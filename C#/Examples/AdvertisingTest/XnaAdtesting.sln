@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaAdtesting", "XnaAdtesting\XnaAdtesting.csproj", "{32753FF4-C89D-4A1D-9F5B-90D0637A7B3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaAdtestingContent", "XnaAdtestingContent\XnaAdtestingContent.contentproj", "{E6011CBE-F5D4-4C98-8E79-5FB512A128DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Windows Phone = Debug|Windows Phone
+		Release|Windows Phone = Release|Windows Phone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32753FF4-C89D-4A1D-9F5B-90D0637A7B3F}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{32753FF4-C89D-4A1D-9F5B-90D0637A7B3F}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{32753FF4-C89D-4A1D-9F5B-90D0637A7B3F}.Debug|Windows Phone.Deploy.0 = Debug|Windows Phone
+		{32753FF4-C89D-4A1D-9F5B-90D0637A7B3F}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{32753FF4-C89D-4A1D-9F5B-90D0637A7B3F}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{32753FF4-C89D-4A1D-9F5B-90D0637A7B3F}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
+		{E6011CBE-F5D4-4C98-8E79-5FB512A128DD}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{E6011CBE-F5D4-4C98-8E79-5FB512A128DD}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

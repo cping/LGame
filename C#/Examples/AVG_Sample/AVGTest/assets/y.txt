@@ -1,0 +1,7 @@
+set test = 128+127
+print(test)
+if 128>99
+ print(true)
+else
+ print(false)
+endif

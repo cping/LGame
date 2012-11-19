@@ -1,0 +1,442 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{5FECED82-F168-43BC-BB57-352BCC8EC9D8}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">Windows Phone</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Loon</RootNamespace>
+    <AssemblyName>LSilverlight-0.3.3</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows Phone</XnaPlatform>
+    <XnaProfile>Reach</XnaProfile>
+    <XnaCrossPlatformGroupID>99a285e3-aa69-467a-89a6-33bc8c645545</XnaCrossPlatformGroupID>
+    <XnaOutputType>Library</XnaOutputType>
+    <XnaRefreshLevel>1</XnaRefreshLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Windows Phone' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Windows Phone\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS_PHONE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Windows Phone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Windows Phone\Release</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS_PHONE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Loon.Action.Avg.Drama\Command.cs" />
+    <Compile Include="Loon.Action.Avg.Drama\CommandType.cs" />
+    <Compile Include="Loon.Action.Avg.Drama\Conversion.cs" />
+    <Compile Include="Loon.Action.Avg.Drama\Expression.cs" />
+    <Compile Include="Loon.Action.Avg\AVGAnm.cs" />
+    <Compile Include="Loon.Action.Avg\AVGCG.cs" />
+    <Compile Include="Loon.Action.Avg\AVGChara.cs" />
+    <Compile Include="Loon.Action.Avg\AVGDialog.cs" />
+    <Compile Include="Loon.Action.Avg\AVGScreen.cs" />
+    <Compile Include="Loon.Action.Collision\CollisionHelper.cs" />
+    <Compile Include="Loon.Action.Collision\CollisionMask.cs" />
+    <Compile Include="Loon.Action.Collision\Gravity.cs" />
+    <Compile Include="Loon.Action.Collision\GravityHandler.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\Closest.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\ClosestSquared.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\Diagonal.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\DiagonalShort.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\Euclidean.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\EuclideanNoSQR.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\Manhattan.cs" />
+    <Compile Include="Loon.Action.Map.Heuristics\Mixing.cs" />
+    <Compile Include="Loon.Action.Map.Tmx\TMXLayer.cs" />
+    <Compile Include="Loon.Action.Map.Tmx\TMXProperty.cs" />
+    <Compile Include="Loon.Action.Map.Tmx\TMXTile.cs" />
+    <Compile Include="Loon.Action.Map.Tmx\TMXTiledMap.cs" />
+    <Compile Include="Loon.Action.Map.Tmx\TMXTileGroup.cs" />
+    <Compile Include="Loon.Action.Map.Tmx\TMXTileSet.cs" />
+    <Compile Include="Loon.Action.Map\AStarFinder.cs" />
+    <Compile Include="Loon.Action.Map\AStarFinderListener.cs" />
+    <Compile Include="Loon.Action.Map\AStarFinderPool.cs" />
+    <Compile Include="Loon.Action.Map\AStarFindHeuristic.cs" />
+    <Compile Include="Loon.Action.Map\Attribute.cs" />
+    <Compile Include="Loon.Action.Map\Character.cs" />
+    <Compile Include="Loon.Action.Map\Config.cs" />
+    <Compile Include="Loon.Action.Map\Field2D.cs" />
+    <Compile Include="Loon.Action.Map\Item.cs" />
+    <Compile Include="Loon.Action.Map\Scene.cs" />
+    <Compile Include="Loon.Action.Map\Story.cs" />
+    <Compile Include="Loon.Action.Map\TileMap.cs" />
+    <Compile Include="Loon.Action.Map\TileMapConfig.cs" />
+    <Compile Include="Loon.Action.Map\TileRoom.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\ArcEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\CrossEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\FadeEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\FractionEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\FreedomEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\IKernel.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\OutEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\PetalKernel.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\PShadowEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\RainKernel.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\ScrollEffect.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\SnowKernel.cs" />
+    <Compile Include="Loon.Action.Sprite.Effect\SplitEffect.cs" />
+    <Compile Include="Loon.Action.Sprite\Animation.cs" />
+    <Compile Include="Loon.Action.Sprite\AnimationHelper.cs" />
+    <Compile Include="Loon.Action.Sprite\AnimationStorage.cs" />
+    <Compile Include="Loon.Action.Sprite\Bind.cs" />
+    <Compile Include="Loon.Action.Sprite\Blood.cs" />
+    <Compile Include="Loon.Action.Sprite\Cycle.cs" />
+    <Compile Include="Loon.Action.Sprite\ISprite.cs" />
+    <Compile Include="Loon.Action.Sprite\JumpObject.cs" />
+    <Compile Include="Loon.Action.Sprite\Label.cs" />
+    <Compile Include="Loon.Action.Sprite\MoveObject.cs" />
+    <Compile Include="Loon.Action.Sprite\Picture.cs" />
+    <Compile Include="Loon.Action.Sprite\SimpleObject.cs" />
+    <Compile Include="Loon.Action.Sprite\Sprite.cs" />
+    <Compile Include="Loon.Action.Sprite\SpriteBatch.cs" />
+    <Compile Include="Loon.Action.Sprite\SpriteBatchObject.cs" />
+    <Compile Include="Loon.Action.Sprite\SpriteBatchScreen.cs" />
+    <Compile Include="Loon.Action.Sprite\SpriteRegion.cs" />
+    <Compile Include="Loon.Action.Sprite\Sprites.cs" />
+    <Compile Include="Loon.Action.Sprite\SpriteSheet.cs" />
+    <Compile Include="Loon.Action.Sprite\StatusBar.cs" />
+    <Compile Include="Loon.Action.Sprite\StatusBars.cs" />
+    <Compile Include="Loon.Action.Sprite\Strap.cs" />
+    <Compile Include="Loon.Action.Sprite\WaitSprite.cs" />
+    <Compile Include="Loon.Action\ActionControl.cs" />
+    <Compile Include="Loon.Action\ActionEvent.cs" />
+    <Compile Include="Loon.Action\ActionListener.cs" />
+    <Compile Include="Loon.Action\Actions.cs" />
+    <Compile Include="Loon.Action\ArrowTo.cs" />
+    <Compile Include="Loon.Action\BallTo.cs" />
+    <Compile Include="Loon.Action\CircleTo.cs" />
+    <Compile Include="Loon.Action\Event.cs" />
+    <Compile Include="Loon.Action\FadeTo.cs" />
+    <Compile Include="Loon.Action\FireTo.cs" />
+    <Compile Include="Loon.Action\JumpTo.cs" />
+    <Compile Include="Loon.Action\MoveTo.cs" />
+    <Compile Include="Loon.Action\RotateTo.cs" />
+    <Compile Include="Loon.Action\ScaleTo.cs" />
+    <Compile Include="Loon.Core.Event\ActionKey.cs" />
+    <Compile Include="Loon.Core.Event\Drawable.cs" />
+    <Compile Include="Loon.Core.Event\KeyListener.cs" />
+    <Compile Include="Loon.Core.Event\TouchListener.cs" />
+    <Compile Include="Loon.Core.Event\Updateable.cs" />
+    <Compile Include="Loon.Core.Geom\AABB.cs" />
+    <Compile Include="Loon.Core.Geom\Circle.cs" />
+    <Compile Include="Loon.Core.Geom\Curve.cs" />
+    <Compile Include="Loon.Core.Geom\Easing.cs" />
+    <Compile Include="Loon.Core.Geom\Ellipse.cs" />
+    <Compile Include="Loon.Core.Geom\FloatValue.cs" />
+    <Compile Include="Loon.Core.Geom\IntValue.cs" />
+    <Compile Include="Loon.Core.Geom\Line.cs" />
+    <Compile Include="Loon.Core.Geom\Matrix.cs" />
+    <Compile Include="Loon.Core.Geom\Path.cs" />
+    <Compile Include="Loon.Core.Geom\Point.cs" />
+    <Compile Include="Loon.Core.Geom\Polygon.cs" />
+    <Compile Include="Loon.Core.Geom\RectBox.cs" />
+    <Compile Include="Loon.Core.Geom\Shape.cs" />
+    <Compile Include="Loon.Core.Geom\ShapeType.cs" />
+    <Compile Include="Loon.Core.Geom\ShapeUtils.cs" />
+    <Compile Include="Loon.Core.Geom\Triangle.cs" />
+    <Compile Include="Loon.Core.Geom\Triangle2f.cs" />
+    <Compile Include="Loon.Core.Geom\TriangleBasic.cs" />
+    <Compile Include="Loon.Core.Geom\TriangleNeat.cs" />
+    <Compile Include="Loon.Core.Geom\TriangleOver.cs" />
+    <Compile Include="Loon.Core.Geom\Vector2f.cs" />
+    <Compile Include="Loon.Core.Geom\Vector3f.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\Actor.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\ActorLayer.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\ActorListener.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\ActorNode.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\ActorSet.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\ActorSpeed.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\ActorTreeSet.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\BSPCollisionChecker.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\BSPCollisionNode.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\ClickListener.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionBaseQuery.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionChecker.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionClassQuery.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionInRangeQuery.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionManager.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionNeighbourQuery.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionPointQuery.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\CollisionQuery.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LButton.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LControl.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LGesture.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LInfo.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LLayer.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LMessage.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LPad.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LPanel.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LPaper.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LProgress.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\LSelect.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\Print.cs" />
+    <Compile Include="Loon.Core.Graphics.Component\Speed.cs" />
+    <Compile Include="Loon.Core.Graphics.Device\BitmapDecoder.cs" />
+    <Compile Include="Loon.Core.Graphics.Device\LGraphicsMath.cs" />
+    <Compile Include="Loon.Core.Graphics.Device\LTrans.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL.Particle\ConfigEmitter.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL.Particle\ConfigEmitterFactory.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL.Particle\FireEmitter.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL.Particle\Particle.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL.Particle\ParticleEmitter.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL.Particle\ParticleLoader.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL.Particle\ParticleSystem.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\GL.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\GL10.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\GL11.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\GLBatch.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\GLEx.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\LTexture.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\LTextureBatch.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\LTexturePack.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\LTextureRegion.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\LTextures.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\Texture2DHelper.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\Texture2DQuad.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\XNA_GL.cs" />
+    <Compile Include="Loon.Core.Graphics.OpenGL\XNA_Shape.cs" />
+    <Compile Include="Loon.Core.Graphics\BMFont.cs" />
+    <Compile Include="Loon.Core.Graphics\Desktop.cs" />
+    <Compile Include="Loon.Core.Graphics\LColor.cs" />
+    <Compile Include="Loon.Core.Graphics\LColorPool.cs" />
+    <Compile Include="Loon.Core.Graphics\LComponent.cs" />
+    <Compile Include="Loon.Core.Graphics\LContainer.cs" />
+    <Compile Include="Loon.Core.Graphics\LFont.cs" />
+    <Compile Include="Loon.Core.Graphics\LGradation.cs" />
+    <Compile Include="Loon.Core.Graphics\LGraphics.cs" />
+    <Compile Include="Loon.Core.Graphics\LLight.cs" />
+    <Compile Include="Loon.Core.Graphics\LPixmap.cs" />
+    <Compile Include="Loon.Core.Graphics\LPixmapData.cs" />
+    <Compile Include="Loon.Core.Graphics\Screen.cs" />
+    <Compile Include="Loon.Core.Input.Sensors\AccelerometerExecute.cs" />
+    <Compile Include="Loon.Core.Input\GamePadListener.cs" />
+    <Compile Include="Loon.Core.Input\LFlickerListener.cs" />
+    <Compile Include="Loon.Core.Input\LInput.cs" />
+    <Compile Include="Loon.Core.Input\LInputFactory.cs" />
+    <Compile Include="Loon.Core.Input\LKey.cs" />
+    <Compile Include="Loon.Core.Input\LProcess.cs" />
+    <Compile Include="Loon.Core.Input\LTouch.cs" />
+    <Compile Include="Loon.Core.Input\LTransition.cs" />
+    <Compile Include="Loon.Core.Resource\ClassRes.cs" />
+    <Compile Include="Loon.Core.Resource\ConfigReader.cs" />
+    <Compile Include="Loon.Core.Resource\CSVReader.cs" />
+    <Compile Include="Loon.Core.Resource\CSVTable.cs" />
+    <Compile Include="Loon.Core.Resource\FileRes.cs" />
+    <Compile Include="Loon.Core.Resource\LPKHeader.cs" />
+    <Compile Include="Loon.Core.Resource\LPKResource.cs" />
+    <Compile Include="Loon.Core.Resource\LPKTable.cs" />
+    <Compile Include="Loon.Core.Resource\RemoteRes.cs" />
+    <Compile Include="Loon.Core.Resource\Resource.cs" />
+    <Compile Include="Loon.Core.Resource\Resources.cs" />
+    <Compile Include="Loon.Core.Resource\SDRes.cs" />
+    <Compile Include="Loon.Core.Store\InvalidRecordIDException.cs" />
+    <Compile Include="Loon.Core.Store\IRecordStoreManager.cs" />
+    <Compile Include="Loon.Core.Store\RecordComparator.cs" />
+    <Compile Include="Loon.Core.Store\RecordEnumeration.cs" />
+    <Compile Include="Loon.Core.Store\RecordFilter.cs" />
+    <Compile Include="Loon.Core.Store\RecordListener.cs" />
+    <Compile Include="Loon.Core.Store\RecordStore.cs" />
+    <Compile Include="Loon.Core.Store\RecordStoreException.cs" />
+    <Compile Include="Loon.Core.Store\RecordStoreFullException.cs" />
+    <Compile Include="Loon.Core.Store\RecordStoreNotFoundException.cs" />
+    <Compile Include="Loon.Core.Store\RecordStoreNotOpenException.cs" />
+    <Compile Include="Loon.Core.Store\Session.cs" />
+    <Compile Include="Loon.Core.Timer\LTimer.cs" />
+    <Compile Include="Loon.Core.Timer\LTimerContext.cs" />
+    <Compile Include="Loon.Core.Timer\SystemTimer.cs" />
+    <Compile Include="Loon.Core\EmptyObject.cs" />
+    <Compile Include="Loon.Core\EmulatorButton.cs" />
+    <Compile Include="Loon.Core\EmulatorButtons.cs" />
+    <Compile Include="Loon.Core\EmulatorListener.cs" />
+    <Compile Include="Loon.Core\LObject.cs" />
+    <Compile Include="Loon.Core\LObjectCamera.cs" />
+    <Compile Include="Loon.Core\LRelease.cs" />
+    <Compile Include="Loon.Core\LSystem.cs" />
+    <Compile Include="Loon.Java.Collections\ArrayListIterator .cs" />
+    <Compile Include="Loon.Java.Collections\Arrays.cs" />
+    <Compile Include="Loon.Java.Collections\ExtendedCollectionBase.cs" />
+    <Compile Include="Loon.Java.Collections\HashedSet.cs" />
+    <Compile Include="Loon.Java.Collections\IteratorAdapter.cs" />
+    <Compile Include="Loon.Java.Collections\JavaListInterface.cs" />
+    <Compile Include="Loon.Java.Collections\LinkedList.cs" />
+    <Compile Include="Loon.Java.Collections\ListSet.cs" />
+    <Compile Include="Loon.Java.Collections\Pool.cs" />
+    <Compile Include="Loon.Java.Collections\ReadOnlySet.cs" />
+    <Compile Include="Loon.Java.Generics\AbstractCollection.cs" />
+    <Compile Include="Loon.Java.Generics\AbstractMap.cs" />
+    <Compile Include="Loon.Java.Generics\AbstractQueue.cs" />
+    <Compile Include="Loon.Java.Generics\AbstractSet.cs" />
+    <Compile Include="Loon.Java.Generics\ArrayListIterator.cs" />
+    <Compile Include="Loon.Java.Generics\ExtendedCollectionBase.cs" />
+    <Compile Include="Loon.Java.Generics\HashedSet.cs" />
+    <Compile Include="Loon.Java.Generics\IEnumeratorAdapter.cs" />
+    <Compile Include="Loon.Java.Generics\IteratorAdapter.cs" />
+    <Compile Include="Loon.Java.Generics\JavaListInterface.cs" />
+    <Compile Include="Loon.Java.Generics\LinkedList.cs" />
+    <Compile Include="Loon.Java.Generics\ListSet.cs" />
+    <Compile Include="Loon.Java.Generics\ReadOnlySet.cs" />
+    <Compile Include="Loon.Java\BufferedInputStream.cs" />
+    <Compile Include="Loon.Java\BufferedOutputStream.cs" />
+    <Compile Include="Loon.Java\ByteArrayInputStream.cs" />
+    <Compile Include="Loon.Java\ByteArrayOutputStream.cs" />
+    <Compile Include="Loon.Java\ByteBuffer.cs" />
+    <Compile Include="Loon.Java\CharArrayReader.cs" />
+    <Compile Include="Loon.Java\Closeable.cs" />
+    <Compile Include="Loon.Java\DataInputStream.cs" />
+    <Compile Include="Loon.Java\DataOutputStream.cs" />
+    <Compile Include="Loon.Java\IlFilterInputStream.cs" />
+    <Compile Include="Loon.Java\IlFilterOutputStream.cs" />
+    <Compile Include="Loon.Java\InputStream.cs" />
+    <Compile Include="Loon.Java\IntBuffer.cs" />
+    <Compile Include="Loon.Java\JavaModifier.cs" />
+    <Compile Include="Loon.Java\JavaRuntime.cs" />
+    <Compile Include="Loon.Java\OutputStream.cs" />
+    <Compile Include="Loon.Java\RuntimeException.cs" />
+    <Compile Include="Loon.Java\SequenceInputStream.cs" />
+    <Compile Include="Loon.Java\Singleton.cs" />
+    <Compile Include="Loon.Java\StringTokenizer.cs" />
+    <Compile Include="Loon.Java\Thread.cs" />
+    <Compile Include="Loon.Media\AssetsSoundManager.cs" />
+    <Compile Include="Loon.Media\MediaSound.cs" />
+    <Compile Include="Loon.Net\Base64Coder.cs" />
+    <Compile Include="Loon.Net\UserAgents.cs" />
+    <Compile Include="Loon.Net\WebHelper.cs" />
+    <Compile Include="Loon.Utils.Collection\ArrayByte.cs" />
+    <Compile Include="Loon.Utils.Collection\ArrayMap.cs" />
+    <Compile Include="Loon.Utils.Collection\IntArray.cs" />
+    <Compile Include="Loon.Utils.Debug\Level.cs" />
+    <Compile Include="Loon.Utils.Debug\Log.cs" />
+    <Compile Include="Loon.Utils.Debug\LogFactory.cs" />
+    <Compile Include="Loon.Utils.Debug\LogFormat.cs" />
+    <Compile Include="Loon.Utils.Debug\LogMessage.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLAttribute.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLComment.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLData.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLDocument.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLElement.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLListener.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLParser.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLProcessing.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLTokenizer.cs" />
+    <Compile Include="Loon.Utils\CollectionUtils.cs" />
+    <Compile Include="Loon.Utils\FileUtils.cs" />
+    <Compile Include="Loon.Utils\GraphicsUtils.cs" />
+    <Compile Include="Loon.Utils\MathUtils.cs" />
+    <Compile Include="Loon.Utils\NumberUtils.cs" />
+    <Compile Include="Loon.Utils\RecordStoreUtils.cs" />
+    <Compile Include="Loon.Utils\ScreenUtils.cs" />
+    <Compile Include="Loon.Utils\StringUtils.cs" />
+    <Compile Include="Loon.Utils\TextureUtils.cs" />
+    <Compile Include="Loon\LSilverlightPlus.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XNAExtensions\Box2D\Box2DXDebug.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\BroadPhase.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Collision.CollideCircle.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Collision.CollidePoly.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Collision.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Collision.Distance.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Collision.TimeOfImpact.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\DynamicTree.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Shapes\CircleShape.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Shapes\PolygonShape.cs" />
+    <Compile Include="XNAExtensions\Box2D\Collision\Shapes\Shape.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Mat22.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Mat33.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Math.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Settings.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Sweep.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Transform.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Vec2.cs" />
+    <Compile Include="XNAExtensions\Box2D\Common\Vec3.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Body.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\ContactManager.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Contacts\CircleContact.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Contacts\Contact.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Contacts\ContactSolver.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Contacts\PolygonAndCircleContact.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Contacts\PolygonContact.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Fixture.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Island.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\DistanceJoint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\GearJoint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\Joint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\LineJoint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\MouseJoint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\PrismaticJoint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\PulleyJoint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\Joints\RevoluteJoint.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\TimeStep.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\World.cs" />
+    <Compile Include="XNAExtensions\Box2D\Dynamics\WorldCallbacks.cs" />
+    <Compile Include="XNAExtensions\Box2D\Stuff\IQueryEnabled.cs" />
+    <Compile Include="XNAExtensions\Box2D\Stuff\IRayCastEnabled.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\Adler32.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\CompressionMode.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\Crc32.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\Deflater.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\DeflaterConstants.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\DeflaterEngine.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\DeflaterHuffman.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\DeflaterPending.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\DeflateStream.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\GZipConstants.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\GZipInputStream.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\IChecksum.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\Inflater.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\InflaterDynHeader.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\InflaterHuffmanTree.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\InflaterInputStream.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\OutputWindow.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\PendingBuffer.cs" />
+    <Compile Include="XNAExtensions\SharpZipLib\StreamManipulator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Devices.Sensors, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Phone, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Phone.Interop, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework.Input.Touch, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework.Interop, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
+    <Reference Include="mscorlib.Extensions, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
+    <Reference Include="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
+    <Reference Include="System.Net, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="loon.def" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>

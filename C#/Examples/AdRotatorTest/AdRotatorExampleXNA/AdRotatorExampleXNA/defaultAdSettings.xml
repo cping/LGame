@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AdSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CultureDescriptors>
+    <AdCultureDescriptor CultureName="en-US">
+      <Probabilities Probability="10" AdType="InnerActive" AppID="ZenithMoon_Studios_Flipped_WP7" />
+      <Probabilities Probability="10" AdType="MobFox" AppID="474b65a3575dcbc261090efb2b996301" IsTest="false"/>
+      <Probabilities Probability="40" AdType="PubCenter" AppID="78b9455f-db44-4de8-b0c3-1a91784790cd" SecondaryID="10029821" />
+      <Probabilities Probability="10" AdType="Smaato" AppID="65754722" SecondaryID="923855310" />
+      <Probabilities Probability="10" AdType="AdDuplex" AppID="7687"/>
+      <Probabilities AdType="DefaultHouseAd" AppID="http://xna-uk.net/AdRotator/XNAHouseAdImage.png"/>
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="en-GB">
+      <Probabilities Probability="5" AdType="InnerActive" AppID="ZenithMoon_Studios_Flipped_WP7" />
+      <Probabilities Probability="5" AdType="MobFox" AppID="474b65a3575dcbc261090efb2b996301" IsTest="false"/>
+      <Probabilities Probability="40" AdType="PubCenter" AppID="78b9455f-db44-4de8-b0c3-1a91784790cd" SecondaryID="10029821" />
+      <Probabilities Probability="40" AdType="Smaato" AppID="65754722" SecondaryID="923855310" />
+      <Probabilities Probability="10" AdType="AdDuplex" AppID="7687"/>
+      <Probabilities AdType="DefaultHouseAd" AppID="http://xna-uk.net/AdRotator/XNAHouseAdImage.png"/>
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="de-DE">
+      <Probabilities Probability="20" AdType="InnerActive" AppID="ZenithMoon_Studios_Flipped_WP7" />
+      <Probabilities Probability="40" AdType="MobFox" AppID="474b65a3575dcbc261090efb2b996301" IsTest="false"/>
+      <Probabilities Probability="30" AdType="Smaato" AppID="65754722" SecondaryID="923855310" />
+      <Probabilities Probability="5" AdType="PubCenter" AppID="78b9455f-db44-4de8-b0c3-1a91784790cd" SecondaryID="10029821" />
+      <Probabilities Probability="5" AdType="AdDuplex" AppID="7687"/>
+      <Probabilities AdType="DefaultHouseAd" AppID="http://xna-uk.net/AdRotator/XNAHouseAdImage.png"/>
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="default">
+      <Probabilities Probability="20" AdType="InnerActive" AppID="ZenithMoon_Studios_Flipped_WP7" />
+      <Probabilities Probability="20" AdType="MobFox" AppID="474b65a3575dcbc261090efb2b996301" IsTest="false"/>
+      <Probabilities Probability="20" AdType="PubCenter" AppID="78b9455f-db44-4de8-b0c3-1a91784790cd" SecondaryID="10029821" />
+      <Probabilities Probability="20" AdType="AdDuplex" AppID="7687"/>
+      <Probabilities Probability="20" AdType="Smaato" AppID="65754722" SecondaryID="923855310" />
+      <Probabilities AdType="DefaultHouseAd" AppID="http://xna-uk.net/AdRotator/XNAHouseAdImage.png"/>
+    </AdCultureDescriptor>
+  </CultureDescriptors>
+</AdSettings>
