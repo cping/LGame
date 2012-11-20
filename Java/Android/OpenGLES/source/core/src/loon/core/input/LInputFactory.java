@@ -446,9 +446,17 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 
 		public static boolean isKeyPressed(int key) {
 			if (key == Key.ANY_KEY) {
-				return keys.size > 0;
+				return keys.size > 0 && only_key.isPressed();
 			} else {
-				return keys.contains(key);
+				return keys.contains(key) && only_key.isPressed();
+			}
+		}
+
+		public static boolean isKeyRelease(int key) {
+			if (key == Key.ANY_KEY) {
+				return keys.size > 0 && !only_key.isPressed();
+			} else {
+				return keys.contains(key) && !only_key.isPressed();
 			}
 		}
 

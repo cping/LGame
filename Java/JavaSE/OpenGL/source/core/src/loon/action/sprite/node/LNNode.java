@@ -39,7 +39,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
 public class LNNode implements LRelease {
-	
+
 	public Object Tag;
 
 	public void down(LTouch e) {
@@ -652,6 +652,18 @@ public class LNNode implements LRelease {
 		}
 	}
 
+	public final void removeAction(LNAction action) {
+		_actionList.remove(action);
+		action._target = null;
+	}
+
+	public final void stopAllAction() {
+		for (LNAction action : _actionList) {
+			action._isEnd = true;
+		}
+		this._actionList.clear();
+	}
+
 	public final void runAction(LNAction action) {
 		this._actionList.add(action);
 		action.setTarget(this);
@@ -729,10 +741,6 @@ public class LNNode implements LRelease {
 				((((_screenRect.width - x) - this._size_width) + this._anchor.x) - (_screenRect.width / 2)) + 240,
 				((_screenRect.height / 2) - (y + this._anchor.y)) + 160);
 
-	}
-
-	public final void stopAllAction() {
-		this._actionList.clear();
 	}
 
 	public Vector2f getAnchor() {

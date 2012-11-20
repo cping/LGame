@@ -53,6 +53,7 @@ public class LNEase extends LNAction {
 	public void step(float dt) {
 		if (_action != null) {
 			_action.step(dt);
+			_isEnd = _action.isEnd();
 		}
 	}
 
