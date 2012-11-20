@@ -4,8 +4,6 @@
 
 License : http://www.apache.org/licenses/LICENSE-2.0
 
-某国对google的https传输极端不友好，迫于无奈新建github分支。
-
 20121118:
 
 原Android版LGameAndroid2DActivity类，更名为LGame，使用方式无任何修正，有疑问请参看examples文件夹下示例（取这个名字是为了同C#版匹配，和XNA继承Game类学的……）
@@ -17,6 +15,8 @@ License : http://www.apache.org/licenses/LICENSE-2.0
 本次修改删除了Android版中许多非必要的代码（和游戏逻辑无关部分），稳定性绝对能够保证（如果MTC和iTestin等测试工具靠谱的话——今天MTC人品爆发都跑出99%通过了（有一台未启动））。话说Android碎片化的结果，零散设置越多崩的几率越高，把针对Android环境的额外配置全删后稳定多了……
 
 PS：有网友提到4.x环境的状态栏无法消除，但小弟上次更新确实设置了setSystemUiVisibility，理论上讲不可能出现这种问题。而小弟刚刚（20121118）做的MTC测试也支持这一推论，除数字手机右侧有特殊按钮组外(具体可参看附带截图，数字这货的按钮栏特殊存在，似乎不是setSystemUiVisibility能控制的，强删View我又怕有其它后遗症……)，其余4.x版本StatusBar状态栏皆已被setSystemUiVisibility函数隐藏。建议检查lib是否为最近更新的版本，或直接以此版替代。
+
+![image](https://raw.github.com/cping/LGame/4.xbar.png "image")
 
 再者，由于Android SDK更新比较频繁（目前最新4.2），我使用的ADT环境也经常会进行升级，如果您的Eclipse载入示例工程出现问题，请更新到新版ADT即可解决。
 
