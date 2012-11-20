@@ -12,6 +12,8 @@ Built-in over 30 game example(Part screenshots):
 
 ![LGame](https://raw.github.com/cping/LGame/master/e3x.png "3")
 
+![LGame](https://raw.github.com/cping/LGame/master/e4x.png "4")
+
 License : http://www.apache.org/licenses/LICENSE-2.0
 
 20121118:
