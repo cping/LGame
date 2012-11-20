@@ -1,3 +1,7 @@
+#LGame (formal name : Loon)
+
+#This Java implemented game framework(but will provide a cross-compiler contain C#、C/C++、Go、JavaScript or other programming language implemented)，Support IOS，Android，WP7，PSM，Mac，Windows，Linux.
+
 某国对google的https传输极端不友好，迫于无奈新建github分支。
 
 20121118:
