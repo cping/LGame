@@ -153,42 +153,6 @@ public final class LTextureBatch implements LRelease {
 			this.y = batch.moveY;
 		}
 
-		public void flip() {
-			if (vertexBuffer != null) {
-				vertexBuffer.flip();
-			}
-			if (coordsBuffer != null) {
-				coordsBuffer.flip();
-			}
-			if (colorBuffer != null) {
-				colorBuffer.flip();
-			}
-		}
-
-		public void limit(int size) {
-			if (vertexBuffer != null) {
-				vertexBuffer.limit(size);
-			}
-			if (coordsBuffer != null) {
-				coordsBuffer.limit(size);
-			}
-			if (colorBuffer != null) {
-				colorBuffer.limit(size);
-			}
-		}
-
-		public void position(int newPosition) {
-			if (vertexBuffer != null) {
-				vertexBuffer.position(newPosition);
-			}
-			if (coordsBuffer != null) {
-				coordsBuffer.position(newPosition);
-			}
-			if (colorBuffer != null) {
-				colorBuffer.position(newPosition);
-			}
-		}
-
 		public void dispose() {
 			if (vertexBuffer != null) {
 				NativeSupport.freeMemory(vertexBuffer);
@@ -462,12 +426,10 @@ public final class LTextureBatch implements LRelease {
 			this.useBegin = false;
 			return;
 		}
-		synchronized (LTextureBatch.class) {
-			this.insertVertices();
-			GLEx.self.glDrawArrays(texture, vertexBuffer, coordBuffer,
-					colorBuffer, isColor, count, moveX, moveY);
-			this.useBegin = false;
-		}
+		this.insertVertices();
+		GLEx.self.glDrawArrays(texture, vertexBuffer, coordBuffer, colorBuffer,
+				isColor, count, moveX, moveY);
+		this.useBegin = false;
 	}
 
 	/**
@@ -486,10 +448,8 @@ public final class LTextureBatch implements LRelease {
 		if (c != null) {
 			GLEx.self.setColor(c);
 		}
-		synchronized (LTextureBatch.class) {
-			GLEx.self.glQuad(texture, vertexBuffer, coordBuffer, count, x, y,
-					sx, sy, ax, sy, rotaion);
-		}
+		GLEx.self.glQuad(texture, vertexBuffer, coordBuffer, count, x, y, sx,
+				sy, ax, sy, rotaion);
 		if (c != null) {
 			GLEx.self.setColor(LColor.white);
 		}
@@ -527,10 +487,8 @@ public final class LTextureBatch implements LRelease {
 			return;
 		}
 		if (isLocked) {
-			synchronized (LTextureBatch.class) {
-				GLEx.self.glDrawArrays(texture, vertexBuffer, coordBuffer,
-						colorBuffer, isColor, count, moveX, moveY);
-			}
+			GLEx.self.glDrawArrays(texture, vertexBuffer, coordBuffer,
+					colorBuffer, isColor, count, moveX, moveY);
 		}
 	}
 
@@ -544,9 +502,7 @@ public final class LTextureBatch implements LRelease {
 		if (cache.count == 0) {
 			return;
 		}
-		synchronized (LTextureBatch.class) {
-			GLEx.self.glDrawArrays(tex2d, cache);
-		}
+		GLEx.self.glDrawArrays(tex2d, cache);
 	}
 
 	/**
@@ -567,9 +523,7 @@ public final class LTextureBatch implements LRelease {
 		if (c != null) {
 			GLEx.self.setColor(c);
 		}
-		synchronized (LTextureBatch.class) {
-			GLEx.self.glQuad(tex2d, cache, x, y, sx, sy, ax, ay, rotation);
-		}
+		GLEx.self.glQuad(tex2d, cache, x, y, sx, sy, ax, ay, rotation);
 		if (c != null) {
 			GLEx.self.setColor(LColor.white);
 		}
@@ -1003,42 +957,6 @@ public final class LTextureBatch implements LRelease {
 	public void setLocation(float x, float y) {
 		this.moveX = x;
 		this.moveY = y;
-	}
-
-	public float[] getCols() {
-		return cols;
-	}
-
-	public float[] getCoords() {
-		return coords;
-	}
-
-	public float[] getVerts() {
-		return verts;
-	}
-
-	public FloatBuffer getColorBuffer() {
-		return colorBuffer;
-	}
-
-	public FloatBuffer getCoordBuffer() {
-		return coordBuffer;
-	}
-
-	public FloatBuffer getVertexBuffer() {
-		return vertexBuffer;
-	}
-
-	public int getOldColorCount() {
-		return oldColorCount;
-	}
-
-	public int getOldCoordCount() {
-		return oldCoordCount;
-	}
-
-	public int getOldVertCount() {
-		return oldVertCount;
 	}
 
 	public boolean isLockCoord() {

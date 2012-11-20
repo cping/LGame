@@ -31,10 +31,6 @@ public class LNEnd extends LNAction {
 		return action;
 	}
 
-	public void setTarget(LNNode node) {
-		super.setTarget(node);
-	}
-
 	public void step(float dt) {
 		super._isEnd = true;
 		_target.stopAllAction();

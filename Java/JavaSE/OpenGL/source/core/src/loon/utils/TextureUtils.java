@@ -1,11 +1,9 @@
 package loon.utils;
 
 import loon.core.LSystem;
-import loon.core.geom.Matrix.Transform2i;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
@@ -268,95 +266,6 @@ public class TextureUtils {
 			image = null;
 		}
 		return tex2d;
-	}
-
-	/**
-	 * 创建一个有色彩渐变的纹理
-	 * 
-	 * @param width
-	 * @param height
-	 * @param alpha
-	 * @param topLeftColor
-	 * @param topRightColor
-	 * @param bottomRightColor
-	 * @param bottomLeftColor
-	 * @return
-	 */
-	public static LTexture createGradientTexture(int width, int height,
-			boolean alpha, LColor topLeftColor, LColor topRightColor,
-			LColor bottomRightColor, LColor bottomLeftColor) {
-		LImage.Processor imgProcessor = new LImage.Processor(width, height,
-				alpha);
-		imgProcessor.fourCornersGradient(topLeftColor.getRGB(),
-				topRightColor.getRGB(), bottomRightColor.getRGB(),
-				bottomLeftColor.getRGB());
-		LTexture tex2d = imgProcessor.getTexture();
-		if (imgProcessor != null) {
-			imgProcessor.dispose();
-			imgProcessor = null;
-		}
-		return tex2d;
-	}
-
-	/**
-	 * 读取指定图像资源，并为该资源生成阴影效果。
-	 * 
-	 * @param resName
-	 * @param angle
-	 * @return
-	 */
-	public static LTexture createShadowTexture(String resName, float angle) {
-		return TextureUtils.createShadowTexture(LTextures.loadTexture(resName),
-				0.4f, 1f, angle);
-	}
-
-	/**
-	 * 读取指定纹理，并为该资源生成阴影效果。
-	 * 
-	 * @param texture
-	 * @param angle
-	 * @return
-	 */
-	public static LTexture createShadowTexture(LTexture texture, float angle) {
-		return TextureUtils.createShadowTexture(texture, 0.4f, 1f, angle);
-	}
-
-	/**
-	 * 读取指定纹理，并为该资源生成阴影效果。
-	 * 
-	 * @param texture
-	 * @param alpha
-	 * @param scale
-	 * @param angle
-	 * @return
-	 */
-	public static LTexture createShadowTexture(LTexture texture, float alpha,
-			float scale, float angle) {
-		final int width = texture.getWidth();
-		final int height = texture.getHeight();
-		LImage image = texture.getImage();
-		int centerX = width / 2;
-		int centerY = height / 2;
-		int offsetX = (int) ((width - image.getWidth()) / 2);
-		int offsetY = (int) ((height - image.getHeight()) / 2);
-		Transform2i t = new Transform2i();
-		t.rotate(angle, centerX, centerY);
-		t.zoom(scale, centerX, centerY);
-		LImage.Processor shadowProcess = new LImage.Processor(width, height,
-				image.hasAlpha());
-		shadowProcess.drawImage(image, offsetX, offsetY);
-		shadowProcess.transparency();
-		shadowProcess.mul(255, 0, 0, 0);
-		shadowProcess.mul((int) (alpha * 255), 255, 255, 255);
-		shadowProcess.convolve(LImage.Processor.gaussianBlurKernel());
-		shadowProcess.transform(t);
-		LTexture result = new LTexture(GLLoader.getTextureData(shadowProcess
-				.getImage()));
-		if (image != null) {
-			image.dispose();
-			image = null;
-		}
-		return result;
 	}
 
 }

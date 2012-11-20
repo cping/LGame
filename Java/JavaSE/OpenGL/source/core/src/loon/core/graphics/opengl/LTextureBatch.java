@@ -153,42 +153,6 @@ public final class LTextureBatch implements LRelease {
 			this.y = batch.moveY;
 		}
 
-		public void flip() {
-			if (vertexBuffer != null) {
-				vertexBuffer.flip();
-			}
-			if (coordsBuffer != null) {
-				coordsBuffer.flip();
-			}
-			if (colorBuffer != null) {
-				colorBuffer.flip();
-			}
-		}
-
-		public void limit(int size) {
-			if (vertexBuffer != null) {
-				vertexBuffer.limit(size);
-			}
-			if (coordsBuffer != null) {
-				coordsBuffer.limit(size);
-			}
-			if (colorBuffer != null) {
-				colorBuffer.limit(size);
-			}
-		}
-
-		public void position(int newPosition) {
-			if (vertexBuffer != null) {
-				vertexBuffer.position(newPosition);
-			}
-			if (coordsBuffer != null) {
-				coordsBuffer.position(newPosition);
-			}
-			if (colorBuffer != null) {
-				colorBuffer.position(newPosition);
-			}
-		}
-
 		public void dispose() {
 			if (vertexBuffer != null) {
 				NativeSupport.freeMemory(vertexBuffer);
@@ -993,42 +957,6 @@ public final class LTextureBatch implements LRelease {
 	public void setLocation(float x, float y) {
 		this.moveX = x;
 		this.moveY = y;
-	}
-
-	public float[] getCols() {
-		return cols;
-	}
-
-	public float[] getCoords() {
-		return coords;
-	}
-
-	public float[] getVerts() {
-		return verts;
-	}
-
-	public FloatBuffer getColorBuffer() {
-		return colorBuffer;
-	}
-
-	public FloatBuffer getCoordBuffer() {
-		return coordBuffer;
-	}
-
-	public FloatBuffer getVertexBuffer() {
-		return vertexBuffer;
-	}
-
-	public int getOldColorCount() {
-		return oldColorCount;
-	}
-
-	public int getOldCoordCount() {
-		return oldCoordCount;
-	}
-
-	public int getOldVertCount() {
-		return oldVertCount;
 	}
 
 	public boolean isLockCoord() {
