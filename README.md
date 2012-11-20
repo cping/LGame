@@ -16,7 +16,7 @@ License : http://www.apache.org/licenses/LICENSE-2.0
 
 PS：有网友提到4.x环境的状态栏无法消除，但小弟上次更新确实设置了setSystemUiVisibility，理论上讲不可能出现这种问题。而小弟刚刚（20121118）做的MTC测试也支持这一推论，除数字手机右侧有特殊按钮组外(具体可参看附带截图，数字这货的按钮栏特殊存在，似乎不是setSystemUiVisibility能控制的，强删View我又怕有其它后遗症……)，其余4.x版本StatusBar状态栏皆已被setSystemUiVisibility函数隐藏。建议检查lib是否为最近更新的版本，或直接以此版替代。
 
-![image](https://raw.github.com/cping/LGame/4.xbar.png "image")
+![image](https://github.com/cping/LGame/blob/master/4.xbar.png "image")
 
 再者，由于Android SDK更新比较频繁（目前最新4.2），我使用的ADT环境也经常会进行升级，如果您的Eclipse载入示例工程出现问题，请更新到新版ADT即可解决。
 
