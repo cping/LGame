@@ -285,8 +285,8 @@ public class SRPGChoiceView extends SRPGView {
 				}
 				int i1 = 0;
 				for (int j1 = 0; j1 < choice[viewIndex].length; j1++) {
-					g.drawEastString(choice[viewIndex][j1], posX + i1 + 14,
-							posY + index * getSpace() + getHeight(), 0, nColor);
+					g.drawString(choice[viewIndex][j1], posX + i1 + 14,
+							posY + index * getSpace() + getHeight(), nColor);
 					i1 += mesList[j1] + tab;
 				}
 				index++;

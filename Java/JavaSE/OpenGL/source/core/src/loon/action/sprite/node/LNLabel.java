@@ -72,7 +72,7 @@ public class LNLabel extends LNNode {
 			batch.setFont(_spriteFont);
 			batch.drawString(this._text, pos[0], pos[1], scale[0], scale[1],
 					_anchor.x, _anchor.y, MathUtils.toDegrees(rotation),
-					batch.getColor(), true);
+					batch.getColor());
 			batch.setFont(font);
 			batch.resetColor();
 		}

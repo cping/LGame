@@ -530,17 +530,17 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public void draw(float x, float y) {
-		draw(null, x, y, texture.width, texture.height, 0, 0, texture.width,
+		draw(colors, x, y, texture.width, texture.height, 0, 0, texture.width,
 				texture.height);
 	}
 
 	public void draw(float x, float y, float width, float height) {
-		draw(null, x, y, width, height, 0, 0, texture.width, texture.height);
+		draw(colors, x, y, width, height, 0, 0, texture.width, texture.height);
 	}
 
 	public void draw(float x, float y, float width, float height, float srcX,
 			float srcY, float srcWidth, float srcHeight) {
-		draw(null, x, y, width, height, srcX, srcY, srcWidth, srcHeight);
+		draw(colors, x, y, width, height, srcX, srcY, srcWidth, srcHeight);
 	}
 
 	public void draw(LColor[] colors, float x, float y, float width,

@@ -259,8 +259,7 @@ final public class StringUtils {
 	 * @param str
 	 * @return
 	 */
-	public static boolean isChinaLanguage(String str) {
-		char[] chars = str.toCharArray();
+	public static boolean isChinaLanguage(char[] chars) {
 		int[] ints = new int[2];
 		boolean isChinese = false;
 		int length = chars.length;

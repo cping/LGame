@@ -19,7 +19,6 @@ import loon.core.graphics.device.LGraphicsTrans;
 import loon.jni.NativeSupport;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
-import loon.utils.StringUtils;
 
 /**
  * 
@@ -3902,164 +3901,18 @@ public final class GLEx implements LGraphicsTrans {
 	 * @param y
 	 * @param rotation
 	 * @param c
+	 * @param check
 	 */
-	public void drawString(String string, float x, float y, float rotation,
+	private void drawString(String string, float x, float y, float rotation,
 			LColor c) {
-		drawString(string, x, y, rotation, c, true);
-	}
-
-	/**
-	 * 输出字符串
-	 * 
-	 * @param string
-	 * @param x
-	 * @param y
-	 * @param rotation
-	 * @param c
-	 * @param check
-	 */
-	private void drawString(String string, float x, float y, float rotation,
-			LColor c, boolean check) {
-		drawString(string, x, y, rotation, c, check, false);
-	}
-
-	/**
-	 * 输出字符串
-	 * 
-	 * @param string
-	 * @param x
-	 * @param y
-	 * @param rotation
-	 * @param c
-	 * @param check
-	 */
-	private void drawString(String string, float x, float y, float rotation,
-			LColor c, boolean check, boolean notEnglish) {
 		if (isClose || c == null || checkAlpha(c)) {
 			return;
 		}
 		if (string == null || string.length() == 0) {
 			return;
 		}
-
 		y = y - font.getAscent();
-		if (notEnglish || LSystem.isStringTexture) {
-			LSTRDictionary.drawString(font, string, x, y, rotation, c);
-			return;
-		}
-		if (check) {
-			if (!StringUtils.isEnglishAndNumeric(string)) {
-				LSTRDictionary.drawString(font, string, x, y, rotation, c);
-				return;
-			}
-		}
-		int fontWidth = 0;
-		int fontHeight = 0;
-		LSTRFont gl = LSTRDictionary.getGLFont(font);
-		if (x != 0 || y != 0) {
-			gl10.glTranslatef(x, y, 0);
-		}
-		if (rotation != 0) {
-			fontWidth = gl.getWidth(string) / 2;
-			fontHeight = gl.getHeight() / 2;
-			gl10.glTranslatef(fontWidth, fontHeight, 0.0f);
-			gl10.glRotatef(rotation, 0f, 0f, 1f);
-			gl10.glTranslatef(-fontWidth, -fontHeight, 0.0f);
-		}
-		gl.drawString(string, 0, 0, 0, c);
-		if (rotation != 0) {
-			gl10.glTranslatef(fontWidth, fontHeight, 0.0f);
-			gl10.glRotatef(-rotation, 0f, 0f, 1f);
-			gl10.glTranslatef(-fontWidth, -fontHeight, 0.0f);
-		}
-		if (x != 0 || y != 0) {
-			gl10.glTranslatef(-x, -y, 0);
-		}
-	}
-
-	/**
-	 * 仅输出东方字符
-	 * 
-	 * @param string
-	 * @param x
-	 * @param y
-	 */
-	public void drawEastString(String string, float x, float y) {
-		drawString(string, x, y, 0, color, false, true);
-	}
-
-	/**
-	 * 仅输出东方字符
-	 * 
-	 * @param string
-	 * @param x
-	 * @param y
-	 * @param rotation
-	 * @param c
-	 */
-	public void drawEastString(String string, float x, float y, float rotation,
-			LColor c) {
-		drawString(string, x, y, rotation, c, false, true);
-	}
-
-	/**
-	 * 仅输出西方字符串
-	 * 
-	 * @param string
-	 * @param x
-	 * @param y
-	 */
-	public void drawWestString(String string, float x, float y) {
-		drawString(string, x, y, 0, color, false);
-	}
-
-	/**
-	 * 仅输出西方字符串
-	 * 
-	 * @param chars
-	 * @param x
-	 * @param y
-	 */
-	public void drawWestString(char chars, float x, float y) {
-		drawString(String.valueOf(chars), x, y, 0, color, false);
-	}
-
-	/**
-	 * 仅输出西方字符串
-	 * 
-	 * @param chars
-	 * @param x
-	 * @param y
-	 * @param c
-	 */
-	public void drawWestString(String string, float x, float y, LColor c) {
-		drawString(string, x, y, 0, c, false);
-	}
-
-	/**
-	 * 仅输出西方字符串
-	 * 
-	 * @param chars
-	 * @param x
-	 * @param y
-	 * @param rotation
-	 */
-	public void drawWestString(char chars, float x, float y, float rotation) {
-		drawString(String.valueOf(chars), x, y, rotation, color, false);
-	}
-
-	/**
-	 * 仅输出西方字符串
-	 * 
-	 * @param chars
-	 * @param x
-	 * @param y
-	 * @param rotation
-	 * @param c
-	 */
-	public void drawWestString(char chars, float x, float y, float rotation,
-			LColor c) {
-		drawString(String.valueOf(chars), x, y, rotation, c, false);
+		LSTRDictionary.drawString(font, string, x, y, rotation, c);
 	}
 
 	/**
@@ -4166,12 +4019,12 @@ public final class GLEx implements LGraphicsTrans {
 			return;
 		}
 		setColor(color);
-		drawEastString(message, x + 1, y);
-		drawEastString(message, x - 1, y);
-		drawEastString(message, x, y + 1);
-		drawEastString(message, x, y - 1);
+		drawString(message, x + 1, y);
+		drawString(message, x - 1, y);
+		drawString(message, x, y + 1);
+		drawString(message, x, y - 1);
 		setColor(color1);
-		drawEastString(message, x, y);
+		drawString(message, x, y);
 	}
 
 	public void drawStyleString(String message, int x, int y, LColor c1,
@@ -4180,12 +4033,12 @@ public final class GLEx implements LGraphicsTrans {
 			return;
 		}
 		setColorRGB(c1);
-		drawEastString(message, x + 1, y);
-		drawEastString(message, x - 1, y);
-		drawEastString(message, x, y + 1);
-		drawEastString(message, x, y - 1);
+		drawString(message, x + 1, y);
+		drawString(message, x - 1, y);
+		drawString(message, x, y + 1);
+		drawString(message, x, y - 1);
 		setColorRGB(c2);
-		drawEastString(message, x, y);
+		drawString(message, x, y);
 	}
 
 	/**

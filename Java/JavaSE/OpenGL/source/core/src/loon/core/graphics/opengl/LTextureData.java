@@ -47,10 +47,6 @@ public abstract class LTextureData implements LRelease {
 		return height;
 	}
 
-	public Buffer getSource() {
-		return source;
-	}
-
 	public int getTexHeight() {
 		return texHeight;
 	}

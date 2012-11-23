@@ -79,10 +79,10 @@ public class Label extends LObject implements ISprite {
 			this.height = font.getSize();
 			if (alpha > 0 && alpha < 1) {
 				g.setAlpha(alpha);
-				g.drawEastString(label, x(), y());
+				g.drawString(label, x(), y());
 				g.setAlpha(1.0F);
 			} else {
-				g.drawEastString(label, x(), y());
+				g.drawString(label, x(), y());
 			}
 			g.setFont(oldFont);
 			g.setColor(oldColor);

@@ -17,7 +17,7 @@ import loon.srpg.SRPGScreen;
 import loon.srpg.SRPGType;
 import loon.srpg.actor.SRPGActor;
 import loon.srpg.effect.SRPGEffectFactory;
-import loon.utils.NumberUtils;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.collection.ArrayMap;
 
@@ -272,7 +272,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_SELLEN)) {
 						if (mesFlag != null && select != null) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								select.setLeftOffset(Integer.parseInt(mesFlag));
 							}
 						}
@@ -280,7 +280,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_SELTOP)) {
 						if (mesFlag != null && select != null) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								select.setTopOffset(Integer.parseInt(mesFlag));
 							}
 						}
@@ -288,7 +288,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEN)) {
 						if (mesFlag != null) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								message.setMessageLength(Integer
 										.parseInt(mesFlag));
 							}
@@ -297,7 +297,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESTOP)) {
 						if (mesFlag != null) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								message.setTopOffset(Integer.parseInt(mesFlag));
 							}
 						}
@@ -305,7 +305,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEFT)) {
 						if (mesFlag != null) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								message.setLeftOffset(Integer.parseInt(mesFlag));
 							}
 						}
@@ -433,14 +433,14 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (screen != null) {
 						if ("center".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								screen.setCenterActor(id);
 							}
 							continue;
 						}
 						if ("move".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								if (size == 3) {
 									move(mesFlag, orderFlag, "60", "0", false);
 								} else {
@@ -451,7 +451,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							continue;
 						}
 						if ("movestop".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								if (size == 3) {
 									move(mesFlag, orderFlag, "60", "0", true);
 								} else {
@@ -503,7 +503,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							}
 						}
 						if ("rotate".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								setExist(false);
 								SRPGActor actor = screen.findActor(id);
@@ -560,7 +560,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							continue;
 						}
 						if ("dir".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								SRPGActor actor = screen.findActor(id);
 								int d = SRPGType.MOVE_DOWN;
@@ -579,7 +579,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							continue;
 						}
 						if ("chop".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								setExist(false);
 								SRPGActor actor = screen.findActor(id);
@@ -626,7 +626,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							}
 						}
 						if ("hide".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								SRPGActor actor = screen.findActor(id);
 								actor.setVisible(false);
@@ -634,7 +634,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							continue;
 						}
 						if ("show".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								SRPGActor actor = screen.findActor(id);
 								actor.setVisible(true);
@@ -652,7 +652,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							continue;
 						}
 						if ("gas".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								setExist(false);
 								SRPGActor actor = screen.findActor(id);
@@ -674,7 +674,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							}
 							continue;
 						} else if ("blow".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								setExist(false);
 								SRPGActor actor = screen.findActor(id);
@@ -696,7 +696,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							}
 							continue;
 						} else if ("thunder".equalsIgnoreCase(cmdFlag)) {
-							if (NumberUtils.isNan(mesFlag)) {
+							if (MathUtils.isNan(mesFlag)) {
 								int id = Integer.parseInt(mesFlag);
 								setExist(false);
 								SRPGActor actor = screen.findActor(id);

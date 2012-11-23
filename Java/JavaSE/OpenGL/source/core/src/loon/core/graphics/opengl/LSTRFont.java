@@ -161,7 +161,7 @@ public class LSTRFont implements LRelease {
 			int customCharsLength = (customCharsArray != null) ? customCharsArray.length
 					: 0;
 			this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
-
+			StringBuilder sbr = new StringBuilder(totalCharSet);
 			for (int i = 0; i < totalCharSet + customCharsLength; i++) {
 				char ch = (i < totalCharSet) ? (char) i : customCharsArray[i
 						- totalCharSet];
@@ -170,6 +170,7 @@ public class LSTRFont implements LRelease {
 				if (charwidth <= 0) {
 					charwidth = 1;
 				}
+
 				int charheight = font.getHeight();
 				if (charheight <= 0) {
 					charheight = fontSize;
@@ -177,10 +178,13 @@ public class LSTRFont implements LRelease {
 
 				IntObject newIntObject = new IntObject();
 
-				newIntObject.width = font.charWidth(ch);
-				newIntObject.height = font.getHeight();
+				newIntObject.width = charwidth;
+				newIntObject.height = charheight;
 
 				if (positionX + newIntObject.width >= textureWidth) {
+					g.drawString(sbr.toString(), 0,
+							positionY + font.getAscent());
+					sbr.delete(0, sbr.length());
 					positionX = 0;
 					positionY += rowHeight;
 					rowHeight = 0;
@@ -197,8 +201,7 @@ public class LSTRFont implements LRelease {
 					rowHeight = newIntObject.height;
 				}
 
-				g.drawString(String.valueOf(ch), positionX,
-						positionY + font.getAscent());
+				sbr.append(ch);
 
 				positionX += newIntObject.width;
 
@@ -209,7 +212,10 @@ public class LSTRFont implements LRelease {
 				}
 
 			}
-
+			if (sbr.length() > 0) {
+				g.drawString(sbr.toString(), 0, positionY + font.getAscent());
+				sbr = null;
+			}
 			LTexture texture = new LTexture(GLLoader.getTextureData(imgTemp),
 					Format.LINEAR);
 
@@ -227,13 +233,13 @@ public class LSTRFont implements LRelease {
 
 	public void drawString(String chars, float x, float y, float rotation,
 			LColor color) {
-		drawString(x, y, 1f, 1f, 0, 0, rotation,
-				chars, color, 0, chars.length() - 1);
+		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, color, 0,
+				chars.length() - 1);
 	}
 
 	public void drawString(String chars, float x, float y, float rotation) {
-		drawString(x, y, 1f, 1f, 0, 0, rotation,
-				chars, null, 0, chars.length() - 1);
+		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, null, 0,
+				chars.length() - 1);
 	}
 
 	public void drawString(String chars, float x, float y, float sx, float sy,
@@ -261,7 +267,10 @@ public class LSTRFont implements LRelease {
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
-
+		if (rotation != 0 && (ax == 0 && ay == 0)) {
+			ax = font.stringWidth(chars) / 2;
+			ay = font.getHeight();
+		}
 		if (useCache) {
 			display = displays.get(chars);
 			if (display == null) {
@@ -272,8 +281,8 @@ public class LSTRFont implements LRelease {
 					if (charCurrent < totalCharSet) {
 						intObject = charArray[charCurrent];
 					} else {
-						intObject = (IntObject) customChars.get(
-								(char) charCurrent);
+						intObject = (IntObject) customChars
+								.get((char) charCurrent);
 					}
 					if (intObject != null) {
 						if ((i >= startIndex) || (i <= endIndex)) {
@@ -292,7 +301,7 @@ public class LSTRFont implements LRelease {
 			} else if (display != null && fontBatch != null
 					&& fontBatch.getTexture() != null) {
 				LTextureBatch.commitQuad(fontBatch.getTexture(), display, c, x,
-						y,sx, sy, ax, ay, rotation);
+						y, sx, sy, ax, ay, rotation);
 			}
 		} else {
 			fontBatch.glBegin();
@@ -302,8 +311,7 @@ public class LSTRFont implements LRelease {
 				if (charCurrent < totalCharSet) {
 					intObject = charArray[charCurrent];
 				} else {
-					intObject = (IntObject) customChars.get(
-							(char) charCurrent);
+					intObject = (IntObject) customChars.get((char) charCurrent);
 				}
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
@@ -326,8 +334,7 @@ public class LSTRFont implements LRelease {
 		if (charCurrent < totalCharSet) {
 			intObject = charArray[charCurrent];
 		} else {
-			intObject = (IntObject) customChars.get(
-					(char) charCurrent);
+			intObject = (IntObject) customChars.get((char) charCurrent);
 		}
 		if (intObject != null) {
 			if (color != null) {
@@ -415,8 +422,7 @@ public class LSTRFont implements LRelease {
 			if (currentChar < totalCharSet) {
 				intObject = charArray[currentChar];
 			} else {
-				intObject = (IntObject) customChars.get(
-						(char) currentChar);
+				intObject = (IntObject) customChars.get((char) currentChar);
 			}
 
 			if (intObject != null)

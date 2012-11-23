@@ -625,7 +625,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 				if (result.startsWith("\"") && result.endsWith("\"")) {
 					setEnvironmentList.put(temps.get(1),
 							result.substring(1, result.length() - 1));
-				} else if (StringUtils.isChinaLanguage(result)
+				} else if (StringUtils.isChinaLanguage(result.toCharArray())
 						|| StringUtils.isEnglishAndNumeric(result)) {
 					setEnvironmentList.put(temps.get(1), result);
 				} else {

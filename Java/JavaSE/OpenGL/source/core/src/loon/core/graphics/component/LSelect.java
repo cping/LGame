@@ -191,7 +191,7 @@ public class LSelect extends LContainer {
 		// g.setAntiAlias(true);
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
-			g.drawEastString(message, messageLeft, messageTop);
+			g.drawString(message, messageLeft, messageTop);
 		} else {
 			messageTop = y + top;
 		}
@@ -208,7 +208,7 @@ public class LSelect extends LContainer {
 							- (int) (buoyage.getHeight() / 1.5));
 					g.setAlpha(1.0F);
 				}
-				g.drawEastString(selects[i], messageLeft, nTop);
+				g.drawString(selects[i], messageLeft, nTop);
 				if ((cursor != null) && isSelect) {
 					g.drawTexture(cursor, nLeft, nTop - cursor.getHeight() / 2);
 				}

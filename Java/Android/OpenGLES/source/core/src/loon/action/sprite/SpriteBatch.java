@@ -37,13 +37,11 @@ import loon.core.graphics.opengl.GLBatch;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLMesh;
 import loon.core.graphics.opengl.LSTRDictionary;
-import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
 import loon.core.graphics.opengl.GLAttributes.Usage;
 import loon.core.graphics.opengl.GLMesh.VertexDataType;
 import loon.utils.MathUtils;
-import loon.utils.StringUtils;
 import loon.utils.TextureUtils;
 
 public class SpriteBatch implements LRelease {
@@ -1750,10 +1748,10 @@ public class SpriteBatch implements LRelease {
 		if (rotation == 0f) {
 			drawString(text, px - (originx * scale), (py + heigh)
 					- (originy * scale), scale, scale, originx, originy,
-					rotation, color, true, false);
+					rotation, color);
 		} else {
 			drawString(text, px, (py + heigh), scale, scale, originx, originy,
-					rotation, color, true, false);
+					rotation, color);
 		}
 		setFont(old);
 	}
@@ -1768,10 +1766,10 @@ public class SpriteBatch implements LRelease {
 		if (rotation == 0f) {
 			drawString(text, position.x - (origin.x * scale),
 					(position.y + heigh) - (origin.y * scale), scale, scale,
-					origin.x, origin.y, rotation, color, true, false);
+					origin.x, origin.y, rotation, color);
 		} else {
 			drawString(text, position.x, (position.y + heigh), scale, scale,
-					origin.x, origin.y, rotation, color, true, false);
+					origin.x, origin.y, rotation, color);
 		}
 		setFont(old);
 	}
@@ -1784,7 +1782,7 @@ public class SpriteBatch implements LRelease {
 		}
 		int heigh = (int) (spriteFont.getHeight() - 2);
 		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
-				color, true, false);
+				color);
 		setFont(old);
 	}
 
@@ -1795,7 +1793,7 @@ public class SpriteBatch implements LRelease {
 			setFont(spriteFont);
 		}
 		int heigh = (int) (spriteFont.getHeight() - 2);
-		drawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color, true, false);
+		drawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color);
 		setFont(old);
 	}
 
@@ -1809,19 +1807,18 @@ public class SpriteBatch implements LRelease {
 		if (rotation == 0f) {
 			drawString(text, position.x - (origin.x * scale.x),
 					(position.y + heigh) - (origin.y * scale.y), scale.x,
-					scale.y, origin.x, origin.y, rotation, color, true, false);
+					scale.y, origin.x, origin.y, rotation, color);
 		} else {
 			drawString(text, position.x, (position.y + heigh), scale.x,
-					scale.y, origin.x, origin.y, rotation, color, true, false);
+					scale.y, origin.x, origin.y, rotation, color);
 		}
 		setFont(old);
 	}
 
 	private boolean lockSubmit = false;
 
-	private void drawString(String string, float x, float y, float scaleX,
-			float scaleY, float ax, float ay, float rotation, LColor c,
-			boolean check, boolean notEnglish) {
+	public void drawString(String string, float x, float y, float scaleX,
+			float scaleY, float ax, float ay, float rotation, LColor c) {
 		if (!drawing) {
 			throw new IllegalStateException("Not implemented begin !");
 		}
@@ -1835,81 +1832,8 @@ public class SpriteBatch implements LRelease {
 			submit();
 		}
 		y = y + font.getAscent();
-		if (notEnglish || LSystem.isStringTexture) {
-			if (!LColor.white.equals(c)) {
-				GLEx.self.setColor(c);
-			}
-			LSTRDictionary.drawString(font, string, x, y, scaleX, scaleX, ax,
-					ay, rotation, c);
-			GLEx.self.resetColor();
-
-			return;
-		}
-		if (check) {
-			if (!StringUtils.isEnglishAndNumeric(string)) {
-				if (!LColor.white.equals(c)) {
-					GLEx.self.setColor(c);
-				}
-				LSTRDictionary.drawString(font, string, x, y, scaleX, scaleX,
-						ax, ay, rotation, c);
-
-				GLEx.self.resetColor();
-
-				return;
-			}
-		}
-
-		if (!LColor.white.equals(c)) {
-			GLEx.self.setColor(c);
-		}
-		GL10 gl10 = GLEx.gl10;
-		int fontWidth = 0;
-		int fontHeight = 0;
-
-		LSTRFont gl = LSTRDictionary.getGLFont(font);
-
-		if (scaleX != 1f || scaleY != 1f) {
-			GLEx.self.save();
-			if (x != 0 || y != 0) {
-				gl10.glTranslatef(x, y, 0);
-			}
-			gl10.glScalef(scaleX, scaleY, 0);
-			if (rotation != 0) {
-				fontWidth = gl.getWidth(string) / 2;
-				fontHeight = gl.getHeight() / 2;
-				gl10.glTranslatef(fontWidth, fontHeight, 0.0f);
-				gl10.glRotatef(rotation, 0f, 0f, 1f);
-				gl10.glTranslatef(-fontWidth, -fontHeight, 0.0f);
-			}
-			gl.drawString(string, 0, 0, 0, c);
-			if (rotation != 0) {
-				gl10.glTranslatef(fontWidth, fontHeight, 0.0f);
-				gl10.glRotatef(-rotation, 0f, 0f, 1f);
-				gl10.glTranslatef(-fontWidth, -fontHeight, 0.0f);
-			}
-			GLEx.self.restore();
-		} else {
-			if (x != 0 || y != 0) {
-				gl10.glTranslatef(x, y, 0);
-			}
-			if (rotation != 0) {
-				fontWidth = gl.getWidth(string) / 2;
-				fontHeight = gl.getHeight() / 2;
-				gl10.glTranslatef(fontWidth, fontHeight, 0.0f);
-				gl10.glRotatef(rotation, 0f, 0f, 1f);
-				gl10.glTranslatef(-fontWidth, -fontHeight, 0.0f);
-			}
-			gl.drawString(string, 0, 0, 0, c);
-			if (rotation != 0) {
-				gl10.glTranslatef(fontWidth, fontHeight, 0.0f);
-				gl10.glRotatef(-rotation, 0f, 0f, 1f);
-				gl10.glTranslatef(-fontWidth, -fontHeight, 0.0f);
-			}
-			if (x != 0 || y != 0) {
-				gl10.glTranslatef(-x, -y, 0);
-			}
-		}
-		GLEx.self.resetColor();
+		LSTRDictionary.drawString(font, string, x, y, scaleX, scaleX, ax,
+				ay, rotation, c);
 	}
 
 	public final void drawString(String string, Vector2f position) {
@@ -1934,34 +1858,22 @@ public class SpriteBatch implements LRelease {
 
 	public void drawString(String string, float x, float y, float rotation,
 			LColor c) {
-		drawString(string, x, y, rotation, c, true);
-	}
-
-	private void drawString(String string, float x, float y, float rotation,
-			LColor c, boolean check) {
-		drawString(string, x, y, 1f, 1f, 0f, 0f, rotation, c, check, false);
+		drawString(string, x, y, rotation, c);
 	}
 
 	public void drawString(String string, float x, float y, float sx, float sy,
-			float ax, float ay, float rotation, LColor c, boolean check) {
-		drawString(string, x, y, sx, sy, ax, ay, rotation, c, check, false);
-	}
-
-	public void drawString(String string, float x, float y, float sx, float sy,
-			Vector2f origin, float rotation, LColor c, boolean check) {
-		drawString(string, x, y, sx, sy, origin.x, origin.y, rotation, c,
-				check, false);
+			Vector2f origin, float rotation, LColor c) {
+		drawString(string, x, y, sx, sy, origin.x, origin.y, rotation, c);
 	}
 
 	public void drawString(String string, float x, float y, Vector2f origin,
 			float rotation, LColor c) {
-		drawString(string, x, y, 1f, 1f, origin.x, origin.y, rotation, c, true,
-				false);
+		drawString(string, x, y, 1f, 1f, origin.x, origin.y, rotation, c);
 	}
 
 	public void drawString(String string, float x, float y, Vector2f origin,
 			LColor c) {
-		drawString(string, x, y, 1f, 1f, origin.x, origin.y, 0, c, true, false);
+		drawString(string, x, y, 1f, 1f, origin.x, origin.y, 0, c);
 	}
 
 	private void checkDrawing() {

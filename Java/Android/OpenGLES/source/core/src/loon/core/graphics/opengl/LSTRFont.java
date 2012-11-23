@@ -163,7 +163,7 @@ public class LSTRFont implements LRelease {
 			int customCharsLength = (customCharsArray != null) ? customCharsArray.length
 					: 0;
 			this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
-
+			StringBuilder sbr = new StringBuilder(totalCharSet);
 			for (int i = 0; i < totalCharSet + customCharsLength; i++) {
 				char ch = (i < totalCharSet) ? (char) i : customCharsArray[i
 						- totalCharSet];
@@ -179,10 +179,12 @@ public class LSTRFont implements LRelease {
 
 				IntObject newIntObject = new IntObject();
 
-				newIntObject.width = font.charWidth(ch);
-				newIntObject.height = font.getHeight();
+				newIntObject.width = charwidth;
+				newIntObject.height = charheight;
 
 				if (positionX + newIntObject.width >= textureWidth) {
+					g.drawString(sbr.toString(), 0, positionY - font.getAscent());
+                    sbr.delete(0, sbr.length());
 					positionX = 0;
 					positionY += rowHeight;
 					rowHeight = 0;
@@ -199,8 +201,7 @@ public class LSTRFont implements LRelease {
 					rowHeight = newIntObject.height;
 				}
 
-				g.drawString(String.valueOf(ch), positionX,
-						positionY - font.getAscent());
+				sbr.append(ch);
 
 				positionX += newIntObject.width;
 
@@ -211,7 +212,10 @@ public class LSTRFont implements LRelease {
 				}
 
 			}
-
+			if(sbr.length()>0){
+				g.drawString(sbr.toString(), 0, positionY - font.getAscent());
+                sbr = null;
+			}
 			LTexture texture = new LTexture(GLLoader.getTextureData(imgTemp),
 					Format.LINEAR);
 
@@ -263,7 +267,10 @@ public class LSTRFont implements LRelease {
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
-
+		if (rotation != 0 && (ax == 0 && ay == 0)) {
+			ax = font.stringWidth(chars) / 2;
+			ay = font.getHeight();
+		}
 		if (useCache) {
 			display = displays.get(chars);
 			if (display == null) {

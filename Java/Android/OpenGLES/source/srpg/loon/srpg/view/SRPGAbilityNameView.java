@@ -61,8 +61,8 @@ public class SRPGAbilityNameView extends SRPGDrawView {
 		LGradation.getInstance(color, color1, super.width, super.height)
 				.drawWidth(g, super.left, super.top);
 		g.setColor(LColor.white);
-		g.drawEastString(ab.getAbilityName(), 5 + super.left, 12 + super.top);
-		g.drawEastString(status.name, (super.width - namelen - 5) + super.left,
+		g.drawString(ab.getAbilityName(), 5 + super.left, 12 + super.top);
+		g.drawString(status.name, (super.width - namelen - 5) + super.left,
 				12 + super.top);
 		g.setFont(old);
 		g.resetColor();
