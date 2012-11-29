@@ -2165,7 +2165,7 @@ public final class GLEx implements LGraphicsTrans {
 		return lineWidth;
 	}
 
-	public static void updateHardwareBuff(LTexture texture) {
+	final static void updateHardwareBuff(LTexture texture) {
 		if (!vboOn) {
 			return;
 		}
@@ -2177,19 +2177,7 @@ public final class GLEx implements LGraphicsTrans {
 		gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
 	}
 
-	public static int createTextureID() {
-		int[] textures = new int[1];
-		gl10.glGenTextures(1, textures, 0);
-		return textures[0];
-	}
-
-	public static IntBuffer genTextures(int tcount) {
-		IntBuffer buffer = NativeSupport.newIntBuffer(tcount);
-		gl10.glGenTextures(tcount, buffer);
-		return buffer;
-	}
-
-	public static int createBufferID() {
+	final static int createBufferID() {
 		if (!vboOn) {
 			return -1;
 		}
@@ -2198,7 +2186,7 @@ public final class GLEx implements LGraphicsTrans {
 		return buffer.get(0);
 	}
 
-	public static IntBuffer genBuffers(int bcount) {
+	final static IntBuffer genBuffers(int bcount) {
 		if (!vboOn) {
 			return IntBuffer.wrap(new int[] { -1 });
 		}
@@ -2207,14 +2195,14 @@ public final class GLEx implements LGraphicsTrans {
 		return buffer;
 	}
 
-	public static void bufferDataARR(int bufferID, FloatBuffer data, int usage) {
+	final static void bufferDataARR(int bufferID, FloatBuffer data, int usage) {
 		gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, bufferID);
 		gl11.glBufferData(GL11.GL_ARRAY_BUFFER, data.remaining(), data, usage);
 		gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
 		data.position(0);
 	}
 
-	public static void bufferSubDataARR(int bufferID, int offset,
+	final static void bufferSubDataARR(int bufferID, int offset,
 			FloatBuffer data) {
 		gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, bufferID);
 		gl11.glBufferSubData(GL11.GL_ARRAY_BUFFER, offset, data.remaining(),
@@ -2223,7 +2211,7 @@ public final class GLEx implements LGraphicsTrans {
 		data.position(0);
 	}
 
-	public static void deleteBuffer(int bufferID) {
+	final static void deleteBuffer(int bufferID) {
 		if (!vboOn) {
 			return;
 		}
@@ -2231,7 +2219,7 @@ public final class GLEx implements LGraphicsTrans {
 		gl11.glDeleteBuffers(1, delBufferID, 0);
 	}
 
-	public static void deleteTexture(int textureID) {
+	final static void deleteTexture(int textureID) {
 		delTextureID[0] = textureID;
 		gl10.glDeleteTextures(1, delTextureID, 0);
 	}
@@ -3170,96 +3158,6 @@ public final class GLEx implements LGraphicsTrans {
 	 * 
 	 * @param texture
 	 * @param destRect
-	 * @param rotation
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			float rotation) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, color,
-				rotation, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, color, 0,
-				null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param color
-	 * @param rotation
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			LColor color, float rotation) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, color,
-				rotation, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param color
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			LColor color, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, color, 0,
-				null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param color
-	 * @param rotation
-	 * @param origin
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			LColor color, float rotation, Vector2f origin, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, color,
-				rotation, origin, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
 	 * @param srcRect
 	 */
 	public final void drawTexture(LTexture texture, RectBox destRect,
@@ -3306,84 +3204,6 @@ public final class GLEx implements LGraphicsTrans {
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
 				srcRect.height, color, rotation, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param srcRect
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			RectBox srcRect, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, 0, null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param srcRect
-	 * @param color
-	 * @param rotation
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			RectBox srcRect, LColor color, float rotation) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, rotation, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param srcRect
-	 * @param color
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			RectBox srcRect, LColor color, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, 0, null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param destRect
-	 * @param srcRect
-	 * @param color
-	 * @param rotation
-	 * @param origin
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, RectBox destRect,
-			RectBox srcRect, LColor color, float rotation, Vector2f origin,
-			Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, rotation, origin, dir);
 	}
 
 	/**
@@ -3416,273 +3236,6 @@ public final class GLEx implements LGraphicsTrans {
 		drawTexture(texture, position.x, position.y, texture.width,
 				texture.height, 0, 0, texture.width, texture.height, color, 0,
 				null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param rotation
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			float rotation) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, 0, 0, texture.width, texture.height, color,
-				rotation, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, 0, 0, texture.width, texture.height, color, 0,
-				null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param color
-	 * @param rotation
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			LColor color, float rotation) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, 0, 0, texture.width, texture.height, color,
-				rotation, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param color
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			LColor color, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, 0, 0, texture.width, texture.height, color, 0,
-				null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param color
-	 * @param rotation
-	 * @param origin
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			LColor color, float rotation, Vector2f origin, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, 0, 0, texture.width, texture.height, color,
-				rotation, origin, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param color
-	 * @param rotation
-	 * @param origin
-	 * @param scale
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			LColor color, float rotation, Vector2f origin, float scale,
-			Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width * scale,
-				texture.height * scale, 0, 0, texture.width, texture.height,
-				color, rotation, origin, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, 0, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 * @param color
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect, LColor color) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, 0, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 * @param rotation
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect, float rotation) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, rotation, null, null);
-	}
-
-	/**
-	 * 
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, 0, null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 * @param color
-	 * @param rotation
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect, LColor color, float rotation) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, rotation, null, null);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 * @param color
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect, LColor color, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, 0, null, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 * @param color
-	 * @param rotation
-	 * @param origin
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect, LColor color, float rotation, Vector2f origin,
-			Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, rotation, origin, dir);
-	}
-
-	/**
-	 * 渲染纹理为指定状态
-	 * 
-	 * @param texture
-	 * @param position
-	 * @param srcRect
-	 * @param color
-	 * @param rotation
-	 * @param origin
-	 * @param scale
-	 * @param dir
-	 */
-	public final void drawTexture(LTexture texture, Vector2f position,
-			RectBox srcRect, LColor color, float rotation, Vector2f origin,
-			float scale, Direction dir) {
-		if (isClose || texture == null || texture.isClose) {
-			return;
-		}
-		drawTexture(texture, position.x, position.y, texture.width * scale,
-				texture.height * scale, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, rotation, origin, dir);
 	}
 
 	/**
@@ -4189,10 +3742,6 @@ public final class GLEx implements LGraphicsTrans {
 		}
 	}
 
-	public final boolean isReplace() {
-		return isReplace;
-	}
-
 	public void resetFont() {
 		this.font = LFont.getDefaultFont();
 		this.resetColor();
@@ -4348,10 +3897,6 @@ public final class GLEx implements LGraphicsTrans {
 
 	public final static boolean isPixelFlinger() {
 		return isPixelFlinger;
-	}
-
-	public javax.microedition.khronos.opengles.GL11Ext getGl11ex() {
-		return gl11ex;
 	}
 
 	public final boolean isClose() {

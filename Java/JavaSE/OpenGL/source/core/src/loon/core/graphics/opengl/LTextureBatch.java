@@ -654,6 +654,14 @@ public final class LTextureBatch implements LRelease {
 				rotation, srcX, srcY, srcWidth, srcHeight, false, false);
 	}
 
+	public void draw(float x, float y, float originX, float originY,
+			float width, float height, float scaleX, float scaleY,
+			float rotation, float srcX, float srcY, float srcWidth,
+			float srcHeight, boolean flipX, boolean flipY) {
+		draw(colors, x, y, originX, originY, width, height, scaleX, scaleY,
+				rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
+	}
+
 	public void draw(LColor[] colors, float x, float y, float originX,
 			float originY, float width, float height, float scaleX,
 			float scaleY, float rotation, float srcX, float srcY,

@@ -1817,7 +1817,7 @@ public class SpriteBatch implements LRelease {
 
 	private boolean lockSubmit = false;
 
-	public void drawString(String string, float x, float y, float scaleX,
+	public void drawString(String mes, float x, float y, float scaleX,
 			float scaleY, float ax, float ay, float rotation, LColor c) {
 		if (!drawing) {
 			throw new IllegalStateException("Not implemented begin !");
@@ -1825,55 +1825,55 @@ public class SpriteBatch implements LRelease {
 		if (c == null) {
 			return;
 		}
-		if (string == null || string.length() == 0) {
+		if (mes == null || mes.length() == 0) {
 			return;
 		}
 		if (!lockSubmit) {
 			submit();
 		}
 		y = y + font.getAscent();
-		LSTRDictionary.drawString(font, string, x, y, scaleX, scaleX, ax,
+		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax,
 				ay, rotation, c);
 	}
 
-	public final void drawString(String string, Vector2f position) {
-		drawString(string, position.x, position.y, getColor());
+	public final void drawString(String mes, Vector2f position) {
+		drawString(mes, position.x, position.y, getColor());
 	}
 
-	public final void drawString(String string, Vector2f position, LColor color) {
-		drawString(string, position.x, position.y, color);
+	public final void drawString(String mes, Vector2f position, LColor color) {
+		drawString(mes, position.x, position.y, color);
 	}
 
-	public final void drawString(String string, float x, float y) {
-		drawString(string, x, y, getColor());
+	public final void drawString(String mes, float x, float y) {
+		drawString(mes, x, y, getColor());
 	}
 
-	public final void drawString(String string, float x, float y, LColor color) {
-		drawString(string, x, y, 0, color);
+	public final void drawString(String mes, float x, float y, LColor color) {
+		drawString(mes, x, y, 0, color);
 	}
 
-	public final void drawString(String string, float x, float y, float rotation) {
-		drawString(string, x, y, rotation, getColor());
+	public final void drawString(String mes, float x, float y, float rotation) {
+		drawString(mes, x, y, rotation, getColor());
 	}
 
-	public void drawString(String string, float x, float y, float rotation,
+	public void drawString(String mes, float x, float y, float rotation,
 			LColor c) {
-		drawString(string, x, y, rotation, c);
+	     drawString(mes, x, y, 1f, 1f, 0, 0, rotation, c);
 	}
 
-	public void drawString(String string, float x, float y, float sx, float sy,
+	public void drawString(String mes, float x, float y, float sx, float sy,
 			Vector2f origin, float rotation, LColor c) {
-		drawString(string, x, y, sx, sy, origin.x, origin.y, rotation, c);
+		drawString(mes, x, y, sx, sy, origin.x, origin.y, rotation, c);
 	}
 
-	public void drawString(String string, float x, float y, Vector2f origin,
+	public void drawString(String mes, float x, float y, Vector2f origin,
 			float rotation, LColor c) {
-		drawString(string, x, y, 1f, 1f, origin.x, origin.y, rotation, c);
+		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, rotation, c);
 	}
 
-	public void drawString(String string, float x, float y, Vector2f origin,
+	public void drawString(String mes, float x, float y, Vector2f origin,
 			LColor c) {
-		drawString(string, x, y, 1f, 1f, origin.x, origin.y, 0, c);
+		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, 0, c);
 	}
 
 	private void checkDrawing() {
