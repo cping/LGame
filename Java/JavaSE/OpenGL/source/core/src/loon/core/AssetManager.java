@@ -34,7 +34,6 @@ public class AssetManager {
 
 	public static void reset() {
 		_loadedIndex = 0;
-		_assetList.size();
 	}
 
 	public static String getCurrentAssetName() {

@@ -1,7 +1,6 @@
 package loon.core.input;
 
 import loon.action.map.Config;
-import loon.action.sprite.WaitSprite;
 import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeEffect;
@@ -285,55 +284,6 @@ public class LTransition {
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
-			return transition;
-		}
-		return null;
-	}
-
-	/**
-	 * 获得一个随机的循环过渡特效
-	 * 
-	 * @return
-	 */
-	public final static LTransition newCycleRandom() {
-		return newCycle(MathUtils.random(0, 11));
-	}
-
-	/**
-	 * 获得一个循环方式的（首尾呼应）的过渡特效，默认支持0-11共12种特效
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public final static LTransition newCycle(final int type) {
-
-		if (GLEx.self != null) {
-
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final WaitSprite wait = new WaitSprite(type);
-
-				public void draw(GLEx g) {
-					wait.createUI(g);
-				}
-
-				public void update(long elapsedTime) {
-					wait.update(elapsedTime);
-				}
-
-				public boolean completed() {
-					return true;
-				}
-
-				public void dispose() {
-					wait.dispose();
-				}
-
-			});
-			transition.setDisplayGameUI(false);
-			transition.code = 0;
 			return transition;
 		}
 		return null;

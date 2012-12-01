@@ -107,10 +107,10 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 
 		public void draw(GLEx g, int x, int y) {
+			LColor oldColor = g.getColor();
+			g.setColor(color);
 			switch (style) {
 			case 0:
-				LColor oldColor = g.getColor();
-				g.setColor(color);
 				float alpha = 0.0f;
 				int nx = x + width / 2 - (int) r * 4,
 				ny = y + height / 2 - (int) r * 4;
@@ -123,7 +123,6 @@ public class WaitSprite extends LObject implements ISprite {
 				}
 				g.setAlpha(1.0F);
 				g.translate(-nx, -ny);
-				g.setColor(oldColor);
 				break;
 			case 1:
 				int old = g.getBlendMode();
@@ -141,8 +140,8 @@ public class WaitSprite extends LObject implements ISprite {
 				g.setBlendMode(old);
 				break;
 			}
+			g.setColor(oldColor);
 		}
-
 	}
 
 	private float alpha;

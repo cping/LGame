@@ -728,8 +728,8 @@ public class Cycle extends LObject implements ISprite {
 
 	public RectBox getCollisionBox() {
 		Shape shape = getShape();
-		return getRect(shape.getX(), shape.getY(), shape.getWidth(), shape
-				.getHeight());
+		return getRect(shape.getX(), shape.getY(), shape.getWidth(),
+					shape.getHeight());
 	}
 
 	public void setWidth(float w) {
@@ -759,5 +759,4 @@ public class Cycle extends LObject implements ISprite {
 	public void dispose() {
 
 	}
-
 }
