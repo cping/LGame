@@ -29,9 +29,9 @@ import loon.core.timer.LTimer;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class WaitSprite extends LObject implements ISprite {
@@ -143,8 +143,6 @@ public class WaitSprite extends LObject implements ISprite {
 			g.setColor(oldColor);
 		}
 	}
-
-	private float alpha;
 
 	private LTimer delay;
 

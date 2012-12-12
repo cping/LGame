@@ -25,9 +25,9 @@ import loon.utils.MathUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 // 此类专为批量渲染单一纹理而设置（比如处理海量精灵块，地图块等），允许提交缓存中数据到渲染器

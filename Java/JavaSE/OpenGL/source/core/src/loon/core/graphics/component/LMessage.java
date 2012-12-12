@@ -28,9 +28,9 @@ import loon.core.input.LInputFactory.Key;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class LMessage extends LContainer {
@@ -179,8 +179,7 @@ public class LMessage extends LContainer {
 	 */
 	public void doClick() {
 		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+			Click.DoClick(this);
 		}
 	}
 
@@ -191,6 +190,22 @@ public class LMessage extends LContainer {
 	protected void processKeyPressed() {
 		if (this.isSelected() && this.input.getKeyPressed() == Key.ENTER) {
 			this.doClick();
+		}
+	}
+	
+	protected void processTouchPressed() {
+		if (!input.isMoving()) {
+			if (Click != null) {
+				Click.DownClick(this, input.getTouchX(), input.getTouchY());
+			}
+		}
+	}
+
+	protected void processTouchReleased() {
+		if (!input.isMoving()) {
+			if (Click != null) {
+				Click.UpClick(this, input.getTouchX(), input.getTouchY());
+			}
 		}
 	}
 
@@ -234,6 +249,9 @@ public class LMessage extends LContainer {
 				getContainer().sendToFront(this);
 			}
 			this.move(this.input.getTouchDX(), this.input.getTouchDY());
+			if (Click != null) {
+				Click.DragClick(this, input.getTouchX(), input.getTouchY());
+			}
 			this.updateIcon();
 		}
 	}
@@ -277,10 +295,6 @@ public class LMessage extends LContainer {
 
 	public void setLocked(boolean locked) {
 		this.locked = locked;
-	}
-
-	protected void validateSize() {
-		super.validateSize();
 	}
 
 	public void createUI(GLEx g, int x, int y, LComponent component,

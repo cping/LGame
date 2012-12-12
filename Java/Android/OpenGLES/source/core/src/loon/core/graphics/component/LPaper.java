@@ -24,9 +24,9 @@ import loon.core.graphics.opengl.LTexture.Format;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class LPaper extends LContainer {
@@ -76,8 +76,7 @@ public class LPaper extends LContainer {
 
 	public void doClick() {
 		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+			Click.DoClick(this);
 		}
 	}
 

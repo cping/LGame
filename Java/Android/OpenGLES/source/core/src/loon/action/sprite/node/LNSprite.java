@@ -84,29 +84,29 @@ public class LNSprite extends LNNode {
 		this(LSystem.screenRect);
 	}
 
-	public static LNSprite InitWithTexture(LTexture tex2d) {
+	public static LNSprite GInitWithTexture(LTexture tex2d) {
 		LNSprite sprite = new LNSprite();
 		sprite.initWithTexture(tex2d);
 		return sprite;
 	}
 
-	public static LNSprite InitWithFilename(String file) {
+	public static LNSprite GInitWithFilename(String file) {
 		LNSprite sprite = new LNSprite();
 		sprite.initWithFilename(file);
 		return sprite;
 	}
 
-	public static LNSprite InitWithFrameStruct(LNFrameStruct fs) {
+	public static LNSprite GInitWithFrameStruct(LNFrameStruct fs) {
 		LNSprite sprite = new LNSprite();
 		sprite.initWithFrameStruct(fs);
 		return sprite;
 	}
 
-	public static LNSprite InitWithFrameStruct(String fsName) {
-		return InitWithFrameStruct(LNDataCache.getFrameStruct(fsName));
+	public static LNSprite GInitWithFrameStruct(String fsName) {
+		return GInitWithFrameStruct(LNDataCache.getFrameStruct(fsName));
 	}
 
-	public static LNSprite InitWithAnimation(LNAnimation ans) {
+	public static LNSprite GInitWithAnimation(LNAnimation ans) {
 		LNSprite sprite = new LNSprite();
 		sprite.initWithAnimation(ans, 0);
 		return sprite;

@@ -36,12 +36,12 @@ import android.graphics.PorterDuff.Mode;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email javachenpeng@yahoo.com
  * @version 0.1.2
  */
-public final class LGraphics implements LGraphicsTrans {
+public final class LGraphics implements LTrans {
 
 	private final static android.graphics.DashPathEffect dashPathEffect = new android.graphics.DashPathEffect(
 			new float[] { 5, 5 }, 0);

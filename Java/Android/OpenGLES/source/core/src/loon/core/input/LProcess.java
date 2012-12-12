@@ -39,9 +39,9 @@ import android.view.View;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class LProcess {
@@ -577,6 +577,9 @@ public class LProcess {
 	}
 
 	private void setScreen(final Screen screen, final boolean put) {
+		if (currentControl != null && currentControl.isOnLoadComplete()) {
+			return;
+		}
 		synchronized (this) {
 			if (screen == null) {
 				this.isInstance = false;

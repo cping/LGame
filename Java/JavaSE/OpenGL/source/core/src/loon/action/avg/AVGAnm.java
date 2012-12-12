@@ -32,9 +32,9 @@ import loon.utils.MathUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
 //0.3.3新增类,用以按指定的格式循环播放动画图像

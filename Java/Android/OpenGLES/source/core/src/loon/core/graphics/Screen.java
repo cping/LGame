@@ -56,7 +56,7 @@ import android.view.View;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
+ * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
@@ -274,8 +274,7 @@ public abstract class Screen implements LInput, LRelease {
 
 	private LColor color;
 
-	private int touchX, touchY, lastTouchX, lastTouchY, touchDX, touchDY,
-			touchDirection;
+	private int touchX, touchY, lastTouchX, lastTouchY, touchDX, touchDY;
 
 	public long elapsedTime;
 
@@ -463,21 +462,21 @@ public abstract class Screen implements LInput, LRelease {
 		return false;
 	}
 
-	protected final PaintOrder DRAW_USER() {
+	protected final PaintOrder DRAW_USER_PAINT() {
 		if (userOrder == null) {
 			userOrder = new PaintOrder(DRAW_USER, this);
 		}
 		return userOrder;
 	}
 
-	protected final PaintOrder DRAW_SPRITE() {
+	protected final PaintOrder DRAW_SPRITE_PAINT() {
 		if (spriteOrder == null) {
 			spriteOrder = new PaintOrder(DRAW_SPRITE, this);
 		}
 		return spriteOrder;
 	}
 
-	protected final PaintOrder DRAW_DESKTOP() {
+	protected final PaintOrder DRAW_DESKTOP_PAINT() {
 		if (desktopOrder == null) {
 			desktopOrder = new PaintOrder(DRAW_DESKTOP, this);
 		}
@@ -498,9 +497,9 @@ public abstract class Screen implements LInput, LRelease {
 		this.height = LSystem.screenRect.height;
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
-		this.fristOrder = DRAW_USER();
-		this.secondOrder = DRAW_SPRITE();
-		this.lastOrder = DRAW_DESKTOP();
+		this.fristOrder = DRAW_USER_PAINT();
+		this.secondOrder = DRAW_SPRITE_PAINT();
+		this.lastOrder = DRAW_DESKTOP_PAINT();
 		this.fristPaintFlag = true;
 		this.secondPaintFlag = true;
 		this.lastPaintFlag = true;
@@ -1864,18 +1863,6 @@ public abstract class Screen implements LInput, LRelease {
 		}
 	}
 
-	/**
-	 * 对外的线程暂停器
-	 * 
-	 * @param timeMillis
-	 */
-	public void pause(long timeMillis) {
-		try {
-			Thread.sleep(timeMillis);
-		} catch (InterruptedException e) {
-		}
-	}
-
 	public Point2i getTouch() {
 		touch.set(touchX, touchY);
 		return touch;
@@ -2137,10 +2124,6 @@ public abstract class Screen implements LInput, LRelease {
 
 	public int getHalfHeight() {
 		return halfHeight;
-	}
-
-	public int getTouchDirection() {
-		return touchDirection;
 	}
 
 	public SensorDirection getSensorDirection() {

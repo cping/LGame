@@ -56,8 +56,6 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		return this.scaleY;
 	}
 
-	public Object Tag;
-
 	protected Attribute attribute;
 
 	protected Animation animation;

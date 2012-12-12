@@ -31,9 +31,9 @@ import loon.utils.TextureUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1.1
  */
 
@@ -110,8 +110,6 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 	protected boolean isLimitMove;
 
 	protected LTexture background;
-
-	private RectBox rect;
 
 	/**
 	 * 构造可用组件
@@ -693,7 +691,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 	}
 
 	public int getCamY() {
-		return cam_y == 0 ? x() : cam_y;
+		return cam_y == 0 ? y() : cam_y;
 	}
 
 	protected void createCustomUI(int w, int h) {

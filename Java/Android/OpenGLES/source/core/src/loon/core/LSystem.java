@@ -42,7 +42,7 @@ import android.widget.RelativeLayout;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
+ * @project loon
  * @author cping
  * @email javachenpeng@yahoo.com.cn
  * @version 0.3.3

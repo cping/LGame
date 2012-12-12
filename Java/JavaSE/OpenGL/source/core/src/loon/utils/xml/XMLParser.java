@@ -25,9 +25,9 @@ import loon.core.resource.Resources;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 // 这是一个简易的XML解析器，自0.3.2起开始支持(为了多平台移植方便……)

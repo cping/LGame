@@ -33,9 +33,9 @@ import loon.utils.CollectionUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class LTexture implements LRelease {
@@ -92,7 +92,7 @@ public class LTexture implements LRelease {
 
 	private boolean isBatch;
 
-	int hashCode = 1;
+	int _hashCode = 1;
 
 	LTextureData imageData;
 
@@ -314,7 +314,7 @@ public class LTexture implements LRelease {
 	public void reload() {
 		this.isLoaded = false;
 		this.reload = true;
-		this.hashCode = 1;
+		this._hashCode = 1;
 		if (childs != null) {
 			Updateable u = new Updateable() {
 				public void action() {
@@ -730,6 +730,7 @@ public class LTexture implements LRelease {
 				
 				
 				copy.parent = LTexture.this;
+				copy.imageData = imageData;
 				copy.textureID = textureID;
 				copy.isLoaded = isLoaded;
 				copy.replace = replace;
@@ -779,6 +780,7 @@ public class LTexture implements LRelease {
 
 						loadTexture();
 						copy.parent = LTexture.this;
+						copy.imageData = imageData;
 						copy.textureID = textureID;
 						copy.isLoaded = isLoaded;
 						copy.replace = replace;
@@ -861,19 +863,28 @@ public class LTexture implements LRelease {
 	}
 
 	public int hashCode() {
-		if (hashCode == 1 && imageData.source != null) {
+		if (_hashCode == 1 && imageData.source != null) {
 			int[] buffer = imageData.source;
-			int limit = buffer.length;
-			for (int j = 0; j < limit; j++) {
-				hashCode = LSystem.unite(hashCode, buffer[j]);
-			}
+			 int skip = 3;
+             int limit = buffer.length;
+             if (limit < 512)
+             {
+                 skip = 1;
+             }
+             for (int j = 0; j < limit; j += skip)
+             {
+                 if (j < limit)
+                 {
+                     _hashCode = LSystem.unite(_hashCode, buffer[j]);
+                 }
+             }
 			if (dataCords != null) {
 				for (int i = 0; i < dataCords.length; i++) {
-					hashCode = LSystem.unite(hashCode, dataCords[i]);
+					_hashCode = LSystem.unite(_hashCode, dataCords[i]);
 				}
 			}
 		}
-		return hashCode;
+		return _hashCode;
 	}
 
 	public boolean isLoaded() {

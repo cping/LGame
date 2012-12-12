@@ -575,6 +575,9 @@ public class SpriteBatch implements LRelease {
 
 	private void checkTexture(final LTexture texture) {
 		checkDrawing();
+		if (!texture.isLoaded()) {
+			texture.loadTexture();
+		}
 		LTexture tex2d = texture.getParent();
 		if (tex2d != null) {
 			if (tex2d != lastTexture) {

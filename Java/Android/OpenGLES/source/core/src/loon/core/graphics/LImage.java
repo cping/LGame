@@ -33,9 +33,9 @@ import android.graphics.Bitmap.Config;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email javachenpeng@yahoo.com
  * @version 0.3.3
  */
 public class LImage implements LRelease {
@@ -866,11 +866,13 @@ public class LImage implements LRelease {
 	}
 
 	public void setPixels(int[] pixels, int w, int h) {
+		isUpdate = true;
 		bitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 	}
 
 	public void setPixels(int[] pixels, int offset, int stride, int x, int y,
 			int width, int height) {
+		isUpdate = true;
 		bitmap.setPixels(pixels, offset, stride, x, y, width, height);
 	}
 
@@ -878,8 +880,9 @@ public class LImage implements LRelease {
 			int offset, int scansize) {
 		setPixels(rgbArray, offset, scansize, startX, startY, w, h);
 	}
-	
+
 	public int[] setPixels(int[] pixels, int x, int y, int w, int h) {
+		isUpdate = true;
 		bitmap.setPixels(pixels, 0, w, x, y, w, h);
 		return pixels;
 	}
@@ -908,10 +911,12 @@ public class LImage implements LRelease {
 	}
 
 	public void setPixel(int rgb, int x, int y) {
+		isUpdate = true;
 		bitmap.setPixel(x, y, rgb);
 	}
 
 	public void setRGB(int rgb, int x, int y) {
+		isUpdate = true;
 		bitmap.setPixel(x, y, rgb);
 	}
 
@@ -998,7 +1003,7 @@ public class LImage implements LRelease {
 	}
 
 	public LTexture getTexture() {
-		if (texture == null || isUpdate) {
+		if (texture == null || texture.isClose() || isUpdate) {
 			setAutoDispose(false);
 			LTexture tmp = texture;
 			texture = new LTexture(GLLoader.getTextureData(this), format);

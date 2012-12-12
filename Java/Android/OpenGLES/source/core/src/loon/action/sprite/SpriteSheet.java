@@ -6,7 +6,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;
 
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -23,9 +22,9 @@ import loon.core.graphics.opengl.LTextureBatch.GLCache;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class SpriteSheet implements LRelease {
@@ -66,7 +65,9 @@ public class SpriteSheet implements LRelease {
 		if (subImages != null) {
 			return;
 		}
-		target.loadTexture();
+		if (!target.isLoaded()) {
+			target.loadTexture();
+		}
 		int tilesAcross = ((width - (margin * 2) - tw) / (tw + spacing)) + 1;
 		int tilesDown = ((height - (margin * 2) - th) / (th + spacing)) + 1;
 		if ((height - th) % (th + spacing) != 0) {

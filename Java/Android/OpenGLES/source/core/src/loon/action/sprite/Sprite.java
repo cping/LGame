@@ -10,7 +10,7 @@ import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.LColor;
 import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LGraphicsTrans;
+import loon.core.graphics.device.LTrans;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.TextureUtils;
@@ -31,12 +31,12 @@ import loon.utils.TextureUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-public class Sprite extends LObject implements ActionBind, ISprite, LGraphicsTrans {
+public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 
 	/**
 	 * 
@@ -91,7 +91,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LGraphicsTra
 		this.setLocation(x, y);
 		this.spriteName = spriteName;
 		this.visible = true;
-		this.transform = LGraphicsTrans.TRANS_NONE;
+		this.transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -286,7 +286,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LGraphicsTra
 		this.spriteName = spriteName;
 		this.setAnimation(animation, images, maxFrame, timer);
 		this.visible = true;
-		this.transform = LGraphicsTrans.TRANS_NONE;
+		this.transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -585,7 +585,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LGraphicsTra
 			if (alpha > 0 && alpha < 1) {
 				g.setAlpha(alpha);
 			}
-			if (LGraphicsTrans.TRANS_NONE == transform) {
+			if (LTrans.TRANS_NONE == transform) {
 				g.drawTexture(image, x(), y(), width, height, rotation);
 			} else {
 				g.drawRegion(image, 0, 0, getWidth(), getHeight(), transform,
@@ -599,7 +599,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LGraphicsTra
 			if (alpha > 0 && alpha < 1) {
 				g.setAlpha(alpha);
 			}
-			if (LGraphicsTrans.TRANS_NONE == transform) {
+			if (LTrans.TRANS_NONE == transform) {
 				g.drawTexture(image, x(), y(), width, height, rotation,
 						filterColor);
 			} else {

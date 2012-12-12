@@ -14,7 +14,6 @@ import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LInputFactory.Key;
 import loon.core.timer.LTimer;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -30,9 +29,9 @@ import loon.core.timer.LTimer;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class LSelect extends LContainer {
@@ -204,13 +203,14 @@ public class LSelect extends LContainer {
 				isSelect = (type == (selectFlag > 0 ? selectFlag : 1));
 				if ((buoyage != null) && isSelect) {
 					g.setAlpha(autoAlpha);
-					g.drawTexture(buoyage, nLeft, nTop
-							- (int) (buoyage.getHeight() / 1.5));
+					g.drawTexture(buoyage, nLeft,
+							nTop - (int) (buoyage.getHeight() / 1.5));
 					g.setAlpha(1.0F);
 				}
 				g.drawString(selects[i], messageLeft, nTop);
 				if ((cursor != null) && isSelect) {
-					g.drawTexture(cursor, nLeft, nTop - cursor.getHeight() / 2);
+					g.drawTexture(cursor, nLeft, nTop - cursor.getHeight() / 2,
+							LColor.white);
 				}
 
 			}
@@ -229,8 +229,7 @@ public class LSelect extends LContainer {
 	 */
 	public void doClick() {
 		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+			Click.DoClick(this);
 		}
 	}
 

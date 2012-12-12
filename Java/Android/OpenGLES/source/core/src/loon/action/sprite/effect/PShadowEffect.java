@@ -32,9 +32,9 @@ import android.graphics.Color;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
 // 这是一个根据导入的图片黑白象素分布来完成渐变效果的特殊类，根据导入的渐变图不同，能够衍生出无穷多的渐变效果。

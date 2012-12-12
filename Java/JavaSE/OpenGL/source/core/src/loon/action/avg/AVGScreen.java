@@ -48,9 +48,9 @@ import loon.utils.StringUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public abstract class AVGScreen extends Screen implements Runnable {
@@ -737,7 +737,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 			if (sprites != null) {
 				sprites.update(delay);
 			}
-			pause(delay);
+			sleep(delay);
 			if (autoPlay) {
 				playAutoNext();
 			}

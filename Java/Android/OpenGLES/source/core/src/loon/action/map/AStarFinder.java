@@ -33,9 +33,9 @@ import loon.core.geom.Vector2f;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email javachenpeng@yahoo.com
  * @version 0.1.1
  */
 public class AStarFinder implements Runnable, LRelease {

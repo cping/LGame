@@ -573,6 +573,9 @@ public class SpriteBatch implements LRelease {
 
 	private void checkTexture(final LTexture texture) {
 		checkDrawing();
+		if (!texture.isLoaded()) {
+			texture.loadTexture();
+		}
 		LTexture tex2d = texture.getParent();
 		if (tex2d != null) {
 			if (tex2d != lastTexture) {
@@ -1830,8 +1833,8 @@ public class SpriteBatch implements LRelease {
 			submit();
 		}
 		y = y - font.getAscent();
-		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax,
-				ay, rotation, c);
+		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
+				rotation, c);
 	}
 
 	public final void drawString(String mes, Vector2f position) {
@@ -1856,7 +1859,7 @@ public class SpriteBatch implements LRelease {
 
 	public void drawString(String mes, float x, float y, float rotation,
 			LColor c) {
-		  drawString(mes, x, y, 1f, 1f, 0, 0, rotation, c);
+		drawString(mes, x, y, 1f, 1f, 0, 0, rotation, c);
 	}
 
 	public void drawString(String mes, float x, float y, float sx, float sy,

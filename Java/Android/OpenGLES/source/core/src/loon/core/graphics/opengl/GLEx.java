@@ -15,7 +15,7 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LGraphicsTrans;
+import loon.core.graphics.device.LTrans;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GL10;
 import loon.core.graphics.opengl.GLBatch;
@@ -44,12 +44,12 @@ import android.util.Log;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-public final class GLEx implements LGraphicsTrans {
+public final class GLEx implements LTrans {
 
 	/**
 	 * 以glQuad方式将所提交的全部纹理及信息渲染为图像

@@ -6,7 +6,6 @@ import java.util.Comparator;
 import loon.core.graphics.opengl.GLEx;
 import loon.utils.CollectionUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -23,9 +22,9 @@ import loon.utils.CollectionUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 
@@ -198,7 +197,7 @@ public abstract class LContainer extends LComponent {
 						|| this.childs[i].getY() > this.getHeight()
 						|| this.childs[i].getX() + this.childs[i].getWidth() < 0
 						|| this.childs[i].getY() + this.childs[i].getHeight() < 0) {
-					this.elastic = true;
+					setElastic(true);
 					break;
 				}
 			}
@@ -338,7 +337,11 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public void setElastic(boolean b) {
-		this.elastic = b;
+		if (getWidth() > 128 || getHeight() > 128) {
+			this.elastic = b;
+		} else {
+			this.elastic = false;
+		}
 	}
 
 	public Comparator<Object> getComparator() {

@@ -27,9 +27,9 @@ import org.lwjgl.opengl.GL15;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 class LWjglGL11 extends LWjglGL10 implements loon.core.graphics.opengl.GL11 {

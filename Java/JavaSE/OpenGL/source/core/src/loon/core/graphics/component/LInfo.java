@@ -30,9 +30,9 @@ import loon.core.timer.LTimer;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class LInfo extends LContainer {
@@ -464,8 +464,7 @@ public class LInfo extends LContainer {
 	 */
 	public void doClick() {
 		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+			Click.DoClick(this);
 		}
 	}
 

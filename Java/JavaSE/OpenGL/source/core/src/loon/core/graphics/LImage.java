@@ -38,9 +38,9 @@ import loon.utils.GraphicsUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1.1
  */
 public class LImage implements LRelease {
@@ -857,6 +857,7 @@ public class LImage implements LRelease {
 	}
 
 	public void setPixels(int[] pixels, int width, int height) {
+		isUpdate = true;
 		bufferedImage.setRGB(0, 0, width, height, pixels, 0, width);
 	}
 
@@ -867,19 +868,23 @@ public class LImage implements LRelease {
 
 	public void setPixels(int[] pixels, int offset, int stride, int x, int y,
 			int width, int height) {
+		isUpdate = true;
 		bufferedImage.setRGB(x, y, width, height, pixels, offset, stride);
 	}
 
 	public int[] setPixels(int[] pixels, int x, int y, int w, int h) {
+		isUpdate = true;
 		bufferedImage.setRGB(x, y, w, h, pixels, 0, w);
 		return pixels;
 	}
 
 	public void setPixel(Color c, int x, int y) {
+		isUpdate = true;
 		bufferedImage.setRGB(x, y, c.getRGB());
 	}
 
 	public void setPixel(int rgb, int x, int y) {
+		isUpdate = true;
 		bufferedImage.setRGB(x, y, rgb);
 	}
 
@@ -892,6 +897,7 @@ public class LImage implements LRelease {
 	}
 
 	public void setRGB(int rgb, int x, int y) {
+		isUpdate = true;
 		bufferedImage.setRGB(x, y, rgb);
 	}
 
@@ -944,7 +950,7 @@ public class LImage implements LRelease {
 	}
 
 	public LTexture getTexture() {
-		if (texture == null || isUpdate) {
+		if (texture == null || texture.isClose() || isUpdate) {
 			setAutoDispose(false);
 			LTexture tmp = texture;
 			texture = new LTexture(GLLoader.getTextureData(this), format);

@@ -23,9 +23,9 @@ import loon.utils.GLUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 
@@ -161,7 +161,7 @@ public class LTextures {
 					if (texture != null) {
 						texture.isLoaded = false;
 						texture.reload = true;
-						texture.hashCode = 1;
+						texture._hashCode = 1;
 						if (texture.childs != null) {
 							Updateable u = new Updateable() {
 								public void action() {

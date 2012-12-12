@@ -17,9 +17,9 @@ import loon.action.sprite.ISprite;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
 public class FadeTo extends ActionEvent {
@@ -37,11 +37,11 @@ public class FadeTo extends ActionEvent {
 		this.setSpeed(speed);
 	}
 
-	public int getType() {
+	public int getIType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public void setIType(int type) {
 		this.type = type;
 	}
 

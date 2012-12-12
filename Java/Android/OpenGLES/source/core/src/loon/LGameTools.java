@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 import loon.LGame.Location;
+import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LInput.ClickEvent;
 import loon.core.input.LInput.SelectEvent;
 import loon.core.input.LInput.TextEvent;
-import loon.core.timer.LTimer;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,9 +33,9 @@ import android.view.View;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
  * @version 0.1.1
  */
 public class LGameTools {
@@ -119,31 +119,23 @@ public class LGameTools {
 
 	}
 
-	final static class Logo {
+	final static class Logo implements LRelease {
 
-		private long elapsed;
+		private int centerX, centerY;
 
-		private int type, centerX, centerY;
+		private float alpha = 0f;
 
-		private LTimer timer = new LTimer(1000);
+		private float curFrame, curTime;
 
-		private float alpha = 0.0f;
-
-		private long beforeTimer;
-
-		boolean finish;
+		boolean finish, inToOut;
 
 		LTexture logo;
 
-		private long innerClock() {
-			long now = System.currentTimeMillis();
-			long ret = now - beforeTimer;
-			beforeTimer = now;
-			return ret;
-		}
-
 		public Logo(LTexture texture) {
 			this.logo = texture;
+			this.curTime = 60;
+			this.curFrame = 0;
+			this.inToOut = true;
 		}
 
 		public void draw(final GLEx gl) {
@@ -162,49 +154,31 @@ public class LGameTools {
 			if (logo == null || !logo.isLoaded()) {
 				return;
 			}
-			elapsed = innerClock();
+			alpha = (curFrame / curTime);
+			if (inToOut) {
+				curFrame++;
+				if (curFrame == curTime) {
+					alpha = 1f;
+					inToOut = false;
+				}
+			} else if (!inToOut) {
+				curFrame--;
+				if (curFrame == 0) {
+					alpha = 0f;
+					finish = true;
+				}
+			}
 			gl.reset(true);
 			gl.setAlpha(alpha);
 			gl.drawTexture(logo, centerX, centerY);
-			switch (type) {
-			case 0:
-				if (alpha >= 1f) {
-					alpha = 1f;
-					type = 1;
-				}
-				if (alpha < 1.0f) {
-					if (timer.action(elapsed)) {
-						alpha += 0.015;
-					}
-				}
-				break;
-			case 1:
-				if (timer.action(elapsed)) {
-					alpha = 1f;
-					type = 2;
-				}
-				break;
-			case 2:
-				if (alpha <= 0f) {
-					if (logo != null) {
-						logo.destroy();
-						logo = null;
-					}
-					alpha = 0;
-					type = 3;
-					finish = true;
-					return;
-				}
-				if (alpha > 0.0f) {
-					if (timer.action(elapsed)) {
-						alpha -= 0.015;
-					}
-				}
-				break;
-			}
-
 		}
 
+		public void dispose() {
+			if (logo != null) {
+				logo.destroy();
+				logo = null;
+			}
+		}
 	}
 
 	final static class Web extends android.webkit.WebView {
@@ -261,16 +235,15 @@ public class LGameTools {
 		}
 
 		public Web(String url, WebProcess webProcess) {
-			this((LGame) LSystem.screenActivity, webProcess,
-					url);
+			this((LGame) LSystem.screenActivity, webProcess, url);
 		}
 
 		public Web(LGame activity, String url) {
 			this(activity, null, url);
 		}
 
-		public Web(final LGame activity,
-				final WebProcess webProcess, final String url) {
+		public Web(final LGame activity, final WebProcess webProcess,
+				final String url) {
 
 			super(activity);
 			this.url = url;

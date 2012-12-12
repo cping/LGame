@@ -23,7 +23,7 @@ import loon.core.graphics.opengl.LTexture.Format;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
+ * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3

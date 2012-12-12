@@ -22,18 +22,18 @@ import loon.utils.MathUtils;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
+ * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
 public class GravityHandler implements LRelease {
 
-	public static interface Update {
+	public static interface GravityUpdate {
 		public void action(Gravity g, float x, float y);
 	}
 
-	private Update listener;
+	private GravityUpdate listener;
 
 	private int width, height;
 
@@ -307,7 +307,7 @@ public class GravityHandler implements LRelease {
 		return isListener;
 	}
 
-	public void onUpdate(Update listener) {
+	public void onUpdate(GravityUpdate listener) {
 		this.listener = listener;
 		if (listener != null) {
 			isListener = true;

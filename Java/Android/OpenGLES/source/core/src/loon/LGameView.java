@@ -48,7 +48,7 @@ import android.view.WindowManager;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
+ * @project loon
  * @author cping
  * @email javachenpeng@yahoo.com
  * @version 0.1.1
@@ -426,6 +426,7 @@ public final class LGameView implements Renderer {
 						gl.setBlendMode(GL.MODE_NORMAL);
 						gl.drawClear();
 						LSystem.isLogo = false;
+						logoFlag.dispose();
 						logoFlag = null;
 						return;
 					}

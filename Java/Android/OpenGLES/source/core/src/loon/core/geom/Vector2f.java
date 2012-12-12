@@ -21,8 +21,6 @@
 package loon.core.geom;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
 
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
@@ -329,27 +327,9 @@ public class Vector2f implements Serializable {
 		return this;
 	}
 
-	public static Vector2f sum(List<?> summands) {
-		Vector2f result = new Vector2f(0, 0);
-		for (Iterator<?> it = summands.iterator(); it.hasNext();) {
-			Vector2f v = (Vector2f) it.next();
-			result.add(v);
-		}
-		return result;
-	}
-
 	public static Vector2f sum(Vector2f a, Vector2f b) {
 		Vector2f answer = new Vector2f(a);
 		return answer.add(b);
-	}
-
-	public static Vector2f mean(List<?> points) {
-		int n = points.size();
-		if (n == 0) {
-			return new Vector2f(0, 0);
-		}
-		return Vector2f.sum(points).mul(1.0f / n);
-
 	}
 
 	public static Vector2f mult(Vector2f vector, float scalar) {

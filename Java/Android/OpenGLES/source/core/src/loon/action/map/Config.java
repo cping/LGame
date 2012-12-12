@@ -15,9 +15,9 @@ package loon.action.map;
  * License for the specific language governing permissions and limitations under
  * the License.
  * 
- * @project loonframework
- * @author chenpeng
- * @email ceponline@yahoo.com.cn
+ * @project loon
+ * @author cping
+ * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
 public interface Config {
