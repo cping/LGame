@@ -173,7 +173,7 @@ public class BMFont implements LRelease {
 						int second = Integer.parseInt(tokens.nextToken());
 						tokens.nextToken();
 						int offset = Integer.parseInt(tokens.nextToken());
-						ArrayList<Short> values = (ArrayList<Short>) kerning
+						ArrayList<Short> values = kerning
 								.get(new Short(first));
 						if (values == null) {
 							values = new ArrayList<Short>();
@@ -187,20 +187,20 @@ public class BMFont implements LRelease {
 			this.chars = new CharDef[maxChar + 1];
 
 			for (Iterator<CharDef> iter = charDefs.iterator(); iter.hasNext();) {
-				CharDef def = (CharDef) iter.next();
+				CharDef def = iter.next();
 				chars[def.id] = def;
 			}
 
 			for (Iterator<Entry<Short, ArrayList<Short>>> iter = kerning
 					.entrySet().iterator(); iter.hasNext();) {
-				Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-				short first = ((Short) entry.getKey()).shortValue();
-				ArrayList<?> valueList = (ArrayList<?>) entry.getValue();
+				Entry<Short, ArrayList<Short>> entry = iter.next();
+				short first = (entry.getKey()).shortValue();
+				ArrayList<Short> valueList = entry.getValue();
 				short[] valueArray = new short[valueList.size()];
 				int i = 0;
-				for (Iterator<?> valueIter = valueList.iterator(); valueIter
+				for (Iterator<Short> valueIter = valueList.iterator(); valueIter
 						.hasNext(); i++) {
-					valueArray[i] = ((Short) valueIter.next()).shortValue();
+					valueArray[i] = (valueIter.next()).shortValue();
 				}
 				chars[first].kerning = valueArray;
 			}
@@ -238,7 +238,7 @@ public class BMFont implements LRelease {
 		tokens.nextToken();
 		def.advance = Short.parseShort(tokens.nextToken());
 
-		if (def.id != ' ') {
+		if (def.id != (short)' ') {
 			lineHeight = MathUtils.max(def.height + def.yoffset, lineHeight);
 		}
 

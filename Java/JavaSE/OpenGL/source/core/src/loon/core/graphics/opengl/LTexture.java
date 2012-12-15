@@ -13,7 +13,6 @@ import loon.core.geom.Polygon;
 import loon.core.geom.Shape;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LImage;
-import loon.core.graphics.opengl.LTextureRegion;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
@@ -158,7 +157,7 @@ public class LTexture implements LRelease {
 			this.colors = (LColor[]) CollectionUtils.copyOf(texture.colors);
 		}
 		if (texture.dataCords != null) {
-			this.dataCords = (float[]) CollectionUtils
+			this.dataCords = CollectionUtils
 					.copyOf(texture.dataCords);
 		}
 		if (texture.data != null) {

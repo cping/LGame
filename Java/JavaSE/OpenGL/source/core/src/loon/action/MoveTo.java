@@ -189,7 +189,7 @@ public class MoveTo extends ActionEvent {
 				CollectionUtils.hashCode(layerMap.getMap()));
 		return hashCode;
 	}
-
+	
 	public void start(ActionBind target) {
 		super.start(target);
 		startLocation.set(target.getX(), target.getY());
@@ -228,8 +228,8 @@ public class MoveTo extends ActionEvent {
 			}
 			if (endX == startX && endY == startY) {
 				if (pActorPath.size() > 1) {
-					Vector2f moveStart = (Vector2f) pActorPath.get(0);
-					Vector2f moveEnd = (Vector2f) pActorPath.get(1);
+					Vector2f moveStart = pActorPath.get(0);
+					Vector2f moveEnd = pActorPath.get(1);
 					startX = layerMap.tilesToWidthPixels(moveStart.x());
 					startY = layerMap.tilesToHeightPixels(moveStart.y());
 					endX = moveEnd.x() * layerMap.getTileWidth();

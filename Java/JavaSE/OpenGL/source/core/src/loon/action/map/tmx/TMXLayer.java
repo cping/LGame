@@ -112,7 +112,7 @@ public class TMXLayer extends LLight implements LRelease {
 			}
 		}
 
-		XMLElement dataNode = (XMLElement) element.getChildrenByName("data");
+		XMLElement dataNode = element.getChildrenByName("data");
 		String encoding = dataNode.getAttribute("encoding", null);
 		String compression = dataNode.getAttribute("compression", null);
 

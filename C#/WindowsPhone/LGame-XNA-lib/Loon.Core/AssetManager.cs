@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Loon.Utils;
+using Loon.Java;
+using System;
 namespace Loon.Core
 {
 
@@ -39,6 +41,14 @@ namespace Loon.Core
         {
             while (!LoadOneAsset())
             {
+                try
+                {
+                    Thread.Sleep(1);
+                }
+                catch (Exception)
+                {
+
+                }
             }
             return true;
         }

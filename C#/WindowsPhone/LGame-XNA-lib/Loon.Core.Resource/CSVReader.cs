@@ -82,7 +82,7 @@ namespace Loon.Core.Resource
             string[] items = new string[v.Count];
             for (int i = 0; i < v.Count; i++)
             {
-                items[i] = (string)v[i];
+                items[i] = v[i];
             }
             return items;
         }

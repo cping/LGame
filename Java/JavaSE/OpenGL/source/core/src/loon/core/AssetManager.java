@@ -53,6 +53,10 @@ public class AssetManager {
 
 	public static boolean loadAllAssets() {
 		while (!loadOneAsset()) {
+			try {
+				Thread.sleep(1);
+			} catch (Exception ex) {
+			}
 		}
 		return true;
 	}

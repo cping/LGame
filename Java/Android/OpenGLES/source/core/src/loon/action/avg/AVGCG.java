@@ -8,8 +8,8 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.utils.StringUtils;
 import loon.utils.collection.ArrayMap;
-
 
 /**
  * Copyright 2008 - 2010
@@ -73,7 +73,7 @@ public class AVGCG {
 
 	private final static String _update(final String n) {
 		String name = n;
-		if (name.startsWith("\"")) {
+		if (StringUtils.startsWith(name, '"')) {
 			name = name.replaceAll("\"", "");
 		}
 		return name;

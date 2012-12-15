@@ -8,10 +8,20 @@ using Loon.Java;
 namespace Loon.Utils
 {
     /// <summary>
-    /// 因为C#与Java差异性的存在，具体函数对比Android版有所出入。
+    /// 因为C#与Java差异性的存在，具体函数对比Android版略有出入。
     /// </summary>
-    public class StringUtils
+    public sealed class StringUtils
     {
+
+        public static bool StartsWith(string n, char tag)
+        {
+            return n[0] == tag;
+        }
+
+        public static bool EndsWith(string n, char tag)
+        {
+            return n[n.Length - 1] == tag;
+        }
 
         private StringUtils()
         {

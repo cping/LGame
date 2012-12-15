@@ -61,9 +61,9 @@ public class LNProgressBar extends LNSprite {
 				batch.draw(_texture, pos[0] + offsetX, pos[1], _anchor.x,
 						_anchor.y, super._size_width, super._size_height,
 						scale[0], scale[1], MathUtils.toDegrees(rotation),
-						((int) super._left) + offsetX, (int) super._top,
+						super._left + offsetX, super._top,
 						(int) (super._orig_width * this._percent),
-						(int) super._orig_height, _flipX, _flipY);
+						super._orig_height, _flipX, _flipY);
 			} else if (this._type == BarType.PROGRESS_BAR_TOP) {
 				batch.draw(_texture, pos[0], pos[1], _anchor.x, _anchor.y,
 						super._size_width, super._size_height, scale[0],
@@ -75,9 +75,9 @@ public class LNProgressBar extends LNSprite {
 				batch.draw(_texture, pos[0], pos[1] + offsetY, _anchor.x,
 						_anchor.y, super._size_width, super._size_height,
 						scale[0], scale[1], MathUtils.toDegrees(rotation),
-						(int) super._left, ((int) super._top)
+						super._left, super._top
 								+ ((int) (super._orig_height * this._percent)),
-						(int) super._orig_width,
+						super._orig_width,
 						(int) (super._orig_height * this._percent), _flipX,
 						_flipY);
 

@@ -244,8 +244,8 @@ namespace Loon.Action
                 {
                     if (pActorPath.Count > 1)
                     {
-                        Vector2f moveStart = (Vector2f)pActorPath[0];
-                        Vector2f moveEnd = (Vector2f)pActorPath[1];
+                        Vector2f moveStart = pActorPath[0];
+                        Vector2f moveEnd = pActorPath[1];
                         startX = layerMap.TilesToWidthPixels(moveStart.X());
                         startY = layerMap.TilesToHeightPixels(moveStart.Y());
                         endX = moveEnd.X() * layerMap.GetTileWidth();

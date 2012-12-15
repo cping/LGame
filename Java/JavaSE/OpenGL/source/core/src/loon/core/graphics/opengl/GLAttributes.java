@@ -20,10 +20,7 @@
  */
 package loon.core.graphics.opengl;
 
-import loon.core.graphics.opengl.GLAttributes;
-
 public class GLAttributes {
-
 
 	public static class VertexAttribute {
 
@@ -52,7 +49,7 @@ public class GLAttributes {
 		public static final int Generic = 4;
 	}
 
-    final VertexAttribute[] attributes;
+	final VertexAttribute[] _attributes;
 
 	public final int vertexSize;
 
@@ -60,19 +57,17 @@ public class GLAttributes {
 		if (attributes.length == 0) {
 			throw new IllegalArgumentException("attributes must be >= 1");
 		}
-		VertexAttribute[] list = new VertexAttribute[attributes.length];
-		for (int i = 0; i < attributes.length; i++) {
-			list[i] = attributes[i];
-		}
-		this.attributes = list;
+		int size = attributes.length;
+		_attributes = new VertexAttribute[size];
+		System.arraycopy(attributes, 0, _attributes, 0, size);
 		checkValidity();
 		vertexSize = calculateOffsets();
 	}
 
 	private int calculateOffsets() {
 		int count = 0;
-		for (int i = 0; i < attributes.length; i++) {
-			VertexAttribute attribute = attributes[i];
+		for (int i = 0; i < _attributes.length; i++) {
+			VertexAttribute attribute = _attributes[i];
 			attribute.offset = count;
 			if (attribute.usage == GLAttributes.Usage.ColorPacked) {
 				count += 4;
@@ -87,8 +82,8 @@ public class GLAttributes {
 		boolean pos = false;
 		boolean cols = false;
 		boolean nors = false;
-		for (int i = 0; i < attributes.length; i++) {
-			VertexAttribute attribute = attributes[i];
+		for (int i = 0; i < _attributes.length; i++) {
+			VertexAttribute attribute = _attributes[i];
 			if (attribute.usage == Usage.Position) {
 				if (pos) {
 					throw new IllegalArgumentException(
@@ -115,18 +110,33 @@ public class GLAttributes {
 				cols = true;
 			}
 		}
-		if (!pos){
+		if (!pos) {
 			throw new IllegalArgumentException(
 					"no position attribute was specified !");
 		}
 	}
 
 	public int size() {
-		return attributes.length;
+		return _attributes.length;
 	}
 
 	public VertexAttribute get(int index) {
-		return attributes[index];
+		return _attributes[index];
 	}
 
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof GLAttributes)) {
+			return false;
+		}
+		GLAttributes other = (GLAttributes) obj;
+		if (this._attributes.length != other.size()) {
+			return false;
+		}
+		for (int i = 0; i < _attributes.length; i++) {
+			if (!_attributes[i].equals(other._attributes[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

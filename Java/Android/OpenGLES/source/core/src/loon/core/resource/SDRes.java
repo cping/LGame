@@ -10,7 +10,6 @@ import java.net.URL;
 import loon.core.LSystem;
 import loon.utils.StringUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -38,10 +37,10 @@ public class SDRes extends DataRes implements Resource {
 		if (isMoutedSD()) {
 			File f = android.os.Environment.getExternalStorageDirectory();
 			String tmp = f.getPath();
-			if (path.startsWith("/")) {
+			if (StringUtils.startsWith(path, '/')) {
 				path = path.substring(1);
 			}
-			if (!tmp.endsWith("/")) {
+			if (!StringUtils.endsWith(tmp, '/')) {
 				path = tmp + "/" + path;
 			} else {
 				path = tmp + path;
@@ -49,7 +48,7 @@ public class SDRes extends DataRes implements Resource {
 		} else {
 			path = LSystem.screenActivity.getCacheDir().getAbsolutePath();
 			path = StringUtils.replaceIgnoreCase(path, "\\", "/");
-			if (path.startsWith("/") || path.startsWith("\\")) {
+			if (StringUtils.startsWith(path, '/') || StringUtils.startsWith(path, '\\')) {
 				path = path.substring(1, path.length());
 			}
 		}
@@ -109,4 +108,7 @@ public class SDRes extends DataRes implements Resource {
 		return true;
 	}
 
+	public int hashCode() {
+		return super.hashCode();
+	}
 }

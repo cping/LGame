@@ -236,7 +236,7 @@ public class ConfigReader implements Expression, LRelease {
 			int col = records.size();
 			int[][] result = new int[col][];
 			for (int i = 0; i < col; i++) {
-				result[i] = (int[]) records.get(i);
+				result[i] = records.get(i);
 			}
 			return result;
 		}

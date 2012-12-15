@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import loon.action.sprite.ISprite;
 import loon.core.LObject;
 import loon.core.LRelease;
 import loon.core.LSystem;
@@ -276,7 +275,7 @@ public class Sprites implements Serializable, LRelease {
 		}
 		ArrayList<ISprite> l = new ArrayList<ISprite>(size);
 		for (int i = size; i > 0; i--) {
-			ISprite sprite = (ISprite) sprites[i - 1];
+			ISprite sprite = sprites[i - 1];
 			Class<? extends ISprite> cls = sprite.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(sprite)
 					|| clazz.equals(cls)) {
@@ -373,7 +372,7 @@ public class Sprites implements Serializable, LRelease {
 			return;
 		}
 		for (int i = size; i > 0; i--) {
-			ISprite sprite = (ISprite) sprites[i - 1];
+			ISprite sprite = sprites[i - 1];
 			Class<? extends ISprite> cls = sprite.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(sprite)
 					|| clazz.equals(cls)) {

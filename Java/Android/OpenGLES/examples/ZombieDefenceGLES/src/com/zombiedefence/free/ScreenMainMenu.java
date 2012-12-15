@@ -318,7 +318,7 @@ public class ScreenMainMenu extends Screen {
 		if (super.mousePositionList.size() > 0) {
 			super.mousePositionList.clear();
 		}
-		if (Key.isKeyPressed(Key.BACK)&&LInputFactory.getOnlyKey().isPressed()) {
+		if (Key.isKeyPressed(Key.BACK)) {
 			if (this.isLoadBoardShowing) {
 				this.isLoadBoardShowing = false;
 				super.buttonList.subList(super.buttonList.size() - 2,

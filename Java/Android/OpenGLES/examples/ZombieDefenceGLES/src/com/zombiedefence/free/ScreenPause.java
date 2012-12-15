@@ -79,7 +79,7 @@ public class ScreenPause extends Screen {
 		}
 		if (!super.isTranAnimFinished) {
 			if (Key.isKeyPressed(Key.BACK)
-					&& LInputFactory.getOnlyKey().isPressed()) {
+					) {
 				Help.currentGameState = this.screenWithinType;
 				this.isStillPaused = false;
 			}
@@ -109,7 +109,7 @@ public class ScreenPause extends Screen {
 					button2.ButtonInitialize();
 				}
 
-				if (Key.isKeyPressed(Key.BACK)&&LInputFactory.getOnlyKey().isPressed()) {
+				if (Key.isKeyPressed(Key.BACK)) {
 					Help.currentGameState = this.screenWithinType;
 					this.isStillPaused = false;
 				}
@@ -122,7 +122,7 @@ public class ScreenPause extends Screen {
 					button2.ButtonInitialize();
 				}
 
-				if (Key.isKeyPressed(Key.BACK)&&LInputFactory.getOnlyKey().isPressed()) {
+				if (Key.isKeyPressed(Key.BACK)) {
 					Help.currentGameState = this.screenWithinType;
 					this.isStillPaused = false;
 				}

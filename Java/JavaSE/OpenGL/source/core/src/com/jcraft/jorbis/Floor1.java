@@ -348,7 +348,7 @@ class Floor1 extends FuncFloor{
       int ady=Math.abs(dy);
       int err=ady*(x-x0);
 
-      int off=(int)(err/adx);
+      int off=(err/adx);
       if(dy<0)
         return (y0-off);
       return (y0+off);

@@ -71,7 +71,7 @@ namespace Loon.Action.Avg
                 int w, int h)
         {
             string path = resName;
-            if (path.StartsWith("\""))
+            if (Loon.Utils.StringUtils.StartsWith(path,'"'))
             {
                 path = resName.Replace("\"", "");
             }

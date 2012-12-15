@@ -497,9 +497,9 @@ public class LProcess {
 	public void runFirstScreen() {
 		int size = screens.size();
 		if (size > 0) {
-			Object o = screens.getFirst();
+			Screen o = screens.getFirst();
 			if (o != currentControl) {
-				setScreen((Screen) o, false);
+				setScreen( o, false);
 			}
 		}
 	}
@@ -507,9 +507,9 @@ public class LProcess {
 	public void runLastScreen() {
 		int size = screens.size();
 		if (size > 0) {
-			Object o = screens.getLast();
+			Screen o = screens.getLast();
 			if (o != currentControl) {
-				setScreen((Screen) o, false);
+				setScreen( o, false);
 			}
 		}
 	}
@@ -520,7 +520,7 @@ public class LProcess {
 			for (int i = 0; i < size; i++) {
 				if (currentControl == screens.get(i)) {
 					if (i - 1 > -1) {
-						setScreen((Screen) screens.get(i - 1), false);
+						setScreen( screens.get(i - 1), false);
 						return;
 					}
 				}
@@ -534,7 +534,7 @@ public class LProcess {
 			for (int i = 0; i < size; i++) {
 				if (currentControl == screens.get(i)) {
 					if (i + 1 < size) {
-						setScreen((Screen) screens.get(i + 1), false);
+						setScreen( screens.get(i + 1), false);
 						return;
 					}
 				}
@@ -547,7 +547,7 @@ public class LProcess {
 		if (size > 0 && index > -1 && index < size) {
 			Object o = screens.get(index);
 			if (currentControl != o) {
-				setScreen((Screen) screens.get(index), false);
+				setScreen( screens.get(index), false);
 			}
 		}
 	}
@@ -651,7 +651,7 @@ public class LProcess {
 				}
 			};
 
-			LSystem.callScreenRunnable(new Thread(runnable));
+			LSystem.callScreenRunnable(new Thread(runnable,"ProcessThread"));
 
 			if (put) {
 				screens.add(screen);

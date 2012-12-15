@@ -491,7 +491,7 @@ public class LInputFactory {
 			while (Mouse.next()) {
 				int touchX = Math.round(Mouse.getEventX() / LSystem.scaleWidth);
 				int touchY = Math
-						.round(((float) (LSystem.screenRect.height * LSystem.scaleHeight)
+						.round(((LSystem.screenRect.height * LSystem.scaleHeight)
 								- Mouse.getEventY() - 1)
 								/ LSystem.scaleHeight);
 				int button = Mouse.getEventButton();

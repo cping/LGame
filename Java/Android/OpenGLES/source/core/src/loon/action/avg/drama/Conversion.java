@@ -95,7 +95,7 @@ public abstract class Conversion implements Expression {
 
 	public static String updateOperator(String context) {
 		if (context != null
-				&& (context.startsWith("\"") || context.startsWith("'"))) {
+				&& (StringUtils.startsWith(context, '"') || StringUtils.startsWith(context, '\''))) {
 			return context;
 		}
 		int size = context.length();

@@ -172,7 +172,7 @@ public final class BSPCollisionNode {
 	}
 
 	public boolean containsActor(Actor actor) {
-		ActorNode anode = (ActorNode) this.actors.get(actor);
+		ActorNode anode = this.actors.get(actor);
 		if (anode != null) {
 			anode.mark();
 			return true;

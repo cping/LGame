@@ -78,7 +78,7 @@ namespace Loon.Action.Avg
         private static string _Update(string n)
         {
             string name = n;
-            if (name.StartsWith("\""))
+            if (StringUtils.StartsWith(name,'"'))
             {
                 name = name.Replace("\"", "");
             }

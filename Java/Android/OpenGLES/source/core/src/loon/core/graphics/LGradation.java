@@ -65,7 +65,7 @@ public class LGradation implements LRelease {
 		hashCode = LSystem.unite(hashCode, h);
 		hashCode = LSystem.unite(hashCode, alpha);
 		String key = String.valueOf(hashCode);
-		LGradation o = (LGradation) gradations.get(key);
+		LGradation o = gradations.get(key);
 		if (o == null) {
 			gradations.put(key, o = new LGradation(s, e, w, h, alpha));
 		}

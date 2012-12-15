@@ -255,7 +255,7 @@ namespace Loon.Action.Sprite
 			}
 			List<ISprite> l = new List<ISprite>(size);
 			for (int i = size; i > 0; i--) {
-				ISprite sprite = (ISprite) sprites[i - 1];
+				ISprite sprite = sprites[i - 1];
 				Type cls = sprite.GetType();
 				if (clazz == null || clazz == cls || clazz.IsInstanceOfType(sprite)
 						|| clazz.Equals(cls)) {
@@ -352,7 +352,7 @@ namespace Loon.Action.Sprite
 				return;
 			}
 			for (int i = size; i > 0; i--) {
-				ISprite sprite = (ISprite) sprites[i - 1];
+				ISprite sprite = sprites[i - 1];
 				Type cls = sprite.GetType();
 				if (clazz == null || clazz == cls || clazz.IsInstanceOfType(sprite)
 						|| clazz.Equals(cls)) {

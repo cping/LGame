@@ -382,8 +382,8 @@ namespace Loon.Action.Sprite
                         {
                             if (findPath.Count > 1)
                             {
-                                Vector2f moveStart = (Vector2f)findPath[0];
-                                Vector2f moveEnd = (Vector2f)findPath[1];
+                                Vector2f moveStart = findPath[0];
+                                Vector2f moveEnd = findPath[1];
                                 startX = tiles.TilesToPixelsX(moveStart.X());
                                 startY = tiles.TilesToPixelsY(moveStart.Y());
                                 endX = moveEnd.X() * tiles.GetTileWidth();

@@ -2161,6 +2161,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, 0, null, Direction.TRANS_NONE);
         }
@@ -2171,6 +2175,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, 0, null,
@@ -2184,6 +2192,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, 0, null,
                     Direction.TRANS_MIRROR);
@@ -2195,6 +2207,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, 0, null, Direction.TRANS_NONE);
@@ -2218,6 +2234,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, rotation, null, Direction.TRANS_NONE);
         }
@@ -2236,6 +2256,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, 0, null, dir);
@@ -2257,6 +2281,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, rotation, null, Direction.TRANS_NONE);
         }
@@ -2276,6 +2304,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, 0, null, dir);
@@ -2298,6 +2330,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, rotation, origin, dir);
@@ -2323,6 +2359,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, texture.width * scale, texture.height
                     * scale, 0, 0, texture.width, texture.height, color, rotation,
                     origin, dir);
@@ -2343,6 +2383,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, x, y, width, height, 0, 0, texture.width,
                     texture.height, color, 0, null, Direction.TRANS_NONE);
@@ -2365,6 +2409,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, width, height, 0, 0, texture.width,
                     texture.height, color, 0, null, Direction.TRANS_NONE);
         }
@@ -2386,6 +2434,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, width, height, 0, 0, texture.width,
                     texture.height, color, rotation, null, Direction.TRANS_NONE);
         }
@@ -2405,6 +2457,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, x, y, texture.width, texture.height, 0, 0,
                     texture.width, texture.height, color, rotation, null, d);
@@ -2520,7 +2576,6 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
-
             DrawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, color,
                     0, null, Direction.TRANS_NONE);
 
@@ -2620,6 +2675,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             if (x_src + width > texture.GetWidth()
                     || y_src + height > texture.GetHeight() || width < 0
@@ -2774,6 +2833,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, destRect.x, destRect.y, destRect.width,
                     destRect.height, 0, 0, texture.width, texture.height, color, 0,
                     null, Direction.TRANS_NONE);
@@ -2793,6 +2856,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, destRect.x, destRect.y, destRect.width,
                     destRect.height, 0, 0, texture.width, texture.height, color, 0,
                     null, Direction.TRANS_NONE);
@@ -2811,6 +2878,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, destRect.x, destRect.y, destRect.width,
                     destRect.height, srcRect.x, srcRect.y, srcRect.width,
@@ -2832,6 +2903,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, destRect.x, destRect.y, destRect.width,
                     destRect.height, srcRect.x, srcRect.y, srcRect.width,
                     srcRect.height, color, 0, null, Direction.TRANS_NONE);
@@ -2844,6 +2919,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, destRect.x, destRect.y, destRect.width,
                     destRect.height, srcRect.x, srcRect.y, srcRect.width,
                     srcRect.height, color, rotation, null, Direction.TRANS_NONE);
@@ -2854,6 +2933,10 @@ namespace Loon.Core.Graphics.Opengl
             if (isClose || texture == null || texture.isClose)
             {
                 return;
+            }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
             }
             DrawTexture(texture, position.x, position.y, texture.width,
                     texture.height, 0, 0, texture.width, texture.height, color, 0,
@@ -2867,6 +2950,10 @@ namespace Loon.Core.Graphics.Opengl
             {
                 return;
             }
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, position.x, position.y, texture.width,
                     texture.height, 0, 0, texture.width, texture.height, color, 0,
                     null, Direction.TRANS_NONE);
@@ -2876,6 +2963,10 @@ namespace Loon.Core.Graphics.Opengl
                 float width, float height, float srcX, float srcY, float srcWidth,
                 float srcHeight, LColor c, float rotation)
         {
+            if (!texture.isLoaded)
+            {
+                texture.LoadTexture();
+            }
             DrawTexture(texture, x, y, width, height, srcX, srcY, srcWidth,
                     srcHeight, c, rotation, null, Direction.TRANS_NONE);
         }

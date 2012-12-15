@@ -321,7 +321,7 @@ public abstract class Resources {
 		}
 		InputStream in = null;
 		// 外部文件标志
-		boolean filePath = innerName.startsWith("$");
+		boolean filePath = StringUtils.startsWith(innerName, '$');
 		if (filePath) {
 			try {
 				innerName = innerName.substring(1, innerName.length());
@@ -356,65 +356,6 @@ public abstract class Resources {
 	}
 
 	/**
-	 * 加载资源文件(无缓存)
-	 * 
-	 * @param resName
-	 * @return
-	 */
-	public final static ArrayByte getNotCacheResource(String resName) {
-		if (resName == null) {
-			return null;
-		}
-		InputStream resource = strRes(resName);
-		if (resource != null) {
-			ArrayByte result = new ArrayByte();
-			try {
-				result.write(resource);
-				resource.close();
-				result.reset();
-			} catch (IOException ex) {
-				result = null;
-			}
-			return result;
-		}
-		resName = resName.startsWith(LSystem.FS) ? resName.substring(1)
-				: resName;
-		InputStream in = null;
-		// 外部文件标志
-		boolean filePath = resName.startsWith("$");
-		if (filePath) {
-			try {
-				resName = resName.substring(1, resName.length());
-				in = new BufferedInputStream(new FileInputStream(new File(
-						resName)));
-			} catch (Exception ex) {
-				if (in != null) {
-					LSystem.close(in);
-				}
-				throw new RuntimeException(resName + " file not found !");
-			}
-		} else {
-			try {
-				in = openResource(resName);
-			} catch (IOException e) {
-				throw new RuntimeException(resName + " file not found !");
-			}
-		}
-		ArrayByte byteArray = new ArrayByte();
-		try {
-			byteArray.write(in);
-			in.close();
-			byteArray.reset();
-		} catch (IOException ex) {
-			byteArray = null;
-		}
-		if (byteArray == null) {
-			throw new RuntimeException(resName + " file not found !");
-		}
-		return byteArray;
-	}
-
-	/**
 	 * 加载资源文件为InputStream格式
 	 * 
 	 * @param fileName
@@ -430,24 +371,6 @@ public abstract class Resources {
 			}
 		}
 		return new ByteArrayInputStream(getResource(fileName).getData());
-	}
-
-	/**
-	 * 加载资源文件为InputStream格式(无缓存)
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public static InputStream getNotCacheResourceAsStream(final String fileName) {
-		if ((fileName.indexOf("file:") >= 0) || (fileName.indexOf(":/") > 0)) {
-			try {
-				URL url = new URL(fileName);
-				return new BufferedInputStream(url.openStream());
-			} catch (Exception e) {
-				return null;
-			}
-		}
-		return new ByteArrayInputStream(getNotCacheResource(fileName).getData());
 	}
 
 	/**

@@ -28,11 +28,6 @@ namespace Loon.Action.Sprite.Node
             }
         }
 
-        public override void DefinitionObjectDidInit()
-        {
-            base.DefinitionObjectDidInit();
-        }
-
         public override void DefinitionObjectDidReceiveString(string v)
         {
             base.DefinitionObjectDidReceiveString(v);

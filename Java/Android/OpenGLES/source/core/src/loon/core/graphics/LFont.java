@@ -346,7 +346,7 @@ public class LFont {
 	}
 
 	public int getTextHeight() {
-		return (int) (getTextBounds(tmp).height() * 2);
+		return (getTextBounds(tmp).height() * 2);
 	}
 
 	public Rect getTextBounds(String text) {

@@ -211,7 +211,7 @@ public abstract class LGame extends Activity {
 
 	public void initialization(final boolean landscape,
 			final boolean fullScreen, final LMode mode) {
-		if (landscape == false) {
+		if (!landscape) {
 			if (LSystem.MAX_SCREEN_HEIGHT > LSystem.MAX_SCREEN_WIDTH) {
 				int tmp_height = LSystem.MAX_SCREEN_HEIGHT;
 				LSystem.MAX_SCREEN_HEIGHT = LSystem.MAX_SCREEN_WIDTH;
@@ -703,7 +703,7 @@ public abstract class LGame extends Activity {
 	 */
 	public void setDestroy(boolean isDestroy) {
 		this.isDestroy = isDestroy;
-		if (isDestroy == false) {
+		if (!isDestroy) {
 			LSystem.isBackLocked = true;
 		}
 	}

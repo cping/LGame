@@ -43,7 +43,7 @@ public class Story {
 	}
 
 	public Scene getScene(int index) {
-		return (Scene) this.scenes.get(index);
+		return this.scenes.get(index);
 	}
 
 	public Scene getScene(String name) {
@@ -64,7 +64,7 @@ public class Story {
 	}
 
 	public Scene removeScene(int index) {
-		return (Scene) this.scenes.remove(index);
+		return this.scenes.remove(index);
 	}
 
 	public int countScenes() {

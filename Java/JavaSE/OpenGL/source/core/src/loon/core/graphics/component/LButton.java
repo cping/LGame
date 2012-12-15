@@ -285,9 +285,5 @@ public class LButton extends LComponent {
 	public void setOffsetTop(int offsetTop) {
 		this.offsetTop = offsetTop;
 	}
-	
-	public void dispose(){
-		super.dispose();
-	}
 
 }

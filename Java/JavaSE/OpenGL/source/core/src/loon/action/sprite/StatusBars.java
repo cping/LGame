@@ -22,8 +22,6 @@ package loon.action.sprite;
 
 import java.util.ArrayList;
 
-import loon.action.sprite.ISprite;
-import loon.action.sprite.StatusBar;
 import loon.core.LObject;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;

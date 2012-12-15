@@ -22,6 +22,7 @@ import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
 import loon.jni.NativeSupport;
 import loon.utils.GraphicsUtils;
+import loon.utils.StringUtils;
 
 /**
  * Copyright 2008 - 2011
@@ -670,7 +671,7 @@ public class LImage implements LRelease {
 			throw new RuntimeException("file name is null !");
 		}
 		String res;
-		if (fileName.startsWith("/")) {
+		if (StringUtils.startsWith(fileName,'/')) {
 			res = fileName.substring(1);
 		} else {
 			res = fileName;

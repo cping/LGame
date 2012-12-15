@@ -369,8 +369,8 @@ public class GLMesh {
 		GLAttributes attributes = vertices.getAttributes();
 		int len = attributes.size();
 		for (int i = 0; i < len; i++) {
-			if (attributes.attributes[i].usage == usage) {
-				return attributes.attributes[i];
+			if (attributes._attributes[i].usage == usage) {
+				return attributes._attributes[i];
 			}
 		}
 		return null;

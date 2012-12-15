@@ -93,4 +93,8 @@ public class ClassRes extends DataRes implements Resource {
 		return true;
 	}
 
+	public int hashCode(){
+		return super.hashCode();
+	}
+	
 }

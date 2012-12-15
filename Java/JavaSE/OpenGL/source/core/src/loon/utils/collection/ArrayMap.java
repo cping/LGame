@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -33,11 +32,11 @@ public class ArrayMap {
 
 	private int threshold;
 
-	private transient Entry[] keyTables;
+	private Entry[] keyTables;
 
-	private transient Entry[] valueTables;
+	private Entry[] valueTables;
 
-	private transient int size = 0;
+	private int size = 0;
 
 	public ArrayMap() {
 		this(CollectionUtils.INITIAL_CAPACITY);
@@ -234,6 +233,10 @@ public class ArrayMap {
 		return array;
 	}
 
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 	public final boolean equals(Object o) {
 		if (!getClass().isInstance(o)) {
 			return false;
@@ -376,13 +379,13 @@ public class ArrayMap {
 
 	public class Entry {
 
-		transient int hashCode;
+		int hashCode;
 
-		transient Object key;
+		Object key;
 
-		transient Object value;
+		Object value;
 
-		transient Entry next;
+		Entry next;
 
 		public Entry(final int hashCode, final Object key, final Object value,
 				final Entry next) {

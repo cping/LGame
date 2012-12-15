@@ -1094,7 +1094,7 @@ public class VorbisFile{
       }
     }
 
-    return ((float)time_total+(float)(pcm_offset-pcm_total)/vi[link].rate);
+    return (time_total+(float)(pcm_offset-pcm_total)/vi[link].rate);
   }
 
   //  link:   -1) return the vorbis_info struct for the bitstream section

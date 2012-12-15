@@ -343,8 +343,8 @@ public class MoveObject extends SpriteBatchObject {
 				if (endX == startX && endY == startY) {
 					if (findPath != null) {
 						if (findPath.size() > 1) {
-							Vector2f moveStart = (Vector2f) findPath.get(0);
-							Vector2f moveEnd = (Vector2f) findPath.get(1);
+							Vector2f moveStart = findPath.get(0);
+							Vector2f moveEnd = findPath.get(1);
 							startX = tiles.tilesToPixelsX(moveStart.x());
 							startY = tiles.tilesToPixelsY(moveStart.y());
 							endX = moveEnd.x() * tiles.getTileWidth();

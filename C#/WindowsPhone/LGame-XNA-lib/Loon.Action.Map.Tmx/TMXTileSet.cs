@@ -121,7 +121,7 @@ namespace Loon.Action.Map.Tmx
                 id += firstGID;
                 TMXProperty tileProps = new TMXProperty();
 
-                XMLElement propsElement = (XMLElement)tileElement
+                XMLElement propsElement = tileElement
                         .GetChildrenByName("properties");
                 List<XMLElement> properties = propsElement.List("property");
                 for (int p = 0; p < properties.Count; p++)
@@ -177,7 +177,7 @@ namespace Loon.Action.Map.Tmx
 
         public TMXProperty GetProperties(int globalID)
         {
-            return (TMXProperty)CollectionUtils.Get(props, ((int)(globalID)));
+            return (TMXProperty)CollectionUtils.Get(props, globalID);
         }
 
         public int GetTileX(int id)

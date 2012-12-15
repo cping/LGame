@@ -79,7 +79,7 @@ namespace Loon.Action.Sprite.Node {
 		private Easing(int type_0, int function_1, float stength) {
 			this.type = type_0;
 			this.function = function_1;
-			this.strength = (float) stength;
+			this.strength = stength;
 		}
 
         public Easing(Easing easing, float strength_0)

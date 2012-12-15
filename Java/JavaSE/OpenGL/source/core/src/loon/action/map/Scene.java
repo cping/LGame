@@ -43,7 +43,7 @@ public class Scene {
 	}
 
 	public Item getItem(int index) {
-		return (Item) this.items.get(index);
+		return this.items.get(index);
 	}
 
 	public Item getItem(String name) {
@@ -64,7 +64,7 @@ public class Scene {
 	}
 
 	public Item removeItem(int index) {
-		return (Item) this.items.remove(index);
+		return this.items.remove(index);
 	}
 
 	public int countItems() {
@@ -76,7 +76,7 @@ public class Scene {
 	}
 
 	public Character getCharacter(int index) {
-		return (Character) this.characters.get(index);
+		return this.characters.get(index);
 	}
 
 	public Character getCharacter(String name) {
@@ -97,7 +97,7 @@ public class Scene {
 	}
 
 	public Character removeCharacter(int index) {
-		return (Character) this.characters.remove(index);
+		return this.characters.remove(index);
 	}
 
 	public int countCharacters() {

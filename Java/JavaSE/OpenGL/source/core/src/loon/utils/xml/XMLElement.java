@@ -91,42 +91,42 @@ public class XMLElement implements LRelease {
 		if (!this.attributes.containsKey(name))
 			throw new Error("Unknown attribute name '" + name
 					+ "' in element '" + this.name + "' !");
-		return (XMLAttribute) this.attributes.get(name);
+		return this.attributes.get(name);
 	}
 
 	public String getAttribute(String name, String v) {
 		if (!this.attributes.containsKey(name)) {
 			return v;
 		}
-		return ((XMLAttribute) this.attributes.get(name)).getValue();
+		return (this.attributes.get(name)).getValue();
 	}
 
 	public int getIntAttribute(String name, int v) {
 		if (!this.attributes.containsKey(name)) {
 			return v;
 		}
-		return ((XMLAttribute) this.attributes.get(name)).getIntValue();
+		return (this.attributes.get(name)).getIntValue();
 	}
 
 	public float getFloatAttribute(String name, float v) {
 		if (!this.attributes.containsKey(name)) {
 			return v;
 		}
-		return ((XMLAttribute) this.attributes.get(name)).getFloatValue();
+		return (this.attributes.get(name)).getFloatValue();
 	}
 
 	public double getDoubleAttribute(String name, double v) {
 		if (!this.attributes.containsKey(name)) {
 			return v;
 		}
-		return ((XMLAttribute) this.attributes.get(name)).getDoubleValue();
+		return (this.attributes.get(name)).getDoubleValue();
 	}
 
 	public boolean getBoolAttribute(String name, boolean v) {
 		if (!this.attributes.containsKey(name)) {
 			return v;
 		}
-		return ((XMLAttribute) this.attributes.get(name)).getBoolValue();
+		return (this.attributes.get(name)).getBoolValue();
 	}
 
 	public HashMap<String, XMLAttribute> getAttributes() {

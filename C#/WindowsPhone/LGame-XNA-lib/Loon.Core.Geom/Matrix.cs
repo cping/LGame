@@ -1,170 +1,11 @@
 namespace Loon.Core.Geom
 {
-
     using System;
     using System.Collections.Generic;
     using Loon.Utils;
 
     public sealed class Matrix
     {
-
-        public class Transform2i
-        {
-
-            public Transform2i()
-            {
-                this.matrixs = Empty();
-            }
-
-            public int[][] matrixs;
-
-            public void Idt()
-            {
-                this.matrixs = Empty();
-            }
-
-            public int Get(int x, int y)
-            {
-                return matrixs[x][y];
-            }
-
-            public void Set(int[][] matrixs_0)
-            {
-                this.matrixs = matrixs_0;
-            }
-
-            public void Mul(int[][] matrixs_0)
-            {
-                this.matrixs = Mul(matrixs_0, matrixs_0);
-            }
-
-            public int[] Mul(int[] fpV)
-            {
-                return Mul(matrixs, fpV);
-            }
-
-            public void Rotate(float alpha, float x, float y)
-            {
-                if (alpha != 1f)
-                {
-                    int[][] angle = RotationMatrix(alpha, x, y);
-                    this.matrixs = Mul(matrixs, angle);
-                }
-            }
-
-            public void Zoom(float scale, float x, float y)
-            {
-                if (scale != 1f)
-                {
-                    int[][] zoom = ZoomMatrix(scale, x, y);
-                    this.matrixs = Mul(matrixs, zoom);
-                }
-            }
-
-            public static int[][] Empty()
-            {
-                int[][] id = {
-						new int[] {
-								Loon.Utils.MathUtils.ONE_FIXED,
-								0, 0 },
-						new int[] {
-								0,
-								Loon.Utils.MathUtils.ONE_FIXED,
-								0 },
-						new int[] {
-								0,
-								0,
-								Loon.Utils.MathUtils.ONE_FIXED } };
-                return id;
-            }
-
-            public static int[][] Def()
-            {
-                int[][] id = { new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 },
-						new int[] { 0, 0, 0 } };
-                return id;
-            }
-
-            public static int[][] Mul(int[][] a, int[][] b)
-            {
-                int[][] matrixs_0 = Def();
-                for (int i = 0; i < 3; ++i)
-                {
-                    for (int j = 0; j < 3; ++j)
-                    {
-                        for (int n = 0; n < 3; ++n)
-                        {
-                            matrixs_0[i][j] += Loon.Utils.MathUtils.Mul(a[i][n], b[n][j]);
-                        }
-                    }
-                }
-                return matrixs_0;
-            }
-
-            public static int[] Mul(int[][] a, int[] b)
-            {
-                int[] matrixs_0 = { 0, 0, 0 };
-                for (int i = 0; i < 3; ++i)
-                {
-                    for (int j = 0; j < 3; ++j)
-                    {
-                        matrixs_0[i] += Loon.Utils.MathUtils.Mul(a[i][j], b[j]);
-                    }
-                }
-                return matrixs_0;
-            }
-
-            public static int[][] ZoomMatrix(float scale,
-                    float x, float y)
-            {
-                int mu = (0 == scale) ? Int32.MaxValue : Loon.Utils.MathUtils
-                        .FromFloat(1 / scale);
-                if (Loon.Utils.MathUtils.ONE_FIXED == mu)
-                {
-                    return Def();
-                }
-                int x_c = Loon.Utils.MathUtils.FromFloat(x);
-                int y_c = Loon.Utils.MathUtils.FromFloat(y);
-                int transX = x_c - Loon.Utils.MathUtils.Mul(x_c, mu);
-                int transY = y_c - Loon.Utils.MathUtils.Mul(y_c, mu);
-                int[][] zoom = {
-						new int[] { mu, 0, transX },
-						new int[] { 0, mu, transY },
-						new int[] {
-								0,
-								0,
-								Loon.Utils.MathUtils.ONE_FIXED } };
-                return zoom;
-            }
-
-            public static int[][] RotationMatrix(float alpha,
-                    float x, float y)
-            {
-                if (0 == alpha % (2 * Loon.Utils.MathUtils.PI))
-                {
-                    return Empty();
-                }
-                int cosAlpha = Loon.Utils.MathUtils.FromDouble(Loon.Utils.MathUtils.Cos(alpha));
-                int sinAlpha = Loon.Utils.MathUtils.FromDouble(Loon.Utils.MathUtils.Sin(alpha));
-                int x_c = Loon.Utils.MathUtils.FromFloat(x);
-                int y_c = Loon.Utils.MathUtils.FromFloat(y);
-                int transX = Loon.Utils.MathUtils.Mul(x_c, Loon.Utils.MathUtils.ONE_FIXED
-                        - cosAlpha)
-                        + Loon.Utils.MathUtils.Mul(y_c, sinAlpha);
-                int transY = Loon.Utils.MathUtils.Mul(y_c, Loon.Utils.MathUtils.ONE_FIXED
-                        - cosAlpha)
-                        - Loon.Utils.MathUtils.Mul(x_c, sinAlpha);
-                int[][] angle = {
-						new int[] { cosAlpha, -sinAlpha, transX },
-						new int[] { sinAlpha, cosAlpha, transY },
-						new int[] {
-								0,
-								0,
-								Loon.Utils.MathUtils.ONE_FIXED } };
-                return angle;
-            }
-
-        }
 
         internal float[] matrixs;
 
@@ -178,10 +19,7 @@ namespace Loon.Core.Geom
         {
             this.result = new float[16];
             matrixs = new float[9];
-            for (int i = 0; i < 9; i++)
-            {
-                matrixs[i] = m.matrixs[i];
-            }
+            System.Array.Copy(m.matrixs, 0, matrixs, 0, 9);
         }
 
         public Matrix(Matrix t1, Matrix t2): this(t1)

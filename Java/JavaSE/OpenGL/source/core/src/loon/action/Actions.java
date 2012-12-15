@@ -2,7 +2,6 @@ package loon.action;
 
 import java.util.ArrayList;
 
-import loon.action.ActionEvent;
 import loon.utils.CollectionUtils;
 import loon.utils.collection.ArrayMap;
 
@@ -86,7 +85,7 @@ public class Actions {
 			if (element.actions != null) {
 				int limit = element.actions.size();
 				for (int i = 0; i < limit; i++) {
-					ActionEvent a = (ActionEvent) element.actions.get(i);
+					ActionEvent a = element.actions.get(i);
 					if (a.getTag() == tag && a.getOriginal() == actObject) {
 						removeAction(i, element);
 					}
@@ -115,7 +114,7 @@ public class Actions {
 			if (element.actions != null) {
 				int limit = element.actions.size();
 				for (int i = 0; i < limit; i++) {
-					ActionEvent a = (ActionEvent) element.actions.get(i);
+					ActionEvent a = element.actions.get(i);
 					if (a.getTag() == tag)
 						return a;
 				}
@@ -135,7 +134,7 @@ public class Actions {
 				if (!currentTarget.paused) {
 					for (currentTarget.actionIndex = 0; currentTarget.actionIndex < currentTarget.actions
 							.size(); currentTarget.actionIndex++) {
-						currentTarget.currentAction = (ActionEvent) currentTarget.actions
+						currentTarget.currentAction = currentTarget.actions
 								.get(currentTarget.actionIndex);
 						if (currentTarget.currentAction == null) {
 							continue;

@@ -251,8 +251,8 @@ public class Command extends Conversion implements Serializable, LRelease {
 			Object valueB = null;
 			String condition = null;
 			if (size <= 4) {
-				valueA = (String) temps.get(1);
-				valueB = (String) temps.get(3);
+				valueA = temps.get(1);
+				valueB = temps.get(3);
 				valueA = setEnvironmentList.get(valueA) == null ? valueA
 						: setEnvironmentList.get(valueA);
 				valueB = setEnvironmentList.get(valueB) == null ? valueB
@@ -592,7 +592,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 			String execute = doExecute();
 			if (execute != null) {
 				resString.append(execute);
-				resString.append("\n");
+				resString.append('\n');
 			}
 		}
 		return resString.toString();
@@ -618,14 +618,16 @@ public class Command extends Conversion implements Serializable, LRelease {
 				Set set = setEnvironmentList.entrySet();
 				for (Iterator it = set.iterator(); it.hasNext();) {
 					Entry entry = (Entry) it.next();
-					if (!(result.startsWith("\"") && result.endsWith("\""))) {
+					if (!(StringUtils.startsWith(result, '"') && StringUtils
+							.endsWith(result, '"'))) {
 						result = StringUtils.replaceMatch(result,
 								(String) entry.getKey(), entry.getValue()
 										.toString());
 					}
 				}
 				// 当为普通字符串时
-				if (result.startsWith("\"") && result.endsWith("\"")) {
+				if (StringUtils.startsWith(result, '"')
+						&& StringUtils.endsWith(result, '"')) {
 					setEnvironmentList.put(temps.get(1),
 							result.substring(1, result.length() - 1));
 				} else if (StringUtils.isChinaLanguage(result.toCharArray())
@@ -667,8 +669,8 @@ public class Command extends Conversion implements Serializable, LRelease {
 										cmd,
 										(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG)
 												.intern(),
-										String.valueOf(GLOBAL_RAND.nextInt(Integer
-												.parseInt((String) key))));
+										String.valueOf(GLOBAL_RAND
+												.nextInt(Integer.parseInt(key))));
 						// 无设定
 					} else {
 						cmd = StringUtils
@@ -1099,7 +1101,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 				final int size = other.size();
 				HashMap result = new HashMap(size);
 				for (int i = 0; i < size; i++) {
-					String otherName = (String) other.get(i);
+					String otherName = other.get(i);
 					result.put(otherName, session.get(otherName));
 				}
 				return result;
@@ -1169,7 +1171,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 						index++;
 					}
 				}
-				result = (String[]) CollectionUtils.copyOf(result, index);
+				result = CollectionUtils.copyOf(result, index);
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			} finally {
@@ -1234,7 +1236,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 						index++;
 					}
 				}
-				result = (String[]) CollectionUtils.copyOf(result, index);
+				result = CollectionUtils.copyOf(result, index);
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			} finally {

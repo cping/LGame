@@ -29,7 +29,7 @@ namespace Loon.Action.Map {
 			this.pathQueue = new AStarFinderPool.TaskQueue ();
 			this.field = field_0;
 			this.running = true;
-            this.pathfinderThread = new Thread(this);
+            this.pathfinderThread = new Thread(this, "AStarThread");
 			this.pathfinderThread.Start();
 		}
 	

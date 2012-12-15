@@ -369,7 +369,7 @@ public class Desktop implements LRelease {
 			return;
 		}
 
-		if (active == false) {
+		if (!active) {
 			if (this.hoverComponent == comp) {
 				this.processTouchMotionEvent();
 			}
@@ -443,7 +443,7 @@ public class Desktop implements LRelease {
 		int size = components.length;
 		ArrayList<LComponent> l = new ArrayList<LComponent>(size);
 		for (int i = size; i > 0; i--) {
-			LComponent comp = (LComponent) components[i - 1];
+			LComponent comp = components[i - 1];
 			Class<? extends LComponent> cls = comp.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(comp)
 					|| clazz.equals(cls)) {
@@ -476,7 +476,7 @@ public class Desktop implements LRelease {
 		int size = components.length;
 		Class<LLayer> clazz = LLayer.class;
 		for (int i = 0; i < size; i++) {
-			LComponent comp = (LComponent) components[i];
+			LComponent comp = components[i];
 			Class<? extends LComponent> cls = comp.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(comp)
 					|| clazz.equals(cls)) {
@@ -491,7 +491,7 @@ public class Desktop implements LRelease {
 		int size = components.length;
 		Class<LLayer> clazz = LLayer.class;
 		for (int i = size; i > 0; i--) {
-			LComponent comp = (LComponent) components[i - 1];
+			LComponent comp = components[i - 1];
 			Class<? extends LComponent> cls = comp.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(comp)
 					|| clazz.equals(cls)) {
@@ -551,10 +551,6 @@ public class Desktop implements LRelease {
 		if (contentPane != null) {
 			contentPane.dispose();
 		}
-	}
-
-	protected void finalize() throws Throwable {
-		super.finalize();
 	}
 
 }

@@ -12,19 +12,19 @@ namespace Loon.Core.Graphics
     public abstract class LContainer : LComponent
     {
 
-        public sealed class InnerComponent : IComparer<object>
+        public sealed class InnerComponent : IComparer<LComponent>
         {
-            public int Compare(object o1, object o2)
+            public int Compare(LComponent o1, LComponent o2)
             {
-                return ((LComponent)o2).GetLayer() - ((LComponent)o1).GetLayer();
+                return o2.GetLayer() - o1.GetLayer();
             }
         }
 
-        private static readonly IComparer<object> DEFAULT_COMPARATOR = new InnerComponent();
+        private static readonly IComparer<LComponent> DEFAULT_COMPARATOR = new InnerComponent();
 
         protected internal bool locked;
 
-        private IComparer<object> comparator = LContainer.DEFAULT_COMPARATOR;
+        private IComparer<LComponent> comparator = LContainer.DEFAULT_COMPARATOR;
 
         private LComponent[] childs = new LComponent[0];
 
@@ -135,7 +135,7 @@ namespace Loon.Core.Graphics
             for (int i = childCount; i > 0; i--)
             {
                 int index = i - 1;
-                LComponent comp = (LComponent)this.childs[index];
+                LComponent comp = this.childs[index];
                 Type cls = comp.GetType();
                 if (clazz == null || (object)clazz == (object)cls || clazz.IsInstanceOfType(comp)
                         || clazz.Equals(cls))
@@ -419,12 +419,12 @@ namespace Loon.Core.Graphics
             }
         }
 
-        public IComparer<object> GetComparator()
+        public IComparer<LComponent> GetComparator()
         {
             return this.comparator;
         }
 
-        public void SetComparator(IComparer<object> c)
+        public void SetComparator(IComparer<LComponent> c)
         {
             if (c == null)
             {
@@ -445,7 +445,7 @@ namespace Loon.Core.Graphics
             {
                 if (this.childs[i].Intersects(x1, y1))
                 {
-                    LComponent comp = (this.childs[i].IsContainer() == false) ? this.childs[i]
+                    LComponent comp = (!this.childs[i].IsContainer()) ? this.childs[i]
                             : ((LContainer)this.childs[i]).FindComponent(x1, y1);
                     return comp;
                 }

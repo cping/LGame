@@ -97,7 +97,7 @@ namespace Loon.Action.Map.Tmx
         {
             for (int i = 0; i < layers.Count; i++)
             {
-                TMXLayer layer = (TMXLayer)layers[i];
+                TMXLayer layer = layers[i];
                 if (layer.name.Equals(name))
                 {
                     return i;
@@ -108,12 +108,12 @@ namespace Loon.Action.Map.Tmx
 
         public LTexture GetTileImage(int x, int y, int layerIndex)
         {
-            TMXLayer layer = (TMXLayer)layers[layerIndex];
+            TMXLayer layer = layers[layerIndex];
 
             int tileSetIndex = layer.data[x,y,0];
             if ((tileSetIndex >= 0) && (tileSetIndex < tileSets.Count))
             {
-                TMXTileSet tileSet = (TMXTileSet)tileSets[tileSetIndex];
+                TMXTileSet tileSet = tileSets[tileSetIndex];
 
                 int sheetX = tileSet.GetTileX(layer.data[x,y,1]);
                 int sheetY = tileSet.GetTileY(layer.data[x,y,1]);
@@ -151,13 +151,13 @@ namespace Loon.Action.Map.Tmx
 
         public int GetTileId(int x, int y, int layerIndex)
         {
-            TMXLayer layer = (TMXLayer)layers[layerIndex];
+            TMXLayer layer = layers[layerIndex];
             return layer.GetTileID(x, y);
         }
 
         public void SetTileId(int x, int y, int layerIndex, int tileid)
         {
-            TMXLayer layer = (TMXLayer)layers[layerIndex];
+            TMXLayer layer = layers[layerIndex];
             layer.SetTileID(x, y, tileid);
         }
 
@@ -171,7 +171,7 @@ namespace Loon.Action.Map.Tmx
         public string GetLayerProperty(int layerIndex, string propertyName,
                 string def)
         {
-            TMXLayer layer = (TMXLayer)layers[layerIndex];
+            TMXLayer layer = layers[layerIndex];
             if (layer == null || layer.props == null)
                 return def;
             return layer.props.GetProperty(propertyName, def);
@@ -224,7 +224,7 @@ namespace Loon.Action.Map.Tmx
         public void Draw(GLEx g, int x, int y, int sx, int sy, int width,
                 int height, int index, bool lineByLine)
         {
-            TMXLayer layer = (TMXLayer)layers[index];
+            TMXLayer layer = layers[index];
             layer.Draw(g, x, y, sx, sy, width, height, lineByLine, tileWidth,
                     tileHeight);
         }
@@ -234,7 +234,7 @@ namespace Loon.Action.Map.Tmx
         {
             for (int i = 0; i < layers.Count; i++)
             {
-                TMXLayer layer = (TMXLayer)layers[i];
+                TMXLayer layer = layers[i];
                 layer.Draw(g, x, y, sx, sy, width, height, lineByLine, tileWidth,
                         tileHeight);
             }
@@ -269,7 +269,7 @@ namespace Loon.Action.Map.Tmx
                 tileWidth = docElement.GetIntAttribute("tilewidth", 0);
                 tileHeight = docElement.GetIntAttribute("tileheight", 0);
 
-                XMLElement propsElement = (XMLElement)docElement
+                XMLElement propsElement = docElement
                         .GetChildrenByName("properties");
                 if (propsElement != null)
                 {
@@ -357,14 +357,14 @@ namespace Loon.Action.Map.Tmx
 
         public TMXTileSet GetTileSet(int index)
         {
-            return (TMXTileSet)tileSets[index];
+            return tileSets[index];
         }
 
         public TMXTileSet GetTileSetByGID(int gid)
         {
             for (int i = 0; i < tileSets.Count; i++)
             {
-                TMXTileSet set = (TMXTileSet)tileSets[i];
+                TMXTileSet set = tileSets[i];
                 if (set.Contains(gid))
                 {
                     return set;
@@ -378,7 +378,7 @@ namespace Loon.Action.Map.Tmx
         {
             for (int i = 0; i < tileSets.Count; i++)
             {
-                TMXTileSet set = (TMXTileSet)tileSets[i];
+                TMXTileSet set = tileSets[i];
 
                 if (set.Contains(gid))
                 {
@@ -403,7 +403,7 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 return grp.objects.Count;
             }
             return -1;
@@ -413,10 +413,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
                     return obj0.name;
                 }
             }
@@ -427,10 +427,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
                     return obj0.type;
                 }
             }
@@ -441,10 +441,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
                     return obj0.x;
                 }
             }
@@ -455,10 +455,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
                     return obj0.y;
                 }
             }
@@ -469,10 +469,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
                     return obj0.width;
                 }
             }
@@ -483,10 +483,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
                     return obj0.height;
                 }
             }
@@ -497,10 +497,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
 
                     if (obj0 == null)
                     {
@@ -519,10 +519,10 @@ namespace Loon.Action.Map.Tmx
         {
             if (groupID >= 0 && groupID < objectGroups.Count)
             {
-                TMXTileGroup grp = (TMXTileGroup)objectGroups[groupID];
+                TMXTileGroup grp = objectGroups[groupID];
                 if (objectID >= 0 && objectID < grp.objects.Count)
                 {
-                    TMXTile obj0 = (TMXTile)grp.objects[objectID];
+                    TMXTile obj0 = grp.objects[objectID];
 
                     if (obj0 == null)
                     {

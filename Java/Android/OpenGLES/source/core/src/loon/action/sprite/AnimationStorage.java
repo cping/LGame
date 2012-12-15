@@ -22,8 +22,6 @@ package loon.action.sprite;
 
 import java.util.ArrayList;
 
-import loon.action.sprite.Animation;
-import loon.action.sprite.AnimationStorage;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.CollectionUtils;
 

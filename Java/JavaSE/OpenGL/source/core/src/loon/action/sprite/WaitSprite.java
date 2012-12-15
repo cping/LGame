@@ -155,7 +155,7 @@ public class WaitSprite extends LObject implements ISprite {
 	private Cycle cycle;
 
 	public WaitSprite(int s) {
-		this(s, (int) LSystem.screenRect.width, (int) LSystem.screenRect.height);
+		this(s, LSystem.screenRect.width, LSystem.screenRect.height);
 	}
 
 	public WaitSprite(int s, int w, int h) {

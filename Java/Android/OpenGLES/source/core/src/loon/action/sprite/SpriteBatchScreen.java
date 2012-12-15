@@ -173,7 +173,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int i = 0;
 		while (removed == -1 && i < nodes.length - 1) {
 			if (nodes[i].isContainer()) {
-				removed = this.removeNode((LNNode) nodes[i], node);
+				removed = this.removeNode( nodes[i], node);
 			}
 			i++;
 		}
@@ -187,7 +187,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int i = 0;
 		while (removed == -1 && i < nodes.length - 1) {
 			if (nodes[i].isContainer()) {
-				removed = this.removeNode((LNNode) nodes[i], clazz);
+				removed = this.removeNode( nodes[i], clazz);
 			}
 			i++;
 		}
@@ -259,7 +259,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			return content.findNode(x, y);
 		}
 		LNNode panel = (this.modal == null) ? this.content
-				: ((LNNode) this.modal);
+				: ( this.modal);
 		LNNode node = panel.findNode(x, y);
 		return node;
 	}
@@ -287,7 +287,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public void setNodeStat(LNNode node, boolean active) {
-		if (active == false) {
+		if (!active) {
 			if (this.hoverNode == node) {
 				this.processTouchMotionEvent();
 			}
@@ -305,8 +305,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			return;
 		}
 		if (node.isContainer()) {
-			LNNode[] nodes = ((LNNode) node).childs;
-			int size = ((LNNode) node).getNodeCount();
+			LNNode[] nodes = ( node).childs;
+			int size = ( node).getNodeCount();
 			for (int i = 0; i < size; i++) {
 				this.setNodeStat(nodes[i], active);
 			}
@@ -341,7 +341,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int size = container.getNodeCount();
 		for (int i = 0; i < size; i++) {
 			if (nodes[i].isContainer()) {
-				this.validateContainer((LNNode) nodes[i]);
+				this.validateContainer( nodes[i]);
 			}
 		}
 	}
@@ -357,7 +357,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int size = nodes.length;
 		ArrayList<LNNode> l = new ArrayList<LNNode>(size);
 		for (int i = size; i > 0; i--) {
-			LNNode node = (LNNode) nodes[i - 1];
+			LNNode node =  nodes[i - 1];
 			Class<? extends LNNode> cls = node.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(node)
 					|| clazz.equals(cls)) {

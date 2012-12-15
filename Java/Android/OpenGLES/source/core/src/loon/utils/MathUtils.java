@@ -53,8 +53,8 @@ public class MathUtils {
 				+ (width * MathUtils.abs(angSin)));
 		int centerX = (int) (x + (width / 2));
 		int centerY = (int) (y + (height / 2));
-		int newX = (int) (centerX - (newW / 2));
-		int newY = (int) (centerY - (newH / 2));
+		int newX = (centerX - (newW / 2));
+		int newY = (centerY - (newH / 2));
 		return new int[] { newX, newY, newW, newH };
 	}
 

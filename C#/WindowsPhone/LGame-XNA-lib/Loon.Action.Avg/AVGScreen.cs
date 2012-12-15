@@ -125,7 +125,7 @@ namespace Loon.Action.Avg
 
         public override void OnLoaded()
         {
-            this.avgThread = new Thread(this);
+            this.avgThread = new Thread(this,"AVGThread");
             this.avgThread.Start();
         }
 

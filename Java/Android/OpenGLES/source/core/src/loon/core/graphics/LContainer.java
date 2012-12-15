@@ -30,15 +30,15 @@ import loon.utils.CollectionUtils;
 
 public abstract class LContainer extends LComponent {
 
-	private static final Comparator<Object> DEFAULT_COMPARATOR = new Comparator<Object>() {
-		public int compare(Object o1, Object o2) {
-			return ((LComponent) o2).getLayer() - ((LComponent) o1).getLayer();
+	private static final Comparator<LComponent> DEFAULT_COMPARATOR = new Comparator<LComponent>() {
+		public int compare(LComponent o1, LComponent o2) {
+			return o2.getLayer() - o1.getLayer();
 		}
 	};
 
 	protected boolean locked;
 
-	private Comparator<Object> comparator = LContainer.DEFAULT_COMPARATOR;
+	private Comparator<LComponent> comparator = LContainer.DEFAULT_COMPARATOR;
 
 	private LComponent[] childs = new LComponent[0];
 
@@ -126,7 +126,7 @@ public abstract class LContainer extends LComponent {
 		int count = 0;
 		for (int i = childCount; i > 0; i--) {
 			int index = i - 1;
-			LComponent comp = (LComponent) this.childs[index];
+			LComponent comp = this.childs[index];
 			Class<? extends LComponent> cls = comp.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(comp)
 					|| clazz.equals(cls)) {
@@ -347,11 +347,11 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
-	public Comparator<Object> getComparator() {
+	public Comparator<LComponent> getComparator() {
 		return this.comparator;
 	}
 
-	public void setComparator(Comparator<Object> c) {
+	public void setComparator(Comparator<LComponent> c) {
 		if (c == null) {
 			throw new NullPointerException("Comparator can not null !");
 		}
@@ -366,7 +366,7 @@ public abstract class LContainer extends LComponent {
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			if (this.childs[i].intersects(x1, y1)) {
-				LComponent comp = (this.childs[i].isContainer() == false) ? this.childs[i]
+				LComponent comp = (!this.childs[i].isContainer()) ? this.childs[i]
 						: ((LContainer) this.childs[i]).findComponent(x1, y1);
 				return comp;
 			}

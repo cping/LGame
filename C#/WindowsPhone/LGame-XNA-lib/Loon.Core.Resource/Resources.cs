@@ -190,7 +190,7 @@ namespace Loon.Core.Resource
                     catch (Exception ex)
                     {
                         Loon.Utils.Debug.Log.Exception(ex);
-                        Loon.Utils.Debug.Log.DebugWrite("\n" + resName + " file not found !");
+                        Loon.Utils.Debug.Log.DebugWrite('\n' + resName + " file not found !");
                     }
                 }
             }

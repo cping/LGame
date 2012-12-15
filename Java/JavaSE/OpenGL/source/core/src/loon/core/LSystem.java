@@ -19,6 +19,7 @@ import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
 import loon.utils.GraphicsUtils;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 
 /**
@@ -519,7 +520,7 @@ public final class LSystem {
 	public static boolean isBEAWithUnsafeSupport() {
 		if (System.getProperty("java.vm.vendor").indexOf("BEA") != -1) {
 			String vmVersion = System.getProperty("java.vm.version");
-			if (vmVersion.startsWith("R")) {
+			if (StringUtils.startsWith(vmVersion,'R')) {
 				return true;
 			}
 			String vmInfo = System.getProperty("java.vm.info");

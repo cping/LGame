@@ -195,7 +195,7 @@ namespace Loon.Core.Graphics
 
                 for (IEnumerator<CharDef> iter = charDefs.GetEnumerator(); iter.MoveNext(); )
                 {
-                    CharDef def = (CharDef)iter.Current;
+                    CharDef def = iter.Current;
                     chars[def.id] = def;
                 }
                 ArrayMap.Entry[] entrys = kerning.ToEntrys();
@@ -209,7 +209,7 @@ namespace Loon.Core.Graphics
                     for (IEnumerator<short> valueIter = valueList.GetEnumerator(); valueIter
                             .MoveNext(); i++)
                     {
-                        valueArray[i] = (short)valueIter.Current;
+                        valueArray[i] = valueIter.Current;
                     }
                     chars[first].kerning = valueArray;
                 }

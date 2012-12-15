@@ -1857,7 +1857,7 @@ namespace Loon.Action.Sprite
             {
                 SetFont(spriteFont);
             }
-            int height = (int)((spriteFont.GetHeight() - 2));
+            int height = ((spriteFont.GetHeight() - 2));
             if (rotation == 0f)
             {
                 DrawString(text, px - (originx * scale), (py + height)
@@ -1880,7 +1880,7 @@ namespace Loon.Action.Sprite
             {
                 SetFont(spriteFont);
             }
-            int heigh = (int)((spriteFont.GetHeight() - 2));
+            int heigh = ((spriteFont.GetHeight() - 2));
             if (rotation == 0f)
             {
                 DrawString(text, position.x - (origin.x * scale),
@@ -1903,7 +1903,7 @@ namespace Loon.Action.Sprite
             {
                 SetFont(spriteFont);
             }
-            int heigh = (int)(spriteFont.GetHeight() - 2);
+            int heigh = (spriteFont.GetHeight() - 2);
             DrawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
                     color);
             SetFont(old);
@@ -1917,7 +1917,7 @@ namespace Loon.Action.Sprite
             {
                 SetFont(spriteFont);
             }
-            int heigh = (int)(spriteFont.GetHeight() - 2);
+            int heigh = (spriteFont.GetHeight() - 2);
             DrawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color);
             SetFont(old);
         }
@@ -1930,7 +1930,7 @@ namespace Loon.Action.Sprite
             {
                 SetFont(spriteFont);
             }
-            int heigh = (int)((spriteFont.GetHeight() - 2));
+            int heigh = ((spriteFont.GetHeight() - 2));
             if (rotation == 0f)
             {
                 DrawString(text, position.x - (origin.x * scale.x),

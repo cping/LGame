@@ -16,12 +16,6 @@ import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LTrans;
-import loon.core.graphics.opengl.GL;
-import loon.core.graphics.opengl.GL10;
-import loon.core.graphics.opengl.GLBatch;
-import loon.core.graphics.opengl.LSTRDictionary;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureBatch;
 import loon.jni.NativeSupport;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
@@ -342,7 +336,7 @@ public final class GLEx implements LTrans {
 
 	private int currentBlendMode;
 
-	private float lastAlpha = 1.0F, lineWidth, sx = 1, sy = 1;
+	private float _lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
 
 	private boolean isClose, isTex2DEnabled, isARRAYEnable, isAntialias,
 			isScissorTest, isPushed;
@@ -367,7 +361,7 @@ public final class GLEx implements LTrans {
 
 	static int verMajor, verMinor;
 
-	private LColor color = new LColor(LColor.white);
+	private LColor _color = new LColor(LColor.white);
 
 	private static final float[] rectDataCords = new float[16];
 
@@ -975,6 +969,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
+        _isReplace = true;
 		bind(0);
 		if (isTex2DEnabled) {
 			gl.glDisable(GL.GL_TEXTURE_2D);
@@ -1023,7 +1018,7 @@ public final class GLEx implements LTrans {
 	}
 
 	public void test() {
-		lastAlpha = 1;
+		_lastAlpha = 1;
 	}
 
 	public boolean isAlpha() {
@@ -1036,17 +1031,17 @@ public final class GLEx implements LTrans {
 	 * @param alpha
 	 */
 	public void setAlpha(float alpha) {
-		if (alpha == lastAlpha) {
+		if (alpha == _lastAlpha) {
 			return;
 		}
-		lastAlpha = alpha < 0 ? 0 : alpha > 1 ? 1 : alpha;
+		_lastAlpha = alpha < 0 ? 0 : alpha > 1 ? 1 : alpha;
 		if (alpha >= 0.95f) {
 			GL_REPLACE();
 			gl10.glColor4f(1f, 1f, 1f, 1f);
 			onAlpha = false;
 		} else {
 			GL_MODULATE();
-			gl10.glColor4f(1f, 1f, 1f, lastAlpha);
+			gl10.glColor4f(1f, 1f, 1f, _lastAlpha);
 			onAlpha = true;
 		}
 	}
@@ -1057,7 +1052,7 @@ public final class GLEx implements LTrans {
 	 * @return
 	 */
 	public float getAlpha() {
-		return color.a;
+		return _color.a;
 	}
 
 	/**
@@ -1084,8 +1079,9 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!color.equals(LColor.white)) {
-			color.setColor(1f, 1f, 1f, 1f);
+		if (!_color.equals(LColor.white)) {
+			GL_MODULATE();
+			_color.setColor(1f, 1f, 1f, 1f);
 			gl10.glColor4f(1f, 1f, 1f, 1f);
 		}
 	}
@@ -1099,10 +1095,10 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!c.equals(color)) {
+		if (!c.equals(_color)) {
 			GL_MODULATE();
-			color.setColor(c.r, c.g, c.b, lastAlpha);
-			gl10.glColor4f(color.r, color.g, color.b, color.a);
+			_color.setColor(c.r, c.g, c.b, _lastAlpha);
+			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
 		}
 	}
 
@@ -1115,11 +1111,11 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!c.equals(color)) {
+		if (!c.equals(_color)) {
 			GL_MODULATE();
-			float alpha = lastAlpha == 1 ? c.a : lastAlpha;
-			color.setColor(c.r, c.g, c.b, alpha);
-			gl10.glColor4f(color.r, color.g, color.b, color.a);
+			float alpha = _lastAlpha == 1 ? c.a : _lastAlpha;
+			_color.setColor(c.r, c.g, c.b, alpha);
+			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
 		}
 	}
 
@@ -1130,7 +1126,7 @@ public final class GLEx implements LTrans {
 	 */
 	public final void setColor(int pixel) {
 		int[] rgbs = LColor.getRGBs(pixel);
-		setColorValue(rgbs[0], rgbs[1], rgbs[2], (int) (lastAlpha * 255));
+		setColorValue(rgbs[0], rgbs[1], rgbs[2], (int) (_lastAlpha * 255));
 	}
 
 	/**
@@ -1155,10 +1151,10 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!color.equals(r, g, b, a)) {
+		if (!_color.equals(r, g, b, a)) {
 			GL_MODULATE();
-			color.setFloatColor(r, g, b, a);
-			gl10.glColor4f(color.r, color.g, color.b, color.a);
+			_color.setFloatColor(r, g, b, a);
+			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
 		}
 	}
 
@@ -1171,10 +1167,10 @@ public final class GLEx implements LTrans {
 		float green = g / 255f;
 		float blue = b / 255f;
 		float alpha = a / 255f;
-		if (!color.equals(red, green, blue, alpha)) {
+		if (!_color.equals(red, green, blue, alpha)) {
 			GL_MODULATE();
-			color.setFloatColor(red, green, blue, alpha);
-			gl10.glColor4f(color.r, color.g, color.b, color.a);
+			_color.setFloatColor(red, green, blue, alpha);
+			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
 		}
 	}
 
@@ -1186,11 +1182,11 @@ public final class GLEx implements LTrans {
 	 * @param b
 	 */
 	public final void setColor(final float r, final float g, final float b) {
-		setColor(r, g, b, lastAlpha);
+		setColor(r, g, b, _lastAlpha);
 	}
 
 	public final void setColor(final int r, final int g, final int b) {
-		setColor(r, g, b, (int) (lastAlpha * 255));
+		setColor(r, g, b, (int) (_lastAlpha * 255));
 	}
 
 	/**
@@ -1199,15 +1195,15 @@ public final class GLEx implements LTrans {
 	 * @return
 	 */
 	public final LColor getColor() {
-		return new LColor(color);
+		return new LColor(_color);
 	}
 
 	public final int getColorRGB() {
-		return color.getRGB();
+		return _color.getRGB();
 	}
 
 	public final int getColorARGB() {
-		return color.getARGB();
+		return _color.getARGB();
 	}
 
 	/**
@@ -2388,7 +2384,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		this.lastAlpha = 1;
+		this._lastAlpha = 1;
 		this.sx = 1;
 		this.sy = 1;
 		if (isPushed) {
@@ -2479,14 +2475,20 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, color, 0, null, null);
+				texture.width, texture.height, _color, 0, null, null);
 	}
 
 	public final void drawFlipTexture(LTexture texture, float x, float y,
 			LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null,
@@ -2497,6 +2499,9 @@ public final class GLEx implements LTrans {
 			LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null,
@@ -2515,6 +2520,9 @@ public final class GLEx implements LTrans {
 			LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null, null);
@@ -2538,8 +2546,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, dx1, dy1, dx2 - dx1, dy2 - dy1, sx1, sy1, sx2,
-				sy2, color, 0, null, null);
+				sy2, _color, 0, null, null);
 	}
 
 	/**
@@ -2555,8 +2566,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, color, rotation, null, null);
+				texture.width, texture.height, _color, rotation, null, null);
 	}
 
 	/**
@@ -2572,8 +2586,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, color, 0, null, dir);
+				texture.width, texture.height, _color, 0, null, dir);
 	}
 
 	/**
@@ -2589,6 +2606,9 @@ public final class GLEx implements LTrans {
 			LColor color, float rotation) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, rotation, null, null);
@@ -2607,6 +2627,9 @@ public final class GLEx implements LTrans {
 			LColor color, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null, dir);
@@ -2627,6 +2650,9 @@ public final class GLEx implements LTrans {
 			LColor color, float rotation, Vector2f origin, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, rotation, origin, dir);
@@ -2650,6 +2676,9 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, texture.width * scale, texture.height
 				* scale, 0, 0, texture.width, texture.height, color, rotation,
 				origin, dir);
@@ -2669,8 +2698,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
-				texture.height, color, 0, null, null);
+				texture.height, _color, 0, null, null);
 	}
 
 	/**
@@ -2687,6 +2719,9 @@ public final class GLEx implements LTrans {
 			float width, float height, LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, 0, null, null);
@@ -2707,8 +2742,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
-				texture.height, color, rotation, null, null);
+				texture.height, _color, rotation, null, null);
 	}
 
 	/**
@@ -2725,8 +2763,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, color, rotation, null, d);
+				texture.width, texture.height, _color, rotation, null, d);
 	}
 
 	/**
@@ -2744,8 +2785,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
-				texture.height, color, 0, null, dir);
+				texture.height, _color, 0, null, dir);
 	}
 
 	/**
@@ -2763,6 +2807,9 @@ public final class GLEx implements LTrans {
 			float width, float height, float rotation, LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, rotation, null, null);
@@ -2783,6 +2830,9 @@ public final class GLEx implements LTrans {
 			float width, float height, LColor color, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, 0, null, dir);
@@ -2806,6 +2856,9 @@ public final class GLEx implements LTrans {
 			Vector2f origin, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, rotation, origin, dir);
@@ -2831,9 +2884,9 @@ public final class GLEx implements LTrans {
 		}
 		if (oesOn && !vboOn) {
 			drawOESTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-					color);
+					_color);
 		} else {
-			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, color,
+			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, _color,
 					0, null, null);
 		}
 	}
@@ -2966,12 +3019,12 @@ public final class GLEx implements LTrans {
 				if (!texture.isStatic) {
 					if (c != null) {
 						GL_REPLACE();
-						gl10.glColor4f(color.r, color.g, color.b, color.a);
+						gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
 					}
 				}
 			}
 		} else {
-			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, color,
+			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, _color,
 					0, null, null);
 		}
 	}
@@ -2992,7 +3045,7 @@ public final class GLEx implements LTrans {
 	public void drawRegion(LTexture texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor) {
 		drawRegion(texture, x_src, y_src, width, height, transform, x_dst,
-				y_dst, anchor, color);
+				y_dst, anchor, _color);
 	}
 
 	/**
@@ -3014,6 +3067,9 @@ public final class GLEx implements LTrans {
 			LColor c) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		if (x_src + width > texture.getWidth()
 				|| y_src + height > texture.getHeight() || width < 0
@@ -3131,8 +3187,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, color, 0,
+				destRect.height, 0, 0, texture.width, texture.height, _color, 0,
 				null, null);
 	}
 
@@ -3147,6 +3206,9 @@ public final class GLEx implements LTrans {
 			LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, 0, 0, texture.width, texture.height, color, 0,
@@ -3165,9 +3227,12 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, 0, null, null);
+				srcRect.height, _color, 0, null, null);
 	}
 
 	/**
@@ -3182,6 +3247,9 @@ public final class GLEx implements LTrans {
 			RectBox srcRect, LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
@@ -3201,9 +3269,12 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, color, rotation, null, null);
+				srcRect.height, _color, rotation, null, null);
 	}
 
 	/**
@@ -3216,8 +3287,11 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
 		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, 0, 0, texture.width, texture.height, color, 0,
+				texture.height, 0, 0, texture.width, texture.height, _color, 0,
 				null, null);
 	}
 
@@ -3232,6 +3306,9 @@ public final class GLEx implements LTrans {
 			LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
 		}
 		drawTexture(texture, position.x, position.y, texture.width,
 				texture.height, 0, 0, texture.width, texture.height, color, 0,
@@ -3305,10 +3382,10 @@ public final class GLEx implements LTrans {
 			bind(texture.textureID);
 
 			if (!texture.isStatic) {
-				updateColor = (c != null && !color.equals(c));
+				updateColor = (c != null && !_color.equals(c));
 				if (updateColor) {
 					GL_MODULATE();
-					gl10.glColor4f(c.r, c.g, c.b, lastAlpha != 1f ? lastAlpha
+					gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
 							: c.a);
 				}
 			}
@@ -3413,7 +3490,7 @@ public final class GLEx implements LTrans {
 			if (!texture.isStatic) {
 				if (updateColor) {
 					GL_REPLACE();
-					gl10.glColor4f(color.r, color.g, color.b, color.a);
+					gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
 				}
 			}
 		}
@@ -3489,7 +3566,7 @@ public final class GLEx implements LTrans {
 	 * @param position
 	 */
 	public final void drawString(String string, Vector2f position) {
-		drawString(string, position.x, position.y, color);
+		drawString(string, position.x, position.y, _color);
 	}
 
 	/**
@@ -3512,7 +3589,7 @@ public final class GLEx implements LTrans {
 	 * @param y
 	 */
 	public final void drawString(final String string, float x, float y) {
-		drawString(string, x, y, color);
+		drawString(string, x, y, _color);
 	}
 
 	/**
@@ -3544,7 +3621,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		drawString(string, x, y, rotation, color);
+		drawString(string, x, y, rotation, _color);
 	}
 
 	/**
@@ -3569,7 +3646,7 @@ public final class GLEx implements LTrans {
 
 		y = y + font.getAscent();
 
-		LSTRDictionary.drawString(font, string, x, y,  rotation, c);
+		LSTRDictionary.drawString(font, string, x, y, rotation, c);
 	}
 
 	/**
@@ -3592,7 +3669,7 @@ public final class GLEx implements LTrans {
 	 * @param rotation
 	 */
 	public void drawChar(char chars, float x, float y, float rotation) {
-		drawChar(chars, x, y, rotation, color);
+		drawChar(chars, x, y, rotation, _color);
 	}
 
 	/**
@@ -3724,21 +3801,21 @@ public final class GLEx implements LTrans {
 		return this.currentBlendMode;
 	}
 
-	private boolean isReplace;
-
+	private boolean _isReplace = false;
+	
 	public final void GL_REPLACE() {
-		if (!isReplace) {
+		if (!_isReplace) {
 			gl10.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE,
 					GL.GL_REPLACE);
-			this.isReplace = true;
+			this._isReplace = true;
 		}
 	}
 
 	public final void GL_MODULATE() {
-		if (isReplace) {
+		if (_isReplace) {
 			gl10.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE,
 					GL.GL_MODULATE);
-			this.isReplace = false;
+			this._isReplace = false;
 		}
 	}
 
@@ -3877,7 +3954,7 @@ public final class GLEx implements LTrans {
 	}
 
 	private final boolean checkAlpha(LColor c) {
-		return lastAlpha < 0.1f;
+		return _lastAlpha < 0.1f;
 	}
 
 	private final boolean checkSave(LTexture texture, float x, float y,

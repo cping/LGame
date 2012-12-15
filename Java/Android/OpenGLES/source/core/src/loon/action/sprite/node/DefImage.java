@@ -69,10 +69,6 @@ public class DefImage extends DefinitionObject {
 		LNDataCache.setImage(this, this.uniqueID);
 	}
 
-	public void definitionObjectDidInit() {
-		super.definitionObjectDidInit();
-	}
-
 	public void definitionObjectDidReceiveString(String v) {
 		super.definitionObjectDidReceiveString(v);
 		ArrayList<String> result = getResult(v);

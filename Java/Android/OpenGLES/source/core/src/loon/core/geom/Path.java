@@ -3,14 +3,6 @@ package loon.core.geom;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import loon.core.geom.Curve;
-import loon.core.geom.Matrix;
-import loon.core.geom.Path;
-import loon.core.geom.Shape;
-import loon.core.geom.ShapeType;
-import loon.core.geom.Vector2f;
-
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -152,7 +144,7 @@ public class Path extends Shape {
 	protected void createPoints() {
 		points = new float[localPoints.size() * 2];
 		for (int i = 0; i < localPoints.size(); i++) {
-			float[] p = (float[]) localPoints.get(i);
+			float[] p = localPoints.get(i);
 			points[(i * 2)] = p[0];
 			points[(i * 2) + 1] = p[1];
 		}
@@ -162,7 +154,7 @@ public class Path extends Shape {
 		Path p = new Path(cx, cy);
 		p.localPoints = transform(localPoints, transform);
 		for (int i = 0; i < holes.size(); i++) {
-			p.holes.add(transform((ArrayList<float[]>) holes.get(i), transform));
+			p.holes.add(transform(holes.get(i), transform));
 		}
 		p.closed = this.closed;
 		return p;
@@ -173,8 +165,8 @@ public class Path extends Shape {
 		float[] out = new float[pts.size() * 2];
 
 		for (int i = 0; i < pts.size(); i++) {
-			in[i * 2] = ((float[]) pts.get(i))[0];
-			in[(i * 2) + 1] = ((float[]) pts.get(i))[1];
+			in[i * 2] = (pts.get(i))[0];
+			in[(i * 2) + 1] = (pts.get(i))[1];
 		}
 		t.transform(in, 0, out, 0, pts.size());
 		ArrayList<float[]> outList = new ArrayList<float[]>();

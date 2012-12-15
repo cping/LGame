@@ -132,7 +132,7 @@ public class TileMapConfig {
 		for (int i = 0; i < col; i++) {
 			mapArray[i] = (int[]) list.get(i);
 		}
-		int row = (((int[]) mapArray[col > 0 ? col - 1 : 0]).length);
+		int row = ((mapArray[col > 0 ? col - 1 : 0]).length);
 		int[][] result = new int[row][col];
 		for (int y = 0; y < col; y++) {
 			for (int x = 0; x < row; x++) {

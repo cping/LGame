@@ -543,7 +543,7 @@ public class GraphicsUtils {
 			return null;
 		}
 		String keyName = resName.toLowerCase();
-		LImage image = (LImage) lazyImages.get(keyName);
+		LImage image = lazyImages.get(keyName);
 		if (image != null && !image.isClose()) {
 			return image;
 		} else {

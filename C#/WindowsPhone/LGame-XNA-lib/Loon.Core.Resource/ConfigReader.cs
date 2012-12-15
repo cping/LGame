@@ -265,7 +265,7 @@ namespace Loon.Core.Resource
                 int[][] result = new int[col][];
                 for (int i_0 = 0; i_0 < col; i_0++)
                 {
-                    result[i_0] = (int[])records[i_0];
+                    result[i_0] = records[i_0];
                 }
                 return result;
             }

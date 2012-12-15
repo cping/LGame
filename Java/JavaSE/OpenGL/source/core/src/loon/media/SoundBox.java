@@ -69,7 +69,7 @@ public abstract class SoundBox {
 
 	public static int getSupportedType(String fileName) {
 		String suffix = FileUtils.getExtension(fileName).toLowerCase();
-		Integer type = (Integer) supportedFiles.get(suffix);
+		Integer type = supportedFiles.get(suffix);
 		return type == null ? -1 : type.intValue();
 	}
 
@@ -104,7 +104,7 @@ public abstract class SoundBox {
 					players[currentPlayer].playSound(fileName);
 				}
 			}
-		});
+		},"SoundThread");
 		thread.start();
 		currentPlayer = (currentPlayer + 1) % players.length;
 	}

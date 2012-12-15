@@ -336,7 +336,7 @@ public class LNNode implements LRelease {
 		int count = 0;
 		for (int i = _childCount; i > 0; i--) {
 			int index = i - 1;
-			LNNode node = (LNNode) this.childs[index];
+			LNNode node = this.childs[index];
 			Class<? extends LNNode> cls = node.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(node)
 					|| clazz.equals(cls)) {
@@ -532,7 +532,7 @@ public class LNNode implements LRelease {
 			if (childs[i] != null) {
 				if (this.childs[i].intersects(x1, y1)) {
 					LNNode node = isContainer() ? this.childs[i]
-							: ((LNNode) this.childs[i]).findNode(x1, y1);
+							: (this.childs[i]).findNode(x1, y1);
 					return node;
 				}
 			}
@@ -863,7 +863,7 @@ public class LNNode implements LRelease {
 
 		if (_size_width >= _screenRect.width) {
 			if (limitX > tempWidth) {
-				tempX = (int) (_screenRect.width - _size_width);
+				tempX = (_screenRect.width - _size_width);
 			} else if (limitX < 1) {
 				tempX = _position.x();
 			}
@@ -872,7 +872,7 @@ public class LNNode implements LRelease {
 		}
 		if (_size_height >= _screenRect.height) {
 			if (limitY > tempHeight) {
-				tempY = (int) (_screenRect.height - _size_height);
+				tempY = (_screenRect.height - _size_height);
 			} else if (limitY < 1) {
 				tempY = _position.y();
 			}

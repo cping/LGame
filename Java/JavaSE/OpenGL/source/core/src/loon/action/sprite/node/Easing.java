@@ -100,7 +100,7 @@ public class Easing {
 	private Easing(int type, int function, float stength) {
 		this.type = type;
 		this.function = function;
-		this.strength = (float) stength;
+		this.strength = stength;
 	}
 
 	public Easing(Easing easing, float strength) {

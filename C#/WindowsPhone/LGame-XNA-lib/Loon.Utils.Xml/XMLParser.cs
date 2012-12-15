@@ -43,7 +43,7 @@ namespace Loon.Utils.Xml {
 			}
 			this.stack.Pop();
 			if (stack.Count > 0) {
-				this.topElement = ((XMLElement) this.stack.Peek());
+				this.topElement = (this.stack.Peek());
 			} else {
 				this.topElement = null;
 			}
@@ -300,7 +300,7 @@ namespace Loon.Utils.Xml {
                     while (reader.Peek() > -1)
                     {
                         sbr.Append(reader.ReadLine());
-                        sbr.Append("\n");
+                        sbr.Append('\n');
                     }
                     if (reader != null)
                     {

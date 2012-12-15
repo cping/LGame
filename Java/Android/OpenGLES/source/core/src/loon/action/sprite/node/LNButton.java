@@ -175,7 +175,7 @@ public class LNButton extends LNUI {
 
 	public void initCheckboxWithPrssingTexture(String fsName1, String fsName2,
 			String fsName3, String fsName4) {
-		if ((fsName3 == "") && (fsName4 == "")) {
+		if ((fsName3.equals("")) && (fsName4.equals(""))) {
 			LNSprite node = new LNSprite(fsName1);
 			LNSprite sprite2 = new LNSprite(fsName2);
 			sprite2.setVisible(false);

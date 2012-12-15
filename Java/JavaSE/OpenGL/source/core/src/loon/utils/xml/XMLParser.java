@@ -66,7 +66,7 @@ public class XMLParser implements LRelease {
 		}
 		this.stack.pop();
 		if (stack.size() > 0) {
-			this.topElement = ((XMLElement) this.stack.peek());
+			this.topElement = this.stack.peek();
 		} else {
 			this.topElement = null;
 		}
@@ -305,7 +305,7 @@ public class XMLParser implements LRelease {
 					in, LSystem.encoding));
 			while (reader.ready()) {
 				sbr.append(reader.readLine());
-				sbr.append("\n");
+				sbr.append('\n');
 			}
 			reader.close();
 		} catch (Exception ex) {

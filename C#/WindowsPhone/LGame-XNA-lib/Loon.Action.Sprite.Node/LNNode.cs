@@ -323,7 +323,7 @@ namespace Loon.Action.Sprite.Node {
 			int count = 0;
 			for (int i = _childCount; i > 0; i--) {
 				int index = i - 1;
-				LNNode node = (LNNode) this.childs[index];
+				LNNode node =  this.childs[index];
                 Type cls = node.GetType();
                 if (clazz == null || clazz == cls || clazz.IsInstanceOfType(node)
                     || clazz.Equals(cls))
@@ -536,7 +536,7 @@ namespace Loon.Action.Sprite.Node {
 				if (childs[i] != null) {
 					if (this.childs[i].Intersects(x1, y1)) {
 						LNNode node = (IsContainer()) ? this.childs[i]
-								: ((LNNode) this.childs[i]).FindNode(x1, y1);
+								: ( this.childs[i]).FindNode(x1, y1);
 						return node;
 					}
 				}

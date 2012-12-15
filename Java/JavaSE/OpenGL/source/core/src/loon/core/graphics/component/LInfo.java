@@ -292,7 +292,7 @@ public class LInfo extends LContainer {
 		int locateCount = locatePoint.size();
 		int widthBuff;
 		baseY = (int) (this.y() + margin_top + fontSize);
-		baseX = (int) (this.x() + margin_left);
+		baseX = (this.x() + margin_left);
 		switch (align) {
 		case 'c': // 居中
 			line = message.split("\n");
@@ -319,9 +319,9 @@ public class LInfo extends LContainer {
 					x += fontSize + pitch;
 				}
 				if (isHch) {
-					flag.setPos((int) (y - flag.height), x);
+					flag.setPos((y - flag.height), x);
 				} else {
-					flag.setPos(x, (int) (y - flag.height));
+					flag.setPos(x, (y - flag.height));
 				}
 				y += linesize + linespacing;
 			}
@@ -352,9 +352,9 @@ public class LInfo extends LContainer {
 					x += fontSize + pitch;
 				}
 				if (isHch) {
-					flag.setPos((int) (y - flag.height), x);
+					flag.setPos((y - flag.height), x);
 				} else {
-					flag.setPos(x, (int) (y - flag.height));
+					flag.setPos(x, (y - flag.height));
 				}
 				y += linesize + linespacing;
 			}
@@ -396,9 +396,9 @@ public class LInfo extends LContainer {
 			}
 			y -= linesize + linespacing;
 			if (isHch) {
-				flag.setPos((int) (y - flag.height), x);
+				flag.setPos((y - flag.height), x);
 			} else {
-				flag.setPos(x, (int) (y - flag.height));
+				flag.setPos(x, (y - flag.height));
 			}
 			break;
 		}

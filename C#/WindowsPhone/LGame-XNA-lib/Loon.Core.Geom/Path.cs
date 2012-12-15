@@ -152,7 +152,7 @@ namespace Loon.Core.Geom
             points = new float[localPoints.Count * 2];
             for (int i = 0; i < localPoints.Count; i++)
             {
-                float[] p = (float[])localPoints[i];
+                float[] p = localPoints[i];
                 points[(i * 2)] = p[0];
                 points[(i * 2) + 1] = p[1];
             }
@@ -164,7 +164,7 @@ namespace Loon.Core.Geom
             p.localPoints = Transform(localPoints, transform);
             for (int i = 0; i < holes.Count; i++)
             {
-                CollectionUtils.Add(p.holes, Transform((List<float[]>)holes[i], transform));
+                CollectionUtils.Add(p.holes, Transform(holes[i], transform));
             }
             p.closed = this.closed;
             return p;
@@ -177,8 +177,8 @@ namespace Loon.Core.Geom
 
             for (int i = 0; i < pts.Count; i++)
             {
-                ins0[i * 2] = ((float[])pts[i])[0];
-                ins0[(i * 2) + 1] = ((float[])pts[i])[1];
+                ins0[i * 2] = (pts[i])[0];
+                ins0[(i * 2) + 1] = (pts[i])[1];
             }
             t.Transform(ins0, 0, xout, 0, pts.Count);
             List<float[]> outList = new List<float[]>();

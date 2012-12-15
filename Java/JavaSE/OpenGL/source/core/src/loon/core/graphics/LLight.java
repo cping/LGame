@@ -155,7 +155,7 @@ public abstract class LLight {
 					lightValue[x][y][component] = 0;
 				}
 				for (int i = 0; i < lights.size(); i++) {
-					float[] effect = ((Light) lights.get(i)).getEffectAt(x, y,
+					float[] effect = (lights.get(i)).getEffectAt(x, y,
 							colouredLights);
 					for (int component = 0; component < 3; component++) {
 						lightValue[x][y][component] += effect[component];

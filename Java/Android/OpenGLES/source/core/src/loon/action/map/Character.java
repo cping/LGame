@@ -43,7 +43,7 @@ public class Character {
 	}
 
 	public Attribute getAttribute(int index) {
-		return (Attribute) this.attributes.get(index);
+		return this.attributes.get(index);
 	}
 
 	public Attribute getAttribute(String name) {
@@ -76,7 +76,7 @@ public class Character {
 	}
 
 	public Item getItem(int index) {
-		return (Item) this.items.get(index);
+		return this.items.get(index);
 	}
 
 	public Item getItem(String name) {
@@ -97,7 +97,7 @@ public class Character {
 	}
 
 	public Item removeItem(int index) {
-		return (Item) this.items.remove(index);
+		return this.items.remove(index);
 	}
 
 	public int countItems() {

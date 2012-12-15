@@ -108,7 +108,7 @@ public class TMXTiledMap implements LRelease {
 
 	public int getLayerIndex(String name) {
 		for (int i = 0; i < layers.size(); i++) {
-			TMXLayer layer = (TMXLayer) layers.get(i);
+			TMXLayer layer = layers.get(i);
 			if (layer.name.equals(name)) {
 				return i;
 			}
@@ -117,11 +117,11 @@ public class TMXTiledMap implements LRelease {
 	}
 
 	public LTexture getTileImage(int x, int y, int layerIndex) {
-		TMXLayer layer = (TMXLayer) layers.get(layerIndex);
+		TMXLayer layer = layers.get(layerIndex);
 
 		int tileSetIndex = layer.data[x][y][0];
 		if ((tileSetIndex >= 0) && (tileSetIndex < tileSets.size())) {
-			TMXTileSet tileSet = (TMXTileSet) tileSets.get(tileSetIndex);
+			TMXTileSet tileSet = tileSets.get(tileSetIndex);
 
 			int sheetX = tileSet.getTileX(layer.data[x][y][1]);
 			int sheetY = tileSet.getTileY(layer.data[x][y][1]);
@@ -153,12 +153,12 @@ public class TMXTiledMap implements LRelease {
 	}
 
 	public int getTileId(int x, int y, int layerIndex) {
-		TMXLayer layer = (TMXLayer) layers.get(layerIndex);
+		TMXLayer layer = layers.get(layerIndex);
 		return layer.getTileID(x, y);
 	}
 
 	public void setTileId(int x, int y, int layerIndex, int tileid) {
-		TMXLayer layer = (TMXLayer) layers.get(layerIndex);
+		TMXLayer layer = layers.get(layerIndex);
 		layer.setTileID(x, y, tileid);
 	}
 
@@ -170,7 +170,7 @@ public class TMXTiledMap implements LRelease {
 
 	public String getLayerProperty(int layerIndex, String propertyName,
 			String def) {
-		TMXLayer layer = (TMXLayer) layers.get(layerIndex);
+		TMXLayer layer = layers.get(layerIndex);
 		if (layer == null || layer.props == null)
 			return def;
 		return layer.props.getProperty(propertyName, def);
@@ -214,7 +214,7 @@ public class TMXTiledMap implements LRelease {
 
 	public void draw(GLEx g, int x, int y, int sx, int sy, int width,
 			int height, int index, boolean lineByLine) {
-		TMXLayer layer = (TMXLayer) layers.get(index);
+		TMXLayer layer = layers.get(index);
 		layer.draw(g, x, y, sx, sy, width, height, lineByLine, tileWidth,
 				tileHeight);
 	}
@@ -222,7 +222,7 @@ public class TMXTiledMap implements LRelease {
 	public void draw(GLEx g, int x, int y, int sx, int sy, int width,
 			int height, boolean lineByLine) {
 		for (int i = 0; i < layers.size(); i++) {
-			TMXLayer layer = (TMXLayer) layers.get(i);
+			TMXLayer layer = layers.get(i);
 			layer.draw(g, x, y, sx, sy, width, height, lineByLine, tileWidth,
 					tileHeight);
 		}
@@ -254,7 +254,7 @@ public class TMXTiledMap implements LRelease {
 			tileWidth = docElement.getIntAttribute("tilewidth", 0);
 			tileHeight = docElement.getIntAttribute("tileheight", 0);
 
-			XMLElement propsElement = (XMLElement) docElement
+			XMLElement propsElement = docElement
 					.getChildrenByName("properties");
 			if (propsElement != null) {
 				props = new TMXProperty();
@@ -329,12 +329,12 @@ public class TMXTiledMap implements LRelease {
 	}
 
 	public TMXTileSet getTileSet(int index) {
-		return (TMXTileSet) tileSets.get(index);
+		return tileSets.get(index);
 	}
 
 	public TMXTileSet getTileSetByGID(int gid) {
 		for (int i = 0; i < tileSets.size(); i++) {
-			TMXTileSet set = (TMXTileSet) tileSets.get(i);
+			TMXTileSet set = tileSets.get(i);
 			if (set.contains(gid)) {
 				return set;
 			}
@@ -345,7 +345,7 @@ public class TMXTiledMap implements LRelease {
 
 	public TMXTileSet findTileSet(int gid) {
 		for (int i = 0; i < tileSets.size(); i++) {
-			TMXTileSet set = (TMXTileSet) tileSets.get(i);
+			TMXTileSet set = tileSets.get(i);
 
 			if (set.contains(gid)) {
 				return set;
@@ -365,7 +365,7 @@ public class TMXTiledMap implements LRelease {
 
 	public int getObjectCount(int groupID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			return grp.objects.size();
 		}
 		return -1;
@@ -373,9 +373,9 @@ public class TMXTiledMap implements LRelease {
 
 	public String getObjectName(int groupID, int objectID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 				return object.name;
 			}
 		}
@@ -384,9 +384,9 @@ public class TMXTiledMap implements LRelease {
 
 	public String getObjectType(int groupID, int objectID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 				return object.type;
 			}
 		}
@@ -395,9 +395,9 @@ public class TMXTiledMap implements LRelease {
 
 	public int getObjectX(int groupID, int objectID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 				return object.x;
 			}
 		}
@@ -406,9 +406,9 @@ public class TMXTiledMap implements LRelease {
 
 	public int getObjectY(int groupID, int objectID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 				return object.y;
 			}
 		}
@@ -417,9 +417,9 @@ public class TMXTiledMap implements LRelease {
 
 	public int getObjectWidth(int groupID, int objectID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 				return object.width;
 			}
 		}
@@ -428,9 +428,9 @@ public class TMXTiledMap implements LRelease {
 
 	public int getObjectHeight(int groupID, int objectID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 				return object.height;
 			}
 		}
@@ -439,9 +439,9 @@ public class TMXTiledMap implements LRelease {
 
 	public String getObjectImage(int groupID, int objectID) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 
 				if (object == null) {
 					return null;
@@ -457,9 +457,9 @@ public class TMXTiledMap implements LRelease {
 	public String getObjectProperty(int groupID, int objectID,
 			String propertyName, String def) {
 		if (groupID >= 0 && groupID < objectGroups.size()) {
-			TMXTileGroup grp = (TMXTileGroup) objectGroups.get(groupID);
+			TMXTileGroup grp = objectGroups.get(groupID);
 			if (objectID >= 0 && objectID < grp.objects.size()) {
-				TMXTile object = (TMXTile) grp.objects.get(objectID);
+				TMXTile object = grp.objects.get(objectID);
 
 				if (object == null) {
 					return def;

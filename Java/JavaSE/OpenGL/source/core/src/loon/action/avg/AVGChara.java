@@ -8,6 +8,7 @@ import loon.core.LSystem;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.utils.StringUtils;
 
 
 /**
@@ -90,7 +91,7 @@ public class AVGChara implements LRelease {
 	public AVGChara(final String resName, final int x, final int y,
 			final int w, final int h) {
 		String path = resName;
-		if (path.startsWith("\"")) {
+		if (StringUtils.startsWith(path,'"')) {
 			path = resName.replaceAll("\"", "");
 		}
 		if (path.endsWith(".an")) {

@@ -51,11 +51,6 @@ namespace Loon.Action.Sprite.Node
             LNDataCache.SetImage(this, this.uniqueID);
         }
 
-        public override void DefinitionObjectDidInit()
-        {
-            base.DefinitionObjectDidInit();
-        }
-
         public override void DefinitionObjectDidReceiveString(string v)
         {
             base.DefinitionObjectDidReceiveString(v);

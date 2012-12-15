@@ -683,6 +683,7 @@ namespace Loon.Core.Input
             private Screen screen;
 
             public _LoadingScreen(LProcess p, Screen s)
+                : base("ProcessThread")
             {
                 this.process = p;
                 this.screen = s;

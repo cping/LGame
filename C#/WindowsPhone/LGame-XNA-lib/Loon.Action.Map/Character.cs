@@ -30,7 +30,7 @@ namespace Loon.Action.Map {
 		}
 	
 		public Attribute GetAttribute(int index) {
-			return (Attribute) this.attributes[index];
+			return this.attributes[index];
 		}
 	
 		public Attribute GetAttribute(string n) {
@@ -63,7 +63,7 @@ namespace Loon.Action.Map {
 		}
 	
 		public Item GetItem(int index) {
-			return (Item) this.items[index];
+			return this.items[index];
 		}
 	
 		public Item GetItem(string n) {

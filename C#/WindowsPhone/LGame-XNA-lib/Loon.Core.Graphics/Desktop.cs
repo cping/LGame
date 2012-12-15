@@ -292,7 +292,7 @@ namespace Loon.Core.Graphics
 				return;
 			}
 	
-			if (active == false) {
+			if (!active) {
 				if (this.hoverComponent == comp) {
 					this.ProcessTouchMotionEvent();
 				}
@@ -369,7 +369,7 @@ namespace Loon.Core.Graphics
             List<LComponent> l = new List<LComponent>(size);
             for (int i = size; i > 0; i--)
             {
-                LComponent comp = (LComponent)components[i - 1];
+                LComponent comp = components[i - 1];
                 Type cls = comp.GetType();
                 if (clazz == null || clazz == cls || clazz.IsInstanceOfType(comp)
                         || clazz.Equals(cls))
@@ -407,7 +407,7 @@ namespace Loon.Core.Graphics
             Type clazz = typeof(LLayer);
             for (int i = 0; i < size; i++)
             {
-                LComponent comp = (LComponent)components[i];
+                LComponent comp = components[i];
                 Type cls = comp.GetType();
                 if (clazz == null || clazz == cls || clazz.IsInstanceOfType(comp)
                         || clazz.Equals(cls))
@@ -425,7 +425,7 @@ namespace Loon.Core.Graphics
             Type clazz = typeof(LLayer);
             for (int i = size; i > 0; i--)
             {
-                LComponent comp = (LComponent)components[i - 1];
+                LComponent comp = components[i - 1];
                 Type cls = comp.GetType();
                 if (clazz == null || clazz == cls || clazz.IsInstanceOfType(comp)
                         || clazz.Equals(cls))

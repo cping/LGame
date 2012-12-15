@@ -7,7 +7,6 @@ import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.LSTRFont;
 
 /**
  * Copyright 2008 - 2011

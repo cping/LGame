@@ -81,4 +81,7 @@ public class FileRes extends DataRes implements Resource {
 		return true;
 	}
 
+	public int hashCode(){
+		return super.hashCode();
+	}
 }

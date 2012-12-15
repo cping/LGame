@@ -54,12 +54,12 @@ public class TMXTile {
 		String h = element.getAttribute("height", null);
 		width = Integer.parseInt(w == null || "".equals(w) ? "0" : w);
 		height = Integer.parseInt(h == null || "".equals(h) ? "0" : h);
-		XMLElement imageElement = (XMLElement) element
+		XMLElement imageElement = element
 				.getChildrenByName("image");
 		if (imageElement != null) {
 			image = imageElement.getAttribute("source", null);
 		}
-		XMLElement propsElement = (XMLElement) element
+		XMLElement propsElement = element
 				.getChildrenByName("properties");
 		if (propsElement != null) {
 			props = new TMXProperty();

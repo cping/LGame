@@ -520,16 +520,18 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 		}
 	}
 
-	private ActionKey close_key = new ActionKey(
+	private ActionKey _close_key = new ActionKey(
 			ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 	public boolean onKey(View v, int keyCode, KeyEvent e) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (!LSystem.isBackLocked) {
-				if (close_key.isPressed()) {
-					close_key.release();
-				} else {
-					close_key.press();
+				if (android.view.KeyEvent.ACTION_UP == e.getAction()
+						&& _close_key.isPressed()) {
+					_close_key.release();
+				} else if (android.view.KeyEvent.ACTION_DOWN == e.getAction()
+						&& !_close_key.isPressed()) {
+					_close_key.press();
 					Runnable runnable = new Runnable() {
 						public void run() {
 							LSystem.screenActivity
@@ -561,6 +563,8 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 			}
 			callKey(e);
 			return true;
+		} else {
+			_close_key.release();
 		}
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
 			return false;

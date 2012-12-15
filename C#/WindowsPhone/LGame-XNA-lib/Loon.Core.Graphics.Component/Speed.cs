@@ -61,17 +61,17 @@ namespace Loon.Core.Graphics.Component {
 		public void Set(float direction_0, float length_1) {
 			this.length = length_1;
 			this.direction = direction_0;
-			this.dx = (float) (length_1 * MathUtils.Cos(MathUtils
+			this.dx = (length_1 * MathUtils.Cos(MathUtils
 					.ToRadians(direction_0)));
-			this.dy = (float) (length_1 * MathUtils.Sin(MathUtils
+			this.dy = (length_1 * MathUtils.Sin(MathUtils
 					.ToRadians(direction_0)));
 		}
 	
 		public void SetDirection(float direction_0) {
 			this.direction = direction_0;
-			this.dx = (float) (this.length * MathUtils.Cos(MathUtils
+			this.dx = (this.length * MathUtils.Cos(MathUtils
 					.ToRadians(direction_0)));
-			this.dy = (float) (this.length * MathUtils.Sin(MathUtils
+			this.dy = (this.length * MathUtils.Sin(MathUtils
 					.ToRadians(direction_0)));
 		}
 	
@@ -80,7 +80,7 @@ namespace Loon.Core.Graphics.Component {
 			this.dy += other.dy;
 			this.direction = (int) MathUtils.ToDegrees(MathUtils.Atan2(this.dy,
 					this.dx));
-			this.length = (float) MathUtils.Sqrt(this.dx * this.dx + this.dy
+			this.length = MathUtils.Sqrt(this.dx * this.dx + this.dy
 					* this.dy);
 		}
 	

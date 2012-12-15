@@ -249,7 +249,11 @@ public class Animation implements LRelease {
 		if (size == 0) {
 			return null;
 		} else {
-			return getFrame(currentFrameIndex).image;
+			LTexture texture = getFrame(currentFrameIndex).image;
+			if (!texture.isLoaded()) {
+				texture.loadTexture();
+			}
+			return texture;
 		}
 	}
 
@@ -263,7 +267,11 @@ public class Animation implements LRelease {
 		if (index < 0 || index >= size) {
 			return null;
 		} else {
-			return getFrame(index).image;
+			LTexture texture = getFrame(index).image;
+			if (!texture.isLoaded()) {
+				texture.loadTexture();
+			}
+			return texture;
 		}
 	}
 
@@ -275,11 +283,11 @@ public class Animation implements LRelease {
 	 */
 	private AnimationFrame getFrame(int index) {
 		if (index < 0) {
-			return (AnimationFrame) frames.get(0);
+			return frames.get(0);
 		} else if (index >= size) {
-			return (AnimationFrame) frames.get(size - 1);
+			return frames.get(size - 1);
 		}
-		return (AnimationFrame) frames.get(index);
+		return frames.get(index);
 	}
 
 	/**

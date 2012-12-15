@@ -88,12 +88,10 @@ namespace Loon.Core.Store
                 string value = StringUtils.Replace(v, flag, "+");
                 if (index >= values.Length)
                 {
-                    string[] res = new string[index + 1];
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        res[i] = values[i];
-                    }
-                    values = res;
+                    int size = index + 1;
+                    string[] res = new string[size];
+                    System.Array.Copy(values, 0, res, 0, values.Length);
+                    this.values = res;
                 }
                 this.values[index] = value;
             }

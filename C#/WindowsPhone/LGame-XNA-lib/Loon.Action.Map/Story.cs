@@ -32,7 +32,7 @@ namespace Loon.Action.Map {
 		}
 	
 		public Scene GetScene(int index) {
-			return (Scene) this.scenes[index];
+			return this.scenes[index];
 		}
 	
 		public Scene GetScene(string name) {

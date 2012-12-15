@@ -131,11 +131,11 @@ namespace Loon.Action.Collision {
 				int size = points.Count;
 				polygon = new Polygon();
 				for (int i = 0; i < size; i++) {
-					Point p = ((Point[]) points[i])[0];
+					Point p = (points[i])[0];
 					polygon.AddPoint(p.x, p.y);
 				}
 				for (int i_0 = size - 1; i_0 >= 0; i_0--) {
-					Point p_1 = ((Point[]) points[i_0])[1];
+					Point p_1 = (points[i_0])[1];
 					polygon.AddPoint(p_1.x, p_1.y);
 				}
 			}

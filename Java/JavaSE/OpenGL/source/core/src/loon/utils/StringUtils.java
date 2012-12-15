@@ -33,6 +33,14 @@ final public class StringUtils {
 	private StringUtils() {
 	}
 
+	public final static boolean startsWith(String n, char tag) {
+		return n.charAt(0) == tag;
+	}
+
+	public final static boolean endsWith(String n, char tag) {
+		return n.charAt(n.length() - 1) == tag;
+	}
+
 	/**
 	 * 拼接指定对象数组为String
 	 * 

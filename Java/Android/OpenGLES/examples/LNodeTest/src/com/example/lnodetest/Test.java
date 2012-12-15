@@ -48,16 +48,18 @@ public class Test extends SpriteBatchScreen {
 	public void create() {
 
 		// 直接载入图片到节点(直接加载大图)
-		LNSprite sprite = LNSprite.InitWithFilename("assets/ccc.png");
+		LNSprite sprite = LNSprite.GInitWithFilename("assets/ccc.png");
 		add(sprite);
 
+		sprite.setLocked(false);
+		
 		LNLabel label = new LNLabel();
 		label.setString("测试中");
 		label.setRotation(60);
 		add(label);
 
 		sprite.runAction(LNSequence.Action(LNEase.Action(Easing.BACK_IN_OUT,
-				LNMoveBy.Action(1f, 125, 225)), LNEnd.Action()));
+				LNMoveBy.Action(1f, 125, 225)),LNEnd.Action()));
 
 		// 载入节点配置文件（大图切分为精灵）
 		loadNodeDef("assets/thunder.Image.txt");

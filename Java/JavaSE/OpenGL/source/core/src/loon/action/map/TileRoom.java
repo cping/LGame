@@ -103,12 +103,12 @@ public class TileRoom {
 	}
 
 	public int getDoorX(TileRoom other) {
-		RoomLink record = (RoomLink) this.connected.get(other);
+		RoomLink record = this.connected.get(other);
 		return record.x;
 	}
 
 	public int getDoorY(TileRoom other) {
-		RoomLink record = (RoomLink) this.connected.get(other);
+		RoomLink record = this.connected.get(other);
 		return record.y;
 	}
 
@@ -143,7 +143,7 @@ public class TileRoom {
 	}
 
 	public RoomLink getDoor(TileRoom room) {
-		return (RoomLink) this.connected.get(room);
+		return this.connected.get(room);
 	}
 
 	public void convert(Field2D field, int in, int out) {

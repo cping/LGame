@@ -132,7 +132,7 @@ public class TMXTileSet implements LRelease {
 			id += firstGID;
 			TMXProperty tileProps = new TMXProperty();
 
-			XMLElement propsElement = (XMLElement) tileElement
+			XMLElement propsElement = tileElement
 					.getChildrenByName("properties");
 			ArrayList<XMLElement> properties = propsElement.list("property");
 			for (int p = 0; p < properties.size(); p++) {
@@ -141,7 +141,7 @@ public class TMXTileSet implements LRelease {
 				String value = propElement.getAttribute("value", null);
 				tileProps.setProperty(name, value);
 			}
-			props.put(new Integer(id), tileProps);
+			props.put(id, tileProps);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class TMXTileSet implements LRelease {
 	}
 
 	public TMXProperty getProperties(int globalID) {
-		return (TMXProperty) props.get(new Integer(globalID));
+		return props.get(globalID);
 	}
 
 	public int getTileX(int id) {

@@ -92,8 +92,8 @@ public class LNLabelAtlas extends LNAtlasNode {
 		super._textureAtlas.resetRect();
 		for (int i = 0; i < this._text.length(); i++) {
 			int num2 = this._text.charAt(i) - this._startchar;
-			super._textureAtlas.addRect(new RectBox(((int) super._left)
-					+ (num2 * super._itemWidth), (int) super._top,
+			super._textureAtlas.addRect(new RectBox(( super._left)
+					+ (num2 * super._itemWidth),  super._top,
 					super._itemWidth, super._itemHeight));
 		}
 	}

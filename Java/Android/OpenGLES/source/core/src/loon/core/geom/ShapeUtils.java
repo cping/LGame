@@ -38,7 +38,7 @@ public class ShapeUtils {
 
 	public static float calculateAngle(float x, float y, float x1, float y1) {
 		float angle = MathUtils.atan2(y - y1, x - x1);
-		return (float) (MathUtils.toDegrees(angle) - 90);
+		return (MathUtils.toDegrees(angle) - 90);
 	}
 
 	public static float updateAngle(float currentAngle, float targetAngle,

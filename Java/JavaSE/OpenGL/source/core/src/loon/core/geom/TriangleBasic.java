@@ -276,7 +276,7 @@ public class TriangleBasic implements Triangle {
 		}
 
 		public Point get(int i) {
-			return (Point) points.get(i);
+			return points.get(i);
 		}
 
 		public void clear() {

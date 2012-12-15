@@ -12,8 +12,6 @@ import loon.core.geom.Polygon;
 import loon.core.geom.Shape;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LImage;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
@@ -157,8 +155,7 @@ public class LTexture implements LRelease {
 			this.colors = (LColor[]) CollectionUtils.copyOf(texture.colors);
 		}
 		if (texture.dataCords != null) {
-			this.dataCords = (float[]) CollectionUtils
-					.copyOf(texture.dataCords);
+			this.dataCords = CollectionUtils.copyOf(texture.dataCords);
 		}
 		if (texture.data != null) {
 			this.data = NativeSupport.clone(texture.data);
@@ -723,12 +720,11 @@ public class LTexture implements LRelease {
 			if (dataCords == null) {
 				setVertCords(this.getWidth(), this.getHeight());
 			}
-			
+
 			final LTexture copy = new LTexture();
 
 			if (isLoaded || !LSystem.isThreadDrawing()) {
-				
-				
+
 				copy.parent = LTexture.this;
 				copy.imageData = imageData;
 				copy.textureID = textureID;
@@ -863,21 +859,41 @@ public class LTexture implements LRelease {
 	}
 
 	public int hashCode() {
-		if (_hashCode == 1 && imageData.source != null) {
+		if (_hashCode == 1) {
 			int[] buffer = imageData.source;
-			 int skip = 3;
-             int limit = buffer.length;
-             if (limit < 512)
-             {
-                 skip = 1;
-             }
-             for (int j = 0; j < limit; j += skip)
-             {
-                 if (j < limit)
-                 {
-                     _hashCode = LSystem.unite(_hashCode, buffer[j]);
-                 }
-             }
+			if (buffer == null) {
+				if (imageData.fileName != null) {
+					LImage tmp = LImage.createImage(imageData.fileName);
+					if (tmp != null) {
+						buffer = tmp.getPixels();
+						tmp.dispose();
+						tmp = null;
+					}
+				} else {
+					_hashCode = LSystem.unite(_hashCode, width);
+					_hashCode = LSystem.unite(_hashCode, height);
+					_hashCode = LSystem.unite(_hashCode, texWidth);
+					_hashCode = LSystem.unite(_hashCode, texHeight);
+					_hashCode = LSystem.unite(_hashCode, textureID);
+					_hashCode = LSystem.unite(_hashCode, texSize);
+					if (dataCords != null) {
+						for (int i = 0; i < dataCords.length; i++) {
+							_hashCode = LSystem.unite(_hashCode, dataCords[i]);
+						}
+					}
+					return _hashCode;
+				}
+			}
+			int skip = 3;
+			int limit = buffer.length;
+			if (limit < 512) {
+				skip = 1;
+			}
+			for (int j = 0; j < limit; j += skip) {
+				if (j < limit) {
+					_hashCode = LSystem.unite(_hashCode, buffer[j]);
+				}
+			}
 			if (dataCords != null) {
 				for (int i = 0; i < dataCords.length; i++) {
 					_hashCode = LSystem.unite(_hashCode, dataCords[i]);

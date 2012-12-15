@@ -34,13 +34,13 @@ namespace Loon.Action.Map.Tmx
             string h = element.GetAttribute("height", null);
             width = System.Int32.Parse((w == null || "".Equals(w)) ? "0" : w);
             height = System.Int32.Parse((h == null || "".Equals(h)) ? "0" : h);
-            XMLElement imageElement = (XMLElement)element
+            XMLElement imageElement = element
                     .GetChildrenByName("image");
             if (imageElement != null)
             {
                 image = imageElement.GetAttribute("source", null);
             }
-            XMLElement propsElement = (XMLElement)element
+            XMLElement propsElement = element
                     .GetChildrenByName("properties");
             if (propsElement != null)
             {

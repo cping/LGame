@@ -46,6 +46,11 @@ namespace Loon.Java
         {
         }
 
+        public Thread(Runnable runnable, string name)
+            : this(runnable, null, name)
+        {
+        }
+
         public Thread(Runnable runnable, ThreadGroup grp, string name)
         {
             thread = new System.Threading.Thread(new System.Threading.ThreadStart(InternalRun));

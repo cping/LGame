@@ -166,7 +166,7 @@ namespace Loon.Action.Sprite.Node {
 	
 		public void InitCheckboxWithPrssingTexture(string fsName1, string fsName2,
 				string fsName3, string fsName4) {
-			if ((fsName3 == "") && (fsName4 == "")) {
+			if ((fsName3.Equals("")) && (fsName4.Equals(""))) {
 				LNSprite node = new LNSprite(fsName1);
 				LNSprite sprite2 = new LNSprite(fsName2);
 				sprite2.SetVisible(false);

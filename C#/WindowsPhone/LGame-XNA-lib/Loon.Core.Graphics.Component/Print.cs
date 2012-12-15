@@ -330,7 +330,7 @@ namespace Loon.Core.Graphics.Component {
 						this.onComplete = true;
 						this.messageCount = messages.Length;
 						this.next = messageCount;
-						this.showMessages = (messages + "_").ToCharArray();
+						this.showMessages = (messages + '_').ToCharArray();
 						this.size = showMessages.Length;
 					}
 		}
@@ -361,7 +361,7 @@ namespace Loon.Core.Graphics.Component {
                         messageBuffer.Remove(messageBuffer.Length - 1, messageBuffer.Length - (messageBuffer.Length - 1));
                     }
                     this.messageBuffer.Append(messages[messageCount]);
-                    this.messageBuffer.Append("_");
+                    this.messageBuffer.Append('_');
                     this.showMessages = messageBuffer.ToString().ToCharArray();
                     this.size = showMessages.Length;
                     this.messageCount++;

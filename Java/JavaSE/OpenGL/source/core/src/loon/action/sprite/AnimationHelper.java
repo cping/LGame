@@ -126,7 +126,7 @@ public class AnimationHelper {
 	public static AnimationHelper makeObject(String fileName, int row, int col,
 			int tileWidth, int tileHeight) {
 		String key = fileName.trim().toLowerCase();
-		AnimationHelper animation = (AnimationHelper) animations.get(key);
+		AnimationHelper animation = animations.get(key);
 		if (animation == null) {
 			LTexture[][] images = TextureUtils.getSplit2Textures(fileName,
 					tileWidth, tileHeight);
@@ -146,7 +146,7 @@ public class AnimationHelper {
 	public static AnimationHelper makeObject(String fileName, int tileWidth,
 			int tileHeight, LColor col) {
 		String key = fileName.trim().toLowerCase();
-		AnimationHelper animation = (AnimationHelper) animations.get(key);
+		AnimationHelper animation = animations.get(key);
 		if (animation == null) {
 			
 			LTexture texture = TextureUtils.filterColor(fileName, col);

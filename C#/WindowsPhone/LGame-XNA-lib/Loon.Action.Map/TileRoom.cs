@@ -148,9 +148,9 @@ namespace Loon.Action.Map
             return this.connectedRooms;
         }
 
-        public TileRoom.RoomLink GetDoor(TileRoom room_0)
+        public TileRoom.RoomLink GetDoor(TileRoom r)
         {
-            return (TileRoom.RoomLink)CollectionUtils.Get(this.connected, room_0);
+            return (TileRoom.RoomLink)CollectionUtils.Get(this.connected, r);
         }
 
         public void Convert(Field2D field, int ins0, int xout)

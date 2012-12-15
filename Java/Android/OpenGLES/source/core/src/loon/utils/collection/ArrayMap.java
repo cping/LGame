@@ -33,11 +33,11 @@ public class ArrayMap {
 
 	private int threshold;
 
-	private transient Entry[] keyTables;
+	private  Entry[] keyTables;
 
-	private transient Entry[] valueTables;
+	private  Entry[] valueTables;
 
-	private transient int size = 0;
+	private  int size = 0;
 
 	public ArrayMap() {
 		this(CollectionUtils.INITIAL_CAPACITY);
@@ -250,6 +250,10 @@ public class ArrayMap {
 		return true;
 	}
 
+	public int hashCode(){
+		return super.hashCode();
+	}
+	
 	public Object clone() {
 		ArrayMap copy = new ArrayMap();
 		copy.threshold = threshold;
@@ -376,13 +380,13 @@ public class ArrayMap {
 
 	public class Entry {
 
-		transient int hashCode;
+		 int hashCode;
 
-		transient Object key;
+		 Object key;
 
-		transient Object value;
+		 Object value;
 
-		transient Entry next;
+		 Entry next;
 
 		public Entry(final int hashCode, final Object key, final Object value,
 				final Entry next) {

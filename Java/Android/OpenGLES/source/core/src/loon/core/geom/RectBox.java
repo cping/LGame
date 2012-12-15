@@ -56,6 +56,10 @@ public class RectBox extends Shape {
 			bottom = r.bottom;
 		}
 
+		public int hashCode(){
+			return super.hashCode();
+		}
+		
 		public boolean equals(Object obj) {
 			Rect2i r = (Rect2i) obj;
 			if (r != null) {
@@ -513,6 +517,10 @@ public class RectBox extends Shape {
 		this.width = (int) width;
 	}
 
+	public int hashCode(){
+		return super.hashCode();
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj instanceof RectBox) {
 			RectBox rect = (RectBox) obj;

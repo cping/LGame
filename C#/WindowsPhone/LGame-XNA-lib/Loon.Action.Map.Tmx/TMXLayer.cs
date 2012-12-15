@@ -83,7 +83,7 @@ namespace Loon.Action.Map.Tmx
                 }
             }
 
-            XMLElement dataNode = (XMLElement)element.GetChildrenByName("data");
+            XMLElement dataNode = element.GetChildrenByName("data");
             string encoding = dataNode.GetAttribute("encoding", null);
             string compression = dataNode.GetAttribute("compression", null);
 

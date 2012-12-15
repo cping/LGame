@@ -43,9 +43,7 @@ public final class Matrix {
 
 	public Matrix(Matrix m) {
 		matrixs = new float[9];
-		for (int i = 0; i < 9; i++) {
-			matrixs[i] = m.matrixs[i];
-		}
+		System.arraycopy(m.matrixs, 0, matrixs, 0, 9);
 	}
 
 	public Matrix(Matrix t1, Matrix t2) {

@@ -106,7 +106,7 @@ namespace Loon.Action.Sprite
                 int tileWidth, int tileHeight)
         {
            /* string key = fileName.Trim().ToLower();
-            AnimationHelper animation = (AnimationHelper)CollectionUtils.Get(animations, key);
+            AnimationHelper animation = CollectionUtils.Get(animations, key);
             if (animation == null)
             {
                 LTexture[][] images = TextureUtils.GetSplit2Textures(fileName,
@@ -131,7 +131,7 @@ namespace Loon.Action.Sprite
                 int tileHeight, LColor col)
         {
             /*string key = fileName.Trim().ToLower();
-            AnimationHelper animation = (AnimationHelper)CollectionUtils.Get(animations, key);
+            AnimationHelper animation = CollectionUtils.Get(animations, key);
             if (animation == null)
             {
 

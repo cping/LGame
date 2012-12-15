@@ -13,6 +13,7 @@ import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
 import loon.utils.GraphicsUtils;
+import loon.utils.StringUtils;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -686,7 +687,7 @@ public class LImage implements LRelease {
 			throw new RuntimeException("file name is null !");
 		}
 		String res;
-		if (fileName.startsWith("/")) {
+		if (StringUtils.startsWith(fileName,'/')) {
 			res = fileName.substring(1);
 		} else {
 			res = fileName;

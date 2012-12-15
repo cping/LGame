@@ -175,7 +175,7 @@ namespace Loon.Action.Sprite
             {
                 if (nodes[i].IsContainer())
                 {
-                    removed = this.RemoveNode((LNNode)nodes[i], node);
+                    removed = this.RemoveNode(nodes[i], node);
                 }
                 i++;
             }
@@ -192,7 +192,7 @@ namespace Loon.Action.Sprite
             {
                 if (nodes[i].IsContainer())
                 {
-                    removed = this.RemoveNode((LNNode)nodes[i], clazz);
+                    removed = this.RemoveNode(nodes[i], clazz);
                 }
                 i++;
             }
@@ -287,7 +287,7 @@ namespace Loon.Action.Sprite
                 return content.FindNode(x, y);
             }
             LNNode panel = (this.modal == null) ? this.content
-                    : ((LNNode)this.modal);
+                    : (this.modal);
             LNNode node = panel.FindNode(x, y);
             return node;
         }
@@ -321,7 +321,7 @@ namespace Loon.Action.Sprite
 
         public virtual void SetNodeStat(LNNode node, bool active)
         {
-            if (active == false)
+            if (!active)
             {
                 if (this.hoverNode == node)
                 {
@@ -347,8 +347,8 @@ namespace Loon.Action.Sprite
             }
             if (node.IsContainer())
             {
-                LNNode[] nodes = ((LNNode)node).childs;
-                int size = ((LNNode)node).GetNodeCount();
+                LNNode[] nodes = (node).childs;
+                int size = (node).GetNodeCount();
                 for (int i = 0; i < size; i++)
                 {
                     this.SetNodeStat(nodes[i], active);
@@ -393,7 +393,7 @@ namespace Loon.Action.Sprite
             {
                 if (nodes[i].IsContainer())
                 {
-                    this.ValidateContainer((LNNode)nodes[i]);
+                    this.ValidateContainer(nodes[i]);
                 }
             }
         }
@@ -413,7 +413,7 @@ namespace Loon.Action.Sprite
             List<LNNode> l = new List<LNNode>(size);
             for (int i = size; i > 0; i--)
             {
-                LNNode node = (LNNode)nodes[i - 1];
+                LNNode node = nodes[i - 1];
                 Type cls = node.GetType();
                 if (clazz == null || clazz == cls || clazz.IsInstanceOfType(node)
                         || clazz.Equals(cls))

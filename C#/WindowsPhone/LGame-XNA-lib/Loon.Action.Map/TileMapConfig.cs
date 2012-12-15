@@ -136,7 +136,7 @@ namespace Loon.Action.Map
             {
                 mapArray[i] = (int[])list[i];
             }
-            int row = (((int[])mapArray[(col > 0) ? col - 1 : 0]).Length);
+            int row = ((mapArray[(col > 0) ? col - 1 : 0]).Length);
             int[][] result = (int[][])CollectionUtils.XNA_CreateJaggedArray(typeof(int), row, col);
             for (int y = 0; y < col; y++)
             {

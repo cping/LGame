@@ -620,15 +620,6 @@ public class GLSurfaceViewCupcake extends SurfaceView implements SurfaceHolder.C
 
 		@Override
 		public void run () {
-			/*
-			 * When the android framework launches a second instance of an activity, the new instance's onCreate() method may be
-			 * called before the first instance returns from onDestroy().
-			 * 
-			 * This semaphore ensures that only one instance at a time accesses EGL.
-			 * 
-			 * changed: using a normal monitor instead of a semaphore. see issue 704
-			 * http://code.google.com/p/libgdx/issues/detail?id=704
-			 */
 			try {
 				synchronized (sEglLock) {
 					guardedRun();

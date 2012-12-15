@@ -4,11 +4,6 @@ import java.util.HashMap;
 
 import loon.core.LSystem;
 import loon.core.event.Updateable;
-import loon.core.graphics.opengl.GL11;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LSTRDictionary;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.GLUtils;
 

@@ -124,7 +124,7 @@ public class Screen {
 					this.isTranAnimFinished = false;
 				}
 			}
-			if (Key.isKeyPressed(Key.BACK)&&LInputFactory.getOnlyKey().isPressed()) {
+			if (Key.isKeyPressed(Key.BACK)) {
 				if (this.screenPause != null) {
 					if (!this.isPaused) {
 						this.isPaused = true;

@@ -57,7 +57,7 @@ namespace Loon.Action.Sprite.Node
 		public virtual void UndefinedElementDidFinish(string elementName)
 		{
 			string result = this.elementNames[this.elementNames.Count - 1];
-			if (result == elementName)
+			if (result.Equals(elementName))
 			{
 				this.elementNames.Remove(result);
 			}

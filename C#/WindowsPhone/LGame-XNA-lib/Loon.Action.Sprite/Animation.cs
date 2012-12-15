@@ -257,7 +257,12 @@ namespace Loon.Action.Sprite
             }
             else
             {
-                return GetFrame(currentFrameIndex).image;
+                LTexture texture = GetFrame(currentFrameIndex).image;
+                if (!texture.isLoaded)
+                {
+                    texture.LoadTexture();
+                }
+                return texture;
             }
         }
 
@@ -275,7 +280,12 @@ namespace Loon.Action.Sprite
             }
             else
             {
-                return GetFrame(index).image;
+                LTexture texture = GetFrame(index).image;
+                if (!texture.isLoaded)
+                {
+                    texture.LoadTexture();
+                }
+                return texture;
             }
         }
 
@@ -289,13 +299,13 @@ namespace Loon.Action.Sprite
         {
             if (index < 0)
             {
-                return (AnimationFrame)frames[0];
+                return frames[0];
             }
             else if (index >= size)
             {
-                return (AnimationFrame)frames[size - 1];
+                return frames[size - 1];
             }
-            return (AnimationFrame)frames[index];
+            return frames[index];
         }
 
         /**

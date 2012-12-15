@@ -234,10 +234,10 @@ public class StatusBar extends LObject implements ISprite {
 		if (current > goal) {
 			current--;
 			value = MathUtils.mid(valueMin,
-					(int) ((current * valueMax) / width), value);
+					((current * valueMax) / width), value);
 		} else {
 			current++;
-			value = MathUtils.mid(value, (int) ((current * valueMax) / width),
+			value = MathUtils.mid(value, ((current * valueMax) / width),
 					valueMin);
 		}
 		return true;

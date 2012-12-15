@@ -159,10 +159,6 @@ public class LPaper extends LContainer {
 		this.locked = locked;
 	}
 
-	protected void validateSize() {
-		super.validateSize();
-	}
-
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 

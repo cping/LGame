@@ -197,6 +197,10 @@ public class AStarFinder implements Runnable, LRelease {
 		this.findHeuristic = find.findHeuristic;
 	}
 
+	public int hashCode(){
+		return super.hashCode();
+	}
+	
 	public boolean equals(Object o) {
 		if (o instanceof AStarFinder) {
 			return this.pathFoundListener == ((AStarFinder) o).pathFoundListener;

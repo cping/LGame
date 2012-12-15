@@ -98,11 +98,10 @@ public class Session implements LRelease {
 		public void set(int index, final String v) {
 			final String value = StringUtils.replace(v, flag, "+");
 			if (index >= values.length) {
-				String[] res = new String[index + 1];
-				for (int i = 0; i < values.length; i++) {
-					res[i] = values[i];
-				}
-				values = res;
+				int size = index + 1;
+				String[] res = new String[size];
+				System.arraycopy(values, 0, res, 0, values.length);
+				this.values = res;
 			}
 			this.values[index] = value;
 		}
@@ -429,7 +428,7 @@ public class Session implements LRelease {
 				records.size());
 		Set<Entry<String, Record>> set = records.entrySet();
 		for (Iterator<Entry<String, Record>> it = set.iterator(); it.hasNext();) {
-			Entry<String, Record> entry = (Entry<String, Record>) it.next();
+			Entry<String, Record> entry = it.next();
 			result.put(entry.getKey(), entry.getValue().get(index));
 		}
 		return result;

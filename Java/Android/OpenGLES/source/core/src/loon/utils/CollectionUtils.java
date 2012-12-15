@@ -222,7 +222,7 @@ final public class CollectionUtils {
 	 */
 	public static Object[] copyOf(Object[] original, int newLength,
 			Class<?> newType) {
-		Object[] copy = ((Object) newType == (Object) Object[].class) ? (Object[]) new Object[newLength]
+		Object[] copy = (newType == Object[].class) ? new Object[newLength]
 				: (Object[]) Array.newInstance(newType.getComponentType(),
 						newLength);
 		System.arraycopy(original, 0, copy, 0, MathUtils.min(original.length,

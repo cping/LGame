@@ -139,11 +139,11 @@ public class CollisionMask implements LRelease {
 			int size = points.size();
 			polygon = new Polygon();
 			for (int i = 0; i < size; i++) {
-				Point p = ((Point[]) points.get(i))[0];
+				Point p = (points.get(i))[0];
 				polygon.addPoint(p.x, p.y);
 			}
 			for (int i = size - 1; i >= 0; i--) {
-				Point p = ((Point[]) points.get(i))[1];
+				Point p = (points.get(i))[1];
 				polygon.addPoint(p.x, p.y);
 			}
 		}

@@ -1,6 +1,7 @@
 package loon.media;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -85,7 +86,11 @@ public class LMidiSound implements MetaEventListener, Sound {
 	}
 	
 	public LMidiSound(String fileName) {
-		bytes = Resources.getNotCacheResource(fileName);
+		try {
+			bytes = new ArrayByte(Resources.openResource(fileName),ArrayByte.BIG_ENDIAN);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		if (rendererStatus == UNINITIALIZED) {
 			rendererStatus = INITIALIZING;
 			Thread thread = new Thread() {

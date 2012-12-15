@@ -90,8 +90,8 @@ public class LPad extends LComponent {
 		this.baseHeight = (int) (p.getEntry("fore").height() * scale);
 		this.backWidth = (int) (p.getEntry("back").width() * scale);
 		this.backHeight = (int) (p.getEntry("back").height() * scale);
-		this.centerX = (baseWidth - dotWidth) / 2 + offsetX;
-		this.centerY = (baseHeight - dotHeight) / 2 + offsetY;
+		this.centerX = (float)(baseWidth - dotWidth) / 2f + offsetX;
+		this.centerY = (float)(baseHeight - dotHeight) / 2f + offsetY;
 		this.scale_pad = scale;
 		p.setFormat(Format.LINEAR);
 	}

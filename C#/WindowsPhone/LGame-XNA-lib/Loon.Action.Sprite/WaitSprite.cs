@@ -132,7 +132,7 @@ namespace Loon.Action.Sprite
 
         private Cycle cycle;
 
-        public WaitSprite(int s):this(s, (int)LSystem.screenRect.width, (int)LSystem.screenRect.height)
+        public WaitSprite(int s):this(s, LSystem.screenRect.width, LSystem.screenRect.height)
         {
             
         }

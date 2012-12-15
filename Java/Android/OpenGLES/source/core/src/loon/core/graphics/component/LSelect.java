@@ -134,7 +134,7 @@ public class LSelect extends LContainer {
 			return null;
 		String[] result = new String[list.size()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = (String) list.get(i);
+			result[i] = list.get(i);
 		}
 		return result;
 	}
@@ -302,10 +302,6 @@ public class LSelect extends LContainer {
 
 	public void setLocked(boolean locked) {
 		this.locked = locked;
-	}
-
-	protected void validateSize() {
-		super.validateSize();
 	}
 
 	public LTexture getCursor() {

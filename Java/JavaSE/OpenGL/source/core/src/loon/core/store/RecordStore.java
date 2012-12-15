@@ -56,7 +56,7 @@ public class RecordStore {
 	public static RecordStore openRecordStore(String recordStoreName,
 			boolean createIfNecessary) throws RecordStoreException {
 		synchronized (stores) {
-			RecordStore store = (RecordStore) stores.get(recordStoreName);
+			RecordStore store = stores.get(recordStoreName);
 			if (store == null) {
 				store = new RecordStore(recordStoreName);
 				stores.put(recordStoreName, store);
@@ -236,7 +236,7 @@ public class RecordStore {
 			oos.writeInt(nextRecordId);
 			oos.writeInt(records.size());
 			for (int i = 0; i < records.size(); i++) {
-				RecordItem ri = (RecordItem) records.elementAt(i);
+				RecordItem ri = records.elementAt(i);
 				oos.writeObject(ri);
 			}
 			oos.close();
@@ -274,7 +274,7 @@ public class RecordStore {
 			throws RecordStoreNotOpenException, RecordStoreException {
 		checkOpen("deleteRecord");
 		for (int i = 0; i < records.size(); i++) {
-			RecordItem ri = (RecordItem) records.elementAt(i);
+			RecordItem ri = records.elementAt(i);
 			if (ri.id == recordId) {
 				records.removeElementAt(i);
 				writeToDisk();
@@ -321,7 +321,7 @@ public class RecordStore {
 					throw new InvalidRecordIDException("nextRecordId at index "
 							+ nextIndex + "/" + records.size());
 				}
-				RecordItem ri = (RecordItem) records.elementAt(nextIndex);
+				RecordItem ri = records.elementAt(nextIndex);
 				nextIndex++;
 				return ri.id;
 			}
@@ -383,7 +383,7 @@ public class RecordStore {
 	private RecordItem getRecordItem(int id) {
 		Enumeration<RecordItem> rs = records.elements();
 		while (rs.hasMoreElements()) {
-			RecordItem ri = (RecordItem) rs.nextElement();
+			RecordItem ri = rs.nextElement();
 			if (ri.id == id) {
 				return ri;
 			}
@@ -426,7 +426,7 @@ public class RecordStore {
 			throw new InvalidRecordIDException("record " + recordId
 					+ " not found");
 		}
-		byte[] data = (byte[]) ri.data;
+		byte[] data = ri.data;
 		if (data == null) {
 			throw new InvalidRecordIDException();
 		}

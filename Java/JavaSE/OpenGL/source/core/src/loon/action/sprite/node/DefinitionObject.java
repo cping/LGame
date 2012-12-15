@@ -67,7 +67,7 @@ public class DefinitionObject {
 
 	public void undefinedElementDidFinish(String elementName) {
 		String result = this.elementNames.get(this.elementNames.size() - 1);
-		if (result == elementName) {
+		if (result.equalsIgnoreCase(elementName)) {
 			this.elementNames.remove(result);
 		}
 	}

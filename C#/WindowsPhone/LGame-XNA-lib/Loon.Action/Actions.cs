@@ -75,7 +75,7 @@ namespace Loon.Action {
 				if (element.actions != null) {
 					int limit = element.actions.Count;
 					for (int i = 0; i < limit; i++) {
-						ActionEvent a = (ActionEvent) element.actions[i];
+						ActionEvent a = element.actions[i];
 						if (a.GetTag() == tag && a.GetOriginal() == actObject) {
 							RemoveAction(i, element);
 						}
@@ -106,7 +106,7 @@ namespace Loon.Action {
 				if (element.actions != null) {
 					int limit = element.actions.Count;
 					for (int i = 0; i < limit; i++) {
-						ActionEvent a = (ActionEvent) element.actions[i];
+						ActionEvent a = element.actions[i];
 						if (a.GetTag() == tag)
 							return a;
 					}
@@ -127,7 +127,7 @@ namespace Loon.Action {
 								if (!currentTarget.paused) {
 									for (currentTarget.actionIndex = 0; currentTarget.actionIndex < currentTarget.actions
 											.Count; currentTarget.actionIndex++) {
-										currentTarget.currentAction = (ActionEvent) currentTarget.actions
+										currentTarget.currentAction = currentTarget.actions
 												[currentTarget.actionIndex];
 										if (currentTarget.currentAction == null) {
 											continue;

@@ -1745,7 +1745,7 @@ public class SpriteBatch implements LRelease {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = (int) ((spriteFont.getHeight() - 2));
+		int heigh = ((spriteFont.getHeight() - 2));
 		if (rotation == 0f) {
 			drawString(text, px - (originx * scale), (py + heigh)
 					- (originy * scale), scale, scale, originx, originy,
@@ -1763,7 +1763,7 @@ public class SpriteBatch implements LRelease {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = (int) ((spriteFont.getHeight() - 2));
+		int heigh = ((spriteFont.getHeight() - 2));
 		if (rotation == 0f) {
 			drawString(text, position.x - (origin.x * scale),
 					(position.y + heigh) - (origin.y * scale), scale, scale,
@@ -1781,7 +1781,7 @@ public class SpriteBatch implements LRelease {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = (int) (spriteFont.getHeight() - 2);
+		int heigh = (spriteFont.getHeight() - 2);
 		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
 				color);
 		setFont(old);
@@ -1793,7 +1793,7 @@ public class SpriteBatch implements LRelease {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = (int) (spriteFont.getHeight() - 2);
+		int heigh = (spriteFont.getHeight() - 2);
 		drawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color);
 		setFont(old);
 	}
@@ -1804,7 +1804,7 @@ public class SpriteBatch implements LRelease {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = (int) ((spriteFont.getHeight() - 2));
+		int heigh = ((spriteFont.getHeight() - 2));
 		if (rotation == 0f) {
 			drawString(text, position.x - (origin.x * scale.x),
 					(position.y + heigh) - (origin.y * scale.y), scale.x,

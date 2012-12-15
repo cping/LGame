@@ -217,7 +217,7 @@ public class ActorTreeSet extends AbstractSet {
 		}
 
 		public Object next() {
-			return (Actor) this.actorIterator.next();
+			return this.actorIterator.next();
 		}
 
 		public boolean hasNext() {

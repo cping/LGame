@@ -73,7 +73,7 @@ public class AssetsSound implements Runnable,
 		} else {
 			this.fileName = file;
 		}
-		if (fileName.startsWith("/")) {
+		if (StringUtils.startsWith(fileName, '/')) {
 			fileName = fileName.replace("/", "");
 		} 
 		this.context = LSystem.screenActivity;
@@ -180,7 +180,7 @@ public class AssetsSound implements Runnable,
 					this.loop = false;
 					this.paused = false;
 					this.status = PLAYING;
-					soundThread = new Thread(this);
+					soundThread = new Thread(this,"SoundThread");
 					soundThread.start();
 					this.lock.notifyAll();
 				}
@@ -200,7 +200,7 @@ public class AssetsSound implements Runnable,
 					this.loop = true;
 					this.paused = false;
 					this.status = PLAYING;
-					soundThread = new Thread(this);
+					soundThread = new Thread(this,"SoundThread");
 					soundThread.start();
 					this.lock.notifyAll();
 				}
@@ -221,7 +221,7 @@ public class AssetsSound implements Runnable,
 					this.paused = false;
 					this.status = PLAYING;
 					this.fileName = file;
-					soundThread = new Thread(this);
+					soundThread = new Thread(this,"SoundThread");
 					soundThread.start();
 					this.lock.notifyAll();
 				}

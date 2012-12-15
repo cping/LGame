@@ -658,10 +658,6 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
-	protected void validateSize() {
-		super.validateSize();
-	}
-
 	public String getUIName() {
 		return "Layer";
 	}

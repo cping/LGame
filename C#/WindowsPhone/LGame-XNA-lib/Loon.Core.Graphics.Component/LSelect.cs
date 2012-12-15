@@ -106,7 +106,7 @@ namespace Loon.Core.Graphics.Component {
             string[] rs = new string[list.Count];
             for (int i = 0; i < rs.Length; i++)
             {
-                rs[i] = (string)list[i];
+                rs[i] = list[i];
             }
             return rs;
         }

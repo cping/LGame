@@ -51,7 +51,7 @@ namespace Loon.Core.Graphics.Opengl
             public const int Generic = 4;
         }
 
-        internal VertexAttribute[] attributes;
+        internal VertexAttribute[] _attributes;
 
         public int vertexSize;
 
@@ -61,12 +61,9 @@ namespace Loon.Core.Graphics.Opengl
             {
                 throw new ArgumentException("attributes must be >= 1");
             }
-            VertexAttribute[] list = new VertexAttribute[attributes.Length];
-            for (int i = 0; i < attributes.Length; i++)
-                list[i] = attributes[i];
-
-            this.attributes = list;
-
+            int size = attributes.Length;
+            _attributes = new VertexAttribute[size];
+            System.Array.Copy(attributes, 0, _attributes, 0, size);
             CheckValidity();
             vertexSize = CalculateOffsets();
         }
@@ -93,9 +90,9 @@ namespace Loon.Core.Graphics.Opengl
         private int CalculateOffsets()
         {
             int count = 0;
-            for (int i = 0; i < attributes.Length; i++)
+            for (int i = 0; i < _attributes.Length; i++)
             {
-                VertexAttribute attribute = attributes[i];
+                VertexAttribute attribute = _attributes[i];
                 attribute.offset = count;
                 if (attribute.usage == Usage.ColorPacked)
                     count += 4;
@@ -112,9 +109,9 @@ namespace Loon.Core.Graphics.Opengl
             bool cols = false;
             bool nors = false;
 
-            for (int i = 0; i < attributes.Length; i++)
+            for (int i = 0; i < _attributes.Length; i++)
             {
-                VertexAttribute attribute = attributes[i];
+                VertexAttribute attribute = _attributes[i];
                 if (attribute.usage == Usage.Position)
                 {
                     if (pos)
@@ -151,32 +148,32 @@ namespace Loon.Core.Graphics.Opengl
 
         public int Size()
         {
-            return attributes.Length;
+            return _attributes.Length;
         }
 
         public VertexAttribute Get(int index)
         {
-            return attributes[index];
+            return _attributes[index];
         }
 
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("[");
-            for (int i = 0; i < attributes.Length; i++)
+            builder.Append('[');
+            for (int i = 0; i < _attributes.Length; i++)
             {
-                builder.Append("(");
-                builder.Append(attributes[i].alias);
+                builder.Append('(');
+                builder.Append(_attributes[i].alias);
                 builder.Append(", ");
-                builder.Append(attributes[i].usage);
+                builder.Append(_attributes[i].usage);
                 builder.Append(", ");
-                builder.Append(attributes[i].numComponents);
+                builder.Append(_attributes[i].numComponents);
                 builder.Append(", ");
-                builder.Append(attributes[i].offset);
+                builder.Append(_attributes[i].offset);
                 builder.Append(")");
-                builder.Append("\n");
+                builder.Append('\n');
             }
-            builder.Append("]");
+            builder.Append(']');
             return builder.ToString();
         }
 
@@ -192,13 +189,13 @@ namespace Loon.Core.Graphics.Opengl
                 return false;
             }
             GLAttributes other = (GLAttributes)obj;
-            if (this.attributes.Length != other.Size())
+            if (this._attributes.Length != other.Size())
             {
                 return false;
             }
-            for (int i = 0; i < attributes.Length; i++)
+            for (int i = 0; i < _attributes.Length; i++)
             {
-                if (!attributes[i].Equals(other.attributes[i]))
+                if (!_attributes[i].Equals(other._attributes[i]))
                 {
                     return false;
                 }

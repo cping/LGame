@@ -281,7 +281,7 @@ public class LSTRFont implements LRelease {
 					if (charCurrent < totalCharSet) {
 						intObject = charArray[charCurrent];
 					} else {
-						intObject = (IntObject) customChars
+						intObject = customChars
 								.get((char) charCurrent);
 					}
 					if (intObject != null) {
@@ -311,7 +311,7 @@ public class LSTRFont implements LRelease {
 				if (charCurrent < totalCharSet) {
 					intObject = charArray[charCurrent];
 				} else {
-					intObject = (IntObject) customChars.get((char) charCurrent);
+					intObject =  customChars.get((char) charCurrent);
 				}
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
@@ -334,7 +334,7 @@ public class LSTRFont implements LRelease {
 		if (charCurrent < totalCharSet) {
 			intObject = charArray[charCurrent];
 		} else {
-			intObject = (IntObject) customChars.get((char) charCurrent);
+			intObject = customChars.get((char) charCurrent);
 		}
 		if (intObject != null) {
 			if (color != null) {
@@ -422,7 +422,7 @@ public class LSTRFont implements LRelease {
 			if (currentChar < totalCharSet) {
 				intObject = charArray[currentChar];
 			} else {
-				intObject = (IntObject) customChars.get((char) currentChar);
+				intObject = customChars.get((char) currentChar);
 			}
 
 			if (intObject != null)

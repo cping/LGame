@@ -409,7 +409,7 @@ namespace Loon.Core.Graphics.Component
 						for (bspNode = node.GetBSPNode(); bspNode != null
 								&& !bspNode.GetArea().Contains(newBounds); bspNode = bspNode
 								.GetParent()) {
-							;
+							
 						}
 						if (bspNode == null) {
 							while (node != null) {

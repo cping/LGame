@@ -346,7 +346,7 @@ public class Print implements LRelease {
 							messageBuffer.length());
 				}
 				this.messageBuffer.append(messages.charAt(messageCount));
-				this.messageBuffer.append("_");
+				this.messageBuffer.append('_');
 				this.showMessages = messageBuffer.toString().toCharArray();
 				this.size = showMessages.length;
 				this.messageCount++;

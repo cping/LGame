@@ -480,9 +480,7 @@ public final class LSystem {
 	 * @param clazz
 	 */
 	public static void go(android.app.Activity from, Class<?> clazz) {
-		if (LSystem.getActivity() instanceof LGame) {
-			((LGame) LSystem.getActivity()).setDestroy(false);
-		}
+		LSystem.getActivity().setDestroy(false);
 		android.content.Intent intent = new android.content.Intent(from, clazz);
 		intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		from.startActivity(intent);

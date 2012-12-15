@@ -175,7 +175,7 @@ public class ParticleSystem {
 	}
 
 	public ParticleEmitter getEmitter(int index) {
-		return (ParticleEmitter) emitters.get(index);
+		return emitters.get(index);
 	}
 
 	public void addEmitter(ParticleEmitter emitter) {

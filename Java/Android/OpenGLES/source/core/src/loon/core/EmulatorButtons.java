@@ -1,9 +1,6 @@
 package loon.core;
 
 import loon.action.sprite.SpriteBatch;
-import loon.core.EmulatorButton;
-import loon.core.EmulatorListener;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexturePack;

@@ -231,11 +231,11 @@ public class LGameTools {
 		private String url;
 
 		public Web(String url) {
-			this((LGame) LSystem.screenActivity, null, url);
+			this(LSystem.screenActivity, null, url);
 		}
 
 		public Web(String url, WebProcess webProcess) {
-			this((LGame) LSystem.screenActivity, webProcess, url);
+			this(LSystem.screenActivity, webProcess, url);
 		}
 
 		public Web(LGame activity, String url) {
@@ -458,10 +458,6 @@ public class LGameTools {
 
 		public void loadData(String data, String encoding) {
 			super.loadData(data, "text/html", encoding);
-		}
-
-		public void loadData(String data, String mimeType, String encoding) {
-			super.loadData(data, mimeType, encoding);
 		}
 
 		public android.webkit.WebSettings getWebSettings() {

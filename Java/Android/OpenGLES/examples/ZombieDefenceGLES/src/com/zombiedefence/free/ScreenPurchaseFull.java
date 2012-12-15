@@ -103,8 +103,7 @@ public class ScreenPurchaseFull extends Screen {
 		if (super.mousePositionList.size() > 0) {
 			super.mousePositionList.clear();
 		}
-		if (Key.isKeyPressed(Key.BACK)
-				&& LInputFactory.getOnlyKey().isPressed()) {
+		if (Key.isKeyPressed(Key.BACK)) {
 			Help.currentGameState = Help.GameScreen.MainMenu;
 		}
 	}

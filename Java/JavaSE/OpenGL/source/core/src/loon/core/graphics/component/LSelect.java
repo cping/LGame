@@ -134,7 +134,7 @@ public class LSelect extends LContainer {
 			return null;
 		String[] result = new String[list.size()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = (String) list.get(i);
+			result[i] = list.get(i);
 		}
 		return result;
 	}
@@ -304,10 +304,6 @@ public class LSelect extends LContainer {
 		this.locked = locked;
 	}
 
-	protected void validateSize() {
-		super.validateSize();
-	}
-
 	public LTexture getCursor() {
 		return cursor;
 	}
@@ -346,10 +342,6 @@ public class LSelect extends LContainer {
 
 	public void setFlashBuoyage(boolean flashBuoyage) {
 		this.isAutoAlpha = flashBuoyage;
-	}
-
-	public void setVisible(boolean v) {
-		super.setVisible(v);
 	}
 
 	public void createUI(GLEx g, int x, int y, LComponent component,

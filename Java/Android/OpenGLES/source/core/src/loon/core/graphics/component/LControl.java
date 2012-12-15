@@ -114,8 +114,8 @@ public class LControl extends LComponent {
 	}
 
 	private void centerOffset() {
-		this.centerX = (baseWidth - dotWidth) / 2 + 1f;
-		this.centerY = (baseHeight - dotHeight) / 2 + 1f;
+		this.centerX = (float)(baseWidth - dotWidth) / 2f + 1f;
+		this.centerY = (float)(baseHeight - dotHeight) / 2f + 1f;
 	}
 
 	public void processTouchPressed() {

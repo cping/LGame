@@ -126,7 +126,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 	}
 
 	public final void onLoaded() {
-		this.avgThread = new Thread(this);
+		this.avgThread = new Thread(this,"AVGThread");
 		this.avgThread.setPriority(Thread.NORM_PRIORITY);
 		this.avgThread.start();
 	}

@@ -183,24 +183,6 @@ public abstract class Resources {
 		return new ByteArrayInputStream(getResource(fileName).getData());
 	}
 
-	/**
-	 * 读取指定资源为InputStream
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public static InputStream getNotCacheResourceAsStream(final String fileName) {
-		if ((fileName.indexOf("file:") >= 0) || (fileName.indexOf(":/") > 0)) {
-			try {
-				URL url = new URL(fileName);
-				return new BufferedInputStream(url.openStream());
-			} catch (Exception e) {
-				return null;
-			}
-		}
-		return new ByteArrayInputStream(getNotCacheResource(fileName).getData());
-	}
-
 	public static InputStream openResource(final String resName)
 			throws IOException {
 		InputStream resource = strRes(resName);
@@ -272,20 +254,20 @@ public abstract class Resources {
 			}
 		}
 		BufferedInputStream in = null;
-		boolean canInner = innerName.startsWith(".")
-				|| (innerName.startsWith("/") && LSystem.isWindows());
+		boolean canInner = StringUtils.startsWith(innerName,'.')
+				|| (StringUtils.startsWith(innerName,'/') && LSystem.isWindows());
 		if (!isExists(innerName) && !canInner) {
 			innerName = ("/" + innerName).intern();
 			canInner = true;
 		}
 		if (canInner) {
-			if (innerName.startsWith(".")) {
+			if (StringUtils.startsWith(innerName,'.')) {
 				innerName = innerName.substring(1, innerName.length());
 			}
 			innerName = StringUtils.replaceIgnoreCase(innerName, "\\", "/");
 			innerName = innerName.substring(1, innerName.length());
 		} else {
-			if (innerName.startsWith("\\")) {
+			if (StringUtils.startsWith(innerName,'\\')) {
 				innerName = innerName.substring(1, innerName.length());
 			}
 		}
@@ -311,58 +293,7 @@ public abstract class Resources {
 		}
 	}
 
-	public static ArrayByte getNotCacheResource(final String fileName) {
-		InputStream resource = strRes(fileName);
-		if (resource != null) {
-			ArrayByte result = new ArrayByte();
-			try {
-				result.write(resource);
-				resource.close();
-				result.reset();
-			} catch (IOException ex) {
-				result = null;
-			}
-			return result;
-		}
-		String innerName = fileName;
-		BufferedInputStream in = null;
-		boolean canInner = innerName.startsWith(".")
-				|| (innerName.startsWith("/") && LSystem.isWindows());
-		if (!isExists(innerName) && !canInner) {
-			innerName = ("/" + innerName).intern();
-			canInner = true;
-		}
-		if (canInner) {
-			if (innerName.startsWith(".")) {
-				innerName = innerName.substring(1, innerName.length());
-			}
-			innerName = StringUtils.replaceIgnoreCase(innerName, "\\", "/");
-			innerName = innerName.substring(1, innerName.length());
-		} else {
-			if (innerName.startsWith("\\")) {
-				innerName = innerName.substring(1, innerName.length());
-			}
-		}
-		if (!canInner) {
-			try {
-				in = new BufferedInputStream(new FileInputStream(new File(
-						innerName)));
-			} catch (FileNotFoundException ex) {
-				throw new RuntimeException(ex);
-			}
-		} else {
-			in = new BufferedInputStream(LSystem.getResourceAsStream(innerName));
-		}
-		ArrayByte byteArray = new ArrayByte();
-		try {
-			byteArray.write(in);
-			in.close();
-			byteArray.reset();
-			return byteArray;
-		} catch (IOException ex) {
-			throw new RuntimeException(fileName + " file not found !");
-		}
-	}
+	
 
 	/**
 	 * 将InputStream转为byte[]

@@ -41,10 +41,6 @@ public class DefAnimation extends DefinitionObject {
 		}
 	}
 
-	public void definitionObjectDidInit() {
-		super.definitionObjectDidInit();
-	}
-
 	public void definitionObjectDidReceiveString(String v) {
 		super.definitionObjectDidReceiveString(v);
 		ArrayList<String> result = getResult(v);

@@ -76,7 +76,7 @@ final public class AVGDialog {
 			lazyImages = new HashMap<String, LTexture>(10);
 		}
 		String keyName = ("buoyage" + width + "|" + height).intern();
-		LTexture lazy = (LTexture) lazyImages.get(keyName);
+		LTexture lazy = lazyImages.get(keyName);
 		if (lazy == null) {
 			LImage lazyImage;
 			LImage image, left, right, center, up, down = null;
@@ -139,7 +139,7 @@ final public class AVGDialog {
 			lazyImages = new HashMap<String, LTexture>(10);
 		}
 		String keyName = "dialog" + width + "|" + height;
-		LTexture lazy = (LTexture) lazyImages.get(keyName);
+		LTexture lazy = lazyImages.get(keyName);
 		if (lazy == null) {
 			try {
 				final int objWidth = 64;

@@ -196,6 +196,10 @@ public class AStarFinder implements Runnable, LRelease {
 		this.flag = find.flag;
 		this.findHeuristic = find.findHeuristic;
 	}
+	
+	public int hashCode(){
+		return super.hashCode();
+	}
 
 	public boolean equals(Object o) {
 		if (o instanceof AStarFinder) {

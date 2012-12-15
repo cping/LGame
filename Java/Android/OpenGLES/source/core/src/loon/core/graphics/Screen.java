@@ -23,7 +23,6 @@ import loon.core.event.ScreenListener;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.geom.Point.Point2i;
-import loon.core.graphics.Screen;
 import loon.core.graphics.component.LLayer;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

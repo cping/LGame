@@ -8,15 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import loon.core.geom.RectBox;
-import loon.core.graphics.component.Actor;
-import loon.core.graphics.component.ActorNode;
-import loon.core.graphics.component.BSPCollisionNode;
-import loon.core.graphics.component.CollisionBaseQuery;
-import loon.core.graphics.component.CollisionClassQuery;
-import loon.core.graphics.component.CollisionInRangeQuery;
-import loon.core.graphics.component.CollisionNeighbourQuery;
-import loon.core.graphics.component.CollisionPointQuery;
-import loon.core.graphics.component.CollisionQuery;
 import loon.utils.MathUtils;
 
 
@@ -384,7 +375,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 					for (bspNode = node.getBSPNode(); bspNode != null
 							&& !bspNode.getArea().contains(newBounds); bspNode = bspNode
 							.getParent()) {
-						;
+				
 					}
 					if (bspNode == null) {
 						while (node != null) {
@@ -576,8 +567,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	public synchronized List getObjectsAt(float x, float y, Class cls) {
 		synchronized (this.pointQuery) {
-			float px = x * this.cellSize + this.cellSize / 2;
-			float py = y * this.cellSize + this.cellSize / 2;
+			float px = x * this.cellSize + this.cellSize / 2f;
+			float py = y * this.cellSize + this.cellSize / 2f;
 			this.pointQuery.init(px, py, cls);
 			float[] r = { px, py, 1, 1 };
 			return this.getIntersectingObjects(r, this.pointQuery);
@@ -673,8 +664,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 	public synchronized Actor getOnlyObjectAt(Actor object, float dx, float dy,
 			Class cls) {
 		synchronized (this.pointQuery) {
-			float px = dx * this.cellSize + this.cellSize / 2;
-			float py = dy * this.cellSize + this.cellSize / 2;
+			float px = dx * this.cellSize + this.cellSize / 2f;
+			float py = dy * this.cellSize + this.cellSize / 2f;
 			this.pointQuery.init(px, py, cls);
 			Object query = this.pointQuery;
 			if (cls != null) {

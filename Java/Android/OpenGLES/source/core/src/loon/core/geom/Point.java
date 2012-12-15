@@ -209,12 +209,12 @@ public class Point extends Shape {
 		dest.setLocation(this.x, this.y);
 	}
 
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 	public boolean equals(Object obj) {
 		Point p = (Point) obj;
-		if (p.x == this.x && p.y == this.y && p.clazz == this.clazz) {
-			return true;
-		} else {
-			return false;
-		}
+		return p.x == this.x && p.y == this.y && p.clazz == this.clazz;
 	}
 }

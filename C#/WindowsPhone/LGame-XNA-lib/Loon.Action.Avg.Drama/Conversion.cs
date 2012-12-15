@@ -90,7 +90,7 @@ namespace Loon.Action.Avg.Drama
         public static string UpdateOperator(string context)
         {
             if (context != null
-                    && (context.StartsWith("\"") || context.StartsWith("'")))
+                    && (StringUtils.StartsWith( context,'"') || StringUtils.StartsWith(context,'\'')))
             {
                 return context;
             }

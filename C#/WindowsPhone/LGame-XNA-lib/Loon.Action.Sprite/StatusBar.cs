@@ -245,12 +245,12 @@ namespace Loon.Action.Sprite
             {
                 current--;
                 value_ren = MathUtils.Mid(valueMin,
-                        (int)((current * valueMax) / width), value_ren);
+                        ((current * valueMax) / width), value_ren);
             }
             else
             {
                 current++;
-                value_ren = MathUtils.Mid(value_ren, (int)((current * valueMax) / width),
+                value_ren = MathUtils.Mid(value_ren, ((current * valueMax) / width),
                         valueMin);
             }
             return true;

@@ -13,14 +13,14 @@ namespace Loon.Core.Geom {
 			public Point2i() {
 			}
 	
-			public Point2i(int x_0, int y_1) {
-				this.x = x_0;
-				this.y = y_1;
+			public Point2i(int xa, int ya) {
+				this.x = xa;
+				this.y = ya;
 			}
 	
-			public Point2i(float x_0, float y_1) {
-				this.x = MathUtils.FromFloat(x_0);
-				this.y = MathUtils.FromFloat(y_1);
+			public Point2i(float xa, float ya) {
+				this.x = MathUtils.FromFloat(xa);
+				this.y = MathUtils.FromFloat(ya);
 			}
 	
 			public Point2i(Point2i p) {
@@ -28,8 +28,8 @@ namespace Loon.Core.Geom {
 				this.y = p.y;
 			}
 	
-			public bool Equals(int x_0, int y_1) {
-				return MathUtils.Equal(x_0, this.x) && MathUtils.Equal(y_1, this.y);
+			public bool Equals(int xa, int ya) {
+				return MathUtils.Equal(xa, this.x) && MathUtils.Equal(ya, this.y);
 			}
 	
 			public int Length() {
@@ -41,14 +41,14 @@ namespace Loon.Core.Geom {
 				y = -y;
 			}
 	
-			public void Offset(int x_0, int y_1) {
-				this.x += x_0;
-				this.y += y_1;
+			public void Offset(int xa, int ya) {
+				this.x += xa;
+				this.y += ya;
 			}
 	
-			public void Set(int x_0, int y_1) {
-				this.x = x_0;
-				this.y = y_1;
+			public void Set(int xa, int ya) {
+				this.x = xa;
+				this.y = ya;
 			}
 	
 			public void Set(Point2i p) {
@@ -63,9 +63,9 @@ namespace Loon.Core.Geom {
 						.Sqrt(MathUtils.Mul(tx, tx) + MathUtils.Mul(ty, ty));
 			}
 	
-			public int DistanceTo(int x_0, int y_1) {
-				int tx = this.x - x_0;
-				int ty = this.y - y_1;
+			public int DistanceTo(int xa, int ya) {
+				int tx = this.x - xa;
+				int ty = this.y - ya;
 				return MathUtils
 						.Sqrt(MathUtils.Mul(tx, tx) + MathUtils.Mul(ty, ty));
 			}
@@ -97,9 +97,9 @@ namespace Loon.Core.Geom {
 	
 		public const int POINT_CONCAVE = 2;
 	
-		public Point(float x_0, float y_1) {
+		public Point(float xa, float ya) {
 			this.CheckPoints();
-			this.SetLocation(x_0, y_1);
+			this.SetLocation(xa, ya);
 			this.type = ShapeType.POINT_SHAPE;
 		}
 	
@@ -148,14 +148,14 @@ namespace Loon.Core.Geom {
 			boundingCircleRadius = 0;
 		}
 	
-		public void Set(int x_0, int y_1) {
-			this.x = x_0;
-			this.y = y_1;
+		public void Set(int xa, int ya) {
+			this.x = xa;
+			this.y = ya;
 		}
 	
-		public override void SetLocation(float x_0, float y_1) {
-			this.x = x_0;
-			this.y = y_1;
+		public override void SetLocation(float xa, float ya) {
+			this.x = xa;
+			this.y = ya;
 		}
 	
 		public void SetLocation(Point p) {
@@ -184,9 +184,9 @@ namespace Loon.Core.Geom {
 			return MathUtils.Sqrt(MathUtils.Mul(tx, tx) + MathUtils.Mul(ty, ty));
 		}
 	
-		public int DistanceTo(int x_0, int y_1) {
-			int tx = (int) (this.x - x_0);
-			int ty = (int) (this.y - y_1);
+		public int DistanceTo(int xa, int ya) {
+			int tx = (int) (this.x - xa);
+			int ty = (int) (this.y - ya);
 			return MathUtils.Sqrt(MathUtils.Mul(tx, tx) + MathUtils.Mul(ty, ty));
 		}
 	
@@ -196,10 +196,6 @@ namespace Loon.Core.Geom {
 	
 		public override bool Equals(object obj) {
 			Point p = (Point) obj;
-			if (p.x == this.x && p.y == this.y && p.clazz == this.clazz) {
-				return true;
-			} else {
-				return false;
-			}
+            return p.x == this.x && p.y == this.y && p.clazz == this.clazz;
 		}
 	}}

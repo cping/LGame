@@ -247,8 +247,8 @@ namespace Loon.Action.Avg.Drama
                 string condition = null;
                 if (size <= 4)
                 {
-                    valueA = (string)temps[1];
-                    valueB = (string)temps[3];
+                    valueA = temps[1];
+                    valueB = temps[3];
                     valueA = (CollectionUtils.Get(setEnvironmentList, valueA) == null) ? valueA
                             : CollectionUtils.Get(setEnvironmentList, valueA);
                     valueB = (CollectionUtils.Get(setEnvironmentList, valueB) == null) ? valueB
@@ -538,7 +538,7 @@ namespace Loon.Action.Avg.Drama
                 if (execute != null)
                 {
                     resString.Append(execute);
-                    resString.Append("\n");
+                    resString.Append('\n');
                 }
             }
             return resString.ToString();
@@ -569,14 +569,14 @@ namespace Loon.Action.Avg.Drama
                 {
                     foreach (KeyValuePair<object, object> temp in setEnvironmentList)
                     {
-                        if (!(result.StartsWith("\"") && result.EndsWith("\"")))
+                        if (!(StringUtils.StartsWith(result,'"') && StringUtils.EndsWith(result,'"')))
                         {
                             result = StringUtils.ReplaceMatch(result,
                                     (string)temp.Key, temp.Value
                                             .ToString());
                         }
                     }
-                    if (result.StartsWith("\"") && result.EndsWith("\""))
+                    if (StringUtils.StartsWith(result,'"') && StringUtils.EndsWith(result,'"'))
                     {
                         CollectionUtils.Put(setEnvironmentList, temps[1], result.Substring(1, (result.Length - 1) - (1)));
                     }
@@ -621,7 +621,7 @@ namespace Loon.Action.Avg.Drama
                                             cmd,
                                             (RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG)
                                                  ,
-                                            LSystem.random.Next(Int32.Parse((string)key)).ToString());
+                                            LSystem.random.Next(Int32.Parse(key)).ToString());
                         }
                         else
                         {
@@ -995,7 +995,7 @@ namespace Loon.Action.Avg.Drama
 
         public string GetSaveName(string name)
         {
-            string newName = scriptName + "_" + name;
+            string newName = scriptName + '_' + name;
             newName = StringUtils.ReplaceIgnoreCase(newName, "/", "$");
             newName = StringUtils.ReplaceIgnoreCase(newName, "\\", "$");
             return newName;
@@ -1164,7 +1164,7 @@ namespace Loon.Action.Avg.Drama
                             index++;
                         }
                     }
-                    result = (string[])CollectionUtils.CopyOf(result, index);
+                    result = CollectionUtils.CopyOf(result, index);
                 }
                 catch (Exception ex)
                 {
@@ -1244,7 +1244,7 @@ namespace Loon.Action.Avg.Drama
                             index++;
                         }
                     }
-                    result = (string[])CollectionUtils.CopyOf(result, index);
+                    result = CollectionUtils.CopyOf(result, index);
                 }
                 catch (Exception ex)
                 {

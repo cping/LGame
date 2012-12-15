@@ -43,7 +43,7 @@ public class AStarFinderPool implements Runnable {
 	public AStarFinderPool(Field2D field) {
 		this.field = field;
 		this.running = true;
-		this.pathfinderThread = new Thread(this);
+		this.pathfinderThread = new Thread(this,"AStarThread");
 		this.pathfinderThread.start();
 	}
 

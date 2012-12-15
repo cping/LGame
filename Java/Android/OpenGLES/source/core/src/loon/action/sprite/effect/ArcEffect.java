@@ -126,8 +126,8 @@ public class ArcEffect extends LObject implements ISprite {
 			g.resetColor();
 		} else {
 			g.setColor(color);
-			float length = MathUtils.sqrt(MathUtils.pow(width / 2, 2.0f)
-					+ MathUtils.pow(height / 2, 2.0f));
+			float length = MathUtils.sqrt(MathUtils.pow(width / 2f, 2.0f)
+					+ MathUtils.pow(height / 2f, 2.0f));
 			float x = getX() + (width / 2 - length);
 			float y = getY() + (height / 2 - length);
 			float w = width / 2 + length - x;

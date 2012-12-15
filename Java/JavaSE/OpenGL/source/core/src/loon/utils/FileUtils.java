@@ -251,7 +251,7 @@ final public class FileUtils {
 		try {
 			writer = new BufferedWriter(new FileWriter(file, append));
 			for (Iterator<String> it = records.iterator(); it.hasNext();) {
-				writer.write((String) it.next());
+				writer.write(it.next());
 				writer.write(LSystem.LS);
 			}
 		} finally {

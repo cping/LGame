@@ -367,7 +367,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 					for (bspNode = node.getBSPNode(); bspNode != null
 							&& !bspNode.getArea().contains(newBounds); bspNode = bspNode
 							.getParent()) {
-						;
+						
 					}
 					if (bspNode == null) {
 						while (node != null) {

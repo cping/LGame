@@ -108,7 +108,7 @@ public class LPixmapData {
 
 	public void put(final float x, final float y, final float color) {
 		if (x > -1 && y > -1 && x < width && y < height) {
-			pixels[(int) x + (int) y * (int) width] = (int) color;
+			pixels[(int) x + (int) y * width] = (int) color;
 		}
 	}
 

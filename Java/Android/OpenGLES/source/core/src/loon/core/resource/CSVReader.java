@@ -103,7 +103,7 @@ public class CSVReader extends BufferedReader {
 		}
 		String items[] = new String[v.size()];
 		for (int i = 0; i < v.size(); i++) {
-			items[i] = (String) v.get(i);
+			items[i] = v.get(i);
 		}
 		return items;
 	}
