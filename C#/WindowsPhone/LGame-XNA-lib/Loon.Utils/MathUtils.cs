@@ -665,6 +665,16 @@ namespace Loon.Utils
             return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
         }
 
+        static public int Min(int a, int b, int c)
+        {
+            return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+        }
+
+        static public float Min(float a, float b, float c)
+        {
+            return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+        }
+
         static public float Min(float a, float b)
         {
             return (a <= b) ? a : b;

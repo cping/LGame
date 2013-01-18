@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * @version 0.1
  */
 public class Scene {
-	
+
 	private String name;
 
 	private ArrayList<Item> items = new ArrayList<Item>();

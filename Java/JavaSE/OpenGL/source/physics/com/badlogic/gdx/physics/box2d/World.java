@@ -59,7 +59,11 @@ import common.Pool;
 public final class World implements LRelease {
 
 	static {
-		NativeSupport.loadLibrary("jbox2d");
+		try {
+			NativeSupport.loadJNI("jbox2d");
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*

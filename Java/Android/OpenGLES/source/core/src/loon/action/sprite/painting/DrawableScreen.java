@@ -84,9 +84,8 @@ public abstract class DrawableScreen extends Screen {
 	}
 
 	public void draw(GLEx g) {
-		if (batch != null) {
+		if (isOnLoadComplete()) {
 			batch.begin();
-	
 			gameCollection.draw(batch, gameTime);
 			if (drawablesToDraw.size() > 0) {
 				drawablesToDraw.clear();

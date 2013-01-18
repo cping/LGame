@@ -169,7 +169,7 @@ public class MathUtils {
 		}
 		return !allowSigns && foundDigit;
 	}
-	
+
 	public static final float PI_OVER2 = 1.5708f;
 
 	public static final float PI_OVER4 = 0.785398f;
@@ -586,6 +586,14 @@ public class MathUtils {
 
 	static public final float max(float a, float b, float c) {
 		return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
+	}
+
+	static public final int min(int a, int b, int c) {
+		return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+	}
+
+	static public final float min(float a, float b, float c) {
+		return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
 	}
 
 	static public final float min(float a, float b) {

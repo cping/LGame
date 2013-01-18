@@ -170,20 +170,26 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 		void paint(GLEx g) {
 			switch (type) {
 			case DRAW_USER:
-				screen.draw(g);
+				synchronized (this) {
+					screen.draw(g);
+				}
 				break;
 			case DRAW_SPRITE:
-				if (spriteRun) {
-					sprites.createUI(g);
-				} else if (spriteRun = (sprites != null && sprites.size() > 0)) {
-					sprites.createUI(g);
+				synchronized (this) {
+					if (spriteRun) {
+						sprites.createUI(g);
+					} else if (spriteRun = (sprites != null && sprites.size() > 0)) {
+						sprites.createUI(g);
+					}
 				}
 				break;
 			case DRAW_DESKTOP:
-				if (desktopRun) {
-					desktop.createUI(g);
-				} else if (desktopRun = (desktop != null && desktop.size() > 0)) {
-					desktop.createUI(g);
+				synchronized (this) {
+					if (desktopRun) {
+						desktop.createUI(g);
+					} else if (desktopRun = (desktop != null && desktop.size() > 0)) {
+						desktop.createUI(g);
+					}
 				}
 				break;
 			}
@@ -192,18 +198,24 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 		void update(LTimerContext c) {
 			switch (type) {
 			case DRAW_USER:
-				screen.alter(c);
+				synchronized (this) {
+					screen.alter(c);
+				}
 				break;
 			case DRAW_SPRITE:
-				spriteRun = (sprites != null && sprites.size() > 0);
-				if (spriteRun) {
-					sprites.update(c.timeSinceLastUpdate);
+				synchronized (this) {
+					spriteRun = (sprites != null && sprites.size() > 0);
+					if (spriteRun) {
+						sprites.update(c.timeSinceLastUpdate);
+					}
 				}
 				break;
 			case DRAW_DESKTOP:
-				desktopRun = (desktop != null && desktop.size() > 0);
-				if (desktopRun) {
-					desktop.update(c.timeSinceLastUpdate);
+				synchronized (this) {
+					desktopRun = (desktop != null && desktop.size() > 0);
+					if (desktopRun) {
+						desktop.update(c.timeSinceLastUpdate);
+					}
 				}
 				break;
 			}
@@ -1494,27 +1506,29 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 	}
 
 	private final void repaint(GLEx g) {
-		if (isTranslate) {
-			g.translate(tx, ty);
-		}
-		afterUI(g);
-		if (fristPaintFlag) {
-			fristOrder.paint(g);
-		}
-		if (secondPaintFlag) {
-			secondOrder.paint(g);
-		}
-		if (lastPaintFlag) {
-			lastOrder.paint(g);
-		}
-		beforeUI(g);
-		if (useScreenListener) {
-			for (ScreenListener t : screens) {
-				t.draw(g);
+		if (!isClose) {
+			if (isTranslate) {
+				g.translate(tx, ty);
 			}
-		}
-		if (isTranslate) {
-			g.translate(-tx, -ty);
+			afterUI(g);
+			if (fristPaintFlag) {
+				fristOrder.paint(g);
+			}
+			if (secondPaintFlag) {
+				secondOrder.paint(g);
+			}
+			if (lastPaintFlag) {
+				lastOrder.paint(g);
+			}
+			beforeUI(g);
+			if (useScreenListener) {
+				for (ScreenListener t : screens) {
+					t.draw(g);
+				}
+			}
+			if (isTranslate) {
+				g.translate(-tx, -ty);
+			}
 		}
 	}
 
@@ -1589,21 +1603,23 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.getTimeSinceLastUpdate();
-		if (isGravity) {
-			gravityHandler.update(elapsedTime);
-		}
-		if (fristPaintFlag) {
-			fristOrder.update(timer);
-		}
-		if (secondPaintFlag) {
-			secondOrder.update(timer);
-		}
-		if (lastPaintFlag) {
-			lastOrder.update(timer);
-		}
-		if (useScreenListener) {
-			for (ScreenListener t : screens) {
-				t.update(elapsedTime);
+		if (!isClose) {
+			if (isGravity) {
+				gravityHandler.update(elapsedTime);
+			}
+			if (fristPaintFlag) {
+				fristOrder.update(timer);
+			}
+			if (secondPaintFlag) {
+				secondOrder.update(timer);
+			}
+			if (lastPaintFlag) {
+				lastOrder.update(timer);
+			}
+			if (useScreenListener) {
+				for (ScreenListener t : screens) {
+					t.update(elapsedTime);
+				}
 			}
 		}
 		this.touchDX = touchX - lastTouchX;
@@ -1805,6 +1821,10 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 		for (int i = 0; i < keyType.length; i++) {
 			keyType[i] = false;
 		}
+	}
+
+	public void resize(int width, int height) {
+		this.touchX = touchY = lastTouchX = lastTouchY = touchDX = touchDY = 0;
 	}
 
 	public Point2i getTouch() {

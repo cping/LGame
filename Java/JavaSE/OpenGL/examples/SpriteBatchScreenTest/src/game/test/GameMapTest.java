@@ -20,8 +20,8 @@
  */
 package game.test;
 
-import loon.JavaGameScene;
-import loon.JavaGameScene.LSetting;
+import loon.JavaApp.LSetting;
+import loon.LGame;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.RotateTo;
@@ -453,6 +453,6 @@ public class GameMapTest extends SpriteBatchScreen {
 		setting.height = 320;
 		setting.fps = 60;
 		setting.showFPS = true;
-		JavaGameScene.register(setting, GameMapTest.class);
+		LGame.register(setting, GameMapTest.class);
 	}
 }

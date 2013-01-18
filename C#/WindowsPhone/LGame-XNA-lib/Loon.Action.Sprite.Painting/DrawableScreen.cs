@@ -70,7 +70,7 @@ namespace Loon.Action.Sprite.Painting
 
         public override void Draw(GLEx g)
         {
-            if (batch != null)
+            if (IsOnLoadComplete())
             {
                 batch.Begin();
 

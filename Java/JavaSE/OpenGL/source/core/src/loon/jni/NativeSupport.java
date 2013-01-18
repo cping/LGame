@@ -21,6 +21,12 @@
 package loon.jni;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -30,55 +36,121 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.util.HashSet;
+import java.util.zip.CRC32;
 
+import loon.core.resource.Resources;
 
 //自0.3.3起，将部分耗时代码本地化。如果携带有lplus库时，将调用so文件，否则依旧纯Java。
 //用户可有选择的使用(事实上，随着Android版本的提高，本地运行与虚拟机运行的速度差距已经
 //在逐渐缩小)。
 public final class NativeSupport {
 
-	private static final String POSTFIX64BIT = "64";
+	static boolean isWindows = System.getProperty("os.name")
+			.contains("Windows");
+	static boolean isLinux = System.getProperty("os.name").contains("Linux");
+	static boolean isMac = System.getProperty("os.name").contains("Mac");
+	static boolean isAndroid = false;
+	static boolean is64Bit = System.getProperty("os.arch").equals("amd64");
 
-	private static void doLoadLibrary(final String lib_name) {
-		AccessController.doPrivileged(new PrivilegedAction<Object>() {
-			public Object run() {
-				String library_path = System
-						.getProperty("org.loon.librarypath");
-				if (library_path != null) {
-					System.load(library_path + File.separator
-							+ System.mapLibraryName(lib_name));
-				} else {
-					System.loadLibrary(lib_name);
-				}
-				return null;
+	private static HashSet<String> loadedLibraries = new HashSet<String>();
+
+	public static String CRC(InputStream input) {
+		if (input == null) {
+			return "" + System.nanoTime();
+		}
+		CRC32 crc = new CRC32();
+		byte[] buffer = new byte[4096];
+		try {
+			while (true) {
+				int length = input.read(buffer);
+				if (length == -1)
+					break;
+				crc.update(buffer, 0, length);
 			}
-		});
+		} catch (Exception ex) {
+			try {
+				input.close();
+			} catch (Exception ignored) {
+			}
+		}
+		return Long.toString(crc.getValue());
 	}
 
-	public static void loadLibrary(final String lib_name)
-			throws UnsatisfiedLinkError {
-		String osArch = System.getProperty("os.arch");
-		boolean is64bit = "amd64".equals(osArch) || "x86_64".equals(osArch);
-		if (is64bit) {
-			try {
-				doLoadLibrary(lib_name + POSTFIX64BIT);
-				return;
-			} catch (UnsatisfiedLinkError e) {
-			}
+	public static String libNames(String libraryName) {
+		if (isWindows) {
+			return libraryName + (is64Bit ? "64.dll" : ".dll");
+		}
+		if (isLinux) {
+			return "lib" + libraryName + (is64Bit ? "64.so" : ".so");
+		}
+		if (isMac) {
+			return "lib" + libraryName + ".dylib";
+		}
+		return libraryName;
+	}
+
+	public static synchronized void loadJNI(String libraryName)
+			throws Throwable {
+		libraryName = libNames(libraryName);
+		if (loadedLibraries.contains(libraryName)) {
+			return;
 		}
 		try {
-			doLoadLibrary(lib_name);
-		} catch (UnsatisfiedLinkError e) {
+			if (isAndroid) {
+				System.loadLibrary(libraryName);
+			} else {
+				System.load(export(libraryName, null).getAbsolutePath());
+			}
+		} catch (Throwable ex) {
+			throw new Exception(ex);
+		}
+		loadedLibraries.add(libraryName);
+	}
+
+	public static File export(String sourcePath, String dirName)
+			throws IOException {
+		String sourceCrc = CRC(Resources.openResource(sourcePath));
+		if (dirName == null) {
+			dirName = sourceCrc;
+		}
+		File extractedDir = new File(System.getProperty("java.io.tmpdir")
+				+ "/loon" + System.getProperty("user.name") + "/" + dirName);
+		File extractedFile = new File(extractedDir,
+				new File(sourcePath).getName());
+		String extractedCrc = null;
+		if (extractedFile.exists()) {
 			try {
-				doLoadLibrary(lib_name + POSTFIX64BIT);
-				return;
-			} catch (UnsatisfiedLinkError ex) {
-				throw new UnsatisfiedLinkError(ex.getMessage());
+				extractedCrc = CRC(new FileInputStream(extractedFile));
+			} catch (FileNotFoundException ignored) {
 			}
 		}
+		if (extractedCrc == null || !extractedCrc.equals(sourceCrc)) {
+			try {
+				InputStream input = Resources.openResource(sourcePath);
+				if (input == null) {
+					return null;
+				}
+				extractedDir.mkdirs();
+				FileOutputStream output = new FileOutputStream(extractedFile);
+				byte[] buffer = new byte[4096];
+				while (true) {
+					int length = input.read(buffer);
+					if (length == -1)
+						break;
+					output.write(buffer, 0, length);
+				}
+				input.close();
+				output.close();
+			} catch (IOException ex) {
+				throw new RuntimeException("Error extracting file: "
+						+ sourcePath, ex);
+			}
+		}
+		return extractedFile.exists() ? extractedFile : null;
 	}
+
+	private static boolean nativesLoaded;
 
 	public static final int SIZEOF_BYTE = 1;
 
@@ -95,13 +167,50 @@ public final class NativeSupport {
 	private static boolean useLoonNative;
 
 	static {
-			try {
-				loadLibrary("lplus");
-				useLoonNative = true;
-				System.out.println("Support of the native method call");
-			} catch (Error e) {
-				useLoonNative = false;
+		String vm = System.getProperty("java.vm.name");
+		if (vm != null && vm.contains("Dalvik")) {
+			isAndroid = true;
+			isWindows = false;
+			isLinux = false;
+			isMac = false;
+			is64Bit = false;
+		}
+		System.setProperty("org.lwjgl.input.Mouse.allowNegativeMouseCoords",
+				"true");
+		try {
+			Method method = Class.forName("javax.jnlp.ServiceManager")
+					.getDeclaredMethod("lookup", new Class[] { String.class });
+			method.invoke(null, "javax.jnlp.PersistenceService");
+		} catch (Throwable ex) {
+		}
+		File nativesDir = null;
+		try {
+			if (isWindows) {
+				nativesDir = export(is64Bit ? "lwjgl64.dll" : "lwjgl.dll", null)
+						.getParentFile();
+				export(is64Bit ? "OpenAL64.dll" : "OpenAL32.dll",
+						nativesDir.getName());
+			} else if (isMac) {
+				nativesDir = export("liblwjgl.jnilib", null).getParentFile();
+				export("openal.dylib", nativesDir.getName());
+			} else if (isLinux) {
+				nativesDir = export(is64Bit ? "liblwjgl64.so" : "liblwjgl.so",
+						null).getParentFile();
+				export(is64Bit ? "libopenal64.so" : "libopenal.so",
+						nativesDir.getName());
 			}
+		} catch (Throwable ex) {
+			throw new RuntimeException("Unable to extract LWJGL natives.", ex);
+		}
+		System.setProperty("org.lwjgl.librarypath",
+				nativesDir.getAbsolutePath());
+		try {
+			loadJNI("lplus");
+			useLoonNative = true;
+			System.out.println("Support of the native method call");
+		} catch (Throwable e) {
+			useLoonNative = false;
+		}
 	}
 
 	public static boolean UseLoonNative() {

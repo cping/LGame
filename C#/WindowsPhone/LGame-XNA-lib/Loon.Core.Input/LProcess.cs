@@ -110,6 +110,14 @@ namespace Loon.Core.Input
             }
         }
 
+        public virtual void Resize(int w, int h)
+        {
+            if (isInstance)
+            {
+                currentControl.Resize(w, h);
+            }
+        }
+
         public LColor GetColor()
         {
             if (isInstance)

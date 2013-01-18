@@ -21,7 +21,6 @@ import loon.utils.GraphicsUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -43,8 +42,8 @@ import loon.utils.StringUtils;
  * @version 0.3.3
  */
 public final class LSystem {
-	
-	public String getLanguage(){
+
+	public String getLanguage() {
 		return java.util.Locale.getDefault().getDisplayName();
 	}
 
@@ -228,7 +227,7 @@ public final class LSystem {
 
 	// 文件分割符
 	final static public String FS = System.getProperty("file.separator", "\\");
-	
+
 	// 默认的最大窗体宽（横屏）
 	public static int MAX_SCREEN_WIDTH = 480;
 
@@ -237,7 +236,7 @@ public final class LSystem {
 
 	public static RectBox screenRect = new RectBox(0, 0, MAX_SCREEN_WIDTH,
 			MAX_SCREEN_HEIGHT);
-	
+
 	final private static Runtime systemRuntime = Runtime.getRuntime();
 
 	final static private boolean osIsLinux;
@@ -349,7 +348,12 @@ public final class LSystem {
 	}
 
 	public static void exit() {
-		System.exit(0);
+		if (LSystem.screenProcess != null
+				&& LSystem.screenProcess.getScene() != null) {
+			LSystem.screenProcess.getScene().exit();
+		}else{
+		  System.exit(-1);
+		}
 	}
 
 	public static void stopRepaint() {
@@ -520,7 +524,7 @@ public final class LSystem {
 	public static boolean isBEAWithUnsafeSupport() {
 		if (System.getProperty("java.vm.vendor").indexOf("BEA") != -1) {
 			String vmVersion = System.getProperty("java.vm.version");
-			if (StringUtils.startsWith(vmVersion,'R')) {
+			if (StringUtils.startsWith(vmVersion, 'R')) {
 				return true;
 			}
 			String vmInfo = System.getProperty("java.vm.info");

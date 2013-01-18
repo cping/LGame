@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2012
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.3.3
+ */
 package loon;
 
 import loon.action.ActionControl;
@@ -26,71 +46,15 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
-/**
- * 
- * Copyright 2008 - 2011
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email javachenpeng@yahoo.com
- * @version 0.1.1
- */
-public class JavaGameScene {
+public class LGame extends JavaApp {
 
-	public static class LSetting {
-
-		public int width = LSystem.MAX_SCREEN_WIDTH;
-
-		public int height = LSystem.MAX_SCREEN_HEIGHT;
-
-		public int fps = LSystem.DEFAULT_MAX_FPS;
-
-		public String title;
-
-		public boolean showFPS;
-
-		public boolean showMemory;
-
-		public boolean showLogo;
-
-	}
-
-	private static Class<?> getType(Object o) {
-		if (o instanceof Integer) {
-			return Integer.TYPE;
-		} else if (o instanceof Float) {
-			return Float.TYPE;
-		} else if (o instanceof Double) {
-			return Double.TYPE;
-		} else if (o instanceof Long) {
-			return Long.TYPE;
-		} else if (o instanceof Short) {
-			return Short.TYPE;
-		} else if (o instanceof Short) {
-			return Short.TYPE;
-		} else if (o instanceof Boolean) {
-			return Boolean.TYPE;
-		} else {
-			return o.getClass();
-		}
-	}
-
-	public static void register(LSetting setting,
+	public static LGame register(LSetting setting,
 			Class<? extends Screen> clazz, Object... args) {
-		JavaGameScene game = new JavaGameScene(setting.title, setting.width,
-				setting.height);
+		LGame game = new LGame(setting.title, setting.width, setting.height);
+		game._AWT_Canvas = setting.canvas;
+		game._x = setting.appX;
+		game._y = setting.appY;
+		game._resizable = setting.resizable;
 		game.setShowFPS(setting.showFPS);
 		game.setShowMemory(setting.showMemory);
 		game.setShowLogo(setting.showLogo);
@@ -121,24 +85,10 @@ public class JavaGameScene {
 				}
 			}
 		}
+		return game;
 	}
 
 	private LSTRFont fpsFont;
-
-	public static enum GLMode {
-
-		Default, VBO;
-
-		private String text;
-
-		private GLMode() {
-			text = "GLMode : " + name();
-		}
-
-		public String toString() {
-			return text;
-		};
-	}
 
 	private long maxFrames = LSystem.DEFAULT_MAX_FPS, frameRate;
 
@@ -148,7 +98,11 @@ public class JavaGameScene {
 
 	private DisplayMode displayMode;
 
-	private int width, height, drawPriority;
+	private int _lastWidth, _lastHeight, drawPriority;
+
+	private int _x = -1, _y = -1;
+
+	private boolean _resizable, _isAWTCanvas;
 
 	private GLEx gl;
 
@@ -160,8 +114,6 @@ public class JavaGameScene {
 
 	private boolean fullscreen = true;
 
-	private boolean clear = true;
-
 	private LTexture logo;
 
 	private static int updateWidth = 0, updateHeight = 0;
@@ -169,16 +121,16 @@ public class JavaGameScene {
 	private static boolean updateScreen = false;
 
 	public static void updateSize(int w, int h) {
-		JavaGameScene.updateWidth = w;
-		JavaGameScene.updateHeight = h;
-		JavaGameScene.updateScreen = true;
+		LGame.updateWidth = w;
+		LGame.updateHeight = h;
+		LGame.updateScreen = true;
 	}
 
-	public JavaGameScene() {
+	public LGame() {
 		this(null, LSystem.MAX_SCREEN_WIDTH, LSystem.MAX_SCREEN_HEIGHT);
 	}
 
-	public JavaGameScene(String titleName, int width, int height) {
+	public LGame(String titleName, int width, int height) {
 		if (width < 1 || height < 1) {
 			throw new RuntimeException("Width and Height must be positive !");
 		}
@@ -207,8 +159,9 @@ public class JavaGameScene {
 		} else {
 			LSystem.screenRect.setBounds(0, 0, width, height);
 		}
+		this._lastWidth = width;
+		this._lastHeight = height;
 		LSystem.screenProcess = new LProcess(this, width, height);
-
 		setFPS(LSystem.DEFAULT_MAX_FPS);
 		setTitle(titleName);
 		setSize(width, height);
@@ -279,10 +232,10 @@ public class JavaGameScene {
 				long elapsed;
 				int cx = 0, cy = 0;
 				double delay;
-					if (logo == null) {
-						logo = LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME
-								+ "logo.png", Format.BILINEAR);
-					}
+				if (logo == null) {
+					logo = LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME
+							+ "logo.png", Format.BILINEAR);
+				}
 				cx = (int) (getWidth() * LSystem.scaleWidth) / 2
 						- logo.getWidth() / 2;
 				cy = (int) (getHeight() * LSystem.scaleHeight) / 2
@@ -354,8 +307,54 @@ public class JavaGameScene {
 			Thread currentThread = Thread.currentThread();
 			process.begin();
 			{
+				process.resize(LSystem.screenRect.width,
+						LSystem.screenRect.height);
 				for (; isRunning && !Display.isCloseRequested()
 						&& mainLoop == currentThread;) {
+
+					Display.processMessages();
+
+					boolean lockedRender = false;
+
+					if (_isAWTCanvas) {
+						int width = _AWT_Canvas.getWidth();
+						int height = _AWT_Canvas.getHeight();
+						if (width != _lastWidth || height != _lastHeight) {
+							LSystem.scaleWidth = ((float) width)
+									/ LSystem.screenRect.width;
+							LSystem.scaleHeight = ((float) height)
+									/ LSystem.screenRect.height;
+							if (gl != null && !gl.isClose()) {
+								gl.setViewPort(0, 0, width, height);
+							}
+							if (process != null) {
+								process.resize(width, height);
+							}
+							_lastWidth = width;
+							_lastHeight = height;
+							lockedRender = true;
+						}
+					} else if (_resizable) {
+						int width = Display.getWidth();
+						int height = Display.getHeight();
+						if (Display.wasResized() || width != _lastWidth
+								|| height != _lastHeight) {
+							LSystem.scaleWidth = ((float) width)
+									/ LSystem.screenRect.width;
+							LSystem.scaleHeight = ((float) height)
+									/ LSystem.screenRect.height;
+							if (gl != null && !gl.isClose()) {
+								gl.setViewPort(0, 0, width, height);
+							}
+							if (process != null) {
+								process.resize(width, height);
+							}
+							_lastWidth = width;
+							_lastHeight = height;
+							requestRendering();
+						}
+					}
+
 					if (!Display.isActive()) {
 						LSystem.isPaused = true;
 						pause(500);
@@ -378,6 +377,9 @@ public class JavaGameScene {
 
 						process.calls();
 
+						if (!isRunning) {
+							break;
+						}
 						goalTimeMicros = lastTimeMicros + 1000000L / maxFrames;
 						currTimeMicros = timer.sleepTimeMicros(goalTimeMicros);
 						elapsedTimeMicros = currTimeMicros - lastTimeMicros
@@ -390,16 +392,18 @@ public class JavaGameScene {
 						timerContext.millisSleepTime = remainderMicros;
 						timerContext.timeSinceLastUpdate = elapsedTime;
 
+						lockedRender |= shouldRender();
+
 						process.runTimer(timerContext);
 
 						ActionControl.update(elapsedTime);
 
-						if (LSystem.AUTO_REPAINT) {
+						if (LSystem.AUTO_REPAINT && lockedRender) {
 
 							int repaintMode = process.getRepaintMode();
 							switch (repaintMode) {
 							case Screen.SCREEN_BITMAP_REPAINT:
-								gl.reset(clear);
+								gl.reset(true);
 								if (process.getX() == 0 && process.getY() == 0) {
 									gl.drawTexture(process.getBackground(), 0,
 											0);
@@ -415,13 +419,13 @@ public class JavaGameScene {
 								}
 								break;
 							case Screen.SCREEN_CANVAS_REPAINT:
-								gl.reset(clear);
+								gl.reset(true);
 								break;
 							case Screen.SCREEN_NOT_REPAINT:
-								gl.reset(clear);
+								gl.reset(true);
 								break;
 							default:
-								gl.reset(clear);
+								gl.reset(true);
 								if (process.getX() == 0 && process.getY() == 0) {
 									gl.drawTexture(
 											process.getBackground(),
@@ -450,7 +454,7 @@ public class JavaGameScene {
 								break;
 							}
 							gl.resetFont();
-
+							
 							process.draw(gl);
 
 							process.drawable(elapsedTime);
@@ -476,12 +480,12 @@ public class JavaGameScene {
 							process.drawEmulator(gl);
 
 							process.unload();
-
+							// 刷新游戏画面
+							Display.update();
+						} else {
+							Display.sync(60);
 						}
-
 					}
-					// 刷新游戏画面
-					Display.update();
 
 					// 此版将F12设定为全屏
 					if (Keyboard.isKeyDown(Keyboard.KEY_F12) && !isFull) {
@@ -497,6 +501,7 @@ public class JavaGameScene {
 					}
 				}
 			}
+		
 			process.end();
 			destoryView();
 		}
@@ -519,6 +524,31 @@ public class JavaGameScene {
 		}
 	}
 
+	volatile boolean _isContinuous = true;
+	volatile boolean _requestRendering = false;
+
+	public void setContinuousRendering(boolean isContinuous) {
+		this._isContinuous = isContinuous;
+	}
+
+	public boolean isContinuousRendering() {
+		return _isContinuous;
+	}
+
+	public void requestRendering() {
+		synchronized (this) {
+			_requestRendering = true;
+		}
+	}
+
+	public boolean shouldRender() {
+		synchronized (this) {
+			boolean rq = _requestRendering;
+			_requestRendering = false;
+			return rq || _isContinuous || Display.isDirty();
+		}
+	}
+
 	public void destoryView() {
 		synchronized (this) {
 			if (LSystem.screenProcess != null) {
@@ -530,9 +560,23 @@ public class JavaGameScene {
 			ActionControl.getInstance().stopAll();
 			LSystem.destroy();
 			LSystem.gc();
-			close();
+			if (displayMode != null) {
+				Mouse.destroy();
+				Keyboard.destroy();
+				Display.destroy();
+			}
 			notifyAll();
 		}
+		System.exit(-1);
+	}
+
+	public void exit() {
+		isRunning = false;
+		try {
+			mainLoop.join();
+		} catch (Exception ex) {
+		}
+		destoryView();
 	}
 
 	public void showScreen() {
@@ -548,8 +592,7 @@ public class JavaGameScene {
 	}
 
 	private void setSize(int w, int h) {
-		this.width = w;
-		this.height = h;
+		LSystem.screenRect.setSize(w, h);
 	}
 
 	private void createScreen() {
@@ -557,20 +600,33 @@ public class JavaGameScene {
 			DisplayMode[] ds;
 			ds = Display.getAvailableDisplayModes();
 			for (int i = 0; i < ds.length; i++) {
-				if (ds[i].getWidth() == width && ds[i].getHeight() == height
+				if (ds[i].getWidth() == LSystem.screenRect.width
+						&& ds[i].getHeight() == LSystem.screenRect.height
 						&& ds[i].getBitsPerPixel() == 32) {
 					displayMode = ds[i];
 					break;
 				}
 			}
 			if (displayMode == null) {
-				displayMode = new DisplayMode(width, height);
+				displayMode = new DisplayMode(LSystem.screenRect.width,
+						LSystem.screenRect.height);
+			}
+			if (_AWT_Canvas != null) {
+				Display.setParent(_AWT_Canvas);
+				_isAWTCanvas = true;
+			} else {
+				Display.setDisplayMode(displayMode);
+				_isAWTCanvas = false;
 			}
 
+			Display.setTitle(windowTitle);
+			Display.setResizable(_resizable);
+			Display.setInitialBackground(0, 0, 0);
 			setIcon(LSystem.FRAMEWORK_IMG_NAME + "icon.png");
 
-			Display.setDisplayMode(displayMode);
-			Display.setTitle(windowTitle);
+			if (_x != -1 && _y != -1) {
+				Display.setLocation(_x, _y);
+			}
 			int samples = 0;
 			try {
 				Display.create(new PixelFormat(8, 8, 0, samples));
@@ -607,7 +663,8 @@ public class JavaGameScene {
 				setGLMode(GLMode.Default);
 			}
 
-			this.gl = new GLEx(width, height);
+			this.gl = new GLEx(LSystem.screenRect.width,
+					LSystem.screenRect.height);
 			this.setViewPort(getBounds());
 			this.gl.update();
 
@@ -632,15 +689,6 @@ public class JavaGameScene {
 		return true;
 	}
 
-	public void close() {
-		if (displayMode != null) {
-			Mouse.destroy();
-			Keyboard.destroy();
-			Display.destroy();
-		}
-		LSystem.exit();
-	}
-
 	public boolean isActive() {
 		if (displayMode != null) {
 			return Display.isActive();
@@ -657,11 +705,18 @@ public class JavaGameScene {
 	}
 
 	public void updateScreen() {
-		DisplayMode dm = Display.getDisplayMode();
-		int w = dm.getWidth();
-		int h = dm.getHeight();
-		LSystem.scaleWidth = ((float) w) / width;
-		LSystem.scaleHeight = ((float) h) / height;
+		int w = 0;
+		int h = 0;
+		if (_AWT_Canvas == null) {
+			DisplayMode dm = Display.getDisplayMode();
+			w = dm.getWidth();
+			h = dm.getHeight();
+		} else {
+			w = _AWT_Canvas.getWidth();
+			h = _AWT_Canvas.getHeight();
+		}
+		LSystem.scaleWidth = ((float) w) / LSystem.screenRect.width;
+		LSystem.scaleHeight = ((float) h) / LSystem.screenRect.height;
 		this.setBounds(0, 0, w, h);
 	}
 
@@ -739,8 +794,28 @@ public class JavaGameScene {
 		}
 	}
 
-	public void setClearFrame(boolean clearFrame) {
-		this.clear = clearFrame;
+	public int getAppX() {
+		return _x;
+	}
+
+	public void seAppX(int x) {
+		this._x = x;
+	}
+
+	public int getAppY() {
+		return _y;
+	}
+
+	public void setAppY(int y) {
+		this._y = y;
+	}
+
+	public boolean isResizable() {
+		return _resizable;
+	}
+
+	public void setResizable(boolean r) {
+		this._resizable = r;
 	}
 
 	public void setFPS(long frames) {

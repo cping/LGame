@@ -31,32 +31,46 @@ namespace Loon.Core.Graphics.Opengl
 
         public void SetVertices(float[] vertices)
         {
-          
+
         }
 
         public void SetVertices(float[] vertices, int offset, int count)
         {
-        
+
         }
 
-        public void GetVertices(float[] buffer)
+        public void GetVertices(float[] vertices)
         {
-          
+
+        }
+
+        public void GetVertices(int srcOffset, float[] vertices)
+        {
+
+        }
+
+        public void GetVertices(int srcOffset, int count, float[] vertices)
+        {
+
+        }
+
+        public void GetVertices(int srcOffset, int count, float[] vertices, int destOffset)
+        {
         }
 
         public void SetIndices(short[] indices)
         {
-            
+
         }
 
         public void SetIndices(short[] indices, int offset, int count)
         {
-        
+
         }
 
         public void GetIndices(short[] buffer)
         {
-           
+
         }
 
         public int GetNumIndices()
@@ -86,7 +100,7 @@ namespace Loon.Core.Graphics.Opengl
 
         public void SetAutoBind(bool autoBind)
         {
-         
+
         }
 
         public void Bind()
@@ -96,22 +110,22 @@ namespace Loon.Core.Graphics.Opengl
 
         public void Unbind()
         {
-           
+
         }
 
         public void Render(int primitiveType)
         {
-          
+
         }
 
         public void Render(int primitiveType, int offset, int count)
         {
-        
+
         }
 
         public void Dispose()
         {
-      
+
         }
 
         public Loon.Core.Graphics.Opengl.GLAttributes.VertexAttribute GetVertexAttribute(int usage)
@@ -133,8 +147,7 @@ namespace Loon.Core.Graphics.Opengl
         {
             return null;
         }
-	
-    }
 
+    }
 
 }

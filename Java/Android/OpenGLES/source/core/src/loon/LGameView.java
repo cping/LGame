@@ -603,6 +603,8 @@ public final class LGameView implements Renderer {
 			if (!LSystem.isCreated) {
 				if (process != null) {
 					process.begin();
+					process.resize(LSystem.screenRect.width,
+							LSystem.screenRect.height);
 				}
 				LSystem.isCreated = true;
 				synchronized (this) {

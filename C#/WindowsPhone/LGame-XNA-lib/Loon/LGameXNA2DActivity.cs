@@ -359,11 +359,19 @@ namespace Loon
 
         public void LoadApp()
         {
+            if (m_process != null)
+            {
+                m_process.Begin();
+            }
             Printf("loadApp");
         }
 
         public void UnloadApp()
         {
+            if (m_process != null)
+            {
+                m_process.End();
+            }
             Printf("unloadApp");
         }
 
@@ -383,6 +391,7 @@ namespace Loon
             }
             m_process.Load(gl);
             LSystem.screenProcess = m_process;
+            
         }
 
         public override void DoMain()
@@ -685,6 +694,10 @@ namespace Loon
             if (suspend)
             {
                 LSystem.isResume = true;
+                if (m_process != null)
+                {
+                    m_process.Resize(GL.device.PresentationParameters.BackBufferWidth, GL.device.PresentationParameters.BackBufferHeight);
+                }
                 Printf("resumeApp");
                 try
                 {
@@ -699,7 +712,6 @@ namespace Loon
                 }
             }
         }
-
 
         private static Type GetType(object o)
         {

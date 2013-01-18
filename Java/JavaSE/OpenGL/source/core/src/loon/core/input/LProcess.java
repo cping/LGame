@@ -3,7 +3,8 @@ package loon.core.input;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import loon.JavaGameScene;
+import loon.JavaApp;
+import loon.LGame;
 import loon.core.EmulatorButtons;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
@@ -44,7 +45,7 @@ import loon.utils.ScreenUtils;
  */
 public class LProcess {
 
-	private JavaGameScene scene;
+	private JavaApp scene;
 
 	ArrayList<Updateable> loads;
 
@@ -72,7 +73,7 @@ public class LProcess {
 
 	private boolean running;
 
-	public LProcess(JavaGameScene scene, int width, int height) {
+	public LProcess(LGame scene, int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.scene = scene;
@@ -108,6 +109,12 @@ public class LProcess {
 		}
 	}
 
+	public void resize(int w, int h) {
+		if (isInstance) {
+			currentControl.resize(w, h);
+		}
+	}
+	
 	public void end() {
 		if (running) {
 			running = false;
@@ -634,11 +641,11 @@ public class LProcess {
 		}
 	}
 
-	public JavaGameScene getScene() {
+	public JavaApp getScene() {
 		return scene;
 	}
 
-	public void setScene(JavaGameScene scene) {
+	public void setScene(JavaApp scene) {
 		this.scene = scene;
 	}
 

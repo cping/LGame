@@ -174,26 +174,35 @@ namespace Loon.Core.Graphics
                 switch (type)
                 {
                     case DRAW_USER:
-                        screen.Draw(g);
+                        lock (this)
+                        {
+                            screen.Draw(g);
+                        }
                         break;
                     case DRAW_SPRITE:
-                        if (screen.spriteRun)
+                        lock (this)
                         {
-                            screen.sprites.CreateUI(g);
-                        }
-                        else if (screen.spriteRun = (screen.sprites != null && screen.sprites.Size() > 0))
-                        {
-                            screen.sprites.CreateUI(g);
+                            if (screen.spriteRun)
+                            {
+                                screen.sprites.CreateUI(g);
+                            }
+                            else if (screen.spriteRun = (screen.sprites != null && screen.sprites.Size() > 0))
+                            {
+                                screen.sprites.CreateUI(g);
+                            }
                         }
                         break;
                     case DRAW_DESKTOP:
-                        if (screen.desktopRun)
+                        lock (this)
                         {
-                            screen.desktop.CreateUI(g);
-                        }
-                        else if (screen.desktopRun = (screen.desktop != null && screen.desktop.Size() > 0))
-                        {
-                            screen.desktop.CreateUI(g);
+                            if (screen.desktopRun)
+                            {
+                                screen.desktop.CreateUI(g);
+                            }
+                            else if (screen.desktopRun = (screen.desktop != null && screen.desktop.Size() > 0))
+                            {
+                                screen.desktop.CreateUI(g);
+                            }
                         }
                         break;
                 }
@@ -204,20 +213,29 @@ namespace Loon.Core.Graphics
                 switch (type)
                 {
                     case DRAW_USER:
-                        screen.Alter(c);
+                        lock (this)
+                        {
+                            screen.Alter(c);
+                        }
                         break;
                     case DRAW_SPRITE:
-                        screen.spriteRun = (screen.sprites != null && screen.sprites.Size() > 0);
-                        if (screen.spriteRun)
+                        lock (this)
                         {
-                            screen.sprites.Update(c.timeSinceLastUpdate);
+                            screen.spriteRun = (screen.sprites != null && screen.sprites.Size() > 0);
+                            if (screen.spriteRun)
+                            {
+                                screen.sprites.Update(c.timeSinceLastUpdate);
+                            }
                         }
                         break;
                     case DRAW_DESKTOP:
-                        screen.desktopRun = (screen.desktop != null && screen.desktop.Size() > 0);
-                        if (screen.desktopRun)
+                        lock (this)
                         {
-                            screen.desktop.Update(c.timeSinceLastUpdate);
+                            screen.desktopRun = (screen.desktop != null && screen.desktop.Size() > 0);
+                            if (screen.desktopRun)
+                            {
+                                screen.desktop.Update(c.timeSinceLastUpdate);
+                            }
                         }
                         break;
                 }
@@ -1419,27 +1437,30 @@ namespace Loon.Core.Graphics
 
         private void Repaint(GLEx g)
         {
-            if (isTranslate)
+            if (!isClose)
             {
-                g.Translate(tx, ty);
-            }
-            AfterUI(g);
-            if (fristPaintFlag)
-            {
-                fristOrder.Paint(g);
-            }
-            if (secondPaintFlag)
-            {
-                secondOrder.Paint(g);
-            }
-            if (lastPaintFlag)
-            {
-                lastOrder.Paint(g);
-            }
-            BeforeUI(g);
-            if (isTranslate)
-            {
-                g.Translate(-tx, -ty);
+                if (isTranslate)
+                {
+                    g.Translate(tx, ty);
+                }
+                AfterUI(g);
+                if (fristPaintFlag)
+                {
+                    fristOrder.Paint(g);
+                }
+                if (secondPaintFlag)
+                {
+                    secondOrder.Paint(g);
+                }
+                if (lastPaintFlag)
+                {
+                    lastOrder.Paint(g);
+                }
+                BeforeUI(g);
+                if (isTranslate)
+                {
+                    g.Translate(-tx, -ty);
+                }
             }
         }
 
@@ -1538,21 +1559,24 @@ namespace Loon.Core.Graphics
         private void Process(LTimerContext timer)
         {
             this.elapsedTime = timer.GetTimeSinceLastUpdate();
-            if (isGravity)
+            if (!isClose)
             {
-                gravityHandler.Update(elapsedTime);
-            }
-            if (fristPaintFlag)
-            {
-                fristOrder.Update(timer);
-            }
-            if (secondPaintFlag)
-            {
-                secondOrder.Update(timer);
-            }
-            if (lastPaintFlag)
-            {
-                lastOrder.Update(timer);
+                if (isGravity)
+                {
+                    gravityHandler.Update(elapsedTime);
+                }
+                if (fristPaintFlag)
+                {
+                    fristOrder.Update(timer);
+                }
+                if (secondPaintFlag)
+                {
+                    secondOrder.Update(timer);
+                }
+                if (lastPaintFlag)
+                {
+                    lastOrder.Update(timer);
+                }
             }
             this.touchDX = touchX - lastTouchX;
             this.touchDY = touchY - lastTouchY;

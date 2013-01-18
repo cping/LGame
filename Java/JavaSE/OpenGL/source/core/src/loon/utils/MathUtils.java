@@ -587,6 +587,14 @@ public class MathUtils {
 		return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
 	}
 
+	static public final int min(int a, int b, int c) {
+		return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+	}
+
+	static public final float min(float a, float b, float c) {
+		return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+	}
+
 	static public final float min(float a, float b) {
 		return (a <= b) ? a : b;
 	}
