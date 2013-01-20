@@ -54,7 +54,6 @@ var context = function(){
    return _game_core;
 }
 
-
 function $package(packName) {
   var i;
   var pkg = window;
@@ -130,14 +129,18 @@ function _process() {
 /**
  * 仿java中Runnable接口
  */
-function Runnable() {
-
+function Runnable(callback) {
+      this.callback = callback;
 };
 
 //构建Runnbale原型(该类仅loon内部有效，不能直接移植为其它用途)
 Runnable.prototype = {
 	constructor: Runnable,
-	run: function() {}
+	run: function() {
+         if(this.callback!=null){
+		    this.callback();
+		 }
+	}
 };
 
 /**
@@ -1768,6 +1771,8 @@ loon.EventTarget = loon.Class.extend({
     var _fps;
 	var _time;
 	var _render;
+	var/*Runnable*/ _runnables = new loon.List();
+    var/*Runnable*/ _executedRunnables = new loon.List();
 
     loon.Core = loon.Class.extend(loon.EventTarget, {
      
@@ -2215,7 +2220,13 @@ loon.EventTarget = loon.Class.extend({
 
 			
         },
-  
+
+  	    post : function(/*Runnable*/runnable) {
+			  	$sync(function() {
+                      _runnables.add(runnable);
+             	});  
+	    },
+
         _requestNextFrame: function() {
             if (!this.ready) {
                 return;
@@ -2244,6 +2255,21 @@ loon.EventTarget = loon.Class.extend({
             this._nextTime = now + 1000 / this.fps;
             this.currentTime = now;
             this._actualFps = e.elapsed > 0 ? (1000 / e.elapsed) : 0;
+
+            /**
+			 * Runnable提交处理
+			 */
+            if(_runnables.count > 0){ 
+				$sync(function() {
+					_executedRunnables.clear();
+					_executedRunnables.addRange(_runnables);
+					_runnables.clear();
+					for (var i = 0; i < _executedRunnables.count; i++) {
+							_executedRunnables.item(i).run();
+							
+					}
+				});  
+			}
 			
             //获取节点集合
             var nodes = this.currentScreen.childNodes.slice();

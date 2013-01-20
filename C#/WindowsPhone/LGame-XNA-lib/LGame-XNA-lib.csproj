@@ -436,6 +436,7 @@
     <Compile Include="Loon.Utils.Xml\XMLDocument.cs" />
     <Compile Include="Loon.Utils.Xml\XMLElement.cs" />
     <Compile Include="Loon.Utils.Xml\XMLListener.cs" />
+    <Compile Include="Loon.Utils.Xml\XMLOutput.cs" />
     <Compile Include="Loon.Utils.Xml\XMLParser.cs" />
     <Compile Include="Loon.Utils.Xml\XMLProcessing.cs" />
     <Compile Include="Loon.Utils.Xml\XMLTokenizer.cs" />

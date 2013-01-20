@@ -51,9 +51,6 @@ import loon.core.input.LInputFactory.Touch;
 import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
 import loon.media.SoundBox;
-import loon.utils.debug.Level;
-import loon.utils.debug.Log;
-import loon.utils.debug.LogFactory;
 
 /**
  * 
@@ -297,8 +294,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler gravityHandler;
 
-	private final Log log;
-
 	private LColor color;
 
 	private int touchX, touchY, lastTouchX, lastTouchY, touchDX, touchDY;
@@ -518,7 +513,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 	public Screen() {
 		LSystem.AUTO_REPAINT = true;
 		Screen.StaticCurrentSceen = this;
-		this.log = LogFactory.getInstance(this.getClass());
 		this.runnables = new ArrayList<Runnable>(1);
 		this.handler = LSystem.screenProcess;
 		this.width = LSystem.screenRect.width;
@@ -2147,146 +2141,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 			this.lastPaintFlag = true;
 			this.lastOrder = lastOrder;
 		}
-	}
-
-	/**
-	 * 记录info信息
-	 * 
-	 * @param message
-	 */
-	public void info(String message) {
-		log.info(message);
-	}
-
-	/**
-	 * 记录info信息
-	 * 
-	 * @param message
-	 * @param tw
-	 */
-	public void info(String message, Throwable tw) {
-		log.info(message, tw);
-	}
-
-	/**
-	 * 记录debug信息
-	 * 
-	 * @param message
-	 */
-	public void debug(String message) {
-		log.debug(message);
-	}
-
-	/**
-	 * 记录debug信息
-	 * 
-	 * @param message
-	 * @param tw
-	 */
-	public void debug(String message, Throwable tw) {
-		log.debug(message, tw);
-	}
-
-	/**
-	 * 记录warn信息
-	 * 
-	 * @param message
-	 */
-	public void warn(String message) {
-		log.warn(message);
-	}
-
-	/**
-	 * 记录warn信息
-	 * 
-	 * @param message
-	 * @param tw
-	 */
-	public void warn(String message, Throwable tw) {
-		log.warn(message, tw);
-	}
-
-	/**
-	 * 记录error信息
-	 * 
-	 * @param message
-	 */
-	public void error(String message) {
-		log.error(message);
-	}
-
-	/**
-	 * 记录error信息
-	 * 
-	 * @param message
-	 * @param tw
-	 */
-	public void error(String message, Throwable tw) {
-		log.error(message, tw);
-	}
-
-	/**
-	 * 输出日志
-	 * 
-	 * @param message
-	 */
-	public void log(String message) {
-		log.log(message);
-	}
-
-	/**
-	 * 输出日志
-	 * 
-	 * @param message
-	 * @param tw
-	 */
-	public void log(String message, Throwable tw) {
-		log.log(message, tw);
-	}
-
-	/**
-	 * 设定是否在控制台显示日志
-	 * 
-	 * @param show
-	 */
-	public void logShow(boolean show) {
-		log.setVisible(show);
-	}
-
-	/**
-	 * 设定日志是否保存为文件
-	 * 
-	 * @param save
-	 */
-	public void logSave(boolean save) {
-		log.setSave(save);
-	}
-
-	/**
-	 * 日志保存地点
-	 * 
-	 * @param fileName
-	 */
-	public void logFileName(String fileName) {
-		log.setFileName(fileName);
-	}
-
-	/**
-	 * 设定日志等级
-	 * 
-	 * @param level
-	 */
-	public void logLevel(int level) {
-		log.setLevel(level);
-	}
-
-	/**
-	 * 设定日志等级
-	 * 
-	 * @param level
-	 */
-	public void logLevel(Level level) {
-		log.setLevel(level);
 	}
 
 	public final void destroy() {
