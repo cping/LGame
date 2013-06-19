@@ -11,7 +11,6 @@ import loon.core.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -189,7 +188,7 @@ public class MoveTo extends ActionEvent {
 				CollectionUtils.hashCode(layerMap.getMap()));
 		return hashCode;
 	}
-	
+
 	public void start(ActionBind target) {
 		super.start(target);
 		startLocation.set(target.getX(), target.getY());

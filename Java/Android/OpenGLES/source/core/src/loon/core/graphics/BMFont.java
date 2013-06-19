@@ -442,6 +442,7 @@ public class BMFont implements LRelease {
 		return lineHeight;
 	}
 
+	@Override
 	public void dispose() {
 		this.isClose = true;
 		if (displayList != null) {

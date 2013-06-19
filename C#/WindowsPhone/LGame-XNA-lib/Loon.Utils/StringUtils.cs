@@ -761,7 +761,7 @@ namespace Loon.Utils
             return new string(p);
         }
 
-        public static string NewString(byte[] p, string p_2)
+        public static string NewString(byte[] p, string p2)
         {
             string str = "";
             for (int i = 0; i < p.Length; i++)

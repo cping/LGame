@@ -34,6 +34,7 @@ public class DefAnimation extends DefinitionObject {
 		return animation;
 	}
 
+	@Override
 	public void definitionObjectDidFinishParsing() {
 		super.definitionObjectDidFinishParsing();
 		if (animation != null) {
@@ -41,6 +42,7 @@ public class DefAnimation extends DefinitionObject {
 		}
 	}
 
+	@Override
 	public void definitionObjectDidReceiveString(String v) {
 		super.definitionObjectDidReceiveString(v);
 		ArrayList<String> result = getResult(v);

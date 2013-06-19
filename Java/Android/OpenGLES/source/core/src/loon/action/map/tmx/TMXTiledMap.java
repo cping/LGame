@@ -474,6 +474,7 @@ public class TMXTiledMap implements LRelease {
 		return def;
 	}
 
+	@Override
 	public void dispose() {
 		if (tileSets != null) {
 			for (TMXTileSet tmx : tileSets) {

@@ -40,9 +40,20 @@ public class LTouch {
 	}
 
 	LTouch() {
-
+		
 	}
-
+	
+	public LTouch(float x, float y, int pointer, int id) {
+		this.set(x, y, pointer, id);
+	}
+	
+	public void set(float x, float y, int pointer, int id) {
+		this.x = x;
+		this.y = y;
+		this.pointer = pointer;
+		this.id = id;
+	}
+	
 	LTouch(LTouch touch) {
 		this.type = touch.type;
 		this.x = touch.x;

@@ -25,7 +25,7 @@ public class FloatValue {
 	private float value;
 
 	public FloatValue(float v) {
-		this.value = v ;
+		this.value = v;
 	}
 
 	public float get() {
@@ -33,7 +33,7 @@ public class FloatValue {
 	}
 
 	public void set(float v) {
-		this.value = v ;
+		this.value = v;
 	}
 
 	public String toString() {

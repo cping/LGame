@@ -466,6 +466,7 @@ public class LSTRFont implements LRelease {
 		this.useCache = useCache;
 	}
 
+	@Override
 	public void dispose() {
 		if (fontBatch != null) {
 			fontBatch.destoryAll();

@@ -39,6 +39,7 @@ public class LNRotateTo extends LNAction {
 		return to;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -47,6 +48,7 @@ public class LNRotateTo extends LNAction {
 		this._diff = this._tarAngle - this._orgAngle;
 	}
 
+	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
@@ -56,6 +58,7 @@ public class LNRotateTo extends LNAction {
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_duration, _tarAngle);
 	}

@@ -153,6 +153,7 @@ public final class LTextureBatch implements LRelease {
 			this.y = batch.moveY;
 		}
 
+		@Override
 		public void dispose() {
 			if (vertexBuffer != null) {
 				NativeSupport.freeMemory(vertexBuffer);
@@ -360,7 +361,7 @@ public final class LTextureBatch implements LRelease {
 	 * 
 	 */
 	public void glBegin() {
-		glBegin(GL10.GL_TRIANGLES);
+		glBegin(GL.GL_TRIANGLES);
 	}
 
 	/**
@@ -1011,6 +1012,7 @@ public final class LTextureBatch implements LRelease {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		this.count = 0;
 		this.useBegin = false;

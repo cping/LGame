@@ -812,7 +812,7 @@ public class MathUtils {
 	}
 
 	public static float wrapAngle(float angle) {
-		angle = (float) Math.IEEEremainder((double) angle, 6.2831854820251465d);
+		angle = (float) Math.IEEEremainder(angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {
 			angle += 6.283185f;
 			return angle;

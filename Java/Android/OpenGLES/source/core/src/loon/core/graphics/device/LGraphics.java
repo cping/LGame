@@ -3,10 +3,10 @@ package loon.core.graphics.device;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Triangle2f;
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
-import loon.utils.GraphicsUtils;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -592,16 +592,16 @@ public final class LGraphics implements LTrans {
 		int newx = x;
 		int newy = y;
 		if (anchor == 0) {
-			anchor = LGraphics.TOP | LGraphics.LEFT;
+			anchor = LTrans.TOP | LTrans.LEFT;
 		}
-		if ((anchor & LGraphics.RIGHT) != 0) {
+		if ((anchor & LTrans.RIGHT) != 0) {
 			newx -= bit.getWidth();
-		} else if ((anchor & LGraphics.HCENTER) != 0) {
+		} else if ((anchor & LTrans.HCENTER) != 0) {
 			newx -= bit.getWidth() / 2;
 		}
-		if ((anchor & LGraphics.BOTTOM) != 0) {
+		if ((anchor & LTrans.BOTTOM) != 0) {
 			newy -= bit.getHeight();
-		} else if ((anchor & LGraphics.VCENTER) != 0) {
+		} else if ((anchor & LTrans.VCENTER) != 0) {
 			newy -= bit.getHeight() / 2;
 		}
 		canvas.drawBitmap(bit, newx, newy, paint);
@@ -953,16 +953,16 @@ public final class LGraphics implements LTrans {
 		int newx = x;
 		int newy = y;
 		if (anchor == 0) {
-			anchor = LGraphics.TOP | LGraphics.LEFT;
+			anchor = LTrans.TOP | LTrans.LEFT;
 		}
-		if ((anchor & LGraphics.TOP) != 0) {
+		if ((anchor & LTrans.TOP) != 0) {
 			newy -= font.getFontMetrics().ascent;
-		} else if ((anchor & LGraphics.BOTTOM) != 0) {
+		} else if ((anchor & LTrans.BOTTOM) != 0) {
 			newy -= font.getFontMetrics().descent;
 		}
-		if ((anchor & LGraphics.HCENTER) != 0) {
+		if ((anchor & LTrans.HCENTER) != 0) {
 			newx -= font.getTypefacePaint().measureText(message) / 2;
-		} else if ((anchor & LGraphics.RIGHT) != 0) {
+		} else if ((anchor & LTrans.RIGHT) != 0) {
 			newx -= font.getTypefacePaint().measureText(message);
 		}
 		int flag = paint.getFlags();
@@ -979,16 +979,16 @@ public final class LGraphics implements LTrans {
 		int newx = x;
 		int newy = y;
 		if (anchor == 0) {
-			anchor = LGraphics.TOP | LGraphics.LEFT;
+			anchor = LTrans.TOP | LTrans.LEFT;
 		}
-		if ((anchor & LGraphics.TOP) != 0) {
+		if ((anchor & LTrans.TOP) != 0) {
 			newy -= font.getFontMetrics().ascent;
-		} else if ((anchor & LGraphics.BOTTOM) != 0) {
+		} else if ((anchor & LTrans.BOTTOM) != 0) {
 			newy -= font.getFontMetrics().descent;
 		}
-		if ((anchor & LGraphics.HCENTER) != 0) {
+		if ((anchor & LTrans.HCENTER) != 0) {
 			newx -= font.getTypefacePaint().measureText(message) / 2;
-		} else if ((anchor & LGraphics.RIGHT) != 0) {
+		} else if ((anchor & LTrans.RIGHT) != 0) {
 			newx -= font.getTypefacePaint().measureText(message);
 		}
 		int flag = paint.getFlags();
@@ -1696,6 +1696,7 @@ public final class LGraphics implements LTrans {
 		return isClose;
 	}
 
+	@Override
 	public String toString() {
 		return getClass().getSimpleName();
 	}

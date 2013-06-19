@@ -21,7 +21,7 @@ package loon.core.event;
  * @version 0.1
  */
 public abstract interface Drawable {
-	
+
 	public abstract void action(long elapsedTime);
-	
+
 }

@@ -100,13 +100,11 @@ namespace Loon.Core.Geom {
 		public Point(float xa, float ya) {
 			this.CheckPoints();
 			this.SetLocation(xa, ya);
-			this.type = ShapeType.POINT_SHAPE;
 		}
 	
 		public Point(Point p) {
 			this.CheckPoints();
 			this.SetLocation(p);
-			this.type = ShapeType.POINT_SHAPE;
 		}
 	
 		public override Shape Transform(Matrix transform) {

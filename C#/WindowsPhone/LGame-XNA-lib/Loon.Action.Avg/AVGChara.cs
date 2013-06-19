@@ -86,7 +86,7 @@ namespace Loon.Action.Avg
                 }
                 catch (IOException e)
                 {
-                    Loon.Utils.Debug.Log.Exception(e.StackTrace);
+                    Loon.Utils.Debugging.Log.Exception(e.StackTrace);
                 }
                 this.maxWidth = w;
                 this.maxHeight = h;

@@ -24,7 +24,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.core.timer.GameTime;
 
 public class DrawableGameComponent extends GameComponent implements IDrawable {
-	
+
 	private boolean _isInitialized;
 	private boolean _isVisible;
 	private int _drawOrder;

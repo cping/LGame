@@ -61,6 +61,7 @@ public class SDRes extends DataRes implements Resource {
 		return sdState.equals(android.os.Environment.MEDIA_MOUNTED);
 	}
 
+	@Override
 	public InputStream getInputStream() {
 		try {
 			if (in != null) {
@@ -72,10 +73,12 @@ public class SDRes extends DataRes implements Resource {
 		}
 	}
 
+	@Override
 	public String getResourceName() {
 		return name;
 	}
 
+	@Override
 	public URI getURI() {
 		try {
 			if (uri != null) {
@@ -87,6 +90,7 @@ public class SDRes extends DataRes implements Resource {
 		}
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -108,6 +112,7 @@ public class SDRes extends DataRes implements Resource {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}

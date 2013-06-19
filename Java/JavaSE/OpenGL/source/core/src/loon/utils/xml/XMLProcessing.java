@@ -21,7 +21,7 @@ package loon.utils.xml;
  * @version 0.1
  */
 public class XMLProcessing {
-	
+
 	private String text;
 
 	public XMLProcessing(String paramString) {

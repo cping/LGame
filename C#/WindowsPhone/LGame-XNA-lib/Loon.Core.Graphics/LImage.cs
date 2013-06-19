@@ -214,7 +214,7 @@ namespace Loon.Core.Graphics
             }
             catch (Exception ex)
             {
-                Loon.Utils.Debug.Log.Exception(ex);
+                Loon.Utils.Debugging.Log.Exception(ex);
             }
             finally
             {

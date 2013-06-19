@@ -28,8 +28,7 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.utils.TextureUtils;
-
+import loon.core.graphics.opengl.TextureUtils;
 
 public class ParticleSystem {
 
@@ -219,11 +218,10 @@ public class ParticleSystem {
 		if (!visible) {
 			return;
 		}
-		
+
 		if ((sprite == null) && (defaultImageName != null)) {
 			loadSystemParticleImage();
 		}
-
 
 		g.translate(x, y);
 
@@ -247,7 +245,7 @@ public class ParticleSystem {
 				g.setBlendMode(GL.MODE_ALPHA_ONE);
 			}
 
-			ParticlePool pool =  particlesByEmitter.get(emitter);
+			ParticlePool pool = particlesByEmitter.get(emitter);
 			LTexture image = emitter.getImage();
 			if (image == null) {
 				image = this.sprite;
@@ -258,7 +256,7 @@ public class ParticleSystem {
 			}
 
 			for (int i = 0; i < pool.particles.length; i++) {
-				if (pool.particles[i].inUse()){
+				if (pool.particles[i].inUse()) {
 					pool.particles[i].render();
 				}
 			}
@@ -359,8 +357,7 @@ public class ParticleSystem {
 
 	public void release(Particle particle) {
 		if (particle != dummy) {
-			ParticlePool pool = particlesByEmitter.get(particle
-					.getEmitter());
+			ParticlePool pool = particlesByEmitter.get(particle.getEmitter());
 			pool.available.add(particle);
 		}
 	}

@@ -225,8 +225,8 @@ final public class CollectionUtils {
 		Object[] copy = (newType == Object[].class) ? new Object[newLength]
 				: (Object[]) Array.newInstance(newType.getComponentType(),
 						newLength);
-		System.arraycopy(original, 0, copy, 0, MathUtils.min(original.length,
-				newLength));
+		System.arraycopy(original, 0, copy, 0,
+				MathUtils.min(original.length, newLength));
 		return copy;
 	}
 

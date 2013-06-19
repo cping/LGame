@@ -9,11 +9,10 @@ import loon.core.geom.Point;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.LColor;
-import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LTrans;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.utils.TextureUtils;
+import loon.core.graphics.opengl.TextureUtils;
 
 
 /**
@@ -469,6 +468,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 	/**
 	 * 变更动画
 	 */
+	@Override
 	public void update(long timer) {
 		if (visible) {
 			animation.update(timer);
@@ -489,6 +489,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		return animation.getSpriteImage();
 	}
 
+	@Override
 	public int getWidth() {
 		LTexture si = animation.getSpriteImage();
 		if (si == null) {
@@ -497,6 +498,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		return (int) (si.getWidth() * scaleX);
 	}
 
+	@Override
 	public int getHeight() {
 		LTexture si = animation.getSpriteImage();
 		if (si == null) {
@@ -522,7 +524,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 	 * @return
 	 */
 	public float getDistance(Sprite second) {
-		return (float) this.getMiddlePoint()
+		return this.getMiddlePoint()
 				.distanceTo(second.getMiddlePoint());
 	}
 
@@ -531,6 +533,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 	 * 
 	 * @return
 	 */
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(getLocation().x(), getLocation().y(), getWidth(),
 				getHeight());
@@ -571,6 +574,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 
 	private LColor filterColor;
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -589,7 +593,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 				g.drawTexture(image, x(), y(), width, height, rotation);
 			} else {
 				g.drawRegion(image, 0, 0, getWidth(), getHeight(), transform,
-						x(), y(), LGraphics.TOP | LGraphics.LEFT);
+						x(), y(), LTrans.TOP | LTrans.LEFT);
 			}
 			if (alpha > 0 && alpha < 1) {
 				g.setAlpha(1);
@@ -604,7 +608,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 						filterColor);
 			} else {
 				g.drawRegion(image, 0, 0, getWidth(), getHeight(), transform,
-						x(), y(), LGraphics.TOP | LGraphics.LEFT, filterColor);
+						x(), y(), LTrans.TOP | LTrans.LEFT, filterColor);
 			}
 			if (alpha > 0 && alpha < 1) {
 				g.setAlpha(1);
@@ -613,10 +617,12 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		}
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
@@ -645,10 +651,12 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		this.filterColor = filterColor;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return this.image;
 	}
 
+	@Override
 	public float getScaleX() {
 		return scaleX;
 	}
@@ -657,6 +665,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		this.scaleX = scaleX;
 	}
 
+	@Override
 	public float getScaleY() {
 		return scaleY;
 	}
@@ -665,6 +674,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		this.scaleY = scaleY;
 	}
 
+	@Override
 	public void dispose() {
 		this.visible = false;
 		if (image != null) {
@@ -677,34 +687,42 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		}
 	}
 
+	@Override
 	public Field2D getField2D() {
 		return null;
 	}
 
+	@Override
 	public boolean isBounded() {
 		return false;
 	}
 
+	@Override
 	public boolean isContainer() {
 		return false;
 	}
 
+	@Override
 	public boolean inContains(int x, int y, int w, int h) {
 		return false;
 	}
 
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}
 
+	@Override
 	public int getContainerWidth() {
 		return 0;
 	}
 
+	@Override
 	public int getContainerHeight() {
 		return 0;
 	}
 
+	@Override
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;
 		this.scaleY = sy;

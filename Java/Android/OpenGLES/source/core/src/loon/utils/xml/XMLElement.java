@@ -141,6 +141,18 @@ public class XMLElement implements LRelease {
 		return this.contents.iterator();
 	}
 
+	public ArrayList<XMLElement> list() {
+		ArrayList<XMLElement> lists = new ArrayList<XMLElement>(contents.size());
+		for (Iterator<?> e = elements(); e.hasNext();) {
+			Object o = e.next();
+			if (!(o instanceof XMLElement)) {
+				continue;
+			}
+			lists.add((XMLElement) o);
+		}
+		return lists;
+	}
+	
 	public XMLElement getFirstChild() {
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
@@ -241,6 +253,7 @@ public class XMLElement implements LRelease {
 		return sbr.toString();
 	}
 
+	@Override
 	public String toString() {
 		Set<?> set = this.attributes.keySet();
 		String str1 = "<" + this.name;
@@ -265,6 +278,7 @@ public class XMLElement implements LRelease {
 		this.contents.add(o);
 	}
 
+	@Override
 	public void dispose() {
 		if (attributes != null) {
 			attributes.clear();

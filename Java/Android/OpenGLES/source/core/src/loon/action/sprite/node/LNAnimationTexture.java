@@ -131,7 +131,7 @@ public class LNAnimationTexture {
 	public final void setAnimationTime(float totalTime) {
 		int count = this._timeList.size();
 		if (count > 0) {
-			float item = totalTime / ((float) count);
+			float item = totalTime / (count);
 			this._timeList.clear();
 			for (int i = 0; i < count; i++) {
 				this._timeList.add(item);

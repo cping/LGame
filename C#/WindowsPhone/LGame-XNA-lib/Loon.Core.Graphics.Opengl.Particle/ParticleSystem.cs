@@ -325,7 +325,7 @@ namespace Loon.Core.Graphics.Opengl.Particle
             }
             catch (Exception e)
             {
-                Loon.Utils.Debug.Log.Exception(e);
+                Loon.Utils.Debugging.Log.Exception(e);
                 defaultImageName = null;
             }
 
@@ -402,7 +402,7 @@ namespace Loon.Core.Graphics.Opengl.Particle
                 return p;
             }
 
-            Loon.Utils.Debug.Log.DebugWrite("Ran out of particles (increase the limit)!");
+            Loon.Utils.Debugging.Log.DebugWrite("Ran out of particles (increase the limit)!");
             return dummy;
         }
 

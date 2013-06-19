@@ -64,11 +64,13 @@ public class DefImage extends DefinitionObject {
 		LNDataCache.setImage(this, this.uniqueID);
 	}
 
+	@Override
 	public void definitionObjectDidFinishParsing() {
 		super.definitionObjectDidFinishParsing();
 		LNDataCache.setImage(this, this.uniqueID);
 	}
 
+	@Override
 	public void definitionObjectDidReceiveString(String v) {
 		super.definitionObjectDidReceiveString(v);
 		ArrayList<String> result = getResult(v);

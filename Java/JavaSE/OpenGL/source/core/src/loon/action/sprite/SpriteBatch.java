@@ -39,10 +39,10 @@ import loon.core.graphics.opengl.GLMesh;
 import loon.core.graphics.opengl.LSTRDictionary;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.graphics.opengl.GLAttributes.Usage;
 import loon.core.graphics.opengl.GLMesh.VertexDataType;
 import loon.utils.MathUtils;
-import loon.utils.TextureUtils;
 
 public class SpriteBatch implements LRelease {
 

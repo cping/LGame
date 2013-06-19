@@ -468,16 +468,19 @@ public class LInfo extends LContainer {
 		}
 	}
 
+	@Override
 	protected void processTouchClicked() {
 		this.doClick();
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected() && this.input.getKeyPressed() == Key.ENTER) {
 			this.doClick();
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -525,6 +528,7 @@ public class LInfo extends LContainer {
 		}
 	}
 
+	@Override
 	protected synchronized void createCustomUI(GLEx g, int x, int y, int w,
 			int h) {
 		if (!visible) {
@@ -536,6 +540,7 @@ public class LInfo extends LContainer {
 		flag.draw(g);
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		if (!locked) {
 			if (getContainer() != null) {
@@ -545,6 +550,7 @@ public class LInfo extends LContainer {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 
@@ -618,6 +624,7 @@ public class LInfo extends LContainer {
 		this.locked = locked;
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (page != null) {
@@ -634,6 +641,7 @@ public class LInfo extends LContainer {
 		}
 	}
 
+	@Override
 	public String getUIName() {
 		return "Info";
 	}

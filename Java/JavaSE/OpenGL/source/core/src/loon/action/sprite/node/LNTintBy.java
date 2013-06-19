@@ -24,10 +24,10 @@ import loon.core.graphics.LColor;
 
 public class LNTintBy extends LNAction {
 
-	LNTintBy(){
-		
+	LNTintBy() {
+
 	}
-	
+
 	protected LColor _delta;
 
 	protected LColor _from;

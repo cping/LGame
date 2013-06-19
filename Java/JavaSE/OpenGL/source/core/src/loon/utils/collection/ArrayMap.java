@@ -377,6 +377,32 @@ public class ArrayMap {
 		size = newSize;
 	}
 
+	public String toString() {
+		return toString(',');
+	}
+
+	public String toString(char split) {
+		if (size == 0) {
+			return "[]";
+		}
+		Entry[] values = this.valueTables;
+		StringBuilder buffer = new StringBuilder(
+				CollectionUtils.INITIAL_CAPACITY);
+		buffer.append('[');
+		for (int i = 0; i < size; i++) {
+			Object key = values[i].key;
+			Object value = values[i].value;
+			buffer.append(key == this ? "(this Map)" : key);
+			buffer.append('=');
+			buffer.append(value == this ? "(this Map)" : value);
+			if (i < size - 1) {
+				buffer.append(split).append(' ');
+			}
+		}
+		buffer.append(']');
+		return buffer.toString();
+	}
+
 	public class Entry {
 
 		int hashCode;

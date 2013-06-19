@@ -236,6 +236,7 @@ public class LGradation implements LRelease {
 		gradations.clear();
 	}
 
+	@Override
 	public void dispose() {
 		if (drawTexWidth != null) {
 			drawTexWidth.destroy();

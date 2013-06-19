@@ -309,6 +309,7 @@ public class GLSurfaceViewCupcake extends SurfaceView implements SurfaceHolder.C
 
 	/** This method is part of the SurfaceHolder.Callback interface, and is not normally called or subclassed by clients of
 	 * GLSurfaceView. */
+	@Override
 	public void surfaceCreated (SurfaceHolder holder) {
 		if (mGLThread != null) {
 			mGLThread.surfaceCreated();
@@ -318,6 +319,7 @@ public class GLSurfaceViewCupcake extends SurfaceView implements SurfaceHolder.C
 
 	/** This method is part of the SurfaceHolder.Callback interface, and is not normally called or subclassed by clients of
 	 * GLSurfaceView. */
+	@Override
 	public void surfaceDestroyed (SurfaceHolder holder) {
 		// Surface will be destroyed when we return
 		if (mGLThread != null) {
@@ -328,6 +330,7 @@ public class GLSurfaceViewCupcake extends SurfaceView implements SurfaceHolder.C
 
 	/** This method is part of the SurfaceHolder.Callback interface, and is not normally called or subclassed by clients of
 	 * GLSurfaceView. */
+	@Override
 	public void surfaceChanged (SurfaceHolder holder, int format, int w, int h) {
 		if (mGLThread != null) {
 			mGLThread.onWindowResize(w, h);
@@ -404,6 +407,7 @@ public class GLSurfaceViewCupcake extends SurfaceView implements SurfaceHolder.C
 			mConfigSpec = configSpec;
 		}
 
+		@Override
 		public EGLConfig chooseConfig (EGL10 egl, EGLDisplay display) {
 			int[] num_config = new int[1];
 			egl.eglChooseConfig(display, mConfigSpec, null, 0, num_config);

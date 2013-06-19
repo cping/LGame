@@ -33,9 +33,10 @@ using Loon.Action.Sprite;
 using Loon.Core.Geom;
 using Loon.Action.Collision;
 using Loon.Core.Graphics.Component;
-using Loon.Utils.Debug;
+using Loon.Utils.Debugging;
 using Loon.Action;
 using Loon.Utils;
+using Loon.Media;
 
 namespace Loon.Core.Graphics
 {
@@ -55,7 +56,7 @@ namespace Loon.Core.Graphics
         void Call();
     }
 
-    public abstract class Screen : LInput
+    public abstract class Screen :_DoubleAbstract, LInput
     {
 
         private List<ScreenListener> screens;
@@ -435,7 +436,6 @@ namespace Loon.Core.Graphics
                 screen.SetClose(false);
                 screen.OnLoad();
                 screen.SetRepaintMode(SCREEN_CANVAS_REPAINT);
-                screen.SetOnLoadState(true);
                 screen.OnLoaded();
                 screen.SetOnLoadState(true);
 
@@ -1220,46 +1220,6 @@ namespace Loon.Core.Graphics
         public virtual void BottomOn(LObject o)
         {
             LObject.BottomOn(o, GetWidth(), GetHeight());
-        }
-
-        public virtual void PlayAssetsMusic(string file, bool loop)
-        {
-            if (handler != null)
-            {
-                handler.GetAssetsSound().PlaySound(file, loop);
-            }
-        }
-
-        public virtual void ResetAssetsMusic(int vol)
-        {
-            if (handler != null)
-            {
-                handler.GetAssetsSound().SetSoundVolume(vol);
-            }
-        }
-
-        public virtual void ResetAssetsMusic()
-        {
-            if (handler != null)
-            {
-                handler.GetAssetsSound().ResetSound();
-            }
-        }
-
-        public virtual void StopAssetsMusic()
-        {
-            if (handler != null)
-            {
-                handler.GetAssetsSound().StopSound();
-            }
-        }
-
-        public virtual void StopAssetsMusic(int index)
-        {
-            if (handler != null)
-            {
-                handler.GetAssetsSound().StopSound(index);
-            }
         }
 
         public virtual int GetRepaintMode()

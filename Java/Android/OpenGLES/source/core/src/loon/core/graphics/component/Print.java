@@ -445,6 +445,7 @@ public class Print implements LRelease {
 		this.isWait = isWait;
 	}
 
+	@Override
 	public void dispose() {
 		if (strings != null) {
 			strings.dispose();

@@ -12,7 +12,6 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
 import loon.utils.CollectionUtils;
-import loon.utils.TextureUtils;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;

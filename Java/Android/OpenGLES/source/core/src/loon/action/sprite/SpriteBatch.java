@@ -31,7 +31,6 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.opengl.GL;
-import loon.core.graphics.opengl.GL10;
 import loon.core.graphics.opengl.GLAttributes;
 import loon.core.graphics.opengl.GLBatch;
 import loon.core.graphics.opengl.GLEx;
@@ -39,10 +38,10 @@ import loon.core.graphics.opengl.GLMesh;
 import loon.core.graphics.opengl.LSTRDictionary;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.graphics.opengl.GLAttributes.Usage;
 import loon.core.graphics.opengl.GLMesh.VertexDataType;
 import loon.utils.MathUtils;
-import loon.utils.TextureUtils;
 
 public class SpriteBatch implements LRelease {
 
@@ -509,7 +508,7 @@ public class SpriteBatch implements LRelease {
 	public void fillRect(float x, float y, float width, float height) {
 		LColor color = getColor();
 		submit();
-		batch.begin(GL10.GL_TRIANGLE_FAN);
+		batch.begin(GL.GL_TRIANGLE_FAN);
 		{
 			batch.color(color);
 			batch.vertex(x, y);
@@ -1944,7 +1943,7 @@ public class SpriteBatch implements LRelease {
 			mesh.getIndicesBuffer().position(0);
 			mesh.getIndicesBuffer().limit(spritesInBatch * 6);
 			setBlendState(state);
-			mesh.render(GL10.GL_TRIANGLES, 0, spritesInBatch * 6);
+			mesh.render(GL.GL_TRIANGLES, 0, spritesInBatch * 6);
 			idx = 0;
 			currBufferIdx++;
 			if (currBufferIdx == buffers.length) {
@@ -1962,6 +1961,7 @@ public class SpriteBatch implements LRelease {
 		this.lockSubmit = lockSubmit;
 	}
 
+	@Override
 	public void dispose() {
 		for (int i = 0; i < buffers.length; i++) {
 			buffers[i].dispose();

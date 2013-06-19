@@ -513,6 +513,7 @@ public abstract class ActorLayer extends LContainer {
 	 * 
 	 * @param map
 	 */
+	@Override
 	public Field2D getField2D() {
 		return tmpField;
 	}
@@ -869,6 +870,7 @@ public abstract class ActorLayer extends LContainer {
 
 	public abstract void action(long elapsedTime);
 
+	@Override
 	public boolean isBounded() {
 		return this.isBounded;
 	}

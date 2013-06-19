@@ -37,10 +37,12 @@ public class JumpTo extends ActionEvent {
 		this.g = g;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return isComplete;
 	}
 
+	@Override
 	public void onLoad() {
 		this.moveY = moveJump;
 	}
@@ -61,6 +63,7 @@ public class JumpTo extends ActionEvent {
 		this.moveY = moveY;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (moveJump < 0) {
 			if (this.moveY > -(moveJump)) {

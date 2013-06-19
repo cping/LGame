@@ -169,6 +169,7 @@ public class FractionEffect extends LObject implements ISprite {
 	}
 
 	private class PixelThread extends Thread {
+		@Override
 		public void run() {
 			for (; !isClose && !isComplete();) {
 				if (!isVisible) {
@@ -207,10 +208,12 @@ public class FractionEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		this.elapsed = elapsedTime;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -245,26 +248,32 @@ public class FractionEffect extends LObject implements ISprite {
 		return stop;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return tmp;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return isVisible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.isVisible = true;
 	}
@@ -285,6 +294,7 @@ public class FractionEffect extends LObject implements ISprite {
 		this.loopMaxCount = loopMaxCount;
 	}
 
+	@Override
 	public void dispose() {
 		this.isClose = true;
 		this.endUsePixelThread();

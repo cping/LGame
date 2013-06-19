@@ -14,7 +14,6 @@ import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
 
-
 /**
  * Copyright 2008 - 2011
  * 

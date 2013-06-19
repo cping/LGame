@@ -57,6 +57,7 @@ public class LNLabelAtlas extends LNAtlasNode {
 
 	private float rotation;
 
+	@Override
 	public void draw(SpriteBatch batch) {
 		if (super._visible) {
 			pos = super.convertToWorldPos();

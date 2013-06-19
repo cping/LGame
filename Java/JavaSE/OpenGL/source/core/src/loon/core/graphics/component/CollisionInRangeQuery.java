@@ -3,7 +3,6 @@ package loon.core.graphics.component;
 import loon.core.geom.RectBox;
 import loon.utils.MathUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2011

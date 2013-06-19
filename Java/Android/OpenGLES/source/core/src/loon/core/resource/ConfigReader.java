@@ -312,6 +312,7 @@ public class ConfigReader implements Expression, LRelease {
 		return isClose;
 	}
 
+	@Override
 	public void dispose() {
 		isClose = true;
 		if (pConfigItems != null) {

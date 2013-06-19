@@ -6,7 +6,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -39,9 +38,9 @@ public class SnowKernel implements IKernel {
 			snowHeight;
 
 	public SnowKernel(int n, int w, int h) {
-		snow = LTextures.loadTexture(
-				(LSystem.FRAMEWORK_IMG_NAME + "snow_" + n + ".png").intern())
-				;
+		snow = LTextures
+				.loadTexture((LSystem.FRAMEWORK_IMG_NAME + "snow_" + n + ".png")
+						.intern());
 		snowWidth = snow.getWidth();
 		snowHeight = snow.getHeight();
 		width = w;

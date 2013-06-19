@@ -216,8 +216,8 @@ public class LColor implements Serializable {
 	public final static LColor purple = new LColor(0xff800080);
 
 	public final static LColor wheat = new LColor(0xfff5deb3);
-	
-    public final static LColor gold = new LColor(0xffffd700);
+
+	public final static LColor gold = new LColor(0xffffd700);
 
 	public static final LColor white = new LColor(1.0f, 1.0f, 1.0f, 1.0f);
 

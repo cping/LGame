@@ -9,12 +9,11 @@ import loon.core.LRelease;
 import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.resource.Resources;
-import loon.utils.TextureUtils;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
-
 
 /**
  * 
@@ -114,7 +113,7 @@ public class TMXTileSet implements LRelease {
 		}
 
 		if (loadImage) {
-			String path = map.getTilesLocation() + "/" + fileName;
+			String path = map.getTilesLocation() + '/' + fileName;
 			LTexture image;
 			if (trans != null) {
 				image = TextureUtils.filterColor(path, trans);

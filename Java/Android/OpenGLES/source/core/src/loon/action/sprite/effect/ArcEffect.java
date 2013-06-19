@@ -90,14 +90,17 @@ public class ArcEffect extends LObject implements ISprite {
 		this.color = color;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (complete) {
 			return;
@@ -110,6 +113,7 @@ public class ArcEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -155,22 +159,27 @@ public class ArcEffect extends LObject implements ISprite {
 		this.turn = turn;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void dispose() {
 
 	}

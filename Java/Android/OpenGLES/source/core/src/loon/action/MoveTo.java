@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.core.LSystem;
 import loon.core.geom.Vector2f;
@@ -110,6 +111,7 @@ public class MoveTo extends ActionEvent {
 		return new float[] { endX, endY };
 	}
 
+	@Override
 	public void onLoad() {
 		if (layerMap == null || original == null) {
 			return;
@@ -167,6 +169,7 @@ public class MoveTo extends ActionEvent {
 		}
 	}
 
+	@Override
 	public int hashCode() {
 		if (layerMap == null || original == null) {
 			return super.hashCode();
@@ -190,6 +193,7 @@ public class MoveTo extends ActionEvent {
 		return hashCode;
 	}
 
+	@Override
 	public void start(ActionBind target) {
 		super.start(target);
 		startLocation.set(target.getX(), target.getY());
@@ -213,6 +217,7 @@ public class MoveTo extends ActionEvent {
 		return layerMap;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (layerMap == null || original == null || pActorPath == null) {
 			return;
@@ -244,31 +249,31 @@ public class MoveTo extends ActionEvent {
 				pActorPath.remove(0);
 			}
 			switch (direction) {
-			case Field2D.TUP:
+			case Config.TUP:
 				startY -= speed;
 				if (startY < endY) {
 					startY = endY;
 				}
 				break;
-			case Field2D.TDOWN:
+			case Config.TDOWN:
 				startY += speed;
 				if (startY > endY) {
 					startY = endY;
 				}
 				break;
-			case Field2D.TLEFT:
+			case Config.TLEFT:
 				startX -= speed;
 				if (startX < endX) {
 					startX = endX;
 				}
 				break;
-			case Field2D.TRIGHT:
+			case Config.TRIGHT:
 				startX += speed;
 				if (startX > endX) {
 					startX = endX;
 				}
 				break;
-			case Field2D.UP:
+			case Config.UP:
 				startX += speed;
 				startY -= speed;
 				if (startX > endX) {
@@ -278,7 +283,7 @@ public class MoveTo extends ActionEvent {
 					startY = endY;
 				}
 				break;
-			case Field2D.DOWN:
+			case Config.DOWN:
 				startX -= speed;
 				startY += speed;
 				if (startX < endX) {
@@ -288,7 +293,7 @@ public class MoveTo extends ActionEvent {
 					startY = endY;
 				}
 				break;
-			case Field2D.LEFT:
+			case Config.LEFT:
 				startX -= speed;
 				startY -= speed;
 				if (startX < endX) {
@@ -298,7 +303,7 @@ public class MoveTo extends ActionEvent {
 					startY = endY;
 				}
 				break;
-			case Field2D.RIGHT:
+			case Config.RIGHT:
 				startX += speed;
 				startY += speed;
 				if (startX > endX) {
@@ -340,6 +345,7 @@ public class MoveTo extends ActionEvent {
 		this.speed = speed;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return pActorPath == null || pActorPath.size() == 0 || isComplete
 				|| original == null;

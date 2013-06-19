@@ -35,6 +35,7 @@ public class CollisionPointQuery implements CollisionQuery {
 		this.cls = cls;
 	}
 
+	@Override
 	public boolean checkCollision(Actor actor) {
 		return this.cls != null && !this.cls.isInstance(actor) ? false : actor
 				.containsPoint(this.x, this.y);

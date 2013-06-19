@@ -23,19 +23,18 @@ package loon.core.graphics.opengl.particle;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.MathUtils;
 
-
 public class FireEmitter implements ParticleEmitter {
-	
+
 	private int x;
 
 	private int y;
-	
+
 	private int interval = 50;
 
 	private long timer;
 
 	private float size = 40;
-	
+
 	public FireEmitter() {
 	}
 
@@ -49,7 +48,7 @@ public class FireEmitter implements ParticleEmitter {
 		this.y = y;
 		this.size = size;
 	}
-	
+
 	public void update(ParticleSystem system, long delta) {
 		timer -= delta;
 		if (timer <= 0) {
@@ -58,9 +57,9 @@ public class FireEmitter implements ParticleEmitter {
 			p.setColor(1, 1, 1, 0.5f);
 			p.setPosition(x, y);
 			p.setSize(size);
-			float vx =  (-0.02f + (MathUtils.random() * 0.04f));
-			float vy =  (-(MathUtils.random() * 0.15f));
-			p.setVelocity(vx,vy,1.1f);
+			float vx = (-0.02f + (MathUtils.random() * 0.04f));
+			float vy = (-(MathUtils.random() * 0.15f));
+			p.setVelocity(vx, vy, 1.1f);
 		}
 	}
 
@@ -71,7 +70,7 @@ public class FireEmitter implements ParticleEmitter {
 			particle.adjustSize(-0.04f * delta * (size / 40.0f));
 		}
 		float c = 0.002f * delta;
-		particle.adjustColor(0,-c/2,-c*2,-c/4);
+		particle.adjustColor(0, -c / 2, -c * 2, -c / 4);
 	}
 
 	public boolean isEnabled() {

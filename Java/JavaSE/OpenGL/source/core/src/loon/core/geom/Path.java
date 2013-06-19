@@ -50,7 +50,6 @@ public class Path extends Shape {
 			localPoints = new ArrayList<float[]>(10);
 		}
 		this.set(sx, sy);
-		this.type = ShapeType.PATH_SHAPE;
 	}
 
 	public void set(float sx, float sy) {

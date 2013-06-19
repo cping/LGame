@@ -5,7 +5,6 @@ import java.util.List;
 import loon.core.geom.Vector2f;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -84,18 +83,14 @@ public class Speed {
 	public void set(float direction, float length) {
 		this.length = length;
 		this.direction = direction;
-		this.dx = (length * MathUtils.cos(MathUtils
-				.toRadians(direction)));
-		this.dy = (length * MathUtils.sin(MathUtils
-				.toRadians(direction)));
+		this.dx = (length * MathUtils.cos(MathUtils.toRadians(direction)));
+		this.dy = (length * MathUtils.sin(MathUtils.toRadians(direction)));
 	}
 
 	public void setDirection(float direction) {
 		this.direction = direction;
-		this.dx = (this.length * MathUtils.cos(MathUtils
-				.toRadians(direction)));
-		this.dy = (this.length * MathUtils.sin(MathUtils
-				.toRadians(direction)));
+		this.dx = (this.length * MathUtils.cos(MathUtils.toRadians(direction)));
+		this.dy = (this.length * MathUtils.sin(MathUtils.toRadians(direction)));
 	}
 
 	public void add(Speed other) {
@@ -103,8 +98,7 @@ public class Speed {
 		this.dy += other.dy;
 		this.direction = (int) MathUtils.toDegrees(MathUtils.atan2(this.dy,
 				this.dx));
-		this.length = MathUtils.sqrt(this.dx * this.dx + this.dy
-				* this.dy);
+		this.length = MathUtils.sqrt(this.dx * this.dx + this.dy * this.dy);
 	}
 
 	public float getX() {

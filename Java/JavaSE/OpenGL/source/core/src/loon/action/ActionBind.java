@@ -23,15 +23,14 @@ package loon.action;
 import loon.action.map.Field2D;
 import loon.core.geom.RectBox;
 
-
 public interface ActionBind {
-	
+
 	public Field2D getField2D();
 
 	public int x();
 
 	public int y();
-	
+
 	public float getX();
 
 	public float getY();
@@ -61,7 +60,7 @@ public interface ActionBind {
 	public boolean isContainer();
 
 	public boolean inContains(int x, int y, int w, int h);
-	
+
 	public RectBox getRectBox();
 
 	public int getContainerWidth();

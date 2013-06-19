@@ -35,7 +35,8 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 
 	private Class<?> cls;
 
-	public void init(float x, float y, float distance, boolean diag, Class<?> cls) {
+	public void init(float x, float y, float distance, boolean diag,
+			Class<?> cls) {
 		this.x = x;
 		this.y = y;
 		this.distance = distance;

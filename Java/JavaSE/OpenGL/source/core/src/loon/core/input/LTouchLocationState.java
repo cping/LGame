@@ -21,7 +21,7 @@
 package loon.core.input;
 
 public enum LTouchLocationState {
-	
+
 	Invalid, Dragged, Pressed, Released;
 
 	public int getValue() {

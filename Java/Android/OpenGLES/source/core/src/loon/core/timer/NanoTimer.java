@@ -131,10 +131,12 @@ public class NanoTimer extends SystemTimer {
 		return virtualNanoTime;
 	}
 
+	@Override
 	public long getTimeMillis() {
 		return nanoTime() / 1000000;
 	}
 
+	@Override
 	public long getTimeMicros() {
 		return nanoTime() / 1000;
 	}

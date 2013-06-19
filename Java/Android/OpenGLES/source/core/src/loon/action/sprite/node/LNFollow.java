@@ -103,6 +103,7 @@ public class LNFollow extends LNAction {
 		return follow;
 	}
 
+	@Override
 	public void step(float dt) {
 		if (_boundarySet) {
 			if (_boundaryFullyCovered) {
@@ -118,12 +119,14 @@ public class LNFollow extends LNAction {
 		}
 	}
 
+	@Override
 	public void update(float time) {
 		if (_followedNode._isClose) {
 			super._isEnd = true;
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_followedNode, winRect);
 	}

@@ -8,7 +8,6 @@ import java.util.LinkedList;
 
 import loon.utils.CollectionUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2011

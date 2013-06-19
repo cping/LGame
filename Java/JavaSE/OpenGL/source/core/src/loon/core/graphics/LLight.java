@@ -2,7 +2,6 @@ package loon.core.graphics;
 
 import java.util.ArrayList;
 
-
 /**
  * Copyright 2008 - 2011
  * 

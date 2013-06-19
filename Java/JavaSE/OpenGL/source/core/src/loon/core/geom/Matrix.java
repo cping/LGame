@@ -4,8 +4,6 @@ import java.util.Collection;
 
 import loon.utils.MathUtils;
 
-
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -29,11 +27,8 @@ import loon.utils.MathUtils;
  */
 public final class Matrix {
 
-	public static final Matrix IDENTITY =
-			new Matrix(new float[]{1, 0, 0, 0,
-					   0, 1, 0, 0,
-					   0, 0, 1, 0,
-					   0, 0, 0, 1});
+	public static final Matrix IDENTITY = new Matrix(new float[] { 1, 0, 0, 0,
+			0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 });
 
 	float[] matrixs;
 
@@ -189,14 +184,14 @@ public final class Matrix {
 		return this;
 	}
 
-	public float  getTranslationX() {
+	public float getTranslationX() {
 		return this.matrixs[6];
 	}
 
-	public float  getTranslationY() {
+	public float getTranslationY() {
 		return this.matrixs[7];
 	}
-	
+
 	public void translation(float x, float y) {
 		this.matrixs[0] = 1;
 		this.matrixs[1] = 0;
@@ -223,7 +218,7 @@ public final class Matrix {
 		this.matrixs[7] = 0;
 		this.matrixs[8] = 1;
 	}
-	
+
 	private float[] result = new float[16];
 
 	public float[] get() {

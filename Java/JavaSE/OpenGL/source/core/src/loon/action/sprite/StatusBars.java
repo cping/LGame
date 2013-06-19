@@ -28,7 +28,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.CollectionUtils;
 
-
 public final class StatusBars extends LObject implements ISprite {
 
 	/**

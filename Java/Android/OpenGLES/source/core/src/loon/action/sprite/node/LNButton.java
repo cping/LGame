@@ -78,6 +78,7 @@ public class LNButton extends LNUI {
 		return button;
 	}
 
+	@Override
 	public void setAlpha(float a) {
 		super._alpha = a;
 		super._color.a = a;
@@ -240,6 +241,7 @@ public class LNButton extends LNUI {
 	
 	private boolean isPressed, isDraging;
 
+	@Override
 	public void processTouchPressed() {
 		if (!isPressed) {
 			super.processTouchPressed();
@@ -255,6 +257,7 @@ public class LNButton extends LNUI {
 		}
 	}
 
+	@Override
 	public void processTouchReleased() {
 		if (isPressed) {
 			super.processTouchReleased();
@@ -280,6 +283,7 @@ public class LNButton extends LNUI {
 		}
 	}
 
+	@Override
 	public void processTouchDragged() {
 		super.processTouchDragged();
 		for (String key : this._buttonElement.keySet()) {
@@ -292,6 +296,7 @@ public class LNButton extends LNUI {
 		isDraging = true;
 	}
 
+	@Override
 	public void update(float dt) {
 		super.update(dt);
 		if (isDraging && !Touch.isDrag()) {

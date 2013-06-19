@@ -1307,6 +1307,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 		return isClose;
 	}
 
+	@Override
 	public void dispose() {
 		this.isClose = true;
 		if (readBuffer != null) {

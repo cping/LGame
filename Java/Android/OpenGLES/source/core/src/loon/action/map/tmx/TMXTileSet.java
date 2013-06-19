@@ -9,8 +9,8 @@ import loon.core.LRelease;
 import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.resource.Resources;
-import loon.utils.TextureUtils;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -80,7 +80,7 @@ public class TMXTileSet implements LRelease {
 				XMLElement docElement = doc.getRoot();
 				element = docElement;
 			} catch (Exception e) {
-				throw new RuntimeException(this.map.tilesLocation + "/"
+				throw new RuntimeException(this.map.tilesLocation + '/'
 						+ source);
 			}
 		}
@@ -197,6 +197,7 @@ public class TMXTileSet implements LRelease {
 		return (gid >= firstGID) && (gid <= lastGID);
 	}
 
+	@Override
 	public void dispose() {
 		if (tiles != null) {
 			tiles.dispose();

@@ -170,7 +170,7 @@ namespace Loon.Action.Collision
                     }
                     catch (Exception e)
                     {
-                        Loon.Utils.Debug.Log.Exception(e);
+                        Loon.Utils.Debugging.Log.Exception(e);
                     }
                 }
             }

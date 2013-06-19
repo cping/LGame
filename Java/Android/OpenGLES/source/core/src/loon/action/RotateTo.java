@@ -40,15 +40,18 @@ public class RotateTo extends ActionEvent {
 		this.speed = speed;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return isComplete;
 	}
 
+	@Override
 	public void onLoad() {
 		startAngle = original.getRotation();
 		diffAngle = 1;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		startAngle += diffAngle * speed;
 		original.setRotation(startAngle);

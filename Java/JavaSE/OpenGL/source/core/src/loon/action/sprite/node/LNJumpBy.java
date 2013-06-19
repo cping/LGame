@@ -24,9 +24,9 @@ import loon.core.geom.Vector2f;
 import loon.utils.MathUtils;
 
 public class LNJumpBy extends LNAction {
-	
-	LNJumpBy(){
-		
+
+	LNJumpBy() {
+
 	}
 
 	protected Vector2f _delta;

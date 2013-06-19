@@ -13,7 +13,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;
 
-
 /**
  * Copyright 2008 - 2011
  * 

@@ -162,6 +162,7 @@ public abstract class Drawable implements LRelease {
 		this._enabled = e;
 	}
 
+	@Override
 	public void dispose() {
 		this._enabled = false;
 	}

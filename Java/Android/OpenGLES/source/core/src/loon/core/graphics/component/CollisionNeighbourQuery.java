@@ -43,6 +43,7 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 		this.cls = cls;
 	}
 
+	@Override
 	public boolean checkCollision(Actor actor) {
 		if (this.cls != null && !this.cls.isInstance(actor)) {
 			return false;

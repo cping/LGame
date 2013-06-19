@@ -21,7 +21,7 @@ package loon.utils.xml;
  * @version 0.1
  */
 public class XMLComment {
-	
+
 	private String text;
 
 	public String getText() {

@@ -20,29 +20,25 @@
  */
 package loon.action.sprite.node;
 
-public class LNCallFuncN extends LNAction
-{
-    protected Callback _c;
-    
-    LNCallFuncN(){
-    	
-    }
+public class LNCallFuncN extends LNAction {
+	protected Callback _c;
 
-    public static LNCallFuncN Action(Callback c)
-    {
-        LNCallFuncN cn = new LNCallFuncN();
-        cn._c = c;
-        return cn;
-    }
+	LNCallFuncN() {
 
-    public void step(float dt)
-    {
-    	_c.invoke(super._target);
-        super._isEnd = true;
-    }
+	}
 
-	public static interface Callback
-	{
+	public static LNCallFuncN Action(Callback c) {
+		LNCallFuncN cn = new LNCallFuncN();
+		cn._c = c;
+		return cn;
+	}
+
+	public void step(float dt) {
+		_c.invoke(super._target);
+		super._isEnd = true;
+	}
+
+	public static interface Callback {
 		void invoke(LNNode node);
 	}
 

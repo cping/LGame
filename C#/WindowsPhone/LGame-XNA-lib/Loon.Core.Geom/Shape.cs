@@ -4,8 +4,6 @@ namespace Loon.Core.Geom {
 	
 	public abstract class Shape {
 	
-		internal ShapeType type;
-	
 		public float x;
 	
 		public float y;
@@ -36,7 +34,6 @@ namespace Loon.Core.Geom {
 	
 		public Shape() {
 			pointsDirty = true;
-			type = ShapeType.DEFAULT_SHAPE;
 			scaleX = scaleY = 1f;
 		}
 	
@@ -548,10 +545,6 @@ namespace Loon.Core.Geom {
 	
 		public virtual float GetHeight() {
 			return maxY - minY;
-		}
-	
-		public ShapeType GetShapeType() {
-			return this.type;
 		}
 	
 		public virtual RectBox GetRect() {

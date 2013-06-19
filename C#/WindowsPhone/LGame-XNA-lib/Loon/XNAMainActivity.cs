@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Loon.Core.Graphics.Opengl;
 using Loon.Java;
-using Loon.Utils.Debug;
+using Loon.Utils.Debugging;
 
 namespace Loon
 {

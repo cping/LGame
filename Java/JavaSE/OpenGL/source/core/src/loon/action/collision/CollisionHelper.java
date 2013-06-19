@@ -9,7 +9,6 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.LImage;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -162,8 +161,9 @@ public final class CollisionHelper {
 				- 1, width2 = x2 + dest.getWidth() - 1, height2 = y2
 				+ dest.getHeight() - 1;
 
-		int xstart = (int) MathUtils.max(x1, x2), ystart = (int) MathUtils.max(y1, y2), xend = (int) MathUtils
-				.min(width1, width2), yend = (int) MathUtils.min(height1, height2);
+		int xstart = (int) MathUtils.max(x1, x2), ystart = (int) MathUtils.max(
+				y1, y2), xend = (int) MathUtils.min(width1, width2), yend = (int) MathUtils
+				.min(height1, height2);
 
 		int toty = MathUtils.abs(yend - ystart);
 		int totx = MathUtils.abs(xend - xstart);

@@ -34,6 +34,7 @@ public class LNCallFunc extends LNAction {
 		return func;
 	}
 
+	@Override
 	public void step(float dt) {
 		this._c.invoke();
 		super._isEnd = true;
@@ -43,6 +44,7 @@ public class LNCallFunc extends LNAction {
 		void invoke();
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_c);
 	}

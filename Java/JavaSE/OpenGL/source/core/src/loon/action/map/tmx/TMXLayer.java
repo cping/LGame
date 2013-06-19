@@ -10,13 +10,12 @@ import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.graphics.LLight;
 import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.GLUtils;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;
 import loon.net.Base64Coder;
-import loon.utils.GLUtils;
 import loon.utils.xml.XMLElement;
-
 
 /**
  * 
@@ -306,7 +305,7 @@ public class TMXLayer extends LLight implements LRelease {
 				mapTileSet.cache = tmxTileSet.tiles.newCache();
 				mapTileSet.cache.x = x;
 				mapTileSet.cache.y = y;
-				
+
 				lazyMaps.put(keyHashCode, mapTileSet);
 
 				if (lightingOn) {

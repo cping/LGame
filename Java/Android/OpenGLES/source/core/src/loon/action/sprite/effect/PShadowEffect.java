@@ -4,6 +4,7 @@ import loon.action.sprite.ISprite;
 import loon.core.LObject;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LImage;
 import loon.core.graphics.opengl.GLEx;
@@ -11,7 +12,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
-import loon.utils.GraphicsUtils;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -201,6 +201,7 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.startUsePixelThread();
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -227,6 +228,7 @@ public class PShadowEffect extends LObject implements ISprite {
 
 	private long elapsed;
 
+	@Override
 	public void update(long elapsedTime) {
 		this.elapsed = elapsedTime;
 	}
@@ -236,6 +238,7 @@ public class PShadowEffect extends LObject implements ISprite {
 	private final static int WHITE = LColor.white.getRGB();
 
 	private class PixelThread extends Thread {
+		@Override
 		public void run() {
 			for (; !isClose && !isComplete();) {
 				if (image == null) {
@@ -276,10 +279,12 @@ public class PShadowEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
@@ -321,10 +326,12 @@ public class PShadowEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
@@ -342,34 +349,42 @@ public class PShadowEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public int getLayer() {
 		return layer;
 	}
 
+	@Override
 	public void setLayer(int layer) {
 		this.layer = layer;
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x, y, width, height);
 	}
 
+	@Override
 	public int x() {
 		return x;
 	}
 
+	@Override
 	public int y() {
 		return y;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
@@ -390,6 +405,7 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.pixelSkip = pixelSkip;
 	}
 
+	@Override
 	public void dispose() {
 		this.isClose = true;
 		this.endUsePixelThread();

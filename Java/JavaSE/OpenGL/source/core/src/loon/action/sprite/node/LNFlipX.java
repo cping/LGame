@@ -23,9 +23,9 @@ package loon.action.sprite.node;
 public class LNFlipX extends LNAction {
 
 	protected boolean _flipX;
-	
-	LNFlipX(){
-		
+
+	LNFlipX() {
+
 	}
 
 	public static LNFlipX Action(boolean fx) {

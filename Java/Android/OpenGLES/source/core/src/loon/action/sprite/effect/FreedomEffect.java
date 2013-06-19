@@ -226,6 +226,7 @@ public class FreedomEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (visible && timer.action(elapsedTime)) {
 			for (int i = 0; i < count; i++) {
@@ -235,6 +236,7 @@ public class FreedomEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (visible) {
 			if (dirty) {
@@ -270,14 +272,17 @@ public class FreedomEffect extends LObject implements ISprite {
 		timer.setDelay(delay);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -286,6 +291,7 @@ public class FreedomEffect extends LObject implements ISprite {
 		this.height = height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
@@ -294,6 +300,7 @@ public class FreedomEffect extends LObject implements ISprite {
 		this.width = width;
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
@@ -302,6 +309,7 @@ public class FreedomEffect extends LObject implements ISprite {
 		this.x = x;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}
@@ -318,30 +326,37 @@ public class FreedomEffect extends LObject implements ISprite {
 		this.kernels = kernels;
 	}
 
+	@Override
 	public int getLayer() {
 		return layer;
 	}
 
+	@Override
 	public void setLayer(int layer) {
 		this.layer = layer;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x, y, width, height);
 	}
 
+	@Override
 	public int x() {
 		return x;
 	}
 
+	@Override
 	public int y() {
 		return y;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public void dispose() {
 		this.visible = false;
 		if (kernels != null) {

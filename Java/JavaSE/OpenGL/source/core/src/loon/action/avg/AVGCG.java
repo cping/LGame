@@ -10,7 +10,6 @@ import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.StringUtils;
 import loon.utils.collection.ArrayMap;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -73,14 +72,15 @@ public class AVGCG {
 
 	private final static String _update(final String n) {
 		String name = n;
-		if (StringUtils.startsWith(n,'"')) {
+		if (StringUtils.startsWith(n, '"')) {
 			name = name.replaceAll("\"", "");
 		}
 		return name;
 	}
 
 	public void setBackgroundCG(final String resName) {
-		this.setBackgroundCG(LTextures.loadTexture(_update(resName), Format.STATIC));
+		this.setBackgroundCG(LTextures.loadTexture(_update(resName),
+				Format.STATIC));
 	}
 
 	public void add(final String resName, AVGChara chara) {
@@ -116,7 +116,7 @@ public class AVGCG {
 	}
 
 	public AVGChara remove(final String resName) {
-		String path =_update(resName);
+		String path = _update(resName);
 		synchronized (charas) {
 			final String name = path.replaceAll(" ", "").toLowerCase();
 			AVGChara chara = null;

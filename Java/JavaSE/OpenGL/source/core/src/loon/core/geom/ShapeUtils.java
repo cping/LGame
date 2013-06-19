@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import loon.utils.MathUtils;
 
-
 public class ShapeUtils {
 
 	public static Vector2f calculateVector(float angle, float magnitude) {
@@ -105,7 +104,7 @@ public class ShapeUtils {
 				+ center.y;
 		return result;
 	}
-	
+
 	public static Triangle triangulate(Vector2f[] vertices) {
 		return triangulate(new TriangleBasic(), vertices);
 	}
@@ -171,7 +170,7 @@ public class ShapeUtils {
 
 	public static void calculateConvexHull(ArrayList<Vector2f> points,
 			ArrayList<Vector2f> convexHullPoints) {
-		if (points.size() <= 1){
+		if (points.size() <= 1) {
 			return;
 		}
 		Vector2f p;

@@ -200,7 +200,7 @@ namespace Loon.Action.Sprite.Node
                 }
                 catch (Exception e)
                 {
-                    Loon.Utils.Debug.Log.Exception(e);
+                    Loon.Utils.Debugging.Log.Exception(e);
                 }
                 if (this.isCurrentElementDefined)
                 {

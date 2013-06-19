@@ -2,8 +2,8 @@ package loon.core.geom;
 
 import java.util.ArrayList;
 
+import loon.physics.PPolygon;
 import loon.utils.CollectionUtils;
-
 
 /**
  * 
@@ -182,14 +182,9 @@ public class Polygon extends Shape {
 			addPoint(xpoints[i], ypoints[i]);
 		}
 	}
-	
-	public Point[] getVertexs() {
-		int size = getPointCount();
-		Point[] verts = new Point[size / 2];
-		for (int i = 0, j = 0; i < size; i += 2, j++) {
-			verts[j] = new Point(points[i], points[i + 1]);
-		}
-		return verts;
+
+	public PPolygon getPPolygon(float scale) {
+		return new PPolygon(points,scale);
 	}
 
 	public void setAllowDuplicatePoints(boolean allowDups) {

@@ -38,6 +38,7 @@ public class XMLDocument {
 		return this.header;
 	}
 
+	@Override
 	public String toString() {
 		return this.header + this.root.toString();
 	}

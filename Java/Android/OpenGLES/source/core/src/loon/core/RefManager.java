@@ -45,6 +45,7 @@ public class RefManager implements LRelease {
 		return objects.add(res);
 	}
 
+	@Override
 	public void dispose() {
 		for (LRelease release : objects) {
 			if (release != null) {

@@ -13,6 +13,8 @@ using Loon.Core.Input;
 using Loon.Core.Event;
 using Loon.Core.Timer;
 using Loon.Core.Graphics.Opengl;
+using Loon.Physics;
+using Loon.Java;
 
 namespace Loon.Action.Sprite
 {
@@ -55,6 +57,121 @@ namespace Loon.Action.Sprite
         private bool isClicked;
 
         protected internal UpdateListener updateListener;
+
+        
+	private bool usePhysics = false;
+
+	private PPhysManager _manager;
+
+	private PWorldBox _box;
+
+	private bool _fixed = false;
+
+	private float _dt = 1F / 60F;
+
+	private void LimitWorld(bool _fixed) {
+		if (_fixed) {
+			if (this._box == null) {
+				this._box = new PWorldBox(_manager, 0f, 0f, GetWidth(),
+						GetHeight());
+			}
+			if (_physicsRect != null) {
+				this._box.Set(_physicsRect.x, _physicsRect.y,
+						_physicsRect.width, _physicsRect.height);
+			}
+			this._box.Build();
+		} else {
+			if (_box != null) {
+				this._box.RemoveWorld();
+			}
+		}
+	}
+
+	public PPhysManager GetPhysicsManager() {
+		if (!usePhysics) {
+			throw new Loon.Java.RuntimeException("You do not set the physics engine !");
+		}
+		return _manager;
+	}
+
+	public bool IsPhysics() {
+		return usePhysics;
+	}
+
+	private RectBox _physicsRect;
+
+	public void SetPhysicsRect(float x, float y, float w, float h) {
+		if (this._physicsRect == null) {
+			this._physicsRect = new RectBox(x, y, w, h);
+		} else {
+			this._physicsRect.SetBounds(x, y, w, h);
+		}
+	}
+
+	public void SetPhysics(bool fix, PPhysManager man) {
+		this._manager = man;
+		this._fixed = fix;
+		this.LimitWorld(_fixed);
+		this.usePhysics = true;
+	}
+
+	public void SetPhysics(bool fix, float scale, float gx, float gy) {
+		if (_manager == null) {
+			this._manager = new PPhysManager(scale, gx, gy);
+		} else {
+			this._manager.scale = scale;
+			this._manager.gravity.Set(gx, gy);
+		}
+		this._manager.SetEnableGravity(true);
+		this._manager.SetStart(true);
+		this._fixed = fix;
+		this.LimitWorld(_fixed);
+		this.usePhysics = true;
+	}
+
+	public void SetPhysics(bool fix) {
+		SetPhysics(fix, 10F);
+	}
+
+	public void SetPhysics(bool fix, float scale) {
+		if (_manager == null) {
+			this._manager = new PPhysManager(scale);
+		} else {
+			this._manager.scale = scale;
+		}
+		this._manager.SetEnableGravity(true);
+		this._manager.SetStart(true);
+		this._fixed = fix;
+		this.LimitWorld(_fixed);
+		this.usePhysics = true;
+	}
+
+	public float GetTimeStep() {
+		return this._dt;
+	}
+
+	public void SetTimeStep(float dt) {
+		this._dt = dt;
+	}
+
+	public override void OnResume() {
+		if (usePhysics) {
+			_manager.SetStart(true);
+			_manager.SetEnableGravity(true);
+		}
+	}
+
+    public override void OnPause()
+    {
+		if (usePhysics) {
+			_manager.SetStart(false);
+			_manager.SetEnableGravity(false);
+		}
+	}
+
+	public bool IsFixed() {
+		return _fixed;
+	}
 
         public void SetUpdateListener(UpdateListener u)
         {
@@ -524,14 +641,20 @@ namespace Loon.Action.Sprite
             }
         }
 
-        public virtual void Add(SpriteBatchObject obj0)
+        public virtual SpriteBatchObject Add(SpriteBatchObject obj0)
         {
             pendingAdd.Add(obj0);
+            return obj0;
         }
 
-        public virtual void Remove(SpriteBatchObject obj0)
+        public virtual SpriteBatchObject Remove(SpriteBatchObject obj0)
         {
             pendingRemove.Add(obj0);
+            if (usePhysics)
+            {
+                UnbindPhysics(obj0);
+            }
+            return obj0;
         }
 
         public virtual void RemoveTileObjects()
@@ -540,7 +663,12 @@ namespace Loon.Action.Sprite
             SpriteBatchObject[] objectArray = objects.ToArray();
             for (int i = 0; i < count; i++)
             {
-                pendingRemove.Add(objectArray[i]);
+                SpriteBatchObject o = (SpriteBatchObject)objectArray[i];
+                pendingRemove.Add(o);
+                if (usePhysics)
+                {
+                    UnbindPhysics(o);
+                }
             }
             pendingAdd.Clear();
         }
@@ -549,7 +677,7 @@ namespace Loon.Action.Sprite
         {
             foreach (SpriteBatchObject o in objects)
             {
-                if (o.GetX() == x && o.GetY() == y)
+                if ((o.GetX() == x && o.GetY() == y) || (o.GetRectBox().Contains(x, y)))
                 {
                     return o;
                 }
@@ -715,6 +843,156 @@ namespace Loon.Action.Sprite
             Remove(o);
         }
 
+
+        private Dictionary<SpriteBatchObject, PBody> _Bodys = new Dictionary<SpriteBatchObject, PBody>(
+                CollectionUtils.INITIAL_CAPACITY);
+
+        public PBody FindPhysics(SpriteBatchObject o)
+        {
+            if (usePhysics)
+            {
+                PBody body = (PBody)CollectionUtils.Get(_Bodys, o);
+                return body;
+            }
+            else
+            {
+                throw new RuntimeException("You do not set the physics engine !");
+            }
+        }
+
+        public void UnbindPhysics(SpriteBatchObject o)
+        {
+            if (usePhysics)
+            {
+                PBody body = (PBody)CollectionUtils.Remove(_Bodys, o);
+                if (body != null)
+                {
+                    body.SetTag(null);
+                    _manager.world.RemoveBody(body);
+                }
+            }
+        }
+
+        public PBody AddPhysics(bool fix, SpriteBatchObject o, float density)
+        {
+            return BindPhysics(fix, Add(o), density);
+        }
+
+        public PBody AddPhysics(bool fix, SpriteBatchObject o)
+        {
+            return BindPhysics(fix, Add(o), 1F);
+        }
+
+        public PBody AddTexturePhysics(bool fix, SpriteBatchObject o,
+                float density)
+        {
+            return BindTexturePhysics(fix, Add(o), density);
+        }
+
+        public PBody AddTexturePhysics(bool fix, SpriteBatchObject o)
+        {
+            return BindTexturePhysics(fix, Add(o), 1F);
+        }
+
+        public PBody BindPhysics(bool fix, SpriteBatchObject o, float density)
+        {
+            if (usePhysics)
+            {
+                PBody body = _manager.AddBox(fix, o.GetRectBox(),
+                        MathUtils.ToRadians(o.GetRotation()), density);
+                body.SetTag(o);
+                CollectionUtils.Put(_Bodys,o, body);
+                return body;
+            }
+            else
+            {
+                throw new RuntimeException("You do not set the physics engine !");
+            }
+        }
+
+        public PBody AddCirclePhysics(bool fix, SpriteBatchObject o,
+                float density)
+        {
+            return BindCirclePhysics(fix, Add(o), density);
+        }
+
+        public PBody AddCirclePhysics(bool fix, SpriteBatchObject o)
+        {
+            return BindCirclePhysics(fix, Add(o), 1F);
+        }
+
+        public PBody BindCirclePhysics(bool fix, SpriteBatchObject o)
+        {
+            return BindCirclePhysics(fix, Add(o), 1F);
+        }
+
+        public PBody BindCirclePhysics(bool fix, SpriteBatchObject o,
+                float density)
+        {
+            if (usePhysics)
+            {
+                RectBox rect = o.GetRectBox();
+                float r = (rect.width + rect.height) / 4;
+                PBody body = _manager.AddCircle(fix, o.X(), o.Y(), r,
+                        MathUtils.ToRadians(o.GetRotation()), density);
+                body.SetTag(o);
+                CollectionUtils.Put(_Bodys,o, body);
+                return body;
+            }
+            else
+            {
+                throw new RuntimeException("You do not set the physics engine !");
+            }
+        }
+
+        public PBody BindTexturePhysics(bool fix, SpriteBatchObject o,
+                float density)
+        {
+            if (usePhysics)
+            {
+                PBody body = _manager.AddShape(fix, o.GetAnimation()
+                        .GetSpriteImage(), MathUtils.ToRadians(o.GetRotation()),
+                        density);
+                if (body.Size() > 0)
+                {
+                    body.Inner_shapes()[0].SetPosition(o.X() / _manager.scale,
+                            o.Y() / _manager.scale);
+                }
+                body.SetTag(o);
+                CollectionUtils.Put(_Bodys, o, body);
+                return body;
+            }
+            else
+            {
+                throw new RuntimeException("You do not set the physics engine !");
+            }
+        }
+
+        public PBody BindTexturePhysics(bool fix, SpriteBatchObject o)
+        {
+            return BindTexturePhysics(fix, o, 1F);
+        }
+
+        public PBody BindPhysics(bool fix, SpriteBatchObject o)
+        {
+            return BindPhysics(fix, o, 1F);
+        }
+
+        public PBody BindPhysics(PBody body, SpriteBatchObject o)
+        {
+            if (usePhysics)
+            {
+                body.SetTag(o);
+                _manager.AddBody(body);
+                CollectionUtils.Put(_Bodys, o, body);
+                return body;
+            }
+            else
+            {
+                throw new RuntimeException("You do not set the physics engine !");
+            }
+        }
+
         public override void Alter(LTimerContext timer)
         {
             for (int i = 0; i < keySize; i++)
@@ -734,8 +1012,23 @@ namespace Loon.Action.Sprite
                 ProcessEvents();
                 content.UpdateNode(timer.GetMilliseconds());
             }
+            if (usePhysics)
+            {
+                if (_dt < 0)
+                {
+                    _manager.Step(timer.GetMilliseconds());
+                }
+                else
+                {
+                    _manager.Step(_dt);
+                }
+            }
             if (follow != null)
             {
+                if (usePhysics)
+                {
+                    _manager.Offset(follow.GetX(), follow.GetY());
+                }
                 foreach (TileMap tile in tiles)
                 {
                     float offsetX = GetHalfWidth() - follow.GetX();
@@ -753,6 +1046,19 @@ namespace Loon.Action.Sprite
             }
             foreach (SpriteBatchObject o in objects)
             {
+                if (usePhysics)
+                {
+                    PBody body = (PBody)CollectionUtils.Get(_Bodys, o);
+                    if (body != null)
+                    {
+                        PShape shape = body.Inner_shapes()[0];
+                        float rotation = (shape.GetAngle() * MathUtils.RAD_TO_DEG) % 360;
+                        AABB aabb = shape.GetAABB();
+                        o.SetLocation(_manager.GetScreenX(aabb.minX),
+                                _manager.GetScreenY(aabb.minY));
+                        o.SetRotation(rotation);
+                    }
+                }
                 o.Update(elapsedTime);
                 if (updateListener != null)
                 {
@@ -861,6 +1167,12 @@ namespace Loon.Action.Sprite
 
         public override void Dispose()
         {
+            if (usePhysics)
+            {
+                _manager.SetStart(false);
+                _manager.SetEnableGravity(false);
+                _Bodys.Clear();
+            }
             this.keySize = 0;
             if (batch != null)
             {

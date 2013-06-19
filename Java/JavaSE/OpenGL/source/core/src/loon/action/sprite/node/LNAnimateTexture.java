@@ -27,9 +27,9 @@ public class LNAnimateTexture extends LNAction {
 	public String _animName;
 
 	public boolean _restoreOriginalFrame;
-	
-	LNAnimateTexture(){
-		
+
+	LNAnimateTexture() {
+
 	}
 
 	public static LNAnimateTexture Action(String fileName, int width, int height) {

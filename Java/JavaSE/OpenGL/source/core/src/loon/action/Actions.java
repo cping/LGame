@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import loon.utils.CollectionUtils;
 import loon.utils.collection.ArrayMap;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -38,8 +37,8 @@ public class Actions {
 		actions.clear();
 	}
 
-	public synchronized void addAction(ActionEvent action, ActionBind actObject,
-			boolean paused) {
+	public synchronized void addAction(ActionEvent action,
+			ActionBind actObject, boolean paused) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element == null) {
 			element = new ActionElement(actObject, paused);

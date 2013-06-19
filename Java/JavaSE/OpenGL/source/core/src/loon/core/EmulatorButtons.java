@@ -70,7 +70,7 @@ public class EmulatorButtons implements LRelease {
 				bounds.top, bounds.right, bounds.bottom);
 		this.width = w;
 		this.height = h;
-		
+
 		if (scale <= 0f) {
 			this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true, 60, 60);
 			this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true, 60, 60);
@@ -105,6 +105,127 @@ public class EmulatorButtons implements LRelease {
 			this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true,
 					(int) (68 * scale), (int) (68 * scale));
 		}
+		this.up._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unUpClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onUpClick();
+				}
+			}
+		};
+		this.left._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unLeftClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onLeftClick();
+				}
+			}
+		};
+		this.right._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unRightClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onRightClick();
+				}
+			}
+		};
+		this.down._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unDownClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onDownClick();
+				}
+			}
+		};
+
+		this.triangle._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unTriangleClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onTriangleClick();
+				}
+			}
+		};
+		this.square._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unSquareClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onSquareClick();
+				}
+			}
+		};
+		this.circle._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unCircleClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onCircleClick();
+				}
+			}
+		};
+		this.cancel._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unCancelClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onCancelClick();
+				}
+			}
+		};
 		if (dpad != null) {
 			dpad.dispose();
 			dpad = null;
@@ -238,148 +359,39 @@ public class EmulatorButtons implements LRelease {
 		batch.end();
 	}
 
-	/**
-	 * 点击事件触发器
-	 * 
-	 */
-	private void checkOn() {
-
-		if (emulatorListener == null) {
-			return;
-		}
-		if (up.isClick()) {
-			emulatorListener.onUpClick();
-		}
-		if (left.isClick()) {
-			emulatorListener.onLeftClick();
-		}
-		if (right.isClick()) {
-			emulatorListener.onRightClick();
-		}
-		if (down.isClick()) {
-			emulatorListener.onDownClick();
-		}
-
-		if (triangle.isClick()) {
-			emulatorListener.onTriangleClick();
-		}
-		if (square.isClick()) {
-			emulatorListener.onSquareClick();
-		}
-		if (circle.isClick()) {
-			emulatorListener.onCircleClick();
-		}
-		if (cancel.isClick()) {
-			emulatorListener.onCancelClick();
-		}
-	}
-
-	public void hit(int x, int y) {
-		hit(0, x, y);
-	}
-
-	public void hit(int id, int x, int y) {
+	public void hit(int id, float x, float y, boolean flag) {
 
 		if (!visible) {
 			return;
 		}
 
-		up.hit(id, x, y);
-		left.hit(id, x, y);
-		right.hit(id, x, y);
-		down.hit(id, x, y);
+		up.hit(id, x, y, flag);
+		left.hit(id, x, y, flag);
+		right.hit(id, x, y, flag);
+		down.hit(id, x, y, flag);
 
-		triangle.hit(id, x, y);
-		square.hit(id, x, y);
-		circle.hit(id, x, y);
-		cancel.hit(id, x, y);
+		triangle.hit(id, x, y, flag);
+		square.hit(id, x, y, flag);
+		circle.hit(id, x, y, flag);
+		cancel.hit(id, x, y, flag);
 
-		checkOn();
 	}
 
-	public boolean isClick() {
-		if (up.isClick()) {
-			return true;
-		}
-		if (left.isClick()) {
-			return true;
-		}
-		if (down.isClick()) {
-			return true;
-		}
-		if (right.isClick()) {
-			return true;
-		}
-		if (triangle.isClick()) {
-			return true;
-		}
-		if (square.isClick()) {
-			return true;
-		}
-		if (circle.isClick()) {
-			return true;
-		}
-		if (cancel.isClick()) {
-			return true;
-		}
-		return false;
-	}
+	public void unhit(int id, float x, float y) {
 
-	/**
-	 * 放开事件触发器
-	 * 
-	 * @param id
-	 */
-	private void checkUn(int id) {
-		if (emulatorListener == null) {
-			return;
-		}
-		if (up.isClick() && up.getPointerId() == id) {
-			emulatorListener.unUpClick();
-		}
-		if (left.isClick() && left.getPointerId() == id) {
-			emulatorListener.unLeftClick();
-		}
-		if (right.isClick() && right.getPointerId() == id) {
-			emulatorListener.unRightClick();
-		}
-		if (down.isClick() && down.getPointerId() == id) {
-			emulatorListener.unDownClick();
-		}
-
-		if (triangle.isClick() && triangle.getPointerId() == id) {
-			emulatorListener.unTriangleClick();
-		}
-		if (square.isClick() && square.getPointerId() == id) {
-			emulatorListener.unSquareClick();
-		}
-		if (circle.isClick() && circle.getPointerId() == id) {
-			emulatorListener.unCircleClick();
-		}
-		if (cancel.isClick() && cancel.getPointerId() == id) {
-			emulatorListener.unCancelClick();
-		}
-	}
-
-	public void unhit() {
-		unhit(0);
-	}
-
-	public void unhit(int id) {
 		if (!visible) {
 			return;
 		}
-		checkUn(id);
 
-		up.unhit(id);
-		left.unhit(id);
-		right.unhit(id);
-		down.unhit(id);
+		up.unhit(id, x, y);
+		left.unhit(id, x, y);
+		right.unhit(id, x, y);
+		down.unhit(id, x, y);
 
-		triangle.unhit(id);
-		square.unhit(id);
-		circle.unhit(id);
-		cancel.unhit(id);
+		triangle.unhit(id, x, y);
+		square.unhit(id, x, y);
+		circle.unhit(id, x, y);
+		cancel.unhit(id, x, y);
 	}
 
 	public boolean isVisible() {
@@ -388,7 +400,7 @@ public class EmulatorButtons implements LRelease {
 
 	public void setVisible(boolean visible) {
 		if (!visible) {
-			unhit();
+			release();
 		}
 		this.visible = visible;
 	}
@@ -431,6 +443,30 @@ public class EmulatorButtons implements LRelease {
 
 	public EmulatorButton getUp() {
 		return up;
+	}
+
+	public void release() {
+
+		up.unhit();
+		left.unhit();
+		right.unhit();
+		down.unhit();
+
+		triangle.unhit();
+		square.unhit();
+		circle.unhit();
+		cancel.unhit();
+
+		if (emulatorListener != null) {
+			emulatorListener.unUpClick();
+			emulatorListener.unLeftClick();
+			emulatorListener.unRightClick();
+			emulatorListener.unDownClick();
+			emulatorListener.unTriangleClick();
+			emulatorListener.unSquareClick();
+			emulatorListener.unCircleClick();
+			emulatorListener.unCancelClick();
+		}
 	}
 
 	public void dispose() {

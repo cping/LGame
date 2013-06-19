@@ -524,7 +524,7 @@ public class LInputFactory {
 					}
 					if (handler.emulatorButtons != null
 							&& handler.emulatorButtons.isVisible()) {
-						handler.emulatorButtons.hit(touchX, touchY);
+						handler.emulatorButtons.hit(0, touchX, touchY, false);
 					}
 					handler.mousePressed(finalTouch);
 					buttons++;
@@ -538,7 +538,7 @@ public class LInputFactory {
 					}
 					if (handler.emulatorButtons != null
 							&& handler.emulatorButtons.isVisible()) {
-						handler.emulatorButtons.unhit();
+						handler.emulatorButtons.unhit(0, touchX, touchY);
 					}
 					handler.mouseReleased(finalTouch);
 					buttons = 0;
@@ -555,6 +555,10 @@ public class LInputFactory {
 					}
 					break;
 				case Touch.TOUCH_DRAG:
+					if (handler.emulatorButtons != null
+							&& handler.emulatorButtons.isVisible()) {
+						handler.emulatorButtons.hit(0, touchX, touchY, true);
+					}
 					if (useTouchCollection) {
 						touchCollection.update(finalTouch.id,
 								LTouchLocationState.Dragged, finalTouch.x,
@@ -593,18 +597,20 @@ public class LInputFactory {
 			}
 			if (Keyboard.isCreated()) {
 				while (Keyboard.next()) {
+					double time = (double) (Keyboard.getEventNanoseconds() / 1000);
+					int keyCode = toKeyCode(Keyboard.getEventKey());
 					if (Keyboard.getEventKeyState()) {
-						int keyCode = toKeyCode(Keyboard.getEventKey());
 						char keyChar = Keyboard.getEventCharacter();
 						finalKey.keyCode = keyCode;
 						finalKey.keyChar = Keyboard.getEventCharacter();
 						finalKey.type = Key.KEY_DOWN;
+						finalKey.timer = time;
 						lastKeyCharPressed = keyChar;
 					} else {
-						int keyCode = toKeyCode(Keyboard.getEventKey());
 						finalKey.keyCode = keyCode;
 						finalKey.keyChar = Keyboard.getEventCharacter();
 						finalKey.type = Key.KEY_UP;
+						finalKey.timer = time;
 						lastKeyCharPressed = Keyboard.getEventCharacter();
 					}
 					switch (finalKey.type) {

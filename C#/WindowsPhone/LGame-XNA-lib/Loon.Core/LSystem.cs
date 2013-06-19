@@ -27,6 +27,16 @@ namespace Loon.Core
             Android, JavaSE, XNA, IOS, HTML5, PSM
         }
 
+        public static bool IsWP8
+        {
+            get
+            {
+                return (Environment.OSVersion.Version >= new Version(7, 10, 0x229a));
+            }
+        }
+
+        public static CallQueue global_queue;
+
         public static ApplicationType type = ApplicationType.XNA;
 
         public static bool isStringTexture = false, isBackLocked = false;
@@ -56,6 +66,14 @@ namespace Loon.Core
             }
         }
         
+	    public static void Post(Updateable update) {
+		    if (global_queue != null) {
+			    global_queue.InvokeLater(update);
+		    } else {
+			    LSystem.Load(update);
+		    }
+	    }
+
 	    // 包内默认的图片路径
 	    public const string FRAMEWORK_IMG_NAME = "assets/loon_";
 
@@ -103,10 +121,10 @@ namespace Loon.Core
         public readonly static JavaRuntime runtime = JavaRuntime.GetJavaRuntime();
 
         // 框架名
-        static public readonly string FRAMEWORK = "LFX";
+        static public readonly string FRAMEWORK = "loon";
 
         // 框架版本信息
-        static public readonly string VERSION = "0.3.3";
+        static public readonly string VERSION = "0.4.0";
 
         static public LGameXNA2DActivity screenActivity;
 

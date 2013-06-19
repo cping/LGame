@@ -37,12 +37,14 @@ public class LNPlace extends LNAction
         return place;
     }
 
-    public void step(float dt)
+    @Override
+	public void step(float dt)
     {
         super._target.setPosition(this._pos);
         super._isEnd = true;
     }
 
+	@Override
 	public LNAction copy() {
 		return Action(_pos);
 	}

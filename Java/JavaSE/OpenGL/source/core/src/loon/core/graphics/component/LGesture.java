@@ -32,7 +32,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LInputFactory.Touch;
 import loon.utils.MathUtils;
 
-
 //0.3.3版新增类,用以进行跨平台手势操作。
 public class LGesture extends LComponent {
 
@@ -156,8 +155,7 @@ public class LGesture extends LComponent {
 		return null;
 	}
 
-	private final static float distance(float x1, float y1, float x2,
-			float y2) {
+	private final static float distance(float x1, float y1, float x2, float y2) {
 		float deltaX = x1 - x2;
 		float deltaY = y1 - y2;
 		return MathUtils.sqrt(deltaX * deltaX + deltaY * deltaY);

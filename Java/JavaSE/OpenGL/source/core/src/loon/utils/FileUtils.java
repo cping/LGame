@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 import loon.core.LSystem;
 
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -218,6 +217,7 @@ final public class FileUtils {
 			while ((i = reader.read()) != -1) {
 				writer.write(i);
 			}
+
 		} finally {
 			close(reader);
 			close(writer);

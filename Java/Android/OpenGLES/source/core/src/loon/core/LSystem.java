@@ -14,12 +14,12 @@ import loon.LGame.Location;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LProcess;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
-import loon.utils.GraphicsUtils;
 import loon.utils.MathUtils;
 
 import android.os.Build;
@@ -56,6 +56,8 @@ public final class LSystem {
 	public enum ApplicationType {
 		Android, JavaSE, XNA, IOS, HTML5, PSM
 	}
+
+	public static CallQueue global_queue;
 
 	public static ApplicationType type = ApplicationType.Android;
 
@@ -197,13 +199,13 @@ public final class LSystem {
 	}
 
 	// 框架名
-	final static public String FRAMEWORK = "LGame";
+	final static public String FRAMEWORK = "loon";
 
 	// 包内默认的图片路径
 	final static public String FRAMEWORK_IMG_NAME = "assets/loon_";
 
 	// 框架版本信息
-	final static public String VERSION = "0.3.3";
+	final static public String VERSION = "0.4.0";
 
 	// 默认的最大窗体宽（横屏）
 	public static int MAX_SCREEN_WIDTH = 480;
@@ -493,44 +495,21 @@ public final class LSystem {
 		return OS_HANDLER;
 	}
 
-	public static void threadUi(final Runnable runnable) {
-		Thread thread = new Thread() {
-			public void run() {
-				for (; screenProcess == null || isLogo;) {
-					try {
-						Thread.sleep(300);
-					} catch (InterruptedException e) {
-					}
+	public final static void post(final Updateable update) {
+		if (LSystem.isPaused) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					update.action();
 				}
-				Screen screen = null;
-				for (; (screen = screenProcess.getScreen()) == null;) {
-					try {
-						Thread.sleep(300);
-					} catch (InterruptedException e) {
-					}
-				}
-				for (; !screen.isOnLoadComplete();) {
-					try {
-						Thread.sleep(300);
-					} catch (InterruptedException e) {
-					}
-				}
-				try {
-					LSystem.stopRepaint();
-					LSystem.getActivity().runOnUiThread(runnable);
-				} catch (Exception ex) {
-					post(runnable);
-				} finally {
-					LSystem.startRepaint();
-				}
+			});
+		} else {
+			if (global_queue != null) {
+				global_queue.invokeLater(update);
+			} else {
+				LSystem.load(update);
 			}
-		};
-		thread.setPriority(Thread.NORM_PRIORITY - 2);
-		thread.start();
-	}
-
-	public static void post(final Runnable runnable) {
-		getOSHandler().post(runnable);
+		}
 	}
 
 	public static void runOnUiThread(final Runnable runnable) {

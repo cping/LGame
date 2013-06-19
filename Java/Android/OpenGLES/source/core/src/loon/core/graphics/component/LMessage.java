@@ -182,16 +182,19 @@ public class LMessage extends LContainer {
 		}
 	}
 
+	@Override
 	protected void processTouchClicked() {
 		this.doClick();
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected() && this.input.getKeyPressed() == Key.ENTER) {
 			this.doClick();
 		}
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
 			if (Click != null) {
@@ -200,6 +203,7 @@ public class LMessage extends LContainer {
 		}
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		if (!input.isMoving()) {
 			if (Click != null) {
@@ -208,6 +212,7 @@ public class LMessage extends LContainer {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -223,6 +228,7 @@ public class LMessage extends LContainer {
 		}
 	}
 
+	@Override
 	protected synchronized void createCustomUI(GLEx g, int x, int y, int w,
 			int h) {
 		if (!visible) {
@@ -242,6 +248,7 @@ public class LMessage extends LContainer {
 		g.resetColor();
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		if (!locked) {
 			if (getContainer() != null) {
@@ -296,15 +303,18 @@ public class LMessage extends LContainer {
 		this.locked = locked;
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 
 	}
 
+	@Override
 	public String getUIName() {
 		return "Message";
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (print != null) {

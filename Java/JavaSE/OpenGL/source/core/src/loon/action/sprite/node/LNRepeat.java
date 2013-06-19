@@ -21,11 +21,11 @@
 package loon.action.sprite.node;
 
 public class LNRepeat extends LNAction {
-	
-	LNRepeat(){
-		
+
+	LNRepeat() {
+
 	}
-	
+
 	protected LNAction _action;
 
 	private int time;

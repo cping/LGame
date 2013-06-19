@@ -57,6 +57,12 @@ namespace Loon.Java
             }
         }
 
+        public static double Java_Cbrt(float number)
+        {
+            double cubeRoot = System.Math.Pow(number, (1.0 / 3.0));
+            return System.Math.Round(cubeRoot, 3);
+        }
+
         public static object NewInstance(string className)
         {
             Type type = JavaRuntime.ClassforName(className);
@@ -340,7 +346,7 @@ namespace Loon.Java
 
         public static void PrintStackTrace(Exception ex)
         {
-            Loon.Utils.Debug.Log.Exception(ex);
+            Loon.Utils.Debugging.Log.Exception(ex);
         }
 
         public static string Substring(string str, int index)

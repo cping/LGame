@@ -79,6 +79,7 @@ public class LNDataCache implements LRelease {
 		imageDictionary.put(key.toLowerCase(), img);
 	}
 
+	@Override
 	public void dispose() {
 		initCache = false;
 		if (imageDictionary != null) {

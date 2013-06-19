@@ -59,13 +59,11 @@ public class Line extends Shape {
 
 	public Line(float[] start, float[] end) {
 		super();
-		this.type = ShapeType.LINE_SHAPE;
 		set(start, end);
 	}
 
 	public Line(Vector2f start, Vector2f end) {
 		super();
-		this.type = ShapeType.LINE_SHAPE;
 		set(start, end);
 	}
 
@@ -242,8 +240,8 @@ public class Line extends Shape {
 	}
 
 	public float ptSegDistSq(Point pt) {
-		return ptSegDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt
-				.getY());
+		return ptSegDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(),
+				pt.getY());
 	}
 
 	public float ptSegDistSq(float px, float py) {
@@ -288,8 +286,8 @@ public class Line extends Shape {
 	}
 
 	public float ptLineDist(Point pt) {
-		return ptLineDist(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt
-				.getY());
+		return ptLineDist(getX1(), getY1(), getX2(), getY2(), pt.getX(),
+				pt.getY());
 	}
 
 	public float ptLineDistSq(float px, float py) {
@@ -297,8 +295,8 @@ public class Line extends Shape {
 	}
 
 	public float ptLineDistSq(Point pt) {
-		return ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt
-				.getY());
+		return ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(),
+				pt.getY());
 	}
 
 	public static float ptLineDistSq(float x1, float y1, float x2, float y2,

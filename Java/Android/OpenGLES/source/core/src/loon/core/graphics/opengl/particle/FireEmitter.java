@@ -50,6 +50,7 @@ public class FireEmitter implements ParticleEmitter {
 		this.size = size;
 	}
 	
+	@Override
 	public void update(ParticleSystem system, long delta) {
 		timer -= delta;
 		if (timer <= 0) {
@@ -64,6 +65,7 @@ public class FireEmitter implements ParticleEmitter {
 		}
 	}
 
+	@Override
 	public void updateParticle(Particle particle, long delta) {
 		if (particle.getLife() > 600) {
 			particle.adjustSize(0.07f * delta);
@@ -74,36 +76,45 @@ public class FireEmitter implements ParticleEmitter {
 		particle.adjustColor(0,-c/2,-c*2,-c/4);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}
 
+	@Override
 	public void setEnabled(boolean enabled) {
 	}
 
+	@Override
 	public boolean completed() {
 		return false;
 	}
 
+	@Override
 	public boolean useAdditive() {
 		return false;
 	}
 
+	@Override
 	public LTexture getImage() {
 		return null;
 	}
 
+	@Override
 	public boolean usePoints(ParticleSystem system) {
 		return false;
 	}
 
+	@Override
 	public boolean isOriented() {
 		return false;
 	}
 
+	@Override
 	public void wrapUp() {
 	}
 
+	@Override
 	public void resetState() {
 	}
 }

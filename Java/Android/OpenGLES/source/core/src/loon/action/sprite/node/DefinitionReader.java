@@ -107,10 +107,12 @@ public class DefinitionReader {
 
 	private class DefListener implements XMLListener {
 
+		@Override
 		public void addHeader(int line, XMLProcessing xp) {
 
 		}
 
+		@Override
 		public void addData(int line, XMLData data) {
 			if (data != null) {
 				String content = data.toString().trim();
@@ -120,10 +122,12 @@ public class DefinitionReader {
 			}
 		}
 
+		@Override
 		public void addComment(int line, XMLComment c) {
 
 		}
 
+		@Override
 		public void addAttribute(int line, XMLAttribute a) {
 			if (a != null) {
 				XMLElement ele = a.getElement();
@@ -137,10 +141,12 @@ public class DefinitionReader {
 			}
 		}
 
+		@Override
 		public void addElement(int line, XMLElement e) {
 			startElement(e != null ? e.getName() : _classType);
 		}
 
+		@Override
 		public void endElement(int line, XMLElement e) {
 			stopElement(e != null ? e.getName() : _classType);
 		}

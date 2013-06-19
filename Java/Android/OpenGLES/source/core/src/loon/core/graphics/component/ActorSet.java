@@ -35,6 +35,7 @@ public class ActorSet extends AbstractSet {
 
 	private int code = 0;
 
+	@Override
 	public int hashCode() {
 		return this.code;
 	}
@@ -148,10 +149,12 @@ public class ActorSet extends AbstractSet {
 
 	}
 
+	@Override
 	public int size() {
 		return this.numActors;
 	}
 
+	@Override
 	public Iterator iterator() {
 		return new ActorSet.ActorSetIterator();
 	}
@@ -210,15 +213,18 @@ public class ActorSet extends AbstractSet {
 			this.currentNode = ActorSet.this.listHeadTail;
 		}
 
+		@Override
 		public boolean hasNext() {
 			return this.currentNode.next != ActorSet.this.listHeadTail;
 		}
 
+		@Override
 		public Object next() {
 			this.currentNode = this.currentNode.next;
 			return this.currentNode.actor;
 		}
 
+		@Override
 		public void remove() {
 			ActorSet.this.remove(this.currentNode);
 		}

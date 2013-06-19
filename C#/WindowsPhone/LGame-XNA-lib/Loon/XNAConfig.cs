@@ -26,7 +26,7 @@ namespace Loon
             {
                 if (object.ReferenceEquals(resourceMan, null))
                 {
-                    System.Resources.ResourceManager resMan = new System.Resources.ResourceManager("LGame.g", typeof(LGameXNA2DActivity).Assembly);
+                    System.Resources.ResourceManager resMan = new System.Resources.ResourceManager("Loon-backend-XNA.g", typeof(LGameXNA2DActivity).Assembly);
                     resourceMan = resMan;
                     resourceMan.IgnoreCase = true;
                 }
@@ -65,7 +65,7 @@ namespace Loon
                 }
                 catch (Exception ex)
                 {
-                    Loon.Utils.Debug.Log.Exception(ex);
+                    Loon.Utils.Debugging.Log.Exception(ex);
                 }
                 texCaches.Add(name, texture);
             }

@@ -22,10 +22,10 @@ package loon.action.sprite.node;
 
 public class LNSpeed extends LNAction {
 
-	LNSpeed(){
-		
+	LNSpeed() {
+
 	}
-	
+
 	protected LNAction _other;
 
 	protected float _speed;

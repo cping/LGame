@@ -118,30 +118,6 @@ namespace Loon
         void Dispose(Microsoft.Xna.Framework.Game game, bool disposing);
     }
 
-    public class LSetting
-    {
-        public int width = LSystem.MAX_SCREEN_WIDTH;
-
-        public int height = LSystem.MAX_SCREEN_HEIGHT;
-
-        public int fps = LSystem.DEFAULT_MAX_FPS;
-
-        public string title;
-
-        public bool full = true;
-
-        public bool showFPS;
-
-        public bool showMemory;
-
-        public bool showLogo;
-
-        public bool landscape;
-
-        public LMode mode = LMode.Fill;
-
-    }
-
     public class GameType
     {
         public LSetting setting = new LSetting();
@@ -158,7 +134,7 @@ namespace Loon
 
         private Logo logoFlag;
 
-        private Loon.Utils.Debug.Log m_log = Loon.Utils.Debug.LogFactory.GetInstance(typeof(LGame));
+        private Loon.Utils.Debugging.Log m_log = Loon.Utils.Debugging.LogFactory.GetInstance(typeof(LGame));
 
         private static bool suspend;
 
@@ -290,7 +266,7 @@ namespace Loon
                     }
                     catch (Exception ex)
                     {
-                        Loon.Utils.Debug.Log.Exception(ex);
+                        Loon.Utils.Debugging.Log.Exception(ex);
                     }
                 }
             }
@@ -478,6 +454,7 @@ namespace Loon
                     m_process.OnResume();
                 }
 
+                _queue.Execute();
 
                 if (m_onRunning)
                 {
@@ -669,6 +646,7 @@ namespace Loon
             if (!suspend)
             {
                 LSystem.isPaused = true;
+                Assets.OnPause();
                 Printf("pauseApp");
                 try
                 {
@@ -698,6 +676,7 @@ namespace Loon
                 {
                     m_process.Resize(GL.device.PresentationParameters.BackBufferWidth, GL.device.PresentationParameters.BackBufferHeight);
                 }
+                Assets.OnResume();
                 Printf("resumeApp");
                 try
                 {
@@ -711,6 +690,25 @@ namespace Loon
                 {
                 }
             }
+        }
+
+        private class runnable_call:Runnable
+        {
+            private Loon.Core.Event.Updateable update;
+            internal runnable_call(Loon.Core.Event.Updateable update)
+            {
+                this.update = update;
+            }
+            public void Run()
+            {
+                update.Action();
+            }
+        }
+
+        public override void InvokeAsync(Loon.Core.Event.Updateable update)
+        {
+            Thread thread = new Thread(new runnable_call(update));
+            thread.Start();
         }
 
         private static Type GetType(object o)
@@ -792,6 +790,7 @@ namespace Loon
                         LSystem.screenProcess.OnDestroy();
                         ActionControl.GetInstance().StopAll();
                     }
+                    Assets.OnDestroy();
                     XNAConfig.Dispose();
                     if (fpsFont != null)
                     {

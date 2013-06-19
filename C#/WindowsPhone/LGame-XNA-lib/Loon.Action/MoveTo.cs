@@ -6,7 +6,7 @@ namespace Loon.Action
     using Loon.Core.Geom;
     using Loon.Utils;
     using Loon.Core.Graphics.Component;
-    using Loon.Utils.Debug;
+    using Loon.Utils.Debugging;
 
     public class MoveTo : ActionEvent
     {

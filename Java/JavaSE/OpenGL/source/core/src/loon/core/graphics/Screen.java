@@ -422,7 +422,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 					screen.setClose(false);
 					screen.onLoad();
 					screen.setRepaintMode(SCREEN_CANVAS_REPAINT);
-					screen.setOnLoadState(true);
 					screen.onLoaded();
 					screen.setOnLoadState(true);
 				}

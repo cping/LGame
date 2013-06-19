@@ -28,7 +28,7 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.utils.TextureUtils;
+import loon.core.graphics.opengl.TextureUtils;
 
 
 public class ParticleSystem {

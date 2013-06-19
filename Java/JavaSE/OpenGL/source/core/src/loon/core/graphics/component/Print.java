@@ -10,7 +10,6 @@ import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.StringUtils;
 
-
 /**
  * Copyright 2008 - 2010
  * 

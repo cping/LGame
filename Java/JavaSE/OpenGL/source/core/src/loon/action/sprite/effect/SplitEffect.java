@@ -11,7 +11,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -162,9 +161,7 @@ public class SplitEffect extends LObject implements ISprite {
 			case Config.RIGHT:
 			case Config.TUP:
 			case Config.TDOWN:
-				texture
-						.draw(x1, y1, width, halfHeight, 0, 0, width,
-								halfHeight);
+				texture.draw(x1, y1, width, halfHeight, 0, 0, width, halfHeight);
 				texture.draw(x2, y2, width, halfHeight, 0, halfHeight, width,
 						height);
 				break;
@@ -172,9 +169,7 @@ public class SplitEffect extends LObject implements ISprite {
 			case Config.DOWN:
 			case Config.TLEFT:
 			case Config.TRIGHT:
-				texture
-						.draw(x1, y1, halfWidth, height, 0, 0, halfWidth,
-								height);
+				texture.draw(x1, y1, halfWidth, height, 0, 0, halfWidth, height);
 				texture.draw(x2, y2, halfWidth, height, halfWidth, 0, width,
 						height);
 				break;

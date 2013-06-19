@@ -25,9 +25,9 @@ public class LNAlphaAction extends LNAction {
 	protected float _alpha;
 
 	private float oldAlpha;
-	
-	LNAlphaAction(){
-		
+
+	LNAlphaAction() {
+
 	}
 
 	public static LNAlphaAction Action(float a) {

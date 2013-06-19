@@ -41,7 +41,17 @@ public class EmulatorButton {
 
 	private float scaleWidth, scaleHeight;
 
-	private int id;
+	private int id = -1;
+
+	Monitor _monitor;
+
+	static interface Monitor {
+
+		void call();
+
+		void free();
+
+	}
 
 	public EmulatorButton(String fileName, int w, int h, int x, int y) {
 		this(new LTextureRegion(fileName), w, h, x, y, true);
@@ -85,23 +95,58 @@ public class EmulatorButton {
 	}
 
 	public void hit(int nid, float x, float y) {
-		onClick = bounds.contains(x, y);
-		id = nid;
+		hit(nid, x, y, false);
+	}
+
+	public void hit(int nid, float x, float y, boolean flag) {
+		if (flag) {
+			if (nid == id) {
+				onClick = bounds.contains(x, y);
+				if (_monitor != null) {
+					if (onClick) {
+						_monitor.call();
+					}
+				}
+			}
+		} else {
+			if (!onClick) {
+				onClick = bounds.contains(x, y);
+				id = nid;
+				if (onClick && _monitor != null) {
+					_monitor.call();
+				}
+			}
+		}
 	}
 
 	public void hit(float x, float y) {
-		onClick = bounds.contains(x, y);
-		id = 0;
+		if (!onClick) {
+			onClick = bounds.contains(x, y);
+			id = 0;
+			if (onClick && _monitor != null) {
+				_monitor.call();
+			}
+		}
 	}
 
-	public void unhit(int nid) {
-		if (id == nid) {
+	public void unhit(int nid, float x, float y) {
+		if (onClick && nid == id) {
 			onClick = false;
+			id = 0;
+			if (_monitor != null) {
+				_monitor.free();
+			}
 		}
 	}
 
 	public void unhit() {
-		onClick = false;
+		if (onClick) {
+			id = 0;
+			onClick = false;
+			if (_monitor != null) {
+				_monitor.free();
+			}
+		}
 	}
 
 	public void setX(int x) {

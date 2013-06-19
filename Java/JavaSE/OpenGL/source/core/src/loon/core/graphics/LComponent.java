@@ -10,10 +10,10 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.component.ClickListener;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LInput;
 import loon.core.input.LInputFactory.Key;
-import loon.utils.TextureUtils;
 
 /**
  * 
@@ -37,7 +37,8 @@ import loon.utils.TextureUtils;
  * @version 0.1.1
  */
 
-public abstract class LComponent extends LObject implements ActionBind, LRelease {
+public abstract class LComponent extends LObject implements ActionBind,
+		LRelease {
 
 	public static interface CallListener {
 

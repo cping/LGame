@@ -157,8 +157,7 @@ public class LTexture implements LRelease {
 			this.colors = (LColor[]) CollectionUtils.copyOf(texture.colors);
 		}
 		if (texture.dataCords != null) {
-			this.dataCords = CollectionUtils
-					.copyOf(texture.dataCords);
+			this.dataCords = CollectionUtils.copyOf(texture.dataCords);
 		}
 		if (texture.data != null) {
 			this.data = NativeSupport.clone(texture.data);
@@ -701,11 +700,11 @@ public class LTexture implements LRelease {
 			if (cache != null) {
 				return cache;
 			}
-			
+
 			if (dataCords == null) {
 				setVertCords(this.getWidth(), this.getHeight());
 			}
-			
+
 			final LTexture copy = new LTexture();
 
 			if (isLoaded || !LSystem.isThreadDrawing()) {
@@ -1268,7 +1267,7 @@ public class LTexture implements LRelease {
 			float x1, float y1, float x2, float y2) {
 		draw(x, y, width - x, height - y, x1, y1, x2, y2);
 	}
-	
+
 	public void draw(float x, float y, float width, float height, float x1,
 			float y1, float x2, float y2) {
 		if (isBatch) {

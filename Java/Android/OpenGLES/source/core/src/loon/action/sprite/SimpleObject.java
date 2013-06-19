@@ -29,6 +29,10 @@ public abstract class SimpleObject extends SpriteBatchObject {
 		super(x, y, w, h, animation, tiles);
 	}
 
+	public SimpleObject(float x, float y, Animation animation, TileMap tiles) {
+		super(x, y, animation, tiles);
+	}
+
 	public void update(long elapsedTime) {
 		animation.update(elapsedTime);
 	}

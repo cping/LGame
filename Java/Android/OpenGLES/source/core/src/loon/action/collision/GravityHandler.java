@@ -316,6 +316,7 @@ public class GravityHandler implements LRelease {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		this.isEnabled = false;
 		if (objects != null) {

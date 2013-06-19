@@ -55,6 +55,7 @@ public class XMLParser implements LRelease {
 		}
 		this.stack.push(root);
 		this.topElement = root;
+		
 		if (l != null) {
 			l.addElement(idx, root);
 		}
@@ -314,6 +315,7 @@ public class XMLParser implements LRelease {
 		return new XMLParser().parseText(sbr.toString(), l);
 	}
 
+	@Override
 	public void dispose() {
 		if (stack != null) {
 			stack.clear();

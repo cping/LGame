@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -33,11 +32,11 @@ public class ArrayMap {
 
 	private int threshold;
 
-	private  Entry[] keyTables;
+	private Entry[] keyTables;
 
-	private  Entry[] valueTables;
+	private Entry[] valueTables;
 
-	private  int size = 0;
+	private int size = 0;
 
 	public ArrayMap() {
 		this(CollectionUtils.INITIAL_CAPACITY);
@@ -234,6 +233,10 @@ public class ArrayMap {
 		return array;
 	}
 
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 	public final boolean equals(Object o) {
 		if (!getClass().isInstance(o)) {
 			return false;
@@ -250,10 +253,6 @@ public class ArrayMap {
 		return true;
 	}
 
-	public int hashCode(){
-		return super.hashCode();
-	}
-	
 	public Object clone() {
 		ArrayMap copy = new ArrayMap();
 		copy.threshold = threshold;
@@ -378,15 +377,41 @@ public class ArrayMap {
 		size = newSize;
 	}
 
+	public String toString() {
+		return toString(',');
+	}
+
+	public String toString(char split) {
+		if (size == 0) {
+			return "[]";
+		}
+		Entry[] values = this.valueTables;
+		StringBuilder buffer = new StringBuilder(
+				CollectionUtils.INITIAL_CAPACITY);
+		buffer.append('[');
+		for (int i = 0; i < size; i++) {
+			Object key = values[i].key;
+			Object value = values[i].value;
+			buffer.append(key == this ? "(this Map)" : key);
+			buffer.append('=');
+			buffer.append(value == this ? "(this Map)" : value);
+			if (i < size - 1) {
+				buffer.append(split).append(' ');
+			}
+		}
+		buffer.append(']');
+		return buffer.toString();
+	}
+
 	public class Entry {
 
-		 int hashCode;
+		int hashCode;
 
-		 Object key;
+		Object key;
 
-		 Object value;
+		Object value;
 
-		 Entry next;
+		Entry next;
 
 		public Entry(final int hashCode, final Object key, final Object value,
 				final Entry next) {

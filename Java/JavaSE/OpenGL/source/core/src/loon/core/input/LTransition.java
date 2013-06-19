@@ -10,9 +10,8 @@ import loon.core.LSystem;
 import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.utils.MathUtils;
-import loon.utils.TextureUtils;
-
 
 /**
  * Copyright 2008 - 2011
@@ -65,9 +64,8 @@ public class LTransition {
 	 * @return
 	 */
 	public final static LTransition newCrossRandom(LColor c) {
-		return newCross(MathUtils.random(0, 1), TextureUtils
-				.createTexture(LSystem.screenRect.width,
-						LSystem.screenRect.height, c));
+		return newCross(MathUtils.random(0, 1), TextureUtils.createTexture(
+				LSystem.screenRect.width, LSystem.screenRect.height, c));
 	}
 
 	/**
@@ -109,7 +107,6 @@ public class LTransition {
 		}
 		return null;
 	}
-
 
 	/**
 	 * 默认使用黑色的圆弧渐变特效
@@ -159,7 +156,6 @@ public class LTransition {
 		return null;
 	}
 
-
 	/**
 	 * 产生一个Screen画面向双向分裂的过渡特效
 	 * 
@@ -180,7 +176,6 @@ public class LTransition {
 		return newSplitRandom(TextureUtils.createTexture(
 				LSystem.screenRect.width, LSystem.screenRect.height, c));
 	}
-
 
 	/**
 	 * 产生一个Screen画面向双向分裂的过渡特效(方向的静态值位于Config类中)

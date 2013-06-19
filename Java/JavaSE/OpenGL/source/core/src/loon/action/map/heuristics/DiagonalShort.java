@@ -23,7 +23,6 @@ package loon.action.map.heuristics;
 import loon.action.map.AStarFindHeuristic;
 import loon.utils.MathUtils;
 
-
 public class DiagonalShort implements AStarFindHeuristic {
 
 	public float getScore(float sx, float sy, float tx, float ty) {

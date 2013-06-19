@@ -169,10 +169,12 @@ public class LLayer extends ActorLayer {
 	 * 
 	 * @param elapsedTime
 	 */
+	@Override
 	public void action(long elapsedTime) {
 
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (visible) {
 			super.update(elapsedTime);
@@ -192,6 +194,7 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
+	@Override
 	public void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (!visible) {
 			return;
@@ -459,26 +462,31 @@ public class LLayer extends ActorLayer {
 		return dragActor;
 	}
 
+	@Override
 	protected void processTouchEntered() {
 		this.pressed = true;
 	}
 
+	@Override
 	protected void processTouchExited() {
 		this.pressed = false;
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
 			this.downKey();
 		}
 	}
 
+	@Override
 	protected void processKeyReleased() {
 		if (this.isSelected()) {
 			this.upKey();
 		}
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		if (!isTouchClick) {
 			return;
@@ -499,6 +507,7 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		if (!isTouchClick) {
 			return;
@@ -520,6 +529,7 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		int dropX = 0;
 		int dropY = 0;
@@ -637,11 +647,13 @@ public class LLayer extends ActorLayer {
 		return this.input.getTouchY() - this.getScreenY();
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (textures != null) {
@@ -663,6 +675,7 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
+	@Override
 	public String getUIName() {
 		return "Layer";
 	}

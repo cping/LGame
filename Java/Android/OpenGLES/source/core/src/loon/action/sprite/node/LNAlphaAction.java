@@ -36,12 +36,14 @@ public class LNAlphaAction extends LNAction {
 		return action;
 	}
 
+	@Override
 	public void step(float dt) {
 		super._target.setAlpha(this._alpha);
 		super._isEnd = true;
 		oldAlpha = _target._alpha;
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_alpha);
 	}

@@ -32,6 +32,7 @@ public class XMLProcessing {
 		return this.text;
 	}
 
+	@Override
 	public String toString() {
 		return "<?" + this.text + "?>";
 	}

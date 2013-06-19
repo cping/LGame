@@ -22,7 +22,6 @@ import loon.core.graphics.LContainer;
 import loon.core.input.LInput;
 import loon.utils.MathUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -94,7 +93,8 @@ public abstract class ActorLayer extends LContainer {
 	 * @param obj
 	 * @param paused
 	 */
-	public void addActionEvent(ActionEvent action, ActionBind obj, boolean paused) {
+	public void addActionEvent(ActionEvent action, ActionBind obj,
+			boolean paused) {
 		ActionControl.getInstance().addAction(action, obj, paused);
 	}
 
@@ -220,7 +220,8 @@ public abstract class ActorLayer extends LContainer {
 	 * @param y
 	 * @return
 	 */
-	public MoveTo callMoveTo(Field2D field, ActionBind o, boolean flag, int x, int y) {
+	public MoveTo callMoveTo(Field2D field, ActionBind o, boolean flag, int x,
+			int y) {
 		if (isClose) {
 			return null;
 		}
@@ -253,7 +254,8 @@ public abstract class ActorLayer extends LContainer {
 	 * @param h
 	 * @return
 	 */
-	public MoveTo callMoveTo(ActionBind o, boolean flag, int x, int y, int w, int h) {
+	public MoveTo callMoveTo(ActionBind o, boolean flag, int x, int y, int w,
+			int h) {
 		if (isClose) {
 			return null;
 		}

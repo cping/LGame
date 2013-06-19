@@ -22,10 +22,10 @@ package loon.action.sprite.node;
 
 public class LNRotationAction extends LNAction {
 
-	LNRotationAction(){
-		
+	LNRotationAction() {
+
 	}
-	
+
 	protected float _rotation;
 
 	public static LNRotationAction Action(float r) {

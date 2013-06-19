@@ -51,7 +51,7 @@ final public class StringUtils {
 		StringBuffer sbr = new StringBuffer(res.length);
 		for (int i = 0; i < res.length; i++) {
 			if (res[i] instanceof Integer) {
-				sbr.append((Integer) res[i]);
+				sbr.append(res[i]);
 			} else {
 				sbr.append(res[i]);
 			}

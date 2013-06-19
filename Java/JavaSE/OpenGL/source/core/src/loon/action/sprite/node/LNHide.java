@@ -21,9 +21,9 @@
 package loon.action.sprite.node;
 
 public class LNHide extends LNAction {
-	
-	LNHide(){
-		
+
+	LNHide() {
+
 	}
 
 	public static LNHide Action() {

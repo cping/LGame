@@ -94,7 +94,7 @@ namespace Loon.Action.Map
                     }
                     catch (IOException ex)
                     {
-                        Loon.Utils.Debug.Log.Exception(ex);
+                        Loon.Utils.Debugging.Log.Exception(ex);
                     }
                 }
             }

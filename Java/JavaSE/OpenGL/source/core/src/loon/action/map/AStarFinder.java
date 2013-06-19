@@ -17,7 +17,6 @@ import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.geom.Vector2f;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -196,8 +195,8 @@ public class AStarFinder implements Runnable, LRelease {
 		this.flag = find.flag;
 		this.findHeuristic = find.findHeuristic;
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return super.hashCode();
 	}
 

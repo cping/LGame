@@ -54,10 +54,12 @@ public class ArrowTo extends ActionEvent {
 		this(tx, ty, 3f, 200f);
 	}
 
+	@Override
 	public boolean isComplete() {
 		return isComplete;
 	}
 
+	@Override
 	public void onLoad() {
 		this.startX = original.getX();
 		this.startY = original.getY();
@@ -69,6 +71,7 @@ public class ArrowTo extends ActionEvent {
 				- startY));
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		float dt = MathUtils.min(elapsedTime / 1000f, 0.1f);
 		vy += gravity * dt;

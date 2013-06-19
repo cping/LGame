@@ -56,10 +56,12 @@ public class RectBox extends Shape {
 			bottom = r.bottom;
 		}
 
-		public int hashCode(){
+		@Override
+		public int hashCode() {
 			return super.hashCode();
 		}
-		
+
+		@Override
 		public boolean equals(Object obj) {
 			Rect2i r = (Rect2i) obj;
 			if (r != null) {
@@ -264,18 +266,16 @@ public class RectBox extends Shape {
 
 	public int height;
 
-    public void offset(Vector2f offset)
-    {
-        x += offset.x;
-        y += offset.y;
-    }
+	public void offset(Vector2f offset) {
+		x += offset.x;
+		y += offset.y;
+	}
 
-    public void offset(int offsetX, int offsetY)
-    {
-    	  x += offsetX;
-          y += offsetY;
-    }
-    
+	public void offset(int offsetX, int offsetY) {
+		x += offsetX;
+		y += offsetY;
+	}
+
 	public int Left() {
 		return this.x();
 	}
@@ -312,6 +312,13 @@ public class RectBox extends Shape {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
+	public void setBoundsFromCenter(float centerX, float centerY,
+			float cornerX, float cornerY) {
+		float halfW = MathUtils.abs(cornerX - centerX);
+		float halfH = MathUtils.abs(cornerY - centerY);
+		setBounds(centerX - halfW, centerY - halfH, halfW * 2.0, halfH * 2.0);
+	}
+
 	public void setBounds(RectBox rect) {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
@@ -321,7 +328,6 @@ public class RectBox extends Shape {
 	}
 
 	public void setBounds(float x, float y, float width, float height) {
-		this.type = ShapeType.BOX_SHAPE;
 		this.x = x;
 		this.y = y;
 		this.width = (int) width;
@@ -334,15 +340,13 @@ public class RectBox extends Shape {
 		this.checkPoints();
 	}
 
-    public void inflate(int horizontalValue, int verticalValue)
-    {
-        this.x -= horizontalValue;
-        this.y -= verticalValue;
-        this.width += horizontalValue * 2;
-        this.height += verticalValue * 2;
-    }
-	
-    
+	public void inflate(int horizontalValue, int verticalValue) {
+		this.x -= horizontalValue;
+		this.y -= verticalValue;
+		this.width += horizontalValue * 2;
+		this.height += verticalValue * 2;
+	}
+
 	public void setLocation(RectBox r) {
 		this.x = r.x;
 		this.y = r.y;
@@ -369,6 +373,7 @@ public class RectBox extends Shape {
 		grow(getWidth() * (h - 1), getHeight() * (v - 1));
 	}
 
+	@Override
 	public void setScale(float sx, float sy) {
 		if (scaleX != sx || scaleY != sy) {
 			setSize(width * (scaleX = sx), height * (scaleY * sy));
@@ -393,18 +398,22 @@ public class RectBox extends Shape {
 		return (int) y;
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
 
+	@Override
 	public void setX(float x) {
 		this.x = x;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}
 
+	@Override
 	public void setY(float y) {
 		this.y = y;
 	}
@@ -416,18 +425,22 @@ public class RectBox extends Shape {
 		this.height = other.height;
 	}
 
+	@Override
 	public float getMinX() {
 		return getX();
 	}
 
+	@Override
 	public float getMinY() {
 		return getY();
 	}
 
+	@Override
 	public float getMaxX() {
 		return this.x + this.width;
 	}
 
+	@Override
 	public float getMaxY() {
 		return this.y + this.height;
 	}
@@ -448,10 +461,12 @@ public class RectBox extends Shape {
 		return this.y + this.height / 2;
 	}
 
+	@Override
 	public float getCenterX() {
 		return x + width / 2f;
 	}
 
+	@Override
 	public float getCenterY() {
 		return y + height / 2f;
 	}
@@ -497,10 +512,12 @@ public class RectBox extends Shape {
 		return new float[] { x, y, width, height };
 	}
 
+	@Override
 	public RectBox getRect() {
 		return this;
 	}
 
+	@Override
 	public float getHeight() {
 		return height;
 	}
@@ -509,6 +526,7 @@ public class RectBox extends Shape {
 		this.height = (int) height;
 	}
 
+	@Override
 	public float getWidth() {
 		return width;
 	}
@@ -517,10 +535,12 @@ public class RectBox extends Shape {
 		this.width = (int) width;
 	}
 
-	public int hashCode(){
+	@Override
+	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RectBox) {
 			RectBox rect = (RectBox) obj;
@@ -545,6 +565,7 @@ public class RectBox extends Shape {
 	 * @param y
 	 * @return
 	 */
+	@Override
 	public boolean contains(float x, float y) {
 		return contains(x, y, 0, 0);
 	}
@@ -679,6 +700,7 @@ public class RectBox extends Shape {
 		setBounds(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
 	}
 
+	@Override
 	protected void createPoints() {
 
 		float useWidth = width;
@@ -706,6 +728,7 @@ public class RectBox extends Shape {
 
 	}
 
+	@Override
 	public Shape transform(Matrix transform) {
 		checkPoints();
 		Polygon resultPolygon = new Polygon();

@@ -16,7 +16,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.resource.Resources;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -37,7 +36,7 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
-//0.3.3新增类,用以按指定的格式循环播放动画图像
+// 0.3.3新增类,用以按指定的格式循环播放动画图像
 public class AVGAnm implements Expression, LRelease {
 
 	final Point2i point = new Point2i();
@@ -334,4 +333,3 @@ public class AVGAnm implements Expression, LRelease {
 	}
 
 }
-

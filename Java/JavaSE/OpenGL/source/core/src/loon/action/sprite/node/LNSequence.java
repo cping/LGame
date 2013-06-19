@@ -25,10 +25,10 @@ import java.util.Arrays;
 
 public class LNSequence extends LNAction {
 
-	LNSequence(){
-		
+	LNSequence() {
+
 	}
-	
+
 	protected ArrayList<LNAction> _actionList;
 
 	protected int _index;

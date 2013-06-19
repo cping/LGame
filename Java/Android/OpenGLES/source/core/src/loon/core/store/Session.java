@@ -7,9 +7,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import loon.core.LRelease;
-import loon.utils.RecordStoreUtils;
+import loon.core.LSystem;
 import loon.utils.StringUtils;
-
 
 /**
  * Copyright 2008 - 2011
@@ -36,14 +35,24 @@ import loon.utils.StringUtils;
  */
 public class Session implements LRelease {
 
-	public static Session load(String name) {
-		return new Session(name);
+	private android.content.SharedPreferences _properties;
+
+	private boolean isPersisted = false;
+
+	private String loadData() {
+		return _properties.getString(name, null);
 	}
 
-	public static Session loadStringSession(String res) {
-		Session session = new Session((Session) null);
-		session.loadEncodeSession(res);
-		return session;
+	private void svaeData(String result) {
+		_properties.edit().putString(name, result).commit();
+	}
+
+	private void removeData() {
+		_properties.edit().remove(name).commit();
+	}
+
+	public static Session load(String name) {
+		return new Session(name);
 	}
 
 	private final String flag = "&";
@@ -129,17 +138,6 @@ public class Session implements LRelease {
 
 	private ArrayList<Record> recordsList;
 
-	private Session(Session session) {
-		if (session != null) {
-			this.name = new String(session.name);
-			this.records = new HashMap<String, Record>(session.records);
-			this.recordsList = new ArrayList<Record>(session.recordsList);
-		} else {
-			this.records = new HashMap<String, Record>(10);
-			this.recordsList = new ArrayList<Record>(10);
-		}
-	}
-
 	public Session(String name) {
 		this(name, true);
 	}
@@ -148,12 +146,23 @@ public class Session implements LRelease {
 		if (name == null) {
 			throw new RuntimeException("session name can not exist !");
 		}
+		try {
+			this._properties = LSystem.getActivity().getSharedPreferences(name,
+					0);
+			isPersisted = true;
+		} catch (Exception ex) {
+			isPersisted = false;
+		}
 		this.name = name;
 		this.records = new HashMap<String, Record>(10);
 		this.recordsList = new ArrayList<Record>(10);
 		if (gain) {
 			load();
 		}
+	}
+
+	public boolean isPersisted() {
+		return isPersisted;
 	}
 
 	public int loadEncodeSession(String encode) {
@@ -419,12 +428,8 @@ public class Session implements LRelease {
 	public void save() {
 		String result = encode();
 		if (result != null && !"".equals(result)) {
-			RecordStoreUtils.setBytes(name, result);
+			svaeData(result);
 		}
-	}
-
-	public int load() {
-		return loadEncodeSession(RecordStoreUtils.getString(name));
 	}
 
 	public HashMap<String, String> getRecords(int index) {
@@ -438,8 +443,13 @@ public class Session implements LRelease {
 		return result;
 	}
 
+	public int load() {
+		return loadEncodeSession(loadData());
+	}
+
+	@Override
 	public Object clone() {
-		return new Session(this);
+		return new Session(name);
 	}
 
 	public void dispose(String name) {
@@ -452,6 +462,7 @@ public class Session implements LRelease {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		try {
 			if (records != null) {
@@ -460,7 +471,7 @@ public class Session implements LRelease {
 			if (recordsList != null) {
 				recordsList.clear();
 			}
-			RecordStoreUtils.removeRecord(name);
+			removeData();
 		} catch (Exception e) {
 		}
 	}

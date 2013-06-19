@@ -23,9 +23,9 @@ package loon.action.sprite.node;
 public class LNCallFunc extends LNAction {
 
 	protected Callback _c;
-	
-	LNCallFunc(){
-		
+
+	LNCallFunc() {
+
 	}
 
 	public static LNCallFunc Action(Callback c) {

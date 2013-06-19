@@ -276,6 +276,7 @@ public class WaitSprite extends LObject implements ISprite {
 				offset, padding);
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -295,6 +296,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public int getHeight() {
 		if (cycle != null) {
 			return cycle.getCollisionBox().height;
@@ -303,6 +305,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public int getWidth() {
 		if (cycle != null) {
 			return cycle.getCollisionBox().width;
@@ -311,6 +314,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -327,6 +331,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void setAlpha(float alpha) {
 		if (cycle != null) {
 			cycle.setAlpha(alpha);
@@ -335,6 +340,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public float getAlpha() {
 		if (cycle != null) {
 			return cycle.getAlpha();
@@ -343,6 +349,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		if (cycle != null) {
 			return cycle.getCollisionBox();
@@ -351,10 +358,12 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public boolean isVisible() {
 		return cycle != null ? cycle.isVisible() : visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		if (cycle != null) {
 			cycle.setVisible(visible);
@@ -363,10 +372,12 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public void dispose() {
 
 	}

@@ -38,6 +38,7 @@ public class LNBezierBy extends LNAction {
 		return bezier;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -45,6 +46,7 @@ public class LNBezierBy extends LNAction {
 		_startPosition = node.getPosition();
 	}
 
+	@Override
 	public void update(float t) {
 		float xa = 0;
 		float xb = _config.controlPoint_1.x;
@@ -61,6 +63,7 @@ public class LNBezierBy extends LNAction {
 		_target.setPosition(_startPosition.x + x, _startPosition.y + y);
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_duration, _config);
 	}

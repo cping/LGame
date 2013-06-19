@@ -50,14 +50,35 @@ namespace Loon.Action.Sprite {
 			this.animation = animation;
 			this.dstWidth = dw;
 			this.dstHeight = dh;
+            Loon.Core.Graphics.Opengl.LTexture texture = animation.GetSpriteImage();
 			if (dw < 1 && dh < 1) {
-				this.rectBox = new RectBox(x, y, animation.GetSpriteImage()
-						.GetWidth(), animation.GetSpriteImage().GetHeight());
+                this.rectBox = new RectBox(x, y, texture
+                        .GetWidth(), texture.GetHeight());
 			} else {
 				this.rectBox = new RectBox(x, y, dw, dh);
 			}
 		}
-	
+
+        public SpriteBatchObject(float x, float y,
+            Animation animation, TileMap map)
+        {
+            this.SetLocation(x, y);
+            this.tiles = map;
+            this.animation = animation;
+            Loon.Core.Graphics.Opengl.LTexture texture = animation.GetSpriteImage();
+            this.dstWidth = texture.GetWidth();
+            this.dstHeight = texture.GetHeight();
+            if (dstWidth < 1 && dstHeight < 1)
+            {
+                this.rectBox = new RectBox(x, y, texture
+                        .GetWidth(), texture.GetHeight());
+            }
+            else
+            {
+                this.rectBox = new RectBox(x, y, dstWidth, dstHeight);
+            }
+        }
+
 		public void Draw(SpriteBatch batch, float offsetX, float offsetY) {
 			if (alpha != 1f) {
 				batch.SetAlpha(alpha);

@@ -17,7 +17,6 @@ import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LTrans;
 import loon.jni.NativeSupport;
-import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 
 /**

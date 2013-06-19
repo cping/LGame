@@ -23,9 +23,9 @@ package loon.action.sprite.node;
 public class LNFlipY extends LNAction {
 
 	protected boolean _flipY;
-	
-	LNFlipY(){
-		
+
+	LNFlipY() {
+
 	}
 
 	public static LNFlipY Action(boolean fy) {
@@ -53,7 +53,7 @@ public class LNFlipY extends LNAction {
 	public LNAction copy() {
 		return Action(_flipY);
 	}
-	
+
 	public LNFlipY reverse() {
 		return LNFlipY.Action(!_flipY);
 	}

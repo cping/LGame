@@ -56,6 +56,7 @@ public class LGameEglConfigChooser implements EGLConfigChooser {
 				EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4, EGL10.EGL_NONE };
 	}
 
+	@Override
 	public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
 		int[] num_config = new int[1];
 		egl.eglChooseConfig(display, m_ConfigAttribs, null, 0, num_config);

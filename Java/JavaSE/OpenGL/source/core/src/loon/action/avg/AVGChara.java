@@ -10,7 +10,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.utils.StringUtils;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -53,7 +52,7 @@ public class AVGChara implements LRelease {
 
 	protected boolean isMove, isAnimation, isVisible = true;
 
-	 int maxWidth, maxHeight;
+	int maxWidth, maxHeight;
 
 	private int moveX;
 
@@ -91,7 +90,7 @@ public class AVGChara implements LRelease {
 	public AVGChara(final String resName, final int x, final int y,
 			final int w, final int h) {
 		String path = resName;
-		if (StringUtils.startsWith(path,'"')) {
+		if (StringUtils.startsWith(path, '"')) {
 			path = resName.replaceAll("\"", "");
 		}
 		if (path.endsWith(".an")) {
@@ -109,13 +108,13 @@ public class AVGChara implements LRelease {
 			this.load(LTextures.loadTexture(path), x, y);
 		}
 	}
-	
+
 	String tmp_path;
 
-	void update(String path){
-		this.tmp_path=path;
+	void update(String path) {
+		this.tmp_path = path;
 	}
-	
+
 	private void load(LTexture image, final int x, final int y) {
 		this.load(image, x, y, image.getWidth(), image.getHeight(),
 				LSystem.screenRect.width, LSystem.screenRect.height);

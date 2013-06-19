@@ -24,15 +24,15 @@ import loon.action.sprite.SpriteBatch;
 import loon.core.geom.RectBox;
 
 public class LNLabelAtlas extends LNAtlasNode {
-	
+
 	private int _charWidth;
-	
+
 	private char _startchar;
-	
+
 	private String _text;
-	
+
 	private LabelType _type;
-	
+
 	public LNFrameStruct fs;
 
 	public LNLabelAtlas() {
@@ -78,8 +78,8 @@ public class LNLabelAtlas extends LNAtlasNode {
 				}
 			} else {
 				for (int k = 0; k < size; k++) {
-					super._textureAtlas.draw(k, batch,
-					pos[0] - ((size * this._charWidth) / 2)
+					super._textureAtlas.draw(k, batch, pos[0]
+							- ((size * this._charWidth) / 2)
 							+ (k * this._charWidth), pos[1], rotation,
 							scale[0], scale[1], batch.getColor());
 				}
@@ -92,9 +92,9 @@ public class LNLabelAtlas extends LNAtlasNode {
 		super._textureAtlas.resetRect();
 		for (int i = 0; i < this._text.length(); i++) {
 			int num2 = this._text.charAt(i) - this._startchar;
-			super._textureAtlas.addRect(new RectBox(( super._left)
-					+ (num2 * super._itemWidth),  super._top,
-					super._itemWidth, super._itemHeight));
+			super._textureAtlas.addRect(new RectBox((super._left)
+					+ (num2 * super._itemWidth), super._top, super._itemWidth,
+					super._itemHeight));
 		}
 	}
 

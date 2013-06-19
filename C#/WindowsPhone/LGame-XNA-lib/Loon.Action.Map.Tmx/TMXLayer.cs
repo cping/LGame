@@ -135,7 +135,7 @@ namespace Loon.Action.Map.Tmx
                 }
                 catch (Exception e)
                 {
-                    Loon.Utils.Debug.Log.Exception(e);
+                    Loon.Utils.Debugging.Log.Exception(e);
                     throw new Exception("Unable to decode base64 !");
                 }
             }

@@ -34,6 +34,7 @@ public class LNFlipX extends LNAction {
 		return flipx;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -43,6 +44,7 @@ public class LNFlipX extends LNAction {
 		}
 	}
 
+	@Override
 	public void update(float t) {
 		super._isEnd = true;
 		if (super._target instanceof LNSprite) {
@@ -50,6 +52,7 @@ public class LNFlipX extends LNAction {
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_flipX);
 	}

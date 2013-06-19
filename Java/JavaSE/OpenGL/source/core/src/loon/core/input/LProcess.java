@@ -18,10 +18,9 @@ import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.ScreenUtils;
 import loon.core.timer.LTimerContext;
 import loon.utils.MathUtils;
-import loon.utils.ScreenUtils;
-
 
 /**
  * Copyright 2008 - 2011
@@ -74,6 +73,7 @@ public class LProcess {
 	private boolean running;
 
 	public LProcess(LGame scene, int width, int height) {
+		LSystem.global_queue = scene;
 		this.width = width;
 		this.height = height;
 		this.scene = scene;
@@ -114,7 +114,7 @@ public class LProcess {
 			currentControl.resize(w, h);
 		}
 	}
-	
+
 	public void end() {
 		if (running) {
 			running = false;
@@ -125,6 +125,18 @@ public class LProcess {
 		if (isInstance) {
 			LTextureBatch.clearBatchCaches();
 			currentControl.callEvents(true);
+		}
+	}
+
+	public void onResume() {
+		if (isInstance) {
+			currentControl.onResume();
+		}
+	}
+
+	public void onPause() {
+		if (isInstance) {
+			currentControl.onPause();
 		}
 	}
 
@@ -184,21 +196,21 @@ public class LProcess {
 	// --- Load start ---//
 
 	public void addLoad(Updateable u) {
-			synchronized (loads) {
-				loads.add(u);
-			}
+		synchronized (loads) {
+			loads.add(u);
+		}
 	}
 
 	public void removeLoad(Updateable u) {
-			synchronized (loads) {
-				loads.remove(u);
-			}
+		synchronized (loads) {
+			loads.remove(u);
+		}
 	}
 
 	public void removeAllLoad() {
-			synchronized (loads) {
-				loads.clear();
-			}
+		synchronized (loads) {
+			loads.clear();
+		}
 	}
 
 	public void load() {
@@ -215,21 +227,21 @@ public class LProcess {
 	// --- UnLoad start ---//
 
 	public void addUnLoad(Updateable u) {
-			synchronized (unloads) {
-				unloads.add(u);
-			}
+		synchronized (unloads) {
+			unloads.add(u);
+		}
 	}
 
 	public void removeUnLoad(Updateable u) {
-			synchronized (unloads) {
-				unloads.remove(u);
-			}
+		synchronized (unloads) {
+			unloads.remove(u);
+		}
 	}
 
 	public void removeAllUnLoad() {
-			synchronized (unloads) {
-				unloads.clear();
-			}
+		synchronized (unloads) {
+			unloads.clear();
+		}
 	}
 
 	public void unload() {
@@ -246,21 +258,21 @@ public class LProcess {
 	// --- Drawable start ---//
 
 	public void addDrawing(Drawable d) {
-			synchronized (drawings) {
-				drawings.add(d);
-			}
+		synchronized (drawings) {
+			drawings.add(d);
+		}
 	}
 
 	public void removeDrawing(Drawable d) {
-			synchronized (drawings) {
-				drawings.remove(d);
-			}
+		synchronized (drawings) {
+			drawings.remove(d);
+		}
 	}
 
 	public void removeAllDrawing() {
-			synchronized (drawings) {
-				drawings.clear();
-			}
+		synchronized (drawings) {
+			drawings.clear();
+		}
 	}
 
 	public void drawable(long elapsedTime) {
@@ -460,7 +472,7 @@ public class LProcess {
 			for (int i = 0; i < size; i++) {
 				if (currentControl == screens.get(i)) {
 					if (i - 1 > -1) {
-						setScreen( screens.get(i - 1), false);
+						setScreen(screens.get(i - 1), false);
 						return;
 					}
 				}
@@ -583,14 +595,14 @@ public class LProcess {
 					startTransition();
 					screen.setClose(false);
 					screen.onLoad();
-					screen.setOnLoadState(true);
 					screen.onLoaded();
+					screen.setOnLoadState(true);
 					endTransition();
 
 				}
 			};
 
-			LSystem.callScreenRunnable(new Thread(runnable,"ProcessThread"));
+			LSystem.callScreenRunnable(new Thread(runnable, "ProcessThread"));
 
 			if (put) {
 				screens.add(screen);

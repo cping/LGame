@@ -14,13 +14,6 @@ namespace Loon.Core.Store
             return new Session(name);
         }
 
-        public static Session LoadStringSession(string res)
-        {
-            Session session = new Session((Session)null);
-            session.LoadEncodeSession(res);
-            return session;
-        }
-
         private const string flag = "&";
 
         private sealed class Record
@@ -120,21 +113,6 @@ namespace Loon.Core.Store
         private Dictionary<string, Record> records;
 
         private List<Record> recordsList;
-
-        private Session(Session session)
-        {
-            if (session != null)
-            {
-                this.name = session.name;
-                this.records = new Dictionary<string, Record>(session.records);
-                this.recordsList = new List<Record>(session.recordsList);
-            }
-            else
-            {
-                this.records = new Dictionary<string, Record>(10);
-                this.recordsList = new List<Record>(10);
-            }
-        }
 
         public Session(string name)
             : this(name, true)
@@ -497,13 +475,13 @@ namespace Loon.Core.Store
             string result = Encode();
             if (result != null && !"".Equals(result))
             {
-                RecordStoreUtils.SetBytes(name, result);
+                TMPStore.SetBytes(name, result);
             }
         }
 
         public int Load()
         {
-            return LoadEncodeSession(RecordStoreUtils.GetString(name));
+            return LoadEncodeSession(TMPStore.GetString(name));
         }
 
         public Dictionary<string, string> GetRecords(int index)
@@ -519,7 +497,8 @@ namespace Loon.Core.Store
 
         public object Clone()
         {
-            return new Session(this);
+            Session session = new Session(name);
+            return session;
         }
 
         public void Dispose(string name)
@@ -546,11 +525,11 @@ namespace Loon.Core.Store
                 {
                     recordsList.Clear();
                 }
-                RecordStoreUtils.RemoveRecord(name);
+                TMPStore.RemoveRecord(name);
             }
             catch (Exception ex)
             {
-                Loon.Utils.Debug.Log.Exception(ex);
+                Loon.Utils.Debugging.Log.Exception(ex);
             }
         }
     }

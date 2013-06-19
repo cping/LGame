@@ -61,6 +61,7 @@ public class LNLabel extends LNNode {
 
 	private float rotation;
 
+	@Override
 	public void draw(SpriteBatch batch) {
 		if (super._visible) {
 			pos = super.convertToWorldPos();

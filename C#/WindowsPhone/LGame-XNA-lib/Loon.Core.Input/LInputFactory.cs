@@ -13,6 +13,7 @@ using Loon.Utils;
 using Microsoft.Xna.Framework.Input;
 using Loon.Utils.Collection;
 using Loon.Core.Event;
+using Loon.Java;
 
 namespace Loon.Core.Input
 {
@@ -694,13 +695,11 @@ namespace Loon.Core.Input
             if (locked.Action(elapsedTime))
             {
 
-#if WINDOWS_PHONE
                 //触发触屏
                 ClickTouch();
-#else
-                                //触发鼠标
-                                ClickMouse();
-#endif
+
+                //触发鼠标
+                //ClickMouse();
 
                 if (!isDraging)
                 {
@@ -1048,6 +1047,7 @@ namespace Loon.Core.Input
                     char keyChar = (char)keyCode;
                     if (IsKeyPressed(e, idx))
                     {
+                        finalKey.timer = JavaRuntime.NanoTime() / 1000f;
                         finalKey.keyCode = keyCode;
                         finalKey.keyChar = keyChar;
                         finalKey.type = Key.KEY_DOWN;
@@ -1055,6 +1055,7 @@ namespace Loon.Core.Input
                     }
                     else if (IsKeyReleased(e, idx))
                     {
+                        finalKey.timer = JavaRuntime.NanoTime() / 1000f;
                         finalKey.keyCode = keyCode;
                         finalKey.keyChar = keyChar;
                         finalKey.type = Key.KEY_UP;

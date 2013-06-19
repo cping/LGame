@@ -1,4 +1,5 @@
 package loon.core.graphics.component;
+
 import java.util.AbstractSet;
 import java.util.Iterator;
 
@@ -24,7 +25,7 @@ import java.util.Iterator;
  * @version 0.1
  */
 
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({ "rawtypes" })
 public class ActorSet extends AbstractSet {
 
 	private ActorSet.ListNode listHeadTail = new ActorSet.ListNode();

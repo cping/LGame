@@ -4,7 +4,6 @@ import loon.core.EmulatorButtons;
 import loon.core.LSystem;
 import loon.core.event.ActionKey;
 import loon.core.geom.Vector2f;
-import loon.utils.MultitouchUtils;
 import loon.utils.collection.IntArray;
 
 import android.util.Log;
@@ -487,6 +486,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 				// 让每次执行键盘事件，至少间隔1/5秒
 				if ((curTime - keyTimeMillis) > LSystem.SECOND / 5) {
 					keyTimeMillis = curTime;
+					finalKey.timer = (double) e.getEventTime();
 					finalKey.keyChar = charCode;
 					finalKey.keyCode = e.getKeyCode();
 					finalKey.type = Key.KEY_DOWN;
@@ -500,6 +500,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 				}
 				break;
 			case android.view.KeyEvent.ACTION_UP:
+				finalKey.timer = (double) e.getEventTime();
 				finalKey.keyChar = charCode;
 				finalKey.keyCode = e.getKeyCode();
 				finalKey.type = Key.KEY_UP;
@@ -523,16 +524,21 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 	private ActionKey _close_key = new ActionKey(
 			ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
+	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent e) {
+
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
+
 			if (!LSystem.isBackLocked) {
 				if (android.view.KeyEvent.ACTION_UP == e.getAction()
 						&& _close_key.isPressed()) {
 					_close_key.release();
 				} else if (android.view.KeyEvent.ACTION_DOWN == e.getAction()
 						&& !_close_key.isPressed()) {
+
 					_close_key.press();
 					Runnable runnable = new Runnable() {
+						@Override
 						public void run() {
 							LSystem.screenActivity
 									.showAndroidYesOrNo(
@@ -542,6 +548,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 											"Yes",
 											"No",
 											new android.content.DialogInterface.OnClickListener() {
+												@Override
 												public void onClick(
 														android.content.DialogInterface dialog,
 														int which) {
@@ -550,6 +557,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 												}
 											},
 											new android.content.DialogInterface.OnClickListener() {
+												@Override
 												public void onClick(
 														android.content.DialogInterface dialog,
 														int which) {
@@ -558,7 +566,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 											});
 						}
 					};
-					LSystem.post(runnable);
+					LSystem.runOnUiThread(runnable);
 				}
 			}
 			callKey(e);
@@ -579,7 +587,8 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 	}
 
 	public void callKeyboard(final boolean visible) {
-		LSystem.post(new Runnable() {
+		LSystem.runOnUiThread(new Runnable() {
+			@Override
 			public void run() {
 				android.view.inputmethod.InputMethodManager manager = (android.view.inputmethod.InputMethodManager) LSystem
 						.getActivity().getSystemService(
@@ -596,6 +605,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 		});
 	}
 
+	@Override
 	public boolean onTouch(View v, MotionEvent e) {
 		if (handler == null) {
 			return true;

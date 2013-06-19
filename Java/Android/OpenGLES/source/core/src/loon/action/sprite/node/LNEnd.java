@@ -31,11 +31,13 @@ public class LNEnd extends LNAction {
 		return action;
 	}
 
+	@Override
 	public void step(float dt) {
 		super._isEnd = true;
 		_target.stopAllAction();
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action();
 	}

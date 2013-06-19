@@ -34,7 +34,8 @@ public class LNRotateBy extends LNRotateTo
         return by;
     }
 
-    public void setTarget(LNNode node)
+    @Override
+	public void setTarget(LNNode node)
     {
         super._firstTick = true;
         super._isEnd = false;

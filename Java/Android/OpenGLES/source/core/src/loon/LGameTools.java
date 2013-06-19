@@ -55,6 +55,7 @@ public class LGameTools {
 			this.selectFlag = f;
 		}
 
+		@Override
 		public void onClick(DialogInterface dialog, int whichButton) {
 			if (event == null) {
 				return;
@@ -95,6 +96,7 @@ public class LGameTools {
 			}
 		}
 
+		@Override
 		public void onCancel(DialogInterface dialog) {
 			if (event instanceof ClickEvent) {
 				switch (selectFlag) {
@@ -173,6 +175,7 @@ public class LGameTools {
 			gl.drawTexture(logo, centerX, centerY);
 		}
 
+		@Override
 		public void dispose() {
 			if (logo != null) {
 				logo.destroy();
@@ -292,30 +295,35 @@ public class LGameTools {
 			if (webProcess != null) {
 				setWebViewClient(new android.webkit.WebViewClient() {
 
+					@Override
 					public void onPageStarted(android.webkit.WebView view,
 							String url, Bitmap favicon) {
 						webProcess.onPageStarted(url, favicon);
 						super.onPageStarted(view, url, favicon);
 					}
 
+					@Override
 					public void onPageFinished(android.webkit.WebView view,
 							String url) {
 						webProcess.onPageFinished(url);
 						super.onPageFinished(view, url);
 					}
 
+					@Override
 					public void onLoadResource(android.webkit.WebView view,
 							String url) {
 						webProcess.onLoadResource(url);
 						super.onLoadResource(view, url);
 					}
 
+					@Override
 					public boolean shouldOverrideUrlLoading(
 							android.webkit.WebView view, String url) {
 						webProcess.shouldOverrideUrlLoading(url);
 						return super.shouldOverrideUrlLoading(view, url);
 					}
 
+					@Override
 					public void onReceivedHttpAuthRequest(
 							android.webkit.WebView view,
 							android.webkit.HttpAuthHandler handler,
@@ -334,9 +342,11 @@ public class LGameTools {
 					activity);
 			activity.addView(progress, Location.CENTER);
 			setWebChromeClient(new android.webkit.WebChromeClient() {
+				@Override
 				public void onProgressChanged(
 						final android.webkit.WebView view, final int newProgress) {
-					LSystem.post(new Runnable() {
+					LSystem.runOnUiThread(new Runnable() {
+						@Override
 						public void run() {
 							progress.setProgress(newProgress);
 							progress.setVisibility(newProgress == 100 ? View.GONE
@@ -350,7 +360,6 @@ public class LGameTools {
 
 				}
 			});
-
 			if (url != null) {
 				loadUrl(url);
 			}
@@ -434,6 +443,7 @@ public class LGameTools {
 		/**
 		 * 通过Url进行跳转
 		 */
+		@Override
 		public void loadUrl(String url) {
 			boolean isURL = url.startsWith("http://")
 					|| url.startsWith("https://") || url.startsWith("ftp://");

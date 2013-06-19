@@ -36,6 +36,7 @@ public class CollisionBaseQuery implements CollisionQuery {
 				.intersects(this.compareObject));
 	}
 
+	@Override
 	public boolean checkCollision(Actor other) {
 		return this.cls != null && !this.cls.isInstance(other) ? false
 				: (this.compareObject == null ? true : other

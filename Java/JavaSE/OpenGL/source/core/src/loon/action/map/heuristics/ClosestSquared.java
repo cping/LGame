@@ -27,7 +27,7 @@ public class ClosestSquared implements AStarFindHeuristic {
 	public float getScore(float sx, float sy, float tx, float ty) {
 		float dx = tx - sx;
 		float dy = ty - sy;
-		return ((dx*dx)+(dy*dy));
+		return ((dx * dx) + (dy * dy));
 	}
 
 	public int getType() {

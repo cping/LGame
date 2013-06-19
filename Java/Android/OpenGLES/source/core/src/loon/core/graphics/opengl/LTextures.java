@@ -5,7 +5,6 @@ import java.util.HashMap;
 import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.GLUtils;
 
 
 /**
@@ -111,6 +110,7 @@ public class LTextures {
 				}
 				if (!texture.isClose) {
 					Updateable u = new Updateable() {
+						@Override
 						public void action() {
 							synchronized (texture) {
 								if (texture.textureID > 0) {
@@ -161,6 +161,7 @@ public class LTextures {
 						texture._hashCode = 1;
 						if (texture.childs != null) {
 							Updateable u = new Updateable() {
+								@Override
 								public void action() {
 									texture.loadTexture();
 									for (int i = 0; i < texture.childs.size(); i++) {

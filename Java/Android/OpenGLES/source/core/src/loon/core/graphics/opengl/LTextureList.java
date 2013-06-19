@@ -12,7 +12,6 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
 import loon.utils.CollectionUtils;
-import loon.utils.TextureUtils;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -376,6 +375,7 @@ public class LTextureList implements LRelease {
 		return this.count;
 	}
 
+	@Override
 	public LTextureList clone() {
 		return new LTextureList(this);
 	}
@@ -394,6 +394,7 @@ public class LTextureList implements LRelease {
 		return dest;
 	}
 
+	@Override
 	public void dispose() {
 		this.visible = false;
 		for (LTextureObject tex2d : this.values) {

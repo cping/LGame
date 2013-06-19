@@ -37,7 +37,7 @@ public class ActionKey {
 	private int amount;
 
 	private int state;
-	
+
 	public boolean isReturn;
 
 	public ActionKey() {
@@ -48,9 +48,9 @@ public class ActionKey {
 		this.mode = mode;
 		reset();
 	}
-	
-	public void act(long elapsedTime){
-		
+
+	public void act(long elapsedTime) {
+
 	}
 
 	public void reset() {

@@ -16,7 +16,6 @@ import loon.core.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.collection.ArrayByte;
 
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -117,8 +116,8 @@ public abstract class Resources {
 			}
 		} else {
 			String[] newPath = StringUtils.split(path, "->");
-			in = new ByteArrayInputStream(LPKResource.openResource(newPath[0]
-					.trim(), newPath[1].trim()));
+			in = new ByteArrayInputStream(LPKResource.openResource(
+					newPath[0].trim(), newPath[1].trim()));
 		}
 		return in;
 	}
@@ -254,20 +253,21 @@ public abstract class Resources {
 			}
 		}
 		BufferedInputStream in = null;
-		boolean canInner = StringUtils.startsWith(innerName,'.')
-				|| (StringUtils.startsWith(innerName,'/') && LSystem.isWindows());
+		boolean canInner = StringUtils.startsWith(innerName, '.')
+				|| (StringUtils.startsWith(innerName, '/') && LSystem
+						.isWindows());
 		if (!isExists(innerName) && !canInner) {
 			innerName = ("/" + innerName).intern();
 			canInner = true;
 		}
 		if (canInner) {
-			if (StringUtils.startsWith(innerName,'.')) {
+			if (StringUtils.startsWith(innerName, '.')) {
 				innerName = innerName.substring(1, innerName.length());
 			}
 			innerName = StringUtils.replaceIgnoreCase(innerName, "\\", "/");
 			innerName = innerName.substring(1, innerName.length());
 		} else {
-			if (StringUtils.startsWith(innerName,'\\')) {
+			if (StringUtils.startsWith(innerName, '\\')) {
 				innerName = innerName.substring(1, innerName.length());
 			}
 		}
@@ -292,8 +292,6 @@ public abstract class Resources {
 			throw new RuntimeException(fileName + " file not found !");
 		}
 	}
-
-	
 
 	/**
 	 * 将InputStream转为byte[]

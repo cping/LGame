@@ -4,7 +4,6 @@ import java.nio.Buffer;
 
 import loon.core.LRelease;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,7 +25,7 @@ import loon.core.LRelease;
  * @version 0.3.3
  */
 public abstract class LTextureData implements LRelease {
-	
+
 	public static boolean ALL_ALPHA = false;
 
 	int width, height;
@@ -34,7 +33,7 @@ public abstract class LTextureData implements LRelease {
 	int texWidth, texHeight;
 
 	boolean hasAlpha, multipyAlpha = ALL_ALPHA;
-	
+
 	Buffer source;
 
 	int[] pixels;
@@ -74,7 +73,7 @@ public abstract class LTextureData implements LRelease {
 	public void setMultipyAlpha(boolean multipyAlpha) {
 		this.multipyAlpha = multipyAlpha;
 	}
-	
+
 	public void dispose() {
 		if (pixels != null) {
 			pixels = null;

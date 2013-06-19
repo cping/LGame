@@ -43,10 +43,12 @@ public class CircleTo extends ActionEvent {
 		this.velocity = velocity;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return isComplete;
 	}
 
+	@Override
 	public void onLoad() {
 		this.cx = (int) original.getX();
 		this.cy = (int) original.getY();
@@ -54,6 +56,7 @@ public class CircleTo extends ActionEvent {
 		this.y = cy;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		dt += MathUtils.max((elapsedTime / 1000), 0.05f);
 		this.x = (int) (this.cx + this.radius

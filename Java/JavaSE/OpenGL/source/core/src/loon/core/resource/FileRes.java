@@ -59,11 +59,11 @@ public class FileRes extends DataRes implements Resource {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;

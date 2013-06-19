@@ -21,7 +21,7 @@ package loon.core.event;
  * @version 0.1
  */
 public abstract interface Updateable {
-	
+
 	public abstract void action();
-	
+
 }

@@ -90,8 +90,8 @@ public class LPad extends LComponent {
 		this.baseHeight = (int) (p.getEntry("fore").height() * scale);
 		this.backWidth = (int) (p.getEntry("back").width() * scale);
 		this.backHeight = (int) (p.getEntry("back").height() * scale);
-		this.centerX = (float)(baseWidth - dotWidth) / 2f + offsetX;
-		this.centerY = (float)(baseHeight - dotHeight) / 2f + offsetY;
+		this.centerX = (baseWidth - dotWidth) / 2f + offsetX;
+		this.centerY = (baseHeight - dotHeight) / 2f + offsetY;
 		this.scale_pad = scale;
 		p.setFormat(Format.LINEAR);
 	}
@@ -111,10 +111,12 @@ public class LPad extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		freeClick();
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		final float x = MathUtils.bringToBounds(0, baseWidth, Touch.getX()
 				- getScreenX())
@@ -172,6 +174,7 @@ public class LPad extends LComponent {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (Touch.isUp()) {
@@ -237,10 +240,12 @@ public class LPad extends LComponent {
 		this.offsetY = offsetY;
 	}
 
+	@Override
 	public String getUIName() {
 		return "Pad";
 	}
 
+	@Override
 	public void dispose() {
 		if (pack != null) {
 			pack.dispose();

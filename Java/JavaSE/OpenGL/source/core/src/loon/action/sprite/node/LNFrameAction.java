@@ -21,15 +21,15 @@
 package loon.action.sprite.node;
 
 public class LNFrameAction extends LNAction {
-	
+
 	protected String _animName;
 
 	protected LNFrameStruct _fs;
 
 	protected int _index;
-	
-	LNFrameAction(){
-		
+
+	LNFrameAction() {
+
 	}
 
 	public static LNFrameAction Action(String aName, int idx) {

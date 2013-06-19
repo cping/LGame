@@ -139,6 +139,7 @@ public class XMLOutput extends Writer implements LRelease {
 		}
 	}
 
+	@Override
 	public void close() throws IOException {
 		while (_stack.size() != 0) {
 			end();
@@ -146,15 +147,18 @@ public class XMLOutput extends Writer implements LRelease {
 		_writer.close();
 	}
 
+	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
 		content();
 		_writer.write(cbuf, off, len);
 	}
 
+	@Override
 	public void flush() throws IOException {
 		_writer.flush();
 	}
 
+	@Override
 	public String toString() {
 		return _writer.toString();
 	}

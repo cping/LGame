@@ -53,6 +53,7 @@ public interface GL10 extends GLBase {
 
 	public void glGenTextures(int n, int[] textures, int offset);
 
+	@Override
 	public void glGenTextures(int n, IntBuffer textures);
 
 	public int glGenTextures();
@@ -109,6 +110,7 @@ public interface GL10 extends GLBase {
 
 	public void glPushMatrix();
 
+	@Override
 	public void glTexSubImage2D(int target, int level, int xoffset,
 			int yoffset, int width, int height, int format, int type,
 			Buffer pixels);

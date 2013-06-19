@@ -547,6 +547,7 @@ public class Desktop implements LRelease {
 		return this.contentPane.get();
 	}
 
+	@Override
 	public void dispose() {
 		if (contentPane != null) {
 			contentPane.dispose();

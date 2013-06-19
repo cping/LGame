@@ -312,6 +312,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		this.setScale(s, s);
 	}
 
+	@Override
 	public void setScale(final float sx, final float sy) {
 		if (this.scaleX == sx && this.scaleY == sy) {
 			return;
@@ -320,10 +321,12 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		this.scaleY = sy;
 	}
 
+	@Override
 	public float getScaleX() {
 		return this.scaleX;
 	}
 
+	@Override
 	public float getScaleY() {
 		return this.scaleY;
 	}
@@ -372,6 +375,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	 * 动作处理(内部传参)
 	 * 
 	 */
+	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			if (isAnimation) {
@@ -413,22 +417,27 @@ public class Actor extends LObject implements ActionBind,LRelease {
 
 	}
 
+	@Override
 	public int x() {
 		return location.x();
 	}
 
+	@Override
 	public int y() {
 		return location.y();
 	}
 
+	@Override
 	public float getX() {
 		return location.x;
 	}
 
+	@Override
 	public float getY() {
 		return location.y;
 	}
 
+	@Override
 	public float getRotation() {
 		return this.rotation;
 	}
@@ -438,6 +447,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	 * 
 	 * @param rotation
 	 */
+	@Override
 	public void setRotation(float rotation) {
 		if (rotation >= 360) {
 			if (rotation < 720) {
@@ -459,6 +469,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		}
 	}
 
+	@Override
 	public int getWidth() {
 		if (image != null) {
 			return image.getWidth();
@@ -466,6 +477,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		return getRectBox().width;
 	}
 
+	@Override
 	public int getHeight() {
 		if (image != null) {
 			return image.getHeight();
@@ -485,6 +497,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		setLocation(x, y);
 	}
 
+	@Override
 	public void move(Vector2f v) {
 		move(v.x, v.y);
 	}
@@ -493,6 +506,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		move(x, y);
 	}
 
+	@Override
 	public void move(float x, float y) {
 		setLocationDrag(location.getX() + x, location.getY() + y);
 	}
@@ -505,18 +519,22 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		this.setLocationDrag(x(), y);
 	}
 
+	@Override
 	public void setX(float x) {
 		this.setLocation(x, getY());
 	}
 
+	@Override
 	public void setY(float y) {
 		this.setLocation(getX(), y);
 	}
 
+	@Override
 	public void setX(Integer x) {
 		setX(x.intValue());
 	}
 
+	@Override
 	public void setY(Integer y) {
 		setY(y.intValue());
 	}
@@ -525,6 +543,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		this.setLocationDrag(x, y);
 	}
 
+	@Override
 	public void setLocation(float x, float y) {
 		setLocationDrag(x, y);
 	}
@@ -632,6 +651,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	 * 
 	 * @return
 	 */
+	@Override
 	public RectBox getRectBox() {
 		RectBox tmp = getBoundingRect();
 		if (tmp == null) {
@@ -953,6 +973,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		this.isAnimation = isAnimation;
 	}
 
+	@Override
 	public void dispose() {
 		if (image != null) {
 			image.destroy();
@@ -964,26 +985,32 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		}
 	}
 
+	@Override
 	public Field2D getField2D() {
 		return gameLayer.getField2D();
 	}
 
+	@Override
 	public boolean isBounded() {
 		return gameLayer.isBounded();
 	}
 
+	@Override
 	public boolean isContainer() {
 		return gameLayer.isContainer();
 	}
 
+	@Override
 	public boolean inContains(int x, int y, int w, int h) {
 		return gameLayer.contains(x, y, w, h);
 	}
 
+	@Override
 	public int getContainerWidth() {
 		return gameLayer.getWidth();
 	}
 
+	@Override
 	public int getContainerHeight() {
 		return gameLayer.getHeight();
 	}

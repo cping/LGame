@@ -31,6 +31,7 @@ public class CollisionClassQuery implements CollisionQuery {
 		this.subQuery = subQuery;
 	}
 
+	@Override
 	public boolean checkCollision(Actor actor) {
 		return this.cls.isInstance(actor) ? this.subQuery.checkCollision(actor)
 				: false;

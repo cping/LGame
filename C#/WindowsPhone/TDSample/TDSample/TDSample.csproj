@@ -143,13 +143,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LGame-XNA-lib\LGame-XNA-lib.csproj">
+    <ProjectReference Include="..\..\LGame-XNA-lib\Loon-backend-XNA.csproj">
       <Project>{EC0B16E5-0A1D-487A-A67C-FD65B8EDB252}</Project>
-      <Name>LGame-XNA-lib</Name>
+      <Name>Loon-backend-XNA</Name>
     </ProjectReference>
     <ProjectReference Include="..\TDSampleContent\TDSampleContent.contentproj">
-      <Name>TDSampleContent</Name>
+      <Name>TDSampleContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{1B44B3E1-C03F-4E34-A387-47203A842AD5}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

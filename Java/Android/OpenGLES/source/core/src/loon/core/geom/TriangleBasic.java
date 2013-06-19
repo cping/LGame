@@ -40,6 +40,7 @@ public class TriangleBasic implements Triangle {
 	public TriangleBasic() {
 	}
 
+	@Override
 	public void addPolyPoint(float x, float y) {
 		Point p = new Point(x, y);
 		if (!poly.contains(p)) {
@@ -55,6 +56,7 @@ public class TriangleBasic implements Triangle {
 		return new float[] { poly.get(index).x, poly.get(index).y };
 	}
 
+	@Override
 	public boolean triangulate() {
 		tried = true;
 
@@ -62,6 +64,7 @@ public class TriangleBasic implements Triangle {
 		return worked;
 	}
 
+	@Override
 	public int getTriangleCount() {
 		if (!tried) {
 			throw new RuntimeException(
@@ -70,6 +73,7 @@ public class TriangleBasic implements Triangle {
 		return tris.size() / 3;
 	}
 
+	@Override
 	public float[] getTrianglePoint(int t, int i) {
 		if (!tried) {
 			throw new RuntimeException(
@@ -242,10 +246,12 @@ public class TriangleBasic implements Triangle {
 			return array;
 		}
 
+		@Override
 		public int hashCode() {
 			return (int) (x * y * 31);
 		}
 
+		@Override
 		public boolean equals(Object other) {
 			if (other instanceof Point) {
 				Point p = (Point) other;
@@ -289,6 +295,7 @@ public class TriangleBasic implements Triangle {
 		}
 	}
 
+	@Override
 	public void startHole() {
 
 	}

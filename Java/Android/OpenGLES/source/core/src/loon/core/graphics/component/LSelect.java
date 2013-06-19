@@ -156,6 +156,7 @@ public class LSelect extends LContainer {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -172,6 +173,7 @@ public class LSelect extends LContainer {
 		}
 	}
 
+	@Override
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (!visible) {
 			return;
@@ -237,6 +239,7 @@ public class LSelect extends LContainer {
 		return onClick;
 	}
 
+	@Override
 	protected void processTouchClicked() {
 		if (!input.isMoving()) {
 			if ((selects != null) && (selectFlag > 0)) {
@@ -249,6 +252,7 @@ public class LSelect extends LContainer {
 		}
 	}
 
+	@Override
 	protected synchronized void processTouchMoved() {
 		if (selects != null) {
 			int touchY = input.getTouchY();
@@ -264,12 +268,14 @@ public class LSelect extends LContainer {
 
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected() && this.input.getKeyPressed() == Key.ENTER) {
 			this.doClick();
 		}
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		processTouchMoved();
 		if (!locked) {
@@ -344,11 +350,13 @@ public class LSelect extends LContainer {
 		this.isAutoAlpha = flashBuoyage;
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 
 	}
 
+	@Override
 	public String getUIName() {
 		return "Select";
 	}

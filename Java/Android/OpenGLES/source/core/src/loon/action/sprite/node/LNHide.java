@@ -30,11 +30,13 @@ public class LNHide extends LNAction {
 		return new LNHide();
 	}
 
+	@Override
 	public void step(float dt) {
 		super._target._visible = false;
 		super._isEnd = true;
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action();
 	}

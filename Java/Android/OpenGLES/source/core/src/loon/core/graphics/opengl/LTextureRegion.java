@@ -208,6 +208,7 @@ public class LTextureRegion implements LRelease {
 		return region.split(tileWidth, tileHeight);
 	}
 
+	@Override
 	public void dispose() {
 		if (texture != null) {
 			texture.destroy();

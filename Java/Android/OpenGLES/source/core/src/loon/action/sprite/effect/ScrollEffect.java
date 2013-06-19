@@ -102,14 +102,17 @@ public class ScrollEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (stop) {
 			return;
@@ -132,6 +135,7 @@ public class ScrollEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -194,6 +198,7 @@ public class ScrollEffect extends LObject implements ISprite {
 		this.count = count;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
@@ -206,18 +211,22 @@ public class ScrollEffect extends LObject implements ISprite {
 		this.stop = stop;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void dispose() {
 		if (texture != null) {
 			texture.destroy();

@@ -38,10 +38,12 @@ public class CollisionManager implements CollisionChecker {
 
 	private CollisionChecker collisionChecker = new BSPCollisionChecker();
 
+	@Override
 	public void initialize(int cellSize) {
 		this.collisionChecker.initialize(cellSize);
 	}
 
+	@Override
 	public void clear() {
 		synchronized (CollisionManager.class) {
 			if (collisionChecker != null) {
@@ -103,6 +105,7 @@ public class CollisionManager implements CollisionChecker {
 		this.makeCollisionObjects(cls, true);
 	}
 
+	@Override
 	public void addObject(Actor actor) {
 		Class cls = actor.getClass();
 		if (this.collisionClasses.contains(cls)) {
@@ -117,6 +120,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public List getIntersectingObjects(Actor actor, Class cls) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(actor, cls);
@@ -124,6 +128,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public List getNeighbours(Actor actor, float distance, boolean diag,
 			Class cls) {
 		synchronized (CollisionManager.class) {
@@ -133,6 +138,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public List getObjects(Class cls) {
 		synchronized (CollisionManager.class) {
 			List result = this.collisionChecker.getObjects(cls);
@@ -148,6 +154,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public List getObjectsAt(float x, float y, Class cls) {
 		synchronized (CollisionManager.class) {
 			this.makeCollisionObjects(cls, true);
@@ -155,6 +162,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public List getObjectsInRange(float x, float y, float r, Class cls) {
 		synchronized (CollisionManager.class) {
 			this.makeCollisionObjects(cls, true);
@@ -163,6 +171,7 @@ public class CollisionManager implements CollisionChecker {
 
 	}
 
+	@Override
 	public List getObjectsList() {
 		synchronized (CollisionManager.class) {
 			return this.getObjects((Class) null);
@@ -170,6 +179,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public Actor getOnlyIntersectingObject(Actor object, Class cls) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(object, cls);
@@ -177,6 +187,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public Actor getOnlyObjectAt(Actor object, float dx, float dy, Class cls) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(object, cls);
@@ -184,6 +195,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public void removeObject(Actor object) {
 		synchronized (CollisionManager.class) {
 			LinkedList classSet = (LinkedList) this.freeObjects.get(object
@@ -208,6 +220,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public void updateObjectLocation(Actor object, float oldX, float oldY) {
 		synchronized (CollisionManager.class) {
 			if (!this.freeObjects.containsKey(object.getClass())) {
@@ -216,6 +229,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public void updateObjectSize(Actor object) {
 		synchronized (CollisionManager.class) {
 			if (!this.freeObjects.containsKey(object.getClass())) {
@@ -224,6 +238,7 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		synchronized (CollisionManager.class) {
 			if (freeObjects != null) {
@@ -242,12 +257,14 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public Iterator getActorsIterator() {
 		synchronized (CollisionManager.class) {
 			return collisionChecker.getActorsIterator();
 		}
 	}
 
+	@Override
 	public List getActorsList() {
 		synchronized (CollisionManager.class) {
 			return collisionChecker.getActorsList();

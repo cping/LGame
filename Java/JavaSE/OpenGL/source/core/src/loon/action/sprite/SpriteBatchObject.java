@@ -30,7 +30,6 @@ import loon.core.LRelease;
 import loon.core.geom.RectBox;
 import loon.core.graphics.LColor;
 
-
 public abstract class SpriteBatchObject extends LObject implements Config,
 		LRelease, ActionBind {
 
@@ -84,7 +83,22 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 			this.rectBox = new RectBox(x, y, dw, dh);
 		}
 	}
-
+	
+	public SpriteBatchObject(float x, float y, 
+			Animation animation, TileMap map) {
+		this.setLocation(x, y);
+		this.tiles = map;
+		this.animation = animation;
+		this.dstWidth = animation.getSpriteImage().getWidth();
+		this.dstHeight = animation.getSpriteImage().getHeight();
+		if (dstWidth < 1 && dstHeight < 1) {
+			this.rectBox = new RectBox(x, y, animation.getSpriteImage()
+					.getWidth(), animation.getSpriteImage().getHeight());
+		} else {
+			this.rectBox = new RectBox(x, y, dstWidth, dstHeight);
+		}
+	}
+	
 	public void draw(SpriteBatch batch, float offsetX, float offsetY) {
 		if (alpha != 1f) {
 			batch.setAlpha(alpha);

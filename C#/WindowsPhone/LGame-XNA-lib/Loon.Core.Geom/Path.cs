@@ -30,7 +30,6 @@ namespace Loon.Core.Geom
                 localPoints = new List<float[]>(10);
             }
             this.Set(sx, sy);
-            this.type = Loon.Core.Geom.ShapeType.PATH_SHAPE;
         }
 
         public void Set(float sx, float sy)

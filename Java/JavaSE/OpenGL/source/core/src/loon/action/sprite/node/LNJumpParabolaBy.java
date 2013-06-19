@@ -23,27 +23,27 @@ package loon.action.sprite.node;
 import loon.core.geom.Vector2f;
 
 public class LNJumpParabolaBy extends LNAction {
-	
-	LNJumpParabolaBy(){
-		
+
+	LNJumpParabolaBy() {
+
 	}
-	
+
 	public float _a;
-	
+
 	public float _b;
-	
+
 	public float _c;
-	
+
 	public Vector2f _delta;
-	
+
 	public float _height;
-	
+
 	public Vector2f _refPoint;
-	
+
 	public Vector2f _startPosition;
 
-	public static LNJumpParabolaBy Action(float duration,
-			Vector2f position, Vector2f refPoint) {
+	public static LNJumpParabolaBy Action(float duration, Vector2f position,
+			Vector2f refPoint) {
 		LNJumpParabolaBy by = new LNJumpParabolaBy();
 		by._delta = position;
 		by._duration = duration;
@@ -74,7 +74,7 @@ public class LNJumpParabolaBy extends LNAction {
 	public LNAction copy() {
 		return Action(_duration, _delta, _refPoint);
 	}
-	
+
 	public LNAction reverse() {
 		return Action(_duration, _delta.negate(), _refPoint);
 	}

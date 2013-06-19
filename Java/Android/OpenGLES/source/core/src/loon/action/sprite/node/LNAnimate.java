@@ -51,6 +51,7 @@ public class LNAnimate extends LNAction {
 		return animate;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -60,6 +61,7 @@ public class LNAnimate extends LNAction {
 		}
 	}
 
+	@Override
 	public void update(float t) {
 		if (super._target instanceof LNSprite) {
 			if (t == 1f) {
@@ -73,6 +75,7 @@ public class LNAnimate extends LNAction {
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_ans, _restoreOriginalFrame);
 	}

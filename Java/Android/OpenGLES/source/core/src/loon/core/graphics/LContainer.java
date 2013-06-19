@@ -31,6 +31,7 @@ import loon.utils.CollectionUtils;
 public abstract class LContainer extends LComponent {
 
 	private static final Comparator<LComponent> DEFAULT_COMPARATOR = new Comparator<LComponent>() {
+		@Override
 		public int compare(LComponent o1, LComponent o2) {
 			return o2.getLayer() - o1.getLayer();
 		}
@@ -51,6 +52,7 @@ public abstract class LContainer extends LComponent {
 		this.setFocusable(false);
 	}
 
+	@Override
 	public boolean isContainer() {
 		return true;
 	}
@@ -164,6 +166,7 @@ public abstract class LContainer extends LComponent {
 		this.add(newComp, index);
 	}
 
+	@Override
 	public void update(long timer) {
 		if (isClose) {
 			return;
@@ -183,6 +186,7 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
+	@Override
 	public void validatePosition() {
 		if (isClose) {
 			return;
@@ -206,6 +210,7 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
+	@Override
 	protected void validateSize() {
 		super.validateSize();
 
@@ -214,6 +219,7 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -321,6 +327,7 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
+	@Override
 	public boolean isSelected() {
 		if (!super.isSelected()) {
 			for (int i = 0; i < this.childCount; i++) {
@@ -386,6 +393,7 @@ public abstract class LContainer extends LComponent {
 		return this.latestInserted;
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (autoDestroy) {

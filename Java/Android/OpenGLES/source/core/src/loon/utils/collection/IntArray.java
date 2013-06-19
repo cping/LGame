@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
-
+import loon.utils.StringUtils;
 
 public class IntArray {
 
@@ -34,6 +34,64 @@ public class IntArray {
 
 	public IntArray() {
 		this(true, CollectionUtils.INITIAL_CAPACITY);
+	}
+
+	public IntArray(String ctx) {
+		String intString = ctx;
+		if (intString != null) {
+			if (intString.indexOf(',') != -1) {
+				intString = StringUtils.replace(intString, ",", "")
+						.replace(" ", "").trim();
+			}
+			if (!MathUtils.isNan(intString)) {
+				throw new RuntimeException('[' + intString + ']'
+						+ " not number ! ");
+			}
+		} else {
+			throw new RuntimeException('[' + intString + ']' + " is NULL ! ");
+		}
+		char[] tmp = intString.toCharArray();
+		int len = tmp.length;
+		items = new int[len];
+		for (int i = 0; i < len; i++) {
+			switch (tmp[i]) {
+			case '0':
+				items[i] = 0;
+				break;
+			case '1':
+				items[i] = 1;
+				break;
+			case '2':
+				items[i] = 2;
+				break;
+			case '3':
+				items[i] = 3;
+				break;
+			case '4':
+				items[i] = 4;
+				break;
+			case '5':
+				items[i] = 5;
+				break;
+			case '6':
+				items[i] = 6;
+				break;
+			case '7':
+				items[i] = 7;
+				break;
+			case '8':
+				items[i] = 8;
+				break;
+			case '9':
+				items[i] = 9;
+				break;
+			default:
+				items[i] = -1;
+				break;
+			}
+		}
+		size = len;
+		tmp = null;
 	}
 
 	public IntArray(int capacity) {
@@ -52,7 +110,7 @@ public class IntArray {
 		System.arraycopy(array.items, 0, items, 0, size);
 	}
 
-	public IntArray(int[] array) {
+	public IntArray(int... array) {
 		this(true, array);
 	}
 
@@ -134,13 +192,82 @@ public class IntArray {
 		return false;
 	}
 
+	public boolean containsAll(IntArray c) {
+		for (int i = 0; i < c.size; i++) {
+			if (!contains(c.items[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean part(IntArray c) {
+		int cc = 0;
+		for (int i = 0; i < c.size; i++) {
+			if (contains(c.items[i])) {
+				cc++;
+			}
+		}
+		return cc != 0;
+	}
+
 	public int indexOf(int value) {
 		int[] items = this.items;
 		for (int i = 0, n = size; i < n; i++) {
-			if (items[i] == value)
+			if (items[i] == value) {
 				return i;
+			}
 		}
 		return -1;
+	}
+
+	public int count(int value) {
+		int cc = 0;
+		int[] items = this.items;
+		for (int i = 0; i < size; i++) {
+			if (items[i] == value) {
+				cc++;
+			}
+		}
+		return cc;
+	}
+
+	public IntArray copy() {
+		return new IntArray(this);
+	}
+
+	public boolean retainAll(IntArray c) {
+		return batchRemove(c, true);
+	}
+
+	public boolean removeAll(IntArray c) {
+		return batchRemove(c, false);
+	}
+
+	private boolean batchRemove(IntArray c, boolean complement) {
+		final int[] data = this.items;
+		int r = 0, w = 0;
+		boolean modified = false;
+		try {
+			for (; r < size; r++) {
+				if (c.contains(data[r]) == complement) {
+					data[w++] = data[r];
+				}
+			}
+		} finally {
+			if (r != size) {
+				System.arraycopy(data, r, data, w, size - r);
+				w += size - r;
+			}
+			if (w != size) {
+				for (int i = w; i < size; i++) {
+					data[i] = -1;
+				}
+				size = w;
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	public boolean removeValue(int value) {
@@ -208,4 +335,24 @@ public class IntArray {
 		return array;
 	}
 
+	public String toString(char split) {
+		if (size == 0) {
+			return "[]";
+		}
+		int[] items = this.items;
+		StringBuilder buffer = new StringBuilder(
+				CollectionUtils.INITIAL_CAPACITY);
+		buffer.append('[');
+		buffer.append(items[0]);
+		for (int i = 1; i < size; i++) {
+			buffer.append(split);
+			buffer.append(items[i]);
+		}
+		buffer.append(']');
+		return buffer.toString();
+	}
+
+	public String toString() {
+		return toString(',');
+	}
 }

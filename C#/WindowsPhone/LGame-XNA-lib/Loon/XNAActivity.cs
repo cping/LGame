@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace Loon
 {
-    public class XNAActivity :XNAContext
+    public abstract class XNAActivity :XNAContext
     {
         private GLSurfaceView m_view;
 

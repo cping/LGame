@@ -27,9 +27,9 @@ public class LNFadeIn extends LNAction {
 	protected float _orgOpacity;
 
 	protected float _tarOpacity;
-	
-	LNFadeIn(){
-		
+
+	LNFadeIn() {
+
 	}
 
 	public static LNFadeIn Action(float duration) {

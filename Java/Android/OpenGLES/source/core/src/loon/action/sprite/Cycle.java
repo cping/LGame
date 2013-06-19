@@ -58,6 +58,7 @@ public class Cycle extends LObject implements ISprite {
 
 				private Path path;
 
+				@Override
 				public void step(GLEx g, float x, float y, float progress,
 						int index, int frame, LColor color, float alpha) {
 					float cx = this.padding + 50, cy = this.padding + 50, angle = (MathUtils.PI / 180)
@@ -123,6 +124,7 @@ public class Cycle extends LObject implements ISprite {
 
 				private Path path;
 
+				@Override
 				public void step(GLEx g, float x, float y, float progress,
 						int index, int frame, LColor color, float alpha) {
 
@@ -454,6 +456,7 @@ public class Cycle extends LObject implements ISprite {
 
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			this.iterateFrame();
@@ -513,6 +516,7 @@ public class Cycle extends LObject implements ISprite {
 		return new float[] { (ex - sx) * t + sx, (ey - sy) * t + sy };
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!isVisible) {
 			return;
@@ -711,6 +715,7 @@ public class Cycle extends LObject implements ISprite {
 		this.blockHalfWidth = blockWidth / 2;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
@@ -726,6 +731,7 @@ public class Cycle extends LObject implements ISprite {
 		return poly;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		Shape shape = getShape();
 		return getRect(shape.getX(), shape.getY(), shape.getWidth(),
@@ -740,22 +746,27 @@ public class Cycle extends LObject implements ISprite {
 		this.height = h;
 	}
 
+	@Override
 	public int getWidth() {
 		return (int) height;
 	}
 
+	@Override
 	public int getHeight() {
 		return (int) width;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return isVisible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.isVisible = visible;
 	}
 
+	@Override
 	public void dispose() {
 
 	}

@@ -90,6 +90,7 @@ public final class ActorNode implements LRelease {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		if (node != null) {
 			node = null;

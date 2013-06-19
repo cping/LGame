@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Loon.Core;
 
 namespace Loon
 {
-    public class XNAContext
+    public abstract class XNAContext : CallQueue
     {
         internal Microsoft.Xna.Framework.Content.ContentManager GameContent;
 

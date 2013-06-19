@@ -10,7 +10,6 @@ import loon.core.geom.RectBox;
 import loon.core.graphics.LImage;
 import loon.core.graphics.opengl.LTexture;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -47,8 +46,8 @@ public class CollisionMask implements LRelease {
 		if (image == null) {
 			throw new RuntimeException("Image is null !");
 		}
-		return makePolygon(image.getPixels(), image.getWidth(), image
-				.getHeight());
+		return makePolygon(image.getPixels(), image.getWidth(),
+				image.getHeight());
 	}
 
 	public static Polygon makePolygon(int[] pixels, int w, int h) {
@@ -158,8 +157,8 @@ public class CollisionMask implements LRelease {
 		if (image == null) {
 			throw new RuntimeException("Image is null !");
 		}
-		return createMask(image.getPixels(), image.getWidth(), image
-				.getHeight());
+		return createMask(image.getPixels(), image.getWidth(),
+				image.getHeight());
 	}
 
 	public static LTexture.Mask createMask(int[] pixels, int w, int h) {

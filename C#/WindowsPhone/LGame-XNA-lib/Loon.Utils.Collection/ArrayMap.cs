@@ -1,11 +1,10 @@
-using System;
-using Loon.Java;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using Loon.Java.Collections;
-
 namespace Loon.Utils.Collection
 {
+
+    using Loon.Java;
+    using System.Runtime.CompilerServices;
+    using System.Collections.Generic;
+    using Loon.Java.Collections;
 
     public class ArrayMap
     {
@@ -175,7 +174,7 @@ namespace Loon.Utils.Collection
         {
             if (index >= size)
             {
-                throw new IndexOutOfRangeException("Index:" + index + ", Size:"
+                throw new System.IndexOutOfRangeException("Index:" + index + ", Size:"
                                     + size.ToString());
             }
             return valueTables[index];
@@ -374,7 +373,7 @@ namespace Loon.Utils.Collection
             int numMoved = size - index - 1;
             if (numMoved > 0)
             {
-                System.Array.Copy((Array)(valueTables), index + 1, (Array)(valueTables), index, numMoved);
+                System.Array.Copy(valueTables, index + 1, valueTables, index, numMoved);
             }
             valueTables[--size] = null;
             return e;
@@ -389,7 +388,7 @@ namespace Loon.Utils.Collection
                 ArrayMap.Entry[] newMapTable = new ArrayMap.Entry[newCapacity];
                 ArrayMap.Entry[] newListTable = new ArrayMap.Entry[newCapacity];
                 threshold = (int)(newCapacity * LOAD_FACTOR);
-                System.Array.Copy((Array)(oldTable), 0, (Array)(newListTable), 0, size);
+                System.Array.Copy(oldTable, 0, newListTable, 0, size);
                 for (int i = 0; i < size; i++)
                 {
                     ArrayMap.Entry old = oldTable[i];
@@ -452,6 +451,37 @@ namespace Loon.Utils.Collection
                 valueTables[i] = null;
             }
             size = newSize;
+        }
+
+        public override string ToString()
+        {
+            return ToString(',');
+        }
+
+        public string ToString(char split)
+        {
+            if (size == 0)
+            {
+                return "[]";
+            }
+            Entry[] values = this.valueTables;
+            System.Text.StringBuilder buffer = new System.Text.StringBuilder(
+                    CollectionUtils.INITIAL_CAPACITY);
+            buffer.Append('[');
+            for (int i = 0; i < size; i++)
+            {
+                object key = values[i].key;
+                object value_ren = values[i].value_ren;
+                buffer.Append((key == (object)this) ? (object)("(this Map)") : (object)(key));
+                buffer.Append('=');
+                buffer.Append((value_ren == (object)this) ? (object)("(this Map)") : (object)(value_ren));
+                if (i < size - 1)
+                {
+                    buffer.Append(split).Append(' ');
+                }
+            }
+            buffer.Append(']');
+            return buffer.ToString();
         }
 
         public class Entry

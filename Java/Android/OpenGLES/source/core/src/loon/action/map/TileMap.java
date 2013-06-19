@@ -569,10 +569,12 @@ public class TileMap extends LObject implements ISprite, LRelease {
 		return field.getTileHeight();
 	}
 
+	@Override
 	public int getHeight() {
 		return field.getHeight() * field.getTileWidth();
 	}
 
+	@Override
 	public int getWidth() {
 		return field.getWidth() * field.getTileHeight();
 	}
@@ -601,14 +603,17 @@ public class TileMap extends LObject implements ISprite, LRelease {
 		this.dirty = dirty;
 	}
 
+	@Override
 	public void setVisible(boolean v) {
 		this.visible = v;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -622,15 +627,18 @@ public class TileMap extends LObject implements ISprite, LRelease {
 		}
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x() + offset.x, y() + offset.y, field.getTileWidth()
 				* field.getWidth(), field.getTileHeight() * field.getHeight());
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return imgPack.getTexture();
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (playAnimation && animations.size() > 0) {
 			for (Animation a : animations) {
@@ -650,6 +658,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 		playAnimation = false;
 	}
 
+	@Override
 	public void dispose() {
 		visible = false;
 		playAnimation = false;

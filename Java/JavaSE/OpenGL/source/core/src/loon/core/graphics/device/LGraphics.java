@@ -28,11 +28,10 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 import loon.core.geom.Triangle2f;
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
-import loon.utils.GraphicsUtils;
-
 
 /**
  * Copyright 2008 - 2009

@@ -120,21 +120,21 @@ public class Point extends Shape {
 	public Point(float x, float y) {
 		this.checkPoints();
 		this.setLocation(x, y);
-		this.type = ShapeType.POINT_SHAPE;
 	}
 
 	public Point(Point p) {
 		this.checkPoints();
 		this.setLocation(p);
-		this.type = ShapeType.POINT_SHAPE;
 	}
 
+	@Override
 	public Shape transform(Matrix transform) {
 		float result[] = new float[points.length];
 		transform.transform(points, 0, result, 0, points.length / 2);
 		return new Point(points[0], points[1]);
 	}
 
+	@Override
 	protected void createPoints() {
 		if (points == null) {
 			points = new float[2];
@@ -151,6 +151,7 @@ public class Point extends Shape {
 		calculateRadius();
 	}
 
+	@Override
 	protected void findCenter() {
 		if (center == null) {
 			center = new float[2];
@@ -159,6 +160,7 @@ public class Point extends Shape {
 		center[1] = points[1];
 	}
 
+	@Override
 	protected void calculateRadius() {
 		boundingCircleRadius = 0;
 	}
@@ -168,6 +170,7 @@ public class Point extends Shape {
 		this.y = y;
 	}
 
+	@Override
 	public void setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -209,10 +212,12 @@ public class Point extends Shape {
 		dest.setLocation(this.x, this.y);
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		Point p = (Point) obj;
 		return p.x == this.x && p.y == this.y && p.clazz == this.clazz;

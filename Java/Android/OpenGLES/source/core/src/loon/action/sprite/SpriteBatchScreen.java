@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import loon.action.map.Config;
 import loon.action.map.TileMap;
@@ -31,6 +32,8 @@ import loon.action.sprite.node.LNNode;
 import loon.core.LObject;
 import loon.core.LSystem;
 import loon.core.event.ActionKey;
+import loon.core.geom.AABB;
+import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.GLEx;
@@ -38,6 +41,10 @@ import loon.core.input.LInput;
 import loon.core.input.LKey;
 import loon.core.input.LInputFactory.Touch;
 import loon.core.timer.LTimerContext;
+import loon.physics.PBody;
+import loon.physics.PPhysManager;
+import loon.physics.PShape;
+import loon.physics.PWorldBox;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.collection.ArrayMap;
@@ -83,6 +90,121 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	private boolean isClicked;
 
 	protected UpdateListener updateListener;
+
+	private boolean usePhysics = false;
+
+	private PPhysManager _manager;
+
+	private PWorldBox _box;
+
+	private boolean _fixed = false;
+
+	private float _dt = 1F / 60F;
+
+	private void limitWorld(boolean _fixed) {
+		if (_fixed) {
+			if (this._box == null) {
+				this._box = new PWorldBox(_manager, 0f, 0f, getWidth(),
+						getHeight());
+			}
+			if (_physicsRect != null) {
+				this._box.set(_physicsRect.x, _physicsRect.y,
+						_physicsRect.width, _physicsRect.height);
+			}
+			this._box.build();
+		} else {
+			if (_box != null) {
+				this._box.removeWorld();
+			}
+		}
+	}
+
+	public PPhysManager getPhysicsManager() {
+		if (!usePhysics) {
+			throw new RuntimeException("You do not set the physics engine !");
+		}
+		return _manager;
+	}
+
+	public boolean isPhysics() {
+		return usePhysics;
+	}
+
+	private RectBox _physicsRect;
+
+	public void setPhysicsRect(float x, float y, float w, float h) {
+		if (this._physicsRect == null) {
+			this._physicsRect = new RectBox(x, y, w, h);
+		} else {
+			this._physicsRect.setBounds(x, y, w, h);
+		}
+	}
+
+	public void setPhysics(boolean fix, PPhysManager man) {
+		this._manager = man;
+		this._fixed = fix;
+		this.limitWorld(_fixed);
+		this.usePhysics = true;
+	}
+
+	public void setPhysics(boolean fix, float scale, float gx, float gy) {
+		if (_manager == null) {
+			this._manager = new PPhysManager(scale, gx, gy);
+		} else {
+			this._manager.scale = scale;
+			this._manager.gravity.set(gx, gy);
+		}
+		this._manager.setEnableGravity(true);
+		this._manager.setStart(true);
+		this._fixed = fix;
+		this.limitWorld(_fixed);
+		this.usePhysics = true;
+	}
+
+	public void setPhysics(boolean fix) {
+		setPhysics(fix, 10F);
+	}
+
+	public void setPhysics(boolean fix, float scale) {
+		if (_manager == null) {
+			this._manager = new PPhysManager(scale);
+		} else {
+			this._manager.scale = scale;
+		}
+		this._manager.setEnableGravity(true);
+		this._manager.setStart(true);
+		this._fixed = fix;
+		this.limitWorld(_fixed);
+		this.usePhysics = true;
+	}
+
+	public float getTimeStep() {
+		return this._dt;
+	}
+
+	public void setTimeStep(float dt) {
+		this._dt = dt;
+	}
+
+	@Override
+	public void onResume() {
+		if (usePhysics) {
+			_manager.setStart(true);
+			_manager.setEnableGravity(true);
+		}
+	}
+
+	@Override
+	public void onPause() {
+		if (usePhysics) {
+			_manager.setStart(false);
+			_manager.setEnableGravity(false);
+		}
+	}
+
+	public boolean isFixed() {
+		return _fixed;
+	}
 
 	public interface UpdateListener {
 
@@ -173,7 +295,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int i = 0;
 		while (removed == -1 && i < nodes.length - 1) {
 			if (nodes[i].isContainer()) {
-				removed = this.removeNode( nodes[i], node);
+				removed = this.removeNode(nodes[i], node);
 			}
 			i++;
 		}
@@ -187,7 +309,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int i = 0;
 		while (removed == -1 && i < nodes.length - 1) {
 			if (nodes[i].isContainer()) {
-				removed = this.removeNode( nodes[i], clazz);
+				removed = this.removeNode(nodes[i], clazz);
 			}
 			i++;
 		}
@@ -258,8 +380,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (this.modal != null && !this.modal.isContainer()) {
 			return content.findNode(x, y);
 		}
-		LNNode panel = (this.modal == null) ? this.content
-				: ( this.modal);
+		LNNode panel = (this.modal == null) ? this.content : (this.modal);
 		LNNode node = panel.findNode(x, y);
 		return node;
 	}
@@ -305,8 +426,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			return;
 		}
 		if (node.isContainer()) {
-			LNNode[] nodes = ( node).childs;
-			int size = ( node).getNodeCount();
+			LNNode[] nodes = (node).childs;
+			int size = (node).getNodeCount();
 			for (int i = 0; i < size; i++) {
 				this.setNodeStat(nodes[i], active);
 			}
@@ -341,7 +462,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int size = container.getNodeCount();
 		for (int i = 0; i < size; i++) {
 			if (nodes[i].isContainer()) {
-				this.validateContainer( nodes[i]);
+				this.validateContainer(nodes[i]);
 			}
 		}
 	}
@@ -357,7 +478,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		int size = nodes.length;
 		ArrayList<LNNode> l = new ArrayList<LNNode>(size);
 		for (int i = size; i > 0; i--) {
-			LNNode node =  nodes[i - 1];
+			LNNode node = nodes[i - 1];
 			Class<? extends LNNode> cls = node.getClass();
 			if (clazz == null || clazz == cls || clazz.isInstance(node)
 					|| clazz.equals(cls)) {
@@ -446,26 +567,36 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public void add(SpriteBatchObject object) {
+	public SpriteBatchObject add(SpriteBatchObject object) {
 		pendingAdd.add(object);
+		return object;
 	}
 
-	public void remove(SpriteBatchObject object) {
+	public SpriteBatchObject remove(SpriteBatchObject object) {
 		pendingRemove.add(object);
+		if (usePhysics) {
+			unbindPhysics(object);
+		}
+		return object;
 	}
 
 	public void removeTileObjects() {
 		final int count = objects.size();
 		final Object[] objectArray = objects.toArray();
 		for (int i = 0; i < count; i++) {
-			pendingRemove.add((SpriteBatchObject) objectArray[i]);
+			SpriteBatchObject o = (SpriteBatchObject) objectArray[i];
+			pendingRemove.add(o);
+			if (usePhysics) {
+				unbindPhysics(o);
+			}
 		}
 		pendingAdd.clear();
 	}
 
 	public SpriteBatchObject findObject(float x, float y) {
 		for (SpriteBatchObject o : objects) {
-			if (o.getX() == x && o.getY() == y) {
+			if ((o.getX() == x && o.getY() == y)
+					|| o.getRectBox().contains(x, y)) {
 				return o;
 			}
 		}
@@ -594,6 +725,122 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		remove(o);
 	}
 
+	private HashMap<SpriteBatchObject, PBody> _Bodys = new HashMap<SpriteBatchObject, PBody>(
+			CollectionUtils.INITIAL_CAPACITY);
+
+	public PBody findPhysics(SpriteBatchObject o) {
+		if (usePhysics) {
+			PBody body = _Bodys.get(o);
+			return body;
+		} else {
+			throw new RuntimeException("You do not set the physics engine !");
+		}
+	}
+
+	public void unbindPhysics(SpriteBatchObject o) {
+		if (usePhysics) {
+			PBody body = _Bodys.remove(o);
+			if (body != null) {
+				body.setTag(null);
+				_manager.world.removeBody(body);
+			}
+		}
+	}
+
+	public PBody addPhysics(boolean fix, SpriteBatchObject o, float density) {
+		return bindPhysics(fix, add(o), density);
+	}
+
+	public PBody addPhysics(boolean fix, SpriteBatchObject o) {
+		return bindPhysics(fix, add(o), 1F);
+	}
+
+	public PBody addTexturePhysics(boolean fix, SpriteBatchObject o,
+			float density) {
+		return bindTexturePhysics(fix, add(o), density);
+	}
+
+	public PBody addTexturePhysics(boolean fix, SpriteBatchObject o) {
+		return bindTexturePhysics(fix, add(o), 1F);
+	}
+
+	public PBody bindPhysics(boolean fix, SpriteBatchObject o, float density) {
+		if (usePhysics) {
+			PBody body = _manager.addBox(fix, o.getRectBox(),
+					MathUtils.toRadians(o.getRotation()), density);
+			body.setTag(o);
+			_Bodys.put(o, body);
+			return body;
+		} else {
+			throw new RuntimeException("You do not set the physics engine !");
+		}
+	}
+
+	public PBody addCirclePhysics(boolean fix, SpriteBatchObject o,
+			float density) {
+		return bindCirclePhysics(fix, add(o), density);
+	}
+
+	public PBody addCirclePhysics(boolean fix, SpriteBatchObject o) {
+		return bindCirclePhysics(fix, add(o), 1F);
+	}
+
+	public PBody bindCirclePhysics(boolean fix, SpriteBatchObject o) {
+		return bindCirclePhysics(fix, add(o), 1F);
+	}
+
+	public PBody bindCirclePhysics(boolean fix, SpriteBatchObject o,
+			float density) {
+		if (usePhysics) {
+			RectBox rect = o.getRectBox();
+			float r = (rect.width + rect.height) / 4;
+			PBody body = _manager.addCircle(fix, o.x(), o.y(), r,
+					MathUtils.toRadians(o.getRotation()), density);
+			body.setTag(o);
+			_Bodys.put(o, body);
+			return body;
+		} else {
+			throw new RuntimeException("You do not set the physics engine !");
+		}
+	}
+
+	public PBody bindTexturePhysics(boolean fix, SpriteBatchObject o,
+			float density) {
+		if (usePhysics) {
+			PBody body = _manager.addShape(fix, o.getAnimation()
+					.getSpriteImage(), MathUtils.toRadians(o.getRotation()),
+					density);
+			if (body.size() > 0) {
+				body.inner_shapes()[0].setPosition(o.x() / _manager.scale,
+						o.y() / _manager.scale);
+			}
+			body.setTag(o);
+			_Bodys.put(o, body);
+			return body;
+		} else {
+			throw new RuntimeException("You do not set the physics engine !");
+		}
+	}
+
+	public PBody bindTexturePhysics(boolean fix, SpriteBatchObject o) {
+		return bindTexturePhysics(fix, o, 1F);
+	}
+
+	public PBody bindPhysics(boolean fix, SpriteBatchObject o) {
+		return bindPhysics(fix, o, 1F);
+	}
+
+	public PBody bindPhysics(PBody body, SpriteBatchObject o) {
+		if (usePhysics) {
+			body.setTag(o);
+			_manager.addBody(body);
+			_Bodys.put(o, body);
+			return body;
+		} else {
+			throw new RuntimeException("You do not set the physics engine !");
+		}
+	}
+
 	public final void alter(LTimerContext timer) {
 		for (int i = 0; i < keySize; i++) {
 			ActionKey act = (ActionKey) keyActions.get(i);
@@ -608,7 +855,17 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			processEvents();
 			content.updateNode(timer.getMilliseconds());
 		}
+		if (usePhysics) {
+			if (_dt < 0) {
+				_manager.step(timer.getMilliseconds());
+			} else {
+				_manager.step(_dt);
+			}
+		}
 		if (follow != null) {
+			if (usePhysics) {
+				_manager.offset(follow.getX(), follow.getY());
+			}
 			for (TileMap tile : tiles) {
 				float offsetX = getHalfWidth() - follow.getX();
 				offsetX = MathUtils.min(offsetX, 0);
@@ -624,6 +881,18 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			}
 		}
 		for (SpriteBatchObject o : objects) {
+			if (usePhysics) {
+				PBody body = _Bodys.get(o);
+				if (body != null) {
+					PShape shape = body.inner_shapes()[0];
+					final float rotation = (shape.getAngle() * MathUtils.RAD_TO_DEG) % 360;
+					AABB aabb = shape.getAABB();
+
+					o.setLocation(_manager.getScreenX(aabb.minX),
+							_manager.getScreenY(aabb.minY));
+					o.setRotation(rotation);
+				}
+			}
 			o.update(elapsedTime);
 			if (updateListener != null) {
 				updateListener.act(o, elapsedTime);
@@ -712,6 +981,11 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public final void dispose() {
+		if (usePhysics) {
+			_manager.setStart(false);
+			_manager.setEnableGravity(false);
+			_Bodys.clear();
+		}
 		this.keySize = 0;
 		if (batch != null) {
 			batch.dispose();

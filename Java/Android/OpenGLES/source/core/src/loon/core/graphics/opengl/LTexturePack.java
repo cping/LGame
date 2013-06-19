@@ -889,6 +889,7 @@ public class LTexturePack implements LRelease {
 		}
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sbr = new StringBuffer(1000);
 		sbr.append("<?xml version=\"1.0\" standalone=\"yes\" ?>\n");
@@ -912,6 +913,7 @@ public class LTexturePack implements LRelease {
 		return sbr.toString();
 	}
 
+	@Override
 	public synchronized void dispose() {
 		free();
 		if (texture != null) {

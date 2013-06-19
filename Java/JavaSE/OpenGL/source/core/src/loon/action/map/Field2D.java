@@ -9,7 +9,6 @@ import loon.core.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 

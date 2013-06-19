@@ -90,7 +90,7 @@ public final class LSTRDictionary {
 	}
 
 	private final static int size = LSystem.DEFAULT_MAX_CACHE_SIZE * 5;
-	
+
 	public final static Dict bind(final LFont font, final String mes) {
 		final String message = mes + added;
 		if (cacheList.size() > size) {

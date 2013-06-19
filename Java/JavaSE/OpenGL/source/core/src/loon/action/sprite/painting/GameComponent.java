@@ -26,11 +26,11 @@ import loon.core.timer.GameTime;
 
 public class GameComponent implements IGameComponent, IUpdateable,
 		Comparable<GameComponent>, LRelease {
-	
+
 	private DrawableScreen _game;
-	
+
 	private int _updateOrder;
-	
+
 	private boolean _enabled;
 
 	public GameComponent(DrawableScreen game) {

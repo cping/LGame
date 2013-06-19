@@ -501,6 +501,7 @@ public final class Matrix {
 		}
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Matrix) || o == null) {
 			return false;
@@ -545,6 +546,7 @@ public final class Matrix {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		for (int j = 0; j < 9; j++) {
@@ -563,6 +565,7 @@ public final class Matrix {
 		return new Vector2f(out[0], out[1]);
 	}
 
+	@Override
 	public Matrix clone() {
 		return new Matrix(this.matrixs);
 	}

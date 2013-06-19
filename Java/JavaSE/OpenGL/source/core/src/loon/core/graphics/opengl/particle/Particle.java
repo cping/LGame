@@ -26,7 +26,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.MathUtils;
 
-
 public class Particle {
 
 	public static final int INHERIT_POINTS = 1;
@@ -203,7 +202,7 @@ public class Particle {
 	}
 
 	public void setSpeed(float speed) {
-		float currentSpeed =  MathUtils.sqrt((velx * velx) + (vely * vely));
+		float currentSpeed = MathUtils.sqrt((velx * velx) + (vely * vely));
 		velx *= speed;
 		vely *= speed;
 		velx /= currentSpeed;

@@ -1,16 +1,16 @@
-
-using Microsoft.Xna.Framework;
 using System;
-using Loon.Core.Graphics.Opengl;
-using System.Diagnostics;
-using Loon.Core;
-using System.Globalization;
-using Microsoft.Xna.Framework.Graphics;
-using Loon.Core.Geom;
-using Loon.Utils;
 using System.Text;
 using System.Threading;
+using System.Globalization;
+using System.Diagnostics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Loon.Core.Graphics.Opengl;
+using Loon.Core;
+using Loon.Core.Geom;
+using Loon.Core.Graphics;
+using Loon.Utils;
 namespace Loon
 {
  
@@ -73,6 +73,8 @@ namespace Loon
             return xna_listener;
         }
 
+        private LSetting.Listener _listener;
+
         private DisplayMode m_displayMode;
 
         private int width, height, maxWidth, maxHeight;
@@ -120,8 +122,9 @@ namespace Loon
             {
                 m_type.setting = setting;
             }
-            m_type.mainType = clazz;
-            m_type.args = args;
+            this.m_type.mainType = clazz;
+            this.m_type.args = args;
+            this._listener = setting.listener;
         }
 
         public void SetLandscape(bool l)
@@ -140,7 +143,7 @@ namespace Loon
             }
         }
 
-        public void OnStateLog(Loon.Utils.Debug.Log log)
+        public void OnStateLog(Loon.Utils.Debugging.Log log)
         {
             StringBuilder sbr = new StringBuilder();
             sbr.Append("Mode:").Append(m_mode);
@@ -450,6 +453,10 @@ namespace Loon
         /// <param name="args"></param>
         protected override void OnActivated(object sender, EventArgs args)
         {
+            if (_listener != null)
+            {
+                _listener.OnResume();
+            }
             this.m_init.ResumeApp();
             base.OnActivated(sender, args);
         }
@@ -461,6 +468,10 @@ namespace Loon
         /// <param name="args"></param>
         protected override void OnDeactivated(object sender, EventArgs args)
         {
+            if (_listener != null)
+            {
+                _listener.OnPause();
+            }
             this.m_init.PauseApp();
             base.OnDeactivated(sender, args);
         }
@@ -472,8 +483,12 @@ namespace Loon
         /// <param name="args"></param>
         protected override void OnExiting(object sender, EventArgs args)
         {
+            if (_listener != null)
+            {
+                _listener.OnExit();
+            }
            this.m_init.FinishApp();
-            base.OnExiting(sender, args);
+           base.OnExiting(sender, args);
         }
 
         /// <summary>

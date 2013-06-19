@@ -14,7 +14,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -36,7 +35,7 @@ import loon.utils.MathUtils;
  * @version 0.1
  */
 public class Sprites implements Serializable, LRelease {
-	
+
 	public static interface SpriteListener {
 
 		public void update(ISprite spr);

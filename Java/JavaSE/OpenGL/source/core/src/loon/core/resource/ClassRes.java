@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 
 import loon.core.LSystem;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -92,8 +91,8 @@ public class ClassRes extends DataRes implements Resource {
 		}
 		return true;
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return super.hashCode();
 	}
 

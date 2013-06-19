@@ -1,15 +1,17 @@
 package loon.core.store;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
 import loon.core.LRelease;
-import loon.utils.RecordStoreUtils;
 import loon.utils.StringUtils;
-
 
 /**
  * Copyright 2008 - 2011
@@ -36,14 +38,32 @@ import loon.utils.StringUtils;
  */
 public class Session implements LRelease {
 
-	public static Session load(String name) {
-		return new Session(name);
+	private static final String STORE_FILENAME_PREFIX = "lgame-record-";
+
+	private static final String STORE_FILENAME_SUFFIX = ".store";
+
+	private final File _tempFile;
+
+	private final Properties _properties;
+
+	private boolean isPersisted = false;
+
+	private String loadData() {
+		return _properties.getProperty(name);
 	}
 
-	public static Session loadStringSession(String res) {
-		Session session = new Session((Session) null);
-		session.loadEncodeSession(res);
-		return session;
+	private void svaeData(String result) {
+		_properties.setProperty(name, result);
+		makeProperties(_properties);
+	}
+
+	private void removeData() {
+		_properties.remove(name);
+		makeProperties(_properties);
+	}
+
+	public static Session load(String name) {
+		return new Session(name);
 	}
 
 	private final String flag = "&";
@@ -129,31 +149,52 @@ public class Session implements LRelease {
 
 	private ArrayList<Record> recordsList;
 
-	private Session(Session session) {
-		if (session != null) {
-			this.name = new String(session.name);
-			this.records = new HashMap<String, Record>(session.records);
-			this.recordsList = new ArrayList<Record>(session.recordsList);
-		} else {
-			this.records = new HashMap<String, Record>(10);
-			this.recordsList = new ArrayList<Record>(10);
+	public Session(String name) {
+		this(name, true);
+	}
+
+	private void makeProperties(Properties _properties) {
+		try {
+			_properties.store(new FileOutputStream(_tempFile), null);
+			isPersisted = true;
+		} catch (Exception e) {
+			isPersisted = false;
 		}
 	}
 
-	public Session(String name) {
-		this(name, true);
+	private Properties makeProperties() {
+		Properties _properties = new Properties();
+		if (_tempFile.exists()) {
+			try {
+				_properties.load(new FileInputStream(_tempFile));
+				isPersisted = true;
+			} catch (Exception e) {
+				isPersisted = false;
+			}
+		} else {
+			makeProperties(_properties);
+		}
+		return _properties;
 	}
 
 	public Session(String name, boolean gain) {
 		if (name == null) {
 			throw new RuntimeException("session name can not exist !");
 		}
+		this._tempFile = new File(
+				new File(System.getProperty("java.io.tmpdir")),
+				STORE_FILENAME_PREFIX + name + STORE_FILENAME_SUFFIX);
+		this._properties = makeProperties();
 		this.name = name;
 		this.records = new HashMap<String, Record>(10);
 		this.recordsList = new ArrayList<Record>(10);
 		if (gain) {
 			load();
 		}
+	}
+
+	public boolean isPersisted() {
+		return isPersisted;
 	}
 
 	public int loadEncodeSession(String encode) {
@@ -419,7 +460,7 @@ public class Session implements LRelease {
 	public void save() {
 		String result = encode();
 		if (result != null && !"".equals(result)) {
-			RecordStoreUtils.setBytes(name, result);
+			svaeData(result);
 		}
 	}
 
@@ -435,11 +476,11 @@ public class Session implements LRelease {
 	}
 
 	public int load() {
-		return loadEncodeSession(RecordStoreUtils.getString(name));
+		return loadEncodeSession(loadData());
 	}
 
 	public Object clone() {
-		return new Session(this);
+		return new Session(name);
 	}
 
 	public void dispose(String name) {
@@ -460,7 +501,7 @@ public class Session implements LRelease {
 			if (recordsList != null) {
 				recordsList.clear();
 			}
-			RecordStoreUtils.removeRecord(name);
+			removeData();
 		} catch (Exception e) {
 		}
 	}

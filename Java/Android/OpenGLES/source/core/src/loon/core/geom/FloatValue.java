@@ -36,6 +36,7 @@ public class FloatValue {
 		this.value = v ;
 	}
 
+	@Override
 	public String toString() {
 		return String.valueOf(value);
 	}

@@ -34,7 +34,8 @@ public class LNDelay extends LNAction
         return delay;
     }
 
-    public void update(float t)
+    @Override
+	public void update(float t)
     {
         if (t == 1f)
         {
@@ -42,6 +43,7 @@ public class LNDelay extends LNAction
         }
     }
 
+	@Override
 	public LNAction copy() {
 		return Action(_duration);
 	}

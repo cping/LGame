@@ -75,7 +75,7 @@ public class Base64Coder {
 
 		return bufIndex - offset;
 	}
-	
+
 	private final static void checking() {
 		if (BASE64_ALPHABET == null) {
 			BASE64_ALPHABET = new byte[BASELENGTH];
@@ -269,7 +269,7 @@ public class Base64Coder {
 
 		int size = data.length;
 		int temp = size;
-		
+
 		for (int ix = 0; ix < data.length; ix++) {
 			if ((data[ix] > 255) || BASE64_ALPHABET[data[ix]] < 0) {
 				--temp;
@@ -288,7 +288,6 @@ public class Base64Coder {
 		int shift = 0;
 		int accum = 0;
 		int index = 0;
-		
 
 		for (int ix = 0; ix < size; ix++) {
 			int value = (data[ix] > 255) ? -1 : BASE64_ALPHABET[data[ix]];

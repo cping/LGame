@@ -5,8 +5,6 @@ import java.util.HashMap;
 import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.GLUtils;
-
 
 /**
  * Copyright 2008 - 2011

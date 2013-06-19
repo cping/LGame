@@ -47,7 +47,6 @@ public class Curve extends Shape {
 		this.c1 = new Vector2f(c1);
 		this.c2 = new Vector2f(c2);
 		this.p2 = new Vector2f(p2);
-		this.type = ShapeType.CURVE_SHAPE;
 		this.segments = segments;
 		pointsDirty = true;
 	}
@@ -67,6 +66,7 @@ public class Curve extends Shape {
 		return new Vector2f(nx, ny);
 	}
 
+	@Override
 	protected void createPoints() {
 		float step = 1.0f / segments;
 		points = new float[(segments + 1) * 2];
@@ -79,6 +79,7 @@ public class Curve extends Shape {
 		}
 	}
 
+	@Override
 	public Shape transform(Matrix transform) {
 		float[] pts = new float[8];
 		float[] dest = new float[8];
@@ -97,6 +98,7 @@ public class Curve extends Shape {
 				dest[7]));
 	}
 
+	@Override
 	public boolean closed() {
 		return false;
 	}

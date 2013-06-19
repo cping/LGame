@@ -128,7 +128,7 @@ namespace Loon.Core.Resource
                     }
                     catch (IOException e)
                     {
-                        Loon.Utils.Debug.Log.Exception(e);
+                        Loon.Utils.Debugging.Log.Exception(e);
                     }
                 }
             }

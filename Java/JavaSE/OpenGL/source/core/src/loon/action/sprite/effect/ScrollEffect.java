@@ -10,7 +10,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.timer.LTimer;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -139,7 +138,7 @@ public class ScrollEffect extends LObject implements ISprite {
 		if (alpha > 0 && alpha < 1) {
 			g.setAlpha(alpha);
 		}
-		
+
 		texture.glBegin();
 		switch (code) {
 		case Config.DOWN:

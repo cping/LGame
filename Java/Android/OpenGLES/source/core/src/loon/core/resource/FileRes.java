@@ -34,6 +34,7 @@ public class FileRes extends DataRes implements Resource {
 		this.name = "file://" + path;
 	}
 
+	@Override
 	public InputStream getInputStream() {
 		try {
 			if (in != null) {
@@ -45,10 +46,12 @@ public class FileRes extends DataRes implements Resource {
 		}
 	}
 
+	@Override
 	public String getResourceName() {
 		return name;
 	}
 
+	@Override
 	public URI getURI() {
 		try {
 			if (uri != null) {
@@ -60,6 +63,7 @@ public class FileRes extends DataRes implements Resource {
 		}
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -81,6 +85,7 @@ public class FileRes extends DataRes implements Resource {
 		return true;
 	}
 
+	@Override
 	public int hashCode(){
 		return super.hashCode();
 	}

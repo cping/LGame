@@ -42,16 +42,19 @@ public class LNOffset extends LNAction {
 		return off;
 	}
 
+	@Override
 	public void step(float t) {
 		super._target.setOffset(_offset);
 	}
 
+	@Override
 	public void update(float time) {
 		if (time == 1f) {
 			super.reset();
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_offset);
 	}

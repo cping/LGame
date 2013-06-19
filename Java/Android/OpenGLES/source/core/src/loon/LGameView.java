@@ -7,8 +7,12 @@ import javax.microedition.khronos.opengles.GL10;
 
 import loon.LGame.LMode;
 import loon.action.ActionControl;
+import loon.core.Assets;
+import loon.core.CallQueue;
 import loon.core.LSystem;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.Screen;
@@ -21,7 +25,6 @@ import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LProcess;
 import loon.core.timer.LTimerContext;
 import loon.core.timer.SystemTimer;
-import loon.utils.GraphicsUtils;
 import loon.utils.MathUtils;
 
 import android.content.Context;
@@ -53,7 +56,7 @@ import android.view.WindowManager;
  * @email javachenpeng@yahoo.com
  * @version 0.1.1
  */
-public final class LGameView implements Renderer {
+public final class LGameView extends CallQueue implements Renderer {
 
 	private GLMode glMode = GLMode.Default;
 
@@ -67,6 +70,7 @@ public final class LGameView implements Renderer {
 			text = "GLMode : " + name();
 		}
 
+		@Override
 		public String toString() {
 			return text;
 		};
@@ -106,17 +110,18 @@ public final class LGameView implements Renderer {
 
 	private LProcess process;
 
-	public LGameView(LGame activity, LMode mode,
-			boolean landscape, boolean fullScreen) {
+	public LGameView(LGame activity, LMode mode, boolean landscape,
+			boolean fullScreen) {
 		this.setFPS(LSystem.DEFAULT_MAX_FPS);
 		this.initScreen(activity, mode, landscape, fullScreen);
 		this.surfaceView = createGLSurfaceView(activity);
 		this.process = LSystem.screenProcess;
 	}
 
-	private void initScreen(LGame activity, LMode mode,
-			boolean fullScreen, boolean landscape) {
+	private void initScreen(LGame activity, LMode mode, boolean fullScreen,
+			boolean landscape) {
 		LSystem.screenActivity = activity;
+		LSystem.global_queue = this;
 		this.context = activity.getApplicationContext();
 		this.setFullScreen(fullScreen);
 		this.setLandscape(landscape, mode);
@@ -292,29 +297,14 @@ public final class LGameView implements Renderer {
 
 		} finally {
 			LSystem.screenProcess = new LProcess(surfaceView, width, height);
-			if (LSystem.isAndroidVersionHigher(11)) {
-				try {
-					setSystemUiVisibility(surfaceView);
-					setSystemUiVisibility(LSystem.screenActivity.getWindow()
-							.getDecorView());
-				} catch (Exception e) {
-				}
-			}
 		}
 		return surfaceView;
-	}
-
-	void setSystemUiVisibility(final View view) throws Exception {
-		java.lang.reflect.Method m = View.class.getMethod(
-				"setSystemUiVisibility", int.class);
-		m.invoke(view, 0x0);
-		m.invoke(view, 0x1);
-		m.invoke(view, 0x2);
 	}
 
 	private android.opengl.GLSurfaceView.EGLConfigChooser getEglConfigChooser() {
 		if (LSystem.isSamsung7500()) {
 			return new android.opengl.GLSurfaceView.EGLConfigChooser() {
+				@Override
 				public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
 					int[] attributes = new int[] { EGL10.EGL_DEPTH_SIZE, 16,
 							EGL10.EGL_NONE };
@@ -335,6 +325,7 @@ public final class LGameView implements Renderer {
 			LSystem.isResume = true;
 			timer = LSystem.getSystemTimer();
 			LTextures.reload();
+			Assets.onResume();
 		}
 	}
 
@@ -345,6 +336,7 @@ public final class LGameView implements Renderer {
 			}
 			LSystem.isRunning = false;
 			LSystem.isPaused = true;
+			Assets.onPause();
 			while (LSystem.isPaused) {
 				try {
 					synch.wait();
@@ -359,10 +351,9 @@ public final class LGameView implements Renderer {
 			LSystem.isRunning = false;
 			LSystem.isDestroy = true;
 			if (LSystem.screenProcess != null) {
-				LSystem.screenProcess.getAssetsSound().stopSoundAll();
-				LSystem.screenProcess.getPlaySound().stopSoundAll();
 				LSystem.screenProcess.onDestroy();
 				ActionControl.getInstance().stopAll();
+				Assets.onDestroy();
 				LSystem.destroy();
 				LSystem.gc();
 			}
@@ -375,6 +366,7 @@ public final class LGameView implements Renderer {
 		}
 	}
 
+	@Override
 	public void onDrawFrame(javax.microedition.khronos.opengles.GL10 gl10) {
 
 		this.onRunning = false;
@@ -412,6 +404,8 @@ public final class LGameView implements Renderer {
 			process.onResume();
 		}
 
+		_queue.execute();
+		
 		if (onRunning) {
 
 			if (LSystem.isLogo) {
@@ -544,6 +538,15 @@ public final class LGameView implements Renderer {
 
 	}
 
+	@Override
+	public void invokeAsync(final Updateable act) {
+		LSystem.getOSHandler().post(new Runnable() {
+			public void run() {
+				act.action();
+			}
+		});
+	}
+
 	private final void pause(long sleep) {
 		try {
 			Thread.sleep(sleep);
@@ -561,6 +564,7 @@ public final class LGameView implements Renderer {
 		frames++;
 	}
 
+	@Override
 	public void onSurfaceChanged(GL10 gl10, int width, int height) {
 		if (gl != null) {
 			Log.i("Android2DView", "onSurfaceChangedUpdate");
@@ -576,6 +580,7 @@ public final class LGameView implements Renderer {
 		}
 	}
 
+	@Override
 	public void onSurfaceCreated(GL10 gl10, EGLConfig config) {
 		createGL(gl10);
 	}
@@ -630,6 +635,7 @@ public final class LGameView implements Renderer {
 					WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 		}
 		try {
+			win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			win.setBackgroundDrawable(null);
 		} catch (Exception e) {
 		}

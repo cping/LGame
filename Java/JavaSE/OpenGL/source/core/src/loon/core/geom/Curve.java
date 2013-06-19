@@ -47,7 +47,6 @@ public class Curve extends Shape {
 		this.c1 = new Vector2f(c1);
 		this.c2 = new Vector2f(c2);
 		this.p2 = new Vector2f(p2);
-		this.type = ShapeType.CURVE_SHAPE;
 		this.segments = segments;
 		pointsDirty = true;
 	}

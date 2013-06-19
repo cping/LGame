@@ -25,10 +25,10 @@ import loon.utils.MathUtils;
 
 public class LNScaleTo extends LNAction {
 
-	LNScaleTo(){
-		
+	LNScaleTo() {
+
 	}
-	
+
 	protected float dt;
 
 	protected float _deltaX, _deltaY;

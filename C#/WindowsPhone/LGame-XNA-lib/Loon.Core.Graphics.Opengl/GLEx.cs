@@ -443,25 +443,9 @@ namespace Loon.Core.Graphics.Opengl
 
         private void _DrawLine(float x1, float y1, float x2, float y2, bool use)
         {
-            if (x1 > x2)
-            {
-                x1++;
-            }
-            else
-            {
-                x2++;
-            }
-            if (y1 > y2)
-            {
-                y1++;
-            }
-            else
-            {
-                y2++;
-            }
             if (use)
             {
-                GLBegin(GL.GL_LINES);
+                GLBegin(GL.GL_LINE_STRIP);
             }
             GLVertex2f(x1, y1);
             GLVertex2f(x2, y2);

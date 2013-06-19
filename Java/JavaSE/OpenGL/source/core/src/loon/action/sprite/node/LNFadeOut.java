@@ -27,9 +27,9 @@ public class LNFadeOut extends LNAction {
 	protected float _orgOpacity;
 
 	protected float _tarOpacity;
-	
-	LNFadeOut(){
-		
+
+	LNFadeOut() {
+
 	}
 
 	public static LNFadeOut Action(float duartion) {

@@ -219,6 +219,7 @@ public class LAccelerometer {
 			this.accelerometerValues = values;
 		}
 
+		@Override
 		public void run() {
 			while (_state._isConnected) {
 				accelerometerValues[2] = -1f;

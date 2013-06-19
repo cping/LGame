@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LGame-XNA-lib", "LGame-XNA-lib\LGame-XNA-lib.csproj", "{EC0B16E5-0A1D-487A-A67C-FD65B8EDB252}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loon-backend-XNA", "LGame-XNA-lib\Loon-backend-XNA.csproj", "{EC0B16E5-0A1D-487A-A67C-FD65B8EDB252}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LGame-XNA", "LGame-XNA\LGame-XNA\LGame-XNA.csproj", "{7B0E7DFA-43AA-48F2-BAF4-9FA240CD5E24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loon-XNA", "LGame-XNA\LGame-XNA\Loon-XNA.csproj", "{7B0E7DFA-43AA-48F2-BAF4-9FA240CD5E24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LGame-XNAContent", "LGame-XNA\LGame-XNAContent\LGame-XNAContent.contentproj", "{9C1B86E1-C9E8-45BB-83B2-74CB2A60E43C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loon-XNAContent", "LGame-XNA\LGame-XNAContent\Loon-XNAContent.contentproj", "{9C1B86E1-C9E8-45BB-83B2-74CB2A60E43C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLKSample", "LLKSample\LLKSample\LLKSample.csproj", "{8C3AB463-5DA6-4965-BFB6-D380135DA59F}"
 EndProject
@@ -25,7 +25,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDSampleContent", "TDSample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeSample", "NodeSample\NodeSample\NodeSample.csproj", "{78B747C1-3067-49ED-BA42-580918D9925B}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "NodeSampleContent", "NodeSample\NodeSampleContent\NodeSampleContent.contentproj", "{51D8B789-90E8-4E07-B311-0BC45B5F99FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeSampleContent", "NodeSample\NodeSampleContent\NodeSampleContent.contentproj", "{51D8B789-90E8-4E07-B311-0BC45B5F99FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsTest", "PhysicsTest\PhysicsTest\PhysicsTest.csproj", "{7621A350-D633-4525-A8D4-68C926D81777}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "PhysicsTestContent", "PhysicsTest\PhysicsTestContent\PhysicsTestContent.contentproj", "{52FF16DF-E681-47CD-9C52-BD59F8CD040A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +89,14 @@ Global
 		{78B747C1-3067-49ED-BA42-580918D9925B}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
 		{51D8B789-90E8-4E07-B311-0BC45B5F99FD}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
 		{51D8B789-90E8-4E07-B311-0BC45B5F99FD}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{7621A350-D633-4525-A8D4-68C926D81777}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{7621A350-D633-4525-A8D4-68C926D81777}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{7621A350-D633-4525-A8D4-68C926D81777}.Debug|Windows Phone.Deploy.0 = Debug|Windows Phone
+		{7621A350-D633-4525-A8D4-68C926D81777}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{7621A350-D633-4525-A8D4-68C926D81777}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{7621A350-D633-4525-A8D4-68C926D81777}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
+		{52FF16DF-E681-47CD-9C52-BD59F8CD040A}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{52FF16DF-E681-47CD-9C52-BD59F8CD040A}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -57,6 +57,7 @@ public class LNSequence extends LNAction {
 		return sequence;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		this._index = 0;
@@ -67,6 +68,7 @@ public class LNSequence extends LNAction {
 		}
 	}
 
+	@Override
 	public void step(float dt) {
 		if (this._index < this._actionList.size()) {
 			do {
@@ -89,6 +91,7 @@ public class LNSequence extends LNAction {
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_actionList);
 	}

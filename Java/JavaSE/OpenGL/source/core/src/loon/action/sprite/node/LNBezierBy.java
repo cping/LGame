@@ -27,9 +27,9 @@ public class LNBezierBy extends LNAction {
 	protected LNBezierDef _config;
 
 	protected Vector2f _startPosition;
-	
-	LNBezierBy(){
-		
+
+	LNBezierBy() {
+
 	}
 
 	public static LNBezierBy Action(float t, LNBezierDef c) {

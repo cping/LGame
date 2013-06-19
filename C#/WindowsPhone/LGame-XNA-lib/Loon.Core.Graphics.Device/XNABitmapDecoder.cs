@@ -135,15 +135,15 @@ namespace Loon.Core.Graphics.Device
             }
             catch (FileNotFoundException)
             {
-                Loon.Utils.Debug.Log.DebugWrite("File not found:" + file);
+                Loon.Utils.Debugging.Log.DebugWrite("File not found:" + file);
             }
             catch (IOException)
             {
-                Loon.Utils.Debug.Log.DebugWrite("Error on reading:" + file);
+                Loon.Utils.Debugging.Log.DebugWrite("Error on reading:" + file);
             }
             if (this.format == null)
             {
-                Loon.Utils.Debug.Log.DebugWrite("Unsuported format !");
+                Loon.Utils.Debugging.Log.DebugWrite("Unsuported format !");
             }
         }
 

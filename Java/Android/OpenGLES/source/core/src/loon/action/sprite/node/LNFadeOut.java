@@ -39,6 +39,7 @@ public class LNFadeOut extends LNAction {
 		return outs;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -47,6 +48,7 @@ public class LNFadeOut extends LNAction {
 		this._diff = this._tarOpacity - this._orgOpacity;
 	}
 
+	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
@@ -57,6 +59,7 @@ public class LNFadeOut extends LNAction {
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_duration);
 	}

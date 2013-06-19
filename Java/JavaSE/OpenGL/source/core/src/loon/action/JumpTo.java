@@ -78,10 +78,10 @@ public class JumpTo extends ActionEvent {
 		} else {
 			this.moveY -= g;
 		}
-	
+
 		if (moveJump > 0) {
-			if (original.getY() + original.getHeight() > original.getContainerHeight()
-					+ original.getHeight()) {
+			if (original.getY() + original.getHeight() > original
+					.getContainerHeight() + original.getHeight()) {
 				isComplete = true;
 			}
 		} else if (original.getY() + original.getHeight() < 0) {
@@ -90,7 +90,8 @@ public class JumpTo extends ActionEvent {
 		boolean isLimit = original.isBounded();
 		if (isLimit) {
 			RectBox rect = original.getRectBox();
-			int limitWidth = (int) (original.getContainerWidth() - rect.getWidth());
+			int limitWidth = (int) (original.getContainerWidth() - rect
+					.getWidth());
 			int limitHeight = (int) rect.getHeight();
 			if (original.getX() > limitWidth) {
 				original.setLocation(offsetX + limitWidth,

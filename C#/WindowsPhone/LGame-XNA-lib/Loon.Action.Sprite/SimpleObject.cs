@@ -10,6 +10,11 @@ namespace Loon.Action.Sprite
            
         }
 
+        public SimpleObject(float x, float y, Animation animation, TileMap tiles):  base(x, y, animation, tiles)
+        {
+          
+        }
+
         public override void Update(long elapsedTime)
         {
             animation.Update(elapsedTime);

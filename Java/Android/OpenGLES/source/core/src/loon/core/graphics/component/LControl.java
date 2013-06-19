@@ -114,10 +114,11 @@ public class LControl extends LComponent {
 	}
 
 	private void centerOffset() {
-		this.centerX = (float)(baseWidth - dotWidth) / 2f + 1f;
-		this.centerY = (float)(baseHeight - dotHeight) / 2f + 1f;
+		this.centerX = (baseWidth - dotWidth) / 2f + 1f;
+		this.centerY = (baseHeight - dotHeight) / 2f + 1f;
 	}
 
+	@Override
 	public void processTouchPressed() {
 		final float relativeX = MathUtils.bringToBounds(0, baseWidth,
 				Touch.getX() - getScreenX())
@@ -128,6 +129,7 @@ public class LControl extends LComponent {
 		onUpdateControlDot(relativeX, relativeY);
 	}
 
+	@Override
 	public void processTouchReleased() {
 		centerOffset();
 	}
@@ -215,6 +217,7 @@ public class LControl extends LComponent {
 
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (visible) {
@@ -226,6 +229,7 @@ public class LControl extends LComponent {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		if (controlBase != null) {
 			controlBase.destroy();
@@ -237,6 +241,7 @@ public class LControl extends LComponent {
 		}
 	}
 
+	@Override
 	public String getUIName() {
 		return "Control";
 	}

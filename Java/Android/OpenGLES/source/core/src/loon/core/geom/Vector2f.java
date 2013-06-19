@@ -576,10 +576,12 @@ public class Vector2f implements Serializable {
 		y = MathUtils.abs(y);
 	}
 
+	@Override
 	public final Vector2f clone() {
 		return new Vector2f(x, y);
 	}
 
+	@Override
 	public final String toString() {
 		return "(" + x + "," + y + ")";
 	}
@@ -644,6 +646,7 @@ public class Vector2f implements Serializable {
 		out.y = a.y > b.y ? a.y : b.y;
 	}
 
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -656,6 +659,7 @@ public class Vector2f implements Serializable {
 		return this.x == x && this.y == y;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

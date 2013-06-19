@@ -54,6 +54,7 @@ public class Sprites implements Serializable, LRelease {
 	private SpriteListener sprListerner;
 
 	private static final Comparator<Object> DEFAULT_COMPARATOR = new Comparator<Object>() {
+		@Override
 		public int compare(Object o1, Object o2) {
 			return ((ISprite) o2).getLayer() - ((ISprite) o1).getLayer();
 		}
@@ -608,6 +609,7 @@ public class Sprites implements Serializable, LRelease {
 		this.sprListerner = sprListerner;
 	}
 
+	@Override
 	public void dispose() {
 		this.visible = false;
 		for (ISprite spr : sprites) {

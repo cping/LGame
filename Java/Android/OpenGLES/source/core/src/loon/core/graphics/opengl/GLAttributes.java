@@ -40,6 +40,7 @@ public class GLAttributes {
 
 	}
 
+	@Override
 	public int hashCode(){
 		return super.hashCode();
 	}
@@ -128,6 +129,7 @@ public class GLAttributes {
 		return _attributes[index];
 	}
 
+	@Override
 	public boolean equals(final Object obj) {
 		if (!(obj instanceof GLAttributes)) {
 			return false;

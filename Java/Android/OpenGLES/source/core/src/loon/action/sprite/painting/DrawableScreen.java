@@ -83,6 +83,7 @@ public abstract class DrawableScreen extends Screen {
 		}
 	}
 
+	@Override
 	public void draw(GLEx g) {
 		if (isOnLoadComplete()) {
 			batch.begin();
@@ -131,6 +132,7 @@ public abstract class DrawableScreen extends Screen {
 		return new ArrayList<Drawable>(drawables);
 	}
 
+	@Override
 	public final void onLoad() {
 		if (GLEx.self != null) {
 			if (batch == null) {
@@ -169,6 +171,7 @@ public abstract class DrawableScreen extends Screen {
 
 	public abstract void released(LKey e);
 
+	@Override
 	public final void alter(LTimerContext timer) {
 		if (!isOnLoadComplete()) {
 			return;
@@ -222,6 +225,7 @@ public abstract class DrawableScreen extends Screen {
 
 	public abstract void update(GameTime gameTime);
 
+	@Override
 	public final void onKeyDown(LKey e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -236,6 +240,7 @@ public abstract class DrawableScreen extends Screen {
 		pressed(e);
 	}
 
+	@Override
 	public final void onKeyUp(LKey e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -250,6 +255,7 @@ public abstract class DrawableScreen extends Screen {
 		released(e);
 	}
 
+	@Override
 	public final void touchDown(LTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -264,6 +270,7 @@ public abstract class DrawableScreen extends Screen {
 		pressed(e);
 	}
 
+	@Override
 	public final void touchUp(LTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -278,6 +285,7 @@ public abstract class DrawableScreen extends Screen {
 		released(e);
 	}
 
+	@Override
 	public final void touchMove(LTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -308,6 +316,7 @@ public abstract class DrawableScreen extends Screen {
 		return gameCollection;
 	}
 
+	@Override
 	public final void dispose() {
 		for (Drawable drawable : drawables) {
 			if (drawable != null) {

@@ -26,9 +26,9 @@ import loon.core.geom.Vector2f;
 import loon.utils.MathUtils;
 
 public class LNFollow extends LNAction {
-	
-	LNFollow(){
-		
+
+	LNFollow() {
+
 	}
 
 	protected LNNode _followedNode;

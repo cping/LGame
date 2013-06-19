@@ -6,10 +6,9 @@ import loon.core.graphics.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.input.LInputFactory.Key;
 import loon.core.input.LInputFactory.Touch;
-import loon.utils.TextureUtils;
-
 
 /**
  * 
@@ -193,13 +192,13 @@ public class LButton extends LComponent {
 
 	public void downClick() {
 		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
+			Click.DownClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
 
 	public void upClick() {
 		if (Click != null) {
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+			Click.UpClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
 

@@ -22,10 +22,10 @@ package loon.action.sprite.node;
 
 public class LNRotateTo extends LNAction {
 
-	LNRotateTo(){
-		
+	LNRotateTo() {
+
 	}
-	
+
 	protected float _diff;
 
 	protected float _orgAngle;

@@ -54,7 +54,7 @@ public class LTimer implements Serializable {
 
 		return false;
 	}
-	
+
 	public boolean action(LTimerContext context) {
 		if (this.active) {
 			this.currentTick += context.getTimeSinceLastUpdate();
@@ -65,7 +65,7 @@ public class LTimer implements Serializable {
 		}
 		return false;
 	}
-	
+
 	public void refresh() {
 		this.currentTick = 0;
 	}
@@ -79,15 +79,15 @@ public class LTimer implements Serializable {
 	public boolean isActive() {
 		return this.active;
 	}
-	
+
 	public void start() {
 		this.active = true;
 	}
-	
+
 	public void stop() {
 		this.active = false;
 	}
-	
+
 	public void setActive(boolean bool) {
 		this.active = bool;
 		this.refresh();

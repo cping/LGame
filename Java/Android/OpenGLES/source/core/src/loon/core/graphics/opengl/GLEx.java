@@ -14,10 +14,8 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LTrans;
 import loon.jni.NativeSupport;
-import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 
 import android.util.Log;
@@ -98,13 +96,13 @@ public final class GLEx implements LTrans {
 						}
 					}
 
-					gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-					gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-					gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, coordsBuffer);
-					gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
-					gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, count);
-					gl10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-					gl10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
+					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
+					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
+					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
 					restore();
 
 				} else {
@@ -126,13 +124,13 @@ public final class GLEx implements LTrans {
 						}
 					}
 
-					gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-					gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-					gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, coordsBuffer);
-					gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
-					gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, count);
-					gl10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-					gl10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
+					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
+					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
+					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
 
 					if (rotaion != 0) {
 						if (ax != 0 || ay != 0) {
@@ -222,21 +220,21 @@ public final class GLEx implements LTrans {
 			{
 				bind(texture.textureID);
 
-				gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-				gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+				gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
+				gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 
-				gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, coordsBuffer);
-				gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
+				gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
+				gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
 
 				if (isColor) {
-					gl10.glEnableClientState(GL10.GL_COLOR_ARRAY);
-					gl10.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuffer);
+					gl10.glEnableClientState(GL.GL_COLOR_ARRAY);
+					gl10.glColorPointer(4, GL.GL_FLOAT, 0, colorBuffer);
 				}
-				gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, count);
-				gl10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-				gl10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+				gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
+				gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+				gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
 				if (isColor) {
-					gl10.glDisableClientState(GL10.GL_COLOR_ARRAY);
+					gl10.glDisableClientState(GL.GL_COLOR_ARRAY);
 				}
 			}
 			if (x != 0 || y != 0) {
@@ -270,7 +268,7 @@ public final class GLEx implements LTrans {
 		{
 			bind(texture.textureID);
 			gl10.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, pix.hasAlpha() ? 4 : 1);
-			android.opengl.GLUtils.texSubImage2D(GL10.GL_TEXTURE_2D, 0, x, y,
+			android.opengl.GLUtils.texSubImage2D(GL.GL_TEXTURE_2D, 0, x, y,
 					pix.getBitmap());
 		}
 	}
@@ -387,7 +385,7 @@ public final class GLEx implements LTrans {
 		if (g10 == null || baseGL == g10) {
 			return;
 		}
-		String renderer = g10.glGetString(GL10.GL_RENDERER);
+		String renderer = g10.glGetString(GL.GL_RENDERER);
 		if (renderer != null) {
 			renderer = renderer.toLowerCase();
 			if (!renderer.toLowerCase().contains("pixelflinger")
@@ -402,7 +400,7 @@ public final class GLEx implements LTrans {
 		Log.i("Android2DView", "GLES:" + renderer);
 		Log.i("PixelFlinger", String.valueOf(GLEx.isPixelFlinger));
 		if (g10 instanceof javax.microedition.khronos.opengles.GL11) {
-			String extensions = g10.glGetString(GL10.GL_EXTENSIONS)
+			String extensions = g10.glGetString(GL.GL_EXTENSIONS)
 					.toLowerCase();
 			if (extensions.contains("gl_oes_framebuffer_object")) {
 				oesOn = !LSystem.isEmulator();
@@ -789,8 +787,8 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (!isARRAYEnable) {
-			gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+			gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
+			gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 			isARRAYEnable = true;
 		}
 	}
@@ -804,8 +802,8 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (isARRAYEnable) {
-			gl10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-			gl10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+			gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
+			gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 			isARRAYEnable = false;
 		}
 	}
@@ -826,7 +824,7 @@ public final class GLEx implements LTrans {
 		if (currentBlendMode == GL.MODE_NORMAL) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, true);
-			gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+			gl10.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			return;
 		} else if (currentBlendMode == GL.MODE_ALPHA_MAP) {
 			GLUtils.disableBlend(gl10);
@@ -835,37 +833,37 @@ public final class GLEx implements LTrans {
 		} else if (currentBlendMode == GL.MODE_ALPHA_BLEND) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, false);
-			gl10.glBlendFunc(GL10.GL_DST_ALPHA, GL10.GL_ONE_MINUS_DST_ALPHA);
+			gl10.glBlendFunc(GL.GL_DST_ALPHA, GL.GL_ONE_MINUS_DST_ALPHA);
 			return;
 		} else if (currentBlendMode == GL.MODE_COLOR_MULTIPLY) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, true);
-			gl10.glBlendFunc(GL10.GL_ONE_MINUS_SRC_COLOR, GL10.GL_SRC_COLOR);
+			gl10.glBlendFunc(GL.GL_ONE_MINUS_SRC_COLOR, GL.GL_SRC_COLOR);
 			return;
 		} else if (currentBlendMode == GL.MODE_ADD) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, true);
-			gl10.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
+			gl10.glBlendFunc(GL.GL_ONE, GL.GL_ONE);
 			return;
 		} else if (currentBlendMode == GL.MODE_SPEED) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, false);
-			gl10.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+			gl10.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
 			return;
 		} else if (currentBlendMode == GL.MODE_SCREEN) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, true);
-			gl10.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_COLOR);
+			gl10.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_COLOR);
 			return;
 		} else if (currentBlendMode == GL.MODE_ALPHA_ONE) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, true);
-			gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+			gl10.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
 			return;
 		} else if (currentBlendMode == GL.MODE_ALPHA) {
 			GLUtils.enableBlend(gl10);
 			gl10.glColorMask(true, true, true, false);
-			gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+			gl10.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			return;
 		} else if (currentBlendMode == GL.MODE_NONE) {
 			GLUtils.disableBlend(gl10);
@@ -889,7 +887,7 @@ public final class GLEx implements LTrans {
 				return false;
 			}
 			// 备忘，支持VBO的真机过少，稍后添加FBO支持
-			String extensions = baseGL.glGetString(GL10.GL_EXTENSIONS)
+			String extensions = baseGL.glGetString(GL.GL_EXTENSIONS)
 					.toLowerCase();
 			// 发现个别机器支持vbo,却不真正支持gl1.1……
 			if (GLEx.isSupportGL11()
@@ -977,7 +975,7 @@ public final class GLEx implements LTrans {
 		}
 		if (clear) {
 			gl10.glClearColor(0, 0, 0, 1f);
-			gl10.glClear(GL10.GL_COLOR_BUFFER_BIT);
+			gl10.glClear(GL.GL_COLOR_BUFFER_BIT);
 		}
 	}
 
@@ -1002,7 +1000,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		gl10.glClearColor(color.r, color.g, color.b, color.a);
-		gl10.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		gl10.glClear(GL.GL_COLOR_BUFFER_BIT);
 	}
 
 	/**
@@ -1064,10 +1062,10 @@ public final class GLEx implements LTrans {
 	 * @param a
 	 */
 	public void setColorValue(int r, int g, int b, int a) {
-		float red = (float) r / 255.0f;
-		float green = (float) g / 255.0f;
-		float blue = (float) b / 255.0f;
-		float alpha = (float) a / 255.0f;
+		float red = r / 255.0f;
+		float green = g / 255.0f;
+		float blue = b / 255.0f;
+		float alpha = a / 255.0f;
 		setColor(red, green, blue, alpha);
 	}
 
@@ -2230,7 +2228,7 @@ public final class GLEx implements LTrans {
 
 	public static void tryError() throws Exception {
 		int id = gl.glGetError();
-		if (id != GL10.GL_NO_ERROR) {
+		if (id != GL.GL_NO_ERROR) {
 			String method = Thread.currentThread().getStackTrace()[3]
 					.getMethodName();
 			throw new Exception(id + " ("
@@ -2279,7 +2277,7 @@ public final class GLEx implements LTrans {
 		}
 		try {
 			if (isScissorTest) {
-				gl10.glDisable(GL10.GL_SCISSOR_TEST);
+				gl10.glDisable(GL.GL_SCISSOR_TEST);
 				isScissorTest = false;
 			}
 			clip.setBounds(0, 0, viewPort.width, viewPort.height);
@@ -2302,7 +2300,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (!isScissorTest) {
-			gl10.glEnable(GL10.GL_SCISSOR_TEST);
+			gl10.glEnable(GL.GL_SCISSOR_TEST);
 			isScissorTest = true;
 		}
 		clip.setBounds(x, y, width, height);
@@ -2990,7 +2988,7 @@ public final class GLEx implements LTrans {
 				}
 				if (texture.parent != null) {
 					gl11.glTexParameteriv(
-							GL10.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_2D,
 							javax.microedition.khronos.opengles.GL11Ext.GL_TEXTURE_CROP_RECT_OES,
 							texture.crops, 0);
 				}
@@ -3002,7 +3000,7 @@ public final class GLEx implements LTrans {
 				crop[2] = swidth;
 				crop[3] = -sheight;
 				gl11ex.glTexParameterfv(
-						GL10.GL_TEXTURE_2D,
+						GL.GL_TEXTURE_2D,
 						javax.microedition.khronos.opengles.GL11Ext.GL_TEXTURE_CROP_RECT_OES,
 						crop, 0);
 				if (LSystem.scaleWidth == 1 && LSystem.scaleHeight == 1) {
@@ -3131,40 +3129,40 @@ public final class GLEx implements LTrans {
 		boolean badAnchor = false;
 
 		if (anchor == 0) {
-			anchor = LGraphics.TOP | LGraphics.LEFT;
+			anchor = LTrans.TOP | LTrans.LEFT;
 		}
 
-		if ((anchor & 0x7f) != anchor || (anchor & LGraphics.BASELINE) != 0) {
+		if ((anchor & 0x7f) != anchor || (anchor & LTrans.BASELINE) != 0) {
 			badAnchor = true;
 		}
 
-		if ((anchor & LGraphics.TOP) != 0) {
-			if ((anchor & (LGraphics.VCENTER | LGraphics.BOTTOM)) != 0) {
+		if ((anchor & LTrans.TOP) != 0) {
+			if ((anchor & (LTrans.VCENTER | LTrans.BOTTOM)) != 0) {
 				badAnchor = true;
 			}
-		} else if ((anchor & LGraphics.BOTTOM) != 0) {
-			if ((anchor & LGraphics.VCENTER) != 0) {
+		} else if ((anchor & LTrans.BOTTOM) != 0) {
+			if ((anchor & LTrans.VCENTER) != 0) {
 				badAnchor = true;
 			} else {
 				y_dst -= dH - 1;
 			}
-		} else if ((anchor & LGraphics.VCENTER) != 0) {
+		} else if ((anchor & LTrans.VCENTER) != 0) {
 			y_dst -= (dH - 1) >>> 1;
 		} else {
 			badAnchor = true;
 		}
 
-		if ((anchor & LGraphics.LEFT) != 0) {
-			if ((anchor & (LGraphics.HCENTER | LGraphics.RIGHT)) != 0) {
+		if ((anchor & LTrans.LEFT) != 0) {
+			if ((anchor & (LTrans.HCENTER | LTrans.RIGHT)) != 0) {
 				badAnchor = true;
 			}
-		} else if ((anchor & LGraphics.RIGHT) != 0) {
-			if ((anchor & LGraphics.HCENTER) != 0) {
+		} else if ((anchor & LTrans.RIGHT) != 0) {
+			if ((anchor & LTrans.HCENTER) != 0) {
 				badAnchor = true;
 			} else {
 				x_dst -= dW - 1;
 			}
-		} else if ((anchor & LGraphics.HCENTER) != 0) {
+		} else if ((anchor & LTrans.HCENTER) != 0) {
 			x_dst -= (dW - 1) >>> 1;
 		} else {
 			badAnchor = true;
@@ -3446,7 +3444,7 @@ public final class GLEx implements LTrans {
 					if (GLEx.vboOn) {
 						gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER,
 								texture.bufferID);
-						gl11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
+						gl11.glVertexPointer(2, GL.GL_FLOAT, 0, 0);
 						if (srcX != 0 || srcY != 0 || srcWidth != texture.width
 								|| srcHeight != texture.height) {
 							gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER,
@@ -3455,13 +3453,13 @@ public final class GLEx implements LTrans {
 							gl11.glBufferSubData(GL11.GL_ARRAY_BUFFER,
 									texture.vertexSize, texture.texSize,
 									rectData);
-							gl11.glTexCoordPointer(2, GL11.GL_FLOAT, 0,
+							gl11.glTexCoordPointer(2, GL.GL_FLOAT, 0,
 									texture.texSize);
 						} else {
-							gl11.glTexCoordPointer(2, GL11.GL_FLOAT, 0,
+							gl11.glTexCoordPointer(2, GL.GL_FLOAT, 0,
 									texture.texSize);
 						}
-						gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);
+						gl11.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, 4);
 						gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
 					} else {
 						texture.data.position(0);
@@ -3469,14 +3467,14 @@ public final class GLEx implements LTrans {
 						if (srcX != 0 || srcY != 0 || srcWidth != texture.width
 								|| srcHeight != texture.height) {
 							put(texture, srcX, srcY, srcWidth, srcHeight);
-							gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0,
+							gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0,
 									rectData);
 						} else {
 							texture.data.position(8);
-							gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0,
+							gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0,
 									texture.data);
 						}
-						gl10.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+						gl10.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, 4);
 					}
 
 				}
@@ -3732,16 +3730,16 @@ public final class GLEx implements LTrans {
 		int newx = x;
 		int newy = y;
 		if (anchor == 0) {
-			anchor = LGraphics.TOP | LGraphics.LEFT;
+			anchor = LTrans.TOP | LTrans.LEFT;
 		}
-		if ((anchor & LGraphics.TOP) != 0) {
+		if ((anchor & LTrans.TOP) != 0) {
 			newy -= font.getAscent();
-		} else if ((anchor & LGraphics.BOTTOM) != 0) {
+		} else if ((anchor & LTrans.BOTTOM) != 0) {
 			newy -= font.getAscent();
 		}
-		if ((anchor & LGraphics.HCENTER) != 0) {
+		if ((anchor & LTrans.HCENTER) != 0) {
 			newx -= font.stringWidth(message) / 2;
-		} else if ((anchor & LGraphics.RIGHT) != 0) {
+		} else if ((anchor & LTrans.RIGHT) != 0) {
 			newx -= font.stringWidth(message);
 		}
 		drawString(message, newx, newy);
@@ -3782,7 +3780,7 @@ public final class GLEx implements LTrans {
 	 */
 	public void bind(int id) {
 		if (lazyTextureID != id) {
-			gl10.glBindTexture(GL10.GL_TEXTURE_2D, id);
+			gl10.glBindTexture(GL.GL_TEXTURE_2D, id);
 			lazyTextureID = id;
 		}
 	}
@@ -3835,12 +3833,12 @@ public final class GLEx implements LTrans {
 	public final void set2DStateOn() {
 		if (!preTex2dMode) {
 			try {
-				gl10.glDisable(GL10.GL_DEPTH_TEST);
+				gl10.glDisable(GL.GL_DEPTH_TEST);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			try {
-				gl10.glMatrixMode(GL10.GL_PROJECTION);
+				gl10.glMatrixMode(GL.GL_PROJECTION);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -3860,7 +3858,7 @@ public final class GLEx implements LTrans {
 				e.printStackTrace();
 			}
 			try {
-				gl10.glMatrixMode(GL10.GL_MODELVIEW);
+				gl10.glMatrixMode(GL.GL_MODELVIEW);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -3913,9 +3911,9 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		gl10.glMatrixMode(GL10.GL_PROJECTION);
+		gl10.glMatrixMode(GL.GL_PROJECTION);
 		gl10.glPushMatrix();
-		gl10.glMatrixMode(GL10.GL_MODELVIEW);
+		gl10.glMatrixMode(GL.GL_MODELVIEW);
 		gl10.glPushMatrix();
 	}
 
@@ -3923,9 +3921,9 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		gl10.glMatrixMode(GL10.GL_PROJECTION);
+		gl10.glMatrixMode(GL.GL_PROJECTION);
 		gl10.glPopMatrix();
-		gl10.glMatrixMode(GL10.GL_MODELVIEW);
+		gl10.glMatrixMode(GL.GL_MODELVIEW);
 		gl10.glPopMatrix();
 	}
 
@@ -3949,7 +3947,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		gl10.glMatrixMode(GL10.GL_MODELVIEW);
+		gl10.glMatrixMode(GL.GL_MODELVIEW);
 		gl10.glLoadMatrixf(m.get(), 0);
 	}
 

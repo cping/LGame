@@ -3,7 +3,6 @@ package loon.action.collision;
 import loon.action.ActionBind;
 import loon.core.LRelease;
 
-
 /**
  * Copyright 2008 - 2012
  * 

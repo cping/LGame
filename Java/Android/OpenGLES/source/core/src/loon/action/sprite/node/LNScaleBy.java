@@ -44,11 +44,13 @@ public class LNScaleBy extends LNAction {
 		return action;
 	}
 
+	@Override
 	public void step(float dt) {
 		super._target.setScale(this._scaleX, this._scaleY);
 		super._isEnd = true;
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_scaleX, _scaleY);
 	}

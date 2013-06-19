@@ -1,6 +1,7 @@
 using System;
 using Loon.Utils;
 using System.Collections.Generic;
+using Loon.Physics;
 namespace Loon.Core.Geom {
 	
 	public class Polygon : Shape {
@@ -173,7 +174,25 @@ namespace Loon.Core.Geom {
 				AddPoint(xpoints_0[i], ypoints_1[i]);
 			}
 		}
-	
+
+        public Point[] GetVertexs()
+        {
+            int size = GetPointCount();
+            Point[] verts = new Point[size / 2];
+            for (int i = 0, j = 0; i < size; i += 2, j++)
+            {
+                verts[j] = new Point(points[i], points[i + 1]);
+            }
+            return verts;
+        }
+
+
+        public PPolygon GetPPolygon(float scale)
+        {
+            return new PPolygon(points, scale);
+        }
+
+
 		public void SetAllowDuplicatePoints(bool allowDups_0) {
 			this.allowDups = allowDups_0;
 		}

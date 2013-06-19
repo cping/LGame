@@ -6,9 +6,8 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
-import loon.utils.TextureUtils;
-
 
 /**
  * Copyright 2008 - 2011
@@ -137,8 +136,10 @@ public class AnimationHelper {
 				}
 			}
 			images = null;
-			animations.put(key, animation = makeObject(result[0], result[1],
-					result[2], result[3]));
+			animations.put(
+					key,
+					animation = makeObject(result[0], result[1], result[2],
+							result[3]));
 		}
 		return animation;
 	}
@@ -148,12 +149,12 @@ public class AnimationHelper {
 		String key = fileName.trim().toLowerCase();
 		AnimationHelper animation = animations.get(key);
 		if (animation == null) {
-			
+
 			LTexture texture = TextureUtils.filterColor(fileName, col);
-			
+
 			int wlength = texture.getWidth() / tileWidth;
 			int hlength = texture.getHeight() / tileHeight;
-		
+
 			LTexture[][] images = TextureUtils.getSplit2Textures(texture,
 					tileWidth, tileHeight);
 
@@ -166,8 +167,10 @@ public class AnimationHelper {
 
 			images = null;
 
-			animations.put(key, animation = makeObject(result[0], result[1],
-					result[3], result[2]));
+			animations.put(
+					key,
+					animation = makeObject(result[0], result[1], result[3],
+							result[2]));
 		}
 		return animation;
 

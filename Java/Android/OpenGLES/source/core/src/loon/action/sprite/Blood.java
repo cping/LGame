@@ -83,6 +83,7 @@ public class Blood extends LObject implements ISprite {
 		drops[index].yspeed = ys;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			for (int i = 0; i < drops.length; ++i) {
@@ -106,6 +107,7 @@ public class Blood extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -147,10 +149,12 @@ public class Blood extends LObject implements ISprite {
 		this.limit = limit;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return null;
 	}
@@ -171,22 +175,27 @@ public class Blood extends LObject implements ISprite {
 		this.ySpeed = speed;
 	}
 
+	@Override
 	public int getHeight() {
 		return 0;
 	}
 
+	@Override
 	public int getWidth() {
 		return 0;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void dispose() {
 
 	}

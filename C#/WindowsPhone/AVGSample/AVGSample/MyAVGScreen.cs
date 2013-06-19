@@ -7,7 +7,6 @@ using Loon.Action.Avg;
 using Loon.Core.Graphics.Opengl;
 using Loon.Core.Graphics;
 using Loon.Action.Avg.Drama;
-using Loon.Utils.Debug;
 
 namespace AVGTest
 {

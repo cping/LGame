@@ -131,6 +131,11 @@ namespace Loon.Core.Resource
             return stream;
         }
 
+        public static InputStream OpenResource(string resName)
+        {
+            return OpenSource(resName);
+        }
+
         /// <summary>
         /// 尝试读取数据流
         /// </summary>
@@ -189,8 +194,8 @@ namespace Loon.Core.Resource
                     }
                     catch (Exception ex)
                     {
-                        Loon.Utils.Debug.Log.Exception(ex);
-                        Loon.Utils.Debug.Log.DebugWrite('\n' + resName + " file not found !");
+                        Loon.Utils.Debugging.Log.Exception(ex);
+                        Loon.Utils.Debugging.Log.DebugWrite('\n' + resName + " file not found !");
                     }
                 }
             }

@@ -23,7 +23,7 @@ package loon.action.sprite.node;
 import loon.core.geom.Vector2f;
 
 public class LNUI extends LNNode {
-	
+
 	public float _bold;
 
 	protected int _touchID;

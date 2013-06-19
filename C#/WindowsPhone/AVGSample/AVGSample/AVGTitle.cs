@@ -7,7 +7,6 @@ using Loon.Core.Graphics.Component;
 using Loon.Core.Input;
 using Loon.Core.Timer;
 using Loon.Core.Graphics.Opengl;
-using Loon.Utils.Debug;
 using Loon.Action.Sprite.Effect;
 using Loon.Core.Event;
 using Loon.Core;

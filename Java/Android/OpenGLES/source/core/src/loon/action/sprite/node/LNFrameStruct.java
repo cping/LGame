@@ -23,9 +23,9 @@ package loon.action.sprite.node;
 import loon.action.sprite.SpriteBatch.BlendState;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.graphics.opengl.LTextures;
-import loon.utils.TextureUtils;
 
 public class LNFrameStruct {
 

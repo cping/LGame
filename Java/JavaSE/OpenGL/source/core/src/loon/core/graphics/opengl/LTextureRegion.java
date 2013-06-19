@@ -4,7 +4,6 @@ import loon.core.LRelease;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 

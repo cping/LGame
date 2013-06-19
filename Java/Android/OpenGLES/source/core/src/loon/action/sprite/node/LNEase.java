@@ -43,6 +43,7 @@ public class LNEase extends LNAction {
 		return action;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super.setTarget(node);
 		if (_action != null) {
@@ -50,6 +51,7 @@ public class LNEase extends LNAction {
 		}
 	}
 
+	@Override
 	public void step(float dt) {
 		if (_action != null) {
 			_action.step(dt);
@@ -57,6 +59,7 @@ public class LNEase extends LNAction {
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_easing, _action);
 	}

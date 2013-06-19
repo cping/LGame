@@ -31,6 +31,6 @@ public interface XMLListener {
 	public void addAttribute(int line, XMLAttribute a);
 
 	public void addElement(int line, XMLElement e);
-	
+
 	public void endElement(int line, XMLElement e);
 }

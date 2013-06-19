@@ -223,6 +223,7 @@ public class LTouchLocation {
 				+ previousPressure;
 	}
 
+	@Override
 	public LTouchLocation clone() {
 		LTouchLocation varCopy = new LTouchLocation();
 

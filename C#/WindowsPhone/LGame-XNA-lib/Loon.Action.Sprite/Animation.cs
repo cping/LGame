@@ -7,6 +7,7 @@ namespace Loon.Action.Sprite
     using Loon.Core.Graphics.Opengl;
     using Loon.Utils;
     using Loon.Core.Graphics;
+    using Loon.Core.Event;
 
     public class Animation : LRelease
     {
@@ -67,6 +68,15 @@ namespace Loon.Action.Sprite
             this.isRunning = true;
             Start();
         }
+        
+	    public static Animation GetDefaultAnimation(String fileName) {
+		    return Animation.GetDefaultAnimation(LTextures.LoadTexture(fileName));
+	    }
+
+	    public static Animation GetDefaultAnimation( LTexture texture) {
+		    return Animation.GetDefaultAnimation(new LTexture[] { texture }, 1,
+				    65535);
+	    }
 
         /**
          * 转化指定文件为动画图像
@@ -260,10 +270,26 @@ namespace Loon.Action.Sprite
                 LTexture texture = GetFrame(currentFrameIndex).image;
                 if (!texture.isLoaded)
                 {
-                    texture.LoadTexture();
+                    LSystem.Load(new inner_load(texture));
                 }
                 return texture;
             }
+        }
+
+        private class inner_load : Updateable
+        {
+            private LTexture texture;
+
+            public inner_load(LTexture tex)
+            {
+                this.texture = tex;
+            }
+
+            public void Action()
+            {
+                texture.LoadTexture();
+            }
+
         }
 
         /**

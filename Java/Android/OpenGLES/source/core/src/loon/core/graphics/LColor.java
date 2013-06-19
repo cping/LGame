@@ -301,6 +301,7 @@ public class LColor implements Serializable {
 		return new LColor(Integer.decode(nm).intValue());
 	}
 
+	@Override
 	public int hashCode() {
 		int result = (r != +0.0f ? Float.floatToIntBits(r) : 0);
 		result = 31 * result + (g != +0.0f ? Float.floatToIntBits(g) : 0);
@@ -309,6 +310,7 @@ public class LColor implements Serializable {
 		return result;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -363,10 +365,10 @@ public class LColor implements Serializable {
 	}
 
 	public void setColorValue(int r, int g, int b, int a) {
-		this.r = r > 1 ? (float) r / 255.0f : r;
-		this.g = g > 1 ? (float) g / 255.0f : g;
-		this.b = b > 1 ? (float) b / 255.0f : b;
-		this.a = a > 1 ? (float) a / 255.0f : a;
+		this.r = r > 1 ? r / 255.0f : r;
+		this.g = g > 1 ? g / 255.0f : g;
+		this.b = b > 1 ? b / 255.0f : b;
+		this.a = a > 1 ? a / 255.0f : a;
 	}
 
 	public void setIntColor(int r, int g, int b, int a) {

@@ -37,7 +37,7 @@ public interface AStarFindHeuristic {
 	public final static int CLOSEST = 6;
 
 	public final static int CLOSEST_SQUARED = 7;
-	
+
 	public float getScore(float sx, float sy, float tx, float ty);
 
 	public int getType();

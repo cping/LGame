@@ -13,8 +13,7 @@ import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LTrans;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.utils.TextureUtils;
-
+import loon.core.graphics.opengl.TextureUtils;
 
 /**
  * Copyright 2008 - 2011

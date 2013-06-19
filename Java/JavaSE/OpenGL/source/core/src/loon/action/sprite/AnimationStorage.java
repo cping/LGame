@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.CollectionUtils;
 
-
 public class AnimationStorage extends Animation {
 
 	private int animationIndexLocked = -1;

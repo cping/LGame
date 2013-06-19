@@ -51,6 +51,7 @@ public class LNJumpParabolaBy extends LNAction {
 		return by;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -64,6 +65,7 @@ public class LNJumpParabolaBy extends LNAction {
 				- (this._b * this._startPosition.x);
 	}
 
+	@Override
 	public void update(float t) {
 		float num = (t * this._delta.x) + this._startPosition.x;
 		float x = num;
@@ -71,6 +73,7 @@ public class LNJumpParabolaBy extends LNAction {
 		super._target.setPosition(x, y);
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_duration, _delta, _refPoint);
 	}

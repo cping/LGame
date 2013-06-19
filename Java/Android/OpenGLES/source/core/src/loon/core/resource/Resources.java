@@ -168,6 +168,7 @@ public abstract class Resources {
 		lazyResources.clear();
 	}
 
+	@Override
 	public void finalize() {
 		destroy();
 	}

@@ -236,6 +236,7 @@ public class CollisionMask implements LRelease {
 		return false;
 	}
 
+	@Override
 	public void dispose() {
 		if (data != null) {
 			data.dispose();

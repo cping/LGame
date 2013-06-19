@@ -177,6 +177,7 @@ public class Gravity implements LRelease {
 		this.angularVelocity = 0;
 	}
 
+	@Override
 	public void dispose() {
 		this.enabled = false;
 		this.bind = null;

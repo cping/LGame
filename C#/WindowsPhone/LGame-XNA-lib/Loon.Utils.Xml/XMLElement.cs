@@ -133,6 +133,21 @@ namespace Loon.Utils.Xml {
             return new IteratorAdapter(this.contents.GetEnumerator());
         }
 
+        public List<XMLElement> List()
+        {
+            List<XMLElement> lists = new List<XMLElement>(contents.Count);
+            for (IIterator e = Elements(); e.HasNext(); )
+            {
+                Object o = e.Next();
+                if (!(o is XMLElement))
+                {
+                    continue;
+                }
+                lists.Add((XMLElement)o);
+            }
+            return lists;
+        }
+
         public XMLElement GetFirstChild()
         {
             for (IIterator e = Elements(); e.HasNext(); )

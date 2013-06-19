@@ -98,9 +98,9 @@ public class Point extends Shape {
 		public final int distanceTo(Point2i p1, Point2i p2) {
 			final int tx = p2.x - p1.x;
 			final int ty = p2.y - p1.y;
-			final int u = MathUtils.div(MathUtils.mul(x - p1.x, tx)
-					+ MathUtils.mul(y - p1.y, ty), MathUtils.mul(tx, tx)
-					+ MathUtils.mul(ty, ty));
+			final int u = MathUtils.div(
+					MathUtils.mul(x - p1.x, tx) + MathUtils.mul(y - p1.y, ty),
+					MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 			final int ix = p1.x + MathUtils.mul(u, tx);
 			final int iy = p1.y + MathUtils.mul(u, ty);
 			final int dx = ix - x;
@@ -120,13 +120,11 @@ public class Point extends Shape {
 	public Point(float x, float y) {
 		this.checkPoints();
 		this.setLocation(x, y);
-		this.type = ShapeType.POINT_SHAPE;
 	}
 
 	public Point(Point p) {
 		this.checkPoints();
 		this.setLocation(p);
-		this.type = ShapeType.POINT_SHAPE;
 	}
 
 	public Shape transform(Matrix transform) {
@@ -136,7 +134,7 @@ public class Point extends Shape {
 	}
 
 	protected void createPoints() {
-		if(points==null){
+		if (points == null) {
 			points = new float[2];
 		}
 		points[0] = getX();
@@ -152,7 +150,7 @@ public class Point extends Shape {
 	}
 
 	protected void findCenter() {
-		if(center==null){
+		if (center == null) {
 			center = new float[2];
 		}
 		center[0] = points[0];
@@ -208,11 +206,11 @@ public class Point extends Shape {
 	public void getLocation(Point dest) {
 		dest.setLocation(this.x, this.y);
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	public boolean equals(Object obj) {
 		Point p = (Point) obj;
 		return p.x == this.x && p.y == this.y && p.clazz == this.clazz;

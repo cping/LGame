@@ -126,6 +126,7 @@ public class JumpObject extends SpriteBatchObject {
 		this.jumperTwo = jumperTwo;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 
 		if (animation != null) {

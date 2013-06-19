@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import loon.core.geom.Vector2f;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -43,7 +42,7 @@ public class AStarFinderPool implements Runnable {
 	public AStarFinderPool(Field2D field) {
 		this.field = field;
 		this.running = true;
-		this.pathfinderThread = new Thread(this,"AStarThread");
+		this.pathfinderThread = new Thread(this, "AStarThread");
 		this.pathfinderThread.start();
 	}
 

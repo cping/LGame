@@ -6,12 +6,12 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
 import loon.utils.FileUtils;
-import loon.utils.GraphicsUtils;
 
 /**
  * 
@@ -242,6 +242,7 @@ public final class GLLoader extends LTextureData {
 	 * 复制当前LTextureData
 	 * 
 	 */
+	@Override
 	public LTextureData copy() {
 		return new GLLoader(this, true);
 	}
@@ -249,6 +250,7 @@ public final class GLLoader extends LTextureData {
 	/**
 	 * 创建纹理
 	 */
+	@Override
 	public void createTexture() {
 		submitGL(this);
 	}
@@ -278,7 +280,7 @@ public final class GLLoader extends LTextureData {
 						0);
 				copyArea(texImage, g, data.width - 1, 0, 1, data.height, 1, 0);
 			}
-			android.opengl.GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0,
+			android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
 					format.getGLFormat(), texImage.getBitmap(),
 					format.getGLType(), 0);
 			if (texImage != null) {
@@ -300,7 +302,7 @@ public final class GLLoader extends LTextureData {
 				final GL10 gl = GLEx.gl10;
 				if (gl != null) {
 					Buffer pixelBuffer = getBufferPixels(data.source, format);
-					gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0,
+					gl.glTexImage2D(GL.GL_TEXTURE_2D, 0,
 							format.getGLFormat(), data.texWidth,
 							data.texHeight, 0, format.getGLFormat(),
 							format.getGLType(), pixelBuffer);
@@ -312,7 +314,7 @@ public final class GLLoader extends LTextureData {
 								data.config);
 				bind.setPixels(data.source, 0, data.texWidth, 0, 0,
 						data.texWidth, data.texHeight);
-				android.opengl.GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0,
+				android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
 						format.getGLFormat(), bind, format.getGLType(), 0);
 				if (bind != null) {
 					bind.recycle();
@@ -348,7 +350,7 @@ public final class GLLoader extends LTextureData {
 			final GL10 gl = GLEx.gl10;
 			if (gl != null) {
 				Buffer pixelBuffer = getBufferPixels(data.source, format);
-				gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, x, y, data.width,
+				gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, x, y, data.width,
 						data.height, format.getGLFormat(), format.getGLType(),
 						pixelBuffer);
 				pixelBuffer = null;
@@ -361,7 +363,7 @@ public final class GLLoader extends LTextureData {
 					data.texWidth, data.texHeight, data.width, data.height,
 					data.config);
 			android.opengl.GLUtils
-					.texSubImage2D(GL10.GL_TEXTURE_2D, 0, x, y,
+					.texSubImage2D(GL.GL_TEXTURE_2D, 0, x, y,
 							image.getBitmap(), format.getGLFormat(),
 							format.getGLType());
 			if (image != null) {

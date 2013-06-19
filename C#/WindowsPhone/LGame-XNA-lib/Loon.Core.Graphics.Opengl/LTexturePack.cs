@@ -115,7 +115,7 @@ namespace Loon.Core.Graphics.Opengl {
             }
             catch (IOException e)
             {
-                Loon.Utils.Debug.Log.Exception(e);
+                Loon.Utils.Debugging.Log.Exception(e);
             }
 		}
 	

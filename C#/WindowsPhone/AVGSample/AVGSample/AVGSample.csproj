@@ -162,13 +162,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LGame-XNA-lib\LGame-XNA-lib.csproj">
+    <ProjectReference Include="..\..\LGame-XNA-lib\Loon-backend-XNA.csproj">
       <Project>{EC0B16E5-0A1D-487A-A67C-FD65B8EDB252}</Project>
-      <Name>LGame-XNA-lib</Name>
+      <Name>Loon-backend-XNA</Name>
     </ProjectReference>
     <ProjectReference Include="..\AVGSampleContent\AVGSampleContent.contentproj">
-      <Name>AVGSampleContent</Name>
+      <Name>AVGSampleContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{1159B6D6-490D-4EF5-8C07-C617B92B6099}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

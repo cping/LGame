@@ -54,12 +54,14 @@ public abstract class ActorSpeed extends Actor {
 		setLocation(this.x, this.y);
 	}
 
+	@Override
 	public void setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
 		super.setLocation(x, y);
 	}
 
+	@Override
 	public void setLocation(int x, int y) {
 		this.x = x;
 		this.y = y;

@@ -42,9 +42,11 @@ public class GameComponent implements IGameComponent, IUpdateable,
 		return _game;
 	}
 
+	@Override
 	public void initialize() {
 	}
 
+	@Override
 	public void update(GameTime gameTime) {
 	}
 
@@ -52,6 +54,7 @@ public class GameComponent implements IGameComponent, IUpdateable,
 		return _game.getSpriteBatch();
 	}
 
+	@Override
 	public final boolean getEnabled() {
 		return _enabled;
 	}
@@ -64,6 +67,7 @@ public class GameComponent implements IGameComponent, IUpdateable,
 		onEnabledChanged(this);
 	}
 
+	@Override
 	public final int getUpdateOrder() {
 		return _updateOrder;
 	}
@@ -91,10 +95,12 @@ public class GameComponent implements IGameComponent, IUpdateable,
 	protected void dispose(boolean disposing) {
 	}
 
+	@Override
 	public void dispose() {
 		dispose(true);
 	}
 
+	@Override
 	public final int compareTo(GameComponent other) {
 		return other.getUpdateOrder() - this.getUpdateOrder();
 	}

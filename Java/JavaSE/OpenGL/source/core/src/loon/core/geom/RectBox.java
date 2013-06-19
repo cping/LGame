@@ -57,11 +57,11 @@ public class RectBox extends Shape {
 			right = r.right;
 			bottom = r.bottom;
 		}
-		
-		public int hashCode(){
+
+		public int hashCode() {
 			return super.hashCode();
 		}
-		
+
 		public boolean equals(Object obj) {
 			Rect2i r = (Rect2i) obj;
 			if (r != null) {
@@ -266,18 +266,16 @@ public class RectBox extends Shape {
 
 	public int height;
 
-    public void offset(Vector2f offset)
-    {
-        x += offset.x;
-        y += offset.y;
-    }
+	public void offset(Vector2f offset) {
+		x += offset.x;
+		y += offset.y;
+	}
 
-    public void offset(int offsetX, int offsetY)
-    {
-    	  x += offsetX;
-          y += offsetY;
-    }
-    
+	public void offset(int offsetX, int offsetY) {
+		x += offsetX;
+		y += offsetY;
+	}
+
 	public int Left() {
 		return this.x();
 	}
@@ -314,6 +312,13 @@ public class RectBox extends Shape {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
+	public void setBoundsFromCenter(float centerX, float centerY,
+			float cornerX, float cornerY) {
+		float halfW = MathUtils.abs(cornerX - centerX);
+		float halfH = MathUtils.abs(cornerY - centerY);
+		setBounds(centerX - halfW, centerY - halfH, halfW * 2.0, halfH * 2.0);
+	}
+
 	public void setBounds(RectBox rect) {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
@@ -323,7 +328,6 @@ public class RectBox extends Shape {
 	}
 
 	public void setBounds(float x, float y, float width, float height) {
-		this.type = ShapeType.BOX_SHAPE;
 		this.x = x;
 		this.y = y;
 		this.width = (int) width;
@@ -336,15 +340,13 @@ public class RectBox extends Shape {
 		this.checkPoints();
 	}
 
-    public void inflate(int horizontalValue, int verticalValue)
-    {
-        this.x -= horizontalValue;
-        this.y -= verticalValue;
-        this.width += horizontalValue * 2;
-        this.height += verticalValue * 2;
-    }
-	
-    
+	public void inflate(int horizontalValue, int verticalValue) {
+		this.x -= horizontalValue;
+		this.y -= verticalValue;
+		this.width += horizontalValue * 2;
+		this.height += verticalValue * 2;
+	}
+
 	public void setLocation(RectBox r) {
 		this.x = r.x;
 		this.y = r.y;
@@ -522,11 +524,11 @@ public class RectBox extends Shape {
 	public void setWidth(float width) {
 		this.width = (int) width;
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (obj instanceof RectBox) {
 			RectBox rect = (RectBox) obj;

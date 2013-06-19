@@ -525,6 +525,7 @@ public class SpriteRegion extends LTextureRegion {
 		return color;
 	}
 
+	@Override
 	public void setRegion(float u, float v, float u2, float v2) {
 		this.xOff = u;
 		this.yOff = v;
@@ -545,6 +546,7 @@ public class SpriteRegion extends LTextureRegion {
 		vertices[19] = v;
 	}
 
+	@Override
 	public void flip(boolean x, boolean y) {
 		super.flip(x, y);
 		float[] vertices = SpriteRegion.this.vertices;
@@ -566,6 +568,7 @@ public class SpriteRegion extends LTextureRegion {
 		}
 	}
 
+	@Override
 	public void scroll(float xAmount, float yAmount) {
 		float[] vertices = SpriteRegion.this.vertices;
 		if (xAmount != 0) {

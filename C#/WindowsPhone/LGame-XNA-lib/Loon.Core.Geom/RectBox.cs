@@ -292,7 +292,15 @@ namespace Loon.Core.Geom {
 		public RectBox(RectBox rect) {
 			SetBounds(rect.x, rect.y, rect.width, rect.height);
 		}
-	
+
+        public void SetBoundsFromCenter(float centerX, float centerY,
+            float cornerX, float cornerY)
+        {
+            float halfW = MathUtils.Abs(cornerX - centerX);
+            float halfH = MathUtils.Abs(cornerY - centerY);
+            SetBounds(centerX - halfW, centerY - halfH, halfW * 2.0, halfH * 2.0);
+        }
+
 		public void SetBounds(RectBox rect) {
 			SetBounds(rect.x, rect.y, rect.width, rect.height);
 		}
@@ -302,7 +310,6 @@ namespace Loon.Core.Geom {
 		}
 	
 		public void SetBounds(float x, float y, float width_0, float height_1) {
-			this.type = ShapeType.BOX_SHAPE;
 			this.x = x;
 			this.y = y;
 			this.width = (int) width_0;

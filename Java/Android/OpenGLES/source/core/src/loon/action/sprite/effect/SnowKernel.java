@@ -50,6 +50,7 @@ public class SnowKernel implements IKernel {
 		speed = MathUtils.random();
 	}
 
+	@Override
 	public int id() {
 		return id;
 	}
@@ -60,6 +61,7 @@ public class SnowKernel implements IKernel {
 		y = -snowHeight;
 	}
 
+	@Override
 	public void update() {
 		if (!exist) {
 			if (MathUtils.random() < 0.002) {
@@ -89,24 +91,29 @@ public class SnowKernel implements IKernel {
 		}
 	}
 
+	@Override
 	public void draw(GLEx g) {
 		if (exist) {
 			snow.draw(x, y);
 		}
 	}
 
+	@Override
 	public LTexture get() {
 		return snow;
 	}
 
+	@Override
 	public float getHeight() {
 		return snowHeight;
 	}
 
+	@Override
 	public float getWidth() {
 		return snowWidth;
 	}
 
+	@Override
 	public void dispose() {
 		if (snow != null) {
 			snow.destroy();

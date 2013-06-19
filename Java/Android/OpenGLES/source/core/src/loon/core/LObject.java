@@ -1,6 +1,6 @@
 package loon.core;
 
-import loon.action.map.Field2D;
+import loon.action.map.Config;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.utils.MathUtils;
@@ -130,7 +130,7 @@ public abstract class LObject {
 	}
 
 	public void move_45D_up(int multiples) {
-		location.move_multiples(Field2D.UP, multiples);
+		location.move_multiples(Config.UP, multiples);
 	}
 
 	public void move_45D_left() {
@@ -138,7 +138,7 @@ public abstract class LObject {
 	}
 
 	public void move_45D_left(int multiples) {
-		location.move_multiples(Field2D.LEFT, multiples);
+		location.move_multiples(Config.LEFT, multiples);
 	}
 
 	public void move_45D_right() {
@@ -146,7 +146,7 @@ public abstract class LObject {
 	}
 
 	public void move_45D_right(int multiples) {
-		location.move_multiples(Field2D.RIGHT, multiples);
+		location.move_multiples(Config.RIGHT, multiples);
 	}
 
 	public void move_45D_down() {
@@ -154,7 +154,7 @@ public abstract class LObject {
 	}
 
 	public void move_45D_down(int multiples) {
-		location.move_multiples(Field2D.DOWN, multiples);
+		location.move_multiples(Config.DOWN, multiples);
 	}
 
 	public void move_up() {
@@ -162,7 +162,7 @@ public abstract class LObject {
 	}
 
 	public void move_up(int multiples) {
-		location.move_multiples(Field2D.TUP, multiples);
+		location.move_multiples(Config.TUP, multiples);
 	}
 
 	public void move_left() {
@@ -170,7 +170,7 @@ public abstract class LObject {
 	}
 
 	public void move_left(int multiples) {
-		location.move_multiples(Field2D.TLEFT, multiples);
+		location.move_multiples(Config.TLEFT, multiples);
 	}
 
 	public void move_right() {
@@ -178,7 +178,7 @@ public abstract class LObject {
 	}
 
 	public void move_right(int multiples) {
-		location.move_multiples(Field2D.TRIGHT, multiples);
+		location.move_multiples(Config.TRIGHT, multiples);
 	}
 
 	public void move_down() {
@@ -186,7 +186,7 @@ public abstract class LObject {
 	}
 
 	public void move_down(int multiples) {
-		location.move_multiples(Field2D.TDOWN, multiples);
+		location.move_multiples(Config.TDOWN, multiples);
 	}
 
 	public void move(Vector2f vector2D) {

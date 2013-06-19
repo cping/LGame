@@ -49,7 +49,8 @@ public class LNAnimationTexture {
 		this(fileName, fileName, -1, width, height, 3f);
 	}
 
-	public LNAnimationTexture(String fileName, int maxFrame, int width, int height) {
+	public LNAnimationTexture(String fileName, int maxFrame, int width,
+			int height) {
 		this(fileName, fileName, maxFrame, width, height, 3f);
 	}
 

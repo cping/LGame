@@ -112,6 +112,7 @@ public class LNSprite extends LNNode {
 		return sprite;
 	}
 
+	@Override
 	public void draw(SpriteBatch batch) {
 		if (super._visible && (this._texture != null)) {
 			pos = super.convertToWorldPos();

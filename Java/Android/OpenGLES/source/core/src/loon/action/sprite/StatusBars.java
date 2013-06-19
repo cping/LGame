@@ -99,6 +99,7 @@ public final class StatusBars extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -118,6 +119,7 @@ public final class StatusBars extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -135,30 +137,37 @@ public final class StatusBars extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void setVisible(boolean v) {
 		this.visible = v;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return null;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public int getWidth() {
 		return 0;
 	}
 
+	@Override
 	public int getHeight() {
 		return 0;
 	}
 
+	@Override
 	public void dispose() {
 		this.visible = false;
 		int size = barCaches.size();

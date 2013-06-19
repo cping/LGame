@@ -107,8 +107,8 @@ public class AVGAnm implements Expression, LRelease {
 		this.posx = new int[count];
 		this.posy = new int[count];
 		for (int i = 0; i < count; i++) {
-			this.posx[i] = (int) (posxTmps.get(i));
-			this.posy[i] = (int) (posyTmps.get(i));
+			this.posx[i] = (posxTmps.get(i));
+			this.posy[i] = (posyTmps.get(i));
 		}
 		if (width == 0) {
 			width = imageWidth;
@@ -325,6 +325,7 @@ public class AVGAnm implements Expression, LRelease {
 		return 0;
 	}
 
+	@Override
 	public void dispose() {
 		stop();
 		if (texture != null) {

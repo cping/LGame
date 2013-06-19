@@ -38,7 +38,6 @@ namespace Loon.Core.Geom {
 			
 			this.loc = new Vector2f(0, 0);
 			this.closest = new Vector2f(0, 0);
-			this.type = ShapeType.LINE_SHAPE;
 			Set(start_0, end_1);
 		}
 
@@ -47,7 +46,6 @@ namespace Loon.Core.Geom {
         {
 			this.loc = new Vector2f(0, 0);
 			this.closest = new Vector2f(0, 0);
-			this.type = ShapeType.LINE_SHAPE;
 			Set(start_0, end_1);
 		}
 	

@@ -1,5 +1,6 @@
 
 using Loon.Core.Geom;
+using Loon.Core.Graphics;
 namespace Loon.Core.Input
 {
     public interface LInput

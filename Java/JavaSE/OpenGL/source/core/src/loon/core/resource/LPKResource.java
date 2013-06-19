@@ -31,7 +31,7 @@ import loon.utils.collection.ArrayByte;
  */
 public abstract class LPKResource {
 
-	//如果此项为true，已加载数据会自动缓存。
+	// 如果此项为true，已加载数据会自动缓存。
 	public static boolean CACHE = false;
 
 	private static HashMap<String, PAK> pakRes = new HashMap<String, PAK>(

@@ -18,7 +18,6 @@ import loon.core.graphics.opengl.LTextureBatch.GLCache;
 import loon.core.resource.Resources;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -173,8 +172,7 @@ public class BMFont implements LRelease {
 						int second = Integer.parseInt(tokens.nextToken());
 						tokens.nextToken();
 						int offset = Integer.parseInt(tokens.nextToken());
-						ArrayList<Short> values = kerning
-								.get(new Short(first));
+						ArrayList<Short> values = kerning.get(new Short(first));
 						if (values == null) {
 							values = new ArrayList<Short>();
 							kerning.put(new Short(first), values);
@@ -238,7 +236,7 @@ public class BMFont implements LRelease {
 		tokens.nextToken();
 		def.advance = Short.parseShort(tokens.nextToken());
 
-		if (def.id != (short)' ') {
+		if (def.id != (short) ' ') {
 			lineHeight = MathUtils.max(def.height + def.yoffset, lineHeight);
 		}
 

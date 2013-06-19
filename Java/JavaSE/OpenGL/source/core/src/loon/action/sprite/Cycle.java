@@ -14,7 +14,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -36,7 +35,6 @@ import loon.utils.MathUtils;
  * @version 0.1
  */
 public class Cycle extends LObject implements ISprite {
-
 
 	public final static Cycle getSample(int type, float srcWidth,
 			float srcHeight, float width, float height, float offset,
@@ -173,9 +171,7 @@ public class Cycle extends LObject implements ISprite {
 			cycle.setStepsPerFrame(1);
 			cycle.setTrailLength(1);
 			cycle.setPointDistance(0.025f);
-			cycle
-					.addPath(Cycle.ARC, 50 * scale, 50 * scale, 40 * scale, 0,
-							360);
+			cycle.addPath(Cycle.ARC, 50 * scale, 50 * scale, 40 * scale, 0, 360);
 			break;
 		case 5:
 			cycle.setColor(0xFF2E82);
@@ -207,18 +203,14 @@ public class Cycle extends LObject implements ISprite {
 			cycle.setPointDistance(0.01f);
 			cycle.setLineWidth(6);
 			cycle.setPadding(0);
-			cycle
-					.addPath(Cycle.ARC, 50 * scale, 50 * scale, 20 * scale,
-							360, 0);
+			cycle.addPath(Cycle.ARC, 50 * scale, 50 * scale, 20 * scale, 360, 0);
 			break;
 		case 8:
 			cycle.setColor(0x05E2FF);
 			cycle.setStepsPerFrame(1);
 			cycle.setTrailLength(1);
 			cycle.setPointDistance(0.02f);
-			cycle
-					.addPath(Cycle.ARC, 50 * scale, 50 * scale, 30 * scale, 0,
-							360);
+			cycle.addPath(Cycle.ARC, 50 * scale, 50 * scale, 30 * scale, 0, 360);
 			break;
 		case 9:
 			cycle.setStepType(1);
@@ -729,7 +721,7 @@ public class Cycle extends LObject implements ISprite {
 	public RectBox getCollisionBox() {
 		Shape shape = getShape();
 		return getRect(shape.getX(), shape.getY(), shape.getWidth(),
-					shape.getHeight());
+				shape.getHeight());
 	}
 
 	public void setWidth(float w) {

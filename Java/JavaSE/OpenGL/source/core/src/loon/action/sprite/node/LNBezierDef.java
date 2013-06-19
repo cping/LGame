@@ -30,7 +30,6 @@ public class LNBezierDef {
 	public Vector2f controlPoint_1;
 
 	public Vector2f controlPoint_2;
-	
 
 	public LNBezierDef() {
 

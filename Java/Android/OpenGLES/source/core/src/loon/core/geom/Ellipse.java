@@ -63,7 +63,6 @@ public class Ellipse extends Shape {
 		this.radius1 = radius1;
 		this.radius2 = radius2;
 		this.segmentCount = segmentCount;
-		this.type = ShapeType.ELLIPSE_SHAPE;
 		checkPoints();
 	}
 
@@ -100,6 +99,7 @@ public class Ellipse extends Shape {
 		}
 	}
 
+	@Override
 	protected void createPoints() {
 		ArrayList<Float> tempPoints = new ArrayList<Float>();
 
@@ -146,16 +146,19 @@ public class Ellipse extends Shape {
 		}
 	}
 
+	@Override
 	protected void findCenter() {
 		center = new float[2];
 		center[0] = x + radius1;
 		center[1] = y + radius2;
 	}
 
+	@Override
 	protected void calculateRadius() {
 		boundingCircleRadius = (radius1 > radius2) ? radius1 : radius2;
 	}
 
+	@Override
 	public int hashCode() {
 		long bits = java.lang.Double.doubleToLongBits(getX());
 		bits += java.lang.Double.doubleToLongBits(getY()) * 37;
@@ -164,6 +167,7 @@ public class Ellipse extends Shape {
 		return (((int) bits) ^ ((int) (bits >> 32)));
 	}
 
+	@Override
 	public Shape transform(Matrix transform) {
 		checkPoints();
 

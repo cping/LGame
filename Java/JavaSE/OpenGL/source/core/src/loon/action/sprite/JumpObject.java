@@ -23,14 +23,13 @@ package loon.action.sprite;
 import loon.action.map.TileMap;
 import loon.core.geom.Vector2f;
 
-
 public class JumpObject extends SpriteBatchObject {
 
 	public static interface JumpListener {
 
 		public void update(long elapsedTime);
 
-		public void check(int x,int y);
+		public void check(int x, int y);
 
 	}
 
@@ -188,6 +187,5 @@ public class JumpObject extends SpriteBatchObject {
 	public void setJumpListener(JumpListener listener) {
 		this.listener = listener;
 	}
-
 
 }

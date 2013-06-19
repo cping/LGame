@@ -34,6 +34,7 @@ abstract class DataRes {
 
 	URI uri;
 
+	@Override
 	public int hashCode() {
 		return (name == null) ? super.hashCode() : name.hashCode();
 	}

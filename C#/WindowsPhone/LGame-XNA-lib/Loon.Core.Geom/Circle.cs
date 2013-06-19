@@ -16,7 +16,6 @@ namespace Loon.Core.Geom {
 			this.y = y - radius_0;
 			this.radius = radius_0;
 			this.boundingCircleRadius = radius_0;
-			this.type = ShapeType.CIRCLE_SHAPE;
 		}
 	
 		public override float GetCenterX() {

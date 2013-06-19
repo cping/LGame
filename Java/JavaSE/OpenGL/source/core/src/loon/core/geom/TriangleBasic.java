@@ -64,16 +64,14 @@ public class TriangleBasic implements Triangle {
 
 	public int getTriangleCount() {
 		if (!tried) {
-			throw new RuntimeException(
-					"this not Triangle !");
+			throw new RuntimeException("this not Triangle !");
 		}
 		return tris.size() / 3;
 	}
 
 	public float[] getTrianglePoint(int t, int i) {
 		if (!tried) {
-			throw new RuntimeException(
-					"this not Triangle !");
+			throw new RuntimeException("this not Triangle !");
 		}
 
 		return tris.get((t * 3) + i).toArray();
@@ -162,11 +160,11 @@ public class TriangleBasic implements Triangle {
 		int[] sV = new int[n];
 
 		if (0.0f < area(contour)) {
-			for (int v = 0; v < n; v++){
+			for (int v = 0; v < n; v++) {
 				sV[v] = v;
 			}
 		} else {
-			for (int v = 0; v < n; v++){
+			for (int v = 0; v < n; v++) {
 				sV[v] = (n - 1) - v;
 			}
 		}

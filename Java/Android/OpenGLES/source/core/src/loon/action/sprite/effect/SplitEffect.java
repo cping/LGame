@@ -1,7 +1,6 @@
 package loon.action.sprite.effect;
 
 import loon.action.map.Config;
-import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.core.LObject;
 import loon.core.LSystem;
@@ -100,14 +99,17 @@ public class SplitEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!complete) {
 			if (timer.action(elapsedTime)) {
@@ -116,15 +118,15 @@ public class SplitEffect extends LObject implements ISprite {
 				case Config.RIGHT:
 				case Config.TLEFT:
 				case Config.TRIGHT:
-					v1.move_multiples(Field2D.TLEFT, multiples);
-					v2.move_multiples(Field2D.TRIGHT, multiples);
+					v1.move_multiples(Config.TLEFT, multiples);
+					v2.move_multiples(Config.TRIGHT, multiples);
 					break;
 				case Config.UP:
 				case Config.DOWN:
 				case Config.TUP:
 				case Config.TDOWN:
-					v1.move_multiples(Field2D.TUP, multiples);
-					v2.move_multiples(Field2D.TDOWN, multiples);
+					v1.move_multiples(Config.TUP, multiples);
+					v2.move_multiples(Config.TDOWN, multiples);
 					break;
 				}
 
@@ -142,6 +144,7 @@ public class SplitEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -191,10 +194,12 @@ public class SplitEffect extends LObject implements ISprite {
 		return complete;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
@@ -207,14 +212,17 @@ public class SplitEffect extends LObject implements ISprite {
 		this.multiples = multiples;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void dispose() {
 		if (texture != null) {
 			texture.destroy();

@@ -6,7 +6,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -40,9 +39,8 @@ public class PetalKernel implements IKernel {
 
 	public PetalKernel(int n, int w, int h) {
 		id = n;
-		sakura = LTextures.loadTexture(
-				(LSystem.FRAMEWORK_IMG_NAME + "sakura_" + n + ".png").intern())
-				;
+		sakura = LTextures.loadTexture((LSystem.FRAMEWORK_IMG_NAME + "sakura_"
+				+ n + ".png").intern());
 		sakuraWidth = sakura.getWidth();
 		sakuraHeight = sakura.getHeight();
 		width = w;

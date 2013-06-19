@@ -102,7 +102,7 @@ public class LNAnimation implements LRelease {
 	public void setAnimationTime(float total) {
 		int count = this._timeList.size();
 		if (count > 0) {
-			float item = total / ((float) count);
+			float item = total / (count);
 			this._timeList.clear();
 			for (int i = 0; i < count; i++) {
 				this._timeList.add(item);
@@ -118,6 +118,7 @@ public class LNAnimation implements LRelease {
 		return this._name;
 	}
 
+	@Override
 	public void dispose() {
 		if (_fsList != null) {
 			_fsList.clear();

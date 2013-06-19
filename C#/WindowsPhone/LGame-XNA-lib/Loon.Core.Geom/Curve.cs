@@ -24,7 +24,6 @@ namespace Loon.Core.Geom {
 			this.c1 = new Vector2f(c1_1);
 			this.c2 = new Vector2f(c2_2);
 			this.p2 = new Vector2f(p2_3);
-			this.type = ShapeType.CURVE_SHAPE;
 			this.segments = segments_4;
 			pointsDirty = true;
 		}

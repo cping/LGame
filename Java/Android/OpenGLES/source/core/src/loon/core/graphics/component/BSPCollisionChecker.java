@@ -102,10 +102,12 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	private LinkedList cacheNodeStack = new LinkedList();
 
+	@Override
 	public void initialize(int cellSize) {
 		this.cellSize = cellSize;
 	}
 
+	@Override
 	public Iterator getActorsIterator() {
 		if (bspTree != null) {
 			return bspTree.getActorsIterator();
@@ -113,6 +115,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		return null;
 	}
 
+	@Override
 	public List getActorsList() {
 		if (bspTree != null) {
 			return bspTree.getActorsList();
@@ -120,6 +123,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		return null;
 	}
 
+	@Override
 	public synchronized void addObject(Actor actor) {
 		RectBox bounds = this.getActorBounds(actor);
 		float by;
@@ -243,6 +247,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized void clear() {
 		if (bspTree != null) {
 			bspTree.clear();
@@ -271,6 +276,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		return actor.getBoundingRect();
 	}
 
+	@Override
 	public synchronized void removeObject(Actor object) {
 		for (ActorNode node = getNodeForActor(object); node != null; node = getNodeForActor(object)) {
 			BSPCollisionNode bspNode = node.getBSPNode();
@@ -408,10 +414,12 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public void updateObjectLocation(Actor object, float oldX, float oldY) {
 		this.updateObject(object);
 	}
 
+	@Override
 	public void updateObjectSize(Actor object) {
 		this.updateObject(object);
 	}
@@ -565,6 +573,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		return null;
 	}
 
+	@Override
 	public synchronized List getObjectsAt(float x, float y, Class cls) {
 		synchronized (this.pointQuery) {
 			float px = x * this.cellSize + this.cellSize / 2f;
@@ -575,6 +584,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized List getIntersectingObjects(Actor actor, Class cls) {
 		RectBox r = this.getActorBounds(actor);
 		synchronized (this.actorQuery) {
@@ -583,6 +593,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized List getObjectsInRange(float x, float y, float r,
 			Class cls) {
 		float halfCell = this.cellSize / 2;
@@ -609,6 +620,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized List getNeighbours(Actor actor, float distance,
 			boolean diag, Class cls) {
 		float x = actor.getX();
@@ -625,6 +637,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized List getObjects(Class cls) {
 		synchronized (cacheSet) {
 			cacheSet.clear();
@@ -657,10 +670,12 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized List getObjectsList() {
 		return this.getObjects((Class) null);
 	}
 
+	@Override
 	public synchronized Actor getOnlyObjectAt(Actor object, float dx, float dy,
 			Class cls) {
 		synchronized (this.pointQuery) {
@@ -676,6 +691,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized Actor getOnlyIntersectingObject(Actor actor, Class cls) {
 		RectBox rect = this.getActorBounds(actor);
 		synchronized (this.actorQuery) {
@@ -702,6 +718,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public synchronized void dispose() {
 		if (cacheSet != null) {
 			cacheSet.clear();

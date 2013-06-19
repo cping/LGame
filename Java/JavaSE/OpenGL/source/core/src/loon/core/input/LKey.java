@@ -3,7 +3,6 @@ package loon.core.input;
 import loon.core.input.LInputFactory.Key;
 import loon.utils.collection.ArrayByte;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -32,6 +31,8 @@ public class LKey {
 
 	char keyChar;
 
+	double timer;
+
 	public LKey(byte[] out) {
 		in(out);
 	}
@@ -44,6 +45,10 @@ public class LKey {
 		this.type = key.type;
 		this.keyCode = key.keyCode;
 		this.keyChar = key.keyChar;
+	}
+
+	public double getTimer() {
+		return timer;
 	}
 
 	public boolean equals(LKey e) {

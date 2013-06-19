@@ -12,12 +12,12 @@ import java.util.Random;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LProcess;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
-import loon.utils.GraphicsUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -51,6 +51,8 @@ public final class LSystem {
 		Android, JavaSE, XNA, IOS, HTML5
 	}
 
+	public static CallQueue global_queue;
+
 	public static ApplicationType type = ApplicationType.JavaSE;
 
 	public static float EMULATOR_BUTTIN_SCALE = 1f;
@@ -69,6 +71,14 @@ public final class LSystem {
 			return RESOLUTION_MEDIUM;
 		} else {
 			return RESOLUTION_HIGH;
+		}
+	}
+
+	public final static void post(Updateable update) {
+		if (global_queue != null) {
+			global_queue.invokeLater(update);
+		} else {
+			LSystem.load(update);
 		}
 	}
 
@@ -190,13 +200,13 @@ public final class LSystem {
 	}
 
 	// 框架名
-	final static public String FRAMEWORK = "LGame";
+	final static public String FRAMEWORK = "loon";
 
 	// 包内默认的图片路径
 	final static public String FRAMEWORK_IMG_NAME = "assets/loon_";
 
 	// 框架版本信息
-	final static public String VERSION = "0.3.3";
+	final static public String VERSION = "0.4.0";
 
 	// 秒
 	final static public long SECOND = 1000;
@@ -351,8 +361,8 @@ public final class LSystem {
 		if (LSystem.screenProcess != null
 				&& LSystem.screenProcess.getScene() != null) {
 			LSystem.screenProcess.getScene().exit();
-		}else{
-		  System.exit(-1);
+		} else {
+			System.exit(0);
 		}
 	}
 

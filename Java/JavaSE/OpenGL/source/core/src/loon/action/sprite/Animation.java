@@ -3,12 +3,13 @@ package loon.action.sprite;
 import java.util.ArrayList;
 
 import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.event.Updateable;
 import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
-import loon.utils.TextureUtils;
-
 
 /**
  * Copyright 2008 - 2011
@@ -80,6 +81,15 @@ public class Animation implements LRelease {
 		this.totalDuration = totalDuration;
 		this.isRunning = true;
 		start();
+	}
+
+	public static Animation getDefaultAnimation(String fileName) {
+		return Animation.getDefaultAnimation(LTextures.loadTexture(fileName));
+	}
+
+	public static Animation getDefaultAnimation(final LTexture texture) {
+		return Animation.getDefaultAnimation(new LTexture[] { texture }, 1,
+				65535);
 	}
 
 	/**
@@ -249,9 +259,15 @@ public class Animation implements LRelease {
 		if (size == 0) {
 			return null;
 		} else {
-			LTexture texture = getFrame(currentFrameIndex).image;
+			final LTexture texture = getFrame(currentFrameIndex).image;
 			if (!texture.isLoaded()) {
-				texture.loadTexture();
+				Updateable update = new Updateable() {
+					@Override
+					public void action() {
+						texture.loadTexture();
+					}
+				};
+				LSystem.load(update);
 			}
 			return texture;
 		}

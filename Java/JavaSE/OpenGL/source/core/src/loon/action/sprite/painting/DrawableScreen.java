@@ -43,13 +43,13 @@ public abstract class DrawableScreen extends Screen {
 	private ArrayList<Drawable> drawablesToDraw;
 
 	private GameComponentCollection gameCollection;
-	
+
 	private boolean isInit;
 
 	private SpriteBatch batch;
 
 	private final GameTime gameTime = new GameTime();
-	
+
 	public DrawableScreen() {
 		this.drawables = new ArrayList<Drawable>();
 		this.drawablesToUpdate = new ArrayList<Drawable>();
@@ -86,7 +86,7 @@ public abstract class DrawableScreen extends Screen {
 	public void draw(GLEx g) {
 		if (isOnLoadComplete()) {
 			batch.begin();
-	
+
 			gameCollection.draw(batch, gameTime);
 			if (drawablesToDraw.size() > 0) {
 				drawablesToDraw.clear();
@@ -145,7 +145,6 @@ public abstract class DrawableScreen extends Screen {
 			gameCollection.load();
 		}
 	}
-
 
 	public abstract void loadContent();
 
@@ -304,8 +303,8 @@ public abstract class DrawableScreen extends Screen {
 	public GameTime getGameTime() {
 		return gameTime;
 	}
-	
-	public GameComponentCollection Components(){
+
+	public GameComponentCollection Components() {
 		return gameCollection;
 	}
 

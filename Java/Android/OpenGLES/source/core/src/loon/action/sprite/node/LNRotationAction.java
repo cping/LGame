@@ -34,11 +34,13 @@ public class LNRotationAction extends LNAction {
 		return action;
 	}
 
+	@Override
 	public void step(float dt) {
 		super._target.setRotation(this._rotation);
 		super._isEnd = true;
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_rotation);
 	}

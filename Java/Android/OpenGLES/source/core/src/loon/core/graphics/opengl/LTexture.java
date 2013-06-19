@@ -314,6 +314,7 @@ public class LTexture implements LRelease {
 		this._hashCode = 1;
 		if (childs != null) {
 			Updateable u = new Updateable() {
+				@Override
 				public void action() {
 					loadTexture();
 					for (int i = 0; i < childs.size(); i++) {
@@ -353,11 +354,11 @@ public class LTexture implements LRelease {
 
 	public void setFormat(Format format) {
 
-		int minFilter = GL10.GL_NEAREST;
-		int maxFilter = GL10.GL_NEAREST;
-		int wrapS = GL10.GL_CLAMP_TO_EDGE;
-		int wrapT = GL10.GL_CLAMP_TO_EDGE;
-		int texEnv = GL10.GL_MODULATE;
+		int minFilter = GL.GL_NEAREST;
+		int maxFilter = GL.GL_NEAREST;
+		int wrapS = GL.GL_CLAMP_TO_EDGE;
+		int wrapT = GL.GL_CLAMP_TO_EDGE;
+		int texEnv = GL.GL_MODULATE;
 
 		if (imageData != null) {
 			if (format == Format.DEFAULT && imageData.hasAlpha) {
@@ -373,47 +374,47 @@ public class LTexture implements LRelease {
 		case NEAREST:
 			break;
 		case LINEAR:
-			minFilter = GL10.GL_LINEAR;
-			maxFilter = GL10.GL_LINEAR;
-			wrapS = GL10.GL_CLAMP_TO_EDGE;
-			wrapT = GL10.GL_CLAMP_TO_EDGE;
-			texEnv = GL10.GL_MODULATE;
+			minFilter = GL.GL_LINEAR;
+			maxFilter = GL.GL_LINEAR;
+			wrapS = GL.GL_CLAMP_TO_EDGE;
+			wrapT = GL.GL_CLAMP_TO_EDGE;
+			texEnv = GL.GL_MODULATE;
 			break;
 		case STATIC:
 		case SPEED:
-			minFilter = GL10.GL_NEAREST;
-			maxFilter = GL10.GL_NEAREST;
-			wrapS = GL10.GL_REPEAT;
-			wrapT = GL10.GL_REPEAT;
-			texEnv = GL10.GL_REPLACE;
+			minFilter = GL.GL_NEAREST;
+			maxFilter = GL.GL_NEAREST;
+			wrapS = GL.GL_REPEAT;
+			wrapT = GL.GL_REPEAT;
+			texEnv = GL.GL_REPLACE;
 			break;
 		case BILINEAR:
-			minFilter = GL10.GL_LINEAR;
-			maxFilter = GL10.GL_LINEAR;
-			wrapS = GL10.GL_CLAMP_TO_EDGE;
-			wrapT = GL10.GL_CLAMP_TO_EDGE;
-			texEnv = GL10.GL_REPLACE;
+			minFilter = GL.GL_LINEAR;
+			maxFilter = GL.GL_LINEAR;
+			wrapS = GL.GL_CLAMP_TO_EDGE;
+			wrapT = GL.GL_CLAMP_TO_EDGE;
+			texEnv = GL.GL_REPLACE;
 			break;
 		case REPEATING:
-			minFilter = GL10.GL_NEAREST;
-			maxFilter = GL10.GL_NEAREST;
-			wrapS = GL10.GL_REPEAT;
-			wrapT = GL10.GL_REPEAT;
-			texEnv = GL10.GL_REPLACE;
+			minFilter = GL.GL_NEAREST;
+			maxFilter = GL.GL_NEAREST;
+			wrapS = GL.GL_REPEAT;
+			wrapT = GL.GL_REPEAT;
+			texEnv = GL.GL_REPLACE;
 			break;
 		case REPEATING_BILINEAR:
-			minFilter = GL10.GL_LINEAR;
-			maxFilter = GL10.GL_LINEAR;
-			wrapS = GL10.GL_REPEAT;
-			wrapT = GL10.GL_REPEAT;
-			texEnv = GL10.GL_REPLACE;
+			minFilter = GL.GL_LINEAR;
+			maxFilter = GL.GL_LINEAR;
+			wrapS = GL.GL_REPEAT;
+			wrapT = GL.GL_REPEAT;
+			texEnv = GL.GL_REPLACE;
 			break;
 		case REPEATING_BILINEAR_PREMULTIPLYALPHA:
-			minFilter = GL10.GL_LINEAR;
-			maxFilter = GL10.GL_LINEAR;
-			wrapS = GL10.GL_REPEAT;
-			wrapT = GL10.GL_REPEAT;
-			texEnv = GL10.GL_MODULATE;
+			minFilter = GL.GL_LINEAR;
+			maxFilter = GL.GL_LINEAR;
+			wrapS = GL.GL_REPEAT;
+			wrapT = GL.GL_REPEAT;
+			texEnv = GL.GL_MODULATE;
 			break;
 		default:
 			break;
@@ -421,14 +422,14 @@ public class LTexture implements LRelease {
 
 		if (format != Format.FONT) {
 			if (ALL_LINEAR && !ALL_NEAREST) {
-				minFilter = GL10.GL_LINEAR;
-				maxFilter = GL10.GL_LINEAR;
+				minFilter = GL.GL_LINEAR;
+				maxFilter = GL.GL_LINEAR;
 			} else if (ALL_NEAREST && !ALL_LINEAR) {
-				minFilter = GL10.GL_NEAREST;
-				maxFilter = GL10.GL_NEAREST;
+				minFilter = GL.GL_NEAREST;
+				maxFilter = GL.GL_NEAREST;
 			} else if (ALL_NEAREST && ALL_LINEAR) {
-				minFilter = GL10.GL_NEAREST;
-				maxFilter = GL10.GL_LINEAR;
+				minFilter = GL.GL_NEAREST;
+				maxFilter = GL.GL_LINEAR;
 			}
 		}
 
@@ -630,6 +631,7 @@ public class LTexture implements LRelease {
 
 				Updateable u = new Updateable() {
 
+					@Override
 					public void action() {
 
 						loadTexture();
@@ -772,6 +774,7 @@ public class LTexture implements LRelease {
 
 				Updateable u = new Updateable() {
 
+					@Override
 					public void action() {
 
 						loadTexture();
@@ -853,11 +856,12 @@ public class LTexture implements LRelease {
 	}
 
 	public synchronized void bind(int unit) {
-		GLEx.gl10.glActiveTexture(GL10.GL_TEXTURE0 + unit);
+		GLEx.gl10.glActiveTexture(GL.GL_TEXTURE0 + unit);
 		GLEx.gl10.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-		GLEx.gl10.glBindTexture(GL10.GL_TEXTURE_2D, textureID);
+		GLEx.gl10.glBindTexture(GL.GL_TEXTURE_2D, textureID);
 	}
 
+	@Override
 	public int hashCode() {
 		if (_hashCode == 1) {
 			int[] buffer = imageData.source;
@@ -945,6 +949,7 @@ public class LTexture implements LRelease {
 		return true;
 	}
 
+	@Override
 	public void dispose() {
 		dispose(true);
 	}
@@ -1009,6 +1014,7 @@ public class LTexture implements LRelease {
 			return height;
 		}
 
+		@Override
 		public void dispose() {
 			if (data != null) {
 				data = null;

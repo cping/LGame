@@ -47,6 +47,7 @@ public class AStarFinderPool implements Runnable {
 		this.pathfinderThread.start();
 	}
 
+	@Override
 	public void run() {
 		while (running) {
 			try {

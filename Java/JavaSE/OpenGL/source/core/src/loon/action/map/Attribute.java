@@ -21,7 +21,7 @@ package loon.action.map;
  * @version 0.1
  */
 public class Attribute {
-	
+
 	private String name;
 
 	private Object attribute;
@@ -45,5 +45,5 @@ public class Attribute {
 	public void setAttribute(Object attribute) {
 		this.attribute = attribute;
 	}
-	
+
 }

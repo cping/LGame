@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import loon.core.LSystem;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -47,8 +46,8 @@ public class CSVReader extends BufferedReader {
 
 	public static BufferedReader reader(String fileName, String charsetName) {
 		try {
-			InputStreamReader reader = new InputStreamReader(Resources
-					.openResource(fileName), charsetName);
+			InputStreamReader reader = new InputStreamReader(
+					Resources.openResource(fileName), charsetName);
 			return new BufferedReader(reader);
 		} catch (java.io.UnsupportedEncodingException e) {
 			return null;

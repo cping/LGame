@@ -7,7 +7,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -81,13 +80,13 @@ public class LPaper extends LContainer {
 
 	public void downClick() {
 		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
+			Click.DownClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
 
 	public void upClick() {
 		if (Click != null) {
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+			Click.UpClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
 

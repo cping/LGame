@@ -56,7 +56,6 @@ public class Circle extends Ellipse {
 		this.y = y - radius;
 		this.radius = radius;
 		this.boundingCircleRadius = radius;
-		this.type = ShapeType.CIRCLE_SHAPE;
 	}
 
 	/**

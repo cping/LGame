@@ -99,7 +99,7 @@ namespace Loon.Java
             }
             catch (Exception ex)
             {
-                Loon.Utils.Debug.Log.Exception(ex);
+                Loon.Utils.Debugging.Log.Exception(ex);
             }
             finally
             {

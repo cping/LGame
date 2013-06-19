@@ -7,7 +7,6 @@ import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -29,7 +28,7 @@ import loon.core.graphics.opengl.LTexture;
  * @version 0.1
  */
 public interface ISprite extends Serializable, LRelease {
-	
+
 	public static final int TYPE_FADE_IN = 0;
 
 	public static final int TYPE_FADE_OUT = 1;
@@ -47,7 +46,7 @@ public interface ISprite extends Serializable, LRelease {
 	public abstract float getX();
 
 	public abstract float getY();
-	
+
 	public abstract void setVisible(boolean visible);
 
 	public abstract boolean isVisible();

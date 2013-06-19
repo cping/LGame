@@ -95,6 +95,7 @@ public abstract class LTextureData implements LRelease {
 		return image;
 	}
 
+	@Override
 	public void dispose() {
 		source = null;
 	}

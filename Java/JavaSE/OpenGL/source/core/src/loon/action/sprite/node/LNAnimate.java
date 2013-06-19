@@ -27,9 +27,9 @@ public class LNAnimate extends LNAction {
 	public String _animName;
 
 	public boolean _restoreOriginalFrame;
-	
-	LNAnimate(){
-		
+
+	LNAnimate() {
+
 	}
 
 	public static LNAnimate Action(LNAnimation anim) {

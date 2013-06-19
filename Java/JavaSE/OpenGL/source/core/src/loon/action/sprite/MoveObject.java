@@ -34,7 +34,6 @@ import loon.core.timer.LTimer;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-
 public class MoveObject extends SpriteBatchObject {
 
 	private boolean allDirection;
@@ -56,7 +55,6 @@ public class MoveObject extends SpriteBatchObject {
 	private AStarFindHeuristic heuristic;
 
 	private int movingLength;
-
 
 	public MoveObject(float x, float y, Animation animation, TileMap map) {
 		this(x, y, 0, 0, animation, map);
@@ -324,7 +322,7 @@ public class MoveObject extends SpriteBatchObject {
 		}
 		this.setLocation(x, y);
 	}
-	
+
 	private boolean isMoving;
 
 	public void update(long elapsedTime) {

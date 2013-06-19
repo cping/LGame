@@ -25,9 +25,9 @@ import loon.core.geom.Vector2f;
 public class LNBezierTo extends LNBezierBy {
 
 	protected LNBezierDef _originalconfig;
-	
-	LNBezierTo(){
-		
+
+	LNBezierTo() {
+
 	}
 
 	public static LNBezierTo Action(float t, LNBezierDef c) {

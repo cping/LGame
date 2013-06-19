@@ -31,9 +31,9 @@ public class LNAnimation implements LRelease {
 	private ArrayList<LNFrameStruct> _fsList;
 
 	protected String _name;
-	
+
 	private ArrayList<Float> _timeList;
-	
+
 	protected float _totalDuration;
 
 	public LNAnimation() {
@@ -94,7 +94,7 @@ public class LNAnimation implements LRelease {
 		}
 		return this._fsList.get(this._fsList.size() - 1);
 	}
-	
+
 	public float getFrameTime(int idx) {
 		return this._timeList.get(idx);
 	}

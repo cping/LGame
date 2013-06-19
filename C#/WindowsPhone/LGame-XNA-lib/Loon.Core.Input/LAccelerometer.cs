@@ -302,7 +302,7 @@ namespace Loon.Core.Input
                         }
                         catch (InvalidOperationException ex)
                         {
-                            Loon.Utils.Debug.Log.Exception(ex);
+                            Loon.Utils.Debugging.Log.Exception(ex);
                         }
                         return;
                     }
@@ -329,7 +329,7 @@ namespace Loon.Core.Input
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Loon.Utils.Debug.Log.Exception(ex);
+                    Loon.Utils.Debugging.Log.Exception(ex);
                 }
                 manager = null;
                 _state._isConnected = false;

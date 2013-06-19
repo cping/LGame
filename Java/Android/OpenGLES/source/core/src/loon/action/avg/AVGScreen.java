@@ -5,6 +5,7 @@ import java.util.List;
 
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
+import loon.action.avg.drama.Conversion;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.effect.FadeEffect;
@@ -32,7 +33,6 @@ import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
-
 
 /**
  * Copyright 2008 - 2011
@@ -112,6 +112,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		this.scriptName = initscript;
 	}
 
+	@Override
 	public void onCreate(int width, int height) {
 		super.onCreate(width, height);
 		LTexture.AUTO_LINEAR();
@@ -123,12 +124,14 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		this.running = true;
 	}
 
+	@Override
 	public final void onLoad() {
 
 	}
 
+	@Override
 	public final void onLoaded() {
-		this.avgThread = new Thread(this,"AVGThread");
+		this.avgThread = new Thread(this, "AVGThread");
 		this.avgThread.setPriority(Thread.NORM_PRIORITY);
 		this.avgThread.start();
 	}
@@ -198,6 +201,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		return null;
 	}
 
+	@Override
 	public void add(LComponent c) {
 		if (desktop == null) {
 			initDesktop();
@@ -206,6 +210,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 
 	}
 
+	@Override
 	public void add(ISprite s) {
 		if (sprites == null) {
 			initDesktop();
@@ -213,20 +218,24 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		sprites.add(s);
 	}
 
+	@Override
 	public void remove(ISprite sprite) {
 		sprites.remove(sprite);
 
 	}
 
+	@Override
 	public void remove(LComponent comp) {
 		desktop.remove(comp);
 	}
 
+	@Override
 	public void removeAll() {
 		sprites.removeAll();
 		desktop.getContentPane().clear();
 	}
 
+	@Override
 	final public synchronized void draw(GLEx g) {
 		if (!running || !isOnLoadComplete() || isClose()) {
 			return;
@@ -284,7 +293,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 					if (!nextScript(result)) {
 						break;
 					}
-					List<?> commands = Command.splitToList(result, " ");
+					List<?> commands = Conversion.splitToList(result, " ");
 					int size = commands.size();
 					String cmdFlag = (String) commands.get(0);
 
@@ -382,18 +391,18 @@ public abstract class AVGScreen extends Screen implements Runnable {
 						continue;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAY)) {
-						playAssetsMusic(mesFlag, false);
+						playSound(mesFlag, false);
 						continue;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYLOOP)) {
-						playAssetsMusic(mesFlag, true);
+						playSound(mesFlag, true);
 						continue;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYSTOP)) {
-						if (MathUtils.isNan(mesFlag)) {
-							stopAssetsMusic(Integer.parseInt(mesFlag));
+						if (mesFlag != null && mesFlag.length() > 0) {
+							stopSound(mesFlag);
 						} else {
-							stopAssetsMusic();
+							stopSound();
 						}
 						continue;
 					}
@@ -423,10 +432,10 @@ public abstract class AVGScreen extends Screen implements Runnable {
 							sprites.removeAll();
 							if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
 								sprites.add(FadeEffect.getInstance(
-										FadeEffect.TYPE_FADE_IN, color));
+										ISprite.TYPE_FADE_IN, color));
 							} else {
 								sprites.add(FadeEffect.getInstance(
-										FadeEffect.TYPE_FADE_OUT, color));
+										ISprite.TYPE_FADE_OUT, color));
 							}
 						}
 						continue;
@@ -730,6 +739,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 
 	public abstract void onLoading();
 
+	@Override
 	public void run() {
 		initAVG();
 		onLoading();
@@ -780,6 +790,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		this.delay = delay;
 	}
 
+	@Override
 	public Desktop getDesktop() {
 		return desktop;
 	}
@@ -856,6 +867,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		scrCG.sleepMax = sleepMax;
 	}
 
+	@Override
 	public Sprites getSprites() {
 		return sprites;
 	}
@@ -878,6 +890,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 
 	final private LTimer autoUpdate = new LTimer(3 * LSystem.MINUTE);
 
+	@Override
 	public void alter(LTimerContext timer) {
 		synchronized (AVGScreen.class) {
 			if (autoUpdate.action(timer)) {
@@ -886,14 +899,17 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		}
 	}
 
+	@Override
 	public void onKeyDown(LKey e) {
 
 	}
 
+	@Override
 	public void onKeyUp(LKey e) {
 
 	}
 
+	@Override
 	public void touchDown(LTouch touch) {
 		if (desktop != null) {
 			LComponent[] cs = desktop.getContentPane().getComponents();
@@ -918,10 +934,12 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		click();
 	}
 
+	@Override
 	public void touchMove(LTouch e) {
 
 	}
 
+	@Override
 	public void touchUp(LTouch touch) {
 
 	}
@@ -942,6 +960,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 		return autoTimer.getDelay();
 	}
 
+	@Override
 	public void dispose() {
 		running = false;
 		try {

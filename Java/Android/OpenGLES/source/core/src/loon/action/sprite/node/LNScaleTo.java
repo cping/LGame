@@ -61,6 +61,7 @@ public class LNScaleTo extends LNAction {
 		return to;
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -71,6 +72,7 @@ public class LNScaleTo extends LNAction {
 		_deltaY = _endY - _startY;
 	}
 
+	@Override
 	public void update(float d) {
 		dt += MathUtils.max(d, 0.01f);
 		super._target.setScale(_startX + (_deltaX * dt), _startY
@@ -82,6 +84,7 @@ public class LNScaleTo extends LNAction {
 
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_duration, _endX, _endY);
 	}

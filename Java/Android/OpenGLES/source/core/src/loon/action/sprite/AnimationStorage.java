@@ -38,6 +38,7 @@ public class AnimationStorage extends Animation {
 			this.store = s;
 		}
 
+		@Override
 		public void onComplete(Animation animation) {
 			if (store.animationIndexLocked != -1) {
 				store.currentFrameIndex = store.animationIndexLocked;
@@ -100,6 +101,7 @@ public class AnimationStorage extends Animation {
 		this(new ArrayList<Animation>(CollectionUtils.INITIAL_CAPACITY));
 	}
 
+	@Override
 	public Object clone() {
 		return new AnimationStorage(playAnimations);
 	}
@@ -113,6 +115,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
+	@Override
 	public synchronized void update(long timer) {
 		if (loopCount != -1 && loopPlay > loopCount) {
 			return;
@@ -147,6 +150,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
+	@Override
 	public LTexture getSpriteImage() {
 		if (currentFrameIndex > -1 && currentFrameIndex < size) {
 			Animation animation = playAnimations.get(currentFrameIndex);
@@ -156,6 +160,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
+	@Override
 	public LTexture getSpriteImage(int idx) {
 		if (currentFrameIndex > -1 && currentFrameIndex < size) {
 			Animation animation = playAnimations.get(currentFrameIndex);
@@ -188,6 +193,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
+	@Override
 	public void reset() {
 		super.reset();
 		loopOverToPlay = true;

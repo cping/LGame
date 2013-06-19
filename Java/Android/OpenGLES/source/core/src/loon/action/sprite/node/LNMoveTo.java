@@ -45,6 +45,7 @@ public class LNMoveTo extends LNAction {
 		return LNMoveTo.Action(duration, new Vector2f(dx, dy));
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -53,6 +54,7 @@ public class LNMoveTo extends LNAction {
 		this._diff = this._pos.sub(this._orgPos);
 	}
 
+	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
@@ -62,6 +64,7 @@ public class LNMoveTo extends LNAction {
 		}
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_duration, _pos);
 	}

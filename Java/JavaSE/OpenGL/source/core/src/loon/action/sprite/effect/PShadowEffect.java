@@ -12,7 +12,6 @@ import loon.core.timer.LTimer;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 

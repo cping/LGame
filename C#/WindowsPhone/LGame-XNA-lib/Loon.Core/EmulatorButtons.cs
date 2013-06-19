@@ -2,11 +2,232 @@ using Loon.Core.Graphics.Opengl;
 using Loon.Core.Geom;
 using Loon.Action.Sprite;
 using System.Runtime.CompilerServices;
+using Loon.Utils;
 
 namespace Loon.Core {
 	
 	public class EmulatorButtons : LRelease {
-	
+
+	 class up_monitor : EmulatorButton.Monitor {
+
+         private EmulatorListener _l;
+
+         public up_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+			public void Free() {
+                if (_l != null)
+                {
+                    _l.UnUpClick();
+				}
+			}
+
+			
+			public void Call() {
+                if (_l != null)
+                {
+                    _l.OnUpClick();
+				}
+			}
+		};
+
+     class down_monitor : EmulatorButton.Monitor
+     {
+
+         private EmulatorListener _l;
+
+         public down_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+         public void Free()
+         {
+             if (_l != null)
+             {
+                 _l.UnDownClick();
+             }
+         }
+
+
+         public void Call()
+         {
+             if (_l != null)
+             {
+                 _l.OnDownClick();
+             }
+         }
+     };
+
+     class left_monitor : EmulatorButton.Monitor
+     {
+
+         private EmulatorListener _l;
+
+         public left_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+         public void Free()
+         {
+             if (_l != null)
+             {
+                 _l.UnLeftClick();
+             }
+         }
+
+
+         public void Call()
+         {
+             if (_l != null)
+             {
+                 _l.OnLeftClick();
+             }
+         }
+     };
+     class right_monitor : EmulatorButton.Monitor
+     {
+
+         private EmulatorListener _l;
+
+         public right_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+         public void Free()
+         {
+             if (_l != null)
+             {
+                 _l.UnRightClick();
+             }
+         }
+
+
+         public void Call()
+         {
+             if (_l != null)
+             {
+                 _l.OnRightClick();
+             }
+         }
+     };
+
+     class triangle_monitor : EmulatorButton.Monitor
+     {
+
+         private EmulatorListener _l;
+
+         public triangle_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+         public void Free()
+         {
+             if (_l != null)
+             {
+                 _l.UnTriangleClick();
+             }
+         }
+
+
+         public void Call()
+         {
+             if (_l != null)
+             {
+                 _l.OnTriangleClick();
+             }
+         }
+     };
+
+     class square_monitor : EmulatorButton.Monitor
+     {
+
+         private EmulatorListener _l;
+
+         public square_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+         public void Free()
+         {
+             if (_l != null)
+             {
+                 _l.UnSquareClick();
+             }
+         }
+
+
+         public void Call()
+         {
+             if (_l != null)
+             {
+                 _l.OnSquareClick();
+             }
+         }
+     };
+
+     class circle_monitor : EmulatorButton.Monitor
+     {
+
+         private EmulatorListener _l;
+
+         public circle_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+         public void Free()
+         {
+             if (_l != null)
+             {
+                 _l.UnCircleClick();
+             }
+         }
+
+
+         public void Call()
+         {
+             if (_l != null)
+             {
+                 _l.OnCircleClick();
+             }
+         }
+     };
+
+     class cancel_monitor : EmulatorButton.Monitor
+     {
+
+         private EmulatorListener _l;
+
+         public cancel_monitor(EmulatorListener l)
+         {
+             this._l = l;
+         }
+
+         public void Free()
+         {
+             if (_l != null)
+             {
+                 _l.UnCancelClick();
+             }
+         }
+
+
+         public void Call()
+         {
+             if (_l != null)
+             {
+                 _l.OnCancelClick();
+             }
+         }
+     };
+
 		private LTextureRegion dpad, buttons;
 	
 		private EmulatorButton up, left, right, down;
@@ -30,71 +251,86 @@ namespace Loon.Core {
 		public EmulatorButtons(EmulatorListener el, int w, int h):this(el, w, h, LSystem.EMULATOR_BUTTIN_SCALE) {
 			
 		}
-	
-		public EmulatorButtons(EmulatorListener el, int w, int h, float scale) {
-			this.emulatorListener = el;
-			if (pack == null) {
-				pack = new LTexturePack();
+
+        public EmulatorButtons(EmulatorListener el, int w, int h, float scale)
+        {
+            this.emulatorListener = el;
+            if (pack == null)
+            {
+                pack = new LTexturePack();
                 pack.PutImage(XNAConfig.LoadTex(LSystem.FRAMEWORK_IMG_NAME + "e1.png"));
-				pack.PutImage(XNAConfig.LoadTex(LSystem.FRAMEWORK_IMG_NAME + "e2.png"));
-				pack.Pack(Loon.Core.Graphics.Opengl.LTexture.Format.LINEAR);
-			}
-			RectBox.Rect2i bounds = pack.GetEntry(0).getBounds();
-			this.dpad = new LTextureRegion(pack.GetTexture(), bounds.left,
-					bounds.top, bounds.right, bounds.bottom);
-			bounds = pack.GetEntry(1).getBounds();
-			this.buttons = new LTextureRegion(pack.GetTexture(), bounds.left,
-					bounds.top, bounds.right, bounds.bottom);
-			this.width = w;
-			this.height = h;
-	
-			if (scale <= 0f) {
-				this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true, 60, 60);
-				this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true, 60, 60);
-				this.right = new EmulatorButton(dpad, 40, 40, 80, 40, true, 60, 60);
-				this.down = new EmulatorButton(dpad, 40, 40, 40, 80, true, 60, 60);
-	
-				this.triangle = new EmulatorButton(buttons, 48, 48, 48, 0, true,
-						68, 68);
-				this.square = new EmulatorButton(buttons, 48, 48, 0, 48, true, 68,
-						68);
-				this.circle = new EmulatorButton(buttons, 48, 48, 96, 48, true, 68,
-						68);
-				this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true, 68,
-						68);
-			} else {
-	
-				this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true,
-						(int) (60 * scale), (int) (60 * scale));
-				this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true,
-						(int) (60 * scale), (int) (60 * scale));
-				this.right = new EmulatorButton(dpad, 40, 40, 80, 40, true,
-						(int) (60 * scale), (int) (60 * scale));
-				this.down = new EmulatorButton(dpad, 40, 40, 40, 80, true,
-						(int) (60 * scale), (int) (60 * scale));
-	
-				this.triangle = new EmulatorButton(buttons, 48, 48, 48, 0, true,
-						(int) (68 * scale), (int) (68 * scale));
-				this.square = new EmulatorButton(buttons, 48, 48, 0, 48, true,
-						(int) (68 * scale), (int) (68 * scale));
-				this.circle = new EmulatorButton(buttons, 48, 48, 96, 48, true,
-						(int) (68 * scale), (int) (68 * scale));
-				this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true,
-						(int) (68 * scale), (int) (68 * scale));
-			}
-	
-			if (dpad != null) {
-				dpad.Dispose();
-				dpad = null;
-			}
-			if (buttons != null) {
-				buttons.Dispose();
-				buttons = null;
-			}
-			this.visible = true;
-	
-			this.SetLocation(0, 0);
-		}
+                pack.PutImage(XNAConfig.LoadTex(LSystem.FRAMEWORK_IMG_NAME + "e2.png"));
+                pack.Pack(Loon.Core.Graphics.Opengl.LTexture.Format.LINEAR);
+            }
+            RectBox.Rect2i bounds = pack.GetEntry(0).getBounds();
+            this.dpad = new LTextureRegion(pack.GetTexture(), bounds.left,
+                    bounds.top, bounds.right, bounds.bottom);
+            bounds = pack.GetEntry(1).getBounds();
+            this.buttons = new LTextureRegion(pack.GetTexture(), bounds.left,
+                    bounds.top, bounds.right, bounds.bottom);
+            this.width = w;
+            this.height = h;
+
+            if (scale <= 0f)
+            {
+                this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true, 60, 60);
+                this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true, 60, 60);
+                this.right = new EmulatorButton(dpad, 40, 40, 80, 40, true, 60, 60);
+                this.down = new EmulatorButton(dpad, 40, 40, 40, 80, true, 60, 60);
+
+                this.triangle = new EmulatorButton(buttons, 48, 48, 48, 0, true,
+                        68, 68);
+                this.square = new EmulatorButton(buttons, 48, 48, 0, 48, true, 68,
+                        68);
+                this.circle = new EmulatorButton(buttons, 48, 48, 96, 48, true, 68,
+                        68);
+                this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true, 68,
+                        68);
+            }
+            else
+            {
+
+                this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true,
+                        (int)(60 * scale), (int)(60 * scale));
+                this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true,
+                        (int)(60 * scale), (int)(60 * scale));
+                this.right = new EmulatorButton(dpad, 40, 40, 80, 40, true,
+                        (int)(60 * scale), (int)(60 * scale));
+                this.down = new EmulatorButton(dpad, 40, 40, 40, 80, true,
+                        (int)(60 * scale), (int)(60 * scale));
+
+                this.triangle = new EmulatorButton(buttons, 48, 48, 48, 0, true,
+                        (int)(68 * scale), (int)(68 * scale));
+                this.square = new EmulatorButton(buttons, 48, 48, 0, 48, true,
+                        (int)(68 * scale), (int)(68 * scale));
+                this.circle = new EmulatorButton(buttons, 48, 48, 96, 48, true,
+                        (int)(68 * scale), (int)(68 * scale));
+                this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true,
+                        (int)(68 * scale), (int)(68 * scale));
+            }
+
+            this.up._monitor = new up_monitor(el);
+            this.left._monitor = new left_monitor(el);
+            this.right._monitor = new right_monitor(el);
+            this.down._monitor = new down_monitor(el);
+            this.triangle._monitor = new triangle_monitor(el);
+            this.square._monitor = new square_monitor(el);
+            this.circle._monitor = new circle_monitor(el);
+            this.cancel._monitor = new cancel_monitor(el);
+            if (dpad != null)
+            {
+                dpad.Dispose();
+                dpad = null;
+            }
+            if (buttons != null)
+            {
+                buttons.Dispose();
+                buttons = null;
+            }
+            this.visible = true;
+
+            this.SetLocation(0, 0);
+        }
 	
 
 		public void SetLocation(int x, int y) {
@@ -214,6 +450,8 @@ namespace Loon.Core {
 			return new EmulatorButton[] { up, left, right, down, triangle, square,
 					circle, cancel };
 		}
+        
+        private float offsetTouchX,offsetTouchY,offsetMoveX,offsetMoveY;
 
         public void OnEmulatorButtonEvent(Microsoft.Xna.Framework.Input.Touch.TouchLocation touch, float touchX, float touchY)
         {
@@ -224,16 +462,24 @@ namespace Loon.Core {
             switch (touch.State)
             {
                 case Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Pressed:
-                    Hit(touch.Id, touchX, touchY);
+                    offsetTouchX = touchX;
+                    offsetTouchY = touchY;
+                    Hit(touch.Id, touchX, touchY, false);
                     break;
                 case Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Released:
-                    Unhit(touch.Id);
+                    Unhit(touch.Id, touchX, touchY);
                     break;
                 case Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Moved:
-                    Hit(touch.Id, touchX, touchY);
+                    offsetMoveX = touchX;
+                    offsetMoveY = touchY;
+                    if (MathUtils.Abs(offsetTouchX - offsetMoveX) > 5
+                        || MathUtils.Abs(offsetTouchY - offsetMoveY) > 5)
+                    {
+                        Hit(touch.Id, touchX, touchY, true);
+                    }
                     break;
                 case Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Invalid:
-                    Unhit(touch.Id);
+                    Unhit(touch.Id, touchX, touchY);
                     break;
             }
         }
@@ -257,108 +503,49 @@ namespace Loon.Core {
 			batch.ResetColor();
             batch.End();
 		}
-	
-		private void CheckOn() {
-	
-			if (emulatorListener == null) {
-				return;
-			}
-			if (up.IsClick()) {
-				emulatorListener.OnUpClick();
-			}
-			if (left.IsClick()) {
-				emulatorListener.OnLeftClick();
-			}
-			if (right.IsClick()) {
-				emulatorListener.OnRightClick();
-			}
-			if (down.IsClick()) {
-				emulatorListener.OnDownClick();
-			}
-	
-			if (triangle.IsClick()) {
-				emulatorListener.OnTriangleClick();
-			}
-			if (square.IsClick()) {
-				emulatorListener.OnSquareClick();
-			}
-			if (circle.IsClick()) {
-				emulatorListener.OnCircleClick();
-			}
-			if (cancel.IsClick()) {
-				emulatorListener.OnCancelClick();
-			}
-		}
-	
-		public void Hit(int id, float x, float y) {
-	
-			if (!visible) {
-				return;
-			}
-	
-			up.Hit(id, x, y);
-			left.Hit(id, x, y);
-			right.Hit(id, x, y);
-			down.Hit(id, x, y);
-	
-			triangle.Hit(id, x, y);
-			square.Hit(id, x, y);
-			circle.Hit(id, x, y);
-			cancel.Hit(id, x, y);
-	
-			CheckOn();
-		}
-	
-		private void CheckUn(int id) {
-			if (emulatorListener == null) {
-				return;
-			}
-			if (up.IsClick() && up.GetPointerId() == id) {
-				emulatorListener.UnUpClick();
-			}
-			if (left.IsClick() && left.GetPointerId() == id) {
-				emulatorListener.UnLeftClick();
-			}
-			if (right.IsClick() && right.GetPointerId() == id) {
-				emulatorListener.UnRightClick();
-			}
-			if (down.IsClick() && down.GetPointerId() == id) {
-				emulatorListener.UnDownClick();
-			}
-			if (triangle.IsClick() && triangle.GetPointerId() == id) {
-				emulatorListener.UnTriangleClick();
-			}
-			if (square.IsClick() && square.GetPointerId() == id) {
-				emulatorListener.UnSquareClick();
-			}
-			if (circle.IsClick() && circle.GetPointerId() == id) {
-				emulatorListener.UnCircleClick();
-			}
-			if (cancel.IsClick() && cancel.GetPointerId() == id) {
-				emulatorListener.UnCancelClick();
-			}
-		}
-	
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void Unhit(int id) {
-	
-			if (!visible) {
-				return;
-			}
-	
-			CheckUn(id);
-	
-			up.Unhit(id);
-			left.Unhit(id);
-			right.Unhit(id);
-			down.Unhit(id);
-	
-			triangle.Unhit(id);
-			square.Unhit(id);
-			circle.Unhit(id);
-			cancel.Unhit(id);
-		}
-	
+
+
+
+        public void Hit(int id, float x, float y, bool flag)
+        {
+
+            if (!visible)
+            {
+                return;
+            }
+
+            up.Hit(id, x, y, flag);
+            left.Hit(id, x, y, flag);
+            right.Hit(id, x, y, flag);
+            down.Hit(id, x, y, flag);
+
+            triangle.Hit(id, x, y, flag);
+            square.Hit(id, x, y, flag);
+            circle.Hit(id, x, y, flag);
+            cancel.Hit(id, x, y, flag);
+
+        }
+
+        public void Unhit(int id, float x, float y)
+        {
+
+            if (!visible)
+            {
+                return;
+            }
+
+            up.Unhit(id, x, y);
+            left.Unhit(id, x, y);
+            right.Unhit(id, x, y);
+            down.Unhit(id, x, y);
+
+            triangle.Unhit(id, x, y);
+            square.Unhit(id, x, y);
+            circle.Unhit(id, x, y);
+            cancel.Unhit(id, x, y);
+        }
+
+
 		public bool IsVisible() {
 			return visible;
 		}

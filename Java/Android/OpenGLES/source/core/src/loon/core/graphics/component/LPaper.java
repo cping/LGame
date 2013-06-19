@@ -92,18 +92,21 @@ public class LPaper extends LContainer {
 		}
 	}
 
+	@Override
 	protected void processTouchClicked() {
 		if (!input.isMoving()) {
 			this.doClick();
 		}
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
 			this.doClick();
 		}
 	}
 
+	@Override
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (visible) {
 			if (animation.getSpriteImage() != null) {
@@ -123,6 +126,7 @@ public class LPaper extends LContainer {
 
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (visible) {
 			super.update(elapsedTime);
@@ -130,6 +134,7 @@ public class LPaper extends LContainer {
 		}
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		if (!locked) {
 			if (getContainer() != null) {
@@ -139,12 +144,14 @@ public class LPaper extends LContainer {
 		}
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
 			this.downClick();
 		}
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		if (!input.isMoving()) {
 			this.upClick();
@@ -159,15 +166,18 @@ public class LPaper extends LContainer {
 		this.locked = locked;
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 
 	}
 
+	@Override
 	public String getUIName() {
 		return "Paper";
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (animation != null) {

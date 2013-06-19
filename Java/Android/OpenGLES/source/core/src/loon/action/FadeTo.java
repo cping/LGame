@@ -53,6 +53,7 @@ public class FadeTo extends ActionEvent {
 		return opacity;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return isComplete;
 	}
@@ -70,10 +71,12 @@ public class FadeTo extends ActionEvent {
 		}
 	}
 
+	@Override
 	public void onLoad() {
 
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (type == ISprite.TYPE_FADE_IN) {
 			currentFrame--;

@@ -93,6 +93,7 @@ public class LColorPool implements LRelease {
 		return getColor(r, g, b, 1f);
 	}
 
+	@Override
 	public void dispose() {
 		if (ColorMap != null) {
 			ColorMap.clear();

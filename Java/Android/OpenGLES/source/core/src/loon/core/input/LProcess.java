@@ -16,11 +16,9 @@ import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.ScreenUtils;
 import loon.core.timer.LTimerContext;
-import loon.media.AssetsSoundManager;
-import loon.media.PlaySoundManager;
 import loon.utils.MathUtils;
-import loon.utils.ScreenUtils;
 
 import android.view.View;
 
@@ -45,10 +43,6 @@ import android.view.View;
  * @version 0.1
  */
 public class LProcess {
-
-	private AssetsSoundManager asm;
-
-	private PlaySoundManager psm;
 
 	ArrayList<Updateable> loads;
 
@@ -332,30 +326,6 @@ public class LProcess {
 		if (emulatorButtons != null) {
 			emulatorButtons.draw(gl);
 		}
-	}
-
-	/**
-	 * 返回AssetsSoundManager
-	 * 
-	 * @return
-	 */
-	public AssetsSoundManager getAssetsSound() {
-		if (this.asm == null) {
-			this.asm = AssetsSoundManager.getInstance();
-		}
-		return asm;
-	}
-
-	/**
-	 * 返回PlaySoundManager
-	 * 
-	 * @return
-	 */
-	public PlaySoundManager getPlaySound() {
-		if (this.psm == null) {
-			this.psm = new PlaySoundManager(LSystem.screenActivity);
-		}
-		return psm;
 	}
 
 	public boolean onCreateOptionsMenu(android.view.Menu menu) {
@@ -644,8 +614,8 @@ public class LProcess {
 					startTransition();
 					screen.setClose(false);
 					screen.onLoad();
-					screen.setOnLoadState(true);
 					screen.onLoaded();
+					screen.setOnLoadState(true);
 					endTransition();
 
 				}

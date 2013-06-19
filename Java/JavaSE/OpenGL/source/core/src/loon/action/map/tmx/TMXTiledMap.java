@@ -15,7 +15,6 @@ import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
 
-
 /**
  * 
  * Copyright 2008 - 2011

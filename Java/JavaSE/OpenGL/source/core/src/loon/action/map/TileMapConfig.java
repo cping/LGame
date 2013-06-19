@@ -11,8 +11,6 @@ import loon.core.LSystem;
 import loon.core.resource.Resources;
 import loon.utils.CollectionUtils;
 
-
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -44,9 +42,11 @@ public class TileMapConfig {
 	public void setBackMap(int[][] backMap) {
 		this.backMap = backMap;
 	}
-	
-	public static Field2D loadCharsField(String resName, int tileWidth, int tileHeight) {
-		Field2D field= new Field2D(loadCharsMap(resName), tileWidth, tileHeight);
+
+	public static Field2D loadCharsField(String resName, int tileWidth,
+			int tileHeight) {
+		Field2D field = new Field2D(loadCharsMap(resName), tileWidth,
+				tileHeight);
 		return field;
 	}
 
@@ -72,10 +72,12 @@ public class TileMapConfig {
 		return map;
 	}
 
-	public static List<int[]> loadList(final String fileName) throws IOException {
+	public static List<int[]> loadList(final String fileName)
+			throws IOException {
 		InputStream in = Resources.openResource(fileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		List<int[]> records = new ArrayList<int[]>(CollectionUtils.INITIAL_CAPACITY);
+		List<int[]> records = new ArrayList<int[]>(
+				CollectionUtils.INITIAL_CAPACITY);
 		String result = null;
 		try {
 			while ((result = reader.readLine()) != null) {

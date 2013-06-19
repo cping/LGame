@@ -150,6 +150,7 @@ public class AVGChara implements LRelease {
 		}
 	}
 
+	@Override
 	public void finalize() {
 		flush();
 	}
@@ -304,6 +305,7 @@ public class AVGChara implements LRelease {
 		return characterCG;
 	}
 
+	@Override
 	public void dispose() {
 		this.isVisible = false;
 		if (characterCG != null) {

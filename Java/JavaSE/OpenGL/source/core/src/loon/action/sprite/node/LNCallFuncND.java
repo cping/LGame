@@ -21,13 +21,13 @@
 package loon.action.sprite.node;
 
 public class LNCallFuncND extends LNAction {
-	
+
 	protected Callback _c;
 
 	protected Object _data;
-	
-	LNCallFuncND(){
-		
+
+	LNCallFuncND() {
+
 	}
 
 	public static LNCallFuncND Action(Callback c, Object data) {

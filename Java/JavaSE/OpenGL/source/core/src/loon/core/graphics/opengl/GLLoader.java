@@ -8,11 +8,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
 import loon.core.resource.Resources;
 import loon.jni.NativeSupport;
-import loon.utils.GraphicsUtils;
 
 /**
  * 

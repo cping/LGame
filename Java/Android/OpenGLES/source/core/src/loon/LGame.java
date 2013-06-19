@@ -3,6 +3,7 @@ package loon;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 
+import loon.LSetting.Listener;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
@@ -45,28 +46,6 @@ import android.widget.FrameLayout;
  */
 public abstract class LGame extends Activity {
 
-	public static class LSetting {
-
-		public int width = LSystem.MAX_SCREEN_WIDTH;
-
-		public int height = LSystem.MAX_SCREEN_HEIGHT;
-
-		public int fps = LSystem.DEFAULT_MAX_FPS;
-
-		public String title;
-
-		public boolean showFPS;
-
-		public boolean showMemory;
-
-		public boolean showLogo;
-
-		public boolean landscape;
-
-		public LMode mode = LMode.Fill;
-
-	}
-
 	private static Class<?> getType(Object o) {
 		if (o instanceof Integer) {
 			return Integer.TYPE;
@@ -89,12 +68,13 @@ public abstract class LGame extends Activity {
 
 	public void register(LSetting setting, Class<? extends Screen> clazz,
 			Object... args) {
-		maxScreen(setting.width, setting.height);
-		initialization(setting.landscape, setting.mode);
-		setShowFPS(setting.showFPS);
-		setShowMemory(setting.showMemory);
-		setShowLogo(setting.showLogo);
-		setFPS(setting.fps);
+		this._listener = setting.listener;
+		this.maxScreen(setting.width, setting.height);
+		this.initialization(setting.landscape, setting.mode);
+		this.setShowFPS(setting.showFPS);
+		this.setShowMemory(setting.showMemory);
+		this.setShowLogo(setting.showLogo);
+		this.setFPS(setting.fps);
 		if (clazz != null) {
 			if (args != null) {
 				try {
@@ -142,6 +122,9 @@ public abstract class LGame extends Activity {
 
 	private FrameLayout frameLayout;
 
+	private Listener _listener;
+
+	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		Runnable runnable = new Runnable() {
@@ -149,8 +132,7 @@ public abstract class LGame extends Activity {
 			public void run() {
 				Log.i("Android2DActivity", "LGame 2D Engine Start");
 				LSystem.screenActivity = LGame.this;
-				LGame.this.frameLayout = new FrameLayout(
-						LGame.this);
+				LGame.this.frameLayout = new FrameLayout(LGame.this);
 				LGame.this.isDestroy = true;
 				LGame.this.onMain();
 			}
@@ -218,9 +200,7 @@ public abstract class LGame extends Activity {
 				LSystem.MAX_SCREEN_WIDTH = tmp_height;
 			}
 		}
-		this.gameView = new LGameView(LGame.this, mode,
-				fullScreen, landscape);
-
+		this.gameView = new LGameView(LGame.this, mode, fullScreen, landscape);
 		if (mode == LMode.Defalut) {
 			// 添加游戏View，显示为指定大小，并居中
 			this.addView(gameView.getView(), gameView.getWidth(),
@@ -246,7 +226,17 @@ public abstract class LGame extends Activity {
 			this.addView(gameView.getView(), gameView.getMaxWidth(),
 					gameView.getMaxHeight(), Location.CENTER);
 		}
+		if (LSystem.isAndroidVersionHigher(11)) {
+			View rootView = getWindow().getDecorView();
+			try {
+				java.lang.reflect.Method m = View.class.getMethod(
+						"setSystemUiVisibility", int.class);
+				m.invoke(rootView, 0x0);
+				m.invoke(rootView, 0x1);
+			} catch (Exception ex) {
 
+			}
+		}
 	}
 
 	public abstract void onMain();
@@ -297,8 +287,7 @@ public abstract class LGame extends Activity {
 				listener, 0);
 		final LGameTools.ClickAndroid CANCEL = new LGameTools.ClickAndroid(
 				listener, 1);
-		final LGameTools.Web web = new LGameTools.Web(
-				LGame.this, url);
+		final LGameTools.Web web = new LGameTools.Web(LGame.this, url);
 		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
 				LGame.this);
 		builder.setCancelable(true);
@@ -507,6 +496,7 @@ public abstract class LGame extends Activity {
 		return -1;
 	}
 
+	@Override
 	public void onConfigurationChanged(android.content.res.Configuration config) {
 		super.onConfigurationChanged(config);
 		orientation = config.orientation;
@@ -721,9 +711,13 @@ public abstract class LGame extends Activity {
 		LSystem.isBackLocked = isBackLocked;
 	}
 
+	@Override
 	protected void onPause() {
 		if (gameView == null) {
 			return;
+		}
+		if (_listener != null) {
+			_listener.onPause();
 		}
 		gameView.pause();
 		onGamePaused();
@@ -736,6 +730,7 @@ public abstract class LGame extends Activity {
 		super.onPause();
 	}
 
+	@Override
 	protected void onResume() {
 		if (gameView == null) {
 			return;
@@ -749,6 +744,9 @@ public abstract class LGame extends Activity {
 				setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			}
 		}
+		if (_listener != null) {
+			_listener.onResume();
+		}
 		gameView.resume();
 		onGameResumed();
 		if (gameView != null && gameView.getView() != null) {
@@ -761,9 +759,13 @@ public abstract class LGame extends Activity {
 
 	public abstract void onGamePaused();
 
+	@Override
 	protected void onDestroy() {
 		try {
 			LSystem.isRunning = false;
+			if (_listener != null) {
+				_listener.onExit();
+			}
 			super.onDestroy();
 			// 当此项为True时，强制关闭整个程序
 			if (isDestroy) {
@@ -775,6 +777,7 @@ public abstract class LGame extends Activity {
 		}
 	}
 
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		if (LSystem.screenProcess != null) {
@@ -785,6 +788,7 @@ public abstract class LGame extends Activity {
 		return result;
 	}
 
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		boolean result = super.onOptionsItemSelected(item);
 		if (LSystem.screenProcess != null) {
@@ -795,6 +799,7 @@ public abstract class LGame extends Activity {
 		return result;
 	}
 
+	@Override
 	public void onOptionsMenuClosed(Menu menu) {
 		super.onOptionsMenuClosed(menu);
 		if (LSystem.screenProcess != null) {

@@ -48,6 +48,7 @@ public class DrawableGameComponent extends GameComponent implements IDrawable {
 	protected void unloadContent() {
 	}
 
+	@Override
 	public final int getDrawOrder() {
 		return _drawOrder;
 	}
@@ -61,6 +62,7 @@ public class DrawableGameComponent extends GameComponent implements IDrawable {
 		}
 	}
 
+	@Override
 	public final boolean getVisible() {
 		return _isVisible;
 	}
@@ -76,6 +78,7 @@ public class DrawableGameComponent extends GameComponent implements IDrawable {
 		}
 	}
 
+	@Override
 	public void draw(SpriteBatch batch, GameTime gameTime) {
 	}
 

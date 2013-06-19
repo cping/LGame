@@ -24,7 +24,6 @@ import java.io.Serializable;
 
 import loon.utils.MathUtils;
 
-
 public class Vector3f implements Serializable {
 
 	/**
@@ -37,7 +36,7 @@ public class Vector3f implements Serializable {
 	public float y;
 
 	public float z;
-	
+
 	public Vector3f() {
 	}
 
@@ -60,7 +59,7 @@ public class Vector3f implements Serializable {
 	public Vector3f cpy() {
 		return new Vector3f(this);
 	}
-	
+
 	public Vector3f add(float x, float y, float z) {
 		return this.set(this.x + x, this.y + y, this.z + z);
 	}
@@ -453,7 +452,6 @@ public class Vector3f implements Serializable {
 	public static float[] toArray(Vector3f vectorA) {
 		return new float[] { vectorA.x, vectorA.y, vectorA.z };
 	}
-	
 
 	public Vector3f set(Vector3f argVec) {
 		x = argVec.x;
@@ -461,51 +459,51 @@ public class Vector3f implements Serializable {
 		z = argVec.z;
 		return this;
 	}
-	
+
 	public Vector3f set(float argX, float argY, float argZ) {
 		x = argX;
 		y = argY;
 		z = argZ;
 		return this;
 	}
-	
+
 	public Vector3f addLocal(Vector3f argVec) {
 		x += argVec.x;
 		y += argVec.y;
 		z += argVec.z;
 		return this;
 	}
-	
+
 	public Vector3f add(Vector3f argVec) {
 		return new Vector3f(x + argVec.x, y + argVec.y, z + argVec.z);
 	}
-	
+
 	public Vector3f sub(Vector3f argVec) {
 		return new Vector3f(x - argVec.x, y - argVec.y, z - argVec.z);
 	}
-	
+
 	public Vector3f mul(float argScalar) {
 		return new Vector3f(x * argScalar, y * argScalar, z * argScalar);
 	}
-	
+
 	public Vector3f negate() {
 		return new Vector3f(-x, -y, -z);
 	}
-	
+
 	public void setZero() {
 		x = 0;
 		y = 0;
 		z = 0;
 	}
-	
+
 	public Vector3f clone() {
 		return new Vector3f(this);
 	}
-	
+
 	public String toString() {
 		return "(" + x + "," + y + "," + z + ")";
 	}
-	
+
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -514,7 +512,7 @@ public class Vector3f implements Serializable {
 		result = prime * result + Float.floatToIntBits(z);
 		return result;
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -531,15 +529,16 @@ public class Vector3f implements Serializable {
 			return false;
 		return true;
 	}
-	
+
 	public final static float dot(Vector3f a, Vector3f b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
-	
+
 	public final static Vector3f cross(Vector3f a, Vector3f b) {
-		return new Vector3f(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+		return new Vector3f(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x
+				* b.y - a.y * b.x);
 	}
-	
+
 	public final static void crossToOut(Vector3f a, Vector3f b, Vector3f out) {
 		final float tempy = a.z * b.x - a.x * b.z;
 		final float tempz = a.x * b.y - a.y * b.x;

@@ -98,14 +98,17 @@ public class CrossEffect extends LObject implements ISprite {
 		return complete;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (complete) {
 			return;
@@ -118,6 +121,7 @@ public class CrossEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -193,18 +197,22 @@ public class CrossEffect extends LObject implements ISprite {
 		this.count = 0;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return otexture;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
@@ -217,6 +225,7 @@ public class CrossEffect extends LObject implements ISprite {
 		this.maxcount = maxcount;
 	}
 
+	@Override
 	public void dispose() {
 		if (otexture != null) {
 			otexture.destroy();

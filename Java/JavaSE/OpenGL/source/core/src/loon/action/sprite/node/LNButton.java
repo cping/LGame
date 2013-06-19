@@ -103,8 +103,9 @@ public class LNButton extends LNUI {
 		LNSprite sprite = new LNSprite(fsName1);
 		this._buttonElement.put("Image", sprite);
 		super.addNode(sprite, 0);
-		super.setNodeSize(sprite.getWidth(),sprite.getHeight());
-		super.setAnchor(new Vector2f(super.getWidth() / 2f, super.getWidth() / 2f));
+		super.setNodeSize(sprite.getWidth(), sprite.getHeight());
+		super.setAnchor(new Vector2f(super.getWidth() / 2f,
+				super.getWidth() / 2f));
 		LNAction action = LNSequence.Action(new LNAction[] { LNAlphaAction
 				.Action(Opacity) });
 		action.assignTarget(sprite);
@@ -125,7 +126,8 @@ public class LNButton extends LNUI {
 
 	public void initButtonWithoutTexture(int width, int height) {
 		super.setNodeSize(width, height);
-		super.setAnchor(new Vector2f(super.getWidth() / 2f, super.getHeight() / 2f));
+		super.setAnchor(new Vector2f(super.getWidth() / 2f,
+				super.getHeight() / 2f));
 	}
 
 	public void initButtonWithTextureTwinkle(String fsName1, String fsName2) {
@@ -136,8 +138,9 @@ public class LNButton extends LNUI {
 		sprite.setFrame("Frame", 0);
 		this._buttonElement.put("Image", sprite);
 		super.addNode(sprite, 0);
-		super.setNodeSize(sprite.getWidth(),sprite.getHeight());
-		super.setAnchor(new Vector2f(super.getWidth() / 2f, super.getHeight() / 2f));
+		super.setNodeSize(sprite.getWidth(), sprite.getHeight());
+		super.setAnchor(new Vector2f(super.getWidth() / 2f,
+				super.getHeight() / 2f));
 		LNAction action = LNSequence.Action(LNFrameAction.Action("Frame", 1));
 		action.assignTarget(sprite);
 		LNAction action2 = LNSequence.Action(LNFrameAction.Action("Frame", 0));
@@ -155,8 +158,9 @@ public class LNButton extends LNUI {
 		LNSprite sprite = new LNSprite(fsName1);
 		this._buttonElement.put("Image", sprite);
 		super.addNode(sprite, 0);
-		super.setNodeSize(sprite.getWidth(),sprite.getHeight());
-		super.setAnchor(new Vector2f(super.getWidth() / 2f, super.getHeight() / 2f));
+		super.setNodeSize(sprite.getWidth(), sprite.getHeight());
+		super.setAnchor(new Vector2f(super.getWidth() / 2f,
+				super.getHeight() / 2f));
 		LNAction action = LNSequence.Action(LNAlphaAction.Action(0.8f));
 		action.assignTarget(sprite);
 		LNAction action2 = LNSequence.Action(LNAlphaAction.Action(1f));
@@ -183,8 +187,9 @@ public class LNButton extends LNUI {
 			super.addNode(sprite2, 0);
 			this._buttonElement.put("ImageOn", node);
 			this._buttonElement.put("ImageOff", sprite2);
-			super.setNodeSize(node.getWidth(),node.getHeight());
-			super.setAnchor(new Vector2f(super.getWidth() / 2f, super.getHeight() / 2f));
+			super.setNodeSize(node.getWidth(), node.getHeight());
+			super.setAnchor(new Vector2f(super.getWidth() / 2f, super
+					.getHeight() / 2f));
 			LNAction action = LNSequence.Action(LNToggleVisibility.Action());
 			action.assignTarget(node);
 			this._touchClickedAction.put("ImageOn", action);
@@ -207,8 +212,9 @@ public class LNButton extends LNUI {
 			sprite4.setVisible(false);
 			this._buttonElement.put("ImageOn", sprite3);
 			this._buttonElement.put("ImageOff", sprite4);
-			super.setNodeSize(sprite3.getWidth(),sprite3.getHeight());
-			super.setAnchor(new Vector2f(super.getWidth() / 2f, super.getHeight() / 2f));
+			super.setNodeSize(sprite3.getWidth(), sprite3.getHeight());
+			super.setAnchor(new Vector2f(super.getWidth() / 2f, super
+					.getHeight() / 2f));
 			LNAction action3 = LNSequence.Action(LNFrameAction.Action("Frame",
 					1));
 			action3.assignTarget(sprite3);
@@ -237,7 +243,7 @@ public class LNButton extends LNUI {
 	}
 
 	public LNCallFunc.Callback ActionCallBack;
-	
+
 	private boolean isPressed, isDraging;
 
 	public void processTouchPressed() {
@@ -251,7 +257,7 @@ public class LNButton extends LNUI {
 				}
 			}
 			isPressed = true;
-		
+
 		}
 	}
 

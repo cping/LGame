@@ -32,9 +32,9 @@ public enum PixelFormat {
 			GL10.GL_UNSIGNED_BYTE, 16);
 
 	private final int glFormat;
-	
+
 	private final int gltype;
-	
+
 	private final int bitpixel;
 
 	private PixelFormat(final int f, final int t, final int b) {

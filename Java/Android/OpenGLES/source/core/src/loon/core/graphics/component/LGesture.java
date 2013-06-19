@@ -70,6 +70,7 @@ public class LGesture extends LComponent {
 		this(0, 0, LSystem.screenRect.width, LSystem.screenRect.height, flag);
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (visible && goalPath != null) {
@@ -81,6 +82,7 @@ public class LGesture extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		final int x = Touch.x();
 		final int y = Touch.y();
@@ -105,6 +107,7 @@ public class LGesture extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		if (autoClear) {
 			clear();
@@ -112,6 +115,7 @@ public class LGesture extends LComponent {
 		upClick();
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		if (input.isMoving()) {
 			final int x = Touch.x();
@@ -255,6 +259,7 @@ public class LGesture extends LComponent {
 		this.autoClear = autoClear;
 	}
 
+	@Override
 	public String getUIName() {
 		return "Gesture";
 	}

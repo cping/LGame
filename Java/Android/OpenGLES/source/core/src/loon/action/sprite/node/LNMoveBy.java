@@ -42,6 +42,7 @@ public class LNMoveBy extends LNMoveTo {
 		return LNMoveBy.Action(duration, new Vector2f(dx, dy));
 	}
 
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -50,6 +51,7 @@ public class LNMoveBy extends LNMoveTo {
 		super._pos = super._orgPos.add(super._diff);
 	}
 
+	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
@@ -62,6 +64,7 @@ public class LNMoveBy extends LNMoveTo {
 		}
 	}
 
+	@Override
 	public LNMoveBy reverse() {
 		return Action(_duration, _diff.negate());
 	}

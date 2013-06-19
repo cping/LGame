@@ -5,7 +5,6 @@ import java.net.URI;
 
 import loon.core.LRelease;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,7 +25,7 @@ import loon.core.LRelease;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-public interface Resource extends LRelease{
+public interface Resource extends LRelease {
 
 	InputStream getInputStream();
 

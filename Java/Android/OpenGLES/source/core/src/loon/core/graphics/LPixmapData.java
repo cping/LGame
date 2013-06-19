@@ -3,7 +3,6 @@ package loon.core.graphics;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.CollectionUtils;
-import loon.utils.GraphicsUtils;
 
 
 /**

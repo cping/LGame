@@ -29,7 +29,6 @@ import loon.core.graphics.opengl.GLAttributes.Usage;
 import loon.core.graphics.opengl.GLAttributes.VertexAttribute;
 import loon.jni.NativeSupport;
 
-
 public class GLMesh {
 
 	public static class IndexArray implements LRelease {
@@ -247,31 +246,35 @@ public class GLMesh {
 		this.vertices.setVertices(vertices, offset, count);
 	}
 
-	public void getVertices (float[] vertices) {
+	public void getVertices(float[] vertices) {
 		getVertices(0, -1, vertices);
 	}
-	
-	public void getVertices (int srcOffset, float[] vertices) {
+
+	public void getVertices(int srcOffset, float[] vertices) {
 		getVertices(srcOffset, -1, vertices);
 	}
 
-	public void getVertices (int srcOffset, int count, float[] vertices) {
+	public void getVertices(int srcOffset, int count, float[] vertices) {
 		getVertices(srcOffset, count, vertices, 0);
 	}
-	
-	public void getVertices (int srcOffset, int count, float[] vertices, int destOffset) {
+
+	public void getVertices(int srcOffset, int count, float[] vertices,
+			int destOffset) {
 		final int max = getNumVertices() * getVertexSize() / 4;
 		if (count == -1) {
 			count = max - srcOffset;
-			if (count > vertices.length - destOffset){
+			if (count > vertices.length - destOffset) {
 				count = vertices.length - destOffset;
 			}
 		}
-		if (srcOffset < 0 || count <= 0 || (srcOffset + count) > max || destOffset < 0 || destOffset >= vertices.length){
+		if (srcOffset < 0 || count <= 0 || (srcOffset + count) > max
+				|| destOffset < 0 || destOffset >= vertices.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		if ((vertices.length - destOffset) < count){
-			throw new IllegalArgumentException("not enough room in vertices array, has " + vertices.length + " floats, needs " + count);
+		if ((vertices.length - destOffset) < count) {
+			throw new IllegalArgumentException(
+					"not enough room in vertices array, has " + vertices.length
+							+ " floats, needs " + count);
 		}
 		int pos = getVerticesBuffer().position();
 		getVerticesBuffer().position(srcOffset);

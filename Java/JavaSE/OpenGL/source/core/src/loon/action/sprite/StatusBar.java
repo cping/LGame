@@ -12,7 +12,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -233,8 +232,8 @@ public class StatusBar extends LObject implements ISprite {
 		}
 		if (current > goal) {
 			current--;
-			value = MathUtils.mid(valueMin,
-					((current * valueMax) / width), value);
+			value = MathUtils.mid(valueMin, ((current * valueMax) / width),
+					value);
 		} else {
 			current++;
 			value = MathUtils.mid(value, ((current * valueMax) / width),

@@ -2,8 +2,8 @@ package loon.core.geom;
 
 import java.util.ArrayList;
 
+import loon.physics.PPolygon;
 import loon.utils.CollectionUtils;
-
 
 /**
  * 
@@ -182,7 +182,11 @@ public class Polygon extends Shape {
 			addPoint(xpoints[i], ypoints[i]);
 		}
 	}
-	
+
+	public PPolygon getPPolygon(float scale) {
+		return new PPolygon(points,scale);
+	}
+
 	public void setAllowDuplicatePoints(boolean allowDups) {
 		this.allowDups = allowDups;
 	}
@@ -220,7 +224,7 @@ public class Polygon extends Shape {
 		pointsDirty = true;
 	}
 
-
+	@Override
 	public Shape transform(Matrix transform) {
 		checkPoints();
 
@@ -235,22 +239,26 @@ public class Polygon extends Shape {
 		return resultPolygon;
 	}
 
+	@Override
 	public void setX(float x) {
 		super.setX(x);
 
 		pointsDirty = false;
 	}
 
+	@Override
 	public void setY(float y) {
 		super.setY(y);
 
 		pointsDirty = false;
 	}
 
+	@Override
 	protected void createPoints() {
 
 	}
 
+	@Override
 	public boolean closed() {
 		return closed;
 	}

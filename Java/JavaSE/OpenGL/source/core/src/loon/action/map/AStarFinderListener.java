@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import loon.core.geom.Vector2f;
 
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -28,5 +27,5 @@ import loon.core.geom.Vector2f;
 public interface AStarFinderListener {
 
 	void pathFound(LinkedList<Vector2f> path);
-	
+
 }

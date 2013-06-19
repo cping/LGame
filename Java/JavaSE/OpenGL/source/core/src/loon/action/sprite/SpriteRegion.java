@@ -30,7 +30,6 @@ import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.MathUtils;
 
-
 public class SpriteRegion extends LTextureRegion {
 
 	public static class Animation {
@@ -143,7 +142,8 @@ public class SpriteRegion extends LTextureRegion {
 		if (sprite == null) {
 			throw new IllegalArgumentException("sprite cannot be null.");
 		}
-		System.arraycopy(sprite.vertices, 0, vertices, 0, SpriteBatch.SPRITE_SIZE);
+		System.arraycopy(sprite.vertices, 0, vertices, 0,
+				SpriteBatch.SPRITE_SIZE);
 		texture = sprite.texture;
 		xOff = sprite.xOff;
 		yOff = sprite.yOff;

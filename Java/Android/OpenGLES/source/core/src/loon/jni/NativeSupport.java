@@ -44,6 +44,7 @@ public final class NativeSupport {
 
 	private static void doLoadLibrary(final String lib_name) {
 		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+			@Override
 			public Object run() {
 				String library_path = System
 						.getProperty("org.loon.librarypath");

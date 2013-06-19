@@ -36,7 +36,6 @@ namespace Loon.Core.Geom {
 			this.radius1 = radius1_0;
 			this.radius2 = radius2_1;
 			this.segmentCount = segmentCount_2;
-			this.type = ShapeType.ELLIPSE_SHAPE;
 			CheckPoints();
 		}
 	

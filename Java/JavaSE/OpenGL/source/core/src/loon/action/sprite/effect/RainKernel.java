@@ -6,7 +6,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -32,15 +31,15 @@ public class RainKernel implements IKernel {
 	private boolean exist;
 
 	private LTexture rain;
-	
+
 	private int id;
 
 	private float offsetX, offsetY, x, y, width, height, rainWidth, rainHeight;
 
 	public RainKernel(int n, int w, int h) {
-		rain = LTextures.loadTexture(
-				(LSystem.FRAMEWORK_IMG_NAME + "rain_" + n + ".png").intern())
-				;
+		rain = LTextures
+				.loadTexture((LSystem.FRAMEWORK_IMG_NAME + "rain_" + n + ".png")
+						.intern());
 		rainWidth = rain.getWidth();
 		rainHeight = rain.getHeight();
 		width = w;

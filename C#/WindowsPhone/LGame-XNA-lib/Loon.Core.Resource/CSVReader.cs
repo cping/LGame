@@ -35,7 +35,7 @@ namespace Loon.Core.Resource
             }
             catch (IOException ex)
             {
-                Loon.Utils.Debug.Log.Exception(ex);
+                Loon.Utils.Debugging.Log.Exception(ex);
                 return null;
             }
         }

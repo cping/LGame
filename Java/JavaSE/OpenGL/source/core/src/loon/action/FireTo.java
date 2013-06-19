@@ -59,8 +59,9 @@ public class FireTo extends ActionEvent {
 			isComplete = true;
 			return;
 		}
-		if (original.isContainer()&&original.isBounded()) {
-			if (original.inContains(x, y, original.getWidth(), original.getHeight())) {
+		if (original.isContainer() && original.isBounded()) {
+			if (original.inContains(x, y, original.getWidth(),
+					original.getHeight())) {
 				synchronized (original) {
 					original.setLocation(x + offsetX, y + offsetY);
 				}

@@ -5,7 +5,6 @@ import loon.core.graphics.LContainer;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 
-
 /**
  * 
  * Copyright 2008 - 2009

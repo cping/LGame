@@ -6,7 +6,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;
 
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -141,7 +140,7 @@ public class SpriteSheet implements LRelease {
 			g.drawTexture(subImages[sx][sy], x, y);
 		}
 	}
-	
+
 	public void glBegin() {
 		target.glBegin();
 	}

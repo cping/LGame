@@ -51,6 +51,7 @@ public class PetalKernel implements IKernel {
 		speed = MathUtils.random();
 	}
 
+	@Override
 	public int id() {
 		return id;
 	}
@@ -61,6 +62,7 @@ public class PetalKernel implements IKernel {
 		y = -sakuraHeight;
 	}
 
+	@Override
 	public void update() {
 		if (!exist) {
 			if (MathUtils.random() < 0.002) {
@@ -90,24 +92,29 @@ public class PetalKernel implements IKernel {
 		}
 	}
 
+	@Override
 	public void draw(GLEx g) {
 		if (exist) {
 			sakura.draw(x, y);
 		}
 	}
 
+	@Override
 	public LTexture get() {
 		return sakura;
 	}
 
+	@Override
 	public float getHeight() {
 		return sakuraHeight;
 	}
 
+	@Override
 	public float getWidth() {
 		return sakuraWidth;
 	}
 
+	@Override
 	public void dispose() {
 		if (sakura != null) {
 			sakura.destroy();

@@ -4,12 +4,11 @@ import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.util.HashMap;
 
+import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.GraphicsUtils;
-
 
 /**
  * Copyright 2008 - 2010
@@ -207,9 +206,9 @@ final public class AVGDialog {
 			messageImage = GraphicsUtils.getResize(messageImage, width - offset
 					+ 1, height - offset + 1);
 
-			g.drawImage(messageImage, (lazyImage.getWidth() - messageImage
-					.getWidth(null)) / 2, (lazyImage.getHeight() - messageImage
-					.getHeight(null)) / 2);
+			g.drawImage(messageImage,
+					(lazyImage.getWidth() - messageImage.getWidth(null)) / 2,
+					(lazyImage.getHeight() - messageImage.getHeight(null)) / 2);
 
 			g.setAlpha(1.0f);
 
@@ -236,8 +235,8 @@ final public class AVGDialog {
 
 			g.drawImage(rightTop, right, 0);
 
-			tmp = GraphicsUtils.getResize(rightCenter, leftCenter
-					.getWidth(null), width - (size * 2));
+			tmp = GraphicsUtils.getResize(rightCenter,
+					leftCenter.getWidth(null), width - (size * 2));
 
 			g.drawImage(tmp, right, size);
 			tmp = null;

@@ -18,9 +18,20 @@ namespace Loon.Core {
 		private LTextureRegion bitmap;
 	
 		private float scaleWidth, scaleHeight;
-	
-		private int id;
-	
+
+        private int id = -1;
+
+        internal Monitor _monitor;
+
+        internal interface Monitor
+        {
+
+            void Call();
+
+            void Free();
+
+        }
+
 		public EmulatorButton(string fileName, int w, int h, int x, int y):this(new LTextureRegion(fileName), w, h, x, y, true) {
 			
 		}
@@ -61,26 +72,80 @@ namespace Loon.Core {
 		public RectBox GetBounds() {
 			return bounds;
 		}
-	
-		public void Hit(int nid, float x, float y) {
-			onClick = bounds.Contains(x, y);
-			id = nid;
-		}
-	
-		public void Hit(float x, float y) {
-			onClick = bounds.Contains(x, y);
-			id = 0;
-		}
-	
-		public void Unhit(int nid) {
-			if (id == nid) {
-				onClick = false;
-			}
-		}
-	
-		public void Unhit() {
-			onClick = false;
-		}
+
+        public void Hit(int nid, float x, float y)
+        {
+            Hit(nid, x, y, false);
+        }
+
+        public void Hit(int nid, float x, float y, bool flag)
+        {
+            if (flag)
+            {
+                if (nid == id)
+                {
+                    onClick = bounds.Contains(x, y);
+                    if (_monitor != null)
+                    {
+                        if (onClick)
+                        {
+                            _monitor.Call();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (!onClick)
+                {
+                    onClick = bounds.Contains(x, y);
+                    id = nid;
+                    if (onClick && _monitor != null)
+                    {
+                        _monitor.Call();
+                    }
+                }
+            }
+        }
+
+        public void Hit(float x, float y)
+        {
+            if (!onClick)
+            {
+                onClick = bounds.Contains(x, y);
+                id = 0;
+                if (onClick && _monitor != null)
+                {
+                    _monitor.Call();
+                }
+            }
+        }
+
+        public void Unhit(int nid, float x, float y)
+        {
+            if (onClick && nid == id)
+            {
+                onClick = false;
+                id = 0;
+                if (_monitor != null)
+                {
+                    _monitor.Free();
+                }
+            }
+        }
+
+        public void Unhit()
+        {
+            if (onClick)
+            {
+                id = 0;
+                onClick = false;
+                if (_monitor != null)
+                {
+                    _monitor.Free();
+                }
+            }
+        }
 	
 		public void SetX(int x) {
 			this.bounds.SetX(x);

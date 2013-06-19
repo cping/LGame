@@ -18,7 +18,6 @@ import loon.core.graphics.opengl.LTexturePack;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2012
  * 

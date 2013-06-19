@@ -1,6 +1,7 @@
 package loon.core.input;
 
 import loon.action.map.Config;
+import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeEffect;
@@ -10,8 +11,8 @@ import loon.core.LSystem;
 import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.utils.MathUtils;
-import loon.utils.TextureUtils;
 
 
 /**
@@ -87,18 +88,22 @@ public class LTransition {
 
 				final CrossEffect cross = new CrossEffect(c, texture);
 
+				@Override
 				public void draw(GLEx g) {
 					cross.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					cross.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return cross.isComplete();
 				}
 
+				@Override
 				public void dispose() {
 					cross.dispose();
 				}
@@ -136,18 +141,22 @@ public class LTransition {
 
 				final ArcEffect arc = new ArcEffect(c);
 
+				@Override
 				public void draw(GLEx g) {
 					arc.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					arc.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return arc.isComplete();
 				}
 
+				@Override
 				public void dispose() {
 					arc.dispose();
 				}
@@ -200,18 +209,22 @@ public class LTransition {
 
 				final SplitEffect split = new SplitEffect(texture, d);
 
+				@Override
 				public void draw(GLEx g) {
 					split.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					split.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return split.isComplete();
 				}
 
+				@Override
 				public void dispose() {
 					split.dispose();
 				}
@@ -230,7 +243,7 @@ public class LTransition {
 	 * @return
 	 */
 	public final static LTransition newFadeIn() {
-		return LTransition.newFade(FadeEffect.TYPE_FADE_IN);
+		return LTransition.newFade(ISprite.TYPE_FADE_IN);
 	}
 
 	/**
@@ -239,7 +252,7 @@ public class LTransition {
 	 * @return
 	 */
 	public final static LTransition newFadeOut() {
-		return LTransition.newFade(FadeEffect.TYPE_FADE_OUT);
+		return LTransition.newFade(ISprite.TYPE_FADE_OUT);
 	}
 
 	/**
@@ -266,18 +279,22 @@ public class LTransition {
 
 				final FadeEffect fade = FadeEffect.getInstance(type, c);
 
+				@Override
 				public void draw(GLEx g) {
 					fade.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					fade.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return fade.isStop();
 				}
 
+				@Override
 				public void dispose() {
 					fade.dispose();
 				}
@@ -324,18 +341,22 @@ public class LTransition {
 
 			transition.setTransitionListener(new TransitionListener() {
 
+				@Override
 				public void draw(GLEx g) {
 					effect.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					effect.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return effect.isComplete();
 				}
 
+				@Override
 				public void dispose() {
 					effect.dispose();
 				}
@@ -354,16 +375,20 @@ public class LTransition {
 
 		transition.setTransitionListener(new TransitionListener() {
 
+			@Override
 			public void draw(GLEx g) {
 			}
 
+			@Override
 			public void update(long elapsedTime) {
 			}
 
+			@Override
 			public boolean completed() {
 				return true;
 			}
 
+			@Override
 			public void dispose() {
 			}
 

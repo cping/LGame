@@ -37,10 +37,12 @@ public class TileRoom {
 			this.room = room;
 		}
 
+		@Override
 		public int hashCode() {
 			return this.room.hashCode() + this.x + this.y;
 		}
 
+		@Override
 		public boolean equals(Object other) {
 			RoomLink o = (RoomLink) other;
 			return (o.room == this.room) && (this.x == o.x) && (this.y == o.y);

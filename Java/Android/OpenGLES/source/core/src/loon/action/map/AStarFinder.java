@@ -197,10 +197,12 @@ public class AStarFinder implements Runnable, LRelease {
 		this.findHeuristic = find.findHeuristic;
 	}
 
+	@Override
 	public int hashCode(){
 		return super.hashCode();
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AStarFinder) {
 			return this.pathFoundListener == ((AStarFinder) o).pathFoundListener;
@@ -310,6 +312,7 @@ public class AStarFinder implements Runnable, LRelease {
 		return flying;
 	}
 
+	@Override
 	public void run() {
 		if (pathFoundListener != null) {
 			pathFoundListener.pathFound(findPath());
@@ -329,6 +332,7 @@ public class AStarFinder implements Runnable, LRelease {
 
 	}
 
+	@Override
 	public void dispose() {
 		try {
 			if (path == null) {

@@ -1,6 +1,5 @@
 package loon.core;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -21,12 +20,10 @@ package loon.core;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-public final class RefObject<T>
-{
+public final class RefObject<T> {
 	public T argvalue;
-	
-	public RefObject(T refarg)
-	{
+
+	public RefObject(T refarg) {
 		argvalue = refarg;
 	}
 }

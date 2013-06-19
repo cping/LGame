@@ -40,10 +40,12 @@ public class FireTo extends ActionEvent {
 		this.speed = speed;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return isComplete;
 	}
 
+	@Override
 	public void onLoad() {
 		this.x = (int) original.getX();
 		this.y = (int) original.getY();
@@ -52,6 +54,7 @@ public class FireTo extends ActionEvent {
 		this.vy = (int) (MathUtils.sin(direction) * this.speed);
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		this.x += this.vx;
 		this.y += this.vy;

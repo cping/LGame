@@ -29,7 +29,6 @@ import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LInputFactory.Touch;
 import loon.utils.MathUtils;
 
-
 public class LPad extends LComponent {
 
 	private boolean isLeft, isRight, isUp, isDown, isClick;
@@ -185,8 +184,8 @@ public class LPad extends LComponent {
 			} else {
 				angle = 0;
 			}
-			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight,
-					angle, null);
+			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight, angle,
+					null);
 		}
 		pack.draw(1, x + (backWidth - baseWidth) * 0.5f, y
 				+ (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight);

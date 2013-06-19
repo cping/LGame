@@ -64,6 +64,7 @@ public class OutEffect extends LObject implements ISprite {
 		this.visible = true;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!complete) {
 			switch (type) {
@@ -102,14 +103,17 @@ public class OutEffect extends LObject implements ISprite {
 		return complete;
 	}
 
+	@Override
 	public int getHeight() {
 		return width;
 	}
 
+	@Override
 	public int getWidth() {
 		return height;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -125,10 +129,12 @@ public class OutEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
@@ -141,14 +147,17 @@ public class OutEffect extends LObject implements ISprite {
 		this.multiples = multiples;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void dispose() {
 		if (texture != null) {
 			texture.destroy();

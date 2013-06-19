@@ -10,7 +10,6 @@ import java.util.Set;
 import loon.core.geom.RectBox;
 import loon.utils.MathUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -367,7 +366,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 					for (bspNode = node.getBSPNode(); bspNode != null
 							&& !bspNode.getArea().contains(newBounds); bspNode = bspNode
 							.getParent()) {
-						
+
 					}
 					if (bspNode == null) {
 						while (node != null) {

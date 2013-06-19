@@ -26,6 +26,7 @@ import loon.utils.MathUtils;
 
 public class DiagonalShort implements AStarFindHeuristic {
 
+	@Override
 	public float getScore(float sx, float sy, float tx, float ty) {
 		float diagonal = MathUtils.min(MathUtils.abs(sx - tx),
 				MathUtils.abs(sy - ty));
@@ -33,6 +34,7 @@ public class DiagonalShort implements AStarFindHeuristic {
 		return 2 * diagonal + (straight - 2 * diagonal);
 	}
 
+	@Override
 	public int getType() {
 		return DIAGONAL_SHORT;
 	}

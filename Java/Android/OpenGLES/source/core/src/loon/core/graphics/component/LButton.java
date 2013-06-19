@@ -6,9 +6,9 @@ import loon.core.graphics.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.input.LInputFactory.Key;
 import loon.core.input.LInputFactory.Touch;
-import loon.utils.TextureUtils;
 
 
 /**
@@ -118,6 +118,7 @@ public class LButton extends LComponent {
 
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		LButton button = (LButton) component;
@@ -152,6 +153,7 @@ public class LButton extends LComponent {
 		}
 	}
 
+	@Override
 	public void update(long timer) {
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
 			this.pressed = false;
@@ -174,6 +176,7 @@ public class LButton extends LComponent {
 		this.text = st;
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		if (this.input.getTouchPressed() == Touch.TOUCH_MOVE) {
 			this.over = this.pressed = this.intersects(this.input.getTouchX(),
@@ -203,12 +206,14 @@ public class LButton extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processTouchClicked() {
 		if (this.input.getTouchReleased() == Touch.TOUCH_UP) {
 			this.doClick();
 		}
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		if (this.input.getTouchPressed() == Touch.TOUCH_DOWN) {
 			this.downClick();
@@ -216,6 +221,7 @@ public class LButton extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		if (this.input.getTouchReleased() == Touch.TOUCH_UP) {
 			this.upClick();
@@ -223,14 +229,17 @@ public class LButton extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processTouchEntered() {
 		this.over = true;
 	}
 
+	@Override
 	protected void processTouchExited() {
 		this.over = this.pressed = false;
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected() && this.input.getKeyPressed() == Key.ENTER) {
 			this.pressedTime = 5;
@@ -239,6 +248,7 @@ public class LButton extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processKeyReleased() {
 		if (this.isSelected() && this.input.getKeyReleased() == Key.ENTER) {
 			this.pressed = false;
@@ -249,6 +259,7 @@ public class LButton extends LComponent {
 		return exception;
 	}
 
+	@Override
 	public String getUIName() {
 		return "Button";
 	}

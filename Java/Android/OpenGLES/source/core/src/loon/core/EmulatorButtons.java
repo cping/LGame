@@ -1,12 +1,14 @@
 package loon.core;
 
 import loon.action.sprite.SpriteBatch;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexturePack;
 import loon.core.graphics.opengl.LTextureRegion;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.MultitouchUtils;
+import loon.core.input.LTouch;
+import loon.core.input.MultitouchUtils;
 
 import android.view.MotionEvent;
 
@@ -107,7 +109,127 @@ public class EmulatorButtons implements LRelease {
 			this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true,
 					(int) (68 * scale), (int) (68 * scale));
 		}
+		this.up._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unUpClick();
+				}
+			}
 
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onUpClick();
+				}
+			}
+		};
+		this.left._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unLeftClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onLeftClick();
+				}
+			}
+		};
+		this.right._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unRightClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onRightClick();
+				}
+			}
+		};
+		this.down._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unDownClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onDownClick();
+				}
+			}
+		};
+
+		this.triangle._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unTriangleClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onTriangleClick();
+				}
+			}
+		};
+		this.square._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unSquareClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onSquareClick();
+				}
+			}
+		};
+		this.circle._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unCircleClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onCircleClick();
+				}
+			}
+		};
+		this.cancel._monitor = new EmulatorButton.Monitor() {
+			@Override
+			public void free() {
+				if (emulatorListener != null) {
+					emulatorListener.unCancelClick();
+				}
+			}
+
+			@Override
+			public void call() {
+				if (emulatorListener != null) {
+					emulatorListener.onCancelClick();
+				}
+			}
+		};
 		if (dpad != null) {
 			dpad.dispose();
 			dpad = null;
@@ -231,6 +353,28 @@ public class EmulatorButtons implements LRelease {
 		cancel.disable(false);
 	}
 
+	private LTouch[] parseMotionEvent(MotionEvent event) {
+		int eventPointerCount = MultitouchUtils.getPointerCount(event);
+		LTouch[] touches = new LTouch[eventPointerCount];
+		int id;
+		float touchX, touchY;
+		for (int t = 0; t < eventPointerCount; t++) {
+			int pointerIndex = t;
+			touchX = MultitouchUtils.getX(event, pointerIndex)
+					/ LSystem.scaleWidth;
+			touchY = MultitouchUtils.getY(event, pointerIndex)
+					/ LSystem.scaleHeight;
+			id = MultitouchUtils.getPointId(event, pointerIndex);
+			touches[t] = new LTouch(touchX, touchY, t, id);
+		}
+		return touches;
+	}
+
+	private LTouch getChangedTouches(int action, LTouch[] touches) {
+		int changed = (action & MultitouchUtils.ACTION_POINTER_INDEX_MASK) >> MultitouchUtils.ACTION_POINTER_INDEX_SHIFT;
+		return touches[changed];
+	}
+
 	/**
 	 * 当触发模拟按钮时，自动分配事件
 	 * 
@@ -241,69 +385,120 @@ public class EmulatorButtons implements LRelease {
 			return;
 		}
 		final int code = e.getAction();
-		float touchX = 0;
-		float touchY = 0;
+
 		if (MultitouchUtils.isMultitouch()) {
-			int action = code & MultitouchUtils.ACTION_MASK;
-			int pointerIndex = (code & MultitouchUtils.ACTION_POINTER_ID_MASK) >> MultitouchUtils.ACTION_POINTER_ID_SHIFT;
-			int pointerId = MultitouchUtils.getPointId(e, pointerIndex);
+
 			synchronized (EmulatorButtons.class) {
-				touchX = MultitouchUtils.getX(e, pointerId)
-						/ LSystem.scaleWidth;
-				touchY = MultitouchUtils.getY(e, pointerId)
-						/ LSystem.scaleHeight;
-				switch (action) {
-				case MotionEvent.ACTION_DOWN:
-				case MultitouchUtils.ACTION_POINTER_DOWN:
-					hit(pointerId, touchX, touchY);
-					break;
-				case MotionEvent.ACTION_UP:
-				case MultitouchUtils.ACTION_POINTER_UP:
-				case MotionEvent.ACTION_OUTSIDE:
-				case MotionEvent.ACTION_CANCEL:
-					unhit(pointerId);
-					break;
-				case MotionEvent.ACTION_MOVE:
-					hit(pointerId, touchX, touchY);
-					break;
-				case MultitouchUtils.ACTION_POINTER_2_DOWN:
-					hit(pointerId, touchX, touchY);
-					break;
-				case MultitouchUtils.ACTION_POINTER_2_UP:
-					unhit(pointerId);
-					break;
-				case MultitouchUtils.ACTION_POINTER_3_DOWN:
-					hit(pointerId, touchX, touchY);
-					break;
-				case MultitouchUtils.ACTION_POINTER_3_UP:
-					unhit(pointerId);
-					break;
-				default:
-					release();
-					break;
-				}
+
+				final int action = code & MultitouchUtils.ACTION_MASK;
+				final LTouch[] touches = parseMotionEvent(e);
+				Updateable update = new Updateable() {
+
+					@Override
+					public void action() {
+						LTouch touch = null;
+						int size = touches.length;
+						if (size == 0) {
+							return;
+						}
+
+						if (size < 2) {
+							switch (action) {
+							case MotionEvent.ACTION_DOWN:
+							case MultitouchUtils.ACTION_POINTER_DOWN:
+								hit(touches[0].getID(), touches[0].getX(),
+										touches[0].getY(), false);
+								break;
+							case MotionEvent.ACTION_UP:
+							case MultitouchUtils.ACTION_POINTER_UP:
+								unhit(touches[0].getID(), touches[0].getX(),
+										touches[0].getY());
+								break;
+							case MotionEvent.ACTION_MOVE:
+								hit(touches[0].getID(), touches[0].getX(),
+										touches[0].getY(), true);
+								break;
+							case MotionEvent.ACTION_CANCEL:
+								unhit(touches[0].getID(), touches[0].getX(),
+										touches[0].getY());
+								break;
+							default:
+								release();
+								break;
+							}
+
+						} else {
+							for (int i = 0; i < size; i++) {
+								switch (action) {
+								case MotionEvent.ACTION_DOWN:
+									hit(touches[i].getID(), touches[i].getX(),
+											touches[i].getY(), false);
+									break;
+								case MotionEvent.ACTION_UP:
+									unhit(touches[i].getID(),
+											touches[i].getX(),
+											touches[i].getY());
+									break;
+								case MultitouchUtils.ACTION_POINTER_DOWN:
+									touch = getChangedTouches(code, touches);
+									hit(touch.getID(), touch.getX(),
+											touch.getY(), false);
+									break;
+								case MultitouchUtils.ACTION_POINTER_UP:
+									touch = getChangedTouches(code, touches);
+									unhit(touch.getID(), touch.getX(),
+											touch.getY());
+									break;
+								case MotionEvent.ACTION_MOVE:
+									hit(touches[i].getID(), touches[i].getX(),
+											touches[i].getY(), true);
+									break;
+								case MotionEvent.ACTION_CANCEL:
+									unhit(touches[i].getID(),
+											touches[i].getX(),
+											touches[i].getY());
+									break;
+								default:
+									release();
+									break;
+								}
+							}
+						}
+					}
+				};
+
+				LSystem.post(update);
+
 			}
 		} else {
-			touchX = e.getX() / LSystem.scaleWidth;
-			touchY = e.getY() / LSystem.scaleHeight;
-			switch (code) {
-			case MotionEvent.ACTION_DOWN:
-			case MultitouchUtils.ACTION_POINTER_DOWN:
-				hit(0, touchX, touchY);
-				break;
-			case MotionEvent.ACTION_UP:
-			case MultitouchUtils.ACTION_POINTER_UP:
-			case MotionEvent.ACTION_OUTSIDE:
-			case MotionEvent.ACTION_CANCEL:
-				unhit(0);
-				break;
-			case MotionEvent.ACTION_MOVE:
-				hit(0, touchX, touchY);
-				break;
-			default:
-				release();
-				break;
-			}
+			final float touchX = e.getX() / LSystem.scaleWidth;
+			final float touchY = e.getY() / LSystem.scaleHeight;
+			Updateable update = new Updateable() {
+
+				@Override
+				public void action() {
+					switch (code) {
+					case MotionEvent.ACTION_DOWN:
+					case MultitouchUtils.ACTION_POINTER_DOWN:
+						hit(0, touchX, touchY, false);
+						break;
+					case MotionEvent.ACTION_UP:
+					case MultitouchUtils.ACTION_POINTER_UP:
+					case MotionEvent.ACTION_OUTSIDE:
+					case MotionEvent.ACTION_CANCEL:
+						unhit(0, touchX, touchY);
+						break;
+					case MotionEvent.ACTION_MOVE:
+						hit(0, touchX, touchY, false);
+						break;
+					default:
+						release();
+						break;
+					}
+				}
+			};
+
+			LSystem.post(update);
 		}
 	}
 
@@ -345,113 +540,39 @@ public class EmulatorButtons implements LRelease {
 		batch.end();
 	}
 
-	/**
-	 * 点击事件触发器
-	 * 
-	 */
-	private void checkOn() {
-
-		if (emulatorListener == null) {
-			return;
-		}
-		if (up.isClick()) {
-			emulatorListener.onUpClick();
-		}
-		if (left.isClick()) {
-			emulatorListener.onLeftClick();
-		}
-		if (right.isClick()) {
-			emulatorListener.onRightClick();
-		}
-		if (down.isClick()) {
-			emulatorListener.onDownClick();
-		}
-
-		if (triangle.isClick()) {
-			emulatorListener.onTriangleClick();
-		}
-		if (square.isClick()) {
-			emulatorListener.onSquareClick();
-		}
-		if (circle.isClick()) {
-			emulatorListener.onCircleClick();
-		}
-		if (cancel.isClick()) {
-			emulatorListener.onCancelClick();
-		}
-	}
-
-	public void hit(int id, float x, float y) {
+	public void hit(int id, float x, float y, boolean flag) {
 
 		if (!visible) {
 			return;
 		}
 
-		up.hit(id, x, y);
-		left.hit(id, x, y);
-		right.hit(id, x, y);
-		down.hit(id, x, y);
+		up.hit(id, x, y, flag);
+		left.hit(id, x, y, flag);
+		right.hit(id, x, y, flag);
+		down.hit(id, x, y, flag);
 
-		triangle.hit(id, x, y);
-		square.hit(id, x, y);
-		circle.hit(id, x, y);
-		cancel.hit(id, x, y);
+		triangle.hit(id, x, y, flag);
+		square.hit(id, x, y, flag);
+		circle.hit(id, x, y, flag);
+		cancel.hit(id, x, y, flag);
 
-		checkOn();
 	}
 
-	/**
-	 * 放开事件触发器
-	 * 
-	 * @param id
-	 */
-	private void checkUn(int id) {
-		if (emulatorListener == null) {
-			return;
-		}
-		if (up.isClick() && up.getPointerId() == id) {
-			emulatorListener.unUpClick();
-		}
-		if (left.isClick() && left.getPointerId() == id) {
-			emulatorListener.unLeftClick();
-		}
-		if (right.isClick() && right.getPointerId() == id) {
-			emulatorListener.unRightClick();
-		}
-		if (down.isClick() && down.getPointerId() == id) {
-			emulatorListener.unDownClick();
-		}
-		if (triangle.isClick() && triangle.getPointerId() == id) {
-			emulatorListener.unTriangleClick();
-		}
-		if (square.isClick() && square.getPointerId() == id) {
-			emulatorListener.unSquareClick();
-		}
-		if (circle.isClick() && circle.getPointerId() == id) {
-			emulatorListener.unCircleClick();
-		}
-		if (cancel.isClick() && cancel.getPointerId() == id) {
-			emulatorListener.unCancelClick();
-		}
-	}
-
-	public synchronized void unhit(int id) {
+	public void unhit(int id, float x, float y) {
 
 		if (!visible) {
 			return;
 		}
 
-		checkUn(id);
+		up.unhit(id, x, y);
+		left.unhit(id, x, y);
+		right.unhit(id, x, y);
+		down.unhit(id, x, y);
 
-		up.unhit(id);
-		left.unhit(id);
-		right.unhit(id);
-		down.unhit(id);
-
-		triangle.unhit(id);
-		square.unhit(id);
-		circle.unhit(id);
-		cancel.unhit(id);
+		triangle.unhit(id, x, y);
+		square.unhit(id, x, y);
+		circle.unhit(id, x, y);
+		cancel.unhit(id, x, y);
 	}
 
 	public boolean isVisible() {
@@ -529,6 +650,7 @@ public class EmulatorButtons implements LRelease {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		if (pack != null) {
 			pack.dispose();

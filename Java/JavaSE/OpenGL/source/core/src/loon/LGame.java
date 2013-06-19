@@ -20,8 +20,15 @@
  */
 package loon;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import loon.LSetting.Listener;
 import loon.action.ActionControl;
+import loon.core.Assets;
 import loon.core.LSystem;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
@@ -32,12 +39,12 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.ScreenUtils;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LProcess;
 import loon.core.timer.LTimerContext;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
-import loon.utils.ScreenUtils;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -51,7 +58,8 @@ public class LGame extends JavaApp {
 	public static LGame register(LSetting setting,
 			Class<? extends Screen> clazz, Object... args) {
 		LGame game = new LGame(setting.title, setting.width, setting.height);
-		game._AWT_Canvas = setting.canvas;
+		game._listener = setting.listener;
+		game._AWT_Canvas = setting.javaCanvas;
 		game._x = setting.appX;
 		game._y = setting.appY;
 		game._resizable = setting.resizable;
@@ -88,6 +96,8 @@ public class LGame extends JavaApp {
 		return game;
 	}
 
+	private final ExecutorService _exec = Executors.newFixedThreadPool(4);
+
 	private LSTRFont fpsFont;
 
 	private long maxFrames = LSystem.DEFAULT_MAX_FPS, frameRate;
@@ -119,6 +129,8 @@ public class LGame extends JavaApp {
 	private static int updateWidth = 0, updateHeight = 0;
 
 	private static boolean updateScreen = false;
+
+	private Listener _listener;
 
 	public static void updateSize(int w, int h) {
 		LGame.updateWidth = w;
@@ -301,6 +313,7 @@ public class LGame extends JavaApp {
 			if (LSystem.isLogo) {
 				showLogo();
 			}
+			boolean wasActive = Display.isActive();
 			final LTimerContext timerContext = new LTimerContext();
 			final SystemTimer timer = LSystem.getSystemTimer();
 			final LProcess process = LSystem.screenProcess;
@@ -311,11 +324,40 @@ public class LGame extends JavaApp {
 						LSystem.screenRect.height);
 				for (; isRunning && !Display.isCloseRequested()
 						&& mainLoop == currentThread;) {
-
 					Display.processMessages();
+					if (wasActive != Display.isActive()) {
+						if (wasActive) {
+							LSystem.isPaused = true;
+							Assets.onPause();
+							onPause();
+							if (process != null) {
+								process.onPause();
+							}
+							if (_listener != null) {
+								_listener.onPause();
+							}
+							pause(500);
+							LSystem.gc(1000, 1);
+							lastTimeMicros = timer.getTimeMicros();
+							elapsedTime = 0;
+							remainderMicros = 0;
+							Display.update();
+						} else {
+							LSystem.isPaused = false;
+							Assets.onResume();
+							onResume();
+							if (process != null) {
+								process.onResume();
+							}
+							if (_listener != null) {
+								_listener.onResume();
+							}
+						}
+						wasActive = Display.isActive();
+						continue;
+					}
 
 					boolean lockedRender = false;
-
 					if (_isAWTCanvas) {
 						int width = _AWT_Canvas.getWidth();
 						int height = _AWT_Canvas.getHeight();
@@ -355,18 +397,8 @@ public class LGame extends JavaApp {
 						}
 					}
 
-					if (!Display.isActive()) {
-						LSystem.isPaused = true;
-						pause(500);
-						LSystem.gc(1000, 1);
-						lastTimeMicros = timer.getTimeMicros();
-						elapsedTime = 0;
-						remainderMicros = 0;
-						Display.update();
-						continue;
-					} else {
-						LSystem.isPaused = false;
-					}
+					_queue.execute();
+
 					synchronized (gl) {
 
 						if (!process.next()) {
@@ -454,7 +486,7 @@ public class LGame extends JavaApp {
 								break;
 							}
 							gl.resetFont();
-							
+
 							process.draw(gl);
 
 							process.drawable(elapsedTime);
@@ -501,9 +533,9 @@ public class LGame extends JavaApp {
 					}
 				}
 			}
-		
+
 			process.end();
-			destoryView();
+			exit();
 		}
 
 		private final void pause(long sleep) {
@@ -549,7 +581,8 @@ public class LGame extends JavaApp {
 		}
 	}
 
-	public void destoryView() {
+	public void exit() {
+		isRunning = false;
 		synchronized (this) {
 			if (LSystem.screenProcess != null) {
 				LSystem.screenProcess.onDestroy();
@@ -558,6 +591,7 @@ public class LGame extends JavaApp {
 				gl.dispose();
 			}
 			ActionControl.getInstance().stopAll();
+			Assets.onDestroy();
 			LSystem.destroy();
 			LSystem.gc();
 			if (displayMode != null) {
@@ -567,16 +601,16 @@ public class LGame extends JavaApp {
 			}
 			notifyAll();
 		}
-		System.exit(-1);
-	}
-
-	public void exit() {
-		isRunning = false;
-		try {
-			mainLoop.join();
-		} catch (Exception ex) {
+		onExit();
+		if (_listener != null) {
+			_listener.onExit();
 		}
-		destoryView();
+		try {
+			_exec.shutdown();
+			_exec.awaitTermination(1, TimeUnit.SECONDS);
+		} catch (InterruptedException ie) {
+		}
+		System.exit(0);
 	}
 
 	public void showScreen() {
@@ -778,6 +812,17 @@ public class LGame extends JavaApp {
 		LSystem.isLogo = showLogo;
 	}
 
+	@Override
+	public void invokeAsync(final Updateable act) {
+		Runnable run = new Runnable() {
+			@Override
+			public void run() {
+				act.action();
+			}
+		};
+		_exec.execute(run);
+	}
+
 	private final String pFontString = " MEORYFPSB0123456789:.of";
 
 	public void setShowFPS(boolean showFps) {
@@ -836,6 +881,21 @@ public class LGame extends JavaApp {
 
 	public float getScaley() {
 		return LSystem.scaleHeight;
+	}
+
+	@Override
+	public void onPause() {
+
+	}
+
+	@Override
+	public void onResume() {
+
+	}
+
+	@Override
+	public void onExit() {
+
 	}
 
 }

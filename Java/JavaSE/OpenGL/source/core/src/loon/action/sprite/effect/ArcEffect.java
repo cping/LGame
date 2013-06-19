@@ -10,7 +10,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -126,7 +125,7 @@ public class ArcEffect extends LObject implements ISprite {
 			g.resetColor();
 		} else {
 			g.setColor(color);
-			float length =  MathUtils.sqrt(MathUtils.pow(width / 2, 2.0f)
+			float length = MathUtils.sqrt(MathUtils.pow(width / 2, 2.0f)
 					+ MathUtils.pow(height / 2, 2.0f));
 			float x = getX() + (width / 2 - length);
 			float y = getY() + (height / 2 - length);

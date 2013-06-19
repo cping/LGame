@@ -59,13 +59,11 @@ public class Line extends Shape {
 
 	public Line(float[] start, float[] end) {
 		super();
-		this.type = ShapeType.LINE_SHAPE;
 		set(start, end);
 	}
 
 	public Line(Vector2f start, Vector2f end) {
 		super();
-		this.type = ShapeType.LINE_SHAPE;
 		set(start, end);
 	}
 
@@ -81,6 +79,7 @@ public class Line extends Shape {
 		return end;
 	}
 
+	@Override
 	public float length() {
 		return vec.len();
 	}
@@ -124,10 +123,12 @@ public class Line extends Shape {
 		return end.getY() - start.getY();
 	}
 
+	@Override
 	public float getX() {
 		return getX1();
 	}
 
+	@Override
 	public float getY() {
 		return getY1();
 	}
@@ -233,6 +234,7 @@ public class Line extends Shape {
 		return true;
 	}
 
+	@Override
 	protected void createPoints() {
 		points = new float[4];
 		points[0] = getX1();
@@ -316,6 +318,7 @@ public class Line extends Shape {
 		return lenSq;
 	}
 
+	@Override
 	public Shape transform(Matrix transform) {
 		float[] temp = new float[4];
 		createPoints();
@@ -323,6 +326,7 @@ public class Line extends Shape {
 		return new Line(temp[0], temp[1], temp[2], temp[3]);
 	}
 
+	@Override
 	public boolean closed() {
 		return false;
 	}

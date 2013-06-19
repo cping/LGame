@@ -23,9 +23,9 @@ package loon.action.sprite.node;
 public class LNBlink extends LNAction {
 
 	protected int _times;
-	
-	LNBlink(){
-		
+
+	LNBlink() {
+
 	}
 
 	public static LNBlink Action(float duration, int times) {

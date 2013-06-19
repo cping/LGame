@@ -24,7 +24,6 @@ import loon.core.graphics.opengl.LTextures;
 import loon.core.timer.LTimer;
 import loon.utils.MathUtils;
 
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -679,9 +678,10 @@ public class Actor extends LObject implements LRelease, ActionBind {
 					this.ys[minY] = height;
 				}
 			} else {
-				this.boundingRect = MathUtils.getBounds(location.x,
-						location.y, this.image.getWidth(),
-						this.image.getHeight(), rotation);
+				this.boundingRect = MathUtils
+						.getBounds(location.x, location.y,
+								this.image.getWidth(), this.image.getHeight(),
+								rotation);
 			}
 		}
 	}

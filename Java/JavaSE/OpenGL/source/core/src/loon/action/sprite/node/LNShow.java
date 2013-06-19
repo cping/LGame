@@ -22,10 +22,10 @@ package loon.action.sprite.node;
 
 public class LNShow extends LNAction {
 
-	LNShow(){
-		
+	LNShow() {
+
 	}
-	
+
 	public static LNShow Action() {
 		return new LNShow();
 	}

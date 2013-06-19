@@ -243,6 +243,7 @@ public class StatusBar extends LObject implements ISprite {
 		return true;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (visible) {
 			if (showValue) {
@@ -257,6 +258,7 @@ public class StatusBar extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
@@ -269,22 +271,27 @@ public class StatusBar extends LObject implements ISprite {
 		this.showValue = showHP;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (visible && hit) {
 			state();
@@ -329,10 +336,12 @@ public class StatusBar extends LObject implements ISprite {
 		this.hit = hit;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
 
+	@Override
 	public void dispose() {
 		synchronized (colors) {
 			quoteCount--;

@@ -468,23 +468,23 @@ namespace Loon.Action.Avg
                         }
                         if (cmdFlag.Equals(CommandType.L_PLAY))
                         {
-                            AssetsSoundManager.GetInstance().PlaySound(mesFlag,false);
+                            PlaySound(mesFlag,false);
                             continue;
                         }
                         if (cmdFlag.Equals(CommandType.L_PLAYLOOP))
                         {
-                            AssetsSoundManager.GetInstance().PlaySound(mesFlag, true);
+                            PlaySound(mesFlag, true);
                             continue;
                         }
                         if (cmdFlag.Equals(CommandType.L_PLAYSTOP))
                         {
-                            if (MathUtils.IsNan(mesFlag))
+                            if (mesFlag != null && mesFlag.Length>0)
                             {
-                                AssetsSoundManager.GetInstance().StopSound(int.Parse(mesFlag));
+                                StopSound(mesFlag);
                             }
                             else
                             {
-                                AssetsSoundManager.GetInstance().StopSoundAll();
+                                StopSound();
                             }
                             continue;
                         }

@@ -45,6 +45,7 @@ public class LNFrameAction extends LNAction {
 		return action;
 	}
 
+	@Override
 	public void step(float dt) {
 		if (this._fs == null) {
 			((LNSprite) super._target).setFrame(this._animName, this._index);
@@ -54,6 +55,7 @@ public class LNFrameAction extends LNAction {
 		super._isEnd = true;
 	}
 
+	@Override
 	public LNAction copy() {
 		return Action(_fs);
 	}

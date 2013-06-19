@@ -23,13 +23,13 @@ package loon.action.sprite.node;
 import loon.core.geom.Vector2f;
 
 public class LNJumpTo extends LNJumpBy {
-	
-	LNJumpTo(){
-		
+
+	LNJumpTo() {
+
 	}
 
-	public static LNJumpTo Action(float duration, Vector2f delta,
-			float height, int jumps) {
+	public static LNJumpTo Action(float duration, Vector2f delta, float height,
+			int jumps) {
 		LNJumpTo to = new LNJumpTo();
 		to._duration = duration;
 		to._delta = delta;

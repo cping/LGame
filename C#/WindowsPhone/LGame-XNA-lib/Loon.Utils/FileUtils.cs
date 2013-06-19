@@ -714,7 +714,7 @@ namespace Loon.Utils
             }
             catch (FileNotFoundException ex)
             {
-                Loon.Utils.Debug.Log.Exception(ex);
+                Loon.Utils.Debugging.Log.Exception(ex);
                 return null;
             }
         }

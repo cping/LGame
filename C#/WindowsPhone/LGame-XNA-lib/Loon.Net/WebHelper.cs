@@ -153,12 +153,12 @@ namespace Loon.Net
             }
             catch (WebException e)
             {
-                Loon.Utils.Debug.Log.Exception(e);
+                Loon.Utils.Debugging.Log.Exception(e);
                 this.exception = e;
             }
             catch (System.Security.SecurityException e)
             {
-                Loon.Utils.Debug.Log.Exception(e);
+                Loon.Utils.Debugging.Log.Exception(e);
                 this.exception = e;
             }
             this.stream = response;

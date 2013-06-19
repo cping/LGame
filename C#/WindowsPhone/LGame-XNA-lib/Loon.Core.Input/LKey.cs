@@ -12,6 +12,8 @@ namespace Loon.Core.Input
 
         internal char keyChar;
 
+        internal double timer;
+
         public LKey(byte[] o)
         {
             In(o);
@@ -27,6 +29,11 @@ namespace Loon.Core.Input
             this.type = key.type;
             this.keyCode = key.keyCode;
             this.keyChar = key.keyChar;
+        }
+
+        public double GetTimer()
+        {
+            return timer;
         }
 
         public bool Equals(LKey e)

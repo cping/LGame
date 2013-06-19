@@ -21,13 +21,13 @@
 package loon.action.sprite.node;
 
 public class LNScaleBy extends LNAction {
-	
-	LNScaleBy(){
-		
+
+	LNScaleBy() {
+
 	}
-	
+
 	protected float _scaleX;
-	
+
 	protected float _scaleY;
 
 	public static LNScaleBy Action(float scale) {

@@ -43,6 +43,7 @@ public class LNProgressBar extends LNSprite {
 
 	private float[] scale;
 
+	@Override
 	public void draw(SpriteBatch batch) {
 		if (super._visible && (super._texture != null)) {
 			pos = super.convertToWorldPos();

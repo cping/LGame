@@ -24,6 +24,7 @@ public class XMLData {
 	
 	private String text;
 
+	@Override
 	public String toString() {
 		return this.text;
 	}

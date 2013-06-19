@@ -15,7 +15,7 @@ namespace Loon
 
         void OnCreate(bool m_landscape, bool m_fullscreen);
 
-        void OnStateLog(Loon.Utils.Debug.Log log);
+        void OnStateLog(Loon.Utils.Debugging.Log log);
 
         GameType GetGameType();
 

@@ -14,7 +14,6 @@ import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LInputFactory.Key;
 import loon.core.timer.LTimer;
 
-
 /**
  * Copyright 2008 - 2011
  * 

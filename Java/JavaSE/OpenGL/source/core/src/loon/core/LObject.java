@@ -5,7 +5,6 @@ import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2012
  * 

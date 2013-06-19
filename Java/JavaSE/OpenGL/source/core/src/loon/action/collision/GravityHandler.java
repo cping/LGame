@@ -146,8 +146,8 @@ public class GravityHandler implements LRelease {
 							if (chageWidth) {
 								bindX -= g.bounce + g.g;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce / MathUtils.random(
-											1, 5)) + second;
+									g.bounce -= (g.bounce / MathUtils.random(1,
+											5)) + second;
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									bindX = limitWidth;
@@ -156,8 +156,8 @@ public class GravityHandler implements LRelease {
 							if (chageHeight) {
 								bindY -= g.bounce + g.g;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce / MathUtils.random(
-											1, 5)) + second;
+									g.bounce -= (g.bounce / MathUtils.random(1,
+											5)) + second;
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									bindY = limitHeight;

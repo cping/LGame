@@ -33,8 +33,6 @@ public abstract class Shape implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	ShapeType type;
-
 	public float x;
 
 	public float y;
@@ -65,7 +63,6 @@ public abstract class Shape implements Serializable {
 
 	public Shape() {
 		pointsDirty = true;
-		type = ShapeType.DEFAULT_SHAPE;
 		scaleX = scaleY = 1f;
 	}
 
@@ -576,10 +573,6 @@ public abstract class Shape implements Serializable {
 
 	public float getHeight() {
 		return maxY - minY;
-	}
-
-	public ShapeType getShapeType() {
-		return this.type;
 	}
 
 	public RectBox getRect() {

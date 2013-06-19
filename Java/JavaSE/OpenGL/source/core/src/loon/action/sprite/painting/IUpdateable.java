@@ -22,8 +22,7 @@ package loon.action.sprite.painting;
 
 import loon.core.timer.GameTime;
 
-public interface IUpdateable
-{
+public interface IUpdateable {
 
 	void update(GameTime gameTime);
 

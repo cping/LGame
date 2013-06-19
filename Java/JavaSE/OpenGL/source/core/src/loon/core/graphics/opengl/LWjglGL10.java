@@ -134,8 +134,8 @@ class LWjglGL10 implements GL10 {
 		if (pointer instanceof FloatBuffer && type == GL10.GL_FLOAT) {
 			GL11.glColorPointer(size, stride, (FloatBuffer) pointer);
 		} else if (pointer instanceof ByteBuffer && type == GL10.GL_FLOAT) {
-			GL11.glColorPointer(size, stride, ((ByteBuffer) pointer)
-					.asFloatBuffer());
+			GL11.glColorPointer(size, stride,
+					((ByteBuffer) pointer).asFloatBuffer());
 		} else if (pointer instanceof ByteBuffer
 				&& type == GL10.GL_UNSIGNED_BYTE) {
 			GL11.glColorPointer(size, true, stride, (ByteBuffer) pointer);
@@ -351,9 +351,7 @@ class LWjglGL10 implements GL10 {
 		if (pointer instanceof FloatBuffer && type == GL11.GL_FLOAT) {
 			GL11.glNormalPointer(stride, (FloatBuffer) pointer);
 		} else if (pointer instanceof ByteBuffer && type == GL11.GL_FLOAT) {
-			GL11
-					.glNormalPointer(stride, ((ByteBuffer) pointer)
-							.asFloatBuffer());
+			GL11.glNormalPointer(stride, ((ByteBuffer) pointer).asFloatBuffer());
 		} else if (pointer instanceof ByteBuffer && type == GL11.GL_BYTE) {
 			GL11.glNormalPointer(stride, (ByteBuffer) pointer);
 		} else {
@@ -448,13 +446,13 @@ class LWjglGL10 implements GL10 {
 		if (pointer instanceof ShortBuffer && type == GL10.GL_SHORT) {
 			GL11.glTexCoordPointer(size, stride, (ShortBuffer) pointer);
 		} else if (pointer instanceof ByteBuffer && type == GL10.GL_SHORT) {
-			GL11.glTexCoordPointer(size, stride, ((ByteBuffer) pointer)
-					.asShortBuffer());
+			GL11.glTexCoordPointer(size, stride,
+					((ByteBuffer) pointer).asShortBuffer());
 		} else if (pointer instanceof FloatBuffer && type == GL10.GL_FLOAT) {
 			GL11.glTexCoordPointer(size, stride, (FloatBuffer) pointer);
 		} else if (pointer instanceof ByteBuffer && type == GL10.GL_FLOAT) {
-			GL11.glTexCoordPointer(size, stride, ((ByteBuffer) pointer)
-					.asFloatBuffer());
+			GL11.glTexCoordPointer(size, stride,
+					((ByteBuffer) pointer).asFloatBuffer());
 		} else {
 			throw new RuntimeException(
 					"Can't use "
@@ -539,8 +537,8 @@ class LWjglGL10 implements GL10 {
 		if (pointer instanceof FloatBuffer && type == GL10.GL_FLOAT) {
 			GL11.glVertexPointer(size, stride, ((FloatBuffer) pointer));
 		} else if (pointer instanceof ByteBuffer && type == GL10.GL_FLOAT) {
-			GL11.glVertexPointer(size, stride, ((ByteBuffer) pointer)
-					.asFloatBuffer());
+			GL11.glVertexPointer(size, stride,
+					((ByteBuffer) pointer).asFloatBuffer());
 		} else {
 			throw new RuntimeException(
 					"Can't use "

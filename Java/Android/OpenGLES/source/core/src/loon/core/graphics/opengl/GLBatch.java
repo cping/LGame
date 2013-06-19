@@ -214,60 +214,60 @@ public class GLBatch implements LRelease {
 		synchronized (GLBatch.class) {
 			GL10 gl = GLEx.gl10;
 			if (nativeLibs) {
-				gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+				gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
 				vertexsBuffer.clear();
 				NativeSupport.copy(vertexs, vertexsBuffer, 0, indexPos);
-				gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexsBuffer);
+				gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertexsBuffer);
 				if (hasCols) {
-					gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+					gl.glEnableClientState(GL.GL_COLOR_ARRAY);
 					colorsBuffer.clear();
 					NativeSupport.copy(colors, colorsBuffer, 0, indexCols);
-					gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorsBuffer);
+					gl.glColorPointer(4, GL.GL_FLOAT, 0, colorsBuffer);
 				}
 				if (hasNors) {
-					gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
+					gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
 					normalsBuffer.clear();
 					NativeSupport.copy(normals, normalsBuffer, 0, indexNors);
-					gl.glNormalPointer(GL10.GL_FLOAT, 0, normalsBuffer);
+					gl.glNormalPointer(GL.GL_FLOAT, 0, normalsBuffer);
 				}
 				if (hasTexCoords) {
-					gl.glClientActiveTexture(GL10.GL_TEXTURE0);
-					gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+					gl.glClientActiveTexture(GL.GL_TEXTURE0);
+					gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 					texCoordsBuffer.clear();
 					NativeSupport.copy(texCoords, texCoordsBuffer, 0,
 							indexTexCoords);
-					gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texCoordsBuffer);
+					gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, texCoordsBuffer);
 				}
 			} else {
-				gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+				gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
 				vertexsBuffer.flip();
-				gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexsBuffer);
+				gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertexsBuffer);
 				if (hasCols) {
-					gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+					gl.glEnableClientState(GL.GL_COLOR_ARRAY);
 					colorsBuffer.flip();
-					gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorsBuffer);
+					gl.glColorPointer(4, GL.GL_FLOAT, 0, colorsBuffer);
 				}
 				if (hasNors) {
-					gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
+					gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
 					normalsBuffer.flip();
-					gl.glNormalPointer(GL10.GL_FLOAT, 0, normalsBuffer);
+					gl.glNormalPointer(GL.GL_FLOAT, 0, normalsBuffer);
 				}
 				if (hasTexCoords) {
-					gl.glClientActiveTexture(GL10.GL_TEXTURE0);
-					gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+					gl.glClientActiveTexture(GL.GL_TEXTURE0);
+					gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 					texCoordsBuffer.flip();
-					gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texCoordsBuffer);
+					gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, texCoordsBuffer);
 				}
 			}
 			gl.glDrawArrays(primitiveType, 0, numVertices);
 			if (hasCols) {
-				gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+				gl.glDisableClientState(GL.GL_COLOR_ARRAY);
 			}
 			if (hasNors) {
-				gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
+				gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
 			}
 			if (hasTexCoords) {
-				gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+				gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 			}
 			GLEx.self.glTex2DEnable();
 		}
@@ -277,6 +277,7 @@ public class GLBatch implements LRelease {
 		return closed;
 	}
 
+	@Override
 	public void dispose() {
 		closed = true;
 		vertexs = null;

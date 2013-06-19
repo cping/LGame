@@ -60,6 +60,7 @@ public class LNNode implements LRelease {
 			return (x < y) ? -1 : ((x == y) ? 0 : 1);
 		}
 
+		@Override
 		public int compare(LNNode p1, LNNode p2) {
 			if (p1 == null || p2 == null) {
 				if (p1 != null) {
@@ -1251,6 +1252,7 @@ public class LNNode implements LRelease {
 		return _autoDestroy;
 	}
 
+	@Override
 	public void dispose() {
 		this._isClose = true;
 		if (this._parent != null) {

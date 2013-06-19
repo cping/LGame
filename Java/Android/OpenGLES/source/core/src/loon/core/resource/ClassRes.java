@@ -41,6 +41,7 @@ public class ClassRes extends DataRes implements Resource {
 		this.classLoader = classLoader;
 	}
 
+	@Override
 	public InputStream getInputStream() {
 		try {
 			if (in != null) {
@@ -57,10 +58,12 @@ public class ClassRes extends DataRes implements Resource {
 		return null;
 	}
 
+	@Override
 	public String getResourceName() {
 		return name;
 	}
 
+	@Override
 	public URI getURI() {
 		try {
 			if (uri != null) {
@@ -72,6 +75,7 @@ public class ClassRes extends DataRes implements Resource {
 		}
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -93,6 +97,7 @@ public class ClassRes extends DataRes implements Resource {
 		return true;
 	}
 
+	@Override
 	public int hashCode(){
 		return super.hashCode();
 	}

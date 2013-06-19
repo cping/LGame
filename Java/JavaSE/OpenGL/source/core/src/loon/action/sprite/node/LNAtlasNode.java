@@ -51,7 +51,8 @@ public class LNAtlasNode extends LNNode {
 			this._textureAtlas = new LNTextureAtlas(texture, this._itemsPerRow
 					* this._itemsPerColumn);
 		} catch (Exception ex) {
-			throw new RuntimeException("LNAtlasNode Exception in the data load : " + fsName);
+			throw new RuntimeException(
+					"LNAtlasNode Exception in the data load : " + fsName);
 		}
 	}
 }

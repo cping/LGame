@@ -24,6 +24,7 @@ import java.util.LinkedList;
 
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.core.LSystem;
@@ -270,6 +271,7 @@ public class MoveObject extends SpriteBatchObject {
 		return false;
 	}
 
+	@Override
 	public int hashCode() {
 		if (tiles == null) {
 			return super.hashCode();
@@ -327,6 +329,7 @@ public class MoveObject extends SpriteBatchObject {
 	
 	private boolean isMoving;
 
+	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 
@@ -359,31 +362,31 @@ public class MoveObject extends SpriteBatchObject {
 					}
 				}
 				switch (direction) {
-				case Field2D.TUP:
+				case Config.TUP:
 					startY -= speed;
 					if (startY < endY) {
 						startY = endY;
 					}
 					break;
-				case Field2D.TDOWN:
+				case Config.TDOWN:
 					startY += speed;
 					if (startY > endY) {
 						startY = endY;
 					}
 					break;
-				case Field2D.TLEFT:
+				case Config.TLEFT:
 					startX -= speed;
 					if (startX < endX) {
 						startX = endX;
 					}
 					break;
-				case Field2D.TRIGHT:
+				case Config.TRIGHT:
 					startX += speed;
 					if (startX > endX) {
 						startX = endX;
 					}
 					break;
-				case Field2D.UP:
+				case Config.UP:
 					startX += speed;
 					startY -= speed;
 					if (startX > endX) {
@@ -393,7 +396,7 @@ public class MoveObject extends SpriteBatchObject {
 						startY = endY;
 					}
 					break;
-				case Field2D.DOWN:
+				case Config.DOWN:
 					startX -= speed;
 					startY += speed;
 					if (startX < endX) {
@@ -403,7 +406,7 @@ public class MoveObject extends SpriteBatchObject {
 						startY = endY;
 					}
 					break;
-				case Field2D.LEFT:
+				case Config.LEFT:
 					startX -= speed;
 					startY -= speed;
 					if (startX < endX) {
@@ -413,7 +416,7 @@ public class MoveObject extends SpriteBatchObject {
 						startY = endY;
 					}
 					break;
-				case Field2D.RIGHT:
+				case Config.RIGHT:
 					startX += speed;
 					startY += speed;
 					if (startX > endX) {
@@ -481,6 +484,7 @@ public class MoveObject extends SpriteBatchObject {
 		return ShapeUtils.getAngleDiff(rotation, r);
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (findPath != null) {

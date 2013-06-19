@@ -71,6 +71,7 @@ public class GLMesh {
 		public void unbind() {
 		}
 
+		@Override
 		public void dispose() {
 			if (byteBuffer != null) {
 				NativeSupport.freeMemory(byteBuffer);
@@ -99,6 +100,7 @@ public class GLMesh {
 			byteBuffer.flip();
 		}
 
+		@Override
 		public void dispose() {
 			if (byteBuffer != null) {
 				NativeSupport.freeMemory(byteBuffer);
@@ -138,36 +140,36 @@ public class GLMesh {
 				switch (attribute.usage) {
 				case Usage.Position:
 					byteBuffer.position(attribute.offset);
-					gl.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-					gl.glVertexPointer(attribute.numComponents, GL10.GL_FLOAT,
+					gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+					gl.glVertexPointer(attribute.numComponents, GL.GL_FLOAT,
 							attributes.vertexSize, byteBuffer);
 					break;
 
 				case Usage.Color:
 				case Usage.ColorPacked:
-					int colorType = GL10.GL_FLOAT;
+					int colorType = GL.GL_FLOAT;
 					if (attribute.usage == Usage.ColorPacked) {
-						colorType = GL11.GL_UNSIGNED_BYTE;
+						colorType = GL.GL_UNSIGNED_BYTE;
 					}
 					byteBuffer.position(attribute.offset);
-					gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+					gl.glEnableClientState(GL.GL_COLOR_ARRAY);
 					gl.glColorPointer(attribute.numComponents, colorType,
 							attributes.vertexSize, byteBuffer);
 					break;
 
 				case Usage.Normal:
 					byteBuffer.position(attribute.offset);
-					gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
-					gl.glNormalPointer(GL10.GL_FLOAT, attributes.vertexSize,
+					gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+					gl.glNormalPointer(GL.GL_FLOAT, attributes.vertexSize,
 							byteBuffer);
 					break;
 
 				case Usage.TextureCoordinates:
-					gl.glClientActiveTexture(GL10.GL_TEXTURE0 + textureUnit);
-					gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+					gl.glClientActiveTexture(GL.GL_TEXTURE0 + textureUnit);
+					gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 					byteBuffer.position(attribute.offset);
 					gl.glTexCoordPointer(attribute.numComponents,
-							GL10.GL_FLOAT, attributes.vertexSize, byteBuffer);
+							GL.GL_FLOAT, attributes.vertexSize, byteBuffer);
 					textureUnit++;
 					break;
 
@@ -189,14 +191,14 @@ public class GLMesh {
 					break;
 				case Usage.Color:
 				case Usage.ColorPacked:
-					gl.glDisableClientState(GL11.GL_COLOR_ARRAY);
+					gl.glDisableClientState(GL.GL_COLOR_ARRAY);
 					break;
 				case Usage.Normal:
-					gl.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+					gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
 					break;
 				case Usage.TextureCoordinates:
-					gl.glClientActiveTexture(GL11.GL_TEXTURE0 + textureUnit);
-					gl.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+					gl.glClientActiveTexture(GL.GL_TEXTURE0 + textureUnit);
+					gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 					textureUnit++;
 					break;
 				default:
@@ -359,7 +361,7 @@ public class GLMesh {
 				buffer.position(offset);
 				buffer.limit(offset + count);
 				GLEx.gl10.glDrawElements(primitiveType, count,
-						GL10.GL_UNSIGNED_SHORT, buffer);
+						GL.GL_UNSIGNED_SHORT, buffer);
 				buffer.position(oldPosition);
 				buffer.limit(oldLimit);
 			} else {
@@ -368,7 +370,7 @@ public class GLMesh {
 		} else {
 			if (indices.getNumIndices() > 0) {
 				GLEx.gl11.glDrawElements(primitiveType, count,
-						GL10.GL_UNSIGNED_SHORT, offset * 2);
+						GL.GL_UNSIGNED_SHORT, offset * 2);
 			} else {
 				GLEx.gl11.glDrawArrays(primitiveType, offset, count);
 			}

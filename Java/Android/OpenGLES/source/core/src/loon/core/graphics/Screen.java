@@ -35,7 +35,7 @@ import loon.core.input.LTransition;
 import loon.core.input.LInputFactory.Touch;
 import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
-import loon.media.PlaySound;
+import loon.media.SoundBox;
 
 import android.view.View;
 
@@ -60,7 +60,7 @@ import android.view.View;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
-public abstract class Screen implements LInput, LRelease {
+public abstract class Screen extends SoundBox implements LInput, LRelease {
 
 	private ArrayList<ScreenListener> screens;
 
@@ -405,13 +405,13 @@ public abstract class Screen implements LInput, LRelease {
 
 			final Thread loading = new Thread() {
 
+				@Override
 				public void run() {
 					screen.onCreate(LSystem.screenRect.width,
 							LSystem.screenRect.height);
 					screen.setClose(false);
 					screen.onLoad();
 					screen.setRepaintMode(SCREEN_CANVAS_REPAINT);
-					screen.setOnLoadState(true);
 					screen.onLoaded();
 					screen.setOnLoadState(true);
 				}
@@ -1032,82 +1032,6 @@ public abstract class Screen implements LInput, LRelease {
 	}
 
 	/**
-	 * 添加一个与指定资源索引相对应的PlaySound音频文件
-	 * 
-	 * @param resId
-	 */
-	public PlaySound addPlaySound(final int resId) {
-		if (LSystem.screenActivity != null) {
-			return handler.getPlaySound().addPlaySound(resId);
-		}
-		return null;
-	}
-
-	/**
-	 * 添加一个与指定资源索引相对应的PlaySound音频文件
-	 * 
-	 * @param resId
-	 * @param vol
-	 */
-	public PlaySound addPlaySound(final int resId, final int vol) {
-		if (handler != null) {
-			return handler.getPlaySound().addPlaySound(resId, vol);
-		}
-		return null;
-	}
-
-	/**
-	 * 播放Assets中的音频文件
-	 * 
-	 * @param file
-	 * @param loop
-	 */
-	public void playAssetsMusic(final String file, final boolean loop) {
-		if (handler != null) {
-			handler.getAssetsSound().playSound(file, loop);
-		}
-	}
-
-	/**
-	 * 设置Assets中的音频文件音量
-	 * 
-	 * @param vol
-	 */
-	public void resetAssetsMusic(final int vol) {
-		if (handler != null) {
-			handler.getAssetsSound().setSoundVolume(vol);
-		}
-	}
-
-	/**
-	 * 重置Assets中的音频文件
-	 * 
-	 */
-	public void resetAssetsMusic() {
-		if (handler != null) {
-			handler.getAssetsSound().resetSound();
-		}
-	}
-
-	/**
-	 * 中断Assets中的音频文件
-	 */
-	public void stopAssetsMusic() {
-		if (handler != null) {
-			handler.getAssetsSound().stopSound();
-		}
-	}
-
-	/**
-	 * 中断Assets中指定索引的音频文件
-	 */
-	public void stopAssetsMusic(int index) {
-		if (handler != null) {
-			handler.getAssetsSound().stopSound(index);
-		}
-	}
-
-	/**
 	 * 设定常规图像加载方法的扩大值
 	 * 
 	 * @param sampleSize
@@ -1402,6 +1326,7 @@ public abstract class Screen implements LInput, LRelease {
 	/**
 	 * 获得背景显示模式
 	 */
+	@Override
 	public int getRepaintMode() {
 		return mode;
 	}
@@ -1411,6 +1336,7 @@ public abstract class Screen implements LInput, LRelease {
 	 * 
 	 * @param mode
 	 */
+	@Override
 	public void setRepaintMode(int mode) {
 		this.mode = mode;
 	}
@@ -1425,6 +1351,7 @@ public abstract class Screen implements LInput, LRelease {
 			return;
 		}
 		Thread runnable = new Thread() {
+			@Override
 			public void run() {
 				event.call();
 			}
@@ -1857,10 +1784,12 @@ public abstract class Screen implements LInput, LRelease {
 		}
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -1868,6 +1797,7 @@ public abstract class Screen implements LInput, LRelease {
 	/**
 	 * 刷新基础设置
 	 */
+	@Override
 	public void refresh() {
 		for (int i = 0; i < touchType.length; i++) {
 			touchType[i] = false;
@@ -1878,6 +1808,7 @@ public abstract class Screen implements LInput, LRelease {
 		}
 	}
 
+	@Override
 	public Point2i getTouch() {
 		touch.set(touchX, touchY);
 		return touch;
@@ -1887,62 +1818,76 @@ public abstract class Screen implements LInput, LRelease {
 		return LSystem.isPaused;
 	}
 
+	@Override
 	public int getTouchPressed() {
 		return touchButtonPressed > LInput.NO_BUTTON ? touchButtonPressed
 				: LInput.NO_BUTTON;
 	}
 
+	@Override
 	public int getTouchReleased() {
 		return touchButtonReleased > LInput.NO_BUTTON ? touchButtonReleased
 				: LInput.NO_BUTTON;
 	}
 
+	@Override
 	public boolean isTouchPressed(int button) {
 		return touchButtonPressed == button;
 	}
 
+	@Override
 	public boolean isTouchReleased(int button) {
 		return touchButtonReleased == button;
 	}
 
+	@Override
 	public int getTouchX() {
 		return touchX;
 	}
 
+	@Override
 	public int getTouchY() {
 		return touchY;
 	}
 
+	@Override
 	public int getTouchDX() {
 		return touchDX;
 	}
 
+	@Override
 	public int getTouchDY() {
 		return touchDY;
 	}
 
+	@Override
 	public boolean isTouchType(int type) {
 		return touchType[type];
 	}
 
+	@Override
 	public int getKeyPressed() {
 		return keyButtonPressed > LInput.NO_KEY ? keyButtonPressed
 				: LInput.NO_KEY;
 	}
 
+	@Override
 	public boolean isKeyPressed(int keyCode) {
 		return keyButtonPressed == keyCode;
 	}
 
+	@Override
 	public int getKeyReleased() {
 		return keyButtonReleased > LInput.NO_KEY ? keyButtonReleased
 				: LInput.NO_KEY;
 	}
 
+	@Override
 	public boolean isKeyReleased(int keyCode) {
 		return keyButtonReleased == keyCode;
 	}
 
+	@Override
 	public boolean isKeyType(int keyCode) {
 		return keyType[keyCode];
 	}
@@ -1975,6 +1920,7 @@ public abstract class Screen implements LInput, LRelease {
 	 * 
 	 * @param code
 	 */
+	@Override
 	public void setKeyDown(int button) {
 		try {
 			keyButtonPressed = button;
@@ -2006,6 +1952,7 @@ public abstract class Screen implements LInput, LRelease {
 		}
 	}
 
+	@Override
 	public void setKeyUp(int button) {
 		try {
 			keyButtonReleased = button;
@@ -2124,11 +2071,33 @@ public abstract class Screen implements LInput, LRelease {
 
 	}
 
+	public void mouseDragged(LTouch e) {
+		if (isLock || isClose || !isLoad) {
+			return;
+		}
+		if (isTranslate) {
+			e.offset(tx, ty);
+		}
+		if (useScreenListener) {
+			for (ScreenListener t : screens) {
+				t.drag(e);
+			}
+		}
+		this.touchX = e.x();
+		this.touchY = e.y();
+		if (!isClickLimit(e)) {
+			touchDrag(e);
+		}
+	}
+
+	public abstract void touchDrag(LTouch e);
+
 	public void move(double x, double y) {
 		this.touchX = (int) x;
 		this.touchY = (int) y;
 	}
 
+	@Override
 	public boolean isMoving() {
 		return Touch.isDrag();
 	}
@@ -2261,6 +2230,7 @@ public abstract class Screen implements LInput, LRelease {
 	 * 释放函数内资源
 	 * 
 	 */
+	@Override
 	public void dispose() {
 
 	}

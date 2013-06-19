@@ -22,7 +22,7 @@ package loon.action.map;
  */
 
 public class Item {
-	
+
 	private String name;
 
 	private Object object;
@@ -42,5 +42,5 @@ public class Item {
 	public void setObject(Object object) {
 		this.object = object;
 	}
-	
+
 }

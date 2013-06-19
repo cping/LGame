@@ -47,6 +47,7 @@ public class CollisionInRangeQuery implements CollisionQuery {
 		this.r = r;
 	}
 
+	@Override
 	public boolean checkCollision(Actor actor) {
 
 		object = actor.getRectBox();

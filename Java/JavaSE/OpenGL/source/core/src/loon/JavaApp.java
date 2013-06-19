@@ -22,9 +22,10 @@ package loon;
 
 import java.awt.Canvas;
 
-import loon.core.LSystem;
+import loon.core.CallQueue;
+
 //桌面加载用类(需要lwjgl.jar支持)
-public abstract class JavaApp {
+public abstract class JavaApp extends CallQueue {
 
 	protected Canvas _AWT_Canvas;
 
@@ -44,6 +45,7 @@ public abstract class JavaApp {
 	}
 
 	protected static Class<?> getType(Object o) {
+
 		if (o instanceof Integer) {
 			return Integer.TYPE;
 		} else if (o instanceof Float) {
@@ -63,30 +65,6 @@ public abstract class JavaApp {
 		}
 	}
 
-	public static class LSetting {
-
-		public int width = LSystem.MAX_SCREEN_WIDTH;
-
-		public int height = LSystem.MAX_SCREEN_HEIGHT;
-
-		public int fps = LSystem.DEFAULT_MAX_FPS;
-
-		public int appX = -1, appY = -1;
-
-		public String title;
-
-		public boolean resizable;
-
-		public boolean showFPS;
-
-		public boolean showMemory;
-
-		public boolean showLogo;
-
-		public Canvas canvas;
-
-	}
-
 	public Canvas getAWTCanvas() {
 		return _AWT_Canvas;
 	}
@@ -94,7 +72,14 @@ public abstract class JavaApp {
 	public void setAWTCanvas(Canvas canvas) {
 		_AWT_Canvas = canvas;
 	}
-	
-	public abstract void exit();
 
+	public void exit() {
+
+	}
+
+	public abstract void onPause();
+
+	public abstract void onResume();
+
+	public abstract void onExit();
 }

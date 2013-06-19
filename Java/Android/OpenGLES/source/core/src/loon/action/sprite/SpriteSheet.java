@@ -185,6 +185,7 @@ public class SpriteSheet implements LRelease {
 		this.target = target;
 	}
 
+	@Override
 	public void dispose() {
 		if (subImages != null) {
 			synchronized (subImages) {

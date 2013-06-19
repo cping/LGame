@@ -22,10 +22,10 @@ package loon.action.sprite.node;
 
 public class LNToggleVisibility extends LNAction {
 
-	LNToggleVisibility(){
-		
+	LNToggleVisibility() {
+
 	}
-	
+
 	public static LNToggleVisibility Action() {
 		return new LNToggleVisibility();
 	}

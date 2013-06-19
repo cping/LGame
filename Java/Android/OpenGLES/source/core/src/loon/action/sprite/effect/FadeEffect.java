@@ -115,11 +115,13 @@ public class FadeEffect extends LObject implements ISprite {
 		this.type = type;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.opacity = visible ? 255 : 0;
 		this.visible = visible;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
@@ -132,6 +134,7 @@ public class FadeEffect extends LObject implements ISprite {
 		return opacity;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -150,6 +153,7 @@ public class FadeEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void update(long timer) {
 		if (type == TYPE_FADE_IN) {
 			currentFrame--;
@@ -166,14 +170,17 @@ public class FadeEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), getWidth(), getHeight());
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
@@ -194,10 +201,12 @@ public class FadeEffect extends LObject implements ISprite {
 		this.offsetY = offsetY;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public void dispose() {
 
 	}

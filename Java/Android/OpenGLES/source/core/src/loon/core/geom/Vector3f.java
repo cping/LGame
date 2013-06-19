@@ -498,14 +498,17 @@ public class Vector3f implements Serializable {
 		z = 0;
 	}
 	
+	@Override
 	public Vector3f clone() {
 		return new Vector3f(this);
 	}
 	
+	@Override
 	public String toString() {
 		return "(" + x + "," + y + "," + z + ")";
 	}
 	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -515,6 +518,7 @@ public class Vector3f implements Serializable {
 		return result;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

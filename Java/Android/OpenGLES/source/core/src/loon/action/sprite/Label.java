@@ -69,6 +69,7 @@ public class Label extends LObject implements ISprite {
 		this.font = font;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (visible) {
 			LFont oldFont = g.getFont();
@@ -90,26 +91,32 @@ public class Label extends LObject implements ISprite {
 	}
 
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public void update(long timer) {
 
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
@@ -134,10 +141,12 @@ public class Label extends LObject implements ISprite {
 		this.color = color;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public void dispose() {
 
 	}

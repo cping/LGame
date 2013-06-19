@@ -131,7 +131,7 @@ public class XMLOutput extends Writer implements LRelease {
 
 	private void newline() throws IOException {
 		int count = _count;
-		if (_currentElement != null){
+		if (_currentElement != null) {
 			count++;
 		}
 		for (int i = 0; i < count; i++) {

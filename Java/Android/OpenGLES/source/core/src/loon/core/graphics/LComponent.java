@@ -10,10 +10,10 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.component.ClickListener;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LInput;
 import loon.core.input.LInputFactory.Key;
-import loon.utils.TextureUtils;
 
 /**
  * 
@@ -220,6 +220,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean isContainer() {
 		return false;
 	}
@@ -228,6 +229,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 	 * 更新组件状态
 	 * 
 	 */
+	@Override
 	public void update(long elapsedTime) {
 		if (isClose) {
 			return;
@@ -342,6 +344,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 						+ comp.height);
 	}
 
+	@Override
 	public void dispose() {
 		this.isClose = true;
 		this.desktop.setComponentStat(this, false);
@@ -457,6 +460,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		}
 	}
 
+	@Override
 	public void setX(Integer x) {
 		if (this.getX() != x || x == 0) {
 			super.setX(x);
@@ -464,6 +468,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		}
 	}
 
+	@Override
 	public void setX(float x) {
 		if (this.getX() != x || x == 0) {
 			super.setX(x);
@@ -471,6 +476,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		}
 	}
 
+	@Override
 	public void setY(Integer y) {
 		if (this.getY() != y || y == 0) {
 			super.setY(y);
@@ -478,6 +484,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		}
 	}
 
+	@Override
 	public void setY(float y) {
 		if (this.getY() != y || y == 0) {
 			super.setY(y);
@@ -485,10 +492,12 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		}
 	}
 
+	@Override
 	public void setLocation(Vector2f location) {
 		setLocation(location.x, location.y);
 	}
 
+	@Override
 	public void setLocation(float dx, float dy) {
 		if (this.getX() != dx || this.getY() != dy || dx == 0 || dy == 0) {
 			super.setLocation(dx, dy);
@@ -496,6 +505,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		}
 	}
 
+	@Override
 	public void move(float dx, float dy) {
 		if (dx != 0 || dy != 0) {
 			if (dx > -100 && dx < 100 && dy > -100 && dy < 100) {
@@ -548,10 +558,12 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		this.width = width;
 	}
 
+	@Override
 	public int getWidth() {
 		return (int) (this.width * scaleX);
 	}
 
+	@Override
 	public int getHeight() {
 		return (int) (this.height * scaleY);
 	}
@@ -709,6 +721,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		this.autoDestroy = autoDestroy;
 	}
 
+	@Override
 	public Field2D getField2D() {
 		return null;
 	}
@@ -719,6 +732,7 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		this.setScale(s, s);
 	}
 
+	@Override
 	public void setScale(final float sx, final float sy) {
 		if (this.scaleX == sx && this.scaleY == sy) {
 			return;
@@ -727,18 +741,22 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		this.scaleY = sy;
 	}
 
+	@Override
 	public float getScaleX() {
 		return this.scaleX;
 	}
 
+	@Override
 	public float getScaleY() {
 		return this.scaleY;
 	}
 
+	@Override
 	public boolean isBounded() {
 		return true;
 	}
 
+	@Override
 	public boolean inContains(int x, int y, int w, int h) {
 		if (parent != null) {
 			return parent.contains(x, y, w, h);
@@ -746,14 +764,17 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		return false;
 	}
 
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}
 
+	@Override
 	public int getContainerWidth() {
 		return parent.getWidth();
 	}
 
+	@Override
 	public int getContainerHeight() {
 		return parent.getHeight();
 	}

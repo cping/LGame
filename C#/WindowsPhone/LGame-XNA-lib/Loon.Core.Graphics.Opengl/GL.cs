@@ -1081,6 +1081,10 @@ namespace Loon.Core.Graphics.Opengl
 
         public void Submit(int primitiveType, int count, VertexPositionColorTexture[] vertices, short[] quad, short[] fan)
         {
+            if (count <= 0)
+            {
+                return;
+            }
             bool flag = (AlphaBlendFunction == BlendFunction.ReverseSubtract) && !this.effect.TextureEnabled;
             if (this.alphaTest && (this.effect.Texture != null))
             {
@@ -1170,6 +1174,10 @@ namespace Loon.Core.Graphics.Opengl
 
         public static void GLVertices(int primitiveType, int numVertices, VertexPositionColorTexture[] vertices, List<Vector3> vertexsBuffer, List<Vector2> texCoordsBuffer, List<Color> colorsBuffer, bool hasCols, bool hasClear, Color defaultColor)
         {
+            if (numVertices <= 0)
+            {
+                return;
+            }
             bool hasCoord = (texCoordsBuffer.Count != 0);
             switch (primitiveType)
             {

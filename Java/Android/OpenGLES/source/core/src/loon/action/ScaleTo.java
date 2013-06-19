@@ -41,10 +41,12 @@ public class ScaleTo extends ActionEvent {
 		this.endY = sy;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return isComplete;
 	}
 
+	@Override
 	public void onLoad() {
 		if (original != null) {
 			startX = original.getScaleX();
@@ -54,6 +56,7 @@ public class ScaleTo extends ActionEvent {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (original != null) {
 			synchronized (original) {

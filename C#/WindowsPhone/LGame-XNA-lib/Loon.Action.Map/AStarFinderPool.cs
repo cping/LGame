@@ -38,7 +38,7 @@ namespace Loon.Action.Map {
 				try {
                     Thread.Sleep(1000000);
 				} catch(Exception ex){
-                    Loon.Utils.Debug.Log.Exception(ex);
+                    Loon.Utils.Debugging.Log.Exception(ex);
 				}
 				EmptyPathQueue();
 			}

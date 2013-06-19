@@ -32,7 +32,6 @@ import loon.core.timer.LTimerContext;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -126,7 +125,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 	}
 
 	public final void onLoaded() {
-		this.avgThread = new Thread(this,"AVGThread");
+		this.avgThread = new Thread(this, "AVGThread");
 		this.avgThread.setPriority(Thread.NORM_PRIORITY);
 		this.avgThread.start();
 	}
@@ -381,16 +380,16 @@ public abstract class AVGScreen extends Screen implements Runnable {
 						continue;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAY)) {
-						playSound(mesFlag);
+						playSound(mesFlag, false);
 						continue;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYLOOP)) {
-						playSound(mesFlag);
+						playSound(mesFlag, true);
 						continue;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYSTOP)) {
-						if (MathUtils.isNan(mesFlag)) {
-							stopSound(Integer.parseInt(mesFlag));
+						if (mesFlag != null && mesFlag.length() > 0) {
+							stopSound(mesFlag);
 						} else {
 							stopSound();
 						}

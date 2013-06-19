@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import loon.utils.xml.XMLElement;
 
-
 /**
  * 
  * Copyright 2008 - 2011

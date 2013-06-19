@@ -57,6 +57,19 @@ namespace Loon.Core.Input
         {
         }
 
+        public LTouch(float x, float y, int pointer, int id)
+        {
+            this.Set(x, y, pointer, id);
+        }
+
+        public void Set(float x, float y, int pointer, int id)
+        {
+            this.x0 = x;
+            this.y0 = y;
+            this.pointer = pointer;
+            this.id = id;
+        }
+	
         public void Set(Point currentLocation, int modifiers)
         {
             Set(currentLocation, Touch.LEFT, modifiers);

@@ -33,7 +33,6 @@ import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.utils.CollectionUtils;
 
-
 //0.3.3新增类，用以充当配置器，其基本数据保存形式是键值对，即以类似ini文件的保存方式，
 //通过key=value为变量赋值，不过也可以利用关键字begin同end之间的空隙保存大块数据。
 public class ConfigReader implements Expression, LRelease {

@@ -1,6 +1,5 @@
 package loon.utils.xml;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -33,7 +32,7 @@ public class XMLAttribute {
 		this.name = n;
 		this.value = v;
 	}
-	
+
 	public XMLElement getElement() {
 		return element;
 	}

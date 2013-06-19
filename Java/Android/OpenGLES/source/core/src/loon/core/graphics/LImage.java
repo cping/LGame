@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LTrans;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
-import loon.utils.GraphicsUtils;
 import loon.utils.StringUtils;
 
 import android.graphics.Bitmap;
@@ -66,6 +66,7 @@ public class LImage implements LRelease {
 
 			public int[] pixels;
 
+			@Override
 			public void dispose() {
 				if (pixels != null) {
 					pixels = null;
@@ -591,37 +592,37 @@ public class LImage implements LRelease {
 				int td;
 
 				switch (transform) {
-				case LGraphics.TRANS_ROT90:
+				case LTrans.TRANS_ROT90:
 					tx = tw - sy - 1;
 					ty = 0;
 					td = tw;
 					break;
-				case LGraphics.TRANS_ROT180:
+				case LTrans.TRANS_ROT180:
 					tx = tw - 1;
 					ty = th - sy - 1;
 					td = -1;
 					break;
-				case LGraphics.TRANS_ROT270:
+				case LTrans.TRANS_ROT270:
 					tx = sy;
 					ty = th - 1;
 					td = -tw;
 					break;
-				case LGraphics.TRANS_MIRROR:
+				case LTrans.TRANS_MIRROR:
 					tx = tw - 1;
 					ty = sy;
 					td = -1;
 					break;
-				case LGraphics.TRANS_MIRROR_ROT90:
+				case LTrans.TRANS_MIRROR_ROT90:
 					tx = tw - sy - 1;
 					ty = th - 1;
 					td = -tw;
 					break;
-				case LGraphics.TRANS_MIRROR_ROT180:
+				case LTrans.TRANS_MIRROR_ROT180:
 					tx = 0;
 					ty = th - sy - 1;
 					td = 1;
 					break;
-				case LGraphics.TRANS_MIRROR_ROT270:
+				case LTrans.TRANS_MIRROR_ROT270:
 					tx = sy;
 					ty = 0;
 					td = tw;
@@ -799,6 +800,7 @@ public class LImage implements LRelease {
 		return config;
 	}
 
+	@Override
 	public LImage clone() {
 		return new LImage(bitmap);
 	}
@@ -990,6 +992,7 @@ public class LImage implements LRelease {
 	 * 返回LImage的hash序列
 	 * 
 	 */
+	@Override
 	public int hashCode() {
 		return GraphicsUtils.hashBitmap(bitmap);
 	}
@@ -1043,6 +1046,7 @@ public class LImage implements LRelease {
 		return fileName;
 	}
 
+	@Override
 	public void dispose() {
 		dispose(true);
 	}

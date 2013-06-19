@@ -31,6 +31,7 @@ public class RemoteRes extends DataRes implements Resource {
 		this.name = url;
 	}
 
+	@Override
 	public InputStream getInputStream() {
 		try {
 			if (in != null) {
@@ -42,10 +43,12 @@ public class RemoteRes extends DataRes implements Resource {
 		}
 	}
 
+	@Override
 	public String getResourceName() {
 		return name;
 	}
 
+	@Override
 	public URI getURI() {
 		try {
 			return new URL(path).toURI();
@@ -54,6 +57,7 @@ public class RemoteRes extends DataRes implements Resource {
 		}
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -75,6 +79,7 @@ public class RemoteRes extends DataRes implements Resource {
 		return true;
 	}
 
+	@Override
 	public int hashCode(){
 		return super.hashCode();
 	}

@@ -17,8 +17,6 @@ namespace Loon.Core.Input
     public class LProcess
     {
 
-        private AssetsSoundManager asm;
-
         internal EmulatorListener emulatorListener;
 
         internal EmulatorButtons emulatorButtons;
@@ -49,6 +47,7 @@ namespace Loon.Core.Input
 
         public LProcess(LGameXNA2DActivity p, int width, int height)
         {
+            LSystem.global_queue = p;
             this.scene = p;
             this.currentInput = new LInputFactory(this);
             this.screens = new LinkedList<Screen>();
@@ -707,13 +706,13 @@ namespace Loon.Core.Input
                     }
                     catch (System.Exception e)
                     {
-                        Loon.Utils.Debug.Log.Exception(e);
+                        Loon.Utils.Debugging.Log.Exception(e);
                     }
                 }
                 screen.SetClose(false);
                 screen.OnLoad();
-                screen.SetOnLoadState(true);
                 screen.OnLoaded();
+                screen.SetOnLoadState(true);
                 process.EndTransition();
             }
 
@@ -805,15 +804,6 @@ namespace Loon.Core.Input
                 }
                 loading_Control = null;
             }
-        }
-
-        public AssetsSoundManager GetAssetsSound()
-        {
-            if (this.asm == null)
-            {
-                this.asm = AssetsSoundManager.GetInstance();
-            }
-            return asm;
         }
 
         public int GetWidth()

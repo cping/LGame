@@ -24,8 +24,8 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 
-import loon.JavaApp.LSetting;
 import loon.core.graphics.Screen;
+
 //网页加载用类(需要lwjgl_applet.jar支持)
 public abstract class JavaApplet extends Applet {
 
@@ -46,7 +46,7 @@ public abstract class JavaApplet extends Applet {
 
 			public final void addNotify() {
 				super.addNotify();
-				setting.canvas = _canvas;
+				setting.javaCanvas = _canvas;
 				_game = LGame.register(setting, clazz, args);
 			}
 
