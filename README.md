@@ -1,6 +1,6 @@
 #LGame (formal name : Loon)
 
-#This Java implemented game framework(but will provide a cross-compiler contain C#¡¢C/C++¡¢Go¡¢JavaScript or other programming language implemented)£¬Support IOS£¬Android£¬WP7£¬PSM£¬Mac£¬Windows£¬Linux.
+#This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
 
 Built-in over 30 game example(Part screenshots):
 
