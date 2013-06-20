@@ -3521,7 +3521,7 @@ public final class GLEx implements LTrans {
 	 * @param c
 	 * @param check
 	 */
-	private void drawString(String string, float x, float y, float rotation,
+	public void drawString(String string, float x, float y, float rotation,
 			LColor c) {
 		if (isClose || c == null || checkAlpha(c)) {
 			return;

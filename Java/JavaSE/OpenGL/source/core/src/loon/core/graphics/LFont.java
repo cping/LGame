@@ -153,7 +153,7 @@ public class LFont {
 	}
 
 	public static LFont getFont(int size) {
-		return LFont.getFont(LSystem.FONT, 0, size);
+		return LFont.getFont(LSystem.FONT_NAME, 0, size);
 	}
 
 	public static LFont getFont(String familyName, int size) {

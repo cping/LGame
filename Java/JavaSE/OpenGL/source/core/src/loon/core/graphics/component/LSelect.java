@@ -36,7 +36,7 @@ import loon.core.timer.LTimer;
  */
 public class LSelect extends LContainer {
 
-	private LFont messageFont = LFont.getFont(LSystem.FONT, 0, 20);
+	private LFont messageFont = LFont.getFont(LSystem.FONT_NAME, 0, 20);
 
 	private LColor fontColor = LColor.white;
 

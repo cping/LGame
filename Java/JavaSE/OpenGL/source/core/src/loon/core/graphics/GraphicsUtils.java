@@ -304,7 +304,7 @@ final public class GraphicsUtils {
 	 * @return
 	 */
 	public static Font getFont() {
-		return getFont(LSystem.FONT, LSystem.FONT_TYPE);
+		return getFont(LSystem.FONT_NAME, LSystem.FONT_TYPE);
 	}
 
 	/**
@@ -314,7 +314,7 @@ final public class GraphicsUtils {
 	 * @return
 	 */
 	public static Font getFont(int size) {
-		return getFont(LSystem.FONT, size);
+		return getFont(LSystem.FONT_NAME, size);
 	}
 
 	/**

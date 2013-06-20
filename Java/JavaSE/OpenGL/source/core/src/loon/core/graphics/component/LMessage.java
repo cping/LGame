@@ -36,7 +36,7 @@ public class LMessage extends LContainer {
 
 	private Animation animation;
 
-	private LFont messageFont = LFont.getFont(LSystem.FONT, 0, 20);
+	private LFont messageFont = LFont.getFont(LSystem.FONT_NAME, 0, 20);
 
 	private LColor fontColor = LColor.white;
 

@@ -287,7 +287,7 @@ public final class LSystem {
 
 	public static int FONT_SIZE = 1;
 
-	public static String FONT = "黑体";
+	public static String FONT_NAME = "黑体";
 
 	public static String LOG_FILE = "log.txt";
 
