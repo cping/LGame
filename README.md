@@ -1,5 +1,9 @@
 #LGame (formal name : Loon)
 
+源自中國本土的項目
+
+International Entertainment Machines
+
 #This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
 
 Built-in over 30 game example(Part screenshots):
