@@ -486,7 +486,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 				// 让每次执行键盘事件，至少间隔1/5秒
 				if ((curTime - keyTimeMillis) > LSystem.SECOND / 5) {
 					keyTimeMillis = curTime;
-					finalKey.timer = (double) e.getEventTime();
+					finalKey.timer = e.getEventTime();
 					finalKey.keyChar = charCode;
 					finalKey.keyCode = e.getKeyCode();
 					finalKey.type = Key.KEY_DOWN;
@@ -500,7 +500,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 				}
 				break;
 			case android.view.KeyEvent.ACTION_UP:
-				finalKey.timer = (double) e.getEventTime();
+				finalKey.timer = e.getEventTime();
 				finalKey.keyChar = charCode;
 				finalKey.keyCode = e.getKeyCode();
 				finalKey.type = Key.KEY_UP;

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UTFDataFormatException;
 
+import loon.core.LRelease;
 import loon.utils.MathUtils;
 
 /**
@@ -28,7 +29,7 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-public class ArrayByte {
+public class ArrayByte implements LRelease{
 
 	public static final int BIG_ENDIAN = 0;
 
@@ -396,6 +397,11 @@ public class ArrayByte {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	@Override
+	public void dispose() {
+		data = null;
 	}
 
 }

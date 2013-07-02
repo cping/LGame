@@ -56,10 +56,12 @@ public abstract class NSObject implements LRelease {
 		return sbr.toString();
 	}
 
+	@Override
 	public String toString() {
 		return toSequence();
 	}
 
+	@Override
 	public void dispose() {
 		if (NSAutoreleasePool._instance != null
 				&& NSAutoreleasePool._instance._enable && isArray()) {

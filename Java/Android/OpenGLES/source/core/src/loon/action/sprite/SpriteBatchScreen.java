@@ -615,6 +615,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		this.follow = o;
 	}
 
+	@Override
 	public final void onLoad() {
 		if (batch == null) {
 			batch = new SpriteBatch(3000);
@@ -627,6 +628,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
+	@Override
 	public final void onLoaded() {
 		create();
 	}
@@ -841,6 +843,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
+	@Override
 	public final void alter(LTimerContext timer) {
 		for (int i = 0; i < keySize; i++) {
 			ActionKey act = (ActionKey) keyActions.get(i);
@@ -902,6 +905,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		commits();
 	}
 
+	@Override
 	public final void draw(GLEx g) {
 		if (isOnLoadComplete()) {
 			batch.begin();
@@ -928,6 +932,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public abstract void before(SpriteBatch batch);
 
+	@Override
 	public final void onKeyDown(LKey e) {
 		keySize = keyActions.size();
 		if (keySize > 0) {
@@ -945,6 +950,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public abstract void press(LKey e);
 
+	@Override
 	public final void onKeyUp(LKey e) {
 		keySize = keyActions.size();
 		if (keySize > 0) {
@@ -966,6 +972,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public abstract void close();
 
+	@Override
 	public void setAutoDestory(final boolean a) {
 		super.setAutoDestory(a);
 		if (content != null) {
@@ -973,6 +980,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
+	@Override
 	public boolean isAutoDestory() {
 		if (content != null) {
 			return content.isAutoDestory();
@@ -980,6 +988,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return super.isAutoDestory();
 	}
 
+	@Override
 	public final void dispose() {
 		if (usePhysics) {
 			_manager.setStart(false);

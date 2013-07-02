@@ -202,6 +202,7 @@
     <Compile Include="Loon.Action.Sprite\SpriteBatch.cs" />
     <Compile Include="Loon.Action.Sprite\SpriteBatchObject.cs" />
     <Compile Include="Loon.Action.Sprite\SpriteBatchScreen.cs" />
+    <Compile Include="Loon.Action.Sprite\SpriteFont.cs" />
     <Compile Include="Loon.Action.Sprite\SpriteRegion.cs" />
     <Compile Include="Loon.Action.Sprite\Sprites.cs" />
     <Compile Include="Loon.Action.Sprite\SpriteSheet.cs" />
@@ -356,6 +357,7 @@
     <Compile Include="Loon.Core\Callback.cs" />
     <Compile Include="Loon.Core\CallbackList.cs" />
     <Compile Include="Loon.Core\CallQueue.cs" />
+    <Compile Include="Loon.Core\Director.cs" />
     <Compile Include="Loon.Core\EmptyObject.cs" />
     <Compile Include="Loon.Core\EmulatorButton.cs" />
     <Compile Include="Loon.Core\EmulatorButtons.cs" />

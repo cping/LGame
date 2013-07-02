@@ -34,6 +34,7 @@ public class PCircleShape extends PShape {
 		this.mcircle = new Circle(px, py, radius);
 	}
 
+	@Override
 	void calcAABB() {
 		if (_parent == null) {
 			return;
@@ -47,6 +48,7 @@ public class PCircleShape extends PShape {
 		return rad;
 	}
 
+	@Override
 	void update() {
 	}
 

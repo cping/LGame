@@ -1,11 +1,11 @@
+using System;
 using Loon.Core;
 using Loon.Core.Graphics;
 using Loon.Core.Graphics.Opengl;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using Loon.Core.Geom;
 using Loon.Utils;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 namespace Loon.Action.Sprite
 {
 
@@ -86,6 +86,39 @@ namespace Loon.Action.Sprite
 
     public class SpriteBatch : LRelease
     {
+
+        public void Draw(SpriteFont font, string cs, float x, float y)
+        {
+            font.DrawString(this, cs, x, y);
+        }
+
+        public void Draw(SpriteFont font, string cs, float x, float y,
+                LColor color)
+        {
+            font.DrawString(this, cs, x, y, color);
+        }
+
+        /**
+         * Sample:
+         * batch.Draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
+                     Vector2f.Zero, new Vector2f(1f, 1f), SpriteEffects.None);
+				
+         * @param font
+         * @param cs
+         * @param local
+         * @param color
+         * @param rotation
+         * @param origin
+         * @param scale
+         * @param spriteEffects
+         */
+        public void Draw(SpriteFont font, string cs, Vector2f local,
+                LColor color, float rotation, Vector2f origin, Vector2f scale,
+                SpriteEffects spriteEffects)
+        {
+            font.DrawString(this, cs, local, color, rotation, origin, scale,
+                    spriteEffects);
+        }
 
         public static int VERTEX_SIZE = 2 + 1 + 2;
 
@@ -366,7 +399,7 @@ namespace Loon.Action.Sprite
             gl.SetColor(old);
         }
 
-        public void drawLine(float x1, float y1, float x2, float y2)
+        public void DrawLine(float x1, float y1, float x2, float y2)
         {
             Submit();
             GLEx gl = GLEx.Self;

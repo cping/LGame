@@ -85,6 +85,7 @@ public class PRodJoint extends PJoint {
 		return v >= min ? min : v;
 	}
 
+	@Override
 	void preSolve(float dt) {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);
@@ -114,6 +115,7 @@ public class PRodJoint extends PJoint {
 		b2.mAng.transpose().mulEqual(localAnchor2);
 	}
 
+	@Override
 	void solvePosition() {
 		float rvn = normal.dot(PTransformer.calcRelativeCorrectVelocity(b1, b2,
 				relAnchor1, relAnchor2));
@@ -128,6 +130,7 @@ public class PRodJoint extends PJoint {
 		b2.positionCorrection(-forceX, -forceY, anchor2.x, anchor2.y);
 	}
 
+	@Override
 	void solveVelocity(float dt) {
 		float rn = normal.dot(PTransformer.calcRelativeVelocity(b1, b2,
 				relAnchor1, relAnchor2));
@@ -139,6 +142,7 @@ public class PRodJoint extends PJoint {
 		b2.applyImpulse(-forceX, -forceY, anchor2.x, anchor2.y);
 	}
 
+	@Override
 	void update() {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);

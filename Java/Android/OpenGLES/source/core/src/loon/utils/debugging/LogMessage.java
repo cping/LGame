@@ -61,6 +61,7 @@ public class LogMessage {
 		return time;
 	}
 
+	@Override
 	public String toString() {
 		return (time + " [" + level + "] " + message).intern();
 	}

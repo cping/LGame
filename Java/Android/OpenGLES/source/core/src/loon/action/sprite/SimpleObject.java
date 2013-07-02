@@ -33,6 +33,7 @@ public abstract class SimpleObject extends SpriteBatchObject {
 		super(x, y, animation, tiles);
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		animation.update(elapsedTime);
 	}

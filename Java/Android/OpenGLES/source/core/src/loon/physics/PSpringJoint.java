@@ -89,6 +89,7 @@ public class PSpringJoint extends PJoint {
 		return str;
 	}
 
+	@Override
 	void preSolve(float dt) {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);
@@ -133,12 +134,15 @@ public class PSpringJoint extends PJoint {
 		str = strength;
 	}
 
+	@Override
 	void solvePosition() {
 	}
 
+	@Override
 	void solveVelocity(float f) {
 	}
 
+	@Override
 	void update() {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);

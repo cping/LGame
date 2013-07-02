@@ -233,10 +233,12 @@ public class ArrayMap {
 		return array;
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 
+	@Override
 	public final boolean equals(Object o) {
 		if (!getClass().isInstance(o)) {
 			return false;
@@ -253,6 +255,7 @@ public class ArrayMap {
 		return true;
 	}
 
+	@Override
 	public Object clone() {
 		ArrayMap copy = new ArrayMap();
 		copy.threshold = threshold;
@@ -377,6 +380,7 @@ public class ArrayMap {
 		size = newSize;
 	}
 
+	@Override
 	public String toString() {
 		return toString(',');
 	}
@@ -442,6 +446,7 @@ public class ArrayMap {
 			next = null;
 		}
 
+		@Override
 		public boolean equals(final Object o) {
 			if (this == o) {
 				return true;
@@ -451,10 +456,12 @@ public class ArrayMap {
 					&& (value != null ? value.equals(e.value) : e.value == null);
 		}
 
+		@Override
 		public int hashCode() {
 			return hashCode;
 		}
 
+		@Override
 		public String toString() {
 			return key + "=" + value;
 		}

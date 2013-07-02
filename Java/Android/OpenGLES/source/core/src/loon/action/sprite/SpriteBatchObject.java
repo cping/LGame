@@ -39,6 +39,7 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		this.setScale(s, s);
 	}
 
+	@Override
 	public void setScale(final float sx, final float sy) {
 		if (this.scaleX == sx && this.scaleY == sy) {
 			return;
@@ -47,10 +48,12 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		this.scaleY = sy;
 	}
 
+	@Override
 	public float getScaleX() {
 		return this.scaleX;
 	}
 
+	@Override
 	public float getScaleY() {
 		return this.scaleY;
 	}
@@ -209,6 +212,7 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		return tiles;
 	}
 
+	@Override
 	public Field2D getField2D() {
 		return tiles.getField();
 	}
@@ -235,11 +239,13 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		return false;
 	}
 
+	@Override
 	public int getWidth() {
 		return (int) ((dstWidth > 1 ? (int) dstWidth : animation
 				.getSpriteImage().getWidth()) * scaleX);
 	}
 
+	@Override
 	public int getHeight() {
 		return (int) ((dstHeight > 1 ? (int) dstHeight : animation
 				.getSpriteImage().getHeight()) * scaleY);
@@ -253,6 +259,7 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		this.attribute = attribute;
 	}
 
+	@Override
 	public void dispose() {
 		if (animation != null) {
 			animation.dispose();
@@ -281,26 +288,32 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		this.mirror = mirror;
 	}
 
+	@Override
 	public boolean isBounded() {
 		return false;
 	}
 
+	@Override
 	public boolean isContainer() {
 		return false;
 	}
 
+	@Override
 	public boolean inContains(int x, int y, int w, int h) {
 		return false;
 	}
 
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionArea();
 	}
 
+	@Override
 	public int getContainerWidth() {
 		return 0;
 	}
 
+	@Override
 	public int getContainerHeight() {
 		return 0;
 	}

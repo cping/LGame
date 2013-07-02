@@ -352,6 +352,7 @@ public class IntArray {
 		return buffer.toString();
 	}
 
+	@Override
 	public String toString() {
 		return toString(',');
 	}

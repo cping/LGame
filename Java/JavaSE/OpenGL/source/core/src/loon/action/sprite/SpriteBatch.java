@@ -46,6 +46,36 @@ import loon.utils.MathUtils;
 
 public class SpriteBatch implements LRelease {
 
+	public void draw(SpriteFont font, CharSequence cs, float x, float y) {
+		font.drawString(this, cs, x, y);
+	}
+
+	public void draw(SpriteFont font, CharSequence cs, float x, float y,
+			LColor color) {
+		font.drawString(this, cs, x, y, color);
+	}
+
+	/**
+	 * Sample:
+	 * batch.draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
+				 Vector2f.Zero, new Vector2f(1f, 1f), SpriteEffects.None);
+				
+	 * @param font
+	 * @param cs
+	 * @param local
+	 * @param color
+	 * @param rotation
+	 * @param origin
+	 * @param scale
+	 * @param spriteEffects
+	 */
+	public void draw(SpriteFont font, CharSequence cs, Vector2f local,
+			LColor color, float rotation, Vector2f origin, Vector2f scale,
+			SpriteEffects spriteEffects) {
+		font.drawString(this, cs, local, color, rotation, origin, scale,
+				spriteEffects);
+	}
+
 	public static enum SpriteEffects {
 		None, FlipHorizontally, FlipVertically;
 	}

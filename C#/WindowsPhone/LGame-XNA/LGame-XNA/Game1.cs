@@ -1,14 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Input.Touch;
-using Microsoft.Xna.Framework.Media;
 using Loon;
 using Loon.Core.Graphics;
 using Loon.Core.Graphics.Opengl;
@@ -21,6 +13,7 @@ using Loon.Core;
 using Loon.Media;
 using Loon.Core.Event;
 using Loon.Utils.Debugging;
+using Loon.Core.Geom;
 
 namespace LGame_XNA
 {
@@ -28,17 +21,18 @@ namespace LGame_XNA
     public class HelloWorld2 : SpriteBatchScreen
     {
 
+        SpriteFont font;
+
         public override void Create()
         {
-        
+            font = SpriteFont.Read("assets/ScoreFont.pak");
         }
 
         public override void After(Loon.Action.Sprite.SpriteBatch batch)
         {
-            batch.SetColor(LColor.red);
-            batch.FillRect(40, 60, 155, 1000);
-            batch.SetColor(LColor.blue);
-            batch.DrawRect(40, 60, 155, 1000);
+           // batch.Draw(font,"ABCD\nEF", 66, 66,LColor.red);
+            batch.Draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
+                     Vector2f.Zero, new Vector2f(1f, 1f), SpriteEffects.None);
         }
 
         public override void Before(Loon.Action.Sprite.SpriteBatch batch)
@@ -250,8 +244,8 @@ namespace LGame_XNA
             LSetting setting = new LSetting();
             setting.showLogo = false;
             setting.showFPS = true;
-            setting.landscape = true;
-            Register(setting, typeof(HelloWorld2));
+            setting.landscape = false;
+            Register(setting, typeof(HelloWorld));
         }
 
         public override void OnGameResumed()

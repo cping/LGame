@@ -49,7 +49,8 @@ public class PTransformer
         e11 += m.e11;
     }
 
-    public PTransformer clone()
+    @Override
+	public PTransformer clone()
     {
         return new PTransformer(e00, e01, e10, e11);
     }
@@ -127,7 +128,8 @@ public class PTransformer
         e11 = cos;
     }
 
-    public String toString()
+    @Override
+	public String toString()
     {
         return (new StringBuilder("[[")).append(e00).append(", ").append(e01).append("], [").append(e10).append(", ").append(e11).append("]]").toString();
     }

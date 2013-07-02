@@ -295,7 +295,7 @@ public final class LSystem {
 
 	public static int DEFAULT_MAX_CACHE_SIZE = 30;
 
-	public static int DEFAULT_MAX_FPS = 200;
+	public static int DEFAULT_MAX_FPS = 60;
 
 	public static boolean AUTO_REPAINT = true;
 

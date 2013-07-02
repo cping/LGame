@@ -96,7 +96,7 @@ public class PPhysWorld {
 		if (s._type == PShapeType.CONCAVE_SHAPE) {
 			PConcavePolygonShape c = (PConcavePolygonShape) s;
 			for (int i = 0; i < c.numConvexes; i++) {
-				addShape(((PShape) (c.convexes[i])));
+				addShape(((c.convexes[i])));
 			}
 			return;
 		}
@@ -215,7 +215,7 @@ public class PPhysWorld {
 	}
 
 	public float getIterations() {
-		return (float) iterations;
+		return iterations;
 	}
 
 	public PJoint[] getJoints() {

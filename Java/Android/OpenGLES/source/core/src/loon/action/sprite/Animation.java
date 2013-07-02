@@ -175,6 +175,7 @@ public class Animation implements LRelease {
 	/**
 	 * 克隆一个独立动画
 	 */
+	@Override
 	public Object clone() {
 		return new Animation(frames, totalDuration);
 	}
@@ -360,6 +361,7 @@ public class Animation implements LRelease {
 			this.endTimer = endTimer;
 		}
 
+		@Override
 		public void dispose() {
 			if (image != null) {
 				LTexture father = image.getParent();
@@ -372,6 +374,7 @@ public class Animation implements LRelease {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		if (frames != null) {
 			for (AnimationFrame frame : frames) {

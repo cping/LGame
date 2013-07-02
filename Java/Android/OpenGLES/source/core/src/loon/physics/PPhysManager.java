@@ -57,8 +57,8 @@ public class PPhysManager {
 	}
 
 	public PBody box(boolean fix, RectBox rect, float angle, float density) {
-		return box(fix, rect.x, rect.y, (float) rect.width,
-				(float) rect.height, angle, density);
+		return box(fix, rect.x, rect.y, rect.width,
+				rect.height, angle, density);
 	}
 
 	public PBody addBox(boolean fix, float x, float y, float w, float h,

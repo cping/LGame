@@ -26,8 +26,8 @@ public class PPolygon {
 
 	public PPolygon(float[] xs, float[] ys) {
 		this.numVertices = xs.length;
-		this.xs = (float[]) xs.clone();
-		this.ys = (float[]) ys.clone();
+		this.xs = xs.clone();
+		this.ys = ys.clone();
 	}
 
 	public PPolygon(float[] points) {

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import loon.JavaApp;
 import loon.LGame;
+import loon.core.Director;
 import loon.core.EmulatorButtons;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
@@ -42,7 +43,7 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-public class LProcess {
+public class LProcess extends Director{
 
 	private JavaApp scene;
 

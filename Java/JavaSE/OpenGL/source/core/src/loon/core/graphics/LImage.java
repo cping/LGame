@@ -878,7 +878,7 @@ public class LImage implements LRelease {
 		return pixels;
 	}
 
-	public void setPixel(Color c, int x, int y) {
+	public void setPixel(LColor c, int x, int y) {
 		isUpdate = true;
 		bufferedImage.setRGB(x, y, c.getRGB());
 	}

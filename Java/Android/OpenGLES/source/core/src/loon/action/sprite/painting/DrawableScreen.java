@@ -300,6 +300,7 @@ public abstract class DrawableScreen extends Screen {
 		move(e);
 	}
 
+	@Override
 	public final void touchDrag(LTouch e) {
 		drag(e);
 	}

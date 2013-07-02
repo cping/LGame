@@ -20,6 +20,7 @@ import loon.core.geom.Vector2f;
 public class PPolygonPolygonCollider implements PCollider {
 	private class PWContactedVertex {
 
+		@Override
 		public PWContactedVertex clone() {
 			PWContactedVertex cv = new PWContactedVertex();
 			cv.v = v.clone();
@@ -82,6 +83,7 @@ public class PPolygonPolygonCollider implements PCollider {
 		return line;
 	}
 
+	@Override
 	public int collide(PShape s1, PShape s2, PContact cs[]) {
 		if (s1._type != PShapeType.CONVEX_SHAPE
 				&& s1._type != PShapeType.BOX_SHAPE

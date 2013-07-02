@@ -82,6 +82,7 @@ public abstract class CallQueue {
 
 	public <T> void notifySuccess(final Callback<T> callback, final T result) {
 		invokeLater(new Updateable() {
+			@Override
 			public void action() {
 				callback.onSuccess(result);
 			}
@@ -90,6 +91,7 @@ public abstract class CallQueue {
 
 	public void notifyFailure(final Callback<?> callback, final Throwable error) {
 		invokeLater(new Updateable() {
+			@Override
 			public void action() {
 				callback.onFailure(error);
 			}

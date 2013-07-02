@@ -63,6 +63,7 @@ public class PConcavePolygonShape extends PShape {
 		_type = PShapeType.CONCAVE_SHAPE;
 	}
 
+	@Override
 	void calcAABB() {
 		for (int i = 0; i < numConvexes; i++) {
 			PConvexPolygonShape c = convexes[i];
@@ -132,6 +133,7 @@ public class PConcavePolygonShape extends PShape {
 		return vertices;
 	}
 
+	@Override
 	void update() {
 		float twoPI = MathUtils.TWO_PI;
 		for (int i = 0; i < numConvexes; i++) {

@@ -132,8 +132,8 @@ public abstract class PShape {
 	public void setColor(int r, int g, int b) {
 		if (_rnd) {
 			_color = new LColor(r, g, b);
-			_strokeColor = new LColor((int) ((float) r * 0.375F),
-					(int) ((float) g * 0.375F), (int) ((float) b * 0.375F));
+			_strokeColor = new LColor((int) (r * 0.375F),
+					(int) (g * 0.375F), (int) (b * 0.375F));
 		}
 	}
 

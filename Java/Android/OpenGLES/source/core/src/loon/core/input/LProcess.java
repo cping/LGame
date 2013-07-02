@@ -3,6 +3,7 @@ package loon.core.input;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import loon.core.Director;
 import loon.core.EmulatorButtons;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
@@ -42,7 +43,7 @@ import android.view.View;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-public class LProcess {
+public class LProcess extends Director{
 
 	ArrayList<Updateable> loads;
 

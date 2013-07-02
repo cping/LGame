@@ -53,6 +53,7 @@ public class PDragJoint extends PJoint {
 		return relAnchor.clone();
 	}
 
+	@Override
 	void preSolve(float dt) {
 		relAnchor = b.mAng.mul(localAnchor);
 		anchor.set(relAnchor.x + b.pos.x, relAnchor.y + b.pos.y);
@@ -79,12 +80,15 @@ public class PDragJoint extends PJoint {
 		b.mAng.transpose().mulEqual(localAnchor);
 	}
 
+	@Override
 	void solvePosition() {
 	}
 
+	@Override
 	void solveVelocity(float f) {
 	}
 
+	@Override
 	void update() {
 		relAnchor = b.mAng.mul(localAnchor);
 		anchor.set(relAnchor.x + b.pos.x, relAnchor.y + b.pos.y);

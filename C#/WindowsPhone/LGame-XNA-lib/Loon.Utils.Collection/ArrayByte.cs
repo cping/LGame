@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using Loon.Java;
 using System.IO;
+using Loon.Core;
 
 namespace Loon.Utils.Collection
 {
-    public class ArrayByte
+    public class ArrayByte : LRelease
     {
 
         public const int BIG_ENDIAN = 0;
@@ -247,12 +248,14 @@ namespace Loon.Utils.Collection
 
         public float ReadFloat()
         {
-            return BitConverter.DoubleToInt64Bits(ReadInt());
+            int r = ReadInt();
+            return System.BitConverter.ToSingle(System.BitConverter.GetBytes(r), 0);
         }
 
         public double ReadDouble()
         {
-            return BitConverter.Int64BitsToDouble(ReadLong());
+            int r = ReadInt();
+            return System.BitConverter.ToDouble(System.BitConverter.GetBytes(r), 0);
         }
 
         public string ReadUTF()
@@ -474,6 +477,11 @@ namespace Loon.Utils.Collection
         public void SetArrayType(int t)
         {
             this.type = t;
+        }
+
+        public void Dispose()
+        {
+            this.data = null;
         }
 	
 

@@ -114,6 +114,7 @@ public class NSArray extends NSObject {
 		sbr.append("</array>");
 	}
 
+	@Override
 	public String toString() {
 		return _list.toString();
 	}

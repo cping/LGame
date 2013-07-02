@@ -1,7 +1,7 @@
 namespace Loon.Core.Input
 {
-    using System.Collections.Generic;
     using System.Runtime.CompilerServices;
+    using System.Collections.Generic;
     using Microsoft.Xna.Framework.Content;
     using Microsoft.Xna.Framework.Graphics;
     using Microsoft.Xna.Framework;
@@ -14,7 +14,7 @@ namespace Loon.Core.Input
     using Loon.Utils;
     using Loon.Media;
 
-    public class LProcess
+    public class LProcess : Director
     {
 
         internal EmulatorListener emulatorListener;

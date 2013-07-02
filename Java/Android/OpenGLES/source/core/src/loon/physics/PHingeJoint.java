@@ -115,6 +115,7 @@ public class PHingeJoint extends PJoint {
 		return enableMotor;
 	}
 
+	@Override
 	void preSolve(float dt) {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);
@@ -208,6 +209,7 @@ public class PHingeJoint extends PJoint {
 		b2.mAng.transpose().mulEqual(localAnchor2);
 	}
 
+	@Override
 	void solvePosition() {
 		if (enableLimit && limitState != 0) {
 			float over = b2.ang - b1.ang - localAngle;
@@ -245,6 +247,7 @@ public class PHingeJoint extends PJoint {
 		b2.positionCorrection(-force.x, -force.y, anchor2.x, anchor2.y);
 	}
 
+	@Override
 	void solveVelocity(float dt) {
 		Vector2f relVel = PTransformer.calcRelativeVelocity(b1, b2, relAnchor1,
 				relAnchor2);
@@ -279,6 +282,7 @@ public class PHingeJoint extends PJoint {
 		}
 	}
 
+	@Override
 	void update() {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);

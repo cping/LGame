@@ -106,6 +106,7 @@ public class ArrayList {
 		return obj;
 	}
 
+	@Override
 	public Object clone() {
 		return this;
 	}
@@ -225,6 +226,7 @@ public class ArrayList {
 		}
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object == this) {
 			return true;
@@ -290,6 +292,7 @@ public class ArrayList {
 		return result;
 	}
 
+	@Override
 	public String toString() {
 		return toString(',');
 	}

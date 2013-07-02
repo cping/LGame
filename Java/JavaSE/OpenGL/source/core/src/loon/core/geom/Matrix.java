@@ -27,9 +27,6 @@ import loon.utils.MathUtils;
  */
 public final class Matrix {
 
-	public static final Matrix IDENTITY = new Matrix(new float[] { 1, 0, 0, 0,
-			0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 });
-
 	float[] matrixs;
 
 	public Matrix() {

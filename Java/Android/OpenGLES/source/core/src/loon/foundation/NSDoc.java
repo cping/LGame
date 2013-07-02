@@ -39,8 +39,8 @@ public class NSDoc {
 			NSDictionary dict = new NSDictionary();
 			ArrayList<XMLElement> children = n.list();
 			for (int i = 0; i < children.size(); i += 2) {
-				XMLElement key = (XMLElement) children.get(i + 0);
-				XMLElement val = (XMLElement) children.get(i + 1);
+				XMLElement key = children.get(i + 0);
+				XMLElement val = children.get(i + 1);
 				dict.put(key.getContents(), parseObject(val));
 			}
 			return dict;
@@ -48,7 +48,7 @@ public class NSDoc {
 			ArrayList<XMLElement> children = n.list();
 			NSArray array = new NSArray(children.size());
 			for (int i = 0; i < children.size(); i++) {
-				array.setValue(i, parseObject((XMLElement) children.get(i)));
+				array.setValue(i, parseObject(children.get(i)));
 			}
 			return array;
 		} else if (type.equalsIgnoreCase("true")
@@ -68,8 +68,8 @@ public class NSDoc {
 		} else if (type.equalsIgnoreCase("range")) {
 			ArrayList<XMLElement> children = n.list();
 			if (children.size() == 2) {
-				XMLElement key = (XMLElement) children.get(0);
-				XMLElement val = (XMLElement) children.get(1);
+				XMLElement key = children.get(0);
+				XMLElement val = children.get(1);
 				return new NSRange(Integer.parseInt(key.getContents()),
 						Integer.parseInt(val.getContents()));
 			}
