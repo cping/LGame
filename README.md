@@ -1,6 +1,6 @@
 ﻿#LGame (formal name : Loon)
 
-#Other: I collect bitcoin, hoping to get donations, address -> 1QAH7B8AMkBvafNjPF1sjKMNgdUh3dbGec
+Other: I collect bitcoin, hoping to get donations, address -> 1QAH7B8AMkBvafNjPF1sjKMNgdUh3dbGec
 
 源自中國本土的項目
 
