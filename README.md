@@ -1,4 +1,9 @@
-﻿#LGame (formal name : Loon)
+﻿#寻求帮助:
+
+具体可见下面地址，帮助小弟代领虚拟币，此币最近找人代领的太多已经超跌了，带领一次支付30CNY，支付宝转账：
+http://note.youdao.com/share/?id=db839edb85a7b58b514a862e04198acc&type=note
+
+#LGame (formal name : Loon)
 
 Other: I collect bitcoin, hoping to get donations, address -> 1QAH7B8AMkBvafNjPF1sjKMNgdUh3dbGec
 
