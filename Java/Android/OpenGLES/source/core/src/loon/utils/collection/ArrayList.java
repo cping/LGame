@@ -36,7 +36,7 @@ public class ArrayList {
 	public ArrayList(int length) {
 		this._items = new Object[length + (length / 2)];
 		this._full = false;
-		this._size = length;
+		this._size = 0;
 	}
 
 	public void addAll(ArrayList array) {
@@ -106,7 +106,6 @@ public class ArrayList {
 		return obj;
 	}
 
-	@Override
 	public Object clone() {
 		return this;
 	}
@@ -226,7 +225,6 @@ public class ArrayList {
 		}
 	}
 
-	@Override
 	public boolean equals(Object object) {
 		if (object == this) {
 			return true;
@@ -292,7 +290,6 @@ public class ArrayList {
 		return result;
 	}
 
-	@Override
 	public String toString() {
 		return toString(',');
 	}

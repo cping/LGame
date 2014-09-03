@@ -36,7 +36,7 @@ public class ArrayList {
 	public ArrayList(int length) {
 		this._items = new Object[length + (length / 2)];
 		this._full = false;
-		this._size = length;
+		this._size = 0;
 	}
 
 	public void addAll(ArrayList array) {

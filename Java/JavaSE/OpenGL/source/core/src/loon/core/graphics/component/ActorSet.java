@@ -25,7 +25,6 @@ import java.util.Iterator;
  * @version 0.1
  */
 
-@SuppressWarnings({ "rawtypes" })
 public class ActorSet extends AbstractSet {
 
 	private ActorSet.ListNode listHeadTail = new ActorSet.ListNode();

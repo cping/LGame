@@ -604,11 +604,21 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 			}
 		});
 	}
-
+	
+	private boolean requestFocus = true;
+		
 	@Override
 	public boolean onTouch(View v, MotionEvent e) {
 		if (handler == null) {
 			return true;
+		}
+		if (requestFocus && LSystem.getActivity() != null) {
+			if (requestFocus && LSystem.getActivity().gameView() != null) {
+				View view = LSystem.getActivity().gameView().getView();
+				view.requestFocus();
+				view.requestFocusFromTouch();
+				requestFocus = false;
+			}
 		}
 		EmulatorButtons ebs = handler.emulatorButtons;
 		if (ebs != null && ebs.isVisible()) {

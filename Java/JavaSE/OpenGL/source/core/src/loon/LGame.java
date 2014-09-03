@@ -808,7 +808,7 @@ public class LGame extends JavaApp {
 		setLogo(LTextures.loadTexture(path));
 	}
 
-	public void setShowLogo(boolean showLogo) {
+	protected void setShowLogo(boolean showLogo) {
 		LSystem.isLogo = showLogo;
 	}
 
@@ -825,14 +825,14 @@ public class LGame extends JavaApp {
 
 	private final String pFontString = " MEORYFPSB0123456789:.of";
 
-	public void setShowFPS(boolean showFps) {
+	protected void setShowFPS(boolean showFps) {
 		this.isFPS = showFps;
 		if (showFps && fpsFont == null) {
 			this.fpsFont = new LSTRFont(LFont.getDefaultFont(), pFontString);
 		}
 	}
 
-	public void setShowMemory(boolean showMemory) {
+	protected void setShowMemory(boolean showMemory) {
 		this.isMemory = showMemory;
 		if (showMemory && fpsFont == null) {
 			this.fpsFont = new LSTRFont(LFont.getDefaultFont(), pFontString);
@@ -859,11 +859,11 @@ public class LGame extends JavaApp {
 		return _resizable;
 	}
 
-	public void setResizable(boolean r) {
+	protected void setResizable(boolean r) {
 		this._resizable = r;
 	}
 
-	public void setFPS(long frames) {
+	protected void setFPS(long frames) {
 		this.maxFrames = frames;
 	}
 

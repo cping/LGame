@@ -30,7 +30,6 @@ import loon.utils.CollectionUtils;
  * @version 0.1
  */
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ActorTreeSet extends AbstractSet {
 
 	private static final Comparator DEFAULT_COMPARATOR = new Comparator() {

@@ -123,7 +123,7 @@ public class LGameTools {
 
 	final static class Logo implements LRelease {
 
-		private int centerX, centerY;
+		private int centerX = 0, centerY = 0;
 
 		private float alpha = 0f;
 
@@ -148,9 +148,9 @@ public class LGameTools {
 				this.logo.loadTexture();
 			}
 			if (centerX == 0 || centerY == 0) {
-				this.centerX = (int) (LSystem.screenRect.width * LSystem.scaleWidth)
+				this.centerX = (int) (LSystem.screenRect.width)
 						/ 2 - logo.getWidth() / 2;
-				this.centerY = (int) (LSystem.screenRect.height * LSystem.scaleHeight)
+				this.centerY = (int) (LSystem.screenRect.height)
 						/ 2 - logo.getHeight() / 2;
 			}
 			if (logo == null || !logo.isLoaded()) {

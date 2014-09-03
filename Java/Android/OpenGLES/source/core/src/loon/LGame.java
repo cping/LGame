@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import loon.LSetting.Listener;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;
@@ -14,12 +15,15 @@ import loon.core.input.LInput.SelectEvent;
 import loon.core.input.LInput.TextEvent;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -66,7 +70,7 @@ public abstract class LGame extends Activity {
 		}
 	}
 
-	public void register(LSetting setting, Class<? extends Screen> clazz,
+	public void register(final LSetting setting, Class<? extends Screen> clazz,
 			Object... args) {
 		this._listener = setting.listener;
 		this.maxScreen(setting.width, setting.height);
@@ -127,17 +131,25 @@ public abstract class LGame extends Activity {
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				Log.i("Android2DActivity", "LGame 2D Engine Start");
-				LSystem.screenActivity = LGame.this;
-				LGame.this.frameLayout = new FrameLayout(LGame.this);
-				LGame.this.isDestroy = true;
-				LGame.this.onMain();
-			}
-		};
-		runOnUiThread(runnable);
+		try {
+			LSystem.screenActivity = LGame.this;
+			LGame.this.frameLayout = new FrameLayout(LGame.this);
+			LGame.this.isDestroy = true;
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					LGame.this.onMain();
+				}
+			};
+			runOnUiThread(runnable);
+
+		} catch (Throwable ex) {
+			LSystem.screenActivity = LGame.this;
+			LGame.this.frameLayout = new FrameLayout(LGame.this);
+			LGame.this.isDestroy = true;
+			LGame.this.onMain();
+		}
+		Log.i("Android2DActivity", "LGame 2D Engine Start");
 	}
 
 	public void setActionBarVisibility(boolean visible) {
@@ -157,11 +169,11 @@ public abstract class LGame extends Activity {
 		}
 	}
 
-	public void initialization(final boolean landscape) {
+	protected void initialization(final boolean landscape) {
 		initialization(landscape, LMode.Ratio);
 	}
 
-	public void initialization(final boolean landscape, final LMode mode) {
+	protected void initialization(final boolean landscape, final LMode mode) {
 		initialization(landscape, true, mode);
 	}
 
@@ -172,7 +184,7 @@ public abstract class LGame extends Activity {
 	 * @param height
 	 * @param landscape
 	 */
-	public void initialization(final int width, final int height,
+	protected void initialization(final int width, final int height,
 			final boolean landscape) {
 		initialization(width, height, landscape, LMode.Ratio);
 	}
@@ -185,13 +197,13 @@ public abstract class LGame extends Activity {
 	 * @param landscape
 	 * @param mode
 	 */
-	public void initialization(final int width, final int height,
+	protected void initialization(final int width, final int height,
 			final boolean landscape, final LMode mode) {
 		maxScreen(width, height);
 		initialization(landscape, mode);
 	}
 
-	public void initialization(final boolean landscape,
+	protected void initialization(final boolean landscape,
 			final boolean fullScreen, final LMode mode) {
 		if (!landscape) {
 			if (LSystem.MAX_SCREEN_HEIGHT > LSystem.MAX_SCREEN_WIDTH) {
@@ -427,17 +439,17 @@ public abstract class LGame extends Activity {
 		return result + ad.length();
 	}
 
-	public void maxScreen() {
+	protected void maxScreen() {
 		RectBox rect = getScreenDimension();
 		maxScreen(rect.width, rect.height);
 	}
 
-	public void maxScreen(int w, int h) {
+	protected void maxScreen(int w, int h) {
 		LSystem.MAX_SCREEN_WIDTH = w;
 		LSystem.MAX_SCREEN_HEIGHT = h;
 	}
 
-	public void showScreen() {
+	protected void showScreen() {
 		setContentView(frameLayout);
 		try {
 			getWindow().setBackgroundDrawable(null);
@@ -617,31 +629,31 @@ public abstract class LGame extends Activity {
 		}
 	}
 
-	public void setShowFPS(boolean flag) {
+	protected void setShowFPS(boolean flag) {
 		if (gameView != null) {
 			this.gameView.setShowFPS(flag);
 		}
 	}
 
-	public void setShowMemory(boolean flag) {
+	protected void setShowMemory(boolean flag) {
 		if (gameView != null) {
 			this.gameView.setShowMemory(flag);
 		}
 	}
 
-	public void setFPS(long frames) {
+	protected void setFPS(long frames) {
 		if (gameView != null) {
 			this.gameView.setFPS(frames);
 		}
 	}
 
-	public void setShowLogo(boolean showLogo) {
+	protected void setShowLogo(boolean showLogo) {
 		if (gameView != null) {
 			gameView.setShowLogo(showLogo);
 		}
 	}
 
-	public void setLogo(LTexture img) {
+	protected void setLogo(LTexture img) {
 		if (gameView != null) {
 			gameView.setLogo(img);
 		}
@@ -725,7 +737,9 @@ public abstract class LGame extends Activity {
 			gameView.destroy();
 		}
 		if (gameView != null && gameView.getView() != null) {
-			((GLSurfaceViewCupcake) gameView.getView()).onPause();
+			if (gameView.getView() instanceof GLSurfaceViewCupcake) {
+				((GLSurfaceViewCupcake) gameView.getView()).onPause();
+			}
 		}
 		super.onPause();
 	}
@@ -735,22 +749,15 @@ public abstract class LGame extends Activity {
 		if (gameView == null) {
 			return;
 		}
-		if (LSystem.SCREEN_LANDSCAPE) {
-			if (getRequestedOrientation() != android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-				setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			}
-		} else {
-			if (getRequestedOrientation() != android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-				setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			}
-		}
 		if (_listener != null) {
 			_listener.onResume();
 		}
 		gameView.resume();
 		onGameResumed();
 		if (gameView != null && gameView.getView() != null) {
-			((GLSurfaceViewCupcake) gameView.getView()).onResume();
+			if (gameView.getView() instanceof GLSurfaceViewCupcake) {
+				((GLSurfaceViewCupcake) gameView.getView()).onResume();
+			}
 		}
 		super.onResume();
 	}

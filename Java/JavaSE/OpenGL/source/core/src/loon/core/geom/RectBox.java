@@ -577,9 +577,12 @@ public class RectBox extends Shape {
 	 * @param rect
 	 * @return
 	 */
-
 	public boolean contains(RectBox rect) {
 		return contains(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public boolean contains(Vector2f v) {
+		return contains(v.x, v.y);
 	}
 
 	/**

@@ -28,12 +28,18 @@ import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
 
 import android.content.Context;
+import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 /**
  * 
@@ -132,139 +138,150 @@ public final class LGameView extends CallQueue implements Renderer {
 		return LSystem.scaleWidth != 1 || LSystem.scaleHeight != 1;
 	}
 
-	protected void setLandscape(boolean landscape, LMode mode) {
-		try {
-			if (landscape) {
-				if (LSystem.screenActivity.getRequestedOrientation() != android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-					LSystem.screenActivity
-							.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-				}
-			} else {
-				if (LSystem.screenActivity.getRequestedOrientation() != android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-					LSystem.screenActivity
-							.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-				}
+	protected void setLandscape(final boolean landscape, LMode mode) {
+		int currentOrientation = LSystem.screenActivity.getResources()
+				.getConfiguration().orientation;
+		if (LSystem.isAndroidVersionHigher(11)) {
+			String error = "Your screenOrientation(in AndroidManifest.xml) set and game settings not match ! ";
+			if (landscape
+					&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+				new android.app.AlertDialog.Builder(LSystem.screenActivity)
+						.setMessage(
+								"LGame Error : " + error + "not landscape !")
+						.show();
+			} else if (!landscape
+					&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+				new android.app.AlertDialog.Builder(LSystem.screenActivity)
+						.setMessage("LGame Error : " + error + "not portrait !")
+						.show();
+			}
+		} else {
+			if (landscape
+					&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+				LSystem.screenActivity
+						.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			} else if (!landscape
+					&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+				LSystem.screenActivity
+						.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			}
 
-			RectBox d = LSystem.screenActivity.getScreenDimension();
-
-			LSystem.SCREEN_LANDSCAPE = landscape;
-
-			this.maxWidth = (int) d.getWidth();
-			this.maxHeight = (int) d.getHeight();
-
-			if (landscape && (d.getWidth() > d.getHeight())) {
-				maxWidth = (int) d.getWidth();
-				maxHeight = (int) d.getHeight();
-			} else if (landscape && (d.getWidth() < d.getHeight())) {
-				maxHeight = (int) d.getWidth();
-				maxWidth = (int) d.getHeight();
-			} else if (!landscape && (d.getWidth() < d.getHeight())) {
-				maxWidth = (int) d.getWidth();
-				maxHeight = (int) d.getHeight();
-			} else if (!landscape && (d.getWidth() > d.getHeight())) {
-				maxHeight = (int) d.getWidth();
-				maxWidth = (int) d.getHeight();
-			}
-
-			if (mode != LMode.Max) {
-				if (landscape) {
-					this.width = LSystem.MAX_SCREEN_WIDTH;
-					this.height = LSystem.MAX_SCREEN_HEIGHT;
-				} else {
-					this.width = LSystem.MAX_SCREEN_HEIGHT;
-					this.height = LSystem.MAX_SCREEN_WIDTH;
-				}
-			} else {
-				if (landscape) {
-					this.width = maxWidth >= LSystem.MAX_SCREEN_WIDTH ? LSystem.MAX_SCREEN_WIDTH
-							: maxWidth;
-					this.height = maxHeight >= LSystem.MAX_SCREEN_HEIGHT ? LSystem.MAX_SCREEN_HEIGHT
-							: maxHeight;
-				} else {
-					this.width = maxWidth >= LSystem.MAX_SCREEN_HEIGHT ? LSystem.MAX_SCREEN_HEIGHT
-							: maxWidth;
-					this.height = maxHeight >= LSystem.MAX_SCREEN_WIDTH ? LSystem.MAX_SCREEN_WIDTH
-							: maxHeight;
-				}
-			}
-
-			if (mode == LMode.Fill) {
-
-				LSystem.scaleWidth = ((float) maxWidth) / width;
-				LSystem.scaleHeight = ((float) maxHeight) / height;
-
-			} else if (mode == LMode.FitFill) {
-
-				RectBox res = GraphicsUtils.fitLimitSize(width, height,
-						maxWidth, maxHeight);
-				maxWidth = res.width;
-				maxHeight = res.height;
-				LSystem.scaleWidth = ((float) maxWidth) / width;
-				LSystem.scaleHeight = ((float) maxHeight) / height;
-
-			} else if (mode == LMode.Ratio) {
-
-				maxWidth = View.MeasureSpec.getSize(maxWidth);
-				maxHeight = View.MeasureSpec.getSize(maxHeight);
-
-				float userAspect = (float) width / (float) height;
-				float realAspect = (float) maxWidth / (float) maxHeight;
-
-				if (realAspect < userAspect) {
-					maxHeight = Math.round(maxWidth / userAspect);
-				} else {
-					maxWidth = Math.round(maxHeight * userAspect);
-				}
-
-				LSystem.scaleWidth = ((float) maxWidth) / width;
-				LSystem.scaleHeight = ((float) maxHeight) / height;
-
-			} else if (mode == LMode.MaxRatio) {
-
-				maxWidth = View.MeasureSpec.getSize(maxWidth);
-				maxHeight = View.MeasureSpec.getSize(maxHeight);
-
-				float userAspect = (float) width / (float) height;
-				float realAspect = (float) maxWidth / (float) maxHeight;
-
-				if ((realAspect < 1 && userAspect > 1)
-						|| (realAspect > 1 && userAspect < 1)) {
-					userAspect = (float) height / (float) width;
-				}
-
-				if (realAspect < userAspect) {
-					maxHeight = Math.round(maxWidth / userAspect);
-				} else {
-					maxWidth = Math.round(maxHeight * userAspect);
-				}
-
-				LSystem.scaleWidth = ((float) maxWidth) / width;
-				LSystem.scaleHeight = ((float) maxHeight) / height;
-
-			} else {
-
-				LSystem.scaleWidth = 1;
-				LSystem.scaleHeight = 1;
-
-			}
-
-			if (LSystem.screenRect == null) {
-				LSystem.screenRect = new RectBox(0, 0, width, height);
-			} else {
-				LSystem.screenRect.setBounds(0, 0, width, height);
-			}
-
-			StringBuffer sbr = new StringBuffer();
-			sbr.append("Mode:").append(mode);
-			sbr.append("\nWidth:").append(width).append(",Height:" + height);
-			sbr.append("\nMaxWidth:").append(maxWidth)
-					.append(",MaxHeight:" + maxHeight);
-			sbr.append("\nScale:").append(isScale());
-			Log.i("Android2DSize", sbr.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		RectBox d = LSystem.screenActivity.getScreenDimension();
+
+		LSystem.SCREEN_LANDSCAPE = landscape;
+
+		this.maxWidth = (int) d.getWidth();
+		this.maxHeight = (int) d.getHeight();
+
+		if (landscape && (d.getWidth() > d.getHeight())) {
+			maxWidth = (int) d.getWidth();
+			maxHeight = (int) d.getHeight();
+		} else if (landscape && (d.getWidth() < d.getHeight())) {
+			maxHeight = (int) d.getWidth();
+			maxWidth = (int) d.getHeight();
+		} else if (!landscape && (d.getWidth() < d.getHeight())) {
+			maxWidth = (int) d.getWidth();
+			maxHeight = (int) d.getHeight();
+		} else if (!landscape && (d.getWidth() > d.getHeight())) {
+			maxHeight = (int) d.getWidth();
+			maxWidth = (int) d.getHeight();
+		}
+
+		if (mode != LMode.Max) {
+			if (landscape) {
+				this.width = LSystem.MAX_SCREEN_WIDTH;
+				this.height = LSystem.MAX_SCREEN_HEIGHT;
+			} else {
+				this.width = LSystem.MAX_SCREEN_HEIGHT;
+				this.height = LSystem.MAX_SCREEN_WIDTH;
+			}
+		} else {
+			if (landscape) {
+				this.width = maxWidth >= LSystem.MAX_SCREEN_WIDTH ? LSystem.MAX_SCREEN_WIDTH
+						: maxWidth;
+				this.height = maxHeight >= LSystem.MAX_SCREEN_HEIGHT ? LSystem.MAX_SCREEN_HEIGHT
+						: maxHeight;
+			} else {
+				this.width = maxWidth >= LSystem.MAX_SCREEN_HEIGHT ? LSystem.MAX_SCREEN_HEIGHT
+						: maxWidth;
+				this.height = maxHeight >= LSystem.MAX_SCREEN_WIDTH ? LSystem.MAX_SCREEN_WIDTH
+						: maxHeight;
+			}
+		}
+
+		if (mode == LMode.Fill) {
+
+			LSystem.scaleWidth = ((float) maxWidth) / width;
+			LSystem.scaleHeight = ((float) maxHeight) / height;
+
+		} else if (mode == LMode.FitFill) {
+
+			RectBox res = GraphicsUtils.fitLimitSize(width, height, maxWidth,
+					maxHeight);
+			maxWidth = res.width;
+			maxHeight = res.height;
+			LSystem.scaleWidth = ((float) maxWidth) / width;
+			LSystem.scaleHeight = ((float) maxHeight) / height;
+
+		} else if (mode == LMode.Ratio) {
+
+			maxWidth = View.MeasureSpec.getSize(maxWidth);
+			maxHeight = View.MeasureSpec.getSize(maxHeight);
+
+			float userAspect = (float) width / (float) height;
+			float realAspect = (float) maxWidth / (float) maxHeight;
+
+			if (realAspect < userAspect) {
+				maxHeight = Math.round(maxWidth / userAspect);
+			} else {
+				maxWidth = Math.round(maxHeight * userAspect);
+			}
+
+			LSystem.scaleWidth = ((float) maxWidth) / width;
+			LSystem.scaleHeight = ((float) maxHeight) / height;
+
+		} else if (mode == LMode.MaxRatio) {
+
+			maxWidth = View.MeasureSpec.getSize(maxWidth);
+			maxHeight = View.MeasureSpec.getSize(maxHeight);
+
+			float userAspect = (float) width / (float) height;
+			float realAspect = (float) maxWidth / (float) maxHeight;
+
+			if ((realAspect < 1 && userAspect > 1)
+					|| (realAspect > 1 && userAspect < 1)) {
+				userAspect = (float) height / (float) width;
+			}
+
+			if (realAspect < userAspect) {
+				maxHeight = Math.round(maxWidth / userAspect);
+			} else {
+				maxWidth = Math.round(maxHeight * userAspect);
+			}
+
+			LSystem.scaleWidth = ((float) maxWidth) / width;
+			LSystem.scaleHeight = ((float) maxHeight) / height;
+
+		} else {
+
+			LSystem.scaleWidth = 1;
+			LSystem.scaleHeight = 1;
+
+		}
+		if (LSystem.screenRect == null) {
+			LSystem.screenRect = new RectBox(0, 0, width, height);
+		} else {
+			LSystem.screenRect.setBounds(0, 0, width, height);
+		}
+
+		StringBuffer sbr = new StringBuffer();
+		sbr.append("Mode:").append(mode);
+		sbr.append("\nWidth:").append(width).append(",Height:" + height);
+		sbr.append("\nMaxWidth:").append(maxWidth)
+				.append(",MaxHeight:" + maxHeight);
+		sbr.append("\nScale:").append(isScale());
+		Log.i("Android2DSize", sbr.toString());
 
 	}
 
@@ -282,21 +299,70 @@ public final class LGameView extends CallQueue implements Renderer {
 
 	private SurfaceView createGLSurfaceView(LGame activity) {
 		android.opengl.GLSurfaceView.EGLConfigChooser configChooser = getEglConfigChooser();
-		GLSurfaceViewCupcake view = new GLSurfaceViewCupcake(activity);
-		if (configChooser != null) {
-			view.setEGLConfigChooser(configChooser);
+		if (LSystem.isAndroidVersionHigher(11)) {
+			GLSurfaceView view = new GLSurfaceView(activity) {
+				@Override
+				public InputConnection onCreateInputConnection(
+						EditorInfo outAttrs) {
+					BaseInputConnection connection = new BaseInputConnection(
+							this, false) {
+						@Override
+						public boolean deleteSurroundingText(int beforeLength,
+								int afterLength) {
+							int sdkVersion = Integer
+									.parseInt(android.os.Build.VERSION.SDK);
+							if (sdkVersion >= 16) {
+								if (beforeLength == 1 && afterLength == 0) {
+									sendDownUpKeyEventForBackwardCompatibility(KeyEvent.KEYCODE_DEL);
+									return true;
+								}
+							}
+							return super.deleteSurroundingText(beforeLength,
+									afterLength);
+						}
+
+						private void sendDownUpKeyEventForBackwardCompatibility(
+								final int code) {
+							final long eventTime = SystemClock.uptimeMillis();
+							super.sendKeyEvent(new KeyEvent(eventTime,
+									eventTime, KeyEvent.ACTION_DOWN, code, 0,
+									0, -1, 0, KeyEvent.FLAG_SOFT_KEYBOARD
+											| KeyEvent.FLAG_KEEP_TOUCH_MODE));
+							super.sendKeyEvent(new KeyEvent(SystemClock
+									.uptimeMillis(), eventTime,
+									KeyEvent.ACTION_UP, code, 0, 0, -1, 0,
+									KeyEvent.FLAG_SOFT_KEYBOARD
+											| KeyEvent.FLAG_KEEP_TOUCH_MODE));
+						}
+					};
+					return connection;
+				}
+
+			};
+			if (configChooser != null) {
+				view.setEGLConfigChooser(configChooser);
+			} else {
+				view.setEGLConfigChooser(5, 6, 5, 0, 16, 0);
+			}
+			view.setRenderer(this);
+			surfaceView = view;
 		} else {
-			view.setEGLConfigChooser(5, 6, 5, 0, 16, 0);
+			GLSurfaceViewCupcake viewCupcake = new GLSurfaceViewCupcake(
+					activity);
+			if (configChooser != null) {
+				viewCupcake.setEGLConfigChooser(configChooser);
+			} else {
+				viewCupcake.setEGLConfigChooser(5, 6, 5, 0, 16, 0);
+			}
+			viewCupcake.setRenderer(this);
+			surfaceView = viewCupcake;
 		}
-		view.setRenderer(this);
-		surfaceView = view;
 		try {
+			LSystem.screenProcess = new LProcess(surfaceView, width, height);
 			surfaceView.setFocusable(true);
 			surfaceView.setFocusableInTouchMode(true);
-		} catch (Exception ex) {
+		} catch (Exception empty) {
 
-		} finally {
-			LSystem.screenProcess = new LProcess(surfaceView, width, height);
 		}
 		return surfaceView;
 	}
@@ -320,6 +386,9 @@ public final class LGameView extends CallQueue implements Renderer {
 	}
 
 	final void resume() {
+		if (surfaceView == null) {
+			return;
+		}
 		synchronized (synch) {
 			LSystem.isRunning = true;
 			LSystem.isResume = true;
@@ -330,6 +399,9 @@ public final class LGameView extends CallQueue implements Renderer {
 	}
 
 	final void pause() {
+		if (surfaceView == null) {
+			return;
+		}
 		synchronized (synch) {
 			if (!LSystem.isRunning) {
 				return;
@@ -339,7 +411,7 @@ public final class LGameView extends CallQueue implements Renderer {
 			Assets.onPause();
 			while (LSystem.isPaused) {
 				try {
-					synch.wait();
+					synch.wait(4000);
 				} catch (InterruptedException ignored) {
 				}
 			}
@@ -347,6 +419,9 @@ public final class LGameView extends CallQueue implements Renderer {
 	}
 
 	final void destroy() {
+		if (surfaceView == null) {
+			return;
+		}
 		synchronized (synch) {
 			LSystem.isRunning = false;
 			LSystem.isDestroy = true;
@@ -368,7 +443,9 @@ public final class LGameView extends CallQueue implements Renderer {
 
 	@Override
 	public void onDrawFrame(javax.microedition.khronos.opengles.GL10 gl10) {
-
+		if (surfaceView == null) {
+			return;
+		}
 		this.onRunning = false;
 		this.onPause = false;
 		this.onDestroy = false;
@@ -405,7 +482,7 @@ public final class LGameView extends CallQueue implements Renderer {
 		}
 
 		_queue.execute();
-		
+
 		if (onRunning) {
 
 			if (LSystem.isLogo) {
@@ -567,6 +644,9 @@ public final class LGameView extends CallQueue implements Renderer {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl10, int width, int height) {
+		if (surfaceView == null) {
+			return;
+		}
 		if (gl != null) {
 			Log.i("Android2DView", "onSurfaceChangedUpdate");
 			this.width = width;
@@ -587,6 +667,9 @@ public final class LGameView extends CallQueue implements Renderer {
 	}
 
 	private void createGL(GL10 gl10) {
+		if (surfaceView == null) {
+			return;
+		}
 		if (gl == null || !gl.equals(gl10, width, height)) {
 			Log.i("Android2DView", "onSurfaceCreated");
 			this.gl = new GLEx(gl10, LSystem.screenRect.width,
@@ -634,11 +717,6 @@ public final class LGameView extends CallQueue implements Renderer {
 		} else {
 			win.setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-		}
-		try {
-			win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			win.setBackgroundDrawable(null);
-		} catch (Exception e) {
 		}
 	}
 
