@@ -30,6 +30,7 @@ import loon.utils.MathUtils;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -139,34 +140,7 @@ public final class LGameView extends CallQueue implements Renderer {
 	}
 
 	protected void setLandscape(final boolean landscape, LMode mode) {
-		int currentOrientation = LSystem.screenActivity.getResources()
-				.getConfiguration().orientation;
-		if (LSystem.isAndroidVersionHigher(11)) {
-			String error = "Your screenOrientation(in AndroidManifest.xml) set and game settings not match ! ";
-			if (landscape
-					&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-				new android.app.AlertDialog.Builder(LSystem.screenActivity)
-						.setMessage(
-								"LGame Error : " + error + "not landscape !")
-						.show();
-			} else if (!landscape
-					&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
-				new android.app.AlertDialog.Builder(LSystem.screenActivity)
-						.setMessage("LGame Error : " + error + "not portrait !")
-						.show();
-			}
-		} else {
-			if (landscape
-					&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-				LSystem.screenActivity
-						.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			} else if (!landscape
-					&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
-				LSystem.screenActivity
-						.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			}
-
-		}
+		
 		RectBox d = LSystem.screenActivity.getScreenDimension();
 
 		LSystem.SCREEN_LANDSCAPE = landscape;
@@ -648,15 +622,23 @@ public final class LGameView extends CallQueue implements Renderer {
 			return;
 		}
 		if (gl != null) {
-			Log.i("Android2DView", "onSurfaceChangedUpdate");
-			this.width = width;
-			this.height = height;
+			Log.i("Android2DView", "onSurfaceChanged");
+			this.width = (int) (width / LSystem.scaleWidth);
+			this.height = (int) (height / LSystem.scaleHeight);
 			gl.setViewPort(0, 0, width, height);
+			if (!LSystem.isCreated) {
+				if (process != null) {
+					process.begin();
+				}
+				LSystem.isCreated = true;
+				synchronized (this) {
+					LSystem.isRunning = true;
+				}
+			}
 			if (process != null) {
-				process.resize(width, height);
+				process.resize(this.width, this.height);
 			}
 		} else if (gl == null || !gl.equals(gl10, width, height)) {
-			Log.i("Android2DView", "onSurfaceChangedCreate");
 			createGL(gl10);
 		}
 	}
@@ -686,20 +668,9 @@ public final class LGameView extends CallQueue implements Renderer {
 				GLEx.setVbo(false);
 				setGLMode(GLMode.Default);
 			}
+			RectBox rect = LSystem.screenActivity.getScreenDimension();
 			gl.update();
-			gl.setViewPort(0, 0, LSystem.screenRect.width,
-					LSystem.screenRect.height);
-			if (!LSystem.isCreated) {
-				if (process != null) {
-					process.begin();
-					process.resize(LSystem.screenRect.width,
-							LSystem.screenRect.height);
-				}
-				LSystem.isCreated = true;
-				synchronized (this) {
-					LSystem.isRunning = true;
-				}
-			}
+			gl.setViewPort(0, 0, rect.width, rect.height);
 		}
 
 	}

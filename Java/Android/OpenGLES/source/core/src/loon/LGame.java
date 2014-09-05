@@ -70,8 +70,8 @@ public abstract class LGame extends Activity {
 		}
 	}
 
-	public void register(final LSetting setting, Class<? extends Screen> clazz,
-			Object... args) {
+	public void register(final LSetting setting,
+			final Class<? extends Screen> clazz, final Object... args) {
 		this._listener = setting.listener;
 		this.maxScreen(setting.width, setting.height);
 		this.initialization(setting.landscape, setting.mode);
@@ -81,27 +81,46 @@ public abstract class LGame extends Activity {
 		this.setFPS(setting.fps);
 		if (clazz != null) {
 			if (args != null) {
-				try {
-					final int funs = args.length;
-					if (funs == 0) {
-						setScreen(clazz.newInstance());
-						showScreen();
-					} else {
-						Class<?>[] functions = new Class<?>[funs];
-						for (int i = 0; i < funs; i++) {
-							functions[i] = getType(args[i]);
+				Runnable runnable = new Runnable() {
+					@Override
+					public void run() {
+						try {
+							final int funs = args.length;
+							if (funs == 0) {
+								setScreen(clazz.newInstance());
+								showScreen();
+							} else {
+								Class<?>[] functions = new Class<?>[funs];
+								for (int i = 0; i < funs; i++) {
+									functions[i] = getType(args[i]);
+								}
+								Constructor<?> constructor = Class.forName(
+										clazz.getName()).getConstructor(
+										functions);
+								Object o = constructor.newInstance(args);
+								if (o != null && (o instanceof Screen)) {
+									setScreen((Screen) o);
+									showScreen();
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-						Constructor<?> constructor = Class.forName(
-								clazz.getName()).getConstructor(functions);
-						Object o = constructor.newInstance(args);
-						if (o != null && (o instanceof Screen)) {
-							setScreen((Screen) o);
-							showScreen();
+						final int currentOrientation = LSystem.screenActivity
+								.getResources().getConfiguration().orientation;
+						if (setting.landscape
+								&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+							LSystem.screenActivity
+									.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+						} else if (!setting.landscape
+								&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+							LSystem.screenActivity
+									.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				};
+				LSystem.getOSHandler().post(runnable);
+
 			}
 		}
 	}
@@ -777,7 +796,11 @@ public abstract class LGame extends Activity {
 			// 当此项为True时，强制关闭整个程序
 			if (isDestroy) {
 				Log.i("Android2DActivity", "LGame 2D Engine Shutdown");
-				android.os.Process.killProcess(android.os.Process.myPid());
+				try {
+					this.finish();
+					System.exit(0);
+				} catch (Error empty) {
+				}
 			}
 		} catch (Exception e) {
 

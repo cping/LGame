@@ -134,6 +134,7 @@ public abstract class LComponent extends LObject implements ActionBind,
 		if (this.height == 0) {
 			this.height = 10;
 		}
+		
 	}
 
 	public int getScreenWidth() {
