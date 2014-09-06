@@ -1,5 +1,12 @@
 ﻿#LGame (formal name : Loon)
 
+20140906:
+
+LGame Project Restart,The game's just started......
+
+<a href="ripple.com//send?to=rGmaiL8f7VDRrYouZokr5qv61b5zvhePcp&name=cping&label=Thank you donate to LGame&amount=100/XRP&dt=20140906"><img src="https://raw.github.com/cping/LGame/master/rippledonate.png" alt="RippleDonate" /></a>
+
+
 源自中國本土的項目
 
 International Entertainment Machines
@@ -20,8 +27,3 @@ Built-in over 30 game example(Part screenshots):
 
 License : http://www.apache.org/licenses/LICENSE-2.0
 
-20130619:
-
-Updated to version 0.4.0 
-
-Start rewriting JVM ......
