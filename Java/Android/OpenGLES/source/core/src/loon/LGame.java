@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import loon.LSetting.Listener;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
-import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;
@@ -15,15 +14,12 @@ import loon.core.input.LInput.SelectEvent;
 import loon.core.input.LInput.TextEvent;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -81,6 +77,8 @@ public abstract class LGame extends Activity {
 		this.setFPS(setting.fps);
 		if (clazz != null) {
 			if (args != null) {
+				final int currentOrientation = LSystem.screenActivity
+						.getResources().getConfiguration().orientation;
 				Runnable runnable = new Runnable() {
 					@Override
 					public void run() {
@@ -88,6 +86,15 @@ public abstract class LGame extends Activity {
 							final int funs = args.length;
 							if (funs == 0) {
 								setScreen(clazz.newInstance());
+								if (setting.landscape
+										&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+									LSystem.screenActivity
+											.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+								} else if (!setting.landscape
+										&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+									LSystem.screenActivity
+											.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+								}
 								showScreen();
 							} else {
 								Class<?>[] functions = new Class<?>[funs];
@@ -100,22 +107,20 @@ public abstract class LGame extends Activity {
 								Object o = constructor.newInstance(args);
 								if (o != null && (o instanceof Screen)) {
 									setScreen((Screen) o);
+									if (setting.landscape
+											&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+										LSystem.screenActivity
+												.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+									} else if (!setting.landscape
+											&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+										LSystem.screenActivity
+												.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+									}
 									showScreen();
 								}
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
-						}
-						final int currentOrientation = LSystem.screenActivity
-								.getResources().getConfiguration().orientation;
-						if (setting.landscape
-								&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-							LSystem.screenActivity
-									.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-						} else if (!setting.landscape
-								&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
-							LSystem.screenActivity
-									.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 						}
 					}
 				};
