@@ -8,19 +8,42 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LInputFactory.Key;
 import loon.core.input.LInputFactory.Touch;
 
+/**
+ * 
+ * Copyright 2014
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.4.1
+ */
 public class LTextBar extends LComponent {
 
 	private LTexture left, right, body;
 
 	private LColor fontColor;
 
-	private LFont font;
+	protected LFont font;
 
-	private String text;
+	protected String text;
 
 	private boolean over, pressed;
 
 	private int pressedTime;
+
+	protected boolean hideBackground = false;
 
 	public LTextBar(String txt, int x, int y, LColor c) {
 		this(txt, DefUI.getDefaultTextures(3), DefUI.getDefaultTextures(3),
@@ -34,11 +57,11 @@ public class LTextBar extends LComponent {
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y) {
-		this(txt, left, right, body, x, y, LColor.white);
+		this(txt, left, right, body, x, y, LColor.black);
 	}
 
 	public LTextBar(String txt, int x, int y) {
-		this(txt, x, y, LColor.white);
+		this(txt, x, y, LColor.black);
 	}
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
@@ -62,30 +85,48 @@ public class LTextBar extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		if (left != null) {
-			g.drawTexture(left, x, y);
-		}
-		if (body != null) {
-			for (float i = 0; i < textWidth(); i += body.getWidth()) {
-				i = i > textWidth() - body.getWidth() ? textWidth() : i;
-				float fit = i / body.getWidth();
-				float overflow = body.getWidth() * (fit % 1);
-				boolean last = overflow != 0;
-				g.drawTexture(body, x + i - overflow + left.getWidth(), y,
-						last ? overflow : body.getWidth() * 2,
-						body.getHeight(), 0, 0,
-						last ? overflow : body.getWidth(), body.getHeight());
+		if (hideBackground) {
+			if (left != null) {
+				g.drawString(text, x + left.getWidth(), y + font.getHeight()
+						+ (font.getHeight() / 2 - font.getHeight() / 2) - 4,
+						fontColor);
+			} else {
+				g.drawString(text, x, y + font.getHeight(), fontColor);
 			}
-		}
-		if (right != null) {
-			g.drawTexture(right, x + left.getWidth() + textWidth() - 1, y);
-		}
-		if (left != null) {
-			g.drawString(text, x + left.getWidth(), y + font.getHeight()
-					+ (font.getHeight() / 2 - font.getHeight() / 2) - 4,
-					fontColor);
 		} else {
-			g.drawString(text, x, y + font.getHeight(), fontColor);
+			if (left != null) {
+				g.drawTexture(left, x, y);
+			}
+			if (body != null) {
+				if (text != null && text.length() > 0 && !"_".equals(text)) {
+					for (float i = 0; i < textWidth(); i += body.getWidth()) {
+						i = i > textWidth() - body.getWidth() ? textWidth() : i;
+						float fit = i / body.getWidth();
+						float overflow = body.getWidth() * (fit % 1);
+						boolean last = overflow != 0;
+						g.drawTexture(body, x + i - overflow + left.getWidth(),
+								y, last ? overflow : body.getWidth() * 2,
+								body.getHeight(), 0, 0,
+								last ? overflow : body.getWidth(),
+								body.getHeight());
+					}
+				} else {
+					g.drawTexture(body,
+							x + 1 - body.getWidth() + left.getWidth(), y,
+							body.getWidth() * 2, body.getHeight(), 0, 0,
+							body.getWidth(), body.getHeight());
+				}
+			}
+			if (right != null) {
+				g.drawTexture(right, x + left.getWidth() + textWidth() - 1, y);
+			}
+			if (left != null) {
+				g.drawString(text, x + left.getWidth(), y + font.getHeight()
+						+ (font.getHeight() / 2 - font.getHeight() / 2) - 4,
+						fontColor);
+			} else {
+				g.drawString(text, x, y + font.getHeight(), fontColor);
+			}
 		}
 	}
 
@@ -216,6 +257,14 @@ public class LTextBar extends LComponent {
 
 	public boolean isTouchPressed() {
 		return this.pressed;
+	}
+
+	public boolean isHideBackground() {
+		return hideBackground;
+	}
+
+	public void setHideBackground(boolean hideBackground) {
+		this.hideBackground = hideBackground;
 	}
 
 	@Override

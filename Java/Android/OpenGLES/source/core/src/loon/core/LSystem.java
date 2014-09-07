@@ -205,7 +205,7 @@ public final class LSystem {
 	final static public String FRAMEWORK_IMG_NAME = "assets/loon_";
 
 	// 框架版本信息
-	final static public String VERSION = "0.4.0";
+	final static public String VERSION = "0.4.1";
 
 	// 默认的最大窗体宽（横屏）
 	public static int MAX_SCREEN_WIDTH = 480;

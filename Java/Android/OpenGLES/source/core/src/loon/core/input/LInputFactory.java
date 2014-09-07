@@ -1,5 +1,6 @@
 package loon.core.input;
 
+import loon.LGameView;
 import loon.core.EmulatorButtons;
 import loon.core.LSystem;
 import loon.core.event.ActionKey;
@@ -34,6 +35,35 @@ import android.view.View.OnTouchListener;
  * @version 0.1
  */
 public class LInputFactory implements OnKeyListener, OnTouchListener {
+
+	public static void setOnscreenKeyboardVisible(final boolean visible) {
+		LSystem.getOSHandler().post(new Runnable() {
+			public void run() {
+				android.view.inputmethod.InputMethodManager manager = (android.view.inputmethod.InputMethodManager) LSystem
+						.getActivity().getSystemService(
+								android.content.Context.INPUT_METHOD_SERVICE);
+				if (visible) {
+					LGameView gameview = LSystem.getActivity().gameView();
+					if (gameview != null) {
+						View view = gameview.getView();
+						view.setFocusable(true);
+						view.setFocusableInTouchMode(true);
+						manager.showSoftInput(view, 0);
+					}
+				} else {
+					LGameView gameview = LSystem.getActivity().gameView();
+					if (gameview != null) {
+						View view = gameview.getView();
+						view.setFocusable(true);
+						view.setFocusableInTouchMode(true);
+						manager.hideSoftInputFromWindow(view.getWindowToken(),
+								0);
+					}
+
+				}
+			}
+		});
+	}
 
 	private static boolean useTouchCollection = false;
 
@@ -480,6 +510,9 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 		try {
 			LSystem.AUTO_REPAINT = false;
 			char charCode = (char) e.getUnicodeChar();
+			if (e.getKeyCode() == 67){
+				charCode = '\b';
+			}
 			switch (e.getAction()) {
 			case android.view.KeyEvent.ACTION_DOWN:
 				long curTime = System.currentTimeMillis();
@@ -604,9 +637,9 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 			}
 		});
 	}
-	
+
 	private boolean requestFocus = true;
-		
+
 	@Override
 	public boolean onTouch(View v, MotionEvent e) {
 		if (handler == null) {

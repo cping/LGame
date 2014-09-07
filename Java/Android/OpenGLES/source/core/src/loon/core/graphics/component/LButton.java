@@ -176,14 +176,6 @@ public class LButton extends LComponent {
 		this.text = st;
 	}
 
-	@Override
-	protected void processTouchDragged() {
-		if (this.input.getTouchPressed() == Touch.TOUCH_MOVE) {
-			this.over = this.pressed = this.intersects(this.input.getTouchX(),
-					this.input.getTouchY());
-		}
-	}
-
 	/**
 	 * 处理点击事件（请重载实现）
 	 * 
@@ -203,6 +195,14 @@ public class LButton extends LComponent {
 	public void upClick() {
 		if (Click != null) {
 			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+		}
+	}
+
+	@Override
+	protected void processTouchDragged() {
+		if (this.input.getTouchPressed() == Touch.TOUCH_MOVE) {
+			this.over = this.pressed = this.intersects(this.input.getTouchX(),
+					this.input.getTouchY());
 		}
 	}
 

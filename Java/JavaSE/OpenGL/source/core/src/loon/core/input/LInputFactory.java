@@ -31,6 +31,10 @@ import org.lwjgl.input.Mouse;
  * @version 0.1
  */
 public class LInputFactory {
+	
+	public static void setOnscreenKeyboardVisible (boolean visible) {
+
+	}
 
 	private static boolean useTouchCollection = false;
 
@@ -602,16 +606,15 @@ public class LInputFactory {
 					if (Keyboard.getEventKeyState()) {
 						char keyChar = Keyboard.getEventCharacter();
 						finalKey.keyCode = keyCode;
-						finalKey.keyChar = Keyboard.getEventCharacter();
+						finalKey.keyChar = keyChar;
 						finalKey.type = Key.KEY_DOWN;
 						finalKey.timer = time;
 						lastKeyCharPressed = keyChar;
 					} else {
 						finalKey.keyCode = keyCode;
-						finalKey.keyChar = Keyboard.getEventCharacter();
+						finalKey.keyChar = lastKeyCharPressed;
 						finalKey.type = Key.KEY_UP;
 						finalKey.timer = time;
-						lastKeyCharPressed = Keyboard.getEventCharacter();
 					}
 					switch (finalKey.type) {
 					case Key.KEY_DOWN:
