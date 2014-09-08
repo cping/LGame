@@ -30,17 +30,19 @@ import loon.core.graphics.opengl.TextureUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  * 
- * Examples1:
+ *          Examples1:
  * 
- * LProgress progress = new LProgress(LColor.red, 110, 110, 200,20);
- * progress.setPercentage(0.6f);
+ *          LProgress progress = new LProgress(LColor.red, 110, 110, 200,20);
+ *          progress.setPercentage(0.6f);
  * 
- * Examples2:
+ *          Examples2:
  * 
- * LProgress progress = new LProgress(ProgressType.UI , LColor.red, 110, 110, 200,20);
- * progress.setPercentage(0.6f);
+ *          LProgress progress = new LProgress(ProgressType.UI , LColor.red,
+ *          110, 110, 200,20); progress.setPercentage(0.6f);
  */
 public class LProgress extends LComponent {
+
+	private boolean vertical = false;
 
 	// 默认提供了三种进度条模式，分别是游戏类血槽，普通的UI形式，以及用户自制图像.(默认为游戏模式)
 	public enum ProgressType {
@@ -121,33 +123,71 @@ public class LProgress extends LComponent {
 	}
 
 	public void draw(SpriteBatch batch, int x, int y) {
-		switch (progressType) {
-		case GAME:
-			batch.draw(bgTexture, x + getWidth() * percentage + 1, y,
-					getWidth() * (1 - percentage), getHeight());
-			batch.draw(bgTextureEnd, x + getWidth() + 1, y,
-					bgTextureEnd.getRegionWidth(), getHeight());
-			batch.setColor(color);
-			batch.draw(bgProgressTexture, x + 1, y, getWidth() * percentage,
-					getHeight());
-			batch.draw(bgProgressStart, x, y, bgProgressStart.getRegionWidth(),
-					getHeight());
-			batch.resetColor();
-			break;
-		case UI:
-			batch.draw(bgTexture.getTexture(), x, y, getWidth(), getHeight());
-			batch.setColor(color);
-			batch.draw(bgProgressTexture.getTexture(), x + 1, y + 1, getWidth()
-					* percentage - 2, getHeight() - 2);
-			batch.resetColor();
-			break;
-		default:
-			batch.draw(bgTexture.getTexture(), x, y, getWidth(), getHeight());
-			batch.setColor(color);
-			batch.draw(bgProgressTexture.getTexture(), x, y, getWidth()
-					* percentage, getHeight());
-			batch.resetColor();
-			break;
+		if (vertical) {
+			float size = 0;
+			switch (progressType) {
+			case GAME:
+				size = getWidth() * (1 - percentage);
+				float posY = getHeight() / 2;
+				batch.draw(bgTexture, x + getHeight() / 2 + 1, y - posY, size,
+						getHeight(), 90);
+				batch.setColor(color);
+				size = getWidth() * percentage;
+				batch.draw(bgProgressTexture, x + 1 + getHeight() / 2, y
+						+ getWidth() - size - posY, getWidth() * percentage,
+						getHeight(), 90);
+				batch.resetColor();
+				break;
+			case UI:
+				batch.draw(bgTexture.getTexture(), x, y, getHeight(),
+						getWidth());
+				batch.setColor(color);
+				size = (getWidth() * percentage - 2);
+				batch.draw(bgProgressTexture.getTexture(), x + 1, y
+						+ getWidth() - size - 1, getHeight() - 2, size);
+				batch.resetColor();
+				break;
+			default:
+				batch.draw(bgTexture.getTexture(), x, y, getHeight(),
+						getWidth());
+				batch.setColor(color);
+				size = (getWidth() * percentage);
+				batch.draw(bgProgressTexture.getTexture(), x, y + getWidth()
+						- size, getHeight(), size);
+				batch.resetColor();
+				break;
+			}
+		} else {
+			switch (progressType) {
+			case GAME:
+				batch.draw(bgTexture, x + getWidth() * percentage + 1, y,
+						getWidth() * (1 - percentage), getHeight());
+				batch.draw(bgTextureEnd, x + getWidth() + 1, y,
+						bgTextureEnd.getRegionWidth(), getHeight());
+				batch.setColor(color);
+				batch.draw(bgProgressTexture, x + 1, y,
+						getWidth() * percentage, getHeight());
+				batch.draw(bgProgressStart, x, y,
+						bgProgressStart.getRegionWidth(), getHeight());
+				batch.resetColor();
+				break;
+			case UI:
+				batch.draw(bgTexture.getTexture(), x, y, getWidth(),
+						getHeight());
+				batch.setColor(color);
+				batch.draw(bgProgressTexture.getTexture(), x + 1, y + 1,
+						getWidth() * percentage - 2, getHeight() - 2);
+				batch.resetColor();
+				break;
+			default:
+				batch.draw(bgTexture.getTexture(), x, y, getWidth(),
+						getHeight());
+				batch.setColor(color);
+				batch.draw(bgProgressTexture.getTexture(), x, y, getWidth()
+						* percentage, getHeight());
+				batch.resetColor();
+				break;
+			}
 		}
 	}
 
@@ -161,6 +201,14 @@ public class LProgress extends LComponent {
 				this.percentage = 0f;
 			}
 		}
+	}
+
+	public boolean isVertical() {
+		return vertical;
+	}
+
+	public void setVertical(boolean vertical) {
+		this.vertical = vertical;
 	}
 
 	public float getPercentage() {
@@ -190,4 +238,5 @@ public class LProgress extends LComponent {
 	public String getUIName() {
 		return "Progress";
 	}
+
 }
