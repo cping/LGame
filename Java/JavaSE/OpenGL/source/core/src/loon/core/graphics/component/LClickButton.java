@@ -114,13 +114,6 @@ public class LClickButton extends LComponent {
 		return this.pressed;
 	}
 
-	protected void processTouchDragged() {
-		if (this.input.getTouchPressed() == Touch.LEFT) {
-			this.over = this.pressed = this.intersects(this.input.getTouchX(),
-					this.input.getTouchY());
-		}
-	}
-
 	public void doClick() {
 		if (Click != null) {
 			Click.DoClick(this);
@@ -139,6 +132,13 @@ public class LClickButton extends LComponent {
 		}
 	}
 
+	protected void processTouchDragged() {
+		if (this.input.getTouchPressed() == Touch.LEFT) {
+			this.over = this.pressed = this.intersects(this.input.getTouchX(),
+					this.input.getTouchY());
+		}
+	}
+	
 	protected void processTouchClicked() {
 		if (this.input.getTouchPressed() == Touch.LEFT
 				|| this.input.getTouchReleased() == Touch.LEFT) {

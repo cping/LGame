@@ -14,6 +14,7 @@ import loon.core.graphics.opengl.TextureUtils;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.input.LInput;
 import loon.core.input.LInputFactory.Key;
+import loon.core.input.LInputFactory.Touch;
 
 /**
  * 
@@ -586,21 +587,56 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		this.tooltip = text;
 	}
 
-	// 鼠标操作
-	protected void processTouchPressed() {
 
+	public void doClick() {
+		if (Click != null) {
+			Click.DoClick(this);
+		}
 	}
 
-	protected void processTouchReleased() {
+	public void downClick() {
+		if (Click != null) {
+			Click.DownClick(this, input.getTouchX(), input.getTouchY());
+		}
+	}
+
+	public void dragClick() {
+		if (Click != null) {
+			Click.DragClick(this, input.getTouchX(), input.getTouchY());
+		}
+	}
+
+	public void upClick() {
+		if (Click != null) {
+			Click.UpClick(this, input.getTouchX(), input.getTouchY());
+		}
 	}
 
 	protected void processTouchClicked() {
+		if (Touch.isDown() || Touch.isUp()) {
+			this.doClick();
+		}
 	}
 
-	protected void processTouchMoved() {
+	protected void processTouchPressed() {
+		if (Touch.isDown()) {
+			this.downClick();
+		}
+	}
+
+	protected void processTouchReleased() {
+		if (Touch.isUp()) {
+			this.upClick();
+		}
 	}
 
 	protected void processTouchDragged() {
+		if (Touch.isDrag()) {
+			this.dragClick();
+		}
+	}
+
+	protected void processTouchMoved() {
 	}
 
 	protected void processTouchEntered() {

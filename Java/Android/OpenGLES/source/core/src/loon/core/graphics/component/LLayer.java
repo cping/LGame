@@ -491,6 +491,7 @@ public class LLayer extends ActorLayer {
 		if (!isTouchClick) {
 			return;
 		}
+		super.processTouchPressed();
 		if (!input.isMoving()) {
 			int dx = this.input.getTouchX() - this.getScreenX();
 			int dy = this.input.getTouchY() - this.getScreenY();
@@ -512,6 +513,7 @@ public class LLayer extends ActorLayer {
 		if (!isTouchClick) {
 			return;
 		}
+		super.processTouchReleased();
 		if (!input.isMoving()) {
 			int dx = this.input.getTouchX() - this.getScreenX();
 			int dy = this.input.getTouchY() - this.getScreenY();
@@ -531,6 +533,7 @@ public class LLayer extends ActorLayer {
 
 	@Override
 	protected void processTouchDragged() {
+		super.processTouchDragged();
 		int dropX = 0;
 		int dropY = 0;
 		if (!locked) {
