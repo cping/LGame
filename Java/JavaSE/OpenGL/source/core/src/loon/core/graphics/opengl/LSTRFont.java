@@ -244,7 +244,7 @@ public class LSTRFont implements LRelease {
 
 	public void drawString(String chars, float x, float y, float sx, float sy,
 			float ax, float ay, float rotation, LColor c) {
-		drawString(x, y, sx, sy, ax, ay, rotation, chars, null, 0,
+		drawString(x, y, sx, sy, ax, ay, rotation, chars, c, 0,
 				chars.length() - 1);
 	}
 

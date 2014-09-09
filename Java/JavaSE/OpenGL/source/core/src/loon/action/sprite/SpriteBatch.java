@@ -1862,6 +1862,7 @@ public class SpriteBatch implements LRelease {
 		if (!lockSubmit) {
 			submit();
 		}
+		
 		y = y - font.getAscent();
 		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
 				rotation, c);

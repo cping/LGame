@@ -117,9 +117,11 @@ public class LProgress extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		batch.begin();
-		draw(batch, x, y);
-		batch.end();
+		if (batch != null) {
+			batch.begin();
+			draw(batch, x, y);
+			batch.end();
+		}
 	}
 
 	public void draw(SpriteBatch batch, int x, int y) {
