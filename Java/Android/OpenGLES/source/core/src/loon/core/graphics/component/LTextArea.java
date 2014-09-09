@@ -35,7 +35,7 @@ import loon.core.graphics.opengl.LTextures;
  * 
  *          LTextArea area = new LTextArea(66, 66, 300, 100);
  *          area.put("GGGGGGGGGG",LColor.red); area.put("GGGGGGGGGG");
- *          //addString为在前一行追加数据 area.add String("1",LColor.red);
+ *          //addString为在前一行追加数据 area.addString("1",LColor.red);
  */
 public class LTextArea extends LComponent {
 
@@ -44,6 +44,7 @@ public class LTextArea extends LComponent {
 	public static final int TYPE_UP = 1;
 
 	private LTexture bgLTexture;
+	private int leftOffset, topOffset;
 
 	private int showType;
 	private String[] message;
@@ -511,7 +512,24 @@ public class LTextArea extends LComponent {
 	}
 
 	private void drawString(GLEx g, String str, int x, int y) {
-		g.drawString(str, x, y + font.getHeight() - 5);
+		g.drawString(str, x + leftOffset, (y + font.getHeight() - 5)
+				+ topOffset);
+	}
+
+	public int getLeftOffset() {
+		return leftOffset;
+	}
+
+	public void setLeftOffset(int leftOffset) {
+		this.leftOffset = leftOffset;
+	}
+
+	public int getTopOffset() {
+		return topOffset;
+	}
+
+	public void setTopOffset(int topOffset) {
+		this.topOffset = topOffset;
 	}
 
 	@Override
