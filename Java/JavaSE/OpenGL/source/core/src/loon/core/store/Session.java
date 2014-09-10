@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import loon.core.LRelease;
+import loon.utils.FileUtils;
 import loon.utils.StringUtils;
 
 /**
@@ -155,6 +156,7 @@ public class Session implements LRelease {
 
 	private void makeProperties(Properties _properties) {
 		try {
+			FileUtils.makedirs(_tempFile);
 			_properties.store(new FileOutputStream(_tempFile), null);
 			isPersisted = true;
 		} catch (Exception e) {

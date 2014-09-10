@@ -219,7 +219,11 @@ public class LSTRFont implements LRelease {
 			LTexture texture = new LTexture(GLLoader.getTextureData(imgTemp),
 					Format.LINEAR);
 
+			LTextureBatch tmpbatch = fontBatch;
 			fontBatch = new LTextureBatch(texture);
+			if (tmpbatch != null) {
+				tmpbatch.destoryAll();
+			}
 
 			if (imgTemp != null) {
 				imgTemp.dispose();

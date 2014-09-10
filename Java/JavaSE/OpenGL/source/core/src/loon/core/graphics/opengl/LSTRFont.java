@@ -218,9 +218,11 @@ public class LSTRFont implements LRelease {
 			}
 			LTexture texture = new LTexture(GLLoader.getTextureData(imgTemp),
 					Format.LINEAR);
-
+			LTextureBatch tmpbatch = fontBatch;
 			fontBatch = new LTextureBatch(texture);
-
+			if (tmpbatch != null) {
+				tmpbatch.destoryAll();
+			}
 			if (imgTemp != null) {
 				imgTemp.dispose();
 				imgTemp = null;
@@ -229,6 +231,10 @@ public class LSTRFont implements LRelease {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void drawString(String chars, float x, float y, LColor color) {
+		drawString(x, y, 1f, 1f, 0, 0, 0, chars, color, 0, chars.length() - 1);
 	}
 
 	public void drawString(String chars, float x, float y, float rotation,
