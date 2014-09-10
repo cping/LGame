@@ -10,11 +10,16 @@ LGame Project Restart,The game's just started.
 
 International Entertainment Machines
 
+## Features
 LGame(LoonGame) is a very cool and small game library designed to simplify the complex and shorten the tedious for beginners and veterans alike. With it, you can use the best aspects of OpenGL/OpenGLES in an easy and organized way optimized for game programming. It is built around the concept that beginners should be able to start with the basics and then move up into a more complex plane of development with the veterans, all on the same platform.
 
 LGame puts all of its effort into keeping things short and simple. The initial setup of a game consists only of making a single class; then you are done. The interface is entirely documented for easy and fast learning, so once you are started, there is nothing between you and your killer game but coding and creativity.
 
 LGame is built around the users wishes, so do not hesitate to suggest and critique!
+
+## Create a LGame project
+LGame comes with a file called LGameProjectMake.jar which is an executable UI and command line tool. You can simply execute the JAR file which will open the setup UI.
+![LGame](https://raw.github.com/cping/LGame/master/install.png "install")
 
 Built-in over 30 game example(Part screenshots):
 
