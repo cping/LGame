@@ -144,7 +144,7 @@ public class LTexture implements LRelease {
 		checkReplace();
 	}
 
-	public LTexture(LTexture texture) {
+	LTexture(LTexture texture) {
 		if (texture == null) {
 			throw new RuntimeException("texture is Null !");
 		}

@@ -51,7 +51,6 @@ public class DefUI {
 			defaultTextures.add(textfieldleft.get());
 			defaultTextures.add(textfieldbody.get());
 		}
-
 		return defaultTextures.get(index);
 	}
 }

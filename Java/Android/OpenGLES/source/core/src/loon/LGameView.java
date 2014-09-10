@@ -712,7 +712,7 @@ public final class LGameView extends CallQueue implements Renderer {
 
 	public void setLogo(LTexture img) {
 		if (logoFlag == null) {
-			this.logoFlag = new LGameTools.Logo(new LTexture(img));
+			this.logoFlag = new LGameTools.Logo(img);
 		}
 	}
 

@@ -146,7 +146,7 @@ public class LTexture implements LRelease {
 		checkReplace();
 	}
 
-	public LTexture(LTexture texture) {
+	 LTexture(LTexture texture) {
 		if (texture == null) {
 			throw new RuntimeException("texture is Null !");
 		}
@@ -182,7 +182,7 @@ public class LTexture implements LRelease {
 		this.isVisible = texture.isVisible;
 		System.arraycopy(texture.crops, 0, crops, 0, crops.length);
 	}
-
+	
 	public LTexture(String res) {
 		this(res, Format.DEFAULT);
 	}
