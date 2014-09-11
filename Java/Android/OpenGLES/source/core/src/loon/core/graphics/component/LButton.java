@@ -154,7 +154,11 @@ public class LButton extends LComponent {
 	}
 
 	@Override
-	public void update(long timer) {
+	public void update(long elapsedTime) {
+		if (!visible) {
+			return;
+		}
+		super.update(elapsedTime);
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
 			this.pressed = false;
 		}
