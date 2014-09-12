@@ -247,6 +247,7 @@ public class LPad extends LComponent {
 
 	@Override
 	public void dispose() {
+		super.dispose();
 		if (pack != null) {
 			pack.dispose();
 		}

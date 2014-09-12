@@ -218,6 +218,7 @@ public class LProgress extends LComponent {
 	}
 
 	public void dispose() {
+		super.dispose();
 		if (texture != null) {
 			if (bgTexture != null) {
 				bgTexture.dispose();

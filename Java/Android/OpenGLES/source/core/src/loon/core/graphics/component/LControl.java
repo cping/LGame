@@ -231,6 +231,7 @@ public class LControl extends LComponent {
 
 	@Override
 	public void dispose() {
+		super.dispose();
 		if (controlBase != null) {
 			controlBase.destroy();
 			controlBase = null;
