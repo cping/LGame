@@ -32,145 +32,21 @@ import loon.core.input.LInputFactory.Touch;
 import loon.utils.collection.Array;
 
 /**
- * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI)
+ * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，若setSupportScroll(true)则支持滚动)
+ * 
+ * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); 
+ * panel.add("ABC");
+ * panel.add("EFG"); 
+ * panel.add("ABC"); 
+ * panel.add("EFG"); 
+ * panel.add("ABC");
+ * panel.add("EFG");
  */
 public class LMenu extends LComponent {
 
-	private LFont font;
-	private float width;
-	private float maxwidth;
-	private float taby;
-
-	private LTexture mainpanel;
-	private LTexture tab;
-	boolean active;
-
-	public int xslot;
-	public int yslot;
-	public float scroll;
-	public float maxscroll;
-	public float scrollspeed = 25f;
-	static LMenu selected;
-	private float cellWidth = 32f;
-	private float cellHeight = 32f;
-	float paddingx = 2f;
-	float paddingy = 50f;
-	int rows = 1;
-
-	public final static int MOVE_LEFT = 0;
-
-	public final static int MOVE_RIGHT = 1;
-
-	private int item_left_offset = 8;
-
-	private int item_top_offset = 0;
-
-	public Array<MenuItem> item = new Array<MenuItem>();
-
-	private SpriteBatch batch;
-
-	private int tabWidth, tabHeight;
-
-	int type = MOVE_LEFT;
-
-	String label;
-
-	public LMenu(String label) {
-		this(LFont.getDefaultFont(), label, 100, 50);
-	}
-
-	public LMenu(LFont font, String label, int width, int height) {
-		this(font, label, width, height, DefUI.getDefaultTextures(3), DefUI
-				.getDefaultTextures(2));
-	}
-
-	public LMenu(LFont font, String label, int width, int height, LTexture tab,
-			LTexture main) {
-		super(0, 0, width, height);
-		this.label = label;
-		this.font = font;
-		this.batch = new SpriteBatch();
-		this.mainpanel = main;
-		this.tab = tab;
-		this.tabWidth = width;
-		this.tabHeight = height;
-		this.maxwidth = getScreenWidth() / 4;
-		this.maxwidth += this.cellWidth + this.paddingx;
-	}
-
-	public RectBox tagbounds(int type) {
-		if (type == MOVE_LEFT) {
-
-			return new RectBox(this.width - 2, getTaby(), tabWidth, tabHeight);
-		} else if (type == MOVE_RIGHT) {
-			return new RectBox(getScreenWidth() - 2 - tabWidth + this.width,
-					getTaby(), tabWidth, tabHeight);
-		}
-		return null;
-	}
-
-	public RectBox panelbounds(int type) {
-		if (type == MOVE_LEFT) {
-			return new RectBox(-1, 0, this.width, getScreenHeight());
-		} else if (type == MOVE_RIGHT) {
-			return new RectBox(getScreenWidth() - this.width - 2, 0,
-					this.width, getScreenHeight());
-		}
-		return null;
-	}
-
-	public float getTaby() {
-		return this.taby;
-	}
-
-	public void setTaby(float taby) {
-		this.taby = taby;
-	}
-
-	public MenuItem add(String label) {
-		return add(label, null);
-	}
-
-	public MenuItem add(String label, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, DefUI.getDefaultTextures(3), label,
-				click));
-	}
-
-	public MenuItem add(String label, String file, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, LTextures.loadTexture(file), label, click));
-	}
-
-	public MenuItem add(String label, LTexture texture, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, texture, label, click));
-	}
-
-	public MenuItem add(String label, LTexture texture, float x, float y,
-			MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, texture, false, label, x, y, click));
-	}
-
-	public MenuItem add(String label, LTexture texture, float x, float y,
-			float w, float h, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, texture, false, label, x, y, w, h,
-				click));
-	}
-
-	public MenuItem add(MenuItem item) {
-		if (this.xslot > this.maxwidth / (this.cellWidth + this.paddingx * 2)) {
-			this.xslot = 1;
-			this.yslot += 1;
-			this.rows += 1;
-		}
-		item.xslot = this.xslot;
-		item.yslot = this.yslot;
-		this.item.add(item);
-		this.xslot += 1;
-		return item;
-	}
-
 	public static interface MenuItemClick {
 		public void onClick(MenuItem item);
-	};
+	}
 
 	public class MenuItem {
 		LTexture texture;
@@ -190,14 +66,7 @@ public class LMenu extends LComponent {
 		private MenuItemClick _itemclick;
 
 		MenuItem(LMenu parent, LTexture tex, String label, MenuItemClick click) {
-			this.texture = tex;
-			this.parent = parent;
-			if (parent != null) {
-				parent.add(this);
-				this.index = parent.item.size();
-			}
-			this.label = label;
-			this._itemclick = click;
+			this(parent, tex, false, label, click);
 		}
 
 		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
@@ -206,50 +75,53 @@ public class LMenu extends LComponent {
 			this.parent = parent;
 			if (parent != null) {
 				parent.add(this);
-				this.index = parent.item.size();
+				this.index = parent.items.size();
 			}
 			this.label = label;
 			this.keep = keep;
 			this._itemclick = click;
+			if (tex == null) {
+				this.keep = false;
+			}
 		}
 
 		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
 				float x, float y, MenuItemClick click) {
-			this.x = x;
-			this.y = y;
-			this.texture = tex;
-			this.localpos = true;
-			this.parent = parent;
-			if (parent != null) {
-				parent.add(this);
-				this.index = parent.item.size();
-			}
-			this.label = label;
-			this.keep = keep;
-			this._itemclick = click;
+			this(parent, tex, true, label, x, y, 0, 0, click);
 		}
 
 		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
 				float x, float y, float w, float h, MenuItemClick click) {
 			this.x = x;
 			this.y = y;
-			this.localsize = true;
 			this.itemWidth = w;
 			this.itemHeight = h;
 			this.texture = tex;
-			this.localpos = true;
+			if (w < 1 && h < 1) {
+				this.localsize = true;
+			} else {
+				this.localsize = false;
+			}
+			this.texture = tex;
+			if (x < 1 && y < 1) {
+				this.localpos = true;
+			} else {
+				this.localpos = false;
+			}
 			this.parent = parent;
 			if (parent != null) {
 				parent.add(this);
-				this.index = parent.item.size();
+				this.index = parent.items.size();
 			}
 			this.label = label;
 			this.keep = keep;
 			this._itemclick = click;
+			if (tex == null) {
+				this.keep = false;
+			}
 		}
 
 		public void draw(SpriteBatch batch) {
-
 			if (this.parent != null) {
 				if (!localpos) {
 					this.x = (this.parent.cellWidth * this.xslot
@@ -259,16 +131,22 @@ public class LMenu extends LComponent {
 					this.y = (this.parent.cellHeight * this.yslot
 							+ this.parent.cellHeight / this.itemHeight + this.yslot
 							* this.parent.paddingy);
+
 					if (x > Float.MAX_VALUE) {
-						x = Float.MIN_VALUE;
+						x = 0;
 					} else if (x < Float.MIN_VALUE) {
 						x = 0;
 					}
 					if (y > Float.MAX_VALUE) {
-						y = Float.MIN_VALUE;
+						y = 0;
 					} else if (y < Float.MIN_VALUE) {
 						y = 0;
 					}
+				}
+				if (parent.type == LMenu.MOVE_RIGHT) {
+					float posX = parent.getScreenWidth()
+							- parent.main_panel_size;
+					this.x = posX + x;
 				}
 				if (!localsize) {
 					if (!this.keep || texture == null) {
@@ -282,7 +160,7 @@ public class LMenu extends LComponent {
 				if (bounds().contains(input.getTouchX(), input.getTouchY())
 						&& Touch.isDown()) {
 					batch.setColor(0.5f, 0.5f, 0.5f, 1.0f);
-					if (input.isTouchPressed(Touch.LEFT) && (!this.clicked)) {
+					if (Touch.isDown() && (!this.clicked)) {
 						if (this._itemclick != null) {
 							this._itemclick.onClick(this);
 						}
@@ -291,7 +169,7 @@ public class LMenu extends LComponent {
 				} else {
 					batch.setColor(1f, 1f, 1f, 1f);
 				}
-				if (!input.isTouchPressed(Touch.LEFT)) {
+				if (!Touch.isDown()) {
 					this.clicked = false;
 				}
 				if (texture != null) {
@@ -314,8 +192,8 @@ public class LMenu extends LComponent {
 			} else {
 				if (bounds().contains(input.getTouchX(), input.getTouchY())
 						&& Touch.isDown()) {
-					batch.setColor(0.5F, 0.5F, 0.5F, 1.0F);
-					if ((input.isTouchPressed(Touch.LEFT)) && (!this.clicked)) {
+					batch.setColor(0.5f, 0.5f, 0.5f, 1.0f);
+					if (Touch.isDown() && (!this.clicked)) {
 						if (this._itemclick != null) {
 							this._itemclick.onClick(this);
 						}
@@ -324,7 +202,7 @@ public class LMenu extends LComponent {
 				} else {
 					batch.setColor(1f, 1f, 1f, 1f);
 				}
-				if (!input.isTouchPressed(Touch.LEFT)) {
+				if (!Touch.isDown()) {
 					this.clicked = false;
 				}
 				if (texture != null) {
@@ -344,9 +222,32 @@ public class LMenu extends LComponent {
 			}
 		}
 
+		private RectBox itemrect;
+
 		public RectBox bounds() {
-			return new RectBox(this.x + 3f, this.y + this.parent.paddingy
-					+ this.parent.scroll, this.itemWidth, this.itemHeight);
+			if (parent.type == LMenu.MOVE_LEFT) {
+				if (itemrect == null) {
+					itemrect = new RectBox(this.x + 3f, this.y
+							+ this.parent.paddingy + this.parent.scroll,
+							this.itemWidth, this.itemHeight);
+				} else {
+					itemrect.setBounds(this.x + 3f, this.y
+							+ this.parent.paddingy + this.parent.scroll,
+							this.itemWidth, this.itemHeight);
+				}
+			} else if (parent.type == LMenu.MOVE_RIGHT) {
+
+				if (itemrect == null) {
+					itemrect = new RectBox(this.x + 3f, this.y
+							+ this.parent.paddingy + this.parent.scroll,
+							this.itemWidth, this.itemHeight);
+				} else {
+					itemrect.setBounds(this.x + 3f, this.y
+							+ this.parent.paddingy + this.parent.scroll,
+							this.itemWidth, this.itemHeight);
+				}
+			}
+			return itemrect;
 		}
 
 		public LMenu getParent() {
@@ -375,6 +276,203 @@ public class LMenu extends LComponent {
 
 	}
 
+	private LFont font;
+	private float width;
+	private float main_panel_size;
+	private float tabY;
+
+	private LTexture mainpanel;
+	private LTexture tab;
+	private boolean active, supportScroll;
+
+	public int xslot;
+	public int yslot;
+	public float scroll;
+	public float maxscroll;
+	public float scrollspeed = 25f;
+	private LMenu selected;
+	private float cellWidth = 32f;
+	private float cellHeight = 32f;
+	private float paddingx = 2f;
+	private float paddingy = 50f;
+	private int rows = 1;
+
+	public final static int MOVE_LEFT = 0;
+
+	public final static int MOVE_RIGHT = 1;
+
+	private int item_left_offset = 10;
+
+	private int item_top_offset = 0;
+
+	public Array<MenuItem> items = new Array<MenuItem>();
+
+	private SpriteBatch batch;
+
+	private int tabWidth, tabHeight;
+
+	private int type = MOVE_RIGHT;
+
+	private String label;
+
+	private boolean _defUI;
+
+	public LMenu(int move_type, String label) {
+		this(move_type, LFont.getDefaultFont(), label, 100, 50);
+	}
+
+	public LMenu(int move_type, String label, int w, int h) {
+		this(move_type, LFont.getDefaultFont(), label, w, h);
+	}
+
+	public LMenu(int move_type, LFont font, String label, int width, int height) {
+		this(move_type, font, label, width, height,
+				DefUI.getDefaultTextures(3), DefUI.getDefaultTextures(2), 0, 0,
+				true);
+	}
+
+	public LMenu(int move_type, LFont font, String label, int width,
+			int height, String tabfile, String mainfile) {
+		this(move_type, font, label, width, height, LTextures
+				.loadTexture(tabfile), LTextures.loadTexture(mainfile), 0, 0,
+				false);
+	}
+
+	public LMenu(int move_type, LFont font, String label, int width,
+			int height, String tabfile, String mainfile, int taby, int mainsize) {
+		this(move_type, font, label, width, height, LTextures
+				.loadTexture(tabfile), LTextures.loadTexture(mainfile), taby,
+				mainsize, false);
+	}
+
+	public LMenu(int move_type, LFont font, String label, int width,
+			int height, LTexture tab, LTexture main, int taby) {
+		this(move_type, font, label, width, height, tab, main, taby, 0, false);
+	}
+
+	public LMenu(int move_type, LFont font, String label, int width,
+			int height, LTexture tab, LTexture main, int taby, int mainsize) {
+		this(move_type, font, label, width, height, tab, main, taby, mainsize,
+				false);
+	}
+
+	public LMenu(int move_type, LFont font, String label, int width,
+			int height, LTexture tab, LTexture main, int taby, int mainsize,
+			boolean defUI) {
+		super(0, 0, width, height);
+		this.type = move_type;
+		this.batch = new SpriteBatch();
+		this.label = label;
+		this.font = font;
+		this.tabY = taby;
+		this.tab = tab;
+		this.mainpanel = main;
+		this.tabWidth = width;
+		this.tabHeight = height;
+		if (mainsize > 0) {
+			this.main_panel_size = mainsize;
+		} else {
+			this.main_panel_size = getScreenWidth() / 4;
+		}
+		this.main_panel_size += this.cellWidth + this.paddingx;
+		this._defUI = defUI;
+		if (type > MOVE_RIGHT) {
+			throw new RuntimeException("Type:" + type
+					+ ", The Menu display mode is not supported !");
+		}
+	}
+
+	private RectBox tabRec;
+
+	private RectBox tagbounds(int type) {
+		if (type == MOVE_LEFT) {
+			if (tabRec == null) {
+				tabRec = new RectBox(this.width, getTaby(), tabWidth, tabHeight);
+			} else {
+				tabRec.setBounds(this.width, getTaby(), tabWidth, tabHeight);
+			}
+		} else if (type == MOVE_RIGHT) {
+			float posX = this.getScreenWidth() - this.width - this.tabWidth;
+			if (tabRec == null) {
+				tabRec = new RectBox(posX, getTaby(), tabWidth, tabHeight);
+			} else {
+				tabRec.setBounds(posX, getTaby(), tabWidth, tabHeight);
+			}
+		}
+		return tabRec;
+	}
+
+	private RectBox mianRec;
+
+	private RectBox panelbounds(int type) {
+		if (type == MOVE_LEFT) {
+			if (mianRec == null) {
+				mianRec = new RectBox(0, 0, this.width, getScreenHeight());
+			} else {
+				mianRec.setBounds(0, 0, this.width, getScreenHeight());
+			}
+		} else if (type == MOVE_RIGHT) {
+			float posX = this.getScreenWidth() - this.width;
+			if (mianRec == null) {
+				mianRec = new RectBox(posX, 0, this.width, getScreenHeight());
+			} else {
+				mianRec.setBounds(posX, 0, this.width, getScreenHeight());
+			}
+		}
+		return mianRec;
+	}
+
+	public float getTaby() {
+		return this.tabY;
+	}
+
+	public void setTaby(float tabY) {
+		this.tabY = tabY;
+	}
+
+	public MenuItem add(String label) {
+		return add(label, null);
+	}
+
+	public MenuItem add(String label, MenuItemClick click) {
+		return add(new LMenu.MenuItem(this, DefUI.getDefaultTextures(3), label,
+				click));
+	}
+
+	public MenuItem add(String label, String file, MenuItemClick click) {
+		return add(new LMenu.MenuItem(this, LTextures.loadTexture(file), label,
+				click));
+	}
+
+	public MenuItem add(String label, LTexture texture, MenuItemClick click) {
+		return add(new LMenu.MenuItem(this, texture, label, click));
+	}
+
+	public MenuItem add(String label, LTexture texture, float x, float y,
+			MenuItemClick click) {
+		return add(new LMenu.MenuItem(this, texture, false, label, x, y, click));
+	}
+
+	public MenuItem add(String label, LTexture texture, float x, float y,
+			float w, float h, MenuItemClick click) {
+		return add(new LMenu.MenuItem(this, texture, false, label, x, y, w, h,
+				click));
+	}
+
+	public MenuItem add(MenuItem item) {
+		if (this.xslot > this.main_panel_size
+				/ (this.cellWidth + this.paddingx * 2)) {
+			this.xslot = 1;
+			this.yslot += 1;
+			this.rows += 1;
+		}
+		item.xslot = this.xslot;
+		item.yslot = this.yslot;
+		this.items.add(item);
+		this.xslot += 1;
+		return item;
+	}
+
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
@@ -386,13 +484,12 @@ public class LMenu extends LComponent {
 			switch (type) {
 			case MOVE_LEFT:
 				if ((selected == this) || (selected == null)) {
-					batch.draw(this.tab, this.width - 2, getTaby(), tabWidth,
+					batch.draw(this.tab, this.width, getTaby(), tabWidth,
 							tabHeight);
 					if (label != null) {
 						batch.drawString(
 								this.label,
 								this.width
-										- 2
 										+ (tabWidth / 2 - font
 												.stringWidth(label) / 2),
 								getTaby()
@@ -401,10 +498,10 @@ public class LMenu extends LComponent {
 					}
 				}
 				if ((this.active) || (this.width > 0)) {
-					batch.draw(mainpanel, 1f, 0, this.width, getScreenHeight());
-					if (this.width == this.maxwidth) {
-						for (int i = 0; i < this.item.size(); i++) {
-							this.item.get(i).draw(batch);
+					batch.draw(mainpanel, 0, 0, this.width, getScreenHeight());
+					if (this.width == this.main_panel_size) {
+						for (int i = 0; i < this.items.size(); i++) {
+							this.items.get(i).draw(batch);
 						}
 					}
 				}
@@ -412,7 +509,31 @@ public class LMenu extends LComponent {
 				break;
 
 			case MOVE_RIGHT:
-				// developing...
+				if ((selected == this) || (selected == null)) {
+					float posX = this.getScreenWidth() - this.width
+							- this.tabWidth;
+					batch.draw(this.tab, posX, getTaby(), tabWidth, tabHeight);
+					if (label != null) {
+						batch.drawString(
+								this.label,
+								posX
+										+ (tabWidth / 2 - font
+												.stringWidth(label) / 2),
+								getTaby()
+										+ (tabHeight / 2 + font.getHeight() / 2)
+										- 5);
+					}
+				}
+				if ((this.active) || (this.width > 0)) {
+					float posX = this.getScreenWidth() - this.width;
+					batch.draw(mainpanel, posX, 0, this.width,
+							getScreenHeight());
+					if (this.width == this.main_panel_size) {
+						for (int i = 0; i < this.items.size(); i++) {
+							this.items.get(i).draw(batch);
+						}
+					}
+				}
 
 				break;
 			}
@@ -432,81 +553,65 @@ public class LMenu extends LComponent {
 		}
 		super.update(elapsedTime);
 
-		if (!isFocusable()) {
-			return;
-		}
-
-		switch (type) {
-		case MOVE_LEFT:
-			if (!this.active) {
-				if (tagbounds(type).contains(input.getTouchX(),
-						input.getTouchY())
-						&& (input.isTouchPressed(Touch.LEFT)
-								|| input.isTouchReleased(Touch.LEFT) || input
-									.isMoving()) && (selected == null)) {
-					this.active = true;
-					this.mouseSelect = true;
-					if (selected == null) {
-						selected = this;
-					}
-				}
-				if (this.width > 0) {
-					this.width -= 0.3f * this.width * (elapsedTime / 100f);
-				}
-
-				if (this.width <= 2) {
-					this.width = 0;
-				}
-
-			} else {
+		if (!this.active) {
+			if (tagbounds(type).contains(input.getTouchX(), input.getTouchY())
+					&& ((Touch.isUp() || Touch.isDrag())) && (selected == null)) {
+				this.active = true;
 				this.mouseSelect = true;
-				if (selected == this) {
-					this.maxscroll = ((this.paddingy + this.cellHeight) * this.rows);
-					if (this.scroll > this.maxscroll) {
-						this.scroll = this.maxscroll;
-					}
-					if (this.scroll < -this.maxscroll) {
-						this.scroll = (-this.maxscroll);
-					}
-
-					if (((tagbounds(type).contains(input.getTouchX(),
-							input.getTouchY())) || (panelbounds(type).contains(
-							input.getTouchX(), input.getTouchY())))) {
-						if (this.width < this.maxwidth)
-							this.width += 0.3F * (this.maxwidth - this.width)
-									* (elapsedTime / 100f);
-						else {
-							this.width = this.maxwidth;
-						}
-						if (this.width > this.maxwidth - 2) {
-							this.width = this.maxwidth;
-						}
-						if (input.isMoving()) {
-							if (input.getTouchDY() > 5) {
-								this.scroll -= this.scrollspeed
-										* (elapsedTime / 100f);
-							} else if (input.getTouchDY() < -5) {
-								this.scroll += this.scrollspeed
-										* (elapsedTime / 100f);
-							}
-						}
-					} else {
-
-						if (selected == this) {
-							selected = null;
-						}
-						this.active = false;
-						mouseSelect = false;
-					}
+				if (selected == null) {
+					selected = this;
 				}
 			}
+			if (this.width > 0) {
+				this.width -= 0.3f * this.width * (elapsedTime / 100f);
+			}
 
-			break;
+			if (this.width <= 2) {
+				this.width = 0;
+			}
 
-		case MOVE_RIGHT:
+		} else {
+			this.mouseSelect = true;
+			if (selected == this) {
+				this.maxscroll = ((this.paddingy + this.cellHeight) * this.rows);
+				if (this.scroll > this.maxscroll) {
+					this.scroll = this.maxscroll;
+				}
+				if (this.scroll < -this.maxscroll) {
+					this.scroll = (-this.maxscroll);
+				}
 
-			// developing...
-			break;
+				if (((tagbounds(type).contains(input.getTouchX(),
+						input.getTouchY())) || (panelbounds(type).contains(
+						input.getTouchX(), input.getTouchY())))) {
+					if (this.width < this.main_panel_size)
+						this.width += 0.3F
+								* (this.main_panel_size - this.width)
+								* (elapsedTime / 100f);
+					else {
+						this.width = this.main_panel_size;
+					}
+					if (this.width > this.main_panel_size - 2) {
+						this.width = this.main_panel_size;
+					}
+					if (input.isMoving() && supportScroll) {
+						if (input.getTouchDY() > 5) {
+							this.scroll -= this.scrollspeed
+									* (elapsedTime / 100f);
+						} else if (input.getTouchDY() < -5) {
+							this.scroll += this.scrollspeed
+									* (elapsedTime / 100f);
+						}
+					}
+				} else {
+
+					if (selected == this) {
+						selected = null;
+					}
+					this.active = false;
+					mouseSelect = false;
+				}
+			}
 		}
 
 	}
@@ -516,11 +621,11 @@ public class LMenu extends LComponent {
 	}
 
 	public float getPanelWidth() {
-		return maxwidth;
+		return main_panel_size;
 	}
 
 	public void setPanelWidth(float w) {
-		this.maxwidth = w;
+		this.main_panel_size = w;
 	}
 
 	public int getItemLeftOffset() {
@@ -563,12 +668,8 @@ public class LMenu extends LComponent {
 		this.scrollspeed = scrollspeed;
 	}
 
-	public static LMenu getSelected() {
+	public LMenu getSelected() {
 		return selected;
-	}
-
-	public static void setSelected(LMenu selected) {
-		LMenu.selected = selected;
 	}
 
 	public float getCellWidth() {
@@ -595,6 +696,78 @@ public class LMenu extends LComponent {
 		this.label = label;
 	}
 
+	public int getXslot() {
+		return xslot;
+	}
+
+	public void setXslot(int xslot) {
+		this.xslot = xslot;
+	}
+
+	public int getYslot() {
+		return yslot;
+	}
+
+	public void setYslot(int yslot) {
+		this.yslot = yslot;
+	}
+
+	public float getMaxscroll() {
+		return maxscroll;
+	}
+
+	public void setMaxscroll(float maxscroll) {
+		this.maxscroll = maxscroll;
+	}
+
+	public float getPaddingx() {
+		return paddingx;
+	}
+
+	public void setPaddingx(float paddingx) {
+		this.paddingx = paddingx;
+	}
+
+	public float getPaddingy() {
+		return paddingy;
+	}
+
+	public void setPaddingy(float paddingy) {
+		this.paddingy = paddingy;
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public int getTabWidth() {
+		return tabWidth;
+	}
+
+	public int getTabHeight() {
+		return tabHeight;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public boolean isSupportScroll() {
+		return supportScroll;
+	}
+
+	public void setSupportScroll(boolean s) {
+		this.supportScroll = s;
+	}
+
+	public void setType(int t) {
+		this.type = t;
+	}
+
+	public boolean isdefUI() {
+		return _defUI;
+	}
+
 	@Override
 	public String getUIName() {
 		return "Menu";
@@ -602,9 +775,16 @@ public class LMenu extends LComponent {
 
 	public void dispose() {
 		super.dispose();
+		if (!_defUI) {
+			if (tab != null) {
+				tab.dispose();
+			}
+			if (mainpanel != null) {
+				mainpanel.dispose();
+			}
+		}
 		if (batch != null) {
 			batch.dispose();
 		}
 	}
-
 }

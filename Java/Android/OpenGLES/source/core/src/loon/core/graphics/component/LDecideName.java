@@ -412,6 +412,7 @@ public class LDecideName extends LComponent {
 	}
 
 	public void dispose() {
+		super.dispose();
 		if (cacheFont != null) {
 			cacheFont.dispose();
 		}
