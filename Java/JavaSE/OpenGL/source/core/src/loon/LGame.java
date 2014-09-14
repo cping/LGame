@@ -445,6 +445,7 @@ public class LGame extends JavaApp {
 								}
 								break;
 							case Screen.SCREEN_COLOR_REPAINT:
+								gl.reset(true);
 								LColor c = process.getColor();
 								if (c != null) {
 									gl.drawClear(c);

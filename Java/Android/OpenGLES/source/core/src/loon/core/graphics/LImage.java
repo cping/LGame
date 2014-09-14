@@ -721,7 +721,7 @@ public class LImage implements LRelease {
 	}
 
 	public LImage(int width, int height) {
-		this(width, height, false);
+		this(width, height, true);
 	}
 
 	/**
