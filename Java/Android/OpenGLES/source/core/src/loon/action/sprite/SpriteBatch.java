@@ -1941,7 +1941,7 @@ public class SpriteBatch implements LRelease {
 		} else {
 			GLEx.self.GL_REPLACE();
 		}
-		if (color == -1.7014117E38f) {
+		if (color == -1.7014117E38f || alpha != 1f) {
 			GLEx.self.GL_MODULATE();
 		} else {
 			GLEx.self.GL_REPLACE();

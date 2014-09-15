@@ -56,10 +56,9 @@ public class SpriteBatch implements LRelease {
 	}
 
 	/**
-	 * Sample:
-	 * batch.draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
-				 Vector2f.Zero, new Vector2f(1f, 1f), SpriteEffects.None);
-				
+	 * Sample: batch.draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
+	 * Vector2f.Zero, new Vector2f(1f, 1f), SpriteEffects.None);
+	 * 
 	 * @param font
 	 * @param cs
 	 * @param local
@@ -1862,7 +1861,7 @@ public class SpriteBatch implements LRelease {
 		if (!lockSubmit) {
 			submit();
 		}
-		
+
 		y = y - font.getAscent();
 		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
 				rotation, c);
@@ -1942,7 +1941,7 @@ public class SpriteBatch implements LRelease {
 		} else {
 			GLEx.self.GL_REPLACE();
 		}
-		if (color == -1.7014117E38f) {
+		if (color == -1.7014117E38f || alpha != 1f) {
 			GLEx.self.GL_MODULATE();
 		} else {
 			GLEx.self.GL_REPLACE();
@@ -1961,6 +1960,7 @@ public class SpriteBatch implements LRelease {
 		if (idx == 0) {
 			return;
 		}
+
 		renderCalls++;
 		totalRenderCalls++;
 		int spritesInBatch = idx / 20;
