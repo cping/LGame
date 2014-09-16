@@ -295,6 +295,7 @@ public class LMenu extends LComponent {
 	private float cellHeight = 32f;
 	private float paddingx = 2f;
 	private float paddingy = 50f;
+	private float alphaMenu = 0.7f;
 	private int rows = 1;
 
 	public final static int MOVE_LEFT = 0;
@@ -480,7 +481,7 @@ public class LMenu extends LComponent {
 			LFont oldfont = g.getFont();
 			int oldcolor = g.getColorARGB();
 			batch.begin();
-			batch.setAlpha(0.7f);
+			batch.setAlpha(alphaMenu);
 			switch (type) {
 			case MOVE_LEFT:
 				if ((selected == this) || (selected == null)) {
@@ -768,6 +769,14 @@ public class LMenu extends LComponent {
 		return _defUI;
 	}
 
+	public float getAlphaMenu() {
+		return alphaMenu;
+	}
+
+	public void setAlphaMenu(float alphaMenu) {
+		this.alphaMenu = alphaMenu;
+	}
+	
 	@Override
 	public String getUIName() {
 		return "Menu";
@@ -787,4 +796,5 @@ public class LMenu extends LComponent {
 			batch.dispose();
 		}
 	}
+
 }
