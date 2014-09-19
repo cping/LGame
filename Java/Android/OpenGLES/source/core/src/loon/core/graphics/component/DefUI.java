@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2014
@@ -30,12 +29,70 @@ import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.opengl.LSubTexture;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.utils.MathUtils;
 import loon.utils.collection.Array;
 import loon.utils.collection.ArrayMap;
 
 public class DefUI {
 
 	public static String win_frame_UI = LSystem.FRAMEWORK_IMG_NAME + "wbar.png";
+
+	/**
+	 * 返回一组随机纹理当做背景图
+	 * 
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static LTexture getGameRandomBackground(int width, int height) {
+		return getGameRandomBackground(45, width, height);
+	}
+
+	/**
+	 * 返回一组指定色彩元素的随机纹理当做背景图
+	 * 
+	 * @param color
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static LTexture getGameRandomBackground(int color, int width,
+			int height) {
+		LImage temp = new LImage(width, height, false);
+		LGraphics g = temp.getLGraphics();
+		g.setColor(color, color, color);
+		g.fillRect(0, 0, width, height);
+		for (int i = 0; i < 20000; i++) {
+			int size = 50;
+			int rand = (int) (MathUtils.random() * 2);
+			int randX = (int) (MathUtils.random() * (width + size)) - size;
+			int randY = (int) (MathUtils.random() * (height + size)) - size;
+			int maxDelta = size;
+			float delta = 0;
+			for (int j = 0; j < maxDelta; j++) {
+				if (j < maxDelta / 2) {
+					delta += 0.35;
+				} else {
+					delta -= 0.35;
+				}
+				g.setColor(color + (int) (delta), color + (int) (delta), color
+						+ (int) (delta));
+				if (rand == 0) {
+					g.fillRect(randX + j, randY, 1, 1);
+				} else {
+					g.fillRect(randX, randY + j, 1, 1);
+				}
+			}
+		}
+		g.dispose();
+		temp.setAutoDispose(true);
+		LTexture background = temp.getTexture();
+		if (temp != null) {
+			temp.dispose();
+			temp = null;
+		}
+		return background;
+	}
 
 	/**
 	 * 生成指定大小，指定列数的表格图
@@ -198,7 +255,7 @@ public class DefUI {
 		LImage img = DefUI.getDefaultWindow("window0");
 		int size = img.getHeight();
 		int length = img.getWidth();
-		int bun = (int) Math.round(1.0D * (height - size) / nums);
+		int bun = (int) MathUtils.round(1.0D * (height - size) / nums);
 		int offset = 0;
 
 		for (int i = 1; i < nums; i++) {
@@ -231,7 +288,7 @@ public class DefUI {
 			int messize, boolean[] oks, LColor[] colors) {
 		LImage img = DefUI.getDefaultWindow("window0");
 		int size = img.getHeight();
-		int bun = (int) Math.round(1.0D * (height - size) / messize);
+		int bun = (int) MathUtils.round(1.0D * (height - size) / messize);
 		for (int i = 0; i < messize; i++) {
 			g.setColor(colors[i]);
 			if (!oks[i]) {
