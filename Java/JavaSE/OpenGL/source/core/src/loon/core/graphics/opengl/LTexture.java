@@ -13,6 +13,7 @@ import loon.core.geom.Polygon;
 import loon.core.geom.Shape;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LImage;
+import loon.core.graphics.LShadow;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
@@ -42,6 +43,14 @@ import org.lwjgl.opengl.GLContext;
  */
 public class LTexture implements LRelease {
 
+	public LTexture makeShadow(int size, float alpha, LColor c) {
+		return new LShadow(this.getImage(), size, alpha, c).getTexture();
+	}
+
+	public LTexture makeShadow() {
+		return new LShadow(this.getImage()).getTexture();
+	}
+	
 	public LTextureRegion getTextureRegion(int x, int y, int width, int height) {
 		return new LTextureRegion(this, x, y, width, height);
 	}
