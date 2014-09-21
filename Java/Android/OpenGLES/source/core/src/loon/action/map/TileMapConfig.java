@@ -66,6 +66,7 @@ public class TileMapConfig {
 					map[i][j] = line.charAt(j);
 				}
 			}
+			br.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

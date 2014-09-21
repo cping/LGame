@@ -118,7 +118,7 @@ public class LLabels extends LComponent {
 
 	@Override
 	public String getUIName() {
-		return "Label";
+		return "Labels";
 	}
 
 
