@@ -251,8 +251,22 @@ public class AStarFinder implements Runnable, LRelease {
 		return astar(field, flag);
 	}
 
+	private int overflow = 1024;
+
+	public void setOverflow(int over) {
+		this.overflow = over;
+	}
+
+	public int getOverflow() {
+		return this.overflow;
+	}
+
 	private LinkedList<Vector2f> astar(Field2D field, boolean flag) {
-		for (; pathes.size() > 0;) {
+		for (int j = 0; pathes.size() > 0; j++) {
+			if (j > overflow) {
+				pathes.clear();
+				continue;
+			}
 			ScoredPath spath = pathes.remove(0);
 			Vector2f current = spath.path.get(spath.path.size() - 1);
 			if (current.equals(goal)) {
