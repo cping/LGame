@@ -85,30 +85,6 @@ public class LWindow extends LContainer {
 		animation.addFrame(image, timer);
 	}
 
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
-	public void downClick() {
-		if (Click != null) {
-			Click.DownClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	public void upClick() {
-		if (Click != null) {
-			Click.UpClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	protected void processTouchClicked() {
-		if (!input.isMoving()) {
-			this.doClick();
-		}
-	}
-
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
 			this.doClick();
@@ -149,24 +125,31 @@ public class LWindow extends LContainer {
 		}
 	}
 
+	protected void processTouchClicked() {
+		if (!input.isMoving()) {
+			super.processTouchClicked();
+		}
+	}
+
 	protected void processTouchDragged() {
 		if (!locked) {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}
 			this.move(this.input.getTouchDX(), this.input.getTouchDY());
+			super.processTouchDragged();
 		}
 	}
 
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
-			this.downClick();
+			super.processTouchPressed();
 		}
 	}
 
 	protected void processTouchReleased() {
 		if (!input.isMoving()) {
-			this.upClick();
+			super.processTouchReleased();
 		}
 	}
 

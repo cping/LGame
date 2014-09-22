@@ -20,12 +20,13 @@
  */
 package loon.action.sprite;
 
+import loon.core.LRelease;
 import loon.core.geom.RectBox.Rect2i;
 import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 
-public class SpriteBatchSheet {
+public class SpriteBatchSheet implements LRelease {
 
 	private float rate;
 	private float currentFrame;
@@ -43,8 +44,7 @@ public class SpriteBatchSheet {
 	private LTexture image;
 	private Rect2i spriteRect, destRect;
 
-	public SpriteBatchSheet(String fileName, int hFrames, int vFrames,
-			float r) {
+	public SpriteBatchSheet(String fileName, int hFrames, int vFrames, float r) {
 		this(LTextures.loadTexture(fileName), hFrames, vFrames, r);
 	}
 
@@ -69,18 +69,18 @@ public class SpriteBatchSheet {
 			currentFrame = 0;
 		}
 		spriteRect.top = (((int) currentFrame) / hFrames) * spriteHeight;
-		spriteRect.bottom = spriteRect.top + spriteHeight;
+		spriteRect.bottom = spriteHeight;
 		spriteRect.left = (((int) currentFrame) % hFrames) * spriteWidth;
-		spriteRect.right = spriteRect.left + spriteWidth;
+		spriteRect.right = spriteWidth;
 		return finished;
 	}
 
 	public void animate(int frame) {
 		currentFrame = frame;
 		spriteRect.top = ((frame) / hFrames) * spriteHeight;
-		spriteRect.bottom = spriteRect.top + spriteHeight;
+		spriteRect.bottom = spriteHeight;
 		spriteRect.left = ((frame) % hFrames) * spriteWidth;
-		spriteRect.right = spriteRect.left + spriteWidth;
+		spriteRect.right = spriteWidth;
 	}
 
 	public void animate(int start, int end) {
@@ -95,9 +95,9 @@ public class SpriteBatchSheet {
 			currentFrame = start;
 		}
 		spriteRect.top = (((int) currentFrame) / hFrames) * spriteHeight;
-		spriteRect.bottom = spriteRect.top + spriteHeight;
+		spriteRect.bottom = spriteHeight;
 		spriteRect.left = (((int) currentFrame) % hFrames) * spriteWidth;
-		spriteRect.right = spriteRect.left + spriteWidth;
+		spriteRect.right = spriteWidth;
 	}
 
 	public void animate(int start, int end, float mod) {
@@ -112,9 +112,9 @@ public class SpriteBatchSheet {
 			currentFrame = start;
 		}
 		spriteRect.top = (((int) currentFrame) / hFrames) * spriteHeight;
-		spriteRect.bottom = spriteRect.top + spriteHeight;
+		spriteRect.bottom = spriteHeight;
 		spriteRect.left = (((int) currentFrame) % hFrames) * spriteWidth;
-		spriteRect.right = spriteRect.left + spriteWidth;
+		spriteRect.right = spriteWidth;
 	}
 
 	public void build(float x, float y, int xSize, int ySize) {
@@ -123,7 +123,7 @@ public class SpriteBatchSheet {
 		this.y = (int) y;
 	}
 
-	private LColor color;
+	private LColor color = new LColor(LColor.white);
 
 	public void draw(SpriteBatch batch) {
 		if (currentFrame >= 0) {
@@ -143,14 +143,14 @@ public class SpriteBatchSheet {
 	public void update(float x, float y) {
 		if (centered) {
 			destRect.top = (int) (y - (imgHeight / 2));
-			destRect.bottom = destRect.top + imgHeight;
+			destRect.bottom = imgHeight;
 			destRect.left = (int) (x - (imgWidth / 2));
-			destRect.right = destRect.left + imgWidth;
+			destRect.right = imgWidth;
 		} else {
 			destRect.top = (int) y;
-			destRect.bottom = destRect.top + imgHeight;
+			destRect.bottom = imgHeight;
 			destRect.left = (int) x;
-			destRect.right = destRect.left + imgWidth;
+			destRect.right = imgWidth;
 		}
 	}
 
@@ -335,5 +335,21 @@ public class SpriteBatchSheet {
 
 	public boolean isAnimating() {
 		return currentFrame > 0;
+	}
+
+	public LColor getColor() {
+		return color;
+	}
+
+	public void setColor(LColor color) {
+		this.color = color;
+	}
+
+	@Override
+	public void dispose() {
+		if (image != null) {
+			image.dispose();
+		}
+
 	}
 }
