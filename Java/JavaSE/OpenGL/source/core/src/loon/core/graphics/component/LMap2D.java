@@ -34,7 +34,14 @@ import loon.core.graphics.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.TextureUtils;
-
+/**
+ * 该类用以显示简单的二维数组地图。
+ * 
+ * Example1(其中参数分别为地图信息，地图原始图片，显示的X与Y坐标，以及每块瓦片的截取大小.建议配合Loon默认提供的LevelEditor.jar使用):
+ * 
+ * LMap2D map2d = new LMap2D("assets/map.txt", "assets/defaultmap.png", 0,0,8,8);
+ * 
+ **/
 public class LMap2D extends LContainer {
 
 	private boolean grid = false;
@@ -55,7 +62,19 @@ public class LMap2D extends LContainer {
 			int rowTileWidth, int colTileHeight) throws IOException {
 		this(datafile, mapFile, x, y, 0, 0, rowTileWidth, colTileHeight, 32);
 	}
-
+	
+	/**
+	 * 如果需要变更显示时的瓦片大小，可调整tileSize参数来实现
+	 * 
+	 * @param datafile
+	 * @param mapFile
+	 * @param x
+	 * @param y
+	 * @param rowTileWidth
+	 * @param colTileHeight
+	 * @param tileSize
+	 * @throws IOException
+	 */
 	public LMap2D(String datafile, String mapFile, int x, int y,
 			int rowTileWidth, int colTileHeight, int tileSize)
 			throws IOException {
