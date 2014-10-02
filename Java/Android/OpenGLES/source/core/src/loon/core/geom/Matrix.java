@@ -1,10 +1,7 @@
 package loon.core.geom;
 
 import java.util.Collection;
-
 import loon.utils.MathUtils;
-
-
 
 /**
  * 
@@ -38,6 +35,13 @@ public final class Matrix {
 	public Matrix(Matrix m) {
 		matrixs = new float[9];
 		System.arraycopy(m.matrixs, 0, matrixs, 0, 9);
+	}
+
+	public Matrix(float mat[], int offset) {
+		matrixs = new float[9];
+		for (int i = 0; i < 9; i++) {
+			matrixs[i] = mat[i + offset];
+		}
 	}
 
 	public Matrix(Matrix t1, Matrix t2) {
@@ -136,6 +140,10 @@ public final class Matrix {
 		return new Matrix(scalex, 0, 0, 0, scaley, 0);
 	}
 
+	public float get(int i) {
+		return matrixs[i];
+	}
+
 	public float get(int x, int y) {
 		try {
 			return matrixs[x * 3 + y];
@@ -183,6 +191,14 @@ public final class Matrix {
 		return this;
 	}
 
+	public float getTranslationX() {
+		return this.matrixs[6];
+	}
+
+	public float getTranslationY() {
+		return this.matrixs[7];
+	}
+
 	public void translation(float x, float y) {
 		this.matrixs[0] = 1;
 		this.matrixs[1] = 0;
@@ -209,7 +225,7 @@ public final class Matrix {
 		this.matrixs[7] = 0;
 		this.matrixs[8] = 1;
 	}
-	
+
 	private float[] result = new float[16];
 
 	public float[] get() {
@@ -501,7 +517,6 @@ public final class Matrix {
 		}
 	}
 
-	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Matrix) || o == null) {
 			return false;
@@ -546,7 +561,6 @@ public final class Matrix {
 		return true;
 	}
 
-	@Override
 	public int hashCode() {
 		int result = 17;
 		for (int j = 0; j < 9; j++) {
@@ -565,12 +579,247 @@ public final class Matrix {
 		return new Vector2f(out[0], out[1]);
 	}
 
-	@Override
 	public Matrix clone() {
 		return new Matrix(this.matrixs);
 	}
 
 	public float[] getValues() {
 		return matrixs;
+	}
+
+	public void set(int i, float value) {
+		matrixs[i] = value;
+	}
+
+	public static void add(Matrix result, Matrix m1, Matrix m2) {
+		for (int i = 0; i < 9; i++) {
+			result.set(i, m1.get(i) + m2.get(i));
+		}
+	}
+
+	public static void sub(Matrix result, Matrix m1, Matrix m2) {
+		for (int i = 0; i < 9; i++) {
+			result.set(i, m1.get(i) - m2.get(i));
+		}
+	}
+
+	public static void mul(Matrix result, Matrix m1, Matrix m2) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				result.set(i, j, m1.get(i, 0) * m2.get(0, j) + m1.get(i, 1)
+						* m2.get(1, j) + m1.get(i, 2) * m2.get(2, j));
+			}
+		}
+	}
+
+	public static void mul(float result[], Matrix m, float v[]) {
+		float a, b, c;
+		a = m.get(0, 0) * v[0] + m.get(1, 0) * v[1] + m.get(2, 0) * v[2];
+		b = m.get(0, 1) * v[0] + m.get(1, 1) * v[1] + m.get(2, 1) * v[2];
+		c = m.get(0, 2) * v[0] + m.get(1, 2) * v[1] + m.get(2, 2) * v[2];
+		result[0] = a;
+		result[1] = b;
+		result[2] = c;
+	}
+
+	public static Matrix getRotationMatrixExact(float ax, float ay, float az) {
+		float cosax = MathUtils.cos(MathUtils.toRadians(ax));
+		float sinax = MathUtils.sin(MathUtils.toRadians(ax));
+		float cosay = MathUtils.cos(MathUtils.toRadians(ay));
+		float sinay = MathUtils.sin(MathUtils.toRadians(ay));
+		float cosaz = MathUtils.cos(MathUtils.toRadians(az));
+		float sinaz = MathUtils.sin(MathUtils.toRadians(az));
+		float tx[] = { 1, 0, 0, 0, cosax, -sinax, 0, sinax, cosax };
+		float ty[] = { cosay, 0, sinay, 0, 1.f, 0.f, -sinay, 0, cosay };
+		float tz[] = { cosaz, -sinaz, 0, sinaz, cosaz, 0, 0, 0, 1 };
+		Matrix Rx = new Matrix(tx);
+		Matrix Ry = new Matrix(ty);
+		Matrix Rz = new Matrix(tz);
+		Matrix result = new Matrix();
+		Matrix tmpresult = new Matrix();
+		Matrix.mul(tmpresult, Rx, Ry);
+		Matrix.mul(result, tmpresult, Rz);
+		return result;
+	}
+
+	public static float distance2d(float x1, float y1, float x2, float y2) {
+		return distance(x1, y1, 0.f, x2, y2, 0.f);
+	}
+
+	public static float distance(float x1, float y1, float z1, float x2,
+			float y2, float z2) {
+		return MathUtils.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1)
+				* (y2 - y1) + (z2 - z1) * (z2 - z1));
+	}
+
+	public static boolean isOnTriange(float x1, float y1, float x2, float y2,
+			float x3, float y3, float x, float y) {
+		float a;
+		float b;
+		boolean s;
+		boolean s2;
+
+		if (x2 - x1 != 0.f) {
+			a = (y2 - y1) / (x2 - x1);
+			b = y1 - a * x1;
+
+			if (a * x3 + b > y3) {
+				s = true;
+			} else{
+				s = false;
+			}
+			if (a * x + b > y) {
+				s2 = true;
+			} else{
+				s2 = false;
+			}
+
+			if ((s != s2) && (a * x + b != y)) {
+				return false;
+			}
+
+		} else {
+			if (x1 > x3) {
+				s = true;
+			} else {
+				s = false;
+			}
+			if (x1 > x) {
+				s2 = true;
+			} else {
+				s2 = false;
+			}
+			if ((s != s2) && (x1 != x)) {
+				return false;
+			}
+		}
+
+		if (x3 - x2 != 0.f) {
+			a = (y3 - y2) / (x3 - x2);
+			b = y2 - a * x2;
+
+			if (a * x1 + b > y1) {
+				s = true;
+			} else {
+				s = false;
+			}
+			if (a * x + b > y) {
+				s2 = true;
+			} else {
+				s2 = false;
+			}
+			if ((s != s2) && (a * x + b != y)) {
+				return false;
+			}
+
+		} else {
+			if (x2 > x1) {
+				s = true;
+			} else {
+				s = false;
+			}
+			if (x2 > x) {
+				s2 = true;
+			} else {
+				s2 = false;
+			}
+			if ((s != s2) && (x1 != x)) {
+				return false;
+			}
+		}
+
+		if (x1 - x3 != 0.f) {
+			a = (y1 - y3) / (x1 - x3);
+			b = y3 - a * x3;
+
+			if (a * x2 + b > y2) {
+				s = true;
+			} else {
+				s = false;
+			}
+
+			if (a * x + b > y) {
+				s2 = true;
+			} else {
+				s2 = false;
+			}
+
+			if ((s != s2) && (a * x + b != y)) {
+				return false;
+			}
+
+		} else {
+			if (x1 > x2) {
+				s = true;
+			} else {
+				s = false;
+			}
+
+			if (x1 > x) {
+				s2 = true;
+			} else {
+				s2 = false;
+			}
+
+			if ((s != s2) && (x1 != x)) {
+				return false;
+			}
+		}
+		return true;
+
+	}
+
+	public static float[] convert33to44(float m33[], int offset) {
+		float m44[] = new float[16];
+
+		m44[0] = m33[0 + offset];
+		m44[1] = m33[1 + offset];
+		m44[2] = m33[2 + offset];
+
+		m44[4] = m33[3 + offset];
+		m44[5] = m33[4 + offset];
+		m44[6] = m33[5 + offset];
+
+		m44[8] = m33[6 + offset];
+		m44[9] = m33[7 + offset];
+		m44[10] = m33[8 + offset];
+
+		m44[15] = 1.0f;
+		return m44;
+	}
+
+	public static void setRotateEulerM(float[] rm, int rmOffset, float x,
+			float y, float z) {
+		x = x * 0.01745329f;
+		y = y * 0.01745329f;
+		z = z * 0.01745329f;
+		float sx = MathUtils.sin(x);
+		float sy = MathUtils.sin(y);
+		float sz = MathUtils.sin(z);
+		float cx = MathUtils.cos(x);
+		float cy = MathUtils.cos(y);
+		float cz = MathUtils.cos(z);
+		float cxsy = cx * sy;
+		float sxsy = sx * sy;
+
+		rm[rmOffset + 0] = cy * cz;
+		rm[rmOffset + 1] = -cy * sz;
+		rm[rmOffset + 2] = sy;
+		rm[rmOffset + 3] = 0.0f;
+
+		rm[rmOffset + 4] = sxsy * cz + cx * sz;
+		rm[rmOffset + 5] = -sxsy * sz + cx * cz;
+		rm[rmOffset + 6] = -sx * cy;
+		rm[rmOffset + 7] = 0.0f;
+
+		rm[rmOffset + 8] = -cxsy * cz + sx * sz;
+		rm[rmOffset + 9] = cxsy * sz + sx * cz;
+		rm[rmOffset + 10] = cx * cy;
+		rm[rmOffset + 11] = 0.0f;
+
+		rm[rmOffset + 12] = 0.0f;
+		rm[rmOffset + 13] = 0.0f;
+		rm[rmOffset + 14] = 0.0f;
+		rm[rmOffset + 15] = 1.0f;
 	}
 }
