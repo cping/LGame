@@ -1,6 +1,7 @@
 package loon.core.graphics.component;
 
 import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
 import loon.utils.collection.ArrayList;
 
 /**
@@ -24,9 +25,45 @@ import loon.utils.collection.ArrayList;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  * 
- * 新增类，用以同时处理多个组件对象到同一状态
+ *          新增类，用以同时处理多个组件对象到同一状态
  */
 public class UIControls {
+
+	public static float getChildrenHeight(LContainer c) {
+		float totalHeight = 0;
+		LComponent[] list = c.getComponents();
+		for (int i = 0; i < list.length; i++) {
+			totalHeight += list[i].getHeight();
+		}
+		return totalHeight;
+	}
+
+	public static float getChildrenWidth(LContainer c) {
+		float totalWidth = 0;
+		LComponent[] list = c.getComponents();
+		for (int i = 0; i < list.length; i++) {
+			totalWidth += list[i].getWidth();
+		}
+		return totalWidth;
+	}
+
+	public static float getMaxChildHeight(LContainer c) {
+		int maxHeight = 0;
+		LComponent[] list = c.getComponents();
+		for (int i = 0; i < list.length; i++) {
+			maxHeight = Math.max(maxHeight, list[i].getHeight());
+		}
+		return maxHeight;
+	}
+
+	public static int getMaxChildWidth(LContainer c) {
+		int maxWidth = 0;
+		LComponent[] list = c.getComponents();
+		for (int i = 0; i < list.length; i++) {
+			maxWidth = Math.max(maxWidth, list[i].getWidth());
+		}
+		return maxWidth;
+	}
 
 	private final ArrayList _comps;
 
