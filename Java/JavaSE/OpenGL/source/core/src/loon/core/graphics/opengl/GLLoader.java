@@ -140,7 +140,7 @@ public final class GLLoader extends LTextureData {
 		if (fileName == null) {
 			throw new RuntimeException("file name is null !");
 		}
-		if (fileName.endsWith("png") && multipyAlpha) {
+		if (fileName.toLowerCase().endsWith("png") && multipyAlpha) {
 			ByteBuffer result = null;
 			PNGData imageData = new PNGData();
 			try {

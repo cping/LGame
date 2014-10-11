@@ -11,7 +11,6 @@ import loon.core.graphics.LImage;
 import loon.core.graphics.device.LGraphics;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
-import loon.utils.FileUtils;
 
 /**
  * 
@@ -139,7 +138,7 @@ public final class GLLoader extends LTextureData {
 		int srcHeight = image.getHeight();
 		this.hasAlpha = image.hasAlpha();
 
-		if (fileName != null && !fileName.endsWith("tga")) {
+		if (fileName != null && !LImage.existType(fileName)) {
 
 			if (GLEx.isPowerOfTwo(srcWidth) && GLEx.isPowerOfTwo(srcHeight)) {
 				this.width = srcWidth;
@@ -302,10 +301,10 @@ public final class GLLoader extends LTextureData {
 				final GL10 gl = GLEx.gl10;
 				if (gl != null) {
 					Buffer pixelBuffer = getBufferPixels(data.source, format);
-					gl.glTexImage2D(GL.GL_TEXTURE_2D, 0,
-							format.getGLFormat(), data.texWidth,
-							data.texHeight, 0, format.getGLFormat(),
-							format.getGLType(), pixelBuffer);
+					gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, format.getGLFormat(),
+							data.texWidth, data.texHeight, 0,
+							format.getGLFormat(), format.getGLType(),
+							pixelBuffer);
 					pixelBuffer = null;
 				}
 			} else {
@@ -380,8 +379,7 @@ public final class GLLoader extends LTextureData {
 		if (resName == null) {
 			return false;
 		} else {
-			String ext = FileUtils.getExtension(resName);
-			if ("png".equalsIgnoreCase(ext)) {
+			if (resName.toLowerCase().endsWith("png")) {
 				return true;
 			}
 		}
