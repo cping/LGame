@@ -11,7 +11,7 @@ import loon.core.timer.GameTime;
 
 public class Sprite extends DrawableGameComponent implements IGameComponent {
 
-	private Vector2f drawPosition=new Vector2f();
+	private Vector2f drawPosition = new Vector2f();
 	private MainGame game;
 	private int showMilliseconds;
 	private String textureFile;

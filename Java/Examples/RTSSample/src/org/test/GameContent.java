@@ -6,8 +6,8 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
 import loon.core.resource.LPKResource;
-import loon.utils.TextureUtils;
 
 public class GameContent {
 	public LTexture[] armyOverlay = new LTexture[3];

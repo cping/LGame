@@ -1,18 +1,13 @@
 ﻿package org.test;
 
-public enum Difficulty
-{
-	Easy,
-	Medium,
-	Hard;
+public enum Difficulty {
+	Easy, Medium, Hard;
 
-	public int getValue()
-	{
+	public int getValue() {
 		return this.ordinal();
 	}
 
-	public static Difficulty forValue(int value)
-	{
+	public static Difficulty forValue(int value) {
 		return values()[value];
 	}
 }

@@ -1,4 +1,5 @@
-﻿package org.test;
+﻿
+package org.test;
 
 import loon.action.sprite.SpriteBatch;
 import loon.core.geom.Vector2f;

@@ -19,18 +19,17 @@ public class LoseScreenSpriteWithText extends Sprite {
 	public void draw(SpriteBatch batch, GameTime gameTime) {
 		super.draw(batch, gameTime);
 		Utils.DrawStringAlignCenter(batch, this.fontHeader, LanguageResources
-				.getLoseHeader().toUpperCase(), 164f, 51f,
-				LColor.white);
+				.getLoseHeader().toUpperCase(), 164f, 51f, LColor.white);
 		int num = 0x23;
 		int num2 = 0x65;
 		for (String str : LanguageResources.getLosePar1().split("[$]", -1)) {
-			Utils.DrawStringAlignLeft(batch, this.font, str, 
-					 num, num2, LColor.white);
+			Utils.DrawStringAlignLeft(batch, this.font, str, num, num2,
+					LColor.white);
 			num2 += 20;
 		}
 		String text = LanguageResources.getMenu().toUpperCase();
-		Utils.DrawStringAlignCenter(batch, this.font, text,160f,
-				400f, LColor.white);
+		Utils.DrawStringAlignCenter(batch, this.font, text, 160f, 400f,
+				LColor.white);
 	}
 
 	@Override

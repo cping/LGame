@@ -1,19 +1,13 @@
 ﻿package org.test;
 
-public enum GameState
-{
-	PlacingInitialTowers,
-	Started,
-	Paused,
-	Ended;
+public enum GameState {
+	PlacingInitialTowers, Started, Paused, Ended;
 
-	public int getValue()
-	{
+	public int getValue() {
 		return this.ordinal();
 	}
 
-	public static GameState forValue(int value)
-	{
+	public static GameState forValue(int value) {
 		return values()[value];
 	}
 }

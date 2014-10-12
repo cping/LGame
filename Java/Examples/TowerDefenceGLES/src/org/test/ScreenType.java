@@ -1,27 +1,13 @@
 ﻿package org.test;
 
-public enum ScreenType
-{
-	ConfirmScreen,
-	GamePausedScreen,
-	GameplayScreen,
-	InstructionsScreen,
-	LoadingScreen,
-	LoseScreen,
-	MainMenuScreen,
-	MonsterInfoScreen,
-	SelectLevelScreen,
-	TowerInfoScreen,
-	WinScreen,
-	BuyToGetFeaturesScreen;
+public enum ScreenType {
+	ConfirmScreen, GamePausedScreen, GameplayScreen, InstructionsScreen, LoadingScreen, LoseScreen, MainMenuScreen, MonsterInfoScreen, SelectLevelScreen, TowerInfoScreen, WinScreen, BuyToGetFeaturesScreen;
 
-	public int getValue()
-	{
+	public int getValue() {
 		return this.ordinal();
 	}
 
-	public static ScreenType forValue(int value)
-	{
+	public static ScreenType forValue(int value) {
 		return values()[value];
 	}
 }

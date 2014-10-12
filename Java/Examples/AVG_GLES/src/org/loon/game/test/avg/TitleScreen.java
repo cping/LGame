@@ -27,7 +27,7 @@ import loon.core.timer.LTimerContext;
  * 
  * @project loonframework
  * @author chenpeng
- * @email：ceponline@yahoo.com.cn
+ * @email锛歝eponline@yahoo.com.cn
  * @version 0.1
  */
 public class TitleScreen extends Screen {
@@ -45,10 +45,10 @@ public class TitleScreen extends Screen {
 	}
 
 	public void onLoad() {
-		// 变更背景
+		// 鍙樻洿鑳屾櫙
 		setBackground("assets/back1.png");
 
-		// 创建一个开始按钮，按照宽191，高57分解按钮图，并设定其Click事件
+		// 鍒涘缓涓�釜寮�鎸夐挳锛屾寜鐓у191锛岄珮57鍒嗚В鎸夐挳鍥撅紝骞惰瀹氬叾Click浜嬩欢
 		start = new LButton("assets/title_start.png", 191, 57) {
 
 			ActionKey action = new ActionKey(
@@ -61,60 +61,60 @@ public class TitleScreen extends Screen {
 				}
 			}
 		};
-		// 设定按钮位置为x=2,y=5
+		// 璁惧畾鎸夐挳浣嶇疆涓簒=2,y=5
 		start.setLocation(2, 5);
-		// 设定此按钮不可用
+		// 璁惧畾姝ゆ寜閽笉鍙敤
 		start.setEnabled(false);
-		// 添加按钮
+		// 娣诲姞鎸夐挳
 		add(start);
 
-		// 创建一个记录读取按钮，按照宽160，高56分解按钮图
+		// 鍒涘缓涓�釜璁板綍璇诲彇鎸夐挳锛屾寜鐓у160锛岄珮56鍒嗚В鎸夐挳鍥�
 		LButton btn2 = new LButton("assets/title_load.png", 160, 56);
-		// 设定按钮位置为x=2,y=start位置类推
+		// 璁惧畾鎸夐挳浣嶇疆涓簒=2,y=start浣嶇疆绫绘帹
 		btn2.setLocation(2, start.getY() + start.getHeight() + 20);
-		// 设定此按钮不可用
+		// 璁惧畾姝ゆ寜閽笉鍙敤
 		btn2.setEnabled(false);
-		// 添加按钮
+		// 娣诲姞鎸夐挳
 		add(btn2);
 
-		// 创建一个环境设置按钮，按照宽215，高57分解按钮图
+		// 鍒涘缓涓�釜鐜璁剧疆鎸夐挳锛屾寜鐓у215锛岄珮57鍒嗚В鎸夐挳鍥�
 		LButton btn3 = new LButton("assets/title_option.png", 215, 57);
-		// 设定按钮位置为x=2,y=btn2位置类推
+		// 璁惧畾鎸夐挳浣嶇疆涓簒=2,y=btn2浣嶇疆绫绘帹
 		btn3.setLocation(2, btn2.getY() + btn2.getHeight() + 20);
-		// 设定此按钮不可用
+		// 璁惧畾姝ゆ寜閽笉鍙敤
 		btn3.setEnabled(false);
-		// 添加按钮
+		// 娣诲姞鎸夐挳
 		add(btn3);
 
-		// 创建一个退出按钮，按照宽142，高57分解按钮图，并设定其Click事件
+		// 鍒涘缓涓�釜閫�嚭鎸夐挳锛屾寜鐓у142锛岄珮57鍒嗚В鎸夐挳鍥撅紝骞惰瀹氬叾Click浜嬩欢
 		end = new LButton("assets/title_end.png", 142, 57) {
 			public void doClick() {
 				LSystem.exit();
 			}
 		};
-		// 设定按钮位置为x=2,y=btn3位置类推
+		// 璁惧畾鎸夐挳浣嶇疆涓簒=2,y=btn3浣嶇疆绫绘帹
 		end.setLocation(2, btn3.getY() + btn3.getHeight() + 20);
-		// 设定此按钮不可用
+		// 璁惧畾姝ゆ寜閽笉鍙敤
 		end.setEnabled(false);
-		// 添加按钮
+		// 娣诲姞鎸夐挳
 		add(end);
 
-		// 增加一个标题
+		// 澧炲姞涓�釜鏍囬
 		title = new LPaper("assets/title.png", -200, 0);
-		// 添加标题
+		// 娣诲姞鏍囬
 		add(title);
 	}
 
 	public void alter(LTimerContext c) {
 		if (isOnLoadComplete()) {
-			// 标题未达到窗体边缘
+			// 鏍囬鏈揪鍒扮獥浣撹竟缂�
 			if (title.getScreenX() + title.getWidth() + 25 <= getWidth()) {
-				// 以三倍速移动（红色无角……）
+				// 浠ヤ笁鍊嶉�绉诲姩锛堢孩鑹叉棤瑙掆�鈥︼級
 				title.move_right(3);
 			} else {
-				// 设定开始按钮可用
+				// 璁惧畾寮�鎸夐挳鍙敤
 				start.setEnabled(true);
-				// 设定结束按钮可用
+				// 璁惧畾缁撴潫鎸夐挳鍙敤
 				end.setEnabled(true);
 			}
 		}
@@ -134,6 +134,12 @@ public class TitleScreen extends Screen {
 
 	public void touchUp(LTouch e) {
 
+	}
+
+	@Override
+	public void touchDrag(LTouch e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

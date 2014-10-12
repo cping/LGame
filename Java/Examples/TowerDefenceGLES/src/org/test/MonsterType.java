@@ -1,21 +1,13 @@
 ﻿package org.test;
 
-public enum MonsterType
-{
-	Peasant,
-	Peon,
-	Berserker,
-	Chicken,
-	Doctor,
-	Chieftain;
+public enum MonsterType {
+	Peasant, Peon, Berserker, Chicken, Doctor, Chieftain;
 
-	public int getValue()
-	{
+	public int getValue() {
 		return this.ordinal();
 	}
 
-	public static MonsterType forValue(int value)
-	{
+	public static MonsterType forValue(int value) {
 		return values()[value];
 	}
 }

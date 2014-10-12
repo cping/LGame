@@ -4,7 +4,7 @@ import loon.core.RefObject;
 import loon.core.geom.Vector2f;
 
 public class AnimatedSpriteMonster {
-	
+
 	public static java.util.ArrayList<AnimatedSprite> GetAllAnimatedSpriteMonsters(
 			MainGame game) {
 
@@ -72,7 +72,8 @@ public class AnimatedSpriteMonster {
 		RefObject<Integer> tempRef_num = new RefObject<Integer>(0);
 		AnimatedSprite tempVar = new AnimatedSprite(game, GetTextureFile(
 				monsterType, "png/", tempRef_num),
-				monsterToolbarDrawPosition.add(-2f, -34f), 6, tempRef_num.argvalue, 80, 80, 1f);
+				monsterToolbarDrawPosition.add(-2f, -34f), 6,
+				tempRef_num.argvalue, 80, 80, 1f);
 		return tempVar;
 	}
 

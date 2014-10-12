@@ -35,10 +35,10 @@ public class Cash extends DrawableGameComponent implements IGameComponent {
 	@Override
 	public void draw(SpriteBatch batch, GameTime gameTime) {
 		batch.draw(this.texture, this.position, LColor.white);
-		Utils.DrawStringAlignRight(batch, this.font, (new Integer(this.cash))
-				.toString(), this.position.x + 46f,
+		Utils.DrawStringAlignRight(batch, this.font,
+				(new Integer(this.cash)).toString(), this.position.x + 46f,
 				this.position.y + 3f, LColor.white);
-		super.draw(batch,gameTime);
+		super.draw(batch, gameTime);
 	}
 
 	public final int Increase(int amount) {

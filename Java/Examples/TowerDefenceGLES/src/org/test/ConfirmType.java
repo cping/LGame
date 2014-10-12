@@ -1,17 +1,13 @@
 ﻿package org.test;
 
-public enum ConfirmType
-{
-	ExitToMainMenu,
-	RestartGame;
+public enum ConfirmType {
+	ExitToMainMenu, RestartGame;
 
-	public int getValue()
-	{
+	public int getValue() {
 		return this.ordinal();
 	}
 
-	public static ConfirmType forValue(int value)
-	{
+	public static ConfirmType forValue(int value) {
 		return values()[value];
 	}
 }

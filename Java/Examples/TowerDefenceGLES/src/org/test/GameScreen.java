@@ -76,12 +76,13 @@ public abstract class GameScreen {
 		this.transitionPosition += num * direction;
 		if (((direction < 0) && (this.transitionPosition <= 0f))
 				|| ((direction > 0) && (this.transitionPosition >= 1f))) {
-			this.transitionPosition = MathUtils.clamp(
-					this.transitionPosition, 0f, 1f);
+			this.transitionPosition = MathUtils.clamp(this.transitionPosition,
+					0f, 1f);
 			return false;
 		}
 		return true;
 	}
+
 	private int privateDrawOrder;
 
 	public final int getDrawOrder() {

@@ -11,8 +11,7 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.timer.GameTime;
 
-public class ScreenManager extends DrawableGameComponent
-{
+public class ScreenManager extends DrawableGameComponent {
 
 	private LTexture buttonBackground;
 	private LFont font;
@@ -24,46 +23,36 @@ public class ScreenManager extends DrawableGameComponent
 
 	private boolean traceEnabled;
 
-	public ScreenManager(MainGame game)
-	{
+	public ScreenManager(MainGame game) {
 		super(game);
 		this.screens = new java.util.ArrayList<GameScreen>();
 		this.screensToUpdate = new java.util.ArrayList<GameScreen>();
 		this.game = game;
 	}
 
-	public final void AddScreen(GameScreen screen)
-	{
+	public final void AddScreen(GameScreen screen) {
 		screen.setScreenManager(this);
 		screen.setIsExiting(false);
-		if (this.isInitialized)
-		{
+		if (this.isInitialized) {
 			screen.LoadContent();
 		}
 		this.screens.add(screen);
 	}
 
-
 	@Override
-	public void draw(SpriteBatch batch,GameTime gameTime)
-	{
-		for (GameScreen screen : this.screens)
-		{
-			if (screen.getScreenState() != ScreenState.Hidden)
-			{
-				screen.draw(batch,gameTime);
+	public void draw(SpriteBatch batch, GameTime gameTime) {
+		for (GameScreen screen : this.screens) {
+			if (screen.getScreenState() != ScreenState.Hidden) {
+				screen.draw(batch, gameTime);
 			}
 		}
 	}
 
-	public final void ExitAllScreens()
-	{
-		for (GameScreen screen : this.GetScreens())
-		{
+	public final void ExitAllScreens() {
+		for (GameScreen screen : this.GetScreens()) {
 			screen.ExitScreen();
 		}
 	}
-
 
 	public void FadeBackBufferToBlack(float a) {
 		drawRectangle(LSystem.screenRect, 0f, 0f, 0f, a);
@@ -84,117 +73,99 @@ public class ScreenManager extends DrawableGameComponent
 		}
 	}
 
-	public final GameScreen[] GetScreens()
-	{
+	public final GameScreen[] GetScreens() {
 		return this.screens.toArray(new GameScreen[0]);
 	}
 
 	@Override
-	public void initialize()
-	{
+	public void initialize() {
 		super.initialize();
 		this.isInitialized = true;
 	}
 
 	@Override
-	protected void loadContent()
-	{
+	protected void loadContent() {
 		this.font = LFont.getFont(12);
-		this.buttonBackground = LTextures.loadTexture("assets/backgrounds/buttonBackground.png");
-		for (GameScreen screen : this.screens)
-		{
+		this.buttonBackground = LTextures
+				.loadTexture("assets/backgrounds/buttonBackground.png");
+		for (GameScreen screen : this.screens) {
 			screen.LoadContent();
 		}
 	}
 
-	public final void RemoveScreen(GameScreen screen)
-	{
-		if (this.isInitialized)
-		{
+	public final void RemoveScreen(GameScreen screen) {
+		if (this.isInitialized) {
 			screen.UnloadContent();
 		}
 		this.screens.remove(screen);
 		this.screensToUpdate.remove(screen);
-		if (this.screens.size() > 0)
-		{
-		
+		if (this.screens.size() > 0) {
+
 		}
 	}
 
-	public final void SerializeState()
-	{}
+	public final void SerializeState() {
+	}
 
-	private void TraceScreens()
-	{
+	private void TraceScreens() {
 		java.util.ArrayList<String> list = new java.util.ArrayList<String>();
-		for (GameScreen screen : this.screens)
-		{
+		for (GameScreen screen : this.screens) {
 			list.add(screen.getClass().getName());
 		}
 	}
 
 	@Override
-	protected void unloadContent()
-	{
-		for (GameScreen screen : this.screens)
-		{
+	protected void unloadContent() {
+		for (GameScreen screen : this.screens) {
 			screen.UnloadContent();
 		}
 	}
 
 	@Override
-	public void update(GameTime gameTime)
-	{
+	public void update(GameTime gameTime) {
 		this.screensToUpdate.clear();
-		for (GameScreen screen : this.screens)
-		{
+		for (GameScreen screen : this.screens) {
 			this.screensToUpdate.add(screen);
 		}
 		boolean otherScreenHasFocus = false;
 		boolean coveredByOtherScreen = false;
-		while (this.screensToUpdate.size() > 0)
-		{
-			GameScreen screen2 = this.screensToUpdate.get(this.screensToUpdate.size() - 1);
+		while (this.screensToUpdate.size() > 0) {
+			GameScreen screen2 = this.screensToUpdate.get(this.screensToUpdate
+					.size() - 1);
 			this.screensToUpdate.remove(this.screensToUpdate.size() - 1);
-			if (screen2.getScreenState() != ScreenState.Hidden)
-			{
-				screen2.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+			if (screen2.getScreenState() != ScreenState.Hidden) {
+				screen2.Update(gameTime, otherScreenHasFocus,
+						coveredByOtherScreen);
 			}
-			if ((screen2.getScreenState() == ScreenState.TransitionOn) || (screen2.getScreenState() == ScreenState.Active))
-			{
-				if (!otherScreenHasFocus)
-				{
+			if ((screen2.getScreenState() == ScreenState.TransitionOn)
+					|| (screen2.getScreenState() == ScreenState.Active)) {
+				if (!otherScreenHasFocus) {
 					screen2.HandleInput(gameTime, game);
 					otherScreenHasFocus = true;
 				}
-				if (!screen2.getIsPopup())
-				{
+				if (!screen2.getIsPopup()) {
 					coveredByOtherScreen = true;
 				}
 			}
 		}
-		if (this.traceEnabled)
-		{
+		if (this.traceEnabled) {
 			this.TraceScreens();
 		}
 	}
 
-	public final LTexture getButtonBackground()
-	{
+	public final LTexture getButtonBackground() {
 		return this.buttonBackground;
 	}
 
-	public final LFont getFont()
-	{
+	public final LFont getFont() {
 		return this.font;
 	}
 
-	public final boolean getTraceEnabled()
-	{
+	public final boolean getTraceEnabled() {
 		return this.traceEnabled;
 	}
-	public final void setTraceEnabled(boolean value)
-	{
+
+	public final void setTraceEnabled(boolean value) {
 		this.traceEnabled = value;
 	}
 }

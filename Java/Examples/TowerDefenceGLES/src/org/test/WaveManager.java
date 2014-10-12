@@ -333,7 +333,7 @@ public class WaveManager extends DrawableGameComponent implements
 				} else {
 					boolean flag = true;
 					for (Wave wave : this.activeWaves) {
-						//?testing
+						// ?testing
 						if (wave.getMonsters().size() > 0) {
 							flag = false;
 							break;

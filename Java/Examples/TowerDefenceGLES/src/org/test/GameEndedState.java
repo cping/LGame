@@ -1,18 +1,13 @@
 ﻿package org.test;
 
-public enum GameEndedState
-{
-	NotSet,
-	Win,
-	Lose;
+public enum GameEndedState {
+	NotSet, Win, Lose;
 
-	public int getValue()
-	{
+	public int getValue() {
 		return this.ordinal();
 	}
 
-	public static GameEndedState forValue(int value)
-	{
+	public static GameEndedState forValue(int value) {
 		return values()[value];
 	}
 }

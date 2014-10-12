@@ -1,19 +1,13 @@
 ﻿package org.test;
 
-public enum ScreenState
-{
-	TransitionOn,
-	Active,
-	TransitionOff,
-	Hidden;
+public enum ScreenState {
+	TransitionOn, Active, TransitionOff, Hidden;
 
-	public int getValue()
-	{
+	public int getValue() {
 		return this.ordinal();
 	}
 
-	public static ScreenState forValue(int value)
-	{
+	public static ScreenState forValue(int value) {
 		return values()[value];
 	}
 }

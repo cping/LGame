@@ -105,6 +105,7 @@ public class MainMenuScreen extends MenuScreen {
 	}
 
 	Vector2f result = new Vector2f(160f, 219f);
+
 	@Override
 	public void draw(SpriteBatch batch, GameTime gameTime) {
 		batch.draw(this.texture, 0f, 0f, LColor.white);

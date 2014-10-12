@@ -1,7 +1,6 @@
 ﻿package org.test;
 
-public final class Constants
-{
+public final class Constants {
 	public static final int GridHeight = 0x13;
 	public static final int GridSize = 20;
 	public static final int GridWidth = 0x12;

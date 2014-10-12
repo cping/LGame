@@ -4,7 +4,7 @@ import loon.core.RefObject;
 import loon.core.geom.Vector2f;
 
 public class AnimatedSpriteTower extends AnimatedSprite {
-	
+
 	public AnimatedSpriteTower(MainGame game, String textureFile,
 			Vector2f position, int spriteCount) {
 		super(game, textureFile, position, 6, spriteCount, 80, 80, 1f);
@@ -40,8 +40,8 @@ public class AnimatedSpriteTower extends AnimatedSprite {
 	}
 
 	public static AnimatedSprite GetAnimatedSpriteTowerForTowerToolbar(
-			MainGame game, Vector2f towerToolbarDrawPosition, TowerType towerType,
-			float scale) {
+			MainGame game, Vector2f towerToolbarDrawPosition,
+			TowerType towerType, float scale) {
 
 		RefObject<Integer> num2 = new RefObject<Integer>(0);
 		AnimatedSprite tempVar = new AnimatedSprite(game, GetTextureFile(
