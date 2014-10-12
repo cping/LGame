@@ -1,7 +1,3 @@
-package loon.action.map;
-
-import java.util.ArrayList;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -22,6 +18,11 @@ import java.util.ArrayList;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.map;
+
+import java.util.ArrayList;
+
+
 public class Character {
 
 	private String name;

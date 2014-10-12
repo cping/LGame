@@ -1,17 +1,3 @@
-package loon.action.map;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-import loon.core.LSystem;
-import loon.core.resource.Resources;
-import loon.utils.CollectionUtils;
-
-
 
 /**
  * Copyright 2008 - 2010
@@ -33,6 +19,21 @@ import loon.utils.CollectionUtils;
  * @email javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.map;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import loon.core.LSystem;
+import loon.core.resource.Resources;
+import loon.utils.CollectionUtils;
+
+
+
 public class TileMapConfig {
 
 	private int[][] backMap;

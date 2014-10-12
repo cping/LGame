@@ -1,5 +1,3 @@
-package loon.action.map;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -20,6 +18,9 @@ package loon.action.map;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.map;
+
+
 public class Attribute {
 	
 	private String name;

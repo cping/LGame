@@ -1,12 +1,4 @@
-package loon.action.map;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import loon.core.geom.Vector2f;
-
-
-/**
+/*
  * Copyright 2008 - 2010
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -26,6 +18,15 @@ import loon.core.geom.Vector2f;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.map;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import loon.core.geom.Vector2f;
+
+
+
 public class AStarFinderPool implements Runnable {
 
 	private Field2D field;

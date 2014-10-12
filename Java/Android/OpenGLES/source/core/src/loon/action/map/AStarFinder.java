@@ -1,22 +1,3 @@
-package loon.action.map;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-
-import loon.action.map.heuristics.Closest;
-import loon.action.map.heuristics.ClosestSquared;
-import loon.action.map.heuristics.Diagonal;
-import loon.action.map.heuristics.DiagonalShort;
-import loon.action.map.heuristics.Euclidean;
-import loon.action.map.heuristics.EuclideanNoSQR;
-import loon.action.map.heuristics.Manhattan;
-import loon.action.map.heuristics.Mixing;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.Vector2f;
-
 
 /**
  * Copyright 2008 - 2010
@@ -38,6 +19,26 @@ import loon.core.geom.Vector2f;
  * @email javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.action.map;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+
+import loon.action.map.heuristics.Closest;
+import loon.action.map.heuristics.ClosestSquared;
+import loon.action.map.heuristics.Diagonal;
+import loon.action.map.heuristics.DiagonalShort;
+import loon.action.map.heuristics.Euclidean;
+import loon.action.map.heuristics.EuclideanNoSQR;
+import loon.action.map.heuristics.Manhattan;
+import loon.action.map.heuristics.Mixing;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.geom.Vector2f;
+
+
 public class AStarFinder implements Runnable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_CLOSEST = new Closest();

@@ -1,20 +1,3 @@
-package loon.action.map.tmx;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LTouch;
-import loon.core.resource.Resources;
-import loon.utils.xml.XMLDocument;
-import loon.utils.xml.XMLElement;
-import loon.utils.xml.XMLParser;
-
 
 /**
  * 
@@ -37,6 +20,24 @@ import loon.utils.xml.XMLParser;
  * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
+package loon.action.map.tmx;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.input.LTouch;
+import loon.core.resource.Resources;
+import loon.utils.xml.XMLDocument;
+import loon.utils.xml.XMLElement;
+import loon.utils.xml.XMLParser;
+
+
 public class TMXTiledMap implements LRelease {
 
 	protected int width;

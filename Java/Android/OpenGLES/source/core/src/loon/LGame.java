@@ -1,4 +1,4 @@
-/**
+/*
  * 
  * Copyright 2008 - 2011
  * 
@@ -24,6 +24,9 @@ package loon;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 
+import org.loon.main.ScreenTest;
+
+import loon.GLSurfaceViewCupcake.GLWrapper;
 import loon.LSetting.Listener;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
@@ -35,6 +38,8 @@ import loon.core.input.LInput.SelectEvent;
 import loon.core.input.LInput.TextEvent;
 
 import android.app.Activity;
+import android.opengl.GLSurfaceView.EGLConfigChooser;
+import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -44,6 +49,41 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
+/** LGame-Android版本的启动类,是标准Activity的继承与封装.
+* <p>
+ * <h3>初始化LGame</h3>
+ * <p>
+ * 在Android的具体环境下，LGame本质上成为了Activity的替代品，也就是可以直接用LGame启动我们的Android游戏，具体用例如下所示:
+ * 
+ * <pre class="prettyprint">
+ * public class MainActivity extends LGame {
+ * 
+ * 
+ * 	public void onMain() {
+ * 		LSetting setting = new LSetting();
+ * 		//横屏或竖屏
+ * 		setting.landscape = true;
+ * 		setting.width = 480;
+ * 		setting.height = 320;
+ * 		setting.showFPS = true;
+ * 		setting.showLogo = false;
+ * 		//注入初始Screen
+ * 	    register(setting,ScreenTest.class);
+ * 	}
+ * 
+ * 	
+ * 	public void onGameResumed() {
+ * 
+ * 		
+ * 	}
+ * 
+ * 	
+ * 	public void onGamePaused() {
+ * 
+ * 	}
+ * 
+ * }
+ * </pre> */
 public abstract class LGame extends Activity {
 
 	private static Class<?> getType(Object o) {
