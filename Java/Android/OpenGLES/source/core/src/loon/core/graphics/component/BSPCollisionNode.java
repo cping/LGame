@@ -1,13 +1,3 @@
-package loon.core.graphics.component;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import loon.core.geom.RectBox;
-
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -29,6 +19,17 @@ import loon.core.geom.RectBox;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+
+package loon.core.graphics.component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import loon.core.geom.RectBox;
+
+
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public final class BSPCollisionNode  {

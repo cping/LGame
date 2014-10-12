@@ -1,11 +1,3 @@
-package loon.core.graphics;
-
-import java.util.Arrays;
-import java.util.Comparator;
-
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.CollectionUtils;
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -27,6 +19,15 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics;
+
+import java.util.Arrays;
+import java.util.Comparator;
+
+import loon.core.graphics.opengl.GLEx;
+import loon.utils.CollectionUtils;
+
+
 
 public abstract class LContainer extends LComponent {
 

@@ -1,10 +1,3 @@
-package loon.core.graphics;
-
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.utils.CollectionUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -25,6 +18,14 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics;
+
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.utils.CollectionUtils;
+
+
+
 // 自0.3.2版起新增的像素处理类
 public class LPixmapData {
 

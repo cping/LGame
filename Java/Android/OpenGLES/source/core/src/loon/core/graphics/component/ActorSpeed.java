@@ -1,5 +1,3 @@
-package loon.core.graphics.component;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -20,6 +18,9 @@ package loon.core.graphics.component;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+
+package loon.core.graphics.component;
+
 
 public abstract class ActorSpeed extends Actor {
 

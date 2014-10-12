@@ -1,9 +1,3 @@
-package loon.core.geom;
-
-import java.util.ArrayList;
-
-import loon.utils.MathUtils;
-
 
 /**
  * 
@@ -26,6 +20,13 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
+import java.util.ArrayList;
+
+import loon.utils.MathUtils;
+
+
 public class Ellipse extends Shape {
 	/**
 	 * 

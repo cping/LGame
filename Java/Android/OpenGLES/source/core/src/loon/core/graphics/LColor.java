@@ -1,7 +1,3 @@
-package loon.core.graphics;
-
-import java.io.Serializable;
-import java.nio.FloatBuffer;
 
 /**
  * 
@@ -24,6 +20,11 @@ import java.nio.FloatBuffer;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics;
+
+import java.io.Serializable;
+import java.nio.FloatBuffer;
+
 public class LColor implements Serializable {
 
 	/**

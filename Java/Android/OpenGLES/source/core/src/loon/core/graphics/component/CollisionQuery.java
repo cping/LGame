@@ -1,4 +1,3 @@
-package loon.core.graphics.component;
 /**
  * 
  * Copyright 2008 - 2011
@@ -20,6 +19,8 @@ package loon.core.graphics.component;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
 public interface CollisionQuery {
 
 	boolean checkCollision(Actor actor);

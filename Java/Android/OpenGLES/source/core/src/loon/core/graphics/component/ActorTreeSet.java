@@ -1,14 +1,3 @@
-package loon.core.graphics.component;
-
-import java.util.AbstractSet;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import loon.utils.CollectionUtils;
-
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -30,6 +19,18 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import loon.utils.CollectionUtils;
+
+
+
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ActorTreeSet extends AbstractSet {

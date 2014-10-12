@@ -1,6 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.LRelease;
 
 /**
  * 
@@ -23,6 +20,10 @@ import loon.core.LRelease;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import loon.core.LRelease;
+
 public final class ActorNode implements LRelease {
 
 	private Actor actor;

@@ -1,19 +1,3 @@
-package loon.core.input;
-
-import loon.LGameView;
-import loon.core.EmulatorButtons;
-import loon.core.LSystem;
-import loon.core.event.ActionKey;
-import loon.core.geom.Vector2f;
-import loon.utils.collection.IntArray;
-
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnKeyListener;
-import android.view.View.OnTouchListener;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -34,6 +18,23 @@ import android.view.View.OnTouchListener;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.input;
+
+import loon.LGameView;
+import loon.core.EmulatorButtons;
+import loon.core.LSystem;
+import loon.core.event.ActionKey;
+import loon.core.geom.Vector2f;
+import loon.utils.collection.IntArray;
+
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
+
+
 public class LInputFactory implements OnKeyListener, OnTouchListener {
 
 	public static void setOnscreenKeyboardVisible(final boolean visible) {

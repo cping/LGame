@@ -1,21 +1,3 @@
-package loon.core.graphics;
-
-import loon.action.ActionBind;
-import loon.action.map.Field2D;
-import loon.core.LObject;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.component.ClickListener;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.TextureUtils;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LInput;
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LInputFactory.Touch;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -37,6 +19,25 @@ import loon.core.input.LInputFactory.Touch;
  * @email：javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.core.graphics;
+
+import loon.action.ActionBind;
+import loon.action.map.Field2D;
+import loon.core.LObject;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+import loon.core.geom.Vector2f;
+import loon.core.graphics.component.ClickListener;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.input.LInput;
+import loon.core.input.LInputFactory.Key;
+import loon.core.input.LInputFactory.Touch;
+
+
 
 public abstract class LComponent extends LObject implements ActionBind, LRelease {
 

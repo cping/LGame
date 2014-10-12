@@ -1,7 +1,3 @@
-package loon.core.geom;
-
-import loon.action.collision.CollisionHelper;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -23,6 +19,11 @@ import loon.action.collision.CollisionHelper;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
+import loon.action.collision.CollisionHelper;
+
+
 public class Circle extends Ellipse {
 	/**
 	 * 

@@ -1,16 +1,3 @@
-package loon.core.graphics.component;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import loon.core.geom.RectBox;
-import loon.utils.MathUtils;
-
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -32,6 +19,20 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import loon.core.geom.RectBox;
+import loon.utils.MathUtils;
+
+
+
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class BSPCollisionChecker implements CollisionChecker {

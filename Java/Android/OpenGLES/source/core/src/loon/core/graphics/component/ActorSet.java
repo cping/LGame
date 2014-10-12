@@ -1,7 +1,3 @@
-package loon.core.graphics.component;
-import java.util.AbstractSet;
-import java.util.Iterator;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -23,6 +19,11 @@ import java.util.Iterator;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+import java.util.AbstractSet;
+import java.util.Iterator;
+
+
 
 @SuppressWarnings({"rawtypes"})
 public class ActorSet extends AbstractSet {

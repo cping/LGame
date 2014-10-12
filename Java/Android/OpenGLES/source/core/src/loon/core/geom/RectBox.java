@@ -1,6 +1,3 @@
-package loon.core.geom;
-
-import loon.utils.MathUtils;
 
 /**
  * Copyright 2008 - 2011
@@ -22,6 +19,10 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
+import loon.utils.MathUtils;
+
 public class RectBox extends Shape {
 
 	/**

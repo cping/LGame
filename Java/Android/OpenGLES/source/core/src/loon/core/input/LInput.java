@@ -1,7 +1,3 @@
-package loon.core.input;
-
-import loon.core.geom.Point.Point2i;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -22,6 +18,11 @@ import loon.core.geom.Point.Point2i;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.input;
+
+import loon.core.geom.Point.Point2i;
+
+
 public interface LInput {
 
 	public interface TextEvent {

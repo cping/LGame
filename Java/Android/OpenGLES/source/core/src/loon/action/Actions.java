@@ -1,9 +1,3 @@
-package loon.action;
-
-import java.util.ArrayList;
-
-import loon.utils.CollectionUtils;
-import loon.utils.collection.ArrayMap;
 
 
 /**
@@ -26,6 +20,13 @@ import loon.utils.collection.ArrayMap;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action;
+
+import java.util.ArrayList;
+
+import loon.utils.CollectionUtils;
+import loon.utils.collection.ArrayMap;
+
 public class Actions {
 
 	final private ArrayMap actions;

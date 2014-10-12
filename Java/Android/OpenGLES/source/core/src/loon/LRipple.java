@@ -1,8 +1,3 @@
-package loon;
-
-import loon.core.LSystem;
-import loon.utils.MathUtils;
-
 
 /**
  * 
@@ -32,6 +27,12 @@ import loon.utils.MathUtils;
  * 通过RTXP金融协议,向指定抵制发送指定货币(也可以直接充值和发送BTC到此协议网络中)
  * 
  */
+package loon;
+
+import loon.core.LSystem;
+import loon.utils.MathUtils;
+
+
 public class LRipple {
 
 	public static void sendRESTCoin(String address, String name, String label,

@@ -1,22 +1,3 @@
-package loon.action.avg;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-
-import loon.action.avg.drama.Expression;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.Point.Point2i;
-import loon.core.graphics.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.resource.Resources;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -37,6 +18,26 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.action.avg;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import loon.action.avg.drama.Expression;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.geom.Point.Point2i;
+import loon.core.graphics.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.resource.Resources;
+import loon.utils.MathUtils;
+
+
+
 //0.3.3新增类,用以按指定的格式循环播放动画图像
 public class AVGAnm implements Expression, LRelease {
 

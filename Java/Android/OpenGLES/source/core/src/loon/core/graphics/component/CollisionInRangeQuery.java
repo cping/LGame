@@ -1,8 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.geom.RectBox;
-import loon.utils.MathUtils;
-
 
 /**
  * 
@@ -25,6 +20,12 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import loon.core.geom.RectBox;
+import loon.utils.MathUtils;
+
+
 public class CollisionInRangeQuery implements CollisionQuery {
 
 	private float dx;

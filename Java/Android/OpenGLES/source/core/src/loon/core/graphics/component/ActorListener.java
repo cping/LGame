@@ -1,6 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.opengl.GLEx;
 
 /**
  * Copyright 2008 - 2011
@@ -22,6 +19,10 @@ import loon.core.graphics.opengl.GLEx;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.opengl.GLEx;
+
 public interface ActorListener {
 
 	public void draw(GLEx g);

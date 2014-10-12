@@ -1,7 +1,3 @@
-package loon.core.geom;
-
-import java.util.ArrayList;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -23,6 +19,11 @@ import java.util.ArrayList;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
+import java.util.ArrayList;
+
+
 public class TriangleBasic implements Triangle {
 	/**
 	 * 

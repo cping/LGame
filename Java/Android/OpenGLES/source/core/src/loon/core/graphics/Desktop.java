@@ -1,14 +1,3 @@
-package loon.core.graphics;
-
-import java.util.ArrayList;
-
-import loon.core.LRelease;
-import loon.core.graphics.component.LLayer;
-import loon.core.graphics.component.LPanel;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.input.LInput;
-import loon.core.input.LInputFactory.Touch;
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -30,6 +19,18 @@ import loon.core.input.LInputFactory.Touch;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics;
+
+import java.util.ArrayList;
+
+import loon.core.LRelease;
+import loon.core.graphics.component.LLayer;
+import loon.core.graphics.component.LPanel;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.input.LInput;
+import loon.core.input.LInputFactory.Touch;
+
+
 public class Desktop implements LRelease {
 
 	// 空桌面布局

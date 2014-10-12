@@ -1,6 +1,3 @@
-package loon.core.geom;
-
-import java.io.Serializable;
 /**
  * 
  * Copyright 2008 - 2011
@@ -22,6 +19,10 @@ import java.io.Serializable;
  * @email：javachenpeng@yahoo.com 
  * @version 0.1
  */
+package loon.core.geom;
+
+import java.io.Serializable;
+
 public interface Triangle extends Serializable {
 
 	public int getTriangleCount();

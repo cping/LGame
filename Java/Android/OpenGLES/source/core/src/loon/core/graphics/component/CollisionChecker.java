@@ -1,10 +1,3 @@
-package loon.core.graphics.component;
-
-import java.util.Iterator;
-import java.util.List;
-
-import loon.core.LRelease;
-
 
 /**
  * 
@@ -27,6 +20,14 @@ import loon.core.LRelease;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import java.util.Iterator;
+import java.util.List;
+
+import loon.core.LRelease;
+
+
 
 @SuppressWarnings({ "rawtypes" })
 public interface CollisionChecker extends LRelease {

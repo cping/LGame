@@ -1,8 +1,3 @@
-package loon.core.input;
-
-import loon.core.input.LInputFactory.Touch;
-import loon.utils.collection.ArrayByte;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -23,6 +18,12 @@ import loon.utils.collection.ArrayByte;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.input;
+
+import loon.core.input.LInputFactory.Touch;
+import loon.utils.collection.ArrayByte;
+
+
 public class LTouch {
 
 	int type;

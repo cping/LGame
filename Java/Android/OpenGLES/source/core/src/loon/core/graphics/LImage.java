@@ -1,24 +1,3 @@
-package loon.core.graphics;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import loon.core.LRelease;
-import loon.core.LRuntimeHack;
-import loon.core.LSystem;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LTrans;
-import loon.core.graphics.filetype.TGA;
-import loon.core.graphics.opengl.GLLoader;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.FileUtils;
-import loon.utils.StringUtils;
-
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 
 /**
  * 
@@ -41,6 +20,28 @@ import android.graphics.Bitmap.Config;
  * @email javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.core.graphics;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import loon.core.LRelease;
+import loon.core.LRuntimeHack;
+import loon.core.LSystem;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LTrans;
+import loon.core.graphics.filetype.TGA;
+import loon.core.graphics.opengl.GLLoader;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.utils.FileUtils;
+import loon.utils.StringUtils;
+
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+
 public class LImage implements LRelease {
 
 	private final static ArrayList<LImage> images = new ArrayList<LImage>(100);

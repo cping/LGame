@@ -1,22 +1,3 @@
-package loon.core.graphics;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.resource.Resources;
-import loon.utils.MathUtils;
-import loon.utils.collection.ArrayByte;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Rect;
-import android.graphics.Bitmap.Config;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -38,6 +19,26 @@ import android.graphics.Bitmap.Config;
  * @email javachenpeng@yahoo.com
  * @version 0.1.2
  */
+package loon.core.graphics;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+import loon.core.resource.Resources;
+import loon.utils.MathUtils;
+import loon.utils.collection.ArrayByte;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.Bitmap.Config;
+
+
 public class GraphicsUtils {
 
 	final static public Matrix matrix = new Matrix();

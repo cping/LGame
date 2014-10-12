@@ -1,9 +1,3 @@
-package loon.core.input;
-
-import java.lang.reflect.Method;
-
-import android.view.MotionEvent;
-
 /**
  * 
  * Copyright 2008 - 2010
@@ -25,6 +19,13 @@ import android.view.MotionEvent;
  * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
+package loon.core.input;
+
+import java.lang.reflect.Method;
+
+import android.view.MotionEvent;
+
+
 public class MultitouchUtils {
 
 	public static final int ACTION_POINTER_1_DOWN = 5;

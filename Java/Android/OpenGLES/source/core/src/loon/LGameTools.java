@@ -1,21 +1,3 @@
-package loon;
-
-import java.io.IOException;
-import java.util.Hashtable;
-
-import loon.LGame.Location;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInput.ClickEvent;
-import loon.core.input.LInput.SelectEvent;
-import loon.core.input.LInput.TextEvent;
-
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.view.View;
 
 /**
  * 
@@ -38,6 +20,25 @@ import android.view.View;
  * @email：javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon;
+
+import java.io.IOException;
+import java.util.Hashtable;
+
+import loon.LGame.Location;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.input.LInput.ClickEvent;
+import loon.core.input.LInput.SelectEvent;
+import loon.core.input.LInput.TextEvent;
+
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.view.View;
+
 public class LGameTools {
 
 	final static class ClickAndroid implements

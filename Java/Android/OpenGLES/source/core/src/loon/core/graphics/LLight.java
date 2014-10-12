@@ -1,9 +1,3 @@
-package loon.core.graphics;
-
-
-import java.util.ArrayList;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -24,6 +18,13 @@ import java.util.ArrayList;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics;
+
+
+import java.util.ArrayList;
+
+
+
 public abstract class LLight {
 
 	protected LColor[] colors;

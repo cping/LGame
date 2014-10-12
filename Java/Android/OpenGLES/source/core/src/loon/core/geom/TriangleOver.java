@@ -1,4 +1,3 @@
-package loon.core.geom;
 
 /**
  * 
@@ -21,6 +20,8 @@ package loon.core.geom;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
 public class TriangleOver implements Triangle {
 	/**
 	 * 

@@ -1,10 +1,3 @@
-package loon.core.geom;
-
-import java.util.ArrayList;
-
-import loon.physics.PPolygon;
-import loon.utils.CollectionUtils;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -26,6 +19,14 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
+import java.util.ArrayList;
+
+import loon.physics.PPolygon;
+import loon.utils.CollectionUtils;
+
+
 public class Polygon extends Shape {
 	/**
 	 * 
