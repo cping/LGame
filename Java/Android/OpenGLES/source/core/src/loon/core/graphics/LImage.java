@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2008 - 2012
@@ -289,14 +288,14 @@ public class LImage implements LRelease {
 		this.fileName = fileName;
 		Bitmap bitmap = null;
 		if (existType(fileName)) {
-			String ext = FileUtils.getExtension(fileName
-					.toLowerCase());
+			String ext = FileUtils.getExtension(fileName.toLowerCase());
 			if ("tga".equals(ext)) {
 				try {
 					TGA.State tga = TGA.load(res);
 					if (tga != null) {
 						bitmap = Bitmap.createBitmap(tga.pixels, tga.width,
-								tga.height, tga.type == 4 ? Bitmap.Config.ARGB_8888
+								tga.height,
+								tga.type == 4 ? Bitmap.Config.ARGB_8888
 										: Bitmap.Config.RGB_565);
 						tga.dispose();
 						tga = null;
@@ -595,6 +594,56 @@ public class LImage implements LRelease {
 		} else {
 			return bitmap.getPixel(x, y);
 		}
+	}
+
+	public LImage light(float v) {
+		return getLightImage(this, v);
+	}
+
+	public LImage light(int v) {
+		return getLightImage(this, v);
+	}
+
+	public static LImage getLightImage(LImage img, float v) {
+		return getLightImage(img, (int) (v * 255));
+	}
+
+	public static LImage getLightImage(LImage img, int v) {
+		LImage newImage = new LImage(img.getWidth(), img.getHeight(), true);
+		LGraphics g = newImage.getLGraphics();
+		g.drawImage(img, 0, 0);
+		getLight(newImage, v);
+		return newImage;
+	}
+
+	public static void getLight(LImage img, int v) {
+		int width = img.getWidth();
+		int height = img.getHeight();
+		for (int x = 0; x < width; ++x) {
+			for (int y = 0; y < height; ++y) {
+				int rgbValue = img.getRGB(x, y);
+				if (rgbValue != 0) {
+					int color = getLight(rgbValue, v);
+					img.setRGB(color, x, y);
+				}
+			}
+		}
+	}
+
+	public static int getLight(int color, int v) {
+		int red = LColor.getRed(color);
+		int green = LColor.getGreen(color);
+		int blue = LColor.getBlue(color);
+		red += v;
+		green += v;
+		blue += v;
+		blue = blue > 255 ? 255 : blue;
+		red = red > 255 ? 255 : red;
+		green = green > 255 ? 255 : green;
+		red = red < 0 ? 0 : red;
+		green = green < 0 ? 0 : green;
+		blue = blue < 0 ? 0 : blue;
+		return LColor.getRGB(red, green, blue);
 	}
 
 	/**

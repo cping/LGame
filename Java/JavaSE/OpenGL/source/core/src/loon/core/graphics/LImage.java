@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2011
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.1.1
+ */
 package loon.core.graphics;
 
 import java.awt.Color;
@@ -23,26 +43,6 @@ import loon.jni.NativeSupport;
 import loon.utils.FileUtils;
 import loon.utils.StringUtils;
 
-/**
- * Copyright 2008 - 2011
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email：javachenpeng@yahoo.com
- * @version 0.1.1
- */
 public class LImage implements LRelease {
 
 	private final static ArrayList<LImage> images = new ArrayList<LImage>(100);
@@ -392,8 +392,8 @@ public class LImage implements LRelease {
 		return bufferedImage.getHeight();
 	}
 
-	public Color getColorAt(int x, int y) {
-		return new Color(this.getRGBAt(x, y), true);
+	public LColor getColorAt(int x, int y) {
+		return new LColor(new Color(this.getRGBAt(x, y), true));
 	}
 
 	public int getRGBAt(int x, int y) {
@@ -559,6 +559,56 @@ public class LImage implements LRelease {
 
 	public String getPath() {
 		return fileName;
+	}
+
+	public LImage light(float v) {
+		return getLightImage(this, v);
+	}
+
+	public LImage light(int v) {
+		return getLightImage(this, v);
+	}
+
+	public static LImage getLightImage(LImage img, float v) {
+		return getLightImage(img, (int) (v * 255));
+	}
+
+	public static LImage getLightImage(LImage img, int v) {
+		LImage newImage = new LImage(img.getWidth(), img.getHeight(), true);
+		LGraphics g = newImage.getLGraphics();
+		g.drawImage(img, 0, 0);
+		getLight(newImage, v);
+		return newImage;
+	}
+
+	public static void getLight(LImage img, int v) {
+		int width = img.getWidth();
+		int height = img.getHeight();
+		for (int x = 0; x < width; ++x) {
+			for (int y = 0; y < height; ++y) {
+				int rgbValue = img.getRGB(x, y);
+				if (rgbValue != 0) {
+					int color = getLight(rgbValue, v);
+					img.setRGB(color, x, y);
+				}
+			}
+		}
+	}
+
+	public static int getLight(int color, int v) {
+		int red = LColor.getRed(color);
+		int green = LColor.getGreen(color);
+		int blue = LColor.getBlue(color);
+		red += v;
+		green += v;
+		blue += v;
+		blue = blue > 255 ? 255 : blue;
+		red = red > 255 ? 255 : red;
+		green = green > 255 ? 255 : green;
+		red = red < 0 ? 0 : red;
+		green = green < 0 ? 0 : green;
+		blue = blue < 0 ? 0 : blue;
+		return LColor.getRGB(red, green, blue);
 	}
 
 	public void dispose() {
