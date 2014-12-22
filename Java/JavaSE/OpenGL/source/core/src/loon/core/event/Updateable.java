@@ -1,4 +1,3 @@
-package loon.core.event;
 
 /**
  * Copyright 2008 - 2011
@@ -20,8 +19,10 @@ package loon.core.event;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.event;
+
 public abstract interface Updateable {
 
-	public abstract void action();
+	public abstract void action(Object a);
 
 }

@@ -27,6 +27,7 @@ import loon.core.event.ActionKey;
 import loon.core.geom.Vector2f;
 import loon.utils.collection.IntArray;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -35,6 +36,7 @@ import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 
 
+@SuppressLint("ClickableViewAccessibility")
 public class LInputFactory implements OnKeyListener, OnTouchListener {
 
 	public static void setOnscreenKeyboardVisible(final boolean visible) {
@@ -641,7 +643,7 @@ public class LInputFactory implements OnKeyListener, OnTouchListener {
 
 	private boolean requestFocus = true;
 
-	@Override
+
 	public boolean onTouch(View v, MotionEvent e) {
 		if (handler == null) {
 			return true;

@@ -1,10 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.util.HashMap;
-
-import loon.core.LSystem;
-import loon.core.event.Updateable;
-import loon.core.graphics.opengl.LTexture.Format;
 
 
 /**
@@ -27,6 +20,14 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.util.HashMap;
+
+import loon.core.LSystem;
+import loon.core.event.Updateable;
+import loon.core.graphics.opengl.LTexture.Format;
+
 
 public class LTextures {
 
@@ -111,7 +112,7 @@ public class LTextures {
 				if (!texture.isClose) {
 					Updateable u = new Updateable() {
 						@Override
-						public void action() {
+						public void action(Object a) {
 							synchronized (texture) {
 								if (texture.textureID > 0) {
 									if (texture.parent == null) {
@@ -162,7 +163,7 @@ public class LTextures {
 						if (texture.childs != null) {
 							Updateable u = new Updateable() {
 								@Override
-								public void action() {
+								public void action(Object a) {
 									texture.loadTexture();
 									for (int i = 0; i < texture.childs.size(); i++) {
 										LTexture child = texture.childs.get(i);

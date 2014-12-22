@@ -1,18 +1,3 @@
-package loon.core.graphics.component;
-
-import java.util.ArrayList;
-
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LContainer;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LSTRFont;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LInputFactory.Key;
-import loon.core.timer.LTimer;
 
 /**
  * Copyright 2008 - 2011
@@ -34,6 +19,22 @@ import loon.core.timer.LTimer;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import java.util.ArrayList;
+
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
+import loon.core.graphics.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LSTRFont;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.input.LInputFactory.Key;
+import loon.core.timer.LTimer;
+
 public class LInfo extends LContainer {
 
 	private boolean isDirty;

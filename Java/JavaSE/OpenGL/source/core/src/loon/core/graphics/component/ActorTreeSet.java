@@ -1,13 +1,3 @@
-package loon.core.graphics.component;
-
-import java.util.AbstractSet;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import loon.utils.CollectionUtils;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -30,6 +20,18 @@ import loon.utils.CollectionUtils;
  * @version 0.1
  */
 
+package loon.core.graphics.component;
+
+import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import loon.utils.CollectionUtils;
+
+
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ActorTreeSet extends AbstractSet {
 
 	private static final Comparator DEFAULT_COMPARATOR = new Comparator() {
@@ -45,6 +47,7 @@ public class ActorTreeSet extends AbstractSet {
 	private ActorSet generalSet = new ActorSet();
 
 	private ActorTreeSet.TasIterator iterator;
+
 
 	public ActorTreeSet() {
 		this.subSets.add(this.generalSet);

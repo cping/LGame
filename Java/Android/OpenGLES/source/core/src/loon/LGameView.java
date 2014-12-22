@@ -594,7 +594,7 @@ public final class LGameView extends CallQueue implements Renderer {
 		LSystem.getOSHandler().post(new Runnable() {
 			@Override
 			public void run() {
-				act.action();
+				act.action(null);
 			}
 		});
 	}

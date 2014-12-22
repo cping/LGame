@@ -24,9 +24,6 @@ package loon;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 
-import org.loon.main.ScreenTest;
-
-import loon.GLSurfaceViewCupcake.GLWrapper;
 import loon.LSetting.Listener;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
@@ -38,8 +35,6 @@ import loon.core.input.LInput.SelectEvent;
 import loon.core.input.LInput.TextEvent;
 
 import android.app.Activity;
-import android.opengl.GLSurfaceView.EGLConfigChooser;
-import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;

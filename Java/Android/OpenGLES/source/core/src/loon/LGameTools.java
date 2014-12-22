@@ -34,11 +34,13 @@ import loon.core.input.LInput.ClickEvent;
 import loon.core.input.LInput.SelectEvent;
 import loon.core.input.LInput.TextEvent;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.View;
 
+@SuppressLint("SetJavaScriptEnabled")
 public class LGameTools {
 
 	final static class ClickAndroid implements

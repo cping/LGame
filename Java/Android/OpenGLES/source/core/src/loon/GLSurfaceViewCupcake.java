@@ -165,7 +165,6 @@ public class GLSurfaceViewCupcake extends SurfaceView implements SurfaceHolder.C
 		init();
 	}
 
-	@SuppressWarnings("deprecation")
 	private void init () {
 		// Install a SurfaceHolder.Callback so we get notified when the
 		// underlying surface is created and destroyed

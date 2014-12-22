@@ -1,12 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInputFactory;
-import loon.core.input.LInputFactory.Key;
 
 /**
  * 
@@ -41,6 +32,16 @@ import loon.core.input.LInputFactory.Key;
  *          文本输入类，可以用setHideBackground函数隐藏背景，从而把其放置到理想的输入背景中
  * 
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.input.LInputFactory;
+import loon.core.input.LInputFactory.Key;
+
 public class LTextField extends LTextBar {
 
 	private OnscreenKeyboard keyboard = new DefaultOnscreenKeyboard();

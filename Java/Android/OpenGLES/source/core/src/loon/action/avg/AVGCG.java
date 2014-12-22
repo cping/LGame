@@ -170,7 +170,7 @@ public class AVGCG {
 	private final static void android_dispose(final AVGChara c) {
 		Updateable remove = new Updateable() {
 			@Override
-			public void action() {
+			public void action(Object a) {
 				c.dispose();
 			}
 		};

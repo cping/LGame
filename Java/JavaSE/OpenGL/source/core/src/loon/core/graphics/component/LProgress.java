@@ -1,13 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.action.sprite.SpriteBatch;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureRegion;
-import loon.core.graphics.opengl.TextureUtils;
 
 /**
  * 
@@ -40,6 +30,17 @@ import loon.core.graphics.opengl.TextureUtils;
  *          LProgress progress = new LProgress(ProgressType.UI , LColor.red,
  *          110, 110, 200,20); progress.setPercentage(0.6f);
  */
+package loon.core.graphics.component;
+
+import loon.action.sprite.SpriteBatch;
+import loon.core.LSystem;
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureRegion;
+import loon.core.graphics.opengl.TextureUtils;
+
 public class LProgress extends LComponent {
 
 	private boolean vertical = false;

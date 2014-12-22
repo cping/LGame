@@ -1,21 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.io.Serializable;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-
-import loon.action.collision.CollisionMask;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.event.Updateable;
-import loon.core.geom.Polygon;
-import loon.core.geom.Shape;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
-import loon.core.graphics.LShadow;
-import loon.core.graphics.opengl.LTextureBatch.GLCache;
-import loon.jni.NativeSupport;
-import loon.utils.CollectionUtils;
 
 /**
  * Copyright 2008 - 2011
@@ -37,6 +19,25 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.io.Serializable;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+
+import loon.action.collision.CollisionMask;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.event.Updateable;
+import loon.core.geom.Polygon;
+import loon.core.geom.Shape;
+import loon.core.graphics.LColor;
+import loon.core.graphics.LImage;
+import loon.core.graphics.LShadow;
+import loon.core.graphics.opengl.LTextureBatch.GLCache;
+import loon.jni.NativeSupport;
+import loon.utils.CollectionUtils;
+
 public class LTexture implements LRelease {
 
 	public LTexture makeShadow(int size, float alpha, LColor c) {
@@ -324,7 +325,7 @@ public class LTexture implements LRelease {
 		if (childs != null) {
 			Updateable u = new Updateable() {
 				@Override
-				public void action() {
+				public void action(Object a) {
 					loadTexture();
 					for (int i = 0; i < childs.size(); i++) {
 						LTexture child = childs.get(i);
@@ -641,7 +642,7 @@ public class LTexture implements LRelease {
 				Updateable u = new Updateable() {
 
 					@Override
-					public void action() {
+					public void action(Object a) {
 
 						loadTexture();
 
@@ -784,7 +785,7 @@ public class LTexture implements LRelease {
 				Updateable u = new Updateable() {
 
 					@Override
-					public void action() {
+					public void action(Object a) {
 
 						loadTexture();
 						copy.parent = LTexture.this;

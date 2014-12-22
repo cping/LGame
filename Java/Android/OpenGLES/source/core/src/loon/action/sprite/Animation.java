@@ -265,7 +265,7 @@ public class Animation implements LRelease {
 			if (!texture.isLoaded()) {
 				Updateable update = new Updateable() {
 					@Override
-					public void action() {
+					public void action(Object a) {
 						texture.loadTexture();
 					}
 				};

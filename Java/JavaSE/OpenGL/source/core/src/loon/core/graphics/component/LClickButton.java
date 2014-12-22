@@ -1,13 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LInputFactory.Touch;
 
 /**
  * 
@@ -30,6 +20,17 @@ import loon.core.input.LInputFactory.Touch;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.input.LInputFactory.Key;
+import loon.core.input.LInputFactory.Touch;
+
 // 与LButton的差异在于，内置有默认UI图片，并且可以选择大小，而不是必须按照图片大小拆分
 public class LClickButton extends LComponent {
 

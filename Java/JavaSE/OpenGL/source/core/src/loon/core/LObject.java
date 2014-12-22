@@ -1,10 +1,3 @@
-package loon.core;
-
-import loon.action.map.Field2D;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -25,6 +18,14 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.core;
+
+import loon.action.map.Field2D;
+import loon.core.geom.RectBox;
+import loon.core.geom.Vector2f;
+import loon.utils.MathUtils;
+
+
 public abstract class LObject {
 
 	public Object Tag;

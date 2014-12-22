@@ -48,7 +48,7 @@ public abstract class CallQueue {
 			}
 			for (; head != null;) {
 				try {
-					head.update.action();
+					head.update.action(null);
 				} catch (Throwable t) {
 				}
 				head = head.next;
@@ -82,7 +82,7 @@ public abstract class CallQueue {
 
 	public <T> void notifySuccess(final Callback<T> callback, final T result) {
 		invokeLater(new Updateable() {
-			public void action() {
+			public void action(Object a) {
 				callback.onSuccess(result);
 			}
 		});
@@ -90,7 +90,7 @@ public abstract class CallQueue {
 
 	public void notifyFailure(final Callback<?> callback, final Throwable error) {
 		invokeLater(new Updateable() {
-			public void action() {
+			public void action(Object a) {
 				callback.onFailure(error);
 			}
 		});

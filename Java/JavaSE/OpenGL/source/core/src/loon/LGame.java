@@ -818,7 +818,7 @@ public class LGame extends JavaApp {
 		Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				act.action();
+				act.action(null);
 			}
 		};
 		_exec.execute(run);

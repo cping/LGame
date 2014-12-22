@@ -1,15 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.TextureUtils;
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LInputFactory.Touch;
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -31,6 +19,19 @@ import loon.core.input.LInputFactory.Touch;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+
+package loon.core.graphics.component;
+
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.TextureUtils;
+import loon.core.input.LInputFactory.Key;
+import loon.core.input.LInputFactory.Touch;
+
 
 public class LButton extends LComponent {
 

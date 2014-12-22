@@ -1,9 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LContainer;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
 
 /**
  * 
@@ -26,6 +20,13 @@ import loon.core.graphics.opengl.LTexture;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+
 public class LPanel extends LContainer {
 
 	public LPanel(int x, int y, int w, int h) {

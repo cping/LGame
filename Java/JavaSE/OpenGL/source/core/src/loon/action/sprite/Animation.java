@@ -1,15 +1,3 @@
-package loon.action.sprite;
-
-import java.util.ArrayList;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.event.Updateable;
-import loon.core.graphics.LColor;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.TextureUtils;
-import loon.utils.CollectionUtils;
 
 /**
  * Copyright 2008 - 2011
@@ -31,6 +19,19 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import java.util.ArrayList;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.event.Updateable;
+import loon.core.graphics.LColor;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.TextureUtils;
+import loon.utils.CollectionUtils;
+
 public class Animation implements LRelease {
 
 	public interface AnimationListener {
@@ -263,7 +264,7 @@ public class Animation implements LRelease {
 			if (!texture.isLoaded()) {
 				Updateable update = new Updateable() {
 					@Override
-					public void action() {
+					public void action(Object a) {
 						texture.loadTexture();
 					}
 				};

@@ -1,11 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
 
 /**
  * 
@@ -39,6 +31,15 @@ import loon.core.graphics.opengl.LTextures;
  *          //addString为在前一行追加数据 
  *          area.addString("1",LColor.red);
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+
 public class LTextArea extends LComponent {
 
 	public static final int TYPE_DOWN = 0;

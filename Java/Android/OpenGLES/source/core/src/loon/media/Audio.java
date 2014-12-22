@@ -40,7 +40,7 @@ public class Audio {
 			final I impl) {
 		Updateable update = new Updateable() {
 			@Override
-			public void action() {
+			public void action(Object a) {
 				sound.onLoaded(impl);
 			}
 		};
@@ -51,7 +51,7 @@ public class Audio {
 			final Throwable error) {
 		Updateable update = new Updateable() {
 			@Override
-			public void action() {
+			public void action(Object a) {
 				sound.onLoadError(error);
 			}
 		};

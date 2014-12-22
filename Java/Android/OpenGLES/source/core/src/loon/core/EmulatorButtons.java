@@ -1,16 +1,3 @@
-package loon.core;
-
-import loon.action.sprite.SpriteBatch;
-import loon.core.event.Updateable;
-import loon.core.geom.RectBox;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexturePack;
-import loon.core.graphics.opengl.LTextureRegion;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LTouch;
-import loon.core.input.MultitouchUtils;
-
-import android.view.MotionEvent;
 
 /**
  * Copyright 2008 - 2011
@@ -32,6 +19,20 @@ import android.view.MotionEvent;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core;
+
+import loon.action.sprite.SpriteBatch;
+import loon.core.event.Updateable;
+import loon.core.geom.RectBox;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexturePack;
+import loon.core.graphics.opengl.LTextureRegion;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.input.LTouch;
+import loon.core.input.MultitouchUtils;
+
+import android.view.MotionEvent;
+
 public class EmulatorButtons implements LRelease {
 
 	private LTextureRegion dpad, buttons;
@@ -395,7 +396,7 @@ public class EmulatorButtons implements LRelease {
 				Updateable update = new Updateable() {
 
 					@Override
-					public void action() {
+					public void action(Object a) {
 						LTouch touch = null;
 						int size = touches.length;
 						if (size == 0) {
@@ -476,7 +477,7 @@ public class EmulatorButtons implements LRelease {
 			Updateable update = new Updateable() {
 
 				@Override
-				public void action() {
+				public void action(Object a) {
 					switch (code) {
 					case MotionEvent.ACTION_DOWN:
 					case MultitouchUtils.ACTION_POINTER_DOWN:
