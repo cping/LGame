@@ -1,7 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.Buffer;
-import java.nio.IntBuffer;
 
 /**
  * Copyright 2008 - 2011
@@ -23,6 +19,11 @@ import java.nio.IntBuffer;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.nio.Buffer;
+import java.nio.IntBuffer;
+
 public interface GLBase extends GL {
 
 	public void glActiveTexture(int texture);

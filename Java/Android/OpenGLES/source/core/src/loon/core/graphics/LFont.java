@@ -31,7 +31,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.Paint.FontMetrics;
 
-
 public class LFont {
 
 	private static LFont defaultFont;
@@ -79,16 +78,17 @@ public class LFont {
 
 	private int fontSize;
 
-	private HashMap<String, Vector2f> fontSizes = new HashMap<String, Vector2f>(50);
+	private HashMap<String, Vector2f> fontSizes = new HashMap<String, Vector2f>(
+			50);
 
 	public Vector2f getOrigin(String text) {
 		Vector2f result = fontSizes.get(text);
-		if(result==null){
+		if (result == null) {
 			result = new Vector2f(stringWidth(text) / 2f, getHeight() / 2f);
 		}
 		return result;
 	}
-	
+
 	public static LFont getAssetsFont(String file, int style, int size) {
 		String name = "assets" + (file + style + size).toLowerCase();
 		LFont o = fonts.get(name);
@@ -256,6 +256,23 @@ public class LFont {
 
 	public float getAscent() {
 		return typefacePaint.ascent();
+	}
+
+	public String confineLength(String s, int width) {
+		int length = 0;
+		for (int i = 0; i < s.length(); i++) {
+			length += stringWidth(String.valueOf(s.charAt(i)));
+			if (length >= width) {
+				int pLength = stringWidth("...");
+				while (length + pLength >= width && i >= 0) {
+					length -= stringWidth(String.valueOf(s.charAt(i)));
+					i--;
+				}
+				s = s.substring(0, ++i) + "...";
+				break;
+			}
+		}
+		return s;
 	}
 
 	public float getDescent() {

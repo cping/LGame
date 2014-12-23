@@ -1,4 +1,3 @@
-package loon.core.geom;
 
 /**
  * Copyright 2008 - 2011
@@ -20,6 +19,8 @@ package loon.core.geom;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
 public class AABB {
 
 	public float minX, minY;

@@ -1,7 +1,3 @@
-package loon.core.geom;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * 
@@ -24,6 +20,11 @@ import java.util.Iterator;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class Path extends Shape {
 	/**
 	 * 

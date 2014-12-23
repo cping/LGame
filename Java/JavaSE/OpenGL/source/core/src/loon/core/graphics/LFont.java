@@ -1,15 +1,3 @@
-package loon.core.graphics;
-
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-
-import loon.core.LSystem;
-import loon.core.geom.Vector2f;
-import loon.core.resource.Resources;
 
 /**
  * Copyright 2008 - 2011
@@ -31,6 +19,19 @@ import loon.core.resource.Resources;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics;
+
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+
+import loon.core.LSystem;
+import loon.core.geom.Vector2f;
+import loon.core.resource.Resources;
+
 public class LFont {
 
 	private static LFont defaultFont = LFont.getFont("Dialog", 0, 20);
@@ -300,6 +301,23 @@ public class LFont {
 	public int getAscent() {
 		checkInitialized();
 		return fontMetrics.getAscent();
+	}
+
+	public String confineLength(String s, int width) {
+		int length = 0;
+		for (int i = 0; i < s.length(); i++) {
+			length += stringWidth(String.valueOf(s.charAt(i)));
+			if (length >= width) {
+				int pLength = stringWidth("...");
+				while (length + pLength >= width && i >= 0) {
+					length -= stringWidth(String.valueOf(s.charAt(i)));
+					i--;
+				}
+				s = s.substring(0, ++i) + "...";
+				break;
+			}
+		}
+		return s;
 	}
 
 	private synchronized void checkInitialized() {
