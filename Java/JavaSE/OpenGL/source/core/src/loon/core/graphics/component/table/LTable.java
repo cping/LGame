@@ -18,6 +18,8 @@ public class LTable extends LComponent {
 
 	private int selectionCount = 0;
 
+	private int columnMinWidth = 15;
+
 	private boolean multipleSelection = false;
 
 	private boolean readOnly = false;
@@ -77,9 +79,119 @@ public class LTable extends LComponent {
 				* cellSpacing);
 	}
 
+	public void mouseDragged(float x, float y) {
+		if (isTableHeadVisible()) {
+			if (header.columnResizeIndex > -1) {
+				int newWidth = (int) (header.columnWidthBuffer + (x - header.mouseX));
+				int sum = getColumnWidth(header.columnResizeIndex)
+						+ getColumnWidth(header.columnResizeIndex + 1);
+
+				if (newWidth < getColumnMinWidth()
+						|| sum - newWidth < getColumnMinWidth()) {
+					return;
+				}
+
+				columns[header.columnResizeIndex].setWidth(newWidth);
+				columns[header.columnResizeIndex + 1].setWidth(sum - newWidth);
+			}
+		}
+	}
+
+	public void mouseExited(float x, float y) {
+		if (header.columnResizeIndex > -1) {
+			header.columnResizeIndex = -1;
+		}
+	}
+
+	public void mouseMoved(float x, float y) {
+		if (!isTableHeadVisible()) {
+			return;
+		}
+
+		float widgetY = y;
+
+		if ((header.headerY + getCellHeight()) - widgetY < getCellHeight()) {
+			int column = isOnColumn((int) x);
+			if (column >= 0) {
+				header.columnResizeIndex = column;
+				return;
+			} else if (header.columnResizeIndex > -1) {
+				header.columnResizeIndex = -1;
+			}
+		} else if (header.columnResizeIndex > -1) {
+			header.columnResizeIndex = -1;
+		}
+	}
+
+	public void mousePressed(float x, float y) {
+		if (isTableHeadVisible()) {
+			if (header.columnResizeIndex > -1) {
+				header.mouseX = (int) x;
+				header.columnWidthBuffer = getColumnWidth(header.columnResizeIndex);
+				return;
+			}
+		}
+
+		if (isTableHeadVisible()
+				&& y  >= (header.headerY+ getCellHeight() + getCellSpacing())) {
+			return;
+		}
+
+		if (readOnly) {
+			return;
+		}
+
+		assertSelectionArraySize();
+
+		int mouseY = (int) y;
+
+		mouseY += getCellSpacing();
+
+		int row = (mouseY / (getCellHeight() + getCellSpacing()));
+
+		if (isTableHeadVisible()) {
+			row--;
+		}
+
+		if (row < 0 || row >= selected.length) {
+			return;
+		}
+
+		if (!selected[row]) {
+			selectionCount++;
+		} else {
+			selectionCount--;
+		}
+
+		if (multipleSelection) {
+			selected[row] = !selected[row];
+		} else {
+			clearSelection();
+			selected[row] = !selected[row];
+		}
+	}
+
+	protected void processTouchDragged() {
+		super.processTouchDragged();
+		mouseDragged(input.getTouchX() - getX(), input.getTouchY() - getY());
+	}
+
+	protected void processTouchPressed() {
+		super.processTouchPressed();
+		mousePressed(input.getTouchX() - getX(), input.getTouchY() - getY());
+	}
+
+	protected void processTouchReleased() {
+		super.processTouchReleased();
+		mouseExited(input.getTouchX() - getX(), input.getTouchY() - getY());
+	}
+
 	@Override
 	public void createUI(GLEx g, int displayX, int displayY,
 			LComponent component, LTexture[] buttonImage) {
+		if (!isVisible()) {
+			return;
+		}
 		ITableModel model = getModel();
 		HeaderControl header = getHeader();
 		if (model == null) {
@@ -124,12 +236,7 @@ public class LTable extends LComponent {
 
 				if (gridVisible) {
 					g.setColor(gridColor);
-					g.drawLine(x, y, x + getColumnWidth(columnIndex), y);
-					g.drawLine(x + getColumnWidth(columnIndex), y, x
-							+ getColumnWidth(columnIndex), y + cellHeight);
-					g.drawLine(x + getColumnWidth(columnIndex), y + cellHeight,
-							x, y + cellHeight);
-					g.drawLine(x, y + cellHeight, x, y);
+					g.drawRect(x, y, getColumnWidth(columnIndex), cellHeight);
 				}
 
 				x += getColumnWidth(columnIndex) + cellSpacing;
@@ -141,7 +248,7 @@ public class LTable extends LComponent {
 
 			g.setColor(headerBackgroundColor);
 			g.fillRect(displayX, displayY, model.getColumnCount()
-					* (getColumnWidth(0) + cellSpacing) + 1, font.getHeight());
+					* (getColumnWidth(0) + cellSpacing)-1, font.getHeight());
 
 			x = displayX;
 			g.setColor(headTextColor);
@@ -368,8 +475,9 @@ public class LTable extends LComponent {
 	}
 
 	private void assertSelectionArraySize() {
-		if (selected.length == model.getRowCount())
+		if (selected.length == model.getRowCount()) {
 			return;
+		}
 
 		boolean[] newSelected = new boolean[model.getRowCount()];
 
@@ -381,9 +489,17 @@ public class LTable extends LComponent {
 	}
 
 	private void assertModel() {
-		if (model == null){
+		if (model == null) {
 			throw new IllegalStateException("No table model set!");
 		}
+	}
+
+	public int getColumnMinWidth() {
+		return columnMinWidth;
+	}
+
+	public void setColumnMinWidth(int columnMinWidth) {
+		this.columnMinWidth = columnMinWidth;
 	}
 
 	public int getColumnWidth(int columnIndex) {
