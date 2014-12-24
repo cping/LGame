@@ -1,11 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInputFactory.Touch;
 
 /**
  * 
@@ -37,6 +29,15 @@ import loon.core.input.LInputFactory.Touch;
  *          list.add("EFG");
  * 
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.input.LInputFactory.Touch;
+
 public class LTextList extends LComponent {
 
 	public final int LIST_SPACE_TOP = 5;
@@ -93,11 +94,11 @@ public class LTextList extends LComponent {
 	private int hold;
 
 	public LTextList(int x, int y) {
-		this(8, x, y, defaultWidth, defaultHeight, 30);
+		this(128, x, y, defaultWidth, defaultHeight, 30);
 	}
 
 	public LTextList(int x, int y, int w, int h) {
-		this(8, x, y, w, h, 30);
+		this(128, x, y, w, h, 30);
 	}
 
 	public LTextList(int max, int x, int y, int width, int height,
@@ -171,26 +172,26 @@ public class LTextList extends LComponent {
 		this.font = newFont;
 	}
 
-	public void changeName(int position, String d_name, int d_number) {
-		this.name[position] = d_name;
-		this.number[position] = d_number;
+	public void changeName(int position, String nameString, int numberInt) {
+		this.name[position] = nameString;
+		this.number[position] = numberInt;
 	}
 
-	public void changeColor(int d_num, LColor d_color) {
-		this.color[d_num] = d_color;
+	public void changeColor(int numberInt, LColor colorValue) {
+		this.color[numberInt] = colorValue;
 	}
 
 	public void setNextStringColor(LColor nextStringColor) {
 		this.nextStringColor = nextStringColor;
 	}
 
-	public void add(String d_name) {
-		add(d_name, num);
+	public void add(String nameString) {
+		add(nameString, num);
 	}
 
-	public void add(String d_name, int d_number) {
-		this.name[this.num] = d_name;
-		this.number[this.num] = d_number;
+	public void add(String nameString, int numberInt) {
+		this.name[this.num] = nameString;
+		this.number[this.num] = numberInt;
 		this.color[this.num] = this.nextStringColor;
 		this.nextStringColor = this.defaultStringColor;
 		this.num += 1;

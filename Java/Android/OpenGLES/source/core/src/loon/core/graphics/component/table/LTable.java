@@ -1,5 +1,6 @@
 package loon.core.graphics.component.table;
 
+import loon.core.LSystem;
 import loon.core.geom.Dimension;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LComponent;
@@ -7,6 +8,7 @@ import loon.core.graphics.LFont;
 import loon.core.graphics.component.DefUI;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.input.LInputFactory.Touch;
 import loon.utils.collection.Array;
 
 /**
@@ -75,6 +77,12 @@ public class LTable extends LComponent {
 	private LTexture headerTexture;
 
 	private LTexture backgroundTexture;
+
+	public LTable(int x, int y) {
+		this(LFont.getDefaultFont(), DefUI.getDefaultTextures(7), DefUI
+				.getDefaultTextures(4), x, y, LSystem.screenRect.width,
+				LSystem.screenRect.height);
+	}
 
 	public LTable(int x, int y, int width, int height) {
 		this(LFont.getDefaultFont(), DefUI.getDefaultTextures(7), DefUI
@@ -169,11 +177,6 @@ public class LTable extends LComponent {
 			}
 		}
 
-		if (isTableHeadVisible()
-				&& y >= (header.headerY + getCellHeight() + getCellSpacing())) {
-			return;
-		}
-
 		if (readOnly) {
 			return;
 		}
@@ -213,17 +216,17 @@ public class LTable extends LComponent {
 
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		mouseDragged(input.getTouchX() - getX(), input.getTouchY() - getY());
+		mouseDragged(Touch.getX() - getX(), Touch.getY() - getY());
 	}
 
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		mousePressed(input.getTouchX() - getX(), input.getTouchY() - getY());
+		mousePressed(Touch.getX() - getX(), Touch.getY() - getY());
 	}
 
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		mouseExited(input.getTouchX() - getX(), input.getTouchY() - getY());
+		mouseExited(Touch.getX() - getX(), Touch.getY() - getY());
 	}
 
 	@Override
@@ -254,17 +257,22 @@ public class LTable extends LComponent {
 			hei += (cellHeight + cellSpacing);
 		}
 
+		if (wid != getWidth()
+				|| hei + (cellHeight + cellSpacing) != getHeight()) {
+			setSize(wid, hei + (cellHeight + cellSpacing));
+		}
+
 		if (backgroundTexture != null) {
 			g.drawTexture(backgroundTexture, x, y, wid, hei);
 		}
 		for (int row = 0; row < size && row < model.getRowCount(); row++) {
-
 			x = displayX;
 			if (isSelected(row)) {
 				g.setColor(selectionColor);
 				g.fillRect(x, y, wid, cellHeight);
 			}
 			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
+
 				g.setColor(textColor);
 				Object value = model.getValue(row, columnIndex);
 
@@ -460,11 +468,7 @@ public class LTable extends LComponent {
 
 	public boolean isSelected(int row) {
 		assertModel();
-
-		if (row >= 0 && row < selected.length)
-			return selected[row];
-		else
-			return false;
+		return row >= 0 && row < selected.length ? selected[row] : false;
 	}
 
 	public int getSelectionCount() {
@@ -472,9 +476,9 @@ public class LTable extends LComponent {
 	}
 
 	public void distributeColumnWidthsEqually() {
-		if (model == null)
+		if (model == null) {
 			throw new IllegalStateException("The table has no model!");
-
+		}
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].setWidth(getWidth() / columns.length);
 		}

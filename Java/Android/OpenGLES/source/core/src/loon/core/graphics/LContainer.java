@@ -93,6 +93,14 @@ public abstract class LContainer extends LComponent {
 		this.childs = newChilds;
 		this.childs[index] = comp;
 		this.desktop.setDesktop(comp);
+		if (desktop != null) {
+			if (this.input == null) {
+				this.input = desktop.input;
+			}
+			if (comp.input == null) {
+				comp.input = desktop.input;
+			}
+		}
 		this.sortComponents();
 		this.latestInserted = comp;
 	}

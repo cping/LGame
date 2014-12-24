@@ -1,11 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.action.sprite.Animation;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LContainer;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
 
 /**
  * Copyright 2008 - 2011
@@ -27,6 +19,15 @@ import loon.core.graphics.opengl.LTextures;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import loon.action.sprite.Animation;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+
 public class LPaper extends LContainer {
 
 	private Animation animation = new Animation();

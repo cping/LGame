@@ -22,7 +22,7 @@ public class SimpleTableModel implements ITableModel {
 	}
 
 	public Object getValue(int row, int column) {
-		if (row > _list.size() || row > _list.get(column).list.size()) {
+		if (column > _list.size() || row > _list.get(column).list.size()) {
 			return "...";
 		}
 		return _list.get(column).list.get(row);

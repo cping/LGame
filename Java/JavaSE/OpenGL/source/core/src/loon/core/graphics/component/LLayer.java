@@ -1,21 +1,3 @@
-package loon.core.graphics.component;
-
-import java.util.HashMap;
-import java.util.Iterator;
-
-import loon.action.map.Field2D;
-import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureBatch;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.timer.LTimer;
-import loon.utils.CollectionUtils;
-import loon.utils.collection.ArrayMap;
 
 /**
  * Copyright 2008 - 2010
@@ -37,6 +19,25 @@ import loon.utils.collection.ArrayMap;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import java.util.HashMap;
+import java.util.Iterator;
+
+import loon.action.map.Field2D;
+import loon.core.geom.RectBox;
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LImage;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureBatch;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.timer.LTimer;
+import loon.utils.CollectionUtils;
+import loon.utils.collection.ArrayMap;
+
 public class LLayer extends ActorLayer {
 
 	private final ArrayMap textures = new ArrayMap(
