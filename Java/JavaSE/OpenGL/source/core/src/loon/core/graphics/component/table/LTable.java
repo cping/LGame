@@ -4,10 +4,27 @@ import loon.core.geom.Dimension;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LFont;
+import loon.core.graphics.component.DefUI;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.collection.Array;
 
+/**
+ * 
+ * Example:
+ * 
+ * Array<ListItem> list=new Array<ListItem>();
+ * 
+ * ListItem item=new ListItem(); item.name="test1"; item.list.add("ffffff");
+ * item.list.add("gggggggg"); item.list.add("hhhhhhhhh"); list.add(item);
+ * 
+ * ListItem item2=new ListItem(); item2.name="test2"; item2.list.add("ffffff");
+ * item2.list.add("gggggggg"); item2.list.add("hhhhhhhhh"); list.add(item2);
+ * LTable table=new LTable(LFont.getDefaultFont(), 60,60, 300, 300);
+ * table.setData(list, 100); add(table);
+ * 
+ * 
+ */
 public class LTable extends LComponent {
 
 	private ITableModel model = null;
@@ -49,16 +66,33 @@ public class LTable extends LComponent {
 
 	private LColor textColor = LColor.white;
 
-	private LColor selectionColor = LColor.red;
+	private LColor selectionColor = LColor.red.darker();
 
 	private LColor headTextColor = LColor.orange;
 
-	private LFont font = LFont.getDefaultFont();
+	private LFont font;
+
+	private LTexture headerTexture;
+
+	public LTable(int x, int y, int width, int height) {
+		this(LFont.getDefaultFont(), DefUI.getDefaultTextures(7), x, y, width,
+				height);
+	}
 
 	public LTable(LFont font, int x, int y, int width, int height) {
+		this(font, DefUI.getDefaultTextures(7), x, y, width, height);
+	}
+
+	public LTable(LTexture headerTexture, int x, int y, int width, int height) {
+		this(LFont.getDefaultFont(), null, x, y, width, height);
+	}
+
+	public LTable(LFont font, LTexture headerTexture, int x, int y, int width,
+			int height) {
 		super(x, y, width, height);
 		this.font = font;
 		this.cellHeight = font.getHeight();
+		this.headerTexture = headerTexture;
 	}
 
 	public void setData(Array<ListItem> list, int width) {
@@ -253,9 +287,15 @@ public class LTable extends LComponent {
 		if (tableHeaderVisible) {
 			header.headerY = displayY;
 
-			g.setColor(headerBackgroundColor);
-			g.fillRect(displayX, displayY, wid - 1, font.getHeight());
-
+			if (headerTexture != null) {
+				g.drawTexture(headerTexture, displayX, displayY, wid,
+						font.getHeight(), headerBackgroundColor);
+				g.setColor(gridColor);
+				g.drawRect(displayX, displayY, wid, font.getHeight());
+			} else {
+				g.setColor(headerBackgroundColor);
+				g.fillRect(displayX, displayY, wid, font.getHeight());
+			}
 			x = displayX;
 
 			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
@@ -518,6 +558,14 @@ public class LTable extends LComponent {
 			return column.getWidth();
 		}
 		return 0;
+	}
+
+	public LTexture getHeaderTexture() {
+		return headerTexture;
+	}
+
+	public void setHeaderTexture(LTexture headerTexture) {
+		this.headerTexture = headerTexture;
 	}
 
 	@Override
