@@ -51,7 +51,7 @@ public class LTable extends LComponent {
 
 	private LColor selectionColor = LColor.red;
 
-	private LColor headTextColor = LColor.green;
+	private LColor headTextColor = LColor.orange;
 
 	private LFont font = LFont.getDefaultFont();
 
@@ -85,12 +85,10 @@ public class LTable extends LComponent {
 				int newWidth = (int) (header.columnWidthBuffer + (x - header.mouseX));
 				int sum = getColumnWidth(header.columnResizeIndex)
 						+ getColumnWidth(header.columnResizeIndex + 1);
-
 				if (newWidth < getColumnMinWidth()
 						|| sum - newWidth < getColumnMinWidth()) {
 					return;
 				}
-
 				columns[header.columnResizeIndex].setWidth(newWidth);
 				columns[header.columnResizeIndex + 1].setWidth(sum - newWidth);
 			}
@@ -107,10 +105,7 @@ public class LTable extends LComponent {
 		if (!isTableHeadVisible()) {
 			return;
 		}
-
-		float widgetY = y;
-
-		if ((header.headerY + getCellHeight()) - widgetY < getCellHeight()) {
+		if (header.headerY < (y + getCellHeight() + getCellHeight())) {
 			int column = isOnColumn((int) x);
 			if (column >= 0) {
 				header.columnResizeIndex = column;
@@ -129,11 +124,13 @@ public class LTable extends LComponent {
 				header.mouseX = (int) x;
 				header.columnWidthBuffer = getColumnWidth(header.columnResizeIndex);
 				return;
+			} else {
+				header.columnResizeIndex = 0;
 			}
 		}
 
 		if (isTableHeadVisible()
-				&& y  >= (header.headerY+ getCellHeight() + getCellSpacing())) {
+				&& y >= (header.headerY + getCellHeight() + getCellSpacing())) {
 			return;
 		}
 
@@ -205,8 +202,18 @@ public class LTable extends LComponent {
 
 		int size = getHeight() / (cellHeight + cellSpacing);
 
+		int wid = 0;
+		for (int i = 0; i < model.getColumnCount(); i++) {
+			wid += getColumnWidth(i);
+		}
+
 		for (int row = 0; row < size && row < model.getRowCount(); row++) {
+
 			x = displayX;
+			if (isSelected(row)) {
+				g.setColor(selectionColor);
+				g.fillRect(x, y, wid, cellHeight);
+			}
 			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
 				g.setColor(textColor);
 				Object value = model.getValue(row, columnIndex);
@@ -247,11 +254,9 @@ public class LTable extends LComponent {
 			header.headerY = displayY;
 
 			g.setColor(headerBackgroundColor);
-			g.fillRect(displayX, displayY, model.getColumnCount()
-					* (getColumnWidth(0) + cellSpacing)-1, font.getHeight());
+			g.fillRect(displayX, displayY, wid - 1, font.getHeight());
 
 			x = displayX;
-			g.setColor(headTextColor);
 
 			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
 				String s = model.getColumnName(columnIndex);
@@ -262,13 +267,15 @@ public class LTable extends LComponent {
 				int entryOffset = OFFSET
 						+ getColumn(columnIndex).getHeaderAlignment().alignX(
 								columnWidth - OFFSET, font.stringWidth(s));
-
+				g.setColor(headTextColor);
 				g.setFont(font);
 				g.drawString(s, x + entryOffset,
 						header.headerY + font.getHeight());
 				x += columnWidth + cellSpacing;
 			}
 		}
+		g.resetColor();
+		g.resetFont();
 	}
 
 	public void setGridColor(LColor gridColor) {
