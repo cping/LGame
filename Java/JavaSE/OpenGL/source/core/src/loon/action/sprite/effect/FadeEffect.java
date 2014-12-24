@@ -1,13 +1,3 @@
-package loon.action.sprite.effect;
-
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -28,6 +18,17 @@ import loon.core.graphics.opengl.LTexture;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+import loon.core.graphics.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+
+
 public class FadeEffect extends LObject implements ISprite {
 	/**
 	 * 

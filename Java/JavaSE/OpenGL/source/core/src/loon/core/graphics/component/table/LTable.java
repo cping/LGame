@@ -74,25 +74,31 @@ public class LTable extends LComponent {
 
 	private LTexture headerTexture;
 
+	private LTexture backgroundTexture;
+
 	public LTable(int x, int y, int width, int height) {
-		this(LFont.getDefaultFont(), DefUI.getDefaultTextures(7), x, y, width,
-				height);
+		this(LFont.getDefaultFont(), DefUI.getDefaultTextures(7), DefUI
+				.getDefaultTextures(4), x, y, width, height);
 	}
 
 	public LTable(LFont font, int x, int y, int width, int height) {
-		this(font, DefUI.getDefaultTextures(7), x, y, width, height);
+		this(font, DefUI.getDefaultTextures(7), DefUI.getDefaultTextures(4), x,
+				y, width, height);
 	}
 
-	public LTable(LTexture headerTexture, int x, int y, int width, int height) {
-		this(LFont.getDefaultFont(), null, x, y, width, height);
+	public LTable(LTexture headerTexture, LTexture backgroundTexture, int x,
+			int y, int width, int height) {
+		this(LFont.getDefaultFont(), headerTexture, backgroundTexture, x, y,
+				width, height);
 	}
 
-	public LTable(LFont font, LTexture headerTexture, int x, int y, int width,
-			int height) {
+	public LTable(LFont font, LTexture headerTexture,
+			LTexture backgroundTexture, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.font = font;
-		this.cellHeight = font.getHeight();
+		this.cellHeight = font.getHeight() + 2;
 		this.headerTexture = headerTexture;
+		this.backgroundTexture = backgroundTexture;
 	}
 
 	public void setData(Array<ListItem> list, int width) {
@@ -175,6 +181,9 @@ public class LTable extends LComponent {
 		assertSelectionArraySize();
 
 		int mouseY = (int) y;
+		if (!isTableHeadVisible()) {
+			mouseY -= getCellHeight();
+		}
 
 		mouseY += getCellSpacing();
 
@@ -240,7 +249,14 @@ public class LTable extends LComponent {
 		for (int i = 0; i < model.getColumnCount(); i++) {
 			wid += getColumnWidth(i);
 		}
+		int hei = 0;
+		for (int i = 0; i < model.getRowCount(); i++) {
+			hei += (cellHeight + cellSpacing);
+		}
 
+		if (backgroundTexture != null) {
+			g.drawTexture(backgroundTexture, x, y, wid, hei);
+		}
 		for (int row = 0; row < size && row < model.getRowCount(); row++) {
 
 			x = displayX;
@@ -290,8 +306,10 @@ public class LTable extends LComponent {
 			if (headerTexture != null) {
 				g.drawTexture(headerTexture, displayX, displayY, wid,
 						font.getHeight(), headerBackgroundColor);
-				g.setColor(gridColor);
-				g.drawRect(displayX, displayY, wid, font.getHeight());
+				if (gridVisible) {
+					g.setColor(gridColor);
+					g.drawRect(displayX, displayY, wid, font.getHeight());
+				}
 			} else {
 				g.setColor(headerBackgroundColor);
 				g.fillRect(displayX, displayY, wid, font.getHeight());
@@ -310,7 +328,7 @@ public class LTable extends LComponent {
 				g.setColor(headTextColor);
 				g.setFont(font);
 				g.drawString(s, x + entryOffset,
-						header.headerY + font.getHeight());
+						header.headerY + font.getHeight() - 4);
 				x += columnWidth + cellSpacing;
 			}
 		}
@@ -566,6 +584,14 @@ public class LTable extends LComponent {
 
 	public void setHeaderTexture(LTexture headerTexture) {
 		this.headerTexture = headerTexture;
+	}
+
+	public LTexture getBackgroundTexture() {
+		return backgroundTexture;
+	}
+
+	public void setBackgroundTexture(LTexture backgroundTexture) {
+		this.backgroundTexture = backgroundTexture;
 	}
 
 	@Override
