@@ -364,6 +364,9 @@ public class LTable extends LContainer {
 			setSize(wid, hei + (cellHeight + cellSpacing));
 		}
 
+		if (gridVisible) {
+			g.setLineWidth(2f);
+		}
 		if (backgroundTexture != null) {
 			g.drawTexture(backgroundTexture, x, y, wid, hei);
 		}
@@ -460,6 +463,9 @@ public class LTable extends LContainer {
 						header.headerY + font.getHeight() - 4);
 				x += columnWidth + cellSpacing;
 			}
+		}
+		if (gridVisible) {
+			g.resetLineWidth();
 		}
 		g.resetColor();
 		g.resetFont();

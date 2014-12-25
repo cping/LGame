@@ -230,10 +230,15 @@ public class TableColumnLayout {
 
 	public void paint(GLEx g) {
 		g.drawRect(getX(), getY(), getWidth(), getHeight(), LColor.white);
-		if (component != null) {
-			g.drawRect(component.getX() - leftMargin, component.getY()
-					- topMargin, component.getWidth() + rightMargin,
-					component.getHeight() + bottomMargin, LColor.gray);
+		if (component != null && component.getContainer() != null
+				&& component.getContainer() instanceof TableLayout) {
+			if (((TableLayout) component.getContainer()).isGrid()) {
+				g.drawRect(component.getContainer().getX() + component.getX()
+						- leftMargin, component.getContainer().getY()
+						+ component.getY() - topMargin, component.getWidth()
+						+ rightMargin, component.getHeight() + bottomMargin,
+						LColor.red);
+			}
 		}
 	}
 
