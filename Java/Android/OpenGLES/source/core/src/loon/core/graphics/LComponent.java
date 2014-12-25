@@ -37,9 +37,8 @@ import loon.core.input.LInput;
 import loon.core.input.LInputFactory.Key;
 import loon.core.input.LInputFactory.Touch;
 
-
-
-public abstract class LComponent extends LObject implements ActionBind, LRelease {
+public abstract class LComponent extends LObject implements ActionBind,
+		LRelease {
 
 	public static interface CallListener {
 
@@ -588,7 +587,6 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 		this.tooltip = text;
 	}
 
-
 	public void doClick() {
 		if (Click != null) {
 			Click.DoClick(this);
@@ -799,6 +797,22 @@ public abstract class LComponent extends LObject implements ActionBind, LRelease
 			return parent.contains(x, y, w, h);
 		}
 		return false;
+	}
+
+	public float getTouchX() {
+		if (parent == null) {
+			return Touch.getX() - getX();
+		} else {
+			return Touch.getX() - parent.getX() - getX();
+		}
+	}
+
+	public float getTouchY() {
+		if (parent == null) {
+			return Touch.getY() - getY();
+		} else {
+			return Touch.getY() - parent.getY() - getY();
+		}
 	}
 
 	@Override

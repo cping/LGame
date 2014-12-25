@@ -400,8 +400,7 @@ public final class GLEx implements LTrans {
 		Log.i("Android2DView", "GLES:" + renderer);
 		Log.i("PixelFlinger", String.valueOf(GLEx.isPixelFlinger));
 		if (g10 instanceof javax.microedition.khronos.opengles.GL11) {
-			String extensions = g10.glGetString(GL.GL_EXTENSIONS)
-					.toLowerCase();
+			String extensions = g10.glGetString(GL.GL_EXTENSIONS).toLowerCase();
 			if (extensions.contains("gl_oes_framebuffer_object")) {
 				oesOn = !LSystem.isEmulator();
 				gl11ex = (javax.microedition.khronos.opengles.GL11Ext) g10;
@@ -967,7 +966,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-        _isReplace = true;
+		_isReplace = true;
 		bind(0);
 		if (isTex2DEnabled) {
 			gl.glDisable(GL.GL_TEXTURE_2D);
@@ -1872,6 +1871,14 @@ public final class GLEx implements LTrans {
 	public final void fillRect(final float x1, final float y1, final float x2,
 			final float y2) {
 		setRect(x1, y1, x2, y2, true);
+	}
+
+	public final void fillRect(final float x1, final float y1, final float x2,
+			final float y2, LColor color) {
+		int argb = getColorARGB();
+		setColor(color);
+		setRect(x1, y1, x2, y2, true);
+		setColor(argb);
 	}
 
 	private float[] temp_xs = new float[4];
@@ -2884,8 +2891,8 @@ public final class GLEx implements LTrans {
 			drawOESTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
 					_color);
 		} else {
-			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, _color,
-					0, null, null);
+			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
+					_color, 0, null, null);
 		}
 	}
 
@@ -3022,8 +3029,8 @@ public final class GLEx implements LTrans {
 				}
 			}
 		} else {
-			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, _color,
-					0, null, null);
+			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
+					_color, 0, null, null);
 		}
 	}
 
@@ -3189,8 +3196,8 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, _color, 0,
-				null, null);
+				destRect.height, 0, 0, texture.width, texture.height, _color,
+				0, null, null);
 	}
 
 	/**
@@ -3467,8 +3474,7 @@ public final class GLEx implements LTrans {
 						if (srcX != 0 || srcY != 0 || srcWidth != texture.width
 								|| srcHeight != texture.height) {
 							put(texture, srcX, srcY, srcWidth, srcHeight);
-							gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0,
-									rectData);
+							gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, rectData);
 						} else {
 							texture.data.position(8);
 							gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0,
@@ -3800,7 +3806,7 @@ public final class GLEx implements LTrans {
 	}
 
 	private boolean _isReplace = false;
-	
+
 	public final void GL_REPLACE() {
 		if (!_isReplace) {
 			gl10.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE,

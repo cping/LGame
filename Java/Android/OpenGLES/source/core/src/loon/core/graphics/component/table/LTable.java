@@ -4,12 +4,15 @@ import loon.core.LSystem;
 import loon.core.geom.Dimension;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
 import loon.core.graphics.LFont;
 import loon.core.graphics.component.DefUI;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInputFactory.Touch;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.collection.Array;
+import loon.utils.collection.ArrayMap;
 
 /**
  * 
@@ -27,7 +30,7 @@ import loon.utils.collection.Array;
  * 
  * 
  */
-public class LTable extends LComponent {
+public class LTable extends LContainer {
 
 	private ITableModel model = null;
 
@@ -44,6 +47,20 @@ public class LTable extends LComponent {
 	private boolean readOnly = false;
 
 	private HeaderControl header = new HeaderControl();
+
+	private ArrayMap bindIcons = new ArrayMap();
+
+	protected class BindIcon {
+
+		protected String name = "...";
+
+		protected LTexture texture;
+
+		BindIcon(String n, LTexture t) {
+			this.name = n;
+			this.texture = t;
+		}
+	}
 
 	class HeaderControl {
 		int headerY;
@@ -107,10 +124,42 @@ public class LTable extends LComponent {
 		this.cellHeight = font.getHeight() + 2;
 		this.headerTexture = headerTexture;
 		this.backgroundTexture = backgroundTexture;
+		this.setElastic(false);
+		this.setLocked(true);
+		this.setLayer(0);
 	}
 
 	public void setData(Array<ListItem> list, int width) {
 		setModel(new SimpleTableModel(list), width);
+	}
+
+	public void bindIcon(String name, LTexture texture) {
+		bindIcons.put(name, new BindIcon(name, texture));
+	}
+
+	public void bindIcon(String name, String fileName) {
+		bindIcons.put(
+				name,
+				new BindIcon(name, LTextures.loadTexture(fileName,
+						Format.LINEAR)));
+	}
+
+	private BindIcon containsBindIcon(String name) {
+		for (int i = 0; i < bindIcons.size(); i++) {
+			BindIcon icon = (BindIcon) bindIcons.get(i);
+			if (name.equalsIgnoreCase(icon.name)) {
+				return icon;
+			}
+		}
+		return null;
+	}
+
+	public void removeIcon(String name) {
+		bindIcons.remove(name);
+	}
+
+	public void removeIcon(int idx) {
+		bindIcons.remove(idx);
 	}
 
 	public Dimension getContentMinSizeHint() {
@@ -216,17 +265,25 @@ public class LTable extends LComponent {
 
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		mouseDragged(Touch.getX() - getX(), Touch.getY() - getY());
+		mouseDragged(getTouchX(), getTouchY());
+		if (!locked) {
+			if (getContainer() != null) {
+				getContainer().sendToFront(this);
+			}
+			if (this.input != null) {
+				this.move(this.input.getTouchDX(), this.input.getTouchDY());
+			}
+		}
 	}
 
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		mousePressed(Touch.getX() - getX(), Touch.getY() - getY());
+		mousePressed(getTouchX(), getTouchY());
 	}
 
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		mouseExited(Touch.getX() - getX(), Touch.getY() - getY());
+		mouseExited(getTouchX(), getTouchY());
 	}
 
 	@Override
@@ -277,7 +334,6 @@ public class LTable extends LComponent {
 				Object value = model.getValue(row, columnIndex);
 
 				if (value != null) {
-
 					ICellRenderer cellRenderer = getColumn(columnIndex)
 							.getCellRenderer();
 					Dimension contentDimension = cellRenderer
@@ -295,8 +351,28 @@ public class LTable extends LComponent {
 									.alignY(cellHeight,
 											contentDimension.getHeight());
 
-					cellRenderer.paint(g, value, alignedX, alignedY,
-							getColumnWidth(columnIndex), cellHeight);
+					if (bindIcons.size() == 0) {
+						cellRenderer.paint(g, value, alignedX, alignedY,
+								getColumnWidth(columnIndex), cellHeight);
+					} else {
+						if (value instanceof String) {
+							String v = (String) value;
+							BindIcon icon = containsBindIcon(v);
+							if (icon != null) {
+								cellRenderer
+										.paint(g, icon, alignedX, alignedY,
+												getColumnWidth(columnIndex),
+												cellHeight);
+							} else {
+								cellRenderer.paint(g, value, alignedX,
+										alignedY, getColumnWidth(columnIndex),
+										cellHeight);
+							}
+						} else {
+							cellRenderer.paint(g, value, alignedX, alignedY,
+									getColumnWidth(columnIndex), cellHeight);
+						}
+					}
 				}
 
 				if (gridVisible) {
@@ -596,6 +672,14 @@ public class LTable extends LComponent {
 
 	public void setBackgroundTexture(LTexture backgroundTexture) {
 		this.backgroundTexture = backgroundTexture;
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 	@Override

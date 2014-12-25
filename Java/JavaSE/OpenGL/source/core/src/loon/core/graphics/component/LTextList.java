@@ -37,7 +37,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LInputFactory.Touch;
 
-
 public class LTextList extends LComponent {
 
 	public final int LIST_SPACE_TOP = 5;
@@ -183,6 +182,59 @@ public class LTextList extends LComponent {
 
 	public void setNextStringColor(LColor nextStringColor) {
 		this.nextStringColor = nextStringColor;
+	}
+
+	private void removeNames(int idx, int flag) {
+		int size = flag - idx - 1;
+		if (size > 0) {
+			System.arraycopy(this.name, idx + 1, this.name, idx, size);
+		}
+		this.name[--flag] = null;
+		if (size == 0) {
+			name = new String[0];
+		}
+	}
+
+	private void removeInteger(int idx, int flag) {
+		int size = flag - idx - 1;
+		if (size > 0) {
+			System.arraycopy(this.number, idx + 1, this.number, idx, size);
+		}
+		this.number[--flag] = -1;
+		if (size == 0) {
+			number = new int[0];
+		}
+	}
+
+	private void removeColor(int idx, int flag) {
+		int size = flag - idx - 1;
+		if (size > 0) {
+			System.arraycopy(this.color, idx + 1, this.color, idx, size);
+		}
+		this.color[--flag] = null;
+		if (size == 0) {
+			color = new LColor[0];
+		}
+	}
+
+	public void remove(String key) {
+		int idx = 0;
+		for (String s : name) {
+			if (s != null && s.equalsIgnoreCase(key)) {
+				remove(idx);
+				break;
+			}
+			idx++;
+		}
+	}
+
+	public void remove(int idx) {
+		if (idx > -1 && idx < name.length) {
+			this.removeNames(idx, this.num);
+			this.removeInteger(idx, this.num);
+			this.removeColor(idx, this.num);
+			this.num -= 1;
+		}
 	}
 
 	public void add(String nameString) {
@@ -488,7 +540,7 @@ public class LTextList extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		draw(g, x, y, Touch.getX(), Touch.getY());
+		draw(g, x, y, getTouchX(), getTouchY());
 	}
 
 	@Override

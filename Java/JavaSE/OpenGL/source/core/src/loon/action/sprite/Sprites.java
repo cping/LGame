@@ -1,18 +1,3 @@
-package loon.action.sprite;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-
-import loon.core.LObject;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.geom.Point.Point2i;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.CollectionUtils;
-import loon.utils.MathUtils;
 
 /**
  * Copyright 2008 - 2010
@@ -34,6 +19,22 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+
+import loon.core.LObject;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+import loon.core.geom.Point.Point2i;
+import loon.core.graphics.opengl.GLEx;
+import loon.utils.CollectionUtils;
+import loon.utils.MathUtils;
+
 public class Sprites implements Serializable, LRelease {
 
 	public static interface SpriteListener {

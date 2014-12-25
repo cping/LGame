@@ -1810,6 +1810,22 @@ public final class GLEx implements LTrans {
 		setRect(x1, y1, x2, y2, true);
 	}
 
+	/**
+	 * 填充一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	public final void fillRect(final float x1, final float y1, final float x2,
+			final float y2, LColor color) {
+		int argb = getColorARGB();
+		setColor(color);
+		setRect(x1, y1, x2, y2, true);
+		setColor(argb);
+	}
+
 	private float[] temp_xs = new float[4];
 
 	private float[] temp_ys = new float[4];

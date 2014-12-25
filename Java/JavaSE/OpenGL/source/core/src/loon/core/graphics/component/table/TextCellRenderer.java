@@ -4,6 +4,7 @@ import loon.core.geom.Alignment;
 import loon.core.geom.Dimension;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
+import loon.core.graphics.component.table.LTable.BindIcon;
 import loon.core.graphics.opengl.GLEx;
 
 public class TextCellRenderer implements ICellRenderer {
@@ -12,16 +13,32 @@ public class TextCellRenderer implements ICellRenderer {
 	private Alignment alignment = Alignment.LEFT;
 
 	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
-		String s = value.toString();
-
-		s = font.confineLength(s, width - 4);
-
-		int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
-
-		g.setFont(font);
-		g.setColor(textColor);
-
-		g.drawString(s, x + entryOffset, y + font.getHeight() - 4);
+		if (value instanceof BindIcon) {
+			int size = font.getHeight() - 4;
+			BindIcon icon = (BindIcon) value;
+			String s = icon.name;
+			s = font.confineLength(s, width - size - 4);
+			int entryOffset = 4 + alignment.alignX(width - 4,
+					font.stringWidth(s));
+			g.setFont(font);
+			g.setColor(textColor);
+			if (icon.texture != null) {
+				g.drawTexture(icon.texture, x + 4, y
+						+ (font.getHeight() - size) / 2, size, size);
+				g.drawString(s, x + size + entryOffset + 4,
+						y + font.getHeight() - 4);
+			} else {
+				g.drawString(s, x + entryOffset, y + font.getHeight() - 4);
+			}
+		} else {
+			String s = value.toString();
+			s = font.confineLength(s, width - 4);
+			int entryOffset = 4 + alignment.alignX(width - 4,
+					font.stringWidth(s));
+			g.setFont(font);
+			g.setColor(textColor);
+			g.drawString(s, x + entryOffset, y + font.getHeight() - 4);
+		}
 	}
 
 	public void setFont(LFont font) {

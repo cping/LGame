@@ -58,6 +58,8 @@ public class LMap2D extends LContainer {
 
 	private static LTexture background;
 
+	private int mapId;
+	
 	public LMap2D(String datafile, String mapFile, int x, int y,
 			int rowTileWidth, int colTileHeight) throws IOException {
 		this(datafile, mapFile, x, y, 0, 0, rowTileWidth, colTileHeight, 32);
@@ -182,17 +184,24 @@ public class LMap2D extends LContainer {
 		}
 	}
 	
-	private int _id;
-	
 	public int getTileID(){
-		return _id;
+		return mapId;
 	}
 
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
-			int posx = (int) ((getX()+input.getTouchX()) / blockSize);
-			int posy = (int) ((getY()+input.getTouchY()) / blockSize);
-			_id = fied2d.getType(posx, posy);
+			int posx = 0;
+			int posy = 0;
+			if (getContainer() == null) {
+				posx = (int) ((getX() + input.getTouchX()) / blockSize);
+				posy = (int) ((getY() + input.getTouchY()) / blockSize);
+			} else {
+				posx = (int) ((getContainer().getX() + getX() + input
+						.getTouchX()) / blockSize);
+				posy = (int) ((getContainer().getY() + getY() + input
+						.getTouchY()) / blockSize);
+			}
+			mapId = fied2d.getType(posx, posy);
 			super.processTouchPressed();
 		}
 	}

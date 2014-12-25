@@ -1,19 +1,3 @@
-package loon.action.sprite;
-
-import loon.action.ActionBind;
-import loon.action.collision.CollisionHelper;
-import loon.action.map.Field2D;
-import loon.core.LObject;
-import loon.core.LSystem;
-import loon.core.geom.Point;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LTrans;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.TextureUtils;
 
 /**
  * Copyright 2008 - 2011
@@ -35,6 +19,23 @@ import loon.core.graphics.opengl.TextureUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import loon.action.ActionBind;
+import loon.action.collision.CollisionHelper;
+import loon.action.map.Field2D;
+import loon.core.LObject;
+import loon.core.LSystem;
+import loon.core.geom.Point;
+import loon.core.geom.RectBox;
+import loon.core.geom.Vector2f;
+import loon.core.graphics.LColor;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LTrans;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
+
 public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 
 	/**
