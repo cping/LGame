@@ -33,6 +33,7 @@ package loon.core.graphics.component;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LFont;
+import loon.core.graphics.LScrollContainer;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LInputFactory.Touch;
@@ -540,7 +541,18 @@ public class LTextList extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		draw(g, x, y, getTouchX(), getTouchY());
+		if (getContainer() == null
+				|| !(getContainer() instanceof LScrollContainer)) {
+			draw(g, x, y, Touch.getX(), Touch.getY());
+		} else {
+			draw(g,
+					x,
+					y,
+					((LScrollContainer) getContainer()).getScrollX()
+							+ Touch.getX(),
+					((LScrollContainer) getContainer()).getScrollY()
+							+ Touch.getY());
+		}
 	}
 
 	@Override

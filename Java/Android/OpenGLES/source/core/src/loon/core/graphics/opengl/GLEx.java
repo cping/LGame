@@ -1,3 +1,24 @@
+/**
+ * 
+ * Copyright 2008 - 2011
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.1
+ */
 package loon.core.graphics.opengl;
 
 import java.nio.FloatBuffer;
@@ -20,27 +41,7 @@ import loon.utils.MathUtils;
 
 import android.util.Log;
 
-/**
- * 
- * Copyright 2008 - 2011
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email：javachenpeng@yahoo.com
- * @version 0.1
- */
+
 public final class GLEx implements LTrans {
 
 	/**
@@ -1861,6 +1862,24 @@ public final class GLEx implements LTrans {
 	}
 
 	/**
+	 * 绘制一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param color
+	 */
+	public final void drawRect(final float x1, final float y1, final float x2,
+			final float y2, LColor color) {
+		int argb = getColorARGB();
+		setColor(color);
+		setRect(x1, y1, x2, y2, false);
+		setColor(argb);
+	}
+
+	
+	/**
 	 * 填充一个矩形
 	 * 
 	 * @param x1
@@ -1873,6 +1892,15 @@ public final class GLEx implements LTrans {
 		setRect(x1, y1, x2, y2, true);
 	}
 
+	/**
+	 * 填充一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param color
+	 */
 	public final void fillRect(final float x1, final float y1, final float x2,
 			final float y2, LColor color) {
 		int argb = getColorARGB();

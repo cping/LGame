@@ -1,23 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import loon.core.LSystem;
-import loon.core.geom.Matrix;
-import loon.core.geom.Polygon;
-import loon.core.geom.RectBox;
-import loon.core.geom.Shape;
-import loon.core.geom.Triangle;
-import loon.core.geom.Triangle2f;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LTrans;
-import loon.jni.NativeSupport;
-import loon.utils.MathUtils;
 
 /**
  * 
@@ -40,6 +20,27 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import loon.core.LSystem;
+import loon.core.geom.Matrix;
+import loon.core.geom.Polygon;
+import loon.core.geom.RectBox;
+import loon.core.geom.Shape;
+import loon.core.geom.Triangle;
+import loon.core.geom.Triangle2f;
+import loon.core.geom.Vector2f;
+import loon.core.graphics.LColor;
+import loon.core.graphics.LFont;
+import loon.core.graphics.LImage;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LTrans;
+import loon.jni.NativeSupport;
+import loon.utils.MathUtils;
+
 public final class GLEx implements LTrans {
 
 	/**
@@ -1795,6 +1796,23 @@ public final class GLEx implements LTrans {
 	public final void drawRect(final float x1, final float y1, final float x2,
 			final float y2) {
 		setRect(x1, y1, x2, y2, false);
+	}
+
+	/**
+	 * 绘制一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param color
+	 */
+	public final void drawRect(final float x1, final float y1, final float x2,
+			final float y2, LColor color) {
+		int argb = getColorARGB();
+		setColor(color);
+		setRect(x1, y1, x2, y2, false);
+		setColor(argb);
 	}
 
 	/**

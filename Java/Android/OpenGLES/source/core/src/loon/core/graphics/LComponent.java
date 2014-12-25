@@ -803,7 +803,12 @@ public abstract class LComponent extends LObject implements ActionBind,
 		if (parent == null) {
 			return Touch.getX() - getX();
 		} else {
-			return Touch.getX() - parent.getX() - getX();
+			if (parent instanceof LScrollContainer) {
+				return Touch.getX() + ((LScrollContainer) parent).getScrollX()
+						- parent.getX() - getX();
+			} else {
+				return Touch.getX() - parent.getX() - getX();
+			}
 		}
 	}
 
@@ -811,7 +816,12 @@ public abstract class LComponent extends LObject implements ActionBind,
 		if (parent == null) {
 			return Touch.getY() - getY();
 		} else {
-			return Touch.getY() - parent.getY() - getY();
+			if (parent instanceof LScrollContainer) {
+				return Touch.getY() + ((LScrollContainer) parent).getScrollY()
+						- parent.getY() - getY();
+			} else {
+				return Touch.getY() - parent.getY() - getY();
+			}
 		}
 	}
 
