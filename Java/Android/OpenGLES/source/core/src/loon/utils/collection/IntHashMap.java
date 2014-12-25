@@ -298,7 +298,6 @@ public class IntHashMap {
 		return false;
 	}
 
-	@Override
 	public IntHashMap clone() throws CloneNotSupportedException {
 		IntHashMap result = null;
 		try {

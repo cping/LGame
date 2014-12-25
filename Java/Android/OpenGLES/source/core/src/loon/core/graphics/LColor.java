@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -24,6 +23,9 @@ package loon.core.graphics;
 
 import java.io.Serializable;
 import java.nio.FloatBuffer;
+
+import loon.utils.StringUtils;
+import loon.utils.collection.BigNumber;
 
 public class LColor implements Serializable {
 
@@ -259,6 +261,10 @@ public class LColor implements Serializable {
 		this(LColor.white);
 	}
 
+	public LColor(BigNumber number) {
+		this((int)number.toNumber());
+	}
+	
 	public LColor(LColor color) {
 		this(color.r, color.g, color.b, color.a);
 	}
@@ -296,10 +302,6 @@ public class LColor implements Serializable {
 			a = 255;
 		}
 		setColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-	}
-
-	public static LColor decode(String nm) {
-		return new LColor(Integer.decode(nm).intValue());
 	}
 
 	@Override
@@ -728,6 +730,31 @@ public class LColor implements Serializable {
 		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
 				| ((int) (255 * g) << 8) | ((int) (255 * r));
 		return Float.intBitsToFloat(color & 0xfeffffff);
+	}
+
+	public static LColor decode(String hex) {
+		return valueOf(hex);
+	}
+
+	public static LColor valueOf(String hex) {
+		if (StringUtils.isEmpty(hex)) {
+			return new LColor(LColor.white);
+		}
+		if (hex.startsWith("#")) {
+			hex = hex.substring(1, hex.length());
+		}
+		long result = new BigNumber(hex).toNumber();
+		return new LColor((int) result);
+	}
+
+	public String toString() {
+		String value = Integer.toHexString(((int) (255 * r) << 24)
+				| ((int) (255 * g) << 16) | ((int) (255 * b) << 8)
+				| ((int) (255 * a)));
+		for (; value.length() < 8;) {
+			value = "0" + value;
+		}
+		return value;
 	}
 
 }

@@ -26,36 +26,36 @@ import java.util.Arrays;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-public class IntArray {
+public class LongArray {
 	public long[] items;
 	public int length;
 	public boolean ordered;
 
-	public IntArray() {
+	public LongArray() {
 		this(true, 16);
 	}
 
-	public IntArray(int capacity) {
+	public LongArray(int capacity) {
 		this(true, capacity);
 	}
 
-	public IntArray(boolean ordered, int capacity) {
+	public LongArray(boolean ordered, int capacity) {
 		this.ordered = ordered;
 		items = new long[capacity];
 	}
 
-	public IntArray(IntArray array) {
+	public LongArray(LongArray array) {
 		this.ordered = array.ordered;
 		length = array.length;
 		items = new long[length];
 		System.arraycopy(array.items, 0, items, 0, length);
 	}
 
-	public IntArray(long[] array) {
+	public LongArray(long[] array) {
 		this(true, array, 0, array.length);
 	}
 
-	public IntArray(boolean ordered, long[] array, int startIndex, int count) {
+	public LongArray(boolean ordered, long[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
 		System.arraycopy(array, startIndex, items, 0, count);
@@ -86,11 +86,11 @@ public class IntArray {
 		items[length++] = value;
 	}
 
-	public void addAll(IntArray array) {
+	public void addAll(LongArray array) {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(IntArray array, int offset, int length) {
+	public void addAll(LongArray array, int offset, int length) {
 		if (offset + length > array.length)
 			throw new IllegalArgumentException(
 					"offset + length must be <= length: " + offset + " + "
@@ -248,7 +248,7 @@ public class IntArray {
 		length -= count;
 	}
 
-	public boolean removeAll(IntArray array) {
+	public boolean removeAll(LongArray array) {
 		int length = this.length;
 		int startlength = length;
 		long[] items = this.items;
@@ -355,9 +355,9 @@ public class IntArray {
 	public boolean equals(Object object) {
 		if (object == this)
 			return true;
-		if (!(object instanceof IntArray))
+		if (!(object instanceof LongArray))
 			return false;
-		IntArray array = (IntArray) object;
+		LongArray array = (LongArray) object;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -380,12 +380,12 @@ public class IntArray {
 		return buffer.toString();
 	}
 
-	static public IntArray with(long... array) {
-		return new IntArray(array);
+	static public LongArray with(long... array) {
+		return new LongArray(array);
 	}
 
-	public IntArray splice(int begin, int end) {
-		IntArray longs = new IntArray(slice(begin, end));
+	public LongArray splice(int begin, int end) {
+		LongArray longs = new LongArray(slice(begin, end));
 		if (end - begin >= length) {
 			items = new long[0];
 			length = 0;
@@ -416,12 +416,12 @@ public class IntArray {
 		return slice(array, begin, array.length);
 	}
 
-	public IntArray slice(int size) {
-		return new IntArray(slice(this.items, size, this.length));
+	public LongArray slice(int size) {
+		return new LongArray(slice(this.items, size, this.length));
 	}
 
-	public IntArray slice(int begin, int end) {
-		return new IntArray(slice(this.items, begin, end));
+	public LongArray slice(int begin, int end) {
+		return new LongArray(slice(this.items, begin, end));
 	}
 
 	public static long[] concat(long[] array, long[] other) {
@@ -435,8 +435,8 @@ public class IntArray {
 		return ret;
 	}
 
-	public IntArray concat(IntArray o) {
-		return new IntArray(concat(this.items, this.length, o.items, o.length));
+	public LongArray concat(LongArray o) {
+		return new LongArray(concat(this.items, this.length, o.items, o.length));
 	}
 
 	public byte[] getBytes() {

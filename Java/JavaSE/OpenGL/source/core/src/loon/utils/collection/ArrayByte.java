@@ -1,14 +1,3 @@
-package loon.utils.collection;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UTFDataFormatException;
-
-import loon.core.LRelease;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -29,6 +18,18 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.utils.collection;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UTFDataFormatException;
+
+import loon.core.LRelease;
+import loon.utils.MathUtils;
+
+
 public class ArrayByte implements LRelease{
 
 	public static final int BIG_ENDIAN = 0;

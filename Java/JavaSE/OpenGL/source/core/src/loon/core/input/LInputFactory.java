@@ -458,7 +458,7 @@ public class LInputFactory {
 
 		public static boolean isKeyPressed(int key) {
 			if (key == Key.ANY_KEY) {
-				return keys.size > 0 && only_key.isPressed();
+				return keys.length > 0 && only_key.isPressed();
 			} else {
 				return keys.contains(key) && only_key.isPressed();
 			}
@@ -466,7 +466,7 @@ public class LInputFactory {
 
 		public static boolean isKeyRelease(int key) {
 			if (key == Key.ANY_KEY) {
-				return keys.size > 0 && !only_key.isPressed();
+				return keys.length > 0 && !only_key.isPressed();
 			} else {
 				return keys.contains(key) && !only_key.isPressed();
 			}
