@@ -346,7 +346,7 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public void setElastic(boolean b) {
-		if (getWidth() > 128 || getHeight() > 128) {
+		if (getWidth() > 32 || getHeight() > 32) {
 			this.elastic = b;
 		} else {
 			this.elastic = false;

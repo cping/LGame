@@ -1,9 +1,9 @@
 package loon.core.graphics;
 
 import loon.core.graphics.component.DefUI;
-import loon.core.graphics.component.LScrollBar;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.utils.MathUtils;
 
 public class LScrollContainer extends LContainer {
 
@@ -17,6 +17,8 @@ public class LScrollContainer extends LContainer {
 
 	private LTexture background;
 
+	private boolean accumulate = false;
+
 	public LScrollContainer(int x, int y, int w, int h) {
 		this(DefUI.getDefaultTextures(8), x, y, w, h);
 	}
@@ -25,7 +27,7 @@ public class LScrollContainer extends LContainer {
 		super(x, y, w, h);
 		this.background = texture;
 		this.setElastic(true);
-		this.setLayer(0);
+		this.setLayer(100);
 	}
 
 	public void createUI(GLEx g) {
@@ -35,30 +37,23 @@ public class LScrollContainer extends LContainer {
 		if (!this.isVisible()) {
 			return;
 		}
+
 		LComponent[] childs = getComponents();
 		synchronized (childs) {
 			if (background == null) {
-				g.setColor(LColor.blue);
+				g.setColor(LColor.gray);
 				g.fillRect(x(), y(), getWidth(), getHeight());
 			} else {
 				g.drawTexture(background, x(), y(), getWidth(), getHeight());
 			}
-			g.translate(scrollX, scrollY);
-			super.createUI(g);
-			if (this.elastic) {
-				g.setClip(this.getScreenX(), this.getScreenY(),
-						this.getWidth(), this.getHeight());
-			}
-			this.renderComponents(g);
 			g.translate(-scrollX, -scrollY);
+			super.createUI(g);
+			g.translate(scrollX, scrollY);
 			if (verticalScrollbar != null) {
 				verticalScrollbar.paint(g);
 			}
 			if (horizontalScrollbar != null) {
 				horizontalScrollbar.paint(g);
-			}
-			if (this.elastic) {
-				g.clearClip();
 			}
 		}
 	}
@@ -70,11 +65,19 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public void moveScrollX(int newScrollX) {
-		scrollX += newScrollX;
+		if (accumulate) {
+			scrollX += newScrollX;
+		} else {
+			scrollX = newScrollX;
+		}
 	}
 
 	public void moveScrollY(int newScrollY) {
-		scrollY += newScrollY;
+		if (accumulate) {
+			scrollY += newScrollY;
+		} else {
+			scrollY = newScrollY;
+		}
 	}
 
 	public int getScrollX() {
@@ -83,6 +86,16 @@ public class LScrollContainer extends LContainer {
 
 	public int getScrollY() {
 		return scrollY;
+	}
+
+	public void add(LComponent comp) {
+		super.add(comp);
+		scrollContainerRealSizeChanged();
+	}
+
+	public synchronized void add(LComponent comp, int index) {
+		super.add(comp, index);
+		scrollContainerRealSizeChanged();
 	}
 
 	@Override
@@ -120,30 +133,36 @@ public class LScrollContainer extends LContainer {
 		if (maxX > getWidth()) {
 			if (horizontalScrollbar != null) {
 				addScrollbar(new LScrollBar(LScrollBar.BOTTOM));
+			} else {
+				horizontalScrollbar = new LScrollBar(LScrollBar.BOTTOM);
+				addScrollbar(horizontalScrollbar);
 			}
 		}
 		int maxY = getInnerHeight();
 		if (maxY > getHeight()) {
 			if (verticalScrollbar != null) {
 				addScrollbar(new LScrollBar(LScrollBar.RIGHT));
+			} else {
+				verticalScrollbar = new LScrollBar(LScrollBar.RIGHT);
+				addScrollbar(verticalScrollbar);
 			}
 		}
 	}
 
 	public int getInnerWidth() {
 		int maxX = 0;
-		for (int i = 0; i < getContainer().getComponentCount(); i++) {
-			maxX = (int) Math.max(getContainer().getComponents()[i].getX()
-					+ getContainer().getComponents()[i].getWidth(), maxX);
+		for (int i = 0; i < getComponentCount(); i++) {
+			maxX = (int) MathUtils.max(x() + getComponents()[i].getX()
+					+ getComponents()[i].getWidth(), maxX);
 		}
 		return maxX;
 	}
 
 	public int getInnerHeight() {
 		int maxY = 0;
-		for (int i = 0; i < getContainer().getComponentCount(); i++) {
-			maxY = (int) Math.max(getContainer().getComponents()[i].getY()
-					+ getContainer().getComponents()[i].getHeight(), maxY);
+		for (int i = 0; i < getComponentCount(); i++) {
+			maxY = (int) MathUtils.max(y() + getComponents()[i].getY()
+					+ getComponents()[i].getHeight(), maxY);
 		}
 		return maxY;
 	}
@@ -152,17 +171,71 @@ public class LScrollContainer extends LContainer {
 		if (scrollBar.getOrientation() == LScrollBar.LEFT
 				|| scrollBar.getOrientation() == LScrollBar.RIGHT) {
 			if (verticalScrollbar != null) {
-				getContainer().remove(verticalScrollbar);
+				remove(verticalScrollbar);
 			}
 			verticalScrollbar = scrollBar;
 			scrollBar.setScrollContainer(this);
 			return;
 		}
 		if (horizontalScrollbar != null) {
-			getContainer().remove(horizontalScrollbar);
+			remove(horizontalScrollbar);
 		}
 		horizontalScrollbar = scrollBar;
 		scrollBar.setScrollContainer(this);
+	}
+
+	protected void processTouchDragged() {
+		super.processTouchDragged();
+		if (horizontalScrollbar != null) {
+			horizontalScrollbar.processTouchDragged();
+		}
+		if (verticalScrollbar != null) {
+			verticalScrollbar.processTouchDragged();
+		}
+	}
+
+	protected void processTouchPressed() {
+		super.processKeyPressed();
+		if (horizontalScrollbar != null) {
+			horizontalScrollbar.processTouchPressed();
+		}
+		if (verticalScrollbar != null) {
+			verticalScrollbar.processTouchPressed();
+		}
+	}
+
+	protected void processTouchReleased() {
+		super.processTouchReleased();
+		if (horizontalScrollbar != null) {
+			horizontalScrollbar.processTouchReleased();
+		}
+		if (verticalScrollbar != null) {
+			verticalScrollbar.processTouchReleased();
+		}
+	}
+
+	public LScrollBar getVerticalScrollbar() {
+		return verticalScrollbar;
+	}
+
+	public void setVerticalScrollbar(LScrollBar verticalScrollbar) {
+		this.verticalScrollbar = verticalScrollbar;
+	}
+
+	public LScrollBar getHorizontalScrollbar() {
+		return horizontalScrollbar;
+	}
+
+	public void setHorizontalScrollbar(LScrollBar horizontalScrollbar) {
+		this.horizontalScrollbar = horizontalScrollbar;
+	}
+
+	public boolean isAccumulate() {
+		return accumulate;
+	}
+
+	public void setAccumulate(boolean accumulate) {
+		this.accumulate = accumulate;
 	}
 
 	@Override

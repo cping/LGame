@@ -1,19 +1,3 @@
-package loon.core.graphics;
-
-import java.awt.Color;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.GLLoader;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTexture.Format;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -34,6 +18,23 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics;
+
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Map.Entry;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.GLLoader;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTexture.Format;
+
+
 public class LGradation implements LRelease {
 
 	private static HashMap<String, LGradation> gradations;

@@ -1,8 +1,6 @@
-package loon.core.graphics.component;
+package loon.core.graphics;
 
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LScrollContainer;
+import loon.core.graphics.component.DefUI;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 
@@ -33,9 +31,9 @@ public class LScrollBar extends LComponent {
 
 	private LTexture slider;
 
-	protected LColor scrollBarColor = LColor.gray;
+	protected LColor scrollBarColor = LColor.white.darker();
 
-	protected LColor sliderColor = LColor.white;
+	protected LColor sliderColor = LColor.black.darker();
 
 	protected int sliderMargin = 3;
 
@@ -46,7 +44,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	public LScrollBar(int orientation, int x, int y, int width, int height) {
-		this(DefUI.getDefaultTextures(7), DefUI.getDefaultTextures(2),
+		this(DefUI.getDefaultTextures(2), DefUI.getDefaultTextures(8),
 				orientation, x, y, width, height);
 	}
 
@@ -249,15 +247,16 @@ public class LScrollBar extends LComponent {
 	protected void processTouchDragged() {
 		super.processTouchDragged();
 		touchDragged(getTouchX(), getTouchY());
+
 	}
 
 	protected void processTouchPressed() {
 		super.processKeyPressed();
-		touchDown(getTouchX(), getTouchY());
 	}
 
 	protected void processTouchReleased() {
 		super.processTouchReleased();
+		touchDown(getTouchX(), getTouchY());
 	}
 
 	public boolean touchDown(float screenX, float screenY) {
@@ -362,13 +361,11 @@ public class LScrollBar extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (scrollBar == null || slider == null) {
-			g.fillRect(x, y, getWidth(), getHeight(), scrollBarColor);
+			g.fillRect(x, y, getWidth()+2, getHeight()+2, scrollBarColor);
 			g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight, sliderColor);
 		} else {
-			g.drawTexture(scrollBar, x, y, getWidth(), getHeight(),
-					scrollBarColor);
-			g.drawTexture(slider, sliderX, sliderY, sliderWidth, sliderHeight,
-					sliderColor);
+			g.fillRect(x, y, getWidth(), getHeight(), scrollBarColor);
+			g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight, sliderColor);
 		}
 	}
 

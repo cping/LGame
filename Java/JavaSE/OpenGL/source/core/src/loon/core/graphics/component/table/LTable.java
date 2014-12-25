@@ -286,6 +286,31 @@ public class LTable extends LContainer {
 		mouseExited(getTouchX(), getTouchY());
 	}
 
+	public int getHeight() {
+		if (model == null) {
+			return super.getHeight();
+		}
+		int height = 0;
+		for (int i = 0; i < model.getRowCount(); i++) {
+			height += (cellHeight + cellSpacing);
+		}
+		if (isTableHeadVisible()) {
+			height += (cellHeight + cellSpacing);
+		}
+		return height;
+	}
+
+	public int getWidth() {
+		if (model == null) {
+			return super.getWidth();
+		}
+		int width = 0;
+		for (int i = 0; i < model.getColumnCount(); i++) {
+			width += getColumnWidth(i);
+		}
+		return width;
+	}
+
 	@Override
 	public void createUI(GLEx g, int displayX, int displayY,
 			LComponent component, LTexture[] buttonImage) {
@@ -530,12 +555,12 @@ public class LTable extends LContainer {
 	}
 
 	public void setModel(ITableModel m, int width) {
+		model = m;
 		columns = new TableColumn[m.getColumnCount()];
 		selected = new boolean[m.getRowCount()];
 		for (int i = 0; i < columns.length; i++) {
 			columns[i] = new TableColumn(m.getColumnName(i), width);
 		}
-		model = m;
 	}
 
 	public ITableModel getModel() {
