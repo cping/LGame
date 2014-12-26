@@ -39,6 +39,8 @@ public class LScrollContainer extends LContainer {
 
 	private boolean accumulate = false;
 
+	public boolean showScroll = true;
+
 	public LScrollContainer(int x, int y, int w, int h) {
 		this(DefUI.getDefaultTextures(8), x, y, w, h);
 	}
@@ -64,16 +66,19 @@ public class LScrollContainer extends LContainer {
 				g.setColor(LColor.gray);
 				g.fillRect(x(), y(), getWidth(), getHeight());
 			} else {
-				g.drawTexture(backgroundTexture, x(), y(), getWidth(), getHeight());
+				g.drawTexture(backgroundTexture, x(), y(), getWidth(),
+						getHeight());
 			}
 			g.translate(-scrollX, -scrollY);
 			super.createUI(g);
 			g.translate(scrollX, scrollY);
-			if (verticalScrollbar != null) {
-				verticalScrollbar.paint(g);
-			}
-			if (horizontalScrollbar != null) {
-				horizontalScrollbar.paint(g);
+			if (showScroll) {
+				if (verticalScrollbar != null) {
+					verticalScrollbar.paint(g);
+				}
+				if (horizontalScrollbar != null) {
+					horizontalScrollbar.paint(g);
+				}
 			}
 		}
 	}
@@ -256,6 +261,14 @@ public class LScrollContainer extends LContainer {
 
 	public void setAccumulate(boolean accumulate) {
 		this.accumulate = accumulate;
+	}
+
+	public boolean isShowScroll() {
+		return showScroll;
+	}
+
+	public void setShowScroll(boolean showScroll) {
+		this.showScroll = showScroll;
 	}
 
 	@Override

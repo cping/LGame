@@ -267,11 +267,11 @@ public class LScrollBar extends LComponent {
 	protected void processTouchDragged() {
 		super.processTouchDragged();
 		touchDragged(getTouchX(), getTouchY());
-
 	}
 
 	protected void processTouchPressed() {
 		super.processKeyPressed();
+		touchDown(getTouchX(), getTouchY());
 	}
 
 	protected void processTouchReleased() {
@@ -285,6 +285,7 @@ public class LScrollBar extends LComponent {
 					.x()));
 			relativeClickY = (int) (screenY - (y() + getSliderY() + scrollContainer
 					.y()));
+			return true;
 		}
 		return false;
 	}
@@ -296,6 +297,7 @@ public class LScrollBar extends LComponent {
 			rClickX -= relativeClickX;
 			rClickY -= relativeClickY;
 			moveSlider(rClickX, rClickY);
+			return true;
 		}
 		return false;
 	}
