@@ -1,3 +1,24 @@
+
+/**
+ * Copyright 2008 - 2009
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.1
+ */
 package loon.core.graphics.device;
 
 import java.awt.Color;
@@ -33,26 +54,6 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
 
-/**
- * Copyright 2008 - 2009
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email：javachenpeng@yahoo.com
- * @version 0.1
- */
 public class LGraphics extends Graphics2D implements LTrans {
 
 	final static public double ANGLE_90 = Math.PI / 2;
@@ -109,6 +110,10 @@ public class LGraphics extends Graphics2D implements LTrans {
 		this.store.restore(g2d);
 	}
 
+	public void save() {
+		this.store.save(g2d);
+	}
+	
 	public void drawSixStart(Color color, int x, int y, int r) {
 		GraphicsUtils.drawSixStart(g2d, color, x, y, r);
 	}
