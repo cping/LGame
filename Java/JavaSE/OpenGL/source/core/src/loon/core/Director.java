@@ -17,17 +17,10 @@ package loon.core;
 
 import java.util.ArrayList;
 
+import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 
 public class Director {
-
-	public static boolean isOrientationPortrait() {
-		if (LSystem.screenRect.width <= LSystem.screenRect.height) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 	public enum Origin {
 		CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, LEFT_CENTER, TOP_CENTER, BOTTOM_CENTER, RIGHT_CENTER
@@ -35,6 +28,106 @@ public class Director {
 
 	public enum Position {
 		SAME, CENTER, LEFT, TOP_LEFT, TOP_LEFT_CENTER, TOP_RIGHT, TOP_RIGHT_CENTER, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_LEFT_CENTER, BOTTOM_RIGHT, BOTTOM_RIGHT_CENTER, RIGHT_CENTER, TOP_CENTER
+	}
+
+	RectBox renderRect;
+	RectBox viewRect;
+
+	public Director() {
+		this(LSystem.screenRect);
+	}
+
+	public Director(RectBox rect) {
+		if (rect != null) {
+			this.renderRect = new RectBox(rect);
+			this.viewRect = new RectBox(rect);
+		} else {
+			this.renderRect = new RectBox();
+			this.viewRect = new RectBox();
+		}
+	}
+
+	public RectBox getRenderRect() {
+		return renderRect;
+	}
+
+	public RectBox getViewRect() {
+		return viewRect;
+	}
+
+	public int getViewLeft() {
+		return viewRect.Left();
+	}
+
+	public int getViewTop() {
+		return viewRect.Top();
+	}
+
+	public void view(RectBox rect) {
+		rect.offset(-viewRect.Left(), -viewRect.Top());
+	}
+
+	public void view(int[] point) {
+		point[0] -= viewRect.Left();
+		point[1] -= viewRect.Top();
+	}
+
+	int[] point = new int[2];
+	public int[] view(int x, int y) {
+		point[0] = x -viewRect.Left();
+		point[1] = y -viewRect.Top();
+		return point;
+	}
+
+	public boolean canView(RectBox rect) {
+		return viewRect.contains(rect);
+	}
+
+	public boolean canView(int x, int y) {
+		return viewRect.contains(x, y);
+	}
+
+	public void move(int dx, int dy) {
+		viewRect.offset(dx, dy);
+	}
+
+	public void center(int x, int y, RectBox world) {
+		x -= (int)renderRect.getWidth() >> 1;
+		y -=  (int)renderRect.getHeight() >> 1;
+		viewRect.offset(x, y);
+		confine(viewRect, world);
+	}
+
+	public static void confine(RectBox rect, RectBox field) {
+		int x = rect.Right() > field.Right() ? field.Right() - (int)rect.getWidth() : rect.Left();
+		if(x < field.Left()) {
+			x = field.Left();
+		}
+		int y = (int) (rect.Bottom() > field.Bottom() ? field.Bottom() - rect.getHeight() : rect.Top());
+		if(y < field.Top()){
+			y = field.Top();
+		}
+		rect.offset(x, y);
+	}
+
+	public static int[] intersect(RectBox rect1, RectBox rect2) {
+		if(rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom() && rect2.Top() < rect1.Bottom()) {
+			return new int[] {
+				rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
+				rect1.Top() < rect2.Top() ? rect2.Top() - rect1.Top() : 0,
+				rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
+				rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0
+			};
+		}
+		return null;
+	}
+	
+	public static boolean isOrientationPortrait() {
+		if (LSystem.screenRect.width <= LSystem.screenRect.height) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public static Vector2f makeOrigin(LObject o, Origin origin) {

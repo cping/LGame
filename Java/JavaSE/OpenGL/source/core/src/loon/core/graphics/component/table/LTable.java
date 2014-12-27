@@ -34,20 +34,28 @@ import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.collection.Array;
 import loon.utils.collection.ArrayMap;
 
-/**
+/*
  * 
  * Example:
  * 
  * Array<ListItem> list=new Array<ListItem>();
  * 
- * ListItem item=new ListItem(); item.name="test1"; item.list.add("ffffff");
- * item.list.add("gggggggg"); item.list.add("hhhhhhhhh"); list.add(item);
+ * ListItem item=new ListItem(); 
+ * item.name="test1"; 
+ * item.list.add("ffffff");
+ * item.list.add("gggggggg"); 
+ * item.list.add("hhhhhhhhh"); 
+ * list.add(item);
  * 
- * ListItem item2=new ListItem(); item2.name="test2"; item2.list.add("ffffff");
- * item2.list.add("gggggggg"); item2.list.add("hhhhhhhhh"); list.add(item2);
+ * ListItem item2=new ListItem(); 
+ * item2.name="test2";
+ * item2.list.add("ffffff");
+ * item2.list.add("gggggggg");
+ * item2.list.add("hhhhhhhhh");
+ * list.add(item2);
  * LTable table=new LTable(LFont.getDefaultFont(), 60,60, 300, 300);
- * table.setData(list, 100); add(table);
- * 
+ * table.setData(list, 100); 
+ * add(table);
  * 
  */
 public class LTable extends LContainer {
