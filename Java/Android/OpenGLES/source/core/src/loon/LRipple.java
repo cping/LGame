@@ -28,16 +28,21 @@
  */
 package loon;
 
-
 import loon.core.LSystem;
 import loon.utils.MathUtils;
-/** LGame自带的简易金融接口(所有版本通用),可以利用Ripple协议进行简单的金融转移.即通过RTXP金融协议,向指定抵制发送指定货币(也可以直接充值和发送BTC到此协议网络中)
+
+/**
+ * LGame自带的简易金融接口(所有版本通用),可以利用Ripple协议进行简单的金融转移.即通过RTXP金融协议,向指定抵制发送指定货币(
+ * 也可以直接充值和发送BTC到此协议网络中)
  * <p>
  * <h3>向指定地址发送XRP</h3>
  * <p>
+ * 
  * <pre class="prettyprint">
- *  sendRESTCoin("rGmaiL8f7VDRrYouZokr5qv61b5zvhePcp", "cping","Thank you donate to LGame", 100);
- * </pre> */
+ * sendRESTCoin(&quot;rGmaiL8f7VDRrYouZokr5qv61b5zvhePcp&quot;, &quot;cping&quot;,
+ * 		&quot;Thank you donate to LGame&quot;, 100);
+ * </pre>
+ */
 public class LRipple {
 
 	public static void sendRESTCoin(String address, String name, String label,
@@ -51,17 +56,7 @@ public class LRipple {
 		String page = "https://ripple.com//send?to=" + address + "&name="
 				+ name + "&label=" + label.replace(" ", "%20") + "&amount="
 				+ amount + "/" + currency + "&dt=" + dt;
-		try {
-			android.net.Uri uri = android.net.Uri.parse(page);
-			android.content.Intent it = new android.content.Intent(
-					android.content.Intent.ACTION_VIEW, uri);
-			if (LSystem.screenActivity != null) {
-				LSystem.screenActivity.startActivity(it);
-			}
-		} catch (Exception err) {
-			err.printStackTrace();
-
-		}
+		LSystem.openURL(page);
 	}
 
 }

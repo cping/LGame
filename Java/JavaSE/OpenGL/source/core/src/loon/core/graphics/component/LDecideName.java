@@ -1,14 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.action.sprite.SpriteBatch;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LSTRFont;
-import loon.core.graphics.opengl.LTexture;
-import loon.utils.MathUtils;
-import loon.utils.collection.Array;
 
 /**
  * 
@@ -40,6 +29,30 @@ import loon.utils.collection.Array;
  *          list.add("<>"); LDecideName decideName = new LDecideName(list,0, 0);
  *          add(decideName);
  * 
+ */
+package loon.core.graphics.component;
+
+import loon.action.sprite.SpriteBatch;
+import loon.core.graphics.LColor;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LSTRFont;
+import loon.core.graphics.opengl.LTexture;
+import loon.utils.MathUtils;
+import loon.utils.collection.Array;
+
+/*
+ * Examples:
+ * 
+ *      Array<String> list = new Array<String>();
+ *      list.add("赵钱孙李周吴郑王");
+ *      list.add("冯陈褚卫蒋沈韩杨"); 
+ *      list.add("朱秦尤许何吕施张"); 
+ *      list.add("孔曹严华金魏陶姜");
+ *      list.add("<>"); 
+ *      LDecideName decideName = new LDecideName(list,0, 0);
+ *      add(decideName);
  */
 public class LDecideName extends LComponent {
 

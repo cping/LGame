@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2008 - 2012
@@ -281,6 +280,20 @@ public final class LSystem {
 
 	private static HashMap<String, Object> settings = new HashMap<String, Object>(
 			5);
+
+	/**
+	 * 打开当前系统浏览器
+	 * 
+	 * @param url
+	 */
+	public static void openURL(String url) {
+		if (LSystem.screenActivity != null) {
+			android.content.Intent browserIntent = new android.content.Intent(
+					android.content.Intent.ACTION_VIEW,
+					android.net.Uri.parse(url));
+			LSystem.screenActivity.startActivity(browserIntent);
+		}
+	}
 
 	/**
 	 * 设定一组键值对到缓存当中
