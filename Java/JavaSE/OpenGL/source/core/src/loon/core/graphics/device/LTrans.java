@@ -1,4 +1,3 @@
-package loon.core.graphics.device;
 
 /**
  * Copyright 2008 - 2009
@@ -20,6 +19,8 @@ package loon.core.graphics.device;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.device;
+
 public interface LTrans {
 
 	public static final int TRANS_NONE = 0;

@@ -1,24 +1,3 @@
-package loon.core.graphics.device;
-
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.geom.Triangle2f;
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
-
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Rect;
-import android.graphics.RectF;
-
-import android.graphics.Paint.FontMetrics;
-import android.graphics.PorterDuff.Mode;
 
 /**
  * 
@@ -41,6 +20,28 @@ import android.graphics.PorterDuff.Mode;
  * @email javachenpeng@yahoo.com
  * @version 0.1.2
  */
+package loon.core.graphics.device;
+
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+import loon.core.geom.Triangle2f;
+import loon.core.graphics.GraphicsUtils;
+import loon.core.graphics.LColor;
+import loon.core.graphics.LFont;
+import loon.core.graphics.LImage;
+
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
+
+import android.graphics.Paint.FontMetrics;
+import android.graphics.PorterDuff.Mode;
+
 public final class LGraphics implements LTrans {
 
 	private final static android.graphics.DashPathEffect dashPathEffect = new android.graphics.DashPathEffect(
@@ -157,18 +158,6 @@ public final class LGraphics implements LTrans {
 			return;
 		}
 		canvas.restore();
-	}
-
-	/**
-	 * 执行Canvas的save
-	 * 
-	 * @param flag
-	 */
-	public void save(int flag) {
-		if (isClose) {
-			return;
-		}
-		canvas.save(flag);
 	}
 
 	/**
