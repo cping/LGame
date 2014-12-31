@@ -1,15 +1,3 @@
-package loon.core.resource;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-
-import loon.core.LSystem;
-import loon.utils.StringUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -30,6 +18,18 @@ import loon.utils.StringUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+
+import loon.core.LSystem;
+import loon.utils.StringUtils;
+
 // 在JavaSE版中没有SDCard，操作模式与FileRes一致，而在Android版中则为SDCard操作(如果未安装SD卡，则尝试读取本地缓存中文件)
 public class SDRes extends DataRes implements Resource {
 

@@ -1,9 +1,3 @@
-package loon.core.processes;
-
-import java.util.LinkedList;
-
-import loon.core.LRelease;
-
 /**
  * 
  * Copyright 2014
@@ -25,6 +19,12 @@ import loon.core.LRelease;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  */
+package loon.core.processes;
+
+import java.util.LinkedList;
+
+import loon.core.LRelease;
+
 public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	
 	private static RealtimeProcessManager instance;

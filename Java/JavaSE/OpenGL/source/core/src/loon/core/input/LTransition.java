@@ -1,18 +1,3 @@
-package loon.core.input;
-
-import loon.action.map.Config;
-import loon.action.sprite.effect.ArcEffect;
-import loon.action.sprite.effect.CrossEffect;
-import loon.action.sprite.effect.FadeEffect;
-import loon.action.sprite.effect.PShadowEffect;
-import loon.action.sprite.effect.SplitEffect;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.TextureUtils;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -33,6 +18,21 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.input;
+
+import loon.action.map.Config;
+import loon.action.sprite.effect.ArcEffect;
+import loon.action.sprite.effect.CrossEffect;
+import loon.action.sprite.effect.FadeEffect;
+import loon.action.sprite.effect.PShadowEffect;
+import loon.action.sprite.effect.SplitEffect;
+import loon.core.LSystem;
+import loon.core.graphics.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
+import loon.utils.MathUtils;
+
 /**
  * 自0.3.2版起新增的Screen切换过渡效果类，内置有多种过渡特效。
  * 

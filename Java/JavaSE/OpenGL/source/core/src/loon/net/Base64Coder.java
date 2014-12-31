@@ -1,7 +1,3 @@
-package loon.net;
-
-import loon.utils.StringUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -22,6 +18,10 @@ import loon.utils.StringUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.net;
+
+import loon.utils.StringUtils;
+
 /**
  * 自0.3.2版起新增类，用以统一跨平台的BASE64处理方法
  */

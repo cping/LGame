@@ -1,12 +1,3 @@
-package loon.core.resource;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -27,6 +18,15 @@ import java.net.URL;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+
 public class FileRes extends DataRes implements Resource {
 
 	public FileRes(String path) {

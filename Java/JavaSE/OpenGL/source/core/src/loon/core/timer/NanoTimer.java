@@ -1,5 +1,3 @@
-package loon.core.timer;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -20,6 +18,9 @@ package loon.core.timer;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.timer;
+
+
 public class NanoTimer extends SystemTimer {
 
 	private static final int NUM_TIMERS = 8;

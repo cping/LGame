@@ -1,7 +1,3 @@
-package loon.core.resource;
-
-import java.io.Serializable;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -22,6 +18,10 @@ import java.io.Serializable;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.Serializable;
+
 public class LPKTable implements Serializable {
 
 	/**

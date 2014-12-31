@@ -1,4 +1,3 @@
-package loon.core.processes;
 /**
  * 
  * Copyright 2014
@@ -20,6 +19,8 @@ package loon.core.processes;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  */
+package loon.core.processes;
+
 public abstract interface RealtimeProcessHost
 {
   public abstract void processFinished(String id, Process process);

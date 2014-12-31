@@ -1,8 +1,3 @@
-package loon.utils;
-
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -23,6 +18,12 @@ import loon.core.geom.RectBox;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.utils;
+
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+
+
 public class MathUtils {
 
 	public static RectBox getBounds(float x, float y, float width,

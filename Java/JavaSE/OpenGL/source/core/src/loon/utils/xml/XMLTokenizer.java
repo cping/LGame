@@ -1,5 +1,3 @@
-package loon.utils.xml;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -20,6 +18,8 @@ package loon.utils.xml;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.utils.xml;
+
 public class XMLTokenizer {
 
 	private String text;

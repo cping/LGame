@@ -1,14 +1,3 @@
-package loon.core.resource;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-
-import loon.core.LSystem;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -29,6 +18,16 @@ import loon.core.LSystem;
  * @email javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.core.resource;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+
+import loon.core.LSystem;
+
 public class CSVReader extends BufferedReader {
 
 	private String delimiter = ",";

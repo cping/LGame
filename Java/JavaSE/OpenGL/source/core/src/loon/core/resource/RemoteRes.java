@@ -1,9 +1,3 @@
-package loon.core.resource;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -24,6 +18,13 @@ import java.net.URL;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+
+
 public class RemoteRes extends DataRes implements Resource {
 
 	public RemoteRes(String url) {

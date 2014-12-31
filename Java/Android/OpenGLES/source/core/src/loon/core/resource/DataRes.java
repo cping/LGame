@@ -1,9 +1,3 @@
-package loon.core.resource;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -24,6 +18,12 @@ import java.net.URI;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
 abstract class DataRes {
 
 	String path;

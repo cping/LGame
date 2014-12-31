@@ -32,6 +32,7 @@ import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.input.LTouch;
+import loon.core.input.LInputFactory.Touch;
 import loon.core.resource.Resources;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
@@ -196,7 +197,13 @@ public class TMXTiledMap implements LRelease {
 		int y = e.y() / tileHeight;
 		draw(g, 0, 0, x, y, width - defWidth, height - defHeight, false);
 	}
-
+	
+	public void draw(GLEx g) {
+		int x = Touch.x() / tileWidth;
+		int y = Touch.y() / tileHeight;
+		draw(g, 0, 0, x, y, width - defWidth, height - defHeight, false);
+	}
+	
 	public void draw(GLEx g, int tx, int ty) {
 		draw(g, 0, 0, tx, ty);
 	}

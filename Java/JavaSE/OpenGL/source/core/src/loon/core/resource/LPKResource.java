@@ -1,14 +1,3 @@
-package loon.core.resource;
-
-import java.io.InputStream;
-import java.util.HashMap;
-
-import loon.core.graphics.LImage;
-import loon.core.graphics.opengl.LTexture;
-import loon.jni.NativeSupport;
-import loon.utils.CollectionUtils;
-import loon.utils.collection.ArrayByte;
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -29,6 +18,17 @@ import loon.utils.collection.ArrayByte;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.core.resource;
+
+import java.io.InputStream;
+import java.util.HashMap;
+
+import loon.core.graphics.LImage;
+import loon.core.graphics.opengl.LTexture;
+import loon.jni.NativeSupport;
+import loon.utils.CollectionUtils;
+import loon.utils.collection.ArrayByte;
+
 public abstract class LPKResource {
 
 	// 如果此项为true，已加载数据会自动缓存。

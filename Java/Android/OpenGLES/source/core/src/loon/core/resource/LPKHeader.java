@@ -1,8 +1,3 @@
-package loon.core.resource;
-
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -23,6 +18,10 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import loon.utils.MathUtils;
+
 public class LPKHeader {
 
 	public static final int LF_PAK_ID = (('L' << 24) + ('G' << 16) + ('P' << 8) + 'K');

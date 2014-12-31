@@ -1,23 +1,3 @@
-package loon.core.resource;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import loon.core.LSystem;
-import loon.utils.StringUtils;
-import loon.utils.collection.ArrayByte;
-
-import android.content.res.AssetManager;
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -39,6 +19,26 @@ import android.content.res.AssetManager;
  * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
+package loon.core.resource;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import loon.core.LSystem;
+import loon.utils.StringUtils;
+import loon.utils.collection.ArrayByte;
+
+import android.content.res.AssetManager;
+
 public abstract class Resources {
 
 	// 以下为0.3.2版中新增资源读取方法(为避免冲突，同时保留了原始读取方式)

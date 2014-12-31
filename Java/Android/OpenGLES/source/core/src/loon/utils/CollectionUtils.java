@@ -1,8 +1,3 @@
-package loon.utils;
-
-import java.lang.reflect.Array;
-import java.util.NoSuchElementException;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -24,6 +19,10 @@ import java.util.NoSuchElementException;
  * @email：javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.utils;
+
+import java.lang.reflect.Array;
+import java.util.NoSuchElementException;
 
 final public class CollectionUtils {
 

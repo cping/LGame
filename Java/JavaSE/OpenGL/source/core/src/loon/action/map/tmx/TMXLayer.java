@@ -1,22 +1,3 @@
-package loon.action.map.tmx;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.zip.GZIPInputStream;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.LLight;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.GLUtils;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureBatch;
-import loon.core.graphics.opengl.LTextureBatch.GLCache;
-import loon.net.Base64Coder;
-import loon.utils.xml.XMLElement;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -38,6 +19,26 @@ import loon.utils.xml.XMLElement;
  * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
+package loon.action.map.tmx;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.zip.GZIPInputStream;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.graphics.LLight;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.GLUtils;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureBatch;
+import loon.core.graphics.opengl.LTextureBatch.GLCache;
+import loon.net.Base64Coder;
+import loon.utils.xml.XMLElement;
+
+
 public class TMXLayer extends LLight implements LRelease {
 
 	private class MapTileSet {

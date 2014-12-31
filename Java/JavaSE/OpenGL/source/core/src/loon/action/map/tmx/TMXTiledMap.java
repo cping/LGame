@@ -1,20 +1,3 @@
-package loon.action.map.tmx;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LTouch;
-import loon.core.resource.Resources;
-import loon.utils.xml.XMLDocument;
-import loon.utils.xml.XMLElement;
-import loon.utils.xml.XMLParser;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -36,6 +19,24 @@ import loon.utils.xml.XMLParser;
  * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
+package loon.action.map.tmx;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.geom.RectBox;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.input.LInputFactory.Touch;
+import loon.core.input.LTouch;
+import loon.core.resource.Resources;
+import loon.utils.xml.XMLDocument;
+import loon.utils.xml.XMLElement;
+import loon.utils.xml.XMLParser;
+
 public class TMXTiledMap implements LRelease {
 
 	protected int width;
@@ -195,6 +196,12 @@ public class TMXTiledMap implements LRelease {
 		draw(g, 0, 0, x, y, width - defWidth, height - defHeight, false);
 	}
 
+	public void draw(GLEx g) {
+		int x = Touch.x() / tileWidth;
+		int y = Touch.y() / tileHeight;
+		draw(g, 0, 0, x, y, width - defWidth, height - defHeight, false);
+	}
+	
 	public void draw(GLEx g, int tx, int ty) {
 		draw(g, 0, 0, tx, ty);
 	}
@@ -243,6 +250,7 @@ public class TMXTiledMap implements LRelease {
 			XMLElement docElement = doc.getRoot();
 
 			String orient = docElement.getAttribute("orientation", "");
+		
 			if (!"orthogonal".equals(orient)) {
 				throw new RuntimeException(
 						"Only orthogonal maps supported, found " + orient);

@@ -1,10 +1,3 @@
-package loon.utils.collection;
-
-import java.util.ArrayList;
-
-import loon.utils.CollectionUtils;
-import loon.utils.MathUtils;
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -26,6 +19,14 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.utils.collection;
+
+import java.util.ArrayList;
+
+import loon.utils.CollectionUtils;
+import loon.utils.MathUtils;
+
+
 public class ArrayMap {
 
 	static final private float LOAD_FACTOR = 0.75f;

@@ -1,11 +1,3 @@
-package loon.action.sprite;
-
-import loon.core.LRelease;
-import loon.core.graphics.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureBatch.GLCache;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -27,6 +19,17 @@ import loon.core.graphics.opengl.LTextureBatch.GLCache;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.event.Updateable;
+import loon.core.graphics.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureBatch.GLCache;
+
+
 public class SpriteSheet implements LRelease {
 
 	private int margin, spacing;
@@ -66,7 +69,14 @@ public class SpriteSheet implements LRelease {
 			return;
 		}
 		if (!target.isLoaded()) {
-			target.loadTexture();
+			Updateable update = new Updateable() {
+				
+				@Override
+				public void action(Object a) {
+					target.loadTexture();
+				}
+			};
+			LSystem.load(update);
 		}
 		int tilesAcross = ((width - (margin * 2) - tw) / (tw + spacing)) + 1;
 		int tilesDown = ((height - (margin * 2) - th) / (th + spacing)) + 1;

@@ -1,5 +1,3 @@
-package loon.utils.debugging;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -20,6 +18,9 @@ package loon.utils.debugging;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.utils.debugging;
+
+
 public class Level {
 
 	public static final Level DEBUG = new Level("Debug", 1);

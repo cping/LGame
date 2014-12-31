@@ -1,12 +1,3 @@
-package loon.core.resource;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import loon.core.LSystem;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -27,6 +18,15 @@ import loon.core.LSystem;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import loon.core.LSystem;
+
+
 public class ClassRes extends DataRes implements Resource {
 
 	private ClassLoader classLoader;

@@ -1,12 +1,3 @@
-package loon.core.resource;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
-import loon.utils.collection.ArrayMap;
-import loon.utils.collection.ArrayMap.Entry;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -27,6 +18,14 @@ import loon.utils.collection.ArrayMap.Entry;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import loon.utils.collection.ArrayMap;
+import loon.utils.collection.ArrayMap.Entry;
+
 public class CSVTable {
 
 	public static class CSVItem extends ArrayMap {
@@ -126,23 +125,23 @@ public class CSVTable {
 		try {
 			String methodType = getter.getReturnType().getName();
 			if (methodType.equalsIgnoreCase("long")) {
-				cache[0] = new Long(value);
+				cache[0] = Long.valueOf(value);
 				setter.invoke(object, cache);
 			} else if (methodType.equalsIgnoreCase("int")
 					|| methodType.equalsIgnoreCase("integer")) {
-				cache[0] = new Integer(value);
+				cache[0] = Integer.valueOf(value);
 				setter.invoke(object, cache);
 			} else if (methodType.equalsIgnoreCase("short")) {
-				cache[0] = new Short(value);
+				cache[0] = Short.valueOf(value);
 				setter.invoke(object, cache);
 			} else if (methodType.equalsIgnoreCase("float")) {
-				cache[0] = new Float(value);
+				cache[0] = Float.valueOf(value);
 				setter.invoke(object, cache);
 			} else if (methodType.equalsIgnoreCase("double")) {
-				cache[0] = new Double(value);
+				cache[0] = Double.valueOf(value);
 				setter.invoke(object, cache);
 			} else if (methodType.equalsIgnoreCase("boolean")) {
-				cache[0] = new Boolean(value);
+				cache[0] = Boolean.valueOf(value);
 				setter.invoke(object, cache);
 			} else if (methodType.equalsIgnoreCase("java.lang.String")) {
 				cache[0] = value;

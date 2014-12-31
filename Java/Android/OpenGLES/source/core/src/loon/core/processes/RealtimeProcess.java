@@ -1,6 +1,3 @@
-package loon.core.processes;
-
-import java.util.LinkedList;
 /**
  * 
  * Copyright 2014
@@ -22,6 +19,10 @@ import java.util.LinkedList;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  */
+package loon.core.processes;
+
+import java.util.LinkedList;
+
 public abstract class RealtimeProcess implements Process {
 	
 	protected boolean isDead;

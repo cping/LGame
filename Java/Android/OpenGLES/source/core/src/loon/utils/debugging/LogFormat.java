@@ -1,7 +1,3 @@
-package loon.utils.debugging;
-
-import loon.core.LSystem;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -22,6 +18,11 @@ import loon.core.LSystem;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.utils.debugging;
+
+import loon.core.LSystem;
+
+
 public class LogFormat {
 
 	final static private int LOG_LEN[] = { 24, 15, 7, 100 };

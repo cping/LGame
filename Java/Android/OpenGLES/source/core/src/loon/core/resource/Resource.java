@@ -1,11 +1,3 @@
-package loon.core.resource;
-
-import java.io.InputStream;
-import java.net.URI;
-
-import loon.core.LRelease;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,13 @@ import loon.core.LRelease;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.resource;
+
+import java.io.InputStream;
+import java.net.URI;
+
+import loon.core.LRelease;
+
 public interface Resource extends LRelease{
 
 	InputStream getInputStream();

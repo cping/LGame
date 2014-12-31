@@ -1,13 +1,3 @@
-package loon.utils.xml;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-
-import loon.core.LRelease;
-import loon.net.Base64Coder;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -28,6 +18,17 @@ import loon.net.Base64Coder;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.utils.xml;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
+import loon.core.LRelease;
+import loon.net.Base64Coder;
+
+
 public class XMLElement implements LRelease {
 
 	private String name;

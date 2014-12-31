@@ -1,9 +1,3 @@
-package loon.utils.debugging;
-
-import java.util.WeakHashMap;
-
-import loon.core.LSystem;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -24,6 +18,13 @@ import loon.core.LSystem;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.utils.debugging;
+
+import java.util.WeakHashMap;
+
+import loon.core.LSystem;
+
+
 public class LogFactory {
 
 	final static private WeakHashMap<String, Object> lazyMap = new WeakHashMap<String, Object>(

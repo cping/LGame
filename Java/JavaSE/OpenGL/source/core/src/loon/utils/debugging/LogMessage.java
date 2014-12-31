@@ -1,8 +1,3 @@
-package loon.utils.debugging;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -23,6 +18,12 @@ import java.util.Date;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.utils.debugging;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 public class LogMessage {
 
 	static private String LOG_DEFAULT_DATE = "yyyy-MM-dd HH:mm:ss,SSS";

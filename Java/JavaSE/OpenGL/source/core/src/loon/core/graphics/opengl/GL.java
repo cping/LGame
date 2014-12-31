@@ -1,5 +1,3 @@
-package loon.core.graphics.opengl;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -20,6 +18,9 @@ package loon.core.graphics.opengl;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+
 public interface GL {
 
 	public static int MODE_NORMAL = 1;

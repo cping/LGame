@@ -1,7 +1,3 @@
-package loon.utils.debugging;
-
-import loon.utils.FileUtils;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -22,6 +18,11 @@ import loon.utils.FileUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.utils.debugging;
+
+import loon.utils.FileUtils;
+
+
 final public class Log {
 
 	public static void exception(Object o) {

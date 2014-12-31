@@ -1,15 +1,3 @@
-package loon.core.input;
-
-import loon.core.LSystem;
-import loon.core.event.ActionKey;
-import loon.core.geom.Vector2f;
-import loon.core.timer.LTimer;
-import loon.core.timer.LTimerContext;
-import loon.utils.collection.IntArray;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -30,6 +18,18 @@ import org.lwjgl.input.Mouse;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.input;
+
+import loon.core.LSystem;
+import loon.core.event.ActionKey;
+import loon.core.geom.Vector2f;
+import loon.core.timer.LTimer;
+import loon.core.timer.LTimerContext;
+import loon.utils.collection.IntArray;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 public class LInputFactory {
 	
 	public static void setOnscreenKeyboardVisible (boolean visible) {

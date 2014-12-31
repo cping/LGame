@@ -1,15 +1,3 @@
-package loon.utils.xml;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Stack;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.resource.Resources;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -30,6 +18,19 @@ import loon.core.resource.Resources;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.utils.xml;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Stack;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.resource.Resources;
+
+
 // 这是一个简易的XML解析器，自0.3.2起开始支持(为了多平台移植方便……)
 public class XMLParser implements LRelease {
 
