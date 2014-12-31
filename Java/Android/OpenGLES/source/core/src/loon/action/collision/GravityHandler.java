@@ -1,12 +1,3 @@
-package loon.action.collision;
-
-import java.util.ArrayList;
-
-import loon.action.ActionBind;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -27,6 +18,16 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.action.collision;
+
+import java.util.ArrayList;
+
+import loon.action.ActionBind;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.utils.MathUtils;
+
+
 public class GravityHandler implements LRelease {
 
 	public static interface GravityUpdate {

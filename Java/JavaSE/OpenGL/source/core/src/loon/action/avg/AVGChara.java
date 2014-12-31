@@ -1,15 +1,3 @@
-package loon.action.avg;
-
-import java.io.IOException;
-
-import loon.action.sprite.ISprite;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.utils.StringUtils;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -30,6 +18,19 @@ import loon.utils.StringUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.avg;
+
+import java.io.IOException;
+
+import loon.action.sprite.ISprite;
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.utils.StringUtils;
+
+
 public class AVGChara implements LRelease {
 
 	private LTexture characterCG;

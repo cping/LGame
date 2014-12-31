@@ -1,6 +1,3 @@
-package loon.action;
-
-import loon.action.sprite.ISprite;
 
 /**
  * Copyright 2008 - 2011
@@ -22,6 +19,10 @@ import loon.action.sprite.ISprite;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action;
+
+import loon.action.sprite.ISprite;
+
 public class FadeTo extends ActionEvent {
 
 	public float time;

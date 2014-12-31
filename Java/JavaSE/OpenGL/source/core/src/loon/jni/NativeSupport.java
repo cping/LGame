@@ -166,6 +166,18 @@ public final class NativeSupport {
 
 	private static boolean useLoonNative;
 
+	private static boolean isInJavaWebStart() {
+		try {
+			Method method = Class.forName("javax.jnlp.ServiceManager")
+					.getDeclaredMethod("lookup",
+							new Class<?>[] { String.class });
+			method.invoke(null, "javax.jnlp.PersistenceService");
+			return true;
+		} catch (Throwable ignored) {
+			return false;
+		}
+	}
+
 	static {
 		String vm = System.getProperty("java.vm.name");
 		if (vm != null && vm.contains("Dalvik")) {
@@ -177,39 +189,40 @@ public final class NativeSupport {
 		}
 		System.setProperty("org.lwjgl.input.Mouse.allowNegativeMouseCoords",
 				"true");
-		try {
-			Method method = Class.forName("javax.jnlp.ServiceManager")
-					.getDeclaredMethod("lookup", new Class[] { String.class });
-			method.invoke(null, "javax.jnlp.PersistenceService");
-		} catch (Throwable ex) {
-		}
-		File nativesDir = null;
-		try {
-			if (isWindows) {
-				nativesDir = export(is64Bit ? "lwjgl64.dll" : "lwjgl.dll", null)
-						.getParentFile();
-				export(is64Bit ? "OpenAL64.dll" : "OpenAL32.dll",
-						nativesDir.getName());
-			} else if (isMac) {
-				nativesDir = export("liblwjgl.jnilib", null).getParentFile();
-				export("openal.dylib", nativesDir.getName());
-			} else if (isLinux) {
-				nativesDir = export(is64Bit ? "liblwjgl64.so" : "liblwjgl.so",
-						null).getParentFile();
-				export(is64Bit ? "libopenal64.so" : "libopenal.so",
-						nativesDir.getName());
+		if (!isInJavaWebStart()) {
+			File nativesDir = null;
+			try {
+				if (isWindows) {
+					nativesDir = export(is64Bit ? "lwjgl64.dll" : "lwjgl.dll",
+							null).getParentFile();
+					export(is64Bit ? "OpenAL64.dll" : "OpenAL32.dll",
+							nativesDir.getName());
+				} else if (isMac) {
+					nativesDir = export("liblwjgl.jnilib", null)
+							.getParentFile();
+					export("openal.dylib", nativesDir.getName());
+				} else if (isLinux) {
+					nativesDir = export(
+							is64Bit ? "liblwjgl64.so" : "liblwjgl.so", null)
+							.getParentFile();
+					export(is64Bit ? "libopenal64.so" : "libopenal.so",
+							nativesDir.getName());
+				}
+			} catch (Throwable ex) {
+				throw new RuntimeException("Unable to extract LWJGL natives.",
+						ex);
 			}
-		} catch (Throwable ex) {
-			throw new RuntimeException("Unable to extract LWJGL natives.", ex);
-		}
-		System.setProperty("org.lwjgl.librarypath",
-				nativesDir.getAbsolutePath());
-		try {
-			loadJNI("lplus");
+			System.setProperty("org.lwjgl.librarypath",
+					nativesDir.getAbsolutePath());
+			try {
+				loadJNI("lplus");
+				useLoonNative = true;
+				System.out.println("Support of the native method call");
+			} catch (Throwable e) {
+				useLoonNative = false;
+			}
+		} else {
 			useLoonNative = true;
-			System.out.println("Support of the native method call");
-		} catch (Throwable e) {
-			useLoonNative = false;
 		}
 	}
 

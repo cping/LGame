@@ -653,12 +653,11 @@ public class LGame extends JavaApp {
 				Display.setDisplayMode(displayMode);
 				_isAWTCanvas = false;
 			}
-
-			Display.setTitle(windowTitle);
-			Display.setResizable(_resizable);
-			Display.setInitialBackground(0, 0, 0);
 			setIcon(LSystem.FRAMEWORK_IMG_NAME + "icon.png");
 
+			Display.setTitle(windowTitle);
+			Display.setInitialBackground(0, 0, 0);
+			
 			if (_x != -1 && _y != -1) {
 				Display.setLocation(_x, _y);
 			}
@@ -681,11 +680,12 @@ public class LGame extends JavaApp {
 					}
 				}
 			}
-
+			if (_resizable) {
+				Display.setResizable(_resizable);
+			}
 			updateScreen();
-
+			
 			boolean support = GLEx.checkVBO();
-
 			if (glMode == GLMode.VBO) {
 				if (support) {
 					GLEx.setVbo(true);
@@ -702,7 +702,6 @@ public class LGame extends JavaApp {
 					LSystem.screenRect.height);
 			this.setViewPort(getBounds());
 			this.gl.update();
-
 		} catch (LWJGLException ex) {
 			ex.printStackTrace();
 		}

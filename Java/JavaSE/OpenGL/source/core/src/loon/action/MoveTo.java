@@ -1,16 +1,3 @@
-package loon.action;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-
-import loon.action.map.AStarFindHeuristic;
-import loon.action.map.AStarFinder;
-import loon.action.map.Field2D;
-import loon.core.LSystem;
-import loon.core.geom.Vector2f;
-import loon.utils.CollectionUtils;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -31,6 +18,19 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import loon.action.map.AStarFindHeuristic;
+import loon.action.map.AStarFinder;
+import loon.action.map.Field2D;
+import loon.core.LSystem;
+import loon.core.geom.Vector2f;
+import loon.utils.CollectionUtils;
+import loon.utils.MathUtils;
+
 public class MoveTo extends ActionEvent {
 
 	private final static HashMap<Integer, LinkedList<Vector2f>> pathCache = new HashMap<Integer, LinkedList<Vector2f>>(

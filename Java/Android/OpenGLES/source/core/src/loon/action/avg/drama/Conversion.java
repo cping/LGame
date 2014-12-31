@@ -1,14 +1,3 @@
-package loon.action.avg.drama;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.utils.MathUtils;
-import loon.utils.StringUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -29,6 +18,18 @@ import loon.utils.StringUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.avg.drama;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.utils.MathUtils;
+import loon.utils.StringUtils;
+
+
 
 public abstract class Conversion implements Expression {
 

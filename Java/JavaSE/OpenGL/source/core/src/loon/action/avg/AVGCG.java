@@ -1,15 +1,3 @@
-package loon.action.avg;
-
-import loon.action.sprite.ISprite;
-import loon.core.LSystem;
-import loon.core.geom.Point.Point2i;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.StringUtils;
-import loon.utils.collection.ArrayMap;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -30,6 +18,18 @@ import loon.utils.collection.ArrayMap;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.avg;
+
+import loon.action.sprite.ISprite;
+import loon.core.LSystem;
+import loon.core.geom.Point.Point2i;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.utils.StringUtils;
+import loon.utils.collection.ArrayMap;
+
 public class AVGCG {
 
 	private long charaShowDelay = 60;

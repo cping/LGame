@@ -1,5 +1,3 @@
-package loon.action;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -20,6 +18,9 @@ package loon.action;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action;
+
+
 public class RotateTo extends ActionEvent {
 
 	private float dstAngle;

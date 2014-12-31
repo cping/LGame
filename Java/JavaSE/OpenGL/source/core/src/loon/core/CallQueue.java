@@ -19,7 +19,7 @@ import loon.core.event.Updateable;
 
 public abstract class CallQueue {
 
-	public class RunQueue {
+	public static class Run {
 
 		private int _count;
 
@@ -34,7 +34,7 @@ public abstract class CallQueue {
 			}
 		}
 
-		public RunQueue() {
+		public Run() {
 		}
 
 		public void execute() {
@@ -70,10 +70,10 @@ public abstract class CallQueue {
 		}
 	}
 
-	protected final RunQueue _queue;
+	protected final Run _queue;
 
 	protected CallQueue() {
-		this._queue = new RunQueue();
+		this._queue = new Run();
 	}
 
 	public void invokeLater(Updateable update) {

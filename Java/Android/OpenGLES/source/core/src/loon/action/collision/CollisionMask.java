@@ -1,16 +1,3 @@
-package loon.action.collision;
-
-import java.util.ArrayList;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.Point;
-import loon.core.geom.Polygon;
-import loon.core.geom.RectBox;
-import loon.core.graphics.LImage;
-import loon.core.graphics.opengl.LTexture;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -31,6 +18,20 @@ import loon.core.graphics.opengl.LTexture;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.collision;
+
+import java.util.ArrayList;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.geom.Point;
+import loon.core.geom.Polygon;
+import loon.core.geom.RectBox;
+import loon.core.graphics.LImage;
+import loon.core.graphics.opengl.LTexture;
+
+
+
 public class CollisionMask implements LRelease {
 
 	private int top, left, right, bottom;

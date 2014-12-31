@@ -1,9 +1,3 @@
-package loon.action.collision;
-
-import loon.action.ActionBind;
-import loon.core.LRelease;
-
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -24,6 +18,12 @@ import loon.core.LRelease;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.action.collision;
+
+import loon.action.ActionBind;
+import loon.core.LRelease;
+
+
 // 自0.3.2版起新增类，用以绑定任意一个LGame对象进行简单的重力牵引。
 public class Gravity implements LRelease {
 

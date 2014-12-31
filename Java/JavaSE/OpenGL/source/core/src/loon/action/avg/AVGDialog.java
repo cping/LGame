@@ -1,15 +1,3 @@
-package loon.action.avg;
-
-import java.awt.Image;
-import java.awt.image.PixelGrabber;
-import java.util.HashMap;
-
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTexture.Format;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -30,6 +18,19 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @email javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.action.avg;
+
+import java.awt.Image;
+import java.awt.image.PixelGrabber;
+import java.util.HashMap;
+
+import loon.core.graphics.GraphicsUtils;
+import loon.core.graphics.LImage;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTexture.Format;
+
+
 final public class AVGDialog {
 
 	private static HashMap<String, LTexture> lazyImages;

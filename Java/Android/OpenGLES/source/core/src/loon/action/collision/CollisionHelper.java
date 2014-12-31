@@ -1,15 +1,3 @@
-package loon.action.collision;
-
-import loon.core.LSystem;
-import loon.core.geom.Line;
-import loon.core.geom.Point;
-import loon.core.geom.RectBox;
-import loon.core.geom.Shape;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -30,6 +18,19 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.collision;
+
+import loon.core.LSystem;
+import loon.core.geom.Line;
+import loon.core.geom.Point;
+import loon.core.geom.RectBox;
+import loon.core.geom.Shape;
+import loon.core.graphics.LColor;
+import loon.core.graphics.LImage;
+import loon.utils.MathUtils;
+
+
+
 public final class CollisionHelper {
 
 	/**

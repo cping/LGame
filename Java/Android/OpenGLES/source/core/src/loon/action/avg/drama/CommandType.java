@@ -1,5 +1,3 @@
-package loon.action.avg.drama;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -20,6 +18,8 @@ package loon.action.avg.drama;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.avg.drama;
+
 public interface CommandType {
 
 	String L_WAIT = "wait";

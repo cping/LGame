@@ -1,10 +1,3 @@
-package loon.action.avg.drama;
-
-import java.util.Random;
-
-import loon.core.LSystem;
-
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -25,6 +18,12 @@ import loon.core.LSystem;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.avg.drama;
+
+import java.util.Random;
+
+import loon.core.LSystem;
+
 public interface Expression {
 
 	// 全局随机数

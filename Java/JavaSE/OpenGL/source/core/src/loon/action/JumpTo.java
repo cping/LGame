@@ -1,7 +1,3 @@
-package loon.action;
-
-import loon.core.geom.RectBox;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -22,6 +18,11 @@ import loon.core.geom.RectBox;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action;
+
+import loon.core.geom.RectBox;
+
+
 public class JumpTo extends ActionEvent {
 
 	private float moveY;
