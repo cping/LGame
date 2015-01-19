@@ -1,8 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.FloatBuffer;
-
-import loon.core.graphics.LColor;
 
 /**
  * Copyright 2008 - 2011
@@ -24,6 +19,12 @@ import loon.core.graphics.LColor;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.nio.FloatBuffer;
+
+import loon.core.graphics.LColor;
+
 public class GLUtils {
 
 	private static int currentHardwareBufferID = -1;

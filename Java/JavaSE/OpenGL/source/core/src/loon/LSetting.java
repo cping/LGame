@@ -43,11 +43,17 @@ public class LSetting {
 	public boolean showMemory;
 
 	public boolean showLogo;
+	
+	public GameType gametype = GameType.UNKOWN;
 
 	public Listener listener;
 
 	public Canvas javaCanvas;
 
+	public GameType getGameType(){
+		return gametype;
+	}
+	
 	public interface Listener {
 
 		void onPause();

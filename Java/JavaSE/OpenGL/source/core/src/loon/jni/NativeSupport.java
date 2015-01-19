@@ -454,6 +454,7 @@ public final class NativeSupport {
 
 	private static void putBuffer(Buffer dst, Object src, int offset,
 			int numFloats) {
+		dst.clear();
 		if (dst instanceof ByteBuffer) {
 			byte[] buffer = (byte[]) src;
 			ByteBuffer writer = (ByteBuffer) dst;

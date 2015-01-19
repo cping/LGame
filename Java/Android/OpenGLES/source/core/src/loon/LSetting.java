@@ -42,10 +42,16 @@ public class LSetting {
 
 	public boolean landscape;
 
+	public GameType gametype = GameType.UNKOWN;
+	
 	public LMode mode = LMode.Fill;
 
 	public Listener listener;
 
+	public GameType getGameType(){
+		return gametype;
+	}
+	
 	public interface Listener {
 
 		void onPause();
