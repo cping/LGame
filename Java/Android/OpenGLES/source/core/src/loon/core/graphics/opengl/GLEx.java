@@ -44,236 +44,6 @@ import android.util.Log;
 
 public final class GLEx implements LTrans {
 
-	/**
-	 * 以glQuad方式将所提交的全部纹理及信息渲染为图像
-	 * 
-	 * @param texture
-	 * @param vertexBuffer
-	 * @param coordsBuffer
-	 * @param count
-	 * @param x
-	 * @param y
-	 * @param rotaion
-	 */
-	void glQuad(final LTexture texture, final FloatBuffer vertexBuffer,
-			final FloatBuffer coordsBuffer, int count, float x, float y,
-			float sx, float sy, float ax, float ay, float rotaion) {
-		if (isClose) {
-			return;
-		}
-		if (count > 0) {
-			if (!texture.isVisible) {
-				return;
-			}
-			if (!texture.isLoaded) {
-				texture.loadTexture();
-			}
-
-			int old = getBlendMode();
-
-			setBlendMode(GL.MODE_SPEED);
-
-			glTex2DEnable();
-			{
-				bind(texture.textureID);
-
-				if (sx != 1f || sy != 1f) {
-					save();
-					if (x != 0 || y != 0) {
-						gl10.glTranslatef(x, y, 0);
-					}
-					gl10.glScalef(sx, sy, 0);
-					if (rotaion != 0) {
-						if (ax != 0 || ay != 0) {
-							gl10.glTranslatef(ax, ay, 0.0f);
-							gl10.glRotatef(rotaion, 0f, 0f, 1f);
-							gl10.glTranslatef(-ax, -ay, 0.0f);
-						} else {
-							gl10.glTranslatef(texture.width / 2,
-									texture.height / 2, 0.0f);
-							gl10.glRotatef(rotaion, 0f, 0f, 1f);
-							gl10.glTranslatef(-texture.width / 2,
-									-texture.height / 2, 0.0f);
-						}
-					}
-
-					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
-					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
-					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
-					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
-					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
-					restore();
-
-				} else {
-
-					if (x != 0 || y != 0) {
-						gl10.glTranslatef(x, y, 0);
-					}
-					if (rotaion != 0) {
-						if (ax != 0 || ay != 0) {
-							gl10.glTranslatef(ax, ay, 0.0f);
-							gl10.glRotatef(rotaion, 0f, 0f, 1f);
-							gl10.glTranslatef(-ax, -ay, 0.0f);
-						} else {
-							gl10.glTranslatef(texture.width / 2,
-									texture.height / 2, 0.0f);
-							gl10.glRotatef(rotaion, 0f, 0f, 1f);
-							gl10.glTranslatef(-texture.width / 2,
-									-texture.height / 2, 0.0f);
-						}
-					}
-
-					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
-					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
-					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
-					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
-					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
-
-					if (rotaion != 0) {
-						if (ax != 0 || ay != 0) {
-							gl10.glTranslatef(ax, ay, 0.0f);
-							gl10.glRotatef(-rotaion, 0f, 0f, 1f);
-							gl10.glTranslatef(-ax, -ay, 0.0f);
-						} else {
-							gl10.glTranslatef(texture.width / 2,
-									texture.height / 2, 0.0f);
-							gl10.glRotatef(-rotaion, 0, 0, 1f);
-							gl10.glTranslatef(-texture.width / 2,
-									-texture.height / 2, 0.0f);
-						}
-					}
-					if (x != 0 || y != 0) {
-						gl10.glTranslatef(-x, -y, 0);
-					}
-				}
-			}
-
-			setBlendMode(old);
-		}
-	}
-
-	/**
-	 * 以glQuad方式将所提交的全部纹理及信息渲染为图像
-	 * 
-	 * @param texture
-	 * @param cache
-	 * @param x
-	 * @param y
-	 * @param rotation
-	 */
-	void glQuad(final LTexture texture, final LTextureBatch.GLCache cache,
-			float x, float y, float sx, float sy, float ax, float ay,
-			float rotation) {
-		glQuad(texture, cache.vertexBuffer, cache.coordsBuffer, cache.count, x,
-				y, sx, sy, ax, ay, rotation);
-	}
-
-	/**
-	 * 以glDrawArrays方式将所提交的全部纹理及信息渲染为图像
-	 * 
-	 * @param texture
-	 * @param cache
-	 */
-	void glDrawArrays(final LTexture texture, final LTextureBatch.GLCache cache) {
-		glDrawArrays(texture, cache.vertexBuffer, cache.coordsBuffer,
-				cache.colorBuffer, cache.isColor, cache.count, cache.x, cache.y);
-	}
-
-	/**
-	 * 以glDrawArrays方式将所提交的全部纹理及信息渲染为图像
-	 * 
-	 * @param texture
-	 * @param vertexBuffer
-	 * @param coordsBuffer
-	 * @param colorBuffer
-	 * @param indexBuffer
-	 * @param isColor
-	 * @param count
-	 * @param x
-	 * @param y
-	 */
-	void glDrawArrays(final LTexture texture, final FloatBuffer vertexBuffer,
-			final FloatBuffer coordsBuffer, final FloatBuffer colorBuffer,
-			boolean isColor, int count, float x, float y) {
-
-		if (isClose) {
-			return;
-		}
-
-		if (count > 0) {
-			if (!texture.isVisible) {
-				return;
-			}
-			if (!texture.isLoaded) {
-				texture.loadTexture();
-			}
-			if (x != 0 || y != 0) {
-				translate(x, y);
-			}
-			if (isColor) {
-				GL_MODULATE();
-			}
-			glTex2DEnable();
-			{
-				bind(texture.textureID);
-
-				gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
-				gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-
-				gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
-				gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
-
-				if (isColor) {
-					gl10.glEnableClientState(GL.GL_COLOR_ARRAY);
-					gl10.glColorPointer(4, GL.GL_FLOAT, 0, colorBuffer);
-				}
-				gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
-				gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-				gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
-				if (isColor) {
-					gl10.glDisableClientState(GL.GL_COLOR_ARRAY);
-				}
-			}
-			if (x != 0 || y != 0) {
-				translate(-x, -y);
-			}
-			if (isColor) {
-				GL_REPLACE();
-			}
-		}
-	}
-
-	/**
-	 * 以指定纹理为目标，复制一组图像到其上
-	 * 
-	 * @param texture
-	 * @param pix
-	 * @param x
-	 * @param y
-	 * @param remove
-	 * @param check
-	 */
-	public synchronized void copyImageToTexture(LTexture texture, LImage pix,
-			int x, int y) {
-		if (!texture.isVisible) {
-			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
-		glTex2DEnable();
-		{
-			bind(texture.textureID);
-			gl10.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, pix.hasAlpha() ? 4 : 1);
-			android.opengl.GLUtils.texSubImage2D(GL.GL_TEXTURE_2D, 0, x, y,
-					pix.getBitmap());
-		}
-	}
-
 	public static class Clip {
 
 		public int x;
@@ -4010,6 +3780,236 @@ public final class GLEx implements LTrans {
 
 	public final boolean isClose() {
 		return isClose;
+	}
+
+	/**
+	 * 以glQuad方式将所提交的全部纹理及信息渲染为图像
+	 * 
+	 * @param texture
+	 * @param vertexBuffer
+	 * @param coordsBuffer
+	 * @param count
+	 * @param x
+	 * @param y
+	 * @param rotaion
+	 */
+	void glQuad(final LTexture texture, final FloatBuffer vertexBuffer,
+			final FloatBuffer coordsBuffer, int count, float x, float y,
+			float sx, float sy, float ax, float ay, float rotaion) {
+		if (isClose) {
+			return;
+		}
+		if (count > 0) {
+			if (!texture.isVisible) {
+				return;
+			}
+			if (!texture.isLoaded) {
+				texture.loadTexture();
+			}
+
+			int old = getBlendMode();
+
+			setBlendMode(GL.MODE_SPEED);
+
+			glTex2DEnable();
+			{
+				bind(texture.textureID);
+
+				if (sx != 1f || sy != 1f) {
+					save();
+					if (x != 0 || y != 0) {
+						gl10.glTranslatef(x, y, 0);
+					}
+					gl10.glScalef(sx, sy, 0);
+					if (rotaion != 0) {
+						if (ax != 0 || ay != 0) {
+							gl10.glTranslatef(ax, ay, 0.0f);
+							gl10.glRotatef(rotaion, 0f, 0f, 1f);
+							gl10.glTranslatef(-ax, -ay, 0.0f);
+						} else {
+							gl10.glTranslatef(texture.width / 2,
+									texture.height / 2, 0.0f);
+							gl10.glRotatef(rotaion, 0f, 0f, 1f);
+							gl10.glTranslatef(-texture.width / 2,
+									-texture.height / 2, 0.0f);
+						}
+					}
+
+					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
+					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
+					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
+					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
+					restore();
+
+				} else {
+
+					if (x != 0 || y != 0) {
+						gl10.glTranslatef(x, y, 0);
+					}
+					if (rotaion != 0) {
+						if (ax != 0 || ay != 0) {
+							gl10.glTranslatef(ax, ay, 0.0f);
+							gl10.glRotatef(rotaion, 0f, 0f, 1f);
+							gl10.glTranslatef(-ax, -ay, 0.0f);
+						} else {
+							gl10.glTranslatef(texture.width / 2,
+									texture.height / 2, 0.0f);
+							gl10.glRotatef(rotaion, 0f, 0f, 1f);
+							gl10.glTranslatef(-texture.width / 2,
+									-texture.height / 2, 0.0f);
+						}
+					}
+
+					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
+					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
+					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
+					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
+
+					if (rotaion != 0) {
+						if (ax != 0 || ay != 0) {
+							gl10.glTranslatef(ax, ay, 0.0f);
+							gl10.glRotatef(-rotaion, 0f, 0f, 1f);
+							gl10.glTranslatef(-ax, -ay, 0.0f);
+						} else {
+							gl10.glTranslatef(texture.width / 2,
+									texture.height / 2, 0.0f);
+							gl10.glRotatef(-rotaion, 0, 0, 1f);
+							gl10.glTranslatef(-texture.width / 2,
+									-texture.height / 2, 0.0f);
+						}
+					}
+					if (x != 0 || y != 0) {
+						gl10.glTranslatef(-x, -y, 0);
+					}
+				}
+			}
+
+			setBlendMode(old);
+		}
+	}
+
+	/**
+	 * 以glQuad方式将所提交的全部纹理及信息渲染为图像
+	 * 
+	 * @param texture
+	 * @param cache
+	 * @param x
+	 * @param y
+	 * @param rotation
+	 */
+	void glQuad(final LTexture texture, final LTextureBatch.GLCache cache,
+			float x, float y, float sx, float sy, float ax, float ay,
+			float rotation) {
+		glQuad(texture, cache.vertexBuffer, cache.coordsBuffer, cache.count, x,
+				y, sx, sy, ax, ay, rotation);
+	}
+
+	/**
+	 * 以glDrawArrays方式将所提交的全部纹理及信息渲染为图像
+	 * 
+	 * @param texture
+	 * @param cache
+	 */
+	void glDrawArrays(final LTexture texture, final LTextureBatch.GLCache cache) {
+		glDrawArrays(texture, cache.vertexBuffer, cache.coordsBuffer,
+				cache.colorBuffer, cache.isColor, cache.count, cache.x, cache.y);
+	}
+
+	/**
+	 * 以glDrawArrays方式将所提交的全部纹理及信息渲染为图像
+	 * 
+	 * @param texture
+	 * @param vertexBuffer
+	 * @param coordsBuffer
+	 * @param colorBuffer
+	 * @param indexBuffer
+	 * @param isColor
+	 * @param count
+	 * @param x
+	 * @param y
+	 */
+	void glDrawArrays(final LTexture texture, final FloatBuffer vertexBuffer,
+			final FloatBuffer coordsBuffer, final FloatBuffer colorBuffer,
+			boolean isColor, int count, float x, float y) {
+
+		if (isClose) {
+			return;
+		}
+
+		if (count > 0) {
+			if (!texture.isVisible) {
+				return;
+			}
+			if (!texture.isLoaded) {
+				texture.loadTexture();
+			}
+			if (x != 0 || y != 0) {
+				translate(x, y);
+			}
+			if (isColor) {
+				GL_MODULATE();
+			}
+			glTex2DEnable();
+			{
+				bind(texture.textureID);
+
+				gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
+				gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+
+				gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
+				gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
+
+				if (isColor) {
+					gl10.glEnableClientState(GL.GL_COLOR_ARRAY);
+					gl10.glColorPointer(4, GL.GL_FLOAT, 0, colorBuffer);
+				}
+				gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
+				gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+				gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
+				if (isColor) {
+					gl10.glDisableClientState(GL.GL_COLOR_ARRAY);
+				}
+			}
+			if (x != 0 || y != 0) {
+				translate(-x, -y);
+			}
+			if (isColor) {
+				GL_REPLACE();
+			}
+		}
+	}
+
+	/**
+	 * 以指定纹理为目标，复制一组图像到其上
+	 * 
+	 * @param texture
+	 * @param pix
+	 * @param x
+	 * @param y
+	 * @param remove
+	 * @param check
+	 */
+	public synchronized void copyImageToTexture(LTexture texture, LImage pix,
+			int x, int y) {
+		if (!texture.isVisible) {
+			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
+		glTex2DEnable();
+		{
+			bind(texture.textureID);
+			gl10.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, pix.hasAlpha() ? 4 : 1);
+			android.opengl.GLUtils.texSubImage2D(GL.GL_TEXTURE_2D, 0, x, y,
+					pix.getBitmap());
+		}
 	}
 
 	public final void dispose() {

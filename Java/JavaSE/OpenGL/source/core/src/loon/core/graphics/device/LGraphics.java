@@ -35,7 +35,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -53,7 +52,7 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
 
-public class LGraphics extends Graphics2D implements LTrans {
+public class LGraphics implements LTrans {
 
 	final static public double ANGLE_90 = Math.PI / 2;
 
@@ -609,59 +608,8 @@ public class LGraphics extends Graphics2D implements LTrans {
 		g2d.scale(sx, sy);
 	}
 
-	public void shear(double shx, double shy) {
-		g2d.shear(shx, shy);
-	}
 
-	public void transform(AffineTransform Tx) {
-		g2d.transform(Tx);
-	}
-
-	public void setTransform(AffineTransform Tx) {
-		g2d.setTransform(Tx);
-	}
-
-	public AffineTransform getTransform() {
-		return g2d.getTransform();
-	}
-
-	public Paint getPaint() {
-		return g2d.getPaint();
-	}
-
-	public Composite getComposite() {
-		return g2d.getComposite();
-	}
-
-	public void setBackground(Color color) {
-		g2d.setBackground(color);
-	}
-
-	public Color getBackground() {
-		return g2d.getBackground();
-	}
-
-	public Stroke getStroke() {
-		return g2d.getStroke();
-	}
-
-	public void clip(Shape s) {
-		g2d.clip(s);
-	}
-
-	public FontRenderContext getFontRenderContext() {
-		return g2d.getFontRenderContext();
-	}
-
-	public Graphics create() {
-		return g2d.create();
-	}
-
-	public Color getColor() {
-		return g2d.getColor();
-	}
-
-	public LColor getGLColor() {
+	public LColor getColor() {
 		return new LColor(g2d.getColor());
 	}
 

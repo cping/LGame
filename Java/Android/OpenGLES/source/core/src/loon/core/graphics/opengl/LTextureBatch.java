@@ -1,15 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.jni.NativeSupport;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -30,6 +18,18 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+
+import loon.core.LRelease;
+import loon.core.LSystem;
+import loon.core.graphics.LColor;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.jni.NativeSupport;
+import loon.utils.MathUtils;
+
 // 此类专为批量渲染单一纹理而设置（比如处理海量精灵块，地图块等），允许提交缓存中数据到渲染器
 public final class LTextureBatch implements LRelease {
 

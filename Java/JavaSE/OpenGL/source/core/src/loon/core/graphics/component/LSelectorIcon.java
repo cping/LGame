@@ -58,7 +58,7 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public void draw(LGraphics g, int mainX, int mainY) {
-		LColor color = g.getGLColor();
+		LColor color = g.getColor();
 		g.setColor(backgroundColor.getRed(), backgroundColor.getGreen(),
 				backgroundColor.getBlue(), 125);
 		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,

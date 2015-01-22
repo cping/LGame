@@ -20,7 +20,6 @@
  */
 package loon.core.graphics.component.chart;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import loon.core.graphics.LColor;
@@ -248,7 +247,7 @@ public class BarChartCanvas extends ChartBaseCanvas {
 		mCnv.drawPath(mPath, mPntAxis);
 		if (_display != null && _display.message != null
 				&& _display.message.length() > 0) {
-			Color old = mCnv.get().getColor();
+			LColor old = mCnv.get().getColor();
 			mCnv.get().setColor(_display.color);
 			LFont font = mCnv.get().getLFont();
 			mCnv.get().setFont(_display.font);

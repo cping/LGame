@@ -21,15 +21,22 @@
  */
 package loon.core;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Random;
 
+import loon.AndroidFiles;
+import loon.Files;
 import loon.LGame;
 import loon.LGame.Location;
 import loon.core.event.Drawable;
@@ -48,6 +55,19 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 
 public final class LSystem {
+
+	public static Files files = null;
+
+	public static Files files() {
+		if (files == null) {
+			if (screenActivity != null) {
+				screenActivity.getFilesDir();
+				files = new AndroidFiles(screenActivity.getAssets(),
+						screenActivity.getFilesDir().getAbsolutePath());
+			}
+		}
+		return files;
+	}
 
 	public String getLanguage() {
 		return java.util.Locale.getDefault().getDisplayName();
@@ -92,22 +112,90 @@ public final class LSystem {
 		}
 		return false;
 	}
+	
+
+	public static final int DEFAULT_BUFFER_SIZE = 8192;
+	public static final byte[] EMPTY_BYTES = new byte[0];
+
+	public static void copyStream(InputStream input, OutputStream output)
+			throws IOException {
+		copyStream(input, output, DEFAULT_BUFFER_SIZE);
+	}
+
+	public static void copyStream(InputStream input, OutputStream output,
+			int bufferSize) throws IOException {
+		byte[] buffer = new byte[bufferSize];
+		int bytesRead;
+		while ((bytesRead = input.read(buffer)) != -1) {
+			output.write(buffer, 0, bytesRead);
+		}
+	}
+
+	public static byte[] copyStreamToByteArray(InputStream input)
+			throws IOException {
+		return copyStreamToByteArray(input, input.available());
+	}
+
+	public static byte[] copyStreamToByteArray(InputStream input,
+			int estimatedSize) throws IOException {
+		ByteArrayOutputStream baos = new OptimizedByteArrayOutputStream(
+				Math.max(0, estimatedSize));
+		copyStream(input, baos);
+		return baos.toByteArray();
+	}
+
+	public static String copyStreamToString(InputStream input)
+			throws IOException {
+		return copyStreamToString(input, input.available());
+	}
+
+	public static String copyStreamToString(InputStream input,
+			int approxStringLength) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+		StringWriter w = new StringWriter(Math.max(0, approxStringLength));
+		char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+
+		int charsRead;
+		while ((charsRead = reader.read(buffer)) != -1) {
+			w.write(buffer, 0, charsRead);
+		}
+
+		return w.toString();
+	}
+	
+	static public class OptimizedByteArrayOutputStream extends
+			ByteArrayOutputStream {
+		
+		public OptimizedByteArrayOutputStream(int initialSize) {
+			super(initialSize);
+		}
+
+		@Override
+		public synchronized byte[] toByteArray() {
+			if (count == buf.length){
+				return buf;
+			}
+			return super.toByteArray();
+		}
+
+		public byte[] getBuffer() {
+			return buf;
+		}
+	}
+
+	public static void close(Closeable in) {
+		if (in != null)
+			try {
+				in.close();
+			} catch (Exception e) {
+			}
+	}
 
 	public final static void close(LTexture tex2d) {
 		if (tex2d != null) {
 			try {
 				tex2d.destroy();
 				tex2d = null;
-			} catch (Exception e) {
-			}
-		}
-	}
-
-	public final static void close(InputStream in) {
-		if (in != null) {
-			try {
-				in.close();
-				in = null;
 			} catch (Exception e) {
 			}
 		}

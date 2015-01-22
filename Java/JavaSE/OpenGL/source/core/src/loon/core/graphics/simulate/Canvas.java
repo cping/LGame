@@ -412,7 +412,7 @@ public class Canvas {
 		if (paint != null) {
 			this._oldAlpha = (int) (_graphics.getAlpha() * 255);
 			this._oldFont = _graphics.getLFont();
-			this._oldColor = _graphics.getGLColor();
+			this._oldColor = _graphics.getColor();
 
 			this.setAlpha(paint.alpha);
 			this._graphics.setAntiAlias(paint.antiAlias);
