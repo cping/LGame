@@ -16,6 +16,7 @@ public class SpriteRegion extends LTextureRegion {
 	static final int VERTEX_SIZE = 2 + 1 + 2;
 	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
+
 	public static class Animation {
 
 		final LTextureRegion[] keyFrames;
@@ -448,11 +449,11 @@ public class SpriteRegion extends LTextureRegion {
 		return bounds;
 	}
 
-	public void draw(SpriteRegion batch) {
-		// batch.draw(texture, getVertices(), 0, SpriteRegion.SPRITE_SIZE);
+	public void draw(SpriteBatch batch) {
+		batch.draw(texture, getVertices(), 0, SpriteRegion.SPRITE_SIZE);
 	}
 
-	public void draw(SpriteRegion batch, float alpha) {
+	public void draw(SpriteBatch batch, float alpha) {
 		LColor color = getColor();
 		float oldAlpha = color.a;
 		color.a *= alpha;

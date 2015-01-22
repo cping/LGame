@@ -198,7 +198,6 @@ public class PShadowEffect extends LObject implements ISprite {
 				g.setAlpha(alpha);
 			}
 			if (!isComplete() && isDirty) {
-				g.copyImageToTexture(texture, image, 0, 0);
 				g.drawTexture(texture, x, y, width, height);
 				isDirty = false;
 			} else if (!isComplete()) {

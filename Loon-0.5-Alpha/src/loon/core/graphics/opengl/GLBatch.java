@@ -70,25 +70,29 @@ public class GLBatch {
 		Array<VertexAttribute> attribs = new Array<VertexAttribute>();
 		attribs.add(new VertexAttribute(Usage.Position, 3,
 				ShaderProgram.POSITION_ATTRIBUTE));
-		if (hasNormals)
+		if (hasNormals){
 			attribs.add(new VertexAttribute(Usage.Normal, 3,
 					ShaderProgram.NORMAL_ATTRIBUTE));
-		if (hasColor)
+		}
+		if (hasColor){
 			attribs.add(new VertexAttribute(Usage.ColorPacked, 4,
 					ShaderProgram.COLOR_ATTRIBUTE));
+		}
 		for (int i = 0; i < numTexCoords; i++) {
 			attribs.add(new VertexAttribute(Usage.TextureCoordinates, 2,
 					ShaderProgram.TEXCOORD_ATTRIBUTE + i));
 		}
 		VertexAttribute[] array = new VertexAttribute[attribs.size()];
-		for (int i = 0; i < attribs.size(); i++)
+		for (int i = 0; i < attribs.size(); i++){
 			array[i] = attribs.get(i);
+		}
 		return array;
 	}
 
 	public void setShader(ShaderProgram shader) {
-		if (ownsShader)
+		if (ownsShader){
 			this.shader.dispose();
+		}
 		this.shader = shader;
 		ownsShader = false;
 	}
@@ -132,12 +136,14 @@ public class GLBatch {
 	}
 
 	public void flush() {
-		if (numVertices == 0)
+		if (numVertices == 0){
 			return;
+		}
 		shader.begin();
 		shader.setUniformMatrix("u_projModelView", projModelView);
-		for (int i = 0; i < numTexCoords; i++)
+		for (int i = 0; i < numTexCoords; i++){
 			shader.setUniformi(shaderUniformNames[i], i);
+		}
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.render(shader, primitiveType);
 		shader.end();

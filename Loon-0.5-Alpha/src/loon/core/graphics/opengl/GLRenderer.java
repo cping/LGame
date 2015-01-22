@@ -105,9 +105,10 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void begin() {
-		if (!autoShapeType)
+		if (!autoShapeType){
 			throw new IllegalStateException(
 					"autoShapeType must be true to use this method.");
+		}
 		begin(ShapeType.Line);
 	}
 

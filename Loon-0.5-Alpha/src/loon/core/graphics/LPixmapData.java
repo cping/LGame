@@ -144,7 +144,7 @@ public class LPixmapData {
 		}
 		synchronized (texture) {
 			if (isDirty) {
-				g.copyImageToTexture(texture, buffer, 0, 0);
+			//	g.copyImageToTexture(texture, buffer, 0, 0);
 				g.drawTexture(texture, x, y, w, h);
 				isDirty = false;
 			} else {

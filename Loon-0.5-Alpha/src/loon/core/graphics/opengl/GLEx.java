@@ -49,66 +49,9 @@ public final class GLEx implements LTrans {
 	}
 
 	public static int height() {
-		return LSystem.screenRect.width;
+		return LSystem.screenRect.height;
 	}
 
-	/**
-	 * 以glQuad方式将所提交的全部纹理及信息渲染为图像
-	 * 
-	 * @param texture
-	 * @param vertexBuffer
-	 * @param coordsBuffer
-	 * @param count
-	 * @param x
-	 * @param y
-	 * @param rotaion
-	 */
-	void glQuad(final LTexture texture, final FloatBuffer vertexBuffer,
-			final FloatBuffer coordsBuffer, int count, float x, float y,
-			float sx, float sy, float ax, float ay, float rotaion) {
-
-	}
-
-	/**
-	 * 以glDrawArrays方式将所提交的全部纹理及信息渲染为图像
-	 * 
-	 * @param texture
-	 * @param vertexBuffer
-	 * @param coordsBuffer
-	 * @param colorBuffer
-	 * @param indexBuffer
-	 * @param isColor
-	 * @param count
-	 * @param x
-	 * @param y
-	 */
-	void glDrawArrays(final LTexture texture, final FloatBuffer vertexBuffer,
-			final FloatBuffer coordsBuffer, final FloatBuffer colorBuffer,
-			boolean isColor, int count, float x, float y) {
-
-	}
-
-	/**
-	 * 以指定纹理为目标，复制一组图像到其上
-	 * 
-	 * @param texture
-	 * @param pix
-	 * @param x
-	 * @param y
-	 * @param remove
-	 * @param check
-	 */
-	public void copyImageToTexture(LTexture texture, LImage pix, int x, int y) {
-		bind(texture);
-		glTex2DEnable();
-		{
-			bind(texture.textureID);
-			gl20.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, pix.hasAlpha() ? 4 : 1);
-			gl20.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, x, y, pix.getWidth(),
-					pix.getHeight(), pix.hasAlpha() ? GL.GL_RGBA : GL.GL_RGB,
-					GL.GL_UNSIGNED_BYTE, pix.getByteBuffer());
-		}
-	}
 
 	public static class Clip {
 
