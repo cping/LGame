@@ -20,8 +20,7 @@
  */
 package loon.utils.debugging;
 
-import loon.utils.FileUtils;
-
+import loon.core.LSystem;
 
 final public class Log {
 
@@ -52,7 +51,7 @@ final public class Log {
 	}
 
 	Log(Class<?> clazz) {
-		this(FileUtils.getExtension(clazz.getName()), 0);
+		this(LSystem.getExtension(clazz.getName()), 0);
 	}
 
 	Log(String app, int type) {

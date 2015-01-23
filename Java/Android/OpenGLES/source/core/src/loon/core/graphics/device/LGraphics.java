@@ -34,6 +34,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -169,7 +170,6 @@ public final class LGraphics implements LTrans {
 		}
 		canvas.save();
 	}
-
 
 	/**
 	 * 创建一个新的 LGraphics对象，它是当前LGraphics对象的克隆
@@ -1538,15 +1538,6 @@ public final class LGraphics implements LTrans {
 		clip = canvas.getClipBounds();
 	}
 
-	public void shear(double shx, double shy) {
-		if (isClose) {
-			return;
-		}
-		tmp_matrix.reset();
-		tmp_matrix.setSkew((float) shx, (float) shy);
-		canvas.concat(tmp_matrix);
-	}
-
 	public void setStrokeStyle(int style) {
 		if (isClose) {
 			return;
@@ -1653,20 +1644,19 @@ public final class LGraphics implements LTrans {
 		canvas.drawRoundRect(rectF, arcWidth, arcHeight, paint);
 	}
 
-	public Canvas getCanvas() {
-		return canvas;
+	public void fill(loon.core.graphics.device.Path p) {
+		Style style = paint.getStyle();
+		paint.setStyle(Style.FILL);
+		canvas.drawPath(p.path2D, paint);
+		paint.setStyle(style);
 	}
 
-	public Paint getPaint() {
-		return paint;
+	public void draw(loon.core.graphics.device.Path p) {
+		canvas.drawPath(p.path2D, paint);
 	}
 
-	public Rect getClip() {
-		return clip;
-	}
-
-	public void setPaint(Paint paint) {
-		this.paint = paint;
+	public void setClip(loon.core.graphics.device.Path p) {
+		canvas.clipPath(p.path2D);
 	}
 
 	public void setBitmap(Bitmap bit) {

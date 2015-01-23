@@ -40,7 +40,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.jni.NativeSupport;
-import loon.utils.FileUtils;
 import loon.utils.StringUtils;
 
 public class LImage implements LRelease {
@@ -248,7 +247,7 @@ public class LImage implements LRelease {
 		if (fileName == null) {
 			return false;
 		}
-		return _otherImages.contains(FileUtils.getExtension(fileName
+		return _otherImages.contains(LSystem.getExtension(fileName
 				.toLowerCase()));
 	}
 
@@ -265,7 +264,7 @@ public class LImage implements LRelease {
 		this.fileName = fileName;
 		BufferedImage img = null;
 		if (existType(fileName)) {
-			String ext = FileUtils.getExtension(fileName.toLowerCase());
+			String ext = LSystem.getExtension(fileName.toLowerCase());
 			if ("tga".equals(ext)) {
 				try {
 					TGA.State tga = TGA.load(res);

@@ -23,12 +23,12 @@ package loon.core.graphics.component.chart;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
+import loon.core.graphics.device.Align;
+import loon.core.graphics.device.Bitmap;
+import loon.core.graphics.device.Canvas;
 import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.simulate.Align;
-import loon.core.graphics.simulate.Bitmap;
-import loon.core.graphics.simulate.Canvas;
-import loon.core.graphics.simulate.Paint;
-import loon.core.graphics.simulate.Path;
+import loon.core.graphics.device.Paint;
+import loon.core.graphics.device.Path;
 
 public class ChartBaseCanvas {
 

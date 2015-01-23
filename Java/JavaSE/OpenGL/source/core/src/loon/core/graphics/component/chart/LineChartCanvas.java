@@ -22,10 +22,10 @@ package loon.core.graphics.component.chart;
 
 import java.util.ArrayList;
 
-import loon.core.graphics.simulate.Align;
-import loon.core.graphics.simulate.Bitmap;
-import loon.core.graphics.simulate.Canvas;
-import loon.core.graphics.simulate.Paint;
+import loon.core.graphics.device.Align;
+import loon.core.graphics.device.Bitmap;
+import loon.core.graphics.device.Canvas;
+import loon.core.graphics.device.Paint;
 
 public class LineChartCanvas extends ChartBaseCanvas {
 

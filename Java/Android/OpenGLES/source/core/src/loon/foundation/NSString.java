@@ -17,7 +17,7 @@ package loon.foundation;
 
 import java.io.UnsupportedEncodingException;
 
-import loon.utils.FileUtils;
+import loon.core.LSystem;
 
 public class NSString extends NSObject {
 
@@ -113,7 +113,7 @@ public class NSString extends NSObject {
 	}
 
 	public String pathExtension() {
-		return FileUtils.getExtension(content);
+		return LSystem.getExtension(content);
 	}
 
 	public String lastPathComponent() {

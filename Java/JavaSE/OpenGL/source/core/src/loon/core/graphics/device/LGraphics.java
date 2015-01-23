@@ -21,30 +21,21 @@
 package loon.core.graphics.device;
 
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.Image;
-import java.awt.Paint;
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.Stroke;
+
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
-import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.VolatileImage;
 import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
-import java.util.Map;
 
 import loon.core.geom.Triangle2f;
 import loon.core.graphics.GraphicsUtils;
@@ -354,14 +345,18 @@ public class LGraphics implements LTrans {
 		g2d.drawGlyphVector(g, x, y);
 	}
 
-	public void fill(Shape s) {
-		g2d.fill(s);
+	public void fill(Path p) {
+		g2d.fill(p.path2D);
 	}
 
-	public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
-		return g2d.hit(rect, s, onStroke);
+	public void draw(Path p) {
+		g2d.draw(p.path2D);
 	}
-
+	
+	public void setClip(Path p) {
+		g2d.setClip(p.path2D);
+	}
+	
 	public void drawRegion(LImage src, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor) {
 		Image img = src.getBufferedImage();
@@ -552,41 +547,6 @@ public class LGraphics implements LTrans {
 		}
 	}
 
-	public GraphicsConfiguration getDeviceConfiguration() {
-		return g2d.getDeviceConfiguration();
-	}
-
-	public void setComposite(Composite comp) {
-		g2d.setComposite(comp);
-	}
-
-	public void setPaint(Paint paint) {
-		g2d.setPaint(paint);
-	}
-
-	public void setStroke(Stroke s) {
-		g2d.setStroke(s);
-	}
-
-	public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
-		g2d.setRenderingHint(hintKey, hintValue);
-	}
-
-	public Object getRenderingHint(RenderingHints.Key hintKey) {
-		return g2d.getRenderingHint(hintKey);
-	}
-
-	public void setRenderingHints(Map<?, ?> hints) {
-		g2d.setRenderingHints(hints);
-	}
-
-	public void addRenderingHints(Map<?, ?> hints) {
-		g2d.addRenderingHints(hints);
-	}
-
-	public RenderingHints getRenderingHints() {
-		return g2d.getRenderingHints();
-	}
 
 	public void translate(int x, int y) {
 		g2d.translate(x, y);
@@ -722,13 +682,6 @@ public class LGraphics implements LTrans {
 		g2d.setClip(x, y, width, height);
 	}
 
-	public Shape getClip() {
-		return g2d.getClip();
-	}
-
-	public void setClip(Shape clip) {
-		g2d.setClip(clip);
-	}
 
 	public void copyArea(int x, int y, int width, int height, int dx, int dy) {
 		g2d.copyArea(x, y, width, height, dx, dy);
@@ -953,42 +906,6 @@ public class LGraphics implements LTrans {
 				bgcolor, null);
 	}
 
-	public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-		return g2d.drawImage(img, x, y, observer);
-	}
-
-	public boolean drawImage(Image img, int x, int y, int width, int height,
-			ImageObserver observer) {
-		return g2d.drawImage(img, x, y, width, height, observer);
-	}
-
-	public boolean drawImage(Image img, int x, int y, Color bgcolor,
-			ImageObserver observer) {
-		return g2d.drawImage(img, x, y, bgcolor, observer);
-	}
-
-	public boolean drawImage(Image img, int x, int y, int width, int height,
-			Color bgcolor, ImageObserver observer) {
-		return g2d.drawImage(img, x, y, width, height, bgcolor, observer);
-	}
-
-	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2,
-			int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
-		return g2d.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-				observer);
-	}
-
-	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2,
-			int sx1, int sy1, int sx2, int sy2, Color bgcolor,
-			ImageObserver observer) {
-		return g2d.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-				bgcolor, observer);
-	}
-
-	public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
-		return g2d.drawImage(img, xform, obs);
-	}
-
 	public int getStrokeStyle() {
 		return strokeStyle;
 	}
@@ -1000,16 +917,6 @@ public class LGraphics implements LTrans {
 		this.strokeStyle = style;
 	}
 
-	public void setGradientPaint(int x1, int y1, Color c1, int x2, int y2,
-			Color c2) {
-		this.g2d.setPaint(new GradientPaint((float) x1, (float) y1, c1,
-				(float) x2, (float) y2, c2, true));
-	}
-
-	public void draw(Shape s) {
-		g2d.draw(s);
-	}
-
 	public void drawChars(char[] chars, int ofs, int len, int x, int y,
 			int align) {
 		drawString(new String(chars, ofs, len), x, y, align);
@@ -1019,9 +926,6 @@ public class LGraphics implements LTrans {
 		g2d.drawRect(x, y, width, height);
 	}
 
-	public Graphics getGraphics() {
-		return g2d;
-	}
 
 	public void dispose() {
 		g2d.dispose();

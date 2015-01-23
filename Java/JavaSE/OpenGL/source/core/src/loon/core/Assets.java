@@ -30,7 +30,6 @@ import loon.core.resource.Resources;
 import loon.media.Audio;
 import loon.media.Sound;
 import loon.utils.CollectionUtils;
-import loon.utils.FileUtils;
 
 //0.3.3版新增的单例资源加载器，默认只有同步加载，建议使用时与多线程配合(比如丢到Screen的onLoad函数下，效果上就等于异步了)。
 public class Assets {
@@ -96,7 +95,7 @@ public class Assets {
 			_audio = new Audio();
 		}
 		Exception err = null;
-		String ext = FileUtils.getExtension(path);
+		String ext = LSystem.getExtension(path);
 		if (ext == null || ext.length() == 0) {
 			for (String suff : SUFFIXES) {
 				final String soundPath = path + suff;

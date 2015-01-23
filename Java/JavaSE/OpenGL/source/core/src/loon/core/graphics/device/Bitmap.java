@@ -18,10 +18,9 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.4.2
  */
-package loon.core.graphics.simulate;
+package loon.core.graphics.device;
 
 import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
 
 public class Bitmap {
 

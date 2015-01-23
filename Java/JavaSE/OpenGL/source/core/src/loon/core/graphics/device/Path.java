@@ -18,14 +18,16 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.4.2
  */
-package loon.core.graphics.simulate;
+package loon.core.graphics.device;
+
+import java.awt.geom.Path2D;
 
 public class Path {
 
-	android.graphics.Path path2D;
+	Path2D path2D;
 
 	public Path() {
-		this.path2D = new android.graphics.Path();
+		this.path2D = new Path2D.Float();
 	}
 
 	public Path(Path p) {
@@ -33,7 +35,7 @@ public class Path {
 	}
 
 	public void close() {
-		this.path2D.close();
+		this.path2D.closePath();
 	}
 
 	public void clear() {

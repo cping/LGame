@@ -24,10 +24,10 @@ import java.util.ArrayList;
 
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
-import loon.core.graphics.simulate.Align;
-import loon.core.graphics.simulate.Canvas;
-import loon.core.graphics.simulate.Paint;
-import loon.core.graphics.simulate.RectF;
+import loon.core.graphics.device.Align;
+import loon.core.graphics.device.Canvas;
+import loon.core.graphics.device.Paint;
+import loon.core.graphics.device.RectF;
 
 
 public class BarChartCanvas extends ChartBaseCanvas {

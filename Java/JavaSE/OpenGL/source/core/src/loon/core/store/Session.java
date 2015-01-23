@@ -3,6 +3,7 @@ package loon.core.store;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,7 +12,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import loon.core.LRelease;
-import loon.utils.FileUtils;
 import loon.utils.StringUtils;
 
 /**
@@ -154,9 +154,28 @@ public class Session implements LRelease {
 		this(name, true);
 	}
 
+	private static void makedirs(File file) throws IOException {
+		checkFile(file);
+		File parentFile = file.getParentFile();
+		if (parentFile != null) {
+			if (!parentFile.exists() && !parentFile.mkdirs()) {
+				throw new IOException("Creating directories "
+						+ parentFile.getPath() + " failed.");
+			}
+		}
+	}
+	
+	private static void checkFile(File file) throws IOException {
+		boolean exists = file.exists();
+		if (exists && !file.isFile()) {
+			throw new IOException("File " + file.getPath()
+					+ " is actually not a file.");
+		}
+	}
+	
 	private void makeProperties(Properties _properties) {
 		try {
-			FileUtils.makedirs(_tempFile);
+			makedirs(_tempFile);
 			_properties.store(new FileOutputStream(_tempFile), null);
 			isPersisted = true;
 		} catch (Exception e) {

@@ -22,10 +22,10 @@ package loon.core.graphics.component.chart;
 
 import java.util.ArrayList;
 
-import loon.core.graphics.simulate.Align;
-import loon.core.graphics.simulate.Canvas;
-import loon.core.graphics.simulate.Paint;
-import loon.core.graphics.simulate.Path;
+import loon.core.graphics.device.Align;
+import loon.core.graphics.device.Canvas;
+import loon.core.graphics.device.Paint;
+import loon.core.graphics.device.Path;
 
 public class StackedLineChartCanvas extends ChartBaseCanvas {
 

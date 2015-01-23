@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.4.2
  */
-package loon.core.graphics.simulate;
+package loon.core.graphics.device;
 
 import java.io.IOException;
 import java.io.InputStream;

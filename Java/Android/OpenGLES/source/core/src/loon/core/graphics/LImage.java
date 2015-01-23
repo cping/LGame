@@ -35,7 +35,6 @@ import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.FileUtils;
 import loon.utils.StringUtils;
 
 import android.graphics.Bitmap;
@@ -271,7 +270,7 @@ public class LImage implements LRelease {
 		if (fileName == null) {
 			return false;
 		}
-		return _otherImages.contains(FileUtils.getExtension(fileName
+		return _otherImages.contains(LSystem.getExtension(fileName
 				.toLowerCase()));
 	}
 
@@ -288,7 +287,7 @@ public class LImage implements LRelease {
 		this.fileName = fileName;
 		Bitmap bitmap = null;
 		if (existType(fileName)) {
-			String ext = FileUtils.getExtension(fileName.toLowerCase());
+			String ext = LSystem.getExtension(fileName.toLowerCase());
 			if ("tga".equals(ext)) {
 				try {
 					TGA.State tga = TGA.load(res);

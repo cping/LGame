@@ -69,6 +69,31 @@ public final class LSystem {
 		return files;
 	}
 
+	public static String getFileName(String name) {
+		if (name == null) {
+			return "";
+		}
+		int length = name.length();
+		int size = name.lastIndexOf(LSystem.FS) + 1;
+		if (size < length) {
+			return name.substring(size, length);
+		} else {
+			return "";
+		}
+	}
+
+	public static String getExtension(String name) {
+		if (name == null) {
+			return "";
+		}
+		int index = name.lastIndexOf(".");
+		if (index == -1) {
+			return "";
+		} else {
+			return name.substring(index + 1);
+		}
+	}
+
 	public String getLanguage() {
 		return java.util.Locale.getDefault().getDisplayName();
 	}

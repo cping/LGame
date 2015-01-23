@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.4.2
  */
-package loon.core.graphics.simulate;
+package loon.core.graphics.device;
 
 public class RectF {
 	public RectF(float l, float t, float r, float b) {

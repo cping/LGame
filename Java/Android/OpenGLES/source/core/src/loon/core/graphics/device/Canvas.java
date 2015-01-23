@@ -18,13 +18,12 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.4.2
  */
-package loon.core.graphics.simulate;
+package loon.core.graphics.device;
 
 import loon.core.geom.Dimension;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
 
 public class Canvas {
 
@@ -161,9 +160,6 @@ public class Canvas {
 		return this._bufferedImage != null ? this._bufferedImage.getWidth() : 0;
 	}
 
-	public void resetClip() {
-		this._graphics.setClip(null);
-	}
 
 	public void setBitmap(Bitmap bitmap) {
 		if (bitmap == null) {
@@ -367,17 +363,17 @@ public class Canvas {
 			if (_isFillAlpha) {
 				this._graphics.setAlpha(0.5f);
 			}
-			_graphics.fill(path.path2D);
+			_graphics.fill(path);
 			if (_isFillAlpha) {
 				this._graphics.setAlpha(1.0f);
 			}
 			return;
 		case Paint.Style.STROKE:
-			_graphics.draw(path.path2D);
+			_graphics.draw(path);
 			return;
 		case Paint.Style.FILL_AND_STROKE:
-			_graphics.fill(path.path2D);
-			_graphics.draw(path.path2D);
+			_graphics.fill(path);
+			_graphics.draw(path);
 			return;
 		default:
 			break;
