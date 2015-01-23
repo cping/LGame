@@ -28,7 +28,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import loon.core.geom.Matrix;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LImage;
 
 public class D3DMaterial {
 	public ByteBuffer mTextureData;

@@ -20,13 +20,13 @@
  */
 package loon.core.graphics.component;
 
+import loon.AndroidInputFactory.Touch;
 import loon.core.LSystem;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexturePack;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LInputFactory.Touch;
 import loon.utils.MathUtils;
 
 

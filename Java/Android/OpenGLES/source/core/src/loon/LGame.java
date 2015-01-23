@@ -24,15 +24,15 @@ package loon;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 
+import loon.LInput.ClickEvent;
+import loon.LInput.SelectEvent;
+import loon.LInput.TextEvent;
 import loon.LSetting.Listener;
 import loon.core.EmulatorListener;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInput.ClickEvent;
-import loon.core.input.LInput.SelectEvent;
-import loon.core.input.LInput.TextEvent;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -181,7 +181,7 @@ public abstract class LGame extends Activity {
 
 	private int orientation;
 
-	private LGameView gameView;
+	private AndroidView gameView;
 
 	private FrameLayout frameLayout;
 
@@ -271,7 +271,7 @@ public abstract class LGame extends Activity {
 				LSystem.MAX_SCREEN_WIDTH = tmp_height;
 			}
 		}
-		this.gameView = new LGameView(LGame.this, mode, fullScreen, landscape);
+		this.gameView = new AndroidView(LGame.this, mode, fullScreen, landscape);
 		if (mode == LMode.Defalut) {
 			// 添加游戏View，显示为指定大小，并居中
 			this.addView(gameView.getView(), gameView.getWidth(),
@@ -324,9 +324,9 @@ public abstract class LGame extends Activity {
 		if (listener == null) {
 			return;
 		}
-		final LGameTools.ClickAndroid OK = new LGameTools.ClickAndroid(
+		final AndroidViewTools.ClickAndroid OK = new AndroidViewTools.ClickAndroid(
 				listener, 0);
-		final LGameTools.ClickAndroid CANCEL = new LGameTools.ClickAndroid(
+		final AndroidViewTools.ClickAndroid CANCEL = new AndroidViewTools.ClickAndroid(
 				listener, 1);
 		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
 				LGame.this);
@@ -354,11 +354,11 @@ public abstract class LGame extends Activity {
 		if (listener == null) {
 			return;
 		}
-		final LGameTools.ClickAndroid OK = new LGameTools.ClickAndroid(
+		final AndroidViewTools.ClickAndroid OK = new AndroidViewTools.ClickAndroid(
 				listener, 0);
-		final LGameTools.ClickAndroid CANCEL = new LGameTools.ClickAndroid(
+		final AndroidViewTools.ClickAndroid CANCEL = new AndroidViewTools.ClickAndroid(
 				listener, 1);
-		final LGameTools.Web web = new LGameTools.Web(LGame.this, url);
+		final AndroidViewTools.Web web = new AndroidViewTools.Web(LGame.this, url);
 		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
 				LGame.this);
 		builder.setCancelable(true);
@@ -380,9 +380,9 @@ public abstract class LGame extends Activity {
 		if (listener == null) {
 			return;
 		}
-		final LGameTools.ClickAndroid ITEM = new LGameTools.ClickAndroid(
+		final AndroidViewTools.ClickAndroid ITEM = new AndroidViewTools.ClickAndroid(
 				listener, 0);
-		final LGameTools.ClickAndroid CANCEL = new LGameTools.ClickAndroid(
+		final AndroidViewTools.ClickAndroid CANCEL = new AndroidViewTools.ClickAndroid(
 				listener, 1);
 		final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
 				LGame.this);
@@ -419,11 +419,11 @@ public abstract class LGame extends Activity {
 		builder.show();
 	}
 
-	public boolean isGamePadBackExit() {
+	protected boolean isGamePadBackExit() {
 		return !LSystem.isBackLocked;
 	}
 
-	public void setGamePadBackExit(boolean flag) {
+	protected void setGamePadBackExit(boolean flag) {
 		LSystem.isBackLocked = !flag;
 	}
 
@@ -724,7 +724,7 @@ public abstract class LGame extends Activity {
 		return new RectBox(dm.xdpi, dm.ydpi, dm.widthPixels, dm.heightPixels);
 	}
 
-	public LGameView gameView() {
+	public AndroidView gameView() {
 		return gameView;
 	}
 
@@ -796,8 +796,8 @@ public abstract class LGame extends Activity {
 			gameView.destroy();
 		}
 		if (gameView != null && gameView.getView() != null) {
-			if (gameView.getView() instanceof GLSurfaceViewCupcake) {
-				((GLSurfaceViewCupcake) gameView.getView()).onPause();
+			if (gameView.getView() instanceof AndroidGLSurfaceViewCupcake) {
+				((AndroidGLSurfaceViewCupcake) gameView.getView()).onPause();
 			}
 		}
 		super.onPause();
@@ -814,8 +814,8 @@ public abstract class LGame extends Activity {
 		gameView.resume();
 		onGameResumed();
 		if (gameView != null && gameView.getView() != null) {
-			if (gameView.getView() instanceof GLSurfaceViewCupcake) {
-				((GLSurfaceViewCupcake) gameView.getView()).onResume();
+			if (gameView.getView() instanceof AndroidGLSurfaceViewCupcake) {
+				((AndroidGLSurfaceViewCupcake) gameView.getView()).onResume();
 			}
 		}
 		super.onResume();

@@ -20,9 +20,9 @@
  */
 package loon.core.event;
 
+import loon.LKey;
+import loon.LTouch;
 import loon.core.graphics.opengl.GLEx;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
 
 public interface ScreenListener {
 	

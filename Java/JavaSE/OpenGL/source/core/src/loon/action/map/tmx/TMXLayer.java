@@ -29,7 +29,7 @@ import java.util.zip.GZIPInputStream;
 
 import loon.core.LRelease;
 import loon.core.LSystem;
-import loon.core.graphics.LLight;
+import loon.core.graphics.device.LLight;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLUtils;
 import loon.core.graphics.opengl.LTexture;

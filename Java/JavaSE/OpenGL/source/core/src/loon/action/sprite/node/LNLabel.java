@@ -22,7 +22,7 @@ package loon.action.sprite.node;
 
 import loon.action.sprite.SpriteBatch;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LFont;
 import loon.utils.MathUtils;
 
 public class LNLabel extends LNNode {

@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import java.util.LinkedList;
 
+import loon.LTouch;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
@@ -29,7 +30,6 @@ import loon.action.map.TileMap;
 import loon.core.LSystem;
 import loon.core.geom.ShapeUtils;
 import loon.core.geom.Vector2f;
-import loon.core.input.LTouch;
 import loon.core.timer.LTimer;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;

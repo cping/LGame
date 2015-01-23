@@ -1,5 +1,3 @@
-package loon.core;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -20,6 +18,8 @@ package loon.core;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core;
+
 public interface EmulatorListener {
 
 	public void onUpClick();

@@ -6,9 +6,9 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LImage;
+import loon.AndroidGraphicsUtils;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
 
@@ -263,7 +263,7 @@ public final class GLLoader extends LTextureData {
 				data.multipyAlpha = isPNGExt(data.fileName);
 			}
 			PixelFormat format = PixelFormat.getPixelFormat(data.config);
-			android.graphics.Bitmap temp = GraphicsUtils.loadBitmap(
+			android.graphics.Bitmap temp = AndroidGraphicsUtils.loadBitmap(
 					data.fileName, data.config);
 			LImage texImage = new LImage(data.texWidth, data.texHeight,
 					data.config);
@@ -393,7 +393,7 @@ public final class GLLoader extends LTextureData {
 	 * @return
 	 */
 	public static int[] getFixPixels(android.graphics.Bitmap bitmap) {
-		final int[] rgba = GraphicsUtils.getPixels(bitmap);
+		final int[] rgba = AndroidGraphicsUtils.getPixels(bitmap);
 		PixelFormat format = PixelFormat.getPixelFormat(bitmap.getConfig());
 		switch (format) {
 		case RGBA_8888:

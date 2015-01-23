@@ -25,6 +25,8 @@ package loon.core.graphics.opengl;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import loon.JavaSEGL10;
+import loon.JavaSEGL11;
 import loon.core.LSystem;
 import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
@@ -33,10 +35,10 @@ import loon.core.geom.Shape;
 import loon.core.geom.Triangle;
 import loon.core.geom.Triangle2f;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LTrans;
 import loon.jni.NativeSupport;
 import loon.utils.MathUtils;
@@ -123,7 +125,7 @@ public final class GLEx implements LTrans {
 
 	boolean onAlpha;
 
-	static int verMajor, verMinor;
+	public static int verMajor, verMinor;
 
 	private LColor color = new LColor(LColor.white);
 
@@ -143,11 +145,11 @@ public final class GLEx implements LTrans {
 		verMajor = Integer.parseInt("" + version.charAt(0));
 		verMinor = Integer.parseInt("" + version.charAt(2));
 		if (verMajor == 1 && verMinor < 5) {
-			GLEx.gl10 = new LWjglGL10();
+			GLEx.gl10 = new JavaSEGL10();
 			setVbo(false);
 			setVBOSupported(false);
 		} else {
-			GLEx.gl11 = new LWjglGL11();
+			GLEx.gl11 = new JavaSEGL11();
 			GLEx.gl10 = GLEx.gl11;
 		}
 		GLEx.gl = gl10;

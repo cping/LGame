@@ -24,17 +24,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import loon.LInput;
+import loon.LTouch;
+import loon.AndroidInputFactory.Key;
+import loon.AndroidInputFactory.Touch;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.input.LInput;
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LInputFactory.Touch;
-import loon.core.input.LTouch;
+import loon.core.graphics.device.LColor;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 

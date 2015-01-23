@@ -8,7 +8,7 @@ import loon.core.geom.Path;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;

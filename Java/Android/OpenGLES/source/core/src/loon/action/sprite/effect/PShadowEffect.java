@@ -1,12 +1,12 @@
 package loon.action.sprite.effect;
 
+import loon.AndroidGraphicsUtils;
 import loon.action.sprite.ISprite;
 import loon.core.LObject;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;
@@ -67,7 +67,7 @@ public class PShadowEffect extends LObject implements ISprite {
 	private int pixelSkip = 8;
 
 	public PShadowEffect(String fileName) {
-		this(GraphicsUtils.loadBitmap(fileName, Config.RGB_565));
+		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565));
 	}
 
 	public PShadowEffect(Bitmap img) {
@@ -75,7 +75,7 @@ public class PShadowEffect extends LObject implements ISprite {
 	}
 
 	public PShadowEffect(String fileName, String backFile) {
-		this(GraphicsUtils.loadBitmap(fileName, Config.RGB_565), GraphicsUtils
+		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), AndroidGraphicsUtils
 				.loadBitmap(backFile, Config.RGB_565), 0, 0,
 				LSystem.screenRect.width, LSystem.screenRect.height);
 	}
@@ -85,7 +85,7 @@ public class PShadowEffect extends LObject implements ISprite {
 	}
 
 	public PShadowEffect(String fileName, int x, int y, int w, int h) {
-		this(GraphicsUtils.loadBitmap(fileName, Config.RGB_565), null, x, y, w,
+		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), null, x, y, w,
 				h);
 	}
 
@@ -95,13 +95,13 @@ public class PShadowEffect extends LObject implements ISprite {
 
 	public PShadowEffect(String fileName, String bacFile, int x, int y, int w,
 			int h) {
-		this(GraphicsUtils.loadBitmap(fileName, Config.RGB_565), GraphicsUtils
+		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), AndroidGraphicsUtils
 				.loadBitmap(bacFile, Config.RGB_565), x, y, w, h);
 	}
 
 	public PShadowEffect(String fileName, Bitmap back, int x, int y, int w,
 			int h) {
-		this(GraphicsUtils.loadBitmap(fileName, Config.RGB_565), back, x, y, w,
+		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), back, x, y, w,
 				h);
 	}
 
@@ -133,28 +133,28 @@ public class PShadowEffect extends LObject implements ISprite {
 			this.scaleHeight = height / 2;
 		}
 		if (back == null) {
-			temp = GraphicsUtils.getResize(img, scaleWidth, scaleHeight, false);
+			temp = AndroidGraphicsUtils.getResize(img, scaleWidth, scaleHeight, false);
 			this.texture = new LTexture(scaleWidth, scaleHeight, true);
 			this.image = new LImage(scaleWidth, scaleHeight, true);
-			this.finalDrawPixels = GraphicsUtils.getPixels(temp);
+			this.finalDrawPixels = AndroidGraphicsUtils.getPixels(temp);
 			this.nowDrawPixels = CollectionUtils.copyOf(finalDrawPixels);
 			if (temp != null) {
 				temp.recycle();
 				temp = null;
 			}
 		} else {
-			temp = GraphicsUtils.getResize(img, scaleWidth, scaleHeight, false);
+			temp = AndroidGraphicsUtils.getResize(img, scaleWidth, scaleHeight, false);
 			this.texture = new LTexture(scaleWidth, scaleHeight, true);
 			this.image = new LImage(scaleWidth, scaleHeight, true);
 			if (back.getWidth() == scaleWidth
 					&& back.getHeight() == scaleHeight) {
-				this.finalBackgroundPixels = GraphicsUtils.getPixels(back);
+				this.finalBackgroundPixels = AndroidGraphicsUtils.getPixels(back);
 				this.backgroundPixels = CollectionUtils
 						.copyOf(finalBackgroundPixels);
 			} else {
-				Bitmap tmp = GraphicsUtils.getResize(back, scaleWidth,
+				Bitmap tmp = AndroidGraphicsUtils.getResize(back, scaleWidth,
 						scaleHeight, true);
-				this.finalBackgroundPixels = GraphicsUtils.getPixels(tmp);
+				this.finalBackgroundPixels = AndroidGraphicsUtils.getPixels(tmp);
 				if (tmp != null) {
 					tmp.recycle();
 					tmp = null;
@@ -162,7 +162,7 @@ public class PShadowEffect extends LObject implements ISprite {
 				this.backgroundPixels = CollectionUtils
 						.copyOf(finalBackgroundPixels);
 			}
-			this.finalDrawPixels = GraphicsUtils.getPixels(temp);
+			this.finalDrawPixels = AndroidGraphicsUtils.getPixels(temp);
 			this.nowDrawPixels = CollectionUtils.copyOf(finalDrawPixels);
 		}
 		if (img.getConfig() != Config.ARGB_8888) {

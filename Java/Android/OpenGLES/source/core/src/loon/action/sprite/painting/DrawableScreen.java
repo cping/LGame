@@ -22,15 +22,15 @@ package loon.action.sprite.painting;
 
 import java.util.ArrayList;
 
+import loon.LKey;
+import loon.LTouch;
 import loon.action.sprite.SpriteBatch;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
 import loon.core.graphics.Screen;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
 import loon.core.timer.GameTime;
 import loon.core.timer.LTimerContext;
 

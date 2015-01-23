@@ -22,10 +22,10 @@ package loon.core.graphics.component.chart;
 
 import java.util.ArrayList;
 
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
 import loon.core.graphics.device.Align;
 import loon.core.graphics.device.Canvas;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.Paint;
 import loon.core.graphics.device.RectF;
 

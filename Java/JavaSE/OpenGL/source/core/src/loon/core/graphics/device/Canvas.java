@@ -21,9 +21,6 @@
 package loon.core.graphics.device;
 
 import loon.core.geom.Dimension;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
 
 public class Canvas {
 

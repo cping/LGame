@@ -26,13 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import loon.LTouch;
+import loon.AndroidInputFactory.Touch;
 import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LTouch;
-import loon.core.input.LInputFactory.Touch;
 import loon.core.resource.Resources;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;

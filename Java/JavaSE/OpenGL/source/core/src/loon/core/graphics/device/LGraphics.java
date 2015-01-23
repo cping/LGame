@@ -21,12 +21,17 @@
 package loon.core.graphics.device;
 
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Paint;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
@@ -37,13 +42,96 @@ import java.awt.image.VolatileImage;
 import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
 
+import loon.JavaSEGraphicsUtils;
 import loon.core.geom.Triangle2f;
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
 
 public class LGraphics implements LTrans {
+
+	class JavaSEGraphics2DStore {
+
+		private Paint paint;
+
+		private Font font;
+
+		private Stroke stroke;
+
+		private AffineTransform transform;
+
+		private Composite composite;
+
+		private Shape clip;
+
+		private RenderingHints renderingHints;
+
+		private Color color;
+
+		private Color background;
+
+		public void save(Graphics2D g2d) {
+			paint = g2d.getPaint();
+			font = g2d.getFont();
+			stroke = g2d.getStroke();
+			transform = g2d.getTransform();
+			composite = g2d.getComposite();
+			clip = g2d.getClip();
+			renderingHints = g2d.getRenderingHints();
+			color = g2d.getColor();
+			background = g2d.getBackground();
+		}
+
+		public void restore(Graphics2D g2d) {
+			g2d.setPaint(paint);
+			g2d.setFont(font);
+			g2d.setStroke(stroke);
+			g2d.setTransform(transform);
+			g2d.setComposite(composite);
+			g2d.setClip(clip);
+			g2d.setRenderingHints(renderingHints);
+			g2d.setColor(color);
+			g2d.setBackground(background);
+		}
+
+		public Color getBackground() {
+			return background;
+		}
+
+		public Shape getClip() {
+			return clip;
+		}
+
+		public Color getColor() {
+			return color;
+		}
+
+		public Composite getComposite() {
+			return composite;
+		}
+
+		public Font getFont() {
+			return font;
+		}
+
+		public Paint getPaint() {
+			return paint;
+		}
+
+		public RenderingHints getRenderingHints() {
+			return renderingHints;
+		}
+
+		public void setRenderingHints(RenderingHints renderingHints) {
+			this.renderingHints = renderingHints;
+		}
+
+		public Stroke getStroke() {
+			return stroke;
+		}
+
+		public AffineTransform getTransform() {
+			return transform;
+		}
+
+	}
 
 	final static public double ANGLE_90 = Math.PI / 2;
 
@@ -67,7 +155,7 @@ public class LGraphics implements LTrans {
 
 	public static final int DOTTED = 1;
 
-	final private Graphics2DStore store = new Graphics2DStore();
+	final private JavaSEGraphics2DStore store = new JavaSEGraphics2DStore();
 
 	final private Graphics2D g2d;
 
@@ -82,7 +170,7 @@ public class LGraphics implements LTrans {
 		this.height = awtImage.getHeight();
 		this.g2d = awtImage.createGraphics();
 		this.g2d.setClip(0, 0, width, height);
-		GraphicsUtils.setPoorRenderingHints(g2d);
+		JavaSEGraphicsUtils.setPoorRenderingHints(g2d);
 		this.store.save(g2d);
 	}
 
@@ -91,7 +179,7 @@ public class LGraphics implements LTrans {
 		this.height = awtImage.getHeight();
 		this.g2d = awtImage.createGraphics();
 		this.g2d.setClip(0, 0, width, height);
-		GraphicsUtils.setPoorRenderingHints(g2d);
+		JavaSEGraphicsUtils.setPoorRenderingHints(g2d);
 		this.store.save(g2d);
 	}
 
@@ -102,21 +190,21 @@ public class LGraphics implements LTrans {
 	public void save() {
 		this.store.save(g2d);
 	}
-	
+
 	public void drawSixStart(Color color, int x, int y, int r) {
-		GraphicsUtils.drawSixStart(g2d, color, x, y, r);
+		JavaSEGraphicsUtils.drawSixStart(g2d, color, x, y, r);
 	}
 
 	public void rectFill(int x, int y, int width, int height, Color color) {
-		GraphicsUtils.rectFill(g2d, x, y, width, height, color);
+		JavaSEGraphicsUtils.rectFill(g2d, x, y, width, height, color);
 	}
 
 	public void rectDraw(int x, int y, int width, int height, Color color) {
-		GraphicsUtils.rectDraw(g2d, x, y, width, height, color);
+		JavaSEGraphicsUtils.rectDraw(g2d, x, y, width, height, color);
 	}
 
 	public void rectOval(int x, int y, int width, int height, Color color) {
-		GraphicsUtils.rectOval(g2d, x, y, width, height, color);
+		JavaSEGraphicsUtils.rectOval(g2d, x, y, width, height, color);
 	}
 
 	public void drawCenterString(String s, int x, int y) {
@@ -164,7 +252,7 @@ public class LGraphics implements LTrans {
 
 	public void drawStyleString(String message, int x, int y, LColor color,
 			LColor color1) {
-		GraphicsUtils.drawStyleString(g2d, message, x, y, color.getAWTColor(),
+		JavaSEGraphicsUtils.drawStyleString(g2d, message, x, y, color.getAWTColor(),
 				color1.getAWTColor());
 	}
 
@@ -195,15 +283,15 @@ public class LGraphics implements LTrans {
 	}
 
 	public double getAlpha() {
-		return GraphicsUtils.getAlpha(g2d);
+		return JavaSEGraphicsUtils.getAlpha(g2d);
 	}
 
 	public void setAntialiasAll(boolean flag) {
-		GraphicsUtils.setAntialiasAll(g2d, flag);
+		JavaSEGraphicsUtils.setAntialiasAll(g2d, flag);
 	}
 
 	public void setAntiAlias(boolean flag) {
-		GraphicsUtils.setAntialias(g2d, flag);
+		JavaSEGraphicsUtils.setAntialias(g2d, flag);
 	}
 
 	public void setAlphaValue(double alpha) {
@@ -211,7 +299,7 @@ public class LGraphics implements LTrans {
 	}
 
 	public void setAlpha(double alpha) {
-		GraphicsUtils.setAlpha(g2d, alpha);
+		JavaSEGraphicsUtils.setAlpha(g2d, alpha);
 	}
 
 	public void fillTriangle(Triangle2f[] ts) {
@@ -352,11 +440,11 @@ public class LGraphics implements LTrans {
 	public void draw(Path p) {
 		g2d.draw(p.path2D);
 	}
-	
+
 	public void setClip(Path p) {
 		g2d.setClip(p.path2D);
 	}
-	
+
 	public void drawRegion(LImage src, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor) {
 		Image img = src.getBufferedImage();
@@ -547,7 +635,6 @@ public class LGraphics implements LTrans {
 		}
 	}
 
-
 	public void translate(int x, int y) {
 		g2d.translate(x, y);
 	}
@@ -567,7 +654,6 @@ public class LGraphics implements LTrans {
 	public void scale(double sx, double sy) {
 		g2d.scale(sx, sy);
 	}
-
 
 	public LColor getColor() {
 		return new LColor(g2d.getColor());
@@ -643,7 +729,7 @@ public class LGraphics implements LTrans {
 	}
 
 	public void setFont(int size) {
-		g2d.setFont(GraphicsUtils.getFont(size));
+		g2d.setFont(JavaSEGraphicsUtils.getFont(size));
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
@@ -681,7 +767,6 @@ public class LGraphics implements LTrans {
 	public void setClip(int x, int y, int width, int height) {
 		g2d.setClip(x, y, width, height);
 	}
-
 
 	public void copyArea(int x, int y, int width, int height, int dx, int dy) {
 		g2d.copyArea(x, y, width, height, dx, dy);
@@ -925,7 +1010,6 @@ public class LGraphics implements LTrans {
 	public void drawRect(int x, int y, int width, int height) {
 		g2d.drawRect(x, y, width, height);
 	}
-
 
 	public void dispose() {
 		g2d.dispose();

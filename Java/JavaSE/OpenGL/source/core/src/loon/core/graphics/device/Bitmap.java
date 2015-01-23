@@ -20,7 +20,6 @@
  */
 package loon.core.graphics.device;
 
-import loon.core.graphics.LImage;
 
 public class Bitmap {
 

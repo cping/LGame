@@ -23,7 +23,7 @@ package loon.core.graphics.opengl;
 import java.nio.FloatBuffer;
 
 import loon.core.LRelease;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.jni.NativeSupport;
 
 //0.3.3新增的顶点操作用类，视有无native支持而采取不同的操作方针。

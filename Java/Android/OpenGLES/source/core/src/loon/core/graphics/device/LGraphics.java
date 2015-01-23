@@ -21,13 +21,10 @@
  */
 package loon.core.graphics.device;
 
+import loon.AndroidGraphicsUtils;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Triangle2f;
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -557,11 +554,11 @@ public final class LGraphics implements LTrans {
 	}
 
 	public void drawImage(String fileName, int x, int y, int w, int h) {
-		drawImage(GraphicsUtils.loadImage(fileName, true), x, y, w, h);
+		drawImage(AndroidGraphicsUtils.loadImage(fileName, true), x, y, w, h);
 	}
 
 	public void drawImage(String fileName, int x, int y) {
-		drawImage(GraphicsUtils.loadImage(fileName, true), x, y);
+		drawImage(AndroidGraphicsUtils.loadImage(fileName, true), x, y);
 	}
 
 	public void drawImage(LImage img, int x, int y) {

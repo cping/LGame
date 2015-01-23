@@ -1,11 +1,3 @@
-package loon.core;
-
-import loon.action.sprite.SpriteBatch;
-import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureRegion;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -26,6 +18,14 @@ import loon.core.graphics.opengl.LTextureRegion;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core;
+
+import loon.action.sprite.SpriteBatch;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureRegion;
+
 public class EmulatorButton {
 
 	private final LColor color = new LColor(LColor.gray.r, LColor.gray.g,

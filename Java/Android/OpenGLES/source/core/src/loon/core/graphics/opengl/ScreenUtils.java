@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import loon.core.LRelease;
 import loon.core.LSystem;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.jni.NativeSupport;
 

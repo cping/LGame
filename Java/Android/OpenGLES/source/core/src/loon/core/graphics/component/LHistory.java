@@ -26,7 +26,7 @@ import loon.action.sprite.SpriteButton.ButtonFunc;
 import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;

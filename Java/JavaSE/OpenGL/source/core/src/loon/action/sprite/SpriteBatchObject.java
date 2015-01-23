@@ -28,7 +28,7 @@ import loon.action.map.TileMap;
 import loon.core.LObject;
 import loon.core.LRelease;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 
 public abstract class SpriteBatchObject extends LObject implements Config,
 		LRelease, ActionBind {

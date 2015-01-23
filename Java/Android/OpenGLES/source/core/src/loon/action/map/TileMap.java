@@ -32,7 +32,7 @@ import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexturePack;

@@ -20,7 +20,7 @@
  */
 package loon.core.graphics.opengl;
 
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.utils.MathUtils;
 
 public class GLRenderer {

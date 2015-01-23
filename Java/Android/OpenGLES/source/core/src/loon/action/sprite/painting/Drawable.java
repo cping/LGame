@@ -20,12 +20,12 @@
  */
 package loon.action.sprite.painting;
 
+import loon.LInput;
+import loon.LKey;
+import loon.LTouch;
 import loon.action.sprite.SpriteBatch;
 import loon.core.LRelease;
 import loon.core.geom.Vector2f;
-import loon.core.input.LInput;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
 import loon.core.timer.GameTime;
 import loon.utils.MathUtils;
 

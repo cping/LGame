@@ -7,7 +7,7 @@ import loon.core.LSystem;
 import loon.core.geom.Point;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture;
 
 /**

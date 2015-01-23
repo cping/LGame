@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import loon.core.LSystem;
-import loon.core.graphics.LFont;
 import loon.core.resource.Resources;
 
 public class Typeface {

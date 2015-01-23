@@ -21,6 +21,8 @@
  */
 package loon.core;
 
+import loon.LTouch;
+import loon.AndroidMultitouchUtils;
 import loon.action.sprite.SpriteBatch;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
@@ -28,8 +30,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexturePack;
 import loon.core.graphics.opengl.LTextureRegion;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LTouch;
-import loon.core.input.MultitouchUtils;
 
 import android.view.MotionEvent;
 
@@ -355,24 +355,24 @@ public class EmulatorButtons implements LRelease {
 	}
 
 	private LTouch[] parseMotionEvent(MotionEvent event) {
-		int eventPointerCount = MultitouchUtils.getPointerCount(event);
+		int eventPointerCount = AndroidMultitouchUtils.getPointerCount(event);
 		LTouch[] touches = new LTouch[eventPointerCount];
 		int id;
 		float touchX, touchY;
 		for (int t = 0; t < eventPointerCount; t++) {
 			int pointerIndex = t;
-			touchX = MultitouchUtils.getX(event, pointerIndex)
+			touchX = AndroidMultitouchUtils.getX(event, pointerIndex)
 					/ LSystem.scaleWidth;
-			touchY = MultitouchUtils.getY(event, pointerIndex)
+			touchY = AndroidMultitouchUtils.getY(event, pointerIndex)
 					/ LSystem.scaleHeight;
-			id = MultitouchUtils.getPointId(event, pointerIndex);
+			id = AndroidMultitouchUtils.getPointId(event, pointerIndex);
 			touches[t] = new LTouch(touchX, touchY, t, id);
 		}
 		return touches;
 	}
 
 	private LTouch getChangedTouches(int action, LTouch[] touches) {
-		int changed = (action & MultitouchUtils.ACTION_POINTER_INDEX_MASK) >> MultitouchUtils.ACTION_POINTER_INDEX_SHIFT;
+		int changed = (action & AndroidMultitouchUtils.ACTION_POINTER_INDEX_MASK) >> AndroidMultitouchUtils.ACTION_POINTER_INDEX_SHIFT;
 		return touches[changed];
 	}
 
@@ -387,11 +387,11 @@ public class EmulatorButtons implements LRelease {
 		}
 		final int code = e.getAction();
 
-		if (MultitouchUtils.isMultitouch()) {
+		if (AndroidMultitouchUtils.isMultitouch()) {
 
 			synchronized (EmulatorButtons.class) {
 
-				final int action = code & MultitouchUtils.ACTION_MASK;
+				final int action = code & AndroidMultitouchUtils.ACTION_MASK;
 				final LTouch[] touches = parseMotionEvent(e);
 				Updateable update = new Updateable() {
 
@@ -406,12 +406,12 @@ public class EmulatorButtons implements LRelease {
 						if (size < 2) {
 							switch (action) {
 							case MotionEvent.ACTION_DOWN:
-							case MultitouchUtils.ACTION_POINTER_DOWN:
+							case AndroidMultitouchUtils.ACTION_POINTER_DOWN:
 								hit(touches[0].getID(), touches[0].getX(),
 										touches[0].getY(), false);
 								break;
 							case MotionEvent.ACTION_UP:
-							case MultitouchUtils.ACTION_POINTER_UP:
+							case AndroidMultitouchUtils.ACTION_POINTER_UP:
 								unhit(touches[0].getID(), touches[0].getX(),
 										touches[0].getY());
 								break;
@@ -440,12 +440,12 @@ public class EmulatorButtons implements LRelease {
 											touches[i].getX(),
 											touches[i].getY());
 									break;
-								case MultitouchUtils.ACTION_POINTER_DOWN:
+								case AndroidMultitouchUtils.ACTION_POINTER_DOWN:
 									touch = getChangedTouches(code, touches);
 									hit(touch.getID(), touch.getX(),
 											touch.getY(), false);
 									break;
-								case MultitouchUtils.ACTION_POINTER_UP:
+								case AndroidMultitouchUtils.ACTION_POINTER_UP:
 									touch = getChangedTouches(code, touches);
 									unhit(touch.getID(), touch.getX(),
 											touch.getY());
@@ -480,11 +480,11 @@ public class EmulatorButtons implements LRelease {
 				public void action(Object a) {
 					switch (code) {
 					case MotionEvent.ACTION_DOWN:
-					case MultitouchUtils.ACTION_POINTER_DOWN:
+					case AndroidMultitouchUtils.ACTION_POINTER_DOWN:
 						hit(0, touchX, touchY, false);
 						break;
 					case MotionEvent.ACTION_UP:
-					case MultitouchUtils.ACTION_POINTER_UP:
+					case AndroidMultitouchUtils.ACTION_POINTER_UP:
 					case MotionEvent.ACTION_OUTSIDE:
 					case MotionEvent.ACTION_CANCEL:
 						unhit(0, touchX, touchY);

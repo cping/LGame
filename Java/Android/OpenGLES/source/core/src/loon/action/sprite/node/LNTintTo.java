@@ -20,7 +20,7 @@
  */
 package loon.action.sprite.node;
 
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 
 public class LNTintTo extends LNAction {
 

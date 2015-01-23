@@ -1,12 +1,3 @@
-package loon.core;
-
-import loon.action.sprite.SpriteBatch;
-import loon.core.geom.RectBox;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexturePack;
-import loon.core.graphics.opengl.LTextureRegion;
-import loon.core.graphics.opengl.LTexture.Format;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -27,6 +18,15 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core;
+
+import loon.action.sprite.SpriteBatch;
+import loon.core.geom.RectBox;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexturePack;
+import loon.core.graphics.opengl.LTextureRegion;
+import loon.core.graphics.opengl.LTexture.Format;
+
 public class EmulatorButtons implements LRelease {
 
 	private LTextureRegion dpad, buttons;

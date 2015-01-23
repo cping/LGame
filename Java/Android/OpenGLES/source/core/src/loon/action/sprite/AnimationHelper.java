@@ -23,9 +23,9 @@ package loon.action.sprite;
 
 import java.util.HashMap;
 
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.TextureUtils;
 import loon.utils.CollectionUtils;

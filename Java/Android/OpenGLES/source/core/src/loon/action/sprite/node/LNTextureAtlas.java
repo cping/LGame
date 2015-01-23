@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import loon.action.sprite.SpriteBatch;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.MathUtils;
 

@@ -34,13 +34,13 @@
  */
 package loon.core.graphics.component;
 
-import loon.core.graphics.LColor;
+import loon.JavaSEInputFactory;
+import loon.JavaSEInputFactory.Key;
 import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInputFactory;
-import loon.core.input.LInputFactory.Key;
 
 public class LTextField extends LTextBar {
 
@@ -53,7 +53,7 @@ public class LTextField extends LTextBar {
 	static public class DefaultOnscreenKeyboard implements OnscreenKeyboard {
 		@Override
 		public void show(boolean visible) {
-			LInputFactory.setOnscreenKeyboardVisible(visible);
+			JavaSEInputFactory.setOnscreenKeyboardVisible(visible);
 		}
 	}
 
@@ -148,7 +148,7 @@ public class LTextField extends LTextBar {
 
 	public void update(long delta) {
 		super.update(delta);
-		if (Key.isUp() && LInputFactory.getOnlyKey().isPressed()) {
+		if (Key.isUp() && JavaSEInputFactory.getOnlyKey().isPressed()) {
 			if (!isFocusable()) {
 				return;
 			}

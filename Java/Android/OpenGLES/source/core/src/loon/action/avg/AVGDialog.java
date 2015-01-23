@@ -22,9 +22,9 @@ package loon.action.avg;
 
 import java.util.HashMap;
 
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LImage;
+import loon.AndroidGraphicsUtils;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 
@@ -37,7 +37,7 @@ final public class AVGDialog {
 		if (lazyImages == null) {
 			lazyImages = new HashMap<String, LTexture>(10);
 		}
-		LImage dialog = GraphicsUtils.loadImage(fileName);
+		LImage dialog = AndroidGraphicsUtils.loadImage(fileName);
 		int w = dialog.getWidth();
 		int[] pixels = dialog.getPixels();
 		int index = -1;
@@ -65,7 +65,7 @@ final public class AVGDialog {
 
 	public final static LTexture getRMXPloadBuoyage(String fileName, int width,
 			int height) {
-		return getRMXPloadBuoyage(GraphicsUtils.loadImage(fileName), width,
+		return getRMXPloadBuoyage(AndroidGraphicsUtils.loadImage(fileName), width,
 				height);
 	}
 
@@ -88,19 +88,19 @@ final public class AVGDialog {
 			final int k = 1;
 
 			try {
-				image = GraphicsUtils.drawClipImage(rmxpImage, objWidth,
+				image = AndroidGraphicsUtils.drawClipImage(rmxpImage, objWidth,
 						objHeight, x1, y1, x2, y2);
 				lazyImage = LImage.createImage(width, height, false);
 				LGraphics g = lazyImage.getLGraphics();
-				left = GraphicsUtils.drawClipImage(image, k, height, 0, 0, k,
+				left = AndroidGraphicsUtils.drawClipImage(image, k, height, 0, 0, k,
 						objHeight);
-				right = GraphicsUtils.drawClipImage(image, k, height, objWidth
+				right = AndroidGraphicsUtils.drawClipImage(image, k, height, objWidth
 						- k, 0, objWidth, objHeight);
-				center = GraphicsUtils.drawClipImage(image, width, height, k,
+				center = AndroidGraphicsUtils.drawClipImage(image, width, height, k,
 						k, objWidth - k, objHeight - k);
-				up = GraphicsUtils.drawClipImage(image, width, k, 0, 0,
+				up = AndroidGraphicsUtils.drawClipImage(image, width, k, 0, 0,
 						objWidth, k);
-				down = GraphicsUtils.drawClipImage(image, width, k, 0,
+				down = AndroidGraphicsUtils.drawClipImage(image, width, k, 0,
 						objHeight - k, objWidth, objHeight);
 				g.drawImage(center, 0, 0);
 				g.drawImage(left, 0, 0);
@@ -156,44 +156,44 @@ final public class AVGDialog {
 
 				LImage messageImage = null;
 
-				image = GraphicsUtils.drawClipImage(rmxpImage, objWidth,
+				image = AndroidGraphicsUtils.drawClipImage(rmxpImage, objWidth,
 						objHeight, x1, y1, x2, y2);
 
-				LImage centerTop = GraphicsUtils.drawClipImage(image,
+				LImage centerTop = AndroidGraphicsUtils.drawClipImage(image,
 						center_size, size, size, 0);
 
-				LImage centerDown = GraphicsUtils.drawClipImage(image,
+				LImage centerDown = AndroidGraphicsUtils.drawClipImage(image,
 						center_size, size, size, objHeight - size);
 
-				LImage leftTop = GraphicsUtils.drawClipImage(image, size, size,
+				LImage leftTop = AndroidGraphicsUtils.drawClipImage(image, size, size,
 						0, 0);
 
-				LImage leftCenter = GraphicsUtils.drawClipImage(image, size,
+				LImage leftCenter = AndroidGraphicsUtils.drawClipImage(image, size,
 						center_size, 0, size);
 
-				LImage leftDown = GraphicsUtils.drawClipImage(image, size,
+				LImage leftDown = AndroidGraphicsUtils.drawClipImage(image, size,
 						size, 0, objHeight - size);
 
-				LImage rightTop = GraphicsUtils.drawClipImage(image, size,
+				LImage rightTop = AndroidGraphicsUtils.drawClipImage(image, size,
 						size, objWidth - size, 0);
 
-				LImage rightCenter = GraphicsUtils.drawClipImage(image, size,
+				LImage rightCenter = AndroidGraphicsUtils.drawClipImage(image, size,
 						center_size, objWidth - size, size);
 
-				LImage rightDown = GraphicsUtils.drawClipImage(image, size,
+				LImage rightDown = AndroidGraphicsUtils.drawClipImage(image, size,
 						size, objWidth - size, objHeight - size);
 
 				lazyImage = LImage.createImage(width, height, rmxpImage
 						.getConfig());
 
-				messageImage = GraphicsUtils.drawClipImage(rmxpImage, 128, 128,
+				messageImage = AndroidGraphicsUtils.drawClipImage(rmxpImage, 128, 128,
 						0, 0, 128, 128, false);
 
 				LGraphics g = lazyImage.getLGraphics();
 
 				g.setAlpha(0.5f);
 
-				messageImage = GraphicsUtils.getResize(messageImage, width
+				messageImage = AndroidGraphicsUtils.getResize(messageImage, width
 						- offset + 1, height - offset + 1);
 
 				g.drawImage(messageImage, (lazyImage.getWidth() - messageImage
@@ -202,12 +202,12 @@ final public class AVGDialog {
 
 				g.setAlpha(1.0f);
 
-				LImage tmp = GraphicsUtils.getResize(centerTop, width
+				LImage tmp = AndroidGraphicsUtils.getResize(centerTop, width
 						- (size * 2), size);
 
 				g.drawImage(tmp, size, 0);
 				tmp = null;
-				tmp = GraphicsUtils.getResize(centerDown, width - (size * 2),
+				tmp = AndroidGraphicsUtils.getResize(centerDown, width - (size * 2),
 						size);
 
 				g.drawImage(tmp, size, height - size);
@@ -215,7 +215,7 @@ final public class AVGDialog {
 
 				g.drawImage(leftTop, 0, 0);
 
-				tmp = GraphicsUtils.getResize(leftCenter,
+				tmp = AndroidGraphicsUtils.getResize(leftCenter,
 						leftCenter.getWidth(), width - (size * 2));
 
 				g.drawImage(tmp, 0, size);
@@ -226,7 +226,7 @@ final public class AVGDialog {
 
 				g.drawImage(rightTop, right, 0);
 
-				tmp = GraphicsUtils.getResize(rightCenter, leftCenter
+				tmp = AndroidGraphicsUtils.getResize(rightCenter, leftCenter
 						.getWidth(), width - (size * 2));
 
 				g.drawImage(tmp, right, size);

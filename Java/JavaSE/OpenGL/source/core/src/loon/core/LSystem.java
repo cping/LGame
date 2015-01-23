@@ -37,13 +37,13 @@ import java.util.Random;
 
 import loon.Files;
 import loon.JavaSEFiles;
+import loon.JavaSEGraphicsUtils;
+import loon.LProcess;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
-import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LProcess;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
@@ -492,7 +492,7 @@ public final class LSystem {
 	 * 
 	 */
 	public static void destroy() {
-		GraphicsUtils.destroyImages();
+		JavaSEGraphicsUtils.destroyImages();
 		Resources.destroy();
 	}
 

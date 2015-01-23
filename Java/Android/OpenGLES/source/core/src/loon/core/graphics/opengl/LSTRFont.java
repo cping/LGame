@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 import loon.core.LRelease;
 import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;
 

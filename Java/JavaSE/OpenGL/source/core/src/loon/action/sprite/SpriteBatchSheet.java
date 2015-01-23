@@ -22,7 +22,7 @@ package loon.action.sprite;
 
 import loon.core.LRelease;
 import loon.core.geom.RectBox.Rect2i;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 

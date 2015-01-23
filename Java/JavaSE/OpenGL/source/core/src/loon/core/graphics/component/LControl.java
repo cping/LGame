@@ -20,6 +20,8 @@
  */
 package loon.core.graphics.component;
 
+import loon.LAccelerometer;
+import loon.JavaSEInputFactory.Touch;
 import loon.action.map.Config;
 import loon.core.LSystem;
 import loon.core.graphics.LComponent;
@@ -27,8 +29,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LAccelerometer;
-import loon.core.input.LInputFactory.Touch;
 import loon.utils.MathUtils;
 
 public class LControl extends LComponent {

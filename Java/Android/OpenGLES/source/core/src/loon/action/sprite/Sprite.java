@@ -8,7 +8,7 @@ import loon.core.LSystem;
 import loon.core.geom.Point;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LTrans;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

@@ -21,6 +21,7 @@
 package loon.core.graphics;
 
 import loon.core.graphics.component.DefUI;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.MathUtils;

@@ -36,16 +36,16 @@ import java.util.HashMap;
 import java.util.Random;
 
 import loon.AndroidFiles;
+import loon.AndroidGraphicsUtils;
 import loon.Files;
 import loon.LGame;
+import loon.LProcess;
 import loon.LGame.Location;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
-import loon.core.graphics.GraphicsUtils;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LProcess;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
@@ -722,7 +722,7 @@ public final class LSystem {
 	 * 清空框架临时资源
 	 */
 	public static void destroy() {
-		GraphicsUtils.destroy();
+		AndroidGraphicsUtils.destroy();
 		Resources.destroy();
 		LSystem.gc();
 	}

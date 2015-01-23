@@ -2,9 +2,9 @@ package loon.core.graphics.component;
 
 import loon.action.sprite.ISprite;
 import loon.core.LSystem;
-import loon.core.graphics.LColor;
 import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.timer.LTimer;

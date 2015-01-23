@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 import loon.core.LRelease;
 import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 
 /**
  * Copyright 2008 - 2011

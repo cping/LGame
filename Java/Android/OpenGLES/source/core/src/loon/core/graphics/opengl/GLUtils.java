@@ -2,7 +2,7 @@ package loon.core.graphics.opengl;
 
 import java.nio.FloatBuffer;
 
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 
 
 /**

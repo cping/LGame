@@ -30,10 +30,10 @@ import loon.core.Assets;
 import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
 import loon.core.graphics.Screen;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LSTRFont;
@@ -41,7 +41,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.ScreenUtils;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LProcess;
 import loon.core.timer.LTimerContext;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
@@ -53,7 +52,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
-public class LGame extends JavaApp {
+public class LGame extends JavaSEApp {
 
 	public static LGame register(LSetting setting,
 			Class<? extends Screen> clazz, Object... args) {
@@ -179,19 +178,19 @@ public class LGame extends JavaApp {
 		setSize(width, height);
 	}
 
-	public void setTitle(String titleName) {
+	protected void setTitle(String titleName) {
 		this.windowTitle = titleName;
 	}
 
-	public void setGLMode(GLMode renderMode) {
+	protected void setGLMode(GLMode renderMode) {
 		this.glMode = renderMode;
 	}
 
-	public GLEx getGraphics() {
+	protected GLEx getGraphics() {
 		return gl;
 	}
 
-	public void setScreen(Screen screen) {
+	protected void setScreen(Screen screen) {
 		LSystem.screenProcess.setScreen(screen);
 	}
 
@@ -614,7 +613,7 @@ public class LGame extends JavaApp {
 		System.exit(0);
 	}
 
-	public void showScreen() {
+	protected void showScreen() {
 		if (!isRunning) {
 			isRunning = true;
 			if (mainLoop == null) {
@@ -707,11 +706,11 @@ public class LGame extends JavaApp {
 		}
 	}
 
-	public void setIcon(String path) {
+	protected void setIcon(String path) {
 		setIcon(new LImage(path));
 	}
 
-	public void setIcon(LImage icon) {
+	protected void setIcon(LImage icon) {
 		Display.setIcon(new java.nio.ByteBuffer[] { (java.nio.ByteBuffer) icon
 				.getByteBuffer() });
 	}
@@ -738,7 +737,7 @@ public class LGame extends JavaApp {
 		return java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
 	}
 
-	public void updateScreen() {
+	protected void updateScreen() {
 		int w = 0;
 		int h = 0;
 		if (_AWT_Canvas == null) {
@@ -754,11 +753,11 @@ public class LGame extends JavaApp {
 		this.setBounds(0, 0, w, h);
 	}
 
-	public void updateFullScreen() {
+	protected void updateFullScreen() {
 		updateFullScreen(getScreenWidth(), getScreenHeight(), true);
 	}
 
-	public void updateFullScreen(int w, int h) {
+	protected void updateFullScreen(int w, int h) {
 		updateFullScreen(w, h, false);
 	}
 

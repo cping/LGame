@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import loon.core.LRelease;
 import loon.core.LSystem;
 import loon.core.event.Updateable;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.TextureUtils;

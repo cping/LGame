@@ -5,8 +5,8 @@ import loon.core.geom.Line;
 import loon.core.geom.Point;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LImage;
 import loon.utils.MathUtils;
 
 /**

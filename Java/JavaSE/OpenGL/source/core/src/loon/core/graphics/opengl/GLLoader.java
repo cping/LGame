@@ -1,19 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.HashMap;
-
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
-import loon.core.resource.Resources;
-import loon.jni.NativeSupport;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -35,6 +19,24 @@ import loon.jni.NativeSupport;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.HashMap;
+
+import loon.JavaSEGraphicsUtils;
+import loon.JavaSEPNGData;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.resource.Resources;
+import loon.jni.NativeSupport;
+
+
 public final class GLLoader extends LTextureData {
 
 	private static final boolean IS_LITTLE_ENDIAN = (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN);
@@ -142,7 +144,7 @@ public final class GLLoader extends LTextureData {
 		}
 		if (fileName.toLowerCase().endsWith("png") && multipyAlpha) {
 			ByteBuffer result = null;
-			PNGData imageData = new PNGData();
+			JavaSEPNGData imageData = new JavaSEPNGData();
 			try {
 				result = imageData.loadImage(Resources.openResource(fileName));
 			} catch (IOException e) {
@@ -234,7 +236,7 @@ public final class GLLoader extends LTextureData {
 					.getRaster().getDataElements(0, 0, image.getWidth(),
 							image.getHeight(), null));
 			if (fileName == null) {
-				this.pixels = GraphicsUtils.getPixels(image);
+				this.pixels = JavaSEGraphicsUtils.getPixels(image);
 			}
 			return;
 		}
@@ -268,7 +270,7 @@ public final class GLLoader extends LTextureData {
 				.getDataElements(0, 0, texImage.getWidth(),
 						texImage.getHeight(), null));
 		if (fileName == null) {
-			this.pixels = GraphicsUtils.getPixels(texImage);
+			this.pixels = JavaSEGraphicsUtils.getPixels(texImage);
 		}
 
 		if (texImage != null) {
