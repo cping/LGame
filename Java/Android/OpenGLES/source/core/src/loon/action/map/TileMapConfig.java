@@ -28,7 +28,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.resource.Resources;
 import loon.utils.CollectionUtils;
 

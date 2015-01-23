@@ -25,9 +25,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.action.collision.CollisionMask;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.geom.Polygon;
 import loon.core.geom.Shape;
@@ -41,7 +41,6 @@ import loon.utils.CollectionUtils;
 import org.lwjgl.opengl.EXTTextureMirrorClamp;
 import org.lwjgl.opengl.GLContext;
 
-
 public class LTexture implements LRelease {
 
 	public LTexture makeShadow(int size, float alpha, LColor c) {
@@ -51,7 +50,7 @@ public class LTexture implements LRelease {
 	public LTexture makeShadow() {
 		return new LShadow(this.getImage()).getTexture();
 	}
-	
+
 	public LTextureRegion getTextureRegion(int x, int y, int width, int height) {
 		return new LTextureRegion(this, x, y, width, height);
 	}
@@ -156,7 +155,7 @@ public class LTexture implements LRelease {
 		checkReplace();
 	}
 
-	 LTexture(LTexture texture) {
+	LTexture(LTexture texture) {
 		if (texture == null) {
 			throw new RuntimeException("texture is Null !");
 		}
@@ -192,7 +191,7 @@ public class LTexture implements LRelease {
 		this.isVisible = texture.isVisible;
 		System.arraycopy(texture.crops, 0, crops, 0, crops.length);
 	}
-	
+
 	public LTexture(String res) {
 		this(res, Format.DEFAULT);
 	}
@@ -482,7 +481,14 @@ public class LTexture implements LRelease {
 		this.heightRatio = texHeightRatio;
 		NativeSupport.replaceFloats(data, dataCords);
 	}
-
+	
+	public boolean hasAlpha() {
+		if (imageData == null) {
+			return false;
+		}
+		return imageData.hasAlpha();
+	}
+	
 	public void setWidth(int width) {
 		this.width = width;
 		setVertCords(width, height);

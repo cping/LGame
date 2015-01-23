@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import loon.LInput;
 import loon.LKey;
+import loon.LSystem;
 import loon.JavaSEInputFactory.Touch;
 import loon.action.map.Config;
 import loon.action.map.TileMap;
@@ -33,7 +34,6 @@ import loon.action.sprite.node.DefinitionReader;
 import loon.action.sprite.node.LNAction;
 import loon.action.sprite.node.LNNode;
 import loon.core.LObject;
-import loon.core.LSystem;
 import loon.core.event.ActionKey;
 import loon.core.geom.AABB;
 import loon.core.geom.RectBox;

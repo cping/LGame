@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextureBatch.GLCache;

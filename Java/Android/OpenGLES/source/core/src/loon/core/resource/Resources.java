@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.collection.ArrayByte;
 

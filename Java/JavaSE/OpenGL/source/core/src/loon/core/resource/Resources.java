@@ -33,7 +33,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.collection.ArrayByte;
 

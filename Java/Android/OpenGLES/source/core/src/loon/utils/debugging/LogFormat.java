@@ -20,7 +20,7 @@
  */
 package loon.utils.debugging;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 
 public class LogFormat {

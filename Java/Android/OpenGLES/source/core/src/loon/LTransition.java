@@ -28,7 +28,6 @@ import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.PShadowEffect;
 import loon.action.sprite.effect.SplitEffect;
-import loon.core.LSystem;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

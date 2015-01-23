@@ -22,8 +22,8 @@ package loon.core.graphics.component;
 
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.AndroidInputFactory.Touch;
-import loon.core.LSystem;
 import loon.core.geom.Path;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.LComponent;

@@ -20,8 +20,8 @@
  */
 package loon.action.avg;
 
+import loon.LSystem;
 import loon.action.sprite.ISprite;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.geom.Point.Point2i;
 import loon.core.graphics.opengl.GLEx;

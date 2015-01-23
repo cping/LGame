@@ -26,7 +26,7 @@ import java.nio.IntBuffer;
 
 import loon.AndroidGL10;
 import loon.AndroidGL11;
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
@@ -43,8 +43,15 @@ import loon.utils.MathUtils;
 
 import android.util.Log;
 
-
 public final class GLEx implements LTrans {
+
+	public static int width() {
+		return LSystem.screenRect.width;
+	}
+
+	public static int height() {
+		return LSystem.screenRect.height;
+	}
 
 	public static class Clip {
 

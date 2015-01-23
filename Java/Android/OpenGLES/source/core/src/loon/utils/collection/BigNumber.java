@@ -25,7 +25,7 @@ import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.utils.StringUtils;
 
 public class BigNumber {

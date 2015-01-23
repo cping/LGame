@@ -2,9 +2,9 @@ package loon.action.collision;
 
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.utils.MathUtils;
 
 /**

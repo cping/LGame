@@ -15,7 +15,7 @@
  */
 package loon.foundation;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 public class NSRange extends NSObject {
 	public int start = 0;

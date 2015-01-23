@@ -29,7 +29,6 @@
  */
 package loon;
 
-import loon.core.LSystem;
 import loon.utils.MathUtils;
 
 public class LRipple {

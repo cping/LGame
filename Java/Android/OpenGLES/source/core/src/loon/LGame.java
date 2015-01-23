@@ -29,7 +29,6 @@ import loon.LInput.SelectEvent;
 import loon.LInput.TextEvent;
 import loon.LSetting.Listener;
 import loon.core.EmulatorListener;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.LTexture;

@@ -27,7 +27,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Vector2f;
 import loon.core.resource.Resources;
 

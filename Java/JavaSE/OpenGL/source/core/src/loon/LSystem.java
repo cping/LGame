@@ -18,7 +18,7 @@
  * @email javachenpeng@yahoo.com.cn
  * @version 0.3.3
  */
-package loon.core;
+package loon;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -35,15 +35,14 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Random;
 
-import loon.Files;
-import loon.JavaSEFiles;
-import loon.JavaSEGraphicsUtils;
-import loon.LProcess;
+import loon.core.CallQueue;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
+import loon.core.graphics.opengl.FrameBuffer;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
@@ -51,6 +50,18 @@ import loon.utils.StringUtils;
 
 public final class LSystem {
 
+	public static FrameBuffer newFrameBuffer(LTexture texture){
+		return new JavaSEFrameBuffer(texture);
+	}
+
+	public static FrameBuffer newFrameBuffer(int width, int height, Format format){
+		return new JavaSEFrameBuffer(width,height,format);
+	}
+
+	public static FrameBuffer newFrameBuffer(int width, int height){
+		return new JavaSEFrameBuffer(width,height);
+	}
+	
 	public static Files files = null;
 
 	public static Files files() {

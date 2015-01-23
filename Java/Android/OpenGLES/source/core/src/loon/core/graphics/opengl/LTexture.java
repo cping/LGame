@@ -25,9 +25,9 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.action.collision.CollisionMask;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.geom.Polygon;
 import loon.core.geom.Shape;
@@ -521,7 +521,14 @@ public class LTexture implements LRelease {
 		this.heightRatio = texHeightRatio;
 		NativeSupport.replaceFloats(data, dataCords);
 	}
-
+	
+	public boolean hasAlpha() {
+		if (imageData == null) {
+			return false;
+		}
+		return imageData.hasAlpha();
+	}
+	
 	public void setWidth(int width) {
 		this.width = width;
 		setVertCords(width, height);

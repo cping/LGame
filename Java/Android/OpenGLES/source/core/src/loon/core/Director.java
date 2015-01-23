@@ -17,6 +17,7 @@ package loon.core;
 
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 

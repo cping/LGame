@@ -21,7 +21,7 @@
  */
 package loon.core.graphics.component;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LGradation;
 import loon.core.graphics.device.LGraphics;

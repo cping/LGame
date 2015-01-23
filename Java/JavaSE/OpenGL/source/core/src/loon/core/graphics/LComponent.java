@@ -22,13 +22,13 @@
 package loon.core.graphics;
 
 import loon.LInput;
+import loon.LSystem;
 import loon.JavaSEInputFactory.Key;
 import loon.JavaSEInputFactory.Touch;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.core.LObject;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.component.ClickListener;

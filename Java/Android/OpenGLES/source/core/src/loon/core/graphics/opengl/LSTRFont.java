@@ -2,8 +2,8 @@ package loon.core.graphics.opengl;
 
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.LGraphics;

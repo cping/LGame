@@ -32,8 +32,8 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 
 import loon.JavaSEGraphicsUtils;
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.filetype.TGA;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;

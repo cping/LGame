@@ -22,7 +22,7 @@ package loon.action.avg.drama;
 
 import java.util.Random;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 public interface Expression {
 

@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -27,7 +26,7 @@ import java.nio.IntBuffer;
 
 import loon.JavaSEGL10;
 import loon.JavaSEGL11;
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
@@ -44,6 +43,14 @@ import loon.jni.NativeSupport;
 import loon.utils.MathUtils;
 
 public final class GLEx implements LTrans {
+
+	public static int width() {
+		return LSystem.screenRect.width;
+	}
+
+	public static int height() {
+		return LSystem.screenRect.height;
+	}
 
 	public static class Clip {
 
@@ -3658,7 +3665,6 @@ public final class GLEx implements LTrans {
 	public final boolean isClose() {
 		return isClose;
 	}
-	
 
 	/**
 	 * 以glQuad方式将所提交的全部纹理及信息渲染为图像
@@ -3884,7 +3890,6 @@ public final class GLEx implements LTrans {
 					GL.GL_UNSIGNED_BYTE, pix.getByteBuffer());
 		}
 	}
-
 
 	public final void dispose() {
 		isClose = true;

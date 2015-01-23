@@ -1,7 +1,7 @@
 package loon.core.graphics.component;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;

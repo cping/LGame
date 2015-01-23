@@ -23,7 +23,7 @@ package loon.core.graphics.device;
 
 import java.util.HashMap;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Vector2f;
 
 import android.graphics.Paint;

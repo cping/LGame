@@ -20,6 +20,7 @@
  */
 package loon.core;
 
+import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;

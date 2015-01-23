@@ -30,7 +30,6 @@ import loon.LInput.ClickEvent;
 import loon.LInput.SelectEvent;
 import loon.LInput.TextEvent;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 

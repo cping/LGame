@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import loon.LSystem;
 import loon.core.LObject;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GL;

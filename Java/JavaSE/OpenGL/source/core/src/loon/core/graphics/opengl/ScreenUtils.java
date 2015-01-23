@@ -1,17 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.awt.DisplayMode;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.nio.IntBuffer;
-import java.util.HashMap;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.jni.NativeSupport;
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -32,6 +18,20 @@ import loon.jni.NativeSupport;
  * @email javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.core.graphics.opengl;
+
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.nio.IntBuffer;
+import java.util.HashMap;
+
+import loon.LSystem;
+import loon.core.LRelease;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.jni.NativeSupport;
+
 public class ScreenUtils {
 
 	final private static GraphicsEnvironment environment = GraphicsEnvironment

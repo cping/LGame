@@ -33,7 +33,7 @@ import java.nio.ShortBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 //自0.3.3起，将部分耗时代码本地化。如果携带有lplus库时，将调用so文件，否则依旧纯Java。
 //用户可有选择的使用(事实上，随着Android版本的提高，本地运行与虚拟机运行的速度差距已经

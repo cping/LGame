@@ -1,8 +1,8 @@
 package loon.core.graphics.component;
 
+import loon.LSystem;
 import loon.AndroidInputFactory.Key;
 import loon.action.sprite.Animation;
-import loon.core.LSystem;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LContainer;
 import loon.core.graphics.device.LColor;

@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.core.LSystem;
 import loon.core.event.ActionKey;
 import loon.core.geom.Vector2f;
 import loon.core.timer.LTimer;

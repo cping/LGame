@@ -27,7 +27,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.event.Updateable;
 
 public class Audio {

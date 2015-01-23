@@ -17,7 +17,7 @@ package loon.foundation;
 
 import java.io.UnsupportedEncodingException;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 public class NSString extends NSObject {
 

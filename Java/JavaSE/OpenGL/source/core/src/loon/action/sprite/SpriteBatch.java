@@ -22,8 +22,8 @@ package loon.action.sprite;
 
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
 import loon.core.geom.Triangle;

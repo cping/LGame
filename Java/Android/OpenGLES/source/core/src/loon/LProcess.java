@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import loon.core.Director;
 import loon.core.EmulatorButtons;
 import loon.core.EmulatorListener;
-import loon.core.LSystem;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.graphics.Screen;

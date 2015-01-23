@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import loon.LKey;
+import loon.LSystem;
 import loon.LTouch;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
@@ -35,7 +36,6 @@ import loon.action.sprite.effect.FreedomEffect;
 import loon.action.sprite.effect.PetalKernel;
 import loon.action.sprite.effect.RainKernel;
 import loon.action.sprite.effect.SnowKernel;
-import loon.core.LSystem;
 import loon.core.graphics.Desktop;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.Screen;

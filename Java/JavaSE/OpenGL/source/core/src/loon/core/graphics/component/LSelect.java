@@ -2,8 +2,8 @@ package loon.core.graphics.component;
 
 import java.util.List;
 
+import loon.LSystem;
 import loon.JavaSEInputFactory.Key;
-import loon.core.LSystem;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LContainer;
 import loon.core.graphics.device.LColor;

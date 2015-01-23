@@ -2,9 +2,9 @@ package loon.action.sprite.effect;
 
 import java.util.Random;
 
+import loon.LSystem;
 import loon.action.sprite.ISprite;
 import loon.core.LObject;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LPixmapData;

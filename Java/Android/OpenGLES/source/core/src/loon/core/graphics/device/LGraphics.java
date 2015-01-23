@@ -22,7 +22,7 @@
 package loon.core.graphics.device;
 
 import loon.AndroidGraphicsUtils;
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Triangle2f;
 

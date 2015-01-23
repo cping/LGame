@@ -15,8 +15,8 @@
  */
 package loon.foundation;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 
 //不完全的仿制cocoa库，可将相关对象序列化为xml文档，便于非标准Java环境保存
 public abstract class NSObject implements LRelease {

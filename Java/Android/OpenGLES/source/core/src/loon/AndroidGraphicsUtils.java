@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;

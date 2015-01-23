@@ -23,7 +23,7 @@ package loon.core.graphics.device;
 import java.io.IOException;
 import java.io.InputStream;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.resource.Resources;
 
 public class Typeface {

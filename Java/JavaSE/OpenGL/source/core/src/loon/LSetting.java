@@ -22,7 +22,6 @@ package loon;
 
 import java.awt.Canvas;
 
-import loon.core.LSystem;
 
 public class LSetting {
 

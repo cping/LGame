@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.LTouch;
 import loon.JavaSEInputFactory.Touch;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

@@ -27,10 +27,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.utils.CollectionUtils;
 
 

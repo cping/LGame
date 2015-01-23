@@ -16,7 +16,6 @@
 package loon;
 
 import loon.LGame.LMode;
-import loon.core.LSystem;
 /** LGame通用的基本配置类,当配置此类后,注入LGame相关入口函数即可启动游戏.
  * <p>
  * <h3>构建基本参数,用以启动游戏</h3>

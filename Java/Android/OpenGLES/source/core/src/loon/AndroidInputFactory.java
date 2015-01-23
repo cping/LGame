@@ -21,7 +21,6 @@
 package loon;
 
 import loon.core.EmulatorButtons;
-import loon.core.LSystem;
 import loon.core.event.ActionKey;
 import loon.core.geom.Vector2f;
 import loon.utils.collection.IntArray;

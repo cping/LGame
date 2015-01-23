@@ -23,9 +23,9 @@ package loon.action.sprite.painting;
 import java.util.ArrayList;
 
 import loon.LKey;
+import loon.LSystem;
 import loon.LTouch;
 import loon.action.sprite.SpriteBatch;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
 import loon.core.graphics.device.LColor;

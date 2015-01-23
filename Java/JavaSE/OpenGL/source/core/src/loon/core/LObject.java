@@ -20,6 +20,7 @@
  */
 package loon.core;
 
+import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;

@@ -22,8 +22,8 @@ package loon.core.graphics.device;
 
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 
 public class LColorPool implements LRelease {
 

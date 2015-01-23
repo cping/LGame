@@ -1,10 +1,10 @@
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.core.LObject;
-import loon.core.LSystem;
 import loon.core.geom.Point;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;

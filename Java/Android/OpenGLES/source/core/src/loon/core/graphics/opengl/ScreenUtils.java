@@ -1,15 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.IntBuffer;
-import java.util.HashMap;
-
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.jni.NativeSupport;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -30,6 +18,18 @@ import loon.jni.NativeSupport;
  * @email ceponline javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.nio.IntBuffer;
+import java.util.HashMap;
+
+import loon.LSystem;
+import loon.core.LRelease;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.jni.NativeSupport;
+
+
 public class ScreenUtils {
 
 	private static HashMap<Integer, ScreenCache> screenCache = new HashMap<Integer, ScreenCache>(

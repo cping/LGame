@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import loon.LSetting.Listener;
 import loon.action.ActionControl;
 import loon.core.Assets;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;

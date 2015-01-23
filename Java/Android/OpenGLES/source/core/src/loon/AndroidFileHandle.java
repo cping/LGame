@@ -10,7 +10,6 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import loon.Files.FileType;
 import loon.core.FileHandle;
-import loon.core.LSystem;
 
 public class AndroidFileHandle extends FileHandle {
 

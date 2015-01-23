@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 
 public class ClassRes extends DataRes implements Resource {

@@ -1,6 +1,6 @@
 package loon.action.collision;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Line;
 import loon.core.geom.Point;
 import loon.core.geom.RectBox;

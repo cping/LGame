@@ -31,7 +31,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.SoundPool;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.event.Updateable;
 
 public class Audio {

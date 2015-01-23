@@ -21,6 +21,7 @@
  */
 package loon.core;
 
+import loon.LSystem;
 import loon.LTouch;
 import loon.AndroidMultitouchUtils;
 import loon.action.sprite.SpriteBatch;

@@ -3,12 +3,12 @@ package loon.action.map;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteBatch;
 import loon.core.LObject;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.device.LImage;

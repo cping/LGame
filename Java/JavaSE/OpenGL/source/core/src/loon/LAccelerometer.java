@@ -22,7 +22,6 @@ package loon;
 
 import loon.JavaSEInputFactory.Key;
 import loon.action.map.Config;
-import loon.core.LSystem;
 import loon.core.geom.Vector3f;
 import loon.utils.MathUtils;
 

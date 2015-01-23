@@ -30,7 +30,6 @@ import loon.LGame.LMode;
 import loon.action.ActionControl;
 import loon.core.Assets;
 import loon.core.CallQueue;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;

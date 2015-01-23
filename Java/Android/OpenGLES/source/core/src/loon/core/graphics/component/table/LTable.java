@@ -20,7 +20,7 @@
  */
 package loon.core.graphics.component.table;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Dimension;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LContainer;

@@ -23,8 +23,8 @@ package loon.action.sprite;
 
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture;

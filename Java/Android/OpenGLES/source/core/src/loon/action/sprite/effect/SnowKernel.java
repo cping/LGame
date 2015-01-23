@@ -1,6 +1,6 @@
 package loon.action.sprite.effect;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;

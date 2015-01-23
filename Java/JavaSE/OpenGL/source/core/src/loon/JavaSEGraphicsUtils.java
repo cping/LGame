@@ -62,7 +62,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
-import loon.core.LSystem;
 import loon.core.graphics.device.LColor;
 import loon.core.resource.Resources;
 import loon.utils.StringUtils;

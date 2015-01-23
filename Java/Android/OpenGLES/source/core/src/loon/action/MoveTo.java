@@ -24,11 +24,11 @@ package loon.action;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
-import loon.core.LSystem;
 import loon.core.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;

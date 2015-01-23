@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.zip.GZIPInputStream;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.device.LLight;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLUtils;

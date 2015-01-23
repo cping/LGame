@@ -26,9 +26,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import loon.AndroidGraphicsUtils;
+import loon.LSystem;
 import loon.core.LRelease;
 import loon.core.LRuntimeHack;
-import loon.core.LSystem;
 import loon.core.graphics.filetype.TGA;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;

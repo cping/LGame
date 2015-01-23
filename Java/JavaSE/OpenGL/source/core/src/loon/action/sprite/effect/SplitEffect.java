@@ -1,10 +1,10 @@
 package loon.action.sprite.effect;
 
+import loon.LSystem;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.core.LObject;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.opengl.GLEx;

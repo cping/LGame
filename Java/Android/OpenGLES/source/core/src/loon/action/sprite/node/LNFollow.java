@@ -20,7 +20,7 @@
  */
 package loon.action.sprite.node;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.utils.MathUtils;

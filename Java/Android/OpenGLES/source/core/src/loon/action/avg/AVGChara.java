@@ -23,9 +23,9 @@ package loon.action.avg;
 
 import java.io.IOException;
 
+import loon.LSystem;
 import loon.action.sprite.ISprite;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
