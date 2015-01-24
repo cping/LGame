@@ -44,8 +44,7 @@ public class JavaSEFrameBuffer implements FrameBuffer {
 				id = glGenFramebuffersEXT();
 				glBindFramebufferEXT(GL_FRAMEBUFFER, id);
 				glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-						texture.hasAlpha() ? GL.GL_RGBA : GL.GL_RGB,
-						texture.getTextureID(), 0);
+						GL.GL_TEXTURE_2D, texture.getTextureID(), 0);
 				int result = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER);
 				if (result != GL_FRAMEBUFFER_COMPLETE) {
 					glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
