@@ -31,19 +31,23 @@ public final class JavaSEFileHandle extends FileHandle {
 	public FileHandle parent() {
 		File parent = file.getParentFile();
 		if (parent == null) {
-			if (type == FileType.Absolute)
+			if (type == FileType.Absolute){
 				parent = new File("/");
-			else
+			}
+			else{
 				parent = new File("");
+			}
 		}
 		return new JavaSEFileHandle(parent, type);
 	}
 
 	public File file() {
-		if (type == FileType.External)
+		if (type == FileType.External){
 			return new File(JavaSEFiles.externalPath, file.getPath());
-		if (type == FileType.Local)
+		}
+		if (type == FileType.Local){
 			return new File(JavaSEFiles.localPath, file.getPath());
+		}
 		return file;
 	}
 }

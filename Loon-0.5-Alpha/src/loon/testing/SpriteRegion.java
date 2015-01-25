@@ -13,8 +13,8 @@ import loon.utils.MathUtils;
 
 
 public class SpriteRegion extends LTextureRegion {
-	static final int VERTEX_SIZE = 2 + 1 + 2;
-	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
+	public static final int VERTEX_SIZE = 2 + 1 + 2;
+	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
 
 	public static class Animation {

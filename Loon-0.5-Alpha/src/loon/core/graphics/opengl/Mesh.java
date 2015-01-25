@@ -328,12 +328,12 @@ public class Mesh implements LRelease {
 
 	public void render(ShaderProgram shader, int primitiveType, int offset,
 			int count, boolean autoBind) {
-		if (count == 0)
+		if (count == 0){
 			return;
-
-		if (autoBind)
+		}
+		if (autoBind){
 			bind(shader);
-
+		}
 		if (isVertexArray) {
 			if (indices.getNumIndices() > 0) {
 				ShortBuffer buffer = indices.getBuffer();
@@ -349,11 +349,13 @@ public class Mesh implements LRelease {
 				GLEx.gl20.glDrawArrays(primitiveType, offset, count);
 			}
 		} else {
-			if (indices.getNumIndices() > 0)
+			if (indices.getNumIndices() > 0){
 				GLEx.gl20.glDrawElements(primitiveType, count,
 						GL20.GL_UNSIGNED_SHORT, offset * 2);
-			else
+			}
+			else{
 				GLEx.gl20.glDrawArrays(primitiveType, offset, count);
+			}
 		}
 
 		if (autoBind)

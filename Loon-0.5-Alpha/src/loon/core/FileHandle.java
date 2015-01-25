@@ -20,8 +20,8 @@ import java.io.Writer;
 import loon.Files.FileType;
 import loon.utils.StreamUtils;
 
-
 public class FileHandle {
+
 	protected File file;
 	protected FileType type;
 
@@ -59,24 +59,27 @@ public class FileHandle {
 	public String extension() {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
-		if (dotIndex == -1)
+		if (dotIndex == -1){
 			return "";
+		}
 		return name.substring(dotIndex + 1);
 	}
 
 	public String nameWithoutExtension() {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
-		if (dotIndex == -1)
+		if (dotIndex == -1){
 			return name;
+		}
 		return name.substring(0, dotIndex);
 	}
 
 	public String pathWithoutExtension() {
 		String path = file.getPath().replace('\\', '/');
 		int dotIndex = path.lastIndexOf('.');
-		if (dotIndex == -1)
+		if (dotIndex == -1){
 			return path;
+		}
 		return path.substring(0, dotIndex);
 	}
 
@@ -85,8 +88,9 @@ public class FileHandle {
 	}
 
 	public File file() {
-		if (type == FileType.External){
-			return new File(LSystem.files().getExternalStoragePath(), file.getPath());
+		if (type == FileType.External) {
+			return new File(LSystem.files().getExternalStoragePath(),
+					file.getPath());
 		}
 		return file;
 	}
@@ -320,11 +324,13 @@ public class FileHandle {
 			throw new RuntimeException("Cannot list a classpath directory: "
 					+ file);
 		String[] relativePaths = file().list();
-		if (relativePaths == null)
+		if (relativePaths == null) {
 			return new FileHandle[0];
+		}
 		FileHandle[] handles = new FileHandle[relativePaths.length];
-		for (int i = 0, n = relativePaths.length; i < n; i++)
+		for (int i = 0, n = relativePaths.length; i < n; i++) {
 			handles[i] = child(relativePaths[i]);
+		}
 		return handles;
 	}
 
@@ -334,15 +340,17 @@ public class FileHandle {
 					+ file);
 		File file = file();
 		String[] relativePaths = file.list();
-		if (relativePaths == null)
+		if (relativePaths == null) {
 			return new FileHandle[0];
+		}
 		FileHandle[] handles = new FileHandle[relativePaths.length];
 		int count = 0;
 		for (int i = 0, n = relativePaths.length; i < n; i++) {
 			String path = relativePaths[i];
 			FileHandle child = child(path);
-			if (!filter.accept(child.file()))
+			if (!filter.accept(child.file())) {
 				continue;
+			}
 			handles[count] = child;
 			count++;
 		}
@@ -457,22 +465,26 @@ public class FileHandle {
 	}
 
 	public boolean delete() {
-		if (type == FileType.Classpath)
+		if (type == FileType.Classpath) {
 			throw new RuntimeException("Cannot delete a classpath file: "
 					+ file);
-		if (type == FileType.Internal)
+		}
+		if (type == FileType.Internal) {
 			throw new RuntimeException("Cannot delete an internal file: "
 					+ file);
+		}
 		return file().delete();
 	}
 
 	public boolean deleteDirectory() {
-		if (type == FileType.Classpath)
+		if (type == FileType.Classpath) {
 			throw new RuntimeException("Cannot delete a classpath file: "
 					+ file);
-		if (type == FileType.Internal)
+		}
+		if (type == FileType.Internal) {
 			throw new RuntimeException("Cannot delete an internal file: "
 					+ file);
+		}
 		return deleteDirectory(file());
 	}
 
@@ -493,35 +505,42 @@ public class FileHandle {
 	public void copyTo(FileHandle dest) {
 		boolean sourceDir = isDirectory();
 		if (!sourceDir) {
-			if (dest.isDirectory())
+			if (dest.isDirectory()) {
 				dest = dest.child(name());
+			}
 			copyFile(this, dest);
 			return;
 		}
 		if (dest.exists()) {
-			if (!dest.isDirectory())
+			if (!dest.isDirectory()) {
 				throw new RuntimeException(
 						"Destination exists but is not a directory: " + dest);
+			}
 		} else {
 			dest.mkdirs();
-			if (!dest.isDirectory())
+			if (!dest.isDirectory()) {
 				throw new RuntimeException(
 						"Destination directory cannot be created: " + dest);
+			}
 		}
-		if (!sourceDir)
+		if (!sourceDir) {
 			dest = dest.child(name());
+		}
 		copyDirectory(this, dest);
 	}
 
 	public void moveTo(FileHandle dest) {
-		if (type == FileType.Classpath)
+		if (type == FileType.Classpath) {
 			throw new RuntimeException("Cannot move a classpath file: " + file);
-		if (type == FileType.Internal)
+		}
+		if (type == FileType.Internal) {
 			throw new RuntimeException("Cannot move an internal file: " + file);
+		}
 		copyTo(dest);
 		delete();
-		if (exists() && isDirectory())
+		if (exists() && isDirectory()) {
 			deleteDirectory();
+		}
 	}
 
 	public long length() {
@@ -545,8 +564,9 @@ public class FileHandle {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof FileHandle))
+		if (!(obj instanceof FileHandle)) {
 			return false;
+		}
 		FileHandle other = (FileHandle) obj;
 		return type == other.type && path().equals(other.path());
 	}
@@ -574,11 +594,13 @@ public class FileHandle {
 	static public FileHandle tempDirectory(String prefix) {
 		try {
 			File file = File.createTempFile(prefix, null);
-			if (!file.delete())
+			if (!file.delete()) {
 				throw new IOException("Unable to delete temp file: " + file);
-			if (!file.mkdir())
+			}
+			if (!file.mkdir()) {
 				throw new IOException("Unable to create temp directory: "
 						+ file);
+			}
 			return new FileHandle(file);
 		} catch (IOException ex) {
 			throw new RuntimeException("Unable to create temp file.", ex);
@@ -590,12 +612,13 @@ public class FileHandle {
 			File[] files = file.listFiles();
 			if (files != null) {
 				for (int i = 0, n = files.length; i < n; i++) {
-					if (!files[i].isDirectory())
+					if (!files[i].isDirectory()) {
 						files[i].delete();
-					else if (preserveTree)
+					} else if (preserveTree) {
 						emptyDirectory(files[i], true);
-					else
+					} else {
 						deleteDirectory(files[i]);
+					}
 				}
 			}
 		}
@@ -623,10 +646,11 @@ public class FileHandle {
 		for (int i = 0, n = files.length; i < n; i++) {
 			FileHandle srcFile = files[i];
 			FileHandle destFile = destDir.child(srcFile.name());
-			if (srcFile.isDirectory())
+			if (srcFile.isDirectory()) {
 				copyDirectory(srcFile, destFile);
-			else
+			} else {
 				copyFile(srcFile, destFile);
+			}
 		}
 	}
 }
