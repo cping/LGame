@@ -6,6 +6,7 @@ import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.LColor;
+import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GL20;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
@@ -33,9 +34,6 @@ public class SpriteBatch {
 	private final Transform4 projectionMatrix = new Transform4();
 	private final Transform4 combinedMatrix = new Transform4();
 
-	private boolean blendingDisabled = false;
-	private int blendSrcFunc = GL20.GL_SRC_ALPHA;
-	private int blendDstFunc = GL20.GL_ONE_MINUS_SRC_ALPHA;
 
 	private ShaderProgram shader;
 	private ShaderProgram customShader = null;
@@ -51,7 +49,14 @@ public class SpriteBatch {
 	public int maxSpritesInBatch = 0;
 
 	private boolean isLoaded;
+	
+	public static enum BlendState {
+		Additive, AlphaBlend, NonPremultiplied, Opaque;
+	}
 
+	private BlendState lastBlendState = BlendState.NonPremultiplied;
+
+	
 	public SpriteBatch() {
 		this(1000, null);
 	}
@@ -175,6 +180,30 @@ public class SpriteBatch {
 		drawing = true;
 	}
 
+	public BlendState getBlendState() {
+		return lastBlendState;
+	}
+
+	public void setBlendState(BlendState state) {
+		if (state != lastBlendState) {
+			this.lastBlendState = state;
+			switch (lastBlendState) {
+			case Additive:
+				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+				break;
+			case AlphaBlend:
+				GLEx.self.setBlendMode(GL.MODE_SPEED);
+				break;
+			case Opaque:
+				GLEx.self.setBlendMode(GL.MODE_NONE);
+				break;
+			case NonPremultiplied:
+				GLEx.self.setBlendMode(GL.MODE_NORMAL);
+				break;
+			}
+		} 
+	}
+	
 	public void end() {
 		if (!isLoaded) {
 			return;
@@ -188,11 +217,7 @@ public class SpriteBatch {
 		}
 		lastTexture = null;
 		drawing = false;
-		GL20 gl = GLEx.gl;
-		gl.glDepthMask(true);
-		if (isBlendingEnabled()) {
-			gl.glDisable(GL20.GL_BLEND);
-		}
+		GLEx.gl.glDepthMask(true);
 		if (customShader != null) {
 			customShader.end();
 		} else {
@@ -264,6 +289,10 @@ public class SpriteBatch {
 	}
 
 	public void submit() {
+		submit(lastBlendState);
+	}
+	
+	public void submit(BlendState state) {
 		if (idx == 0) {
 			return;
 		}
@@ -274,7 +303,6 @@ public class SpriteBatch {
 			maxSpritesInBatch = spritesInBatch;
 		}
 		int count = spritesInBatch * 6;
-
 		if (!lastTexture.isLoaded()) {
 			lastTexture.loadTexture();
 		}
@@ -282,53 +310,11 @@ public class SpriteBatch {
 		mesh.setVertices(vertices, 0, idx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
-
-		if (blendingDisabled) {
-			GLEx.gl.glDisable(GL20.GL_BLEND);
-		} else {
-			GLEx.gl.glEnable(GL20.GL_BLEND);
-			if (blendSrcFunc != -1) {
-				GLEx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
-			}
-		}
-
+		setBlendState(state);
 		mesh.render(customShader != null ? customShader : shader,
 				GL20.GL_TRIANGLES, 0, count);
 
 		idx = 0;
-	}
-
-	public void disableBlending() {
-		if (blendingDisabled) {
-			return;
-		}
-		submit();
-		blendingDisabled = true;
-	}
-
-	public void enableBlending() {
-		if (!blendingDisabled) {
-			return;
-		}
-		submit();
-		blendingDisabled = false;
-	}
-
-	public void setBlendFunction(int srcFunc, int dstFunc) {
-		if (blendSrcFunc == srcFunc && blendDstFunc == dstFunc) {
-			return;
-		}
-		submit();
-		blendSrcFunc = srcFunc;
-		blendDstFunc = dstFunc;
-	}
-
-	public int getBlendSrcFunc() {
-		return blendSrcFunc;
-	}
-
-	public int getBlendDstFunc() {
-		return blendDstFunc;
 	}
 
 	public void dispose() {
@@ -403,10 +389,6 @@ public class SpriteBatch {
 			setupMatrices();
 		}
 
-	}
-
-	public boolean isBlendingEnabled() {
-		return !blendingDisabled;
 	}
 
 	public boolean isDrawing() {

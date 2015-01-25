@@ -12,6 +12,7 @@ import loon.core.graphics.opengl.Mesh.VertexDataType;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.testing.SpriteRegion;
+import loon.testing.SpriteBatch.BlendState;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -133,10 +134,6 @@ public class LTextureBatch {
 
 	private final Transform4 combinedMatrix = new Transform4();
 
-	private boolean blendingDisabled = false;
-	private int blendSrcFunc = GL20.GL_SRC_ALPHA;
-	private int blendDstFunc = GL20.GL_ONE_MINUS_SRC_ALPHA;
-
 	private ShaderProgram shader;
 	private ShaderProgram customShader = null;
 	private boolean ownsShader;
@@ -155,7 +152,13 @@ public class LTextureBatch {
 	private int texWidth, texHeight;
 
 	private int size = 0;
+	
+	public static enum BlendState {
+		Additive, AlphaBlend, NonPremultiplied, Opaque;
+	}
 
+	private BlendState lastBlendState = BlendState.NonPremultiplied;
+	
 	public LTextureBatch(LTexture tex) {
 		this(tex, 1000, null);
 	}
@@ -233,6 +236,30 @@ public class LTextureBatch {
 		return shader;
 	}
 
+	public BlendState getBlendState() {
+		return lastBlendState;
+	}
+
+	public void setBlendState(BlendState state) {
+		if (state != lastBlendState) {
+			this.lastBlendState = state;
+			switch (lastBlendState) {
+			case Additive:
+				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+				break;
+			case AlphaBlend:
+				GLEx.self.setBlendMode(GL.MODE_SPEED);
+				break;
+			case Opaque:
+				GLEx.self.setBlendMode(GL.MODE_NONE);
+				break;
+			case NonPremultiplied:
+				GLEx.self.setBlendMode(GL.MODE_NORMAL);
+				break;
+			}
+		} 
+	}
+	
 	public void begin() {
 		if (!isLoaded) {
 			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
@@ -295,11 +322,7 @@ public class LTextureBatch {
 		}
 
 		drawing = false;
-		GL20 gl = GLEx.gl;
-		gl.glDepthMask(true);
-		if (isBlendingEnabled()) {
-			gl.glDisable(GL20.GL_BLEND);
-		}
+		GLEx.gl.glDepthMask(true);
 		if (customShader != null) {
 			customShader.end();
 		} else {
@@ -371,6 +394,10 @@ public class LTextureBatch {
 	}
 
 	public void submit() {
+		submit(lastBlendState);
+	}
+	
+	public void submit(BlendState state) {
 		if (vertexIdx == 0) {
 			return;
 		}
@@ -388,52 +415,10 @@ public class LTextureBatch {
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
-
-		if (blendingDisabled) {
-			GLEx.gl.glDisable(GL20.GL_BLEND);
-		} else {
-			GLEx.gl.glEnable(GL20.GL_BLEND);
-			if (blendSrcFunc != -1) {
-				GLEx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
-			}
-		}
-
+		setBlendState(state);
 		mesh.render(customShader != null ? customShader : shader,
 				GL20.GL_TRIANGLES, 0, count);
 
-	}
-
-	public void disableBlending() {
-		if (blendingDisabled) {
-			return;
-		}
-		submit();
-		blendingDisabled = true;
-	}
-
-	public void enableBlending() {
-		if (!blendingDisabled) {
-			return;
-		}
-		submit();
-		blendingDisabled = false;
-	}
-
-	public void setBlendFunction(int srcFunc, int dstFunc) {
-		if (blendSrcFunc == srcFunc && blendDstFunc == dstFunc) {
-			return;
-		}
-		submit();
-		blendSrcFunc = srcFunc;
-		blendDstFunc = dstFunc;
-	}
-
-	public int getBlendSrcFunc() {
-		return blendSrcFunc;
-	}
-
-	public int getBlendDstFunc() {
-		return blendDstFunc;
 	}
 
 	private final Transform4 transformMatrix = new Transform4();
@@ -506,10 +491,6 @@ public class LTextureBatch {
 
 	}
 
-	public boolean isBlendingEnabled() {
-		return !blendingDisabled;
-	}
-
 	public boolean isDrawing() {
 		return drawing;
 	}
@@ -522,7 +503,7 @@ public class LTextureBatch {
 		this.isCacheLocked = false;
 	}
 
-	private void commit(Cache cache) {
+	private void commit(Cache cache,BlendState state) {
 		if (!isLoaded) {
 			return;
 		}
@@ -543,20 +524,9 @@ public class LTextureBatch {
 			mesh.setVertices(cache.vertices, 0, cache.vertexIdx);
 			mesh.getIndicesBuffer().position(0);
 			mesh.getIndicesBuffer().limit(cache.count);
-			if (blendingDisabled) {
-				GLEx.gl.glDisable(GL20.GL_BLEND);
-			} else {
-				GLEx.gl.glEnable(GL20.GL_BLEND);
-				if (blendSrcFunc != -1) {
-					GLEx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
-				}
-			}
+			setBlendState(state);
 			mesh.render(customShader != null ? customShader : shader,
 					GL20.GL_TRIANGLES, 0, cache.count);
-		}
-		GL20 gl = GLEx.gl;
-		if (isBlendingEnabled()) {
-			gl.glDisable(GL20.GL_BLEND);
 		}
 		if (customShader != null) {
 			customShader.end();
@@ -567,7 +537,7 @@ public class LTextureBatch {
 
 	public void postLastCache() {
 		if (lastCache != null) {
-			commit(lastCache);
+			commit(lastCache,lastBlendState);
 		}
 	}
 
@@ -1454,7 +1424,7 @@ public class LTextureBatch {
 						-texture.height / 2, 0.0f);
 			}
 		}
-		commit(cache);
+		commit(cache,lastBlendState);
 		restore();
 	}
 
@@ -1467,7 +1437,7 @@ public class LTextureBatch {
 			projectionMatrix.translate(-texture.width / 2, -texture.height / 2,
 					0.0f);
 		}
-		commit(cache);
+		commit(cache,lastBlendState);
 		restore();
 	}
 

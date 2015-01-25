@@ -37,11 +37,11 @@ public class IndexBufferObjectSubData implements IndexData {
 	}
 
 	private int createBufferObject() {
-		int result = GLEx.gl20.glGenBuffer();
-		GLEx.gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, result);
-		GLEx.gl20.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
+		int result = GLEx.gl.glGenBuffer();
+		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, result);
+		GLEx.gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
 				byteBuffer.capacity(), null, usage);
-		GLEx.gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		return result;
 	}
 
@@ -62,7 +62,7 @@ public class IndexBufferObjectSubData implements IndexData {
 		byteBuffer.limit(count << 1);
 
 		if (isBound) {
-			GLEx.gl20.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0,
+			GLEx.gl.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0,
 					byteBuffer.limit(), byteBuffer);
 			isDirty = false;
 		}
@@ -79,7 +79,7 @@ public class IndexBufferObjectSubData implements IndexData {
 		byteBuffer.limit(buffer.limit() << 1);
 
 		if (isBound) {
-			GLEx.gl20.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0,
+			GLEx.gl.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0,
 					byteBuffer.limit(), byteBuffer);
 			isDirty = false;
 		}
@@ -94,10 +94,10 @@ public class IndexBufferObjectSubData implements IndexData {
 		if (bufferHandle == 0) {
 			throw new RuntimeException("buuh");
 		}
-		GLEx.gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);
+		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
 			byteBuffer.limit(buffer.limit() * 2);
-			GLEx.gl20.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0,
+			GLEx.gl.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0,
 					byteBuffer.limit(), byteBuffer);
 			isDirty = false;
 		}
@@ -105,7 +105,7 @@ public class IndexBufferObjectSubData implements IndexData {
 	}
 
 	public void unbind() {
-		GLEx.gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		isBound = false;
 	}
 
@@ -115,7 +115,7 @@ public class IndexBufferObjectSubData implements IndexData {
 	}
 
 	public void dispose() {
-		GL20 gl = GLEx.gl20;
+		GL20 gl = GLEx.gl;
 		gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		gl.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;

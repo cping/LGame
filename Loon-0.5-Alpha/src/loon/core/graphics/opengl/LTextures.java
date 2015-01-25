@@ -23,13 +23,11 @@ package loon.core.graphics.opengl;
 
 import java.util.HashMap;
 
-
 import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.opengl.LTexture.Format;
 
 public class LTextures {
-
 	private static HashMap<String, LTexture> lazyTextures = new HashMap<String, LTexture>(
 			100);
 
@@ -120,7 +118,7 @@ public class LTextures {
 								}
 								texture.isLoaded = false;
 								texture.isClose = true;
-
+								LTextureBatch.isBatchCacheDitry = true;
 							}
 						}
 					};
@@ -150,8 +148,8 @@ public class LTextures {
 
 	public static void reload() {
 		synchronized (lazyTextures) {
-			if (GLEx.gl20 != null) {
-				GLEx.gl20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
+			if (GLEx.gl != null) {
+				GLEx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0);
 			}
 			if (lazyTextures.size() > 0) {
 				for (final LTexture texture : lazyTextures.values()) {
@@ -169,10 +167,9 @@ public class LTextures {
 											child.textureID = texture.textureID;
 											child.isLoaded = texture.isLoaded;
 											child.reload = texture.reload;
-
 										}
 									}
-
+									LTextureBatch.isBatchCacheDitry = true;
 								}
 							};
 							LSystem.load(u);
@@ -180,7 +177,9 @@ public class LTextures {
 					}
 				}
 			}
-
+			if (GLEx.self != null) {
+				GLEx.self.reload();
+			}
 		}
 	}
 
@@ -195,7 +194,7 @@ public class LTextures {
 			}
 			lazyTextures.clear();
 		}
-
+		LSTRDictionary.dispose();
 	}
 
 	public static void destroyAll() {
@@ -209,6 +208,6 @@ public class LTextures {
 			}
 			lazyTextures.clear();
 		}
-
+		LSTRDictionary.dispose();
 	}
 }

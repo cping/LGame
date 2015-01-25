@@ -341,20 +341,20 @@ public class Mesh implements LRelease {
 				int oldLimit = buffer.limit();
 				buffer.position(offset);
 				buffer.limit(offset + count);
-				GLEx.gl20.glDrawElements(primitiveType, count,
+				GLEx.gl.glDrawElements(primitiveType, count,
 						GL20.GL_UNSIGNED_SHORT, buffer);
 				buffer.position(oldPosition);
 				buffer.limit(oldLimit);
 			} else {
-				GLEx.gl20.glDrawArrays(primitiveType, offset, count);
+				GLEx.gl.glDrawArrays(primitiveType, offset, count);
 			}
 		} else {
 			if (indices.getNumIndices() > 0){
-				GLEx.gl20.glDrawElements(primitiveType, count,
+				GLEx.gl.glDrawElements(primitiveType, count,
 						GL20.GL_UNSIGNED_SHORT, offset * 2);
 			}
 			else{
-				GLEx.gl20.glDrawArrays(primitiveType, offset, count);
+				GLEx.gl.glDrawArrays(primitiveType, offset, count);
 			}
 		}
 

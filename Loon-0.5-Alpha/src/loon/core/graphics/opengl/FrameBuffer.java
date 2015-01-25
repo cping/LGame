@@ -62,7 +62,7 @@ public class FrameBuffer implements LRelease {
 	}
 
 	private void build() {
-		GL20 gl = GLEx.gl20;
+		GL20 gl = GLEx.gl;
 
 		if (!defaultFramebufferHandleInitialized) {
 			defaultFramebufferHandleInitialized = true;
@@ -158,7 +158,7 @@ public class FrameBuffer implements LRelease {
 	}
 
 	public void dispose() {
-		GL20 gl = GLEx.gl20;
+		GL20 gl = GLEx.gl;
 		colorTexture.dispose();
 		if (hasDepth){
 			gl.glDeleteRenderbuffer(depthbufferHandle);
@@ -173,12 +173,12 @@ public class FrameBuffer implements LRelease {
 	}
 
 	public void bind() {
-		GLEx.gl20.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
+		GLEx.gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
 	}
 
 
 	public static void unbind() {
-		GLEx.gl20.glBindFramebuffer(GL20.GL_FRAMEBUFFER,
+		GLEx.gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER,
 				defaultFramebufferHandle);
 	}
 
@@ -188,7 +188,7 @@ public class FrameBuffer implements LRelease {
 	}
 
 	protected void setFrameBufferViewport() {
-		GLEx.gl20.glViewport(0, 0, colorTexture.getWidth(),
+		GLEx.gl.glViewport(0, 0, colorTexture.getWidth(),
 				colorTexture.getHeight());
 	}
 
@@ -198,13 +198,13 @@ public class FrameBuffer implements LRelease {
 	}
 
 	protected void setDefaultFrameBufferViewport() {
-		GLEx.gl20.glViewport(0, 0, GLEx.width(),
+		GLEx.gl.glViewport(0, 0, GLEx.width(),
 				GLEx.height());
 	}
 
 	public void end(int x, int y, int width, int height) {
 		unbind();
-		GLEx.gl20.glViewport(x, y, width, height);
+		GLEx.gl.glViewport(x, y, width, height);
 	}
 
 	public LTexture getColorBufferTexture() {
@@ -230,7 +230,7 @@ public class FrameBuffer implements LRelease {
 	}
 
 	public static void invalidateAllFrameBuffers(GLEx app) {
-		if (GLEx.gl20 == null){
+		if (GLEx.gl == null){
 			return;
 		}
 		Array<FrameBuffer> bufferArray = buffers.get(app);

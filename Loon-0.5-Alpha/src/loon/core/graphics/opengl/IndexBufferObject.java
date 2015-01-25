@@ -22,7 +22,7 @@ public class IndexBufferObject implements IndexData {
 		buffer = byteBuffer.asShortBuffer();
 		buffer.flip();
 		byteBuffer.flip();
-		bufferHandle = GLEx.gl20.glGenBuffer();
+		bufferHandle = GLEx.gl.glGenBuffer();
 		usage = isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW;
 	}
 
@@ -33,7 +33,7 @@ public class IndexBufferObject implements IndexData {
 		buffer = byteBuffer.asShortBuffer();
 		buffer.flip();
 		byteBuffer.flip();
-		bufferHandle = GLEx.gl20.glGenBuffer();
+		bufferHandle = GLEx.gl.glGenBuffer();
 		usage = GL20.GL_STATIC_DRAW;
 	}
 
@@ -54,7 +54,7 @@ public class IndexBufferObject implements IndexData {
 		byteBuffer.limit(count << 1);
 
 		if (isBound) {
-			GLEx.gl20.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
+			GLEx.gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
 					byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
@@ -71,7 +71,7 @@ public class IndexBufferObject implements IndexData {
 		byteBuffer.limit(buffer.limit() << 1);
 
 		if (isBound) {
-			GLEx.gl20.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
+			GLEx.gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
 					byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
@@ -83,13 +83,13 @@ public class IndexBufferObject implements IndexData {
 	}
 
 	public void bind() {
-		if (bufferHandle == 0)
+		if (bufferHandle == 0){
 			throw new RuntimeException("No buffer allocated!");
-
-		GLEx.gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);
+		}
+		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
 			byteBuffer.limit(buffer.limit() * 2);
-			GLEx.gl20.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
+			GLEx.gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER,
 					byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
@@ -97,20 +97,19 @@ public class IndexBufferObject implements IndexData {
 	}
 
 	public void unbind() {
-		GLEx.gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		isBound = false;
 	}
 
 	public void invalidate() {
-		bufferHandle = GLEx.gl20.glGenBuffer();
+		bufferHandle = GLEx.gl.glGenBuffer();
 		isDirty = true;
 	}
 
 	public void dispose() {
-		GLEx.gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
-		GLEx.gl20.glDeleteBuffer(bufferHandle);
+		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLEx.gl.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;
-
 		NativeSupport.freeMemory(byteBuffer);
 	}
 }

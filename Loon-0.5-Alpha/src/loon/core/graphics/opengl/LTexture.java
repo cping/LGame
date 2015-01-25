@@ -704,12 +704,12 @@ public class LTexture implements LRelease {
 	}
 
 	public synchronized void bind() {
-		GLEx.gl20.glBindTexture(GL.GL_TEXTURE_2D, textureID);
+		GLEx.gl.glBindTexture(GL.GL_TEXTURE_2D, textureID);
 	}
 
 	public synchronized void bind(int unit) {
-		GLEx.gl20.glActiveTexture(GL20.GL_TEXTURE0 + unit);
-		GLEx.gl20.glBindTexture(GL20.GL_TEXTURE_2D, textureID);
+		GLEx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
+		GLEx.gl.glBindTexture(GL20.GL_TEXTURE_2D, textureID);
 	}
 
 	public int hashCode() {

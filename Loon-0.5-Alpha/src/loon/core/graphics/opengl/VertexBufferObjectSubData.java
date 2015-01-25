@@ -32,11 +32,11 @@ public class VertexBufferObjectSubData implements VertexData {
 	}
 
 	private int createBufferObject() {
-		int result = GLEx.gl20.glGenBuffer();
-		GLEx.gl20.glBindBuffer(GL20.GL_ARRAY_BUFFER, result);
-		GLEx.gl20.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.capacity(),
+		int result = GLEx.gl.glGenBuffer();
+		GLEx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, result);
+		GLEx.gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.capacity(),
 				null, usage);
-		GLEx.gl20.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
+		GLEx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		return result;
 	}
 
@@ -63,7 +63,7 @@ public class VertexBufferObjectSubData implements VertexData {
 
 	private void bufferChanged() {
 		if (isBound) {
-			GLEx.gl20.glBufferSubData(GL20.GL_ARRAY_BUFFER, 0,
+			GLEx.gl.glBufferSubData(GL20.GL_ARRAY_BUFFER, 0,
 					byteBuffer.limit(), byteBuffer);
 			isDirty = false;
 		}
@@ -118,7 +118,7 @@ public class VertexBufferObjectSubData implements VertexData {
 
 	@Override
 	public void bind(final ShaderProgram shader, final int[] locations) {
-		final GL20 gl = GLEx.gl20;
+		final GL20 gl = GLEx.gl;
 
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
@@ -165,7 +165,7 @@ public class VertexBufferObjectSubData implements VertexData {
 
 	@Override
 	public void unbind(final ShaderProgram shader, final int[] locations) {
-		final GL20 gl = GLEx.gl20;
+		final GL20 gl = GLEx.gl;
 		final int numAttributes = attributes.size();
 		if (locations == null) {
 			for (int i = 0; i < numAttributes; i++) {
@@ -189,7 +189,7 @@ public class VertexBufferObjectSubData implements VertexData {
 
 	@Override
 	public void dispose() {
-		GL20 gl = GLEx.gl20;
+		GL20 gl = GLEx.gl;
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		gl.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;

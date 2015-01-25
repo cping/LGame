@@ -44,6 +44,32 @@ import loon.utils.MathUtils;
 
 public final class GLEx implements LTrans {
 
+	private static boolean enableBlend = false;
+	
+	public static void enableBlend(final GL20 gl10) {
+		try {
+			if (!GLEx.enableBlend) {
+				gl10.glEnable(GL20.GL_BLEND);
+				GLEx.enableBlend = true;
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	public static void disableBlend(final GL20 gl10) {
+		try {
+			if (GLEx.enableBlend) {
+				gl10.glDisable(GL20.GL_BLEND);
+				GLEx.enableBlend = false;
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	public final void reload(){
+		enableBlend = false;
+	}
+	
 	public static int width() {
 		return LSystem.screenRect.width;
 	}
@@ -104,8 +130,6 @@ public final class GLEx implements LTrans {
 
 	public static GL20 gl;
 
-	public static GL20 gl20;
-
 	private int currentBlendMode;
 
 	private float _lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
@@ -145,8 +169,7 @@ public final class GLEx implements LTrans {
 	private boolean onSaveFlag;
 
 	public GLEx(int width, int height) {
-		GLEx.gl20 = new LWJGLGL20();
-		GLEx.gl = gl20;
+		GLEx.gl = new LWJGLGL20();
 		GLEx.self = this;
 		this.viewPort = new RectBox(0, 0, width, height);
 		this.clip = new Clip(0, 0, viewPort.width, viewPort.height);
@@ -434,7 +457,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (isTex2DEnabled) {
-			gl20.glDisable(GL.GL_TEXTURE_2D);
+			gl.glDisable(GL.GL_TEXTURE_2D);
 			isTex2DEnabled = false;
 		}
 	}
@@ -448,7 +471,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (!isTex2DEnabled) {
-			gl20.glEnable(GL.GL_TEXTURE_2D);
+			gl.glEnable(GL.GL_TEXTURE_2D);
 			isTex2DEnabled = true;
 		}
 	}
@@ -475,8 +498,63 @@ public final class GLEx implements LTrans {
 	 * @param mode
 	 */
 	public final void setBlendMode(int mode) {
-
+		if (isClose) {
+			return;
+		}
+		if (currentBlendMode == mode) {
+			return;
+		}
+		this.currentBlendMode = mode;
+		if (currentBlendMode == GL.MODE_NORMAL) {
+			GLEx.enableBlend(gl);
+			gl.glColorMask(true, true, true, true);
+			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			return;
+		} else if (currentBlendMode == GL.MODE_ALPHA_MAP) {
+			GLEx.disableBlend(gl);
+			gl.glColorMask(false, false, false, true);
+			return;
+		} else if (currentBlendMode == GL.MODE_ALPHA_BLEND) {
+			GLEx.enableBlend(gl);
+			gl.glColorMask(true, true, true, false);
+			gl.glBlendFunc(GL20.GL_DST_ALPHA, GL20.GL_ONE_MINUS_DST_ALPHA);
+			return;
+		} else if (currentBlendMode == GL.MODE_COLOR_MULTIPLY) {
+			GLEx.enableBlend(gl);
+			gl.glColorMask(true, true, true, true);
+			gl.glBlendFunc(GL20.GL_ONE_MINUS_SRC_COLOR, GL20.GL_SRC_COLOR);
+			return;
+		} else if (currentBlendMode == GL.MODE_ADD) {
+			GLEx.enableBlend(gl);
+			gl.glColorMask(true, true, true, true);
+			gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);
+			return;
+		} else if (currentBlendMode == GL.MODE_SPEED) {
+			GLEx.enableBlend(gl);
+			gl.glColorMask(true, true, true, false);
+			gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			return;
+		} else if (currentBlendMode == GL.MODE_SCREEN) {
+			GLEx.enableBlend(gl);
+			gl.glColorMask(true, true, true, true);
+			gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_COLOR);
+			return;
+		} else if (currentBlendMode == GL.MODE_ALPHA_ONE) {
+			GLEx.enableBlend(gl);
+			gl.glColorMask(true, true, true, true);
+			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			return;
+		} else if (currentBlendMode == GL.MODE_ALPHA) {
+			GLEx.enableBlend(gl);
+			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			return;
+		} else if (currentBlendMode == GL.MODE_NONE) {
+			GLEx.disableBlend(gl);
+			gl.glColorMask(true, true, true, false);
+			return;
+		}
 	}
+
 
 	/**
 	 * 保存当前的矩阵设置
@@ -513,8 +591,8 @@ public final class GLEx implements LTrans {
 			isTex2DEnabled = false;
 		}
 		if (clear) {
-			gl20.glClearColor(0, 0, 0, 1f);
-			gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			gl.glClearColor(0, 0, 0, 1f);
+			gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		}
 	}
 
@@ -538,8 +616,8 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		gl20.glClearColor(color.r, color.g, color.b, color.a);
-		gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		gl.glClearColor(color.r, color.g, color.b, color.a);
+		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	/**
@@ -740,9 +818,9 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (flag) {
-			gl20.glEnable(GL.GL_LINE_SMOOTH);
+			gl.glEnable(GL.GL_LINE_SMOOTH);
 		} else {
-			gl20.glDisable(GL.GL_LINE_SMOOTH);
+			gl.glDisable(GL.GL_LINE_SMOOTH);
 		}
 		this.isAntialias = flag;
 	}
@@ -1741,7 +1819,7 @@ public final class GLEx implements LTrans {
 		}
 		try {
 			if (isScissorTest) {
-				gl20.glDisable(GL20.GL_SCISSOR_TEST);
+				gl.glDisable(GL20.GL_SCISSOR_TEST);
 				isScissorTest = false;
 			}
 			clip.setBounds(0, 0, viewPort.width, viewPort.height);
@@ -1764,11 +1842,11 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (!isScissorTest) {
-			gl20.glEnable(GL20.GL_SCISSOR_TEST);
+			gl.glEnable(GL20.GL_SCISSOR_TEST);
 			isScissorTest = true;
 		}
 		clip.setBounds(x, y, width, height);
-		gl20.glScissor(
+		gl.glScissor(
 				(int) (x * LSystem.scaleWidth),
 				(int) ((LSystem.screenRect.height - y - height) * LSystem.scaleHeight),
 				(int) (width * LSystem.scaleWidth),
@@ -1917,7 +1995,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		gl20.glClearColor(color.r, color.g, color.b, color.a);
+		gl.glClearColor(color.r, color.g, color.b, color.a);
 	}
 
 	/**
@@ -3085,7 +3163,7 @@ public final class GLEx implements LTrans {
 	 */
 	public void bind(int id) {
 		if (lazyTextureID != id) {
-			gl20.glBindTexture(GL20.GL_TEXTURE_2D, id);
+			gl.glBindTexture(GL20.GL_TEXTURE_2D, id);
 			lazyTextureID = id;
 		}
 	}
