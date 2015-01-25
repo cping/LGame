@@ -142,7 +142,7 @@ public class LNSprite extends LNNode {
 				batch.resetColor();
 				BlendState oldState = batch.getBlendState();
 				if (blendState != oldState) {
-					batch.flush(blendState);
+					batch.submit(blendState);
 					batch.setBlendState(oldState);
 				}
 			}

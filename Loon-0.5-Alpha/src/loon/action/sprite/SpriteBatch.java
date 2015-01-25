@@ -1,30 +1,7 @@
-/**
- * Copyright 2008 - 2012
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email：javachenpeng@yahoo.com
- * @version 0.3.3
- */
 package loon.action.sprite;
 
-import java.util.HashMap;
-
-
-import loon.core.LRelease;
 import loon.core.LSystem;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
 import loon.core.geom.Triangle;
@@ -32,33 +9,27 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.LColor;
 import loon.core.graphics.LFont;
 import loon.core.graphics.opengl.GL;
-
 import loon.core.graphics.opengl.GL20;
-import loon.core.graphics.opengl.GLAttributes;
 import loon.core.graphics.opengl.GLBatch;
 import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.Mesh;
-import loon.core.graphics.opengl.ShaderProgram;
-import loon.core.graphics.opengl.VertexAttribute;
-
+import loon.core.graphics.opengl.LSTRDictionary;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
+import loon.core.graphics.opengl.Mesh;
+import loon.core.graphics.opengl.ShaderProgram;
 import loon.core.graphics.opengl.TextureUtils;
-import loon.core.graphics.opengl.GLAttributes.Usage;
+import loon.core.graphics.opengl.VertexAttribute;
 import loon.core.graphics.opengl.Mesh.VertexDataType;
+import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.core.graphics.opengl.math.Transform4;
-
 import loon.utils.MathUtils;
+import loon.utils.collection.IntMap;
 
-public class SpriteBatch implements LRelease {
-	private final ShaderProgram shader;
-	private ShaderProgram customShader = null;
-	private boolean ownsShader;
+public class SpriteBatch {
 
-	private final Transform4 transformMatrix = new Transform4();
-	private final Transform4 projectionMatrix = new Transform4();
-	private final Transform4 combinedMatrix = new Transform4();
-
+	public static enum SpriteEffects {
+		None, FlipHorizontally, FlipVertically;
+	}
 	public void draw(SpriteFont font, CharSequence cs, float x, float y) {
 		font.drawString(this, cs, x, y);
 	}
@@ -68,19 +39,6 @@ public class SpriteBatch implements LRelease {
 		font.drawString(this, cs, x, y, color);
 	}
 
-	/**
-	 * Sample: batch.draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
-	 * Vector2f.Zero, new Vector2f(1f, 1f), SpriteEffects.None);
-	 * 
-	 * @param font
-	 * @param cs
-	 * @param local
-	 * @param color
-	 * @param rotation
-	 * @param origin
-	 * @param scale
-	 * @param spriteEffects
-	 */
 	public void draw(SpriteFont font, CharSequence cs, Vector2f local,
 			LColor color, float rotation, Vector2f origin, Vector2f scale,
 			SpriteEffects spriteEffects) {
@@ -88,10 +46,366 @@ public class SpriteBatch implements LRelease {
 				spriteEffects);
 	}
 
-	public static enum SpriteEffects {
-		None, FlipHorizontally, FlipVertically;
+	private float alpha = 1f;
+	private Mesh mesh;
+
+	float[] vertices;
+	int idx = 0;
+	LTexture lastTexture = null;
+	float invTexWidth = 0, invTexHeight = 0;
+
+	boolean drawing = false;
+
+	private final Transform4 transformMatrix = new Transform4();
+	private final Transform4 projectionMatrix = new Transform4();
+	private final Transform4 combinedMatrix = new Transform4();
+
+	private ShaderProgram shader;
+	private ShaderProgram customShader = null;
+	private boolean ownsShader;
+
+	float color = LColor.white.toFloatBits();
+	private LColor tempColor = new LColor(1, 1, 1, 1);
+
+	public int renderCalls = 0;
+
+	public int totalRenderCalls = 0;
+
+	public int maxSpritesInBatch = 0;
+
+	private boolean isLoaded;
+
+	private boolean lockSubmit = false;
+
+	private GLBatch batch;
+	
+	public static enum BlendState {
+		Additive, AlphaBlend, NonPremultiplied, Opaque;
 	}
 
+	private BlendState lastBlendState = BlendState.NonPremultiplied;
+
+	private LFont font = LFont.getDefaultFont();
+
+	public LFont getFont() {
+		return font;
+	}
+
+	public void setFont(LFont font) {
+		this.font = font;
+	}
+	
+	public SpriteBatch() {
+		this(1000, null);
+	}
+
+	public SpriteBatch(int size) {
+		this(size, null);
+	}
+
+	public SpriteBatch(final int size, final ShaderProgram defaultShader) {
+		if (size > 5460) {
+			throw new IllegalArgumentException(
+					"Can't have more than 5460 sprites per batch: " + size);
+		}
+		Updateable update = new Updateable() {
+
+			public void action(Object a) {
+
+				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
+						size * 6, new VertexAttribute(Usage.Position, 2,
+								ShaderProgram.POSITION_ATTRIBUTE),
+						new VertexAttribute(Usage.ColorPacked, 4,
+								ShaderProgram.COLOR_ATTRIBUTE),
+						new VertexAttribute(Usage.TextureCoordinates, 2,
+								ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+
+				projectionMatrix
+						.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
+
+				vertices = new float[size * SpriteRegion.SPRITE_SIZE];
+
+				int len = size * 6;
+				short[] indices = new short[len];
+				short j = 0;
+				for (int i = 0; i < len; i += 6, j += 4) {
+					indices[i] = j;
+					indices[i + 1] = (short) (j + 1);
+					indices[i + 2] = (short) (j + 2);
+					indices[i + 3] = (short) (j + 2);
+					indices[i + 4] = (short) (j + 3);
+					indices[i + 5] = j;
+				}
+				mesh.setIndices(indices);
+
+				if (defaultShader == null) {
+					shader = createDefaultShader();
+					ownsShader = true;
+				} else {
+					shader = defaultShader;
+				}
+				isLoaded = true;
+			}
+		};
+		LSystem.load(update);
+
+	}
+
+	static public ShaderProgram createDefaultShader() {
+		String vertexShader = "attribute vec4 "
+				+ ShaderProgram.POSITION_ATTRIBUTE
+				+ ";\n" //
+				+ "attribute vec4 "
+				+ ShaderProgram.COLOR_ATTRIBUTE
+				+ ";\n" //
+				+ "attribute vec2 "
+				+ ShaderProgram.TEXCOORD_ATTRIBUTE
+				+ "0;\n" //
+				+ "uniform mat4 u_projTrans;\n" //
+				+ "varying vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "\n" //
+				+ "void main()\n" //
+				+ "{\n" //
+				+ "   v_color = "
+				+ ShaderProgram.COLOR_ATTRIBUTE
+				+ ";\n" //
+				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
+				+ "   v_texCoords = "
+				+ ShaderProgram.TEXCOORD_ATTRIBUTE
+				+ "0;\n" //
+				+ "   gl_Position =  u_projTrans * "
+				+ ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+				+ "}\n";
+		String fragmentShader = "#ifdef GL_ES\n" //
+				+ "#define LOWP lowp\n" //
+				+ "precision mediump float;\n" //
+				+ "#else\n" //
+				+ "#define LOWP \n" //
+				+ "#endif\n" //
+				+ "varying LOWP vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "uniform sampler2D u_texture;\n" //
+				+ "void main()\n"//
+				+ "{\n" //
+				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+				+ "}";
+
+		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
+		if (shader.isCompiled() == false)
+			throw new IllegalArgumentException("Error compiling shader: "
+					+ shader.getLog());
+		return shader;
+	}
+
+
+	public final void draw(Shape shape) {
+		float[] points = shape.getPoints();
+		if (points.length == 0) {
+			return;
+		}
+		submit();
+		LColor color = getColor();
+		batch.begin(projectionMatrix,GL.GL_LINE_STRIP);
+		for (int i = 0; i < points.length; i += 2) {
+			batch.color(color);
+			batch.vertex(points[i], points[i + 1]);
+		}
+		if (shape.closed()) {
+			batch.color(color);
+			batch.vertex(points[0], points[1]);
+		}
+		batch.end();
+	}
+
+	public final void fill(Shape shape) {
+		if (shape == null) {
+			return;
+		}
+		Triangle tris = shape.getTriangles();
+		if (tris.getTriangleCount() == 0) {
+			return;
+		}
+		submit();
+		LColor color = getColor();
+		batch.begin(projectionMatrix,GL.GL_TRIANGLES);
+		for (int i = 0; i < tris.getTriangleCount(); i++) {
+			for (int p = 0; p < 3; p++) {
+				float[] pt = tris.getTrianglePoint(i, p);
+				batch.color(color);
+				batch.vertex(pt[0], pt[1]);
+			}
+		}
+		batch.end();
+	}
+
+	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
+		submit();
+		LColor color = getColor();
+		batch.begin(projectionMatrix,GL.GL_POLYGON);
+		for (int i = 0; i < nPoints; i++) {
+			batch.color(color);
+			batch.vertex(xPoints[i], yPoints[i]);
+		}
+		batch.end();
+	}
+
+	public void drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
+		submit();
+		LColor color = getColor();
+		batch.begin(projectionMatrix,GL.GL_LINE_LOOP);
+		for (int i = 0; i < nPoints; i++) {
+			batch.color(color);
+			batch.vertex(xPoints[i], yPoints[i]);
+		}
+		batch.end();
+	}
+
+	public void drawOval(float x1, float y1, float width, float height) {
+		this.drawArc(x1, y1, width, height, 32, 0, 360);
+	}
+
+	public void fillOval(float x1, float y1, float width, float height) {
+		this.fillArc(x1, y1, width, height, 32, 0, 360);
+	}
+
+	public void drawArc(RectBox rect, int segments, float start, float end) {
+		drawArc(rect.x, rect.y, rect.width, rect.height, segments, start, end);
+	}
+
+	public void drawArc(float x1, float y1, float width, float height,
+			int segments, float start, float end) {
+		submit();
+		LColor color = getColor();
+		while (end < start) {
+			end += 360;
+		}
+		float cx = x1 + (width / 2.0f);
+		float cy = y1 + (height / 2.0f);
+		batch.begin(projectionMatrix,GL.GL_LINE_STRIP);
+		int step = 360 / segments;
+		for (float a = start; a < (end + step); a += step) {
+			float ang = a;
+			if (ang > end) {
+				ang = end;
+			}
+			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
+			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
+			batch.color(color);
+			batch.vertex(x, y);
+		}
+		batch.end();
+	}
+
+	public final void fillArc(float x1, float y1, float width, float height,
+			float start, float end) {
+		fillArc(x1, y1, width, height, 40, start, end);
+	}
+
+	public final void fillArc(float x1, float y1, float width, float height,
+			int segments, float start, float end) {
+		submit();
+		LColor color = getColor();
+		while (end < start) {
+			end += 360;
+		}
+		float cx = x1 + (width / 2.0f);
+		float cy = y1 + (height / 2.0f);
+		batch.begin(projectionMatrix,GL.GL_TRIANGLE_FAN);
+		int step = 360 / segments;
+		batch.vertex(cx, cy);
+		for (float a = start; a < (end + step); a += step) {
+			float ang = a;
+			if (ang > end) {
+				ang = end;
+			}
+
+			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
+			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
+			batch.color(color);
+			batch.vertex(x, y);
+		}
+		batch.end();
+	}
+
+	public final void drawRoundRect(float x, float y, float width,
+			float height, int radius) {
+		drawRoundRect(x, y, width, height, radius, 40);
+	}
+
+	public final void drawRoundRect(float x, float y, float width,
+			float height, int radius, int segs) {
+		if (radius < 0) {
+			throw new IllegalArgumentException("radius > 0");
+		}
+		if (radius == 0) {
+			drawRect(x, y, width, height);
+			return;
+		}
+		int mr = (int) MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		drawLine(x + radius, y, x + width - radius, y);
+		drawLine(x, y + radius, x, y + height - radius);
+		drawLine(x + width, y + radius, x + width, y + height - radius);
+		drawLine(x + radius, y + height, x + width - radius, y + height);
+		float d = radius * 2;
+		drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+		drawArc(x, y + height - d, d, d, segs, 90, 180);
+		drawArc(x + width - d, y, d, d, segs, 270, 360);
+		drawArc(x, y, d, d, segs, 180, 270);
+	}
+
+	public final void fillRoundRect(float x, float y, float width,
+			float height, int cornerRadius) {
+		fillRoundRect(x, y, width, height, cornerRadius, 40);
+	}
+
+	public final void fillRoundRect(float x, float y, float width,
+			float height, int radius, int segs) {
+		if (radius < 0) {
+			throw new IllegalArgumentException("radius > 0");
+		}
+		if (radius == 0) {
+			fillRect(x, y, width, height);
+			return;
+		}
+		int mr = (int) MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		float d = radius * 2;
+		fillRect(x + radius, y, width - d, radius);
+		fillRect(x, y + radius, radius, height - d);
+		fillRect(x + width - radius, y + radius, radius, height - d);
+		fillRect(x + radius, y + height - radius, width - d, radius);
+		fillRect(x + radius, y + radius, width - d, height - d);
+		fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+		fillArc(x, y + height - d, d, d, segs, 90, 180);
+		fillArc(x + width - d, y, d, d, segs, 270, 360);
+		fillArc(x, y, d, d, segs, 180, 270);
+	}
+
+	public void fillRect(float x, float y, float width, float height) {
+		LColor color = getColor();
+		submit();
+		batch.begin(projectionMatrix,GL.GL_TRIANGLE_FAN);
+		{
+			batch.color(color);
+			batch.vertex(x, y);
+			batch.color(color);
+			batch.vertex(x + width, y);
+			batch.color(color);
+			batch.vertex(x + width, y + height);
+			batch.color(color);
+			batch.vertex(x, y + height);
+		}
+		batch.end();
+	}
+
+	private static LTexture whitePixel;
+	
 	static class TextureLine {
 
 		private Vector2f pstart = new Vector2f();
@@ -159,186 +473,60 @@ public class SpriteBatch implements LRelease {
 		}
 	}
 
-	private HashMap<Integer, SpriteBatch.TextureLine> lineLazy = new HashMap<Integer, SpriteBatch.TextureLine>(
+	private IntMap<SpriteBatch.TextureLine> lineLazy = new IntMap<SpriteBatch.TextureLine>(
 			1000);
 
-	private LColor tempColor = new LColor(1f, 1f, 1f, 1f);
-
-	public float color = LColor.white.toFloatBits();
-
-	private LTexture lastTexture = null;
-
-	private int idx = 0;
-
-	private final float[] vertices;
-
-	private boolean drawing = false;
-
-	public int renderCalls = 0;
-
-	public int totalRenderCalls = 0;
-
-	public int maxSpritesInBatch = 0;
-
-	public static final int VERTEX_SIZE = 2 + 1 + 2;
-
-	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
-
-	private static LTexture whitePixel;
-
-	private float alpha = 1f;
-
-	private float invTexWidth;
-
-	private float invTexHeight;
-
-	private Mesh mesh;
-
-	public SpriteBatch() {
-		this(1000);
+	// 因为效率关系，矩形区域绘制与GLEx类处理方式不同，改为纹理渲染
+	public void drawRect(float x, float y, float width, float height) {
+		drawLine(x, y, x + width, y);
+		drawLine(x + width, y, x + width, y + height);
+		drawLine(x + width, y + height, x, y + height);
+		drawLine(x, y + height, x, y);
 	}
 
-	public SpriteBatch(int size) {
-		this(size, null);
+	public void drawPoint(int x, int y, LColor c) {
+		float old = color;
+		setColor(c);
+		drawLine(x, y, x + 1, y + 1);
+		setColor(old);
 	}
 
-	public SpriteBatch(int size, ShaderProgram defaultShader) {
-		if (size > 5460) {
-			throw new IllegalArgumentException(
-					"Can't have more than 5460 sprites per batch: " + size);
-		}
-
-		mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-				new VertexAttribute(Usage.Position, 2,
-						ShaderProgram.POSITION_ATTRIBUTE), new VertexAttribute(
-						Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-				new VertexAttribute(Usage.TextureCoordinates, 2,
-						ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-
-		projectionMatrix.setToOrtho2D(0, 0, LSystem.screenRect.width,
-				LSystem.screenRect.height);
-
-		vertices = new float[size * SPRITE_SIZE];
-
-		int len = size * 6;
-		short[] indices = new short[len];
-		short j = 0;
-		for (int i = 0; i < len; i += 6, j += 4) {
-			indices[i + 0] = (short) (j + 0);
-			indices[i + 1] = (short) (j + 1);
-			indices[i + 2] = (short) (j + 2);
-			indices[i + 3] = (short) (j + 2);
-			indices[i + 4] = (short) (j + 3);
-			indices[i + 5] = (short) (j + 0);
-		}
-		mesh.setIndices(indices);
-
-		if (defaultShader == null) {
-			shader = createDefaultShader();
-			ownsShader = true;
-		} else {
-			shader = defaultShader;
+	public void drawPoints(int[] x, int[] y, LColor c) {
+		int size = y.length;
+		for (int i = 0; i < size; i++) {
+			drawPoint(x[i], y[i], c);
 		}
 	}
 
-	static public ShaderProgram createDefaultShader() {
-		String vertexShader = "attribute vec4 "
-				+ ShaderProgram.POSITION_ATTRIBUTE
-				+ ";\n" //
-				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE
-				+ "0;\n" //
-				+ "uniform mat4 u_projTrans;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "void main(){\n" //
-				+ " gl_Position = u_projTrans * "
-				+ ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ " v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
-				+ "precision highp float;\n" //
-				+ "#endif\n" //
-				+ "uniform sampler2D u_texture;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "void main(){\n"//
-				+ " gl_FragColor = texture2D(u_texture, v_texCoords);\n" //
-				+ "}";
-		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
-		if (shader.isCompiled() == false) {
-			throw new IllegalArgumentException("Error compiling shader: "
-					+ shader.getLog());
-		}
-		return shader;
-	}
-
-	public void halfAlpha() {
-		color = 1.7014117E38f;
-		alpha = 0.5f;
-	}
-
-	public void resetColor() {
-		color = -1.7014117E38f;
-		alpha = 1f;
-	}
-
-	public static enum BlendState {
-		Additive, AlphaBlend, NonPremultiplied, Opaque;
-	}
-
-	private BlendState lastBlendState = BlendState.NonPremultiplied;
-
-	private int mode;
-
-	public void begin() {
-		if (drawing) {
-			throw new IllegalStateException("Not implemented end !");
-		}
-
-		GLEx.gl.glDepthMask(false);
-		if (customShader != null) {
-			customShader.begin();
-		} else {
-			shader.begin();
-		}
-		setupMatrices();
-		drawing = true;
-		mode = GLEx.self.getBlendMode();
-		GLEx.self.glTex2DEnable();
-		renderCalls = 0;
-		idx = 0;
-		lastTexture = null;
-		drawing = true;
-	}
-
-	private void setupMatrices() {
-		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
-		if (customShader != null) {
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			customShader.setUniformi("u_texture", 0);
-		} else {
-			shader.setUniformMatrix("u_projTrans", combinedMatrix);
-			shader.setUniformi("u_texture", 0);
+	public void drawPoints(int[] x, int[] y) {
+		int size = y.length;
+		for (int i = 0; i < size; i++) {
+			drawPoint(x[i], y[i]);
 		}
 	}
 
-	public void end() {
-		checkDrawing();
-		if (idx > 0) {
-			submit();
-		}
-
-		GLEx.gl.glDepthMask(true);
-		lastTexture = null;
-		idx = 0;
-		drawing = false;
-		GLEx.self.setBlendMode(mode);
-		GLEx.self.glTex2DDisable();
-		if (customShader != null) {
-			customShader.end();
-		} else {
-			shader.end();
-		}
+	public void drawPoint(int x, int y) {
+		drawLine(x, y, x + 1, y + 1);
 	}
 
+	public void drawLine(float x1, float y1, float x2, float y2) {
+		int hashCode = 1;
+		hashCode = LSystem.unite(hashCode, x1);
+		hashCode = LSystem.unite(hashCode, y1);
+		hashCode = LSystem.unite(hashCode, x2);
+		hashCode = LSystem.unite(hashCode, y2);
+		TextureLine line = lineLazy.get(hashCode);
+		if (line == null) {
+			line = new TextureLine();
+			line.setStart(x1, y1);
+			line.setEnd(x2, y2);
+			line.setStrokeWidth(1f);
+			lineLazy.put(hashCode, line);
+		}
+		line.draw(this);
+	}
+
+	
 	public void setColor(LColor c) {
 		color = c.toFloatBits();
 	}
@@ -396,194 +584,240 @@ public class SpriteBatch implements LRelease {
 		return color;
 	}
 
-//	private GLBatch batch = new GLBatch(1000);
-
-	public void drawSpriteBounds(SpriteRegion sprite, LColor color) {
-		float[] vertices = sprite.getVertices();
-
-		float x1 = vertices[0];
-		float y1 = vertices[1];
-
-		float x2 = vertices[5];
-		float y2 = vertices[6];
-
-		float x3 = vertices[10];
-		float y3 = vertices[11];
-
-		float x4 = vertices[15];
-		float y4 = vertices[16];
-
-		setColor(color);
-		drawLine(x1, y1, x2, y2);
-		drawLine(x2, y2, x3, y3);
-		drawLine(x3, y3, x4, y4);
-		drawLine(x4, y4, x1, y1);
-		resetColor();
+	public void halfAlpha() {
+		color = 1.7014117E38f;
+		alpha = 0.5f;
 	}
 
-	public final void draw(Shape shape) {
-		
+	public void resetColor() {
+		color = -1.7014117E38f;
+		alpha = 1f;
 	}
 
-	public final void fill(Shape shape) {
-		
-	}
-
-	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
-		submit();
-		LColor color = getColor();
-
-	}
-
-	public void drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
-		
-	}
-
-	public void drawOval(float x1, float y1, float width, float height) {
-		this.drawArc(x1, y1, width, height, 32, 0, 360);
-	}
-
-	public void fillOval(float x1, float y1, float width, float height) {
-		this.fillArc(x1, y1, width, height, 32, 0, 360);
-	}
-
-	public void drawArc(RectBox rect, int segments, float start, float end) {
-		drawArc(rect.x, rect.y, rect.width, rect.height, segments, start, end);
-	}
-
-	public void drawArc(float x1, float y1, float width, float height,
-			int segments, float start, float end) {
-		
-	}
-
-	public final void fillArc(float x1, float y1, float width, float height,
-			float start, float end) {
-		fillArc(x1, y1, width, height, 40, start, end);
-	}
-
-	public final void fillArc(float x1, float y1, float width, float height,
-			int segments, float start, float end) {
-		
-	}
-
-	public final void drawRoundRect(float x, float y, float width,
-			float height, int radius) {
-		drawRoundRect(x, y, width, height, radius, 40);
-	}
-
-	public final void drawRoundRect(float x, float y, float width,
-			float height, int radius, int segs) {
-		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
+	public void drawString(LFont spriteFont, String text, float px, float py,
+			LColor color, float rotation, float originx, float originy,
+			float scale) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
 		}
-		if (radius == 0) {
-			drawRect(x, y, width, height);
-			return;
+		int heigh = ((spriteFont.getHeight() - 2));
+		if (rotation == 0f) {
+			drawString(text, px - (originx * scale), (py + heigh)
+					- (originy * scale), scale, scale, originx, originy,
+					rotation, color);
+		} else {
+			drawString(text, px, (py + heigh), scale, scale, originx, originy,
+					rotation, color);
 		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
+		setFont(old);
+	}
+
+	public void drawString(LFont spriteFont, String text, Vector2f position,
+			LColor color, float rotation, Vector2f origin, float scale) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
 		}
-		drawLine(x + radius, y, x + width - radius, y);
-		drawLine(x, y + radius, x, y + height - radius);
-		drawLine(x + width, y + radius, x + width, y + height - radius);
-		drawLine(x + radius, y + height, x + width - radius, y + height);
-		float d = radius * 2;
-		drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		drawArc(x, y + height - d, d, d, segs, 90, 180);
-		drawArc(x + width - d, y, d, d, segs, 270, 360);
-		drawArc(x, y, d, d, segs, 180, 270);
-	}
-
-	public final void fillRoundRect(float x, float y, float width,
-			float height, int cornerRadius) {
-		fillRoundRect(x, y, width, height, cornerRadius, 40);
-	}
-
-	public final void fillRoundRect(float x, float y, float width,
-			float height, int radius, int segs) {
-		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
+		int heigh = ((spriteFont.getHeight() - 2));
+		if (rotation == 0f) {
+			drawString(text, position.x - (origin.x * scale),
+					(position.y + heigh) - (origin.y * scale), scale, scale,
+					origin.x, origin.y, rotation, color);
+		} else {
+			drawString(text, position.x, (position.y + heigh), scale, scale,
+					origin.x, origin.y, rotation, color);
 		}
-		if (radius == 0) {
-			fillRect(x, y, width, height);
-			return;
+		setFont(old);
+	}
+
+	public void drawString(LFont spriteFont, String text, Vector2f position,
+			LColor color) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
 		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
+		int heigh = (spriteFont.getHeight() - 2);
+		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
+				color);
+		setFont(old);
+	}
+
+	public void drawString(LFont spriteFont, String text, float x, float y,
+			LColor color) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
 		}
-		float d = radius * 2;
-		fillRect(x + radius, y, width - d, radius);
-		fillRect(x, y + radius, radius, height - d);
-		fillRect(x + width - radius, y + radius, radius, height - d);
-		fillRect(x + radius, y + height - radius, width - d, radius);
-		fillRect(x + radius, y + radius, width - d, height - d);
-		fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		fillArc(x, y + height - d, d, d, segs, 90, 180);
-		fillArc(x + width - d, y, d, d, segs, 270, 360);
-		fillArc(x, y, d, d, segs, 180, 270);
+		int heigh = (spriteFont.getHeight() - 2);
+		drawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color);
+		setFont(old);
 	}
 
-	public void fillRect(float x, float y, float width, float height) {
-
-	}
-
-	// 因为效率关系，矩形区域绘制与GLEx类处理方式不同，改为纹理渲染
-	public void drawRect(float x, float y, float width, float height) {
-		drawLine(x, y, x + width, y);
-		drawLine(x + width, y, x + width, y + height);
-		drawLine(x + width, y + height, x, y + height);
-		drawLine(x, y + height, x, y);
-	}
-
-	public void drawPoint(int x, int y, LColor c) {
-		float old = color;
-		setColor(c);
-		drawLine(x, y, x + 1, y + 1);
-		setColor(old);
-	}
-
-	public void drawPoints(int[] x, int[] y, LColor c) {
-		int size = y.length;
-		for (int i = 0; i < size; i++) {
-			drawPoint(x[i], y[i], c);
+	public void drawString(LFont spriteFont, String text, Vector2f position,
+			LColor color, float rotation, Vector2f origin, Vector2f scale) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
 		}
-	}
-
-	public void drawPoints(int[] x, int[] y) {
-		int size = y.length;
-		for (int i = 0; i < size; i++) {
-			drawPoint(x[i], y[i]);
+		int heigh = ((spriteFont.getHeight() - 2));
+		if (rotation == 0f) {
+			drawString(text, position.x - (origin.x * scale.x),
+					(position.y + heigh) - (origin.y * scale.y), scale.x,
+					scale.y, origin.x, origin.y, rotation, color);
+		} else {
+			drawString(text, position.x, (position.y + heigh), scale.x,
+					scale.y, origin.x, origin.y, rotation, color);
 		}
+		setFont(old);
 	}
 
-	public void drawPoint(int x, int y) {
-		drawLine(x, y, x + 1, y + 1);
-	}
-
-	public void drawLine(float x1, float y1, float x2, float y2) {
-		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, x1);
-		hashCode = LSystem.unite(hashCode, y1);
-		hashCode = LSystem.unite(hashCode, x2);
-		hashCode = LSystem.unite(hashCode, y2);
-		TextureLine line = lineLazy.get(hashCode);
-		if (line == null) {
-			line = new TextureLine();
-			line.setStart(x1, y1);
-			line.setEnd(x2, y2);
-			line.setStrokeWidth(1f);
-			lineLazy.put(hashCode, line);
-		}
-		line.draw(this);
-	}
-
-	private void checkTexture(final LTexture texture) {
+	public void drawString(String mes, float x, float y, float scaleX,
+			float scaleY, float ax, float ay, float rotation, LColor c) {
 		checkDrawing();
-		if (!texture.isLoaded()) {
-			texture.loadTexture();
+		if (c == null) {
+			return;
 		}
+		if (mes == null || mes.length() == 0) {
+			return;
+		}
+		if (!lockSubmit) {
+			submit();
+		}
+		y = y - font.getAscent();
+		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
+				rotation, c);
+	}
+	
+	public boolean isLockSubmit() {
+		return lockSubmit;
+	}
+
+	public void setLockSubmit(boolean lockSubmit) {
+		this.lockSubmit = lockSubmit;
+	}
+	
+	public final void drawString(String mes, Vector2f position) {
+		drawString(mes, position.x, position.y, getColor());
+	}
+
+	public final void drawString(String mes, Vector2f position, LColor color) {
+		drawString(mes, position.x, position.y, color);
+	}
+
+	public final void drawString(String mes, float x, float y) {
+		drawString(mes, x, y, getColor());
+	}
+
+	public final void drawString(String mes, float x, float y, LColor color) {
+		drawString(mes, x, y, 0, color);
+	}
+
+	public final void drawString(String mes, float x, float y, float rotation) {
+		drawString(mes, x, y, rotation, getColor());
+	}
+
+	public void drawString(String mes, float x, float y, float rotation,
+			LColor c) {
+		drawString(mes, x, y, 1f, 1f, 0, 0, rotation, c);
+	}
+
+	public void drawString(String mes, float x, float y, float sx, float sy,
+			Vector2f origin, float rotation, LColor c) {
+		drawString(mes, x, y, sx, sy, origin.x, origin.y, rotation, c);
+	}
+
+	public void drawString(String mes, float x, float y, Vector2f origin,
+			float rotation, LColor c) {
+		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, rotation, c);
+	}
+
+	public void drawString(String mes, float x, float y, Vector2f origin,
+			LColor c) {
+		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, 0, c);
+	}
+
+	public void begin() {
+		if (!isLoaded) {
+			return;
+		}
+		if (drawing) {
+			throw new IllegalStateException(
+					"SpriteBatch.end must be called before begin.");
+		}
+		renderCalls = 0;
+		GLEx.gl.glDepthMask(false);
+		if (customShader != null) {
+			customShader.begin();
+		} else {
+			shader.begin();
+		}
+		setupMatrices();
+		drawing = true;
+	}
+
+	public BlendState getBlendState() {
+		return lastBlendState;
+	}
+
+	public void setBlendState(BlendState state) {
+		if (drawing) {
+			submit();
+		}
+		if (state != lastBlendState) {
+			this.lastBlendState = state;
+			switch (lastBlendState) {
+			case Additive:
+				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+				break;
+			case AlphaBlend:
+				GLEx.self.setBlendMode(GL.MODE_SPEED);
+				break;
+			case Opaque:
+				GLEx.self.setBlendMode(GL.MODE_NONE);
+				break;
+			case NonPremultiplied:
+				GLEx.self.setBlendMode(GL.MODE_NORMAL);
+				break;
+			}
+		}
+	}
+
+	public void end() {
+		if (!isLoaded) {
+			return;
+		}
+		if (!drawing) {
+			throw new IllegalStateException(
+					"SpriteBatch.begin must be called before end.");
+		}
+		if (idx > 0) {
+			submit();
+		}
+		lastTexture = null;
+		drawing = false;
+		GLEx.gl.glDepthMask(true);
+		if (customShader != null) {
+			customShader.end();
+		} else {
+			shader.end();
+		}
+	}
+
+	private void checkDrawing() {
+		if (!drawing) {
+			throw new IllegalStateException("Not implemented begin !");
+		}
+	}
+
+	private boolean checkTexture(final LTexture texture) {
+		if (!isLoaded) {
+			return false;
+		}
+		if (texture == null) {
+			return false;
+		}
+		checkDrawing();
 		LTexture tex2d = texture.getParent();
 		if (tex2d != null) {
 			if (tex2d != lastTexture) {
@@ -602,6 +836,114 @@ public class SpriteBatch implements LRelease {
 		} else if (idx == vertices.length) {
 			submit();
 		}
+		return true;
+	}
+
+	public void submit() {
+		submit(lastBlendState);
+	}
+
+	public void submit(BlendState state) {
+		if (idx == 0) {
+			return;
+		}
+		renderCalls++;
+		totalRenderCalls++;
+		int spritesInBatch = idx / 20;
+		if (spritesInBatch > maxSpritesInBatch) {
+			maxSpritesInBatch = spritesInBatch;
+		}
+		int count = spritesInBatch * 6;
+		if (!lastTexture.isLoaded()) {
+			lastTexture.loadTexture();
+		}
+		Mesh mesh = this.mesh;
+		mesh.setVertices(vertices, 0, idx);
+		mesh.getIndicesBuffer().position(0);
+		mesh.getIndicesBuffer().limit(count);
+		setBlendState(state);
+		mesh.render(customShader != null ? customShader : shader,
+				GL20.GL_TRIANGLES, 0, count);
+
+		idx = 0;
+	}
+
+	public void dispose() {
+		mesh.dispose();
+		if (ownsShader && shader != null) {
+			shader.dispose();
+		}
+	}
+
+	public Transform4 getProjectionMatrix() {
+		return projectionMatrix;
+	}
+
+	public Transform4 getTransformMatrix() {
+		return transformMatrix;
+	}
+
+	public void setProjectionMatrix(Transform4 projection) {
+		if (drawing) {
+			submit();
+		}
+		projectionMatrix.set(projection);
+		if (drawing) {
+			setupMatrices();
+		}
+	}
+
+	public void setTransformMatrix(Transform4 transform) {
+		if (drawing) {
+			submit();
+		}
+		transformMatrix.set(transform);
+		if (drawing) {
+			setupMatrices();
+		}
+	}
+
+	private void setupMatrices() {
+		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
+		if (customShader != null) {
+			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
+			customShader.setUniformi("u_texture", 0);
+		} else {
+			shader.setUniformMatrix("u_projTrans", combinedMatrix);
+			shader.setUniformi("u_texture", 0);
+		}
+	}
+
+	protected void switchTexture(LTexture texture) {
+		submit();
+		lastTexture = texture;
+		invTexWidth = 1.0f / texture.getWidth();
+		invTexHeight = 1.0f / texture.getHeight();
+	}
+
+	public void setShader(ShaderProgram shader) {
+		if (drawing) {
+			submit();
+			if (customShader != null) {
+				customShader.end();
+			} else {
+				this.shader.end();
+			}
+		}
+		customShader = shader;
+		if (drawing) {
+			if (customShader != null) {
+				customShader.begin();
+			} else {
+				this.shader.begin();
+			}
+			setupMatrices();
+		}
+
+	}
+
+	public boolean isDrawing() {
+		return drawing;
 	}
 
 	public void draw(LTexture texture, float x, float y, float rotation) {
@@ -1037,7 +1379,10 @@ public class SpriteBatch implements LRelease {
 			float scaleY, float rotation, float srcX, float srcY,
 			float srcWidth, float srcHeight, boolean flipX, boolean flipY,
 			boolean off) {
-		checkTexture(texture);
+
+		if (!checkTexture(texture)) {
+			return;
+		}
 
 		float worldOriginX = x + originX;
 		float worldOriginY = y + originY;
@@ -1130,6 +1475,8 @@ public class SpriteBatch implements LRelease {
 			v2 = tmp;
 		}
 
+		int idx = this.idx;
+
 		vertices[idx++] = x1;
 		vertices[idx++] = y1;
 		vertices[idx++] = color;
@@ -1153,6 +1500,8 @@ public class SpriteBatch implements LRelease {
 		vertices[idx++] = color;
 		vertices[idx++] = u2;
 		vertices[idx++] = v;
+
+		this.idx = idx;
 	}
 
 	public void draw(LTexture texture, float x, float y, float width,
@@ -1253,7 +1602,9 @@ public class SpriteBatch implements LRelease {
 			float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY) {
 
-		checkTexture(texture);
+		if (!checkTexture(texture)) {
+			return;
+		}
 
 		float u = srcX * invTexWidth + texture.xOff;
 		float v = srcY * invTexHeight + texture.yOff;
@@ -1274,6 +1625,8 @@ public class SpriteBatch implements LRelease {
 			v2 = tmp;
 		}
 
+		int idx = this.idx;
+
 		vertices[idx++] = x;
 		vertices[idx++] = y;
 		vertices[idx++] = color;
@@ -1297,6 +1650,8 @@ public class SpriteBatch implements LRelease {
 		vertices[idx++] = color;
 		vertices[idx++] = u2;
 		vertices[idx++] = v;
+
+		this.idx = idx;
 	}
 
 	public void draw(LTexture texture, Vector2f pos, RectBox srcBox, LColor c) {
@@ -1326,7 +1681,10 @@ public class SpriteBatch implements LRelease {
 
 	public void draw(LTexture texture, float x, float y, float srcX,
 			float srcY, float srcWidth, float srcHeight) {
-		checkTexture(texture);
+
+		if (!checkTexture(texture)) {
+			return;
+		}
 
 		float u = srcX * invTexWidth + texture.xOff;
 		float v = srcY * invTexHeight + texture.yOff;
@@ -1335,6 +1693,8 @@ public class SpriteBatch implements LRelease {
 		final float fx2 = x + srcWidth;
 		final float fy2 = y + srcHeight;
 
+		int idx = this.idx;
+
 		vertices[idx++] = x;
 		vertices[idx++] = y;
 		vertices[idx++] = color;
@@ -1358,12 +1718,11 @@ public class SpriteBatch implements LRelease {
 		vertices[idx++] = color;
 		vertices[idx++] = u2;
 		vertices[idx++] = v;
+
+		this.idx = idx;
 	}
 
 	public void draw(LTexture texture, float x, float y) {
-		if (texture == null) {
-			return;
-		}
 		draw(texture, x, y, texture.getWidth(), texture.getHeight());
 	}
 
@@ -1396,10 +1755,10 @@ public class SpriteBatch implements LRelease {
 
 	public void draw(LTexture texture, float x, float y, float width,
 			float height) {
-		if (texture == null) {
+
+		if (!checkTexture(texture)) {
 			return;
 		}
-		checkTexture(texture);
 
 		final float fx2 = x + width;
 		final float fy2 = y + height;
@@ -1408,6 +1767,8 @@ public class SpriteBatch implements LRelease {
 		final float u2 = texture.widthRatio;
 		final float v2 = texture.heightRatio;
 
+		int idx = this.idx;
+
 		vertices[idx++] = x;
 		vertices[idx++] = y;
 		vertices[idx++] = color;
@@ -1431,12 +1792,16 @@ public class SpriteBatch implements LRelease {
 		vertices[idx++] = color;
 		vertices[idx++] = u2;
 		vertices[idx++] = v;
+
+		this.idx = idx;
 	}
 
 	public void draw(LTexture texture, float[] spriteVertices, int offset,
 			int length) {
 
-		checkTexture(texture);
+		if (checkTexture(texture)) {
+			return;
+		}
 
 		int remainingVertices = vertices.length - idx;
 		if (remainingVertices == 0) {
@@ -1474,7 +1839,10 @@ public class SpriteBatch implements LRelease {
 
 	public void draw(LTextureRegion region, float x, float y, float width,
 			float height) {
-		checkTexture(region.getTexture());
+
+		if (!checkTexture(region.getTexture())) {
+			return;
+		}
 
 		final float fx2 = x + width;
 		final float fy2 = y + height;
@@ -1483,6 +1851,8 @@ public class SpriteBatch implements LRelease {
 		final float u2 = region.widthRatio;
 		final float v2 = region.heightRatio;
 
+		int idx = this.idx;
+
 		vertices[idx++] = x;
 		vertices[idx++] = y;
 		vertices[idx++] = color;
@@ -1506,13 +1876,17 @@ public class SpriteBatch implements LRelease {
 		vertices[idx++] = color;
 		vertices[idx++] = u2;
 		vertices[idx++] = v;
+
+		this.idx = idx;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float originX,
 			float originY, float width, float height, float scaleX,
 			float scaleY, float rotation) {
 
-		checkTexture(region.getTexture());
+		if (!checkTexture(region.getTexture())) {
+			return;
+		}
 
 		final float worldOriginX = x + originX;
 		final float worldOriginY = y + originY;
@@ -1589,6 +1963,8 @@ public class SpriteBatch implements LRelease {
 		final float u2 = region.widthRatio;
 		final float v2 = region.heightRatio;
 
+		int idx = this.idx;
+
 		vertices[idx++] = x1;
 		vertices[idx++] = y1;
 		vertices[idx++] = color;
@@ -1612,13 +1988,17 @@ public class SpriteBatch implements LRelease {
 		vertices[idx++] = color;
 		vertices[idx++] = u2;
 		vertices[idx++] = v;
+
+		this.idx = idx;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float originX,
 			float originY, float width, float height, float scaleX,
 			float scaleY, float rotation, boolean clockwise) {
 
-		checkTexture(region.getTexture());
+		if (!checkTexture(region.getTexture())) {
+			return;
+		}
 
 		final float worldOriginX = x + originX;
 		final float worldOriginY = y + originY;
@@ -1711,6 +2091,8 @@ public class SpriteBatch implements LRelease {
 			v4 = region.heightRatio;
 		}
 
+		int idx = this.idx;
+
 		vertices[idx++] = x1;
 		vertices[idx++] = y1;
 		vertices[idx++] = color;
@@ -1734,242 +2116,8 @@ public class SpriteBatch implements LRelease {
 		vertices[idx++] = color;
 		vertices[idx++] = u4;
 		vertices[idx++] = v4;
-	}
 
-	private LFont font = LFont.getDefaultFont();
-
-	public LFont getFont() {
-		return font;
-	}
-
-	public void setFont(LFont font) {
-		this.font = font;
-	}
-
-	public void drawString(LFont spriteFont, String text, float px, float py,
-			LColor color, float rotation, float originx, float originy,
-			float scale) {
-		LFont old = font;
-		if (spriteFont != null) {
-			setFont(spriteFont);
-		}
-		int heigh = ((spriteFont.getHeight() - 2));
-		if (rotation == 0f) {
-			drawString(text, px - (originx * scale), (py + heigh)
-					- (originy * scale), scale, scale, originx, originy,
-					rotation, color);
-		} else {
-			drawString(text, px, (py + heigh), scale, scale, originx, originy,
-					rotation, color);
-		}
-		setFont(old);
-	}
-
-	public void drawString(LFont spriteFont, String text, Vector2f position,
-			LColor color, float rotation, Vector2f origin, float scale) {
-		LFont old = font;
-		if (spriteFont != null) {
-			setFont(spriteFont);
-		}
-		int heigh = ((spriteFont.getHeight() - 2));
-		if (rotation == 0f) {
-			drawString(text, position.x - (origin.x * scale),
-					(position.y + heigh) - (origin.y * scale), scale, scale,
-					origin.x, origin.y, rotation, color);
-		} else {
-			drawString(text, position.x, (position.y + heigh), scale, scale,
-					origin.x, origin.y, rotation, color);
-		}
-		setFont(old);
-	}
-
-	public void drawString(LFont spriteFont, String text, Vector2f position,
-			LColor color) {
-		LFont old = font;
-		if (spriteFont != null) {
-			setFont(spriteFont);
-		}
-		int heigh = (spriteFont.getHeight() - 2);
-		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
-				color);
-		setFont(old);
-	}
-
-	public void drawString(LFont spriteFont, String text, float x, float y,
-			LColor color) {
-		LFont old = font;
-		if (spriteFont != null) {
-			setFont(spriteFont);
-		}
-		int heigh = (spriteFont.getHeight() - 2);
-		drawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color);
-		setFont(old);
-	}
-
-	public void drawString(LFont spriteFont, String text, Vector2f position,
-			LColor color, float rotation, Vector2f origin, Vector2f scale) {
-		LFont old = font;
-		if (spriteFont != null) {
-			setFont(spriteFont);
-		}
-		int heigh = ((spriteFont.getHeight() - 2));
-		if (rotation == 0f) {
-			drawString(text, position.x - (origin.x * scale.x),
-					(position.y + heigh) - (origin.y * scale.y), scale.x,
-					scale.y, origin.x, origin.y, rotation, color);
-		} else {
-			drawString(text, position.x, (position.y + heigh), scale.x,
-					scale.y, origin.x, origin.y, rotation, color);
-		}
-		setFont(old);
-	}
-
-	private boolean lockSubmit = false;
-
-	public void drawString(String mes, float x, float y, float scaleX,
-			float scaleY, float ax, float ay, float rotation, LColor c) {
-		if (!drawing) {
-			throw new IllegalStateException("Not implemented begin !");
-		}
-		if (c == null) {
-			return;
-		}
-		if (mes == null || mes.length() == 0) {
-			return;
-		}
-		if (!lockSubmit) {
-			submit();
-		}
-
-		y = y - font.getAscent();
-
-	}
-
-	public final void drawString(String mes, Vector2f position) {
-		drawString(mes, position.x, position.y, getColor());
-	}
-
-	public final void drawString(String mes, Vector2f position, LColor color) {
-		drawString(mes, position.x, position.y, color);
-	}
-
-	public final void drawString(String mes, float x, float y) {
-		drawString(mes, x, y, getColor());
-	}
-
-	public final void drawString(String mes, float x, float y, LColor color) {
-		drawString(mes, x, y, 0, color);
-	}
-
-	public final void drawString(String mes, float x, float y, float rotation) {
-		drawString(mes, x, y, rotation, getColor());
-	}
-
-	public void drawString(String mes, float x, float y, float rotation,
-			LColor c) {
-		drawString(mes, x, y, 1f, 1f, 0, 0, rotation, c);
-	}
-
-	public void drawString(String mes, float x, float y, float sx, float sy,
-			Vector2f origin, float rotation, LColor c) {
-		drawString(mes, x, y, sx, sy, origin.x, origin.y, rotation, c);
-	}
-
-	public void drawString(String mes, float x, float y, Vector2f origin,
-			float rotation, LColor c) {
-		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, rotation, c);
-	}
-
-	public void drawString(String mes, float x, float y, Vector2f origin,
-			LColor c) {
-		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, 0, c);
-	}
-
-	private void checkDrawing() {
-		if (!drawing) {
-			throw new IllegalStateException("Not implemented begin !");
-		}
-	}
-
-	public void flush() {
-		submit();
-	}
-
-	public BlendState getBlendState() {
-		return lastBlendState;
-	}
-
-	public void setBlendState(BlendState state) {
-		if (state != lastBlendState) {
-			this.lastBlendState = state;
-			switch (lastBlendState) {
-			case Additive:
-				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-				break;
-			case AlphaBlend:
-				GLEx.self.setBlendMode(GL.MODE_SPEED);
-				break;
-			case Opaque:
-				GLEx.self.setBlendMode(GL.MODE_NONE);
-				break;
-			case NonPremultiplied:
-				GLEx.self.setBlendMode(GL.MODE_NORMAL);
-				break;
-			}
-		} else {
-			GLEx.self.GL_REPLACE();
-		}
-		if (color == -1.7014117E38f || alpha != 1f) {
-			GLEx.self.GL_MODULATE();
-		} else {
-			GLEx.self.GL_REPLACE();
-		}
-	}
-
-	public void flush(BlendState state) {
-		submit(state);
-	}
-
-	private void submit() {
-		submit(lastBlendState);
-	}
-
-	private void submit(BlendState state) {
-		if (idx == 0) {
-			return;
-		}
-		renderCalls++;
-		totalRenderCalls++;
-		int spritesInBatch = idx / 20;
-		if (spritesInBatch > maxSpritesInBatch) {
-			maxSpritesInBatch = spritesInBatch;
-		}
-		GLEx.self.glTex2DEnable();
-		int count = spritesInBatch * 6;
-		GLEx.self.bind(lastTexture);
-		Mesh mesh = this.mesh;
-		mesh.setVertices(vertices, 0, idx);
-		mesh.getIndicesBuffer().position(0);
-		mesh.getIndicesBuffer().limit(count);
-		setBlendState(state);
-		mesh.render(customShader != null ? customShader : shader,
-				GL20.GL_TRIANGLES, 0, count);
-		idx = 0;
-	}
-
-	public boolean isLockSubmit() {
-		return lockSubmit;
-	}
-
-	public void setLockSubmit(boolean lockSubmit) {
-		this.lockSubmit = lockSubmit;
-	}
-
-	public void dispose() {
-		mesh.dispose();
-		if (ownsShader && shader != null) {
-			shader.dispose();
-		}
+		this.idx = idx;
 	}
 
 }

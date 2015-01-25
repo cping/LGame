@@ -583,16 +583,18 @@ public class Mesh implements LRelease {
 
 	private static void addManagedMesh(GLEx self, Mesh mesh) {
 		TArray<Mesh> managedResources = meshes.get(self);
-		if (managedResources == null)
+		if (managedResources == null){
 			managedResources = new TArray<Mesh>();
+		}
 		managedResources.add(mesh);
 		meshes.put(self, managedResources);
 	}
 
 	public static void invalidateAllMeshes(GLEx self) {
 		TArray<Mesh> meshesArray = meshes.get(self);
-		if (meshesArray == null)
+		if (meshesArray == null){
 			return;
+		}
 		for (int i = 0; i < meshesArray.size; i++) {
 			meshesArray.get(i).vertices.invalidate();
 			meshesArray.get(i).indices.invalidate();

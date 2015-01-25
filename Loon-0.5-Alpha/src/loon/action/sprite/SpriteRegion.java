@@ -1,36 +1,21 @@
-/**
- * Copyright 2008 - 2012
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email：javachenpeng@yahoo.com
- * @version 0.3.3
- */
 package loon.action.sprite;
+
 
 import java.util.List;
 
 import loon.core.geom.RectBox;
 import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.graphics.opengl.LTextureRegion;
 import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.LTexture.Format;
 import loon.utils.MathUtils;
 
+
 public class SpriteRegion extends LTextureRegion {
+	public static final int VERTEX_SIZE = 2 + 1 + 2;
+	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
+
 
 	public static class Animation {
 
@@ -71,7 +56,7 @@ public class SpriteRegion extends LTextureRegion {
 		}
 	}
 
-	final float[] vertices = new float[SpriteBatch.SPRITE_SIZE];
+	final float[] vertices = new float[SpriteRegion.SPRITE_SIZE];
 	private final LColor color = new LColor(1f, 1f, 1f, 1f);
 	private float x, y;
 	float width, height;
@@ -143,7 +128,7 @@ public class SpriteRegion extends LTextureRegion {
 			throw new IllegalArgumentException("sprite cannot be null.");
 		}
 		System.arraycopy(sprite.vertices, 0, vertices, 0,
-				SpriteBatch.SPRITE_SIZE);
+				SpriteRegion.SPRITE_SIZE);
 		texture = sprite.texture;
 		xOff = sprite.xOff;
 		yOff = sprite.yOff;
@@ -465,7 +450,7 @@ public class SpriteRegion extends LTextureRegion {
 	}
 
 	public void draw(SpriteBatch batch) {
-		batch.draw(texture, getVertices(), 0, SpriteBatch.SPRITE_SIZE);
+		batch.draw(texture, getVertices(), 0, SpriteRegion.SPRITE_SIZE);
 	}
 
 	public void draw(SpriteBatch batch, float alpha) {
@@ -589,4 +574,5 @@ public class SpriteRegion extends LTextureRegion {
 			vertices[19] = v2;
 		}
 	}
+
 }

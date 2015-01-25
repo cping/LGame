@@ -86,7 +86,6 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>> {
 
 		int[] keyTable = this.keyTable;
 
-		// Check for existing keys.
 		int index1 = key & mask;
 		int key1 = keyTable[index1];
 		if (key1 == key) {

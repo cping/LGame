@@ -5,7 +5,6 @@ import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.utils.collection.Array;
 
-
 public class GLBatch {
 	private int primitiveType;
 	private int vertexIdx;
@@ -25,22 +24,21 @@ public class GLBatch {
 	private final float[] vertices;
 	private final String[] shaderUniformNames;
 
-	public GLBatch(boolean hasNormals, boolean hasColors,
-			int numTexCoords) {
+	public GLBatch(boolean hasNormals, boolean hasColors, int numTexCoords) {
 		this(5000, hasNormals, hasColors, numTexCoords, createDefaultShader(
 				hasNormals, hasColors, numTexCoords));
 		ownsShader = true;
 	}
 
-	public GLBatch(int maxVertices, boolean hasNormals,
-			boolean hasColors, int numTexCoords) {
+	public GLBatch(int maxVertices, boolean hasNormals, boolean hasColors,
+			int numTexCoords) {
 		this(maxVertices, hasNormals, hasColors, numTexCoords,
 				createDefaultShader(hasNormals, hasColors, numTexCoords));
 		ownsShader = true;
 	}
 
-	public GLBatch(int maxVertices, boolean hasNormals,
-			boolean hasColors, int numTexCoords, ShaderProgram shader) {
+	public GLBatch(int maxVertices, boolean hasNormals, boolean hasColors,
+			int numTexCoords, ShaderProgram shader) {
 		this.maxVertices = maxVertices;
 		this.numTexCoords = numTexCoords;
 		this.shader = shader;
@@ -70,11 +68,11 @@ public class GLBatch {
 		Array<VertexAttribute> attribs = new Array<VertexAttribute>();
 		attribs.add(new VertexAttribute(Usage.Position, 3,
 				ShaderProgram.POSITION_ATTRIBUTE));
-		if (hasNormals){
+		if (hasNormals) {
 			attribs.add(new VertexAttribute(Usage.Normal, 3,
 					ShaderProgram.NORMAL_ATTRIBUTE));
 		}
-		if (hasColor){
+		if (hasColor) {
 			attribs.add(new VertexAttribute(Usage.ColorPacked, 4,
 					ShaderProgram.COLOR_ATTRIBUTE));
 		}
@@ -83,14 +81,14 @@ public class GLBatch {
 					ShaderProgram.TEXCOORD_ATTRIBUTE + i));
 		}
 		VertexAttribute[] array = new VertexAttribute[attribs.size()];
-		for (int i = 0; i < attribs.size(); i++){
+		for (int i = 0; i < attribs.size(); i++) {
 			array[i] = attribs.get(i);
 		}
 		return array;
 	}
 
 	public void setShader(ShaderProgram shader) {
-		if (ownsShader){
+		if (ownsShader) {
 			this.shader.dispose();
 		}
 		this.shader = shader;
@@ -124,6 +122,10 @@ public class GLBatch {
 		vertices[idx + 2] = z;
 	}
 
+	public void vertex(float x, float y) {
+		vertex(x, y, 0);
+	}
+
 	public void vertex(float x, float y, float z) {
 		final int idx = vertexIdx;
 		vertices[idx] = x;
@@ -136,12 +138,12 @@ public class GLBatch {
 	}
 
 	public void flush() {
-		if (numVertices == 0){
+		if (numVertices == 0) {
 			return;
 		}
 		shader.begin();
 		shader.setUniformMatrix("u_projModelView", projModelView);
-		for (int i = 0; i < numTexCoords; i++){
+		for (int i = 0; i < numTexCoords; i++) {
 			shader.setUniformi(shaderUniformNames[i], i);
 		}
 		mesh.setVertices(vertices, 0, vertexIdx);

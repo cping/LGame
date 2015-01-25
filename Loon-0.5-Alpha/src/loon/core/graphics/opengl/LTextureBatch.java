@@ -2,6 +2,8 @@ package loon.core.graphics.opengl;
 
 import java.util.HashMap;
 
+import loon.action.sprite.SpriteRegion;
+import loon.action.sprite.SpriteBatch.BlendState;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
 import loon.core.LRelease;
 import loon.core.LSystem;
@@ -11,8 +13,6 @@ import loon.core.graphics.LColor;
 import loon.core.graphics.opengl.Mesh.VertexDataType;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.core.graphics.opengl.math.Transform4;
-import loon.testing.SpriteRegion;
-import loon.testing.SpriteBatch.BlendState;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
