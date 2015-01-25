@@ -79,8 +79,6 @@ public class ShaderProgram implements LRelease {
 		}
 		this.vertexShaderSource = vertexShader;
 		this.fragmentShaderSource = fragmentShader;
-
-
 		compileShaders(vertexShader, fragmentShader);
 		if (isCompiled()) {
 			fetchAttributes();

@@ -1,7 +1,6 @@
 package loon.action.sprite;
 
 import loon.core.LSystem;
-import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
 import loon.core.geom.Triangle;
@@ -56,6 +55,7 @@ public class SpriteBatch {
 
 	boolean drawing = false;
 
+	private final static Transform4 cacheProjectionMatrix = new Transform4();
 	private final Transform4 transformMatrix = new Transform4();
 	private final Transform4 projectionMatrix = new Transform4();
 	private final Transform4 combinedMatrix = new Transform4();
@@ -72,12 +72,14 @@ public class SpriteBatch {
 	public int totalRenderCalls = 0;
 
 	public int maxSpritesInBatch = 0;
+	
+	int size;
 
 	private boolean isLoaded;
 
 	private boolean lockSubmit = false;
 
-	private GLBatch batch;
+	private GLBatch batch=new GLBatch(5000, false, true, 0);
 	
 	public static enum BlendState {
 		Additive, AlphaBlend, NonPremultiplied, Opaque;
@@ -108,47 +110,9 @@ public class SpriteBatch {
 			throw new IllegalArgumentException(
 					"Can't have more than 5460 sprites per batch: " + size);
 		}
-		Updateable update = new Updateable() {
-
-			public void action(Object a) {
-
-				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
-						size * 6, new VertexAttribute(Usage.Position, 2,
-								ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4,
-								ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2,
-								ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-
-				projectionMatrix
-						.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
-
-				vertices = new float[size * SpriteRegion.SPRITE_SIZE];
-
-				int len = size * 6;
-				short[] indices = new short[len];
-				short j = 0;
-				for (int i = 0; i < len; i += 6, j += 4) {
-					indices[i] = j;
-					indices[i + 1] = (short) (j + 1);
-					indices[i + 2] = (short) (j + 2);
-					indices[i + 3] = (short) (j + 2);
-					indices[i + 4] = (short) (j + 3);
-					indices[i + 5] = j;
-				}
-				mesh.setIndices(indices);
-
-				if (defaultShader == null) {
-					shader = createDefaultShader();
-					ownsShader = true;
-				} else {
-					shader = defaultShader;
-				}
-				isLoaded = true;
-			}
-		};
-		LSystem.load(update);
-
+		cacheProjectionMatrix.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
+		this.shader = defaultShader;
+		this.size = size;
 	}
 
 	static public ShaderProgram createDefaultShader() {
@@ -478,7 +442,7 @@ public class SpriteBatch {
 
 	// 因为效率关系，矩形区域绘制与GLEx类处理方式不同，改为纹理渲染
 	public void drawRect(float x, float y, float width, float height) {
-		drawLine(x, y, x + width, y);
+        drawLine(x, y, x + width, y);
 		drawLine(x + width, y, x + width, y + height);
 		drawLine(x + width, y + height, x, y + height);
 		drawLine(x, y + height, x, y);
@@ -739,7 +703,38 @@ public class SpriteBatch {
 
 	public void begin() {
 		if (!isLoaded) {
-			return;
+			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
+					size * 6, new VertexAttribute(Usage.Position, 2,
+							ShaderProgram.POSITION_ATTRIBUTE),
+					new VertexAttribute(Usage.ColorPacked, 4,
+							ShaderProgram.COLOR_ATTRIBUTE),
+					new VertexAttribute(Usage.TextureCoordinates, 2,
+							ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+
+			projectionMatrix
+					.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
+
+			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
+
+			int len = size * 6;
+			short[] indices = new short[len];
+			short j = 0;
+			for (int i = 0; i < len; i += 6, j += 4) {
+				indices[i] = j;
+				indices[i + 1] = (short) (j + 1);
+				indices[i + 2] = (short) (j + 2);
+				indices[i + 3] = (short) (j + 2);
+				indices[i + 4] = (short) (j + 3);
+				indices[i + 5] = j;
+			}
+			mesh.setIndices(indices);
+
+			if (shader == null) {
+				shader = createDefaultShader();
+				ownsShader = true;
+			} 
+			isLoaded = true;
+		
 		}
 		if (drawing) {
 			throw new IllegalStateException(
@@ -761,9 +756,6 @@ public class SpriteBatch {
 	}
 
 	public void setBlendState(BlendState state) {
-		if (drawing) {
-			submit();
-		}
 		if (state != lastBlendState) {
 			this.lastBlendState = state;
 			switch (lastBlendState) {
@@ -818,6 +810,9 @@ public class SpriteBatch {
 			return false;
 		}
 		checkDrawing();
+		if (!texture.isLoaded()) {
+			texture.loadTexture();
+		}
 		LTexture tex2d = texture.getParent();
 		if (tex2d != null) {
 			if (tex2d != lastTexture) {
@@ -854,9 +849,7 @@ public class SpriteBatch {
 			maxSpritesInBatch = spritesInBatch;
 		}
 		int count = spritesInBatch * 6;
-		if (!lastTexture.isLoaded()) {
-			lastTexture.loadTexture();
-		}
+		GLEx.self.bind(lastTexture);
 		Mesh mesh = this.mesh;
 		mesh.setVertices(vertices, 0, idx);
 		mesh.getIndicesBuffer().position(0);

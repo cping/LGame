@@ -46,7 +46,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 public final class LSystem {
-
+	
 	public static Files instance = null;
 
 	public static Files files() {

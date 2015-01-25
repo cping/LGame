@@ -12,55 +12,40 @@ public class GLBatch {
 	private final int maxVertices;
 	private int numVertices;
 
-	private final Mesh mesh;
+	private Mesh mesh;
 	private ShaderProgram shader;
 	private boolean ownsShader;
-	private final int numTexCoords;
-	private final int vertexSize;
-	private final int normalOffset;
-	private final int colorOffset;
-	private final int texCoordOffset;
+	private  int numTexCoords;
+	private  int vertexSize;
+	private  int normalOffset;
+	private  int colorOffset;
+	private  int texCoordOffset;
 	private final Transform4 projModelView = new Transform4();
-	private final float[] vertices;
-	private final String[] shaderUniformNames;
+	private  float[] vertices;
+	private  String[] shaderUniformNames;
 
 	public GLBatch(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		this(5000, hasNormals, hasColors, numTexCoords, createDefaultShader(
-				hasNormals, hasColors, numTexCoords));
+		this(5000, hasNormals, hasColors, numTexCoords, null);
 		ownsShader = true;
 	}
 
 	public GLBatch(int maxVertices, boolean hasNormals, boolean hasColors,
 			int numTexCoords) {
 		this(maxVertices, hasNormals, hasColors, numTexCoords,
-				createDefaultShader(hasNormals, hasColors, numTexCoords));
+				null);
 		ownsShader = true;
 	}
+	
+	private boolean hasNormals,hasColors;
 
 	public GLBatch(int maxVertices, boolean hasNormals, boolean hasColors,
 			int numTexCoords, ShaderProgram shader) {
 		this.maxVertices = maxVertices;
 		this.numTexCoords = numTexCoords;
 		this.shader = shader;
+		this.hasNormals = hasNormals;
+		this.hasColors = hasColors;
 
-		VertexAttribute[] attribs = buildVertexAttributes(hasNormals,
-				hasColors, numTexCoords);
-		mesh = new Mesh(false, maxVertices, 0, attribs);
-
-		vertices = new float[maxVertices
-				* (mesh.getVertexAttributes().vertexSize / 4)];
-		vertexSize = mesh.getVertexAttributes().vertexSize / 4;
-		normalOffset = mesh.getVertexAttribute(Usage.Normal) != null ? mesh
-				.getVertexAttribute(Usage.Normal).offset / 4 : 0;
-		colorOffset = mesh.getVertexAttribute(Usage.ColorPacked) != null ? mesh
-				.getVertexAttribute(Usage.ColorPacked).offset / 4 : 0;
-		texCoordOffset = mesh.getVertexAttribute(Usage.TextureCoordinates) != null ? mesh
-				.getVertexAttribute(Usage.TextureCoordinates).offset / 4 : 0;
-
-		shaderUniformNames = new String[numTexCoords];
-		for (int i = 0; i < numTexCoords; i++) {
-			shaderUniformNames[i] = "u_sampler" + i;
-		}
 	}
 
 	private VertexAttribute[] buildVertexAttributes(boolean hasNormals,
@@ -96,6 +81,27 @@ public class GLBatch {
 	}
 
 	public void begin(Transform4 projModelView, int primitiveType) {
+		if(shader==null){
+			VertexAttribute[] attribs = buildVertexAttributes(hasNormals,
+					hasColors, numTexCoords);
+			mesh = new Mesh(false, maxVertices, 0, attribs);
+			vertices = new float[maxVertices
+					* (mesh.getVertexAttributes().vertexSize / 4)];
+			vertexSize = mesh.getVertexAttributes().vertexSize / 4;
+			normalOffset = mesh.getVertexAttribute(Usage.Normal) != null ? mesh
+					.getVertexAttribute(Usage.Normal).offset / 4 : 0;
+			colorOffset = mesh.getVertexAttribute(Usage.ColorPacked) != null ? mesh
+					.getVertexAttribute(Usage.ColorPacked).offset / 4 : 0;
+			texCoordOffset = mesh.getVertexAttribute(Usage.TextureCoordinates) != null ? mesh
+					.getVertexAttribute(Usage.TextureCoordinates).offset / 4 : 0;
+
+			shaderUniformNames = new String[numTexCoords];
+			for (int i = 0; i < numTexCoords; i++) {
+				shaderUniformNames[i] = "u_sampler" + i;
+			}
+			shader = createDefaultShader(
+					hasNormals, hasColors, numTexCoords);
+		}
 		this.projModelView.set(projModelView);
 		this.primitiveType = primitiveType;
 	}

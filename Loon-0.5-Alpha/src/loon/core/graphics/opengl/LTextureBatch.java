@@ -183,8 +183,8 @@ public class LTextureBatch {
 			throw new IllegalArgumentException(
 					"Can't have more than 5460 sprites per batch: " + size);
 		}
-		this.setTexture(tex);
 		cacheProjectionMatrix.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
+		this.setTexture(tex);
 		this.shader = defaultShader;
 		this.size = size;
 	}

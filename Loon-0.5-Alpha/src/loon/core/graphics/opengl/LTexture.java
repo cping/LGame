@@ -711,6 +711,12 @@ public class LTexture implements LRelease {
 		GLEx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
 		GLEx.gl.glBindTexture(GL20.GL_TEXTURE_2D, textureID);
 	}
+	
+
+	public synchronized void unbind() {
+		GLEx.gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
+	}
+
 
 	public int hashCode() {
 		if (_hashCode == 1 && imageData.source != null) {
