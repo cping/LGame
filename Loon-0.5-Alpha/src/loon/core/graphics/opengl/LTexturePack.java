@@ -1,24 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import loon.action.sprite.SpriteRegion;
-import loon.core.LRelease;
-import loon.core.geom.RectBox;
-import loon.core.geom.Point.Point2i;
-import loon.core.geom.RectBox.Rect2i;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.resource.Resources;
-import loon.utils.collection.ArrayMap;
-import loon.utils.xml.XMLDocument;
-import loon.utils.xml.XMLElement;
-import loon.utils.xml.XMLParser;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -39,6 +18,28 @@ import loon.utils.xml.XMLParser;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import loon.action.sprite.SpriteRegion;
+import loon.core.LRelease;
+import loon.core.geom.RectBox;
+import loon.core.geom.Point.Point2i;
+import loon.core.geom.RectBox.Rect2i;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.resource.Resources;
+import loon.utils.collection.ArrayMap;
+import loon.utils.xml.XMLDocument;
+import loon.utils.xml.XMLElement;
+import loon.utils.xml.XMLParser;
+
+
 public class LTexturePack implements LRelease {
 
 	private final Point2i blittedSize = new Point2i();

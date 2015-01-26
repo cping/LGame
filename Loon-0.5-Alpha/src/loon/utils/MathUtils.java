@@ -20,7 +20,7 @@
  */
 package loon.utils;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.RectBox;
 
 public class MathUtils {

@@ -1,7 +1,7 @@
 package loon.core.graphics.opengl;
 
 import loon.core.LRelease;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.core.graphics.opengl.math.Location2;
 import loon.core.graphics.opengl.math.Location3;

@@ -1,23 +1,3 @@
-package loon.action.map;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
-import loon.action.sprite.Animation;
-import loon.action.sprite.ISprite;
-import loon.action.sprite.SpriteBatch;
-import loon.core.LObject;
-import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.LImage;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTexturePack;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2012
  * 
@@ -38,6 +18,26 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.action.map;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import loon.LSystem;
+import loon.action.sprite.Animation;
+import loon.action.sprite.ISprite;
+import loon.action.sprite.SpriteBatch;
+import loon.core.LObject;
+import loon.core.LRelease;
+import loon.core.geom.RectBox;
+import loon.core.geom.Vector2f;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTexturePack;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.utils.MathUtils;
+
 public class TileMap extends LObject implements ISprite, LRelease {
 
 	/**

@@ -4,9 +4,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.action.sprite.ISprite;
 import loon.core.LObject;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

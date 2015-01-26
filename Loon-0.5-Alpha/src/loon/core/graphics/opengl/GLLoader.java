@@ -30,9 +30,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 
-import loon.core.graphics.GraphicsUtils;
-import loon.core.graphics.LImage;
+import loon.JavaSEGraphicsUtils;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.resource.Resources;
 import loon.jni.NativeSupport;
 
@@ -234,7 +234,7 @@ public final class GLLoader extends LTextureData {
 					.getRaster().getDataElements(0, 0, image.getWidth(),
 							image.getHeight(), null));
 			if (fileName == null) {
-				this.pixels = GraphicsUtils.getPixels(image);
+				this.pixels = JavaSEGraphicsUtils.getPixels(image);
 			}
 			return;
 		}
@@ -268,7 +268,7 @@ public final class GLLoader extends LTextureData {
 				.getDataElements(0, 0, texImage.getWidth(),
 						texImage.getHeight(), null));
 		if (fileName == null) {
-			this.pixels = GraphicsUtils.getPixels(texImage);
+			this.pixels = JavaSEGraphicsUtils.getPixels(texImage);
 		}
 
 		if (texImage != null) {

@@ -21,7 +21,7 @@
 package loon.core.graphics.component.table;
 
 import loon.core.geom.Dimension;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 

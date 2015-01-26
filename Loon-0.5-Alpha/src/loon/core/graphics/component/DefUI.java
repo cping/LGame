@@ -21,11 +21,11 @@
  */
 package loon.core.graphics.component;
 
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LGradation;
-import loon.core.graphics.LImage;
+import loon.LSystem;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LGradation;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.utils.MathUtils;

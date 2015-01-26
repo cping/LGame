@@ -1,9 +1,9 @@
 package loon.core.graphics.opengl;
 
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
+import loon.LSystem;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture.Format;
 
 /**

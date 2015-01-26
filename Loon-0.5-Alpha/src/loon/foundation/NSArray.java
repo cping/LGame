@@ -15,7 +15,7 @@
  */
 package loon.foundation;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.utils.collection.ArrayList;
 
 public class NSArray extends NSObject {

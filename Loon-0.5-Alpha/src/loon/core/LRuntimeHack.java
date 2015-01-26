@@ -2,7 +2,8 @@ package loon.core;
 
 import java.lang.reflect.Method;
 
-import loon.core.LSystem.ApplicationType;
+import loon.LSystem;
+import loon.LSystem.ApplicationType;
 
 public class LRuntimeHack {
 

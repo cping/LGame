@@ -24,9 +24,10 @@ package loon.core.graphics.opengl;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.lwjgl.opengl.GL11;
 
 import loon.Files;
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
@@ -34,18 +35,69 @@ import loon.core.geom.Shape;
 import loon.core.geom.Triangle;
 import loon.core.geom.Triangle2f;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LTrans;
+import loon.core.graphics.opengl.math.Transform4;
 import loon.jni.NativeSupport;
 import loon.utils.MathUtils;
 
 public final class GLEx implements LTrans {
 
+	private final static Transform4 transformMatrix = new Transform4();
+
+	private final static Transform4 projectionMatrix = new Transform4();
+
+	private final static Transform4 cache_projectionMatrix = new Transform4();
+
+	private final static Transform4 cache_transformMatrix = new Transform4();
+
+	public static void setTransformMatrix(Transform4 t) {
+		transformMatrix.set(t);
+	}
+
+	public static void setProjectionMatrix(Transform4 t) {
+		projectionMatrix.set(t);
+	}
+
+	public static Transform4 getTransformMatrix() {
+		return transformMatrix;
+	}
+
+	public static Transform4 getProjectionMatrix() {
+		return projectionMatrix;
+	}
+
+	public void save() {
+		if (isClose) {
+			return;
+		}
+		if (!isPushed) {
+			cache_projectionMatrix.set(projectionMatrix);
+			cache_transformMatrix.set(transformMatrix);
+			isPushed = true;
+		}
+	}
+
+	public void restore() {
+		if (isClose) {
+			return;
+		}
+		this._lastAlpha = 1;
+		this.sx = 1;
+		this.sy = 1;
+		if (isPushed) {
+			projectionMatrix.set(cache_projectionMatrix);
+			transformMatrix.set(cache_transformMatrix);
+			isPushed = false;
+		}
+		resetFont();
+	}
+
 	private static boolean enableBlend = false;
-	
+
 	public static void enableBlend(final GL20 gl10) {
 		try {
 			if (!GLEx.enableBlend) {
@@ -66,10 +118,10 @@ public final class GLEx implements LTrans {
 		}
 	}
 
-	public final void reload(){
+	public final void reload() {
 		enableBlend = false;
 	}
-	
+
 	public static int width() {
 		return LSystem.screenRect.width;
 	}
@@ -77,7 +129,6 @@ public final class GLEx implements LTrans {
 	public static int height() {
 		return LSystem.screenRect.height;
 	}
-
 
 	public static class Clip {
 
@@ -134,7 +185,7 @@ public final class GLEx implements LTrans {
 
 	private float _lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
 
-	private boolean isClose, isTex2DEnabled, isARRAYEnable, isAntialias,
+	private boolean isClose, isTex2DEnabled, isAntialias,
 			isScissorTest, isPushed;
 
 	private final Clip clip;
@@ -143,13 +194,7 @@ public final class GLEx implements LTrans {
 
 	private final RectBox viewPort;
 
-	private boolean preTex2dMode;
-
 	public static int lazyTextureID;
-
-	private static final int[] delBufferID = new int[1];
-
-	private static final int[] delTextureID = new int[1];
 
 	boolean onAlpha;
 
@@ -157,20 +202,21 @@ public final class GLEx implements LTrans {
 
 	private LColor color = new LColor(LColor.white);
 
-	private static final float[] rectDataCords = new float[16];
-
-	private static final FloatBuffer rectData = NativeSupport
-			.newFloatBuffer(rectDataCords.length);
-
-	private static int glDataBufferID;
-
 	private LFont font = LFont.getDefaultFont();
 
 	private boolean onSaveFlag;
 
 	public GLEx(int width, int height) {
+		String version = org.lwjgl.opengl.GL11.glGetString(GL11.GL_VERSION);
+		verMajor = Integer.parseInt("" + version.charAt(0));
+		verMinor = Integer.parseInt("" + version.charAt(2));
+		if (verMajor == 1 && verMinor < 5) {
+			throw new RuntimeException("Not support GL20 !");
+		}
 		GLEx.gl = new LWJGLGL20();
 		GLEx.self = this;
+		cache_projectionMatrix.setToOrtho2D(0, 0, width, height);
+		projectionMatrix.setToOrtho2D(0, 0, width, height);
 		this.viewPort = new RectBox(0, 0, width, height);
 		this.clip = new Clip(0, 0, viewPort.width, viewPort.height);
 		this.isTex2DEnabled = false;
@@ -193,6 +239,13 @@ public final class GLEx implements LTrans {
 
 	}
 
+	public final void setViewPort(int x, int y, int width, int height) {
+		if (isClose) {
+			return;
+		}
+		gl.glViewport(x, y, width, height);
+	}
+
 	private boolean useBegin;
 
 	private GLBatch glBatch;
@@ -207,10 +260,10 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		this.glTex2DDisable();
-		/*if (glBatch == null) {
-			glBatch = new GLBatch(9000);
+		if (glBatch == null) {
+			glBatch = new GLBatch(500, false, true, 0);
 		}
-		glBatch.begin(mode);*/
+		glBatch.begin(projectionMatrix, mode);
 		this.useBegin = true;
 	}
 
@@ -285,7 +338,7 @@ public final class GLEx implements LTrans {
 		if (isClose || !useBegin) {
 			return;
 		}
-	//	glVertex3f(x, y, 0);
+		glBatch.vertex(x, y, 0);
 	}
 
 	/**
@@ -299,7 +352,7 @@ public final class GLEx implements LTrans {
 		if (isClose || !useBegin) {
 			return;
 		}
-		//glBatch.vertex(x, y, z);
+		glBatch.vertex(x, y, z);
 	}
 
 	/**
@@ -444,7 +497,7 @@ public final class GLEx implements LTrans {
 			useBegin = false;
 			return;
 		}
-		//glBatch.end();
+		glBatch.end();
 		useBegin = false;
 	}
 
@@ -474,22 +527,6 @@ public final class GLEx implements LTrans {
 			gl.glEnable(GL.GL_TEXTURE_2D);
 			isTex2DEnabled = true;
 		}
-	}
-
-	/**
-	 * 允许顶点数组操作
-	 * 
-	 */
-	public final void glTex2DARRAYEnable() {
-
-	}
-
-	/**
-	 * 禁用定点数组操作
-	 * 
-	 */
-	public final void glTex2DARRAYDisable() {
-
 	}
 
 	/**
@@ -555,26 +592,6 @@ public final class GLEx implements LTrans {
 		}
 	}
 
-
-	/**
-	 * 保存当前的矩阵设置
-	 * 
-	 */
-	public final void glPushMatrix() {
-		if (isClose) {
-			return;
-		}
-
-	}
-
-	/**
-	 * 还原上次保存的矩阵设置
-	 * 
-	 */
-	public final void glPopMatrix() {
-
-	}
-
 	/**
 	 * 清除当前帧色彩
 	 * 
@@ -584,7 +601,6 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		_isReplace = true;
 		bind(0);
 		if (isTex2DEnabled) {
 			gl.glDisable(GL.GL_TEXTURE_2D);
@@ -684,7 +700,6 @@ public final class GLEx implements LTrans {
 		}
 		if (!color.equals(LColor.white)) {
 			color.setColor(1f, 1f, 1f, 1f);
-
 		}
 	}
 
@@ -698,9 +713,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (!c.equals(color)) {
-			GL_MODULATE();
 			color.setColor(c.r, c.g, c.b, _lastAlpha);
-
 		}
 	}
 
@@ -714,10 +727,8 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (!c.equals(color)) {
-			GL_MODULATE();
 			float alpha = _lastAlpha == 1 ? c.a : _lastAlpha;
 			color.setColor(c.r, c.g, c.b, alpha);
-
 		}
 	}
 
@@ -754,9 +765,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		if (!color.equals(r, g, b, a)) {
-			GL_MODULATE();
 			color.setFloatColor(r, g, b, a);
-
 		}
 	}
 
@@ -770,9 +779,7 @@ public final class GLEx implements LTrans {
 		float blue = b / 255f;
 		float alpha = a / 255f;
 		if (!color.equals(red, green, blue, alpha)) {
-			GL_MODULATE();
 			color.setFloatColor(red, green, blue, alpha);
-
 		}
 	}
 
@@ -922,8 +929,11 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		glBegin(GL.GL_LINE_LOOP);
+		glColor(color);
 		glVertex2f(x1, y1);
+		glColor(color);
 		glVertex2f(x2, y2);
+		glColor(color);
 		glVertex2f(x3, y3);
 		glEnd();
 	}
@@ -944,8 +954,11 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		glBegin(GL.GL_TRIANGLES);
+		glColor(color);
 		glVertex2f(x1, y1);
+		glColor(color);
 		glVertex2f(x2, y2);
+		glColor(color);
 		glVertex2f(x3, y3);
 		glEnd();
 	}
@@ -1130,7 +1143,9 @@ public final class GLEx implements LTrans {
 			glBegin(GL.GL_LINES);
 		}
 		{
+			glColor(color);
 			glVertex2f(x1, y1);
+			glColor(color);
 			glVertex2f(x2, y2);
 		}
 		if (use) {
@@ -1149,6 +1164,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		glBegin(GL.GL_POINTS);
+		glColor(color);
 		glVertex2f(x, y);
 		glEnd();
 	}
@@ -1166,6 +1182,7 @@ public final class GLEx implements LTrans {
 		}
 		glBegin(GL.GL_POINTS);
 		for (int i = 0; i < size; i++) {
+			glColor(color);
 			glVertex2f(x[i], y[i]);
 		}
 		glEnd();
@@ -1186,9 +1203,11 @@ public final class GLEx implements LTrans {
 		}
 		glBegin(GL.GL_LINE_STRIP);
 		for (int i = 0; i < points.length; i += 2) {
+			glColor(color);
 			glVertex2f(points[i], points[i + 1]);
 		}
 		if (shape.closed()) {
+			glColor(color);
 			glVertex2f(points[0], points[1]);
 		}
 		glEnd();
@@ -1214,70 +1233,11 @@ public final class GLEx implements LTrans {
 		for (int i = 0; i < tris.getTriangleCount(); i++) {
 			for (int p = 0; p < 3; p++) {
 				float[] pt = tris.getTrianglePoint(i, p);
+				glColor(color);
 				glVertex2f(pt[0], pt[1]);
 			}
 		}
 		glEnd();
-	}
-
-	/**
-	 * 结合纹理绘制指定形状
-	 * 
-	 * @param shape
-	 * @param image
-	 * @param scaleX
-	 * @param scaleY
-	 */
-	public void draw(Shape shape, final LTexture image, final float scaleX,
-			final float scaleY) {
-		if (shape == null) {
-			return;
-		}
-		Triangle tris = shape.getTriangles();
-		if (tris.getTriangleCount() == 0) {
-			return;
-		}
-
-	}
-
-	/**
-	 * 结合纹理绘制指定形状，且自动修正大小
-	 * 
-	 * @param shape
-	 * @param image
-	 */
-	public void drawFit(Shape shape, LTexture image) {
-		drawFit(shape, image, 1f, 1f);
-	}
-
-	/**
-	 * 结合纹理绘制指定形状，且自动修正大小
-	 * 
-	 * @param shape
-	 * @param image
-	 * @param scaleX
-	 * @param scaleY
-	 */
-	public void drawFit(Shape shape, final LTexture image, final float scaleX,
-			final float scaleY) {
-		if (shape == null) {
-			return;
-		}
-		Triangle tris = shape.getTriangles();
-		if (tris.getTriangleCount() == 0) {
-			return;
-		}
-
-	}
-
-	/**
-	 * 结合纹理绘制指定形状
-	 * 
-	 * @param shape
-	 * @param image
-	 */
-	public void draw(Shape shape, LTexture image) {
-		draw(shape, image, 0.01f, 0.01f);
 	}
 
 	/**
@@ -1291,7 +1251,10 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-
+		save();
+		translate(x, y);
+		draw(p);
+		restore();
 	}
 
 	/**
@@ -1304,7 +1267,10 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-
+		save();
+		projectionMatrix.rotate(-rotation, 0.0f, 0.0f, 1.0f);
+		draw(p);
+		restore();
 	}
 
 	/**
@@ -1318,7 +1284,10 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-
+		save();
+		translate(x, y);
+		fill(p);
+		restore();
 	}
 
 	/**
@@ -1331,7 +1300,10 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-
+		save();
+		projectionMatrix.rotate(-rotation, 0.0f, 0.0f, 1.0f);
+		fill(p);
+		restore();
 	}
 
 	/**
@@ -1364,6 +1336,7 @@ public final class GLEx implements LTrans {
 		}
 		{
 			for (int i = 0; i < nPoints; i++) {
+				glColor(color);
 				glVertex2f(xPoints[i], yPoints[i]);
 			}
 		}
@@ -1402,6 +1375,7 @@ public final class GLEx implements LTrans {
 			glBegin(GL.GL_LINE_LOOP);
 		}
 		for (int i = 0; i < nPoints; i++) {
+			glColor(color);
 			glVertex2f(xPoints[i], yPoints[i]);
 		}
 		if (use) {
@@ -1547,6 +1521,7 @@ public final class GLEx implements LTrans {
 			}
 			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
 			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
+			glColor(color);
 			glVertex2f(x, y);
 		}
 		glEnd();
@@ -1591,6 +1566,7 @@ public final class GLEx implements LTrans {
 		float cy = y1 + (height / 2.0f);
 		glBegin(GL.GL_TRIANGLE_FAN);
 		int step = 360 / segments;
+		glColor(color);
 		glVertex2f(cx, cy);
 		for (float a = start; a < (end + step); a += step) {
 			float ang = a;
@@ -1600,12 +1576,13 @@ public final class GLEx implements LTrans {
 
 			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
 			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
-
+			glColor(color);
 			glVertex2f(x, y);
 		}
 		glEnd();
 		if (isAntialias) {
 			glBegin(GL.GL_TRIANGLE_FAN);
+			glColor(color);
 			glVertex2f(cx, cy);
 			if (end != 360) {
 				end -= 10;
@@ -1620,7 +1597,7 @@ public final class GLEx implements LTrans {
 						* width / 2.0f));
 				float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang + 10))
 						* height / 2.0f));
-
+				glColor(color);
 				glVertex2f(x, y);
 			}
 			glEnd();
@@ -1734,14 +1711,16 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-
+		this.lineWidth = width;
+		gl.glLineWidth(width);
 	}
 
 	public void resetLineWidth() {
 		if (isClose) {
 			return;
 		}
-
+		gl.glLineWidth(1.0f);
+		this.lineWidth = 1.0f;
 	}
 
 	public final float getLineWidth() {
@@ -1894,42 +1873,12 @@ public final class GLEx implements LTrans {
 		return clip.y;
 	}
 
-	public final void setViewPort(int x, int y, int width, int height) {
-		if (isClose) {
-			return;
-		}
-
-	}
-
 	public final void setViewPort(RectBox port) {
 		setViewPort((int) port.x, (int) port.y, port.width, port.height);
 	}
 
 	public final RectBox getViewPort() {
 		return viewPort;
-	}
-
-	public void save() {
-		if (isClose) {
-			return;
-		}
-		if (!isPushed) {
-
-		}
-	}
-
-	public void restore() {
-		if (isClose) {
-			return;
-		}
-		this._lastAlpha = 1;
-		this.sx = 1;
-		this.sy = 1;
-		if (isPushed) {
-
-			isPushed = false;
-		}
-		resetFont();
 	}
 
 	public void scale(float sx, float sy) {
@@ -1948,7 +1897,7 @@ public final class GLEx implements LTrans {
 		}
 		save();
 		translate(rx, ry);
-
+        projectionMatrix.rotate(0, 0, 1, angle);
 		translate(-rx, -ry);
 	}
 
@@ -1965,25 +1914,11 @@ public final class GLEx implements LTrans {
 		save();
 		translateX = x;
 		translateY = y;
-
+		projectionMatrix.translate(x, y, 0);
 		clip.x -= x;
 		clip.width -= x;
 		clip.y -= y;
 		clip.height -= y;
-	}
-
-	public void glTranslatef(float x, float y, float z) {
-		if (isClose) {
-			return;
-		}
-
-	}
-
-	public void glRotatef(float angle, float x, float y, float z) {
-		if (isClose) {
-			return;
-		}
-
 	}
 
 	/**
@@ -2852,99 +2787,8 @@ public final class GLEx implements LTrans {
 			float srcHeight, LColor c, float rotation, Vector2f origin,
 			Direction dir) {
 
-		if (isClose) {
-			return;
-		}
-
-		if (!texture.isVisible) {
-			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
-
-		if (checkAlpha(c)) {
-			return;
-		}
-
-		glTex2DEnable();
-		{
-
-			bind(texture.textureID);
-
-			if (!texture.isStatic) {
-				updateColor = (c != null && !color.equals(c));
-				if (updateColor) {
-					GL_MODULATE();
-
-				}
-			}
-
-		}
 	}
 
-	private LTexture lastTextre;
-
-	public LTexture getLastTexture() {
-		return lastTextre;
-	}
-
-	private float lastX, lastY, lastWidth, LastHeight;
-
-	/**
-	 * 将指定纹理文件作为矩形区域注入画布
-	 * 
-	 * @param texture
-	 * @param srcX
-	 * @param srcY
-	 * @param srcWidth
-	 * @param srcHeight
-	 */
-	private final void put(LTexture texture, float srcX, float srcY,
-			float srcWidth, float srcHeight) {
-
-		if (lastTextre != texture || lastX != srcX || lastY != srcY
-				|| lastWidth != srcWidth || LastHeight != srcHeight) {
-			final float invTexWidth = (1f / texture.width) * texture.widthRatio;
-			final float invTexHeight = (1f / texture.height)
-					* texture.heightRatio;
-
-			final float xOff = srcX * invTexWidth + texture.xOff;
-			final float yOff = srcY * invTexHeight + texture.yOff;
-			final float widthRatio = srcWidth * invTexWidth;
-			final float heightRatio = srcHeight * invTexHeight;
-
-			rectDataCords[8] = xOff;
-			rectDataCords[9] = yOff;
-			rectDataCords[10] = widthRatio;
-			rectDataCords[11] = yOff;
-			rectDataCords[12] = xOff;
-			rectDataCords[13] = heightRatio;
-			rectDataCords[14] = widthRatio;
-			rectDataCords[15] = heightRatio;
-
-			lastTextre = texture;
-			lastX = srcX;
-			lastY = srcY;
-			lastWidth = srcWidth;
-			LastHeight = srcHeight;
-
-			rectData.put(rectDataCords, 8, 8);
-			rectData.position(8);
-		}
-
-	}
-
-	/**
-	 * 清空画布为指定色彩
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 */
-	public void clear(float r, float g, float b) {
-
-	}
 
 	/**
 	 * 输出字符串
@@ -3182,16 +3026,6 @@ public final class GLEx implements LTrans {
 		return this.currentBlendMode;
 	}
 
-	private boolean _isReplace = false;
-
-	public final void GL_REPLACE() {
-
-	}
-
-	public final void GL_MODULATE() {
-
-	}
-
 	public void resetFont() {
 		this.font = LFont.getDefaultFont();
 		this.resetColor();
@@ -3205,45 +3039,8 @@ public final class GLEx implements LTrans {
 		return this.font;
 	}
 
-	public final void set2DStateOn() {
-
-	}
-
-	public final void set2DStateOff() {
-
-	}
-
-	public void savePrj() {
-
-	}
-
-	public void restorePrj() {
-
-	}
-
-	public void saveMatrices() {
-
-	}
-
-	public void restoreMatrices() {
-
-	}
-
-	public void setMatrixMode(Matrix m) {
-		if (isClose) {
-			return;
-		}
-
-	}
-
 	private final boolean checkAlpha(LColor c) {
 		return _lastAlpha < 0.1f;
-	}
-
-	private final boolean checkSave(LTexture texture, float x, float y,
-			float width, float height, float rotation, Direction dir) {
-		return x != 0 || y != 0 || width != texture.width
-				|| height != texture.height || dir != Direction.TRANS_NONE;
 	}
 
 	public final float getTranslateX() {
@@ -3263,6 +3060,19 @@ public final class GLEx implements LTrans {
 		if (glBatch != null) {
 			glBatch.dispose();
 		}
+	}
+
+		public void copyImageToTexture(LTexture texture, LImage pix, int x, int y) {
+			bind(texture);
+			glTex2DEnable();
+			{
+				bind(texture.textureID);
+				gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, pix.hasAlpha() ? 4 : 1);
+				gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, x, y, pix.getWidth(),
+						pix.getHeight(), pix.hasAlpha() ? GL.GL_RGBA : GL.GL_RGB,
+						GL.GL_UNSIGNED_BYTE, pix.getByteBuffer());
+			}
+		
 	}
 
 }

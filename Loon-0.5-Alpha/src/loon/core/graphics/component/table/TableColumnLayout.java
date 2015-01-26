@@ -20,8 +20,8 @@
  */
 package loon.core.graphics.component.table;
 
-import loon.core.graphics.LColor;
 import loon.core.graphics.LComponent;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 
 public class TableColumnLayout {

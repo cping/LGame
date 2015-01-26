@@ -22,8 +22,8 @@ package loon.action.sprite.node;
 
 import java.util.HashMap;
 
+import loon.LInputFactory.Touch;
 import loon.core.geom.Vector2f;
-import loon.core.input.LInputFactory.Touch;
 import loon.utils.MathUtils;
 
 public class LNButton extends LNUI {

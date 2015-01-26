@@ -2,14 +2,13 @@ package loon.core.graphics.opengl;
 
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.action.sprite.SpriteRegion;
-import loon.action.sprite.SpriteBatch.BlendState;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.Mesh.VertexDataType;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.core.graphics.opengl.math.Transform4;
@@ -152,13 +151,20 @@ public class LTextureBatch {
 	private int texWidth, texHeight;
 
 	private int size = 0;
-	
+
+	private float tx, ty;
+
+	public void setPos(float tx, float ty) {
+		this.tx = tx;
+		this.ty = ty;
+	}
+
 	public static enum BlendState {
 		Additive, AlphaBlend, NonPremultiplied, Opaque;
 	}
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
-	
+
 	public LTextureBatch(LTexture tex) {
 		this(tex, 1000, null);
 	}
@@ -230,9 +236,10 @@ public class LTextureBatch {
 				+ "}";
 
 		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
-		if (shader.isCompiled() == false)
+		if (shader.isCompiled() == false) {
 			throw new IllegalArgumentException("Error compiling shader: "
 					+ shader.getLog());
+		}
 		return shader;
 	}
 
@@ -257,9 +264,9 @@ public class LTextureBatch {
 				GLEx.self.setBlendMode(GL.MODE_NORMAL);
 				break;
 			}
-		} 
+		}
 	}
-	
+
 	public void begin() {
 		if (!isLoaded) {
 			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
@@ -269,8 +276,6 @@ public class LTextureBatch {
 							ShaderProgram.COLOR_ATTRIBUTE),
 					new VertexAttribute(Usage.TextureCoordinates, 2,
 							ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-
-			projectionMatrix.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
 
 			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
 			int len = size * 6;
@@ -318,9 +323,19 @@ public class LTextureBatch {
 					"SpriteBatch.begin must be called before end.");
 		}
 		if (vertexIdx > 0) {
+			if (tx != 0 || ty != 0) {
+				GLEx.self.save();
+				Transform4 project = GLEx.getProjectionMatrix();
+				project.translate(tx, ty, 0);
+				if (drawing) {
+					setupMatrices();
+				}
+			}
 			submit();
+			if (tx != 0 || ty != 0) {
+				GLEx.self.restore();
+			}
 		}
-
 		drawing = false;
 		GLEx.gl.glDepthMask(true);
 		if (customShader != null) {
@@ -396,7 +411,7 @@ public class LTextureBatch {
 	public void submit() {
 		submit(lastBlendState);
 	}
-	
+
 	public void submit(BlendState state) {
 		if (vertexIdx == 0) {
 			return;
@@ -408,9 +423,7 @@ public class LTextureBatch {
 			}
 			this.count = spritesInBatch * 6;
 		}
-		if (!lastTexture.isLoaded()) {
-			lastTexture.loadTexture();
-		}
+		GLEx.self.bind(texture);
 		Mesh mesh = this.mesh;
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.getIndicesBuffer().position(0);
@@ -421,39 +434,9 @@ public class LTextureBatch {
 
 	}
 
-	private final Transform4 transformMatrix = new Transform4();
-	private final Transform4 projectionMatrix = new Transform4();
-
-	Transform4 getProjectionMatrix() {
-		return projectionMatrix;
-	}
-
-	Transform4 getTransformMatrix() {
-		return transformMatrix;
-	}
-
-	void setProjectionMatrix(Transform4 projection) {
-		if (drawing) {
-			submit();
-		}
-		projectionMatrix.set(projection);
-		if (drawing) {
-			setupMatrices();
-		}
-	}
-
-	void setTransformMatrix(Transform4 transform) {
-		if (drawing) {
-			submit();
-		}
-		transformMatrix.set(transform);
-		if (drawing) {
-			setupMatrices();
-		}
-	}
-
 	private void setupMatrices() {
-		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
+		combinedMatrix.set(GLEx.getProjectionMatrix()).mul(
+				GLEx.getTransformMatrix());
 		if (customShader != null) {
 			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
 			customShader.setUniformi("u_texture", 0);
@@ -503,7 +486,7 @@ public class LTextureBatch {
 		this.isCacheLocked = false;
 	}
 
-	private void commit(Cache cache,BlendState state) {
+	private void commit(Cache cache, BlendState state) {
 		if (!isLoaded) {
 			return;
 		}
@@ -517,9 +500,7 @@ public class LTextureBatch {
 			if (cache.vertexIdx == 0) {
 				return;
 			}
-			if (!lastTexture.isLoaded()) {
-				lastTexture.loadTexture();
-			}
+			GLEx.self.bind(texture);
 			Mesh mesh = this.mesh;
 			mesh.setVertices(cache.vertices, 0, cache.vertexIdx);
 			mesh.getIndicesBuffer().position(0);
@@ -537,7 +518,7 @@ public class LTextureBatch {
 
 	public void postLastCache() {
 		if (lastCache != null) {
-			commit(lastCache,lastBlendState);
+			commit(lastCache, lastBlendState);
 		}
 	}
 
@@ -1369,81 +1350,92 @@ public class LTextureBatch {
 		this.vertexIdx = idx;
 	}
 
-	public void save() {
-		cacheProjectionMatrix.set(projectionMatrix);
-	}
-
-	public void restore() {
-		projectionMatrix.set(cacheProjectionMatrix);
-	}
-
-	public void commit(float x, float y, float sx, float sy, float ax, float ay,
-			float rotaion) {
-		save();
+	public void commit(float x, float y, float sx, float sy, float ax,
+			float ay, float rotaion) {
+		GLEx.self.save();
+		Transform4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
-			projectionMatrix.translate(x, y, 0);
+			project.translate(x, y, 0);
 		}
-		projectionMatrix.scale(sx, sy, 0);
+		project.scale(sx, sy, 0);
 		if (rotaion != 0) {
 			if (ax != 0 || ay != 0) {
-				projectionMatrix.translate(ax, ay, 0.0f);
-				projectionMatrix.rotate(0f, 0f, 1f, rotaion);
-				projectionMatrix.translate(-ax, -ay, 0.0f);
+				project.translate(ax, ay, 0.0f);
+				project.rotate(0f, 0f, 1f, rotaion);
+				project.translate(-ax, -ay, 0.0f);
 			} else {
-				projectionMatrix.translate(texture.width / 2,
-						texture.height / 2, 0.0f);
-				projectionMatrix.rotate(0f, 0f, 0f, rotaion);
-				projectionMatrix.translate(-texture.width / 2,
-						-texture.height / 2, 0.0f);
+				project.translate(texture.width / 2, texture.height / 2, 0.0f);
+				project.rotate(0f, 0f, 0f, rotaion);
+				project.translate(-texture.width / 2, -texture.height / 2, 0.0f);
 			}
 		}
 		if (drawing) {
 			setupMatrices();
 		}
 		end();
-		restore();
+		GLEx.self.restore();
 	}
 
-	public void postLastCache(Cache cache, float x, float y, float sx,
-			float sy, float ax, float ay, float rotaion) {
-		save();
-		if (x != 0 || y != 0) {
-			projectionMatrix.translate(x, y, 0);
+	public void setShaderUniformf(String name, LColor color) {
+		if (shader != null) {
+			shader.setUniformf(name, color);
 		}
-		projectionMatrix.scale(sx, sy, 0);
+	}
+
+	public void setShaderUniformf(int name, LColor color) {
+		if (shader != null) {
+			shader.setUniformf(name, color);
+		}
+	}
+
+	public void postCache(Cache cache, float x, float y) {
+		GLEx.self.save();
+		Transform4 project = GLEx.getProjectionMatrix();
+		if (x != 0 || y != 0) {
+			project.translate(x, y, 0);
+		}
+		commit(cache, lastBlendState);
+		GLEx.self.restore();
+	}
+
+	public void postCache(Cache cache, float x, float y, float sx, float sy,
+			float ax, float ay, float rotaion) {
+		GLEx.self.save();
+		Transform4 project = GLEx.getProjectionMatrix();
+		if (x != 0 || y != 0) {
+			project.translate(x, y, 0);
+		}
+		project.scale(sx, sy, 0);
 		if (rotaion != 0) {
 			if (ax != 0 || ay != 0) {
-				projectionMatrix.translate(ax, ay, 0.0f);
-				projectionMatrix.rotate(0f, 0f, 1f, rotaion);
-				projectionMatrix.translate(-ax, -ay, 0.0f);
+				project.translate(ax, ay, 0.0f);
+				project.rotate(0f, 0f, 1f, rotaion);
+				project.translate(-ax, -ay, 0.0f);
 			} else {
-				projectionMatrix.translate(texture.width / 2,
-						texture.height / 2, 0.0f);
-				projectionMatrix.rotate(0f, 0f, 0f, rotaion);
-				projectionMatrix.translate(-texture.width / 2,
-						-texture.height / 2, 0.0f);
+				project.translate(texture.width / 2, texture.height / 2, 0.0f);
+				project.rotate(0f, 0f, 0f, rotaion);
+				project.translate(-texture.width / 2, -texture.height / 2, 0.0f);
 			}
 		}
-		commit(cache,lastBlendState);
-		restore();
+		commit(cache, lastBlendState);
+		GLEx.self.restore();
 	}
 
-	public void postLastCache(Cache cache, float rotaion) {
-		save();
+	public void postCache(Cache cache, float rotaion) {
+		GLEx.self.save();
+		Transform4 project = GLEx.getProjectionMatrix();
 		if (rotaion != 0) {
-			projectionMatrix.translate(texture.width / 2, texture.height / 2,
-					0.0f);
-			projectionMatrix.rotate(0f, 0f, 1f, rotaion);
-			projectionMatrix.translate(-texture.width / 2, -texture.height / 2,
-					0.0f);
+			project.translate(texture.width / 2, texture.height / 2, 0.0f);
+			project.rotate(0f, 0f, 1f, rotaion);
+			project.translate(-texture.width / 2, -texture.height / 2, 0.0f);
 		}
-		commit(cache,lastBlendState);
-		restore();
+		commit(cache, lastBlendState);
+		GLEx.self.restore();
 	}
 
-	public void postLastCache(float rotaion) {
+	public void postCache(float rotaion) {
 		if (lastCache != null) {
-			postLastCache(lastCache, rotaion);
+			postCache(lastCache, rotaion);
 		}
 	}
 

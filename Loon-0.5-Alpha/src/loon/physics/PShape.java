@@ -17,7 +17,7 @@ package loon.physics;
 
 import loon.core.geom.AABB;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.utils.MathUtils;
 
 public abstract class PShape {

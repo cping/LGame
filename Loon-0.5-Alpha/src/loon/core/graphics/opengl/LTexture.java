@@ -24,15 +24,15 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.action.collision.CollisionMask;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
 import loon.core.geom.Polygon;
 import loon.core.geom.Shape;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
-import loon.core.graphics.LShadow;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.device.LShadow;
 import loon.jni.NativeSupport;
 
 
@@ -898,6 +898,10 @@ public class LTexture implements LRelease {
 			}
 		}
 		return image;
+	}
+	
+	public LTextureBatch getBatch(){
+		return new LTextureBatch(this);
 	}
 
 	public void setImageColor(float r, float g, float b, float a) {

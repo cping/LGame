@@ -1,12 +1,12 @@
 package loon.action.sprite;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
 import loon.core.geom.Triangle;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GL20;
 import loon.core.graphics.opengl.GLBatch;
@@ -55,11 +55,6 @@ public class SpriteBatch {
 
 	boolean drawing = false;
 
-	private final static Transform4 cacheProjectionMatrix = new Transform4();
-	private final Transform4 transformMatrix = new Transform4();
-	private final Transform4 projectionMatrix = new Transform4();
-	private final Transform4 combinedMatrix = new Transform4();
-
 	private ShaderProgram shader;
 	private ShaderProgram customShader = null;
 	private boolean ownsShader;
@@ -79,7 +74,9 @@ public class SpriteBatch {
 
 	private boolean lockSubmit = false;
 
-	private GLBatch batch=new GLBatch(5000, false, true, 0);
+	private final Transform4 combinedMatrix = new Transform4();
+	
+	private GLBatch batch = new GLBatch(5000, false, true, 0);
 	
 	public static enum BlendState {
 		Additive, AlphaBlend, NonPremultiplied, Opaque;
@@ -110,7 +107,6 @@ public class SpriteBatch {
 			throw new IllegalArgumentException(
 					"Can't have more than 5460 sprites per batch: " + size);
 		}
-		cacheProjectionMatrix.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
 		this.shader = defaultShader;
 		this.size = size;
 	}
@@ -162,7 +158,18 @@ public class SpriteBatch {
 		return shader;
 	}
 
+	public void setShaderUniformf(String name, LColor color) {
+		if (shader != null) {
+			shader.setUniformf(name, color);
+		}
+	}
 
+	public void setShaderUniformf(int name, LColor color) {
+		if (shader != null) {
+			shader.setUniformf(name, color);
+		}
+	}
+	
 	public final void draw(Shape shape) {
 		float[] points = shape.getPoints();
 		if (points.length == 0) {
@@ -170,7 +177,7 @@ public class SpriteBatch {
 		}
 		submit();
 		LColor color = getColor();
-		batch.begin(projectionMatrix,GL.GL_LINE_STRIP);
+		batch.begin(GLEx.getProjectionMatrix(),GL.GL_LINE_STRIP);
 		for (int i = 0; i < points.length; i += 2) {
 			batch.color(color);
 			batch.vertex(points[i], points[i + 1]);
@@ -192,7 +199,7 @@ public class SpriteBatch {
 		}
 		submit();
 		LColor color = getColor();
-		batch.begin(projectionMatrix,GL.GL_TRIANGLES);
+		batch.begin(GLEx.getProjectionMatrix(),GL.GL_TRIANGLES);
 		for (int i = 0; i < tris.getTriangleCount(); i++) {
 			for (int p = 0; p < 3; p++) {
 				float[] pt = tris.getTrianglePoint(i, p);
@@ -206,7 +213,7 @@ public class SpriteBatch {
 	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
 		submit();
 		LColor color = getColor();
-		batch.begin(projectionMatrix,GL.GL_POLYGON);
+		batch.begin(GLEx.getProjectionMatrix(),GL.GL_POLYGON);
 		for (int i = 0; i < nPoints; i++) {
 			batch.color(color);
 			batch.vertex(xPoints[i], yPoints[i]);
@@ -217,7 +224,7 @@ public class SpriteBatch {
 	public void drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
 		submit();
 		LColor color = getColor();
-		batch.begin(projectionMatrix,GL.GL_LINE_LOOP);
+		batch.begin(GLEx.getProjectionMatrix(),GL.GL_LINE_LOOP);
 		for (int i = 0; i < nPoints; i++) {
 			batch.color(color);
 			batch.vertex(xPoints[i], yPoints[i]);
@@ -246,7 +253,7 @@ public class SpriteBatch {
 		}
 		float cx = x1 + (width / 2.0f);
 		float cy = y1 + (height / 2.0f);
-		batch.begin(projectionMatrix,GL.GL_LINE_STRIP);
+		batch.begin(GLEx.getProjectionMatrix(),GL.GL_LINE_STRIP);
 		int step = 360 / segments;
 		for (float a = start; a < (end + step); a += step) {
 			float ang = a;
@@ -275,7 +282,7 @@ public class SpriteBatch {
 		}
 		float cx = x1 + (width / 2.0f);
 		float cy = y1 + (height / 2.0f);
-		batch.begin(projectionMatrix,GL.GL_TRIANGLE_FAN);
+		batch.begin(GLEx.getProjectionMatrix(),GL.GL_TRIANGLE_FAN);
 		int step = 360 / segments;
 		batch.vertex(cx, cy);
 		for (float a = start; a < (end + step); a += step) {
@@ -354,7 +361,7 @@ public class SpriteBatch {
 	public void fillRect(float x, float y, float width, float height) {
 		LColor color = getColor();
 		submit();
-		batch.begin(projectionMatrix,GL.GL_TRIANGLE_FAN);
+		batch.begin(GLEx.getProjectionMatrix(),GL.GL_TRIANGLE_FAN);
 		{
 			batch.color(color);
 			batch.vertex(x, y);
@@ -711,9 +718,6 @@ public class SpriteBatch {
 					new VertexAttribute(Usage.TextureCoordinates, 2,
 							ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
 
-			projectionMatrix
-					.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
-
 			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
 
 			int len = size * 6;
@@ -868,36 +872,8 @@ public class SpriteBatch {
 		}
 	}
 
-	public Transform4 getProjectionMatrix() {
-		return projectionMatrix;
-	}
-
-	public Transform4 getTransformMatrix() {
-		return transformMatrix;
-	}
-
-	public void setProjectionMatrix(Transform4 projection) {
-		if (drawing) {
-			submit();
-		}
-		projectionMatrix.set(projection);
-		if (drawing) {
-			setupMatrices();
-		}
-	}
-
-	public void setTransformMatrix(Transform4 transform) {
-		if (drawing) {
-			submit();
-		}
-		transformMatrix.set(transform);
-		if (drawing) {
-			setupMatrices();
-		}
-	}
-
 	private void setupMatrices() {
-		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
+		combinedMatrix.set(GLEx.getProjectionMatrix()).mul(GLEx.getTransformMatrix());
 		if (customShader != null) {
 			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
 			customShader.setUniformi("u_texture", 0);

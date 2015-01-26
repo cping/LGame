@@ -2,7 +2,7 @@ package loon.core;
 
 import loon.action.sprite.SpriteBatch;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
 

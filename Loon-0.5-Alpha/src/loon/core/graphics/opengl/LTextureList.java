@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
 import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
 import loon.utils.CollectionUtils;

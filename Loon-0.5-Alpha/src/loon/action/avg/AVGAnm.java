@@ -26,11 +26,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.Point.Point2i;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.resource.Resources;

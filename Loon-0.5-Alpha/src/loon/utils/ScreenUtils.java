@@ -18,7 +18,7 @@ package loon.utils;
 
 import java.nio.ByteBuffer;
 
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GL20;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import loon.action.sprite.SpriteBatch.BlendState;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.utils.StringUtils;
 
 public class DefImage extends DefinitionObject {

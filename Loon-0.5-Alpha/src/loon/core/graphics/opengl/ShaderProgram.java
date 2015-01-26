@@ -8,7 +8,7 @@ import java.nio.IntBuffer;
 
 import loon.core.FileHandle;
 import loon.core.LRelease;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.math.Transform3;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.core.graphics.opengl.math.Location2;
@@ -259,6 +259,14 @@ public class ShaderProgram implements LRelease {
 		int location = fetchUniformLocation(name);
 		gl.glUniform1f(location, value);
 	}
+	
+	public void setUniformf(String name, LColor values) {
+		setUniformf(name, values.r, values.g, values.b, values.a);
+	}
+
+	public void setUniformf(int location, LColor values) {
+		setUniformf(location, values.r, values.g, values.b, values.a);
+	}
 
 	public void setUniformf(int location, float value) {
 		GL20 gl = GLEx.gl;
@@ -451,21 +459,15 @@ public class ShaderProgram implements LRelease {
 		setUniformf(location, values.x, values.y, values.z);
 	}
 
-	public void setUniformf(String name, LColor values) {
-		setUniformf(name, values.r, values.g, values.b, values.a);
-	}
-
-	public void setUniformf(int location, LColor values) {
-		setUniformf(location, values.r, values.g, values.b, values.a);
-	}
 
 	public void setVertexAttribute(String name, int size, int type,
 			boolean normalize, int stride, Buffer buffer) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		int location = fetchAttributeLocation(name);
-		if (location == -1)
+		if (location == -1){
 			return;
+		}
 		gl.glVertexAttribPointer(location, size, type, normalize, stride,
 				buffer);
 	}

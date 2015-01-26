@@ -23,10 +23,10 @@ package loon.core.graphics.opengl;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 
 
 

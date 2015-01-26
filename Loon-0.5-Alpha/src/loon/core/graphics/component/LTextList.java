@@ -30,13 +30,13 @@
  */
 package loon.core.graphics.component;
 
-import loon.core.graphics.LColor;
+import loon.LInputFactory.Touch;
 import loon.core.graphics.LComponent;
-import loon.core.graphics.LFont;
 import loon.core.graphics.LScrollContainer;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInputFactory.Touch;
 
 public class LTextList extends LComponent {
 

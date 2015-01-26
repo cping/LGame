@@ -1,10 +1,10 @@
 package loon.core.graphics.component;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.StringUtils;

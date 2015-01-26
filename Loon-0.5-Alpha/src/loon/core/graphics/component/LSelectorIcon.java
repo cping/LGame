@@ -22,8 +22,8 @@
 package loon.core.graphics.component;
 
 import loon.action.sprite.SpriteBatch;
-import loon.core.graphics.LColor;
 import loon.core.graphics.LComponent;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
@@ -58,7 +58,7 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public void draw(LGraphics g, int mainX, int mainY) {
-		LColor color = g.getGLColor();
+		LColor color = g.getColor();
 		g.setColor(backgroundColor.getRed(), backgroundColor.getGreen(),
 				backgroundColor.getBlue(), 125);
 		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,

@@ -20,8 +20,8 @@
  */
 package loon.action;
 
+import loon.LSystem;
 import loon.action.map.Field2D;
-import loon.core.LSystem;
 import loon.utils.MathUtils;
 
 //0.3.3新增动作，让指定对象做弓箭射出状（抛物线）

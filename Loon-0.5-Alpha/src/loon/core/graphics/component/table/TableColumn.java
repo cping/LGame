@@ -21,7 +21,7 @@
 package loon.core.graphics.component.table;
 
 import loon.core.geom.Alignment;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LFont;
 
 public class TableColumn {
 

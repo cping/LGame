@@ -22,9 +22,9 @@ package loon.action.sprite.node;
 
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatch.BlendState;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.opengl.LTexture;

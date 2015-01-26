@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import loon.LSystem;
 import loon.core.LObject;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Point.Point2i;
 import loon.core.graphics.opengl.GLEx;

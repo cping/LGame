@@ -2,12 +2,12 @@ package loon.action.sprite;
 
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.core.LObject;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.MathUtils;

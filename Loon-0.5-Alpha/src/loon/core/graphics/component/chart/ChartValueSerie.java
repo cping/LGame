@@ -22,7 +22,7 @@ package loon.core.graphics.component.chart;
 
 import java.util.ArrayList;
 
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 
 public class ChartValueSerie {
 

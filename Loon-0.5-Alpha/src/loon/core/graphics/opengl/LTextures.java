@@ -23,7 +23,7 @@ package loon.core.graphics.opengl;
 
 import java.util.HashMap;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.opengl.LTexture.Format;
 

@@ -1,6 +1,6 @@
 package loon.core.graphics.opengl;
 
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.utils.collection.Array;

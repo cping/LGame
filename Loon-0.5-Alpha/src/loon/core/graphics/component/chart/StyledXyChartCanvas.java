@@ -22,8 +22,8 @@ package loon.core.graphics.component.chart;
 
 import java.util.ArrayList;
 
-import loon.core.graphics.simulate.Canvas;
-import loon.core.graphics.simulate.Paint;
+import loon.core.graphics.device.Canvas;
+import loon.core.graphics.device.Paint;
 
 public class StyledXyChartCanvas extends ChartBaseCanvas {
 

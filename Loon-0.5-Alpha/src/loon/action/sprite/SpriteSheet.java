@@ -1,9 +1,9 @@
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.event.Updateable;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 

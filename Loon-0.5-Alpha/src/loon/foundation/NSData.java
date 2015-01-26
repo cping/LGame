@@ -18,7 +18,7 @@ package loon.foundation;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.net.Base64Coder;
 import loon.utils.MathUtils;
 

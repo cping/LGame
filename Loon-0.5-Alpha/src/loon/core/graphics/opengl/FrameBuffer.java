@@ -6,8 +6,8 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.graphics.opengl.LTexture.TextureFilter;
 import loon.core.graphics.opengl.LTexture.TextureWrap;

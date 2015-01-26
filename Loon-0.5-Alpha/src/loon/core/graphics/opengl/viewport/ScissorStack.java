@@ -19,23 +19,24 @@ public class ScissorStack {
 	public static boolean pushScissors(RectBox scissor) {
 		fix(scissor);
 		if (scissors.size == 0) {
-			if (scissor.width < 1 || scissor.height < 1)
+			if (scissor.width < 1 || scissor.height < 1){
 				return false;
+			}
 			GLEx.gl.glEnable(GL20.GL_SCISSOR_TEST);
 		} else {
 			RectBox parent = scissors.get(scissors.size - 1);
 			float minX = Math.max(parent.x, scissor.x);
 			float maxX = Math.min(parent.x + parent.width, scissor.x
 					+ scissor.width);
-			if (maxX - minX < 1)
+			if (maxX - minX < 1){
 				return false;
-
+			}
 			float minY = Math.max(parent.y, scissor.y);
 			float maxY = Math.min(parent.y + parent.height, scissor.y
 					+ scissor.height);
-			if (maxY - minY < 1)
+			if (maxY - minY < 1){
 				return false;
-
+			}
 			scissor.x = minX;
 			scissor.y = minY;
 			scissor.width = (int) (maxX - minX);

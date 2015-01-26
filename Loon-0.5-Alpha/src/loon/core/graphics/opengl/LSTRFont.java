@@ -22,12 +22,12 @@ package loon.core.graphics.opengl;
 
 import java.util.HashMap;
 
+import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.graphics.opengl.LTextureBatch.Cache;
 
@@ -304,7 +304,7 @@ public class LSTRFont implements LRelease {
 				displays.put(chars, display = fontBatch.newCache());
 			} else if (display != null && fontBatch != null
 					&& fontBatch.texture != null) {
-				fontBatch.postLastCache(display, x, y, sx, sy, ax, ay, rotation);
+				fontBatch.postCache(display, x, y, sx, sy, ax, ay, rotation);
 			}
 		} else {
 			fontBatch.begin();

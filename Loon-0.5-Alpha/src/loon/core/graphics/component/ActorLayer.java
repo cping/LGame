@@ -3,6 +3,8 @@ package loon.core.graphics.component;
 import java.util.Iterator;
 import java.util.List;
 
+import loon.LInput;
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
@@ -16,10 +18,8 @@ import loon.action.RotateTo;
 import loon.action.ScaleTo;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.graphics.LContainer;
-import loon.core.input.LInput;
 import loon.utils.MathUtils;
 
 /**
