@@ -29,7 +29,7 @@ import loon.utils.collection.IntArray;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-public class LInputFactory {
+public class JavaSEInputFactory {
 
 	public static void setOnscreenKeyboardVisible(boolean visible) {
 
@@ -472,7 +472,7 @@ public class LInputFactory {
 		}
 	}
 
-	public LInputFactory(LProcess handler) {
+	public JavaSEInputFactory(LProcess handler) {
 		Keyboard.enableRepeatEvents(false);
 		this.handler = handler;
 	}
@@ -643,257 +643,257 @@ public class LInputFactory {
 	public static int toKeyCode(int lwjglKeyCode) {
 		switch (lwjglKeyCode) {
 		case Keyboard.KEY_0:
-			return LInputFactory.Key.NUM_0;
+			return JavaSEInputFactory.Key.NUM_0;
 		case Keyboard.KEY_1:
-			return LInputFactory.Key.NUM_1;
+			return JavaSEInputFactory.Key.NUM_1;
 		case Keyboard.KEY_2:
-			return LInputFactory.Key.NUM_2;
+			return JavaSEInputFactory.Key.NUM_2;
 		case Keyboard.KEY_3:
-			return LInputFactory.Key.NUM_3;
+			return JavaSEInputFactory.Key.NUM_3;
 		case Keyboard.KEY_4:
-			return LInputFactory.Key.NUM_4;
+			return JavaSEInputFactory.Key.NUM_4;
 		case Keyboard.KEY_5:
-			return LInputFactory.Key.NUM_5;
+			return JavaSEInputFactory.Key.NUM_5;
 		case Keyboard.KEY_6:
-			return LInputFactory.Key.NUM_6;
+			return JavaSEInputFactory.Key.NUM_6;
 		case Keyboard.KEY_7:
-			return LInputFactory.Key.NUM_7;
+			return JavaSEInputFactory.Key.NUM_7;
 		case Keyboard.KEY_8:
-			return LInputFactory.Key.NUM_8;
+			return JavaSEInputFactory.Key.NUM_8;
 		case Keyboard.KEY_9:
-			return LInputFactory.Key.NUM_9;
+			return JavaSEInputFactory.Key.NUM_9;
 		case Keyboard.KEY_A:
-			return LInputFactory.Key.A;
+			return JavaSEInputFactory.Key.A;
 		case Keyboard.KEY_B:
-			return LInputFactory.Key.B;
+			return JavaSEInputFactory.Key.B;
 		case Keyboard.KEY_C:
-			return LInputFactory.Key.C;
+			return JavaSEInputFactory.Key.C;
 		case Keyboard.KEY_D:
-			return LInputFactory.Key.D;
+			return JavaSEInputFactory.Key.D;
 		case Keyboard.KEY_E:
-			return LInputFactory.Key.E;
+			return JavaSEInputFactory.Key.E;
 		case Keyboard.KEY_F:
-			return LInputFactory.Key.F;
+			return JavaSEInputFactory.Key.F;
 		case Keyboard.KEY_G:
-			return LInputFactory.Key.G;
+			return JavaSEInputFactory.Key.G;
 		case Keyboard.KEY_H:
-			return LInputFactory.Key.H;
+			return JavaSEInputFactory.Key.H;
 		case Keyboard.KEY_I:
-			return LInputFactory.Key.I;
+			return JavaSEInputFactory.Key.I;
 		case Keyboard.KEY_J:
-			return LInputFactory.Key.J;
+			return JavaSEInputFactory.Key.J;
 		case Keyboard.KEY_K:
-			return LInputFactory.Key.K;
+			return JavaSEInputFactory.Key.K;
 		case Keyboard.KEY_L:
-			return LInputFactory.Key.L;
+			return JavaSEInputFactory.Key.L;
 		case Keyboard.KEY_M:
-			return LInputFactory.Key.M;
+			return JavaSEInputFactory.Key.M;
 		case Keyboard.KEY_N:
-			return LInputFactory.Key.N;
+			return JavaSEInputFactory.Key.N;
 		case Keyboard.KEY_O:
-			return LInputFactory.Key.O;
+			return JavaSEInputFactory.Key.O;
 		case Keyboard.KEY_P:
-			return LInputFactory.Key.P;
+			return JavaSEInputFactory.Key.P;
 		case Keyboard.KEY_Q:
-			return LInputFactory.Key.Q;
+			return JavaSEInputFactory.Key.Q;
 		case Keyboard.KEY_R:
-			return LInputFactory.Key.R;
+			return JavaSEInputFactory.Key.R;
 		case Keyboard.KEY_S:
-			return LInputFactory.Key.S;
+			return JavaSEInputFactory.Key.S;
 		case Keyboard.KEY_T:
-			return LInputFactory.Key.T;
+			return JavaSEInputFactory.Key.T;
 		case Keyboard.KEY_U:
-			return LInputFactory.Key.U;
+			return JavaSEInputFactory.Key.U;
 		case Keyboard.KEY_V:
-			return LInputFactory.Key.V;
+			return JavaSEInputFactory.Key.V;
 		case Keyboard.KEY_W:
-			return LInputFactory.Key.W;
+			return JavaSEInputFactory.Key.W;
 		case Keyboard.KEY_X:
-			return LInputFactory.Key.X;
+			return JavaSEInputFactory.Key.X;
 		case Keyboard.KEY_Y:
-			return LInputFactory.Key.Y;
+			return JavaSEInputFactory.Key.Y;
 		case Keyboard.KEY_Z:
-			return LInputFactory.Key.Z;
+			return JavaSEInputFactory.Key.Z;
 		case Keyboard.KEY_LMETA:
-			return LInputFactory.Key.ALT_LEFT;
+			return JavaSEInputFactory.Key.ALT_LEFT;
 		case Keyboard.KEY_RMETA:
-			return LInputFactory.Key.ALT_RIGHT;
+			return JavaSEInputFactory.Key.ALT_RIGHT;
 		case Keyboard.KEY_BACKSLASH:
-			return LInputFactory.Key.BACKSLASH;
+			return JavaSEInputFactory.Key.BACKSLASH;
 		case Keyboard.KEY_COMMA:
-			return LInputFactory.Key.COMMA;
+			return JavaSEInputFactory.Key.COMMA;
 		case Keyboard.KEY_DELETE:
-			return LInputFactory.Key.FORWARD_DEL;
+			return JavaSEInputFactory.Key.FORWARD_DEL;
 		case Keyboard.KEY_LEFT:
-			return LInputFactory.Key.DPAD_LEFT;
+			return JavaSEInputFactory.Key.DPAD_LEFT;
 		case Keyboard.KEY_RIGHT:
-			return LInputFactory.Key.DPAD_RIGHT;
+			return JavaSEInputFactory.Key.DPAD_RIGHT;
 		case Keyboard.KEY_UP:
-			return LInputFactory.Key.DPAD_UP;
+			return JavaSEInputFactory.Key.DPAD_UP;
 		case Keyboard.KEY_DOWN:
-			return LInputFactory.Key.DPAD_DOWN;
+			return JavaSEInputFactory.Key.DPAD_DOWN;
 		case Keyboard.KEY_RETURN:
-			return LInputFactory.Key.ENTER;
+			return JavaSEInputFactory.Key.ENTER;
 		case Keyboard.KEY_HOME:
-			return LInputFactory.Key.HOME;
+			return JavaSEInputFactory.Key.HOME;
 		case Keyboard.KEY_MINUS:
-			return LInputFactory.Key.MINUS;
+			return JavaSEInputFactory.Key.MINUS;
 		case Keyboard.KEY_PERIOD:
-			return LInputFactory.Key.PERIOD;
+			return JavaSEInputFactory.Key.PERIOD;
 		case Keyboard.KEY_ADD:
-			return LInputFactory.Key.PLUS;
+			return JavaSEInputFactory.Key.PLUS;
 		case Keyboard.KEY_SEMICOLON:
-			return LInputFactory.Key.SEMICOLON;
+			return JavaSEInputFactory.Key.SEMICOLON;
 		case Keyboard.KEY_LSHIFT:
-			return LInputFactory.Key.SHIFT_LEFT;
+			return JavaSEInputFactory.Key.SHIFT_LEFT;
 		case Keyboard.KEY_RSHIFT:
-			return LInputFactory.Key.SHIFT_RIGHT;
+			return JavaSEInputFactory.Key.SHIFT_RIGHT;
 		case Keyboard.KEY_SLASH:
-			return LInputFactory.Key.SLASH;
+			return JavaSEInputFactory.Key.SLASH;
 		case Keyboard.KEY_SPACE:
-			return LInputFactory.Key.SPACE;
+			return JavaSEInputFactory.Key.SPACE;
 		case Keyboard.KEY_TAB:
-			return LInputFactory.Key.TAB;
+			return JavaSEInputFactory.Key.TAB;
 		case Keyboard.KEY_LCONTROL:
-			return LInputFactory.Key.CONTROL_LEFT;
+			return JavaSEInputFactory.Key.CONTROL_LEFT;
 		case Keyboard.KEY_RCONTROL:
-			return LInputFactory.Key.CONTROL_RIGHT;
+			return JavaSEInputFactory.Key.CONTROL_RIGHT;
 		case Keyboard.KEY_ESCAPE:
-			return LInputFactory.Key.ESCAPE;
+			return JavaSEInputFactory.Key.ESCAPE;
 		case Keyboard.KEY_END:
-			return LInputFactory.Key.END;
+			return JavaSEInputFactory.Key.END;
 		case Keyboard.KEY_INSERT:
-			return LInputFactory.Key.INSERT;
+			return JavaSEInputFactory.Key.INSERT;
 		case Keyboard.KEY_NUMPAD5:
-			return LInputFactory.Key.DPAD_CENTER;
+			return JavaSEInputFactory.Key.DPAD_CENTER;
 		case Keyboard.KEY_BACK:
-			return LInputFactory.Key.DEL;
+			return JavaSEInputFactory.Key.DEL;
 		default:
-			return LInputFactory.Key.UNKNOWN;
+			return JavaSEInputFactory.Key.UNKNOWN;
 		}
 	}
 
 	public static int toLwjglKeyCode(int keyCode) {
 		switch (keyCode) {
-		case LInputFactory.Key.NUM_0:
+		case JavaSEInputFactory.Key.NUM_0:
 			return Keyboard.KEY_0;
-		case LInputFactory.Key.NUM_1:
+		case JavaSEInputFactory.Key.NUM_1:
 			return Keyboard.KEY_1;
-		case LInputFactory.Key.NUM_2:
+		case JavaSEInputFactory.Key.NUM_2:
 			return Keyboard.KEY_2;
-		case LInputFactory.Key.NUM_3:
+		case JavaSEInputFactory.Key.NUM_3:
 			return Keyboard.KEY_3;
-		case LInputFactory.Key.NUM_4:
+		case JavaSEInputFactory.Key.NUM_4:
 			return Keyboard.KEY_4;
-		case LInputFactory.Key.NUM_5:
+		case JavaSEInputFactory.Key.NUM_5:
 			return Keyboard.KEY_5;
-		case LInputFactory.Key.NUM_6:
+		case JavaSEInputFactory.Key.NUM_6:
 			return Keyboard.KEY_6;
-		case LInputFactory.Key.NUM_7:
+		case JavaSEInputFactory.Key.NUM_7:
 			return Keyboard.KEY_7;
-		case LInputFactory.Key.NUM_8:
+		case JavaSEInputFactory.Key.NUM_8:
 			return Keyboard.KEY_8;
-		case LInputFactory.Key.NUM_9:
+		case JavaSEInputFactory.Key.NUM_9:
 			return Keyboard.KEY_9;
-		case LInputFactory.Key.A:
+		case JavaSEInputFactory.Key.A:
 			return Keyboard.KEY_A;
-		case LInputFactory.Key.B:
+		case JavaSEInputFactory.Key.B:
 			return Keyboard.KEY_B;
-		case LInputFactory.Key.C:
+		case JavaSEInputFactory.Key.C:
 			return Keyboard.KEY_C;
-		case LInputFactory.Key.D:
+		case JavaSEInputFactory.Key.D:
 			return Keyboard.KEY_D;
-		case LInputFactory.Key.E:
+		case JavaSEInputFactory.Key.E:
 			return Keyboard.KEY_E;
-		case LInputFactory.Key.F:
+		case JavaSEInputFactory.Key.F:
 			return Keyboard.KEY_F;
-		case LInputFactory.Key.G:
+		case JavaSEInputFactory.Key.G:
 			return Keyboard.KEY_G;
-		case LInputFactory.Key.H:
+		case JavaSEInputFactory.Key.H:
 			return Keyboard.KEY_H;
-		case LInputFactory.Key.I:
+		case JavaSEInputFactory.Key.I:
 			return Keyboard.KEY_I;
-		case LInputFactory.Key.J:
+		case JavaSEInputFactory.Key.J:
 			return Keyboard.KEY_J;
-		case LInputFactory.Key.K:
+		case JavaSEInputFactory.Key.K:
 			return Keyboard.KEY_K;
-		case LInputFactory.Key.L:
+		case JavaSEInputFactory.Key.L:
 			return Keyboard.KEY_L;
-		case LInputFactory.Key.M:
+		case JavaSEInputFactory.Key.M:
 			return Keyboard.KEY_M;
-		case LInputFactory.Key.N:
+		case JavaSEInputFactory.Key.N:
 			return Keyboard.KEY_N;
-		case LInputFactory.Key.O:
+		case JavaSEInputFactory.Key.O:
 			return Keyboard.KEY_O;
-		case LInputFactory.Key.P:
+		case JavaSEInputFactory.Key.P:
 			return Keyboard.KEY_P;
-		case LInputFactory.Key.Q:
+		case JavaSEInputFactory.Key.Q:
 			return Keyboard.KEY_Q;
-		case LInputFactory.Key.R:
+		case JavaSEInputFactory.Key.R:
 			return Keyboard.KEY_R;
-		case LInputFactory.Key.S:
+		case JavaSEInputFactory.Key.S:
 			return Keyboard.KEY_S;
-		case LInputFactory.Key.T:
+		case JavaSEInputFactory.Key.T:
 			return Keyboard.KEY_T;
-		case LInputFactory.Key.U:
+		case JavaSEInputFactory.Key.U:
 			return Keyboard.KEY_U;
-		case LInputFactory.Key.V:
+		case JavaSEInputFactory.Key.V:
 			return Keyboard.KEY_V;
-		case LInputFactory.Key.W:
+		case JavaSEInputFactory.Key.W:
 			return Keyboard.KEY_W;
-		case LInputFactory.Key.X:
+		case JavaSEInputFactory.Key.X:
 			return Keyboard.KEY_X;
-		case LInputFactory.Key.Y:
+		case JavaSEInputFactory.Key.Y:
 			return Keyboard.KEY_Y;
-		case LInputFactory.Key.Z:
+		case JavaSEInputFactory.Key.Z:
 			return Keyboard.KEY_Z;
-		case LInputFactory.Key.ALT_LEFT:
+		case JavaSEInputFactory.Key.ALT_LEFT:
 			return Keyboard.KEY_LMETA;
-		case LInputFactory.Key.ALT_RIGHT:
+		case JavaSEInputFactory.Key.ALT_RIGHT:
 			return Keyboard.KEY_RMETA;
-		case LInputFactory.Key.BACKSLASH:
+		case JavaSEInputFactory.Key.BACKSLASH:
 			return Keyboard.KEY_BACKSLASH;
-		case LInputFactory.Key.COMMA:
+		case JavaSEInputFactory.Key.COMMA:
 			return Keyboard.KEY_COMMA;
-		case LInputFactory.Key.FORWARD_DEL:
+		case JavaSEInputFactory.Key.FORWARD_DEL:
 			return Keyboard.KEY_DELETE;
-		case LInputFactory.Key.DPAD_LEFT:
+		case JavaSEInputFactory.Key.DPAD_LEFT:
 			return Keyboard.KEY_LEFT;
-		case LInputFactory.Key.DPAD_RIGHT:
+		case JavaSEInputFactory.Key.DPAD_RIGHT:
 			return Keyboard.KEY_RIGHT;
-		case LInputFactory.Key.DPAD_UP:
+		case JavaSEInputFactory.Key.DPAD_UP:
 			return Keyboard.KEY_UP;
-		case LInputFactory.Key.DPAD_DOWN:
+		case JavaSEInputFactory.Key.DPAD_DOWN:
 			return Keyboard.KEY_DOWN;
-		case LInputFactory.Key.ENTER:
+		case JavaSEInputFactory.Key.ENTER:
 			return Keyboard.KEY_RETURN;
-		case LInputFactory.Key.HOME:
+		case JavaSEInputFactory.Key.HOME:
 			return Keyboard.KEY_HOME;
-		case LInputFactory.Key.MINUS:
+		case JavaSEInputFactory.Key.MINUS:
 			return Keyboard.KEY_MINUS;
-		case LInputFactory.Key.PERIOD:
+		case JavaSEInputFactory.Key.PERIOD:
 			return Keyboard.KEY_PERIOD;
-		case LInputFactory.Key.PLUS:
+		case JavaSEInputFactory.Key.PLUS:
 			return Keyboard.KEY_ADD;
-		case LInputFactory.Key.SEMICOLON:
+		case JavaSEInputFactory.Key.SEMICOLON:
 			return Keyboard.KEY_SEMICOLON;
-		case LInputFactory.Key.SHIFT_LEFT:
+		case JavaSEInputFactory.Key.SHIFT_LEFT:
 			return Keyboard.KEY_LSHIFT;
-		case LInputFactory.Key.SHIFT_RIGHT:
+		case JavaSEInputFactory.Key.SHIFT_RIGHT:
 			return Keyboard.KEY_RSHIFT;
-		case LInputFactory.Key.SLASH:
+		case JavaSEInputFactory.Key.SLASH:
 			return Keyboard.KEY_SLASH;
-		case LInputFactory.Key.SPACE:
+		case JavaSEInputFactory.Key.SPACE:
 			return Keyboard.KEY_SPACE;
-		case LInputFactory.Key.TAB:
+		case JavaSEInputFactory.Key.TAB:
 			return Keyboard.KEY_TAB;
-		case LInputFactory.Key.DEL:
+		case JavaSEInputFactory.Key.DEL:
 			return Keyboard.KEY_BACK;
-		case LInputFactory.Key.CONTROL_LEFT:
+		case JavaSEInputFactory.Key.CONTROL_LEFT:
 			return Keyboard.KEY_LCONTROL;
-		case LInputFactory.Key.CONTROL_RIGHT:
+		case JavaSEInputFactory.Key.CONTROL_RIGHT:
 			return Keyboard.KEY_RCONTROL;
-		case LInputFactory.Key.ESCAPE:
+		case JavaSEInputFactory.Key.ESCAPE:
 			return Keyboard.KEY_ESCAPE;
 		default:
 			return Keyboard.KEY_NONE;

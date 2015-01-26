@@ -1,3 +1,4 @@
+
 /**
  * 
  * Copyright 2014
@@ -21,8 +22,8 @@
  */
 package loon.core.graphics.component;
 
-import loon.LInputFactory.Key;
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Key;
+import loon.JavaSEInputFactory.Touch;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
@@ -142,7 +143,7 @@ public class LClickButton extends LComponent {
 					this.input.getTouchY());
 		}
 	}
-
+	
 	protected void processTouchClicked() {
 		if (this.input.getTouchPressed() == Touch.LEFT
 				|| this.input.getTouchReleased() == Touch.LEFT) {

@@ -26,7 +26,7 @@ import loon.LProcess;
 import loon.LSystem;
 import loon.LTouch;
 import loon.LTransition;
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Touch;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;

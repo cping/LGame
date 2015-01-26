@@ -30,7 +30,7 @@
  */
 package loon.core.graphics.component;
 
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Touch;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LScrollContainer;
 import loon.core.graphics.device.LColor;

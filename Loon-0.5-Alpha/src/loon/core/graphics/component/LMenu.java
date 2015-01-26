@@ -21,7 +21,7 @@
  */
 package loon.core.graphics.component;
 
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Touch;
 import loon.action.sprite.SpriteBatch;
 import loon.core.geom.RectBox;
 import loon.core.graphics.LComponent;
@@ -32,11 +32,14 @@ import loon.core.graphics.opengl.LTextures;
 import loon.utils.collection.Array;
 
 /**
- * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，
- * 若setSupportScroll(true)则支持滚动)
+ * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，若setSupportScroll(true)则支持滚动)
  * 
- * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); panel.add("ABC");
- * panel.add("EFG"); panel.add("ABC"); panel.add("EFG"); panel.add("ABC");
+ * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); 
+ * panel.add("ABC");
+ * panel.add("EFG"); 
+ * panel.add("ABC"); 
+ * panel.add("EFG"); 
+ * panel.add("ABC");
  * panel.add("EFG");
  */
 public class LMenu extends LComponent {
@@ -773,7 +776,7 @@ public class LMenu extends LComponent {
 	public void setAlphaMenu(float alphaMenu) {
 		this.alphaMenu = alphaMenu;
 	}
-
+	
 	@Override
 	public String getUIName() {
 		return "Menu";

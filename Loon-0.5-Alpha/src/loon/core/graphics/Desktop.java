@@ -24,11 +24,12 @@ package loon.core.graphics;
 import java.util.ArrayList;
 
 import loon.LInput;
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Touch;
 import loon.core.LRelease;
 import loon.core.graphics.component.LLayer;
 import loon.core.graphics.component.LPanel;
 import loon.core.graphics.opengl.GLEx;
+
 
 public class Desktop implements LRelease {
 

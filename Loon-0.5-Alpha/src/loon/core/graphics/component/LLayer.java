@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2008 - 2010
  * 
@@ -31,6 +32,7 @@ import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.timer.LTimer;
 import loon.utils.CollectionUtils;
@@ -258,6 +260,38 @@ public class LLayer extends ActorLayer {
 
 					} else {
 
+						int texId = actorImage.getTextureID();
+
+						LTextureBatch batch = (LTextureBatch) textures
+								.getValue(texId);
+
+						if (batch == null) {
+							LTextureBatch pBatch = LTextureBatch
+									.bindBatchCache(LLayer.this, texId,
+											actorImage);
+							batch = pBatch;
+							batch.begin();
+
+							textures.put(texId, batch);
+
+						}
+
+						batch.setTexture(actorImage);
+
+						if (isBitmapFilter) {
+							batch.draw(actorX, actorY, width, height, angle,
+									thing.filterColor);
+						} else {
+							if (colorAlpha != 1f) {
+								alphaColor.a = colorAlpha;
+							}
+							batch.draw(actorX, actorY, width, height, angle,
+									alphaColor);
+							if (colorAlpha != 1f) {
+								alphaColor.a = 1;
+							}
+						}
+
 					}
 				}
 				if (thing.isConsumerDrawing) {
@@ -280,7 +314,8 @@ public class LLayer extends ActorLayer {
 		final int size = textures.size();
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-
+				LTextureBatch batch = (LTextureBatch) textures.get(i);
+				batch.end();
 			}
 			textures.clear();
 		}

@@ -20,7 +20,7 @@
  */
 package loon;
 
-import loon.LInputFactory.Key;
+import loon.JavaSEInputFactory.Key;
 import loon.action.map.Config;
 import loon.core.geom.Vector3f;
 import loon.utils.MathUtils;

@@ -20,7 +20,7 @@
  */
 package loon;
 
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Touch;
 import loon.core.RefObject;
 import loon.core.geom.Vector2f;
 

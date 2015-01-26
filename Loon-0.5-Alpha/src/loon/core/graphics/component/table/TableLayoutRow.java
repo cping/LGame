@@ -215,7 +215,7 @@ public class TableLayoutRow {
 				newColmns.add(columns[i]);
 			}
 		}
-		columns = (TableColumnLayout[]) newColmns.toArray();
+		columns = (TableColumnLayout[])newColmns.toArray();
 		adjustColumns();
 	}
 

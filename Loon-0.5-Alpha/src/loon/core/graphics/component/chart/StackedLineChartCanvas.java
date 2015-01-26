@@ -156,9 +156,10 @@ public class StackedLineChartCanvas extends ChartBaseCanvas {
 				mPntFill.reset();
 				mPntFill.setStyle(Paint.Style.FILL);
 				mPntFill.setColor(serie.mFillColor);
-				if (serie.mUseDip) {
+				if (serie.mUseDip){
 					mPnt.setStrokeWidth(dipToPixel(serie.mWidth));
-				} else {
+				}
+				else{
 					mPnt.setStrokeWidth(serie.mWidth);
 				}
 				mPnt.setAntiAlias(true);

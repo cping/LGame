@@ -20,7 +20,7 @@
  */
 package loon;
 
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Touch;
 import loon.utils.collection.ArrayByte;
 
 public class LTouch {
@@ -135,7 +135,7 @@ public class LTouch {
 	}
 
 	public boolean isDrag() {
-		return LInputFactory.isDraging;
+		return JavaSEInputFactory.isDraging;
 	}
 
 	public boolean isLeft() {

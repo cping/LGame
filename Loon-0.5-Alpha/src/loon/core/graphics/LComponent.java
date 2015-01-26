@@ -23,8 +23,8 @@ package loon.core.graphics;
 
 import loon.LInput;
 import loon.LSystem;
-import loon.LInputFactory.Key;
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Key;
+import loon.JavaSEInputFactory.Touch;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.core.LObject;

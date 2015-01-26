@@ -30,6 +30,7 @@ import java.util.LinkedList;
 
 import loon.utils.CollectionUtils;
 
+
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ActorTreeSet extends AbstractSet {
 
@@ -46,6 +47,7 @@ public class ActorTreeSet extends AbstractSet {
 	private ActorSet generalSet = new ActorSet();
 
 	private ActorTreeSet.TasIterator iterator;
+
 
 	public ActorTreeSet() {
 		this.subSets.add(this.generalSet);

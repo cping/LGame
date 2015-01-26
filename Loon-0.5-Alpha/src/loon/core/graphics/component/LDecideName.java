@@ -1,3 +1,4 @@
+
 /**
  * 
  * Copyright 2014
@@ -36,6 +37,7 @@ import loon.core.graphics.LComponent;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.MathUtils;
 import loon.utils.collection.Array;
@@ -76,6 +78,8 @@ public class LDecideName extends LComponent {
 
 	private SpriteBatch batch;
 
+	private LSTRFont cacheFont;
+
 	public LDecideName(Array<String> mes, int x, int y) {
 		this(mes, x, y, 400, 250);
 	}
@@ -111,6 +115,7 @@ public class LDecideName extends LComponent {
 		for (int i = 0; i < mes.size(); i++) {
 			sbr.append(mes.get(i));
 		}
+		this.cacheFont = new LSTRFont(font, sbr.toString());
 
 	}
 
@@ -128,7 +133,37 @@ public class LDecideName extends LComponent {
 					LColor.orange);
 		}
 		float posY = y + topOffset;
-
+		if (!_cache) {
+			cacheFont.startChar();
+		} else {
+			cacheFont.postCharCache();
+		}
+		for (int j = 0; j < this.keyArrays.size(); j++) {
+			for (int i = 0; i < this.keyArrays.get(j).length(); i++)
+				if (this.keyArrays.get(j).charAt(i) != '　') {
+					if (!_cache) {
+						cacheFont.addChar(
+								this.keyArrays.get(j).charAt(i),
+								posX
+										+ MathUtils.round((i * dx + 0.01f)
+												* getWidth()),
+								posY
+										+ MathUtils
+												.round(((j + 1) * dy - 0.01f)
+														* getHeight()),
+								fontColor);
+					}
+					g.drawRect(posX + MathUtils.round((i * dx) * getWidth()),
+							posY + MathUtils.round((j * dy) * getHeight()),
+							MathUtils.round(dx * getWidth()),
+							MathUtils.round(dy * getHeight()));
+				}
+		}
+		if (!_cache) {
+			cacheFont.stopChar();
+			cacheFont.saveCharCache();
+			_cache = true;
+		}
 		g.setColor(selectColor);
 		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()),
 				posY + MathUtils.round((this.cursorY * dy) * getHeight()),
@@ -260,7 +295,7 @@ public class LDecideName extends LComponent {
 
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
-		if (_cache) {
+		if(_cache){
 			_cache = false;
 		}
 	}
@@ -391,7 +426,9 @@ public class LDecideName extends LComponent {
 
 	public void dispose() {
 		super.dispose();
-
+		if (cacheFont != null) {
+			cacheFont.dispose();
+		}
 		if (bgTexture != null) {
 			bgTexture.dispose();
 		}

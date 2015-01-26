@@ -1,7 +1,7 @@
 package loon.core.graphics.component;
 
 import loon.LSystem;
-import loon.LInputFactory.Key;
+import loon.JavaSEInputFactory.Key;
 import loon.action.sprite.Animation;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LContainer;

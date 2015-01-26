@@ -6,6 +6,7 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.utils.StringUtils;
 
@@ -65,6 +66,8 @@ public class Print implements LRelease {
 
 	private LTexture creeseIcon;
 
+	private LSTRFont strings;
+
 	private boolean isEnglish, isLeft, isWait;
 
 	private float iconX, iconY;
@@ -90,7 +93,33 @@ public class Print implements LRelease {
 	}
 
 	public void setMessage(String context, LFont font, boolean isComplete) {
-
+		if (strings != null) {
+			strings.dispose();
+		}
+		this.strings = new LSTRFont(font, context);
+		this.lazyHashCade = 1;
+		this.wait = 0;
+		this.visible = false;
+		this.showMessages = new char[] { '\0' };
+		this.interceptMaxString = 0;
+		this.next = 0;
+		this.messageCount = 0;
+		this.interceptCount = 0;
+		this.size = 0;
+		this.tmp_left = 0;
+		this.left = 0;
+		this.fontSize = 0;
+		this.fontHeight = 0;
+		this.messages = context;
+		this.next = context.length();
+		this.onComplete = false;
+		this.newLine = false;
+		this.messageCount = 0;
+		this.messageBuffer.delete(0, messageBuffer.length());
+		if (isComplete) {
+			this.complete();
+		}
+		this.visible = true;
 	}
 
 	public String getMessage() {
@@ -127,7 +156,131 @@ public class Print implements LRelease {
 	}
 
 	private void drawMessage(GLEx gl, LColor old) {
+		if (!visible) {
+			return;
+		}
+		if (strings == null) {
+			return;
+		}
+		synchronized (showMessages) {
 
+			this.size = showMessages.length;
+			this.fontSize = isEnglish ? strings.getSize() / 2 : gl.getFont()
+					.getSize();
+			this.fontHeight = strings.getHeight();
+			this.tmp_left = isLeft ? 0 : (width - (fontSize * messageLength))
+					/ 2 - (int) (fontSize * 1.5);
+			this.left = tmp_left;
+			this.index = offset = font = tmp_font = 0;
+			this.fontSizeDouble = fontSize * 2;
+
+			int hashCode = 1;
+			hashCode = LSystem.unite(hashCode, size);
+			hashCode = LSystem.unite(hashCode, left);
+			hashCode = LSystem.unite(hashCode, fontSize);
+			hashCode = LSystem.unite(hashCode, fontHeight);
+			if (strings == null) {
+				return;
+			}
+
+			if (hashCode == lazyHashCade) {
+				strings.postCharCache();
+				if (iconX != 0 && iconY != 0) {
+					gl.drawTexture(creeseIcon, iconX, iconY);
+				}
+				return;
+			}
+
+			strings.startChar();
+			fontColor = old;
+
+			for (int i = 0; i < size; i++) {
+				text = showMessages[i];
+				if (text == '\0') {
+					continue;
+				}
+				if (interceptCount < interceptMaxString) {
+					interceptCount++;
+					continue;
+				} else {
+					interceptMaxString = 0;
+					interceptCount = 0;
+				}
+				if (showMessages[i] == 'n'
+						&& showMessages[i > 0 ? i - 1 : 0] == '\\') {
+					index = 0;
+					left = tmp_left;
+					offset++;
+					continue;
+				} else if (text == '\n') {
+					index = 0;
+					left = tmp_left;
+					offset++;
+					continue;
+				} else if (text == '<') {
+					LColor color = getColor(showMessages[i < size - 1 ? i + 1
+							: i]);
+					if (color != null) {
+						interceptMaxString = 1;
+						fontColor = color;
+					}
+					continue;
+				} else if (showMessages[i > 0 ? i - 1 : i] == '<'
+						&& getColor(text) != null) {
+					continue;
+				} else if (text == '/') {
+					if (showMessages[i < size - 1 ? i + 1 : i] == '>') {
+						interceptMaxString = 1;
+						fontColor = old;
+					}
+					continue;
+				} else if (index > messageLength) {
+					index = 0;
+					left = tmp_left;
+					offset++;
+					newLine = false;
+				} else if (text == '\\') {
+					continue;
+				}
+				tmp_font = strings.charWidth(text);
+
+				if (Character.isLetter(text)) {
+					if (tmp_font < fontSize) {
+						font = fontSize;
+					} else {
+						font = tmp_font;
+					}
+				} else {
+					font = fontSize;
+				}
+				left += font;
+				if (font <= 10 && StringUtils.isSingle(text)) {
+					left += 12;
+				}
+				if (i != size - 1) {
+					strings.addChar(text, vector.x + left + leftOffset,
+							(offset * fontHeight) + vector.y + fontSizeDouble
+									+ topOffset, fontColor);
+				} else if (!newLine && !onComplete) {
+					iconX = vector.x + left + leftOffset + iconWidth;
+					iconY = (offset * fontHeight) + vector.y + fontSize
+							+ topOffset + strings.getAscent();
+					if (iconX != 0 && iconY != 0) {
+						gl.drawTexture(creeseIcon, iconX, iconY);
+					}
+				}
+				index++;
+			}
+
+			strings.stopChar();
+			strings.saveCharCache();
+
+			lazyHashCade = hashCode;
+
+			if (messageCount == next) {
+				onComplete = true;
+			}
+		}
 	}
 
 	public void draw(GLEx g, LColor old) {
@@ -292,7 +445,10 @@ public class Print implements LRelease {
 	}
 
 	public void dispose() {
-
+		if (strings != null) {
+			strings.dispose();
+			strings = null;
+		}
 	}
 
 }

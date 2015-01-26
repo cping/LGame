@@ -1,3 +1,4 @@
+
 /**
  * 
  * Copyright 2008 - 2009
@@ -26,6 +27,7 @@ import java.util.Comparator;
 
 import loon.core.graphics.opengl.GLEx;
 import loon.utils.CollectionUtils;
+
 
 public abstract class LContainer extends LComponent {
 

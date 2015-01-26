@@ -6,25 +6,24 @@ import loon.core.graphics.opengl.GL20;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.core.graphics.opengl.math.Location3;
-import loon.utils.collection.TArray;
-
+import loon.utils.collection.Array;
 
 public class ScissorStack {
 	
-	private static TArray<RectBox> scissors = new TArray<RectBox>();
+	private static Array<RectBox> scissors = new Array<RectBox>();
 	static Location3 tmp = new Location3();
 	static final RectBox viewport = new RectBox();
 
 
 	public static boolean pushScissors(RectBox scissor) {
 		fix(scissor);
-		if (scissors.size == 0) {
+		if (scissors.size() == 0) {
 			if (scissor.width < 1 || scissor.height < 1){
 				return false;
 			}
 			GLEx.gl.glEnable(GL20.GL_SCISSOR_TEST);
 		} else {
-			RectBox parent = scissors.get(scissors.size - 1);
+			RectBox parent = scissors.get(scissors.size() - 1);
 			float minX = Math.max(parent.x, scissor.x);
 			float maxX = Math.min(parent.x + parent.width, scissor.x
 					+ scissor.width);
@@ -50,11 +49,11 @@ public class ScissorStack {
 
 	public static RectBox popScissors() {
 		RectBox old = scissors.pop();
-		if (scissors.size == 0){
+		if (scissors.size() == 0){
 			GLEx.gl.glDisable(GL20.GL_SCISSOR_TEST);
 		}
 		else {
-			RectBox scissor = scissors.peek();
+			RectBox scissor = scissors.last();
 			GLEx.gl.glScissor((int) scissor.x, (int) scissor.y,
 					(int) scissor.width, (int) scissor.height);
 		}
@@ -62,7 +61,7 @@ public class ScissorStack {
 	}
 
 	public static RectBox peekScissors() {
-		return scissors.peek();
+		return scissors.last();
 	}
 
 	private static void fix(RectBox rect) {
@@ -103,12 +102,12 @@ public class ScissorStack {
 	}
 
 	public static RectBox getViewport() {
-		if (scissors.size == 0) {
+		if (scissors.size() == 0) {
 			viewport.setBounds(0, 0, GLEx.width(),
 					GLEx.height());
 			return viewport;
 		} else {
-			RectBox scissor = scissors.peek();
+			RectBox scissor = scissors.last();
 			viewport.setBounds(scissor);
 			return viewport;
 		}

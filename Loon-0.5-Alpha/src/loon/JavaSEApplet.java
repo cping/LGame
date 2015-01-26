@@ -27,7 +27,7 @@ import java.awt.Canvas;
 import loon.core.graphics.Screen;
 
 //网页加载用类(需要lwjgl_applet.jar支持)
-public abstract class JavaApplet extends Applet {
+public abstract class JavaSEApplet extends Applet {
 
 	/**
 	 * 
@@ -38,7 +38,7 @@ public abstract class JavaApplet extends Applet {
 
 	private LGame _game;
 
-	public JavaApplet(final LSetting setting,
+	public JavaSEApplet(final LSetting setting,
 			final Class<? extends Screen> clazz, final Object... args) {
 		_canvas = new Canvas() {
 

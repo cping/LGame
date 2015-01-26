@@ -26,7 +26,7 @@ public interface ITableModel {
 
 	public int getColumnCount();
 
-	public Object getValue(int row, int column);
+	public Object getValue(int row, int column); 
 
 	public int getRowCount();
 

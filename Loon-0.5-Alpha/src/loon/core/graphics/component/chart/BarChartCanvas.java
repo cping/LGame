@@ -20,7 +20,6 @@
  */
 package loon.core.graphics.component.chart;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import loon.core.graphics.device.Align;
@@ -29,6 +28,7 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.Paint;
 import loon.core.graphics.device.RectF;
+
 
 public class BarChartCanvas extends ChartBaseCanvas {
 

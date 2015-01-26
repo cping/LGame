@@ -1,7 +1,7 @@
 package loon.core.graphics.component;
 
-import loon.LInputFactory.Key;
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Key;
+import loon.JavaSEInputFactory.Touch;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
@@ -124,7 +124,7 @@ public class LCheckBox extends LComponent {
 				LFont old = g.getFont();
 				g.setFont(font);
 				g.drawString(text, x + boxsize,
-						(y + font.getHeight() - boxsize / 2) + 5, fontColor);
+						(y + font.getHeight() - boxsize / 2) + 5,fontColor);
 				g.setFont(old);
 			}
 			if (!ticked) {
@@ -136,8 +136,7 @@ public class LCheckBox extends LComponent {
 			if (showtext && text != null) {
 				LFont old = g.getFont();
 				g.setFont(font);
-				g.drawString(text, x + boxsize + 5, y + font.getHeight() + 15,
-						fontColor);
+				g.drawString(text, x + boxsize + 5, y + font.getHeight() + 15,fontColor);
 				g.setFont(old);
 			}
 			if (!ticked) {
@@ -262,10 +261,11 @@ public class LCheckBox extends LComponent {
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
 	}
-
+	
 	@Override
 	public String getUIName() {
 		return "CheckBox";
 	}
+
 
 }

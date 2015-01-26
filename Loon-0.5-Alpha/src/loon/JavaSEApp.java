@@ -25,24 +25,9 @@ import java.awt.Canvas;
 import loon.core.CallQueue;
 
 //桌面加载用类(需要lwjgl.jar支持)
-public abstract class JavaApp extends CallQueue {
+public abstract class JavaSEApp extends CallQueue {
 
 	protected Canvas _AWT_Canvas;
-
-	public static enum GLMode {
-
-		Default, VBO;
-
-		private String text;
-
-		private GLMode() {
-			text = "GLMode : " + name();
-		}
-
-		public String toString() {
-			return text;
-		};
-	}
 
 	protected static Class<?> getType(Object o) {
 

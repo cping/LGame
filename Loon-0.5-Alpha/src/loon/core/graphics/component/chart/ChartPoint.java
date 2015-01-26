@@ -21,15 +21,15 @@
 package loon.core.graphics.component.chart;
 
 public class ChartPoint {
-	public float x = 0;
-	public float y = 0;
-
-	public ChartPoint() {
+	   public float x = 0;
+	   public float y = 0;
+	   
+	   public ChartPoint() {   
+	   }
+	   
+	   public ChartPoint(float x,float y) {
+	      this.x = x;
+	      this.y = y;
+	   }
+	   
 	}
-
-	public ChartPoint(float x, float y) {
-		this.x = x;
-		this.y = y;
-	}
-
-}

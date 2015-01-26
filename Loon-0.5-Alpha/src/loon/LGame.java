@@ -31,17 +31,18 @@ import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
 import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.ScreenUtils;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.timer.LTimerContext;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
-import loon.utils.reflect.ClassReflection;
-import loon.utils.reflect.Constructor;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -50,8 +51,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
-
-public class LGame extends JavaApp {
+public class LGame extends JavaSEApp {
 
 	public static LGame register(LSetting setting,
 			Class<? extends Screen> clazz, Object... args) {
@@ -70,14 +70,16 @@ public class LGame extends JavaApp {
 				try {
 					final int funs = args.length;
 					if (funs == 0) {
-						game.setScreen(ClassReflection.newInstance(clazz));
+						game.setScreen(clazz.newInstance());
 						game.showScreen();
 					} else {
 						Class<?>[] functions = new Class<?>[funs];
 						for (int i = 0; i < funs; i++) {
 							functions[i] = getType(args[i]);
 						}
-						Constructor constructor = ClassReflection.getConstructor(clazz, functions);
+						java.lang.reflect.Constructor<?> constructor = Class
+								.forName(clazz.getName()).getConstructor(
+										functions);
 						Object o = constructor.newInstance(args);
 						if (o != null && (o instanceof Screen)) {
 							game.setScreen((Screen) o);
@@ -94,6 +96,8 @@ public class LGame extends JavaApp {
 
 	private final ExecutorService _exec = Executors.newFixedThreadPool(4);
 
+	private LSTRFont fpsFont;
+
 	private long maxFrames = LSystem.DEFAULT_MAX_FPS, frameRate;
 
 	private OpenGLThread mainLoop;
@@ -109,6 +113,7 @@ public class LGame extends JavaApp {
 	private boolean _resizable, _isAWTCanvas;
 
 	private GLEx gl;
+
 
 	private String windowTitle;
 
@@ -171,15 +176,15 @@ public class LGame extends JavaApp {
 		setSize(width, height);
 	}
 
-	public void setTitle(String titleName) {
+	protected void setTitle(String titleName) {
 		this.windowTitle = titleName;
 	}
 
-	public GLEx getGraphics() {
+	protected GLEx getGraphics() {
 		return gl;
 	}
 
-	public void setScreen(Screen screen) {
+	protected void setScreen(Screen screen) {
 		LSystem.screenProcess.setScreen(screen);
 	}
 
@@ -482,7 +487,8 @@ public class LGame extends JavaApp {
 
 							if (isFPS) {
 								tickFrames();
-
+								fpsFont.drawString("FPS:" + frameRate, 5, 5, 0,
+										LColor.white);
 							}
 							if (isMemory) {
 								Runtime runtime = Runtime.getRuntime();
@@ -493,7 +499,8 @@ public class LGame extends JavaApp {
 										+ " of "
 										+ ((float) ((totalMemory * 10) >> 20) / 10)
 										+ " MB";
-
+								fpsFont.drawString("MEMORY:" + memory, 5, 25,
+										0, LColor.white);
 							}
 
 							process.drawEmulator(gl);
@@ -600,7 +607,7 @@ public class LGame extends JavaApp {
 		System.exit(0);
 	}
 
-	public void showScreen() {
+	protected void showScreen() {
 		if (!isRunning) {
 			isRunning = true;
 			if (mainLoop == null) {
@@ -643,7 +650,7 @@ public class LGame extends JavaApp {
 
 			Display.setTitle(windowTitle);
 			Display.setInitialBackground(0, 0, 0);
-
+			
 			if (_x != -1 && _y != -1) {
 				Display.setLocation(_x, _y);
 			}
@@ -670,7 +677,6 @@ public class LGame extends JavaApp {
 				Display.setResizable(_resizable);
 			}
 			updateScreen();
-
 			this.gl = new GLEx(LSystem.screenRect.width,
 					LSystem.screenRect.height);
 			this.setViewPort(getBounds());
@@ -680,11 +686,11 @@ public class LGame extends JavaApp {
 		}
 	}
 
-	public void setIcon(String path) {
+	protected void setIcon(String path) {
 		setIcon(new LImage(path));
 	}
 
-	public void setIcon(LImage icon) {
+	protected void setIcon(LImage icon) {
 		Display.setIcon(new java.nio.ByteBuffer[] { (java.nio.ByteBuffer) icon
 				.getByteBuffer() });
 	}
@@ -711,7 +717,7 @@ public class LGame extends JavaApp {
 		return java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
 	}
 
-	public void updateScreen() {
+	protected void updateScreen() {
 		int w = 0;
 		int h = 0;
 		if (_AWT_Canvas == null) {
@@ -727,11 +733,11 @@ public class LGame extends JavaApp {
 		this.setBounds(0, 0, w, h);
 	}
 
-	public void updateFullScreen() {
+	protected void updateFullScreen() {
 		updateFullScreen(getScreenWidth(), getScreenHeight(), true);
 	}
 
-	public void updateFullScreen(int w, int h) {
+	protected void updateFullScreen(int w, int h) {
 		updateFullScreen(w, h, false);
 	}
 
@@ -743,7 +749,11 @@ public class LGame extends JavaApp {
 					if (Display.isFullscreen()) {
 						return;
 					}
-
+					java.awt.DisplayMode useDisplayMode = ScreenUtils
+							.searchFullScreenModeDisplay(w, h);
+					if (useDisplayMode == null) {
+						return;
+					}
 				}
 				DisplayMode d = new DisplayMode(w, h);
 				if (gl != null && !gl.isClose()) {
@@ -796,12 +806,16 @@ public class LGame extends JavaApp {
 
 	protected void setShowFPS(boolean showFps) {
 		this.isFPS = showFps;
-
+		if (showFps && fpsFont == null) {
+			this.fpsFont = new LSTRFont(LFont.getDefaultFont(), pFontString);
+		}
 	}
 
 	protected void setShowMemory(boolean showMemory) {
 		this.isMemory = showMemory;
-
+		if (showMemory && fpsFont == null) {
+			this.fpsFont = new LSTRFont(LFont.getDefaultFont(), pFontString);
+		}
 	}
 
 	public int getAppX() {

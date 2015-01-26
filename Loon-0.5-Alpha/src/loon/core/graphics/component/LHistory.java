@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2008 - 2011
  * 
@@ -113,7 +114,7 @@ public class LHistory extends LComponent {
 						prevPage();
 					}
 				}, 2);
-		prevPageButton.setLocation(height - size, y + size);
+		prevPageButton.setLocation(height - size, y + size );
 		nextPageButton = new SpriteButton(
 				LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME
 						+ "history_next.png", Format.LINEAR), 1, size, size,
@@ -125,7 +126,8 @@ public class LHistory extends LComponent {
 						nextPage();
 					}
 				}, 2);
-		nextPageButton.setLocation(height - size, y + size * 2);
+		nextPageButton.setLocation(height - size, y + size* 2);
+
 
 		closeButton.visible = true;
 		nextPageButton.visible = true;
@@ -136,8 +138,8 @@ public class LHistory extends LComponent {
 			message[i] = null;
 		}
 
-		lineStringNum = (int) ((float) (width - size) / (float) fontSize) - 1;
-		linesNum = (int) ((float) (height - size) / (float) linespacing) - 2;
+		lineStringNum = (int) ((float) (width-size) / (float) fontSize)-1;
+		linesNum = (int) ((float) (height-size) / (float) linespacing)-2;
 
 	}
 
@@ -181,9 +183,10 @@ public class LHistory extends LComponent {
 		if (downFlag) {
 			int moveY = Math.abs(y - touchY);
 			if (moveY > 50) {
-				if (y < touchY) {
+				if (y < touchY){
 					nextLine();
-				} else {
+				}
+				else{
 					prevLine();
 				}
 				touchX = x;
@@ -263,8 +266,8 @@ public class LHistory extends LComponent {
 			int max = point + linesNum;
 			LFont old = g.getFont();
 			g.setFont(font);
-			int nx = x - font.getSize();
-			int ny = y + font.getHeight() + (int) (fontSize * 2);
+			int nx=x-font.getSize();
+			int ny=y+font.getHeight()+(int)(fontSize*2);
 			for (int i = point; i < max; i++) {
 				if (message[i] != null) {
 					g.drawString(message[i], left + nx, top + ny);
@@ -280,17 +283,17 @@ public class LHistory extends LComponent {
 
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		onMove(input.getTouchX(), input.getTouchY());
+		onMove(input.getTouchX(),input.getTouchY());
 	}
 
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		onDown(input.getTouchX(), input.getTouchY());
+		onDown(input.getTouchX(),input.getTouchY());
 	}
 
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		onUp(input.getTouchX(), input.getTouchY());
+		onUp(input.getTouchX(),input.getTouchY());
 	}
 
 	@Override

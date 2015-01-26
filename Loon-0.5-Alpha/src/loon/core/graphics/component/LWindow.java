@@ -131,7 +131,7 @@ public class LWindow extends LContainer {
 			super.processTouchClicked();
 		}
 	}
-
+	
 	protected void processTouchDragged() {
 		if (!locked) {
 			if (getContainer() != null) {

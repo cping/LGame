@@ -7,13 +7,11 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 
 /**
- * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢)
- * PS:具体位置可用setOffsetLeft和setOffsetTop进一步微调
+ * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢) PS:具体位置可用setOffsetLeft和setOffsetTop进一步微调
  * 
  * Example1:
  * 
- * LLabel label =
- * LLabel.make(LabelAlignment.CENTER,"ABC",0,0,200,100,LColor.red);
+ * LLabel label = LLabel.make(LabelAlignment.CENTER,"ABC",0,0,200,100,LColor.red);
  * 
  * Example2:
  * 

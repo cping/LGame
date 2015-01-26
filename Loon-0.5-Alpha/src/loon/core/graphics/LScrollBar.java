@@ -384,7 +384,7 @@ public class LScrollBar extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (scrollBar == null || slider == null) {
-			g.fillRect(x, y, getWidth() + 2, getHeight() + 2, scrollBarColor);
+			g.fillRect(x, y, getWidth()+2, getHeight()+2, scrollBarColor);
 			g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight, sliderColor);
 		} else {
 			g.fillRect(x, y, getWidth(), getHeight(), scrollBarColor);

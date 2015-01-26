@@ -40,7 +40,7 @@ import loon.utils.MathUtils;
 
 public class LProcess extends Director {
 
-	private JavaApp scene;
+	private JavaSEApp scene;
 
 	ArrayList<Updateable> loads;
 
@@ -60,7 +60,7 @@ public class LProcess extends Director {
 
 	private int id, width, height;
 
-	private LInputFactory currentInput;
+	private JavaSEInputFactory currentInput;
 
 	private LTransition transition;
 
@@ -74,7 +74,7 @@ public class LProcess extends Director {
 		this.height = height;
 		this.scene = scene;
 		this.screens = new LinkedList<Screen>();
-		this.currentInput = new LInputFactory(this);
+		this.currentInput = new JavaSEInputFactory(this);
 		this.clear();
 	}
 
@@ -648,11 +648,11 @@ public class LProcess extends Director {
 		}
 	}
 
-	public JavaApp getScene() {
+	public JavaSEApp getScene() {
 		return scene;
 	}
 
-	public void setScene(JavaApp scene) {
+	public void setScene(JavaSEApp scene) {
 		this.scene = scene;
 	}
 
@@ -704,7 +704,7 @@ public class LProcess extends Director {
 		}
 	}
 
-	public LInputFactory getInput() {
+	public JavaSEInputFactory getInput() {
 		return currentInput;
 	}
 

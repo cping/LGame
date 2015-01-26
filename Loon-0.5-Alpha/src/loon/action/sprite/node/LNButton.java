@@ -22,7 +22,7 @@ package loon.action.sprite.node;
 
 import java.util.HashMap;
 
-import loon.LInputFactory.Touch;
+import loon.JavaSEInputFactory.Touch;
 import loon.core.geom.Vector2f;
 import loon.utils.MathUtils;
 

@@ -1,19 +1,3 @@
-/*******************************************************************************
- * Copyright 2011 See AUTHORS file.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
-
 package loon.utils.reflect;
 
 import java.lang.reflect.Modifier;
@@ -40,23 +24,14 @@ public final class ClassReflection {
 		return c1.isAssignableFrom(c2);
 	}
 
-	/**
-	 * Returns true if the class or interface represented by the supplied Class
-	 * is a member class.
-	 */
 	static public boolean isMemberClass(Class<?> c) {
 		return c.isMemberClass();
 	}
 
-	/**
-	 * Returns true if the class or interface represented by the supplied Class
-	 * is a static class.
-	 */
 	static public boolean isStaticClass(Class<?> c) {
 		return Modifier.isStatic(c.getModifiers());
 	}
 
-	/** Creates a new instance of the class represented by the supplied Class. */
 	static public <T> T newInstance(Class<T> c) throws ReflectionException {
 		try {
 			return c.newInstance();
@@ -71,10 +46,6 @@ public final class ClassReflection {
 		}
 	}
 
-	/**
-	 * Returns an array of {@link Constructor} containing the public
-	 * constructors of the class represented by the supplied Class.
-	 */
 	static public Constructor[] getConstructors(Class<?> c) {
 		java.lang.reflect.Constructor<?>[] constructors = c.getConstructors();
 		Constructor[] result = new Constructor[constructors.length];
@@ -84,10 +55,6 @@ public final class ClassReflection {
 		return result;
 	}
 
-	/**
-	 * Returns a {@link Constructor} that represents the public constructor for
-	 * the supplied class which takes the supplied parameter types.
-	 */
 	static public Constructor getConstructor(Class<?> c, Class<?>... parameterTypes)
 			throws ReflectionException {
 		try {
@@ -102,10 +69,6 @@ public final class ClassReflection {
 		}
 	}
 
-	/**
-	 * Returns a {@link Constructor} that represents the constructor for the
-	 * supplied class which takes the supplied parameter types.
-	 */
 	static public Constructor getDeclaredConstructor(Class<?> c,
 			Class<?>... parameterTypes) throws ReflectionException {
 		try {
@@ -120,10 +83,6 @@ public final class ClassReflection {
 		}
 	}
 
-	/**
-	 * Returns an array of {@link Method} containing the public member methods
-	 * of the class represented by the supplied Class.
-	 */
 	static public Method[] getMethods(Class<?> c) {
 		java.lang.reflect.Method[] methods = c.getMethods();
 		Method[] result = new Method[methods.length];
@@ -133,10 +92,6 @@ public final class ClassReflection {
 		return result;
 	}
 
-	/**
-	 * Returns a {@link Method} that represents the public member method for the
-	 * supplied class which takes the supplied parameter types.
-	 */
 	static public Method getMethod(Class<?> c, String name,
 			Class<?>... parameterTypes) throws ReflectionException {
 		try {
@@ -151,10 +106,6 @@ public final class ClassReflection {
 		}
 	}
 
-	/**
-	 * Returns an array of {@link Method} containing the methods declared by the
-	 * class represented by the supplied Class.
-	 */
 	static public Method[] getDeclaredMethods(Class<?> c) {
 		java.lang.reflect.Method[] methods = c.getDeclaredMethods();
 		Method[] result = new Method[methods.length];
@@ -164,10 +115,6 @@ public final class ClassReflection {
 		return result;
 	}
 
-	/**
-	 * Returns a {@link Method} that represents the method declared by the
-	 * supplied class which takes the supplied parameter types.
-	 */
 	static public Method getDeclaredMethod(Class<?> c, String name,
 			Class<?>... parameterTypes) throws ReflectionException {
 		try {
@@ -182,10 +129,6 @@ public final class ClassReflection {
 		}
 	}
 
-	/**
-	 * Returns an array of {@link Field} containing the public fields of the
-	 * class represented by the supplied Class.
-	 */
 	static public Field[] getFields(Class<?> c) {
 		java.lang.reflect.Field[] fields = c.getFields();
 		Field[] result = new Field[fields.length];
@@ -195,10 +138,6 @@ public final class ClassReflection {
 		return result;
 	}
 
-	/**
-	 * Returns a {@link Field} that represents the specified public member field
-	 * for the supplied class.
-	 */
 	static public Field getField(Class<?> c, String name)
 			throws ReflectionException {
 		try {
@@ -213,10 +152,6 @@ public final class ClassReflection {
 		}
 	}
 
-	/**
-	 * Returns an array of {@link Field} objects reflecting all the fields
-	 * declared by the supplied class.
-	 */
 	static public Field[] getDeclaredFields(Class<?> c) {
 		java.lang.reflect.Field[] fields = c.getDeclaredFields();
 		Field[] result = new Field[fields.length];
@@ -226,11 +161,7 @@ public final class ClassReflection {
 		return result;
 	}
 
-	/**
-	 * Returns a {@link Field} that represents the specified declared field for
-	 * the supplied class.
-	 */
-	static public Field getDeclaredField(Class c, String name)
+	static public Field getDeclaredField(Class<?> c, String name)
 			throws ReflectionException {
 		try {
 			return new Field(c.getDeclaredField(name));
@@ -244,20 +175,11 @@ public final class ClassReflection {
 		}
 	}
 
-	/**
-	 * Returns true if the supplied class includes an annotation of the given
-	 * class type.
-	 */
 	static public boolean isAnnotationPresent(Class<?> c,
 			Class<? extends java.lang.annotation.Annotation> annotationType) {
 		return c.isAnnotationPresent(annotationType);
 	}
 
-	/**
-	 * Returns an array of {@link Annotation} objects reflecting all annotations
-	 * declared by the supplied class, or an empty array if there are none. Does
-	 * not include inherited annotations.
-	 */
 	static public Annotation[] getDeclaredAnnotations(Class<?> c) {
 		java.lang.annotation.Annotation[] annotations = c
 				.getDeclaredAnnotations();
@@ -268,13 +190,7 @@ public final class ClassReflection {
 		return result;
 	}
 
-	/**
-	 * Returns an {@link Annotation} object reflecting the annotation provided,
-	 * or null of this field doesn't have such an annotation. This is a
-	 * convenience function if the caller knows already which annotation type
-	 * he's looking for.
-	 */
-	static public Annotation getDeclaredAnnotation(Class c,
+	static public Annotation getDeclaredAnnotation(Class<?> c,
 			Class<? extends java.lang.annotation.Annotation> annotationType) {
 		java.lang.annotation.Annotation[] annotations = c
 				.getDeclaredAnnotations();
