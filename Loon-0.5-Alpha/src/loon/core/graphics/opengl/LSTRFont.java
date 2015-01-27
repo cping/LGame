@@ -257,7 +257,6 @@ public class LSTRFont implements LRelease {
 	private void drawString(float x, float y, float sx, float sy, float ax,
 			float ay, float rotation, String chars, LColor c, int startIndex,
 			int endIndex) {
-
 		if (displays.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (displays) {
 				for (Cache cache : displays.values()) {
@@ -281,6 +280,8 @@ public class LSTRFont implements LRelease {
 			display = displays.get(chars);
 			if (display == null) {
 				fontBatch.begin();
+				float old = fontBatch.getFloatColor();
+				fontBatch.setColor(c);
 				char[] charList = chars.toCharArray();
 				for (int i = 0; i < charList.length; i++) {
 					charCurrent = charList[i];
@@ -296,19 +297,22 @@ public class LSTRFont implements LRelease {
 									intObject.height, intObject.storedX,
 									intObject.storedY, intObject.storedX
 											+ intObject.width,
-									intObject.storedY + intObject.height,c);
+									intObject.storedY + intObject.height, c);
 						}
 						totalWidth += intObject.width;
 					}
 				}
+				fontBatch.setColor(old);
 				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 				displays.put(chars, display = fontBatch.newCache());
 			} else if (display != null && fontBatch != null
 					&& fontBatch.texture != null) {
-				fontBatch.postCache(display, x, y, sx, sy, ax, ay, rotation);
+				fontBatch.postCache(display, c, x, y, sx, sy, ax, ay, rotation);
 			}
 		} else {
 			fontBatch.begin();
+			float old = fontBatch.getFloatColor();
+			fontBatch.setColor(c);
 			char[] charList = chars.toCharArray();
 			for (int i = 0; i < charList.length; i++) {
 				charCurrent = charList[i];
@@ -324,11 +328,12 @@ public class LSTRFont implements LRelease {
 								intObject.height, intObject.storedX,
 								intObject.storedY, intObject.storedX
 										+ intObject.width, intObject.storedY
-										+ intObject.height,c);
+										+ intObject.height, c);
 					}
 					totalWidth += intObject.width;
 				}
 			}
+			fontBatch.setColor(old);
 			fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 		}
 	}
@@ -344,7 +349,7 @@ public class LSTRFont implements LRelease {
 			fontBatch.draw(x, y - font.getAscent(), intObject.width,
 					intObject.height, intObject.storedX, intObject.storedY,
 					intObject.storedX + intObject.width, intObject.storedY
-							+ intObject.height,color);
+							+ intObject.height, color);
 		}
 	}
 

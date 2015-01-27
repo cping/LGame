@@ -43,6 +43,101 @@ import loon.utils.MathUtils;
 
 public final class GLEx implements LTrans {
 
+	static public ShaderProgram createDefaultShader() {
+		String vertexShader = "attribute vec4 "
+				+ ShaderProgram.POSITION_ATTRIBUTE
+				+ ";\n" //
+				+ "attribute vec4 "
+				+ ShaderProgram.COLOR_ATTRIBUTE
+				+ ";\n" //
+				+ "attribute vec2 "
+				+ ShaderProgram.TEXCOORD_ATTRIBUTE
+				+ "0;\n" //
+				+ "uniform mat4 u_projTrans;\n" //
+				+ "varying vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "\n" //
+				+ "void main()\n" //
+				+ "{\n" //
+				+ "   v_color = "
+				+ ShaderProgram.COLOR_ATTRIBUTE
+				+ ";\n" //
+				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
+				+ "   v_texCoords = "
+				+ ShaderProgram.TEXCOORD_ATTRIBUTE
+				+ "0;\n" //
+				+ "   gl_Position =  u_projTrans * "
+				+ ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+				+ "}\n";
+		String fragmentShader = "#ifdef GL_ES\n" //
+				+ "#define LOWP lowp\n" //
+				+ "precision mediump float;\n" //
+				+ "#else\n" //
+				+ "#define LOWP \n" //
+				+ "#endif\n" //
+				+ "varying LOWP vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "uniform sampler2D u_texture;\n" //
+				+ "void main()\n"//
+				+ "{\n" //
+				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+				+ "}";
+
+		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
+		if (shader.isCompiled() == false)
+			throw new IllegalArgumentException("Error compiling shader: "
+					+ shader.getLog());
+		return shader;
+	}
+
+	static public ShaderProgram createGlobalShader() {
+		String vertexShader = "attribute vec4 "
+				+ ShaderProgram.POSITION_ATTRIBUTE
+				+ ";\n" //
+				+ "attribute vec4 "
+				+ ShaderProgram.COLOR_ATTRIBUTE
+				+ ";\n" //
+				+ "attribute vec2 "
+				+ ShaderProgram.TEXCOORD_ATTRIBUTE
+				+ "0;\n" //
+				+ "uniform mat4 u_projTrans;\n" //
+				+ "uniform vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "\n" //
+				+ "void main()\n" //
+				+ "{\n" //
+				+ "   v_color = "
+				+ ShaderProgram.COLOR_ATTRIBUTE
+				+ ";\n" //
+				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
+				+ "   v_texCoords = "
+				+ ShaderProgram.TEXCOORD_ATTRIBUTE
+				+ "0;\n" //
+				+ "   gl_Position =  u_projTrans * "
+				+ ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+				+ "}\n";
+		String fragmentShader = "#ifdef GL_ES\n" //
+				+ "#define LOWP lowp\n" //
+				+ "precision mediump float;\n" //
+				+ "#else\n" //
+				+ "#define LOWP \n" //
+				+ "#endif\n" //
+				+ "uniform LOWP vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "uniform sampler2D u_texture;\n" //
+				+ "void main()\n"//
+				+ "{\n" //
+				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+				+ "}";
+
+		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
+		if (shader.isCompiled() == false) {
+			throw new IllegalArgumentException("Error compiling shader: "
+					+ shader.getLog());
+		}
+		return shader;
+	}
+	
 	private final static Transform4 transformMatrix = new Transform4();
 
 	private final static Transform4 projectionMatrix = new Transform4();
@@ -591,8 +686,7 @@ public final class GLEx implements LTrans {
 		bind(0);
 		glTex2DDisable();
 		if (clear) {
-			gl.glClearColor(0, 0, 0, 1f);
-			gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			GLUtils.setClearColor(gl, 0, 0, 0, 1f);
 		}
 	}
 
@@ -646,7 +740,21 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		lastAlpha = alpha < 0 ? 0 : alpha > 1 ? 1 : alpha;
-
+	    if (color.a == alpha)
+        {
+            return;
+        }
+        if (alpha > 0.95f)
+        {
+            color.a = 1f;
+            onAlpha = false;
+        }
+        else
+        {
+            color.a = alpha;
+            onAlpha = true;
+        }
+        lastAlpha = color.a;
 	}
 
 	/**
@@ -3088,17 +3196,6 @@ public final class GLEx implements LTrans {
 		return isClose;
 	}
 
-	public final void dispose() {
-		isClose = true;
-		if (glBatch != null) {
-			glBatch.dispose();
-		}
-		if (texBatch != null) {
-			texBatch.destoryAll();
-			texBatch = null;
-		}
-	}
-
 	public void copyImageToTexture(LTexture texture, LImage pix, int x, int y) {
 		bind(texture);
 		glTex2DEnable();
@@ -3110,6 +3207,17 @@ public final class GLEx implements LTrans {
 					GL.GL_UNSIGNED_BYTE, pix.getByteBuffer());
 		}
 
+	}
+
+	public final void dispose() {
+		isClose = true;
+		if (glBatch != null) {
+			glBatch.dispose();
+		}
+		if (texBatch != null) {
+			texBatch.destoryAll();
+			texBatch = null;
+		}
 	}
 
 }

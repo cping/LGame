@@ -37,7 +37,6 @@ import loon.core.graphics.opengl.LTextureBatch.Cache;
 import loon.core.resource.Resources;
 import loon.utils.MathUtils;
 
-
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
 public class BMFont implements LRelease {
@@ -93,8 +92,8 @@ public class BMFont implements LRelease {
 			if (isClose) {
 				return;
 			}
-			displayList.getBatch().draw(x + xoffset, y + yoffset, width, height, tx, ty,
-					tx + width, ty + height);
+			displayList.getBatch().draw(x + xoffset, y + yoffset, width,
+					height, tx, ty, tx + width, ty + height);
 		}
 
 		public int getKerning(int point) {
@@ -331,7 +330,7 @@ public class BMFont implements LRelease {
 			displays.put(key, display);
 
 		} else if (display.cache != null) {
-			displayList.getBatch().postCache(display.cache, tx,ty);
+			displayList.getBatch().postCache(display.cache, c, tx, ty);
 		}
 	}
 

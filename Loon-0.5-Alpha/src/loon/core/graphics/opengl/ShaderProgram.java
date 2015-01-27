@@ -68,12 +68,11 @@ public class ShaderProgram implements LRelease {
 
 	private boolean invalidated;
 
-
 	public ShaderProgram(String vertexShader, String fragmentShader) {
-		if (vertexShader == null){
+		if (vertexShader == null) {
 			throw new IllegalArgumentException("vertex shader must not be null");
 		}
-		if (fragmentShader == null){
+		if (fragmentShader == null) {
 			throw new IllegalArgumentException(
 					"fragment shader must not be null");
 		}
@@ -115,7 +114,7 @@ public class ShaderProgram implements LRelease {
 		IntBuffer intbuf = NativeSupport.newIntBuffer(1);
 
 		int shader = gl.glCreateShader(type);
-		if (shader == 0){
+		if (shader == 0) {
 			return -1;
 		}
 
@@ -135,7 +134,7 @@ public class ShaderProgram implements LRelease {
 	private int linkProgram() {
 		GL20 gl = GLEx.gl;
 		int program = gl.glCreateProgram();
-		if (program == 0){
+		if (program == 0) {
 			return -1;
 		}
 		gl.glAttachShader(program, vertexShaderHandle);
@@ -156,7 +155,6 @@ public class ShaderProgram implements LRelease {
 	}
 
 	final static IntBuffer intbuf = NativeSupport.newIntBuffer(1);
-
 
 	public String getLog() {
 		if (isCompiled) {
@@ -190,7 +188,7 @@ public class ShaderProgram implements LRelease {
 		int location;
 		if ((location = uniforms.get(name, -2)) == -2) {
 			location = gl.glGetUniformLocation(program, name);
-			if (location == -1 && pedantic){
+			if (location == -1 && pedantic) {
 				throw new IllegalArgumentException("no uniform with name '"
 						+ name + "' in shader");
 			}
@@ -259,7 +257,7 @@ public class ShaderProgram implements LRelease {
 		int location = fetchUniformLocation(name);
 		gl.glUniform1f(location, value);
 	}
-	
+
 	public void setUniformf(String name, LColor values) {
 		setUniformf(name, values.r, values.g, values.b, values.a);
 	}
@@ -381,7 +379,8 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(name, matrix, false);
 	}
 
-	public void setUniformMatrix(String name, Transform4 matrix, boolean transpose) {
+	public void setUniformMatrix(String name, Transform4 matrix,
+			boolean transpose) {
 		setUniformMatrix(fetchUniformLocation(name), matrix, transpose);
 	}
 
@@ -389,7 +388,8 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	public void setUniformMatrix(int location, Transform4 matrix, boolean transpose) {
+	public void setUniformMatrix(int location, Transform4 matrix,
+			boolean transpose) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		gl.glUniformMatrix4fv(location, 1, transpose, matrix.val, 0);
@@ -399,7 +399,8 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(name, matrix, false);
 	}
 
-	public void setUniformMatrix(String name, Transform3 matrix, boolean transpose) {
+	public void setUniformMatrix(String name, Transform3 matrix,
+			boolean transpose) {
 		setUniformMatrix(fetchUniformLocation(name), matrix, transpose);
 	}
 
@@ -407,7 +408,8 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	public void setUniformMatrix(int location, Transform3 matrix, boolean transpose) {
+	public void setUniformMatrix(int location, Transform3 matrix,
+			boolean transpose) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		gl.glUniformMatrix3fv(location, 1, transpose, matrix.val, 0);
@@ -459,13 +461,12 @@ public class ShaderProgram implements LRelease {
 		setUniformf(location, values.x, values.y, values.z);
 	}
 
-
 	public void setVertexAttribute(String name, int size, int type,
 			boolean normalize, int stride, Buffer buffer) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		int location = fetchAttributeLocation(name);
-		if (location == -1){
+		if (location == -1) {
 			return;
 		}
 		gl.glVertexAttribPointer(location, size, type, normalize, stride,
@@ -516,7 +517,7 @@ public class ShaderProgram implements LRelease {
 		gl.glDeleteShader(vertexShaderHandle);
 		gl.glDeleteShader(fragmentShaderHandle);
 		gl.glDeleteProgram(program);
-		if (shaders.get(GLEx.self) != null){
+		if (shaders.get(GLEx.self) != null) {
 			shaders.get(GLEx.self).removeValue(this, true);
 		}
 	}
@@ -525,7 +526,7 @@ public class ShaderProgram implements LRelease {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		int location = fetchAttributeLocation(name);
-		if (location == -1){
+		if (location == -1) {
 			return;
 		}
 		gl.glDisableVertexAttribArray(location);
@@ -541,7 +542,7 @@ public class ShaderProgram implements LRelease {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		int location = fetchAttributeLocation(name);
-		if (location == -1){
+		if (location == -1) {
 			return;
 		}
 		gl.glEnableVertexAttribArray(location);
@@ -562,7 +563,7 @@ public class ShaderProgram implements LRelease {
 
 	private void addManagedShader(GLEx self, ShaderProgram shaderProgram) {
 		TArray<ShaderProgram> managedResources = shaders.get(self);
-		if (managedResources == null){
+		if (managedResources == null) {
 			managedResources = new TArray<ShaderProgram>();
 		}
 		managedResources.add(shaderProgram);
@@ -570,11 +571,11 @@ public class ShaderProgram implements LRelease {
 	}
 
 	public static void invalidateAllShaderPrograms(GLEx self) {
-		if (GLEx.gl == null){
+		if (GLEx.gl == null) {
 			return;
 		}
 		TArray<ShaderProgram> shaderArray = shaders.get(self);
-		if (shaderArray == null){
+		if (shaderArray == null) {
 			return;
 		}
 		for (int i = 0; i < shaderArray.size; i++) {
@@ -605,6 +606,12 @@ public class ShaderProgram implements LRelease {
 		gl.glVertexAttrib4f(location, value1, value2, value3, value4);
 	}
 
+	public void setAttributef(String name, LColor color) {
+		GL20 gl = GLEx.gl;
+		int location = fetchAttributeLocation(name);
+		gl.glVertexAttrib4f(location, color.r, color.g, color.b, color.a);
+	}
+
 	IntBuffer params = NativeSupport.newIntBuffer(1);
 	IntBuffer type = NativeSupport.newIntBuffer(1);
 
@@ -619,8 +626,7 @@ public class ShaderProgram implements LRelease {
 			params.clear();
 			params.put(0, 1);
 			type.clear();
-			String name = GLEx.gl
-					.glGetActiveUniform(program, i, params, type);
+			String name = GLEx.gl.glGetActiveUniform(program, i, params, type);
 			int location = GLEx.gl.glGetUniformLocation(program, name);
 			uniforms.put(name, location);
 			uniformTypes.put(name, type.get(0));

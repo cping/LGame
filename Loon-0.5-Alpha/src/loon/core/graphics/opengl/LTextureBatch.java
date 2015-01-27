@@ -135,11 +135,13 @@ public class LTextureBatch {
 
 	private final Transform4 combinedMatrix = new Transform4();
 
-	private ShaderProgram shader;
+	private ShaderProgram shader = null;
 	private ShaderProgram customShader = null;
+	private ShaderProgram globalShader = null;
 	private boolean ownsShader;
 
-	float color = LColor.white.toFloatBits();
+	private final float whiteColor = LColor.white.toFloatBits();
+	float color = whiteColor;
 	private LColor tempColor = new LColor(1, 1, 1, 1);
 
 	public int maxSpritesInBatch = 0;
@@ -193,54 +195,6 @@ public class LTextureBatch {
 		this.size = size;
 	}
 
-	static public ShaderProgram createDefaultShader() {
-		String vertexShader = "attribute vec4 "
-				+ ShaderProgram.POSITION_ATTRIBUTE
-				+ ";\n" //
-				+ "attribute vec4 "
-				+ ShaderProgram.COLOR_ATTRIBUTE
-				+ ";\n" //
-				+ "attribute vec2 "
-				+ ShaderProgram.TEXCOORD_ATTRIBUTE
-				+ "0;\n" //
-				+ "uniform mat4 u_projTrans;\n" //
-				+ "varying vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "\n" //
-				+ "void main()\n" //
-				+ "{\n" //
-				+ "   v_color = "
-				+ ShaderProgram.COLOR_ATTRIBUTE
-				+ ";\n" //
-				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
-				+ "   v_texCoords = "
-				+ ShaderProgram.TEXCOORD_ATTRIBUTE
-				+ "0;\n" //
-				+ "   gl_Position =  u_projTrans * "
-				+ ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
-				+ "#define LOWP lowp\n" //
-				+ "precision mediump float;\n" //
-				+ "#else\n" //
-				+ "#define LOWP \n" //
-				+ "#endif\n" //
-				+ "varying LOWP vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "uniform sampler2D u_texture;\n" //
-				+ "void main()\n"//
-				+ "{\n" //
-				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
-				+ "}";
-
-		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
-		if (shader.isCompiled() == false) {
-			throw new IllegalArgumentException("Error compiling shader: "
-					+ shader.getLog());
-		}
-		return shader;
-	}
-
 	public BlendState getBlendState() {
 		return lastBlendState;
 	}
@@ -263,9 +217,9 @@ public class LTextureBatch {
 					GLEx.self.setBlendMode(GL.MODE_NORMAL);
 					break;
 				}
-			}else{
+			} else {
 				Updateable update = new Updateable() {
-					
+
 					@Override
 					public void action(Object a) {
 						switch (lastBlendState) {
@@ -313,7 +267,7 @@ public class LTextureBatch {
 			}
 			mesh.setIndices(indices);
 			if (shader == null) {
-				shader = createDefaultShader();
+				shader = GLEx.createDefaultShader();
 				ownsShader = true;
 			}
 			isLoaded = true;
@@ -508,16 +462,24 @@ public class LTextureBatch {
 		this.isCacheLocked = false;
 	}
 
-	private void commit(Cache cache, BlendState state) {
+	private void commit(Cache cache, LColor color, BlendState state) {
 		if (!isLoaded) {
 			return;
 		}
-		if (customShader != null) {
-			customShader.begin();
-		} else {
-			shader.begin();
+		if (globalShader == null) {
+			globalShader = GLEx.createGlobalShader();
 		}
-		setupMatrices();
+		globalShader.begin();
+		float oldColor = getFloatColor();
+		if (color != null) {
+			globalShader.setUniformf("v_color", color);
+		}
+		combinedMatrix.set(GLEx.getProjectionMatrix()).mul(
+				GLEx.getTransformMatrix());
+		if (globalShader != null) {
+			globalShader.setUniformMatrix("u_projTrans", combinedMatrix);
+			globalShader.setUniformi("u_texture", 0);
+		}
 		if (cache.vertexIdx > 0) {
 			if (cache.vertexIdx == 0) {
 				return;
@@ -528,19 +490,17 @@ public class LTextureBatch {
 			mesh.getIndicesBuffer().position(0);
 			mesh.getIndicesBuffer().limit(cache.count);
 			setBlendState(state);
-			mesh.render(customShader != null ? customShader : shader,
-					GL20.GL_TRIANGLES, 0, cache.count);
+			mesh.render(globalShader, GL20.GL_TRIANGLES, 0, cache.count);
 		}
-		if (customShader != null) {
-			customShader.end();
-		} else {
-			shader.end();
+		if (color != null) {
+			globalShader.setUniformf("v_color", oldColor);
 		}
+		globalShader.end();
 	}
 
 	public void postLastCache() {
 		if (lastCache != null) {
-			commit(lastCache, lastBlendState);
+			commit(lastCache, null, lastBlendState);
 		}
 	}
 
@@ -1398,30 +1358,18 @@ public class LTextureBatch {
 		GLEx.self.restore();
 	}
 
-	public void setShaderUniformf(String name, LColor color) {
-		if (shader != null) {
-			shader.setUniformf(name, color);
-		}
-	}
-
-	public void setShaderUniformf(int name, LColor color) {
-		if (shader != null) {
-			shader.setUniformf(name, color);
-		}
-	}
-
-	public void postCache(Cache cache, float x, float y) {
+	public void postCache(Cache cache, LColor color, float x, float y) {
 		GLEx.self.save();
 		Transform4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
 			project.translate(x, y, 0);
 		}
-		commit(cache, lastBlendState);
+		commit(cache, color, lastBlendState);
 		GLEx.self.restore();
 	}
 
-	public void postCache(Cache cache, float x, float y, float sx, float sy,
-			float ax, float ay, float rotaion) {
+	public void postCache(Cache cache, LColor color, float x, float y,
+			float sx, float sy, float ax, float ay, float rotaion) {
 		GLEx.self.save();
 		Transform4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
@@ -1439,11 +1387,11 @@ public class LTextureBatch {
 				project.translate(-texture.width / 2, -texture.height / 2, 0.0f);
 			}
 		}
-		commit(cache, lastBlendState);
+		commit(cache, color, lastBlendState);
 		GLEx.self.restore();
 	}
 
-	public void postCache(Cache cache, float rotaion) {
+	public void postCache(Cache cache, LColor color, float rotaion) {
 		GLEx.self.save();
 		Transform4 project = GLEx.getProjectionMatrix();
 		if (rotaion != 0) {
@@ -1451,13 +1399,13 @@ public class LTextureBatch {
 			project.rotate(0f, 0f, 1f, rotaion);
 			project.translate(-texture.width / 2, -texture.height / 2, 0.0f);
 		}
-		commit(cache, lastBlendState);
+		commit(cache, color, lastBlendState);
 		GLEx.self.restore();
 	}
 
-	public void postCache(float rotaion) {
+	public void postCache(LColor color, float rotaion) {
 		if (lastCache != null) {
-			postCache(lastCache, rotaion);
+			postCache(lastCache, color, rotaion);
 		}
 	}
 
