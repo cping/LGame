@@ -178,7 +178,7 @@ public class LTextures {
 				}
 			}
 			if (GLEx.self != null) {
-				GLEx.self.reload();
+				GLUtils.reload();
 				FrameBuffer.invalidateAllFrameBuffers(GLEx.self);
 				ShaderProgram.invalidateAllShaderPrograms(GLEx.self);
 				Mesh.invalidateAllMeshes(GLEx.self);

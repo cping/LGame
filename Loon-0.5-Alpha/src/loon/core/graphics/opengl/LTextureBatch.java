@@ -3,9 +3,11 @@ package loon.core.graphics.opengl;
 import java.util.HashMap;
 
 import loon.LSystem;
+import loon.action.sprite.SpriteBatch.BlendState;
 import loon.action.sprite.SpriteRegion;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
 import loon.core.LRelease;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.device.LColor;
@@ -159,10 +161,6 @@ public class LTextureBatch {
 		this.ty = ty;
 	}
 
-	public static enum BlendState {
-		Additive, AlphaBlend, NonPremultiplied, Opaque;
-	}
-
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
 	public LTextureBatch(LTexture tex) {
@@ -250,19 +248,43 @@ public class LTextureBatch {
 	public void setBlendState(BlendState state) {
 		if (state != lastBlendState) {
 			this.lastBlendState = state;
-			switch (lastBlendState) {
-			case Additive:
-				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-				break;
-			case AlphaBlend:
-				GLEx.self.setBlendMode(GL.MODE_SPEED);
-				break;
-			case Opaque:
-				GLEx.self.setBlendMode(GL.MODE_NONE);
-				break;
-			case NonPremultiplied:
-				GLEx.self.setBlendMode(GL.MODE_NORMAL);
-				break;
+			if (GLEx.self != null) {
+				switch (lastBlendState) {
+				case Additive:
+					GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+					break;
+				case AlphaBlend:
+					GLEx.self.setBlendMode(GL.MODE_SPEED);
+					break;
+				case Opaque:
+					GLEx.self.setBlendMode(GL.MODE_NONE);
+					break;
+				case NonPremultiplied:
+					GLEx.self.setBlendMode(GL.MODE_NORMAL);
+					break;
+				}
+			}else{
+				Updateable update = new Updateable() {
+					
+					@Override
+					public void action(Object a) {
+						switch (lastBlendState) {
+						case Additive:
+							GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+							break;
+						case AlphaBlend:
+							GLEx.self.setBlendMode(GL.MODE_SPEED);
+							break;
+						case Opaque:
+							GLEx.self.setBlendMode(GL.MODE_NONE);
+							break;
+						case NonPremultiplied:
+							GLEx.self.setBlendMode(GL.MODE_NORMAL);
+							break;
+						}
+					}
+				};
+				LSystem.load(update);
 			}
 		}
 	}

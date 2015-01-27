@@ -315,7 +315,7 @@ public final class LSystem {
 	final static public String FRAMEWORK_IMG_NAME = "assets/loon_";
 
 	// 框架版本信息
-	final static public String VERSION = "0.4.1";
+	final static public String VERSION = "0.5";
 
 	// 秒
 	final static public long SECOND = 1000;
