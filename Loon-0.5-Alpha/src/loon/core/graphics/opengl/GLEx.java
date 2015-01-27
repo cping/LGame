@@ -173,6 +173,8 @@ public final class GLEx implements LTrans {
 
 	}
 
+	private float lastAlpha = 1f;
+
 	public static enum Direction {
 		TRANS_NONE, TRANS_MIRROR, TRANS_FILP, TRANS_MF;
 	}
@@ -185,8 +187,8 @@ public final class GLEx implements LTrans {
 
 	private float _lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
 
-	private boolean isClose, isTex2DEnabled, isAntialias,
-			isScissorTest, isPushed;
+	private boolean isClose, isTex2DEnabled, isAntialias, isScissorTest,
+			isPushed;
 
 	private final Clip clip;
 
@@ -205,6 +207,12 @@ public final class GLEx implements LTrans {
 	private LFont font = LFont.getDefaultFont();
 
 	private boolean onSaveFlag;
+
+	private boolean updateColor;
+
+	private LTexture lastTextre = null;
+
+	private LTextureBatch texBatch = null;
 
 	public GLEx(int width, int height) {
 		String version = org.lwjgl.opengl.GL11.glGetString(GL11.GL_VERSION);
@@ -1897,7 +1905,7 @@ public final class GLEx implements LTrans {
 		}
 		save();
 		translate(rx, ry);
-        projectionMatrix.rotate(0, 0, 1, angle);
+		projectionMatrix.rotate(0, 0, 1, angle);
 		translate(-rx, -ry);
 	}
 
@@ -2763,8 +2771,6 @@ public final class GLEx implements LTrans {
 				srcHeight, c, rotation, null, null);
 	}
 
-	private boolean updateColor;
-
 	/**
 	 * 渲染纹理为指定设置
 	 * 
@@ -2786,9 +2792,66 @@ public final class GLEx implements LTrans {
 			float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, LColor c, float rotation, Vector2f origin,
 			Direction dir) {
-
+		if (isClose) {
+			return;
+		}
+		if (texture == null) {
+			return;
+		}
+		if (!texture.isVisible) {
+			return;
+		}
+		if (!texture.isLoaded) {
+			texture.loadTexture();
+		}
+		if (texBatch == null) {
+			texBatch = new LTextureBatch(texture);
+		}
+		if (lastTextre != texture) {
+			texBatch.setTexture(texture);
+			texBatch.begin();
+		}
+		float oldColor = texBatch.getFloatColor();
+		if (c != null) {
+			texBatch.setColor(c);
+		} else {
+			if (lastAlpha != 1f) {
+				float old = color.a;
+				color.a = old * lastAlpha;
+				texBatch.setColor(color);
+				color.a = old;
+			} else {
+				texBatch.setColor(color);
+			}
+		}
+		boolean flipX = false;
+		boolean flipY = false;
+		if (Direction.TRANS_MIRROR == dir) {
+			flipX = true;
+		} else if (Direction.TRANS_FILP == dir) {
+			flipY = true;
+		} else if (Direction.TRANS_MF == dir) {
+			flipX = true;
+			flipY = true;
+		}
+		if (origin != null) {
+			texBatch.draw(x, y, origin.x, origin.y, width, height, 1f, 1f,
+					rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
+		} else if (rotation == 0 && !flipX && !flipY) {
+			texBatch.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight);
+		} else if (rotation == 0) {
+			texBatch.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight,
+					flipX, flipY);
+		} else {
+			texBatch.draw(x, y, width / 2, height / 2, width, height, 1f, 1f,
+					rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
+		}
+		texBatch.setColor(oldColor);
+		if (lastTextre != texture) {
+			texBatch.end();
+			lastTextre = texture;
+		}
 	}
-
 
 	/**
 	 * 输出字符串
@@ -2871,7 +2934,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		y = y - font.getAscent();
-
+		LSTRDictionary.drawString(font, string, x, y, rotation, c);
 	}
 
 	/**
@@ -3060,19 +3123,23 @@ public final class GLEx implements LTrans {
 		if (glBatch != null) {
 			glBatch.dispose();
 		}
+		if (texBatch != null) {
+			texBatch.destoryAll();
+			texBatch = null;
+		}
 	}
 
-		public void copyImageToTexture(LTexture texture, LImage pix, int x, int y) {
-			bind(texture);
-			glTex2DEnable();
-			{
-				bind(texture.textureID);
-				gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, pix.hasAlpha() ? 4 : 1);
-				gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, x, y, pix.getWidth(),
-						pix.getHeight(), pix.hasAlpha() ? GL.GL_RGBA : GL.GL_RGB,
-						GL.GL_UNSIGNED_BYTE, pix.getByteBuffer());
-			}
-		
+	public void copyImageToTexture(LTexture texture, LImage pix, int x, int y) {
+		bind(texture);
+		glTex2DEnable();
+		{
+			bind(texture.textureID);
+			gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, pix.hasAlpha() ? 4 : 1);
+			gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, x, y, pix.getWidth(),
+					pix.getHeight(), pix.hasAlpha() ? GL.GL_RGBA : GL.GL_RGB,
+					GL.GL_UNSIGNED_BYTE, pix.getByteBuffer());
+		}
+
 	}
 
 }

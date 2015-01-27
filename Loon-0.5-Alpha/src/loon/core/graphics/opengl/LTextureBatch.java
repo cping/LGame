@@ -369,7 +369,7 @@ public class LTextureBatch {
 		return color;
 	}
 
-	public float getPackedColor() {
+	public float getFloatColor() {
 		return color;
 	}
 
