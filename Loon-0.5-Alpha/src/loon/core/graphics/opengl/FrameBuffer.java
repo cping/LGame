@@ -90,7 +90,7 @@ public class FrameBuffer implements LRelease {
 		}
 
 		gl.glBindTexture(GL20.GL_TEXTURE_2D,
-				colorTexture.getTextureObjectHandle());
+				colorTexture.getTextureID());
 
 		if (hasDepth) {
 			gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthbufferHandle);
@@ -109,7 +109,7 @@ public class FrameBuffer implements LRelease {
 		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
 		gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER,
 				GL20.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D,
-				colorTexture.getTextureObjectHandle(), 0);
+				colorTexture.getTextureID(), 0);
 		if (hasDepth) {
 			gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER,
 					GL20.GL_DEPTH_ATTACHMENT, GL20.GL_RENDERBUFFER,
@@ -228,7 +228,7 @@ public class FrameBuffer implements LRelease {
 		managedResources.add(frameBuffer);
 		buffers.put(app, managedResources);
 	}
-
+	
 	public static void invalidateAllFrameBuffers(GLEx app) {
 		if (GLEx.gl == null){
 			return;

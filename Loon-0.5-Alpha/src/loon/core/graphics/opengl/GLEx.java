@@ -27,6 +27,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.opengl.GL11;
 
 import loon.Files;
+import loon.JavaSEGL20;
 import loon.LSystem;
 import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
@@ -120,6 +121,7 @@ public final class GLEx implements LTrans {
 
 	public final void reload() {
 		enableBlend = false;
+		
 	}
 
 	public static int width() {
@@ -221,7 +223,7 @@ public final class GLEx implements LTrans {
 		if (verMajor == 1 && verMinor < 5) {
 			throw new RuntimeException("Not support GL20 !");
 		}
-		GLEx.gl = new LWJGLGL20();
+		GLEx.gl = new JavaSEGL20();
 		GLEx.self = this;
 		cache_projectionMatrix.setToOrtho2D(0, 0, width, height);
 		projectionMatrix.setToOrtho2D(0, 0, width, height);

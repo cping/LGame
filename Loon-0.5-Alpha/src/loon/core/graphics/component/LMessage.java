@@ -66,7 +66,7 @@ public class LMessage extends LContainer {
 		super(x, y, width, height);
 		this.animation = new Animation();
 		if (formImage == null) {
-			this.setBackground(new LTexture(width, height, true, Format.SPEED));
+			this.setBackground(new LTexture(width, height, true, Format.STATIC));
 			this.setAlpha(0.3F);
 		} else {
 			this.setBackground(formImage);

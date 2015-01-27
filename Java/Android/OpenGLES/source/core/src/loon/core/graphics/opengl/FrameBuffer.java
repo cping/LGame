@@ -20,4 +20,6 @@ public interface FrameBuffer {
 	public void unbind() ;
 
 	public void destroy() ;
+
+	public void build();
 }

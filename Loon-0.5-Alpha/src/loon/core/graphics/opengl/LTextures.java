@@ -179,6 +179,9 @@ public class LTextures {
 			}
 			if (GLEx.self != null) {
 				GLEx.self.reload();
+				FrameBuffer.invalidateAllFrameBuffers(GLEx.self);
+				ShaderProgram.invalidateAllShaderPrograms(GLEx.self);
+				Mesh.invalidateAllMeshes(GLEx.self);
 			}
 		}
 	}
@@ -195,6 +198,11 @@ public class LTextures {
 			lazyTextures.clear();
 		}
 		LSTRDictionary.dispose();
+		if (GLEx.self != null) {
+			FrameBuffer.clearAllFrameBuffers(GLEx.self);
+			ShaderProgram.clearAllShaderPrograms(GLEx.self);
+			Mesh.clearAllMeshes(GLEx.self);
+		}
 	}
 
 	public static void destroyAll() {
@@ -209,5 +217,10 @@ public class LTextures {
 			lazyTextures.clear();
 		}
 		LSTRDictionary.dispose();
+		if (GLEx.self != null) {
+			FrameBuffer.clearAllFrameBuffers(GLEx.self);
+			ShaderProgram.clearAllShaderPrograms(GLEx.self);
+			Mesh.clearAllMeshes(GLEx.self);
+		}
 	}
 }

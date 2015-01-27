@@ -80,7 +80,7 @@ public class LSelect extends LContainer {
 	public LSelect(LTexture formImage, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		if (formImage == null) {
-			this.setBackground(new LTexture(width, height, true, Format.SPEED));
+			this.setBackground(new LTexture(width, height, true, Format.STATIC));
 			this.setAlpha(0.3F);
 		} else {
 			this.setBackground(formImage);

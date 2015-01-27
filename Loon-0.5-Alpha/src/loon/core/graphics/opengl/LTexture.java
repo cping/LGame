@@ -35,8 +35,53 @@ import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LShadow;
 import loon.jni.NativeSupport;
 
-
 public class LTexture implements LRelease {
+
+	public enum TextureFilter {
+		Nearest(GL20.GL_NEAREST), Linear(GL20.GL_LINEAR), MipMap(
+				GL20.GL_LINEAR_MIPMAP_LINEAR), MipMapNearestNearest(
+				GL20.GL_NEAREST_MIPMAP_NEAREST), MipMapLinearNearest(
+				GL20.GL_LINEAR_MIPMAP_NEAREST), MipMapNearestLinear(
+				GL20.GL_NEAREST_MIPMAP_LINEAR), MipMapLinearLinear(
+				GL20.GL_LINEAR_MIPMAP_LINEAR);
+
+		final int glEnum;
+
+		TextureFilter(int glEnum) {
+			this.glEnum = glEnum;
+		}
+
+		public boolean isMipMap() {
+			return glEnum != GL20.GL_NEAREST && glEnum != GL20.GL_LINEAR;
+		}
+
+		public int getGLEnum() {
+			return glEnum;
+		}
+	}
+
+	public enum TextureWrap {
+		MirroredRepeat(GL20.GL_MIRRORED_REPEAT), ClampToEdge(
+				GL20.GL_CLAMP_TO_EDGE), Repeat(GL20.GL_REPEAT);
+
+		final int glEnum;
+
+		TextureWrap(int glEnum) {
+			this.glEnum = glEnum;
+		}
+
+		public int getGLEnum() {
+			return glEnum;
+		}
+	}
+
+	protected TextureFilter minFilter = TextureFilter.Nearest;
+
+	protected TextureFilter magFilter = TextureFilter.Nearest;
+
+	protected TextureWrap uWrap = TextureWrap.ClampToEdge;
+
+	protected TextureWrap vWrap = TextureWrap.ClampToEdge;
 
 	public LTexture makeShadow(int size, float alpha, LColor c) {
 		return new LShadow(this.getImage(), size, alpha, c).getTexture();
@@ -254,11 +299,6 @@ public class LTexture implements LRelease {
 		}
 	}
 
-	protected TextureFilter minFilter = TextureFilter.Nearest;
-	protected TextureFilter magFilter = TextureFilter.Nearest;
-	protected TextureWrap uWrap = TextureWrap.ClampToEdge;
-	protected TextureWrap vWrap = TextureWrap.ClampToEdge;
-
 	public void setFilter(TextureFilter minFilter, TextureFilter magFilter) {
 		this.minFilter = minFilter;
 		this.magFilter = magFilter;
@@ -319,82 +359,51 @@ public class LTexture implements LRelease {
 	}
 
 	public void setFormat(Format format) {
-		switch (format) {
-		case DEFAULT:
-		case NEAREST:
-			setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-			setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
-			break;
-		case FONT:
-		case LINEAR:
+		if (ALL_LINEAR && !ALL_NEAREST) {
 			setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
-			break;
-		case STATIC:
-		case SPEED:
+		} else if (ALL_NEAREST && !ALL_LINEAR) {
 			setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-			setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-			break;
-		case BILINEAR:
-			setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
-			break;
-		case REPEATING:
-			setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-			setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-			break;
-		case REPEATING_BILINEAR:
-		case REPEATING_BILINEAR_PREMULTIPLYALPHA:
-			setFilter(TextureFilter.Linear, TextureFilter.Linear);
-			setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-			break;
-		}
-	}
-
-	public enum TextureFilter {
-		Nearest(GL20.GL_NEAREST), Linear(GL20.GL_LINEAR), MipMap(
-				GL20.GL_LINEAR_MIPMAP_LINEAR), MipMapNearestNearest(
-				GL20.GL_NEAREST_MIPMAP_NEAREST), MipMapLinearNearest(
-				GL20.GL_LINEAR_MIPMAP_NEAREST), MipMapNearestLinear(
-				GL20.GL_NEAREST_MIPMAP_LINEAR), MipMapLinearLinear(
-				GL20.GL_LINEAR_MIPMAP_LINEAR);
-
-		final int glEnum;
-
-		TextureFilter(int glEnum) {
-			this.glEnum = glEnum;
-		}
-
-		public boolean isMipMap() {
-			return glEnum != GL20.GL_NEAREST && glEnum != GL20.GL_LINEAR;
-		}
-
-		public int getGLEnum() {
-			return glEnum;
-		}
-	}
-
-	public int getTextureObjectHandle() {
-		return this.textureID;
-	}
-
-	public enum TextureWrap {
-		MirroredRepeat(GL20.GL_MIRRORED_REPEAT), ClampToEdge(
-				GL20.GL_CLAMP_TO_EDGE), Repeat(GL20.GL_REPEAT);
-
-		final int glEnum;
-
-		TextureWrap(int glEnum) {
-			this.glEnum = glEnum;
-		}
-
-		public int getGLEnum() {
-			return glEnum;
+		} else if (ALL_NEAREST && ALL_LINEAR) {
+			setFilter(TextureFilter.Nearest, TextureFilter.Linear);
+			setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
+		} else {
+			switch (format) {
+			case DEFAULT:
+			case NEAREST:
+				setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+				setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
+				break;
+			case FONT:
+			case LINEAR:
+				setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
+				break;
+			case STATIC:
+			case SPEED:
+				setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+				setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+				break;
+			case BILINEAR:
+				setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
+				break;
+			case REPEATING:
+				setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+				setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+				break;
+			case REPEATING_BILINEAR:
+			case REPEATING_BILINEAR_PREMULTIPLYALPHA:
+				setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+				break;
+			}
 		}
 	}
 
 	public int getTextureID() {
-		return textureID;
+		return this.textureID;
 	}
 
 	public void setVertCords(int width, int height) {
@@ -711,12 +720,10 @@ public class LTexture implements LRelease {
 		GLEx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
 		GLEx.gl.glBindTexture(GL20.GL_TEXTURE_2D, textureID);
 	}
-	
 
 	public synchronized void unbind() {
 		GLEx.gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
 	}
-
 
 	public int hashCode() {
 		if (_hashCode == 1 && imageData.source != null) {
@@ -899,8 +906,8 @@ public class LTexture implements LRelease {
 		}
 		return image;
 	}
-	
-	public LTextureBatch getBatch(){
+
+	public LTextureBatch getBatch() {
 		return new LTextureBatch(this);
 	}
 

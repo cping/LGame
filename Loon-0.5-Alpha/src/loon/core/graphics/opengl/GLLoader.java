@@ -31,6 +31,7 @@ import java.nio.ByteOrder;
 import java.util.HashMap;
 
 import loon.JavaSEGraphicsUtils;
+import loon.JavaSEPNGData;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LImage;
 import loon.core.resource.Resources;
@@ -142,7 +143,7 @@ public final class GLLoader extends LTextureData {
 		}
 		if (fileName.toLowerCase().endsWith("png") && multipyAlpha) {
 			ByteBuffer result = null;
-			PNGData imageData = new PNGData();
+			JavaSEPNGData imageData = new JavaSEPNGData();
 			try {
 				result = imageData.loadImage(Resources.openResource(fileName));
 			} catch (IOException e) {

@@ -24,6 +24,7 @@ package loon.core.graphics.opengl;
 
 import java.util.HashMap;
 
+import loon.JavaSEFrameBuffer;
 import loon.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.opengl.LTexture.Format;
@@ -190,6 +191,7 @@ public class LTextures {
 				}
 			}
 			GLUtils.reload();
+			JavaSEFrameBuffer.invalidateAllFrameBuffers(GLEx.self);
 		}
 	}
 
@@ -205,6 +207,7 @@ public class LTextures {
 			lazyTextures.clear();
 		}
 		LSTRDictionary.dispose();
+		JavaSEFrameBuffer.clearAllFrameBuffers(GLEx.self);
 	}
 
 	public static void destroyAll() {
@@ -219,5 +222,6 @@ public class LTextures {
 			lazyTextures.clear();
 		}
 		LSTRDictionary.dispose();
+		JavaSEFrameBuffer.clearAllFrameBuffers(GLEx.self);
 	}
 }

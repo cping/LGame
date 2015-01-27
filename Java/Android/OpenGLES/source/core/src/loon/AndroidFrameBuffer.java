@@ -1,5 +1,8 @@
 package loon;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.microedition.khronos.opengles.GL11ExtensionPack;
 
 import loon.core.event.Updateable;
@@ -8,8 +11,11 @@ import loon.core.graphics.opengl.GL10;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.utils.collection.Array;
 
 public class AndroidFrameBuffer implements FrameBuffer {
+
+	private final static Map<GLEx, Array<FrameBuffer>> buffers = new HashMap<GLEx, Array<FrameBuffer>>();
 
 	int[] framebuffers = new int[1];
 	private LTexture texture;
@@ -24,14 +30,34 @@ public class AndroidFrameBuffer implements FrameBuffer {
 		return extensions.indexOf(" " + extension + " ") >= 0;
 	}
 
-	public AndroidFrameBuffer(final LTexture texture) {
-		if (!isSupported()) {
-			throw new RuntimeException(
-					"FBO extension not supported in hardware");
+	private static void addManagedFrameBuffer(GLEx app, FrameBuffer frameBuffer) {
+		Array<FrameBuffer> managedResources = buffers.get(app);
+		if (managedResources == null) {
+			managedResources = new Array<FrameBuffer>();
 		}
-		this.texture = texture;
-		this.width = texture.getWidth();
-		this.height = texture.getHeight();
+		managedResources.add(frameBuffer);
+		buffers.put(app, managedResources);
+	}
+
+	public static void invalidateAllFrameBuffers(GLEx app) {
+		if (GLEx.gl == null) {
+			return;
+		}
+		Array<FrameBuffer> bufferArray = buffers.get(app);
+		if (bufferArray == null) {
+			return;
+		}
+		for (int i = 0; i < bufferArray.size(); i++) {
+			bufferArray.get(i).build();
+		}
+	}
+
+	public static void clearAllFrameBuffers(GLEx app) {
+		buffers.remove(app);
+	}
+
+	public void build() {
+		isLoaded = false;
 		Updateable update = new Updateable() {
 
 			@Override
@@ -73,6 +99,18 @@ public class AndroidFrameBuffer implements FrameBuffer {
 			}
 		};
 		LSystem.load(update);
+	}
+
+	public AndroidFrameBuffer(final LTexture texture) {
+		if (!isSupported()) {
+			throw new RuntimeException(
+					"FBO extension not supported in hardware");
+		}
+		this.texture = texture;
+		this.width = texture.getWidth();
+		this.height = texture.getHeight();
+		this.build();
+		addManagedFrameBuffer(GLEx.self, this);
 	}
 
 	public AndroidFrameBuffer(int width, int height, Format format) {
@@ -136,6 +174,24 @@ public class AndroidFrameBuffer implements FrameBuffer {
 		gl11ep.glBindFramebufferOES(GL11ExtensionPack.GL_FRAMEBUFFER_OES, 0);
 	}
 
+	protected void setFrameBufferViewport() {
+		GLEx.gl.glViewport(0, 0, texture.getWidth(), texture.getHeight());
+	}
+
+	public void end() {
+		unbind();
+		setDefaultFrameBufferViewport();
+	}
+
+	protected void setDefaultFrameBufferViewport() {
+		GLEx.gl.glViewport(0, 0, GLEx.width(), GLEx.height());
+	}
+
+	public void end(int x, int y, int width, int height) {
+		unbind();
+		GLEx.gl.glViewport(x, y, width, height);
+	}
+
 	public void destroy() {
 		if (isLoaded) {
 			isLoaded = false;
@@ -143,6 +199,12 @@ public class AndroidFrameBuffer implements FrameBuffer {
 			gl11ep.glBindFramebufferOES(GL11ExtensionPack.GL_FRAMEBUFFER_OES, 0);
 			gl11ep.glDeleteFramebuffersOES(1, framebuffers, 0);
 			id = 0;
+		}
+		if (texture != null) {
+			texture.destroy();
+		}
+		if (buffers.get(GLEx.self) != null) {
+			buffers.get(GLEx.self).remove(this);
 		}
 	}
 }

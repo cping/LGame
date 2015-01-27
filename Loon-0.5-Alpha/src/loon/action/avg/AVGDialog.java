@@ -128,7 +128,7 @@ final public class AVGDialog {
 				g.drawImage(down, 0, height - k);
 				g.dispose();
 
-				lazyImage.setFormat(Format.SPEED);
+				lazyImage.setFormat(Format.STATIC);
 				lazyTexture = lazyImage.getTexture();
 
 				if (lazyImage != null) {
@@ -244,7 +244,7 @@ final public class AVGDialog {
 
 			g.dispose();
 
-			lazyImage.setFormat(Format.SPEED);
+			lazyImage.setFormat(Format.STATIC);
 			lazyTexture = lazyImage.getTexture();
 
 			if (lazyImage != null) {
