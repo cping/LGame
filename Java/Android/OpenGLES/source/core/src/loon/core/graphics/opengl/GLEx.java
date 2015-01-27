@@ -116,8 +116,7 @@ public final class GLEx implements LTrans {
 
 	private float _lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
 
-	private boolean isClose, isTex2DEnabled, isARRAYEnable, isAntialias,
-			isScissorTest, isPushed;
+	private boolean isClose, isAntialias, isPushed;
 
 	private final Clip clip;
 
@@ -160,7 +159,6 @@ public final class GLEx implements LTrans {
 			int height) {
 		this.viewPort = new RectBox(0, 0, width, height);
 		this.clip = new Clip(0, 0, viewPort.width, viewPort.height);
-		this.isTex2DEnabled = false;
 		this.isClose = false;
 		if (g10 == null || baseGL == g10) {
 			return;
@@ -537,10 +535,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (isTex2DEnabled) {
-			gl.glDisable(GL.GL_TEXTURE_2D);
-			isTex2DEnabled = false;
-		}
+		GLUtils.disableTextures(gl10);
 	}
 
 	/**
@@ -551,10 +546,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!isTex2DEnabled) {
-			gl.glEnable(GL.GL_TEXTURE_2D);
-			isTex2DEnabled = true;
-		}
+		GLUtils.enableTextures(gl10);
 	}
 
 	/**
@@ -565,11 +557,8 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!isARRAYEnable) {
-			gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
-			gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-			isARRAYEnable = true;
-		}
+		GLUtils.enableVertexArray(gl10);
+		GLUtils.enableTexCoordArray(gl10);
 	}
 
 	/**
@@ -580,11 +569,8 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (isARRAYEnable) {
-			gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
-			gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-			isARRAYEnable = false;
-		}
+		GLUtils.disableVertexArray(gl10);
+		GLUtils.disableTexCoordArray(gl10);
 	}
 
 	/**
@@ -748,10 +734,7 @@ public final class GLEx implements LTrans {
 		}
 		_isReplace = true;
 		bind(0);
-		if (isTex2DEnabled) {
-			gl.glDisable(GL.GL_TEXTURE_2D);
-			isTex2DEnabled = false;
-		}
+		glTex2DDisable();
 		if (clear) {
 			gl10.glClearColor(0, 0, 0, 1f);
 			gl10.glClear(GL.GL_COLOR_BUFFER_BIT);
@@ -2090,10 +2073,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		try {
-			if (isScissorTest) {
-				gl10.glDisable(GL.GL_SCISSOR_TEST);
-				isScissorTest = false;
-			}
+			GLUtils.disablecissorTest(gl10);
 			clip.setBounds(0, 0, viewPort.width, viewPort.height);
 			gl.glScissor(0, 0, (int) (viewPort.width * LSystem.scaleWidth),
 					(int) (viewPort.height * LSystem.scaleHeight));
@@ -2113,10 +2093,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!isScissorTest) {
-			gl10.glEnable(GL.GL_SCISSOR_TEST);
-			isScissorTest = true;
-		}
+		GLUtils.enablecissorTest(gl10);
 		clip.setBounds(x, y, width, height);
 		gl10.glScissor(
 				(int) (x * LSystem.scaleWidth),
