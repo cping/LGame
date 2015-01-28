@@ -1,10 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.FloatBuffer;
-
-import loon.core.graphics.device.LColor;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -25,6 +18,12 @@ import loon.core.graphics.device.LColor;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.nio.FloatBuffer;
+
+import loon.core.graphics.device.LColor;
+
 public class GLUtils {
 
 	private static int currentHardwareBufferID = -1;
@@ -57,14 +56,6 @@ public class GLUtils {
 
 	private static boolean enableVertexArray = false;
 
-	private static float red = -1;
-
-	private static float green = -1;
-
-	private static float blue = -1;
-
-	private static float alpha = -1;
-
 	public static void reset(final GL10 gl10) {
 		GLUtils.currentHardwareBufferID = -1;
 		GLUtils.currentHardwareTextureID = -1;
@@ -76,10 +67,6 @@ public class GLUtils {
 		GLUtils.disableTexCoordArray(gl10);
 		GLUtils.disableTexColorArray(gl10);
 		GLUtils.disableVertexArray(gl10);
-		GLUtils.red = -1;
-		GLUtils.green = -1;
-		GLUtils.blue = -1;
-		GLUtils.alpha = -1;
 	}
 
 	public static void reload() {
@@ -87,10 +74,6 @@ public class GLUtils {
 		GLUtils.currentHardwareTextureID = -1;
 		GLUtils.currentSourceBlendMode = -1;
 		GLUtils.currentDestinationBlendMode = -1;
-		GLUtils.red = -1;
-		GLUtils.green = -1;
-		GLUtils.blue = -1;
-		GLUtils.alpha = -1;
 		GLUtils.enableDither = true;
 		GLUtils.enableLightning = true;
 		GLUtils.enableDepthTest = true;
@@ -110,38 +93,12 @@ public class GLUtils {
 
 	public static void setClearColor(final GL10 gl10, float r, float g,
 			float b, float a) {
-		try {
-			if (a != GLUtils.alpha || r != GLUtils.red || g != GLUtils.green
-					|| b != GLUtils.blue) {
-				GLUtils.alpha = a;
-				GLUtils.red = r;
-				GLUtils.green = g;
-				GLUtils.blue = b;
-				gl10.glClearColor(r, g, b, a);
-				gl10.glClear(GL.GL_COLOR_BUFFER_BIT
-						| GL.GL_DEPTH_BUFFER_BIT);
-			}
-		} catch (Exception e) {
-		}
+		gl10.glClearColor(r, g, b, a);
+		gl10.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 	}
 
 	public static void setClearColor(final GL10 gl10, LColor c) {
 		GLUtils.setClearColor(gl10, c.r, c.g, c.b, c.a);
-	}
-
-	public static void setColor(final GL10 gl10, final float r, final float g,
-			final float b, final float a) {
-		try {
-			if (a != GLUtils.alpha || r != GLUtils.red || g != GLUtils.green
-					|| b != GLUtils.blue) {
-				GLUtils.alpha = a;
-				GLUtils.red = r;
-				GLUtils.green = g;
-				GLUtils.blue = b;
-				gl10.glColor4f(r, g, b, a);
-			}
-		} catch (Exception e) {
-		}
 	}
 
 	public static void enableVertexArray(final GL10 gl10) {

@@ -427,7 +427,7 @@ public final class LTextureBatch implements LRelease {
 			return;
 		}
 		this.insertVertices();
-		GLEx.self.glDrawArrays(texture, vertexBuffer, coordBuffer, colorBuffer,
+		GLEx.self.commitDrawArrays(texture, colors==null?null:colors[0],vertexBuffer, coordBuffer, colorBuffer,
 				isColor, count, moveX, moveY);
 		this.useBegin = false;
 	}
@@ -445,14 +445,8 @@ public final class LTextureBatch implements LRelease {
 		}
 		this.isColor = false;
 		this.insertVertices();
-		if (c != null) {
-			GLEx.self.setColor(c);
-		}
-		GLEx.self.glQuad(texture, vertexBuffer, coordBuffer, count, x, y, sx,
+		GLEx.self.commitQuad(texture, colors==null?null:colors[0], vertexBuffer, coordBuffer, count, x, y, sx,
 				sy, ax, sy, rotaion);
-		if (c != null) {
-			GLEx.self.setColor(LColor.white);
-		}
 		this.useBegin = false;
 	}
 
@@ -467,14 +461,8 @@ public final class LTextureBatch implements LRelease {
 			return;
 		}
 		if (isLocked) {
-			if (c != null) {
-				GLEx.self.setColor(c);
-			}
-			GLEx.self.glQuad(texture, vertexBuffer, coordBuffer, count, x, y,
+			GLEx.self.commitQuad(texture, colors==null?null:colors[0], vertexBuffer, coordBuffer, count, x, y,
 					sx, sy, ax, ay, rotaion);
-			if (c != null) {
-				GLEx.self.setColor(LColor.white);
-			}
 		}
 	}
 
@@ -487,7 +475,7 @@ public final class LTextureBatch implements LRelease {
 			return;
 		}
 		if (isLocked) {
-			GLEx.self.glDrawArrays(texture, vertexBuffer, coordBuffer,
+			GLEx.self.commitDrawArrays(texture,  colors==null?null:colors[0],vertexBuffer, coordBuffer,
 					colorBuffer, isColor, count, moveX, moveY);
 		}
 	}
@@ -498,13 +486,20 @@ public final class LTextureBatch implements LRelease {
 	 * @param tex2d
 	 * @param cache
 	 */
+	public final static void commit(LTexture tex2d, LColor color,GLCache cache) {
+		if (cache.count == 0) {
+			return;
+		}
+		GLEx.self.commitDrawArrays(tex2d,color, cache);
+	}
+	
 	public final static void commit(LTexture tex2d, GLCache cache) {
 		if (cache.count == 0) {
 			return;
 		}
-		GLEx.self.glDrawArrays(tex2d, cache);
+		GLEx.self.commitDrawArrays(tex2d,null, cache);
 	}
-
+	
 	/**
 	 * 提交缓存数据进行文字渲染
 	 * 
@@ -520,13 +515,7 @@ public final class LTextureBatch implements LRelease {
 		if (cache.count == 0) {
 			return;
 		}
-		if (c != null) {
-			GLEx.self.setColor(c);
-		}
-		GLEx.self.glQuad(tex2d, cache, x, y, sx, sy, ax, ay, rotation);
-		if (c != null) {
-			GLEx.self.setColor(LColor.white);
-		}
+		GLEx.self.commitQuad(tex2d, c,cache, x, y, sx, sy, ax, ay, rotation);
 	}
 
 	public void draw(float x, float y) {
@@ -977,7 +966,7 @@ public final class LTextureBatch implements LRelease {
 
 	public void postLastCache() {
 		if (lastCache != null) {
-			LTextureBatch.commit(texture, lastCache);
+			LTextureBatch.commit(texture,colors==null?null:colors[0], lastCache);
 		}
 	}
 

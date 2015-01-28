@@ -27,7 +27,6 @@ import java.nio.IntBuffer;
 import loon.AndroidGL10;
 import loon.AndroidGL11;
 import loon.LSystem;
-import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
@@ -138,7 +137,7 @@ public final class GLEx implements LTrans {
 
 	static int verMajor, verMinor;
 
-	private LColor _color = new LColor(LColor.white);
+	private LColor color = new LColor(LColor.white);
 
 	private static final float[] rectDataCords = new float[16];
 
@@ -313,8 +312,8 @@ public final class GLEx implements LTrans {
 		if ((x < 0 || y < 0) || (x > viewPort.width || y > viewPort.height)) {
 			return;
 		}
-		this.glVertex2f(x, y);
 		this.glColor(r, g, b, a);
+		this.glVertex2f(x, y);
 	}
 
 	/**
@@ -702,28 +701,6 @@ public final class GLEx implements LTrans {
 	}
 
 	/**
-	 * 保存当前的矩阵设置
-	 * 
-	 */
-	public final void glPushMatrix() {
-		if (isClose) {
-			return;
-		}
-		gl10.glPushMatrix();
-	}
-
-	/**
-	 * 还原上次保存的矩阵设置
-	 * 
-	 */
-	public final void glPopMatrix() {
-		if (isClose) {
-			return;
-		}
-		gl10.glPopMatrix();
-	}
-
-	/**
 	 * 清除当前帧色彩
 	 * 
 	 * @param clear
@@ -736,8 +713,7 @@ public final class GLEx implements LTrans {
 		bind(0);
 		glTex2DDisable();
 		if (clear) {
-			gl10.glClearColor(0, 0, 0, 1f);
-			gl10.glClear(GL.GL_COLOR_BUFFER_BIT);
+			GLUtils.setClearColor(gl10, 0, 0, 0, 1f);
 		}
 	}
 
@@ -761,8 +737,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		gl10.glClearColor(color.r, color.g, color.b, color.a);
-		gl10.glClear(GL.GL_COLOR_BUFFER_BIT);
+		GLUtils.setClearColor(gl10, color);
 	}
 
 	/**
@@ -794,16 +769,17 @@ public final class GLEx implements LTrans {
 		if (alpha == _lastAlpha) {
 			return;
 		}
-		_lastAlpha = alpha < 0 ? 0 : alpha > 1 ? 1 : alpha;
-		if (alpha >= 0.95f) {
-			GL_REPLACE();
-			gl10.glColor4f(1f, 1f, 1f, 1f);
+		if (color.a == alpha) {
+			return;
+		}
+		if (alpha > 0.95f) {
+			color.a = 1f;
 			onAlpha = false;
 		} else {
-			GL_MODULATE();
-			gl10.glColor4f(1f, 1f, 1f, _lastAlpha);
+			color.a = alpha;
 			onAlpha = true;
 		}
+		_lastAlpha = color.a;
 	}
 
 	/**
@@ -812,7 +788,7 @@ public final class GLEx implements LTrans {
 	 * @return
 	 */
 	public float getAlpha() {
-		return _color.a;
+		return color.a;
 	}
 
 	/**
@@ -839,27 +815,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!_color.equals(LColor.white)) {
-			GL_MODULATE();
-			_color.setColor(1f, 1f, 1f, 1f);
-			gl10.glColor4f(1f, 1f, 1f, 1f);
-		}
-	}
-
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param color
-	 */
-	public final void setColorRGB(LColor c) {
-		if (isClose) {
-			return;
-		}
-		if (!c.equals(_color)) {
-			GL_MODULATE();
-			_color.setColor(c.r, c.g, c.b, _lastAlpha);
-			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
-		}
+		color.setColor(1f, 1f, 1f, 1f);
 	}
 
 	/**
@@ -871,12 +827,8 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!c.equals(_color)) {
-			GL_MODULATE();
-			float alpha = _lastAlpha == 1 ? c.a : _lastAlpha;
-			_color.setColor(c.r, c.g, c.b, alpha);
-			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
-		}
+		float alpha = _lastAlpha == 1 ? c.a : _lastAlpha;
+		color.setColor(c.r, c.g, c.b, alpha);
 	}
 
 	/**
@@ -911,11 +863,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!_color.equals(r, g, b, a)) {
-			GL_MODULATE();
-			_color.setFloatColor(r, g, b, a);
-			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
-		}
+		color.setFloatColor(r, g, b, a);
 	}
 
 	public final void setColor(final int r, final int g, final int b,
@@ -927,11 +875,7 @@ public final class GLEx implements LTrans {
 		float green = g / 255f;
 		float blue = b / 255f;
 		float alpha = a / 255f;
-		if (!_color.equals(red, green, blue, alpha)) {
-			GL_MODULATE();
-			_color.setFloatColor(red, green, blue, alpha);
-			gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
-		}
+		color.setFloatColor(red, green, blue, alpha);
 	}
 
 	/**
@@ -955,15 +899,15 @@ public final class GLEx implements LTrans {
 	 * @return
 	 */
 	public final LColor getColor() {
-		return new LColor(_color);
+		return new LColor(color);
 	}
 
 	public final int getColorRGB() {
-		return _color.getRGB();
+		return color.getRGB();
 	}
 
 	public final int getColorARGB() {
-		return _color.getARGB();
+		return color.getARGB();
 	}
 
 	/**
@@ -1080,8 +1024,11 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		glBegin(GL.GL_LINE_LOOP);
+		glColor(color);
 		glVertex2f(x1, y1);
+		glColor(color);
 		glVertex2f(x2, y2);
+		glColor(color);
 		glVertex2f(x3, y3);
 		glEnd();
 	}
@@ -1103,8 +1050,11 @@ public final class GLEx implements LTrans {
 		}
 
 		glBegin(GL.GL_TRIANGLES);
+		glColor(color);
 		glVertex2f(x1, y1);
+		glColor(color);
 		glVertex2f(x2, y2);
+		glColor(color);
 		glVertex2f(x3, y3);
 		glEnd();
 	}
@@ -1291,7 +1241,9 @@ public final class GLEx implements LTrans {
 			glBegin(GL.GL_LINES);
 		}
 		{
+			glColor(color);
 			glVertex2f(x1, y1);
+			glColor(color);
 			glVertex2f(x2, y2);
 		}
 		if (use) {
@@ -1310,6 +1262,7 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		glBegin(GL.GL_POINTS);
+		glColor(color);
 		glVertex2f(x, y);
 		glEnd();
 	}
@@ -1327,6 +1280,7 @@ public final class GLEx implements LTrans {
 		}
 		glBegin(GL.GL_POINTS);
 		for (int i = 0; i < size; i++) {
+			glColor(color);
 			glVertex2f(x[i], y[i]);
 		}
 		glEnd();
@@ -1347,9 +1301,11 @@ public final class GLEx implements LTrans {
 		}
 		glBegin(GL.GL_LINE_STRIP);
 		for (int i = 0; i < points.length; i += 2) {
+			glColor(color);
 			glVertex2f(points[i], points[i + 1]);
 		}
 		if (shape.closed()) {
+			glColor(color);
 			glVertex2f(points[0], points[1]);
 		}
 		glEnd();
@@ -1375,6 +1331,7 @@ public final class GLEx implements LTrans {
 		for (int i = 0; i < tris.getTriangleCount(); i++) {
 			for (int p = 0; p < 3; p++) {
 				float[] pt = tris.getTrianglePoint(i, p);
+				glColor(color);
 				glVertex2f(pt[0], pt[1]);
 			}
 		}
@@ -1408,6 +1365,7 @@ public final class GLEx implements LTrans {
 				float ty = pt[1] * scaleY;
 				tx = image.xOff + (image.widthRatio * tx);
 				ty = image.yOff + (image.heightRatio * ty);
+				batch.glColor4f(color);
 				batch.glTexCoord2f(tx, ty);
 				batch.glVertex2f(pt[0], pt[1]);
 			}
@@ -1463,6 +1421,7 @@ public final class GLEx implements LTrans {
 				tx = image.xOff + (image.widthRatio * tx);
 				ty = image.yOff + (image.heightRatio * ty);
 
+				batch.glColor4f(color);
 				batch.glTexCoord2f(tx, ty);
 				batch.glVertex2f(pt[0], pt[1]);
 			}
@@ -1566,6 +1525,7 @@ public final class GLEx implements LTrans {
 		}
 		{
 			for (int i = 0; i < nPoints; i++) {
+				glColor(color);
 				glVertex2f(xPoints[i], yPoints[i]);
 			}
 		}
@@ -1603,6 +1563,7 @@ public final class GLEx implements LTrans {
 			glBegin(GL.GL_LINE_LOOP);
 		}
 		for (int i = 0; i < nPoints; i++) {
+			glColor(color);
 			glVertex2f(xPoints[i], yPoints[i]);
 		}
 		if (use) {
@@ -1640,7 +1601,6 @@ public final class GLEx implements LTrans {
 		setColor(argb);
 	}
 
-	
 	/**
 	 * 填充一个矩形
 	 * 
@@ -1749,6 +1709,7 @@ public final class GLEx implements LTrans {
 			}
 			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
 			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
+			glColor(color);
 			glVertex2f(x, y);
 		}
 		glEnd();
@@ -1793,7 +1754,7 @@ public final class GLEx implements LTrans {
 
 		glBegin(GL.GL_TRIANGLE_FAN);
 		int step = 360 / segments;
-
+		glColor(color);
 		glVertex2f(cx, cy);
 
 		for (float a = start; a < (end + step); a += step) {
@@ -1805,11 +1766,13 @@ public final class GLEx implements LTrans {
 			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
 			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
 
+			glColor(color);
 			glVertex2f(x, y);
 		}
 		glEnd();
 		if (isAntialias) {
 			glBegin(GL.GL_TRIANGLE_FAN);
+			glColor(color);
 			glVertex2f(cx, cy);
 			if (end != 360) {
 				end -= 10;
@@ -1824,7 +1787,7 @@ public final class GLEx implements LTrans {
 						* width / 2.0f));
 				float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang + 10))
 						* height / 2.0f));
-
+				glColor(color);
 				glVertex2f(x, y);
 			}
 			glEnd();
@@ -2268,7 +2231,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, _color, 0, null, null);
+				texture.width, texture.height, color, 0, null, null);
 	}
 
 	public final void drawFlipTexture(LTexture texture, float x, float y,
@@ -2339,7 +2302,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, dx1, dy1, dx2 - dx1, dy2 - dy1, sx1, sy1, sx2,
-				sy2, _color, 0, null, null);
+				sy2, color, 0, null, null);
 	}
 
 	/**
@@ -2359,7 +2322,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, _color, rotation, null, null);
+				texture.width, texture.height, color, rotation, null, null);
 	}
 
 	/**
@@ -2379,7 +2342,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, _color, 0, null, dir);
+				texture.width, texture.height, color, 0, null, dir);
 	}
 
 	/**
@@ -2491,7 +2454,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
-				texture.height, _color, 0, null, null);
+				texture.height, color, 0, null, null);
 	}
 
 	/**
@@ -2535,7 +2498,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
-				texture.height, _color, rotation, null, null);
+				texture.height, color, rotation, null, null);
 	}
 
 	/**
@@ -2556,7 +2519,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
-				texture.width, texture.height, _color, rotation, null, d);
+				texture.width, texture.height, color, rotation, null, d);
 	}
 
 	/**
@@ -2578,7 +2541,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
-				texture.height, _color, 0, null, dir);
+				texture.height, color, 0, null, dir);
 	}
 
 	/**
@@ -2673,10 +2636,10 @@ public final class GLEx implements LTrans {
 		}
 		if (oesOn && !vboOn) {
 			drawOESTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-					_color);
+					color);
 		} else {
-			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-					_color, 0, null, null);
+			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, color,
+					0, null, null);
 		}
 	}
 
@@ -2773,7 +2736,7 @@ public final class GLEx implements LTrans {
 				bind(texture.textureID);
 				if (!texture.isStatic) {
 					if (c != null) {
-						GL_MODULATE();
+						MODULATE();
 						gl10.glColor4f(c.r, c.g, c.b, c.a);
 					}
 				}
@@ -2807,14 +2770,14 @@ public final class GLEx implements LTrans {
 
 				if (!texture.isStatic) {
 					if (c != null) {
-						GL_REPLACE();
-						gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
+						REPLACE();
+						gl10.glColor4f(color.r, color.g, color.b, color.a);
 					}
 				}
 			}
 		} else {
 			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-					_color, 0, null, null);
+					color, 0, null, null);
 		}
 	}
 
@@ -2834,7 +2797,7 @@ public final class GLEx implements LTrans {
 	public void drawRegion(LTexture texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor) {
 		drawRegion(texture, x_src, y_src, width, height, transform, x_dst,
-				y_dst, anchor, _color);
+				y_dst, anchor, color);
 	}
 
 	/**
@@ -2980,8 +2943,8 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
-				destRect.height, 0, 0, texture.width, texture.height, _color,
-				0, null, null);
+				destRect.height, 0, 0, texture.width, texture.height, color, 0,
+				null, null);
 	}
 
 	/**
@@ -3021,7 +2984,7 @@ public final class GLEx implements LTrans {
 		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, _color, 0, null, null);
+				srcRect.height, color, 0, null, null);
 	}
 
 	/**
@@ -3063,7 +3026,7 @@ public final class GLEx implements LTrans {
 		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
-				srcRect.height, _color, rotation, null, null);
+				srcRect.height, color, rotation, null, null);
 	}
 
 	/**
@@ -3080,7 +3043,7 @@ public final class GLEx implements LTrans {
 			texture.loadTexture();
 		}
 		drawTexture(texture, position.x, position.y, texture.width,
-				texture.height, 0, 0, texture.width, texture.height, _color, 0,
+				texture.height, 0, 0, texture.width, texture.height, color, 0,
 				null, null);
 	}
 
@@ -3171,9 +3134,9 @@ public final class GLEx implements LTrans {
 			bind(texture.textureID);
 
 			if (!texture.isStatic) {
-				updateColor = (c != null && !_color.equals(c));
+				updateColor = (c != null && !color.equals(c));
 				if (updateColor) {
-					GL_MODULATE();
+					MODULATE();
 					gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
 							: c.a);
 				}
@@ -3277,8 +3240,8 @@ public final class GLEx implements LTrans {
 
 			if (!texture.isStatic) {
 				if (updateColor) {
-					GL_REPLACE();
-					gl10.glColor4f(_color.r, _color.g, _color.b, _color.a);
+					REPLACE();
+					gl10.glColor4f(color.r, color.g, color.b, color.a);
 				}
 			}
 		}
@@ -3354,7 +3317,7 @@ public final class GLEx implements LTrans {
 	 * @param position
 	 */
 	public final void drawString(String string, Vector2f position) {
-		drawString(string, position.x, position.y, _color);
+		drawString(string, position.x, position.y, color);
 	}
 
 	/**
@@ -3377,7 +3340,7 @@ public final class GLEx implements LTrans {
 	 * @param y
 	 */
 	public final void drawString(final String string, float x, float y) {
-		drawString(string, x, y, _color);
+		drawString(string, x, y, color);
 	}
 
 	/**
@@ -3409,7 +3372,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		drawString(string, x, y, rotation, _color);
+		drawString(string, x, y, rotation, color);
 	}
 
 	/**
@@ -3457,7 +3420,7 @@ public final class GLEx implements LTrans {
 	 * @param rotation
 	 */
 	public void drawChar(char chars, float x, float y, float rotation) {
-		drawChar(chars, x, y, rotation, _color);
+		drawChar(chars, x, y, rotation, color);
 	}
 
 	/**
@@ -3554,12 +3517,12 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		setColorRGB(c1);
+		setColorARGB(c1);
 		drawString(message, x + 1, y);
 		drawString(message, x - 1, y);
 		drawString(message, x, y + 1);
 		drawString(message, x, y - 1);
-		setColorRGB(c2);
+		setColorARGB(c2);
 		drawString(message, x, y);
 	}
 
@@ -3591,7 +3554,7 @@ public final class GLEx implements LTrans {
 
 	private boolean _isReplace = false;
 
-	public final void GL_REPLACE() {
+	public final void REPLACE() {
 		if (!_isReplace) {
 			gl10.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE,
 					GL.GL_REPLACE);
@@ -3599,7 +3562,7 @@ public final class GLEx implements LTrans {
 		}
 	}
 
-	public final void GL_MODULATE() {
+	public final void MODULATE() {
 		if (_isReplace) {
 			gl10.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE,
 					GL.GL_MODULATE);
@@ -3666,81 +3629,6 @@ public final class GLEx implements LTrans {
 		}
 	}
 
-	public final void set2DStateOff() {
-		if (preTex2dMode) {
-			try {
-				gl10.glMatrixMode(GL.GL_PROJECTION);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				gl10.glPopMatrix();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				gl10.glMatrixMode(GL.GL_MODELVIEW);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				gl10.glPopMatrix();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				gl10.glEnable(GL.GL_DEPTH_TEST);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			preTex2dMode = false;
-		}
-	}
-
-	public void saveMatrices() {
-		if (isClose) {
-			return;
-		}
-		gl10.glMatrixMode(GL.GL_PROJECTION);
-		gl10.glPushMatrix();
-		gl10.glMatrixMode(GL.GL_MODELVIEW);
-		gl10.glPushMatrix();
-	}
-
-	public void restoreMatrices() {
-		if (isClose) {
-			return;
-		}
-		gl10.glMatrixMode(GL.GL_PROJECTION);
-		gl10.glPopMatrix();
-		gl10.glMatrixMode(GL.GL_MODELVIEW);
-		gl10.glPopMatrix();
-	}
-
-	public void savePrj() {
-		if (isClose) {
-			return;
-		}
-		gl10.glMatrixMode(GL.GL_PROJECTION);
-		gl10.glPushMatrix();
-	}
-
-	public void restorePrj() {
-		if (isClose) {
-			return;
-		}
-		gl10.glMatrixMode(GL.GL_PROJECTION);
-		gl10.glPopMatrix();
-	}
-
-	public void setMatrixMode(Matrix m) {
-		if (isClose) {
-			return;
-		}
-		gl10.glMatrixMode(GL.GL_MODELVIEW);
-		gl10.glLoadMatrixf(m.get(), 0);
-	}
-
 	private final boolean checkAlpha(LColor c) {
 		return _lastAlpha < 0.1f;
 	}
@@ -3779,9 +3667,10 @@ public final class GLEx implements LTrans {
 	 * @param y
 	 * @param rotaion
 	 */
-	void glQuad(final LTexture texture, final FloatBuffer vertexBuffer,
-			final FloatBuffer coordsBuffer, int count, float x, float y,
-			float sx, float sy, float ax, float ay, float rotaion) {
+	void commitQuad(final LTexture texture, LColor c,
+			final FloatBuffer vertexBuffer, final FloatBuffer coordsBuffer,
+			int count, float x, float y, float sx, float sy, float ax,
+			float ay, float rotaion) {
 		if (isClose) {
 			return;
 		}
@@ -3792,7 +3681,11 @@ public final class GLEx implements LTrans {
 			if (!texture.isLoaded) {
 				texture.loadTexture();
 			}
-
+			if (c != null) {
+				MODULATE();
+				gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
+						: c.a);
+			}
 			int old = getBlendMode();
 
 			setBlendMode(GL.MODE_SPEED);
@@ -3821,13 +3714,13 @@ public final class GLEx implements LTrans {
 						}
 					}
 
-					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
-					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
-					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
-					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
-					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+					gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, coordsBuffer);
+					gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
+					gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, count);
+					gl10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+					gl10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 					restore();
 
 				} else {
@@ -3849,13 +3742,13 @@ public final class GLEx implements LTrans {
 						}
 					}
 
-					gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
-					gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
-					gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
-					gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
-					gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-					gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+					gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+					gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, coordsBuffer);
+					gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
+					gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, count);
+					gl10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+					gl10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 
 					if (rotaion != 0) {
 						if (ax != 0 || ay != 0) {
@@ -3875,8 +3768,11 @@ public final class GLEx implements LTrans {
 					}
 				}
 			}
-
 			setBlendMode(old);
+			if (c != null) {
+				gl10.glColor4f(color.r, color.g, color.b, color.a);
+				REPLACE();
+			}
 		}
 	}
 
@@ -3889,26 +3785,28 @@ public final class GLEx implements LTrans {
 	 * @param y
 	 * @param rotation
 	 */
-	void glQuad(final LTexture texture, final LTextureBatch.GLCache cache,
-			float x, float y, float sx, float sy, float ax, float ay,
-			float rotation) {
-		glQuad(texture, cache.vertexBuffer, cache.coordsBuffer, cache.count, x,
-				y, sx, sy, ax, ay, rotation);
+	void commitQuad(final LTexture texture, LColor color,
+			final LTextureBatch.GLCache cache, float x, float y, float sx,
+			float sy, float ax, float ay, float rotation) {
+		commitQuad(texture, color, cache.vertexBuffer, cache.coordsBuffer,
+				cache.count, x, y, sx, sy, ax, ay, rotation);
 	}
 
 	/**
-	 * 以glDrawArrays方式将所提交的全部纹理及信息渲染为图像
+	 * 以commitDrawArrays方式将所提交的全部纹理及信息渲染为图像
 	 * 
 	 * @param texture
 	 * @param cache
 	 */
-	void glDrawArrays(final LTexture texture, final LTextureBatch.GLCache cache) {
-		glDrawArrays(texture, cache.vertexBuffer, cache.coordsBuffer,
-				cache.colorBuffer, cache.isColor, cache.count, cache.x, cache.y);
+	void commitDrawArrays(final LTexture texture, LColor color,
+			final LTextureBatch.GLCache cache) {
+		commitDrawArrays(texture, color, cache.vertexBuffer,
+				cache.coordsBuffer, cache.colorBuffer, cache.isColor,
+				cache.count, cache.x, cache.y);
 	}
 
 	/**
-	 * 以glDrawArrays方式将所提交的全部纹理及信息渲染为图像
+	 * 以commitDrawArrays方式将所提交的全部纹理及信息渲染为图像
 	 * 
 	 * @param texture
 	 * @param vertexBuffer
@@ -3920,9 +3818,10 @@ public final class GLEx implements LTrans {
 	 * @param x
 	 * @param y
 	 */
-	void glDrawArrays(final LTexture texture, final FloatBuffer vertexBuffer,
-			final FloatBuffer coordsBuffer, final FloatBuffer colorBuffer,
-			boolean isColor, int count, float x, float y) {
+	void commitDrawArrays(final LTexture texture, LColor c,
+			final FloatBuffer vertexBuffer, final FloatBuffer coordsBuffer,
+			final FloatBuffer colorBuffer, boolean isColor, int count, float x,
+			float y) {
 
 		if (isClose) {
 			return;
@@ -3939,34 +3838,41 @@ public final class GLEx implements LTrans {
 				translate(x, y);
 			}
 			if (isColor) {
-				GL_MODULATE();
+				MODULATE();
+				if (c != null) {
+					gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
+							: c.a);
+				}
 			}
 			glTex2DEnable();
 			{
 				bind(texture.textureID);
 
-				gl10.glEnableClientState(GL.GL_VERTEX_ARRAY);
-				gl10.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+				gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+				gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
-				gl10.glTexCoordPointer(2, GL.GL_FLOAT, 0, coordsBuffer);
-				gl10.glVertexPointer(3, GL.GL_FLOAT, 0, vertexBuffer);
+				gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, coordsBuffer);
+				gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
 
 				if (isColor) {
-					gl10.glEnableClientState(GL.GL_COLOR_ARRAY);
-					gl10.glColorPointer(4, GL.GL_FLOAT, 0, colorBuffer);
+					gl10.glEnableClientState(GL10.GL_COLOR_ARRAY);
+					gl10.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuffer);
 				}
-				gl10.glDrawArrays(GL.GL_TRIANGLES, 0, count);
-				gl10.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-				gl10.glDisableClientState(GL.GL_VERTEX_ARRAY);
+				gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, count);
+				gl10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+				gl10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 				if (isColor) {
-					gl10.glDisableClientState(GL.GL_COLOR_ARRAY);
+					gl10.glDisableClientState(GL10.GL_COLOR_ARRAY);
 				}
 			}
 			if (x != 0 || y != 0) {
 				translate(-x, -y);
 			}
 			if (isColor) {
-				GL_REPLACE();
+				if (c != null) {
+					gl10.glColor4f(color.r, color.g, color.b, color.a);
+				}
+				REPLACE();
 			}
 		}
 	}

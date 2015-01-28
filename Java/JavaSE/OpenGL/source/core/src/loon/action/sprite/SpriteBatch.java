@@ -167,10 +167,6 @@ public class SpriteBatch implements LRelease {
 
 	private boolean drawing = false;
 
-	public int renderCalls = 0;
-
-	public int totalRenderCalls = 0;
-
 	public int maxSpritesInBatch = 0;
 
 	public static final int VERTEX_SIZE = 2 + 1 + 2;
@@ -245,7 +241,6 @@ public class SpriteBatch implements LRelease {
 		}
 		mode = GLEx.self.getBlendMode();
 		GLEx.self.glTex2DEnable();
-		renderCalls = 0;
 		idx = 0;
 		lastTexture = null;
 		drawing = true;
@@ -1938,13 +1933,6 @@ public class SpriteBatch implements LRelease {
 				GLEx.self.setBlendMode(GL.MODE_NORMAL);
 				break;
 			}
-		} else {
-			GLEx.self.GL_REPLACE();
-		}
-		if (color == -1.7014117E38f || alpha != 1f) {
-			GLEx.self.GL_MODULATE();
-		} else {
-			GLEx.self.GL_REPLACE();
 		}
 	}
 
@@ -1960,9 +1948,6 @@ public class SpriteBatch implements LRelease {
 		if (idx == 0) {
 			return;
 		}
-
-		renderCalls++;
-		totalRenderCalls++;
 		int spritesInBatch = idx / 20;
 		if (spritesInBatch > maxSpritesInBatch) {
 			maxSpritesInBatch = spritesInBatch;
