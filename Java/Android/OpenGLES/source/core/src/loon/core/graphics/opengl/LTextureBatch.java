@@ -24,7 +24,9 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 
 import loon.LSystem;
+import loon.action.sprite.SpriteBatch.BlendState;
 import loon.core.LRelease;
+import loon.core.event.Updateable;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.jni.NativeSupport;
@@ -227,6 +229,8 @@ public final class LTextureBatch implements LRelease {
 
 	boolean useBegin, lockCoord, isColor, isLocked;
 
+	private BlendState lastBlendState = BlendState.NonPremultiplied;
+	
 	public LTextureBatch(String fileName, Format format) {
 		this(fileName, format, DEFAULT_MAX_VERTICES);
 	}
@@ -356,6 +360,54 @@ public final class LTextureBatch implements LRelease {
 		this.isLocked = false;
 	}
 
+	public BlendState getBlendState() {
+		return lastBlendState;
+	}
+
+	public void setBlendState(BlendState state) {
+		if (state != lastBlendState) {
+			this.lastBlendState = state;
+			if (GLEx.self != null) {
+				switch (lastBlendState) {
+				case Additive:
+					GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+					break;
+				case AlphaBlend:
+					GLEx.self.setBlendMode(GL.MODE_SPEED);
+					break;
+				case Opaque:
+					GLEx.self.setBlendMode(GL.MODE_NONE);
+					break;
+				case NonPremultiplied:
+					GLEx.self.setBlendMode(GL.MODE_NORMAL);
+					break;
+				}
+			} else {
+				Updateable update = new Updateable() {
+
+					@Override
+					public void action(Object a) {
+						switch (lastBlendState) {
+						case Additive:
+							GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+							break;
+						case AlphaBlend:
+							GLEx.self.setBlendMode(GL.MODE_SPEED);
+							break;
+						case Opaque:
+							GLEx.self.setBlendMode(GL.MODE_NONE);
+							break;
+						case NonPremultiplied:
+							GLEx.self.setBlendMode(GL.MODE_NORMAL);
+							break;
+						}
+					}
+				};
+				LSystem.load(update);
+			}
+		}
+	}
+	
 	/**
 	 * 开始批处理
 	 * 

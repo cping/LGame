@@ -1,6 +1,7 @@
 package loon.action.sprite;
 
 import loon.LSystem;
+import loon.core.event.Updateable;
 import loon.core.geom.Matrix4;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
@@ -715,19 +716,43 @@ public class SpriteBatch {
 	public void setBlendState(BlendState state) {
 		if (state != lastBlendState) {
 			this.lastBlendState = state;
-			switch (lastBlendState) {
-			case Additive:
-				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-				break;
-			case AlphaBlend:
-				GLEx.self.setBlendMode(GL.MODE_SPEED);
-				break;
-			case Opaque:
-				GLEx.self.setBlendMode(GL.MODE_NONE);
-				break;
-			case NonPremultiplied:
-				GLEx.self.setBlendMode(GL.MODE_NORMAL);
-				break;
+			if (GLEx.self != null) {
+				switch (lastBlendState) {
+				case Additive:
+					GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+					break;
+				case AlphaBlend:
+					GLEx.self.setBlendMode(GL.MODE_SPEED);
+					break;
+				case Opaque:
+					GLEx.self.setBlendMode(GL.MODE_NONE);
+					break;
+				case NonPremultiplied:
+					GLEx.self.setBlendMode(GL.MODE_NORMAL);
+					break;
+				}
+			} else {
+				Updateable update = new Updateable() {
+
+					@Override
+					public void action(Object a) {
+						switch (lastBlendState) {
+						case Additive:
+							GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+							break;
+						case AlphaBlend:
+							GLEx.self.setBlendMode(GL.MODE_SPEED);
+							break;
+						case Opaque:
+							GLEx.self.setBlendMode(GL.MODE_NONE);
+							break;
+						case NonPremultiplied:
+							GLEx.self.setBlendMode(GL.MODE_NORMAL);
+							break;
+						}
+					}
+				};
+				LSystem.load(update);
 			}
 		}
 	}

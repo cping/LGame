@@ -40,13 +40,28 @@ import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
+import loon.core.graphics.opengl.FrameBuffer;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 public final class LSystem {
+
+	public static FrameBuffer newFrameBuffer(LTexture texture) {
+		return new FrameBuffer(texture);
+	}
+
+	public static FrameBuffer newFrameBuffer(int width, int height,
+			Format format) {
+		return new FrameBuffer(format, width, height, false);
+	}
+
+	public static FrameBuffer newFrameBuffer(int width, int height) {
+		return new FrameBuffer(Format.LINEAR, width, height, false);
+	}
 
 	public static Files files = null;
 

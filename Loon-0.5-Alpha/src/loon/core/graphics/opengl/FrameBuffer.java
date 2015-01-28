@@ -40,25 +40,44 @@ public class FrameBuffer implements LRelease {
 	protected final Format format;
 
 	public FrameBuffer(Format format, int width, int height, boolean hasDepth) {
-		this(format, width, height, hasDepth, false);
+		this(format, null, width, height, hasDepth, false);
 	}
 
 	public FrameBuffer(Format format, int width, int height, boolean hasDepth,
 			boolean hasStencil) {
+		this(format, null, width, height, hasDepth, hasStencil);
+	}
+
+	public FrameBuffer(LTexture texture) {
+		this(Format.LINEAR, texture, texture.getWidth(), texture.getHeight(),
+				false, false);
+	}
+
+	public FrameBuffer(Format format, LTexture texture, int width, int height,
+			boolean hasDepth) {
+		this(format, texture, width, height, hasDepth, false);
+	}
+
+	public FrameBuffer(Format format, LTexture texture, int width, int height,
+			boolean hasDepth, boolean hasStencil) {
 		this.width = width;
 		this.height = height;
 		this.format = format;
 		this.hasDepth = hasDepth;
 		this.hasStencil = hasStencil;
+		this.colorTexture = texture;
 		build();
 
 		addManagedFrameBuffer(GLEx.self, this);
 	}
 
 	protected void setupTexture() {
-		colorTexture = new LTexture(width, height, format);
-		colorTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		colorTexture.setWrap(TextureWrap.ClampToEdge, TextureWrap.ClampToEdge);
+		if (colorTexture == null || colorTexture.isClose()) {
+			colorTexture = new LTexture(width, height, format);
+			colorTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+			colorTexture.setWrap(TextureWrap.ClampToEdge,
+					TextureWrap.ClampToEdge);
+		}
 	}
 
 	private void build() {
@@ -158,7 +177,10 @@ public class FrameBuffer implements LRelease {
 
 	public void dispose() {
 		GL20 gl = GLEx.gl;
-		colorTexture.dispose();
+		if (colorTexture != null) {
+			colorTexture.dispose();
+			colorTexture = null;
+		}
 		if (hasDepth) {
 			gl.glDeleteRenderbuffer(depthbufferHandle);
 		}
