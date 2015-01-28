@@ -4,6 +4,7 @@ import loon.core.Ray;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Camera;
 import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.ScissorStack;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.core.graphics.opengl.math.Location2;
 import loon.core.graphics.opengl.math.Location3;

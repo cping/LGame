@@ -1,9 +1,7 @@
-package loon.core.graphics.opengl.viewport;
+package loon.core.graphics.opengl;
 
 import loon.core.geom.RectBox;
 import loon.core.graphics.Camera;
-import loon.core.graphics.opengl.GL20;
-import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.core.graphics.opengl.math.Location3;
 import loon.utils.collection.Array;
@@ -14,14 +12,13 @@ public class ScissorStack {
 	static Location3 tmp = new Location3();
 	static final RectBox viewport = new RectBox();
 
-
 	public static boolean pushScissors(RectBox scissor) {
 		fix(scissor);
 		if (scissors.size() == 0) {
 			if (scissor.width < 1 || scissor.height < 1){
 				return false;
 			}
-			GLEx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+			GLUtils.enablecissorTest(GLEx.gl);
 		} else {
 			RectBox parent = scissors.get(scissors.size() - 1);
 			float minX = Math.max(parent.x, scissor.x);
@@ -50,7 +47,7 @@ public class ScissorStack {
 	public static RectBox popScissors() {
 		RectBox old = scissors.pop();
 		if (scissors.size() == 0){
-			GLEx.gl.glDisable(GL20.GL_SCISSOR_TEST);
+			GLUtils.disablecissorTest(GLEx.gl);
 		}
 		else {
 			RectBox scissor = scissors.last();

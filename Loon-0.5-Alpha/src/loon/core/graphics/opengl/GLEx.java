@@ -40,6 +40,7 @@ import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LTrans;
 import loon.core.graphics.opengl.math.Transform4;
 import loon.utils.MathUtils;
+import loon.utils.collection.Array;
 
 public final class GLEx implements LTrans {
 
@@ -137,14 +138,10 @@ public final class GLEx implements LTrans {
 		}
 		return shader;
 	}
-	
+
 	private final static Transform4 transformMatrix = new Transform4();
 
 	private final static Transform4 projectionMatrix = new Transform4();
-
-	private final static Transform4 cache_projectionMatrix = new Transform4();
-
-	private final static Transform4 cache_transformMatrix = new Transform4();
 
 	public static void setTransformMatrix(Transform4 t) {
 		transformMatrix.set(t);
@@ -162,13 +159,14 @@ public final class GLEx implements LTrans {
 		return projectionMatrix;
 	}
 
+	private static Array<Transform4> matrixs = new Array<Transform4>();
+
 	public void save() {
 		if (isClose) {
 			return;
 		}
 		if (!isPushed) {
-			cache_projectionMatrix.set(projectionMatrix);
-			cache_transformMatrix.set(transformMatrix);
+			matrixs.add(projectionMatrix.cpy());
 			isPushed = true;
 		}
 	}
@@ -181,13 +179,13 @@ public final class GLEx implements LTrans {
 		this.sx = 1;
 		this.sy = 1;
 		if (isPushed) {
-			projectionMatrix.set(cache_projectionMatrix);
-			transformMatrix.set(cache_transformMatrix);
+			if (matrixs.size() > 0) {
+				projectionMatrix.set(matrixs.pop());
+			}
 			isPushed = false;
 		}
 		resetFont();
 	}
-
 
 	public static int width() {
 		return LSystem.screenRect.width;
@@ -252,8 +250,7 @@ public final class GLEx implements LTrans {
 
 	private float lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
 
-	private boolean isClose, isAntialias,
-			isPushed;
+	private boolean isClose, isAntialias, isPushed;
 
 	private final Clip clip;
 
@@ -284,7 +281,6 @@ public final class GLEx implements LTrans {
 		}
 		GLEx.gl = new JavaSEGL20();
 		GLEx.self = this;
-		cache_projectionMatrix.setToOrtho2D(0, 0, width, height);
 		projectionMatrix.setToOrtho2D(0, 0, width, height);
 		this.viewPort = new RectBox(0, 0, width, height);
 		this.clip = new Clip(0, 0, viewPort.width, viewPort.height);
@@ -325,7 +321,7 @@ public final class GLEx implements LTrans {
 		// 设定画布渲染模式为默认
 		this.setBlendMode(GL.MODE_NORMAL);
 	}
-	
+
 	public final void setViewPort(int x, int y, int width, int height) {
 		if (isClose) {
 			return;
@@ -740,21 +736,17 @@ public final class GLEx implements LTrans {
 			return;
 		}
 		lastAlpha = alpha < 0 ? 0 : alpha > 1 ? 1 : alpha;
-	    if (color.a == alpha)
-        {
-            return;
-        }
-        if (alpha > 0.95f)
-        {
-            color.a = 1f;
-            onAlpha = false;
-        }
-        else
-        {
-            color.a = alpha;
-            onAlpha = true;
-        }
-        lastAlpha = color.a;
+		if (color.a == alpha) {
+			return;
+		}
+		if (alpha > 0.95f) {
+			color.a = 1f;
+			onAlpha = false;
+		} else {
+			color.a = alpha;
+			onAlpha = true;
+		}
+		lastAlpha = color.a;
 	}
 
 	/**
@@ -2887,8 +2879,8 @@ public final class GLEx implements LTrans {
 		}
 		if (lastTextre != texture) {
 			texBatch.setTexture(texture);
-			texBatch.begin();
 		}
+		texBatch.begin();
 		float oldColor = texBatch.getFloatColor();
 		if (c != null) {
 			texBatch.setColor(c);
@@ -2925,8 +2917,8 @@ public final class GLEx implements LTrans {
 					rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 		}
 		texBatch.setColor(oldColor);
+		texBatch.end();
 		if (lastTextre != texture) {
-			texBatch.end();
 			lastTextre = texture;
 		}
 	}
