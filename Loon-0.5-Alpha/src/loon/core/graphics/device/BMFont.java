@@ -92,8 +92,8 @@ public class BMFont implements LRelease {
 			if (isClose) {
 				return;
 			}
-			displayList.getBatch().draw(x + xoffset, y + yoffset, width,
-					height, tx, ty, tx + width, ty + height);
+			displayList.draw(x + xoffset, y + yoffset, width, height, tx, ty,
+					tx + width, ty + height);
 		}
 
 		public int getKerning(int point) {
@@ -278,11 +278,11 @@ public class BMFont implements LRelease {
 
 			int x = 0, y = 0;
 
-			displayList.getBatch().begin();
-			displayList.getBatch().setPos(tx, ty);
+			displayList.glBegin();
+			displayList.setBatchPos(tx, ty);
 
 			if (c != null) {
-				displayList.getBatch().setColor(c);
+				displayList.setImageColor(c);
 			}
 
 			CharDef lastCharDef = null;
@@ -315,14 +315,14 @@ public class BMFont implements LRelease {
 			}
 
 			if (c != null) {
-				displayList.getBatch().setColor(LColor.white);
+				displayList.setImageColor(LColor.white);
 			}
 
-			displayList.getBatch().end();
+			displayList.glEnd();
 
 			display = new Display();
 
-			display.cache = displayList.getBatch().newCache();
+			display.cache = displayList.newBatchCache();
 			display.text = text;
 			display.width = 0;
 			display.height = 0;
@@ -330,7 +330,7 @@ public class BMFont implements LRelease {
 			displays.put(key, display);
 
 		} else if (display.cache != null) {
-			displayList.getBatch().postCache(display.cache, c, tx, ty);
+			displayList.getTextureBatch().postCache(display.cache, c, tx, ty);
 		}
 	}
 

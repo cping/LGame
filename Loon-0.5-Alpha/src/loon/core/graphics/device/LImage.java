@@ -216,8 +216,8 @@ public class LImage implements LRelease {
 				LSystem.gc();
 				this.width = width;
 				this.height = height;
-				this.bufferedImage = JavaSEGraphicsUtils.createImage(width, height,
-						transparency);
+				this.bufferedImage = JavaSEGraphicsUtils.createImage(width,
+						height, transparency);
 			} catch (Exception ex) {
 				LSystem.gc();
 			}
@@ -230,7 +230,8 @@ public class LImage implements LRelease {
 	public LImage(int width, int height, int type) {
 		this.width = width;
 		this.height = height;
-		this.bufferedImage = JavaSEGraphicsUtils.createImage(width, height, type);
+		this.bufferedImage = JavaSEGraphicsUtils.createImage(width, height,
+				type);
 		if (!images.contains(this)) {
 			images.add(this);
 		}
@@ -269,8 +270,8 @@ public class LImage implements LRelease {
 				try {
 					TGA.State tga = TGA.load(res);
 					if (tga != null) {
-						img = JavaSEGraphicsUtils.createImage(tga.width, tga.height,
-								tga.type == 4 ? true : false);
+						img = JavaSEGraphicsUtils.createImage(tga.width,
+								tga.height, tga.type == 4 ? true : false);
 						img.setRGB(0, 0, tga.width, tga.height, tga.pixels, 0,
 								tga.width);
 						tga.dispose();

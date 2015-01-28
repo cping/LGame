@@ -1,7 +1,6 @@
 package loon.utils.collection;
 
-
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 abstract public class Pool<T> {
 
 	public final int max;

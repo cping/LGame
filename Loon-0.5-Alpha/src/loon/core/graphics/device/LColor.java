@@ -264,9 +264,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor(BigNumber number) {
-		this((int)number.toNumber());
+		this((int) number.toNumber());
 	}
-	
+
 	public LColor(Color color) {
 		this(color.getRed(), color.getGreen(), color.getBlue(), color
 				.getAlpha());
@@ -747,7 +747,7 @@ public class LColor implements Serializable {
 			hex = hex.substring(1, hex.length());
 		}
 		long result = new BigNumber(hex).toNumber();
-		return new LColor((int)result);
+		return new LColor((int) result);
 	}
 
 	public String toString() {

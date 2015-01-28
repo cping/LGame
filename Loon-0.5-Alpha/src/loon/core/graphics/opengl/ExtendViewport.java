@@ -1,12 +1,12 @@
-package loon.core.graphics.opengl.viewport;
+package loon.core.graphics.opengl;
 
+import loon.core.geom.Vector2f;
 import loon.core.graphics.Camera;
 import loon.core.graphics.CenterCamera;
-import loon.core.graphics.opengl.math.Location2;
 import loon.utils.collection.Scaling;
 
 public class ExtendViewport extends Viewport {
-	
+
 	private float minWorldWidth, minWorldHeight;
 	private float maxWorldWidth, maxWorldHeight;
 
@@ -38,7 +38,7 @@ public class ExtendViewport extends Viewport {
 	public void update(int screenWidth, int screenHeight, boolean centerCamera) {
 		float worldWidth = minWorldWidth;
 		float worldHeight = minWorldHeight;
-		Location2 scaled = Scaling.fit.apply(worldWidth, worldHeight,
+		Vector2f scaled = Scaling.fit.apply(worldWidth, worldHeight,
 				screenWidth, screenHeight);
 
 		int viewportWidth = Math.round(scaled.x);

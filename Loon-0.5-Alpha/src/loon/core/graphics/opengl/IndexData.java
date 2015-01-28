@@ -1,10 +1,8 @@
-
 package loon.core.graphics.opengl;
 
 import java.nio.ShortBuffer;
 
 import loon.core.LRelease;
-
 
 public interface IndexData extends LRelease {
 

@@ -6,7 +6,6 @@ import java.io.OutputStream;
 
 import loon.Files.FileType;
 
-
 public abstract class FileHandleStream extends FileHandle {
 
 	public FileHandleStream(String path) {

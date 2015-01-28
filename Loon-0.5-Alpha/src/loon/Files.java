@@ -6,11 +6,7 @@ public interface Files {
 
 	public enum FileType {
 
-		Classpath,
-		Internal,
-		External,
-		Absolute,
-		Local;
+		Classpath, Internal, External, Absolute, Local;
 	}
 
 	public FileHandle getFileHandle(String path, FileType type);

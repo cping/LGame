@@ -89,8 +89,7 @@ public class FrameBuffer implements LRelease {
 			stencilbufferHandle = gl.glGenRenderbuffer();
 		}
 
-		gl.glBindTexture(GL20.GL_TEXTURE_2D,
-				colorTexture.getTextureID());
+		gl.glBindTexture(GL20.GL_TEXTURE_2D, colorTexture.getTextureID());
 
 		if (hasDepth) {
 			gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthbufferHandle);
@@ -160,14 +159,14 @@ public class FrameBuffer implements LRelease {
 	public void dispose() {
 		GL20 gl = GLEx.gl;
 		colorTexture.dispose();
-		if (hasDepth){
+		if (hasDepth) {
 			gl.glDeleteRenderbuffer(depthbufferHandle);
 		}
-		if (hasStencil){
+		if (hasStencil) {
 			gl.glDeleteRenderbuffer(stencilbufferHandle);
 		}
 		gl.glDeleteFramebuffer(framebufferHandle);
-		if (buffers.get(GLEx.self) != null){
+		if (buffers.get(GLEx.self) != null) {
 			buffers.get(GLEx.self).remove(this);
 		}
 	}
@@ -176,10 +175,8 @@ public class FrameBuffer implements LRelease {
 		GLEx.gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
 	}
 
-
 	public static void unbind() {
-		GLEx.gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER,
-				defaultFramebufferHandle);
+		GLEx.gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
 	}
 
 	public void begin() {
@@ -198,8 +195,7 @@ public class FrameBuffer implements LRelease {
 	}
 
 	protected void setDefaultFrameBufferViewport() {
-		GLEx.gl.glViewport(0, 0, GLEx.width(),
-				GLEx.height());
+		GLEx.gl.glViewport(0, 0, GLEx.width(), GLEx.height());
 	}
 
 	public void end(int x, int y, int width, int height) {
@@ -219,22 +215,21 @@ public class FrameBuffer implements LRelease {
 		return colorTexture.getWidth();
 	}
 
-	private static void addManagedFrameBuffer(GLEx app,
-			FrameBuffer frameBuffer) {
+	private static void addManagedFrameBuffer(GLEx app, FrameBuffer frameBuffer) {
 		Array<FrameBuffer> managedResources = buffers.get(app);
-		if (managedResources == null){
+		if (managedResources == null) {
 			managedResources = new Array<FrameBuffer>();
 		}
 		managedResources.add(frameBuffer);
 		buffers.put(app, managedResources);
 	}
-	
+
 	public static void invalidateAllFrameBuffers(GLEx app) {
-		if (GLEx.gl == null){
+		if (GLEx.gl == null) {
 			return;
 		}
 		Array<FrameBuffer> bufferArray = buffers.get(app);
-		if (bufferArray == null){
+		if (bufferArray == null) {
 			return;
 		}
 		for (int i = 0; i < bufferArray.size(); i++) {

@@ -1,4 +1,4 @@
-package loon.core.graphics.opengl.math;
+package loon.core.geom;
 
 import java.io.Serializable;
 
@@ -31,7 +31,7 @@ public class Quaternion implements Serializable {
 		this.set(quaternion);
 	}
 
-	public Quaternion(Location3 axis, float angle) {
+	public Quaternion(Vector3f axis, float angle) {
 		this.set(axis, angle);
 	}
 
@@ -47,7 +47,7 @@ public class Quaternion implements Serializable {
 		return this.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
-	public Quaternion set(Location3 axis, float angle) {
+	public Quaternion set(Vector3f axis, float angle) {
 		return setFromAxis(axis.x, axis.y, axis.z, angle);
 	}
 
@@ -158,7 +158,7 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Location3 transform(Location3 v) {
+	public Vector3f transform(Vector3f v) {
 		tmp2.set(this);
 		tmp2.conjugate();
 		tmp2.mulLeft(tmp1.set(v.x, v.y, v.z, 0)).mulLeft(this);
@@ -254,22 +254,22 @@ public class Quaternion implements Serializable {
 		final float zz = z * z;
 		final float zw = z * w;
 
-		matrix[Transform4.M00] = 1 - 2 * (yy + zz);
-		matrix[Transform4.M01] = 2 * (xy - zw);
-		matrix[Transform4.M02] = 2 * (xz + yw);
-		matrix[Transform4.M03] = 0;
-		matrix[Transform4.M10] = 2 * (xy + zw);
-		matrix[Transform4.M11] = 1 - 2 * (xx + zz);
-		matrix[Transform4.M12] = 2 * (yz - xw);
-		matrix[Transform4.M13] = 0;
-		matrix[Transform4.M20] = 2 * (xz - yw);
-		matrix[Transform4.M21] = 2 * (yz + xw);
-		matrix[Transform4.M22] = 1 - 2 * (xx + yy);
-		matrix[Transform4.M23] = 0;
-		matrix[Transform4.M30] = 0;
-		matrix[Transform4.M31] = 0;
-		matrix[Transform4.M32] = 0;
-		matrix[Transform4.M33] = 1;
+		matrix[Matrix4.M00] = 1 - 2 * (yy + zz);
+		matrix[Matrix4.M01] = 2 * (xy - zw);
+		matrix[Matrix4.M02] = 2 * (xz + yw);
+		matrix[Matrix4.M03] = 0;
+		matrix[Matrix4.M10] = 2 * (xy + zw);
+		matrix[Matrix4.M11] = 1 - 2 * (xx + zz);
+		matrix[Matrix4.M12] = 2 * (yz - xw);
+		matrix[Matrix4.M13] = 0;
+		matrix[Matrix4.M20] = 2 * (xz - yw);
+		matrix[Matrix4.M21] = 2 * (yz + xw);
+		matrix[Matrix4.M22] = 1 - 2 * (xx + yy);
+		matrix[Matrix4.M23] = 0;
+		matrix[Matrix4.M30] = 0;
+		matrix[Matrix4.M31] = 0;
+		matrix[Matrix4.M32] = 0;
+		matrix[Matrix4.M33] = 1;
 	}
 
 	public Quaternion idt() {
@@ -287,11 +287,11 @@ public class Quaternion implements Serializable {
 				&& MathUtils.isEqual(w, 1f, tolerance);
 	}
 
-	public Quaternion setFromAxis(final Location3 axis, final float degrees) {
+	public Quaternion setFromAxis(final Vector3f axis, final float degrees) {
 		return setFromAxis(axis.x, axis.y, axis.z, degrees);
 	}
 
-	public Quaternion setFromAxisRad(final Location3 axis, final float radians) {
+	public Quaternion setFromAxisRad(final Vector3f axis, final float radians) {
 		return setFromAxisRad(axis.x, axis.y, axis.z, radians);
 	}
 
@@ -302,7 +302,7 @@ public class Quaternion implements Serializable {
 
 	public Quaternion setFromAxisRad(final float x, final float y,
 			final float z, final float radians) {
-		float d = Location3.len(x, y, z);
+		float d = Vector3f.len(x, y, z);
 		if (d == 0f)
 			return idt();
 		d = 1f / d;
@@ -314,27 +314,27 @@ public class Quaternion implements Serializable {
 				.nor();
 	}
 
-	public Quaternion setFromMatrix(boolean normalizeAxes, Transform4 matrix) {
-		return setFromAxes(normalizeAxes, matrix.val[Transform4.M00],
-				matrix.val[Transform4.M01], matrix.val[Transform4.M02],
-				matrix.val[Transform4.M10], matrix.val[Transform4.M11],
-				matrix.val[Transform4.M12], matrix.val[Transform4.M20],
-				matrix.val[Transform4.M21], matrix.val[Transform4.M22]);
+	public Quaternion setFromMatrix(boolean normalizeAxes, Matrix4 matrix) {
+		return setFromAxes(normalizeAxes, matrix.val[Matrix4.M00],
+				matrix.val[Matrix4.M01], matrix.val[Matrix4.M02],
+				matrix.val[Matrix4.M10], matrix.val[Matrix4.M11],
+				matrix.val[Matrix4.M12], matrix.val[Matrix4.M20],
+				matrix.val[Matrix4.M21], matrix.val[Matrix4.M22]);
 	}
 
-	public Quaternion setFromMatrix(Transform4 matrix) {
+	public Quaternion setFromMatrix(Matrix4 matrix) {
 		return setFromMatrix(false, matrix);
 	}
 
-	public Quaternion setFromMatrix(boolean normalizeAxes, Transform3 matrix) {
-		return setFromAxes(normalizeAxes, matrix.val[Transform3.M00],
-				matrix.val[Transform3.M01], matrix.val[Transform3.M02],
-				matrix.val[Transform3.M10], matrix.val[Transform3.M11],
-				matrix.val[Transform3.M12], matrix.val[Transform3.M20],
-				matrix.val[Transform3.M21], matrix.val[Transform3.M22]);
+	public Quaternion setFromMatrix(boolean normalizeAxes, Matrix3 matrix) {
+		return setFromAxes(normalizeAxes, matrix.val[Matrix3.M00],
+				matrix.val[Matrix3.M01], matrix.val[Matrix3.M02],
+				matrix.val[Matrix3.M10], matrix.val[Matrix3.M11],
+				matrix.val[Matrix3.M12], matrix.val[Matrix3.M20],
+				matrix.val[Matrix3.M21], matrix.val[Matrix3.M22]);
 	}
 
-	public Quaternion setFromMatrix(Transform3 matrix) {
+	public Quaternion setFromMatrix(Matrix3 matrix) {
 		return setFromMatrix(false, matrix);
 	}
 
@@ -346,9 +346,9 @@ public class Quaternion implements Serializable {
 	public Quaternion setFromAxes(boolean normalizeAxes, float xx, float xy,
 			float xz, float yx, float yy, float yz, float zx, float zy, float zz) {
 		if (normalizeAxes) {
-			final float lx = 1f / Location3.len(xx, xy, xz);
-			final float ly = 1f / Location3.len(yx, yy, yz);
-			final float lz = 1f / Location3.len(zx, zy, zz);
+			final float lx = 1f / Vector3f.len(xx, xy, xz);
+			final float ly = 1f / Vector3f.len(yx, yy, yz);
+			final float lz = 1f / Vector3f.len(zx, zy, zz);
 			xx *= lx;
 			xy *= lx;
 			xz *= lx;
@@ -395,7 +395,7 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion setFromCross(final Location3 v1, final Location3 v2) {
+	public Quaternion setFromCross(final Vector3f v1, final Vector3f v2) {
 		final float dot = MathUtils.clamp(v1.dot(v2), -1f, 1f);
 		final float angle = (float) Math.acos(dot);
 		return setFromAxisRad(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x
@@ -405,7 +405,7 @@ public class Quaternion implements Serializable {
 	public Quaternion setFromCross(final float x1, final float y1,
 			final float z1, final float x2, final float y2, final float z2) {
 		final float dot = MathUtils.clamp(
-				Location3.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
+				Vector3f.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
 		final float angle = (float) Math.acos(dot);
 		return setFromAxisRad(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2
 				- y1 * x2, angle);
@@ -538,11 +538,11 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public float getAxisAngle(Location3 axis) {
+	public float getAxisAngle(Vector3f axis) {
 		return getAxisAngleRad(axis) * MathUtils.RAD_TO_DEG;
 	}
 
-	public float getAxisAngleRad(Location3 axis) {
+	public float getAxisAngleRad(Vector3f axis) {
 		if (this.w > 1) {
 			this.nor();
 		}
@@ -572,20 +572,20 @@ public class Quaternion implements Serializable {
 
 	public void getSwingTwist(final float axisX, final float axisY,
 			final float axisZ, final Quaternion swing, final Quaternion twist) {
-		final float d = Location3.dot(this.x, this.y, this.z, axisX, axisY,
+		final float d = Vector3f.dot(this.x, this.y, this.z, axisX, axisY,
 				axisZ);
 		twist.set(axisX * d, axisY * d, axisZ * d, this.w).nor();
 		swing.set(twist).conjugate().mulLeft(this);
 	}
 
-	public void getSwingTwist(final Location3 axis, final Quaternion swing,
+	public void getSwingTwist(final Vector3f axis, final Quaternion swing,
 			final Quaternion twist) {
 		getSwingTwist(axis.x, axis.y, axis.z, swing, twist);
 	}
 
 	public float getAngleAroundRad(final float axisX, final float axisY,
 			final float axisZ) {
-		final float d = Location3.dot(this.x, this.y, this.z, axisX, axisY,
+		final float d = Vector3f.dot(this.x, this.y, this.z, axisX, axisY,
 				axisZ);
 		final float l2 = Quaternion.len2(axisX * d, axisY * d, axisZ * d,
 				this.w);
@@ -593,7 +593,7 @@ public class Quaternion implements Serializable {
 				.clamp((float) (this.w / Math.sqrt(l2)), -1f, 1f)));
 	}
 
-	public float getAngleAroundRad(final Location3 axis) {
+	public float getAngleAroundRad(final Vector3f axis) {
 		return getAngleAroundRad(axis.x, axis.y, axis.z);
 	}
 
@@ -602,7 +602,7 @@ public class Quaternion implements Serializable {
 		return getAngleAroundRad(axisX, axisY, axisZ) * MathUtils.RAD_TO_DEG;
 	}
 
-	public float getAngleAround(final Location3 axis) {
+	public float getAngleAround(final Vector3f axis) {
 		return getAngleAround(axis.x, axis.y, axis.z);
 	}
 }

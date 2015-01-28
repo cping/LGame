@@ -1,21 +1,21 @@
 package loon.core.graphics.opengl;
 
+import loon.core.geom.Matrix4;
 import loon.core.geom.RectBox;
+import loon.core.geom.Vector3f;
 import loon.core.graphics.Camera;
-import loon.core.graphics.opengl.math.Transform4;
-import loon.core.graphics.opengl.math.Location3;
 import loon.utils.collection.Array;
 
 public class ScissorStack {
-	
+
 	private static Array<RectBox> scissors = new Array<RectBox>();
-	static Location3 tmp = new Location3();
+	static Vector3f tmp = new Vector3f();
 	static final RectBox viewport = new RectBox();
 
 	public static boolean pushScissors(RectBox scissor) {
 		fix(scissor);
 		if (scissors.size() == 0) {
-			if (scissor.width < 1 || scissor.height < 1){
+			if (scissor.width < 1 || scissor.height < 1) {
 				return false;
 			}
 			GLUtils.enablecissorTest(GLEx.gl);
@@ -24,13 +24,13 @@ public class ScissorStack {
 			float minX = Math.max(parent.x, scissor.x);
 			float maxX = Math.min(parent.x + parent.width, scissor.x
 					+ scissor.width);
-			if (maxX - minX < 1){
+			if (maxX - minX < 1) {
 				return false;
 			}
 			float minY = Math.max(parent.y, scissor.y);
 			float maxY = Math.min(parent.y + parent.height, scissor.y
 					+ scissor.height);
-			if (maxY - minY < 1){
+			if (maxY - minY < 1) {
 				return false;
 			}
 			scissor.x = minX;
@@ -39,17 +39,16 @@ public class ScissorStack {
 			scissor.height = (int) Math.max(1, maxY - minY);
 		}
 		scissors.add(scissor);
-		GLEx.gl.glScissor((int) scissor.x, (int) scissor.y, (int) scissor.width,
-				(int) scissor.height);
+		GLEx.gl.glScissor((int) scissor.x, (int) scissor.y,
+				(int) scissor.width, (int) scissor.height);
 		return true;
 	}
 
 	public static RectBox popScissors() {
 		RectBox old = scissors.pop();
-		if (scissors.size() == 0){
+		if (scissors.size() == 0) {
 			GLUtils.disablecissorTest(GLEx.gl);
-		}
-		else {
+		} else {
 			RectBox scissor = scissors.last();
 			GLEx.gl.glScissor((int) scissor.x, (int) scissor.y,
 					(int) scissor.width, (int) scissor.height);
@@ -76,15 +75,15 @@ public class ScissorStack {
 		}
 	}
 
-	public static void calculateScissors(Camera camera, Transform4 batchTransform,
-			RectBox area, RectBox scissor) {
-		calculateScissors(camera, 0, 0, GLEx.width(),
-				GLEx.height(), batchTransform, area, scissor);
+	public static void calculateScissors(Camera camera,
+			Matrix4 batchTransform, RectBox area, RectBox scissor) {
+		calculateScissors(camera, 0, 0, GLEx.width(), GLEx.height(),
+				batchTransform, area, scissor);
 	}
 
 	public static void calculateScissors(Camera camera, float viewportX,
 			float viewportY, float viewportWidth, float viewportHeight,
-			Transform4 batchTransform, RectBox area, RectBox scissor) {
+			Matrix4 batchTransform, RectBox area, RectBox scissor) {
 		tmp.set(area.x, area.y, 0);
 		tmp.mul(batchTransform);
 		camera.project(tmp, viewportX, viewportY, viewportWidth, viewportHeight);
@@ -100,8 +99,7 @@ public class ScissorStack {
 
 	public static RectBox getViewport() {
 		if (scissors.size() == 0) {
-			viewport.setBounds(0, 0, GLEx.width(),
-					GLEx.height());
+			viewport.setBounds(0, 0, GLEx.width(), GLEx.height());
 			return viewport;
 		} else {
 			RectBox scissor = scissors.last();

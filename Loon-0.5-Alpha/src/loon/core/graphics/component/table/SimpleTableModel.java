@@ -23,7 +23,7 @@ package loon.core.graphics.component.table;
 import loon.utils.collection.Array;
 
 public class SimpleTableModel implements ITableModel {
-	
+
 	private Array<ListItem> _list;
 
 	public SimpleTableModel(Array<ListItem> list) {

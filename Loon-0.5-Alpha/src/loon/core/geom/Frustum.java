@@ -1,21 +1,20 @@
-package loon.core.graphics.opengl.math;
+package loon.core.geom;
 
 import loon.core.BoundingBox;
-import loon.core.graphics.opengl.math.Plane.PlaneSide;
+import loon.core.geom.Plane.PlaneSide;
 import loon.jni.NativeSupport;
 
 public class Frustum {
-	protected static final Location3[] clipSpacePlanePoints = {
-			new Location3(-1, -1, -1), new Location3(1, -1, -1),
-			new Location3(1, 1, -1),
-			new Location3(-1, 1, -1), 
-			new Location3(-1, -1, 1), new Location3(1, -1, 1),
-			new Location3(1, 1, 1), new Location3(-1, 1, 1) }; 
+	protected static final Vector3f[] clipSpacePlanePoints = {
+			new Vector3f(-1, -1, -1), new Vector3f(1, -1, -1),
+			new Vector3f(1, 1, -1), new Vector3f(-1, 1, -1),
+			new Vector3f(-1, -1, 1), new Vector3f(1, -1, 1),
+			new Vector3f(1, 1, 1), new Vector3f(-1, 1, 1) };
 	protected static final float[] clipSpacePlanePointsArray = new float[8 * 3];
 
 	static {
 		int j = 0;
-		for (Location3 v : clipSpacePlanePoints) {
+		for (Vector3f v : clipSpacePlanePoints) {
 			clipSpacePlanePointsArray[j++] = v.x;
 			clipSpacePlanePointsArray[j++] = v.y;
 			clipSpacePlanePointsArray[j++] = v.z;
@@ -24,23 +23,23 @@ public class Frustum {
 
 	public final Plane[] planes = new Plane[6];
 
-	public final Location3[] planePoints = { new Location3(), new Location3(),
-			new Location3(), new Location3(), new Location3(), new Location3(),
-			new Location3(), new Location3() };
+	public final Vector3f[] planePoints = { new Vector3f(), new Vector3f(),
+			new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f(),
+			new Vector3f(), new Vector3f() };
 	protected final float[] planePointsArray = new float[8 * 3];
 
 	public Frustum() {
 		for (int i = 0; i < 6; i++) {
-			planes[i] = new Plane(new Location3(), 0);
+			planes[i] = new Plane(new Vector3f(), 0);
 		}
 	}
 
-	public void update(Transform4 inverseProjectionView) {
+	public void update(Matrix4 inverseProjectionView) {
 		System.arraycopy(clipSpacePlanePointsArray, 0, planePointsArray, 0,
 				clipSpacePlanePointsArray.length);
 		NativeSupport.prj(inverseProjectionView.val, planePointsArray, 0, 8, 3);
 		for (int i = 0, j = 0; i < 8; i++) {
-			Location3 v = planePoints[i];
+			Vector3f v = planePoints[i];
 			v.x = planePointsArray[j++];
 			v.y = planePointsArray[j++];
 			v.z = planePointsArray[j++];
@@ -54,10 +53,10 @@ public class Frustum {
 		planes[5].set(planePoints[4], planePoints[0], planePoints[1]);
 	}
 
-	public boolean pointInFrustum(Location3 point) {
+	public boolean pointInFrustum(Vector3f point) {
 		for (int i = 0; i < planes.length; i++) {
 			PlaneSide result = planes[i].testPoint(point);
-			if (result == PlaneSide.Back){
+			if (result == PlaneSide.Back) {
 				return false;
 			}
 		}
@@ -67,17 +66,17 @@ public class Frustum {
 	public boolean pointInFrustum(float x, float y, float z) {
 		for (int i = 0; i < planes.length; i++) {
 			PlaneSide result = planes[i].testPoint(x, y, z);
-			if (result == PlaneSide.Back){
+			if (result == PlaneSide.Back) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public boolean sphereInFrustum(Location3 center, float radius) {
-		for (int i = 0; i < 6; i++){
+	public boolean sphereInFrustum(Vector3f center, float radius) {
+		for (int i = 0; i < 6; i++) {
 			if ((planes[i].normal.x * center.x + planes[i].normal.y * center.y + planes[i].normal.z
-					* center.z) < (-radius - planes[i].d)){
+					* center.z) < (-radius - planes[i].d)) {
 				return false;
 			}
 		}
@@ -85,19 +84,19 @@ public class Frustum {
 	}
 
 	public boolean sphereInFrustum(float x, float y, float z, float radius) {
-		for (int i = 0; i < 6; i++){
+		for (int i = 0; i < 6; i++) {
 			if ((planes[i].normal.x * x + planes[i].normal.y * y + planes[i].normal.z
-					* z) < (-radius - planes[i].d)){
+					* z) < (-radius - planes[i].d)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public boolean sphereInFrustumWithoutNearFar(Location3 center, float radius) {
-		for (int i = 2; i < 6; i++){
+	public boolean sphereInFrustumWithoutNearFar(Vector3f center, float radius) {
+		for (int i = 2; i < 6; i++) {
 			if ((planes[i].normal.x * center.x + planes[i].normal.y * center.y + planes[i].normal.z
-					* center.z) < (-radius - planes[i].d)){
+					* center.z) < (-radius - planes[i].d)) {
 				return false;
 			}
 		}
@@ -106,9 +105,9 @@ public class Frustum {
 
 	public boolean sphereInFrustumWithoutNearFar(float x, float y, float z,
 			float radius) {
-		for (int i = 2; i < 6; i++){
+		for (int i = 2; i < 6; i++) {
 			if ((planes[i].normal.x * x + planes[i].normal.y * y + planes[i].normal.z
-					* z) < (-radius - planes[i].d)){
+					* z) < (-radius - planes[i].d)) {
 				return false;
 			}
 		}
@@ -116,23 +115,23 @@ public class Frustum {
 	}
 
 	public boolean boundsInFrustum(BoundingBox bounds) {
-		Location3[] corners = bounds.getCorners();
+		Vector3f[] corners = bounds.getCorners();
 		int len = corners.length;
 		for (int i = 0, len2 = planes.length; i < len2; i++) {
 			int out = 0;
-			for (int j = 0; j < len; j++){
-				if (planes[i].testPoint(corners[j]) == PlaneSide.Back){
+			for (int j = 0; j < len; j++) {
+				if (planes[i].testPoint(corners[j]) == PlaneSide.Back) {
 					out++;
 				}
 			}
-			if (out == 8){
+			if (out == 8) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public boolean boundsInFrustum(Location3 center, Location3 dimensions) {
+	public boolean boundsInFrustum(Vector3f center, Vector3f dimensions) {
 		return boundsInFrustum(center.x, center.y, center.z, dimensions.x / 2,
 				dimensions.y / 2, dimensions.z / 2);
 	}

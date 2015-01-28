@@ -33,6 +33,7 @@ import loon.core.geom.Shape;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LShadow;
+import loon.core.graphics.opengl.LTextureBatch.Cache;
 import loon.jni.NativeSupport;
 
 public class LTexture implements LRelease {
@@ -165,17 +166,11 @@ public class LTexture implements LRelease {
 
 	public float heightRatio = 1.0f;
 
-	int dataSize;
-
-	int vertexSize;
-
-	int texSize;
+	private LTextureBatch batch;
 
 	Format format;
 
 	String lazyName;
-
-	boolean isStatic;
 
 	private LTexture() {
 		format = Format.DEFAULT;
@@ -203,7 +198,6 @@ public class LTexture implements LRelease {
 		this.heightRatio = texture.heightRatio;
 		this.isLoaded = texture.isLoaded;
 		this.isClose = texture.isClose;
-		this.isStatic = texture.isStatic;
 		this.isVisible = texture.isVisible;
 	}
 
@@ -500,7 +494,6 @@ public class LTexture implements LRelease {
 				sub.isLoaded = isLoaded;
 				sub.imageData = imageData;
 				sub.hasAlpha = hasAlpha;
-				sub.isStatic = isStatic;
 				sub.reload = reload;
 				sub.format = format;
 				sub.width = width;
@@ -542,7 +535,6 @@ public class LTexture implements LRelease {
 						sub.isLoaded = isLoaded;
 						sub.imageData = imageData;
 						sub.hasAlpha = hasAlpha;
-						sub.isStatic = isStatic;
 						sub.reload = reload;
 						sub.format = format;
 						sub.width = width;
@@ -644,7 +636,6 @@ public class LTexture implements LRelease {
 				copy.imageData = imageData;
 				copy.textureID = textureID;
 				copy.isLoaded = isLoaded;
-				copy.isStatic = isStatic;
 				copy.reload = reload;
 				copy.format = format;
 				copy.hasAlpha = hasAlpha;
@@ -676,7 +667,6 @@ public class LTexture implements LRelease {
 						copy.imageData = imageData;
 						copy.textureID = textureID;
 						copy.isLoaded = isLoaded;
-						copy.isStatic = isStatic;
 						copy.reload = reload;
 						copy.format = format;
 						copy.hasAlpha = hasAlpha;
@@ -907,77 +897,86 @@ public class LTexture implements LRelease {
 		return image;
 	}
 
-	public LTextureBatch getBatch() {
-		return new LTextureBatch(this);
-	}
+	private LColor color = new LColor(LColor.white);
 
 	public void setImageColor(float r, float g, float b, float a) {
-		setColor(TOP_LEFT, r, g, b, a);
-		setColor(TOP_RIGHT, r, g, b, a);
-		setColor(BOTTOM_LEFT, r, g, b, a);
-		setColor(BOTTOM_RIGHT, r, g, b, a);
+		color.setColor(r, g, b, a);
 	}
 
 	public void setImageColor(float r, float g, float b) {
-		setColor(TOP_LEFT, r, g, b);
-		setColor(TOP_RIGHT, r, g, b);
-		setColor(BOTTOM_LEFT, r, g, b);
-		setColor(BOTTOM_RIGHT, r, g, b);
+		color.setColor(r, g, b);
 	}
 
 	public void setImageColor(LColor c) {
 		if (c == null) {
 			return;
 		}
-		setImageColor(c.r, c.g, c.b, c.a);
+		color.setColor(c);
 	}
 
-	public void setColor(int corner, float r, float g, float b, float a) {
-
+	public LTextureBatch getTextureBatch() {
+		makeBatch();
+		return batch;
 	}
 
-	public void setColor(int corner, float r, float g, float b) {
-
+	void makeBatch() {
+		if (!isBatch) {
+			batch = new LTextureBatch(this);
+			isBatch = true;
+		}
 	}
 
 	void freeBatch() {
-
+		if (isBatch) {
+			if (batch != null) {
+				batch.dispose();
+				batch = null;
+				isBatch = false;
+			}
+		}
 	}
 
 	public boolean isBatch() {
-		return false;
+		return (isBatch && batch.isLoaded);
 	}
 
 	public void glBegin() {
-
-	}
-
-	public void glBegin(int type) {
-
+		makeBatch();
+		batch.begin();
 	}
 
 	public void glEnd() {
-
+		if (isBatch) {
+			batch.end();
+		}
 	}
 
 	public void setBatchPos(float x, float y) {
-
+		if (isBatch) {
+			batch.setLocation(x, y);
+		}
 	}
 
 	public boolean isBatchLocked() {
-		return false;
+		return isBatch && batch.isCacheLocked;
 	}
 
 	public void glCacheCommit() {
-
+		if (isBatch) {
+			batch.postLastCache();
+		}
 	}
 
 	public void glLock() {
-
+		if (isBatch) {
+			batch.lock();
+		}
 	}
 
 	public void glUnLock() {
-
+		if (isBatch) {
+			batch.unLock();
+		}
 	}
 
 	public void draw(float x, float y) {
@@ -985,32 +984,55 @@ public class LTexture implements LRelease {
 	}
 
 	public void draw(float x, float y, float width, float height) {
-
-	}
-
-	public void draw(float x, float y, LColor[] c) {
-
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(color);
+			batch.draw(x, y, width, height);
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawTexture(this, x, y, width, height, color);
+		}
 	}
 
 	public void draw(float x, float y, LColor c) {
-
+		if (isBatch) {
+			batch.draw(x, y, c);
+		} else {
+			GLEx.self.drawTexture(this, x, y, c);
+		}
 	}
 
 	public void draw(float x, float y, float width, float height, LColor c) {
-
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(c);
+			batch.draw(x, y, width, height);
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawTexture(this, x, y, width, height, c);
+		}
 	}
 
 	public void drawFlipX(float x, float y, LColor c) {
-
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(c);
+			batch.draw(x, y, width, height, 0, 0, width, height, true, false);
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawFlipTexture(this, x, y, c);
+		}
 	}
 
 	public void drawFlipY(float x, float y, LColor c) {
-
-	}
-
-	public void draw(float x, float y, float width, float height, float x1,
-			float y1, float x2, float y2, LColor[] c) {
-
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(c);
+			batch.draw(x, y, width, height, 0, 0, width, height, false, true);
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawMirrorTexture(this, x, y, c);
+		}
 	}
 
 	public void drawEmbedded(float x, float y, float width, float height,
@@ -1020,12 +1042,28 @@ public class LTexture implements LRelease {
 
 	public void draw(float x, float y, float width, float height, float x1,
 			float y1, float x2, float y2, LColor c) {
-
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(c);
+			batch.draw(x, y, width, height, x1, y1, x2, y2);
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2, c);
+		}
 	}
 
 	public void draw(float x, float y, float srcX, float srcY, float srcWidth,
 			float srcHeight) {
-
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(color);
+			batch.draw(x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY,
+					srcWidth, srcHeight, color);
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawTexture(this, x, y, srcWidth - srcX,
+					srcHeight - srcY, srcX, srcY, srcWidth, srcHeight, color);
+		}
 	}
 
 	public void drawEmbedded(float x, float y, float width, float height,
@@ -1035,7 +1073,15 @@ public class LTexture implements LRelease {
 
 	public void draw(float x, float y, float width, float height, float x1,
 			float y1, float x2, float y2) {
-
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(color);
+			batch.draw(x, y, width, height, x1, y1, x2, y2);
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2,
+					color);
+		}
 	}
 
 	public void draw(float x, float y, float rotation) {
@@ -1050,7 +1096,35 @@ public class LTexture implements LRelease {
 
 	public void draw(float x, float y, float width, float height, float x1,
 			float y1, float x2, float y2, float rotation, LColor c) {
+		if (rotation == 0) {
+			draw(x, y, width, height, x1, y1, x2, y2, c);
+			return;
+		}
+		if (isBatch) {
+			float old = batch.getFloatColor();
+			batch.setColor(c);
+			// batch.draw(x, y, width, height, x1, y1, x2, y2, rotation);
+			// if (update) {
+			// setImageColor(LColor.white);
+			// }
+			batch.setColor(old);
+		} else {
+			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2, c,
+					rotation);
+		}
+	}
 
+	public Cache newBatchCache() {
+		if (isBatch) {
+			return batch.newCache();
+		}
+		return null;
+	}
+
+	public void postLastBatchCache() {
+		if (isBatch) {
+			batch.postLastCache();
+		}
 	}
 
 	public void freeCache() {
@@ -1072,5 +1146,4 @@ public class LTexture implements LRelease {
 		freeCache();
 		freeBatch();
 	}
-
 }

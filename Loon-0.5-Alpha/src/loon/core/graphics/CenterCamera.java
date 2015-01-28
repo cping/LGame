@@ -1,8 +1,8 @@
 package loon.core.graphics;
 
+import loon.core.geom.Vector2f;
+import loon.core.geom.Vector3f;
 import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.math.Location2;
-import loon.core.graphics.opengl.math.Location3;
 import loon.jni.NativeSupport;
 
 public class CenterCamera extends Camera {
@@ -20,7 +20,7 @@ public class CenterCamera extends Camera {
 		update();
 	}
 
-	private final Location3 tmp = new Location3();
+	private final Vector3f tmp = new Vector3f();
 
 	@Override
 	public void update() {
@@ -69,8 +69,8 @@ public class CenterCamera extends Camera {
 	public void translate(float x, float y) {
 		translate(x, y, 0);
 	}
-	
-	public void translate(Location2 vec) {
+
+	public void translate(Vector2f vec) {
 		translate(vec.x, vec.y, 0);
 	}
 }

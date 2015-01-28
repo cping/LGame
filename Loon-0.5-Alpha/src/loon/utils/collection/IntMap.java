@@ -5,9 +5,9 @@ import java.util.NoSuchElementException;
 
 import loon.utils.MathUtils;
 
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class IntMap<V> implements Iterable<IntMap.Entry<V>> {
-	
+
 	private static final int PRIME2 = 0xb4b82e39;
 	private static final int PRIME3 = 0xced1c241;
 	private static final int EMPTY = 0;

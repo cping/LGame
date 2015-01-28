@@ -1,11 +1,3 @@
-package loon.action.sprite.effect;
-
-import loon.LSystem;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -26,6 +18,14 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import loon.LSystem;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.utils.MathUtils;
+
 public class SnowKernel implements IKernel {
 
 	private boolean exist;

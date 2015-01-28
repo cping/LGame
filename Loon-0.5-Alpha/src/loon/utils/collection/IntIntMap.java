@@ -5,9 +5,8 @@ import java.util.NoSuchElementException;
 
 import loon.utils.MathUtils;
 
-
 public class IntIntMap implements Iterable<IntIntMap.Entry> {
-	
+
 	private static final int PRIME2 = 0xb4b82e39;
 	private static final int PRIME3 = 0xced1c241;
 	private static final int EMPTY = 0;

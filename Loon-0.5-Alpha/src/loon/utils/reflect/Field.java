@@ -98,7 +98,6 @@ public final class Field {
 		return field.isAnnotationPresent(annotationType);
 	}
 
-
 	public Annotation[] getDeclaredAnnotations() {
 		java.lang.annotation.Annotation[] annotations = field
 				.getDeclaredAnnotations();
@@ -108,6 +107,7 @@ public final class Field {
 		}
 		return result;
 	}
+
 	public Annotation getDeclaredAnnotation(
 			Class<? extends java.lang.annotation.Annotation> annotationType) {
 		java.lang.annotation.Annotation[] annotations = field

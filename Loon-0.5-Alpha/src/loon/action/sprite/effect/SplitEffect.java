@@ -1,16 +1,3 @@
-package loon.action.sprite.effect;
-
-import loon.LSystem;
-import loon.action.map.Config;
-import loon.action.map.Field2D;
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -31,6 +18,19 @@ import loon.core.timer.LTimer;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import loon.LSystem;
+import loon.action.map.Config;
+import loon.action.map.Field2D;
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.geom.Vector2f;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.timer.LTimer;
+
 public class SplitEffect extends LObject implements ISprite {
 
 	/**

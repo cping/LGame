@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 
 public class Vector2f implements Serializable {
 	/**
@@ -94,7 +95,15 @@ public class Vector2f implements Serializable {
 	public final Vector2f mul(float a) {
 		return new Vector2f(x * a, y * a);
 	}
-
+	
+	public Vector2f mul(Matrix3 mat) {
+		float x = this.x * mat.val[0] + this.y * mat.val[3] + mat.val[6];
+		float y = this.x * mat.val[1] + this.y * mat.val[4] + mat.val[7];
+		this.x = x;
+		this.y = y;
+		return this;
+	}
+	
 	public Vector2f sub(float x, float y) {
 		return new Vector2f(this.x - x, this.y - y);
 	}
@@ -656,6 +665,7 @@ public class Vector2f implements Serializable {
 		return this.x == x && this.y == y;
 	}
 
+	
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -664,10 +674,102 @@ public class Vector2f implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Vector2f other = (Vector2f) obj;
-		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
+		if (NumberUtils.floatToIntBits(x) != NumberUtils
+				.floatToIntBits(other.x))
 			return false;
-		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
+		if (NumberUtils.floatToIntBits(y) != NumberUtils
+				.floatToIntBits(other.y))
 			return false;
 		return true;
 	}
+
+	
+	public boolean epsilonEquals(Vector2f other, float epsilon) {
+		if (other == null)
+			return false;
+		if (Math.abs(other.x - x) > epsilon)
+			return false;
+		if (Math.abs(other.y - y) > epsilon)
+			return false;
+		return true;
+	}
+
+	public boolean epsilonEquals(float x, float y, float epsilon) {
+		if (Math.abs(x - this.x) > epsilon)
+			return false;
+		if (Math.abs(y - this.y) > epsilon)
+			return false;
+		return true;
+	}
+
+	
+	public boolean isUnit() {
+		return isUnit(0.000000001f);
+	}
+
+	
+	public boolean isUnit(final float margin) {
+		return Math.abs(len2() - 1f) < margin;
+	}
+
+	
+	public boolean isZero() {
+		return x == 0 && y == 0;
+	}
+
+	
+	public boolean isZero(final float margin) {
+		return len2() < margin;
+	}
+
+	
+	public boolean isOnLine(Vector2f other) {
+		return MathUtils.isZero(x * other.y - y * other.x);
+	}
+
+	
+	public boolean isOnLine(Vector2f other, float epsilon) {
+		return MathUtils.isZero(x * other.y - y * other.x, epsilon);
+	}
+
+	
+	public boolean isCollinear(Vector2f other, float epsilon) {
+		return isOnLine(other, epsilon) && dot(other) > 0f;
+	}
+
+	
+	public boolean isCollinear(Vector2f other) {
+		return isOnLine(other) && dot(other) > 0f;
+	}
+
+	
+	public boolean isCollinearOpposite(Vector2f other, float epsilon) {
+		return isOnLine(other, epsilon) && dot(other) < 0f;
+	}
+
+	
+	public boolean isCollinearOpposite(Vector2f other) {
+		return isOnLine(other) && dot(other) < 0f;
+	}
+
+	
+	public boolean isPerpendicular(Vector2f vector) {
+		return MathUtils.isZero(dot(vector));
+	}
+
+	
+	public boolean isPerpendicular(Vector2f vector, float epsilon) {
+		return MathUtils.isZero(dot(vector), epsilon);
+	}
+
+	
+	public boolean hasSameDirection(Vector2f vector) {
+		return dot(vector) > 0;
+	}
+
+	
+	public boolean hasOppositeDirection(Vector2f vector) {
+		return dot(vector) < 0;
+	}
+
 }

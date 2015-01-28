@@ -6,15 +6,13 @@ import java.util.NoSuchElementException;
 import loon.utils.MathUtils;
 import loon.utils.reflect.ArrayReflection;
 
-
-@SuppressWarnings({"rawtypes","unchecked"})
-public class TArray<T>  {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class TArray<T> {
 
 	public T[] items;
 
 	public int size;
 	public boolean ordered;
-
 
 	public TArray() {
 		this(true, 16);

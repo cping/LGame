@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2014
@@ -295,7 +294,7 @@ public class LDecideName extends LComponent {
 
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
-		if(_cache){
+		if (_cache) {
 			_cache = false;
 		}
 	}

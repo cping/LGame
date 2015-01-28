@@ -1,12 +1,3 @@
-package loon.action.sprite;
-
-import loon.LSystem;
-import loon.core.LRelease;
-import loon.core.event.Updateable;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -28,6 +19,16 @@ import loon.core.graphics.opengl.LTexture;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import loon.LSystem;
+import loon.core.LRelease;
+import loon.core.event.Updateable;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+
+
 public class SpriteSheet implements LRelease {
 
 	private int margin, spacing;
@@ -138,7 +139,7 @@ public class SpriteSheet implements LRelease {
 		draw(g, x, y, sx, sy, null);
 	}
 
-	public void draw(GLEx g, int x, int y, int sx, int sy, LColor[] color) {
+	public void draw(GLEx g, int x, int y, int sx, int sy, LColor color) {
 		if (target.isBatch()) {
 			final float nx = sx * tw;
 			final float ny = sy * th;

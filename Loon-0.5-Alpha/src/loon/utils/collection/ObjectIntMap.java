@@ -5,8 +5,7 @@ import java.util.NoSuchElementException;
 
 import loon.utils.MathUtils;
 
-
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 
 	private static final int PRIME2 = 0xb4b82e39;
@@ -70,7 +69,7 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 	}
 
 	public void put(K key, int value) {
-		if (key == null){
+		if (key == null) {
 			throw new IllegalArgumentException("key cannot be null.");
 		}
 		K[] keyTable = this.keyTable;
@@ -361,10 +360,10 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 		if (maximumCapacity < 0)
 			throw new IllegalArgumentException("maximumCapacity must be >= 0: "
 					+ maximumCapacity);
-		if (size > maximumCapacity){
+		if (size > maximumCapacity) {
 			maximumCapacity = size;
 		}
-		if (capacity <= maximumCapacity){
+		if (capacity <= maximumCapacity) {
 			return;
 		}
 		maximumCapacity = MathUtils.nextPowerOfTwo(maximumCapacity);

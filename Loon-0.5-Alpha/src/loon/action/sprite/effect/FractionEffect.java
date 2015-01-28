@@ -1,20 +1,3 @@
-package loon.action.sprite.effect;
-
-import java.util.Random;
-
-import loon.LSystem;
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.device.LPixmapData;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.timer.LTimer;
-import loon.jni.NativeSupport;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -35,6 +18,23 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import java.util.Random;
+
+import loon.LSystem;
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.device.LPixmapData;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.timer.LTimer;
+import loon.jni.NativeSupport;
+import loon.utils.MathUtils;
+
 public class FractionEffect extends LObject implements ISprite {
 
 	/**

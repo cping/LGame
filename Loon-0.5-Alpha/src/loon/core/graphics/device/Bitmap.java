@@ -20,7 +20,6 @@
  */
 package loon.core.graphics.device;
 
-
 public class Bitmap {
 
 	protected LImage bufferedImage;

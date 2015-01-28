@@ -1,13 +1,3 @@
-package loon.action.sprite;
-
-import loon.LSystem;
-import loon.core.LRelease;
-import loon.core.event.Updateable;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextureBatch.GLCache;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -29,6 +19,17 @@ import loon.core.graphics.opengl.LTextureBatch.GLCache;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import loon.LSystem;
+import loon.core.LRelease;
+import loon.core.event.Updateable;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureBatch.GLCache;
+
+
 public class SpriteSheet implements LRelease {
 
 	private int margin, spacing;

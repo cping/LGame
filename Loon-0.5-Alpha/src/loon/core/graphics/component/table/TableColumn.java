@@ -34,10 +34,10 @@ public class TableColumn {
 	private float relativeWidth = -1;
 
 	private Alignment headingAlignment = Alignment.MIDDLE;
-	
+
 	private Alignment entryAlignment = Alignment.LEFT;
 
-	protected TableColumn(String name,LFont font) {
+	protected TableColumn(String name, LFont font) {
 		this.name = name;
 		setWidth(font.stringWidth(name));
 	}

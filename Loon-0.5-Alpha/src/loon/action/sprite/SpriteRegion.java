@@ -1,6 +1,5 @@
 package loon.action.sprite;
 
-
 import java.util.List;
 
 import loon.core.geom.RectBox;
@@ -11,11 +10,9 @@ import loon.core.graphics.opengl.LTextureRegion;
 import loon.core.graphics.opengl.LTextures;
 import loon.utils.MathUtils;
 
-
 public class SpriteRegion extends LTextureRegion {
 	public static final int VERTEX_SIZE = 2 + 1 + 2;
 	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
-
 
 	public static class Animation {
 

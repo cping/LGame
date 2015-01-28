@@ -5,7 +5,6 @@ import java.nio.ShortBuffer;
 
 import loon.jni.NativeSupport;
 
-
 public class IndexBufferObject implements IndexData {
 	ShortBuffer buffer;
 	ByteBuffer byteBuffer;
@@ -83,7 +82,7 @@ public class IndexBufferObject implements IndexData {
 	}
 
 	public void bind() {
-		if (bufferHandle == 0){
+		if (bufferHandle == 0) {
 			throw new RuntimeException("No buffer allocated!");
 		}
 		GLEx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);

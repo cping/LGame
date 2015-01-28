@@ -1,58 +1,34 @@
-/*******************************************************************************
- * Copyright 2011 See AUTHORS file.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
-
 package loon.core;
 
 import java.io.Serializable;
 import java.util.List;
 
-import loon.core.graphics.opengl.math.Transform4;
-import loon.core.graphics.opengl.math.Location3;
+import loon.core.geom.Matrix4;
+import loon.core.geom.Vector3f;
 
-
-/**
- * Encapsulates an axis aligned bounding box represented by a minimum and a
- * maximum Vector. Additionally you can query for the bounding box's center,
- * dimensions and corner points.
- * 
- * @author badlogicgames@gmail.com, Xoppa
- */
 public class BoundingBox implements Serializable {
-	private static final long serialVersionUID = -1286036817192127343L;
 
-	private final static Location3 tmpVector = new Location3();
 
-	public final Location3 min = new Location3();
-	public final Location3 max = new Location3();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2215702906048039413L;
 
-	private final Location3 cnt = new Location3();
-	private final Location3 dim = new Location3();
+	private final static Vector3f tmpVector = new Vector3f();
 
-	private Location3[] corners;
+	public final Vector3f min = new Vector3f();
+	public final Vector3f max = new Vector3f();
 
-	public Location3 getCenter() {
+	private final Vector3f cnt = new Vector3f();
+	private final Vector3f dim = new Vector3f();
+
+	private Vector3f[] corners;
+
+	public Vector3f getCenter() {
 		return cnt;
 	}
 
-	/**
-	 * @param out
-	 *            The {@link Location3} to receive the center of the bounding box.
-	 * @return The vector specified with the out argument.
-	 */
-	public Location3 getCenter(Location3 out) {
+	public Vector3f getCenter(Vector3f out) {
 		return out.set(cnt);
 	}
 
@@ -68,11 +44,11 @@ public class BoundingBox implements Serializable {
 		return cnt.z;
 	}
 
-	public Location3[] getCorners() {
+	public Vector3f[] getCorners() {
 		if (corners == null) {
-			corners = new Location3[8];
+			corners = new Vector3f[8];
 			for (int i = 0; i < 8; i++)
-				corners[i] = new Location3();
+				corners[i] = new Vector3f();
 		}
 		corners[0].set(min.x, min.y, min.z);
 		corners[1].set(max.x, min.y, min.z);
@@ -85,54 +61,43 @@ public class BoundingBox implements Serializable {
 		return corners;
 	}
 
-	public Location3 getCorner000(final Location3 out) {
+	public Vector3f getCorner000(final Vector3f out) {
 		return out.set(min.x, min.y, min.z);
 	}
 
-	public Location3 getCorner001(final Location3 out) {
+	public Vector3f getCorner001(final Vector3f out) {
 		return out.set(min.x, min.y, max.z);
 	}
 
-	public Location3 getCorner010(final Location3 out) {
+	public Vector3f getCorner010(final Vector3f out) {
 		return out.set(min.x, max.y, min.z);
 	}
 
-	public Location3 getCorner011(final Location3 out) {
+	public Vector3f getCorner011(final Vector3f out) {
 		return out.set(min.x, max.y, max.z);
 	}
 
-	public Location3 getCorner100(final Location3 out) {
+	public Vector3f getCorner100(final Vector3f out) {
 		return out.set(max.x, min.y, min.z);
 	}
 
-	public Location3 getCorner101(final Location3 out) {
+	public Vector3f getCorner101(final Vector3f out) {
 		return out.set(max.x, min.y, max.z);
 	}
 
-	public Location3 getCorner110(final Location3 out) {
+	public Vector3f getCorner110(final Vector3f out) {
 		return out.set(max.x, max.y, min.z);
 	}
 
-	public Location3 getCorner111(final Location3 out) {
+	public Vector3f getCorner111(final Vector3f out) {
 		return out.set(max.x, max.y, max.z);
 	}
 
-	/**
-	 * @deprecated Use {@link #getDimensions(Location3)} instead
-	 * @return The dimensions of this bounding box on all three axis
-	 */
-	@Deprecated
-	public Location3 getDimensions() {
+	public Vector3f getDimensions() {
 		return dim;
 	}
 
-	/**
-	 * @param out
-	 *            The {@link Location3} to receive the dimensions of this bounding
-	 *            box on all three axis.
-	 * @return The vector specified with the out argument
-	 */
-	public Location3 getDimensions(final Location3 out) {
+	public Vector3f getDimensions(final Vector3f out) {
 		return out.set(dim);
 	}
 
@@ -148,11 +113,11 @@ public class BoundingBox implements Serializable {
 		return dim.z;
 	}
 
-	public Location3 getMin(final Location3 out) {
+	public Vector3f getMin(final Vector3f out) {
 		return out.set(min);
 	}
 
-	public Location3 getMax(final Location3 out) {
+	public Vector3f getMax(final Vector3f out) {
 		return out.set(max);
 	}
 
@@ -164,31 +129,15 @@ public class BoundingBox implements Serializable {
 		this.set(bounds);
 	}
 
-	public BoundingBox(Location3 minimum, Location3 maximum) {
+	public BoundingBox(Vector3f minimum, Vector3f maximum) {
 		this.set(minimum, maximum);
 	}
 
-	/**
-	 * Sets the given bounding box.
-	 * 
-	 * @param bounds
-	 *            The bounds.
-	 * @return This bounding box for chaining.
-	 */
 	public BoundingBox set(BoundingBox bounds) {
 		return this.set(bounds.min, bounds.max);
 	}
 
-	/**
-	 * Sets the given minimum and maximum vector.
-	 * 
-	 * @param minimum
-	 *            The minimum vector
-	 * @param maximum
-	 *            The maximum vector
-	 * @return This bounding box for chaining.
-	 */
-	public BoundingBox set(Location3 minimum, Location3 maximum) {
+	public BoundingBox set(Vector3f minimum, Vector3f maximum) {
 		min.set(minimum.x < maximum.x ? minimum.x : maximum.x,
 				minimum.y < maximum.y ? minimum.y : maximum.y,
 				minimum.z < maximum.z ? minimum.z : maximum.z);
@@ -200,39 +149,20 @@ public class BoundingBox implements Serializable {
 		return this;
 	}
 
-	/**
-	 * Sets the bounding box minimum and maximum vector from the given points.
-	 * 
-	 * @param points
-	 *            The points.
-	 * @return This bounding box for chaining.
-	 */
-	public BoundingBox set(Location3[] points) {
+	public BoundingBox set(Vector3f[] points) {
 		this.inf();
-		for (Location3 l_point : points)
+		for (Vector3f l_point : points)
 			this.ext(l_point);
 		return this;
 	}
 
-	/**
-	 * Sets the bounding box minimum and maximum vector from the given points.
-	 * 
-	 * @param points
-	 *            The points.
-	 * @return This bounding box for chaining.
-	 */
-	public BoundingBox set(List<Location3> points) {
+	public BoundingBox set(List<Vector3f> points) {
 		this.inf();
-		for (Location3 l_point : points)
+		for (Vector3f l_point : points)
 			this.ext(l_point);
 		return this;
 	}
 
-	/**
-	 * Sets the minimum and maximum vector to positive and negative infinity.
-	 * 
-	 * @return This bounding box for chaining.
-	 */
 	public BoundingBox inf() {
 		min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY,
 				Float.POSITIVE_INFINITY);
@@ -243,45 +173,20 @@ public class BoundingBox implements Serializable {
 		return this;
 	}
 
-	/**
-	 * Extends the bounding box to incorporate the given {@link Location3}.
-	 * 
-	 * @param point
-	 *            The vector
-	 * @return This bounding box for chaining.
-	 */
-	public BoundingBox ext(Location3 point) {
+	public BoundingBox ext(Vector3f point) {
 		return this.set(min.set(min(min.x, point.x), min(min.y, point.y),
 				min(min.z, point.z)), max.set(Math.max(max.x, point.x),
 				Math.max(max.y, point.y), Math.max(max.z, point.z)));
 	}
 
-	/**
-	 * Sets the minimum and maximum vector to zeros.
-	 * 
-	 * @return This bounding box for chaining.
-	 */
 	public BoundingBox clr() {
 		return this.set(min.set(0, 0, 0), max.set(0, 0, 0));
 	}
 
-	/**
-	 * Returns whether this bounding box is valid. This means that {@link #max}
-	 * is greater than {@link #min}.
-	 * 
-	 * @return True in case the bounding box is valid, false otherwise
-	 */
 	public boolean isValid() {
 		return min.x < max.x && min.y < max.y && min.z < max.z;
 	}
 
-	/**
-	 * Extends this bounding box by the given bounding box.
-	 * 
-	 * @param a_bounds
-	 *            The bounding box
-	 * @return This bounding box for chaining.
-	 */
 	public BoundingBox ext(BoundingBox a_bounds) {
 		return this.set(min.set(min(min.x, a_bounds.min.x),
 				min(min.y, a_bounds.min.y), min(min.z, a_bounds.min.z)), max
@@ -289,17 +194,7 @@ public class BoundingBox implements Serializable {
 						max(max.z, a_bounds.max.z)));
 	}
 
-	/**
-	 * Extends this bounding box by the given transformed bounding box.
-	 * 
-	 * @param bounds
-	 *            The bounding box
-	 * @param transform
-	 *            The transformation matrix to apply to bounds, before using it
-	 *            to extend this bounding box.
-	 * @return This bounding box for chaining.
-	 */
-	public BoundingBox ext(BoundingBox bounds, Transform4 transform) {
+	public BoundingBox ext(BoundingBox bounds, Matrix4 transform) {
 		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.min.z).mul(
 				transform));
 		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.max.z).mul(
@@ -319,16 +214,7 @@ public class BoundingBox implements Serializable {
 		return this;
 	}
 
-	/**
-	 * Multiplies the bounding box by the given matrix. This is achieved by
-	 * multiplying the 8 corner points and then calculating the minimum and
-	 * maximum vectors from the transformed points.
-	 * 
-	 * @param transform
-	 *            The matrix
-	 * @return This bounding box for chaining.
-	 */
-	public BoundingBox mul(Transform4 transform) {
+	public BoundingBox mul(Matrix4 transform) {
 		final float x0 = min.x, y0 = min.y, z0 = min.z, x1 = max.x, y1 = max.y, z1 = max.z;
 		inf();
 		ext(tmpVector.set(x0, y0, z0).mul(transform));
@@ -342,29 +228,14 @@ public class BoundingBox implements Serializable {
 		return this;
 	}
 
-	/**
-	 * Returns whether the given bounding box is contained in this bounding box.
-	 * 
-	 * @param b
-	 *            The bounding box
-	 * @return Whether the given bounding box is contained
-	 */
 	public boolean contains(BoundingBox b) {
 		return !isValid()
 				|| (min.x <= b.min.x && min.y <= b.min.y && min.z <= b.min.z
 						&& max.x >= b.max.x && max.y >= b.max.y && max.z >= b.max.z);
 	}
 
-	/**
-	 * Returns whether the given bounding box is intersecting this bounding box
-	 * (at least one point in).
-	 * 
-	 * @param b
-	 *            The bounding box
-	 * @return Whether the given bounding box is intersected
-	 */
 	public boolean intersects(BoundingBox b) {
-		if (!isValid()){
+		if (!isValid()) {
 			return false;
 		}
 
@@ -381,7 +252,7 @@ public class BoundingBox implements Serializable {
 
 	}
 
-	public boolean contains(Location3 v) {
+	public boolean contains(Vector3f v) {
 		return min.x <= v.x && max.x >= v.x && min.y <= v.y && max.y >= v.y
 				&& min.z <= v.z && max.z >= v.z;
 	}
@@ -391,17 +262,6 @@ public class BoundingBox implements Serializable {
 		return "[" + min + "|" + max + "]";
 	}
 
-	/**
-	 * Extends the bounding box by the given vector.
-	 * 
-	 * @param x
-	 *            The x-coordinate
-	 * @param y
-	 *            The y-coordinate
-	 * @param z
-	 *            The z-coordinate
-	 * @return This bounding box for chaining.
-	 */
 	public BoundingBox ext(float x, float y, float z) {
 		return this.set(min.set(min(min.x, x), min(min.y, y), min(min.z, z)),
 				max.set(max(max.x, x), max(max.y, y), max(max.z, z)));

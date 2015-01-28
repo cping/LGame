@@ -99,7 +99,7 @@ public class Canvas {
 	public LGraphics get() {
 		return _graphics;
 	}
-	
+
 	public void drawLine(float x1, float y1, float x2, float y2, Paint paint) {
 		if (paint != null) {
 			if (paint.isTransparent()) {
@@ -113,7 +113,6 @@ public class Canvas {
 		}
 	}
 
-	
 	public void drawBitmap(Bitmap bitmap, int left, int top, Paint paint) {
 		if (paint != null) {
 			if (paint.isTransparent()) {

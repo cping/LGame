@@ -2,8 +2,7 @@ package loon.utils.collection;
 
 import java.util.NoSuchElementException;
 
-
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class OrderedMap<K, V> extends ObjectMap<K, V> {
 	final TArray<K> keys;
 

@@ -7,7 +7,7 @@ import loon.utils.MathUtils;
 import loon.utils.collection.ObjectMap.Entry;
 import loon.utils.reflect.ArrayReflection;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	public K[] keys;
 	public V[] values;

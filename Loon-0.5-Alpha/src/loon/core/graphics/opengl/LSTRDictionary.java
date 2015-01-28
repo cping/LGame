@@ -28,8 +28,6 @@ import loon.core.LRelease;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 
-
-
 public final class LSTRDictionary {
 
 	private final static HashMap<String, LFont> cacheList = new HashMap<String, LFont>(

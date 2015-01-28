@@ -29,7 +29,6 @@ import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.Paint;
 import loon.core.graphics.device.RectF;
 
-
 public class BarChartCanvas extends ChartBaseCanvas {
 
 	private ArrayList<ChartValueSerie> mSeries = new ArrayList<ChartValueSerie>();

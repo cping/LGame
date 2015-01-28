@@ -55,10 +55,15 @@ public class LShadow {
 
 	/**
 	 * 引入指定图像，并以此生成阴影.
-	 * @param image 图像
-	 * @param size 模糊程度(越高则图像越模糊)
-	 * @param a 透明度
-	 * @param c 希望阴影化区域显示的颜色
+	 * 
+	 * @param image
+	 *            图像
+	 * @param size
+	 *            模糊程度(越高则图像越模糊)
+	 * @param a
+	 *            透明度
+	 * @param c
+	 *            希望阴影化区域显示的颜色
 	 */
 	public LShadow(LImage image, int size, float a, LColor c) {
 		this.size = size;

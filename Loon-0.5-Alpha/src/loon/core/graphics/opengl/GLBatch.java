@@ -1,8 +1,8 @@
 package loon.core.graphics.opengl;
 
+import loon.core.geom.Matrix4;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
-import loon.core.graphics.opengl.math.Transform4;
 import loon.utils.collection.Array;
 
 public class GLBatch {
@@ -15,14 +15,14 @@ public class GLBatch {
 	private Mesh mesh;
 	private ShaderProgram shader;
 	private boolean ownsShader;
-	private  int numTexCoords;
-	private  int vertexSize;
-	private  int normalOffset;
-	private  int colorOffset;
-	private  int texCoordOffset;
-	private final Transform4 projModelView = new Transform4();
-	private  float[] vertices;
-	private  String[] shaderUniformNames;
+	private int numTexCoords;
+	private int vertexSize;
+	private int normalOffset;
+	private int colorOffset;
+	private int texCoordOffset;
+	private final Matrix4 projModelView = new Matrix4();
+	float[] vertices;
+	private String[] shaderUniformNames;
 
 	public GLBatch(boolean hasNormals, boolean hasColors, int numTexCoords) {
 		this(5000, hasNormals, hasColors, numTexCoords, null);
@@ -31,12 +31,11 @@ public class GLBatch {
 
 	public GLBatch(int maxVertices, boolean hasNormals, boolean hasColors,
 			int numTexCoords) {
-		this(maxVertices, hasNormals, hasColors, numTexCoords,
-				null);
+		this(maxVertices, hasNormals, hasColors, numTexCoords, null);
 		ownsShader = true;
 	}
-	
-	private boolean hasNormals,hasColors;
+
+	private boolean hasNormals, hasColors;
 
 	public GLBatch(int maxVertices, boolean hasNormals, boolean hasColors,
 			int numTexCoords, ShaderProgram shader) {
@@ -80,8 +79,8 @@ public class GLBatch {
 		ownsShader = false;
 	}
 
-	public void begin(Transform4 projModelView, int primitiveType) {
-		if(shader==null){
+	public void begin(Matrix4 projModelView, int primitiveType) {
+		if (shader == null) {
 			VertexAttribute[] attribs = buildVertexAttributes(hasNormals,
 					hasColors, numTexCoords);
 			mesh = new Mesh(false, maxVertices, 0, attribs);
@@ -93,15 +92,18 @@ public class GLBatch {
 			colorOffset = mesh.getVertexAttribute(Usage.ColorPacked) != null ? mesh
 					.getVertexAttribute(Usage.ColorPacked).offset / 4 : 0;
 			texCoordOffset = mesh.getVertexAttribute(Usage.TextureCoordinates) != null ? mesh
-					.getVertexAttribute(Usage.TextureCoordinates).offset / 4 : 0;
+					.getVertexAttribute(Usage.TextureCoordinates).offset / 4
+					: 0;
 
 			shaderUniformNames = new String[numTexCoords];
 			for (int i = 0; i < numTexCoords; i++) {
 				shaderUniformNames[i] = "u_sampler" + i;
 			}
-			shader = createDefaultShader(
-					hasNormals, hasColors, numTexCoords);
+			shader = createDefaultShader(hasNormals, hasColors, numTexCoords);
 		}
+		this.numSetTexCoords = 0;
+		this.vertexIdx = 0;
+		this.numVertices = 0;
 		this.projModelView.set(projModelView);
 		this.primitiveType = primitiveType;
 	}
@@ -155,10 +157,6 @@ public class GLBatch {
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.render(shader, primitiveType);
 		shader.end();
-
-		numSetTexCoords = 0;
-		vertexIdx = 0;
-		numVertices = 0;
 	}
 
 	public void end() {
@@ -180,80 +178,12 @@ public class GLBatch {
 		mesh.dispose();
 	}
 
-	static private String createVertexShader(boolean hasNormals,
-			boolean hasColors, int numTexCoords) {
-		String shader = "attribute vec4 "
-				+ ShaderProgram.POSITION_ATTRIBUTE
-				+ ";\n"
-				+ (hasNormals ? "attribute vec3 "
-						+ ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
-				+ (hasColors ? "attribute vec4 "
-						+ ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + i
-					+ ";\n";
-		}
-
-		shader += "uniform mat4 u_projModelView;\n";
-		shader += (hasColors ? "varying vec4 v_col;\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "varying vec2 v_tex" + i + ";\n";
-		}
-
-		shader += "void main() {\n"
-				+ "   gl_Position = u_projModelView * "
-				+ ShaderProgram.POSITION_ATTRIBUTE
-				+ ";\n"
-				+ (hasColors ? "   v_col = " + ShaderProgram.COLOR_ATTRIBUTE
-						+ ";\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "   v_tex" + i + " = " + ShaderProgram.TEXCOORD_ATTRIBUTE
-					+ i + ";\n";
-		}
-		shader += "   gl_PointSize = 1.0;\n";
-		shader += "}\n";
-		return shader;
-	}
-
-	static private String createFragmentShader(boolean hasNormals,
-			boolean hasColors, int numTexCoords) {
-		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n"
-				+ "#endif\n";
-
-		if (hasColors)
-			shader += "varying vec4 v_col;\n";
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "varying vec2 v_tex" + i + ";\n";
-			shader += "uniform sampler2D u_sampler" + i + ";\n";
-		}
-
-		shader += "void main() {\n" + "   gl_FragColor = "
-				+ (hasColors ? "v_col" : "vec4(1, 1, 1, 1)");
-
-		if (numTexCoords > 0)
-			shader += " * ";
-
-		for (int i = 0; i < numTexCoords; i++) {
-			if (i == numTexCoords - 1) {
-				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ")";
-			} else {
-				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ") *";
-			}
-		}
-
-		shader += ";\n}";
-		return shader;
-	}
-
 	static public ShaderProgram createDefaultShader(boolean hasNormals,
 			boolean hasColors, int numTexCoords) {
-		String vertexShader = createVertexShader(hasNormals, hasColors,
+		String vertexShader = GLEx.createVertexShader(hasNormals, hasColors,
 				numTexCoords);
-		String fragmentShader = createFragmentShader(hasNormals, hasColors,
-				numTexCoords);
+		String fragmentShader = GLEx.createFragmentShader(hasNormals,
+				hasColors, numTexCoords);
 		ShaderProgram program = new ShaderProgram(vertexShader, fragmentShader);
 		return program;
 	}

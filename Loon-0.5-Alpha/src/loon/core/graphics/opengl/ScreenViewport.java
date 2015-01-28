@@ -1,10 +1,11 @@
-package loon.core.graphics.opengl.viewport;
+package loon.core.graphics.opengl;
 
 import loon.core.graphics.Camera;
 import loon.core.graphics.CenterCamera;
 
+
 public class ScreenViewport extends Viewport {
-	
+
 	private float unitsPerPixel = 1;
 
 	public ScreenViewport() {

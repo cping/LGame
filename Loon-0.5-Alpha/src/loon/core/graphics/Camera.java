@@ -1,27 +1,27 @@
 package loon.core.graphics;
 
 import loon.core.Ray;
+import loon.core.geom.Frustum;
+import loon.core.geom.Matrix4;
+import loon.core.geom.Quaternion;
+import loon.core.geom.Vector3f;
 import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.math.Frustum;
-import loon.core.graphics.opengl.math.Transform4;
-import loon.core.graphics.opengl.math.Quaternion;
-import loon.core.graphics.opengl.math.Location3;
 
 public abstract class Camera {
 
-	public final Location3 position = new Location3();
-	
-	public final Location3 direction = new Location3(0, 0, -1);
+	public final Vector3f position = new Vector3f();
 
-	public final Location3 up = new Location3(0, 1, 0);
+	public final Vector3f direction = new Vector3f(0, 0, -1);
 
-	public final Transform4 projection = new Transform4();
+	public final Vector3f up = new Vector3f(0, 1, 0);
 
-	public final Transform4 view = new Transform4();
+	public final Matrix4 projection = new Matrix4();
 
-	public final Transform4 combined = new Transform4();
+	public final Matrix4 view = new Matrix4();
 
-	public final Transform4 invProjectionView = new Transform4();
+	public final Matrix4 combined = new Matrix4();
+
+	public final Matrix4 invProjectionView = new Matrix4();
 
 	public float near = 1;
 
@@ -33,8 +33,8 @@ public abstract class Camera {
 
 	public final Frustum frustum = new Frustum();
 
-	private final Location3 tmpVec = new Location3();
-	private final Ray ray = new Ray(new Location3(), new Location3());
+	private final Vector3f tmpVec = new Vector3f();
+	private final Ray ray = new Ray(new Vector3f(), new Vector3f());
 
 	public abstract void update();
 
@@ -43,7 +43,7 @@ public abstract class Camera {
 	public void lookAt(float x, float y, float z) {
 		tmpVec.set(x, y, z).sub(position).nor();
 		if (!tmpVec.isZero()) {
-			float dot = tmpVec.dot(up); 
+			float dot = tmpVec.dot(up);
 			if (Math.abs(dot - 1) < 0.000000001f) {
 				up.set(direction).scl(-1);
 			} else if (Math.abs(dot + 1) < 0.000000001f) {
@@ -54,7 +54,7 @@ public abstract class Camera {
 		}
 	}
 
-	public void lookAt(Location3 target) {
+	public void lookAt(Vector3f target) {
 		lookAt(target.x, target.y, target.z);
 	}
 
@@ -68,12 +68,12 @@ public abstract class Camera {
 		up.rotate(angle, axisX, axisY, axisZ);
 	}
 
-	public void rotate(Location3 axis, float angle) {
+	public void rotate(Vector3f axis, float angle) {
 		direction.rotate(axis, angle);
 		up.rotate(axis, angle);
 	}
 
-	public void rotate(final Transform4 transform) {
+	public void rotate(final Matrix4 transform) {
 		direction.rot(transform);
 		up.rot(transform);
 	}
@@ -83,7 +83,7 @@ public abstract class Camera {
 		quat.transform(up);
 	}
 
-	public void rotateAround(Location3 point, Location3 axis, float angle) {
+	public void rotateAround(Vector3f point, Vector3f axis, float angle) {
 		tmpVec.set(point);
 		tmpVec.sub(position);
 		translate(tmpVec);
@@ -92,7 +92,7 @@ public abstract class Camera {
 		translate(-tmpVec.x, -tmpVec.y, -tmpVec.z);
 	}
 
-	public void transform(final Transform4 transform) {
+	public void transform(final Matrix4 transform) {
 		position.mul(transform);
 		rotate(transform);
 	}
@@ -101,11 +101,11 @@ public abstract class Camera {
 		position.add(x, y, z);
 	}
 
-	public void translate(Location3 vec) {
+	public void translate(Vector3f vec) {
 		position.add(vec);
 	}
 
-	public Location3 unproject(Location3 screenCoords, float viewportX,
+	public Vector3f unproject(Vector3f screenCoords, float viewportX,
 			float viewportY, float viewportWidth, float viewportHeight) {
 		float x = screenCoords.x, y = screenCoords.y;
 		x = x - viewportX;
@@ -118,19 +118,17 @@ public abstract class Camera {
 		return screenCoords;
 	}
 
-	public Location3 unproject(Location3 screenCoords) {
-		unproject(screenCoords, 0, 0, GLEx.width(),
-				GLEx.height());
+	public Vector3f unproject(Vector3f screenCoords) {
+		unproject(screenCoords, 0, 0, GLEx.width(), GLEx.height());
 		return screenCoords;
 	}
 
-	public Location3 project(Location3 worldCoords) {
-		project(worldCoords, 0, 0,GLEx.width(),
-				GLEx.height());
+	public Vector3f project(Vector3f worldCoords) {
+		project(worldCoords, 0, 0, GLEx.width(), GLEx.height());
 		return worldCoords;
 	}
 
-	public Location3 project(Location3 worldCoords, float viewportX,
+	public Vector3f project(Vector3f worldCoords, float viewportX,
 			float viewportY, float viewportWidth, float viewportHeight) {
 		worldCoords.prj(combined);
 		worldCoords.x = viewportWidth * (worldCoords.x + 1) / 2 + viewportX;
@@ -150,7 +148,6 @@ public abstract class Camera {
 	}
 
 	public Ray getPickRay(float screenX, float screenY) {
-		return getPickRay(screenX, screenY, 0, 0, GLEx.width(),
-				GLEx.height());
+		return getPickRay(screenX, screenY, 0, 0, GLEx.width(), GLEx.height());
 	}
 }

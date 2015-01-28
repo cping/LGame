@@ -34,8 +34,8 @@ public class VertexBufferObjectSubData implements VertexData {
 	private int createBufferObject() {
 		int result = GLEx.gl.glGenBuffer();
 		GLEx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, result);
-		GLEx.gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.capacity(),
-				null, usage);
+		GLEx.gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.capacity(), null,
+				usage);
 		GLEx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		return result;
 	}

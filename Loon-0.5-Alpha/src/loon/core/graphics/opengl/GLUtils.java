@@ -46,14 +46,6 @@ public class GLUtils {
 
 	private static boolean enableTextures = false;
 
-	private static float red = -1;
-
-	private static float green = -1;
-
-	private static float blue = -1;
-
-	private static float alpha = -1;
-
 	public static void reset(final GL20 gl10) {
 		GLUtils.currentHardwareBufferID = -1;
 		GLUtils.currentSourceBlendMode = -1;
@@ -61,20 +53,12 @@ public class GLUtils {
 		GLUtils.disableBlend(gl10);
 		GLUtils.disableCulling(gl10);
 		GLUtils.disableTextures(gl10);
-		GLUtils.red = -1;
-		GLUtils.green = -1;
-		GLUtils.blue = -1;
-		GLUtils.alpha = -1;
 	}
 
 	public static void reload() {
 		GLUtils.currentHardwareBufferID = -1;
 		GLUtils.currentSourceBlendMode = -1;
 		GLUtils.currentDestinationBlendMode = -1;
-		GLUtils.red = -1;
-		GLUtils.green = -1;
-		GLUtils.blue = -1;
-		GLUtils.alpha = -1;
 		GLUtils.enableDither = true;
 		GLUtils.enableLightning = true;
 		GLUtils.enableDepthTest = true;
@@ -87,19 +71,8 @@ public class GLUtils {
 
 	public static void setClearColor(final GL20 gl10, float r, float g,
 			float b, float a) {
-		try {
-			if (a != GLUtils.alpha || r != GLUtils.red || g != GLUtils.green
-					|| b != GLUtils.blue) {
-				GLUtils.alpha = a;
-				GLUtils.red = r;
-				GLUtils.green = g;
-				GLUtils.blue = b;
-				gl10.glClearColor(r, g, b, a);
-				gl10.glClear(GL20.GL_COLOR_BUFFER_BIT
-						| GL20.GL_DEPTH_BUFFER_BIT);
-			}
-		} catch (Exception e) {
-		}
+		gl10.glClearColor(r, g, b, a);
+		gl10.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 	}
 
 	public static void setClearColor(final GL20 gl10, LColor c) {
@@ -205,7 +178,7 @@ public class GLUtils {
 		} catch (Exception e) {
 		}
 	}
-	
+
 	public static void disableDither(final GL20 gl10) {
 		try {
 			if (GLUtils.enableDither) {

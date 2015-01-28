@@ -34,7 +34,6 @@ import java.util.Map.Entry;
 import loon.core.LRelease;
 import loon.utils.StringUtils;
 
-
 /**
  * 自0.3.2开始新增类，该类用以长期保存游戏中键值对关系(执行save后保存到本地,初始化时自动加载同名数据)
  */
@@ -165,7 +164,7 @@ public class Session implements LRelease {
 			}
 		}
 	}
-	
+
 	private static void checkFile(File file) throws IOException {
 		boolean exists = file.exists();
 		if (exists && !file.isFile()) {
@@ -173,7 +172,7 @@ public class Session implements LRelease {
 					+ " is actually not a file.");
 		}
 	}
-	
+
 	private void makeProperties(Properties _properties) {
 		try {
 			makedirs(_tempFile);

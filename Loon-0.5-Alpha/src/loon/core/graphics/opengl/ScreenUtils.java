@@ -122,12 +122,11 @@ public class ScreenUtils {
 			}
 			runnable = new Runnable() {
 				public void run() {
-					GLEx.gl
-							.glReadPixels(
-									x,
-									(int) (LSystem.screenRect.height * LSystem.scaleHeight)
-											- y - height, width, height,
-									GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
+					GLEx.gl.glReadPixels(
+							x,
+							(int) (LSystem.screenRect.height * LSystem.scaleHeight)
+									- y - height, width, height, GL.GL_RGBA,
+							GL.GL_UNSIGNED_BYTE, buffer);
 					for (int i = 0, ny = 0; i < height; i++, ny++) {
 						for (int j = 0; j < width; j++) {
 							final int pix = buffer.get(i * width + j);

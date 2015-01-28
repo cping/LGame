@@ -48,7 +48,6 @@ import loon.utils.StringUtils;
 
 public final class LSystem {
 
-	
 	public static Files files = null;
 
 	public static Files files() {
@@ -183,17 +182,16 @@ public final class LSystem {
 		return w.toString();
 	}
 
-
 	static public class OptimizedByteArrayOutputStream extends
 			ByteArrayOutputStream {
-		
+
 		public OptimizedByteArrayOutputStream(int initialSize) {
 			super(initialSize);
 		}
 
 		@Override
 		public synchronized byte[] toByteArray() {
-			if (count == buf.length){
+			if (count == buf.length) {
 				return buf;
 			}
 			return super.toByteArray();
@@ -203,7 +201,7 @@ public final class LSystem {
 			return buf;
 		}
 	}
-	
+
 	public final static void close(LTexture tex2d) {
 		if (tex2d != null) {
 			try {

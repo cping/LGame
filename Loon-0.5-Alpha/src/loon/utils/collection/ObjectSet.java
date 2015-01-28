@@ -5,8 +5,7 @@ import java.util.NoSuchElementException;
 
 import loon.utils.MathUtils;
 
-
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ObjectSet<T> implements Iterable<T> {
 
 	private static final int PRIME2 = 0xb4b82e39;
@@ -64,7 +63,7 @@ public class ObjectSet<T> implements Iterable<T> {
 	}
 
 	public boolean add(T key) {
-		if (key == null){
+		if (key == null) {
 			throw new IllegalArgumentException("key cannot be null.");
 		}
 		T[] keyTable = this.keyTable;
@@ -178,7 +177,6 @@ public class ObjectSet<T> implements Iterable<T> {
 			int index3, T key3) {
 		T[] keyTable = this.keyTable;
 		int mask = this.mask;
-
 
 		T evictedKey;
 		int i = 0, pushIterations = this.pushIterations;

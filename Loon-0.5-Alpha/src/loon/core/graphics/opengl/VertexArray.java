@@ -124,7 +124,7 @@ public class VertexArray implements VertexData {
 
 	@Override
 	public void unbind(ShaderProgram shader, int[] locations) {
-		
+
 		final int numAttributes = attributes.size();
 		if (locations == null) {
 			for (int i = 0; i < numAttributes; i++) {

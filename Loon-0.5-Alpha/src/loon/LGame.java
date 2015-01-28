@@ -114,7 +114,6 @@ public class LGame extends JavaSEApp {
 
 	private GLEx gl;
 
-
 	private String windowTitle;
 
 	private RectBox bounds = new RectBox();
@@ -650,7 +649,7 @@ public class LGame extends JavaSEApp {
 
 			Display.setTitle(windowTitle);
 			Display.setInitialBackground(0, 0, 0);
-			
+
 			if (_x != -1 && _y != -1) {
 				Display.setLocation(_x, _y);
 			}

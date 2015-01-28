@@ -19,10 +19,10 @@
  * @version 0.4.2
  */
 package loon.core.graphics.component.chart;
+
 import java.util.ArrayList;
 
 import loon.core.graphics.device.LColor;
-
 
 public class ChartValueSerie {
 

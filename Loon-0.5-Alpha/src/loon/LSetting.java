@@ -22,7 +22,6 @@ package loon;
 
 import java.awt.Canvas;
 
-
 public class LSetting {
 
 	public int width = LSystem.MAX_SCREEN_WIDTH;

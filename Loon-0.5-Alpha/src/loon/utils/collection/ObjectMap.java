@@ -5,8 +5,7 @@ import java.util.NoSuchElementException;
 
 import loon.utils.MathUtils;
 
-
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	private static final int PRIME2 = 0xb4b82e39;

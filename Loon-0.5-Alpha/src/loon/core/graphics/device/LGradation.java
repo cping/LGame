@@ -33,7 +33,6 @@ import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
 
-
 public class LGradation implements LRelease {
 
 	private static HashMap<String, LGradation> gradations;

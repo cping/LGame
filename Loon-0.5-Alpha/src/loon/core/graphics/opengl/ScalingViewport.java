@@ -1,10 +1,9 @@
-package loon.core.graphics.opengl.viewport;
+package loon.core.graphics.opengl;
 
+import loon.core.geom.Vector2f;
 import loon.core.graphics.Camera;
 import loon.core.graphics.CenterCamera;
-import loon.core.graphics.opengl.math.Location2;
 import loon.utils.collection.Scaling;
-
 
 public class ScalingViewport extends Viewport {
 	private Scaling scaling;
@@ -22,7 +21,7 @@ public class ScalingViewport extends Viewport {
 
 	@Override
 	public void update(int screenWidth, int screenHeight, boolean centerCamera) {
-		Location2 scaled = scaling.apply(getWorldWidth(), getWorldHeight(),
+		Vector2f scaled = scaling.apply(getWorldWidth(), getWorldHeight(),
 				screenWidth, screenHeight);
 		int viewportWidth = Math.round(scaled.x);
 		int viewportHeight = Math.round(scaled.y);

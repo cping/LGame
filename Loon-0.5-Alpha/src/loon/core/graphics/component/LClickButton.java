@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2014
@@ -143,7 +142,7 @@ public class LClickButton extends LComponent {
 					this.input.getTouchY());
 		}
 	}
-	
+
 	protected void processTouchClicked() {
 		if (this.input.getTouchPressed() == Touch.LEFT
 				|| this.input.getTouchReleased() == Touch.LEFT) {

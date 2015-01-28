@@ -25,46 +25,41 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 
-public class TextureCellRenderer implements ICellRenderer
-{
+public class TextureCellRenderer implements ICellRenderer {
 	private boolean scaleTexture = true;
 
-	public void paint(GLEx g, Object value, int x, int y, int width, int height)
-	{
+	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
 
-		if(!(value instanceof LTexture)){
+		if (!(value instanceof LTexture)) {
 			return;
 		}
-		
-		LTexture textire = (LTexture)value;
-		
+
+		LTexture textire = (LTexture) value;
+
 		g.setColor(LColor.white);
-		
-		if(scaleTexture){
+
+		if (scaleTexture) {
 			g.drawTexture(textire, x, y, width, height);
-		}
-		else{
+		} else {
 			g.drawTexture(textire, x, y);
 		}
 	}
 
-	public void setScaleTexture(boolean s)
-	{
+	public void setScaleTexture(boolean s) {
 		this.scaleTexture = s;
 	}
 
-	public Dimension getCellContentSize(Object value)
-	{
-		if(value == null){
+	public Dimension getCellContentSize(Object value) {
+		if (value == null) {
 			return null;
 		}
-		
-		if(!(value instanceof LTexture)){
+
+		if (!(value instanceof LTexture)) {
 			return null;
 		}
-		
-		LTexture texture = (LTexture)value;
-		
+
+		LTexture texture = (LTexture) value;
+
 		return new Dimension(texture.getWidth(), texture.getHeight());
 	}
 }

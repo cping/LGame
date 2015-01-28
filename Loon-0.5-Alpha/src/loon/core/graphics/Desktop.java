@@ -30,7 +30,6 @@ import loon.core.graphics.component.LLayer;
 import loon.core.graphics.component.LPanel;
 import loon.core.graphics.opengl.GLEx;
 
-
 public class Desktop implements LRelease {
 
 	// 空桌面布局

@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -47,7 +46,7 @@ public class LTexture implements LRelease {
 	public LTexture makeShadow() {
 		return new LShadow(this.getImage()).getTexture();
 	}
-	
+
 	public LTextureRegion getTextureRegion(int x, int y, int width, int height) {
 		return new LTextureRegion(this, x, y, width, height);
 	}
@@ -521,14 +520,14 @@ public class LTexture implements LRelease {
 		this.heightRatio = texHeightRatio;
 		NativeSupport.replaceFloats(data, dataCords);
 	}
-	
+
 	public boolean hasAlpha() {
 		if (imageData == null) {
 			return false;
 		}
 		return imageData.hasAlpha();
 	}
-	
+
 	public void setWidth(int width) {
 		this.width = width;
 		setVertCords(width, height);
@@ -1228,7 +1227,8 @@ public class LTexture implements LRelease {
 		if (isBatch) {
 			batch.draw(colors, x, y, width, height);
 		} else {
-			GLEx.self.drawTexture(this, x, y, width, height);
+			GLEx.self.drawTexture(this, x, y, width, height,
+					colors == null ? null : colors[0]);
 		}
 	}
 
@@ -1236,19 +1236,21 @@ public class LTexture implements LRelease {
 		if (isBatch) {
 			batch.draw(c, x, y, width, height);
 		} else {
-			GLEx.self.drawTexture(this, x, y, width, height);
+			GLEx.self.drawTexture(this, x, y, width, height, c == null ? null
+					: c[0]);
 		}
 	}
 
 	public void draw(float x, float y, LColor c) {
 		if (isBatch) {
+			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
 			batch.draw(colors, x, y, width, height);
 			if (update) {
-				setImageColor(LColor.white);
+				setImageColor(old);
 			}
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, c);
@@ -1257,13 +1259,14 @@ public class LTexture implements LRelease {
 
 	public void draw(float x, float y, float width, float height, LColor c) {
 		if (isBatch) {
+			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
 			batch.draw(colors, x, y, width, height);
 			if (update) {
-				setImageColor(LColor.white);
+				setImageColor(old);
 			}
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, c);
@@ -1272,6 +1275,7 @@ public class LTexture implements LRelease {
 
 	public void drawFlipX(float x, float y, LColor c) {
 		if (isBatch) {
+			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
@@ -1279,7 +1283,7 @@ public class LTexture implements LRelease {
 			batch.draw(colors, x, y, width, height, 0, 0, width, height, true,
 					false);
 			if (update) {
-				setImageColor(LColor.white);
+				setImageColor(old);
 			}
 		} else {
 			GLEx.self.drawFlipTexture(this, x, y, c);
@@ -1288,6 +1292,7 @@ public class LTexture implements LRelease {
 
 	public void drawFlipY(float x, float y, LColor c) {
 		if (isBatch) {
+			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
@@ -1295,7 +1300,7 @@ public class LTexture implements LRelease {
 			batch.draw(colors, x, y, width, height, 0, 0, width, height, false,
 					true);
 			if (update) {
-				setImageColor(LColor.white);
+				setImageColor(old);
 			}
 		} else {
 			GLEx.self.drawMirrorTexture(this, x, y, c);
@@ -1307,23 +1312,30 @@ public class LTexture implements LRelease {
 		if (isBatch) {
 			batch.draw(c, x, y, width, height, x1, y1, x2, y2);
 		} else {
-			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2);
+			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2,
+					c == null ? null : c[0]);
 		}
+	}
+
+	public void drawEmbedded(float x, float y, float width, float height,
+			float x1, float y1, float x2, float y2, LColor c) {
+		draw(x, y, width - x, height - y, x1, y1, x2, y2, c);
 	}
 
 	public void draw(float x, float y, float width, float height, float x1,
 			float y1, float x2, float y2, LColor c) {
 		if (isBatch) {
+			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
 			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
 			if (update) {
-				setImageColor(LColor.white);
+				setImageColor(old);
 			}
 		} else {
-			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2);
+			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2, c);
 		}
 	}
 
@@ -1334,7 +1346,8 @@ public class LTexture implements LRelease {
 					srcY, srcWidth, srcHeight);
 		} else {
 			GLEx.self.drawTexture(this, x, y, srcWidth - srcX,
-					srcHeight - srcY, srcX, srcY, srcWidth, srcHeight);
+					srcHeight - srcY, srcX, srcY, srcWidth, srcHeight,
+					colors == null ? null : colors[0]);
 		}
 	}
 
@@ -1348,23 +1361,19 @@ public class LTexture implements LRelease {
 		if (isBatch) {
 			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
 		} else {
-			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2);
+			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2,
+					colors == null ? null : colors[0]);
 		}
 	}
 
 	public void draw(float x, float y, float rotation) {
 		draw(x, y, this.width, this.height, 0, 0, this.width, this.height,
-				rotation, LColor.white);
+				rotation, colors == null ? null : colors[0]);
 	}
 
 	public void draw(float x, float y, float w, float h, float rotation,
 			LColor c) {
 		draw(x, y, w, h, 0, 0, this.width, this.height, rotation, c);
-	}
-
-	public void drawEmbedded(float x, float y, float width, float height,
-			float x1, float y1, float x2, float y2, LColor c) {
-		draw(x, y, width - x, height - y, x1, y1, x2, y2, c);
 	}
 
 	public void draw(float x, float y, float width, float height, float x1,
@@ -1374,13 +1383,14 @@ public class LTexture implements LRelease {
 			return;
 		}
 		if (isBatch) {
+			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
 			batch.draw(colors, x, y, width, height, x1, y1, x2, y2, rotation);
 			if (update) {
-				setImageColor(LColor.white);
+				setImageColor(old);
 			}
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2, c,

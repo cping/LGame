@@ -55,8 +55,8 @@ public final class ClassReflection {
 		return result;
 	}
 
-	static public Constructor getConstructor(Class<?> c, Class<?>... parameterTypes)
-			throws ReflectionException {
+	static public Constructor getConstructor(Class<?> c,
+			Class<?>... parameterTypes) throws ReflectionException {
 		try {
 			return new Constructor(c.getConstructor(parameterTypes));
 		} catch (SecurityException e) {

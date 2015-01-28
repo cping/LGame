@@ -1,6 +1,5 @@
 package loon.utils.reflect;
 
-
 public final class ArrayReflection {
 
 	static public Object newInstance(Class<?> c, int size) {

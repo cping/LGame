@@ -1,18 +1,3 @@
-package loon.action.sprite.effect;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-
-import loon.LSystem;
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -33,6 +18,21 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+
+import loon.LSystem;
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.timer.LTimer;
+import loon.utils.MathUtils;
+
 public class FreedomEffect extends LObject implements ISprite {
 
 	/**

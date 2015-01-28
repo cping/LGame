@@ -12,9 +12,8 @@ import loon.core.timer.LTimer;
 /**
  * Example:
  * 
- * 		LToast toast = LToast.makeText(null, "ABCDEFG",Style.ERROR);
- *		add(toast);
- *
+ * LToast toast = LToast.makeText(null, "ABCDEFG",Style.ERROR); add(toast);
+ * 
  */
 public class LToast extends LComponent {
 

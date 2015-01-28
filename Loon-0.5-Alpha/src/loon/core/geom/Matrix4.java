@@ -1,17 +1,17 @@
-package loon.core.graphics.opengl.math;
+package loon.core.geom;
 
 import java.io.Serializable;
 
 import loon.jni.NativeSupport;
 import loon.utils.MathUtils;
 
-public class Transform4 implements Serializable {
+public class Matrix4 implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4331834668907675786L;
-	
+
 	public static final int M00 = 0;
 
 	public static final int M01 = 4;
@@ -44,58 +44,57 @@ public class Transform4 implements Serializable {
 
 	public static final int M33 = 15;
 
-
-	public static final float tmp[] = new float[16]; 
+	public static final float tmp[] = new float[16];
 	public final float val[] = new float[16];
 
-	public Transform4() {
+	public Matrix4() {
 		val[M00] = 1f;
 		val[M11] = 1f;
 		val[M22] = 1f;
 		val[M33] = 1f;
 	}
 
-	public Transform4(Transform4 matrix) {
+	public Matrix4(Matrix4 matrix) {
 		this.set(matrix);
 	}
 
-	public Transform4(float[] values) {
+	public Matrix4(float[] values) {
 		this.set(values);
 	}
 
-	public Transform4(Quaternion quaternion) {
+	public Matrix4(Quaternion quaternion) {
 		this.set(quaternion);
 	}
 
-	public Transform4(Location3 position, Quaternion rotation, Location3 scale) {
+	public Matrix4(Vector3f position, Quaternion rotation, Vector3f scale) {
 		set(position, rotation, scale);
 	}
 
-	public Transform4 set(Transform4 matrix) {
+	public Matrix4 set(Matrix4 matrix) {
 		return this.set(matrix.val);
 	}
 
-	public Transform4 set(float[] values) {
+	public Matrix4 set(float[] values) {
 		System.arraycopy(values, 0, val, 0, val.length);
 		return this;
 	}
 
-	public Transform4 set(Quaternion quaternion) {
+	public Matrix4 set(Quaternion quaternion) {
 		return set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
-	public Transform4 set(float quaternionX, float quaternionY, float quaternionZ,
-			float quaternionW) {
+	public Matrix4 set(float quaternionX, float quaternionY,
+			float quaternionZ, float quaternionW) {
 		return set(0f, 0f, 0f, quaternionX, quaternionY, quaternionZ,
 				quaternionW);
 	}
 
-	public Transform4 set(Location3 position, Quaternion orientation) {
+	public Matrix4 set(Vector3f position, Quaternion orientation) {
 		return set(position.x, position.y, position.z, orientation.x,
 				orientation.y, orientation.z, orientation.w);
 	}
 
-	public Transform4 set(float translationX, float translationY,
+	public Matrix4 set(float translationX, float translationY,
 			float translationZ, float quaternionX, float quaternionY,
 			float quaternionZ, float quaternionW) {
 		final float xs = quaternionX * 2f, ys = quaternionY * 2f, zs = quaternionZ * 2f;
@@ -128,13 +127,14 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 set(Location3 position, Quaternion orientation, Location3 scale) {
+	public Matrix4 set(Vector3f position, Quaternion orientation,
+			Vector3f scale) {
 		return set(position.x, position.y, position.z, orientation.x,
 				orientation.y, orientation.z, orientation.w, scale.x, scale.y,
 				scale.z);
 	}
 
-	public Transform4 set(float translationX, float translationY,
+	public Matrix4 set(float translationX, float translationY,
 			float translationZ, float quaternionX, float quaternionY,
 			float quaternionZ, float quaternionW, float scaleX, float scaleY,
 			float scaleZ) {
@@ -168,7 +168,8 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 set(Location3 xAxis, Location3 yAxis, Location3 zAxis, Location3 pos) {
+	public Matrix4 set(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis,
+			Vector3f pos) {
 		val[M00] = xAxis.x;
 		val[M01] = xAxis.y;
 		val[M02] = xAxis.z;
@@ -188,18 +189,18 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 cpy() {
-		return new Transform4(this);
+	public Matrix4 cpy() {
+		return new Matrix4(this);
 	}
 
-	public Transform4 trn(Location3 vector) {
+	public Matrix4 trn(Vector3f vector) {
 		val[M03] += vector.x;
 		val[M13] += vector.y;
 		val[M23] += vector.z;
 		return this;
 	}
 
-	public Transform4 trn(float x, float y, float z) {
+	public Matrix4 trn(float x, float y, float z) {
 		val[M03] += x;
 		val[M13] += y;
 		val[M23] += z;
@@ -210,18 +211,18 @@ public class Transform4 implements Serializable {
 		return val;
 	}
 
-	public Transform4 mul(Transform4 matrix) {
+	public Matrix4 mul(Matrix4 matrix) {
 		NativeSupport.mul(val, matrix.val);
 		return this;
 	}
 
-	public Transform4 mulLeft(Transform4 matrix) {
+	public Matrix4 mulLeft(Matrix4 matrix) {
 		tmpMat.set(matrix);
 		NativeSupport.mul(tmpMat.val, this.val);
 		return set(tmpMat);
 	}
 
-	public Transform4 tra() {
+	public Matrix4 tra() {
 		tmp[M00] = val[M00];
 		tmp[M01] = val[M10];
 		tmp[M02] = val[M20];
@@ -241,7 +242,7 @@ public class Transform4 implements Serializable {
 		return set(tmp);
 	}
 
-	public Transform4 idt() {
+	public Matrix4 idt() {
 		val[M00] = 1;
 		val[M01] = 0;
 		val[M02] = 0;
@@ -261,7 +262,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 inv() {
+	public Matrix4 inv() {
 		float l_det = val[M30] * val[M21] * val[M12] * val[M03] - val[M20]
 				* val[M31] * val[M12] * val[M03] - val[M30] * val[M11]
 				* val[M22] * val[M03] + val[M10] * val[M31] * val[M22]
@@ -397,7 +398,7 @@ public class Transform4 implements Serializable {
 				* val[M11] * val[M20];
 	}
 
-	public Transform4 setToProjection(float near, float far, float fovy,
+	public Matrix4 setToProjection(float near, float far, float fovy,
 			float aspectRatio) {
 		idt();
 		float l_fd = (float) (1.0 / Math.tan((fovy * (Math.PI / 180)) / 2.0));
@@ -423,19 +424,19 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 setToOrtho2D(float x, float y, float width, float height) {
+	public Matrix4 setToOrtho2D(float x, float y, float width, float height) {
 		setToOrtho(x, x + width, y + height, y, 1f, -1f);
 		return this;
 	}
 
-	public Transform4 setToOrtho2D(float x, float y, float width, float height,
+	public Matrix4 setToOrtho2D(float x, float y, float width, float height,
 			float near, float far) {
 		setToOrtho(x, x + width, y + height, y, near, far);
 		return this;
 	}
 
-	public Transform4 setToOrtho(float left, float right, float bottom, float top,
-			float near, float far) {
+	public Matrix4 setToOrtho(float left, float right, float bottom,
+			float top, float near, float far) {
 
 		this.idt();
 		float x_orth = 2 / (right - left);
@@ -466,21 +467,21 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 setTranslation(Location3 vector) {
+	public Matrix4 setTranslation(Vector3f vector) {
 		val[M03] = vector.x;
 		val[M13] = vector.y;
 		val[M23] = vector.z;
 		return this;
 	}
 
-	public Transform4 setTranslation(float x, float y, float z) {
+	public Matrix4 setTranslation(float x, float y, float z) {
 		val[M03] = x;
 		val[M13] = y;
 		val[M23] = z;
 		return this;
 	}
 
-	public Transform4 setToTranslation(Location3 vector) {
+	public Matrix4 setToTranslation(Vector3f vector) {
 		idt();
 		val[M03] = vector.x;
 		val[M13] = vector.y;
@@ -488,7 +489,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 setToTranslation(float x, float y, float z) {
+	public Matrix4 setToTranslation(float x, float y, float z) {
 		idt();
 		val[M03] = x;
 		val[M13] = y;
@@ -496,8 +497,8 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 setToTranslationAndScaling(Location3 translation,
-			Location3 scaling) {
+	public Matrix4 setToTranslationAndScaling(Vector3f translation,
+			Vector3f scaling) {
 		idt();
 		val[M03] = translation.x;
 		val[M13] = translation.y;
@@ -508,7 +509,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 setToTranslationAndScaling(float translationX,
+	public Matrix4 setToTranslationAndScaling(float translationX,
 			float translationY, float translationZ, float scalingX,
 			float scalingY, float scalingZ) {
 		idt();
@@ -524,7 +525,7 @@ public class Transform4 implements Serializable {
 	static Quaternion quat = new Quaternion();
 	static Quaternion quat2 = new Quaternion();
 
-	public Transform4 setToRotation(Location3 axis, float degrees) {
+	public Matrix4 setToRotation(Vector3f axis, float degrees) {
 		if (degrees == 0) {
 			idt();
 			return this;
@@ -532,7 +533,7 @@ public class Transform4 implements Serializable {
 		return set(quat.set(axis, degrees));
 	}
 
-	public Transform4 setToRotationRad(Location3 axis, float radians) {
+	public Matrix4 setToRotationRad(Vector3f axis, float radians) {
 		if (radians == 0) {
 			idt();
 			return this;
@@ -540,7 +541,7 @@ public class Transform4 implements Serializable {
 		return set(quat.setFromAxisRad(axis, radians));
 	}
 
-	public Transform4 setToRotation(float axisX, float axisY, float axisZ,
+	public Matrix4 setToRotation(float axisX, float axisY, float axisZ,
 			float degrees) {
 		if (degrees == 0) {
 			idt();
@@ -549,7 +550,7 @@ public class Transform4 implements Serializable {
 		return set(quat.setFromAxis(axisX, axisY, axisZ, degrees));
 	}
 
-	public Transform4 setToRotationRad(float axisX, float axisY, float axisZ,
+	public Matrix4 setToRotationRad(float axisX, float axisY, float axisZ,
 			float radians) {
 		if (radians == 0) {
 			idt();
@@ -558,21 +559,21 @@ public class Transform4 implements Serializable {
 		return set(quat.setFromAxisRad(axisX, axisY, axisZ, radians));
 	}
 
-	public Transform4 setToRotation(final Location3 v1, final Location3 v2) {
+	public Matrix4 setToRotation(final Vector3f v1, final Vector3f v2) {
 		return set(quat.setFromCross(v1, v2));
 	}
 
-	public Transform4 setToRotation(final float x1, final float y1,
+	public Matrix4 setToRotation(final float x1, final float y1,
 			final float z1, final float x2, final float y2, final float z2) {
 		return set(quat.setFromCross(x1, y1, z1, x2, y2, z2));
 	}
 
-	public Transform4 setFromEulerAngles(float yaw, float pitch, float roll) {
+	public Matrix4 setFromEulerAngles(float yaw, float pitch, float roll) {
 		quat.setEulerAngles(yaw, pitch, roll);
 		return set(quat);
 	}
 
-	public Transform4 setToScaling(Location3 vector) {
+	public Matrix4 setToScaling(Vector3f vector) {
 		idt();
 		val[M00] = vector.x;
 		val[M11] = vector.y;
@@ -580,7 +581,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 setToScaling(float x, float y, float z) {
+	public Matrix4 setToScaling(float x, float y, float z) {
 		idt();
 		val[M00] = x;
 		val[M11] = y;
@@ -588,11 +589,11 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	static final Location3 l_vez = new Location3();
-	static final Location3 l_vex = new Location3();
-	static final Location3 l_vey = new Location3();
+	static final Vector3f l_vez = new Vector3f();
+	static final Vector3f l_vex = new Vector3f();
+	static final Vector3f l_vey = new Vector3f();
 
-	public Transform4 setToLookAt(Location3 direction, Location3 up) {
+	public Matrix4 setToLookAt(Vector3f direction, Vector3f up) {
 		l_vez.set(direction).nor();
 		l_vex.set(direction).nor();
 		l_vex.crs(up).nor();
@@ -611,10 +612,11 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	static final Location3 tmpVec = new Location3();
-	static final Transform4 tmpMat = new Transform4();
+	static final Vector3f tmpVec = new Vector3f();
+	static final Matrix4 tmpMat = new Matrix4();
 
-	public Transform4 setToLookAt(Location3 position, Location3 target, Location3 up) {
+	public Matrix4 setToLookAt(Vector3f position, Vector3f target,
+			Vector3f up) {
 		tmpVec.set(target).sub(position);
 		setToLookAt(tmpVec, up);
 		this.mul(tmpMat.setToTranslation(-position.x, -position.y, -position.z));
@@ -622,11 +624,12 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	static final Location3 right = new Location3();
-	static final Location3 tmpForward = new Location3();
-	static final Location3 tmpUp = new Location3();
+	static final Vector3f right = new Vector3f();
+	static final Vector3f tmpForward = new Vector3f();
+	static final Vector3f tmpUp = new Vector3f();
 
-	public Transform4 setToWorld(Location3 position, Location3 forward, Location3 up) {
+	public Matrix4 setToWorld(Vector3f position, Vector3f forward,
+			Vector3f up) {
 		tmpForward.set(forward).nor();
 		right.set(tmpForward).crs(up).nor();
 		tmpUp.set(right).crs(tmpForward).nor();
@@ -644,13 +647,13 @@ public class Transform4 implements Serializable {
 				+ "]\n";
 	}
 
-	public Transform4 lerp(Transform4 matrix, float alpha) {
+	public Matrix4 lerp(Matrix4 matrix, float alpha) {
 		for (int i = 0; i < 16; i++)
 			this.val[i] = this.val[i] * (1 - alpha) + matrix.val[i] * alpha;
 		return this;
 	}
 
-	public Transform4 avg(Transform4 other, float w) {
+	public Matrix4 avg(Matrix4 other, float w) {
 
 		getScale(tmpVec);
 		other.getScale(tmpForward);
@@ -670,7 +673,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 avg(Transform4[] t) {
+	public Matrix4 avg(Matrix4[] t) {
 		final float w = 1.0f / t.length;
 
 		tmpVec.set(t[0].getScale(tmpUp).scl(w));
@@ -696,7 +699,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 avg(Transform4[] t, float[] w) {
+	public Matrix4 avg(Matrix4[] t, float[] w) {
 
 		tmpVec.set(t[0].getScale(tmpUp).scl(w[0]));
 
@@ -721,7 +724,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 set(Transform3 mat) {
+	public Matrix4 set(Matrix3 mat) {
 		val[0] = mat.val[0];
 		val[1] = mat.val[1];
 		val[2] = mat.val[2];
@@ -741,7 +744,7 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 setAsAffine(Transform4 mat) {
+	public Matrix4 setAsAffine(Matrix4 mat) {
 		val[M00] = mat.val[M00];
 		val[M10] = mat.val[M10];
 		val[M01] = mat.val[M01];
@@ -751,28 +754,28 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 scl(Location3 scale) {
+	public Matrix4 scl(Vector3f scale) {
 		val[M00] *= scale.x;
 		val[M11] *= scale.y;
 		val[M22] *= scale.z;
 		return this;
 	}
 
-	public Transform4 scl(float x, float y, float z) {
+	public Matrix4 scl(float x, float y, float z) {
 		val[M00] *= x;
 		val[M11] *= y;
 		val[M22] *= z;
 		return this;
 	}
 
-	public Transform4 scl(float scale) {
+	public Matrix4 scl(float scale) {
 		val[M00] *= scale;
 		val[M11] *= scale;
 		val[M22] *= scale;
 		return this;
 	}
 
-	public Location3 getTranslation(Location3 position) {
+	public Vector3f getTranslation(Vector3f position) {
 		position.x = val[M03];
 		position.y = val[M13];
 		position.z = val[M23];
@@ -788,54 +791,57 @@ public class Transform4 implements Serializable {
 	}
 
 	public float getScaleXSquared() {
-		return val[Transform4.M00] * val[Transform4.M00] + val[Transform4.M01]
-				* val[Transform4.M01] + val[Transform4.M02] * val[Transform4.M02];
+		return val[Matrix4.M00] * val[Matrix4.M00] + val[Matrix4.M01]
+				* val[Matrix4.M01] + val[Matrix4.M02]
+				* val[Matrix4.M02];
 	}
 
 	public float getScaleYSquared() {
-		return val[Transform4.M10] * val[Transform4.M10] + val[Transform4.M11]
-				* val[Transform4.M11] + val[Transform4.M12] * val[Transform4.M12];
+		return val[Matrix4.M10] * val[Matrix4.M10] + val[Matrix4.M11]
+				* val[Matrix4.M11] + val[Matrix4.M12]
+				* val[Matrix4.M12];
 	}
 
 	public float getScaleZSquared() {
-		return val[Transform4.M20] * val[Transform4.M20] + val[Transform4.M21]
-				* val[Transform4.M21] + val[Transform4.M22] * val[Transform4.M22];
+		return val[Matrix4.M20] * val[Matrix4.M20] + val[Matrix4.M21]
+				* val[Matrix4.M21] + val[Matrix4.M22]
+				* val[Matrix4.M22];
 	}
 
 	public float getScaleX() {
-		return (MathUtils.isZero(val[Transform4.M01]) && MathUtils
-				.isZero(val[Transform4.M02])) ? Math.abs(val[Transform4.M00])
+		return (MathUtils.isZero(val[Matrix4.M01]) && MathUtils
+				.isZero(val[Matrix4.M02])) ? Math.abs(val[Matrix4.M00])
 				: (float) Math.sqrt(getScaleXSquared());
 	}
 
 	public float getScaleY() {
-		return (MathUtils.isZero(val[Transform4.M10]) && MathUtils
-				.isZero(val[Transform4.M12])) ? Math.abs(val[Transform4.M11])
+		return (MathUtils.isZero(val[Matrix4.M10]) && MathUtils
+				.isZero(val[Matrix4.M12])) ? Math.abs(val[Matrix4.M11])
 				: (float) Math.sqrt(getScaleYSquared());
 	}
 
 	public float getScaleZ() {
-		return (MathUtils.isZero(val[Transform4.M20]) && MathUtils
-				.isZero(val[Transform4.M21])) ? Math.abs(val[Transform4.M22])
+		return (MathUtils.isZero(val[Matrix4.M20]) && MathUtils
+				.isZero(val[Matrix4.M21])) ? Math.abs(val[Matrix4.M22])
 				: (float) Math.sqrt(getScaleZSquared());
 	}
 
-	public Location3 getScale(Location3 scale) {
+	public Vector3f getScale(Vector3f scale) {
 		return scale.set(getScaleX(), getScaleY(), getScaleZ());
 	}
 
-	public Transform4 toNormalMatrix() {
+	public Matrix4 toNormalMatrix() {
 		val[M03] = 0;
 		val[M13] = 0;
 		val[M23] = 0;
 		return inv().tra();
 	}
 
-	public Transform4 translate(Location3 translation) {
+	public Matrix4 translate(Vector3f translation) {
 		return translate(translation.x, translation.y, translation.z);
 	}
-	
-	public Transform4 translate(float x, float y, float z) {
+
+	public Matrix4 translate(float x, float y, float z) {
 		tmp[M00] = 1;
 		tmp[M01] = 0;
 		tmp[M02] = 0;
@@ -857,45 +863,47 @@ public class Transform4 implements Serializable {
 		return this;
 	}
 
-	public Transform4 rotate(Location3 axis, float degrees) {
+	public Matrix4 rotate(Vector3f axis, float degrees) {
 		if (degrees == 0)
 			return this;
 		quat.set(axis, degrees);
 		return rotate(quat);
 	}
 
-	public Transform4 rotateRad(Location3 axis, float radians) {
+	public Matrix4 rotateRad(Vector3f axis, float radians) {
 		if (radians == 0)
 			return this;
 		quat.setFromAxisRad(axis, radians);
 		return rotate(quat);
 	}
 
-	public Transform4 rotate(float axisX, float axisY, float axisZ, float degrees) {
+	public Matrix4 rotate(float axisX, float axisY, float axisZ,
+			float degrees) {
 		if (degrees == 0)
 			return this;
 		quat.setFromAxis(axisX, axisY, axisZ, degrees);
 		return rotate(quat);
 	}
 
-	public Transform4 rotateRad(float axisX, float axisY, float axisZ,
+	public Matrix4 rotateRad(float axisX, float axisY, float axisZ,
 			float radians) {
 		if (radians == 0)
 			return this;
 		quat.setFromAxisRad(axisX, axisY, axisZ, radians);
 		return rotate(quat);
 	}
-	public Transform4 rotate(Quaternion rotation) {
+
+	public Matrix4 rotate(Quaternion rotation) {
 		rotation.toMatrix(tmp);
 		NativeSupport.mul(val, tmp);
 		return this;
 	}
 
-	public Transform4 rotate(final Location3 v1, final Location3 v2) {
+	public Matrix4 rotate(final Vector3f v1, final Vector3f v2) {
 		return rotate(quat.setFromCross(v1, v2));
 	}
 
-	public Transform4 scale(float scaleX, float scaleY, float scaleZ) {
+	public Matrix4 scale(float scaleX, float scaleY, float scaleZ) {
 		tmp[M00] = scaleX;
 		tmp[M01] = 0;
 		tmp[M02] = 0;

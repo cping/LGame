@@ -20,7 +20,6 @@
  */
 package loon.core.graphics.device;
 
-
 public class Paint {
 
 	public Align align;

@@ -7,11 +7,11 @@ import java.util.Map;
 
 import loon.core.BoundingBox;
 import loon.core.LRelease;
+import loon.core.geom.Matrix3;
+import loon.core.geom.Matrix4;
+import loon.core.geom.Vector2f;
+import loon.core.geom.Vector3f;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
-import loon.core.graphics.opengl.math.Transform3;
-import loon.core.graphics.opengl.math.Transform4;
-import loon.core.graphics.opengl.math.Location2;
-import loon.core.graphics.opengl.math.Location3;
 import loon.utils.collection.TArray;
 
 public class Mesh implements LRelease {
@@ -82,7 +82,7 @@ public class Mesh implements LRelease {
 	}
 
 	public static Mesh create(boolean isStatic, final Mesh base,
-			final Transform4[] transformations) {
+			final Matrix4[] transformations) {
 		final VertexAttribute posAttr = base.getVertexAttribute(Usage.Position);
 		final int offset = posAttr.offset / 4;
 		final int numComponents = posAttr.numComponents;
@@ -118,7 +118,7 @@ public class Mesh implements LRelease {
 	}
 
 	public static Mesh create(boolean isStatic, final Mesh[] meshes,
-			final Transform4[] transformations) {
+			final Matrix4[] transformations) {
 		if (transformations != null && transformations.length < meshes.length)
 			throw new IllegalArgumentException(
 					"Not enough transformations specified");
@@ -251,7 +251,7 @@ public class Mesh implements LRelease {
 	public void getIndices(int srcOffset, short[] indices, int destOffset) {
 		getIndices(srcOffset, -1, indices, destOffset);
 	}
-	
+
 	public void getIndices(int srcOffset, int count, short[] indices,
 			int destOffset) {
 		int max = getNumIndices();
@@ -328,10 +328,10 @@ public class Mesh implements LRelease {
 
 	public void render(ShaderProgram shader, int primitiveType, int offset,
 			int count, boolean autoBind) {
-		if (count == 0){
+		if (count == 0) {
 			return;
 		}
-		if (autoBind){
+		if (autoBind) {
 			bind(shader);
 		}
 		if (isVertexArray) {
@@ -349,11 +349,10 @@ public class Mesh implements LRelease {
 				GLEx.gl.glDrawArrays(primitiveType, offset, count);
 			}
 		} else {
-			if (indices.getNumIndices() > 0){
+			if (indices.getNumIndices() > 0) {
 				GLEx.gl.glDrawElements(primitiveType, count,
 						GL20.GL_UNSIGNED_SHORT, offset * 2);
-			}
-			else{
+			} else {
 				GLEx.gl.glDrawArrays(primitiveType, offset, count);
 			}
 		}
@@ -433,7 +432,7 @@ public class Mesh implements LRelease {
 	}
 
 	public BoundingBox calculateBoundingBox(final BoundingBox out, int offset,
-			int count, final Transform4 transform) {
+			int count, final Matrix4 transform) {
 		return extendBoundingBox(out.inf(), offset, count, transform);
 	}
 
@@ -442,10 +441,10 @@ public class Mesh implements LRelease {
 		return extendBoundingBox(out, offset, count, null);
 	}
 
-	private final Location3 tmpV = new Location3();
+	private final Vector3f tmpV = new Vector3f();
 
 	public BoundingBox extendBoundingBox(final BoundingBox out, int offset,
-			int count, final Transform4 transform) {
+			int count, final Matrix4 transform) {
 		int numIndices = getNumIndices();
 		if (offset < 0 || count < 1 || offset + count > numIndices)
 			throw new RuntimeException("Not enough indices ( offset=" + offset
@@ -492,7 +491,7 @@ public class Mesh implements LRelease {
 
 	public float calculateRadiusSquared(final float centerX,
 			final float centerY, final float centerZ, int offset, int count,
-			final Transform4 transform) {
+			final Matrix4 transform) {
 		int numIndices = getNumIndices();
 		if (offset < 0 || count < 1 || offset + count > numIndices)
 			throw new RuntimeException("Not enough indices");
@@ -545,13 +544,14 @@ public class Mesh implements LRelease {
 	}
 
 	public float calculateRadius(final float centerX, final float centerY,
-			final float centerZ, int offset, int count, final Transform4 transform) {
+			final float centerZ, int offset, int count,
+			final Matrix4 transform) {
 		return (float) Math.sqrt(calculateRadiusSquared(centerX, centerY,
 				centerZ, offset, count, transform));
 	}
 
-	public float calculateRadius(final Location3 center, int offset, int count,
-			final Transform4 transform) {
+	public float calculateRadius(final Vector3f center, int offset, int count,
+			final Matrix4 transform) {
 		return calculateRadius(center.x, center.y, center.z, offset, count,
 				transform);
 	}
@@ -561,7 +561,7 @@ public class Mesh implements LRelease {
 		return calculateRadius(centerX, centerY, centerZ, offset, count, null);
 	}
 
-	public float calculateRadius(final Location3 center, int offset, int count) {
+	public float calculateRadius(final Vector3f center, int offset, int count) {
 		return calculateRadius(center.x, center.y, center.z, offset, count,
 				null);
 	}
@@ -572,7 +572,7 @@ public class Mesh implements LRelease {
 				null);
 	}
 
-	public float calculateRadius(final Location3 center) {
+	public float calculateRadius(final Vector3f center) {
 		return calculateRadius(center.x, center.y, center.z, 0,
 				getNumIndices(), null);
 	}
@@ -583,7 +583,7 @@ public class Mesh implements LRelease {
 
 	private static void addManagedMesh(GLEx self, Mesh mesh) {
 		TArray<Mesh> managedResources = meshes.get(self);
-		if (managedResources == null){
+		if (managedResources == null) {
 			managedResources = new TArray<Mesh>();
 		}
 		managedResources.add(mesh);
@@ -592,7 +592,7 @@ public class Mesh implements LRelease {
 
 	public static void invalidateAllMeshes(GLEx self) {
 		TArray<Mesh> meshesArray = meshes.get(self);
-		if (meshesArray == null){
+		if (meshesArray == null) {
 			return;
 		}
 		for (int i = 0; i < meshesArray.size; i++) {
@@ -654,16 +654,16 @@ public class Mesh implements LRelease {
 		setVertices(vertices);
 	}
 
-	public void transform(final Transform4 matrix) {
+	public void transform(final Matrix4 matrix) {
 		transform(matrix, 0, getNumVertices());
 	}
 
-	public void transform(final Transform4 matrix, final int start, final int count) {
+	public void transform(final Matrix4 matrix, final int start,
+			final int count) {
 		final VertexAttribute posAttr = getVertexAttribute(Usage.Position);
 		final int posOffset = posAttr.offset / 4;
 		final int stride = getVertexSize() / 4;
 		final int numComponents = posAttr.numComponents;
-
 
 		final float[] vertices = new float[count * stride];
 		getVertices(start * stride, count * stride, vertices);
@@ -673,8 +673,9 @@ public class Mesh implements LRelease {
 		updateVertices(start * stride, vertices);
 	}
 
-	public static void transform(final Transform4 matrix, final float[] vertices,
-			int vertexSize, int offset, int dimensions, int start, int count) {
+	public static void transform(final Matrix4 matrix,
+			final float[] vertices, int vertexSize, int offset, int dimensions,
+			int start, int count) {
 		if (offset < 0 || dimensions < 1 || (offset + dimensions) > vertexSize)
 			throw new IndexOutOfBoundsException();
 		if (start < 0 || count < 1
@@ -683,7 +684,7 @@ public class Mesh implements LRelease {
 					+ ", count = " + count + ", vertexSize = " + vertexSize
 					+ ", length = " + vertices.length);
 
-		final Location3 tmp = new Location3();
+		final Vector3f tmp = new Vector3f();
 
 		int idx = offset + (start * vertexSize);
 		switch (dimensions) {
@@ -715,11 +716,11 @@ public class Mesh implements LRelease {
 		}
 	}
 
-	public void transformUV(final Transform3 matrix) {
+	public void transformUV(final Matrix3 matrix) {
 		transformUV(matrix, 0, getNumVertices());
 	}
 
-	protected void transformUV(final Transform3 matrix, final int start,
+	protected void transformUV(final Matrix3 matrix, final int start,
 			final int count) {
 		final VertexAttribute posAttr = getVertexAttribute(Usage.TextureCoordinates);
 		final int offset = posAttr.offset / 4;
@@ -732,7 +733,7 @@ public class Mesh implements LRelease {
 		setVertices(vertices, 0, vertices.length);
 	}
 
-	public static void transformUV(final Transform3 matrix,
+	public static void transformUV(final Matrix3 matrix,
 			final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
 		if (start < 0 || count < 1
@@ -741,7 +742,7 @@ public class Mesh implements LRelease {
 					+ ", count = " + count + ", vertexSize = " + vertexSize
 					+ ", length = " + vertices.length);
 
-		final Location2 tmp = new Location2();
+		final Vector2f tmp = new Vector2f();
 
 		int idx = offset + (start * vertexSize);
 		for (int i = 0; i < count; i++) {

@@ -252,8 +252,8 @@ public class LGraphics implements LTrans {
 
 	public void drawStyleString(String message, int x, int y, LColor color,
 			LColor color1) {
-		JavaSEGraphicsUtils.drawStyleString(g2d, message, x, y, color.getAWTColor(),
-				color1.getAWTColor());
+		JavaSEGraphicsUtils.drawStyleString(g2d, message, x, y,
+				color.getAWTColor(), color1.getAWTColor());
 	}
 
 	public void draw3DString(String s, int x, int y, Color c) {

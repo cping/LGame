@@ -1,7 +1,6 @@
 package loon.utils.collection;
 
-
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Pools {
 	static private final ObjectMap<Class, Pool> typePools = new ObjectMap();
 
@@ -49,12 +48,12 @@ public class Pools {
 				continue;
 			if (pool == null) {
 				pool = typePools.get(object.getClass());
-				if (pool == null){
+				if (pool == null) {
 					continue;
 				}
 			}
 			pool.free(object);
-			if (!samePool){
+			if (!samePool) {
 				pool = null;
 			}
 		}

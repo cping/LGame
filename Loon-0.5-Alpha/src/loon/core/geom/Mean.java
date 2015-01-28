@@ -1,4 +1,4 @@
-package loon.core.graphics.opengl.math;
+package loon.core.geom;
 
 public final class Mean {
 	float values[];
@@ -18,18 +18,18 @@ public final class Mean {
 	public void clear() {
 		added_values = 0;
 		last_value = 0;
-		for (int i = 0; i < values.length; i++){
+		for (int i = 0; i < values.length; i++) {
 			values[i] = 0;
 		}
 		dirty = true;
 	}
 
 	public void addValue(float value) {
-		if (added_values < values.length){
+		if (added_values < values.length) {
 			added_values++;
 		}
 		values[last_value++] = value;
-		if (last_value > values.length - 1){
+		if (last_value > values.length - 1) {
 			last_value = 0;
 		}
 		dirty = true;
@@ -39,7 +39,7 @@ public final class Mean {
 		if (hasEnoughData()) {
 			if (dirty) {
 				float mean = 0;
-				for (int i = 0; i < values.length; i++){
+				for (int i = 0; i < values.length; i++) {
 					mean += values[i];
 				}
 				this.mean = mean / values.length;
@@ -60,7 +60,7 @@ public final class Mean {
 	}
 
 	public float standardDeviation() {
-		if (!hasEnoughData()){
+		if (!hasEnoughData()) {
 			return 0;
 		}
 		float mean = getMean();

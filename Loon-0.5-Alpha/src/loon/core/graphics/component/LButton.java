@@ -32,7 +32,6 @@ import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.TextureUtils;
 
-
 public class LButton extends LComponent {
 
 	private String text = null;

@@ -42,12 +42,11 @@ public class Typeface {
 	public Typeface() {
 		this.font = LFont.getDefaultFont();
 	}
-	
+
 	public Typeface(LFont f) {
 		this.font = f;
 	}
 
-	
 	public Typeface(int opt) {
 		this.opt = opt;
 		this.font = LFont.getDefaultFont();

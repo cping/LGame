@@ -1,21 +1,19 @@
-package loon.core.graphics.opengl.viewport;
+package loon.core.graphics.opengl;
 
 import loon.core.Ray;
+import loon.core.geom.Matrix4;
 import loon.core.geom.RectBox;
+import loon.core.geom.Vector2f;
+import loon.core.geom.Vector3f;
 import loon.core.graphics.Camera;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.ScissorStack;
-import loon.core.graphics.opengl.math.Transform4;
-import loon.core.graphics.opengl.math.Location2;
-import loon.core.graphics.opengl.math.Location3;
 
 public abstract class Viewport {
-	
+
 	private Camera camera;
 	private float worldWidth, worldHeight;
 	private int screenX, screenY, screenWidth, screenHeight;
 
-	private final Location3 tmp = new Location3();
+	private final Vector3f tmp = new Vector3f();
 
 	public void apply() {
 		apply(false);
@@ -25,7 +23,7 @@ public abstract class Viewport {
 		GLEx.gl.glViewport(screenX, screenY, screenWidth, screenHeight);
 		camera.viewportWidth = worldWidth;
 		camera.viewportHeight = worldHeight;
-		if (centerCamera){
+		if (centerCamera) {
 			camera.position.set(worldWidth / 2, worldHeight / 2, 0);
 		}
 		camera.update();
@@ -39,27 +37,27 @@ public abstract class Viewport {
 		apply(centerCamera);
 	}
 
-	public Location2 unproject(Location2 screenCoords) {
+	public Vector2f unproject(Vector2f screenCoords) {
 		tmp.set(screenCoords.x, screenCoords.y, 1);
 		camera.unproject(tmp, screenX, screenY, screenWidth, screenHeight);
 		screenCoords.set(tmp.x, tmp.y);
 		return screenCoords;
 	}
 
-	public Location2 project(Location2 worldCoords) {
+	public Vector2f project(Vector2f worldCoords) {
 		tmp.set(worldCoords.x, worldCoords.y, 1);
 		camera.project(tmp, screenX, screenY, screenWidth, screenHeight);
 		worldCoords.set(tmp.x, tmp.y);
 		return worldCoords;
 	}
 
-	public Location3 unproject(Location3 screenCoords) {
+	public Vector3f unproject(Vector3f screenCoords) {
 		camera.unproject(screenCoords, screenX, screenY, screenWidth,
 				screenHeight);
 		return screenCoords;
 	}
 
-	public Location3 project(Location3 worldCoords) {
+	public Vector3f project(Vector3f worldCoords) {
 		camera.project(worldCoords, screenX, screenY, screenWidth, screenHeight);
 		return worldCoords;
 	}
@@ -69,14 +67,14 @@ public abstract class Viewport {
 				screenWidth, screenHeight);
 	}
 
-	public void calculateScissors(Transform4 batchTransform, RectBox area,
+	public void calculateScissors(Matrix4 batchTransform, RectBox area,
 			RectBox scissor) {
 		ScissorStack.calculateScissors(camera, screenX, screenY, screenWidth,
 				screenHeight, batchTransform, area, scissor);
 	}
 
-	public Location2 toScreenCoordinates(Location2 worldCoords,
-			Transform4 transformMatrix) {
+	public Vector2f toScreenCoordinates(Vector2f worldCoords,
+			Matrix4 transformMatrix) {
 		tmp.set(worldCoords.x, worldCoords.y, 0);
 		tmp.mul(transformMatrix);
 		camera.project(tmp);
@@ -156,7 +154,7 @@ public abstract class Viewport {
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 	}
-	
+
 	public void setScreenBounds(int screenX, int screenY, int screenWidth,
 			int screenHeight) {
 		this.screenX = screenX;

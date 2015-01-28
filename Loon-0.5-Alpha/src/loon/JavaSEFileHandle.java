@@ -6,7 +6,7 @@ import loon.Files.FileType;
 import loon.core.FileHandle;
 
 public final class JavaSEFileHandle extends FileHandle {
-	
+
 	public JavaSEFileHandle(String fileName, FileType type) {
 		super(fileName, type);
 	}
@@ -22,7 +22,7 @@ public final class JavaSEFileHandle extends FileHandle {
 	}
 
 	public FileHandle sibling(String name) {
-		if (file.getPath().length() == 0){
+		if (file.getPath().length() == 0) {
 			throw new RuntimeException("Cannot get the sibling of the root.");
 		}
 		return new JavaSEFileHandle(new File(file.getParent(), name), type);
@@ -31,10 +31,9 @@ public final class JavaSEFileHandle extends FileHandle {
 	public FileHandle parent() {
 		File parent = file.getParentFile();
 		if (parent == null) {
-			if (type == FileType.Absolute){
+			if (type == FileType.Absolute) {
 				parent = new File("/");
-			}
-			else{
+			} else {
 				parent = new File("");
 			}
 		}
@@ -42,10 +41,10 @@ public final class JavaSEFileHandle extends FileHandle {
 	}
 
 	public File file() {
-		if (type == FileType.External){
+		if (type == FileType.External) {
 			return new File(JavaSEFiles.externalPath, file.getPath());
 		}
-		if (type == FileType.Local){
+		if (type == FileType.Local) {
 			return new File(JavaSEFiles.localPath, file.getPath());
 		}
 		return file;

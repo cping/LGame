@@ -21,12 +21,11 @@
  */
 package loon.core.graphics.opengl;
 
-import java.nio.FloatBuffer;
-
 import org.lwjgl.opengl.GL11;
 
 import loon.JavaSEGL20;
 import loon.LSystem;
+import loon.core.geom.Matrix4;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
@@ -38,11 +37,78 @@ import loon.core.graphics.device.LFont;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LTrans;
-import loon.core.graphics.opengl.math.Transform4;
 import loon.utils.MathUtils;
 import loon.utils.collection.Array;
 
 public final class GLEx implements LTrans {
+
+	static public String createVertexShader(boolean hasNormals,
+			boolean hasColors, int numTexCoords) {
+		String shader = "attribute vec4 "
+				+ ShaderProgram.POSITION_ATTRIBUTE
+				+ ";\n"
+				+ (hasNormals ? "attribute vec3 "
+						+ ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
+				+ (hasColors ? "attribute vec4 "
+						+ ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
+
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + i
+					+ ";\n";
+		}
+
+		shader += "uniform mat4 u_projModelView;\n";
+		shader += (hasColors ? "varying vec4 v_col;\n" : "");
+
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "varying vec2 v_tex" + i + ";\n";
+		}
+
+		shader += "void main() {\n"
+				+ "   gl_Position = u_projModelView * "
+				+ ShaderProgram.POSITION_ATTRIBUTE
+				+ ";\n"
+				+ (hasColors ? "   v_col = " + ShaderProgram.COLOR_ATTRIBUTE
+						+ ";\n" : "");
+
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "   v_tex" + i + " = " + ShaderProgram.TEXCOORD_ATTRIBUTE
+					+ i + ";\n";
+		}
+		shader += "   gl_PointSize = 1.0;\n";
+		shader += "}\n";
+		return shader;
+	}
+
+	static public String createFragmentShader(boolean hasNormals,
+			boolean hasColors, int numTexCoords) {
+		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n"
+				+ "#endif\n";
+
+		if (hasColors)
+			shader += "varying vec4 v_col;\n";
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "varying vec2 v_tex" + i + ";\n";
+			shader += "uniform sampler2D u_sampler" + i + ";\n";
+		}
+
+		shader += "void main() {\n" + "   gl_FragColor = "
+				+ (hasColors ? "v_col" : "vec4(1, 1, 1, 1)");
+
+		if (numTexCoords > 0)
+			shader += " * ";
+
+		for (int i = 0; i < numTexCoords; i++) {
+			if (i == numTexCoords - 1) {
+				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ")";
+			} else {
+				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ") *";
+			}
+		}
+
+		shader += ";\n}";
+		return shader;
+	}
 
 	static public ShaderProgram createDefaultShader() {
 		String vertexShader = "attribute vec4 "
@@ -88,6 +154,71 @@ public final class GLEx implements LTrans {
 		if (shader.isCompiled() == false)
 			throw new IllegalArgumentException("Error compiling shader: "
 					+ shader.getLog());
+		return shader;
+	}
+
+	static public String createGlobalVertexShader(boolean hasNormals,
+			boolean hasColors, int numTexCoords) {
+		String shader = "attribute vec4 "
+				+ ShaderProgram.POSITION_ATTRIBUTE
+				+ ";\n"
+				+ (hasNormals ? "attribute vec3 "
+						+ ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
+				+ (hasColors ? "attribute vec4 "
+						+ ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
+
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + i
+					+ ";\n";
+		}
+
+		shader += "uniform mat4 u_projModelView;\n";
+		shader += (hasColors ? "uniform vec4 v_col;\n" : "");
+
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "varying vec2 v_tex" + i + ";\n";
+		}
+
+		shader += "void main() {\n"
+				+ "   gl_Position = u_projModelView * "
+				+ ShaderProgram.POSITION_ATTRIBUTE
+				+ ";\n"
+				+ (hasColors ? "   v_col = " + ShaderProgram.COLOR_ATTRIBUTE
+						+ ";\n" : "");
+
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "   v_tex" + i + " = " + ShaderProgram.TEXCOORD_ATTRIBUTE
+					+ i + ";\n";
+		}
+		shader += "   gl_PointSize = 1.0;\n";
+		shader += "}\n";
+		return shader;
+	}
+
+	static public String createGlobalFragmentShader(boolean hasNormals,
+			boolean hasColors, int numTexCoords) {
+		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n"
+				+ "#endif\n";
+		if (hasColors) {
+			shader += "uniform vec4 v_col;\n";
+		}
+		for (int i = 0; i < numTexCoords; i++) {
+			shader += "varying vec2 v_tex" + i + ";\n";
+			shader += "uniform sampler2D u_sampler" + i + ";\n";
+		}
+		shader += "void main() {\n" + "   gl_FragColor = "
+				+ (hasColors ? "v_col" : "vec4(1, 1, 1, 1)");
+		if (numTexCoords > 0) {
+			shader += " * ";
+		}
+		for (int i = 0; i < numTexCoords; i++) {
+			if (i == numTexCoords - 1) {
+				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ")";
+			} else {
+				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ") *";
+			}
+		}
+		shader += ";\n}";
 		return shader;
 	}
 
@@ -139,27 +270,27 @@ public final class GLEx implements LTrans {
 		return shader;
 	}
 
-	private final static Transform4 transformMatrix = new Transform4();
+	private final static Matrix4 transformMatrix = new Matrix4();
 
-	private final static Transform4 projectionMatrix = new Transform4();
+	private final static Matrix4 projectionMatrix = new Matrix4();
 
-	public static void setTransformMatrix(Transform4 t) {
+	public static void setTransformMatrix(Matrix4 t) {
 		transformMatrix.set(t);
 	}
 
-	public static void setProjectionMatrix(Transform4 t) {
+	public static void setProjectionMatrix(Matrix4 t) {
 		projectionMatrix.set(t);
 	}
 
-	public static Transform4 getTransformMatrix() {
+	public static Matrix4 getTransformMatrix() {
 		return transformMatrix;
 	}
 
-	public static Transform4 getProjectionMatrix() {
+	public static Matrix4 getProjectionMatrix() {
 		return projectionMatrix;
 	}
 
-	private static Array<Transform4> matrixs = new Array<Transform4>();
+	private static Array<Matrix4> matrixs = new Array<Matrix4>();
 
 	public void save() {
 		if (isClose) {
@@ -248,7 +379,7 @@ public final class GLEx implements LTrans {
 
 	private int currentBlendMode;
 
-	private float lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
+	float lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
 
 	private boolean isClose, isAntialias, isPushed;
 
@@ -706,8 +837,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		gl.glClearColor(color.r, color.g, color.b, color.a);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		GLUtils.setClearColor(gl, color);
 	}
 
 	/**
@@ -735,7 +865,6 @@ public final class GLEx implements LTrans {
 		if (alpha == lastAlpha) {
 			return;
 		}
-		lastAlpha = alpha < 0 ? 0 : alpha > 1 ? 1 : alpha;
 		if (color.a == alpha) {
 			return;
 		}
@@ -792,28 +921,12 @@ public final class GLEx implements LTrans {
 	 * 
 	 * @param color
 	 */
-	public final void setColorRGB(LColor c) {
-		if (isClose) {
-			return;
-		}
-		if (!c.equals(color)) {
-			color.setColor(c.r, c.g, c.b, lastAlpha);
-		}
-	}
-
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param color
-	 */
 	public final void setColorARGB(LColor c) {
 		if (isClose) {
 			return;
 		}
-		if (!c.equals(color)) {
-			float alpha = lastAlpha == 1 ? c.a : lastAlpha;
-			color.setColor(c.r, c.g, c.b, alpha);
-		}
+		float alpha = lastAlpha == 1 ? c.a : lastAlpha;
+		color.setColor(c.r, c.g, c.b, alpha);
 	}
 
 	/**
@@ -848,9 +961,7 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		if (!color.equals(r, g, b, a)) {
-			color.setFloatColor(r, g, b, a);
-		}
+		color.setFloatColor(r, g, b, a);
 	}
 
 	public final void setColor(final int r, final int g, final int b,
@@ -862,9 +973,7 @@ public final class GLEx implements LTrans {
 		float green = g / 255f;
 		float blue = b / 255f;
 		float alpha = a / 255f;
-		if (!color.equals(red, green, blue, alpha)) {
-			color.setFloatColor(red, green, blue, alpha);
-		}
+		color.setFloatColor(red, green, blue, alpha);
 	}
 
 	/**
@@ -1811,19 +1920,6 @@ public final class GLEx implements LTrans {
 		return lineWidth;
 	}
 
-	final static void updateHardwareBuff(LTexture texture) {
-
-	}
-
-	final static void bufferDataARR(int bufferID, FloatBuffer data, int usage) {
-
-	}
-
-	final static void bufferSubDataARR(int bufferID, int offset,
-			FloatBuffer data) {
-
-	}
-
 	public static void checkError() {
 		try {
 			tryError();
@@ -1997,18 +2093,6 @@ public final class GLEx implements LTrans {
 		clip.width -= x;
 		clip.y -= y;
 		clip.height -= y;
-	}
-
-	/**
-	 * 设定背景颜色
-	 * 
-	 * @param color
-	 */
-	public final void setBackground(LColor color) {
-		if (isClose) {
-			return;
-		}
-		gl.glClearColor(color.r, color.g, color.b, color.a);
 	}
 
 	/**
@@ -3124,12 +3208,12 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		setColorRGB(c1);
+		setColorARGB(c1);
 		drawString(message, x + 1, y);
 		drawString(message, x - 1, y);
 		drawString(message, x, y + 1);
 		drawString(message, x, y - 1);
-		setColorRGB(c2);
+		setColorARGB(c2);
 		drawString(message, x, y);
 	}
 

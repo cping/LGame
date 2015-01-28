@@ -2,7 +2,6 @@ package loon.core.graphics.opengl;
 
 import loon.core.graphics.opengl.VertexAttributes.Usage;
 
-
 public final class VertexAttribute {
 
 	public final int usage;

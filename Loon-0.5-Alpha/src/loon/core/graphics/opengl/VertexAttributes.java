@@ -156,18 +156,18 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		public void remove() {
 			throw new RuntimeException("Remove not allowed.");
 		}
-		
+
 		@Override
 		public Iterator<T> iterator() {
 			return this;
 		}
 	}
-	
-	@SuppressWarnings({"unchecked","rawtypes"})
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static private class ReadonlyIterable<T> implements Iterable<T> {
-		
+
 		private final T[] array;
-		
+
 		private ReadonlyIterator iterator1, iterator2;
 
 		public ReadonlyIterable(T[] array) {

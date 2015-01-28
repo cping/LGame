@@ -1,20 +1,13 @@
 package loon.utils.collection;
 
-import loon.core.graphics.opengl.math.Location2;
+import loon.core.geom.Vector2f;
 
 public enum Scaling {
-	fit,
-	fill,
-	fillX,
-	fillY,
-	stretch,
-	stretchX,
-	stretchY,
-	none;
+	fit, fill, fillX, fillY, stretch, stretchX, stretchY, none;
 
-	static private final Location2 temp = new Location2();
+	static private final Vector2f temp = new Vector2f();
 
-	public Location2 apply(float sourceWidth, float sourceHeight,
+	public Vector2f apply(float sourceWidth, float sourceHeight,
 			float targetWidth, float targetHeight) {
 		switch (this) {
 		case fit: {

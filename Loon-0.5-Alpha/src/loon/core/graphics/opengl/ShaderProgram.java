@@ -8,11 +8,11 @@ import java.nio.IntBuffer;
 
 import loon.core.FileHandle;
 import loon.core.LRelease;
+import loon.core.geom.Matrix3;
+import loon.core.geom.Matrix4;
+import loon.core.geom.Vector2f;
+import loon.core.geom.Vector3f;
 import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.math.Transform3;
-import loon.core.graphics.opengl.math.Transform4;
-import loon.core.graphics.opengl.math.Location2;
-import loon.core.graphics.opengl.math.Location3;
 import loon.jni.NativeSupport;
 import loon.utils.collection.ObjectIntMap;
 import loon.utils.collection.ObjectMap;
@@ -375,40 +375,40 @@ public class ShaderProgram implements LRelease {
 		gl.glUniform4fv(location, length / 4, values, offset);
 	}
 
-	public void setUniformMatrix(String name, Transform4 matrix) {
+	public void setUniformMatrix(String name, Matrix4 matrix) {
 		setUniformMatrix(name, matrix, false);
 	}
 
-	public void setUniformMatrix(String name, Transform4 matrix,
+	public void setUniformMatrix(String name, Matrix4 matrix,
 			boolean transpose) {
 		setUniformMatrix(fetchUniformLocation(name), matrix, transpose);
 	}
 
-	public void setUniformMatrix(int location, Transform4 matrix) {
+	public void setUniformMatrix(int location, Matrix4 matrix) {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	public void setUniformMatrix(int location, Transform4 matrix,
+	public void setUniformMatrix(int location, Matrix4 matrix,
 			boolean transpose) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		gl.glUniformMatrix4fv(location, 1, transpose, matrix.val, 0);
 	}
 
-	public void setUniformMatrix(String name, Transform3 matrix) {
+	public void setUniformMatrix(String name, Matrix3 matrix) {
 		setUniformMatrix(name, matrix, false);
 	}
 
-	public void setUniformMatrix(String name, Transform3 matrix,
+	public void setUniformMatrix(String name, Matrix3 matrix,
 			boolean transpose) {
 		setUniformMatrix(fetchUniformLocation(name), matrix, transpose);
 	}
 
-	public void setUniformMatrix(int location, Transform3 matrix) {
+	public void setUniformMatrix(int location, Matrix3 matrix) {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	public void setUniformMatrix(int location, Transform3 matrix,
+	public void setUniformMatrix(int location, Matrix3 matrix,
 			boolean transpose) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
@@ -445,19 +445,19 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix4fv(fetchUniformLocation(name), values, offset, length);
 	}
 
-	public void setUniformf(String name, Location2 values) {
+	public void setUniformf(String name, Vector2f values) {
 		setUniformf(name, values.x, values.y);
 	}
 
-	public void setUniformf(int location, Location2 values) {
+	public void setUniformf(int location, Vector2f values) {
 		setUniformf(location, values.x, values.y);
 	}
 
-	public void setUniformf(String name, Location3 values) {
+	public void setUniformf(String name, Vector3f values) {
 		setUniformf(name, values.x, values.y, values.z);
 	}
 
-	public void setUniformf(int location, Location3 values) {
+	public void setUniformf(int location, Vector3f values) {
 		setUniformf(location, values.x, values.y, values.z);
 	}
 

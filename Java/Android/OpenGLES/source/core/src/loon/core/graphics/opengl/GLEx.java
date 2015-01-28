@@ -2204,17 +2204,6 @@ public final class GLEx implements LTrans {
 		gl10.glRotatef(angle, x, y, z);
 	}
 
-	/**
-	 * 设定背景颜色
-	 * 
-	 * @param color
-	 */
-	public final void setBackground(LColor color) {
-		if (isClose) {
-			return;
-		}
-		gl10.glClearColor(color.r, color.g, color.b, color.a);
-	}
 
 	/**
 	 * 渲染纹理到指定位置

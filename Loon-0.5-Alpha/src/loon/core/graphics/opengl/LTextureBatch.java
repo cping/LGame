@@ -8,12 +8,12 @@ import loon.action.sprite.SpriteRegion;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
 import loon.core.LRelease;
 import loon.core.event.Updateable;
+import loon.core.geom.Matrix4;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.Mesh.VertexDataType;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
-import loon.core.graphics.opengl.math.Transform4;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -133,7 +133,7 @@ public class LTextureBatch {
 
 	private LTexture lastTexture = null;
 
-	private final Transform4 combinedMatrix = new Transform4();
+	private final Matrix4 combinedMatrix = new Matrix4();
 
 	private ShaderProgram shader = null;
 	private ShaderProgram customShader = null;
@@ -146,7 +146,7 @@ public class LTextureBatch {
 
 	public int maxSpritesInBatch = 0;
 
-	private boolean isLoaded;
+	boolean isLoaded;
 
 	LTexture texture;
 
@@ -158,7 +158,7 @@ public class LTextureBatch {
 
 	private float tx, ty;
 
-	public void setPos(float tx, float ty) {
+	public void setLocation(float tx, float ty) {
 		this.tx = tx;
 		this.ty = ty;
 	}
@@ -181,7 +181,7 @@ public class LTextureBatch {
 		this.invTexHeight = (1f / texHeight) * texture.heightRatio;
 	}
 
-	private final static Transform4 cacheProjectionMatrix = new Transform4();
+	private final static Matrix4 cacheProjectionMatrix = new Matrix4();
 
 	public LTextureBatch(LTexture tex, final int size,
 			final ShaderProgram defaultShader) {
@@ -301,7 +301,7 @@ public class LTextureBatch {
 		if (vertexIdx > 0) {
 			if (tx != 0 || ty != 0) {
 				GLEx.self.save();
-				Transform4 project = GLEx.getProjectionMatrix();
+				Matrix4 project = GLEx.getProjectionMatrix();
 				project.translate(tx, ty, 0);
 				if (drawing) {
 					setupMatrices();
@@ -472,7 +472,8 @@ public class LTextureBatch {
 		globalShader.begin();
 		float oldColor = getFloatColor();
 		if (color != null) {
-			globalShader.setUniformf("v_color", color);
+			globalShader.setUniformf("v_color", color.r, color.g, color.b,
+					GLEx.self.lastAlpha != 1f ? GLEx.self.lastAlpha : color.a);
 		}
 		combinedMatrix.set(GLEx.getProjectionMatrix()).mul(
 				GLEx.getTransformMatrix());
@@ -1335,7 +1336,7 @@ public class LTextureBatch {
 	public void commit(float x, float y, float sx, float sy, float ax,
 			float ay, float rotaion) {
 		GLEx.self.save();
-		Transform4 project = GLEx.getProjectionMatrix();
+		Matrix4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
 			project.translate(x, y, 0);
 		}
@@ -1360,7 +1361,7 @@ public class LTextureBatch {
 
 	public void postCache(Cache cache, LColor color, float x, float y) {
 		GLEx.self.save();
-		Transform4 project = GLEx.getProjectionMatrix();
+		Matrix4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
 			project.translate(x, y, 0);
 		}
@@ -1371,7 +1372,7 @@ public class LTextureBatch {
 	public void postCache(Cache cache, LColor color, float x, float y,
 			float sx, float sy, float ax, float ay, float rotaion) {
 		GLEx.self.save();
-		Transform4 project = GLEx.getProjectionMatrix();
+		Matrix4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
 			project.translate(x, y, 0);
 		}
@@ -1393,7 +1394,7 @@ public class LTextureBatch {
 
 	public void postCache(Cache cache, LColor color, float rotaion) {
 		GLEx.self.save();
-		Transform4 project = GLEx.getProjectionMatrix();
+		Matrix4 project = GLEx.getProjectionMatrix();
 		if (rotaion != 0) {
 			project.translate(texture.width / 2, texture.height / 2, 0.0f);
 			project.rotate(0f, 0f, 1f, rotaion);

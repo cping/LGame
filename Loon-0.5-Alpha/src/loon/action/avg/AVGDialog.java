@@ -86,8 +86,8 @@ final public class AVGDialog {
 
 	public final static LTexture getRMXPloadBuoyage(String fileName, int width,
 			int height) {
-		return getRMXPloadBuoyage(JavaSEGraphicsUtils.loadImage(fileName), width,
-				height);
+		return getRMXPloadBuoyage(JavaSEGraphicsUtils.loadImage(fileName),
+				width, height);
 	}
 
 	public final static LTexture getRMXPloadBuoyage(Image rmxpImage, int width,
@@ -111,12 +111,12 @@ final public class AVGDialog {
 						objHeight, x1, y1, x2, y2);
 				LImage lazyImage = LImage.createImage(width, height, false);
 				LGraphics g = lazyImage.getLGraphics();
-				left = JavaSEGraphicsUtils.drawClipImage(image, k, height, 0, 0, k,
-						objHeight);
-				right = JavaSEGraphicsUtils.drawClipImage(image, k, height, objWidth
-						- k, 0, objWidth, objHeight);
-				center = JavaSEGraphicsUtils.drawClipImage(image, width, height, k,
-						k, objWidth - k, objHeight - k);
+				left = JavaSEGraphicsUtils.drawClipImage(image, k, height, 0,
+						0, k, objHeight);
+				right = JavaSEGraphicsUtils.drawClipImage(image, k, height,
+						objWidth - k, 0, objWidth, objHeight);
+				center = JavaSEGraphicsUtils.drawClipImage(image, width,
+						height, k, k, objWidth - k, objHeight - k);
 				up = JavaSEGraphicsUtils.drawClipImage(image, width, k, 0, 0,
 						objWidth, k);
 				down = JavaSEGraphicsUtils.drawClipImage(image, width, k, 0,
@@ -167,44 +167,44 @@ final public class AVGDialog {
 
 			Image messageImage = null;
 
-			image = JavaSEGraphicsUtils.drawClipImage(rmxpImage, objWidth, objHeight,
-					x1, y1, x2, y2);
+			image = JavaSEGraphicsUtils.drawClipImage(rmxpImage, objWidth,
+					objHeight, x1, y1, x2, y2);
 
-			Image centerTop = JavaSEGraphicsUtils.drawClipImage(image, center_size,
-					size, size, 0);
+			Image centerTop = JavaSEGraphicsUtils.drawClipImage(image,
+					center_size, size, size, 0);
 
-			Image centerDown = JavaSEGraphicsUtils.drawClipImage(image, center_size,
-					size, size, objHeight - size);
+			Image centerDown = JavaSEGraphicsUtils.drawClipImage(image,
+					center_size, size, size, objHeight - size);
 
-			Image leftTop = JavaSEGraphicsUtils
-					.drawClipImage(image, size, size, 0, 0);
+			Image leftTop = JavaSEGraphicsUtils.drawClipImage(image, size,
+					size, 0, 0);
 
 			Image leftCenter = JavaSEGraphicsUtils.drawClipImage(image, size,
 					center_size, 0, size);
 
-			Image leftDown = JavaSEGraphicsUtils.drawClipImage(image, size, size, 0,
-					objHeight - size);
+			Image leftDown = JavaSEGraphicsUtils.drawClipImage(image, size,
+					size, 0, objHeight - size);
 
-			Image rightTop = JavaSEGraphicsUtils.drawClipImage(image, size, size,
-					objWidth - size, 0);
+			Image rightTop = JavaSEGraphicsUtils.drawClipImage(image, size,
+					size, objWidth - size, 0);
 
 			Image rightCenter = JavaSEGraphicsUtils.drawClipImage(image, size,
 					center_size, objWidth - size, size);
 
-			Image rightDown = JavaSEGraphicsUtils.drawClipImage(image, size, size,
-					objWidth - size, objHeight - size);
+			Image rightDown = JavaSEGraphicsUtils.drawClipImage(image, size,
+					size, objWidth - size, objHeight - size);
 
 			LImage lazyImage = LImage.createImage(width, height, true);
 
-			messageImage = JavaSEGraphicsUtils.drawClipImage(rmxpImage, 128, 128, 0,
-					0, 128, 128);
+			messageImage = JavaSEGraphicsUtils.drawClipImage(rmxpImage, 128,
+					128, 0, 0, 128, 128);
 
 			LGraphics g = lazyImage.getLGraphics();
 
 			g.setAlpha(0.5f);
 
-			messageImage = JavaSEGraphicsUtils.getResize(messageImage, width - offset
-					+ 1, height - offset + 1);
+			messageImage = JavaSEGraphicsUtils.getResize(messageImage, width
+					- offset + 1, height - offset + 1);
 
 			g.drawImage(messageImage,
 					(lazyImage.getWidth() - messageImage.getWidth(null)) / 2,
@@ -212,12 +212,13 @@ final public class AVGDialog {
 
 			g.setAlpha(1.0f);
 
-			Image tmp = JavaSEGraphicsUtils.getResize(centerTop, width - (size * 2),
-					size);
+			Image tmp = JavaSEGraphicsUtils.getResize(centerTop, width
+					- (size * 2), size);
 
 			g.drawImage(tmp, size, 0);
 			tmp = null;
-			tmp = JavaSEGraphicsUtils.getResize(centerDown, width - (size * 2), size);
+			tmp = JavaSEGraphicsUtils.getResize(centerDown, width - (size * 2),
+					size);
 
 			g.drawImage(tmp, size, height - size);
 			tmp = null;

@@ -2,7 +2,8 @@ package loon.core;
 
 import java.io.Serializable;
 
-import loon.core.graphics.opengl.math.Location3;
+import loon.core.geom.Vector3f;
+
 
 public class Segment implements Serializable {
 
@@ -11,11 +12,11 @@ public class Segment implements Serializable {
 	 */
 	private static final long serialVersionUID = 3682695256015093326L;
 
-	public final Location3 a = new Location3();
+	public final Vector3f a = new Vector3f();
 
-	public final Location3 b = new Location3();
+	public final Vector3f b = new Vector3f();
 
-	public Segment(Location3 a, Location3 b) {
+	public Segment(Vector3f a, Vector3f b) {
 		this.a.set(a);
 		this.b.set(b);
 	}

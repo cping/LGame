@@ -92,7 +92,7 @@ public class PooledLinkedList<T> {
 
 	public void clear() {
 		iter();
-		while ((next()) != null){
+		while ((next()) != null) {
 			remove();
 		}
 	}

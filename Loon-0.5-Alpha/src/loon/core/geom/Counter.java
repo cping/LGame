@@ -1,13 +1,13 @@
-package loon.core.graphics.opengl.math;
+package loon.core.geom;
 
 public class Counter {
 
 	public int count;
-	
+
 	public float total;
-	
+
 	public float min;
-	
+
 	public float max;
 
 	public float average;
@@ -35,10 +35,10 @@ public class Counter {
 			this.value = latest;
 		}
 		if (mean == null || mean.hasEnoughData()) {
-			if (this.value < min){
+			if (this.value < min) {
 				min = this.value;
 			}
-			if (this.value > max){
+			if (this.value > max) {
 				max = this.value;
 			}
 		}
@@ -52,7 +52,7 @@ public class Counter {
 		average = 0f;
 		latest = 0f;
 		value = 0f;
-		if (mean != null){
+		if (mean != null) {
 			mean.clear();
 		}
 	}

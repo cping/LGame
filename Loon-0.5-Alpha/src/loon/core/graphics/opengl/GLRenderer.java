@@ -1,10 +1,10 @@
 package loon.core.graphics.opengl;
 
 import loon.core.LRelease;
+import loon.core.geom.Matrix4;
+import loon.core.geom.Vector2f;
+import loon.core.geom.Vector3f;
 import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.math.Transform4;
-import loon.core.graphics.opengl.math.Location2;
-import loon.core.graphics.opengl.math.Location3;
 import loon.jni.NativeSupport;
 import loon.utils.MathUtils;
 
@@ -26,11 +26,11 @@ public class GLRenderer implements LRelease {
 
 	private final GLBatch renderer;
 	private boolean matrixDirty = false;
-	private final Transform4 projectionMatrix = new Transform4();
-	private final Transform4 transformMatrix = new Transform4();
-	private final Transform4 combinedMatrix = new Transform4();
-	private final Location2 tmp = new Location2();
-	private final LColor color = new LColor(1, 1, 1, 1);
+	private final Matrix4 projectionMatrix = new Matrix4();
+	private final Matrix4 transformMatrix = new Matrix4();
+	private final Matrix4 combinedMatrix = new Matrix4();
+	private final Vector2f tmp = new Vector2f();
+	private final LColor color = new LColor(1f, 1f, 1f, 1f);
 	private ShapeType shapeType;
 	private boolean autoShapeType;
 	private float defaultRectLineWidth = 0.75f;
@@ -41,8 +41,7 @@ public class GLRenderer implements LRelease {
 
 	public GLRenderer(int maxVertices) {
 		renderer = new GLBatch(maxVertices, false, true, 0);
-		projectionMatrix.setToOrtho2D(0, 0, GLEx.width(),
-				GLEx.height());
+		projectionMatrix.setToOrtho2D(0, 0, GLEx.width(), GLEx.height());
 		matrixDirty = true;
 	}
 
@@ -62,21 +61,21 @@ public class GLRenderer implements LRelease {
 		matrixDirty = true;
 	}
 
-	public void setProjectionMatrix(Transform4 matrix) {
+	public void setProjectionMatrix(Matrix4 matrix) {
 		projectionMatrix.set(matrix);
 		matrixDirty = true;
 	}
 
-	public Transform4 getProjectionMatrix() {
+	public Matrix4 getProjectionMatrix() {
 		return projectionMatrix;
 	}
 
-	public void setTransformMatrix(Transform4 matrix) {
+	public void setTransformMatrix(Matrix4 matrix) {
 		transformMatrix.set(matrix);
 		matrixDirty = true;
 	}
 
-	public Transform4 getTransformMatrix() {
+	public Matrix4 getTransformMatrix() {
 		return transformMatrix;
 	}
 
@@ -105,7 +104,7 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void begin() {
-		if (!autoShapeType){
+		if (!autoShapeType) {
 			throw new IllegalStateException(
 					"autoShapeType must be true to use this method.");
 		}
@@ -157,7 +156,7 @@ public class GLRenderer implements LRelease {
 		line(x, y, z, x2, y2, z2, color, color);
 	}
 
-	public final void line(Location3 v0, Location3 v1) {
+	public final void line(Vector3f v0, Vector3f v1) {
 		line(v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, color, color);
 	}
 
@@ -165,7 +164,7 @@ public class GLRenderer implements LRelease {
 		line(x, y, 0.0f, x2, y2, 0.0f, color, color);
 	}
 
-	public final void line(Location2 v0, Location2 v1) {
+	public final void line(Vector2f v0, Vector2f v1) {
 		line(v0.x, v0.y, 0.0f, v1.x, v1.y, 0.0f, color, color);
 	}
 
@@ -190,7 +189,7 @@ public class GLRenderer implements LRelease {
 	public void curve(float x1, float y1, float cx1, float cy1, float cx2,
 			float cy2, float x2, float y2, int segments) {
 		check(ShapeType.Line, null, segments * 2 + 2);
-		
+
 		float subdiv_step = 1f / segments;
 		float subdiv_step2 = subdiv_step * subdiv_step;
 		float subdiv_step3 = subdiv_step * subdiv_step * subdiv_step;
@@ -454,7 +453,7 @@ public class GLRenderer implements LRelease {
 	public void rectLine(float x1, float y1, float x2, float y2, float width) {
 		check(ShapeType.Line, ShapeType.Filled, 8);
 
-		Location2 t = tmp.set(y2 - y1, x1 - x2).nor();
+		Vector2f t = tmp.set(y2 - y1, x1 - x2).nor();
 		width *= 0.5f;
 		float tx = t.x * width;
 		float ty = t.y * width;
@@ -495,7 +494,7 @@ public class GLRenderer implements LRelease {
 		}
 	}
 
-	public void rectLine(Location2 p1, Location2 p2, float width) {
+	public void rectLine(Vector2f p1, Vector2f p2, float width) {
 		rectLine(p1.x, p1.y, p2.x, p2.y, width);
 	}
 
@@ -666,7 +665,7 @@ public class GLRenderer implements LRelease {
 		line(x - size, y + size, x + size, y - size);
 	}
 
-	public void x(Location2 p, float size) {
+	public void x(Vector2f p, float size) {
 		x(p.x, p.y, size);
 	}
 
@@ -968,7 +967,7 @@ public class GLRenderer implements LRelease {
 	}
 
 	private void check(ShapeType preferred, ShapeType other, int newVertices) {
-		if (shapeType == null){
+		if (shapeType == null) {
 			throw new IllegalStateException("begin must be called first.");
 		}
 

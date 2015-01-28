@@ -69,14 +69,14 @@ public final class StreamUtils {
 
 	static public class OptimizedByteArrayOutputStream extends
 			ByteArrayOutputStream {
-		
+
 		public OptimizedByteArrayOutputStream(int initialSize) {
 			super(initialSize);
 		}
 
 		@Override
 		public synchronized byte[] toByteArray() {
-			if (count == buf.length){
+			if (count == buf.length) {
 				return buf;
 			}
 			return super.toByteArray();

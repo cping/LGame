@@ -27,7 +27,6 @@ import loon.core.graphics.device.Canvas;
 import loon.core.graphics.device.Paint;
 import loon.core.graphics.device.RectF;
 
-
 public class StackedBarChartCanvas extends ChartBaseCanvas {
 
 	private ArrayList<ChartValueSerie> mSeries = new ArrayList<ChartValueSerie>();
@@ -51,12 +50,12 @@ public class StackedBarChartCanvas extends ChartBaseCanvas {
 
 			getXYminmax();
 
-			if (p_yscale_auto){
+			if (p_yscale_auto) {
 				calcYgridRange();
 			}
 
 			calcXYcoefs();
-			
+
 			reset();
 
 			drawData();

@@ -38,7 +38,7 @@ public class ChartBaseCanvas {
 	int p_paddright = 8;
 	int p_paddbottom = 8;
 	int p_paddleft = 8;
-	
+
 	boolean p_xscale_auto = true;
 	boolean p_yscale_auto = true;
 	boolean p_border_vis = true;
@@ -88,7 +88,7 @@ public class ChartBaseCanvas {
 	private final Canvas _myCanvas;
 
 	private LColor _background = LColor.gray.darker();
-	
+
 	public ChartBaseCanvas(int w, int h) {
 		this._myImage = new LImage(w, h, true);
 		this._myCanvas = new Canvas(_myImage.getLGraphics());
@@ -113,7 +113,7 @@ public class ChartBaseCanvas {
 		mPntGrid.setStyle(Paint.Style.STROKE);
 		mPntGrid.setColor(p_grid_color);
 		mPntGrid.setStrokeWidth(p_grid_width);
-	//	mPntGrid.setPathEffect(new DashPathEffect(new float[] { 2, 2 }, 0));
+		// mPntGrid.setPathEffect(new DashPathEffect(new float[] { 2, 2 }, 0));
 		mPntGrid.setAntiAlias(p_grid_aa);
 		mPntAxis.setStyle(Paint.Style.STROKE);
 		mPntAxis.setColor(p_axis_color);
@@ -128,14 +128,14 @@ public class ChartBaseCanvas {
 	}
 
 	public void reset() {
-			mBmp = Bitmap.createBitmap(p_width, p_height);
-			mCnv = new Canvas(mBmp);
+		mBmp = Bitmap.createBitmap(p_width, p_height);
+		mCnv = new Canvas(mBmp);
 	}
-	
-	public void setAxisVis(boolean a){
+
+	public void setAxisVis(boolean a) {
 		p_axis_vis = a;
 	}
-	
+
 	public void paint(LGraphics g) {
 		if (_myImage != null) {
 			synchronized (_myImage) {
@@ -145,7 +145,7 @@ public class ChartBaseCanvas {
 			}
 		}
 	}
-	
+
 	public void draw(Canvas cnv) {
 
 		if ((mBmp == null) || (bRedraw)) {
@@ -328,23 +328,22 @@ public class ChartBaseCanvas {
 		mYmax = 90;
 	}
 
-	public void setLeft(int p){
+	public void setLeft(int p) {
 		this.p_paddleft = p;
 	}
 
-	public void setTop(int p){
+	public void setTop(int p) {
 		this.p_paddtop = p;
 	}
-	
-	
-	public void setBottom(int p){
+
+	public void setBottom(int p) {
 		this.p_paddbottom = p;
 	}
 
-	public void setRight(int p){
+	public void setRight(int p) {
 		this.p_paddright = p;
 	}
-	
+
 	protected void calcXgridRange() {
 		mXdivGrid = (float) Math.pow(10,
 				Math.floor(Math.log10(Math.abs(mXmax - mXmin))));
@@ -407,7 +406,7 @@ public class ChartBaseCanvas {
 	}
 
 	protected void drawGrid() {
-		
+
 		mPath.reset();
 		for (int ii = 1; ii < mXgridNum; ii++) {
 			mPath.moveTo(sX + ii * (dX / mXgridNum), sY);
@@ -445,10 +444,10 @@ public class ChartBaseCanvas {
 
 	private String mYLabelFlag = null;
 
-	public void setYLabelFlag(String label){
+	public void setYLabelFlag(String label) {
 		this.mYLabelFlag = label;
 	}
-	
+
 	protected void drawYlabel() {
 		if (p_ytext_left) {
 			mPntText.setTextAlign(Align.RIGHT);
@@ -470,7 +469,7 @@ public class ChartBaseCanvas {
 									/ 2, mPntText);
 				}
 			}
-			
+
 		} else {
 			for (int ii = 1; ii < mYgridNum; ii++) {
 				mPath.moveTo(eX - 3, eY - ii * (dY / mYgridNum));

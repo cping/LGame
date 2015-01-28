@@ -60,7 +60,7 @@ public class FileHandle {
 	public String extension() {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
-		if (dotIndex == -1){
+		if (dotIndex == -1) {
 			return "";
 		}
 		return name.substring(dotIndex + 1);
@@ -69,7 +69,7 @@ public class FileHandle {
 	public String nameWithoutExtension() {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
-		if (dotIndex == -1){
+		if (dotIndex == -1) {
 			return name;
 		}
 		return name.substring(0, dotIndex);
@@ -78,7 +78,7 @@ public class FileHandle {
 	public String pathWithoutExtension() {
 		String path = file.getPath().replace('\\', '/');
 		int dotIndex = path.lastIndexOf('.');
-		if (dotIndex == -1){
+		if (dotIndex == -1) {
 			return path;
 		}
 		return path.substring(0, dotIndex);

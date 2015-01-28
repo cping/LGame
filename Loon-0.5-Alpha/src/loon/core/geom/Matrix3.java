@@ -1,10 +1,10 @@
-package loon.core.graphics.opengl.math;
+package loon.core.geom;
 
 import java.io.Serializable;
 
 import loon.utils.MathUtils;
 
-public class Transform3 implements Serializable {
+public class Matrix3 implements Serializable {
 
 	/**
 	 * 
@@ -22,19 +22,19 @@ public class Transform3 implements Serializable {
 	public float[] val = new float[9];
 	private float[] tmp = new float[9];
 
-	public Transform3() {
+	public Matrix3() {
 		idt();
 	}
 
-	public Transform3(Transform3 matrix) {
+	public Matrix3(Matrix3 matrix) {
 		set(matrix);
 	}
 
-	public Transform3(float[] values) {
+	public Matrix3(float[] values) {
 		this.set(values);
 	}
 
-	public Transform3 idt() {
+	public Matrix3 idt() {
 		val[M00] = 1;
 		val[M10] = 0;
 		val[M20] = 0;
@@ -47,7 +47,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 mul(Transform3 m) {
+	public Matrix3 mul(Matrix3 m) {
 		float v00 = val[M00] * m.val[M00] + val[M01] * m.val[M10] + val[M02]
 				* m.val[M20];
 		float v01 = val[M00] * m.val[M01] + val[M01] * m.val[M11] + val[M02]
@@ -82,7 +82,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 mulLeft(Transform3 m) {
+	public Matrix3 mulLeft(Matrix3 m) {
 		float v00 = m.val[M00] * val[M00] + m.val[M01] * val[M10] + m.val[M02]
 				* val[M20];
 		float v01 = m.val[M00] * val[M01] + m.val[M01] * val[M11] + m.val[M02]
@@ -117,12 +117,11 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-
-	public Transform3 setToRotation(float degrees) {
+	public Matrix3 setToRotation(float degrees) {
 		return setToRotationRad(MathUtils.DEG_TO_RAD * degrees);
 	}
 
-	public Transform3 setToRotationRad(float radians) {
+	public Matrix3 setToRotationRad(float radians) {
 		float cos = (float) Math.cos(radians);
 		float sin = (float) Math.sin(radians);
 
@@ -141,12 +140,12 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 setToRotation(Location3 axis, float degrees) {
+	public Matrix3 setToRotation(Vector3f axis, float degrees) {
 		return setToRotation(axis, MathUtils.cosDeg(degrees),
 				MathUtils.sinDeg(degrees));
 	}
 
-	public Transform3 setToRotation(Location3 axis, float cos, float sin) {
+	public Matrix3 setToRotation(Vector3f axis, float cos, float sin) {
 		float oc = 1.0f - cos;
 		val[M00] = oc * axis.x * axis.x + cos;
 		val[M10] = oc * axis.x * axis.y - axis.z * sin;
@@ -160,7 +159,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 setToTranslation(float x, float y) {
+	public Matrix3 setToTranslation(float x, float y) {
 		this.val[M00] = 1;
 		this.val[M10] = 0;
 		this.val[M20] = 0;
@@ -176,7 +175,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 setToTranslation(Location2 translation) {
+	public Matrix3 setToTranslation(Vector2f translation) {
 		this.val[M00] = 1;
 		this.val[M10] = 0;
 		this.val[M20] = 0;
@@ -192,7 +191,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 setToScaling(float scaleX, float scaleY) {
+	public Matrix3 setToScaling(float scaleX, float scaleY) {
 		val[M00] = scaleX;
 		val[M10] = 0;
 		val[M20] = 0;
@@ -205,7 +204,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 setToScaling(Location2 scale) {
+	public Matrix3 setToScaling(Vector2f scale) {
 		val[M00] = scale.x;
 		val[M10] = 0;
 		val[M20] = 0;
@@ -231,9 +230,9 @@ public class Transform3 implements Serializable {
 				* val[M11] * val[M20];
 	}
 
-	public Transform3 inv() {
+	public Matrix3 inv() {
 		float det = det();
-		if (det == 0){
+		if (det == 0) {
 			throw new RuntimeException("Can't invert a singular matrix");
 		}
 
@@ -262,48 +261,48 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 set(Transform3 mat) {
+	public Matrix3 set(Matrix3 mat) {
 		System.arraycopy(mat.val, 0, val, 0, val.length);
 		return this;
 	}
 
-	public Transform3 set(Transform4 mat) {
-		val[M00] = mat.val[Transform4.M00];
-		val[M10] = mat.val[Transform4.M10];
-		val[M20] = mat.val[Transform4.M20];
-		val[M01] = mat.val[Transform4.M01];
-		val[M11] = mat.val[Transform4.M11];
-		val[M21] = mat.val[Transform4.M21];
-		val[M02] = mat.val[Transform4.M02];
-		val[M12] = mat.val[Transform4.M12];
-		val[M22] = mat.val[Transform4.M22];
+	public Matrix3 set(Matrix4 mat) {
+		val[M00] = mat.val[Matrix4.M00];
+		val[M10] = mat.val[Matrix4.M10];
+		val[M20] = mat.val[Matrix4.M20];
+		val[M01] = mat.val[Matrix4.M01];
+		val[M11] = mat.val[Matrix4.M11];
+		val[M21] = mat.val[Matrix4.M21];
+		val[M02] = mat.val[Matrix4.M02];
+		val[M12] = mat.val[Matrix4.M12];
+		val[M22] = mat.val[Matrix4.M22];
 		return this;
 	}
 
-	public Transform3 set(float[] values) {
+	public Matrix3 set(float[] values) {
 		System.arraycopy(values, 0, val, 0, val.length);
 		return this;
 	}
 
-	public Transform3 trn(Location2 vector) {
+	public Matrix3 trn(Vector2f vector) {
 		val[M02] += vector.x;
 		val[M12] += vector.y;
 		return this;
 	}
 
-	public Transform3 trn(float x, float y) {
+	public Matrix3 trn(float x, float y) {
 		val[M02] += x;
 		val[M12] += y;
 		return this;
 	}
 
-	public Transform3 trn(Location3 vector) {
+	public Matrix3 trn(Vector3f vector) {
 		val[M02] += vector.x;
 		val[M12] += vector.y;
 		return this;
 	}
 
-	public Transform3 translate(float x, float y) {
+	public Matrix3 translate(float x, float y) {
 		tmp[M00] = 1;
 		tmp[M10] = 0;
 		tmp[M20] = 0;
@@ -319,7 +318,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 translate(Location2 translation) {
+	public Matrix3 translate(Vector2f translation) {
 		tmp[M00] = 1;
 		tmp[M10] = 0;
 		tmp[M20] = 0;
@@ -335,12 +334,12 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 rotate(float degrees) {
+	public Matrix3 rotate(float degrees) {
 		return rotateRad(MathUtils.DEG_TO_RAD * degrees);
 	}
 
-	public Transform3 rotateRad(float radians) {
-		if (radians == 0){
+	public Matrix3 rotateRad(float radians) {
+		if (radians == 0) {
 			return this;
 		}
 		float cos = (float) Math.cos(radians);
@@ -361,7 +360,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 scale(float scaleX, float scaleY) {
+	public Matrix3 scale(float scaleX, float scaleY) {
 		tmp[M00] = scaleX;
 		tmp[M10] = 0;
 		tmp[M20] = 0;
@@ -375,7 +374,7 @@ public class Transform3 implements Serializable {
 		return this;
 	}
 
-	public Transform3 scale(Location2 scale) {
+	public Matrix3 scale(Vector2f scale) {
 		tmp[M00] = scale.x;
 		tmp[M10] = 0;
 		tmp[M20] = 0;
@@ -393,13 +392,13 @@ public class Transform3 implements Serializable {
 		return val;
 	}
 
-	public Location2 getTranslation(Location2 position) {
+	public Vector2f getTranslation(Vector2f position) {
 		position.x = val[M02];
 		position.y = val[M12];
 		return position;
 	}
 
-	public Location2 getScale(Location2 scale) {
+	public Vector2f getScale(Vector2f scale) {
 		scale.x = (float) Math.sqrt(val[M00] * val[M00] + val[M01] * val[M01]);
 		scale.y = (float) Math.sqrt(val[M10] * val[M10] + val[M11] * val[M11]);
 		return scale;
@@ -413,25 +412,25 @@ public class Transform3 implements Serializable {
 		return (float) Math.atan2(val[M10], val[M00]);
 	}
 
-	public Transform3 scl(float scale) {
+	public Matrix3 scl(float scale) {
 		val[M00] *= scale;
 		val[M11] *= scale;
 		return this;
 	}
 
-	public Transform3 scl(Location2 scale) {
+	public Matrix3 scl(Vector2f scale) {
 		val[M00] *= scale.x;
 		val[M11] *= scale.y;
 		return this;
 	}
 
-	public Transform3 scl(Location3 scale) {
+	public Matrix3 scl(Vector3f scale) {
 		val[M00] *= scale.x;
 		val[M11] *= scale.y;
 		return this;
 	}
 
-	public Transform3 transpose() {
+	public Matrix3 transpose() {
 		float v01 = val[M10];
 		float v02 = val[M20];
 		float v10 = val[M01];
