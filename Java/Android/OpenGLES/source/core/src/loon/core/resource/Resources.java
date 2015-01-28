@@ -113,7 +113,7 @@ public abstract class Resources {
 		return in;
 	}
 
-	private static ClassLoader classLoader;
+	static ClassLoader classLoader;
 
 	private final static Object lock = new Object();
 
@@ -267,14 +267,6 @@ public abstract class Resources {
 			try {
 				in = classLoader.getResourceAsStream(resName);
 			} catch (Exception e) {
-				try {
-					in = LSystem.getResourceAsStream(resName);
-				} catch (Exception ex) {
-					throw new RuntimeException(resName + " not found!");
-				}
-			}
-			if (in == null) {
-				in = LSystem.getResourceAsStream(resName);
 			}
 			return in;
 		} else {

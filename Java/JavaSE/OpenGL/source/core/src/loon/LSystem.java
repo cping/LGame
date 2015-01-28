@@ -24,8 +24,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -236,31 +234,6 @@ public final class LSystem {
 		}
 	}
 
-	final static private ClassLoader classLoader;
-
-	/**
-	 * 获得指定名称资源的数据流
-	 * 
-	 * @param resName
-	 * @return
-	 */
-	public final static InputStream getResourceAsStream(String resName) {
-		try {
-			return classLoader.getResourceAsStream(resName);
-		} catch (Exception e) {
-			try {
-				return Resources.class.getClassLoader().getResourceAsStream(
-						resName);
-			} catch (Exception ex) {
-				try {
-					return new FileInputStream(new File(resName));
-				} catch (FileNotFoundException e1) {
-					return null;
-				}
-			}
-		}
-	}
-
 	/**
 	 * 执行一个位于Screen线程中的Runnable
 	 * 
@@ -466,7 +439,6 @@ public final class LSystem {
 	}
 
 	static {
-		classLoader = Thread.currentThread().getContextClassLoader();
 		OS_NAME = System.getProperty("os.name").toLowerCase();
 		osIsLinux = OS_NAME.indexOf("linux") != -1;
 		osIsUnix = OS_NAME.indexOf("nix") != -1 || OS_NAME.indexOf("nux") != 1;

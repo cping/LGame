@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import loon.LSystem;
-
 public class ClassRes extends DataRes implements Resource {
 
 	private ClassLoader classLoader;
@@ -46,7 +44,7 @@ public class ClassRes extends DataRes implements Resource {
 				return in;
 			}
 			if (classLoader == null) {
-				return (in = LSystem.getResourceAsStream(path));
+				return (in = Resources.classLoader.getResourceAsStream(path));
 			} else {
 				return (in = classLoader.getResourceAsStream(path));
 			}

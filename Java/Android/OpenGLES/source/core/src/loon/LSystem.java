@@ -24,9 +24,6 @@ package loon;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -236,30 +233,6 @@ public final class LSystem {
 		}
 	}
 
-	/***
-	 * 获得指定名称资源的数据流
-	 * 
-	 * @param resName
-	 * @return
-	 * @throws FileNotFoundException
-	 */
-	public final static InputStream getResourceAsStream(String resName)
-			throws FileNotFoundException {
-		try {
-			return Resources.class.getClassLoader()
-					.getResourceAsStream(resName);
-		} catch (Exception ex) {
-			try {
-				return getActivity().getAssets().open(resName);
-			} catch (IOException e1) {
-				try {
-					return getActivity().openFileInput(resName);
-				} catch (IOException e2) {
-					return new FileInputStream(new File(resName));
-				}
-			}
-		}
-	}
 
 	/**
 	 * 执行一个位于Screen线程中的Runnable

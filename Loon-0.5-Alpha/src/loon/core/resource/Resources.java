@@ -39,7 +39,7 @@ import loon.utils.collection.ArrayByte;
 
 public abstract class Resources {
 
-	private static ClassLoader classLoader;
+	static ClassLoader classLoader;
 
 	static {
 		try {
@@ -202,9 +202,6 @@ public abstract class Resources {
 				} catch (Exception e) {
 					throw new RuntimeException(resName + " not found!");
 				}
-				if (in == null) {
-					in = LSystem.getResourceAsStream(resName);
-				}
 				return in;
 			} else {
 				try {
@@ -277,8 +274,6 @@ public abstract class Resources {
 			} catch (FileNotFoundException ex) {
 				throw new RuntimeException(ex);
 			}
-		} else {
-			in = new BufferedInputStream(LSystem.getResourceAsStream(innerName));
 		}
 		ArrayByte byteArray = new ArrayByte();
 		try {

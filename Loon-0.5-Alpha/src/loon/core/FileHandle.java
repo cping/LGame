@@ -19,6 +19,7 @@ import java.io.Writer;
 
 import loon.LSystem;
 import loon.Files.FileType;
+import loon.core.resource.Resources;
 import loon.utils.StreamUtils;
 
 public class FileHandle {
@@ -96,15 +97,26 @@ public class FileHandle {
 		return file;
 	}
 
+	private static ClassLoader classLoader;
+
+	static {
+		try {
+			classLoader = Resources.class.getClassLoader();
+		} catch (Exception e) {
+			classLoader = Thread.currentThread().getContextClassLoader();
+		}
+	}
+
 	public InputStream read() {
 		if (type == FileType.Classpath
 				|| (type == FileType.Internal && !file().exists())
 				|| (type == FileType.Local && !file().exists())) {
-			InputStream input = FileHandle.class.getResourceAsStream("/"
+			InputStream input = classLoader.getResourceAsStream("/"
 					+ file.getPath().replace('\\', '/'));
-			if (input == null)
+			if (input == null) {
 				throw new RuntimeException("File not found: " + file + " ("
 						+ type + ")");
+			}
 			return input;
 		}
 		try {

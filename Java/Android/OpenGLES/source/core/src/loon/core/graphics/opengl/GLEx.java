@@ -3123,7 +3123,7 @@ public final class GLEx implements LTrans {
 			bind(texture.textureID);
 
 			if (!texture.isStatic) {
-				updateColor = (c != null && !color.equals(c));
+				updateColor = !color.equals(c) || _lastAlpha != 1f;
 				if (updateColor) {
 					MODULATE();
 					gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
