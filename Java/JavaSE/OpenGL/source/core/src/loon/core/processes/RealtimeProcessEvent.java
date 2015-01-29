@@ -21,9 +21,9 @@
  */
 package loon.core.processes;
 
-public abstract interface RealtimeProcessEvent
-{
-  public abstract void addProcess(RealtimeProcess process);
+public abstract interface RealtimeProcessEvent {
+	
+	public abstract void addProcess(RealtimeProcess process);
 
-  public abstract void tick(long nanoTime);
+	public abstract void tick(long nanoTime);
 }

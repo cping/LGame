@@ -38,11 +38,12 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.ScreenUtils;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimerContext;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
+import loon.utils.ScreenUtils;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -418,9 +419,11 @@ public class LGame extends JavaSEApp {
 
 						lockedRender |= shouldRender();
 
-						process.runTimer(timerContext);
+						RealtimeProcessManager.get().tick(elapsedTime);
 
 						ActionControl.update(elapsedTime);
+						
+						process.runTimer(timerContext);
 
 						if (LSystem.AUTO_REPAINT && lockedRender) {
 

@@ -28,7 +28,6 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 
-
 public class SpriteSheet implements LRelease {
 
 	private int margin, spacing;

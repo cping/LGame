@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import loon.core.geom.Vector3f;
 
-
 public class Segment implements Serializable {
 
 	/**

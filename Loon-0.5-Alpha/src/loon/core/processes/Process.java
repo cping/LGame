@@ -22,6 +22,7 @@
 package loon.core.processes;
 
 public abstract interface Process {
+	
 	public abstract void setProcessHost(RealtimeProcessHost host);
 
 	public abstract void fireThisWhenFinished(RealtimeProcess process);

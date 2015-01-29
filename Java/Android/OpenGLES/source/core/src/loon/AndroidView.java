@@ -41,6 +41,7 @@ import loon.core.graphics.opengl.LSTRFont;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimerContext;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
@@ -493,6 +494,8 @@ public final class AndroidView extends CallQueue implements Renderer {
 			timerContext.millisSleepTime = remainderMicros;
 			timerContext.timeSinceLastUpdate = elapsedTime;
 
+			RealtimeProcessManager.get().tick(elapsedTime);
+			
 			ActionControl.update(elapsedTime);
 
 			process.runTimer(timerContext);

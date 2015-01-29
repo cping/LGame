@@ -379,8 +379,7 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(name, matrix, false);
 	}
 
-	public void setUniformMatrix(String name, Matrix4 matrix,
-			boolean transpose) {
+	public void setUniformMatrix(String name, Matrix4 matrix, boolean transpose) {
 		setUniformMatrix(fetchUniformLocation(name), matrix, transpose);
 	}
 
@@ -388,8 +387,7 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	public void setUniformMatrix(int location, Matrix4 matrix,
-			boolean transpose) {
+	public void setUniformMatrix(int location, Matrix4 matrix, boolean transpose) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		gl.glUniformMatrix4fv(location, 1, transpose, matrix.val, 0);
@@ -399,8 +397,7 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(name, matrix, false);
 	}
 
-	public void setUniformMatrix(String name, Matrix3 matrix,
-			boolean transpose) {
+	public void setUniformMatrix(String name, Matrix3 matrix, boolean transpose) {
 		setUniformMatrix(fetchUniformLocation(name), matrix, transpose);
 	}
 
@@ -408,8 +405,7 @@ public class ShaderProgram implements LRelease {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	public void setUniformMatrix(int location, Matrix3 matrix,
-			boolean transpose) {
+	public void setUniformMatrix(int location, Matrix3 matrix, boolean transpose) {
 		GL20 gl = GLEx.gl;
 		checkManaged();
 		gl.glUniformMatrix3fv(location, 1, transpose, matrix.val, 0);

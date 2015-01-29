@@ -20,7 +20,6 @@ import java.io.Writer;
 import loon.LSystem;
 import loon.Files.FileType;
 import loon.core.resource.Resources;
-import loon.utils.StreamUtils;
 
 public class FileHandle {
 
@@ -144,7 +143,7 @@ public class FileHandle {
 		try {
 			return new InputStreamReader(stream, charset);
 		} catch (UnsupportedEncodingException ex) {
-			StreamUtils.closeQuietly(stream);
+			LSystem.close(stream);
 			throw new RuntimeException("Error reading file: " + this, ex);
 		}
 	}
@@ -184,7 +183,7 @@ public class FileHandle {
 		} catch (IOException ex) {
 			throw new RuntimeException("Error reading layout file: " + this, ex);
 		} finally {
-			StreamUtils.closeQuietly(reader);
+			LSystem.close(reader);
 		}
 		return output.toString();
 	}
@@ -192,11 +191,11 @@ public class FileHandle {
 	public byte[] readBytes() {
 		InputStream input = read();
 		try {
-			return StreamUtils.copyStreamToByteArray(input, estimateLength());
+			return LSystem.copyStreamToByteArray(input, estimateLength());
 		} catch (IOException ex) {
 			throw new RuntimeException("Error reading file: " + this, ex);
 		} finally {
-			StreamUtils.closeQuietly(input);
+			LSystem.close(input);
 		}
 	}
 
@@ -219,7 +218,7 @@ public class FileHandle {
 		} catch (IOException ex) {
 			throw new RuntimeException("Error reading file: " + this, ex);
 		} finally {
-			StreamUtils.closeQuietly(input);
+			LSystem.close(input);
 		}
 		return position - offset;
 	}
@@ -252,13 +251,13 @@ public class FileHandle {
 		OutputStream output = null;
 		try {
 			output = write(append);
-			StreamUtils.copyStream(input, output, 4096);
+			LSystem.copyStream(input, output, 4096);
 		} catch (Exception ex) {
 			throw new RuntimeException("Error stream writing to file: " + file
 					+ " (" + type + ")", ex);
 		} finally {
-			StreamUtils.closeQuietly(input);
-			StreamUtils.closeQuietly(output);
+			LSystem.close(input);
+			LSystem.close(output);
 		}
 
 	}
@@ -304,7 +303,7 @@ public class FileHandle {
 			throw new RuntimeException("Error writing file: " + file + " ("
 					+ type + ")", ex);
 		} finally {
-			StreamUtils.closeQuietly(writer);
+			LSystem.close(writer);
 		}
 	}
 
@@ -316,7 +315,7 @@ public class FileHandle {
 			throw new RuntimeException("Error writing file: " + file + " ("
 					+ type + ")", ex);
 		} finally {
-			StreamUtils.closeQuietly(output);
+			LSystem.close(output);
 		}
 	}
 
@@ -328,7 +327,7 @@ public class FileHandle {
 			throw new RuntimeException("Error writing file: " + file + " ("
 					+ type + ")", ex);
 		} finally {
-			StreamUtils.closeQuietly(output);
+			LSystem.close(output);
 		}
 	}
 
@@ -564,7 +563,7 @@ public class FileHandle {
 				return input.available();
 			} catch (Exception ignored) {
 			} finally {
-				StreamUtils.closeQuietly(input);
+				LSystem.close(input);
 			}
 			return 0;
 		}

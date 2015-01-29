@@ -83,8 +83,8 @@ public class Matrix4 implements Serializable {
 		return set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
-	public Matrix4 set(float quaternionX, float quaternionY,
-			float quaternionZ, float quaternionW) {
+	public Matrix4 set(float quaternionX, float quaternionY, float quaternionZ,
+			float quaternionW) {
 		return set(0f, 0f, 0f, quaternionX, quaternionY, quaternionZ,
 				quaternionW);
 	}
@@ -127,8 +127,7 @@ public class Matrix4 implements Serializable {
 		return this;
 	}
 
-	public Matrix4 set(Vector3f position, Quaternion orientation,
-			Vector3f scale) {
+	public Matrix4 set(Vector3f position, Quaternion orientation, Vector3f scale) {
 		return set(position.x, position.y, position.z, orientation.x,
 				orientation.y, orientation.z, orientation.w, scale.x, scale.y,
 				scale.z);
@@ -435,8 +434,8 @@ public class Matrix4 implements Serializable {
 		return this;
 	}
 
-	public Matrix4 setToOrtho(float left, float right, float bottom,
-			float top, float near, float far) {
+	public Matrix4 setToOrtho(float left, float right, float bottom, float top,
+			float near, float far) {
 
 		this.idt();
 		float x_orth = 2 / (right - left);
@@ -615,8 +614,7 @@ public class Matrix4 implements Serializable {
 	static final Vector3f tmpVec = new Vector3f();
 	static final Matrix4 tmpMat = new Matrix4();
 
-	public Matrix4 setToLookAt(Vector3f position, Vector3f target,
-			Vector3f up) {
+	public Matrix4 setToLookAt(Vector3f position, Vector3f target, Vector3f up) {
 		tmpVec.set(target).sub(position);
 		setToLookAt(tmpVec, up);
 		this.mul(tmpMat.setToTranslation(-position.x, -position.y, -position.z));
@@ -628,8 +626,7 @@ public class Matrix4 implements Serializable {
 	static final Vector3f tmpForward = new Vector3f();
 	static final Vector3f tmpUp = new Vector3f();
 
-	public Matrix4 setToWorld(Vector3f position, Vector3f forward,
-			Vector3f up) {
+	public Matrix4 setToWorld(Vector3f position, Vector3f forward, Vector3f up) {
 		tmpForward.set(forward).nor();
 		right.set(tmpForward).crs(up).nor();
 		tmpUp.set(right).crs(tmpForward).nor();
@@ -792,20 +789,17 @@ public class Matrix4 implements Serializable {
 
 	public float getScaleXSquared() {
 		return val[Matrix4.M00] * val[Matrix4.M00] + val[Matrix4.M01]
-				* val[Matrix4.M01] + val[Matrix4.M02]
-				* val[Matrix4.M02];
+				* val[Matrix4.M01] + val[Matrix4.M02] * val[Matrix4.M02];
 	}
 
 	public float getScaleYSquared() {
 		return val[Matrix4.M10] * val[Matrix4.M10] + val[Matrix4.M11]
-				* val[Matrix4.M11] + val[Matrix4.M12]
-				* val[Matrix4.M12];
+				* val[Matrix4.M11] + val[Matrix4.M12] * val[Matrix4.M12];
 	}
 
 	public float getScaleZSquared() {
 		return val[Matrix4.M20] * val[Matrix4.M20] + val[Matrix4.M21]
-				* val[Matrix4.M21] + val[Matrix4.M22]
-				* val[Matrix4.M22];
+				* val[Matrix4.M21] + val[Matrix4.M22] * val[Matrix4.M22];
 	}
 
 	public float getScaleX() {
@@ -877,8 +871,7 @@ public class Matrix4 implements Serializable {
 		return rotate(quat);
 	}
 
-	public Matrix4 rotate(float axisX, float axisY, float axisZ,
-			float degrees) {
+	public Matrix4 rotate(float axisX, float axisY, float axisZ, float degrees) {
 		if (degrees == 0)
 			return this;
 		quat.setFromAxis(axisX, axisY, axisZ, degrees);

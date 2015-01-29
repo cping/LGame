@@ -544,8 +544,7 @@ public class Mesh implements LRelease {
 	}
 
 	public float calculateRadius(final float centerX, final float centerY,
-			final float centerZ, int offset, int count,
-			final Matrix4 transform) {
+			final float centerZ, int offset, int count, final Matrix4 transform) {
 		return (float) Math.sqrt(calculateRadiusSquared(centerX, centerY,
 				centerZ, offset, count, transform));
 	}
@@ -658,8 +657,7 @@ public class Mesh implements LRelease {
 		transform(matrix, 0, getNumVertices());
 	}
 
-	public void transform(final Matrix4 matrix, final int start,
-			final int count) {
+	public void transform(final Matrix4 matrix, final int start, final int count) {
 		final VertexAttribute posAttr = getVertexAttribute(Usage.Position);
 		final int posOffset = posAttr.offset / 4;
 		final int stride = getVertexSize() / 4;
@@ -673,9 +671,8 @@ public class Mesh implements LRelease {
 		updateVertices(start * stride, vertices);
 	}
 
-	public static void transform(final Matrix4 matrix,
-			final float[] vertices, int vertexSize, int offset, int dimensions,
-			int start, int count) {
+	public static void transform(final Matrix4 matrix, final float[] vertices,
+			int vertexSize, int offset, int dimensions, int start, int count) {
 		if (offset < 0 || dimensions < 1 || (offset + dimensions) > vertexSize)
 			throw new IndexOutOfBoundsException();
 		if (start < 0 || count < 1

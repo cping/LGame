@@ -75,8 +75,8 @@ public class ScissorStack {
 		}
 	}
 
-	public static void calculateScissors(Camera camera,
-			Matrix4 batchTransform, RectBox area, RectBox scissor) {
+	public static void calculateScissors(Camera camera, Matrix4 batchTransform,
+			RectBox area, RectBox scissor) {
 		calculateScissors(camera, 0, 0, GLEx.width(), GLEx.height(),
 				batchTransform, area, scissor);
 	}

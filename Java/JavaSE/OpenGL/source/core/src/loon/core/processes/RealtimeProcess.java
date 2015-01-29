@@ -23,15 +23,24 @@ package loon.core.processes;
 
 import java.util.LinkedList;
 
+import loon.LSystem;
+import loon.core.timer.LTimer;
+
 public abstract class RealtimeProcess implements Process {
-	
+
 	protected boolean isDead;
-	
+
 	protected final String id;
-	
+
+	private LTimer timer = new LTimer(LSystem.SECOND);
+
 	private RealtimeProcessHost processHost;
-	
+
 	private LinkedList<RealtimeProcess> processesToFireWhenFinished;
+
+	public RealtimeProcess() {
+		this("Process" + System.currentTimeMillis());
+	}
 
 	public RealtimeProcess(String id) {
 		this.isDead = false;
@@ -46,12 +55,48 @@ public abstract class RealtimeProcess implements Process {
 		if (this.processesToFireWhenFinished == null) {
 			this.processesToFireWhenFinished = new LinkedList<RealtimeProcess>();
 		}
-
 		this.processesToFireWhenFinished.add(realtimeProcess);
 	}
 
 	public void tick(long nanoTime) {
+		if (timer.action(nanoTime)) {
+			run();
+		}
 	}
+
+	public void sleep(long delay) {
+		timer.setDelay(delay);
+	}
+
+	public void setDelay(long delay) {
+		timer.setDelay(delay);
+	}
+
+	public long getDelay() {
+		return timer.getDelay();
+	}
+
+	public long getCurrentTick() {
+		return timer.getCurrentTick();
+	}
+
+	public void interrupt() {
+		timer.stop();
+	}
+
+	public void stop() {
+		timer.stop();
+	}
+
+	public void start() {
+		timer.start();
+	}
+
+	public boolean isActive() {
+		return timer.isActive();
+	}
+
+	public abstract void run();
 
 	public void kill() {
 		this.isDead = true;

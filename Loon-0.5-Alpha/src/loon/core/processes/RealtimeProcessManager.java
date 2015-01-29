@@ -70,6 +70,30 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 		}
 	}
 
+	public void delete(String id) {
+		if (processes != null && processes.size() > 0) {
+			synchronized (this.processes) {
+				for (Process p : processes) {
+					if (p.getId() == id || p.getId().equals(id)) {
+						p.kill();
+					}
+				}
+			}
+		}
+	}
+
+	public void deleteIndex(String id) {
+		if (processes != null && processes.size() > 0) {
+			synchronized (this.processes) {
+				for (Process p : processes) {
+					if (p.getId() == id || p.getId().indexOf(id) != -1) {
+						p.kill();
+					}
+				}
+			}
+		}
+	}
+
 	@Override
 	public void dispose() {
 		if (processes != null && processes.size() > 0) {

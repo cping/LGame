@@ -1,11 +1,3 @@
-package loon.core.graphics.opengl;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.LTexture.Format;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,14 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import loon.LSystem;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture.Format;
+
 public class TextureUtils {
 
 	public static LTexture filterColor(String res, LColor col) {

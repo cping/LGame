@@ -404,8 +404,8 @@ public class Quaternion implements Serializable {
 
 	public Quaternion setFromCross(final float x1, final float y1,
 			final float z1, final float x2, final float y2, final float z2) {
-		final float dot = MathUtils.clamp(
-				Vector3f.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
+		final float dot = MathUtils.clamp(Vector3f.dot(x1, y1, z1, x2, y2, z2),
+				-1f, 1f);
 		final float angle = (float) Math.acos(dot);
 		return setFromAxisRad(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2
 				- y1 * x2, angle);

@@ -102,7 +102,7 @@ public final class LSystem {
 	}
 
 	public String getLanguage() {
-		return java.util.Locale.getDefault().getDisplayName();
+		return java.util.Locale.getDefault().getLanguage();
 	}
 
 	public enum ApplicationType {

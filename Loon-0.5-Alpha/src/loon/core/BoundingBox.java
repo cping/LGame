@@ -8,7 +8,6 @@ import loon.core.geom.Vector3f;
 
 public class BoundingBox implements Serializable {
 
-
 	/**
 	 * 
 	 */

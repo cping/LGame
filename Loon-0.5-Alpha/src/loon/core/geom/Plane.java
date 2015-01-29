@@ -2,7 +2,6 @@ package loon.core.geom;
 
 import java.io.Serializable;
 
-
 public class Plane implements Serializable {
 
 	/**

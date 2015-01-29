@@ -70,7 +70,6 @@ public class Vector3f implements Serializable {
 		return this;
 	}
 
-	
 	public Vector3f set(final Vector3f vector) {
 		return this.set(vector.x, vector.y, vector.z);
 	}
@@ -83,12 +82,10 @@ public class Vector3f implements Serializable {
 		return this.set(vector.x, vector.y, z);
 	}
 
-	
 	public Vector3f cpy() {
 		return new Vector3f(this);
 	}
 
-	
 	public Vector3f add(final Vector3f vector) {
 		return this.add(vector.x, vector.y, vector.z);
 	}
@@ -101,7 +98,6 @@ public class Vector3f implements Serializable {
 		return this.set(this.x + values, this.y + values, this.z + values);
 	}
 
-	
 	public Vector3f sub(final Vector3f a_vec) {
 		return this.sub(a_vec.x, a_vec.y, a_vec.z);
 	}
@@ -114,12 +110,10 @@ public class Vector3f implements Serializable {
 		return this.set(this.x - value, this.y - value, this.z - value);
 	}
 
-	
 	public Vector3f scl(float scalar) {
 		return this.set(this.x * scalar, this.y * scalar, this.z * scalar);
 	}
 
-	
 	public Vector3f scl(final Vector3f other) {
 		return this.set(x * other.x, y * other.y, z * other.z);
 	}
@@ -128,7 +122,6 @@ public class Vector3f implements Serializable {
 		return this.set(this.x * vx, this.y * vy, this.z * vz);
 	}
 
-	
 	public Vector3f mulAdd(Vector3f vec, float scalar) {
 		this.x += vec.x * scalar;
 		this.y += vec.y * scalar;
@@ -136,7 +129,6 @@ public class Vector3f implements Serializable {
 		return this;
 	}
 
-	
 	public Vector3f mulAdd(Vector3f vec, Vector3f mulVec) {
 		this.x += vec.x * mulVec.x;
 		this.y += vec.y * mulVec.y;
@@ -148,7 +140,6 @@ public class Vector3f implements Serializable {
 		return (float) Math.sqrt(x * x + y * y + z * z);
 	}
 
-	
 	public float len() {
 		return (float) Math.sqrt(x * x + y * y + z * z);
 	}
@@ -157,7 +148,6 @@ public class Vector3f implements Serializable {
 		return x * x + y * y + z * z;
 	}
 
-	
 	public float len2() {
 		return x * x + y * y + z * z;
 	}
@@ -174,7 +164,6 @@ public class Vector3f implements Serializable {
 		return (float) Math.sqrt(a * a + b * b + c * c);
 	}
 
-	
 	public float dst(final Vector3f vector) {
 		final float a = vector.x - x;
 		final float b = vector.y - y;
@@ -197,7 +186,6 @@ public class Vector3f implements Serializable {
 		return a * a + b * b + c * c;
 	}
 
-	
 	public float dst2(Vector3f point) {
 		final float a = point.x - x;
 		final float b = point.y - y;
@@ -212,7 +200,6 @@ public class Vector3f implements Serializable {
 		return a * a + b * b + c * c;
 	}
 
-	
 	public Vector3f nor() {
 		final float len2 = this.len2();
 		if (len2 == 0f || len2 == 1f) {
@@ -226,7 +213,6 @@ public class Vector3f implements Serializable {
 		return x1 * x2 + y1 * y2 + z1 * z2;
 	}
 
-	
 	public float dot(final Vector3f vector) {
 		return x * vector.x + y * vector.y + z * vector.z;
 	}
@@ -253,8 +239,8 @@ public class Vector3f implements Serializable {
 
 	public Vector3f mul(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01]
-				+ z * l_mat[Matrix4.M02] + l_mat[Matrix4.M03], x
+		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z
+				* l_mat[Matrix4.M02] + l_mat[Matrix4.M03], x
 				* l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11] + z
 				* l_mat[Matrix4.M12] + l_mat[Matrix4.M13], x
 				* l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z
@@ -263,8 +249,8 @@ public class Vector3f implements Serializable {
 
 	public Vector3f traMul(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10]
-				+ z * l_mat[Matrix4.M20] + l_mat[Matrix4.M30], x
+		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z
+				* l_mat[Matrix4.M20] + l_mat[Matrix4.M30], x
 				* l_mat[Matrix4.M01] + y * l_mat[Matrix4.M11] + z
 				* l_mat[Matrix4.M21] + l_mat[Matrix4.M31], x
 				* l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z
@@ -295,21 +281,21 @@ public class Vector3f implements Serializable {
 
 	public Vector3f prj(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
-		final float l_w = 1f / (x * l_mat[Matrix4.M30] + y
-				* l_mat[Matrix4.M31] + z * l_mat[Matrix4.M32] + l_mat[Matrix4.M33]);
-		return this.set((x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01]
-				+ z * l_mat[Matrix4.M02] + l_mat[Matrix4.M03])
-				* l_w, (x * l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11]
-				+ z * l_mat[Matrix4.M12] + l_mat[Matrix4.M13])
-				* l_w, (x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21]
-				+ z * l_mat[Matrix4.M22] + l_mat[Matrix4.M23])
+		final float l_w = 1f / (x * l_mat[Matrix4.M30] + y * l_mat[Matrix4.M31]
+				+ z * l_mat[Matrix4.M32] + l_mat[Matrix4.M33]);
+		return this.set((x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z
+				* l_mat[Matrix4.M02] + l_mat[Matrix4.M03])
+				* l_w, (x * l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11] + z
+				* l_mat[Matrix4.M12] + l_mat[Matrix4.M13])
+				* l_w, (x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z
+				* l_mat[Matrix4.M22] + l_mat[Matrix4.M23])
 				* l_w);
 	}
 
 	public Vector3f rot(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01]
-				+ z * l_mat[Matrix4.M02], x * l_mat[Matrix4.M10] + y
+		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z
+				* l_mat[Matrix4.M02], x * l_mat[Matrix4.M10] + y
 				* l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12], x
 				* l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z
 				* l_mat[Matrix4.M22]);
@@ -317,8 +303,8 @@ public class Vector3f implements Serializable {
 
 	public Vector3f unrotate(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10]
-				+ z * l_mat[Matrix4.M20], x * l_mat[Matrix4.M01] + y
+		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z
+				* l_mat[Matrix4.M20], x * l_mat[Matrix4.M01] + y
 				* l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21], x
 				* l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z
 				* l_mat[Matrix4.M22]);
@@ -329,8 +315,8 @@ public class Vector3f implements Serializable {
 		x -= l_mat[Matrix4.M03];
 		y -= l_mat[Matrix4.M03];
 		z -= l_mat[Matrix4.M03];
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10]
-				+ z * l_mat[Matrix4.M20], x * l_mat[Matrix4.M01] + y
+		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z
+				* l_mat[Matrix4.M20], x * l_mat[Matrix4.M01] + y
 				* l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21], x
 				* l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z
 				* l_mat[Matrix4.M22]);
@@ -355,79 +341,64 @@ public class Vector3f implements Serializable {
 		return this.mul(tmpMat);
 	}
 
-	
 	public boolean isUnit() {
 		return isUnit(0.000000001f);
 	}
 
-	
 	public boolean isUnit(final float margin) {
 		return Math.abs(len2() - 1f) < margin;
 	}
 
-	
 	public boolean isZero() {
 		return x == 0 && y == 0 && z == 0;
 	}
 
-	
 	public boolean isZero(final float margin) {
 		return len2() < margin;
 	}
 
-	
 	public boolean isOnLine(Vector3f other, float epsilon) {
 		return len2(y * other.z - z * other.y, z * other.x - x * other.z, x
 				* other.y - y * other.x) <= epsilon;
 	}
 
-	
 	public boolean isOnLine(Vector3f other) {
 		return len2(y * other.z - z * other.y, z * other.x - x * other.z, x
 				* other.y - y * other.x) <= MathUtils.FLOAT_ROUNDING_ERROR;
 	}
 
-	
 	public boolean isCollinear(Vector3f other, float epsilon) {
 		return isOnLine(other, epsilon) && hasSameDirection(other);
 	}
 
-	
 	public boolean isCollinear(Vector3f other) {
 		return isOnLine(other) && hasSameDirection(other);
 	}
 
-	
 	public boolean isCollinearOpposite(Vector3f other, float epsilon) {
 		return isOnLine(other, epsilon) && hasOppositeDirection(other);
 	}
 
-	
 	public boolean isCollinearOpposite(Vector3f other) {
 		return isOnLine(other) && hasOppositeDirection(other);
 	}
 
-	
 	public boolean isPerpendicular(Vector3f vector) {
 		return MathUtils.isZero(dot(vector));
 	}
 
-	
 	public boolean isPerpendicular(Vector3f vector, float epsilon) {
 		return MathUtils.isZero(dot(vector), epsilon);
 	}
 
-	
 	public boolean hasSameDirection(Vector3f vector) {
 		return dot(vector) > 0;
 	}
 
-	
 	public boolean hasOppositeDirection(Vector3f vector) {
 		return dot(vector) < 0;
 	}
 
-	
 	public Vector3f lerp(final Vector3f target, float alpha) {
 		scl(1.0f - alpha);
 		add(target.x * alpha, target.y * alpha, target.z * alpha);
@@ -455,17 +426,14 @@ public class Vector3f implements Serializable {
 				.nor();
 	}
 
-	
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + "]";
 	}
 
-	
 	public Vector3f limit(float limit) {
 		return limit2(limit * limit);
 	}
 
-	
 	public Vector3f limit2(float limit2) {
 		float len2 = len2();
 		if (len2 > limit2) {
@@ -474,19 +442,16 @@ public class Vector3f implements Serializable {
 		return this;
 	}
 
-	
 	public Vector3f setLength(float len) {
 		return setLength2(len * len);
 	}
 
-	
 	public Vector3f setLength2(float len2) {
 		float oldLen2 = len2();
 		return (oldLen2 == 0 || oldLen2 == len2) ? this : scl((float) Math
 				.sqrt(len2 / oldLen2));
 	}
 
-	
 	public Vector3f clamp(float min, float max) {
 		final float len2 = len2();
 		if (len2 == 0f)
@@ -500,7 +465,6 @@ public class Vector3f implements Serializable {
 		return this;
 	}
 
-	
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -510,7 +474,6 @@ public class Vector3f implements Serializable {
 		return result;
 	}
 
-	
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -531,7 +494,6 @@ public class Vector3f implements Serializable {
 		return true;
 	}
 
-	
 	public boolean epsilonEquals(final Vector3f other, float epsilon) {
 		if (other == null)
 			return false;
@@ -554,7 +516,6 @@ public class Vector3f implements Serializable {
 		return true;
 	}
 
-	
 	public Vector3f setZero() {
 		this.x = 0;
 		this.y = 0;

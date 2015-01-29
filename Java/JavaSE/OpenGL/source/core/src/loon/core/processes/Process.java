@@ -21,19 +21,19 @@
  */
 package loon.core.processes;
 
-public abstract interface Process
-{
-  public abstract void setProcessHost(RealtimeProcessHost host);
+public abstract interface Process {
+	
+	public abstract void setProcessHost(RealtimeProcessHost host);
 
-  public abstract void fireThisWhenFinished(RealtimeProcess process);
+	public abstract void fireThisWhenFinished(RealtimeProcess process);
 
-  public abstract void tick(long nanoTime);
+	public abstract void tick(long nanoTime);
 
-  public abstract void kill();
+	public abstract void kill();
 
-  public abstract boolean isDead();
+	public abstract boolean isDead();
 
-  public abstract String getId();
+	public abstract String getId();
 
-  public abstract void finish();
+	public abstract void finish();
 }

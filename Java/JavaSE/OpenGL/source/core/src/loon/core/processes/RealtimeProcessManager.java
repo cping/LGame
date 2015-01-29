@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import loon.core.LRelease;
 
 public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
-	
+
 	private static RealtimeProcessManager instance;
-	
+
 	private LinkedList<Process> processes;
 
 	public static RealtimeProcessManager get() {
@@ -67,6 +67,30 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 		}
 		synchronized (this.processes) {
 			this.processes.removeAll(deadProcesses);
+		}
+	}
+
+	public void delete(String id) {
+		if (processes != null && processes.size() > 0) {
+			synchronized (this.processes) {
+				for (Process p : processes) {
+					if (p.getId() == id || p.getId().equals(id)) {
+						p.kill();
+					}
+				}
+			}
+		}
+	}
+
+	public void deleteIndex(String id) {
+		if (processes != null && processes.size() > 0) {
+			synchronized (this.processes) {
+				for (Process p : processes) {
+					if (p.getId() == id || p.getId().indexOf(id) != -1) {
+						p.kill();
+					}
+				}
+			}
 		}
 	}
 

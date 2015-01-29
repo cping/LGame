@@ -488,7 +488,7 @@ public class LTexture implements LRelease {
 
 			final LTexture sub = new LTexture();
 
-			if (isLoaded || !LSystem.isThreadDrawing()) {
+			if (isLoaded) {
 				sub.parent = LTexture.this;
 				sub.textureID = textureID;
 				sub.isLoaded = isLoaded;
@@ -631,7 +631,7 @@ public class LTexture implements LRelease {
 
 			final LTexture copy = new LTexture();
 
-			if (isLoaded || !LSystem.isThreadDrawing()) {
+			if (isLoaded) {
 				copy.parent = LTexture.this;
 				copy.imageData = imageData;
 				copy.textureID = textureID;

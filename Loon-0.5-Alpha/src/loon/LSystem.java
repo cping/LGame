@@ -96,7 +96,7 @@ public final class LSystem {
 	}
 
 	public String getLanguage() {
-		return java.util.Locale.getDefault().getDisplayName();
+		return java.util.Locale.getDefault().getLanguage();
 	}
 
 	public enum ApplicationType {
@@ -135,16 +135,6 @@ public final class LSystem {
 	}
 
 	public final static int TRANSPARENT = 0xff000000;
-
-	public final static boolean isThreadDrawing() {
-		Thread thread = Thread.currentThread();
-		if (thread != null) {
-			if ("OpenGLThread".equalsIgnoreCase(thread.getName())) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public static final int DEFAULT_BUFFER_SIZE = 8192;
 	public static final byte[] EMPTY_BYTES = new byte[0];
@@ -234,7 +224,6 @@ public final class LSystem {
 		}
 	}
 
-
 	/**
 	 * 执行一个位于Screen线程中的Runnable
 	 * 
@@ -253,25 +242,17 @@ public final class LSystem {
 	}
 
 	public final static void load(Updateable u) {
-		if (LSystem.isThreadDrawing()) {
-			u.action(null);
-		} else {
 			LProcess process = LSystem.screenProcess;
 			if (process != null) {
 				process.addLoad(u);
 			}
-		}
 	}
 
 	public final static void unload(Updateable u) {
-		if (LSystem.isThreadDrawing()) {
-			u.action(null);
-		} else {
 			LProcess process = LSystem.screenProcess;
 			if (process != null) {
 				process.addUnLoad(u);
 			}
-		}
 	}
 
 	public final static void clearUpdate() {

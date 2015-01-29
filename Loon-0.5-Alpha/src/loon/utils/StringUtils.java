@@ -22,6 +22,8 @@
 package loon.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 final public class StringUtils {
@@ -98,6 +100,10 @@ final public class StringUtils {
 
 	}
 
+    public static String[] split(String s, char tag) {
+        return split(s, Character.toString(tag));
+    }
+    
 	/**
 	 * 分解字符串
 	 * 
@@ -105,16 +111,15 @@ final public class StringUtils {
 	 * @param tag
 	 * @return
 	 */
-	public static String[] split(final String string, final String tag) {
-		StringTokenizer str = new StringTokenizer(string, tag);
-		String[] result = new String[str.countTokens()];
-		int index = 0;
-		for (; str.hasMoreTokens();) {
-			result[index++] = str.nextToken();
-		}
-		return result;
-	}
-
+    public static String[] split(String s, String tag) {
+        StringTokenizer tokenizer = new StringTokenizer(s, tag);
+        List<String> tokens = new ArrayList<String>();
+        while (tokenizer.hasMoreTokens()){
+            tokens.add(tokenizer.nextToken());
+        }
+        return tokens.toArray(new String[0]);
+    }
+    
 	/**
 	 * 过滤指定字符串
 	 * 

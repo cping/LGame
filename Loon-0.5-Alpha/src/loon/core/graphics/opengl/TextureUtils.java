@@ -1,11 +1,3 @@
-package loon.core.graphics.opengl;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.LTexture.Format;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,15 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import loon.LSystem;
+import loon.core.event.Updateable;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture.Format;
+
 public class TextureUtils {
 
 	public static LTexture filterColor(String res, LColor col) {
@@ -143,14 +144,23 @@ public class TextureUtils {
 				tileHeight);
 	}
 
-	public static LTexture[] getSplitTextures(LTexture image, int tileWidth,
-			int tileHeight) {
+	public static LTexture[] getSplitTextures(final LTexture image,
+			int tileWidth, int tileHeight) {
 		if (image == null) {
 			return null;
 		}
-		if (LSystem.isThreadDrawing()) {
-			image.loadTexture();
+		if (!image.isLoaded) {
+			Updateable update = new Updateable() {
+
+				@Override
+				public void action(Object a) {
+
+					image.loadTexture();
+				}
+			};
+			LSystem.load(update);
 		}
+
 		int frame = 0;
 		int wlength = image.getWidth() / tileWidth;
 		int hlength = image.getHeight() / tileHeight;
@@ -172,13 +182,21 @@ public class TextureUtils {
 				tileHeight);
 	}
 
-	public static LTexture[][] getSplit2Textures(LTexture image, int tileWidth,
-			int tileHeight) {
+	public static LTexture[][] getSplit2Textures(final LTexture image,
+			int tileWidth, int tileHeight) {
 		if (image == null) {
 			return null;
 		}
-		if (LSystem.isThreadDrawing()) {
-			image.loadTexture();
+		if (!image.isLoaded) {
+			Updateable update = new Updateable() {
+
+				@Override
+				public void action(Object a) {
+
+					image.loadTexture();
+				}
+			};
+			LSystem.load(update);
 		}
 		int wlength = image.getWidth() / tileWidth;
 		int hlength = image.getHeight() / tileHeight;
@@ -206,12 +224,20 @@ public class TextureUtils {
 		if (count <= 0) {
 			throw new IllegalArgumentException();
 		}
-		LTexture image = LTextures.loadTexture(fileName);
+		final LTexture image = LTextures.loadTexture(fileName);
 		if (image == null) {
 			return null;
 		}
-		if (LSystem.isThreadDrawing()) {
-			image.loadTexture();
+		if (!image.isLoaded) {
+			Updateable update = new Updateable() {
+
+				@Override
+				public void action(Object a) {
+
+					image.loadTexture();
+				}
+			};
+			LSystem.load(update);
 		}
 		if (width == null) {
 			width = new int[count];
