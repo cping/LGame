@@ -123,13 +123,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 		ActionControl.getInstance().removeAllActions(act);
 	}
 
-	public void sleep(long time) {
-		try {
-			Thread.sleep(time);
-		} catch (Exception e) {
-		}
-	}
-
 	public float getDeltaTime() {
 		return elapsedTime / 1000f;
 	}

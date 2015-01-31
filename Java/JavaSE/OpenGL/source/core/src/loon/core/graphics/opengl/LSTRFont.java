@@ -1,16 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.util.HashMap;
-
-import loon.LSystem;
-import loon.core.LRelease;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.graphics.opengl.LTextureBatch.GLCache;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -31,6 +18,19 @@ import loon.core.graphics.opengl.LTextureBatch.GLCache;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.util.HashMap;
+
+import loon.LSystem;
+import loon.core.LRelease;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.graphics.opengl.LTextureBatch.GLCache;
+
 public class LSTRFont implements LRelease {
 
 	private boolean useCache;

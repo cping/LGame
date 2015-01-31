@@ -348,8 +348,7 @@ public class LSTRFont implements LRelease {
 		if (intObject != null) {
 			fontBatch.draw(x, y - font.getAscent(), intObject.width,
 					intObject.height, intObject.storedX, intObject.storedY,
-					intObject.storedX + intObject.width, intObject.storedY
-							+ intObject.height, color);
+					 intObject.width,  intObject.height,color);
 		}
 	}
 

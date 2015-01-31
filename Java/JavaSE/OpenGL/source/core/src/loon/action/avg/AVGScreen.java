@@ -34,6 +34,7 @@ import loon.action.sprite.effect.FreedomEffect;
 import loon.action.sprite.effect.PetalKernel;
 import loon.action.sprite.effect.RainKernel;
 import loon.action.sprite.effect.SnowKernel;
+import loon.core.event.Updateable;
 import loon.core.graphics.Desktop;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.Screen;
@@ -47,13 +48,14 @@ import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-
-public abstract class AVGScreen extends Screen implements Runnable {
+public abstract class AVGScreen extends Screen {
 
 	private Object synch = new Object();
 
@@ -83,7 +85,7 @@ public abstract class AVGScreen extends Screen implements Runnable {
 
 	protected Sprites sprites;
 
-	private Thread avgThread;
+	private RealtimeProcess avgProcess;
 
 	private String dialogFileName;
 
@@ -126,9 +128,33 @@ public abstract class AVGScreen extends Screen implements Runnable {
 	}
 
 	public final void onLoaded() {
-		this.avgThread = new Thread(this, "AVGThread");
-		this.avgThread.setPriority(Thread.NORM_PRIORITY);
-		this.avgThread.start();
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				initAVG();
+				onLoading();
+			}
+		});
+		this.avgProcess = new RealtimeProcess() {
+
+			@Override
+			public void run() {
+				if (running) {
+					if (desktop != null) {
+						desktop.update(delay);
+					}
+					if (sprites != null) {
+						sprites.update(delay);
+					}
+					if (autoPlay) {
+						playAutoNext();
+					}
+				}
+			}
+		};
+		avgProcess.sleep(delay);
+		RealtimeProcessManager.get().addProcess(avgProcess);
 	}
 
 	private synchronized void initDesktop() {
@@ -727,24 +753,6 @@ public abstract class AVGScreen extends Screen implements Runnable {
 
 	}
 
-	public void run() {
-		initAVG();
-		onLoading();
-		for (; running;) {
-			if (desktop != null) {
-				desktop.update(delay);
-			}
-			if (sprites != null) {
-				sprites.update(delay);
-			}
-			sleep(delay);
-			if (autoPlay) {
-				playAutoNext();
-			}
-		}
-
-	}
-
 	public boolean isCommandGo() {
 		return isRunning;
 	}
@@ -938,9 +946,9 @@ public abstract class AVGScreen extends Screen implements Runnable {
 	public void dispose() {
 		running = false;
 		try {
-			if (avgThread != null) {
-				avgThread.interrupt();
-				avgThread = null;
+			if (avgProcess != null) {
+				avgProcess.kill();
+				avgProcess = null;
 			}
 		} catch (Exception e) {
 		}

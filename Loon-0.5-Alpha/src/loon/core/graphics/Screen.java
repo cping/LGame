@@ -5,7 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.JDialog;
@@ -49,6 +48,8 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
 import loon.media.SoundBox;
@@ -133,13 +134,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 
 	public void removeAllActions(ActionBind act) {
 		ActionControl.getInstance().removeAllActions(act);
-	}
-
-	public void sleep(long time) {
-		try {
-			Thread.sleep(time);
-		} catch (Exception e) {
-		}
 	}
 
 	public float getDeltaTime() {
@@ -273,12 +267,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 		NONE, LEFT, RIGHT, UP, DOWN;
 	}
 
-	public static interface LEvent {
-
-		public void call();
-
-	}
-
 	public abstract void draw(GLEx g);
 
 	public final static int SCREEN_NOT_REPAINT = 0;
@@ -288,9 +276,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 	public final static int SCREEN_CANVAS_REPAINT = -2;
 
 	public final static int SCREEN_COLOR_REPAINT = -3;
-
-	// 线程事件集合
-	private final ArrayList<Runnable> runnables;
 
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler gravityHandler;
@@ -415,8 +400,9 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 				break;
 			}
 
-			final Thread loading = new Thread() {
-
+			RealtimeProcessManager.get().addProcess(new RealtimeProcess() {
+				
+				@Override
 				public void run() {
 					screen.onCreate(LSystem.screenRect.width,
 							LSystem.screenRect.height);
@@ -425,10 +411,10 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 					screen.setRepaintMode(SCREEN_CANVAS_REPAINT);
 					screen.onLoaded();
 					screen.setOnLoadState(true);
+					kill();
 				}
-
-			};
-			callEvent(loading);
+			});
+			
 			replaceLoading = true;
 		}
 	}
@@ -513,7 +499,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 	public Screen() {
 		LSystem.AUTO_REPAINT = true;
 		Screen.StaticCurrentSceen = this;
-		this.runnables = new ArrayList<Runnable>(1);
 		this.handler = LSystem.screenProcess;
 		this.width = LSystem.screenRect.width;
 		this.height = LSystem.screenRect.height;
@@ -900,16 +885,18 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 				final String output = JOptionPane.showInputDialog(null, title,
 						text);
 				if (output != null)
-					LSystem.callScreenRunnable(new Runnable() {
+					LSystem.load(new Updateable() {
+						
 						@Override
-						public void run() {
+						public void action(Object a) {
 							listener.input(output);
 						}
 					});
 				else
-					LSystem.callScreenRunnable(new Runnable() {
+					LSystem.load(new Updateable() {
+						
 						@Override
-						public void run() {
+						public void action(Object a) {
 							listener.cancel();
 						}
 					});
@@ -1355,118 +1342,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 	 */
 	public void setRepaintMode(int mode) {
 		this.mode = mode;
-	}
-
-	/**
-	 * 增减一个线程事件
-	 * 
-	 * @param event
-	 */
-	public void callEvent(final LEvent event) {
-		if (event == null) {
-			return;
-		}
-		Thread runnable = new Thread() {
-			public void run() {
-				event.call();
-			}
-		};
-		callEvent(runnable);
-	}
-
-	/**
-	 * 增减一个线程事件
-	 * 
-	 * @param runnable
-	 */
-	public final void callEvent(Runnable runnable) {
-		synchronized (runnables) {
-			runnables.add(runnable);
-		}
-	}
-
-	/**
-	 * 暂停指定的线程事件
-	 * 
-	 * @param runnable
-	 */
-	public final void callEventWait(Runnable runnable) {
-		synchronized (runnable) {
-			synchronized (runnables) {
-				runnables.add(runnable);
-			}
-			try {
-				runnable.wait();
-			} catch (InterruptedException ex) {
-			}
-		}
-	}
-
-	/**
-	 * 中断所有线程事件
-	 * 
-	 */
-	public final void callEventInterrupt() {
-		synchronized (runnables) {
-			for (Iterator<Runnable> it = runnables.iterator(); it.hasNext();) {
-				Object running = it.next();
-				synchronized (running) {
-					if (running instanceof Thread) {
-						((Thread) running).setPriority(Thread.MIN_PRIORITY);
-						((Thread) running).interrupt();
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * 运行线程事件
-	 * 
-	 */
-	public final void callEvents() {
-		callEvents(true);
-	}
-
-	/**
-	 * 执行或中断指定的线程事件
-	 * 
-	 * @param execute
-	 */
-	public final void callEvents(boolean execute) {
-		if (!execute) {
-			synchronized (runnables) {
-				runnables.clear();
-			}
-			return;
-		}
-		if (runnables.size() == 0) {
-			return;
-		}
-		ArrayList<Runnable> runnableList;
-		synchronized (runnables) {
-			runnableList = new ArrayList<Runnable>(runnables);
-			runnables.clear();
-		}
-		for (Iterator<Runnable> it = runnableList.iterator(); it.hasNext();) {
-			Object running = it.next();
-			synchronized (running) {
-				try {
-					if (running instanceof Thread) {
-						Thread thread = (Thread) running;
-						if (!thread.isAlive()) {
-							thread.start();
-						}
-
-					} else {
-						((Runnable) running).run();
-					}
-				} catch (Exception ex) {
-				}
-				running.notifyAll();
-			}
-		}
-		runnableList = null;
 	}
 
 	public void setLocation(float x, float y) {
@@ -2155,7 +2030,6 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 			replaceDelay.setDelay(10);
 			tx = ty = 0;
 			isClose = true;
-			callEvents(false);
 			isTranslate = false;
 			isNext = false;
 			isGravity = false;

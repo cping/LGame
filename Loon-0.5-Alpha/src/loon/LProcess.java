@@ -20,7 +20,6 @@
  */
 package loon;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import loon.core.Director;
@@ -35,6 +34,8 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimerContext;
 import loon.utils.MathUtils;
 
@@ -42,11 +43,11 @@ public class LProcess extends Director {
 
 	private JavaSEApp scene;
 
-	ArrayList<Updateable> loads;
+	LinkedList<Updateable> loads;
 
-	ArrayList<Updateable> unloads;
+	LinkedList<Updateable> unloads;
 
-	ArrayList<Drawable> drawings;
+	LinkedList<Drawable> drawings;
 
 	EmulatorListener emulatorListener;
 
@@ -80,17 +81,17 @@ public class LProcess extends Director {
 
 	public void clear() {
 		if (loads == null) {
-			loads = new ArrayList<Updateable>(10);
+			loads = new LinkedList<Updateable>();
 		} else {
 			loads.clear();
 		}
 		if (unloads == null) {
-			unloads = new ArrayList<Updateable>(10);
+			unloads = new LinkedList<Updateable>();
 		} else {
 			unloads.clear();
 		}
 		if (drawings == null) {
-			drawings = new ArrayList<Drawable>(10);
+			drawings = new LinkedList<Drawable>();
 		} else {
 			drawings.clear();
 		}
@@ -114,12 +115,6 @@ public class LProcess extends Director {
 	public void end() {
 		if (running) {
 			running = false;
-		}
-	}
-
-	public void calls() {
-		if (isInstance) {
-			currentControl.callEvents(true);
 		}
 	}
 
@@ -171,11 +166,11 @@ public class LProcess extends Director {
 		}
 	}
 
-	private final static void callUpdateable(final ArrayList<Updateable> list) {
+	private final static void callUpdateable(final LinkedList<Updateable> list) {
 		LSystem.AUTO_REPAINT = false;
-		ArrayList<Updateable> loadCache;
+		LinkedList<Updateable> loadCache;
 		synchronized (list) {
-			loadCache = new ArrayList<Updateable>(list);
+			loadCache = new LinkedList<Updateable>(list);
 			list.clear();
 		}
 		for (int i = 0; i < loadCache.size(); i++) {
@@ -577,27 +572,24 @@ public class LProcess extends Director {
 
 			screen.onCreate(LSystem.screenRect.width, LSystem.screenRect.height);
 
-			Runnable runnable = new Runnable() {
+			RealtimeProcess process = new RealtimeProcess() {
 
 				@Override
 				public void run() {
-					for (; LSystem.isLogo;) {
-						try {
-							Thread.sleep(60);
-						} catch (InterruptedException e) {
-						}
+					if (!LSystem.isLogo) {
+						startTransition();
+						screen.setClose(false);
+						screen.onLoad();
+						screen.onLoaded();
+						screen.setOnLoadState(true);
+						endTransition();
+						kill();
 					}
-					startTransition();
-					screen.setClose(false);
-					screen.onLoad();
-					screen.onLoaded();
-					screen.setOnLoadState(true);
-					endTransition();
-
 				}
 			};
+			process.setDelay(60);
 
-			LSystem.callScreenRunnable(new Thread(runnable, "ProcessThread"));
+			RealtimeProcessManager.get().addProcess(process);
 
 			if (put) {
 				screens.add(screen);

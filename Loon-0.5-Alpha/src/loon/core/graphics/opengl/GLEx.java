@@ -810,6 +810,9 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
+		if (matrixs != null) {
+			matrixs.clear();
+		}
 		bind(0);
 		glTex2DDisable();
 		if (clear) {
@@ -1920,23 +1923,6 @@ public final class GLEx implements LTrans {
 		return lineWidth;
 	}
 
-	public static void checkError() {
-		try {
-			tryError();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void tryError() throws Exception {
-		int id = gl.glGetError();
-		if (id != GL20.GL_NO_ERROR) {
-			String method = Thread.currentThread().getStackTrace()[3]
-					.getMethodName();
-			throw new Exception(id + ":" + method);
-		}
-	}
-
 	/**
 	 * 验证是否为2的N次幂
 	 * 
@@ -2106,9 +2092,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null, null);
 	}
@@ -2127,9 +2110,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, rotation, null, d);
 	}
@@ -2146,9 +2126,6 @@ public final class GLEx implements LTrans {
 			LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null, null);
@@ -2184,9 +2161,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null, dir);
 	}
@@ -2204,9 +2178,6 @@ public final class GLEx implements LTrans {
 			LColor color, float rotation) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, rotation, null, null);
@@ -2246,9 +2217,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, 0, null, dir);
 	}
@@ -2268,9 +2236,6 @@ public final class GLEx implements LTrans {
 			LColor color, float rotation, Vector2f origin, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, texture.width, texture.height, 0, 0,
 				texture.width, texture.height, color, rotation, origin, dir);
@@ -2294,9 +2259,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, texture.width * scale, texture.height
 				* scale, 0, 0, texture.width, texture.height, color, rotation,
 				origin, dir);
@@ -2315,9 +2277,6 @@ public final class GLEx implements LTrans {
 			float width, float height) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, 0, null, null);
@@ -2338,9 +2297,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, 0, null, null);
 	}
@@ -2360,9 +2316,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, rotation, null, null);
 	}
@@ -2381,9 +2334,6 @@ public final class GLEx implements LTrans {
 			float width, float height, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, 0, null, dir);
@@ -2405,9 +2355,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, rotation, null, null);
 	}
@@ -2427,9 +2374,6 @@ public final class GLEx implements LTrans {
 			float width, float height, LColor color, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, 0, null, dir);
@@ -2453,9 +2397,6 @@ public final class GLEx implements LTrans {
 			Vector2f origin, Direction dir) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, x, y, width, height, 0, 0, texture.width,
 				texture.height, color, rotation, origin, dir);
@@ -2775,9 +2716,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, 0, 0, texture.width, texture.height, color, 0,
 				null, null);
@@ -2795,9 +2733,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, 0, 0, texture.width, texture.height, color, 0,
 				null, null);
@@ -2814,9 +2749,6 @@ public final class GLEx implements LTrans {
 			RectBox srcRect) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
@@ -2836,9 +2768,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
 				srcRect.height, color, 0, null, null);
@@ -2857,9 +2786,6 @@ public final class GLEx implements LTrans {
 		if (isClose || texture == null || texture.isClose) {
 			return;
 		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
-		}
 		drawTexture(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
 				srcRect.height, color, rotation, null, null);
@@ -2874,9 +2800,6 @@ public final class GLEx implements LTrans {
 	public final void drawTexture(LTexture texture, Vector2f position) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, position.x, position.y, texture.width,
 				texture.height, 0, 0, texture.width, texture.height, color, 0,
@@ -2894,9 +2817,6 @@ public final class GLEx implements LTrans {
 			LColor color) {
 		if (isClose || texture == null || texture.isClose) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		drawTexture(texture, position.x, position.y, texture.width,
 				texture.height, 0, 0, texture.width, texture.height, color, 0,
@@ -2954,9 +2874,6 @@ public final class GLEx implements LTrans {
 		}
 		if (!texture.isVisible) {
 			return;
-		}
-		if (!texture.isLoaded) {
-			texture.loadTexture();
 		}
 		if (texBatch == null) {
 			texBatch = new LTextureBatch(texture);

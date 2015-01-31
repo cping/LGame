@@ -30,8 +30,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class JavaSEInputFactory {
-
-	public static void setOnscreenKeyboardVisible(boolean visible) {
+	
+	public static void setOnscreenKeyboardVisible (boolean visible) {
 
 	}
 
@@ -490,13 +490,14 @@ public class JavaSEInputFactory {
 	}
 
 	void updateMouse() {
+
 		if (Mouse.isCreated()) {
 			while (Mouse.next()) {
+	
 				int touchX = Math.round(Mouse.getEventX() / LSystem.scaleWidth);
-				int touchY = Math
-						.round(((LSystem.screenRect.height * LSystem.scaleHeight)
-								- Mouse.getEventY() - 1)
+				int touchY = (int) ((-(Mouse.getEventY()-(LSystem.screenRect.height/2)))
 								/ LSystem.scaleHeight);
+				 
 				int button = Mouse.getEventButton();
 				finalTouch.x = touchX - (handler.getX() / LSystem.scaleWidth);
 				finalTouch.y = touchY - (handler.getY() / LSystem.scaleHeight);

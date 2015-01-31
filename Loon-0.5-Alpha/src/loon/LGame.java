@@ -400,8 +400,6 @@ public class LGame extends JavaSEApp {
 
 						process.load();
 
-						process.calls();
-
 						if (!isRunning) {
 							break;
 						}

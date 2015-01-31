@@ -1,15 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.LSystem;
-import loon.core.LRelease;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LSTRFont;
-import loon.core.graphics.opengl.LTexture;
-import loon.utils.StringUtils;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -30,6 +18,18 @@ import loon.utils.StringUtils;
  * @email javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.core.graphics.component;
+
+import loon.LSystem;
+import loon.core.LRelease;
+import loon.core.geom.Vector2f;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LSTRFont;
+import loon.core.graphics.opengl.LTexture;
+import loon.utils.StringUtils;
+
 public class Print implements LRelease {
 
 	private int index, offset, font, tmp_font;

@@ -55,34 +55,8 @@ public class Audio {
 	}
 
 	public JavaSound createSound(final InputStream in, final boolean music) {
-		final JavaSound sound = new JavaSound();
-		LSystem.callScreenRunnable(new Runnable() {
-			public void run() {
-				try {
-					AudioInputStream ais = AudioSystem.getAudioInputStream(in);
-					Clip clip = AudioSystem.getClip();
-					if (music) {
-						clip = new BigClip(clip);
-					}
-					AudioFormat baseFormat = ais.getFormat();
-					if (baseFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-						AudioFormat decodedFormat = new AudioFormat(
-								AudioFormat.Encoding.PCM_SIGNED, baseFormat
-										.getSampleRate(), 16, baseFormat
-										.getChannels(), baseFormat
-										.getChannels() * 2, baseFormat
-										.getSampleRate(), false);
-						ais = AudioSystem.getAudioInputStream(decodedFormat,
-								ais);
-					}
-					clip.open(ais);
-					dispatchLoaded(sound, clip);
-				} catch (Exception e) {
-					dispatchLoadError(sound, e);
-				}
-			}
-		});
-		return sound;
+		
+		return null;
 	}
 
 	public void onPause() {

@@ -160,16 +160,6 @@ public class Assets {
 		return (_loadedIndex >= _assetList.size());
 	}
 
-	public static boolean loadAllAssets() {
-		while (!loadOneAsset()) {
-			try {
-				Thread.sleep(1);
-			} catch (Exception ex) {
-			}
-		}
-		return true;
-	}
-
 	public static boolean loadOneAsset() {
 		if (hasLoaded()) {
 			return true;

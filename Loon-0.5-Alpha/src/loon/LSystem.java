@@ -41,6 +41,8 @@ import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.FrameBuffer;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.processes.Process;
+import loon.core.processes.RealtimeProcess;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
@@ -220,23 +222,6 @@ public final class LSystem {
 			try {
 				in.close();
 			} catch (Exception e) {
-			}
-		}
-	}
-
-	/**
-	 * 执行一个位于Screen线程中的Runnable
-	 * 
-	 * @param runnable
-	 */
-	public final static void callScreenRunnable(Runnable runnable) {
-		LProcess process = LSystem.screenProcess;
-		if (process != null) {
-			Screen screen = process.getScreen();
-			if (screen != null) {
-				synchronized (screen) {
-					screen.callEvent(runnable);
-				}
 			}
 		}
 	}

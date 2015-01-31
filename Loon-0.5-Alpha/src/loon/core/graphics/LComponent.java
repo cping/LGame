@@ -704,7 +704,7 @@ public abstract class LComponent extends LObject implements ActionBind,
 	}
 
 	public void setBackground(String fileName) {
-		this.setBackground(new LTexture(fileName, Format.STATIC));
+		this.setBackground(new LTexture(fileName, Format.SPEED));
 	}
 
 	public void setBackground(LColor color) {

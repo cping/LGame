@@ -202,44 +202,27 @@ public class LTextureBatch {
 	public void setBlendState(BlendState state) {
 		if (state != lastBlendState) {
 			this.lastBlendState = state;
-			if (GLEx.self != null) {
-				switch (lastBlendState) {
-				case Additive:
-					GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-					break;
-				case AlphaBlend:
-					GLEx.self.setBlendMode(GL.MODE_SPEED);
-					break;
-				case Opaque:
-					GLEx.self.setBlendMode(GL.MODE_NONE);
-					break;
-				case NonPremultiplied:
-					GLEx.self.setBlendMode(GL.MODE_NORMAL);
-					break;
-				}
-			} else {
-				Updateable update = new Updateable() {
+			Updateable update = new Updateable() {
 
-					@Override
-					public void action(Object a) {
-						switch (lastBlendState) {
-						case Additive:
-							GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-							break;
-						case AlphaBlend:
-							GLEx.self.setBlendMode(GL.MODE_SPEED);
-							break;
-						case Opaque:
-							GLEx.self.setBlendMode(GL.MODE_NONE);
-							break;
-						case NonPremultiplied:
-							GLEx.self.setBlendMode(GL.MODE_NORMAL);
-							break;
-						}
+				@Override
+				public void action(Object a) {
+					switch (lastBlendState) {
+					case Additive:
+						GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+						break;
+					case AlphaBlend:
+						GLEx.self.setBlendMode(GL.MODE_SPEED);
+						break;
+					case Opaque:
+						GLEx.self.setBlendMode(GL.MODE_NONE);
+						break;
+					case NonPremultiplied:
+						GLEx.self.setBlendMode(GL.MODE_NORMAL);
+						break;
 					}
-				};
-				LSystem.load(update);
-			}
+				}
+			};
+			LSystem.load(update);
 		}
 	}
 
@@ -466,7 +449,13 @@ public class LTextureBatch {
 		if (!isLoaded) {
 			return;
 		}
-		if (globalShader == null) {
+		if (color == null) {
+			if (shader == null) {
+				shader = GLEx.createDefaultShader();
+			} else {
+				globalShader = shader;
+			}
+		} else if (globalShader == null) {
 			globalShader = GLEx.createGlobalShader();
 		}
 		globalShader.begin();
@@ -482,9 +471,6 @@ public class LTextureBatch {
 			globalShader.setUniformi("u_texture", 0);
 		}
 		if (cache.vertexIdx > 0) {
-			if (cache.vertexIdx == 0) {
-				return;
-			}
 			GLEx.self.bind(texture);
 			Mesh mesh = this.mesh;
 			mesh.setVertices(cache.vertices, 0, cache.vertexIdx);
@@ -1119,6 +1105,12 @@ public class LTextureBatch {
 	}
 
 	public void draw(float x, float y, float width, float height, float srcX,
+			float srcY, float srcWidth, float srcHeight, float rotation) {
+		draw(x, y, width / 2, height / 2, width, height, 1f, 1f, rotation,
+				srcX, srcY, srcWidth, srcHeight, false, false);
+	}
+
+	public void draw(float x, float y, float width, float height, float srcX,
 			float srcY, float srcWidth, float srcHeight, LColor c) {
 		float old = color;
 		if (c != null) {
@@ -1411,7 +1403,9 @@ public class LTextureBatch {
 	}
 
 	public void dispose() {
-		mesh.dispose();
+		if (mesh != null) {
+			mesh.dispose();
+		}
 		if (ownsShader && shader != null) {
 			shader.dispose();
 		}

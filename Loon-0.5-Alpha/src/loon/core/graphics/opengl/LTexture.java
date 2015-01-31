@@ -1103,10 +1103,7 @@ public class LTexture implements LRelease {
 		if (isBatch) {
 			float old = batch.getFloatColor();
 			batch.setColor(c);
-			// batch.draw(x, y, width, height, x1, y1, x2, y2, rotation);
-			// if (update) {
-			// setImageColor(LColor.white);
-			// }
+			batch.draw(x, y, width, height, x1, y1, x2, y2, rotation);
 			batch.setColor(old);
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2, c,
