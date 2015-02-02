@@ -147,7 +147,6 @@ public class LTexture implements LRelease {
 
 	String lazyName;
 
-	boolean isStatic;
 
 	private LTexture() {
 		format = Format.DEFAULT;
@@ -187,7 +186,6 @@ public class LTexture implements LRelease {
 		this.replace = texture.replace;
 		this.isLoaded = texture.isLoaded;
 		this.isClose = texture.isClose;
-		this.isStatic = texture.isStatic;
 		this.isVisible = texture.isVisible;
 		System.arraycopy(texture.crops, 0, crops, 0, crops.length);
 	}
@@ -241,7 +239,6 @@ public class LTexture implements LRelease {
 	public final void checkReplace() {
 		this.replace = Format.BILINEAR == format || Format.BILINEAR == format
 				|| Format.REPEATING_BILINEAR == format;
-		this.isStatic = format == Format.SPEED || format == Format.STATIC;
 	}
 
 	public final String getFileName() {
@@ -571,7 +568,6 @@ public class LTexture implements LRelease {
 				sub.imageData = imageData;
 				sub.hasAlpha = hasAlpha;
 				sub.replace = replace;
-				sub.isStatic = isStatic;
 				sub.reload = reload;
 				sub.format = format;
 				sub.width = width;
@@ -618,7 +614,6 @@ public class LTexture implements LRelease {
 						sub.imageData = imageData;
 						sub.hasAlpha = hasAlpha;
 						sub.replace = replace;
-						sub.isStatic = isStatic;
 						sub.reload = reload;
 						sub.format = format;
 						sub.width = width;
@@ -729,7 +724,6 @@ public class LTexture implements LRelease {
 				copy.textureID = textureID;
 				copy.isLoaded = isLoaded;
 				copy.replace = replace;
-				copy.isStatic = isStatic;
 				copy.reload = reload;
 				copy.format = format;
 				copy.hasAlpha = hasAlpha;
@@ -780,7 +774,6 @@ public class LTexture implements LRelease {
 						copy.textureID = textureID;
 						copy.isLoaded = isLoaded;
 						copy.replace = replace;
-						copy.isStatic = isStatic;
 						copy.reload = reload;
 						copy.format = format;
 						copy.hasAlpha = hasAlpha;

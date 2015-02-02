@@ -3016,13 +3016,11 @@ public final class GLEx implements LTrans {
 
 			bind(texture.textureID);
 
-			if (!texture.isStatic) {
-				updateColor = !color.equals(c) || _lastAlpha != 1f;
-				if (updateColor) {
-					MODULATE();
-					gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
-							: c.a);
-				}
+			updateColor = !color.equals(c) || _lastAlpha != 1f;
+			if (updateColor) {
+				MODULATE();
+				gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
+						: c.a);
 			}
 
 			if (onSaveFlag = checkSave(texture, x, y, width, height, rotation,
@@ -3122,11 +3120,9 @@ public final class GLEx implements LTrans {
 				gl10.glPopMatrix();
 			}
 
-			if (!texture.isStatic) {
-				if (updateColor) {
-					REPLACE();
-					gl10.glColor4f(color.r, color.g, color.b, color.a);
-				}
+			if (updateColor) {
+				REPLACE();
+				gl10.glColor4f(color.r, color.g, color.b, color.a);
 			}
 
 		}

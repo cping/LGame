@@ -2204,7 +2204,6 @@ public final class GLEx implements LTrans {
 		gl10.glRotatef(angle, x, y, z);
 	}
 
-
 	/**
 	 * 渲染纹理到指定位置
 	 * 
@@ -2723,11 +2722,9 @@ public final class GLEx implements LTrans {
 			glTex2DEnable();
 			{
 				bind(texture.textureID);
-				if (!texture.isStatic) {
-					if (c != null) {
-						MODULATE();
-						gl10.glColor4f(c.r, c.g, c.b, c.a);
-					}
+				if (c != null) {
+					MODULATE();
+					gl10.glColor4f(c.r, c.g, c.b, c.a);
 				}
 				if (texture.parent != null) {
 					gl11.glTexParameteriv(
@@ -2757,16 +2754,14 @@ public final class GLEx implements LTrans {
 									* LSystem.scaleHeight);
 				}
 
-				if (!texture.isStatic) {
-					if (c != null) {
-						REPLACE();
-						gl10.glColor4f(color.r, color.g, color.b, color.a);
-					}
+				if (c != null) {
+					REPLACE();
+					gl10.glColor4f(color.r, color.g, color.b, color.a);
 				}
 			}
 		} else {
-			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-					color, 0, null, null);
+			drawTexture(texture, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, color,
+					0, null, null);
 		}
 	}
 
@@ -3122,13 +3117,11 @@ public final class GLEx implements LTrans {
 
 			bind(texture.textureID);
 
-			if (!texture.isStatic) {
-				updateColor = !color.equals(c) || _lastAlpha != 1f;
-				if (updateColor) {
-					MODULATE();
-					gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
-							: c.a);
-				}
+			updateColor = !color.equals(c) || _lastAlpha != 1f;
+			if (updateColor) {
+				MODULATE();
+				gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
+						: c.a);
 			}
 
 			if (onSaveFlag = checkSave(texture, x, y, width, height, rotation,
@@ -3227,11 +3220,9 @@ public final class GLEx implements LTrans {
 				gl10.glPopMatrix();
 			}
 
-			if (!texture.isStatic) {
-				if (updateColor) {
-					REPLACE();
-					gl10.glColor4f(color.r, color.g, color.b, color.a);
-				}
+			if (updateColor) {
+				REPLACE();
+				gl10.glColor4f(color.r, color.g, color.b, color.a);
 			}
 		}
 	}

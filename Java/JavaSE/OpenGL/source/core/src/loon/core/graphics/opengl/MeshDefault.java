@@ -19,6 +19,18 @@ public class MeshDefault {
 							Usage.ColorPacked, 4, "COLOR"),
 					new GLAttributes.VertexAttribute(Usage.TextureCoordinates,
 							2, "TEXCOORD"));
+			int len = size * 6;
+			short[] indices = new short[len];
+			short j = 0;
+			for (int i = 0; i < len; i += 6, j += 4) {
+				indices[i + 0] = (short) (j + 0);
+				indices[i + 1] = (short) (j + 1);
+				indices[i + 2] = (short) (j + 2);
+				indices[i + 3] = (short) (j + 2);
+				indices[i + 4] = (short) (j + 3);
+				indices[i + 5] = (short) (j + 0);
+			}
+			mesh.setIndices(indices);
 		}
 		return mesh;
 	}
