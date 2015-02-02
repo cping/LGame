@@ -377,7 +377,7 @@ public final class GLEx implements LTrans {
 
 	public static GL20 gl;
 
-	private int currentBlendMode;
+	private int currentBlendMode = -1;
 
 	float lastAlpha = 1F, lineWidth, sx = 1, sy = 1;
 
@@ -712,8 +712,11 @@ public final class GLEx implements LTrans {
 			useBegin = false;
 			return;
 		}
+		int oldmode = getBlendMode();
+		setBlendMode(GL.MODE_NORMAL);
 		glBatch.end();
 		useBegin = false;
+		setBlendMode(oldmode);
 	}
 
 	/**
@@ -2866,6 +2869,7 @@ public final class GLEx implements LTrans {
 			float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, LColor c, float rotation, Vector2f origin,
 			Direction dir) {
+		
 		if (isClose) {
 			return;
 		}
@@ -2881,7 +2885,13 @@ public final class GLEx implements LTrans {
 		if (lastTextre != texture) {
 			texBatch.setTexture(texture);
 		}
+
+		int oldmode = getBlendMode();
+		
+		setBlendMode(GL.MODE_NORMAL);
+		
 		texBatch.begin();
+		
 		float oldColor = texBatch.getFloatColor();
 		if (c != null) {
 			texBatch.setColor(c);
@@ -2895,6 +2905,7 @@ public final class GLEx implements LTrans {
 				texBatch.setColor(color);
 			}
 		}
+		
 		boolean flipX = false;
 		boolean flipY = false;
 		if (Direction.TRANS_MIRROR == dir) {
@@ -2905,20 +2916,25 @@ public final class GLEx implements LTrans {
 			flipX = true;
 			flipY = true;
 		}
+
 		if (origin != null) {
 			texBatch.draw(x, y, origin.x, origin.y, width, height, 1f, 1f,
 					rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 		} else if (rotation == 0 && !flipX && !flipY) {
 			texBatch.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight);
 		} else if (rotation == 0) {
-			texBatch.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight,
-					flipX, flipY);
+			texBatch.draw(null, x, y, width, height, srcX, srcY, srcWidth,
+					srcHeight, flipX, flipY);
 		} else {
 			texBatch.draw(x, y, width / 2, height / 2, width, height, 1f, 1f,
 					rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 		}
 		texBatch.setColor(oldColor);
+
 		texBatch.end();
+
+		setBlendMode(oldmode);
+		
 		if (lastTextre != texture) {
 			lastTextre = texture;
 		}

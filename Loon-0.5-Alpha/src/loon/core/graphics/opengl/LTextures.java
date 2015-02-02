@@ -160,7 +160,6 @@ public class LTextures {
 						if (texture.childs != null) {
 							Updateable u = new Updateable() {
 								public void action(Object a) {
-									texture.loadTexture();
 									for (int i = 0; i < texture.childs.size(); i++) {
 										LTexture child = texture.childs.get(i);
 										if (child != null) {

@@ -5,19 +5,15 @@ import java.util.HashMap;
 import loon.LSystem;
 import loon.action.sprite.SpriteBatch.BlendState;
 import loon.action.sprite.SpriteRegion;
-import loon.action.sprite.SpriteBatch.SpriteEffects;
 import loon.core.LRelease;
-import loon.core.event.Updateable;
 import loon.core.geom.Matrix4;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
 import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.Mesh.VertexDataType;
-import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class LTextureBatch {
+public class LTextureBatch implements LRelease {
+
+	private boolean isClosed;
 
 	public boolean isCacheLocked;
 
@@ -97,6 +93,8 @@ public class LTextureBatch {
 
 	private Cache lastCache;
 
+	private LColor[] colors;
+
 	public static class Cache implements LRelease {
 
 		float[] vertices;
@@ -121,8 +119,6 @@ public class LTextureBatch {
 
 	}
 
-	private Mesh mesh;
-
 	int count = 0;
 
 	float[] vertices;
@@ -138,7 +134,6 @@ public class LTextureBatch {
 	private ShaderProgram shader = null;
 	private ShaderProgram customShader = null;
 	private ShaderProgram globalShader = null;
-	private boolean ownsShader;
 
 	private final float whiteColor = LColor.white.toFloatBits();
 	float color = whiteColor;
@@ -166,7 +161,7 @@ public class LTextureBatch {
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
 	public LTextureBatch(LTexture tex) {
-		this(tex, 1000, null);
+		this(tex, 4096, null);
 	}
 
 	public LTextureBatch(LTexture tex, int size) {
@@ -195,6 +190,28 @@ public class LTextureBatch {
 		this.size = size;
 	}
 
+	public void glColor4f() {
+		vertices[vertexIdx++] = color;
+	}
+
+	public void glColor4f(LColor color) {
+		vertices[vertexIdx++] = color.toFloatBits();
+	}
+
+	public void glColor4f(float r, float g, float b, float a) {
+		vertices[vertexIdx++] = LColor.toFloatBits(r, g, b, a);
+	}
+
+	public void glTexCoord2f(float u, float v) {
+		vertices[vertexIdx++] = u;
+		vertices[vertexIdx++] = v;
+	}
+
+	public void glVertex2f(float x, float y) {
+		vertices[vertexIdx++] = x;
+		vertices[vertexIdx++] = y;
+	}
+
 	public BlendState getBlendState() {
 		return lastBlendState;
 	}
@@ -202,56 +219,16 @@ public class LTextureBatch {
 	public void setBlendState(BlendState state) {
 		if (state != lastBlendState) {
 			this.lastBlendState = state;
-			Updateable update = new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					switch (lastBlendState) {
-					case Additive:
-						GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-						break;
-					case AlphaBlend:
-						GLEx.self.setBlendMode(GL.MODE_SPEED);
-						break;
-					case Opaque:
-						GLEx.self.setBlendMode(GL.MODE_NONE);
-						break;
-					case NonPremultiplied:
-						GLEx.self.setBlendMode(GL.MODE_NORMAL);
-						break;
-					}
-				}
-			};
-			LSystem.load(update);
 		}
 	}
 
 	public void begin() {
 		if (!isLoaded) {
-			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
-					size * 6, new VertexAttribute(Usage.Position, 2,
-							ShaderProgram.POSITION_ATTRIBUTE),
-					new VertexAttribute(Usage.ColorPacked, 4,
-							ShaderProgram.COLOR_ATTRIBUTE),
-					new VertexAttribute(Usage.TextureCoordinates, 2,
-							ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
 
 			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
-			int len = size * 6;
-			short[] indices = new short[len];
-			short j = 0;
-			for (int i = 0; i < len; i += 6, j += 4) {
-				indices[i] = j;
-				indices[i + 1] = (short) (j + 1);
-				indices[i + 2] = (short) (j + 2);
-				indices[i + 3] = (short) (j + 2);
-				indices[i + 4] = (short) (j + 3);
-				indices[i + 5] = j;
-			}
-			mesh.setIndices(indices);
+
 			if (shader == null) {
 				shader = GLEx.createDefaultShader();
-				ownsShader = true;
 			}
 			isLoaded = true;
 		}
@@ -342,10 +319,16 @@ public class LTextureBatch {
 		if (!isLoaded || isCacheLocked) {
 			return false;
 		}
+		if (isClosed) {
+			return false;
+		}
 		if (texture == null) {
 			return false;
 		}
 		checkDrawing();
+		if (!texture.isLoaded()) {
+			texture.loadTexture();
+		}
 		LTexture tex2d = texture.getParent();
 		if (tex2d != null) {
 			if (tex2d != lastTexture) {
@@ -364,6 +347,7 @@ public class LTextureBatch {
 		} else if (vertexIdx == vertices.length) {
 			submit();
 		}
+
 		return true;
 	}
 
@@ -383,13 +367,22 @@ public class LTextureBatch {
 			this.count = spritesInBatch * 6;
 		}
 		GLEx.self.bind(texture);
-		Mesh mesh = this.mesh;
-		mesh.setVertices(vertices, 0, vertexIdx);
-		mesh.getIndicesBuffer().position(0);
-		mesh.getIndicesBuffer().limit(count);
-		setBlendState(state);
-		mesh.render(customShader != null ? customShader : shader,
-				GL20.GL_TRIANGLES, 0, count);
+		switch (lastBlendState) {
+		case Additive:
+			GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+			break;
+		case AlphaBlend:
+			GLEx.self.setBlendMode(GL.MODE_SPEED);
+			break;
+		case Opaque:
+			GLEx.self.setBlendMode(GL.MODE_NONE);
+			break;
+		case NonPremultiplied:
+			GLEx.self.setBlendMode(GL.MODE_NORMAL);
+			break;
+		}
+		MeshDefault.post(customShader != null ? customShader : shader, vertices,
+				vertexIdx, count);
 
 	}
 
@@ -449,12 +442,14 @@ public class LTextureBatch {
 		if (!isLoaded) {
 			return;
 		}
+		if (drawing) {
+			end();
+		}
 		if (color == null) {
 			if (shader == null) {
 				shader = GLEx.createDefaultShader();
-			} else {
-				globalShader = shader;
 			}
+			globalShader = shader;
 		} else if (globalShader == null) {
 			globalShader = GLEx.createGlobalShader();
 		}
@@ -472,12 +467,21 @@ public class LTextureBatch {
 		}
 		if (cache.vertexIdx > 0) {
 			GLEx.self.bind(texture);
-			Mesh mesh = this.mesh;
-			mesh.setVertices(cache.vertices, 0, cache.vertexIdx);
-			mesh.getIndicesBuffer().position(0);
-			mesh.getIndicesBuffer().limit(cache.count);
-			setBlendState(state);
-			mesh.render(globalShader, GL20.GL_TRIANGLES, 0, cache.count);
+			switch (lastBlendState) {
+			case Additive:
+				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+				break;
+			case AlphaBlend:
+				GLEx.self.setBlendMode(GL.MODE_SPEED);
+				break;
+			case Opaque:
+				GLEx.self.setBlendMode(GL.MODE_NONE);
+				break;
+			case NonPremultiplied:
+				GLEx.self.setBlendMode(GL.MODE_NORMAL);
+				break;
+			}
+			MeshDefault.post(globalShader, cache.vertices, cache.vertexIdx, cache.count);
 		}
 		if (color != null) {
 			globalShader.setUniformf("v_color", oldColor);
@@ -514,419 +518,180 @@ public class LTextureBatch {
 		}
 	}
 
-	public void draw(float x, float y, float rotation) {
-		draw(x, y, texWidth / 2, texHeight / 2, texWidth, texHeight, 1f, 1f,
-				rotation, 0, 0, texWidth, texHeight, false, false);
+	private float xOff, yOff, widthRatio, heightRatio;
+
+	private float drawWidth, drawHeight;
+
+	private float textureSrcX, textureSrcY;
+
+	private float srcWidth, srcHeight;
+
+	private float renderWidth, renderHeight;
+
+	public void draw(float x, float y) {
+		draw(colors, x, y, texture.width, texture.height, 0, 0, texture.width,
+				texture.height);
 	}
 
-	public void draw(float x, float y, float width, float height, float rotation) {
-		if (rotation == 0 && texWidth == width && texHeight == height) {
-			draw(x, y, width, height);
+	public void draw(float x, float y, float width, float height) {
+		draw(colors, x, y, width, height, 0, 0, texture.width, texture.height);
+	}
+
+	public void draw(float x, float y, float width, float height, float srcX,
+			float srcY, float srcWidth, float srcHeight) {
+		draw(colors, x, y, width, height, srcX, srcY, srcWidth, srcHeight);
+	}
+
+	public void draw(LColor[] colors, float x, float y, float width,
+			float height) {
+		draw(colors, x, y, width, height, 0, 0, texture.width, texture.height);
+	}
+
+	/**
+	 * 以指定的色彩，顶点绘制出指定区域内的纹理到指定位置
+	 * 
+	 * @param colors
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param srcX
+	 * @param srcY
+	 * @param srcWidth
+	 * @param srcHeight
+	 */
+	public void draw(LColor[] colors, float x, float y, float width,
+			float height, float srcX, float srcY, float srcWidth,
+			float srcHeight) {
+
+		if (!checkTexture(texture)) {
+			return;
+		}
+
+		xOff = srcX * invTexWidth + texture.xOff;
+		yOff = srcY * invTexHeight + texture.yOff;
+		widthRatio = srcWidth * invTexWidth;
+		heightRatio = srcHeight * invTexHeight;
+
+		final float fx2 = x + width;
+		final float fy2 = y + height;
+
+		if (colors == null) {
+			glVertex2f(x, y);
+			glColor4f();
+			glTexCoord2f(xOff, yOff);
+
+			glVertex2f(x, fy2);
+			glColor4f();
+			glTexCoord2f(xOff, heightRatio);
+
+			glVertex2f(fx2, fy2);
+			glColor4f();
+			glTexCoord2f(widthRatio, heightRatio);
+
+			glVertex2f(fx2, y);
+			glColor4f();
+			glTexCoord2f(widthRatio, yOff);
+
 		} else {
-			draw(x, y, width / 2, height / 2, width, height, 1f, 1f, rotation,
-					0, 0, texWidth, texHeight, false, false);
+			glVertex2f(x, y);
+			glColor4f(colors[LTexture.TOP_LEFT]);
+			glTexCoord2f(xOff, yOff);
+
+			glVertex2f(x, fy2);
+			glColor4f(colors[LTexture.BOTTOM_LEFT]);
+			glTexCoord2f(xOff, heightRatio);
+
+			glVertex2f(fx2, fy2);
+			glColor4f(colors[LTexture.BOTTOM_RIGHT]);
+			glTexCoord2f(widthRatio, heightRatio);
+
+			glVertex2f(fx2, y);
+			glColor4f(colors[LTexture.TOP_RIGHT]);
+			glTexCoord2f(widthRatio, yOff);
+
 		}
 	}
 
-	public void draw(float x, float y, float rotation, float srcX, float srcY,
-			float srcWidth, float srcHeight) {
-		draw(x, y, srcWidth / 2, srcHeight / 2, texWidth, texHeight, 1f, 1f,
+	public void drawQuad(float drawX, float drawY, float drawX2, float drawY2,
+			float srcX, float srcY, float srcX2, float srcY2) {
+
+		if (!checkTexture(texture)) {
+			return;
+		}
+
+		drawWidth = drawX2 - drawX;
+		drawHeight = drawY2 - drawY;
+		textureSrcX = ((srcX / texWidth) * texture.widthRatio) + texture.xOff;
+		textureSrcY = ((srcY / texHeight) * texture.heightRatio) + texture.yOff;
+		srcWidth = srcX2 - srcX;
+		srcHeight = srcY2 - srcY;
+		renderWidth = ((srcWidth / texWidth) * texture.widthRatio);
+		renderHeight = ((srcHeight / texHeight) * texture.heightRatio);
+
+		glVertex2f(drawX, drawY);
+		glColor4f();
+		glTexCoord2f(textureSrcX, textureSrcY);
+
+		glVertex2f(drawX, drawY + drawHeight);
+		glColor4f();
+		glTexCoord2f(textureSrcX, textureSrcY + renderHeight);
+
+		glVertex2f(drawX + drawWidth, drawY + drawHeight);
+		glColor4f();
+		glTexCoord2f(textureSrcX + renderWidth, textureSrcY + renderHeight);
+
+		glVertex2f(drawX + drawWidth, drawY);
+		glColor4f();
+		glTexCoord2f(textureSrcX + renderWidth, textureSrcY);
+
+	}
+
+	public void draw(LColor[] colors, float x, float y, float rotation) {
+		draw(colors, x, y, texture.getWidth() / 2, texture.getHeight() / 2,
+				texture.getWidth(), texture.getHeight(), 1f, 1f, rotation, 0,
+				0, texture.getWidth(), texture.getHeight(), false, false);
+	}
+
+	public void draw(LColor[] colors, float x, float y, float width,
+			float height, float rotation) {
+		draw(colors, x, y, texture.getWidth() / 2, texture.getHeight() / 2,
+				width, height, 1f, 1f, rotation, 0, 0, texture.getWidth(),
+				texture.getHeight(), false, false);
+	}
+
+	public void draw(LColor[] colors, float x, float y, float srcX, float srcY,
+			float srcWidth, float srcHeight, float rotation) {
+		draw(colors, x, y, texture.getWidth() / 2, texture.getHeight() / 2,
+				texture.getWidth(), texture.getHeight(), 1f, 1f, rotation,
+				srcX, srcY, srcWidth, srcHeight, false, false);
+	}
+
+	public void draw(LColor[] colors, float x, float y, float width,
+			float height, float srcX, float srcY, float srcWidth,
+			float srcHeight, float rotation) {
+		draw(colors, x, y, width / 2, height / 2, width, height, 1f, 1f,
 				rotation, srcX, srcY, srcWidth, srcHeight, false, false);
-	}
-
-	public void draw(Vector2f pos, Vector2f origin, float width, float height,
-			float scale, float rotation, RectBox src, boolean flipX,
-			boolean flipY) {
-		draw(pos.x, pos.y, origin.x, origin.y, width, height, scale, scale,
-				rotation, src.x, src.y, src.width, src.height, flipX, flipY,
-				false);
-	}
-
-	public void draw(Vector2f pos, Vector2f origin, float scale,
-			float rotation, RectBox src, boolean flipX, boolean flipY) {
-		draw(pos.x, pos.y, origin.x, origin.y, src.width, src.height, scale,
-				scale, rotation, src.x, src.y, src.width, src.height, flipX,
-				flipY, false);
-	}
-
-	public void draw(Vector2f pos, Vector2f origin, float scale, RectBox src,
-			boolean flipX, boolean flipY) {
-		draw(pos.x, pos.y, origin.x, origin.y, src.width, src.height, scale,
-				scale, 0, src.x, src.y, src.width, src.height, flipX, flipY,
-				false);
-	}
-
-	public void draw(Vector2f pos, Vector2f origin, RectBox src, boolean flipX,
-			boolean flipY) {
-		draw(pos.x, pos.y, origin.x, origin.y, src.width, src.height, 1f, 1f,
-				0, src.x, src.y, src.width, src.height, flipX, flipY, false);
-	}
-
-	public void draw(Vector2f pos, RectBox src, boolean flipX, boolean flipY) {
-		draw(pos.x, pos.y, src.width / 2, src.height / 2, src.width,
-				src.height, 1f, 1f, 0, src.x, src.y, src.width, src.height,
-				flipX, flipY, false);
 	}
 
 	public void draw(float x, float y, float originX, float originY,
 			float width, float height, float scaleX, float scaleY,
 			float rotation, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY) {
-		draw(x, y, originX, originY, width, height, scaleX, scaleY, rotation,
-				srcX, srcY, srcWidth, srcHeight, flipX, flipY, false);
+		draw(colors, x, y, originX, originY, width, height, scaleX, scaleY,
+				rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 	}
 
-	public void draw(float x, float y, float originX, float originY,
-			float scaleX, float scaleY, float rotation, float srcX, float srcY,
+	public void draw(LColor[] colors, float x, float y, float originX,
+			float originY, float width, float height, float scaleX,
+			float scaleY, float rotation, float srcX, float srcY,
 			float srcWidth, float srcHeight, boolean flipX, boolean flipY) {
-		draw(x, y, originX, originY, srcWidth, srcHeight, scaleX, scaleY,
-				rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, false);
-	}
-
-	public void draw(Vector2f position, RectBox src, LColor c, float rotation,
-			Vector2f origin, Vector2f scale, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		if (src != null) {
-			draw(position.x, position.y, origin.x, origin.y, src.width,
-					src.height, scale.x, scale.y, rotation, src.x, src.y,
-					src.width, src.height, flipX, flipY, true);
-		} else {
-			draw(position.x, position.y, origin.x, origin.y, texWidth,
-					texHeight, scale.x, scale.y, rotation, 0, 0, texWidth,
-					texHeight, flipX, flipY, true);
-		}
-		setColor(old);
-	}
-
-	public void draw(Vector2f position, RectBox src, LColor c, float rotation,
-			float sx, float sy, float scale, SpriteEffects effects) {
-
-		if (src == null && rotation == 0 && scale == 1f && sx == 0 && sy == 0) {
-			draw(position, c);
-			return;
-		}
-
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		if (src != null) {
-			draw(position.x, position.y, sx, sy, src.width, src.height, scale,
-					scale, rotation, src.x, src.y, src.width, src.height,
-					flipX, flipY, true);
-		} else {
-			draw(position.x, position.y, sx, sy, texWidth, texHeight, scale,
-					scale, rotation, 0, 0, texWidth, texHeight, flipX, flipY,
-					true);
-		}
-		setColor(old);
-	}
-
-	public void draw(Vector2f position, RectBox src, LColor c, float rotation,
-			Vector2f origin, float scale, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		if (src != null) {
-			draw(position.x, position.y, origin.x, origin.y, src.width,
-					src.height, scale, scale, rotation, src.x, src.y,
-					src.width, src.height, flipX, flipY, true);
-		} else {
-			draw(position.x, position.y, origin.x, origin.y, texWidth,
-					texHeight, scale, scale, rotation, 0, 0, texWidth,
-					texHeight, flipX, flipY, true);
-		}
-		setColor(old);
-	}
-
-	public void draw(float px, float py, float srcX, float srcY,
-			float srcWidth, float srcHeight, LColor c, float rotation,
-			float originX, float originY, float scale, SpriteEffects effects) {
-
-		if (effects == SpriteEffects.None && rotation == 0f && originX == 0f
-				&& originY == 0f && scale == 1f) {
-			draw(px, py, srcX, srcY, srcWidth, srcHeight, c);
-			return;
-		}
-
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		draw(px, py, originX, originY, srcWidth, srcHeight, scale, scale,
-				rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, true);
-		setColor(old);
-	}
-
-	public void draw(float px, float py, RectBox src, LColor c, float rotation,
-			Vector2f origin, float scale, SpriteEffects effects) {
-		draw(px, py, src, c, rotation, origin.x, origin.y, scale, effects);
-	}
-
-	public void draw(float px, float py, RectBox src, LColor c, float rotation,
-			float ox, float oy, float scale, SpriteEffects effects) {
-		draw(px, py, src, c, rotation, ox, oy, scale, scale, effects);
-	}
-
-	public void draw(float px, float py, RectBox src, LColor c, float rotation,
-			float ox, float oy, float scaleX, float scaleY,
-			SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		if (src != null) {
-			draw(px, py, ox, oy, src.width, src.height, scaleX, scaleY,
-					rotation, src.x, src.y, src.width, src.height, flipX,
-					flipY, true);
-		} else {
-			draw(px, py, ox, oy, texWidth, texHeight, scaleX, scaleY, rotation,
-					0, 0, texWidth, texHeight, flipX, flipY, true);
-		}
-		setColor(old);
-	}
-
-	public void draw(Vector2f position, LColor c, float rotation,
-			Vector2f origin, Vector2f scale, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-
-		draw(position.x, position.y, origin.x, origin.y, texWidth, texHeight,
-				scale.x, scale.y, rotation, 0, 0, texWidth, texHeight, flipX,
-				flipY, true);
-
-		setColor(old);
-	}
-
-	public void draw(Vector2f position, LColor c, float rotation,
-			float originX, float originY, float scale, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-
-		draw(position.x, position.y, originX, originY, texWidth, texHeight,
-				scale, scale, rotation, 0, 0, texWidth, texHeight, flipX,
-				flipY, true);
-
-		setColor(old);
-	}
-
-	public void draw(float posX, float posY, float srcX, float srcY,
-			float srcWidth, float srcHeight, LColor c, float rotation,
-			float originX, float originY, float scaleX, float scaleY,
-			SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		draw(posX, posY, originX, originY, srcWidth, srcHeight, scaleX, scaleY,
-				rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, true);
-		setColor(old);
-	}
-
-	public void draw(Vector2f position, float srcX, float srcY, float srcWidth,
-			float srcHeight, LColor c, float rotation, Vector2f origin,
-			Vector2f scale, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		draw(position.x, position.y, origin.x, origin.y, srcWidth, srcHeight,
-				scale.x, scale.y, rotation, srcX, srcY, srcWidth, srcHeight,
-				flipX, flipY, true);
-		setColor(old);
-	}
-
-	public void draw(RectBox dst, RectBox src, LColor c, float rotation,
-			Vector2f origin, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		if (src != null) {
-			draw(dst.x, dst.y, origin.x, origin.y, dst.width, dst.height, 1f,
-					1f, rotation, src.x, src.y, src.width, src.height, flipX,
-					flipY, true);
-		} else {
-			draw(dst.x, dst.y, origin.x, origin.y, dst.width, dst.height, 1f,
-					1f, rotation, 0, 0, texWidth, texHeight, flipX, flipY, true);
-		}
-		setColor(old);
-	}
-
-	public void draw(float dstX, float dstY, float dstWidth, float dstHeight,
-			float srcX, float srcY, float srcWidth, float srcHeight, LColor c,
-			float rotation, float originX, float originY, SpriteEffects effects) {
-		if (effects == SpriteEffects.None && rotation == 0 && originX == 0
-				&& originY == 0) {
-			draw(dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth,
-					srcHeight, c);
-			return;
-		}
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		draw(dstX, dstY, originX, originY, dstWidth, dstHeight, 1f, 1f,
-				rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, true);
-		setColor(old);
-	}
-
-	public void draw(float x, float y, float originX, float originY,
-			float width, float height, float scaleX, float scaleY,
-			float rotation, float srcX, float srcY, float srcWidth,
-			float srcHeight, boolean flipX, boolean flipY, boolean off) {
 
 		if (!checkTexture(texture)) {
 			return;
 		}
-
-		float worldOriginX = x + originX;
-		float worldOriginY = y + originY;
-		if (off) {
-			worldOriginX = x;
-			worldOriginY = y;
-		}
+		final float worldOriginX = x + originX;
+		final float worldOriginY = y + originY;
 		float fx = -originX;
 		float fy = -originY;
 		float fx2 = width - originX;
@@ -995,338 +760,230 @@ public class LTextureBatch {
 		x4 += worldOriginX;
 		y4 += worldOriginY;
 
-		float u = srcX * invTexWidth + texture.xOff;
-		float v = srcY * invTexHeight + texture.yOff;
-		float u2 = (srcX + srcWidth) * invTexWidth;
-		float v2 = (srcY + srcHeight) * invTexHeight;
+		xOff = srcX * invTexWidth + texture.xOff;
+		yOff = srcY * invTexHeight + texture.yOff;
+		widthRatio = srcWidth * invTexWidth;
+		heightRatio = srcHeight * invTexHeight;
 
 		if (flipX) {
-			float tmp = u;
-			u = u2;
-			u2 = tmp;
+			float tmp = xOff;
+			xOff = widthRatio;
+			widthRatio = tmp;
 		}
 
 		if (flipY) {
-			float tmp = v;
-			v = v2;
-			v2 = tmp;
+			float tmp = yOff;
+			yOff = heightRatio;
+			heightRatio = tmp;
 		}
 
-		int idx = this.vertexIdx;
+		if (colors == null) {
+			glVertex2f(x1, y1);
+			glColor4f();
+			glTexCoord2f(xOff, yOff);
 
-		vertices[idx++] = x1;
-		vertices[idx++] = y1;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+			glVertex2f(x2, y2);
+			glColor4f();
+			glTexCoord2f(xOff, heightRatio);
 
-		vertices[idx++] = x2;
-		vertices[idx++] = y2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+			glVertex2f(x3, y3);
+			glColor4f();
+			glTexCoord2f(widthRatio, heightRatio);
 
-		vertices[idx++] = x3;
-		vertices[idx++] = y3;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+			glVertex2f(x4, y4);
+			glColor4f();
+			glTexCoord2f(widthRatio, yOff);
 
-		vertices[idx++] = x4;
-		vertices[idx++] = y4;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		} else {
+			glVertex2f(x1, y1);
+			glColor4f(colors[LTexture.TOP_LEFT]);
+			glTexCoord2f(xOff, yOff);
 
-		this.vertexIdx = idx;
-	}
+			glVertex2f(x2, y2);
+			glColor4f(colors[LTexture.BOTTOM_LEFT]);
+			glTexCoord2f(xOff, heightRatio);
 
-	public void draw(float x, float y, float width, float height,
-			float rotation, LColor c) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		draw(x, y, width, height, rotation);
-		setColor(old);
-	}
+			glVertex2f(x3, y3);
+			glColor4f(colors[LTexture.BOTTOM_RIGHT]);
+			glTexCoord2f(widthRatio, heightRatio);
 
-	public void drawFlipX(float x, float y) {
-		draw(x, y, texWidth, texHeight, 0, 0, texWidth, texHeight, true, false);
-	}
-
-	public void drawFlipY(float x, float y) {
-		draw(x, y, texWidth, texHeight, 0, 0, texWidth, texHeight, false, true);
-	}
-
-	public void drawFlipX(float x, float y, float width, float height) {
-		draw(x, y, width, height, 0, 0, texWidth, texHeight, true, false);
-	}
-
-	public void drawFlipY(float x, float y, float width, float height) {
-		draw(x, y, width, height, 0, 0, texWidth, texHeight, false, true);
-	}
-
-	public void drawFlipX(float x, float y, float rotation) {
-		draw(x, y, texWidth / 2, texHeight / 2, texWidth, texHeight, 1f, 1f,
-				rotation, 0, 0, texWidth, texHeight, true, false);
-	}
-
-	public void drawFlipY(float x, float y, float rotation) {
-		draw(x, y, texWidth / 2, texHeight / 2, texWidth, texHeight, 1f, 1f,
-				rotation, 0, 0, texWidth, texHeight, false, true);
-	}
-
-	public void drawFlipX(float x, float y, float width, float height,
-			float rotation) {
-		draw(x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, 0,
-				0, texWidth, texHeight, true, false);
-	}
-
-	public void drawFlipY(float x, float y, float width, float height,
-			float rotation) {
-		draw(x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, 0,
-				0, texWidth, texHeight, false, true);
-	}
-
-	public void draw(RectBox dstBox, RectBox srcBox, LColor c) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		draw(dstBox.x, dstBox.y, dstBox.width, dstBox.height, srcBox.x,
-				srcBox.y, srcBox.width, srcBox.height, false, false);
-		setColor(old);
-	}
-
-	public void draw(float x, float y, float width, float height, float srcX,
-			float srcY, float srcWidth, float srcHeight) {
-		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, false, false);
-	}
-
-	public void draw(float x, float y, float width, float height, float srcX,
-			float srcY, float srcWidth, float srcHeight, float rotation) {
-		draw(x, y, width / 2, height / 2, width, height, 1f, 1f, rotation,
-				srcX, srcY, srcWidth, srcHeight, false, false);
-	}
-
-	public void draw(float x, float y, float width, float height, float srcX,
-			float srcY, float srcWidth, float srcHeight, LColor c) {
-		float old = color;
-		if (c != null) {
-			if (!c.equals(LColor.white)) {
-				setColor(c);
-			}
-		}
-		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, false, false);
-		if (c != null) {
-			setColor(old);
+			glVertex2f(x4, y4);
+			glColor4f(colors[LTexture.TOP_RIGHT]);
+			glTexCoord2f(widthRatio, yOff);
 		}
 	}
 
-	public void drawEmbedded(float x, float y, float width, float height,
-			float srcX, float srcY, float srcWidth, float srcHeight, LColor c) {
-		draw(x, y, width - x, height - y, srcX, srcY, srcWidth - srcX,
-				srcHeight - srcY, c);
-	}
-
-	public void draw(float x, float y, float width, float height, float srcX,
-			float srcY, float srcWidth, float srcHeight, boolean flipX,
-			boolean flipY) {
+	public void draw(LColor[] colors, float x, float y, float width,
+			float height, float srcX, float srcY, float srcWidth,
+			float srcHeight, boolean flipX, boolean flipY) {
 
 		if (!checkTexture(texture)) {
 			return;
 		}
+		xOff = srcX * invTexWidth + texture.xOff;
+		yOff = srcY * invTexHeight + texture.yOff;
+		widthRatio = srcWidth * invTexWidth;
+		heightRatio = srcHeight * invTexHeight;
 
-		float u = srcX * invTexWidth + texture.xOff;
-		float v = srcY * invTexHeight + texture.yOff;
-		float u2 = (srcX + srcWidth) * invTexWidth;
-		float v2 = (srcY + srcHeight) * invTexHeight;
 		final float fx2 = x + width;
 		final float fy2 = y + height;
 
 		if (flipX) {
-			float tmp = u;
-			u = u2;
-			u2 = tmp;
+			float tmp = xOff;
+			xOff = widthRatio;
+			widthRatio = tmp;
 		}
 
 		if (flipY) {
-			float tmp = v;
-			v = v2;
-			v2 = tmp;
+			float tmp = yOff;
+			yOff = heightRatio;
+			heightRatio = tmp;
 		}
 
-		int idx = this.vertexIdx;
+		if (colors == null) {
+			glVertex2f(x, y);
+			glColor4f();
+			glTexCoord2f(xOff, yOff);
 
-		vertices[idx++] = x;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+			glVertex2f(x, fy2);
+			glColor4f();
+			glTexCoord2f(xOff, heightRatio);
 
-		vertices[idx++] = x;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+			glVertex2f(fx2, fx2);
+			glColor4f();
+			glTexCoord2f(widthRatio, heightRatio);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
-
-		vertices[idx++] = fx2;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
-
-		this.vertexIdx = idx;
-	}
-
-	public void draw(Vector2f pos, RectBox srcBox, LColor c) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		if (srcBox == null) {
-			draw(pos.x, pos.y, 0, 0, texWidth, texHeight);
+			glVertex2f(fx2, y);
+			glColor4f();
+			glTexCoord2f(widthRatio, yOff);
 		} else {
-			draw(pos.x, pos.y, srcBox.x, srcBox.y, srcBox.width, srcBox.height);
+			glVertex2f(x, y);
+			glColor4f(colors[LTexture.TOP_LEFT]);
+			glTexCoord2f(xOff, yOff);
+
+			glVertex2f(x, fy2);
+			glColor4f(colors[LTexture.BOTTOM_LEFT]);
+			glTexCoord2f(xOff, heightRatio);
+
+			glVertex2f(fx2, fx2);
+			glColor4f(colors[LTexture.BOTTOM_RIGHT]);
+			glTexCoord2f(widthRatio, heightRatio);
+
+			glVertex2f(fx2, y);
+			glColor4f(colors[LTexture.TOP_RIGHT]);
+			glTexCoord2f(widthRatio, yOff);
+
 		}
-		setColor(old);
 	}
 
-	public void draw(float x, float y, float srcX, float srcY, float srcWidth,
-			float srcHeight, LColor c) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		draw(x, y, srcX, srcY, srcWidth, srcHeight);
-		setColor(old);
+	public void setImageColor(float r, float g, float b, float a) {
+		setColor(LTexture.TOP_LEFT, r, g, b, a);
+		setColor(LTexture.TOP_RIGHT, r, g, b, a);
+		setColor(LTexture.BOTTOM_LEFT, r, g, b, a);
+		setColor(LTexture.BOTTOM_RIGHT, r, g, b, a);
 	}
 
-	public void draw(float x, float y, float srcX, float srcY, float srcWidth,
-			float srcHeight) {
+	public void setImageColor(float r, float g, float b) {
+		setColor(LTexture.TOP_LEFT, r, g, b);
+		setColor(LTexture.TOP_RIGHT, r, g, b);
+		setColor(LTexture.BOTTOM_LEFT, r, g, b);
+		setColor(LTexture.BOTTOM_RIGHT, r, g, b);
+	}
 
-		if (!checkTexture(texture)) {
+	public void setImageColor(LColor c) {
+		if (c == null) {
 			return;
 		}
-
-		float u = srcX * invTexWidth + texture.xOff;
-		float v = srcY * invTexHeight + texture.yOff;
-		float u2 = (srcX + srcWidth) * invTexWidth;
-		float v2 = (srcY + srcHeight) * invTexHeight;
-		final float fx2 = x + srcWidth;
-		final float fy2 = y + srcHeight;
-
-		int idx = this.vertexIdx;
-
-		vertices[idx++] = x;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
-
-		vertices[idx++] = x;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
-
-		vertices[idx++] = fx2;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
-
-		vertices[idx++] = fx2;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
-
-		this.vertexIdx = idx;
+		setImageColor(c.r, c.g, c.b, c.a);
 	}
 
-	public void draw(float x, float y) {
-		draw(x, y, texWidth, texHeight);
+	public void setColor(int corner, float r, float g, float b, float a) {
+		if (colors == null) {
+			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f) };
+		}
+		colors[corner].r = r;
+		colors[corner].g = g;
+		colors[corner].b = b;
+		colors[corner].a = a;
+	}
+
+	public void setColor(int corner, float r, float g, float b) {
+		if (colors == null) {
+			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f) };
+		}
+		colors[corner].r = r;
+		colors[corner].g = g;
+		colors[corner].b = b;
+	}
+
+	public void draw(float x, float y, LColor[] c) {
+		draw(c, x, y, texture.width, texture.height);
 	}
 
 	public void draw(float x, float y, LColor c) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
 		}
-		draw(x, y, texWidth, texHeight);
-		setColor(old);
+		draw(colors, x, y, texture.width, texture.height);
+		if (update) {
+			setImageColor(LColor.white);
+		}
 	}
 
-	public void draw(RectBox rect, LColor c) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
+	public void draw(float x, float y, float width, float height, LColor c) {
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
 		}
-		draw(rect.x, rect.y, rect.width, rect.height);
-		setColor(old);
+		draw(colors, x, y, width, height);
+		if (update) {
+			setImageColor(LColor.white);
+		}
 	}
 
-	public void draw(Vector2f pos, LColor c) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		draw(pos.x, pos.y, texWidth, texHeight);
-		setColor(old);
+	public void draw(float x, float y, float width, float height, float x1,
+			float y1, float x2, float y2, LColor[] c) {
+		draw(c, x, y, width, height, x1, y1, x2, y2);
 	}
 
-	public void draw(float x, float y, float width, float height) {
-
-		if (!checkTexture(texture)) {
-			return;
+	public void draw(float x, float y, float width, float height, float x1,
+			float y1, float x2, float y2, LColor c) {
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
 		}
+		draw(colors, x, y, width, height, x1, y1, x2, y2);
+		if (update) {
+			setImageColor(LColor.white);
+		}
+	}
 
-		final float fx2 = x + width;
-		final float fy2 = y + height;
-		final float u = texture.xOff;
-		final float v = texture.yOff;
-		final float u2 = texture.widthRatio;
-		final float v2 = texture.heightRatio;
+	public void draw(float x, float y, float w, float h, float rotation,
+			LColor c) {
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
+		}
+		draw(colors, x, y, w, h, rotation);
+		if (update) {
+			setImageColor(LColor.white);
+		}
+	}
 
-		int idx = this.vertexIdx;
-
-		vertices[idx++] = x;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
-
-		vertices[idx++] = x;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
-
-		vertices[idx++] = fx2;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
-
-		vertices[idx++] = fx2;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
-
-		this.vertexIdx = idx;
+	private boolean checkUpdateColor(LColor c) {
+		return c != null && !LColor.white.equals(c);
 	}
 
 	public void commit(float x, float y, float sx, float sy, float ax,
 			float ay, float rotaion) {
+		if (isClosed) {
+			return;
+		}
 		GLEx.self.save();
 		Matrix4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
@@ -1352,6 +1009,9 @@ public class LTextureBatch {
 	}
 
 	public void postCache(Cache cache, LColor color, float x, float y) {
+		if (isClosed) {
+			return;
+		}
 		GLEx.self.save();
 		Matrix4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
@@ -1363,6 +1023,9 @@ public class LTextureBatch {
 
 	public void postCache(Cache cache, LColor color, float x, float y,
 			float sx, float sy, float ax, float ay, float rotaion) {
+		if (isClosed) {
+			return;
+		}
 		GLEx.self.save();
 		Matrix4 project = GLEx.getProjectionMatrix();
 		if (x != 0 || y != 0) {
@@ -1385,6 +1048,9 @@ public class LTextureBatch {
 	}
 
 	public void postCache(Cache cache, LColor color, float rotaion) {
+		if (isClosed) {
+			return;
+		}
 		GLEx.self.save();
 		Matrix4 project = GLEx.getProjectionMatrix();
 		if (rotaion != 0) {
@@ -1403,11 +1069,16 @@ public class LTextureBatch {
 	}
 
 	public void dispose() {
-		if (mesh != null) {
-			mesh.dispose();
-		}
-		if (ownsShader && shader != null) {
+		isClosed = true;
+		isLoaded = false;
+		if (shader != null) {
 			shader.dispose();
+		}
+		if (globalShader != null) {
+			globalShader.dispose();
+		}
+		if (customShader != null) {
+			customShader.dispose();
 		}
 		if (lastCache != null) {
 			lastCache.dispose();

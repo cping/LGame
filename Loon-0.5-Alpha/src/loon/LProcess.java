@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2011
+* Copyright 2008 - 2011
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,7 @@
  */
 package loon;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import loon.core.Director;
@@ -33,21 +34,22 @@ import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.processes.RealtimeProcess;
 import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimerContext;
 import loon.utils.MathUtils;
 
-public class LProcess extends Director {
+public class LProcess extends Director{
 
 	private JavaSEApp scene;
 
-	LinkedList<Updateable> loads;
+	ArrayList<Updateable> loads;
 
-	LinkedList<Updateable> unloads;
+	ArrayList<Updateable> unloads;
 
-	LinkedList<Drawable> drawings;
+	ArrayList<Drawable> drawings;
 
 	EmulatorListener emulatorListener;
 
@@ -69,7 +71,7 @@ public class LProcess extends Director {
 
 	private boolean running;
 
-	public LProcess(LGame scene, int width, int height) {
+	LProcess(LGame scene, int width, int height) {
 		LSystem.global_queue = scene;
 		this.width = width;
 		this.height = height;
@@ -81,17 +83,17 @@ public class LProcess extends Director {
 
 	public void clear() {
 		if (loads == null) {
-			loads = new LinkedList<Updateable>();
+			loads = new ArrayList<Updateable>(10);
 		} else {
 			loads.clear();
 		}
 		if (unloads == null) {
-			unloads = new LinkedList<Updateable>();
+			unloads = new ArrayList<Updateable>(10);
 		} else {
 			unloads.clear();
 		}
 		if (drawings == null) {
-			drawings = new LinkedList<Drawable>();
+			drawings = new ArrayList<Drawable>(10);
 		} else {
 			drawings.clear();
 		}
@@ -115,6 +117,12 @@ public class LProcess extends Director {
 	public void end() {
 		if (running) {
 			running = false;
+		}
+	}
+
+	public void calls() {
+		if (isInstance) {
+			LTextureBatch.clearBatchCaches();
 		}
 	}
 
@@ -166,11 +174,11 @@ public class LProcess extends Director {
 		}
 	}
 
-	private final static void callUpdateable(final LinkedList<Updateable> list) {
+	private final static void callUpdateable(final ArrayList<Updateable> list) {
 		LSystem.AUTO_REPAINT = false;
-		LinkedList<Updateable> loadCache;
+		ArrayList<Updateable> loadCache;
 		synchronized (list) {
-			loadCache = new LinkedList<Updateable>(list);
+			loadCache = new ArrayList<Updateable>(list);
 			list.clear();
 		}
 		for (int i = 0; i < loadCache.size(); i++) {
@@ -572,6 +580,7 @@ public class LProcess extends Director {
 
 			screen.onCreate(LSystem.screenRect.width, LSystem.screenRect.height);
 
+
 			RealtimeProcess process = new RealtimeProcess() {
 
 				@Override
@@ -590,6 +599,7 @@ public class LProcess extends Director {
 			process.setDelay(60);
 
 			RealtimeProcessManager.get().addProcess(process);
+
 
 			if (put) {
 				screens.add(screen);
@@ -668,7 +678,6 @@ public class LProcess extends Director {
 			}
 			LTextures.disposeAll();
 			LImage.disposeAll();
-
 		}
 	}
 

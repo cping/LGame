@@ -34,7 +34,6 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.device.LShadow;
 import loon.core.graphics.opengl.LTextureBatch.Cache;
-import loon.jni.NativeSupport;
 
 public class LTexture implements LRelease {
 
@@ -234,6 +233,7 @@ public class LTexture implements LRelease {
 	}
 
 	public LTexture(LTextureData d, Format format) {
+		this();
 		this.format = format;
 		this.hasAlpha = d.hasAlpha;
 		this.imageData = d;
@@ -270,9 +270,10 @@ public class LTexture implements LRelease {
 			return;
 		}
 		isLoaded = true;
-		setFormat(format);
 		loadTextureBuffer();
+		setFormat(format);
 		LTextures.loadTexture(this);
+		LTextureBatch.isBatchCacheDitry = true;
 	}
 
 	public void unsafeSetFilter(TextureFilter minFilter, TextureFilter magFilter) {
@@ -296,7 +297,6 @@ public class LTexture implements LRelease {
 	public void setFilter(TextureFilter minFilter, TextureFilter magFilter) {
 		this.minFilter = minFilter;
 		this.magFilter = magFilter;
-		bind();
 		GLEx.gl.glTexParameterf(GL.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER,
 				minFilter.getGLEnum());
 		GLEx.gl.glTexParameterf(GL.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER,
@@ -306,7 +306,6 @@ public class LTexture implements LRelease {
 	public void setWrap(TextureWrap u, TextureWrap v) {
 		this.uWrap = u;
 		this.vWrap = v;
-		bind();
 		GLEx.gl.glTexParameterf(GL.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S,
 				u.getGLEnum());
 		GLEx.gl.glTexParameterf(GL.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T,
@@ -318,28 +317,24 @@ public class LTexture implements LRelease {
 			this.textureID = createTextureID();
 			this.reload = false;
 		}
+		bind();
 		this.hasAlpha = imageData.hasAlpha;
 		int srcPixelFormat = hasAlpha ? GL.GL_RGBA : GL.GL_RGB;
 		setWidth(imageData.width);
 		setHeight(imageData.height);
 		setTextureWidth(imageData.texWidth);
 		setTextureHeight(imageData.texHeight);
-		bind();
 		GLEx.gl.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
 		GLEx.gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, srcPixelFormat,
 				imageData.texWidth, imageData.texHeight, 0, srcPixelFormat,
 				GL.GL_UNSIGNED_BYTE, imageData.source);
 		setFormat(format);
-		if (imageData.fileName != null) {
-			NativeSupport.freeMemory(imageData.source);
-		}
-		bind();
 	}
 
 	protected void delete() {
-		if (textureID != 0) {
+		if (textureID > 0) {
 			GLEx.gl.glDeleteTexture(textureID);
-			textureID = 0;
+			textureID = -1;
 		}
 	}
 
@@ -897,21 +892,50 @@ public class LTexture implements LRelease {
 		return image;
 	}
 
-	private LColor color = new LColor(LColor.white);
+	private LColor[] colors = null;
 
 	public void setImageColor(float r, float g, float b, float a) {
-		color.setColor(r, g, b, a);
+		setColor(TOP_LEFT, r, g, b, a);
+		setColor(TOP_RIGHT, r, g, b, a);
+		setColor(BOTTOM_LEFT, r, g, b, a);
+		setColor(BOTTOM_RIGHT, r, g, b, a);
 	}
 
 	public void setImageColor(float r, float g, float b) {
-		color.setColor(r, g, b);
+		setColor(TOP_LEFT, r, g, b);
+		setColor(TOP_RIGHT, r, g, b);
+		setColor(BOTTOM_LEFT, r, g, b);
+		setColor(BOTTOM_RIGHT, r, g, b);
 	}
 
 	public void setImageColor(LColor c) {
 		if (c == null) {
 			return;
 		}
-		color.setColor(c);
+		setImageColor(c.r, c.g, c.b, c.a);
+	}
+
+	public void setColor(int corner, float r, float g, float b, float a) {
+		if (colors == null) {
+			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f) };
+		}
+		colors[corner].r = r;
+		colors[corner].g = g;
+		colors[corner].b = b;
+		colors[corner].a = a;
+	}
+
+	public void setColor(int corner, float r, float g, float b) {
+		if (colors == null) {
+			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+					new LColor(1f, 1f, 1f, 1f) };
+		}
+		colors[corner].r = r;
+		colors[corner].g = g;
+		colors[corner].b = b;
 	}
 
 	public LTextureBatch getTextureBatch() {
@@ -985,29 +1009,49 @@ public class LTexture implements LRelease {
 
 	public void draw(float x, float y, float width, float height) {
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(color);
-			batch.draw(x, y, width, height);
-			batch.setColor(old);
+			batch.draw(colors, x, y, width, height);
 		} else {
-			GLEx.self.drawTexture(this, x, y, width, height, color);
+			GLEx.self.drawTexture(this, x, y, width, height,
+					colors == null ? null : colors[0]);
+		}
+	}
+
+	public void draw(float x, float y, LColor[] c) {
+		if (isBatch) {
+			batch.draw(c, x, y, width, height);
+		} else {
+			GLEx.self.drawTexture(this, x, y, width, height, c == null ? null
+					: c[0]);
 		}
 	}
 
 	public void draw(float x, float y, LColor c) {
 		if (isBatch) {
-			batch.draw(x, y, c);
+			LColor old = (colors == null ? LColor.white : colors[0]);
+			final boolean update = checkUpdateColor(c);
+			if (update) {
+				setImageColor(c);
+			}
+			batch.draw(colors, x, y, width, height);
+			if (update) {
+				setImageColor(old);
+			}
 		} else {
-			GLEx.self.drawTexture(this, x, y, c);
+			GLEx.self.drawTexture(this, x, y, width, height, c);
 		}
 	}
 
 	public void draw(float x, float y, float width, float height, LColor c) {
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(c);
-			batch.draw(x, y, width, height);
-			batch.setColor(old);
+			LColor old = (colors == null ? LColor.white : colors[0]);
+			final boolean update = checkUpdateColor(c);
+			if (update) {
+				setImageColor(c);
+			}
+			batch.draw(colors, x, y, width, height);
+			if (update) {
+				setImageColor(old);
+			}
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, c);
 		}
@@ -1015,10 +1059,16 @@ public class LTexture implements LRelease {
 
 	public void drawFlipX(float x, float y, LColor c) {
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(c);
-			batch.draw(x, y, width, height, 0, 0, width, height, true, false);
-			batch.setColor(old);
+			LColor old = (colors == null ? LColor.white : colors[0]);
+			final boolean update = checkUpdateColor(c);
+			if (update) {
+				setImageColor(c);
+			}
+			batch.draw(colors, x, y, width, height, 0, 0, width, height, true,
+					false);
+			if (update) {
+				setImageColor(old);
+			}
 		} else {
 			GLEx.self.drawFlipTexture(this, x, y, c);
 		}
@@ -1026,12 +1076,28 @@ public class LTexture implements LRelease {
 
 	public void drawFlipY(float x, float y, LColor c) {
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(c);
-			batch.draw(x, y, width, height, 0, 0, width, height, false, true);
-			batch.setColor(old);
+			LColor old = (colors == null ? LColor.white : colors[0]);
+			final boolean update = checkUpdateColor(c);
+			if (update) {
+				setImageColor(c);
+			}
+			batch.draw(colors, x, y, width, height, 0, 0, width, height, false,
+					true);
+			if (update) {
+				setImageColor(old);
+			}
 		} else {
 			GLEx.self.drawMirrorTexture(this, x, y, c);
+		}
+	}
+
+	public void draw(float x, float y, float width, float height, float x1,
+			float y1, float x2, float y2, LColor[] c) {
+		if (isBatch) {
+			batch.draw(c, x, y, width, height, x1, y1, x2, y2);
+		} else {
+			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2,
+					c == null ? null : c[0]);
 		}
 	}
 
@@ -1043,10 +1109,15 @@ public class LTexture implements LRelease {
 	public void draw(float x, float y, float width, float height, float x1,
 			float y1, float x2, float y2, LColor c) {
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(c);
-			batch.draw(x, y, width, height, x1, y1, x2, y2);
-			batch.setColor(old);
+			LColor old = (colors == null ? LColor.white : colors[0]);
+			final boolean update = checkUpdateColor(c);
+			if (update) {
+				setImageColor(c);
+			}
+			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
+			if (update) {
+				setImageColor(old);
+			}
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2, c);
 		}
@@ -1055,14 +1126,12 @@ public class LTexture implements LRelease {
 	public void draw(float x, float y, float srcX, float srcY, float srcWidth,
 			float srcHeight) {
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(color);
-			batch.draw(x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY,
-					srcWidth, srcHeight, color);
-			batch.setColor(old);
+			batch.draw(colors, x, y, srcWidth - srcX, srcHeight - srcY, srcX,
+					srcY, srcWidth, srcHeight);
 		} else {
 			GLEx.self.drawTexture(this, x, y, srcWidth - srcX,
-					srcHeight - srcY, srcX, srcY, srcWidth, srcHeight, color);
+					srcHeight - srcY, srcX, srcY, srcWidth, srcHeight,
+					colors == null ? null : colors[0]);
 		}
 	}
 
@@ -1074,19 +1143,16 @@ public class LTexture implements LRelease {
 	public void draw(float x, float y, float width, float height, float x1,
 			float y1, float x2, float y2) {
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(color);
-			batch.draw(x, y, width, height, x1, y1, x2, y2);
-			batch.setColor(old);
+			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2,
-					color);
+					colors == null ? null : colors[0]);
 		}
 	}
 
 	public void draw(float x, float y, float rotation) {
 		draw(x, y, this.width, this.height, 0, 0, this.width, this.height,
-				rotation, LColor.white);
+				rotation, colors == null ? null : colors[0]);
 	}
 
 	public void draw(float x, float y, float w, float h, float rotation,
@@ -1101,14 +1167,23 @@ public class LTexture implements LRelease {
 			return;
 		}
 		if (isBatch) {
-			float old = batch.getFloatColor();
-			batch.setColor(c);
-			batch.draw(x, y, width, height, x1, y1, x2, y2, rotation);
-			batch.setColor(old);
+			LColor old = (colors == null ? LColor.white : colors[0]);
+			final boolean update = checkUpdateColor(c);
+			if (update) {
+				setImageColor(c);
+			}
+			batch.draw(colors, x, y, width, height, x1, y1, x2, y2, rotation);
+			if (update) {
+				setImageColor(old);
+			}
 		} else {
 			GLEx.self.drawTexture(this, x, y, width, height, x1, y1, x2, y2, c,
 					rotation);
 		}
+	}
+
+	private boolean checkUpdateColor(LColor c) {
+		return c != null && !LColor.white.equals(c);
 	}
 
 	public Cache newBatchCache() {

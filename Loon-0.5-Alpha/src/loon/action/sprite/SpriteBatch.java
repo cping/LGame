@@ -716,44 +716,6 @@ public class SpriteBatch {
 	public void setBlendState(BlendState state) {
 		if (state != lastBlendState) {
 			this.lastBlendState = state;
-			if (GLEx.self != null) {
-				switch (lastBlendState) {
-				case Additive:
-					GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-					break;
-				case AlphaBlend:
-					GLEx.self.setBlendMode(GL.MODE_SPEED);
-					break;
-				case Opaque:
-					GLEx.self.setBlendMode(GL.MODE_NONE);
-					break;
-				case NonPremultiplied:
-					GLEx.self.setBlendMode(GL.MODE_NORMAL);
-					break;
-				}
-			} else {
-				Updateable update = new Updateable() {
-
-					@Override
-					public void action(Object a) {
-						switch (lastBlendState) {
-						case Additive:
-							GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-							break;
-						case AlphaBlend:
-							GLEx.self.setBlendMode(GL.MODE_SPEED);
-							break;
-						case Opaque:
-							GLEx.self.setBlendMode(GL.MODE_NONE);
-							break;
-						case NonPremultiplied:
-							GLEx.self.setBlendMode(GL.MODE_NORMAL);
-							break;
-						}
-					}
-				};
-				LSystem.load(update);
-			}
 		}
 	}
 
@@ -836,7 +798,20 @@ public class SpriteBatch {
 		mesh.setVertices(vertices, 0, idx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
-		setBlendState(state);
+		switch (lastBlendState) {
+		case Additive:
+			GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+			break;
+		case AlphaBlend:
+			GLEx.self.setBlendMode(GL.MODE_SPEED);
+			break;
+		case Opaque:
+			GLEx.self.setBlendMode(GL.MODE_NONE);
+			break;
+		case NonPremultiplied:
+			GLEx.self.setBlendMode(GL.MODE_NORMAL);
+			break;
+		}
 		mesh.render(customShader != null ? customShader : shader,
 				GL20.GL_TRIANGLES, 0, count);
 

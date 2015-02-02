@@ -80,6 +80,8 @@ public class LSTRFont implements LRelease {
 
 	private IntObject[] charArray = new IntObject[totalCharSet];
 
+	private LColor[] colors = null;
+
 	private LFont font;
 
 	private IntObject intObject;
@@ -292,12 +294,12 @@ public class LSTRFont implements LRelease {
 					}
 					if (intObject != null) {
 						if ((i >= startIndex) || (i <= endIndex)) {
-							fontBatch.drawEmbedded(totalWidth, 0,
+							fontBatch.drawQuad(totalWidth, 0,
 									(totalWidth + intObject.width),
 									intObject.height, intObject.storedX,
 									intObject.storedY, intObject.storedX
 											+ intObject.width,
-									intObject.storedY + intObject.height, c);
+									intObject.storedY + intObject.height);
 						}
 						totalWidth += intObject.width;
 					}
@@ -323,12 +325,12 @@ public class LSTRFont implements LRelease {
 				}
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
-						fontBatch.drawEmbedded(totalWidth, 0,
+						fontBatch.drawQuad(totalWidth, 0,
 								(totalWidth + intObject.width),
 								intObject.height, intObject.storedX,
 								intObject.storedY, intObject.storedX
 										+ intObject.width, intObject.storedY
-										+ intObject.height, c);
+										+ intObject.height);
 					}
 					totalWidth += intObject.width;
 				}
@@ -346,9 +348,16 @@ public class LSTRFont implements LRelease {
 			intObject = customChars.get((char) charCurrent);
 		}
 		if (intObject != null) {
-			fontBatch.draw(x, y - font.getAscent(), intObject.width,
+			if (color != null) {
+				setImageColor(color);
+			}
+			fontBatch.draw(colors, x, y - font.getAscent(), intObject.width,
 					intObject.height, intObject.storedX, intObject.storedY,
-					 intObject.width,  intObject.height,color);
+					intObject.storedX + intObject.width, intObject.storedY
+							+ intObject.height);
+			if (colors != null) {
+				colors = null;
+			}
 		}
 	}
 
@@ -383,6 +392,31 @@ public class LSTRFont implements LRelease {
 
 	public LTextureBatch getFontBatch() {
 		return fontBatch;
+	}
+
+	private void setImageColor(float r, float g, float b) {
+		setColor(LTexture.TOP_LEFT, r, g, b);
+		setColor(LTexture.TOP_RIGHT, r, g, b);
+		setColor(LTexture.BOTTOM_LEFT, r, g, b);
+		setColor(LTexture.BOTTOM_RIGHT, r, g, b);
+	}
+
+	private void setImageColor(LColor c) {
+		if (c == null) {
+			return;
+		}
+		setImageColor(c.r, c.g, c.b);
+	}
+
+	private void setColor(int corner, float r, float g, float b) {
+		if (colors == null) {
+			colors = new LColor[] { new LColor(1, 1, 1, 1f),
+					new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
+					new LColor(1, 1, 1, 1f) };
+		}
+		colors[corner].r = r;
+		colors[corner].g = g;
+		colors[corner].b = b;
 	}
 
 	public int charWidth(char c) {

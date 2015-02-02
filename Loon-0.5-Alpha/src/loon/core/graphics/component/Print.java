@@ -271,9 +271,9 @@ public class Print implements LRelease {
 				}
 				index++;
 			}
-
-			strings.stopChar();
 			strings.saveCharCache();
+			strings.postCharCache();
+			
 
 			lazyHashCade = hashCode;
 

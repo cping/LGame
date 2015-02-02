@@ -400,6 +400,8 @@ public class LGame extends JavaSEApp {
 
 						process.load();
 
+						process.calls();
+
 						if (!isRunning) {
 							break;
 						}
@@ -650,7 +652,7 @@ public class LGame extends JavaSEApp {
 
 			Display.setTitle(windowTitle);
 			Display.setInitialBackground(0, 0, 0);
-
+			
 			if (_x != -1 && _y != -1) {
 				Display.setLocation(_x, _y);
 			}
@@ -677,6 +679,7 @@ public class LGame extends JavaSEApp {
 				Display.setResizable(_resizable);
 			}
 			updateScreen();
+
 			this.gl = new GLEx(LSystem.screenRect.width,
 					LSystem.screenRect.height);
 			this.setViewPort(getBounds());

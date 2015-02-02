@@ -453,7 +453,7 @@ public class LTexturePack implements LRelease {
 		return blittedSize;
 	}
 
-	public void drawOnlyBatch(int id, float x, float y, LColor c) {
+	public void drawOnlyBatch(int id, float x, float y, LColor[] c) {
 		this.pack();
 		PackEntry entry = getEntry(id);
 		if (entry == null) {
@@ -512,7 +512,8 @@ public class LTexturePack implements LRelease {
 	}
 
 	public void drawOnlyBatch(int id, float dx1, float dy1, float dx2,
-			float dy2, float sx1, float sy1, float sx2, float sy2, LColor color) {
+			float dy2, float sx1, float sy1, float sx2, float sy2,
+			LColor[] color) {
 		this.pack();
 		PackEntry entry = getEntry(id);
 		if (entry == null) {
@@ -558,7 +559,7 @@ public class LTexturePack implements LRelease {
 		return draw(name, x, y, 0, color);
 	}
 
-	public void drawOnlyBatch(String name, float x, float y, LColor c) {
+	public void drawOnlyBatch(String name, float x, float y, LColor[] c) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (texture.isBatch()) {
@@ -640,7 +641,8 @@ public class LTexturePack implements LRelease {
 	}
 
 	public void drawOnlyBatch(String name, float dx1, float dy1, float dx2,
-			float dy2, float sx1, float sy1, float sx2, float sy2, LColor color) {
+			float dy2, float sx1, float sy1, float sx2, float sy2,
+			LColor[] color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {

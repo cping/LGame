@@ -90,31 +90,26 @@ public final class GLLoader extends LTextureData {
 	}
 
 	private final static LTextureData loadLazy(String fileName) {
-		synchronized (lazyLoader) {
-			String key = fileName.trim().toLowerCase();
-			LTextureData data = lazyLoader.get(key);
-			if (data == null || data.source == null) {
-				try {
-					lazyLoader.put(key, data = new GLLoader(fileName));
-				} catch (Exception ex) {
-					throw new RuntimeException("Path " + fileName
-							+ " is null !");
-				}
+		String key = fileName.trim().toLowerCase();
+		LTextureData data = lazyLoader.get(key);
+		if (data == null || data.source == null) {
+			try {
+				lazyLoader.put(key, data = new GLLoader(fileName));
+			} catch (Exception ex) {
+				throw new RuntimeException("Path " + fileName + " is null !");
 			}
-			return data;
 		}
+		return data;
 	}
 
 	public final static void destory() {
-		synchronized (lazyLoader) {
-			for (LTextureData loader : lazyLoader.values()) {
-				if (loader != null) {
-					loader.dispose();
-					loader = null;
-				}
+		for (LTextureData loader : lazyLoader.values()) {
+			if (loader != null) {
+				loader.dispose();
+				loader = null;
 			}
-			lazyLoader.clear();
 		}
+		lazyLoader.clear();
 	}
 
 	private GLLoader(LTextureData data, boolean newCopy) {

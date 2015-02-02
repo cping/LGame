@@ -716,6 +716,9 @@ public abstract class LComponent extends LObject implements ActionBind,
 		if (background == null) {
 			return;
 		}
+		if(this.background == background){
+			return;
+		}
 		LTexture oldImage = this.background;
 		if (oldImage != background && oldImage != null) {
 			oldImage.destroy();

@@ -1,9 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.Buffer;
-
-import loon.core.LRelease;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -24,6 +18,12 @@ import loon.core.LRelease;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.core.graphics.opengl;
+
+import java.nio.Buffer;
+
+import loon.core.LRelease;
+
 public abstract class LTextureData implements LRelease {
 
 	public static boolean ALL_ALPHA = false;

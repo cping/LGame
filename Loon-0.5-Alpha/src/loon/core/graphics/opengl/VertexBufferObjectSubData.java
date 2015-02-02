@@ -104,13 +104,6 @@ public class VertexBufferObjectSubData implements VertexData {
 		bufferChanged();
 	}
 
-	/**
-	 * Binds this VertexBufferObject for rendering via glDrawArrays or
-	 * glDrawElements
-	 * 
-	 * @param shader
-	 *            the shader
-	 */
 	@Override
 	public void bind(final ShaderProgram shader) {
 		bind(shader, null);
