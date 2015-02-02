@@ -109,7 +109,7 @@ public abstract class RealtimeProcess implements Process {
 	public String getId() {
 		return this.id;
 	}
-
+	
 	public void finish() {
 		if (!this.isDead) {
 			kill();

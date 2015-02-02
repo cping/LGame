@@ -1,7 +1,6 @@
 package loon.action.sprite;
 
 import loon.LSystem;
-import loon.core.event.Updateable;
 import loon.core.geom.Matrix4;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
@@ -10,18 +9,14 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GL;
-import loon.core.graphics.opengl.GL20;
 import loon.core.graphics.opengl.GLBatch;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LSTRDictionary;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
-import loon.core.graphics.opengl.Mesh;
+import loon.core.graphics.opengl.MeshDefault;
 import loon.core.graphics.opengl.ShaderProgram;
 import loon.core.graphics.opengl.TextureUtils;
-import loon.core.graphics.opengl.VertexAttribute;
-import loon.core.graphics.opengl.Mesh.VertexDataType;
-import loon.core.graphics.opengl.VertexAttributes.Usage;
 import loon.utils.MathUtils;
 import loon.utils.collection.IntMap;
 
@@ -48,7 +43,6 @@ public class SpriteBatch {
 	}
 
 	private float alpha = 1f;
-	private Mesh mesh;
 
 	float[] vertices;
 	int idx = 0;
@@ -664,35 +658,12 @@ public class SpriteBatch {
 
 	public void begin() {
 		if (!isLoaded) {
-			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
-					size * 6, new VertexAttribute(Usage.Position, 2,
-							ShaderProgram.POSITION_ATTRIBUTE),
-					new VertexAttribute(Usage.ColorPacked, 4,
-							ShaderProgram.COLOR_ATTRIBUTE),
-					new VertexAttribute(Usage.TextureCoordinates, 2,
-							ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-
 			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
-
-			int len = size * 6;
-			short[] indices = new short[len];
-			short j = 0;
-			for (int i = 0; i < len; i += 6, j += 4) {
-				indices[i] = j;
-				indices[i + 1] = (short) (j + 1);
-				indices[i + 2] = (short) (j + 2);
-				indices[i + 3] = (short) (j + 2);
-				indices[i + 4] = (short) (j + 3);
-				indices[i + 5] = j;
-			}
-			mesh.setIndices(indices);
-
 			if (shader == null) {
 				shader = GLEx.createDefaultShader();
 				ownsShader = true;
 			}
 			isLoaded = true;
-
 		}
 		if (drawing) {
 			throw new IllegalStateException(
@@ -714,9 +685,7 @@ public class SpriteBatch {
 	}
 
 	public void setBlendState(BlendState state) {
-		if (state != lastBlendState) {
-			this.lastBlendState = state;
-		}
+		this.lastBlendState = state;
 	}
 
 	public void end() {
@@ -793,35 +762,35 @@ public class SpriteBatch {
 			maxSpritesInBatch = spritesInBatch;
 		}
 		int count = spritesInBatch * 6;
-		GLEx.self.bind(lastTexture);
-		Mesh mesh = this.mesh;
-		mesh.setVertices(vertices, 0, idx);
-		mesh.getIndicesBuffer().position(0);
-		mesh.getIndicesBuffer().limit(count);
+		GLEx self = GLEx.self;
+		self.bind(lastTexture);
+		int old = self.getBlendMode();
 		switch (lastBlendState) {
 		case Additive:
-			GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+			self.setBlendMode(GL.MODE_ALPHA_ONE);
 			break;
 		case AlphaBlend:
-			GLEx.self.setBlendMode(GL.MODE_SPEED);
+			self.setBlendMode(GL.MODE_SPEED);
 			break;
 		case Opaque:
-			GLEx.self.setBlendMode(GL.MODE_NONE);
+			self.setBlendMode(GL.MODE_NONE);
 			break;
 		case NonPremultiplied:
-			GLEx.self.setBlendMode(GL.MODE_NORMAL);
+			self.setBlendMode(GL.MODE_NORMAL);
 			break;
 		}
-		mesh.render(customShader != null ? customShader : shader,
-				GL20.GL_TRIANGLES, 0, count);
-
+		MeshDefault.post(size,customShader != null ? customShader : shader,
+				vertices, idx, count);
+		self.setBlendMode(old);
 		idx = 0;
 	}
 
 	public void dispose() {
-		mesh.dispose();
 		if (ownsShader && shader != null) {
 			shader.dispose();
+		}
+		if (customShader != null) {
+			customShader.dispose();
 		}
 	}
 

@@ -8,6 +8,8 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimer;
 import loon.jni.NativeSupport;
 import loon.utils.CollectionUtils;
@@ -97,7 +99,7 @@ public class PShadowEffect extends LObject implements ISprite {
 		this(LImage.createImage(fileName), back, x, y, w, h);
 	}
 
-	private PixelThread pixelThread;
+	private PixelProcess pixelProcess;
 
 	public PShadowEffect(LImage img, LImage back, int x, int y, int w, int h) {
 		if (deasilTrans == null || widdershinTrans == null) {
@@ -179,7 +181,7 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.visible = true;
 		this.nowDrawPixels = CollectionUtils.copyOf(finalDrawPixels);
 		this.backgroundPixels = CollectionUtils.copyOf(finalBackgroundPixels);
-		this.startUsePixelThread();
+		this.startUsePixelProcess();
 	}
 
 	private final static int BLACK = LColor.black.getRGB();
@@ -215,9 +217,14 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.elapsed = elapsedTime;
 	}
 
-	private class PixelThread extends Thread {
+	private class PixelProcess extends RealtimeProcess {
+
+		public PixelProcess() {
+			setDelay(30);
+		}
+
 		public void run() {
-			for (; !isClose && !isComplete();) {
+			if (!isClose && !isComplete()) {
 				if (image == null) {
 					return;
 				}
@@ -264,21 +271,16 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.visible = visible;
 	}
 
-	final void startUsePixelThread() {
-		if (pixelThread == null) {
-			pixelThread = new PixelThread();
-			pixelThread.start();
+	final void startUsePixelProcess() {
+		if (pixelProcess == null || pixelProcess.isDead()) {
+			pixelProcess = new PixelProcess();
+			RealtimeProcessManager.get().addProcess(pixelProcess);
 		}
 	}
 
-	final void endUsePixelThread() {
-		if (pixelThread != null) {
-			try {
-				pixelThread.interrupt();
-				pixelThread = null;
-			} catch (Exception ex) {
-				pixelThread = null;
-			}
+	final void endUsePixelProcess() {
+		if (pixelProcess != null) {
+			pixelProcess.kill();
 		}
 	}
 
@@ -286,9 +288,9 @@ public class PShadowEffect extends LObject implements ISprite {
 		final boolean stop = flag ? (pixelCount > max_pixel)
 				: (pixelCount < min_pixel);
 		if (!stop) {
-			startUsePixelThread();
+			startUsePixelProcess();
 		} else {
-			endUsePixelThread();
+			endUsePixelProcess();
 		}
 		return stop;
 	}
@@ -372,7 +374,7 @@ public class PShadowEffect extends LObject implements ISprite {
 
 	public void dispose() {
 		this.isClose = true;
-		this.endUsePixelThread();
+		this.endUsePixelProcess();
 		this.finalDrawPixels = null;
 		this.nowDrawPixels = null;
 		if (texture != null) {

@@ -217,16 +217,12 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public void setBlendState(BlendState state) {
-		if (state != lastBlendState) {
-			this.lastBlendState = state;
-		}
+		this.lastBlendState = state;
 	}
 
 	public void begin() {
 		if (!isLoaded) {
-
 			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
-
 			if (shader == null) {
 				shader = GLEx.createDefaultShader();
 			}
@@ -366,23 +362,26 @@ public class LTextureBatch implements LRelease {
 			}
 			this.count = spritesInBatch * 6;
 		}
-		GLEx.self.bind(texture);
+		GLEx self = GLEx.self;
+		self.bind(texture);
+		int old = self.getBlendMode();
 		switch (lastBlendState) {
 		case Additive:
-			GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+			self.setBlendMode(GL.MODE_ALPHA_ONE);
 			break;
 		case AlphaBlend:
-			GLEx.self.setBlendMode(GL.MODE_SPEED);
+			self.setBlendMode(GL.MODE_SPEED);
 			break;
 		case Opaque:
-			GLEx.self.setBlendMode(GL.MODE_NONE);
+			self.setBlendMode(GL.MODE_NONE);
 			break;
 		case NonPremultiplied:
-			GLEx.self.setBlendMode(GL.MODE_NORMAL);
+			self.setBlendMode(GL.MODE_NORMAL);
 			break;
 		}
-		MeshDefault.post(customShader != null ? customShader : shader, vertices,
-				vertexIdx, count);
+		MeshDefault.post(size, customShader != null ? customShader : shader,
+				vertices, vertexIdx, count);
+		self.setBlendMode(old);
 
 	}
 
@@ -466,22 +465,26 @@ public class LTextureBatch implements LRelease {
 			globalShader.setUniformi("u_texture", 0);
 		}
 		if (cache.vertexIdx > 0) {
-			GLEx.self.bind(texture);
+			GLEx self = GLEx.self;
+			self.bind(texture);
+			int old = self.getBlendMode();
 			switch (lastBlendState) {
 			case Additive:
-				GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
+				self.setBlendMode(GL.MODE_ALPHA_ONE);
 				break;
 			case AlphaBlend:
-				GLEx.self.setBlendMode(GL.MODE_SPEED);
+				self.setBlendMode(GL.MODE_SPEED);
 				break;
 			case Opaque:
-				GLEx.self.setBlendMode(GL.MODE_NONE);
+				self.setBlendMode(GL.MODE_NONE);
 				break;
 			case NonPremultiplied:
-				GLEx.self.setBlendMode(GL.MODE_NORMAL);
+				self.setBlendMode(GL.MODE_NORMAL);
 				break;
 			}
-			MeshDefault.post(globalShader, cache.vertices, cache.vertexIdx, cache.count);
+			MeshDefault.post(size, globalShader, cache.vertices,
+					cache.vertexIdx, cache.count);
+			self.setBlendMode(old);
 		}
 		if (color != null) {
 			globalShader.setUniformf("v_color", oldColor);

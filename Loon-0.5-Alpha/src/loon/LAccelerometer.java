@@ -160,11 +160,11 @@ public class LAccelerometer {
 
 	}
 
-	class SensorThread extends RealtimeProcess {
+	class SensorProcess extends RealtimeProcess {
 
 		final float[] accelerometerValues;
 
-		public SensorThread(float[] values) {
+		public SensorProcess(float[] values) {
 			this.accelerometerValues = values;
 			this.setDelay(_sleep);
 		}
@@ -196,13 +196,13 @@ public class LAccelerometer {
 
 	private final float[] accelerometerValues = new float[3];
 
-	private SensorThread sensorThread;
+	private SensorProcess sensorProcess;
 
 	public void start() {
 		if (!_state._isConnected) {
 			_state._isConnected = true;
-			sensorThread = new SensorThread(accelerometerValues);
-			RealtimeProcessManager.get().addProcess(sensorThread);
+			sensorProcess = new SensorProcess(accelerometerValues);
+			RealtimeProcessManager.get().addProcess(sensorProcess);
 		}
 	}
 
@@ -244,8 +244,8 @@ public class LAccelerometer {
 
 	public void sleep(int sleep) {
 		this._sleep = sleep;
-		if (sensorThread != null) {
-			sensorThread.setDelay(sleep);
+		if (sensorProcess != null) {
+			sensorProcess.setDelay(sleep);
 		}
 	}
 

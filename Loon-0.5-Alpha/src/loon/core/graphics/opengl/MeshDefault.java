@@ -2,14 +2,14 @@ package loon.core.graphics.opengl;
 
 import loon.core.graphics.opengl.Mesh.VertexDataType;
 import loon.core.graphics.opengl.VertexAttributes.Usage;
+import loon.utils.collection.ObjectMap;
 
 public class MeshDefault {
 
-	private final static int size = 1024;
-	
-	private static ShaderProgram shader = null;
+	private final static ObjectMap<Integer, Mesh> meshLazy = new ObjectMap<Integer, Mesh>(
+			10);
 
-	private static Mesh mesh = null;
+	private static ShaderProgram shader = null;
 
 	public static ShaderProgram getShader() {
 		if (shader == null) {
@@ -18,7 +18,8 @@ public class MeshDefault {
 		return shader;
 	}
 
-	public static Mesh getMesh() {
+	public static Mesh getMesh(final int size) {
+		Mesh mesh = meshLazy.get(size);
 		if (mesh == null) {
 			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
 					size * 6, new VertexAttribute(Usage.Position, 2,
@@ -39,15 +40,14 @@ public class MeshDefault {
 				indices[i + 5] = j;
 			}
 			mesh.setIndices(indices);
+			meshLazy.put(size, mesh);
 		}
 		return mesh;
 	}
 
-	public static void post(ShaderProgram shader, float[] vertices,
-			int vertexIdx, int count) {
-		if (mesh == null) {
-			getMesh();
-		}
+	public static void post(final int size, ShaderProgram shader,
+			float[] vertices, int vertexIdx, int count) {
+		Mesh mesh = getMesh(size);
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
