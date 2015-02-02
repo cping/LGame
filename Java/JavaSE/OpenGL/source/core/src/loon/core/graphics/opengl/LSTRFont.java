@@ -23,6 +23,7 @@ package loon.core.graphics.opengl;
 import java.util.HashMap;
 
 import loon.LSystem;
+import loon.action.sprite.SpriteBatch.BlendState;
 import loon.core.LRelease;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
@@ -220,6 +221,7 @@ public class LSTRFont implements LRelease {
 					Format.LINEAR);
 			LTextureBatch tmpbatch = fontBatch;
 			fontBatch = new LTextureBatch(texture);
+			fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.destoryAll();
 			}

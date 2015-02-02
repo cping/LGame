@@ -24,7 +24,6 @@ import java.util.HashMap;
 
 import loon.LSystem;
 import loon.core.LRelease;
-import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
 import loon.core.geom.Triangle;
@@ -33,16 +32,13 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GL10;
-import loon.core.graphics.opengl.GLAttributes;
 import loon.core.graphics.opengl.GLBatch;
 import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.GLMesh;
 import loon.core.graphics.opengl.LSTRDictionary;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
+import loon.core.graphics.opengl.MeshDefault;
 import loon.core.graphics.opengl.TextureUtils;
-import loon.core.graphics.opengl.GLAttributes.Usage;
-import loon.core.graphics.opengl.GLMesh.VertexDataType;
 import loon.utils.MathUtils;
 
 public class SpriteBatch implements LRelease {
@@ -154,15 +150,9 @@ public class SpriteBatch implements LRelease {
 
 	public float color = LColor.white.toFloatBits();
 
-	private GLMesh mesh;
-
-	private GLMesh[] buffers;
-
 	private LTexture lastTexture = null;
 
 	private int idx = 0;
-
-	private int currBufferIdx = 0;
 
 	private final float[] vertices;
 
@@ -182,40 +172,15 @@ public class SpriteBatch implements LRelease {
 
 	private float invTexHeight;
 
+	private int size;
+
 	public SpriteBatch() {
 		this(1000);
 	}
 
 	public SpriteBatch(int size) {
-		this(size, 1);
-	}
-
-	public SpriteBatch(int size, int buffers) {
-		this.buffers = new GLMesh[buffers];
-		for (int i = 0; i < buffers; i++) {
-			this.buffers[i] = new GLMesh(VertexDataType.VertexArray, false,
-					size * 4, size * 6, new GLAttributes.VertexAttribute(
-							Usage.Position, 2, "POSITION"),
-					new GLAttributes.VertexAttribute(Usage.ColorPacked, 4,
-							"COLOR"), new GLAttributes.VertexAttribute(
-							Usage.TextureCoordinates, 2, "TEXCOORD"));
-		}
 		this.vertices = new float[size * SPRITE_SIZE];
-		int len = size * 6;
-		short[] indices = new short[len];
-		short j = 0;
-		for (int i = 0; i < len; i += 6, j += 4) {
-			indices[i + 0] = (short) (j + 0);
-			indices[i + 1] = (short) (j + 1);
-			indices[i + 2] = (short) (j + 2);
-			indices[i + 3] = (short) (j + 2);
-			indices[i + 4] = (short) (j + 3);
-			indices[i + 5] = (short) (j + 0);
-		}
-		for (int i = 0; i < buffers; i++) {
-			this.buffers[i].setIndices(indices);
-		}
-		this.mesh = this.buffers[0];
+		this.size = size;
 	}
 
 	public void halfAlpha() {
@@ -234,13 +199,10 @@ public class SpriteBatch implements LRelease {
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
-	private int mode;
-
 	public void begin() {
 		if (drawing) {
 			throw new IllegalStateException("Not implemented end !");
 		}
-		mode = GLEx.self.getBlendMode();
 		GLEx.self.glTex2DEnable();
 		idx = 0;
 		lastTexture = null;
@@ -253,9 +215,7 @@ public class SpriteBatch implements LRelease {
 			submit();
 		}
 		lastTexture = null;
-		idx = 0;
 		drawing = false;
-		GLEx.self.setBlendMode(mode);
 		GLEx.self.glTex2DDisable();
 	}
 
@@ -1918,47 +1878,7 @@ public class SpriteBatch implements LRelease {
 	}
 
 	public void setBlendState(BlendState state) {
-		if (state != lastBlendState) {
-			this.lastBlendState = state;
-			if (GLEx.self != null) {
-				switch (lastBlendState) {
-				case Additive:
-					GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-					break;
-				case AlphaBlend:
-					GLEx.self.setBlendMode(GL.MODE_SPEED);
-					break;
-				case Opaque:
-					GLEx.self.setBlendMode(GL.MODE_NONE);
-					break;
-				case NonPremultiplied:
-					GLEx.self.setBlendMode(GL.MODE_NORMAL);
-					break;
-				}
-			} else {
-				Updateable update = new Updateable() {
-
-					@Override
-					public void action(Object a) {
-						switch (lastBlendState) {
-						case Additive:
-							GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-							break;
-						case AlphaBlend:
-							GLEx.self.setBlendMode(GL.MODE_SPEED);
-							break;
-						case Opaque:
-							GLEx.self.setBlendMode(GL.MODE_NONE);
-							break;
-						case NonPremultiplied:
-							GLEx.self.setBlendMode(GL.MODE_NORMAL);
-							break;
-						}
-					}
-				};
-				LSystem.load(update);
-			}
-		}
+		this.lastBlendState = state;
 	}
 
 	public void flush(BlendState state) {
@@ -1977,18 +1897,25 @@ public class SpriteBatch implements LRelease {
 		if (spritesInBatch > maxSpritesInBatch) {
 			maxSpritesInBatch = spritesInBatch;
 		}
-		GLEx.self.bind(lastTexture);
-		mesh.setVertices(vertices, 0, idx);
-		mesh.getIndicesBuffer().position(0);
-		mesh.getIndicesBuffer().limit(spritesInBatch * 6);
-		setBlendState(state);
-		mesh.render(GL10.GL_TRIANGLES, 0, spritesInBatch * 6);
-		idx = 0;
-		currBufferIdx++;
-		if (currBufferIdx == buffers.length) {
-			currBufferIdx = 0;
+		GLEx self = GLEx.self;
+		self.bind(lastTexture);
+		int old = self.getBlendMode();
+		switch (lastBlendState) {
+		case Additive:
+			self.setBlendMode(GL.MODE_ALPHA_ONE);
+			break;
+		case AlphaBlend:
+			self.setBlendMode(GL.MODE_SPEED);
+			break;
+		case Opaque:
+			self.setBlendMode(GL.MODE_NONE);
+			break;
+		case NonPremultiplied:
+			self.setBlendMode(GL.MODE_NORMAL);
+			break;
 		}
-		mesh = buffers[currBufferIdx];
+		MeshDefault.post(size, vertices, idx, spritesInBatch * 6);
+		self.setBlendMode(old);
 	}
 
 	public boolean isLockSubmit() {
@@ -2000,9 +1927,6 @@ public class SpriteBatch implements LRelease {
 	}
 
 	public void dispose() {
-		for (int i = 0; i < buffers.length; i++) {
-			buffers[i].dispose();
-		}
 		if (lineLazy != null) {
 			lineLazy.clear();
 		}

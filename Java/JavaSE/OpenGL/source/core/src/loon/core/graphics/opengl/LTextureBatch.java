@@ -26,7 +26,6 @@ import java.util.HashMap;
 import loon.LSystem;
 import loon.action.sprite.SpriteBatch.BlendState;
 import loon.core.LRelease;
-import loon.core.event.Updateable;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.jni.NativeSupport;
@@ -229,7 +228,7 @@ public final class LTextureBatch implements LRelease {
 	boolean useBegin, lockCoord, isColor, isLocked;
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
-	
+
 	public LTextureBatch(String fileName, Format format) {
 		this(fileName, format, DEFAULT_MAX_VERTICES);
 	}
@@ -358,54 +357,13 @@ public final class LTextureBatch implements LRelease {
 	public void unLock() {
 		this.isLocked = false;
 	}
-	
 
 	public BlendState getBlendState() {
 		return lastBlendState;
 	}
 
 	public void setBlendState(BlendState state) {
-		if (state != lastBlendState) {
-			this.lastBlendState = state;
-			if (GLEx.self != null) {
-				switch (lastBlendState) {
-				case Additive:
-					GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-					break;
-				case AlphaBlend:
-					GLEx.self.setBlendMode(GL.MODE_SPEED);
-					break;
-				case Opaque:
-					GLEx.self.setBlendMode(GL.MODE_NONE);
-					break;
-				case NonPremultiplied:
-					GLEx.self.setBlendMode(GL.MODE_NORMAL);
-					break;
-				}
-			} else {
-				Updateable update = new Updateable() {
-
-					@Override
-					public void action(Object a) {
-						switch (lastBlendState) {
-						case Additive:
-							GLEx.self.setBlendMode(GL.MODE_ALPHA_ONE);
-							break;
-						case AlphaBlend:
-							GLEx.self.setBlendMode(GL.MODE_SPEED);
-							break;
-						case Opaque:
-							GLEx.self.setBlendMode(GL.MODE_NONE);
-							break;
-						case NonPremultiplied:
-							GLEx.self.setBlendMode(GL.MODE_NORMAL);
-							break;
-						}
-					}
-				};
-				LSystem.load(update);
-			}
-		}
+		lastBlendState = state;
 	}
 
 	/**
@@ -480,8 +438,26 @@ public final class LTextureBatch implements LRelease {
 			return;
 		}
 		this.insertVertices();
-		GLEx.self.commitDrawArrays(texture, colors==null?null:colors[0],vertexBuffer, coordBuffer, colorBuffer,
-				isColor, count, moveX, moveY);
+		GLEx self = GLEx.self;
+		int old = self.getBlendMode();
+		switch (lastBlendState) {
+		case Additive:
+			self.setBlendMode(GL.MODE_ALPHA_ONE);
+			break;
+		case AlphaBlend:
+			self.setBlendMode(GL.MODE_SPEED);
+			break;
+		case Opaque:
+			self.setBlendMode(GL.MODE_NONE);
+			break;
+		case NonPremultiplied:
+			self.setBlendMode(GL.MODE_NORMAL);
+			break;
+		}
+		self.commitDrawArrays(texture, colors == null ? null : colors[0],
+				vertexBuffer, coordBuffer, colorBuffer, isColor, count, moveX,
+				moveY);
+		self.setBlendMode(old);
 		this.useBegin = false;
 	}
 
@@ -498,8 +474,10 @@ public final class LTextureBatch implements LRelease {
 		}
 		this.isColor = false;
 		this.insertVertices();
-		GLEx.self.commitQuad(texture, colors==null?null:colors[0], vertexBuffer, coordBuffer, count, x, y, sx,
-				sy, ax, sy, rotaion);
+		GLEx.self
+				.commitQuad(texture, colors == null ? null : colors[0],
+						vertexBuffer, coordBuffer, count, x, y, sx, sy, ax, sy,
+						rotaion);
 		this.useBegin = false;
 	}
 
@@ -514,8 +492,9 @@ public final class LTextureBatch implements LRelease {
 			return;
 		}
 		if (isLocked) {
-			GLEx.self.commitQuad(texture, colors==null?null:colors[0], vertexBuffer, coordBuffer, count, x, y,
-					sx, sy, ax, ay, rotaion);
+			GLEx.self.commitQuad(texture, colors == null ? null : colors[0],
+					vertexBuffer, coordBuffer, count, x, y, sx, sy, ax, ay,
+					rotaion);
 		}
 	}
 
@@ -528,8 +507,9 @@ public final class LTextureBatch implements LRelease {
 			return;
 		}
 		if (isLocked) {
-			GLEx.self.commitDrawArrays(texture,  colors==null?null:colors[0],vertexBuffer, coordBuffer,
-					colorBuffer, isColor, count, moveX, moveY);
+			GLEx.self.commitDrawArrays(texture, colors == null ? null
+					: colors[0], vertexBuffer, coordBuffer, colorBuffer,
+					isColor, count, moveX, moveY);
 		}
 	}
 
@@ -539,20 +519,20 @@ public final class LTextureBatch implements LRelease {
 	 * @param tex2d
 	 * @param cache
 	 */
-	public final static void commit(LTexture tex2d, LColor color,GLCache cache) {
+	public final static void commit(LTexture tex2d, LColor color, GLCache cache) {
 		if (cache.count == 0) {
 			return;
 		}
-		GLEx.self.commitDrawArrays(tex2d,color, cache);
+		GLEx.self.commitDrawArrays(tex2d, color, cache);
 	}
-	
+
 	public final static void commit(LTexture tex2d, GLCache cache) {
 		if (cache.count == 0) {
 			return;
 		}
-		GLEx.self.commitDrawArrays(tex2d,null, cache);
+		GLEx.self.commitDrawArrays(tex2d, null, cache);
 	}
-	
+
 	/**
 	 * 提交缓存数据进行文字渲染
 	 * 
@@ -568,7 +548,7 @@ public final class LTextureBatch implements LRelease {
 		if (cache.count == 0) {
 			return;
 		}
-		GLEx.self.commitQuad(tex2d, c,cache, x, y, sx, sy, ax, ay, rotation);
+		GLEx.self.commitQuad(tex2d, c, cache, x, y, sx, sy, ax, ay, rotation);
 	}
 
 	public void draw(float x, float y) {
@@ -1019,7 +999,25 @@ public final class LTextureBatch implements LRelease {
 
 	public void postLastCache() {
 		if (lastCache != null) {
-			LTextureBatch.commit(texture,colors==null?null:colors[0], lastCache);
+			GLEx self = GLEx.self;
+			int old = self.getBlendMode();
+			switch (lastBlendState) {
+			case Additive:
+				self.setBlendMode(GL.MODE_ALPHA_ONE);
+				break;
+			case AlphaBlend:
+				self.setBlendMode(GL.MODE_SPEED);
+				break;
+			case Opaque:
+				self.setBlendMode(GL.MODE_NONE);
+				break;
+			case NonPremultiplied:
+				self.setBlendMode(GL.MODE_NORMAL);
+				break;
+			}
+			LTextureBatch.commit(texture, colors == null ? null : colors[0],
+					lastCache);
+			self.setBlendMode(old);
 		}
 	}
 

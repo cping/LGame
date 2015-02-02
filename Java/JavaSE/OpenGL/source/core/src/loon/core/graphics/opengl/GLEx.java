@@ -3690,11 +3690,9 @@ public final class GLEx implements LTrans {
 			final FloatBuffer vertexBuffer, final FloatBuffer coordsBuffer,
 			final FloatBuffer colorBuffer, boolean isColor, int count, float x,
 			float y) {
-
 		if (isClose) {
 			return;
 		}
-
 		if (count > 0) {
 			if (!texture.isVisible) {
 				return;

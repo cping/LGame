@@ -8,16 +8,7 @@ public class MeshDefault {
 
 	private final static ObjectMap<Integer, Mesh> meshLazy = new ObjectMap<Integer, Mesh>(
 			10);
-
-	private static ShaderProgram shader = null;
-
-	public static ShaderProgram getShader() {
-		if (shader == null) {
-			shader = GLEx.createDefaultShader();
-		}
-		return shader;
-	}
-
+	
 	public static Mesh getMesh(final int size) {
 		Mesh mesh = meshLazy.get(size);
 		if (mesh == null) {
