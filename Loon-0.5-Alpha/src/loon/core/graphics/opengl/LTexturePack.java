@@ -404,7 +404,7 @@ public class LTexturePack implements LRelease {
 	public boolean isBatch() {
 		return texture != null && texture.isBatch();
 	}
-
+	
 	public void glBegin() {
 		if (count > 0) {
 			pack();

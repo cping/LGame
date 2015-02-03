@@ -36,6 +36,7 @@ import loon.core.graphics.opengl.LTextureBatch.Cache;
 import loon.net.Base64Coder;
 import loon.utils.xml.XMLElement;
 
+
 public class TMXLayer extends LLight implements LRelease {
 
 	private class MapTileSet {
@@ -273,7 +274,7 @@ public class TMXLayer extends LLight implements LRelease {
 						}
 
 						tmxTileSet.tiles.draw(g, cx, cy, sheetX, sheetY,
-								colors != null ? colors[0] : null);
+								colors);
 					}
 
 				}

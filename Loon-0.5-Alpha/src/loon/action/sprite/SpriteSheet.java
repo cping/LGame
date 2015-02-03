@@ -135,7 +135,7 @@ public class SpriteSheet implements LRelease {
 	}
 
 	public void draw(GLEx g, int x, int y, int sx, int sy) {
-		draw(g, x, y, sx, sy, null);
+		draw(g, x, y, sx, sy, (LColor)null);
 	}
 
 	public void draw(GLEx g, int x, int y, int sx, int sy, LColor color) {
@@ -145,10 +145,21 @@ public class SpriteSheet implements LRelease {
 			target.draw(x, y, tw, th, nx, ny, nx + tw, ny + th, color);
 		} else {
 			checkImage(sx, sy);
-			g.drawTexture(subImages[sx][sy], x, y);
+			g.drawTexture(subImages[sx][sy], x, y, color);
 		}
 	}
 
+	public void draw(GLEx g, int x, int y, int sx, int sy, LColor[] color) {
+		if (target.isBatch()) {
+			final float nx = sx * tw;
+			final float ny = sy * th;
+			target.draw(x, y, tw, th, nx, ny, nx + tw, ny + th, color);
+		} else {
+			checkImage(sx, sy);
+			g.drawTexture(subImages[sx][sy], x, y);
+		}
+	}
+	
 	public void glBegin() {
 		target.glBegin();
 	}

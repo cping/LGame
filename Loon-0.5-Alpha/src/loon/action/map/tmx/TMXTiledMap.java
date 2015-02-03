@@ -201,7 +201,7 @@ public class TMXTiledMap implements LRelease {
 		int y = Touch.y() / tileHeight;
 		draw(g, 0, 0, x, y, width - defWidth, height - defHeight, false);
 	}
-
+	
 	public void draw(GLEx g, int tx, int ty) {
 		draw(g, 0, 0, tx, ty);
 	}
@@ -250,7 +250,7 @@ public class TMXTiledMap implements LRelease {
 			XMLElement docElement = doc.getRoot();
 
 			String orient = docElement.getAttribute("orientation", "");
-
+		
 			if (!"orthogonal".equals(orient)) {
 				throw new RuntimeException(
 						"Only orthogonal maps supported, found " + orient);
