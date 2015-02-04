@@ -1,18 +1,3 @@
-package loon.action.sprite;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-
-import loon.LSystem;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GL;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -33,6 +18,21 @@ import loon.core.timer.LTimer;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
+import loon.LSystem;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.GL;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.timer.LTimer;
+
 public class WaitSprite extends LObject implements ISprite {
 
 	/**

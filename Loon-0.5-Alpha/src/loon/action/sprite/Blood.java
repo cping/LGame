@@ -1,13 +1,3 @@
-package loon.action.sprite;
-
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -28,6 +18,16 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.timer.LTimer;
+import loon.utils.MathUtils;
+
 public class Blood extends LObject implements ISprite {
 
 	/**

@@ -1,10 +1,3 @@
-package loon.action.sprite;
-
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -25,6 +18,13 @@ import loon.core.graphics.opengl.LTexture;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+
 public class Picture extends LObject implements ISprite {
 
 	/**

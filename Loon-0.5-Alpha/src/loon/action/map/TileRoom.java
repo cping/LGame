@@ -1,8 +1,3 @@
-package loon.action.map;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -23,6 +18,11 @@ import java.util.HashMap;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.map;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class TileRoom {
 
 	class RoomLink {

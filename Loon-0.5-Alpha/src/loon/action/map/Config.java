@@ -1,5 +1,3 @@
-package loon.action.map;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -20,6 +18,8 @@ package loon.action.map;
  * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
+package loon.action.map;
+
 public interface Config {
 
 	public static final int EMPTY = -1;

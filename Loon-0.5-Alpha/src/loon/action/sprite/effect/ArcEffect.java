@@ -1,15 +1,3 @@
-package loon.action.sprite.effect;
-
-import loon.LSystem;
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -30,6 +18,18 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import loon.LSystem;
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.timer.LTimer;
+import loon.utils.MathUtils;
+
 /**
  * 0.3.2版新增类，单一色彩的圆弧渐变特效
  */

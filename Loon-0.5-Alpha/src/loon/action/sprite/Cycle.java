@@ -1,19 +1,3 @@
-package loon.action.sprite;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import loon.core.LObject;
-import loon.core.geom.Path;
-import loon.core.geom.Polygon;
-import loon.core.geom.RectBox;
-import loon.core.geom.Shape;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -34,6 +18,22 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import loon.core.LObject;
+import loon.core.geom.Path;
+import loon.core.geom.Polygon;
+import loon.core.geom.RectBox;
+import loon.core.geom.Shape;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.timer.LTimer;
+import loon.utils.MathUtils;
+
 public class Cycle extends LObject implements ISprite {
 
 	public final static Cycle getSample(int type, float srcWidth,

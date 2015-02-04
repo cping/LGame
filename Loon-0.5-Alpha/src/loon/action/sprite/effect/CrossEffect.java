@@ -1,12 +1,3 @@
-package loon.action.sprite.effect;
-
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -27,6 +18,15 @@ import loon.core.timer.LTimer;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.timer.LTimer;
+
 /**
  * 0.3.2起新增类，百叶窗特效 0--竖屏,1--横屏
  */

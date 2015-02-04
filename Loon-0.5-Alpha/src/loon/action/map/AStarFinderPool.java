@@ -1,12 +1,3 @@
-package loon.action.map;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import loon.core.geom.Vector2f;
-import loon.core.processes.RealtimeProcess;
-import loon.core.processes.RealtimeProcessManager;
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -27,6 +18,15 @@ import loon.core.processes.RealtimeProcessManager;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.map;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import loon.core.geom.Vector2f;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
+
 public class AStarFinderPool {
 
 	private Field2D field;

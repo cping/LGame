@@ -1,17 +1,3 @@
-package loon.action.sprite;
-
-import java.util.HashMap;
-
-import loon.LSystem;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -32,6 +18,20 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import java.util.HashMap;
+
+import loon.LSystem;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.utils.MathUtils;
+
 public class StatusBar extends LObject implements ISprite {
 
 	private static final long serialVersionUID = 1L;

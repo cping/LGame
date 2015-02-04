@@ -1,7 +1,3 @@
-package loon.action.map.tmx;
-
-import java.util.Hashtable;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -23,6 +19,10 @@ import java.util.Hashtable;
  * @email javachenpeng@yahoo.com
  * @version 0.1.0
  */
+package loon.action.map.tmx;
+
+import java.util.Hashtable;
+
 public class TMXProperty extends Hashtable<String, String> {
 
 	/**

@@ -1,14 +1,3 @@
-package loon.action.map;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import loon.core.geom.Vector2f;
-import loon.utils.CollectionUtils;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -29,6 +18,17 @@ import loon.utils.MathUtils;
  * @email javachenpeng@yahoo.com
  * @version 0.1.1
  */
+package loon.action.map;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import loon.core.geom.Vector2f;
+import loon.utils.CollectionUtils;
+import loon.utils.MathUtils;
+
 public class Field2D implements Config {
 
 	private final static float angular = MathUtils.cos(MathUtils.PI / 4);

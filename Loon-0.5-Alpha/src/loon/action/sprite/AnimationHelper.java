@@ -1,14 +1,3 @@
-package loon.action.sprite;
-
-import java.util.HashMap;
-
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.TextureUtils;
-import loon.utils.CollectionUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -29,6 +18,17 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite;
+
+import java.util.HashMap;
+
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.TextureUtils;
+import loon.utils.CollectionUtils;
+
 public class AnimationHelper {
 
 	private final static HashMap<String, AnimationHelper> animations = new HashMap<String, AnimationHelper>();
