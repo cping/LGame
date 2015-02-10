@@ -1,5 +1,7 @@
 ﻿#LGame (formal name : Loon)
 
+Please see [XRPMoon.com](http://www.xrpmoon.com/blog) for downloads, build and installation instructions and other documentation.
+
 20140906:
 
 LGame Project Restart,The game's just started.
