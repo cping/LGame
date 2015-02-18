@@ -1,13 +1,5 @@
-package loon.core.graphics.opengl;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.LTexture.Format;
-
 /**
- * Copyright 2008 - 2012
+ * Copyright 2008 - 2011
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -24,40 +16,109 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.3.3
+ * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import loon.LSystem;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.jni.NativeSupport;
+
 public class TextureUtils {
 
-	public static LTexture filterColor(String res, LColor height) {
-		return TextureUtils.filterColor(res, height, Format.DEFAULT);
+	public static LTexture filterGray(String res) {
+		return filterGray(res, Format.DEFAULT);
 	}
 
-	public static LTexture filterColor(String res, LColor height, Format format) {
-		int color = height.getRGB();
+	public static LTexture filterGray(String res, Format format) {
 		LImage tmp = new LImage(res);
-		LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-		LGraphics g = image.getLGraphics();
-		g.drawImage(tmp, 0, 0);
-		g.dispose();
-		if (tmp != null) {
-			tmp.dispose();
-			tmp = null;
-		}
-		int[] pixels = image.getPixels();
-		int size = pixels.length;
-		for (int i = 0; i < size; i++) {
-			if (pixels[i] == color) {
-				pixels[i] = 0xffffff;
-			}
-		}
-		image.setFormat(format);
-		image.setPixels(pixels, image.getWidth(), image.getHeight());
-		LTexture texture = image.getTexture();
-		if (image != null) {
-			image.dispose();
-			image = null;
-		}
+		int[] pixels = NativeSupport.toGray(tmp.getPixels(), tmp.getWidth(),
+				tmp.getHeight());
+		tmp.setFormat(format);
+		tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+		tmp.setAutoDispose(true);
+		LTexture texture = tmp.getTexture();
+		pixels = null;
 		return texture;
+	}
+
+	public static LTexture filterColor(String res, LColor col) {
+		return TextureUtils.filterColor(res, col, Format.DEFAULT);
+	}
+
+	public static LTexture filterColor(String res, LColor col, Format format) {
+		LImage tmp = new LImage(res);
+		if (tmp.hasAlpha()) {
+			int[] pixels = NativeSupport.toColorKey(tmp.getPixels(),
+					col.getRGB());
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+			tmp.setAutoDispose(true);
+			LTexture texture = tmp.getTexture();
+			pixels = null;
+			return texture;
+
+		} else {
+			LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
+			LGraphics g = image.getLGraphics();
+			g.drawImage(tmp, 0, 0);
+			g.dispose();
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
+			}
+			int[] pixels = NativeSupport.toColorKey(image.getPixels(),
+					col.getRGB());
+			image.setFormat(format);
+			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			LTexture texture = image.getTexture();
+			if (image != null) {
+				image.dispose();
+				image = null;
+			}
+			pixels = null;
+			return texture;
+		}
+	}
+
+	public static LTexture filterColor(String res, int[] colors) {
+		return TextureUtils.filterColor(res, colors, Format.DEFAULT);
+	}
+
+	public static LTexture filterColor(String res, int[] colors, Format format) {
+		LImage tmp = new LImage(res);
+		if (tmp.hasAlpha()) {
+			int[] pixels = NativeSupport.toColorKeys(tmp.getPixels(), colors);
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+			tmp.setAutoDispose(true);
+			LTexture texture = tmp.getTexture();
+			pixels = null;
+			return texture;
+
+		} else {
+			LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
+			LGraphics g = image.getLGraphics();
+			g.drawImage(tmp, 0, 0);
+			g.dispose();
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
+			}
+			int[] pixels = NativeSupport.toColorKeys(image.getPixels(), colors);
+			image.setFormat(format);
+			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			LTexture texture = image.getTexture();
+			if (image != null) {
+				image.dispose();
+				image = null;
+			}
+			pixels = null;
+			return texture;
+		}
 	}
 
 	public static LTexture filterLimitColor(String res, LColor start, LColor end) {
@@ -100,95 +161,60 @@ public class TextureUtils {
 		return texture;
 	}
 
-	public static LTexture filterColor(String res, int[] colors) {
-		return TextureUtils.filterColor(res, colors, Format.DEFAULT);
-	}
-
-	public static LTexture filterColor(String res, int[] colors, Format format) {
-		LImage tmp = new LImage(res);
-		LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-		LGraphics g = image.getLGraphics();
-		g.drawImage(tmp, 0, 0);
-		g.dispose();
-		if (tmp != null) {
-			tmp.dispose();
-			tmp = null;
-		}
-		int[] pixels = image.getPixels();
-		int size = pixels.length;
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < colors.length; j++) {
-				if (pixels[i] == colors[j]) {
-					pixels[i] = 0xffffff;
-				}
-			}
-		}
-		image.setFormat(format);
-		image.setPixels(pixels, image.getWidth(), image.getHeight());
-		LTexture texture = image.getTexture();
-		if (image != null) {
-			image.dispose();
-			image = null;
-		}
-		return texture;
-	}
-
 	public static LTexture loadTexture(String fileName) {
 		return LTextures.loadTexture(fileName);
 	}
 
-	public static LTexture[] getSplitTextures(String fileName, int width,
-			int height) {
-		return getSplitTextures(LTextures.loadTexture(fileName), width, height);
+	public static LTexture[] getSplitTextures(String fileName, int tileWidth,
+			int tileHeight) {
+		return getSplitTextures(LTextures.loadTexture(fileName), tileWidth,
+				tileHeight);
 	}
 
-	public static LTexture[] getSplitTextures(LTexture image, int width,
-			int height) {
+	public static LTexture[] getSplitTextures(LTexture image, int tileWidth,
+			int tileHeight) {
 		if (image == null) {
 			return null;
 		}
-
 		if (LSystem.isThreadDrawing()) {
 			image.loadTexture();
 		}
-
 		int frame = 0;
-		int wlength = image.getWidth() / width;
-		int hlength = image.getHeight() / height;
+		int wlength = image.getWidth() / tileWidth;
+		int hlength = image.getHeight() / tileHeight;
 		int total = wlength * hlength;
 		LTexture[] images = new LTexture[total];
 		for (int y = 0; y < hlength; y++) {
 			for (int x = 0; x < wlength; x++) {
-				images[frame] = image.getSubTexture((x * width), (y * height),
-						width, height);
+				images[frame] = image.getSubTexture((x * tileWidth),
+						(y * tileHeight), tileWidth, tileHeight);
 				frame++;
 			}
 		}
 		return images;
 	}
 
-	public static LTexture[][] getSplit2Textures(String fileName, int width,
-			int height) {
-		return getSplit2Textures(LTextures.loadTexture(fileName), width, height);
+	public static LTexture[][] getSplit2Textures(String fileName,
+			int tileWidth, int tileHeight) {
+		return getSplit2Textures(LTextures.loadTexture(fileName), tileWidth,
+				tileHeight);
 	}
 
-	public static LTexture[][] getSplit2Textures(LTexture image, int width,
-			int height) {
+	public static LTexture[][] getSplit2Textures(LTexture image, int tileWidth,
+			int tileHeight) {
 		if (image == null) {
 			return null;
 		}
-
 		if (LSystem.isThreadDrawing()) {
 			image.loadTexture();
 		}
-
-		int wlength = image.getWidth() / width;
-		int hlength = image.getHeight() / height;
+		int wlength = image.getWidth() / tileWidth;
+		int hlength = image.getHeight() / tileHeight;
 		LTexture[][] textures = new LTexture[wlength][hlength];
 		for (int y = 0; y < hlength; y++) {
 			for (int x = 0; x < wlength; x++) {
-				textures[x][y] = image.getSubTexture((x * width), (y * height),
-						width, height);
+				textures[x][y] = image.getSubTexture((x * tileWidth),
+						(y * tileHeight), tileWidth, tileHeight);
 			}
 		}
 		return textures;
@@ -212,11 +238,9 @@ public class TextureUtils {
 		if (image == null) {
 			return null;
 		}
-
 		if (LSystem.isThreadDrawing()) {
 			image.loadTexture();
 		}
-
 		if (width == null) {
 			width = new int[count];
 			int w = image.getWidth();

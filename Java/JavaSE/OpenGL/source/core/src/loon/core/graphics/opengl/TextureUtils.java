@@ -25,39 +25,63 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LGraphics;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.jni.NativeSupport;
 
 public class TextureUtils {
+
+	public static LTexture filterGray(String res) {
+		return filterGray(res, Format.DEFAULT);
+	}
+
+	public static LTexture filterGray(String res, Format format) {
+		LImage tmp = new LImage(res);
+		int[] pixels = NativeSupport.toGray(tmp.getPixels(), tmp.getWidth(),
+				tmp.getHeight());
+		tmp.setFormat(format);
+		tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+		tmp.setAutoDispose(true);
+		LTexture texture = tmp.getTexture();
+		pixels = null;
+		return texture;
+	}
 
 	public static LTexture filterColor(String res, LColor col) {
 		return TextureUtils.filterColor(res, col, Format.DEFAULT);
 	}
 
 	public static LTexture filterColor(String res, LColor col, Format format) {
-		int color = col.getRGB();
 		LImage tmp = new LImage(res);
-		LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-		LGraphics g = image.getLGraphics();
-		g.drawImage(tmp, 0, 0);
-		g.dispose();
-		if (tmp != null) {
-			tmp.dispose();
-			tmp = null;
-		}
-		int[] pixels = image.getPixels();
-		int size = pixels.length;
-		for (int i = 0; i < size; i++) {
-			if (pixels[i] == color) {
-				pixels[i] = 0xffffff;
+		if (tmp.hasAlpha()) {
+			int[] pixels = NativeSupport.toColorKey(tmp.getPixels(),
+					col.getRGB());
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+			tmp.setAutoDispose(true);
+			LTexture texture = tmp.getTexture();
+			pixels = null;
+			return texture;
+
+		} else {
+			LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
+			LGraphics g = image.getLGraphics();
+			g.drawImage(tmp, 0, 0);
+			g.dispose();
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
 			}
+			int[] pixels = NativeSupport.toColorKey(image.getPixels(),
+					col.getRGB());
+			image.setFormat(format);
+			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			LTexture texture = image.getTexture();
+			if (image != null) {
+				image.dispose();
+				image = null;
+			}
+			pixels = null;
+			return texture;
 		}
-		image.setFormat(format);
-		image.setPixels(pixels, image.getWidth(), image.getHeight());
-		LTexture texture = image.getTexture();
-		if (image != null) {
-			image.dispose();
-			image = null;
-		}
-		return texture;
 	}
 
 	public static LTexture filterColor(String res, int[] colors) {
@@ -66,31 +90,35 @@ public class TextureUtils {
 
 	public static LTexture filterColor(String res, int[] colors, Format format) {
 		LImage tmp = new LImage(res);
-		LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-		LGraphics g = image.getLGraphics();
-		g.drawImage(tmp, 0, 0);
-		g.dispose();
-		if (tmp != null) {
-			tmp.dispose();
-			tmp = null;
-		}
-		int[] pixels = image.getPixels();
-		int size = pixels.length;
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < colors.length; j++) {
-				if (pixels[i] == colors[j]) {
-					pixels[i] = 0xffffff;
-				}
+		if (tmp.hasAlpha()) {
+			int[] pixels = NativeSupport.toColorKeys(tmp.getPixels(), colors);
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+			tmp.setAutoDispose(true);
+			LTexture texture = tmp.getTexture();
+			pixels = null;
+			return texture;
+
+		} else {
+			LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
+			LGraphics g = image.getLGraphics();
+			g.drawImage(tmp, 0, 0);
+			g.dispose();
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
 			}
+			int[] pixels = NativeSupport.toColorKeys(image.getPixels(), colors);
+			image.setFormat(format);
+			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			LTexture texture = image.getTexture();
+			if (image != null) {
+				image.dispose();
+				image = null;
+			}
+			pixels = null;
+			return texture;
 		}
-		image.setFormat(format);
-		image.setPixels(pixels, image.getWidth(), image.getHeight());
-		LTexture texture = image.getTexture();
-		if (image != null) {
-			image.dispose();
-			image = null;
-		}
-		return texture;
 	}
 
 	public static LTexture filterLimitColor(String res, LColor start, LColor end) {

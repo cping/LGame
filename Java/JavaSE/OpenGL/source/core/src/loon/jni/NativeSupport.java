@@ -1066,6 +1066,66 @@ public final class NativeSupport {
 		}
 	}
 
+	public static int[] toColorKey(int[] buffer, int colorKey) {
+		if (useLoonNative) {
+			setColorKey(buffer, colorKey);
+		} else {
+			int size = buffer.length;
+			for (int i = 0; i < size; i++) {
+				int pixel = buffer[i];
+				if (pixel == colorKey) {
+					buffer[i] = 0x00FFFFFF;
+				}
+			}
+		}
+		return buffer;
+	}
+
+	public static int[] toColorKeys(int[] buffer, int[] colors) {
+		if (useLoonNative) {
+			setColorKeys(buffer, colors);
+		} else {
+			int length = colors.length;
+			int size = buffer.length;
+			for (int n = 0; n < length; n++) {
+				for (int i = 0; i < size; i++) {
+					int pixel = buffer[i];
+					if (pixel == colors[n]) {
+						buffer[i] = 0x00FFFFFF;
+					}
+
+				}
+			}
+		}
+		return buffer;
+	}
+
+	public static int[] toGray(int[] buffer, int w, int h) {
+		if (useLoonNative) {
+			return getGray(buffer, w, h);
+		} else {
+			int size = w * h;
+			int[] newResult = new int[size];
+			System.arraycopy(buffer, 0, newResult, 0, size);
+			int alpha = 0xFF << 24;
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					int idx = w * i + j;
+					int color = newResult[idx];
+					if (color != 0x00FFFFFF) {
+						int red = ((color & 0x00FF0000) >> 16);
+						int green = ((color & 0x0000FF00) >> 8);
+						int blue = color & 0x000000FF;
+						color = (red + green + blue) / 3;
+						color = alpha | (color << 16) | (color << 8) | color;
+						newResult[idx] = color;
+					}
+				}
+			}
+			return newResult;
+		}
+	}
+
 	private native static void jniencode(byte[] src, int size, int tag);
 
 	private native static void jnimul(float[] mata, float[] matb);
@@ -1130,4 +1190,10 @@ public final class NativeSupport {
 
 	private native static void updateFractions(int size, float[] src,
 			int width, int height, int[] dst, int numElements);
+
+	private native static int[] setColorKey(int[] buffer, int colorKey);
+
+	private native static int[] setColorKeys(int[] buffer, int[] colorKey);
+
+	private native static int[] getGray(int[] buffer, int w, int h);
 }

@@ -66,6 +66,12 @@ extern "C" {
 
 	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_bufferFreeDirect(JNIEnv *, jclass, jobject);
 
+	JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_getGray(JNIEnv *env, jclass, jintArray, jint, jint);
+
+	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKey(JNIEnv *env, jclass, jintArray, jint);
+
+	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jclass, jintArray, jintArray);
+
 #ifdef __cplusplus
 }
 #endif

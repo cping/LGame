@@ -392,6 +392,77 @@ JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_updateArray(JNIEnv *env, jcla
      env->ReleaseIntArrayElements(colors, jniColors, 0);
 }
 
+
+JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_getGray(JNIEnv *env, jclass, jintArray buffer, jint w, jint h) {
+        jint *cbuf;
+		cbuf = env->GetIntArrayElements(buffer, false);
+		if (cbuf == NULL) {
+		  return 0;
+		}
+		int alpha = 0xFF << 24;
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				int idx = w * i + j;
+				int color = cbuf[idx];
+				if (color != 0x00FFFFFF) {
+					int red = ((color & 0x00FF0000) >> 16);
+					int green = ((color & 0x0000FF00) >> 8);
+					int blue = color & 0x000000FF;
+					color = (red + green + blue) / 3;
+					color = alpha | (color << 16) | (color << 8) | color;
+					cbuf[idx] = color;
+				}
+			}
+		}
+		int size = w * h;
+		jintArray result = env->NewIntArray(size);
+		env->SetIntArrayRegion(result, 0, size, cbuf);
+		env->ReleaseIntArrayElements(buffer, cbuf, 0);
+		return result;
+}
+
+JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKey(JNIEnv *env, jclass, jintArray buffer, jint colorkey) {
+        jint *cbuf;
+		cbuf = env->GetIntArrayElements(buffer, false);
+		if (cbuf == NULL) {
+		  return;
+		}
+        jsize size = env->GetArrayLength(buffer);
+		for (int i = 0; i < size; i++) {
+					int pixel = cbuf[i];
+					if (pixel == colorkey) {
+						cbuf[i] = 0x00FFFFFF;
+					}
+		}
+		env->ReleaseIntArrayElements(buffer, cbuf, 0);
+}
+
+JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jclass, jintArray buffer, jintArray colors) {
+        jint *cbuf;
+		cbuf = env->GetIntArrayElements(buffer, false);
+		if (cbuf == NULL) {
+		  return;
+		}
+		jint *cpixels;
+		cpixels = env->GetIntArrayElements(colors, false);
+		if (cpixels == NULL) {
+		  return;
+		}
+		jsize size = env->GetArrayLength(buffer);
+		jsize length = env->GetArrayLength(colors);
+		for (int n = 0; n < length; n++) {
+				for (int i = 0; i < size; i++) {
+						int pixel = cbuf[i];
+						if (pixel == cpixels[n]) {
+							cbuf[i] = 0x00FFFFFF;
+						}
+				}
+		}
+		env->ReleaseIntArrayElements(buffer, cbuf, 0);
+		env->ReleaseIntArrayElements(colors, cpixels, 0);
+}
+
+
 static inline void copy(JNIEnv* env, jarray src, int srcOffset, jobject dst, int dstOffset, int numBytes) {
 	char* pDst = (char*)env->GetDirectBufferAddress( dst );
 	char* pSrc = (char*)env->GetPrimitiveArrayCritical(src, 0);
