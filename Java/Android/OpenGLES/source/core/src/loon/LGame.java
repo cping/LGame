@@ -111,8 +111,6 @@ public abstract class LGame extends Activity {
 		this.setFPS(setting.fps);
 		if (clazz != null) {
 			if (args != null) {
-				final int currentOrientation = LSystem.screenActivity
-						.getResources().getConfiguration().orientation;
 				Runnable runnable = new Runnable() {
 					@Override
 					public void run() {
@@ -120,15 +118,6 @@ public abstract class LGame extends Activity {
 							final int funs = args.length;
 							if (funs == 0) {
 								setScreen(clazz.newInstance());
-								if (setting.landscape
-										&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-									LSystem.screenActivity
-											.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-								} else if (!setting.landscape
-										&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
-									LSystem.screenActivity
-											.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-								}
 								showScreen();
 							} else {
 								Class<?>[] functions = new Class<?>[funs];
@@ -141,15 +130,6 @@ public abstract class LGame extends Activity {
 								Object o = constructor.newInstance(args);
 								if (o != null && (o instanceof Screen)) {
 									setScreen((Screen) o);
-									if (setting.landscape
-											&& currentOrientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-										LSystem.screenActivity
-												.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-									} else if (!setting.landscape
-											&& currentOrientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) {
-										LSystem.screenActivity
-												.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-									}
 									showScreen();
 								}
 							}

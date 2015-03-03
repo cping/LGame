@@ -6,21 +6,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import loon.LSystem;
+import loon.LTouch;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
 import loon.action.scripting.ScriptScreen;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LLight;
 import loon.core.graphics.Screen;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LLight;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLUtils;
 import loon.core.graphics.opengl.LTexturePack;
-import loon.core.input.LTouch;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.xml.XMLElement;
@@ -57,6 +57,7 @@ public class PackTileMap extends LLight implements LRelease {
 			tiles.put(id, tile);
 		}
 
+		@Override
 		public PackTile getTile(int id) {
 			return tiles.get(id);
 		}
@@ -65,6 +66,7 @@ public class PackTileMap extends LLight implements LRelease {
 			return tiles.containsKey(id);
 		}
 
+		@Override
 		public String getName() {
 			return "simple";
 		}
@@ -197,6 +199,7 @@ public class PackTileMap extends LLight implements LRelease {
 
 						boolean solid;
 
+						@Override
 						public void draw(LTexturePack pack, float x, float y,
 								LColor[] c) {
 							if (c == null) {
@@ -236,22 +239,27 @@ public class PackTileMap extends LLight implements LRelease {
 							}
 						}
 
+						@Override
 						public boolean isSolid() {
 							return solid;
 						}
 
+						@Override
 						public void setSolid(boolean s) {
 							this.solid = s;
 						}
 
+						@Override
 						public int width() {
 							return tileWidth;
 						}
 
+						@Override
 						public int height() {
 							return tileHeight;
 						}
 
+						@Override
 						public void update(long t) {
 
 						}
@@ -281,7 +289,7 @@ public class PackTileMap extends LLight implements LRelease {
 			int col = records.size();
 			int[][] result = new int[col][];
 			for (int i = 0; i < col; i++) {
-				result[i] = (int[]) records.get(i);
+				result[i] = records.get(i);
 			}
 			this.width = result[0].length;
 			this.height = result.length;
@@ -636,6 +644,7 @@ public class PackTileMap extends LLight implements LRelease {
 		return screen;
 	}
 
+	@Override
 	public void dispose() {
 		if (tiles != null) {
 			tiles = null;

@@ -1,15 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.JavaSEInputFactory.Key;
-import loon.JavaSEInputFactory.Touch;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.utils.MathUtils;
-
 /**
  * 
  * Copyright 2014
@@ -31,6 +19,19 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  */
+package loon.core.graphics.component;
+
+import loon.Key;
+import loon.Touch;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.utils.MathUtils;
+
+
 public class LCheckBox extends LComponent {
 
 	private LTexture unchecked, checked;

@@ -21,7 +21,7 @@
  */
 package loon.core.graphics.component;
 
-import loon.JavaSEInputFactory.Touch;
+import loon.Touch;
 import loon.action.sprite.SpriteBatch;
 import loon.core.geom.RectBox;
 import loon.core.graphics.LComponent;

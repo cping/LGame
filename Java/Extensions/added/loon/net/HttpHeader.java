@@ -1,6 +1,6 @@
 package loon.net;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 /**
  * Copyright 2008 - 2009

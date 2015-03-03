@@ -20,6 +20,7 @@
  */
 package loon.core.graphics.opengl;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import loon.core.LRelease;
@@ -32,15 +33,19 @@ public class GLBatch implements LRelease {
 	private int primitiveType;
 
 	private float[] vertexs;
+	private ByteBuffer vertexsByteBuffer;
 	private FloatBuffer vertexsBuffer;
 
 	private float[] colors;
+	private ByteBuffer colorsByteBuffer;
 	private FloatBuffer colorsBuffer;
 
 	private float[] normals;
+	private ByteBuffer normalsByteBuffer;
 	private FloatBuffer normalsBuffer;
 
 	private float[] texCoords;
+	private ByteBuffer texCoordsByteBuffer;
 	private FloatBuffer texCoordsBuffer;
 
 	private int indexPos = 0;
@@ -70,20 +75,28 @@ public class GLBatch implements LRelease {
 		this.nativeLibs = NativeSupport.UseLoonNative();
 		if (nativeLibs) {
 			this.vertexs = new float[3 * maxVertices];
-			this.vertexsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
+			this.vertexsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.vertexsBuffer = this.vertexsByteBuffer.asFloatBuffer();
 			this.colors = new float[4 * maxVertices];
-			this.colorsBuffer = NativeSupport.newFloatBuffer(4 * maxVertices);
+			this.colorsByteBuffer = NativeSupport.newUnsafeByteBuffer(4 * maxVertices);
+			this.colorsBuffer = this.colorsByteBuffer.asFloatBuffer();
 			this.normals = new float[3 * maxVertices];
-			this.normalsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
+			this.normalsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.normalsBuffer = this.normalsByteBuffer.asFloatBuffer();
 			this.texCoords = new float[2 * maxVertices];
-			this.texCoordsBuffer = NativeSupport
-					.newFloatBuffer(2 * maxVertices);
+			this.texCoordsByteBuffer = NativeSupport
+					.newUnsafeByteBuffer(2 * maxVertices);
+			this.texCoordsBuffer = this.texCoordsByteBuffer.asFloatBuffer();
 		} else {
-			this.vertexsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
-			this.colorsBuffer = NativeSupport.newFloatBuffer(4 * maxVertices);
-			this.normalsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
-			this.texCoordsBuffer = NativeSupport
-					.newFloatBuffer(2 * maxVertices);
+			this.vertexsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.vertexsBuffer = this.vertexsByteBuffer.asFloatBuffer();
+			this.colorsByteBuffer = NativeSupport.newUnsafeByteBuffer(4 * maxVertices);
+			this.colorsBuffer = this.colorsByteBuffer.asFloatBuffer();
+			this.normalsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.normalsBuffer = this.normalsByteBuffer.asFloatBuffer();
+			this.texCoordsByteBuffer = NativeSupport
+					.newUnsafeByteBuffer(2 * maxVertices);
+			this.texCoordsBuffer = this.texCoordsByteBuffer.asFloatBuffer();
 		}
 	}
 
@@ -281,13 +294,13 @@ public class GLBatch implements LRelease {
 	public void dispose() {
 		closed = true;
 		vertexs = null;
-		vertexsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(vertexsByteBuffer);
 		colors = null;
-		colorsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(colorsByteBuffer);
 		normals = null;
-		normalsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(normalsByteBuffer);
 		texCoords = null;
-		texCoordsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(texCoordsByteBuffer);
 	}
 
 }

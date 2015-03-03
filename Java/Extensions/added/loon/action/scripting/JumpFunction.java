@@ -22,17 +22,18 @@ import java.util.Stack;
  * @email：ceponline@yahoo.com.cn 
  * @version 0.1
  */
-public class CallFunction extends Function{
+public class JumpFunction extends Function {
 	
     private String script;
-    
-    public CallFunction(String script) {
+
+    public JumpFunction(String script) {
         this.script = script;
     }
     
-    public void update(ScriptFactory engine, Stack<StackFrame> stack, Callback callback) {
-        callback.call(script);
-        engine.call(script);
+    @Override
+	public void update(ScriptFactory engine, Stack<StackFrame> stack, Callback callback) {
+        callback.jump(script);
+        engine.jump(stack, script);
     }
 
     public String getScript() {
@@ -40,4 +41,5 @@ public class CallFunction extends Function{
     }
 
 }
+
 

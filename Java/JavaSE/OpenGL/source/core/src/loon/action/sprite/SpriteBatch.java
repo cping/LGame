@@ -32,13 +32,16 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GL10;
+import loon.core.graphics.opengl.GLAttributes;
 import loon.core.graphics.opengl.GLBatch;
 import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.GLMesh;
 import loon.core.graphics.opengl.LSTRDictionary;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureRegion;
-import loon.core.graphics.opengl.MeshDefault;
 import loon.core.graphics.opengl.TextureUtils;
+import loon.core.graphics.opengl.GLAttributes.Usage;
+import loon.core.graphics.opengl.GLMesh.VertexDataType;
 import loon.utils.MathUtils;
 
 public class SpriteBatch implements LRelease {
@@ -172,15 +175,33 @@ public class SpriteBatch implements LRelease {
 
 	private float invTexHeight;
 
-	private int size;
-
+	private final GLMesh mesh;
+	
 	public SpriteBatch() {
 		this(1000);
 	}
 
 	public SpriteBatch(int size) {
 		this.vertices = new float[size * SPRITE_SIZE];
-		this.size = size;
+		mesh = new GLMesh(VertexDataType.VertexArray, false, size * 4,
+				size * 6, new GLAttributes.VertexAttribute(Usage.Position, 2,
+						"POSITION"), new GLAttributes.VertexAttribute(
+						Usage.ColorPacked, 4, "COLOR"),
+				new GLAttributes.VertexAttribute(Usage.TextureCoordinates, 2,
+						"TEXCOORD"));
+		int len = size * 6;
+		short[] indices = new short[len];
+		short j = 0;
+		for (int i = 0; i < len; i += 6, j += 4) {
+			indices[i + 0] = (short) (j + 0);
+			indices[i + 1] = (short) (j + 1);
+			indices[i + 2] = (short) (j + 2);
+			indices[i + 3] = (short) (j + 2);
+			indices[i + 4] = (short) (j + 3);
+			indices[i + 5] = (short) (j + 0);
+		}
+		mesh.setIndices(indices);
+
 	}
 
 	public void halfAlpha() {
@@ -1914,8 +1935,12 @@ public class SpriteBatch implements LRelease {
 			self.setBlendMode(GL.MODE_NORMAL);
 			break;
 		}
-		MeshDefault.post(size, vertices, idx, spritesInBatch * 6);
+		mesh.setVertices(vertices, 0, idx);
+		mesh.getIndicesBuffer().position(0);
+		mesh.getIndicesBuffer().limit(spritesInBatch * 6);
+		mesh.render(GL.GL_TRIANGLES, 0, spritesInBatch * 6);
 		self.setBlendMode(old);
+		idx = 0;
 	}
 
 	public boolean isLockSubmit() {

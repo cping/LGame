@@ -23,7 +23,7 @@ package loon.core.graphics.component;
 import java.util.ArrayList;
 
 import loon.LSystem;
-import loon.JavaSEInputFactory.Touch;
+import loon.Touch;
 import loon.core.geom.Path;
 import loon.core.geom.Vector2f;
 import loon.core.graphics.LComponent;

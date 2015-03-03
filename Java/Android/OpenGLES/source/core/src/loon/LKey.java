@@ -20,9 +20,7 @@
  */
 package loon;
 
-import loon.AndroidInputFactory.Key;
 import loon.utils.collection.ArrayByte;
-
 
 public class LKey {
 

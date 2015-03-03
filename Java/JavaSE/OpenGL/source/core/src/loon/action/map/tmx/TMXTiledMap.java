@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import loon.LSystem;
 import loon.LTouch;
-import loon.JavaSEInputFactory.Touch;
+import loon.Touch;
 import loon.core.LRelease;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;

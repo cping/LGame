@@ -234,22 +234,6 @@ public final class LSystem {
 		}
 	}
 
-	/**
-	 * 执行一个位于Screen线程中的Runnable
-	 * 
-	 * @param runnable
-	 */
-	public final static void callScreenRunnable(Runnable runnable) {
-		LProcess process = LSystem.screenProcess;
-		if (process != null) {
-			Screen screen = process.getScreen();
-			if (screen != null) {
-				synchronized (screen) {
-					screen.callEvent(runnable);
-				}
-			}
-		}
-	}
 
 	public final static void load(Updateable u) {
 		if (LSystem.isThreadDrawing()) {

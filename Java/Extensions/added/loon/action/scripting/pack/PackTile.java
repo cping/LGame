@@ -1,6 +1,6 @@
 package loon.action.scripting.pack;
 
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexturePack;
 
 

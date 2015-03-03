@@ -26,6 +26,7 @@ import loon.LKey;
 import loon.LSystem;
 import loon.LTouch;
 import loon.action.sprite.SpriteBatch;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.Screen;
 import loon.core.graphics.device.LColor;
@@ -256,48 +257,69 @@ public abstract class DrawableScreen extends Screen {
 	}
 
 	@Override
-	public final void touchDown(LTouch e) {
-		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
+	public final void touchDown(final LTouch e) {
+		Updateable updateable = new Updateable() {
+			
+			@Override
+			public void action(Object a) {
+				for (Drawable drawable : drawablesToDraw) {
+					if (drawable._enabled) {
+						if (drawable != null) {
+							if (drawable.getDrawableState() == DrawableState.Hidden) {
+								continue;
+							}
+							drawable.pressed(e);
+						}
 					}
-					drawable.pressed(e);
 				}
+				pressed(e);
 			}
-		}
-		pressed(e);
+		};
+		LSystem.load(updateable);
 	}
 
 	@Override
-	public final void touchUp(LTouch e) {
-		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
+	public final void touchUp(final LTouch e) {
+		Updateable updateable = new Updateable() {
+			
+			@Override
+			public void action(Object a) {
+				for (Drawable drawable : drawablesToDraw) {
+					if (drawable._enabled) {
+						if (drawable != null) {
+							if (drawable.getDrawableState() == DrawableState.Hidden) {
+								continue;
+							}
+							drawable.released(e);
+						}
 					}
-					drawable.released(e);
 				}
+				pressed(e);
 			}
-		}
-		released(e);
+		};
+		LSystem.load(updateable);
 	}
 
 	@Override
-	public final void touchMove(LTouch e) {
-		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
+	public final void touchMove(final LTouch e) {
+		Updateable updateable = new Updateable() {
+			
+			@Override
+			public void action(Object a) {
+				for (Drawable drawable : drawablesToDraw) {
+					if (drawable._enabled) {
+						if (drawable != null) {
+							if (drawable.getDrawableState() == DrawableState.Hidden) {
+								continue;
+							}
+							drawable.move(e);
+						}
 					}
-					drawable.move(e);
 				}
+				pressed(e);
 			}
-		}
-		move(e);
+		};
+		LSystem.load(updateable);
 	}
 
 	@Override

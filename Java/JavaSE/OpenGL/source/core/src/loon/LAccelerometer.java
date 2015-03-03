@@ -20,9 +20,10 @@
  */
 package loon;
 
-import loon.JavaSEInputFactory.Key;
 import loon.action.map.Config;
 import loon.core.geom.Vector3f;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 import loon.utils.MathUtils;
 
 //0.3.3版修改后重力感应方式，与原有的Screen重力感应方式不同，该类非绑定于Screen(JavaSE版只能键盘模拟重力)
@@ -158,16 +159,17 @@ public class LAccelerometer {
 
 	}
 
-	class SensorThread extends Thread {
+	class SensorProcess extends RealtimeProcess {
 
 		final float[] accelerometerValues;
 
-		public SensorThread(float[] values) {
+		public SensorProcess(float[] values) {
 			this.accelerometerValues = values;
+			this.setDelay(_sleep);
 		}
 
 		public void run() {
-			while (_state._isConnected) {
+			if (_state._isConnected) {
 				accelerometerValues[2] = -1f;
 				if (Key.isDown() && Key.getKeyCode() == Key.LEFT) {
 					accelerometerValues[0]--;
@@ -183,10 +185,6 @@ public class LAccelerometer {
 				}
 				onSensor(accelerometerValues);
 				_state._acceleration.set(currentX, currentY, currentZ);
-				try {
-					Thread.sleep(_sleep);
-				} catch (InterruptedException e) {
-				}
 			}
 		}
 	}
@@ -197,10 +195,13 @@ public class LAccelerometer {
 
 	private final float[] accelerometerValues = new float[3];
 
+	private SensorProcess sensorProcess;
+
 	public void start() {
 		if (!_state._isConnected) {
 			_state._isConnected = true;
-			LSystem.callScreenRunnable(new SensorThread(accelerometerValues));
+			sensorProcess = new SensorProcess(accelerometerValues);
+			RealtimeProcessManager.get().addProcess(sensorProcess);
 		}
 	}
 
@@ -242,6 +243,9 @@ public class LAccelerometer {
 
 	public void sleep(int sleep) {
 		this._sleep = sleep;
+		if (sensorProcess != null) {
+			sensorProcess.setDelay(sleep);
+		}
 	}
 
 	/**

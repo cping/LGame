@@ -20,6 +20,7 @@
  */
 package loon.core.graphics.opengl;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import loon.core.LRelease;
@@ -32,15 +33,19 @@ public class GLBatch implements LRelease {
 	private int primitiveType;
 
 	private float[] vertexs;
+	private ByteBuffer vertexsByteBuffer;
 	private FloatBuffer vertexsBuffer;
 
 	private float[] colors;
+	private ByteBuffer colorsByteBuffer;
 	private FloatBuffer colorsBuffer;
 
 	private float[] normals;
+	private ByteBuffer normalsByteBuffer;
 	private FloatBuffer normalsBuffer;
 
 	private float[] texCoords;
+	private ByteBuffer texCoordsByteBuffer;
 	private FloatBuffer texCoordsBuffer;
 
 	private int indexPos = 0;
@@ -70,45 +75,55 @@ public class GLBatch implements LRelease {
 		this.nativeLibs = NativeSupport.UseLoonNative();
 		if (nativeLibs) {
 			this.vertexs = new float[3 * maxVertices];
-			this.vertexsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
+			this.vertexsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.vertexsBuffer = this.vertexsByteBuffer.asFloatBuffer();
 			this.colors = new float[4 * maxVertices];
-			this.colorsBuffer = NativeSupport.newFloatBuffer(4 * maxVertices);
+			this.colorsByteBuffer = NativeSupport.newUnsafeByteBuffer(4 * maxVertices);
+			this.colorsBuffer = this.colorsByteBuffer.asFloatBuffer();
 			this.normals = new float[3 * maxVertices];
-			this.normalsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
+			this.normalsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.normalsBuffer = this.normalsByteBuffer.asFloatBuffer();
 			this.texCoords = new float[2 * maxVertices];
-			this.texCoordsBuffer = NativeSupport
-					.newFloatBuffer(2 * maxVertices);
+			this.texCoordsByteBuffer = NativeSupport
+					.newUnsafeByteBuffer(2 * maxVertices);
+			this.texCoordsBuffer = this.texCoordsByteBuffer.asFloatBuffer();
 		} else {
-			this.vertexsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
-			this.colorsBuffer = NativeSupport.newFloatBuffer(4 * maxVertices);
-			this.normalsBuffer = NativeSupport.newFloatBuffer(3 * maxVertices);
-			this.texCoordsBuffer = NativeSupport
-					.newFloatBuffer(2 * maxVertices);
+			this.vertexsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.vertexsBuffer = this.vertexsByteBuffer.asFloatBuffer();
+			this.colorsByteBuffer = NativeSupport.newUnsafeByteBuffer(4 * maxVertices);
+			this.colorsBuffer = this.colorsByteBuffer.asFloatBuffer();
+			this.normalsByteBuffer = NativeSupport.newUnsafeByteBuffer(3 * maxVertices);
+			this.normalsBuffer = this.normalsByteBuffer.asFloatBuffer();
+			this.texCoordsByteBuffer = NativeSupport
+					.newUnsafeByteBuffer(2 * maxVertices);
+			this.texCoordsBuffer = this.texCoordsByteBuffer.asFloatBuffer();
 		}
 	}
 
 	public void begin(int p) {
-		GLEx.self.glTex2DDisable();
-		this.primitiveType = p;
-		this.numVertices = 0;
-		if (nativeLibs) {
-			indexPos = 0;
-			indexCols = 0;
-			indexNors = 0;
-			indexTexCoords = 0;
-		} else {
-			vertexsBuffer.rewind();
-			vertexsBuffer.limit(vertexsBuffer.capacity());
-			colorsBuffer.rewind();
-			colorsBuffer.limit(colorsBuffer.capacity());
-			normalsBuffer.rewind();
-			normalsBuffer.limit(normalsBuffer.capacity());
-			texCoordsBuffer.rewind();
-			texCoordsBuffer.limit(texCoordsBuffer.capacity());
+		synchronized (GLBatch.class) {
+			GLEx.self.glTex2DDisable();
+			this.primitiveType = p;
+			this.numVertices = 0;
+			if (nativeLibs) {
+				indexPos = 0;
+				indexCols = 0;
+				indexNors = 0;
+				indexTexCoords = 0;
+			} else {
+				vertexsBuffer.rewind();
+				vertexsBuffer.limit(vertexsBuffer.capacity());
+				colorsBuffer.rewind();
+				colorsBuffer.limit(colorsBuffer.capacity());
+				normalsBuffer.rewind();
+				normalsBuffer.limit(normalsBuffer.capacity());
+				texCoordsBuffer.rewind();
+				texCoordsBuffer.limit(texCoordsBuffer.capacity());
+			}
+			this.hasCols = false;
+			this.hasNors = false;
+			this.hasTexCoords = false;
 		}
-		this.hasCols = false;
-		this.hasNors = false;
-		this.hasTexCoords = false;
 	}
 
 	public void color(float r, float g, float b, float a) {
@@ -205,84 +220,87 @@ public class GLBatch implements LRelease {
 		return maxVertices;
 	}
 
-	public void end() {
+	public synchronized void end() {
 		if (numVertices == 0) {
 			return;
 		}
-		GL10 gl = GLEx.gl10;
-		if (nativeLibs) {
-			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			vertexsBuffer.clear();
-			NativeSupport.copy(vertexs, vertexsBuffer, 0, indexPos);
-			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexsBuffer);
+		synchronized (GLBatch.class) {
+			GL10 gl = GLEx.gl10;
+			if (nativeLibs) {
+				gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+				vertexsBuffer.clear();
+				NativeSupport.copy(vertexs, vertexsBuffer, 0, indexPos);
+				gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertexsBuffer);
+				if (hasCols) {
+					gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+					colorsBuffer.clear();
+					NativeSupport.copy(colors, colorsBuffer, 0, indexCols);
+					gl.glColorPointer(4, GL.GL_FLOAT, 0, colorsBuffer);
+				}
+				if (hasNors) {
+					gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+					normalsBuffer.clear();
+					NativeSupport.copy(normals, normalsBuffer, 0, indexNors);
+					gl.glNormalPointer(GL.GL_FLOAT, 0, normalsBuffer);
+				}
+				if (hasTexCoords) {
+					gl.glClientActiveTexture(GL.GL_TEXTURE0);
+					gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					texCoordsBuffer.clear();
+					NativeSupport.copy(texCoords, texCoordsBuffer, 0,
+							indexTexCoords);
+					gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, texCoordsBuffer);
+				}
+			} else {
+				gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+				vertexsBuffer.flip();
+				gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertexsBuffer);
+				if (hasCols) {
+					gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+					colorsBuffer.flip();
+					gl.glColorPointer(4, GL.GL_FLOAT, 0, colorsBuffer);
+				}
+				if (hasNors) {
+					gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+					normalsBuffer.flip();
+					gl.glNormalPointer(GL.GL_FLOAT, 0, normalsBuffer);
+				}
+				if (hasTexCoords) {
+					gl.glClientActiveTexture(GL.GL_TEXTURE0);
+					gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+					texCoordsBuffer.flip();
+					gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, texCoordsBuffer);
+				}
+			}
+			gl.glDrawArrays(primitiveType, 0, numVertices);
 			if (hasCols) {
-				gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-				colorsBuffer.clear();
-				NativeSupport.copy(colors, colorsBuffer, 0, indexCols);
-				gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorsBuffer);
+				gl.glDisableClientState(GL.GL_COLOR_ARRAY);
 			}
 			if (hasNors) {
-				gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
-				normalsBuffer.clear();
-				NativeSupport.copy(normals, normalsBuffer, 0, indexNors);
-				gl.glNormalPointer(GL10.GL_FLOAT, 0, normalsBuffer);
+				gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
 			}
 			if (hasTexCoords) {
-				gl.glClientActiveTexture(GL10.GL_TEXTURE0);
-				gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-				texCoordsBuffer.clear();
-				NativeSupport.copy(texCoords, texCoordsBuffer, 0,
-						indexTexCoords);
-				gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texCoordsBuffer);
+				gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 			}
-		} else {
-			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			vertexsBuffer.flip();
-			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexsBuffer);
-			if (hasCols) {
-				gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-				colorsBuffer.flip();
-				gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorsBuffer);
-			}
-			if (hasNors) {
-				gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
-				normalsBuffer.flip();
-				gl.glNormalPointer(GL10.GL_FLOAT, 0, normalsBuffer);
-			}
-			if (hasTexCoords) {
-				gl.glClientActiveTexture(GL10.GL_TEXTURE0);
-				gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-				texCoordsBuffer.flip();
-				gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texCoordsBuffer);
-			}
+			GLEx.self.glTex2DEnable();
 		}
-		gl.glDrawArrays(primitiveType, 0, numVertices);
-		if (hasCols) {
-			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
-		}
-		if (hasNors) {
-			gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
-		}
-		if (hasTexCoords) {
-			gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		}
-		GLEx.self.glTex2DEnable();
 	}
 
 	public boolean isClose() {
 		return closed;
 	}
 
+	@Override
 	public void dispose() {
 		closed = true;
 		vertexs = null;
-		vertexsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(vertexsByteBuffer);
 		colors = null;
-		colorsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(colorsByteBuffer);
 		normals = null;
-		normalsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(normalsByteBuffer);
 		texCoords = null;
-		texCoordsBuffer = null;
+		NativeSupport.disposeUnsafeByteBuffer(texCoordsByteBuffer);
 	}
 
 }

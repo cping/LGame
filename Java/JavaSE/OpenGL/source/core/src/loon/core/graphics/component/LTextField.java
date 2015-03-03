@@ -34,8 +34,8 @@
  */
 package loon.core.graphics.component;
 
-import loon.JavaSEInputFactory;
-import loon.JavaSEInputFactory.Key;
+import loon.Key;
+import loon.Touch;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
@@ -53,7 +53,7 @@ public class LTextField extends LTextBar {
 	static public class DefaultOnscreenKeyboard implements OnscreenKeyboard {
 		@Override
 		public void show(boolean visible) {
-			JavaSEInputFactory.setOnscreenKeyboardVisible(visible);
+			Touch.setOnscreenKeyboardVisible(visible);
 		}
 	}
 
@@ -148,7 +148,7 @@ public class LTextField extends LTextBar {
 
 	public void update(long delta) {
 		super.update(delta);
-		if (Key.isUp() && JavaSEInputFactory.getOnlyKey().isPressed()) {
+		if (Key.isUp() && Touch.getOnlyKey().isPressed()) {
 			if (!isFocusable()) {
 				return;
 			}

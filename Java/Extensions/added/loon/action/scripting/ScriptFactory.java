@@ -268,7 +268,7 @@ public class ScriptFactory implements LRelease {
 	}
 
 	public void update(Stack<StackFrame> stack) {
-		StackFrame frame = (StackFrame) stack.peek();
+		StackFrame frame = stack.peek();
 		frame.newTick();
 		switch (update(stack, frame, callback)) {
 		case Script.COMPLETE_SCRIPT:
@@ -308,7 +308,7 @@ public class ScriptFactory implements LRelease {
 	}
 
 	void execute(Stack<StackFrame> stack, String name) {
-		Script script = (Script) scripts.get(name);
+		Script script = scripts.get(name);
 		stack.push(new StackFrame(script));
 	}
 
@@ -380,6 +380,7 @@ public class ScriptFactory implements LRelease {
 		return map;
 	}
 
+	@Override
 	public void dispose() {
 		if (packs != null) {
 			for (LTexturePack pack : packs.values()) {

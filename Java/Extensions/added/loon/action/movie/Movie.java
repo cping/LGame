@@ -52,11 +52,11 @@ public class Movie implements LRelease {
 	}
 
 	public MovieSequence getMovieSequence(int index) {
-		return (MovieSequence) this.sequences.get(index);
+		return this.sequences.get(index);
 	}
 
 	public MovieSequence getCurrentMovieSequence() {
-		return (MovieSequence) this.sequences.get(this.currentSequence);
+		return this.sequences.get(this.currentSequence);
 	}
 
 	public void start() {
@@ -138,6 +138,7 @@ public class Movie implements LRelease {
 		getCurrentMovieSequence().forward(frames);
 	}
 
+	@Override
 	public void dispose() {
 		for (MovieSequence m : sequences) {
 			if (m != null) {

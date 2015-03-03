@@ -22,18 +22,21 @@ import java.util.Stack;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
-public class WithText extends UserFunction {
+public class UserFunction extends Function {
 
-	private String text;
+	private String name;
 
-	public WithText(String name, String text) {
-		super(name);
-		this.text = text;
+	public UserFunction(String name) {
+		this.name = name;
 	}
 
-	public void update(ScriptFactory engine, Stack<StackFrame> stack,
-			Callback callback) {
-		callback.function(getName(), text);
+	@Override
+	public void update(ScriptFactory engine, Stack<StackFrame> stack, Callback callback) {
+		callback.function(name);
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

@@ -20,9 +20,7 @@
  */
 package loon;
 
-import loon.AndroidInputFactory.Touch;
 import loon.utils.collection.ArrayByte;
-
 
 public class LTouch {
 

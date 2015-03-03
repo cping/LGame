@@ -1,6 +1,6 @@
 package loon.srpg.effect;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.graphics.opengl.GLEx;
 
 /**

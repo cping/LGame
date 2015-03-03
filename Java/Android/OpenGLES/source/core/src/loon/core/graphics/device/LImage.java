@@ -23,6 +23,7 @@ package loon.core.graphics.device;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
 import java.util.ArrayList;
 
 import loon.AndroidGraphicsUtils;
@@ -87,14 +88,14 @@ public class LImage implements LRelease {
 
 	public static LImage createImage(byte[] imageData, int imageOffset,
 			int imageLength, boolean transparency) {
-		return AndroidGraphicsUtils.loadImage(imageData, imageOffset, imageLength,
-				transparency);
+		return AndroidGraphicsUtils.loadImage(imageData, imageOffset,
+				imageLength, transparency);
 	}
 
 	public static LImage createImage(byte[] imageData, int imageOffset,
 			int imageLength) {
-		return AndroidGraphicsUtils.loadImage(imageData, imageOffset, imageLength,
-				false);
+		return AndroidGraphicsUtils.loadImage(imageData, imageOffset,
+				imageLength, false);
 	}
 
 	public static LImage createImage(String fileName) {
@@ -553,8 +554,8 @@ public class LImage implements LRelease {
 	 * @return
 	 */
 	public LImage getSubImage(int x, int y, int w, int h) {
-		return AndroidGraphicsUtils
-				.drawClipImage(this, w, h, x, y, bitmap.getConfig());
+		return AndroidGraphicsUtils.drawClipImage(this, w, h, x, y,
+				bitmap.getConfig());
 	}
 
 	/**
@@ -700,6 +701,19 @@ public class LImage implements LRelease {
 
 	public String getPath() {
 		return fileName;
+	}
+
+	public Buffer getByteBuffer() {
+		return getByteBuffer(this);
+	}
+
+	public static Buffer getByteBuffer(LImage image) {
+		int[] pixels = image.getPixels();
+		if (image.hasAlpha()) {
+			return GLLoader.argbToRGBABuffer(pixels);
+		} else {
+			return GLLoader.argbToRGBBuffer(pixels);
+		}
 	}
 
 	@Override

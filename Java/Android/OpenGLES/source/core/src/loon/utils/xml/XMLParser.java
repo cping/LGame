@@ -56,7 +56,6 @@ public class XMLParser implements LRelease {
 		}
 		this.stack.push(root);
 		this.topElement = root;
-		
 		if (l != null) {
 			l.addElement(idx, root);
 		}
@@ -68,7 +67,7 @@ public class XMLParser implements LRelease {
 		}
 		this.stack.pop();
 		if (stack.size() > 0) {
-			this.topElement = (this.stack.peek());
+			this.topElement = this.stack.peek();
 		} else {
 			this.topElement = null;
 		}
@@ -291,18 +290,6 @@ public class XMLParser implements LRelease {
 	public static XMLDocument parse(InputStream in, XMLListener l) {
 		StringBuffer sbr = new StringBuffer(10000);
 		try {
-			int i = 0;
-			while (in.available() == 0) {
-				i++;
-				try {
-					Thread.sleep(100L);
-				} catch (Exception e) {
-				}
-				if (i <= 100) {
-					continue;
-				}
-				throw new RuntimeException("Parser: InputStream timed out !");
-			}
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					in, LSystem.encoding));
 			while (reader.ready()) {
@@ -316,7 +303,6 @@ public class XMLParser implements LRelease {
 		return new XMLParser().parseText(sbr.toString(), l);
 	}
 
-	@Override
 	public void dispose() {
 		if (stack != null) {
 			stack.clear();

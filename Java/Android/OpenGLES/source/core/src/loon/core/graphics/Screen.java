@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2008 - 2012
@@ -26,14 +25,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import loon.LGame.Location;
 import loon.LInput;
 import loon.LKey;
 import loon.LProcess;
 import loon.LSystem;
 import loon.LTouch;
 import loon.LTransition;
-import loon.AndroidInputFactory.Touch;
-import loon.LGame.Location;
+import loon.Touch;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
@@ -2205,6 +2204,7 @@ public abstract class Screen extends SoundBox implements LInput, LRelease {
 				releases.clear();
 			}
 			dispose();
+			System.gc();
 		}
 	}
 

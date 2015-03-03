@@ -20,9 +20,10 @@
  */
 package loon;
 
-import loon.AndroidInputFactory.Key;
 import loon.action.map.Config;
 import loon.core.geom.Vector3f;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 import loon.utils.MathUtils;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -210,17 +211,17 @@ public class LAccelerometer {
 		}
 	}
 
-	class SensorThread extends Thread {
+	class SensorProcess extends RealtimeProcess {
 
 		final float[] accelerometerValues;
 
-		public SensorThread(float[] values) {
+		public SensorProcess(float[] values) {
 			this.accelerometerValues = values;
+			this.setDelay(_sleep);
 		}
 
-		@Override
 		public void run() {
-			while (_state._isConnected) {
+			if (_state._isConnected) {
 				accelerometerValues[2] = -1f;
 				if (Key.isDown() && Key.getKeyCode() == Key.LEFT) {
 					accelerometerValues[0]--;
@@ -236,10 +237,6 @@ public class LAccelerometer {
 				}
 				onSensor(accelerometerValues);
 				_state._acceleration.set(currentX, currentY, currentZ);
-				try {
-					Thread.sleep(_sleep);
-				} catch (InterruptedException e) {
-				}
 			}
 		}
 	}
@@ -256,11 +253,14 @@ public class LAccelerometer {
 
 	private SensorEventListener accelerometerListener;
 
+	private SensorProcess sensorProcess;
+	
 	public void start() {
 		// 模拟器下启动时键盘模拟重力
 		if (LSystem.isEmulator()) {
 			_state._isConnected = true;
-			LSystem.callScreenRunnable(new SensorThread(accelerometerValues));
+			sensorProcess = new SensorProcess(accelerometerValues);
+			RealtimeProcessManager.get().addProcess(sensorProcess);
 			return;
 		}
 		if (!_state._isConnected && manager == null) {
@@ -280,7 +280,8 @@ public class LAccelerometer {
 			// 如果无法正常启动，则开启伪重力感应
 			if (!_state._isConnected) {
 				_state._isConnected = true;
-				LSystem.callScreenRunnable(new SensorThread(accelerometerValues));
+				sensorProcess = new SensorProcess(accelerometerValues);
+				RealtimeProcessManager.get().addProcess(sensorProcess);
 			}
 		}
 	}
@@ -332,6 +333,9 @@ public class LAccelerometer {
 
 	public void sleep(int sleep) {
 		this._sleep = sleep;
+		if (sensorProcess != null) {
+			sensorProcess.setDelay(sleep);
+		}
 	}
 
 	/**

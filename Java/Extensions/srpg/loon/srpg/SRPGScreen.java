@@ -1,26 +1,27 @@
 package loon.srpg;
 
+import loon.LSystem;
+import loon.LTouch;
+import loon.Touch;
 import loon.action.avg.drama.Command;
 import loon.action.sprite.AnimationHelper;
 import loon.core.EmulatorButton;
 import loon.core.EmulatorButtons;
 import loon.core.EmulatorListener;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LGradation;
-import loon.core.graphics.LImage;
+import loon.core.event.Updateable;
 import loon.core.graphics.Screen;
 import loon.core.graphics.component.LMessage;
 import loon.core.graphics.component.LSelect;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.device.LGradation;
 import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
-import loon.core.input.LTouch;
-import loon.core.input.LInputFactory.Touch;
 import loon.core.timer.LTimerContext;
 import loon.srpg.ability.SRPGAbilityFactory;
 import loon.srpg.ability.SRPGAbilityOption;
@@ -3101,9 +3102,9 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 		if (!isEventLoop || isSrpgTouchLock) {
 			return;
 		}
-		Runnable runnable = new Runnable() {
+		Updateable runnable = new Updateable() {
 			@Override
-			public void run() {
+			public void action(Object o) {
 				if (!isSrpgNoMove) {
 					mouse_x = e.x();
 					mouse_y = e.y();
@@ -3112,7 +3113,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 				onDown(e);
 			}
 		};
-		callEvent(runnable);
+		LSystem.load(runnable);
 	}
 
 	public abstract void onDown(LTouch e);

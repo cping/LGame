@@ -36,7 +36,7 @@
 package loon.core.graphics.component;
 
 import loon.AndroidInputFactory;
-import loon.AndroidInputFactory.Key;
+import loon.Key;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;

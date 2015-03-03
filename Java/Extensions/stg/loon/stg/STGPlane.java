@@ -3,8 +3,8 @@ package loon.stg;
 import java.util.Hashtable;
 
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.timer.LTimer;
 import loon.stg.effect.Picture;
 

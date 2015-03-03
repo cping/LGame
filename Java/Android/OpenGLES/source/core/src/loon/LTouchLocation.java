@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.AndroidInputFactory.Touch;
 import loon.core.RefObject;
 import loon.core.geom.Vector2f;
 

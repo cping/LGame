@@ -22,7 +22,7 @@ package loon.core.graphics.component;
 
 import loon.LAccelerometer;
 import loon.LSystem;
-import loon.JavaSEInputFactory.Touch;
+import loon.Touch;
 import loon.action.map.Config;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.opengl.GLEx;

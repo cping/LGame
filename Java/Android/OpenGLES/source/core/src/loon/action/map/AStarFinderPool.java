@@ -24,14 +24,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import loon.core.geom.Vector2f;
-
-
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 
 public class AStarFinderPool implements Runnable {
 
 	private Field2D field;
 
-	private Thread pathfinderThread;
+	private RealtimeProcess pathfinderProcess;
 
 	private boolean running;
 
@@ -44,19 +44,22 @@ public class AStarFinderPool implements Runnable {
 	public AStarFinderPool(Field2D field) {
 		this.field = field;
 		this.running = true;
-		this.pathfinderThread = new Thread(this,"AStarThread");
-		this.pathfinderThread.start();
+		pathfinderProcess = new RealtimeProcess("AStarProcess") {
+			
+			@Override
+			public void run() {
+				if (running) {
+					emptyPathQueue();
+					kill();
+				}
+			}
+		};
+		pathfinderProcess.sleep(1000000);
+		RealtimeProcessManager.get().addProcess(pathfinderProcess);
 	}
 
-	@Override
 	public void run() {
-		while (running) {
-			try {
-				Thread.sleep(1000000);
-			} catch (InterruptedException ex) {
-			}
-			emptyPathQueue();
-		}
+		
 	}
 
 	private void emptyPathQueue() {
@@ -68,7 +71,7 @@ public class AStarFinderPool implements Runnable {
 
 	public void stop() {
 		running = true;
-		pathfinderThread.interrupt();
+		pathfinderProcess.kill();
 	}
 
 	public void search(AStarFindHeuristic heuristic, int startx, int starty,
@@ -82,7 +85,7 @@ public class AStarFinderPool implements Runnable {
 		} else {
 			pathQueue.add(pathfinderTask);
 		}
-		pathfinderThread.interrupt();
+		pathfinderProcess.kill();
 	}
 
 	public void search(AStarFindHeuristic heuristic, int startx, int starty,

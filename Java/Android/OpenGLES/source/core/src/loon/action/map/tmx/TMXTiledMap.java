@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 import loon.LSystem;
 import loon.LTouch;
-import loon.AndroidInputFactory.Touch;
+import loon.Touch;
 import loon.core.LRelease;
 import loon.core.geom.RectBox;
 import loon.core.graphics.opengl.GLEx;
@@ -37,7 +37,6 @@ import loon.core.resource.Resources;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
-
 
 public class TMXTiledMap implements LRelease {
 

@@ -22,20 +22,22 @@ import java.util.Stack;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
-public class UserFunction extends Function {
+public class WithPosition extends UserFunction {
 
-	private String name;
+	private int x;
 
-	public UserFunction(String name) {
-		this.name = name;
+	private int y;
+
+	public WithPosition(String name, int x, int y) {
+		super(name);
+		this.x = x;
+		this.y = y;
 	}
-
-	public void update(ScriptFactory engine, Stack<StackFrame> stack, Callback callback) {
-		callback.function(name);
-	}
-
-	public String getName() {
-		return name;
+	
+	@Override
+	public void update(ScriptFactory engine, Stack<StackFrame> stack,
+			Callback callback) {
+		callback.function(getName(), x, y);
 	}
 
 }

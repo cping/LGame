@@ -2,8 +2,8 @@ package loon.srpg.actor;
 
 import loon.action.sprite.AnimationHelper;
 import loon.core.LRelease;
-import loon.core.graphics.LColor;
 import loon.core.graphics.Screen;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.srpg.SRPGType;

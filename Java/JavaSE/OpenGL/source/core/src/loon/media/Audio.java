@@ -56,8 +56,8 @@ public class Audio {
 
 	public JavaSound createSound(final InputStream in, final boolean music) {
 		final JavaSound sound = new JavaSound();
-		LSystem.callScreenRunnable(new Runnable() {
-			public void run() {
+		LSystem.load(new Updateable() {
+			public void action(Object o) {
 				try {
 					AudioInputStream ais = AudioSystem.getAudioInputStream(in);
 					Clip clip = AudioSystem.getClip();

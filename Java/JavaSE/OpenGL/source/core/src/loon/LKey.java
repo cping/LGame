@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.JavaSEInputFactory.Key;
 import loon.utils.collection.ArrayByte;
 
 public class LKey {

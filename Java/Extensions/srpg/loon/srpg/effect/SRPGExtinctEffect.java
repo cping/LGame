@@ -1,8 +1,8 @@
 package loon.srpg.effect;
 
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
+import loon.LSystem;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.srpg.SRPGType;
 import loon.utils.MathUtils;

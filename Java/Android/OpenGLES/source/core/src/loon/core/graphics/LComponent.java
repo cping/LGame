@@ -21,10 +21,10 @@
  */
 package loon.core.graphics;
 
+import loon.Key;
 import loon.LInput;
 import loon.LSystem;
-import loon.AndroidInputFactory.Key;
-import loon.AndroidInputFactory.Touch;
+import loon.Touch;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.core.LObject;

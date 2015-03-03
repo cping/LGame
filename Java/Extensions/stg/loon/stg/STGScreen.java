@@ -5,16 +5,18 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import loon.LSystem;
+import loon.LTouch;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.Conversion;
 import loon.action.map.Config;
 import loon.action.sprite.effect.ScrollEffect;
-import loon.core.LSystem;
+import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LImage;
 import loon.core.graphics.Screen;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
@@ -22,7 +24,6 @@ import loon.core.graphics.opengl.LTexturePack;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.TextureUtils;
 import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.input.LTouch;
 import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
 import loon.stg.STGHero.HeroTouch;
@@ -1216,15 +1217,15 @@ public abstract class STGScreen extends Screen {
 
 	@Override
 	public final void touchDown(final LTouch e) {
-		Runnable runnable = new Runnable() {
+		Updateable runnable = new Updateable() {
 			@Override
-			public void run() {
+			public void action(Object a) {
 				if (touch != null) {
 					touch.onTouch(e);
 				}
 			}
 		};
-		callEvent(runnable);
+		LSystem.load(runnable);
 		onDown(e);
 	}
 

@@ -187,9 +187,9 @@ public class Audio {
 			@Override
 			public void resolve(final AndroidSound<MediaPlayer> sound) {
 				final MediaPlayer mp = new MediaPlayer();
-				LSystem.callScreenRunnable(new Runnable() {
+				LSystem.load(new Updateable() {
 					@Override
-					public void run() {
+					public void action(Object o) {
 						try {
 							AssetFileDescriptor fd = openFd(path);
 							mp.setDataSource(fd.getFileDescriptor(),

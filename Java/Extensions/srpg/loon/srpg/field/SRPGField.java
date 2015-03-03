@@ -1,8 +1,8 @@
 package loon.srpg.field;
 
+import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.core.LRelease;
-import loon.core.LSystem;
 import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

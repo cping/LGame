@@ -27,7 +27,7 @@ import java.util.HashMap;
 import loon.LInput;
 import loon.LKey;
 import loon.LSystem;
-import loon.JavaSEInputFactory.Touch;
+import loon.Touch;
 import loon.action.map.Config;
 import loon.action.map.TileMap;
 import loon.action.sprite.node.DefinitionReader;

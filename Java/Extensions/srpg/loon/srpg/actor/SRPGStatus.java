@@ -1,6 +1,6 @@
 package loon.srpg.actor;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.graphics.opengl.LTexture;
 import loon.srpg.SRPGType;
 import loon.utils.CollectionUtils;

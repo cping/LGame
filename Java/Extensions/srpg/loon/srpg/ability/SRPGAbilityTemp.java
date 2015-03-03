@@ -3,8 +3,8 @@ package loon.srpg.ability;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
+import loon.LSystem;
+import loon.core.graphics.device.LColor;
 import loon.srpg.SRPGType;
 import loon.srpg.actor.SRPGActor;
 import loon.srpg.actor.SRPGActorFactory;

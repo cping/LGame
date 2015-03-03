@@ -24,7 +24,7 @@ package loon.core.graphics;
 import java.util.ArrayList;
 
 import loon.LInput;
-import loon.JavaSEInputFactory.Touch;
+import loon.Touch;
 import loon.core.LRelease;
 import loon.core.graphics.component.LLayer;
 import loon.core.graphics.component.LPanel;

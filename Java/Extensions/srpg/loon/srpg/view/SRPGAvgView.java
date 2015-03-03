@@ -2,18 +2,18 @@ package loon.srpg.view;
 
 import java.util.List;
 
+import loon.LSystem;
+import loon.Touch;
 import loon.action.avg.AVGCG;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
 import loon.action.avg.drama.Conversion;
 import loon.core.LRelease;
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
 import loon.core.graphics.component.LMessage;
 import loon.core.graphics.component.LSelect;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInputFactory.Touch;
 import loon.srpg.SRPGScreen;
 import loon.srpg.SRPGType;
 import loon.srpg.actor.SRPGActor;

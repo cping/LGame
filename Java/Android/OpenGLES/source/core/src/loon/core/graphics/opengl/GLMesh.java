@@ -23,14 +23,16 @@ package loon.core.graphics.opengl;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 import loon.core.LRelease;
 import loon.core.graphics.opengl.GLAttributes.Usage;
 import loon.core.graphics.opengl.GLAttributes.VertexAttribute;
 import loon.jni.NativeSupport;
 
-
 public class GLMesh {
+
+	private static ArrayList<GLMesh> meshLazy = new ArrayList<GLMesh>(10);
 
 	public static class IndexArray implements LRelease {
 
@@ -39,7 +41,7 @@ public class GLMesh {
 		private ByteBuffer byteBuffer;
 
 		public IndexArray(int maxIndices) {
-			byteBuffer = NativeSupport.newByteBuffer(maxIndices * 2);
+			byteBuffer = NativeSupport.newUnsafeByteBuffer(maxIndices * 2);
 			buffer = byteBuffer.asShortBuffer();
 			buffer.flip();
 			byteBuffer.flip();
@@ -73,10 +75,7 @@ public class GLMesh {
 
 		@Override
 		public void dispose() {
-			if (byteBuffer != null) {
-				NativeSupport.freeMemory(byteBuffer);
-				byteBuffer = null;
-			}
+			NativeSupport.disposeUnsafeByteBuffer(byteBuffer);
 		}
 	}
 
@@ -84,7 +83,7 @@ public class GLMesh {
 
 		final GLAttributes attributes;
 		final FloatBuffer buffer;
-		final ByteBuffer byteBuffer;
+		ByteBuffer byteBuffer;
 		boolean isBound = false;
 
 		public VertexArray(int numVertices, VertexAttribute... attributes) {
@@ -93,8 +92,9 @@ public class GLMesh {
 
 		public VertexArray(int numVertices, GLAttributes attributes) {
 			this.attributes = attributes;
-			byteBuffer = NativeSupport.newByteBuffer(this.attributes.vertexSize
-					* numVertices);
+			byteBuffer = NativeSupport
+					.newUnsafeByteBuffer(this.attributes.vertexSize
+							* numVertices);
 			buffer = byteBuffer.asFloatBuffer();
 			buffer.flip();
 			byteBuffer.flip();
@@ -102,9 +102,7 @@ public class GLMesh {
 
 		@Override
 		public void dispose() {
-			if (byteBuffer != null) {
-				NativeSupport.freeMemory(byteBuffer);
-			}
+			NativeSupport.disposeUnsafeByteBuffer(byteBuffer);
 		}
 
 		public FloatBuffer getBuffer() {
@@ -168,8 +166,8 @@ public class GLMesh {
 					gl.glClientActiveTexture(GL.GL_TEXTURE0 + textureUnit);
 					gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 					byteBuffer.position(attribute.offset);
-					gl.glTexCoordPointer(attribute.numComponents,
-							GL.GL_FLOAT, attributes.vertexSize, byteBuffer);
+					gl.glTexCoordPointer(attribute.numComponents, GL.GL_FLOAT,
+							attributes.vertexSize, byteBuffer);
 					textureUnit++;
 					break;
 
@@ -249,31 +247,35 @@ public class GLMesh {
 		this.vertices.setVertices(vertices, offset, count);
 	}
 
-	public void getVertices (float[] vertices) {
+	public void getVertices(float[] vertices) {
 		getVertices(0, -1, vertices);
 	}
-	
-	public void getVertices (int srcOffset, float[] vertices) {
+
+	public void getVertices(int srcOffset, float[] vertices) {
 		getVertices(srcOffset, -1, vertices);
 	}
 
-	public void getVertices (int srcOffset, int count, float[] vertices) {
+	public void getVertices(int srcOffset, int count, float[] vertices) {
 		getVertices(srcOffset, count, vertices, 0);
 	}
-	
-	public void getVertices (int srcOffset, int count, float[] vertices, int destOffset) {
+
+	public void getVertices(int srcOffset, int count, float[] vertices,
+			int destOffset) {
 		final int max = getNumVertices() * getVertexSize() / 4;
 		if (count == -1) {
 			count = max - srcOffset;
-			if (count > vertices.length - destOffset){
+			if (count > vertices.length - destOffset) {
 				count = vertices.length - destOffset;
 			}
 		}
-		if (srcOffset < 0 || count <= 0 || (srcOffset + count) > max || destOffset < 0 || destOffset >= vertices.length){
+		if (srcOffset < 0 || count <= 0 || (srcOffset + count) > max
+				|| destOffset < 0 || destOffset >= vertices.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		if ((vertices.length - destOffset) < count){
-			throw new IllegalArgumentException("not enough room in vertices array, has " + vertices.length + " floats, needs " + count);
+		if ((vertices.length - destOffset) < count) {
+			throw new IllegalArgumentException(
+					"not enough room in vertices array, has " + vertices.length
+							+ " floats, needs " + count);
 		}
 		int pos = getVerticesBuffer().position();
 		getVerticesBuffer().position(srcOffset);
@@ -381,8 +383,22 @@ public class GLMesh {
 	}
 
 	public void dispose() {
+		dispose(true);
+	}
+
+	public void dispose(boolean remove) {
 		vertices.dispose();
 		indices.dispose();
+		if (remove) {
+			meshLazy.remove(this);
+		}
+	}
+
+	public static void disposeAll() {
+		for (GLMesh mesh : meshLazy) {
+			mesh.dispose(false);
+		}
+		meshLazy.clear();
 	}
 
 	public VertexAttribute getVertexAttribute(int usage) {

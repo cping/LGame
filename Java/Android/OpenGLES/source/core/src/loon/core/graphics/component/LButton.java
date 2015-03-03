@@ -22,8 +22,8 @@
  */
 package loon.core.graphics.component;
 
-import loon.AndroidInputFactory.Key;
-import loon.AndroidInputFactory.Touch;
+import loon.Key;
+import loon.Touch;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
@@ -31,8 +31,6 @@ import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.TextureUtils;
-
-
 
 public class LButton extends LComponent {
 

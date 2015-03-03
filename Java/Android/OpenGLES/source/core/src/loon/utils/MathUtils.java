@@ -20,12 +20,40 @@
  */
 package loon.utils;
 
-import android.util.FloatMath;
 import loon.LSystem;
 import loon.core.geom.RectBox;
 
-
 public class MathUtils {
+
+	static public boolean isZero(float value, float tolerance) {
+		return Math.abs(value) <= tolerance;
+	}
+
+	static public boolean isEqual(float a, float b) {
+		return Math.abs(a - b) <= FLOAT_ROUNDING_ERROR;
+	}
+
+	static public boolean isEqual(float a, float b, float tolerance) {
+		return Math.abs(a - b) <= tolerance;
+	}
+
+	static public final float FLOAT_ROUNDING_ERROR = 0.000001f;
+
+	static public int nextPowerOfTwo(int value) {
+		if (value == 0)
+			return 1;
+		value--;
+		value |= value >> 1;
+		value |= value >> 2;
+		value |= value >> 4;
+		value |= value >> 8;
+		value |= value >> 16;
+		return value + 1;
+	}
+
+	static public boolean isPowerOfTwo(int value) {
+		return value != 0 && (value & value - 1) == 0;
+	}
 
 	public static RectBox getBounds(float x, float y, float width,
 			float height, float rotate, RectBox result) {
@@ -229,13 +257,13 @@ public class MathUtils {
 	static {
 		for (int i = 0; i < SIN_COUNT; i++) {
 			float a = (i + 0.5f) / SIN_COUNT * radFull;
-			sin[i] = FloatMath.sin(a);
-			cos[i] = FloatMath.cos(a);
+			sin[i] = (float) Math.sin(a);
+			cos[i] = (float) Math.cos(a);
 		}
 		for (int i = 0; i < 360; i += 90) {
-			sin[(int) (i * degToIndex) & SIN_MASK] = FloatMath.sin(i
+			sin[(int) (i * degToIndex) & SIN_MASK] = (float) Math.sin(i
 					* DEG_TO_RAD);
-			cos[(int) (i * degToIndex) & SIN_MASK] = FloatMath.cos(i
+			cos[(int) (i * degToIndex) & SIN_MASK] = (float) Math.cos(i
 					* DEG_TO_RAD);
 		}
 	}
@@ -521,11 +549,11 @@ public class MathUtils {
 	}
 
 	static public final float mag(float a, float b) {
-		return FloatMath.sqrt(a * a + b * b);
+		return (float) Math.sqrt(a * a + b * b);
 	}
 
 	static public final float mag(float a, float b, float c) {
-		return FloatMath.sqrt(a * a + b * b + c * c);
+		return (float) Math.sqrt(a * a + b * b + c * c);
 	}
 
 	static public final float dist(float x1, float y1, float x2, float y2) {
@@ -554,7 +582,7 @@ public class MathUtils {
 	}
 
 	static public final float sqrt(float a) {
-		return FloatMath.sqrt(a);
+		return (float) Math.sqrt(a);
 	}
 
 	static public final float log(float a) {
@@ -813,7 +841,7 @@ public class MathUtils {
 	}
 
 	public static float wrapAngle(float angle) {
-		angle = (float) Math.IEEEremainder(angle, 6.2831854820251465d);
+		angle = (float) Math.IEEEremainder((double) angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {
 			angle += 6.283185f;
 			return angle;

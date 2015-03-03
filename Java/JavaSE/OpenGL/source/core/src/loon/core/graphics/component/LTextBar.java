@@ -1,13 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.JavaSEInputFactory.Key;
-import loon.JavaSEInputFactory.Touch;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-
 /**
  * 
  * Copyright 2014
@@ -29,6 +19,16 @@ import loon.core.graphics.opengl.LTexture;
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  */
+package loon.core.graphics.component;
+
+import loon.Key;
+import loon.Touch;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+
 public class LTextBar extends LComponent {
 
 	private LTexture left, right, body;

@@ -1,17 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.LSystem;
-import loon.AndroidInputFactory.Key;
-import loon.action.sprite.Animation;
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LContainer;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.graphics.opengl.LTexture.Format;
-
 /**
  * Copyright 2008 - 2009
  * 
@@ -32,6 +18,20 @@ import loon.core.graphics.opengl.LTexture.Format;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.component;
+
+import loon.Key;
+import loon.LSystem;
+import loon.action.sprite.Animation;
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.graphics.opengl.LTexture.Format;
+
 public class LMessage extends LContainer {
 
 	private Animation animation;

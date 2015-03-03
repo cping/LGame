@@ -34,10 +34,13 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLLoader;
+import loon.core.graphics.opengl.GLMesh;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.ScreenUtils;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
 import loon.core.timer.LTimerContext;
 import loon.utils.MathUtils;
 
@@ -123,7 +126,6 @@ public class LProcess extends Director{
 	public void calls() {
 		if (isInstance) {
 			LTextureBatch.clearBatchCaches();
-			currentControl.callEvents(true);
 		}
 	}
 
@@ -581,27 +583,25 @@ public class LProcess extends Director{
 
 			screen.onCreate(LSystem.screenRect.width, LSystem.screenRect.height);
 
-			Runnable runnable = new Runnable() {
+
+			RealtimeProcess process = new RealtimeProcess() {
 
 				@Override
 				public void run() {
-					for (; LSystem.isLogo;) {
-						try {
-							Thread.sleep(60);
-						} catch (InterruptedException e) {
-						}
+					if (!LSystem.isLogo) {
+						startTransition();
+						screen.setClose(false);
+						screen.onLoad();
+						screen.onLoaded();
+						screen.setOnLoadState(true);
+						endTransition();
+						kill();
 					}
-					startTransition();
-					screen.setClose(false);
-					screen.onLoad();
-					screen.onLoaded();
-					screen.setOnLoadState(true);
-					endTransition();
-
 				}
 			};
+			process.setDelay(60);
 
-			LSystem.callScreenRunnable(new Thread(runnable, "ProcessThread"));
+			RealtimeProcessManager.get().addProcess(process);
 
 			if (put) {
 				screens.add(screen);
@@ -681,6 +681,7 @@ public class LProcess extends Director{
 			LTextures.disposeAll();
 			LImage.disposeAll();
 			ScreenUtils.disposeAll();
+			GLMesh.disposeAll();
 		}
 	}
 

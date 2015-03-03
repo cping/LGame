@@ -1,20 +1,3 @@
-package loon.action.sprite.effect;
-
-import java.util.Random;
-
-import loon.LSystem;
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.device.LPixmapData;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.timer.LTimer;
-import loon.jni.NativeSupport;
-import loon.utils.MathUtils;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -35,6 +18,25 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import java.util.Random;
+
+import loon.LSystem;
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.device.LPixmapData;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
+import loon.core.timer.LTimer;
+import loon.jni.NativeSupport;
+import loon.utils.MathUtils;
+
 public class FractionEffect extends LObject implements ISprite {
 
 	/**
@@ -70,7 +72,7 @@ public class FractionEffect extends LObject implements ISprite {
 
 	private LTexture tmp;
 
-	private PixelThread pixelThread;
+	private PixelProcess pixelProcess;
 
 	public FractionEffect(String resName, boolean remove, float scale) {
 		init(LTextures.loadTexture(resName), 1.2f, remove, scale);
@@ -167,15 +169,20 @@ public class FractionEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
-	private class PixelThread extends Thread {
+	private class PixelProcess extends RealtimeProcess {
+
+		public PixelProcess() {
+			setDelay(30);
+		}
+
 		public void run() {
-			for (; !isClose && !isComplete();) {
+			if (!isClose && !isComplete()) {
 				if (!isVisible) {
-					continue;
+					return;
 				}
 				if (timer.action(elapsed)) {
 					if (pixmap.isDirty()) {
-						continue;
+						return;
 					}
 					pixmap.reset();
 					NativeSupport.filterFractions(size, fractions,
@@ -189,20 +196,15 @@ public class FractionEffect extends LObject implements ISprite {
 	}
 
 	final void startUsePixelThread() {
-		if (pixelThread == null) {
-			pixelThread = new PixelThread();
-			pixelThread.start();
+		if (pixelProcess == null || pixelProcess.isDead()) {
+			pixelProcess = new PixelProcess();
+			RealtimeProcessManager.get().addProcess(pixelProcess);
 		}
 	}
 
 	final void endUsePixelThread() {
-		if (pixelThread != null) {
-			try {
-				pixelThread.interrupt();
-				pixelThread = null;
-			} catch (Exception ex) {
-				pixelThread = null;
-			}
+		if (pixelProcess != null) {
+			pixelProcess.kill();
 		}
 	}
 

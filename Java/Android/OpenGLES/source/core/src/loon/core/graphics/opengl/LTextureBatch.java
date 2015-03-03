@@ -20,6 +20,7 @@
  */
 package loon.core.graphics.opengl;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
@@ -119,7 +120,7 @@ public final class LTextureBatch implements LRelease {
 		FloatBuffer coordsBuffer;
 
 		FloatBuffer colorBuffer;
-
+		
 		public float x, y;
 
 		int count;
@@ -146,7 +147,6 @@ public final class LTextureBatch implements LRelease {
 				colorBuffer = NativeSupport.newFloatBuffer(batch.cols, 0,
 						batch.oldColorCount);
 			}
-
 			coordsBuffer = NativeSupport.newFloatBuffer(batch.coords, 0,
 					batch.oldCoordCount);
 
@@ -155,18 +155,9 @@ public final class LTextureBatch implements LRelease {
 		}
 
 		public void dispose() {
-			if (vertexBuffer != null) {
-				NativeSupport.freeMemory(vertexBuffer);
-				this.vertexBuffer = null;
-			}
-			if (coordsBuffer != null) {
-				NativeSupport.freeMemory(coordsBuffer);
-				this.coordsBuffer = null;
-			}
-			if (colorBuffer != null) {
-				NativeSupport.freeMemory(colorBuffer);
-				this.colorBuffer = null;
-			}
+				vertexBuffer = null;
+				coordsBuffer = null;
+				colorBuffer = null;
 		}
 
 	}
@@ -199,6 +190,12 @@ public final class LTextureBatch implements LRelease {
 
 	private LTexture texture;
 
+	private ByteBuffer vertexByteBuffer;
+
+	private ByteBuffer coordByteBuffer;
+
+	private ByteBuffer colorByteBuffer;
+	
 	private FloatBuffer vertexBuffer;
 
 	private FloatBuffer coordBuffer;
@@ -395,13 +392,16 @@ public final class LTextureBatch implements LRelease {
 	 */
 	private void make(int size) {
 		if (vertexBuffer == null) {
-			vertexBuffer = NativeSupport.newFloatBuffer(size * 3);
+			vertexByteBuffer = NativeSupport.newUnsafeByteBuffer(size * 3);
+			vertexBuffer = vertexByteBuffer.asFloatBuffer();
 		}
 		if (colorBuffer == null) {
-			colorBuffer = NativeSupport.newFloatBuffer(size * 4);
+			colorByteBuffer = NativeSupport.newUnsafeByteBuffer(size * 4);
+			colorBuffer = colorByteBuffer.asFloatBuffer();
 		}
 		if (coordBuffer == null) {
-			coordBuffer = NativeSupport.newFloatBuffer(size * 2);
+			coordByteBuffer = NativeSupport.newUnsafeByteBuffer(size * 2);
+			coordBuffer = coordByteBuffer.asFloatBuffer();
 		}
 		this.maxCount = size;
 	}
@@ -1055,17 +1055,14 @@ public final class LTextureBatch implements LRelease {
 		this.count = 0;
 		this.useBegin = false;
 		this.isLocked = true;
-		if (vertexBuffer != null) {
-			NativeSupport.freeMemory(vertexBuffer);
-			this.vertexBuffer = null;
+		if (vertexByteBuffer != null) {
+			NativeSupport.disposeUnsafeByteBuffer(this.vertexByteBuffer) ;
 		}
-		if (coordBuffer != null) {
-			NativeSupport.freeMemory(coordBuffer);
-			this.coordBuffer = null;
+		if (coordByteBuffer != null) {
+			NativeSupport.disposeUnsafeByteBuffer(this.coordByteBuffer) ;
 		}
-		if (colorBuffer != null) {
-			NativeSupport.freeMemory(colorBuffer);
-			this.colorBuffer = null;
+		if (colorByteBuffer != null) {
+			NativeSupport.disposeUnsafeByteBuffer(this.colorByteBuffer) ;
 		}
 		this.verts = null;
 		this.cols = null;

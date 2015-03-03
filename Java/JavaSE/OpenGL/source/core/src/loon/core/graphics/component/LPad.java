@@ -21,7 +21,7 @@
 package loon.core.graphics.component;
 
 import loon.LSystem;
-import loon.JavaSEInputFactory.Touch;
+import loon.Touch;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;

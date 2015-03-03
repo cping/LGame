@@ -1,24 +1,5 @@
-package loon.action.sprite.effect;
-
-import loon.AndroidGraphicsUtils;
-import loon.LSystem;
-import loon.action.sprite.ISprite;
-import loon.core.LObject;
-import loon.core.geom.RectBox;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LImage;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.timer.LTimer;
-import loon.jni.NativeSupport;
-import loon.utils.CollectionUtils;
-
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.Color;
-
 /**
- * Copyright 2008 - 2012
+ * Copyright 2008 - 2011
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -35,8 +16,24 @@ import android.graphics.Color;
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.3.3
+ * @version 0.1
  */
+package loon.action.sprite.effect;
+
+import loon.LSystem;
+import loon.action.sprite.ISprite;
+import loon.core.LObject;
+import loon.core.geom.RectBox;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LImage;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.processes.RealtimeProcess;
+import loon.core.processes.RealtimeProcessManager;
+import loon.core.timer.LTimer;
+import loon.jni.NativeSupport;
+import loon.utils.CollectionUtils;
+
 // 这是一个根据导入的图片黑白象素分布来完成渐变效果的特殊类，根据导入的渐变图不同，能够衍生出无穷多的渐变效果。
 // 此种方式在吉里吉里(krkr)，nscript等AVG游戏引擎中较常使用。（因此，也可以直接套用它们的渐变图）
 public class PShadowEffect extends LObject implements ISprite {
@@ -67,51 +64,48 @@ public class PShadowEffect extends LObject implements ISprite {
 	private int pixelSkip = 8;
 
 	public PShadowEffect(String fileName) {
-		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565));
+		this(LImage.createImage(fileName));
 	}
 
-	public PShadowEffect(Bitmap img) {
+	public PShadowEffect(LImage img) {
 		this(img, 0, 0);
 	}
 
 	public PShadowEffect(String fileName, String backFile) {
-		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), AndroidGraphicsUtils
-				.loadBitmap(backFile, Config.RGB_565), 0, 0,
+		this(LImage.createImage(fileName), LImage.createImage(backFile), 0, 0,
 				LSystem.screenRect.width, LSystem.screenRect.height);
 	}
 
-	public PShadowEffect(Bitmap img, int x, int y) {
+	public PShadowEffect(LImage img, int x, int y) {
 		this(img, null, x, y, img.getWidth(), img.getHeight());
 	}
 
 	public PShadowEffect(String fileName, int x, int y, int w, int h) {
-		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), null, x, y, w,
-				h);
+		this(LImage.createImage(fileName), null, x, y, w, h);
 	}
 
-	public PShadowEffect(Bitmap img, Bitmap back, int x, int y) {
+	public PShadowEffect(LImage img, LImage back, int x, int y) {
 		this(img, back, x, y, img.getWidth(), img.getHeight());
 	}
 
 	public PShadowEffect(String fileName, String bacFile, int x, int y, int w,
 			int h) {
-		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), AndroidGraphicsUtils
-				.loadBitmap(bacFile, Config.RGB_565), x, y, w, h);
+		this(LImage.createImage(fileName), LImage.createImage(bacFile), x, y,
+				w, h);
 	}
 
-	public PShadowEffect(String fileName, Bitmap back, int x, int y, int w,
+	public PShadowEffect(String fileName, LImage back, int x, int y, int w,
 			int h) {
-		this(AndroidGraphicsUtils.loadBitmap(fileName, Config.RGB_565), back, x, y, w,
-				h);
+		this(LImage.createImage(fileName), back, x, y, w, h);
 	}
 
-	private PixelThread pixelThread;
+	private PixelProcess pixelProcess;
 
-	public PShadowEffect(Bitmap img, Bitmap back, int x, int y, int w, int h) {
+	public PShadowEffect(LImage img, LImage back, int x, int y, int w, int h) {
 		if (deasilTrans == null || widdershinTrans == null) {
 			deasilTrans = new int[max_pixel];
 			for (int i = 0; i < max_pixel; i++) {
-				deasilTrans[i] = Color.rgb(i, i, i);
+				deasilTrans[i] = LColor.getRGB(i, i, i);
 			}
 			int flag = 0;
 			widdershinTrans = new int[max_pixel];
@@ -124,64 +118,53 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.width = w;
 		this.height = h;
 		this.visible = true;
-		Bitmap temp = null;
-		if (NativeSupport.UseLoonNative()) {
-			this.scaleWidth = width;
-			this.scaleHeight = height;
-		} else {
-			this.scaleWidth = width / 2;
-			this.scaleHeight = height / 2;
-		}
+		LImage temp = null;
+		// 此处与Android版处理有差异，因为微机上无论如何不会慢……
+		this.scaleWidth = width;
+		this.scaleHeight = height;
 		if (back == null) {
-			temp = AndroidGraphicsUtils.getResize(img, scaleWidth, scaleHeight, false);
+			temp = img.scaledInstance(scaleWidth, scaleHeight);
 			this.texture = new LTexture(scaleWidth, scaleHeight, true);
 			this.image = new LImage(scaleWidth, scaleHeight, true);
-			this.finalDrawPixels = AndroidGraphicsUtils.getPixels(temp);
+			this.finalDrawPixels = temp.getPixels();
 			this.nowDrawPixels = CollectionUtils.copyOf(finalDrawPixels);
 			if (temp != null) {
-				temp.recycle();
+				temp.dispose();
 				temp = null;
 			}
 		} else {
-			temp = AndroidGraphicsUtils.getResize(img, scaleWidth, scaleHeight, false);
+			temp = img.scaledInstance(scaleWidth, scaleHeight);
 			this.texture = new LTexture(scaleWidth, scaleHeight, true);
 			this.image = new LImage(scaleWidth, scaleHeight, true);
 			if (back.getWidth() == scaleWidth
 					&& back.getHeight() == scaleHeight) {
-				this.finalBackgroundPixels = AndroidGraphicsUtils.getPixels(back);
+				this.finalBackgroundPixels = back.getPixels();
 				this.backgroundPixels = CollectionUtils
 						.copyOf(finalBackgroundPixels);
 			} else {
-				Bitmap tmp = AndroidGraphicsUtils.getResize(back, scaleWidth,
-						scaleHeight, true);
-				this.finalBackgroundPixels = AndroidGraphicsUtils.getPixels(tmp);
+				LImage tmp = back.scaledInstance(scaleWidth, scaleHeight);
+				this.finalBackgroundPixels = tmp.getPixels();
 				if (tmp != null) {
-					tmp.recycle();
+					tmp.dispose();
 					tmp = null;
 				}
 				this.backgroundPixels = CollectionUtils
 						.copyOf(finalBackgroundPixels);
 			}
-			this.finalDrawPixels = AndroidGraphicsUtils.getPixels(temp);
+			this.finalDrawPixels = temp.getPixels();
 			this.nowDrawPixels = CollectionUtils.copyOf(finalDrawPixels);
-		}
-		if (img.getConfig() != Config.ARGB_8888) {
-			for (int i = 0; i < finalDrawPixels.length; i++) {
-				int c = Color.red(finalDrawPixels[i]);
-				finalDrawPixels[i] = Color.rgb(c, c, c);
-			}
 		}
 		this.setBlackToWhite(flag);
 		if (temp != null) {
-			temp.recycle();
+			temp.dispose();
 			temp = null;
 		}
 		if (img != null) {
-			img.recycle();
+			img.dispose();
 			img = null;
 		}
 		if (back != null) {
-			back.recycle();
+			back.dispose();
 			back = null;
 		}
 	}
@@ -198,10 +181,13 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.visible = true;
 		this.nowDrawPixels = CollectionUtils.copyOf(finalDrawPixels);
 		this.backgroundPixels = CollectionUtils.copyOf(finalBackgroundPixels);
-		this.startUsePixelThread();
+		this.startUsePixelProcess();
 	}
 
-	@Override
+	private final static int BLACK = LColor.black.getRGB();
+
+	private final static int WHITE = LColor.white.getRGB();
+
 	public void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -214,7 +200,6 @@ public class PShadowEffect extends LObject implements ISprite {
 				g.setAlpha(alpha);
 			}
 			if (!isComplete() && isDirty) {
-				g.copyImageToTexture(texture, image, 0, 0);
 				g.drawTexture(texture, x, y, width, height);
 				isDirty = false;
 			} else if (!isComplete()) {
@@ -228,19 +213,18 @@ public class PShadowEffect extends LObject implements ISprite {
 
 	private long elapsed;
 
-	@Override
 	public void update(long elapsedTime) {
 		this.elapsed = elapsedTime;
 	}
 
-	private final static int BLACK = LColor.black.getRGB();
+	private class PixelProcess extends RealtimeProcess {
 
-	private final static int WHITE = LColor.white.getRGB();
+		public PixelProcess() {
+			setDelay(30);
+		}
 
-	private class PixelThread extends Thread {
-		@Override
 		public void run() {
-			for (; !isClose && !isComplete();) {
+			if (!isClose && !isComplete()) {
 				if (image == null) {
 					return;
 				}
@@ -279,31 +263,24 @@ public class PShadowEffect extends LObject implements ISprite {
 		}
 	}
 
-	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
-	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
-	final void startUsePixelThread() {
-		if (pixelThread == null) {
-			pixelThread = new PixelThread();
-			pixelThread.start();
+	final void startUsePixelProcess() {
+		if (pixelProcess == null || pixelProcess.isDead()) {
+			pixelProcess = new PixelProcess();
+			RealtimeProcessManager.get().addProcess(pixelProcess);
 		}
 	}
 
-	final void endUsePixelThread() {
-		if (pixelThread != null) {
-			try {
-				pixelThread.interrupt();
-				pixelThread = null;
-			} catch (Exception ex) {
-				pixelThread = null;
-			}
+	final void endUsePixelProcess() {
+		if (pixelProcess != null) {
+			pixelProcess.kill();
 		}
 	}
 
@@ -311,9 +288,9 @@ public class PShadowEffect extends LObject implements ISprite {
 		final boolean stop = flag ? (pixelCount > max_pixel)
 				: (pixelCount < min_pixel);
 		if (!stop) {
-			startUsePixelThread();
+			startUsePixelProcess();
 		} else {
-			endUsePixelThread();
+			endUsePixelProcess();
 		}
 		return stop;
 	}
@@ -326,12 +303,10 @@ public class PShadowEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
-	@Override
 	public int getHeight() {
 		return height;
 	}
 
-	@Override
 	public int getWidth() {
 		return width;
 	}
@@ -349,42 +324,34 @@ public class PShadowEffect extends LObject implements ISprite {
 		}
 	}
 
-	@Override
 	public int getLayer() {
 		return layer;
 	}
 
-	@Override
 	public void setLayer(int layer) {
 		this.layer = layer;
 	}
 
-	@Override
 	public float getX() {
 		return x;
 	}
 
-	@Override
 	public float getY() {
 		return y;
 	}
 
-	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x, y, width, height);
 	}
 
-	@Override
 	public int x() {
 		return x;
 	}
 
-	@Override
 	public int y() {
 		return y;
 	}
 
-	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
@@ -405,10 +372,9 @@ public class PShadowEffect extends LObject implements ISprite {
 		this.pixelSkip = pixelSkip;
 	}
 
-	@Override
 	public void dispose() {
 		this.isClose = true;
-		this.endUsePixelThread();
+		this.endUsePixelProcess();
 		this.finalDrawPixels = null;
 		this.nowDrawPixels = null;
 		if (texture != null) {

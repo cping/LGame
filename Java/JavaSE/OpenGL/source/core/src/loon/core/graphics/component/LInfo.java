@@ -23,7 +23,7 @@ package loon.core.graphics.component;
 
 import java.util.ArrayList;
 
-import loon.JavaSEInputFactory.Key;
+import loon.Key;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LContainer;
 import loon.core.graphics.device.LColor;

@@ -3,7 +3,9 @@ package loon.action.scripting;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import loon.LTouch;
 import loon.action.map.AStarFindHeuristic;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.scripting.pack.PackAnimation;
 import loon.action.scripting.pack.PackSprite;
@@ -16,7 +18,6 @@ import loon.core.geom.Vector2f;
 import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexturePack;
-import loon.core.input.LTouch;
 import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
 
@@ -115,6 +116,7 @@ public abstract class ScriptScreen extends Screen {
 		this.scriptFile = res;
 	}
 
+	@Override
 	public void onCreate(int width, int height) {
 		super.onCreate(width, height);
 		this.isPack = false;
@@ -151,6 +153,7 @@ public abstract class ScriptScreen extends Screen {
 		return null;
 	}
 
+	@Override
 	public final void onLoad() {
 		if (scripts != null) {
 			scripts.load();
@@ -455,6 +458,7 @@ public abstract class ScriptScreen extends Screen {
 
 	public abstract void onLoading();
 
+	@Override
 	public final void onLoaded() {
 		if (callback == null) {
 			callback = onCallback();
@@ -585,9 +589,9 @@ public abstract class ScriptScreen extends Screen {
 							if (go.endX == go.startX && go.endY == go.startY) {
 								if (go.findPath != null) {
 									if (go.findPath.size() > 1) {
-										Vector2f moveStart = (Vector2f) go.findPath
+										Vector2f moveStart = go.findPath
 												.get(0);
-										Vector2f moveEnd = (Vector2f) go.findPath
+										Vector2f moveEnd = go.findPath
 												.get(1);
 										go.startX = field2D
 												.tilesToWidthPixels(moveStart
@@ -610,31 +614,31 @@ public abstract class ScriptScreen extends Screen {
 								}
 							}
 							switch (go.direction) {
-							case Field2D.TUP:
+							case Config.TUP:
 								go.startY -= go.speed;
 								if (go.startY < go.endY) {
 									go.startY = go.endY;
 								}
 								break;
-							case Field2D.TDOWN:
+							case Config.TDOWN:
 								go.startY += go.speed;
 								if (go.startY > go.endY) {
 									go.startY = go.endY;
 								}
 								break;
-							case Field2D.TLEFT:
+							case Config.TLEFT:
 								go.startX -= go.speed;
 								if (go.startX < go.endX) {
 									go.startX = go.endX;
 								}
 								break;
-							case Field2D.TRIGHT:
+							case Config.TRIGHT:
 								go.startX += go.speed;
 								if (go.startX > go.endX) {
 									go.startX = go.endX;
 								}
 								break;
-							case Field2D.UP:
+							case Config.UP:
 								go.startX += go.speed;
 								go.startY -= go.speed;
 								if (go.startX > go.endX) {
@@ -644,7 +648,7 @@ public abstract class ScriptScreen extends Screen {
 									go.startY = go.endY;
 								}
 								break;
-							case Field2D.DOWN:
+							case Config.DOWN:
 								go.startX -= go.speed;
 								go.startY += go.speed;
 								if (go.startX < go.endX) {
@@ -654,7 +658,7 @@ public abstract class ScriptScreen extends Screen {
 									go.startY = go.endY;
 								}
 								break;
-							case Field2D.LEFT:
+							case Config.LEFT:
 								go.startX -= go.speed;
 								go.startY -= go.speed;
 								if (go.startX < go.endX) {
@@ -664,7 +668,7 @@ public abstract class ScriptScreen extends Screen {
 									go.startY = go.endY;
 								}
 								break;
-							case Field2D.RIGHT:
+							case Config.RIGHT:
 								go.startX += go.speed;
 								go.startY += go.speed;
 								if (go.startX > go.endX) {
@@ -683,6 +687,7 @@ public abstract class ScriptScreen extends Screen {
 		}
 	}
 
+	@Override
 	public final void alter(LTimerContext timer) {
 		if (isOnLoadComplete()) {
 			going();
@@ -693,6 +698,7 @@ public abstract class ScriptScreen extends Screen {
 
 	public abstract void update(long elapsedTime);
 
+	@Override
 	public final void draw(GLEx g) {
 		if (isOnLoadComplete()) {
 			if (isPack) {
@@ -753,6 +759,7 @@ public abstract class ScriptScreen extends Screen {
 		return scripts;
 	}
 
+	@Override
 	public void dispose() {
 		this.isPack = false;
 		this.isMap = false;

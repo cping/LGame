@@ -33,6 +33,7 @@ import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.GLLoader;
+import loon.core.graphics.opengl.GLMesh;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextureBatch;
 import loon.core.graphics.opengl.LTextures;
@@ -42,8 +43,7 @@ import loon.utils.MathUtils;
 
 import android.view.View;
 
-
-public class LProcess extends Director{
+public class LProcess extends Director {
 
 	ArrayList<Updateable> loads;
 
@@ -69,7 +69,7 @@ public class LProcess extends Director{
 
 	private LTransition transition;
 
-	LProcess(View view, int width, int height) {
+	public LProcess(View view, int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.screens = new LinkedList<Screen>();
@@ -470,7 +470,7 @@ public class LProcess extends Director{
 		if (size > 0) {
 			Screen o = screens.getFirst();
 			if (o != currentControl) {
-				setScreen( o, false);
+				setScreen(o, false);
 			}
 		}
 	}
@@ -480,7 +480,7 @@ public class LProcess extends Director{
 		if (size > 0) {
 			Screen o = screens.getLast();
 			if (o != currentControl) {
-				setScreen( o, false);
+				setScreen(o, false);
 			}
 		}
 	}
@@ -491,7 +491,7 @@ public class LProcess extends Director{
 			for (int i = 0; i < size; i++) {
 				if (currentControl == screens.get(i)) {
 					if (i - 1 > -1) {
-						setScreen( screens.get(i - 1), false);
+						setScreen(screens.get(i - 1), false);
 						return;
 					}
 				}
@@ -505,7 +505,7 @@ public class LProcess extends Director{
 			for (int i = 0; i < size; i++) {
 				if (currentControl == screens.get(i)) {
 					if (i + 1 < size) {
-						setScreen( screens.get(i + 1), false);
+						setScreen(screens.get(i + 1), false);
 						return;
 					}
 				}
@@ -518,7 +518,7 @@ public class LProcess extends Director{
 		if (size > 0 && index > -1 && index < size) {
 			Object o = screens.get(index);
 			if (currentControl != o) {
-				setScreen( screens.get(index), false);
+				setScreen(screens.get(index), false);
 			}
 		}
 	}
@@ -622,7 +622,7 @@ public class LProcess extends Director{
 				}
 			};
 
-			LSystem.callScreenRunnable(new Thread(runnable,"ProcessThread"));
+			LSystem.callScreenRunnable(new Thread(runnable, "ProcessThread"));
 
 			if (put) {
 				screens.add(screen);
@@ -683,6 +683,7 @@ public class LProcess extends Director{
 			LTextures.disposeAll();
 			LImage.disposeAll();
 			ScreenUtils.disposeAll();
+			GLMesh.disposeAll();
 		}
 	}
 

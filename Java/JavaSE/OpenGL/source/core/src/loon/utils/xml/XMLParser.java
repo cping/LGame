@@ -289,18 +289,6 @@ public class XMLParser implements LRelease {
 	public static XMLDocument parse(InputStream in, XMLListener l) {
 		StringBuffer sbr = new StringBuffer(10000);
 		try {
-			int i = 0;
-			while (in.available() == 0) {
-				i++;
-				try {
-					Thread.sleep(100L);
-				} catch (Exception e) {
-				}
-				if (i <= 100) {
-					continue;
-				}
-				throw new RuntimeException("Parser: InputStream timed out !");
-			}
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					in, LSystem.encoding));
 			while (reader.ready()) {

@@ -30,7 +30,7 @@ import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.core.LObject;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
@@ -47,6 +47,7 @@ public class Node extends LObject implements ISprite, ActionBind {
 	private static final long serialVersionUID = 3211228930455651878L;
 
 	private Comparator<Node> zIndexComparator = new Comparator<Node>() {
+		@Override
 		public int compare(Node one, Node two) {
 			return one.zIndex - two.zIndex;
 		}
@@ -105,6 +106,7 @@ public class Node extends LObject implements ISprite, ActionBind {
 		this.height = (int) h;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		final int remove = requireRemove.size();
 		if (remove > 0) {
@@ -122,10 +124,12 @@ public class Node extends LObject implements ISprite, ActionBind {
 		}
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -138,22 +142,27 @@ public class Node extends LObject implements ISprite, ActionBind {
 		return color;
 	}
 
+	@Override
 	public float getAlpha() {
 		return color.a;
 	}
 
+	@Override
 	public void setAlpha(float a) {
 		color.a = a;
 	}
 
+	@Override
 	public void setVisible(boolean v) {
 		this.visible = v;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -223,14 +232,17 @@ public class Node extends LObject implements ISprite, ActionBind {
 		return this.zIndex;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width * scaleX, height * scaleY);
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
 
+	@Override
 	public void dispose() {
 		this.visible = false;
 		if (texture != null) {
@@ -239,30 +251,37 @@ public class Node extends LObject implements ISprite, ActionBind {
 		}
 	}
 
+	@Override
 	public Field2D getField2D() {
 		return null;
 	}
 
+	@Override
 	public boolean isBounded() {
 		return false;
 	}
 
+	@Override
 	public boolean isContainer() {
 		return false;
 	}
 
+	@Override
 	public boolean inContains(int x, int y, int w, int h) {
 		return false;
 	}
 
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}
 
+	@Override
 	public int getContainerWidth() {
 		return 0;
 	}
 
+	@Override
 	public int getContainerHeight() {
 		return 0;
 	}
@@ -273,6 +292,7 @@ public class Node extends LObject implements ISprite, ActionBind {
 		this.setScale(s, s);
 	}
 
+	@Override
 	public void setScale(final float sx, final float sy) {
 		if (this.scaleX == sx && this.scaleY == sy) {
 			return;
@@ -281,10 +301,12 @@ public class Node extends LObject implements ISprite, ActionBind {
 		this.scaleY = sy;
 	}
 
+	@Override
 	public float getScaleX() {
 		return this.scaleX;
 	}
 
+	@Override
 	public float getScaleY() {
 		return this.scaleY;
 	}

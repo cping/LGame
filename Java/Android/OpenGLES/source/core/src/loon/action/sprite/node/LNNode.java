@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import loon.Key;
 import loon.LInput;
 import loon.LSystem;
 import loon.LTouch;
-import loon.AndroidInputFactory.Key;
-import loon.AndroidInputFactory.Touch;
+import loon.Touch;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.core.LRelease;

@@ -74,6 +74,7 @@ public class TextureUtils {
 					col.getRGB());
 			image.setFormat(format);
 			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			image.setAutoDispose(true);
 			LTexture texture = image.getTexture();
 			if (image != null) {
 				image.dispose();
@@ -111,6 +112,7 @@ public class TextureUtils {
 			int[] pixels = NativeSupport.toColorKeys(image.getPixels(), colors);
 			image.setFormat(format);
 			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			image.setAutoDispose(true);
 			LTexture texture = image.getTexture();
 			if (image != null) {
 				image.dispose();
@@ -127,38 +129,38 @@ public class TextureUtils {
 
 	public static LTexture filterLimitColor(String res, LColor start,
 			LColor end, Format format) {
-		int sred = start.getRed();
-		int sgreen = start.getGreen();
-		int sblue = start.getBlue();
-		int ered = end.getRed();
-		int egreen = end.getGreen();
-		int eblue = end.getBlue();
 		LImage tmp = new LImage(res);
-		LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-		LGraphics g = image.getLGraphics();
-		g.drawImage(tmp, 0, 0);
-		g.dispose();
-		if (tmp != null) {
-			tmp.dispose();
-			tmp = null;
-		}
-		int[] pixels = image.getPixels();
-		int size = pixels.length;
-		for (int i = 0; i < size; i++) {
-			int[] rgbs = LColor.getRGBs(pixels[i]);
-			if ((rgbs[0] >= sred && rgbs[1] >= sgreen && rgbs[2] >= sblue)
-					&& (rgbs[0] <= ered && rgbs[1] <= egreen && rgbs[2] <= eblue)) {
-				pixels[i] = 0xffffff;
+		if (tmp.hasAlpha()) {
+			int[] pixels = NativeSupport.toColorKeyLimit(tmp.getPixels(),
+					start.getRGB(), end.getRGB());
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+			tmp.setAutoDispose(true);
+			LTexture texture = tmp.getTexture();
+			pixels = null;
+			return texture;
+		} else {
+			LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
+			LGraphics g = image.getLGraphics();
+			g.drawImage(tmp, 0, 0);
+			g.dispose();
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
 			}
+			int[] pixels = NativeSupport.toColorKeyLimit(image.getPixels(),
+					start.getRGB(), end.getRGB());
+			image.setFormat(format);
+			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			image.setAutoDispose(true);
+			LTexture texture = image.getTexture();
+			if (image != null) {
+				image.dispose();
+				image = null;
+			}
+			pixels = null;
+			return texture;
 		}
-		image.setFormat(format);
-		image.setPixels(pixels, image.getWidth(), image.getHeight());
-		LTexture texture = image.getTexture();
-		if (image != null) {
-			image.dispose();
-			image = null;
-		}
-		return texture;
 	}
 
 	public static LTexture loadTexture(String fileName) {

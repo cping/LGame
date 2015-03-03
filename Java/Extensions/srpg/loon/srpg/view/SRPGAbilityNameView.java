@@ -1,9 +1,9 @@
 package loon.srpg.view;
 
-import loon.core.LSystem;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.LGradation;
+import loon.LSystem;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.device.LGradation;
 import loon.core.graphics.opengl.GLEx;
 import loon.srpg.ability.SRPGAbilityFactory;
 import loon.srpg.actor.SRPGStatus;

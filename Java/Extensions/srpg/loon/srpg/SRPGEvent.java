@@ -1,6 +1,6 @@
 package loon.srpg;
 
-import loon.core.input.LTouch;
+import loon.LTouch;
 
 /**
  * Copyright 2008 - 2011

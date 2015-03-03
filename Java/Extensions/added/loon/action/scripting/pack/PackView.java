@@ -64,18 +64,22 @@ public abstract class PackView {
 			return timer.getDelay();
 		}
 
+		@Override
 		public float worldToRealX(float x) {
 			return x - cameraX + width / 2;
 		}
 
+		@Override
 		public float worldToRealY(float y) {
 			return y - cameraY + height / 2;
 		}
 
+		@Override
 		public float realToWorldX(float x) {
 			return x + cameraX - width / 2;
 		}
 
+		@Override
 		public float realToWorldY(float y) {
 			return y + cameraY - height / 2;
 		}
@@ -89,6 +93,7 @@ public abstract class PackView {
 			}
 		}
 
+		@Override
 		public void update(long elapsedTime) {
 			if (bind == null) {
 				return;
@@ -134,22 +139,27 @@ public abstract class PackView {
 		private EmptyView() {
 		}
 
+		@Override
 		public float worldToRealX(float x) {
 			return x;
 		}
 
+		@Override
 		public float worldToRealY(float y) {
 			return y;
 		}
 
+		@Override
 		public float realToWorldX(float x) {
 			return x;
 		}
 
+		@Override
 		public float realToWorldY(float y) {
 			return y;
 		}
 
+		@Override
 		public void update(long elapsedTime) {
 
 		}

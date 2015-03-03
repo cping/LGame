@@ -1,6 +1,6 @@
 package loon.action.scripting;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 /**
  * Copyright 2008 - 2011
@@ -22,21 +22,35 @@ import java.util.Stack;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
-public class WithPosition extends UserFunction {
-
-	private int x;
-
-	private int y;
-
-	public WithPosition(String name, int x, int y) {
-		super(name);
-		this.x = x;
-		this.y = y;
-	}
+public class Script {
 	
-	public void update(ScriptFactory engine, Stack<StackFrame> stack,
-			Callback callback) {
-		callback.function(getName(), x, y);
+	private String name;
+
+	private ArrayList<Function> functions = new ArrayList<Function>();
+
+	public static final int COMPLETE_SCRIPT = 0;
+
+	public static final int COMPLETE_FUNCTION = 1;
+
+	public static final int UNCOMPLETE_FUNCTION = 2;
+
+	public String getName() {
+		return name;
 	}
 
+	public Script(String name) {
+		this.name = name;
+	}
+
+	public int size() {
+		return functions.size();
+	}
+
+	public Function getFunction(int index) {
+		return functions.get(index);
+	}
+
+	public void add(Function fun) {
+		functions.add(fun);
+	}
 }

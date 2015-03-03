@@ -2,7 +2,7 @@ package loon.action.scripting.pack;
 
 import loon.core.LObject;
 import loon.core.geom.RectBox;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexturePack;
 import loon.core.timer.LTimer;
 import loon.utils.MathUtils;
@@ -90,10 +90,12 @@ public class PackSprite extends LObject {
 		frame = 0;
 	}
 
+	@Override
 	public int getWidth() {
 		return (width == 0 ? animation.getFrame(frame).getWidth() : (int) width);
 	}
 
+	@Override
 	public int getHeight() {
 		return (height == 0 ? animation.getFrame(frame).getHeight()
 				: (int) height);
@@ -161,6 +163,7 @@ public class PackSprite extends LObject {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			nextFrame();

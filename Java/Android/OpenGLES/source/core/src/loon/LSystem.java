@@ -62,7 +62,24 @@ public final class LSystem {
 	public static FrameBuffer newFrameBuffer(int width, int height){
 		return new AndroidFrameBuffer(width,height);
 	}
-	
+
+	/**
+	 * 执行一个位于Screen线程中的Runnable
+	 * 
+	 * @param runnable
+	 */
+	public final static void callScreenRunnable(Runnable runnable) {
+		LProcess process = LSystem.screenProcess;
+		if (process != null) {
+			Screen screen = process.getScreen();
+			if (screen != null) {
+				synchronized (screen) {
+					screen.callEvent(runnable);
+				}
+			}
+		}
+	}
+
 	public static Files files = null;
 
 	public static Files files() {
@@ -229,24 +246,6 @@ public final class LSystem {
 				tex2d.destroy();
 				tex2d = null;
 			} catch (Exception e) {
-			}
-		}
-	}
-
-
-	/**
-	 * 执行一个位于Screen线程中的Runnable
-	 * 
-	 * @param runnable
-	 */
-	public final static void callScreenRunnable(Runnable runnable) {
-		LProcess process = LSystem.screenProcess;
-		if (process != null) {
-			Screen screen = process.getScreen();
-			if (screen != null) {
-				synchronized (screen) {
-					screen.callEvent(runnable);
-				}
 			}
 		}
 	}

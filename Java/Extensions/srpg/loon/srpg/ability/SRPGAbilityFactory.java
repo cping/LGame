@@ -2,7 +2,7 @@ package loon.srpg.ability;
 
 import java.util.ArrayList;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.srpg.SRPGType;
 import loon.srpg.actor.SRPGActor;
 import loon.srpg.actor.SRPGActors;

@@ -1,9 +1,9 @@
 package loon.srpg.view;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LFont;
 import loon.core.graphics.component.Print;
+import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
 

@@ -1,6 +1,6 @@
 package loon.action.scripting;
 
-import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * Copyright 2008 - 2011
@@ -22,35 +22,21 @@ import java.util.ArrayList;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
-public class Script {
+public class WaitFunction extends Function {
 	
-	private String name;
+	private int frames;
 
-	private ArrayList<Function> functions = new ArrayList<Function>();
-
-	public static final int COMPLETE_SCRIPT = 0;
-
-	public static final int COMPLETE_FUNCTION = 1;
-
-	public static final int UNCOMPLETE_FUNCTION = 2;
-
-	public String getName() {
-		return name;
+	public WaitFunction(int frames) {
+		this.frames = frames;
+	}
+	
+	@Override
+	public void update(ScriptFactory engine, Stack<StackFrame> stack, Callback callback) {
 	}
 
-	public Script(String name) {
-		this.name = name;
+	@Override
+	public int getWait() {
+		return frames;
 	}
 
-	public int size() {
-		return functions.size();
-	}
-
-	public Function getFunction(int index) {
-		return (Function) functions.get(index);
-	}
-
-	public void add(Function fun) {
-		functions.add(fun);
-	}
 }

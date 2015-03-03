@@ -72,6 +72,8 @@ extern "C" {
 
 	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jclass, jintArray, jintArray);
 
+	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeyLimit(JNIEnv *env, jclass, jintArray, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

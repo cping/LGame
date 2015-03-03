@@ -32,8 +32,10 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 
 import loon.LSystem;
+import loon.core.graphics.device.LColor;
 
 //自0.3.3起，将部分耗时代码本地化。如果携带有lplus库时，将调用so文件，否则依旧纯Java。
 //用户可有选择的使用(事实上，随着Android版本的提高，本地运行与虚拟机运行的速度差距已经
@@ -82,19 +84,7 @@ public final class NativeSupport {
 		}
 	}
 
-	public static final int SIZEOF_BYTE = 1;
-
-	public static final int SIZEOF_SHORT = 2;
-
-	public static final int SIZEOF_FLOAT = 4;
-
-	public static final int SIZEOF_INT = SIZEOF_FLOAT;
-
-	public static final int SIZEOF_DOUBLE = 8;
-
-	public static final int SIZEOF_LONG = SIZEOF_DOUBLE;
-
-	private static boolean useLoonNative;
+	private static boolean useLoonNative = false;
 
 	static {
 		if (LSystem.isEmulator() && !LSystem.isAndroidVersionHigher(8)) {
@@ -108,10 +98,15 @@ public final class NativeSupport {
 				useLoonNative = false;
 			}
 		}
+
 	}
 
 	public static boolean UseLoonNative() {
 		return useLoonNative;
+	}
+
+	public static void OpenLoonNative() {
+		useLoonNative = false;
 	}
 
 	public static void CloseLoonNative() {
@@ -135,11 +130,11 @@ public final class NativeSupport {
 	public static void copy(float[] src, Buffer dst, int offset, int numFloats) {
 		if (useLoonNative) {
 			bufferCopy(src, dst, numFloats, offset);
-			if (dst instanceof ByteBuffer) {
-				dst.limit(numFloats << SIZEOF_SHORT);
-			} else if (dst instanceof FloatBuffer) {
+			dst.position(0);
+			if (dst instanceof ByteBuffer)
+				dst.limit(numFloats << 2);
+			else if (dst instanceof FloatBuffer)
 				dst.limit(numFloats);
-			}
 		} else {
 			putBuffer(dst, src, offset, numFloats);
 		}
@@ -195,10 +190,9 @@ public final class NativeSupport {
 	public static void copy(short[] src, int srcOffset, Buffer dst,
 			int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset << SIZEOF_BYTE, dst,
-					positionInBytes(dst), numElements << SIZEOF_BYTE);
-			dst.limit(dst.position()
-					+ bytesToElements(dst, numElements << SIZEOF_BYTE));
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
+					numElements << 1);
+			dst.limit(dst.position() + bytesToElements(dst, numElements << 1));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
@@ -207,10 +201,9 @@ public final class NativeSupport {
 	public static void copy(char[] src, int srcOffset, Buffer dst,
 			int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset << SIZEOF_BYTE, dst,
-					positionInBytes(dst), numElements << SIZEOF_BYTE);
-			dst.limit(dst.position()
-					+ bytesToElements(dst, numElements << SIZEOF_BYTE));
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
+					numElements << 1);
+			dst.limit(dst.position() + bytesToElements(dst, numElements << 1));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
@@ -219,10 +212,9 @@ public final class NativeSupport {
 	public static void copy(int[] src, int srcOffset, Buffer dst,
 			int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset << SIZEOF_SHORT, dst,
-					positionInBytes(dst), numElements << SIZEOF_SHORT);
-			dst.limit(dst.position()
-					+ bytesToElements(dst, numElements << SIZEOF_SHORT));
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
+					numElements << 2);
+			dst.limit(dst.position() + bytesToElements(dst, numElements << 2));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
@@ -231,9 +223,8 @@ public final class NativeSupport {
 	public static void copy(long[] src, int srcOffset, Buffer dst,
 			int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset << 3, dst, positionInBytes(dst),
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
 					numElements << 3);
-			dst.limit(dst.position() + bytesToElements(dst, numElements << 3));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
@@ -242,10 +233,9 @@ public final class NativeSupport {
 	public static void copy(float[] src, int srcOffset, Buffer dst,
 			int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset << SIZEOF_SHORT, dst,
-					positionInBytes(dst), numElements << SIZEOF_SHORT);
-			dst.limit(dst.position()
-					+ bytesToElements(dst, numElements << SIZEOF_SHORT));
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
+					numElements << 2);
+			dst.limit(dst.position() + bytesToElements(dst, numElements << 2));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
@@ -254,7 +244,7 @@ public final class NativeSupport {
 	public static void copy(double[] src, int srcOffset, Buffer dst,
 			int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset << 3, dst, positionInBytes(dst),
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
 					numElements << 3);
 			dst.limit(dst.position() + bytesToElements(dst, numElements << 3));
 		} else {
@@ -277,15 +267,15 @@ public final class NativeSupport {
 		if (dst instanceof ByteBuffer) {
 			return dst.position();
 		} else if (dst instanceof ShortBuffer) {
-			return dst.position() << SIZEOF_BYTE;
+			return dst.position() << 1;
 		} else if (dst instanceof CharBuffer) {
-			return dst.position() << SIZEOF_BYTE;
+			return dst.position() << 1;
 		} else if (dst instanceof IntBuffer) {
-			return dst.position() << SIZEOF_SHORT;
+			return dst.position() << 2;
 		} else if (dst instanceof LongBuffer) {
 			return dst.position() << 3;
 		} else if (dst instanceof FloatBuffer) {
-			return dst.position() << SIZEOF_SHORT;
+			return dst.position() << 2;
 		} else if (dst instanceof DoubleBuffer) {
 			return dst.position() << 3;
 		} else {
@@ -298,15 +288,15 @@ public final class NativeSupport {
 		if (dst instanceof ByteBuffer) {
 			return bytes;
 		} else if (dst instanceof ShortBuffer) {
-			return bytes >>> SIZEOF_BYTE;
+			return bytes >>> 1;
 		} else if (dst instanceof CharBuffer) {
-			return bytes >>> SIZEOF_BYTE;
+			return bytes >>> 1;
 		} else if (dst instanceof IntBuffer) {
-			return bytes >>> SIZEOF_SHORT;
+			return bytes >>> 2;
 		} else if (dst instanceof LongBuffer) {
 			return bytes >>> 3;
 		} else if (dst instanceof FloatBuffer) {
-			return bytes >>> SIZEOF_SHORT;
+			return bytes >>> 2;
 		} else if (dst instanceof DoubleBuffer) {
 			return bytes >>> 3;
 		} else {
@@ -319,15 +309,15 @@ public final class NativeSupport {
 		if (dst instanceof ByteBuffer) {
 			return elements;
 		} else if (dst instanceof ShortBuffer) {
-			return elements << SIZEOF_BYTE;
+			return elements << 1;
 		} else if (dst instanceof CharBuffer) {
-			return elements << SIZEOF_BYTE;
+			return elements << 1;
 		} else if (dst instanceof IntBuffer) {
-			return elements << SIZEOF_SHORT;
+			return elements << 2;
 		} else if (dst instanceof LongBuffer) {
 			return elements << 3;
 		} else if (dst instanceof FloatBuffer) {
-			return elements << SIZEOF_SHORT;
+			return elements << 2;
 		} else if (dst instanceof DoubleBuffer) {
 			return elements << 3;
 		} else {
@@ -382,6 +372,7 @@ public final class NativeSupport {
 	}
 
 	private static void putBuffer(Buffer dst, Buffer src, int numFloats) {
+		dst.clear();
 		if (dst instanceof ByteBuffer) {
 			ByteBuffer buffer = (ByteBuffer) dst;
 			buffer.limit(numFloats);
@@ -460,95 +451,47 @@ public final class NativeSupport {
 			return buffer;
 		}
 	}
-
+	
 	public static ByteBuffer newByteBuffer(int numBytes) {
-		if (useLoonNative) {
-			ByteBuffer buffer = bufferDirect(numBytes);
-			buffer.order(ByteOrder.nativeOrder());
-			return buffer;
-		} else {
 			ByteBuffer buffer = ByteBuffer.allocateDirect(numBytes);
 			buffer.order(ByteOrder.nativeOrder());
 			return buffer;
-		}
 	}
 
 	public static FloatBuffer newFloatBuffer(int numFloats) {
-		if (useLoonNative) {
-			ByteBuffer buffer = bufferDirect(numFloats * SIZEOF_FLOAT);
+			ByteBuffer buffer = ByteBuffer.allocateDirect(numFloats * 4);
 			buffer.order(ByteOrder.nativeOrder());
 			return buffer.asFloatBuffer();
-		} else {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(numFloats
-					* SIZEOF_FLOAT);
-			buffer.order(ByteOrder.nativeOrder());
-			return buffer.asFloatBuffer();
-		}
 	}
 
 	public static DoubleBuffer newDoubleBuffer(int numDoubles) {
-		if (useLoonNative) {
-			ByteBuffer buffer = bufferDirect(numDoubles * SIZEOF_DOUBLE);
+			ByteBuffer buffer = ByteBuffer.allocateDirect(numDoubles * 8);
 			buffer.order(ByteOrder.nativeOrder());
 			return buffer.asDoubleBuffer();
-		} else {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(numDoubles
-					* SIZEOF_DOUBLE);
-			buffer.order(ByteOrder.nativeOrder());
-			return buffer.asDoubleBuffer();
-		}
 	}
 
 	public static ShortBuffer newShortBuffer(int numShorts) {
-		if (useLoonNative) {
-			ByteBuffer buffer = bufferDirect(numShorts * SIZEOF_SHORT);
+			ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts * 2);
 			buffer.order(ByteOrder.nativeOrder());
 			return buffer.asShortBuffer();
-		} else {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts
-					* SIZEOF_SHORT);
-			buffer.order(ByteOrder.nativeOrder());
-			return buffer.asShortBuffer();
-		}
 	}
 
 	public static CharBuffer newCharBuffer(int numChars) {
-		if (useLoonNative) {
-			ByteBuffer buffer = bufferDirect(numChars * SIZEOF_SHORT);
+			ByteBuffer buffer = ByteBuffer.allocateDirect(numChars * 2);
 			buffer.order(ByteOrder.nativeOrder());
 			return buffer.asCharBuffer();
-		} else {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(numChars
-					* SIZEOF_SHORT);
-			buffer.order(ByteOrder.nativeOrder());
-			return buffer.asCharBuffer();
-		}
 	}
 
 	public static IntBuffer newIntBuffer(int numInts) {
-		if (useLoonNative) {
-			ByteBuffer buffer = bufferDirect(numInts * SIZEOF_FLOAT);
+			ByteBuffer buffer = ByteBuffer.allocateDirect(numInts * 4);
 			buffer.order(ByteOrder.nativeOrder());
 			return buffer.asIntBuffer();
-		} else {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(numInts
-					* SIZEOF_FLOAT);
-			buffer.order(ByteOrder.nativeOrder());
-			return buffer.asIntBuffer();
-		}
 	}
 
 	public static LongBuffer newLongBuffer(int numLongs) {
-		if (useLoonNative) {
-			ByteBuffer buffer = bufferDirect(numLongs * SIZEOF_DOUBLE);
+			ByteBuffer buffer = ByteBuffer.allocateDirect(numLongs * 8);
 			buffer.order(ByteOrder.nativeOrder());
 			return buffer.asLongBuffer();
-		} else {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(numLongs
-					* SIZEOF_DOUBLE);
-			buffer.order(ByteOrder.nativeOrder());
-			return buffer.asLongBuffer();
-		}
 	}
 
 	public static void put(final Buffer buffer, final float[] source,
@@ -556,10 +499,39 @@ public final class NativeSupport {
 		if (useLoonNative) {
 			bufferPut(buffer, source, length, offset);
 			buffer.position(0);
-			buffer.limit(length << SIZEOF_SHORT);
+			buffer.limit(length << 2);
 		} else {
 			putBuffer(buffer, source, offset, length);
 		}
+	}
+
+	private static ArrayList<ByteBuffer> unsafeBuffers = new ArrayList<ByteBuffer>();
+
+	private static int allocatedUnsafe = 0;
+
+	public static int getAllocatedBytesUnsafe() {
+		return allocatedUnsafe;
+	}
+
+	public static void disposeUnsafeByteBuffer(ByteBuffer buffer) {
+		int size = buffer.capacity();
+		synchronized (unsafeBuffers) {
+			if (!unsafeBuffers.remove(buffer))
+				throw new IllegalArgumentException(
+						"buffer not allocated with newUnsafeByteBuffer or already disposed");
+		}
+		allocatedUnsafe -= size;
+		freeMemory(buffer);
+	}
+
+	public static ByteBuffer newUnsafeByteBuffer(int numBytes) {
+		ByteBuffer buffer = allocateDirect(numBytes);
+		buffer.order(ByteOrder.nativeOrder());
+		allocatedUnsafe += numBytes;
+		synchronized (unsafeBuffers) {
+			unsafeBuffers.add(buffer);
+		}
+		return buffer;
 	}
 
 	public static ByteBuffer allocateDirect(final int capacity) {
@@ -570,12 +542,12 @@ public final class NativeSupport {
 		}
 	}
 
-	public static void freeMemory(Buffer buffer) {
+	private static void freeMemory(Buffer buffer) {
 		if (useLoonNative) {
 			bufferFreeDirect(buffer);
-		} else {
-			buffer = null;
 		}
+		buffer.clear();
+		buffer = null;
 	}
 
 	public static void clear(Buffer buffer) {
@@ -977,7 +949,31 @@ public final class NativeSupport {
 					if (pixel == colors[n]) {
 						buffer[i] = 0x00FFFFFF;
 					}
+				}
+			}
+		}
+		return buffer;
+	}
 
+	public static int[] toColorKeyLimit(int[] buffer, int start, int end) {
+		if (useLoonNative) {
+			setColorKeyLimit(buffer, start, end);
+		} else {
+			int sred = LColor.getRed(start);
+			int sgreen = LColor.getGreen(start);
+			int sblue = LColor.getBlue(start);
+			int ered = LColor.getRed(end);
+			int egreen = LColor.getGreen(end);
+			int eblue = LColor.getBlue(end);
+			int size = buffer.length;
+			for (int i = 0; i < size; i++) {
+				int pixel = buffer[i];
+				int r = LColor.getRed(pixel);
+				int g = LColor.getGreen(pixel);
+				int b = LColor.getBlue(pixel);
+				if ((r >= sred && g >= sgreen && b >= sblue)
+						&& (r <= ered && g <= egreen && b <= eblue)) {
+					buffer[i] = 0x00FFFFFF;
 				}
 			}
 		}
@@ -1078,6 +1074,9 @@ public final class NativeSupport {
 	private native static int[] setColorKey(int[] buffer, int colorKey);
 
 	private native static int[] setColorKeys(int[] buffer, int[] colorKey);
+
+	private native static int[] setColorKeyLimit(int[] buffer, int start,
+			int end);
 
 	private native static int[] getGray(int[] buffer, int w, int h);
 }

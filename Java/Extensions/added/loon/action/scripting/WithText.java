@@ -22,19 +22,19 @@ import java.util.Stack;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
-public class WaitFunction extends Function {
-	
-	private int frames;
+public class WithText extends UserFunction {
 
-	public WaitFunction(int frames) {
-		this.frames = frames;
-	}
-	
-	public void update(ScriptFactory engine, Stack<StackFrame> stack, Callback callback) {
+	private String text;
+
+	public WithText(String name, String text) {
+		super(name);
+		this.text = text;
 	}
 
-	public int getWait() {
-		return frames;
+	@Override
+	public void update(ScriptFactory engine, Stack<StackFrame> stack,
+			Callback callback) {
+		callback.function(getName(), text);
 	}
 
 }

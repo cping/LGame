@@ -190,6 +190,7 @@ public class HttpDownload extends Observable implements LRelease, Runnable {
 		thread.start();
 	}
 
+	@Override
 	public void run() {
 		if (client == null) {
 			return;
@@ -297,6 +298,7 @@ public class HttpDownload extends Observable implements LRelease, Runnable {
 		notifyObservers();
 	}
 
+	@Override
 	public synchronized void dispose() {
 		stop();
 		if (out != null) {

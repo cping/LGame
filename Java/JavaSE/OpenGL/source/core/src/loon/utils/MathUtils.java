@@ -23,8 +23,37 @@ package loon.utils;
 import loon.LSystem;
 import loon.core.geom.RectBox;
 
-
 public class MathUtils {
+
+	static public boolean isZero(float value, float tolerance) {
+		return Math.abs(value) <= tolerance;
+	}
+
+	static public boolean isEqual(float a, float b) {
+		return Math.abs(a - b) <= FLOAT_ROUNDING_ERROR;
+	}
+
+	static public boolean isEqual(float a, float b, float tolerance) {
+		return Math.abs(a - b) <= tolerance;
+	}
+
+	static public final float FLOAT_ROUNDING_ERROR = 0.000001f;
+
+	static public int nextPowerOfTwo(int value) {
+		if (value == 0)
+			return 1;
+		value--;
+		value |= value >> 1;
+		value |= value >> 2;
+		value |= value >> 4;
+		value |= value >> 8;
+		value |= value >> 16;
+		return value + 1;
+	}
+
+	static public boolean isPowerOfTwo(int value) {
+		return value != 0 && (value & value - 1) == 0;
+	}
 
 	public static RectBox getBounds(float x, float y, float width,
 			float height, float rotate, RectBox result) {

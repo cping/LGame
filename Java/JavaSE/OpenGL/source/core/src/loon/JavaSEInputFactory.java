@@ -21,7 +21,6 @@
 package loon;
 
 import loon.core.event.ActionKey;
-import loon.core.geom.Vector2f;
 import loon.core.timer.LTimer;
 import loon.core.timer.LTimerContext;
 import loon.utils.collection.IntArray;
@@ -30,8 +29,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class JavaSEInputFactory {
-	
-	public static void setOnscreenKeyboardVisible (boolean visible) {
+
+	public static void setOnscreenKeyboardVisible(boolean visible) {
 
 	}
 
@@ -61,416 +60,15 @@ public class JavaSEInputFactory {
 
 	private final LProcess handler;
 
-	private final static LTouch finalTouch = new LTouch();
+	final static LTouch finalTouch = new LTouch();
 
-	private final static LKey finalKey = new LKey();
+	final static LKey finalKey = new LKey();
 
 	private char lastKeyCharPressed;
 
 	private int buttons;
 
 	static boolean isDraging;
-
-	public static class Touch {
-
-		public static final int TOUCH_DOWN = 0;
-
-		public static final int TOUCH_UP = 1;
-
-		public static final int TOUCH_MOVE = 2;
-
-		public static final int TOUCH_DRAG = 3;
-
-		public static final int LEFT = 0;
-
-		public static final int RIGHT = 1;
-
-		public static final int MIDDLE = 2;
-
-		private static final Vector2f location = new Vector2f();
-
-		public static Vector2f getLocation() {
-			location.set(finalTouch.x, finalTouch.y);
-			return location;
-		}
-
-		public static int getButton() {
-			return finalTouch.button;
-		}
-
-		public static int getPointer() {
-			return finalTouch.pointer;
-		}
-
-		public static int getType() {
-			return finalTouch.type;
-		}
-
-		public static int x() {
-			return (int) finalTouch.x;
-		}
-
-		public static int y() {
-			return (int) finalTouch.y;
-		}
-
-		public static float getX() {
-			return finalTouch.x;
-		}
-
-		public static float getY() {
-			return finalTouch.y;
-		}
-
-		public static boolean isDown() {
-			return finalTouch.isDown();
-		}
-
-		public static boolean isUp() {
-			return finalTouch.isUp();
-		}
-
-		public static boolean isMove() {
-			return finalTouch.isMove();
-		}
-
-		public static boolean isDrag() {
-			return isDraging;
-		}
-
-		public static boolean isLeft() {
-			return finalTouch.isLeft();
-		}
-
-		public static boolean isMiddle() {
-			return finalTouch.isMiddle();
-		}
-
-		public static boolean isRight() {
-			return finalTouch.isRight();
-		}
-	}
-
-	public static class Key {
-
-		public static final int KEY_DOWN = 0;
-
-		public static final int KEY_UP = 1;
-
-		public static final int KEY_TYPED = 2;
-
-		public static final int ANY_KEY = -1;
-
-		public static final int NUM_0 = 7;
-
-		public static final int NUM_1 = 8;
-
-		public static final int NUM_2 = 9;
-
-		public static final int NUM_3 = 10;
-
-		public static final int NUM_4 = 11;
-
-		public static final int NUM_5 = 12;
-
-		public static final int NUM_6 = 13;
-
-		public static final int NUM_7 = 14;
-
-		public static final int NUM_8 = 15;
-
-		public static final int NUM_9 = 16;
-
-		public static final int A = 29;
-
-		public static final int ALT_LEFT = 57;
-
-		public static final int ALT_RIGHT = 58;
-
-		public static final int APOSTROPHE = 75;
-
-		public static final int AT = 77;
-
-		public static final int B = 30;
-
-		public static final int BACK = 4;
-
-		public static final int BACKSLASH = 73;
-
-		public static final int C = 31;
-
-		public static final int CALL = 5;
-
-		public static final int CAMERA = 27;
-
-		public static final int CLEAR = 28;
-
-		public static final int COMMA = 55;
-
-		public static final int D = 32;
-
-		public static final int DEL = 67;
-
-		public static final int BACKSPACE = 67;
-
-		public static final int FORWARD_DEL = 112;
-
-		public static final int DPAD_CENTER = 23;
-
-		public static final int DPAD_DOWN = 20;
-
-		public static final int DPAD_LEFT = 21;
-
-		public static final int DPAD_RIGHT = 22;
-
-		public static final int DPAD_UP = 19;
-
-		public static final int CENTER = 23;
-
-		public static final int DOWN = 20;
-
-		public static final int LEFT = 21;
-
-		public static final int RIGHT = 22;
-
-		public static final int UP = 19;
-
-		public static final int E = 33;
-
-		public static final int ENDCALL = 6;
-
-		public static final int ENTER = 66;
-
-		public static final int ENVELOPE = 65;
-
-		public static final int EQUALS = 70;
-
-		public static final int EXPLORER = 64;
-
-		public static final int F = 34;
-
-		public static final int FOCUS = 80;
-
-		public static final int G = 35;
-
-		public static final int GRAVE = 68;
-
-		public static final int H = 36;
-
-		public static final int HEADSETHOOK = 79;
-
-		public static final int HOME = 3;
-
-		public static final int I = 37;
-
-		public static final int J = 38;
-
-		public static final int K = 39;
-
-		public static final int L = 40;
-
-		public static final int LEFT_BRACKET = 71;
-
-		public static final int M = 41;
-
-		public static final int MEDIA_FAST_FORWARD = 90;
-
-		public static final int MEDIA_NEXT = 87;
-
-		public static final int MEDIA_PLAY_PAUSE = 85;
-
-		public static final int MEDIA_PREVIOUS = 88;
-
-		public static final int MEDIA_REWIND = 89;
-
-		public static final int MEDIA_STOP = 86;
-
-		public static final int MENU = 82;
-
-		public static final int MINUS = 69;
-
-		public static final int MUTE = 91;
-
-		public static final int N = 42;
-
-		public static final int NOTIFICATION = 83;
-
-		public static final int NUM = 78;
-
-		public static final int O = 43;
-
-		public static final int P = 44;
-
-		public static final int PERIOD = 56;
-
-		public static final int PLUS = 81;
-
-		public static final int POUND = 18;
-
-		public static final int POWER = 26;
-
-		public static final int Q = 45;
-
-		public static final int R = 46;
-
-		public static final int RIGHT_BRACKET = 72;
-
-		public static final int S = 47;
-
-		public static final int SEARCH = 84;
-
-		public static final int SEMICOLON = 74;
-
-		public static final int SHIFT_LEFT = 59;
-
-		public static final int SHIFT_RIGHT = 60;
-
-		public static final int SLASH = 76;
-
-		public static final int SOFT_LEFT = 1;
-
-		public static final int SOFT_RIGHT = 2;
-
-		public static final int SPACE = 62;
-
-		public static final int STAR = 17;
-
-		public static final int SYM = 63;
-
-		public static final int T = 48;
-
-		public static final int TAB = 61;
-
-		public static final int U = 49;
-
-		public static final int UNKNOWN = 0;
-
-		public static final int V = 50;
-
-		public static final int VOLUME_DOWN = 25;
-
-		public static final int VOLUME_UP = 24;
-
-		public static final int W = 51;
-
-		public static final int X = 52;
-
-		public static final int Y = 53;
-
-		public static final int Z = 54;
-
-		public static final int META_ALT_LEFT_ON = 16;
-
-		public static final int META_ALT_ON = 2;
-
-		public static final int META_ALT_RIGHT_ON = 32;
-
-		public static final int META_SHIFT_LEFT_ON = 64;
-
-		public static final int META_SHIFT_ON = 1;
-
-		public static final int META_SHIFT_RIGHT_ON = 128;
-
-		public static final int META_SYM_ON = 4;
-
-		public static final int CONTROL_LEFT = 129;
-
-		public static final int CONTROL_RIGHT = 130;
-
-		public static final int ESCAPE = 131;
-
-		public static final int END = 132;
-
-		public static final int INSERT = 133;
-
-		public static final int PAGE_UP = 92;
-
-		public static final int PAGE_DOWN = 93;
-
-		public static final int PICTSYMBOLS = 94;
-
-		public static final int SWITCH_CHARSET = 95;
-
-		public static final int BUTTON_A = 96;
-
-		public static final int BUTTON_B = 97;
-
-		public static final int BUTTON_C = 98;
-
-		public static final int BUTTON_X = 99;
-
-		public static final int BUTTON_Y = 100;
-
-		public static final int BUTTON_Z = 101;
-
-		public static final int BUTTON_L1 = 102;
-
-		public static final int BUTTON_R1 = 103;
-
-		public static final int BUTTON_L2 = 104;
-
-		public static final int BUTTON_R2 = 105;
-
-		public static final int BUTTON_THUMBL = 106;
-
-		public static final int BUTTON_THUMBR = 107;
-
-		public static final int BUTTON_START = 108;
-
-		public static final int BUTTON_SELECT = 109;
-
-		public static final int BUTTON_MODE = 110;
-
-		public static final int BUTTON_CIRCLE = 255;
-
-		public static char getKeyChar() {
-			return finalKey.keyChar;
-		}
-
-		public static int getKeyCode() {
-			return finalKey.keyCode;
-		}
-
-		public static int getType() {
-			return finalKey.keyCode;
-		}
-
-		public static boolean isDown() {
-			return finalKey.isDown();
-		}
-
-		public static boolean isUp() {
-			return finalKey.isUp();
-		}
-
-		public static void clear() {
-			keys.clear();
-		}
-
-		public static void addKey(int key) {
-			keys.add(key);
-		}
-
-		public static void removeKey(int key) {
-			keys.removeValue(key);
-		}
-
-		public static boolean isKeyPressed(int key) {
-			if (key == Key.ANY_KEY) {
-				return keys.length > 0 && only_key.isPressed();
-			} else {
-				return keys.contains(key) && only_key.isPressed();
-			}
-		}
-
-		public static boolean isKeyRelease(int key) {
-			if (key == Key.ANY_KEY) {
-				return keys.length > 0 && !only_key.isPressed();
-			} else {
-				return keys.contains(key) && !only_key.isPressed();
-			}
-		}
-	}
 
 	public JavaSEInputFactory(LProcess handler) {
 		Keyboard.enableRepeatEvents(false);
@@ -583,7 +181,7 @@ public class JavaSEInputFactory {
 		}
 	}
 
-	private final static ActionKey only_key = new ActionKey(
+	final static ActionKey only_key = new ActionKey(
 			ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 	public static ActionKey getOnlyKey() {
@@ -643,257 +241,257 @@ public class JavaSEInputFactory {
 	public static int toKeyCode(int lwjglKeyCode) {
 		switch (lwjglKeyCode) {
 		case Keyboard.KEY_0:
-			return JavaSEInputFactory.Key.NUM_0;
+			return Key.NUM_0;
 		case Keyboard.KEY_1:
-			return JavaSEInputFactory.Key.NUM_1;
+			return Key.NUM_1;
 		case Keyboard.KEY_2:
-			return JavaSEInputFactory.Key.NUM_2;
+			return Key.NUM_2;
 		case Keyboard.KEY_3:
-			return JavaSEInputFactory.Key.NUM_3;
+			return Key.NUM_3;
 		case Keyboard.KEY_4:
-			return JavaSEInputFactory.Key.NUM_4;
+			return Key.NUM_4;
 		case Keyboard.KEY_5:
-			return JavaSEInputFactory.Key.NUM_5;
+			return Key.NUM_5;
 		case Keyboard.KEY_6:
-			return JavaSEInputFactory.Key.NUM_6;
+			return Key.NUM_6;
 		case Keyboard.KEY_7:
-			return JavaSEInputFactory.Key.NUM_7;
+			return Key.NUM_7;
 		case Keyboard.KEY_8:
-			return JavaSEInputFactory.Key.NUM_8;
+			return Key.NUM_8;
 		case Keyboard.KEY_9:
-			return JavaSEInputFactory.Key.NUM_9;
+			return Key.NUM_9;
 		case Keyboard.KEY_A:
-			return JavaSEInputFactory.Key.A;
+			return Key.A;
 		case Keyboard.KEY_B:
-			return JavaSEInputFactory.Key.B;
+			return Key.B;
 		case Keyboard.KEY_C:
-			return JavaSEInputFactory.Key.C;
+			return Key.C;
 		case Keyboard.KEY_D:
-			return JavaSEInputFactory.Key.D;
+			return Key.D;
 		case Keyboard.KEY_E:
-			return JavaSEInputFactory.Key.E;
+			return Key.E;
 		case Keyboard.KEY_F:
-			return JavaSEInputFactory.Key.F;
+			return Key.F;
 		case Keyboard.KEY_G:
-			return JavaSEInputFactory.Key.G;
+			return Key.G;
 		case Keyboard.KEY_H:
-			return JavaSEInputFactory.Key.H;
+			return Key.H;
 		case Keyboard.KEY_I:
-			return JavaSEInputFactory.Key.I;
+			return Key.I;
 		case Keyboard.KEY_J:
-			return JavaSEInputFactory.Key.J;
+			return Key.J;
 		case Keyboard.KEY_K:
-			return JavaSEInputFactory.Key.K;
+			return Key.K;
 		case Keyboard.KEY_L:
-			return JavaSEInputFactory.Key.L;
+			return Key.L;
 		case Keyboard.KEY_M:
-			return JavaSEInputFactory.Key.M;
+			return Key.M;
 		case Keyboard.KEY_N:
-			return JavaSEInputFactory.Key.N;
+			return Key.N;
 		case Keyboard.KEY_O:
-			return JavaSEInputFactory.Key.O;
+			return Key.O;
 		case Keyboard.KEY_P:
-			return JavaSEInputFactory.Key.P;
+			return Key.P;
 		case Keyboard.KEY_Q:
-			return JavaSEInputFactory.Key.Q;
+			return Key.Q;
 		case Keyboard.KEY_R:
-			return JavaSEInputFactory.Key.R;
+			return Key.R;
 		case Keyboard.KEY_S:
-			return JavaSEInputFactory.Key.S;
+			return Key.S;
 		case Keyboard.KEY_T:
-			return JavaSEInputFactory.Key.T;
+			return Key.T;
 		case Keyboard.KEY_U:
-			return JavaSEInputFactory.Key.U;
+			return Key.U;
 		case Keyboard.KEY_V:
-			return JavaSEInputFactory.Key.V;
+			return Key.V;
 		case Keyboard.KEY_W:
-			return JavaSEInputFactory.Key.W;
+			return Key.W;
 		case Keyboard.KEY_X:
-			return JavaSEInputFactory.Key.X;
+			return Key.X;
 		case Keyboard.KEY_Y:
-			return JavaSEInputFactory.Key.Y;
+			return Key.Y;
 		case Keyboard.KEY_Z:
-			return JavaSEInputFactory.Key.Z;
+			return Key.Z;
 		case Keyboard.KEY_LMETA:
-			return JavaSEInputFactory.Key.ALT_LEFT;
+			return Key.ALT_LEFT;
 		case Keyboard.KEY_RMETA:
-			return JavaSEInputFactory.Key.ALT_RIGHT;
+			return Key.ALT_RIGHT;
 		case Keyboard.KEY_BACKSLASH:
-			return JavaSEInputFactory.Key.BACKSLASH;
+			return Key.BACKSLASH;
 		case Keyboard.KEY_COMMA:
-			return JavaSEInputFactory.Key.COMMA;
+			return Key.COMMA;
 		case Keyboard.KEY_DELETE:
-			return JavaSEInputFactory.Key.FORWARD_DEL;
+			return Key.FORWARD_DEL;
 		case Keyboard.KEY_LEFT:
-			return JavaSEInputFactory.Key.DPAD_LEFT;
+			return Key.DPAD_LEFT;
 		case Keyboard.KEY_RIGHT:
-			return JavaSEInputFactory.Key.DPAD_RIGHT;
+			return Key.DPAD_RIGHT;
 		case Keyboard.KEY_UP:
-			return JavaSEInputFactory.Key.DPAD_UP;
+			return Key.DPAD_UP;
 		case Keyboard.KEY_DOWN:
-			return JavaSEInputFactory.Key.DPAD_DOWN;
+			return Key.DPAD_DOWN;
 		case Keyboard.KEY_RETURN:
-			return JavaSEInputFactory.Key.ENTER;
+			return Key.ENTER;
 		case Keyboard.KEY_HOME:
-			return JavaSEInputFactory.Key.HOME;
+			return Key.HOME;
 		case Keyboard.KEY_MINUS:
-			return JavaSEInputFactory.Key.MINUS;
+			return Key.MINUS;
 		case Keyboard.KEY_PERIOD:
-			return JavaSEInputFactory.Key.PERIOD;
+			return Key.PERIOD;
 		case Keyboard.KEY_ADD:
-			return JavaSEInputFactory.Key.PLUS;
+			return Key.PLUS;
 		case Keyboard.KEY_SEMICOLON:
-			return JavaSEInputFactory.Key.SEMICOLON;
+			return Key.SEMICOLON;
 		case Keyboard.KEY_LSHIFT:
-			return JavaSEInputFactory.Key.SHIFT_LEFT;
+			return Key.SHIFT_LEFT;
 		case Keyboard.KEY_RSHIFT:
-			return JavaSEInputFactory.Key.SHIFT_RIGHT;
+			return Key.SHIFT_RIGHT;
 		case Keyboard.KEY_SLASH:
-			return JavaSEInputFactory.Key.SLASH;
+			return Key.SLASH;
 		case Keyboard.KEY_SPACE:
-			return JavaSEInputFactory.Key.SPACE;
+			return Key.SPACE;
 		case Keyboard.KEY_TAB:
-			return JavaSEInputFactory.Key.TAB;
+			return Key.TAB;
 		case Keyboard.KEY_LCONTROL:
-			return JavaSEInputFactory.Key.CONTROL_LEFT;
+			return Key.CONTROL_LEFT;
 		case Keyboard.KEY_RCONTROL:
-			return JavaSEInputFactory.Key.CONTROL_RIGHT;
+			return Key.CONTROL_RIGHT;
 		case Keyboard.KEY_ESCAPE:
-			return JavaSEInputFactory.Key.ESCAPE;
+			return Key.ESCAPE;
 		case Keyboard.KEY_END:
-			return JavaSEInputFactory.Key.END;
+			return Key.END;
 		case Keyboard.KEY_INSERT:
-			return JavaSEInputFactory.Key.INSERT;
+			return Key.INSERT;
 		case Keyboard.KEY_NUMPAD5:
-			return JavaSEInputFactory.Key.DPAD_CENTER;
+			return Key.DPAD_CENTER;
 		case Keyboard.KEY_BACK:
-			return JavaSEInputFactory.Key.DEL;
+			return Key.DEL;
 		default:
-			return JavaSEInputFactory.Key.UNKNOWN;
+			return Key.UNKNOWN;
 		}
 	}
 
 	public static int toLwjglKeyCode(int keyCode) {
 		switch (keyCode) {
-		case JavaSEInputFactory.Key.NUM_0:
+		case Key.NUM_0:
 			return Keyboard.KEY_0;
-		case JavaSEInputFactory.Key.NUM_1:
+		case Key.NUM_1:
 			return Keyboard.KEY_1;
-		case JavaSEInputFactory.Key.NUM_2:
+		case Key.NUM_2:
 			return Keyboard.KEY_2;
-		case JavaSEInputFactory.Key.NUM_3:
+		case Key.NUM_3:
 			return Keyboard.KEY_3;
-		case JavaSEInputFactory.Key.NUM_4:
+		case Key.NUM_4:
 			return Keyboard.KEY_4;
-		case JavaSEInputFactory.Key.NUM_5:
+		case Key.NUM_5:
 			return Keyboard.KEY_5;
-		case JavaSEInputFactory.Key.NUM_6:
+		case Key.NUM_6:
 			return Keyboard.KEY_6;
-		case JavaSEInputFactory.Key.NUM_7:
+		case Key.NUM_7:
 			return Keyboard.KEY_7;
-		case JavaSEInputFactory.Key.NUM_8:
+		case Key.NUM_8:
 			return Keyboard.KEY_8;
-		case JavaSEInputFactory.Key.NUM_9:
+		case Key.NUM_9:
 			return Keyboard.KEY_9;
-		case JavaSEInputFactory.Key.A:
+		case Key.A:
 			return Keyboard.KEY_A;
-		case JavaSEInputFactory.Key.B:
+		case Key.B:
 			return Keyboard.KEY_B;
-		case JavaSEInputFactory.Key.C:
+		case Key.C:
 			return Keyboard.KEY_C;
-		case JavaSEInputFactory.Key.D:
+		case Key.D:
 			return Keyboard.KEY_D;
-		case JavaSEInputFactory.Key.E:
+		case Key.E:
 			return Keyboard.KEY_E;
-		case JavaSEInputFactory.Key.F:
+		case Key.F:
 			return Keyboard.KEY_F;
-		case JavaSEInputFactory.Key.G:
+		case Key.G:
 			return Keyboard.KEY_G;
-		case JavaSEInputFactory.Key.H:
+		case Key.H:
 			return Keyboard.KEY_H;
-		case JavaSEInputFactory.Key.I:
+		case Key.I:
 			return Keyboard.KEY_I;
-		case JavaSEInputFactory.Key.J:
+		case Key.J:
 			return Keyboard.KEY_J;
-		case JavaSEInputFactory.Key.K:
+		case Key.K:
 			return Keyboard.KEY_K;
-		case JavaSEInputFactory.Key.L:
+		case Key.L:
 			return Keyboard.KEY_L;
-		case JavaSEInputFactory.Key.M:
+		case Key.M:
 			return Keyboard.KEY_M;
-		case JavaSEInputFactory.Key.N:
+		case Key.N:
 			return Keyboard.KEY_N;
-		case JavaSEInputFactory.Key.O:
+		case Key.O:
 			return Keyboard.KEY_O;
-		case JavaSEInputFactory.Key.P:
+		case Key.P:
 			return Keyboard.KEY_P;
-		case JavaSEInputFactory.Key.Q:
+		case Key.Q:
 			return Keyboard.KEY_Q;
-		case JavaSEInputFactory.Key.R:
+		case Key.R:
 			return Keyboard.KEY_R;
-		case JavaSEInputFactory.Key.S:
+		case Key.S:
 			return Keyboard.KEY_S;
-		case JavaSEInputFactory.Key.T:
+		case Key.T:
 			return Keyboard.KEY_T;
-		case JavaSEInputFactory.Key.U:
+		case Key.U:
 			return Keyboard.KEY_U;
-		case JavaSEInputFactory.Key.V:
+		case Key.V:
 			return Keyboard.KEY_V;
-		case JavaSEInputFactory.Key.W:
+		case Key.W:
 			return Keyboard.KEY_W;
-		case JavaSEInputFactory.Key.X:
+		case Key.X:
 			return Keyboard.KEY_X;
-		case JavaSEInputFactory.Key.Y:
+		case Key.Y:
 			return Keyboard.KEY_Y;
-		case JavaSEInputFactory.Key.Z:
+		case Key.Z:
 			return Keyboard.KEY_Z;
-		case JavaSEInputFactory.Key.ALT_LEFT:
+		case Key.ALT_LEFT:
 			return Keyboard.KEY_LMETA;
-		case JavaSEInputFactory.Key.ALT_RIGHT:
+		case Key.ALT_RIGHT:
 			return Keyboard.KEY_RMETA;
-		case JavaSEInputFactory.Key.BACKSLASH:
+		case Key.BACKSLASH:
 			return Keyboard.KEY_BACKSLASH;
-		case JavaSEInputFactory.Key.COMMA:
+		case Key.COMMA:
 			return Keyboard.KEY_COMMA;
-		case JavaSEInputFactory.Key.FORWARD_DEL:
+		case Key.FORWARD_DEL:
 			return Keyboard.KEY_DELETE;
-		case JavaSEInputFactory.Key.DPAD_LEFT:
+		case Key.DPAD_LEFT:
 			return Keyboard.KEY_LEFT;
-		case JavaSEInputFactory.Key.DPAD_RIGHT:
+		case Key.DPAD_RIGHT:
 			return Keyboard.KEY_RIGHT;
-		case JavaSEInputFactory.Key.DPAD_UP:
+		case Key.DPAD_UP:
 			return Keyboard.KEY_UP;
-		case JavaSEInputFactory.Key.DPAD_DOWN:
+		case Key.DPAD_DOWN:
 			return Keyboard.KEY_DOWN;
-		case JavaSEInputFactory.Key.ENTER:
+		case Key.ENTER:
 			return Keyboard.KEY_RETURN;
-		case JavaSEInputFactory.Key.HOME:
+		case Key.HOME:
 			return Keyboard.KEY_HOME;
-		case JavaSEInputFactory.Key.MINUS:
+		case Key.MINUS:
 			return Keyboard.KEY_MINUS;
-		case JavaSEInputFactory.Key.PERIOD:
+		case Key.PERIOD:
 			return Keyboard.KEY_PERIOD;
-		case JavaSEInputFactory.Key.PLUS:
+		case Key.PLUS:
 			return Keyboard.KEY_ADD;
-		case JavaSEInputFactory.Key.SEMICOLON:
+		case Key.SEMICOLON:
 			return Keyboard.KEY_SEMICOLON;
-		case JavaSEInputFactory.Key.SHIFT_LEFT:
+		case Key.SHIFT_LEFT:
 			return Keyboard.KEY_LSHIFT;
-		case JavaSEInputFactory.Key.SHIFT_RIGHT:
+		case Key.SHIFT_RIGHT:
 			return Keyboard.KEY_RSHIFT;
-		case JavaSEInputFactory.Key.SLASH:
+		case Key.SLASH:
 			return Keyboard.KEY_SLASH;
-		case JavaSEInputFactory.Key.SPACE:
+		case Key.SPACE:
 			return Keyboard.KEY_SPACE;
-		case JavaSEInputFactory.Key.TAB:
+		case Key.TAB:
 			return Keyboard.KEY_TAB;
-		case JavaSEInputFactory.Key.DEL:
+		case Key.DEL:
 			return Keyboard.KEY_BACK;
-		case JavaSEInputFactory.Key.CONTROL_LEFT:
+		case Key.CONTROL_LEFT:
 			return Keyboard.KEY_LCONTROL;
-		case JavaSEInputFactory.Key.CONTROL_RIGHT:
+		case Key.CONTROL_RIGHT:
 			return Keyboard.KEY_RCONTROL;
-		case JavaSEInputFactory.Key.ESCAPE:
+		case Key.ESCAPE:
 			return Keyboard.KEY_ESCAPE;
 		default:
 			return Keyboard.KEY_NONE;

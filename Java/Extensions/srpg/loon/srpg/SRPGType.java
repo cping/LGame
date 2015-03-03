@@ -1,7 +1,7 @@
 package loon.srpg;
 
-import loon.core.LSystem;
-import loon.core.graphics.LFont;
+import loon.LSystem;
+import loon.core.graphics.device.LFont;
 
 /**
  * Copyright 2008 - 2011
