@@ -21,7 +21,7 @@
 package org.test.actor;
 
 import loon.action.sprite.SpriteBatch.SpriteEffects;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.timer.GameTime;
 
 public class Enemy1 extends Enemy

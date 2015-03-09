@@ -19,10 +19,8 @@
  * @version 0.3.3
  */
 package org.test.stages;
-
-import loon.core.LSystem;
-
-import loon.core.input.LInputFactory.Touch;
+import loon.LSystem;
+import loon.Touch;
 import loon.core.timer.GameTime;
 
 import org.test.base.BaseSprite;

@@ -3417,6 +3417,8 @@ public final class GLEx implements LTrans {
 	public void bind(int id) {
 		if (lazyTextureID != id) {
 			gl10.glBindTexture(GL10.GL_TEXTURE_2D, id);
+			gl10.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE,
+					GL.GL_MODULATE);
 			lazyTextureID = id;
 		}
 	}

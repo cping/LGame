@@ -37,7 +37,6 @@ import loon.core.CallQueue;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
-import loon.core.graphics.Screen;
 import loon.core.graphics.opengl.FrameBuffer;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;

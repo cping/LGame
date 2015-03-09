@@ -39,6 +39,24 @@ import loon.utils.collection.ArrayByte;
 
 public abstract class Resources {
 
+	static InputStream toFileStream(String path) {
+		try {
+			File file = new File(path);
+			if (file.exists()) {
+				return new FileInputStream(file);
+			} else {
+				file = new File(StringUtils.replaceIgnoreCase(path, "assets/",
+						""));
+				if (file.exists()) {
+					return new FileInputStream(file);
+				}
+			}
+			return null;
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+
 	static ClassLoader classLoader;
 
 	static {
@@ -100,7 +118,10 @@ public abstract class Resources {
 		if (path == null) {
 			return null;
 		}
-		InputStream in = null;
+		InputStream in = Resources.toFileStream(path);
+		if (in != null) {
+			return in;
+		}
 		if (path.indexOf("->") == -1) {
 			if (path.startsWith("sd:")) {
 				in = sdRes(path.substring(3, path.length())).getInputStream();

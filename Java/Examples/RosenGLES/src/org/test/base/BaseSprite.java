@@ -22,12 +22,12 @@ package org.test.base;
 
 import java.util.Arrays;
 
+import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
-import loon.core.LSystem;
 import loon.core.geom.RectBox;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.timer.GameTime;

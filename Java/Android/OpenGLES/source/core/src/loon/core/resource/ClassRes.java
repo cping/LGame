@@ -41,9 +41,6 @@ public class ClassRes extends DataRes implements Resource {
 	@Override
 	public InputStream getInputStream() {
 		try {
-			if (in != null) {
-				return in;
-			}
 			if (classLoader == null) {
 				return (in = Resources.classLoader.getResourceAsStream(path));
 			} else {

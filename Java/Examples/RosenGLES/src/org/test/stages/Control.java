@@ -20,8 +20,8 @@
  */
 package org.test.stages;
 
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LInputFactory.Touch;
+import loon.Key;
+import loon.Touch;
 import loon.core.timer.GameTime;
 
 import org.test.base.BaseContainer;

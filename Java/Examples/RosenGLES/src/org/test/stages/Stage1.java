@@ -20,7 +20,7 @@
  */
 package org.test.stages;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 import org.test.actor.Player;
 import org.test.base.BaseSprite;

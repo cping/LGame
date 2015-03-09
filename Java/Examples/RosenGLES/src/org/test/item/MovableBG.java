@@ -20,7 +20,7 @@
  */
 package org.test.item;
 
-import loon.core.LSystem;
+import loon.LSystem;
 
 import org.test.base.BaseSprite;
 

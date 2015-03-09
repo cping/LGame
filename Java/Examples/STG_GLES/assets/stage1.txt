@@ -1,5 +1,5 @@
 //设定反射用包
-package org.loon.stg.sample
+package com.mygame
 
 //加载主角类
 leader Hero1 166 266

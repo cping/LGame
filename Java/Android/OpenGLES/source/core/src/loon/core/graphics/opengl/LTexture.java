@@ -1391,7 +1391,7 @@ public class LTexture implements LRelease {
 	}
 
 	private boolean checkUpdateColor(LColor c) {
-		return c != null && !LColor.white.equals(c);
+		return true;//c != null && !LColor.white.equals(c);
 	}
 
 	public GLCache newBatchCache() {

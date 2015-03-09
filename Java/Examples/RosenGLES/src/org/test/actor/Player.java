@@ -20,10 +20,10 @@
  */
 package org.test.actor;
 
+import loon.LSystem;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
-import loon.core.LSystem;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.timer.GameTime;
 
 import org.test.base.BaseSprite;

@@ -20,7 +20,7 @@
  */
 package org.test.item;
 
-import loon.core.input.LInputFactory.Touch;
+import loon.Touch;
 import loon.core.timer.GameTime;
 
 import org.test.base.BaseSprite;

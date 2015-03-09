@@ -23,7 +23,7 @@ package org.test.actor;
 import org.test.item.Block;
 
 import loon.action.sprite.SpriteBatch.SpriteEffects;
-import loon.core.graphics.LColor;
+import loon.core.graphics.device.LColor;
 import loon.core.timer.GameTime;
 import loon.utils.MathUtils;
 

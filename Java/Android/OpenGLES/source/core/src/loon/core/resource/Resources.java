@@ -41,6 +41,24 @@ import android.content.res.AssetManager;
 
 public abstract class Resources {
 
+	static InputStream toFileStream(String path) {
+		try {
+			File file = new File(path);
+			if (file.exists()) {
+				return new FileInputStream(file);
+			} else {
+				file = new File(StringUtils.replaceIgnoreCase(path, "assets/",
+						""));
+				if (file.exists()) {
+					return new FileInputStream(file);
+				}
+			}
+			return null;
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+	
 	// 以下为0.3.2版中新增资源读取方法(为避免冲突，同时保留了原始读取方式)
 	/**
 	 * 从类中读取资源
@@ -92,7 +110,10 @@ public abstract class Resources {
 		if (path == null) {
 			return null;
 		}
-		InputStream in = null;
+		InputStream in = Resources.toFileStream(path);
+		if (in != null) {
+			return in;
+		}
 		if (path.indexOf("->") == -1) {
 			if (path.startsWith("sd:")) {
 				in = sdRes(path.substring(3, path.length())).getInputStream();

@@ -30,11 +30,11 @@ import org.test.stages.Stage1;
 import org.test.stages.Stage2;
 import org.test.stages.Title;
 
+import loon.LKey;
+import loon.LTouch;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.painting.DrawableScreen;
 import loon.core.geom.Vector2f;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
 import loon.core.timer.GameTime;
 
 public class GameScreen extends DrawableScreen {

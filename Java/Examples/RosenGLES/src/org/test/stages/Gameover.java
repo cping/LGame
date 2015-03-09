@@ -20,7 +20,7 @@
  */
 package org.test.stages;
 
-import loon.core.LSystem;
+import loon.LSystem;
 import loon.core.timer.GameTime;
 
 import org.test.base.BaseSprite;
