@@ -33,6 +33,7 @@ import android.media.SoundPool;
 
 import loon.LSystem;
 import loon.core.event.Updateable;
+import loon.utils.StringUtils;
 
 public class Audio {
 
@@ -169,6 +170,15 @@ public class Audio {
 
 	private static AssetFileDescriptor openFd(String fileName)
 			throws IOException {
+		if (LSystem.type == LSystem.ApplicationType.Android) {
+			if (fileName.toLowerCase().startsWith("assets/")) {
+				fileName = StringUtils.replaceIgnoreCase(fileName, "assets/",
+						"");
+			}
+			if (fileName.startsWith("/") || fileName.startsWith("\\")) {
+				fileName = fileName.substring(1, fileName.length());
+			}
+		}
 		return LSystem.getActivity().getAssets().openFd(fileName);
 	}
 
