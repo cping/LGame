@@ -1,6 +1,6 @@
 ﻿#LGame (formal name : Loon)
 
-Please see [XRPMoon.com](http://www.xrpmoon.com/blog) for downloads, build and installation instructions and other documentation.
+Please see [XRPMoon.com](http://www.xrpmoon.com) for downloads, build and installation instructions and other documentation.
 
 20140906:
 
@@ -8,7 +8,7 @@ LGame Project Restart,The game's just started.
 
 <a href="https://ripple.com//send?to=rGmaiL8f7VDRrYouZokr5qv61b5zvhePcp&name=cping&label=Thank you donate to LGame&amount=100/XRP&dt=20140906"><img src="https://raw.github.com/cping/LGame/master/rippledonate.png" alt="RippleDonate" /></a>
 
-源自中國本土的項目
+源自中國本土的Java遊戲引擎項目
 
 International Entertainment Machines
 
@@ -38,3 +38,9 @@ Built-in over 30 game example(Part screenshots):
 License : http://www.apache.org/licenses/LICENSE-2.0
 
 #This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
+
+## 代碼貢獻者(拼音首字母排序，不分先後)
+
+-   暗夜星辰 
+
+-   鹏凌三千 [http://www.xrpmoon.com/blog](http://www.xrpmoon.com/blog)
