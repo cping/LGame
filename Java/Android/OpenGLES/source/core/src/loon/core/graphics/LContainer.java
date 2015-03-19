@@ -59,6 +59,9 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public synchronized void add(LComponent comp) {
+		if (this == comp) {
+			return;
+		}
 		if (this.contains(comp)) {
 			return;
 		}
@@ -71,6 +74,14 @@ public abstract class LContainer extends LComponent {
 		this.childs[0] = comp;
 		this.childCount++;
 		this.desktop.setDesktop(comp);
+		if (desktop != null) {
+			if (this.input == null) {
+				this.input = desktop.input;
+			}
+			if (comp.input == null) {
+				comp.input = desktop.input;
+			}
+		}
 		this.sortComponents();
 		this.latestInserted = comp;
 	}

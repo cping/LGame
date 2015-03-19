@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -28,7 +27,6 @@ import java.util.Comparator;
 import loon.core.graphics.opengl.GLEx;
 import loon.utils.CollectionUtils;
 
-
 public abstract class LContainer extends LComponent {
 
 	private static final Comparator<LComponent> DEFAULT_COMPARATOR = new Comparator<LComponent>() {
@@ -57,6 +55,9 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public synchronized void add(LComponent comp) {
+		if (this == comp) {
+			return;
+		}
 		if (this.contains(comp)) {
 			return;
 		}
