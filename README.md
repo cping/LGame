@@ -1,5 +1,7 @@
 ﻿#LGame (formal name : Loon)
 
+A fast, simple & powerful game framework, powered by Java.
+
 Please see [XRPMoon.com](http://www.xrpmoon.com) for downloads, build and installation instructions and other documentation.
 
 20140906:
