@@ -22,6 +22,7 @@ package loon.core.graphics.device;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.util.ArrayList;
 
+import loon.LConfig;
 import loon.JavaSEGraphicsUtils;
 import loon.LSystem;
 import loon.core.LRelease;
@@ -216,8 +218,8 @@ public class LImage implements LRelease {
 				LSystem.gc();
 				this.width = width;
 				this.height = height;
-				this.bufferedImage = JavaSEGraphicsUtils.createImage(width, height,
-						transparency);
+				this.bufferedImage = JavaSEGraphicsUtils.createImage(width,
+						height, transparency);
 			} catch (Exception ex) {
 				LSystem.gc();
 			}
@@ -230,7 +232,8 @@ public class LImage implements LRelease {
 	public LImage(int width, int height, int type) {
 		this.width = width;
 		this.height = height;
-		this.bufferedImage = JavaSEGraphicsUtils.createImage(width, height, type);
+		this.bufferedImage = JavaSEGraphicsUtils.createImage(width, height,
+				type);
 		if (!images.contains(this)) {
 			images.add(this);
 		}
@@ -252,6 +255,10 @@ public class LImage implements LRelease {
 	}
 
 	public LImage(String fileName) {
+		this(fileName, true);
+	}
+
+	public LImage(String fileName, boolean filter) {
 		if (fileName == null) {
 			throw new RuntimeException("file name is null !");
 		}
@@ -263,22 +270,20 @@ public class LImage implements LRelease {
 		}
 		this.fileName = fileName;
 		BufferedImage img = null;
-		if (existType(fileName)) {
-			String ext = LSystem.getExtension(fileName.toLowerCase());
-			if ("tga".equals(ext)) {
-				try {
-					TGA.State tga = TGA.load(res);
-					if (tga != null) {
-						img = JavaSEGraphicsUtils.createImage(tga.width, tga.height,
-								tga.type == 4 ? true : false);
-						img.setRGB(0, 0, tga.width, tga.height, tga.pixels, 0,
-								tga.width);
-						tga.dispose();
-						tga = null;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
+		String ext = LSystem.getExtension(fileName.toLowerCase());
+		if ("tga".equals(ext)) {
+			try {
+				TGA.State tga = TGA.load(res);
+				if (tga != null) {
+					img = JavaSEGraphicsUtils.createImage(tga.width,
+							tga.height, tga.type == 4 ? true : false);
+					img.setRGB(0, 0, tga.width, tga.height, tga.pixels, 0,
+							tga.width);
+					tga.dispose();
+					tga = null;
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		} else {
 			img = JavaSEGraphicsUtils.loadBufferedImage(res);
@@ -286,10 +291,63 @@ public class LImage implements LRelease {
 		if (img == null) {
 			throw new RuntimeException("File " + fileName + " was not found !");
 		}
+		if (filter) {
+			img = getFilterImage(fileName, ext, img);
+		}
 		setImage(img);
 		if (!images.contains(this)) {
 			images.add(this);
 		}
+	}
+
+	private static BufferedImage getFilterImage(final String name,
+			final String ext, BufferedImage img) {
+		LConfig config = LSystem.getConfig();
+		if (config.isAutoColorFilter() && config.getFilterFiles() != null
+				&& config.getColors() != null) {
+			if (config.getFilterkeywords() != null) {
+				int count = 0;
+				final String[] res = config.getFilterkeywords();
+				for (int i = 0; i < res.length; i++) {
+					if (name.indexOf(res[i]) != -1) {
+						count++;
+						break;
+					}
+				}
+				if (count == 0) {
+					return img;
+				}
+			}
+			for (String e : config.getFilterFiles()) {
+				if (e.equalsIgnoreCase(ext) && config.getColors().length > 0) {
+					if (img.getColorModel().hasAlpha()) {
+						int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+						int[] pixels = NativeSupport.toColorKeys(srcImages,
+								config.getColors());
+						JavaSEGraphicsUtils.setPixels(img, pixels,
+								img.getWidth(), img.getHeight());
+					} else {
+						BufferedImage tmp = JavaSEGraphicsUtils.createImage(
+								img.getWidth(), img.getHeight(), true);
+						Graphics2D g = tmp.createGraphics();
+						g.drawImage(img, 0, 0, null);
+						g.dispose();
+						int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+						int[] pixels = NativeSupport.toColorKeys(srcImages,
+								config.getColors());
+						JavaSEGraphicsUtils.setPixels(tmp, pixels,
+								img.getWidth(), img.getHeight());
+						if (img != null) {
+							img.flush();
+							img = null;
+						}
+						img = tmp;
+					}
+					return img;
+				}
+			}
+		}
+		return img;
 	}
 
 	public LImage(BufferedImage img) {

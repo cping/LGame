@@ -27,6 +27,7 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 
 import loon.AndroidGraphicsUtils;
+import loon.LConfig;
 import loon.LSystem;
 import loon.core.LRelease;
 import loon.core.LRuntimeHack;
@@ -35,6 +36,7 @@ import loon.core.graphics.opengl.GLLoader;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTextures;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.jni.NativeSupport;
 import loon.utils.StringUtils;
 
 import android.graphics.Bitmap;
@@ -275,6 +277,10 @@ public class LImage implements LRelease {
 	}
 
 	public LImage(String fileName, Config config) {
+		this(fileName, config, true);
+	}
+
+	public LImage(String fileName, Config config, boolean filter) {
 		if (fileName == null) {
 			throw new RuntimeException("file name is null !");
 		}
@@ -285,37 +291,83 @@ public class LImage implements LRelease {
 			res = fileName;
 		}
 		this.fileName = fileName;
-		Bitmap bitmap = null;
-		if (existType(fileName)) {
-			String ext = LSystem.getExtension(fileName.toLowerCase());
-			if ("tga".equals(ext)) {
-				try {
-					TGA.State tga = TGA.load(res);
-					if (tga != null) {
-						bitmap = Bitmap.createBitmap(tga.pixels, tga.width,
-								tga.height,
-								tga.type == 4 ? Bitmap.Config.ARGB_8888
-										: Bitmap.Config.RGB_565);
-						tga.dispose();
-						tga = null;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
+		Bitmap img = null;
+		String ext = LSystem.getExtension(fileName.toLowerCase());
+		if ("tga".equals(ext)) {
+			try {
+				TGA.State tga = TGA.load(res);
+				if (tga != null) {
+					img = Bitmap.createBitmap(tga.pixels, tga.width,
+							tga.height, tga.type == 4 ? Bitmap.Config.ARGB_8888
+									: Bitmap.Config.RGB_565);
+					tga.dispose();
+					tga = null;
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		} else {
-			bitmap = AndroidGraphicsUtils.loadBitmap(res, config);
+			img = AndroidGraphicsUtils.loadBitmap(res, config);
 		}
-		if (bitmap == null) {
+		if (img == null) {
 			throw new RuntimeException("File " + fileName + " was not found !");
 		}
-		setBitmap(bitmap);
+		if (filter) {
+			img = getFilterImage(fileName, ext, img);
+		}
+		setBitmap(img);
 		if (this.bitmap != null) {
 			LRuntimeHack.get().trackFree(bitSize(this.bitmap));
 		}
 		if (!images.contains(this)) {
 			images.add(this);
 		}
+	}
+
+	private static Bitmap getFilterImage(final String name, final String ext,
+			Bitmap img) {
+		LConfig config = LSystem.getConfig();
+		if (config.isAutoColorFilter() && config.getFilterFiles() != null
+				&& config.getColors() != null) {
+			if (config.getFilterkeywords() != null) {
+				int count = 0;
+				final String[] res = config.getFilterkeywords();
+				for (int i = 0; i < res.length; i++) {
+					if (name.indexOf(res[i]) != -1) {
+						count++;
+						break;
+					}
+				}
+				if (count == 0) {
+					return img;
+				}
+			}
+			for (String e : config.getFilterFiles()) {
+				if (e.equalsIgnoreCase(ext) && config.getColors().length > 0) {
+					if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
+						int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+						int[] pixels = NativeSupport.toColorKeys(srcImages,
+								config.getColors());
+						AndroidGraphicsUtils.setPixels(img, pixels,
+								img.getWidth(), img.getHeight());
+					} else {
+						Bitmap tmp = img.copy(Config.ARGB_8888, true);
+						int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+						int[] pixels = NativeSupport.toColorKeys(srcImages,
+								config.getColors());
+						AndroidGraphicsUtils.setPixels(tmp, pixels,
+								img.getWidth(), img.getHeight());
+						if (img != null) {
+							img.recycle();
+							img = null;
+						}
+						img = tmp;
+					}
+					return img;
+				}
+			}
+		}
+		return img;
 	}
 
 	public LImage(int width, int height) {
@@ -393,10 +445,10 @@ public class LImage implements LRelease {
 		}
 	}
 
-	public void setBitmap(Bitmap bitmap) {
-		this.width = bitmap.getWidth();
-		this.height = bitmap.getHeight();
-		this.bitmap = bitmap;
+	public void setBitmap(Bitmap img) {
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+		this.bitmap = img;
 	}
 
 	public Config getConfig() {

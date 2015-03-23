@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2008 - 2009
@@ -458,7 +457,8 @@ final public class JavaSEGraphicsUtils {
 	}
 
 	public static Image copy(Image target, BufferedImage source) {
-		Graphics2D g = JavaSEGraphicsUtils.getBufferImage(target).createGraphics();
+		Graphics2D g = JavaSEGraphicsUtils.getBufferImage(target)
+				.createGraphics();
 		g.drawImage(source, 0, 0, null);
 		g.dispose();
 		return target;
@@ -892,7 +892,8 @@ final public class JavaSEGraphicsUtils {
 	 * @return
 	 */
 	public static BufferedImage rotateImage(final Image image) {
-		return JavaSEGraphicsUtils.rotateImage(JavaSEGraphicsUtils.getBufferImage(image));
+		return JavaSEGraphicsUtils.rotateImage(JavaSEGraphicsUtils
+				.getBufferImage(image));
 	}
 
 	public static BufferedImage rotateImage(final BufferedImage image,
@@ -971,7 +972,8 @@ final public class JavaSEGraphicsUtils {
 		} else {
 			isOpaque = !pg.getColorModel().hasAlpha();
 		}
-		BufferedImage bufferimage = JavaSEGraphicsUtils.createImage(w, h, !isOpaque);
+		BufferedImage bufferimage = JavaSEGraphicsUtils.createImage(w, h,
+				!isOpaque);
 		Graphics g = bufferimage.createGraphics();
 		g.drawImage(image, 0, 0, null);
 		g.dispose();
@@ -1315,6 +1317,11 @@ final public class JavaSEGraphicsUtils {
 			hash_result = (hash_result << 7) ^ pixels[x + width * y];
 		}
 		return hash_result;
+	}
+
+	public static void setPixels(BufferedImage img, int[] pixels, int width,
+			int height) {
+		img.setRGB(0, 0, width, height, pixels, 0, width);
 	}
 
 	public static int[] getPixels(BufferedImage img) {

@@ -39,7 +39,6 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.Bitmap.Config;
 
-
 public class AndroidGraphicsUtils {
 
 	final static public Matrix matrix = new Matrix();
@@ -628,7 +627,8 @@ public class AndroidGraphicsUtils {
 								+ fileName.substring(dotIndex);
 					}
 				}
-				images[i] = AndroidGraphicsUtils.loadImage(imageName, transparency);
+				images[i] = AndroidGraphicsUtils.loadImage(imageName,
+						transparency);
 			}
 			return images;
 		} catch (Exception ex) {
@@ -767,8 +767,8 @@ public class AndroidGraphicsUtils {
 	 */
 	public static LImage drawCropImage(final LImage image, int x, int y,
 			int objectWidth, int objectHeight) {
-		return AndroidGraphicsUtils.drawClipImage(image, objectWidth, objectHeight, x,
-				y, image.getConfig());
+		return AndroidGraphicsUtils.drawClipImage(image, objectWidth,
+				objectHeight, x, y, image.getConfig());
 	}
 
 	/**
@@ -783,8 +783,8 @@ public class AndroidGraphicsUtils {
 	 */
 	public static LImage drawClipImage(final LImage image, int objectWidth,
 			int objectHeight, int x, int y) {
-		return AndroidGraphicsUtils.drawClipImage(image, objectWidth, objectHeight, x,
-				y, image.getConfig());
+		return AndroidGraphicsUtils.drawClipImage(image, objectWidth,
+				objectHeight, x, y, image.getConfig());
 	}
 
 	/**
@@ -796,7 +796,8 @@ public class AndroidGraphicsUtils {
 	 * @return
 	 */
 	public static LImage getResize(LImage image, int w, int h) {
-		return new LImage(AndroidGraphicsUtils.getResize(image.getBitmap(), w, h));
+		return new LImage(AndroidGraphicsUtils.getResize(image.getBitmap(), w,
+				h));
 	}
 
 	/**
@@ -881,6 +882,19 @@ public class AndroidGraphicsUtils {
 		return hash_result;
 	}
 
+	public static void drawBitmap(final Bitmap src, final Bitmap dst, int x,
+			int y) {
+		if (src == null || dst == null) {
+			return;
+		}
+		canvas.setBitmap(src);
+		canvas.drawBitmap(dst, x, y, null);
+	}
+
+	public static void setPixels(Bitmap bit, int[] pixels, int w, int h) {
+		bit.setPixels(pixels, 0, w, 0, 0, w, h);
+	}
+
 	/**
 	 * 从一个单独的Bitmap中获得其像素信息
 	 * 
@@ -888,15 +902,10 @@ public class AndroidGraphicsUtils {
 	 * @return
 	 */
 	public static int[] getPixels(Bitmap bit) {
-		int w = bit.getWidth(), h = bit.getHeight();
-		int pixels[] = new int[w * h];
-		bit.getPixels(pixels, 0, w, 0, 0, w, h);
-		/*if (bit.getConfig() != Config.ARGB_8888) {
-			for (int i = 0; i < pixels.length; i++) {
-				pixels[i] = pixels[i] & 0x00ff0000 + pixels[i] & 0x0000ff00
-						+ pixels[i] & 0x000000ff;
-			}
-		}*/
+		int width = bit.getWidth();
+		int height= bit.getHeight();
+		int pixels[] = new int[width * height];
+		bit.getPixels(pixels, 0, width, 0, 0, width, height);
 		return pixels;
 	}
 

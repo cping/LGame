@@ -112,7 +112,7 @@ public final class GLLoader extends LTextureData {
 		if (fileName == null) {
 			throw new RuntimeException("file name is null !");
 		}
-		this.create(new LImage(fileName, config));
+		this.create(new LImage(fileName, config, false));
 		this.fileName = fileName;
 	}
 
@@ -263,12 +263,11 @@ public final class GLLoader extends LTextureData {
 				data.multipyAlpha = isPNGExt(data.fileName);
 			}
 			PixelFormat format = PixelFormat.getPixelFormat(data.config);
-			android.graphics.Bitmap temp = AndroidGraphicsUtils.loadBitmap(
-					data.fileName, data.config);
+			LImage temp = new LImage(data.fileName, data.config);
 			LImage texImage = new LImage(data.texWidth, data.texHeight,
 					data.config);
 			LGraphics g = texImage.getLGraphics();
-			g.drawBitmap(temp, 0, 0);
+			g.drawImage(temp, 0, 0);
 			if (data.height < data.texHeight - 1) {
 				copyArea(texImage, g, 0, 0, data.width, 1, 0,
 						data.texHeight - 1);
@@ -287,7 +286,7 @@ public final class GLLoader extends LTextureData {
 				texImage = null;
 			}
 			if (temp != null) {
-				temp.recycle();
+				temp.dispose();
 				temp = null;
 			}
 		} else {

@@ -445,11 +445,11 @@ JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_getGray(JNIEnv *env, jcl
 	return result;
 }
 
-JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKey(JNIEnv *env, jclass, jintArray buffer, jint colorkey) {
+JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_setColorKey(JNIEnv *env, jclass, jintArray buffer, jint colorkey) {
 	jint *cbuf;
 	cbuf = env->GetIntArrayElements(buffer, false);
 	if (cbuf == NULL) {
-		return;
+		return NULL;
 	}
 	jsize size = env->GetArrayLength(buffer);
 	for (int i = 0; i < size; i++) {
@@ -458,14 +458,17 @@ JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKey(JNIEnv *env, jcla
 			cbuf[i] = 0x00FFFFFF;
 		}
 	}
+	jintArray result = env->NewIntArray(size);
+	env->SetIntArrayRegion(result, 0, size, cbuf);
 	env->ReleaseIntArrayElements(buffer, cbuf, 0);
+	return result;
 }
 
-JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeyLimit(JNIEnv *env, jclass, jintArray buffer, jint ca,jint cb) {
+JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_setColorKeyLimit(JNIEnv *env, jclass, jintArray buffer, jint ca,jint cb) {
 	jint *cbuf;
 	cbuf = env->GetIntArrayElements(buffer, false);
 	if (cbuf == NULL) {
-		return;
+		return NULL;
 	}
 	jsize size = env->GetArrayLength(buffer);
 	int sred = red(ca);
@@ -484,19 +487,23 @@ JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeyLimit(JNIEnv *env,
 				cbuf[i] = 0x00FFFFFF;
 		}
 	}
+
+	jintArray result = env->NewIntArray(size);
+	env->SetIntArrayRegion(result, 0, size, cbuf);
 	env->ReleaseIntArrayElements(buffer, cbuf, 0);
+	return result;
 }
 
-JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jclass, jintArray buffer, jintArray colors) {
+JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jclass, jintArray buffer, jintArray colors) {
 	jint *cbuf;
 	cbuf = env->GetIntArrayElements(buffer, false);
 	if (cbuf == NULL) {
-		return;
+		return NULL;
 	}
 	jint *cpixels;
 	cpixels = env->GetIntArrayElements(colors, false);
 	if (cpixels == NULL) {
-		return;
+		return NULL;
 	}
 	jsize size = env->GetArrayLength(buffer);
 	jsize length = env->GetArrayLength(colors);
@@ -508,8 +515,11 @@ JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jcl
 			}
 		}
 	}
+	jintArray result = env->NewIntArray(size);
+	env->SetIntArrayRegion(result, 0, size, cbuf);
 	env->ReleaseIntArrayElements(buffer, cbuf, 0);
 	env->ReleaseIntArrayElements(colors, cpixels, 0);
+	return result;
 }
 
 JNIEXPORT void JNICALL  Java_loon_jni_NativeSupport_bufferCopy___3FLjava_nio_Buffer_2II

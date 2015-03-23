@@ -68,11 +68,11 @@ extern "C" {
 
 	JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_getGray(JNIEnv *env, jclass, jintArray, jint, jint);
 
-	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKey(JNIEnv *env, jclass, jintArray, jint);
+	JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_setColorKey(JNIEnv *env, jclass, jintArray, jint);
 
-	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jclass, jintArray, jintArray);
+	JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_setColorKeys(JNIEnv *env, jclass, jintArray, jintArray);
 
-	JNIEXPORT void JNICALL Java_loon_jni_NativeSupport_setColorKeyLimit(JNIEnv *env, jclass, jintArray, jint, jint);
+	JNIEXPORT jintArray JNICALL Java_loon_jni_NativeSupport_setColorKeyLimit(JNIEnv *env, jclass, jintArray, jint, jint);
 
 #ifdef __cplusplus
 }

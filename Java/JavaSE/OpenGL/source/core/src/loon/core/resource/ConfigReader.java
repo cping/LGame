@@ -21,6 +21,8 @@
 package loon.core.resource;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,34 +39,30 @@ import loon.utils.CollectionUtils;
 //通过key=value为变量赋值，不过也可以利用关键字begin同end之间的空隙保存大块数据。
 public class ConfigReader implements Expression, LRelease {
 
-	private final static HashMap<String, ConfigReader> pConfigReaders = new HashMap<String, ConfigReader>(
-			CollectionUtils.INITIAL_CAPACITY);
+	private String FLAG_L_TAG = "//";
 
-	public static ConfigReader getInstance(String resName) {
+	private String FLAG_C_TAG = "#";
+
+	private String FLAG_I_TAG = "'";
+
+	private final static HashMap<String, ConfigReader> pConfigReaders = new HashMap<String, ConfigReader>();
+
+	public static ConfigReader getInstance(String resName) throws IOException {
 		synchronized (pConfigReaders) {
 			ConfigReader reader = pConfigReaders.get(resName);
 			if (reader == null || reader.isClose) {
-				try {
-					reader = new ConfigReader(resName);
-				} catch (IOException ex) {
-					throw new RuntimeException(ex.getMessage());
-				}
+				reader = new ConfigReader(resName);	
 				pConfigReaders.put(resName, reader);
 			}
 			return reader;
 		}
 	}
 
-	public static ConfigReader getInstance(final InputStream in) {
-		try {
+	public static ConfigReader getInstance(final InputStream in) throws IOException {
 			return new ConfigReader(in);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex.getMessage());
-		}
 	}
 
-	private final HashMap<String, String> pConfigItems = new HashMap<String, String>(
-			CollectionUtils.INITIAL_CAPACITY);
+	private final HashMap<String, String> pConfigItems = new HashMap<String, String>();
 
 	private StringBuffer values = new StringBuffer();
 
@@ -76,6 +74,12 @@ public class ConfigReader implements Expression, LRelease {
 
 	public ConfigReader(final String resName) throws IOException {
 		this(Resources.openResource(resName));
+	}
+
+	public ConfigReader(final File file) throws IOException {
+		this(file != null ? (file.exists() ? new FileInputStream(file)
+				: Resources.openResource(file.getPath()))
+				: new FileInputStream(new File("assets/def.txt")));
 	}
 
 	public ConfigReader(final InputStream in) throws IOException {
@@ -133,21 +137,27 @@ public class ConfigReader implements Expression, LRelease {
 		String key = null;
 		String value = null;
 		int idx = 0;
+		int equals = 0;
 		for (int i = 0; i < size; i++) {
 			char flag = chars[i];
 			switch (flag) {
 			case '=':
-				if (idx == 0) {
-					key = sbr.toString();
-					sbr.delete(0, sbr.length());
+				if (equals < 3) {
+					equals++;
+					if (idx == 0) {
+						key = sbr.toString();
+						sbr.delete(0, sbr.length());
+					}
+					idx++;
 				}
-				idx++;
 				break;
 			case '\'':
-				break;
-			case ' ':
+				if (equals > 1) {
+					sbr.append(flag);
+				}
 				break;
 			case '\"':
+				equals++;
 				break;
 			default:
 				sbr.append(flag);
@@ -157,7 +167,7 @@ public class ConfigReader implements Expression, LRelease {
 		if (key != null) {
 			value = sbr.toString();
 			if (save) {
-				pConfigItems.put(key, value);
+				pConfigItems.put(key.trim(), value.trim());
 			}
 		}
 		return value;
@@ -174,6 +184,72 @@ public class ConfigReader implements Expression, LRelease {
 			pConfigItems.remove(key);
 		}
 	}
+
+	public boolean getBoolValue(String name) {
+		return getBoolValue(name, false);
+	}
+
+	public boolean getBoolValue(String name, boolean fallback) {
+		String v = null;
+		synchronized (pConfigItems) {
+			v = pConfigItems.get(name);
+		}
+		if (v == null) {
+			return fallback;
+		}
+		return "true".equalsIgnoreCase(v) || "yes".equalsIgnoreCase(v)
+				|| "ok".equalsIgnoreCase(v);
+	}
+
+	public int getIntValue(String name) {
+		return getIntValue(name, 0);
+	}
+
+	public int getIntValue(String name, int fallback) {
+		String v = null;
+		synchronized (pConfigItems) {
+			v = pConfigItems.get(name);
+		}
+		if (v == null) {
+			return fallback;
+		}
+		return Integer.parseInt(v);
+	}
+
+	public float getFloatValue(String name) {
+		return getFloatValue(name, 0f);
+	}
+
+	public float getFloatValue(String name, float fallback) {
+		String v = null;
+		synchronized (pConfigItems) {
+			v = pConfigItems.get(name);
+		}
+		if (v == null) {
+			return fallback;
+		}
+		return Float.parseFloat(v);
+	}
+
+	public String getValue(String name) {
+		return getValue(name, null);
+	}
+
+	public String getValue(String name, String fallback) {
+		String v = null;
+		synchronized (pConfigItems) {
+			v = pConfigItems.get(name);
+		}
+		if (v == null) {
+			return fallback;
+		}
+		return v;
+	}
+
+	public String get(String name) {
+		return getValue(name, null);
+	}
+
 
 	public Field2D getField2D(String name, int width, int height) {
 		return getField2D(name, width, height, null);
@@ -242,71 +318,8 @@ public class ConfigReader implements Expression, LRelease {
 		return fallback;
 	}
 
-	public boolean getBoolValue(String name) {
-		return getBoolValue(name, false);
-	}
-
-	public boolean getBoolValue(String name, boolean fallback) {
-		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
-		}
-		if (v == null) {
-			return fallback;
-		}
-		return "true".equalsIgnoreCase(v) || "yes".equalsIgnoreCase(v)
-				|| "ok".equalsIgnoreCase(v);
-	}
-
-	public int getIntValue(String name) {
-		return getIntValue(name, 0);
-	}
-
-	public int getIntValue(String name, int fallback) {
-		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
-		}
-		if (v == null) {
-			return fallback;
-		}
-		return Integer.parseInt(v);
-	}
-
-	public float getFloatValue(String name) {
-		return getFloatValue(name, 0f);
-	}
-
-	public float getFloatValue(String name, float fallback) {
-		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
-		}
-		if (v == null) {
-			return fallback;
-		}
-		return Float.parseFloat(v);
-	}
-
-	public String getValue(String name) {
-		return getValue(name, null);
-	}
-
-	public String getValue(String name, String fallback) {
-		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
-		}
-		if (v == null) {
-			return fallback;
-		}
-		return v;
-	}
-
-	public String get(String name) {
-		return getValue(name, null);
-	}
-
+	
+	
 	public boolean isClose() {
 		return isClose;
 	}

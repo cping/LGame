@@ -1051,7 +1051,7 @@ public final class NativeSupport {
 
 	public static int[] toColorKey(int[] buffer, int colorKey) {
 		if (useLoonNative) {
-			setColorKey(buffer, colorKey);
+			return setColorKey(buffer, colorKey);
 		} else {
 			int size = buffer.length;
 			for (int i = 0; i < size; i++) {
@@ -1066,7 +1066,7 @@ public final class NativeSupport {
 
 	public static int[] toColorKeys(int[] buffer, int[] colors) {
 		if (useLoonNative) {
-			setColorKeys(buffer, colors);
+			return setColorKeys(buffer, colors);
 		} else {
 			int length = colors.length;
 			int size = buffer.length;
@@ -1084,7 +1084,7 @@ public final class NativeSupport {
 
 	public static int[] toColorKeyLimit(int[] buffer, int start, int end) {
 		if (useLoonNative) {
-			setColorKeyLimit(buffer, start, end);
+			return setColorKeyLimit(buffer, start, end);
 		} else {
 			int sred = LColor.getRed(start);
 			int sgreen = LColor.getGreen(start);

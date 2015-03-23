@@ -27,7 +27,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
 public class IntArray {
-	public long[] items;
+	public int[] items;
 	public int length;
 	public boolean ordered;
 
@@ -41,30 +41,30 @@ public class IntArray {
 
 	public IntArray(boolean ordered, int capacity) {
 		this.ordered = ordered;
-		items = new long[capacity];
+		items = new int[capacity];
 	}
 
 	public IntArray(IntArray array) {
 		this.ordered = array.ordered;
 		length = array.length;
-		items = new long[length];
+		items = new int[length];
 		System.arraycopy(array.items, 0, items, 0, length);
 	}
 
-	public IntArray(long[] array) {
+	public IntArray(int[] array) {
 		this(true, array, 0, array.length);
 	}
 
-	public IntArray(boolean ordered, long[] array, int startIndex, int count) {
+	public IntArray(boolean ordered, int[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
 		System.arraycopy(array, startIndex, items, 0, count);
 	}
 
-	public void unshift(long value) {
+	public void unshift(int value) {
 		if (length > 0) {
-			long[] items = this.items;
-			long[] newItems = new long[length + 1];
+			int[] items = this.items;
+			int[] newItems = new int[length + 1];
 			newItems[0] = value;
 			System.arraycopy(items, 0, newItems, 1, length);
 			this.length = newItems.length;
@@ -74,12 +74,12 @@ public class IntArray {
 		}
 	}
 
-	public void push(long value) {
+	public void push(int value) {
 		add(value);
 	}
 
-	public void add(long value) {
-		long[] items = this.items;
+	public void add(int value) {
+		int[] items = this.items;
 		if (length == items.length) {
 			items = relength(Math.max(8, (int) (length * 1.75f)));
 		}
@@ -98,12 +98,12 @@ public class IntArray {
 		addAll(array.items, offset, length);
 	}
 
-	public void addAll(long... array) {
+	public void addAll(int... array) {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(long[] array, int offset, int length) {
-		long[] items = this.items;
+	public void addAll(int[] array, int offset, int length) {
+		int[] items = this.items;
 		int lengthNeeded = length + length;
 		if (lengthNeeded > items.length) {
 			items = relength(Math.max(8, (int) (lengthNeeded * 1.75f)));
@@ -112,14 +112,14 @@ public class IntArray {
 		length += length;
 	}
 
-	public long get(int index) {
+	public int get(int index) {
 		if (index >= length) {
 			return 0;
 		}
 		return items[index];
 	}
 
-	public void set(int index, long value) {
+	public void set(int index, int value) {
 		if (index >= length) {
 			int size = length;
 			for (int i = size; i < index + 1; i++) {
@@ -145,12 +145,12 @@ public class IntArray {
 		items[index] *= value;
 	}
 
-	public void insert(int index, long value) {
+	public void insert(int index, int value) {
 		if (index > length) {
 			throw new IndexOutOfBoundsException("index can't be > length: "
 					+ index + " > " + length);
 		}
-		long[] items = this.items;
+		int[] items = this.items;
 		if (length == items.length)
 			items = relength(Math.max(8, (int) (length * 1.75f)));
 		if (ordered)
@@ -168,39 +168,39 @@ public class IntArray {
 		if (second >= length)
 			throw new IndexOutOfBoundsException("second can't be >= length: "
 					+ second + " >= " + length);
-		long[] items = this.items;
-		long firstValue = items[first];
+		int[] items = this.items;
+		int firstValue = items[first];
 		items[first] = items[second];
 		items[second] = firstValue;
 	}
 
-	public boolean contains(long value) {
+	public boolean contains(int value) {
 		int i = length - 1;
-		long[] items = this.items;
+		int[] items = this.items;
 		while (i >= 0)
 			if (items[i--] == value)
 				return true;
 		return false;
 	}
 
-	public int indexOf(long value) {
-		long[] items = this.items;
+	public int indexOf(int value) {
+		int[] items = this.items;
 		for (int i = 0, n = length; i < n; i++)
 			if (items[i] == value)
 				return i;
 		return -1;
 	}
 
-	public int lastIndexOf(long value) {
-		long[] items = this.items;
+	public int lastIndexOf(int value) {
+		int[] items = this.items;
 		for (int i = length - 1; i >= 0; i--)
 			if (items[i] == value)
 				return i;
 		return -1;
 	}
 
-	public boolean removeValue(long value) {
-		long[] items = this.items;
+	public boolean removeValue(int value) {
+		int[] items = this.items;
 		for (int i = 0, n = length; i < n; i++) {
 			if (items[i] == value) {
 				removeIndex(i);
@@ -210,13 +210,13 @@ public class IntArray {
 		return false;
 	}
 
-	public long removeIndex(int index) {
+	public int removeIndex(int index) {
 		if (index >= length) {
 			throw new IndexOutOfBoundsException("index can't be >= length: "
 					+ index + " >= " + length);
 		}
-		long[] items = this.items;
-		long value = items[index];
+		int[] items = this.items;
+		int value = items[index];
 		length--;
 		if (ordered) {
 			System.arraycopy(items, index + 1, items, index, length - index);
@@ -235,7 +235,7 @@ public class IntArray {
 			throw new IndexOutOfBoundsException("start can't be > end: "
 					+ start + " > " + end);
 		}
-		long[] items = this.items;
+		int[] items = this.items;
 		int count = end - start + 1;
 		if (ordered) {
 			System.arraycopy(items, start + count, items, start, length
@@ -251,9 +251,9 @@ public class IntArray {
 	public boolean removeAll(IntArray array) {
 		int length = this.length;
 		int startlength = length;
-		long[] items = this.items;
+		int[] items = this.items;
 		for (int i = 0, n = array.length; i < n; i++) {
-			long item = array.get(i);
+			int item = array.get(i);
 			for (int ii = 0; ii < length; ii++) {
 				if (item == items[ii]) {
 					removeIndex(ii);
@@ -265,19 +265,19 @@ public class IntArray {
 		return length != startlength;
 	}
 
-	public long pop() {
+	public int pop() {
 		return items[--length];
 	}
 
-	public long shift() {
+	public int shift() {
 		return removeIndex(0);
 	}
 
-	public long peek() {
+	public int peek() {
 		return items[length - 1];
 	}
 
-	public long first() {
+	public int first() {
 		if (length == 0) {
 			throw new IllegalStateException("Array is empty.");
 		}
@@ -288,22 +288,22 @@ public class IntArray {
 		length = 0;
 	}
 
-	public long[] shrink() {
+	public int[] shrink() {
 		if (items.length != length)
 			relength(length);
 		return items;
 	}
 
-	public long[] ensureCapacity(int additionalCapacity) {
+	public int[] ensureCapacity(int additionalCapacity) {
 		int lengthNeeded = length + additionalCapacity;
 		if (lengthNeeded > items.length)
 			relength(Math.max(8, lengthNeeded));
 		return items;
 	}
 
-	protected long[] relength(int newlength) {
-		long[] newItems = new long[newlength];
-		long[] items = this.items;
+	protected int[] relength(int newlength) {
+		int[] newItems = new int[newlength];
+		int[] items = this.items;
 		System.arraycopy(items, 0, newItems, 0,
 				Math.min(length, newItems.length));
 		this.items = newItems;
@@ -315,20 +315,20 @@ public class IntArray {
 	}
 
 	public void reverse() {
-		long[] items = this.items;
+		int[] items = this.items;
 		for (int i = 0, lastIndex = length - 1, n = length / 2; i < n; i++) {
 			int ii = lastIndex - i;
-			long temp = items[i];
+			int temp = items[i];
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
 	}
 
 	public void shuffle() {
-		long[] items = this.items;
+		int[] items = this.items;
 		for (int i = length - 1; i >= 0; i--) {
 			int ii = MathUtils.random(i);
-			long temp = items[i];
+			int temp = items[i];
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
@@ -339,7 +339,7 @@ public class IntArray {
 			length = newlength;
 	}
 
-	public long random() {
+	public int random() {
 		if (length == 0) {
 			return 0;
 		}
@@ -370,7 +370,7 @@ public class IntArray {
 	public String toString(String separator) {
 		if (length == 0)
 			return "";
-		long[] items = this.items;
+		int[] items = this.items;
 		StringBuilder buffer = new StringBuilder(32);
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
@@ -380,14 +380,14 @@ public class IntArray {
 		return buffer.toString();
 	}
 
-	static public IntArray with(long... array) {
+	static public IntArray with(int... array) {
 		return new IntArray(array);
 	}
 
 	public IntArray splice(int begin, int end) {
 		IntArray longs = new IntArray(slice(begin, end));
 		if (end - begin >= length) {
-			items = new long[0];
+			items = new int[0];
 			length = 0;
 			return longs;
 		} else {
@@ -396,7 +396,7 @@ public class IntArray {
 		return longs;
 	}
 
-	public static long[] slice(long[] array, int begin, int end) {
+	public static int[] slice(int[] array, int begin, int end) {
 		if (begin > end) {
 			throw new RuntimeException();
 		}
@@ -407,12 +407,12 @@ public class IntArray {
 			end = array.length + end;
 		}
 		int elements = end - begin;
-		long[] ret = new long[elements];
+		int[] ret = new int[elements];
 		System.arraycopy(array, begin, ret, 0, elements);
 		return ret;
 	}
 
-	public static long[] slice(long[] array, int begin) {
+	public static int[] slice(int[] array, int begin) {
 		return slice(array, begin, array.length);
 	}
 
@@ -424,12 +424,12 @@ public class IntArray {
 		return new IntArray(slice(this.items, begin, end));
 	}
 
-	public static long[] concat(long[] array, long[] other) {
+	public static int[] concat(int[] array, int[] other) {
 		return concat(array, array.length, other, other.length);
 	}
 
-	public static long[] concat(long[] array, int alen, long[] other, int blen) {
-		long[] ret = new long[alen + blen];
+	public static int[] concat(int[] array, int alen, int[] other, int blen) {
+		int[] ret = new int[alen + blen];
 		System.arraycopy(array, 0, ret, 0, alen);
 		System.arraycopy(other, 0, ret, alen, blen);
 		return ret;
@@ -440,7 +440,7 @@ public class IntArray {
 	}
 
 	public byte[] getBytes() {
-		long[] items = this.items;
+		int[] items = this.items;
 		byte[] bytes = new byte[this.length];
 		for (int i = 0; i < bytes.length; i++) {
 			bytes[i] = BigInteger.valueOf(items[i]).byteValue();
@@ -452,7 +452,7 @@ public class IntArray {
 		if (length == 0) {
 			return "[]";
 		}
-		long[] items = this.items;
+		int[] items = this.items;
 		StringBuilder buffer = new StringBuilder(
 				CollectionUtils.INITIAL_CAPACITY);
 		buffer.append('[');

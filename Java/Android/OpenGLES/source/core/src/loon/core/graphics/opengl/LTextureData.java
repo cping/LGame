@@ -1,10 +1,3 @@
-package loon.core.graphics.opengl;
-
-import loon.core.LRelease;
-import loon.core.graphics.device.LImage;
-
-
-import android.graphics.Bitmap.Config;
 
 /**
  * Copyright 2008 - 2011
@@ -26,6 +19,14 @@ import android.graphics.Bitmap.Config;
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
+package loon.core.graphics.opengl;
+
+import loon.core.LRelease;
+import loon.core.graphics.device.LImage;
+
+
+import android.graphics.Bitmap.Config;
+
 public abstract class LTextureData implements LRelease {
 
 	android.graphics.Bitmap.Config config;

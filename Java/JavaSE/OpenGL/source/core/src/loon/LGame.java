@@ -654,8 +654,6 @@ public class LGame extends JavaSEApp {
 				Display.setDisplayMode(displayMode);
 				_isAWTCanvas = false;
 			}
-			setIcon(LSystem.FRAMEWORK_IMG_NAME + "icon.png");
-
 			Display.setTitle(windowTitle);
 			Display.setInitialBackground(0, 0, 0);
 			

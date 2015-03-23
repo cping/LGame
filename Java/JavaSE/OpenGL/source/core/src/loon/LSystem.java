@@ -31,34 +31,135 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import loon.core.CallQueue;
 import loon.core.event.Drawable;
 import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.FrameBuffer;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.resource.ConfigReader;
 import loon.core.resource.Resources;
 import loon.core.timer.SystemTimer;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.collection.IntArray;
 
 public final class LSystem {
 
-	public static FrameBuffer newFrameBuffer(LTexture texture){
+	static LConfig _config;
+
+	public static LConfig getConfig() {
+		synchronized (LConfig.class) {
+			if (_config == null) {
+				_config = new LConfig();
+				try {
+					ConfigReader reader = ConfigReader
+							.getInstance("assets/def.txt");
+					_config.autofilterColor = reader.getBoolValue(
+							"auto_filter", false);
+					String result = reader.get("auto_colors_files");
+					if (result == null) {
+						_config.autofilterColor = false;
+					} else {
+						HashSet<String> list = new HashSet<String>(10);
+						String[] files = StringUtils.split(result, ",");
+						if (files.length > 0) {
+							for (int i = 0; i < files.length; i++) {
+								list.add(files[i]);
+							}
+							if (list.size() > 0) {
+								_config.filterFiles = list
+										.toArray(new String[0]);
+							}
+						}
+					}
+					result = reader.get("auto_filter_keywords");
+					if (result != null) {
+						_config.filterkeywords = StringUtils.split(result, ",");
+					}
+					result = reader.get("auto_colors");
+					if (result == null) {
+						_config.filterColors = new int[1];
+						_config.filterColors[0] = LColor.black.getRGB();
+					} else {
+						String[] colors = StringUtils.split(result, ",");
+						if (colors.length > 0) {
+							IntArray ints = new IntArray();
+							for (int i = 0; i < colors.length; i++) {
+								String colorName = colors[i];
+								if (MathUtils.isNan(colorName)) {
+									ints.add(Double.valueOf(colorName)
+											.intValue());
+								} else {
+									int color_int = LColor.black.getRGB();
+									if (colorName.startsWith("#")
+											|| colorName.startsWith("0")) {
+										color_int = LColor.decode(colorName)
+												.getRGB();
+									} else {
+										if (colorName.equalsIgnoreCase("red")) {
+											color_int = LColor.red.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("white")) {
+											color_int = LColor.white.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("blue")) {
+											color_int = LColor.blue.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("gray")) {
+											color_int = LColor.gray.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("yellow")) {
+											color_int = LColor.yellow.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("green")) {
+											color_int = LColor.green.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("orange")) {
+											color_int = LColor.orange.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("wheat")) {
+											color_int = LColor.wheat.getRGB();
+										} else if (colorName
+												.equalsIgnoreCase("gold")) {
+											color_int = LColor.gold.getRGB();
+										}
+
+									}
+									if (!ints.contains(color_int)) {
+										ints.add(color_int);
+									}
+								}
+							}
+							_config.filterColors = ints.toArray();
+						}
+					}
+
+				} catch (IOException e) {
+				}
+			}
+			return _config;
+		}
+	}
+
+	public static FrameBuffer newFrameBuffer(LTexture texture) {
 		return new JavaSEFrameBuffer(texture);
 	}
 
-	public static FrameBuffer newFrameBuffer(int width, int height, Format format){
-		return new JavaSEFrameBuffer(width,height,format);
+	public static FrameBuffer newFrameBuffer(int width, int height,
+			Format format) {
+		return new JavaSEFrameBuffer(width, height, format);
 	}
 
-	public static FrameBuffer newFrameBuffer(int width, int height){
-		return new JavaSEFrameBuffer(width,height);
+	public static FrameBuffer newFrameBuffer(int width, int height) {
+		return new JavaSEFrameBuffer(width, height);
 	}
-	
+
 	public static Files files = null;
 
 	public static Files files() {
@@ -193,17 +294,16 @@ public final class LSystem {
 		return w.toString();
 	}
 
-
 	static public class OptimizedByteArrayOutputStream extends
 			ByteArrayOutputStream {
-		
+
 		public OptimizedByteArrayOutputStream(int initialSize) {
 			super(initialSize);
 		}
 
 		@Override
 		public synchronized byte[] toByteArray() {
-			if (count == buf.length){
+			if (count == buf.length) {
 				return buf;
 			}
 			return super.toByteArray();
@@ -213,7 +313,7 @@ public final class LSystem {
 			return buf;
 		}
 	}
-	
+
 	public final static void close(LTexture tex2d) {
 		if (tex2d != null) {
 			try {
@@ -232,7 +332,6 @@ public final class LSystem {
 			}
 		}
 	}
-
 
 	public final static void load(Updateable u) {
 		if (LSystem.isThreadDrawing()) {

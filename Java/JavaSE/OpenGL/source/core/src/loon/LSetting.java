@@ -22,7 +22,6 @@ package loon;
 
 import java.awt.Canvas;
 
-
 public class LSetting {
 
 	public int width = LSystem.MAX_SCREEN_WIDTH;
@@ -42,17 +41,25 @@ public class LSetting {
 	public boolean showMemory;
 
 	public boolean showLogo;
-	
+
 	public GameType gametype = GameType.UNKOWN;
 
 	public Listener listener;
 
 	public Canvas javaCanvas;
 
-	public GameType getGameType(){
+	public void setConfig(LConfig c) {
+		LSystem._config = c;
+	}
+
+	public LConfig getConfig() {
+		return LSystem._config;
+	}
+
+	public GameType getGameType() {
 		return gametype;
 	}
-	
+
 	public interface Listener {
 
 		void onPause();

@@ -50,7 +50,15 @@ public class LSetting {
 	public GameType getGameType(){
 		return gametype;
 	}
-	
+
+	public void setConfig(LConfig c) {
+		LSystem._config = c;
+	}
+
+	public LConfig getConfig() {
+		return LSystem._config;
+	}
+
 	public interface Listener {
 
 		void onPause();
