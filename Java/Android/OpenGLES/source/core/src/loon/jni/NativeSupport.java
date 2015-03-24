@@ -938,9 +938,9 @@ public final class NativeSupport {
 	}
 
 	public static int[] toColorKeys(int[] buffer, int[] colors) {
-	/*	if (useLoonNative) {
+		if (useLoonNative) {
 			return setColorKeys(buffer, colors);
-		} else {*/
+		} else {
 			int length = colors.length;
 			int size = buffer.length;
 			for (int n = 0; n < length; n++) {
@@ -951,7 +951,7 @@ public final class NativeSupport {
 					}
 				}
 			}
-		//}
+		}
 		return buffer;
 	}
 
