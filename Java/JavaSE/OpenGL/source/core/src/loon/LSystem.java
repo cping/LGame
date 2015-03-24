@@ -40,6 +40,7 @@ import loon.core.event.Updateable;
 import loon.core.geom.RectBox;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.opengl.FrameBuffer;
+import loon.core.graphics.opengl.GL;
 import loon.core.graphics.opengl.LTexture;
 import loon.core.graphics.opengl.LTexture.Format;
 import loon.core.resource.ConfigReader;
@@ -51,6 +52,8 @@ import loon.utils.collection.IntArray;
 
 public final class LSystem {
 
+	static String _configFile = "assets/def.txt";
+
 	static LConfig _config;
 
 	public static LConfig getConfig() {
@@ -58,10 +61,11 @@ public final class LSystem {
 			if (_config == null) {
 				_config = new LConfig();
 				try {
-					ConfigReader reader = ConfigReader
-							.getInstance("assets/def.txt");
+					ConfigReader reader = ConfigReader.getInstance(_configFile);
 					_config.autofilterColor = reader.getBoolValue(
 							"auto_filter", false);
+					_config.autofilterAll = reader.getBoolValue(
+							"auto_filter_all", false);
 					String result = reader.get("auto_colors_files");
 					if (result == null) {
 						_config.autofilterColor = false;
@@ -77,6 +81,32 @@ public final class LSystem {
 										.toArray(new String[0]);
 							}
 						}
+					}
+					result = reader.get("blend");
+					if (result != null) {
+						int mode = GL.MODE_NORMAL;
+						if ("normal".equalsIgnoreCase(result)) {
+							mode = GL.MODE_NORMAL;
+						} else if ("alphamap".equalsIgnoreCase(result)) {
+							mode = GL.MODE_ALPHA_MAP;
+						} else if ("alphablend".equalsIgnoreCase(result)) {
+							mode = GL.MODE_ALPHA_BLEND;
+						} else if ("colormultiply".equalsIgnoreCase(result)) {
+							mode = GL.MODE_COLOR_MULTIPLY;
+						} else if ("add".equalsIgnoreCase(result)) {
+							mode = GL.MODE_ADD;
+						} else if ("screen".equalsIgnoreCase(result)) {
+							mode = GL.MODE_SCREEN;
+						} else if ("alpha".equalsIgnoreCase(result)) {
+							mode = GL.MODE_ALPHA;
+						} else if ("speed".equalsIgnoreCase(result)) {
+							mode = GL.MODE_SPEED;
+						} else if ("alphaone".equalsIgnoreCase(result)) {
+							mode = GL.MODE_ALPHA_ONE;
+						} else if ("none".equalsIgnoreCase(result)) {
+							mode = GL.MODE_NONE;
+						}
+						_config.blend = mode;
 					}
 					result = reader.get("auto_filter_keywords");
 					if (result != null) {

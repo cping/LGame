@@ -143,6 +143,8 @@ public final class GLEx implements LTrans {
 
 	private LFont font = LFont.getDefaultFont();
 
+	private int defaultBlend = GL.MODE_NORMAL;
+	
 	public GLEx(int width, int height) {
 		String version = org.lwjgl.opengl.GL11.glGetString(GL11.GL_VERSION);
 		verMajor = Integer.parseInt("" + version.charAt(0));
@@ -160,6 +162,7 @@ public final class GLEx implements LTrans {
 		this.viewPort = new RectBox(0, 0, width, height);
 		this.clip = new Clip(0, 0, viewPort.width, viewPort.height);
 		this.isClose = false;
+		this.defaultBlend = LSystem.getConfig().getBlend();
 	}
 
 	public int getWidth() {
@@ -205,7 +208,7 @@ public final class GLEx implements LTrans {
 		// 禁用纹理贴图
 		GLUtils.disableTextures(gl10);
 		// 设定画布渲染模式为默认
-		this.setBlendMode(GL.MODE_NORMAL);
+		this.setBlendMode(defaultBlend);
 		// 支持VBO则启用VBO加速
 		if (GLEx.vboOn) {
 			try {

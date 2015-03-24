@@ -153,7 +153,9 @@ public final class GLEx implements LTrans {
 	private static javax.microedition.khronos.opengles.GL10 baseGL;
 
 	private static boolean isPixelFlinger;
-
+	
+	private int defaultBlend = GL.MODE_NORMAL;
+	
 	public GLEx(javax.microedition.khronos.opengles.GL10 g10, int width,
 			int height) {
 		this.viewPort = new RectBox(0, 0, width, height);
@@ -199,6 +201,7 @@ public final class GLEx implements LTrans {
 		GLEx.self = this;
 		GLEx.gl = gl10;
 		GLEx.baseGL = g10;
+		defaultBlend = LSystem.getConfig().getBlend();
 	}
 
 	public final static boolean isSupportGL11() {
@@ -257,7 +260,7 @@ public final class GLEx implements LTrans {
 		// 禁用纹理贴图
 		GLUtils.disableTextures(gl10);
 		// 设定画布渲染模式为默认
-		this.setBlendMode(GL.MODE_NORMAL);
+		this.setBlendMode(defaultBlend);
 		// 支持VBO则启用VBO加速
 		if (GLEx.vboOn) {
 			try {

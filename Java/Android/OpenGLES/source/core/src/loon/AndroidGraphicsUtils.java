@@ -891,7 +891,7 @@ public class AndroidGraphicsUtils {
 		canvas.drawBitmap(dst, x, y, null);
 	}
 
-	public static void setPixels(Bitmap bit, int[] pixels, int w, int h) {
+	public static void setPixels(final Bitmap bit,final int[] pixels, int w, int h) {
 		bit.setPixels(pixels, 0, w, 0, 0, w, h);
 	}
 

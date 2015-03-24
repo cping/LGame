@@ -16,13 +16,17 @@
 package loon;
 
 import loon.LGame.LMode;
-/** LGame通用的基本配置类,当配置此类后,注入LGame相关入口函数即可启动游戏.
+
+/**
+ * LGame通用的基本配置类,当配置此类后,注入LGame相关入口函数即可启动游戏.
  * <p>
  * <h3>构建基本参数,用以启动游戏</h3>
  * <p>
+ * 
  * <pre class="prettyprint">
- *  LSetting setting = new LSetting();
- * </pre> */
+ * LSetting setting = new LSetting();
+ * </pre>
+ */
 public class LSetting {
 
 	public int width = LSystem.MAX_SCREEN_WIDTH;
@@ -42,13 +46,21 @@ public class LSetting {
 	public boolean landscape;
 
 	public GameType gametype = GameType.UNKOWN;
-	
+
 	public LMode mode = LMode.Fill;
 
 	public Listener listener;
 
-	public GameType getGameType(){
+	public GameType getGameType() {
 		return gametype;
+	}
+
+	public void setConfigFile(String file) {
+		LSystem._configFile = file;
+	}
+
+	public String getConfigFile() {
+		return LSystem._configFile;
 	}
 
 	public void setConfig(LConfig c) {

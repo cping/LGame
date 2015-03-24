@@ -303,6 +303,9 @@ public class LImage implements LRelease {
 	private static BufferedImage getFilterImage(final String name,
 			final String ext, BufferedImage img) {
 		LConfig config = LSystem.getConfig();
+		if (config.isAutoAllFilter()) {
+			return img;
+		}
 		if (config.isAutoColorFilter() && config.getFilterFiles() != null
 				&& config.getColors() != null) {
 			if (config.getFilterkeywords() != null) {
@@ -320,6 +323,96 @@ public class LImage implements LRelease {
 			}
 			for (String e : config.getFilterFiles()) {
 				if (e.equalsIgnoreCase(ext) && config.getColors().length > 0) {
+					if (config.getColors().length == 1) {
+						if (img.getColorModel().hasAlpha()) {
+							int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+							int[] pixels = NativeSupport.toColorKey(srcImages,
+									config.getColors()[0]);
+							JavaSEGraphicsUtils.setPixels(img, pixels,
+									img.getWidth(), img.getHeight());
+						} else {
+							BufferedImage tmp = JavaSEGraphicsUtils.createImage(
+									img.getWidth(), img.getHeight(), true);
+							Graphics2D g = tmp.createGraphics();
+							g.drawImage(img, 0, 0, null);
+							g.dispose();
+							int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+							int[] pixels = NativeSupport.toColorKey(srcImages,
+									config.getColors()[0]);
+							JavaSEGraphicsUtils.setPixels(tmp, pixels,
+									img.getWidth(), img.getHeight());
+							if (img != null) {
+								img.flush();
+								img = null;
+							}
+							img = tmp;
+						}
+						return img;
+					} else {
+						if (img.getColorModel().hasAlpha()) {
+							int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+							int[] pixels = NativeSupport.toColorKeys(srcImages,
+									config.getColors());
+							JavaSEGraphicsUtils.setPixels(img, pixels,
+									img.getWidth(), img.getHeight());
+						} else {
+							BufferedImage tmp = JavaSEGraphicsUtils.createImage(
+									img.getWidth(), img.getHeight(), true);
+							Graphics2D g = tmp.createGraphics();
+							g.drawImage(img, 0, 0, null);
+							g.dispose();
+							int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+							int[] pixels = NativeSupport.toColorKeys(srcImages,
+									config.getColors());
+							JavaSEGraphicsUtils.setPixels(tmp, pixels,
+									img.getWidth(), img.getHeight());
+							if (img != null) {
+								img.flush();
+								img = null;
+							}
+							img = tmp;
+						}
+						return img;
+					}
+				}
+			}
+		}
+		return img;
+	}
+
+	private static BufferedImage getFilterAllImage(BufferedImage img) {
+		LConfig config = LSystem.getConfig();
+		if (!config.isAutoAllFilter()) {
+			return img;
+		}
+		if (config.isAutoColorFilter() && config.getColors() != null) {
+			if (config.getColors().length > 0) {
+				if (config.getColors().length == 1) {
+					if (img.getColorModel().hasAlpha()) {
+						int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+						int[] pixels = NativeSupport.toColorKey(srcImages,
+								config.getColors()[0]);
+						JavaSEGraphicsUtils.setPixels(img, pixels,
+								img.getWidth(), img.getHeight());
+					} else {
+						BufferedImage tmp = JavaSEGraphicsUtils.createImage(
+								img.getWidth(), img.getHeight(), true);
+						Graphics2D g = tmp.createGraphics();
+						g.drawImage(img, 0, 0, null);
+						g.dispose();
+						int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+						int[] pixels = NativeSupport.toColorKey(srcImages,
+								config.getColors()[0]);
+						JavaSEGraphicsUtils.setPixels(tmp, pixels,
+								img.getWidth(), img.getHeight());
+						if (img != null) {
+							img.flush();
+							img = null;
+						}
+						img = tmp;
+					}
+					return img;
+				} else {
 					if (img.getColorModel().hasAlpha()) {
 						int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
 						int[] pixels = NativeSupport.toColorKeys(srcImages,
@@ -375,7 +468,7 @@ public class LImage implements LRelease {
 	public void setImage(BufferedImage img) {
 		this.width = img.getWidth();
 		this.height = img.getHeight();
-		this.bufferedImage = img;
+		this.bufferedImage = getFilterAllImage(img);
 	}
 
 	public void setImage(Image img) {

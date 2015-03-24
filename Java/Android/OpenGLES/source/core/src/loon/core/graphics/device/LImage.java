@@ -327,6 +327,9 @@ public class LImage implements LRelease {
 	private static Bitmap getFilterImage(final String name, final String ext,
 			Bitmap img) {
 		LConfig config = LSystem.getConfig();
+		if (config.isAutoAllFilter()) {
+			return img;
+		}
 		if (config.isAutoColorFilter() && config.getFilterFiles() != null
 				&& config.getColors() != null) {
 			if (config.getFilterkeywords() != null) {
@@ -342,14 +345,138 @@ public class LImage implements LRelease {
 					return img;
 				}
 			}
+			final int size = config.getColors().length;
 			for (String e : config.getFilterFiles()) {
-				if (e.equalsIgnoreCase(ext) && config.getColors().length > 0) {
+				if (e.equalsIgnoreCase(ext) && size > 0) {
+					if (size == 1) {
+						if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
+							int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+							int[] pixels = NativeSupport.toColorKey(srcImages,
+									config.getColors()[0]);
+							if (!img.isMutable()) {
+								Bitmap tmp = Bitmap.createBitmap(pixels,
+										img.getWidth(), img.getHeight(),
+										img.getConfig());
+								if (img != null) {
+									img.recycle();
+									img = null;
+								}
+								img = tmp;
+							} else {
+								AndroidGraphicsUtils.setPixels(img, pixels,
+										img.getWidth(), img.getHeight());
+							}
+						} else {
+							Bitmap tmp = img.copy(Config.ARGB_8888, true);
+							int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+							int[] pixels = NativeSupport.toColorKey(srcImages,
+									config.getColors()[0]);
+							AndroidGraphicsUtils.setPixels(tmp, pixels,
+									img.getWidth(), img.getHeight());
+							if (img != null) {
+								img.recycle();
+								img = null;
+							}
+							img = tmp;
+						}
+						return img;
+					} else {
+						if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
+							int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+							int[] pixels = NativeSupport.toColorKeys(srcImages,
+									config.getColors());
+							if (!img.isMutable()) {
+								Bitmap tmp = Bitmap.createBitmap(pixels,
+										img.getWidth(), img.getHeight(),
+										img.getConfig());
+								if (img != null) {
+									img.recycle();
+									img = null;
+								}
+								img = tmp;
+							} else {
+								AndroidGraphicsUtils.setPixels(img, pixels,
+										img.getWidth(), img.getHeight());
+							}
+						} else {
+							Bitmap tmp = img.copy(Config.ARGB_8888, true);
+							int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+							int[] pixels = NativeSupport.toColorKeys(srcImages,
+									config.getColors());
+							AndroidGraphicsUtils.setPixels(tmp, pixels,
+									img.getWidth(), img.getHeight());
+							if (img != null) {
+								img.recycle();
+								img = null;
+							}
+							img = tmp;
+						}
+						return img;
+					}
+				}
+			}
+		}
+		return img;
+	}
+
+	private static Bitmap getFilterAllImage(Bitmap img) {
+		LConfig config = LSystem.getConfig();
+		if (!config.isAutoAllFilter()) {
+			return img;
+		}
+		if (config.isAutoColorFilter() && config.getColors() != null) {
+			final int size = config.getColors().length;
+			if (size > 0) {
+				if (size == 1) {
+					if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
+						int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+						int[] pixels = NativeSupport.toColorKey(srcImages,
+								config.getColors()[0]);
+						if (!img.isMutable()) {
+							Bitmap tmp = Bitmap.createBitmap(pixels,
+									img.getWidth(), img.getHeight(),
+									img.getConfig());
+							if (img != null) {
+								img.recycle();
+								img = null;
+							}
+							img = tmp;
+						} else {
+							AndroidGraphicsUtils.setPixels(img, pixels,
+									img.getWidth(), img.getHeight());
+						}
+					} else {
+						Bitmap tmp = img.copy(Config.ARGB_8888, true);
+						int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+						int[] pixels = NativeSupport.toColorKey(srcImages,
+								config.getColors()[0]);
+						AndroidGraphicsUtils.setPixels(tmp, pixels,
+								img.getWidth(), img.getHeight());
+						if (img != null) {
+							img.recycle();
+							img = null;
+						}
+						img = tmp;
+					}
+					return img;
+				} else {
 					if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
 						int[] srcImages = AndroidGraphicsUtils.getPixels(img);
 						int[] pixels = NativeSupport.toColorKeys(srcImages,
 								config.getColors());
-						AndroidGraphicsUtils.setPixels(img, pixels,
-								img.getWidth(), img.getHeight());
+						if (!img.isMutable()) {
+							Bitmap tmp = Bitmap.createBitmap(pixels,
+									img.getWidth(), img.getHeight(),
+									img.getConfig());
+							if (img != null) {
+								img.recycle();
+								img = null;
+							}
+							img = tmp;
+						} else {
+							AndroidGraphicsUtils.setPixels(img, pixels,
+									img.getWidth(), img.getHeight());
+						}
 					} else {
 						Bitmap tmp = img.copy(Config.ARGB_8888, true);
 						int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
@@ -446,9 +573,9 @@ public class LImage implements LRelease {
 	}
 
 	public void setBitmap(Bitmap img) {
-		this.width = img.getWidth();
-		this.height = img.getHeight();
-		this.bitmap = img;
+		this.bitmap = getFilterAllImage(img);
+		this.width = bitmap.getWidth();
+		this.height = bitmap.getHeight();
 	}
 
 	public Config getConfig() {

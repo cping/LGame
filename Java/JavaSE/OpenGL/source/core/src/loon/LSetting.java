@@ -48,6 +48,14 @@ public class LSetting {
 
 	public Canvas javaCanvas;
 
+	public void setConfigFile(String file) {
+		LSystem._configFile = file;
+	}
+
+	public String getConfigFile() {
+		return LSystem._configFile;
+	}
+
 	public void setConfig(LConfig c) {
 		LSystem._config = c;
 	}
