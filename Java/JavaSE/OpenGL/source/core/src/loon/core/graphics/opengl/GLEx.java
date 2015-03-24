@@ -27,6 +27,7 @@ import java.nio.IntBuffer;
 import loon.JavaSEGL10;
 import loon.JavaSEGL11;
 import loon.LSystem;
+import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
@@ -523,6 +524,50 @@ public final class GLEx implements LTrans {
 		GLUtils.disableTexCoordArray(gl10);
 	}
 
+	public void savePrj() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPushMatrix();
+	}
+
+	public void restorePrj() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPopMatrix();
+	}
+
+	public void saveMatrices() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPushMatrix();
+		gl10.glMatrixMode(GL.GL_MODELVIEW);
+		gl10.glPushMatrix();
+	}
+
+	public void restoreMatrices() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPopMatrix();
+		gl10.glMatrixMode(GL.GL_MODELVIEW);
+		gl10.glPopMatrix();
+	}
+
+	public void setMatrixMode(Matrix m) {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL10.GL_MODELVIEW);
+		gl10.glLoadMatrixf(m.get(), 0);
+	}
+	
 	/**
 	 * 设定当前使用的色彩混合模式
 	 * 

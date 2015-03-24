@@ -1,8 +1,3 @@
-package loon.core.geom;
-
-import java.util.Collection;
-import loon.utils.MathUtils;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -24,6 +19,11 @@ import loon.utils.MathUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.geom;
+
+import java.util.Collection;
+import loon.utils.MathUtils;
+
 public final class Matrix {
 
 	float[] matrixs;

@@ -27,6 +27,7 @@ import java.nio.IntBuffer;
 import loon.AndroidGL10;
 import loon.AndroidGL11;
 import loon.LSystem;
+import loon.core.geom.Matrix;
 import loon.core.geom.Polygon;
 import loon.core.geom.RectBox;
 import loon.core.geom.Shape;
@@ -153,9 +154,9 @@ public final class GLEx implements LTrans {
 	private static javax.microedition.khronos.opengles.GL10 baseGL;
 
 	private static boolean isPixelFlinger;
-	
+
 	private int defaultBlend = GL.MODE_NORMAL;
-	
+
 	public GLEx(javax.microedition.khronos.opengles.GL10 g10, int width,
 			int height) {
 		this.viewPort = new RectBox(0, 0, width, height);
@@ -573,6 +574,50 @@ public final class GLEx implements LTrans {
 		}
 		GLUtils.disableVertexArray(gl10);
 		GLUtils.disableTexCoordArray(gl10);
+	}
+
+	public void savePrj() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPushMatrix();
+	}
+
+	public void restorePrj() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPopMatrix();
+	}
+
+	public void saveMatrices() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPushMatrix();
+		gl10.glMatrixMode(GL.GL_MODELVIEW);
+		gl10.glPushMatrix();
+	}
+
+	public void restoreMatrices() {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL.GL_PROJECTION);
+		gl10.glPopMatrix();
+		gl10.glMatrixMode(GL.GL_MODELVIEW);
+		gl10.glPopMatrix();
+	}
+
+	public void setMatrixMode(Matrix m) {
+		if (isClose) {
+			return;
+		}
+		gl10.glMatrixMode(GL10.GL_MODELVIEW);
+		gl10.glLoadMatrixf(m.get(), 0);
 	}
 
 	/**
