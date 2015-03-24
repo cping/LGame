@@ -68,6 +68,14 @@ public class LImage implements LRelease {
 		return AndroidGraphicsUtils.loadImage(in, transparency);
 	}
 
+	public static LImage createImage(byte[] buffer, int[] filters) {
+		return new LImage(AndroidGraphicsUtils.filterBitmap(buffer, filters));
+	}
+
+	public static LImage createImage(byte[] buffer, LColor filter) {
+		return new LImage(AndroidGraphicsUtils.filterBitmap(buffer, filter));
+	}
+
 	public static LImage createImage(byte[] buffer) {
 		return AndroidGraphicsUtils.loadImage(buffer, true);
 	}
@@ -350,7 +358,8 @@ public class LImage implements LRelease {
 				if (e.equalsIgnoreCase(ext) && size > 0) {
 					if (size == 1) {
 						if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
-							int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+							int[] srcImages = AndroidGraphicsUtils
+									.getPixels(img);
 							int[] pixels = NativeSupport.toColorKey(srcImages,
 									config.getColors()[0]);
 							if (!img.isMutable()) {
@@ -368,7 +377,8 @@ public class LImage implements LRelease {
 							}
 						} else {
 							Bitmap tmp = img.copy(Config.ARGB_8888, true);
-							int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+							int[] srcImages = AndroidGraphicsUtils
+									.getPixels(tmp);
 							int[] pixels = NativeSupport.toColorKey(srcImages,
 									config.getColors()[0]);
 							AndroidGraphicsUtils.setPixels(tmp, pixels,
@@ -382,7 +392,8 @@ public class LImage implements LRelease {
 						return img;
 					} else {
 						if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
-							int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+							int[] srcImages = AndroidGraphicsUtils
+									.getPixels(img);
 							int[] pixels = NativeSupport.toColorKeys(srcImages,
 									config.getColors());
 							if (!img.isMutable()) {
@@ -400,7 +411,8 @@ public class LImage implements LRelease {
 							}
 						} else {
 							Bitmap tmp = img.copy(Config.ARGB_8888, true);
-							int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+							int[] srcImages = AndroidGraphicsUtils
+									.getPixels(tmp);
 							int[] pixels = NativeSupport.toColorKeys(srcImages,
 									config.getColors());
 							AndroidGraphicsUtils.setPixels(tmp, pixels,
@@ -572,7 +584,7 @@ public class LImage implements LRelease {
 		}
 	}
 
-	public void setBitmap(Bitmap img) {
+	private void setBitmap(Bitmap img) {
 		this.bitmap = getFilterAllImage(img);
 		this.width = bitmap.getWidth();
 		this.height = bitmap.getHeight();

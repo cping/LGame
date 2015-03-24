@@ -1,17 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.util.HashMap;
-
-import loon.AndroidGraphicsUtils;
-import loon.core.graphics.device.LGraphics;
-import loon.core.graphics.device.LImage;
-import loon.jni.NativeSupport;
-import loon.utils.CollectionUtils;
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -33,6 +19,20 @@ import loon.utils.CollectionUtils;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.util.HashMap;
+
+import loon.AndroidGraphicsUtils;
+import loon.core.graphics.device.LGraphics;
+import loon.core.graphics.device.LImage;
+import loon.jni.NativeSupport;
+import loon.utils.CollectionUtils;
+
 public final class GLLoader extends LTextureData {
 
 	private static final boolean IS_LITTLE_ENDIAN = (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN);

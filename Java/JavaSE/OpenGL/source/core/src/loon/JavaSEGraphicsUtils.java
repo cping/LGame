@@ -63,6 +63,7 @@ import java.util.Map.Entry;
 
 import loon.core.graphics.device.LColor;
 import loon.core.resource.Resources;
+import loon.jni.NativeSupport;
 import loon.utils.StringUtils;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1188,6 +1189,76 @@ final public class JavaSEGraphicsUtils {
 		}
 
 		return img_tmp;
+	}
+
+	/**
+	 * 过滤指定像素
+	 * 
+	 * @param images
+	 * @param color
+	 * @return
+	 */
+	public static BufferedImage filterImage(byte[] images, LColor color) {
+		BufferedImage img = getBufferImage(JavaSEGraphicsUtils.toolKit
+				.createImage(images));
+		if (img.getColorModel().hasAlpha()) {
+			int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+			int[] pixels = NativeSupport.toColorKey(srcImages, color.getRGB());
+			JavaSEGraphicsUtils.setPixels(img, pixels, img.getWidth(),
+					img.getHeight());
+		} else {
+			BufferedImage tmp = JavaSEGraphicsUtils.createImage(img.getWidth(),
+					img.getHeight(), true);
+			Graphics2D g = tmp.createGraphics();
+			g.drawImage(img, 0, 0, null);
+			g.dispose();
+			int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+			int[] pixels = NativeSupport.toColorKey(srcImages,
+					color.getRGB());
+			JavaSEGraphicsUtils.setPixels(tmp, pixels, img.getWidth(),
+					img.getHeight());
+			if (img != null) {
+				img.flush();
+				img = null;
+			}
+			img = tmp;
+		}
+		return img;
+	}
+
+	/**
+	 * 过滤指定像素
+	 * 
+	 * @param images
+	 * @param color
+	 * @return
+	 */
+	public static BufferedImage filterImage(byte[] images, int[] colors) {
+		BufferedImage img = getBufferImage(JavaSEGraphicsUtils.toolKit
+				.createImage(images));
+		if (img.getColorModel().hasAlpha()) {
+			int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+			int[] pixels = NativeSupport.toColorKeys(srcImages, colors);
+			JavaSEGraphicsUtils.setPixels(img, pixels, img.getWidth(),
+					img.getHeight());
+		} else {
+			BufferedImage tmp = JavaSEGraphicsUtils.createImage(img.getWidth(),
+					img.getHeight(), true);
+			Graphics2D g = tmp.createGraphics();
+			g.drawImage(img, 0, 0, null);
+			g.dispose();
+			int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+			int[] pixels = NativeSupport.toColorKeys(srcImages,
+					colors);
+			JavaSEGraphicsUtils.setPixels(tmp, pixels, img.getWidth(),
+					img.getHeight());
+			if (img != null) {
+				img.flush();
+				img = null;
+			}
+			img = tmp;
+		}
+		return img;
 	}
 
 	private static Panel context = new Panel();

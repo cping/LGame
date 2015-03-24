@@ -29,6 +29,7 @@ import loon.core.geom.RectBox;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;
 import loon.core.resource.Resources;
+import loon.jni.NativeSupport;
 import loon.utils.MathUtils;
 import loon.utils.collection.ArrayByte;
 
@@ -637,6 +638,84 @@ public class AndroidGraphicsUtils {
 	}
 
 	/**
+	 * 过滤指定像素
+	 * 
+	 * @param images
+	 * @param color
+	 * @return
+	 */
+	public static Bitmap filterBitmap(byte[] images, LColor color) {
+		Bitmap img = AndroidGraphicsUtils.loadBitmap(images, true);
+		if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
+			int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+			int[] pixels = NativeSupport.toColorKey(srcImages, color.getRGB());
+			if (!img.isMutable()) {
+				Bitmap tmp = Bitmap.createBitmap(pixels, img.getWidth(),
+						img.getHeight(), img.getConfig());
+				if (img != null) {
+					img.recycle();
+					img = null;
+				}
+				img = tmp;
+			} else {
+				AndroidGraphicsUtils.setPixels(img, pixels, img.getWidth(),
+						img.getHeight());
+			}
+		} else {
+			Bitmap tmp = img.copy(Config.ARGB_8888, true);
+			int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+			int[] pixels = NativeSupport.toColorKey(srcImages, color.getRGB());
+			AndroidGraphicsUtils.setPixels(tmp, pixels, img.getWidth(),
+					img.getHeight());
+			if (img != null) {
+				img.recycle();
+				img = null;
+			}
+			img = tmp;
+		}
+		return img;
+	}
+
+	/**
+	 * 过滤指定像素
+	 * 
+	 * @param images
+	 * @param color
+	 * @return
+	 */
+	public static Bitmap filterBitmap(byte[] images, int[] colors) {
+		Bitmap img = AndroidGraphicsUtils.loadBitmap(images, true);
+		if (img.hasAlpha() && img.getConfig() != Config.RGB_565) {
+			int[] srcImages = AndroidGraphicsUtils.getPixels(img);
+			int[] pixels = NativeSupport.toColorKeys(srcImages, colors);
+			if (!img.isMutable()) {
+				Bitmap tmp = Bitmap.createBitmap(pixels, img.getWidth(),
+						img.getHeight(), img.getConfig());
+				if (img != null) {
+					img.recycle();
+					img = null;
+				}
+				img = tmp;
+			} else {
+				AndroidGraphicsUtils.setPixels(img, pixels, img.getWidth(),
+						img.getHeight());
+			}
+		} else {
+			Bitmap tmp = img.copy(Config.ARGB_8888, true);
+			int[] srcImages = AndroidGraphicsUtils.getPixels(tmp);
+			int[] pixels = NativeSupport.toColorKeys(srcImages, colors);
+			AndroidGraphicsUtils.setPixels(tmp, pixels, img.getWidth(),
+					img.getHeight());
+			if (img != null) {
+				img.recycle();
+				img = null;
+			}
+			img = tmp;
+		}
+		return img;
+	}
+
+	/**
 	 * 剪切指定图像
 	 * 
 	 * @param image
@@ -891,7 +970,8 @@ public class AndroidGraphicsUtils {
 		canvas.drawBitmap(dst, x, y, null);
 	}
 
-	public static void setPixels(final Bitmap bit,final int[] pixels, int w, int h) {
+	public static void setPixels(final Bitmap bit, final int[] pixels, int w,
+			int h) {
 		bit.setPixels(pixels, 0, w, 0, 0, w, h);
 	}
 
@@ -903,7 +983,7 @@ public class AndroidGraphicsUtils {
 	 */
 	public static int[] getPixels(Bitmap bit) {
 		int width = bit.getWidth();
-		int height= bit.getHeight();
+		int height = bit.getHeight();
 		int pixels[] = new int[width * height];
 		bit.getPixels(pixels, 0, width, 0, 0, width, height);
 		return pixels;

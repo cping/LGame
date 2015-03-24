@@ -62,6 +62,14 @@ public class LImage implements LRelease {
 
 	private Format format = Format.DEFAULT;
 
+	public static LImage createImage(byte[] buffer, int[] filters) {
+		return new LImage(JavaSEGraphicsUtils.filterImage(buffer, filters));
+	}
+
+	public static LImage createImage(byte[] buffer, LColor filter) {
+		return new LImage(JavaSEGraphicsUtils.filterImage(buffer, filter));
+	}
+
 	public static LImage createImage(byte[] buffer) {
 		return new LImage(JavaSEGraphicsUtils.toolKit.createImage(buffer));
 	}
@@ -458,23 +466,16 @@ public class LImage implements LRelease {
 		}
 	}
 
-	public void setImage(LImage img) {
-		this.width = img.getWidth();
-		this.height = img.getHeight();
-		this.bufferedImage = img.bufferedImage;
-		this.isAutoDispose = img.isAutoDispose;
-	}
-
-	public void setImage(BufferedImage img) {
+	private void setImage(BufferedImage img) {
 		this.width = img.getWidth();
 		this.height = img.getHeight();
 		this.bufferedImage = getFilterAllImage(img);
 	}
 
-	public void setImage(Image img) {
+	private void setImage(Image img) {
 		this.width = img.getWidth(null);
 		this.height = img.getHeight(null);
-		this.bufferedImage = JavaSEGraphicsUtils.getBufferImage(img);
+		this.bufferedImage = getFilterAllImage(JavaSEGraphicsUtils.getBufferImage(img));
 	}
 
 	public Object clone() {
