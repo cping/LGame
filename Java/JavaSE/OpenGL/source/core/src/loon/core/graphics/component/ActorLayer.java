@@ -1,3 +1,24 @@
+/**
+ * 
+ * Copyright 2008 - 2011
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.1.1
+ */
 package loon.core.graphics.component;
 
 import java.util.Iterator;
@@ -22,27 +43,6 @@ import loon.core.geom.RectBox;
 import loon.core.graphics.LContainer;
 import loon.utils.MathUtils;
 
-/**
- * 
- * Copyright 2008 - 2011
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email：javachenpeng@yahoo.com
- * @version 0.1.1
- */
 @SuppressWarnings("rawtypes")
 public abstract class ActorLayer extends LContainer {
 
@@ -57,6 +57,8 @@ public abstract class ActorLayer extends LContainer {
 	ActorTreeSet objects;
 
 	long elapsedTime;
+	
+	private int tileSize = 32;
 
 	public ActorLayer(int x, int y, int layerWidth, int layerHeight,
 			int cellSize) {
@@ -290,7 +292,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public MoveTo callMoveTo(ActionBind o, int x, int y) {
-		return callMoveTo(o, x, y, 32, 32);
+		return callMoveTo(o, x, y, tileSize, tileSize);
 	}
 
 	/**
@@ -303,7 +305,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public MoveTo callMoveTo(ActionBind o, int x, int y, boolean flag) {
-		return callMoveTo(o, flag, x, y, 32, 32);
+		return callMoveTo(o, flag, x, y, tileSize, tileSize);
 	}
 
 	/**
@@ -953,6 +955,14 @@ public abstract class ActorLayer extends LContainer {
 			return null;
 		}
 		return this.objects;
+	}
+
+	public int getTileSize() {
+		return tileSize;
+	}
+
+	public void setTileSize(int tileSize) {
+		this.tileSize = tileSize;
 	}
 
 }

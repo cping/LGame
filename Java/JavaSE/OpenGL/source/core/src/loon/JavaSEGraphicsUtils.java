@@ -39,6 +39,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
 import java.awt.image.PixelGrabber;
@@ -1213,8 +1214,7 @@ final public class JavaSEGraphicsUtils {
 			g.drawImage(img, 0, 0, null);
 			g.dispose();
 			int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
-			int[] pixels = NativeSupport.toColorKey(srcImages,
-					color.getRGB());
+			int[] pixels = NativeSupport.toColorKey(srcImages, color.getRGB());
 			JavaSEGraphicsUtils.setPixels(tmp, pixels, img.getWidth(),
 					img.getHeight());
 			if (img != null) {
@@ -1248,8 +1248,7 @@ final public class JavaSEGraphicsUtils {
 			g.drawImage(img, 0, 0, null);
 			g.dispose();
 			int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
-			int[] pixels = NativeSupport.toColorKeys(srcImages,
-					colors);
+			int[] pixels = NativeSupport.toColorKeys(srcImages, colors);
 			JavaSEGraphicsUtils.setPixels(tmp, pixels, img.getWidth(),
 					img.getHeight());
 			if (img != null) {
@@ -1395,12 +1394,47 @@ final public class JavaSEGraphicsUtils {
 		img.setRGB(0, 0, width, height, pixels, 0, width);
 	}
 
-	public static int[] getPixels(BufferedImage img) {
+	/**
+	 * 从一个单独的BufferedImage中获得其像素信息
+	 * 
+	 * @param img
+	 * @return
+	 */
+	public static int[] getPixels(final BufferedImage img) {
 		int width = img.getWidth();
 		int height = img.getHeight();
 		int pixels[] = new int[width * height];
 		img.getRGB(0, 0, width, height, pixels, 0, width);
 		return pixels;
+	}
+
+	/**
+	 * 从一个单独的BufferedImage中获得其像素信息
+	 * 
+	 * @param img
+	 * @return
+	 */
+	public static byte[] getBytePixels(final BufferedImage img) {
+		if (img == null) {
+			return null;
+		}
+		DataBuffer buffer = img.getRaster().getDataBuffer();
+		switch (buffer.getDataType()) {
+		case DataBuffer.TYPE_BYTE:
+			DataBufferByte byteBuf = (DataBufferByte) buffer;
+			return byteBuf.getData();
+		default:
+			BufferedImage tmp = new BufferedImage(img.getWidth(),
+					img.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+			Graphics2D g = tmp.createGraphics();
+			g.drawImage(img, 0, 0, null);
+			g.dispose();
+			buffer = img.getRaster().getDataBuffer();
+			if (buffer.getDataType() == DataBuffer.TYPE_BYTE) {
+				return ((DataBufferByte) buffer).getData();
+			}
+			return null;
+		}
 	}
 
 	/**

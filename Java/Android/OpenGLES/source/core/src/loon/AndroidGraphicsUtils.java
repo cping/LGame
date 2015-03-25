@@ -23,6 +23,8 @@ package loon;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.HashMap;
 
 import loon.core.geom.RectBox;
@@ -981,11 +983,31 @@ public class AndroidGraphicsUtils {
 	 * @param bit
 	 * @return
 	 */
-	public static int[] getPixels(Bitmap bit) {
+	public static int[] getPixels(final Bitmap bit) {
+		if (bit == null) {
+			return null;
+		}
 		int width = bit.getWidth();
 		int height = bit.getHeight();
 		int pixels[] = new int[width * height];
 		bit.getPixels(pixels, 0, width, 0, 0, width, height);
+		return pixels;
+	}
+
+	/**
+	 * 从一个单独的Bitmap中获得其像素信息
+	 * 
+	 * @param bit
+	 * @return
+	 */
+	public static byte[] getBytePixels(final Bitmap bit) {
+		if (bit == null) {
+			return null;
+		}
+		final byte[] pixels = new byte[bit.getWidth() * bit.getHeight() * 4];
+		final ByteBuffer buf = ByteBuffer.wrap(pixels);
+		buf.order(ByteOrder.nativeOrder());
+		bit.copyPixelsToBuffer(buf);
 		return pixels;
 	}
 

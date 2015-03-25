@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -32,7 +31,6 @@ import loon.action.map.Field2D;
 import loon.core.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
-
 
 public class MoveTo extends ActionEvent {
 
@@ -117,7 +115,8 @@ public class MoveTo extends ActionEvent {
 		if (layerMap == null || original == null) {
 			return;
 		}
-		if (!original.getRectBox().contains(endLocation.x(), endLocation.y())) {
+		if (!(original.x() == endLocation.x() && original.y() == endLocation
+				.y())) {
 			if (useCache) {
 				synchronized (pathCache) {
 					if (pathCache.size() > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {

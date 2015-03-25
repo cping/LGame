@@ -113,7 +113,8 @@ public class MoveTo extends ActionEvent {
 		if (layerMap == null || original == null) {
 			return;
 		}
-		if (!original.getRectBox().contains(endLocation.x(), endLocation.y())) {
+		if (!(original.x() == endLocation.x() && original.y() == endLocation
+				.y())) {
 			if (useCache) {
 				synchronized (pathCache) {
 					if (pathCache.size() > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
@@ -139,6 +140,7 @@ public class MoveTo extends ActionEvent {
 					pActorPath.addAll(final_path);
 				}
 			} else {
+
 				pActorPath = AStarFinder.find(heuristic, layerMap,
 						layerMap.pixelsToTilesWidth(startLocation.x()),
 						layerMap.pixelsToTilesHeight(startLocation.y()),

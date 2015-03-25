@@ -45,8 +45,6 @@ import loon.core.graphics.LContainer;
 import loon.utils.MathUtils;
 
 
-
-
 @SuppressWarnings("rawtypes")
 public abstract class ActorLayer extends LContainer {
 
@@ -63,6 +61,8 @@ public abstract class ActorLayer extends LContainer {
 	ActorTreeSet objects;
 
 	long elapsedTime;
+
+	private int tileSize = 32;
 
 	public ActorLayer(int x, int y, int layerWidth, int layerHeight,
 			int cellSize) {
@@ -300,7 +300,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public MoveTo callMoveTo(ActionBind o, int x, int y) {
-		return callMoveTo(o, x, y, 32, 32);
+		return callMoveTo(o, x, y, tileSize, tileSize);
 	}
 
 	/**
@@ -313,7 +313,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public MoveTo callMoveTo(ActionBind o, int x, int y, boolean flag) {
-		return callMoveTo(o, flag, x, y, 32, 32);
+		return callMoveTo(o, flag, x, y, tileSize, tileSize);
 	}
 
 	/**
@@ -969,6 +969,14 @@ public abstract class ActorLayer extends LContainer {
 			return null;
 		}
 		return this.objects;
+	}
+
+	public int getTileSize() {
+		return tileSize;
+	}
+
+	public void setTileSize(int tileSize) {
+		this.tileSize = tileSize;
 	}
 
 }
