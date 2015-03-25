@@ -3,6 +3,7 @@ package loon.core.graphics.component;
 import loon.LSystem;
 import loon.action.sprite.ISprite;
 import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LFont;
 import loon.core.graphics.opengl.GLEx;
@@ -12,9 +13,8 @@ import loon.core.timer.LTimer;
 /**
  * Example:
  * 
- * 		LToast toast = LToast.makeText(null, "ABCDEFG",Style.ERROR);
- *		add(toast);
- *
+ * LToast toast = LToast.makeText(null, "ABCDEFG",Style.ERROR); add(toast);
+ * 
  */
 public class LToast extends LComponent {
 
@@ -67,13 +67,20 @@ public class LToast extends LComponent {
 			int duration, Style style) {
 		LToast toast = null;
 		if (owner != null) {
-			toast = new LToast(font, text, duration, owner.x(), owner.y(),
-					owner.getWidth(), owner.getHeight());
+			if (owner instanceof LToast) {
+				return (LToast) owner;
+			} else if (owner instanceof LContainer) {
+				toast = new LToast(font, text, duration, owner.x(), owner.y(),
+						owner.getWidth(), owner.getHeight());
+				((LContainer) owner).add(toast);
+			} else {
+				toast = new LToast(font, text, duration, owner.x(), owner.y(),
+						owner.getWidth(), owner.getHeight());
+			}
 		} else {
 			toast = new LToast(font, text, duration, 0, 0,
 					LSystem.screenRect.width, LSystem.screenRect.height);
 		}
-
 		if (style == Style.SUCCESS) {
 			toast.mBackgroundColor = SUCCESS_GRAY;
 		}
@@ -100,7 +107,7 @@ public class LToast extends LComponent {
 	private String mText;
 	private int mDuration;
 	private LTimer timer = new LTimer();
-	private LTimer lock = new LTimer(LSystem.SECOND * 3);
+	private LTimer lock = new LTimer(LSystem.SECOND * 2);
 	private LColor mBackgroundColor = LColor.orange;
 	private LColor mForegroundColor = LColor.white;
 	private LFont font;
@@ -148,17 +155,17 @@ public class LToast extends LComponent {
 		if (!isVisible()) {
 			return;
 		}
-
 		int w = this.getWidth();
 		int h = this.getHeight();
 		float old = g.getAlpha();
 		g.setAlpha(opacity);
 		g.setColor(mBackgroundColor);
 		g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+		g.setColor(LColor.white);
+		g.setAlpha(old);
 		g.setFont(font);
 		g.drawString(mText, displayX + (cellWidth - font.stringWidth(mText))
 				/ 2, displayY + font.getHeight(), mForegroundColor);
-		g.setAlpha(old);
 		g.resetColor();
 		g.resetFont();
 	}

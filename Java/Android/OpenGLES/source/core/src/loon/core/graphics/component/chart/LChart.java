@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.core.event.Updateable;
 import loon.core.graphics.LComponent;
 import loon.core.graphics.LContainer;
+import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LImage;
 import loon.core.graphics.opengl.GLEx;
 import loon.core.graphics.opengl.LTexture;
@@ -87,7 +88,7 @@ public class LChart extends LContainer {
 			LSystem.load(update);
 		}
 		if (chartTexture != null && !updateChart) {
-			g.drawTexture(chartTexture, x, y);
+			g.drawTexture(chartTexture, x, y, LColor.white);
 		}
 	}
 

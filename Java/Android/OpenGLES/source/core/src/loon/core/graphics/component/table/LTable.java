@@ -376,13 +376,14 @@ public class LTable extends LContainer {
 			g.setLineWidth(2f);
 		}
 		if (backgroundTexture != null) {
-			g.drawTexture(backgroundTexture, x, y, wid, hei);
+			g.drawTexture(backgroundTexture, x, y, wid, hei, LColor.white);
 		}
 		for (int row = 0; row < size && row < model.getRowCount(); row++) {
 			x = displayX;
 			if (isSelected(row)) {
 				g.setColor(selectionColor);
 				g.fillRect(x, y, wid, cellHeight);
+				g.setColor(LColor.white);
 			}
 			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
 
@@ -434,6 +435,7 @@ public class LTable extends LContainer {
 				if (gridVisible) {
 					g.setColor(gridColor);
 					g.drawRect(x, y, getColumnWidth(columnIndex), cellHeight);
+					g.setColor(LColor.white);
 				}
 
 				x += getColumnWidth(columnIndex) + cellSpacing;
@@ -449,26 +451,25 @@ public class LTable extends LContainer {
 				if (gridVisible) {
 					g.setColor(gridColor);
 					g.drawRect(displayX, displayY, wid, font.getHeight());
+					g.setColor(LColor.white);
 				}
 			} else {
 				g.setColor(headerBackgroundColor);
 				g.fillRect(displayX, displayY, wid, font.getHeight());
+				g.setColor(LColor.white);
 			}
 			x = displayX;
 
 			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
 				String s = model.getColumnName(columnIndex);
 				int columnWidth = getColumnWidth(columnIndex);
-
 				s = font.confineLength(s, columnWidth - OFFSET);
-
 				int entryOffset = OFFSET
 						+ getColumn(columnIndex).getHeaderAlignment().alignX(
 								columnWidth - OFFSET, font.stringWidth(s));
-				g.setColor(headTextColor);
 				g.setFont(font);
 				g.drawString(s, x + entryOffset,
-						header.headerY + font.getHeight() - 4);
+						header.headerY + font.getHeight() - 4, headTextColor);
 				x += columnWidth + cellSpacing;
 			}
 		}
