@@ -98,7 +98,11 @@ public class Assets {
 	}
 
 	public static InputStream getStream(String resName) throws IOException {
-		return Resources.openResource(normalizePath(pathPrefix + resName));
+		if (resName.startsWith(pathPrefix)) {
+			return Resources.openResource(normalizePath(resName));
+		} else {
+			return Resources.openResource(normalizePath(pathPrefix + resName));
+		}
 	}
 
 	public static String getText(String path) throws IOException {
