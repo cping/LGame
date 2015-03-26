@@ -1,4 +1,3 @@
-
 /**
  * 
  * Copyright 2014
@@ -88,7 +87,8 @@ public class LTextArea extends LComponent {
 	private LFont font = LFont.getDefaultFont();
 	private int countFrame;
 	private LColor triangleColor = LColor.orange;
-
+	private LColor tmpcolor = new LColor(LColor.white);
+	
 	public LTextArea(int x, int y, int w, int h) {
 		this(w, x, y, w, h);
 	}
@@ -210,8 +210,8 @@ public class LTextArea extends LComponent {
 		}
 	}
 
-	public void put(String mes, LColor color) {
-		setColor(color.getRed(), color.getGreen(), color.getBlue());
+	public void put(String mes, LColor tmpcolor) {
+		setColor(tmpcolor.getRed(), tmpcolor.getGreen(), tmpcolor.getBlue());
 		put(mes);
 	}
 
@@ -289,8 +289,8 @@ public class LTextArea extends LComponent {
 		this.getMessageLength[this.num] = d_length;
 	}
 
-	public void addString(String mes, LColor color) {
-		setColor(color.getRed(), color.getGreen(), color.getBlue());
+	public void addString(String mes, LColor tmpcolor) {
+		setColor(tmpcolor.getRed(), tmpcolor.getGreen(), tmpcolor.getBlue());
 		addString(mes);
 	}
 
@@ -308,8 +308,8 @@ public class LTextArea extends LComponent {
 		this.brightSpeed = speed;
 	}
 
-	public void setWaitTriangleColor(LColor color) {
-		this.triangleColor = color;
+	public void setWaitTriangleColor(LColor tmpcolor) {
+		this.triangleColor = tmpcolor;
 	}
 
 	public void draw(GLEx g, int dx, int dy, int d_type, int lines) {
@@ -399,34 +399,31 @@ public class LTextArea extends LComponent {
 						}
 					}
 
-					g.setColor(this.drawNewCr[this.num],
+					tmpcolor.setColor(this.drawNewCr[this.num],
 							this.drawNewCg[this.num], this.drawNewCb[this.num]);
 
 					this.str = "new";
-					drawString(g, this.str, this.posx, this.drawY);
+					drawString(g, this.str, this.posx, this.drawY,tmpcolor);
 					this.posx += this.font.stringWidth(this.str);
 				}
-				g.setColor(50, 50, 50);
+				tmpcolor.setColor(50, 50, 50);
 				drawString(g, this.getMessage[this.num], this.posx + 1,
-						this.drawY + 1);
-				g.setColor(this.cr[this.num] + this.bright[i],
+						this.drawY + 1,tmpcolor);
+				tmpcolor.setColor(this.cr[this.num] + this.bright[i],
 						this.cg[this.num] + this.bright[i], this.cb[this.num]
 								+ this.bright[i]);
-				drawString(g, this.getMessage[this.num], this.posx, this.drawY);
-
+				drawString(g, this.getMessage[this.num], this.posx, this.drawY,tmpcolor);
 				if ((this.waitFlag) && (i == 0) && index > 0) {
 					this.posy = (this.countFrame * 1 / 3 % this.font.getSize()
 							/ 2 - 2);
-					g.setColor(this.triangleColor);
 					drawString(
 							g,
 							"▼",
 							this.posx
 									+ this.font
 											.stringWidth(this.getMessage[this.num]),
-							this.drawY - this.posy);
+							this.drawY - this.posy,this.triangleColor);
 				}
-
 				if (this.brightType[i] == 0) {
 					this.bright[i] += this.brightSpeed;
 					if (this.bright[i] >= this.brightMax) {
@@ -514,9 +511,9 @@ public class LTextArea extends LComponent {
 		this.countFrame = countFrame;
 	}
 
-	private void drawString(GLEx g, String str, int x, int y) {
+	private void drawString(GLEx g, String str, int x, int y, LColor color) {
 		g.drawString(str, x + leftOffset, (y + font.getHeight() - 5)
-				+ topOffset);
+				+ topOffset, color);
 	}
 
 	public int getLeftOffset() {

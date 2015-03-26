@@ -114,6 +114,7 @@ public class LPad extends LComponent {
 	@Override
 	protected void processTouchReleased() {
 		freeClick();
+		super.processTouchReleased();
 	}
 
 	@Override
@@ -172,6 +173,7 @@ public class LPad extends LComponent {
 				freeClick();
 			}
 		}
+		super.processTouchPressed();
 	}
 
 	@Override

@@ -1,12 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LComponent;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-
 /**
  * 
  * Copyright 2014
@@ -37,6 +28,15 @@ import loon.core.graphics.opengl.LTextures;
  *          area.put("GGGGGGGGGG",LColor.red); area.put("GGGGGGGGGG");
  *          //addString为在前一行追加数据 area.addString("1",LColor.red);
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.LComponent;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+import loon.core.graphics.opengl.GLEx;
+import loon.core.graphics.opengl.LTexture;
+import loon.core.graphics.opengl.LTextures;
+
 public class LTextArea extends LComponent {
 
 	public static final int TYPE_DOWN = 0;
@@ -85,7 +85,8 @@ public class LTextArea extends LComponent {
 	private LFont font = LFont.getDefaultFont();
 	private int countFrame;
 	private LColor triangleColor = LColor.orange;
-
+	private LColor tmpcolor = new LColor(LColor.white);
+	
 	public LTextArea(int x, int y, int w, int h) {
 		this(w, x, y, w, h);
 	}
@@ -396,34 +397,31 @@ public class LTextArea extends LComponent {
 						}
 					}
 
-					g.setColor(this.drawNewCr[this.num],
+					tmpcolor.setColor(this.drawNewCr[this.num],
 							this.drawNewCg[this.num], this.drawNewCb[this.num]);
 
 					this.str = "new";
-					drawString(g, this.str, this.posx, this.drawY);
+					drawString(g, this.str, this.posx, this.drawY,tmpcolor);
 					this.posx += this.font.stringWidth(this.str);
 				}
-				g.setColor(50, 50, 50);
+				tmpcolor.setColor(50, 50, 50);
 				drawString(g, this.getMessage[this.num], this.posx + 1,
-						this.drawY + 1);
-				g.setColor(this.cr[this.num] + this.bright[i],
+						this.drawY + 1,tmpcolor);
+				tmpcolor.setColor(this.cr[this.num] + this.bright[i],
 						this.cg[this.num] + this.bright[i], this.cb[this.num]
 								+ this.bright[i]);
-				drawString(g, this.getMessage[this.num], this.posx, this.drawY);
-
+				drawString(g, this.getMessage[this.num], this.posx, this.drawY,tmpcolor);
 				if ((this.waitFlag) && (i == 0) && index > 0) {
 					this.posy = (this.countFrame * 1 / 3 % this.font.getSize()
 							/ 2 - 2);
-					g.setColor(this.triangleColor);
 					drawString(
 							g,
 							"▼",
 							this.posx
 									+ this.font
 											.stringWidth(this.getMessage[this.num]),
-							this.drawY - this.posy);
+							this.drawY - this.posy,this.triangleColor);
 				}
-
 				if (this.brightType[i] == 0) {
 					this.bright[i] += this.brightSpeed;
 					if (this.bright[i] >= this.brightMax) {
@@ -511,9 +509,9 @@ public class LTextArea extends LComponent {
 		this.countFrame = countFrame;
 	}
 
-	private void drawString(GLEx g, String str, int x, int y) {
+	private void drawString(GLEx g, String str, int x, int y, LColor color) {
 		g.drawString(str, x + leftOffset, (y + font.getHeight() - 5)
-				+ topOffset);
+				+ topOffset, color);
 	}
 
 	public int getLeftOffset() {

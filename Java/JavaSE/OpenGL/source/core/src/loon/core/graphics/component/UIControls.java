@@ -1,9 +1,3 @@
-package loon.core.graphics.component;
-
-import loon.core.graphics.LComponent;
-import loon.core.graphics.LContainer;
-import loon.utils.collection.ArrayList;
-
 /**
  * 
  * Copyright 2014
@@ -27,6 +21,12 @@ import loon.utils.collection.ArrayList;
  * 
  *          新增类，用以同时处理多个组件对象到同一状态
  */
+package loon.core.graphics.component;
+
+import loon.core.graphics.LComponent;
+import loon.core.graphics.LContainer;
+import loon.utils.collection.ArrayList;
+
 public class UIControls {
 
 	public static float getChildrenHeight(LContainer c) {

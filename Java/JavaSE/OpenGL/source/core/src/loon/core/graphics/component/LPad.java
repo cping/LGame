@@ -112,6 +112,7 @@ public class LPad extends LComponent {
 
 	protected void processTouchReleased() {
 		freeClick();
+		super.processTouchReleased();
 	}
 
 	protected void processTouchPressed() {
@@ -169,6 +170,7 @@ public class LPad extends LComponent {
 				freeClick();
 			}
 		}
+		super.processTouchPressed();
 	}
 
 	public void createUI(GLEx g, int x, int y, LComponent component,
