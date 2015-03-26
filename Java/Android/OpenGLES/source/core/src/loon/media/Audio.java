@@ -34,6 +34,7 @@ import android.media.SoundPool;
 import loon.LSystem;
 import loon.core.event.Updateable;
 import loon.utils.StringUtils;
+import loon.utils.debugging.Log;
 
 public class Audio {
 
@@ -100,6 +101,11 @@ public class Audio {
 			return (streamId != 0);
 		}
 
+		protected boolean prepareImpl() {
+			pool.play(soundId, 0, 0, 0, 0, 1);
+			return true;
+		}
+
 		@Override
 		protected void stopImpl() {
 			if (notSupport()) {
@@ -142,29 +148,35 @@ public class Audio {
 
 	public Audio() {
 		this.pool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
-	}
-
-	private void loading(int soundId) {
-		PooledSound sound = loadingSounds.get(soundId);
-		if (sound != null) {
-			dispatchLoaded(sound, soundId);
-		} else {
-			dispatchLoadError(sound, new Exception("Sound load failed [id="
-					+ soundId + "]"));
-		}
+		//以标准pool监听器监听数据
+		this.pool
+				.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+					public void onLoadComplete(SoundPool soundPool,
+							int soundId, int status) {
+						PooledSound sound = loadingSounds.remove(soundId);
+						if (sound == null) {
+							Log.exception("load complete for unknown sound [id="
+									+ soundId + "]");
+						} else if (status == 0) {
+							dispatchLoaded(sound, soundId);
+						} else {
+							dispatchLoadError(sound, new Exception(
+									"Sound load failed [errcode=" + status
+											+ "]"));
+						}
+					}
+				});
 	}
 
 	public SoundImpl<?> createSound(AssetFileDescriptor fd) {
 		PooledSound sound = new PooledSound(pool.load(fd, 1));
 		loadingSounds.put(sound.soundId, sound);
-		loading(sound.soundId);
 		return sound;
 	}
 
 	public SoundImpl<?> createSound(FileDescriptor fd, long offset, long length) {
 		PooledSound sound = new PooledSound(pool.load(fd, offset, length, 1));
 		loadingSounds.put(sound.soundId, sound);
-		loading(sound.soundId);
 		return sound;
 	}
 
@@ -243,12 +255,13 @@ public class Audio {
 	}
 
 	public void onResume() {
-		for (PooledSound p : loadingSounds.values()) {
-			pool.resume(p.soundId);
-		}
+		pool.autoResume();
 		HashSet<AndroidSound<?>> wasPlaying = new HashSet<AndroidSound<?>>(
 				playing);
 		playing.clear();
+		if (!wasPlaying.isEmpty()) {
+			Log.exception("Resuming " + wasPlaying.size() + " playing sounds.");
+		}
 		for (AndroidSound<?> sound : wasPlaying) {
 			sound.onResume();
 		}
