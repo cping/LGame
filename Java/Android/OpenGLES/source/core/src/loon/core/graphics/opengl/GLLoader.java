@@ -264,26 +264,34 @@ public final class GLLoader extends LTextureData {
 			}
 			PixelFormat format = PixelFormat.getPixelFormat(data.config);
 			LImage temp = new LImage(data.fileName, data.config);
-			LImage texImage = new LImage(data.texWidth, data.texHeight,
-					data.config);
-			LGraphics g = texImage.getLGraphics();
-			g.drawImage(temp, 0, 0);
-			if (data.height < data.texHeight - 1) {
-				copyArea(texImage, g, 0, 0, data.width, 1, 0,
-						data.texHeight - 1);
-				copyArea(texImage, g, 0, data.height - 1, data.width, 1, 0, 1);
-			}
-			if (data.width < data.texWidth - 1) {
-				copyArea(texImage, g, 0, 0, 1, data.height, data.texWidth - 1,
-						0);
-				copyArea(texImage, g, data.width - 1, 0, 1, data.height, 1, 0);
-			}
-			android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
-					format.getGLFormat(), texImage.getBitmap(),
-					format.getGLType(), 0);
-			if (texImage != null) {
-				texImage.dispose();
-				texImage = null;
+			if (GLEx.isPowerOfTwo(temp.getWidth()) && GLEx.isPowerOfTwo(temp.getHeight())) {
+				android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
+						format.getGLFormat(), temp.getBitmap(),
+						format.getGLType(), 0);
+			} else {
+				LImage texImage = new LImage(data.texWidth, data.texHeight,
+						data.config);
+				LGraphics g = texImage.getLGraphics();
+				g.drawImage(temp, 0, 0);
+				if (data.height < data.texHeight - 1) {
+					copyArea(texImage, g, 0, 0, data.width, 1, 0,
+							data.texHeight - 1);
+					copyArea(texImage, g, 0, data.height - 1, data.width, 1, 0,
+							1);
+				}
+				if (data.width < data.texWidth - 1) {
+					copyArea(texImage, g, 0, 0, 1, data.height,
+							data.texWidth - 1, 0);
+					copyArea(texImage, g, data.width - 1, 0, 1, data.height, 1,
+							0);
+				}
+				android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
+						format.getGLFormat(), texImage.getBitmap(),
+						format.getGLType(), 0);
+				if (texImage != null) {
+					texImage.dispose();
+					texImage = null;
+				}
 			}
 			if (temp != null) {
 				temp.dispose();
@@ -294,30 +302,15 @@ public final class GLLoader extends LTextureData {
 				data.multipyAlpha = isPNGExt(data.fileName);
 			}
 			PixelFormat format = PixelFormat.getPixelFormat(data.config);
-			if (data.multipyAlpha
-					&& (data.texWidth > 48 && data.texHeight > 48)
-					&& (data.config != android.graphics.Bitmap.Config.RGB_565)) {
-				final GL10 gl = GLEx.gl10;
-				if (gl != null) {
-					Buffer pixelBuffer = getBufferPixels(data.source, format);
-					gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, format.getGLFormat(),
-							data.texWidth, data.texHeight, 0,
-							format.getGLFormat(), format.getGLType(),
-							pixelBuffer);
-					pixelBuffer = null;
-				}
-			} else {
-				android.graphics.Bitmap bind = android.graphics.Bitmap
-						.createBitmap(data.texWidth, data.texHeight,
-								data.config);
-				bind.setPixels(data.source, 0, data.texWidth, 0, 0,
-						data.texWidth, data.texHeight);
-				android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
-						format.getGLFormat(), bind, format.getGLType(), 0);
-				if (bind != null) {
-					bind.recycle();
-					bind = null;
-				}
+			android.graphics.Bitmap bind = android.graphics.Bitmap
+					.createBitmap(data.texWidth, data.texHeight, data.config);
+			bind.setPixels(data.source, 0, data.texWidth, 0, 0, data.texWidth,
+					data.texHeight);
+			android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
+					format.getGLFormat(), bind, format.getGLType(), 0);
+			if (bind != null) {
+				bind.recycle();
+				bind = null;
 			}
 		}
 		if (data.fileName != null) {
@@ -343,34 +336,18 @@ public final class GLLoader extends LTextureData {
 			data.multipyAlpha = isPNGExt(data.fileName);
 		}
 		PixelFormat format = PixelFormat.getPixelFormat(data.config);
-		if (data.multipyAlpha && (data.texWidth > 48 && data.texHeight > 48)
-				&& (data.config != android.graphics.Bitmap.Config.RGB_565)) {
-			final GL10 gl = GLEx.gl10;
-			if (gl != null) {
-				Buffer pixelBuffer = getBufferPixels(data.source, format);
-				gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, x, y, data.width,
-						data.height, format.getGLFormat(), format.getGLType(),
-						pixelBuffer);
-				pixelBuffer = null;
-				if (data.fileName != null) {
-					data.source = null;
-				}
-			}
-		} else {
-			LImage image = LTextureData.createPixelImage(data.source,
-					data.texWidth, data.texHeight, data.width, data.height,
-					data.config);
-			android.opengl.GLUtils
-					.texSubImage2D(GL.GL_TEXTURE_2D, 0, x, y,
-							image.getBitmap(), format.getGLFormat(),
-							format.getGLType());
-			if (image != null) {
-				image.dispose();
-				image = null;
-			}
-			if (data.fileName != null) {
-				data.source = null;
-			}
+		android.graphics.Bitmap bind = android.graphics.Bitmap.createBitmap(
+				data.texWidth, data.texHeight, data.config);
+		bind.setPixels(data.source, 0, data.texWidth, 0, 0, data.texWidth,
+				data.texHeight);
+		android.opengl.GLUtils.texImage2D(GL.GL_TEXTURE_2D, 0,
+				format.getGLFormat(), bind, format.getGLType(), 0);
+		if (bind != null) {
+			bind.recycle();
+			bind = null;
+		}
+		if (data.fileName != null) {
+			data.source = null;
 		}
 	}
 
@@ -403,7 +380,7 @@ public final class GLLoader extends LTextureData {
 		return rgba;
 	}
 
-	private static Buffer getBufferPixels(final int[] source, PixelFormat format) {
+	static Buffer getBufferPixels(final int[] source, PixelFormat format) {
 		final int[] rgba = CollectionUtils.copyOf(source);
 		switch (format) {
 		case RGB_565:
