@@ -65,13 +65,108 @@ public class Audio {
 	}
 
 	private final HashSet<AndroidSound<?>> playing = new HashSet<AndroidSound<?>>();
-
+	private final HashMap<String, OpenALSound> loadingOpenAlSounds = new HashMap<String, OpenALSound>();
 	private final HashMap<Integer, PooledSound> loadingSounds = new HashMap<Integer, PooledSound>();
 	private final SoundPool pool;
 
 	final static boolean notSupport() {
 		return (LSystem.isDevice("GT-S5830B") || LSystem.isDevice("GT-I9100"));
 	}
+
+	private class OpenALSound extends SoundImpl<String> {
+
+		private SoundOpenAlEnv env;
+
+		private String path;
+
+		private SoundOpenAlSource source;
+
+		private SoundOpenAlBuffer buffer;
+
+		private boolean _complete, _loop;
+
+		public OpenALSound(final String path) {
+			this.path = path;
+			this.env = SoundOpenAlEnv.getInstance();
+			if (SoundOpenAlEnv.isSupportNative()) {
+				Updateable loading = new Updateable() {
+
+					@Override
+					public void action(Object a) {
+						try {
+							OpenALSound.this.buffer = env.addBuffer(path);
+							OpenALSound.this.source = env.addSource(buffer);
+							_complete = true;
+							dispatchLoaded(OpenALSound.this, path);
+						} catch (IOException e) {
+							_complete = false;
+							dispatchLoadError(OpenALSound.this, e);
+						}
+					}
+				};
+				LSystem.load(loading);
+			}
+		}
+
+		private boolean check() {
+			return buffer != null && source != null && _complete;
+		}
+
+		@Override
+		public String toString() {
+			return path;
+		}
+
+		@Override
+		protected boolean playingImpl() {
+			return false;
+		}
+
+		@Override
+		protected boolean playImpl() {
+			if (check()) {
+				source.play(_loop);
+				return true;
+			}
+			return false;
+		}
+
+		protected boolean prepareImpl() {
+			if (check()) {
+				source.setPosition(0, 0, 0);
+			}
+			return true;
+		}
+
+		@Override
+		protected void stopImpl() {
+			if (check()) {
+				source.stop();
+			}
+		}
+
+		@Override
+		protected void setLoopingImpl(boolean looping) {
+			_loop = looping;
+		}
+
+		@Override
+		protected void setVolumeImpl(float volume) {
+			if (check()) {
+				source.setPitch(volume);
+				source.setGain(volume);
+			}
+		}
+
+		@Override
+		protected void releaseImpl() {
+			if (check()) {
+				source.stop();
+				source.release();
+				buffer.release();
+			}
+		}
+	};
 
 	private class PooledSound extends SoundImpl<Integer> {
 		public final int soundId;
@@ -148,14 +243,14 @@ public class Audio {
 
 	public Audio() {
 		this.pool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
-		//以标准pool监听器监听数据
+		// 以标准pool监听器监听数据
 		this.pool
 				.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 					public void onLoadComplete(SoundPool soundPool,
 							int soundId, int status) {
 						PooledSound sound = loadingSounds.remove(soundId);
 						if (sound == null) {
-							Log.exception("load complete for unknown sound [id="
+							Log.exception("load _complete for unknown sound [id="
 									+ soundId + "]");
 						} else if (status == 0) {
 							dispatchLoaded(sound, soundId);
@@ -195,6 +290,12 @@ public class Audio {
 	}
 
 	public SoundImpl<?> createSound(final String path) {
+		if ("wav".equalsIgnoreCase(LSystem.getExtension(path))
+				&& SoundOpenAlEnv.isSupportNative()) {
+			OpenALSound sound = new OpenALSound(path);
+			loadingOpenAlSounds.put(sound.path, sound);
+			return sound;
+		}
 		try {
 			return createSound(openFd(path));
 		} catch (IOException ioe) {
@@ -252,6 +353,9 @@ public class Audio {
 		for (AndroidSound<?> sound : playing) {
 			sound.onPause();
 		}
+		for (OpenALSound al : loadingOpenAlSounds.values()) {
+			al.stop();
+		}
 	}
 
 	public void onResume() {
@@ -265,12 +369,19 @@ public class Audio {
 		for (AndroidSound<?> sound : wasPlaying) {
 			sound.onResume();
 		}
+		for (OpenALSound al : loadingOpenAlSounds.values()) {
+			al.play();
+		}
 	}
 
 	public void onDestroy() {
+		for (OpenALSound al : loadingOpenAlSounds.values()) {
+			al.release();
+		}
 		for (AndroidSound<?> sound : playing) {
 			sound.release();
 		}
+		loadingOpenAlSounds.clear();
 		playing.clear();
 		pool.release();
 	}

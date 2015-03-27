@@ -24,6 +24,8 @@ package loon;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,6 +53,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.collection.IntArray;
 
+import android.app.Activity;
 import android.os.Build;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
@@ -518,6 +521,60 @@ public final class LSystem {
 					android.content.Intent.ACTION_VIEW,
 					android.net.Uri.parse(url));
 			LSystem.screenActivity.startActivity(browserIntent);
+		}
+	}
+
+	public static String getResourcePath(String name) throws IOException {
+		if (LSystem.screenActivity == null) {
+			return name;
+		}
+		if (LSystem.type == LSystem.ApplicationType.Android) {
+			if (name.toLowerCase().startsWith("assets/")) {
+				name = StringUtils.replaceIgnoreCase(name, "assets/", "");
+			}
+			if (name.startsWith("/") || name.startsWith("\\")) {
+				name = name.substring(1, name.length());
+			}
+		}
+		File file = new File(LSystem.screenActivity.getFilesDir(), name);
+		if (!file.exists()) {
+			retrieveFromAssets(LSystem.screenActivity, name);
+		}
+		return file.getAbsolutePath();
+	}
+
+	private static void retrieveFromAssets(Activity activity, String filename)
+			throws IOException {
+		InputStream is = activity.getAssets().open(filename);
+		File outFile = new File(activity.getFilesDir(), filename);
+		makedirs(outFile);
+		FileOutputStream fos = new FileOutputStream(outFile);
+		byte[] buffer = new byte[2048];
+		int length;
+		while ((length = is.read(buffer)) > 0) {
+			fos.write(buffer, 0, length);
+		}
+		fos.flush();
+		fos.close();
+		is.close();
+	}
+
+	private static void makedirs(File file) throws IOException {
+		checkFile(file);
+		File parentFile = file.getParentFile();
+		if (parentFile != null) {
+			if (!parentFile.exists() && !parentFile.mkdirs()) {
+				throw new IOException("Creating directories "
+						+ parentFile.getPath() + " failed.");
+			}
+		}
+	}
+
+	private static void checkFile(File file) throws IOException {
+		boolean exists = file.exists();
+		if (exists && !file.isFile()) {
+			throw new IOException("File " + file.getPath()
+					+ " is actually not a file.");
 		}
 	}
 
