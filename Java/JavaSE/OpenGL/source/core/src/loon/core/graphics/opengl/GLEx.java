@@ -725,170 +725,141 @@ public final class GLEx implements LTrans {
 		GLUtils.setClearColor(gl10, color);
 	}
 
-	/**
-	 * 设定色彩透明度
-	 * 
-	 * @param alpha
-	 */
 	public void setAlphaValue(int alpha) {
-		if (isClose) {
+		if (this.isClose) {
 			return;
 		}
-		setAlpha((float) alpha / 255);
+		setAlpha(alpha / 255.0F);
+	}
+
+	public void test() {
+		this._lastAlpha = 1.0F;
 	}
 
 	public boolean isAlpha() {
-		return onAlpha;
+		return this.onAlpha;
 	}
 
-	/**
-	 * 设定色彩透明度
-	 * 
-	 * @param alpha
-	 */
 	public void setAlpha(float alpha) {
-		if (alpha == _lastAlpha) {
+		if (alpha == this._lastAlpha) {
 			return;
 		}
-		if (color.a == alpha) {
-			return;
-		}
-		if (alpha > 0.95f) {
-			color.a = 1f;
-			onAlpha = false;
+		this._lastAlpha = (alpha > 1.0F ? 1.0F : alpha < 0.0F ? 0.0F : alpha);
+		if (alpha >= 0.95F) {
+			REPLACE();
+			gl10.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			this.onAlpha = false;
 		} else {
-			color.a = alpha;
-			onAlpha = true;
+			MODULATE();
+			gl10.glColor4f(1.0F, 1.0F, 1.0F, this._lastAlpha);
+			this.onAlpha = true;
 		}
-		_lastAlpha = color.a;
 	}
 
-	/**
-	 * 返回当前的色彩透明度
-	 * 
-	 * @return
-	 */
 	public float getAlpha() {
-		return color.a;
+		return this.color.a;
 	}
 
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param a
-	 */
 	public void setColorValue(int r, int g, int b, int a) {
-		float red = (float) r / 255.0f;
-		float green = (float) g / 255.0f;
-		float blue = (float) b / 255.0f;
-		float alpha = (float) a / 255.0f;
+		float red = r / 255.0F;
+		float green = g / 255.0F;
+		float blue = b / 255.0F;
+		float alpha = a / 255.0F;
 		setColor(red, green, blue, alpha);
 	}
 
-	/**
-	 * 释放颜色设定
-	 * 
-	 */
 	public final void resetColor() {
-		if (isClose) {
+		if (this.isClose) {
 			return;
 		}
-		color.setColor(1f, 1f, 1f, 1f);
+		if (!this.color.equals(LColor.white)) {
+			MODULATE();
+			this.color.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+			gl10.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		}
 	}
 
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param color
-	 */
+	public final void setColorRGB(LColor c) {
+		if (this.isClose) {
+			return;
+		}
+		if (!c.equals(this.color)) {
+			MODULATE();
+			this.color.setColor(c.r, c.g, c.b, this._lastAlpha);
+			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+					this.color.a);
+		}
+	}
+
 	public final void setColorARGB(LColor c) {
-		if (isClose) {
+		if (this.isClose) {
 			return;
 		}
-		float alpha = _lastAlpha == 1 ? c.a : _lastAlpha;
-		color.setColor(c.r, c.g, c.b, alpha);
+		if (!c.equals(this.color)) {
+			MODULATE();
+			float alpha = this._lastAlpha == 1.0F ? c.a : this._lastAlpha;
+			this.color.setColor(c.r, c.g, c.b, alpha);
+			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+					this.color.a);
+		}
 	}
 
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param pixel
-	 */
 	public final void setColor(int pixel) {
 		int[] rgbs = LColor.getRGBs(pixel);
-		setColorValue(rgbs[0], rgbs[1], rgbs[2], (int) (_lastAlpha * 255));
+		setColorValue(rgbs[0], rgbs[1], rgbs[2],
+				(int) (this._lastAlpha * 255.0F));
 	}
 
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param c
-	 */
 	public final void setColor(LColor c) {
 		setColorARGB(c);
 	}
 
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param a
-	 */
-	public final void setColor(final float r, final float g, final float b,
-			final float a) {
-		if (isClose) {
+	public final void setColor(float r, float g, float b, float a) {
+		if (this.isClose) {
 			return;
 		}
-		color.setFloatColor(r, g, b, a);
+		if (!this.color.equals(r, g, b, a)) {
+			MODULATE();
+			this.color.setFloatColor(r, g, b, a);
+			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+					this.color.a);
+		}
 	}
 
-	public final void setColor(final int r, final int g, final int b,
-			final int a) {
-		if (isClose) {
+	public final void setColor(int r, int g, int b, int a) {
+		if (this.isClose) {
 			return;
 		}
-		float red = r / 255f;
-		float green = g / 255f;
-		float blue = b / 255f;
-		float alpha = a / 255f;
-		color.setFloatColor(red, green, blue, alpha);
+		float red = r / 255.0F;
+		float green = g / 255.0F;
+		float blue = b / 255.0F;
+		float alpha = a / 255.0F;
+		if (!this.color.equals(red, green, blue, alpha)) {
+			MODULATE();
+			this.color.setFloatColor(red, green, blue, alpha);
+			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+					this.color.a);
+		}
 	}
 
-	/**
-	 * 设定画布颜色
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 */
-	public final void setColor(final float r, final float g, final float b) {
-		setColor(r, g, b, _lastAlpha);
+	public final void setColor(float r, float g, float b) {
+		setColor(r, g, b, this._lastAlpha);
 	}
 
-	public final void setColor(final int r, final int g, final int b) {
-		setColor(r, g, b, (int) (_lastAlpha * 255));
+	public final void setColor(int r, int g, int b) {
+		setColor(r, g, b, (int) (this._lastAlpha * 255.0F));
 	}
 
-	/**
-	 * 获得当前画布颜色
-	 * 
-	 * @return
-	 */
 	public final LColor getColor() {
-		return new LColor(color);
+		return new LColor(this.color);
 	}
 
 	public final int getColorRGB() {
-		return color.getRGB();
+		return this.color.getRGB();
 	}
 
 	public final int getColorARGB() {
-		return color.getARGB();
+		return this.color.getARGB();
 	}
 
 	/**
