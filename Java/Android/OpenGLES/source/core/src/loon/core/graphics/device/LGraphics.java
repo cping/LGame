@@ -1648,10 +1648,18 @@ public final class LGraphics implements LTrans {
 		paint.setStyle(style);
 	}
 
+	public void fill(loon.core.graphics.device.Path p,Paint paint) {
+		canvas.drawPath(p.path2D, paint);
+	}
+	
 	public void draw(loon.core.graphics.device.Path p) {
 		canvas.drawPath(p.path2D, paint);
 	}
 
+	public void draw(loon.core.graphics.device.Path p,Paint paint) {
+		canvas.drawPath(p.path2D, paint);
+	}
+	
 	public void setClip(loon.core.graphics.device.Path p) {
 		canvas.clipPath(p.path2D);
 	}

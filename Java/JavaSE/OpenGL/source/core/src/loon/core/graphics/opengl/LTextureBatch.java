@@ -953,7 +953,7 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	private boolean checkUpdateColor(LColor c) {
-		return true;// c != null && !LColor.white.equals(c);
+		return c != null && !LColor.white.equals(c);
 	}
 
 	public LTexture getTexture() {

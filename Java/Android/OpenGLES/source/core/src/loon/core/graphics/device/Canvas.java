@@ -99,7 +99,7 @@ public class Canvas {
 	public LGraphics get() {
 		return _graphics;
 	}
-	
+
 	public void drawLine(float x1, float y1, float x2, float y2, Paint paint) {
 		if (paint != null) {
 			if (paint.isTransparent()) {
@@ -113,7 +113,6 @@ public class Canvas {
 		}
 	}
 
-	
 	public void drawBitmap(Bitmap bitmap, int left, int top, Paint paint) {
 		if (paint != null) {
 			if (paint.isTransparent()) {
@@ -156,7 +155,6 @@ public class Canvas {
 	public int getWidth() {
 		return this._bufferedImage != null ? this._bufferedImage.getWidth() : 0;
 	}
-
 
 	public void setBitmap(Bitmap bitmap) {
 		if (bitmap == null) {
@@ -360,17 +358,17 @@ public class Canvas {
 			if (_isFillAlpha) {
 				this._graphics.setAlpha(0.5f);
 			}
-			_graphics.fill(path);
+			_graphics.fill(path, paint.getPaint());
 			if (_isFillAlpha) {
 				this._graphics.setAlpha(1.0f);
 			}
 			return;
 		case Paint.Style.STROKE:
-			_graphics.draw(path);
+			_graphics.draw(path, paint.getPaint());
 			return;
 		case Paint.Style.FILL_AND_STROKE:
-			_graphics.fill(path);
-			_graphics.draw(path);
+			_graphics.fill(path, paint.getPaint());
+			_graphics.draw(path, paint.getPaint());
 			return;
 		default:
 			break;

@@ -145,7 +145,7 @@ public final class GLEx implements LTrans {
 	private LFont font = LFont.getDefaultFont();
 
 	private int defaultBlend = GL.MODE_NORMAL;
-	
+
 	public GLEx(int width, int height) {
 		String version = org.lwjgl.opengl.GL11.glGetString(GL11.GL_VERSION);
 		verMajor = Integer.parseInt("" + version.charAt(0));
@@ -567,7 +567,7 @@ public final class GLEx implements LTrans {
 		gl10.glMatrixMode(GL10.GL_MODELVIEW);
 		gl10.glLoadMatrixf(m.get(), 0);
 	}
-	
+
 	/**
 	 * 设定当前使用的色彩混合模式
 	 * 
@@ -694,12 +694,20 @@ public final class GLEx implements LTrans {
 		if (isClose) {
 			return;
 		}
-		_isReplace = true;
+		this.setAlpha(1);
+		this._isReplace = true;
+		this.sx = 1;
+		this.sy = 1;
 		bind(0);
 		glTex2DDisable();
 		if (clear) {
 			GLUtils.setClearColor(gl10, 0, 0, 0, 1f);
 		}
+	}
+
+	public final void noAlpha() {
+		setAlpha(1f);
+		resetColor();
 	}
 
 	/**
@@ -772,36 +780,36 @@ public final class GLEx implements LTrans {
 		if (this.isClose) {
 			return;
 		}
-		if (!this.color.equals(LColor.white)) {
-			MODULATE();
+	//	if (!this.color.equals(LColor.white)) {
+	//		MODULATE();
 			this.color.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-			gl10.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		}
+	//		gl10.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+	//	}
 	}
 
 	public final void setColorRGB(LColor c) {
 		if (this.isClose) {
 			return;
 		}
-		if (!c.equals(this.color)) {
-			MODULATE();
+	//	if (!c.equals(this.color)) {
+	//		MODULATE();
 			this.color.setColor(c.r, c.g, c.b, this._lastAlpha);
-			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
-					this.color.a);
-		}
+		//	gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+		//			this.color.a);
+	//	}
 	}
 
 	public final void setColorARGB(LColor c) {
 		if (this.isClose) {
 			return;
 		}
-		if (!c.equals(this.color)) {
-			MODULATE();
+		//if (!c.equals(this.color)) {
+		//	MODULATE();
 			float alpha = this._lastAlpha == 1.0F ? c.a : this._lastAlpha;
 			this.color.setColor(c.r, c.g, c.b, alpha);
-			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
-					this.color.a);
-		}
+		//	gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+		//			this.color.a);
+		//}
 	}
 
 	public final void setColor(int pixel) {
@@ -818,12 +826,12 @@ public final class GLEx implements LTrans {
 		if (this.isClose) {
 			return;
 		}
-		if (!this.color.equals(r, g, b, a)) {
-			MODULATE();
+	//	if (!this.color.equals(r, g, b, a)) {
+	//		MODULATE();
 			this.color.setFloatColor(r, g, b, a);
-			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
-					this.color.a);
-		}
+	//		gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+	//				this.color.a);
+	//	}
 	}
 
 	public final void setColor(int r, int g, int b, int a) {
@@ -834,12 +842,12 @@ public final class GLEx implements LTrans {
 		float green = g / 255.0F;
 		float blue = b / 255.0F;
 		float alpha = a / 255.0F;
-		if (!this.color.equals(red, green, blue, alpha)) {
-			MODULATE();
+	///	if (!this.color.equals(red, green, blue, alpha)) {
+		//	MODULATE();
 			this.color.setFloatColor(red, green, blue, alpha);
-			gl10.glColor4f(this.color.r, this.color.g, this.color.b,
-					this.color.a);
-		}
+		//	gl10.glColor4f(this.color.r, this.color.g, this.color.b,
+		//			this.color.a);
+		//}
 	}
 
 	public final void setColor(float r, float g, float b) {
@@ -3036,12 +3044,13 @@ public final class GLEx implements LTrans {
 			bind(texture.textureID);
 
 			updateColor = !color.equals(c) || _lastAlpha != 1f;
+			MODULATE();
 			if (updateColor) {
-				MODULATE();
 				gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
 						: c.a);
+			} else {
+				gl10.glColor4f(1f, 1f, 1f, 1f);
 			}
-
 			if (onSaveFlag = checkSave(texture, x, y, width, height, rotation,
 					dir)) {
 				gl10.glPushMatrix();
@@ -3138,9 +3147,8 @@ public final class GLEx implements LTrans {
 			if (onSaveFlag) {
 				gl10.glPopMatrix();
 			}
-
+			REPLACE();
 			if (updateColor) {
-				REPLACE();
 				gl10.glColor4f(color.r, color.g, color.b, color.a);
 			}
 
@@ -3566,10 +3574,12 @@ public final class GLEx implements LTrans {
 			if (!texture.isLoaded) {
 				texture.loadTexture();
 			}
+			MODULATE();
 			if (c != null) {
-				MODULATE();
 				gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
 						: c.a);
+			} else {
+				gl10.glColor4f(1f, 1f, 1f, 1f);
 			}
 			int old = getBlendMode();
 
@@ -3720,12 +3730,12 @@ public final class GLEx implements LTrans {
 			if (x != 0 || y != 0) {
 				translate(x, y);
 			}
-			if (isColor) {
-				MODULATE();
-				if (c != null) {
-					gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
-							: c.a);
-				}
+			MODULATE();
+			if (isColor && c != null) {
+				gl10.glColor4f(c.r, c.g, c.b, _lastAlpha != 1f ? _lastAlpha
+						: c.a);
+			} else {
+				gl10.glColor4f(1f, 1f, 1f, 1f);
 			}
 			glTex2DEnable();
 			{
@@ -3751,11 +3761,9 @@ public final class GLEx implements LTrans {
 			if (x != 0 || y != 0) {
 				translate(-x, -y);
 			}
-			if (isColor) {
-				if (c != null) {
-					gl10.glColor4f(color.r, color.g, color.b, color.a);
-				}
-				REPLACE();
+			REPLACE();
+			if (isColor && c != null) {
+				gl10.glColor4f(color.r, color.g, color.b, color.a);
 			}
 		}
 	}
