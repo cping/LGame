@@ -68,6 +68,7 @@ public final class LSystem {
 		synchronized (LConfig.class) {
 			if (_config == null) {
 				_config = new LConfig();
+				_config.blend = GL.MODE_NORMAL;
 				try {
 					ConfigReader reader = ConfigReader.getInstance(_configFile);
 					_config.autofilterColor = reader.getBoolValue(

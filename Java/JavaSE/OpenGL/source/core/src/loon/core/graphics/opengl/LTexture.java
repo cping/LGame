@@ -1035,6 +1035,10 @@ public class LTexture implements LRelease {
 		return image;
 	}
 
+	public void resetColor() {
+		setImageColor(LColor.white);
+	}
+
 	public void setImageColor(float r, float g, float b, float a) {
 		setColor(TOP_LEFT, r, g, b, a);
 		setColor(TOP_RIGHT, r, g, b, a);
