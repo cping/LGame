@@ -853,10 +853,6 @@ public final class LTextureBatch implements LRelease {
 		}
 	}
 
-	public void resetColor() {
-		setImageColor(LColor.white);
-	}
-	
 	public void setImageColor(float r, float g, float b, float a) {
 		setColor(LTexture.TOP_LEFT, r, g, b, a);
 		setColor(LTexture.TOP_RIGHT, r, g, b, a);
