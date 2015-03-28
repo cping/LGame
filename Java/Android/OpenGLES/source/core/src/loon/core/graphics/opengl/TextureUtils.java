@@ -20,6 +20,7 @@
  */
 package loon.core.graphics.opengl;
 
+import android.graphics.Bitmap.Config;
 import loon.LSystem;
 import loon.core.graphics.device.LColor;
 import loon.core.graphics.device.LGraphics;
@@ -35,14 +36,34 @@ public class TextureUtils {
 
 	public static LTexture filterGray(String res, Format format) {
 		LImage tmp = new LImage(res);
-		int[] pixels = NativeSupport.toGray(tmp.getPixels(), tmp.getWidth(),
-				tmp.getHeight());
-		tmp.setFormat(format);
-		tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
-		tmp.setAutoDispose(true);
-		LTexture texture = tmp.getTexture();
-		pixels = null;
-		return texture;
+		if (tmp.hasAlpha() && tmp.getBitmap().isMutable()) {
+			int[] pixels = NativeSupport.toGray(tmp.getPixels(),
+					tmp.getWidth(), tmp.getHeight());
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
+			tmp.setAutoDispose(true);
+			LTexture texture = tmp.getTexture();
+			pixels = null;
+			return texture;
+		} else {
+			LImage image = new LImage(tmp.getBitmap().copy(Config.ARGB_8888,
+					true));
+			int[] pixels = NativeSupport.toGray(tmp.getPixels(),
+					tmp.getWidth(), tmp.getHeight());
+			image.setFormat(format);
+			image.setPixels(pixels, image.getWidth(), image.getHeight());
+			LTexture texture = image.getTexture();
+			if (image != null) {
+				image.dispose();
+				image = null;
+			}
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
+			}
+			pixels = null;
+			return texture;
+		}
 	}
 
 	public static LTexture filterColor(String res, LColor col) {
@@ -51,7 +72,7 @@ public class TextureUtils {
 
 	public static LTexture filterColor(String res, LColor col, Format format) {
 		LImage tmp = new LImage(res);
-		if (tmp.hasAlpha()) {
+		if (tmp.hasAlpha() && tmp.getBitmap().isMutable()) {
 			int[] pixels = NativeSupport.toColorKey(tmp.getPixels(),
 					col.getRGB());
 			tmp.setFormat(format);
@@ -62,14 +83,8 @@ public class TextureUtils {
 			return texture;
 
 		} else {
-			LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-			LGraphics g = image.getLGraphics();
-			g.drawImage(tmp, 0, 0);
-			g.dispose();
-			if (tmp != null) {
-				tmp.dispose();
-				tmp = null;
-			}
+			LImage image = new LImage(tmp.getBitmap().copy(Config.ARGB_8888,
+					true));
 			int[] pixels = NativeSupport.toColorKey(image.getPixels(),
 					col.getRGB());
 			image.setFormat(format);
@@ -78,6 +93,10 @@ public class TextureUtils {
 			if (image != null) {
 				image.dispose();
 				image = null;
+			}
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
 			}
 			pixels = null;
 			return texture;
@@ -90,7 +109,7 @@ public class TextureUtils {
 
 	public static LTexture filterColor(String res, int[] colors, Format format) {
 		LImage tmp = new LImage(res);
-		if (tmp.hasAlpha()) {
+		if (tmp.hasAlpha() && tmp.getBitmap().isMutable()) {
 			int[] pixels = NativeSupport.toColorKeys(tmp.getPixels(), colors);
 			tmp.setFormat(format);
 			tmp.setPixels(pixels, tmp.getWidth(), tmp.getHeight());
@@ -100,21 +119,19 @@ public class TextureUtils {
 			return texture;
 
 		} else {
-			LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-			LGraphics g = image.getLGraphics();
-			g.drawImage(tmp, 0, 0);
-			g.dispose();
-			if (tmp != null) {
-				tmp.dispose();
-				tmp = null;
-			}
-			int[] pixels = NativeSupport.toColorKeys(image.getPixels(), colors);
+			LImage image = new LImage(tmp.getBitmap().copy(Config.ARGB_8888,
+					true));
+			int[] pixels = NativeSupport.toColorKeys(tmp.getPixels(), colors);
 			image.setFormat(format);
 			image.setPixels(pixels, image.getWidth(), image.getHeight());
 			LTexture texture = image.getTexture();
 			if (image != null) {
 				image.dispose();
 				image = null;
+			}
+			if (tmp != null) {
+				tmp.dispose();
+				tmp = null;
 			}
 			pixels = null;
 			return texture;
@@ -134,14 +151,8 @@ public class TextureUtils {
 		int egreen = end.getGreen();
 		int eblue = end.getBlue();
 		LImage tmp = new LImage(res);
-		LImage image = new LImage(tmp.getWidth(), tmp.getHeight(), true);
-		LGraphics g = image.getLGraphics();
-		g.drawImage(tmp, 0, 0);
-		g.dispose();
-		if (tmp != null) {
-			tmp.dispose();
-			tmp = null;
-		}
+		LImage image = new LImage(tmp.getBitmap().copy(Config.ARGB_8888,
+				true));
 		int[] pixels = image.getPixels();
 		int size = pixels.length;
 		for (int i = 0; i < size; i++) {
@@ -157,6 +168,10 @@ public class TextureUtils {
 		if (image != null) {
 			image.dispose();
 			image = null;
+		}
+		if (tmp != null) {
+			tmp.dispose();
+			tmp = null;
 		}
 		return texture;
 	}
