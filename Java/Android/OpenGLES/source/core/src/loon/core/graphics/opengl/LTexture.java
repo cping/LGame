@@ -129,7 +129,7 @@ public class LTexture implements LRelease {
 
 	public float heightRatio = 1.0f;
 
-	int[] crops = { 0, 0, 0, 0 };
+	final int[] crops = { 0, 0, 0, 0 };
 
 	float[] dataCords;
 
@@ -1432,16 +1432,6 @@ public class LTexture implements LRelease {
 		dispose(remove);
 		freeCache();
 		freeBatch();
-		if (remove) {
-			data = null;
-			if (imageData != null) {
-				imageData.dispose();
-				imageData = null;
-			}
-			colors = null;
-			dataCords = null;
-			crops = null;
-		}
 	}
 
 }
