@@ -1,13 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import loon.LSystem;
-import loon.core.LRelease;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -28,6 +18,16 @@ import loon.core.graphics.device.LFont;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import loon.LSystem;
+import loon.core.LRelease;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.device.LFont;
+
 public final class LSTRDictionary {
 
 	private final static HashMap<String, LFont> cacheList = new HashMap<String, LFont>(

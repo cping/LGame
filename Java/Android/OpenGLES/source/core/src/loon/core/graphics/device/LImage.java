@@ -855,8 +855,12 @@ public class LImage implements LRelease {
 	}
 
 	public LTexture getTexture() {
+		return getTexture(true);
+	}
+
+	public LTexture getTexture(boolean autoFree) {
 		if (texture == null || texture.isClose() || isUpdate) {
-			setAutoDispose(true);
+			setAutoDispose(autoFree);
 			LTexture tmp = texture;
 			texture = new LTexture(GLLoader.getTextureData(this), format);
 			if (tmp != null) {

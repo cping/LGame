@@ -333,18 +333,21 @@ public class LImage implements LRelease {
 				if (e.equalsIgnoreCase(ext) && config.getColors().length > 0) {
 					if (config.getColors().length == 1) {
 						if (img.getColorModel().hasAlpha()) {
-							int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+							int[] srcImages = JavaSEGraphicsUtils
+									.getPixels(img);
 							int[] pixels = NativeSupport.toColorKey(srcImages,
 									config.getColors()[0]);
 							JavaSEGraphicsUtils.setPixels(img, pixels,
 									img.getWidth(), img.getHeight());
 						} else {
-							BufferedImage tmp = JavaSEGraphicsUtils.createImage(
-									img.getWidth(), img.getHeight(), true);
+							BufferedImage tmp = JavaSEGraphicsUtils
+									.createImage(img.getWidth(),
+											img.getHeight(), true);
 							Graphics2D g = tmp.createGraphics();
 							g.drawImage(img, 0, 0, null);
 							g.dispose();
-							int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+							int[] srcImages = JavaSEGraphicsUtils
+									.getPixels(tmp);
 							int[] pixels = NativeSupport.toColorKey(srcImages,
 									config.getColors()[0]);
 							JavaSEGraphicsUtils.setPixels(tmp, pixels,
@@ -358,18 +361,21 @@ public class LImage implements LRelease {
 						return img;
 					} else {
 						if (img.getColorModel().hasAlpha()) {
-							int[] srcImages = JavaSEGraphicsUtils.getPixels(img);
+							int[] srcImages = JavaSEGraphicsUtils
+									.getPixels(img);
 							int[] pixels = NativeSupport.toColorKeys(srcImages,
 									config.getColors());
 							JavaSEGraphicsUtils.setPixels(img, pixels,
 									img.getWidth(), img.getHeight());
 						} else {
-							BufferedImage tmp = JavaSEGraphicsUtils.createImage(
-									img.getWidth(), img.getHeight(), true);
+							BufferedImage tmp = JavaSEGraphicsUtils
+									.createImage(img.getWidth(),
+											img.getHeight(), true);
 							Graphics2D g = tmp.createGraphics();
 							g.drawImage(img, 0, 0, null);
 							g.dispose();
-							int[] srcImages = JavaSEGraphicsUtils.getPixels(tmp);
+							int[] srcImages = JavaSEGraphicsUtils
+									.getPixels(tmp);
 							int[] pixels = NativeSupport.toColorKeys(srcImages,
 									config.getColors());
 							JavaSEGraphicsUtils.setPixels(tmp, pixels,
@@ -475,7 +481,8 @@ public class LImage implements LRelease {
 	private void setImage(Image img) {
 		this.width = img.getWidth(null);
 		this.height = img.getHeight(null);
-		this.bufferedImage = getFilterAllImage(JavaSEGraphicsUtils.getBufferImage(img));
+		this.bufferedImage = getFilterAllImage(JavaSEGraphicsUtils
+				.getBufferImage(img));
 	}
 
 	public Object clone() {
@@ -691,6 +698,10 @@ public class LImage implements LRelease {
 	}
 
 	public LTexture getTexture() {
+		return getTexture(true);
+	}
+
+	public LTexture getTexture(boolean autoFree) {
 		if (texture == null || texture.isClose() || isUpdate) {
 			setAutoDispose(true);
 			LTexture tmp = texture;

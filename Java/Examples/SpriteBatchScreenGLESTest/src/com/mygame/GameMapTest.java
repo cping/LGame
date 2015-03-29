@@ -18,8 +18,13 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
-package game.test;
+package com.mygame;
 
+import loon.Key;
+import loon.LKey;
+import loon.LSystem;
+import loon.LSystem.ApplicationType;
+import loon.LTouch;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.RotateTo;
@@ -29,15 +34,10 @@ import loon.action.sprite.JumpObject;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatchObject;
 import loon.action.sprite.SpriteBatchScreen;
-import loon.core.LSystem;
-import loon.core.LSystem.ApplicationType;
 import loon.core.event.ActionKey;
 import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
 import loon.core.graphics.component.LPad;
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
+import loon.core.graphics.device.LColor;
 
 //PS:使用SpriteBatch时，请尽可能使用同一LTexture衍生出的图片，这样后台能有效的合并处理
 public class GameMapTest extends SpriteBatchScreen {
@@ -421,6 +421,11 @@ public class GameMapTest extends SpriteBatchScreen {
 
 	}
 
+	@Override
+	public void touchDrag(LTouch e) {
+		
+	}
+	
 	public void touchDown(LTouch e) {
 
 	}
@@ -440,5 +445,6 @@ public class GameMapTest extends SpriteBatchScreen {
 	public void release(LKey e) {
 
 	}
+
 
 }

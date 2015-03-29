@@ -1,21 +1,3 @@
-package loon.core.graphics.opengl;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import loon.LSystem;
-import loon.action.sprite.SpriteBatch;
-import loon.core.LRelease;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.LTexture.Format;
-import loon.core.resource.Resources;
-import loon.utils.CollectionUtils;
-import loon.utils.xml.XMLDocument;
-import loon.utils.xml.XMLElement;
-import loon.utils.xml.XMLParser;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -36,6 +18,24 @@ import loon.utils.xml.XMLParser;
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
+package loon.core.graphics.opengl;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import loon.LSystem;
+import loon.action.sprite.SpriteBatch;
+import loon.core.LRelease;
+import loon.core.graphics.device.LColor;
+import loon.core.graphics.opengl.LTexture.Format;
+import loon.core.resource.Resources;
+import loon.utils.CollectionUtils;
+import loon.utils.xml.XMLDocument;
+import loon.utils.xml.XMLElement;
+import loon.utils.xml.XMLParser;
+
 public class LTextureList implements LRelease {
 
 	private final int width = LSystem.screenRect.width;

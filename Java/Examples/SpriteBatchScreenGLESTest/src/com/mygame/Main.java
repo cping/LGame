@@ -1,18 +1,12 @@
-package game.test;
+package com.mygame;
 
 import loon.LGame;
+import loon.LSetting;
 import loon.core.graphics.opengl.LTexture;
 
-public class SpriteBatchScreenGLESTestActivity extends LGame {
+public class Main extends LGame {
 
-	public void onGamePaused() {
-
-	}
-
-	public void onGameResumed() {
-
-	}
-
+	@Override
 	public void onMain() {
 		LTexture.ALL_LINEAR = true;
 		LSetting setting = new LSetting();
@@ -20,8 +14,21 @@ public class SpriteBatchScreenGLESTestActivity extends LGame {
 		setting.height = 320;
 		setting.showFPS = true;
 		setting.landscape = true;
-		setting.fps = 40;
+		setting.fps = 60;
 		register(setting, GameMapTest.class);
 	}
+
+	@Override
+	public void onGameResumed() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onGamePaused() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
