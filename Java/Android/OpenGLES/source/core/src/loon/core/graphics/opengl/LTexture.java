@@ -129,9 +129,9 @@ public class LTexture implements LRelease {
 
 	public float heightRatio = 1.0f;
 
-	final int[] crops = { 0, 0, 0, 0 };
+	int[] crops = { 0, 0, 0, 0 };
 
-	float dataCords[];
+	float[] dataCords;
 
 	FloatBuffer data;
 
@@ -1391,7 +1391,7 @@ public class LTexture implements LRelease {
 	}
 
 	private boolean checkUpdateColor(LColor c) {
-		return true;//c != null && !LColor.white.equals(c);
+		return true;// c != null && !LColor.white.equals(c);
 	}
 
 	public GLCache newBatchCache() {
@@ -1432,6 +1432,16 @@ public class LTexture implements LRelease {
 		dispose(remove);
 		freeCache();
 		freeBatch();
+		if (remove) {
+			data = null;
+			if (imageData != null) {
+				imageData.dispose();
+				imageData = null;
+			}
+			colors = null;
+			dataCords = null;
+			crops = null;
+		}
 	}
 
 }

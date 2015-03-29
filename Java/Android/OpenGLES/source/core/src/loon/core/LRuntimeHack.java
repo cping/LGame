@@ -1,9 +1,11 @@
 package loon.core;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import loon.LSystem;
 import loon.LSystem.ApplicationType;
+import loon.utils.debugging.Log;
 
 public class LRuntimeHack {
 
@@ -19,6 +21,7 @@ public class LRuntimeHack {
 	private Object runtime = null;
 	private Method trackAllocation = null;
 	private Method trackFree = null;
+	private static int totalSize = 0;
 
 	public static float getTargetHeapUtilization() {
 		if (LSystem.type != ApplicationType.Android) {
@@ -70,11 +73,16 @@ public class LRuntimeHack {
 		if (runtime == null) {
 			return false;
 		}
+		totalSize += size;
+		Log.debugWrite("trackAlloc(" + size + ") total=" + totalSize);
 		try {
 			Object res = trackAllocation.invoke(runtime, Long.valueOf(size));
-			return (res instanceof Boolean) ? ((Boolean) res).booleanValue()
-					: true;
-		} catch (Throwable e) {
+			return (res instanceof Boolean) ? (Boolean) res : true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		} catch (IllegalAccessException e) {
+			return false;
+		} catch (InvocationTargetException e) {
 			return false;
 		}
 	}
@@ -86,16 +94,24 @@ public class LRuntimeHack {
 		if (runtime == null) {
 			return false;
 		}
+		totalSize -= size;
+		Log.debugWrite("trackFree(" + size + ") total=" + totalSize);
 		try {
 			Object res = trackFree.invoke(runtime, Long.valueOf(size));
-			return (res instanceof Boolean) ? ((Boolean) res).booleanValue()
-					: true;
-		} catch (Throwable e) {
+			return (res instanceof Boolean) ? (Boolean) res : true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		} catch (IllegalAccessException e) {
+			return false;
+		} catch (InvocationTargetException e) {
 			return false;
 		}
 	}
 
 	public LRuntimeHack() {
+		if (!LSystem.USE_BITMAP_MEMORY_HACK) {
+			return;
+		}
 		if (LSystem.type != ApplicationType.Android) {
 			return;
 		}
@@ -109,9 +125,15 @@ public class LRuntimeHack {
 			trackFree = cl.getMethod("trackExternalFree",
 					new Class[] { long.class });
 			success = true;
-		} catch (Throwable e) {
+		} catch (ClassNotFoundException e) {
+		} catch (SecurityException e) {
+		} catch (NoSuchMethodException e) {
+		} catch (IllegalArgumentException e) {
+		} catch (IllegalAccessException e) {
+		} catch (InvocationTargetException e) {
 		}
 		if (!success) {
+			Log.debugWrite("VMRuntime hack does not work!");
 			runtime = null;
 			trackAllocation = null;
 			trackFree = null;

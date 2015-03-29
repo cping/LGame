@@ -405,16 +405,16 @@ public final class GLLoader extends LTextureData {
 	}
 
 	private static Buffer getBufferPixels(final int[] source, PixelFormat format) {
-		final int[] rgba = CollectionUtils.copyOf(source);
+		final int[] buffer = CollectionUtils.copyOf(source);
 		switch (format) {
 		case RGB_565:
-			return ByteBuffer.wrap(convertARGB_8888toRGB_565(rgba));
+			return ByteBuffer.wrap(convertARGB_8888toRGB_565(buffer));
 		case RGBA_8888:
-			return IntBuffer.wrap(convertARGB_8888toRGBA_8888(rgba));
+			return IntBuffer.wrap(convertARGB_8888toRGBA_8888(buffer));
 		case RGBA_4444:
-			return ByteBuffer.wrap(convertARGB_8888toARGB_4444(rgba));
+			return ByteBuffer.wrap(convertARGB_8888toARGB_4444(buffer));
 		case A_8:
-			return ByteBuffer.wrap(convertARGB_8888toA_8(rgba));
+			return ByteBuffer.wrap(convertARGB_8888toA_8(buffer));
 		default:
 			throw new IllegalArgumentException("Unexpected "
 					+ PixelFormat.class.getSimpleName() + ": '" + format + "'.");

@@ -274,6 +274,10 @@ public final class LSystem {
 
 	public final static int RESOLUTION_HIGH = 2;
 
+	public final static int ICE_CREAM_SANDWICH = 14;
+
+	public final static int HONEYCOMB = 11;
+
 	public static int getResolutionType() {
 		final int max = MathUtils.max(screenRect.width, screenRect.height);
 		if (max < 480) {
@@ -508,6 +512,8 @@ public final class LSystem {
 
 	private static int BULIDM_SDK;
 
+	public static boolean USE_BITMAP_MEMORY_HACK;
+
 	private static HashMap<String, Object> settings = new HashMap<String, Object>(
 			5);
 
@@ -618,11 +624,13 @@ public final class LSystem {
 				BULIDM_SDK = Build.VERSION.class.getDeclaredField("SDK_INT")
 						.getInt(null);
 			} catch (Exception e) {
+				BULIDM_SDK = 3;
 			}
 		}
 		BULIDM_DEVICE = Build.DEVICE;
 		EMULATOR = BULID_BRAND.indexOf("generic") != -1
 				&& BULID_MODEL.indexOf("sdk") != -1;
+		USE_BITMAP_MEMORY_HACK = BULIDM_SDK < ICE_CREAM_SANDWICH;
 	}
 
 	/**
