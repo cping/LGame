@@ -1,0 +1,2176 @@
+/**
+ * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
+package loon.opengl;
+
+import java.util.ArrayList;
+
+import loon.Graphics;
+import loon.LRelease;
+import loon.LSystem;
+import loon.LTexture;
+import loon.LTrans;
+import loon.canvas.LColor;
+import loon.font.LFont;
+import loon.geom.Affine2f;
+import loon.geom.Matrix3;
+import loon.geom.Matrix4;
+import loon.geom.RectBox;
+import loon.geom.Shape;
+import loon.geom.Transforms;
+import loon.geom.Triangle2f;
+import loon.geom.Vector2f;
+import loon.geom.XY;
+import loon.utils.Array;
+import loon.utils.GLUtils;
+import loon.utils.MathUtils;
+import loon.utils.StringUtils;
+
+public class GLEx implements LRelease {
+
+	private class TmpSave {
+		int baseColor = LColor.DEF_COLOR;
+		int fillColor = LColor.DEF_COLOR;
+		float lineWidth = 1f;
+		LFont font = null;
+		LTexture patternTex = null;
+	}
+
+	public static enum Direction {
+		TRANS_NONE, TRANS_MIRROR, TRANS_FILP, TRANS_MF;
+	}
+
+	private LColor tmpColor = new LColor();
+	private final Array<Affine2f> affineStack = new Array<Affine2f>();
+	private final LTexture colorTex;
+	protected final RenderTarget target;
+
+	private final ArrayList<RectBox> scissors = new ArrayList<RectBox>();
+	private int scissorDepth;
+	private int fillColor = LColor.DEF_COLOR;
+	private int baseColor = LColor.DEF_COLOR;
+
+	private float lineWidth = 1f;
+
+	private boolean isClosed;
+
+	private Graphics gfx;
+	private LFont font;
+	private BaseBatch batch;
+
+	private LTexture patternTex;
+	private Affine2f lastTrans;
+
+	private TmpSave tmpSave = new TmpSave();
+
+	/**
+	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
+	 * 
+	 * PS:但是，只有在LGame中注入的，可以影响全局渲染.
+	 * 
+	 * @param gfx
+	 * @param target
+	 * @param def
+	 */
+	public GLEx(Graphics gfx, RenderTarget target, BaseBatch def) {
+		this.gfx = gfx;
+		this.target = target;
+		this.batch = def;
+		this.affineStack.add(lastTrans = new Affine2f());
+		this.colorTex = gfx.finalColorTex();
+		this.scale(target.xscale(), target.yscale());
+		this.font = LFont.getDefaultFont();
+		this.tmpSave.font = this.font;
+	}
+
+	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {
+		this(gfx, target, createDefaultBatch(gl));
+	}
+
+	public int getWidth() {
+		return LSystem.viewSize.getWidth();
+	}
+
+	public int getHeight() {
+		return LSystem.viewSize.getHeight();
+	}
+
+	/**
+	 * 启动一系列渲染命令
+	 * 
+	 * @return
+	 */
+	public GLEx begin() {
+		if (isClosed) {
+			return this;
+		}
+		if (batch == null) {
+			return this;
+		}
+		target.bind();
+		beginBatch(batch);
+		return this;
+	}
+
+	/**
+	 * 结束当前的渲染，并且一次性提交渲染结果到系统。与0.5以前旧版不同的是，此命令提交的LTexture渲染，如果LTexture对象不改变的话，
+	 * 将是连续的. 也就是同一纹理中素材使用的越频繁，渲染效率也就越高，反之，大量使用不同纹理，则会导致渲染速度下降.
+	 * 
+	 * @return
+	 */
+	public GLEx end() {
+		if (isClosed) {
+			return this;
+		}
+		if (batch == null) {
+			return this;
+		}
+		batch.end();
+		return this;
+	}
+
+	public boolean running() {
+		if (isClosed) {
+			return false;
+		}
+		if (batch == null) {
+			return false;
+		}
+		return batch.running();
+	}
+
+	public GLEx resetFont() {
+		this.font = LFont.getDefaultFont();
+		return this;
+	}
+
+	public final GLEx resetColor() {
+		return setColor(LColor.DEF_COLOR);
+	}
+
+	public GLEx setFont(LFont font) {
+		this.font = font;
+		return this;
+	}
+
+	public LFont getFont() {
+		return this.font;
+	}
+
+	public BaseBatch pushBatch(BaseBatch b) {
+		if (isClosed) {
+			return null;
+		}
+		if (b == null) {
+			return null;
+		}
+		BaseBatch oldBatch = batch;
+		save();
+		batch.end();
+		batch = beginBatch(b);
+		return oldBatch;
+	}
+
+	public BaseBatch popBatch(BaseBatch oldBatch) {
+		if (isClosed) {
+			return null;
+		}
+		if (oldBatch != null) {
+			batch.end();
+			batch = beginBatch(oldBatch);
+			restore();
+		}
+		return batch;
+	}
+
+	/**
+	 * 变更画布基础设置
+	 * 
+	 */
+	public final GLEx update() {
+		if (isClosed) {
+			return this;
+		}
+		GL20 gl = batch.gl;
+		// 刷新原始设置
+		GLUtils.reset(gl);
+		// 清空背景为黑色
+		GLUtils.setClearColor(gl, LColor.black);
+		// 禁用色彩抖动
+		GLUtils.disableDither(gl);
+		// 禁用深度测试
+		GLUtils.disableDepthTest(gl);
+		// 禁用双面剪切
+		GLUtils.disableCulling(gl);
+		// 禁用纹理贴图
+		GLUtils.disableTextures(gl);
+		// 设定画布渲染模式为默认
+		this.setBlendMode(LSystem.MODE_NORMAL);
+		return this;
+	}
+
+	public static BaseBatch createDefaultBatch(GL20 gl) {
+		try {
+			if (UniformBatch.isLikelyToPerform(gl)) {
+				return new UniformBatch(gl);
+			}
+		} catch (Throwable e) {
+		}
+		return new TrilateralBatch(gl);
+	}
+
+	/**
+	 * 设定当前使用的色彩混合模式
+	 * 
+	 * @param mode
+	 */
+	public GLEx setBlendMode(int mode) {
+		if (isClosed) {
+			return this;
+		}
+		GLUtils.setBlendMode(batch.gl, mode);
+		return this;
+	}
+
+	public int getBlendMode() {
+		return GLUtils.getBlendMode();
+	}
+
+	public Affine2f tx() {
+		return lastTrans;
+	}
+
+	public GLEx saveBrush() {
+		tmpSave.baseColor = baseColor;
+		tmpSave.fillColor = fillColor;
+		tmpSave.patternTex = patternTex;
+		tmpSave.font = font;
+		tmpSave.lineWidth = lineWidth;
+		return this;
+	}
+
+	public GLEx restoreBrush() {
+		baseColor = tmpSave.baseColor;
+		fillColor = tmpSave.fillColor;
+		patternTex = tmpSave.patternTex;
+		setFont(tmpSave.font);
+		setLineWidth(tmpSave.lineWidth);
+		return this;
+	}
+
+	public GLEx save() {
+		this.saveTx();
+		this.saveBrush();
+		return this;
+	}
+
+	public GLEx restore() {
+		this.restoreTx();
+		this.restoreBrush();
+		return this;
+	}
+
+	private boolean saved;
+
+	public GLEx saveTx() {
+		if (isClosed || saved) {
+			return this;
+		}
+
+		if (lastTrans != null) {
+			affineStack.add(lastTrans = lastTrans.cpy());
+			saved = true;
+		}
+		return this;
+	}
+
+	public GLEx restoreTx() {
+		if (isClosed || !saved) {
+			return this;
+		}
+		lastTrans = affineStack.pop();
+		saved = false;
+		return this;
+	}
+
+	public boolean setClip(int x, int y, int width, int height) {
+		return startClipped(x, y, width, height);
+	}
+
+	public boolean startClipped(int x, int y, int width, int height) {
+		if (isClosed) {
+			return false;
+		}
+		batch.flush();
+		RectBox r = pushScissorState(x, target.height() - y - height, width,
+				height);
+		batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
+		if (scissorDepth == 1) {
+			GLUtils.enablecissorTest(batch.gl);
+		}
+		return !r.isEmpty();
+	}
+
+	public GLEx clearClip() {
+		return endClipped();
+	}
+
+	public GLEx endClipped() {
+		if (isClosed) {
+			return this;
+		}
+		batch.flush();
+		RectBox r = popScissorState();
+		if (r == null) {
+			GLUtils.disablecissorTest(batch.gl);
+		} else {
+			batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
+		}
+		return this;
+	}
+
+	public GLEx translate(float x, float y) {
+		tx().translate(x, y);
+		return this;
+	}
+
+	public GLEx scale(float sx, float sy) {
+		tx().scale(sx, sy);
+		return this;
+	}
+
+	public GLEx rotate(float rx, float ry, float angle) {
+		translate(rx, ry);
+		rotate(angle);
+		return this;
+	}
+
+	public GLEx rotate(float angle) {
+		float sr = (float) Math.sin(angle);
+		float cr = (float) Math.cos(angle);
+		transform(cr, sr, -sr, cr, 0, 0);
+		return this;
+	}
+
+	public GLEx transform(float m00, float m01, float m10, float m11, float tx,
+			float ty) {
+		Affine2f top = tx();
+		Transforms.multiply(top, m00, m01, m10, m11, tx, ty, top);
+		return this;
+	}
+
+	public GLEx concatenate(Affine2f xf, float originX, float originY) {
+		Affine2f txf = tx();
+		Transforms.multiply(txf, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty,
+				txf);
+		if (originX != 0 || originY != 0) {
+			txf.translate(-originX, -originY);
+		}
+		return this;
+	}
+
+	public GLEx set(Matrix3 mat3) {
+		saveTx();
+		Affine2f txf = tx();
+		txf.set(mat3);
+		return this;
+	}
+
+	public GLEx set(Matrix4 mat4) {
+		saveTx();
+		Affine2f txf = tx();
+		txf.set(mat4);
+		return this;
+	}
+
+	public GLEx preConcatenate(Affine2f xf) {
+		Affine2f txf = tx();
+		Transforms.multiply(xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, txf,
+				txf);
+		return this;
+	}
+
+	public float getAlpha() {
+		return alpha();
+	}
+
+	public float alpha() {
+		return ((baseColor >> 24) & 0xFF) / 255f;
+	}
+
+	public GLEx setAlpha(float alpha) {
+		int ialpha = (int) (0xFF * MathUtils.clamp(alpha, 0, 1));
+		this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
+		return this;
+	}
+
+	public void reset(float red, float green, float blue, float alpha) {
+		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
+		this.font = LFont.getDefaultFont();
+		this.baseColor = LColor.DEF_COLOR;
+		this.fillColor = LColor.DEF_COLOR;
+		this.patternTex = null;
+		this.lineWidth = 1f;
+	}
+
+	public void reset() {
+		GLUtils.setClearColor(batch.gl, tmpColor.setColor(baseColor));
+		this.font = LFont.getDefaultFont();
+		this.baseColor = LColor.DEF_COLOR;
+		this.fillColor = LColor.DEF_COLOR;
+		this.patternTex = null;
+		this.lineWidth = 1f;
+	}
+
+	public int color() {
+		return baseColor;
+	}
+
+	public LColor getColor() {
+		return new LColor(baseColor);
+	}
+
+	public GLEx setColor(LColor color) {
+		int argb = color.getARGB();
+		setColor(argb);
+		return this;
+	}
+
+	public GLEx setColor(int r, int g, int b) {
+		return setColor(LColor.getRGB(r, g, b));
+	}
+
+	public GLEx setColor(int r, int g, int b, int a) {
+		return setColor(LColor.getARGB(r, g, b, a));
+	}
+
+	public GLEx setColor(float r, float g, float b, float a) {
+		return setColor(LColor.getARGB((int) (r > 1 ? r : r * 255),
+				(int) (g > 1 ? g : r * 255), (int) (b > 1 ? b : b * 255),
+				(int) (a > 1 ? a : a * 255)));
+	}
+
+	public GLEx setColor(int c) {
+		this.baseColor = c;
+		this.fillColor = c;
+		this.patternTex = null;
+		return this;
+	}
+
+	public GLEx setTint(int c) {
+		this.baseColor = c;
+		return this;
+	}
+
+	public int combineColor(int c) {
+		int otint = this.baseColor;
+		if (c != LColor.DEF_COLOR) {
+			this.baseColor = LColor.combine(c, otint);
+		}
+		return otint;
+	}
+
+	public GLEx setFillColor(int color) {
+		this.fillColor = color;
+		this.patternTex = null;
+		return this;
+	}
+
+	public GLEx setFillPattern(LTexture texture) {
+		this.patternTex = texture;
+		return this;
+	}
+
+	public GLEx clear() {
+		return clear(0, 0, 0, 0);
+	}
+
+	public GLEx clear(float red, float green, float blue, float alpha) {
+		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
+		return this;
+	}
+
+	public final GLEx clear(LColor color) {
+		GLUtils.setClearColor(batch.gl, color);
+		return this;
+	}
+
+	public final GLEx draw(Painter texture, float x, float y, Direction dir) {
+		if(isClosed){
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), null, 0, null, dir);
+	}
+
+	public final GLEx draw(Painter texture, float x, float y, LColor color,
+			float rotation) {
+		if(isClosed){
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, rotation, null, null);
+	}
+
+	public GLEx draw(Painter texture, float x, float y) {
+		if(isClosed){
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height());
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color) {
+		if(isClosed){
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), color);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h,
+			LColor color) {
+		if(isClosed){
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		int argb = baseColor;
+		if (color != null) {
+			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
+			argb = color == null ? baseColor : ((ialpha << 24) | (color
+					.getARGB() & 0xFFFFFF));
+		}
+		texture.addToBatch(batch, argb, tx(), x, y, w, h);
+		return this;
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h,
+			float rotation) {
+		if(isClosed){
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		Affine2f xf = tx();
+		if (rotation != 0) {
+			xf = new Affine2f();
+			xf.rotate(rotation);
+			Transforms.multiply(tx(), xf, xf);
+		}
+		texture.addToBatch(batch, baseColor, xf, x, y, w, h);
+		return this;
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h,
+			LColor color, float rotation) {
+		if(isClosed){
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		int argb = baseColor;
+		if (color != null) {
+			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
+			argb = color == null ? baseColor : ((ialpha << 24) | (color
+					.getARGB() & 0xFFFFFF));
+		}
+		Affine2f xf = tx();
+		if (rotation != 0) {
+			xf = new Affine2f();
+			xf.rotate(rotation);
+			Transforms.multiply(tx(), xf, xf);
+		}
+		texture.addToBatch(batch, argb, xf, x, y, w, h);
+		return this;
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h) {
+		if (isClosed) {
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		texture.addToBatch(batch, baseColor, tx(), x, y, w, h);
+		return this;
+	}
+
+	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh,
+			float sx, float sy, float sw, float sh) {
+		if (isClosed) {
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		texture.addToBatch(batch, baseColor, tx(), dx, dy, dw, dh, sx, sy, sw,
+				sh);
+		return this;
+	}
+
+	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh,
+			float sx, float sy, float sw, float sh, LColor color) {
+		if (isClosed) {
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		int argb = baseColor;
+		if (color != null) {
+			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
+			argb = color == null ? baseColor : ((ialpha << 24) | (color
+					.getARGB() & 0xFFFFFF));
+		}
+		texture.addToBatch(batch, argb, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
+		return this;
+	}
+
+	public GLEx drawFlip(LTexture texture, float x, float y, LColor color) {
+		if(isClosed){
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, 0, null,
+				Direction.TRANS_FILP);
+	}
+
+	public GLEx drawMirror(LTexture texture, float x, float y, LColor color) {
+		if (isClosed) {
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, 0, null,
+				Direction.TRANS_MIRROR);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color,
+			Direction dir) {
+		if (isClosed) {
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, 0, null, dir);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color,
+			float rotation, Vector2f origin, Direction dir) {
+		if (isClosed) {
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, rotation, origin, dir);
+	}
+
+	public GLEx draw(Painter texture, RectBox destRect, RectBox srcRect,
+			LColor color, float rotation) {
+		return draw(texture, destRect.x, destRect.y, destRect.width,
+				destRect.height, srcRect.x, srcRect.y, srcRect.width,
+				srcRect.height, color, rotation, null, null);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float width,
+			float height, float srcX, float srcY, float srcWidth,
+			float srcHeight, LColor c, float rotation) {
+		return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+				srcHeight, c, rotation, null, null);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float width,
+			float height, float srcX, float srcY, float srcWidth,
+			float srcHeight, LColor color, float rotation, Vector2f origin,
+			Direction dir) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		Affine2f xf = tx();
+
+		boolean dirDirty = (dir != null && dir != Direction.TRANS_NONE);
+
+		boolean rotDirty = (rotation != 0);
+
+		boolean oriDirty = (origin != null && (origin.x != 0 || origin.y != 0));
+
+		if (dirDirty || rotDirty || oriDirty) {
+			xf = new Affine2f();
+			if (oriDirty) {
+				xf.translate(origin.x, origin.y);
+			}
+			if (rotDirty) {
+				xf.rotate(rotation);
+			}
+			if (dirDirty) {
+				switch (dir) {
+				case TRANS_MIRROR:
+					Affine2f.transform(xf, Affine2f.TRANS_MIRROR, width, height);
+					break;
+				case TRANS_FILP:
+					Affine2f.transform(xf, Affine2f.TRANS_MIRROR_ROT180, width,
+							height);
+					break;
+				case TRANS_MF:
+					Affine2f.transform(xf, Affine2f.TRANS_ROT180, width, height);
+					break;
+				default:
+					break;
+				}
+			}
+			Transforms.multiply(tx(), xf, xf);
+		}
+
+		int argb = baseColor;
+		if (color != null) {
+			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
+			argb = color == null ? baseColor : ((ialpha << 24) | (color
+					.getARGB() & 0xFFFFFF));
+		}
+		texture.addToBatch(batch, argb, xf, x, y, width, height, srcX, srcY,
+				srcWidth, srcHeight);
+		return this;
+	}
+
+	public GLEx drawCentered(Painter texture, float x, float y) {
+		if (isClosed) {
+			return this;
+		}
+		if(texture == null){
+			return this;
+		}
+		return draw(texture, x - texture.width() / 2, y - texture.height() / 2);
+	}
+
+	public GLEx drawLine(XY a, XY b, float width) {
+		return drawLine(a.getX(), a.getY(), b.getX(), b.getY(), width);
+	}
+
+	public GLEx drawLine(float x0, float y0, float x1, float y1, float width) {
+		if (isClosed) {
+			return this;
+		}
+		if (x1 < x0) {
+			float temp = x0;
+			x0 = x1;
+			x1 = temp;
+			temp = y0;
+			y0 = y1;
+			y1 = temp;
+		}
+
+		float dx = x1 - x0, dy = y1 - y0;
+		float length = MathUtils.sqrt(dx * dx + dy * dy);
+		float wx = dx * (width / 2) / length;
+		float wy = dy * (width / 2) / length;
+
+		Affine2f xf = new Affine2f();
+		xf.setRotation(MathUtils.atan2(dy, dx));
+		xf.setTranslation(x0 + wy, y0 - wx);
+		Transforms.multiply(tx(), xf, xf);
+		if (patternTex != null) {
+			batch.addQuad(patternTex, baseColor, xf, 0, 0, length, width);
+		} else {
+			batch.addQuad(colorTex, LColor.combine(fillColor, baseColor), xf,
+					0, 0, length, width);
+		}
+		return this;
+	}
+
+	public GLEx fillRect(float x, float y, float width, float height) {
+		if (isClosed) {
+			return this;
+		}
+		if (patternTex != null) {
+			batch.addQuad(patternTex, baseColor, tx(), x, y, width, height);
+		} else {
+			batch.addQuad(colorTex, LColor.combine(fillColor, baseColor), tx(),
+					x, y, width, height);
+		}
+		return this;
+	}
+
+	public GLEx closeBatch() {
+		if (batch != null) {
+			batch.close();
+		}
+		return this;
+	}
+
+	public GLEx initBatch() {
+		if (batch != null) {
+			batch.init();
+		}
+		return this;
+	}
+
+	public GLEx freeBatchBuffer() {
+		if (batch != null) {
+			batch.freeBuffer();
+		}
+		return this;
+	}
+
+	private BaseBatch beginBatch(BaseBatch batch) {
+		batch.begin(target.width(), target.height(), target.flip());
+		return batch;
+	}
+
+	public int getClipWidth() {
+		if (scissors.size() == 0) {
+			return 0;
+		}
+		return scissors.get(scissorDepth).width;
+	}
+
+	public int getClipHeight() {
+		if (scissors.size() == 0) {
+			return 0;
+		}
+		return scissors.get(scissorDepth).height;
+	}
+
+	private RectBox pushScissorState(int x, int y, int width, int height) {
+		if (scissorDepth == scissors.size()) {
+			scissors.add(new RectBox());
+		}
+		RectBox r = scissors.get(scissorDepth);
+		if (scissorDepth == 0) {
+			r.setBounds(x, y, width, height);
+		} else {
+			RectBox pr = scissors.get(scissorDepth - 1);
+			r.setLocation(Math.max(pr.x, x), Math.max(pr.y, y));
+			r.setSize(Math.max(Math.min(pr.maxX(), x + width - 1) - r.x, 0),
+					Math.max(Math.min(pr.maxY(), y + height - 1) - r.y, 0));
+		}
+		scissorDepth++;
+		return r;
+	}
+
+	private RectBox popScissorState() {
+		scissorDepth--;
+		return scissorDepth == 0 ? null : scissors.get(scissorDepth - 1);
+	}
+
+	private boolean useBegin;
+
+	private GLBatch glBatch;
+
+	/**
+	 * 模拟标准OpenGL的glBegin(实际为重新初始化顶点集合)
+	 * 
+	 * @param mode
+	 */
+	public GLEx glBegin(int mode) {
+		if (running()) {
+			saveTx();
+			end();
+		}
+		GLUtils.disableTextures(batch.gl);
+		if (glBatch == null) {
+			glBatch = new GLBatch(3000, false, true, 0);
+		}
+		this.glBatch.begin(gfx.getProjectionMatrix(), mode);
+		this.useBegin = true;
+		return this;
+	}
+
+	/**
+	 * 在模拟标准OpenGL的环境中传入指定像素点
+	 * 
+	 * @param x
+	 * @param y
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @param a
+	 */
+	public GLEx putPixel4ES(float x, float y, float r, float g, float b, float a) {
+		if (!useBegin) {
+			return this;
+		}
+		if (a <= 0 || (r == 0 && g == 0 && b == 0 && a == 0)) {
+			return this;
+		}
+		if ((x < 0 || y < 0)
+				|| (x > LSystem.viewSize.width || y > LSystem.viewSize.height)) {
+			return this;
+		}
+		this.glVertex2f(x, y);
+		this.glColor(r, g, b, a);
+		return this;
+	}
+
+	/**
+	 * 在模拟标准OpenGL的环境中传入指定像素点
+	 * 
+	 * @param x
+	 * @param y
+	 * @param c
+	 */
+	public GLEx putPixel4ES(float x, float y, LColor c) {
+		return putPixel4ES(x, y, c.r, c.g, c.b, c.a);
+	}
+
+	/**
+	 * 在模拟标准OpenGL的环境中传入指定像素点
+	 * 
+	 * @param x
+	 * @param y
+	 * @param r
+	 * @param g
+	 * @param b
+	 */
+	public GLEx putPixel3ES(float x, float y, float r, float g, float b) {
+		return putPixel4ES(x, y, r, g, b, 1);
+	}
+
+	/**
+	 * 设置纹理坐标
+	 * 
+	 * @param fcol
+	 * @param frow
+	 */
+	public final GLEx glTexCoord2f(float fcol, float frow) {
+		if (!useBegin) {
+			return this;
+		}
+		glBatch.texCoord(fcol, frow);
+		return this;
+	}
+
+	/**
+	 * 添加二维纹理
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public final GLEx glVertex2f(float x, float y) {
+		if (!useBegin) {
+			return this;
+		}
+		glBatch.vertex(x, y, 0);
+		return this;
+	}
+
+	/**
+	 * 添加三维纹理
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public final GLEx glVertex3f(float x, float y, float z) {
+		if (!useBegin) {
+			return this;
+		}
+		glBatch.vertex(x, y, z);
+		return this;
+	}
+
+	/**
+	 * 定义色彩
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @param a
+	 */
+	public GLEx glColor(float r, float g, float b, float a) {
+		if (!useBegin) {
+			return this;
+		}
+		glBatch.color(r, g, b, a);
+		return this;
+	}
+
+	/**
+	 * 定义色彩
+	 * 
+	 * @param c
+	 */
+	public GLEx glColor(LColor c) {
+		glBatch.color(c);
+		return this;
+	}
+
+	public GLEx glColor(int c) {
+		glBatch.color(new LColor(c));
+		return this;
+	}
+
+	/**
+	 * 定义色彩
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 */
+	public GLEx glColor(float r, float g, float b) {
+		return glColor(r, g, b, 1);
+	}
+
+	/**
+	 * 绘制线段(模式应为GL.GL_LINES)
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	public GLEx glLine(float x1, float y1, float x2, float y2) {
+		return $drawLine(x1, y1, x2, y2, false);
+	}
+
+	public GLEx drawLine(float x1, float y1, float x2, float y2) {
+		return $drawLine(x1, y1, x2, y2, true);
+	}
+
+	private GLEx $drawLine(float x1, float y1, float x2, float y2, boolean use) {
+		if (isClosed) {
+			return this;
+		}
+		if (x1 > x2) {
+			x1++;
+		} else {
+			x2++;
+		}
+		if (y1 > y2) {
+			y1++;
+		} else {
+			y2++;
+		}
+		if (use) {
+			glBegin(GL20.GL_LINES);
+		}
+		{
+			glColor(baseColor);
+			glVertex2f(x1, y1);
+			glColor(baseColor);
+			glVertex2f(x2, y2);
+		}
+		if (use) {
+			glEnd();
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制矩形(模式应为GL.GL_POLYGON)
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	public GLEx glDrawRect(float x, float y, float width, float height) {
+		return glRect(x, y, width, height, false);
+	}
+
+	/**
+	 * 绘制矩形(模式应为GL.GL_POLYGON)
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	public GLEx glFillRect(float x, float y, float width, float height) {
+		return glRect(x, y, width, height, true);
+	}
+
+	/**
+	 * 绘制矩形(模式应为GL.GL_POLYGON)
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param fill
+	 */
+	private final GLEx glRect(float x, float y, float width, float height,
+			boolean fill) {
+		float[] xs = new float[4];
+		float[] ys = new float[4];
+		xs[0] = x;
+		xs[1] = x + width;
+		xs[2] = x + width;
+		xs[3] = x;
+		ys[0] = y;
+		ys[1] = y;
+		ys[2] = y + height;
+		ys[3] = y + height;
+		if (fill) {
+			glFillPoly(xs, ys, 4);
+		} else {
+			glDrawPoly(xs, ys, 4);
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制多边形(模式应为GL.GL_LINE_LOOP)
+	 * 
+	 * @param xPoints
+	 * @param yPoints
+	 * @param nPoints
+	 */
+	public GLEx glDrawPoly(float[] xPoints, float[] yPoints, int nPoints) {
+		return $drawPolygon(xPoints, yPoints, nPoints, false);
+	}
+
+	/**
+	 * 填充多边形(模式应为GL.GL_LINE_LOOP)
+	 * 
+	 * @param xPoints
+	 * @param yPoints
+	 * @param nPoints
+	 */
+	public GLEx glFillPoly(float[] xPoints, float[] yPoints, int nPoints) {
+		return $fillPolygon(xPoints, yPoints, nPoints, false);
+	}
+
+	/**
+	 * 检查是否开启了glbegin函数
+	 * 
+	 * @return
+	 */
+	public boolean useGLBegin() {
+		return useBegin;
+	}
+
+	/**
+	 * 模拟标准OpenGL的glEnd(实际为提交顶点坐标给OpenGL)
+	 * 
+	 */
+	public GLEx glEnd() {
+		if (!useBegin) {
+			useBegin = false;
+			return this;
+		}
+		glBatch.end();
+		useBegin = false;
+		if (!running()) {
+			restoreTx();
+			begin();
+		}
+		return this;
+	}
+
+	public GLEx draw(Shape shape) {
+		float[] points = shape.getPoints();
+		if (points.length == 0) {
+			return this;
+		}
+		glBegin(GL20.GL_LINE_STRIP);
+		for (int i = 0; i < points.length; i += 2) {
+			glColor(baseColor);
+			glVertex2f(points[i], points[i + 1]);
+		}
+		if (shape.closed()) {
+			glColor(baseColor);
+			glVertex2f(points[0], points[1]);
+		}
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 绘制五角星
+	 * 
+	 * @param color
+	 * @param x
+	 * @param y
+	 * @param r
+	 */
+	public GLEx drawSixStart(LColor color, float x, float y, float r) {
+		setColor(color);
+		drawTriangle(color, x, y, r);
+		drawRTriangle(color, x, y, r);
+		return this;
+	}
+
+	/**
+	 * 绘制正三角
+	 * 
+	 * @param color
+	 * @param x
+	 * @param y
+	 * @param r
+	 */
+	public GLEx drawTriangle(LColor color, float x, float y, float r) {
+		float x1 = x;
+		float y1 = y - r;
+		float x2 = x - (r * MathUtils.cos(MathUtils.PI / 6));
+		float y2 = y + (r * MathUtils.sin(MathUtils.PI / 6));
+		float x3 = x + (r * MathUtils.cos(MathUtils.PI / 6));
+		float y3 = y + (r * MathUtils.sin(MathUtils.PI / 6));
+		float[] xpos = new float[3];
+		xpos[0] = x1;
+		xpos[1] = x2;
+		xpos[2] = x3;
+		float[] ypos = new float[3];
+		ypos[0] = y1;
+		ypos[1] = y2;
+		ypos[2] = y3;
+		setColor(color);
+		fillPolygon(xpos, ypos, 3);
+		return this;
+	}
+
+	/**
+	 * 绘制倒三角
+	 * 
+	 * @param color
+	 * @param x
+	 * @param y
+	 * @param r
+	 */
+	public GLEx drawRTriangle(LColor color, float x, float y, float r) {
+		float x1 = x;
+		float y1 = y + r;
+		float x2 = x - (r * MathUtils.cos(MathUtils.PI / 6.0f));
+		float y2 = y - (r * MathUtils.sin(MathUtils.PI / 6.0f));
+		float x3 = x + (r * MathUtils.cos(MathUtils.PI / 6.0f));
+		float y3 = y - (r * MathUtils.sin(MathUtils.PI / 6.0f));
+		float[] xpos = new float[3];
+		xpos[0] = x1;
+		xpos[1] = x2;
+		xpos[2] = x3;
+		float[] ypos = new float[3];
+		ypos[0] = y1;
+		ypos[1] = y2;
+		ypos[2] = y3;
+		setColor(color);
+		fillPolygon(xpos, ypos, 3);
+		return this;
+	}
+
+	/**
+	 * 绘制三角形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 */
+	public GLEx drawTriangle(final float x1, final float y1, final float x2,
+			final float y2, final float x3, final float y3) {
+		glBegin(GL20.GL_LINE_LOOP);
+		glColor(baseColor);
+		glVertex2f(x1, y1);
+		glColor(baseColor);
+		glVertex2f(x2, y2);
+		glColor(baseColor);
+		glVertex2f(x3, y3);
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 填充三角形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 */
+	public GLEx fillTriangle(final float x1, final float y1, final float x2,
+			final float y2, final float x3, final float y3) {
+		glBegin(GL20.GL_TRIANGLES);
+		glColor(baseColor);
+		glVertex2f(x1, y1);
+		glColor(baseColor);
+		glVertex2f(x2, y2);
+		glColor(baseColor);
+		glVertex2f(x3, y3);
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 绘制并填充一组三角
+	 * 
+	 * @param ts
+	 */
+	public GLEx fillTriangle(Triangle2f[] ts) {
+		return fillTriangle(ts, 0, 0);
+	}
+
+	/**
+	 * 绘制并填充一组三角
+	 * 
+	 * @param ts
+	 * @param x
+	 * @param y
+	 */
+	public GLEx fillTriangle(Triangle2f[] ts, int x, int y) {
+		if (ts == null) {
+			return this;
+		}
+		int size = ts.length;
+		for (int i = 0; i < size; i++) {
+			fillTriangle(ts[i], x, y);
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制并填充一组三角
+	 * 
+	 * @param t
+	 */
+	public GLEx fillTriangle(Triangle2f t) {
+		return fillTriangle(t, 0, 0);
+	}
+
+	/**
+	 * 绘制并填充一组三角
+	 * 
+	 * @param t
+	 * @param x
+	 * @param y
+	 */
+	public GLEx fillTriangle(Triangle2f t, float x, float y) {
+		if (t == null) {
+			return this;
+		}
+		float[] xpos = new float[3];
+		float[] ypos = new float[3];
+		xpos[0] = x + t.xpoints[0];
+		xpos[1] = x + t.xpoints[1];
+		xpos[2] = x + t.xpoints[2];
+		ypos[0] = y + t.ypoints[0];
+		ypos[1] = y + t.ypoints[1];
+		ypos[2] = y + t.ypoints[2];
+		fillPolygon(xpos, ypos, 3);
+		return this;
+	}
+
+	/**
+	 * 绘制一组三角
+	 * 
+	 * @param ts
+	 */
+	public GLEx drawTriangle(Triangle2f[] ts) {
+		return drawTriangle(ts, 0, 0);
+	}
+
+	/**
+	 * 绘制一组三角
+	 * 
+	 * @param ts
+	 * @param x
+	 * @param y
+	 */
+	public GLEx drawTriangle(Triangle2f[] ts, int x, int y) {
+		if (ts == null) {
+			return this;
+		}
+		int size = ts.length;
+		for (int i = 0; i < size; i++) {
+			drawTriangle(ts[i], x, y);
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制三角
+	 * 
+	 * @param t
+	 */
+	public GLEx drawTriangle(Triangle2f t) {
+		return drawTriangle(t, 0, 0);
+	}
+
+	/**
+	 * 绘制三角
+	 * 
+	 * @param t
+	 * @param x
+	 * @param y
+	 */
+	public GLEx drawTriangle(Triangle2f t, float x, float y) {
+		if (t == null) {
+			return this;
+		}
+		float[] xpos = new float[3];
+		float[] ypos = new float[3];
+		xpos[0] = x + t.xpoints[0];
+		xpos[1] = x + t.xpoints[1];
+		xpos[2] = x + t.xpoints[2];
+		ypos[0] = y + t.ypoints[0];
+		ypos[1] = y + t.ypoints[1];
+		ypos[2] = y + t.ypoints[2];
+		drawPolygon(xpos, ypos, 3);
+		return this;
+	}
+
+	/**
+	 * 绘制椭圆
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param r
+	 * @param a
+	 */
+	public GLEx drawOval(float x1, float y1, float width, float height) {
+		return this.drawArc(x1, y1, width, height, 32, 0, 360);
+	}
+
+	/**
+	 * 填充椭圆
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param r
+	 * @param a
+	 */
+	public GLEx fillOval(float x1, float y1, float width, float height) {
+		return this.fillArc(x1, y1, width, height, 32, 0, 360);
+	}
+
+	/**
+	 * 绘制色彩点
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public GLEx drawPoint(float x, float y) {
+		glBegin(GL20.GL_POINTS);
+		glColor(baseColor);
+		glVertex2f(x, y);
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 绘制色彩点
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public GLEx drawPoint(float x, float y, int color) {
+		glBegin(GL20.GL_POINTS);
+		glColor(color);
+		glVertex2f(x, y);
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 绘制一组色彩点
+	 * 
+	 * @param x
+	 * @param y
+	 * @param size
+	 */
+	public GLEx drawPoints(float[] x, float[] y, int size) {
+		glBegin(GL20.GL_POINTS);
+		for (int i = 0; i < size; i++) {
+			glColor(baseColor);
+			glVertex2f(x[i], y[i]);
+		}
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 填充多边形
+	 * 
+	 * @param xPoints
+	 * @param yPoints
+	 * @param nPoints
+	 */
+	public GLEx fillPolygon(float xPoints[], float yPoints[], int nPoints) {
+		return $fillPolygon(xPoints, yPoints, nPoints, true);
+	}
+
+	private final GLEx $fillPolygon(float xPoints[], float yPoints[],
+			int nPoints, boolean use) {
+		if (isClosed) {
+			return this;
+		}
+		if (use) {
+			glBegin(GL20.GL_TRIANGLE_FAN);
+		}
+		{
+			for (int i = 0; i < nPoints; i++) {
+				glColor(baseColor);
+				glVertex2f(xPoints[i], yPoints[i]);
+			}
+		}
+		if (use) {
+			glEnd();
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制多边形轮廓
+	 * 
+	 * @param xPoints
+	 * @param yPoints
+	 * @param nPoints
+	 */
+	public GLEx drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
+		return $drawPolygon(xPoints, yPoints, nPoints, true);
+
+	}
+
+	private GLEx $drawPolygon(float[] xPoints, float[] yPoints, int nPoints,
+			boolean use) {
+		if (isClosed) {
+			return this;
+		}
+		if (use) {
+			glBegin(GL20.GL_LINE_LOOP);
+		}
+		for (int i = 0; i < nPoints; i++) {
+			glColor(baseColor);
+			glVertex2f(xPoints[i], yPoints[i]);
+		}
+		if (use) {
+			glEnd();
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	public final GLEx drawRect(final float x1, final float y1, final float x2,
+			final float y2) {
+		setRect(x1, y1, x2, y2, false);
+		return this;
+	}
+
+	/**
+	 * 绘制一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param color
+	 */
+	public final GLEx drawRect(final float x1, final float y1, final float x2,
+			final float y2, LColor color) {
+		int argb = baseColor;
+		setColor(color);
+		setRect(x1, y1, x2, y2, false);
+		setColor(argb);
+		return this;
+	}
+
+	/**
+	 * 填充一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	public final GLEx fillRect(final float x1, final float y1, final float x2,
+			final float y2, LColor color) {
+		int argb = baseColor;
+		setColor(color);
+		setRect(x1, y1, x2, y2, true);
+		setColor(argb);
+		return this;
+	}
+
+	private float[] temp_xs = new float[4];
+
+	private float[] temp_ys = new float[4];
+
+	/**
+	 * 设置矩形图案
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param fill
+	 */
+	public final GLEx setRect(float x, float y, float width, float height,
+			boolean fill) {
+		if (isClosed) {
+			return this;
+		}
+		temp_xs[0] = x;
+		temp_xs[1] = x + width;
+		temp_xs[2] = x + width;
+		temp_xs[3] = x;
+
+		temp_ys[0] = y;
+		temp_ys[1] = y;
+		temp_ys[2] = y + height;
+		temp_ys[3] = y + height;
+
+		if (fill) {
+			fillPolygon(temp_xs, temp_ys, 4);
+		} else {
+			drawPolygon(temp_xs, temp_ys, 4);
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制指定大小的弧度
+	 * 
+	 * @param rect
+	 * @param segments
+	 * @param start
+	 * @param end
+	 */
+	public final GLEx drawArc(RectBox rect, int segments, float start, float end) {
+		return drawArc(rect.x, rect.y, rect.width, rect.height, segments,
+				start, end);
+	}
+
+	/**
+	 * 绘制指定大小的弧度
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param segments
+	 * @param start
+	 * @param end
+	 */
+	public final GLEx drawArc(float x1, float y1, float width, float height,
+			int segments, float start, float end) {
+		if (isClosed) {
+			return this;
+		}
+		while (end < start) {
+			end += 360;
+		}
+		float cx = x1 + (width / 2.0f);
+		float cy = y1 + (height / 2.0f);
+		glBegin(GL20.GL_LINE_STRIP);
+		int step = 360 / segments;
+		for (float a = start; a < (end + step); a += step) {
+			float ang = a;
+			if (ang > end) {
+				ang = end;
+			}
+			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
+			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
+			glColor(baseColor);
+			glVertex2f(x, y);
+		}
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 填充指定大小的弧度
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param start
+	 * @param end
+	 */
+	public final GLEx fillArc(float x1, float y1, float width, float height,
+			float start, float end) {
+		return fillArc(x1, y1, width, height, 40, start, end);
+	}
+
+	/**
+	 * 填充指定大小的弧度
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param segments
+	 * @param start
+	 * @param end
+	 */
+	public final GLEx fillArc(float x1, float y1, float width, float height,
+			int segments, float start, float end) {
+		if (isClosed) {
+			return this;
+		}
+		while (end < start) {
+			end += 360;
+		}
+		float cx = x1 + (width / 2.0f);
+		float cy = y1 + (height / 2.0f);
+		glBegin(GL20.GL_TRIANGLE_FAN);
+		int step = 360 / segments;
+		glColor(baseColor);
+		glVertex2f(cx, cy);
+		for (float a = start; a < (end + step); a += step) {
+			float ang = a;
+			if (ang > end) {
+				ang = end;
+			}
+
+			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
+			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
+			glColor(baseColor);
+			glVertex2f(x, y);
+		}
+		glEnd();
+		return this;
+	}
+
+	/**
+	 * 绘制圆形边框
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param radius
+	 */
+	public final GLEx drawRoundRect(float x, float y, float width,
+			float height, int radius) {
+		return drawRoundRect(x, y, width, height, radius, 40);
+	}
+
+	/**
+	 * 绘制圆形边框
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param radius
+	 * @param segs
+	 */
+	public final GLEx drawRoundRect(float x, float y, float width,
+			float height, int radius, int segs) {
+		if (isClosed) {
+			return this;
+		}
+		if (radius < 0) {
+			throw new IllegalArgumentException("radius > 0");
+		}
+		if (radius == 0) {
+			drawRect(x, y, width, height);
+			return this;
+		}
+		int mr = (int) MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		drawLine(x + radius, y, x + width - radius, y);
+		drawLine(x, y + radius, x, y + height - radius);
+		drawLine(x + width, y + radius, x + width, y + height - radius);
+		drawLine(x + radius, y + height, x + width - radius, y + height);
+		float d = radius * 2;
+		drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+		drawArc(x, y + height - d, d, d, segs, 90, 180);
+		drawArc(x + width - d, y, d, d, segs, 270, 360);
+		drawArc(x, y, d, d, segs, 180, 270);
+		return this;
+	}
+
+	/**
+	 * 填充圆形边框
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param cornerRadius
+	 */
+	public final GLEx fillRoundRect(float x, float y, float width,
+			float height, int cornerRadius) {
+		return fillRoundRect(x, y, width, height, cornerRadius, 40);
+	}
+
+	/**
+	 * 填充圆形边框
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param radius
+	 * @param segs
+	 */
+	public final GLEx fillRoundRect(float x, float y, float width,
+			float height, int radius, int segs) {
+		if (isClosed) {
+			return this;
+		}
+		if (radius < 0) {
+			throw new IllegalArgumentException("radius > 0");
+		}
+		if (radius == 0) {
+			fillRect(x, y, width, height);
+			return this;
+		}
+		int mr = (int) MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		float d = radius * 2;
+		fillRect(x + radius, y, width - d, radius);
+		fillRect(x, y + radius, radius, height - d);
+		fillRect(x + width - radius, y + radius, radius, height - d);
+		fillRect(x + radius, y + height - radius, width - d, radius);
+		fillRect(x + radius, y + radius, width - d, height - d);
+		fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+		fillArc(x, y + height - d, d, d, segs, 90, 180);
+		fillArc(x + width - d, y, d, d, segs, 270, 360);
+		fillArc(x, y, d, d, segs, 180, 270);
+		return this;
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param string
+	 * @param position
+	 */
+	public GLEx drawString(String string, Vector2f position) {
+		return drawString(string, position.x, position.y,
+				tmpColor.setColor(baseColor));
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param string
+	 * @param position
+	 * @param color
+	 */
+	public GLEx drawString(String string, Vector2f position, LColor color) {
+		return drawString(string, position.x, position.y, color);
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param string
+	 * @param x
+	 * @param y
+	 */
+	public GLEx drawString(String string, float x, float y) {
+		return drawString(string, x, y, tmpColor.setColor(baseColor));
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param string
+	 * @param x
+	 * @param y
+	 * @param color
+	 */
+	public GLEx drawString(String string, float x, float y, LColor color) {
+		return drawString(string, x, y, 0, color);
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param string
+	 * @param x
+	 * @param y
+	 * @param rotation
+	 */
+	public GLEx drawString(String string, float x, float y, float rotation) {
+		return drawString(string, x, y, rotation, tmpColor.setColor(baseColor));
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param string
+	 * @param x
+	 * @param y
+	 * @param rotation
+	 * @param c
+	 * @param check
+	 */
+	public GLEx drawString(String string, float x, float y, float rotation,
+			LColor c) {
+		if (isClosed) {
+			return this;
+		}
+		if (c == null || c.a <= 0) {
+			return this;
+		}
+		if (StringUtils.isEmpty(string)) {
+			return this;
+		}
+		y = y - font.getAscent();
+		LSTRDictionary.drawString(font, string, x, y, rotation, c);
+		return this;
+	}
+
+	/**
+	 * 输出字符
+	 * 
+	 * @param chars
+	 * @param x
+	 * @param y
+	 */
+	public GLEx drawChar(char chars, float x, float y) {
+		return drawChar(chars, x, y, 0);
+	}
+
+	/**
+	 * 输出字符
+	 * 
+	 * @param chars
+	 * @param x
+	 * @param y
+	 * @param rotation
+	 */
+	public GLEx drawChar(char chars, float x, float y, float rotation) {
+		return drawChar(chars, x, y, rotation, tmpColor.setColor(baseColor));
+	}
+
+	/**
+	 * 输出字符
+	 * 
+	 * @param chars
+	 * @param x
+	 * @param y
+	 * @param rotation
+	 * @param c
+	 */
+	public GLEx drawChar(char chars, float x, float y, float rotation, LColor c) {
+		return drawString(String.valueOf(chars), x, y, rotation, c);
+	}
+
+	/**
+	 * 渲染纹理为指定状态
+	 * 
+	 * @param texture
+	 * @param x_src
+	 * @param y_src
+	 * @param width
+	 * @param height
+	 * @param transform
+	 * @param x_dst
+	 * @param y_dst
+	 * @param anchor
+	 */
+	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+			int height, int transform, int x_dst, int y_dst, int anchor) {
+		return drawRegion(texture, x_src, y_src, width, height, transform,
+				x_dst, y_dst, anchor, null);
+	}
+
+	/**
+	 * 渲染纹理为指定状态
+	 * 
+	 * @param texture
+	 * @param x_src
+	 * @param y_src
+	 * @param width
+	 * @param height
+	 * @param transform
+	 * @param x_dst
+	 * @param y_dst
+	 * @param anchor
+	 * @param c
+	 */
+	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+			int height, int transform, int x_dst, int y_dst, int anchor,
+			LColor c) {
+		if (isClosed) {
+			return this;
+		}
+		if (x_src + width > texture.width()
+				|| y_src + height > texture.height() || width < 0 || height < 0
+				|| x_src < 0 || y_src < 0) {
+			throw new IllegalArgumentException("Area out of texture");
+		}
+		int dW = width, dH = height;
+
+		float rotate = 0;
+		Direction dir = Direction.TRANS_NONE;
+
+		switch (transform) {
+		case LTrans.TRANS_NONE: {
+			break;
+		}
+		case LTrans.TRANS_ROT90: {
+			rotate = 90;
+			dW = height;
+			dH = width;
+			break;
+		}
+		case LTrans.TRANS_ROT180: {
+			rotate = 180;
+			break;
+		}
+		case LTrans.TRANS_ROT270: {
+			rotate = 270;
+			dW = height;
+			dH = width;
+			break;
+		}
+		case LTrans.TRANS_MIRROR: {
+			dir = Direction.TRANS_MIRROR;
+			break;
+		}
+		case LTrans.TRANS_MIRROR_ROT90: {
+			dir = Direction.TRANS_MIRROR;
+			rotate = -90;
+			dW = height;
+			dH = width;
+			break;
+		}
+		case LTrans.TRANS_MIRROR_ROT180: {
+			dir = Direction.TRANS_MIRROR;
+			rotate = -180;
+			break;
+		}
+		case LTrans.TRANS_MIRROR_ROT270: {
+			dir = Direction.TRANS_MIRROR;
+			rotate = -270;
+			dW = height;
+			dH = width;
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Bad transform");
+		}
+
+		boolean badAnchor = false;
+
+		if (anchor == 0) {
+			anchor = LTrans.TOP | LTrans.LEFT;
+		}
+
+		if ((anchor & 0x7f) != anchor || (anchor & LTrans.BASELINE) != 0) {
+			badAnchor = true;
+		}
+
+		if ((anchor & LTrans.TOP) != 0) {
+			if ((anchor & (LTrans.VCENTER | LTrans.BOTTOM)) != 0) {
+				badAnchor = true;
+			}
+		} else if ((anchor & LTrans.BOTTOM) != 0) {
+			if ((anchor & LTrans.VCENTER) != 0) {
+				badAnchor = true;
+			} else {
+				y_dst -= dH - 1;
+			}
+		} else if ((anchor & LTrans.VCENTER) != 0) {
+			y_dst -= (dH - 1) >>> 1;
+		} else {
+			badAnchor = true;
+		}
+
+		if ((anchor & LTrans.LEFT) != 0) {
+			if ((anchor & (LTrans.HCENTER | LTrans.RIGHT)) != 0) {
+				badAnchor = true;
+			}
+		} else if ((anchor & LTrans.RIGHT) != 0) {
+			if ((anchor & LTrans.HCENTER) != 0) {
+				badAnchor = true;
+			} else {
+				x_dst -= dW - 1;
+			}
+		} else if ((anchor & LTrans.HCENTER) != 0) {
+			x_dst -= (dW - 1) >>> 1;
+		} else {
+			badAnchor = true;
+		}
+		if (badAnchor) {
+			throw new IllegalArgumentException("Bad Anchor");
+		}
+
+		draw(texture, x_dst, y_dst, width, height, x_src, y_src, x_src + width,
+				y_src + height, c, rotate, null, dir);
+		return this;
+	}
+
+	public GLEx setLineWidth(float width) {
+		if (isClosed) {
+			return this;
+		}
+		this.lineWidth = width;
+		batch.gl.glLineWidth(width);
+		return this;
+	}
+
+	public GLEx resetLineWidth() {
+		if (isClosed) {
+			return this;
+		}
+		batch.gl.glLineWidth(1f);
+		this.lineWidth = 1f;
+		return this;
+	}
+
+	public float getLineWidth() {
+		return lineWidth;
+	}
+
+	public boolean disposed() {
+		return this.isClosed;
+	}
+
+	@Override
+	public void close() {
+		this.isClosed = true;
+	}
+}
