@@ -145,4 +145,22 @@ public class LFont {
 	public TextLayout getLayoutText(String text) {
 		return LSystem.base().graphics().layoutText(text, this.textFormat);
 	}
+
+	public String confineLength(String s, int width) {
+		int length = 0;
+		for (int i = 0; i < s.length(); i++) {
+			length += stringWidth(String.valueOf(s.charAt(i)));
+			if (length >= width) {
+				int pLength = stringWidth("...");
+				while (length + pLength >= width && i >= 0) {
+					length -= stringWidth(String.valueOf(s.charAt(i)));
+					i--;
+				}
+				s = s.substring(0, ++i) + "...";
+				break;
+			}
+		}
+		return s;
+	}
+
 }

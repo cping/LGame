@@ -25,61 +25,46 @@ import loon.geom.Affine2f;
 import loon.opengl.ShaderProgram.Mini;
 import static loon.opengl.GL20.*;
 
-/**
- * A batch which renders indexed triangles. It serves as a {@link BaseBatch},
- * but can also render arbitrary triangles via {@link #addTris}.
- */
 public class TrilateralBatch extends BaseBatch {
-	/** The source for the stock triangle batch shader program. */
+
+	protected static final int[] QUAD_INDICES = { 0, 1, 2, 1, 3, 2 };
+	
 	public static class Source extends LTextureBind.Source {
 
-		/** Declares the uniform variables for our shader. */
 		public static final String VERT_UNIFS = "uniform vec2 u_HScreenSize;\n"
 				+ "uniform float u_Flip;\n";
 
-		/** The same-for-all-verts-in-a-quad attribute variables for our shader. */
 		public static final String VERT_ATTRS = "attribute vec4 a_Matrix;\n"
 				+ "attribute vec2 a_Translation;\n"
 				+ "attribute vec2 a_Color;\n";
 
-		/** The varies-per-vert attribute variables for our shader. */
 		public static final String PER_VERT_ATTRS = "attribute vec2 a_Position;\n"
 				+ "attribute vec2 a_TexCoord;\n";
 
-		/** Declares the varying variables for our shader. */
 		public static final String VERT_VARS = "varying vec2 v_TexCoord;\n"
 				+ "varying vec4 v_Color;\n";
 
-		/** The shader code that computes {@code gl_Position}. */
 		public static final String VERT_SETPOS =
-		// Transform the vertex.
+
 		"mat3 transform = mat3(\n"
 				+ "  a_Matrix[0],      a_Matrix[1],      0,\n"
 				+ "  a_Matrix[2],      a_Matrix[3],      0,\n"
 				+ "  a_Translation[0], a_Translation[1], 1);\n"
 				+ "gl_Position = vec4(transform * vec3(a_Position, 1.0), 1);\n"
 				+
-				// Scale from screen coordinates to [0, 2].
 				"gl_Position.xy /= u_HScreenSize.xy;\n" +
-				// Offset to [-1, 1].
 				"gl_Position.xy -= 1.0;\n" +
-				// If requested, flip the y-axis.
 				"gl_Position.y *= u_Flip;\n";
 
-		/** The shader code that computes {@code v_TexCoord}. */
 		public static final String VERT_SETTEX = "v_TexCoord = a_TexCoord;\n";
 
-		/** The shader code that computes {@code v_Color}. */
 		public static final String VERT_SETCOLOR =
-		// tint is encoded as two floats A*R and G*B where A, R, G, B are (0 -
-		// 255)
 		"float red = mod(a_Color.x, 256.0);\n"
 				+ "float alpha = (a_Color.x - red) / 256.0;\n"
 				+ "float blue = mod(a_Color.y, 256.0);\n"
 				+ "float green = (a_Color.y - blue) / 256.0;\n"
 				+ "v_Color = vec4(red / 255.0, green / 255.0, blue / 255.0, alpha / 255.0);\n";
 
-		/** Returns the source of the vertex shader program. */
 		public String vertex() {
 			return (VERT_UNIFS + VERT_ATTRS + PER_VERT_ATTRS + VERT_VARS
 					+ "void main(void) {\n" + VERT_SETPOS + VERT_SETTEX
@@ -99,10 +84,8 @@ public class TrilateralBatch extends BaseBatch {
 	protected int uTexture;
 	protected int uHScreenSize;
 	protected int uFlip;
-	protected int aMatrix, aTranslation, aColor; // stable (same for whole
-													// quad)
-	protected int aPosition, aTexCoord; // changing (varies per quad
-										// vertex)
+	protected int aMatrix, aTranslation, aColor; 
+	protected int aPosition, aTexCoord;
 
 	protected int verticesId, elementsId;
 	protected float[] stableAttrs;
@@ -112,12 +95,10 @@ public class TrilateralBatch extends BaseBatch {
 
 	private Source source;
 
-	/** Creates a triangle batch with the default shader program. */
 	public TrilateralBatch(GL20 gl) {
 		this(gl, new Source());
 	}
 
-	/** Creates a triangle batch with the supplied custom shader program. */
 	public TrilateralBatch(GL20 gl, Source source) {
 		super(gl);
 		this.source = source;
@@ -137,30 +118,20 @@ public class TrilateralBatch extends BaseBatch {
 		aPosition = program.getAttribLocation("a_Position");
 		aTexCoord = program.getAttribLocation("a_TexCoord");
 
-		// create our vertex and index buffers
 		stableAttrs = new float[stableAttrsSize()];
 		vertices = new float[START_VERTS * vertexSize()];
 		elements = new short[START_ELEMS];
 
-		// create our GL buffers
 		int[] ids = new int[2];
 		gl.glGenBuffers(2, ids, 0);
 		verticesId = ids[0];
 		elementsId = ids[1];
 	}
 
-	/**
-	 * Prepares to add primitives with the specified tint and transform. This
-	 * configures {@link #stableAttrs} with all of the attributes that are the
-	 * same for every vertex.
-	 */
 	public void prepare(int tint, Affine2f xf) {
 		prepare(tint, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty);
 	}
 
-	/**
-	 * See {@link #prepare(int,Affine2f)}.
-	 */
 	public void prepare(int tint, float m00, float m01, float m10, float m11,
 			float tx, float ty) {
 		float[] stables = stableAttrs;
@@ -174,47 +145,6 @@ public class TrilateralBatch extends BaseBatch {
 		stables[7] = (tint >> 0) & 0xFFFF; // gb
 	}
 
-	/**
-	 * Adds a collection of textured triangles to the current render operation.
-	 *
-	 * @param xys
-	 *            a list of x/y coordinates as: {@code [x1, y1, x2, y2, ...]}.
-	 * @param xysOffset
-	 *            the offset of the coordinates array, must not be negative and
-	 *            no greater than {@code xys.length}. Note: this is an absolute
-	 *            offset; since {@code xys} contains pairs of values, this will
-	 *            be some multiple of two.
-	 * @param xysLen
-	 *            the number of coordinates to read, must be no less than zero
-	 *            and no greater than {@code xys.length - xysOffset}. Note: this
-	 *            is an absolute length; since {@code xys} contains pairs of
-	 *            values, this will be some multiple of two.
-	 * @param tw
-	 *            the width of the texture for which we will auto-generate
-	 *            texture coordinates.
-	 * @param th
-	 *            the height of the texture for which we will auto-generate
-	 *            texture coordinates.
-	 * @param indices
-	 *            the index of the triangle vertices in the {@code xys} array.
-	 *            Because this method renders a slice of {@code xys}, one must
-	 *            also specify {@code indexBase} which tells us how to interpret
-	 *            indices. The index into {@code xys} will be computed as:
-	 *            {@code 2*(indices[ii] - indexBase)}, so if your indices
-	 *            reference vertices relative to the whole array you should pass
-	 *            {@code xysOffset/2} for {@code indexBase}, but if your indices
-	 *            reference vertices relative to <em>the slice</em> then you
-	 *            should pass zero.
-	 * @param indicesOffset
-	 *            the offset of the indices array, must not be negative and no
-	 *            greater than {@code indices.length}.
-	 * @param indicesLen
-	 *            the number of indices to read, must be no less than zero and
-	 *            no greater than {@code indices.length - indicesOffset}.
-	 * @param indexBase
-	 *            the basis for interpreting {@code indices}. See the docs for
-	 *            {@code indices} for details.
-	 */
 	public void addTris(LTexture tex, int tint, Affine2f xf,
 			float[] xys, int xysOffset, int xysLen, float tw, float th,
 			int[] indices, int indicesOffset, int indicesLen, int indexBase) {
@@ -224,17 +154,7 @@ public class TrilateralBatch extends BaseBatch {
 				indicesLen, indexBase);
 	}
 
-	/**
-	 * Adds a collection of textured triangles to the current render operation.
-	 * See
-	 * {@link #addTris(Texture,int,Affine2f,float[],int,int,float,float,int[],int,int,int)}
-	 * for parameter documentation.
-	 *
-	 * @param sxys
-	 *            a list of sx/sy texture coordinates as:
-	 *            {@code [sx1, sy1, sx2, sy2, ...]}. This must be of the same
-	 *            length as {@code xys}.
-	 */
+
 	public void addTris(LTexture tex, int tint, Affine2f xf,
 			float[] xys, float[] sxys, int xysOffset, int xysLen,
 			int[] indices, int indicesOffset, int indicesLen, int indexBase) {
@@ -244,11 +164,6 @@ public class TrilateralBatch extends BaseBatch {
 				indicesLen, indexBase);
 	}
 
-	/**
-	 * Adds triangle primitives to a prepared batch. This must be preceded by
-	 * calls to {@link #setTexture} and {@link #prepare} to configure the
-	 * texture and stable attributes.
-	 */
 	public void addTris(float[] xys, int xysOffset, int xysLen, float tw,
 			float th, int[] indices, int indicesOffset, int indicesLen,
 			int indexBase) {
@@ -264,11 +179,6 @@ public class TrilateralBatch extends BaseBatch {
 		addElems(vertIdx, indices, indicesOffset, indicesLen, indexBase);
 	}
 
-	/**
-	 * Adds triangle primitives to a prepared batch. This must be preceded by
-	 * calls to {@link #setTexture} and {@link #prepare} to configure the
-	 * texture and stable attributes.
-	 */
 	public void addTris(float[] xys, float[] sxys, int xysOffset, int xysLen,
 			int[] indices, int indicesOffset, int indicesLen, int indexBase) {
 		int vertIdx = beginPrimitive(xysLen / 2, indicesLen), offset = vertPos;
@@ -374,12 +284,6 @@ public class TrilateralBatch extends BaseBatch {
 		return "tris/" + (elements.length / QUAD_INDICES.length);
 	}
 
-	/**
-	 * Returns the size (in floats) of the stable attributes. If a custom shader
-	 * adds additional stable attributes, it should use this to determine the
-	 * offset at which to bind them, and override this method to return the new
-	 * size including their attributes.
-	 */
 	protected int stableAttrsSize() {
 		return 8;
 	}
@@ -393,15 +297,12 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	protected int beginPrimitive(int vertexCount, int elemCount) {
-
-		// check whether we have enough room to hold this primitive
 		int vertIdx = vertPos / vertexSize();
 		int verts = vertIdx + vertexCount, elems = elemPos + elemCount;
 		int availVerts = vertices.length / vertexSize(), availElems = elements.length;
 		if (verts <= availVerts && elems <= availElems) {
 			return vertIdx;
 		}
-		// otherwise, flush and expand our buffers if needed
 		flush();
 		if (verts > availVerts) {
 			expandVerts(verts);
@@ -464,5 +365,4 @@ public class TrilateralBatch extends BaseBatch {
 		return offset;
 	}
 
-	protected static final int[] QUAD_INDICES = { 0, 1, 2, 1, 3, 2 };
 }

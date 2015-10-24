@@ -300,7 +300,7 @@ public class RectBox extends Shape {
 		add(v.x, v.y);
 
 	}
-	
+
 	public int Left() {
 		return this.x();
 	}
@@ -412,6 +412,22 @@ public class RectBox extends Shape {
 	public boolean overlaps(RectBox rectangle) {
 		return !(x > rectangle.x + rectangle.width || x + width < rectangle.x
 				|| y > rectangle.y + rectangle.height || y + height < rectangle.y);
+	}
+
+	private int _ox, _oy, _ow, _oh;
+
+	private Matrix4 _matrix;
+
+	public Matrix4 getMatrix() {
+		if (_matrix == null) {
+			_matrix = new Matrix4();
+		}
+		if (this._ox != this.x || this._oy != this.y || this._ow != this.width
+				|| this._oh != this.height) {
+			return _matrix
+					.setToOrtho2D(this.x, this.y, this.width, this.height);
+		}
+		return _matrix;
 	}
 
 	public int x() {
@@ -822,6 +838,5 @@ public class RectBox extends Shape {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y)
 				&& ((y - this.y) < this.height);
 	}
-
 
 }

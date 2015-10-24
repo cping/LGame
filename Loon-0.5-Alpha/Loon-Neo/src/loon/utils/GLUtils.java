@@ -54,6 +54,11 @@ public class GLUtils {
 		GLUtils.enableTextures = false;
 	}
 
+	public static void delete(GL20 gl, int id) {
+		gl.glDeleteTexture(id);
+		currentTextureID = -1;
+	}
+
 	public static void bind(GL20 gl, int id) {
 		if (currentTextureID != id) {
 			gl.glBindTexture(GL20.GL_TEXTURE_2D, id);
@@ -80,7 +85,7 @@ public class GLUtils {
 		}
 		return (count > 1) ? (1 << (highest + 1)) : value;
 	}
-	
+
 	public static int powerOfTwo(int value) {
 		if (value == 0) {
 			return 1;
@@ -95,7 +100,7 @@ public class GLUtils {
 		value |= value >> 16;
 		return value + 1;
 	}
-	
+
 	private static int currentBlendMode;
 
 	public static final int getBlendMode() {

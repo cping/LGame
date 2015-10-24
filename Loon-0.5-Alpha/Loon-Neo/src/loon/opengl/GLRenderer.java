@@ -22,13 +22,79 @@ package loon.opengl;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.canvas.ColorGrid;
+import loon.canvas.ColorGridLine;
 import loon.canvas.LColor;
 import loon.geom.Matrix4;
+import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.utils.MathUtils;
 
 public class GLRenderer implements LRelease {
+
+	public static class GridRenderer {
+
+		GLRenderer renderer;
+
+		RectBox rect;
+
+		ColorGrid grid;
+
+		public GridRenderer(GLRenderer glRenderer, ColorGrid grid, RectBox rect) {
+			this.renderer = glRenderer;
+			this.rect = rect;
+			this.grid = grid;
+		}
+
+		public GridRenderer(ColorGrid grid, RectBox rect) {
+			this(new GLRenderer(), grid, rect);
+		}
+
+		public void paint(boolean visible) {
+			if (visible) {
+				Matrix4 old = renderer.getProjectionMatrix().cpy();
+				LColor tmp = renderer.getColor();
+				try {
+					renderer.setProjectionMatrix(rect.getMatrix());
+					renderer.begin(ShapeType.Line);
+					for (int i = 0; i < grid.lines.size(); i++) {
+						ColorGridLine line = grid.lines.get(i);
+						if (line.x == line.x2) {
+							if ((line.x > rect.x + (rect.width / 2))) {
+								line.x -= (grid.cellSize * grid.horizontal);
+								line.x2 = line.x;
+							}
+							if ((line.x < line.x2 - (rect.width / 2))) {
+								line.x += (grid.cellSize * grid.horizontal);
+								line.x2 = line.x;
+							}
+							renderer.setColor(line.color());
+							renderer.line(line.x, rect.y - (rect.height / 2),
+									line.x2, rect.y + (rect.height / 2));
+						} else {
+							if ((line.y > rect.y + (rect.height / 2))) {
+								line.y -= (grid.cellSize * grid.vertical);
+								line.y2 = line.y;
+							}
+							if ((line.y < rect.y - (rect.height / 2))) {
+								line.y += (grid.cellSize * grid.vertical);
+								line.y2 = line.y;
+							}
+							renderer.setColor(line.color());
+							renderer.line(rect.x - (rect.width / 2), line.y,
+									0.1f, rect.x + (rect.width / 2), line.y2,
+									0.1f);
+						}
+					}
+				} finally {
+					renderer.end();
+					renderer.setProjectionMatrix(old);
+					renderer.setColor(tmp);
+				}
+			}
+		}
+	}
 
 	public enum ShapeType {
 		Point(GL20.GL_POINTS), Line(GL20.GL_LINES), Filled(GL20.GL_TRIANGLES);
@@ -66,6 +132,10 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void setColor(LColor color) {
+		this.color.setColor(color);
+	}
+
+	public void setColor(int color) {
 		this.color.setColor(color);
 	}
 
@@ -132,14 +202,17 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void begin(ShapeType type) {
-		if (shapeType != null)
+		if (shapeType != null) {
 			throw new IllegalStateException(
 					"Call end() before beginning a new shape batch.");
+		}
 		shapeType = type;
 		if (matrixDirty) {
-			projectionMatrix.set(LSystem.base().graphics().getProjectionMatrix());
+			projectionMatrix.set(LSystem.base().graphics()
+					.getProjectionMatrix());
 			combinedMatrix.set(projectionMatrix);
-			LSystem.base().support().mul(combinedMatrix.val, transformMatrix.val);
+			LSystem.base().support()
+					.mul(combinedMatrix.val, transformMatrix.val);
 			matrixDirty = false;
 		}
 		renderer.begin(combinedMatrix, shapeType.getGlType());

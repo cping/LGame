@@ -58,8 +58,6 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class AVGScreen extends Screen {
 
-	private Object synch = new Object();
-
 	private boolean isSelectMessage, scrFlag, isRunning, running;
 
 	private int delay;
@@ -310,345 +308,338 @@ public abstract class AVGScreen extends Screen {
 	public abstract void drawScreen(GLEx g);
 
 	public void nextScript() {
-		synchronized (synch) {
-			if (command != null && !isClose() && running) {
-				for (; isRunning = command.next();) {
-					String result = command.doExecute();
-					if (result == null) {
-						continue;
-					}
-					if (!nextScript(result)) {
-						break;
-					}
-					List<?> commands = Conversion.splitToList(result, " ");
-					int size = commands.size();
-					String cmdFlag = (String) commands.get(0);
+		if (command != null && !isClose() && running) {
+			for (; isRunning = command.next();) {
+				String result = command.doExecute();
+				if (result == null) {
+					continue;
+				}
+				if (!nextScript(result)) {
+					break;
+				}
+				List<?> commands = Conversion.splitToList(result, " ");
+				int size = commands.size();
+				String cmdFlag = (String) commands.get(0);
 
-					String mesFlag = null, orderFlag = null, lastFlag = null;
-					if (size == 2) {
-						mesFlag = (String) commands.get(1);
-					} else if (size == 3) {
-						mesFlag = (String) commands.get(1);
-						orderFlag = (String) commands.get(2);
-					} else if (size == 4) {
-						mesFlag = (String) commands.get(1);
-						orderFlag = (String) commands.get(2);
-						lastFlag = (String) commands.get(3);
+				String mesFlag = null, orderFlag = null, lastFlag = null;
+				if (size == 2) {
+					mesFlag = (String) commands.get(1);
+				} else if (size == 3) {
+					mesFlag = (String) commands.get(1);
+					orderFlag = (String) commands.get(2);
+				} else if (size == 4) {
+					mesFlag = (String) commands.get(1);
+					orderFlag = (String) commands.get(2);
+					lastFlag = (String) commands.get(3);
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_APLAY)) {
+					autoPlay = true;
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_ASTOP)) {
+					autoPlay = false;
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_ADELAY)) {
+					if (mesFlag != null) {
+						if (MathUtils.isNan(mesFlag)) {
+							autoTimer.setDelay(Integer.parseInt(mesFlag));
+						}
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_APLAY)) {
-						autoPlay = true;
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_ASTOP)) {
-						autoPlay = false;
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_ADELAY)) {
-						if (mesFlag != null) {
-							if (MathUtils.isNan(mesFlag)) {
-								autoTimer.setDelay(Integer.parseInt(mesFlag));
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_WAIT)) {
+					scrFlag = true;
+					break;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOW)
+						|| cmdFlag.equalsIgnoreCase(CommandType.L_RAIN)
+						|| cmdFlag.equalsIgnoreCase(CommandType.L_PETAL)) {
+					if (sprites != null) {
+						boolean flag = false;
+						ISprite[] ss = sprites.getSprites();
+
+						for (int i = 0; i < ss.length; i++) {
+							ISprite s = ss[i];
+							if (s instanceof FreedomEffect) {
+								flag = true;
+								break;
 							}
 						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_WAIT)) {
-						scrFlag = true;
-						break;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOW)
-							|| cmdFlag.equalsIgnoreCase(CommandType.L_RAIN)
-							|| cmdFlag.equalsIgnoreCase(CommandType.L_PETAL)) {
-						if (sprites != null) {
-							boolean flag = false;
-							ISprite[] ss = sprites.getSprites();
-
-							for (int i = 0; i < ss.length; i++) {
-								ISprite s = ss[i];
-								if (s instanceof FreedomEffect) {
-									flag = true;
-									break;
-								}
+						if (!flag) {
+							if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOW)) {
+								sprites.add(FreedomEffect.getSnowEffect());
+							} else if (cmdFlag
+									.equalsIgnoreCase(CommandType.L_RAIN)) {
+								sprites.add(FreedomEffect.getRainEffect());
+							} else if (cmdFlag
+									.equalsIgnoreCase(CommandType.L_PETAL)) {
+								sprites.add(FreedomEffect.getPetalEffect());
 							}
-							if (!flag) {
+						}
+
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOWSTOP)
+						|| cmdFlag.equalsIgnoreCase(CommandType.L_RAINSTOP)
+						|| cmdFlag.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
+					if (sprites != null) {
+						ISprite[] ss = sprites.getSprites();
+
+						for (int i = 0; i < ss.length; i++) {
+							ISprite s = ss[i];
+							if (s instanceof FreedomEffect) {
 								if (cmdFlag
-										.equalsIgnoreCase(CommandType.L_SNOW)) {
-									sprites.add(FreedomEffect.getSnowEffect());
+										.equalsIgnoreCase(CommandType.L_SNOWSTOP)) {
+									if (((FreedomEffect) s).getKernels()[0] instanceof SnowKernel) {
+										sprites.remove(s);
+									}
 								} else if (cmdFlag
-										.equalsIgnoreCase(CommandType.L_RAIN)) {
-									sprites.add(FreedomEffect.getRainEffect());
+										.equalsIgnoreCase(CommandType.L_RAINSTOP)) {
+									if (((FreedomEffect) s).getKernels()[0] instanceof RainKernel) {
+										sprites.remove(s);
+									}
 								} else if (cmdFlag
-										.equalsIgnoreCase(CommandType.L_PETAL)) {
-									sprites.add(FreedomEffect.getPetalEffect());
-								}
-							}
-
-						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOWSTOP)
-							|| cmdFlag.equalsIgnoreCase(CommandType.L_RAINSTOP)
-							|| cmdFlag
-									.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
-						if (sprites != null) {
-							ISprite[] ss = sprites.getSprites();
-
-							for (int i = 0; i < ss.length; i++) {
-								ISprite s = ss[i];
-								if (s instanceof FreedomEffect) {
-									if (cmdFlag
-											.equalsIgnoreCase(CommandType.L_SNOWSTOP)) {
-										if (((FreedomEffect) s).getKernels()[0] instanceof SnowKernel) {
-											sprites.remove(s);
-										}
-									} else if (cmdFlag
-											.equalsIgnoreCase(CommandType.L_RAINSTOP)) {
-										if (((FreedomEffect) s).getKernels()[0] instanceof RainKernel) {
-											sprites.remove(s);
-										}
-									} else if (cmdFlag
-											.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
-										if (((FreedomEffect) s).getKernels()[0] instanceof PetalKernel) {
-											sprites.remove(s);
-										}
+										.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
+									if (((FreedomEffect) s).getKernels()[0] instanceof PetalKernel) {
+										sprites.remove(s);
 									}
 								}
 							}
-
 						}
-						continue;
+
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAY)) {
-						playSound(mesFlag, false);
-						continue;
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAY)) {
+					playSound(mesFlag, false);
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYLOOP)) {
+					playSound(mesFlag, true);
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYSTOP)) {
+					if (mesFlag != null && mesFlag.length() > 0) {
+						stopSound(mesFlag);
+					} else {
+						stopSound();
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYLOOP)) {
-						playSound(mesFlag, true);
-						continue;
+					continue;
+				}
+
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEOUT)
+						|| cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
+					scrFlag = true;
+					LColor color = LColor.black;
+					if (mesFlag.equalsIgnoreCase("red")) {
+						color = LColor.red;
+					} else if (mesFlag.equalsIgnoreCase("yellow")) {
+						color = LColor.yellow;
+					} else if (mesFlag.equalsIgnoreCase("white")) {
+						color = LColor.white;
+					} else if (mesFlag.equalsIgnoreCase("black")) {
+						color = LColor.black;
+					} else if (mesFlag.equalsIgnoreCase("cyan")) {
+						color = LColor.cyan;
+					} else if (mesFlag.equalsIgnoreCase("green")) {
+						color = LColor.green;
+					} else if (mesFlag.equalsIgnoreCase("orange")) {
+						color = LColor.orange;
+					} else if (mesFlag.equalsIgnoreCase("pink")) {
+						color = LColor.pink;
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_PLAYSTOP)) {
-						if (mesFlag != null && mesFlag.length() > 0) {
-							stopSound(mesFlag);
+					if (sprites != null) {
+						sprites.removeAll();
+						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
+							sprites.add(FadeEffect.getInstance(
+									ISprite.TYPE_FADE_IN, color));
 						} else {
-							stopSound();
+							sprites.add(FadeEffect.getInstance(
+									ISprite.TYPE_FADE_OUT, color));
 						}
-						continue;
 					}
-
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEOUT)
-							|| cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-						scrFlag = true;
-						LColor color = LColor.black;
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELLEN)) {
+					if (mesFlag != null) {
+						if (MathUtils.isNan(mesFlag)) {
+							select.setLeftOffset(Integer.parseInt(mesFlag));
+						}
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELTOP)) {
+					if (mesFlag != null) {
+						if (MathUtils.isNan(mesFlag)) {
+							select.setTopOffset(Integer.parseInt(mesFlag));
+						}
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEN)) {
+					if (mesFlag != null) {
+						if (MathUtils.isNan(mesFlag)) {
+							message.setMessageLength(Integer.parseInt(mesFlag));
+						}
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESTOP)) {
+					if (mesFlag != null) {
+						if (MathUtils.isNan(mesFlag)) {
+							message.setTopOffset(Integer.parseInt(mesFlag));
+						}
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEFT)) {
+					if (mesFlag != null) {
+						if (MathUtils.isNan(mesFlag)) {
+							message.setLeftOffset(Integer.parseInt(mesFlag));
+						}
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESCOLOR)) {
+					if (mesFlag != null) {
 						if (mesFlag.equalsIgnoreCase("red")) {
-							color = LColor.red;
+							message.setFontColor(LColor.red);
 						} else if (mesFlag.equalsIgnoreCase("yellow")) {
-							color = LColor.yellow;
+							message.setFontColor(LColor.yellow);
 						} else if (mesFlag.equalsIgnoreCase("white")) {
-							color = LColor.white;
+							message.setFontColor(LColor.white);
 						} else if (mesFlag.equalsIgnoreCase("black")) {
-							color = LColor.black;
+							message.setFontColor(LColor.black);
 						} else if (mesFlag.equalsIgnoreCase("cyan")) {
-							color = LColor.cyan;
+							message.setFontColor(LColor.cyan);
 						} else if (mesFlag.equalsIgnoreCase("green")) {
-							color = LColor.green;
+							message.setFontColor(LColor.green);
 						} else if (mesFlag.equalsIgnoreCase("orange")) {
-							color = LColor.orange;
+							message.setFontColor(LColor.orange);
 						} else if (mesFlag.equalsIgnoreCase("pink")) {
-							color = LColor.pink;
+							message.setFontColor(LColor.pink);
 						}
-						if (sprites != null) {
-							sprites.removeAll();
-							if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-								sprites.add(FadeEffect.getInstance(
-										ISprite.TYPE_FADE_IN, color));
-							} else {
-								sprites.add(FadeEffect.getInstance(
-										ISprite.TYPE_FADE_OUT, color));
-							}
-						}
-						continue;
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SELLEN)) {
-						if (mesFlag != null) {
-							if (MathUtils.isNan(mesFlag)) {
-								select.setLeftOffset(Integer.parseInt(mesFlag));
-							}
-						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SELTOP)) {
-						if (mesFlag != null) {
-							if (MathUtils.isNan(mesFlag)) {
-								select.setTopOffset(Integer.parseInt(mesFlag));
-							}
-						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEN)) {
-						if (mesFlag != null) {
-							if (MathUtils.isNan(mesFlag)) {
-								message.setMessageLength(Integer
-										.parseInt(mesFlag));
-							}
-						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESTOP)) {
-						if (mesFlag != null) {
-							if (MathUtils.isNan(mesFlag)) {
-								message.setTopOffset(Integer.parseInt(mesFlag));
-							}
-						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEFT)) {
-						if (mesFlag != null) {
-							if (MathUtils.isNan(mesFlag)) {
-								message.setLeftOffset(Integer.parseInt(mesFlag));
-							}
-						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESCOLOR)) {
-						if (mesFlag != null) {
-							if (mesFlag.equalsIgnoreCase("red")) {
-								message.setFontColor(LColor.red);
-							} else if (mesFlag.equalsIgnoreCase("yellow")) {
-								message.setFontColor(LColor.yellow);
-							} else if (mesFlag.equalsIgnoreCase("white")) {
-								message.setFontColor(LColor.white);
-							} else if (mesFlag.equalsIgnoreCase("black")) {
-								message.setFontColor(LColor.black);
-							} else if (mesFlag.equalsIgnoreCase("cyan")) {
-								message.setFontColor(LColor.cyan);
-							} else if (mesFlag.equalsIgnoreCase("green")) {
-								message.setFontColor(LColor.green);
-							} else if (mesFlag.equalsIgnoreCase("orange")) {
-								message.setFontColor(LColor.orange);
-							} else if (mesFlag.equalsIgnoreCase("pink")) {
-								message.setFontColor(LColor.pink);
-							}
-						}
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_MES)) {
-						if (select.isVisible()) {
-							select.setVisible(false);
-						}
-						scrFlag = true;
-						String nMessage = mesFlag;
-						message.setMessage(StringUtils.replace(nMessage, "&",
-								" "));
-						message.setVisible(true);
-						break;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESSTOP)) {
-						scrFlag = true;
-						message.setVisible(false);
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MES)) {
+					if (select.isVisible()) {
 						select.setVisible(false);
-						continue;
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECT)) {
-						selectMessage = mesFlag;
-						continue;
+					scrFlag = true;
+					String nMessage = mesFlag;
+					message.setMessage(StringUtils.replace(nMessage, "&", " "));
+					message.setVisible(true);
+					break;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESSTOP)) {
+					scrFlag = true;
+					message.setVisible(false);
+					select.setVisible(false);
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECT)) {
+					selectMessage = mesFlag;
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECTS)) {
+					if (message.isVisible()) {
+						message.setVisible(false);
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECTS)) {
-						if (message.isVisible()) {
-							message.setVisible(false);
-						}
-						select.setVisible(true);
-						scrFlag = true;
-						isSelectMessage = true;
-						String[] selects = command.getReads();
-						select.setMessage(selectMessage, selects);
-						break;
+					select.setVisible(true);
+					scrFlag = true;
+					isSelectMessage = true;
+					String[] selects = command.getReads();
+					select.setMessage(selectMessage, selects);
+					break;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SHAKE)) {
+					scrCG.shakeNumber = Integer.valueOf(mesFlag).intValue();
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_CGWAIT)) {
+					scrFlag = false;
+					break;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SLEEP)) {
+					scrCG.sleep = Integer.valueOf(mesFlag).intValue();
+					scrCG.sleepMax = Integer.valueOf(mesFlag).intValue();
+					scrFlag = false;
+					break;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_FLASH)) {
+					scrFlag = true;
+					String[] colors = null;
+					if (mesFlag != null) {
+						colors = mesFlag.split(",");
+					} else {
+						colors = new String[] { "0", "0", "0" };
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SHAKE)) {
-						scrCG.shakeNumber = Integer.valueOf(mesFlag).intValue();
-						continue;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_CGWAIT)) {
+					if (color == null && colors != null && colors.length == 3) {
+						color = new LColor(Integer.valueOf(colors[0])
+								.intValue(), Integer.valueOf(colors[1])
+								.intValue(), Integer.valueOf(colors[2])
+								.intValue());
+						scrCG.sleep = 20;
+						scrCG.sleepMax = scrCG.sleep;
 						scrFlag = false;
-						break;
+					} else {
+						color = null;
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_SLEEP)) {
-						scrCG.sleep = Integer.valueOf(mesFlag).intValue();
-						scrCG.sleepMax = Integer.valueOf(mesFlag).intValue();
-						scrFlag = false;
-						break;
-					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_FLASH)) {
-						scrFlag = true;
-						String[] colors = null;
-						if (mesFlag != null) {
-							colors = mesFlag.split(",");
-						} else {
-							colors = new String[] { "0", "0", "0" };
-						}
-						if (color == null && colors != null
-								&& colors.length == 3) {
-							color = new LColor(Integer.valueOf(colors[0])
-									.intValue(), Integer.valueOf(colors[1])
-									.intValue(), Integer.valueOf(colors[2])
-									.intValue());
-							scrCG.sleep = 20;
-							scrCG.sleepMax = scrCG.sleep;
-							scrFlag = false;
-						} else {
-							color = null;
-						}
 
-						continue;
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_GB)) {
+					if (mesFlag == null) {
+						return;
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_GB)) {
-						if (mesFlag == null) {
-							return;
-						}
-						if (mesFlag.equalsIgnoreCase("none")) {
-							scrCG.noneBackgroundCG();
-						} else {
-							scrCG.setBackgroundCG(mesFlag);
-						}
-						continue;
+					if (mesFlag.equalsIgnoreCase("none")) {
+						scrCG.noneBackgroundCG();
+					} else {
+						scrCG.setBackgroundCG(mesFlag);
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_CG)) {
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_CG)) {
 
-						if (mesFlag == null) {
-							return;
-						}
-						if (scrCG != null
-								&& scrCG.count() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+					if (mesFlag == null) {
+						return;
+					}
+					if (scrCG != null
+							&& scrCG.count() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+						scrCG.close();
+					}
+					if (mesFlag.equalsIgnoreCase(CommandType.L_DEL)) {
+						if (orderFlag != null) {
+							scrCG.remove(orderFlag);
+						} else {
 							scrCG.close();
 						}
-						if (mesFlag.equalsIgnoreCase(CommandType.L_DEL)) {
-							if (orderFlag != null) {
-								scrCG.remove(orderFlag);
-							} else {
-								scrCG.close();
-							}
-						} else if (lastFlag != null
-								&& CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
-							scrCG.replace(mesFlag, lastFlag);
-						} else {
-							int x = 0, y = 0;
-							if (orderFlag != null) {
-								x = Integer.parseInt(orderFlag);
-							}
-							if (size >= 4) {
-								y = Integer.parseInt((String) commands.get(3));
-							}
-							final int tx = x;
-							final int ty = y;
-							final String name = mesFlag;
-							scrCG.add(name, tx, ty, getWidth(), getHeight());
+					} else if (lastFlag != null
+							&& CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
+						scrCG.replace(mesFlag, lastFlag);
+					} else {
+						int x = 0, y = 0;
+						if (orderFlag != null) {
+							x = Integer.parseInt(orderFlag);
 						}
-						continue;
+						if (size >= 4) {
+							y = Integer.parseInt((String) commands.get(3));
+						}
+						final int tx = x;
+						final int ty = y;
+						final String name = mesFlag;
+						scrCG.add(name, tx, ty, getWidth(), getHeight());
 					}
-					if (cmdFlag.equalsIgnoreCase(CommandType.L_EXIT)) {
-						scrFlag = true;
-						running = false;
-						onExit();
-						break;
-					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_EXIT)) {
+					scrFlag = true;
+					running = false;
+					onExit();
+					break;
 				}
 			}
 		}
