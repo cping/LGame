@@ -43,10 +43,28 @@ public class RoboVMFont {
 		styleVariants.put(name, variantName);
 	}
 
+	final static String filterFontName(String name) {
+		String familyName = name;
+		if (familyName != null) {
+			if (familyName.equalsIgnoreCase("Serif")
+					|| familyName.equalsIgnoreCase("TimesRoman")) {
+				familyName = "Times New Roman";
+			} else if (familyName.equalsIgnoreCase("SansSerif")
+					|| familyName.equalsIgnoreCase("Helvetica")) {
+				familyName = "Helvetica";
+			} else if (familyName.equalsIgnoreCase("Monospaced")
+					|| familyName.equalsIgnoreCase("Courier")
+					|| familyName.equalsIgnoreCase("Dialog")) {
+				familyName = "Arial";
+			}
+		}
+		return familyName;
+	}
+
 	static CTFont resolveFont(Font font) {
 		CTFont ctFont = fonts.get(font == null ? DEFAULT_FONT : font);
 		if (ctFont == null) {
-			String iosName = getVariant(font.name, font.style);
+			String iosName = getVariant(filterFontName(font.name), font.style);
 			fonts.put(
 					font,
 					ctFont = CTFont.create(iosName, font.size,

@@ -20,8 +20,6 @@
  */
 package loon.geom;
 
-import java.awt.geom.Rectangle2D;
-
 import loon.utils.MathUtils;
 
 public class RectBox extends Shape {
@@ -548,10 +546,6 @@ public class RectBox extends Shape {
 
 	public float[] toFloat() {
 		return new float[] { x, y, width, height };
-	}
-
-	public Rectangle2D getRectangle2D() {
-		return new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
 	}
 
 	public RectBox getRect() {

@@ -82,14 +82,14 @@ public class AndroidGame extends LGame {
 
 	private State state = State.RUNNING;
 
-	private final AndroidAssets assets;
-	private final AndroidAsyn syn;
-	private final AndroidGraphics graphics;
-	private final AndroidInputMake input;
-	private final AndroidLog log;
-	private final AndroidSave save;
-	private final Json json;
-	private final long start = System.nanoTime();
+	protected final AndroidAssets assets;
+	protected final AndroidAsyn syn;
+	protected final AndroidGraphics graphics;
+	protected final AndroidInputMake input;
+	protected final AndroidLog log;
+	protected final AndroidSave save;
+	protected final Json json;
+	protected final long start = System.nanoTime();
 
 	public AndroidGame(Loon activity, LSetting config) {
 		super(config);

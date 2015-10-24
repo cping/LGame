@@ -30,9 +30,9 @@ public abstract class LGame {
 
 	public Act<Error> errors = Act.create();
 
-	public LGame(final LSetting config) {
+	public LGame(LSetting config) {
 		if (config == null) {
-			this.setting = new LSetting();
+			config = new LSetting();
 		}
 		this.setting = config;
 		String appName = config.appName;

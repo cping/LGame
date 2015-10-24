@@ -29,31 +29,46 @@ import android.graphics.Typeface;
 
 class AndroidFont {
 
-  private static final String[] NO_HACKS = {};
+	private static final String[] NO_HACKS = {};
 
-  public static final AndroidFont DEFAULT = new AndroidFont(Typeface.DEFAULT, 14, null);
+	public static final AndroidFont DEFAULT = new AndroidFont(Typeface.DEFAULT,
+			14, null);
 
-  public final Typeface typeface;
-  public final float size;
-  public final String[] resources;
-  protected Paint paint;
+	public final Typeface typeface;
+	public final float size;
+	public final String[] resources;
+	protected Paint paint;
 
-  public AndroidFont(Typeface typeface, float size, String[] res) {
-    this.typeface = typeface;
-    this.size = size;
-    this.resources = (res != null) ? res : NO_HACKS;
-  }
+	public AndroidFont(Typeface typeface, float size, String[] res) {
+		this.typeface = typeface;
+		this.size = size;
+		this.resources = (res != null) ? res : NO_HACKS;
+	}
 
-  public static Typeface create (Font font) {
-    return Typeface.create(font.name, TO_ANDROID_STYLE.get(font.style));
-  }
+	public static Typeface create(Font font) {
+		String familyName = font.name;
+		if (familyName != null) {
+			if (familyName.equalsIgnoreCase("Serif")
+					|| familyName.equalsIgnoreCase("TimesRoman")) {
+				familyName = "serif";
+			} else if (familyName.equalsIgnoreCase("SansSerif")
+					|| familyName.equalsIgnoreCase("Helvetica")) {
+				familyName = "sans-serif";
+			} else if (familyName.equalsIgnoreCase("Monospaced")
+					|| familyName.equalsIgnoreCase("Courier")
+					|| familyName.equalsIgnoreCase("Dialog")) {
+				familyName = "monospace";
+			}
+		}
+		return Typeface.create(familyName, TO_ANDROID_STYLE.get(font.style));
+	}
 
-  protected static final Map<Font.Style,Integer> TO_ANDROID_STYLE =
-    new EnumMap<Font.Style,Integer>(Font.Style.class);
-  static {
-    TO_ANDROID_STYLE.put(Font.Style.PLAIN,       Typeface.NORMAL);
-    TO_ANDROID_STYLE.put(Font.Style.BOLD,        Typeface.BOLD);
-    TO_ANDROID_STYLE.put(Font.Style.ITALIC,      Typeface.ITALIC);
-    TO_ANDROID_STYLE.put(Font.Style.BOLD_ITALIC, Typeface.BOLD_ITALIC);
-  }
+	protected static final Map<Font.Style, Integer> TO_ANDROID_STYLE = new EnumMap<Font.Style, Integer>(
+			Font.Style.class);
+	static {
+		TO_ANDROID_STYLE.put(Font.Style.PLAIN, Typeface.NORMAL);
+		TO_ANDROID_STYLE.put(Font.Style.BOLD, Typeface.BOLD);
+		TO_ANDROID_STYLE.put(Font.Style.ITALIC, Typeface.ITALIC);
+		TO_ANDROID_STYLE.put(Font.Style.BOLD_ITALIC, Typeface.BOLD_ITALIC);
+	}
 }

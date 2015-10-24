@@ -101,7 +101,14 @@ public class AndroidAssets extends Assets {
 		return image;
 	}
 
-	AndroidAudio _audio;
+	protected AndroidAudio _audio;
+
+	protected AndroidAudio getNativeAudio() {
+		if (_audio == null) {
+			_audio = new AndroidAudio();
+		}
+		return _audio;
+	}
 
 	@Override
 	public Sound getSound(String path) {

@@ -10,9 +10,10 @@ public class MainActivity extends Loon {
 		LSetting setting = new LSetting();
 		setting.isFPS = true;
 		setting.isLogo = false;
+		setting.fullscreen = true;
 		setting.logoPath = "loon_logo.png";
 		setting.fps = 60;
-		setting.fontName = "黑体";
+		setting.fontName = "Dialog";
 		setting.appName = "test";
 		setting.emulateTouch = false;
 		register(setting, ScreenTest.class);

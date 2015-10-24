@@ -45,6 +45,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -422,6 +423,10 @@ public abstract class Loon extends Activity {
 		Loon.self = this;
 
 		Context context = getApplicationContext();
+		this.onMain();
+		if (setting != null) {
+			this.setFullScreen(setting.fullscreen);
+		}
 		this.game = createGame();
 		this.gameView = new AndroidGameViewGL(context, game);
 
@@ -454,23 +459,45 @@ public abstract class Loon extends Activity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		AndroidGame.debugLog("onWindowFocusChanged(" + hasFocus + ")");
-		if (hasFocus) {
-			game.assets()._audio.onResume();
-		} else {
-			game.assets()._audio.onPause();
+		if (game != null && game.assets != null && game.assets._audio != null) {
+			if (hasFocus) {
+				game.assets.getNativeAudio().onResume();
+			} else {
+				game.assets.getNativeAudio().onPause();
+			}
 		}
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		game.input().onKeyDown(keyCode, event);
+		if (game != null && game.input != null) {
+			game.input.onKeyDown(keyCode, event);
+		}
 		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		game.input().onKeyUp(keyCode, event);
+		if (game != null && game.input != null) {
+			game.input.onKeyUp(keyCode, event);
+		}
 		return super.onKeyUp(keyCode, event);
+	}
+
+	public void setFullScreen(boolean fullScreen) {
+		Window win = getWindow();
+		if (AndroidGame.isAndroidVersionHigher(11)) {
+			int flagHardwareAccelerated = 0x1000000;
+			win.setFlags(flagHardwareAccelerated, flagHardwareAccelerated);
+		}
+		if (fullScreen) {
+			win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			win.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+			win.requestFeature(android.view.Window.FEATURE_NO_TITLE);
+		} else {
+			win.setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
+					WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+		}
 	}
 
 	@Override
@@ -484,8 +511,10 @@ public abstract class Loon extends Activity {
 		for (File file : getCacheDir().listFiles()) {
 			file.delete();
 		}
-		game.assets()._audio.onDestroy();
-		game.onExit();
+		if (game != null && game.assets != null) {
+			game.assets.getNativeAudio().onDestroy();
+			game.onExit();
+		}
 		super.onDestroy();
 	}
 
@@ -493,14 +522,18 @@ public abstract class Loon extends Activity {
 	protected void onPause() {
 		AndroidGame.debugLog("onPause");
 		gameView.onPause();
-		game.onPause();
+		if (game != null) {
+			game.onPause();
+		}
 		super.onPause();
 	}
 
 	@Override
 	protected void onResume() {
 		AndroidGame.debugLog("onResume");
-		game.onResume();
+		if (game != null) {
+			game.onResume();
+		}
 		gameView.onResume();
 		super.onResume();
 	}
@@ -517,7 +550,6 @@ public abstract class Loon extends Activity {
 		return usePortraitOrientation() ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 	}
-
 
 	@SuppressWarnings("deprecation")
 	protected Bitmap.Config preferredBitmapConfig() {
@@ -542,8 +574,7 @@ public abstract class Loon extends Activity {
 	}
 
 	protected AndroidGame createGame() {
-		AndroidGame game = new AndroidGame(this, setting);
-		return game;
+		return this.game = new AndroidGame(this, setting);
 	}
 
 	protected AndroidGame getGame() {
@@ -551,7 +582,9 @@ public abstract class Loon extends Activity {
 	}
 
 	protected AndroidGame initialize() {
-		game.register(mainClass, parameters);
+		if (game != null) {
+			game.register(mainClass, parameters);
+		}
 		return game;
 	}
 

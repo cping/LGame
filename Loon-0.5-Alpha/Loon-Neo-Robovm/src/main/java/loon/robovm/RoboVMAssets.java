@@ -149,6 +149,13 @@ public class RoboVMAssets extends Assets {
 
 	protected RoboVMAudio _audio;
 
+	protected RoboVMAudio getNativeAudio(){
+		if (_audio == null) {
+			_audio = new RoboVMAudio(game, game.config.openALSources);
+		}
+		return _audio;
+	}
+	
 	private Sound createSound(String path, boolean isMusic) {
 		if (_audio == null) {
 			_audio = new RoboVMAudio(game, game.config.openALSources);

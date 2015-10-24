@@ -189,7 +189,7 @@ public class RoboVMGame extends LGame {
 			public void invoke(NSTimer timer) {
 				EAGLContext.setCurrentContext(null);
 				if (assets != null && assets._audio != null) {
-					assets._audio.terminate();
+					assets.getNativeAudio().terminate();
 				}
 			}
 		}, null, false);

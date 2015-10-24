@@ -34,7 +34,7 @@ public class LSetting {
 
 	public int height = 320;
 
-	public boolean fullscreen;
+	public boolean fullscreen = false;
 
 	public boolean emulateTouch;
 

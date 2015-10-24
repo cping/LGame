@@ -97,7 +97,6 @@ public class AndroidGameViewGL extends GLSurfaceView {
 		queueEvent(new Runnable() {
 			@Override
 			public void run() {
-				game.activity.onMain();
 				game.activity.initialize();
 				paused.set(LSystem.PAUSED = false);
 			}
