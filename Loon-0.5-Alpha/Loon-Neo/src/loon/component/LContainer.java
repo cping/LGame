@@ -26,6 +26,7 @@ import java.util.Comparator;
 
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.reflect.ClassReflection;
 
 public abstract class LContainer extends LComponent {
 
@@ -138,7 +139,7 @@ public abstract class LContainer extends LComponent {
 			int index = i - 1;
 			LComponent comp = this.childs[index];
 			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(comp)
+			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
 					|| clazz.equals(cls)) {
 				this.remove(index);
 				count++;

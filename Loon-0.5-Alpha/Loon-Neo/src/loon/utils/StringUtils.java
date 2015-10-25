@@ -22,7 +22,7 @@
 package loon.utils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.StringTokenizer;
+import java.util.ArrayList;
 
 final public class StringUtils {
 
@@ -105,16 +105,84 @@ final public class StringUtils {
 	 * @param tag
 	 * @return
 	 */
-	public static String[] split(final String string, final String tag) {
-		StringTokenizer str = new StringTokenizer(string, tag);
-		String[] result = new String[str.countTokens()];
-		int index = 0;
-		for (; str.hasMoreTokens();) {
-			result[index++] = str.nextToken();
+	public static String[] split(String str, Character flag) {
+		ArrayList<String> stringList = new ArrayList<String>();
+		String tempString;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < str.length(); i++) {
+			if (str.charAt(i) != flag) {
+				sb.append(str.charAt(i));
+			} else {
+				tempString = sb.toString();
+				stringList.add(tempString);
+				sb.setLength(0);
+			}
 		}
-		return result;
+		tempString = sb.toString();
+		stringList.add(tempString);
+		sb.setLength(0);
+		String[] stockArr = new String[stringList.size()];
+		stockArr = stringList.toArray(stockArr);
+		return stockArr;
 	}
+	
+	/**
+	 * 解析csv文件
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String[] splitCsv(String str)
+	  {
+	    ArrayList<String> stringList = new ArrayList<String>();
+	    String tempString;
+	    StringBuilder sb = new StringBuilder();
+	    for (int i = 0; i < str.length(); i++)
+	      {
+	        if (str.charAt(i) == '"')
+	          {
+	            i++;
+	            while (i < str.length())
+	              {
+	                if (str.charAt(i) == '"'
+	                    && str.charAt(i + 1) == '"') 
+	                  {
+	                    sb.append('"');
+	                    i = i + 2;
+	                  }
+	                if (str.charAt(i) == '"')
+	                  {
+	                    break;
+	                  }
+	                else
+	                  {
+	                    sb.append(str.charAt(i));
+	                    i++;
+	                  }
+	              }
+	            i++;
+	          }
 
+	        if (str.charAt(i) != ',')
+	          {
+	            sb.append(str.charAt(i));
+	          }
+	        else
+	          {
+	            tempString = sb.toString();
+	            stringList.add(tempString);
+	            sb.setLength(0);
+	          }
+	      }
+	      
+	    tempString = sb.toString();
+	    stringList.add(tempString);
+	    sb.setLength(0);
+	    String[] stockArr = new String[stringList.size()];
+	    stockArr = stringList.toArray(stockArr);
+	    return stockArr;
+	  }
+	
 	/**
 	 * 过滤指定字符串
 	 * 
@@ -440,7 +508,7 @@ final public class StringUtils {
 	public static String getAsciiString(byte[] data) {
 		return getAsciiString(data, 0, data.length);
 	}
-	
+
 	public static String unescape(String escaped) {
 		int length = escaped.length();
 		int i = 0;

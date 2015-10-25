@@ -21,6 +21,8 @@
  */
 package loon.component;
 
+import loon.utils.reflect.ClassReflection;
+
 public class CollisionClassQuery implements CollisionQuery {
 
 	private Class<?> cls;
@@ -34,7 +36,7 @@ public class CollisionClassQuery implements CollisionQuery {
 
 	@Override
 	public boolean checkCollision(Actor actor) {
-		return this.cls.isInstance(actor) ? this.subQuery.checkCollision(actor)
+		return ClassReflection.isInstance(this.cls,actor) ? this.subQuery.checkCollision(actor)
 				: false;
 	}
 }

@@ -136,7 +136,7 @@ public abstract class Conversion implements Expression {
 		return sbr.toString().trim();
 	}
 
-	public static List<String> splitToList(final String string, final String tag) {
+	public static List<String> splitToList(final String string, final char tag) {
 		return Arrays.asList(StringUtils.split(string, tag));
 	}
 

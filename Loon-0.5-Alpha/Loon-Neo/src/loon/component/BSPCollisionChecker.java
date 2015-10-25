@@ -30,6 +30,7 @@ import java.util.Set;
 
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.reflect.ClassReflection;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class BSPCollisionChecker implements CollisionChecker {
@@ -650,7 +651,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				Iterator i = node.getActorsIterator();
 				while (i.hasNext()) {
 					Actor left = (Actor) i.next();
-					if (cls == null || cls.isInstance(left)) {
+					if (cls == null ||ClassReflection.isInstance(cls,left)) {
 						cacheSet.add(left);
 					}
 				}

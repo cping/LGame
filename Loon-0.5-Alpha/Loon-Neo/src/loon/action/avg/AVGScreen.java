@@ -317,7 +317,7 @@ public abstract class AVGScreen extends Screen {
 				if (!nextScript(result)) {
 					break;
 				}
-				List<?> commands = Conversion.splitToList(result, " ");
+				List<?> commands = Conversion.splitToList(result, ' ');
 				int size = commands.size();
 				String cmdFlag = (String) commands.get(0);
 

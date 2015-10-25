@@ -854,7 +854,7 @@ public class MathUtils {
 	}
 
 	public static float wrapAngle(float angle) {
-		angle = (float) Math.IEEEremainder((double) angle, 6.2831854820251465d);
+		angle = (float) IEEEremainder((double) angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {
 			angle += 6.283185f;
 			return angle;
@@ -865,6 +865,24 @@ public class MathUtils {
 		return angle;
 	}
 
+	public static double normalizeLon(double lon) {
+		if (lon == lon) {
+			while ((lon < -180.0) || (lon > 180.)) {
+				lon = IEEEremainder(lon, 360.);
+			}
+		}
+		return lon;
+	}
+
+	public static double IEEEremainder(double f1, double f2) {
+		double r = Math.abs(f1 % f2);
+		if (Double.isNaN(r) || r == f2 || r <= Math.abs(f2) / 2.0) {
+			return r;
+		} else {
+			return Math.signum(f1) * (r - f2);
+		}
+	}
+	
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static String toString(float value) {

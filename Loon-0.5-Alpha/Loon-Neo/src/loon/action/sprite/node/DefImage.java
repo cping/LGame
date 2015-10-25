@@ -74,7 +74,7 @@ public class DefImage extends DefinitionObject {
 		ArrayList<String> result = getResult(v);
 		for (String list : result) {
 			if (list.length() > 2) {
-				String[] values = StringUtils.split(list, "=");
+				String[] values = StringUtils.split(list, '=');
 				String name = values[0];
 				String value = values[1];
 				if ("imageid".equalsIgnoreCase(name)) {
@@ -96,7 +96,7 @@ public class DefImage extends DefinitionObject {
 				} else if ("id".equalsIgnoreCase(name)) {
 					this.uniqueID = value;
 				} else if ("mask".equalsIgnoreCase(name)) {
-					String[] colors = StringUtils.split(value, ",");
+					String[] colors = StringUtils.split(value, ',');
 					if (colors.length == 3) {
 						this.maskColor = new LColor(
 								Integer.parseInt(colors[0]),

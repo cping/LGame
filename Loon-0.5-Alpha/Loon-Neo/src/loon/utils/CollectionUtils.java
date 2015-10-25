@@ -21,10 +21,9 @@
  */
 package loon.utils;
 
-import java.lang.reflect.Array;
 import java.util.NoSuchElementException;
 
-
+import loon.utils.reflect.ArrayReflection;
 
 final public class CollectionUtils {
 
@@ -83,8 +82,8 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static Object expand(Object obj, int i, boolean flag) {
-		int j = Array.getLength(obj);
-		Object obj1 = Array.newInstance(obj.getClass().getComponentType(), j
+		int j = ArrayReflection.getLength(obj);
+		Object obj1 = ArrayReflection.newInstance(obj.getClass().getComponentType(), j
 				+ i);
 		System.arraycopy(obj, 0, obj1, flag ? 0 : i, j);
 		return obj1;
@@ -113,7 +112,7 @@ final public class CollectionUtils {
 	public static Object expand(Object obj, int size, boolean flag,
 			Class<?> class1) {
 		if (obj == null) {
-			return Array.newInstance(class1, 1);
+			return ArrayReflection.newInstance(class1, 1);
 		} else {
 			return expand(obj, size, flag);
 		}
@@ -128,15 +127,15 @@ final public class CollectionUtils {
 	 */
 	public static Object cut(Object obj, int size) {
 		int j;
-		if ((j = Array.getLength(obj)) == 1) {
-			return Array.newInstance(obj.getClass().getComponentType(), 0);
+		if ((j = ArrayReflection.getLength(obj)) == 1) {
+			return ArrayReflection.newInstance(obj.getClass().getComponentType(), 0);
 		}
 		int k;
 		if ((k = j - size - 1) > 0) {
 			System.arraycopy(obj, size + 1, obj, size, k);
 		}
 		j--;
-		Object obj1 = Array.newInstance(obj.getClass().getComponentType(), j);
+		Object obj1 = ArrayReflection.newInstance(obj.getClass().getComponentType(), j);
 		System.arraycopy(obj, 0, obj1, 0, j);
 		return obj1;
 	}
@@ -148,12 +147,12 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static Object copyOf(Object src) {
-		int srcLength = Array.getLength(src);
+		int srcLength = ArrayReflection.getLength(src);
 		Class<?> srcComponentType = src.getClass().getComponentType();
-		Object dest = Array.newInstance(srcComponentType, srcLength);
+		Object dest = ArrayReflection.newInstance(srcComponentType, srcLength);
 		if (srcComponentType.isArray()) {
-			for (int i = 0; i < Array.getLength(src); i++) {
-				Array.set(dest, i, copyOf(Array.get(src, i)));
+			for (int i = 0; i < ArrayReflection.getLength(src); i++) {
+				ArrayReflection.set(dest, i, copyOf(ArrayReflection.get(src, i)));
 			}
 		} else {
 			System.arraycopy(src, 0, dest, 0, srcLength);
@@ -224,7 +223,7 @@ final public class CollectionUtils {
 	public static Object[] copyOf(Object[] original, int newLength,
 			Class<?> newType) {
 		Object[] copy = (newType == Object[].class) ? new Object[newLength]
-				: (Object[]) Array.newInstance(newType.getComponentType(),
+				: (Object[]) ArrayReflection.newInstance(newType.getComponentType(),
 						newLength);
 		System.arraycopy(original, 0, copy, 0,
 				MathUtils.min(original.length, newLength));

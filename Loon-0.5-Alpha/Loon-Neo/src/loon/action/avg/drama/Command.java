@@ -369,7 +369,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 	public synchronized String[] getReads() {
 		String result = readBuffer.toString();
 		result = result.replaceAll(SELECTS_TAG, "");
-		return StringUtils.split(result, FLAG);
+		return StringUtils.split(result, FLAG_CHAR);
 	}
 
 	/**
@@ -835,7 +835,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 				ifing = true;
 				// 条件判断b
 			} else if (elseif_bool) {
-				String[] value = StringUtils.split(cmd, " ");
+				String[] value = StringUtils.split(cmd, ' ');
 				if (!backIfBool && !esleflag) {
 					// 存在if判断
 					if (value.length > 1 && IF_TAG.equals(value[1])) {

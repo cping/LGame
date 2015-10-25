@@ -21,6 +21,8 @@
 package loon;
 
 import loon.event.InputMake;
+import loon.utils.reflect.ClassReflection;
+import loon.utils.reflect.Constructor;
 import loon.utils.reply.Act;
 
 /*
@@ -115,15 +117,14 @@ public abstract class LGame {
 				try {
 					final int funs = args.length;
 					if (funs == 0) {
-						display.setScreen(clazz.newInstance());
+						display.setScreen(ClassReflection.newInstance(clazz));
 					} else {
 						Class<?>[] functions = new Class<?>[funs];
 						for (int i = 0; i < funs; i++) {
 							functions[i] = getType(args[i]);
 						}
-						java.lang.reflect.Constructor<?> constructor = Class
-								.forName(clazz.getName()).getConstructor(
-										functions);
+						Constructor constructor = ClassReflection
+								.getConstructor(clazz, functions);
 						Object o = constructor.newInstance(args);
 						if (o != null && (o instanceof Screen)) {
 							display.setScreen((Screen) o);

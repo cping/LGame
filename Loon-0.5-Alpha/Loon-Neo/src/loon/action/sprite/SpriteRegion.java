@@ -9,7 +9,7 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.LTextureRegion;
 import loon.utils.MathUtils;
-
+import loon.utils.NumberUtils;
 
 public class SpriteRegion extends LTextureRegion {
 	
@@ -500,7 +500,7 @@ public class SpriteRegion extends LTextureRegion {
 
 	public LColor getColor() {
 		float floatBits = vertices[2];
-		int intBits = Float.floatToRawIntBits(floatBits);
+		int intBits = NumberUtils.floatToRawIntBits(floatBits);
 		LColor color = this.color;
 		color.r = (intBits & 0xff) / 255f;
 		color.g = ((intBits >>> 8) & 0xff) / 255f;

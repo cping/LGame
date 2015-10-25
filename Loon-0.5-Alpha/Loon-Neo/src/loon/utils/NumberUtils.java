@@ -20,12 +20,4 @@ public final class NumberUtils {
 	public static float intBitsToFloat(int value) {
 		return Float.intBitsToFloat(value);
 	}
-
-	public static long doubleToLongBits(double value) {
-		return Double.doubleToLongBits(value);
-	}
-
-	public static double longBitsToDouble(long value) {
-		return Double.longBitsToDouble(value);
-	}
 }

@@ -18,7 +18,7 @@ public class LFont {
 		defaultFont = font;
 	}
 
-	private final static String tmp = "A";
+	private final static String tmp = "H";
 
 	private TextFormat textFormat = null;
 

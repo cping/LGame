@@ -64,10 +64,12 @@ public abstract class Event {
 		}
 
 		public void updateFlag(int flag, boolean on) {
-			if (on)
+			if (on){
 				setFlag(flag);
-			else
+			}
+			else{
 				clearFlag(flag);
+			}
 		}
 
 		@Override

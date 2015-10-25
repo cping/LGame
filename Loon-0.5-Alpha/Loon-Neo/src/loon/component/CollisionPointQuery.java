@@ -21,6 +21,8 @@
  */
 package loon.component;
 
+import loon.utils.reflect.ClassReflection;
+
 public class CollisionPointQuery implements CollisionQuery {
 
 	private float x;
@@ -37,7 +39,7 @@ public class CollisionPointQuery implements CollisionQuery {
 
 	@Override
 	public boolean checkCollision(Actor actor) {
-		return this.cls != null && !this.cls.isInstance(actor) ? false : actor
+		return this.cls != null && !ClassReflection.isInstance(this.cls,actor) ? false : actor
 				.containsPoint(this.x, this.y);
 	}
 }

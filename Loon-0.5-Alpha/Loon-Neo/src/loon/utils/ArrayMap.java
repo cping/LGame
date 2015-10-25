@@ -238,7 +238,7 @@ public class ArrayMap {
 	}
 
 	public final boolean equals(Object o) {
-		if (!getClass().isInstance(o)) {
+		if (!(o instanceof ArrayMap)) {
 			return false;
 		}
 		ArrayMap e = (ArrayMap) o;

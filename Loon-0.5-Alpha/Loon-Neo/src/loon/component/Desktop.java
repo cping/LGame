@@ -28,6 +28,7 @@ import loon.Screen;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
+import loon.utils.reflect.ClassReflection;
 
 public class Desktop implements LRelease {
 
@@ -441,7 +442,7 @@ public class Desktop implements LRelease {
 		for (int i = size; i > 0; i--) {
 			LComponent comp = components[i - 1];
 			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(comp)
+			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
 					|| clazz.equals(cls)) {
 				l.add(comp);
 			}
@@ -475,7 +476,7 @@ public class Desktop implements LRelease {
 		for (int i = 0; i < size; i++) {
 			LComponent comp = components[i];
 			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(comp)
+			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
 					|| clazz.equals(cls)) {
 				return (LLayer) comp;
 			}
@@ -490,7 +491,7 @@ public class Desktop implements LRelease {
 		for (int i = size; i > 0; i--) {
 			LComponent comp = components[i - 1];
 			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(comp)
+			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
 					|| clazz.equals(cls)) {
 				return (LLayer) comp;
 			}

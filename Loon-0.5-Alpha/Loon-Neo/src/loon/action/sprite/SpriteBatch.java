@@ -20,6 +20,7 @@ import loon.opengl.TextureUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 
 public class SpriteBatch {
 
@@ -468,7 +469,7 @@ public class SpriteBatch {
 
 	public void setAlpha(float alpha) {
 		this.alpha = alpha;
-		int intBits = Float.floatToRawIntBits(color);
+		int intBits = NumberUtils.floatToRawIntBits(color);
 		int r = (intBits & 0xff);
 		int g = ((intBits >>> 8) & 0xff);
 		int b = ((intBits >>> 16) & 0xff);
@@ -489,7 +490,7 @@ public class SpriteBatch {
 	}
 
 	public LColor getColor() {
-		int intBits = Float.floatToRawIntBits(color);
+		int intBits = NumberUtils.floatToRawIntBits(color);
 		LColor color = this.tempColor;
 		color.r = (intBits & 0xff) / 255f;
 		color.g = ((intBits >>> 8) & 0xff) / 255f;

@@ -41,6 +41,7 @@ import loon.action.sprite.ISprite;
 import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.reflect.ClassReflection;
 
 
 @SuppressWarnings("rawtypes")
@@ -731,7 +732,7 @@ public abstract class ActorLayer extends LContainer {
 					continue;
 				}
 				Class cls = actor.getClass();
-				if (clazz == null || clazz == cls || clazz.isInstance(actor)
+				if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,actor)
 						|| clazz.equals(cls)) {
 					if (this.objects.remove(actor)) {
 						this.collisionChecker.removeObject(actor);

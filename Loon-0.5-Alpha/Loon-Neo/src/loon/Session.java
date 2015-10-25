@@ -50,7 +50,7 @@ public class Session {
 		return new Session(name);
 	}
 
-	private final String flag = "&";
+	private final char flag = '&';
 
 	private final class Record {
 
@@ -100,7 +100,7 @@ public class Session {
 		}
 
 		public void set(int index, final String v) {
-			final String value = StringUtils.replace(v, flag, "+");
+			final String value = StringUtils.replace(v, String.valueOf(flag), "+");
 			if (index >= values.length) {
 				int size = index + 1;
 				String[] res = new String[size];

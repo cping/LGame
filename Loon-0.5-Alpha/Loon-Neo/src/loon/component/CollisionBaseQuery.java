@@ -21,6 +21,8 @@
  */
 package loon.component;
 
+import loon.utils.reflect.ClassReflection;
+
 public class CollisionBaseQuery implements CollisionQuery {
 
 	private Class<?> cls;
@@ -39,7 +41,7 @@ public class CollisionBaseQuery implements CollisionQuery {
 
 	@Override
 	public boolean checkCollision(Actor other) {
-		return this.cls != null && !this.cls.isInstance(other) ? false
+		return this.cls != null && !ClassReflection.isInstance(this.cls,other) ? false
 				: (this.compareObject == null ? true : other
 						.intersects(this.compareObject));
 	}

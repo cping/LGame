@@ -47,7 +47,7 @@ public class DefAnimation extends DefinitionObject {
 		float time = 3f;
 		for (String list : result) {
 			if (list.length() > 2) {
-				String[] values = StringUtils.split(list, "=");
+				String[] values = StringUtils.split(list, '=');
 				String name = values[0];
 				String value = values[1];
 				if ("id".equalsIgnoreCase(name)) {
@@ -63,7 +63,7 @@ public class DefAnimation extends DefinitionObject {
 						animation = new LNAnimation();
 					}
 					animation._name = uniqueID;
-					String[] lists = StringUtils.split(list, ",");
+					String[] lists = StringUtils.split(list, ',');
 					for (int i = 0; i < lists.length; i++) {
 						animation.addFrameStruct(lists[i], time);
 					}

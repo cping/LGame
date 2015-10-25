@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import loon.utils.reflect.ClassReflection;
+
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class CollisionManager implements CollisionChecker {
 
@@ -93,7 +95,9 @@ public class CollisionManager implements CollisionChecker {
 			it = entries1.iterator();
 			while (it.hasNext()) {
 				entry = (Entry) it.next();
-				if (cls.isAssignableFrom((Class) entry.getKey())) {
+				if (cls != null
+						&& ClassReflection.isAssignableFrom(cls,
+								(Class) entry.getKey())) {
 					this.makeCollisionObjects((Class) entry.getKey(), false);
 				}
 			}
@@ -146,7 +150,9 @@ public class CollisionManager implements CollisionChecker {
 			Iterator it = entries.iterator();
 			while (it.hasNext()) {
 				Entry entry = (Entry) it.next();
-				if (cls == null || cls.isAssignableFrom((Class) entry.getKey())) {
+				if (cls == null
+						|| ClassReflection.isAssignableFrom(cls,
+								(Class) entry.getKey())) {
 					result.addAll((Collection) entry.getValue());
 				}
 			}

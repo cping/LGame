@@ -91,4 +91,5 @@ public abstract class InputMake {
 
 	public abstract void callback(LObject o);
 
+
 }

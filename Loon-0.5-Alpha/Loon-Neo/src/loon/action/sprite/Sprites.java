@@ -33,6 +33,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.reflect.ClassReflection;
 
 public class Sprites implements Serializable, LRelease {
 
@@ -276,7 +277,7 @@ public class Sprites implements Serializable, LRelease {
 		for (int i = size; i > 0; i--) {
 			ISprite sprite = sprites[i - 1];
 			Class<? extends ISprite> cls = sprite.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(sprite)
+			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,sprite)
 					|| clazz.equals(cls)) {
 				l.add(sprite);
 			}
@@ -373,7 +374,7 @@ public class Sprites implements Serializable, LRelease {
 		for (int i = size; i > 0; i--) {
 			ISprite sprite = sprites[i - 1];
 			Class<? extends ISprite> cls = sprite.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(sprite)
+			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,sprite)
 					|| clazz.equals(cls)) {
 				size--;
 				sprites[i - 1] = sprites[size];

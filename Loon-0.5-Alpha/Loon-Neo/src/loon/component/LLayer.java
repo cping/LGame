@@ -29,6 +29,7 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
 public class LLayer extends ActorLayer {
@@ -390,7 +391,7 @@ public class LLayer extends ActorLayer {
 		} else if (direction > 0) {
 			scrollPos = visibleRect.getMaxY();
 		}
-		int increment = Math.abs((int) Math.IEEEremainder(scrollPos, cellSize));
+		int increment = Math.abs((int) MathUtils.IEEEremainder(scrollPos, cellSize));
 		if (increment == 0) {
 			increment = cellSize;
 		}

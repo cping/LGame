@@ -22,6 +22,7 @@
 package loon.component;
 
 import loon.utils.MathUtils;
+import loon.utils.reflect.ClassReflection;
 
 public class CollisionNeighbourQuery implements CollisionQuery {
 
@@ -45,7 +46,7 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 
 	@Override
 	public boolean checkCollision(Actor actor) {
-		if (this.cls != null && !this.cls.isInstance(actor)) {
+		if (this.cls != null && !ClassReflection.isInstance(this.cls,actor)) {
 			return false;
 		} else {
 			float actorX = actor.getX();

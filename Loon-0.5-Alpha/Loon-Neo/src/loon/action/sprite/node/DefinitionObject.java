@@ -59,7 +59,7 @@ public class DefinitionObject {
 	}
 
 	public static Vector2f strToVector2(String str) {
-		String[] result = StringUtils.split(str, ",");
+		String[] result = StringUtils.split(str, ',');
 		String name = result[0];
 		String value = result[1];
 		return new Vector2f(Float.parseFloat(name), Float.parseFloat(value));
