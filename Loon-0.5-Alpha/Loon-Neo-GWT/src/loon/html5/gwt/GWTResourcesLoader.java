@@ -95,7 +95,9 @@ public class GWTResourcesLoader {
 
 	public InputStream read () {
 		InputStream in = preloader.read(file);
-		if (in == null) throw new RuntimeException(file + " does not exist");
+		if (in == null){
+			throw new RuntimeException(file + " does not exist");
+		}
 		return in;
 	}
 
@@ -128,7 +130,9 @@ public class GWTResourcesLoader {
 	}
 
 	public String readString (String charset) {
-		if (preloader.isText(file)) return preloader.texts.get(file);
+		if (preloader.isText(file)){
+			return preloader.texts.get(file);
+		}
 		try {
 			return new String(readBytes(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {

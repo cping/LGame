@@ -1,5 +1,6 @@
 package loon.test;
 
+import loon.LTexture;
 import loon.LTransition;
 import loon.Screen;
 import loon.event.GameTouch;
@@ -9,19 +10,20 @@ import loon.utils.timer.LTimerContext;
 
 public class ScreenTest extends Screen{
 
+	LTexture tex = LTexture.createTexture("loon_logo.png");
+	
 	public LTransition onTransition(){
 		return LTransition.newEmpty();
 	}
 	
 	@Override
 	public void draw(GLEx g) {
-		// TODO Auto-generated method stub
-		
+		g.draw(tex, 66, 66);
 	}
 
 	@Override
 	public void onLoad() {
-		// TODO Auto-generated method stub
+
 		
 	}
 

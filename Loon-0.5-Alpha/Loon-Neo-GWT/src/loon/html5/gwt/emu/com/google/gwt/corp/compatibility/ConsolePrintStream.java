@@ -19,9 +19,6 @@ package com.google.gwt.corp.compatibility;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-/** Print stream for GWT that prints to the browser console.
- * 
- * @author Stefan Haustein */
 public class ConsolePrintStream extends PrintStream {
 
 	StringBuilder buf = new StringBuilder();

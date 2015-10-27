@@ -16,6 +16,7 @@ public class TestLoon extends Loon {
 		setting.isFPS = true;
 		setting.fontName = "黑体";
 		setting.rootId = "embed-loon.test.TestLoon";
+	
 		register(setting, new Data() {
 			
 			@Override

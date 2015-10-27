@@ -23,15 +23,17 @@ package loon.html5.gwt;
 import java.util.List;
 
 import loon.Assets;
+import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.jni.XDomainRequest;
+import loon.utils.ObjectMap;
 import loon.utils.Scale;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.canvas.dom.client.ImageData;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -42,15 +44,18 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 
 public class GWTAssets extends Assets {
 
-	private static final boolean LOG_XHR_SUCCESS = false;
+	private final static String GWT_DEF_RES = "assets/";
 
-	private final GWTGame plat;
+	private final static boolean LOG_XHR_SUCCESS = false;
 
-	private String pathPrefix = GWT.getModuleBaseForStaticFiles();
+	private final GWTGame game;
+
 	private Scale assetScale = null;
 
 	public void setPathPrefix(String prefix) {
-		pathPrefix = prefix;
+		if (!prefix.startsWith(GWT_DEF_RES)) {
+			pathPrefix = prefix;
+		}
 	}
 
 	public void setAssetScale(float scaleFactor) {
@@ -60,9 +65,9 @@ public class GWTAssets extends Assets {
 	@Override
 	public Image getImageSync(String path) {
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
-			return adaptImage(pathPrefix + path, rsrc.scale);
+			return localImage(pathPrefix + path, rsrc.scale);
 		}
-		return new GWTImage(plat.graphics(), new Throwable(
+		return new GWTImage(game.graphics(), new Throwable(
 				"Image missing from manifest: " + path));
 	}
 
@@ -71,48 +76,55 @@ public class GWTAssets extends Assets {
 		Scale assetScale = (this.assetScale == null) ? Scale.ONE
 				: this.assetScale;
 		List<Scale.ScaledResource> rsrcs = assetScale.getScaledResources(path);
-		return getImage(rsrcs.get(0).path, rsrcs.get(0).scale);
-	}
-
-	protected GWTImage getImage(String path, Scale scale) {
-		String url = pathPrefix + path;
-
-		return adaptImage(url, scale);
+		return localImage(rsrcs.get(0).path, rsrcs.get(0).scale);
 	}
 
 	@Override
-	public Image getRemoteImage(String url) {
-		return adaptImage(url, Scale.ONE);
+	public Image getRemoteImage(String path) {
+		return localImage(path, Scale.ONE);
 	}
 
 	@Override
-	public Image getRemoteImage(String url, int width, int height) {
-		return adaptImage(url, Scale.ONE).preload(width, height);
+	public Image getRemoteImage(String path, int width, int height) {
+		return localImage(path, Scale.ONE).preload(width, height);
 	}
 
 	@Override
 	public Sound getSound(String path) {
-		GWTResourcesLoader gwtFile = Loon.self.resources.internal(pathPrefix + path);
+		path = getPath(path);
+		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			path = GWT_DEF_RES + path;
+		}
+		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
 		return new GWTSound(gwtFile.path());
 	}
 
 	@Override
 	public String getTextSync(String path) throws Exception {
-		GWTResourcesLoader gwtFile = Loon.self.resources.internal(pathPrefix + path);
-		return gwtFile.readString();
+		path = getPath(path);
+		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			path = GWT_DEF_RES + path;
+		}
+		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
+		String text = gwtFile.readString();
+		return text == null ? gwtFile.preloader.texts.get(LSystem
+				.getFileName(path)) : text;
 	}
 
 	@Override
-	public GoFuture<String> getText(final String path) {
+	public GoFuture<String> getText(String path) {
 		GoPromise<String> result = GoPromise.create();
-		final String fullPath = pathPrefix + path;
+		path = getPath(path);
+		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			path = GWT_DEF_RES + path;
+		}
 		try {
-			doXhr(fullPath, result);
+			doXhr(path, result);
 		} catch (JavaScriptException e) {
 			if (Window.Navigator.getUserAgent().indexOf("MSIE") != -1) {
-				doXdr(fullPath, result);
+				doXdr(path, result);
 			} else {
-				GWTResourcesLoader gwtFile = Loon.self.resources.internal(fullPath);
+				GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
 				try {
 					result.succeed(gwtFile.readString());
 				} catch (Exception ex) {
@@ -125,13 +137,43 @@ public class GWTAssets extends Assets {
 
 	@Override
 	public byte[] getBytesSync(String path) throws Exception {
-		GWTResourcesLoader gwtFile = Loon.self.resources.internal(pathPrefix + path);
+		path = getPath(path);
+		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			path = GWT_DEF_RES + path;
+		}
+		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
 		return gwtFile.readBytes();
 	}
 
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
-		throw new UnsupportedOperationException("unused");
+		path = getPath(path);
+		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			path = GWT_DEF_RES + path;
+		}
+		Exception error = null;
+		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
+			try {
+				ImageElement image = localImageElement(path);
+				Scale viewScale = game.graphics().scale(), imageScale = rsrc.scale;
+				float viewImageRatio = viewScale.factor / imageScale.factor;
+				if (viewImageRatio < 1f) {
+					ImageData data = GWTImage.scaleImage(image, viewImageRatio);
+					ImageElement img = Document.get().createImageElement();
+					img.setWidth(data.getWidth());
+					img.setHeight(data.getHeight());
+					image = img;
+					imageScale = viewScale;
+				}
+				return new ImageImpl.Data(imageScale, image, image.getWidth(),
+						image.getHeight());
+			} catch (Exception fnfe) {
+				error = fnfe;
+			}
+		}
+		game.log().warn(
+				"Could not load image: " + path + " [error=" + error + "]");
+		throw error != null ? error : new Exception(path);
 	}
 
 	@Override
@@ -140,17 +182,18 @@ public class GWTAssets extends Assets {
 		ImageElement img = Document.get().createImageElement();
 		setCrossOrigin(img, "anonymous");
 		img.setSrc(source);
-		return new GWTImage(plat.graphics(), plat.graphics().scale(), img,
+		return new GWTImage(game.graphics(), game.graphics().scale(), img,
 				source);
 	}
 
-	GWTAssets(GWTGame plat) {
-		super(plat.asyn());
-		this.plat = plat;
+	GWTAssets(GWTGame game) {
+		super(game.asyn());
+		this.game = game;
+		GWTAssets.pathPrefix = "";
 	}
 
 	private Scale assetScale() {
-		return (assetScale != null) ? assetScale : plat.graphics().scale();
+		return (assetScale != null) ? assetScale : game.graphics().scale();
 	}
 
 	private void doXdr(final String path, final GoPromise<String> result) {
@@ -158,7 +201,7 @@ public class GWTAssets extends Assets {
 		xdr.setHandler(new XDomainRequest.Handler() {
 			@Override
 			public void onTimeout(XDomainRequest xdr) {
-				plat.log().error("xdr::onTimeout[" + path + "]()");
+				game.log().error("xdr::onTimeout[" + path + "]()");
 				result.fail(new Exception("Error getting " + path + " : "
 						+ xdr.getStatus()));
 			}
@@ -166,28 +209,30 @@ public class GWTAssets extends Assets {
 			@Override
 			public void onProgress(XDomainRequest xdr) {
 				if (LOG_XHR_SUCCESS)
-					plat.log().debug("xdr::onProgress[" + path + "]()");
+					game.log().debug("xdr::onProgress[" + path + "]()");
 			}
 
 			@Override
 			public void onLoad(XDomainRequest xdr) {
 				if (LOG_XHR_SUCCESS)
-					plat.log().debug("xdr::onLoad[" + path + "]()");
+					game.log().debug("xdr::onLoad[" + path + "]()");
 				result.succeed(xdr.getResponseText());
 			}
 
 			@Override
 			public void onError(XDomainRequest xdr) {
-				plat.log().error("xdr::onError[" + path + "]()");
+				game.log().error("xdr::onError[" + path + "]()");
 				result.fail(new Exception("Error getting " + path + " : "
 						+ xdr.getStatus()));
 			}
 		});
-		if (LOG_XHR_SUCCESS)
-			plat.log().debug("xdr.open('GET', '" + path + "')...");
+		if (LOG_XHR_SUCCESS) {
+			game.log().debug("xdr.open('GET', '" + path + "')...");
+		}
 		xdr.open("GET", path);
-		if (LOG_XHR_SUCCESS)
-			plat.log().debug("xdr.send()...");
+		if (LOG_XHR_SUCCESS) {
+			game.log().debug("xdr.send()...");
+		}
 		xdr.send();
 	}
 
@@ -200,7 +245,7 @@ public class GWTAssets extends Assets {
 				if (readyState == XMLHttpRequest.DONE) {
 					int status = xhr.getStatus();
 					if (status != 0 && (status < 200 || status >= 400)) {
-						plat.log().error(
+						game.log().error(
 								"xhr::onReadyStateChange[" + path + "]"
 										+ "(readyState = " + readyState
 										+ "; status = " + status + ")");
@@ -208,7 +253,7 @@ public class GWTAssets extends Assets {
 								+ " : " + xhr.getStatusText()));
 					} else {
 						if (LOG_XHR_SUCCESS)
-							plat.log().debug(
+							game.log().debug(
 									"xhr::onReadyStateChange[" + path + "]"
 											+ "(readyState = " + readyState
 											+ "; status = " + status + ")");
@@ -217,24 +262,57 @@ public class GWTAssets extends Assets {
 				}
 			}
 		});
-		if (LOG_XHR_SUCCESS)
-			plat.log().debug("xhr.open('GET', '" + path + "')...");
+		if (LOG_XHR_SUCCESS) {
+			game.log().debug("xhr.open('GET', '" + path + "')...");
+		}
 		xhr.open("GET", path);
-		if (LOG_XHR_SUCCESS)
-			plat.log().debug("xhr.send()...");
+		if (LOG_XHR_SUCCESS) {
+			game.log().debug("xhr.send()...");
+		}
 		xhr.send();
 	}
 
-	private String getKey(String fullPath) {
-		String key = fullPath.substring(fullPath.lastIndexOf('/') + 1);
-		int dotCharIdx = key.indexOf('.');
-		return dotCharIdx != -1 ? key.substring(0, dotCharIdx) : key;
+	private GWTImage localImage(String path, Scale scale) {
+		path = getPath(path);
+		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			path = GWT_DEF_RES + path;
+		}
+		GWTResourcesLoader files = Loon.self.resources.internal(path);
+		ObjectMap<String, ImageElement> res = files.preloader.images;
+		ImageElement tmp = res.get(path = files.path());
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(LSystem.getFileName(path = files.path()));
+		}
+		if (tmp == null) {
+			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+		}
+		if (tmp == null) {
+			return new GWTImage(game.graphics(), new Throwable("file " + path
+					+ " not found"));
+		}
+		return new GWTImage(game.graphics(), scale, tmp, path);
 	}
 
-	private GWTImage adaptImage(String url, Scale scale) {
-		GWTResourcesLoader files = 	Loon.self.resources.internal(pathPrefix + url);
-		return new GWTImage(plat.graphics(), scale,
-				files.preloader.images.get(files.path()), url);
+	private ImageElement localImageElement(String path) {
+		path = getPath(path);
+		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			path = GWT_DEF_RES + path;
+		}
+		GWTResourcesLoader files = Loon.self.resources.internal(path);
+		ObjectMap<String, ImageElement> res = files.preloader.images;
+		ImageElement tmp = res.get(path = files.path());
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(LSystem.getFileName(path = files.path()));
+		}
+		if (tmp == null) {
+			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+		}
+		if (tmp == null) {
+			game.log().warn("file " + path + " not found");
+		}
+		return tmp;
 	}
 
 	private native void setCrossOrigin(Element elem, String state) /*-{

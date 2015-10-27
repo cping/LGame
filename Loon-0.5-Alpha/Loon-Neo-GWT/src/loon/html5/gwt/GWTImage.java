@@ -31,6 +31,7 @@ import loon.utils.Scale;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.CanvasPixelArray;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.ImageData;
@@ -39,16 +40,49 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NativeEvent;
 
-
 public class GWTImage extends ImageImpl {
 
-	private static native boolean isComplete(ImageElement img) /*-{ return img.complete; }-*/;
+	private static native boolean isComplete(ImageElement img) /*-{
+		return img.complete;
+	}-*/;
+
+	public static ImageData scaleImage(ImageElement image, float scale) {
+		return scaleImage(image, scale, scale);
+	}
+
+	public static ImageData scaleImage(ImageElement image, float scaleToRatioh,
+			float scaleToRatiow) {
+		Canvas canvasTmp = Canvas.createIfSupported();
+		Context2d context = canvasTmp.getContext2d();
+		float ch = (image.getHeight() * scaleToRatioh);
+		float cw = (image.getWidth() * scaleToRatiow);
+		canvasTmp.setCoordinateSpaceHeight((int) ch);
+		canvasTmp.setCoordinateSpaceWidth((int) cw);
+
+		float sx = 0;
+		float sy = 0;
+		float sw = image.getWidth();
+		float sh = image.getHeight();
+
+		float dx = 0;
+		float dy = 0;
+		float dw = image.getWidth();
+		float dh = image.getHeight();
+
+		context.scale(scaleToRatioh, scaleToRatiow);
+		context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+
+		float w = dw * scaleToRatioh;
+		float h = dh * scaleToRatiow;
+		ImageData imageData = context.getImageData(0, 0, w, h);
+
+		return imageData;
+	}
 
 	private ImageElement img;
 	CanvasElement canvas;
 
-	public GWTImage(Graphics gfx, Scale scale, CanvasElement elem,
-			String source) {
+	public GWTImage(Graphics gfx, Scale scale, CanvasElement elem, String source) {
 		super(gfx, scale, elem.getWidth(), elem.getHeight(), source, elem);
 		this.canvas = elem;
 	}
@@ -58,10 +92,9 @@ public class GWTImage extends ImageImpl {
 				.getHeight(), source);
 		img = elem;
 		final GoPromise<Image> pstate = ((GoPromise<Image>) state);
-		if (isComplete(img)){
+		if (isComplete(img)) {
 			pstate.succeed(this);
-		}
-		else {
+		} else {
 			GWTInputMake.addEventListener(img, "load", new EventHandler() {
 				@Override
 				public void handleEvent(NativeEvent evt) {

@@ -34,7 +34,6 @@ public class GWTLog extends Log {
 		if (e != null) {
 			lmsg += ": " + e.getMessage();
 		}
-		System.out.println(lmsg);
 		if (e != null) {
 			e.printStackTrace(System.out);
 		}
@@ -47,6 +46,20 @@ public class GWTLog extends Log {
 				$wnd.console.info(msg, e);
 			} else {
 				$wnd.console.info(msg);
+			}
+		}else{
+			if (e != null) {
+				if (window.console) {
+				    window.console.log(msg + ":" + e);
+				} else {
+				    document.title = msg + "," + e;
+				}
+			}else{
+				if (window.console) {
+				    window.console.log(msg);
+				} else {
+				    document.title = msg;
+				}
 			}
 		}
 	}-*/;

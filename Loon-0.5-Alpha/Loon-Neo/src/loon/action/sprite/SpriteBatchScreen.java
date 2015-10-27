@@ -28,7 +28,6 @@ import loon.LSystem;
 import loon.Screen;
 import loon.action.map.Config;
 import loon.action.map.TileMap;
-import loon.action.sprite.node.DefinitionReader;
 import loon.action.sprite.node.LNAction;
 import loon.action.sprite.node.LNNode;
 import loon.event.ActionKey;
@@ -215,10 +214,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 		public void act(SpriteBatchObject obj, long elapsedTime);
 
-	}
-
-	public synchronized void loadNodeDef(String resName) {
-		DefinitionReader.get().load(resName);
 	}
 
 	public SpriteBatchScreen() {

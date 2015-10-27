@@ -10,7 +10,7 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.user.theme.clean.Clean'/>
   <inherits name='loon.html5.Core' />
-  <set-configuration-property name="loon.assetpath" value="assets"/>
+  <set-configuration-property name="loon.assetpath" value="../assets"/>
   <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
   <entry-point class='loon.test.TestLoon'/>
 </module>
