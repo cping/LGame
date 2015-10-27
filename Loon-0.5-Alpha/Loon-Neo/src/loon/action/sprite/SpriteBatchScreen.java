@@ -20,7 +20,6 @@
  */
 package loon.action.sprite;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -222,10 +221,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		DefinitionReader.get().load(resName);
 	}
 
-	public synchronized void loadNodeDef(InputStream res) {
-		DefinitionReader.get().load(res);
-	}
-
 	public SpriteBatchScreen() {
 		super();
 		this.objects = new ArrayList<SpriteBatchObject>(10);
@@ -287,14 +282,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return removed;
 	}
 
-	public int removeNode(Class<? extends LNNode> clazz) {
-		int removed = this.removeNode(this.content, clazz);
-		if (removed != -1) {
-			this.processTouchMotionEvent();
-		}
-		return removed;
-	}
-
 	private int removeNode(LNNode container, LNNode node) {
 		int removed = container.removeNode(node);
 		LNNode[] nodes = container.childs;
@@ -306,19 +293,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			i++;
 		}
 
-		return removed;
-	}
-
-	private int removeNode(LNNode container, Class<? extends LNNode> clazz) {
-		int removed = container.removeNode(clazz);
-		LNNode[] nodes = container.childs;
-		int i = 0;
-		while (removed == -1 && i < nodes.length - 1) {
-			if (nodes[i].isContainer()) {
-				removed = this.removeNode(nodes[i], clazz);
-			}
-			i++;
-		}
 		return removed;
 	}
 
@@ -471,27 +445,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 				this.validateContainer(nodes[i]);
 			}
 		}
-	}
-
-	public ArrayList<LNNode> getNodes(Class<? extends LNNode> clazz) {
-		if (content == null) {
-			return null;
-		}
-		if (clazz == null) {
-			return null;
-		}
-		LNNode[] nodes = content.childs;
-		int size = nodes.length;
-		ArrayList<LNNode> l = new ArrayList<LNNode>(size);
-		for (int i = size; i > 0; i--) {
-			LNNode node = nodes[i - 1];
-			Class<? extends LNNode> cls = node.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(node)
-					|| clazz.equals(cls)) {
-				l.add(node);
-			}
-		}
-		return l;
 	}
 
 	public LNNode getTopNode() {

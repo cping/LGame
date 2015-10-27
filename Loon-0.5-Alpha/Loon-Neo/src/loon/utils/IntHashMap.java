@@ -15,7 +15,6 @@
  */
 package loon.utils;
 
-
 public class IntHashMap {
 
 	Entry[] valueTables;
@@ -197,7 +196,7 @@ public class IntHashMap {
 	}
 
 	public Entry[] toEntrys() {
-		Entry[] lists = (Entry[]) CollectionUtils.copyOf(valueTables, _size);
+		Entry[] lists = CollectionUtils.copyOf(valueTables, _size);
 		return lists;
 	}
 
@@ -297,17 +296,13 @@ public class IntHashMap {
 		return false;
 	}
 
-	public IntHashMap clone() throws CloneNotSupportedException {
-		IntHashMap result = null;
-		try {
-			result = (IntHashMap) super.clone();
-			result.valueTables = new Entry[valueTables.length];
-			result._modCount = 0;
-			result._size = 0;
-			result.reset();
-			result.putAllForCreate(this);
-		} catch (CloneNotSupportedException e) {
-		}
+	public IntHashMap clone() {
+		IntHashMap result = new IntHashMap();
+		result.valueTables = new Entry[valueTables.length];
+		result._modCount = 0;
+		result._size = 0;
+		result.reset();
+		result.putAllForCreate(this);
 		return result;
 	}
 

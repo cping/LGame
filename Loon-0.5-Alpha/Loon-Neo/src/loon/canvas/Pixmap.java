@@ -8,6 +8,7 @@ import loon.LSystem;
 import loon.geom.Polygon.Polygon2i;
 import loon.geom.RectBox;
 import loon.geom.Triangle2f;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
 /**
@@ -1449,7 +1450,7 @@ public class Pixmap extends Director implements LRelease {
 		if (translateX == 0) {
 			xPointsCopy = xPoints;
 		} else {
-			xPointsCopy = (int[]) xPoints.clone();
+			xPointsCopy = CollectionUtils.copyOf(xPoints);
 			for (int i = 0; i < nPoints; i++) {
 				xPointsCopy[i] += translateX;
 			}
@@ -1458,7 +1459,7 @@ public class Pixmap extends Director implements LRelease {
 		if (translateY == 0) {
 			yPointsCopy = yPoints;
 		} else {
-			yPointsCopy = (int[]) yPoints.clone();
+			yPointsCopy = CollectionUtils.copyOf(yPoints);
 			for (int i = 0; i < nPoints; i++) {
 				yPointsCopy[i] += translateY;
 			}

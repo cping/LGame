@@ -796,7 +796,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 				int size = functions.size() - 1;
 				String[] function = (String[]) functions.get(size);
 				int index = function.length;
-				function = (String[]) CollectionUtils.expand(function, 1);
+				function = CollectionUtils.expand(function, 1);
 				function[index] = cmd;
 				functions.set(size, function);
 				return executeCommand;

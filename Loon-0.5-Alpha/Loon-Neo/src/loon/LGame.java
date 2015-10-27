@@ -21,8 +21,6 @@
 package loon;
 
 import loon.event.InputMake;
-import loon.utils.reflect.ClassReflection;
-import loon.utils.reflect.Constructor;
 import loon.utils.reply.Act;
 
 /*
@@ -59,9 +57,6 @@ public abstract class LGame {
 		setting.fontName = fontName;
 	}
 
-	public void initProcess() {
-		LSystem.init(this);
-	}
 
 	public static enum Type {
 		JAVASE, ANDROID, IOS, WP, HTML5, STUB
@@ -89,7 +84,22 @@ public abstract class LGame {
 		}
 	}
 
-	private static Class<?> getType(Object o) {
+	public Display register(Screen screen) {
+		LSystem.viewSize.setSize(setting.width, setting.height);
+		this.display = new Display(this, setting.fps);
+		this.display.setScreen(screen);
+		return display;
+	}
+
+	public void initProcess() {
+		LSystem.init(this);
+	}
+	
+	/**
+	 * 由于GWT不支持真实的反射，而完全模拟反射需要耗费大量资源，精确反射又难以控制用户具体使用的类，所以统一放弃外部反射方法，
+	 * 不让用户有机会使用自定义的类操作。
+	 * */
+	/*private static Class<?> getType(Object o) {
 		if (o instanceof Integer) {
 			return Integer.TYPE;
 		} else if (o instanceof Float) {
@@ -112,6 +122,9 @@ public abstract class LGame {
 	public Display register(Class<? extends Screen> clazz, Object... args) {
 		LSystem.viewSize.setSize(setting.width, setting.height);
 		this.display = new Display(this, setting.fps);
+		if (args == null) {
+			args = new Object[0];
+		}
 		if (clazz != null) {
 			if (args != null) {
 				try {
@@ -126,6 +139,7 @@ public abstract class LGame {
 						Constructor constructor = ClassReflection
 								.getConstructor(clazz, functions);
 						Object o = constructor.newInstance(args);
+
 						if (o != null && (o instanceof Screen)) {
 							display.setScreen((Screen) o);
 						}
@@ -136,8 +150,9 @@ public abstract class LGame {
 			}
 		}
 		return display;
-	}
+	}*/
 
+	
 	public void reportError(String message, Throwable cause) {
 		errors.emit(new Error(message, cause));
 		log().warn(message, cause);

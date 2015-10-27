@@ -17,7 +17,7 @@ public class FadeOvalEffect extends LObject implements ISprite {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final LColor[] OVAL_COLORS = new LColor[5];
-	
+
 	private LColor _ovalColor;
 	private float _ovalWidth;
 	private float _ovalHeight;
@@ -27,7 +27,6 @@ public class FadeOvalEffect extends LObject implements ISprite {
 	private boolean _visible = true;
 	private boolean _finish = false;
 	private int _type = TYPE_FADE_IN;
-
 
 	public FadeOvalEffect(int type, LColor color) {
 		this(type, color, LSystem.viewSize.width, LSystem.viewSize.height);
@@ -49,8 +48,8 @@ public class FadeOvalEffect extends LObject implements ISprite {
 		this._ovalColor = oc;
 		this._elapsed = 0;
 		for (int i = 0; i < OVAL_COLORS.length; i++) {
-			OVAL_COLORS[i] = new LColor(_ovalColor.r, _ovalColor.g, _ovalColor.b,
-					1F - 0.15f * i);
+			OVAL_COLORS[i] = new LColor(_ovalColor.r, _ovalColor.g,
+					_ovalColor.b, 1F - 0.15f * i);
 		}
 		this._max_time = time;
 		this._timer = new LTimer(0);
@@ -93,10 +92,11 @@ public class FadeOvalEffect extends LObject implements ISprite {
 			if (_type == TYPE_FADE_IN) {
 				this._elapsed += elapsedTime / 20f;
 				float progress = this._elapsed / this._max_time;
-				this._ovalWidth = (_ovalWidth * MathUtils.pow(1f - progress, 2f));
-				this._ovalHeight = (_ovalHeight * MathUtils
+				this._ovalWidth = (_ovalWidth * MathUtils
 						.pow(1f - progress, 2f));
-				if (this._elapsed >= this._max_time) {
+				this._ovalHeight = (_ovalHeight * MathUtils.pow(1f - progress,
+						2f));
+				if (this._elapsed >= this._max_time / 15f) {
 					this._elapsed = -1;
 					this._ovalWidth = (this._ovalHeight = 0f);
 					this._finish = true;

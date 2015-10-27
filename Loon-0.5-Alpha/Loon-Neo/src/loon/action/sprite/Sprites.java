@@ -21,7 +21,6 @@
 package loon.action.sprite;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -33,7 +32,6 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
-import loon.utils.reflect.ClassReflection;
 
 public class Sprites implements Serializable, LRelease {
 
@@ -97,8 +95,8 @@ public class Sprites implements Serializable, LRelease {
 		}
 		for (int i = 0; i < this.size; i++) {
 			if (this.sprites[i] == sprite) {
-				this.sprites = (ISprite[]) CollectionUtils.cut(this.sprites, i);
-				this.sprites = (ISprite[]) CollectionUtils.expand(this.sprites,
+				this.sprites =  CollectionUtils.cut(this.sprites, i);
+				this.sprites =  CollectionUtils.expand(this.sprites,
 						1, false);
 				this.sprites[0] = sprite;
 				this.sortSprites();
@@ -121,8 +119,8 @@ public class Sprites implements Serializable, LRelease {
 		}
 		for (int i = 0; i < this.size; i++) {
 			if (this.sprites[i] == sprite) {
-				this.sprites = (ISprite[]) CollectionUtils.cut(this.sprites, i);
-				this.sprites = (ISprite[]) CollectionUtils.expand(this.sprites,
+				this.sprites =  CollectionUtils.cut(this.sprites, i);
+				this.sprites =  CollectionUtils.expand(this.sprites,
 						1, true);
 				this.sprites[this.size - 1] = sprite;
 				this.sortSprites();
@@ -263,29 +261,6 @@ public class Sprites implements Serializable, LRelease {
 	}
 
 	/**
-	 * 返回所有指定类产生的精灵
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public synchronized ArrayList<ISprite> getSprites(
-			Class<? extends ISprite> clazz) {
-		if (clazz == null) {
-			return null;
-		}
-		ArrayList<ISprite> l = new ArrayList<ISprite>(size);
-		for (int i = size; i > 0; i--) {
-			ISprite sprite = sprites[i - 1];
-			Class<? extends ISprite> cls = sprite.getClass();
-			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,sprite)
-					|| clazz.equals(cls)) {
-				l.add(sprite);
-			}
-		}
-		return l;
-	}
-
-	/**
 	 * 顺序添加精灵
 	 * 
 	 * @param sprite
@@ -359,33 +334,6 @@ public class Sprites implements Serializable, LRelease {
 	public synchronized void removeAll() {
 		clear();
 		this.sprites = new ISprite[0];
-	}
-
-	/**
-	 * 删除所有指定类
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public synchronized void remove(Class<? extends ISprite> clazz) {
-		if (clazz == null) {
-			return;
-		}
-		for (int i = size; i > 0; i--) {
-			ISprite sprite = sprites[i - 1];
-			Class<? extends ISprite> cls = sprite.getClass();
-			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,sprite)
-					|| clazz.equals(cls)) {
-				size--;
-				sprites[i - 1] = sprites[size];
-				sprites[size] = null;
-				if (size == 0) {
-					sprites = new ISprite[0];
-				} else {
-					compressCapacity(2);
-				}
-			}
-		}
 	}
 
 	/**

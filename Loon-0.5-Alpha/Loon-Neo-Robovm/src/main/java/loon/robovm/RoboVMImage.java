@@ -336,8 +336,8 @@ public class RoboVMImage extends ImageImpl {
 
 	@Override
 	public int getPixel(int x, int y) {
-		int width = getWidth();
-		int height = getHeight();
+		int width = (int) image.getWidth();
+		int height = (int) image.getHeight();
 
 		byte bytesPerPixel = 4;
 		int bytesPerRow = bytesPerPixel * width;
@@ -368,8 +368,8 @@ public class RoboVMImage extends ImageImpl {
 
 	@Override
 	public void setRGB(int rgb, int x, int y) {
-		int width = getWidth();
-		int height = getHeight();
+		int width = (int) image.getWidth();
+		int height = (int) image.getHeight();
 
 		byte bytesPerPixel = 4;
 		int bytesPerRow = bytesPerPixel * width;

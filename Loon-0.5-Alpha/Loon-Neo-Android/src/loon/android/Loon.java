@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
-import loon.Screen;
+import loon.LazyLoading;
 import loon.utils.StringUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -50,7 +50,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public abstract class Loon extends Activity {
+public abstract class Loon extends Activity implements LazyLoading{
 
 	@SuppressLint("SetJavaScriptEnabled")
 	final static class Web extends android.webkit.WebView {
@@ -357,8 +357,7 @@ public abstract class Loon extends Activity {
 	protected static Loon self;
 	private LSetting setting;
 
-	private Class<? extends Screen> mainClass;
-	private Object[] parameters;
+	private LazyLoading.Data mainData ;
 
 	public static String getResourcePath(String name) throws IOException {
 		if (self == null) {
@@ -583,16 +582,15 @@ public abstract class Loon extends Activity {
 
 	protected AndroidGame initialize() {
 		if (game != null) {
-			game.register(mainClass, parameters);
+			game.register(mainData.onScreen());
 		}
 		return game;
 	}
 
-	public void register(LSetting s, Class<? extends Screen> clazz,
-			Object... pars) {
+	@Override
+	public void register(LSetting s, LazyLoading.Data data) {
 		this.setting = s;
-		this.mainClass = clazz;
-		this.parameters = pars;
+		this.mainData = data;
 	}
 
 	private void setContentView(AndroidGameViewGL view) {

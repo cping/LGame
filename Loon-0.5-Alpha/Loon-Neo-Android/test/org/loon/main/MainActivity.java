@@ -1,6 +1,7 @@
 package org.loon.main;
 
 import loon.LSetting;
+import loon.Screen;
 import loon.android.Loon;
 
 public class MainActivity extends Loon {
@@ -16,7 +17,13 @@ public class MainActivity extends Loon {
 		setting.fontName = "Dialog";
 		setting.appName = "test";
 		setting.emulateTouch = false;
-		register(setting, ScreenTest.class);
+		register(setting, new Data() {
+			
+			@Override
+			public Screen onScreen() {
+				return new ScreenTest();
+			}
+		});
 	}
 
 }

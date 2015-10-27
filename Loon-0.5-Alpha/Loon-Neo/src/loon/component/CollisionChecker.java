@@ -39,21 +39,21 @@ public interface CollisionChecker{
 
 	void updateObjectSize(Actor actor);
 
-	List getObjectsAt(float x, float y, Class cls);
+	List getObjectsAt(float x, float y, String flag);
 
-	List getIntersectingObjects(Actor actor, Class cls);
+	List getIntersectingObjects(Actor actor, String flag);
 
-	List getObjectsInRange(float x, float y, float r, Class cls);
+	List getObjectsInRange(float x, float y, float r, String flag);
 
-	List getNeighbours(Actor actor, float distance, boolean d, Class cls);
+	List getNeighbours(Actor actor, float distance, boolean d, String flag);
 
-	List getObjects(Class actor);
+	List getObjects(String actor);
 
 	List getObjectsList();
 
-	Actor getOnlyObjectAt(Actor actor, float x, float y, Class cls);
+	Actor getOnlyObjectAt(Actor actor, float x, float y, String flag);
 
-	Actor getOnlyIntersectingObject(Actor actor, Class cls);
+	Actor getOnlyIntersectingObject(Actor actor, String flag);
 
 	Iterator getActorsIterator();
 

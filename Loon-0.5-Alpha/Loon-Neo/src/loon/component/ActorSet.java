@@ -25,8 +25,7 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 
 
-@SuppressWarnings({"rawtypes"})
-public class ActorSet extends AbstractSet {
+public class ActorSet extends AbstractSet<Actor> {
 
 	private ActorSet.ListNode listHeadTail = new ActorSet.ListNode();
 
@@ -156,7 +155,7 @@ public class ActorSet extends AbstractSet {
 	}
 
 	@Override
-	public Iterator iterator() {
+	public Iterator<Actor> iterator() {
 		return new ActorSet.ActorSetIterator();
 	}
 
@@ -206,7 +205,7 @@ public class ActorSet extends AbstractSet {
 		}
 	}
 
-	private class ActorSetIterator implements Iterator {
+	private class ActorSetIterator implements Iterator<Actor> {
 
 		ActorSet.ListNode currentNode;
 
@@ -220,7 +219,7 @@ public class ActorSet extends AbstractSet {
 		}
 
 		@Override
-		public Object next() {
+		public Actor next() {
 			this.currentNode = this.currentNode.next;
 			return this.currentNode.actor;
 		}

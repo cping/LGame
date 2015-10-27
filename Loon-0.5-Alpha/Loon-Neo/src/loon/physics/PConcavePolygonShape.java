@@ -123,7 +123,7 @@ public class PConcavePolygonShape extends PShape {
 	}
 
 	public PConvexPolygonShape[] getConvexes() {
-		return (PConvexPolygonShape[]) CollectionUtils.copyOf(convexes,
+		return  CollectionUtils.copyOf(convexes,
 				numConvexes);
 	}
 

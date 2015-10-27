@@ -252,7 +252,7 @@ public class JavaSEImage extends ImageImpl {
 	@Override
 	public Image getSubImage(int x, int y, int width, int height) {
 		return new JavaSEImage(gfx, scale, buffer.getSubimage(x, y, width,
-				height), source);
+				height), "<canvas>");
 	}
 
 }

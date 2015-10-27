@@ -536,8 +536,7 @@ public class LTextureBatch implements LRelease {
 			mesh.post(size, globalShader, cache.vertices, cache.vertexIdx,
 					cache.count);
 			GLUtils.setBlendMode(gl, old);
-		}
-		if (color != null) {
+		} else if (color != null) {
 			globalShader.setUniformf("v_color", oldColor);
 		}
 		globalShader.end();

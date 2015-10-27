@@ -7,6 +7,7 @@ import loon.LTexture;
 import loon.LTextureBatch;
 import loon.LTextures;
 import loon.LTransition;
+import loon.LazyLoading;
 import loon.Screen;
 import loon.action.avg.AVGDialog;
 import loon.action.sprite.effect.FadeOvalEffect;
@@ -373,7 +374,13 @@ remove(this);
 		setting.fontName = "黑体";
 		setting.appName = "test";
 		setting.emulateTouch = false;
-		Loon.register(setting, ScreenTest.class);
+		Loon.register(setting, new LazyLoading.Data() {
+			
+			@Override
+			public Screen onScreen() {
+				return new ScreenTest();
+			}
+		});
 	}
 
 }

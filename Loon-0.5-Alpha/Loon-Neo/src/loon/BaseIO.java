@@ -20,9 +20,6 @@
  */
 package loon;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import loon.LTexture.Format;
 import loon.canvas.Image;
 
@@ -70,10 +67,6 @@ public abstract class BaseIO {
 			}
 		}
 		return null;
-	}
-
-	public static InputStream loadStream(String path) {
-		return new ByteArrayInputStream(loadBytes(path));
 	}
 
 	public static byte[] loadBytes(String path) {

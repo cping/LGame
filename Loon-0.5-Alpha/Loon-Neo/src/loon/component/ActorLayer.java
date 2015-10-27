@@ -41,8 +41,6 @@ import loon.action.sprite.ISprite;
 import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
-import loon.utils.reflect.ClassReflection;
-
 
 @SuppressWarnings("rawtypes")
 public abstract class ActorLayer extends LContainer {
@@ -713,38 +711,6 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	/**
-	 * 删除所有指定的游戏类
-	 * 
-	 * @param clazz
-	 */
-	public void removeObject(Class clazz) {
-		if (isClose) {
-			return;
-		}
-		if (objects.size() == 0) {
-			return;
-		}
-		synchronized (objects) {
-			Iterator it = objects.iterator();
-			while (it.hasNext()) {
-				Actor actor = (Actor) it.next();
-				if (actor == null) {
-					continue;
-				}
-				Class cls = actor.getClass();
-				if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,actor)
-						|| clazz.equals(cls)) {
-					if (this.objects.remove(actor)) {
-						this.collisionChecker.removeObject(actor);
-					}
-					removeActionEvents(actor);
-					actor.setLayer((ActorLayer) null);
-				}
-			}
-		}
-	}
-
-	/**
 	 * 删除指定集合中的所有角色
 	 * 
 	 * @param objects
@@ -772,7 +738,7 @@ public abstract class ActorLayer extends LContainer {
 		if (isClose) {
 			return null;
 		}
-		return getCollisionObjects(actor.getClass());
+		return getCollisionObjects(actor.getFlag());
 	}
 
 	/**
@@ -803,14 +769,14 @@ public abstract class ActorLayer extends LContainer {
 	/**
 	 * 获得指定类所产生角色碰撞的List集合
 	 * 
-	 * @param cls
+	 * @param flag
 	 * @return
 	 */
-	public List getCollisionObjects(Class cls) {
+	public List getCollisionObjects(String flag) {
 		if (isClose) {
 			return null;
 		}
-		return this.collisionChecker.getObjects(cls);
+		return this.collisionChecker.getObjects(flag);
 	}
 
 	/**
@@ -818,14 +784,14 @@ public abstract class ActorLayer extends LContainer {
 	 * 
 	 * @param x
 	 * @param y
-	 * @param cls
+	 * @param flag
 	 * @return
 	 */
-	public List getCollisionObjectsAt(float x, float y, Class cls) {
+	public List getCollisionObjectsAt(float x, float y, String flag) {
 		if (isClose) {
 			return null;
 		}
-		return this.collisionChecker.getObjectsAt(x, y, cls);
+		return this.collisionChecker.getObjectsAt(x, y, flag);
 	}
 
 	/**
@@ -882,35 +848,35 @@ public abstract class ActorLayer extends LContainer {
 		return objects.getSynchronizedObject(x, y);
 	}
 
-	List getIntersectingObjects(Actor actor, Class cls) {
+	List getIntersectingObjects(Actor actor, String flag) {
 		if (isClose) {
 			return null;
 		}
-		return this.collisionChecker.getIntersectingObjects(actor, cls);
+		return this.collisionChecker.getIntersectingObjects(actor, flag);
 	}
 
-	Actor getOnlyIntersectingObject(Actor object, Class cls) {
+	Actor getOnlyIntersectingObject(Actor object, String flag) {
 		if (isClose) {
 			return null;
 		}
-		return this.collisionChecker.getOnlyIntersectingObject(object, cls);
+		return this.collisionChecker.getOnlyIntersectingObject(object, flag);
 	}
 
-	List getObjectsInRange(float x, float y, float r, Class cls) {
+	List getObjectsInRange(float x, float y, float r, String flag) {
 		if (isClose) {
 			return null;
 		}
-		return this.collisionChecker.getObjectsInRange(x, y, r, cls);
+		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
 	}
 
-	List getNeighbours(Actor actor, float distance, boolean d, Class cls) {
+	List getNeighbours(Actor actor, float distance, boolean d, String flag) {
 		if (isClose) {
 			return null;
 		}
 		if (distance < 0) {
 			throw new RuntimeException("distance < 0");
 		} else {
-			return this.collisionChecker.getNeighbours(actor, distance, d, cls);
+			return this.collisionChecker.getNeighbours(actor, distance, d, flag);
 		}
 	}
 
@@ -956,11 +922,11 @@ public abstract class ActorLayer extends LContainer {
 		this.collisionChecker.updateObjectSize(object);
 	}
 
-	Actor getOnlyObjectAt(Actor object, float dx, float dy, Class cls) {
+	Actor getOnlyObjectAt(Actor object, float dx, float dy, String flag) {
 		if (isClose) {
 			return null;
 		}
-		return this.collisionChecker.getOnlyObjectAt(object, dx, dy, cls);
+		return this.collisionChecker.getOnlyObjectAt(object, dx, dy, flag);
 	}
 
 	ActorTreeSet getObjectsListInPaintO() {

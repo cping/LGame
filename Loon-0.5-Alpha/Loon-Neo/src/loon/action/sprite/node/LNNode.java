@@ -258,7 +258,7 @@ public class LNNode {
 			}
 			if (zd > z) {
 				flag = true;
-				this.childs = (LNNode[]) CollectionUtils.expand(this.childs, 1,
+				this.childs = CollectionUtils.expand(this.childs, 1,
 						false);
 				childs[index] = node;
 				_childCount++;
@@ -269,7 +269,7 @@ public class LNNode {
 			index++;
 		}
 		if (!flag) {
-			this.childs = (LNNode[]) CollectionUtils.expand(this.childs, 1,
+			this.childs = CollectionUtils.expand(this.childs, 1,
 					false);
 			this.childs[0] = node;
 			this._childCount++;
@@ -328,29 +328,11 @@ public class LNNode {
 		return -1;
 	}
 
-	public synchronized int removeNode(Class<? extends LNNode> clazz) {
-		if (clazz == null) {
-			return -1;
-		}
-		int count = 0;
-		for (int i = _childCount; i > 0; i--) {
-			int index = i - 1;
-			LNNode node = this.childs[index];
-			Class<? extends LNNode> cls = node.getClass();
-			if (clazz == null || clazz == cls || clazz.isInstance(node)
-					|| clazz.equals(cls)) {
-				this.removeNode(index);
-				count++;
-			}
-		}
-		return count;
-	}
-
 	public synchronized LNNode removeNode(int index) {
 		LNNode node = this.childs[index];
 		this._screen.setNodeStat(node, false);
 		node.setContainer(null);
-		this.childs = (LNNode[]) CollectionUtils.cut(this.childs, index);
+		this.childs = CollectionUtils.cut(this.childs, index);
 		this._childCount--;
 		return node;
 	}
@@ -441,8 +423,8 @@ public class LNNode {
 		}
 		for (int i = 0; i < this._childCount; i++) {
 			if (this.childs[i] == node) {
-				this.childs = (LNNode[]) CollectionUtils.cut(this.childs, i);
-				this.childs = (LNNode[]) CollectionUtils.expand(this.childs, 1,
+				this.childs = CollectionUtils.cut(this.childs, i);
+				this.childs = CollectionUtils.expand(this.childs, 1,
 						false);
 				this.childs[0] = node;
 				this.sortComponents();
@@ -460,8 +442,8 @@ public class LNNode {
 		}
 		for (int i = 0; i < this._childCount; i++) {
 			if (this.childs[i] == node) {
-				this.childs = (LNNode[]) CollectionUtils.cut(this.childs, i);
-				this.childs = (LNNode[]) CollectionUtils.expand(this.childs, 1,
+				this.childs = CollectionUtils.cut(this.childs, i);
+				this.childs = CollectionUtils.expand(this.childs, 1,
 						true);
 				this.childs[this._childCount - 1] = node;
 				this.sortComponents();

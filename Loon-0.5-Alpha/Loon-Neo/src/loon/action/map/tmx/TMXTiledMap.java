@@ -21,10 +21,8 @@
  */
 package loon.action.map.tmx;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import loon.BaseIO;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
@@ -77,24 +75,10 @@ public class TMXTiledMap implements LRelease {
 			res = fileName;
 		}
 		try {
-			this.load(BaseIO.loadStream(fileName), res);
+			this.load(fileName, res);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public TMXTiledMap(String fileName, String tileSetsLocation)
-			throws RuntimeException {
-			load(BaseIO.loadStream(fileName), tileSetsLocation);
-	}
-
-	public TMXTiledMap(InputStream in) throws RuntimeException {
-		load(in, "");
-	}
-
-	public TMXTiledMap(InputStream in, String tileSetsLocation)
-			throws RuntimeException {
-		load(in, tileSetsLocation);
 	}
 
 	public String getTilesLocation() {
@@ -233,7 +217,7 @@ public class TMXTiledMap implements LRelease {
 		return layers.size();
 	}
 
-	private void load(InputStream in, String tileSetsLocation)
+	private void load(String path, String tileSetsLocation)
 			throws RuntimeException {
 
 		screenRect = LSystem.viewSize.getRect();
@@ -241,7 +225,7 @@ public class TMXTiledMap implements LRelease {
 		tilesLocation = tileSetsLocation;
 
 		try {
-			XMLDocument doc = XMLParser.parse(in);
+			XMLDocument doc = XMLParser.parse(path);
 			XMLElement docElement = doc.getRoot();
 
 			String orient = docElement.getAttribute("orientation", "");

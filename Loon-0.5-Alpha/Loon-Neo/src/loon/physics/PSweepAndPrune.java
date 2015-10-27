@@ -31,9 +31,9 @@ public class PSweepAndPrune {
 
 	void addObject(PSortableObject ox, PSortableObject oy) {
 		if (numObject + 1 >= objsX.length) {
-			objsX = (PSortableObject[]) CollectionUtils.copyOf(objsX,
+			objsX =  CollectionUtils.copyOf(objsX,
 					objsX.length * 2);
-			objsY = (PSortableObject[]) CollectionUtils.copyOf(objsY,
+			objsY =  CollectionUtils.copyOf(objsY,
 					objsY.length * 2);
 		}
 		objsX[numObject] = ox;

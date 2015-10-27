@@ -21,14 +21,11 @@
  */
 package loon.component;
 
-import java.util.ArrayList;
-
 import loon.LRelease;
 import loon.Screen;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
-import loon.utils.reflect.ClassReflection;
 
 public class Desktop implements LRelease {
 
@@ -94,14 +91,6 @@ public class Desktop implements LRelease {
 		return removed;
 	}
 
-	public int remove(Class<? extends LComponent> clazz) {
-		int removed = this.removeComponent(this.contentPane, clazz);
-		if (removed != -1) {
-			this.processTouchMotionEvent();
-		}
-		return removed;
-	}
-
 	private int removeComponent(LContainer container, LComponent comp) {
 		int removed = container.remove(comp);
 		LComponent[] components = container.getComponents();
@@ -114,21 +103,6 @@ public class Desktop implements LRelease {
 			i++;
 		}
 
-		return removed;
-	}
-
-	private int removeComponent(LContainer container,
-			Class<? extends LComponent> clazz) {
-		int removed = container.remove(clazz);
-		LComponent[] components = container.getComponents();
-		int i = 0;
-		while (removed == -1 && i < components.length - 1) {
-			if (components[i].isContainer()) {
-				removed = this.removeComponent((LContainer) components[i],
-						clazz);
-			}
-			i++;
-		}
 		return removed;
 	}
 
@@ -432,24 +406,6 @@ public class Desktop implements LRelease {
 		}
 	}
 
-	public ArrayList<LComponent> getComponents(Class<? extends LComponent> clazz) {
-		if (clazz == null) {
-			return null;
-		}
-		LComponent[] components = contentPane.getComponents();
-		int size = components.length;
-		ArrayList<LComponent> l = new ArrayList<LComponent>(size);
-		for (int i = size; i > 0; i--) {
-			LComponent comp = components[i - 1];
-			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
-					|| clazz.equals(cls)) {
-				l.add(comp);
-			}
-		}
-		return l;
-	}
-
 	public LComponent getTopComponent() {
 		LComponent[] components = contentPane.getComponents();
 		int size = components.length;
@@ -472,12 +428,9 @@ public class Desktop implements LRelease {
 	public LLayer getTopLayer() {
 		LComponent[] components = contentPane.getComponents();
 		int size = components.length;
-		Class<LLayer> clazz = LLayer.class;
 		for (int i = 0; i < size; i++) {
 			LComponent comp = components[i];
-			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
-					|| clazz.equals(cls)) {
+			if (comp instanceof LLayer) {
 				return (LLayer) comp;
 			}
 		}
@@ -487,12 +440,9 @@ public class Desktop implements LRelease {
 	public LLayer getBottomLayer() {
 		LComponent[] components = contentPane.getComponents();
 		int size = components.length;
-		Class<LLayer> clazz = LLayer.class;
 		for (int i = size; i > 0; i--) {
 			LComponent comp = components[i - 1];
-			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
-					|| clazz.equals(cls)) {
+			if (comp instanceof LLayer) {
 				return (LLayer) comp;
 			}
 		}

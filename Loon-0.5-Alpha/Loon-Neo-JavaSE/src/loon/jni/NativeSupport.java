@@ -31,11 +31,8 @@ import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -143,9 +140,8 @@ public final class NativeSupport {
 		if (dirName == null) {
 			dirName = sourceCrc;
 		}
-		File extractedDir = new File(System.getProperty("java.io.tmpdir") + "/loon"
-				 + System.getProperty("user.name") + "/"
-				+ dirName);
+		File extractedDir = new File(System.getProperty("java.io.tmpdir")
+				+ "/loon" + System.getProperty("user.name") + "/" + dirName);
 		File extractedFile = new File(extractedDir,
 				new File(sourcePath).getName());
 		String extractedCrc = null;
@@ -428,16 +424,10 @@ public final class NativeSupport {
 			return dst.position();
 		} else if (dst instanceof ShortBuffer) {
 			return dst.position() << 1;
-		} else if (dst instanceof CharBuffer) {
-			return dst.position() << 1;
 		} else if (dst instanceof IntBuffer) {
 			return dst.position() << 2;
-		} else if (dst instanceof LongBuffer) {
-			return dst.position() << 3;
 		} else if (dst instanceof FloatBuffer) {
 			return dst.position() << 2;
-		} else if (dst instanceof DoubleBuffer) {
-			return dst.position() << 3;
 		} else {
 			throw new RuntimeException("Can't copy to a "
 					+ dst.getClass().getName() + " instance");
@@ -449,16 +439,10 @@ public final class NativeSupport {
 			return bytes;
 		} else if (dst instanceof ShortBuffer) {
 			return bytes >>> 1;
-		} else if (dst instanceof CharBuffer) {
-			return bytes >>> 1;
 		} else if (dst instanceof IntBuffer) {
 			return bytes >>> 2;
-		} else if (dst instanceof LongBuffer) {
-			return bytes >>> 3;
 		} else if (dst instanceof FloatBuffer) {
 			return bytes >>> 2;
-		} else if (dst instanceof DoubleBuffer) {
-			return bytes >>> 3;
 		} else {
 			throw new RuntimeException("Can't copy to a "
 					+ dst.getClass().getName() + " instance");
@@ -470,16 +454,10 @@ public final class NativeSupport {
 			return elements;
 		} else if (dst instanceof ShortBuffer) {
 			return elements << 1;
-		} else if (dst instanceof CharBuffer) {
-			return elements << 1;
 		} else if (dst instanceof IntBuffer) {
 			return elements << 2;
-		} else if (dst instanceof LongBuffer) {
-			return elements << 3;
 		} else if (dst instanceof FloatBuffer) {
 			return elements << 2;
-		} else if (dst instanceof DoubleBuffer) {
-			return elements << 3;
 		} else {
 			throw new RuntimeException("Can't copy to a "
 					+ dst.getClass().getName() + " instance");
@@ -499,19 +477,9 @@ public final class NativeSupport {
 			ShortBuffer writer = (ShortBuffer) dst;
 			writer.limit(numFloats);
 			writer.put(buffer, offset, numFloats);
-		} else if (dst instanceof CharBuffer) {
-			char[] buffer = (char[]) src;
-			CharBuffer writer = (CharBuffer) dst;
-			writer.limit(numFloats);
-			writer.put(buffer, offset, numFloats);
 		} else if (dst instanceof IntBuffer) {
 			int[] buffer = (int[]) src;
 			IntBuffer writer = (IntBuffer) dst;
-			writer.limit(numFloats);
-			writer.put(buffer, offset, numFloats);
-		} else if (dst instanceof LongBuffer) {
-			long[] buffer = (long[]) src;
-			LongBuffer writer = (LongBuffer) dst;
 			writer.limit(numFloats);
 			writer.put(buffer, offset, numFloats);
 		} else if (dst instanceof FloatBuffer) {
@@ -519,16 +487,10 @@ public final class NativeSupport {
 			FloatBuffer writer = (FloatBuffer) dst;
 			writer.limit(numFloats);
 			writer.put(buffer, offset, numFloats);
-		} else if (dst instanceof DoubleBuffer) {
-			double[] buffer = (double[]) src;
-			DoubleBuffer writer = (DoubleBuffer) dst;
-			writer.limit(numFloats);
-			writer.put(buffer, offset, numFloats);
 		} else {
 			throw new RuntimeException("Can't copy to a "
 					+ dst.getClass().getName() + " instance");
 		}
-		dst.position(0);
 	}
 
 	private static void putBuffer(Buffer dst, Buffer src, int numFloats) {
@@ -541,31 +503,18 @@ public final class NativeSupport {
 			ShortBuffer buffer = (ShortBuffer) dst;
 			buffer.limit(numFloats);
 			buffer.put((ShortBuffer) src);
-		} else if (dst instanceof CharBuffer) {
-			CharBuffer buffer = (CharBuffer) dst;
-			buffer.limit(numFloats);
-			buffer.put((CharBuffer) src);
 		} else if (dst instanceof IntBuffer) {
 			IntBuffer buffer = (IntBuffer) dst;
 			buffer.limit(numFloats);
 			buffer.put((IntBuffer) src);
-		} else if (dst instanceof LongBuffer) {
-			LongBuffer buffer = (LongBuffer) dst;
-			buffer.limit(numFloats);
-			buffer.put((LongBuffer) src);
 		} else if (dst instanceof FloatBuffer) {
 			FloatBuffer buffer = (FloatBuffer) dst;
 			buffer.limit(numFloats);
 			buffer.put((FloatBuffer) src);
-		} else if (dst instanceof DoubleBuffer) {
-			DoubleBuffer buffer = (DoubleBuffer) dst;
-			buffer.limit(numFloats);
-			buffer.put((DoubleBuffer) src);
 		} else {
 			throw new RuntimeException("Can't copy to a "
 					+ dst.getClass().getName() + " instance");
 		}
-		dst.position(0);
 	}
 
 	public static ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
@@ -624,34 +573,16 @@ public final class NativeSupport {
 		return buffer.asFloatBuffer();
 	}
 
-	public static DoubleBuffer newDoubleBuffer(int numDoubles) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numDoubles * 8);
-		buffer.order(ByteOrder.nativeOrder());
-		return buffer.asDoubleBuffer();
-	}
-
 	public static ShortBuffer newShortBuffer(int numShorts) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts * 2);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asShortBuffer();
 	}
 
-	public static CharBuffer newCharBuffer(int numChars) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numChars * 2);
-		buffer.order(ByteOrder.nativeOrder());
-		return buffer.asCharBuffer();
-	}
-
 	public static IntBuffer newIntBuffer(int numInts) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numInts * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asIntBuffer();
-	}
-
-	public static LongBuffer newLongBuffer(int numLongs) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numLongs * 8);
-		buffer.order(ByteOrder.nativeOrder());
-		return buffer.asLongBuffer();
 	}
 
 	public static void put(final Buffer buffer, final float[] source,

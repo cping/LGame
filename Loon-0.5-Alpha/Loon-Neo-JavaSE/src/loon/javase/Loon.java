@@ -23,11 +23,11 @@ package loon.javase;
 import org.lwjgl.opengl.Display;
 
 import loon.LSetting;
-import loon.Screen;
+import loon.LazyLoading;
 import loon.jni.NativeSupport;
 
-public class Loon extends JavaSEGame {
-
+public class Loon extends JavaSEGame{
+	
 	public Loon(LSetting config) {
 		super(config);
 	}
@@ -37,19 +37,12 @@ public class Loon extends JavaSEGame {
 		Display.setTitle(title);
 	}
 
-	public static void register(LSetting setting,
-			Class<? extends Screen> clazz, Object... args) {
+	public static void register(LSetting setting, LazyLoading.Data lazy) {
 		Loon game = new Loon(setting);
-		game.registerDisplay(clazz);
+		game.register(lazy.onScreen());
+		game.reset();
 	}
-
-	public loon.Display registerDisplay(Class<? extends Screen> clazz,
-			Object... args) {
-		loon.Display display = super.register(clazz, args);
-		this.reset();
-		return display;
-	}
-
+	
 	public void reset() {
 		boolean wasActive = Display.isActive();
 		while (!Display.isCloseRequested()) {

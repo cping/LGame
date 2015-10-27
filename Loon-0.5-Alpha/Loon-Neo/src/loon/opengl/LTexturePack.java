@@ -20,7 +20,6 @@
  */
 package loon.opengl;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import loon.BaseIO;
@@ -135,19 +134,15 @@ public class LTexturePack implements LRelease {
 		if (path == null || "".equals(path)) {
 			throw new RuntimeException(path + " not found !");
 		}
-		set(BaseIO.loadStream(path));
-	}
-
-	public LTexturePack(InputStream in) {
-		set(in);
+		set(path);
 	}
 
 	public LTexturePack(XMLElement pack) {
 		set(pack);
 	}
 
-	private void set(InputStream in) {
-		XMLDocument doc = XMLParser.parse(in);
+	private void set(String path) {
+		XMLDocument doc = XMLParser.parse(path);
 		XMLElement pack = doc.getRoot();
 		set(pack);
 	}

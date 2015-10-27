@@ -20,13 +20,9 @@
  */
 package loon.utils.xml;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Stack;
 
 import loon.BaseIO;
-import loon.LSystem;
 
 public class XMLParser {
 
@@ -268,32 +264,13 @@ public class XMLParser {
 	}
 
 	public static XMLDocument parse(String file) {
-		return parse(file, null);
+		return new XMLParser().parseText(file, null);
 	}
 
 	public static XMLDocument parse(String file, XMLListener l) {
-		return parse(BaseIO.loadStream(file), l);
+		return new XMLParser().parseText(BaseIO.loadText(file), l);
 	}
 
-	public static XMLDocument parse(InputStream in) {
-		return parse(in, null);
-	}
-
-	public static XMLDocument parse(InputStream in, XMLListener l) {
-		StringBuffer sbr = new StringBuffer(10000);
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					in, LSystem.ENCODING));
-			while (reader.ready()) {
-				sbr.append(reader.readLine());
-				sbr.append('\n');
-			}
-			reader.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return new XMLParser().parseText(sbr.toString(), l);
-	}
 
 	public void dispose() {
 		if (stack != null) {

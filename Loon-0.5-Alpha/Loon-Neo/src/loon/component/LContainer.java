@@ -26,7 +26,6 @@ import java.util.Comparator;
 
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
-import loon.utils.reflect.ClassReflection;
 
 public abstract class LContainer extends LComponent {
 
@@ -66,7 +65,7 @@ public abstract class LContainer extends LComponent {
 			comp.setContainer(null);
 		}
 		comp.setContainer(this);
-		this.childs = (LComponent[]) CollectionUtils.expand(this.childs, 1,
+		this.childs = CollectionUtils.expand(this.childs, 1,
 				false);
 		this.childs[0] = comp;
 		this.childCount++;
@@ -130,31 +129,13 @@ public abstract class LContainer extends LComponent {
 		return -1;
 	}
 
-	public synchronized int remove(Class<? extends LComponent> clazz) {
-		if (clazz == null) {
-			return -1;
-		}
-		int count = 0;
-		for (int i = childCount; i > 0; i--) {
-			int index = i - 1;
-			LComponent comp = this.childs[index];
-			Class<? extends LComponent> cls = comp.getClass();
-			if (clazz == null || clazz == cls || ClassReflection.isInstance(clazz,comp)
-					|| clazz.equals(cls)) {
-				this.remove(index);
-				count++;
-			}
-		}
-		return count;
-	}
-
 	public synchronized LComponent remove(int index) {
 		LComponent comp = this.childs[index];
 
 		this.desktop.setComponentStat(comp, false);
 		comp.setContainer(null);
 		// comp.dispose();
-		this.childs = (LComponent[]) CollectionUtils.cut(this.childs, index);
+		this.childs = CollectionUtils.cut(this.childs, index);
 		this.childCount--;
 
 		return comp;
@@ -258,9 +239,9 @@ public abstract class LContainer extends LComponent {
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			if (this.childs[i] == comp) {
-				this.childs = (LComponent[]) CollectionUtils
+				this.childs = CollectionUtils
 						.cut(this.childs, i);
-				this.childs = (LComponent[]) CollectionUtils.expand(
+				this.childs = CollectionUtils.expand(
 						this.childs, 1, false);
 				this.childs[0] = comp;
 				this.sortComponents();
@@ -278,9 +259,9 @@ public abstract class LContainer extends LComponent {
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			if (this.childs[i] == comp) {
-				this.childs = (LComponent[]) CollectionUtils
+				this.childs = CollectionUtils
 						.cut(this.childs, i);
-				this.childs = (LComponent[]) CollectionUtils.expand(
+				this.childs = CollectionUtils.expand(
 						this.childs, 1, true);
 				this.childs[this.childCount - 1] = comp;
 				this.sortComponents();

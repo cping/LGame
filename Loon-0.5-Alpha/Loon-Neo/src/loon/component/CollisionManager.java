@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import loon.utils.reflect.ClassReflection;
-
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class CollisionManager implements CollisionChecker {
 
@@ -61,11 +59,11 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
-	private void makeCollisionObjects(Class cls, boolean includeSubclasses) {
+	private void makeCollisionObjects(String flag, boolean includeSubclasses) {
 		Set entries;
 		Iterator it;
 		Entry entry;
-		if (cls == null) {
+		if (flag == null) {
 			entries = this.freeObjects.entrySet();
 			it = entries.iterator();
 			for (; it.hasNext();) {
@@ -78,10 +76,10 @@ public class CollisionManager implements CollisionChecker {
 				this.collisionClasses.add(entry.getKey());
 			}
 			this.freeObjects.clear();
-		} else if (!this.collisionClasses.contains(cls)) {
-			List entries2 = (List) this.freeObjects.remove(cls);
+		} else if (!this.collisionClasses.contains(flag)) {
+			List entries2 = (List) this.freeObjects.remove(flag);
 			if (entries2 != null) {
-				this.collisionClasses.add(cls);
+				this.collisionClasses.add(flag);
 				it = entries2.iterator();
 				for (; it.hasNext();) {
 					Actor entry1 = (Actor) it.next();
@@ -95,115 +93,102 @@ public class CollisionManager implements CollisionChecker {
 			it = entries1.iterator();
 			while (it.hasNext()) {
 				entry = (Entry) it.next();
-				if (cls != null
-						&& ClassReflection.isAssignableFrom(cls,
-								(Class) entry.getKey())) {
-					this.makeCollisionObjects((Class) entry.getKey(), false);
+				if (flag != null
+						&& flag.equals(
+								(String) entry.getKey())) {
+					this.makeCollisionObjects((String) entry.getKey(), false);
 				}
 			}
 		}
 	}
 
-	private void prepareForCollision(Actor actor, Class cls) {
-		this.makeCollisionObjects(actor.getClass(), false);
-		this.makeCollisionObjects(cls, true);
+	private void prepareForCollision(Actor actor, String flag) {
+		this.makeCollisionObjects(actor.getFlag(), false);
+		this.makeCollisionObjects(flag, true);
 	}
 
 	@Override
 	public void addObject(Actor actor) {
-		Class cls = actor.getClass();
-		if (this.collisionClasses.contains(cls)) {
+		String flag = actor.getFlag();
+		if (this.collisionClasses.contains(flag)) {
 			this.collisionChecker.addObject(actor);
 		} else {
-			LinkedList classSet = (LinkedList) this.freeObjects.get(cls);
+			LinkedList classSet = (LinkedList) this.freeObjects.get(flag);
 			if (classSet == null) {
 				classSet = new LinkedList();
-				this.freeObjects.put(cls, classSet);
+				this.freeObjects.put(flag, classSet);
 			}
 			classSet.add(actor);
 		}
 	}
 
 	@Override
-	public List getIntersectingObjects(Actor actor, Class cls) {
+	public List getIntersectingObjects(Actor actor, String flag) {
 		synchronized (CollisionManager.class) {
-			this.prepareForCollision(actor, cls);
-			return this.collisionChecker.getIntersectingObjects(actor, cls);
+			this.prepareForCollision(actor, flag);
+			return this.collisionChecker.getIntersectingObjects(actor, flag);
 		}
 	}
 
 	@Override
 	public List getNeighbours(Actor actor, float distance, boolean diag,
-			Class cls) {
+			String flag) {
 		synchronized (CollisionManager.class) {
-			this.prepareForCollision(actor, cls);
+			this.prepareForCollision(actor, flag);
 			return this.collisionChecker.getNeighbours(actor, distance, diag,
-					cls);
+					flag);
 		}
 	}
 
 	@Override
-	public List getObjects(Class cls) {
-		synchronized (CollisionManager.class) {
-			List result = this.collisionChecker.getObjects(cls);
+	public List getObjects(String flag) {
+			List result = this.collisionChecker.getObjects(flag);
 			Set entries = this.freeObjects.entrySet();
 			Iterator it = entries.iterator();
 			while (it.hasNext()) {
 				Entry entry = (Entry) it.next();
-				if (cls == null
-						|| ClassReflection.isAssignableFrom(cls,
-								(Class) entry.getKey())) {
+				if (flag == null
+						|| flag.equals(
+								(String) entry.getKey())) {
 					result.addAll((Collection) entry.getValue());
 				}
 			}
 			return result;
-		}
 	}
 
 	@Override
-	public List getObjectsAt(float x, float y, Class cls) {
-		synchronized (CollisionManager.class) {
-			this.makeCollisionObjects(cls, true);
-			return this.collisionChecker.getObjectsAt(x, y, cls);
-		}
+	public List getObjectsAt(float x, float y, String flag) {
+			this.makeCollisionObjects(flag, true);
+			return this.collisionChecker.getObjectsAt(x, y, flag);
+		
 	}
 
 	@Override
-	public List getObjectsInRange(float x, float y, float r, Class cls) {
-		synchronized (CollisionManager.class) {
-			this.makeCollisionObjects(cls, true);
-			return this.collisionChecker.getObjectsInRange(x, y, r, cls);
-		}
+	public List getObjectsInRange(float x, float y, float r, String flag) {
+			this.makeCollisionObjects(flag, true);
+			return this.collisionChecker.getObjectsInRange(x, y, r, flag);
 
 	}
 
 	@Override
 	public List getObjectsList() {
-		synchronized (CollisionManager.class) {
-			return this.getObjects((Class) null);
-
-		}
+			return this.getObjects((String) null);
 	}
 
 	@Override
-	public Actor getOnlyIntersectingObject(Actor object, Class cls) {
-		synchronized (CollisionManager.class) {
-			this.prepareForCollision(object, cls);
-			return this.collisionChecker.getOnlyIntersectingObject(object, cls);
-		}
+	public Actor getOnlyIntersectingObject(Actor object, String flag) {
+			this.prepareForCollision(object, flag);
+			return this.collisionChecker.getOnlyIntersectingObject(object, flag);
 	}
 
 	@Override
-	public Actor getOnlyObjectAt(Actor object, float dx, float dy, Class cls) {
-		synchronized (CollisionManager.class) {
-			this.prepareForCollision(object, cls);
-			return this.collisionChecker.getOnlyObjectAt(object, dx, dy, cls);
-		}
+	public Actor getOnlyObjectAt(Actor object, float dx, float dy, String flag) {
+			this.prepareForCollision(object, flag);
+			return this.collisionChecker.getOnlyObjectAt(object, dx, dy, flag);
 	}
 
 	@Override
 	public void removeObject(Actor object) {
-		synchronized (CollisionManager.class) {
 			LinkedList classSet = (LinkedList) this.freeObjects.get(object
 					.getClass());
 			if (classSet != null) {
@@ -211,42 +196,34 @@ public class CollisionManager implements CollisionChecker {
 			} else {
 				this.collisionChecker.removeObject(object);
 			}
-		}
 	}
 
-	public void removeObject(Class cls) {
-		synchronized (CollisionManager.class) {
-			LinkedList classSet = (LinkedList) this.freeObjects.get(cls);
+	public void removeObject(String flag) {
+			LinkedList classSet = (LinkedList) this.freeObjects.get(flag);
 			if (collisionClasses != null) {
-				collisionClasses.remove(cls);
+				collisionClasses.remove(flag);
 			}
 			if (classSet != null) {
-				classSet.remove(cls);
+				classSet.remove(flag);
 			}
-		}
 	}
 
 	@Override
 	public void updateObjectLocation(Actor object, float oldX, float oldY) {
-		synchronized (CollisionManager.class) {
 			if (!this.freeObjects.containsKey(object.getClass())) {
 				this.collisionChecker.updateObjectLocation(object, oldX, oldY);
 			}
-		}
 	}
 
 	@Override
 	public void updateObjectSize(Actor object) {
-		synchronized (CollisionManager.class) {
 			if (!this.freeObjects.containsKey(object.getClass())) {
 				this.collisionChecker.updateObjectSize(object);
 			}
-		}
 	}
 
 	@Override
 	public void dispose() {
-		synchronized (CollisionManager.class) {
 			if (freeObjects != null) {
 				freeObjects.clear();
 				freeObjects = null;
@@ -260,21 +237,16 @@ public class CollisionManager implements CollisionChecker {
 				collisionChecker.clear();
 				collisionChecker = null;
 			}
-		}
 	}
 
 	@Override
 	public Iterator getActorsIterator() {
-		synchronized (CollisionManager.class) {
 			return collisionChecker.getActorsIterator();
-		}
 	}
 
 	@Override
 	public List getActorsList() {
-		synchronized (CollisionManager.class) {
 			return collisionChecker.getActorsList();
-		}
 	}
 
 }

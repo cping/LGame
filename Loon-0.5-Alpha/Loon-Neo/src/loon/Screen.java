@@ -462,6 +462,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen() {
+		resetBase();
+	}
+	
+	final void resetBase(){
 		Screen.StaticCurrentSceen = this;
 		this.handler = LSystem._process;
 		this.width = LSystem.viewSize.getWidth();
@@ -944,17 +948,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 返回与指定类匹配的组件
-	 */
-
-	public ArrayList<LComponent> getComponents(Class<? extends LComponent> clazz) {
-		if (desktop != null) {
-			return desktop.getComponents(clazz);
-		}
-		return null;
-	}
-
-	/**
 	 * 返回位于屏幕顶部的组件
 	 * 
 	 * @return
@@ -994,17 +987,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return null;
 	}
 
-	/**
-	 * 返回所有指定类产生的精灵
-	 * 
-	 */
-
-	public ArrayList<ISprite> getSprites(Class<? extends ISprite> clazz) {
-		if (sprites != null) {
-			return sprites.getSprites(clazz);
-		}
-		return null;
-	}
 
 	/**
 	 * 返回位于数据顶部的精灵
@@ -1063,13 +1045,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public Screen removeSprite(Class<? extends ISprite> clazz) {
-		if (sprites != null) {
-			sprites.remove(clazz);
-		}
-		return this;
-	}
-
 	public Screen remove(LComponent comp) {
 		if (desktop != null) {
 			desktop.remove(comp);
@@ -1077,12 +1052,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public Screen removeComponent(Class<? extends LComponent> clazz) {
-		if (desktop != null) {
-			desktop.remove(clazz);
-		}
-		return this;
-	}
 
 	public Screen removeAll() {
 		if (sprites != null) {

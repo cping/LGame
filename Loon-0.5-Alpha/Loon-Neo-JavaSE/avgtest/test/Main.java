@@ -1,6 +1,8 @@
 package test;
 
 import loon.LSetting;
+import loon.LazyLoading;
+import loon.Screen;
 import loon.javase.Loon;
 
 public class Main {
@@ -13,7 +15,13 @@ public class Main {
 		setting.isFPS = true;
 		setting.fontName = "黑体";
 		setting.isLogo = false;
-		Loon.register(setting, TitleScreen.class);
+		Loon.register(setting, new LazyLoading.Data() {
+			
+			@Override
+			public Screen onScreen() {
+				return new TitleScreen();
+			}
+		});
 	}
 
 

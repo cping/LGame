@@ -1,7 +1,5 @@
 package loon.action.sprite.effect;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 import loon.LObject;
@@ -11,6 +9,8 @@ import loon.action.sprite.ISprite;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.reflect.ArrayReflection;
+import loon.utils.reflect.ClassReflection;
 import loon.utils.timer.LTimer;
 
 public class FreedomEffect extends LObject implements ISprite {
@@ -190,10 +190,10 @@ public class FreedomEffect extends LObject implements ISprite {
 		this.height = h;
 		this.count = count;
 		this.timer = new LTimer(80);
-		this.kernels = (IKernel[]) Array.newInstance(clazz, count);
+		this.kernels = (IKernel[]) ArrayReflection.newInstance(clazz, count);
 		try {
-			Constructor<?> constructor = clazz
-					.getDeclaredConstructor(new Class[] { int.class, int.class,
+			loon.utils.reflect.Constructor constructor = ClassReflection
+					.getDeclaredConstructor(clazz,new Class[] { int.class, int.class,
 							int.class });
 			for (int i = 0; i < count; i++) {
 				int no = MathUtils.random(0, limit);

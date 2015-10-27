@@ -20,9 +20,7 @@
  */
 package loon.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UTFDataFormatException;
 
@@ -49,22 +47,6 @@ public class ArrayByte implements LRelease {
 
 	public ArrayByte(int length) {
 		this(new byte[length]);
-	}
-
-	public ArrayByte(InputStream ins, int type) throws IOException {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024 * 10];
-		int n = 0;
-		while (-1 != (n = ins.read(buffer))) {
-			output.write(buffer, 0, n);
-		}
-		this.data = output.toByteArray();
-		reset(type);
-		if (ins != null) {
-			ins.close();
-			ins = null;
-		}
-		output = null;
 	}
 
 	public ArrayByte(byte[] data) {
@@ -289,21 +271,6 @@ public class ArrayByte implements LRelease {
 		ensureCapacity(length);
 		System.arraycopy(buffer, offset, data, position, length);
 		position += length;
-	}
-
-	public void write(InputStream in) throws IOException {
-		write(in, 8192);
-	}
-
-	public void write(InputStream in, int size) throws IOException {
-		byte[] buffer = new byte[size];
-		while (true) {
-			int bytesRead = in.read(buffer);
-			if (bytesRead == -1) {
-				return;
-			}
-			write(buffer, 0, bytesRead);
-		}
 	}
 
 	public void writeBoolean(boolean v) {

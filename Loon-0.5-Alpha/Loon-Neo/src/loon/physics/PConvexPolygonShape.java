@@ -26,8 +26,8 @@ public class PConvexPolygonShape extends PShape {
 	Vector2f[] vers;
 
 	public PConvexPolygonShape(float xvers[], float yvers[], float density) {
-		float xs[] = (float[]) xvers.clone();
-		float ys[] = (float[]) yvers.clone();
+		float xs[] = xvers;
+		float ys[] = yvers;
 		numVertices = xs.length;
 		_dens = density;
 		localVers = new Vector2f[numVertices];

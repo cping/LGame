@@ -79,7 +79,7 @@ public class LProcess extends PlayerUtils {
 	protected final RootPlayer rootPlayer;
 
 	private final LGame game;
-	
+
 	public LProcess(LGame game) {
 		super();
 		this.game = game;
@@ -266,7 +266,6 @@ public class LProcess extends PlayerUtils {
 				throw new RuntimeException(
 						"Cannot create a [Screen] instance !");
 			}
-
 			if (!game.display().showLogo) {
 				if (currentScreen != null) {
 					setTransition(screen.onTransition());
@@ -333,7 +332,7 @@ public class LProcess extends PlayerUtils {
 					}
 				}
 			};
-			process.setDelay(60);
+			process.setDelay(0);
 
 			RealtimeProcessManager.get().addProcess(process);
 
@@ -684,6 +683,9 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void setScreen(final Screen screen) {
+		if (screen.handler == null) {
+			screen.resetBase();
+		}
 		if (game.setting.isLogo && game.display().showLogo) {
 			loadingScreen = screen;
 		} else {

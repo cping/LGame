@@ -20,7 +20,6 @@
  */
 package loon.utils.timer;
 
-
 public class LTimerContext {
 
 	public long timeSinceLastUpdate, millisSleepTime;
@@ -43,6 +42,10 @@ public class LTimerContext {
 
 	public long getSleepTimeMicros() {
 		return millisSleepTime * 1000;
+	}
+
+	public String toString() {
+		return "timeSinceLastUpdate :" + timeSinceLastUpdate;
 	}
 
 }

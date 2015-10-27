@@ -179,10 +179,10 @@ public class AnimationHelper {
 	}
 
 	public AnimationHelper(AnimationHelper animation) {
-		leftImages = (LTexture[]) CollectionUtils.copyOf(animation.leftImages);
-		downImages = (LTexture[]) CollectionUtils.copyOf(animation.downImages);
-		upImages = (LTexture[]) CollectionUtils.copyOf(animation.upImages);
-		rightImages = (LTexture[]) CollectionUtils
+		leftImages = CollectionUtils.copyOf(animation.leftImages);
+		downImages = CollectionUtils.copyOf(animation.downImages);
+		upImages = CollectionUtils.copyOf(animation.upImages);
+		rightImages = CollectionUtils
 				.copyOf(animation.rightImages);
 	}
 

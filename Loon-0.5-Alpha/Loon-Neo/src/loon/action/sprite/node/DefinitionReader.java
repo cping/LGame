@@ -20,9 +20,9 @@
  */
 package loon.action.sprite.node;
 
-import java.io.InputStream;
 import java.util.HashMap;
 
+import loon.utils.reflect.ClassReflection;
 import loon.utils.xml.XMLAttribute;
 import loon.utils.xml.XMLComment;
 import loon.utils.xml.XMLData;
@@ -157,21 +157,12 @@ public class DefinitionReader {
 		XMLParser.parse(resName, listener);
 	}
 
-	public void load(InputStream res) {
-		this._path = null;
-		this._classType = null;
-		this._source = null;
-		this.currentDefinitionObject = null;
-		this.isCurrentElementDefined = false;
-		XMLParser.parse(res, listener);
-	}
-
 	private void startElement(String name) {
 		Class<?> clazz = change.get(name.toLowerCase());
 		if (clazz != null) {
 			DefinitionObject childObject = null;
 			try {
-				childObject = (DefinitionObject) clazz.newInstance();
+				childObject = (DefinitionObject) ClassReflection.newInstance(clazz);
 				if (_source != null) {
 					childObject.fileName = _source;
 				}

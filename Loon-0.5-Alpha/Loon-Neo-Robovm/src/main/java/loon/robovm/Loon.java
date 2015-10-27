@@ -21,7 +21,7 @@
 package loon.robovm;
 
 import loon.LSetting;
-import loon.Screen;
+import loon.LazyLoading;
 import loon.robovm.RoboVMGame.IOSSetting;
 
 import org.robovm.apple.coregraphics.CGRect;
@@ -31,12 +31,12 @@ import org.robovm.apple.uikit.UIApplicationLaunchOptions;
 import org.robovm.apple.uikit.UIScreen;
 import org.robovm.apple.uikit.UIWindow;
 
-public abstract class Loon extends UIApplicationDelegateAdapter {
+public abstract class Loon extends UIApplicationDelegateAdapter implements
+		LazyLoading {
 
 	private RoboVMGame game = null;
 	private LSetting setting;
-	private Class<? extends Screen> mainClass;
-	private Object[] parameters;
+	private LazyLoading.Data mainData;
 
 	@Override
 	public boolean didFinishLaunching(UIApplication app,
@@ -71,15 +71,15 @@ public abstract class Loon extends UIApplicationDelegateAdapter {
 	}
 
 	protected RoboVMGame initialize() {
-		game.register(mainClass, parameters);
+		if (game != null) {
+			game.register(mainData.onScreen());
+		}
 		return game;
 	}
 
-	public void register(LSetting s, Class<? extends Screen> clazz,
-			Object... pars) {
+	public void register(LSetting s, LazyLoading.Data data) {
 		this.setting = s;
-		this.mainClass = clazz;
-		this.parameters = pars;
+		this.mainData = data;
 	}
 
 	/**

@@ -46,6 +46,8 @@ import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
 public class Actor extends LObject implements ActionBind,LRelease {
+	
+	private String flag = "Actor";
 
 	private static int sequenceNumber = 0;
 
@@ -823,51 +825,51 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	}
 
 	public List<?> getNeighbours(float distance, boolean diagonal,
-			Class<? extends Actor> cls) {
+			String flag) {
 		this.failIfNotInLayer();
-		return this.getLLayer().getNeighbours(this, distance, diagonal, cls);
+		return this.getLLayer().getNeighbours(this, distance, diagonal, flag);
 	}
 
 	public List<?> getCollisionObjects(float dx, float dy,
-			Class<? extends Actor> cls) {
+			String flag) {
 		this.failIfNotInLayer();
 		return this.gameLayer.getCollisionObjectsAt(location.x + dx, location.y
-				+ dy, cls);
+				+ dy, flag);
 	}
 
 	public Actor getOnlyCollisionObject(float dx, float dy,
-			Class<? extends Actor> cls) {
+			String flag) {
 		this.failIfNotInLayer();
 		return this.gameLayer.getOnlyObjectAt(this, location.x + dx, location.y
-				+ dy, cls);
+				+ dy, flag);
 	}
 
-	public List<?> getCollisionObjects(float radius, Class<? extends Actor> cls) {
+	public List<?> getCollisionObjects(float radius, String flag) {
 		this.failIfNotInLayer();
 		List<?> inRange = this.gameLayer.getObjectsInRange(location.x,
-				location.y, radius, cls);
+				location.y, radius, flag);
 		inRange.remove(this);
 		return inRange;
 	}
 
 	public List<?> getCollisionObjects() {
-		return getCollisionObjects(this.getClass());
+		return getCollisionObjects(flag);
 	}
 
-	public List<?> getCollisionObjects(Class<? extends Actor> cls) {
+	public List<?> getCollisionObjects(String flag) {
 		this.failIfNotInLayer();
-		List<?> list = this.gameLayer.getIntersectingObjects(this, cls);
+		List<?> list = this.gameLayer.getIntersectingObjects(this, flag);
 		list.remove(this);
 		return list;
 	}
 
 	public Actor getOnlyCollisionObject() {
-		return getOnlyCollisionObject(Actor.class);
+		return getOnlyCollisionObject(flag);
 	}
 
-	public Actor getOnlyCollisionObject(Class<? extends Actor> cls) {
+	public Actor getOnlyCollisionObject(String flag) {
 		this.failIfNotInLayer();
-		return this.gameLayer.getOnlyIntersectingObject(this, cls);
+		return this.gameLayer.getOnlyIntersectingObject(this, flag);
 	}
 
 	public Actor getOnlyCollisionObjectAt(float x, float y) {
@@ -1011,6 +1013,14 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	@Override
 	public int getContainerHeight() {
 		return gameLayer.getHeight();
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
 	}
 
 }

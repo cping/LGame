@@ -82,6 +82,10 @@ public class LSTRFont implements LRelease {
 
 	}
 
+	private boolean initChars = false;
+
+	private char[] additionalChars = null;
+
 	public LSTRFont(LFont font) {
 		this(font, (char[]) null);
 	}
@@ -90,7 +94,7 @@ public class LSTRFont implements LRelease {
 		this(font, strings.toCharArray());
 	}
 
-	public LSTRFont(LFont font, char[] additionalChars) {
+	public LSTRFont(LFont font, char[] chs) {
 		if (displays == null) {
 			displays = new HashMap<String, Cache>(totalCharSet);
 		} else {
@@ -98,15 +102,19 @@ public class LSTRFont implements LRelease {
 		}
 		this.useCache = true;
 		this.font = font;
-		this.fontSize = (int) font.getSize();
-		this.ascent = font.getAscent();
-		this.make(additionalChars);
+		this.additionalChars = chs;
+		make();
 	}
 
 	private LTexture texture;
 
-	private void make(char[] customCharsArray) {
-		if (customCharsArray != null && customCharsArray.length > totalCharSet) {
+	private void make() {
+		if (initChars) {
+			return;
+		}
+		this.fontSize = (int) font.getSize();
+		this.ascent = font.getAscent();
+		if (additionalChars != null && additionalChars.length > totalCharSet) {
 			textureWidth *= 2;
 		}
 		Canvas canvas = LSystem.base().graphics()
@@ -116,12 +124,12 @@ public class LSTRFont implements LRelease {
 		int rowHeight = 0;
 		int positionX = 0;
 		int positionY = 0;
-		int customCharsLength = (customCharsArray != null) ? customCharsArray.length
+		int customCharsLength = (additionalChars != null) ? additionalChars.length
 				: 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		StringBuilder sbr = new StringBuilder(totalCharSet);
 		for (int i = 0; i < totalCharSet + customCharsLength; i++) {
-			char ch = (i < totalCharSet) ? (char) i : customCharsArray[i
+			char ch = (i < totalCharSet) ? (char) i : additionalChars[i
 					- totalCharSet];
 
 			TextLayout layout = font.getLayoutText(String.valueOf(ch));
@@ -186,7 +194,7 @@ public class LSTRFont implements LRelease {
 		if (tmpbatch != null) {
 			tmpbatch.destoryAll();
 		}
-
+		initChars = true;
 	}
 
 	public LTexture getTexture() {
@@ -194,7 +202,8 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void drawString(String chars, float x, float y) {
-		drawString(x, y, 1f, 1f, 0, 0, 0, chars, LColor.white, 0, chars.length() - 1);
+		drawString(x, y, 1f, 1f, 0, 0, 0, chars, LColor.white, 0,
+				chars.length() - 1);
 	}
 
 	public void drawString(String chars, float x, float y, LColor color) {
@@ -221,6 +230,7 @@ public class LSTRFont implements LRelease {
 	private void drawString(float x, float y, float sx, float sy, float ax,
 			float ay, float rotation, String chars, LColor c, int startIndex,
 			int endIndex) {
+		make();
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
@@ -308,6 +318,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {
+		make();
 		this.charCurrent = c;
 		if (charCurrent < totalCharSet) {
 			intObject = charArray[charCurrent];
@@ -329,10 +340,12 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void startChar() {
+		make();
 		fontBatch.begin();
 	}
 
 	public void stopChar() {
+		make();
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
@@ -343,6 +356,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void postCharCache() {
+		make();
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
@@ -353,6 +367,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public Cache saveCharCache() {
+		make();
 		fontBatch.disposeLastCache();
 		return fontBatch.newCache();
 	}
@@ -387,10 +402,12 @@ public class LSTRFont implements LRelease {
 	}
 
 	public int charWidth(char c) {
+		make();
 		return font.charWidth(c);
 	}
 
 	public int getWidth(String s) {
+		make();
 		int totalWidth = 0;
 		IntObject intObject = null;
 		int currentChar = 0;
@@ -451,6 +468,7 @@ public class LSTRFont implements LRelease {
 				c = null;
 			}
 		}
+		initChars = false;
 	}
 
 }

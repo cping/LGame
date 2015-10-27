@@ -21,11 +21,9 @@
  */
 package loon.action.map.tmx;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import loon.BaseIO;
 import loon.LRelease;
 import loon.LTexture;
 import loon.LTextures;
@@ -73,9 +71,8 @@ public class TMXTileSet implements LRelease {
 		String source = element.getAttribute("source", "");
 		if (!"".equals(source)) {
 			try {
-				InputStream in = BaseIO.loadStream(map.getTilesLocation()
+				XMLDocument doc = XMLParser.parse(map.getTilesLocation()
 						+ "/" + source);
-				XMLDocument doc = XMLParser.parse(in);
 				XMLElement docElement = doc.getRoot();
 				element = docElement;
 			} catch (Exception e) {

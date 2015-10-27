@@ -23,6 +23,7 @@ package loon.utils.json;
 import loon.Json;
 
 class JsonTypes {
+	
   public static boolean isArray(Object o) {
     return o instanceof Json.Array;
   }

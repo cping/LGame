@@ -143,7 +143,7 @@ public class ActorTreeSet extends AbstractSet {
 	public void sendToFront(Actor actor) {
 		if (generalSet != null) {
 			synchronized (generalSet) {
-				Object[] o = generalSet.toArray();
+				Actor[] o = generalSet.toArray(new Actor[0]);
 				int size = o.length;
 				if (o == null || size <= 0) {
 					return;
@@ -153,8 +153,8 @@ public class ActorTreeSet extends AbstractSet {
 				}
 				for (int i = 0; i < size; i++) {
 					if (o[i] == actor) {
-						o = (Object[]) CollectionUtils.cut(o, i);
-						o = (Object[]) CollectionUtils.expand(o, 1, true);
+						o =  CollectionUtils.cut(o, i);
+						o =  CollectionUtils.expand(o, 1, true);
 						o[size - 1] = actor;
 						Arrays.sort(o, DEFAULT_COMPARATOR);
 						break;
@@ -169,7 +169,7 @@ public class ActorTreeSet extends AbstractSet {
 	public void sendToBack(Actor actor) {
 		if (generalSet != null) {
 			synchronized (generalSet) {
-				Object[] o = generalSet.toArray();
+				Actor[] o = generalSet.toArray(new Actor[0]);
 				int size = o.length;
 				if (o == null || size <= 0) {
 					return;
@@ -179,8 +179,8 @@ public class ActorTreeSet extends AbstractSet {
 				}
 				for (int i = 0; i < size; i++) {
 					if (o[i] == actor) {
-						o = (Object[]) CollectionUtils.cut(o, i);
-						o = (Object[]) CollectionUtils.expand(o, 1, false);
+						o = CollectionUtils.cut(o, i);
+						o = CollectionUtils.expand(o, 1, false);
 						o[0] = actor;
 						Arrays.sort(o, DEFAULT_COMPARATOR);
 						break;

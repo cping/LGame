@@ -99,15 +99,10 @@ public class UniformBatch extends BaseBatch {
 	protected int quadCounter;
 	private Source source;
 
-	/** Creates a uniform quad batch with the default shader programs. */
 	public UniformBatch(GL20 gl) {
 		this(gl, new Source());
 	}
 
-	/**
-	 * Creates a uniform quad batch with the supplied custom shader program
-	 * builder.
-	 */
 	public UniformBatch(GL20 gl, Source source) {
 		super(gl);
 		this.source = source;

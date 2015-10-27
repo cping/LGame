@@ -1,4 +1,5 @@
 import loon.LSetting;
+import loon.Screen;
 import loon.robovm.Loon;
 
 import org.robovm.apple.foundation.NSAutoreleasePool;
@@ -6,6 +7,8 @@ import org.robovm.apple.uikit.UIApplication;
 
 public class LoonTest extends Loon {
 
+	
+	
 	@Override
 	public void onMain() {
 		LSetting setting = new LSetting();
@@ -16,13 +19,19 @@ public class LoonTest extends Loon {
 		setting.fontName = "黑体";
 		setting.appName = "test";
 		setting.emulateTouch = false;
-		register(setting, ScreenTest.class);
+		register(setting, new Data() {
+
+			@Override
+			public Screen onScreen() {
+				return new ScreenTest();
+			}
+		});
 	}
 
-    public static void main(String[] args) {
-        try (NSAutoreleasePool pool = new NSAutoreleasePool()) {
-            UIApplication.main(args, null, LoonTest.class);
-        }
-    }
+	public static void main(String[] args) {
+		try (NSAutoreleasePool pool = new NSAutoreleasePool()) {
+			UIApplication.main(args, null, LoonTest.class);
+		}
+	}
 
 }

@@ -22,11 +22,8 @@ package loon.javase;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
 import loon.Support;
@@ -75,27 +72,12 @@ public class JavaSESupport implements Support {
 	}
 
 	@Override
-	public void copy(char[] src, int srcOffset, Buffer dst, int numElements) {
-		NativeSupport.copy(src, srcOffset, dst, numElements);
-	}
-
-	@Override
 	public void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
 		NativeSupport.copy(src, srcOffset, dst, numElements);
 	}
 
 	@Override
-	public void copy(long[] src, int srcOffset, Buffer dst, int numElements) {
-		NativeSupport.copy(src, srcOffset, dst, numElements);
-	}
-
-	@Override
 	public void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
-		NativeSupport.copy(src, srcOffset, dst, numElements);
-	}
-
-	@Override
-	public void copy(double[] src, int srcOffset, Buffer dst, int numElements) {
 		NativeSupport.copy(src, srcOffset, dst, numElements);
 	}
 
@@ -135,28 +117,13 @@ public class JavaSESupport implements Support {
 	}
 
 	@Override
-	public DoubleBuffer newDoubleBuffer(int numDoubles) {
-		return NativeSupport.newDoubleBuffer(numDoubles);
-	}
-
-	@Override
 	public ShortBuffer newShortBuffer(int numShorts) {
 		return NativeSupport.newShortBuffer(numShorts);
 	}
 
 	@Override
-	public CharBuffer newCharBuffer(int numChars) {
-		return NativeSupport.newCharBuffer(numChars);
-	}
-
-	@Override
 	public IntBuffer newIntBuffer(int numInts) {
 		return NativeSupport.newIntBuffer(numInts);
-	}
-
-	@Override
-	public LongBuffer newLongBuffer(int numLongs) {
-		return NativeSupport.newLongBuffer(numLongs);
 	}
 
 	@Override

@@ -213,7 +213,7 @@ public class ArrayMap {
 	}
 
 	public Entry[] toEntrys() {
-		Entry[] lists = (Entry[]) CollectionUtils.copyOf(valueTables, size);
+		Entry[] lists =  CollectionUtils.copyOf(valueTables, size);
 		return lists;
 	}
 

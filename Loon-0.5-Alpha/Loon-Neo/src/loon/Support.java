@@ -66,15 +66,9 @@ public interface Support {
 
 	public void copy(short[] src, int srcOffset, Buffer dst, int numElements);
 
-	public void copy(char[] src, int srcOffset, Buffer dst, int numElements);
-
 	public void copy(int[] src, int srcOffset, Buffer dst, int numElements);
 
-	public void copy(long[] src, int srcOffset, Buffer dst, int numElements);
-
 	public void copy(float[] src, int srcOffset, Buffer dst, int numElements);
-
-	public void copy(double[] src, int srcOffset, Buffer dst, int numElements);
 
 	public void copy(Buffer src, Buffer dst, int numElements);
 
@@ -90,15 +84,9 @@ public interface Support {
 
 	public FloatBuffer newFloatBuffer(int numFloats);
 
-	public DoubleBuffer newDoubleBuffer(int numDoubles);
-
 	public ShortBuffer newShortBuffer(int numShorts);
 
-	public CharBuffer newCharBuffer(int numChars);
-
 	public IntBuffer newIntBuffer(int numInts);
-
-	public LongBuffer newLongBuffer(int numLongs);
 
 	public void put(final Buffer buffer, final float[] source,
 			final int offset, final int length);

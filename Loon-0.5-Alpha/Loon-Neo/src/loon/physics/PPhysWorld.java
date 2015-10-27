@@ -72,7 +72,7 @@ public class PPhysWorld {
 
 	public void addBody(PBody b) {
 		if (numBodies + 1 >= bodies.length) {
-			bodies = (PBody[]) CollectionUtils
+			bodies =  CollectionUtils
 					.copyOf(bodies, bodies.length * 2);
 		}
 		b.w = this;
@@ -85,7 +85,7 @@ public class PPhysWorld {
 
 	public void addJoint(PJoint j) {
 		if (numJoints + 1 >= joints.length) {
-			joints = (PJoint[]) CollectionUtils.copyOf(joints,
+			joints =  CollectionUtils.copyOf(joints,
 					joints.length * 2);
 		}
 		joints[numJoints] = j;
@@ -101,7 +101,7 @@ public class PPhysWorld {
 			return;
 		}
 		if (numShapes + 1 >= shapes.length) {
-			shapes = (PShape[]) CollectionUtils.copyOf(shapes,
+			shapes =  CollectionUtils.copyOf(shapes,
 					shapes.length * 2);
 		}
 		shapes[numShapes] = s;
@@ -111,7 +111,7 @@ public class PPhysWorld {
 
 	private void addSolver(PSolver s) {
 		if (numSolvers + 1 >= solvers.length) {
-			solvers = (PSolver[]) CollectionUtils.copyOf(solvers,
+			solvers =  CollectionUtils.copyOf(solvers,
 					solvers.length * 2);
 		}
 		solvers[numSolvers] = s;
@@ -158,6 +158,7 @@ public class PPhysWorld {
 					} while (obj[j] != end && j < sap.numObject);
 				}
 		}
+
 		long en = System.nanoTime();
 		collisionDetectionTime = en - st;
 		for (int i = 0; i < numSolvers; i++) {
@@ -191,7 +192,7 @@ public class PPhysWorld {
 	}
 
 	public PBody[] getBodies() {
-		return (PBody[]) CollectionUtils.copyOf(bodies, numBodies);
+		return  CollectionUtils.copyOf(bodies, numBodies);
 	}
 
 	public PBody[] inner_bodies() {
@@ -219,7 +220,7 @@ public class PPhysWorld {
 	}
 
 	public PJoint[] getJoints() {
-		return (PJoint[]) CollectionUtils.copyOf(joints, numJoints);
+		return  CollectionUtils.copyOf(joints, numJoints);
 	}
 
 	public long getPositionUpdateTime() {
@@ -227,11 +228,11 @@ public class PPhysWorld {
 	}
 
 	public PShape[] getShapes() {
-		return (PShape[]) CollectionUtils.copyOf(shapes, numShapes);
+		return  CollectionUtils.copyOf(shapes, numShapes);
 	}
 
 	public PSolver[] getSolvers() {
-		return (PSolver[]) CollectionUtils.copyOf(solvers, numSolvers);
+		return  CollectionUtils.copyOf(solvers, numSolvers);
 	}
 
 	public long getTotalStepTime() {
