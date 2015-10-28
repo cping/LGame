@@ -272,7 +272,8 @@ public class LProcess extends PlayerUtils {
 				} else {
 					LTransition transition = screen.onTransition();
 					if (transition == null) {
-						switch (MathUtils.random(0, 4)) {
+						int rad = MathUtils.random(0, 4);
+						switch (rad) {
 						case 0:
 							transition = LTransition.newFadeIn();
 							break;

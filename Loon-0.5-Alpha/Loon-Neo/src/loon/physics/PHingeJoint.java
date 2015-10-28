@@ -64,11 +64,11 @@ public class PHingeJoint extends PJoint {
 	}
 
 	public Vector2f getAnchorPoint1() {
-		return anchor1.clone();
+		return anchor1.cpy();
 	}
 
 	public Vector2f getAnchorPoint2() {
-		return anchor2.clone();
+		return anchor2.cpy();
 	}
 
 	public PBody getBody1() {
@@ -100,11 +100,11 @@ public class PHingeJoint extends PJoint {
 	}
 
 	public Vector2f getRelativeAnchorPoint1() {
-		return relAnchor1.clone();
+		return relAnchor1.cpy();
 	}
 
 	public Vector2f getRelativeAnchorPoint2() {
-		return relAnchor2.clone();
+		return relAnchor2.cpy();
 	}
 
 	public boolean isEnableLimit() {

@@ -212,7 +212,7 @@ public class PPhysWorld {
 	}
 
 	public Vector2f getGravity() {
-		return gravity.clone();
+		return gravity.cpy();
 	}
 
 	public float getIterations() {

@@ -38,7 +38,7 @@ public class PDragJoint extends PJoint {
 	}
 
 	public Vector2f getAnchorPoint() {
-		return anchor.clone();
+		return anchor.cpy();
 	}
 
 	public PBody getBody() {
@@ -46,11 +46,11 @@ public class PDragJoint extends PJoint {
 	}
 
 	public Vector2f getDragPoint() {
-		return dragPoint.clone();
+		return dragPoint.cpy();
 	}
 
 	public Vector2f getRelativeAnchorPoint() {
-		return relAnchor.clone();
+		return relAnchor.cpy();
 	}
 
 	void preSolve(float dt) {
@@ -60,7 +60,7 @@ public class PDragJoint extends PJoint {
 		Vector2f f = anchor.sub(dragPoint);
 		float k = b.m;
 		f.mulLocal(-k * 20F);
-		Vector2f relVel = b.vel.clone();
+		Vector2f relVel = b.vel.cpy();
 		relVel.x += -b.angVel * relAnchor.y;
 		relVel.y += b.angVel * relAnchor.x;
 		relVel.mulLocal((float) Math.sqrt(k * 20F * k));

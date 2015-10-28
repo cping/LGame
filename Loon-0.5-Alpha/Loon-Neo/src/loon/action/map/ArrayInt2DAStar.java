@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import loon.utils.CollectionUtils;
+
 public class ArrayInt2DAStar {
 
 	public static interface TileFactory<T> {
@@ -50,7 +52,7 @@ public class ArrayInt2DAStar {
 		Node parent;
 
 		public Node(int[] position) {
-			this.position = position.clone();
+			this.position = CollectionUtils.copyOf(position);
 		}
 
 		public boolean equals(int[] position) {

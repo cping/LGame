@@ -580,7 +580,7 @@ public final class Matrix {
 		return new Vector2f(out[0], out[1]);
 	}
 
-	public Matrix clone() {
+	public Matrix cpy() {
 		return new Matrix(this.matrixs);
 	}
 

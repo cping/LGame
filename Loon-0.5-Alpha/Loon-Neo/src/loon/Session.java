@@ -441,8 +441,7 @@ public class Session {
 		return loadEncodeSession(loadData());
 	}
 
-	@Override
-	public Object clone() {
+	public Session cpy() {
 		return new Session(name);
 	}
 

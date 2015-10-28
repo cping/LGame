@@ -21,6 +21,7 @@ import loon.geom.Dimension;
 import loon.geom.Point.Point2i;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.processes.Process;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -51,8 +52,8 @@ public class Director extends SoundBox {
 			this.viewRect = new RectBox();
 		}
 	}
-	
-	public void setSize(int width,int height){
+
+	public void setSize(int width, int height) {
 		this.renderRect.setBounds(0, 0, width, height);
 		this.viewRect = new RectBox(0, 0, width, height);
 	}
@@ -287,7 +288,18 @@ public class Director extends SoundBox {
 
 	public final static int round(int div1, int div2) {
 		final int remainder = div1 % div2;
-		if (Math.abs(remainder) * 2 <= Math.abs(div2)) {
+		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
+			return div1 / div2;
+		} else if (div1 * div2 < 0) {
+			return div1 / div2 - 1;
+		} else {
+			return div1 / div2 + 1;
+		}
+	}
+
+	public final static float round(float div1, float div2) {
+		final float remainder = div1 % div2;
+		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
 			return div1 / div2;
 		} else if (div1 * div2 < 0) {
 			return div1 / div2 - 1;
@@ -298,7 +310,7 @@ public class Director extends SoundBox {
 
 	public final static long round(long div1, long div2) {
 		final long remainder = div1 % div2;
-		if (Math.abs(remainder) * 2 <= Math.abs(div2)) {
+		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
 			return div1 / div2;
 		} else if (div1 * div2 < 0) {
 			return div1 / div2 - 1;
@@ -346,6 +358,26 @@ public class Director extends SoundBox {
 		}
 	}
 
+	public final static RectBox getBoundingBox(float[] xpoints,
+			float[] ypoints, int npoints) {
+		float boundsMinX = Float.MAX_VALUE;
+		float boundsMinY = Float.MAX_VALUE;
+		float boundsMaxX = Float.MIN_VALUE;
+		float boundsMaxY = Float.MIN_VALUE;
+
+		for (int i = 0; i < npoints; i++) {
+			float x = xpoints[i];
+			boundsMinX = MathUtils.min(boundsMinX, x);
+			boundsMaxX = MathUtils.max(boundsMaxX, x);
+			float y = ypoints[i];
+			boundsMinY = MathUtils.min(boundsMinY, y);
+			boundsMaxY = MathUtils.max(boundsMaxY, y);
+		}
+
+		return new RectBox(boundsMinX, boundsMinY, boundsMaxX - boundsMinX,
+				boundsMaxY - boundsMinY);
+	}
+	
 	public final static RectBox getBoundingBox(int xpoints[], int ypoints[],
 			int npoints) {
 		int boundsMinX = Integer.MAX_VALUE;
@@ -355,11 +387,11 @@ public class Director extends SoundBox {
 
 		for (int i = 0; i < npoints; i++) {
 			int x = xpoints[i];
-			boundsMinX = Math.min(boundsMinX, x);
-			boundsMaxX = Math.max(boundsMaxX, x);
+			boundsMinX = MathUtils.min(boundsMinX, x);
+			boundsMaxX = MathUtils.max(boundsMaxX, x);
 			int y = ypoints[i];
-			boundsMinY = Math.min(boundsMinY, y);
-			boundsMaxY = Math.max(boundsMaxY, y);
+			boundsMinY = MathUtils.min(boundsMinY, y);
+			boundsMaxY = MathUtils.max(boundsMaxY, y);
 		}
 
 		return new RectBox(boundsMinX, boundsMinY, boundsMaxX - boundsMinX,
@@ -406,7 +438,50 @@ public class Director extends SoundBox {
 		return i;
 	}
 
-	public final static boolean contains(int xPoints[], int yPoints[],
+	public final static int getBoundingShape(float xPoints[], float yPoints[],
+			float startAngle, float arcAngle, float centerX, float centerY,
+			float boundingX, float boundingY, float boundingWidth,
+			float boundingHeight) {
+		xPoints[0] = centerX;
+		yPoints[0] = centerY;
+		Point2i startPoint = getBoundingPointAtAngle((int) boundingX,
+				(int) boundingY, (int) boundingWidth, (int) boundingHeight,
+				(int) startAngle);
+		xPoints[1] = startPoint.x;
+		yPoints[1] = startPoint.y;
+		int i = 2;
+		for (int angle = 0; angle < arcAngle; i++, angle += 90) {
+			if (angle + 90 > arcAngle
+					&& ((startAngle + angle - 45) % 360) / 90 == ((startAngle
+							+ arcAngle + 45) % 360) / 90) {
+				break;
+			}
+			float modAngle = (startAngle + angle) % 360;
+			if (modAngle > 315 || modAngle <= 45) {
+				xPoints[i] = boundingX + boundingWidth;
+				yPoints[i] = boundingY;
+			} else if (modAngle > 135 && modAngle <= 225) {
+				xPoints[i] = boundingX;
+				yPoints[i] = boundingY + boundingHeight;
+			} else if (modAngle > 45 && modAngle <= 135) {
+				xPoints[i] = boundingX;
+				yPoints[i] = boundingY;
+			} else {
+				xPoints[i] = boundingX + boundingWidth;
+				yPoints[i] = boundingY + boundingHeight;
+			}
+		}
+		Point2i endPoint = getBoundingPointAtAngle((int) boundingX,
+				(int) boundingY, (int) boundingWidth, (int) boundingHeight,
+				(int) (startAngle + arcAngle) % 360);
+		if (xPoints[i - 1] != endPoint.x || yPoints[i - 1] != endPoint.y) {
+			xPoints[i] = endPoint.x;
+			yPoints[i++] = endPoint.y;
+		}
+		return i;
+	}
+
+	public final static boolean contains(int[] xPoints, int[] yPoints,
 			int nPoints, RectBox bounds, int x, int y) {
 		if ((bounds != null && bounds.inside(x, y))
 				|| (bounds == null && getBoundingBox(xPoints, yPoints, nPoints)
@@ -450,7 +525,51 @@ public class Director extends SoundBox {
 
 		return false;
 	}
-	
+
+	public final static boolean contains(float[] xPoints, float[] yPoints,
+			int nPoints, RectBox bounds, float x, float y) {
+		if ((bounds != null && bounds.inside(x, y))
+				|| (bounds == null && getBoundingBox(xPoints, yPoints, nPoints)
+						.inside(x, y))) {
+			int hits = 0;
+			float ySave = 0;
+			int i = 0;
+
+			while (i < nPoints && yPoints[i] == y) {
+				i++;
+			}
+			for (int n = 0; n < nPoints; n++) {
+				int j = (i + 1) % nPoints;
+
+				float dx = xPoints[j] - xPoints[i];
+				float dy = yPoints[j] - yPoints[i];
+
+				if (dy != 0) {
+
+					float rx = x - xPoints[i];
+					float ry = y - yPoints[i];
+
+					if (yPoints[j] == y && xPoints[j] >= x) {
+						ySave = yPoints[i];
+					}
+					if (yPoints[i] == y && xPoints[i] >= x) {
+						if ((ySave > y) != (yPoints[j] > y)) {
+							hits--;
+						}
+					}
+					if (ry * dy >= 0
+							&& (ry <= dy && ry >= 0 || ry >= dy && ry <= 0)
+							&& round(dx * ry, dy) >= rx) {
+						hits++;
+					}
+				}
+				i = j;
+			}
+			return (hits % 2) != 0;
+		}
+
+		return false;
+	}
 
 	public void addRealtimeProcess(RealtimeProcess realtimeProcess) {
 		RealtimeProcessManager.get().addProcess(realtimeProcess);

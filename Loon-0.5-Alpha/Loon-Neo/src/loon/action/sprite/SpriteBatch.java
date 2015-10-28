@@ -3,26 +3,23 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.canvas.PixmapFloatImpl;
 import loon.font.LFont;
 import loon.geom.Matrix4;
 import loon.geom.RectBox;
-import loon.geom.Shape;
-import loon.geom.Triangle;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
-import loon.opengl.GLBatch;
+import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
-import loon.opengl.TextureUtils;
 import loon.utils.GLUtils;
-import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class SpriteBatch {
+public class SpriteBatch extends PixmapFloatImpl {
 
 	public static enum SpriteEffects {
 		None, FlipHorizontally, FlipVertically;
@@ -58,13 +55,13 @@ public class SpriteBatch {
 
 	private final Matrix4 combinedMatrix = new Matrix4();
 
-	private GLBatch batch = new GLBatch(5000, false, true, 0);
-
 	private MeshDefault mesh;
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
 	private LFont font = LFont.getDefaultFont();
+
+	private LTexture colorTexture;
 
 	public LFont getFont() {
 		return font;
@@ -83,10 +80,13 @@ public class SpriteBatch {
 	}
 
 	public SpriteBatch(final int size, final ShaderProgram defaultShader) {
+		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(),
+				LSystem.viewSize.getHeight(), 4);
 		if (size > 5460) {
 			throw new IllegalArgumentException(
 					"Can't have more than 5460 sprites per batch: " + size);
 		}
+		this.colorTexture = LSystem.base().graphics().finalColorTex();
 		this.mesh = new MeshDefault();
 		this.shader = defaultShader;
 		this.size = size;
@@ -102,340 +102,6 @@ public class SpriteBatch {
 		if (shader != null) {
 			shader.setUniformf(name, color);
 		}
-	}
-
-	public final void draw(Shape shape) {
-		float[] points = shape.getPoints();
-		if (points.length == 0) {
-			return;
-		}
-		submit();
-		LColor color = getColor();
-		batch.begin(LSystem.base().graphics().getProjectionMatrix(),
-				GL20.GL_LINE_STRIP);
-		for (int i = 0; i < points.length; i += 2) {
-			batch.color(color);
-			batch.vertex(points[i], points[i + 1]);
-		}
-		if (shape.closed()) {
-			batch.color(color);
-			batch.vertex(points[0], points[1]);
-		}
-		batch.end();
-	}
-
-	public final void fill(Shape shape) {
-		if (shape == null) {
-			return;
-		}
-		Triangle tris = shape.getTriangles();
-		if (tris.getTriangleCount() == 0) {
-			return;
-		}
-		submit();
-		LColor color = getColor();
-		batch.begin(LSystem.base().graphics().getProjectionMatrix(),
-				GL20.GL_TRIANGLES);
-		for (int i = 0; i < tris.getTriangleCount(); i++) {
-			for (int p = 0; p < 3; p++) {
-				float[] pt = tris.getTrianglePoint(i, p);
-				batch.color(color);
-				batch.vertex(pt[0], pt[1]);
-			}
-		}
-		batch.end();
-	}
-
-	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
-		submit();
-		LColor color = getColor();
-		batch.begin(LSystem.base().graphics().getProjectionMatrix(),
-				GL20.GL_TRIANGLE_FAN);
-		for (int i = 0; i < nPoints; i++) {
-			batch.color(color);
-			batch.vertex(xPoints[i], yPoints[i]);
-		}
-		batch.end();
-	}
-
-	public void drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
-		submit();
-		LColor color = getColor();
-		batch.begin(LSystem.base().graphics().getProjectionMatrix(),
-				GL20.GL_LINE_LOOP);
-		for (int i = 0; i < nPoints; i++) {
-			batch.color(color);
-			batch.vertex(xPoints[i], yPoints[i]);
-		}
-		batch.end();
-	}
-
-	public void drawOval(float x1, float y1, float width, float height) {
-		this.drawArc(x1, y1, width, height, 32, 0, 360);
-	}
-
-	public void fillOval(float x1, float y1, float width, float height) {
-		this.fillArc(x1, y1, width, height, 32, 0, 360);
-	}
-
-	public void drawArc(RectBox rect, int segments, float start, float end) {
-		drawArc(rect.x, rect.y, rect.width, rect.height, segments, start, end);
-	}
-
-	public void drawArc(float x1, float y1, float width, float height,
-			int segments, float start, float end) {
-		submit();
-		LColor color = getColor();
-		while (end < start) {
-			end += 360;
-		}
-		float cx = x1 + (width / 2.0f);
-		float cy = y1 + (height / 2.0f);
-		batch.begin(LSystem.base().graphics().getProjectionMatrix(),
-				GL20.GL_LINE_STRIP);
-		int step = 360 / segments;
-		for (float a = start; a < (end + step); a += step) {
-			float ang = a;
-			if (ang > end) {
-				ang = end;
-			}
-			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
-			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
-			batch.color(color);
-			batch.vertex(x, y);
-		}
-		batch.end();
-	}
-
-	public final void fillArc(float x1, float y1, float width, float height,
-			float start, float end) {
-		fillArc(x1, y1, width, height, 40, start, end);
-	}
-
-	public final void fillArc(float x1, float y1, float width, float height,
-			int segments, float start, float end) {
-		submit();
-		LColor color = getColor();
-		while (end < start) {
-			end += 360;
-		}
-		float cx = x1 + (width / 2.0f);
-		float cy = y1 + (height / 2.0f);
-		batch.begin(LSystem.base().graphics().getProjectionMatrix(),
-				GL20.GL_TRIANGLE_FAN);
-		int step = 360 / segments;
-		batch.vertex(cx, cy);
-		for (float a = start; a < (end + step); a += step) {
-			float ang = a;
-			if (ang > end) {
-				ang = end;
-			}
-
-			float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * width / 2.0f));
-			float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * height / 2.0f));
-			batch.color(color);
-			batch.vertex(x, y);
-		}
-		batch.end();
-	}
-
-	public final void drawRoundRect(float x, float y, float width,
-			float height, int radius) {
-		drawRoundRect(x, y, width, height, radius, 40);
-	}
-
-	public final void drawRoundRect(float x, float y, float width,
-			float height, int radius, int segs) {
-		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
-		}
-		if (radius == 0) {
-			drawRect(x, y, width, height);
-			return;
-		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
-		}
-		drawLine(x + radius, y, x + width - radius, y);
-		drawLine(x, y + radius, x, y + height - radius);
-		drawLine(x + width, y + radius, x + width, y + height - radius);
-		drawLine(x + radius, y + height, x + width - radius, y + height);
-		float d = radius * 2;
-		drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		drawArc(x, y + height - d, d, d, segs, 90, 180);
-		drawArc(x + width - d, y, d, d, segs, 270, 360);
-		drawArc(x, y, d, d, segs, 180, 270);
-	}
-
-	public final void fillRoundRect(float x, float y, float width,
-			float height, int cornerRadius) {
-		fillRoundRect(x, y, width, height, cornerRadius, 40);
-	}
-
-	public final void fillRoundRect(float x, float y, float width,
-			float height, int radius, int segs) {
-		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
-		}
-		if (radius == 0) {
-			fillRect(x, y, width, height);
-			return;
-		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
-		}
-		float d = radius * 2;
-		fillRect(x + radius, y, width - d, radius);
-		fillRect(x, y + radius, radius, height - d);
-		fillRect(x + width - radius, y + radius, radius, height - d);
-		fillRect(x + radius, y + height - radius, width - d, radius);
-		fillRect(x + radius, y + radius, width - d, height - d);
-		fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		fillArc(x, y + height - d, d, d, segs, 90, 180);
-		fillArc(x + width - d, y, d, d, segs, 270, 360);
-		fillArc(x, y, d, d, segs, 180, 270);
-	}
-
-	public void fillRect(float x, float y, float width, float height) {
-		LColor color = getColor();
-		submit();
-		batch.begin(LSystem.base().graphics().getProjectionMatrix(),
-				GL20.GL_TRIANGLE_FAN);
-		{
-			batch.color(color);
-			batch.vertex(x, y);
-			batch.color(color);
-			batch.vertex(x + width, y);
-			batch.color(color);
-			batch.vertex(x + width, y + height);
-			batch.color(color);
-			batch.vertex(x, y + height);
-		}
-		batch.end();
-	}
-
-	private static LTexture whitePixel;
-
-	static class TextureLine {
-
-		private Vector2f pstart = new Vector2f();
-
-		private Vector2f pend = new Vector2f();
-
-		private float pstrokeWidth;
-
-		private float pangle;
-
-		private Vector2f pdirection;
-
-		private Vector2f pcentre;
-
-		private float plength;
-
-		private boolean pchanged;
-
-		public TextureLine() {
-			pchanged = true;
-			if (whitePixel == null) {
-				whitePixel = TextureUtils.createTexture(1, 1, LColor.white);
-			}
-		}
-
-		public void setStart(float x, float y) {
-			pstart.set(x, y);
-			pchanged = true;
-		}
-
-		public void setEnd(float x, float y) {
-			pend.set(x, y);
-			pchanged = true;
-		}
-
-		public float getStrokeWidth() {
-			return pstrokeWidth;
-		}
-
-		public void setStrokeWidth(float value) {
-			pstrokeWidth = value;
-			pchanged = true;
-		}
-
-		public void update() {
-			pdirection = new Vector2f(pend.x - pstart.x, pend.y - pstart.y);
-			pdirection.nor();
-			pangle = MathUtils.toDegrees(MathUtils.atan2(pend.y - pstart.y,
-					pend.x - pstart.x));
-			plength = MathUtils.ceil(Vector2f.dst(pstart, pend));
-			pcentre = new Vector2f((pend.x + pstart.x) / 2,
-					(pend.y + pstart.y) / 2);
-			pchanged = false;
-		}
-
-		public void draw(SpriteBatch batch) {
-			if (pchanged) {
-				update();
-			}
-			if (pstrokeWidth > 0) {
-				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f,
-						pstrokeWidth / 2, plength, pstrokeWidth, 1f, 1f,
-						pangle, 0, 0, 1f, 1f, false, false, true);
-			}
-		}
-	}
-
-	private IntMap<SpriteBatch.TextureLine> lineLazy = new IntMap<SpriteBatch.TextureLine>(
-			1000);
-
-	// 因为效率关系，矩形区域绘制与GLEx类处理方式不同，改为纹理渲染
-	public void drawRect(float x, float y, float width, float height) {
-		drawLine(x, y, x + width, y);
-		drawLine(x + width, y, x + width, y + height);
-		drawLine(x + width, y + height, x, y + height);
-		drawLine(x, y + height, x, y);
-	}
-
-	public void drawPoint(int x, int y, LColor c) {
-		float old = color;
-		setColor(c);
-		drawLine(x, y, x + 1, y + 1);
-		setColor(old);
-	}
-
-	public void drawPoints(int[] x, int[] y, LColor c) {
-		int size = y.length;
-		for (int i = 0; i < size; i++) {
-			drawPoint(x[i], y[i], c);
-		}
-	}
-
-	public void drawPoints(int[] x, int[] y) {
-		int size = y.length;
-		for (int i = 0; i < size; i++) {
-			drawPoint(x[i], y[i]);
-		}
-	}
-
-	public void drawPoint(int x, int y) {
-		drawLine(x, y, x + 1, y + 1);
-	}
-
-	public void drawLine(float x1, float y1, float x2, float y2) {
-		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, x1);
-		hashCode = LSystem.unite(hashCode, y1);
-		hashCode = LSystem.unite(hashCode, x2);
-		hashCode = LSystem.unite(hashCode, y2);
-		TextureLine line = lineLazy.get(hashCode);
-		if (line == null) {
-			line = new TextureLine();
-			line.setStart(x1, y1);
-			line.setEnd(x2, y2);
-			line.setStrokeWidth(1f);
-			lineLazy.put(hashCode, line);
-		}
-		line.draw(this);
 	}
 
 	public void setColor(LColor c) {
@@ -630,6 +296,7 @@ public class SpriteBatch {
 		} else {
 			shader.end();
 		}
+		LSystem.mainBeginDraw();
 	}
 
 	private void checkDrawing() {
@@ -1944,6 +1611,91 @@ public class SpriteBatch {
 		vertices[idx++] = v4;
 
 		this.idx = idx;
+	}
+
+	public void drawPoints(int[] x, int[] y, LColor c) {
+		int size = y.length;
+		float tmp = color;
+		setColor(c);
+		for (int i = 0; i < size; i++) {
+			drawPointImpl(x[i], y[i]);
+		}
+		setColor(tmp);
+	}
+
+	public void drawPoints(int[] x, int[] y) {
+		int size = y.length;
+		for (int i = 0; i < size; i++) {
+			drawPoint(x[i], y[i]);
+		}
+	}
+
+	public void drawPoint(int x, int y) {
+		drawPointImpl(x, y);
+	}
+
+	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
+		fillPolygonImpl(xPoints, yPoints, nPoints);
+	}
+
+	public void drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
+		drawPolygonImpl(xPoints, yPoints, nPoints);
+	}
+
+	public void drawOval(float x1, float y1, float width, float height) {
+		this.drawOvalImpl(x1, y1, width, height);
+	}
+
+	public void fillOval(float x1, float y1, float width, float height) {
+		this.fillOvalImpl(x1, y1, width, height);
+	}
+
+	public void drawArc(RectBox rect, float start, float end) {
+		drawArcImpl(rect.x, rect.y, rect.width, rect.height, start, end);
+	}
+
+	public void drawArc(float x1, float y1, float width, float height,
+			float start, float end) {
+		drawArcImpl(x1, y1, width, height, start, end);
+	}
+
+	public void fillArc(float x1, float y1, float width, float height,
+			float start, float end) {
+		fillArcImpl(x1, y1, width, height, start, end);
+	}
+
+	public void drawRect(float x, float y, float width, float height) {
+		drawRectImpl(x, y, width, height);
+	}
+
+	public final void fillRoundRect(float x, float y, float width,
+			float height, int radius) {
+		fillRoundRectImpl(x, y, width, height, radius);
+	}
+
+	public void fillRect(float x, float y, float width, float height) {
+		fillRectNative(x, y, width, height);
+	}
+
+	@Override
+	protected void drawPointNative(float x, float y, int skip) {
+		draw(colorTexture, x, y, skip, skip);
+	}
+
+	@Override
+	protected void fillRectNative(float x, float y, float width, float height) {
+		GLEx gl = LSystem.base().display().GL();
+		if (gl.alltextures()) {
+			if (gl.running()) {
+				gl.fillRect(x, y, width, height);
+			} else {
+				gl.begin();
+				gl.fillRect(x, y, width, height);
+				gl.end();
+			}
+		} else {
+			draw(colorTexture, x, y, width, height);
+		}
 	}
 
 }

@@ -148,11 +148,6 @@ public abstract class AbstractTransform implements Transform
         throw new UnsupportedOperationException();
     }
 
-    @Deprecated @Override // from Transform
-    public Transform clone () {
-        return cpy();
-    }
-
     @Override // from Transform
     public abstract Transform cpy ();
 }

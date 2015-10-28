@@ -95,6 +95,7 @@ public class SysInputFactory {
 		finalTouch.button = event.button;
 		finalTouch.pointer = 0;
 		finalTouch.id = 0;
+
 		if (button == -1) {
 			if (buttons > 0) {
 				finalTouch.type = SysTouch.TOUCH_DRAG;

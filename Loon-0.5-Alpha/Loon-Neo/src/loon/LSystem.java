@@ -35,7 +35,7 @@ public class LSystem {
 	public static String ENCODING = "UTF-8";
 
 	public static String APP_NAME = "Loon";
-	
+
 	public static float EMULATOR_BUTTIN_SCALE = 1f;
 
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
@@ -51,7 +51,7 @@ public class LSystem {
 	public static boolean AUTO_REPAINT = true;
 
 	public static boolean USE_LOG = true;
-	
+
 	public static boolean LOCK_SCREEN = false;
 	// 包内默认的图片路径
 	final static public String FRAMEWORK_IMG_NAME = "loon_";
@@ -62,16 +62,33 @@ public class LSystem {
 	// 文件分割符
 	final static public String FS = System.getProperty("file.separator", "\\");
 
+	public static boolean isHTML5() {
+		if (_base == null) {
+			return false;
+		}
+		return _base.type() == LGame.Type.HTML5;
+	}
+
 	public static String getFileName(String name) {
 		if (name == null) {
 			return "";
 		}
-		int length = name.length();
-		int size = name.lastIndexOf(LSystem.FS) + 1;
-		if (size < length) {
-			return name.substring(size, length);
+		if (name.indexOf(LSystem.FS) != -1) {
+			int length = name.length();
+			int size = name.lastIndexOf(LSystem.FS) + 1;
+			if (size < length) {
+				return name.substring(size, length);
+			} else {
+				return "";
+			}
 		} else {
-			return "";
+			int length = name.length();
+			int size = name.lastIndexOf('/') + 1;
+			if (size < length) {
+				return name.substring(size, length);
+			} else {
+				return "";
+			}
 		}
 	}
 
@@ -125,8 +142,8 @@ public class LSystem {
 			}
 		}
 	}
-	
-	public final static LProcess getProcess(){
+
+	public final static LProcess getProcess() {
 		return _process;
 	}
 

@@ -51,7 +51,7 @@ public class PContact {
 	}
 
 	public Vector2f getNormal() {
-		return normal.clone();
+		return normal.cpy();
 	}
 
 	public float getOverlap() {
@@ -59,15 +59,15 @@ public class PContact {
 	}
 
 	public Vector2f getPosition() {
-		return pos.clone();
+		return pos.cpy();
 	}
 
 	public Vector2f getRelativeVelocity() {
-		return relVel.clone();
+		return relVel.cpy();
 	}
 
 	public Vector2f getTangent() {
-		return tangent.clone();
+		return tangent.cpy();
 	}
 
 }

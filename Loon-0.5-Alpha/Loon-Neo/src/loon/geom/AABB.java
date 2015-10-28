@@ -37,7 +37,7 @@ public class AABB {
 		this.maxY = maxY;
 	}
 	
-	public AABB clone() {
+	public AABB cpy() {
 		return new AABB(this.minX, this.minY, this.maxX, this.maxY);
 	}
 

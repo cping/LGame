@@ -833,4 +833,8 @@ public class RectBox extends Shape {
 				&& ((y - this.y) < this.height);
 	}
 
+	public RectBox cpy() {
+		return new RectBox(this.x, this.y, this.width, this.height);
+	}
+
 }

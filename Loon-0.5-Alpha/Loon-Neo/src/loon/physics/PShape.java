@@ -85,11 +85,11 @@ public abstract class PShape {
 	}
 
 	public Vector2f getLocalPosition() {
-		return _localPos.clone();
+		return _localPos.cpy();
 	}
 
 	public Vector2f getPosition() {
-		return _pos.clone();
+		return _pos.cpy();
 	}
 
 	public float getRestitution() {

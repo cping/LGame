@@ -18,12 +18,13 @@ package loon.physics;
 import loon.geom.Vector2f;
 
 public class PPolygonPolygonCollider implements PCollider {
-	private class PWContactedVertex {
+	
+	public class PWContactedVertex {
 
-		public PWContactedVertex clone() {
+		public PWContactedVertex cpy() {
 			PWContactedVertex cv = new PWContactedVertex();
-			cv.v = v.clone();
-			cv.data = data.clone();
+			cv.v = v.cpy();
+			cv.data = data.cpy();
 			return cv;
 		}
 
@@ -75,7 +76,7 @@ public class PPolygonPolygonCollider implements PCollider {
 			c = 1;
 		float d = dist0 / (dist0 - dist1);
 		line[1] = new PWContactedVertex();
-		line[1].v = clips[1].v.sub(clips[0].v).clone();
+		line[1].v = clips[1].v.sub(clips[0].v).cpy();
 		line[1].v.mulLocal(d);
 		line[1].v.addLocal(clips[0].v);
 		line[1].data = clips[c].data;

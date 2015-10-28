@@ -591,10 +591,6 @@ public class Vector2f implements Serializable, XY {
 		y = MathUtils.abs(y);
 	}
 
-	public final Vector2f clone() {
-		return new Vector2f(x, y);
-	}
-
 	public final String toString() {
 		return "(" + x + "," + y + ")";
 	}

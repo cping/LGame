@@ -30,7 +30,7 @@ public class PContactData {
 		this.flip = flip;
 	}
 
-	public PContactData clone() {
+	public PContactData cpy() {
 		PContactData ret = new PContactData();
 		ret.id = id;
 		ret.flip = flip;

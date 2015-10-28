@@ -158,7 +158,7 @@ public class PTransformer {
 
 	public static Vector2f calcRelativeCorrectVelocity(PBody b1, PBody b2,
 			Vector2f r1, Vector2f r2) {
-		Vector2f relVel = b1.correctVel.clone();
+		Vector2f relVel = b1.correctVel.cpy();
 		relVel.x -= b2.correctVel.x;
 		relVel.y -= b2.correctVel.y;
 		relVel.x += -b1.correctAngVel * r1.y;
@@ -170,7 +170,7 @@ public class PTransformer {
 
 	public static Vector2f calcRelativeVelocity(PBody b1, PBody b2,
 			Vector2f r1, Vector2f r2) {
-		Vector2f relVel = b1.vel.clone();
+		Vector2f relVel = b1.vel.cpy();
 		relVel.x -= b2.vel.x;
 		relVel.y -= b2.vel.y;
 		relVel.x += -b1.angVel * r1.y;
