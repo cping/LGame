@@ -50,7 +50,13 @@ public class GWTGame extends LGame {
 		public boolean transparentCanvas = false;
 
 		public boolean antiAliasing = true;
-
+		
+		public boolean stencil = false;
+		
+		public boolean premultipliedAlpha = false;
+		
+		public boolean preserveDrawingBuffer = false; 
+		
 		public float scaleFactor = devicePixelRatio();
 
 		public String rootId = "loon-root";
@@ -170,6 +176,7 @@ public class GWTGame extends LGame {
 			setTitle(setting.appName);
 		}
 		initProcess();
+
 	}
 
 	private boolean initGwt = false;

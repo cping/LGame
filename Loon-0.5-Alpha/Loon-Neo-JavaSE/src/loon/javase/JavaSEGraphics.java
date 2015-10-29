@@ -40,6 +40,10 @@ import loon.utils.Scale;
 
 public abstract class JavaSEGraphics extends Graphics {
 
+	protected static final int[] STYLE_TO_JAVA = { java.awt.Font.PLAIN,
+			java.awt.Font.BOLD, java.awt.Font.ITALIC,
+			java.awt.Font.BOLD | java.awt.Font.ITALIC };
+	
 	private ByteBuffer imgBuf = createImageBuffer(1024);
 	private Map<String, java.awt.Font> fonts = new HashMap<String, java.awt.Font>();
 
@@ -145,7 +149,4 @@ public abstract class JavaSEGraphics extends Graphics {
 				ByteOrder.nativeOrder());
 	}
 
-	protected static final int[] STYLE_TO_JAVA = { java.awt.Font.PLAIN,
-			java.awt.Font.BOLD, java.awt.Font.ITALIC,
-			java.awt.Font.BOLD | java.awt.Font.ITALIC };
 }

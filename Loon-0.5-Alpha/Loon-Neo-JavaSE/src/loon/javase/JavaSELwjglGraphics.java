@@ -46,7 +46,7 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 	private Dimension screenSize = new Dimension();
 
 	public JavaSELwjglGraphics(JavaSEGame game) {
-		super(game, new JavaSELwjglGL20(), Scale.ONE); 
+		super(game, new JavaSELwjglGL20(), Scale.ONE);
 	}
 
 	boolean isPowerOfTwo(int value) {
@@ -76,8 +76,15 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 
 	@Override
 	protected void init() {
-		setDisplayMode(scale.scaledCeil(game.setting.width),
-				scale.scaledCeil(game.setting.height), game.setting.fullscreen);
+		if (game.setting.width_zoom > 0 && game.setting.height_zoom > 0) {
+			setDisplayMode(scale.scaledCeil(game.setting.width_zoom),
+					scale.scaledCeil(game.setting.height_zoom),
+					game.setting.fullscreen);
+		} else {
+			setDisplayMode(scale.scaledCeil(game.setting.width),
+					scale.scaledCeil(game.setting.height),
+					game.setting.fullscreen);
+		}
 		try {
 			System.setProperty("org.lwjgl.opengl.Display.enableHighDPI", "true");
 			Display.create();

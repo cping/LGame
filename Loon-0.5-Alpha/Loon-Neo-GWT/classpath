@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="loon/gwt/emu/|loon/html5/gwt/emu/" kind="src" path="src"/>
+	<classpathentry excluding="java/lang/System.java" kind="src" path="src/loon/html5/gwt/emu"/>
+	<classpathentry kind="src" output="test-classes" path="test"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Loon-Neo"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>

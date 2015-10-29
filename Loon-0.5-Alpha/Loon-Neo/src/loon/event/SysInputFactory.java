@@ -87,8 +87,8 @@ public class SysInputFactory {
 	private EmulatorButtons ebuttons;
 
 	public void callMouse(MouseMake.ButtonEvent event) {
-		float touchX = (event.getX() - handler.getX()) / LSystem.scaleWidth;
-		float touchY = (event.getY() - handler.getY()) / LSystem.scaleHeight;
+		float touchX = (event.getX() - handler.getX()) / LSystem.getScaleWidth();
+		float touchY = (event.getY() - handler.getY()) / LSystem.getScaleHeight();
 		int button = event.button;
 		finalTouch.x = touchX;
 		finalTouch.y = touchY;
@@ -176,8 +176,8 @@ public class SysInputFactory {
 		int size = events.length;
 		for (int i = 0; i < size; i++) {
 			TouchMake.Event e = events[i];
-			float touchX = (e.getX() - handler.getX()) / LSystem.scaleWidth;
-			float touchY = (e.getY() - handler.getY()) / LSystem.scaleHeight;
+			float touchX = (e.getX() - handler.getX()) / LSystem.getScaleWidth();
+			float touchY = (e.getY() - handler.getY()) / LSystem.getScaleHeight();
 			finalTouch.x = touchX;
 			finalTouch.y = touchY;
 			finalTouch.pointer = i;

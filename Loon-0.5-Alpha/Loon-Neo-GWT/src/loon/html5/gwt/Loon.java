@@ -124,7 +124,6 @@ public abstract class Loon implements EntryPoint, LazyLoading {
 										callback.update(state);
 										if (state.hasEnded()) {
 											getRootPanel().clear();
-											getRootPanel().remove(root);
 											if (loadingListener != null) {
 												loadingListener.beforeSetup();
 											}

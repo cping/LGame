@@ -1285,5 +1285,4 @@ public abstract class GL20 {
 
 	public abstract void glViewport(int x, int y, int width, int height);
 
-
 }

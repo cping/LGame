@@ -85,14 +85,13 @@ public abstract class LGame {
 	}
 
 	public Display register(Screen screen) {
-		LSystem.viewSize.setSize(setting.width, setting.height);
 		this.display = new Display(this, setting.fps);
 		this.display.setScreen(screen);
 		return display;
 	}
 
 	public void initProcess() {
-		LSystem.init(this);
+		LSystem.initProcess(this);
 	}
 	
 	/**

@@ -102,10 +102,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		this.scale(target.xscale(), target.yscale());
+		if (LSystem.isScaling()) {
+			this.scale(target.xscale() * LSystem.getScaleWidth(),
+					target.yscale() * LSystem.getScaleHeight());
+		} else {
+			this.scale(target.xscale(), target.yscale());
+		}
 		this.font = LFont.getDefaultFont();
 		this.tmpSave.font = this.font;
-		this.useAlltextures = LSystem.isHTML5();
+		this.useAlltextures = true;//LSystem.isHTML5();
 		this.tmpSave.alltextures = this.useAlltextures;
 	}
 
@@ -325,10 +330,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return startClipped(x, y, width, height);
 	}
 
-	public boolean startClipped(int x, int y, int width, int height) {
+	public boolean startClipped(int x1, int y1, int w1, int h1) {
 		if (isClosed) {
 			return false;
 		}
+		int x = (int) (x1 * LSystem.getScaleWidth());
+		int y = (int) (y1 * LSystem.getScaleHeight());
+		int width = (int) (w1 * LSystem.getScaleHeight());
+		int height = (int) (h1 * LSystem.getScaleHeight());
 		batch.flush();
 		RectBox r = pushScissorState(x, target.height() - y - height, width,
 				height);
@@ -358,12 +367,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx translate(float x, float y) {
-		tx().translate(x, y);
+		lastTrans.translate(x, y);
 		return this;
 	}
 
 	public GLEx scale(float sx, float sy) {
-		tx().scale(sx, sy);
+		lastTrans.scale(sx, sy);
 		return this;
 	}
 
@@ -373,7 +382,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx viewport(int x, int y, int width, int height) {
+		if (isClosed) {
+			return this;
+		}
+		batch.gl.glViewport(x, y, width, height);
+		return this;
+	}
+
 	public GLEx rotate(float angle) {
+		if (isClosed) {
+			return this;
+		}
 		float sr = (float) Math.sin(angle);
 		float cr = (float) Math.cos(angle);
 		transform(cr, sr, -sr, cr, 0, 0);
@@ -382,12 +402,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public GLEx transform(float m00, float m01, float m10, float m11, float tx,
 			float ty) {
+		if (isClosed) {
+			return this;
+		}
 		Affine2f top = tx();
 		Transforms.multiply(top, m00, m01, m10, m11, tx, ty, top);
 		return this;
 	}
 
 	public GLEx concatenate(Affine2f xf, float originX, float originY) {
+		if (isClosed) {
+			return this;
+		}
 		Affine2f txf = tx();
 		Transforms.multiply(txf, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty,
 				txf);
@@ -398,6 +424,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx set(Matrix3 mat3) {
+		if (isClosed) {
+			return this;
+		}
 		saveTx();
 		Affine2f txf = tx();
 		txf.set(mat3);
@@ -405,6 +434,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx set(Matrix4 mat4) {
+		if (isClosed) {
+			return this;
+		}
 		saveTx();
 		Affine2f txf = tx();
 		txf.set(mat4);
@@ -412,6 +444,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx preConcatenate(Affine2f xf) {
+		if (isClosed) {
+			return this;
+		}
 		Affine2f txf = tx();
 		Transforms.multiply(xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, txf,
 				txf);
@@ -433,6 +468,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public void reset(float red, float green, float blue, float alpha) {
+		if (isClosed) {
+			return;
+		}
 		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
 		this.font = LFont.getDefaultFont();
 		this.baseColor = LColor.DEF_COLOR;
@@ -442,6 +480,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public void reset() {
+		if (isClosed) {
+			return;
+		}
 		GLUtils.setClearColor(batch.gl, tmpColor.setColor(baseColor));
 		this.font = LFont.getDefaultFont();
 		this.baseColor = LColor.DEF_COLOR;
@@ -625,7 +666,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		texture.addToBatch(batch, argb, xf, x, y, w, h);
 		return this;
 	}
-	
+
 	public GLEx draw(Painter texture, float x, float y, float w, float h) {
 		if (isClosed) {
 			return this;
@@ -1877,7 +1918,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return drawArc(rect.x, rect.y, rect.width, rect.height, segments,
 				start, end);
 	}
-	
+
 	/**
 	 * 绘制指定大小的弧度
 	 * 
@@ -1893,7 +1934,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float start, float end) {
 		return drawArc(x1, y1, width, height, 40, start, end);
 	}
-	
+
 	/**
 	 * 绘制指定大小的弧度
 	 * 
@@ -2084,7 +2125,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (useAlltextures) {
-           fillRoundRectImpl(x, y, width, height, radius);
+			fillRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
 				throw new IllegalArgumentException("radius > 0");

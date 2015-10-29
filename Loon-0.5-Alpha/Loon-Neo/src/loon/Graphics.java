@@ -62,6 +62,7 @@ public abstract class Graphics {
 		}
 
 		public float xscale() {
+
 			return scale.factor;
 		}
 
@@ -103,13 +104,14 @@ public abstract class Graphics {
 	public Matrix4 getProjectionMatrix() {
 		if (projectionMatrix == null) {
 			matrixsStack.add(projectionMatrix = new Matrix4());
-			projectionMatrix.setToOrtho2D(0, 0, LSystem.viewSize.width,
-					LSystem.viewSize.height);
+			projectionMatrix.setToOrtho2D(0, 0, LSystem.viewSize.getWidth(),
+					LSystem.viewSize.getHeight());
 		} else if (LSystem.base().display() != null
 				&& !LSystem.base().display().GL().tx().equals(lastAffine)) {
 			lastAffine = LSystem.base().display().GL().tx().cpy();
 			LSystem.viewSize.getMatrix().mul(projectionMatrix);
 			projectionMatrix = projectionMatrix.newCombine(lastAffine);
+
 		}
 		return projectionMatrix;
 	}
@@ -202,15 +204,14 @@ public abstract class Graphics {
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
 		if (!LSystem.LOCK_SCREEN) {
-			LSystem.viewSize.setSize(viewWidth, viewHeight);
 			this.scale = scale;
-			this.viewPixelWidth = viewWidth;
+			this.viewPixelWidth = viewWidth ;
 			this.viewPixelHeight = viewHeight;
-			this.viewSizeM.width = scale.invScaled(viewWidth);
-			this.viewSizeM.height = scale.invScaled(viewHeight);
+			this.viewSizeM.width = scale.invScaled(viewPixelWidth);
+			this.viewSizeM.height = scale.invScaled(viewPixelHeight);
 			Display d = game.display();
 			if (d != null) {
-				d.resize(scale, viewWidth, viewHeight);
+				d.resize(scale, viewPixelWidth, viewPixelHeight);
 			}
 		}
 	}

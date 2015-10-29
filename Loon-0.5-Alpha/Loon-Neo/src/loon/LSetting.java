@@ -34,6 +34,10 @@ public class LSetting {
 
 	public int height = 320;
 
+	public int width_zoom = -1;
+
+	public int height_zoom = -1;
+
 	public boolean fullscreen = false;
 
 	public boolean emulateTouch;
@@ -67,6 +71,12 @@ public class LSetting {
 		this.truePause = setting.truePause;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
+	}
+
+	public boolean scaling() {
+		return this.width_zoom > 0
+				&& this.height_zoom > 0
+				&& (this.width_zoom != this.width || this.height_zoom != this.height);
 	}
 
 }

@@ -40,9 +40,9 @@ public class LSystem {
 
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
-	public static final float scaleWidth = 1f;
+	private static float scaleWidth = 1f;
 
-	public static final float scaleHeight = 1f;
+	private static float scaleHeight = 1f;
 
 	public static final Dimension viewSize = new Dimension(480, 320);
 
@@ -61,7 +61,94 @@ public class LSystem {
 
 	// 文件分割符
 	final static public String FS = System.getProperty("file.separator", "\\");
-	
+
+	final static public Random random = new Random();
+
+	public final static String version = "0.5";
+
+	public static int MODE_NORMAL = 1;
+
+	public static int MODE_ALPHA_MAP = 2;
+
+	public static int MODE_ALPHA_BLEND = 3;
+
+	public static int MODE_COLOR_MULTIPLY = 4;
+
+	public static int MODE_ADD = 5;
+
+	public static int MODE_SCREEN = 6;
+
+	public static int MODE_ALPHA = 7;
+
+	public static int MODE_SPEED = 8;
+
+	public static int MODE_ALPHA_ONE = 9;
+
+	public static int MODE_NONE = 10;
+
+	// 秒
+	final static public long SECOND = 1000;
+
+	// 分
+	final static public long MINUTE = SECOND * 60;
+
+	// 小时
+	final static public long HOUR = MINUTE * 60;
+
+	// 天
+	final static public long DAY = HOUR * 24;
+
+	// 周
+	final static public long WEEK = DAY * 7;
+
+	// 理论上一年
+	final static public long YEAR = DAY * 365;
+
+	// 是否使用了缩放画布
+	private static boolean _USE_SCALING = false;
+
+	// 是否使用了HTML5环境
+	private static boolean _USE_HTML5 = false;
+
+	static LGame _base;
+
+	static LProcess _process;
+
+	public static LGame base() {
+		return _base;
+	}
+
+	protected static void initProcess(LGame game) {
+		_base = game;
+		LSetting setting = _base.setting;
+		if (setting.scaling()) {
+			LSystem.scaleWidth = (float) setting.width_zoom
+					/ (float) setting.width;
+			LSystem.scaleHeight = (float) setting.height_zoom
+					/ (float) setting.height;
+			_USE_SCALING = true;
+		}
+		LSystem.viewSize.setSize(setting.width, setting.height);
+		_process = new LProcess(game);
+		_USE_HTML5 = (_base.type() == LGame.Type.HTML5);
+		_base.log().debug("The Loon Game Engine is Begin");
+	}
+
+	public static boolean isHTML5() {
+		return LSystem._USE_HTML5;
+	}
+
+	public static boolean isScaling() {
+		return LSystem._USE_SCALING;
+	}
+
+	public static float getScaleWidth() {
+		return LSystem.scaleWidth;
+	}
+
+	public static float getScaleHeight() {
+		return LSystem.scaleHeight;
+	}
 
 	public static String getFileName(String name) {
 		if (name == null) {
@@ -412,69 +499,6 @@ public class LSystem {
 					+ shader.getLog());
 		}
 		return shader;
-	}
-
-	final static public Random random = new Random();
-
-	public final static String version = "0.5";
-
-	public static int MODE_NORMAL = 1;
-
-	public static int MODE_ALPHA_MAP = 2;
-
-	public static int MODE_ALPHA_BLEND = 3;
-
-	public static int MODE_COLOR_MULTIPLY = 4;
-
-	public static int MODE_ADD = 5;
-
-	public static int MODE_SCREEN = 6;
-
-	public static int MODE_ALPHA = 7;
-
-	public static int MODE_SPEED = 8;
-
-	public static int MODE_ALPHA_ONE = 9;
-
-	public static int MODE_NONE = 10;
-
-	// 秒
-	final static public long SECOND = 1000;
-
-	// 分
-	final static public long MINUTE = SECOND * 60;
-
-	// 小时
-	final static public long HOUR = MINUTE * 60;
-
-	// 天
-	final static public long DAY = HOUR * 24;
-
-	// 周
-	final static public long WEEK = DAY * 7;
-
-	// 理论上一年
-	final static public long YEAR = DAY * 365;
-
-	static LGame _base;
-
-	static LProcess _process;
-
-	public static LGame base() {
-		return _base;
-	}
-
-	private static boolean _USE_HTML5 = false;
-	
-	public static boolean isHTML5() {
-			return _USE_HTML5;
-	}
-	
-	protected static void init(LGame game) {
-		_base = game;
-		_process = new LProcess(game);
-		_USE_HTML5 =  (_base.type() == LGame.Type.HTML5);
-		_base.log().debug("The Loon Game Engine is Begin");
 	}
 
 	public static String format(float value) {

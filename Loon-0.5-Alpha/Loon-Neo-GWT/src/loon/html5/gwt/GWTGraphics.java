@@ -33,6 +33,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
 import loon.geom.Vector2f;
+import loon.html5.gwt.GWTGame.Config;
 import loon.opengl.GL20;
 import loon.utils.Scale;
 
@@ -52,6 +53,7 @@ import com.google.gwt.webgl.client.WebGLRenderingContext;
 
 public class GWTGraphics extends Graphics {
 
+	private final Config config;
 	private final CanvasElement dummyCanvas;
 	private final Context2d dummyCtx;
 
@@ -69,23 +71,17 @@ public class GWTGraphics extends Graphics {
 
 	static float experimentalScale = 1;
 
-	public GWTGraphics(Panel panel, LGame game, GWTGame.Config config) {
-		super(game, new GWTGL20(), new Scale(config.scaleFactor));
-		
-		Document doc = Document.get();
-		dummyCanvas = doc.createCanvasElement();
-		dummyCtx = dummyCanvas.getContext2d();
+	public GWTGraphics(Panel panel, LGame game, GWTGame.Config cfg) {
+		super(game, new GWTGL20(), new Scale(cfg.scaleFactor));
 
-		Element root = doc.getElementById(config.rootId);
-		if (root == null) {
-			root = doc.createDivElement();
-			root.setAttribute("style", "width: " + config.width
-					+ "px; height: " + config.height + "px");
-			doc.getBody().appendChild(root);
-		} else {
-			root.setInnerHTML("");
-		}
-		rootElement = root;
+		this.config = cfg;
+		Document doc = Document.get();
+		this.dummyCanvas = doc.createCanvasElement();
+		this.dummyCtx = dummyCanvas.getContext2d();
+
+		Element root = panel.getElement();
+
+		this.rootElement = root;
 
 		measureElement = doc.createDivElement();
 		measureElement.getStyle().setVisibility(Style.Visibility.HIDDEN);
@@ -99,11 +95,21 @@ public class GWTGraphics extends Graphics {
 
 		canvas = Document.get().createCanvasElement();
 		root.appendChild(canvas);
-		setSize(root.getOffsetWidth(), root.getOffsetHeight());
-
+		if (config.scaling()) {
+			setSize(config.width_zoom > 0 ? config.width_zoom
+					: root.getOffsetWidth(),
+					config.height_zoom > 0 ? config.height_zoom : root
+							.getOffsetHeight());
+		} else {
+			setSize(config.width > 0 ? config.width : root.getOffsetWidth(),
+					config.height > 0 ? config.height : root.getOffsetHeight());
+		}
 		WebGLContextAttributes attrs = WebGLContextAttributes.create();
-		attrs.setAlpha(config.transparentCanvas);
 		attrs.setAntialias(config.antiAliasing);
+		attrs.setStencil(config.stencil);
+		attrs.setAlpha(config.transparentCanvas);
+		attrs.setPremultipliedAlpha(config.premultipliedAlpha);
+		attrs.setPreserveDrawingBuffer(config.preserveDrawingBuffer);
 
 		WebGLRenderingContext glc = WebGLRenderingContext.getContext(canvas,
 				attrs);
@@ -112,6 +118,12 @@ public class GWTGraphics extends Graphics {
 		}
 
 		((GWTGL20) gl).init(glc);
+
+		if (config.scaling()) {
+			glc.viewport(0, 0, config.width_zoom, config.height_zoom);
+		} else {
+			glc.viewport(0, 0, config.width, config.height);
+		}
 
 		if (config.fullscreen) {
 			Window.addResizeHandler(new ResizeHandler() {
@@ -133,8 +145,6 @@ public class GWTGraphics extends Graphics {
 								+ "height:" + experimentalScale * height
 								+ "px; " + "position:absolute; left:" + xOfs
 								+ "px; top:" + yOfs);
-
-						Window.alert("Switching to fullscreen mode.");
 						Document.get().getBody().addClassName("fullscreen");
 					} else {
 						experimentalScale = 1;
@@ -145,6 +155,28 @@ public class GWTGraphics extends Graphics {
 			});
 		}
 	}
+
+	private boolean isFullscreen() {
+		return isFullscreenJSNI();
+	}
+
+	private native int getScreenWidthJSNI() /*-{
+		return $wnd.screen.width;
+	}-*/;
+
+	private native int getScreenHeightJSNI() /*-{
+		return $wnd.screen.height;
+	}-*/;
+
+	private native boolean isFullscreenJSNI() /*-{
+		if ("webkitIsFullScreen" in $doc) {
+			return $doc.webkitIsFullScreen;
+		}
+		if ("mozFullScreen" in $doc) {
+			return $doc.mozFullScreen;
+		}
+		return false
+	}-*/;
 
 	public void setSize(int width, int height) {
 		rootElement.getStyle().setWidth(width, Unit.PX);

@@ -190,6 +190,7 @@ public class Display extends LSystemView {
 	}
 
 	protected void paint(LTimerContext timerContext) {
+
 		if (showLogo) {
 			try {
 				glEx.save();

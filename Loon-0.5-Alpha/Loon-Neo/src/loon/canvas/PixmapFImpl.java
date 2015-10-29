@@ -84,6 +84,8 @@ public abstract class PixmapFImpl {
 		this._clip.set(clip);
 		this._width = w;
 		this._height = h;
+		this._width = w;
+		this._height = h;
 		this._skip = skip;
 		if (LSystem.isHTML5() && _skip < 12) {
 			_skip = 12;
@@ -362,7 +364,7 @@ public abstract class PixmapFImpl {
 		} else {
 			arcAngle %= 360;
 		}
-		
+
 		final float startAngle = arcAngle > 0 ? start
 				: (start + arcAngle < 0 ? start + arcAngle + 360 : start
 						+ arcAngle);
