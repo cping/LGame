@@ -15,8 +15,6 @@ public class GLUtils {
 
 	private static int currentDestinationBlendMode = -1;
 
-	private static int currentTextureID = -1;
-
 	private static boolean enableDither = true;
 
 	private static boolean enableDepthTest = true;
@@ -34,7 +32,6 @@ public class GLUtils {
 		GLUtils.currentHardwareTextureID = -1;
 		GLUtils.currentSourceBlendMode = -1;
 		GLUtils.currentDestinationBlendMode = -1;
-		GLUtils.currentTextureID = -1;
 		GLUtils.disableBlend(gl);
 		GLUtils.disableCulling(gl);
 		GLUtils.disableTextures(gl);
@@ -45,7 +42,6 @@ public class GLUtils {
 		GLUtils.currentHardwareTextureID = -1;
 		GLUtils.currentSourceBlendMode = -1;
 		GLUtils.currentDestinationBlendMode = -1;
-		GLUtils.currentTextureID = -1;
 		GLUtils.enableDither = true;
 		GLUtils.enableDepthTest = true;
 		GLUtils.enablecissorTest = false;
@@ -54,24 +50,6 @@ public class GLUtils {
 		GLUtils.enableTextures = false;
 	}
 
-	public static void delete(GL20 gl, int id) {
-		gl.glDeleteTexture(id);
-		currentTextureID = -1;
-	}
-
-	public static void bind(GL20 gl, int id) {
-		if (currentTextureID != id) {
-			gl.glBindTexture(GL20.GL_TEXTURE_2D, id);
-			GLUtils.currentTextureID = id;
-		}
-	}
-
-	public static void bind(GL20 gl, LTexture tex2d) {
-		if (!tex2d.isLoaded()) {
-			tex2d.loadTexture();
-		}
-		bind(gl, tex2d.getID());
-	}
 
 	public static int nextPOT(int value) {
 		assert value < 0x10000;
@@ -308,6 +286,18 @@ public class GLUtils {
 		}
 	}
 
+	public static void deleteTexture(GL20 gl, int id) {
+		gl.glDeleteTexture(id);
+		currentHardwareTextureID = -1;
+	}
+
+	public static void bindTexture(GL20 gl, LTexture tex2d) {
+		if (!tex2d.isLoaded()) {
+			tex2d.loadTexture();
+		}
+		bindTexture(gl, tex2d.getID());
+	}
+	
 	public static void blendFunction(final GL20 gl, final int pSourceBlendMode,
 			final int pDestinationBlendMode) {
 		try {

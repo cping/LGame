@@ -227,11 +227,13 @@ public class UniformBatch extends BaseBatch {
 	public void end() {
 		super.end();
 		gl.glDisableVertexAttribArray(aVertex);
+
 	}
 	
 	public void freeBuffer() {
 		gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
 		gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
 	}
 
 	private static int usableMaxUniformVectors(GL20 gl) {

@@ -34,7 +34,7 @@ public class Dimension {
 		}
 		return rect;
 	}
-
+	
 	public Matrix4 getMatrix() {
 		if (dirty) {
 			if (matrix4 == null) {

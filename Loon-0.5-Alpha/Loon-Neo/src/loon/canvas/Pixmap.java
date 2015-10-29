@@ -2,11 +2,10 @@ package loon.canvas;
 
 import java.nio.IntBuffer;
 
-import loon.Director;
 import loon.LRelease;
 import loon.LSystem;
 import loon.geom.Polygon.Polygon2i;
-import loon.geom.RectBox;
+import loon.geom.RectI;
 import loon.geom.Triangle2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
@@ -14,7 +13,7 @@ import loon.utils.MathUtils;
 /**
  * 跨平台处理像素用类(不同平台内部渲染实现通常有细节差异，某些时候不如自己写同一方法更能保证效果一致)
  */
-public class Pixmap extends Director implements LRelease {
+public class Pixmap extends Limit implements LRelease {
 
 	private int baseColor = LColor.DEF_COLOR;
 
@@ -38,9 +37,9 @@ public class Pixmap extends Director implements LRelease {
 
 	private boolean hasAlpha;
 
-	private RectBox defClip;
+	private RectI defClip;
 
-	private RectBox clip;
+	private RectI clip;
 
 	public Pixmap(String path) {
 		this(path, true);
@@ -70,9 +69,8 @@ public class Pixmap extends Director implements LRelease {
 		} else {
 			this.transparent = 0;
 		}
-		this.defClip = new RectBox(0, 0, width, height);
-		this.clip = new RectBox(0, 0, width, height);
-		this.setSize(w, h);
+		this.defClip = new RectI(0, 0, width, height);
+		this.clip = new RectI(0, 0, width, height);
 	}
 
 	/**
@@ -556,12 +554,12 @@ public class Pixmap extends Director implements LRelease {
 				| (blue & 0xFF);
 	}
 
-	public RectBox getClipBounds() {
+	public RectI getClipBounds() {
 		if (isClose) {
 			return null;
 		}
-		return defClip != null ? new RectBox(defClip.x, defClip.y,
-				defClip.width, defClip.height) : new RectBox(0, 0, width,
+		return defClip != null ? new RectI(defClip.x, defClip.y,
+				defClip.width, defClip.height) : new RectI(0, 0, width,
 				height);
 	}
 
@@ -570,12 +568,12 @@ public class Pixmap extends Director implements LRelease {
 			return;
 		}
 		if (defClip != null) {
-			defClip = defClip.getIntersection(new RectBox(x, y, width, height));
-			clip = clip.getIntersection(new RectBox(x + translateX, y
+			defClip = defClip.getIntersection(new RectI(x, y, width, height));
+			clip = clip.getIntersection(new RectI(x + translateX, y
 					+ translateY, width, height));
 		} else {
-			defClip = new RectBox(x, y, width, height);
-			clip = new RectBox(x + translateX, y + translateY, width, height);
+			defClip = new RectI(x, y, width, height);
+			clip = new RectI(x + translateX, y + translateY, width, height);
 		}
 	}
 
@@ -584,24 +582,24 @@ public class Pixmap extends Director implements LRelease {
 			return;
 		}
 		if (defClip == null) {
-			defClip = new RectBox(x, y, width, height);
+			defClip = new RectI(x, y, width, height);
 		} else {
-			defClip.setBounds(x, y, width, height);
+			defClip.set(x, y, width, height);
 		}
-		clip = new RectBox(MathUtils.max(x + translateX, 0), MathUtils.max(y
+		clip = new RectI(MathUtils.max(x + translateX, 0), MathUtils.max(y
 				+ translateY, 0), MathUtils.min(width, width - translateX),
 				MathUtils.min(height, height - translateY));
 	}
 
-	public RectBox getClip() {
+	public RectI getClip() {
 		if (isClose) {
 			return null;
 		}
 		return getClipBounds();
 	}
 
-	public void setClip(RectBox clip) {
-		setClip(clip.x(), clip.y(), clip.width, clip.height);
+	public void setClip(RectI clip) {
+		setClip(clip.x, clip.y, clip.width, clip.height);
 	}
 
 	/**
@@ -1235,13 +1233,13 @@ public class Pixmap extends Director implements LRelease {
 		if (isClose) {
 			return;
 		}
-		int maxX = MathUtils.min(x + width - 1 + translateX, clip.x()
+		int maxX = MathUtils.min(x + width - 1 + translateX, clip.x
 				+ clip.width - 1);
-		int maxY = MathUtils.min(y + height - 1 + translateY, clip.y()
+		int maxY = MathUtils.min(y + height - 1 + translateY, clip.y
 				+ clip.height - 1);
-		for (int row = MathUtils.max(y + translateY, clip.y()), rowOffset = row
+		for (int row = MathUtils.max(y + translateY, clip.y), rowOffset = row
 				* width; row <= maxY; row++, rowOffset += width) {
-			for (int col = MathUtils.max(x + translateX, clip.x()); col <= maxX; col++) {
+			for (int col = MathUtils.max(x + translateX, clip.x); col <= maxX; col++) {
 				drawPoint(drawPixels, col + rowOffset);
 			}
 		}
@@ -1335,7 +1333,7 @@ public class Pixmap extends Director implements LRelease {
 		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle,
 				MathUtils.abs(arcAngle), centerX, centerY, x + translateX - 1,
 				y + translateY - 1, width + 2, height + 2);
-		final RectBox bounds = getBoundingBox(xPoints, yPoints, nPoints)
+		final RectI bounds = getBoundingBox(xPoints, yPoints, nPoints)
 				.getIntersection(clip);
 		this.drawCircle(x, y, width, height, false, new CircleUpdate() {
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
@@ -1381,7 +1379,7 @@ public class Pixmap extends Director implements LRelease {
 		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle,
 				MathUtils.abs(arcAngle), centerX, centerY, x + translateX - 1,
 				y + translateY - 1, width + 2, height + 2);
-		final RectBox bounds = getBoundingBox(xPoints, yPoints, nPoints)
+		final RectI bounds = getBoundingBox(xPoints, yPoints, nPoints)
 				.getIntersection(clip);
 		this.drawCircle(x, y, width, height, true, new CircleUpdate() {
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
@@ -1464,10 +1462,10 @@ public class Pixmap extends Director implements LRelease {
 				yPointsCopy[i] += translateY;
 			}
 		}
-		RectBox bounds = getBoundingBox(xPointsCopy, yPointsCopy, nPoints)
+		RectI bounds = getBoundingBox(xPointsCopy, yPointsCopy, nPoints)
 				.getIntersection(clip);
-		for (int x = bounds.x(); x < bounds.x + bounds.width; x++) {
-			for (int y = bounds.y(); y < bounds.y + bounds.height; y++) {
+		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
 				if (contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
 					drawPoint(x, y);
 				}
@@ -1482,18 +1480,18 @@ public class Pixmap extends Director implements LRelease {
 		}
 		if (y >= clip.y && y < clip.y + clip.height) {
 			y *= width;
-			int maxX = MathUtils.min(x2, clip.x() + clip.width - 1);
+			int maxX = MathUtils.min(x2, clip.x + clip.width - 1);
 			if (drawPixels != null)
-				for (int x = MathUtils.max(x1, clip.x()); x <= maxX; x++)
+				for (int x = MathUtils.max(x1, clip.x); x <= maxX; x++)
 					drawPoint(drawPixels, x + y);
 		}
 	}
 
 	private void drawVerticalLine(int x, int y1, int y2) {
 		if (x >= clip.x && x < clip.x + clip.width) {
-			int maxY = MathUtils.min(y2, clip.y() + clip.height - 1) * width;
+			int maxY = MathUtils.min(y2, clip.y + clip.height - 1) * width;
 			if (drawPixels != null)
-				for (int y = MathUtils.max(y1, clip.y()) * width; y <= maxY; y += width)
+				for (int y = MathUtils.max(y1, clip.y) * width; y <= maxY; y += width)
 					drawPoint(drawPixels, x + y);
 		}
 	}
@@ -1523,16 +1521,16 @@ public class Pixmap extends Director implements LRelease {
 	}
 
 	private void drawArcPoint(int xPoints[], int yPoints[], int nPoints,
-			RectBox bounds, int x, int y) {
+			RectI bounds, int x, int y) {
 		if (contains(xPoints, yPoints, nPoints, bounds, x, y)) {
 			drawPoint(x, y);
 		}
 	}
 
 	private void drawArcImpl(int xPoints[], int yPoints[], int nPoints,
-			RectBox bounds, int xLeft, int xRight, int y) {
+			RectI bounds, int xLeft, int xRight, int y) {
 		if (y >= clip.y && y < clip.y + clip.height) {
-			for (int x = MathUtils.max(xLeft, clip.x()); x <= xRight; x++) {
+			for (int x = MathUtils.max(xLeft, clip.x); x <= xRight; x++) {
 				if (contains(xPoints, yPoints, nPoints, bounds, x, y)) {
 					drawPoint(x, y);
 				}
@@ -1550,7 +1548,7 @@ public class Pixmap extends Director implements LRelease {
 		int b = height / 2;
 		long squareA = width * width / 4;
 		long squareB = height * height / 4;
-		long squareAB = round((long) width * width * height * height, 16L);
+		long squareAB = MathUtils.round((long) width * width * height * height, 16L);
 
 		x += translateX;
 		y += translateY;

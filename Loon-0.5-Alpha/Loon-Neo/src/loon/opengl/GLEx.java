@@ -28,7 +28,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
 import loon.canvas.LColor;
-import loon.canvas.PixmapFloatImpl;
+import loon.canvas.PixmapFImpl;
 import loon.font.LFont;
 import loon.geom.Affine2f;
 import loon.geom.Matrix3;
@@ -36,6 +36,7 @@ import loon.geom.Matrix4;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Transforms;
+import loon.geom.Triangle;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -44,7 +45,7 @@ import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class GLEx extends PixmapFloatImpl implements LRelease {
+public class GLEx extends PixmapFImpl implements LRelease {
 
 	private class TmpSave {
 		int baseColor = LColor.DEF_COLOR;
@@ -624,7 +625,7 @@ public class GLEx extends PixmapFloatImpl implements LRelease {
 		texture.addToBatch(batch, argb, xf, x, y, w, h);
 		return this;
 	}
-
+	
 	public GLEx draw(Painter texture, float x, float y, float w, float h) {
 		if (isClosed) {
 			return this;
@@ -1268,21 +1269,86 @@ public class GLEx extends PixmapFloatImpl implements LRelease {
 		return this;
 	}
 
+	/**
+	 * 绘制不特定Shape
+	 * 
+	 * @param shape
+	 * @return
+	 */
 	public GLEx draw(Shape shape) {
-		float[] points = shape.getPoints();
-		if (points.length == 0) {
-			return this;
+		return draw(shape, 0f, 0f);
+	}
+
+	/**
+	 * 绘制不特定Shape
+	 * 
+	 * @param shape
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public GLEx draw(Shape shape, float x, float y) {
+		if (useAlltextures) {
+			drawShapeImpl(shape, x, y);
+		} else {
+			float[] points = shape.getPoints();
+			if (points.length == 0) {
+				return this;
+			}
+			glBegin(GL20.GL_LINE_STRIP);
+			for (int i = 0; i < points.length; i += 2) {
+				glColor(baseColor);
+				glVertex2f(points[i] + x, points[i + 1] + y);
+			}
+			if (shape.closed()) {
+				glColor(baseColor);
+				glVertex2f(points[0] + x, points[1] + y);
+			}
+			glEnd();
 		}
-		glBegin(GL20.GL_LINE_STRIP);
-		for (int i = 0; i < points.length; i += 2) {
-			glColor(baseColor);
-			glVertex2f(points[i], points[i + 1]);
+		return this;
+	}
+
+	/**
+	 * 绘制不特定Shape
+	 * 
+	 * @param shape
+	 * @return
+	 */
+	public GLEx fill(Shape shape) {
+		return fill(shape, 0f, 0f);
+	}
+
+	/**
+	 * 绘制不特定Shape
+	 * 
+	 * @param shape
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public GLEx fill(Shape shape, float x, float y) {
+		if (useAlltextures) {
+			fillShapeImpl(shape, x, y);
+		} else {
+			Triangle tris = shape.getTriangles();
+			if (tris.getTriangleCount() == 0) {
+				return this;
+			}
+			float[] points = shape.getPoints();
+			if (points.length == 0) {
+				return this;
+			}
+			glBegin(GL20.GL_TRIANGLES);
+			for (int i = 0; i < tris.getTriangleCount(); i++) {
+				for (int p = 0; p < 3; p++) {
+					float[] pt = tris.getTrianglePoint(i, p);
+					glColor(baseColor);
+					glVertex2f(pt[0] + x, pt[1] + y);
+				}
+			}
+			glEnd();
 		}
-		if (shape.closed()) {
-			glColor(baseColor);
-			glVertex2f(points[0], points[1]);
-		}
-		glEnd();
 		return this;
 	}
 
@@ -1811,7 +1877,23 @@ public class GLEx extends PixmapFloatImpl implements LRelease {
 		return drawArc(rect.x, rect.y, rect.width, rect.height, segments,
 				start, end);
 	}
-
+	
+	/**
+	 * 绘制指定大小的弧度
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public final GLEx drawArc(float x1, float y1, float width, float height,
+			float start, float end) {
+		return drawArc(x1, y1, width, height, 40, start, end);
+	}
+	
 	/**
 	 * 绘制指定大小的弧度
 	 * 
@@ -1945,26 +2027,30 @@ public class GLEx extends PixmapFloatImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
+		if (useAlltextures) {
+			drawRoundRectImpl(x, y, width, height, radius);
+		} else {
+			if (radius < 0) {
+				throw new IllegalArgumentException("radius > 0");
+			}
+			if (radius == 0) {
+				drawRect(x, y, width, height);
+				return this;
+			}
+			int mr = (int) MathUtils.min(width, height) / 2;
+			if (radius > mr) {
+				radius = mr;
+			}
+			drawLine(x + radius, y, x + width - radius, y);
+			drawLine(x, y + radius, x, y + height - radius);
+			drawLine(x + width, y + radius, x + width, y + height - radius);
+			drawLine(x + radius, y + height, x + width - radius, y + height);
+			float d = radius * 2;
+			drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+			drawArc(x, y + height - d, d, d, segs, 90, 180);
+			drawArc(x + width - d, y, d, d, segs, 270, 360);
+			drawArc(x, y, d, d, segs, 180, 270);
 		}
-		if (radius == 0) {
-			drawRect(x, y, width, height);
-			return this;
-		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
-		}
-		drawLine(x + radius, y, x + width - radius, y);
-		drawLine(x, y + radius, x, y + height - radius);
-		drawLine(x + width, y + radius, x + width, y + height - radius);
-		drawLine(x + radius, y + height, x + width - radius, y + height);
-		float d = radius * 2;
-		drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		drawArc(x, y + height - d, d, d, segs, 90, 180);
-		drawArc(x + width - d, y, d, d, segs, 270, 360);
-		drawArc(x, y, d, d, segs, 180, 270);
 		return this;
 	}
 
@@ -1997,27 +2083,31 @@ public class GLEx extends PixmapFloatImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
+		if (useAlltextures) {
+           fillRoundRectImpl(x, y, width, height, radius);
+		} else {
+			if (radius < 0) {
+				throw new IllegalArgumentException("radius > 0");
+			}
+			if (radius == 0) {
+				fillRect(x, y, width, height);
+				return this;
+			}
+			int mr = (int) MathUtils.min(width, height) / 2;
+			if (radius > mr) {
+				radius = mr;
+			}
+			float d = radius * 2;
+			fillRect(x + radius, y, width - d, radius);
+			fillRect(x, y + radius, radius, height - d);
+			fillRect(x + width - radius, y + radius, radius, height - d);
+			fillRect(x + radius, y + height - radius, width - d, radius);
+			fillRect(x + radius, y + radius, width - d, height - d);
+			fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+			fillArc(x, y + height - d, d, d, segs, 90, 180);
+			fillArc(x + width - d, y, d, d, segs, 270, 360);
+			fillArc(x, y, d, d, segs, 180, 270);
 		}
-		if (radius == 0) {
-			fillRect(x, y, width, height);
-			return this;
-		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
-		}
-		float d = radius * 2;
-		fillRect(x + radius, y, width - d, radius);
-		fillRect(x, y + radius, radius, height - d);
-		fillRect(x + width - radius, y + radius, radius, height - d);
-		fillRect(x + radius, y + height - radius, width - d, radius);
-		fillRect(x + radius, y + radius, width - d, height - d);
-		fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		fillArc(x, y + height - d, d, d, segs, 90, 180);
-		fillArc(x + width - d, y, d, d, segs, 270, 360);
-		fillArc(x, y, d, d, segs, 180, 270);
 		return this;
 	}
 

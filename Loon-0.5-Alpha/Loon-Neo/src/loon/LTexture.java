@@ -817,7 +817,7 @@ public class LTexture extends Painter implements LRelease {
 			_isLoaded = false;
 			if (!disposed) {
 				disposed = true;
-				GLUtils.delete(gfx.gl, id);
+				GLUtils.deleteTexture(gfx.gl, id);
 			}
 			if (image != null) {
 				image.close();

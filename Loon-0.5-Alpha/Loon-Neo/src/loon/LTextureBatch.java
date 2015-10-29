@@ -414,7 +414,7 @@ public class LTextureBatch implements LRelease {
 			this.count = spritesInBatch * 6;
 		}
 		GL20 gl = LSystem.base().graphics().gl;
-		GLUtils.bind(gl, texture.getID());
+		GLUtils.bindTexture(gl, texture.getID());
 		int old = GLUtils.getBlendMode();
 		switch (lastBlendState) {
 		case Additive:
@@ -517,7 +517,7 @@ public class LTextureBatch implements LRelease {
 		}
 		if (cache.vertexIdx > 0) {
 			GL20 gl = LSystem.base().graphics().gl;
-			GLUtils.bind(gl, texture.getID());
+			GLUtils.bindTexture(gl, texture.getID());
 			int old = GLUtils.getBlendMode();
 			switch (lastBlendState) {
 			case Additive:

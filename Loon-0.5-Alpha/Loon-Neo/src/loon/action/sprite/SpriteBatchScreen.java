@@ -859,6 +859,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	
 	@Override
 	public final void draw(GLEx g) {
+	
 		if (isOnLoadComplete()) {
 			batch.begin();
 			before(batch);
@@ -878,6 +879,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			after(batch);
 			batch.end();
 		}
+	
 	}
 
 	public abstract void after(SpriteBatch batch);

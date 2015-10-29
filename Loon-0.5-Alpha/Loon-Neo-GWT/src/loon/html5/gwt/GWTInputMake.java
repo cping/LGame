@@ -52,17 +52,17 @@ public class GWTInputMake extends InputMake {
 	private boolean isRequestingMouseLock;
 
 	private boolean inTouchSequence = false;
-	
-	private float touchDX=-1,touchDY=-1;
-	
-	public float getTouchDX(){
+
+	private float touchDX = -1, touchDY = -1;
+
+	public float getTouchDX() {
 		return touchDX;
 	}
-	
-	public float getTouchDY(){
+
+	public float getTouchDY() {
 		return touchDY;
 	}
-	
+
 	public GWTInputMake(GWTGame gwtgame, Element root) {
 
 		this.game = gwtgame;
@@ -107,21 +107,18 @@ public class GWTInputMake extends InputMake {
 			public abstract void handleEvent(NativeEvent ev, float x, float y);
 		}
 
-		
 		abstract class MoveEventHandler extends XYEventHandler {
-			
+
 			private float lastX = -1, lastY = -1;
 
-	
-			
 			@Override
 			public void handleEvent(NativeEvent ev, float x, float y) {
 				if (lastX == -1) {
 					lastX = x;
 					lastY = y;
 				}
+
 				if (inDragSequence == wantDragSequence()) {
-	
 					if (isMouseLocked()) {
 						touchDX = getMovementX(ev);
 						touchDY = getMovementY(ev);
@@ -129,10 +126,11 @@ public class GWTInputMake extends InputMake {
 						touchDX = x - lastX;
 						touchDY = y - lastY;
 					}
-					dispatch(
-							new MouseMake.ButtonEvent(0, game.time(), x, y,
-									ev.getButton(), true), ev);
 				}
+
+				dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1,
+						false), ev);
+
 				lastX = x;
 				lastY = y;
 				lastMousePt.set(x, y);
@@ -152,6 +150,7 @@ public class GWTInputMake extends InputMake {
 		captureEvent(rootElement, "mousedown", new XYEventHandler() {
 			@Override
 			public void handleEvent(NativeEvent ev, float x, float y) {
+
 				inDragSequence = true;
 				int btn = getMouseButton(ev);
 				if (btn != -1) {
@@ -167,9 +166,10 @@ public class GWTInputMake extends InputMake {
 				if (inDragSequence) {
 					inDragSequence = false;
 					int btn = getMouseButton(ev);
-					if (btn != -1)
+					if (btn != -1){
 						dispatch(new MouseMake.ButtonEvent(0, game.time(), x,
 								y, btn, false), ev);
+					}
 				}
 				handleRequestsInUserEventContext();
 			}
@@ -221,7 +221,7 @@ public class GWTInputMake extends InputMake {
 				if (inTouchSequence) {
 					dispatch(toTouchEvents(TouchMake.Event.Kind.END, nevent),
 							nevent);
-					if (nevent.getTouches().length() == 0){
+					if (nevent.getTouches().length() == 0) {
 						inTouchSequence = false;
 					}
 				}
@@ -394,8 +394,9 @@ public class GWTInputMake extends InputMake {
 			event.setFlag(mods(nevent));
 			game.dispatchEvent(mouseEvents, event);
 		} finally {
-			if (event.isSet(Event.F_PREVENT_DEFAULT))
+			if (event.isSet(Event.F_PREVENT_DEFAULT)) {
 				nevent.preventDefault();
+			}
 		}
 	}
 

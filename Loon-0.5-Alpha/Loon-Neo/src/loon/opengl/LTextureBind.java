@@ -88,7 +88,7 @@ public class LTextureBind extends GLBase {
 	}
 
 	protected void bindTexture() {
-		GLUtils.bind(gl, curTexId);
+		GLUtils.bindTexture(gl, curTexId);
 	}
 
 	@Override

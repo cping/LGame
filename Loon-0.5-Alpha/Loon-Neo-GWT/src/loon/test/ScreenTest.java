@@ -10,7 +10,7 @@ import loon.utils.timer.LTimerContext;
 
 public class ScreenTest extends Screen{
 
-	LTexture tex = LTexture.createTexture("loon_logo.png");
+	//LTexture tex = LTexture.createTexture("loon_logo.png");
 	
 	public LTransition onTransition(){
 		return LTransition.newEmpty();
@@ -18,12 +18,12 @@ public class ScreenTest extends Screen{
 	
 	@Override
 	public void draw(GLEx g) {
-		g.draw(tex, 66, 66);
+	//	g.draw(tex, 66, 66);
 	}
 
 	@Override
 	public void onLoad() {
-
+		setBackground("back1.png");
 		
 	}
 

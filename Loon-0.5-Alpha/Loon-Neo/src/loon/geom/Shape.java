@@ -536,7 +536,7 @@ public abstract class Shape implements Serializable, XY {
 		return true;
 	}
 
-	public Shape prune() {
+	public Polygon prune() {
 		Polygon result = new Polygon();
 
 		for (int i = 0; i < getPointCount(); i++) {

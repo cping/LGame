@@ -3,14 +3,14 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.canvas.PixmapFloatImpl;
+import loon.canvas.PixmapFImpl;
 import loon.font.LFont;
 import loon.geom.Matrix4;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
-import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
@@ -19,9 +19,9 @@ import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class SpriteBatch extends PixmapFloatImpl {
+public class SpriteBatch extends PixmapFImpl {
 
-	public static enum SpriteEffects {
+    public static enum SpriteEffects {
 		None, FlipHorizontally, FlipVertically;
 	}
 
@@ -257,9 +257,9 @@ public class SpriteBatch extends PixmapFloatImpl {
 			throw new IllegalStateException(
 					"SpriteBatch.end must be called before begin.");
 		}
-		LSystem.mainEndDraw();
 		renderCalls = 0;
 		LSystem.base().graphics().gl.glDepthMask(false);
+		LSystem.mainEndDraw();
 		if (customShader != null) {
 			customShader.begin();
 		} else {
@@ -364,7 +364,7 @@ public class SpriteBatch extends PixmapFloatImpl {
 		}
 		int count = spritesInBatch * 6;
 		GL20 gl = LSystem.base().graphics().gl;
-		GLUtils.bind(gl, lastTexture);
+		GLUtils.bindTexture(gl, lastTexture);
 		int old = GLUtils.getBlendMode();
 		switch (lastBlendState) {
 		case Additive:
@@ -1613,25 +1613,10 @@ public class SpriteBatch extends PixmapFloatImpl {
 		this.idx = idx;
 	}
 
-	public void drawPoints(int[] x, int[] y, LColor c) {
-		int size = y.length;
-		float tmp = color;
-		setColor(c);
-		for (int i = 0; i < size; i++) {
-			drawPointImpl(x[i], y[i]);
-		}
-		setColor(tmp);
-	}
-
-	public void drawPoints(int[] x, int[] y) {
-		int size = y.length;
-		for (int i = 0; i < size; i++) {
-			drawPoint(x[i], y[i]);
-		}
-	}
-
 	public void drawPoint(int x, int y) {
+
 		drawPointImpl(x, y);
+
 	}
 
 	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
@@ -1643,11 +1628,11 @@ public class SpriteBatch extends PixmapFloatImpl {
 	}
 
 	public void drawOval(float x1, float y1, float width, float height) {
-		this.drawOvalImpl(x1, y1, width, height);
+		drawOvalImpl(x1, y1, width, height);
 	}
 
 	public void fillOval(float x1, float y1, float width, float height) {
-		this.fillOvalImpl(x1, y1, width, height);
+		fillOvalImpl(x1, y1, width, height);
 	}
 
 	public void drawArc(RectBox rect, float start, float end) {
@@ -1666,6 +1651,13 @@ public class SpriteBatch extends PixmapFloatImpl {
 
 	public void drawRect(float x, float y, float width, float height) {
 		drawRectImpl(x, y, width, height);
+
+	}
+
+	public final void drawRoundRect(float x, float y, float width,
+			float height, int radius) {
+		drawRoundRectImpl(x, y, width, height, radius, radius);
+
 	}
 
 	public final void fillRoundRect(float x, float y, float width,
@@ -1677,25 +1669,32 @@ public class SpriteBatch extends PixmapFloatImpl {
 		fillRectNative(x, y, width, height);
 	}
 
+	public void draw(Shape shape) {
+		draw(shape, 0, 0);
+	}
+
+	public void draw(Shape shape, float x, float y) {
+		drawShapeImpl(shape, x, y);
+	}
+
+	public void fill(Shape shape) {
+		fill(shape, 0, 0);
+	}
+
+	public void fill(Shape shape, float x, float y) {
+		fillShapeImpl(shape, x, y);
+	}
+
 	@Override
 	protected void drawPointNative(float x, float y, int skip) {
-		draw(colorTexture, x, y, skip, skip);
+		if (!inside(x, y)) {
+			draw(colorTexture, x, y, skip, skip);
+		}
 	}
 
 	@Override
 	protected void fillRectNative(float x, float y, float width, float height) {
-		GLEx gl = LSystem.base().display().GL();
-		if (gl.alltextures()) {
-			if (gl.running()) {
-				gl.fillRect(x, y, width, height);
-			} else {
-				gl.begin();
-				gl.fillRect(x, y, width, height);
-				gl.end();
-			}
-		} else {
-			draw(colorTexture, x, y, width, height);
-		}
+		draw(colorTexture, x, y, width, height);
 	}
 
 }

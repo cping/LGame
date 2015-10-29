@@ -182,7 +182,7 @@ public abstract class Graphics {
 			Canvas canvas = createCanvas(1, 1);
 			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width,
 					canvas.height);
-			colorTex = canvas.toTexture(LTexture.Format.UNMANAGED);
+			colorTex = canvas.toTexture(LTexture.Format.NEAREST);
 		}
 		return colorTex;
 	}
@@ -217,7 +217,7 @@ public abstract class Graphics {
 
 	public int createTexture(LTexture.Format config) {
 		int id = gl.glGenTexture();
-		GLUtils.bind(gl, id);
+		GLUtils.bindTexture(gl, id);
 		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 				config.magFilter);
 		int minFilter = mipmapify(config.minFilter, config.mipmaps);

@@ -888,7 +888,7 @@ public class SpriteCache implements LRelease {
 		}
 		drawing = false;
 		GL20 gl = LSystem.base().graphics().gl;
-		GLUtils.bind(gl, lastTexture);
+		GLUtils.bindTexture(gl, lastTexture);
 		int old = GLUtils.getBlendMode();
 		switch (lastBlendState) {
 		case Additive:

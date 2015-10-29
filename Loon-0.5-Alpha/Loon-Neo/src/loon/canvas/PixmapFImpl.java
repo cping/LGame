@@ -20,24 +20,38 @@
  */
 package loon.canvas;
 
-import loon.Director;
+import static loon.canvas.Limit.*;
+import loon.LSystem;
 import loon.geom.RectBox;
+import loon.geom.RectF;
+import loon.geom.Shape;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-public abstract class PixmapFloatImpl extends Director {
+public abstract class PixmapFImpl {
+
+	private RectF temp_rect = new RectF();
 
 	private int _skip = 3;
 
-	private RectBox _clip = new RectBox();
+	private RectF _clip = new RectF();
 
 	private float _translateX = 0, _translateY = 0;
 
 	private float _width, _height;
 
-	public PixmapFloatImpl(float tx, float ty, RectBox clip, float w,
-			float h, int skip) {
+	public PixmapFImpl(float tx, float ty, RectF clip, float w, float h,
+			int skip) {
 		setClipImpl(tx, ty, clip, w, h, skip);
+	}
+
+	public PixmapFImpl(float tx, float ty, RectBox clip, float w, float h,
+			int skip) {
+		setClipImpl(tx, ty, clip, w, h, skip);
+	}
+
+	protected void setClipImpl(float tx, float ty, RectF clip, float w, float h) {
+		this.setClipImpl(tx, ty, clip, w, h, _skip);
 	}
 
 	protected void setClipImpl(float tx, float ty, RectBox clip, float w,
@@ -49,10 +63,33 @@ public abstract class PixmapFloatImpl extends Director {
 			float h, int skip) {
 		this._translateX = tx;
 		this._translateY = ty;
-		this._clip.setBounds(clip);
+		this._clip.x = clip.x;
+		this._clip.y = clip.y;
+		this._clip.width = clip.width;
+		this._clip.height = clip.height;
 		this._width = w;
 		this._height = h;
 		this._skip = skip;
+		if (LSystem.isHTML5() && _skip < 12) {
+			_skip = 12;
+		} else if (_skip < 1) {
+			_skip = 1;
+		}
+	}
+
+	protected void setClipImpl(float tx, float ty, RectF clip, float w,
+			float h, int skip) {
+		this._translateX = tx;
+		this._translateY = ty;
+		this._clip.set(clip);
+		this._width = w;
+		this._height = h;
+		this._skip = skip;
+		if (LSystem.isHTML5() && _skip < 12) {
+			_skip = 12;
+		} else if (_skip < 1) {
+			_skip = 1;
+		}
 	}
 
 	protected void fillPolygonImpl(float[] xPoints, float[] yPoints, int nPoints) {
@@ -74,10 +111,11 @@ public abstract class PixmapFloatImpl extends Director {
 				yPointsCopy[i] += _translateY;
 			}
 		}
-		RectBox bounds = getBoundingBox(xPointsCopy, yPointsCopy, nPoints)
-				.getIntersection(_clip);
-		for (int x = bounds.x(); x < bounds.x + bounds.width; x += _skip) {
-			for (int y = bounds.y(); y < bounds.y + bounds.height; y += _skip) {
+		RectF bounds = RectF.getIntersection(
+				setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints),
+				_clip, temp_rect);
+		for (float x = bounds.x; x < bounds.x + bounds.width; x += _skip) {
+			for (float y = bounds.y; y < bounds.y + bounds.height; y += _skip) {
 				if (contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
 					drawPointImpl(x, y);
 				}
@@ -256,12 +294,17 @@ public abstract class PixmapFloatImpl extends Director {
 		if (arcAngle == 0) {
 			return;
 		}
+		if (arcAngle < 0) {
+			start = 360 - arcAngle;
+			arcAngle = 360 + arcAngle;
+		}
 		start %= 360;
 		if (start < 0) {
 			start += 360;
 		}
 		if (arcAngle % 360 == 0) {
-			arcAngle = 360;
+			drawOvalImpl(x, y, width, height);
+			return;
 		} else {
 			arcAngle %= 360;
 		}
@@ -276,8 +319,9 @@ public abstract class PixmapFloatImpl extends Director {
 		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle,
 				MathUtils.abs(arcAngle), centerX, centerY, x + _translateX - 1,
 				y + _translateY - 1, width + 2, height + 2);
-		final RectBox bounds = getBoundingBox(xPoints, yPoints, nPoints)
-				.getIntersection(_clip);
+		final RectF bounds = RectF.getIntersection(
+				setBoundingBox(temp_rect, xPoints, yPoints, nPoints), _clip,
+				temp_rect);
 		this.drawCircleImpl(x, y, width, height, false, new CircleUpdate() {
 			public void newPoint(float xLeft, float yTop, float xRight,
 					float yBottom) {
@@ -293,7 +337,7 @@ public abstract class PixmapFloatImpl extends Director {
 	}
 
 	protected void drawArcPointImpl(float[] xPoints, float[] yPoints,
-			int nPoints, RectBox bounds, float x, float y) {
+			int nPoints, RectF bounds, float x, float y) {
 		if (contains(xPoints, yPoints, nPoints, bounds, x, y)) {
 			drawPointImpl(x, y);
 		}
@@ -314,9 +358,11 @@ public abstract class PixmapFloatImpl extends Director {
 		}
 		if (arcAngle % 360 == 0) {
 			fillOvalImpl(x, y, width, height);
+			return;
 		} else {
 			arcAngle %= 360;
 		}
+		
 		final float startAngle = arcAngle > 0 ? start
 				: (start + arcAngle < 0 ? start + arcAngle + 360 : start
 						+ arcAngle);
@@ -328,7 +374,8 @@ public abstract class PixmapFloatImpl extends Director {
 		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle,
 				MathUtils.abs(arcAngle), centerX, centerY, x + _translateX - 1,
 				y + _translateY - 1, width + 2, height + 2);
-		final RectBox bounds = getBoundingBox(xPoints, yPoints, nPoints);
+		final RectF bounds = setBoundingBox(temp_rect, xPoints, yPoints,
+				nPoints);
 
 		this.drawCircleImpl(x, y, width, height, true, new CircleUpdate() {
 			public void newPoint(float xLeft, float yTop, float xRight,
@@ -344,7 +391,7 @@ public abstract class PixmapFloatImpl extends Director {
 	}
 
 	protected void drawArcImpl(float[] xPoints, float[] yPoints, int nPoints,
-			RectBox bounds, float xLeft, float xRight, float y) {
+			RectF bounds, float xLeft, float xRight, float y) {
 		if (y >= _clip.y && y < _clip.y + _clip.height) {
 			for (int x = (int) MathUtils.max(xLeft, _clip.x); x <= xRight; x += _skip) {
 				if (contains(xPoints, yPoints, nPoints, bounds, x, y)) {
@@ -360,7 +407,7 @@ public abstract class PixmapFloatImpl extends Director {
 		float b = height / 2;
 		float squareA = (width * width / 4);
 		float squareB = (height * height / 4);
-		float squareAB = round(width * width * height * height, 16L);
+		float squareAB = MathUtils.round(width * width * height * height, 16L);
 
 		x += _translateX;
 		y += _translateY;
@@ -389,7 +436,7 @@ public abstract class PixmapFloatImpl extends Director {
 			} else if (deltaC >= 0) {
 				currentY--;
 			} else {
-				int min = (int) MathUtils.min(
+				float min = MathUtils.min(
 						MathUtils.abs(deltaA),
 						MathUtils.min(MathUtils.abs(deltaB),
 								MathUtils.abs(deltaC)));
@@ -423,12 +470,52 @@ public abstract class PixmapFloatImpl extends Director {
 		}
 	}
 
+	protected void drawShapeImpl(Shape shape, float x1, float y1) {
+		if (shape == null) {
+			return;
+		}
+		final float[] points = shape.getPoints();
+		int size = points.length;
+		int len = size / 2;
+		final float[] xps = new float[len];
+		final float[] yps = new float[len];
+		for (int i = 0, j = 0; i < size; i += 2, j++) {
+			xps[j] = points[i] + x1;
+			yps[j] = points[i + 1] + y1;
+		}
+		drawPolylineImpl(xps, yps, len);
+		drawLineImpl(xps[len - 1], yps[len - 1], xps[0], yps[0]);
+	}
+
+	protected void fillShapeImpl(Shape shape, float x1, float y1) {
+		if (shape == null) {
+			return;
+		}
+		final float[] points = shape.getPoints();
+		int size = points.length;
+		int len = size / 2;
+		final float[] xps = new float[len];
+		final float[] yps = new float[len];
+		for (int i = 0, j = 0; i < size; i += 2, j++) {
+			xps[j] = points[i] + x1;
+			yps[j] = points[i + 1] + y1;
+		}
+		RectF bounds = RectF.getIntersection(
+				setBoundingBox(temp_rect, xps, yps, len), _clip, temp_rect);
+		for (float x = bounds.x; x < bounds.x + bounds.width; x += _skip) {
+			for (float y = bounds.y; y < bounds.y + bounds.height; y += _skip) {
+				if (contains(xps, yps, len, bounds, x, y)) {
+					drawPointNative(x, y, _skip);
+				}
+			}
+		}
+	}
+
 	protected boolean inside(float x, float y) {
 		return (x < _clip.x || x >= _clip.x + _clip.width || y < _clip.y || y >= _clip.y
 				+ _clip.height);
 	}
 
-	
 	protected void drawRectImpl(float x1, float y1, float w1, float h1) {
 		float tempX = x1;
 		float tempY = y1;
@@ -450,8 +537,8 @@ public abstract class PixmapFloatImpl extends Director {
 		drawLineImpl(tempHeight, tempHeight - 1, tempHeight, tempY + 1);
 	}
 
-	protected void drawRoundRectImpl(float x, float y, float width, float height,
-			float arcWidth, float arcHeight) {
+	protected void drawRoundRectImpl(float x, float y, float width,
+			float height, float arcWidth, float arcHeight) {
 		drawLineImpl(x + arcWidth / 2, y, x + width - arcWidth / 2, y);
 		drawLineImpl(x, y + arcHeight / 2, x, y + height - arcHeight / 2);
 		drawLineImpl(x + arcWidth / 2, y + height, x + width - arcWidth / 2, y
@@ -464,24 +551,50 @@ public abstract class PixmapFloatImpl extends Director {
 		drawArcImpl(x + width - arcWidth, y + height + -arcHeight, arcWidth,
 				arcHeight, 270, 90);
 	}
-	
-	protected void fillRoundRectImpl(float x, float y, float width, float height,
-			float arcWidth, float arcHeight) {
+
+	protected void fillRoundRectImpl(float x, float y, float width,
+			float height, float arcWidth, float arcHeight) {
 		fillRectNative(x + arcWidth / 2, y, width - arcWidth + 1, height);
-		fillRectNative(x, y + arcHeight / 2 - 1, arcWidth / 2, height - arcHeight);
-		fillRectNative(x + width - arcWidth / 2, y + arcHeight / 2 - 1, arcWidth / 2,
-				height - arcHeight);
+		fillRectNative(x, y + arcHeight / 2 - 1, arcWidth / 2, height
+				- arcHeight);
+		fillRectNative(x + width - arcWidth / 2, y + arcHeight / 2 - 1,
+				arcWidth / 2, height - arcHeight);
 
 		fillArcImpl(x, y, arcWidth - 1, arcHeight - 1, 90, 90);
 		fillArcImpl(x + width - arcWidth, y, arcWidth - 1, arcHeight - 1, 0, 90);
-		fillArcImpl(x, y + height + -arcHeight, arcWidth - 1, arcHeight - 1, 180,
-				90);
-		fillArcImpl(x + width - arcWidth, y + height + -arcHeight, arcWidth - 1,
-				arcHeight - 1, 270, 90);
+		fillArcImpl(x, y + height + -arcHeight, arcWidth - 1, arcHeight - 1,
+				180, 90);
+		fillArcImpl(x + width - arcWidth, y + height + -arcHeight,
+				arcWidth - 1, arcHeight - 1, 270, 90);
 	}
-	
-	protected void fillRoundRectImpl(float x, float y, float width, float height,
-			int radius) {
+
+	protected final void drawRoundRectImpl(float x, float y, float width,
+			float height, float radius) {
+		if (radius < 0) {
+			throw new IllegalArgumentException("radius > 0");
+		}
+		if (radius == 0) {
+			drawRectImpl(x, y, width, height);
+			return;
+		}
+		float mr = MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		drawLineImpl(x + radius, y, x + width - radius, y);
+		drawLineImpl(x, y + radius, x, y + height - radius);
+		drawLineImpl(x + width, y + radius, x + width, y + height - radius);
+		drawLineImpl(x + radius, y + height, x + width - radius, y + height);
+		float d = radius * 2;
+		drawArcImpl(x + width - d, y + height - d, d, d, 0, 90);
+		drawArcImpl(x, y + height - d, d, d, 90, 180);
+		drawArcImpl(x + width - d, y, d, d, 270, 360);
+		drawArcImpl(x, y, d, d, 180, 270);
+		return;
+	}
+
+	protected void fillRoundRectImpl(float x, float y, float width,
+			float height, float radius) {
 		if (radius < 0) {
 			throw new IllegalArgumentException("radius > 0");
 		}
@@ -489,7 +602,7 @@ public abstract class PixmapFloatImpl extends Director {
 			fillRectNative(x, y, width, height);
 			return;
 		}
-		int mr = (int) MathUtils.min(width, height) / 2;
+		float mr = MathUtils.min(width, height) / 2;
 		if (radius > mr) {
 			radius = mr;
 		}
@@ -504,7 +617,7 @@ public abstract class PixmapFloatImpl extends Director {
 		fillArcImpl(x + width - d, y, d, d, 270, 360);
 		fillArcImpl(x, y, d, d, 180, 270);
 	}
-	
+
 	protected void drawPointImpl(float x, float y) {
 		if (_skip > 7) {
 			int loc = _skip / 2;
@@ -516,8 +629,9 @@ public abstract class PixmapFloatImpl extends Director {
 
 	protected abstract void drawPointNative(float x, float y, int skip);
 
-	protected abstract void fillRectNative(float x, float y,float width,float height);
-	
+	protected abstract void fillRectNative(float x, float y, float width,
+			float height);
+
 	private interface CircleUpdate {
 		public void newPoint(float xLeft, float yTop, float xRight,
 				float yBottom);

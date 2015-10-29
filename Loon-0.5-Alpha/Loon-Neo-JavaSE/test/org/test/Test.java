@@ -78,7 +78,7 @@ remove(this);
 
 		public void onLoad() {
 
-			puspStage(newStage1(), StageSystem.flip());
+		//	puspStage(newStage1(), StageSystem.flip());
 
 		}
 
@@ -89,6 +89,7 @@ remove(this);
 
 		@Override
 		public void draw(GLEx g) {
+	
 			/*
 			 * if (text2 == null) { // Image image
 			 * =Image.createImage("loon_wbar.png");

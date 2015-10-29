@@ -187,11 +187,11 @@ public class ShaderProgram implements LRelease {
 	private boolean invalidated;
 
 	private final int[] params = new int[2];
-	
+
 	private final int[] length = new int[1];
-	
+
 	private final int[] size = new int[1];
-	
+
 	private final int[] type = new int[1];
 	
 	private byte[] namebytes;
@@ -621,14 +621,28 @@ public class ShaderProgram implements LRelease {
 	}
 
 	public void begin() {
-		GL20 gl = LSystem.base().graphics().gl;
-		checkManaged();
-		gl.glUseProgram(program);
+			GL20 gl = LSystem.base().graphics().gl;
+			checkManaged();
+			gl.glUseProgram(program);
 	}
-
+	
+	public void glUseProgramBind() {
+			GL20 gl = LSystem.base().graphics().gl;
+			gl.glUseProgram(program);
+	}
+	
+	public void glUseProgramUnBind() {
+		if (!LSystem.mainDrawRunning()) {
+			GL20 gl = LSystem.base().graphics().gl;
+			gl.glUseProgram(0);
+		}
+	}
+	
 	public void end() {
-		GL20 gl = LSystem.base().graphics().gl;
-		gl.glUseProgram(0);
+		if (!LSystem.mainDrawRunning()) {
+			GL20 gl = LSystem.base().graphics().gl;
+			gl.glUseProgram(0);
+		}
 	}
 
 	public void close() {

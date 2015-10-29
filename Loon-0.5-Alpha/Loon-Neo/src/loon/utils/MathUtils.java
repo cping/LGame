@@ -24,6 +24,14 @@ import loon.LSystem;
 import loon.geom.RectBox;
 
 public class MathUtils {
+
+	private static final int[] SHIFT = { 0, 1144, 2289, 3435, 4583, 5734, 6888,
+			8047, 9210, 10380, 11556, 12739, 13930, 15130, 16340, 17560, 18792,
+			20036, 21294, 22566, 23853, 25157, 26478, 27818, 29179, 30560,
+			31964, 33392, 34846, 36327, 37837, 39378, 40951, 42560, 44205,
+			45889, 47615, 49385, 51202, 53070, 54991, 56970, 59009, 61113,
+			63287, 65536 };
+
 	public static float log10(float v) {
 		return (float) Math.log10(v);
 	}
@@ -918,4 +926,59 @@ public class MathUtils {
 		}
 		return buf.toString();
 	}
+	
+
+	public final static int round(int div1, int div2) {
+		final int remainder = div1 % div2;
+		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
+			return div1 / div2;
+		} else if (div1 * div2 < 0) {
+			return div1 / div2 - 1;
+		} else {
+			return div1 / div2 + 1;
+		}
+	}
+
+	public final static float round(float div1, float div2) {
+		final float remainder = div1 % div2;
+		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
+			return div1 / div2;
+		} else if (div1 * div2 < 0) {
+			return div1 / div2 - 1;
+		} else {
+			return div1 / div2 + 1;
+		}
+	}
+
+	public final static long round(long div1, long div2) {
+		final long remainder = div1 % div2;
+		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
+			return div1 / div2;
+		} else if (div1 * div2 < 0) {
+			return div1 / div2 - 1;
+		} else {
+			return div1 / div2 + 1;
+		}
+	}
+
+	public final static int toShift(int angle) {
+		if (angle <= 45) {
+			return SHIFT[angle];
+		} else if (angle >= 315) {
+			return -SHIFT[360 - angle];
+		} else if (angle >= 135 && angle <= 180) {
+			return -SHIFT[180 - angle];
+		} else if (angle >= 180 && angle <= 225) {
+			return SHIFT[angle - 180];
+		} else if (angle >= 45 && angle <= 90) {
+			return SHIFT[90 - angle];
+		} else if (angle >= 90 && angle <= 135) {
+			return -SHIFT[angle - 90];
+		} else if (angle >= 225 && angle <= 270) {
+			return SHIFT[270 - angle];
+		} else {
+			return -SHIFT[angle - 270];
+		}
+	}
+
 }

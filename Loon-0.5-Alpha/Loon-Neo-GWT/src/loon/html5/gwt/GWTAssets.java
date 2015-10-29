@@ -27,6 +27,7 @@ import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.html5.gwt.preloader.Blob;
 import loon.jni.XDomainRequest;
 import loon.utils.ObjectMap;
 import loon.utils.Scale;
@@ -106,9 +107,22 @@ public class GWTAssets extends Assets {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
-		String text = gwtFile.readString();
-		return text == null ? gwtFile.preloader.texts.get(LSystem
-				.getFileName(path)) : text;
+		if (gwtFile.preloader.isText(path)) {
+			return gwtFile.readString();
+		}
+		ObjectMap<String, String> res = gwtFile.preloader.texts;
+		String tmp = res.get(path = gwtFile.path());
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (tmp == null) {
+			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+		}
+		if (tmp == null) {
+			game.log().warn("file " + path + " not found");
+		}
+		return tmp;
 	}
 
 	@Override
@@ -125,10 +139,32 @@ public class GWTAssets extends Assets {
 				doXdr(path, result);
 			} else {
 				GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
-				try {
-					result.succeed(gwtFile.readString());
-				} catch (Exception ex) {
-					result.succeed(null);
+				if (gwtFile.preloader.isText(path)) {
+					try {
+						result.succeed(gwtFile.readString());
+					} catch (Exception ex) {
+						result.succeed(null);
+					}
+				} else {
+					ObjectMap<String, String> res = gwtFile.preloader.texts;
+					String tmp = res.get(path = gwtFile.path());
+					if (tmp == null
+							&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+						tmp = res
+								.get(LSystem.getFileName(path = gwtFile.path()));
+					}
+					if (tmp == null) {
+						tmp = res.get(LSystem
+								.getFileName(path = (GWT_DEF_RES + path)));
+					}
+					if (tmp == null) {
+						game.log().warn("file " + path + " not found");
+					}
+					try {
+						result.succeed(tmp);
+					} catch (Exception ex) {
+						result.succeed(null);
+					}
 				}
 			}
 		}
@@ -142,7 +178,22 @@ public class GWTAssets extends Assets {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
-		return gwtFile.readBytes();
+		if (gwtFile.preloader.isBinary(path)) {
+			return gwtFile.readBytes();
+		}
+		ObjectMap<String, Blob> res = gwtFile.preloader.binaries;
+		Blob tmp = res.get(path = gwtFile.path());
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (tmp == null) {
+			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+		}
+		if (tmp == null) {
+			game.log().warn("file " + path + " not found");
+		}
+		return Loon.self.resources.internal(path).readBytes();
 	}
 
 	@Override
@@ -278,6 +329,10 @@ public class GWTAssets extends Assets {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader files = Loon.self.resources.internal(path);
+		if (files.preloader.isImage(path)) {
+			return new GWTImage(game.graphics(), scale,
+					files.preloader.images.get(path), path);
+		}
 		ObjectMap<String, ImageElement> res = files.preloader.images;
 		ImageElement tmp = res.get(path = files.path());
 		if (tmp == null
@@ -300,6 +355,9 @@ public class GWTAssets extends Assets {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader files = Loon.self.resources.internal(path);
+		if (files.preloader.isImage(path)) {
+			return files.preloader.images.get(path);
+		}
 		ObjectMap<String, ImageElement> res = files.preloader.images;
 		ImageElement tmp = res.get(path = files.path());
 		if (tmp == null

@@ -20,6 +20,7 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.opengl.Mesh.VertexDataType;
 import loon.opengl.VertexAttributes.Usage;
 import loon.utils.ObjectMap;
@@ -28,7 +29,7 @@ public class MeshDefault {
 
 	private final ObjectMap<Integer, Mesh> meshLazy = new ObjectMap<Integer, Mesh>(
 			10);
-	
+
 	public Mesh getMesh(final int size) {
 		Mesh mesh = meshLazy.get(size);
 		if (mesh == null) {
@@ -56,12 +57,19 @@ public class MeshDefault {
 		return mesh;
 	}
 
-	public void post(final int size, ShaderProgram shader,
-			float[] vertices, int vertexIdx, int count) {
+	public void post(final int size, ShaderProgram shader, float[] vertices,
+			int vertexIdx, int count) {
+		boolean running = LSystem.mainDrawRunning();
+		if (!running) {
+			shader.glUseProgramBind();
+		}
 		Mesh mesh = getMesh(size);
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
 		mesh.render(shader, GL20.GL_TRIANGLES, 0, count);
+		if (!running) {
+			shader.glUseProgramUnBind();
+		}
 	}
 }

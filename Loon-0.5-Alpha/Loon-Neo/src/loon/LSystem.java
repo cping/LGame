@@ -61,13 +61,7 @@ public class LSystem {
 
 	// 文件分割符
 	final static public String FS = System.getProperty("file.separator", "\\");
-
-	public static boolean isHTML5() {
-		if (_base == null) {
-			return false;
-		}
-		return _base.type() == LGame.Type.HTML5;
-	}
+	
 
 	public static String getFileName(String name) {
 		if (name == null) {
@@ -102,6 +96,18 @@ public class LSystem {
 		} else {
 			return name.substring(index + 1);
 		}
+	}
+
+	public static boolean mainDrawRunning() {
+		if (_base == null) {
+			return false;
+		}
+		Display game = _base.display();
+		if (game != null) {
+			GLEx gl = game.GL();
+			return gl.running();
+		}
+		return false;
 	}
 
 	public static void mainBeginDraw() {
@@ -458,9 +464,16 @@ public class LSystem {
 		return _base;
 	}
 
+	private static boolean _USE_HTML5 = false;
+	
+	public static boolean isHTML5() {
+			return _USE_HTML5;
+	}
+	
 	protected static void init(LGame game) {
 		_base = game;
 		_process = new LProcess(game);
+		_USE_HTML5 =  (_base.type() == LGame.Type.HTML5);
 		_base.log().debug("The Loon Game Engine is Begin");
 	}
 
