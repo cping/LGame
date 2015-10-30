@@ -110,7 +110,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		this.font = LFont.getDefaultFont();
 		this.tmpSave.font = this.font;
-		this.useAlltextures = true;//LSystem.isHTML5();
+		this.useAlltextures = LSystem.isHTML5();
 		this.tmpSave.alltextures = this.useAlltextures;
 	}
 
@@ -336,7 +336,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		int x = (int) (x1 * LSystem.getScaleWidth());
 		int y = (int) (y1 * LSystem.getScaleHeight());
-		int width = (int) (w1 * LSystem.getScaleHeight());
+		int width = (int) (w1 * LSystem.getScaleWidth());
 		int height = (int) (h1 * LSystem.getScaleHeight());
 		batch.flush();
 		RectBox r = pushScissorState(x, target.height() - y - height, width,

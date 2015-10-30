@@ -37,10 +37,12 @@ import org.robovm.apple.coregraphics.CGRect;
 import org.robovm.apple.foundation.NSTimer;
 import org.robovm.apple.foundation.NSURL;
 import org.robovm.apple.glkit.GLKViewDrawableColorFormat;
+import org.robovm.apple.glkit.GLKViewDrawableDepthFormat;
+import org.robovm.apple.glkit.GLKViewDrawableMultisample;
+import org.robovm.apple.glkit.GLKViewDrawableStencilFormat;
 import org.robovm.apple.opengles.EAGLContext;
 import org.robovm.apple.uikit.UIApplication;
 import org.robovm.apple.uikit.UIDevice;
-import org.robovm.apple.uikit.UIInterfaceOrientationMask;
 import org.robovm.objc.block.VoidBlock1;
 
 public class RoboVMGame extends LGame {
@@ -56,10 +58,28 @@ public class RoboVMGame extends LGame {
 
 	private final RoboVMLog log = new RoboVMLog();
 	private final Json json = new JsonImpl();
-	
+
 	public static class IOSSetting extends LSetting {
 
-		public UIInterfaceOrientationMask orients = UIInterfaceOrientationMask.Portrait;
+		public float displayScaleLargeScreenIfRetina = 1.0f;
+
+		public float displayScaleSmallScreenIfRetina = 1.0f;
+
+		public float displayScaleLargeScreenIfNonRetina = 1.0f;
+
+		public float displayScaleSmallScreenIfNonRetina = 1.0f;
+
+		public boolean orientationPortrait = true;
+
+		public boolean orientationLandscape = true;
+
+		public GLKViewDrawableColorFormat colorFormat = GLKViewDrawableColorFormat.RGB565;
+
+		public GLKViewDrawableDepthFormat depthFormat = GLKViewDrawableDepthFormat._16;
+
+		public GLKViewDrawableStencilFormat stencilFormat = GLKViewDrawableStencilFormat.None;
+
+		public GLKViewDrawableMultisample multisample = GLKViewDrawableMultisample.None;
 
 		public boolean iPadLikePhone = false;
 
@@ -93,8 +113,8 @@ public class RoboVMGame extends LGame {
 	private final RoboVMInputMake input;
 	private final RoboVMSave save;
 
-	protected RoboVMGame(IOSSetting config, CGRect initBounds) {
-		super(config);
+	protected RoboVMGame(Loon game, IOSSetting config, CGRect initBounds) {
+		super(config, game);
 		this.config = config;
 		this.assets = new RoboVMAssets(this);
 		this.graphics = new RoboVMGraphics(this, initBounds);
@@ -165,7 +185,7 @@ public class RoboVMGame extends LGame {
 	}
 
 	void willEnterForeground() {
-		if (!paused){
+		if (!paused) {
 			return;
 		}
 		paused = false;
@@ -177,7 +197,7 @@ public class RoboVMGame extends LGame {
 	}
 
 	void doEnterBackground() {
-		if (paused){
+		if (paused) {
 			return;
 		}
 		paused = true;

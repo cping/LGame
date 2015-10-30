@@ -39,8 +39,12 @@ public abstract class Graphics {
 
 	protected final LGame game;
 	protected final Dimension viewSizeM = new Dimension();
-	protected Scale scale;
+	protected Scale scale = null;
 	protected int viewPixelWidth, viewPixelHeight;
+
+	private Affine2f lastAffine = null;
+	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
+	private Matrix4 transformMatrix = null, projectionMatrix = null;
 
 	// 创建一个半永久的纹理，用以批量进行颜色渲染
 	private static LTexture colorTex;
@@ -78,11 +82,14 @@ public abstract class Graphics {
 		}
 	};
 
-	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
-
-	private Matrix4 transformMatrix;
-
-	private Matrix4 projectionMatrix;
+	/**
+	 * 返回一个缩放比例，用以让当前设备加载的资源按照此比例进行资源缩放
+	 * 
+	 * @return
+	 */
+	public Scale scale() {
+		return scale;
+	}
 
 	public void setTransformMatrix(Matrix4 t) {
 		this.transformMatrix = t;
@@ -99,41 +106,44 @@ public abstract class Graphics {
 		return transformMatrix;
 	}
 
-	private Affine2f lastAffine = null;
-
 	public Matrix4 getProjectionMatrix() {
+		Display display = game.display();
 		if (projectionMatrix == null) {
 			matrixsStack.add(projectionMatrix = new Matrix4());
 			projectionMatrix.setToOrtho2D(0, 0, LSystem.viewSize.getWidth(),
 					LSystem.viewSize.getHeight());
-		} else if (LSystem.base().display() != null
-				&& !LSystem.base().display().GL().tx().equals(lastAffine)) {
-			lastAffine = LSystem.base().display().GL().tx().cpy();
-			LSystem.viewSize.getMatrix().mul(projectionMatrix);
+		} else if (display != null && !display.GL().tx().equals(lastAffine)) {
+			lastAffine = display.GL().tx();
 			projectionMatrix = projectionMatrix.newCombine(lastAffine);
-
+			if (LSystem.isScaling()
+					&& ((lastAffine.tx != 0) || (lastAffine.ty != 0))) {
+				LSetting setting = game.setting;
+				projectionMatrix.scale(setting.width / setting.width_zoom,
+						setting.height / setting.height_zoom, 0f);
+			}
 		}
 		return projectionMatrix;
 	}
 
+	private boolean saved;
+
 	public void save() {
-		if (projectionMatrix == null) {
+		if (saved) {
 			return;
 		}
-		matrixsStack.add(projectionMatrix = projectionMatrix.cpy());
+
+		if (projectionMatrix != null) {
+			matrixsStack.add(projectionMatrix = projectionMatrix.cpy());
+			saved = true;
+		}
 	}
 
 	public void restore() {
+		if (!saved) {
+			return;
+		}
 		projectionMatrix = matrixsStack.pop();
-	}
-
-	/**
-	 * 返回一个缩放比例，用以让当前设备按照此比例进行资源缩放
-	 * 
-	 * @return
-	 */
-	public Scale scale() {
-		return scale;
+		saved = false;
 	}
 
 	public abstract Dimension screenSize();
@@ -204,8 +214,12 @@ public abstract class Graphics {
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
 		if (!LSystem.LOCK_SCREEN) {
+			LSystem.viewSize.setSize(viewWidth, viewHeight);
+			if (projectionMatrix != null) {
+				LSystem.viewSize.getMatrix().mul(projectionMatrix);
+			}
 			this.scale = scale;
-			this.viewPixelWidth = viewWidth ;
+			this.viewPixelWidth = viewWidth;
 			this.viewPixelHeight = viewHeight;
 			this.viewSizeM.width = scale.invScaled(viewPixelWidth);
 			this.viewSizeM.height = scale.invScaled(viewPixelHeight);

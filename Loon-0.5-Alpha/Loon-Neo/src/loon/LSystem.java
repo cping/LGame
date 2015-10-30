@@ -114,7 +114,18 @@ public class LSystem {
 
 	static LProcess _process;
 
+	static Platform _platform;
+
+	public static Platform platform() {
+		return _platform;
+	}
+
 	public static LGame base() {
+		if (_base != null) {
+			return _base;
+		} else if (_platform != null) {
+			_base = _platform.getGame();
+		}
 		return _base;
 	}
 

@@ -62,6 +62,8 @@ public class LSetting {
 		this.fps = setting.fps;
 		this.width = setting.width;
 		this.height = setting.height;
+		this.width_zoom = setting.width_zoom;
+		this.height_zoom = setting.height_zoom;
 		this.fullscreen = setting.fullscreen;
 		this.emulateTouch = setting.emulateTouch;
 		this.pivotKey = setting.pivotKey;

@@ -20,8 +20,10 @@
  */
 package loon.html5.gwt;
 
+import loon.LGame;
 import loon.LSetting;
 import loon.LazyLoading;
+import loon.Platform;
 import loon.html5.gwt.GWTGame.Config;
 import loon.html5.gwt.soundmanager2.SoundManager;
 import loon.html5.gwt.preloader.Preloader;
@@ -34,6 +36,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -43,7 +46,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public abstract class Loon implements EntryPoint, LazyLoading {
+public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	public interface LoadingListener {
 
@@ -201,7 +204,7 @@ public abstract class Loon implements EntryPoint, LazyLoading {
 		return this.game = new GWTGame(this, root, (Config) this.setting);
 	}
 
-	protected GWTGame getGame() {
+	public LGame getGame() {
 		return game;
 	}
 
@@ -216,5 +219,30 @@ public abstract class Loon implements EntryPoint, LazyLoading {
 		this.setting = s;
 		this.mainData = data;
 	}
+
+	public int getContainerWidth() {
+		return Window.getClientWidth();
+	}
+
+	public int getContainerHeight() {
+		return Window.getClientHeight();
+	}
+
+	public Orientation getOrientation() {
+		if (getContainerHeight() > getContainerWidth()) {
+			return Orientation.Portrait;
+		} else {
+			return Orientation.Landscape;
+		}
+	}
+	
+	public void close() {
+		closeImpl();
+	}
+
+	private static native void closeImpl()
+	/*-{
+		$wnd.close();
+	}-*/;
 
 }

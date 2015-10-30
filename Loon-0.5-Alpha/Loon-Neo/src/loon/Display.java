@@ -223,6 +223,7 @@ public class Display extends LSystemView {
 
 		glEx.saveTx();
 		glEx.begin();
+
 		glEx.reset(cred, cgreen, cblue, calpha);
 		try {
 			process.load();

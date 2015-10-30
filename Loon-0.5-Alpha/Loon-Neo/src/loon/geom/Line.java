@@ -1,8 +1,5 @@
-package loon.geom;
-
 /**
- * 
- * Copyright 2008 - 2011
+ * Copyright 2008 - 2015 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,8 +16,10 @@ package loon.geom;
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.1
+ * @version 0.5
  */
+package loon.geom;
+
 public class Line extends Shape {
 	/**
 	 * 

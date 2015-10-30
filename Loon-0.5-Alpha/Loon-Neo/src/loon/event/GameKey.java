@@ -20,7 +20,6 @@
  */
 package loon.event;
 
-
 public class GameKey {
 
 	int type;

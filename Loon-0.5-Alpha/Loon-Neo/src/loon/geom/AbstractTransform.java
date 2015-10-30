@@ -22,132 +22,132 @@ package loon.geom;
 
 
 /**
- * Implements some code shared by the various {@link Transform} implementations.
+ * 一个抽象类，用来辅助实现Transform转换功能，提供必要的接口
  */
 public abstract class AbstractTransform implements Transform
 {
 	public Object tag;
 	
-    @Override // from Transform
+    @Override 
     public Vector2f scale () {
         return new Vector2f(scaleX(), scaleY());
     }
 
-    @Override // from Transform
+    @Override 
     public Vector2f translation () {
         return new Vector2f(tx(), ty());
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setUniformScale (float scale) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setScale (float scaleX, float scaleY) {
         setScaleX(scaleX);
         setScaleY(scaleY);
         return this;
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setScaleX (float scaleX) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setScaleY (float scaleY) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setRotation (float angle) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setTranslation (float tx, float ty) {
         setTx(tx);
         setTy(ty);
         return this;
     }
 
-    @Override // from Transform
+    @Override 
     public Transform uniformScale (float scale) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform scale (float scaleX, float scaleY) {
         scaleX(scaleX);
         scaleY(scaleY);
         return this;
     }
 
-    @Override // from Transform
+    @Override 
     public Transform scaleX (float scaleX) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform scaleY (float scaleY) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform rotate (float angle) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform translate (float tx, float ty) {
         translateX(tx);
         translateY(ty);
         return this;
     }
 
-    @Override // from Transform
+    @Override 
     public Transform translateX (float tx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform translateY (float ty) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform shear (float sx, float sy) {
         shearX(sx);
         shearY(sy);
         return this;
     }
 
-    @Override // from Transform
+    @Override 
     public Transform shearX (float sx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform shearY (float sy) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setTx (float tx) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setTy (float ty) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public Transform setTransform (float m00, float m01, float m10, float m11, float tx, float ty) {
         throw new UnsupportedOperationException();
     }
 
-    @Override // from Transform
+    @Override 
     public abstract Transform cpy ();
 }

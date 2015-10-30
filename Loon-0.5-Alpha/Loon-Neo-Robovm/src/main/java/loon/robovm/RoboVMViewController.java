@@ -43,10 +43,14 @@ public class RoboVMViewController extends GLKViewController implements
 
 	public final RoboVMGame game;
 
-	public RoboVMViewController(CGRect bounds, RoboVMGame.IOSSetting config) {
+	private final Loon plat;
+
+	public RoboVMViewController(Loon base, CGRect bounds,
+			RoboVMGame.IOSSetting config) {
 		EAGLContext ctx = new EAGLContext(EAGLRenderingAPI.OpenGLES2);
 		EAGLContext.setCurrentContext(ctx);
-		game = new RoboVMGame(config, bounds);
+		plat = base;
+		game = new RoboVMGame(base, config, bounds);
 		view = new GLKView(bounds, ctx) {
 			@Method(selector = "touchesBegan:withEvent:")
 			public void touchesBegan(NSSet<UITouch> touches, UIEvent event) {
@@ -68,8 +72,13 @@ public class RoboVMViewController extends GLKViewController implements
 				game.input().onTouchesMoved(touches, event);
 			}
 		};
-		view.setMultipleTouchEnabled(true);
+		view.setDelegate(this);
 		view.setDrawableColorFormat(game.config.glBufferFormat);
+		view.setDrawableDepthFormat(config.depthFormat);
+		view.setDrawableStencilFormat(config.stencilFormat);
+		view.setDrawableMultisample(config.multisample);
+		view.setMultipleTouchEnabled(true);
+
 		setView(view);
 		setDelegate(this);
 		setPreferredFramesPerSecond(config.fps);
@@ -83,10 +92,9 @@ public class RoboVMViewController extends GLKViewController implements
 
 	@Override
 	public void willPause(GLKViewController self, boolean paused) {
-		if (paused){
+		if (paused) {
 			game.doEnterBackground();
-		}
-		else {
+		} else {
 			view.bindDrawable();
 			game.willEnterForeground();
 		}
@@ -117,13 +125,23 @@ public class RoboVMViewController extends GLKViewController implements
 	// from ViewController
 	public void didRotate(UIInterfaceOrientation fromOrient) {
 		super.didRotate(fromOrient);
-		game.graphics().setSize(getView().getBounds());
+		CGRect bounds = plat.getBounds(this);
+		game.graphics().setSize(bounds);
 		game.orient.emit(new RoboVMOrientEvent.DidRotate(fromOrient));
 	}
 
 	@Override
 	public UIInterfaceOrientationMask getSupportedInterfaceOrientations() {
-		return game.config.orients;
+		long mask = 0;
+		if (game.config.orientationLandscape) {
+			mask |= ((1 << UIInterfaceOrientation.LandscapeLeft.value()) | (1 << UIInterfaceOrientation.LandscapeRight
+					.value()));
+		}
+		if (game.config.orientationPortrait) {
+			mask |= ((1 << UIInterfaceOrientation.Portrait.value()) | (1 << UIInterfaceOrientation.PortraitUpsideDown
+					.value()));
+		}
+		return new UIInterfaceOrientationMask(mask);
 	}
 
 	@Override
@@ -133,7 +151,13 @@ public class RoboVMViewController extends GLKViewController implements
 
 	public boolean shouldAutorotateToInterfaceOrientation(
 			UIInterfaceOrientation orientation) {
-		return true; 
+		switch (orientation) {
+		case LandscapeLeft:
+		case LandscapeRight:
+			return game.config.orientationLandscape;
+		default:
+			return game.config.orientationPortrait;
+		}
 	}
 
 	@Override

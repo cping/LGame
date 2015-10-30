@@ -24,13 +24,14 @@ import loon.event.InputMake;
 import loon.utils.reply.Act;
 
 /*
- * 这类为最主要的游戏功能类集合对象，其中涵盖了Loon的基础对象实例。
+ * 此类为最主要的游戏功能类集合对象，其中涵盖了Loon的基础对象实例。
  */
 public abstract class LGame {
 
 	public Act<Error> errors = Act.create();
 
-	public LGame(LSetting config) {
+	public LGame(LSetting config, Platform plat) {
+		LSystem._platform = plat;
 		if (config == null) {
 			config = new LSetting();
 		}
@@ -56,7 +57,6 @@ public abstract class LGame {
 		}
 		setting.fontName = fontName;
 	}
-
 
 	public static enum Type {
 		JAVASE, ANDROID, IOS, WP, HTML5, STUB
@@ -93,7 +93,7 @@ public abstract class LGame {
 	public void initProcess() {
 		LSystem.initProcess(this);
 	}
-	
+
 	/**
 	 * 由于GWT不支持真实的反射，而完全模拟反射需要耗费大量资源，精确反射又难以控制用户具体使用的类，所以统一放弃外部反射方法，
 	 * 不让用户有机会使用自定义的类操作。
@@ -151,7 +151,6 @@ public abstract class LGame {
 		return display;
 	}*/
 
-	
 	public void reportError(String message, Throwable cause) {
 		errors.emit(new Error(message, cause));
 		log().warn(message, cause);

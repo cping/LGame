@@ -22,63 +22,51 @@ package loon.javase;
 
 import org.lwjgl.opengl.Display;
 
+import loon.LGame;
 import loon.LSetting;
 import loon.LazyLoading;
-import loon.jni.NativeSupport;
+import loon.Platform;
 
-public class Loon extends JavaSEGame{
-	
+public class Loon implements Platform {
+
+	private JavaSEGame game;
+
 	public Loon(LSetting config) {
-		super(config);
-	}
-
-	@Override
-	public void setTitle(String title) {
-		Display.setTitle(title);
+		this.game = new JavaSEGame(this, config);
 	}
 
 	public static void register(LSetting setting, LazyLoading.Data lazy) {
-		Loon game = new Loon(setting);
-		game.register(lazy.onScreen());
-		game.reset();
-	}
-	
-	public void reset() {
-		boolean wasActive = Display.isActive();
-		while (!Display.isCloseRequested()) {
-			boolean newActive = Display.isActive();
-			if (wasActive != newActive) {
-				status.emit(wasActive ? Status.PAUSE : Status.RESUME);
-				wasActive = newActive;
-			}
-			((JavaSELwjglGraphics) graphics()).checkScaleFactor();
-			if (newActive || !setting.truePause) {
-				processFrame();
-			}
-			Display.update();
-			Display.sync(setting.fps);
-		}
-		shutdown();
+		Loon plat = new Loon(setting);
+		plat.game.register(lazy.onScreen());
+		plat.game.reset();
 	}
 
 	@Override
-	protected void preInit() {
-		try {
-			NativeSupport.loadJNI("lwjgl");
-			NativeSupport.loadJNI("lplus");
-		} catch (Throwable exc) {
-			exc.printStackTrace();
+	public int getContainerWidth() {
+		return Display.getWidth();
+	}
+
+	@Override
+	public int getContainerHeight() {
+		return Display.getHeight();
+	}
+
+	@Override
+	public void close() {
+		System.exit(-1);
+	}
+
+	@Override
+	public Orientation getOrientation() {
+		if (getContainerHeight() > getContainerWidth()) {
+			return Orientation.Portrait;
+		} else {
+			return Orientation.Landscape;
 		}
 	}
 
-	@Override
-	protected JavaSEGraphics createGraphics() {
-		return new JavaSELwjglGraphics(this);
-	}
-
-	@Override
-	protected JavaSEInputMake createInput() {
-		return new JavaSELwjglInputMake(this);
+	public LGame getGame() {
+		return game;
 	}
 
 }

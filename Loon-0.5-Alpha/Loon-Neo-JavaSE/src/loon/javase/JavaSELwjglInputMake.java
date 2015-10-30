@@ -39,8 +39,8 @@ public class JavaSELwjglInputMake extends JavaSEInputMake {
 
 	private JFrame frame;
 
-	public JavaSELwjglInputMake(Loon loon) {
-		super(loon);
+	public JavaSELwjglInputMake(JavaSEGame game) {
+		super(game);
 	}
 
 	@Override

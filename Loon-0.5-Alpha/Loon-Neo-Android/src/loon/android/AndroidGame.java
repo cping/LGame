@@ -91,9 +91,9 @@ public class AndroidGame extends LGame {
 	protected final Json json;
 	protected final long start = System.nanoTime();
 
-	public AndroidGame(Loon activity, LSetting config) {
-		super(config);
-		this.activity = activity;
+	public AndroidGame(Loon game, LSetting config) {
+		super(config, game);
+		this.activity = game;
 		this.log = new AndroidLog(config.appName);
 		this.syn = new AndroidAsyn(log, frame, activity) {
 			@Override

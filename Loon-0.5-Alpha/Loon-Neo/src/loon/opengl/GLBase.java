@@ -22,10 +22,6 @@ package loon.opengl;
 
 import loon.LRelease;
 
-/**
- * A batch manages the delivery of groups of drawing calls to the GPU. It is
- * usually a combination of a {@link GLProgram} and one or more buffers.
- */
 public abstract class GLBase implements LRelease {
 
 	public boolean begun; 
@@ -46,12 +42,6 @@ public abstract class GLBase implements LRelease {
 		begun = true;
 	}
 
-	/**
-	 * Sends any accumulated drawing calls to the GPU. Depending on the nature
-	 * of the batch, this may be necessary before certain state changes (like
-	 * switching to a new texture). This should be a NOOP if there's nothing to
-	 * flush.
-	 */
 	public void flush() {
 		if (!begun) {
 			throw new IllegalStateException(getClass().getSimpleName()
@@ -59,11 +49,6 @@ public abstract class GLBase implements LRelease {
 		}
 	}
 
-	/**
-	 * Must be called when one is done using this batch to accumulate and send
-	 * drawing commands. The default implementation calls {@link #flush} and
-	 * marks this batch as inactive.
-	 */
 	public void end() {
 		if (!begun){
 			throw new IllegalStateException(getClass().getSimpleName()
@@ -79,10 +64,6 @@ public abstract class GLBase implements LRelease {
 		}
 	}
 
-	/**
-	 * Releases any GPU resources retained by this batch. This should be called
-	 * when the batch will never again be used.
-	 */
 	@Override
 	public void close() {
 		if (begun){

@@ -205,11 +205,12 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 		try {
 			DisplayMode mode = Display.getDisplayMode();
 			if (fullscreen == Display.isFullscreen()
-					&& mode.getWidth() == width && mode.getHeight() == height)
+					&& mode.getWidth() == width && mode.getHeight() == height){
 				return;
-
-			if (!fullscreen)
+			}
+			if (!fullscreen){
 				mode = new DisplayMode(width, height);
+			}
 			else {
 				DisplayMode matching = null;
 				for (DisplayMode dm : Display.getAvailableDisplayModes()) {

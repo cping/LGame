@@ -50,13 +50,13 @@ public class GWTGame extends LGame {
 		public boolean transparentCanvas = false;
 
 		public boolean antiAliasing = true;
-		
+
 		public boolean stencil = false;
-		
+
 		public boolean premultipliedAlpha = false;
-		
-		public boolean preserveDrawingBuffer = false; 
-		
+
+		public boolean preserveDrawingBuffer = false;
+
 		public float scaleFactor = devicePixelRatio();
 
 		public String rootId = "loon-root";
@@ -148,7 +148,7 @@ public class GWTGame extends LGame {
 	private final Loon game;
 
 	public GWTGame(Loon game, Panel panel, Config config) {
-		super(config);
+		super(config, game);
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 			@Override
 			public void onUncaughtException(Throwable e) {
@@ -180,7 +180,7 @@ public class GWTGame extends LGame {
 	}
 
 	private boolean initGwt = false;
-	
+
 	public void start() {
 		if (!initGwt) {
 			game.initialize();

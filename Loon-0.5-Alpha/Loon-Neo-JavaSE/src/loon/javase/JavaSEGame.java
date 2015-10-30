@@ -28,14 +28,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.lwjgl.opengl.Display;
+
 import loon.*;
 import loon.event.KeyMake;
 import loon.geom.Dimension;
+import loon.jni.NativeSupport;
 import loon.utils.Scale;
 import loon.utils.json.JsonImpl;
 import loon.utils.reply.Port;
 
-public abstract class JavaSEGame extends LGame {
+public class JavaSEGame extends LGame {
 
 	final static private boolean osIsLinux;
 
@@ -147,8 +150,8 @@ public abstract class JavaSEGame extends LGame {
 	private final JavaSEAssets assets = new JavaSEAssets(this);
 
 	public static class Headless extends JavaSEGame {
-		public Headless(LSetting config) {
-			super(config);
+		public Headless(Loon game, LSetting config) {
+			super(game, config);
 		}
 
 		@Override
@@ -195,9 +198,8 @@ public abstract class JavaSEGame extends LGame {
 
 	}
 
-	public JavaSEGame(final LSetting config) {
-		super(config);
-
+	public JavaSEGame(final Loon game, final LSetting config) {
+		super(config, game);
 		this.preInit();
 		this.graphics = createGraphics();
 		this.input = createInput();
@@ -223,7 +225,9 @@ public abstract class JavaSEGame extends LGame {
 		this.initProcess();
 	}
 
-	public abstract void setTitle(String title);
+	public void setTitle(String title) {
+		Display.setTitle(title);
+	}
 
 	@Override
 	public double time() {
@@ -351,11 +355,22 @@ public abstract class JavaSEGame extends LGame {
 		}
 	}
 
-	protected abstract void preInit();
+	protected void preInit() {
+		try {
+			NativeSupport.loadJNI("lwjgl");
+			NativeSupport.loadJNI("lplus");
+		} catch (Throwable exc) {
+			exc.printStackTrace();
+		}
+	}
 
-	protected abstract JavaSEGraphics createGraphics();
+	protected JavaSEGraphics createGraphics() {
+		return new JavaSELwjglGraphics(this);
+	}
 
-	protected abstract JavaSEInputMake createInput();
+	protected JavaSEInputMake createInput() {
+		return new JavaSELwjglInputMake(this);
+	}
 
 	protected void shutdown() {
 		status.emit(Status.EXIT);
@@ -378,5 +393,23 @@ public abstract class JavaSEGame extends LGame {
 
 	protected void toggleActivation() {
 		active = !active;
+	}
+
+	public void reset() {
+		boolean wasActive = Display.isActive();
+		while (!Display.isCloseRequested()) {
+			boolean newActive = Display.isActive();
+			if (wasActive != newActive) {
+				status.emit(wasActive ? Status.PAUSE : Status.RESUME);
+				wasActive = newActive;
+			}
+			((JavaSELwjglGraphics) graphics()).checkScaleFactor();
+			if (newActive || !setting.truePause) {
+				processFrame();
+			}
+			Display.update();
+			Display.sync(setting.fps);
+		}
+		shutdown();
 	}
 }

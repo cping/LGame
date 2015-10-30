@@ -30,6 +30,8 @@ import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
 import loon.LazyLoading;
+import loon.Platform;
+import loon.geom.RectBox;
 import loon.utils.StringUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -40,6 +42,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -50,7 +53,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public abstract class Loon extends Activity implements LazyLoading{
+public abstract class Loon extends Activity implements Platform, LazyLoading {
 
 	@SuppressLint("SetJavaScriptEnabled")
 	final static class Web extends android.webkit.WebView {
@@ -357,7 +360,7 @@ public abstract class Loon extends Activity implements LazyLoading{
 	protected static Loon self;
 	private LSetting setting;
 
-	private LazyLoading.Data mainData ;
+	private LazyLoading.Data mainData;
 
 	public static String getResourcePath(String name) throws IOException {
 		if (self == null) {
@@ -411,6 +414,12 @@ public abstract class Loon extends Activity implements LazyLoading{
 			throw new IOException("File " + file.getPath()
 					+ " is actually not a file.");
 		}
+	}
+
+	protected DisplayMetrics getSysDisplayMetrices() {
+		DisplayMetrics dm = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		return dm;
 	}
 
 	public abstract void onMain();
@@ -576,7 +585,7 @@ public abstract class Loon extends Activity implements LazyLoading{
 		return this.game = new AndroidGame(this, setting);
 	}
 
-	protected AndroidGame getGame() {
+	public LGame getGame() {
 		return game;
 	}
 
@@ -708,5 +717,38 @@ public abstract class Loon extends Activity implements LazyLoading{
 
 	public LinearLayout getLayout() {
 		return linearLayout;
+	}
+
+	public RectBox getScreenDimension() {
+		DisplayMetrics dm = getSysDisplayMetrices();
+		return new RectBox(dm.xdpi, dm.ydpi, dm.widthPixels, dm.heightPixels);
+	}
+
+	@Override
+	public int getContainerWidth() {
+		DisplayMetrics dm = getSysDisplayMetrices();
+		return dm.widthPixels;
+	}
+
+	@Override
+	public int getContainerHeight() {
+		DisplayMetrics dm = getSysDisplayMetrices();
+		return dm.heightPixels;
+	}
+
+	public void close() {
+		try {
+			this.finish();
+			System.exit(-1);
+		} catch (Throwable noop) {
+		}
+	}
+
+	public Orientation getOrientation() {
+		if (getContainerHeight() > getContainerWidth()) {
+			return Orientation.Portrait;
+		} else {
+			return Orientation.Landscape;
+		}
 	}
 }

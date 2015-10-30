@@ -29,8 +29,8 @@ import loon.utils.json.JsonImpl;
 
 public class EmptyGame extends LGame {
 
-	public EmptyGame(LSetting config) {
-		super(config);
+	public EmptyGame(LSetting config, Platform plat) {
+		super(config, plat);
 	}
 
 	private Save save = new Save() {
@@ -73,16 +73,16 @@ public class EmptyGame extends LGame {
 
 		@Override
 		public void onError(Throwable e) {
-		
+
 		}
 
 		@Override
 		protected void callNativeLog(Level level, String msg, Throwable e) {
 			System.err.println(level.levelString + msg);
-			if (e != null){
+			if (e != null) {
 				e.printStackTrace(System.err);
 			}
-		
+
 		}
 	};
 	private Asyn exec = new Asyn.Default(log, frame) {

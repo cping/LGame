@@ -20,53 +20,126 @@
  */
 package loon.robovm;
 
+import loon.LGame;
 import loon.LSetting;
 import loon.LazyLoading;
+import loon.Platform;
 import loon.robovm.RoboVMGame.IOSSetting;
 
 import org.robovm.apple.coregraphics.CGRect;
+import org.robovm.apple.foundation.NSThread;
 import org.robovm.apple.uikit.UIApplication;
 import org.robovm.apple.uikit.UIApplicationDelegateAdapter;
 import org.robovm.apple.uikit.UIApplicationLaunchOptions;
+import org.robovm.apple.uikit.UIDevice;
+import org.robovm.apple.uikit.UIInterfaceOrientation;
 import org.robovm.apple.uikit.UIScreen;
+import org.robovm.apple.uikit.UIUserInterfaceIdiom;
+import org.robovm.apple.uikit.UIViewController;
 import org.robovm.apple.uikit.UIWindow;
 
 public abstract class Loon extends UIApplicationDelegateAdapter implements
-		LazyLoading {
+		Platform, LazyLoading {
 
 	private RoboVMGame game = null;
 	private LSetting setting;
 	private LazyLoading.Data mainData;
+	private float displayScaleFactor;
+	private UIWindow uiWindow;
+	private UIApplication uiApp;
 
 	@Override
 	public boolean didFinishLaunching(UIApplication app,
 			UIApplicationLaunchOptions launchOpts) {
 		CGRect bounds = UIScreen.getMainScreen().getBounds();
-		UIWindow window = new UIWindow(bounds);
+		uiApp = app;
+		uiWindow = new UIWindow(bounds);
 		onMain();
 		if (setting instanceof RoboVMGame.IOSSetting) {
-			RoboVMViewController ctrl = new RoboVMViewController(
-					window.getBounds(), (RoboVMGame.IOSSetting) setting);
-			window.setRootViewController(ctrl);
+			IOSSetting config = (IOSSetting) setting;
+			float scale = (float) (getIosVersion() >= 8 ? UIScreen
+					.getMainScreen().getNativeScale() : UIScreen
+					.getMainScreen().getScale());
+			if (scale >= 2.0f) {
+				if (UIDevice.getCurrentDevice().getUserInterfaceIdiom() == UIUserInterfaceIdiom.Pad) {
+					displayScaleFactor = config.displayScaleLargeScreenIfRetina
+							* scale;
+				} else {
+					displayScaleFactor = config.displayScaleSmallScreenIfRetina
+							* scale;
+				}
+			} else {
+				if (UIDevice.getCurrentDevice().getUserInterfaceIdiom() == UIUserInterfaceIdiom.Pad) {
+					displayScaleFactor = config.displayScaleLargeScreenIfNonRetina;
+				} else {
+					displayScaleFactor = config.displayScaleSmallScreenIfNonRetina;
+				}
+			}
+			RoboVMViewController ctrl = new RoboVMViewController(this,
+					uiWindow.getBounds(), (RoboVMGame.IOSSetting) setting);
+			uiWindow.setRootViewController(ctrl);
 			game = ctrl.game;
 		} else {
 			RoboVMGame.IOSSetting config = new IOSSetting();
 			config.copy(setting);
-			RoboVMViewController ctrl = new RoboVMViewController(
-					window.getBounds(), config);
-			window.setRootViewController(ctrl);
+			RoboVMViewController ctrl = new RoboVMViewController(this,
+					uiWindow.getBounds(), config);
+			uiWindow.setRootViewController(ctrl);
 			game = ctrl.game;
 			setting = config;
 		}
 		initialize();
-		window.makeKeyAndVisible();
-		addStrongRef(window);
+		uiWindow.makeKeyAndVisible();
+		addStrongRef(uiWindow);
 		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	CGRect getBounds(UIViewController viewController) {
+		CGRect bounds = UIScreen.getMainScreen().getBounds();
+		UIInterfaceOrientation orientation = null;
+		if (setting != null && setting instanceof RoboVMGame.IOSSetting) {
+			IOSSetting config = (IOSSetting) setting;
+			if (viewController != null) {
+				orientation = viewController.getInterfaceOrientation();
+			} else if (config.orientationLandscape == config.orientationPortrait) {
+				orientation = uiApp.getStatusBarOrientation();
+			} else if (config.orientationLandscape) {
+				orientation = UIInterfaceOrientation.LandscapeRight;
+			} else {
+				orientation = UIInterfaceOrientation.Portrait;
+			}
+		} else {
+			if (viewController != null) {
+				orientation = viewController.getInterfaceOrientation();
+			} else {
+				orientation = UIInterfaceOrientation.LandscapeLeft;
+			}
+		}
+		int width;
+		int height;
+		switch (orientation) {
+		case LandscapeLeft:
+		case LandscapeRight:
+			height = (int) bounds.getWidth();
+			width = (int) bounds.getHeight();
+			if (width < height) {
+				width = (int) bounds.getWidth();
+				height = (int) bounds.getHeight();
+			}
+			break;
+		default:
+			width = (int) bounds.getWidth();
+			height = (int) bounds.getHeight();
+		}
+		width *= displayScaleFactor;
+		height *= displayScaleFactor;
+		return new CGRect(0, 0, width, height);
 	}
 
 	public abstract void onMain();
 
-	protected RoboVMGame getGame() {
+	public LGame getGame() {
 		return game;
 	}
 
@@ -80,6 +153,43 @@ public abstract class Loon extends UIApplicationDelegateAdapter implements
 	public void register(LSetting s, LazyLoading.Data data) {
 		this.setting = s;
 		this.mainData = data;
+	}
+
+	public void close() {
+		NSThread.exit();
+	}
+
+	@Override
+	public int getContainerWidth() {
+		return (int) UIScreen.getMainScreen().getBounds().getWidth();
+	}
+
+	@Override
+	public int getContainerHeight() {
+		return (int) UIScreen.getMainScreen().getBounds().getHeight();
+	}
+
+	@Override
+	public Orientation getOrientation() {
+		if (getContainerHeight() > getContainerWidth()) {
+			return Orientation.Portrait;
+		} else {
+			return Orientation.Landscape;
+		}
+	}
+
+	private int getIosVersion() {
+		String systemVersion = UIDevice.getCurrentDevice().getSystemVersion();
+		int version = Integer.parseInt(systemVersion.split("\\.")[0]);
+		return version;
+	}
+
+	public UIWindow getUIWindow() {
+		return uiWindow;
+	}
+
+	public UIApplication getUIApp() {
+		return uiApp;
 	}
 
 	/**
