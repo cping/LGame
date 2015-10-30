@@ -56,11 +56,13 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	protected LoadingListener loadingListener;
+	
 	protected Preloader preloader;
 
 	protected Panel root;
 
 	protected static Loon self;
+	
 	private LSetting setting;
 
 	private LazyLoading.Data mainData;
@@ -239,7 +241,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	public void close() {
 		closeImpl();
 	}
-
+	  
 	private static native void closeImpl()
 	/*-{
 		$wnd.close();

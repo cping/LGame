@@ -25,7 +25,7 @@ public class TestLoon extends Loon {
 			
 			@Override
 			public Screen onScreen() {
-				return new TitleScreen();
+				return new ScreenTest();
 			}
 		});
 		

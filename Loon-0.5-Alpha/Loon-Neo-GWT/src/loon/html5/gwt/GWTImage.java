@@ -26,7 +26,9 @@ import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.canvas.LColor;
 import loon.canvas.Pattern;
+import loon.geom.Affine2f;
 import loon.jni.EventHandler;
+import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
@@ -135,18 +137,20 @@ public class GWTImage extends ImageImpl {
 		return new GWTPattern(img, repeatX, repeatY);
 	}
 
-	@Override
-	public void getRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize) {
-		assert isLoaded() : "Cannot getRgb() a non-ready image";
-
+	private void createCanvas() {
 		if (canvas == null) {
 			canvas = img.getOwnerDocument().createCanvasElement();
 			canvas.setHeight(img.getHeight());
 			canvas.setWidth(img.getWidth());
 			canvas.getContext2d().drawImage(img, 0, 0);
 		}
+	}
 
+	@Override
+	public void getRGB(int startX, int startY, int width, int height,
+			int[] rgbArray, int offset, int scanSize) {
+		assert isLoaded() : "Cannot getRgb() a non-ready image";
+		createCanvas();
 		Context2d ctx = canvas.getContext2d();
 		ImageData imageData = ctx.getImageData(startX, startY, width, height);
 		CanvasPixelArray pixelData = imageData.getData();
@@ -167,6 +171,7 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public void setRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
+		createCanvas();
 		Context2d ctx = canvas.getContext2d();
 		ImageData imageData = ctx.createImageData(width, height);
 		CanvasPixelArray pixelData = imageData.getData();
@@ -199,11 +204,34 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public void draw(Object ctx, float dx, float dy, float dw, float dh,
 			float sx, float sy, float sw, float sh) {
+		//此处HTML5同名API有坑，不能直接调用，否则部分移植游戏显示的会很诡异，幸亏用矩阵转换结果是正确的，差点逼我用Pixmap做像素处理……
+		Context2d context = (Context2d) ctx;
+		float f = scale().factor;
+		sx *= f;
+		sy *= f;
+		sw *= f;
+		sh *= f;
+		float scaleX = dw / (sw - sx), scaleY = dh / (sh - sy);
+		context.save();
+		context.rect(MathUtils.ifloor(dx), MathUtils.ifloor(dy),
+				MathUtils.iceil(dw), MathUtils.iceil(dh));
+		context.clip();
+		Affine2f affine = new Affine2f(scaleX, 0f, 0f, scaleY,
+				dx - sx * scaleX, dy - sy * scaleY);
+		context.transform(affine.m00, affine.m01, affine.m10, affine.m11,
+				affine.tx, affine.ty);
+		context.drawImage(img, 0, 0);
+		context.restore();
+		
+		//html5的canvas渲染有坑，此处直接调用同名api的处理结果，与javase、javame以及android的同名api显示结果完全不同，所以下列方式弃用……
+		/**
+		 *  
 		sx *= scale.factor;
 		sy *= scale.factor;
 		sw *= scale.factor;
 		sh *= scale.factor;
 		((Context2d) ctx).drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+		 */
 	}
 
 	@Override
@@ -336,7 +364,7 @@ public class GWTImage extends ImageImpl {
 
 	@Override
 	public void setPixel(int rgb, int x, int y) {
-
+		createCanvas();
 		int width = img.getWidth();
 		int height = img.getHeight();
 		Context2d ctx = canvas.getContext2d();
@@ -360,12 +388,7 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public int getPixel(int x, int y) {
 		assert isLoaded() : "Cannot getRgb() a non-ready image";
-		if (canvas == null) {
-			canvas = img.getOwnerDocument().createCanvasElement();
-			canvas.setHeight(img.getHeight());
-			canvas.setWidth(img.getWidth());
-			canvas.getContext2d().drawImage(img, 0, 0);
-		}
+		createCanvas();
 		Context2d ctx = canvas.getContext2d();
 		ImageData imageData = ctx.getImageData(0, 0, img.getWidth(),
 				img.getHeight());

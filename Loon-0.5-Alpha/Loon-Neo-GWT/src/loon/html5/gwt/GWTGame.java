@@ -306,4 +306,137 @@ public class GWTGame extends LGame {
 		return Date.now();
 	}-*/;
 
+	native static public void consoleLog(String message) /*-{
+		console.log("GWT: " + message);
+	}-*/;
+
+	private native String getUserAgent() /*-{
+		return $wnd.navigator.userAgent.toLowerCase();
+	}-*/;
+
+	public boolean isAndroid() {
+		return isAndroidPhone() || isAndroidTablet();
+	}
+
+	public boolean isIPhone() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("iphone") && devicePixelRatio() < 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIPad() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("ipad") && devicePixelRatio() < 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIOs() {
+		return isIPad() || isIPadRetina() || isIPhone() || isRetina();
+	}
+
+	public boolean isRetina() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("iphone") && devicePixelRatio() >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIPadRetina() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("ipad") && devicePixelRatio() >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isDesktop() {
+		return !isIOs() && !isAndroid();
+	}
+
+	public boolean isTablet() {
+		return isIPad() || isIPadRetina() || isAndroidTablet();
+	}
+
+	public boolean isAndroidTablet() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android") && !userAgent.contains("mobile")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroidPhone() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android") && userAgent.contains("mobile")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isPhone() {
+		return isIPhone() || isRetina() || isAndroidPhone();
+	}
+
+	public boolean isBlackBerry() {
+		return false;
+	}
+
+	public boolean isAndroid4_4_OrHigher() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android") && userAgent.contains("chrome")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroid2x() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android 2.")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroid4_3_orLower() {
+		if (isAndroid4_4_OrHigher()) {
+			return false;
+		}
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIOS6() {
+		if (!isIOs()) {
+			return false;
+		}
+		String userAgent = getUserAgent();
+		if (userAgent.contains("os 6_")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIOS9() {
+		if (!isIOs()) {
+			return false;
+		}
+		String userAgent = getUserAgent();
+		if (userAgent.contains("os 9_")) {
+			return true;
+		}
+		return false;
+	}
+
+	public native boolean isStandalone() /*-{
+		return $wnd.navigator.standalone;
+	}-*/;
+
 }

@@ -34,8 +34,10 @@ import loon.utils.Scale;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.ImageData;
 import com.google.gwt.core.client.JavaScriptException;
+import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -343,8 +345,9 @@ public class GWTAssets extends Assets {
 			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
 		}
 		if (tmp == null) {
-			return new GWTImage(game.graphics(), new Throwable("file " + path
-					+ " not found"));
+			game.log().warn("file " + path + " not found");
+			return new GWTImage(game.graphics(), scale, createEmptyCanvas(50,
+					50), path);
 		}
 		return new GWTImage(game.graphics(), scale, tmp, path);
 	}
@@ -371,6 +374,17 @@ public class GWTAssets extends Assets {
 			game.log().warn("file " + path + " not found");
 		}
 		return tmp;
+	}
+
+	private CanvasElement createEmptyCanvas(int w, int h) {
+		CanvasElement elem = Document.get().createCanvasElement();
+		elem.setWidth(w);
+		elem.setHeight(h);
+		setCrossOrigin(elem, "anonymous");
+		Context2d context = elem.getContext2d();
+		context.setFillStyle("rgba(255,255,255,255)");
+		context.fillRect(0, 0, w, h);
+		return elem;
 	}
 
 	private native void setCrossOrigin(Element elem, String state) /*-{
