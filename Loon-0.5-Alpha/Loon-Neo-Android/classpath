@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="core"/>
+	<classpathentry kind="src" path="avgtest"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>

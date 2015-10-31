@@ -25,7 +25,6 @@ import loon.event.InputMake;
 import loon.event.KeyMake;
 import loon.event.SysKey;
 import loon.event.TouchMake;
-import loon.geom.Vector2f;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 import android.app.AlertDialog;
@@ -359,12 +358,11 @@ public class AndroidInputMake extends InputMake {
 			if (isChanged && tt != changedIdx) {
 				continue;
 			}
-			Vector2f xy = game.graphics().transformTouch(event.getX(tt),
-					event.getY(tt));
 			float pressure = event.getPressure(tt);
 			float size = event.getSize(tt);
 			int id = event.getPointerId(tt);
-			touches[tidx++] = new TouchMake.Event(0, time, xy.x(), xy.y(),
+			touches[tidx++] = new TouchMake.Event(0, time, event.getX(tt),
+					event.getY(tt),
 					kind, id, pressure, size);
 		}
 		return touches;

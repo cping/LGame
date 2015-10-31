@@ -27,7 +27,7 @@ public class ScreenTest extends Screen {
 	}
 
 	@Override
-	public void resize(Scale scale, int width, int height) {
+	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		
 	}

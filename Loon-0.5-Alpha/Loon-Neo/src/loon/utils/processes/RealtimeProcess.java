@@ -25,6 +25,7 @@ import java.util.LinkedList;
 
 import loon.LSystem;
 import loon.utils.timer.LTimer;
+import loon.utils.timer.LTimerContext;
 
 public abstract class RealtimeProcess implements Process {
 
@@ -58,7 +59,7 @@ public abstract class RealtimeProcess implements Process {
 		this.processesToFireWhenFinished.add(realtimeProcess);
 	}
 
-	public void tick(long time) {
+	public void tick(LTimerContext time) {
 		if (timer.action(time)) {
 			run(time);
 		}
@@ -96,7 +97,7 @@ public abstract class RealtimeProcess implements Process {
 		return timer.isActive();
 	}
 
-	public abstract void run(long time);
+	public abstract void run(LTimerContext time);
 
 	public void kill() {
 		this.isDead = true;

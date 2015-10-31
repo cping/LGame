@@ -42,7 +42,8 @@ public abstract class Graphics {
 	protected Scale scale = null;
 	protected int viewPixelWidth, viewPixelHeight;
 
-	private Affine2f lastAffine = null;
+	private Display display = null;
+	private Affine2f affine = null, lastAffine = null;
 	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
 	private Matrix4 transformMatrix = null, projectionMatrix = null;
 
@@ -66,7 +67,6 @@ public abstract class Graphics {
 		}
 
 		public float xscale() {
-
 			return scale.factor;
 		}
 
@@ -107,20 +107,23 @@ public abstract class Graphics {
 	}
 
 	public Matrix4 getProjectionMatrix() {
-		Display display = game.display();
+		display = game.display();
 		if (projectionMatrix == null) {
 			matrixsStack.add(projectionMatrix = new Matrix4());
 			projectionMatrix.setToOrtho2D(0, 0, LSystem.viewSize.getWidth(),
 					LSystem.viewSize.getHeight());
-		} else if (display != null && !display.GL().tx().equals(lastAffine)) {
-			lastAffine = display.GL().tx();
-			projectionMatrix = projectionMatrix.newCombine(lastAffine);
-			if (game.setting.scaling()
-					&& ((lastAffine.tx != 0) || (lastAffine.ty != 0))) {
+		} else if (display != null
+				&& !(affine = display.GL().tx()).equals(lastAffine)) {
+			if (game.setting.scaling()) {
+				lastAffine = affine.cpy();
 				LSetting setting = game.setting;
-				projectionMatrix.scale(setting.width / setting.width_zoom,
-						setting.height / setting.height_zoom, 0f);
+				lastAffine.scale((float) setting.width
+						/ (float) setting.width_zoom, (float) setting.height
+						/ (float) setting.height_zoom);
+			} else {
+				lastAffine = affine;
 			}
+			projectionMatrix = projectionMatrix.newCombine(lastAffine);
 		}
 
 		return projectionMatrix;
@@ -132,7 +135,6 @@ public abstract class Graphics {
 		if (saved) {
 			return;
 		}
-
 		if (projectionMatrix != null) {
 			matrixsStack.add(projectionMatrix = projectionMatrix.cpy());
 			saved = true;
@@ -216,8 +218,9 @@ public abstract class Graphics {
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
 		Display d = game.display();
 		if (!LSystem.LOCK_SCREEN) {
-			// LSystem.viewSize.setSize((int)(viewWidth/LSystem.getScaleWidth()),
-			// (int)(viewHeight/LSystem.getScaleHeight()));
+			LSystem.viewSize.setSize(
+					(int) (viewWidth / LSystem.getScaleWidth()),
+					(int) (viewHeight / LSystem.getScaleHeight()));
 			if (projectionMatrix != null) {
 				LSystem.viewSize.getMatrix().mul(projectionMatrix);
 			}
@@ -227,7 +230,7 @@ public abstract class Graphics {
 			this.viewSizeM.width = scale.invScaled(viewPixelWidth);
 			this.viewSizeM.height = scale.invScaled(viewPixelHeight);
 			if (d != null) {
-				d.resize(scale, viewPixelWidth, viewPixelHeight);
+				d.resize(viewPixelWidth, viewPixelHeight);
 			}
 		}
 	}

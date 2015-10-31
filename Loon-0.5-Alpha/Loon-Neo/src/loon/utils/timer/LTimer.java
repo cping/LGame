@@ -54,10 +54,10 @@ public class LTimer implements Serializable {
 
 		return false;
 	}
-
+	
 	public boolean action(LTimerContext context) {
 		if (this.active) {
-			this.currentTick += context.getTimeSinceLastUpdate();
+			this.currentTick += context.timeSinceLastUpdate;
 			if (this.currentTick >= this.delay) {
 				this.currentTick -= this.delay;
 				return true;
@@ -109,4 +109,5 @@ public class LTimer implements Serializable {
 	public void setCurrentTick(long tick) {
 		this.currentTick = tick;
 	}
+
 }

@@ -32,7 +32,6 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
-import loon.geom.Vector2f;
 import loon.utils.Scale;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
@@ -49,7 +48,6 @@ public class AndroidGraphics extends Graphics {
 	}
 
 	private final AndroidGame game;
-	private final Vector2f touchTemp = new Vector2f();
 
 	private Map<Refreshable, Void> refreshables = Collections
 			.synchronizedMap(new WeakHashMap<Refreshable, Void>());
@@ -185,7 +183,4 @@ public class AndroidGraphics extends Graphics {
 		refreshables.remove(ref);
 	}
 
-	Vector2f transformTouch(float x, float y) {
-		return touchTemp.set(x / scale.factor, y / scale.factor);
-	}
 }

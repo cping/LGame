@@ -21,7 +21,7 @@
 package loon;
 
 public class LSetting {
-
+	
 	public boolean isFPS = false;
 
 	public boolean isLogo = false;

@@ -22,16 +22,16 @@ package loon;
 
 import loon.utils.reply.Act;
 import loon.utils.reply.Port;
-import loon.utils.timer.GameClock;
+import loon.utils.timer.LTimerContext;
 
 public abstract class LSystemView extends BaseIO {
 
-	public final Act<GameClock> update = Act.create();
+	public final Act<LTimerContext> update = Act.create();
 
-	public final Act<GameClock> paint = Act.create();
+	public final Act<LTimerContext> paint = Act.create();
 
-	private final GameClock updateClock = new GameClock();
-	private final GameClock paintClock = new GameClock();
+	private final LTimerContext updateClock = new LTimerContext();
+	private final LTimerContext paintClock = new LTimerContext();
 	private final long updateRate;
 	private int nextUpdate;
 	private LGame game;
@@ -50,15 +50,18 @@ public abstract class LSystemView extends BaseIO {
 		});
 	}
 
-	public void update(GameClock clock) {
+	public void update(LTimerContext clock) {
 		update.emit(clock);
 	}
 
-	public void paint(GameClock clock) {
+	public void paint(LTimerContext clock) {
 		paint.emit(paintClock);
 	}
 
 	private void onFrame() {
+		if(!LSystem.AUTO_REPAINT){
+			return;
+		}
 		int nextUpdate = this.nextUpdate;
 		int updateTick = game.tick();
 		if (updateTick >= nextUpdate) {
@@ -71,21 +74,21 @@ public abstract class LSystemView extends BaseIO {
 			this.nextUpdate = nextUpdate;
 			long updateDt = updates * updateRate;
 			updateClock.tick += updateDt;
-			updateClock.dt = updateDt;
+			updateClock.timeSinceLastUpdate = updateDt;
 			update(updateClock);
 		}
 		long paintTick = game.tick();
-		paintClock.dt = paintTick - paintClock.tick;
+		paintClock.timeSinceLastUpdate = paintTick - paintClock.tick;
 		paintClock.tick = paintTick;
 		paintClock.alpha = 1 - (nextUpdate - paintTick) / (float) updateRate;
 		paint(paintClock);
 	}
 
-	public final GameClock getUpdate() {
+	public final LTimerContext getUpdate() {
 		return updateClock;
 	}
 
-	public final GameClock getPaint() {
+	public final LTimerContext getPaint() {
 		return paintClock;
 	}
 }

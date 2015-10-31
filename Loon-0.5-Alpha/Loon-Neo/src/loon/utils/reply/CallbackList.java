@@ -27,8 +27,9 @@ public class CallbackList<T> implements Callback<T> {
 
 	public static <T> List<Callback<T>> createAdd(List<Callback<T>> list,
 			Callback<T> callback) {
-		if (list == null)
+		if (list == null){
 			list = new ArrayList<Callback<T>>();
+		}
 		list.add(callback);
 		return list;
 	}
@@ -36,8 +37,9 @@ public class CallbackList<T> implements Callback<T> {
 	public static <T> List<Callback<T>> dispatchSuccessClear(
 			List<Callback<T>> list, T result) {
 		if (list != null) {
-			for (int ii = 0, ll = list.size(); ii < ll; ii++)
+			for (int ii = 0, ll = list.size(); ii < ll; ii++){
 				list.get(ii).onSuccess(result);
+			}
 		}
 		return null;
 	}
@@ -45,8 +47,9 @@ public class CallbackList<T> implements Callback<T> {
 	public static <T> List<Callback<T>> dispatchFailureClear(
 			List<Callback<T>> list, Throwable cause) {
 		if (list != null) {
-			for (int ii = 0, ll = list.size(); ii < ll; ii++)
+			for (int ii = 0, ll = list.size(); ii < ll; ii++){
 				list.get(ii).onFailure(cause);
+			}
 		}
 		return null;
 	}

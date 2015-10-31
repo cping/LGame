@@ -47,7 +47,6 @@ public class Test2 extends SpriteBatchScreen{
 
 		batch.drawRect(255, 155, 300, 300);
 		
-		
 	}
 
 	@Override
@@ -81,7 +80,7 @@ public class Test2 extends SpriteBatchScreen{
 	}
 
 	@Override
-	public void resize(Scale scale, int width, int height) {
+	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -116,6 +115,8 @@ public class Test2 extends SpriteBatchScreen{
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
 		setting.fps = 60;
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.fontName = "黑体";
 		setting.appName = "test";
 		setting.emulateTouch = false;

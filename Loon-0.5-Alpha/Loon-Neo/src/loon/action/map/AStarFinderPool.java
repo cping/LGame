@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import loon.geom.Vector2f;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.timer.LTimerContext;
 
 public class AStarFinderPool {
 
@@ -47,7 +48,7 @@ public class AStarFinderPool {
 		pathfinderProcess = new RealtimeProcess("AStarProcess") {
 
 			@Override
-			public void run(long time) {
+			public void run(LTimerContext time) {
 				if (running) {
 					emptyPathQueue();
 					kill();
@@ -97,20 +98,20 @@ public class AStarFinderPool {
 			int startX, int startY, int endX, int endY, boolean flying,
 			boolean flag) {
 		LinkedList<Vector2f> result = null;
-		try (AStarFinder astar = new AStarFinder(heuristic, field, startX,
-				startY, endX, endY, flying, flag)) {
-			result = astar.findPath();
-		}
+		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
+				endX, endY, flying, flag);
+		result = astar.findPath();
+		astar.close();
 		return result;
 	}
 
 	public LinkedList<Vector2f> search(AStarFindHeuristic heuristic,
 			int startX, int startY, int endX, int endY, boolean flying) {
 		LinkedList<Vector2f> result = null;
-		try (AStarFinder astar = new AStarFinder(heuristic, field, startX,
-				startY, endX, endY, flying, false)) {
-			result = astar.findPath();
-		}
+		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
+				endX, endY, flying, false);
+		result = astar.findPath();
+		astar.close();
 		return result;
 	}
 

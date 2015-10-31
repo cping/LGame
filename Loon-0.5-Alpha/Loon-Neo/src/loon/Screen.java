@@ -50,7 +50,6 @@ import loon.stage.RootPlayer;
 import loon.stage.Stage;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
-import loon.utils.Scale;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
@@ -362,7 +361,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			RealtimeProcessManager.get().addProcess(new RealtimeProcess() {
 
 				@Override
-				public void run(long time) {
+				public void run(LTimerContext time) {
 					screen.onCreate(LSystem.viewSize.getWidth(),
 							LSystem.viewSize.getHeight());
 					screen.setClose(false);
@@ -1289,7 +1288,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	private final void process(final LTimerContext timer) {
-		this.elapsedTime = timer.getTimeSinceLastUpdate();
+		this.elapsedTime = timer.timeSinceLastUpdate;
 		if (!isClose) {
 			if (isGravity) {
 				gravityHandler.update(elapsedTime);
@@ -1512,7 +1511,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 	}
 
-	public abstract void resize(Scale scale, int width, int height);
+	public abstract void resize(int width, int height);
 
 	public Point2i getTouch() {
 		touch.set((int)SysTouch.getX(), (int)SysTouch.getY());

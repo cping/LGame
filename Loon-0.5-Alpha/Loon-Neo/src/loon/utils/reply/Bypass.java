@@ -129,8 +129,9 @@ public abstract class Bypass {
 				} catch (RuntimeException ex) {
 					exn = ex;
 				}
-				if (cons.oneShot())
+				if (cons.oneShot()){
 					cons.close();
+				}
 			}
 
 		} finally {

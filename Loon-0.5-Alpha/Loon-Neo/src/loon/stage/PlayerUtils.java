@@ -14,7 +14,7 @@ import loon.utils.MathUtils;
 import loon.utils.reply.Act;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
-import loon.utils.timer.GameClock;
+import loon.utils.timer.LTimerContext;
 
 public class PlayerUtils extends Director {
 
@@ -223,8 +223,8 @@ public class PlayerUtils extends Director {
 		throw new AssertionError();
 	}
 
-	public static void bind(Player player, final Act<GameClock> paint,
-			final Port<GameClock> onPaint) {
+	public static void bind(Player player, final Act<LTimerContext> paint,
+			final Port<LTimerContext> onPaint) {
 
 		player.state.connectNotify(new Port<Player.State>() {
 			public void onEmit(Player.State state) {
@@ -238,9 +238,9 @@ public class PlayerUtils extends Director {
 		});
 	}
 
-	public static void bind(Player player, final Act<GameClock> update,
-			final Port<GameClock> onUpdate, final Act<GameClock> paint,
-			final Port<GameClock> onPaint) {
+	public static void bind(Player player, final Act<LTimerContext> update,
+			final Port<LTimerContext> onUpdate, final Act<LTimerContext> paint,
+			final Port<LTimerContext> onPaint) {
 		player.state.connectNotify(new Port<Player.State>() {
 			public void onEmit(Player.State state) {
 				_pcon = Closeable.Shutdown.close(_pcon);

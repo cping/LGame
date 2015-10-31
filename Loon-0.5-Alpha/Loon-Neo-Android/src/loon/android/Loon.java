@@ -33,6 +33,7 @@ import loon.LazyLoading;
 import loon.Platform;
 import loon.android.AndroidGame.AndroidSetting;
 import loon.android.AndroidGame.LMode;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.utils.StringUtils;
 import android.annotation.SuppressLint;
@@ -450,14 +451,26 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 		int width = setting.width;
 		int height = setting.height;
-		if (setting.width_zoom == -1 || setting.height_zoom == -1) {
+
+		// 是否按比例缩放屏幕
+		if (setting.useRatioScaleFactor) {
+			float scale = scaleFactor();
+			width *= scale;
+			height *= scale;
+			setting.width_zoom = width;
+			setting.height_zoom = height;
+			setting.updateScale();
+			mode = LMode.MaxRatio;
+		// 若缩放值为无法实现的数值，则默认操作
+		} else if (setting.width_zoom <= 0 || setting.height_zoom <= 0) {
 			updateViewSize(setting.landscape(), setting.width, setting.height,
 					mode);
-			setting.width_zoom = this.maxWidth;
-			setting.height_zoom = this.maxHeight;
 			width = this.maxWidth;
 			height = this.maxHeight;
+			setting.width_zoom = this.maxWidth;
+			setting.height_zoom = this.maxHeight;
 			setting.updateScale();
+			mode = LMode.Fill;
 		}
 
 		this.game = createGame();
@@ -684,6 +697,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	private void setContentView(LMode mode, AndroidGameViewGL view, int w, int h) {
 		this.frameLayout = new FrameLayout(this);
+		this.frameLayout .setBackgroundColor(LColor.black.getRGB());
 		if (mode == LMode.Defalut) {
 			// 添加游戏View，显示为指定大小，并居中
 			this.addView(view, view.getWidth(), view.getHeight(),
@@ -832,7 +846,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 				.append(",Height:" + zoomHeight);
 		sbr.append("\nMaxWidth:").append(maxWidth)
 				.append(",MaxHeight:" + maxHeight);
-		game.log().info("Android2DSize", sbr.toString());
+		Log.d("Android2DSize", sbr.toString());
 	}
 
 	// 检查ADView状态，如果ADView上附着有其它View则删除，

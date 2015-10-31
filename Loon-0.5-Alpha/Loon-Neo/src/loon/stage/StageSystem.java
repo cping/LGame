@@ -8,7 +8,7 @@ import loon.LProcess;
 import loon.LSystem;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
-import loon.utils.timer.GameClock;
+import loon.utils.timer.LTimerContext;
 
 public class StageSystem extends PlayerUtils {
 
@@ -270,20 +270,20 @@ public class StageSystem extends PlayerUtils {
 				complete();
 			} else
 				_onPaint = LSystem.base().display().paint
-						.connect(new Port<GameClock>() {
-							public void onEmit(GameClock clock) {
+						.connect(new Port<LTimerContext>() {
+							public void onEmit(LTimerContext clock) {
 								paint(clock);
 							}
 						});
 		}
 
-		public void paint(GameClock clock) {
+		public void paint(LTimerContext clock) {
 			LProcess process = LSystem.getProcess();
 			if (process != null && process.isScreenTransitionCompleted()) {
 				if (_skipFrames > 0) {
 					_skipFrames -= 1;
 				} else {
-					_elapsed += clock.dt;
+					_elapsed += clock.timeSinceLastUpdate;
 					if (_trans.update(_oscreen, _nscreen, _elapsed)) {
 						complete();
 					}

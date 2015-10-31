@@ -43,13 +43,20 @@ public class AndroidGame extends LGame {
 
 	public static class AndroidSetting extends LSetting {
 		
+		//屏幕显示模式
 		public LMode showMode = LMode.Fill;
 		
+		//是否使用唤醒锁
 		public boolean useWakelock = false;
 		
-		public boolean hideStatusBar = false;
+		//是否隐藏状态栏
+		public boolean hideStatusBar = true;
 		
+		//是否启动输入法模式
 		public boolean useImmersiveMode = false;
+		
+		//是否使用等比屏幕缩放（使用此项，可以保证游戏画面不是失真，而不使用此项，则默认全屏拉伸满屏幕，不管画面是否变形）
+		public boolean useRatioScaleFactor = false;
 
 	}
 

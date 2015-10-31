@@ -104,8 +104,9 @@ public abstract class RenderTarget implements LRelease {
 
 	@Override
 	protected void finalize() {
-		if (!disposed)
+		if (!disposed){
 			gfx.queueForDispose(this);
+		}
 	}
 
 	private boolean disposed;

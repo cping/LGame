@@ -21,13 +21,15 @@
  */
 package loon.utils.processes;
 
+import loon.utils.timer.LTimerContext;
+
 public abstract interface Process {
 	
 	public abstract void setProcessHost(RealtimeProcessHost host);
 
 	public abstract void fireThisWhenFinished(RealtimeProcess process);
 
-	public abstract void tick(long nanoTime);
+	public abstract void tick(LTimerContext time);
 
 	public abstract void kill();
 

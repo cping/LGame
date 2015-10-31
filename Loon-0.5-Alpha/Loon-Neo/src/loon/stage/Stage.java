@@ -4,7 +4,7 @@ import loon.LProcess;
 import loon.LSystem;
 import loon.utils.reply.Act;
 import loon.utils.reply.Closeable;
-import loon.utils.timer.GameClock;
+import loon.utils.timer.LTimerContext;
 
 public abstract class Stage extends PlayerUtils {
 
@@ -12,9 +12,9 @@ public abstract class Stage extends PlayerUtils {
 
 	public final GroupPlayer players = new GroupPlayer();
 
-	public final Act<GameClock> update = Act.create();
+	public final Act<LTimerContext> update = Act.create();
 
-	public final Act<GameClock> paint = Act.create();
+	public final Act<LTimerContext> paint = Act.create();
 
 	public float width() {
 		return LSystem.viewSize.width;

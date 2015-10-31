@@ -34,7 +34,7 @@ import loon.stage.PlayerUtils;
 import loon.utils.reply.Act;
 import loon.utils.reply.Port;
 import loon.utils.reply.UnitPort;
-import loon.utils.timer.GameClock;
+import loon.utils.timer.LTimerContext;
 
 public class ParticleEmitter {
 
@@ -54,7 +54,7 @@ public class ParticleEmitter {
 
 	public final Act<ParticleEmitter> onEmpty = Act.create();
 
-	public ParticleEmitter(final ParticleBatch batch, final Act<GameClock> paint,
+	public ParticleEmitter(final ParticleBatch batch, final Act<LTimerContext> paint,
 			final int maxParticles, final Painter p) {
 		this.layer = new Player() {
 			@Override
@@ -72,8 +72,8 @@ public class ParticleEmitter {
 		};
 		_buffer = new ParticleBuffer(maxParticles);
 
-		PlayerUtils.bind(layer, paint, new Port<GameClock>() {
-			public void onEmit(GameClock clock) {
+		PlayerUtils.bind(layer, paint, new Port<LTimerContext>() {
+			public void onEmit(LTimerContext clock) {
 				paint(clock);
 			}
 		});
@@ -98,8 +98,8 @@ public class ParticleEmitter {
 		});
 	}
 
-	protected void paint(GameClock clock) {
-		float dt = clock.dt / 1000f, now = _time + dt;
+	protected void paint(LTimerContext clock) {
+		float dt = clock.getMilliseconds(), now = _time + dt;
 		_time = now;
 		if (generator != null && generator.generate(this, now, dt)) {
 			generator = null;

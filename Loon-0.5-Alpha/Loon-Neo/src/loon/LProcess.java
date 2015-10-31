@@ -40,7 +40,6 @@ import loon.stage.RootPlayer;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
 import loon.utils.MathUtils;
-import loon.utils.Scale;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
@@ -321,7 +320,7 @@ public class LProcess extends PlayerUtils {
 			RealtimeProcess process = new RealtimeProcess() {
 
 				@Override
-				public void run(long time) {
+				public void run(LTimerContext time) {
 					if (!LSystem._base.display().showLogo) {
 						startTransition();
 						screen.setClose(false);
@@ -353,9 +352,9 @@ public class LProcess extends PlayerUtils {
 		}
 	}
 
-	public void resize(Scale scale, int w, int h) {
+	public void resize(int w, int h) {
 		if (isInstance) {
-			currentScreen.resize(scale, w, h);
+			currentScreen.resize(w, h);
 		}
 	}
 

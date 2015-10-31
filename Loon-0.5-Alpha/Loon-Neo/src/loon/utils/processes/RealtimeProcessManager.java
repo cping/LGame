@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import loon.LRelease;
+import loon.utils.timer.LTimerContext;
 
 public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 
@@ -45,13 +46,17 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 		this.processes = new LinkedList<Process>();
 	}
 
+	public static RealtimeProcessManager newProcess() {
+		return new RealtimeProcessManager();
+	}
+
 	public void addProcess(RealtimeProcess realtimeProcess) {
 		synchronized (this.processes) {
 			this.processes.add(realtimeProcess);
 		}
 	}
 
-	public void tick(long time) {
+	public void tick(LTimerContext time) {
 		if (processes.size() > 0) {
 			LinkedList<Process> toBeUpdated;
 			synchronized (this.processes) {
@@ -127,4 +132,5 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 			}
 		}
 	}
+
 }

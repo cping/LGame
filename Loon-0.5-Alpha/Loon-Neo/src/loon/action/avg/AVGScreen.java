@@ -141,13 +141,13 @@ public abstract class AVGScreen extends Screen {
 		this.avgProcess = new RealtimeProcess() {
 
 			@Override
-			public void run(long time) {
+			public void run(LTimerContext time) {
 				if (running) {
 					if (desktop != null) {
-						desktop.update(time);
+						desktop.update(time.timeSinceLastUpdate);
 					}
 					if (sprites != null) {
-						sprites.update(time);
+						sprites.update(time.timeSinceLastUpdate);
 					}
 					if (autoPlay) {
 						playAutoNext();

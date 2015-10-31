@@ -27,11 +27,9 @@ import loon.opengl.GL20;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.utils.MathUtils;
-import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
-import loon.utils.timer.GameClock;
 import loon.utils.timer.LTimerContext;
 
 public class Display extends LSystemView {
@@ -104,8 +102,6 @@ public class Display extends LSystemView {
 
 	private LSTRFont fpsFont;
 
-	private LTimerContext context = new LTimerContext();
-
 	private float cred, cgreen, cblue, calpha;
 
 	private final GLEx glEx;
@@ -139,10 +135,9 @@ public class Display extends LSystemView {
 		glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget,
 				gl);
 		glEx.update();
-		paint.connect(new Port<GameClock>() {
-			public void onEmit(GameClock clock) {
-				context.setTimeSinceLastUpdate(clock.dt);
-				paint(context);
+		paint.connect(new Port<LTimerContext>() {
+			public void onEmit(LTimerContext clock) {
+				draw(clock);
 			}
 		}).setPriority(-1);
 		if (!setting.isLogo) {
@@ -189,7 +184,7 @@ public class Display extends LSystemView {
 		this.clearColor(0, 0, 0, 0);
 	}
 
-	protected void paint(LTimerContext timerContext) {
+	protected void draw(LTimerContext clock) {
 		if (showLogo) {
 			try {
 				glEx.save();
@@ -228,11 +223,10 @@ public class Display extends LSystemView {
 			process.load();
 			process.calls();
 
-			RealtimeProcessManager.get().tick(context.timeSinceLastUpdate);
-
-			ActionControl.update(context.timeSinceLastUpdate);
-
-			process.runTimer(timerContext);
+			RealtimeProcessManager.get().tick(clock);
+			ActionControl.update(clock.timeSinceLastUpdate);
+			
+			process.runTimer(clock);
 
 			int repaintMode = process.getRepaintMode();
 			switch (repaintMode) {
@@ -271,7 +265,7 @@ public class Display extends LSystemView {
 			}
 
 			process.draw(glEx);
-			process.drawable(context.timeSinceLastUpdate);
+			process.drawable(clock.timeSinceLastUpdate);
 
 			if (setting.isFPS) {
 				tickFrames();
@@ -288,8 +282,8 @@ public class Display extends LSystemView {
 
 	}
 
-	public Display resize(Scale scale, int viewWidth, int viewHeight) {
-		process.resize(scale, viewWidth, viewHeight);
+	public Display resize(int viewWidth, int viewHeight) {
+		process.resize(viewWidth, viewHeight);
 		return this;
 	}
 

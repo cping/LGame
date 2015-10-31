@@ -34,6 +34,7 @@ import loon.stage.StageSystem;
 import loon.stage.StageTransition;
 import loon.utils.Scale;
 import loon.utils.processes.RealtimeProcess;
+import loon.utils.timer.GameTime;
 import loon.utils.timer.LTimerContext;
 
 public class Test {
@@ -201,7 +202,7 @@ remove(this);
 							RealtimeProcess process = new RealtimeProcess() {
 
 								@Override
-								public void run(long time) {
+								public void run(LTimerContext time) {
 
 									addPlayer(new ImagePlayer("back1.png"));
 
@@ -252,7 +253,7 @@ remove(this);
 		}
 
 		@Override
-		public void resize(Scale scale, int width, int height) {
+		public void resize(int width, int height) {
 			// TODO Auto-generated method stub
 
 		}
