@@ -639,7 +639,7 @@ public class RectBox extends Shape {
 		return intersects(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public boolean intersects(int x, int y) {
+	public boolean intersects(float x, float y) {
 		return intersects(0, 0, width, height);
 	}
 

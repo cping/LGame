@@ -32,6 +32,7 @@ public class GLUtils {
 		GLUtils.currentHardwareTextureID = -1;
 		GLUtils.currentSourceBlendMode = -1;
 		GLUtils.currentDestinationBlendMode = -1;
+		GLUtils.currentBlendMode = -1;
 		GLUtils.disableBlend(gl);
 		GLUtils.disableCulling(gl);
 		GLUtils.disableTextures(gl);
@@ -42,6 +43,7 @@ public class GLUtils {
 		GLUtils.currentHardwareTextureID = -1;
 		GLUtils.currentSourceBlendMode = -1;
 		GLUtils.currentDestinationBlendMode = -1;
+		GLUtils.currentBlendMode = -1;
 		GLUtils.enableDither = true;
 		GLUtils.enableDepthTest = true;
 		GLUtils.enablecissorTest = false;
@@ -49,7 +51,6 @@ public class GLUtils {
 		GLUtils.enableCulling = false;
 		GLUtils.enableTextures = false;
 	}
-
 
 	public static int nextPOT(int value) {
 		assert value < 0x10000;
@@ -79,7 +80,7 @@ public class GLUtils {
 		return value + 1;
 	}
 
-	private static int currentBlendMode;
+	private static int currentBlendMode = -1;
 
 	public static final int getBlendMode() {
 		return currentBlendMode;
@@ -277,6 +278,7 @@ public class GLUtils {
 	}
 
 	public static void bindTexture(final GL20 gl, final int hardwareTextureID) {
+		GLUtils.enableTextures(gl);
 		try {
 			if (GLUtils.currentHardwareTextureID != hardwareTextureID) {
 				GLUtils.currentHardwareTextureID = hardwareTextureID;
@@ -297,7 +299,7 @@ public class GLUtils {
 		}
 		bindTexture(gl, tex2d.getID());
 	}
-	
+
 	public static void blendFunction(final GL20 gl, final int pSourceBlendMode,
 			final int pDestinationBlendMode) {
 		try {

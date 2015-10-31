@@ -67,7 +67,8 @@ public class AndroidGraphics extends Graphics {
 	final Bitmap.Config preferredBitmapConfig;
 
 	public AndroidGraphics(AndroidGame game, Bitmap.Config bitmapConfig) {
-		super(game, new AndroidGL20(), new Scale(game.activity.scaleFactor()));
+		super(game, new AndroidGL20(), game.setting.scaling() ? Scale.ONE
+				: new Scale(game.activity.scaleFactor()));
 		this.game = game;
 		this.preferredBitmapConfig = bitmapConfig;
 	}
@@ -100,10 +101,9 @@ public class AndroidGraphics extends Graphics {
 	}
 
 	public void setCanvasFilterBitmaps(boolean filterBitmaps) {
-		if (filterBitmaps){
+		if (filterBitmaps) {
 			AndroidCanvasState.PAINT_FLAGS |= Paint.FILTER_BITMAP_FLAG;
-		}
-		else{
+		} else {
 			AndroidCanvasState.PAINT_FLAGS &= ~Paint.FILTER_BITMAP_FLAG;
 		}
 	}
@@ -114,7 +114,7 @@ public class AndroidGraphics extends Graphics {
 	}
 
 	public void setCanvasScaleFunc(ScaleFunc scaleFunc) {
-		if (scaleFunc == null){
+		if (scaleFunc == null) {
 			throw new NullPointerException("Scale func have not null");
 		}
 		canvasScaleFunc = scaleFunc;

@@ -173,7 +173,7 @@ public class Desktop implements LRelease {
 	 * 事件监听
 	 * 
 	 */
-	private void processEvents() {
+	public void processEvents() {
 		// 鼠标滑动
 		this.processTouchMotionEvent();
 		// 鼠标事件
@@ -193,14 +193,18 @@ public class Desktop implements LRelease {
 	 */
 	private void processTouchMotionEvent() {
 		if (this.hoverComponent != null && this.hoverComponent.isEnabled()
-				&& input.isMoving()) {
+				&& this.input.isMoving()) {
 			if (this.input.getTouchDY() != 0 || this.input.getTouchDY() != 0) {
 				this.hoverComponent.processTouchDragged();
 			}
+
 		} else {
 			// 获得当前窗体下鼠标坐标
 			LComponent comp = this.findComponent(this.input.getTouchX(),
 					this.input.getTouchY());
+			if(comp!=null){
+
+			}
 			if (comp != null) {
 				if (this.input.getTouchDX() != 0
 						|| this.input.getTouchDY() != 0) {
@@ -220,7 +224,6 @@ public class Desktop implements LRelease {
 					this.hoverComponent.processTouchExited();
 				}
 			}
-
 			this.hoverComponent = comp;
 		}
 	}
@@ -277,12 +280,12 @@ public class Desktop implements LRelease {
 	 * @param y
 	 * @return
 	 */
+	@SuppressWarnings("resource")
 	private LComponent findComponent(int x, int y) {
 		if (this.modal != null && !this.modal.isContainer()) {
 			return null;
 		}
 		// 返回子容器
-		@SuppressWarnings("resource")
 		LContainer panel = (this.modal == null) ? this.contentPane
 				: ((LContainer) this.modal);
 		LComponent comp = panel.findComponent(x, y);

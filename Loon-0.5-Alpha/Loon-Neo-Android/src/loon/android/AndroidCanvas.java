@@ -54,14 +54,14 @@ public class AndroidCanvas extends Canvas {
 		scale(factor, factor);
 	}
 
-	void draw(Bitmap bitmap, float dx, float dy, float dw, float dh, float sx,
-			float sy, float sw, float sh) {
-		srcR.set((int) sx, (int) sy, (int) (sx + sw), (int) (sy + sh));
-		dstR.set(dx, dy, dx + dw, dy + dh);
+	void draw(Bitmap bitmap, float x, float y, float w, float h, float x1,
+			float y1, float w1, float h1) {
+		srcR.set((int) x1, (int) y1, (int) w1, (int) h1);
+		dstR.set(x, y, x + w, y + h);
 		canvas.drawBitmap(bitmap, srcR, dstR, currentState().prepareImage());
 		isDirty = true;
 	}
-	
+
 	public Canvas setColor(LColor color) {
 		int argb = color.getARGB();
 		this.setStrokeColor(argb);
@@ -78,7 +78,7 @@ public class AndroidCanvas extends Canvas {
 		this.setAlpha(a);
 		return null;
 	}
-	
+
 	@Override
 	public Canvas setColor(int r, int g, int b) {
 		int rgb = LColor.getRGB(r, g, b);
@@ -96,7 +96,7 @@ public class AndroidCanvas extends Canvas {
 	public int getFillColor() {
 		return currentState().fillColor;
 	}
-	
+
 	public float alpha() {
 		return currentState().alpha;
 	}
@@ -189,8 +189,7 @@ public class AndroidCanvas extends Canvas {
 			float radius) {
 		canvas.translate(x, y);
 		dstR.set(0, 0, width, height);
-		canvas.drawRoundRect(dstR, radius, radius, currentState()
-				.prepareFill());
+		canvas.drawRoundRect(dstR, radius, radius, currentState().prepareFill());
 		canvas.translate(-x, -y);
 		isDirty = true;
 		return this;

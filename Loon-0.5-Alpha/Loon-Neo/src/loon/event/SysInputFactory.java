@@ -107,8 +107,10 @@ public class SysInputFactory {
 	private EmulatorButtons ebuttons;
 
 	public void callMouse(MouseMake.ButtonEvent event) {
-		float touchX = (event.getX() - handler.getX()) / LSystem.getScaleWidth();
-		float touchY = (event.getY() - handler.getY()) / LSystem.getScaleHeight();
+		float touchX = (event.getX() - handler.getX())
+				/ LSystem.getScaleWidth();
+		float touchY = (event.getY() - handler.getY())
+				/ LSystem.getScaleHeight();
 		int button = event.button;
 		finalTouch.x = touchX;
 		finalTouch.y = touchY;
@@ -194,14 +196,18 @@ public class SysInputFactory {
 
 	public void callTouch(TouchMake.Event[] events) {
 		int size = events.length;
+
 		for (int i = 0; i < size; i++) {
 			TouchMake.Event e = events[i];
-			float touchX = (e.getX() - handler.getX()) / LSystem.getScaleWidth();
-			float touchY = (e.getY() - handler.getY()) / LSystem.getScaleHeight();
+			float touchX = (e.getX() - handler.getX())
+					/ LSystem.getScaleWidth();
+			float touchY = (e.getY() - handler.getY())
+					/ LSystem.getScaleHeight();
 			finalTouch.x = touchX;
 			finalTouch.y = touchY;
 			finalTouch.pointer = i;
 			finalTouch.id = e.id;
+		
 			switch (e.kind) {
 			case START:
 				if (useTouchCollection) {
@@ -226,16 +232,18 @@ public class SysInputFactory {
 			case MOVE:
 				offsetMoveX = touchX;
 				offsetMoveY = touchY;
-				if (Math.abs(offsetTouchX - offsetMoveX) > 5
-						|| Math.abs(offsetTouchY - offsetMoveY) > 5) {
+				finalTouch.dx = offsetTouchX - offsetMoveX;
+				finalTouch.dy = offsetTouchY - offsetMoveY;
+				if (Math.abs(finalTouch.dx) > 0.1f
+						|| Math.abs(finalTouch.dy) > 0.1f) {
 					if (useTouchCollection) {
 						touchCollection.update(finalTouch.id,
 								LTouchLocationState.Dragged, finalTouch.x,
 								finalTouch.y);
 					}
 					finalTouch.button = SysTouch.TOUCH_MOVE;
-					//a few platforms no such behavior (ios or android)
-					//handler.mouseMoved(finalTouch);
+					// a few platforms no such behavior (ios or android)
+					// handler.mouseMoved(finalTouch);
 					handler.mouseDragged(finalTouch);
 					isDraging = true;
 				}

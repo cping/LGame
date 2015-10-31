@@ -91,7 +91,10 @@ public class AndroidImage extends ImageImpl {
 		sy *= scale.factor;
 		sw *= scale.factor;
 		sh *= scale.factor;
-		((AndroidCanvas) ctx).draw(bitmap, dx, dy, dw, dh, sx, sy, sw, sh);
+
+		AndroidCanvas canvas = ((AndroidCanvas) ctx);
+		
+		canvas.draw(bitmap, dx, dy, dw, dh, sx, sy, sw, sh);
 	}
 
 	@Override

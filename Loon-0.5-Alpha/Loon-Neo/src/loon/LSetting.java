@@ -20,8 +20,6 @@
  */
 package loon;
 
-import loon.event.SysKey;
-
 public class LSetting {
 
 	public boolean isFPS = false;
@@ -40,17 +38,13 @@ public class LSetting {
 
 	public boolean fullscreen = false;
 
-	public boolean emulateTouch;
-
-	public int pivotKey = SysKey.ESCAPE;
+	public boolean emulateTouch = false;
 
 	public int activationKey = -1;
 
 	public boolean convertImagesOnLoad = true;
 
 	public String appName = LSystem.APP_NAME;
-
-	public boolean truePause;
 
 	public String logoPath = "loon_logo.png";
 
@@ -66,13 +60,23 @@ public class LSetting {
 		this.height_zoom = setting.height_zoom;
 		this.fullscreen = setting.fullscreen;
 		this.emulateTouch = setting.emulateTouch;
-		this.pivotKey = setting.pivotKey;
 		this.activationKey = setting.activationKey;
 		this.convertImagesOnLoad = setting.convertImagesOnLoad;
 		this.appName = setting.appName;
-		this.truePause = setting.truePause;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
+	}
+
+	public boolean landscape() {
+		return this.height < this.width;
+	}
+
+	public void updateScale() {
+		if (scaling()) {
+			LSystem.setScaleWidth((float) width_zoom / (float) width);
+			LSystem.setScaleHeight((float) height_zoom / (float) height);
+			LSystem.viewSize.setSize(width, height);
+		}
 	}
 
 	public boolean scaling() {

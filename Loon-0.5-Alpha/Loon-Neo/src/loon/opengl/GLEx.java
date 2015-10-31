@@ -102,9 +102,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		if (LSystem.isScaling()) {
+		if (LSystem.base().setting.scaling()) {
 			this.scale(target.xscale() * LSystem.getScaleWidth(),
-					target.yscale() * LSystem.getScaleHeight());
+					target.xscale() * LSystem.getScaleHeight());
 		} else {
 			this.scale(target.xscale(), target.yscale());
 		}
@@ -112,6 +112,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.tmpSave.font = this.font;
 		this.useAlltextures = LSystem.isHTML5();
 		this.tmpSave.alltextures = this.useAlltextures;
+		this.update();
 	}
 
 	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {

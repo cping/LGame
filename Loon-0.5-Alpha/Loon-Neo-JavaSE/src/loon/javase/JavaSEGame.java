@@ -40,6 +40,10 @@ import loon.utils.reply.Port;
 
 public class JavaSEGame extends LGame {
 
+	public static class JavaSetting extends LSetting {
+		public boolean vSyncEnabled = true;
+	}
+	
 	final static private boolean osIsLinux;
 
 	final static private boolean osIsUnix;
@@ -404,7 +408,7 @@ public class JavaSEGame extends LGame {
 				wasActive = newActive;
 			}
 			((JavaSELwjglGraphics) graphics()).checkScaleFactor();
-			if (newActive || !setting.truePause) {
+			if (newActive) {
 				processFrame();
 			}
 			Display.update();

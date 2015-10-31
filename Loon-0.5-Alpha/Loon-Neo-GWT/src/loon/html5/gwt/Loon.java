@@ -24,7 +24,7 @@ import loon.LGame;
 import loon.LSetting;
 import loon.LazyLoading;
 import loon.Platform;
-import loon.html5.gwt.GWTGame.Config;
+import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.soundmanager2.SoundManager;
 import loon.html5.gwt.preloader.Preloader;
 import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
@@ -81,11 +81,11 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	public void onModuleLoad() {
 		Loon.self = this;
 		onMain();
-		Config config = null;
-		if (this.setting instanceof Config) {
-			config = (Config) this.setting;
+		GWTSetting config = null;
+		if (this.setting instanceof GWTSetting) {
+			config = (GWTSetting) this.setting;
 		} else {
-			config = new Config();
+			config = new GWTSetting();
 			config.copy(this.setting);
 		}
 		this.setting = config;
@@ -203,7 +203,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	protected GWTGame createGame() {
-		return this.game = new GWTGame(this, root, (Config) this.setting);
+		return this.game = new GWTGame(this, root, (GWTSetting) this.setting);
 	}
 
 	public LGame getGame() {

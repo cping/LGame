@@ -37,6 +37,22 @@ import android.widget.RelativeLayout;
 
 public class AndroidGame extends LGame {
 
+	public static enum LMode {
+		Defalut, Max, Fill, FitFill, Ratio, MaxRatio
+	}
+
+	public static class AndroidSetting extends LSetting {
+		
+		public LMode showMode = LMode.Fill;
+		
+		public boolean useWakelock = false;
+		
+		public boolean hideStatusBar = false;
+		
+		public boolean useImmersiveMode = false;
+
+	}
+
 	final private static String BULID_BRAND, BULID_MODEL, BULIDM_PRODUCT,
 			BULIDM_RELEASE, BULIDM_DEVICE;
 
@@ -305,7 +321,6 @@ public class AndroidGame extends LGame {
 			relativeParams.addRule(RelativeLayout.CENTER_VERTICAL,
 					RelativeLayout.TRUE);
 		}
-
 		return relativeParams;
 	}
 

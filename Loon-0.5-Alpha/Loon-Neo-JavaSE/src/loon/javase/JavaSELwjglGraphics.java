@@ -30,6 +30,7 @@ import java.util.Arrays;
 
 import loon.*;
 import loon.geom.Dimension;
+import loon.javase.JavaSEGame.JavaSetting;
 import loon.jni.NativeSupport;
 import loon.opengl.GL20;
 import loon.utils.GLUtils;
@@ -76,6 +77,12 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 
 	@Override
 	protected void init() {
+		if(game.setting instanceof JavaSetting){
+			JavaSetting setting = (JavaSetting)game.setting;
+			Display.setVSyncEnabled(setting.vSyncEnabled);
+		}else{
+			Display.setVSyncEnabled(true);
+		}
 		if (game.setting.width_zoom > 0 && game.setting.height_zoom > 0) {
 			setDisplayMode(scale.scaledCeil(game.setting.width_zoom),
 					scale.scaledCeil(game.setting.height_zoom),

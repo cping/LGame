@@ -241,7 +241,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private LColor color;
 
-	private int touchX, touchY, lastTouchX, lastTouchY, touchDX, touchDY;
+	private float lastTouchX, lastTouchY, touchDX, touchDY;
 
 	public long elapsedTime;
 
@@ -501,7 +501,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.height = height;
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
-		this.touchX = touchY = lastTouchX = lastTouchY = touchDX = touchDY = 0;
+		this.lastTouchX = lastTouchY = touchDX = touchDY = 0;
 		this.isLoad = isLock = isClose = isTranslate = isGravity = false;
 		if (sprites != null) {
 			sprites.close();
@@ -1076,8 +1076,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		if (sprite.isVisible()) {
 			RectBox rect = sprite.getCollisionBox();
-			if (rect.contains(touchX, touchY)
-					|| rect.intersects(touchX, touchY)) {
+			if (rect.contains(SysTouch.getX(), SysTouch.getY())
+					|| rect.intersects(SysTouch.getX(), SysTouch.getY())) {
 				return true;
 			}
 		}
@@ -1097,8 +1097,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		if (component.isVisible()) {
 			RectBox rect = component.getCollisionBox();
-			if (rect.contains(touchX, touchY)
-					|| rect.intersects(touchX, touchY)) {
+			if (rect.contains(SysTouch.getX(), SysTouch.getY())
+					|| rect.intersects(SysTouch.getX(), SysTouch.getY())) {
 				return true;
 			}
 		}
@@ -1309,10 +1309,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			}
 		}
-		this.touchDX = touchX - lastTouchX;
-		this.touchDY = touchY - lastTouchY;
-		this.lastTouchX = touchX;
-		this.lastTouchY = touchY;
+		this.touchDX = SysTouch.getX() - lastTouchX;
+		this.touchDY = SysTouch.getY() - lastTouchY;
+		this.lastTouchX = SysTouch.getX();
+		this.lastTouchY = SysTouch.getY();
 		this.touchButtonReleased = NO_BUTTON;
 	}
 
@@ -1515,7 +1515,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public abstract void resize(Scale scale, int width, int height);
 
 	public Point2i getTouch() {
-		touch.set(touchX, touchY);
+		touch.set((int)SysTouch.getX(), (int)SysTouch.getY());
 		return touch;
 	}
 
@@ -1542,19 +1542,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public int getTouchX() {
-		return touchX;
+		return (int) SysTouch.getX();
 	}
 
 	public int getTouchY() {
-		return touchY;
+		return (int) SysTouch.getY();
 	}
 
 	public int getTouchDX() {
-		return touchDX;
+		return (int) touchDX;
 	}
 
 	public int getTouchDY() {
-		return touchDY;
+		return (int) touchDY;
 	}
 
 	public boolean isTouchType(int type) {
@@ -1740,8 +1740,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				t.move(e);
 			}
 		}
-		this.touchX = e.x();
-		this.touchY = e.y();
 		if (!isClickLimit(e)) {
 			touchMove(e);
 		}
@@ -1761,20 +1759,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				t.drag(e);
 			}
 		}
-		this.touchX = e.x();
-		this.touchY = e.y();
 		if (!isClickLimit(e)) {
 			touchDrag(e);
 		}
 	}
 
 	public abstract void touchDrag(GameTouch e);
-
-	public Screen move(double x, double y) {
-		this.touchX = (int) x;
-		this.touchY = (int) y;
-		return this;
-	}
 
 	public boolean isMoving() {
 		return SysTouch.isDrag();

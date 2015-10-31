@@ -104,9 +104,6 @@ public class LSystem {
 	// 理论上一年
 	final static public long YEAR = DAY * 365;
 
-	// 是否使用了缩放画布
-	private static boolean _USE_SCALING = false;
-
 	// 是否使用了HTML5环境
 	private static boolean _USE_HTML5 = false;
 
@@ -132,13 +129,7 @@ public class LSystem {
 	protected static void initProcess(LGame game) {
 		_base = game;
 		LSetting setting = _base.setting;
-		if (setting.scaling()) {
-			LSystem.scaleWidth = (float) setting.width_zoom
-					/ (float) setting.width;
-			LSystem.scaleHeight = (float) setting.height_zoom
-					/ (float) setting.height;
-			_USE_SCALING = true;
-		}
+		setting.updateScale();
 		LSystem.viewSize.setSize(setting.width, setting.height);
 		_process = new LProcess(game);
 		_USE_HTML5 = (_base.type() == LGame.Type.HTML5);
@@ -149,9 +140,6 @@ public class LSystem {
 		return LSystem._USE_HTML5;
 	}
 
-	public static boolean isScaling() {
-		return LSystem._USE_SCALING;
-	}
 
 	public static float getScaleWidth() {
 		return LSystem.scaleWidth;
@@ -159,6 +147,14 @@ public class LSystem {
 
 	public static float getScaleHeight() {
 		return LSystem.scaleHeight;
+	}
+
+	public static void setScaleWidth(float sx) {
+		LSystem.scaleWidth = sx;
+	}
+
+	public static void setScaleHeight(float sy) {
+		LSystem.scaleHeight = sy;
 	}
 
 	public static String getFileName(String name) {

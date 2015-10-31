@@ -81,6 +81,14 @@ public class SysTouch {
 		return SysInputFactory.finalTouch.y;
 	}
 
+	public static float getDX() {
+		return SysInputFactory.finalTouch.dx;
+	}
+
+	public static float getDY() {
+		return SysInputFactory.finalTouch.dy;
+	}
+	
 	public static boolean isDown() {
 		return SysInputFactory.finalTouch.isDown();
 	}

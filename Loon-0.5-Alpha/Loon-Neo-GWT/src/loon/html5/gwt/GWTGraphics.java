@@ -33,7 +33,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
 import loon.geom.Vector2f;
-import loon.html5.gwt.GWTGame.Config;
+import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.opengl.GL20;
 import loon.utils.Scale;
 
@@ -53,7 +53,7 @@ import com.google.gwt.webgl.client.WebGLRenderingContext;
 
 public class GWTGraphics extends Graphics {
 
-	private final Config config;
+	private final GWTSetting config;
 	private final CanvasElement dummyCanvas;
 	private final Context2d dummyCtx;
 
@@ -71,7 +71,7 @@ public class GWTGraphics extends Graphics {
 
 	static float experimentalScale = 1;
 
-	public GWTGraphics(Panel panel, LGame game, GWTGame.Config cfg) {
+	public GWTGraphics(Panel panel, LGame game, GWTGame.GWTSetting cfg) {
 		super(game, new GWTGL20(), new Scale(cfg.scaleFactor));
 
 		this.config = cfg;

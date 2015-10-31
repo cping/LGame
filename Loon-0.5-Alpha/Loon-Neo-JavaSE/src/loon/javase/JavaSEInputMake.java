@@ -58,13 +58,13 @@ public class JavaSEInputMake extends InputMake {
 		kevQueue.add(event);
 	}
 
+	public boolean convertImagesOnLoad = true;
 	protected void emulateTouch() {
-		final int pivotKey = game.setting.pivotKey;
 		keyboardEvents.connect(new Port<KeyMake.Event>() {
 			public void onEmit(KeyMake.Event event) {
 				if (event instanceof KeyMake.KeyEvent) {
 					KeyMake.KeyEvent kevent = (KeyMake.KeyEvent) event;
-					if (kevent.keyCode == pivotKey && kevent.down) {
+					if (kevent.down) {
 						pivot = new Vector2f(x, y);
 					}
 				}

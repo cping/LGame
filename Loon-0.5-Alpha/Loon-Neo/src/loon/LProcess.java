@@ -88,7 +88,7 @@ public class LProcess extends PlayerUtils {
 		this.clear();
 		InputMake input = game.input();
 		if (input != null) {
-			if (!LSystem._base.setting.emulateTouch) {
+			if (!game.setting.emulateTouch && !game.isMobile()) {
 				input.mouseEvents.connect(new MouseMake.ButtonSlot() {
 					public void onEmit(MouseMake.ButtonEvent event) {
 						currentInput.callMouse(event);

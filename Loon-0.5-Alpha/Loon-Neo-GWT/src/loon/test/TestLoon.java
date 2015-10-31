@@ -1,7 +1,7 @@
 package loon.test;
 
 import loon.Screen;
-import loon.html5.gwt.GWTGame.Config;
+import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.Loon;
 
 public class TestLoon extends Loon {
@@ -9,7 +9,7 @@ public class TestLoon extends Loon {
 	@Override
 	public void onMain() {
 	
-		Config setting = new Config();
+		GWTSetting setting = new GWTSetting();
 		setting.fps = 60;
 		//original size
 		setting.width  = 480;
@@ -25,7 +25,7 @@ public class TestLoon extends Loon {
 			
 			@Override
 			public Screen onScreen() {
-				return new ScreenTest();
+				return new TitleScreen();
 			}
 		});
 		

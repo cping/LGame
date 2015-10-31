@@ -151,6 +151,11 @@ public abstract class LGame {
 		return display;
 	}*/
 
+	public boolean isMobile(){
+		Type type = this.type();
+		return (type==LGame.Type.ANDROID||type==LGame.Type.IOS||type==LGame.Type.WP);
+	}
+	
 	public void reportError(String message, Throwable cause) {
 		errors.emit(new Error(message, cause));
 		log().warn(message, cause);

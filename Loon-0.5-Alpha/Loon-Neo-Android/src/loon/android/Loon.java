@@ -31,6 +31,8 @@ import loon.LSetting;
 import loon.LSystem;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.android.AndroidGame.AndroidSetting;
+import loon.android.AndroidGame.LMode;
 import loon.geom.RectBox;
 import loon.utils.StringUtils;
 import android.annotation.SuppressLint;
@@ -42,18 +44,18 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
-public abstract class Loon extends Activity implements Platform, LazyLoading {
+public abstract class Loon extends Activity implements AndroidBase, Platform,
+		LazyLoading {
 
 	@SuppressLint("SetJavaScriptEnabled")
 	final static class Web extends android.webkit.WebView {
@@ -353,12 +355,12 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 
 	}
 
-	private LinearLayout linearLayout;
+	private FrameLayout frameLayout;
 
 	private AndroidGame game;
 	private AndroidGameViewGL gameView;
 	protected static Loon self;
-	private LSetting setting;
+	private AndroidSetting setting;
 
 	private LazyLoading.Data mainData;
 
@@ -422,6 +424,8 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 		return dm;
 	}
 
+	private Handler handler;
+
 	public abstract void onMain();
 
 	@Override
@@ -432,19 +436,52 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 
 		Context context = getApplicationContext();
 		this.onMain();
-		if (setting != null) {
-			this.setFullScreen(setting.fullscreen);
+		LMode mode = setting.showMode;
+		if (mode == null) {
+			mode = LMode.Fill;
 		}
+
+		if (setting != null && setting.fullscreen) {
+			this.setFullScreen(setting.fullscreen);
+		} else {
+			int windowFlags = makeWindowFlags();
+			getWindow().setFlags(windowFlags, windowFlags);
+		}
+
+		int width = setting.width;
+		int height = setting.height;
+		if (setting.width_zoom == -1 || setting.height_zoom == -1) {
+			updateViewSize(setting.landscape(), setting.width, setting.height,
+					mode);
+			setting.width_zoom = this.maxWidth;
+			setting.height_zoom = this.maxHeight;
+			width = this.maxWidth;
+			height = this.maxHeight;
+			setting.updateScale();
+		}
+
 		this.game = createGame();
 		this.gameView = new AndroidGameViewGL(context, game);
+		this.handler = new Handler();
 
-		int windowFlags = makeWindowFlags();
-		getWindow().setFlags(windowFlags, windowFlags);
-
-		setContentView(gameView);
+		setContentView(mode, gameView, width, height);
 
 		setRequestedOrientation(orientation());
 
+		createWakeLock(setting.useWakelock);
+		hideStatusBar(setting.hideStatusBar);
+		setImmersiveMode(setting.useImmersiveMode);
+		if (setting.useImmersiveMode && AndroidGame.getSDKVersion() >= 19) {
+			try {
+				Class<?> vlistener = Class
+						.forName("com.badlogic.gdx.backends.android.AndroidVisibilityListener");
+				Object o = vlistener.newInstance();
+				java.lang.reflect.Method method = vlistener.getDeclaredMethod(
+						"createListener", AndroidBase.class);
+				method.invoke(o, this);
+			} catch (Exception e) {
+			}
+		}
 		try {
 			final int REQUIRED_CONFIG_CHANGES = android.content.pm.ActivityInfo.CONFIG_ORIENTATION
 					| android.content.pm.ActivityInfo.CONFIG_KEYBOARD_HIDDEN;
@@ -467,6 +504,10 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		AndroidGame.debugLog("onWindowFocusChanged(" + hasFocus + ")");
+		if (setting != null) {
+			setImmersiveMode(setting.useImmersiveMode);
+			hideStatusBar(setting.hideStatusBar);
+		}
 		if (game != null && game.assets != null && game.assets._audio != null) {
 			if (hasFocus) {
 				game.assets.getNativeAudio().onResume();
@@ -598,26 +639,200 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 
 	@Override
 	public void register(LSetting s, LazyLoading.Data data) {
-		this.setting = s;
+		if (s instanceof AndroidSetting) {
+			this.setting = (AndroidSetting) s;
+		} else {
+			AndroidSetting tmp = new AndroidSetting();
+			tmp.copy(s);
+			tmp.fullscreen = true;
+			this.setting = tmp;
+		}
 		this.mainData = data;
 	}
 
-	private void setContentView(AndroidGameViewGL view) {
-		LinearLayout layout = new LinearLayout(this);
-		layout.setBackgroundColor(0xFF000000);
-		layout.setGravity(Gravity.CENTER);
-		layout.addView(gameView);
+	@Override
+	public Handler getHandler() {
+		return this.handler;
+	}
 
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.MATCH_PARENT);
-		getWindow().setContentView(layout, params);
+	@Override
+	public Window getApplicationWindow() {
+		return this.getWindow();
+	}
+
+	protected void createWakeLock(boolean use) {
+		if (use) {
+			getWindow()
+					.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		}
+	}
+
+	protected void hideStatusBar(boolean hide) {
+		if (!hide || AndroidGame.getSDKVersion() < 11) {
+			return;
+		}
+		View rootView = getWindow().getDecorView();
+		try {
+			java.lang.reflect.Method m = View.class.getMethod(
+					"setSystemUiVisibility", int.class);
+			if (AndroidGame.getSDKVersion() <= 13)
+				m.invoke(rootView, 0x0);
+			m.invoke(rootView, 0x1);
+		} catch (Exception e) {
+		}
+	}
+
+	private void setContentView(LMode mode, AndroidGameViewGL view, int w, int h) {
+		this.frameLayout = new FrameLayout(this);
+		if (mode == LMode.Defalut) {
+			// 添加游戏View，显示为指定大小，并居中
+			this.addView(view, view.getWidth(), view.getHeight(),
+					AndroidLocation.CENTER);
+		} else if (mode == LMode.Ratio) {
+			// 添加游戏View，显示为屏幕许可范围，并居中
+			this.addView(view, w, h, AndroidLocation.CENTER);
+		} else if (mode == LMode.MaxRatio) {
+			// 添加游戏View，显示为屏幕许可的最大范围(可能比单纯的Ratio失真)，并居中
+			this.addView(view, w, h, AndroidLocation.CENTER);
+		} else if (mode == LMode.Max) {
+			// 添加游戏View，显示为最大范围值，并居中
+			this.addView(view, w, h, AndroidLocation.CENTER);
+		} else if (mode == LMode.Fill) {
+			// 添加游戏View，显示为全屏，并居中
+			this.addView(view,
+					android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+					android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+					AndroidLocation.CENTER);
+		} else if (mode == LMode.FitFill) {
+			// 添加游戏View，显示为按比例缩放情况下的最大值，并居中
+			this.addView(view, w, h, AndroidLocation.CENTER);
+		}
+		getWindow().setContentView(frameLayout);
 	}
 
 	protected FrameLayout.LayoutParams createLayoutParams() {
 		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-				0xffffffff, 0xffffffff);
+				android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+				android.view.ViewGroup.LayoutParams.MATCH_PARENT);
 		layoutParams.gravity = Gravity.CENTER;
 		return layoutParams;
+	}
+
+	private int maxWidth, maxHeight;
+
+	private int zoomWidth, zoomHeight;
+
+	protected void updateViewSize(final boolean landscape, int width,
+			int height, LMode mode) {
+
+		RectBox d = getScreenDimension();
+
+		this.maxWidth = (int) d.getWidth();
+		this.maxHeight = (int) d.getHeight();
+
+		if (landscape && (d.getWidth() > d.getHeight())) {
+			maxWidth = (int) d.getWidth();
+			maxHeight = (int) d.getHeight();
+		} else if (landscape && (d.getWidth() < d.getHeight())) {
+			maxHeight = (int) d.getWidth();
+			maxWidth = (int) d.getHeight();
+		} else if (!landscape && (d.getWidth() < d.getHeight())) {
+			maxWidth = (int) d.getWidth();
+			maxHeight = (int) d.getHeight();
+		} else if (!landscape && (d.getWidth() > d.getHeight())) {
+			maxHeight = (int) d.getWidth();
+			maxWidth = (int) d.getHeight();
+		}
+
+		if (mode != LMode.Max) {
+			if (landscape) {
+				this.zoomWidth = width;
+				this.zoomHeight = height;
+			} else {
+				this.zoomWidth = height;
+				this.zoomHeight = width;
+			}
+		} else {
+			if (landscape) {
+				this.zoomWidth = maxWidth >= width ? width : maxWidth;
+				this.zoomHeight = maxHeight >= height ? height : maxHeight;
+			} else {
+				this.zoomWidth = maxWidth >= height ? height : maxWidth;
+				this.zoomHeight = maxHeight >= width ? width : maxHeight;
+			}
+		}
+
+		if (mode == LMode.Fill) {
+
+			LSystem.setScaleWidth(((float) maxWidth) / zoomWidth);
+			LSystem.setScaleHeight(((float) maxHeight) / zoomHeight);
+
+		} else if (mode == LMode.FitFill) {
+
+			RectBox res = AndroidGraphicsUtils.fitLimitSize(zoomWidth,
+					zoomHeight, maxWidth, maxHeight);
+			maxWidth = res.width;
+			maxHeight = res.height;
+			LSystem.setScaleWidth(((float) maxWidth) / zoomWidth);
+			LSystem.setScaleHeight(((float) maxHeight) / zoomHeight);
+
+		} else if (mode == LMode.Ratio) {
+
+			maxWidth = View.MeasureSpec.getSize(maxWidth);
+			maxHeight = View.MeasureSpec.getSize(maxHeight);
+
+			float userAspect = (float) zoomWidth / (float) zoomHeight;
+			float realAspect = (float) maxWidth / (float) maxHeight;
+
+			if (realAspect < userAspect) {
+				maxHeight = Math.round(maxWidth / userAspect);
+			} else {
+				maxWidth = Math.round(maxHeight * userAspect);
+			}
+
+			LSystem.setScaleWidth(((float) maxWidth) / zoomWidth);
+			LSystem.setScaleHeight(((float) maxHeight) / zoomHeight);
+
+		} else if (mode == LMode.MaxRatio) {
+
+			maxWidth = View.MeasureSpec.getSize(maxWidth);
+			maxHeight = View.MeasureSpec.getSize(maxHeight);
+
+			float userAspect = (float) zoomWidth / (float) zoomHeight;
+			float realAspect = (float) maxWidth / (float) maxHeight;
+
+			if ((realAspect < 1 && userAspect > 1)
+					|| (realAspect > 1 && userAspect < 1)) {
+				userAspect = (float) zoomHeight / (float) zoomWidth;
+			}
+
+			if (realAspect < userAspect) {
+				maxHeight = Math.round(maxWidth / userAspect);
+			} else {
+				maxWidth = Math.round(maxHeight * userAspect);
+			}
+
+			LSystem.setScaleWidth(((float) maxWidth) / zoomWidth);
+			LSystem.setScaleHeight(((float) maxHeight) / zoomHeight);
+
+		} else {
+
+			LSystem.setScaleWidth(1f);
+			LSystem.setScaleHeight(1f);
+
+		}
+
+		LSystem.setScaleWidth(((float) maxWidth) / zoomWidth);
+		LSystem.setScaleHeight(((float) maxHeight) / zoomHeight);
+		LSystem.viewSize.setSize(zoomWidth, zoomHeight);
+
+		StringBuffer sbr = new StringBuffer();
+		sbr.append("Mode:").append(mode);
+		sbr.append("\nWidth:").append(zoomWidth)
+				.append(",Height:" + zoomHeight);
+		sbr.append("\nMaxWidth:").append(maxWidth)
+				.append(",MaxHeight:" + maxHeight);
+		game.log().info("Android2DSize", sbr.toString());
 	}
 
 	// 检查ADView状态，如果ADView上附着有其它View则删除，
@@ -680,7 +895,7 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 		if (view == null) {
 			return;
 		}
-		linearLayout.addView(view, createLayoutParams());
+		frameLayout.addView(view, createLayoutParams());
 		try {
 			if (view.getVisibility() != View.VISIBLE) {
 				view.setVisibility(View.VISIBLE);
@@ -693,11 +908,26 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 		if (view == null) {
 			return;
 		}
-		linearLayout.removeView(view);
+		frameLayout.removeView(view);
 		try {
 			if (view.getVisibility() != View.GONE) {
 				view.setVisibility(View.GONE);
 			}
+		} catch (Exception e) {
+		}
+	}
+
+	public void setImmersiveMode(boolean use) {
+		if (!use || AndroidGame.getSDKVersion() < 19) {
+			return;
+		}
+		View view = getWindow().getDecorView();
+		try {
+			java.lang.reflect.Method m = View.class.getMethod(
+					"setSystemUiVisibility", int.class);
+			int code = 0x00000100 | 0x00000200 | 0x00000400 | 0x00000002
+					| 0x00000004 | 0x00001000;
+			m.invoke(view, code);
 		} catch (Exception e) {
 		}
 	}
@@ -715,8 +945,8 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 		return result + ad.length();
 	}
 
-	public LinearLayout getLayout() {
-		return linearLayout;
+	public FrameLayout getLayout() {
+		return frameLayout;
 	}
 
 	public RectBox getScreenDimension() {
@@ -750,5 +980,13 @@ public abstract class Loon extends Activity implements Platform, LazyLoading {
 		} else {
 			return Orientation.Landscape;
 		}
+	}
+
+	public int getMaxWidth() {
+		return maxWidth;
+	}
+
+	public int getMaxHeight() {
+		return maxHeight;
 	}
 }

@@ -32,15 +32,30 @@ public class AndroidLog extends loon.Log {
 	}
 
 	@Override
-	protected void callNativeLog(Level l, String msg, Throwable e) {
-		if (l.id == Level.DEBUG.id) {
-			Log.d(logMes + "-" + l.levelString, msg, e);
-		} else if (l.id == Level.WARN.id) {
-			Log.w(logMes + "-" + l.levelString, msg, e);
-		} else if (l.id == Level.ERROR.id) {
-			Log.w(logMes + "-" + l.levelString, msg, e);
+	protected void callNativeLog(Level level, String msg, Throwable e) {
+		if (e == null) {
+			if (level.id == Level.ALL.id || level.id <= Level.DEBUG.id) {
+				Log.d(logMes + "-" + level, msg);
+			} else if (level.id == Level.ALL.id || level.id <= Level.WARN.id) {
+				Log.w(logMes + "-" + level, msg);
+			} else if (level.id == Level.ALL.id || level.id <= Level.ERROR.id) {
+				Log.e(logMes + "-" + level, msg);
+			} else {
+				Log.i(logMes + "-" + level, msg);
+			}
 		} else {
-			Log.i(logMes + "-" + l.levelString, msg, e);
+			if (level.id == Level.ALL.id || level.id <= Level.DEBUG.id) {
+				Log.d(logMes + "-" + level, msg, e);
+			} else if (level.id == Level.ALL.id || level.id <= Level.WARN.id) {
+				Log.w(logMes + "-" + level, msg, e);
+			} else if (level.id == Level.ALL.id || level.id <= Level.ERROR.id) {
+				Log.e(logMes + "-" + level, msg, e);
+			} else {
+				Log.i(logMes + "-" + level, msg, e);
+			}
+			if (e != null) {
+				e.printStackTrace(System.out);
+			}
 		}
 	}
 

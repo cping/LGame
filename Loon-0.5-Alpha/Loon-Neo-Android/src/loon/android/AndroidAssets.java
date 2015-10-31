@@ -22,16 +22,23 @@ package loon.android;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import loon.Assets;
+import loon.LRelease;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.utils.Scale;
+import loon.utils.StringUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -48,6 +55,404 @@ import android.net.http.AndroidHttpClient;
 
 public class AndroidAssets extends Assets {
 
+	private final static String DEF_RES = "assets/";
+
+	public static interface Resource extends LRelease {
+
+		InputStream getInputStream();
+
+		String getResourceName();
+
+		URI getURI();
+	}
+
+	public static abstract class DataRes {
+
+		String path;
+
+		String name;
+
+		InputStream in;
+
+		URI uri;
+
+		@Override
+		public int hashCode() {
+			return (name == null) ? super.hashCode() : name.hashCode();
+		}
+
+		public void close() {
+			if (in != null) {
+				try {
+					in.close();
+					in = null;
+				} catch (IOException e) {
+				}
+			}
+			if (uri != null) {
+				uri = null;
+			}
+		}
+	}
+
+	public static class ClassRes extends DataRes implements Resource {
+
+		private ClassLoader classLoader;
+
+		public ClassRes(String path) {
+			this(path, null);
+		}
+
+		public ClassRes(String path, ClassLoader classLoader) {
+			this.path = path;
+			this.name = "classpath://" + path;
+			this.classLoader = classLoader;
+		}
+
+		@Override
+		public InputStream getInputStream() {
+			try {
+				if (classLoader == null) {
+					return (in = AndroidAssets.classLoader
+							.getResourceAsStream(path));
+				} else {
+					return (in = classLoader.getResourceAsStream(path));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		public String getResourceName() {
+			return name;
+		}
+
+		@Override
+		public URI getURI() {
+			try {
+				if (uri != null) {
+					return uri;
+				}
+				return (uri = classLoader.getResource(path).toURI());
+			} catch (URISyntaxException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ClassRes other = (ClassRes) obj;
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+
+	}
+
+	public static class FileRes extends DataRes implements Resource {
+
+		public FileRes(String path) {
+			this.path = path;
+			this.name = "file://" + path;
+		}
+
+		@Override
+		public InputStream getInputStream() {
+			try {
+				if (in != null) {
+					return in;
+				}
+				File file = new File(path);
+				return (in = new FileInputStream(file));
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException("file " + name + " not found !", e);
+			}
+		}
+
+		@Override
+		public String getResourceName() {
+			return name;
+		}
+
+		@Override
+		public URI getURI() {
+			try {
+				if (uri != null) {
+					return uri;
+				}
+				return (uri = new URL(path).toURI());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			FileRes other = (FileRes) obj;
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+	}
+
+	public static class RemoteRes extends DataRes implements Resource {
+
+		public RemoteRes(String url) {
+			this.path = url;
+			this.name = url;
+		}
+
+		@Override
+		public InputStream getInputStream() {
+			try {
+				if (in != null) {
+					return in;
+				}
+				return in = new URL(path).openStream();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public String getResourceName() {
+			return name;
+		}
+
+		@Override
+		public URI getURI() {
+			try {
+				return new URL(path).toURI();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			RemoteRes other = (RemoteRes) obj;
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+	}
+
+	public static class SDRes extends DataRes implements Resource {
+
+		public SDRes(String path) {
+			if (isMoutedSD()) {
+				File f = android.os.Environment.getExternalStorageDirectory();
+				String tmp = f.getPath();
+				if (StringUtils.startsWith(path, '/')) {
+					path = path.substring(1);
+				}
+				if (!StringUtils.endsWith(tmp, '/')) {
+					path = tmp + "/" + path;
+				} else {
+					path = tmp + path;
+				}
+			} else {
+				path = Loon.self.getCacheDir().getAbsolutePath();
+				path = StringUtils.replaceIgnoreCase(path, "\\", "/");
+				if (StringUtils.startsWith(path, '/')
+						|| StringUtils.startsWith(path, '\\')) {
+					path = path.substring(1, path.length());
+				}
+			}
+			this.path = path;
+			this.name = "sdcard://" + path;
+		}
+
+		public final static boolean isMoutedSD() {
+			String sdState = android.os.Environment.getExternalStorageState();
+			return sdState.equals(android.os.Environment.MEDIA_MOUNTED);
+		}
+
+		@Override
+		public InputStream getInputStream() {
+			try {
+				if (in != null) {
+					return in;
+				}
+				return (in = new FileInputStream(new File(path)));
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException("file " + name + " not found !", e);
+			}
+		}
+
+		@Override
+		public String getResourceName() {
+			return name;
+		}
+
+		@Override
+		public URI getURI() {
+			try {
+				if (uri != null) {
+					return uri;
+				}
+				return (uri = new URL(path).toURI());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			SDRes other = (SDRes) obj;
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+	}
+
+	public static Resource classRes(String path) {
+		return new ClassRes(path);
+	}
+
+	public static Resource fileRes(String path) {
+		return new FileRes(path);
+	}
+
+	public static Resource remoteRes(String path) {
+		return new RemoteRes(path);
+	}
+
+	public static Resource sdRes(String path) {
+		return new SDRes(path);
+	}
+
+
+	private InputStream filestream(String path) {
+		try {
+			File file = new File(path);
+			if (file.exists()) {
+				return new FileInputStream(file);
+			} else {
+				file = new File(StringUtils.replaceIgnoreCase(getPath(path),
+						DEF_RES, ""));
+				if (file.exists()) {
+					return new FileInputStream(file);
+				}
+			}
+			return null;
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+
+	public InputStream strRes(final String path) {
+		if (path == null) {
+			return null;
+		}
+		InputStream in = filestream(path);
+		if (in != null) {
+			return in;
+		}
+		if (path.indexOf("->") == -1) {
+			if (path.startsWith("sd:")) {
+				in = sdRes(path.substring(3, path.length())).getInputStream();
+			} else if (path.startsWith("class:")) {
+				in = classRes(path.substring(6, path.length()))
+						.getInputStream();
+			} else if (path.startsWith("path:")) {
+				in = fileRes(path.substring(5, path.length())).getInputStream();
+			} else if (path.startsWith("url:")) {
+				in = remoteRes(path.substring(4, path.length()))
+						.getInputStream();
+			}
+		}
+		return in;
+	}
+
+	private static ClassLoader classLoader;
+
+	static {
+		try {
+			classLoader = AndroidAssets.class.getClassLoader();
+		} catch (Throwable ex) {
+			classLoader = null;
+		}
+	}
+
 	public class BitmapOptions extends BitmapFactory.Options {
 
 		public Scale scale;
@@ -60,7 +465,7 @@ public class AndroidAssets extends Assets {
 
 	private final AndroidGame game;
 	private final AssetManager assetMgr;
-	private String pathPrefix = "";
+
 	private Scale assetScale = null;
 
 	private BitmapOptionsAdjuster optionsAdjuster = new BitmapOptionsAdjuster() {
@@ -70,6 +475,7 @@ public class AndroidAssets extends Assets {
 
 	public AndroidAssets(AndroidGame game) {
 		super(game.asyn());
+		Assets.pathPrefix = "";
 		this.game = game;
 		this.assetMgr = game.activity.getResources().getAssets();
 		this.setPathPrefix("");
@@ -212,12 +618,57 @@ public class AndroidAssets extends Assets {
 	}
 
 	protected InputStream openAsset(String path) throws IOException {
-		String fullPath = getPath(path);
-		InputStream is = assetMgr.open(fullPath, AssetManager.ACCESS_STREAMING);
+		String newPath = getPath(path);
+		InputStream is = openResource(newPath);
 		if (is == null) {
-			throw new FileNotFoundException("Missing resource: " + fullPath);
+			is = assetMgr.open(newPath, AssetManager.ACCESS_STREAMING);
+		}
+		if (is == null) {
+			throw new FileNotFoundException("not found resource: " + newPath);
 		}
 		return is;
+	}
+
+	public InputStream openResource(String resName) throws IOException {
+		InputStream resource = strRes(resName);
+		if (resource != null) {
+			return resource;
+		}
+		if (resName.indexOf('\\') != -1) {
+			resName = resName.replace('\\', '/');
+		}
+		String fileName = resName.toLowerCase();
+		if (fileName.startsWith(DEF_RES)
+				|| fileName.startsWith('/' + DEF_RES)) {
+			boolean flag = resName.startsWith("/");
+			String file;
+			if (flag) {
+				file = resName.substring(1);
+			} else {
+				file = resName;
+			}
+			int index = file.indexOf('/') + 1;
+			if (index != -1) {
+				file = resName.substring(index);
+			} else {
+				int length = file.length();
+				int size = file.lastIndexOf('/', 0) + 1;
+				if (size < length) {
+					file = file.substring(size, length);
+				}
+			}
+			return this.assetMgr.open(file);
+		}
+		if (classLoader != null) {
+			InputStream in = null;
+			try {
+				in = classLoader.getResourceAsStream(resName);
+			} catch (Exception e) {
+			}
+			return in;
+		} else {
+			return this.assetMgr.open(resName);
+		}
 	}
 
 	protected BitmapOptions createOptions(String path, boolean purgeable,

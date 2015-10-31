@@ -31,7 +31,6 @@ import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
 public class LButton extends LComponent {
-
 	private String text = null;
 
 	private boolean over, pressed, exception;
@@ -115,14 +114,9 @@ public class LButton extends LComponent {
 
 	}
 
-	private int tmpColor;
-	private LFont tmpFont;
-	
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		tmpColor = g.color();
-		tmpFont = g.getFont();
 		LButton button = (LButton) component;
 		if (buttonImage != null) {
 			if (!button.isEnabled()) {
@@ -140,6 +134,7 @@ public class LButton extends LComponent {
 			}
 		}
 		if (text != null) {
+			LFont old = g.getFont();
 			g.setFont(font);
 			g.setColor(fontColor);
 			g.drawString(
@@ -149,9 +144,9 @@ public class LButton extends LComponent {
 					y + button.getOffsetTop()
 							+ (button.getHeight() - font.getHeight()) / 2
 							+ font.getHeight());
+			g.setFont(old);
+			g.resetColor();
 		}
-		g.setColor(tmpColor);
-		g.setFont(tmpFont);
 	}
 
 	@Override
@@ -193,13 +188,13 @@ public class LButton extends LComponent {
 
 	public void downClick() {
 		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
+			Click.DownClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
 
 	public void upClick() {
 		if (Click != null) {
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
+			Click.UpClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
 
@@ -213,8 +208,9 @@ public class LButton extends LComponent {
 
 	@Override
 	protected void processTouchClicked() {
-		int code = this.input.getTouchReleased();
-		if (code == SysTouch.TOUCH_DOWN || code == SysTouch.TOUCH_UP) {
+
+		if (this.input.getTouchReleased() == SysTouch.TOUCH_UP
+				|| this.input.getTouchReleased() == SysTouch.TOUCH_DOWN) {
 			this.doClick();
 		}
 	}
@@ -301,5 +297,4 @@ public class LButton extends LComponent {
 	public void setOffsetTop(int offsetTop) {
 		this.offsetTop = offsetTop;
 	}
-
 }

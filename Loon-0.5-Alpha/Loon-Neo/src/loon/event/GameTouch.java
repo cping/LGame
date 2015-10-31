@@ -26,6 +26,8 @@ public class GameTouch {
 
 	float x, y;
 
+	float dx, dy;
+	
 	int button;
 
 	int pointer;
@@ -115,6 +117,14 @@ public class GameTouch {
 		return y;
 	}
 
+	public float getDX() {
+		return dx;
+	}
+
+	public float getDY() {
+		return dy;
+	}
+	
 	static boolean isDraging;
 	
 	public boolean isDown() {

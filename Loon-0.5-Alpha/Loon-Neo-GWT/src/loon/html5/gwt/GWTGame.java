@@ -41,7 +41,7 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class GWTGame extends LGame {
 
-	public static class Config extends LSetting {
+	public static class GWTSetting extends LSetting {
 
 		public boolean preferFlash = true;
 
@@ -147,7 +147,7 @@ public class GWTGame extends LGame {
 
 	private final Loon game;
 
-	public GWTGame(Loon game, Panel panel, Config config) {
+	public GWTGame(Loon game, Panel panel, GWTSetting config) {
 		super(config, game);
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 			@Override

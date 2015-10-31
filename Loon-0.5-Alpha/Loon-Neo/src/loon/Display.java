@@ -190,7 +190,6 @@ public class Display extends LSystemView {
 	}
 
 	protected void paint(LTimerContext timerContext) {
-
 		if (showLogo) {
 			try {
 				glEx.save();
@@ -235,63 +234,58 @@ public class Display extends LSystemView {
 
 			process.runTimer(timerContext);
 
-			if (LSystem.AUTO_REPAINT) {
-
-				int repaintMode = process.getRepaintMode();
-				switch (repaintMode) {
-				case Screen.SCREEN_BITMAP_REPAINT:
-					if (process.getX() == 0 && process.getY() == 0) {
-						glEx.draw(process.getBackground(), 0, 0);
-					} else {
-						glEx.draw(process.getBackground(), process.getX(),
-								process.getY());
-					}
-					break;
-				case Screen.SCREEN_COLOR_REPAINT:
-					LColor c = process.getColor();
-					if (c != null) {
-						glEx.clear(c);
-					}
-					break;
-				case Screen.SCREEN_CANVAS_REPAINT:
-					break;
-				case Screen.SCREEN_NOT_REPAINT:
-					break;
-				default:
-					if (process.getX() == 0 && process.getY() == 0) {
-						glEx.draw(
-								process.getBackground(),
-								repaintMode / 2
-										- LSystem.random.nextInt(repaintMode),
-								repaintMode / 2
-										- LSystem.random.nextInt(repaintMode));
-					} else {
-						glEx.draw(process.getBackground(),
-								process.getX() + repaintMode / 2
-										- LSystem.random.nextInt(repaintMode),
-								process.getY() + repaintMode / 2
-										- LSystem.random.nextInt(repaintMode));
-					}
-					break;
+			int repaintMode = process.getRepaintMode();
+			switch (repaintMode) {
+			case Screen.SCREEN_BITMAP_REPAINT:
+				if (process.getX() == 0 && process.getY() == 0) {
+					glEx.draw(process.getBackground(), 0, 0);
+				} else {
+					glEx.draw(process.getBackground(), process.getX(),
+							process.getY());
 				}
-
-				process.draw(glEx);
-				process.drawable(context.timeSinceLastUpdate);
-
-				if (setting.isFPS) {
-					tickFrames();
-					fpsFont.drawString("FPS:" + frameRate, 5, 5, 0,
-							LColor.white);
+				break;
+			case Screen.SCREEN_COLOR_REPAINT:
+				LColor c = process.getColor();
+				if (c != null) {
+					glEx.clear(c);
 				}
-
-				process.drawEmulator(glEx);
-				process.unload();
-
+				break;
+			case Screen.SCREEN_CANVAS_REPAINT:
+				break;
+			case Screen.SCREEN_NOT_REPAINT:
+				break;
+			default:
+				if (process.getX() == 0 && process.getY() == 0) {
+					glEx.draw(process.getBackground(), repaintMode / 2
+							- LSystem.random.nextInt(repaintMode), repaintMode
+							/ 2 - LSystem.random.nextInt(repaintMode));
+				} else {
+					glEx.draw(
+							process.getBackground(),
+							process.getX() + repaintMode / 2
+									- LSystem.random.nextInt(repaintMode),
+							process.getY() + repaintMode / 2
+									- LSystem.random.nextInt(repaintMode));
+				}
+				break;
 			}
+
+			process.draw(glEx);
+			process.drawable(context.timeSinceLastUpdate);
+
+			if (setting.isFPS) {
+				tickFrames();
+				fpsFont.drawString("FPS:" + frameRate, 5, 5, 0, LColor.white);
+			}
+
+			process.drawEmulator(glEx);
+			process.unload();
+
 		} finally {
 			glEx.end();
 			glEx.restoreTx();
 		}
+
 	}
 
 	public Display resize(Scale scale, int viewWidth, int viewHeight) {

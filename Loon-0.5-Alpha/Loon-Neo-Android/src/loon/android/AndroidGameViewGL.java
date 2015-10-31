@@ -43,6 +43,8 @@ public class AndroidGameViewGL extends GLSurfaceView {
 		this.game = g;
 
 		setFocusable(true);
+		setFocusableInTouchMode(true);
+		requestFocus();
 		setEGLContextClientVersion(2);
 		setPreserveEGLContextOnPause(true);
 
@@ -50,11 +52,17 @@ public class AndroidGameViewGL extends GLSurfaceView {
 			@Override
 			public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 				game.graphics().onSurfaceCreated();
+				if (game.display() != null) {
+					game.display().GL().update();
+				}
 			}
 
 			@Override
 			public void onSurfaceChanged(GL10 gl, int width, int height) {
 				game.graphics().onSizeChanged(width, height);
+				if (game.display() != null) {
+					game.display().GL().update();
+				}
 				if (!started.get()) {
 					startGame();
 				}
@@ -64,6 +72,7 @@ public class AndroidGameViewGL extends GLSurfaceView {
 			public void onDrawFrame(GL10 gl) {
 				if (!paused.get()) {
 					game.processFrame();
+
 				}
 			}
 		});
