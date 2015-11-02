@@ -20,35 +20,19 @@
  */
 package loon.javase;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 import loon.event.SysKey;
 import loon.event.SysTouch;
 import loon.geom.Vector2f;
-import loon.utils.reply.GoFuture;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import static loon.event.KeyMake.*;
-
 public class JavaSELwjglInputMake extends JavaSEInputMake {
-
-	private JFrame frame;
 
 	public JavaSELwjglInputMake(JavaSEGame game) {
 		super(game);
-	}
-
-	@Override
-	public GoFuture<String> getText(TextType textType, String label,
-			String initVal) {
-		Object result = JOptionPane.showInputDialog(frame, label, "",
-				JOptionPane.QUESTION_MESSAGE, null, null, initVal);
-		return GoFuture.success((String) result);
 	}
 
 	@Override

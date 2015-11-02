@@ -43,8 +43,10 @@ public class GWTGame extends LGame {
 
 	public static class GWTSetting extends LSetting {
 
-		public boolean preferFlash = true;
+		//是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
+		public boolean preferFlash = false;
 
+		//当前浏览器的渲染模式
 		public Mode mode = GWTUrl.Renderer.requestedMode();
 
 		public boolean transparentCanvas = false;

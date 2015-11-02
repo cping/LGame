@@ -15,9 +15,9 @@ public class GLUtils {
 
 	private static int currentDestinationBlendMode = -1;
 
-	private static boolean enableDither = true;
+	private static boolean enableDither = false;
 
-	private static boolean enableDepthTest = true;
+	private static boolean enableDepthTest = false;
 
 	private static boolean enablecissorTest = false;
 
@@ -28,14 +28,7 @@ public class GLUtils {
 	private static boolean enableTextures = false;
 
 	public static void reset(final GL20 gl) {
-		GLUtils.currentHardwareBufferID = -1;
-		GLUtils.currentHardwareTextureID = -1;
-		GLUtils.currentSourceBlendMode = -1;
-		GLUtils.currentDestinationBlendMode = -1;
-		GLUtils.currentBlendMode = -1;
-		GLUtils.disableBlend(gl);
-		GLUtils.disableCulling(gl);
-		GLUtils.disableTextures(gl);
+		GLUtils.reload();
 	}
 
 	public static void reload() {
@@ -44,8 +37,8 @@ public class GLUtils {
 		GLUtils.currentSourceBlendMode = -1;
 		GLUtils.currentDestinationBlendMode = -1;
 		GLUtils.currentBlendMode = -1;
-		GLUtils.enableDither = true;
-		GLUtils.enableDepthTest = true;
+		GLUtils.enableDither = false;
+		GLUtils.enableDepthTest = false;
 		GLUtils.enablecissorTest = false;
 		GLUtils.enableBlend = false;
 		GLUtils.enableCulling = false;
@@ -278,7 +271,6 @@ public class GLUtils {
 	}
 
 	public static void bindTexture(final GL20 gl, final int hardwareTextureID) {
-		GLUtils.enableTextures(gl);
 		try {
 			if (GLUtils.currentHardwareTextureID != hardwareTextureID) {
 				GLUtils.currentHardwareTextureID = hardwareTextureID;

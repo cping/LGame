@@ -30,7 +30,6 @@ import loon.event.SysTouch;
 import loon.event.TouchMake;
 import loon.geom.Vector2f;
 import loon.jni.EventHandler;
-import loon.utils.reply.GoFuture;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -39,7 +38,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 
 public class GWTInputMake extends InputMake {
 
@@ -252,26 +250,6 @@ public class GWTInputMake extends InputMake {
 				|| $doc.body.webkitRequestPointerLock || $doc.body.mozRequestPointerLock);
 	}-*/;
 
-	@Override
-	public GoFuture<String> getText(KeyMake.TextType textType, String label,
-			String initVal) {
-		String result = Window.prompt(label, initVal);
-		emitFakeMouseUp();
-		return GoFuture.success(result);
-	}
-
-	public GoFuture<Boolean> sysDialog(String title, String message, String ok,
-			String cancel) {
-		boolean result;
-		if (cancel != null) {
-			result = Window.confirm(message);
-		} else {
-			Window.alert(message);
-			result = true;
-		}
-		emitFakeMouseUp();
-		return GoFuture.success(result);
-	}
 
 	void emitFakeMouseUp() {
 		mouseEvents.emit(new MouseMake.ButtonEvent(0, game.time(), 0, 0,

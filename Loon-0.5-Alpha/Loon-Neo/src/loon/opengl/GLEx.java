@@ -247,14 +247,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		GLUtils.reset(gl);
 		// 清空背景为黑色
 		GLUtils.setClearColor(gl, LColor.black);
-		// 禁用色彩抖动
-		GLUtils.disableDither(gl);
-		// 禁用深度测试
-		GLUtils.disableDepthTest(gl);
-		// 禁用双面剪切
-		GLUtils.disableCulling(gl);
-		// 禁用纹理贴图
-		GLUtils.disableTextures(gl);
+		if (!LSystem.isHTML5()) {
+			// 禁用色彩抖动
+			GLUtils.disableDither(gl);
+			// 禁用深度测试
+			GLUtils.disableDepthTest(gl);
+			// 禁用双面剪切
+			GLUtils.disableCulling(gl);
+		}
 		// 设定画布渲染模式为默认
 		this.setBlendMode(LSystem.MODE_NORMAL);
 		return this;

@@ -116,6 +116,10 @@ public class GWTAssets extends Assets {
 		String tmp = res.get(path = gwtFile.path());
 		if (tmp == null
 				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
@@ -152,6 +156,10 @@ public class GWTAssets extends Assets {
 					String tmp = res.get(path = gwtFile.path());
 					if (tmp == null
 							&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+						tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+					}
+					if (tmp == null
+							&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 						tmp = res
 								.get(LSystem.getFileName(path = gwtFile.path()));
 					}
@@ -185,6 +193,10 @@ public class GWTAssets extends Assets {
 		}
 		ObjectMap<String, Blob> res = gwtFile.preloader.binaries;
 		Blob tmp = res.get(path = gwtFile.path());
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+		}
 		if (tmp == null
 				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
@@ -339,6 +351,10 @@ public class GWTAssets extends Assets {
 		ImageElement tmp = res.get(path = files.path());
 		if (tmp == null
 				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = files.path()));
 		}
 		if (tmp == null) {
@@ -363,6 +379,10 @@ public class GWTAssets extends Assets {
 		}
 		ObjectMap<String, ImageElement> res = files.preloader.images;
 		ImageElement tmp = res.get(path = files.path());
+		if (tmp == null
+				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+		}
 		if (tmp == null
 				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = files.path()));

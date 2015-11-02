@@ -25,14 +25,8 @@ import loon.event.InputMake;
 import loon.event.KeyMake;
 import loon.event.SysKey;
 import loon.event.TouchMake;
-import loon.utils.reply.GoFuture;
-import loon.utils.reply.GoPromise;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.widget.EditText;
 
 public class AndroidInputMake extends InputMake {
 
@@ -45,63 +39,6 @@ public class AndroidInputMake extends InputMake {
 	@Override
 	public boolean hasHardwareKeyboard() {
 		return false;
-	}
-
-	@Override
-	public GoFuture<String> getText(final KeyMake.TextType ttype,
-			final String label, final String initVal) {
-		final GoPromise<String> result = game.asyn().deferredPromise();
-		game.activity.runOnUiThread(new Runnable() {
-			public void run() {
-				final AlertDialog.Builder alert = new AlertDialog.Builder(
-						game.activity);
-
-				alert.setMessage(label);
-
-				final EditText input = new EditText(game.activity);
-				final int inputType;
-				switch (ttype) {
-				case NUMBER:
-					inputType = InputType.TYPE_CLASS_NUMBER
-							| InputType.TYPE_NUMBER_FLAG_SIGNED;
-					break;
-				case EMAIL:
-					inputType = InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-					break;
-				case URL:
-					inputType = InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_URI;
-					break;
-				case DEFAULT:
-				default:
-					inputType = InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_NORMAL;
-					break;
-				}
-				input.setInputType(inputType);
-				input.setText(initVal);
-				alert.setView(input);
-
-				alert.setPositiveButton("Ok",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								result.succeed(input.getText().toString());
-							}
-						});
-
-				alert.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								result.succeed(null);
-							}
-						});
-				alert.show();
-			}
-		});
-		return result;
 	}
 
 	void onKeyDown(int keyCode, KeyEvent nativeEvent) {

@@ -22,7 +22,6 @@ package loon.event;
 
 import loon.LObject;
 import loon.utils.reply.Act;
-import loon.utils.reply.GoFuture;
 
 public abstract class InputMake {
 
@@ -63,10 +62,6 @@ public abstract class InputMake {
 	public void setMouseLocked(boolean locked) {
 	}
 
-	public GoFuture<String> getText(KeyMake.TextType textType, String label,
-			String initialValue) {
-		return GoFuture.failure(new Exception("getText is not supported"));
-	}
 
 	protected int modifierFlags(boolean altP, boolean ctrlP, boolean metaP,
 			boolean shiftP) {
