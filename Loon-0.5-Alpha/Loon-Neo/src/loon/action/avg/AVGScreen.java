@@ -923,7 +923,7 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	@Override
-	public void touchUp(GameTouch touch) {
+	public void touchUp(GameTouch e) {
 
 	}
 

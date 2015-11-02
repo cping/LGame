@@ -62,6 +62,9 @@ public class AndroidImage extends ImageImpl {
 	@Override
 	public void getRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0){
+			return;
+		}
 		bitmap.getPixels(rgbArray, offset, scanSize, startX, startY, width,
 				height);
 	}
@@ -69,6 +72,9 @@ public class AndroidImage extends ImageImpl {
 	@Override
 	public void setRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0){
+			return;
+		}
 		bitmap.setPixels(rgbArray, offset, scanSize, startX, startY, width,
 				height);
 	}

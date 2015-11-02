@@ -80,7 +80,7 @@ public abstract class LSystemView extends BaseIO {
 		long paintTick = game.tick();
 		paintClock.timeSinceLastUpdate = paintTick - paintClock.tick;
 		paintClock.tick = paintTick;
-		paintClock.alpha = 1 - (nextUpdate - paintTick) / (float) updateRate;
+		paintClock.alpha = 1f - (nextUpdate - paintTick) / (float) updateRate;
 		paint(paintClock);
 	}
 

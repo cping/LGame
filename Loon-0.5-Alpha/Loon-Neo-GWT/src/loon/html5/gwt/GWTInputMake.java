@@ -273,7 +273,7 @@ public class GWTInputMake extends InputMake {
 		return GoFuture.success(result);
 	}
 
-	private void emitFakeMouseUp() {
+	void emitFakeMouseUp() {
 		mouseEvents.emit(new MouseMake.ButtonEvent(0, game.time(), 0, 0,
 				SysTouch.LEFT, false));
 	}

@@ -81,6 +81,9 @@ public class RoboVMImage extends ImageImpl {
 	@Override
 	public void getRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0){
+			return;
+		}
 		int bytesPerRow = 4 * width;
 		CGBitmapContext context = CGBitmapContext.create(width, height, 8,
 				bytesPerRow, CGColorSpace.createDeviceRGB(), new CGBitmapInfo(
@@ -109,6 +112,9 @@ public class RoboVMImage extends ImageImpl {
 	@Override
 	public void setRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0){
+			return;
+		}
 		int bytesPerRow = 4 * width;
 		CGBitmapContext context = CGBitmapContext.create(width, height, 8,
 				bytesPerRow, CGColorSpace.createDeviceRGB(), new CGBitmapInfo(

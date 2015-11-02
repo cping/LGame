@@ -6,6 +6,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.geom.Polygon.Polygon2i;
 import loon.geom.RectI;
+import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
@@ -15,6 +16,8 @@ import loon.utils.MathUtils;
  */
 public class Pixmap extends Limit implements LRelease {
 
+	private RectI temp_rect = new RectI();
+	
 	private int baseColor = LColor.DEF_COLOR;
 
 	private int background = LColor.black.getRGB();
@@ -40,15 +43,6 @@ public class Pixmap extends Limit implements LRelease {
 	private RectI defClip;
 
 	private RectI clip;
-
-	public Pixmap(String path) {
-		this(path, true);
-	}
-
-	public Pixmap(String path, boolean hasAlpha) {
-		Image img = Image.createImage(path);
-		set(img.getPixels(), img.getWidth(), img.getHeight(), img.hasAlpha());
-	}
 
 	public Pixmap(int w, int h, boolean hasAlpha) {
 		this.set(new int[w * h], w, h, hasAlpha);
@@ -602,6 +596,47 @@ public class Pixmap extends Limit implements LRelease {
 		setClip(clip.x, clip.y, clip.width, clip.height);
 	}
 
+	public void drawShapeImpl(Shape shape, int x1, int y1) {
+		if (shape == null) {
+			return;
+		}
+		final float[] points = shape.getPoints();
+		int size = points.length;
+		int len = size / 2;
+		final int[] xps = new int[len];
+		final int[] yps = new int[len];
+		for (int i = 0, j = 0; i < size; i += 2, j++) {
+			xps[j] = (int) (points[i] + x1);
+			yps[j] = (int) (points[i + 1] + y1);
+		}
+		drawPolyline(xps, yps, len);
+		drawLine(xps[len - 1], yps[len - 1], xps[0], yps[0]);
+	}
+
+	public void fillShapeImpl(Shape shape, int x1, int y1) {
+		if (shape == null) {
+			return;
+		}
+		final float[] points = shape.getPoints();
+		int size = points.length;
+		int len = size / 2;
+		final int[] xps = new int[len];
+		final int[] yps = new int[len];
+		for (int i = 0, j = 0; i < size; i += 2, j++) {
+			xps[j] = (int) (points[i] + x1);
+			yps[j] = (int) (points[i + 1] + y1);
+		}
+		RectI bounds = RectI.getIntersection(
+				setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
+		for (int x = bounds.x; x < bounds.x + bounds.width; x ++) {
+			for (int y = bounds.y; y < bounds.y + bounds.height; y ++) {
+				if (contains(xps, yps, len, bounds, x, y)) {
+					drawPoint(x, y);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * 绘制五角星
 	 */
@@ -1305,20 +1340,26 @@ public class Pixmap extends Limit implements LRelease {
 	 * @param start
 	 * @param arcAngle
 	 */
-	public void drawArc(int x, int y, int width, int height, int start,
-			int arcAngle) {
-		if (isClose) {
+
+	public void drawArc(int x, int y, int width, int height,
+			int start, int arcAngle) {
+		if(isClose){
 			return;
 		}
 		if (arcAngle == 0) {
 			return;
+		}
+		if (arcAngle < 0) {
+			start = 360 - arcAngle;
+			arcAngle = 360 + arcAngle;
 		}
 		start %= 360;
 		if (start < 0) {
 			start += 360;
 		}
 		if (arcAngle % 360 == 0) {
-			arcAngle = 360;
+			drawOval(x, y, width, height);
+			return;
 		} else {
 			arcAngle %= 360;
 		}
@@ -1333,14 +1374,19 @@ public class Pixmap extends Limit implements LRelease {
 		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle,
 				MathUtils.abs(arcAngle), centerX, centerY, x + translateX - 1,
 				y + translateY - 1, width + 2, height + 2);
-		final RectI bounds = getBoundingBox(xPoints, yPoints, nPoints)
-				.getIntersection(clip);
+		final RectI bounds = RectI.getIntersection(
+				setBoundingBox(temp_rect, xPoints, yPoints, nPoints), clip,
+				temp_rect);
 		this.drawCircle(x, y, width, height, false, new CircleUpdate() {
-			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
+			public void newPoint(int xLeft, int yTop, int xRight,
+					int yBottom) {
 				drawArcPoint(xPoints, yPoints, nPoints, bounds, xLeft, yTop);
-				drawArcPoint(xPoints, yPoints, nPoints, bounds, xRight, yTop);
-				drawArcPoint(xPoints, yPoints, nPoints, bounds, xLeft, yBottom);
-				drawArcPoint(xPoints, yPoints, nPoints, bounds, xRight, yBottom);
+				drawArcPoint(xPoints, yPoints, nPoints, bounds, xRight,
+						yTop);
+				drawArcPoint(xPoints, yPoints, nPoints, bounds, xLeft,
+						yBottom);
+				drawArcPoint(xPoints, yPoints, nPoints, bounds, xRight,
+						yBottom);
 			}
 		});
 	}
@@ -1357,8 +1403,12 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public void fillArc(int x, int y, int width, int height, int start,
 			int arcAngle) {
-		if (arcAngle == 0) {
+		if(isClose){
 			return;
+		}
+		if (arcAngle < 0) {
+			start = 360 - arcAngle;
+			arcAngle = 360 + arcAngle;
 		}
 		start %= 360;
 		if (start < 0) {
@@ -1366,6 +1416,7 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		if (arcAngle % 360 == 0) {
 			fillOval(x, y, width, height);
+			return;
 		} else {
 			arcAngle %= 360;
 		}
@@ -1379,8 +1430,8 @@ public class Pixmap extends Limit implements LRelease {
 		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle,
 				MathUtils.abs(arcAngle), centerX, centerY, x + translateX - 1,
 				y + translateY - 1, width + 2, height + 2);
-		final RectI bounds = getBoundingBox(xPoints, yPoints, nPoints)
-				.getIntersection(clip);
+		final RectI bounds = setBoundingBox(temp_rect, xPoints, yPoints,
+				nPoints);
 		this.drawCircle(x, y, width, height, true, new CircleUpdate() {
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawArcImpl(xPoints, yPoints, nPoints, bounds, xLeft, xRight,
@@ -1440,11 +1491,8 @@ public class Pixmap extends Limit implements LRelease {
 	 * @param yPoints
 	 * @param nPoints
 	 */
-	public void fillPolygon(int xPoints[], int yPoints[], int nPoints) {
-		if (isClose) {
-			return;
-		}
-		int xPointsCopy[];
+	protected void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+		int[] xPointsCopy;
 		if (translateX == 0) {
 			xPointsCopy = xPoints;
 		} else {
@@ -1453,7 +1501,7 @@ public class Pixmap extends Limit implements LRelease {
 				xPointsCopy[i] += translateX;
 			}
 		}
-		int yPointsCopy[];
+		int[] yPointsCopy;
 		if (translateY == 0) {
 			yPointsCopy = yPoints;
 		} else {
@@ -1462,10 +1510,11 @@ public class Pixmap extends Limit implements LRelease {
 				yPointsCopy[i] += translateY;
 			}
 		}
-		RectI bounds = getBoundingBox(xPointsCopy, yPointsCopy, nPoints)
-				.getIntersection(clip);
-		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+		RectI bounds = RectI.getIntersection(
+				setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints),
+			clip, temp_rect);
+		for (int x = bounds.x; x < bounds.x + bounds.width; x ++) {
+			for (int y = bounds.y; y < bounds.y + bounds.height; y ++) {
 				if (contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
 					drawPoint(x, y);
 				}
@@ -1473,7 +1522,8 @@ public class Pixmap extends Limit implements LRelease {
 		}
 
 	}
-
+	
+	
 	private void drawLineImpl(int x1, int x2, int y) {
 		if (isClose) {
 			return;

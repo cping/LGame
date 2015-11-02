@@ -25,6 +25,7 @@ import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
+import loon.action.sprite.effect.PixelWindEffect;
 import loon.action.sprite.effect.SplitEffect;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
@@ -332,6 +333,38 @@ public class LTransition {
 		return null;
 	}
 
+	public static final LTransition newPixelWind(final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final PixelWindEffect windEffect = new PixelWindEffect(c);
+
+				public void draw(GLEx g) {
+					windEffect.createUI(g);
+				}
+
+				public void update(long elapsedTime) {
+					windEffect.update(elapsedTime);
+				}
+
+				public boolean completed() {
+					return windEffect.isCompleted();
+				}
+
+				public void close() {
+					windEffect.close();
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+	
 	public static final LTransition newEmpty() {
 
 		final LTransition transition = new LTransition();

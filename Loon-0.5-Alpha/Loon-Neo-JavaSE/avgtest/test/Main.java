@@ -13,8 +13,9 @@ public class Main {
 		setting.width = 480;
 		setting.height = 320;
 		//缩放显示为:
-		setting.width_zoom = 640;
-		setting.height_zoom = 480;
+		//setting.width_zoom = 640;
+		//setting.height_zoom = 480;
+		//setting.fullscreen = true;
 		setting.fps = 60;
 		setting.isFPS = true;
 		setting.fontName = "黑体";

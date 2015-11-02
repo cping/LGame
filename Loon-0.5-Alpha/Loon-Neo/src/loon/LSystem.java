@@ -23,6 +23,8 @@ package loon;
 import java.util.Random;
 
 import loon.event.Drawable;
+import loon.event.KeyMake;
+import loon.event.SysInput;
 import loon.event.Updateable;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
@@ -136,10 +138,29 @@ public class LSystem {
 		_base.log().debug("The Loon Game Engine is Begin");
 	}
 
+	public static void exit() {
+		if (_platform != null) {
+			_platform.close();
+		}
+	}
+
+	public static void sysText(SysInput.TextEvent event,
+			KeyMake.TextType textType, String label, String initialValue) {
+		if (_platform != null) {
+			_platform.sysText(event, textType, label, initialValue);
+		}
+	}
+
+	public static void sysDialog(SysInput.ClickEvent event, String title,
+			String text, String ok, String cancel) {
+		if (_platform != null) {
+			_platform.sysDialog(event, title, text, ok, cancel);
+		}
+	}
+
 	public static boolean isHTML5() {
 		return LSystem._USE_HTML5;
 	}
-
 
 	public static float getScaleWidth() {
 		return LSystem.scaleWidth;

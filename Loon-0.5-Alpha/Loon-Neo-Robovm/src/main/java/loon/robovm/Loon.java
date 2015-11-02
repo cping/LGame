@@ -24,20 +24,31 @@ import loon.LGame;
 import loon.LSetting;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.event.KeyMake;
+import loon.event.SysInput;
 import loon.robovm.RoboVMGame.IOSSetting;
 
 import org.robovm.apple.coregraphics.CGRect;
 import org.robovm.apple.foundation.NSThread;
+import org.robovm.apple.uikit.UIAlertView;
+import org.robovm.apple.uikit.UIAlertViewDelegateAdapter;
+import org.robovm.apple.uikit.UIAlertViewStyle;
 import org.robovm.apple.uikit.UIApplication;
 import org.robovm.apple.uikit.UIApplicationDelegateAdapter;
 import org.robovm.apple.uikit.UIApplicationLaunchOptions;
 import org.robovm.apple.uikit.UIDevice;
 import org.robovm.apple.uikit.UIInterfaceOrientation;
+import org.robovm.apple.uikit.UIKeyboardType;
+import org.robovm.apple.uikit.UIReturnKeyType;
 import org.robovm.apple.uikit.UIScreen;
+import org.robovm.apple.uikit.UITextAutocapitalizationType;
+import org.robovm.apple.uikit.UITextAutocorrectionType;
+import org.robovm.apple.uikit.UITextField;
 import org.robovm.apple.uikit.UIUserInterfaceIdiom;
 import org.robovm.apple.uikit.UIViewController;
 import org.robovm.apple.uikit.UIWindow;
 
+@SuppressWarnings("deprecation")
 public abstract class Loon extends UIApplicationDelegateAdapter implements
 		Platform, LazyLoading {
 
@@ -94,7 +105,6 @@ public abstract class Loon extends UIApplicationDelegateAdapter implements
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
 	CGRect getBounds(UIViewController viewController) {
 		CGRect bounds = UIScreen.getMainScreen().getBounds();
 		UIInterfaceOrientation orientation = null;
@@ -190,6 +200,82 @@ public abstract class Loon extends UIApplicationDelegateAdapter implements
 
 	public UIApplication getUIApp() {
 		return uiApp;
+	}
+
+	@Override
+	public void sysText(final SysInput.TextEvent event,
+			KeyMake.TextType textType, String label, String initVal) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		UIAlertView view = new UIAlertView();
+		if (label != null) {
+			view.setTitle(label);
+		}
+		view.addButton("Cancel");
+		view.addButton("OK");
+		view.setAlertViewStyle(UIAlertViewStyle.PlainTextInput);
+
+		final UITextField field = view.getTextField(0);
+		field.setReturnKeyType(UIReturnKeyType.Done);
+		if (initVal != null) {
+			field.setText(initVal);
+		}
+
+		switch (textType) {
+		case NUMBER:
+			field.setKeyboardType(UIKeyboardType.NumberPad);
+			break;
+		case EMAIL:
+			field.setKeyboardType(UIKeyboardType.EmailAddress);
+			break;
+		case URL:
+			field.setKeyboardType(UIKeyboardType.URL);
+			break;
+		case DEFAULT:
+			field.setKeyboardType(UIKeyboardType.Default);
+			break;
+		}
+		field.setAutocorrectionType(UITextAutocorrectionType.Yes);
+		field.setAutocapitalizationType(UITextAutocapitalizationType.Sentences);
+		field.setSecureTextEntry(false);
+		view.setDelegate(new UIAlertViewDelegateAdapter() {
+			public void clicked(UIAlertView view, long buttonIndex) {
+				if (buttonIndex == 0) {
+					event.cancel();
+				} else {
+					event.input(field.getText());
+				}
+			}
+		});
+		view.show();
+	}
+
+	@Override
+	public void sysDialog(final SysInput.ClickEvent event,String title, String text, String ok, String cancel) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		UIAlertView view = new UIAlertView();
+		view.setTitle(title);
+		view.setMessage(text);
+		if (cancel != null) {
+			view.addButton(cancel);
+		}
+		view.addButton(ok);
+		view.setAlertViewStyle(UIAlertViewStyle.Default);
+		view.setDelegate(new UIAlertViewDelegateAdapter() {
+			public void clicked(UIAlertView view, long buttonIndex) {
+				if(buttonIndex == 1){
+					event.clicked();
+				}else{
+					event.cancel();
+				}
+			}
+		});
+		view.show();
 	}
 
 	/**

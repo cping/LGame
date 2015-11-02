@@ -22,22 +22,30 @@ package loon;
 
 public class LSetting {
 	
+	//是否显示FPS帧率
 	public boolean isFPS = false;
 
+	//是否显示logo（替换logo使用logoPath指定地址）
 	public boolean isLogo = false;
 
+	//帧率
 	public int fps = 60;
 
+	//游戏画面实际宽度
 	public int width = 480;
 
+	//游戏画面实际高度
 	public int height = 320;
 
+	//游戏画面缩放大小（不需要则维持在-1即可）
 	public int width_zoom = -1;
 
 	public int height_zoom = -1;
 
+	//是否全屏
 	public boolean fullscreen = false;
 
+	//是否使用虚拟触屏按钮
 	public boolean emulateTouch = false;
 
 	public int activationKey = -1;

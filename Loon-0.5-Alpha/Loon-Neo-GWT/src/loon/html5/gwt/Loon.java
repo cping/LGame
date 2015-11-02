@@ -22,8 +22,12 @@ package loon.html5.gwt;
 
 import loon.LGame;
 import loon.LSetting;
+import loon.LSystem;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.event.KeyMake;
+import loon.event.SysInput;
+import loon.event.Updateable;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.soundmanager2.SoundManager;
 import loon.html5.gwt.preloader.Preloader;
@@ -56,13 +60,13 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	protected LoadingListener loadingListener;
-	
+
 	protected Preloader preloader;
 
 	protected Panel root;
 
 	protected static Loon self;
-	
+
 	private LSetting setting;
 
 	private LazyLoading.Data mainData;
@@ -237,14 +241,71 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			return Orientation.Landscape;
 		}
 	}
-	
+
 	public void close() {
 		closeImpl();
 	}
-	  
+
 	private static native void closeImpl()
 	/*-{
 		$wnd.close();
 	}-*/;
+
+	@Override
+	public void sysText(final SysInput.TextEvent event,
+			final KeyMake.TextType textType, final String label,
+			final String initVal) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+
+				String result = Window.prompt(label, initVal);
+				if (game.input() instanceof GWTInputMake) {
+					((GWTInputMake) game.input()).emitFakeMouseUp();
+				}
+				if (result != null) {
+					event.input(result);
+				} else {
+					event.cancel();
+				}
+			}
+		});
+
+	}
+
+	@Override
+	public void sysDialog(final SysInput.ClickEvent event, final String title,
+			final String text, final String ok, final String cancel) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				boolean result;
+				if (cancel != null)
+					result = Window.confirm(text);
+				else {
+					Window.alert(text);
+					result = true;
+				}
+				if (game.input() instanceof GWTInputMake) {
+					((GWTInputMake) game.input()).emitFakeMouseUp();
+				}
+				if (result) {
+					event.clicked();
+				} else {
+					event.cancel();
+				}
+			}
+		});
+	}
 
 }

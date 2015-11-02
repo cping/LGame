@@ -30,9 +30,13 @@ import loon.utils.MathUtils;
 
 public abstract class PixmapFImpl {
 
+	protected final static int def_skip = 3;
+
+	protected final static int def_skip_html5 = 6;
+	
 	private RectF temp_rect = new RectF();
 
-	private int _skip = 3;
+	private int _skip = def_skip;
 
 	private RectF _clip = new RectF();
 
@@ -70,8 +74,8 @@ public abstract class PixmapFImpl {
 		this._width = w;
 		this._height = h;
 		this._skip = skip;
-		if (LSystem.isHTML5() && _skip < 12) {
-			_skip = 12;
+		if (LSystem.isHTML5() && _skip < def_skip_html5) {
+			_skip = def_skip_html5;
 		} else if (_skip < 1) {
 			_skip = 1;
 		}
@@ -87,11 +91,19 @@ public abstract class PixmapFImpl {
 		this._width = w;
 		this._height = h;
 		this._skip = skip;
-		if (LSystem.isHTML5() && _skip < 12) {
-			_skip = 12;
+		if (LSystem.isHTML5() && _skip < def_skip_html5) {
+			_skip = def_skip_html5;
 		} else if (_skip < 1) {
 			_skip = 1;
 		}
+	}
+
+	public int getPixSkip() {
+		return _skip;
+	}
+
+	public void setPixSkip(int s) {
+		_skip = s;
 	}
 
 	protected void fillPolygonImpl(float[] xPoints, float[] yPoints, int nPoints) {

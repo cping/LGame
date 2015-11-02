@@ -140,6 +140,12 @@ public class Display extends LSystemView {
 				draw(clock);
 			}
 		}).setPriority(-1);
+		update.connect(new Port<LTimerContext>() {
+			public void onEmit(LTimerContext clock) {
+				RealtimeProcessManager.get().tick(clock);
+				ActionControl.update(clock.timeSinceLastUpdate);
+			}
+		}).setPriority(1);
 		if (!setting.isLogo) {
 			process.start();
 		}
@@ -222,10 +228,6 @@ public class Display extends LSystemView {
 		try {
 			process.load();
 			process.calls();
-
-			RealtimeProcessManager.get().tick(clock);
-			ActionControl.update(clock.timeSinceLastUpdate);
-			
 			process.runTimer(clock);
 
 			int repaintMode = process.getRepaintMode();

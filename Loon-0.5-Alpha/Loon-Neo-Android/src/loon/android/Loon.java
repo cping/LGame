@@ -34,18 +34,23 @@ import loon.Platform;
 import loon.android.AndroidGame.AndroidSetting;
 import loon.android.AndroidGame.LMode;
 import loon.canvas.LColor;
+import loon.event.KeyMake;
+import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.utils.StringUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -53,6 +58,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 
 public abstract class Loon extends Activity implements AndroidBase, Platform,
@@ -461,7 +467,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			setting.height_zoom = height;
 			setting.updateScale();
 			mode = LMode.MaxRatio;
-		// 若缩放值为无法实现的数值，则默认操作
+			// 若缩放值为无法实现的数值，则默认操作
 		} else if (setting.width_zoom <= 0 || setting.height_zoom <= 0) {
 			updateViewSize(setting.landscape(), setting.width, setting.height,
 					mode);
@@ -697,7 +703,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	private void setContentView(LMode mode, AndroidGameViewGL view, int w, int h) {
 		this.frameLayout = new FrameLayout(this);
-		this.frameLayout .setBackgroundColor(LColor.black.getRGB());
+		this.frameLayout.setBackgroundColor(LColor.black.getRGB());
 		if (mode == LMode.Defalut) {
 			// 添加游戏View，显示为指定大小，并居中
 			this.addView(view, view.getWidth(), view.getHeight(),
@@ -1003,4 +1009,95 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 	public int getMaxHeight() {
 		return maxHeight;
 	}
+
+	@Override
+	public void sysText(final SysInput.TextEvent event,
+			final KeyMake.TextType textType, final String label,
+			final String initVal) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		game.activity.runOnUiThread(new Runnable() {
+			public void run() {
+				final AlertDialog.Builder alert = new AlertDialog.Builder(
+						game.activity);
+				alert.setMessage(label);
+				final EditText input = new EditText(game.activity);
+				final int inputType;
+				switch (textType) {
+				case NUMBER:
+					inputType = InputType.TYPE_CLASS_NUMBER
+							| InputType.TYPE_NUMBER_FLAG_SIGNED;
+					break;
+				case EMAIL:
+					inputType = InputType.TYPE_CLASS_TEXT
+							| InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+					break;
+				case URL:
+					inputType = InputType.TYPE_CLASS_TEXT
+							| InputType.TYPE_TEXT_VARIATION_URI;
+					break;
+				case DEFAULT:
+				default:
+					inputType = InputType.TYPE_CLASS_TEXT
+							| InputType.TYPE_TEXT_VARIATION_NORMAL;
+					break;
+				}
+				input.setInputType(inputType);
+				input.setText(initVal);
+				alert.setView(input);
+
+				alert.setPositiveButton("Ok",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								event.input(input.getText().toString());
+							}
+						});
+
+				alert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								event.cancel();
+							}
+						});
+				alert.show();
+			}
+		});
+	}
+
+	@Override
+	public void sysDialog(final SysInput.ClickEvent event, final String title,
+			final String text, final String ok, final String cancel) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		game.activity.runOnUiThread(new Runnable() {
+			public void run() {
+				AlertDialog.Builder alert = new AlertDialog.Builder(
+						game.activity).setTitle(title).setMessage(text);
+				alert.setPositiveButton(ok,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								event.clicked();
+							}
+						});
+				if (cancel != null) {
+					alert.setNegativeButton(cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									event.cancel();
+								}
+							});
+				}
+				alert.show();
+			}
+		});
+	}
+
 }

@@ -20,12 +20,18 @@
  */
 package loon.javase;
 
+import javax.swing.JOptionPane;
+
 import org.lwjgl.opengl.Display;
 
 import loon.LGame;
 import loon.LSetting;
+import loon.LSystem;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.event.KeyMake;
+import loon.event.SysInput;
+import loon.event.Updateable;
 
 public class Loon implements Platform {
 
@@ -63,6 +69,59 @@ public class Loon implements Platform {
 		} else {
 			return Orientation.Landscape;
 		}
+	}
+
+	@Override
+	public void sysText(final SysInput.TextEvent event,
+			final KeyMake.TextType textType, final String label,
+			final String initVal) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				final String output = (String) JOptionPane.showInputDialog(
+						null, label, "", JOptionPane.QUESTION_MESSAGE, null,
+						null, initVal);
+				if (output != null) {
+					event.input(output);
+				} else {
+					event.cancel();
+				}
+			}
+		});
+	}
+
+	@Override
+	public void sysDialog(final SysInput.ClickEvent event, String title,
+			String text, String ok, String cancel) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				int optType = JOptionPane.OK_CANCEL_OPTION;
+				int msgType = cancel == null ? JOptionPane.INFORMATION_MESSAGE
+						: JOptionPane.QUESTION_MESSAGE;
+				Object[] options = (cancel == null) ? new Object[] { ok }
+						: new Object[] { ok, cancel };
+				Object defOption = (cancel == null) ? ok : cancel;
+				int result = JOptionPane.showOptionDialog(null, text, title,
+						optType, msgType, null, options, defOption);
+				if (result == 0) {
+					event.clicked();
+				} else {
+					event.cancel();
+				}
+			}
+		});
+
 	}
 
 	public LGame getGame() {

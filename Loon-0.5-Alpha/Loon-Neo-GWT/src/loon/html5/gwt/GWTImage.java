@@ -150,6 +150,9 @@ public class GWTImage extends ImageImpl {
 	public void getRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
 		assert isLoaded() : "Cannot getRgb() a non-ready image";
+		if (width <= 0 || height <= 0){
+			return;
+		}
 		createCanvas();
 		Context2d ctx = canvas.getContext2d();
 		ImageData imageData = ctx.getImageData(startX, startY, width, height);
@@ -171,6 +174,9 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public void setRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0){
+			return;
+		}
 		createCanvas();
 		Context2d ctx = canvas.getContext2d();
 		ImageData imageData = ctx.createImageData(width, height);

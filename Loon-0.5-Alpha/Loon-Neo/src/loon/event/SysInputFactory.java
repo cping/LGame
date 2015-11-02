@@ -117,7 +117,7 @@ public class SysInputFactory {
 		finalTouch.button = event.button;
 		finalTouch.pointer = 0;
 		finalTouch.id = 0;
-
+		ebuttons = handler.getEmulatorButtons();
 		if (button == -1) {
 			if (buttons > 0) {
 				finalTouch.type = SysTouch.TOUCH_DRAG;
@@ -139,13 +139,12 @@ public class SysInputFactory {
 			if (useTouchCollection) {
 				touchCollection.add(finalTouch.id, finalTouch.x, finalTouch.y);
 			}
-			ebuttons = handler.getEmulatorButtons();
-			if (ebuttons != null && ebuttons.isVisible()) {
-				ebuttons.hit(0, touchX, touchY, false);
-			}
 			handler.mousePressed(finalTouch);
 			buttons++;
 			isDraging = false;
+			if (ebuttons != null && ebuttons.isVisible()) {
+				ebuttons.hit(0, touchX, touchY, false);
+			}
 			break;
 		case SysTouch.TOUCH_UP:
 			if (useTouchCollection) {
@@ -153,13 +152,12 @@ public class SysInputFactory {
 						LTouchLocationState.Released, finalTouch.x,
 						finalTouch.y);
 			}
-			ebuttons = handler.getEmulatorButtons();
-			if (ebuttons != null && ebuttons.isVisible()) {
-				ebuttons.unhit(0, touchX, touchY);
-			}
 			handler.mouseReleased(finalTouch);
 			buttons = 0;
 			isDraging = false;
+			if (ebuttons != null && ebuttons.isVisible()) {
+				ebuttons.unhit(0, touchX, touchY);
+			}
 			break;
 		case SysTouch.TOUCH_MOVE:
 			if (!isDraging) {
@@ -195,6 +193,8 @@ public class SysInputFactory {
 	}
 
 	public void callTouch(TouchMake.Event[] events) {
+		
+		ebuttons = handler.getEmulatorButtons();
 		int size = events.length;
 
 		for (int i = 0; i < size; i++) {
@@ -228,6 +228,9 @@ public class SysInputFactory {
 				finalTouch.button = SysTouch.TOUCH_DOWN;
 				handler.mousePressed(finalTouch);
 				isDraging = false;
+				if (ebuttons != null && ebuttons.isVisible()) {
+					ebuttons.hit(0, touchX, touchY, false);
+				}
 				break;
 			case MOVE:
 				offsetMoveX = touchX;
@@ -243,9 +246,13 @@ public class SysInputFactory {
 					}
 					finalTouch.button = SysTouch.TOUCH_MOVE;
 					// a few platforms no such behavior (ios or android)
-					// handler.mouseMoved(finalTouch);
+					handler.mouseMoved(finalTouch);
 					handler.mouseDragged(finalTouch);
 					isDraging = true;
+				}
+				ebuttons = handler.getEmulatorButtons();
+				if (ebuttons != null && ebuttons.isVisible()) {
+					ebuttons.unhit(0, touchX, touchY);
 				}
 				break;
 			case END:

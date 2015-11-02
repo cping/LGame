@@ -256,7 +256,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	private void setScreen(final Screen screen, boolean put) {
-		if (currentScreen != null && currentScreen.isOnLoadComplete()) {
+		if (loadingScreen != null && loadingScreen.isOnLoadComplete()) {
 			return;
 		}
 		synchronized (this) {
@@ -271,7 +271,7 @@ public class LProcess extends PlayerUtils {
 				} else {
 					LTransition transition = screen.onTransition();
 					if (transition == null) {
-						int rad = MathUtils.random(0, 4);
+						int rad = MathUtils.random(0, 5);
 						switch (rad) {
 						case 0:
 							transition = LTransition.newFadeIn();
@@ -291,6 +291,9 @@ public class LProcess extends PlayerUtils {
 						case 4:
 							transition = LTransition
 									.newFadeOvalIn(LColor.black);
+							break;
+						case 5:
+							transition = LTransition.newPixelWind(LColor.white);
 							break;
 						}
 					}

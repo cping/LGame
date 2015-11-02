@@ -126,16 +126,32 @@ public class FadeOvalEffect extends LObject implements ISprite {
 			return;
 		}
 		if (this._elapsed > -1) {
+			int tmp = g.getPixSkip();
+			boolean usetex = g.alltextures();
+			if (usetex) {
+				g.setPixSkip(12);
+			}
 			int old = g.color();
-			int size = OVAL_COLORS.length;
-			for (int i = size - 1; i >= 0; i--) {
-				g.setColor(OVAL_COLORS[i]);
-				float w = this._ovalWidth + i * this._ovalWidth * 0.1f;
-				float h = this._ovalHeight + i * this._ovalWidth * 0.1f;
+			if (usetex) {
+				g.setColor(OVAL_COLORS[0]);
+				float w = this._ovalWidth + 4 * this._ovalWidth * 0.1f;
+				float h = this._ovalHeight + 4 * this._ovalWidth * 0.1f;
 				g.fillOval(g.getWidth() / 2 - w / 2f, g.getHeight() / 2 - h
 						/ 2f, w, h);
+			} else {
+				int size = OVAL_COLORS.length;
+				for (int i = size - 1; i >= 0; i--) {
+					g.setColor(OVAL_COLORS[i]);
+					float w = this._ovalWidth + i * this._ovalWidth * 0.1f;
+					float h = this._ovalHeight + i * this._ovalWidth * 0.1f;
+					g.fillOval(g.getWidth() / 2 - w / 2f, g.getHeight() / 2 - h
+							/ 2f, w, h);
+				}
 			}
 			g.setColor(old);
+			if (usetex) {
+				g.setPixSkip(tmp);
+			}
 		}
 	}
 

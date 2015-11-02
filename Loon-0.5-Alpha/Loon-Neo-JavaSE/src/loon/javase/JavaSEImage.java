@@ -191,12 +191,18 @@ public class JavaSEImage extends ImageImpl {
 	@Override
 	public void getRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0){
+			return;
+		}
 		buffer.getRGB(startX, startY, width, height, rgbArray, offset, scanSize);
 	}
 
-	public void setRGB(int startX, int startY, int w, int h, int[] rgbArray,
+	public void setRGB(int startX, int startY, int width, int height, int[] rgbArray,
 			int offset, int scansize) {
-		setPixels(rgbArray, offset, scansize, startX, startY, w, h);
+		if (width <= 0 || height <= 0){
+			return;
+		}
+		setPixels(rgbArray, offset, scansize, startX, startY, width, height);
 	}
 
 	@Override

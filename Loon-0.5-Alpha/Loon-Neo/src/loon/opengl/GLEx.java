@@ -47,13 +47,27 @@ import loon.utils.StringUtils;
 
 public class GLEx extends PixmapFImpl implements LRelease {
 
-	private class TmpSave {
+	private class BrushSave {
 		int baseColor = LColor.DEF_COLOR;
 		int fillColor = LColor.DEF_COLOR;
+		int pixSkip = def_skip;
 		float lineWidth = 1f;
+
 		boolean alltextures = false;
 		LFont font = null;
 		LTexture patternTex = null;
+
+		BrushSave cpy() {
+			BrushSave save = new BrushSave();
+			save.baseColor = this.baseColor;
+			save.fillColor = this.fillColor;
+			save.pixSkip = this.pixSkip;
+			save.lineWidth = this.lineWidth;
+			save.alltextures = this.alltextures;
+			save.font = this.font;
+			save.patternTex = this.patternTex;
+			return save;
+		}
 	}
 
 	public static enum Direction {
@@ -62,6 +76,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private LColor tmpColor = new LColor();
 	private final Array<Affine2f> affineStack = new Array<Affine2f>();
+	private final Array<BrushSave> brushStack = new Array<BrushSave>();
 	private final LTexture colorTex;
 	protected final RenderTarget target;
 
@@ -72,7 +87,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private float lineWidth = 1f;
 
-	private boolean isClosed;
+	private boolean savedBrush = false, savedTx = false;
+	private boolean isClosed = false;
 
 	private Graphics gfx;
 	private LFont font;
@@ -80,8 +96,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private LTexture patternTex;
 	private Affine2f lastTrans;
-
-	private TmpSave tmpSave = new TmpSave();
+	private BrushSave lastBrush;
 
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
@@ -93,10 +108,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param gfx
 	 * @param target
 	 * @param def
+	 * @param alltex
 	 */
-	public GLEx(Graphics gfx, RenderTarget target, BaseBatch def) {
+	public GLEx(Graphics gfx, RenderTarget target, BaseBatch def, boolean alltex) {
 		super(0f, 0f, LSystem.viewSize.getRect(), LSystem.viewSize.width,
-				LSystem.viewSize.height, 3);
+				LSystem.viewSize.height, def_skip);
 		this.gfx = gfx;
 		this.target = target;
 		this.batch = def;
@@ -109,14 +125,17 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			this.scale(target.xscale(), target.yscale());
 		}
 		this.font = LFont.getDefaultFont();
-		this.tmpSave.font = this.font;
-		this.useAlltextures = LSystem.isHTML5();
-		this.tmpSave.alltextures = this.useAlltextures;
+		this.lastBrush = new BrushSave();
+		this.lastBrush.font = this.font;
+		this.useAlltextures = alltex;
+		this.lastBrush.alltextures = this.useAlltextures;
+		this.lastBrush.pixSkip = LSystem.isHTML5() ? def_skip_html5 : def_skip;
+		this.brushStack.add(lastBrush);
 		this.update();
 	}
 
 	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {
-		this(gfx, target, createDefaultBatch(gl));
+		this(gfx, target, createDefaultBatch(gl), LSystem.isHTML5());
 	}
 
 	public int getWidth() {
@@ -273,22 +292,41 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx saveBrush() {
-		tmpSave.baseColor = baseColor;
-		tmpSave.fillColor = fillColor;
-		tmpSave.patternTex = patternTex;
-		tmpSave.font = font;
-		tmpSave.lineWidth = lineWidth;
-		tmpSave.alltextures = useAlltextures;
+		if (isClosed || savedBrush) {
+			return this;
+		}
+		if (lastBrush != null) {
+			brushStack.add(lastBrush = lastBrush.cpy());
+			savedBrush = true;
+		}
 		return this;
 	}
 
 	public GLEx restoreBrush() {
-		baseColor = tmpSave.baseColor;
-		fillColor = tmpSave.fillColor;
-		patternTex = tmpSave.patternTex;
-		useAlltextures = tmpSave.alltextures;
-		setFont(tmpSave.font);
-		setLineWidth(tmpSave.lineWidth);
+		if (isClosed || !savedBrush) {
+			return this;
+		}
+		lastBrush = brushStack.pop();
+		if (lastBrush != null) {
+			this.baseColor = lastBrush.baseColor;
+			this.fillColor = lastBrush.fillColor;
+			this.patternTex = lastBrush.patternTex;
+			this.useAlltextures = lastBrush.alltextures;
+			this.setFont(lastBrush.font);
+			this.setLineWidth(lastBrush.lineWidth);
+		}
+		savedBrush = false;
+		return this;
+	}
+
+	public GLEx restoreBrushDef() {
+		baseColor = LColor.DEF_COLOR;
+		fillColor = LColor.DEF_COLOR;
+		patternTex = null;
+		useAlltextures = LSystem.isHTML5();
+		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
+		setFont(LFont.getDefaultFont());
+		setLineWidth(1f);
 		return this;
 	}
 
@@ -304,26 +342,24 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	private boolean saved;
-
 	public GLEx saveTx() {
-		if (isClosed || saved) {
+		if (isClosed || savedTx) {
 			return this;
 		}
 
 		if (lastTrans != null) {
 			affineStack.add(lastTrans = lastTrans.cpy());
-			saved = true;
+			savedTx = true;
 		}
 		return this;
 	}
 
 	public GLEx restoreTx() {
-		if (isClosed || !saved) {
+		if (isClosed || !savedTx) {
 			return this;
 		}
 		lastTrans = affineStack.pop();
-		saved = false;
+		savedTx = false;
 		return this;
 	}
 
@@ -2422,8 +2458,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		this.lineWidth = width;
-		batch.gl.glLineWidth(width);
+		if (width != lineWidth) {
+			this.lineWidth = width;
+			batch.gl.glLineWidth(width);
+		}
 		return this;
 	}
 
@@ -2431,8 +2469,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		batch.gl.glLineWidth(1f);
-		this.lineWidth = 1f;
+		if (this.lineWidth != 1f) {
+			batch.gl.glLineWidth(1f);
+			this.lineWidth = 1f;
+		}
 		return this;
 	}
 
