@@ -271,7 +271,7 @@ public class LProcess extends PlayerUtils {
 				} else {
 					LTransition transition = screen.onTransition();
 					if (transition == null) {
-						int rad = MathUtils.random(0, 5);
+						int rad = MathUtils.random(0, 8);
 						switch (rad) {
 						case 0:
 							transition = LTransition.newFadeIn();
@@ -282,7 +282,6 @@ public class LProcess extends PlayerUtils {
 						case 2:
 							transition = LTransition
 									.newSplitRandom(LColor.black);
-
 							break;
 						case 3:
 							transition = LTransition
@@ -294,6 +293,18 @@ public class LProcess extends PlayerUtils {
 							break;
 						case 5:
 							transition = LTransition.newPixelWind(LColor.white);
+							break;
+						case 6:
+							transition = LTransition
+									.newPixelDarkOut(LColor.black);
+							break;
+						case 7:
+							transition = LTransition
+									.newPixelDarkIn(LColor.black);
+							break;
+						case 8:
+							transition = LTransition
+									.newPixelThunder(LColor.black);
 							break;
 						}
 					}

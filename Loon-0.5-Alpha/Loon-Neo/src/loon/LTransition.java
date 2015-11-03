@@ -25,6 +25,9 @@ import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
+import loon.action.sprite.effect.PixelDarkInEffect;
+import loon.action.sprite.effect.PixelDarkOutEffect;
+import loon.action.sprite.effect.PixelThunderEffect;
 import loon.action.sprite.effect.PixelWindEffect;
 import loon.action.sprite.effect.SplitEffect;
 import loon.canvas.LColor;
@@ -364,6 +367,104 @@ public class LTransition {
 		}
 		return null;
 	}
+
+	public static final LTransition newPixelDarkIn(final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final PixelDarkInEffect darkinEffect = new PixelDarkInEffect(c);
+
+				public void draw(GLEx g) {
+					darkinEffect.createUI(g);
+				}
+
+				public void update(long elapsedTime) {
+					darkinEffect.update(elapsedTime);
+				}
+
+				public boolean completed() {
+					return darkinEffect.isCompleted();
+				}
+
+				public void close() {
+					darkinEffect.close();
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+	
+	public static final LTransition newPixelDarkOut(final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final PixelDarkOutEffect darkoutEffect = new PixelDarkOutEffect(c);
+
+				public void draw(GLEx g) {
+					darkoutEffect.createUI(g);
+				}
+
+				public void update(long elapsedTime) {
+					darkoutEffect.update(elapsedTime);
+				}
+
+				public boolean completed() {
+					return darkoutEffect.isCompleted();
+				}
+
+				public void close() {
+					darkoutEffect.close();
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+	
+
+	public static final LTransition newPixelThunder(final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final PixelThunderEffect thunderEffect = new PixelThunderEffect(c);
+
+				public void draw(GLEx g) {
+					thunderEffect.createUI(g);
+				}
+
+				public void update(long elapsedTime) {
+					thunderEffect.update(elapsedTime);
+				}
+
+				public boolean completed() {
+					return thunderEffect.isCompleted();
+				}
+
+				public void close() {
+					thunderEffect.close();
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+	
 	
 	public static final LTransition newEmpty() {
 

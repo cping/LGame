@@ -28,6 +28,10 @@ public class GWTLog extends Log {
 	private GWTLog() {
 	}
 
+	public native static void log(String msg)/*-{
+		$wnd.console.info(msg);
+}-*/;
+	
 	@Override
 	protected void callNativeLog(Level level, String msg, Throwable e) {
 		String lmsg = level + ": " + msg;

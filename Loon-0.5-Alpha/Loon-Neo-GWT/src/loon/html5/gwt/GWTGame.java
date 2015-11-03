@@ -28,6 +28,7 @@ import loon.Log;
 import loon.Save;
 import loon.Support;
 import loon.event.InputMake;
+import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.jni.NativeSupport;
 import loon.jni.TimerCallback;
 import loon.utils.reply.Act;
@@ -41,14 +42,21 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class GWTGame extends LGame {
 
+	private static String cur_language = null;
+	
+	private static String cur_browserType = null;
+	
 	public static class GWTSetting extends LSetting {
 
-		//是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
+		// 是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
 		public boolean preferFlash = false;
 
-		//当前浏览器的渲染模式
+		// 当前浏览器的渲染模式
 		public Mode mode = GWTUrl.Renderer.requestedMode();
-
+		
+		//当此项存在时，会尝试加载内部资源
+		public LocalAssetResources internalRes = null;
+		
 		public boolean transparentCanvas = false;
 
 		public boolean antiAliasing = true;
@@ -316,6 +324,12 @@ public class GWTGame extends LGame {
 		return $wnd.navigator.userAgent.toLowerCase();
 	}-*/;
 
+	@Override
+	public boolean isMobile() {
+		return super.isMobile()
+				|| isAndroid() || isIOs() || getUserAgent().contains("mobile");
+	}
+
 	public boolean isAndroid() {
 		return isAndroidPhone() || isAndroidTablet();
 	}
@@ -440,5 +454,63 @@ public class GWTGame extends LGame {
 	public native boolean isStandalone() /*-{
 		return $wnd.navigator.standalone;
 	}-*/;
+	
+
+	private static native String languageImpl()
+	/*-{
+		var nav = $wnd.navigator;
+		var curLanguage = nav.language;
+		curLanguage = curLanguage ? curLanguage : nav.browserLanguage;
+		curLanguage = curLanguage ? curLanguage.split("-")[0] : "en";
+		return curLanguage;
+	}-*/;
+
+	public static String language() {
+		if (cur_language == null) {
+			cur_language = languageImpl();
+		}
+		return cur_language;
+	}
+
+	private static native String browserTypeImpl()
+	/*-{
+		var ua = $wnd.navigator.userAgent;
+		var BROWSER_TYPE_WECHAT = "wechat";
+		var BROWSER_TYPE_ANDROID = "androidbrowser";
+		var BROWSER_TYPE_IE = "ie";
+		var BROWSER_TYPE_360 = "360browser";
+		var BROWSER_TYPE_MAXTHON = "maxthon";
+		var BROWSER_TYPE_OPERA = "opera";
+		var BROWSER_TYPE_UNKNOWN = "unknown";
+		var typeReg1 = /sogou|qzone|liebao|micromessenger|ucbrowser|360 aphone|360browser|baiduboxapp|baidubrowser|maxthon|mxbrowser|trident|miuibrowser/i;
+		var typeReg2 = /qqbrowser|chrome|safari|firefox|opr|oupeng|opera/i;
+		var browserTypes = typeReg1.exec(ua);
+		if (!browserTypes) {
+			browserTypes = typeReg2.exec(ua);
+		}
+		var browserType = browserTypes ? browserTypes[0] : BROWSER_TYPE_UNKNOWN;
+		if (browserType === "micromessenger") {
+			browserType = BROWSER_TYPE_WECHAT;
+		} else if (browserType === "safari"
+				&& (ua.match(/android.*applewebkit/))) {
+			browserType = BROWSER_TYPE_ANDROID;
+		} else if (browserType === "trident") {
+			browserType = BROWSER_TYPE_IE;
+		} else if (browserType === "360 aphone") {
+			browserType = BROWSER_TYPE_360;
+		} else if (browserType === "mxbrowser") {
+			browserType = BROWSER_TYPE_MAXTHON;
+		} else if (browserType === "opr") {
+			browserType = BROWSER_TYPE_OPERA;
+		}
+		return browserType;
+	}-*/;
+	
+	public static String browserType() {
+		if (cur_browserType == null) {
+			cur_browserType = browserTypeImpl();
+		}
+		return cur_browserType;
+	}
 
 }

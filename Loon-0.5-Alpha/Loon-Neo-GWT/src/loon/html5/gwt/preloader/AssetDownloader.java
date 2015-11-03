@@ -30,39 +30,10 @@ import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.google.gwt.xhr.client.XMLHttpRequest.ResponseType;
 
-public class AssetDownloader {
+public class AssetDownloader extends IDownloader {
 
-	private boolean useBrowserCache,useInlineBase64;
-
-	public AssetDownloader() {
-		useBrowserCache = true;
-		useInlineBase64 = false;
-	}
-
-	public void setUseBrowserCache(boolean useBrowserCache) {
-		this.useBrowserCache = useBrowserCache;
-	}
-
-	public boolean isUseBrowserCache() {
-		return useBrowserCache;
-	}
-
-	public void setUseInlineBase64(boolean useInlineBase64) {
-		this.useInlineBase64 = useInlineBase64;
-	}
-
-	public boolean isUseInlineBase64() {
-		return useInlineBase64;
-	}
-
-	public interface AssetLoaderListener<T> {
-
-		public void onProgress(double amount);
-
-		public void onFailure();
-
-		public void onSuccess(T result);
-
+	public AssetDownloader(){
+		super();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -177,10 +148,11 @@ public class AssetDownloader {
 					hookImgListener(image, new ImgEventListener() {
 						@Override
 						public void onEvent(NativeEvent event) {
-							if (event.getType().equals("error"))
+							if (event.getType().equals("error")) {
 								listener.onFailure();
-							else
+							} else {
 								listener.onSuccess(image);
+							}
 						}
 					});
 					if (isUseInlineBase64()) {
@@ -197,47 +169,20 @@ public class AssetDownloader {
 			hookImgListener(image, new ImgEventListener() {
 				@Override
 				public void onEvent(NativeEvent event) {
-					if (event.getType().equals("error"))
+					if (event.getType().equals("error")) {
 						listener.onFailure();
-					else
+					} else {
 						listener.onSuccess(image);
+					}
 				}
 			});
 			image.setSrc(url);
 		}
 	}
 
-	private static interface ImgEventListener {
-		public void onEvent(NativeEvent event);
+	@Override
+	public void clear() {
+		// noop
 	}
-
-	static native void hookImgListener(ImageElement img, ImgEventListener h) /*-{
-		img
-				.addEventListener(
-						'load',
-						function(e) {
-							h.@loon.html5.gwt.preloader.AssetDownloader.ImgEventListener::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
-						}, false);
-		img
-				.addEventListener(
-						'error',
-						function(e) {
-							h.@loon.html5.gwt.preloader.AssetDownloader.ImgEventListener::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
-						}, false);
-	}-*/;
-
-	static native ImageElement createImage() /*-{
-		return new Image();
-	}-*/;
-
-	@SuppressWarnings("rawtypes")
-	private native static void setOnProgress(XMLHttpRequest req,
-			AssetLoaderListener listener) /*-{
-		var _this = this;
-		this.onprogress = $entry(function(evt) {
-			listener.@loon.html5.gwt.preloader.AssetDownloader.AssetLoaderListener::onProgress(D)(evt.loaded);
-		});
-	}-*/;
-
 
 }

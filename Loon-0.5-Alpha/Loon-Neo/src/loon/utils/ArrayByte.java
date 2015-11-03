@@ -49,6 +49,14 @@ public class ArrayByte implements LRelease {
 		this(new byte[length]);
 	}
 
+	public ArrayByte(String base64) {
+		if(!Base64Coder.isBase64(base64)){
+			throw new RuntimeException("it is not base64 :" + base64 );
+		}
+		this.data = Base64Coder.decodeBase64(base64.toCharArray());
+		reset();
+	}
+
 	public ArrayByte(byte[] data) {
 		this.data = data;
 		reset();
@@ -364,6 +372,11 @@ public class ArrayByte implements LRelease {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+	
+	@Override
+	public String toString(){
+		return new String(Base64Coder.encode(data));
 	}
 
 	@Override

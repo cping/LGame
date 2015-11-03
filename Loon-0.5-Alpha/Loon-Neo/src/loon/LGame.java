@@ -59,7 +59,7 @@ public abstract class LGame {
 	}
 
 	public static enum Type {
-		JAVASE, ANDROID, IOS, WP, HTML5, STUB
+		JAVASE, ANDROID, IOS, WP, HTML5, UNITY, STUB
 	}
 
 	public LSetting setting;
@@ -98,64 +98,35 @@ public abstract class LGame {
 	 * 由于GWT不支持真实的反射，而完全模拟反射需要耗费大量资源，精确反射又难以控制用户具体使用的类，所以统一放弃外部反射方法，
 	 * 不让用户有机会使用自定义的类操作。
 	 * */
-	/*private static Class<?> getType(Object o) {
-		if (o instanceof Integer) {
-			return Integer.TYPE;
-		} else if (o instanceof Float) {
-			return Float.TYPE;
-		} else if (o instanceof Double) {
-			return Double.TYPE;
-		} else if (o instanceof Long) {
-			return Long.TYPE;
-		} else if (o instanceof Short) {
-			return Short.TYPE;
-		} else if (o instanceof Short) {
-			return Short.TYPE;
-		} else if (o instanceof Boolean) {
-			return Boolean.TYPE;
-		} else {
-			return o.getClass();
-		}
-	}
+	/*
+	 * private static Class<?> getType(Object o) { if (o instanceof Integer) {
+	 * return Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE;
+	 * } else if (o instanceof Double) { return Double.TYPE; } else if (o
+	 * instanceof Long) { return Long.TYPE; } else if (o instanceof Short) {
+	 * return Short.TYPE; } else if (o instanceof Short) { return Short.TYPE; }
+	 * else if (o instanceof Boolean) { return Boolean.TYPE; } else { return
+	 * o.getClass(); } }
+	 * 
+	 * public Display register(Class<? extends Screen> clazz, Object... args) {
+	 * LSystem.viewSize.setSize(setting.width, setting.height); this.display =
+	 * new Display(this, setting.fps); if (args == null) { args = new Object[0];
+	 * } if (clazz != null) { if (args != null) { try { final int funs =
+	 * args.length; if (funs == 0) {
+	 * display.setScreen(ClassReflection.newInstance(clazz)); } else {
+	 * Class<?>[] functions = new Class<?>[funs]; for (int i = 0; i < funs; i++)
+	 * { functions[i] = getType(args[i]); } Constructor constructor =
+	 * ClassReflection .getConstructor(clazz, functions); Object o =
+	 * constructor.newInstance(args);
+	 * 
+	 * if (o != null && (o instanceof Screen)) { display.setScreen((Screen) o);
+	 * } } } catch (Exception e) { e.printStackTrace(); } } } return display; }
+	 */
 
-	public Display register(Class<? extends Screen> clazz, Object... args) {
-		LSystem.viewSize.setSize(setting.width, setting.height);
-		this.display = new Display(this, setting.fps);
-		if (args == null) {
-			args = new Object[0];
-		}
-		if (clazz != null) {
-			if (args != null) {
-				try {
-					final int funs = args.length;
-					if (funs == 0) {
-						display.setScreen(ClassReflection.newInstance(clazz));
-					} else {
-						Class<?>[] functions = new Class<?>[funs];
-						for (int i = 0; i < funs; i++) {
-							functions[i] = getType(args[i]);
-						}
-						Constructor constructor = ClassReflection
-								.getConstructor(clazz, functions);
-						Object o = constructor.newInstance(args);
-
-						if (o != null && (o instanceof Screen)) {
-							display.setScreen((Screen) o);
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return display;
-	}*/
-
-	public boolean isMobile(){
+	public boolean isMobile() {
 		Type type = this.type();
-		return (type==LGame.Type.ANDROID||type==LGame.Type.IOS||type==LGame.Type.WP);
+		return (type == LGame.Type.ANDROID || type == LGame.Type.IOS || type == LGame.Type.WP);
 	}
-	
+
 	public void reportError(String message, Throwable cause) {
 		errors.emit(new Error(message, cause));
 		log().warn(message, cause);

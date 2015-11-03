@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import loon.LSystem;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 
 import com.google.gwt.core.ext.BadPropertyValueException;
@@ -58,13 +59,18 @@ public class PreloaderBundleGenerator extends Generator {
 		ResourcesWrapper source = new ResourcesWrapper(assetPath);
 		if (!source.exists()) {
 			source = new ResourcesWrapper("../" + assetPath);
-			if (!source.exists())
-				throw new RuntimeException(
-						"assets path '"
-								+ assetPath
-								+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+			if (!source.exists()) {
+				source = new ResourcesWrapper(assetPath.substring(
+						assetPath.indexOf('/') + 1, assetPath.length()));
+				if (!source.exists()) {
+					throw new RuntimeException(
+							"assets path '"
+									+ assetPath
+									+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+				}
+			}
 		}
-		if (!source.isDirectory()){
+		if (!source.isDirectory()) {
 			throw new RuntimeException(
 					"assets path '"
 							+ assetPath
@@ -135,8 +141,14 @@ public class PreloaderBundleGenerator extends Generator {
 				buffer.append(":");
 				String mimetype = URLConnection
 						.guessContentTypeFromName(asset.file.name());
-				buffer.append(mimetype == null ? "application/unknown"
-						: mimetype);
+				String ext = LSystem.getExtension(asset.file.name())
+						.toLowerCase();
+				if (ext.equals("an") || ext.equals("tmx")) {
+					buffer.append("text/plain");
+				} else {
+					buffer.append(mimetype == null ? "application/unknown"
+							: mimetype);
+				}
 				buffer.append("\n");
 			}
 			target.child(bundle.getKey() + ".txt").writeString(

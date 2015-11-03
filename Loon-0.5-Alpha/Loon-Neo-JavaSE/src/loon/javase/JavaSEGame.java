@@ -43,7 +43,7 @@ public class JavaSEGame extends LGame {
 	public static class JavaSetting extends LSetting {
 		public boolean vSyncEnabled = true;
 	}
-	
+
 	final static private boolean osIsLinux;
 
 	final static private boolean osIsUnix;
@@ -289,18 +289,18 @@ public class JavaSEGame extends LGame {
 	}
 
 	private static void browse(String url) throws Exception {
-		String osName = System.getProperty("os.name", "");
-		if (osName.startsWith("Mac OS")) {
+		if (isMacOS()) {
 			Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
 			Method openURL = fileMgr.getDeclaredMethod("openURL",
 					new Class[] { String.class });
 			openURL.invoke(null, new Object[] { url });
-		} else if (osName.startsWith("Windows")) {
+		} else if (isWindows()) {
 			Runtime.getRuntime().exec(
 					"rundll32 url.dll,FileProtocolHandler " + url);
 		} else {
-			String[] browsers = { "firefox", "opera", "konqueror", "epiphany",
-					"mozilla", "netscape" };
+			String[] browsers = { "google-chrome", "firefox", "mozilla",
+					"opera", "epiphany", "konqueror", "netscape", "links",
+					"lynx", "epiphany", "conkeror", "midori", "kazehakase", };
 			String browser = null;
 			for (int count = 0; count < browsers.length && browser == null; count++) {
 				if (Runtime.getRuntime()
@@ -334,6 +334,20 @@ public class JavaSEGame extends LGame {
 							systemRuntime.exec(iexplore.getAbsolutePath()
 									+ " \"" + url + "\"");
 						} else {
+							File chrome = new File(
+									"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
+							if (chrome.exists()) {
+								systemRuntime.exec(chrome.getAbsolutePath()
+										+ " \"" + url + "\"");
+								return;
+							}
+							chrome = new File(
+									"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
+							if (chrome.exists()) {
+								systemRuntime.exec(chrome.getAbsolutePath()
+										+ " \"" + url + "\"");
+								return;
+							}
 							systemRuntime
 									.exec("rundll32 url.dll,FileProtocolHandler "
 											+ url);
@@ -341,9 +355,9 @@ public class JavaSEGame extends LGame {
 					} else if (isMacOS()) {
 						systemRuntime.exec("open " + url);
 					} else if (isUnix()) {
-						String[] browsers = { "epiphany", "firefox", "mozilla",
-								"konqueror", "netscape", "opera", "links",
-								"lynx" };
+						String[] browsers = { "google-chrome", "firefox", "mozilla",
+								"opera", "epiphany", "konqueror", "netscape", "links",
+								"lynx", "epiphany", "conkeror", "midori", "kazehakase" };
 						StringBuffer cmd = new StringBuffer();
 						for (int i = 0; i < browsers.length; i++) {
 							cmd.append((i == 0 ? "" : " || ") + browsers[i]

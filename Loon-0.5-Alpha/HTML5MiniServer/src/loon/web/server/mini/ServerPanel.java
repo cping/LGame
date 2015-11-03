@@ -18,6 +18,7 @@ public class ServerPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private javax.swing.JLabel labMessage;
+	private javax.swing.JButton btnOpenURL;
 	private javax.swing.JButton btnServerClose;
 	private javax.swing.JButton btnServerOpen;
 	private javax.swing.JButton btnSelectDir;
@@ -46,6 +47,7 @@ public class ServerPanel extends JPanel {
 		labMessage = new javax.swing.JLabel();
 		btnServerOpen = new javax.swing.JButton();
 		btnServerClose = new javax.swing.JButton();
+		btnOpenURL = new javax.swing.JButton();
 
 		setLayout(null);
 
@@ -145,6 +147,16 @@ public class ServerPanel extends JPanel {
 		});
 		btnServerOpen.setEnabled(true);
 		btnServerClose.setEnabled(false);
+
+		btnOpenURL.setText("OpenBrowse");
+		btnOpenURL.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				Browse.openURL(String.format("http://127.0.0.1:%s", _server
+						.getConfig().getPort()));
+			}
+		});
+		add(btnOpenURL);
+		btnOpenURL.setBounds(20, 170, 120, 30);
 	}
 
 }

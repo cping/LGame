@@ -28,24 +28,25 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import loon.LRelease;
+import loon.html5.gwt.GWTLog;
 import loon.html5.gwt.GWTResourcesLoader;
 import loon.html5.gwt.GWTResources.FileType;
-import loon.html5.gwt.preloader.AssetDownloader.AssetLoaderListener;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
+import loon.html5.gwt.preloader.IDownloader.AssetLoaderListener;
 import loon.utils.Array;
 import loon.utils.ObjectMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
 
-public class Preloader {
+public class Preloader implements LRelease {
 
 	public interface PreloaderCallback {
 
-		public void update (PreloaderState state);
+		public void update(PreloaderState state);
 
-		public void error (String file);
-
+		public void error(String file);
 	}
 
 	public ObjectMap<String, Void> directories = new ObjectMap<String, Void>();
@@ -55,7 +56,7 @@ public class Preloader {
 	public ObjectMap<String, Blob> binaries = new ObjectMap<String, Blob>();
 
 	public static class Asset {
-		public Asset (String url, AssetType type, long size, String mimeType) {
+		public Asset(String url, AssetType type, long size, String mimeType) {
 			this.url = url;
 			this.type = type;
 			this.size = size;
@@ -73,20 +74,21 @@ public class Preloader {
 
 	public static class PreloaderState {
 
-		public PreloaderState (Array<Asset> assets) {
+		public PreloaderState(Array<Asset> assets) {
 			this.assets = assets;
 		}
 
-		public long getDownloadedSize () {
+		public long getDownloadedSize() {
 			long size = 0;
 			for (int i = 0; i < assets.size(); i++) {
 				Asset asset = assets.get(i);
-				size += (asset.succeed || asset.failed) ? asset.size : Math.min(asset.size, asset.loaded);
+				size += (asset.succeed || asset.failed) ? asset.size : Math
+						.min(asset.size, asset.loaded);
 			}
 			return size;
 		}
 
-		public long getTotalSize () {
+		public long getTotalSize() {
 			long size = 0;
 			for (int i = 0; i < assets.size(); i++) {
 				Asset asset = assets.get(i);
@@ -95,12 +97,12 @@ public class Preloader {
 			return size;
 		}
 
-		public float getProgress () {
+		public float getProgress() {
 			long total = getTotalSize();
-			return total == 0 ? 1 : (getDownloadedSize() / (float)total);
+			return total == 0 ? 1 : (getDownloadedSize() / (float) total);
 		}
 
-		public boolean hasEnded () {
+		public boolean hasEnded() {
 			return getDownloadedSize() == getTotalSize();
 		}
 
@@ -110,45 +112,88 @@ public class Preloader {
 
 	public final String baseUrl;
 
-	public Preloader (String newBaseURL) {
+	public final LocalAssetResources localRes;
 
+	public IDownloader loader = null;
+
+	public Preloader(String newBaseURL, LocalAssetResources res) {
 		baseUrl = newBaseURL;
-
+		localRes = res;
 		GWT.create(PreloaderBundle.class);
 	}
 
-	public void preload (final String assetFileUrl, final PreloaderCallback callback) {
-		final AssetDownloader loader = new AssetDownloader();
-
+	public void preload(final String assetFileUrl,
+			final PreloaderCallback callback) {
+		if (localRes == null) {
+			loader = new AssetDownloader();
+		} else {
+			loader = new LocalAssetDownloader(localRes);
+		}
 		loader.loadText(baseUrl + assetFileUrl, new AssetLoaderListener<String>() {
 			@Override
-			public void onProgress (double amount) {
+			public void onProgress(double amount) {
 			}
 
 			@Override
-			public void onFailure () {
+			public void onFailure() {
 				callback.error(assetFileUrl);
 			}
 
 			@Override
-			public void onSuccess (String result) {
-				String[] lines = result.split("\n");
+			public void onSuccess(String result) {
 				Array<Asset> assets = new Array<Asset>();
-				for (String line : lines) {
-					String[] tokens = line.split(":");
-					if (tokens.length != 4) {
-						throw new RuntimeException("Invalid assets description file.");
+				if (result.startsWith("list:")) {
+					String context = result.substring(5, result.length());
+					GWTLog.log(result);
+					String[] lines = context.split(";");
+					for (String line : lines) {
+						String[] tokens = line.split(":");
+						if (tokens.length != 4) {
+							throw new RuntimeException(
+									"Invalid assets description file.");
+						}
+						AssetType type = AssetType.Text;
+						if (tokens[0].equals("i"))
+							type = AssetType.Image;
+						if (tokens[0].equals("b"))
+							type = AssetType.Binary;
+						if (tokens[0].equals("a"))
+							type = AssetType.Audio;
+						if (tokens[0].equals("d"))
+							type = AssetType.Directory;
+						long size = Long.parseLong(tokens[2]);
+						if (type == AssetType.Audio
+								&& !loader.isUseBrowserCache()) {
+							size = 0;
+						}
+						assets.add(new Asset(tokens[1].trim(), type, size,
+								tokens[3]));
 					}
-					AssetType type = AssetType.Text;
-					if (tokens[0].equals("i")) type = AssetType.Image;
-					if (tokens[0].equals("b")) type = AssetType.Binary;
-					if (tokens[0].equals("a")) type = AssetType.Audio;
-					if (tokens[0].equals("d")) type = AssetType.Directory;
-					long size = Long.parseLong(tokens[2]);
-					if (type == AssetType.Audio && !loader.isUseBrowserCache()) {
-						size = 0;
+				} else {
+					String[] lines = result.split("\n");
+					for (String line : lines) {
+						String[] tokens = line.split(":");
+						if (tokens.length != 4) {
+							throw new RuntimeException(
+									"Invalid assets description file.");
+						}
+						AssetType type = AssetType.Text;
+						if (tokens[0].equals("i"))
+							type = AssetType.Image;
+						if (tokens[0].equals("b"))
+							type = AssetType.Binary;
+						if (tokens[0].equals("a"))
+							type = AssetType.Audio;
+						if (tokens[0].equals("d"))
+							type = AssetType.Directory;
+						long size = Long.parseLong(tokens[2]);
+						if (type == AssetType.Audio
+								&& !loader.isUseBrowserCache()) {
+							size = 0;
+						}
+						assets.add(new Asset(tokens[1].trim(), type, size,
+								tokens[3]));
 					}
-					assets.add(new Asset(tokens[1].trim(), type, size, tokens[3]));
 				}
 				final PreloaderState state = new PreloaderState(assets);
 				for (int i = 0; i < assets.size(); i++) {
@@ -160,99 +205,106 @@ public class Preloader {
 						continue;
 					}
 
-					loader.load(baseUrl + asset.url, asset.type, asset.mimeType, new AssetLoaderListener<Object>() {
-						@Override
-						public void onProgress (double amount) {
-							asset.loaded = (long)amount;
-							callback.update(state);
-						}
+					loader.load(baseUrl + asset.url, asset.type,
+							asset.mimeType, new AssetLoaderListener<Object>() {
+								@Override
+								public void onProgress(double amount) {
+									asset.loaded = (long) amount;
+									callback.update(state);
+								}
 
-						@Override
-						public void onFailure () {
-							asset.failed = true;
-							callback.error(asset.url);
-							callback.update(state);
-						}
+								@Override
+								public void onFailure() {
+									asset.failed = true;
+									callback.error(asset.url);
+									callback.update(state);
+								}
 
-						@Override
-						public void onSuccess (Object result) {
-							switch (asset.type) {
-							case Text:
-								texts.put(asset.url, (String)result);
-								break;
-							case Image:
-								images.put(asset.url, (ImageElement)result);
-								break;
-							case Binary:
-								binaries.put(asset.url, (Blob)result);
-								break;
-							case Audio:
-								audio.put(asset.url, null);
-								break;
-							case Directory:
-								directories.put(asset.url, null);
-								break;
-							}
-							asset.succeed = true;
-							callback.update(state);
-						}
-					});
+								@Override
+								public void onSuccess(Object result) {
+									switch (asset.type) {
+									case Text:
+										texts.put(asset.url, (String) result);
+										break;
+									case Image:
+										images.put(asset.url,
+												(ImageElement) result);
+										break;
+									case Binary:
+										binaries.put(asset.url, (Blob) result);
+										break;
+									case Audio:
+										audio.put(asset.url, null);
+										break;
+									case Directory:
+										directories.put(asset.url, null);
+										break;
+									}
+									asset.succeed = true;
+									callback.update(state);
+								}
+							});
 				}
+
 				callback.update(state);
+				loader.clear();
 			}
 		});
 	}
 
-	public InputStream read (String url) {
+	public InputStream read(String url) {
 		if (texts.containsKey(url)) {
 			try {
-				return new ByteArrayInputStream(texts.get(url).getBytes("UTF-8"));
+				return new ByteArrayInputStream(texts.get(url)
+						.getBytes("UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				return null;
 			}
 		}
 		if (images.containsKey(url)) {
-			return new ByteArrayInputStream(new byte[1]); 
+			return new ByteArrayInputStream(new byte[1]);
 		}
 		if (binaries.containsKey(url)) {
 			return binaries.get(url).read();
 		}
 		if (audio.containsKey(url)) {
-			return new ByteArrayInputStream(new byte[1]); 
+			return new ByteArrayInputStream(new byte[1]);
 		}
 		return null;
 	}
 
-	public boolean contains (String url) {
-		return texts.containsKey(url) || images.containsKey(url) || binaries.containsKey(url) || audio.containsKey(url)
-			|| directories.containsKey(url);
+	public boolean contains(String url) {
+		return texts.containsKey(url) || images.containsKey(url)
+				|| binaries.containsKey(url) || audio.containsKey(url)
+				|| directories.containsKey(url);
 	}
 
-	public boolean isText (String url) {
+	public boolean isText(String url) {
 		return texts.containsKey(url);
 	}
 
-	public boolean isImage (String url) {
+	public boolean isImage(String url) {
 		return images.containsKey(url);
 	}
 
-	public boolean isBinary (String url) {
+	public boolean isBinary(String url) {
 		return binaries.containsKey(url);
 	}
 
-	public boolean isAudio (String url) {
+	public boolean isAudio(String url) {
 		return audio.containsKey(url);
 	}
 
-	public boolean isDirectory (String url) {
+	public boolean isDirectory(String url) {
 		return directories.containsKey(url);
 	}
 
-	private boolean isChild (String path, String url) {
-		return path.startsWith(url) && (path.indexOf('/', url.length() + 1) < 0);
+	private boolean isChild(String path, String url) {
+		return path.startsWith(url)
+				&& (path.indexOf('/', url.length() + 1) < 0);
 	}
 
-	public GWTResourcesLoader[] list (String url) {
+	public GWTResourcesLoader[] list(String url) {
 		ArrayList<GWTResourcesLoader> files = new ArrayList<GWTResourcesLoader>();
 		for (String path : texts.keys()) {
 			if (isChild(path, url)) {
@@ -264,7 +316,7 @@ public class Preloader {
 		return list;
 	}
 
-	public GWTResourcesLoader[] list (String url, FileFilter filter) {
+	public GWTResourcesLoader[] list(String url, FileFilter filter) {
 		ArrayList<GWTResourcesLoader> files = new ArrayList<GWTResourcesLoader>();
 		for (String path : texts.keys()) {
 			if (isChild(path, url) && filter.accept(new File(path))) {
@@ -276,10 +328,12 @@ public class Preloader {
 		return list;
 	}
 
-	public GWTResourcesLoader[] list (String url, FilenameFilter filter) {
+	public GWTResourcesLoader[] list(String url, FilenameFilter filter) {
 		ArrayList<GWTResourcesLoader> files = new ArrayList<GWTResourcesLoader>();
 		for (String path : texts.keys()) {
-			if (isChild(path, url) && filter.accept(new File(url), path.substring(url.length() + 1))) {
+			if (isChild(path, url)
+					&& filter.accept(new File(url),
+							path.substring(url.length() + 1))) {
 				files.add(new GWTResourcesLoader(this, path, FileType.Internal));
 			}
 		}
@@ -288,7 +342,7 @@ public class Preloader {
 		return list;
 	}
 
-	public GWTResourcesLoader[] list (String url, String suffix) {
+	public GWTResourcesLoader[] list(String url, String suffix) {
 		ArrayList<GWTResourcesLoader> files = new ArrayList<GWTResourcesLoader>();
 		for (String path : texts.keys()) {
 			if (isChild(path, url) && path.endsWith(suffix)) {
@@ -300,7 +354,7 @@ public class Preloader {
 		return list;
 	}
 
-	public long length (String url) {
+	public long length(String url) {
 		if (texts.containsKey(url)) {
 			try {
 				return texts.get(url).getBytes("UTF-8").length;
@@ -318,6 +372,13 @@ public class Preloader {
 			return 1;
 		}
 		return 0;
+	}
+
+	@Override
+	public void close() {
+		if (loader != null) {
+			loader.clear();
+		}
 	}
 
 }

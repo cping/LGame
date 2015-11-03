@@ -53,21 +53,22 @@ public class DefaultAssetFilter implements AssetFilter {
 		return AssetType.Binary;
 	}
 
-	private boolean isImage(String extension) {
+	static boolean isImage(String extension) {
 		return extension.equals("jpg") || extension.equals("jpeg")
 				|| extension.equals("png") || extension.equals("bmp")
 				|| extension.equals("gif");
 	}
 
-	private boolean isText(String extension) {
+	static boolean isText(String extension) {
 		return extension.equals("json") || extension.equals("xml")
 				|| extension.equals("txt") || extension.equals("glsl")
 				|| extension.equals("fnt") || extension.equals("pack")
 				|| extension.equals("obj") || extension.equals("atlas")
-				|| extension.equals("g3dj") || extension.equals("tmx");
+				|| extension.equals("g3dj") || extension.equals("tmx")
+				|| extension.equals("an");
 	}
 
-	private boolean isAudio(String extension) {
+	static boolean isAudio(String extension) {
 		return extension.equals("mp3") || extension.equals("ogg")
 				|| extension.equals("wav") || extension.equals("mid");
 	}

@@ -10,6 +10,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
+//此像素非真像素，而是指'像素风'……实际是三角形纹理贴图效果……
 public abstract class PixelBaseEffect extends LObject implements ISprite {
 
 	/**
@@ -138,7 +139,7 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 		int tmp = g.getPixSkip();
 		boolean usetex = g.alltextures();
 		if (usetex) {
-			g.setPixSkip(6);
+			g.setPixSkip(4);
 		}
 		draw(g, this.x(), this.y());
 		if (usetex) {

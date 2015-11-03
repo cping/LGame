@@ -3,6 +3,7 @@ package loon.test;
 import loon.Screen;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.Loon;
+import loon.html5.gwt.preloader.LocalAssetResources;
 
 public class TestLoon extends Loon {
 
@@ -20,7 +21,14 @@ public class TestLoon extends Loon {
 		setting.isFPS = true;
 		setting.fontName = "黑体";
 		setting.rootId = "embed-loon.test.TestLoon";
-	
+		
+		//如果想要完全本地运行页面，在任意浏览器都能静态运行，而不通过服务器，只能提前写好资源路径……（否则，部分浏览器不能读txt之类的本地文件，只能放在服务器才行）
+		/*LocalAssetResources res = new LocalAssetResources();
+		res.putImage("w6.png");
+		res.commit();
+		
+		setting.internalRes = res;*/
+		
 		register(setting, new Data() {
 			
 			@Override

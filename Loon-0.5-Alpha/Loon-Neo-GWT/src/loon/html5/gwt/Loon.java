@@ -30,6 +30,7 @@ import loon.event.SysInput;
 import loon.event.Updateable;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.soundmanager2.SoundManager;
+import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.html5.gwt.preloader.Preloader;
 import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
 import loon.html5.gwt.preloader.Preloader.PreloaderState;
@@ -114,35 +115,37 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			this.root = panel;
 		}
 
+		// 新增了一项本地资源加载器（此处'本地资源'，指写死在class里的资源……避免跨域……从而独立运行html在任意浏览器，而不必经过服务器，或修改浏览器参数满足本地访问权限）
+		final LocalAssetResources localRes = config.internalRes;
+
 		SoundManager.init(GWT.getModuleBaseURL(), 9, config.preferFlash,
 				new SoundManager.SoundManagerCallback() {
 
 					@Override
 					public void onready() {
 						final PreloaderCallback callback = getPreloaderCallback();
-						preloader = createPreloader();
-						preloader.preload("assets.txt",
-								new PreloaderCallback() {
-									@Override
-									public void error(String file) {
-										callback.error(file);
-									}
+						preloader = createPreloader(localRes);
+						preloader.preload("assets.txt", new PreloaderCallback() {
+							@Override
+							public void error(String file) {
+								callback.error(file);
+							}
 
-									@Override
-									public void update(PreloaderState state) {
-										callback.update(state);
-										if (state.hasEnded()) {
-											getRootPanel().clear();
-											if (loadingListener != null) {
-												loadingListener.beforeSetup();
-											}
-											mainLoop();
-											if (loadingListener != null) {
-												loadingListener.afterSetup();
-											}
-										}
+							@Override
+							public void update(PreloaderState state) {
+								callback.update(state);
+								if (state.hasEnded()) {
+									getRootPanel().clear();
+									if (loadingListener != null) {
+										loadingListener.beforeSetup();
 									}
-								});
+									mainLoop();
+									if (loadingListener != null) {
+										loadingListener.afterSetup();
+									}
+								}
+							}
+						});
 					}
 
 					@Override
@@ -165,8 +168,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return GWT.getHostPageBaseURL() + "assets/";
 	}
 
-	public Preloader createPreloader() {
-		return new Preloader(getPreloaderBaseURL());
+	public Preloader createPreloader(LocalAssetResources res) {
+		return new Preloader(getPreloaderBaseURL(), res);
 	}
 
 	public PreloaderCallback getPreloaderCallback() {
