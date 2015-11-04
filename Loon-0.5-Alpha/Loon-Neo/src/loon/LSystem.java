@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.util.Random;
-
 import loon.event.Drawable;
 import loon.event.KeyMake;
 import loon.event.SysInput;
@@ -63,8 +61,6 @@ public class LSystem {
 
 	// 文件分割符
 	final static public String FS = System.getProperty("file.separator", "/");
-
-	final static public Random random = new Random();
 
 	public final static String version = "0.5";
 

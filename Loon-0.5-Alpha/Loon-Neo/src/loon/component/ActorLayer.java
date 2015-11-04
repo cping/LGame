@@ -24,7 +24,6 @@ package loon.component;
 import java.util.Iterator;
 import java.util.List;
 
-import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
@@ -614,8 +613,8 @@ public abstract class ActorLayer extends LContainer {
 			if (index >= count) {
 				return randoms;
 			}
-			int rx = LSystem.random.nextInt(row);
-			int ry = LSystem.random.nextInt(col);
+			int rx = MathUtils.random(row);
+			int ry = MathUtils.random(col);
 			if (oldRx != rx && oldRy != ry && rx != x && ry != y
 					&& rx * actorWidth != nx && ry * actorHeight != ny) {
 				boolean stop = false;

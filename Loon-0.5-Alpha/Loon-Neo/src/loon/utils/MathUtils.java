@@ -20,10 +20,13 @@
  */
 package loon.utils;
 
-import loon.LSystem;
+import java.util.Random;
+
 import loon.geom.RectBox;
 
 public class MathUtils {
+
+	final static public Random random = new Random();
 
 	private static final int[] SHIFT = { 0, 1144, 2289, 3435, 4583, 5734, 6888,
 			8047, 9210, 10380, 11556, 12739, 13930, 15130, 16340, 17560, 18792,
@@ -745,35 +748,35 @@ public class MathUtils {
 	}
 
 	public static final int nextInt(int range) {
-		return range <= 0 ? 0 : LSystem.random.nextInt(range);
+		return range <= 0 ? 0 : random.nextInt(range);
 	}
 
 	public static final int nextInt(int start, int end) {
-		return end <= 0 ? 0 : start + LSystem.random.nextInt(end - start);
+		return end <= 0 ? 0 : start + random.nextInt(end - start);
 	}
 
 	public static final int random(int range) {
-		return LSystem.random.nextInt(range + 1);
+		return random.nextInt(range + 1);
 	}
 
 	public static final int random(int start, int end) {
-		return start + LSystem.random.nextInt(end - start + 1);
+		return start + random.nextInt(end - start + 1);
 	}
 
 	public static final boolean randomBoolean() {
-		return LSystem.random.nextBoolean();
+		return random.nextBoolean();
 	}
 
 	public static final float random() {
-		return LSystem.random.nextFloat();
+		return random.nextFloat();
 	}
 
 	public static final float random(float range) {
-		return LSystem.random.nextFloat() * range;
+		return random.nextFloat() * range;
 	}
 
 	public static final float random(float start, float end) {
-		return start + LSystem.random.nextFloat() * (end - start);
+		return start + random.nextFloat() * (end - start);
 	}
 
 	public static int floor(float x) {

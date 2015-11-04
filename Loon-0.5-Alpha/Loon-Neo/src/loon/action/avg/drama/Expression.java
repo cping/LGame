@@ -22,12 +22,12 @@ package loon.action.avg.drama;
 
 import java.util.Random;
 
-import loon.LSystem;
+import loon.utils.MathUtils;
 
 public interface Expression {
 
 	// 全局随机数
-	Random GLOBAL_RAND = LSystem.random;
+	Random GLOBAL_RAND = MathUtils.random;
 
 	// 默认变量1,用于记录当前选择项
 	String V_SELECT_KEY = "SELECT";

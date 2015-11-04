@@ -29,6 +29,7 @@ import loon.event.Updateable;
 import loon.geom.Point.Point2i;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 public class AVGCG implements LRelease{
@@ -180,8 +181,8 @@ public class AVGCG implements LRelease{
 		if (background != null) {
 			if (shakeNumber > 0) {
 				g.draw(background,
-						shakeNumber / 2 - LSystem.random.nextInt(shakeNumber),
-						shakeNumber / 2 - LSystem.random.nextInt(shakeNumber));
+						shakeNumber / 2 - MathUtils.random(shakeNumber),
+						shakeNumber / 2 - MathUtils.random(shakeNumber));
 			} else {
 				g.draw(background, 0, 0);
 			}

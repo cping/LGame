@@ -63,8 +63,8 @@ public class PetalKernel implements IKernel {
 				speed = -0.2f;
 			}
 			if (y >= height) {
-				y = -(LSystem.random.nextFloat() * 1) - sakuraHeight;
-				x = (LSystem.random.nextFloat() * (width - 1));
+				y = -(MathUtils.random() * 1) - sakuraHeight;
+				x = (MathUtils.random() * (width - 1));
 			}
 		}
 	}

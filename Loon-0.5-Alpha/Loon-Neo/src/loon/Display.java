@@ -253,15 +253,15 @@ public class Display extends LSystemView {
 			default:
 				if (process.getX() == 0 && process.getY() == 0) {
 					glEx.draw(process.getBackground(), repaintMode / 2
-							- LSystem.random.nextInt(repaintMode), repaintMode
-							/ 2 - LSystem.random.nextInt(repaintMode));
+							- MathUtils.random(repaintMode), repaintMode
+							/ 2 - MathUtils.random(repaintMode));
 				} else {
 					glEx.draw(
 							process.getBackground(),
 							process.getX() + repaintMode / 2
-									- LSystem.random.nextInt(repaintMode),
+									- MathUtils.random(repaintMode),
 							process.getY() + repaintMode / 2
-									- LSystem.random.nextInt(repaintMode));
+									- MathUtils.random(repaintMode));
 				}
 				break;
 			}

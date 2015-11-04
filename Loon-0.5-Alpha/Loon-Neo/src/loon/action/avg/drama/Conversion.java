@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import loon.LRelease;
-import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -366,7 +365,7 @@ public abstract class Conversion implements Expression {
 						stkIdx++;
 						break;
 					case STACK_RAND:
-						stack[stkIdx] = LSystem.random.nextFloat();
+						stack[stkIdx] = MathUtils.random();
 						stkIdx++;
 						break;
 					default:

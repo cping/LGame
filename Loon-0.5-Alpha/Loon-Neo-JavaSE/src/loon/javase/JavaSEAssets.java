@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -46,7 +47,6 @@ import loon.utils.Scale;
 
 public class JavaSEAssets extends Assets {
 
-	
 	private final JavaSEGame game;
 	private File[] directories = {};
 
@@ -56,7 +56,6 @@ public class JavaSEAssets extends Assets {
 		super(game.asyn());
 		this.game = game;
 	}
-
 
 	public void addDirectory(File dir) {
 		File[] ndirs = new File[directories.length + 1];
@@ -71,7 +70,8 @@ public class JavaSEAssets extends Assets {
 
 	@Override
 	public Image getRemoteImage(final String url, int width, int height) {
-		final JavaSEImage image = new JavaSEImage(game, true, width, height, url);
+		final JavaSEImage image = new JavaSEImage(game, true, width, height,
+				url);
 		asyn.invokeAsync(new Runnable() {
 			public void run() {
 				try {
@@ -107,7 +107,7 @@ public class JavaSEAssets extends Assets {
 	}
 
 	private static JavaSEAudio _audio;
-	
+
 	protected Sound getSound(String path, boolean music) {
 		if (_audio == null) {
 			_audio = new JavaSEAudio();
@@ -118,9 +118,8 @@ public class JavaSEAssets extends Assets {
 			for (String suff : SUFFIXES) {
 				final String soundPath = path + suff;
 				try {
-					return _audio.createSound(
-							new ByteArrayInputStream(
-									getBytesSync(soundPath)), music);
+					return _audio.createSound(new ByteArrayInputStream(
+							getBytesSync(soundPath)), music);
 				} catch (Exception e) {
 					e.printStackTrace();
 					err = e;
@@ -128,9 +127,8 @@ public class JavaSEAssets extends Assets {
 			}
 		} else {
 			try {
-				return _audio.createSound(
-						new ByteArrayInputStream(getBytesSync(path)),
-						music);
+				return _audio.createSound(new ByteArrayInputStream(
+						getBytesSync(path)), music);
 			} catch (Exception e) {
 				e.printStackTrace();
 				err = e;
@@ -138,7 +136,6 @@ public class JavaSEAssets extends Assets {
 		}
 		return new Sound.Error(err);
 	}
-
 
 	static ClassLoader classLoader;
 
@@ -155,7 +152,8 @@ public class JavaSEAssets extends Assets {
 		URL url = classLoader.getResource(serachPath);
 		if (url != null) {
 			return url.getProtocol().equals("file") ? new FileResource(
-					new File(url.getPath())) : new URLResource(url);
+					new File(URLDecoder.decode(url.getPath(), LSystem.ENCODING)))
+					: new URLResource(url);
 		} else {
 			File file = new File(serachPath);
 			if (file.exists()) {
@@ -272,7 +270,7 @@ public class JavaSEAssets extends Assets {
 		public byte[] readBytes() throws IOException {
 			InputStream in = openStream();
 			try {
-				byte[] buffer = new byte[(int) file.length()]; 
+				byte[] buffer = new byte[(int) file.length()];
 				in.read(buffer);
 				return buffer;
 			} finally {
