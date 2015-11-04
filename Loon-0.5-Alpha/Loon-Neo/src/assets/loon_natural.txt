@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="yes" ?>
+<pack file="assets/loon_natural.png">
+	<block name="loon_rain_0" left="0" top="0" right="23" bottom="259" />
+	<block name="loon_rain_2" left="23" top="0" right="47" bottom="207" />
+	<block name="loon_rain_1" left="47" top="0" right="70" bottom="206" />
+	<block name="loon_rain_3" left="70" top="0" right="79" bottom="122" />
+	<block name="loon_snow_4" left="79" top="0" right="92" bottom="14" />
+	<block name="loon_snow_3" left="112" top="0" right="124" bottom="12" />
+	<block name="loon_snow_2" left="124" top="0" right="134" bottom="10" />
+	<block name="loon_snow_1" left="145" top="0" right="153" bottom="8" />
+	<block name="loon_snow_0" left="153" top="0" right="159" bottom="6" />
+	<block name="loon_sakura_0" left="93" top="0" right="112" bottom="13" />
+	<block name="loon_sakura_1" left="134" top="0" right="145" bottom="8" />
+</pack>

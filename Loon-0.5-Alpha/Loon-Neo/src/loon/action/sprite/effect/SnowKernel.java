@@ -2,8 +2,8 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.opengl.GLEx;
+import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
 public class SnowKernel implements IKernel {
@@ -16,11 +16,9 @@ public class SnowKernel implements IKernel {
 
 	private float offsetX, offsetY, speed, x, y, width, height, snowWidth,
 			snowHeight;
-
-	public SnowKernel(int n, int w, int h) {
-		snow = LTextures
-				.loadTexture((LSystem.FRAMEWORK_IMG_NAME + "snow_" + n + ".png")
-						.intern());
+	
+	public SnowKernel(LTexturePack pack, int n, int w, int h) {
+		snow = pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "snow_" + n);
 		snowWidth = snow.width();
 		snowHeight = snow.height();
 		width = w;

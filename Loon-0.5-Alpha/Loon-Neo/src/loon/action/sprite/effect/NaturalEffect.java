@@ -1,44 +1,43 @@
 package loon.action.sprite.effect;
 
-import java.util.ArrayList;
-
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
-import loon.utils.reflect.ArrayReflection;
-import loon.utils.reflect.ClassReflection;
 import loon.utils.timer.LTimer;
 
-public class FreedomEffect extends LObject implements ISprite {
+public class NaturalEffect extends LObject implements ISprite {
+
+	public static enum NaturalType {
+		Rain, Snow, Petal;
+	}
 
 	/**
 	 * 自由场景特效
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private LTexturePack pack;
+
 	private int x, y, width, height, count, layer;
 
 	private LTimer timer;
 
-	private LTexture texture;
-
 	private IKernel[] kernels;
 
-	private boolean visible = true, dirty;
-
-	private ArrayList<LTexture> tex2ds = new ArrayList<LTexture>(10);
+	private boolean visible = true;
 
 	/**
 	 * 返回默认数量的飘雪
 	 * 
 	 * @return
 	 */
-	public static FreedomEffect getSnowEffect() {
-		return FreedomEffect.getSnowEffect(60);
+	public static NaturalEffect getSnowEffect() {
+		return NaturalEffect.getSnowEffect(60);
 	}
 
 	/**
@@ -47,8 +46,8 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param count
 	 * @return
 	 */
-	public static FreedomEffect getSnowEffect(int count) {
-		return FreedomEffect.getSnowEffect(count, 0, 0);
+	public static NaturalEffect getSnowEffect(int count) {
+		return NaturalEffect.getSnowEffect(count, 0, 0);
 	}
 
 	/**
@@ -59,9 +58,9 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param y
 	 * @return
 	 */
-	public static FreedomEffect getSnowEffect(int count, int x, int y) {
-		return FreedomEffect.getSnowEffect(count, x, y,
-				LSystem.viewSize.getWidth(),LSystem.viewSize.getHeight());
+	public static NaturalEffect getSnowEffect(int count, int x, int y) {
+		return NaturalEffect.getSnowEffect(count, x, y,
+				LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	/**
@@ -74,9 +73,9 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param h
 	 * @return
 	 */
-	public static FreedomEffect getSnowEffect(int count, int x, int y, int w,
+	public static NaturalEffect getSnowEffect(int count, int x, int y, int w,
 			int h) {
-		return new FreedomEffect(SnowKernel.class, count, 4, x, y, w, h);
+		return new NaturalEffect(NaturalType.Snow, count, 4, x, y, w, h);
 	}
 
 	/**
@@ -84,8 +83,8 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * 
 	 * @return
 	 */
-	public static FreedomEffect getRainEffect() {
-		return FreedomEffect.getRainEffect(60);
+	public static NaturalEffect getRainEffect() {
+		return NaturalEffect.getRainEffect(60);
 	}
 
 	/**
@@ -94,8 +93,8 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param count
 	 * @return
 	 */
-	public static FreedomEffect getRainEffect(int count) {
-		return FreedomEffect.getRainEffect(count, 0, 0);
+	public static NaturalEffect getRainEffect(int count) {
+		return NaturalEffect.getRainEffect(count, 0, 0);
 	}
 
 	/**
@@ -106,8 +105,8 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param y
 	 * @return
 	 */
-	public static FreedomEffect getRainEffect(int count, int x, int y) {
-		return FreedomEffect.getRainEffect(count, x, y,
+	public static NaturalEffect getRainEffect(int count, int x, int y) {
+		return NaturalEffect.getRainEffect(count, x, y,
 				LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
@@ -121,9 +120,9 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param h
 	 * @return
 	 */
-	public static FreedomEffect getRainEffect(int count, int x, int y, int w,
+	public static NaturalEffect getRainEffect(int count, int x, int y, int w,
 			int h) {
-		return new FreedomEffect(RainKernel.class, count, 3, x, y, w, h);
+		return new NaturalEffect(NaturalType.Rain, count, 3, x, y, w, h);
 	}
 
 	/**
@@ -131,8 +130,8 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * 
 	 * @return
 	 */
-	public static FreedomEffect getPetalEffect() {
-		return FreedomEffect.getPetalEffect(25);
+	public static NaturalEffect getPetalEffect() {
+		return NaturalEffect.getPetalEffect(25);
 	}
 
 	/**
@@ -141,8 +140,8 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param count
 	 * @return
 	 */
-	public static FreedomEffect getPetalEffect(int count) {
-		return FreedomEffect.getPetalEffect(count, 0, 0);
+	public static NaturalEffect getPetalEffect(int count) {
+		return NaturalEffect.getPetalEffect(count, 0, 0);
 	}
 
 	/**
@@ -153,8 +152,8 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param y
 	 * @return
 	 */
-	public static FreedomEffect getPetalEffect(int count, int x, int y) {
-		return FreedomEffect.getPetalEffect(count, x, y,
+	public static NaturalEffect getPetalEffect(int count, int x, int y) {
+		return NaturalEffect.getPetalEffect(count, x, y,
 				LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
@@ -168,21 +167,21 @@ public class FreedomEffect extends LObject implements ISprite {
 	 * @param h
 	 * @return
 	 */
-	public static FreedomEffect getPetalEffect(int count, int x, int y, int w,
+	public static NaturalEffect getPetalEffect(int count, int x, int y, int w,
 			int h) {
-		return new FreedomEffect(PetalKernel.class, count, 1, x, y, w, h);
+		return new NaturalEffect(NaturalType.Petal, count, 1, x, y, w, h);
 	}
 
-	public FreedomEffect(Class<?> clazz, int count, int limit) {
-		this(clazz, count, limit, 0, 0);
+	public NaturalEffect(NaturalType ntype, int count, int limit) {
+		this(ntype, count, limit, 0, 0);
 	}
 
-	public FreedomEffect(Class<?> clazz, int count, int limit, int x, int y) {
-		this(clazz, count, limit, x, y, LSystem.viewSize.getWidth(),
+	public NaturalEffect(NaturalType ntype, int count, int limit, int x, int y) {
+		this(ntype, count, limit, x, y, LSystem.viewSize.getWidth(),
 				LSystem.viewSize.getHeight());
 	}
 
-	public FreedomEffect(Class<?> clazz, int count, int limit, int x, int y,
+	public NaturalEffect(NaturalType ntype, int count, int limit, int x, int y,
 			int w, int h) {
 		this.x = x;
 		this.y = y;
@@ -190,18 +189,29 @@ public class FreedomEffect extends LObject implements ISprite {
 		this.height = h;
 		this.count = count;
 		this.timer = new LTimer(80);
-		this.kernels = (IKernel[]) ArrayReflection.newInstance(clazz, count);
-		try {
-			loon.utils.reflect.Constructor constructor = ClassReflection
-					.getDeclaredConstructor(clazz,new Class[] { int.class, int.class,
-							int.class });
+		this.pack = new LTexturePack(LSystem.FRAMEWORK_IMG_NAME + "natural.txt");
+		switch (ntype) {
+		case Petal:
+			this.kernels = new PetalKernel[count];
 			for (int i = 0; i < count; i++) {
 				int no = MathUtils.random(0, limit);
-				kernels[i] = (IKernel) constructor.newInstance(new Object[] {
-						new Integer(no), new Integer(w), new Integer(h) });
+				kernels[i] = new PetalKernel(pack, no, w, h);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			break;
+		case Snow:
+			this.kernels = new SnowKernel[count];
+			for (int i = 0; i < count; i++) {
+				int no = MathUtils.random(0, limit);
+				kernels[i] = new SnowKernel(pack, no, w, h);
+			}
+			break;
+		case Rain:
+			this.kernels = new RainKernel[count];
+			for (int i = 0; i < count; i++) {
+				int no = MathUtils.random(0, limit);
+				kernels[i] = new RainKernel(pack, no, w, h);
+			}
+			break;
 		}
 	}
 
@@ -210,33 +220,13 @@ public class FreedomEffect extends LObject implements ISprite {
 			for (int i = 0; i < count; i++) {
 				kernels[i].update();
 			}
-			dirty = true;
 		}
 	}
 
 	public void createUI(GLEx g) {
 		if (visible) {
-			if (dirty) {
-				tex2ds.clear();
-				for (int i = 0; i < count; i++) {
-					texture = kernels[i].get();
-					if (!tex2ds.contains(texture)) {
-						tex2ds.add(texture);
-						texture.glBegin();
-					}
-					kernels[i].draw(g);
-				}
-				for (int i = 0; i < tex2ds.size(); i++) {
-					texture = tex2ds.get(i);
-					texture.newBatchCache();
-					texture.postLastBatchCache();
-				}
-				dirty = false;
-			} else {
-				for (int i = 0; i < tex2ds.size(); i++) {
-					texture = tex2ds.get(i);
-					texture.postLastBatchCache();
-				}
+			for (int i = 0; i < count; i++) {
+				kernels[i].draw(g);
 			}
 		}
 	}
@@ -324,11 +314,14 @@ public class FreedomEffect extends LObject implements ISprite {
 	public void close() {
 		this.visible = false;
 		if (kernels != null) {
-			for (int i = 0; i < kernels.length; i++) {
+			int size = kernels.length;
+			for (int i = 0; i < size; i++) {
 				kernels[i].close();
 				kernels[i] = null;
 			}
 		}
-		tex2ds.clear();
+		if (pack != null) {
+			pack.close();
+		}
 	}
 }

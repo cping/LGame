@@ -2,8 +2,8 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.opengl.GLEx;
+import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
 public class RainKernel implements IKernel {
@@ -16,10 +16,8 @@ public class RainKernel implements IKernel {
 
 	private float offsetX, offsetY, x, y, width, height, rainWidth, rainHeight;
 
-	public RainKernel(int n, int w, int h) {
-		rain = LTextures
-				.loadTexture((LSystem.FRAMEWORK_IMG_NAME + "rain_" + n + ".png")
-						.intern());
+	public RainKernel(LTexturePack pack, int n, int w, int h) {
+		rain = pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "rain_" + n);
 		rainWidth = rain.width();
 		rainHeight = rain.height();
 		width = w;

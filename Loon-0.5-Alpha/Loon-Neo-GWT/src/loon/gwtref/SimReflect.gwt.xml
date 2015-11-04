@@ -21,16 +21,6 @@
 	<extend-configuration-property name="loon.reflect.include"
 		value="loon.canvas.Image" />
 	<extend-configuration-property name="loon.reflect.include"
-		value="loon.action.sprite.effect.IKernel" />
-	<extend-configuration-property name="loon.reflect.include"
-		value="loon.action.sprite.effect.SnowKernel" />
-	<extend-configuration-property name="loon.reflect.include"
-		value="loon.action.sprite.effect.RainKernel" />
-	<extend-configuration-property name="loon.reflect.include"
-		value="loon.action.sprite.effect.PetalKernel" />
-	<extend-configuration-property name="loon.reflect.include"
-		value="loon.action.sprite.effect.FreedomEffect" />
-	<extend-configuration-property name="loon.reflect.include"
 		value="loon.utils.ObjectMap" />
 	<extend-configuration-property name="loon.reflect.include"
 		value="loon.utils.OrderedMap" />

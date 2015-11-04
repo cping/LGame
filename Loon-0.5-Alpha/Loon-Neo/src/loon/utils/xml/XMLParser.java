@@ -264,7 +264,7 @@ public class XMLParser {
 	}
 
 	public static XMLDocument parse(String file) {
-		return new XMLParser().parseText(file, null);
+		return parse(file, null);
 	}
 
 	public static XMLDocument parse(String file, XMLListener l) {

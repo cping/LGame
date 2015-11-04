@@ -32,7 +32,7 @@ import loon.action.avg.drama.Conversion;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.effect.FadeEffect;
-import loon.action.sprite.effect.FreedomEffect;
+import loon.action.sprite.effect.NaturalEffect;
 import loon.action.sprite.effect.PetalKernel;
 import loon.action.sprite.effect.RainKernel;
 import loon.action.sprite.effect.SnowKernel;
@@ -361,20 +361,20 @@ public abstract class AVGScreen extends Screen {
 
 						for (int i = 0; i < ss.length; i++) {
 							ISprite s = ss[i];
-							if (s instanceof FreedomEffect) {
+							if (s instanceof NaturalEffect) {
 								flag = true;
 								break;
 							}
 						}
 						if (!flag) {
 							if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOW)) {
-								sprites.add(FreedomEffect.getSnowEffect());
+								sprites.add(NaturalEffect.getSnowEffect());
 							} else if (cmdFlag
 									.equalsIgnoreCase(CommandType.L_RAIN)) {
-								sprites.add(FreedomEffect.getRainEffect());
+								sprites.add(NaturalEffect.getRainEffect());
 							} else if (cmdFlag
 									.equalsIgnoreCase(CommandType.L_PETAL)) {
-								sprites.add(FreedomEffect.getPetalEffect());
+								sprites.add(NaturalEffect.getPetalEffect());
 							}
 						}
 
@@ -389,20 +389,20 @@ public abstract class AVGScreen extends Screen {
 
 						for (int i = 0; i < ss.length; i++) {
 							ISprite s = ss[i];
-							if (s instanceof FreedomEffect) {
+							if (s instanceof NaturalEffect) {
 								if (cmdFlag
 										.equalsIgnoreCase(CommandType.L_SNOWSTOP)) {
-									if (((FreedomEffect) s).getKernels()[0] instanceof SnowKernel) {
+									if (((NaturalEffect) s).getKernels()[0] instanceof SnowKernel) {
 										sprites.remove(s);
 									}
 								} else if (cmdFlag
 										.equalsIgnoreCase(CommandType.L_RAINSTOP)) {
-									if (((FreedomEffect) s).getKernels()[0] instanceof RainKernel) {
+									if (((NaturalEffect) s).getKernels()[0] instanceof RainKernel) {
 										sprites.remove(s);
 									}
 								} else if (cmdFlag
 										.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
-									if (((FreedomEffect) s).getKernels()[0] instanceof PetalKernel) {
+									if (((NaturalEffect) s).getKernels()[0] instanceof PetalKernel) {
 										sprites.remove(s);
 									}
 								}

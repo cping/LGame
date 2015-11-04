@@ -4,6 +4,7 @@ import loon.LTexture;
 import loon.LTransition;
 import loon.Screen;
 import loon.action.avg.AVGDialog;
+import loon.action.sprite.effect.NaturalEffect;
 import loon.event.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.Scale;
@@ -11,7 +12,6 @@ import loon.utils.timer.LTimerContext;
 
 public class ScreenTest extends Screen{
 
-	LTexture tex = null;
 	
 	public LTransition onTransition(){
 		return LTransition.newEmpty();
@@ -19,15 +19,12 @@ public class ScreenTest extends Screen{
 	
 	@Override
 	public void draw(GLEx g) {
-		if(tex==null){
-			tex=AVGDialog.getRMXPDialog("w6.png", 200, 200);
-		}
-		g.draw(tex, 66, 66);
+
 	}
 
 	@Override
 	public void onLoad() {
-		
+		add(NaturalEffect.getSnowEffect());
 		
 	}
 

@@ -2,8 +2,8 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.opengl.GLEx;
+import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
 public class PetalKernel implements IKernel {
@@ -17,10 +17,9 @@ public class PetalKernel implements IKernel {
 
 	private int id;
 
-	public PetalKernel(int n, int w, int h) {
+	public PetalKernel(LTexturePack pack, int n, int w, int h) {
 		id = n;
-		sakura = LTextures.loadTexture((LSystem.FRAMEWORK_IMG_NAME + "sakura_"
-				+ n + ".png").intern());
+		sakura = pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "sakura_" + n);
 		sakuraWidth = sakura.width();
 		sakuraHeight = sakura.height();
 		width = w;

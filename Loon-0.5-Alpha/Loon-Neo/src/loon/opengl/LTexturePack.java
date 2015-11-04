@@ -65,7 +65,8 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		return texture.copy(entry.bounds.left, entry.bounds.top,
-				entry.bounds.right, entry.bounds.bottom);
+				entry.bounds.right - entry.bounds.left, entry.bounds.bottom
+						- entry.bounds.top);
 	}
 
 	public LTexture getTexture(int id) {
@@ -75,7 +76,8 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		return texture.copy(entry.bounds.left, entry.bounds.top,
-				entry.bounds.right, entry.bounds.bottom);
+				entry.bounds.right - entry.bounds.left, entry.bounds.bottom
+						- entry.bounds.top);
 	}
 
 	public SpriteRegion createSpriteRegion(int id) {
@@ -85,7 +87,8 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+				entry.bounds.top, entry.bounds.right - entry.bounds.left,
+				entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -96,7 +99,8 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+				entry.bounds.top, entry.bounds.right - entry.bounds.left,
+				entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -107,7 +111,8 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+				entry.bounds.top, entry.bounds.right - entry.bounds.left,
+				entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -118,7 +123,8 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+				entry.bounds.top, entry.bounds.right - entry.bounds.left,
+				entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -905,7 +911,7 @@ public class LTexturePack implements LRelease {
 	public void setFormat(Format format) {
 		this.format = format;
 	}
-	
+
 	public synchronized void close() {
 		free();
 		if (texture != null) {
