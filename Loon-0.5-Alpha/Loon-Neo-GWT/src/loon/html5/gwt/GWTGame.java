@@ -279,8 +279,12 @@ public class GWTGame extends LGame {
 			$wnd.mozRequestAnimationFrame(fn);
 		} else if ($wnd.webkitRequestAnimationFrame) {
 			$wnd.webkitRequestAnimationFrame(fn);
+		} else if ($wnd.oRequestAnimationFrame) {
+			$wnd.oRequestAnimationFrame(fn);
+		} else if ($wnd.msRequestAnimationFrame) {
+			$wnd.msRequestAnimationFrame(fn);
 		} else {
-			$wnd.setTimeout(fn, 20);
+			$wnd.setTimeout(fn, 16);
 		}
 	}-*/;
 

@@ -80,7 +80,7 @@ public class LocalAssetDownloader extends IDownloader {
 		} while (path.length() != pathLen);
 		path = path.replace("\\", "/");
 		ObjectMap<String, String> res = localRes.texts;
-	
+
 		String text = res.get(path);
 		if (text == null
 				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
@@ -263,6 +263,22 @@ public class LocalAssetDownloader extends IDownloader {
 				base64 = res
 						.get(LSystem.getFileName(path = ("assets/" + path)));
 			}
+			if (base64 == null) {
+				final ImageElement image = createImage();
+				hookImgListener(image, new ImgEventListener() {
+					@Override
+					public void onEvent(NativeEvent event) {
+						if (event.getType().equals("error")) {
+							listener.onFailure();
+						} else {
+							listener.onSuccess(image);
+						}
+					}
+				});
+				setOnProgress(listener);
+				image.setSrc(path);
+				return;
+			}
 			final ImageElement image = createImage();
 			hookImgListener(image, new ImgEventListener() {
 				@Override
@@ -275,8 +291,8 @@ public class LocalAssetDownloader extends IDownloader {
 				}
 			});
 			setCrossOrigin(image, "anonymous");
-			image.setSrc("data:" + mimeType + ";base64," + base64);
 			setOnProgress(listener);
+			image.setSrc("data:" + mimeType + ";base64," + base64);
 		}
 	}
 
