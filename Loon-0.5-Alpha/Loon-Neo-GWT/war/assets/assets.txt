@@ -1,9 +1,12 @@
 d:assets:0:application/unknown
+d:assets:0:application/unknown
+d:assets/script:0:application/unknown
+t:assets/script/s1.txt:3905:text/plain
 i:back1.png:227391:image/png
 i:back2.png:196942:image/png
 i:background.png:307618:image/png
 i:c.png:64740:image/png
-b:chara3.an:352:application/unknown
+t:chara3.an:352:text/plain
 i:chara3.png:77529:image/png
 i:dialog_yes.png:22831:image/png
 i:name0.png:16155:image/png
@@ -12,6 +15,8 @@ i:p.png:28849:image/png
 i:r0.png:90564:image/png
 i:r1.png:90556:image/png
 i:r2.png:90410:image/png
+d:script:0:application/unknown
+t:script/s1.txt:3905:text/plain
 i:title.png:20819:image/png
 i:title_end.png:18677:image/png
 i:title_load.png:19405:image/png

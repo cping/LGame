@@ -138,6 +138,6 @@ public abstract class Assets {
 			pathLen = path.length();
 			path = path.replaceAll("[^/]+/\\.\\./", "");
 		} while (path.length() != pathLen);
-		return path;
+		return path.replace("\\", "/");
 	}
 }

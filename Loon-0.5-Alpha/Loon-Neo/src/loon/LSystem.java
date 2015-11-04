@@ -62,7 +62,7 @@ public class LSystem {
 	final static public String LS = System.getProperty("line.separator", "\n");
 
 	// 文件分割符
-	final static public String FS = System.getProperty("file.separator", "\\");
+	final static public String FS = System.getProperty("file.separator", "/");
 
 	final static public Random random = new Random();
 
@@ -182,22 +182,16 @@ public class LSystem {
 		if (name == null) {
 			return "";
 		}
-		if (name.indexOf(LSystem.FS) != -1) {
-			int length = name.length();
-			int size = name.lastIndexOf(LSystem.FS) + 1;
-			if (size < length) {
-				return name.substring(size, length);
-			} else {
-				return "";
-			}
+		int length = name.length();
+		int idx = name.lastIndexOf('/');
+		if (idx == -1) {
+			idx = name.lastIndexOf('\\');
+		}
+		int size = idx + 1;
+		if (size < length) {
+			return name.substring(size, length);
 		} else {
-			int length = name.length();
-			int size = name.lastIndexOf('/') + 1;
-			if (size < length) {
-				return name.substring(size, length);
-			} else {
-				return "";
-			}
+			return "";
 		}
 	}
 

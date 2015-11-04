@@ -4,6 +4,7 @@ import loon.LSystem;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 import loon.utils.ObjectMap;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.typedarrays.shared.Int8Array;
@@ -77,7 +78,9 @@ public class LocalAssetDownloader extends IDownloader {
 			pathLen = path.length();
 			path = path.replaceAll("[^/]+/\\.\\./", "");
 		} while (path.length() != pathLen);
+		path = path.replace("\\", "/");
 		ObjectMap<String, String> res = localRes.texts;
+	
 		String text = res.get(path);
 		if (text == null
 				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
@@ -151,6 +154,7 @@ public class LocalAssetDownloader extends IDownloader {
 			pathLen = path.length();
 			path = path.replaceAll("[^/]+/\\.\\./", "");
 		} while (path.length() != pathLen);
+		path = path.replace("\\", "/");
 		ObjectMap<String, Blob> res = localRes.binaries;
 		Blob blob = res.get(path);
 		if (blob == null
@@ -223,12 +227,19 @@ public class LocalAssetDownloader extends IDownloader {
 
 	public void loadImage(final String url, final String mimeType,
 			final AssetLoaderListener<ImageElement> listener) {
+		String path = url;
+		int pathLen;
+		do {
+			pathLen = path.length();
+			path = path.replaceAll("[^/]+/\\.\\./", "");
+		} while (path.length() != pathLen);
+		path = path.replace("\\", "/");
+		if (tryInline) {
 			final ImageElement image = createImage();
 			hookImgListener(image, new ImgEventListener() {
 				@Override
 				public void onEvent(NativeEvent event) {
 					if (event.getType().equals("error")) {
-		
 						listener.onFailure();
 					} else {
 						listener.onSuccess(image);
@@ -236,8 +247,43 @@ public class LocalAssetDownloader extends IDownloader {
 				}
 			});
 			image.setSrc(url);
-		
+		} else {
+			ObjectMap<String, String> res = localRes.images;
+			String base64 = res.get(path);
+			if (base64 == null
+					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				base64 = res.get(path.substring(path.indexOf('/') + 1,
+						path.length()));
+			}
+			if (base64 == null
+					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				base64 = res.get(LSystem.getFileName(path));
+			}
+			if (base64 == null) {
+				base64 = res
+						.get(LSystem.getFileName(path = ("assets/" + path)));
+			}
+			final ImageElement image = createImage();
+			hookImgListener(image, new ImgEventListener() {
+				@Override
+				public void onEvent(NativeEvent event) {
+					if (event.getType().equals("error")) {
+						listener.onFailure();
+					} else {
+						listener.onSuccess(image);
+					}
+				}
+			});
+			setCrossOrigin(image, "anonymous");
+			image.setSrc("data:" + mimeType + ";base64," + base64);
+			setOnProgress(listener);
+		}
 	}
+
+	private native void setCrossOrigin(Element elem, String state) /*-{
+		if ('crossOrigin' in elem)
+			elem.setAttribute('crossOrigin', state);
+	}-*/;
 
 	public boolean isTryInline() {
 		return tryInline;

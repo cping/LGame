@@ -1,7 +1,6 @@
 package loon.html5.gwt.preloader;
 
 import loon.LSystem;
-
 import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
 
@@ -42,10 +41,12 @@ public class LocalAssetResources {
 				sbr.append(((String) obj).length());
 			} else if (obj instanceof Integer) {
 				sbr.append(((Integer) obj).intValue());
+			} else if (obj instanceof Long) {
+				sbr.append(((Long) obj).longValue());
 			} else if (obj instanceof Blob) {
 				sbr.append(((Blob) obj).length());
 			} else {
-				sbr.append(0);
+				sbr.append(Long.MAX_VALUE);
 			}
 			sbr.append(':');
 			if (DefaultAssetFilter.isImage(ext)) {
@@ -74,49 +75,13 @@ public class LocalAssetResources {
 
 	public ObjectMap<String, String> texts = new ObjectMap<String, String>();
 	public ObjectMap<String, Blob> binaries = new ObjectMap<String, Blob>();
+	public ObjectMap<String, String> images = new ObjectMap<String, String>();
 
 	public LocalAssetResources() {
-		def();
+		 def();
 	}
 
-	private void def() {
-		StringBuilder sbr = new StringBuilder();
-		sbr.append("<?xml version=\"1.0\" standalone=\"yes\"?>");
-		sbr.append("\n");
-		sbr.append("<pack file=\"assets/loon_pad_ui.png\">");
-		sbr.append("\n");
-		sbr.append("<block id=\"0\" name=\"back\" left=\"0\" top=\"0\" right=\"116\" bottom=\"116\"/>");
-		sbr.append("\n");
-		sbr.append("<block id=\"1\" name=\"fore\" left=\"116\" top=\"0\" right=\"222\" bottom=\"106\"/>");
-		sbr.append("\n");
-		sbr.append("<block id=\"2\" name=\"dot\" left=\"0\" top=\"116\" right=\"48\" bottom=\"164\"/>");
-		sbr.append("\n");
-		sbr.append("</pack>");
-
-		putText("assets/loon_pad_ui.txt", sbr.toString());
-		putImage("assets/loon_bar.png");
-		putImage("assets/loon_control_base.png");
-		putImage("assets/loon_control_dot.png");
-		putImage("assets/loon_creese.png");
-		putImage("assets/loon_e1.png");
-		putImage("assets/loon_e2.png");
-		putImage("assets/loon_icon.png");
-		putImage("assets/loon_logo.png");
-		putImage("assets/loon_pad_ui.png");
-		putImage("assets/loon_rain_0.png");
-		putImage("assets/loon_rain_1.png");
-		putImage("assets/loon_rain_2.png");
-		putImage("assets/loon_rain_3.png");
-		putImage("assets/loon_sakura_0.png");
-		putImage("assets/loon_sakura_1.png");
-		putImage("assets/loon_snow_0.png");
-		putImage("assets/loon_snow_1.png");
-		putImage("assets/loon_snow_2.png");
-		putImage("assets/loon_snow_3.png");
-		putImage("assets/loon_snow_4.png");
-		putImage("assets/loon_ui.png");
-		putImage("assets/loon_wbar.png");
-	}
+	private void def() {}
 
 	public void putAssetItem(AssetItem assets) {
 		String result = assets.toString() + ";";
@@ -126,16 +91,21 @@ public class LocalAssetResources {
 	}
 
 	public void putImage(String url) {
-		putAssetItem(new AssetItem(url, 0));
+		putAssetItem(new AssetItem(url, Integer.MAX_VALUE));
 	}
 
 	public void putImage(String url, int size) {
 		putAssetItem(new AssetItem(url, size));
 	}
 
+	public void putImage(String url, String base64) {
+		images.put(url, base64);
+		putAssetItem(new AssetItem(url, Integer.MAX_VALUE));
+	}
+
 	public void putText(String url, String context) {
 		texts.put(url, context);
-		putAssetItem(new AssetItem(url, context));
+		putAssetItem(new AssetItem(url, Integer.MAX_VALUE));
 	}
 
 	public void putBlobString(String url, String base64data) {
