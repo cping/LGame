@@ -56,6 +56,9 @@ public class GWTGame extends LGame {
 		
 		//当此项存在时，会尝试加载内部资源
 		public LocalAssetResources internalRes = null;
+
+		//当此项存在时，同样会尝试加载内部资源
+		public boolean jsloadRes = false;
 		
 		public boolean transparentCanvas = false;
 
@@ -318,10 +321,6 @@ public class GWTGame extends LGame {
 
 	private static native double now() /*-{
 		return Date.now();
-	}-*/;
-
-	native static public void consoleLog(String message) /*-{
-		console.log("GWT: " + message);
 	}-*/;
 
 	private native String getUserAgent() /*-{

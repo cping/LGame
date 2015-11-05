@@ -135,7 +135,7 @@ public class MathUtils {
 		}
 		return number;
 	}
-
+	
 	/**
 	 * 判断是否为数字
 	 * 

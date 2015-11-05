@@ -21,14 +21,9 @@
  */
 package loon.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 final public class StringUtils {
-
-	public static final String ASCII_CHARSET = "US-ASCII";
-
-	public static final String ISO88591_CHARSET = "ISO-8859-1";
 
 	private StringUtils() {
 	}
@@ -481,32 +476,6 @@ final public class StringUtils {
 			return count;
 		}
 		return count;
-	}
-
-	public static byte[] getAsciiBytes(String data) {
-		if (data == null) {
-			throw new IllegalArgumentException("Parameter may not be null");
-		}
-		try {
-			return data.getBytes(ASCII_CHARSET);
-		} catch (UnsupportedEncodingException e) {
-		}
-		throw new RuntimeException("LGame requires ASCII support");
-	}
-
-	public static String getAsciiString(byte[] data, int offset, int length) {
-		if (data == null) {
-			throw new IllegalArgumentException("Parameter may not be null");
-		}
-		try {
-			return new String(data, offset, length, ASCII_CHARSET);
-		} catch (UnsupportedEncodingException e) {
-		}
-		throw new RuntimeException("LGame requires ASCII support");
-	}
-
-	public static String getAsciiString(byte[] data) {
-		return getAsciiString(data, 0, data.length);
 	}
 
 	public static String unescape(String escaped) {

@@ -551,4 +551,25 @@ public class LSystem {
 	public static int unite(int hashCode, int value) {
 		return 31 * hashCode + value;
 	}
+
+	public static boolean isImage(String extension) {
+		return extension.equals("jpg") || extension.equals("jpeg")
+				|| extension.equals("png") || extension.equals("bmp")
+				|| extension.equals("gif");
+	}
+
+	public static boolean isText(String extension) {
+		return extension.equals("json") || extension.equals("xml")
+				|| extension.equals("txt") || extension.equals("glsl")
+				|| extension.equals("fnt") || extension.equals("pack")
+				|| extension.equals("obj") || extension.equals("atlas")
+				|| extension.equals("g3dj") || extension.equals("tmx")
+				|| extension.equals("an") || extension.equals("text")
+				|| extension.equals("cfg") || extension.equals("cvs");
+	}
+
+	public static boolean isAudio(String extension) {
+		return extension.equals("mp3") || extension.equals("ogg")
+				|| extension.equals("wav") || extension.equals("mid");
+	}
 }

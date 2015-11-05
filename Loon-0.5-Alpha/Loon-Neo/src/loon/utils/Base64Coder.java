@@ -20,8 +20,6 @@
  */
 package loon.utils;
 
-import loon.utils.StringUtils;
-
 /**
  * 自0.3.2版起新增类，用以统一跨平台的BASE64处理方法
  */
@@ -115,7 +113,7 @@ public class Base64Coder {
 	}
 
 	public static boolean isBase64(String v) {
-		return isArrayByteBase64(StringUtils.getAsciiBytes(v));
+		return isArrayByteBase64(v.getBytes());
 	}
 
 	public static boolean isArrayByteBase64(byte[] bytes) {

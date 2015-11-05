@@ -1,16 +1,45 @@
-48C1CC6791E9A23ABB24BB03ACF9EF18.cache.js
-user.agent ie9
-
-7FC762FAF7D7CD893BC1D12C64A9C0E0.cache.js
-user.agent ie8
-
-B06BC7BC9EF7BC6DA0726297ED00E632.cache.js
+52104753548B0F098404CF14D8B9469D.cache.js
+ClientBundle.enableInlining true
+audioElementSupport maybe
+canvasElementSupport maybe
+compiler.emulatedStack false
+compiler.predeclare.cross.fragment.references false
+compiler.stackMode strip
+compiler.useSourceMaps true
+compiler.useSymbolMaps false
+dragEventSupport maybe
+gwt.enableDebugId false
+gwt.forceBidi false
+gwt.logging.enabled FALSE
+gwt.suppressNonStaticFinalFieldWarnings false
+locale default
+rpc.XserializeFinalFields false
+superdevmode off
+touchEventSupport maybe
 user.agent safari
+videoElementSupport maybe
+webApiUsage modern
 
-F00E890BD56FAEDD7B31E0AD927CBA03.cache.js
-user.agent ie10
-
-F456F48624F9BFB060275DEB8B0A633C.cache.js
-user.agent gecko1_8
+52104753548B0F098404CF14D8B9469D.cache.js
+ClientBundle.enableInlining true
+audioElementSupport maybe
+canvasElementSupport maybe
+compiler.emulatedStack false
+compiler.predeclare.cross.fragment.references false
+compiler.stackMode strip
+compiler.useSourceMaps true
+compiler.useSymbolMaps false
+dragEventSupport maybe
+gwt.enableDebugId false
+gwt.forceBidi false
+gwt.logging.enabled FALSE
+gwt.suppressNonStaticFinalFieldWarnings false
+locale zh
+rpc.XserializeFinalFields false
+superdevmode off
+touchEventSupport maybe
+user.agent safari
+videoElementSupport maybe
+webApiUsage modern
 
 Devmode:devmode.js

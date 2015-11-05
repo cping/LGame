@@ -15,6 +15,7 @@
 		<exclude name="**/PreloaderBundleGenerator.java"/>
 		<exclude name="**/FileWrapper.java"/>
 	</source>
+	<define-configuration-property name="loon.addtojs" is-multi-valued="false"/>
 	<define-configuration-property name="loon.assetpath" is-multi-valued="false"/>
 	<define-configuration-property name="loon.assetfilterclass" is-multi-valued="false"/>
 	<define-configuration-property name="loon.assetoutputpath" is-multi-valued="false"/>

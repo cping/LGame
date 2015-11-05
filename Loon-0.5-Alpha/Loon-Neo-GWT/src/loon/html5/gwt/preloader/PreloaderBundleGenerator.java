@@ -20,9 +20,12 @@
  */
 package loon.html5.gwt.preloader;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ import java.util.Map.Entry;
 
 import loon.LSystem;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
+import loon.utils.Base64Coder;
 
 import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.ConfigurationProperty;
@@ -44,29 +48,58 @@ import com.google.gwt.user.rebind.SourceWriter;
 
 public class PreloaderBundleGenerator extends Generator {
 
+	static class Var {
+		String name;
+		String context;
+	}
+
 	@Override
 	public String generate(TreeLogger logger, GeneratorContext context,
 			String typeName) throws UnableToCompleteException {
-		System.out.println(new File(".").getAbsolutePath());
+		System.out.println("location : " + new File(".").getAbsolutePath());
 		String assetPath = getAssetPath(context);
-		System.out.println("my assets path : " + assetPath);
+		System.out.println("set assets path : " + assetPath);
 		String assetOutputPath = getAssetOutputPath(context);
 		if (assetOutputPath == null) {
 			assetOutputPath = "war/";
 		}
 		AssetFilter assetFilter = getAssetFilter(context);
-
 		ResourcesWrapper source = new ResourcesWrapper(assetPath);
-		if (!source.exists()) {
+		String[] source_list = source.file().list();
+		int idx = 0;
+		boolean fix_loc = false;
+		//防止定位到奇怪的assets资源目录……
+		if (source_list != null && source_list.length > 0) {
+			for (String file : source_list) {
+				if (file.contains("assets/loon_logo.png")
+						|| file.contains("assets/loon_pad_ui.png")
+						|| file.contains("assets/loon_ui.png")
+						|| file.contains("assets.txt")) {
+					idx++;
+				}
+				if (idx >= 1) {
+					fix_loc = true;
+					break;
+				}
+			}
+		}
+		if (fix_loc) {
 			source = new ResourcesWrapper("../" + assetPath);
-			if (!source.exists()) {
-				source = new ResourcesWrapper(assetPath.substring(
+		}
+		if (!source.exists() || source.list().length == 0) {
+			source = new ResourcesWrapper("../" + assetPath);
+			if (!source.exists() || source.list().length == 0) {
+				source = new ResourcesWrapper(getPath(assetPath).substring(
 						assetPath.indexOf('/') + 1, assetPath.length()));
-				if (!source.exists()) {
-					throw new RuntimeException(
-							"assets path '"
-									+ assetPath
-									+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+				if (!source.exists() || source.list().length == 0) {
+					source = new ResourcesWrapper(getPath(assetPath).replace(
+							assetOutputPath, "").replace("../", ""));
+					if (!source.exists()) {
+						throw new RuntimeException(
+								"assets path '"
+										+ assetPath
+										+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+					}
 				}
 			}
 		}
@@ -86,11 +119,123 @@ public class PreloaderBundleGenerator extends Generator {
 			target = new ResourcesWrapper(assetOutputPath + "assets/");
 		}
 		if (target.exists()) {
-			if (!target.deleteDirectory())
+			if (!target.deleteDirectory()) {
 				throw new RuntimeException("Couldn't clean target path '"
 						+ target + "'");
+			}
 		}
 		ArrayList<Asset> assets = new ArrayList<Asset>();
+		boolean addtojs = false;
+		ConfigurationProperty property = null;
+		try {
+			property = context.getPropertyOracle().getConfigurationProperty(
+					"loon.addtojs");
+			if (property != null && property.getValues().size() > 0) {
+				String parameter = property.getValues().get(0).toLowerCase();
+				if ("yes".equals(parameter) || "true".equals(parameter)
+						|| "ok".equals(parameter)) {
+					addtojs = true;
+				}
+			}
+		} catch (BadPropertyValueException e) {
+			addtojs = false;
+		}
+		if (addtojs) {
+			// 附带一提，这里不能调用jsni给LocalAssetResources赋值，因为动态加载的关系，gwt不会处理此文件中内容，所以用@方式引用不了gwt中对象，只能传基本对象和一维数组给gwt识别.
+			// 要想在这个js直接引用gwt中对象，需要一个执行顺序更优先的外部程序执行自己的编译顺序才行，而不能让gwt自行处理，但暂时还没有打算。
+			StringBuilder dcode = new StringBuilder();
+			dcode.append("function LocalResources(){\n");
+			// 先传个LocalAssetResources过来备用，如果自制开发工具的话，此处可以直接做注入
+			// PS:还有个流氓招数，就是分别穷举函数名，记录混淆前和混淆后的实际函数名以及参数，然后动态传值，不过那样太流氓，不考虑……
+			dcode.append("this.running = function(res){\n");
+			dcode.append("var list = new Array();");
+			ArrayList<String> list = listFile(source.file());
+			for (String fileName : list) {
+				ResourcesWrapper fileRes = new ResourcesWrapper(fileName);
+				System.out.println("<<" + fileRes.path() + ">>");
+				String extension = fileRes.extension().toLowerCase();
+				if (LSystem.isText(extension)) {
+					String path = getPath(fileRes.path());
+					String resName = getResName(path);
+					Var var = getVarText(resName, path);
+					if (var != null) {
+						dcode.append('\n');
+						dcode.append(var.context);
+						dcode.append('\n');
+						push(dcode, resName, var.name, true);
+					}
+				} else if (LSystem.isImage(extension)) {
+					String path = getPath(fileRes.path());
+					String resName = getResName(path);
+					dcode.append('\n');
+					if (addtojs) {
+						String result;
+						try {
+							result = new String(Base64Coder.encode(fileRes
+									.readBytes()));
+						} catch (IOException e) {
+							result = "";
+						}
+						StringBuilder ctx = new StringBuilder();
+						char[] chars = result.toCharArray();
+						int size = chars.length;
+						int count = 0;
+						for (int i = 0; i < size; i++) {
+							char ch = chars[i];
+							if (count == 156) {
+								ctx.append("\"+\n");
+								count = 0;
+								ctx.append("\"");
+							}
+							ctx.append(ch);
+							count++;
+
+						}
+						push(dcode, resName, ctx.toString(), false);
+					} else {
+						push(dcode, resName, fileRes.length(), true);
+					}
+				} else if (LSystem.isAudio(extension)) {
+					copyDirectory(source, target, assetFilter, assets);
+				} else {
+					String path = getPath(fileRes.path());
+					String resName = getResName(path);
+					dcode.append('\n');
+					if (addtojs) {
+						String result;
+						try {
+							result = new String(Base64Coder.encode(fileRes
+									.readBytes()));
+						} catch (IOException e) {
+							result = "";
+						}
+						StringBuilder ctx = new StringBuilder();
+						char[] chars = result.toCharArray();
+						int size = chars.length;
+						int count = 0;
+						for (int i = 0; i < size; i++) {
+							char ch = chars[i];
+							if (count == 128) {
+								ctx.append("\"+\n");
+								count = 0;
+								ctx.append("\"");
+							}
+							ctx.append(ch);
+							count++;
+						}
+						push(dcode, resName, ctx.toString(), false);
+					}
+				}
+			}
+			dcode.append("return list;};};");
+
+			ResourcesWrapper res = new ResourcesWrapper(target.path()
+					+ "/resources.js");
+			res.writeString(dcode.toString(), false, LSystem.ENCODING);
+
+			return createDummyClass(logger, context);
+		}
+
 		copyDirectory(source, target, assetFilter, assets);
 
 		List<String> classpathFiles = getClasspathFiles(context);
@@ -157,6 +302,25 @@ public class PreloaderBundleGenerator extends Generator {
 		return createDummyClass(logger, context);
 	}
 
+	private static ArrayList<String> listFile(File file) {
+		ArrayList<String> ret = new ArrayList<String>();
+		String[] listFile = file.list();
+		if (listFile != null) {
+			for (int i = 0; i < listFile.length; i++) {
+				File tempfile = new File(file.getPath() + '/' + listFile[i]);
+				if (tempfile.isDirectory()) {
+					ArrayList<String> ls = listFile(tempfile);
+					ret.addAll(ls);
+					ls.clear();
+					ls = null;
+				} else {
+					ret.add(tempfile.getPath());
+				}
+			}
+		}
+		return ret;
+	}
+
 	private class Asset {
 		ResourcesWrapper file;
 		AssetType type;
@@ -164,6 +328,28 @@ public class PreloaderBundleGenerator extends Generator {
 		public Asset(ResourcesWrapper file, AssetType type) {
 			this.file = file;
 			this.type = type;
+		}
+	}
+
+	private static void push(StringBuilder code, String key, Object value,
+			boolean allplus) {
+		if (allplus) {
+			code.append(String.format("list.push({k:%s,v:%s});", "\"" + key
+					+ "\"", value));
+		} else {
+			if (value instanceof String) {
+				String result = (String) value;
+				if (result.startsWith("\"") || result.startsWith("\\\"")) {
+					code.append(String.format("list.push({k:%s,v:%s});", "\""
+							+ key + "\"", result));
+				} else {
+					code.append(String.format("list.push({k:%s,v:%s});", "\""
+							+ key + "\"", "\"" + result + "\""));
+				}
+			} else {
+				code.append(String.format("list.push({k:%s,v:%s});", "\"" + key
+						+ "\"", value));
+			}
 		}
 	}
 
@@ -244,7 +430,6 @@ public class PreloaderBundleGenerator extends Generator {
 		} else {
 			String[] tokens = paths.split(",");
 			for (String token : tokens) {
-				System.out.println(token);
 				if (new ResourcesWrapper(token).exists()
 						|| new ResourcesWrapper("../" + token).exists()) {
 					return token;
@@ -314,4 +499,84 @@ public class PreloaderBundleGenerator extends Generator {
 		sourceWriter.commit(logger);
 		return packageName + "." + className;
 	}
+
+	private static String readCodeString(File file) throws Exception {
+		FileInputStream in = new FileInputStream(file);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in,
+				LSystem.ENCODING));
+		try {
+			String text = null;
+			StringBuffer dcode = new StringBuffer();
+			for (; (text = reader.readLine()) != null;) {
+				text = text.trim();
+				if (text.length() > 0) {
+					char[] chars = text.toCharArray();
+					dcode.append("\"");
+					int size = chars.length;
+					for (int i = 0; i < size; i++) {
+						char ch = chars[i];
+						if (ch == '\\') {
+							dcode.append('\\');
+							dcode.append(ch);
+						} else if (ch == '"') {
+							dcode.append('\\');
+							dcode.append(ch);
+						} else {
+							dcode.append(ch);
+						}
+					}
+					if (size > 0
+							&& chars[size - 1] != DefaultAssetFilter.special_symbols) {
+						dcode.append(DefaultAssetFilter.special_symbols);
+					}
+					dcode.append("\"+");
+					dcode.append('\n');
+				}
+			}
+			text = dcode.toString();
+			int idx = text.lastIndexOf('+');
+			return text.substring(0, idx);
+		} finally {
+			reader.close();
+		}
+	}
+
+	private static String getPath(String path) {
+		int pathLen;
+		do {
+			pathLen = path.length();
+			path = path.replaceAll("[^/]+/\\.\\./", "");
+		} while (path.length() != pathLen);
+		return path.replace("\\", "/");
+	}
+
+	private static String getResName(String fileName) {
+		int idx = fileName.indexOf("assets/");
+		String path = fileName;
+		if (idx != -1) {
+			path = fileName.substring(idx + 7, fileName.length());
+		} else if ((idx = path.indexOf('/')) != -1) {
+			path = fileName.substring(idx, fileName.length());
+		} else {
+			path = LSystem.getFileName(fileName);
+		}
+		return path;
+	}
+
+	private static Var getVarText(String resName, String fileName) {
+		try {
+			String varname = "txt_"
+					+ resName.replace('.', '_').replace('/', '_');
+			String result = readCodeString(new File(fileName));
+			Var var = new Var();
+			var.name = varname;
+			var.context = ("var " + varname + " = (" + result) + ").replace('"
+					+ DefaultAssetFilter.special_symbols + "', '\\n');";
+			return var;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

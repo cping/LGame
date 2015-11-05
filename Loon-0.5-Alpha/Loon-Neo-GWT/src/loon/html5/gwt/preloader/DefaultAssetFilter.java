@@ -20,7 +20,11 @@
  */
 package loon.html5.gwt.preloader;
 
+import loon.LSystem;
+
 public class DefaultAssetFilter implements AssetFilter {
+	
+	public final static char special_symbols = 'φ';
 
 	private String extension(String file) {
 		String name = file;
@@ -41,37 +45,18 @@ public class DefaultAssetFilter implements AssetFilter {
 	@Override
 	public AssetType getType(String file) {
 		String extension = extension(file).toLowerCase();
-		if (isImage(extension)) {
+		if (LSystem.isImage(extension)) {
 			return AssetType.Image;
 		}
-		if (isAudio(extension)) {
+		if (LSystem.isAudio(extension)) {
 			return AssetType.Audio;
 		}
-		if (isText(extension)) {
+		if (LSystem.isText(extension)) {
 			return AssetType.Text;
 		}
 		return AssetType.Binary;
 	}
 
-	static boolean isImage(String extension) {
-		return extension.equals("jpg") || extension.equals("jpeg")
-				|| extension.equals("png") || extension.equals("bmp")
-				|| extension.equals("gif");
-	}
-
-	static boolean isText(String extension) {
-		return extension.equals("json") || extension.equals("xml")
-				|| extension.equals("txt") || extension.equals("glsl")
-				|| extension.equals("fnt") || extension.equals("pack")
-				|| extension.equals("obj") || extension.equals("atlas")
-				|| extension.equals("g3dj") || extension.equals("tmx")
-				|| extension.equals("an");
-	}
-
-	static boolean isAudio(String extension) {
-		return extension.equals("mp3") || extension.equals("ogg")
-				|| extension.equals("wav") || extension.equals("mid");
-	}
 
 	@Override
 	public String getBundleName(String file) {

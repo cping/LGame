@@ -35,8 +35,12 @@ import loon.html5.gwt.preloader.Preloader;
 import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
 import loon.html5.gwt.preloader.Preloader.PreloaderState;
 
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -52,6 +56,19 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public abstract class Loon implements Platform, EntryPoint, LazyLoading {
+
+	static final class JsMap extends JavaScriptObject {
+		protected JsMap() {
+		}
+
+		public native String getKey() /*-{
+			return this["k"];
+		}-*/;
+
+		public native String getValue() /*-{
+			return this["v"];
+		}-*/;
+	}
 
 	public interface LoadingListener {
 
@@ -70,6 +87,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	private LSetting setting;
 
+	private GWTSetting config;
+
 	private LazyLoading.Data mainData;
 
 	protected GWTResources resources;
@@ -86,7 +105,6 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	public void onModuleLoad() {
 		Loon.self = this;
 		onMain();
-		GWTSetting config = null;
 		if (this.setting instanceof GWTSetting) {
 			config = (GWTSetting) this.setting;
 		} else {
@@ -94,6 +112,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			config.copy(this.setting);
 		}
 		this.setting = config;
+
 		Element element = Document.get().getElementById(config.rootId);
 		if (element == null) {
 			VerticalPanel panel = new VerticalPanel();
@@ -115,46 +134,111 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			this.root = panel;
 		}
 
-		// 新增了一项本地资源加载器（此处'本地资源'，指写死在class里的资源……避免跨域……从而独立运行html在任意浏览器，而不必经过服务器，或修改浏览器参数满足本地访问权限）
-		final LocalAssetResources localRes = config.internalRes;
-
 		SoundManager.init(GWT.getModuleBaseURL(), 9, config.preferFlash,
 				new SoundManager.SoundManagerCallback() {
 
 					@Override
 					public void onready() {
-						final PreloaderCallback callback = getPreloaderCallback();
-						preloader = createPreloader(localRes);
-						preloader.preload("assets.txt", new PreloaderCallback() {
-							@Override
-							public void error(String file) {
-								callback.error(file);
-							}
+						boolean internalExist = config.internalRes != null;
+						boolean jsres = config.jsloadRes || internalExist;
+						if (jsres) {
+							final LocalAssetResources localRes = internalExist ? config.internalRes
+									: new LocalAssetResources();
+							ScriptInjector
+									.fromUrl("assets/resources.js")
+									.setCallback(
+											new Callback<Void, Exception>() {
+												public void onFailure(
+														Exception reason) {
+													consoleLog("resources script load failed.");
+												}
 
-							@Override
-							public void update(PreloaderState state) {
-								callback.update(state);
-								if (state.hasEnded()) {
-									getRootPanel().clear();
-									if (loadingListener != null) {
-										loadingListener.beforeSetup();
-									}
-									mainLoop();
-									if (loadingListener != null) {
-										loadingListener.afterSetup();
-									}
-								}
-							}
-						});
+												public void onSuccess(
+														Void result) {
+													JsArray<JsMap> list = loadJavaScriptResources(
+															localRes).cast();
+
+													int size = list.length();
+
+													for (int i = 0; i < size; i++) {
+														JsMap res = list.get(i);
+														String key = res
+																.getKey();
+														String value = res
+																.getValue();
+														String ext = LSystem
+																.getExtension(key);
+
+														if (LSystem.isText(ext)) {
+															localRes.putText(
+																	key, value);
+														} else if (LSystem
+																.isImage(ext)) {
+
+															localRes.putImage(
+																	key, value);
+														} else if (LSystem
+																.isAudio(ext)) {
+															// noop
+														} else {
+															localRes.putBlobString(
+																	key, value);
+														}
+													}
+
+													localRes.commit();
+													loadResources(
+															getPreloaderCallback(),
+															localRes);
+
+												}
+											})
+									.setWindow(ScriptInjector.TOP_WINDOW)
+									.inject();
+						} else {
+							loadResources(getPreloaderCallback(), null);
+						}
 					}
 
 					@Override
 					public void ontimeout(String status, String errorType) {
-						System.err.println("SoundManager:" + status + " "
-								+ errorType);
+						consoleLog("SoundManager:" + status + " " + errorType);
 					}
 
 				});
+
+	}
+
+	private native JsArray<JavaScriptObject> loadJavaScriptResources(
+			LocalAssetResources res) /*-{
+		return new $wnd.LocalResources().running(res);
+	}-*/;
+
+	Preloader loadResources(final PreloaderCallback callback,
+			final LocalAssetResources localRes) {
+		this.preloader = createPreloader(localRes);
+		this.preloader.preload("assets.txt", new PreloaderCallback() {
+			@Override
+			public void error(String file) {
+				callback.error(file);
+			}
+
+			@Override
+			public void update(PreloaderState state) {
+				callback.update(state);
+				if (state.hasEnded()) {
+					getRootPanel().clear();
+					if (loadingListener != null) {
+						loadingListener.beforeSetup();
+					}
+					mainLoop();
+					if (loadingListener != null) {
+						loadingListener.afterSetup();
+					}
+				}
+			}
+		});
+		return this.preloader;
 	}
 
 	void mainLoop() {
@@ -252,6 +336,10 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	private static native void closeImpl()
 	/*-{
 		$wnd.close();
+	}-*/;
+
+	public native static void consoleLog(String message) /*-{
+		console.log("GWT: " + message);
 	}-*/;
 
 	@Override

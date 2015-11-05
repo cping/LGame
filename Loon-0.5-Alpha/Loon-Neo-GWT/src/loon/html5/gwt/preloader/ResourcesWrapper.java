@@ -22,6 +22,7 @@ package loon.html5.gwt.preloader;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -187,41 +188,26 @@ public class ResourcesWrapper {
 		return output.toString();
 	}
 
-	public byte[] readBytes() {
-		int length = (int) length();
-		if (length == 0)
-			length = 512;
-		byte[] buffer = new byte[length];
-		int position = 0;
-		InputStream input = read();
+	public byte[] readBytes() throws IOException {
+		InputStream is = new DataInputStream(new BufferedInputStream(
+				new FileInputStream(file)));
 		try {
-			while (true) {
-				int count = input.read(buffer, position, buffer.length
-						- position);
-				if (count == -1)
-					break;
-				position += count;
-				if (position == buffer.length) {
-					byte[] newBuffer = new byte[buffer.length * 2];
-					System.arraycopy(buffer, 0, newBuffer, 0, position);
-					buffer = newBuffer;
-				}
+			long length = file.length();
+			byte[] bytes = new byte[(int) length];
+			int offset = 0;
+			int numRead = 0;
+			while (offset < bytes.length
+					&& (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+				offset += numRead;
 			}
-		} catch (IOException ex) {
-			throw new RuntimeException("Error reading file: " + this, ex);
+			if (offset < bytes.length) {
+				throw new IOException("Could not completely read file "
+						+ file.getName());
+			}
+			return bytes;
 		} finally {
-			try {
-				if (input != null)
-					input.close();
-			} catch (IOException ignored) {
-			}
+			is.close();
 		}
-		if (position < buffer.length) {
-			byte[] newBuffer = new byte[position];
-			System.arraycopy(buffer, 0, newBuffer, 0, position);
-			buffer = newBuffer;
-		}
-		return buffer;
 	}
 
 	public int readBytes(byte[] bytes, int offset, int size) {
