@@ -173,10 +173,12 @@ public final class System {
 	public static String getProperty(String name, String def) {
 		return def;
 	}
-	
-	public static native int nanoTime()/*-{
-	return (new Date()).getTime() * 1000;
-    }-*/;
-	  
+
+	public static native int nanoTime()
+	/*-{
+		var n = $wnd.now();
+		return n * 1000;
+	}-*/;
+
 	public static native void exit(int code) /*-{ }-*/;
 }

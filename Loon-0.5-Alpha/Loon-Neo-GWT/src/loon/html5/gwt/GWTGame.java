@@ -43,9 +43,9 @@ import com.google.gwt.user.client.ui.Panel;
 public class GWTGame extends LGame {
 
 	private static String cur_language = null;
-	
+
 	private static String cur_browserType = null;
-	
+
 	public static class GWTSetting extends LSetting {
 
 		// 是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
@@ -53,13 +53,13 @@ public class GWTGame extends LGame {
 
 		// 当前浏览器的渲染模式
 		public Mode mode = GWTUrl.Renderer.requestedMode();
-		
-		//当此项存在时，会尝试加载内部资源
+
+		// 当此项存在时，会尝试加载内部资源
 		public LocalAssetResources internalRes = null;
 
-		//当此项存在时，同样会尝试加载内部资源
+		// 当此项存在时，同样会尝试加载内部资源
 		public boolean jsloadRes = false;
-		
+
 		public boolean transparentCanvas = false;
 
 		public boolean antiAliasing = true;
@@ -168,7 +168,7 @@ public class GWTGame extends LGame {
 				reportError("Uncaught Exception: ", e);
 			}
 		});
-
+		
 		this.game = game;
 
 		log.info("devicePixelRatio: " + devicePixelRatio()
@@ -311,6 +311,7 @@ public class GWTGame extends LGame {
 		};
 	}-*/;
 
+
 	private static native double initNow() /*-{
 		if (!Date.now)
 			Date.now = function now() {
@@ -329,8 +330,8 @@ public class GWTGame extends LGame {
 
 	@Override
 	public boolean isMobile() {
-		return super.isMobile()
-				|| isAndroid() || isIOs() || getUserAgent().contains("mobile");
+		return super.isMobile() || isAndroid() || isIOs()
+				|| getUserAgent().contains("mobile");
 	}
 
 	public boolean isAndroid() {
@@ -457,7 +458,6 @@ public class GWTGame extends LGame {
 	public native boolean isStandalone() /*-{
 		return $wnd.navigator.standalone;
 	}-*/;
-	
 
 	private static native String languageImpl()
 	/*-{
@@ -508,7 +508,7 @@ public class GWTGame extends LGame {
 		}
 		return browserType;
 	}-*/;
-	
+
 	public static String browserType() {
 		if (cur_browserType == null) {
 			cur_browserType = browserTypeImpl();

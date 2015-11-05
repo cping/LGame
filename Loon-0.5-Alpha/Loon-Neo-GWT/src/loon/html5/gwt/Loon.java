@@ -103,6 +103,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	@Override
 	public void onModuleLoad() {
+		initTime();
 		Loon.self = this;
 		onMain();
 		if (this.setting instanceof GWTSetting) {
@@ -276,7 +277,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 			@Override
 			public void error(String file) {
-				System.out.println("error: " + file);
+				consoleLog("error: " + file);
 			}
 
 			@Override
@@ -286,6 +287,18 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 		};
 	}
+
+	private static native void initTime()
+	/*-{
+		Date.now = Date.now || function() {
+			return new Date().getTime();
+		};
+		window.performance = window.performance || {};
+		performance.now = (function() {
+			return performance.now || performance.mozNow || performance.msNow
+					|| performance.oNow || performance.webkitNow || Date.now;
+		})();
+	}-*/;
 
 	private GWTGame game;
 

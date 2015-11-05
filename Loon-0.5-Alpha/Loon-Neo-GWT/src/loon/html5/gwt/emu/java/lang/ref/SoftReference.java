@@ -18,10 +18,10 @@
 package java.lang.ref;
 
 /**
- * Implements a weak reference, which is the middle of the three types of
- * references. Once the garbage collector decides that an object {@code obj} is
- * is <a href="package.html#definitions>weakly-reachable</a>, the following
- * happens:
+ * Implements a soft reference, which is the least-weak of the three types of
+ * references. Once the garbage collector has decided that an object {@code obj}
+ * is <a href="package.html#definitions>softly-reachable</a>, the following
+ * may happen, either immediately or at a later point:
  *
  * <ul>
  *   <li>
@@ -29,11 +29,11 @@ package java.lang.ref;
  *     following elements:
  *     <ul>
  *       <li>
- *         All weak references pointing to {@code obj}.
+ *         All soft references pointing to {@code obj}.
  *       </li>
  *       <li>
- *         All weak references pointing to objects from which {@code obj} is
- *         either strongly or softly reachable.
+ *         All soft references pointing to objects from which {@code obj} is
+ *         strongly reachable.
  *       </li>
  *     </ul>
  *   </li>
@@ -41,20 +41,21 @@ package java.lang.ref;
  *     All references in {@code ref} are atomically cleared.
  *   </li>
  *   <li>
- *     All objects formerly being referenced by {@code ref} become eligible for
- *     finalization.
- *   </li>
- *   <li>
- *     At some future point, all references in {@code ref} will be enqueued
- *     with their corresponding reference queues, if any.
+ *     At the same time or some time in the future, all references in {@code
+ *     ref} will be enqueued with their corresponding reference queues, if any.
  *   </li>
  * </ul>
  *
- * Weak references are useful for mappings that should have their entries
- * removed automatically once they are not referenced any more (from outside).
- * The difference between a {@code SoftReference} and a {@code WeakReference} is
- * the point of time at which the decision is made to clear and enqueue the
- * reference:
+ * The system may decide not to clear and enqueue soft references until a later
+ * time, yet all {@code SoftReference}s pointing to softly reachable objects are
+ * guaranteed to be cleared before the VM will throw an {@link
+ * java.lang.OutOfMemoryError}.
+ *
+ * Soft references are useful for caches that should automatically have
+ * their entries removed once they are not referenced any more (from outside),
+ * and there is a need for memory. The difference between a {@code
+ * SoftReference} and a {@code WeakReference} is the point of time at which the
+ * decision is made to clear and enqueue the reference:
  *
  * <ul>
  *   <li>
@@ -70,27 +71,21 @@ package java.lang.ref;
  *
  * @since 1.2
  */
-public class WeakReference<T> extends Reference<T> {
+public class SoftReference<T> extends Reference<T> {
 
-    public T get () {
-        return _value;
-    }
-
-    protected final T _value;
     /**
-     * Constructs a new weak reference to the given referent. The newly created
+     * Constructs a new soft reference to the given referent. The newly created
      * reference is not registered with any reference queue.
      *
      * @param r the referent to track
      */
-    public WeakReference(T r) {
+    public SoftReference(T r) {
         super();
-        _value = r;
         initReference(r);
     }
 
     /**
-     * Constructs a new weak reference to the given referent. The newly created
+     * Constructs a new soft reference to the given referent. The newly created
      * reference is registered with the given reference queue.
      *
      * @param r the referent to track
@@ -98,9 +93,19 @@ public class WeakReference<T> extends Reference<T> {
      *          results in a weak reference that is not associated with any
      *          queue.
      */
-    public WeakReference(T r, ReferenceQueue<? super T> q) {
+    public SoftReference(T r, ReferenceQueue<? super T> q) {
         super();
-        _value = r;
         initReference(r, q);
+    }
+
+    /**
+     * Return the referent of the reference object.
+     *
+     * @return the referent to which reference refers, or {@code null} if the
+     *         referent has been cleared.
+     */
+    @Override
+    public T get() {
+        return super.get();
     }
 }

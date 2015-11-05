@@ -68,7 +68,7 @@ public class PreloaderBundleGenerator extends Generator {
 		String[] source_list = source.file().list();
 		int idx = 0;
 		boolean fix_loc = false;
-		//防止定位到奇怪的assets资源目录……
+		// 防止定位到奇怪的assets资源目录……
 		if (source_list != null && source_list.length > 0) {
 			for (String file : source_list) {
 				if (file.contains("assets/loon_logo.png")
@@ -431,7 +431,9 @@ public class PreloaderBundleGenerator extends Generator {
 			String[] tokens = paths.split(",");
 			for (String token : tokens) {
 				if (new ResourcesWrapper(token).exists()
-						|| new ResourcesWrapper("../" + token).exists()) {
+						|| new ResourcesWrapper("../" + token).exists()
+						|| new ResourcesWrapper(getPath(token).replace("../",
+								"")).exists()) {
 					return token;
 				}
 			}

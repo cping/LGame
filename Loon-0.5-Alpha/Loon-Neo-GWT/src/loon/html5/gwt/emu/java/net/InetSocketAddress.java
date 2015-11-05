@@ -13,27 +13,34 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java.io;
+package java.net;
 
-public abstract class OutputStream {
-	// not abstract because of some gwt strangeness
-	public void write (int b) throws IOException {
-	}
+import java.net.InetAddress;
 
-	public void write (byte[] ba) throws IOException {
-		write(ba, 0, ba.length);
-	}
+public class InetSocketAddress {
 
-	public void write (byte[] ba, int start, int len) throws IOException {
-		int end = start + len;
-		for (int i = start; i < end; i++) {
-			write(ba[i]);
-		}
-	}
+  private final InetAddress address;
+  private final int port;
 
-	public void flush () {
-	}
+  public InetSocketAddress(int port) {
+    this(new InetAddress(new byte[]{0,0,0,0}), port);
+  }
 
-	public void close () throws IOException {
-	}
+  public InetSocketAddress(InetAddress address, int port) {
+    this.address = address;
+    this.port = port;
+  } 
+  
+  public InetAddress getAddress() {
+    return address;
+  }
+  
+  public int getPort() {
+    return port;
+  }
+
+  public String toString() {
+	return address.toString() + ":" + port;
+  }
+  
 }

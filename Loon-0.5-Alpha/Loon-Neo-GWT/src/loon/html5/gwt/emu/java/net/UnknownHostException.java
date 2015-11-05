@@ -13,27 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java.io;
+package java.net;
 
-public abstract class OutputStream {
-	// not abstract because of some gwt strangeness
-	public void write (int b) throws IOException {
+import java.io.IOException;
+
+public class UnknownHostException extends IOException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public UnknownHostException() {
 	}
 
-	public void write (byte[] ba) throws IOException {
-		write(ba, 0, ba.length);
+	public UnknownHostException(String msg) {
+		super(msg);
 	}
 
-	public void write (byte[] ba, int start, int len) throws IOException {
-		int end = start + len;
-		for (int i = start; i < end; i++) {
-			write(ba[i]);
-		}
-	}
-
-	public void flush () {
-	}
-
-	public void close () throws IOException {
-	}
 }
