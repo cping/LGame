@@ -23,8 +23,6 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.event.SysKey;
-import loon.event.SysTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
@@ -56,11 +54,11 @@ public class LTextBar extends LComponent {
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y) {
-		this(txt, left, right, body, x, y, LColor.black);
+		this(txt, left, right, body, x, y, LColor.white);
 	}
 
 	public LTextBar(String txt, int x, int y) {
-		this(txt, x, y, LColor.black);
+		this(txt, x, y, LColor.white);
 	}
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
@@ -86,11 +84,9 @@ public class LTextBar extends LComponent {
 			LTexture[] buttonImage) {
 		if (hideBackground) {
 			if (left != null) {
-				g.drawString(text, x + left.getWidth(), y + font.getHeight()
-						+ (font.getHeight() / 2 - font.getHeight() / 2) - 4,
-						fontColor);
+				g.drawString(text, x + left.getWidth(), y, fontColor);
 			} else {
-				g.drawString(text, x, y + font.getHeight(), fontColor);
+				g.drawString(text, x, y, fontColor);
 			}
 		} else {
 			if (left != null) {
@@ -119,11 +115,9 @@ public class LTextBar extends LComponent {
 				g.draw(right, x + left.getWidth() + textWidth() - 1, y);
 			}
 			if (left != null) {
-				g.drawString(text, x + left.getWidth(), y + font.getHeight()
-						+ (font.getHeight() / 2 - font.getHeight() / 2) - 4,
-						fontColor);
+				g.drawString(text, x + left.getWidth(), y, fontColor);
 			} else {
-				g.drawString(text, x, y + font.getHeight(), fontColor);
+				g.drawString(text, x, y, fontColor);
 			}
 		}
 	}
@@ -172,54 +166,27 @@ public class LTextBar extends LComponent {
 		this.text = text;
 	}
 
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
-	public void downClick() {
-		if (Click != null) {
-			Click.DownClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	public void upClick() {
-		if (Click != null) {
-			Click.UpClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
 	@Override
 	protected void processTouchDragged() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_MOVE) {
-			this.over = this.pressed = this.intersects(this.input.getTouchX(),
-					this.input.getTouchY());
-		}
+		this.over = this.pressed = this.intersects(this.input.getTouchX(),
+				this.input.getTouchY());
 	}
 
 	@Override
 	protected void processTouchClicked() {
-		int code = this.input.getTouchReleased();
-		if (code == SysTouch.TOUCH_DOWN || code == SysTouch.TOUCH_UP) {
-			this.doClick();
-		}
+		this.doClick();
 	}
 
 	@Override
 	protected void processTouchPressed() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_DOWN) {
-			this.downClick();
-			this.pressed = true;
-		}
+		this.downClick();
+		this.pressed = true;
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (this.input.getTouchReleased() == SysTouch.TOUCH_UP) {
-			this.upClick();
-			this.pressed = false;
-		}
+		this.upClick();
+		this.pressed = false;
 	}
 
 	protected void processTouchEntered() {
@@ -231,7 +198,7 @@ public class LTextBar extends LComponent {
 	}
 
 	protected void processKeyPressed() {
-		if (this.isSelected() && this.input.getKeyPressed() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressedTime = 5;
 			this.pressed = true;
 			this.doClick();
@@ -239,7 +206,7 @@ public class LTextBar extends LComponent {
 	}
 
 	protected void processKeyReleased() {
-		if (this.isSelected() && this.input.getKeyReleased() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressed = false;
 		}
 	}

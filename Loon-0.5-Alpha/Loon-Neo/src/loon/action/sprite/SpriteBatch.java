@@ -1,5 +1,7 @@
 package loon.action.sprite;
 
+import java.util.HashMap;
+
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -21,7 +23,7 @@ import loon.utils.NumberUtils;
 
 public class SpriteBatch extends PixmapFImpl {
 
-    public static enum SpriteEffects {
+	public static enum SpriteEffects {
 		None, FlipHorizontally, FlipVertically;
 	}
 
@@ -62,6 +64,94 @@ public class SpriteBatch extends PixmapFImpl {
 	private LFont font = LFont.getDefaultFont();
 
 	private LTexture colorTexture;
+
+	public static class TextureLine {
+
+		private Vector2f pstart = new Vector2f();
+
+		private Vector2f pend = new Vector2f();
+
+		private float pstrokeWidth;
+
+		private float pangle;
+
+		private Vector2f pdirection;
+
+		private Vector2f pcentre;
+
+		private float plength;
+
+		private boolean pchanged;
+
+		private LTexture whitePixel;
+
+		public TextureLine(LTexture texture) {
+			pchanged = true;
+			whitePixel = texture;
+		}
+
+		public void setStart(float x, float y) {
+			pstart.set(x, y);
+			pchanged = true;
+		}
+
+		public void setEnd(float x, float y) {
+			pend.set(x, y);
+			pchanged = true;
+		}
+
+		public float getStrokeWidth() {
+			return pstrokeWidth;
+		}
+
+		public void setStrokeWidth(float value) {
+			pstrokeWidth = value;
+			pchanged = true;
+		}
+
+		public void update() {
+			pdirection = new Vector2f(pend.x - pstart.x, pend.y - pstart.y);
+			pdirection.nor();
+			pangle = MathUtils.toDegrees(MathUtils.atan2(pend.y - pstart.y,
+					pend.x - pstart.x));
+			plength = MathUtils.ceil(Vector2f.dst(pstart, pend));
+			pcentre = new Vector2f((pend.x + pstart.x) / 2,
+					(pend.y + pstart.y) / 2);
+			pchanged = false;
+		}
+
+		public void draw(SpriteBatch batch) {
+			if (pchanged) {
+				update();
+			}
+			if (pstrokeWidth > 0) {
+				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f,
+						pstrokeWidth / 2, plength, pstrokeWidth, 1f, 1f,
+						pangle, 0, 0, 1f, 1f, false, false, true);
+			}
+		}
+	}
+
+	private HashMap<Integer, SpriteBatch.TextureLine> lineLazy = new HashMap<Integer, SpriteBatch.TextureLine>(
+			1000);
+
+	@Override
+	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
+		int hashCode = 1;
+		hashCode = LSystem.unite(hashCode, x1);
+		hashCode = LSystem.unite(hashCode, y1);
+		hashCode = LSystem.unite(hashCode, x2);
+		hashCode = LSystem.unite(hashCode, y2);
+		SpriteBatch.TextureLine line = lineLazy.get(hashCode);
+		if (line == null) {
+			line = new SpriteBatch.TextureLine(colorTexture);
+			line.setStart(x1, y1);
+			line.setEnd(x2, y2);
+			line.setStrokeWidth(LSystem.base().display().GL().getPixSkip());
+			lineLazy.put(hashCode, line);
+		}
+		line.draw(this);
+	}
 
 	public LFont getFont() {
 		return font;
@@ -179,22 +269,6 @@ public class SpriteBatch extends PixmapFImpl {
 		alpha = 1f;
 	}
 
-	public void drawString(String mes, float x, float y, float scaleX,
-			float scaleY, float ax, float ay, float rotation, LColor c) {
-		checkDrawing();
-		if (c == null) {
-			return;
-		}
-		if (mes == null || mes.length() == 0) {
-			return;
-		}
-		if (!lockSubmit) {
-			submit();
-		}
-		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
-				rotation, c);
-	}
-
 	public boolean isLockSubmit() {
 		return lockSubmit;
 	}
@@ -243,6 +317,22 @@ public class SpriteBatch extends PixmapFImpl {
 		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, 0, c);
 	}
 
+	public void drawString(String mes, float x, float y, float scaleX,
+			float scaleY, float ax, float ay, float rotation, LColor c) {
+		checkDrawing();
+		if (c == null) {
+			return;
+		}
+		if (mes == null || mes.length() == 0) {
+			return;
+		}
+		if (!lockSubmit) {
+			submit();
+		}
+		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
+				rotation, c);
+	}
+
 	public void begin() {
 		if (!isLoaded) {
 			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
@@ -252,13 +342,13 @@ public class SpriteBatch extends PixmapFImpl {
 			}
 			isLoaded = true;
 		}
+		LSystem.mainEndDraw();
 		if (drawing) {
 			throw new IllegalStateException(
 					"SpriteBatch.end must be called before begin.");
 		}
 		renderCalls = 0;
 		LSystem.base().graphics().gl.glDepthMask(false);
-		LSystem.mainEndDraw();
 		if (customShader != null) {
 			customShader.begin();
 		} else {
@@ -315,7 +405,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!texture.isLoaded()) {
 			texture.loadTexture();
 		}
-		LTexture tex2d = texture.getParent();
+		LTexture tex2d = LTexture.firstFather(texture);
 		if (tex2d != null) {
 			if (tex2d != lastTexture) {
 				submit();

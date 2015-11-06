@@ -94,10 +94,9 @@ public class LWindow extends LContainer {
 		if (visible) {
 			g.draw(barTexture, x, y, w, this.barheight);
 			if (title != null) {
-				float height = font.getHeight();
 				LFont old = g.getFont();
 				g.setFont(font);
-				g.drawString(title, x + 5, y + height, fontColor);
+				g.drawString(title, x + 5, y, fontColor);
 				g.setFont(old);
 			}
 			if (animation.getSpriteImage() != null) {

@@ -190,19 +190,21 @@ public class LGesture extends LComponent {
 		}
 		return new float[] { 0, 0 };
 	}
-
+	
+	@Override
 	public void dragClick() {
 		if (Click != null) {
 			Click.DragClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
-
+	@Override
 	public void downClick() {
 		if (Click != null) {
 			Click.DownClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
-
+	
+	@Override
 	public void upClick() {
 		if (Click != null) {
 			Click.UpClick(this, input.getTouchX(), input.getTouchY());

@@ -27,6 +27,10 @@ import loon.utils.ObjectMap;
 
 public class MeshDefault {
 
+	private boolean running = false;
+
+	private boolean stop_main_readering = false;
+	
 	private final ObjectMap<Integer, Mesh> meshLazy = new ObjectMap<Integer, Mesh>(
 			10);
 
@@ -59,9 +63,13 @@ public class MeshDefault {
 
 	public void post(final int size, ShaderProgram shader, float[] vertices,
 			int vertexIdx, int count) {
-		boolean running = LSystem.mainDrawRunning();
+		//防止与主画面渲染器GLEx冲突
+		this.running = LSystem.mainDrawRunning();
 		if (!running) {
 			shader.glUseProgramBind();
+		} else {
+			LSystem.mainEndDraw();
+			stop_main_readering = true;
 		}
 		Mesh mesh = getMesh(size);
 		mesh.setVertices(vertices, 0, vertexIdx);
@@ -70,6 +78,8 @@ public class MeshDefault {
 		mesh.render(shader, GL20.GL_TRIANGLES, 0, count);
 		if (!running) {
 			shader.glUseProgramUnBind();
+		} else if (stop_main_readering) {
+			LSystem.mainBeginDraw();
 		}
 	}
 }

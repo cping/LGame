@@ -24,8 +24,6 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
-import loon.event.SysKey;
-import loon.event.SysTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -58,8 +56,8 @@ public class LCheckBox extends LComponent {
 
 	public LCheckBox(String txt, int x, int y, LColor textcolor, LFont font) {
 		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
-				.getDefaultTextures(6), DefUI.getDefaultTextures(5)
-				.getWidth(), true, textcolor, font);
+				.getDefaultTextures(6), DefUI.getDefaultTextures(5).getWidth(),
+				true, textcolor, font);
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize) {
@@ -104,8 +102,8 @@ public class LCheckBox extends LComponent {
 	public LCheckBox(String txt, int x, int y, LTexture unchecked,
 			LTexture checked, int boxsize, boolean boxtoleftoftext,
 			LColor textcolor, LFont font) {
-		super(x, y, font.stringWidth(txt) + boxsize,(int)  MathUtils.max(
-				font.getHeight(),  boxsize));
+		super(x, y, font.stringWidth(txt) + boxsize, (int) MathUtils.max(
+				font.getHeight(), boxsize));
 		this.text = txt;
 		this.unchecked = unchecked;
 		this.checked = checked;
@@ -122,8 +120,8 @@ public class LCheckBox extends LComponent {
 			if (showtext && text != null) {
 				LFont old = g.getFont();
 				g.setFont(font);
-				g.drawString(text, x + boxsize,
-						(y + font.getHeight() - boxsize / 2) + 5, fontColor);
+				g.drawString(text, x + boxsize,y + (font.getHeight() - boxsize) / 2 + 5,
+						fontColor);
 				g.setFont(old);
 			}
 			if (!ticked) {
@@ -135,17 +133,16 @@ public class LCheckBox extends LComponent {
 			if (showtext && text != null) {
 				LFont old = g.getFont();
 				g.setFont(font);
-				g.drawString(text, x + boxsize + 5, y + font.getHeight() + 15,
-						fontColor);
+				g.drawString(text, x + boxsize + 5, y + (font.getHeight() - boxsize) / 2 + 5, fontColor);
 				g.setFont(old);
 			}
 			if (!ticked) {
-				g.draw(unchecked, y + font.stringWidth(text),
-						y + font.getHeight() / 2 - boxsize / 2, boxsize,
+				g.draw(unchecked, x + font.stringWidth(text) + boxsize + 5,
+						y + font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
 						boxsize);
 			} else {
-				g.draw(checked, y + font.stringWidth(text),
-						y + font.getHeight() / 2 - boxsize / 2, boxsize,
+				g.draw(checked, x + font.stringWidth(text)  + boxsize + 5,
+						y + font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
 						boxsize);
 			}
 		}
@@ -169,76 +166,54 @@ public class LCheckBox extends LComponent {
 		return this.pressed;
 	}
 
+	@Override
 	protected void processTouchDragged() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_MOVE) {
 			this.over = this.pressed = this.intersects(this.input.getTouchX(),
 					this.input.getTouchY());
-		}
 	}
 
+	@Override
 	protected void processTouchEntered() {
 		this.over = true;
 	}
 
+	@Override
 	protected void processTouchExited() {
 		this.over = this.pressed = false;
 	}
 
+	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected() && this.input.getKeyPressed() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressedTime = 5;
 			this.pressed = true;
 			this.doClick();
 		}
 	}
 
+	@Override
 	protected void processKeyReleased() {
-		if (this.isSelected() && this.input.getKeyReleased() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressed = false;
-		}
-	}
-
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
-	public void downClick() {
-		if (Click != null) {
-			Click.DownClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	public void upClick() {
-		if (Click != null) {
-			Click.UpClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
 
 	@Override
 	protected void processTouchClicked() {
-		int code = this.input.getTouchReleased();
-		if (code == SysTouch.TOUCH_DOWN || code == SysTouch.TOUCH_UP) {
-			this.doClick();
-		}
+		this.doClick();
 	}
 
 	@Override
 	protected void processTouchPressed() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_DOWN) {
-			this.downClick();
-			this.pressed = true;
-		}
+		this.downClick();
+		this.pressed = true;
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (this.input.getTouchReleased() == SysTouch.TOUCH_UP) {
-			this.upClick();
-			this.pressed = false;
-			this.ticked = !ticked;
-		}
+		this.upClick();
+		this.pressed = false;
+		this.ticked = !ticked;
 	}
 
 	public boolean isTicked() {

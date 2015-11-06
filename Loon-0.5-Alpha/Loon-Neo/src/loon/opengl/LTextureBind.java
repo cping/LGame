@@ -24,7 +24,7 @@ import loon.LTexture;
 import loon.utils.GLUtils;
 
 public class LTextureBind extends GLBase {
-	
+
 	public static abstract class Source {
 
 		public String fragment() {
@@ -61,20 +61,19 @@ public class LTextureBind extends GLBase {
 		}
 
 		protected static final String FRAGMENT_PREAMBLE = "#ifdef GL_ES\n"
-				+ "precision lowp float;\n" + "#else\n"
-				+
-				"#define lowp\n" + "#define mediump\n" + "#define highp\n"
-				+ "#endif\n";
+				+ "precision lowp float;\n" + "#else\n" + "#define lowp\n"
+				+ "#define mediump\n" + "#define highp\n" + "#endif\n";
 	}
 
 	public final GL20 gl;
 	protected int curTexId;
 
 	public void setTexture(LTexture texture) {
-		if (curTexId != 0 && curTexId != texture.getID()) {
+		int id = texture.getID();
+		if (curTexId != 0 && curTexId != id) {
 			flush();
 		}
-		this.curTexId = texture.getID();
+		this.curTexId = id;
 	}
 
 	@Override
@@ -99,6 +98,5 @@ public class LTextureBind extends GLBase {
 	@Override
 	public void freeBuffer() {
 
-		
 	}
 }

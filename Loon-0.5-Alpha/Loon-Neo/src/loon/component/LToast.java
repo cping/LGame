@@ -96,7 +96,7 @@ public class LToast extends LComponent {
 	public static final int LENGTH_LONG = 60;
 	public static final LColor ERROR_RED = LColor.maroon;
 	public static final LColor SUCCESS_GRAY = LColor.gray;
-	public static final LColor NORMAL_ORANGE = LColor.orange;
+	public static final LColor NORMAL_ORANGE = LColor.orange.copy();
 	private final float MAX_OPACITY = 1.0f;
 	private final float OPACITY_INCREMENT = 0.05f;
 	private int _frame_radius = 15;
@@ -106,8 +106,8 @@ public class LToast extends LComponent {
 	private int mDuration;
 	private LTimer timer = new LTimer();
 	private LTimer lock = new LTimer(LSystem.SECOND * 2);
-	private LColor mBackgroundColor = LColor.orange;
-	private LColor mForegroundColor = LColor.white;
+	private LColor mBackgroundColor = LColor.orange.copy();
+	private LColor mForegroundColor = LColor.white.copy();
 	private LFont font;
 	private int displayX = 0;
 	private int displayY = 0;
@@ -157,16 +157,17 @@ public class LToast extends LComponent {
 		int h = this.getHeight();
 		int oc = g.color();
 		float oa = g.alpha();
-		g.setAlpha(opacity);
+		LFont f = g.getFont();
 		g.setColor(mBackgroundColor);
+		g.setAlpha(opacity);
 		g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
-		g.setColor(LColor.white);
-		g.setAlpha(oa);
+		g.setColor(LColor.DEF_COLOR);
 		g.setFont(font);
 		g.drawString(mText, displayX + (cellWidth - font.stringWidth(mText))
-				/ 2, displayY + font.getHeight(), mForegroundColor);
-		g.setAlpha(alpha);
+				/ 2, displayY, mForegroundColor);
 		g.setColor(oc);
+		g.setAlpha(oa);
+		g.setFont(f);
 	}
 
 	public void update(long elapsedTime) {

@@ -544,13 +544,12 @@ public class LColor implements Serializable {
 	/**
 	 * 直接复制一个Color
 	 * 
-	 * @param c
 	 * @return
 	 */
-	public LColor copy(LColor c) {
+	public LColor copy() {
 		return new LColor(r, g, b, a);
 	}
-
+	
 	/**
 	 * 获得像素相加的Color
 	 * 

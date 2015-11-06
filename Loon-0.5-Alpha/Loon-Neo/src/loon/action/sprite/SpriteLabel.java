@@ -8,7 +8,7 @@ import loon.font.Font.Style;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class Label extends LObject implements ISprite {
+public class SpriteLabel extends LObject implements ISprite {
 
 	/**
 	 * 
@@ -25,24 +25,25 @@ public class Label extends LObject implements ISprite {
 
 	private String label;
 
-	public Label(String label, int x, int y) {
+	public SpriteLabel(String label, int x, int y) {
 		this(LFont.getDefaultFont(), label, x, y);
 	}
 
-	public Label(String label, String font, Style type, int size, int x, int y) {
+	public SpriteLabel(String label, String font, Style type, int size, int x,
+			int y) {
 		this(LFont.getFont(font, type, size), label, x, y);
 	}
 
-	public Label(LFont font, String label, int x, int y) {
+	public SpriteLabel(LFont font, String label, int x, int y) {
 		this.font = font;
 		this.label = label;
-		this.color = LColor.black;
+		this.color = LColor.white;
 		this.visible = true;
 		this.setLocation(x, y);
 	}
 
 	public void setFont(String fontName, Style type, int size) {
-		setFont(LFont.getFont(fontName,type , size));
+		setFont(LFont.getFont(fontName, type, size));
 	}
 
 	public void setFont(LFont font) {

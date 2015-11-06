@@ -71,24 +71,6 @@ public class LPaper extends LContainer {
 		animation.addFrame(image, timer);
 	}
 
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
-	public void downClick() {
-		if (Click != null) {
-			Click.DownClick(this,input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	public void upClick() {
-		if (Click != null) {
-			Click.UpClick(this,input.getTouchX(), input.getTouchY());
-		}
-	}
-
 	@Override
 	protected void processTouchClicked() {
 		if (!input.isMoving()) {

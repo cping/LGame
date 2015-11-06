@@ -33,7 +33,7 @@ public abstract class PixmapFImpl {
 	protected final static int def_skip = 3;
 
 	protected final static int def_skip_html5 = 6;
-	
+
 	private RectF temp_rect = new RectF();
 
 	private int _skip = def_skip;
@@ -533,22 +533,14 @@ public abstract class PixmapFImpl {
 	protected void drawRectImpl(float x1, float y1, float w1, float h1) {
 		float tempX = x1;
 		float tempY = y1;
-		float tempWidth = x1 + w1;
-		float tempHeight = y1 + h1;
-		if (tempX > tempWidth) {
-			x1 = tempX;
-			tempX = tempWidth;
-			tempWidth = x1;
-		}
-		if (tempY > tempHeight) {
-			y1 = tempY;
-			tempY = tempHeight;
-			tempHeight = y1;
-		}
-		drawLineImpl(tempX, tempY, tempHeight, tempY);
-		drawLineImpl(tempX, tempY + 1, tempX, tempHeight);
-		drawLineImpl(tempHeight, tempHeight, tempX + 1, tempHeight);
-		drawLineImpl(tempHeight, tempHeight - 1, tempHeight, tempY + 1);
+		float tempWidth = w1;
+		float tempHeight = h1;
+		drawLineImpl(tempX, tempY, tempX + tempWidth, tempY);
+		drawLineImpl(tempX + tempWidth, tempY, tempX + tempWidth, tempY
+				+ tempHeight);
+		drawLineImpl(tempX + tempWidth, tempY + tempHeight, tempX, tempY
+				+ tempHeight);
+		drawLineImpl(tempX, tempY + tempHeight, tempX, tempY);
 	}
 
 	protected void drawRoundRectImpl(float x, float y, float width,

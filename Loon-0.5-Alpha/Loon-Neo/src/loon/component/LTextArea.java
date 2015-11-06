@@ -85,7 +85,7 @@ public class LTextArea extends LComponent {
 	private int countFrame;
 	private LColor triangleColor = LColor.orange;
 	private LColor tmpcolor = new LColor(LColor.white);
-	
+
 	public LTextArea(int x, int y, int w, int h) {
 		this(w, x, y, w, h);
 	}
@@ -99,7 +99,7 @@ public class LTextArea extends LComponent {
 	}
 
 	public LTextArea(int type, int max, LFont font, int x, int y, int w, int h) {
-		this(type, max, font, x, y, w, h, DefUI.getDefaultTextures(3));
+		this(type, max, font, x, y, w, h, DefUI.getDefaultTextures(4));
 	}
 
 	public LTextArea(int x, int y, int w, int h, String bgFile) {
@@ -400,16 +400,17 @@ public class LTextArea extends LComponent {
 							this.drawNewCg[this.num], this.drawNewCb[this.num]);
 
 					this.str = "new";
-					drawString(g, this.str, this.posx, this.drawY,tmpcolor);
+					drawString(g, this.str, this.posx, this.drawY, tmpcolor);
 					this.posx += this.font.stringWidth(this.str);
 				}
 				tmpcolor.setColor(50, 50, 50);
 				drawString(g, this.getMessage[this.num], this.posx + 1,
-						this.drawY + 1,tmpcolor);
+						this.drawY + 1, tmpcolor);
 				tmpcolor.setColor(this.cr[this.num] + this.bright[i],
 						this.cg[this.num] + this.bright[i], this.cb[this.num]
 								+ this.bright[i]);
-				drawString(g, this.getMessage[this.num], this.posx, this.drawY,tmpcolor);
+				drawString(g, this.getMessage[this.num], this.posx, this.drawY,
+						tmpcolor);
 				if ((this.waitFlag) && (i == 0) && index > 0) {
 					this.posy = (this.countFrame * 1 / 3 % this.font.getSize()
 							/ 2 - 2);
@@ -419,7 +420,7 @@ public class LTextArea extends LComponent {
 							this.posx
 									+ this.font
 											.stringWidth(this.getMessage[this.num]),
-							this.drawY - this.posy,this.triangleColor);
+							this.drawY - this.posy, this.triangleColor);
 				}
 				if (this.brightType[i] == 0) {
 					this.bright[i] += this.brightSpeed;
@@ -509,8 +510,8 @@ public class LTextArea extends LComponent {
 	}
 
 	private void drawString(GLEx g, String str, int x, int y, LColor color) {
-		g.drawString(str, x + leftOffset, (y + font.getHeight() - 5)
-				+ topOffset, color);
+		g.drawString(str, x + leftOffset + 5,
+				(y - 5) + topOffset + font.getAscent() / 2, color);
 	}
 
 	public int getLeftOffset() {

@@ -72,7 +72,7 @@ public class LProgress extends LComponent {
 				defaultColorTexture = TextureUtils.createTexture(1, 1,
 						LColor.white);
 			}
-			this.bgTexture = new LTextureRegion(DefUI.getDefaultTextures(3));
+			this.bgTexture = new LTextureRegion(DefUI.getDefaultTextures(4));
 			this.bgProgressTexture = new LTextureRegion(defaultColorTexture);
 			break;
 		default:

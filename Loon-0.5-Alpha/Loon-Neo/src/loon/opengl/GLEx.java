@@ -52,6 +52,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		int fillColor = LColor.DEF_COLOR;
 		int pixSkip = def_skip;
 		float lineWidth = 1f;
+		float baseAlpha = 1f;
 
 		boolean alltextures = false;
 		LFont font = null;
@@ -85,6 +86,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private int fillColor = LColor.DEF_COLOR;
 	private int baseColor = LColor.DEF_COLOR;
 
+	private float baseAlpha = 1f;
 	private float lineWidth = 1f;
 
 	private boolean savedBrush = false, savedTx = false;
@@ -308,6 +310,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		lastBrush = brushStack.pop();
 		if (lastBrush != null) {
+			this.baseAlpha = lastBrush.baseAlpha;
 			this.baseColor = lastBrush.baseColor;
 			this.fillColor = lastBrush.fillColor;
 			this.patternTex = lastBrush.patternTex;
@@ -320,6 +323,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx restoreBrushDef() {
+		baseAlpha = 1f;
 		baseColor = LColor.DEF_COLOR;
 		fillColor = LColor.DEF_COLOR;
 		patternTex = null;
@@ -494,11 +498,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return alpha();
 	}
 
+	//以实际渲染颜色的alpha为优先返回
 	public float alpha() {
 		return ((baseColor >> 24) & 0xFF) / 255f;
 	}
 
 	public GLEx setAlpha(float alpha) {
+		this.baseAlpha = alpha;
 		int ialpha = (int) (0xFF * MathUtils.clamp(alpha, 0, 1));
 		this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
 		return this;
@@ -557,14 +563,26 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setColor(int c) {
-		this.baseColor = c;
+		if (this.baseAlpha != 1f) {
+			this.baseColor = c;
+			int ialpha = (int) (0xFF * MathUtils.clamp(this.baseAlpha, 0, 1));
+			this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
+		} else {
+			this.baseColor = c;
+		}
 		this.fillColor = c;
 		this.patternTex = null;
 		return this;
 	}
 
 	public GLEx setTint(int c) {
-		this.baseColor = c;
+		if (this.baseAlpha != 1f) {
+			this.baseColor = c;
+			int ialpha = (int) (0xFF * MathUtils.clamp(this.baseAlpha, 0, 1));
+			this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
+		} else {
+			this.baseColor = c;
+		}
 		return this;
 	}
 
@@ -1338,7 +1356,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			useBegin = false;
 			return this;
 		}
+		int tmp = getBlendMode();
+		if (baseColor != LColor.DEF_COLOR) {
+			setBlendMode(LSystem.MODE_SPEED);
+		}
 		glBatch.end();
+		setBlendMode(tmp);
 		useBegin = false;
 		if (!running()) {
 			restoreTx();

@@ -230,8 +230,8 @@ public class StatusBar extends LObject implements ISprite {
 				g.setColor(LColor.white);
 				int current = g.getFont().stringWidth(hpString);
 				int h = (int) g.getFont().getHeight();
-				g.drawString("" + value, (x() + width / 2 - current / 2) + 2,
-						(y() + height / 2 + h / 2));
+				g.drawString(String.valueOf(value), (x() + width / 2 - current / 2) + 2,
+						(y() + height / 2 - h / 2));
 			}
 			drawBar(g, goal, current, width, getX(), getY());
 		}

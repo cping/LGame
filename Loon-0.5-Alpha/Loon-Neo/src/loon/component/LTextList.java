@@ -19,23 +19,28 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  * 
- *          新增类，用以列表方式显示指定数据，本身有默认UI，用户也可以自行注入图片进行替换.
- * 
- *          Example1:
- * 
- *          LTextList list = new LTextList(0,0,150,100); list.add("图灵测试");
- *          list.add("人月神话"); list.add("费雪效应"); list.add("ABC");
- *          list.add("EFG");
- * 
  */
 package loon.component;
 
 import loon.LTexture;
+
 import loon.canvas.LColor;
 import loon.event.SysTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
+/*
+*          新增类，用以列表方式显示指定数据，本身有默认UI，用户也可以自行注入图片进行替换.
+* 
+*          Example1:
+* 
+*          LTextList list = new LTextList(0,0,150,100); 
+*          list.add("图灵测试");
+*          list.add("人月神话");
+*          list.add("费雪效应"); 
+*          list.add("ABC");
+*          list.add("EFG");
+*/          
 public class LTextList extends LComponent {
 
 	public final int LIST_SPACE_TOP = 5;
@@ -308,7 +313,7 @@ public class LTextList extends LComponent {
 	}
 
 	private void drawString(GLEx g, String str, int x, int y) {
-		g.drawString(str, x, y + font.getHeight() - 5);
+		g.drawString(str, x, y - 5);
 	}
 
 	public void draw(GLEx g, int x, int y, float mouseX, float mouseY) {

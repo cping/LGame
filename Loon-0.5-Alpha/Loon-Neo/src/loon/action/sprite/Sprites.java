@@ -47,7 +47,7 @@ public class Sprites implements Serializable, LRelease {
 
 	private int viewY;
 
-	private boolean isViewWindowSet, visible;
+	private boolean isViewWindowSet = false, visible = true;
 
 	private SpriteListener sprListerner;
 
@@ -77,7 +77,7 @@ public class Sprites implements Serializable, LRelease {
 	public Sprites() {
 		this.visible = true;
 		this.width = LSystem.viewSize.getWidth();
-		this.height =LSystem.viewSize.getHeight();
+		this.height = LSystem.viewSize.getHeight();
 		this.sprites = new ISprite[capacity];
 	}
 
@@ -95,9 +95,8 @@ public class Sprites implements Serializable, LRelease {
 		}
 		for (int i = 0; i < this.size; i++) {
 			if (this.sprites[i] == sprite) {
-				this.sprites =  CollectionUtils.cut(this.sprites, i);
-				this.sprites =  CollectionUtils.expand(this.sprites,
-						1, false);
+				this.sprites = CollectionUtils.cut(this.sprites, i);
+				this.sprites = CollectionUtils.expand(this.sprites, 1, false);
 				this.sprites[0] = sprite;
 				this.sortSprites();
 				break;
@@ -119,9 +118,8 @@ public class Sprites implements Serializable, LRelease {
 		}
 		for (int i = 0; i < this.size; i++) {
 			if (this.sprites[i] == sprite) {
-				this.sprites =  CollectionUtils.cut(this.sprites, i);
-				this.sprites =  CollectionUtils.expand(this.sprites,
-						1, true);
+				this.sprites = CollectionUtils.cut(this.sprites, i);
+				this.sprites = CollectionUtils.expand(this.sprites, 1, true);
 				this.sprites[this.size - 1] = sprite;
 				this.sortSprites();
 				break;
@@ -170,7 +168,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param y
 	 * @return
 	 */
-	public synchronized ISprite find(int x, int y) {
+	public ISprite find(int x, int y) {
 		ISprite[] snapshot = sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
@@ -188,7 +186,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param name
 	 * @return
 	 */
-	public synchronized ISprite find(String name) {
+	public ISprite find(String name) {
 		ISprite[] snapshot = sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
@@ -209,7 +207,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param sprite
 	 * @return
 	 */
-	public synchronized boolean add(int index, ISprite sprite) {
+	public boolean add(int index, ISprite sprite) {
 		if (sprite == null) {
 			return false;
 		}
@@ -229,7 +227,7 @@ public class Sprites implements Serializable, LRelease {
 		return sprites[index] != null;
 	}
 
-	public synchronized ISprite getSprite(int index) {
+	public ISprite getSprite(int index) {
 		if (index < 0 || index > size || index >= sprites.length) {
 			return null;
 		}
@@ -241,7 +239,7 @@ public class Sprites implements Serializable, LRelease {
 	 * 
 	 * @return
 	 */
-	public synchronized ISprite getTopSprite() {
+	public ISprite getTopSprite() {
 		if (size > 0) {
 			return sprites[0];
 		}
@@ -253,7 +251,7 @@ public class Sprites implements Serializable, LRelease {
 	 * 
 	 * @return
 	 */
-	public synchronized ISprite getBottomSprite() {
+	public ISprite getBottomSprite() {
 		if (size > 0) {
 			return sprites[size - 1];
 		}
@@ -266,7 +264,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param sprite
 	 * @return
 	 */
-	public synchronized boolean add(ISprite sprite) {
+	public boolean add(ISprite sprite) {
 		if (contains(sprite)) {
 			return false;
 		}
@@ -293,7 +291,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param sprite
 	 * @return
 	 */
-	public synchronized boolean contains(ISprite sprite) {
+	public boolean contains(ISprite sprite) {
 		if (sprite == null) {
 			return false;
 		}
@@ -314,7 +312,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param index
 	 * @return
 	 */
-	public synchronized ISprite remove(int index) {
+	public ISprite remove(int index) {
 		ISprite removed = this.sprites[index];
 		int size = this.size - index - 1;
 		if (size > 0) {
@@ -331,7 +329,7 @@ public class Sprites implements Serializable, LRelease {
 	 * 清空所有精灵
 	 * 
 	 */
-	public synchronized void removeAll() {
+	public void removeAll() {
 		clear();
 		this.sprites = new ISprite[0];
 	}
@@ -342,7 +340,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param sprite
 	 * @return
 	 */
-	public synchronized boolean remove(ISprite sprite) {
+	public boolean remove(ISprite sprite) {
 		if (sprite == null) {
 			return false;
 		}
@@ -374,7 +372,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @param startIndex
 	 * @param endIndex
 	 */
-	public synchronized void remove(int startIndex, int endIndex) {
+	public void remove(int startIndex, int endIndex) {
 		int numMoved = this.size - endIndex;
 		System.arraycopy(this.sprites, endIndex, this.sprites, startIndex,
 				numMoved);
@@ -411,7 +409,7 @@ public class Sprites implements Serializable, LRelease {
 	 * 清空当前精灵集合
 	 * 
 	 */
-	public synchronized void clear() {
+	public void clear() {
 		for (int i = 0; i < sprites.length; i++) {
 			sprites[i] = null;
 		}
@@ -456,9 +454,7 @@ public class Sprites implements Serializable, LRelease {
 		if (!visible) {
 			return;
 		}
-		int minX, minY, maxX, maxY;
-		int clipWidth = g.getClipWidth();
-		int clipHeight = g.getClipHeight();
+		float minX, minY, maxX, maxY;
 		if (this.isViewWindowSet) {
 			g.setClip(x, y, this.width, this.height);
 			minX = this.viewX;
@@ -467,9 +463,9 @@ public class Sprites implements Serializable, LRelease {
 			maxY = minY + this.height;
 		} else {
 			minX = x;
-			maxX = x + clipWidth;
+			maxX = x + this.width;
 			minY = y;
-			maxY = y + clipHeight;
+			maxY = y + this.height;
 		}
 		g.translate(x - this.viewX, y - this.viewY);
 		for (int i = 0; i < this.size; i++) {

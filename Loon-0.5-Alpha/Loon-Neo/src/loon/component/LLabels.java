@@ -61,7 +61,8 @@ public class LLabels extends LComponent {
 	public Array<Info> labels = new Array<Info>();
 
 	private float speed = 0;
-
+	
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -76,14 +77,14 @@ public class LLabels extends LComponent {
 			Info label = labels.get(i);
 			if (label.length == -1) {
 				g.drawString(label.message, x + label.x,
-						y + label.y + font.getHeight() / 2 + 5, label.color);
+						y + label.y - font.getHeight() / 2 + 5, label.color);
 			} else {
 				label.stateTime += speed;
 				if (label.stateTime > label.length) {
 					labels.remove(label);
 				} else {
 					g.drawString(label.message, x + label.x,
-							y + label.y + font.getHeight() / 2 + 5, label.color);
+							y + label.y - font.getHeight() / 2 + 5, label.color);
 				}
 			}
 		}

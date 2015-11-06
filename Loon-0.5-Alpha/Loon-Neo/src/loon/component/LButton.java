@@ -24,8 +24,6 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
-import loon.event.SysKey;
-import loon.event.SysTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -45,12 +43,8 @@ public class LButton extends LComponent {
 		this(fileName, null, 0, 0);
 	}
 
-	public LButton(String fileName, String text, int x, int y) {
-		this(LTextures.loadTexture(fileName), text, x, y);
-	}
-
-	public LButton(LTexture img, String text, int x, int y) {
-		this(img, text, img.getWidth(), img.getHeight(), x, y);
+	public LButton(String fileName, String text, int row, int col) {
+		this(LTextures.loadTexture(fileName), text, row, col, 0, 0);
 	}
 
 	public LButton(String fileName, int row, int col) {
@@ -135,17 +129,19 @@ public class LButton extends LComponent {
 		}
 		if (text != null) {
 			LFont old = g.getFont();
+			int tmp = g.color();
 			g.setFont(font);
 			g.setColor(fontColor);
 			g.drawString(
 					text,
 					x + button.getOffsetLeft()
 							+ (button.getWidth() - font.stringWidth(text)) / 2,
-					y + button.getOffsetTop()
-							+ (button.getHeight() - font.getHeight()) / 2
-							+ font.getHeight());
+					y
+							+ button.getOffsetTop()
+							+ (button.getHeight() - font.getHeight() - font
+									.getAscent()) / 2);
 			g.setFont(old);
-			g.resetColor();
+			g.setColor(tmp);
 		}
 	}
 
@@ -176,59 +172,27 @@ public class LButton extends LComponent {
 		this.text = st;
 	}
 
-	/**
-	 * 处理点击事件（请重载实现）
-	 * 
-	 */
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
-	public void downClick() {
-		if (Click != null) {
-			Click.DownClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	public void upClick() {
-		if (Click != null) {
-			Click.UpClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
 	@Override
 	protected void processTouchDragged() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_MOVE) {
 			this.over = this.pressed = this.intersects(this.input.getTouchX(),
 					this.input.getTouchY());
-		}
 	}
 
 	@Override
 	protected void processTouchClicked() {
-
-		if (this.input.getTouchReleased() == SysTouch.TOUCH_UP
-				|| this.input.getTouchReleased() == SysTouch.TOUCH_DOWN) {
 			this.doClick();
-		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_DOWN) {
 			this.downClick();
 			this.pressed = true;
-		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (this.input.getTouchReleased() == SysTouch.TOUCH_UP) {
 			this.upClick();
 			this.pressed = false;
-		}
 	}
 
 	@Override
@@ -243,7 +207,7 @@ public class LButton extends LComponent {
 
 	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected() && this.input.getKeyPressed() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressedTime = 5;
 			this.pressed = true;
 			this.doClick();
@@ -252,7 +216,7 @@ public class LButton extends LComponent {
 
 	@Override
 	protected void processKeyReleased() {
-		if (this.isSelected() && this.input.getKeyReleased() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressed = false;
 		}
 	}

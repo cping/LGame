@@ -368,12 +368,12 @@ public class LScrollBar extends LComponent {
 		super.setY(y);
 		adjustSlider();
 	}
-
+	@Override
 	public void setWidth(int width) {
 		super.setWidth(width);
 		adjustSlider();
 	}
-
+	@Override
 	public void setHeight(int height) {
 		super.setHeight(height);
 		adjustSlider();

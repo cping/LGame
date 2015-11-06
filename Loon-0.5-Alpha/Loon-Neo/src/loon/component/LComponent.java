@@ -605,27 +605,19 @@ public abstract class LComponent extends LObject implements ActionBind,
 	}
 
 	protected void processTouchClicked() {
-		if (SysTouch.isDown() || SysTouch.isUp()) {
 			this.doClick();
-		}
 	}
 
 	protected void processTouchPressed() {
-		if (SysTouch.isDown()) {
 			this.downClick();
-		}
 	}
 
 	protected void processTouchReleased() {
-		if (SysTouch.isUp()) {
 			this.upClick();
-		}
 	}
 
 	protected void processTouchDragged() {
-		if (SysTouch.isDrag()) {
 			this.dragClick();
-		}
 	}
 
 	protected void processTouchMoved() {

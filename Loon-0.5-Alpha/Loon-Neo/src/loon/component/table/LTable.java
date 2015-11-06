@@ -148,7 +148,7 @@ public class LTable extends LContainer {
 			LTexture backgroundTexture, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.font = font;
-		this.cellHeight = font.getHeight() + 2;
+		this.cellHeight = (int) (font.getHeight() + font.getAscent());
 		this.headerTexture = headerTexture;
 		this.backgroundTexture = backgroundTexture;
 		this.setElastic(false);
@@ -442,15 +442,15 @@ public class LTable extends LContainer {
 				header.headerY = displayY;
 				if (headerTexture != null) {
 					g.draw(headerTexture, displayX, displayY, wid,
-							font.getHeight(), headerBackgroundColor);
+							cellHeight, headerBackgroundColor);
 					if (gridVisible) {
 						g.setColor(gridColor);
-						g.drawRect(displayX, displayY, wid, font.getHeight());
+						g.drawRect(displayX, displayY, wid, cellHeight);
 						g.setColor(LColor.white);
 					}
 				} else {
 					g.setColor(headerBackgroundColor);
-					g.fillRect(displayX, displayY, wid, font.getHeight());
+					g.fillRect(displayX, displayY, wid, cellHeight);
 					g.setColor(LColor.white);
 				}
 				x = displayX;
@@ -465,7 +465,7 @@ public class LTable extends LContainer {
 											font.stringWidth(s));
 					g.setFont(font);
 					g.drawString(s, x + entryOffset,
-							header.headerY + font.getHeight() - 4,
+							header.headerY + font.getAscent()/2 - 4,
 							headTextColor);
 					x += columnWidth + cellSpacing;
 				}

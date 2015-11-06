@@ -25,7 +25,6 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
-import loon.event.SysKey;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -171,16 +170,6 @@ public class LMessage extends LContainer {
 		return print.getMessage();
 	}
 
-	/**
-	 * 处理点击事件（请重载实现）
-	 * 
-	 */
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
 	@Override
 	protected void processTouchClicked() {
 		this.doClick();
@@ -188,7 +177,7 @@ public class LMessage extends LContainer {
 
 	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected() && this.input.getKeyPressed() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.doClick();
 		}
 	}
@@ -196,18 +185,14 @@ public class LMessage extends LContainer {
 	@Override
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
-			if (Click != null) {
-				Click.DownClick(this, input.getTouchX(), input.getTouchY());
-			}
+			this.downClick();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		if (!input.isMoving()) {
-			if (Click != null) {
-				Click.UpClick(this, input.getTouchX(), input.getTouchY());
-			}
+			this.upClick();
 		}
 	}
 

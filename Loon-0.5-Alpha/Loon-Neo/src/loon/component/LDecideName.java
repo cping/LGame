@@ -98,10 +98,10 @@ public class LDecideName extends LComponent {
 				DefUI.getDefaultTextures(2));
 	}
 
-	public LDecideName(String label, String name, Array<String> mes,
-			LFont font, int x, int y, int width, int height, LTexture bg) {
-		super(x, y, width, height + font.getHeight() + 10);
-		this.font = font;
+	public LDecideName(String label, String name, Array<String> mes, LFont f,
+			int x, int y, int width, int height, LTexture bg) {
+		super(x, y, width, height - f.getHeight() - 20);
+		this.font = f;
 		this.labelName = label;
 		this.name = name;
 		this.keyArrays = mes;
@@ -127,8 +127,7 @@ public class LDecideName extends LComponent {
 		}
 		float posX = x + leftOffset;
 		if (labelName != null) {
-			g.drawString(labelName + this.name, posX, y + font.getHeight(),
-					LColor.orange);
+			g.drawString(labelName + this.name, posX, y, LColor.orange);
 		}
 		float posY = y + topOffset;
 		if (!_cache) {
@@ -148,8 +147,8 @@ public class LDecideName extends LComponent {
 								posY
 										+ MathUtils
 												.round(((j + 1) * dy - 0.01f)
-														* getHeight()),
-								fontColor);
+														* getHeight())
+										- font.getAscent(), fontColor);
 					}
 					g.drawRect(posX + MathUtils.round((i * dx) * getWidth()),
 							posY + MathUtils.round((j * dy) * getHeight()),
@@ -293,7 +292,7 @@ public class LDecideName extends LComponent {
 
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
-		if(_cache){
+		if (_cache) {
 			_cache = false;
 		}
 	}
@@ -415,6 +414,10 @@ public class LDecideName extends LComponent {
 
 	public void setFontcache(boolean d_cache) {
 		this._cache = d_cache;
+	}
+
+	public LFont getFont() {
+		return font;
 	}
 
 	@Override

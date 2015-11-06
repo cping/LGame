@@ -47,9 +47,9 @@ public class TextCellRenderer implements ICellRenderer {
 				g.draw(icon.texture, x + 4, y
 						+ (font.getHeight() - size) / 2, size, size);
 				g.drawString(s, x + size + entryOffset + 4,
-						y + font.getHeight() - 4);
+						y - 4);
 			} else {
-				g.drawString(s, x + entryOffset, y + font.getHeight() - 4);
+				g.drawString(s, x + entryOffset, y - 4);
 			}
 		} else {
 			String s = value.toString();
@@ -58,7 +58,7 @@ public class TextCellRenderer implements ICellRenderer {
 					font.stringWidth(s));
 			g.setFont(font);
 			g.setColor(textColor);
-			g.drawString(s, x + entryOffset, y + font.getHeight() - 4);
+			g.drawString(s, x + entryOffset, y - 4);
 		}
 	}
 

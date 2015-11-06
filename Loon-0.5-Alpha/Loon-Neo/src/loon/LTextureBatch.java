@@ -366,7 +366,7 @@ public class LTextureBatch implements LRelease {
 		if (!texture.isLoaded()) {
 			texture.loadTexture();
 		}
-		LTexture tex2d = texture.getParent();
+		LTexture tex2d = LTexture.firstFather(texture);
 		if (tex2d != null) {
 			if (tex2d != lastTexture) {
 				submit();

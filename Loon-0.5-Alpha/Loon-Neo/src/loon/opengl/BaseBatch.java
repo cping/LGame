@@ -31,13 +31,31 @@ public abstract class BaseBatch extends LTextureBind {
 			return;
 		}
 		setTexture(tex);
-		float u2 = tex.getFormat().repeatX ? w / tex.width() : tex.widthRatio;
-		float uv = tex.getFormat().repeatY ? h / tex.height() : tex.heightRatio;
-		if (tex.isScale()) {
-			addQuad(tint, xf, x, y, (x + w), (y + h), tex.xOff, tex.yOff, u2,
-					uv);
+		if (tex.getParent() == null) {
+			float u2 = tex.getFormat().repeatX ? w / tex.width()
+					: tex.widthRatio;
+			float uv = tex.getFormat().repeatY ? h / tex.height()
+					: tex.heightRatio;
+			if (tex.isScale()) {
+				addQuad(tint, xf, x, y, (x + w), (y + h), tex.xOff, tex.yOff,
+						u2, uv);
+			} else {
+				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2,
+						uv);
+			}
 		} else {
-			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
+			LTexture forefather = LTexture.firstFather(tex);
+			float u2 = tex.getFormat().repeatX ? w / forefather.width()
+					: tex.widthRatio;
+			float uv = tex.getFormat().repeatY ? h / forefather.height()
+					: tex.heightRatio;
+			if (tex.isScale()) {
+				addQuad(tint, xf, x, y, (x + w), (y + h), tex.xOff, tex.yOff,
+						u2, uv);
+			} else {
+				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2,
+						uv);
+			}
 		}
 	}
 
@@ -47,16 +65,32 @@ public abstract class BaseBatch extends LTextureBind {
 			return;
 		}
 		setTexture(tex);
-		float texWidth = tex.width(), texHeight = tex.height();
-		if (tex.isScale()) {
-			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, tex.xOff
-					* (sx / texWidth), tex.yOff * (sy / texHeight),
-					((sx + sw) / texWidth), ((sy + sh) / texHeight));
+		if (tex.getParent() == null) {
+			float texWidth = tex.width(), texHeight = tex.height();
+			if (tex.isScale()) {
+				addQuad(tint, xf, dx, dy, dx + dw, dy + dh, tex.xOff
+						* (sx / texWidth), tex.yOff * (sy / texHeight),
+						((sx + sw) / texWidth), ((sy + sh) / texHeight));
+			} else {
+				addQuad(tint, xf, dx, dy, dx + dw, dy + dh, tex.xOff
+						* (sx / texWidth), tex.yOff * (sy / texHeight),
+						tex.widthRatio * ((sx + sw) / texWidth),
+						tex.heightRatio * ((sy + sh) / texHeight));
+			}
 		} else {
-			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, tex.xOff
-					* (sx / texWidth), tex.yOff * (sy / texHeight),
-					tex.widthRatio * ((sx + sw) / texWidth), tex.heightRatio
-							* ((sy + sh) / texHeight));
+			LTexture forefather = LTexture.firstFather(tex);
+			float texWidth = forefather.width(), texHeight = forefather
+					.height();
+			if (tex.isScale()) {
+				addQuad(tint, xf, dx, dy, dx + dw, dy + dh, tex.xOff
+						* (sx / texWidth), tex.yOff * (sy / texHeight),
+						((sx + sw) / texWidth), ((sy + sh) / texHeight));
+			} else {
+				addQuad(tint, xf, dx, dy, dx + dw, dy + dh, tex.xOff
+						* (sx / texWidth), tex.yOff * (sy / texHeight),
+						tex.widthRatio * ((sx + sw) / texWidth),
+						tex.heightRatio * ((sy + sh) / texHeight));
+			}
 		}
 	}
 
@@ -69,7 +103,6 @@ public abstract class BaseBatch extends LTextureBind {
 	public void addQuad(int tint, float m00, float m01, float m10, float m11,
 			float tx, float ty, float left, float top, float right,
 			float bottom, float sl, float st, float sr, float sb) {
-
 		addQuad(tint, m00, m01, m10, m11, tx, ty, left, top, sl, st, right,
 				top, sr, st, left, bottom, sl, sb, right, bottom, sr, sb);
 	}

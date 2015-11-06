@@ -24,8 +24,6 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
-import loon.event.SysKey;
-import loon.event.SysTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
@@ -93,11 +91,12 @@ public class LClickButton extends LComponent {
 					x + getOffsetLeft() + (getWidth() - font.stringWidth(text))
 							/ 2,
 					(y + getOffsetTop() + (getHeight() - font.getHeight())
-							/ 2 + font.getHeight()) - 5, fontColor);
+							/ 2) - 5, fontColor);
 			g.setFont(old);
 		}
 	}
-
+	
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -115,74 +114,52 @@ public class LClickButton extends LComponent {
 	public boolean isTouchPressed() {
 		return this.pressed;
 	}
-
+	
+	@Override
 	protected void processTouchDragged() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_MOVE) {
 			this.over = this.pressed = this.intersects(this.input.getTouchX(),
 					this.input.getTouchY());
-		}
-	}
-
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
-	public void downClick() {
-		if (Click != null) {
-			Click.DownClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	public void upClick() {
-		if (Click != null) {
-			Click.UpClick(this, input.getTouchX(), input.getTouchY());
-		}
 	}
 
 	@Override
 	protected void processTouchClicked() {
-		int code = this.input.getTouchReleased();
-		if (code == SysTouch.TOUCH_DOWN || code == SysTouch.TOUCH_UP) {
 			this.doClick();
-		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
-		if (this.input.getTouchPressed() == SysTouch.TOUCH_DOWN) {
 			this.downClick();
 			this.pressed = true;
-		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (this.input.getTouchReleased() == SysTouch.TOUCH_UP) {
 			this.upClick();
 			this.pressed = false;
-		}
 	}
-
+	
+	@Override
 	protected void processTouchEntered() {
 		this.over = true;
 	}
 
+	@Override
 	protected void processTouchExited() {
 		this.over = this.pressed = false;
 	}
-
+	
+	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected() && this.input.getKeyPressed() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressedTime = 5;
 			this.pressed = true;
 			this.doClick();
 		}
 	}
 
+	@Override
 	protected void processKeyReleased() {
-		if (this.isSelected() && this.input.getKeyReleased() == SysKey.ENTER) {
+		if (this.isSelected()) {
 			this.pressed = false;
 		}
 	}

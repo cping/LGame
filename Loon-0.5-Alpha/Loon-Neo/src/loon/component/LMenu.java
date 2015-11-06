@@ -182,8 +182,8 @@ public class LMenu extends LComponent {
 							this.x
 									+ 3f
 									+ (itemWidth / 2 - font.stringWidth(label) / 2),
-							this.y + this.parent.paddingy + this.parent.scroll
-									- 2);
+							this.y + this.parent.paddingy + this.parent.scroll - font.getAscent()
+									- 2) ;
 				}
 
 				g.setColor(1f, 1f, 1f, 1f);
@@ -212,7 +212,7 @@ public class LMenu extends LComponent {
 					g.drawString(
 							this.label,
 							this.x
-									+ (itemWidth / 2 - font.stringWidth(label) / 2),
+									+ (itemWidth / 2 - font.stringWidth(label) / 2 - font.getAscent()),
 							this.y - 2);
 				}
 
@@ -325,7 +325,7 @@ public class LMenu extends LComponent {
 
 	public LMenu(int move_type, LFont font, String label, int width, int height) {
 		this(move_type, font, label, width, height,
-				DefUI.getDefaultTextures(3), DefUI.getDefaultTextures(2), 0, 0,
+				DefUI.getDefaultTextures(4), DefUI.getDefaultTextures(2), 0, 0,
 				true);
 	}
 
@@ -432,7 +432,7 @@ public class LMenu extends LComponent {
 	}
 
 	public MenuItem add(String label, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, DefUI.getDefaultTextures(3), label,
+		return add(new LMenu.MenuItem(this, DefUI.getDefaultTextures(4), label,
 				click));
 	}
 
@@ -509,7 +509,7 @@ public class LMenu extends LComponent {
 					g.drawString(
 							this.label,
 							posX + (tabWidth / 2 - font.stringWidth(label) / 2),
-							getTaby() + (tabHeight / 2 + font.getHeight() / 2)
+							getTaby() + (tabHeight / 2 - font.getHeight() / 2)
 									- 5);
 				}
 			}

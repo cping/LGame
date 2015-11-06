@@ -37,7 +37,15 @@ public abstract class Painter extends TextureSource {
 	public static final int BOTTOM_RIGHT = 2;
 
 	public static final int BOTTOM_LEFT = 3;
-
+	
+	public static LTexture firstFather(LTexture texture) {
+		if (texture.getParent() == null) {
+			return texture;
+		} else {
+			return firstFather(texture.getParent());
+		}
+	}
+	
 	public abstract LTexture texture();
 
 	public abstract float width();

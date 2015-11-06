@@ -173,16 +173,16 @@ public class LLabel extends LComponent {
 			case CENTER:
 				g.drawString(text, x
 						+ (getWidth() / 2 - font.stringWidth(text) / 2)
-						+ offsetLeft, y + font.getHeight()
+						+ offsetLeft, y
 						+ (getHeight() / 2 - font.getHeight() / 2) + offsetTop);
 				break;
 			case LEFT:
-				g.drawString(text, x + offsetLeft, y + font.getHeight()
+				g.drawString(text, x + offsetLeft, y
 						+ (getHeight() / 2 - font.getHeight() / 2) + offsetTop);
 				break;
 			case RIGHT:
 				g.drawString(text, x + getWidth() - font.stringWidth(text)
-						+ offsetLeft, y + font.getHeight()
+						+ offsetLeft, y
 						+ (getHeight() / 2 - font.getHeight() / 2) + offsetTop);
 				break;
 			default:

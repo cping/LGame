@@ -190,7 +190,8 @@ public class LSelect extends LContainer {
 		// g.setAntiAlias(true);
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
-			g.drawString(message, messageLeft, messageTop);
+			g.drawString(message, messageLeft,
+					messageTop - messageFont.getAscent());
 		} else {
 			messageTop = y + top;
 		}
@@ -203,11 +204,12 @@ public class LSelect extends LContainer {
 				isSelect = (type == (selectFlag > 0 ? selectFlag : 1));
 				if ((buoyage != null) && isSelect) {
 					g.setAlpha(autoAlpha);
-					g.draw(buoyage, nLeft,
-							nTop - (int) (buoyage.getHeight() / 1.5));
+					g.draw(buoyage, nLeft, nTop
+							- (int) (buoyage.getHeight() / 1.5));
 					g.setAlpha(1F);
 				}
-				g.drawString(selects[i], messageLeft, nTop);
+				g.drawString(selects[i], messageLeft,
+						nTop - messageFont.getAscent());
 				if ((cursor != null) && isSelect) {
 					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2,
 							LColor.white);
@@ -222,17 +224,7 @@ public class LSelect extends LContainer {
 	}
 
 	private boolean onClick;
-
-	/**
-	 * 处理点击事件（请重载实现）
-	 * 
-	 */
-	public void doClick() {
-		if (Click != null) {
-			Click.DoClick(this);
-		}
-	}
-
+	
 	public boolean isClick() {
 		return onClick;
 	}
