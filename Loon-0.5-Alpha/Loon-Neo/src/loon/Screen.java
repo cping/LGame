@@ -55,7 +55,8 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public abstract class Screen extends PlayerUtils implements SysInput, LRelease, XY {
+public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
+		XY {
 
 	private ArrayList<ScreenListener> screens;
 
@@ -150,26 +151,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		void paint(GLEx g) {
 			switch (type) {
 			case DRAW_USER:
-				synchronized (this) {
-					screen.draw(g);
-				}
+				screen.draw(g);
 				break;
 			case DRAW_SPRITE:
-				synchronized (this) {
-					if (spriteRun) {
-						sprites.createUI(g);
-					} else if (spriteRun = (sprites != null && sprites.size() > 0)) {
-						sprites.createUI(g);
-					}
+				if (spriteRun) {
+					sprites.createUI(g);
+				} else if (spriteRun = (sprites != null && sprites.size() > 0)) {
+					sprites.createUI(g);
 				}
 				break;
 			case DRAW_DESKTOP:
-				synchronized (this) {
-					if (desktopRun) {
-						desktop.createUI(g);
-					} else if (desktopRun = (desktop != null && desktop.size() > 0)) {
-						desktop.createUI(g);
-					}
+				if (desktopRun) {
+					desktop.createUI(g);
+				} else if (desktopRun = (desktop != null && desktop.size() > 0)) {
+					desktop.createUI(g);
 				}
 				break;
 			}
@@ -178,24 +173,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		void update(LTimerContext c) {
 			switch (type) {
 			case DRAW_USER:
-				synchronized (this) {
-					screen.alter(c);
-				}
+				screen.alter(c);
 				break;
 			case DRAW_SPRITE:
-				synchronized (this) {
-					spriteRun = (sprites != null && sprites.size() > 0);
-					if (spriteRun) {
-						sprites.update(c.timeSinceLastUpdate);
-					}
+				spriteRun = (sprites != null && sprites.size() > 0);
+				if (spriteRun) {
+					sprites.update(c.timeSinceLastUpdate);
 				}
 				break;
 			case DRAW_DESKTOP:
-				synchronized (this) {
-					desktopRun = (desktop != null && desktop.size() > 0);
-					if (desktopRun) {
-						desktop.update(c.timeSinceLastUpdate);
-					}
+				desktopRun = (desktop != null && desktop.size() > 0);
+				if (desktopRun) {
+					desktop.update(c.timeSinceLastUpdate);
 				}
 				break;
 			}
@@ -375,7 +364,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 			replaceLoading = true;
 		}
-		
+
 		return this;
 	}
 
@@ -463,17 +452,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen() {
 		resetBase();
 	}
-	
-	final void resetBase(){
+
+	final void resetBase() {
 		Screen.StaticCurrentSceen = this;
 		this.handler = LSystem._process;
 		this.width = LSystem.viewSize.getWidth();
 		this.height = LSystem.viewSize.getHeight();
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
-		this.fristOrder = DRAW_USER_PAINT();
+		// 最先桌面
+		this.fristOrder = DRAW_DESKTOP_PAINT();
+		// 其次精灵
 		this.secondOrder = DRAW_SPRITE_PAINT();
-		this.lastOrder = DRAW_DESKTOP_PAINT();
+		// 最后用户
+		this.lastOrder = DRAW_USER_PAINT();
 		this.fristPaintFlag = true;
 		this.secondPaintFlag = true;
 		this.lastPaintFlag = true;
@@ -986,7 +978,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return null;
 	}
 
-
 	/**
 	 * 返回位于数据顶部的精灵
 	 * 
@@ -1050,7 +1041,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		return this;
 	}
-
 
 	public Screen removeAll() {
 		if (sprites != null) {
@@ -1180,35 +1170,46 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private final void repaint(GLEx g) {
 		if (!isClose) {
-			if (isTranslate) {
-				g.translate(tx, ty);
-			}
-			afterUI(g);
-			if (fristPaintFlag) {
-				fristOrder.paint(g);
-			}
-			if (secondPaintFlag) {
-				secondOrder.paint(g);
-			}
-			if (lastPaintFlag) {
-				lastOrder.paint(g);
-			}
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.draw(g);
-				}
-			}
-			LProcess process = LSystem._process;
-			RootPlayer players = process.rootPlayer;
 			try {
+				// 记录屏幕矩阵以及画笔
 				g.save();
-				players.update(elapsedTime);
-				players.paint(g);
+				// 偏移屏幕
+				if (isTranslate) {
+					g.translate(tx, ty);
+				}
+				// 最下一层渲染，可重载
+				afterUI(g);
+				// 用户自定义的多个渲染接口
+				if (useScreenListener) {
+					for (ScreenListener t : screens) {
+						t.draw(g);
+					}
+				}
+				// 最底层，舞台以及表演者
+				LProcess process = LSystem._process;
+				RootPlayer players = process.rootPlayer;
+				if (players.children() > 0) {
+					players.update(elapsedTime);
+					players.paint(g);
+				}
+				// PS:下列三项允许用户调整顺序
+				// 再后首先，桌面
+				if (fristPaintFlag) {
+					fristOrder.paint(g);
+				}
+				// 其次，精灵
+				if (secondPaintFlag) {
+					secondOrder.paint(g);
+				}
+				// 最后，用户渲染
+				if (lastPaintFlag) {
+					lastOrder.paint(g);
+				}
+				// 最前一层渲染，可重载
+				beforeUI(g);
 			} finally {
+				// 还原屏幕矩阵以及画笔
 				g.restore();
-			}
-			if (isTranslate) {
-				g.translate(-tx, -ty);
 			}
 		}
 	}
@@ -1514,7 +1515,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public abstract void resize(int width, int height);
 
 	public Point2i getTouch() {
-		touch.set((int)SysTouch.getX(), (int)SysTouch.getY());
+		touch.set((int) SysTouch.getX(), (int) SysTouch.getY());
 		return touch;
 	}
 

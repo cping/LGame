@@ -137,12 +137,12 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 			return;
 		}
 		int tmp = g.getPixSkip();
-		boolean usetex = g.alltextures();
-		if (usetex) {
+		boolean useTex = g.alltextures();
+		if (useTex) {
 			g.setPixSkip(4);
 		}
 		draw(g, this.x(), this.y());
-		if (usetex) {
+		if (useTex) {
 			g.setPixSkip(tmp);
 		}
 	}

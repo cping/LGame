@@ -463,12 +463,7 @@ public class LColor implements Serializable {
 		return setColor(color.r, color.g, color.b, color.a);
 	}
 
-	private int tmp_color = -1;
-
 	public LColor setColor(int pixel) {
-		if (tmp_color == pixel) {
-			return this;
-		}
 		int r = (pixel & 0x00FF0000) >> 16;
 		int g = (pixel & 0x0000FF00) >> 8;
 		int b = (pixel & 0x000000FF);

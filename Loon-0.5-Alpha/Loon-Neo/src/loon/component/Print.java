@@ -16,15 +16,16 @@ import loon.utils.StringUtils;
 public class Print implements LRelease {
 
 	// they is other char flags
-	private final static char[] _wrapchars = { '\u3002', '\u3001', '\uff0c', '\uff0e', '\u300d',
-			'\uff3d', '\u3011', '\u300f', '\u30fc', '\uff5e', '\uff09',
-			'\u3041', '\u3043', '\u3045', '\u3047', '\u3049', '\u30a1',
-			'\u30a3', '\u30a5', '\u30a7', '\u30a9', '\u30c3', '\u30e3',
-			'\u30e5', '\u30e7', '\u30ee', '\u308e', '\u3083', '\u3085',
-			'\u3087', '\u3063', '\u2026', '\uff0d', '\uff01', '\uff1f' };
+	private final static char[] _wrapchars = { '\u3002', '\u3001', '\uff0c',
+			'\uff0e', '\u300d', '\uff3d', '\u3011', '\u300f', '\u30fc',
+			'\uff5e', '\uff09', '\u3041', '\u3043', '\u3045', '\u3047',
+			'\u3049', '\u30a1', '\u30a3', '\u30a5', '\u30a7', '\u30a9',
+			'\u30c3', '\u30e3', '\u30e5', '\u30e7', '\u30ee', '\u308e',
+			'\u3083', '\u3085', '\u3087', '\u3063', '\u2026', '\uff0d',
+			'\uff01', '\uff1f' };
 
 	private final static int _otherFlagsSize = _wrapchars.length;
-			
+
 	public static List<String> formatMessage(String text, LFont font, int width) {
 		List<String> list = new ArrayList<String>();
 
@@ -49,7 +50,7 @@ public class Print implements LRelease {
 
 			if ((c == '\n') || (font.stringWidth(line + c) > width)) {
 				line = str.substring(0, i);
-				
+
 				for (int j = 0; j < _otherFlagsSize; j++) {
 					if (c == _wrapchars[j]) {
 						int delta = font.stringWidth(line + c) - width;
@@ -73,8 +74,6 @@ public class Print implements LRelease {
 	}
 
 	private int index, offset, font, tmp_font;
-
-	private int fontSizeDouble;
 
 	private char text;
 
@@ -212,7 +211,6 @@ public class Print implements LRelease {
 					/ 2 - (int) (fontSize * 1.5);
 			this.left = tmp_left;
 			this.index = offset = font = tmp_font = 0;
-			this.fontSizeDouble = fontSize * 2;
 
 			int hashCode = 1;
 			hashCode = LSystem.unite(hashCode, size);
@@ -235,13 +233,12 @@ public class Print implements LRelease {
 			strings.startChar();
 			fontColor = old;
 
-			
 			for (int i = 0; i < size; i++) {
 				text = showMessages[i];
 				if (text == '\0') {
 					continue;
 				}
-                
+
 				if (interceptCount < interceptMaxString) {
 					interceptCount++;
 					continue;
@@ -301,7 +298,7 @@ public class Print implements LRelease {
 				}
 				if (i != size - 1) {
 					strings.addChar(text, vector.x + left + leftOffset,
-							(offset * fontHeight) + vector.y + fontSizeDouble
+							(offset * fontHeight) + vector.y + fontSize
 									+ topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
 					iconX = vector.x + left + leftOffset + iconWidth;

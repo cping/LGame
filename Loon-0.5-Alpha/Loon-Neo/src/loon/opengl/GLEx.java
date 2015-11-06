@@ -2267,7 +2267,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (StringUtils.isEmpty(string)) {
 			return this;
 		}
-		y = y - font.getAscent();
 		LSTRDictionary.drawString(font, string, x, y, rotation, c);
 		return this;
 	}
@@ -2488,8 +2487,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this.useAlltextures;
 	}
 
-	public void setAlltextures(boolean all) {
-		this.useAlltextures = all;
+	public GLEx setAlltextures(boolean all) {
+		this.useAlltextures = LSystem.isHTML5() ? true : all;
+		return this;
 	}
 
 	@Override

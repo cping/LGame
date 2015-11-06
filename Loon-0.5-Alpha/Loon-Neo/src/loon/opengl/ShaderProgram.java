@@ -193,7 +193,7 @@ public class ShaderProgram implements LRelease {
 	private final int[] size = new int[1];
 
 	private final int[] type = new int[1];
-	
+
 	private byte[] namebytes;
 
 	final IntBuffer intbuf;
@@ -621,23 +621,23 @@ public class ShaderProgram implements LRelease {
 	}
 
 	public void begin() {
-			GL20 gl = LSystem.base().graphics().gl;
-			checkManaged();
-			gl.glUseProgram(program);
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		gl.glUseProgram(program);
 	}
-	
+
 	public void glUseProgramBind() {
-			GL20 gl = LSystem.base().graphics().gl;
-			gl.glUseProgram(program);
+		GL20 gl = LSystem.base().graphics().gl;
+		gl.glUseProgram(program);
 	}
-	
+
 	public void glUseProgramUnBind() {
 		if (!LSystem.mainDrawRunning()) {
 			GL20 gl = LSystem.base().graphics().gl;
 			gl.glUseProgram(0);
 		}
 	}
-	
+
 	public void end() {
 		if (!LSystem.mainDrawRunning()) {
 			GL20 gl = LSystem.base().graphics().gl;
@@ -647,7 +647,9 @@ public class ShaderProgram implements LRelease {
 
 	public void close() {
 		GL20 gl = LSystem.base().graphics().gl;
-		gl.glUseProgram(0);
+		if (!LSystem.mainDrawRunning()) {
+			gl.glUseProgram(0);
+		}
 		gl.glDeleteShader(vertexShaderHandle);
 		gl.glDeleteShader(fragmentShaderHandle);
 		gl.glDeleteProgram(program);

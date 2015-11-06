@@ -33,8 +33,12 @@ import loon.utils.Array;
  * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，
  * 若setSupportScroll(true)则支持滚动)
  * 
- * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); panel.add("ABC");
- * panel.add("EFG"); panel.add("ABC"); panel.add("EFG"); panel.add("ABC");
+ * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); 
+ * panel.add("ABC");
+ * panel.add("EFG"); 
+ * panel.add("ABC"); 
+ * panel.add("EFG"); 
+ * panel.add("ABC");
  * panel.add("EFG");
  */
 public class LMenu extends LComponent {
@@ -152,7 +156,7 @@ public class LMenu extends LComponent {
 						this.itemHeight = this.texture.getHeight();
 					}
 				}
-				if (bounds().contains(input.getTouchX(), input.getTouchY())
+				if (bounds().contains(SysTouch.getX(),SysTouch.getY())
 						&& SysTouch.isDown()) {
 					g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
 					if (SysTouch.isDown() && (!this.clicked)) {
@@ -185,7 +189,7 @@ public class LMenu extends LComponent {
 				g.setColor(1f, 1f, 1f, 1f);
 
 			} else {
-				if (bounds().contains(input.getTouchX(), input.getTouchY())
+				if (bounds().contains(SysTouch.getX(),SysTouch.getY())
 						&& SysTouch.isDown()) {
 					g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
 					if (SysTouch.isDown() && (!this.clicked)) {
@@ -320,8 +324,8 @@ public class LMenu extends LComponent {
 	}
 
 	public LMenu(int move_type, LFont font, String label, int width, int height) {
-		this(move_type, font, label, width, height, DefUI
-				.getDefaultTextures(3), DefUI.getDefaultTextures(2), 0, 0,
+		this(move_type, font, label, width, height,
+				DefUI.getDefaultTextures(3), DefUI.getDefaultTextures(2), 0, 0,
 				true);
 	}
 
@@ -428,8 +432,8 @@ public class LMenu extends LComponent {
 	}
 
 	public MenuItem add(String label, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, DefUI.getDefaultTextures(3),
-				label, click));
+		return add(new LMenu.MenuItem(this, DefUI.getDefaultTextures(3), label,
+				click));
 	}
 
 	public MenuItem add(String label, String file, MenuItemClick click) {
@@ -482,7 +486,7 @@ public class LMenu extends LComponent {
 							this.label,
 							this.width
 									+ (tabWidth / 2 - font.stringWidth(label) / 2),
-							getTaby() + (tabHeight / 2 + font.getHeight() / 2)
+							getTaby() + (tabHeight / 2 - font.getHeight() / 2)
 									- 5);
 				}
 			}
@@ -535,8 +539,8 @@ public class LMenu extends LComponent {
 		super.update(elapsedTime);
 
 		if (!this.active) {
-			if (tagbounds(type).contains(input.getTouchX(), input.getTouchY())
-					&& ((SysTouch.isUp() || SysTouch.isDrag()))
+			if (tagbounds(type).contains(SysTouch.getX(), SysTouch.getY())
+					&& ((SysTouch.isDown() || SysTouch.isDrag()))
 					&& (selected == null)) {
 				this.active = true;
 				this.mouseSelect = true;
@@ -563,9 +567,9 @@ public class LMenu extends LComponent {
 					this.scroll = (-this.maxscroll);
 				}
 
-				if (((tagbounds(type).contains(input.getTouchX(),
-						input.getTouchY())) || (panelbounds(type).contains(
-						input.getTouchX(), input.getTouchY())))) {
+				if (((tagbounds(type)
+						.contains(SysTouch.getX(), SysTouch.getY())) || (panelbounds(type)
+						.contains(SysTouch.getX(), SysTouch.getY())))) {
 					if (this.width < this.main_panel_size)
 						this.width += 0.3F
 								* (this.main_panel_size - this.width)

@@ -103,6 +103,11 @@ public class ArcEffect extends LObject implements ISprite {
 			g.setAlpha(alpha);
 		}
 		g.setColor(color);
+		int tmp = g.getPixSkip();
+		boolean useTex = g.alltextures();
+		if(useTex){
+			g.setPixSkip(10);
+		}
 		if (count <= 1) {
 			g.fillRect(x(), y(), width, height);
 		} else {
@@ -116,6 +121,9 @@ public class ArcEffect extends LObject implements ISprite {
 				float h = height / 2 + length - y;
 				g.fillArc(x, y, w, h, 20, 0, this.sign[this.turn] * deg);
 			}
+		}
+		if(useTex){
+			g.setPixSkip(tmp);
 		}
 		if (alpha != 1f) {
 			g.setAlpha(1f);

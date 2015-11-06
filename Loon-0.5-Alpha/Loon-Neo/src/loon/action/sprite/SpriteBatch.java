@@ -191,7 +191,6 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!lockSubmit) {
 			submit();
 		}
-		y = y - font.getAscent();
 		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
 				rotation, c);
 	}

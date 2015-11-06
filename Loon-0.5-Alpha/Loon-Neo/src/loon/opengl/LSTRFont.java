@@ -32,11 +32,16 @@ import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.utils.GLUtils;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 public class LSTRFont implements LRelease {
 
+	private char newLineFlag = '\n';
+
 	private boolean useCache;
+
+	private float offsetX = 1, offsetY = 1;
 
 	private HashMap<String, Cache> displays;
 
@@ -58,7 +63,7 @@ public class LSTRFont implements LRelease {
 
 	private int charCurrent;
 
-	private int totalWidth;
+	private int totalWidth = 0, totalHeight = 0;
 
 	private int textureWidth = 512;
 
@@ -249,6 +254,7 @@ public class LSTRFont implements LRelease {
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
+		this.totalHeight = 0;
 		if (rotation != 0 && (ax == 0 && ay == 0)) {
 			TextLayout layout = font.getLayoutText(chars);
 			ax = layout.bounds.width / 2;
@@ -257,7 +263,6 @@ public class LSTRFont implements LRelease {
 		if (useCache) {
 			display = displays.get(chars);
 			if (display == null) {
-
 				fontBatch.begin();
 				float old = fontBatch.getFloatColor();
 				fontBatch.setColor(c);
@@ -269,20 +274,26 @@ public class LSTRFont implements LRelease {
 					} else {
 						intObject = customChars.get((char) charCurrent);
 					}
+					if (charCurrent == newLineFlag) {
+						totalHeight += fontSize;
+						totalWidth = 0;
+					}
 					if (intObject != null) {
 						if ((i >= startIndex) || (i <= endIndex)) {
-							fontBatch.drawQuad(totalWidth, 0,
-									(totalWidth + intObject.width),
-									intObject.height, intObject.storedX,
-									intObject.storedY, intObject.storedX
-											+ intObject.width,
-									intObject.storedY + intObject.height);
+							fontBatch.drawQuad(totalWidth, totalHeight,
+									(totalWidth + intObject.width) - offsetX,
+									(totalHeight + intObject.height) - offsetY,
+									intObject.storedX,
+									intObject.storedY,
+									intObject.storedX + intObject.width
+											- offsetX, intObject.storedY
+											+ intObject.height - offsetY);
 						}
 						totalWidth += intObject.width;
 					}
 				}
-				fontBatch.setColor(old);
 				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
+				fontBatch.setColor(old);
 				displays.put(chars, display = fontBatch.newCache());
 			} else if (display != null && fontBatch != null
 					&& fontBatch.toTexture() != null) {
@@ -300,14 +311,19 @@ public class LSTRFont implements LRelease {
 				} else {
 					intObject = customChars.get((char) charCurrent);
 				}
+				if (charCurrent == newLineFlag) {
+					totalHeight += fontSize;
+					totalWidth = 0;
+				}
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
-						fontBatch.drawQuad(totalWidth, 0,
-								(totalWidth + intObject.width),
-								intObject.height, intObject.storedX,
-								intObject.storedY, intObject.storedX
-										+ intObject.width, intObject.storedY
-										+ intObject.height);
+						fontBatch.drawQuad(totalWidth, totalHeight,
+								(totalWidth + intObject.width) - offsetX,
+								(totalHeight + intObject.height) - offsetY,
+								intObject.storedX, intObject.storedY
+										, intObject.storedX
+										+ intObject.width - offsetX,
+								intObject.storedY + intObject.height - offsetY);
 					}
 					totalWidth += intObject.width;
 				}
@@ -329,10 +345,17 @@ public class LSTRFont implements LRelease {
 			if (color != null) {
 				setImageColor(color);
 			}
-			fontBatch.draw(colors, x, y - font.getAscent(), intObject.width,
-					intObject.height, intObject.storedX, intObject.storedY,
-					intObject.storedX + intObject.width, intObject.storedY
-							+ intObject.height);
+			if (c == newLineFlag) {
+				fontBatch.draw(colors, x, y + fontSize, intObject.width - offsetX,
+						intObject.height - offsetY, intObject.storedX, intObject.storedY,
+						intObject.storedX + intObject.width  - offsetX, intObject.storedY
+								+ intObject.height  - offsetY);
+			} else {
+				fontBatch.draw(colors, x, y, intObject.width - offsetX, intObject.height - offsetY,
+						intObject.storedX , intObject.storedY, intObject.storedX
+								+ intObject.width  - offsetX, intObject.storedY
+								+ intObject.height - offsetY);
+			}
 			if (colors != null) {
 				colors = null;
 			}
@@ -412,6 +435,7 @@ public class LSTRFont implements LRelease {
 		IntObject intObject = null;
 		int currentChar = 0;
 		char[] charList = s.toCharArray();
+		int maxWidth = 0;
 		for (int i = 0; i < charList.length; i++) {
 			currentChar = charList[i];
 			if (currentChar < totalCharSet) {
@@ -419,11 +443,41 @@ public class LSTRFont implements LRelease {
 			} else {
 				intObject = customChars.get((char) currentChar);
 			}
-
-			if (intObject != null)
+			if (intObject != null) {
+				if (currentChar == newLineFlag) {
+					maxWidth = MathUtils.max(maxWidth, totalWidth);
+					totalWidth = 0;
+				}
 				totalWidth += intObject.width;
+			}
 		}
-		return totalWidth;
+		return MathUtils.max(maxWidth, totalWidth);
+	}
+
+	public int getHeight(String s) {
+		make();
+		int currentChar = 0;
+		char[] charList = s.toCharArray();
+		int lines = 0;
+		int height = 0;
+		int maxHeight = 0;
+		for (int i = 0; i < charList.length; i++) {
+			currentChar = charList[i];
+			if (currentChar < totalCharSet) {
+				intObject = charArray[currentChar];
+			} else {
+				intObject = customChars.get((char) currentChar);
+			}
+			if (intObject != null) {
+				maxHeight = MathUtils.max(maxHeight, intObject.height);
+				height = maxHeight;
+			}
+			if (currentChar == newLineFlag) {
+				lines++;
+				height = 0;
+			}
+		}
+		return lines * getLineHeight() + height;
 	}
 
 	public int getHeight() {
@@ -458,6 +512,30 @@ public class LSTRFont implements LRelease {
 		this.useCache = useCache;
 	}
 
+	public char getNewLineFlag() {
+		return newLineFlag;
+	}
+
+	public void setNewLineFlag(char newLineFlag) {
+		this.newLineFlag = newLineFlag;
+	}
+
+	public float getOffsetX() {
+		return offsetX;
+	}
+
+	public void setOffsetX(float offsetX) {
+		this.offsetX = offsetX;
+	}
+
+	public float getOffsetY() {
+		return offsetY;
+	}
+
+	public void setOffsetY(float offsetY) {
+		this.offsetY = offsetY;
+	}
+	
 	public void close() {
 		if (fontBatch != null) {
 			fontBatch.destoryAll();
