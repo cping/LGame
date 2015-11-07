@@ -20,6 +20,8 @@
  */
 package loon.html5.gwt;
 
+import java.util.HashMap;
+
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
@@ -53,6 +55,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
+	private HashMap<String, OrientationChangedHandler> _handlers = new HashMap<String, OrientationChangedHandler>();
+
+	private Orientation _orientation;
+
+	private int _currentHandlerId = 1;
+
 	static final class JsMap extends JavaScriptObject {
 		protected JsMap() {
 		}
@@ -66,11 +74,21 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		}-*/;
 	}
 
+	public interface OrientationChangedEvent {
+		void onOrientationChanged();
+	}
+
 	public interface LoadingListener {
 
 		public void beforeSetup();
 
 		public void afterSetup();
+	}
+
+	public interface OrientationChangedHandler {
+
+		void onChanged(Orientation newOrientation);
+
 	}
 
 	protected LoadingListener loadingListener;
@@ -103,7 +121,25 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	public void onModuleLoad() {
 		initTime();
 		Loon.self = this;
-		onMain();
+
+		_orientation = calculateScreenOrientation();
+		try {
+			this.registerOrientationChangedHandler(new OrientationChangedEvent() {
+
+				@Override
+				public void onOrientationChanged() {
+					_orientation = calculateScreenOrientation();
+					for (OrientationChangedHandler handler : _handlers.values()) {
+						handler.onChanged(getOrientation());
+					}
+				}
+			});
+		} catch (Exception e) {
+			consoleLog("Does not support gets screen orientation .");
+			_orientation = Orientation.Landscape;
+		}
+
+		this.onMain();
 
 		if (this.setting instanceof GWTSetting) {
 			config = (GWTSetting) this.setting;
@@ -156,77 +192,66 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 					@Override
 					public void onready() {
-						boolean internalExist = config.internalRes != null;
-						boolean jsres = config.jsloadRes || internalExist;
-						if (jsres) {
-							final LocalAssetResources localRes = internalExist ? config.internalRes
-									: new LocalAssetResources();
-							ScriptInjector
-									.fromUrl("assets/resources.js")
-									.setCallback(
-											new Callback<Void, Exception>() {
-												public void onFailure(
-														Exception reason) {
-													consoleLog("resources script load failed.");
-												}
-
-												public void onSuccess(
-														Void result) {
-													JsArray<JsMap> list = loadJavaScriptResources(
-															localRes).cast();
-
-													int size = list.length();
-
-													for (int i = 0; i < size; i++) {
-														JsMap res = list.get(i);
-														String key = res
-																.getKey();
-														String value = res
-																.getValue();
-														String ext = LSystem
-																.getExtension(key);
-
-														if (LSystem.isText(ext)) {
-															localRes.putText(
-																	key, value);
-														} else if (LSystem
-																.isImage(ext)) {
-
-															localRes.putImage(
-																	key, value);
-														} else if (LSystem
-																.isAudio(ext)) {
-															// noop
-														} else {
-															localRes.putBlobString(
-																	key, value);
-														}
-													}
-
-													localRes.commit();
-													loadResources(
-															progress.getPreloaderCallback(
-																	Loon.self,
-																	root),
-															localRes);
-
-												}
-											})
-									.setWindow(ScriptInjector.TOP_WINDOW)
-									.inject();
-						} else {
-							loadResources(progress.getPreloaderCallback(
-									Loon.self, root), null);
-						}
+						loadResources();
 					}
 
 					@Override
 					public void ontimeout(String status, String errorType) {
 						consoleLog("SoundManager:" + status + " " + errorType);
+						// 音频环境目前浏览器支持有限，并非所有浏览器都完美支持音频播放，但是——
+						// 无论音频载入成败与否，都尝试加载其它资源。
+						loadResources();
 					}
 
 				});
 
+	}
+
+	private final void loadResources() {
+		boolean internalExist = config.internalRes != null;
+		boolean jsres = config.jsloadRes || internalExist;
+		if (jsres) {
+			final LocalAssetResources localRes = internalExist ? config.internalRes
+					: new LocalAssetResources();
+			ScriptInjector.fromUrl("assets/resources.js")
+					.setCallback(new Callback<Void, Exception>() {
+						public void onFailure(Exception reason) {
+							consoleLog("resources script load failed.");
+						}
+
+						public void onSuccess(Void result) {
+							JsArray<JsMap> list = loadJavaScriptResources(
+									localRes).cast();
+
+							int size = list.length();
+
+							for (int i = 0; i < size; i++) {
+								JsMap res = list.get(i);
+								String key = res.getKey();
+								String value = res.getValue();
+								String ext = LSystem.getExtension(key);
+
+								if (LSystem.isText(ext)) {
+									localRes.putText(key, value);
+								} else if (LSystem.isImage(ext)) {
+
+									localRes.putImage(key, value);
+								} else if (LSystem.isAudio(ext)) {
+									// noop
+								} else {
+									localRes.putBlobString(key, value);
+								}
+							}
+
+							localRes.commit();
+							loadResources(progress.getPreloaderCallback(
+									Loon.self, root), localRes);
+
+						}
+					}).setWindow(ScriptInjector.TOP_WINDOW).inject();
+		} else {
+			loadResources(progress.getPreloaderCallback(Loon.self, root), null);
+		}
 	}
 
 	private native JsArray<JavaScriptObject> loadJavaScriptResources(
@@ -295,7 +320,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	protected GWTGame createGame() {
-		return this.game = new GWTGame(this, root, (GWTSetting) this.setting);
+		return this.game = new GWTGame(this, root, config);
 	}
 
 	public LGame getGame() {
@@ -315,14 +340,19 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public int getContainerWidth() {
-		return Window.getClientWidth();
+		return getOrientation() == Orientation.Landscape ? getJSNIScreenWidth()
+				: getJSNIScreenHeight();
 	}
 
 	public int getContainerHeight() {
-		return Window.getClientHeight();
+		return getOrientation() == Orientation.Landscape ? getJSNIScreenHeight()
+				: getJSNIScreenWidth();
 	}
-
+	
 	public Orientation getOrientation() {
+		if (_orientation == Orientation.Landscape) {
+			return Orientation.Landscape;
+		}
 		if (getContainerHeight() > getContainerWidth()) {
 			return Orientation.Portrait;
 		} else {
@@ -400,4 +430,39 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		});
 	}
 
+	private native void registerOrientationChangedHandler(
+			OrientationChangedEvent handler) /*-{
+		var callback = function() {
+			handler.@loon.html5.gwt.Loon.OrientationChangedEvent::onOrientationChanged()();
+		}
+		$wnd.addEventListener("orientationchange", callback, false);
+	}-*/;
+
+	private native boolean calculateIsPortraitOrientation() /*-{
+		var result = false;
+		if ($wnd.orientation != null && $wnd.orientation == 0) {
+			result = true;
+		}
+		return result;
+	}-*/;
+
+	private Orientation calculateScreenOrientation() {
+		return calculateIsPortraitOrientation() ? Orientation.Portrait
+				: Orientation.Landscape;
+	}
+
+	public String addHandler(OrientationChangedHandler handler) {
+		int newHandlerIdValue = _currentHandlerId++;
+		String newHandlerId = String.valueOf(newHandlerIdValue);
+		_handlers.put(newHandlerId, handler);
+		return newHandlerId;
+	}
+
+	protected native int getJSNIScreenWidth() /*-{
+		return $wnd.screen.width;
+	}-*/;
+
+	protected native int getJSNIScreenHeight() /*-{
+		return $wnd.screen.height;
+	}-*/;
 }

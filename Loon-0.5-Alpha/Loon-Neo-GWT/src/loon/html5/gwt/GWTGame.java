@@ -172,9 +172,11 @@ public class GWTGame extends LGame {
 				reportError("Uncaught Exception: ", e);
 			}
 		});
-
 		this.game = game;
 
+		log.info("Browser orientation: " + game.getOrientation());
+		log.info("Browser screen width: " + game.getContainerWidth()
+				+ ", screen height: " + game.getContainerHeight());
 		log.info("devicePixelRatio: " + devicePixelRatio()
 				+ " backingStorePixelRatio: " + backingStorePixelRatio());
 

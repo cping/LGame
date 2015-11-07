@@ -26,6 +26,7 @@ import java.util.HashMap;
 import loon.Graphics;
 import loon.LGame;
 import loon.LSystem;
+import loon.Platform.Orientation;
 import loon.canvas.Canvas;
 import loon.font.Font;
 import loon.font.TextFormat;
@@ -34,6 +35,7 @@ import loon.font.TextWrap;
 import loon.geom.Dimension;
 import loon.geom.Vector2f;
 import loon.html5.gwt.GWTGame.GWTSetting;
+import loon.html5.gwt.Loon.OrientationChangedHandler;
 import loon.opengl.GL20;
 import loon.utils.Scale;
 
@@ -71,7 +73,7 @@ public class GWTGraphics extends Graphics {
 
 	static float experimentalScale = 1;
 
-	public GWTGraphics(Panel panel, LGame game, GWTGame.GWTSetting cfg) {
+	public GWTGraphics(final Panel panel, final LGame game, final GWTSetting cfg) {
 		super(game, new GWTGL20(), new Scale(cfg.scaleFactor));
 
 		this.config = cfg;
@@ -129,16 +131,16 @@ public class GWTGraphics extends Graphics {
 			Window.addResizeHandler(new ResizeHandler() {
 				@Override
 				public void onResize(ResizeEvent event) {
-					if (fullScreenWidth() == event.getWidth()
-							&& fullScreenHeight() == event.getHeight()) {
+					if (getScreenWidthJSNI() == event.getWidth()
+							&& getScreenHeightJSNI() == event.getHeight()) {
 						float width = LSystem.viewSize.width(), height = LSystem.viewSize
 								.height();
-						experimentalScale = Math.min(fullScreenWidth() / width,
-								fullScreenHeight() / height);
+						experimentalScale = Math.min(getScreenWidthJSNI()
+								/ width, getScreenHeightJSNI() / height);
 
-						int yOfs = (int) ((fullScreenHeight() - height
+						int yOfs = (int) ((getScreenHeightJSNI() - height
 								* experimentalScale) / 3.f);
-						int xOfs = (int) ((fullScreenWidth() - width
+						int xOfs = (int) ((getScreenWidthJSNI() - width
 								* experimentalScale) / 2.f);
 						rootElement.setAttribute("style", "width:"
 								+ experimentalScale * width + "px; "
@@ -154,6 +156,18 @@ public class GWTGraphics extends Graphics {
 				}
 			});
 		}
+
+		Loon.self.addHandler(new OrientationChangedHandler() {
+			@Override
+			public void onChanged(Orientation newOrientation) {
+				int width = Loon.self.getContainerWidth();
+				int height = Loon.self.getContainerHeight();
+				game.log().info(
+						"update screen size width :" + width + " height :"
+								+ height);
+				setSize(width, height);
+			}
+		});
 	}
 
 	private boolean isFullscreen() {
@@ -262,11 +276,4 @@ public class GWTGraphics extends Graphics {
 		return mousePoint.set(x / mouseScale, y / mouseScale);
 	}
 
-	private native int fullScreenWidth() /*-{
-		return $wnd.screen.width;
-	}-*/;
-
-	private native int fullScreenHeight() /*-{
-		return $wnd.screen.height;
-	}-*/;
 }
