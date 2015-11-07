@@ -498,13 +498,22 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return alpha();
 	}
 
-	//以实际渲染颜色的alpha为优先返回
+	// 以实际渲染颜色的alpha为优先返回
 	public float alpha() {
 		return ((baseColor >> 24) & 0xFF) / 255f;
 	}
 
 	public GLEx setAlpha(float alpha) {
-		this.baseAlpha = alpha;
+		// fix alpha
+		if (alpha < 0.01f) {
+			alpha = 0.01f;
+			baseAlpha = 0;
+		} else if (alpha > 1f) {
+			alpha = 1f;
+			baseAlpha = 1f;
+		} else {
+			this.baseAlpha = alpha;
+		}
 		int ialpha = (int) (0xFF * MathUtils.clamp(alpha, 0, 1));
 		this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
 		return this;

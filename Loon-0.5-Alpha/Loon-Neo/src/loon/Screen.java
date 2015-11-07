@@ -1185,7 +1185,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 						t.draw(g);
 					}
 				}
-				//记录画笔，避免被(用户自定义)组件污染
+				// 记录画笔，避免被(用户自定义)组件污染
 				g.saveBrush();
 				// 最底层，舞台以及表演者
 				LProcess process = LSystem._process;
@@ -1203,7 +1203,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				if (secondPaintFlag) {
 					secondOrder.paint(g);
 				}
-				//还原画笔
+				// 还原画笔
 				g.restoreBrush();
 				// 最后，用户渲染
 				if (lastPaintFlag) {

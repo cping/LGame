@@ -1,6 +1,8 @@
 package loon.html5.gwt;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.Callback;
@@ -14,13 +16,82 @@ import com.google.gwt.resources.client.ExternalTextResource;
 import com.google.gwt.resources.client.ResourceCallback;
 import com.google.gwt.resources.client.ResourceException;
 import com.google.gwt.resources.client.TextResource;
+import com.google.gwt.typedarrays.shared.ArrayBuffer;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.xhr.client.ReadyStateChangeHandler;
+import com.google.gwt.xhr.client.XMLHttpRequest;
+import com.google.gwt.xhr.client.XMLHttpRequest.ResponseType;
 
 public class GWTScriptLoader {
-	
-	public static interface JsArrayMixedCallback {
-		Object call(JsArrayMixed args); 
+
+	public interface LoadBinaryListener {
+
+		public void onLoadBinaryFile(ArrayBuffer buffer);
+
+		public void onFaild(int states, String statesText);
 	}
-	
+
+	public interface LoadTextListener {
+
+		public void onLoadTextFile(String text);
+
+		public void onFaild(int states, String statesText);
+	}
+
+	public static void loadBinaryFile(String url,
+			final LoadBinaryListener listener) {
+
+		XMLHttpRequest request = XMLHttpRequest.create();
+		request.setResponseType(ResponseType.ArrayBuffer);
+		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
+			@Override
+			public void onReadyStateChange(XMLHttpRequest xhr) {
+				if (xhr.getResponseArrayBuffer() == null) {
+					return;
+				}
+				if (xhr.getStatus() == 200) {
+					ArrayBuffer arrayBufer = xhr.getResponseArrayBuffer();
+
+					listener.onLoadBinaryFile(arrayBufer);
+				} else {
+					listener.onFaild(xhr.getStatus(), xhr.getStatusText());
+				}
+
+			}
+		});
+		request.open("GET", url);
+		request.send();
+	}
+
+	public static void loadTextFile(String url, final LoadTextListener listener) {
+		try {
+			new RequestBuilder(RequestBuilder.GET, url).sendRequest(null,
+					new RequestCallback() {
+
+						@Override
+						public void onResponseReceived(Request request,
+								Response response) {
+							listener.onLoadTextFile(response.getText());
+						}
+
+						@Override
+						public void onError(Request request, Throwable exception) {
+							listener.onFaild(0, exception.getMessage());
+						}
+					});
+		} catch (RequestException e) {
+			listener.onFaild(0, e.getMessage());
+		}
+	}
+
+	public static interface JsArrayMixedCallback {
+		Object call(JsArrayMixed args);
+	}
+
 	public static native <T> T get(JavaScriptObject o, Object p)/*-{
 		return o[p];
 	}-*/;
@@ -100,6 +171,38 @@ public class GWTScriptLoader {
 		return arr;
 	}-*/;
 
+	public static List<String> toList(JsArrayString array) {
+		List<String> list = new ArrayList<String>();
+		for (int i = 0; i < array.length(); i++) {
+			list.add(array.get(i));
+		}
+		return list;
+	}
+
+	public static <T extends JavaScriptObject> List<T> toList(JsArray<T> array) {
+		List<T> list = new ArrayList<T>();
+		for (int i = 0; i < array.length(); i++) {
+			list.add(array.get(i));
+		}
+		return list;
+	}
+
+	public static <E extends JavaScriptObject> JsArray<E> toArray(List<E> list) {
+		JsArray<E> array = JsArray.createArray().cast();
+		for (E data : list) {
+			array.push(data);
+		}
+		return array;
+	}
+
+	public static JsArrayNumber toArray(int[] ints) {
+		JsArrayNumber array = JsArrayNumber.createArray().cast();
+		for (int i = 0; i < ints.length; i++) {
+			array.push(ints[i]);
+		}
+		return array;
+	}
+	
 	public static boolean arrayContains(JsArray<JavaScriptObject> a,
 			JavaScriptObject val) {
 		for (int i = 0; i < a.length(); i++) {
@@ -308,15 +411,16 @@ public class GWTScriptLoader {
 		return $wnd;
 	}-*/;
 
-	public static final native JavaScriptObject toJsFunction(JsArrayMixedCallback c)/*-{
+	public static final native JavaScriptObject toJsFunction(
+			JsArrayMixedCallback c)/*-{
 		return $entry(function() {
 			return c.@loon.html5.gwt.GWTScriptLoader.JsArrayMixedCallback::call(Lcom/google/gwt/core/client/JsArrayMixed;)(arguments);
 		});
 	}-*/;
 
 	public static void loadFont(String fontJsUrl, Callback<Void, Exception> c) {
-		ScriptInjector.fromUrl(fontJsUrl).setWindow(window())
-				.setCallback(c).inject();
+		ScriptInjector.fromUrl(fontJsUrl).setWindow(window()).setCallback(c)
+				.inject();
 	}
 
 	public static void loadFont(TextResource fontJs) {

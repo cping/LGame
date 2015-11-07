@@ -20,9 +20,12 @@
  */
 package loon;
 
+import java.util.List;
+
 import loon.action.map.Config;
 import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.CrossEffect;
+import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.PixelDarkInEffect;
@@ -49,6 +52,59 @@ import loon.utils.MathUtils;
  * 
  */
 public class LTransition {
+
+	/**
+	 * 特效混合播放，把指定好的特效一起播放出去
+	 * 
+	 * @param transitions
+	 * @return
+	 */
+	public static final LTransition newCombinedTransition(
+			final List<LTransition> transitions) {
+
+		if (LSystem._base != null) {
+
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				public void draw(GLEx g) {
+					for (int i = 0; i < transitions.size(); i++) {
+						((LTransition) transitions.get(i)).draw(g);
+					}
+				}
+
+				public void update(long elapsedTime) {
+					for (int i = 0; i < transitions.size(); i++) {
+						LTransition t = (LTransition) transitions.get(i);
+						if (!t.completed()) {
+							t.update(elapsedTime);
+						}
+					}
+				}
+
+				public boolean completed() {
+					for (int i = 0; i < transitions.size(); i++) {
+						if (!((LTransition) transitions.get(i)).completed()) {
+							return false;
+						}
+					}
+					return true;
+				}
+
+				public void close() {
+					for (int i = 0; i < transitions.size(); i++) {
+						((LTransition) transitions.get(i)).close();
+					}
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
 
 	/**
 	 * 随机的百叶窗特效
@@ -286,6 +342,46 @@ public class LTransition {
 		return null;
 	}
 
+	public static final LTransition newFadeDotOut(final LColor c) {
+		return newFadeDot(FadeEffect.TYPE_FADE_OUT, c);
+	}
+
+	public static final LTransition newFadeDotIn(final LColor c) {
+		return newFadeDot(FadeEffect.TYPE_FADE_IN, c);
+	}
+
+	public static final LTransition newFadeDot(final int type, final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final FadeDotEffect fadedot = new FadeDotEffect(type, -1, c);
+
+				public void draw(GLEx g) {
+					fadedot.createUI(g);
+				}
+
+				public void update(long elapsedTime) {
+					fadedot.update(elapsedTime);
+				}
+
+				public boolean completed() {
+					return fadedot.isCompleted();
+				}
+
+				public void close() {
+					fadedot.close();
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
 	/**
 	 * 产生一个黑色的淡入效果
 	 * 
@@ -399,14 +495,15 @@ public class LTransition {
 		}
 		return null;
 	}
-	
+
 	public static final LTransition newPixelDarkOut(final LColor c) {
 		if (LSystem._base != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final PixelDarkOutEffect darkoutEffect = new PixelDarkOutEffect(c);
+				final PixelDarkOutEffect darkoutEffect = new PixelDarkOutEffect(
+						c);
 
 				public void draw(GLEx g) {
 					darkoutEffect.createUI(g);
@@ -431,7 +528,6 @@ public class LTransition {
 		}
 		return null;
 	}
-	
 
 	public static final LTransition newPixelThunder(final LColor c) {
 		if (LSystem._base != null) {
@@ -439,7 +535,8 @@ public class LTransition {
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final PixelThunderEffect thunderEffect = new PixelThunderEffect(c);
+				final PixelThunderEffect thunderEffect = new PixelThunderEffect(
+						c);
 
 				public void draw(GLEx g) {
 					thunderEffect.createUI(g);
@@ -464,8 +561,7 @@ public class LTransition {
 		}
 		return null;
 	}
-	
-	
+
 	public static final LTransition newEmpty() {
 
 		final LTransition transition = new LTransition();

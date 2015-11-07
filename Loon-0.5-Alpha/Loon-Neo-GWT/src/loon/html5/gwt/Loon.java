@@ -34,6 +34,7 @@ import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.html5.gwt.preloader.Preloader;
 import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
 import loon.html5.gwt.preloader.Preloader.PreloaderState;
+import loon.utils.MathUtils;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
@@ -43,16 +44,11 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public abstract class Loon implements Platform, EntryPoint, LazyLoading {
@@ -93,6 +89,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	protected GWTResources resources;
 
+	protected GWTProgress progress = null;
+
 	public String getBaseUrl() {
 		return preloader.baseUrl;
 	}
@@ -106,6 +104,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		initTime();
 		Loon.self = this;
 		onMain();
+
 		if (this.setting instanceof GWTSetting) {
 			config = (GWTSetting) this.setting;
 		} else {
@@ -113,7 +112,24 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			config.copy(this.setting);
 		}
 		this.setting = config;
-
+		this.progress = config.progress;
+		if (this.progress == null) {
+			boolean flag = (config.internalRes == null && !config.jsloadRes);
+			if (flag) {
+				int rad = MathUtils.random(0, 1);
+				switch (rad) {
+				case 0:
+					this.progress = GWTProgressDef.newSimpleLogoProcess(config);
+					break;
+				case 1:
+				default:
+					this.progress = GWTProgressDef.newLogoProcess();
+					break;
+				}
+			} else {
+				this.progress = GWTProgressDef.newSimpleLogoProcess(config);
+			}
+		}
 		Element element = Document.get().getElementById(config.rootId);
 		if (element == null) {
 			VerticalPanel panel = new VerticalPanel();
@@ -189,7 +205,9 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 													localRes.commit();
 													loadResources(
-															getPreloaderCallback(),
+															progress.getPreloaderCallback(
+																	Loon.self,
+																	root),
 															localRes);
 
 												}
@@ -197,7 +215,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 									.setWindow(ScriptInjector.TOP_WINDOW)
 									.inject();
 						} else {
-							loadResources(getPreloaderCallback(), null);
+							loadResources(progress.getPreloaderCallback(
+									Loon.self, root), null);
 						}
 					}
 
@@ -255,37 +274,6 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	public Preloader createPreloader(LocalAssetResources res) {
 		return new Preloader(getPreloaderBaseURL(), res);
-	}
-
-	public PreloaderCallback getPreloaderCallback() {
-		final Panel preloaderPanel = new VerticalPanel();
-		preloaderPanel.setStyleName("loon-preloader");
-
-		final Image logo = new Image(GWT.getModuleBaseURL() + "logo.png");
-		logo.setStyleName("logo");
-		preloaderPanel.add(logo);
-		final Panel meterPanel = new SimplePanel();
-		meterPanel.setStyleName("loon-meter");
-		meterPanel.addStyleName("red");
-		final InlineHTML meter = new InlineHTML();
-		final Style meterStyle = meter.getElement().getStyle();
-		meterStyle.setWidth(0, Unit.PCT);
-		meterPanel.add(meter);
-		preloaderPanel.add(meterPanel);
-		getRootPanel().add(preloaderPanel);
-		return new PreloaderCallback() {
-
-			@Override
-			public void error(String file) {
-				consoleLog("error: " + file);
-			}
-
-			@Override
-			public void update(PreloaderState state) {
-				meterStyle.setWidth(100f * state.getProgress(), Unit.PCT);
-			}
-
-		};
 	}
 
 	private static native void initTime()

@@ -26,6 +26,16 @@ public class Print implements LRelease {
 
 	private final static int _otherFlagsSize = _wrapchars.length;
 
+	/**
+	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
+	 * 
+	 * PS:此项不处理'\n'外的特殊操作符
+	 * 
+	 * @param text
+	 * @param font
+	 * @param width
+	 * @return
+	 */
 	public static List<String> formatMessage(String text, LFont font, int width) {
 		List<String> list = new ArrayList<String>();
 

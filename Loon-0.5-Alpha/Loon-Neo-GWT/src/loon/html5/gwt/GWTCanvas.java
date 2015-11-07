@@ -224,7 +224,7 @@ public class GWTCanvas extends Canvas {
 
 	@Override
 	public Canvas setFillColor(int color) {
-		ctx.setFillStyle(GWTGraphics.cssColorString(color));
+		ctx.setFillStyle(LColor.cssColorString(color));
 		return this;
 	}
 
@@ -263,7 +263,7 @@ public class GWTCanvas extends Canvas {
 	@Override
 	public Canvas setStrokeColor(int color) {
 		strokeColor = color;
-		ctx.setStrokeStyle(GWTGraphics.cssColorString(color));
+		ctx.setStrokeStyle(LColor.cssColorString(color));
 		return this;
 	}
 

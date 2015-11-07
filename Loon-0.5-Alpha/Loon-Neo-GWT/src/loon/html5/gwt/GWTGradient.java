@@ -21,6 +21,7 @@
 package loon.html5.gwt;
 
 import loon.canvas.Gradient;
+import loon.canvas.LColor;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -34,13 +35,13 @@ public class GWTGradient extends Gradient {
       Linear cfg = (Linear)config;
       gradient = ctx.createLinearGradient(cfg.x0, cfg.y0, cfg.x1, cfg.y1);
       for (int ii = 0; ii < cfg.colors.length; ++ii) {
-        gradient.addColorStop(cfg.positions[ii], GWTGraphics.cssColorString(cfg.colors[ii]));
+        gradient.addColorStop(cfg.positions[ii], LColor.cssColorString(cfg.colors[ii]));
       }
     } else if (config instanceof Radial) {
       Radial cfg = (Radial)config;
       gradient = ctx.createRadialGradient(cfg.x, cfg.y, 0, cfg.x, cfg.y, cfg.r);
       for (int ii = 0; ii < cfg.colors.length; ++ii) {
-        gradient.addColorStop(cfg.positions[ii], GWTGraphics.cssColorString(cfg.colors[ii]));
+        gradient.addColorStop(cfg.positions[ii], LColor.cssColorString(cfg.colors[ii]));
       }
     } else throw new IllegalArgumentException("HtmlGradient Error: " + config);
   }

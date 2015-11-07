@@ -72,7 +72,11 @@ public class GWTGame extends LGame {
 
 		public float scaleFactor = devicePixelRatio();
 
+		// 需要绑定的层id
 		public String rootId = "loon-root";
+
+		// 初始化时的进度条样式（不实现则默认加载）
+		public GWTProgress progress = null;
 
 	}
 
@@ -168,7 +172,7 @@ public class GWTGame extends LGame {
 				reportError("Uncaught Exception: ", e);
 			}
 		});
-		
+
 		this.game = game;
 
 		log.info("devicePixelRatio: " + devicePixelRatio()
@@ -310,7 +314,6 @@ public class GWTGame extends LGame {
 			return false;
 		};
 	}-*/;
-
 
 	private static native double initNow() /*-{
 		if (!Date.now)

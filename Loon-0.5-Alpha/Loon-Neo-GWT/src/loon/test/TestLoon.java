@@ -2,6 +2,7 @@ package loon.test;
 
 import loon.Screen;
 import loon.html5.gwt.GWTGame.GWTSetting;
+import loon.html5.gwt.GWTProgressDef;
 import loon.html5.gwt.Loon;
 
 public class TestLoon extends Loon {
@@ -24,6 +25,9 @@ public class TestLoon extends Loon {
 		//当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
 		setting.jsloadRes = false;
 
+		//设置一个需要的初始化进度条样式（不填则默认）
+	//	setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);
+		
 		register(setting, new Data() {
 
 			@Override

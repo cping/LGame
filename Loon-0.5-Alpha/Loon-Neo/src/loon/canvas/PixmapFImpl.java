@@ -625,9 +625,9 @@ public abstract class PixmapFImpl {
 	}
 
 	protected void drawPointImpl(float x, float y) {
-		if (_skip > 7) {
+		if (_skip > 4) {
 			int loc = _skip / 2;
-			drawPointNative(x - loc, y - loc, _skip);
+			drawPointNative(x - loc - 4, y - loc - 4, _skip);
 		} else {
 			drawPointNative(x, y, _skip);
 		}

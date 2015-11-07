@@ -269,6 +269,10 @@ public class LProcess extends PlayerUtils {
 				if (currentScreen != null) {
 					setTransition(screen.onTransition());
 				} else {
+					//为了防止画面单调，Loon默认为无设定Transition的，首个Screen随机增加一个特效
+					//不想使用，或者需要设定的话，请重载Screen的onTransition函数。
+					//不使用：返回:	LTransition.newEmpty()
+					//使用：返回: 设定或者自定义一个LTransition对象.
 					LTransition transition = screen.onTransition();
 					if (transition == null) {
 						int rad = MathUtils.random(0, 8);
@@ -300,11 +304,10 @@ public class LProcess extends PlayerUtils {
 							break;
 						case 7:
 							transition = LTransition
-									.newPixelDarkIn(LColor.black);
+									.newPixelThunder(LColor.black);
 							break;
 						case 8:
-							transition = LTransition
-									.newPixelThunder(LColor.black);
+							transition = LTransition.newFadeDotIn(LColor.black);
 							break;
 						}
 					}

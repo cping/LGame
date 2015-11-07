@@ -1397,7 +1397,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glClearDepth(double depth) {
-		throw new RuntimeException("NYI glClearDepth");
+		glc.clearDepth((float) depth);
 	}
 
 	@Override

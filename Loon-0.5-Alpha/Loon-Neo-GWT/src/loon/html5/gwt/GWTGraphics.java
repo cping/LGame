@@ -221,14 +221,6 @@ public class GWTGraphics extends Graphics {
 		return new GWTCanvas(this, new GWTImage(this, scale, elem, "<canvas>"));
 	}
 
-	static String cssColorString(int color) {
-		double a = ((color >> 24) & 0xff) / 255.0;
-		int r = (color >> 16) & 0xff;
-		int g = (color >> 8) & 0xff;
-		int b = (color >> 0) & 0xff;
-		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-	}
-
 	void updateTexture(int tex, ImageElement img) {
 		gl.glBindTexture(GL20.GL_TEXTURE_2D, tex);
 		((GWTGL20) gl).glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA,

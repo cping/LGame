@@ -549,7 +549,7 @@ public class LColor implements Serializable {
 	public LColor copy() {
 		return new LColor(r, g, b, a);
 	}
-	
+
 	/**
 	 * 获得像素相加的Color
 	 * 
@@ -694,7 +694,7 @@ public class LColor implements Serializable {
 	public static int getBlue(int color) {
 		return color & 0xff;
 	}
-	
+
 	/**
 	 * 获得像素预乘
 	 * 
@@ -753,6 +753,19 @@ public class LColor implements Serializable {
 		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
 				| ((int) (255 * g) << 8) | ((int) (255 * r));
 		return Float.intBitsToFloat(color & 0xfeffffff);
+	}
+
+	public static String cssColorString(int color) {
+		double a = ((color >> 24) & 0xff) / 255.0;
+		int r = (color >> 16) & 0xff;
+		int g = (color >> 8) & 0xff;
+		int b = (color >> 0) & 0xff;
+		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+	}
+
+	public String toCSS() {
+		return "rgba(" + (int) (r * 255) + "," + (int) (g * 255) + ","
+				+ (int) (b * 255) + "," + (int) (a * 255) + ")";
 	}
 
 	public String toString() {

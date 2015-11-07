@@ -104,7 +104,7 @@ public class ArcEffect extends LObject implements ISprite {
 		}
 		g.setColor(color);
 		int tmp = g.getPixSkip();
-		boolean useTex = g.alltextures();
+		boolean useTex = g.alltextures() && LSystem.isHTML5();
 		if(useTex){
 			g.setPixSkip(10);
 		}

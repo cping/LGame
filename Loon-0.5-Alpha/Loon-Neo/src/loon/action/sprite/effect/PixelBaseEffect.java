@@ -3,6 +3,7 @@ package loon.action.sprite.effect;
 import java.util.ArrayList;
 
 import loon.LObject;
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
@@ -137,7 +138,7 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 			return;
 		}
 		int tmp = g.getPixSkip();
-		boolean useTex = g.alltextures();
+		boolean useTex = g.alltextures() && LSystem.isHTML5();
 		if (useTex) {
 			g.setPixSkip(4);
 		}

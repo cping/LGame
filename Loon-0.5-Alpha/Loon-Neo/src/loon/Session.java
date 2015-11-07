@@ -28,6 +28,9 @@ import java.util.Set;
 
 import loon.utils.StringUtils;
 
+/**
+ * 游戏记录器，用于记录当前游戏数据
+ */
 public class Session {
 	
 	private Save _save;
