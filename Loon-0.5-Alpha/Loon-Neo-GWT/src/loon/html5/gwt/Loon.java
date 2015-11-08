@@ -609,7 +609,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public boolean isDesktop() {
-		return !isIOS() && !isAndroid() && !isBlackBerry();
+		return !isIOS() && !isAndroid() && !isBlackBerry()
+				&& !getUserAgent().contains("mobile");
 	}
 
 	public boolean isTablet() {

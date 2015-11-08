@@ -96,10 +96,8 @@ public class GWTInputMake extends InputMake {
 
 		abstract class XYEventHandler implements EventHandler {
 			public void handleEvent(NativeEvent ev) {
-				Vector2f xy = game.graphics().transformMouse(
-						getRelativeX(ev, rootElement),
+				handleEvent(ev, getRelativeX(ev, rootElement),
 						getRelativeY(ev, rootElement));
-				handleEvent(ev, xy.x, xy.y);
 			}
 
 			public abstract void handleEvent(NativeEvent ev, float x, float y);
@@ -164,7 +162,7 @@ public class GWTInputMake extends InputMake {
 				if (inDragSequence) {
 					inDragSequence = false;
 					int btn = getMouseButton(ev);
-					if (btn != -1){
+					if (btn != -1) {
 						dispatch(new MouseMake.ButtonEvent(0, game.time(), x,
 								y, btn, false), ev);
 					}
@@ -249,7 +247,6 @@ public class GWTInputMake extends InputMake {
 		return !!($doc.body.requestPointerLock
 				|| $doc.body.webkitRequestPointerLock || $doc.body.mozRequestPointerLock);
 	}-*/;
-
 
 	void emitFakeMouseUp() {
 		mouseEvents.emit(new MouseMake.ButtonEvent(0, game.time(), 0, 0,
@@ -473,9 +470,8 @@ public class GWTInputMake extends InputMake {
 			com.google.gwt.dom.client.Touch touch = nativeTouches.get(t);
 			float x = touch.getRelativeX(rootElement);
 			float y = touch.getRelativeY(rootElement);
-			Vector2f xy = game.graphics().transformMouse(x, y);
 			int id = getTouchIdentifier(nevent, t);
-			touches[t] = new TouchMake.Event(0, time, xy.x, xy.y, kind, id);
+			touches[t] = new TouchMake.Event(0, time, x, y, kind, id);
 		}
 		return touches;
 	}

@@ -24,7 +24,7 @@ public class TestLoon extends Loon {
 		
 		
 		//当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
-		setting.jsloadRes = false;
+		setting.jsloadRes = true;
 
 		//设置一个需要的初始化进度条样式（不填则默认）
 	//	setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);

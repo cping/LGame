@@ -46,21 +46,23 @@ class AndroidFont {
 	}
 
 	public static Typeface create(Font font) {
-		String familyName = font.name;
-		if (familyName != null) {
-			if (familyName.equalsIgnoreCase("Serif")
-					|| familyName.equalsIgnoreCase("TimesRoman")) {
-				familyName = "serif";
-			} else if (familyName.equalsIgnoreCase("SansSerif")
-					|| familyName.equalsIgnoreCase("Helvetica")) {
-				familyName = "sans-serif";
-			} else if (familyName.equalsIgnoreCase("Monospaced")
-					|| familyName.equalsIgnoreCase("Courier")
-					|| familyName.equalsIgnoreCase("Dialog")) {
-				familyName = "monospace";
+		String name = font.name;
+		if (name != null) {
+			String familyName = name.toLowerCase();
+			if (familyName.equals("serif") || familyName.equals("timesroman")) {
+				name = "serif";
+			} else if (familyName.equals("sansserif")
+					|| familyName.equals("helvetica")) {
+				name = "sans-serif";
+			} else if (familyName.equals("monospaced")
+					|| familyName.equals("courier")
+					|| familyName.equals("dialog") || familyName.equals("黑体")) {
+				name = "monospace";
 			}
+		} else {
+			name = "monospace";
 		}
-		return Typeface.create(familyName, TO_ANDROID_STYLE.get(font.style));
+		return Typeface.create(name, TO_ANDROID_STYLE.get(font.style));
 	}
 
 	protected static final Map<Font.Style, Integer> TO_ANDROID_STYLE = new EnumMap<Font.Style, Integer>(

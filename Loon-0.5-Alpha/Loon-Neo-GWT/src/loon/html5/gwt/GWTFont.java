@@ -29,6 +29,24 @@ class GWTFont {
 
 	public static String toCSS(Font font) {
 		String name = font.name;
+		// 针对不同浏览器（主要是手机），有可能字体不支持，请自行引入font的css解决……
+		if (Loon.self != null && !Loon.self.isDesktop()) {
+			if (name != null) {
+				String familyName = name.toLowerCase();
+				if (familyName.equals("serif") || familyName.equals("timesroman")) {
+					name = "serif";
+				} else if (familyName.equals("sansserif")
+						|| familyName.equals("helvetica")) {
+					name = "sans-serif";
+				} else if (familyName.equals("monospaced")
+						|| familyName.equals("courier")
+						|| familyName.equals("dialog") || familyName.equals("黑体")) {
+					name = "monospace";
+				}
+			} else {
+				name = "monospace";
+			}
+		}
 		if (!name.startsWith("\"") && name.contains(" ")) {
 			name = '"' + name + '"';
 		}

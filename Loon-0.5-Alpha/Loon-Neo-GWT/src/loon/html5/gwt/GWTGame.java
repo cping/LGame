@@ -66,7 +66,8 @@ public class GWTGame extends LGame {
 
 		public boolean preserveDrawingBuffer = false;
 
-		public float scaleFactor = Loon.devicePixelRatio();
+		//如果此项开启，按照屏幕大小等比缩放
+		public boolean useRatioScaleFactor = false;
 
 		// 需要绑定的层id
 		public String rootId = "loon-root";
@@ -168,6 +169,17 @@ public class GWTGame extends LGame {
 		log.info("devicePixelRatio: " + Loon.devicePixelRatio()
 				+ " backingStorePixelRatio: " + Loon.backingStorePixelRatio());
 
+		if (config.useRatioScaleFactor) {
+			int width = setting.width;
+			int height = setting.height;
+			float scale = Loon.devicePixelRatio();
+			width *= scale;
+			height *= scale;
+			setting.width_zoom = width;
+			setting.height_zoom = height;
+			setting.updateScale();
+			// 若缩放值为无法实现的数值，则默认操作
+		}
 		try {
 			graphics = new GWTGraphics(panel, this, config);
 			input = new GWTInputMake(this, graphics.rootElement);
@@ -193,11 +205,11 @@ public class GWTGame extends LGame {
 			game.initialize();
 			initGwt = true;
 		}
-		requestAnimationFrame(game.setting.fps,new TimerCallback() {
+		requestAnimationFrame(game.setting.fps, new TimerCallback() {
 
 			@Override
 			public void fire() {
-				requestAnimationFrame(game.setting.fps,this);
+				requestAnimationFrame(game.setting.fps, this);
 				emitFrame();
 			}
 		});
@@ -205,14 +217,12 @@ public class GWTGame extends LGame {
 		/*
 		 * 亲测AnimationScheduler作用不大……
 		 * 
-		 * AnimationScheduler.get().requestAnimationFrame(new AnimationCallback() {
+		 * AnimationScheduler.get().requestAnimationFrame(new
+		 * AnimationCallback() {
 		 * 
-		 * @Override 
-		 * public void execute(double timestamp) { 
-		 *        emitFrame();
-		 *        AnimationScheduler.get().requestAnimationFrame(this, graphics.canvas); 
-		 * } 
-		 * }, graphics.canvas);
+		 * @Override public void execute(double timestamp) { emitFrame();
+		 * AnimationScheduler.get().requestAnimationFrame(this,
+		 * graphics.canvas); } }, graphics.canvas);
 		 */
 
 	}
@@ -287,7 +297,7 @@ public class GWTGame extends LGame {
 			callback.@loon.jni.TimerCallback::fire()();
 		};
 		if (frameRate != 60) {
-                $wnd.setTimeout(fn, 1000 / frameRate);
+			$wnd.setTimeout(fn, 1000 / frameRate);
 		} else {
 			if ($wnd.requestAnimationFrame) {
 				$wnd.requestAnimationFrame(fn);

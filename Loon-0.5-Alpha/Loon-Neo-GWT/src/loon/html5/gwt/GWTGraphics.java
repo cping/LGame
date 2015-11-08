@@ -33,7 +33,6 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
-import loon.geom.Vector2f;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.Loon.OrientationChangedHandler;
 import loon.opengl.GL20;
@@ -64,9 +63,8 @@ public class GWTGraphics extends Graphics {
 
 	final Element rootElement;
 	final CanvasElement canvas;
-	private final Vector2f mousePoint = new Vector2f();
+
 	private final Dimension screenSize = new Dimension();
-	private final float mouseScale;
 
 	private static final String HEIGHT_TEXT = "THEQUICKBROWNFOXJUMPEDOVERTHELAZYDOGthequickbrownfoxjumpedoverthelazydog_-+!.,[]0123456789";
 	private static final String EMWIDTH_TEXT = "m";
@@ -74,7 +72,8 @@ public class GWTGraphics extends Graphics {
 	static float experimentalScale = 1;
 
 	public GWTGraphics(final Panel panel, final LGame game, final GWTSetting cfg) {
-		super(game, new GWTGL20(), new Scale(cfg.scaleFactor));
+		super(game, new GWTGL20(), game.setting.scaling() ? Scale.ONE
+				: new Scale(Loon.devicePixelRatio()));
 
 		this.config = cfg;
 		Document doc = Document.get();
@@ -92,8 +91,6 @@ public class GWTGraphics extends Graphics {
 		measureElement.getStyle().setOverflow(Style.Overflow.VISIBLE);
 		measureElement.getStyle().setWhiteSpace(Style.WhiteSpace.NOWRAP);
 		root.appendChild(measureElement);
-
-		mouseScale = config.scaleFactor / Loon.devicePixelRatio();
 
 		canvas = Document.get().createCanvasElement();
 		root.appendChild(canvas);
@@ -270,10 +267,6 @@ public class GWTGraphics extends Graphics {
 			fontMetrics.put(font, metrics);
 		}
 		return metrics;
-	}
-
-	Vector2f transformMouse(float x, float y) {
-		return mousePoint.set(x / mouseScale, y / mouseScale);
 	}
 
 }
