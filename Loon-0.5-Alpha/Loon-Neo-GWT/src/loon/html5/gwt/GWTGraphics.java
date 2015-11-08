@@ -93,7 +93,7 @@ public class GWTGraphics extends Graphics {
 		measureElement.getStyle().setWhiteSpace(Style.WhiteSpace.NOWRAP);
 		root.appendChild(measureElement);
 
-		mouseScale = config.scaleFactor / GWTGame.devicePixelRatio();
+		mouseScale = config.scaleFactor / Loon.devicePixelRatio();
 
 		canvas = Document.get().createCanvasElement();
 		root.appendChild(canvas);

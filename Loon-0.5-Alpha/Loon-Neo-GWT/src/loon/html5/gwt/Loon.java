@@ -55,6 +55,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
+	private static String cur_language = null;
+
+	private static String cur_browserType = null;
+
 	private HashMap<String, OrientationChangedHandler> _handlers = new HashMap<String, OrientationChangedHandler>();
 
 	private Orientation _orientation;
@@ -340,20 +344,34 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public int getContainerWidth() {
-		return getOrientation() == Orientation.Landscape ? getJSNIScreenWidth()
-				: getJSNIScreenHeight();
+		int width = getJSNIAvailWidth() <= 0 ? getJSNIScreenWidth()
+				: getJSNIAvailWidth();
+		if (isIOS() && isLandscape()) {
+			return getContainerHeight();
+		}
+		if (isNextGenerationIos()) {
+			return width * 2;
+		}
+		return width;
 	}
 
 	public int getContainerHeight() {
-		return getOrientation() == Orientation.Landscape ? getJSNIScreenHeight()
-				: getJSNIScreenWidth();
+		int height = getJSNIAvailHeight() <= 0 ? getJSNIScreenHeight()
+				: getJSNIAvailHeight();
+		if (isIOS() && isLandscape()) {
+			return getContainerWidth();
+		}
+		if (isNextGenerationIos()) {
+			return height * 2;
+		}
+		return height;
 	}
-	
+
 	public Orientation getOrientation() {
 		if (_orientation == Orientation.Landscape) {
 			return Orientation.Landscape;
 		}
-		if (getContainerHeight() > getContainerWidth()) {
+		if (getJSNIScreenHeight() > getJSNIScreenWidth()) {
 			return Orientation.Portrait;
 		} else {
 			return Orientation.Landscape;
@@ -438,7 +456,17 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		$wnd.addEventListener("orientationchange", callback, false);
 	}-*/;
 
-	private native boolean calculateIsPortraitOrientation() /*-{
+	public boolean isMobile() {
+		return isAndroid() || isIOS() || isBlackBerry()
+				|| getUserAgent().contains("mobile");
+	}
+
+	/**
+	 * 通过orientation属性取得屏幕是否竖屏，若浏览器不支持orientation,有可能取不到
+	 * 
+	 * @return
+	 */
+	protected native boolean isPortrait() /*-{
 		var result = false;
 		if ($wnd.orientation != null && $wnd.orientation == 0) {
 			result = true;
@@ -446,9 +474,33 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return result;
 	}-*/;
 
+	/**
+	 * 通过orientation属性取得屏幕是否横屏，若浏览器不支持orientation,有可能取不到
+	 * 
+	 * @return
+	 */
+	protected native boolean isLandscape() /*-{
+		var result = false;
+		if ($wnd.orientation != null
+				&& ($wnd.orientation == 90 || orientation == -90)) {
+			result = true;
+		}
+		return result;
+	}-*/;
+
+	/**
+	 * 若同时取不到横竖，则判定为不支持
+	 */
+	public boolean noSupportOrientation() {
+		return !isPortrait() && !isLandscape();
+	}
+
+	public native float getOrientationValue() /*-{
+		return $wnd.orientation || 0;
+	}-*/;
+
 	private Orientation calculateScreenOrientation() {
-		return calculateIsPortraitOrientation() ? Orientation.Portrait
-				: Orientation.Landscape;
+		return isPortrait() ? Orientation.Portrait : Orientation.Landscape;
 	}
 
 	public String addHandler(OrientationChangedHandler handler) {
@@ -458,11 +510,250 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return newHandlerId;
 	}
 
+	/**
+	 * 屏幕[完整宽度]
+	 * 
+	 * @return
+	 */
 	protected native int getJSNIScreenWidth() /*-{
-		return $wnd.screen.width;
+		return $wnd.screen.width || 0;
 	}-*/;
 
+	/**
+	 * 屏幕[完整高度]
+	 * 
+	 * @return
+	 */
 	protected native int getJSNIScreenHeight() /*-{
-		return $wnd.screen.height;
+		return $wnd.screen.height || 0;
 	}-*/;
+
+	/**
+	 * 屏幕[可用宽度]
+	 * 
+	 * @return
+	 */
+	protected native int getJSNIAvailWidth() /*-{
+		return $wnd.screen.availWidth || 0;
+	}-*/;
+
+	/**
+	 * 屏幕[可用高度]
+	 * 
+	 * @return
+	 */
+	protected native int getJSNIAvailHeight() /*-{
+		return $wnd.screen.availHeight || 0;
+	}-*/;
+
+	public native static float devicePixelRatio() /*-{
+		return $wnd.devicePixelRatio || 1;
+	}-*/;
+
+	public native static float backingStorePixelRatio() /*-{
+		return $wnd.webkitBackingStorePixelRatio || 1;
+	}-*/;
+
+	public boolean isHdpi() {
+		return devicePixelRatio() == 1.5;
+	}
+
+	public boolean isXhdpi() {
+		return devicePixelRatio() > 1.5;
+	}
+
+	public native String getUserAgent() /*-{
+		return $wnd.navigator.userAgent.toLowerCase();
+	}-*/;
+
+	public boolean isAndroid() {
+		return isAndroidPhone() || isAndroidTablet();
+	}
+
+	public boolean isIPhone() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("iphone") && devicePixelRatio() < 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIPad() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("ipad") && devicePixelRatio() < 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIOS() {
+		return isIPad() || isIPadRetina() || isIPhone() || isRetina();
+	}
+
+	public boolean isRetina() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("iphone") && devicePixelRatio() >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIPadRetina() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("ipad") && devicePixelRatio() >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isDesktop() {
+		return !isIOS() && !isAndroid() && !isBlackBerry();
+	}
+
+	public boolean isTablet() {
+		return isIPad() || isIPadRetina() || isAndroidTablet();
+	}
+
+	public boolean isAndroidTablet() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android") && !userAgent.contains("mobile")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroidPhone() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android") && userAgent.contains("mobile")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isPhone() {
+		return isIPhone() || isRetina() || isAndroidPhone();
+	}
+
+	public boolean isBlackBerry() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("blackberry")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroid4_4_OrHigher() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android") && userAgent.contains("chrome")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroid2x() {
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android 2.")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroid4_3_orLower() {
+		if (isAndroid4_4_OrHigher()) {
+			return false;
+		}
+		String userAgent = getUserAgent();
+		if (userAgent.contains("android")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIOS6() {
+		if (!isIOS()) {
+			return false;
+		}
+		String userAgent = getUserAgent();
+		if (userAgent.contains("os 6_")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIOS9() {
+		if (!isIOS()) {
+			return false;
+		}
+		String userAgent = getUserAgent();
+		if (userAgent.contains("os 9_")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isNextGenerationIos() {
+		boolean ratio = (devicePixelRatio() > 1);
+		return isIOS() && ratio;
+	}
+
+	public native boolean isStandalone() /*-{
+		return $wnd.navigator.standalone;
+	}-*/;
+
+	private static native String languageImpl()
+	/*-{
+		var nav = $wnd.navigator;
+		var curLanguage = nav.language;
+		curLanguage = curLanguage ? curLanguage : nav.browserLanguage;
+		curLanguage = curLanguage ? curLanguage.split("-")[0] : "en";
+		return curLanguage;
+	}-*/;
+
+	public static String language() {
+		if (cur_language == null) {
+			cur_language = languageImpl();
+		}
+		return cur_language;
+	}
+
+	private static native String browserTypeImpl()
+	/*-{
+		var ua = $wnd.navigator.userAgent;
+		var BROWSER_TYPE_WECHAT = "wechat";
+		var BROWSER_TYPE_ANDROID = "androidbrowser";
+		var BROWSER_TYPE_IE = "ie";
+		var BROWSER_TYPE_360 = "360browser";
+		var BROWSER_TYPE_MAXTHON = "maxthon";
+		var BROWSER_TYPE_OPERA = "opera";
+		var BROWSER_TYPE_UNKNOWN = "unknown";
+		var typeReg1 = /sogou|qzone|liebao|micromessenger|ucbrowser|360 aphone|360browser|baiduboxapp|baidubrowser|maxthon|mxbrowser|trident|miuibrowser/i;
+		var typeReg2 = /qqbrowser|chrome|safari|firefox|opr|oupeng|opera/i;
+		var browserTypes = typeReg1.exec(ua);
+		if (!browserTypes) {
+			browserTypes = typeReg2.exec(ua);
+		}
+		var browserType = browserTypes ? browserTypes[0] : BROWSER_TYPE_UNKNOWN;
+		if (browserType === "micromessenger") {
+			browserType = BROWSER_TYPE_WECHAT;
+		} else if (browserType === "safari"
+				&& (ua.match(/android.*applewebkit/))) {
+			browserType = BROWSER_TYPE_ANDROID;
+		} else if (browserType === "trident") {
+			browserType = BROWSER_TYPE_IE;
+		} else if (browserType === "360 aphone") {
+			browserType = BROWSER_TYPE_360;
+		} else if (browserType === "mxbrowser") {
+			browserType = BROWSER_TYPE_MAXTHON;
+		} else if (browserType === "opr") {
+			browserType = BROWSER_TYPE_OPERA;
+		}
+		return browserType;
+	}-*/;
+
+	public static String browserType() {
+		if (cur_browserType == null) {
+			cur_browserType = browserTypeImpl();
+		}
+		return cur_browserType;
+	}
 }

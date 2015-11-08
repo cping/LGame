@@ -42,10 +42,6 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class GWTGame extends LGame {
 
-	private static String cur_language = null;
-
-	private static String cur_browserType = null;
-
 	public static class GWTSetting extends LSetting {
 
 		// 是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
@@ -70,7 +66,7 @@ public class GWTGame extends LGame {
 
 		public boolean preserveDrawingBuffer = false;
 
-		public float scaleFactor = devicePixelRatio();
+		public float scaleFactor = Loon.devicePixelRatio();
 
 		// 需要绑定的层id
 		public String rootId = "loon-root";
@@ -138,14 +134,6 @@ public class GWTGame extends LGame {
 		disableRightClickImpl(graphics.rootElement);
 	}
 
-	native static float devicePixelRatio() /*-{
-		return $wnd.devicePixelRatio || 1;
-	}-*/;
-
-	native static float backingStorePixelRatio() /*-{
-		return $wnd.webkitBackingStorePixelRatio || 1;
-	}-*/;
-
 	private final static Support support = new NativeSupport();
 
 	static final AgentInfo agentInfo = computeAgentInfo();
@@ -173,12 +161,12 @@ public class GWTGame extends LGame {
 			}
 		});
 		this.game = game;
-
+		
 		log.info("Browser orientation: " + game.getOrientation());
 		log.info("Browser screen width: " + game.getContainerWidth()
 				+ ", screen height: " + game.getContainerHeight());
-		log.info("devicePixelRatio: " + devicePixelRatio()
-				+ " backingStorePixelRatio: " + backingStorePixelRatio());
+		log.info("devicePixelRatio: " + Loon.devicePixelRatio()
+				+ " backingStorePixelRatio: " + Loon.backingStorePixelRatio());
 
 		try {
 			graphics = new GWTGraphics(panel, this, config);
@@ -329,196 +317,9 @@ public class GWTGame extends LGame {
 		return Date.now();
 	}-*/;
 
-	private native String getUserAgent() /*-{
-		return $wnd.navigator.userAgent.toLowerCase();
-	}-*/;
-
 	@Override
 	public boolean isMobile() {
-		return super.isMobile() || isAndroid() || isIOs()
-				|| getUserAgent().contains("mobile");
-	}
-
-	public boolean isAndroid() {
-		return isAndroidPhone() || isAndroidTablet();
-	}
-
-	public boolean isIPhone() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("iphone") && devicePixelRatio() < 2) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isIPad() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("ipad") && devicePixelRatio() < 2) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isIOs() {
-		return isIPad() || isIPadRetina() || isIPhone() || isRetina();
-	}
-
-	public boolean isRetina() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("iphone") && devicePixelRatio() >= 2) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isIPadRetina() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("ipad") && devicePixelRatio() >= 2) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isDesktop() {
-		return !isIOs() && !isAndroid();
-	}
-
-	public boolean isTablet() {
-		return isIPad() || isIPadRetina() || isAndroidTablet();
-	}
-
-	public boolean isAndroidTablet() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("android") && !userAgent.contains("mobile")) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isAndroidPhone() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("android") && userAgent.contains("mobile")) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isPhone() {
-		return isIPhone() || isRetina() || isAndroidPhone();
-	}
-
-	public boolean isBlackBerry() {
-		return false;
-	}
-
-	public boolean isAndroid4_4_OrHigher() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("android") && userAgent.contains("chrome")) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isAndroid2x() {
-		String userAgent = getUserAgent();
-		if (userAgent.contains("android 2.")) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isAndroid4_3_orLower() {
-		if (isAndroid4_4_OrHigher()) {
-			return false;
-		}
-		String userAgent = getUserAgent();
-		if (userAgent.contains("android")) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isIOS6() {
-		if (!isIOs()) {
-			return false;
-		}
-		String userAgent = getUserAgent();
-		if (userAgent.contains("os 6_")) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isIOS9() {
-		if (!isIOs()) {
-			return false;
-		}
-		String userAgent = getUserAgent();
-		if (userAgent.contains("os 9_")) {
-			return true;
-		}
-		return false;
-	}
-
-	public native boolean isStandalone() /*-{
-		return $wnd.navigator.standalone;
-	}-*/;
-
-	private static native String languageImpl()
-	/*-{
-		var nav = $wnd.navigator;
-		var curLanguage = nav.language;
-		curLanguage = curLanguage ? curLanguage : nav.browserLanguage;
-		curLanguage = curLanguage ? curLanguage.split("-")[0] : "en";
-		return curLanguage;
-	}-*/;
-
-	public static String language() {
-		if (cur_language == null) {
-			cur_language = languageImpl();
-		}
-		return cur_language;
-	}
-
-	private static native String browserTypeImpl()
-	/*-{
-		var ua = $wnd.navigator.userAgent;
-		var BROWSER_TYPE_WECHAT = "wechat";
-		var BROWSER_TYPE_ANDROID = "androidbrowser";
-		var BROWSER_TYPE_IE = "ie";
-		var BROWSER_TYPE_360 = "360browser";
-		var BROWSER_TYPE_MAXTHON = "maxthon";
-		var BROWSER_TYPE_OPERA = "opera";
-		var BROWSER_TYPE_UNKNOWN = "unknown";
-		var typeReg1 = /sogou|qzone|liebao|micromessenger|ucbrowser|360 aphone|360browser|baiduboxapp|baidubrowser|maxthon|mxbrowser|trident|miuibrowser/i;
-		var typeReg2 = /qqbrowser|chrome|safari|firefox|opr|oupeng|opera/i;
-		var browserTypes = typeReg1.exec(ua);
-		if (!browserTypes) {
-			browserTypes = typeReg2.exec(ua);
-		}
-		var browserType = browserTypes ? browserTypes[0] : BROWSER_TYPE_UNKNOWN;
-		if (browserType === "micromessenger") {
-			browserType = BROWSER_TYPE_WECHAT;
-		} else if (browserType === "safari"
-				&& (ua.match(/android.*applewebkit/))) {
-			browserType = BROWSER_TYPE_ANDROID;
-		} else if (browserType === "trident") {
-			browserType = BROWSER_TYPE_IE;
-		} else if (browserType === "360 aphone") {
-			browserType = BROWSER_TYPE_360;
-		} else if (browserType === "mxbrowser") {
-			browserType = BROWSER_TYPE_MAXTHON;
-		} else if (browserType === "opr") {
-			browserType = BROWSER_TYPE_OPERA;
-		}
-		return browserType;
-	}-*/;
-
-	public static String browserType() {
-		if (cur_browserType == null) {
-			cur_browserType = browserTypeImpl();
-		}
-		return cur_browserType;
+		return super.isMobile() || game.isMobile();
 	}
 
 }
