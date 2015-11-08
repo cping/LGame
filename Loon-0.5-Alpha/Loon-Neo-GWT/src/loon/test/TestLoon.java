@@ -22,6 +22,7 @@ public class TestLoon extends Loon {
 		setting.fontName = "黑体";
 		setting.rootId = "embed-loon.test.TestLoon";
 		
+		
 		//当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
 		setting.jsloadRes = false;
 

@@ -63,7 +63,7 @@ public class GWTGraphics extends Graphics {
 	private final Map<Font, GWTFontMetrics> fontMetrics = new HashMap<Font, GWTFontMetrics>();
 
 	final Element rootElement;
-	private final CanvasElement canvas;
+	final CanvasElement canvas;
 	private final Vector2f mousePoint = new Vector2f();
 	private final Dimension screenSize = new Dimension();
 	private final float mouseScale;

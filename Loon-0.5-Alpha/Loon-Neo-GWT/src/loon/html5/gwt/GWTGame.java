@@ -161,7 +161,7 @@ public class GWTGame extends LGame {
 			}
 		});
 		this.game = game;
-		
+
 		log.info("Browser orientation: " + game.getOrientation());
 		log.info("Browser screen width: " + game.getContainerWidth()
 				+ ", screen height: " + game.getContainerHeight());
@@ -193,13 +193,28 @@ public class GWTGame extends LGame {
 			game.initialize();
 			initGwt = true;
 		}
-		requestAnimationFrame(new TimerCallback() {
+		requestAnimationFrame(game.setting.fps,new TimerCallback() {
+
 			@Override
 			public void fire() {
-				requestAnimationFrame(this);
+				requestAnimationFrame(game.setting.fps,this);
 				emitFrame();
 			}
 		});
+
+		/*
+		 * 亲测AnimationScheduler作用不大……
+		 * 
+		 * AnimationScheduler.get().requestAnimationFrame(new AnimationCallback() {
+		 * 
+		 * @Override 
+		 * public void execute(double timestamp) { 
+		 *        emitFrame();
+		 *        AnimationScheduler.get().requestAnimationFrame(this, graphics.canvas); 
+		 * } 
+		 * }, graphics.canvas);
+		 */
+
 	}
 
 	@Override
@@ -266,22 +281,27 @@ public class GWTGame extends LGame {
 		return $wnd;
 	}-*/;
 
-	private native void requestAnimationFrame(TimerCallback callback) /*-{
+	private native void requestAnimationFrame(float frameRate,
+			TimerCallback callback) /*-{
 		var fn = function() {
 			callback.@loon.jni.TimerCallback::fire()();
 		};
-		if ($wnd.requestAnimationFrame) {
-			$wnd.requestAnimationFrame(fn);
-		} else if ($wnd.mozRequestAnimationFrame) {
-			$wnd.mozRequestAnimationFrame(fn);
-		} else if ($wnd.webkitRequestAnimationFrame) {
-			$wnd.webkitRequestAnimationFrame(fn);
-		} else if ($wnd.oRequestAnimationFrame) {
-			$wnd.oRequestAnimationFrame(fn);
-		} else if ($wnd.msRequestAnimationFrame) {
-			$wnd.msRequestAnimationFrame(fn);
+		if (frameRate != 60) {
+                $wnd.setTimeout(fn, 1000 / frameRate);
 		} else {
-			$wnd.setTimeout(fn, 16);
+			if ($wnd.requestAnimationFrame) {
+				$wnd.requestAnimationFrame(fn);
+			} else if ($wnd.mozRequestAnimationFrame) {
+				$wnd.mozRequestAnimationFrame(fn);
+			} else if ($wnd.webkitRequestAnimationFrame) {
+				$wnd.webkitRequestAnimationFrame(fn);
+			} else if ($wnd.oRequestAnimationFrame) {
+				$wnd.oRequestAnimationFrame(fn);
+			} else if ($wnd.msRequestAnimationFrame) {
+				$wnd.msRequestAnimationFrame(fn);
+			} else {
+				$wnd.setTimeout(fn, 16);
+			}
 		}
 	}-*/;
 
@@ -290,7 +310,7 @@ public class GWTGame extends LGame {
 		return {
 			isFirefox : userAgent.indexOf("firefox") != -1,
 			isChrome : userAgent.indexOf("chrome") != -1,
-			isSafari : userAgent.indexOf("safari") != -1,
+			isSafari : $wnd.opera || userAgent.indexOf("safari") != -1,
 			isOpera : userAgent.indexOf("opera") != -1,
 			isIE : userAgent.indexOf("msie") != -1,
 			isMacOS : userAgent.indexOf("mac") != -1,
@@ -321,5 +341,4 @@ public class GWTGame extends LGame {
 	public boolean isMobile() {
 		return super.isMobile() || game.isMobile();
 	}
-
 }

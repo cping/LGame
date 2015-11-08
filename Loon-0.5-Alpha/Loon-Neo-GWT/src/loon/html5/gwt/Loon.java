@@ -103,15 +103,15 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	protected static Loon self;
 
-	private LSetting setting;
+	private LazyLoading.Data mainData = null;
 
-	private GWTSetting config;
-
-	private LazyLoading.Data mainData;
-
-	protected GWTResources resources;
+	protected GWTResources resources = null;
 
 	protected GWTProgress progress = null;
+
+	LSetting setting = null;
+
+	GWTSetting config = null;
 
 	public String getBaseUrl() {
 		return preloader.baseUrl;
@@ -124,6 +124,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	@Override
 	public void onModuleLoad() {
 		initTime();
+		initRequestAnimFrame();
+
 		Loon.self = this;
 
 		_orientation = calculateScreenOrientation();
@@ -698,6 +700,35 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	public native boolean isStandalone() /*-{
 		return $wnd.navigator.standalone;
+	}-*/;
+
+	private static native void initRequestAnimFrame()
+	/*-{
+		$wnd.requestAnimFrame = (function() {
+			return window.requestAnimationFrame
+					|| window.webkitRequestAnimationFrame
+					|| window.mozRequestAnimationFrame
+					|| window.oRequestAnimationFrame
+					|| window.msRequestAnimationFrame
+					|| function stTime(callback, element) {
+						$wnd.setTimeout(callback, 16);
+					};
+		})();
+
+		$wnd.cancelAnimationFrame = (function() {
+			return $wnd.cancelAnimationFrame = $wnd.cancelAnimationFrame
+					|| $wnd.cancelRequestAnimationFrame
+					|| $wnd.msCancelRequestAnimationFrame
+					|| $wnd.mozCancelRequestAnimationFrame
+					|| $wnd.oCancelRequestAnimationFrame
+					|| $wnd.webkitCancelRequestAnimationFrame
+					|| $wnd.msCancelAnimationFrame
+					|| $wnd.mozCancelAnimationFrame
+					|| $wnd.webkitCancelAnimationFrame
+					|| $wnd.oCancelAnimationFrame || function etime(id) {
+						$wnd.clearTimeout(id);
+					};
+		})();
 	}-*/;
 
 	private static native String languageImpl()
