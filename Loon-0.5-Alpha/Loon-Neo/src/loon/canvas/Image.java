@@ -289,4 +289,11 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 		return (int) height();
 	}
 
+	public Pixmap getPixmap() {
+		return new Pixmap(getPixels(), getWidth(), getHeight(), hasAlpha());
+	}
+
+	public void setPixmap(Pixmap pixmap) {
+		setPixels(pixmap.getData(), pixmap.getWidth(), pixmap.getHeight());
+	}
 }

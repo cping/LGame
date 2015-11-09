@@ -67,11 +67,13 @@ public abstract class Graphics {
 		}
 
 		public float xscale() {
-			return scale.factor;
+			return game.setting.scaling() ? LSystem.getScaleWidth()
+					: scale.factor;
 		}
 
 		public float yscale() {
-			return scale.factor;
+			return game.setting.scaling() ? LSystem.getScaleHeight()
+					: scale.factor;
 		}
 
 		public boolean flip() {
@@ -227,8 +229,12 @@ public abstract class Graphics {
 			this.scale = scale;
 			this.viewPixelWidth = viewWidth;
 			this.viewPixelHeight = viewHeight;
-			this.viewSizeM.width = scale.invScaled(viewPixelWidth);
-			this.viewSizeM.height = scale.invScaled(viewPixelHeight);
+			this.viewSizeM.width = game.setting.scaling() ? LSystem
+					.invXScaled(viewPixelWidth) : scale
+					.invScaled(viewPixelWidth);
+			this.viewSizeM.height = game.setting.scaling() ? LSystem
+					.invXScaled(viewPixelHeight) : scale
+					.invScaled(viewPixelHeight);
 			if (d != null) {
 				d.resize(viewPixelWidth, viewPixelHeight);
 			}

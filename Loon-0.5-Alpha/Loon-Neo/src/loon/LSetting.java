@@ -58,6 +58,7 @@ public class LSetting {
 
 	public String fontName = LSystem.FONT_NAME;
 
+	
 	public void copy(LSetting setting) {
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
@@ -92,7 +93,7 @@ public class LSetting {
 				&& this.height_zoom > 0
 				&& (this.width_zoom != this.width || this.height_zoom != this.height);
 	}
-
+	
 	public int getShowWidth() {
 		return this.width_zoom > 0 ? this.width_zoom : this.width;
 	}

@@ -220,13 +220,11 @@ public class ShaderProgram implements LRelease {
 		vertexShaderHandle = loadShader(GL20.GL_VERTEX_SHADER, vertexShader);
 		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER,
 				fragmentShader);
-
 		if (vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
 			isCompiled = false;
 			return;
 		}
-
-		program = linkProgram();
+		program = linkProgram(createProgram());
 		if (program == -1) {
 			isCompiled = false;
 			return;
@@ -257,12 +255,18 @@ public class ShaderProgram implements LRelease {
 		return shader;
 	}
 
-	private int linkProgram() {
+	protected int createProgram() {
 		GL20 gl = LSystem.base().graphics().gl;
 		int program = gl.glCreateProgram();
-		if (program == 0) {
+		return program != 0 ? program : -1;
+	}
+
+	private int linkProgram(int program) {
+		GL20 gl = LSystem.base().graphics().gl;
+		if (program == -1) {
 			return -1;
 		}
+
 		gl.glAttachShader(program, vertexShaderHandle);
 		gl.glAttachShader(program, fragmentShaderHandle);
 		gl.glLinkProgram(program);

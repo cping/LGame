@@ -120,12 +120,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		if (LSystem.base().setting.scaling()) {
-			this.scale(target.xscale() * LSystem.getScaleWidth(),
-					target.xscale() * LSystem.getScaleHeight());
-		} else {
-			this.scale(target.xscale(), target.yscale());
-		}
+		this.scale(target.xscale(), target.yscale());
 		this.font = LFont.getDefaultFont();
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = this.font;

@@ -289,7 +289,7 @@ public class RoboVMImage extends ImageImpl {
 		int height = (int) image.getHeight();
 		int length = width * height;
 		int[] rgbArray = new int[length];
-		getRGB(0, 0, width, height, rgbArray, length, rgbArray.length);
+		getRGB(0, 0, width, height, rgbArray, length, width);
 		return rgbArray;
 	}
 
@@ -302,7 +302,7 @@ public class RoboVMImage extends ImageImpl {
 	public int[] getPixels(int offset, int stride, int x, int y, int width,
 			int height) {
 		int[] rgbArray = new int[width * height];
-		getRGB(x, y, width, height, rgbArray, offset, rgbArray.length);
+		getRGB(x, y, width, height, rgbArray, offset, width);
 		return rgbArray;
 	}
 
@@ -315,7 +315,7 @@ public class RoboVMImage extends ImageImpl {
 
 	@Override
 	public void setPixels(int[] pixels, int width, int height) {
-		setPixels(pixels, 0, pixels.length, 0, 0, width, height);
+		setPixels(pixels, 0, width, 0, 0, width, height);
 	}
 
 	@Override
@@ -326,7 +326,7 @@ public class RoboVMImage extends ImageImpl {
 
 	@Override
 	public int[] setPixels(int[] pixels, int x, int y, int w, int h) {
-		setRGB(x, y, w, h, pixels, 0, pixels.length);
+		setRGB(x, y, w, h, pixels, 0, w);
 		return pixels;
 	}
 

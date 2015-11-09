@@ -174,6 +174,14 @@ public class LSystem {
 		LSystem.scaleHeight = sy;
 	}
 
+	public static float invXScaled(float length) {
+		return length / LSystem.getScaleWidth();
+	}
+
+	public static float invYScaled(float length) {
+		return length / LSystem.getScaleWidth();
+	}
+	
 	public static String getFileName(String name) {
 		if (name == null) {
 			return "";

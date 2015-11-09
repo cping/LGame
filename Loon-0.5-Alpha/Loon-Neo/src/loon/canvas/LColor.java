@@ -32,7 +32,7 @@ public class LColor implements Serializable {
 	// 默认色彩
 	public static final int DEF_COLOR = 0xFFFFFFFF;
 
-	// 默认透明色
+	// 默认黑色透明区域
 	public final static int TRANSPARENT = 0xff000000;
 
 	public static float[] toRGBA(int pixel) {
