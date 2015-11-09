@@ -221,6 +221,7 @@ public class Display extends LSystemView {
 			return;
 		}
 
+		process.save();
 		glEx.saveTx();
 		glEx.begin();
 
@@ -280,6 +281,7 @@ public class Display extends LSystemView {
 		} finally {
 			glEx.end();
 			glEx.restoreTx();
+			process.restore();
 		}
 
 	}

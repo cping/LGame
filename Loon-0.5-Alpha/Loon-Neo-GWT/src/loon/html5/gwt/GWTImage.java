@@ -150,7 +150,7 @@ public class GWTImage extends ImageImpl {
 	public void getRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
 		assert isLoaded() : "Cannot getRgb() a non-ready image";
-		if (width <= 0 || height <= 0){
+		if (width <= 0 || height <= 0) {
 			return;
 		}
 		createCanvas();
@@ -174,7 +174,7 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public void setRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
-		if (width <= 0 || height <= 0){
+		if (width <= 0 || height <= 0) {
 			return;
 		}
 		createCanvas();
@@ -210,7 +210,6 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public void draw(Object ctx, float dx, float dy, float dw, float dh,
 			float sx, float sy, float sw, float sh) {
-		//此处HTML5同名API有坑，不能直接调用，否则部分移植游戏显示的会很诡异，幸亏用矩阵转换结果是正确的，差点逼我用Pixmap做像素处理……
 		Context2d context = (Context2d) ctx;
 		float f = scale().factor;
 		sx *= f;
@@ -228,16 +227,6 @@ public class GWTImage extends ImageImpl {
 				affine.tx, affine.ty);
 		context.drawImage(img, 0, 0);
 		context.restore();
-		
-		//html5的canvas渲染有坑，此处直接调用同名api的处理结果，与javase、javame以及android的同名api显示结果完全不同，所以下列方式弃用……
-		/**
-		 *  
-		sx *= scale.factor;
-		sy *= scale.factor;
-		sw *= scale.factor;
-		sh *= scale.factor;
-		((Context2d) ctx).drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-		 */
 	}
 
 	@Override
@@ -312,7 +301,7 @@ public class GWTImage extends ImageImpl {
 		int width = getWidth();
 		int height = getHeight();
 		int[] pixels = new int[width * height];
-		getRGB(0, 0, width, height, pixels, 0, pixels.length);
+		getRGB(0, 0, width, height, pixels, 0, width);
 		return pixels;
 	}
 
@@ -320,14 +309,14 @@ public class GWTImage extends ImageImpl {
 	public int[] getPixels(int[] pixels) {
 		int width = getWidth();
 		int height = getHeight();
-		getRGB(0, 0, width, height, pixels, 0, pixels.length);
+		getRGB(0, 0, width, height, pixels, 0, width);
 		return pixels;
 	}
 
 	@Override
 	public int[] getPixels(int x, int y, int w, int h) {
 		int[] pixels = new int[w * h];
-		getRGB(x, y, w, h, pixels, 0, pixels.length);
+		getRGB(x, y, w, h, pixels, 0, w);
 		return pixels;
 	}
 
@@ -348,7 +337,24 @@ public class GWTImage extends ImageImpl {
 
 	@Override
 	public void setPixels(int[] pixels, int width, int height) {
-		setRGB(0, 0, width, height, pixels, 0, width * height);
+		if (width <= 0 || height <= 0) {
+			return;
+		}
+		createCanvas();
+		Context2d ctx = canvas.getContext2d();
+		ImageData imageData = ctx.createImageData(width, height);
+		CanvasPixelArray pixelData = imageData.getData();
+		int i = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int argb = pixels[x + y * width];
+				pixelData.set(i++, (argb >> 16) & 255);
+				pixelData.set(i++, (argb >> 8) & 255);
+				pixelData.set(i++, (argb) & 255);
+				pixelData.set(i++, (argb >> 24) & 255);
+			}
+		}
+		ctx.putImageData(imageData, 0, 0);
 	}
 
 	@Override

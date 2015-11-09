@@ -21,6 +21,7 @@
 package loon.html5.gwt;
 
 import loon.Graphics;
+import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.canvas.Gradient;
 import loon.canvas.Image;
@@ -43,7 +44,8 @@ public class GWTCanvas extends Canvas {
 		super(gfx, image);
 		this.ctx = image.canvas.getContext2d();
 		float scale = image.scale().factor;
-		ctx.scale(scale, scale);
+		this.ctx.scale(scale, scale);
+		this.ctx.setGlobalCompositeOperation(com.google.gwt.canvas.dom.client.Context2d.Composite.SOURCE_OVER);
 	}
 
 	@Override
@@ -80,7 +82,7 @@ public class GWTCanvas extends Canvas {
 		this.setFillColor(rgb);
 		return null;
 	}
-	
+
 	@Override
 	public Canvas clear() {
 		return clearRect(0, 0, width, height);
@@ -141,7 +143,13 @@ public class GWTCanvas extends Canvas {
 
 	@Override
 	public Canvas drawText(String text, float x, float y) {
-		ctx.fillText(text, x, y);
+		if (_font == null) {
+			ctx.fillText(text, x, y);
+		} else if (LSystem.base() != null) {
+			fillText(
+					LSystem.base().graphics()
+							.layoutText(text, _font.getFormat()), x, y);
+		}
 		isDirty = true;
 		return this;
 	}
@@ -400,6 +408,5 @@ public class GWTCanvas extends Canvas {
 		}
 		return Context2d.LineJoin.ROUND;
 	}
-
 
 }

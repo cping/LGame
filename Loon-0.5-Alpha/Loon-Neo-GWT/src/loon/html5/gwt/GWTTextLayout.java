@@ -109,19 +109,15 @@ class GWTTextLayout extends TextLayout {
 	static int measureLine(Context2d ctx, TextFormat format, TextWrap wrap,
 			GWTFontMetrics metrics, String[] words, int idx,
 			List<TextLayout> layouts) {
-		// we always put at least one word on a line
 		String line = words[idx++];
 		int startIdx = idx;
-
-		// build a rough estimate line based on character count and emwidth
 		for (; idx < words.length; idx++) {
 			String nline = line + " " + words[idx];
-			if (nline.length() * metrics.emwidth > wrap.width)
+			if (nline.length() * metrics.emwidth > wrap.width){
 				break;
+			}
 			line = nline;
 		}
-
-		// now, based on exact measurements, either add more words...
 		double lineWidth = ctx.measureText(line).getWidth();
 		if (lineWidth < wrap.width) {
 			for (; idx < words.length; idx++) {
@@ -135,21 +131,14 @@ class GWTTextLayout extends TextLayout {
 			}
 		}
 
-		// or pop words off...
-		while (lineWidth > wrap.width && idx > (startIdx + 1)) { // don't pop
-																	// off the
-																	// last word
+		while (lineWidth > wrap.width && idx > (startIdx + 1)) { 
 			line = line.substring(0, line.length() - words[--idx].length() - 1);
 			lineWidth = ctx.measureText(line).getWidth();
 		}
 
-		// finally, if we're still over the limit (we have a single looong
-		// word), hard break
 		if (lineWidth > wrap.width) {
 			StringBuilder remainder = new StringBuilder();
 			while (lineWidth > wrap.width && line.length() > 1) {
-				// this could be more efficient, but this edge case should be
-				// rare enough not to matter
 				int lastIdx = line.length() - 1;
 				remainder.insert(0, line.charAt(lastIdx));
 				line = line.substring(0, lastIdx);

@@ -140,6 +140,14 @@ public class LProcess extends PlayerUtils {
 			}
 		});
 	}
+	
+	public void save(){
+		game.graphics().save();
+	}
+	
+	public void restore(){
+		game.graphics().restore();
+	}
 
 	private final static void callUpdateable(final ArrayList<Updateable> list) {
 		ArrayList<Updateable> loadCache;

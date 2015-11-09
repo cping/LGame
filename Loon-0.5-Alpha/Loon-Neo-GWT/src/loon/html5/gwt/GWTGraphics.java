@@ -36,6 +36,7 @@ import loon.geom.Dimension;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.Loon.OrientationChangedHandler;
 import loon.opengl.GL20;
+import loon.utils.GLUtils;
 import loon.utils.Scale;
 
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -233,7 +234,7 @@ public class GWTGraphics extends Graphics {
 	}
 
 	void updateTexture(int tex, ImageElement img) {
-		gl.glBindTexture(GL20.GL_TEXTURE_2D, tex);
+		GLUtils.bindTexture(gl, tex);
 		((GWTGL20) gl).glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA,
 				GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, img);
 	}
