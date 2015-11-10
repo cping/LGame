@@ -34,8 +34,6 @@ import android.opengl.GLUtils;
 
 public class AndroidImage extends ImageImpl {
 
-	private boolean closed;
-
 	protected Bitmap bitmap;
 
 	public AndroidImage(Graphics gfx, Scale scale, Bitmap bitmap, String source) {
@@ -140,21 +138,6 @@ public class AndroidImage extends ImageImpl {
 
 	private int bitSize(Bitmap b) {
 		return b.getRowBytes() * b.getHeight();
-	}
-
-	@Override
-	public void close() {
-		if (this.bitmap != null) {
-			AndroidRuntime.get().trackAlloc(bitSize(this.bitmap));
-			this.bitmap.recycle();
-			this.bitmap = null;
-		}
-		this.closed = true;
-	}
-
-	@Override
-	public boolean isClosed() {
-		return closed;
 	}
 
 	public void getLight(Image buffer, int v) {
@@ -283,6 +266,15 @@ public class AndroidImage extends ImageImpl {
 			return false;
 		}
 		return bitmap.hasAlpha();
+	}
+
+	@Override
+	protected void closeImpl() {
+		if (this.bitmap != null) {
+			AndroidRuntime.get().trackAlloc(bitSize(this.bitmap));
+			this.bitmap.recycle();
+			this.bitmap = null;
+		}
 	}
 
 }

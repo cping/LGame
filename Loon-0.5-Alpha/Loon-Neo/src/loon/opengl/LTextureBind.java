@@ -20,7 +20,9 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.LTexture;
+import loon.event.Updateable;
 import loon.utils.GLUtils;
 
 public class LTextureBind extends GLBase {
@@ -68,12 +70,28 @@ public class LTextureBind extends GLBase {
 	public final GL20 gl;
 	protected int curTexId;
 
-	public void setTexture(LTexture texture) {
-		int id = texture.getID();
-		if (curTexId != 0 && curTexId != id) {
-			flush();
+	public void setTexture(final LTexture texture) {
+		if (!texture.isLoaded()) {
+			texture.loadTexture();
+			Updateable update = new Updateable() {
+
+				@Override
+				public void action(Object a) {
+					int id = texture.getID();
+					if (curTexId != 0 && curTexId != id) {
+						flush();
+					}
+					LTextureBind.this.curTexId = id;
+				}
+			};
+			LSystem.load(update);
+		} else {
+			int id = texture.getID();
+			if (curTexId != 0 && curTexId != id) {
+				flush();
+			}
+			this.curTexId = id;
 		}
-		this.curTexId = id;
 	}
 
 	@Override

@@ -254,17 +254,6 @@ public class GWTImage extends ImageImpl {
 		((GWTGraphics) gfx).updateTexture(tex.getID(), img);
 	}
 
-	private boolean closed;
-
-	@Override
-	public void close() {
-		closed = true;
-	}
-
-	@Override
-	public boolean isClosed() {
-		return closed;
-	}
 
 	public void getLight(Image buffer, int v) {
 		int width = (int) buffer.width();
@@ -441,5 +430,11 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public Image getSubImage(int x, int y, int width, int height) {
 		return Image.drawClipImage(this, width, height, x, y);
+	}
+
+	@Override
+	protected void closeImpl() {
+		img = null;
+		canvas = null;
 	}
 }

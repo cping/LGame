@@ -26,6 +26,7 @@ import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.opengl.BaseBatch;
 import loon.opengl.Painter;
@@ -48,6 +49,8 @@ public class LTexture extends Painter implements LRelease {
 	public static LTexture createTexture(final String path) {
 		return LTextures.loadTexture(path);
 	}
+
+	private boolean _drawing = false;
 
 	private String source;
 
@@ -150,7 +153,8 @@ public class LTexture extends Painter implements LRelease {
 
 	private Graphics gfx;
 
-	private boolean isChild, disposed;
+	//_closed是删除标记，disposed是已经真的被删掉
+	private boolean isChild, _closed, disposed;
 
 	HashMap<Integer, LTexture> childs;
 
@@ -173,7 +177,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	LTexture() {
-
+		this._isLoaded = false;
 	}
 
 	public LTexture(Graphics gfx, int id, Format config, int pixWidth,
@@ -186,6 +190,7 @@ public class LTexture extends Painter implements LRelease {
 		this.scale = scale;
 		this.displayWidth = dispWidth;
 		this.displayHeight = dispHeight;
+		this._isLoaded = false;
 	}
 
 	public float toTexWidth() {
@@ -204,7 +209,6 @@ public class LTexture extends Painter implements LRelease {
 
 	public void release() {
 		if (config.managed) {
-			assert refCount > 0 : "Released a texture with no references!";
 			if (--refCount == 0) {
 				close();
 			}
@@ -234,40 +238,62 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	public void update(Image img) {
+	public void update(final Image img) {
 		if (img == null) {
+			throw new RuntimeException(
+					"the image is null, can not conversion it into texture .");
+		}
+		if (_drawing) {
 			return;
 		}
+		this._drawing = true;
 		this.source = img.getSource();
-		this.image = img;
-		if (config.repeatX || config.repeatY || config.mipmaps) {
-			int pixWidth = image.pixelWidth(), pixHeight = image.pixelHeight();
-			int potWidth = config.toTexWidth(pixWidth), potHeight = config
-					.toTexWidth(pixHeight);
-			if (potWidth != pixWidth || potHeight != pixHeight) {
-				Canvas scaled = gfx.createCanvasImpl(Scale.ONE, potWidth,
-						potHeight);
-				scaled.draw(image, 0, 0, potWidth, potHeight);
-				scaled.image.upload(gfx, this);
-				scaled.close();
-			} else {
-				image.upload(gfx, this);
+		Updateable process = new Updateable() {
+
+			@Override
+			public void action(Object o) {
+				final Image image = img;
+				if (image != null) {
+					if (config.repeatX || config.repeatY || config.mipmaps) {
+						int pixWidth = image.pixelWidth(), pixHeight = image
+								.pixelHeight();
+						int potWidth = config.toTexWidth(pixWidth), potHeight = config
+								.toTexWidth(pixHeight);
+						if (potWidth != pixWidth || potHeight != pixHeight) {
+							Canvas scaled = gfx.createCanvasImpl(Scale.ONE,
+									potWidth, potHeight);
+							scaled.draw(image, 0, 0, potWidth, potHeight);
+							scaled.image.upload(gfx, LTexture.this);
+							scaled.close();
+						} else {
+							image.upload(gfx, LTexture.this);
+						}
+					} else {
+						image.upload(gfx, LTexture.this);
+					}
+					if (config.mipmaps) {
+						gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
+					}
+				}
+				LTextureBatch.isBatchCacheDitry = true;
+				_isLoaded = true;
+				if (image.toClose()) {
+					image.destroy();
+				}
+				_drawing = false;
 			}
-		} else {
-			image.upload(gfx, this);
-		}
-		if (config.mipmaps) {
-			gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		_isLoaded = true;
+
+		};
+		LSystem.load(process);
 	}
+	
 
 	public boolean isClose() {
-		return disposed;
+		return disposed || _closed;
 	}
 
 	public boolean disposed() {
-		return disposed;
+		return disposed || _closed;
 	}
 
 	public UnitPort disposeAct() {
@@ -341,7 +367,7 @@ public class LTexture extends Painter implements LRelease {
 	public boolean isChildAllClose() {
 		if (childs != null) {
 			for (LTexture tex2d : childs.values()) {
-				if (tex2d != null && !tex2d.disposed) {
+				if (tex2d != null && !tex2d.isClose()) {
 					return false;
 				}
 			}
@@ -388,27 +414,56 @@ public class LTexture extends Painter implements LRelease {
 			if (cache != null) {
 				return cache;
 			}
-
 			final LTexture copy = new LTexture();
+			if (_isLoaded) {
+				copy.parent = LTexture.this;
+				copy.id = id;
+				copy._isLoaded = _isLoaded;
+				copy.gfx = gfx;
+				copy.config = config;
+				copy.source = source;
+				copy.pixelWidth = pixelWidth;
+				copy.pixelHeight = pixelHeight;
+				copy.scale = scale;
+				copy.scaleSize = true;
+				copy.displayWidth = displayWidth;
+				copy.displayHeight = displayHeight;
+				copy.xOff = (((float) x / displayWidth) * widthRatio) + xOff;
+				copy.yOff = (((float) y / displayHeight) * heightRatio) + yOff;
+				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+						+ copy.xOff;
+				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+						+ copy.yOff;
+			} else {
+				copy.parent = LTexture.this;
+				copy.id = id;
+				copy.gfx = gfx;
+				copy.config = config;
+				copy.source = source;
+				copy.pixelWidth = pixelWidth;
+				copy.pixelHeight = pixelHeight;
+				copy.scale = scale;
+				copy.scaleSize = true;
+				copy.displayWidth = displayWidth;
+				copy.displayHeight = displayHeight;
+				copy.xOff = (((float) x / displayWidth) * widthRatio) + xOff;
+				copy.yOff = (((float) y / displayHeight) * heightRatio) + yOff;
+				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+						+ copy.xOff;
+				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+						+ copy.yOff;
 
-			copy.parent = LTexture.this;
-			copy.id = id;
-			copy._isLoaded = _isLoaded;
-			copy.gfx = gfx;
-			copy.config = config;
-			copy.source = source;
-			copy.pixelWidth = pixelWidth;
-			copy.pixelHeight = pixelHeight;
-			copy.scale = scale;
-			copy.scaleSize = true;
-			copy.displayWidth = displayWidth;
-			copy.displayHeight = displayHeight;
-			copy.xOff = (((float) x / displayWidth) * widthRatio) + xOff;
-			copy.yOff = (((float) y / displayHeight) * heightRatio) + yOff;
-			copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
-					+ copy.xOff;
-			copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
-					+ copy.yOff;
+				Updateable update = new Updateable() {
+
+					@Override
+					public void action(Object a) {
+						loadTexture();
+						copy.id = id;
+						copy._isLoaded = _isLoaded;
+					}
+				};
+				LSystem.load(update);
+			}
 			isChild = true;
 			childs.put(hashCode, copy);
 			return copy;
@@ -442,23 +497,52 @@ public class LTexture extends Painter implements LRelease {
 
 			final LTexture copy = new LTexture();
 
-			copy.parent = LTexture.this;
-			copy.id = id;
-			copy._isLoaded = _isLoaded;
-			copy.gfx = gfx;
-			copy.config = config;
-			copy.source = source;
-			copy.pixelWidth = pixelWidth;
-			copy.pixelHeight = pixelHeight;
-			copy.scale = scale;
-			copy.scaleSize = true;
-			copy.displayWidth = displayWidth;
-			copy.displayHeight = displayHeight;
+			if (_isLoaded) {
+				copy.parent = LTexture.this;
+				copy.id = id;
+				copy._isLoaded = _isLoaded;
+				copy.gfx = gfx;
+				copy.config = config;
+				copy.source = source;
+				copy.pixelWidth = pixelWidth;
+				copy.pixelHeight = pixelHeight;
+				copy.scale = scale;
+				copy.scaleSize = true;
+				copy.displayWidth = displayWidth;
+				copy.displayHeight = displayHeight;
 
-			copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
-					+ copy.xOff;
-			copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
-					+ copy.yOff;
+				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+						+ copy.xOff;
+				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+						+ copy.yOff;
+			} else {
+				copy.parent = LTexture.this;
+				copy.gfx = gfx;
+				copy.config = config;
+				copy.source = source;
+				copy.pixelWidth = pixelWidth;
+				copy.pixelHeight = pixelHeight;
+				copy.scale = scale;
+				copy.scaleSize = true;
+				copy.displayWidth = displayWidth;
+				copy.displayHeight = displayHeight;
+
+				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+						+ copy.xOff;
+				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+						+ copy.yOff;
+				Updateable update = new Updateable() {
+
+					@Override
+					public void action(Object a) {
+						loadTexture();
+						copy.id = id;
+						copy._isLoaded = _isLoaded;
+					}
+				};
+				LSystem.load(update);
+
+			}
 
 			isChild = true;
 			childs.put(hashCode, copy);
@@ -813,17 +897,25 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	void free() {
-		if (parent == null) {
-			_isLoaded = false;
-			if (!disposed) {
-				disposed = true;
-				GLUtils.deleteTexture(gfx.gl, id);
+		Updateable update = new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				if (parent == null) {
+					if (!disposed) {
+						disposed = true;
+						GLUtils.deleteTexture(gfx.gl, id);
+					}
+					if (image != null) {
+						image.close();
+						image = null;
+					}
+					_isLoaded = false;
+					_closed = true;
+				}
 			}
-			if (image != null) {
-				image.close();
-				image = null;
-			}
-		}
+		};
+		LSystem.load(update);
 	}
 
 	public int getWidth() {
@@ -836,6 +928,7 @@ public class LTexture extends Painter implements LRelease {
 
 	@Override
 	public void close() {
+		_closed = true;
 		if (!isChildAllClose()) {
 			return;
 		}

@@ -189,7 +189,6 @@ public class RoboVMImage extends ImageImpl {
 			image.dispose();
 			image = null;
 		}
-		this.isClose = true;
 	}
 
 	protected RoboVMImage(Graphics gfx, Scale scale, int pixelWidth,
@@ -231,18 +230,6 @@ public class RoboVMImage extends ImageImpl {
 	@Override
 	protected Object createErrorBitmap(int pixelWidth, int pixelHeight) {
 		return RoboVMGraphics.createCGBitmap(pixelWidth, pixelHeight).toImage();
-	}
-
-	private boolean isClose;
-
-	@Override
-	public void close() {
-		this.dispose();
-	}
-
-	@Override
-	public boolean isClosed() {
-		return isClose;
 	}
 
 	public void getLight(Image buffer, int v) {
@@ -416,6 +403,11 @@ public class RoboVMImage extends ImageImpl {
 	@Override
 	protected void finalize() {
 		dispose();
+	}
+
+	@Override
+	protected void closeImpl() {
+		this.dispose();
 	}
 
 }
