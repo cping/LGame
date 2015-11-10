@@ -153,7 +153,7 @@ public class LTexture extends Painter implements LRelease {
 
 	private Graphics gfx;
 
-	//_closed是删除标记，disposed是已经真的被删掉
+	// _closed是删除标记，disposed是已经真的被删掉
 	private boolean isChild, _closed, disposed;
 
 	HashMap<Integer, LTexture> childs;
@@ -243,6 +243,10 @@ public class LTexture extends Painter implements LRelease {
 			throw new RuntimeException(
 					"the image is null, can not conversion it into texture .");
 		}
+		if (parent != null) {
+			parent.update(img);
+			return;
+		}
 		if (_drawing) {
 			return;
 		}
@@ -286,7 +290,6 @@ public class LTexture extends Painter implements LRelease {
 		};
 		LSystem.load(process);
 	}
-	
 
 	public boolean isClose() {
 		return disposed || _closed;
@@ -422,17 +425,19 @@ public class LTexture extends Painter implements LRelease {
 				copy.gfx = gfx;
 				copy.config = config;
 				copy.source = source;
-				copy.pixelWidth = pixelWidth;
-				copy.pixelHeight = pixelHeight;
 				copy.scale = scale;
 				copy.scaleSize = true;
-				copy.displayWidth = displayWidth;
-				copy.displayHeight = displayHeight;
-				copy.xOff = (((float) x / displayWidth) * widthRatio) + xOff;
-				copy.yOff = (((float) y / displayHeight) * heightRatio) + yOff;
-				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
+				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
+				copy.displayWidth = this.displayWidth * this.widthRatio;
+				copy.displayHeight = this.displayHeight * this.heightRatio;
+				copy.xOff = (((float) x / copy.displayWidth) * this.widthRatio)
+						+ this.xOff;
+				copy.yOff = (((float) y / copy.displayHeight) * this.heightRatio)
+						+ this.yOff;
+				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
 						+ copy.xOff;
-				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 						+ copy.yOff;
 			} else {
 				copy.parent = LTexture.this;
@@ -440,17 +445,19 @@ public class LTexture extends Painter implements LRelease {
 				copy.gfx = gfx;
 				copy.config = config;
 				copy.source = source;
-				copy.pixelWidth = pixelWidth;
-				copy.pixelHeight = pixelHeight;
 				copy.scale = scale;
 				copy.scaleSize = true;
-				copy.displayWidth = displayWidth;
-				copy.displayHeight = displayHeight;
-				copy.xOff = (((float) x / displayWidth) * widthRatio) + xOff;
-				copy.yOff = (((float) y / displayHeight) * heightRatio) + yOff;
-				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
+				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
+				copy.displayWidth = this.displayWidth * this.widthRatio;
+				copy.displayHeight = this.displayHeight * this.heightRatio;
+				copy.xOff = (((float) x / copy.displayWidth) * this.widthRatio)
+						+ this.xOff;
+				copy.yOff = (((float) y / copy.displayHeight) * this.heightRatio)
+						+ this.yOff;
+				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
 						+ copy.xOff;
-				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 						+ copy.yOff;
 
 				Updateable update = new Updateable() {
@@ -504,33 +511,36 @@ public class LTexture extends Painter implements LRelease {
 				copy.gfx = gfx;
 				copy.config = config;
 				copy.source = source;
-				copy.pixelWidth = pixelWidth;
-				copy.pixelHeight = pixelHeight;
 				copy.scale = scale;
 				copy.scaleSize = true;
-				copy.displayWidth = displayWidth;
-				copy.displayHeight = displayHeight;
-
-				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
+				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
+				copy.displayWidth = this.displayWidth * this.widthRatio;
+				copy.displayHeight = this.displayHeight * this.heightRatio;
+				copy.xOff = this.xOff;
+				copy.yOff = this.yOff;
+				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
 						+ copy.xOff;
-				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 						+ copy.yOff;
 			} else {
 				copy.parent = LTexture.this;
 				copy.gfx = gfx;
 				copy.config = config;
 				copy.source = source;
-				copy.pixelWidth = pixelWidth;
-				copy.pixelHeight = pixelHeight;
 				copy.scale = scale;
 				copy.scaleSize = true;
-				copy.displayWidth = displayWidth;
-				copy.displayHeight = displayHeight;
-
-				copy.widthRatio = (((float) width / LTexture.this.width()) * widthRatio)
+				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
+				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
+				copy.displayWidth = this.displayWidth * this.widthRatio;
+				copy.displayHeight = this.displayHeight * this.heightRatio;
+				copy.xOff = this.xOff;
+				copy.yOff = this.yOff;
+				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
 						+ copy.xOff;
-				copy.heightRatio = (((float) height / LTexture.this.height()) * heightRatio)
+				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 						+ copy.yOff;
+
 				Updateable update = new Updateable() {
 
 					@Override

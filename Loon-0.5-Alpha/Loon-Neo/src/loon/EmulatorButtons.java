@@ -3,14 +3,12 @@ package loon;
 import loon.LSystem;
 import loon.LTexture.Format;
 import loon.action.sprite.SpriteBatch;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
-import loon.opengl.LTextureRegion;
 
 public class EmulatorButtons implements LRelease {
 
-	private LTextureRegion dpad, buttons;
+	private LTexture dpad, buttons;
 
 	private EmulatorButton up, left, right, down;
 
@@ -23,6 +21,8 @@ public class EmulatorButtons implements LRelease {
 	private final static int offset = 10;
 
 	private boolean visible;
+
+	private float ealpha = 0.5f;
 
 	private LTexturePack pack;
 
@@ -43,12 +43,9 @@ public class EmulatorButtons implements LRelease {
 			pack.putImage(LSystem.FRAMEWORK_IMG_NAME + "e2.png");
 			pack.pack(Format.LINEAR);
 		}
-		RectBox.Rect2i bounds = pack.getEntry(0).getBounds();
-		this.dpad = new LTextureRegion(pack.getTexture(), bounds.left,
-				bounds.top, bounds.right, bounds.bottom);
-		bounds = pack.getEntry(1).getBounds();
-		this.buttons = new LTextureRegion(pack.getTexture(), bounds.left,
-				bounds.top, bounds.right, bounds.bottom);
+		
+		this.dpad = pack.getTextureAll(0);
+		this.buttons = pack.getTextureAll(1);
 		this.width = w;
 		this.height = h;
 
@@ -320,24 +317,46 @@ public class EmulatorButtons implements LRelease {
 				circle, cancel };
 	}
 
-	private SpriteBatch batch = new SpriteBatch(10);
-
 	public void draw(GLEx g) {
 		if (!visible) {
 			return;
 		}
-		batch.begin();
-		batch.halfAlpha();
-		up.draw(batch);
-		left.draw(batch);
-		right.draw(batch);
-		down.draw(batch);
-		triangle.draw(batch);
-		square.draw(batch);
-		circle.draw(batch);
-		cancel.draw(batch);
-		batch.resetColor();
-		batch.end();
+		float tmp = g.alpha();
+		g.setAlpha(ealpha);
+		up.draw(g);
+		left.draw(g);
+		right.draw(g);
+		down.draw(g);
+		triangle.draw(g);
+		square.draw(g);
+		circle.draw(g);
+		cancel.draw(g);
+		g.setAlpha(tmp);
+	}
+	
+	public void draw(SpriteBatch g) {
+		if (!visible) {
+			return;
+		}
+		float tmp = g.alpha();
+		g.setAlpha(ealpha);
+		up.draw(g);
+		left.draw(g);
+		right.draw(g);
+		down.draw(g);
+		triangle.draw(g);
+		square.draw(g);
+		circle.draw(g);
+		cancel.draw(g);
+		g.setAlpha(tmp);
+	}
+
+	public void setAlpha(float a) {
+		this.ealpha = a;
+	}
+
+	public float getAlpha() {
+		return this.ealpha;
 	}
 
 	public void hit(int id, float x, float y, boolean flag) {
@@ -454,10 +473,6 @@ public class EmulatorButtons implements LRelease {
 		if (pack != null) {
 			pack.close();
 			pack = null;
-		}
-		if (batch != null) {
-			batch.close();
-			batch = null;
 		}
 	}
 

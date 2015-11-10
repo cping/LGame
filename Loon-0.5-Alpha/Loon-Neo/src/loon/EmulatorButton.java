@@ -3,7 +3,7 @@ package loon;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
-import loon.opengl.LTextureRegion;
+import loon.opengl.GLEx;
 
 public class EmulatorButton {
 
@@ -16,7 +16,7 @@ public class EmulatorButton {
 
 	private RectBox bounds;
 
-	private LTextureRegion bitmap;
+	private LTexture bitmap;
 
 	private float scaleWidth, scaleHeight;
 
@@ -33,32 +33,31 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton(String fileName, int w, int h, int x, int y) {
-		this(new LTextureRegion(fileName), w, h, x, y, true);
+		this(LTextures.loadTexture(fileName), w, h, x, y, true);
 	}
 
-	public EmulatorButton(LTextureRegion img, int w, int h, int x, int y) {
+	public EmulatorButton(LTexture img, int w, int h, int x, int y) {
 		this(img, w, h, x, y, true);
 	}
 
 	public EmulatorButton(String fileName, int x, int y) {
-		this(new LTextureRegion(fileName), 0, 0, x, y, false);
+		this(LTextures.loadTexture(fileName), 0, 0, x, y, false);
 	}
 
-	public EmulatorButton(LTextureRegion img, int x, int y) {
+	public EmulatorButton(LTexture img, int x, int y) {
 		this(img, 0, 0, x, y, false);
 	}
 
-	public EmulatorButton(LTextureRegion img, int w, int h, int x, int y,
-			boolean flag) {
-		this(img, w, h, x, y, flag, img.getRegionWidth(), img.getRegionHeight());
+	public EmulatorButton(LTexture img, int w, int h, int x, int y, boolean flag) {
+		this(img, w, h, x, y, flag, img.getWidth(), img.getHeight());
 	}
 
-	public EmulatorButton(LTextureRegion img, int w, int h, int x, int y,
+	public EmulatorButton(LTexture img, int w, int h, int x, int y,
 			boolean flag, int sizew, int sizeh) {
 		if (flag) {
-			this.bitmap = new LTextureRegion(img, x, y, w, h);
+			this.bitmap = img.copy(x, y, w, h);
 		} else {
-			this.bitmap = new LTextureRegion(img);
+			this.bitmap = img;
 		}
 		this.scaleWidth = sizew;
 		this.scaleHeight = sizeh;
@@ -189,7 +188,7 @@ public class EmulatorButton {
 		if (bitmap != null) {
 			bitmap.close();
 		}
-		this.bitmap = new LTextureRegion(on);
+		this.bitmap = on;
 		this.setSize(on.width(), on.height());
 	}
 
@@ -206,4 +205,14 @@ public class EmulatorButton {
 		}
 	}
 
+	public void draw(GLEx g) {
+		if (!disabled) {
+			if (onClick) {
+				g.draw(bitmap, bounds.x, bounds.y, scaleWidth, scaleHeight,
+						color);
+			} else {
+				g.draw(bitmap, bounds.x, bounds.y, scaleWidth, scaleHeight);
+			}
+		}
+	}
 }

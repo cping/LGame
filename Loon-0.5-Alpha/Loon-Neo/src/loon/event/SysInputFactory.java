@@ -168,6 +168,9 @@ public class SysInputFactory {
 				}
 				handler.mouseMoved(finalTouch);
 			}
+			if (ebuttons != null && ebuttons.isVisible()) {
+				ebuttons.unhit(0, touchX, touchY);
+			}
 			break;
 		case SysTouch.TOUCH_DRAG:
 			ebuttons = handler.getEmulatorButtons();
@@ -180,6 +183,9 @@ public class SysInputFactory {
 								finalTouch.x, finalTouch.y);
 			}
 			handler.mouseDragged(finalTouch);
+			if (ebuttons != null && ebuttons.isVisible()) {
+				ebuttons.hit(0, touchX, touchY, false);
+			}
 			isDraging = true;
 			break;
 		default:
@@ -187,6 +193,9 @@ public class SysInputFactory {
 				touchCollection
 						.update(finalTouch.id, LTouchLocationState.Invalid,
 								finalTouch.x, finalTouch.y);
+			}
+			if (ebuttons != null && ebuttons.isVisible()) {
+				ebuttons.release();
 			}
 			break;
 		}
@@ -229,7 +238,7 @@ public class SysInputFactory {
 				handler.mousePressed(finalTouch);
 				isDraging = false;
 				if (ebuttons != null && ebuttons.isVisible()) {
-					ebuttons.hit(0, touchX, touchY, false);
+					ebuttons.hit(i, touchX, touchY, false);
 				}
 				break;
 			case MOVE:
@@ -252,7 +261,7 @@ public class SysInputFactory {
 				}
 				ebuttons = handler.getEmulatorButtons();
 				if (ebuttons != null && ebuttons.isVisible()) {
-					ebuttons.unhit(0, touchX, touchY);
+					ebuttons.hit(i, touchX, touchY, false);
 				}
 				break;
 			case END:
@@ -267,6 +276,9 @@ public class SysInputFactory {
 				}
 				handler.mouseReleased(finalTouch);
 				isDraging = false;
+				if (ebuttons != null && ebuttons.isVisible()) {
+					ebuttons.unhit(i, touchX, touchY);
+				}
 				break;
 			case CANCEL:
 			default:
@@ -274,6 +286,9 @@ public class SysInputFactory {
 					touchCollection.update(finalTouch.id,
 							LTouchLocationState.Invalid, finalTouch.x,
 							finalTouch.y);
+				}
+				if (ebuttons != null && ebuttons.isVisible()) {
+					ebuttons.release();
 				}
 				break;
 			}
