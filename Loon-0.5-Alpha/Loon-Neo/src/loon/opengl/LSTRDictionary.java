@@ -153,6 +153,26 @@ public final class LSTRDictionary {
 		}
 	}
 
+	public final static void drawString(GLEx gl, LFont font, String message,
+			float x, float y, float angle, LColor c) {
+		Dict pDict = bind(font, message);
+		if (pDict.font != null) {
+			synchronized (pDict.font) {
+				pDict.font.drawString(gl, message, x, y, angle, c);
+			}
+		}
+	}
+
+	public final static void drawString(GLEx gl, LFont font, String message,
+			float x, float y, float sx, float sy, float angle, LColor c) {
+		Dict pDict = bind(font, message);
+		if (pDict.font != null) {
+			synchronized (pDict.font) {
+				pDict.font.drawString(gl, message, x, y, sx, sy, angle, c);
+			}
+		}
+	}
+
 	/**
 	 * 生成特定字符串的缓存用ID
 	 * 

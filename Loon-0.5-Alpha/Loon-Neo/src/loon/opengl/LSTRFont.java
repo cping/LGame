@@ -283,8 +283,7 @@ public class LSTRFont implements LRelease {
 							fontBatch.drawQuad(totalWidth, totalHeight,
 									(totalWidth + intObject.width) - offsetX,
 									(totalHeight + intObject.height) - offsetY,
-									intObject.storedX,
-									intObject.storedY,
+									intObject.storedX, intObject.storedY,
 									intObject.storedX + intObject.width
 											- offsetX, intObject.storedY
 											+ intObject.height - offsetY);
@@ -320,9 +319,8 @@ public class LSTRFont implements LRelease {
 						fontBatch.drawQuad(totalWidth, totalHeight,
 								(totalWidth + intObject.width) - offsetX,
 								(totalHeight + intObject.height) - offsetY,
-								intObject.storedX, intObject.storedY
-										, intObject.storedX
-										+ intObject.width - offsetX,
+								intObject.storedX, intObject.storedY,
+								intObject.storedX + intObject.width - offsetX,
 								intObject.storedY + intObject.height - offsetY);
 					}
 					totalWidth += intObject.width;
@@ -331,6 +329,81 @@ public class LSTRFont implements LRelease {
 			fontBatch.setColor(old);
 			fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 		}
+	}
+
+	public void drawString(GLEx gl, String chars, float x, float y) {
+		drawString(gl, x, y, 1f, 1f, 0, chars, LColor.white, 0,
+				chars.length() - 1);
+	}
+
+	public void drawString(GLEx gl, String chars, float x, float y, LColor color) {
+		drawString(gl, x, y, 1f, 1f, 0, chars, color, 0, chars.length() - 1);
+	}
+
+	public void drawString(GLEx gl, String chars, float x, float y,
+			float rotation, LColor color) {
+		drawString(gl, x, y, 1f, 1f, rotation, chars, color, 0,
+				chars.length() - 1);
+	}
+
+	public void drawString(GLEx gl, String chars, float x, float y,
+			float rotation) {
+		drawString(gl, x, y, 1f, 1f, rotation, chars, LColor.white, 0,
+				chars.length() - 1);
+	}
+
+	public void drawString(GLEx gl, String chars, float x, float y, float sx,
+			float sy, float rotation, LColor c) {
+		drawString(gl, x, y, sx, sy, rotation, chars, c, 0, chars.length() - 1);
+	}
+
+	private void drawString(GLEx gl, float x, float y, float sx, float sy,
+			float rotation, String chars, LColor c, int startIndex, int endIndex) {
+		make();
+		if (StringUtils.isEmpty(chars)) {
+			return;
+		}
+		if (displays.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			synchronized (displays) {
+				for (Cache cache : displays.values()) {
+					if (cache != null) {
+						cache.close();
+						cache = null;
+					}
+				}
+			}
+			displays.clear();
+		}
+		this.intObject = null;
+		this.charCurrent = 0;
+		this.totalWidth = 0;
+		this.totalHeight = 0;
+		final LTexture texture = fontBatch.toTexture();
+		int old = gl.color();
+		char[] charList = chars.toCharArray();
+		gl.setColor(c);
+		for (int i = 0; i < charList.length; i++) {
+			charCurrent = charList[i];
+			if (charCurrent < totalCharSet) {
+				intObject = charArray[charCurrent];
+			} else {
+				intObject = customChars.get((char) charCurrent);
+			}
+			if (charCurrent == newLineFlag) {
+				totalHeight += fontSize;
+				totalWidth = 0;
+			}
+			if (intObject != null) {
+				if ((i >= startIndex) || (i <= endIndex)) {
+					gl.draw(texture, x + totalWidth, y + totalHeight,
+							intObject.width * sx, intObject.height * sy,
+							intObject.storedX, intObject.storedY,
+							intObject.width, intObject.height, c, rotation);
+				}
+				totalWidth += intObject.width;
+			}
+		}
+		gl.setColor(old);
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {
@@ -346,15 +419,17 @@ public class LSTRFont implements LRelease {
 				setImageColor(color);
 			}
 			if (c == newLineFlag) {
-				fontBatch.draw(colors, x, y + fontSize, intObject.width - offsetX,
-						intObject.height - offsetY, intObject.storedX, intObject.storedY,
-						intObject.storedX + intObject.width  - offsetX, intObject.storedY
-								+ intObject.height  - offsetY);
-			} else {
-				fontBatch.draw(colors, x, y, intObject.width - offsetX, intObject.height - offsetY,
-						intObject.storedX , intObject.storedY, intObject.storedX
-								+ intObject.width  - offsetX, intObject.storedY
+				fontBatch.draw(colors, x, y + fontSize, intObject.width
+						- offsetX, intObject.height - offsetY,
+						intObject.storedX, intObject.storedY, intObject.storedX
+								+ intObject.width - offsetX, intObject.storedY
 								+ intObject.height - offsetY);
+			} else {
+				fontBatch.draw(colors, x, y, intObject.width - offsetX,
+						intObject.height - offsetY, intObject.storedX,
+						intObject.storedY, intObject.storedX + intObject.width
+								- offsetX, intObject.storedY + intObject.height
+								- offsetY);
 			}
 			if (colors != null) {
 				colors = null;
@@ -535,7 +610,7 @@ public class LSTRFont implements LRelease {
 	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 	}
-	
+
 	public void close() {
 		if (fontBatch != null) {
 			fontBatch.destoryAll();

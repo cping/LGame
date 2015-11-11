@@ -253,8 +253,8 @@ public class Display extends LSystemView {
 			default:
 				if (process.getX() == 0 && process.getY() == 0) {
 					glEx.draw(process.getBackground(), repaintMode / 2
-							- MathUtils.random(repaintMode), repaintMode
-							/ 2 - MathUtils.random(repaintMode));
+							- MathUtils.random(repaintMode), repaintMode / 2
+							- MathUtils.random(repaintMode));
 				} else {
 					glEx.draw(
 							process.getBackground(),
@@ -271,7 +271,8 @@ public class Display extends LSystemView {
 
 			if (setting.isFPS) {
 				tickFrames();
-				fpsFont.drawString("FPS:" + frameRate, 5, 5, 0, LColor.white);
+				fpsFont.drawString(glEx, "FPS:" + frameRate, 5, 5, 0,
+						LColor.white);
 			}
 
 			process.drawEmulator(glEx);

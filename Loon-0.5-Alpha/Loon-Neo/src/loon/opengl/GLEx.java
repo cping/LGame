@@ -141,8 +141,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public int getHeight() {
 		return LSystem.viewSize.getHeight();
 	}
-	
-	public Graphics gfx(){
+
+	public Graphics gfx() {
 		return this.gfx;
 	}
 
@@ -757,6 +757,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
+		if (LColor.white.equals(color)) {
+			texture.addToBatch(batch, baseColor, tx(), dx, dy, dw, dh, sx, sy,
+					sw, sh);
+			return this;
+		}
 		int argb = baseColor;
 		if (color != null) {
 			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
@@ -817,6 +822,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public GLEx draw(Painter texture, RectBox destRect, RectBox srcRect,
 			LColor color, float rotation) {
+		if (rotation == 0) {
+			return draw(texture, destRect.x, destRect.y, destRect.width,
+					destRect.height, srcRect.x, srcRect.y, srcRect.width,
+					srcRect.height, color);
+		}
 		return draw(texture, destRect.x, destRect.y, destRect.width,
 				destRect.height, srcRect.x, srcRect.y, srcRect.width,
 				srcRect.height, color, rotation, null, null);
@@ -825,6 +835,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx draw(Painter texture, float x, float y, float width,
 			float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, LColor c, float rotation) {
+		if (rotation == 0) {
+			return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+					srcHeight, c);
+		}
 		return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
 				srcHeight, c, rotation, null, null);
 	}
@@ -1045,7 +1059,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * 
 	 * @param mode
 	 */
-	public GLEx glBegin(int mode) {
+	private GLEx glBegin(int mode) {
 		if (!useAlltextures) {
 			if (running()) {
 				saveTx();
@@ -1062,72 +1076,25 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	/**
-	 * 在模拟标准OpenGL的环境中传入指定像素点
+	 * 模拟标准OpenGL的glEnd(实际为提交顶点坐标给OpenGL)
 	 * 
-	 * @param x
-	 * @param y
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param a
 	 */
-	public GLEx putPixel4ES(float x, float y, float r, float g, float b, float a) {
-		if (useAlltextures) {
-			return this;
-		}
+	private GLEx glEnd() {
 		if (!useBegin) {
+			useBegin = false;
 			return this;
 		}
-		if (a <= 0 || (r == 0 && g == 0 && b == 0 && a == 0)) {
-			return this;
+		int tmp = getBlendMode();
+		if (baseColor != LColor.DEF_COLOR) {
+			setBlendMode(LSystem.MODE_SPEED);
 		}
-		if ((x < 0 || y < 0)
-				|| (x > LSystem.viewSize.width || y > LSystem.viewSize.height)) {
-			return this;
+		glBatch.end();
+		setBlendMode(tmp);
+		useBegin = false;
+		if (!running()) {
+			restoreTx();
+			begin();
 		}
-		this.glVertex2f(x, y);
-		this.glColor(r, g, b, a);
-		return this;
-	}
-
-	/**
-	 * 在模拟标准OpenGL的环境中传入指定像素点
-	 * 
-	 * @param x
-	 * @param y
-	 * @param c
-	 */
-	public GLEx putPixel4ES(float x, float y, LColor c) {
-		return putPixel4ES(x, y, c.r, c.g, c.b, c.a);
-	}
-
-	/**
-	 * 在模拟标准OpenGL的环境中传入指定像素点
-	 * 
-	 * @param x
-	 * @param y
-	 * @param r
-	 * @param g
-	 * @param b
-	 */
-	public GLEx putPixel3ES(float x, float y, float r, float g, float b) {
-		return putPixel4ES(x, y, r, g, b, 1);
-	}
-
-	/**
-	 * 设置纹理坐标
-	 * 
-	 * @param fcol
-	 * @param frow
-	 */
-	public final GLEx glTexCoord2f(float fcol, float frow) {
-		if (useAlltextures) {
-			return this;
-		}
-		if (!useBegin) {
-			return this;
-		}
-		glBatch.texCoord(fcol, frow);
 		return this;
 	}
 
@@ -1137,7 +1104,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param x
 	 * @param y
 	 */
-	public final GLEx glVertex2f(float x, float y) {
+	private final GLEx glVertex2f(float x, float y) {
 		if (useAlltextures) {
 			return this;
 		}
@@ -1148,85 +1115,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	/**
-	 * 添加三维纹理
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 */
-	public final GLEx glVertex3f(float x, float y, float z) {
-		if (useAlltextures) {
-			return this;
-		}
-		if (!useBegin) {
-			return this;
-		}
-		glBatch.vertex(x, y, z);
-		return this;
-	}
-
-	/**
-	 * 定义色彩
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param a
-	 */
-	public GLEx glColor(float r, float g, float b, float a) {
-		if (useAlltextures) {
-			return this;
-		}
-		if (!useBegin) {
-			return this;
-		}
-		glBatch.color(r, g, b, a);
-		return this;
-	}
-
-	/**
-	 * 定义色彩
-	 * 
-	 * @param c
-	 */
-	public GLEx glColor(LColor c) {
-		if (useAlltextures) {
-			return this;
-		}
-		glBatch.color(c);
-		return this;
-	}
-
-	public GLEx glColor(int c) {
+	private GLEx glColor(int c) {
 		if (useAlltextures) {
 			return this;
 		}
 		glBatch.color(new LColor(c));
 		return this;
-	}
-
-	/**
-	 * 定义色彩
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 */
-	public GLEx glColor(float r, float g, float b) {
-		return glColor(r, g, b, 1);
-	}
-
-	/**
-	 * 绘制线段(模式应为GL.GL_LINES)
-	 * 
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
-	 */
-	public GLEx glLine(float x1, float y1, float x2, float y2) {
-		return $drawLine(x1, y1, x2, y2, false);
 	}
 
 	public GLEx drawLine(float x1, float y1, float x2, float y2) {
@@ -1264,113 +1158,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			}
 			return this;
 		}
-	}
-
-	/**
-	 * 绘制矩形(模式应为GL.GL_POLYGON)
-	 * 
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 */
-	public GLEx glDrawRect(float x, float y, float width, float height) {
-		return glRect(x, y, width, height, false);
-	}
-
-	/**
-	 * 绘制矩形(模式应为GL.GL_POLYGON)
-	 * 
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 */
-	public GLEx glFillRect(float x, float y, float width, float height) {
-		return glRect(x, y, width, height, true);
-	}
-
-	/**
-	 * 绘制矩形(模式应为GL.GL_POLYGON)
-	 * 
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param fill
-	 */
-	private final GLEx glRect(float x, float y, float width, float height,
-			boolean fill) {
-		float[] xs = new float[4];
-		float[] ys = new float[4];
-		xs[0] = x;
-		xs[1] = x + width;
-		xs[2] = x + width;
-		xs[3] = x;
-		ys[0] = y;
-		ys[1] = y;
-		ys[2] = y + height;
-		ys[3] = y + height;
-		if (fill) {
-			glFillPoly(xs, ys, 4);
-		} else {
-			glDrawPoly(xs, ys, 4);
-		}
-		return this;
-	}
-
-	/**
-	 * 绘制多边形(模式应为GL.GL_LINE_LOOP)
-	 * 
-	 * @param xPoints
-	 * @param yPoints
-	 * @param nPoints
-	 */
-	public GLEx glDrawPoly(float[] xPoints, float[] yPoints, int nPoints) {
-		return $drawPolygon(xPoints, yPoints, nPoints, false);
-	}
-
-	/**
-	 * 填充多边形(模式应为GL.GL_LINE_LOOP)
-	 * 
-	 * @param xPoints
-	 * @param yPoints
-	 * @param nPoints
-	 */
-	public GLEx glFillPoly(float[] xPoints, float[] yPoints, int nPoints) {
-		return $fillPolygon(xPoints, yPoints, nPoints, false);
-	}
-
-	/**
-	 * 检查是否开启了glbegin函数
-	 * 
-	 * @return
-	 */
-	public boolean useGLBegin() {
-		return useBegin;
-	}
-
-	/**
-	 * 模拟标准OpenGL的glEnd(实际为提交顶点坐标给OpenGL)
-	 * 
-	 */
-	public GLEx glEnd() {
-		if (!useBegin) {
-			useBegin = false;
-			return this;
-		}
-		int tmp = getBlendMode();
-		if (baseColor != LColor.DEF_COLOR) {
-			setBlendMode(LSystem.MODE_SPEED);
-		}
-		glBatch.end();
-		setBlendMode(tmp);
-		useBegin = false;
-		if (!running()) {
-			restoreTx();
-			begin();
-		}
-		return this;
 	}
 
 	/**
@@ -2293,7 +2080,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (StringUtils.isEmpty(string)) {
 			return this;
 		}
-		LSTRDictionary.drawString(font, string, x, y, rotation, c);
+		LSTRDictionary.drawString(this,font, string, x, y, rotation, c);
 		return this;
 	}
 

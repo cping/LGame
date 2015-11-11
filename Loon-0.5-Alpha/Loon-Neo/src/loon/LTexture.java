@@ -384,6 +384,14 @@ public class LTexture extends Painter implements LRelease {
 				+ ", dsize=" + displayWidth + "x" + displayHeight + " @ "
 				+ scale + ", config=" + config + "]";
 	}
+	
+	public float getDisplayWidth(){
+		return displayWidth;
+	}
+	
+	public float getDisplayHeight(){
+		return displayHeight;
+	}
 
 	protected void finalize() {
 		_isLoaded = false;
