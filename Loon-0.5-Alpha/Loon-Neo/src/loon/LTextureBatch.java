@@ -210,8 +210,6 @@ public class LTextureBatch implements LRelease {
 		return texture;
 	}
 
-	private final static Matrix4 cacheProjectionMatrix = new Matrix4();
-
 	private MeshDefault mesh;
 
 	public LTextureBatch(LTexture tex, final int size,
@@ -220,8 +218,6 @@ public class LTextureBatch implements LRelease {
 			throw new IllegalArgumentException(
 					"Can't have more than 5460 sprites per batch: " + size);
 		}
-		cacheProjectionMatrix.set(LSystem.base().graphics()
-				.getProjectionMatrix());
 		this.setTexture(tex);
 		this.shader = defaultShader;
 		this.size = size;
@@ -281,7 +277,7 @@ public class LTextureBatch implements LRelease {
 		} else {
 			shader.begin();
 		}
-		setupMatrices();
+		setupMatrices(LSystem.base().graphics().getProjectionMatrix());
 		drawing = true;
 	}
 
@@ -295,18 +291,14 @@ public class LTextureBatch implements LRelease {
 		}
 		if (vertexIdx > 0) {
 			if (tx != 0 || ty != 0) {
-				LSystem.base().graphics().save();
 				Matrix4 project = LSystem.base().graphics()
-						.getProjectionMatrix();
+						.getProjectionMatrix().cpy();
 				project.translate(tx, ty, 0);
 				if (drawing) {
-					setupMatrices();
+					setupMatrices(project);
 				}
 			}
 			submit();
-			if (tx != 0 || ty != 0) {
-				LSystem.base().graphics().restore();
-			}
 		}
 		drawing = false;
 		LSystem.base().graphics().gl.glDepthMask(true);
@@ -435,9 +427,9 @@ public class LTextureBatch implements LRelease {
 		GLUtils.setBlendMode(gl, old);
 	}
 
-	private void setupMatrices() {
-		combinedMatrix.set(LSystem.base().graphics().getProjectionMatrix())
-				.mul(LSystem.base().graphics().getTransformMatrix());
+	private void setupMatrices(Matrix4 view) {
+		combinedMatrix.set(view).mul(
+				LSystem.base().graphics().getTransformMatrix());
 		if (customShader != null) {
 			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
 			customShader.setUniformi("u_texture", 0);
@@ -454,7 +446,7 @@ public class LTextureBatch implements LRelease {
 		invTexHeight = 1.0f / texHeight;
 	}
 
-	public void setShader(ShaderProgram shader) {
+	protected void setShader(Matrix4 view, ShaderProgram shader) {
 		if (drawing) {
 			submit();
 			if (customShader != null) {
@@ -470,9 +462,8 @@ public class LTextureBatch implements LRelease {
 			} else {
 				this.shader.begin();
 			}
-			setupMatrices();
+			setupMatrices(view);
 		}
-
 	}
 
 	public boolean isDrawing() {
@@ -487,7 +478,8 @@ public class LTextureBatch implements LRelease {
 		this.isCacheLocked = false;
 	}
 
-	private void commit(Cache cache, LColor color, BlendState state) {
+	private void commit(Matrix4 view, Cache cache, LColor color,
+			BlendState state) {
 		if (!isLoaded) {
 			return;
 		}
@@ -509,8 +501,8 @@ public class LTextureBatch implements LRelease {
 			globalShader.setUniformf("v_color", color.r, color.g, color.b,
 					color.a);
 		}
-		combinedMatrix.set(LSystem.base().graphics().getProjectionMatrix())
-				.mul(LSystem.base().graphics().getTransformMatrix());
+		combinedMatrix.set(view).mul(
+				LSystem.base().graphics().getTransformMatrix());
 		if (globalShader != null) {
 			globalShader.setUniformMatrix("u_projTrans", combinedMatrix);
 			globalShader.setUniformi("u_texture", 0);
@@ -545,7 +537,8 @@ public class LTextureBatch implements LRelease {
 
 	public void postLastCache() {
 		if (lastCache != null) {
-			commit(lastCache, null, lastBlendState);
+			commit(LSystem.base().graphics().getProjectionMatrix(), lastCache,
+					null, lastBlendState);
 		}
 	}
 
@@ -1040,12 +1033,17 @@ public class LTextureBatch implements LRelease {
 		if (isClosed) {
 			return;
 		}
-		LSystem.base().graphics().save();
 		Matrix4 project = LSystem.base().graphics().getProjectionMatrix();
+		boolean update = (x != 0 || y != 0 || rotaion != 0 || sx != 1f || sy != 1f);
+		if (update) {
+			project = project.cpy();
+		}
 		if (x != 0 || y != 0) {
 			project.translate(x, y, 0);
 		}
-		project.scale(sx, sy, 0);
+		if (sx != 1f || sy != 1f) {
+			project.scale(sx, sy, 0);
+		}
 		if (rotaion != 0) {
 			if (ax != 0 || ay != 0) {
 				project.translate(ax, ay, 0.0f);
@@ -1060,10 +1058,9 @@ public class LTextureBatch implements LRelease {
 			}
 		}
 		if (drawing) {
-			setupMatrices();
+			setupMatrices(project);
 		}
 		end();
-		LSystem.base().graphics().restore();
 	}
 
 	public void postCache(Cache cache, LColor color, float x, float y) {
@@ -1072,13 +1069,12 @@ public class LTextureBatch implements LRelease {
 		}
 		x += cache.x;
 		y += cache.y;
-		LSystem.base().graphics().save();
 		Matrix4 project = LSystem.base().graphics().getProjectionMatrix();
 		if (x != 0 || y != 0) {
+			project = project.cpy();
 			project.translate(x, y, 0);
 		}
-		commit(cache, color, lastBlendState);
-		LSystem.base().graphics().restore();
+		commit(project, cache, color, lastBlendState);
 	}
 
 	public void postCache(Cache cache, LColor color, float x, float y,
@@ -1088,12 +1084,17 @@ public class LTextureBatch implements LRelease {
 		}
 		x += cache.x;
 		y += cache.y;
-		LSystem.base().graphics().save();
 		Matrix4 project = LSystem.base().graphics().getProjectionMatrix();
+		boolean update = (x != 0 || y != 0 || rotaion != 0 || sx != 1f || sy != 1f);
+		if (update) {
+			project = project.cpy();
+		}
 		if (x != 0 || y != 0) {
 			project.translate(x, y, 0);
 		}
-		project.scale(sx, sy, 0);
+		if (sx != 1f || sy != 1f) {
+			project.scale(sx, sy, 0);
+		}
 		if (rotaion != 0) {
 			if (ax != 0 || ay != 0) {
 				project.translate(ax, ay, 0.0f);
@@ -1107,8 +1108,7 @@ public class LTextureBatch implements LRelease {
 						0.0f);
 			}
 		}
-		commit(cache, color, lastBlendState);
-		LSystem.base().graphics().restore();
+		commit(project, cache, color, lastBlendState);
 	}
 
 	public void postCache(Cache cache, LColor color, float rotaion) {
@@ -1117,17 +1117,16 @@ public class LTextureBatch implements LRelease {
 		}
 		float x = cache.x;
 		float y = cache.y;
-		LSystem.base().graphics().save();
 		Matrix4 project = LSystem.base().graphics().getProjectionMatrix();
 		if (rotaion != 0) {
+			project = project.cpy();
 			project.translate((texture.width() / 2) + x,
 					(y + texture.height() / 2) + y, 0.0f);
 			project.rotate(0f, 0f, 1f, rotaion);
 			project.translate((-texture.width() / 2) + y,
 					(-texture.height() / 2) + y, 0.0f);
 		}
-		commit(cache, color, lastBlendState);
-		LSystem.base().graphics().restore();
+		commit(project, cache, color, lastBlendState);
 	}
 
 	public void postCache(LColor color, float rotaion) {

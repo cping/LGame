@@ -20,13 +20,13 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.LTrans;
 import loon.utils.MathUtils;
 
 /**
  * 以对象存储，而非数组的方式实现一个3x2(标准矩阵应为3x3)的2D仿射矩阵类，
- * 也就是保留了线的“直线性”和“平行性”，但缺少了长宽高的3D矩阵延展能力。
- * 所以，此类仅适合2D应用中使用.
+ * 也就是保留了线的“直线性”和“平行性”，但缺少了长宽高的3D矩阵延展能力。 所以，此类仅适合2D应用中使用.
  * 
  * 对应的3x3矩阵关系如下所示:
  * 
@@ -40,11 +40,13 @@ import loon.utils.MathUtils;
  */
 public class Affine2f extends AbstractTransform implements LTrans {
 
+	private Matrix4 projectionMatrix = null;
+
 	protected Affine2f(Transform other) {
 		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(),
 				other.ty());
 	}
-	
+
 	public static Affine2f transform(Affine2f tx, int transform, float width,
 			float height) {
 		switch (transform) {
@@ -484,6 +486,18 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		}
 		float rdet = 1 / det;
 		return into.set((x * m11 - y * m10) * rdet, (y * m00 - x * m01) * rdet);
+	}
+
+	public Matrix4 toMatrix4() {
+		Affine2f affine = this;
+		Dimension dim = LSystem.viewSize;
+		if (projectionMatrix == null) {
+			projectionMatrix = new Matrix4();
+		}
+		projectionMatrix.setToOrtho2D(0, 0,
+				dim.width * LSystem.getScaleWidth(),
+				dim.height * LSystem.getScaleHeight());
+		return projectionMatrix.thisCombine(affine);
 	}
 
 	@Override

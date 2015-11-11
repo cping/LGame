@@ -999,7 +999,7 @@ public class Matrix4 implements Serializable {
 	}
 
 	public Matrix4 newCombine(Affine2f affine) {
-		
+
 		float m00 = affine.m00;
 		float m10 = affine.m10;
 		float m20 = 0;
@@ -1051,7 +1051,7 @@ public class Matrix4 implements Serializable {
 				+ val[M33] * m33;
 
 		Matrix4 m = new Matrix4();
-		
+
 		m.val[M00] = nm00;
 		m.val[M10] = nm10;
 		m.val[M20] = nm20;
@@ -1070,6 +1070,78 @@ public class Matrix4 implements Serializable {
 		m.val[M33] = nm33;
 
 		return m;
+	}
+
+	public Matrix4 thisCombine(Affine2f affine) {
+
+		float m00 = affine.m00;
+		float m10 = affine.m10;
+		float m20 = 0;
+		float m30 = 0;
+		float m01 = affine.m01;
+		float m11 = affine.m11;
+		float m21 = 0;
+		float m31 = 0;
+		float m02 = 0;
+		float m12 = 0;
+		float m22 = 1;
+		float m32 = 0;
+		float m03 = affine.tx;
+		float m13 = affine.ty;
+		float m23 = 0;
+		float m33 = 1;
+
+		float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20
+				+ val[M03] * m30;
+		float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21
+				+ val[M03] * m31;
+		float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22
+				+ val[M03] * m32;
+		float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23
+				+ val[M03] * m33;
+		float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20
+				+ val[M13] * m30;
+		float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21
+				+ val[M13] * m31;
+		float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22
+				+ val[M13] * m32;
+		float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23
+				+ val[M13] * m33;
+		float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20
+				+ val[M23] * m30;
+		float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21
+				+ val[M23] * m31;
+		float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22
+				+ val[M23] * m32;
+		float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23
+				+ val[M23] * m33;
+		float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20
+				+ val[M33] * m30;
+		float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21
+				+ val[M33] * m31;
+		float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22
+				+ val[M33] * m32;
+		float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23
+				+ val[M33] * m33;
+
+		val[M00] = nm00;
+		val[M10] = nm10;
+		val[M20] = nm20;
+		val[M30] = nm30;
+		val[M01] = nm01;
+		val[M11] = nm11;
+		val[M21] = nm21;
+		val[M31] = nm31;
+		val[M02] = nm02;
+		val[M12] = nm12;
+		val[M22] = nm22;
+		val[M32] = nm32;
+		val[M03] = nm03;
+		val[M13] = nm13;
+		val[M23] = nm23;
+		val[M33] = nm33;
+
+		return this;
 	}
 
 	public static Matrix4 newCombine(Matrix4 m1, Matrix4 m2) {
@@ -1107,7 +1179,7 @@ public class Matrix4 implements Serializable {
 				+ m1.val[M32] * m2.val[M23] + m1.val[M33] * m2.val[M33];
 
 		Matrix4 m = new Matrix4();
-		
+
 		m.val[M00] = m00;
 		m.val[M10] = m10;
 		m.val[M20] = m20;

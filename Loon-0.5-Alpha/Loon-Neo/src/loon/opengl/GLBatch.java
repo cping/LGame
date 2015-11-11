@@ -23,12 +23,12 @@ package loon.opengl;
 import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.LColor;
-import loon.geom.Matrix4;
+import loon.geom.Affine2f;
 import loon.opengl.VertexAttributes.Usage;
 import loon.utils.Array;
 
-public class GLBatch implements LRelease{
-	
+public class GLBatch implements LRelease {
+
 	private int primitiveType;
 	private int vertexIdx;
 	private int numSetTexCoords;
@@ -43,7 +43,7 @@ public class GLBatch implements LRelease{
 	private int normalOffset;
 	private int colorOffset;
 	private int texCoordOffset;
-	private final Matrix4 projModelView = new Matrix4();
+	private final Affine2f projModelView = new Affine2f();
 	float[] vertices;
 	private String[] shaderUniformNames;
 
@@ -102,7 +102,7 @@ public class GLBatch implements LRelease{
 		ownsShader = false;
 	}
 
-	public void begin(Matrix4 projModelView, int primitiveType) {
+	public void begin(Affine2f projModelView, int primitiveType) {
 		if (shader == null) {
 			VertexAttribute[] attribs = buildVertexAttributes(hasNormals,
 					hasColors, numTexCoords);
@@ -173,7 +173,7 @@ public class GLBatch implements LRelease{
 			return;
 		}
 		shader.begin();
-		shader.setUniformMatrix("u_projModelView", projModelView);
+		shader.setUniformMatrix("u_projModelView", projModelView.toMatrix4());
 		for (int i = 0; i < numTexCoords; i++) {
 			shader.setUniformi(shaderUniformNames[i], i);
 		}

@@ -89,7 +89,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private float baseAlpha = 1f;
 	private float lineWidth = 1f;
 
-	private boolean savedBrush = false, savedTx = false;
 	private boolean isClosed = false;
 
 	private Graphics gfx;
@@ -141,6 +140,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public int getHeight() {
 		return LSystem.viewSize.getHeight();
+	}
+	
+	public Graphics gfx(){
+		return this.gfx;
 	}
 
 	/**
@@ -289,18 +292,17 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx saveBrush() {
-		if (isClosed || savedBrush) {
+		if (isClosed) {
 			return this;
 		}
 		if (lastBrush != null) {
 			brushStack.add(lastBrush = lastBrush.cpy());
-			savedBrush = true;
 		}
 		return this;
 	}
 
 	public GLEx restoreBrush() {
-		if (isClosed || !savedBrush) {
+		if (isClosed) {
 			return this;
 		}
 		lastBrush = brushStack.pop();
@@ -313,7 +315,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			this.setFont(lastBrush.font);
 			this.setLineWidth(lastBrush.lineWidth);
 		}
-		savedBrush = false;
 		return this;
 	}
 
@@ -342,23 +343,21 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx saveTx() {
-		if (isClosed || savedTx) {
+		if (isClosed) {
 			return this;
 		}
 
 		if (lastTrans != null) {
 			affineStack.add(lastTrans = lastTrans.cpy());
-			savedTx = true;
 		}
 		return this;
 	}
 
 	public GLEx restoreTx() {
-		if (isClosed || !savedTx) {
+		if (isClosed) {
 			return this;
 		}
 		lastTrans = affineStack.pop();
-		savedTx = false;
 		return this;
 	}
 
@@ -1056,7 +1055,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (glBatch == null) {
 				glBatch = new GLBatch(3000, false, true, 0);
 			}
-			this.glBatch.begin(gfx.getProjectionMatrix(), mode);
+			this.glBatch.begin(lastTrans, mode);
 			this.useBegin = true;
 		}
 		return this;

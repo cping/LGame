@@ -44,9 +44,8 @@ public abstract class Graphics {
 
 	private Display display = null;
 	private Affine2f affine = null, lastAffine = null;
-	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
 	private Matrix4 transformMatrix = null, projectionMatrix = null;
-
+	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
 	// 创建一个半永久的纹理，用以批量进行颜色渲染
 	private static LTexture colorTex;
 
@@ -110,47 +109,29 @@ public abstract class Graphics {
 
 	public Matrix4 getProjectionMatrix() {
 		display = game.display();
+		Dimension view = LSystem.viewSize;
 		if (projectionMatrix == null) {
-			matrixsStack.add(projectionMatrix = new Matrix4());
-			projectionMatrix.setToOrtho2D(0, 0, LSystem.viewSize.getWidth(),
-					LSystem.viewSize.getHeight());
+			projectionMatrix = new Matrix4();
+			projectionMatrix.setToOrtho2D(0, 0, view.getWidth(),
+					view.getHeight());
 		} else if (display != null
 				&& !(affine = display.GL().tx()).equals(lastAffine)) {
-			if (game.setting.scaling()) {
-				lastAffine = affine.cpy();
-				LSetting setting = game.setting;
-				lastAffine.scale((float) setting.width
-						/ (float) setting.width_zoom, (float) setting.height
-						/ (float) setting.height_zoom);
-			} else {
-				lastAffine = affine;
-			}
-			projectionMatrix = projectionMatrix.newCombine(lastAffine);
+			projectionMatrix = affine.toMatrix4();
+			lastAffine = affine;
 		}
-
 		return projectionMatrix;
 	}
 
-	private boolean saved;
-
 	public void save() {
-		if (saved) {
-			return;
-		}
 		if (projectionMatrix != null) {
 			matrixsStack.add(projectionMatrix = projectionMatrix.cpy());
-			saved = true;
 		}
 	}
 
 	public void restore() {
-		if (!saved) {
-			return;
-		}
 		projectionMatrix = matrixsStack.pop();
-		saved = false;
 	}
-
+	
 	public abstract Dimension screenSize();
 
 	public Canvas createCanvas(float width, float height) {

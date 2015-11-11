@@ -30,7 +30,7 @@ import loon.utils.MathUtils;
 
 public abstract class PixmapFImpl {
 
-	protected final static int def_skip = 3;
+	protected final static int def_skip = 2;
 
 	protected final static int def_skip_html5 = 6;
 
