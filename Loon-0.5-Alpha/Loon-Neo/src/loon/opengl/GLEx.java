@@ -694,7 +694,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		Affine2f xf = tx();
 		if (rotation != 0) {
 			xf = new Affine2f();
-			xf.rotate(rotation);
+			float w1 = x + w / 2;
+			float h1 = y + h / 2;
+			xf.translate(w1, h1);
+			xf.rotate(MathUtils.toRadians(rotation));
+			xf.translate(-w1, -h1);
 			Transforms.multiply(tx(), xf, xf);
 		}
 		texture.addToBatch(batch, baseColor, xf, x, y, w, h);
@@ -718,7 +722,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		Affine2f xf = tx();
 		if (rotation != 0) {
 			xf = new Affine2f();
-			xf.rotate(rotation);
+			float w1 = x + w / 2;
+			float h1 = y + h / 2;
+			xf.translate(w1, h1);
+			xf.rotate(MathUtils.toRadians(rotation));
+			xf.translate(-w1, -h1);
 			Transforms.multiply(tx(), xf, xf);
 		}
 		texture.addToBatch(batch, argb, xf, x, y, w, h);
@@ -853,6 +861,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
+
 		Affine2f xf = tx();
 
 		boolean dirDirty = (dir != null && dir != Direction.TRANS_NONE);
@@ -867,19 +876,25 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				xf.translate(origin.x, origin.y);
 			}
 			if (rotDirty) {
-				xf.rotate(rotation);
+				float w1 = x + width / 2;
+				float h1 = y + height / 2;
+				xf.translate(w1, h1);
+				xf.rotate(MathUtils.toRadians(rotation));
+				xf.translate(-w1, -h1);
 			}
 			if (dirDirty) {
 				switch (dir) {
 				case TRANS_MIRROR:
-					Affine2f.transform(xf, Affine2f.TRANS_MIRROR, width, height);
-					break;
-				case TRANS_FILP:
-					Affine2f.transform(xf, Affine2f.TRANS_MIRROR_ROT180, width,
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR, width,
 							height);
 					break;
+				case TRANS_FILP:
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR_ROT180,
+							width, height);
+					break;
 				case TRANS_MF:
-					Affine2f.transform(xf, Affine2f.TRANS_ROT180, width, height);
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_ROT180, width,
+							height);
 					break;
 				default:
 					break;
@@ -2080,7 +2095,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (StringUtils.isEmpty(string)) {
 			return this;
 		}
-		LSTRDictionary.drawString(this,font, string, x, y, rotation, c);
+		LSTRDictionary.drawString(this, font, string, x, y, rotation, c);
 		return this;
 	}
 

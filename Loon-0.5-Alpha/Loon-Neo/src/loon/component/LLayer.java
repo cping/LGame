@@ -259,12 +259,14 @@ public class LLayer extends ActorLayer {
 							thing.actorListener.draw(g);
 						}
 					} else {
+						g.saveTx();
 						g.translate(actorX, actorY);
 						thing.draw(g);
 						if (isListener) {
 							thing.actorListener.draw(g);
 						}
 						g.translate(-actorX, -actorY);
+						g.restoreTx();
 					}
 				}
 			}

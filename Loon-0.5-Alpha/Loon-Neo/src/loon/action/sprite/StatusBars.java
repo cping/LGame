@@ -105,14 +105,12 @@ public final class StatusBars extends LObject implements ISprite {
 		int size = barCaches.size();
 		if (size > 0) {
 			synchronized (barCaches) {
-				StatusBar.glBegin();
 				for (int i = 0; i < size; i++) {
 					StatusBar bar = barCaches.get(i);
 					if (bar != null && bar.visible) {
 						bar.createUI(g);
 					}
 				}
-				StatusBar.glEnd();
 			}
 		}
 	}

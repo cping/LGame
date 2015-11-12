@@ -47,41 +47,61 @@ public class Affine2f extends AbstractTransform implements LTrans {
 				other.ty());
 	}
 
-	public static Affine2f transform(Affine2f tx, int transform, float width,
-			float height) {
+	public static Affine2f transform(Affine2f tx, float x, float y,
+			int transform, float width, float height) {
 		switch (transform) {
 		case TRANS_ROT90: {
-			tx.translate(height, 0);
+			float w = height;
+			float h = y;
+			tx.translate(w, h);
 			tx.rotate(ANGLE_90);
+			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT180: {
-			tx.translate(width, height);
+			float w = x + width;
+			float h = y + height;
+			tx.translate(w, h);
 			tx.rotate(MathUtils.PI);
+			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT270: {
-			tx.translate(0, width);
+			float w = x;
+			float h = y + width;
+			tx.translate(w, h);
 			tx.rotate(ANGLE_270);
+			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR: {
-			tx.translate(width, 0);
+			float w = x + width;
+			float h = y;
+			tx.translate(w, h);
 			tx.scale(-1, 1);
+			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT90: {
-			tx.translate(height, 0);
+			float w = x + height;
+			float h = y;
+			tx.translate(w, h);
 			tx.rotate(ANGLE_90);
-			tx.translate(width, 0);
+			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
 		}
 		case TRANS_MIRROR_ROT180: {
-			tx.translate(width, 0);
+			float w = x + width;
+			float h = y;
+			tx.translate(w, h);
 			tx.scale(-1, 1);
-			tx.translate(width, height);
+			tx.translate(-w, -h);
+			w = x + width;
+			h = y + height;
+			tx.translate(w, h);
 			tx.rotate(MathUtils.PI);
+			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
@@ -360,6 +380,11 @@ public class Affine2f extends AbstractTransform implements LTrans {
 	public Affine2f rotate(float angle) {
 		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
 		return Transforms.multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
+	}
+
+	public Affine2f rotate(float angle, float x, float y) {
+		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
+		return Transforms.multiply(this, cosa, sina, -sina, cosa, x, y, this);
 	}
 
 	@Override

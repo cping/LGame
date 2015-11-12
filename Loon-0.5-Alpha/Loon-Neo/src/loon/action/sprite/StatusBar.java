@@ -38,8 +38,6 @@ public class StatusBar extends LObject implements ISprite {
 
 	private LTexture texture;
 
-	private static boolean useBegin;
-
 	public StatusBar(int width, int height) {
 		this(0, 0, width, height);
 	}
@@ -126,28 +124,6 @@ public class StatusBar extends LObject implements ISprite {
 		this.goal = (width * valueMin) / valueMax;
 	}
 
-	public static void glBegin() {
-		synchronized (colors) {
-			for (LTexture tex2d : colors.values()) {
-				if (tex2d != null) {
-					tex2d.glBegin();
-				}
-			}
-			useBegin = true;
-		}
-	}
-
-	public static void glEnd() {
-		synchronized (colors) {
-			for (LTexture tex2d : colors.values()) {
-				if (tex2d != null) {
-					tex2d.glEnd();
-				}
-			}
-			useBegin = false;
-		}
-	}
-
 	private void drawBar(GLEx g, float v1, float v2, float size, float x,
 			float y) {
 		float cv1 = (width * v1) / size;
@@ -157,38 +133,32 @@ public class StatusBar extends LObject implements ISprite {
 		} else {
 			cv2 = (width * v2) / size;
 		}
-		if (!useBegin) {
-			texture.glBegin();
-		}
 		if (cv1 < width || cv2 < height) {
-			texture.draw(x, y, width, height, backPos[0], backPos[1],
+			g.draw(texture, x, y, width, height, backPos[0], backPos[1],
 					backPos[2], backPos[3]);
 		}
 		if (valueMin < value) {
 			if (cv1 == width) {
-				texture.draw(x, y, cv1, height, beforePos[0], beforePos[1],
+				g.draw(texture, x, y, cv1, height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			} else {
 				if (!dead) {
-					texture.draw(x, y, cv2, height, afterPos[0], afterPos[1],
-							afterPos[2], afterPos[3]);
+					g.draw(texture, x, y, cv2, height, afterPos[0],
+							afterPos[1], afterPos[2], afterPos[3]);
 				}
-				texture.draw(x, y, cv1, height, beforePos[0], beforePos[1],
+				g.draw(texture, x, y, cv1, height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			}
 		} else {
 			if (cv2 == width) {
-				texture.draw(x, y, cv2, height, beforePos[0], beforePos[1],
+				g.draw(texture, x, y, cv2, height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			} else {
-				texture.draw(x, y, cv1, height, afterPos[0], afterPos[1],
+				g.draw(texture, x, y, cv1, height, afterPos[0], afterPos[1],
 						afterPos[2], afterPos[3]);
-				texture.draw(x, y, cv2, height, beforePos[0], beforePos[1],
+				g.draw(texture, x, y, cv2, height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			}
-		}
-		if (!useBegin) {
-			texture.glEnd();
 		}
 	}
 
@@ -230,7 +200,8 @@ public class StatusBar extends LObject implements ISprite {
 				g.setColor(LColor.white);
 				int current = g.getFont().stringWidth(hpString);
 				int h = (int) g.getFont().getHeight();
-				g.drawString(String.valueOf(value), (x() + width / 2 - current / 2) + 2,
+				g.drawString(String.valueOf(value),
+						(x() + width / 2 - current / 2) + 2,
 						(y() + height / 2 - h / 2));
 			}
 			drawBar(g, goal, current, width, getX(), getY());
