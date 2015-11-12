@@ -218,6 +218,15 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		this.ty = ty;
 	}
 
+	public void setThis(Affine2f other) {
+		this.m00 = other.m00;
+		this.m01 = other.m01;
+		this.m10 = other.m10;
+		this.m11 = other.m11;
+		this.tx = other.tx;
+		this.ty = other.ty;
+	}
+
 	public Affine2f set(Affine2f other) {
 		return setTransform(other.m00, other.m01, other.m10, other.m11,
 				other.tx, other.ty);
@@ -514,15 +523,16 @@ public class Affine2f extends AbstractTransform implements LTrans {
 	}
 
 	public Matrix4 toMatrix4() {
-		Affine2f affine = this;
 		Dimension dim = LSystem.viewSize;
 		if (projectionMatrix == null) {
 			projectionMatrix = new Matrix4();
 		}
+		Affine2f affine = this;
 		projectionMatrix.setToOrtho2D(0, 0,
 				dim.width * LSystem.getScaleWidth(),
 				dim.height * LSystem.getScaleHeight());
-		return projectionMatrix.thisCombine(affine);
+		projectionMatrix.thisCombine(affine);
+		return projectionMatrix;
 	}
 
 	@Override

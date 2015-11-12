@@ -238,57 +238,50 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	public void update(final Image img) {
-		if (img == null) {
+	public void update(final Image image) {
+		if (image == null) {
 			throw new RuntimeException(
 					"the image is null, can not conversion it into texture .");
 		}
 		if (parent != null) {
-			parent.update(img);
+			parent.update(image);
 			return;
 		}
 		if (_drawing) {
 			return;
 		}
 		this._drawing = true;
-		this.source = img.getSource();
-		Updateable process = new Updateable() {
+		this.source = image.getSource();
 
-			@Override
-			public void action(Object o) {
-				final Image image = img;
-				if (image != null) {
-					if (config.repeatX || config.repeatY || config.mipmaps) {
-						int pixWidth = image.pixelWidth(), pixHeight = image
-								.pixelHeight();
-						int potWidth = config.toTexWidth(pixWidth), potHeight = config
-								.toTexWidth(pixHeight);
-						if (potWidth != pixWidth || potHeight != pixHeight) {
-							Canvas scaled = gfx.createCanvasImpl(Scale.ONE,
-									potWidth, potHeight);
-							scaled.draw(image, 0, 0, potWidth, potHeight);
-							scaled.image.upload(gfx, LTexture.this);
-							scaled.close();
-						} else {
-							image.upload(gfx, LTexture.this);
-						}
-					} else {
-						image.upload(gfx, LTexture.this);
-					}
-					if (config.mipmaps) {
-						gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
-					}
+		if (image != null) {
+			if (config.repeatX || config.repeatY || config.mipmaps) {
+				int pixWidth = image.pixelWidth(), pixHeight = image
+						.pixelHeight();
+				int potWidth = config.toTexWidth(pixWidth), potHeight = config
+						.toTexWidth(pixHeight);
+				if (potWidth != pixWidth || potHeight != pixHeight) {
+					Canvas scaled = gfx.createCanvasImpl(Scale.ONE, potWidth,
+							potHeight);
+					scaled.draw(image, 0, 0, potWidth, potHeight);
+					scaled.image.upload(gfx, LTexture.this);
+					scaled.close();
+				} else {
+					image.upload(gfx, LTexture.this);
 				}
-				LTextureBatch.isBatchCacheDitry = true;
-				_isLoaded = true;
-				if (image.toClose()) {
-					image.destroy();
-				}
-				_drawing = false;
+			} else {
+				image.upload(gfx, LTexture.this);
 			}
+			if (config.mipmaps) {
+				gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
+			}
+		}
+		LTextureBatch.isBatchCacheDitry = true;
+		_isLoaded = true;
+		if (image.toClose()) {
+			image.destroy();
+		}
+		_drawing = false;
 
-		};
-		LSystem.load(process);
 	}
 
 	public boolean isClose() {
@@ -384,12 +377,12 @@ public class LTexture extends Painter implements LRelease {
 				+ ", dsize=" + displayWidth + "x" + displayHeight + " @ "
 				+ scale + ", config=" + config + "]";
 	}
-	
-	public float getDisplayWidth(){
+
+	public float getDisplayWidth() {
 		return displayWidth;
 	}
-	
-	public float getDisplayHeight(){
+
+	public float getDisplayHeight() {
 		return displayHeight;
 	}
 
@@ -426,59 +419,28 @@ public class LTexture extends Painter implements LRelease {
 				return cache;
 			}
 			final LTexture copy = new LTexture();
-			if (_isLoaded) {
-				copy.parent = LTexture.this;
-				copy.id = id;
-				copy._isLoaded = _isLoaded;
-				copy.gfx = gfx;
-				copy.config = config;
-				copy.source = source;
-				copy.scale = scale;
-				copy.scaleSize = true;
-				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
-				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
-				copy.displayWidth = this.displayWidth * this.widthRatio;
-				copy.displayHeight = this.displayHeight * this.heightRatio;
-				copy.xOff = (((float) x / copy.displayWidth) * this.widthRatio)
-						+ this.xOff;
-				copy.yOff = (((float) y / copy.displayHeight) * this.heightRatio)
-						+ this.yOff;
-				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
-						+ copy.xOff;
-				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
-						+ copy.yOff;
-			} else {
-				copy.parent = LTexture.this;
-				copy.id = id;
-				copy.gfx = gfx;
-				copy.config = config;
-				copy.source = source;
-				copy.scale = scale;
-				copy.scaleSize = true;
-				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
-				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
-				copy.displayWidth = this.displayWidth * this.widthRatio;
-				copy.displayHeight = this.displayHeight * this.heightRatio;
-				copy.xOff = (((float) x / copy.displayWidth) * this.widthRatio)
-						+ this.xOff;
-				copy.yOff = (((float) y / copy.displayHeight) * this.heightRatio)
-						+ this.yOff;
-				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
-						+ copy.xOff;
-				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
-						+ copy.yOff;
 
-				Updateable update = new Updateable() {
+			copy.parent = LTexture.this;
+			copy.id = id;
+			copy._isLoaded = _isLoaded;
+			copy.gfx = gfx;
+			copy.config = config;
+			copy.source = source;
+			copy.scale = scale;
+			copy.scaleSize = true;
+			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
+			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
+			copy.displayWidth = this.displayWidth * this.widthRatio;
+			copy.displayHeight = this.displayHeight * this.heightRatio;
+			copy.xOff = (((float) x / copy.displayWidth) * this.widthRatio)
+					+ this.xOff;
+			copy.yOff = (((float) y / copy.displayHeight) * this.heightRatio)
+					+ this.yOff;
+			copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
+					+ copy.xOff;
+			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
+					+ copy.yOff;
 
-					@Override
-					public void action(Object a) {
-						loadTexture();
-						copy.id = id;
-						copy._isLoaded = _isLoaded;
-					}
-				};
-				LSystem.load(update);
-			}
 			isChild = true;
 			childs.put(hashCode, copy);
 			return copy;
@@ -512,55 +474,24 @@ public class LTexture extends Painter implements LRelease {
 
 			final LTexture copy = new LTexture();
 
-			if (_isLoaded) {
-				copy.parent = LTexture.this;
-				copy.id = id;
-				copy._isLoaded = _isLoaded;
-				copy.gfx = gfx;
-				copy.config = config;
-				copy.source = source;
-				copy.scale = scale;
-				copy.scaleSize = true;
-				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
-				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
-				copy.displayWidth = this.displayWidth * this.widthRatio;
-				copy.displayHeight = this.displayHeight * this.heightRatio;
-				copy.xOff = this.xOff;
-				copy.yOff = this.yOff;
-				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
-						+ copy.xOff;
-				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
-						+ copy.yOff;
-			} else {
-				copy.parent = LTexture.this;
-				copy.gfx = gfx;
-				copy.config = config;
-				copy.source = source;
-				copy.scale = scale;
-				copy.scaleSize = true;
-				copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
-				copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
-				copy.displayWidth = this.displayWidth * this.widthRatio;
-				copy.displayHeight = this.displayHeight * this.heightRatio;
-				copy.xOff = this.xOff;
-				copy.yOff = this.yOff;
-				copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
-						+ copy.xOff;
-				copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
-						+ copy.yOff;
-
-				Updateable update = new Updateable() {
-
-					@Override
-					public void action(Object a) {
-						loadTexture();
-						copy.id = id;
-						copy._isLoaded = _isLoaded;
-					}
-				};
-				LSystem.load(update);
-
-			}
+			copy.parent = LTexture.this;
+			copy.id = id;
+			copy._isLoaded = _isLoaded;
+			copy.gfx = gfx;
+			copy.config = config;
+			copy.source = source;
+			copy.scale = scale;
+			copy.scaleSize = true;
+			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
+			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
+			copy.displayWidth = this.displayWidth * this.widthRatio;
+			copy.displayHeight = this.displayHeight * this.heightRatio;
+			copy.xOff = this.xOff;
+			copy.yOff = this.yOff;
+			copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio)
+					+ copy.xOff;
+			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
+					+ copy.yOff;
 
 			isChild = true;
 			childs.put(hashCode, copy);

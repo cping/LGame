@@ -62,26 +62,6 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
-	public ByteBuffer clone(final ByteBuffer dst) {
-		if (dst == null) {
-			return null;
-		}
-		int size = dst.limit();
-		ByteBuffer copy = newByteBuffer(size);
-		copy(copy, dst, size);
-		return copy;
-	}
-
-	public FloatBuffer clone(final FloatBuffer dst) {
-		if (dst == null) {
-			return null;
-		}
-		int size = dst.limit();
-		FloatBuffer copy = newFloatBuffer(size);
-		copy(copy, dst, size);
-		return copy;
-	}
-
 	public void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
@@ -110,60 +90,59 @@ public final class NativeSupport implements Support {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public void copy(Buffer src, Buffer dst, int numElements) {
-		putBuffer(dst, src, numElements);
-	}
-
 	private void putBuffer(Buffer dst, Object src, int offset, int numFloats) {
-		dst.clear();
 		if (dst instanceof ByteBuffer) {
-			byte[] buffer = (byte[]) src;
-			ByteBuffer writer = (ByteBuffer) dst;
-			writer.limit(numFloats);
-			writer.put(buffer, offset, numFloats);
-		} else if (dst instanceof ShortBuffer) {
-			short[] buffer = (short[]) src;
-			ShortBuffer writer = (ShortBuffer) dst;
-			writer.limit(numFloats);
-			writer.put(buffer, offset, numFloats);
-		} else if (dst instanceof IntBuffer) {
-			int[] buffer = (int[]) src;
-			IntBuffer writer = (IntBuffer) dst;
-			writer.limit(numFloats);
-			writer.put(buffer, offset, numFloats);
-		} else if (dst instanceof FloatBuffer) {
-			float[] buffer = (float[]) src;
-			FloatBuffer writer = (FloatBuffer) dst;
-			writer.limit(numFloats);
-			writer.put(buffer, offset, numFloats);
-		} else {
-			throw new RuntimeException("Can't copy to a "
-					+ dst.getClass().getName() + " instance");
-		}
-	}
-
-	private void putBuffer(Buffer dst, Buffer src, int numFloats) {
-		dst.clear();
-		if (dst instanceof ByteBuffer) {
-			ByteBuffer buffer = (ByteBuffer) dst;
-			buffer.limit(numFloats);
-			buffer.put((ByteBuffer) src);
+			if (src instanceof byte[]) {
+				ByteBuffer byteBuffer = (ByteBuffer) dst;
+				int oldPosition = byteBuffer.position();
+				byteBuffer.put((byte[]) src, offset, numFloats);
+				byteBuffer.position(oldPosition);
+				byteBuffer.limit(oldPosition + numFloats);
+			} else {
+				FloatBuffer floatBuffer = asFloatBuffer(dst);
+				floatBuffer.clear();
+				dst.position(0);
+				floatBuffer.put((float[]) src, offset, numFloats);
+				dst.position(0);
+				dst.limit(numFloats << 2);
+			}
 		} else if (dst instanceof ShortBuffer) {
 			ShortBuffer buffer = (ShortBuffer) dst;
-			buffer.limit(numFloats);
-			buffer.put((ShortBuffer) src);
+			int oldPosition = buffer.position();
+			buffer.put((short[]) src, offset, numFloats);
+			buffer.position(oldPosition);
+			buffer.limit(oldPosition + numFloats);
 		} else if (dst instanceof IntBuffer) {
 			IntBuffer buffer = (IntBuffer) dst;
-			buffer.limit(numFloats);
-			buffer.put((IntBuffer) src);
+			int[] source = (int[]) src;
+			int oldPosition = buffer.position();
+			buffer.put(source, offset, numFloats);
+			buffer.position(oldPosition);
+			buffer.limit(oldPosition + numFloats);
 		} else if (dst instanceof FloatBuffer) {
-			FloatBuffer buffer = (FloatBuffer) dst;
-			buffer.limit(numFloats);
-			buffer.put((FloatBuffer) src);
+			FloatBuffer floatBuffer = asFloatBuffer(dst);
+			floatBuffer.clear();
+			dst.position(0);
+			floatBuffer.put((float[]) src, offset, numFloats);
+			dst.position(0);
+			dst.limit(numFloats);
 		} else {
 			throw new RuntimeException("Can't copy to a "
 					+ dst.getClass().getName() + " instance");
 		}
+		dst.position(0);
+	}
+
+	private final static FloatBuffer asFloatBuffer(final Buffer data) {
+		FloatBuffer buffer = null;
+		if (data instanceof ByteBuffer)
+			buffer = ((ByteBuffer) data).asFloatBuffer();
+		else if (data instanceof FloatBuffer)
+			buffer = (FloatBuffer) data;
+		if (buffer == null)
+			throw new RuntimeException(
+					"data must be a ByteBuffer or FloatBuffer");
+		return buffer;
 	}
 
 	public ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {

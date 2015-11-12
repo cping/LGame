@@ -52,16 +52,6 @@ public class AndroidSupport implements Support {
 	}
 
 	@Override
-	public ByteBuffer clone(ByteBuffer dst) {
-		return NativeSupport.clone(dst);
-	}
-
-	@Override
-	public FloatBuffer clone(FloatBuffer dst) {
-		return NativeSupport.clone(dst);
-	}
-
-	@Override
 	public void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
 		NativeSupport.copy(src, srcOffset, dst, numElements);
 	}
@@ -79,12 +69,6 @@ public class AndroidSupport implements Support {
 	@Override
 	public void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
 		NativeSupport.copy(src, srcOffset, dst, numElements);
-	}
-
-
-	@Override
-	public void copy(Buffer src, Buffer dst, int numElements) {
-		NativeSupport.copy(src, dst, numElements);
 	}
 
 	@Override
@@ -125,11 +109,6 @@ public class AndroidSupport implements Support {
 	@Override
 	public IntBuffer newIntBuffer(int numInts) {
 		return NativeSupport.newIntBuffer(numInts);
-	}
-
-	@Override
-	public void put(Buffer buffer, float[] source, int offset, int length) {
-		NativeSupport.put(buffer, source, offset, length);
 	}
 
 	@Override

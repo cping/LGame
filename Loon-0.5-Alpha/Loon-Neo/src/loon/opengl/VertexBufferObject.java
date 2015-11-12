@@ -85,7 +85,7 @@ public class VertexBufferObject implements VertexData {
 	@Override
 	public void setVertices(float[] vertices, int offset, int count) {
 		isDirty = true;
-		LSystem.base().support().copy(vertices, byteBuffer, offset, count);
+		LSystem.base().support().copy(vertices, buffer, offset, count);
 		buffer.position(0);
 		buffer.limit(count);
 		bufferChanged();

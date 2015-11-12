@@ -55,10 +55,6 @@ public interface Support {
 
 	public FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats);
 
-	public ByteBuffer clone(final ByteBuffer dst);
-
-	public FloatBuffer clone(final FloatBuffer dst);
-
 	public void copy(byte[] src, int srcOffset, Buffer dst, int numElements);
 
 	public void copy(short[] src, int srcOffset, Buffer dst, int numElements);
@@ -66,8 +62,6 @@ public interface Support {
 	public void copy(int[] src, int srcOffset, Buffer dst, int numElements);
 
 	public void copy(float[] src, int srcOffset, Buffer dst, int numElements);
-
-	public void copy(Buffer src, Buffer dst, int numElements);
 
 	public ByteBuffer replaceBytes(ByteBuffer dst, float[] src);
 
@@ -84,9 +78,6 @@ public interface Support {
 	public ShortBuffer newShortBuffer(int numShorts);
 
 	public IntBuffer newIntBuffer(int numInts);
-
-	public void put(final Buffer buffer, final float[] source,
-			final int offset, final int length);
 
 	public int getAllocatedBytesUnsafe();
 

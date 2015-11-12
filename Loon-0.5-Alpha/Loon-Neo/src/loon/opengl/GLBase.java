@@ -43,17 +43,11 @@ public abstract class GLBase implements LRelease {
 	}
 
 	public void flush() {
-		if (!begun) {
-			throw new IllegalStateException(getClass().getSimpleName()
-					+ " flush() without begin()");
-		}
+		
 	}
 
 	public void end() {
-		if (!begun){
-			throw new IllegalStateException(getClass().getSimpleName()
-					+ " mismatched end()");
-		}
+	
 		try {
 			flush();
 		}catch(Exception ex){
@@ -62,6 +56,7 @@ public abstract class GLBase implements LRelease {
 		
 			begun = false;
 		}
+	
 	}
 
 	@Override

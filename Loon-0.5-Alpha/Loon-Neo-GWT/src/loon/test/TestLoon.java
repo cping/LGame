@@ -303,7 +303,7 @@ remove(this);
 		// target size
 		setting.width_zoom = 640;
 		setting.height_zoom = 480;
-		setting.isFPS = false;
+		setting.isFPS = true;
 		setting.fontName = "黑体";
 		setting.rootId = "embed-loon.test.TestLoon";
 		//按屏幕缩放比例缩放

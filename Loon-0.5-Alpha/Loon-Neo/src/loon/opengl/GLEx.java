@@ -2330,6 +2330,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 	}
 
+	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
+		drawLine(x1, y1, x2, y2, getPixSkip());
+	}
+
 	protected void drawPointNative(float x, float y, int skip) {
 		if (!inside(x, y)) {
 			if (patternTex != null) {

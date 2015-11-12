@@ -27,14 +27,15 @@ import java.nio.ShortBuffer;
 import loon.LSystem;
 
 public class IndexArray implements IndexData {
-	 IntBuffer tmpHandle ;
+	IntBuffer tmpHandle;
 
 	ShortBuffer buffer;
 	ByteBuffer byteBuffer;
 
 	public IndexArray(int maxIndices) {
-		byteBuffer = LSystem.base().support().newUnsafeByteBuffer(maxIndices * 2);
-		  tmpHandle = LSystem.base().support().newIntBuffer(1);
+		byteBuffer = LSystem.base().support()
+				.newUnsafeByteBuffer(maxIndices * 2);
+		tmpHandle = LSystem.base().support().newIntBuffer(1);
 		buffer = byteBuffer.asShortBuffer();
 		buffer.flip();
 		byteBuffer.flip();
