@@ -476,9 +476,9 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	 */
 	public static native WebGLRenderingContext getContext(CanvasElement canvas,
 			WebGLContextAttributes attributes) /*-{
-		var names = [ "webgl", "experimental-webgl", "experimental-webgl2",
-				"moz-webgl", "webkit-webgl", "webkit-3d", "3d", "opera-3d",
-				"ms-webgl", "ms-3d" ];
+		var names = [ "webgl", "experimental-webgl", "moz-webgl",
+				"webkit-webgl", "webkit-3d", "3d", "opera-3d", "ms-webgl",
+				"ms-3d", "experimental-webgl2" ];
 		for (var i = 0; i < names.length; i++) {
 			try {
 				var ctx = canvas.getContext(names[i], attributes);
@@ -1515,6 +1515,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	 */
 	public final native <T extends WebGLObject> T getFramebufferAttachmentParametero(
 			int target, int attachment, int pname) /*-{
-    return this.getFramebufferAttachmentParameter(target, attachment, pname);
-  }-*/;
+		return this
+				.getFramebufferAttachmentParameter(target, attachment, pname);
+	}-*/;
 }

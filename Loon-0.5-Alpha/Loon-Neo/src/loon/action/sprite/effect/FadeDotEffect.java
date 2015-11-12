@@ -99,7 +99,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 
 	private ArrayList<Dot> _dots = new ArrayList<Dot>();
 
-	private int _count = 5;
+	private int _count = 4;
 
 	private int _width;
 

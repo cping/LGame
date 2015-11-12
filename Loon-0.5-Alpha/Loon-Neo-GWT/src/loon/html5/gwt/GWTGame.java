@@ -33,16 +33,39 @@ import loon.jni.NativeSupport;
 import loon.jni.TimerCallback;
 import loon.utils.reply.Act;
 
+import com.google.gwt.animation.client.AnimationScheduler;
+import com.google.gwt.animation.client.AnimationScheduler.AnimationCallback;
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Panel;
 
 public class GWTGame extends LGame {
 
+	private static final int MIN_DELAY = 5;
+
+	/**
+	 * 由于手机版的浏览器对webgl支持实在各种奇葩，不同手机环境差异实在惊人，干脆把常用的刷新方式都写出来，用户自己选……
+	 */
+	public static enum Repaint {
+		//RequestAnimationFrame效率最高
+		//Schedule在某些情况下更适用（有间断时）
+		//AnimationScheduler本质是前两者的api混合，会等待canvas渲染后刷新，虽然效率最低，但是最稳，不容易造成webgl卡死现象
+		//为了稳定考虑，所以默认用这个.
+		RequestAnimationFrame, Schedule, AnimationScheduler;
+	}
+
 	public static class GWTSetting extends LSetting {
+
+		// 经过几天来的实测，webgl对不同浏览器（以及在不同手机环境）下的差异太大，于是把刷新模式也交给用户定制好了……
+		// 暂时来说，canvas还是目前手机版html5的王道，webgl差异不解决，很难推（大家都用chrome世界就完美了……）
+		/**经过几天的反复测试，最终还是默认用gwt提供的AnimationScheduler刷新（本质还是RequestAnimationFrame
+		 * 但是不同平台上综合来说，这个有对象绑定，会匀速刷新canvas，不容易造成卡死……）**/
+		public Repaint repaint = Repaint.AnimationScheduler;
 
 		// 是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
 		public boolean preferFlash = false;
@@ -66,7 +89,7 @@ public class GWTGame extends LGame {
 
 		public boolean preserveDrawingBuffer = false;
 
-		//如果此项开启，按照屏幕大小等比缩放
+		// 如果此项开启，按照屏幕大小等比缩放
 		public boolean useRatioScaleFactor = false;
 
 		// 需要绑定的层id
@@ -200,31 +223,56 @@ public class GWTGame extends LGame {
 
 	private boolean initGwt = false;
 
-	public void start() {
+	private void init() {
 		if (!initGwt) {
 			game.initialize();
 			initGwt = true;
 		}
-		requestAnimationFrame(game.setting.fps, new TimerCallback() {
+	}
 
-			@Override
-			public void fire() {
-				requestAnimationFrame(game.setting.fps, this);
-				emitFrame();
-			}
-		});
+	public void start() {
+		Repaint repaint = game.config.repaint;
+		// 此处使用了三种不同的画面刷新模式，万一有浏览器刷不动，大家可以换模式看看……
+		switch (repaint) {
+		case RequestAnimationFrame:
+			requestAnimationFrame(game.setting.fps, new TimerCallback() {
 
-		/*
-		 * 亲测AnimationScheduler作用不大……
-		 * 
-		 * AnimationScheduler.get().requestAnimationFrame(new
-		 * AnimationCallback() {
-		 * 
-		 * @Override public void execute(double timestamp) { emitFrame();
-		 * AnimationScheduler.get().requestAnimationFrame(this,
-		 * graphics.canvas); } }, graphics.canvas);
-		 */
+				@Override
+				public void fire() {
+					init();
+					requestAnimationFrame(game.setting.fps, this);
+					emitFrame();
+				}
+			});
+			break;
+		case AnimationScheduler:
+			AnimationScheduler.get().requestAnimationFrame(
+					new AnimationCallback() {
 
+						@Override
+						public void execute(double timestamp) {
+							init();
+							emitFrame();
+							AnimationScheduler.get().requestAnimationFrame(
+									this, graphics.canvas);
+						}
+					}, graphics.canvas);
+			break;
+		case Schedule:
+			final int framed = (int) ((1f / game.setting.fps) * 1000f);
+			new Timer() {
+				@Override
+				public void run() {
+					init();
+					Duration duration = new Duration();
+					emitFrame();
+					this.schedule(Math.max(MIN_DELAY,
+							framed - duration.elapsedMillis()));
+
+				}
+			}.schedule(framed);
+			break;
+		}
 	}
 
 	@Override
@@ -296,7 +344,7 @@ public class GWTGame extends LGame {
 		var fn = function() {
 			callback.@loon.jni.TimerCallback::fire()();
 		};
-		if (frameRate != 60) {
+		if (frameRate < 60) {
 			$wnd.setTimeout(fn, 1000 / frameRate);
 		} else {
 			if ($wnd.requestAnimationFrame) {

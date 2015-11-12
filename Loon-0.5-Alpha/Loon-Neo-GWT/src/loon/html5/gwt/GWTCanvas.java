@@ -45,7 +45,6 @@ public class GWTCanvas extends Canvas {
 		this.ctx = image.canvas.getContext2d();
 		float scale = image.scale().factor;
 		this.ctx.scale(scale, scale);
-		this.ctx.setGlobalCompositeOperation(com.google.gwt.canvas.dom.client.Context2d.Composite.SOURCE_OVER);
 	}
 
 	@Override

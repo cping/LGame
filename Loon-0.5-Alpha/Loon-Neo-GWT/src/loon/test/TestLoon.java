@@ -10,6 +10,7 @@ import loon.event.GameTouch;
 import loon.event.Updateable;
 import loon.font.LFont;
 import loon.html5.gwt.GWTGame.GWTSetting;
+import loon.html5.gwt.GWTGame.Repaint;
 import loon.html5.gwt.GWTProgressDef;
 import loon.html5.gwt.Loon;
 import loon.opengl.GLEx;
@@ -303,6 +304,7 @@ remove(this);
 		// target size
 		setting.width_zoom = 640;
 		setting.height_zoom = 480;
+		setting.repaint = Repaint.AnimationScheduler;
 		setting.isFPS = true;
 		setting.fontName = "黑体";
 		setting.rootId = "embed-loon.test.TestLoon";

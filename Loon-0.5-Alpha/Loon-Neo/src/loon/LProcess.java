@@ -140,7 +140,7 @@ public class LProcess extends PlayerUtils {
 			}
 		});
 	}
-	
+
 	private final static void callUpdateable(final ArrayList<Updateable> list) {
 		ArrayList<Updateable> loadCache;
 		synchronized (list) {
@@ -269,46 +269,77 @@ public class LProcess extends PlayerUtils {
 				if (currentScreen != null) {
 					setTransition(screen.onTransition());
 				} else {
-					//为了防止画面单调，Loon默认为无设定Transition的，首个Screen随机增加一个特效
-					//不想使用，或者需要设定的话，请重载Screen的onTransition函数。
-					//不使用：返回:	LTransition.newEmpty()
-					//使用：返回: 设定或者自定义一个LTransition对象.
+					// 为了防止画面单调，Loon默认为无设定Transition的，首个Screen随机增加一个特效
+					// 不想使用，或者需要设定的话，请重载Screen的onTransition函数。
+					// 不使用：返回: LTransition.newEmpty()
+					// 使用：返回: 设定或者自定义一个LTransition对象.
 					LTransition transition = screen.onTransition();
 					if (transition == null) {
-						int rad = MathUtils.random(0, 8);
-						switch (rad) {
-						case 0:
-							transition = LTransition.newFadeIn();
-							break;
-						case 1:
-							transition = LTransition.newArc();
-							break;
-						case 2:
-							transition = LTransition
-									.newSplitRandom(LColor.black);
-							break;
-						case 3:
-							transition = LTransition
-									.newCrossRandom(LColor.black);
-							break;
-						case 4:
-							transition = LTransition
-									.newFadeOvalIn(LColor.black);
-							break;
-						case 5:
-							transition = LTransition.newPixelWind(LColor.white);
-							break;
-						case 6:
-							transition = LTransition
-									.newPixelDarkOut(LColor.black);
-							break;
-						case 7:
-							transition = LTransition
-									.newPixelThunder(LColor.black);
-							break;
-						case 8:
-							transition = LTransition.newFadeDotIn(LColor.black);
-							break;
+						if (LSystem.isHTML5()) {
+							int rad = MathUtils.random(0, 5);
+							switch (rad) {
+							case 0:
+								transition = LTransition.newFadeIn();
+								break;
+							case 1:
+								transition = LTransition
+										.newSplitRandom(LColor.black);
+								break;
+							case 2:
+								transition = LTransition
+										.newCrossRandom(LColor.black);
+								break;
+							case 3:
+								transition = LTransition
+										.newPixelWind(LColor.white);
+								break;
+							case 4:
+								transition = LTransition
+										.newPixelDarkOut(LColor.black);
+								break;
+							case 5:
+								transition = LTransition
+										.newPixelThunder(LColor.black);
+								break;
+							}
+						} else {
+							int rad = MathUtils.random(0, 8);
+							switch (rad) {
+							case 0:
+								transition = LTransition.newFadeIn();
+								break;
+							case 1:
+								transition = LTransition.newArc();
+								break;
+							case 2:
+								transition = LTransition
+										.newSplitRandom(LColor.black);
+								break;
+							case 3:
+								transition = LTransition
+										.newCrossRandom(LColor.black);
+								break;
+							case 4:
+								transition = LTransition
+										.newFadeOvalIn(LColor.black);
+								break;
+							case 5:
+								transition = LTransition
+										.newPixelWind(LColor.white);
+								break;
+							case 6:
+								transition = LTransition
+										.newPixelDarkOut(LColor.black);
+								break;
+							case 7:
+								transition = LTransition
+										.newPixelThunder(LColor.black);
+								break;
+							case 8:
+								transition = LTransition
+										.newFadeDotIn(LColor.black);
+								break;
+							}
 						}
 					}
 					setTransition(transition);

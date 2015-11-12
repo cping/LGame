@@ -127,9 +127,9 @@ public class FadeOvalEffect extends LObject implements ISprite {
 		}
 		if (this._elapsed > -1) {
 			int tmp = g.getPixSkip();
-			boolean usetex = g.alltextures() && LSystem.isHTML5();
+			boolean usetex = LSystem.isHTML5();
 			if (usetex) {
-				g.setPixSkip(12);
+				g.setPixSkip(10);
 			}
 			int old = g.color();
 			if (usetex) {

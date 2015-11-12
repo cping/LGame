@@ -31,6 +31,7 @@ import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
 import loon.html5.gwt.GWTGame.GWTSetting;
+import loon.html5.gwt.GWTGame.Repaint;
 import loon.html5.gwt.soundmanager2.SoundManager;
 import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.html5.gwt.preloader.Preloader;
@@ -154,6 +155,10 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			config.copy(this.setting);
 		}
 		this.setting = config;
+		//gwt中提供的AnimationScheduler默认不能设置间隔，所以转个能设置的默认（走setTimeout）
+		if (config.fps != 60 && config.repaint == Repaint.AnimationScheduler) {
+			config.repaint = Repaint.RequestAnimationFrame;
+		}
 		this.progress = config.progress;
 		if (this.progress == null) {
 			boolean flag = (config.internalRes == null && !config.jsloadRes);

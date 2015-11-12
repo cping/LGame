@@ -32,7 +32,7 @@ public abstract class PixmapFImpl {
 
 	protected final static int def_skip = 2;
 
-	protected final static int def_skip_html5 = 6;
+	protected final static int def_skip_html5 = 8;
 
 	private RectF temp_rect = new RectF();
 
