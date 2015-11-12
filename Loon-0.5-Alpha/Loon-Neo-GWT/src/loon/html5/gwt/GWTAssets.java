@@ -39,7 +39,6 @@ import com.google.gwt.canvas.dom.client.ImageData;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
@@ -245,7 +244,6 @@ public class GWTAssets extends Assets {
 	protected ImageImpl createImage(boolean async, int rwid, int rhei,
 			String source) {
 		ImageElement img = Document.get().createImageElement();
-		setCrossOrigin(img, "anonymous");
 		img.setSrc(source);
 		return new GWTImage(game.graphics(), game.graphics().scale(), img,
 				source);
@@ -400,15 +398,10 @@ public class GWTAssets extends Assets {
 		CanvasElement elem = Document.get().createCanvasElement();
 		elem.setWidth(w);
 		elem.setHeight(h);
-		setCrossOrigin(elem, "anonymous");
 		Context2d context = elem.getContext2d();
 		context.setFillStyle("rgba(255,255,255,255)");
 		context.fillRect(0, 0, w, h);
 		return elem;
 	}
 
-	private native void setCrossOrigin(Element elem, String state) /*-{
-		if ('crossOrigin' in elem)
-			elem.setAttribute('crossOrigin', state);
-	}-*/;
 }

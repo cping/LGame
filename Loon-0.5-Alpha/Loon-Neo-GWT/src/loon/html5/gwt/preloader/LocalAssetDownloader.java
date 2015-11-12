@@ -4,7 +4,6 @@ import loon.LSystem;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 import loon.utils.ObjectMap;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.typedarrays.shared.Int8Array;
@@ -290,16 +289,10 @@ public class LocalAssetDownloader extends IDownloader {
 					}
 				}
 			});
-			setCrossOrigin(image, "anonymous");
 			setOnProgress(listener);
 			image.setSrc("data:" + mimeType + ";base64," + base64);
 		}
 	}
-
-	private native void setCrossOrigin(Element elem, String state) /*-{
-		if ('crossOrigin' in elem)
-			elem.setAttribute('crossOrigin', state);
-	}-*/;
 
 	public boolean isTryInline() {
 		return tryInline;

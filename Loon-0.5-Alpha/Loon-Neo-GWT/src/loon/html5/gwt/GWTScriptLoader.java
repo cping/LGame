@@ -12,6 +12,7 @@ import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.resources.client.ExternalTextResource;
 import com.google.gwt.resources.client.ResourceCallback;
 import com.google.gwt.resources.client.ResourceException;
@@ -41,6 +42,17 @@ public class GWTScriptLoader {
 
 		public void onFaild(int states, String statesText);
 	}
+
+	/**
+	 * 跨域标记，亲测部分浏览器有反作用，慎用
+	 * 
+	 * @param elem
+	 * @param state
+	 */
+	public native void setCrossOrigin(Element elem, String state) /*-{
+		if ('crossOrigin' in elem)
+			elem.setAttribute('crossOrigin', state);
+	}-*/;
 
 	public static void loadBinaryFile(String url,
 			final LoadBinaryListener listener) {

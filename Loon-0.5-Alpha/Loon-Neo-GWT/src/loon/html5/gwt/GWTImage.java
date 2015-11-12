@@ -39,7 +39,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.ImageData;
 import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NativeEvent;
 
@@ -148,15 +147,9 @@ public class GWTImage extends ImageImpl {
 			canvas.setHeight(img.getHeight());
 			canvas.setWidth(img.getWidth());
 			canvas.getContext2d().drawImage(img, 0, 0);
-			setCrossOrigin(canvas, "anonymous");
 		}
 	}
 
-	private native void setCrossOrigin(Element elem, String state) /*-{
-		if ('crossOrigin' in elem)
-			elem.setAttribute('crossOrigin', state);
-	}-*/;
-	
 	@Override
 	public void getRGB(int startX, int startY, int width, int height,
 			int[] rgbArray, int offset, int scanSize) {
@@ -448,7 +441,7 @@ public class GWTImage extends ImageImpl {
 
 	@Override
 	protected void closeImpl() {
-	//	img = null;
-	//	canvas = null;
+		img = null;
+		canvas = null;
 	}
 }
