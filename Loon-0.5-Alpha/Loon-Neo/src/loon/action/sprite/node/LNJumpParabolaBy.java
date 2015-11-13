@@ -55,7 +55,7 @@ public class LNJumpParabolaBy extends LNAction {
 		super._firstTick = true;
 		super._isEnd = false;
 		super._target = node;
-		this._startPosition = super._target._position;
+		this._startPosition = super._target.getLocation();
 		this._a = ((this._refPoint.y / this._refPoint.x) - (this._delta.y / this._delta.x))
 				/ (this._refPoint.x - this._delta.x);
 		this._b = (this._delta.y / this._delta.x)

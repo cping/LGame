@@ -255,15 +255,12 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 		return low;
 	}
 
-	private long _elapsed;
-
 	@Override
 	public void update(long elapsedTime) {
-		this._elapsed = elapsedTime;
-	}
-
-	public long getElapsed() {
-		return this._elapsed;
+		super.update(elapsedTime);
+		for (int ii = 0, ll = children.size(); ii < ll; ii++) {
+			children.get(ii).update(elapsedTime);
+		}
 	}
 
 }

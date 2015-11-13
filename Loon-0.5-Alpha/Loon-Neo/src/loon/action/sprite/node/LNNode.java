@@ -24,7 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import loon.LObject;
 import loon.LSystem;
+import loon.action.ActionBind;
+import loon.action.map.Field2D;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.canvas.LColor;
@@ -37,9 +40,7 @@ import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-public class LNNode {
-
-	public Object Tag;
+public class LNNode extends LObject implements ActionBind {
 
 	public void down(GameTouch e) {
 
@@ -62,17 +63,17 @@ public class LNNode {
 		public int compare(LNNode p1, LNNode p2) {
 			if (p1 == null || p2 == null) {
 				if (p1 != null) {
-					return p1._zOrder;
+					return p1._layer;
 				}
 				if (p2 != null) {
-					return p2._zOrder;
+					return p2._layer;
 				}
 				return 0;
 			}
 			if (SysTouch.isDrag()) {
-				return p2._zOrder - p1._zOrder;
+				return p2._layer - p1._layer;
 			}
-			return match(p2._zOrder, p1._zOrder);
+			return match(p2._layer, p1._layer);
 		}
 	};
 	private Comparator<LNNode> comparator = LNNode.DEFAULT_COMPARATOR;
@@ -148,10 +149,6 @@ public class LNNode {
 
 	protected LNNode _parent = null;
 
-	protected final Vector2f _position = new Vector2f();
-
-	protected float _rotation;
-
 	protected float _rotationAlongX;
 
 	protected float _rotationAlongY;
@@ -159,8 +156,6 @@ public class LNNode {
 	protected final Vector2f _scale = new Vector2f(1f, 1f);
 
 	protected boolean _visible = true;
-
-	protected int _zOrder = 0;
 
 	protected boolean _autoDestroy;
 
@@ -258,8 +253,7 @@ public class LNNode {
 			}
 			if (zd > z) {
 				flag = true;
-				this.childs = CollectionUtils.expand(this.childs, 1,
-						false);
+				this.childs = CollectionUtils.expand(this.childs, 1, false);
 				childs[index] = node;
 				_childCount++;
 				node.setScreen(_screen);
@@ -269,8 +263,7 @@ public class LNNode {
 			index++;
 		}
 		if (!flag) {
-			this.childs = CollectionUtils.expand(this.childs, 1,
-					false);
+			this.childs = CollectionUtils.expand(this.childs, 1, false);
 			this.childs[0] = node;
 			this._childCount++;
 			node.setScreen(_screen);
@@ -363,14 +356,13 @@ public class LNNode {
 
 	}
 
-	public final void updateNode(float dt) {
+	@Override
+	public final void update(long elapsedTime) {
 		if (_isClose) {
 			return;
 		}
+		float dt = (float) elapsedTime / 1000f;
 		synchronized (childs) {
-			if (_isClose) {
-				return;
-			}
 			if (_parent != null) {
 				validatePosition();
 			}
@@ -396,7 +388,7 @@ public class LNNode {
 			for (int i = 0; i < this._childCount; i++) {
 				component = childs[i];
 				if (component != null) {
-					component.updateNode(dt);
+					component.update(elapsedTime);
 				}
 			}
 		}
@@ -424,8 +416,7 @@ public class LNNode {
 		for (int i = 0; i < this._childCount; i++) {
 			if (this.childs[i] == node) {
 				this.childs = CollectionUtils.cut(this.childs, i);
-				this.childs = CollectionUtils.expand(this.childs, 1,
-						false);
+				this.childs = CollectionUtils.expand(this.childs, 1, false);
 				this.childs[0] = node;
 				this.sortComponents();
 				break;
@@ -443,8 +434,7 @@ public class LNNode {
 		for (int i = 0; i < this._childCount; i++) {
 			if (this.childs[i] == node) {
 				this.childs = CollectionUtils.cut(this.childs, i);
-				this.childs = CollectionUtils.expand(this.childs, 1,
-						true);
+				this.childs = CollectionUtils.expand(this.childs, 1, true);
 				this.childs[this._childCount - 1] = node;
 				this.sortComponents();
 				break;
@@ -544,6 +534,8 @@ public class LNNode {
 		if (!this._visible) {
 			return;
 		}
+		float tmp = batch.alpha();
+		batch.setAlpha(_alpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {
 			if (childs[i] != null && childs[i].getZOrder() < 0) {
 				childs[i].drawNode(batch);
@@ -565,6 +557,7 @@ public class LNNode {
 				}
 			}
 		}
+		batch.setAlpha(tmp);
 	}
 
 	public void setOffset(float x, float y) {
@@ -582,8 +575,8 @@ public class LNNode {
 	private float[] pos = new float[2];
 
 	public float[] convertToWorldPos() {
-		pos[0] = _offset.x + _position.x;
-		pos[1] = _offset.y + _position.y;
+		pos[0] = _offset.x + _location.x;
+		pos[1] = _offset.y + _location.y;
 		if (this._parent != null) {
 			float[] result = this._parent.convertToWorldPos();
 			pos[0] += result[0];
@@ -679,7 +672,7 @@ public class LNNode {
 	}
 
 	public void setPosition(float x, float y) {
-		this._position.set(x, y);
+		this._location.set(x, y);
 	}
 
 	public void setPositionOrig(Vector2f v) {
@@ -687,12 +680,12 @@ public class LNNode {
 	}
 
 	public void setPositionOrig(float x, float y) {
-		this._position.set((x + this._anchor.x) - (_screenRect.width / 2),
+		this._location.set((x + this._anchor.x) - (_screenRect.width / 2),
 				(_screenRect.height / 2) - (y + this._anchor.y));
 	}
 
 	public void setPosition(Vector2f newPosition) {
-		if (!newPosition.equals(this._position)) {
+		if (!newPosition.equals(this._location)) {
 			this.position(newPosition);
 		}
 	}
@@ -762,11 +755,11 @@ public class LNNode {
 	}
 
 	public Vector2f getPosition() {
-		return this._position;
+		return this._location;
 	}
 
 	public void position(Vector2f v) {
-		this._position.set(v);
+		this._location.set(v);
 	}
 
 	public float getRotation() {
@@ -806,11 +799,11 @@ public class LNNode {
 	}
 
 	public final int getZOrder() {
-		return this._zOrder;
+		return this._layer;
 	}
 
 	public final void setZOrder(int value) {
-		this._zOrder = value;
+		this._layer = value;
 	}
 
 	public int getScreenWidth() {
@@ -846,7 +839,7 @@ public class LNNode {
 			if (limitX > tempWidth) {
 				tempX = (_screenRect.width - _size_width);
 			} else if (limitX < 1) {
-				tempX = _position.x();
+				tempX = _location.x();
 			}
 		} else {
 			return;
@@ -855,7 +848,7 @@ public class LNNode {
 			if (limitY > tempHeight) {
 				tempY = (_screenRect.height - _size_height);
 			} else if (limitY < 1) {
-				tempY = _position.y();
+				tempY = _location.y();
 			}
 		} else {
 			return;
@@ -1029,50 +1022,50 @@ public class LNNode {
 		}
 	}
 
-	public int getX() {
-		return _position.x();
+	public float getX() {
+		return _location.x;
 	}
 
-	public int getY() {
-		return _position.y();
+	public float getY() {
+		return _location.y;
 	}
 
 	public void setX(Integer x) {
-		if (this._position.x != x || x == 0) {
-			this._position.x = x;
+		if (this._location.x != x || x == 0) {
+			this._location.x = x;
 			this.validatePosition();
 		}
 	}
 
 	public void setX(float x) {
-		if (this._position.x != x || x == 0) {
-			this._position.x = x;
+		if (this._location.x != x || x == 0) {
+			this._location.x = x;
 			this.validatePosition();
 		}
 	}
 
 	public void setY(Integer y) {
-		if (this._position.y != y || y == 0) {
-			this._position.y = y;
+		if (this._location.y != y || y == 0) {
+			this._location.y = y;
 			this.validatePosition();
 		}
 	}
 
 	public void setY(float y) {
-		if (this._position.y != y || y == 0) {
-			this._position.y = y;
+		if (this._location.y != y || y == 0) {
+			this._location.y = y;
 			this.validatePosition();
 		}
 	}
 
-	public void setLocation(Vector2f location) {
-		setLocation(location.x, location.y);
+	public void setLocation(Vector2f _location) {
+		setLocation(_location.x, _location.y);
 	}
 
 	public void setLocation(float dx, float dy) {
-		if (this._position.x != dx || this._position.y != dy || dx == 0
+		if (this._location.x != dx || this._location.y != dy || dx == 0
 				|| dy == 0) {
-			this._position.set(dx, dy);
+			this._location.set(dx, dy);
 			this.validatePosition();
 		}
 	}
@@ -1083,11 +1076,11 @@ public class LNNode {
 				if (_parent != null && _limitMove) {
 					if (_parent.contains((int) (pos[0] + dx),
 							(int) (pos[1] + dy), _size_width, _size_height)) {
-						this._position.move(dx, dy);
+						this._location.move(dx, dy);
 						this.validatePosition();
 					}
 				} else {
-					this._position.move(dx, dy);
+					this._location.move(dx, dy);
 					this.validatePosition();
 				}
 			}
@@ -1116,8 +1109,8 @@ public class LNNode {
 			this._screenX = (int) pos[0];
 			this._screenY = (int) pos[1];
 		} else {
-			this._screenX = _position.x();
-			this._screenY = _position.y();
+			this._screenX = _location.x();
+			this._screenY = _location.y();
 		}
 		for (int i = 0; i < this._childCount; i++) {
 			if (this.childs[i] != null) {
@@ -1130,9 +1123,8 @@ public class LNNode {
 
 	public RectBox getRectBox() {
 		if (_rotation != 0) {
-			int[] result = MathUtils.getLimit(_position.getX(),
-					_position.getY(), getWidth(), getHeight(),
-					MathUtils.toDegrees(_rotation));
+			int[] result = MathUtils.getLimit(_location.getX(), _location.getY(),
+					getWidth(), getHeight(), MathUtils.toDegrees(_rotation));
 			if (temp_rect == null) {
 				temp_rect = new RectBox(result[0], result[1], result[2],
 						result[3]);
@@ -1141,10 +1133,10 @@ public class LNNode {
 			}
 		} else {
 			if (temp_rect == null) {
-				temp_rect = new RectBox(_position.getX(), _position.getY(),
+				temp_rect = new RectBox(_location.getX(), _location.getY(),
 						getWidth(), getHeight());
 			} else {
-				temp_rect.setBounds(_position.getX(), _position.getY(),
+				temp_rect.setBounds(_location.getX(), _location.getY(),
 						getWidth(), getHeight());
 			}
 		}
@@ -1213,11 +1205,11 @@ public class LNNode {
 	}
 
 	public int getCamX() {
-		return cam_x == 0 ? _position.x() : cam_x;
+		return cam_x == 0 ? _location.x() : cam_x;
 	}
 
 	public int getCamY() {
-		return cam_y == 0 ? _position.y() : cam_y;
+		return cam_y == 0 ? _location.y() : cam_y;
 	}
 
 	public boolean isClose() {
@@ -1251,6 +1243,36 @@ public class LNNode {
 				}
 			}
 		}
+	}
+
+	@Override
+	public Field2D getField2D() {
+		return null;
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean inContains(int x, int y, int w, int h) {
+		return getCollisionBox().contains(x, y, w, h);
+	}
+
+	public RectBox getCollisionBox() {
+		return getRect(getLocation().x(), getLocation().y(), getWidth(),
+				getHeight());
+	}
+
+	@Override
+	public int getContainerWidth() {
+		return 0;
+	}
+
+	@Override
+	public int getContainerHeight() {
+		return 0;
 	}
 
 }

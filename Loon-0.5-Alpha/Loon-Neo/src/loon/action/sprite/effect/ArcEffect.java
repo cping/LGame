@@ -99,8 +99,8 @@ public class ArcEffect extends LObject implements ISprite {
 			return;
 		}
 		tmpColor = g.color();
-		if (alpha > 0 && alpha < 1f) {
-			g.setAlpha(alpha);
+		if (_alpha > 0 && _alpha < 1f) {
+			g.setAlpha(_alpha);
 		}
 		g.setColor(color);
 		int tmp = g.getPixSkip();
@@ -125,7 +125,7 @@ public class ArcEffect extends LObject implements ISprite {
 		if(useTex){
 			g.setPixSkip(tmp);
 		}
-		if (alpha != 1f) {
+		if (_alpha != 1f) {
 			g.setAlpha(1f);
 		}
 		g.setColor(tmpColor);

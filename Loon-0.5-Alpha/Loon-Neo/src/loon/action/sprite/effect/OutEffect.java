@@ -95,13 +95,12 @@ public class OutEffect extends LObject implements ISprite {
 			return;
 		}
 		if (!complete) {
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(alpha);
+			float tmp = g.alpha();
+			if (_alpha > 0 && _alpha < 1) {
+				g.setAlpha(_alpha);
 			}
 			g.draw(texture, x(), y());
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(1);
-			}
+			g.setAlpha(tmp);
 		}
 	}
 

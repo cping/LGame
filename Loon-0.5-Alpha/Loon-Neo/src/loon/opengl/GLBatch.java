@@ -173,7 +173,7 @@ public class GLBatch implements LRelease {
 			return;
 		}
 		shader.begin();
-		shader.setUniformMatrix("u_projModelView", projModelView.toMatrix4());
+		shader.setUniformMatrix("u_projModelView", projModelView.toViewMatrix4());
 		for (int i = 0; i < numTexCoords; i++) {
 			shader.setUniformi(shaderUniformNames[i], i);
 		}

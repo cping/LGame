@@ -120,7 +120,7 @@ public class LNSprite extends LNNode {
 					rotation = convertToWorldRot();
 					scale = convertToWorldScale();
 				} else {
-					rotation = _rotation;
+					rotation = super._rotation;
 					scale[0] = _scale.x;
 					scale[1] = _scale.y;
 				}

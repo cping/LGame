@@ -77,32 +77,32 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		this.dstWidth = dw;
 		this.dstHeight = dh;
 		if (dw < 1 && dh < 1) {
-			this.rectBox = new RectBox(x, y, animation.getSpriteImage()
-					.width(), animation.getSpriteImage().height());
+			this.rectBox = new RectBox(x, y,
+					animation.getSpriteImage().width(), animation
+							.getSpriteImage().height());
 		} else {
 			this.rectBox = new RectBox(x, y, dw, dh);
 		}
 	}
-	
-	public SpriteBatchObject(float x, float y, 
-			Animation animation, TileMap map) {
+
+	public SpriteBatchObject(float x, float y, Animation animation, TileMap map) {
 		this.setLocation(x, y);
 		this.tiles = map;
 		this.animation = animation;
 		this.dstWidth = animation.getSpriteImage().width();
 		this.dstHeight = animation.getSpriteImage().height();
 		if (dstWidth < 1 && dstHeight < 1) {
-			this.rectBox = new RectBox(x, y, animation.getSpriteImage()
-					.width(), animation.getSpriteImage().height());
+			this.rectBox = new RectBox(x, y,
+					animation.getSpriteImage().width(), animation
+							.getSpriteImage().height());
 		} else {
 			this.rectBox = new RectBox(x, y, dstWidth, dstHeight);
 		}
 	}
-	
+
 	public void draw(SpriteBatch batch, float offsetX, float offsetY) {
-		if (alpha != 1f) {
-			batch.setAlpha(alpha);
-		}
+		float tmp = batch.color();
+		batch.setAlpha(_alpha);
 		if (!filterColor.equals(1f, 1f, 1f, 1f)) {
 			batch.setColor(filterColor);
 		}
@@ -200,9 +200,10 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 				}
 			}
 		}
-		if (alpha != 1f || !filterColor.equals(1f, 1f, 1f, 1f)) {
+		if (_alpha != 1f || !filterColor.equals(1f, 1f, 1f, 1f)) {
 			batch.resetColor();
 		}
+		batch.setAlpha(tmp);
 	}
 
 	public TileMap getTileMap() {

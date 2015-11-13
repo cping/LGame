@@ -58,10 +58,11 @@ public class SpriteLabel extends LObject implements ISprite {
 			g.setColor(color);
 			this.width = font.stringWidth(label);
 			this.height = (int) font.getHeight();
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(alpha);
+			if (_alpha > 0 && _alpha < 1) {
+				float tmp = g.alpha();
+				g.setAlpha(_alpha);
 				g.drawString(label, x(), y());
-				g.setAlpha(1.0F);
+				g.setAlpha(tmp);
 			} else {
 				g.drawString(label, x(), y());
 			}

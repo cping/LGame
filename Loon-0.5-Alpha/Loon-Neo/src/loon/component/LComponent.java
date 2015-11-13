@@ -22,7 +22,6 @@
 package loon.component;
 
 import loon.LObject;
-import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -38,8 +37,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
-public abstract class LComponent extends LObject implements ActionBind,
-		LRelease {
+public abstract class LComponent extends LObject implements ActionBind {
 
 	public static interface CallListener {
 
@@ -264,10 +262,10 @@ public abstract class LComponent extends LObject implements ActionBind,
 		final int width = this.getWidth();
 		final int height = this.getHeight();
 		g.saveTx();
-		if (rotation != 0) {
+		if (_rotation != 0) {
 			float centerX = this.screenX + width / 2;
 			float centerY = this.screenY + height / 2;
-			g.rotate(centerX, centerY, rotation);
+			g.rotate(centerX, centerY, _rotation);
 		} else if (!(scaleX == 1f && scaleY == 1f)) {
 			g.scale(scaleX, scaleY);
 		} else if (this.elastic) {
@@ -300,7 +298,7 @@ public abstract class LComponent extends LObject implements ActionBind,
 				this.createUI(g, this.screenX, this.screenY, this, this.imageUI);
 			}
 		}
-		if (rotation != 0 || !(scaleX == 1f && scaleY == 1f)) {
+		if (_rotation != 0 || !(scaleX == 1f && scaleY == 1f)) {
 			g.restoreTx();
 		} else if (this.elastic) {
 			g.clearClip();
@@ -491,8 +489,8 @@ public abstract class LComponent extends LObject implements ActionBind,
 		}
 	}
 
-	public void setLocation(Vector2f location) {
-		setLocation(location.x, location.y);
+	public void setLocation(Vector2f _location) {
+		setLocation(_location.x, _location.y);
 	}
 
 	public void setLocation(float dx, float dy) {
@@ -530,11 +528,11 @@ public abstract class LComponent extends LObject implements ActionBind,
 
 	public void validatePosition() {
 		if (parent != null) {
-			this.screenX = location.x() + this.parent.getScreenX();
-			this.screenY = location.y() + this.parent.getScreenY();
+			this.screenX = _location.x() + this.parent.getScreenX();
+			this.screenY = _location.y() + this.parent.getScreenY();
 		} else {
-			this.screenX = location.x();
-			this.screenY = location.y();
+			this.screenX = _location.x();
+			this.screenY = _location.y();
 		}
 	}
 

@@ -115,8 +115,9 @@ public class ScrollEffect extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		if (alpha > 0 && alpha < 1) {
-			g.setAlpha(alpha);
+		float tmp = g.alpha();
+		if (_alpha > 0 && _alpha < 1) {
+			g.setAlpha(_alpha);
 		}
 		switch (code) {
 		case Config.DOWN:
@@ -158,9 +159,7 @@ public class ScrollEffect extends LObject implements ISprite {
 			}
 			break;
 		}
-		if (alpha > 0 && alpha < 1) {
-			g.setAlpha(1f);
-		}
+		g.setAlpha(tmp);
 	}
 
 	public int getCount() {

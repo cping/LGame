@@ -280,7 +280,6 @@ public class Desktop implements LRelease {
 	 * @param y
 	 * @return
 	 */
-	@SuppressWarnings("resource")
 	private LComponent findComponent(int x, int y) {
 		if (this.modal != null && !this.modal.isContainer()) {
 			return null;

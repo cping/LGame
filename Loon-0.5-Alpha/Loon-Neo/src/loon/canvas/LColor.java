@@ -350,6 +350,10 @@ public class LColor implements Serializable {
 		setColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 	}
 
+	public LColor reset() {
+		return setColor(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
 	public int hashCode() {
 		int result = (r != +0.0f ? Float.floatToIntBits(r) : 0);
 		result = 31 * result + (g != +0.0f ? Float.floatToIntBits(g) : 0);

@@ -92,7 +92,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		this.noSequenceNumber = sequenceNumber++;
 		this.animation = animation;
 		this.isAnimation = true;
-		this.location.set(x, y);
+		this._location.set(x, y);
 		this.setImage(animation.getSpriteImage());
 	}
 
@@ -102,7 +102,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 
 	public Actor(LTexture image, int x, int y) {
 		this.noSequenceNumber = sequenceNumber++;
-		this.location.set(x, y);
+		this._location.set(x, y);
 		this.setImage(image);
 	}
 
@@ -128,9 +128,9 @@ public class Actor extends LObject implements ActionBind,LRelease {
 
 	protected void setSize(int w, int h) {
 		if (boundingRect != null) {
-			boundingRect.setBounds(location.x, location.y, w, h);
+			boundingRect.setBounds(_location.x, _location.y, w, h);
 		} else {
-			boundingRect = new RectBox(location.x, location.y, w, h);
+			boundingRect = new RectBox(_location.x, _location.y, w, h);
 		}
 	}
 
@@ -419,51 +419,51 @@ public class Actor extends LObject implements ActionBind,LRelease {
 
 	@Override
 	public int x() {
-		return location.x();
+		return _location.x();
 	}
 
 	@Override
 	public int y() {
-		return location.y();
+		return _location.y();
 	}
 
 	@Override
 	public float getX() {
-		return location.x;
+		return _location.x;
 	}
 
 	@Override
 	public float getY() {
-		return location.y;
+		return _location.y;
 	}
 
 	@Override
 	public float getRotation() {
-		return this.rotation;
+		return this._rotation;
 	}
 
 	/**
 	 * 决定当前对象旋转方向
 	 * 
-	 * @param rotation
+	 * @param _rotation
 	 */
 	@Override
-	public void setRotation(float rotation) {
-		if (rotation >= 360) {
-			if (rotation < 720) {
-				rotation -= 360;
+	public void setRotation(float _rotation) {
+		if (_rotation >= 360) {
+			if (_rotation < 720) {
+				_rotation -= 360;
 			} else {
-				rotation %= 360;
+				_rotation %= 360;
 			}
-		} else if (rotation < 0) {
-			if (rotation >= -360) {
-				rotation += 360;
+		} else if (_rotation < 0) {
+			if (_rotation >= -360) {
+				_rotation += 360;
 			} else {
-				rotation = 360 + rotation % 360;
+				_rotation = 360 + _rotation % 360;
 			}
 		}
-		if (this.rotation != rotation) {
-			this.rotation = rotation;
+		if (this._rotation != _rotation) {
+			this._rotation = _rotation;
 			this.boundingRect = null;
 			this.sizeChanged();
 		}
@@ -508,7 +508,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 
 	@Override
 	public void move(float x, float y) {
-		setLocationDrag(location.getX() + x, location.getY() + y);
+		setLocationDrag(_location.getX() + x, _location.getY() + y);
 	}
 
 	public void setX(int x) {
@@ -550,21 +550,21 @@ public class Actor extends LObject implements ActionBind,LRelease {
 
 	private void setLocationDrag(float x, float y) {
 		this.failIfNotInLayer();
-		float oldX = location.getX();
-		float oldY = location.getY();
+		float oldX = _location.getX();
+		float oldY = _location.getY();
 		if (this.gameLayer.isBounded()) {
-			location.x = this.limitValue(x, this.gameLayer.getWidth()
+			_location.x = this.limitValue(x, this.gameLayer.getWidth()
 					- getWidth());
-			location.y = this.limitValue(y, this.gameLayer.getHeight()
+			_location.y = this.limitValue(y, this.gameLayer.getHeight()
 					- getHeight());
 		} else {
-			location.x = x;
-			location.y = y;
+			_location.x = x;
+			_location.y = y;
 		}
-		if (location.x != oldX || location.y != oldY) {
+		if (_location.x != oldX || _location.y != oldY) {
 			if (this.boundingRect != null) {
-				float dx = (location.getX() - oldX) * this.gameLayer.cellSize;
-				float dy = (location.getY() - oldY) * this.gameLayer.cellSize;
+				float dx = (_location.getX() - oldX) * this.gameLayer.cellSize;
+				float dy = (_location.getY() - oldY) * this.gameLayer.cellSize;
 				this.boundingRect.setX(this.boundingRect.getX() + dx);
 				this.boundingRect.setY(this.boundingRect.getY() + dy);
 				for (int i = 0; i < 4; ++i) {
@@ -627,7 +627,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	public void setLocationInPixels(float x, float y) {
 		float xCell = this.gameLayer.toCellFloor(x);
 		float yCell = this.gameLayer.toCellFloor(y);
-		if (xCell != location.x || yCell != location.y) {
+		if (xCell != _location.x || yCell != _location.y) {
 			this.setLocationDrag(xCell, yCell);
 		}
 	}
@@ -655,10 +655,10 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	public RectBox getRectBox() {
 		RectBox tmp = getBoundingRect();
 		if (tmp == null) {
-			return getRect(location.x, location.y, getWidth() * scaleX,
+			return getRect(_location.x, _location.y, getWidth() * scaleX,
 					getHeight() * scaleY);
 		}
-		return getRect(location.x, location.y, tmp.width * scaleX, tmp.height
+		return getRect(_location.x, _location.y, tmp.width * scaleX, tmp.height
 				* scaleY);
 	}
 
@@ -697,17 +697,17 @@ public class Actor extends LObject implements ActionBind,LRelease {
 			int cellSize = layer.getCellSize();
 			int minY = 0;
 			if (this.image == null) {
-				width = location.x() * cellSize + cellSize;
-				height = location.y() * cellSize + cellSize;
+				width = _location.x() * cellSize + cellSize;
+				height = _location.y() * cellSize + cellSize;
 				this.boundingRect = new RectBox(width, height, 0, 0);
 				for (minY = 0; minY < 4; ++minY) {
 					this.xs[minY] = width;
 					this.ys[minY] = height;
 				}
 			} else {
-				this.boundingRect = MathUtils.getBounds(location.x,
-						location.y, this.image.getWidth(),
-						this.image.getHeight(), rotation);
+				this.boundingRect = MathUtils.getBounds(_location.x,
+						_location.y, this.image.getWidth(),
+						this.image.getHeight(), _rotation);
 			}
 		}
 	}
@@ -743,8 +743,8 @@ public class Actor extends LObject implements ActionBind,LRelease {
 
 	public float[] toPixels() {
 		float size = gameLayer.cellSize / 2;
-		pos[0] = location.x * gameLayer.cellSize + size;
-		pos[1] = location.y * gameLayer.cellSize + size;
+		pos[0] = _location.x * gameLayer.cellSize + size;
+		pos[1] = _location.y * gameLayer.cellSize + size;
 		return pos;
 	}
 
@@ -763,7 +763,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	private void failIfNotInLayer() {
 		if (this.gameLayer == null) {
 			throw new IllegalStateException(
-					"The actor has not been inserted into a Layer so it has no location yet !");
+					"The actor has not been inserted into a Layer so it has no _location yet !");
 		}
 	}
 
@@ -794,22 +794,22 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		if (this.image == null) {
 			if (other.image != null) {
 				thisBounds1 = this.gameLayer.getCellSize();
-				return other.containsPoint(location.x() * thisBounds1
-						+ thisBounds1 / 2, location.y() * thisBounds1
+				return other.containsPoint(_location.x() * thisBounds1
+						+ thisBounds1 / 2, _location.y() * thisBounds1
 						+ thisBounds1 / 2);
 			} else {
-				return location.x == other.location.x
-						&& location.y == other.location.y;
+				return _location.x == other._location.x
+						&& _location.y == other._location.y;
 			}
 		} else if (other.image == null) {
 			thisBounds1 = this.gameLayer.getCellSize();
-			return this.containsPoint(other.location.x() * thisBounds1
-					+ thisBounds1 / 2, other.location.y() * thisBounds1
+			return this.containsPoint(other._location.x() * thisBounds1
+					+ thisBounds1 / 2, other._location.y() * thisBounds1
 					+ thisBounds1 / 2);
 		} else {
 			RectBox thisBounds = this.getBoundingRect();
 			RectBox otherBounds = other.getBoundingRect();
-			if (this.rotation == 0 && other.rotation == 0) {
+			if (this._rotation == 0 && other._rotation == 0) {
 				return thisBounds.intersects(otherBounds);
 			} else if (!thisBounds.intersects(otherBounds)) {
 				return false;
@@ -833,21 +833,21 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	public List<?> getCollisionObjects(float dx, float dy,
 			String flag) {
 		this.failIfNotInLayer();
-		return this.gameLayer.getCollisionObjectsAt(location.x + dx, location.y
+		return this.gameLayer.getCollisionObjectsAt(_location.x + dx, _location.y
 				+ dy, flag);
 	}
 
 	public Actor getOnlyCollisionObject(float dx, float dy,
 			String flag) {
 		this.failIfNotInLayer();
-		return this.gameLayer.getOnlyObjectAt(this, location.x + dx, location.y
+		return this.gameLayer.getOnlyObjectAt(this, _location.x + dx, _location.y
 				+ dy, flag);
 	}
 
 	public List<?> getCollisionObjects(float radius, String flag) {
 		this.failIfNotInLayer();
-		List<?> inRange = this.gameLayer.getObjectsInRange(location.x,
-				location.y, radius, flag);
+		List<?> inRange = this.gameLayer.getObjectsInRange(_location.x,
+				_location.y, radius, flag);
 		inRange.remove(this);
 		return inRange;
 	}
@@ -890,8 +890,8 @@ public class Actor extends LObject implements ActionBind,LRelease {
 			if (this.boundingRect == null) {
 				this.calcBounds();
 			}
-			if (this.rotation != 0 && this.rotation != 90
-					&& this.rotation != 270) {
+			if (this._rotation != 0 && this._rotation != 90
+					&& this._rotation != 270) {
 				for (int v = 0; v < 4; ++v) {
 					int v1 = v + 1 & 3;
 					float edgeX = this.xs[v] - this.xs[v1];

@@ -304,7 +304,7 @@ public class Cycle extends LObject implements ISprite {
 		this.trailLength = 1;
 		this.scaleX = 1;
 		this.scaleY = 1;
-		this.alpha = 1;
+		this._alpha = 1;
 		this.blockWidth = w;
 		this.blockHeight = h;
 		this.blockHalfWidth = w / 2;
@@ -511,9 +511,9 @@ public class Cycle extends LObject implements ISprite {
 			} else {
 				point = points.get(index - pointsLength);
 			}
-			this.alpha = (i / (l - 1));
+			this._alpha = (i / (l - 1));
 			frameD = frame / (pointsLength - 1);
-			indexD = (int) alpha;
+			indexD = (int) _alpha;
 			if (lineWidth > 0) {
 				g.setLineWidth(lineWidth);
 			}
@@ -521,12 +521,12 @@ public class Cycle extends LObject implements ISprite {
 				g.scale(scaleX, scaleY);
 			}
 			tmpColor = g.color();
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(alpha);
+			if (_alpha > 0 && _alpha < 1) {
+				g.setAlpha(_alpha);
 			}
 			g.setColor(color);
-			step(g, point, indexD, frameD, color, alpha);
-			if (alpha != 1f) {
+			step(g, point, indexD, frameD, color, _alpha);
+			if (_alpha != 1f) {
 				g.setAlpha(1f);
 			}
 			g.setColor(tmpColor);

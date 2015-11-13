@@ -476,7 +476,7 @@ public class MoveObject extends SpriteBatchObject {
 
 	public float getRotationTo(float x, float y) {
 		float r = MathUtils.atan2(x - x(), y - y());
-		return ShapeUtils.getAngleDiff(rotation, r);
+		return ShapeUtils.getAngleDiff(_rotation, r);
 	}
 
 	public void close() {

@@ -21,23 +21,15 @@
  */
 package loon.component;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
+import loon.action.sprite.LayerSorter;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 
 public abstract class LContainer extends LComponent {
 
-	private static final Comparator<LComponent> DEFAULT_COMPARATOR = new Comparator<LComponent>() {
-		public int compare(LComponent o1, LComponent o2) {
-			return o2.getLayer() - o1.getLayer();
-		}
-	};
-
 	protected boolean locked;
 
-	private Comparator<LComponent> comparator = LContainer.DEFAULT_COMPARATOR;
+	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
 	private LComponent[] childs = new LComponent[0];
 
@@ -271,7 +263,7 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public void sortComponents() {
-		Arrays.sort(this.childs, this.comparator);
+		compSorter.sort(this.childs);
 	}
 
 	protected void transferFocus(LComponent component) {
@@ -334,19 +326,6 @@ public abstract class LContainer extends LComponent {
 		} else {
 			this.elastic = false;
 		}
-	}
-
-	public Comparator<LComponent> getComparator() {
-		return this.comparator;
-	}
-
-	public void setComparator(Comparator<LComponent> c) {
-		if (c == null) {
-			throw new NullPointerException("Comparator can not null !");
-		}
-
-		this.comparator = c;
-		this.sortComponents();
 	}
 
 	public LComponent findComponent(int x1, int y1) {

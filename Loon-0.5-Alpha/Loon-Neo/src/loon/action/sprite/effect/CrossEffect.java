@@ -101,66 +101,67 @@ public class CrossEffect extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		if (complete) {
-			if (ntexture != null) {
-				if (alpha > 0 && alpha < 1) {
-					g.setAlpha(alpha);
-				}
-				g.draw(ntexture, x(), y());
-				if (alpha != 1f) {
-					g.setAlpha(1f);
-				}
-			}
-			return;
-		}
-		if (alpha > 0 && alpha < 1) {
-			g.setAlpha(alpha);
-		}
-		part = 0;
-		left = 0;
-		right = 0;
-		tmp = null;
-		switch (code) {
-		default:
-			part = width / this.maxcount / 2;
-			for (int i = 0; i <= this.maxcount; i++) {
-				if (i <= this.count) {
-					tmp = this.ntexture;
-					if (tmp == null) {
-						continue;
+		float old = g.alpha();
+		try {
+			if (complete) {
+				if (ntexture != null) {
+					if (_alpha > 0 && _alpha < 1) {
+						g.setAlpha(_alpha);
 					}
-				} else {
-					tmp = this.otexture;
+					g.draw(ntexture, x(), y());
 				}
-				left = i * 2 * part;
-				right = width - ((i + 1) * 2 - 1) * part;
-				g.draw(tmp, x() + left, y(), part, height, left, 0,
-						left + part, height);
-				g.draw(tmp, x() + right, y(), part, height, right, 0, right
-						+ part, height);
+				return;
 			}
-			break;
-		case 1:
-			part = height / this.maxcount / 2;
-			for (int i = 0; i <= this.maxcount; i++) {
-				if (i <= this.count) {
-					tmp = this.ntexture;
-					if (tmp == null) {
-						continue;
+			if (_alpha > 0 && _alpha < 1) {
+				g.setAlpha(_alpha);
+			}
+			part = 0;
+			left = 0;
+			right = 0;
+			tmp = null;
+			switch (code) {
+			default:
+				part = width / this.maxcount / 2;
+				for (int i = 0; i <= this.maxcount; i++) {
+					if (i <= this.count) {
+						tmp = this.ntexture;
+						if (tmp == null) {
+							continue;
+						}
+					} else {
+						tmp = this.otexture;
 					}
-				} else {
-					tmp = this.otexture;
+					left = i * 2 * part;
+					right = width - ((i + 1) * 2 - 1) * part;
+					g.draw(tmp, x() + left, y(), part, height, left, 0, left
+							+ part, height);
+					g.draw(tmp, x() + right, y(), part, height, right, 0, right
+							+ part, height);
 				}
-				int up = i * 2 * part;
-				int down = height - ((i + 1) * 2 - 1) * part;
-				g.draw(tmp, 0, up, width, part, 0, up, width, up + part);
-				g.draw(tmp, 0, down, width, part, 0, down, width, down + part);
+				break;
+			case 1:
+				part = height / this.maxcount / 2;
+				for (int i = 0; i <= this.maxcount; i++) {
+					if (i <= this.count) {
+						tmp = this.ntexture;
+						if (tmp == null) {
+							continue;
+						}
+					} else {
+						tmp = this.otexture;
+					}
+					int up = i * 2 * part;
+					int down = height - ((i + 1) * 2 - 1) * part;
+					g.draw(tmp, 0, up, width, part, 0, up, width, up + part);
+					g.draw(tmp, 0, down, width, part, 0, down, width, down
+							+ part);
+				}
+				break;
 			}
-			break;
+		} finally {
+			g.setAlpha(old);
 		}
-		if (alpha != 1f) {
-			g.setAlpha(1f);
-		}
+
 	}
 
 	public void reset() {

@@ -158,12 +158,12 @@ public class SpriteButton extends LObject implements ISprite {
 	public void createUI(GLEx g) {
 		if (visible) {
 			float old = getAlpha();
-			if (alpha > 0f && alpha < 1f) {
-				setAlpha(alpha);
+			if (_alpha > 0f && _alpha < 1f) {
+				setAlpha(_alpha);
 			}
 			g.draw(image, x(), y(), width * scale, height * scale, rectSrc.x,
 					rectSrc.y, rectSrc.width, rectSrc.height);
-			if (alpha != 1f) {
+			if (_alpha != 1f) {
 				setAlpha(old);
 			}
 		}

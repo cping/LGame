@@ -127,8 +127,9 @@ public class SplitEffect extends LObject implements ISprite {
 			return;
 		}
 		if (!complete) {
-			if (alpha > 0 && alpha < 1f) {
-				g.setAlpha(alpha);
+			float tmp = g.alpha();
+			if (_alpha > 0 && _alpha < 1f) {
+				g.setAlpha(_alpha);
 			}
 			final float x1 = v1.x + getX();
 			final float y1 = v1.y + getY();
@@ -157,10 +158,7 @@ public class SplitEffect extends LObject implements ISprite {
 				break;
 
 			}
-
-			if (alpha != 1f) {
-				g.setAlpha(1f);
-			}
+            g.setAlpha(tmp);
 		}
 	}
 

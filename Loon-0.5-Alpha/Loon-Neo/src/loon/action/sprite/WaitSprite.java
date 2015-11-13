@@ -47,7 +47,7 @@ public class WaitSprite extends LObject implements ISprite {
 			this.style = s;
 			this.width = width;
 			this.height = height;
-			this.color = new LColor(0.0f, 0.0f, 0.0f);
+			this.color = new LColor(LColor.white);
 			switch (style) {
 			case 0:
 				int r1 = width / 8,
@@ -89,14 +89,14 @@ public class WaitSprite extends LObject implements ISprite {
 			g.setColor(color);
 			switch (style) {
 			case 0:
-				float alpha = 0.0f;
+				float _alpha = 0.0f;
 				int nx = x + width / 2 - (int) r * 4,
 				ny = y + height / 2 - (int) r * 4;
 				g.translate(nx, ny);
 				for (Iterator<Object> it = list.iterator(); it.hasNext();) {
 					RectBox s = (RectBox) it.next();
-					alpha = alpha + 0.1f;
-					g.setAlpha(alpha);
+					_alpha = _alpha + 0.1f;
+					g.setAlpha(_alpha);
 					g.fillOval(s.x, s.y, s.width, s.height);
 				}
 				g.setAlpha(1.0F);
@@ -140,7 +140,7 @@ public class WaitSprite extends LObject implements ISprite {
 		this.style = s;
 		this.wait = new DrawWait(s, w, h);
 		this.delay = new LTimer(120);
-		this.alpha = 1.0F;
+		this._alpha = 1f;
 		this.visible = true;
 		if (s > 1) {
 			int width = w / 2;
@@ -259,8 +259,8 @@ public class WaitSprite extends LObject implements ISprite {
 			return;
 		}
 		if (style < 2) {
-			if (alpha > 0.1 && alpha < 1.0) {
-				g.setAlpha(alpha);
+			if (_alpha > 0.1 && _alpha < 1.0) {
+				g.setAlpha(_alpha);
 				wait.draw(g, x(), y());
 				g.setAlpha(1.0F);
 			} else {
@@ -305,11 +305,11 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
-	public void setAlpha(float alpha) {
+	public void setAlpha(float a) {
 		if (cycle != null) {
-			cycle.setAlpha(alpha);
+			cycle.setAlpha(a);
 		} else {
-			this.alpha = alpha;
+			this._alpha = a;
 		}
 	}
 
@@ -317,7 +317,7 @@ public class WaitSprite extends LObject implements ISprite {
 		if (cycle != null) {
 			return cycle.getAlpha();
 		} else {
-			return alpha;
+			return _alpha;
 		}
 	}
 

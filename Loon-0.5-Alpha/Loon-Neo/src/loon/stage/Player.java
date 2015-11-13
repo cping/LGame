@@ -22,9 +22,11 @@ package loon.stage;
 
 import loon.LObject;
 import loon.LRelease;
+import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
+import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.BaseBatch;
@@ -35,10 +37,9 @@ import loon.utils.reply.Port;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
-public abstract class Player extends LObject implements LRelease {
+public abstract class Player extends LObject implements ActionBind, LRelease {
 
 	protected int flags;
-	protected float depth;
 
 	private String name;
 	private GroupPlayer parent;
@@ -46,13 +47,15 @@ public abstract class Player extends LObject implements LRelease {
 	private HitTester hitTester;
 	private BaseBatch batch;
 
-	private float scaleX = 1, scaleY = 1, rotation = 0;
+	private float scaleX = 1, scaleY = 1;
 	private final Affine2f affine = new Affine2f();
 
+	
 	private Origin origin = Origin.FIXED;
 	private float originX, originY;
 	protected int baseColor = LColor.DEF_COLOR;
-
+	protected long _elapsed;
+	
 	public static enum State {
 		REMOVED, ADDED, DISPOSED
 	}
@@ -165,7 +168,7 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public interface HitTester {
-		Player hitTest(Player layer, Vector2f p);
+		Player hitTest(Player l, Vector2f p);
 	}
 
 	public final VarView<State> state = Var.create(State.REMOVED);
@@ -275,8 +278,8 @@ public abstract class Player extends LObject implements LRelease {
 
 	public Affine2f affine() {
 		if (isSet(Flag.XFDIRTY)) {
-			float sina = MathUtils.sin(rotation), cosa = MathUtils
-					.cos(rotation);
+			float sina = MathUtils.sin(_rotation), cosa = MathUtils
+					.cos(_rotation);
 			float m00 = cosa * scaleX, m01 = sina * scaleY;
 			float m10 = -sina * scaleX, m11 = cosa * scaleY;
 			float tx = affine.tx(), ty = affine.ty();
@@ -286,18 +289,18 @@ public abstract class Player extends LObject implements LRelease {
 		return affine;
 	}
 
-	public float alpha() {
-		return alpha;
+	public float _alpha() {
+		return _alpha;
 	}
 
-	public Player alpha(float alpha) {
-		setAlpha(alpha);
+	public Player _alpha(float _alpha) {
+		setAlpha(_alpha);
 		return this;
 	}
 
-	public void setAlpha(float alpha) {
-		this.alpha = alpha;
-		int ialpha = (int) (0xFF * MathUtils.clamp(alpha, 0, 1));
+	public void setAlpha(float _alpha) {
+		this._alpha = _alpha;
+		int ialpha = (int) (0xFF * MathUtils.clamp(_alpha, 0, 1));
 		this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
 	}
 
@@ -307,7 +310,7 @@ public abstract class Player extends LObject implements LRelease {
 
 	public Player setColor(int baseColor) {
 		this.baseColor = baseColor;
-		this.alpha = ((baseColor >> 24) & 0xFF) / 255f;
+		this._alpha = ((baseColor >> 24) & 0xFF) / 255f;
 		return this;
 	}
 
@@ -353,14 +356,19 @@ public abstract class Player extends LObject implements LRelease {
 		return this;
 	}
 
-	public float depth() {
-		return depth;
+	public int depth() {
+		return _layer;
 	}
 
-	public Player setDepth(float depth) {
-		float oldDepth = this.depth;
+	@Override
+	public void setLayer(int l) {
+		this.setDepth(l);
+	}
+
+	public Player setDepth(int depth) {
+		float oldDepth = this._layer;
 		if (depth != oldDepth) {
-			this.depth = depth;
+			this._layer = depth;
 			if (parent != null)
 				parent.depthChanged(this, oldDepth);
 		}
@@ -410,8 +418,8 @@ public abstract class Player extends LObject implements LRelease {
 		return into.set(scaleX, scaleY);
 	}
 
-	public Player setScale(float scale) {
-		return setScale(scale, scale);
+	public void setScale(float scale) {
+		setScale(scale, scale);
 	}
 
 	public Player setScaleX(float sx) {
@@ -430,17 +438,16 @@ public abstract class Player extends LObject implements LRelease {
 		return this;
 	}
 
-	public Player setScale(float sx, float sy) {
+	public void setScale(float sx, float sy) {
 		if (sx != scaleX || sy != scaleY) {
 			scaleX = sx;
 			scaleY = sy;
 			setFlag(Flag.XFDIRTY, true);
 		}
-		return this;
 	}
 
-	public float rotation() {
-		return rotation;
+	public float _rotation() {
+		return _rotation;
 	}
 
 	public Player setToRotation(float angle) {
@@ -449,17 +456,11 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void setRotation(float angle) {
-		if(rotation>1f){
-			rotation = MathUtils.toRadians(angle);
-		}
-		if (rotation != angle) {
-			rotation = angle;
+		if (_rotation != angle) {
+			_rotation = angle;
 			setFlag(Flag.XFDIRTY, true);
 		}
-		if (rect != null) {
-			rect = MathUtils.getBounds(location.x, location.y, getWidth(),
-					getHeight(), angle, rect);
-		}
+		super.setRotation(_rotation);
 	}
 
 	@Override
@@ -505,7 +506,7 @@ public abstract class Player extends LObject implements LRelease {
 
 	public Player getHits() {
 		return setHitTester(new Player.HitTester() {
-			public Player hitTest(Player layer, Vector2f p) {
+			public Player hitTest(Player l, Vector2f p) {
 				Player hit = hitTestDefault(p);
 				return (hit == null) ? Player.this : hit;
 			}
@@ -607,9 +608,9 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_45D_up(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.UP, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.UP, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move_45D_left() {
@@ -617,9 +618,9 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_45D_left(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.LEFT, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.LEFT, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move_45D_right() {
@@ -627,9 +628,9 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_45D_right(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.RIGHT, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.RIGHT, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move_45D_down() {
@@ -637,9 +638,9 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_45D_down(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.DOWN, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.DOWN, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move_up() {
@@ -647,9 +648,9 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_up(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.TUP, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.TUP, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move_left() {
@@ -657,9 +658,9 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_left(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.TLEFT, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.TLEFT, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move_right() {
@@ -667,9 +668,9 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_right(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.TRIGHT, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.TRIGHT, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move_down() {
@@ -677,66 +678,127 @@ public abstract class Player extends LObject implements LRelease {
 	}
 
 	public void move_down(int multiples) {
-		location.set(affine.tx, affine.ty);
-		location.move_multiples(Field2D.TDOWN, multiples);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move_multiples(Field2D.TDOWN, multiples);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move(Vector2f v) {
-		location.set(affine.tx, affine.ty);
-		location.move(v);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move(v);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void move(float x, float y) {
-		location.set(affine.tx, affine.ty);
-		location.move(x, y);
-		affine.setTranslation(location.x, location.y);
+		_location.set(affine.tx, affine.ty);
+		_location.move(x, y);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public void setLocation(float x, float y) {
-		location.setLocation(x, y);
-		affine.setTranslation(location.x, location.y);
+		_location.setLocation(x, y);
+		affine.setTranslation(_location.x, _location.y);
 	}
 
 	public int x() {
-		return (int) location.getX();
+		return (int) _location.getX();
 	}
 
 	public int y() {
-		return (int) location.getY();
+		return (int) _location.getY();
 	}
 
 	public float getX() {
-		return location.getX();
+		return _location.getX();
 	}
 
 	public float getY() {
-		return location.getY();
+		return _location.getY();
 	}
 
 	public void setX(Integer x) {
 		affine.setTx(x);
-		location.setX(x.intValue());
+		_location.setX(x.intValue());
 	}
 
 	public void setX(float x) {
 		affine.setTx(x);
-		location.setX(x);
+		_location.setX(x);
 	}
 
 	public void setY(Integer y) {
 		affine.setTy(y);
-		location.setY(y.intValue());
+		_location.setY(y.intValue());
 	}
 
 	public void setY(float y) {
 		affine.setTy(y);
-		location.setY(y);
+		_location.setY(y);
 	}
 
 	public void setLocation(Vector2f l) {
 		affine.setTranslation(l.x, l.y);
-		location.set(l);
+		_location.set(l);
+	}
+
+	public RectBox getCollisionBox() {
+		return getRect(getLocation().x(), getLocation().y(), getWidth(),
+				getHeight());
+	}
+
+	@Override
+	public Field2D getField2D() {
+		return null;
+	}
+
+	@Override
+	public float getScaleX() {
+		return scaleX;
+	}
+
+	@Override
+	public float getScaleY() {
+		return scaleY;
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return false;
+	}
+
+	@Override
+	public boolean inContains(int x, int y, int w, int h) {
+		return false;
+	}
+
+	@Override
+	public RectBox getRectBox() {
+		return getCollisionBox();
+	}
+
+	@Override
+	public int getContainerWidth() {
+		return 0;
+	}
+
+	@Override
+	public int getContainerHeight() {
+		return 0;
+	}
+
+	
+	@Override
+	public void update(long elapsedTime) {
+		_elapsed = elapsedTime;
+	}
+	
+
+	public long getElapsed() {
+		return this._elapsed;
 	}
 }

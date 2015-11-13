@@ -434,7 +434,7 @@ public class Matrix4 implements Serializable {
 
 	public Matrix4 setToProjection(float near, float far, float fovy,
 			float aspectRatio) {
-		idt();
+
 		float l_fd = (float) (1.0 / Math.tan((fovy * (Math.PI / 180)) / 2.0));
 		float l_a1 = (far + near) / (near - far);
 		float l_a2 = (2 * far * near) / (near - far);
@@ -472,7 +472,6 @@ public class Matrix4 implements Serializable {
 	public Matrix4 setToOrtho(float left, float right, float bottom, float top,
 			float near, float far) {
 
-		this.idt();
 		float x_orth = 2 / (right - left);
 		float y_orth = 2 / (top - bottom);
 		float z_orth = -2 / (far - near);
@@ -480,7 +479,7 @@ public class Matrix4 implements Serializable {
 		float tx = -(right + left) / (right - left);
 		float ty = -(top + bottom) / (top - bottom);
 		float tz = -(far + near) / (far - near);
-
+		
 		val[M00] = x_orth;
 		val[M10] = 0;
 		val[M20] = 0;
@@ -1074,72 +1073,72 @@ public class Matrix4 implements Serializable {
 
 	public Matrix4 thisCombine(Affine2f affine) {
 
-		float m00 = affine.m00;
-		float m10 = affine.m10;
-		float m20 = 0;
-		float m30 = 0;
-		float m01 = affine.m01;
-		float m11 = affine.m11;
-		float m21 = 0;
-		float m31 = 0;
-		float m02 = 0;
-		float m12 = 0;
-		float m22 = 1;
-		float m32 = 0;
-		float m03 = affine.tx;
-		float m13 = affine.ty;
-		float m23 = 0;
-		float m33 = 1;
+		final float m00 = affine.m00;
+		final float m10 = affine.m10;
+		final float m20 = 0;
+		final float m30 = 0;
+		final float m01 = affine.m01;
+		final float m11 = affine.m11;
+		final float m21 = 0;
+		final float m31 = 0;
+		final float m02 = 0;
+		final float m12 = 0;
+		final float m22 = 1;
+		final float m32 = 0;
+		final float m03 = affine.tx;
+		final float m13 = affine.ty;
+		final float m23 = 0;
+		final float m33 = 1;
 
-		float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20
+		final float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20
 				+ val[M03] * m30;
-		float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21
+		final float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21
 				+ val[M03] * m31;
-		float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22
+		final float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22
 				+ val[M03] * m32;
-		float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23
+		final float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23
 				+ val[M03] * m33;
-		float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20
+		final float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20
 				+ val[M13] * m30;
-		float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21
+		final float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21
 				+ val[M13] * m31;
-		float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22
+		final float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22
 				+ val[M13] * m32;
-		float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23
+		final float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23
 				+ val[M13] * m33;
-		float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20
+		final float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20
 				+ val[M23] * m30;
-		float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21
+		final float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21
 				+ val[M23] * m31;
-		float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22
+		final float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22
 				+ val[M23] * m32;
-		float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23
+		final float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23
 				+ val[M23] * m33;
-		float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20
+		final float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20
 				+ val[M33] * m30;
-		float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21
+		final float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21
 				+ val[M33] * m31;
-		float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22
+		final float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22
 				+ val[M33] * m32;
-		float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23
+		final float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23
 				+ val[M33] * m33;
 
-		val[M00] = nm00;
-		val[M10] = nm10;
-		val[M20] = nm20;
-		val[M30] = nm30;
-		val[M01] = nm01;
-		val[M11] = nm11;
-		val[M21] = nm21;
-		val[M31] = nm31;
-		val[M02] = nm02;
-		val[M12] = nm12;
-		val[M22] = nm22;
-		val[M32] = nm32;
-		val[M03] = nm03;
-		val[M13] = nm13;
-		val[M23] = nm23;
-		val[M33] = nm33;
+		this.val[M00] = nm00;
+		this.val[M10] = nm10;
+		this.val[M20] = nm20;
+		this.val[M30] = nm30;
+		this.val[M01] = nm01;
+		this.val[M11] = nm11;
+		this.val[M21] = nm21;
+		this.val[M31] = nm31;
+		this.val[M02] = nm02;
+		this.val[M12] = nm12;
+		this.val[M22] = nm22;
+		this.val[M32] = nm32;
+		this.val[M03] = nm03;
+		this.val[M13] = nm13;
+		this.val[M23] = nm23;
+		this.val[M33] = nm33;
 
 		return this;
 	}

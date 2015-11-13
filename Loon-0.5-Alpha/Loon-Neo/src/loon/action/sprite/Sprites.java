@@ -21,8 +21,6 @@
 package loon.action.sprite;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Comparator;
 
 import loon.LObject;
 import loon.LRelease;
@@ -51,13 +49,7 @@ public class Sprites implements Serializable, LRelease {
 
 	private SpriteListener sprListerner;
 
-	private static final Comparator<Object> DEFAULT_COMPARATOR = new Comparator<Object>() {
-		public int compare(Object o1, Object o2) {
-			return ((ISprite) o2).getLayer() - ((ISprite) o1).getLayer();
-		}
-	};
-
-	private Comparator<Object> comparator = Sprites.DEFAULT_COMPARATOR;
+	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(false);
 
 	private int capacity = 1000;
 
@@ -132,7 +124,7 @@ public class Sprites implements Serializable, LRelease {
 	 * 
 	 */
 	public void sortSprites() {
-		Arrays.sort(this.sprites, this.comparator);
+		spriteSorter.sort(this.sprites);
 	}
 
 	/**

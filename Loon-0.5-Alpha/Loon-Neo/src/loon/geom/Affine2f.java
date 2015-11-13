@@ -40,7 +40,7 @@ import loon.utils.MathUtils;
  */
 public class Affine2f extends AbstractTransform implements LTrans {
 
-	private Matrix4 projectionMatrix = null;
+	private static Matrix4 projectionMatrix = null;
 
 	protected Affine2f(Transform other) {
 		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(),
@@ -182,6 +182,14 @@ public class Affine2f extends AbstractTransform implements LTrans {
 			}
 		}
 		return false;
+	}
+
+	public boolean equals(Affine2f a2f) {
+		if (a2f == null) {
+			return false;
+		}
+		return a2f.m00 == m00 && a2f.m01 == m01 && a2f.tx == tx && a2f.ty == ty
+				&& a2f.m10 == m10 && a2f.m11 == m11;
 	}
 
 	public Affine2f set(Matrix3 matrix) {
@@ -630,6 +638,28 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		}
 	}
 
+	public final Affine2f postConcatenate(final Affine2f t) {
+		return postConcatenate(t.m00, t.m01, t.m10, t.m11, t.tx, t.ty);
+	}
+
+	public Affine2f postConcatenate(final float ma, final float mb,
+			final float mc, final float md, final float mx, final float my) {
+		final float m00 = this.m00;
+		final float m01 = this.m01;
+		final float m10 = this.m10;
+		final float m11 = this.m11;
+		final float tx = this.tx;
+		final float ty = this.ty;
+
+		this.m00 = m00 * ma + m01 * mc;
+		this.m01 = m00 * mb + m01 * md;
+		this.m10 = m10 * ma + m11 * mc;
+		this.m11 = m10 * mb + m11 * md;
+		this.tx = tx * ma + ty * mc + mx;
+		this.ty = tx * mb + ty * md + my;
+		return this;
+	}
+
 	@Override
 	public Transform lerp(Transform other, float t) {
 		if (generality() < other.generality()) {
@@ -661,6 +691,18 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		}
 	}
 
+	public void transform(final float[] vertices) {
+		int count = vertices.length >> 1;
+		int i = 0;
+		int j = 0;
+		while (--count >= 0) {
+			final float x = vertices[i++];
+			final float y = vertices[i++];
+			vertices[j++] = x * this.m00 + y * this.m10 + this.tx;
+			vertices[j++] = x * this.m01 + y * this.m11 + this.ty;
+		}
+	}
+
 	@Override
 	public Vector2f transformPoint(Vector2f v, Vector2f into) {
 		float x = v.x(), y = v.y();
@@ -685,16 +727,15 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return into.set((x * m11 - y * m10) * rdet, (y * m00 - x * m01) * rdet);
 	}
 
-	public Matrix4 toMatrix4() {
+	public Matrix4 toViewMatrix4() {
 		Dimension dim = LSystem.viewSize;
 		if (projectionMatrix == null) {
 			projectionMatrix = new Matrix4();
 		}
-		Affine2f affine = this;
 		projectionMatrix.setToOrtho2D(0, 0,
 				dim.width * LSystem.getScaleWidth(),
 				dim.height * LSystem.getScaleHeight());
-		projectionMatrix.thisCombine(affine);
+		projectionMatrix.thisCombine(this);
 		return projectionMatrix;
 	}
 

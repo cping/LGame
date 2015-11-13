@@ -26,48 +26,48 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.utils.MathUtils;
 
-public abstract class LObject implements XY {
+public abstract class LObject implements XY , ZIndex {
 
 	public Object Tag;
 
-	public float alpha = 1f;
+	public float _alpha = 1f;
 
 	protected RectBox rect;
 
 	protected String name;
 
-	protected Vector2f location = new Vector2f(0, 0);
+	protected Vector2f _location = new Vector2f(0, 0);
 
-	protected int layer;
+	protected int _layer;
 
-	protected float rotation;
+	protected float _rotation;
 
-	public void setTransparency(int alpha) {
-		setAlpha(alpha / 255f);
+	public void setTransparency(int _alpha) {
+		setAlpha(_alpha / 255f);
 	}
 
 	public int getTransparency() {
-		return (int) (alpha * 255);
+		return (int) (_alpha * 255);
 	}
 
 	public void setAlpha(float a) {
-		this.alpha = a;
+		this._alpha = a;
 	}
 
 	public float getAlpha() {
-		return this.alpha;
+		return this._alpha;
 	}
 
 	public void setRotation(float r) {
-		this.rotation = r;
+		this._rotation = r;
 		if (rect != null) {
-			rect = MathUtils.getBounds(location.x, location.y, getWidth(),
+			rect = MathUtils.getBounds(_location.x, _location.y, getWidth(),
 					getHeight(), r, rect);
 		}
 	}
 
 	public float getRotation() {
-		return rotation;
+		return _rotation;
 	}
 
 	public abstract void update(long elapsedTime);
@@ -119,11 +119,11 @@ public abstract class LObject implements XY {
 	}
 
 	public int getLayer() {
-		return layer;
+		return _layer;
 	}
 
-	public void setLayer(int layer) {
-		this.layer = layer;
+	public void setLayer(int z) {
+		this._layer = z;
 	}
 
 	public void move_45D_up() {
@@ -131,7 +131,7 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_45D_up(int multiples) {
-		location.move_multiples(Field2D.UP, multiples);
+		_location.move_multiples(Field2D.UP, multiples);
 	}
 
 	public void move_45D_left() {
@@ -139,7 +139,7 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_45D_left(int multiples) {
-		location.move_multiples(Field2D.LEFT, multiples);
+		_location.move_multiples(Field2D.LEFT, multiples);
 	}
 
 	public void move_45D_right() {
@@ -147,7 +147,7 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_45D_right(int multiples) {
-		location.move_multiples(Field2D.RIGHT, multiples);
+		_location.move_multiples(Field2D.RIGHT, multiples);
 	}
 
 	public void move_45D_down() {
@@ -155,7 +155,7 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_45D_down(int multiples) {
-		location.move_multiples(Field2D.DOWN, multiples);
+		_location.move_multiples(Field2D.DOWN, multiples);
 	}
 
 	public void move_up() {
@@ -163,7 +163,7 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_up(int multiples) {
-		location.move_multiples(Field2D.TUP, multiples);
+		_location.move_multiples(Field2D.TUP, multiples);
 	}
 
 	public void move_left() {
@@ -171,7 +171,7 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_left(int multiples) {
-		location.move_multiples(Field2D.TLEFT, multiples);
+		_location.move_multiples(Field2D.TLEFT, multiples);
 	}
 
 	public void move_right() {
@@ -179,7 +179,7 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_right(int multiples) {
-		location.move_multiples(Field2D.TRIGHT, multiples);
+		_location.move_multiples(Field2D.TRIGHT, multiples);
 	}
 
 	public void move_down() {
@@ -187,59 +187,59 @@ public abstract class LObject implements XY {
 	}
 
 	public void move_down(int multiples) {
-		location.move_multiples(Field2D.TDOWN, multiples);
+		_location.move_multiples(Field2D.TDOWN, multiples);
 	}
 
 	public void move(Vector2f v) {
-		location.move(v);
+		_location.move(v);
 	}
 
 	public void move(float x, float y) {
-		location.move(x, y);
+		_location.move(x, y);
 	}
 
 	public void setLocation(float x, float y) {
-		location.setLocation(x, y);
+		_location.setLocation(x, y);
 	}
 
 	public int x() {
-		return (int) location.getX();
+		return (int) _location.getX();
 	}
 
 	public int y() {
-		return (int) location.getY();
+		return (int) _location.getY();
 	}
 
 	public float getX() {
-		return location.getX();
+		return _location.getX();
 	}
 
 	public float getY() {
-		return location.getY();
+		return _location.getY();
 	}
 
 	public void setX(Integer x) {
-		location.setX(x.intValue());
+		_location.setX(x.intValue());
 	}
 
 	public void setX(float x) {
-		location.setX(x);
+		_location.setX(x);
 	}
 
 	public void setY(Integer y) {
-		location.setY(y.intValue());
+		_location.setY(y.intValue());
 	}
 
 	public void setY(float y) {
-		location.setY(y);
+		_location.setY(y);
 	}
 
 	public Vector2f getLocation() {
-		return location;
+		return _location;
 	}
 
-	public void setLocation(Vector2f location) {
-		this.location = location;
+	public void setLocation(Vector2f _location) {
+		this._location = _location;
 	}
 
 	public static void centerOn(final LObject object, int w, int h) {
@@ -287,4 +287,5 @@ public abstract class LObject implements XY {
 
 	public abstract int getWidth();
 
-	public abstract int getHeight();}
+	public abstract int getHeight();
+}

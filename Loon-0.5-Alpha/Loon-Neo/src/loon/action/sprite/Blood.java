@@ -92,14 +92,14 @@ public class Blood extends LObject implements ISprite {
 			return;
 		}
 		tmpColor = g.color();
-		if (alpha > 0 && alpha < 1) {
-			g.setAlpha(alpha);
+		if (_alpha > 0 && _alpha < 1) {
+			g.setAlpha(_alpha);
 		}
 		g.setColor(color);
 		for (int i = 0; i < drops.length; ++i) {
 			g.fillOval((int) drops[i].x, (int) drops[i].y, 2, 2);
 		}
-		if (alpha != 1f) {
+		if (_alpha != 1f) {
 			g.setAlpha(1f);
 		}
 		g.setColor(tmpColor);

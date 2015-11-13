@@ -116,7 +116,7 @@ public abstract class Graphics {
 					view.getHeight());
 		} else if (display != null
 				&& !(affine = display.GL().tx()).equals(lastAffine)) {
-			projectionMatrix = affine.toMatrix4();
+			projectionMatrix = affine.toViewMatrix4();
 			lastAffine = affine;
 		}
 		return projectionMatrix;

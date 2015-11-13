@@ -35,7 +35,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
-public class Sprite extends LObject implements ActionBind, ISprite, LTrans{
+public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 
 	/**
 	 * 
@@ -580,36 +580,29 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans{
 		}
 		float width = (image.width() * scaleX);
 		float height = (image.height() * scaleY);
+		float tmp = g.alpha();
 		if (filterColor == null) {
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(alpha);
+			if (_alpha > 0 && _alpha < 1) {
+				g.setAlpha(_alpha);
 			}
 			if (LTrans.TRANS_NONE == transform) {
-				g.draw(image, x(), y(), width, height, rotation);
+				g.draw(image, x(), y(), width, height, _rotation);
 			} else {
 				g.drawRegion(image, 0, 0, getWidth(), getHeight(), transform,
 						x(), y(), LTrans.TOP | LTrans.LEFT);
 			}
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(1);
-			}
-			return;
 		} else {
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(alpha);
+			if (_alpha > 0 && _alpha < 1) {
+				g.setAlpha(_alpha);
 			}
 			if (LTrans.TRANS_NONE == transform) {
-				g.draw(image, x(), y(), width, height,
-						filterColor, rotation);
+				g.draw(image, x(), y(), width, height, filterColor, _rotation);
 			} else {
 				g.drawRegion(image, 0, 0, getWidth(), getHeight(), transform,
 						x(), y(), LTrans.TOP | LTrans.LEFT, filterColor);
 			}
-			if (alpha > 0 && alpha < 1) {
-				g.setAlpha(1);
-			}
-			return;
 		}
+		g.setAlpha(tmp);
 	}
 
 	public boolean isVisible() {
@@ -689,7 +682,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans{
 	}
 
 	public boolean inContains(int x, int y, int w, int h) {
-		return false;
+		return getCollisionBox().contains(x, y, w, h);
 	}
 
 	public RectBox getRectBox() {

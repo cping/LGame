@@ -183,7 +183,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	public void setTimeStep(float dt) {
 		this._dt = dt;
 	}
-	
+
 	public abstract void onResume();
 
 	@Override
@@ -196,7 +196,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public abstract void onPause();
-	
+
 	@Override
 	public void pause() {
 		if (usePhysics) {
@@ -237,6 +237,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			return;
 		}
 		this.content = node;
+		this._dt = 1 / LSystem.base().setting.fps;
 	}
 
 	public LNNode node() {
@@ -714,7 +715,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return bindTexturePhysics(fix, add(o), density);
 	}
 
-	public PBody addTexturePhysics(boolean fix, SpriteBatchObject o) throws Exception {
+	public PBody addTexturePhysics(boolean fix, SpriteBatchObject o)
+			throws Exception {
 		return bindTexturePhysics(fix, add(o), 1F);
 	}
 
@@ -776,7 +778,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public PBody bindTexturePhysics(boolean fix, SpriteBatchObject o) throws Exception {
+	public PBody bindTexturePhysics(boolean fix, SpriteBatchObject o)
+			throws Exception {
 		return bindTexturePhysics(fix, o, 1F);
 	}
 
@@ -794,7 +797,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			throw new RuntimeException("You do not set the physics engine !");
 		}
 	}
-	
+
 	@Override
 	public final void alter(LTimerContext timer) {
 		for (int i = 0; i < keySize; i++) {
@@ -808,7 +811,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 		if (content.isVisible()) {
 			processEvents();
-			content.updateNode(timer.getMilliseconds());
+			content.update(timer.timeSinceLastUpdate);
 		}
 		if (usePhysics) {
 			if (_dt < 0) {
@@ -856,10 +859,10 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		update(elapsedTime);
 		commits();
 	}
-	
+
 	@Override
 	public final void draw(GLEx g) {
-	
+
 		if (isOnLoadComplete()) {
 			batch.begin();
 			before(batch);
@@ -879,13 +882,13 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			after(batch);
 			batch.end();
 		}
-	
+
 	}
 
 	public abstract void after(SpriteBatch batch);
 
 	public abstract void before(SpriteBatch batch);
-	
+
 	@Override
 	public final void onKeyDown(GameKey e) {
 		keySize = keyActions.size();
@@ -903,7 +906,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public abstract void press(GameKey e);
-	
+
 	@Override
 	public final void onKeyUp(GameKey e) {
 		keySize = keyActions.size();
@@ -925,7 +928,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	public abstract void update(long elapsedTime);
 
 	public abstract void dispose();
-	
+
 	@Override
 	public Screen setAutoDestory(final boolean a) {
 		super.setAutoDestory(a);
