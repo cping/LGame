@@ -520,19 +520,6 @@ public class LTexturePack implements LRelease {
 		return blittedSize;
 	}
 
-	public void drawOnlyBatch(int id, float x, float y, LColor[] c) {
-		this.pack();
-		PackEntry entry = getEntry(id);
-		if (entry == null) {
-			return;
-		}
-		if (texture.isBatch()) {
-			texture.draw(x, y, entry.bounds.width(), entry.bounds.height(),
-					entry.bounds.left, entry.bounds.top, entry.bounds.right,
-					entry.bounds.bottom, c);
-		}
-	}
-
 	public Point2i draw(int id, float x, float y, float w, float h) {
 		return draw(id, x, y, w, h, 0, null);
 	}
@@ -579,21 +566,6 @@ public class LTexturePack implements LRelease {
 		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
 	}
 
-	public void drawOnlyBatch(int id, float dx1, float dy1, float dx2,
-			float dy2, float sx1, float sy1, float sx2, float sy2,
-			LColor[] color) {
-		this.pack();
-		PackEntry entry = getEntry(id);
-		if (entry == null) {
-			return;
-		}
-		if (texture.isBatch()) {
-			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1
-					+ entry.bounds.top, sx2 + entry.bounds.left, sy2
-					+ entry.bounds.top, color);
-		}
-		blittedSize.set(entry.bounds.width(), entry.bounds.height());
-	}
 
 	public Point2i draw(int id, float dx1, float dy1, float dx2, float dy2,
 			float sx1, float sy1, float sx2, float sy2, float rotation,

@@ -11,14 +11,14 @@ public class ShadowFont {
 	private int offsetY = 2;
 	private LSTRFont strfont;
 
-	public LSTRFont getStrFont(){
+	public LSTRFont getStrFont() {
 		return strfont;
 	}
 
-	public LFont getFont(){
+	public LFont getFont() {
 		return strfont.getFont();
 	}
-	
+
 	public ShadowFont(LFont font, String message, boolean shadow) {
 		this.strfont = new LSTRFont(font, message);
 		this.withShadow = shadow;
@@ -30,6 +30,14 @@ public class ShadowFont {
 			strfont.drawString(text, x, y, color);
 		}
 		strfont.drawString(text, x, y, color);
+	}
+
+	public void drawString(GLEx g, float x, float y, String text, LColor color) {
+		if (this.withShadow) {
+			this.shadowColor.a = (this.shadowAlpha * color.a);
+			strfont.drawString(g, text, x, y, color);
+		}
+		strfont.drawString(g, text, x, y, color);
 	}
 
 	public void setShadowColor(LColor color) {

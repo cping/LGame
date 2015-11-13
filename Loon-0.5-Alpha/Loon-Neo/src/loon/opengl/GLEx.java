@@ -429,9 +429,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		float sr = (float) Math.sin(angle);
-		float cr = (float) Math.cos(angle);
-		transform(cr, sr, -sr, cr, 0, 0);
+		tx().preRotate(angle);
 		return this;
 	}
 
@@ -697,7 +695,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float w1 = x + w / 2;
 			float h1 = y + h / 2;
 			xf.translate(w1, h1);
-			xf.rotate(MathUtils.toRadians(rotation));
+			xf.preRotate(rotation);
 			xf.translate(-w1, -h1);
 			Transforms.multiply(tx(), xf, xf);
 		}
@@ -725,7 +723,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float w1 = x + w / 2;
 			float h1 = y + h / 2;
 			xf.translate(w1, h1);
-			xf.rotate(MathUtils.toRadians(rotation));
+			xf.preRotate(rotation);
 			xf.translate(-w1, -h1);
 			Transforms.multiply(tx(), xf, xf);
 		}
@@ -879,7 +877,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				float w1 = x + width / 2;
 				float h1 = y + height / 2;
 				xf.translate(w1, h1);
-				xf.rotate(MathUtils.toRadians(rotation));
+				xf.preRotate(rotation);
 				xf.translate(-w1, -h1);
 			}
 			if (dirDirty) {

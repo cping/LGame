@@ -15,7 +15,7 @@ public abstract class AbstractBox {
 	protected float _boxY;
 	protected float _borderW;
 	protected LColor borderColor = new LColor(LColor.white);
-	protected float _alpha;
+	protected float _alpha = 1f;
 	protected ShadowFont font;
 	protected LColor fontColor = new LColor(LColor.white);
 	protected LTexture _textureBox;
