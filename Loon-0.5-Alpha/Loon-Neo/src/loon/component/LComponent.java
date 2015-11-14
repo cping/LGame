@@ -32,12 +32,14 @@ import loon.event.ClickListener;
 import loon.event.SysInput;
 import loon.event.SysKey;
 import loon.event.SysTouch;
+import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
-public abstract class LComponent extends LObject implements ActionBind {
+public abstract class LComponent extends LObject implements ActionBind, XY {
 
 	public static interface CallListener {
 
@@ -259,24 +261,34 @@ public abstract class LComponent extends LObject implements ActionBind {
 		if (!this.visible) {
 			return;
 		}
+		boolean update = _rotation != 0 || !(scaleX == 1f && scaleY == 1f);
 		final int width = this.getWidth();
 		final int height = this.getHeight();
-		g.saveTx();
-		if (_rotation != 0) {
-			float centerX = this.screenX + width / 2;
-			float centerY = this.screenY + height / 2;
-			g.rotate(centerX, centerY, _rotation);
-		} else if (!(scaleX == 1f && scaleY == 1f)) {
-			g.scale(scaleX, scaleY);
-		} else if (this.elastic) {
+		if (this.elastic) {
 			g.setClip(this.screenX, this.screenY, width, height);
+		}
+		if (update) {
+			g.saveTx();
+			if (!(scaleX == 1f && scaleY == 1f)) {
+				Affine2f transform = g.tx();
+				float centerX = this.screenX + width / 2;
+				float centerY = this.screenY + height / 2;
+				transform.translate(centerX, centerY);
+				transform.preScale(scaleX, scaleY);
+				transform.translate(-centerX, -centerY);
+			}
+			if (_rotation != 0) {
+				float centerX = this.screenX + width / 2;
+				float centerY = this.screenY + height / 2;
+				g.rotate(centerX, centerY, _rotation);
+			}
 		}
 		// 变更透明度
 		if (alpha > 0.1 && alpha < 1.0) {
+			float tmp = g.alpha();
 			g.setAlpha(alpha);
 			if (background != null) {
-				g.draw(background, this.screenX, this.screenY, width,
-						height);
+				g.draw(background, this.screenX, this.screenY, width, height);
 			}
 			if (this.customRendering) {
 				this.createCustomUI(g, this.screenX, this.screenY, width,
@@ -284,12 +296,11 @@ public abstract class LComponent extends LObject implements ActionBind {
 			} else {
 				this.createUI(g, this.screenX, this.screenY, this, this.imageUI);
 			}
-			g.setAlpha(1F);
+			g.setAlpha(tmp);
 			// 不变更
 		} else {
 			if (background != null) {
-				g.draw(background, this.screenX, this.screenY, width,
-						height);
+				g.draw(background, this.screenX, this.screenY, width, height);
 			}
 			if (this.customRendering) {
 				this.createCustomUI(g, this.screenX, this.screenY, width,
@@ -298,9 +309,10 @@ public abstract class LComponent extends LObject implements ActionBind {
 				this.createUI(g, this.screenX, this.screenY, this, this.imageUI);
 			}
 		}
-		if (_rotation != 0 || !(scaleX == 1f && scaleY == 1f)) {
+		if (update) {
 			g.restoreTx();
-		} else if (this.elastic) {
+		}
+		if (this.elastic) {
 			g.clearClip();
 		}
 	}
@@ -603,19 +615,19 @@ public abstract class LComponent extends LObject implements ActionBind {
 	}
 
 	protected void processTouchClicked() {
-			this.doClick();
+		this.doClick();
 	}
 
 	protected void processTouchPressed() {
-			this.downClick();
+		this.downClick();
 	}
 
 	protected void processTouchReleased() {
-			this.upClick();
+		this.upClick();
 	}
 
 	protected void processTouchDragged() {
-			this.dragClick();
+		this.dragClick();
 	}
 
 	protected void processTouchMoved() {
@@ -788,7 +800,8 @@ public abstract class LComponent extends LObject implements ActionBind {
 			return SysTouch.getX() - getX();
 		} else {
 			if (parent instanceof LScrollContainer) {
-				return SysTouch.getX() + ((LScrollContainer) parent).getScrollX()
+				return SysTouch.getX()
+						+ ((LScrollContainer) parent).getScrollX()
 						- parent.getX() - getX();
 			} else {
 				return SysTouch.getX() - parent.getX() - getX();
@@ -801,7 +814,8 @@ public abstract class LComponent extends LObject implements ActionBind {
 			return SysTouch.getY() - getY();
 		} else {
 			if (parent instanceof LScrollContainer) {
-				return SysTouch.getY() + ((LScrollContainer) parent).getScrollY()
+				return SysTouch.getY()
+						+ ((LScrollContainer) parent).getScrollY()
 						- parent.getY() - getY();
 			} else {
 				return SysTouch.getY() - parent.getY() - getY();

@@ -31,7 +31,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 
 	private static RealtimeProcessManager instance;
 
-	private LinkedList<Process> processes;
+	private LinkedList<GameProcess> processes;
 
 	public static RealtimeProcessManager get() {
 		synchronized (RealtimeProcessManager.class) {
@@ -43,7 +43,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	}
 
 	private RealtimeProcessManager() {
-		this.processes = new LinkedList<Process>();
+		this.processes = new LinkedList<GameProcess>();
 	}
 
 	public static RealtimeProcessManager newProcess() {
@@ -58,18 +58,18 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 
 	public void tick(LTimerContext time) {
 		if (processes.size() > 0) {
-			LinkedList<Process> toBeUpdated;
+			LinkedList<GameProcess> toBeUpdated;
 			synchronized (this.processes) {
-				toBeUpdated = new LinkedList<Process>(this.processes);
+				toBeUpdated = new LinkedList<GameProcess>(this.processes);
 			}
-			LinkedList<Process> deadProcesses = new LinkedList<Process>();
-			for (Process realtimeProcess : toBeUpdated) {
+			LinkedList<GameProcess> deadProcesses = new LinkedList<GameProcess>();
+			for (GameProcess realtimeProcess : toBeUpdated) {
 				realtimeProcess.tick(time);
 				if (realtimeProcess.isDead()) {
 					deadProcesses.add(realtimeProcess);
 				}
 			}
-			for (Process realtimeProcess : deadProcesses) {
+			for (GameProcess realtimeProcess : deadProcesses) {
 				realtimeProcess.finish();
 			}
 			synchronized (this.processes) {
@@ -78,11 +78,11 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 		}
 	}
 
-	public Process find(String id) {
+	public GameProcess find(String id) {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<Process> ps = new ArrayList<Process>(processes);
-				for (Process p : ps) {
+				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
+				for (GameProcess p : ps) {
 					if (p.getId() == id || p.getId().equals(id)) {
 						return p;
 					}
@@ -95,8 +95,8 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	public void delete(String id) {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<Process> ps = new ArrayList<Process>(processes);
-				for (Process p : ps) {
+				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
+				for (GameProcess p : ps) {
 					if (p.getId() == id || p.getId().equals(id)) {
 						p.kill();
 						processes.remove(p);
@@ -109,8 +109,8 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	public void deleteIndex(String id) {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<Process> ps = new ArrayList<Process>(processes);
-				for (Process p : ps) {
+				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
+				for (GameProcess p : ps) {
 					if (p.getId() == id || p.getId().indexOf(id) != -1) {
 						p.kill();
 						processes.remove(p);
@@ -124,8 +124,8 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	public void close() {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<Process> ps = new ArrayList<Process>(processes);
-				for (Process p : ps) {
+				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
+				for (GameProcess p : ps) {
 					p.finish();
 				}
 				processes.clear();

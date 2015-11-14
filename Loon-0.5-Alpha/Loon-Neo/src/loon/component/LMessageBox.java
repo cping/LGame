@@ -10,7 +10,7 @@ import loon.opengl.ShadowFont;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class LMessageBox {
+public class LMessageBox  {
 
 	public static class DrawMessageBox extends AbstractBox {
 
@@ -378,5 +378,18 @@ public class LMessageBox {
 
 	public void resumeMessage() {
 		this.stopMessage = false;
+	}
+
+	//@Override
+	public void createUI(GLEx g, int x, int y, LComponent component,
+			LTexture[] buttonImage) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	//@Override
+	public String getUIName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

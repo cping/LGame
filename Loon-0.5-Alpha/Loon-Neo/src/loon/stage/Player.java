@@ -37,7 +37,7 @@ import loon.utils.reply.Port;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
-public abstract class Player extends LObject implements ActionBind, LRelease {
+public abstract class Player extends LObject implements ActionBind, XY, LRelease {
 
 	protected int flags;
 

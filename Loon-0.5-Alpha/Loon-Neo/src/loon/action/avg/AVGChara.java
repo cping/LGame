@@ -26,20 +26,21 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.ISprite;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
-public class AVGChara implements LRelease {
+public class AVGChara implements XY , LRelease {
 
 	private LTexture characterCG;
 
-	private int width;
+	private float width;
 
-	private int height;
+	private float height;
 
-	int x;
+	float x;
 
-	int y;
+	float y;
 
 	int flag = -1;
 
@@ -53,7 +54,7 @@ public class AVGChara implements LRelease {
 
 	int maxWidth, maxHeight;
 
-	private int moveX;
+	private float moveX;
 
 	private int direction;
 
@@ -179,11 +180,11 @@ public class AVGChara implements LRelease {
 		y = 0;
 	}
 
-	public int getNext() {
+	public float getNext() {
 		return moveX;
 	}
 
-	public int getMaxNext() {
+	public float getMaxNext() {
 		return x;
 	}
 
@@ -224,13 +225,13 @@ public class AVGChara implements LRelease {
 		g.draw(characterCG, moveX, y);
 	}
 
-	public int getX() {
+	public float getX() {
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setX(float x) {
 		if (isMove) {
-			int move = x - this.moveX;
+			float move = x - this.moveX;
 			if (move < 0) {
 				this.moveX = this.x;
 				this.x = x;
@@ -246,27 +247,27 @@ public class AVGChara implements LRelease {
 
 	}
 
-	public int getY() {
+	public float getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public void setHeight(float height) {
 		this.height = height;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	public void setWidth(float width) {
 		this.width = width;
 	}
 
@@ -278,7 +279,7 @@ public class AVGChara implements LRelease {
 		this.moveSleep = moveSleep;
 	}
 
-	public int getMoveX() {
+	public float getMoveX() {
 		return moveX;
 	}
 

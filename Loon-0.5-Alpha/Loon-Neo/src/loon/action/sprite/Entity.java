@@ -15,8 +15,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.LayerSorter;
 
-public class Entity extends LObject implements ActionBind, IEntity,
-		LRelease {
+public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 
 	/**
 	 * 
@@ -580,39 +579,44 @@ public class Entity extends LObject implements ActionBind, IEntity,
 	protected void paint(final GLEx g) {
 		boolean exist = _image != null || (_width > 0 && _height > 0);
 		if (exist) {
-			g.saveTx();
-			Affine2f tx = g.tx();
-			final float _rotation = this._rotation;
-			final float scaleX = this._scaleX;
-			final float scaleY = this._scaleY;
-			if ((scaleX != 1) || (scaleY != 1)) {
-				final float scaleCenterX = this._scaleCenterX == -1 ? (this._location.x + this._width / 2f)
-						: this._rotationCenterX;
-				final float scaleCenterY = this._scaleCenterY == -1 ? (this._location.y + this._height / 2f)
-						: this._rotationCenterY;
-				tx.translate(scaleCenterX, scaleCenterY);
-				tx.preScale(scaleX, scaleY);
-				tx.translate(-scaleCenterX, -scaleCenterY);
-			}
-			final float skewX = this._skewX;
-			final float skewY = this._skewY;
-			if ((skewX != 0) || (skewY != 0)) {
-				final float skewCenterX = this._skewCenterX == -1 ? (this._location.x + this._width / 2f)
-						: this._rotationCenterX;
-				final float skewCenterY = this._skewCenterY == -1 ? (this._location.y + this._height / 2f)
-						: this._rotationCenterY;
-				tx.translate(skewCenterX, skewCenterY);
-				tx.preShear(skewX, skewY);
-				tx.translate(-skewCenterX, -skewCenterY);
-			}
-			if (_rotation != 0) {
-				final float rotationCenterX = this._rotationCenterX == -1 ? (this._location.x + this._width / 2f)
-						: this._rotationCenterX;
-				final float rotationCenterY = this._rotationCenterY == -1 ? (this._location.y + this._height / 2f)
-						: this._rotationCenterY;
-				tx.translate(rotationCenterX, rotationCenterY);
-				tx.preRotate(_rotation);
-				tx.translate(-rotationCenterX, -rotationCenterY);
+			boolean update = _rotation != 0
+					|| !(_scaleX == 1f && _scaleY == 1f)
+					|| !(_skewX == 0 && _skewY == 0);
+			if (update) {
+				g.saveTx();
+				Affine2f tx = g.tx();
+				final float _rotation = this._rotation;
+				final float scaleX = this._scaleX;
+				final float scaleY = this._scaleY;
+				if ((scaleX != 1) || (scaleY != 1)) {
+					final float scaleCenterX = this._scaleCenterX == -1 ? (this._location.x + this._width / 2f)
+							: this._rotationCenterX;
+					final float scaleCenterY = this._scaleCenterY == -1 ? (this._location.y + this._height / 2f)
+							: this._rotationCenterY;
+					tx.translate(scaleCenterX, scaleCenterY);
+					tx.preScale(scaleX, scaleY);
+					tx.translate(-scaleCenterX, -scaleCenterY);
+				}
+				final float skewX = this._skewX;
+				final float skewY = this._skewY;
+				if ((skewX != 0) || (skewY != 0)) {
+					final float skewCenterX = this._skewCenterX == -1 ? (this._location.x + this._width / 2f)
+							: this._rotationCenterX;
+					final float skewCenterY = this._skewCenterY == -1 ? (this._location.y + this._height / 2f)
+							: this._rotationCenterY;
+					tx.translate(skewCenterX, skewCenterY);
+					tx.preShear(skewX, skewY);
+					tx.translate(-skewCenterX, -skewCenterY);
+				}
+				if (_rotation != 0) {
+					final float rotationCenterX = this._rotationCenterX == -1 ? (this._location.x + this._width / 2f)
+							: this._rotationCenterX;
+					final float rotationCenterY = this._rotationCenterY == -1 ? (this._location.y + this._height / 2f)
+							: this._rotationCenterY;
+					tx.translate(rotationCenterX, rotationCenterY);
+					tx.preRotate(_rotation);
+					tx.translate(-rotationCenterX, -rotationCenterY);
+				}
 			}
 			if (_image != null) {
 				g.draw(_image, _location.x, _location.y, _baseColor);
@@ -620,7 +624,9 @@ public class Entity extends LObject implements ActionBind, IEntity,
 				g.fillRect(_location.x, _location.y, _width, _height,
 						_baseColor);
 			}
-			g.restoreTx();
+			if (update) {
+				g.restoreTx();
+			}
 		}
 	}
 

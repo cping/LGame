@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import loon.action.ActionBind;
-import loon.action.ActionControl;
-import loon.action.ActionEvent;
 import loon.action.ArrowTo;
 import loon.action.CircleTo;
 import loon.action.FadeTo;
@@ -41,7 +39,6 @@ import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
 
-@SuppressWarnings("rawtypes")
 public abstract class ActorLayer extends LContainer {
 
 	private final static int min_size = 48;
@@ -93,129 +90,6 @@ public abstract class ActorLayer extends LContainer {
 			this.cellSize = cellSize;
 			this.collisionChecker.initialize(cellSize);
 		}
-	}
-
-	/**
-	 * 添加一个独立事件，并选择是否暂不启动
-	 * 
-	 * @param action
-	 * @param obj
-	 * @param paused
-	 */
-	public void addActionEvent(ActionEvent action, ActionBind obj, boolean paused) {
-		ActionControl.getInstance().addAction(action, obj, paused);
-	}
-
-	/**
-	 * 添加一个独立事件
-	 * 
-	 * @param action
-	 * @param obj
-	 */
-	public void addActionEvent(ActionEvent action, ActionBind obj) {
-		ActionControl.getInstance().addAction(action, obj);
-	}
-
-	/**
-	 * 删除所有和指定对象有关的独立事件
-	 * 
-	 * @param actObject
-	 */
-	public void removeActionEvents(ActionBind actObject) {
-		ActionControl.getInstance().removeAllActions(actObject);
-	}
-
-	/**
-	 * 获得当前独立事件总数
-	 * 
-	 * @return
-	 */
-	public int getActionEventCount() {
-		return ActionControl.getInstance().getCount();
-	}
-
-	/**
-	 * 删除指定的独立事件
-	 * 
-	 * @param tag
-	 * @param actObject
-	 */
-	public void removeActionEvent(Object tag, ActionBind actObject) {
-		ActionControl.getInstance().removeAction(tag, actObject);
-	}
-
-	/**
-	 * 删除指定的独立事件
-	 * 
-	 * @param action
-	 */
-	public void removeActionEvent(ActionEvent action) {
-		ActionControl.getInstance().removeAction(action);
-	}
-
-	/**
-	 * 获得制定的独立事件
-	 * 
-	 * @param tag
-	 * @param actObject
-	 * @return
-	 */
-	public ActionEvent getActionEvent(Object tag, ActionBind actObject) {
-		return ActionControl.getInstance().getAction(tag, actObject);
-	}
-
-	/**
-	 * 停止对象对应的自动事件
-	 * 
-	 * @param actObject
-	 */
-	public void stopActionEvent(ActionBind actObject) {
-		ActionControl.getInstance().stop(actObject);
-	}
-
-	/**
-	 * 设定指定角色暂停状态
-	 * 
-	 * @param pause
-	 * @param actObject
-	 */
-	public void pauseActionEvent(boolean pause, ActionBind actObject) {
-		ActionControl.getInstance().paused(pause, actObject);
-	}
-
-	/**
-	 * 设置是否暂停自动事件运行
-	 * 
-	 * @param pause
-	 */
-	public void pauseActionEvent(boolean pause) {
-		ActionControl.getInstance().setPause(pause);
-	}
-
-	/**
-	 * 获得是否暂停了独立事件运行
-	 * 
-	 * @return
-	 */
-	public boolean isPauseActionEvent() {
-		return ActionControl.getInstance().isPause();
-	}
-
-	/**
-	 * 启动指定对象对应的对立事件
-	 * 
-	 * @param actObject
-	 */
-	public void startActionEvent(ActionBind actObject) {
-		ActionControl.getInstance().start(actObject);
-	}
-
-	/**
-	 * 停止独立事件运行用线程
-	 * 
-	 */
-	public void stopActionEvent() {
-		ActionControl.getInstance().stop();
 	}
 
 	/**
@@ -714,12 +588,12 @@ public abstract class ActorLayer extends LContainer {
 	 * 
 	 * @param objects
 	 */
-	public void removeObjects(List objects) {
+	public void removeObjects(List<?> objects) {
 		if (isClose) {
 			return;
 		}
 		synchronized (objects) {
-			Iterator iter = objects.iterator();
+			Iterator<?> iter = objects.iterator();
 			while (iter.hasNext()) {
 				Actor actor = (Actor) iter.next();
 				this.removeObject(actor);
@@ -733,7 +607,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param actor
 	 * @return
 	 */
-	public List getCollisionObjects(Actor actor) {
+	public List<?> getCollisionObjects(Actor actor) {
 		if (isClose) {
 			return null;
 		}
@@ -771,7 +645,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param flag
 	 * @return
 	 */
-	public List getCollisionObjects(String flag) {
+	public List<?> getCollisionObjects(String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -786,7 +660,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param flag
 	 * @return
 	 */
-	public List getCollisionObjectsAt(float x, float y, String flag) {
+	public List<?> getCollisionObjectsAt(float x, float y, String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -847,7 +721,7 @@ public abstract class ActorLayer extends LContainer {
 		return objects.getSynchronizedObject(x, y);
 	}
 
-	List getIntersectingObjects(Actor actor, String flag) {
+	List<?> getIntersectingObjects(Actor actor, String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -861,14 +735,14 @@ public abstract class ActorLayer extends LContainer {
 		return this.collisionChecker.getOnlyIntersectingObject(object, flag);
 	}
 
-	List getObjectsInRange(float x, float y, float r, String flag) {
+	List<?> getObjectsInRange(float x, float y, float r, String flag) {
 		if (isClose) {
 			return null;
 		}
 		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
 	}
 
-	List getNeighbours(Actor actor, float distance, boolean d, String flag) {
+	List<?> getNeighbours(Actor actor, float distance, boolean d, String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -900,7 +774,7 @@ public abstract class ActorLayer extends LContainer {
 		return cellCenter;
 	}
 
-	List getCollisionObjects(float x, float y) {
+	List<?> getCollisionObjects(float x, float y) {
 		if (isClose) {
 			return null;
 		}

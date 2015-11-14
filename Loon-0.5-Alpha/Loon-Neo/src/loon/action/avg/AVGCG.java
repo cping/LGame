@@ -155,8 +155,8 @@ public class AVGCG implements LRelease{
 				}
 			}
 			if (old != null) {
-				final int x = old.getX();
-				final int y = old.getY();
+				final float x = old.getX();
+				final float y = old.getY();
 				AVGChara newObject = new AVGChara(path2, 0, 0, old.maxWidth,
 						old.maxHeight);
 				newObject.setMove(false);

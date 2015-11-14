@@ -27,7 +27,7 @@ import loon.LSystem;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public abstract class RealtimeProcess implements Process {
+public abstract class RealtimeProcess implements GameProcess {
 
 	protected boolean isDead;
 

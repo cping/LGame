@@ -20,12 +20,28 @@ import java.util.ArrayList;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
-import loon.utils.processes.Process;
+import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 
 public class Director extends SoundBox {
 
+	public final static void addRealtimeProcess(RealtimeProcess realtimeProcess) {
+		RealtimeProcessManager.get().addProcess(realtimeProcess);
+	}
+
+	public final static void removeRealtimeProcess(String id) {
+		RealtimeProcessManager.get().delete(id);
+	}
+
+	public final static void deleteIndex(String id) {
+		RealtimeProcessManager.get().deleteIndex(id);
+	}
+
+	public final static GameProcess find(String id) {
+		return RealtimeProcessManager.get().find(id);
+	}
+	
 	public enum Origin {
 		CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, LEFT_CENTER, TOP_CENTER, BOTTOM_CENTER, RIGHT_CENTER
 	}
@@ -277,19 +293,4 @@ public class Director extends SoundBox {
 		}
 	}
 
-	public void addRealtimeProcess(RealtimeProcess realtimeProcess) {
-		RealtimeProcessManager.get().addProcess(realtimeProcess);
-	}
-
-	public void removeRealtimeProcess(String id) {
-		RealtimeProcessManager.get().delete(id);
-	}
-
-	public void deleteIndex(String id) {
-		RealtimeProcessManager.get().deleteIndex(id);
-	}
-
-	public Process find(String id) {
-		return RealtimeProcessManager.get().find(id);
-	}
 }

@@ -22,5 +22,5 @@
 package loon.utils.processes;
 
 public abstract interface RealtimeProcessHost {
-	public abstract void processFinished(String id, Process process);
+	public abstract void processFinished(String id, GameProcess process);
 }

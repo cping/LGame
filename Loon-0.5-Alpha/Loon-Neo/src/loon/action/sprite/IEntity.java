@@ -5,10 +5,9 @@ import java.util.Comparator;
 import loon.ZIndex;
 import loon.action.sprite.IEntity;
 import loon.canvas.LColor;
-import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public interface IEntity extends ISprite, ZIndex, XY {
+public interface IEntity extends ISprite, ZIndex {
 
 	public static final int TAG_INVALID = Integer.MIN_VALUE;
 

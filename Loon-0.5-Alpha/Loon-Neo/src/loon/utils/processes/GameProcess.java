@@ -23,7 +23,7 @@ package loon.utils.processes;
 
 import loon.utils.timer.LTimerContext;
 
-public abstract interface Process {
+public abstract interface GameProcess {
 	
 	public abstract void setProcessHost(RealtimeProcessHost host);
 

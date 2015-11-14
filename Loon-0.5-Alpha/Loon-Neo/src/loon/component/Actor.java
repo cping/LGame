@@ -41,12 +41,13 @@ import loon.action.sprite.Animation;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class Actor extends LObject implements ActionBind,LRelease {
-	
+public class Actor extends LObject implements ActionBind, XY, LRelease {
+
 	private String flag = "Actor";
 
 	private static int sequenceNumber = 0;
@@ -300,7 +301,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	 */
 	public void removeActionEvents() {
 		failIfNotInLayer();
-		gameLayer.removeActionEvents(this);
+		removeActionEvents(this);
 	}
 
 	/**
@@ -684,7 +685,7 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	}
 
 	public boolean isConsumerDrawing = true;
-	
+
 	/**
 	 * 矫正当前图像大小
 	 * 
@@ -824,24 +825,21 @@ public class Actor extends LObject implements ActionBind,LRelease {
 		}
 	}
 
-	public List<?> getNeighbours(float distance, boolean diagonal,
-			String flag) {
+	public List<?> getNeighbours(float distance, boolean diagonal, String flag) {
 		this.failIfNotInLayer();
 		return this.getLLayer().getNeighbours(this, distance, diagonal, flag);
 	}
 
-	public List<?> getCollisionObjects(float dx, float dy,
-			String flag) {
+	public List<?> getCollisionObjects(float dx, float dy, String flag) {
 		this.failIfNotInLayer();
-		return this.gameLayer.getCollisionObjectsAt(_location.x + dx, _location.y
-				+ dy, flag);
+		return this.gameLayer.getCollisionObjectsAt(_location.x + dx,
+				_location.y + dy, flag);
 	}
 
-	public Actor getOnlyCollisionObject(float dx, float dy,
-			String flag) {
+	public Actor getOnlyCollisionObject(float dx, float dy, String flag) {
 		this.failIfNotInLayer();
-		return this.gameLayer.getOnlyObjectAt(this, _location.x + dx, _location.y
-				+ dy, flag);
+		return this.gameLayer.getOnlyObjectAt(this, _location.x + dx,
+				_location.y + dy, flag);
 	}
 
 	public List<?> getCollisionObjects(float radius, String flag) {

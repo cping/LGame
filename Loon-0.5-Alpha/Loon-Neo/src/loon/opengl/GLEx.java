@@ -412,8 +412,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx rotate(float rx, float ry, float angle) {
-		translate(rx, ry);
-		rotate(angle);
+		Affine2f aff = tx();
+		if (aff != null) {
+			aff.translate(rx, ry);
+			aff.preRotate(angle);
+			aff.translate(-rx, -ry);
+		}
 		return this;
 	}
 
@@ -465,7 +469,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		txf.set(aff);
 		return this;
 	}
-	
+
 	public GLEx set(Matrix3 mat3) {
 		if (isClosed) {
 			return this;
@@ -1047,8 +1051,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else {
 			RectBox pr = scissors.get(scissorDepth - 1);
 			r.setLocation(MathUtils.max(pr.x, x), MathUtils.max(pr.y, y));
-			r.setSize(MathUtils.max(MathUtils.min(pr.maxX(), x + width - 1) - r.x, 0),
-					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
+			r.setSize(MathUtils.max(MathUtils.min(pr.maxX(), x + width - 1)
+					- r.x, 0), MathUtils.max(
+					MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}
 		if (useAlltextures) {
 			setClipImpl(0, 0, r, getWidth(), getHeight());
