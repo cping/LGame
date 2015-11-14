@@ -56,7 +56,7 @@ public class TArray<T> {
 	public void add(T value) {
 		T[] items = this.items;
 		if (size == items.length)
-			items = resize(Math.max(8, (int) (size * 1.75f)));
+			items = resize(MathUtils.max(8, (int) (size * 1.75f)));
 		items[size++] = value;
 	}
 
@@ -80,7 +80,7 @@ public class TArray<T> {
 		T[] items = this.items;
 		int sizeNeeded = size + count;
 		if (sizeNeeded > items.length)
-			items = resize(Math.max(8, (int) (sizeNeeded * 1.75f)));
+			items = resize(MathUtils.max(8, (int) (sizeNeeded * 1.75f)));
 		System.arraycopy(array, start, items, size, count);
 		size += count;
 	}
@@ -105,7 +105,7 @@ public class TArray<T> {
 					+ index + " > " + size);
 		T[] items = this.items;
 		if (size == items.length)
-			items = resize(Math.max(8, (int) (size * 1.75f)));
+			items = resize(MathUtils.max(8, (int) (size * 1.75f)));
 		if (ordered)
 			System.arraycopy(items, index, items, index + 1, size - index);
 		else
@@ -292,7 +292,7 @@ public class TArray<T> {
 	public T[] ensureCapacity(int additionalCapacity) {
 		int sizeNeeded = size + additionalCapacity;
 		if (sizeNeeded > items.length)
-			resize(Math.max(8, sizeNeeded));
+			resize(MathUtils.max(8, sizeNeeded));
 		return items;
 	}
 
@@ -300,7 +300,7 @@ public class TArray<T> {
 		T[] items = this.items;
 		T[] newItems = (T[]) ArrayReflection.newInstance(items.getClass()
 				.getComponentType(), newSize);
-		System.arraycopy(items, 0, newItems, 0, Math.min(size, newItems.length));
+		System.arraycopy(items, 0, newItems, 0, MathUtils.min(size, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}

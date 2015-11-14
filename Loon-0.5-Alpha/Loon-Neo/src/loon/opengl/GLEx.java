@@ -1046,9 +1046,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			r.setBounds(x, y, width, height);
 		} else {
 			RectBox pr = scissors.get(scissorDepth - 1);
-			r.setLocation(Math.max(pr.x, x), Math.max(pr.y, y));
-			r.setSize(Math.max(Math.min(pr.maxX(), x + width - 1) - r.x, 0),
-					Math.max(Math.min(pr.maxY(), y + height - 1) - r.y, 0));
+			r.setLocation(MathUtils.max(pr.x, x), MathUtils.max(pr.y, y));
+			r.setSize(MathUtils.max(MathUtils.min(pr.maxX(), x + width - 1) - r.x, 0),
+					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}
 		if (useAlltextures) {
 			setClipImpl(0, 0, r, getWidth(), getHeight());

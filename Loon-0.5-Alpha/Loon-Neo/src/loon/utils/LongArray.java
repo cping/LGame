@@ -78,7 +78,7 @@ public class LongArray {
 	public void add(long value) {
 		long[] items = this.items;
 		if (length == items.length) {
-			items = relength(Math.max(8, (int) (length * 1.75f)));
+			items = relength(MathUtils.max(8, (int) (length * 1.75f)));
 		}
 		items[length++] = value;
 	}
@@ -103,7 +103,7 @@ public class LongArray {
 		long[] items = this.items;
 		int lengthNeeded = length + length;
 		if (lengthNeeded > items.length) {
-			items = relength(Math.max(8, (int) (lengthNeeded * 1.75f)));
+			items = relength(MathUtils.max(8, (int) (lengthNeeded * 1.75f)));
 		}
 		System.arraycopy(array, offset, items, length, length);
 		length += length;
@@ -149,7 +149,7 @@ public class LongArray {
 		}
 		long[] items = this.items;
 		if (length == items.length)
-			items = relength(Math.max(8, (int) (length * 1.75f)));
+			items = relength(MathUtils.max(8, (int) (length * 1.75f)));
 		if (ordered)
 			System.arraycopy(items, index, items, index + 1, length - index);
 		else
@@ -294,7 +294,7 @@ public class LongArray {
 	public long[] ensureCapacity(int additionalCapacity) {
 		int lengthNeeded = length + additionalCapacity;
 		if (lengthNeeded > items.length)
-			relength(Math.max(8, lengthNeeded));
+			relength(MathUtils.max(8, lengthNeeded));
 		return items;
 	}
 
@@ -302,7 +302,7 @@ public class LongArray {
 		long[] newItems = new long[newlength];
 		long[] items = this.items;
 		System.arraycopy(items, 0, newItems, 0,
-				Math.min(length, newItems.length));
+				MathUtils.min(length, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}

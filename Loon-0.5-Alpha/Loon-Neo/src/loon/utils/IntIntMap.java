@@ -50,9 +50,9 @@ public class IntIntMap implements Iterable<IntIntMap.Entry> {
 		threshold = (int) (capacity * loadFactor);
 		mask = capacity - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = Math.max(3, (int) Math.ceil(Math.log(capacity)) * 2);
-		pushIterations = Math.max(Math.min(capacity, 8),
-				(int) Math.sqrt(capacity) / 8);
+		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
+		pushIterations = MathUtils.max(MathUtils.min(capacity, 8),
+				(int) MathUtils.sqrt(capacity) / 8);
 
 		keyTable = new int[capacity + stashCapacity];
 		valueTable = new int[keyTable.length];
@@ -477,9 +477,9 @@ public class IntIntMap implements Iterable<IntIntMap.Entry> {
 		threshold = (int) (newSize * loadFactor);
 		mask = newSize - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = Math.max(3, (int) Math.ceil(Math.log(newSize)) * 2);
-		pushIterations = Math.max(Math.min(newSize, 8),
-				(int) Math.sqrt(newSize) / 8);
+		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
+		pushIterations = MathUtils.max(MathUtils.min(newSize, 8),
+				(int) MathUtils.sqrt(newSize) / 8);
 
 		int[] oldKeyTable = keyTable;
 		int[] oldValueTable = valueTable;

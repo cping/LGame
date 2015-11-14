@@ -23,6 +23,7 @@ package loon.stage;
 import loon.geom.Transform;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 public abstract class ClippedPlayer extends Player {
 
@@ -80,7 +81,7 @@ public abstract class ClippedPlayer extends Player {
 			tx.transform(size.set(width, height), size);
 			tx.translate(-originX, -originY);
 			boolean nonEmpty = gl.startClipped((int) pos.x, (int) pos.y,
-					Math.round(Math.abs(size.x)), Math.round(Math.abs(size.y)));
+					MathUtils.round(MathUtils.abs(size.x)), MathUtils.round(MathUtils.abs(size.y)));
 			try {
 				if (nonEmpty){
 					paintClipped(gl);

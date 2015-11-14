@@ -1,6 +1,5 @@
 package loon.utils;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 	}
 
 	public void sort(final T[] es) {
-		Arrays.sort(es, this.zIndexComparator);
+		this.sort(es, this.zIndexComparator);
 	}
 
 	public void sort(final T[] es, final int s, final int e) {

@@ -120,8 +120,8 @@ public class Ellipse extends Shape {
 			if (ang > end) {
 				ang = end;
 			}
-			float newX = (float) (cx + (MathUtils.cos(Math.toRadians(ang)) * radius1));
-			float newY = (float) (cy + (MathUtils.sin(Math.toRadians(ang)) * radius2));
+			float newX = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * radius1));
+			float newY = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * radius2));
 
 			if (newX > maxX) {
 				maxX = newX;

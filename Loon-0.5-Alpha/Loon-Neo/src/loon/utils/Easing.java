@@ -286,9 +286,9 @@ public class Easing {
 			}
 		case FUNCTION_OUT_ELASTIC:
 			t2 = 0.3f / 4;
-			t3 = (float) (2 * Math.PI / 0.3);
-			return (float) Math.pow(2, -10 * t)
-					* (float) Math.sin((t - t2) * t3) + 1;
+			t3 = (float) (2 * MathUtils.PI / 0.3);
+			return MathUtils.pow(2, -10 * t)
+					* MathUtils.sin((t - t2) * t3) + 1;
 		}
 	}
 

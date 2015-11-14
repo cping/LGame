@@ -22,6 +22,8 @@ package loon.utils.json;
 
 import java.math.BigInteger;
 
+import loon.utils.MathUtils;
+
 final class JsonParser {
 
 	private int linePos = 1, rowPos, charOffset, utf8adjust;
@@ -440,7 +442,7 @@ final class JsonParser {
 					+ tokenLinePos + ", char " + tokenCharPos, tokenLinePos,
 					tokenCharPos, tokenCharOffset);
 		else {
-			int charPos = Math.max(1, index - rowPos - utf8adjust);
+			int charPos = MathUtils.max(1, index - rowPos - utf8adjust);
 			return new JsonParserException(e, message + " on line " + linePos
 					+ ", char " + charPos, linePos, charPos, index + charOffset);
 		}

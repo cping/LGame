@@ -98,15 +98,15 @@ public class SpriteRegion extends LTextureRegion {
 		this.texture = texture;
 		setRegion(srcX, srcY, srcWidth, srcHeight);
 		setColor(1f, 1f, 1f, 1f);
-		setSize(Math.abs(srcWidth), Math.abs(srcHeight));
+		setSize(MathUtils.abs(srcWidth), MathUtils.abs(srcHeight));
 		setOrigin(width / 2, height / 2);
 	}
 
 	public SpriteRegion(LTextureRegion region) {
 		setRegion(region);
 		setColor(1f, 1f, 1f, 1f);
-		setSize(Math.abs(region.getRegionWidth()),
-				Math.abs(region.getRegionHeight()));
+		setSize(MathUtils.abs(region.getRegionWidth()),
+				MathUtils.abs(region.getRegionHeight()));
 		setOrigin(width / 2, height / 2);
 	}
 
@@ -114,7 +114,7 @@ public class SpriteRegion extends LTextureRegion {
 			int srcWidth, int srcHeight) {
 		setRegion(region, srcX, srcY, srcWidth, srcHeight);
 		setColor(1f, 1f, 1f, 1f);
-		setSize(Math.abs(srcWidth), Math.abs(srcHeight));
+		setSize(MathUtils.abs(srcWidth), MathUtils.abs(srcHeight));
 		setOrigin(width / 2, height / 2);
 	}
 

@@ -16,6 +16,7 @@
 package loon.physics;
 
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 public class PCirclePolygonCollider implements PCollider {
 
@@ -69,9 +70,9 @@ public class PCirclePolygonCollider implements PCollider {
 			a.set(c1._pos.x - ver.x, c1._pos.y - ver.y);
 			b.set(c1._pos.x - nextVer.x, c1._pos.y - nextVer.y);
 			if ((a.x * edgeX + a.y * edgeY) * (b.x * edgeX + b.y * edgeY) <= 0.0F) {
-				float edgeLen = (float) Math
+				float edgeLen = MathUtils
 						.sqrt(edgeX * edgeX + edgeY * edgeY);
-				float distanceToEdge = Math.abs(a.x * edgeY - a.y * edgeX)
+				float distanceToEdge = MathUtils.abs(a.x * edgeY - a.y * edgeX)
 						/ edgeLen;
 				if (distanceToEdge <= c1.rad) {
 					distanceToEdge -= c1.rad;

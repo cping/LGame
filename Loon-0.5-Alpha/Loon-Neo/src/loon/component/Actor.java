@@ -491,9 +491,9 @@ public class Actor extends LObject implements ActionBind,LRelease {
 	 * @param distance
 	 */
 	public void move(double distance) {
-		double angle = Math.toRadians(getRotation());
-		int x = (int) Math.round(getX() + Math.cos(angle) * distance);
-		int y = (int) Math.round(getY() + Math.sin(angle) * distance);
+		double angle = MathUtils.toRadians(getRotation());
+		int x = (int) MathUtils.round(getX() + MathUtils.cos(angle) * distance);
+		int y = (int) MathUtils.round(getY() + MathUtils.sin(angle) * distance);
 		setLocation(x, y);
 	}
 

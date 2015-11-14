@@ -22,6 +22,7 @@ package loon.font;
 
 import loon.geom.Dimension;
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
 
 public abstract class TextLayout {
 
@@ -49,7 +50,7 @@ public abstract class TextLayout {
     this.text = text;
     this.format = format;
     this.bounds = bounds;
-    this.size = new Dimension(Math.max(bounds.x(), 0) + bounds.width(), height);
+    this.size = new Dimension(MathUtils.max(bounds.x(), 0) + bounds.width(), height);
   }
 
   public static String normalizeEOL(String text) {

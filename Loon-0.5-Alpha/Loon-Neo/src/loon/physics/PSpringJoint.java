@@ -16,6 +16,7 @@
 package loon.physics;
 
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 public class PSpringJoint extends PJoint {
 
@@ -103,7 +104,7 @@ public class PSpringJoint extends PJoint {
 		force = -over * k;
 		force += PTransformer.calcRelativeVelocity(b1, b2, relAnchor1,
 				relAnchor2).dot(normal)
-				* damp * -(float) Math.sqrt(k * mass) * 2.0F;
+				* damp * - MathUtils.sqrt(k * mass) * 2.0f;
 		force *= dt;
 		b1.applyImpulse(normal.x * force, normal.y * force, anchor1.x,
 				anchor1.y);

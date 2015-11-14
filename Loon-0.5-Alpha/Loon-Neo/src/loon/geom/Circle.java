@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import loon.utils.MathUtils;
+
 public class Circle extends Ellipse {
 	/**
 	 * 
@@ -100,17 +102,17 @@ public class Circle extends Ellipse {
 			Circle other = (Circle) shape;
 			float totalRad2 = getRadius() + other.getRadius();
 
-			if (Math.abs(other.getCenterX() - getCenterX()) > totalRad2) {
+			if (MathUtils.abs(other.getCenterX() - getCenterX()) > totalRad2) {
 				return false;
 			}
-			if (Math.abs(other.getCenterY() - getCenterY()) > totalRad2) {
+			if (MathUtils.abs(other.getCenterY() - getCenterY()) > totalRad2) {
 				return false;
 			}
 
 			totalRad2 *= totalRad2;
 
-			float dx = Math.abs(other.getCenterX() - getCenterX());
-			float dy = Math.abs(other.getCenterY() - getCenterY());
+			float dx = MathUtils.abs(other.getCenterX() - getCenterX());
+			float dy = MathUtils.abs(other.getCenterY() - getCenterY());
 
 			return totalRad2 >= ((dx * dx) + (dy * dy));
 		} else if (shape instanceof RectBox) {

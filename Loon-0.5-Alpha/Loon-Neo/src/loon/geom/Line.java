@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import loon.utils.MathUtils;
+
 public class Line extends Shape {
 	/**
 	 * 
@@ -146,7 +148,7 @@ public class Line extends Shape {
 	}
 
 	public float distance(Vector2f point) {
-		return (float) Math.sqrt(distanceSquared(point));
+		return MathUtils.sqrt(distanceSquared(point));
 	}
 
 	public boolean on(Vector2f point) {
@@ -249,7 +251,7 @@ public class Line extends Shape {
 
 	public static float ptSegDist(float x1, float y1, float x2, float y2,
 			float px, float py) {
-		return (float) Math.sqrt(ptSegDistSq(x1, y1, x2, y2, px, py));
+		return MathUtils.sqrt(ptSegDistSq(x1, y1, x2, y2, px, py));
 	}
 
 	public static float ptSegDistSq(float x1, float y1, float x2, float y2,
@@ -281,7 +283,7 @@ public class Line extends Shape {
 
 	public static float ptLineDist(float x1, float y1, float x2, float y2,
 			float px, float py) {
-		return (float) Math.sqrt(ptLineDistSq(x1, y1, x2, y2, px, py));
+		return MathUtils.sqrt(ptLineDistSq(x1, y1, x2, y2, px, py));
 	}
 
 	public float ptLineDist(Point pt) {

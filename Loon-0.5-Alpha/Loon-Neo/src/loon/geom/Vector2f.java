@@ -355,7 +355,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public float lenManhattan() {
-		return Math.abs(this.x) + Math.abs(this.y);
+		return MathUtils.abs(this.x) + MathUtils.abs(this.y);
 	}
 
 	public static Vector2f cpy(Vector2f vectorA) {
@@ -687,17 +687,17 @@ public class Vector2f implements Serializable, XY {
 	public boolean epsilonEquals(Vector2f other, float epsilon) {
 		if (other == null)
 			return false;
-		if (Math.abs(other.x - x) > epsilon)
+		if (MathUtils.abs(other.x - x) > epsilon)
 			return false;
-		if (Math.abs(other.y - y) > epsilon)
+		if (MathUtils.abs(other.y - y) > epsilon)
 			return false;
 		return true;
 	}
 
 	public boolean epsilonEquals(float x, float y, float epsilon) {
-		if (Math.abs(x - this.x) > epsilon)
+		if (MathUtils.abs(x - this.x) > epsilon)
 			return false;
-		if (Math.abs(y - this.y) > epsilon)
+		if (MathUtils.abs(y - this.y) > epsilon)
 			return false;
 		return true;
 	}
@@ -707,7 +707,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public boolean isUnit(final float margin) {
-		return Math.abs(len2() - 1f) < margin;
+		return MathUtils.abs(len2() - 1f) < margin;
 	}
 
 	public boolean isZero() {

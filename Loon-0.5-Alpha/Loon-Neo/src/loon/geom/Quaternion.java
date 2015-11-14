@@ -78,11 +78,11 @@ public class Quaternion implements Serializable {
 
 	public final static float len(final float x, final float y, final float z,
 			final float w) {
-		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
+		return MathUtils.sqrt(x * x + y * y + z * z + w * w);
 	}
 
 	public float len() {
-		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
+		return MathUtils.sqrt(x * x + y * y + z * z + w * w);
 	}
 
 	@Override
@@ -97,14 +97,14 @@ public class Quaternion implements Serializable {
 
 	public Quaternion setEulerAnglesRad(float yaw, float pitch, float roll) {
 		final float hr = roll * 0.5f;
-		final float shr = (float) Math.sin(hr);
-		final float chr = (float) Math.cos(hr);
+		final float shr = MathUtils.sin(hr);
+		final float chr = MathUtils.cos(hr);
 		final float hp = pitch * 0.5f;
-		final float shp = (float) Math.sin(hp);
-		final float chp = (float) Math.cos(hp);
+		final float shp = MathUtils.sin(hp);
+		final float chp = MathUtils.cos(hp);
 		final float hy = yaw * 0.5f;
-		final float shy = (float) Math.sin(hy);
-		final float chy = (float) Math.cos(hy);
+		final float shy = MathUtils.sin(hy);
+		final float chy = MathUtils.cos(hy);
 		final float chy_shp = chy * shp;
 		final float shy_chp = shy * chp;
 		final float chy_chp = chy * chp;
@@ -134,7 +134,7 @@ public class Quaternion implements Serializable {
 
 	public float getPitchRad() {
 		final int pole = getGimbalPole();
-		return pole == 0 ? (float) Math.asin(MathUtils.clamp(2f * (w * x - z
+		return pole == 0 ? MathUtils.asin(MathUtils.clamp(2f * (w * x - z
 				* y), -1f, 1f)) : (float) pole * MathUtils.PI * 0.5f;
 	}
 
@@ -163,7 +163,7 @@ public class Quaternion implements Serializable {
 	public Quaternion nor() {
 		float len = len2();
 		if (len != 0.f && !MathUtils.isEqual(len, 1f)) {
-			len = (float) Math.sqrt(len);
+			len = MathUtils.sqrt(len);
 			w /= len;
 			x /= len;
 			y /= len;
@@ -329,8 +329,8 @@ public class Quaternion implements Serializable {
 		d = 1f / d;
 		float l_ang = radians < 0 ? MathUtils.TWO_PI
 				- (-radians % MathUtils.TWO_PI) : radians % MathUtils.TWO_PI;
-		float l_sin = (float) Math.sin(l_ang / 2);
-		float l_cos = (float) Math.cos(l_ang / 2);
+		float l_sin = MathUtils.sin(l_ang / 2);
+		float l_cos = MathUtils.cos(l_ang / 2);
 		return this.set(d * x * l_sin, d * y * l_sin, d * z * l_sin, l_cos)
 				.nor();
 	}
@@ -384,28 +384,28 @@ public class Quaternion implements Serializable {
 		final float t = xx + yy + zz;
 
 		if (t >= 0) {
-			float s = (float) Math.sqrt(t + 1);
+			float s = MathUtils.sqrt(t + 1);
 			w = 0.5f * s;
 			s = 0.5f / s;
 			x = (zy - yz) * s;
 			y = (xz - zx) * s;
 			z = (yx - xy) * s;
 		} else if ((xx > yy) && (xx > zz)) {
-			float s = (float) Math.sqrt(1.0 + xx - yy - zz);
+			float s = MathUtils.sqrt(1f + xx - yy - zz);
 			x = s * 0.5f;
 			s = 0.5f / s;
 			y = (yx + xy) * s;
 			z = (xz + zx) * s;
 			w = (zy - yz) * s;
 		} else if (yy > zz) {
-			float s = (float) Math.sqrt(1.0 + yy - xx - zz);
+			float s = MathUtils.sqrt(1f + yy - xx - zz);
 			y = s * 0.5f;
 			s = 0.5f / s;
 			x = (yx + xy) * s;
 			z = (zy + yz) * s;
 			w = (xz - zx) * s;
 		} else {
-			float s = (float) Math.sqrt(1.0 + zz - xx - yy);
+			float s = MathUtils.sqrt(1f + zz - xx - yy);
 			z = s * 0.5f;
 			s = 0.5f / s;
 			x = (xz + zx) * s;
@@ -418,7 +418,7 @@ public class Quaternion implements Serializable {
 
 	public Quaternion setFromCross(final Vector3f v1, final Vector3f v2) {
 		final float dot = MathUtils.clamp(v1.dot(v2), -1f, 1f);
-		final float angle = (float) Math.acos(dot);
+		final float angle = MathUtils.acos(dot);
 		return setFromAxisRad(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x
 				* v2.z, v1.x * v2.y - v1.y * v2.x, angle);
 	}
@@ -427,7 +427,7 @@ public class Quaternion implements Serializable {
 			final float z1, final float x2, final float y2, final float z2) {
 		final float dot = MathUtils.clamp(Vector3f.dot(x1, y1, z1, x2, y2, z2),
 				-1f, 1f);
-		final float angle = (float) Math.acos(dot);
+		final float angle = MathUtils.acos(dot);
 		return setFromAxisRad(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2
 				- y1 * x2, angle);
 	}
@@ -438,11 +438,11 @@ public class Quaternion implements Serializable {
 		float scale0 = 1 - alpha;
 		float scale1 = alpha;
 		if ((1 - absDot) > 0.1) {
-			final double angle = Math.acos(absDot);
-			final double invSinTheta = 1f / Math.sin(angle);
+			final double angle = MathUtils.acos(absDot);
+			final double invSinTheta = 1f / MathUtils.sin(angle);
 
-			scale0 = (float) (Math.sin((1 - alpha) * angle) * invSinTheta);
-			scale1 = (float) (Math.sin((alpha * angle)) * invSinTheta);
+			scale0 = (float) (MathUtils.sin((1 - alpha) * angle) * invSinTheta);
+			scale1 = (float) (MathUtils.sin((alpha * angle)) * invSinTheta);
 		}
 
 		if (dot < 0.f) {
@@ -481,19 +481,19 @@ public class Quaternion implements Serializable {
 	public Quaternion exp(float alpha) {
 
 		float norm = len();
-		float normExp = (float) Math.pow(norm, alpha);
+		float normExp = MathUtils.pow(norm, alpha);
 
-		float theta = (float) Math.acos(w / norm);
+		float theta = MathUtils.acos(w / norm);
 
 		float coeff = 0;
-		if (Math.abs(theta) < 0.001) {
+		if (MathUtils.abs(theta) < 0.001) {
 			coeff = normExp * alpha / norm;
 		} else {
-			coeff = (float) (normExp * Math.sin(alpha * theta) / (norm * Math
+			coeff = (float) (normExp * MathUtils.sin(alpha * theta) / (norm * MathUtils
 					.sin(theta)));
 		}
 
-		w = (float) (normExp * Math.cos(alpha * theta));
+		w = (float) (normExp * MathUtils.cos(alpha * theta));
 		x *= coeff;
 		y *= coeff;
 		z *= coeff;
@@ -567,8 +567,8 @@ public class Quaternion implements Serializable {
 		if (this.w > 1) {
 			this.nor();
 		}
-		float angle = (float) (2.0 * Math.acos(this.w));
-		double s = Math.sqrt(1 - this.w * this.w);
+		float angle = (float) (2.0 * MathUtils.acos(this.w));
+		double s = MathUtils.sqrt(1 - this.w * this.w);
 		if (s < MathUtils.FLOAT_ROUNDING_ERROR) {
 			axis.x = this.x;
 			axis.y = this.y;
@@ -583,7 +583,7 @@ public class Quaternion implements Serializable {
 	}
 
 	public float getAngleRad() {
-		return (float) (2.0 * Math.acos((this.w > 1) ? (this.w / len())
+		return (float) (2.0 * MathUtils.acos((this.w > 1) ? (this.w / len())
 				: this.w));
 	}
 
@@ -610,8 +610,8 @@ public class Quaternion implements Serializable {
 				axisZ);
 		final float l2 = Quaternion.len2(axisX * d, axisY * d, axisZ * d,
 				this.w);
-		return MathUtils.isZero(l2) ? 0f : (float) (2.0 * Math.acos(MathUtils
-				.clamp((float) (this.w / Math.sqrt(l2)), -1f, 1f)));
+		return MathUtils.isZero(l2) ? 0f : (float) (2.0 * MathUtils.acos(MathUtils
+				.clamp((float) (this.w / MathUtils.sqrt(l2)), -1f, 1f)));
 	}
 
 	public float getAngleAroundRad(final Vector3f axis) {

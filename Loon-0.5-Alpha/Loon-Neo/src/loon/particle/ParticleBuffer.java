@@ -24,6 +24,7 @@ import java.util.List;
 
 import loon.canvas.LColor;
 import loon.opengl.ParticleBatch;
+import loon.utils.MathUtils;
 
 public class ParticleBuffer {
 	
@@ -133,7 +134,7 @@ public class ParticleBuffer {
 				ppos += 32 * NUM_FIELDS;
 				continue;
 			}
-			for (int end = Math.min(pp + 32, _maxParticles); pp < end
+			for (int end = MathUtils.min(pp + 32, _maxParticles); pp < end
 					&& initted < count; pp++, ppos += NUM_FIELDS, mask <<= 1) {
 				if ((live & mask) != 0)
 					continue;

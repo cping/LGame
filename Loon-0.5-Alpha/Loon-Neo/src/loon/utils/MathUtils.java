@@ -286,6 +286,13 @@ public class MathUtils {
 			cos[(int) (i * degToIndex) & SIN_MASK] = (float) Math.cos(i
 					* DEG_TO_RAD);
 		}
+		for (int i = 0; i < ATAN2_DIM; i++) {
+			for (int j = 0; j < ATAN2_DIM; j++) {
+				float x0 = (float) i / ATAN2_DIM;
+				float y0 = (float) j / ATAN2_DIM;
+				atan2[j * ATAN2_DIM + i] = (float) Math.atan2(y0, x0);
+			}
+		}
 	}
 
 	public static final int ZERO_FIXED = 0;
@@ -420,27 +427,27 @@ public class MathUtils {
 	static final int CK2 = 32551;
 
 	private static double reduceSinAngle(double radians) {
-		radians %= Math.PI * 2.0;
-		if (Math.abs(radians) > Math.PI) {
-			radians = radians - (Math.PI * 2.0);
+		radians %= PI * 2.0;
+		if (Math.abs(radians) > PI) {
+			radians = radians - (PI * 2.0);
 		}
-		if (Math.abs(radians) > Math.PI / 2) {
-			radians = Math.PI - radians;
+		if (Math.abs(radians) > PI / 2) {
+			radians = PI - radians;
 		}
 		return radians;
 	}
 
 	public static double sin(double radians) {
 		radians = reduceSinAngle(radians);
-		if (Math.abs(radians) <= Math.PI / 4) {
+		if (Math.abs(radians) <= PI / 4) {
 			return Math.sin(radians);
 		} else {
-			return Math.cos(Math.PI / 2 - radians);
+			return Math.cos(PI / 2 - radians);
 		}
 	}
 
 	public static double cos(double radians) {
-		return sin(radians + Math.PI / 2);
+		return sin(radians + PI / 2);
 	}
 
 	public static int cos(int f) {
@@ -670,13 +677,6 @@ public class MathUtils {
 				* ((value - istart) / (istop - istart));
 	}
 
-	static public final float degrees(float radians) {
-		return radians * MathUtils.RAD_TO_DEG;
-	}
-
-	static public final float radians(float degrees) {
-		return degrees * MathUtils.DEG_TO_RAD;
-	}
 
 	public static final float sin(float rad) {
 		return sin[(int) (rad * radToIndex) & SIN_MASK];
@@ -692,16 +692,6 @@ public class MathUtils {
 
 	public static final float cosDeg(float deg) {
 		return cos[(int) (deg * degToIndex) & SIN_MASK];
-	}
-
-	static {
-		for (int i = 0; i < ATAN2_DIM; i++) {
-			for (int j = 0; j < ATAN2_DIM; j++) {
-				float x0 = (float) i / ATAN2_DIM;
-				float y0 = (float) j / ATAN2_DIM;
-				atan2[j * ATAN2_DIM + i] = (float) Math.atan2(y0, x0);
-			}
-		}
 	}
 
 	public static double atan2(double y, double x) {
@@ -736,12 +726,16 @@ public class MathUtils {
 		return (atan2[yi * ATAN2_DIM + xi] + add) * mul;
 	}
 
-	public static final float radToDeg(final float rad) {
-		return RAD_TO_DEG * rad;
+	public static float toDegrees(final float radians) {
+		return radians * RAD_TO_DEG;
 	}
 
-	public static final float degToRad(double deg) {
-		return (float) (deg * 360 / (2 * Math.PI));
+	public static float toRadians(final float degrees) {
+		return degrees * DEG_TO_RAD;
+	}
+
+	public static final float degToRad(float deg) {
+		return deg * 360 / TWO_PI;
 	}
 
 	public static final int bringToBounds(final int minValue,
@@ -863,14 +857,6 @@ public class MathUtils {
 		return result;
 	}
 
-	public static float toDegrees(float radians) {
-		return (float) (radians * 57.295779513082320876798154814105);
-	}
-
-	public static float toRadians(float degrees) {
-		return (float) (degrees * 0.017453292519943295769236907684886);
-	}
-
 	public static float wrapAngle(float angle) {
 		angle = (float) IEEEremainder((double) angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {
@@ -885,8 +871,8 @@ public class MathUtils {
 
 	public static double normalizeLon(double lon) {
 		if (lon == lon) {
-			while ((lon < -180.0) || (lon > 180.)) {
-				lon = IEEEremainder(lon, 360.);
+			while ((lon < -180d) || (lon > 180d)) {
+				lon = IEEEremainder(lon, 360d);
 			}
 		}
 		return lon;

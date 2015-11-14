@@ -22,6 +22,7 @@ package loon.component.table;
 
 import loon.font.LFont;
 import loon.geom.Alignment;
+import loon.utils.MathUtils;
 
 public class TableColumn {
 
@@ -70,7 +71,7 @@ public class TableColumn {
 	}
 
 	public void setRelativeWidth(float relativeWidth) {
-		relativeWidth = Math.max(0, Math.min(1, relativeWidth));
+		relativeWidth = MathUtils.max(0, MathUtils.min(1, relativeWidth));
 		this.relativeWidth = relativeWidth;
 		this.width = 0;
 	}

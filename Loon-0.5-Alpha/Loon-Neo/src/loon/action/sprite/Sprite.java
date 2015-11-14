@@ -34,6 +34,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
+import loon.utils.MathUtils;
 
 public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 
@@ -480,8 +481,8 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 	 * @param vector
 	 */
 	public void updateLocation(Vector2f vector) {
-		this.setX(Math.round(vector.getX()));
-		this.setY(Math.round(vector.getY()));
+		this.setX(MathUtils.round(vector.getX()));
+		this.setY(MathUtils.round(vector.getY()));
 	}
 
 	public LTexture getImage() {

@@ -26,6 +26,7 @@ import java.util.List;
 
 import loon.action.map.ArrayInt2DAStar.TileFactory;
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
 
 @SuppressWarnings("unchecked")
 public class HexagonMap<T> implements GeometryMap, Iterable<TileVisit<T>> {
@@ -127,8 +128,8 @@ public class HexagonMap<T> implements GeometryMap, Iterable<TileVisit<T>> {
 				/ (origin.getEndHeight() + origin.getMidHeight());
 		int yOdd = (y - origin.getY())
 				% (origin.getEndHeight() + origin.getMidHeight());
-		int yOdd0 = Math.round((float) origin.getEndHeight()
-				/ (float) origin.getHalfWidth() * xOdd);
+		int yOdd0 = MathUtils.round( origin.getEndHeight()
+				/  origin.getHalfWidth() * xOdd);
 		if ((yBlock & 1) == 0) {
 			if (yOdd < origin.getEndHeight() - yOdd0) {
 				m0 = xBlock - 1;

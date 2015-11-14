@@ -16,6 +16,7 @@
 package loon.physics;
 
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 public class PTransformer {
 
@@ -106,8 +107,8 @@ public class PTransformer {
 	}
 
 	public void setRotate(float theta) {
-		float sin = (float) Math.sin(theta);
-		float cos = (float) Math.cos(theta);
+		float sin = MathUtils.sin(theta);
+		float cos = MathUtils.cos(theta);
 		e00 = cos;
 		e01 = sin;
 		e10 = -sin;

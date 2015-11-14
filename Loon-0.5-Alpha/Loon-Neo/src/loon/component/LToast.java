@@ -6,6 +6,7 @@ import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
 /**
@@ -175,13 +176,13 @@ public class LToast extends LComponent {
 		if (timer.action(elapsedTime)) {
 			if (mType == ISprite.TYPE_FADE_IN) {
 				opacity += OPACITY_INCREMENT;
-				opacity = (Math.min(opacity, MAX_OPACITY));
+				opacity = (MathUtils.min(opacity, MAX_OPACITY));
 				if (opacity >= MAX_OPACITY) {
 					stop = true;
 				}
 			} else {
 				opacity -= OPACITY_INCREMENT;
-				opacity = (Math.max(opacity, 0));
+				opacity = (MathUtils.max(opacity, 0));
 				if (opacity <= 0) {
 					stop = true;
 					setVisible(false);

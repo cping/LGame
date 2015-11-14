@@ -239,7 +239,7 @@ public class PHingeJoint extends PJoint {
 				relAnchor1, relAnchor2));
 		float length = force.length();
 		force.normalize();
-		force.mulLocal(Math.max(length * 0.2F - 0.002F, 0.0F));
+		force.mulLocal(MathUtils.max(length * 0.2f - 0.002f, 0.0f));
 		mass.mulEqual(force);
 		b1.positionCorrection(force.x, force.y, anchor1.x, anchor1.y);
 		b2.positionCorrection(-force.x, -force.y, anchor2.x, anchor2.y);

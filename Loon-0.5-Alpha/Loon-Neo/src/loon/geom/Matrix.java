@@ -458,7 +458,7 @@ public final class Matrix {
 		}
 
 		final float det = det();
-		if (Math.abs(det) <= MathUtils.EPSILON) {
+		if (MathUtils.abs(det) <= MathUtils.EPSILON) {
 			throw new ArithmeticException("This matrix cannot be inverted !");
 		}
 

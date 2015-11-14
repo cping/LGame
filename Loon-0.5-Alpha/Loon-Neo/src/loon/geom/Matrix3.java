@@ -157,8 +157,8 @@ public class Matrix3 implements Serializable {
 	}
 
 	public Matrix3 setToRotationRad(float radians) {
-		float cos = (float) Math.cos(radians);
-		float sin = (float) Math.sin(radians);
+		float cos = MathUtils.cos(radians);
+		float sin = MathUtils.sin(radians);
 
 		this.val[M00] = cos;
 		this.val[M10] = sin;
@@ -377,8 +377,8 @@ public class Matrix3 implements Serializable {
 		if (radians == 0) {
 			return this;
 		}
-		float cos = (float) Math.cos(radians);
-		float sin = (float) Math.sin(radians);
+		float cos = MathUtils.cos(radians);
+		float sin = MathUtils.sin(radians);
 
 		tmp[M00] = cos;
 		tmp[M10] = sin;
@@ -434,17 +434,17 @@ public class Matrix3 implements Serializable {
 	}
 
 	public Vector2f getScale(Vector2f scale) {
-		scale.x = (float) Math.sqrt(val[M00] * val[M00] + val[M01] * val[M01]);
-		scale.y = (float) Math.sqrt(val[M10] * val[M10] + val[M11] * val[M11]);
+		scale.x = MathUtils.sqrt(val[M00] * val[M00] + val[M01] * val[M01]);
+		scale.y = MathUtils.sqrt(val[M10] * val[M10] + val[M11] * val[M11]);
 		return scale;
 	}
 
 	public float getRotation() {
-		return MathUtils.DEG_TO_RAD * (float) Math.atan2(val[M10], val[M00]);
+		return MathUtils.DEG_TO_RAD * MathUtils.atan2(val[M10], val[M00]);
 	}
 
 	public float getRotationRad() {
-		return (float) Math.atan2(val[M10], val[M00]);
+		return MathUtils.atan2(val[M10], val[M00]);
 	}
 
 	public Matrix3 scl(float scale) {

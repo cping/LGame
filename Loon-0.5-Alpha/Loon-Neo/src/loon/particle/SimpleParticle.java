@@ -160,7 +160,7 @@ public class SimpleParticle {
 
 	public void adjustSize(float delta) {
 		size += delta;
-		size = Math.max(0, size);
+		size = MathUtils.max(0, size);
 	}
 
 	public void setLife(float life) {

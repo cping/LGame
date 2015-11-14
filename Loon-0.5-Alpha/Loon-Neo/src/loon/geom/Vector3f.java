@@ -137,11 +137,11 @@ public class Vector3f implements Serializable {
 	}
 
 	public static float len(final float x, final float y, final float z) {
-		return (float) Math.sqrt(x * x + y * y + z * z);
+		return MathUtils.sqrt(x * x + y * y + z * z);
 	}
 
 	public float len() {
-		return (float) Math.sqrt(x * x + y * y + z * z);
+		return MathUtils.sqrt(x * x + y * y + z * z);
 	}
 
 	public static float len2(final float x, final float y, final float z) {
@@ -161,21 +161,21 @@ public class Vector3f implements Serializable {
 		final float a = x2 - x1;
 		final float b = y2 - y1;
 		final float c = z2 - z1;
-		return (float) Math.sqrt(a * a + b * b + c * c);
+		return MathUtils.sqrt(a * a + b * b + c * c);
 	}
 
 	public float dst(final Vector3f vector) {
 		final float a = vector.x - x;
 		final float b = vector.y - y;
 		final float c = vector.z - z;
-		return (float) Math.sqrt(a * a + b * b + c * c);
+		return MathUtils.sqrt(a * a + b * b + c * c);
 	}
 
 	public float dst(float x, float y, float z) {
 		final float a = x - this.x;
 		final float b = y - this.y;
 		final float c = z - this.z;
-		return (float) Math.sqrt(a * a + b * b + c * c);
+		return MathUtils.sqrt(a * a + b * b + c * c);
 	}
 
 	public static float dst2(final float x1, final float y1, final float z1,
@@ -205,7 +205,7 @@ public class Vector3f implements Serializable {
 		if (len2 == 0f || len2 == 1f) {
 			return this;
 		}
-		return this.scl(1f / (float) Math.sqrt(len2));
+		return this.scl(1f / MathUtils.sqrt(len2));
 	}
 
 	public static float dot(float x1, float y1, float z1, float x2, float y2,
@@ -346,7 +346,7 @@ public class Vector3f implements Serializable {
 	}
 
 	public boolean isUnit(final float margin) {
-		return Math.abs(len2() - 1f) < margin;
+		return MathUtils.abs(len2() - 1f) < margin;
 	}
 
 	public boolean isZero() {
@@ -411,18 +411,18 @@ public class Vector3f implements Serializable {
 			return lerp(target, alpha);
 		}
 
-		final float theta0 = (float) Math.acos(dot);
+		final float theta0 = MathUtils.acos(dot);
 		final float theta = theta0 * alpha;
 
-		final float st = (float) Math.sin(theta);
+		final float st = MathUtils.sin(theta);
 		final float tx = target.x - x * dot;
 		final float ty = target.y - y * dot;
 		final float tz = target.z - z * dot;
 		final float l2 = tx * tx + ty * ty + tz * tz;
 		final float dl = st
-				* ((l2 < 0.0001f) ? 1f : 1f / (float) Math.sqrt(l2));
+				* ((l2 < 0.0001f) ? 1f : 1f / MathUtils.sqrt(l2));
 
-		return scl((float) Math.cos(theta)).add(tx * dl, ty * dl, tz * dl)
+		return scl(MathUtils.cos(theta)).add(tx * dl, ty * dl, tz * dl)
 				.nor();
 	}
 
@@ -448,7 +448,7 @@ public class Vector3f implements Serializable {
 
 	public Vector3f setLength2(float len2) {
 		float oldLen2 = len2();
-		return (oldLen2 == 0 || oldLen2 == len2) ? this : scl((float) Math
+		return (oldLen2 == 0 || oldLen2 == len2) ? this : scl(MathUtils
 				.sqrt(len2 / oldLen2));
 	}
 
@@ -458,10 +458,10 @@ public class Vector3f implements Serializable {
 			return this;
 		float max2 = max * max;
 		if (len2 > max2)
-			return scl((float) Math.sqrt(max2 / len2));
+			return scl(MathUtils.sqrt(max2 / len2));
 		float min2 = min * min;
 		if (len2 < min2)
-			return scl((float) Math.sqrt(min2 / len2));
+			return scl(MathUtils.sqrt(min2 / len2));
 		return this;
 	}
 
@@ -497,21 +497,21 @@ public class Vector3f implements Serializable {
 	public boolean epsilonEquals(final Vector3f other, float epsilon) {
 		if (other == null)
 			return false;
-		if (Math.abs(other.x - x) > epsilon)
+		if (MathUtils.abs(other.x - x) > epsilon)
 			return false;
-		if (Math.abs(other.y - y) > epsilon)
+		if (MathUtils.abs(other.y - y) > epsilon)
 			return false;
-		if (Math.abs(other.z - z) > epsilon)
+		if (MathUtils.abs(other.z - z) > epsilon)
 			return false;
 		return true;
 	}
 
 	public boolean epsilonEquals(float x, float y, float z, float epsilon) {
-		if (Math.abs(x - this.x) > epsilon)
+		if (MathUtils.abs(x - this.x) > epsilon)
 			return false;
-		if (Math.abs(y - this.y) > epsilon)
+		if (MathUtils.abs(y - this.y) > epsilon)
 			return false;
-		if (Math.abs(z - this.z) > epsilon)
+		if (MathUtils.abs(z - this.z) > epsilon)
 			return false;
 		return true;
 	}

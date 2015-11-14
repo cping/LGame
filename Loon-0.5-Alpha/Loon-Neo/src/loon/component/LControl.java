@@ -173,7 +173,7 @@ public class LControl extends LComponent {
 			return;
 		}
 		if (this.allowDiagonal) {
-			final float angle = MathUtils.radToDeg(MathUtils.atan2(x, y)) + 180;
+			final float angle = MathUtils.toRadians(MathUtils.atan2(x, y)) + 180;
 			if (LAccelerometer.checkAngle(0, angle) || LAccelerometer.checkAngle(360, angle)) {
 				position(0, -SIDE, Config.TUP);
 			} else if (LAccelerometer.checkAngle(45, angle)) {

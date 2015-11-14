@@ -16,6 +16,7 @@
 package loon.physics;
 
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 public class PFigure {
 
@@ -78,8 +79,8 @@ public class PFigure {
 		vers.prev = list;
 		list.next = vers;
 		for (int i = 0; i < numVertices; i++) {
-			vers.v.set(vers.v.x + (float) Math.random() * 0.001F, vers.v.y
-					+ (float) Math.random() * 0.001F);
+			vers.v.set(vers.v.x + MathUtils.random() * 0.001F, vers.v.y
+					+ MathUtils.random() * 0.001F);
 			vers = vers.next;
 		}
 

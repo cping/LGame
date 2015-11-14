@@ -192,10 +192,10 @@ public class RectBox extends Shape {
 		public boolean setIntersect(Rect2i a, Rect2i b) {
 			if (a.left < b.right && b.left < a.right && a.top < b.bottom
 					&& b.top < a.bottom) {
-				left = Math.max(a.left, b.left);
-				top = Math.max(a.top, b.top);
-				right = Math.min(a.right, b.right);
-				bottom = Math.min(a.bottom, b.bottom);
+				left = MathUtils.max(a.left, b.left);
+				top = MathUtils.max(a.top, b.top);
+				right = MathUtils.min(a.right, b.right);
+				bottom = MathUtils.min(a.bottom, b.bottom);
 				return true;
 			}
 			return false;
@@ -287,10 +287,10 @@ public class RectBox extends Shape {
 	}
 
 	public void add(float px, float py) {
-		float x1 = Math.min(x, px);
-		float x2 = Math.max(x + width, px);
-		float y1 = Math.min(y, py);
-		float y2 = Math.max(y + height, py);
+		float x1 = MathUtils.min(x, px);
+		float x2 = MathUtils.max(x + width, px);
+		float y1 = MathUtils.min(y, py);
+		float y2 = MathUtils.max(y + height, py);
 		setBounds(x1, y1, x2 - x1, y2 - y1);
 	}
 
@@ -679,7 +679,7 @@ public class RectBox extends Shape {
 		int y1 = (int) MathUtils.max(this.y, y);
 		int x2 = (int) MathUtils.min(this.x + this.width - 1, x + width - 1);
 		int y2 = (int) MathUtils.min(this.y + this.height - 1, y + height - 1);
-		setBounds(x1, y1, Math.max(0, x2 - x1 + 1), Math.max(0, y2 - y1 + 1));
+		setBounds(x1, y1, MathUtils.max(0, x2 - x1 + 1), MathUtils.max(0, y2 - y1 + 1));
 	}
 
 	/**

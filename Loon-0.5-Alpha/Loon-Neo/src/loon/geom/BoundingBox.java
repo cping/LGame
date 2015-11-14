@@ -25,6 +25,7 @@ import java.util.List;
 
 import loon.geom.Matrix4;
 import loon.geom.Vector3f;
+import loon.utils.MathUtils;
 
 public class BoundingBox implements Serializable {
 
@@ -194,8 +195,8 @@ public class BoundingBox implements Serializable {
 
 	public BoundingBox ext(Vector3f point) {
 		return this.set(min.set(min(min.x, point.x), min(min.y, point.y),
-				min(min.z, point.z)), max.set(Math.max(max.x, point.x),
-				Math.max(max.y, point.y), Math.max(max.z, point.z)));
+				min(min.z, point.z)), max.set(MathUtils.max(max.x, point.x),
+				MathUtils.max(max.y, point.y), MathUtils.max(max.z, point.z)));
 	}
 
 	public BoundingBox clr() {
@@ -258,13 +259,13 @@ public class BoundingBox implements Serializable {
 			return false;
 		}
 
-		float lx = Math.abs(this.cnt.x - b.cnt.x);
+		float lx = MathUtils.abs(this.cnt.x - b.cnt.x);
 		float sumx = (this.dim.x / 2.0f) + (b.dim.x / 2.0f);
 
-		float ly = Math.abs(this.cnt.y - b.cnt.y);
+		float ly = MathUtils.abs(this.cnt.y - b.cnt.y);
 		float sumy = (this.dim.y / 2.0f) + (b.dim.y / 2.0f);
 
-		float lz = Math.abs(this.cnt.z - b.cnt.z);
+		float lz = MathUtils.abs(this.cnt.z - b.cnt.z);
 		float sumz = (this.dim.z / 2.0f) + (b.dim.z / 2.0f);
 
 		return (lx <= sumx && ly <= sumy && lz <= sumz);

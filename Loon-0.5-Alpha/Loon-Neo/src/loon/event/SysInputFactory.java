@@ -24,6 +24,7 @@ import loon.EmulatorButtons;
 import loon.LProcess;
 import loon.LSystem;
 import loon.utils.IntArray;
+import loon.utils.MathUtils;
 
 public class SysInputFactory {
 
@@ -246,8 +247,8 @@ public class SysInputFactory {
 				offsetMoveY = touchY;
 				finalTouch.dx = offsetTouchX - offsetMoveX;
 				finalTouch.dy = offsetTouchY - offsetMoveY;
-				if (Math.abs(finalTouch.dx) > 0.1f
-						|| Math.abs(finalTouch.dy) > 0.1f) {
+				if (MathUtils.abs(finalTouch.dx) > 0.1f
+						|| MathUtils.abs(finalTouch.dy) > 0.1f) {
 					if (useTouchCollection) {
 						touchCollection.update(finalTouch.id,
 								LTouchLocationState.Dragged, finalTouch.x,

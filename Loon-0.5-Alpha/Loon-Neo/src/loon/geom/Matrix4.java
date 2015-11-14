@@ -435,7 +435,7 @@ public class Matrix4 implements Serializable {
 	public Matrix4 setToProjection(float near, float far, float fovy,
 			float aspectRatio) {
 
-		float l_fd = (float) (1.0 / Math.tan((fovy * (Math.PI / 180)) / 2.0));
+		float l_fd = (float) (1f / MathUtils.tan(fovy * MathUtils.DEG_TO_RAD) / 2f);
 		float l_a1 = (far + near) / (near - far);
 		float l_a2 = (2 * far * near) / (near - far);
 		val[M00] = l_fd / aspectRatio;
@@ -838,20 +838,20 @@ public class Matrix4 implements Serializable {
 
 	public float getScaleX() {
 		return (MathUtils.isZero(val[Matrix4.M01]) && MathUtils
-				.isZero(val[Matrix4.M02])) ? Math.abs(val[Matrix4.M00])
-				: (float) Math.sqrt(getScaleXSquared());
+				.isZero(val[Matrix4.M02])) ? MathUtils.abs(val[Matrix4.M00])
+				: MathUtils.sqrt(getScaleXSquared());
 	}
 
 	public float getScaleY() {
 		return (MathUtils.isZero(val[Matrix4.M10]) && MathUtils
-				.isZero(val[Matrix4.M12])) ? Math.abs(val[Matrix4.M11])
-				: (float) Math.sqrt(getScaleYSquared());
+				.isZero(val[Matrix4.M12])) ? MathUtils.abs(val[Matrix4.M11])
+				: MathUtils.sqrt(getScaleYSquared());
 	}
 
 	public float getScaleZ() {
 		return (MathUtils.isZero(val[Matrix4.M20]) && MathUtils
-				.isZero(val[Matrix4.M21])) ? Math.abs(val[Matrix4.M22])
-				: (float) Math.sqrt(getScaleZSquared());
+				.isZero(val[Matrix4.M21])) ? MathUtils.abs(val[Matrix4.M22])
+				: MathUtils.sqrt(getScaleZSquared());
 	}
 
 	public Vector3f getScale(Vector3f scale) {

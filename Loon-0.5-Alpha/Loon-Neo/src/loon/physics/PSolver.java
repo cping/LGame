@@ -15,6 +15,8 @@
  */
 package loon.physics;
 
+import loon.utils.MathUtils;
+
 public class PSolver {
 
 	PBody b1;
@@ -32,8 +34,8 @@ public class PSolver {
 		s2 = shape2;
 		b1 = s1._parent;
 		b2 = s2._parent;
-		fric = (float) Math.sqrt(s1._fric * s2._fric);
-		rest = (float) Math.sqrt(s1._rest * s2._rest);
+		fric = MathUtils.sqrt(s1._fric * s2._fric);
+		rest = MathUtils.sqrt(s1._rest * s2._rest);
 		cs = contacts;
 		numContacts = num;
 		for (int i = 0; i < numContacts; i++) {
@@ -48,7 +50,7 @@ public class PSolver {
 					.calcRelativeVelocity(b1, b2, c.rel1, c.rel2);
 			float rvn = c.relVel.dot(c.normal);
 			if (rvn < -0.5F)
-				c.targetVelocity = Math.max(rest * -rvn, 0.0F);
+				c.targetVelocity = MathUtils.max(rest * -rvn, 0.0F);
 			else
 				c.targetVelocity = 0.0F;
 			c.tangent.set(c.normal.y, -c.normal.x);
@@ -147,8 +149,8 @@ public class PSolver {
 	void update(PContact contacts[], int num) {
 		PContact old[] = cs;
 		int oldNumContacts = numContacts;
-		fric = (float) Math.sqrt(s1._fric * s2._fric);
-		rest = (float) Math.sqrt(s1._rest * s2._rest);
+		fric = MathUtils.sqrt(s1._fric * s2._fric);
+		rest = MathUtils.sqrt(s1._rest * s2._rest);
 		cs = contacts;
 		numContacts = num;
 		for (int i = 0; i < numContacts; i++) {

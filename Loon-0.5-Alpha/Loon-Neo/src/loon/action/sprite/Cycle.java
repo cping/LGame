@@ -438,7 +438,7 @@ public class Cycle extends LObject implements ISprite {
 
 		for (float pd = this.pointDistance, t = pd; t <= 1; t += pd) {
 
-			t = Math.round(t * 1f / pd) / (1f / pd);
+			t = MathUtils.round(t * 1f / pd) / (1f / pd);
 			switch (index) {
 			case BEZIER:
 				result = bezier(t, f[0], f[1], f[2], f[3], f[4], f[5], f[6],

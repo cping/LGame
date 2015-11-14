@@ -389,7 +389,7 @@ public class LLayer extends ActorLayer {
 		} else if (direction > 0) {
 			scrollPos = visibleRect.getMaxY();
 		}
-		int increment = Math.abs((int) MathUtils.IEEEremainder(scrollPos,
+		int increment = MathUtils.abs((int) MathUtils.IEEEremainder(scrollPos,
 				cellSize));
 		if (increment == 0) {
 			increment = cellSize;

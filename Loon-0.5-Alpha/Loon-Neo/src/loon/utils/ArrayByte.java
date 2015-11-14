@@ -98,7 +98,7 @@ public class ArrayByte implements LRelease {
 			byte[] oldData = data;
 			data = new byte[length];
 			System.arraycopy(oldData, 0, data, 0,
-					Math.min(oldData.length, length));
+					MathUtils.min(oldData.length, length));
 			if (position > length) {
 				position = length;
 			}
@@ -160,7 +160,7 @@ public class ArrayByte implements LRelease {
 		int size = (int) MathUtils.min(2048, remaining);
 		byte[] skipBuffer = new byte[size];
 		while (remaining > 0) {
-			nr = read(skipBuffer, 0, (int) Math.min(size, remaining));
+			nr = read(skipBuffer, 0, (int) MathUtils.min(size, remaining));
 			if (nr < 0) {
 				break;
 			}

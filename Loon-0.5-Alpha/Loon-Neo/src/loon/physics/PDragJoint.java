@@ -16,6 +16,7 @@
 package loon.physics;
 
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 public class PDragJoint extends PJoint {
 
@@ -63,7 +64,7 @@ public class PDragJoint extends PJoint {
 		Vector2f relVel = b.vel.cpy();
 		relVel.x += -b.angVel * relAnchor.y;
 		relVel.y += b.angVel * relAnchor.x;
-		relVel.mulLocal((float) Math.sqrt(k * 20F * k));
+		relVel.mulLocal(MathUtils.sqrt(k * 20F * k));
 		f.subLocal(relVel);
 		f.mulLocal(dt);
 		mass.mulEqual(f);

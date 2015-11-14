@@ -34,6 +34,7 @@ import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.opengl.VertexAttributes.Usage;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class Mesh implements LRelease {
@@ -571,7 +572,7 @@ public class Mesh implements LRelease {
 
 	public float calculateRadius(final float centerX, final float centerY,
 			final float centerZ, int offset, int count, final Matrix4 transform) {
-		return (float) Math.sqrt(calculateRadiusSquared(centerX, centerY,
+		return  MathUtils.sqrt(calculateRadiusSquared(centerX, centerY,
 				centerZ, offset, count, transform));
 	}
 

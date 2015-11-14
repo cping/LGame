@@ -39,6 +39,7 @@ import loon.canvas.LColor;
 import loon.event.SysKey;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 
 public class LTextField extends LTextBar {
@@ -213,7 +214,7 @@ public class LTextField extends LTextBar {
 			return;
 		}
 		text = text.substring(0,
-				Math.max(startidx, text.length() - cursor.length()));
+				MathUtils.max(startidx, text.length() - cursor.length()));
 	}
 
 }

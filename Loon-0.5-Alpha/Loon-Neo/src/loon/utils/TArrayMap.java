@@ -52,7 +52,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	public void put(K key, V value) {
 		if (size == keys.length)
-			resize(Math.max(8, (int) (size * 1.75f)));
+			resize(MathUtils.max(8, (int) (size * 1.75f)));
 		int index = indexOfKey(key);
 		if (index == -1)
 			index = size++;
@@ -62,7 +62,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	public void put(K key, V value, int index) {
 		if (size == keys.length)
-			resize(Math.max(8, (int) (size * 1.75f)));
+			resize(MathUtils.max(8, (int) (size * 1.75f)));
 		int existingIndex = indexOfKey(key);
 		if (existingIndex != -1)
 			removeIndex(existingIndex);
@@ -84,7 +84,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 							+ length + " <= " + map.size);
 		int sizeNeeded = size + length - offset;
 		if (sizeNeeded >= keys.length)
-			resize(Math.max(8, (int) (sizeNeeded * 1.75f)));
+			resize(MathUtils.max(8, (int) (sizeNeeded * 1.75f)));
 		System.arraycopy(map.keys, offset, keys, size, length);
 		System.arraycopy(map.values, offset, values, size, length);
 		size += length;
@@ -160,7 +160,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 		if (index > size)
 			throw new IndexOutOfBoundsException(String.valueOf(index));
 		if (size == keys.length)
-			resize(Math.max(8, (int) (size * 1.75f)));
+			resize(MathUtils.max(8, (int) (size * 1.75f)));
 		if (ordered) {
 			System.arraycopy(keys, index, keys, index + 1, size - index);
 			System.arraycopy(values, index, values, index + 1, size - index);
@@ -325,19 +325,19 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	public void ensureCapacity(int additionalCapacity) {
 		int sizeNeeded = size + additionalCapacity;
 		if (sizeNeeded >= keys.length)
-			resize(Math.max(8, sizeNeeded));
+			resize(MathUtils.max(8, sizeNeeded));
 	}
 
 	protected void resize(int newSize) {
 		K[] newKeys = (K[]) ArrayReflection.newInstance(keys.getClass()
 				.getComponentType(), newSize);
-		System.arraycopy(keys, 0, newKeys, 0, Math.min(size, newKeys.length));
+		System.arraycopy(keys, 0, newKeys, 0, MathUtils.min(size, newKeys.length));
 		this.keys = newKeys;
 
 		V[] newValues = (V[]) ArrayReflection.newInstance(values.getClass()
 				.getComponentType(), newSize);
 		System.arraycopy(values, 0, newValues, 0,
-				Math.min(size, newValues.length));
+				MathUtils.min(size, newValues.length));
 		this.values = newValues;
 	}
 

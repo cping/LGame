@@ -32,6 +32,7 @@ import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.utils.Array;
 import loon.utils.ArrayMap;
+import loon.utils.MathUtils;
 
 /*
  * 
@@ -667,7 +668,7 @@ public class LTable extends LContainer {
 		double sum = 0;
 		for (int col = 0; col < columns.length - 1; col++) {
 			sum += getColumnWidth(col) + cellSpacing;
-			if (Math.abs(sum - x) < 5)
+			if (MathUtils.abs(sum - x) < 5)
 				return col;
 		}
 
