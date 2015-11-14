@@ -1,10 +1,10 @@
-package loon.action.sprite;
+package loon.utils;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import loon.ZIndex;
-import loon.utils.InsertionSorter;
 
 public class LayerSorter<T> extends InsertionSorter<T> {
 
@@ -33,7 +33,7 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 	}
 
 	public void sort(final T[] es) {
-		this.sort(es, this.zIndexComparator);
+		Arrays.sort(es, this.zIndexComparator);
 	}
 
 	public void sort(final T[] es, final int s, final int e) {

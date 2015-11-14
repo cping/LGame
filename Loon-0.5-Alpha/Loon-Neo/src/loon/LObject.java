@@ -26,7 +26,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.utils.MathUtils;
 
-public abstract class LObject implements XY , ZIndex {
+public abstract class LObject implements XY, ZIndex {
 
 	public Object Tag;
 
@@ -196,6 +196,10 @@ public abstract class LObject implements XY , ZIndex {
 
 	public void move(float x, float y) {
 		_location.move(x, y);
+	}
+
+	public void setLocation(XY local) {
+		_location.setLocation(local.getX(), local.getY());
 	}
 
 	public void setLocation(float x, float y) {

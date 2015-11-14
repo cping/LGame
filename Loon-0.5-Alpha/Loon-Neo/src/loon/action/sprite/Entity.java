@@ -6,28 +6,24 @@ import java.util.Comparator;
 import loon.LObject;
 import loon.LRelease;
 import loon.LTexture;
+import loon.LTextures;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
-import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.LayerSorter;
 
-public class Entity extends LObject implements ActionBind, ISprite, IEntity,
+public class Entity extends LObject implements ActionBind, IEntity,
 		LRelease {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final int VERTEX_INDEX_X = 0;
-	public static final int VERTEX_INDEX_Y = 1;
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
-
-	private static final float[] VERTICES_SCENE_TO_LOCAL_TMP = new float[2];
-	private static final float[] VERTICES_LOCAL_TO_SCENE_TMP = new float[2];
 
 	protected boolean _disposed;
 	protected boolean _visible = true;
@@ -42,50 +38,58 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 
 	protected ArrayList<IEntity> _childrens;
 
-	protected LColor _baseColor = new LColor(1, 1, 1, 1);
+	protected LColor _baseColor = new LColor(LColor.white);
 
-	protected Camera _camera;
-
-	protected float _rotationCenterX = 0;
-	protected float _rotationCenterY = 0;
+	protected float _rotationCenterX = -1;
+	protected float _rotationCenterY = -1;
 
 	protected float _scaleX = 1;
 	protected float _scaleY = 1;
 
-	protected float _scaleCenterX = 0;
-	protected float _scaleCenterY = 0;
+	protected float _scaleCenterX = -1;
+	protected float _scaleCenterY = -1;
 
 	protected float _skewX = 0;
 	protected float _skewY = 0;
 
-	protected float _skewCenterX = 0;
-	protected float _skewCenterY = 0;
+	protected float _skewCenterX = -1;
+	protected float _skewCenterY = -1;
 
-	private boolean _localToParentTransformationDirty = true;
-	private boolean _parentToLocalTransformationDirty = true;
-
-	private Affine2f _localToParentTransformation;
-	private Affine2f _parentToLocalTransformation;
-
-	private Affine2f _localToSceneTransformation;
-	private Affine2f _sceneToLocalTransformation;
-
-	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
+	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(
+			false);
 
 	protected float _width, _height;
 
+	protected LTexture _image;
+
 	public Entity() {
-		this(0, 0, 0, 0);
+		this(null);
 	}
 
-	public Entity(final float x, final float y) {
-		this(x, y, 0, 0);
+	public Entity(final LTexture texture) {
+		this(texture, 0, 0, texture == null ? 0 : texture.getWidth(),
+				texture == null ? 0 : texture.getHeight());
 	}
 
-	public Entity(final float x, final float y, final float w, final float h) {
+	public Entity(final LTexture texture, final float x, final float y) {
+		this(texture, x, y, texture == null ? 0 : texture.getWidth(),
+				texture == null ? 0 : texture.getHeight());
+	}
+
+	public Entity(final LTexture texture, final float x, final float y,
+			final float w, final float h) {
 		this.setLocation(x, y);
 		this._width = w;
 		this._height = h;
+		this._image = texture;
+	}
+
+	public static Entity make(LTexture texture, final float x, final float y) {
+		return new Entity(texture, x, y);
+	}
+
+	public static Entity make(String path, final float x, final float y) {
+		return new Entity(LTextures.loadTexture(path), x, y);
 	}
 
 	protected void onUpdateColor() {
@@ -162,49 +166,8 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	}
 
 	@Override
-	public void setX(final float x) {
-		this._location.x = x;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
-	}
-
-	@Override
-	public void setY(final float y) {
-		this._location.x = y;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
-	}
-
-	@Override
-	public void setPosition(final IEntity pOtherEntity) {
-		this.setPosition(pOtherEntity.getX(), pOtherEntity.getY());
-	}
-
-	@Override
-	public void setPosition(final float x, final float y) {
-		this._location.set(x, y);
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
-	}
-
-	@Override
-	public float getRotation() {
-		return this._rotation;
-	}
-
-	@Override
 	public boolean isRotated() {
 		return this._rotation != 0;
-	}
-
-	@Override
-	public void setRotation(final float r) {
-		this._rotation = r;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
@@ -220,26 +183,17 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	@Override
 	public void setRotationCenterX(final float sx) {
 		this._rotationCenterX = sx;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setRotationCenterY(final float sy) {
 		this._rotationCenterY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setRotationCenter(final float sx, final float sy) {
 		this._rotationCenterX = sx;
 		this._rotationCenterY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
@@ -260,35 +214,23 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	@Override
 	public void setScaleX(final float pScaleX) {
 		this._scaleX = pScaleX;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setScaleY(final float pScaleY) {
 		this._scaleY = pScaleY;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setScale(final float pScale) {
 		this._scaleX = pScale;
 		this._scaleY = pScale;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setScale(final float pScaleX, final float pScaleY) {
 		this._scaleX = pScaleX;
 		this._scaleY = pScaleY;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
@@ -304,26 +246,17 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	@Override
 	public void setScaleCenterX(final float sx) {
 		this._scaleCenterX = sx;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setScaleCenterY(final float sy) {
 		this._scaleCenterY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setScaleCenter(final float sx, final float sy) {
 		this._scaleCenterX = sx;
 		this._scaleCenterY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
@@ -344,35 +277,23 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	@Override
 	public void setSkewX(final float sx) {
 		this._skewX = sx;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setSkewY(final float sy) {
 		this._skewY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setSkew(final float pSkew) {
 		this._skewX = pSkew;
 		this._skewY = pSkew;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setSkew(final float sx, final float sy) {
 		this._skewX = sx;
 		this._skewY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
@@ -388,26 +309,17 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	@Override
 	public void setSkewCenterX(final float sx) {
 		this._skewCenterX = sx;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setSkewCenterY(final float sy) {
 		this._skewCenterY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
 	public void setSkewCenter(final float sx, final float sy) {
 		this._skewCenterX = sx;
 		this._skewCenterY = sy;
-
-		this._localToParentTransformationDirty = true;
-		this._parentToLocalTransformationDirty = true;
 	}
 
 	@Override
@@ -590,221 +502,6 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	}
 
 	@Override
-	public float[] getSceneCenterCoordinates() {
-		return this.convertLocalToSceneCoordinates(0, 0);
-	}
-
-	@Override
-	public float[] getSceneCenterCoordinates(final float[] res) {
-		return this.convertLocalToSceneCoordinates(0, 0, res);
-	}
-
-	@Override
-	public Affine2f getLocalToParentTransformation() {
-		if (this._localToParentTransformation == null) {
-			this._localToParentTransformation = new Affine2f();
-		}
-
-		final Affine2f localToParentTransformation = this._localToParentTransformation;
-		if (this._localToParentTransformationDirty) {
-			localToParentTransformation.idt();
-			final float scaleX = this._scaleX;
-			final float scaleY = this._scaleY;
-			if ((scaleX != 1) || (scaleY != 1)) {
-				final float scaleCenterX = this._scaleCenterX;
-				final float scaleCenterY = this._scaleCenterY;
-				localToParentTransformation.postTranslate(-scaleCenterX,
-						-scaleCenterY);
-				localToParentTransformation.postScale(scaleX, scaleY);
-				localToParentTransformation.postTranslate(scaleCenterX,
-						scaleCenterY);
-			}
-			final float skewX = this._skewX;
-			final float skewY = this._skewY;
-			if ((skewX != 0) || (skewY != 0)) {
-				final float skewCenterX = this._skewCenterX;
-				final float skewCenterY = this._skewCenterY;
-
-				localToParentTransformation.postTranslate(-skewCenterX,
-						-skewCenterY);
-				localToParentTransformation.postShear(skewX, skewY);
-				localToParentTransformation.postTranslate(skewCenterX,
-						skewCenterY);
-			}
-			final float _rotation = this._rotation;
-			if (_rotation != 0) {
-				final float rotationCenterX = this._rotationCenterX;
-				final float rotationCenterY = this._rotationCenterY;
-
-				localToParentTransformation.postTranslate(-rotationCenterX,
-						-rotationCenterY);
-				localToParentTransformation.postRotate(_rotation);
-				localToParentTransformation.postTranslate(rotationCenterX,
-						rotationCenterY);
-			}
-			localToParentTransformation.postTranslate(_location.x, _location.y);
-
-			this._localToParentTransformationDirty = false;
-		}
-		return localToParentTransformation;
-	}
-
-	@Override
-	public Affine2f getParentToLocalTransformation() {
-		if (this._parentToLocalTransformation == null) {
-			this._parentToLocalTransformation = new Affine2f();
-		}
-		final Affine2f parentToLocalTransformation = this._parentToLocalTransformation;
-		if (this._parentToLocalTransformationDirty) {
-			parentToLocalTransformation.idt();
-			parentToLocalTransformation.postTranslate(-_location.x,
-					-_location.y);
-			final float _rotation = this._rotation;
-			if (_rotation != 0) {
-				final float rotationCenterX = this._rotationCenterX;
-				final float rotationCenterY = this._rotationCenterY;
-				parentToLocalTransformation.postTranslate(-rotationCenterX,
-						-rotationCenterY);
-				parentToLocalTransformation.postRotate(-_rotation);
-				parentToLocalTransformation.postTranslate(rotationCenterX,
-						rotationCenterY);
-			}
-			final float skewX = this._skewX;
-			final float skewY = this._skewY;
-			if ((skewX != 0) || (skewY != 0)) {
-				final float skewCenterX = this._skewCenterX;
-				final float skewCenterY = this._skewCenterY;
-				parentToLocalTransformation.postTranslate(-skewCenterX,
-						-skewCenterY);
-				parentToLocalTransformation.postShear(-skewX, -skewY);
-				parentToLocalTransformation.postTranslate(skewCenterX,
-						skewCenterY);
-			}
-			final float scaleX = this._scaleX;
-			final float scaleY = this._scaleY;
-			if ((scaleX != 1) || (scaleY != 1)) {
-				final float scaleCenterX = this._scaleCenterX;
-				final float scaleCenterY = this._scaleCenterY;
-				parentToLocalTransformation.postTranslate(-scaleCenterX,
-						-scaleCenterY);
-				parentToLocalTransformation.postScale(1 / scaleX, 1 / scaleY);
-				parentToLocalTransformation.postTranslate(scaleCenterX,
-						scaleCenterY);
-			}
-
-			this._parentToLocalTransformationDirty = false;
-		}
-		return parentToLocalTransformation;
-	}
-
-	@Override
-	public Affine2f getLocalToSceneTransformation() {
-		if (this._localToSceneTransformation == null) {
-			this._localToSceneTransformation = new Affine2f();
-		}
-
-		final Affine2f localToSceneTransformation = this._localToSceneTransformation;
-		localToSceneTransformation.set(this.getLocalToParentTransformation());
-
-		final IEntity parent = this._parent;
-		if (parent != null) {
-			localToSceneTransformation.postConcatenate(parent
-					.getLocalToSceneTransformation());
-		}
-
-		return localToSceneTransformation;
-	}
-
-	@Override
-	public Affine2f getSceneToLocalTransformation() {
-		if (this._sceneToLocalTransformation == null) {
-			this._sceneToLocalTransformation = new Affine2f();
-		}
-		final Affine2f sceneToLocalTransformation = this._sceneToLocalTransformation;
-		sceneToLocalTransformation.set(this.getParentToLocalTransformation());
-		final IEntity parent = this._parent;
-		if (parent != null) {
-			sceneToLocalTransformation.preConcatenate(parent
-					.getSceneToLocalTransformation());
-		}
-		return sceneToLocalTransformation;
-	}
-
-	@Override
-	public float[] convertLocalToSceneCoordinates(final float x, final float y) {
-		return this.convertLocalToSceneCoordinates(x, y,
-				Entity.VERTICES_LOCAL_TO_SCENE_TMP);
-	}
-
-	@Override
-	public float[] convertLocalToSceneCoordinates(final float x, final float y,
-			final float[] res) {
-		final Affine2f localToSceneTransformation = this
-				.getLocalToSceneTransformation();
-
-		res[VERTEX_INDEX_X] = x;
-		res[VERTEX_INDEX_Y] = y;
-
-		localToSceneTransformation.transform(res);
-
-		return res;
-	}
-
-	@Override
-	public float[] convertLocalToSceneCoordinates(final float[] coods) {
-		return this.convertLocalToSceneCoordinates(coods,
-				Entity.VERTICES_LOCAL_TO_SCENE_TMP);
-	}
-
-	@Override
-	public float[] convertLocalToSceneCoordinates(final float[] coods,
-			final float[] res) {
-		final Affine2f localToSceneTransformation = this
-				.getLocalToSceneTransformation();
-
-		res[VERTEX_INDEX_X] = coods[VERTEX_INDEX_X];
-		res[VERTEX_INDEX_Y] = coods[VERTEX_INDEX_Y];
-
-		localToSceneTransformation.transform(res);
-
-		return res;
-	}
-
-	@Override
-	public float[] convertSceneToLocalCoordinates(final float x, final float y) {
-		return this.convertSceneToLocalCoordinates(x, y,
-				Entity.VERTICES_SCENE_TO_LOCAL_TMP);
-	}
-
-	@Override
-	public float[] convertSceneToLocalCoordinates(final float x, final float y,
-			final float[] res) {
-		res[VERTEX_INDEX_X] = x;
-		res[VERTEX_INDEX_Y] = y;
-
-		this.getSceneToLocalTransformation().transform(res);
-
-		return res;
-	}
-
-	@Override
-	public float[] convertSceneToLocalCoordinates(final float[] coods) {
-		return this.convertSceneToLocalCoordinates(coods,
-				Entity.VERTICES_SCENE_TO_LOCAL_TMP);
-	}
-
-	@Override
-	public float[] convertSceneToLocalCoordinates(final float[] coods,
-			final float[] res) {
-		res[VERTEX_INDEX_X] = coods[VERTEX_INDEX_X];
-		res[VERTEX_INDEX_Y] = coods[VERTEX_INDEX_Y];
-
-		this.getSceneToLocalTransformation().transform(res);
-
-		return res;
-	}
-
-	@Override
 	public void onAttached() {
 
 	}
@@ -825,23 +522,10 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 	}
 
 	@Override
-	public final void createUI(final GLEx g, final Camera c) {
+	public final void createUI(final GLEx g) {
 		if (this._visible) {
-			this.onManagedPaint(g, c);
+			this.onManagedPaint(g);
 		}
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, _camera);
-	}
-
-	public void setCamera(Camera c) {
-		this._camera = c;
-	}
-
-	public Camera getCamera() {
-		return this._camera;
 	}
 
 	@Override
@@ -889,32 +573,58 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 		return stringBuilder.toString();
 	}
 
-	@Override
-	public void toString(final StringBuilder s) {
-		s.append(this.getClass().getSimpleName());
+	protected void prePaint(final GLEx g) {
 
-		if ((this._childrens != null) && (this._childrens.size() > 0)) {
-			s.append(" [");
-			final ArrayList<IEntity> entities = this._childrens;
-			for (int i = 0; i < entities.size(); i++) {
-				entities.get(i).toString(s);
-				if (i < (entities.size() - 1)) {
-					s.append(", ");
-				}
+	}
+
+	protected void paint(final GLEx g) {
+		boolean exist = _image != null || (_width > 0 && _height > 0);
+		if (exist) {
+			g.saveTx();
+			Affine2f tx = g.tx();
+			final float _rotation = this._rotation;
+			final float scaleX = this._scaleX;
+			final float scaleY = this._scaleY;
+			if ((scaleX != 1) || (scaleY != 1)) {
+				final float scaleCenterX = this._scaleCenterX == -1 ? (this._location.x + this._width / 2f)
+						: this._rotationCenterX;
+				final float scaleCenterY = this._scaleCenterY == -1 ? (this._location.y + this._height / 2f)
+						: this._rotationCenterY;
+				tx.translate(scaleCenterX, scaleCenterY);
+				tx.preScale(scaleX, scaleY);
+				tx.translate(-scaleCenterX, -scaleCenterY);
 			}
-			s.append("]");
+			final float skewX = this._skewX;
+			final float skewY = this._skewY;
+			if ((skewX != 0) || (skewY != 0)) {
+				final float skewCenterX = this._skewCenterX == -1 ? (this._location.x + this._width / 2f)
+						: this._rotationCenterX;
+				final float skewCenterY = this._skewCenterY == -1 ? (this._location.y + this._height / 2f)
+						: this._rotationCenterY;
+				tx.translate(skewCenterX, skewCenterY);
+				tx.preShear(skewX, skewY);
+				tx.translate(-skewCenterX, -skewCenterY);
+			}
+			if (_rotation != 0) {
+				final float rotationCenterX = this._rotationCenterX == -1 ? (this._location.x + this._width / 2f)
+						: this._rotationCenterX;
+				final float rotationCenterY = this._rotationCenterY == -1 ? (this._location.y + this._height / 2f)
+						: this._rotationCenterY;
+				tx.translate(rotationCenterX, rotationCenterY);
+				tx.preRotate(_rotation);
+				tx.translate(-rotationCenterX, -rotationCenterY);
+			}
+			if (_image != null) {
+				g.draw(_image, _location.x, _location.y, _baseColor);
+			} else {
+				g.fillRect(_location.x, _location.y, _width, _height,
+						_baseColor);
+			}
+			g.restoreTx();
 		}
 	}
 
-	protected void prePaint(final GLEx g, final Camera c) {
-
-	}
-
-	protected void paint(final GLEx g, final Camera c) {
-
-	}
-
-	protected void postPaint(final GLEx g, final Camera c) {
+	protected void postPaint(final GLEx g) {
 
 	}
 
@@ -923,12 +633,12 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 				Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
-	protected void onManagedPaint(final GLEx g, final Camera c) {
+	protected void onManagedPaint(final GLEx g) {
 		final ArrayList<IEntity> children = this._childrens;
 		if ((children == null) || !this._childrenVisible) {
-			this.prePaint(g, c);
-			this.paint(g, c);
-			this.postPaint(g, c);
+			this.prePaint(g);
+			this.paint(g);
+			this.postPaint(g);
 		} else {
 			if (this._childrenSortPending) {
 				entitySorter.sort(this._childrens);
@@ -939,16 +649,16 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 			for (; i < childCount; i++) {
 				final IEntity child = children.get(i);
 				if (child.getLayer() < 0) {
-					child.createUI(g, c);
+					child.createUI(g);
 				} else {
 					break;
 				}
 			}
-			this.prePaint(g, c);
-			this.paint(g, c);
-			this.postPaint(g, c);
+			this.prePaint(g);
+			this.paint(g);
+			this.postPaint(g);
 			for (; i < childCount; i++) {
-				children.get(i).createUI(g, c);
+				children.get(i).createUI(g);
 			}
 		}
 	}
@@ -1023,7 +733,24 @@ public class Entity extends LObject implements ActionBind, ISprite, IEntity,
 
 	@Override
 	public LTexture getBitmap() {
-		return null;
+		return _image;
+	}
+
+	@Override
+	public void toString(final StringBuilder s) {
+		s.append(this.getClass().getSimpleName());
+
+		if ((this._childrens != null) && (this._childrens.size() > 0)) {
+			s.append(" [");
+			final ArrayList<IEntity> entities = this._childrens;
+			for (int i = 0; i < entities.size(); i++) {
+				entities.get(i).toString(s);
+				if (i < (entities.size() - 1)) {
+					s.append(", ");
+				}
+			}
+			s.append("]");
+		}
 	}
 
 }

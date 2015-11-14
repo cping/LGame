@@ -652,7 +652,14 @@ public class MathUtils {
 	public static int min(int a, int b) {
 		return (a <= b) ? a : b;
 	}
+	public static float mix(final float x, final float y, final float m) {
+		return x * (1 - m) + y * m;
+	}
 
+	public static int mix(final int x, final int y, final float m) {
+		return Math.round(x * (1 - m) + y * m);
+	}
+	
 	static public final float norm(float value, float start, float stop) {
 		return (value - start) / (stop - start);
 	}

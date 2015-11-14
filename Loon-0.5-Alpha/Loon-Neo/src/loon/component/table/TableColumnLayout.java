@@ -24,7 +24,6 @@ import loon.canvas.LColor;
 import loon.component.LComponent;
 import loon.opengl.GLEx;
 
-
 public class TableColumnLayout {
 
 	public static final int HORIZONTAL_ALIGN_CENTER = 1;

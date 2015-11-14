@@ -29,6 +29,7 @@ import loon.geom.Point.Point2i;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 
 public class Sprites implements Serializable, LRelease {

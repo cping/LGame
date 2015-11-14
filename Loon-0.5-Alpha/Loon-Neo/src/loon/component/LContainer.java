@@ -21,9 +21,9 @@
  */
 package loon.component;
 
-import loon.action.sprite.LayerSorter;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.LayerSorter;
 
 public abstract class LContainer extends LComponent {
 

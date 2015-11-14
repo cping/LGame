@@ -456,6 +456,16 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx set(Affine2f aff) {
+		if (isClosed) {
+			return this;
+		}
+		saveTx();
+		Affine2f txf = tx();
+		txf.set(aff);
+		return this;
+	}
+	
 	public GLEx set(Matrix3 mat3) {
 		if (isClosed) {
 			return this;

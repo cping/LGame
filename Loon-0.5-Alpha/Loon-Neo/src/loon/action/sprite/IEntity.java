@@ -5,10 +5,10 @@ import java.util.Comparator;
 import loon.ZIndex;
 import loon.action.sprite.IEntity;
 import loon.canvas.LColor;
-import loon.geom.Affine2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public interface IEntity extends ZIndex {
+public interface IEntity extends ISprite, ZIndex, XY {
 
 	public static final int TAG_INVALID = Integer.MIN_VALUE;
 
@@ -49,10 +49,6 @@ public interface IEntity extends ZIndex {
 	public void setX(final float x);
 
 	public void setY(final float y);
-
-	public void setPosition(final IEntity o);
-
-	public void setPosition(final float x, final float y);
 
 	public boolean isRotated();
 
@@ -139,38 +135,6 @@ public interface IEntity extends ZIndex {
 	public void setColor(final float r, final float g, final float b,
 			final float a);
 
-	public float[] getSceneCenterCoordinates();
-
-	public float[] getSceneCenterCoordinates(final float[] res);
-
-	public float[] convertLocalToSceneCoordinates(final float x, final float y);
-
-	public float[] convertLocalToSceneCoordinates(final float x, final float y,
-			final float[] res);
-
-	public float[] convertLocalToSceneCoordinates(final float[] coords);
-
-	public float[] convertLocalToSceneCoordinates(final float[] coords,
-			final float[] res);
-
-	public float[] convertSceneToLocalCoordinates(final float x, final float y);
-
-	public float[] convertSceneToLocalCoordinates(final float x, final float y,
-			final float[] res);
-
-	public float[] convertSceneToLocalCoordinates(final float[] coords);
-
-	public float[] convertSceneToLocalCoordinates(final float[] coords,
-			final float[] res);
-
-	public Affine2f getLocalToSceneTransformation();
-
-	public Affine2f getSceneToLocalTransformation();
-
-	public Affine2f getLocalToParentTransformation();
-
-	public Affine2f getParentToLocalTransformation();
-
 	public int getChildCount();
 
 	public void onAttached();
@@ -206,11 +170,11 @@ public interface IEntity extends ZIndex {
 	public Object getUserData();
 
 	public void toString(final StringBuilder s);
-	
+
 	public void update(long elapsedTime);
-	
+
 	public void reset();
-	
-	public void createUI(final GLEx pGLState, final Camera pCamera);
+
+	public void createUI(final GLEx gl);
 
 }
