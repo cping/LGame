@@ -1,5 +1,6 @@
 package loon.component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,9 +11,54 @@ import loon.opengl.ShadowFont;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class LMessageBox  {
+/**
+ * 此组件功能近似LMessage，并且允许连续播放文字序列 ，设置角色头像和显示位置，差异在于，此组件不支持彩色文字设置，也就是只允许'\n'符号生效
+ * 而在效率上无文字缓存，所以总体帧率耗费比LMessage更大，适合动态频率高的场合使用，但是此组件多个同时存在会影响帧率
+ **/
+/*
+ * 以下为简单用例:
+ * 
+		LTexture texture = DefUI.getGameWinFrame(200, 200);
+		LMessageBox box = new LMessageBox(new String[] { 
+				"人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。", 
+				"明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" },
+				texture, 66, 66, 180, 180);
+		box.getMessageBox().setOffset(10, 10);
+		add(box);
+		box.SetClick(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+				LMessageBox box = (LMessageBox) comp;
+				box.next();
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		});
+	
+ * } });
+ */
+public class LMessageBox extends LComponent {
+
+	public final static String defalut_flagType = "▼";
 
 	public static class DrawMessageBox extends AbstractBox {
+
+		private final int DEFAULT_WIDTH;
+		private final int DEFAULT_HEIGHT;
 
 		LTexture imgFace;
 
@@ -29,16 +75,19 @@ public class LMessageBox  {
 		private float messageHeight;
 		private float pageX;
 		private float pageY;
-		private final int DEFAULT_WIDTH;
-		private final int DEFAULT_HEIGHT;
-		private String flagType = "▼";
+		private float offsetX;
+		private float offsetY;
+
+		private String flagType = defalut_flagType;
 
 		protected DrawMessageBox(ShadowFont font, LTexture face, LTexture box,
 				int w, int h) {
 			super(font);
 			super.init(w, h);
+
 			this.DEFAULT_WIDTH = w;
 			this.DEFAULT_HEIGHT = h;
+
 			this.imgFace = face;
 			this.drawFace = false;
 			this._radius = 10;
@@ -81,23 +130,25 @@ public class LMessageBox  {
 			}
 		}
 
-		public void draw(GLEx g, String message, boolean isPage) {
-			draw(g, this._boxX, this._boxY, message, isPage);
+		public void draw(GLEx g, String message, int row, boolean isPage) {
+			draw(g, this._boxX, this._boxY, message, row, isPage);
 		}
 
-		private void draw(GLEx g, float x, float y, String message,
+		private void draw(GLEx g, float x, float y, String message, int row,
 				boolean isPage) {
 			this._boxX = x;
 			this._boxY = y;
 			drawBorder(g, this._boxX, this._boxY);
 			if (this.drawFace) {
-				drawFace(g, this._boxX, this._boxY);
+				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
-			drawMessage(g, message, this._boxX + this.messageX, this._boxY
-					+ this.messageY);
+			drawMessage(g, message, this._boxX + this.messageX + offsetX,
+					this._boxY + this.messageY + offsetY);
 			if (isPage && flagType != null) {
-				this.font.drawString(g, this._boxX + this.pageX, this._boxY
-						+ this.pageY, flagType, this.fontColor);
+				this.font.drawString(g, this._boxX + this.pageX + this.offsetX,
+						this._boxY + this.pageY
+								+ this.font.getStrFont().getHeight(message)
+								+ this.offsetY, flagType, this.fontColor);
 			}
 		}
 
@@ -120,6 +171,27 @@ public class LMessageBox  {
 
 		public int getMessageHeight() {
 			return MathUtils.round(this.messageHeight);
+		}
+
+		public void setOffset(float x, float y) {
+			this.offsetX = x;
+			this.offsetY = y;
+		}
+
+		public void setOffsetX(float x) {
+			this.offsetX = x;
+		}
+
+		public void setOffsetY(float y) {
+			this.offsetY = y;
+		}
+
+		public float getOffsetX() {
+			return this.offsetX;
+		}
+
+		public float getOffetY() {
+			return this.offsetY;
 		}
 
 		public boolean isFaceMode() {
@@ -175,14 +247,17 @@ public class LMessageBox  {
 		return facepools.get(name);
 	}
 
-	public class Message {
+	public static class Message {
 		private String message;
 		private String comment;
 		private String face;
+		List<String> lines;
 
-		public Message() {
-			this.message = "";
-			this.comment = "";
+		public Message(String text, String comm, String face, List<String> ls) {
+			this.message = text;
+			this.comment = comm;
+			this.face = face;
+			this.lines = ls;
 		}
 
 		public String getMessage() {
@@ -208,12 +283,16 @@ public class LMessageBox  {
 		public void setFace(String face) {
 			this.face = face;
 		}
+
+		public String toString() {
+			return this.message;
+		}
 	}
 
-	protected int messageIndex;
-	protected List<Message> messageList;
-	protected List<String> lines;
-	protected int typeDelayTime;
+	protected int messageIndex = 0;
+	protected List<Message> _messageList;
+
+	protected long typeDelayTime;
 	protected int renderRow;
 	protected int renderCol;
 	protected boolean finished;
@@ -225,30 +304,99 @@ public class LMessageBox  {
 	protected int pageBlinkTime;
 	protected DrawMessageBox _box;
 
-	public static int MESSAGE_TYPE_INTERVAL = 50;
-	public static final int MESSAGE_DEFAULT_TYPE_INTERVAL = 50;
-	public static int MESSAGE_PAGE_BLINK_TIME = 300;
+	protected int delay = 50;
 
-	public final List<String> _list;
+	protected int pageTime = 300;
 
 	private LFont _font;
 
-	public LMessageBox(String text, LFont font, LTexture face, LTexture box,
-			int w, int h) {
-		this._list = Print.formatMessage(text, font, w);
-		this._box = new DrawMessageBox(new ShadowFont(font, text, true), face,
-				box, w, h);
+	public LMessageBox(List<Message> messages, int x, int y, int width,
+			int height) {
+		this(messages, null, LFont.getDefaultFont(), null, x, y, width, height);
+	}
+
+	public LMessageBox(List<Message> messages, LTexture texture, int x, int y,
+			int width, int height) {
+		this(messages, null, LFont.getDefaultFont(), texture, x, y, width,
+				height);
+	}
+
+	public LMessageBox(List<Message> messages, String typeFlag, LFont font,
+			LTexture box, int x, int y, int width, int height) {
+		super(x, y, width, height);
+		this._messageList = messages;
+		StringBuilder sbr = new StringBuilder();
+		if (messages != null) {
+			for (Message text : messages) {
+				sbr.append(text.message);
+			}
+		}
+		this._box = new DrawMessageBox(new ShadowFont(font, sbr.toString(),
+				typeFlag == null ? defalut_flagType : typeFlag, true), null,
+				box, width, height);
 		this._font = font;
 	}
 
+	public LMessageBox(String[] messages, int x, int y, int width, int height) {
+		this(messages, null, LFont.getDefaultFont(), null, null, x, y, width,
+				height);
+	}
+
+	public LMessageBox(String[] messages, LTexture texture, int x, int y,
+			int width, int height) {
+		this(messages, null, LFont.getDefaultFont(), null, texture, x, y,
+				width, height);
+	}
+
+	/**
+	 * 若传递字符串数组，则只能构建统一头像位置的对话框
+	 * 
+	 * @param messages
+	 * @param typeFlag
+	 * @param font
+	 * @param face
+	 * @param box
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	public LMessageBox(String[] messages, String typeFlag, LFont font,
+			String face, LTexture box, int x, int y, int width, int height) {
+		super(x, y, width, height);
+		if (messages != null) {
+			_messageList = new ArrayList<LMessageBox.Message>();
+			for (String text : messages) {
+				_messageList.add(new Message(text, null, face, Print
+						.formatMessage(text, font, width)));
+			}
+		}
+		this._box = new DrawMessageBox(new ShadowFont(font, messages,
+				typeFlag == null ? defalut_flagType : typeFlag, true), null,
+				box, width, height);
+		if (!StringUtils.isEmpty(face)) {
+			toFaceImage(face);
+		}
+		this._font = font;
+	}
+
+	public LFont getFont() {
+		return this._font;
+	}
+
+	public DrawMessageBox getMessageBox() {
+		return this._box;
+	}
+
 	protected void updateType() {
+		Message message = _messageList.get(messageIndex);
 		if ((this.typeDelayTime <= 0) && (!this.finished)) {
-			this.typeDelayTime = MESSAGE_TYPE_INTERVAL;
-			if (this.renderCol > ((String) this.lines.get(this.renderRow))
-					.length() - 1) {
-				if (this.renderRow >= this.lines.size() - 1) {
+			this.typeDelayTime = delay;
+			if (this.renderCol > message.lines.get(this.renderRow).length() - 1) {
+
+				if (this.renderRow >= message.lines.size() - 1) {
 					this.finished = true;
-					this.pageBlinkTime = MESSAGE_PAGE_BLINK_TIME;
+					this.pageBlinkTime = pageTime;
 				} else {
 					this.renderRow += 1;
 					this.renderCol = 0;
@@ -256,49 +404,50 @@ public class LMessageBox  {
 			} else
 				this.renderCol += 1;
 		}
+
 	}
 
-	public void nextIndex() {
-		setIndex(++this.messageIndex);
+	public LMessageBox next() {
+		int size = this.messageIndex + 1;
+		if (size < this._messageList.size()) {
+			setIndex(++this.messageIndex);
+			restart();
+		}
+		return this;
 	}
 
-	public void setIndex(int index) {
-		this.messageIndex = index;
+	public LMessageBox setIndex(int index) {
+		int size = this.messageIndex + 1;
+		if (size > 0 && size < this._messageList.size()) {
+			this.messageIndex = index;
+			restart();
+		}
+		return this;
 	}
 
-	protected final void postSetIndex() {
-		if (this.messageList == null) {
+	public final void postSetIndex() {
+		if (this._messageList == null) {
 			return;
 		}
-		String str = ((Message) this.messageList.get(this.messageIndex))
-				.getFace();
-		if (str == null || str.equals("null")) {
+		String str = this._messageList.get(this.messageIndex).getFace();
+		if ((str == null || str.equals("null"))) {
 			setFaceImage(null);
 		} else {
-			String[] result = StringUtils.split(str, ',');
-			int size = result.length;
-			if (size > 0) {
-				if (3 == size) {
-					setFaceImage(facepools.get(result[0]),
-							Float.valueOf(result[1]), Float.valueOf(result[2]));
-				} else if (2 == size) {
-					setFaceImage(facepools.get(result[0]),
-							Float.valueOf(result[1]), Float.valueOf(result[1]));
-				} else {
-					setFaceImage(facepools.get(result[0]));
-				}
-			}
+			toFaceImage(str);
 		}
 		restart();
 		pauseMessage();
 	}
 
-	protected void drawMessage(GLEx g) {
-		StringBuilder message = new StringBuilder();
+	private final StringBuilder _message = new StringBuilder();
 
-		if (!this.lines.isEmpty()) {
+	public void drawMessage(GLEx g) {
+		Message message = _messageList.get(messageIndex);
+		_message.delete(0, _message.length());
+
+		if (!message.lines.isEmpty()) {
 			for (int i = 0; i < this.renderRow + 1; i++) {
-				String line = (String) this.lines.get(i);
+				String line = message.lines.get(i);
 
 				int len = 0;
 
@@ -311,16 +460,16 @@ public class LMessageBox  {
 				String t = line.substring(0, len);
 				if (t.length() != 0) {
 					if (len == line.length())
-						message.append(t + "\n");
+						_message.append(t + "\n");
 					else {
-						message.append(t);
+						_message.append(t);
 					}
 				}
 			}
 		}
 
 		if ((this.finished) && (!this.noPaged)) {
-			if (this.pageBlinkTime > MESSAGE_PAGE_BLINK_TIME) {
+			if (this.pageBlinkTime > pageTime) {
 				this.pageBlinkTime = 0;
 				this.isPaged = (!this.isPaged);
 			}
@@ -328,32 +477,28 @@ public class LMessageBox  {
 			this.isPaged = false;
 		}
 
-		this._box.draw(g, message.toString(), this.isPaged);
+		this._box.draw(g, _message.toString(), renderRow, this.isPaged);
 	}
 
-	protected void restart() {
+	public boolean isCompleted() {
+		return this.finished;
+	}
+
+	public void restart() {
 		this.renderCol = 0;
 		this.renderRow = 0;
-		this.typeDelayTime = MESSAGE_TYPE_INTERVAL;
+		this.typeDelayTime = delay;
 		this.pageBlinkTime = 0;
 		this.finished = false;
-		String message = null;
-		if ((this.messageList != null) && (this.messageList.size() > 0)) {
-			message = ((Message) this.messageList.get(this.messageIndex))
-					.getMessage();
-		}
-		if (message != null) {
-			this.lines = Print.formatMessage(message, this._font,
-					this._box.getMessageWidth());
-		}
 	}
 
-	protected void showAll() {
-		if (this.lines.isEmpty()) {
+	public void showAll() {
+		Message message = _messageList.get(messageIndex);
+		if (message.lines.isEmpty()) {
 			this.renderRow = (this.renderCol = 0);
 		} else {
-			this.renderRow = (this.lines.size() - 1);
-			this.renderCol = ((String) this.lines.get(this.renderRow)).length();
+			this.renderRow = (message.lines.size() - 1);
+			this.renderCol = message.lines.get(this.renderRow).length();
 			this.finished = true;
 		}
 	}
@@ -380,16 +525,69 @@ public class LMessageBox  {
 		this.stopMessage = false;
 	}
 
-	//@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
-		// TODO Auto-generated method stub
-		
+	protected void toFaceImage(final String face) {
+		if (face == null) {
+			return;
+		}
+		String[] result = StringUtils.split(face, ',');
+		int size = result.length;
+		if (size > 0) {
+			if (3 == size) {
+				setFaceImage(facepools.get(result[0]),
+						Float.valueOf(result[1]), Float.valueOf(result[2]));
+			} else if (2 == size) {
+				setFaceImage(facepools.get(result[0]),
+						Float.valueOf(result[1]), Float.valueOf(result[1]));
+			} else {
+				setFaceImage(facepools.get(result[0]));
+			}
+		}
 	}
 
-	//@Override
-	public String getUIName() {
-		// TODO Auto-generated method stub
-		return null;
+	@Override
+	public void update(long elapsedTime) {
+		super.update(elapsedTime);
+		this._box.setLocation(this._location);
+		if (!this.noMessage) {
+			Message message = _messageList.get(messageIndex);
+			if (!StringUtils.isEmpty(message.face)) {
+				toFaceImage(message.face);
+			}
+			if ((!this.stopMessage) && (!message.lines.isEmpty())) {
+				this.typeDelayTime -= elapsedTime;
+				updateType();
+			}
+			if (this.finished) {
+				this.pageBlinkTime += elapsedTime;
+			}
+		}
 	}
+
+	public int getPageTime() {
+		return pageTime;
+	}
+
+	public void setPageTime(int pageTime) {
+		this.pageTime = pageTime;
+	}
+
+	public int getDelay() {
+		return delay;
+	}
+
+	public void setDelay(int time) {
+		this.delay = time;
+	}
+
+	@Override
+	public void createUI(GLEx g, int x, int y, LComponent component,
+			LTexture[] buttonImage) {
+		drawMessage(g);
+	}
+
+	@Override
+	public String getUIName() {
+		return "MessageBox";
+	}
+
 }

@@ -43,6 +43,7 @@ public class Print implements LRelease {
 			return list;
 		}
 
+
 		char c1 = '〜';
 		char c2 = 65374;
 		String str = text.replace(c1, c2);
@@ -80,6 +81,7 @@ public class Print implements LRelease {
 				i++;
 			}
 		}
+
 		return list;
 	}
 

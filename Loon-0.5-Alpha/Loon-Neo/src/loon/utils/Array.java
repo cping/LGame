@@ -348,6 +348,10 @@ public class Array<T> {
 		}
 	}
 
+	public boolean hashNext() {
+		return _next_count > 0;
+	}
+
 	public int idxNext() {
 		return _next_count;
 	}

@@ -32,6 +32,7 @@ import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.utils.GLUtils;
+import loon.utils.IntArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -99,6 +100,10 @@ public class LSTRFont implements LRelease {
 		this(font, strings.toCharArray());
 	}
 
+	public LSTRFont(LFont font, String[] strings) {
+		this(font, filterStrings(strings).toCharArray());
+	}
+	
 	public LSTRFont(LFont font, char[] chs) {
 		if (displays == null) {
 			displays = new HashMap<String, Cache>(totalCharSet);
@@ -609,6 +614,21 @@ public class LSTRFont implements LRelease {
 
 	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
+	}
+
+	public final static String filterStrings(String[] messages) {
+		IntArray chars = new IntArray();
+		StringBuilder sbr = new StringBuilder();
+		for (String text : messages) {
+			char[] list = text.toCharArray();
+			for (char ch : list) {
+				if (!chars.contains(ch)) {
+					chars.add(ch);
+					sbr.append(ch);
+				}
+			}
+		}
+		return sbr.toString();
 	}
 
 	public void close() {

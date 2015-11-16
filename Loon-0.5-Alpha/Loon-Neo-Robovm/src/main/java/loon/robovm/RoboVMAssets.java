@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import loon.Assets;
+import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
@@ -39,6 +40,7 @@ import org.robovm.apple.uikit.UIImage;
 
 public class RoboVMAssets extends Assets {
 
+	private final static String IOS_DEF_RES = "assets/";
 	private RoboVMNet net;
 	private final RoboVMGame game;
 	private final File bundleRoot = new File(NSBundle.getMainBundle()
@@ -57,18 +59,27 @@ public class RoboVMAssets extends Assets {
 	}
 
 	@Override
-	public Image getRemoteImage(String url, int width, int height) {
+	public Image getRemoteImage(final String url, final int width,
+			final int height) {
 		final ImageImpl image = createImage(true, width, height, url);
-		net.req(url).execute().onSuccess(new Port<RoboVMAbstractNet.Response>() {
-			public void onEmit(RoboVMAbstractNet.Response rsp) {
-				image.succeed(toData(Scale.ONE,
-						new UIImage(new NSData(rsp.payload()))));
-			}
-		}).onFailure(new Port<Throwable>() {
-			public void onEmit(Throwable cause) {
-				image.fail(cause);
-			}
-		});
+		net.req(url).execute()
+				.onSuccess(new Port<RoboVMAbstractNet.Response>() {
+					public void onEmit(RoboVMAbstractNet.Response rsp) {
+						try {
+							image.succeed(toData(Scale.ONE, new UIImage(
+									new NSData(rsp.payload()))));
+						} catch (Throwable t) {
+							game.log().warn(
+									"Failed to decode remote image [url=" + url
+											+ "]", t);
+							image.fail(t);
+						}
+					}
+				}).onFailure(new Port<Throwable>() {
+					public void onEmit(Throwable cause) {
+						image.fail(cause);
+					}
+				});
 		return image;
 	}
 
@@ -144,18 +155,37 @@ public class RoboVMAssets extends Assets {
 	}
 
 	protected File resolvePath(String path) {
-		return new File(assetRoot, path);
+		File file = new File(assetRoot, path);
+		if (!file.exists()) {
+			path = getPath(path);
+			if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+				path = IOS_DEF_RES + path;
+			}
+			file = new File(assetRoot, path);
+			if (!file.exists()
+					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				file =  new File(assetRoot,path.substring(path.indexOf('/') + 1, path.length()));
+			}
+			if (!file.exists()
+					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				file = new File(LSystem.getFileName(path = file.getAbsolutePath()));
+			}
+			if (!file.exists()) {
+				file =  new File(LSystem.getFileName(path = (IOS_DEF_RES + path)));
+			}
+		}
+		return file;
 	}
 
 	protected RoboVMAudio _audio;
 
-	protected RoboVMAudio getNativeAudio(){
+	protected RoboVMAudio getNativeAudio() {
 		if (_audio == null) {
 			_audio = new RoboVMAudio(game, game.config.openALSources);
 		}
 		return _audio;
 	}
-	
+
 	private Sound createSound(String path, boolean isMusic) {
 		if (_audio == null) {
 			_audio = new RoboVMAudio(game, game.config.openALSources);

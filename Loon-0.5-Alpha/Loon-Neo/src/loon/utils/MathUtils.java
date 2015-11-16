@@ -225,14 +225,13 @@ public class MathUtils {
 
 	static private final int BIG_ENOUGH_INT = 16 * 1024;
 
-	static private final double BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
+	static private final float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
 
-	static private final double CEIL = 0.9999999;
+	static private final float CEIL = 0.9999999f;
 
-	static private final double BIG_ENOUGH_CEIL = Double
-			.longBitsToDouble(Double.doubleToLongBits(BIG_ENOUGH_INT + 1) - 1);
+	static private final float BIG_ENOUGH_CEIL = NumberUtils.intBitsToFloat(NumberUtils.floatToRawIntBits(BIG_ENOUGH_INT + 1) - 1);
 
-	static private final double BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
+	static private final float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
 
 	static private final int ATAN2_BITS = 7;
 

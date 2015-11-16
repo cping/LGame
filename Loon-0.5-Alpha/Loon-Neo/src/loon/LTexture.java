@@ -31,6 +31,7 @@ import loon.geom.Affine2f;
 import loon.opengl.BaseBatch;
 import loon.opengl.Painter;
 import loon.utils.GLUtils;
+import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.reply.UnitPort;
@@ -833,12 +834,15 @@ public class LTexture extends Painter implements LRelease {
 		}
 		if (o instanceof LTexture) {
 			LTexture tmp = (LTexture) o;
-			if (source.equals(source) && this.xOff == tmp.xOff
-					&& this.yOff == tmp.yOff
+			if (source.equals(source) && this.id == tmp.id
+					&& this.xOff == tmp.xOff && this.yOff == tmp.yOff
 					&& this.widthRatio == tmp.widthRatio
 					&& this.heightRatio == tmp.heightRatio
-					&& childs.size() == tmp.childs.size()
-					&& this.config == tmp.config && this.isChild == tmp.isChild) {
+					&& this.config == tmp.config && this.isChild == tmp.isChild
+					&& this.displayWidth == tmp.displayWidth
+					&& this.displayHeight == tmp.displayHeight
+					&& this.pixelWidth == tmp.pixelWidth
+					&& this.pixelHeight == tmp.pixelHeight) {
 				return true;
 			}
 		}
@@ -873,6 +877,22 @@ public class LTexture extends Painter implements LRelease {
 
 	public int getHeight() {
 		return (int) height();
+	}
+
+	@Override
+	public int hashCode() {
+		int result = getID();
+		result = LSystem.unite(result,
+				width() != +0.0f ? NumberUtils.floatToIntBits(width()) : 0);
+		result = LSystem.unite(result,
+				height() != +0.0f ? NumberUtils.floatToIntBits(height()) : 0);
+		result = LSystem.unite(result, disposed() ? 1 : 0);
+		result = LSystem.unite(result, xOff);
+		result = LSystem.unite(result, yOff);
+		result = LSystem.unite(result, widthRatio);
+		result = LSystem.unite(result, heightRatio);
+		result = LSystem.unite(result, childs == null ? 0 : childs.size());
+		return result;
 	}
 
 	@Override

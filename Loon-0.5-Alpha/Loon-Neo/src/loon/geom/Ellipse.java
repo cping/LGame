@@ -24,7 +24,7 @@ package loon.geom;
 import java.util.ArrayList;
 
 import loon.utils.MathUtils;
-
+import loon.utils.NumberUtils;
 
 public class Ellipse extends Shape {
 	/**
@@ -156,11 +156,11 @@ public class Ellipse extends Shape {
 	}
 
 	public int hashCode() {
-		long bits = java.lang.Double.doubleToLongBits(getX());
-		bits += java.lang.Double.doubleToLongBits(getY()) * 37;
-		bits += java.lang.Double.doubleToLongBits(getWidth()) * 43;
-		bits += java.lang.Double.doubleToLongBits(getHeight()) * 47;
-		return (((int) bits) ^ ((int) (bits >> 32)));
+		int bits = NumberUtils.floatToIntBits(getX());
+		bits += NumberUtils.floatToIntBits(getY()) * 37;
+		bits += NumberUtils.floatToIntBits(getWidth()) * 43;
+		bits += NumberUtils.floatToIntBits(getHeight()) * 47;
+		return bits ^ ((bits >> 32));
 	}
 
 	public Shape transform(Matrix transform) {

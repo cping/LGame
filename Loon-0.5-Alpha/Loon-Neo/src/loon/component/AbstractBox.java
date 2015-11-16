@@ -2,10 +2,12 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.ShadowFont;
 
-public abstract class AbstractBox {
+public abstract class AbstractBox implements XY {
 
 	protected int _width;
 	protected int _height;
@@ -55,6 +57,16 @@ public abstract class AbstractBox {
 		this._radius = r;
 	}
 
+	@Override
+	public float getX() {
+		return this._boxX;
+	}
+
+	@Override
+	public float getY() {
+		return this._boxY;
+	}
+
 	public int getWidth() {
 		return this._boxWidth;
 	}
@@ -66,6 +78,11 @@ public abstract class AbstractBox {
 	public void setLocation(float x, float y) {
 		this._boxX = x;
 		this._boxY = y;
+	}
+
+	public void setLocation(Vector2f pos) {
+		this._boxX = pos.x;
+		this._boxY = pos.y;
 	}
 
 	protected void drawBorder(GLEx g, float x, float y) {

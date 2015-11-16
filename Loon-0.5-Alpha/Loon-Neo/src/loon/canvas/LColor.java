@@ -22,6 +22,8 @@ package loon.canvas;
 
 import java.io.Serializable;
 
+import loon.utils.NumberUtils;
+
 public class LColor implements Serializable {
 
 	/**
@@ -355,10 +357,10 @@ public class LColor implements Serializable {
 	}
 
 	public int hashCode() {
-		int result = (r != +0.0f ? Float.floatToIntBits(r) : 0);
-		result = 31 * result + (g != +0.0f ? Float.floatToIntBits(g) : 0);
-		result = 31 * result + (b != +0.0f ? Float.floatToIntBits(b) : 0);
-		result = 31 * result + (a != +0.0f ? Float.floatToIntBits(a) : 0);
+		int result = (r != +0.0f ? NumberUtils.floatToIntBits(r) : 0);
+		result = 31 * result + (g != +0.0f ? NumberUtils.floatToIntBits(g) : 0);
+		result = 31 * result + (b != +0.0f ? NumberUtils.floatToIntBits(b) : 0);
+		result = 31 * result + (a != +0.0f ? NumberUtils.floatToIntBits(a) : 0);
 		return result;
 	}
 
@@ -370,32 +372,32 @@ public class LColor implements Serializable {
 			return false;
 		}
 		LColor color = (LColor) o;
-		if (Float.compare(color.a, a) != 0) {
+		if (NumberUtils.compare(color.a, a) != 0) {
 			return false;
 		}
-		if (Float.compare(color.b, b) != 0) {
+		if (NumberUtils.compare(color.b, b) != 0) {
 			return false;
 		}
-		if (Float.compare(color.g, g) != 0) {
+		if (NumberUtils.compare(color.g, g) != 0) {
 			return false;
 		}
-		if (Float.compare(color.r, r) != 0) {
+		if (NumberUtils.compare(color.r, r) != 0) {
 			return false;
 		}
 		return true;
 	}
 
 	public boolean equals(float r1, float g1, float b1, float a1) {
-		if (Float.compare(a1, a) != 0) {
+		if (NumberUtils.compare(a1, a) != 0) {
 			return false;
 		}
-		if (Float.compare(b1, b) != 0) {
+		if (NumberUtils.compare(b1, b) != 0) {
 			return false;
 		}
-		if (Float.compare(g1, g) != 0) {
+		if (NumberUtils.compare(g1, g) != 0) {
 			return false;
 		}
-		if (Float.compare(r1, r) != 0) {
+		if (NumberUtils.compare(r1, r) != 0) {
 			return false;
 		}
 		return true;
@@ -750,13 +752,13 @@ public class LColor implements Serializable {
 	public static float toFloatBits(float r, float g, float b, float a) {
 		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
 				| ((int) (255 * g) << 8) | ((int) (255 * r));
-		return Float.intBitsToFloat(color & 0xfeffffff);
+		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
 	}
 
 	public float toFloatBits() {
 		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
 				| ((int) (255 * g) << 8) | ((int) (255 * r));
-		return Float.intBitsToFloat(color & 0xfeffffff);
+		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
 	}
 
 	public static String cssColorString(int color) {

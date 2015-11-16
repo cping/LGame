@@ -216,7 +216,7 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void setColor(int v) {
-		color = Float.intBitsToFloat(v & 0xfeffffff);
+		color = NumberUtils.intBitsToFloat(v & 0xfeffffff);
 	}
 
 	public void setColor(float color) {

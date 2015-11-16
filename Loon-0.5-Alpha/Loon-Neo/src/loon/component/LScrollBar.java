@@ -324,11 +324,11 @@ public class LScrollBar extends LComponent {
 	}
 
 	protected void updateScrollContainerY() {
-		double ratio = (double) ((scrollContainer.getInnerHeight()) - scrollContainer
+		float ratio = (float) ((scrollContainer.getInnerHeight()) - scrollContainer
 				.getHeight())
 				/ (getHeight() - getSliderHeight() - (getSliderMargin() * 2));
-		if (Double.isNaN(ratio) || Double.isInfinite(ratio)) {
-			ratio = 0.0;
+		if (Float.isNaN(ratio) || Float.isInfinite(ratio)) {
+			ratio = 0f;
 		}
 		int relativeSliderY = getSliderY() - (y() + getSliderMargin());
 		scrollContainer.moveScrollY((int) (relativeSliderY * ratio));

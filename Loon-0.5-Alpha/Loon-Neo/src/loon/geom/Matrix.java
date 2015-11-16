@@ -24,6 +24,7 @@ package loon.geom;
 import java.util.Collection;
 
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 
 public final class Matrix {
 
@@ -529,33 +530,33 @@ public final class Matrix {
 
 		Matrix comp = (Matrix) o;
 
-		if (Float.compare(matrixs[0], comp.matrixs[0]) != 0) {
+		if (NumberUtils.compare(matrixs[0], comp.matrixs[0]) != 0) {
 			return false;
 		}
-		if (Float.compare(matrixs[1], comp.matrixs[1]) != 0) {
+		if (NumberUtils.compare(matrixs[1], comp.matrixs[1]) != 0) {
 			return false;
 		}
-		if (Float.compare(matrixs[2], comp.matrixs[2]) != 0) {
-			return false;
-		}
-
-		if (Float.compare(matrixs[3], comp.matrixs[3]) != 0) {
-			return false;
-		}
-		if (Float.compare(matrixs[4], comp.matrixs[4]) != 0) {
-			return false;
-		}
-		if (Float.compare(matrixs[5], comp.matrixs[5]) != 0) {
+		if (NumberUtils.compare(matrixs[2], comp.matrixs[2]) != 0) {
 			return false;
 		}
 
-		if (Float.compare(matrixs[6], comp.matrixs[6]) != 0) {
+		if (NumberUtils.compare(matrixs[3], comp.matrixs[3]) != 0) {
 			return false;
 		}
-		if (Float.compare(matrixs[7], comp.matrixs[7]) != 0) {
+		if (NumberUtils.compare(matrixs[4], comp.matrixs[4]) != 0) {
 			return false;
 		}
-		if (Float.compare(matrixs[8], comp.matrixs[8]) != 0) {
+		if (NumberUtils.compare(matrixs[5], comp.matrixs[5]) != 0) {
+			return false;
+		}
+
+		if (NumberUtils.compare(matrixs[6], comp.matrixs[6]) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(matrixs[7], comp.matrixs[7]) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(matrixs[8], comp.matrixs[8]) != 0) {
 			return false;
 		}
 
@@ -565,7 +566,7 @@ public final class Matrix {
 	public int hashCode() {
 		int result = 17;
 		for (int j = 0; j < 9; j++) {
-			final long val = Float.floatToIntBits(matrixs[j]);
+			final long val = NumberUtils.floatToIntBits(matrixs[j]);
 			result += 31 * result + (int) (val ^ (val >>> 32));
 		}
 		return result;

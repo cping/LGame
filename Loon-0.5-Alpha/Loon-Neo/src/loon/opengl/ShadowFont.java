@@ -4,9 +4,10 @@ import loon.canvas.LColor;
 import loon.font.LFont;
 
 public class ShadowFont {
+
 	private boolean withShadow = false;
 	private LColor shadowColor = new LColor(0f, 0f, 0f, 1f);
-	private float shadowAlpha = 1.0F;
+	private float shadowAlpha = 1f;
 	private int offsetX = 2;
 	private int offsetY = 2;
 	private LSTRFont strfont;
@@ -19,15 +20,29 @@ public class ShadowFont {
 		return strfont.getFont();
 	}
 
-	public ShadowFont(LFont font, String message, boolean shadow) {
-		this.strfont = new LSTRFont(font, message);
+	public ShadowFont(LFont font, String[] messages, String append,
+			boolean shadow) {
+		if (append != null) {
+			int size = messages.length + 1;
+			String[] dest = new String[size];
+			dest[size - 1] = append;
+			System.arraycopy(messages, 0, dest, 0, messages.length);
+			this.strfont = new LSTRFont(font, dest);
+		} else {
+			this.strfont = new LSTRFont(font, messages);
+		}
+		this.withShadow = shadow;
+	}
+
+	public ShadowFont(LFont font, String message, String append, boolean shadow) {
+		this.strfont = new LSTRFont(font, message + append);
 		this.withShadow = shadow;
 	}
 
 	public void drawString(float x, float y, String text, LColor color) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * color.a);
-			strfont.drawString(text, x, y, color);
+			strfont.drawString(text, x, y, shadowColor);
 		}
 		strfont.drawString(text, x, y, color);
 	}
@@ -35,7 +50,7 @@ public class ShadowFont {
 	public void drawString(GLEx g, float x, float y, String text, LColor color) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * color.a);
-			strfont.drawString(g, text, x, y, color);
+			strfont.drawString(g, text, x, y, shadowColor);
 		}
 		strfont.drawString(g, text, x, y, color);
 	}

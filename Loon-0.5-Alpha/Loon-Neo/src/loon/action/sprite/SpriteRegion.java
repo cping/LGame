@@ -276,7 +276,7 @@ public class SpriteRegion extends LTextureRegion {
 	public void setColor(float r, float g, float b, float a) {
 		int intBits = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
 				| ((int) (255 * g) << 8) | ((int) (255 * r));
-		float color = Float.intBitsToFloat(intBits & 0xfeffffff);
+		float color = NumberUtils.intBitsToFloat(intBits & 0xfeffffff);
 		float[] vertices = this.vertices;
 		vertices[2] = color;
 		vertices[7] = color;

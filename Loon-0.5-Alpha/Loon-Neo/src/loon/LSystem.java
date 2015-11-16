@@ -27,6 +27,7 @@ import loon.event.Updateable;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderProgram;
+import loon.utils.NumberUtils;
 
 public class LSystem {
 
@@ -545,12 +546,7 @@ public class LSystem {
 	}
 
 	public static int unite(int hashCode, float value) {
-		int v = Float.floatToIntBits(value);
-		return unite(hashCode, v);
-	}
-
-	public static int unite(int hashCode, double value) {
-		long v = Double.doubleToLongBits(value);
+		int v = NumberUtils.floatToIntBits(value);
 		return unite(hashCode, v);
 	}
 

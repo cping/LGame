@@ -213,11 +213,7 @@ public class ArrayByte implements LRelease {
 	}
 
 	public float readFloat() throws IndexOutOfBoundsException {
-		return Float.intBitsToFloat(readInt());
-	}
-
-	public double readDouble() throws IndexOutOfBoundsException {
-		return Double.longBitsToDouble(readLong());
+		return NumberUtils.intBitsToFloat(readInt());
 	}
 
 	public String readUTF() throws IndexOutOfBoundsException,
@@ -323,11 +319,7 @@ public class ArrayByte implements LRelease {
 	}
 
 	public void writeFloat(float v) {
-		writeInt(Float.floatToIntBits(v));
-	}
-
-	public void writeDouble(double v) {
-		writeLong(Double.doubleToLongBits(v));
+		writeInt(NumberUtils.floatToIntBits(v));
 	}
 
 	public void writeUTF(String s) throws UTFDataFormatException {
