@@ -7,8 +7,8 @@ import loon.action.map.tmx.TMXImageLayer;
 import loon.action.map.tmx.TMXMap;
 import loon.action.map.tmx.TMXTileLayer;
 import loon.action.map.tmx.TMXTileSet;
-import loon.action.map.tmx.tiles.TmxMapTile;
-import loon.action.map.tmx.tiles.TmxTile;
+import loon.action.map.tmx.tiles.TMXMapTile;
+import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 
@@ -86,8 +86,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 				batch.begin();
 			} else {
 				if (batch.existCache()) {
-			
-					batch.postLastCache();
+					batch.postCache(baseColor, 0);
 					return;
 				} else {
 					batch.begin();
@@ -97,7 +96,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		} else {
 			batch.begin();
 		}
-
+		batch.setColor(baseColor);
 		for (int x = 0; x < tileLayer.getWidth(); x++) {
 			for (int y = 0; y < tileLayer.getHeight(); y++) {
 
@@ -111,14 +110,14 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 					continue;
 				}
 
-				TmxMapTile mapTile = tileLayer.getTile(x, y);
+				TMXMapTile mapTile = tileLayer.getTile(x, y);
 
 				if (mapTile.getTileSetID() == -1) {
 					continue;
 				}
 
 				TMXTileSet tileSet = map.getTileset(mapTile.getTileSetID());
-				TmxTile tile = tileSet.getTile(mapTile.getGID()
+				TMXTile tile = tileSet.getTile(mapTile.getGID()
 						- tileSet.getFirstGID());
 
 				LTexture texture = textureMap.get(tileSet.getImage()

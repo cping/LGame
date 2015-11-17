@@ -3,7 +3,7 @@ package loon.action.map.tmx.tiles;
 import loon.LSystem;
 import loon.action.map.tmx.TMXMap;
 
-public class TmxMapTile
+public class TMXMapTile
 {
     private int tileSetID;
     private int id;
@@ -13,7 +13,7 @@ public class TmxMapTile
     private boolean flippedVertically;
     private boolean flippedDiagonally;
 
-    public TmxMapTile(int gid, int tileSetFirstID, int tileSetID)
+    public TMXMapTile(int gid, int tileSetFirstID, int tileSetID)
     {
 
         this.tileSetID = tileSetID;

@@ -14,9 +14,10 @@ import loon.action.map.tmx.TMXMap;
 import loon.action.map.tmx.TMXMapLayer;
 import loon.action.map.tmx.TMXTileLayer;
 import loon.action.map.tmx.TMXTileSet;
-import loon.action.map.tmx.tiles.TmxAnimationFrame;
-import loon.action.map.tmx.tiles.TmxTile;
+import loon.action.map.tmx.tiles.TMXAnimationFrame;
+import loon.action.map.tmx.tiles.TMXTile;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.TimeUtils;
@@ -26,12 +27,12 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 
 	protected static class TileAnimator {
 
-		private TmxTile tile;
+		private TMXTile tile;
 
 		private int currentFrameIndex;
 		private float elapsedDuration;
 
-		public TileAnimator(TmxTile tile) {
+		public TileAnimator(TMXTile tile) {
 			this.tile = tile;
 			elapsedDuration = 0;
 			currentFrameIndex = 0;
@@ -49,7 +50,7 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 			}
 		}
 
-		public TmxAnimationFrame getCurrentFrame() {
+		public TMXAnimationFrame getCurrentFrame() {
 			return tile.getFrames().get(currentFrameIndex);
 		}
 	}
@@ -65,15 +66,17 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 
 	protected TMXMap map;
 	protected Map<String, LTexture> textureMap;
-	protected Map<TmxTile, TileAnimator> tileAnimators;
+	protected Map<TMXTile, TileAnimator> tileAnimators;
 
 	protected boolean visible;
 	protected float scaleX = 1f;
 	protected float scaleY = 1f;
 
+	protected LColor baseColor = new LColor(LColor.white);
+
 	public TMXMapRenderer(TMXMap map) {
 		this.textureMap = new HashMap<String, LTexture>();
-		this.tileAnimators = new HashMap<TmxTile, TileAnimator>();
+		this.tileAnimators = new HashMap<TMXTile, TileAnimator>();
 		this.visible = true;
 		this.map = map;
 
@@ -82,7 +85,7 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 			if (!textureMap.containsKey(path)) {
 				textureMap.put(path, LTextures.loadTexture(path));
 			}
-			for (TmxTile tile : tileSet.getTiles()) {
+			for (TMXTile tile : tileSet.getTiles()) {
 				if (tile.isAnimated()) {
 					TileAnimator animator = new TileAnimator(tile);
 					tileAnimators.put(tile, animator);
@@ -122,6 +125,22 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 		gl.fillRect(_location.x, _location.y,
 				map.getWidth() * map.getTileWidth(),
 				map.getHeight() * map.getTileHeight(), map.getBackgroundColor());
+	}
+
+	public void setLocationToTilePosX(int x) {
+		setX(x / map.getTileWidth());
+	}
+
+	public void setLocationToTilePosY(int y) {
+		setY(y / map.getTileHeight());
+	}
+
+	public void setColor(LColor c) {
+		baseColor.setColor(c);
+	}
+
+	public LColor getColor() {
+		return baseColor;
 	}
 
 	@Override
@@ -177,6 +196,12 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 
 	@Override
 	public void createUI(GLEx g) {
+		float tmp = g.alpha();
+		float tmpAlpha = baseColor.a;
+		int color  = g.color();
+		g.setAlpha(_alpha);
+		baseColor.a = _alpha;
+		g.setColor(baseColor);
 		renderBackgroundColor(g);
 		for (TMXMapLayer mapLayer : map.getLayers()) {
 			if (mapLayer instanceof TMXTileLayer) {
@@ -186,6 +211,9 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 				renderImageLayer(g, (TMXImageLayer) mapLayer);
 			}
 		}
+		baseColor.a = tmpAlpha;
+		g.setColor(color);
+		g.setAlpha(tmp);
 	}
 
 	@Override
@@ -251,6 +279,9 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 
 	public int hashCode() {
 		int result = map.getTileSets().size();
+		result = LSystem.unite(result, _location.x);
+		result = LSystem.unite(result, _location.y);
+		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, map.getTileWidth());
 		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, scaleX);

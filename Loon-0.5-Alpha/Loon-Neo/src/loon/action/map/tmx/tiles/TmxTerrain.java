@@ -3,7 +3,7 @@ package loon.action.map.tmx.tiles;
 import loon.action.map.tmx.TMXProperties;
 import loon.utils.xml.XMLElement;
 
-public class TmxTerrain {
+public class TMXTerrain {
 
 	private String name;
 
@@ -11,7 +11,7 @@ public class TmxTerrain {
 
 	private TMXProperties properties;
 
-	public TmxTerrain() {
+	public TMXTerrain() {
 		properties = new TMXProperties();
 	}
 

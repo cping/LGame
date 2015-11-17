@@ -3,8 +3,8 @@ package loon.action.map.tmx;
 import java.util.ArrayList;
 import java.util.List;
 
-import loon.action.map.tmx.tiles.TmxTerrain;
-import loon.action.map.tmx.tiles.TmxTile;
+import loon.action.map.tmx.tiles.TMXTerrain;
+import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
@@ -24,8 +24,8 @@ public class TMXTileSet {
 	private Vector2f tileOffset;
 	private TMXImage image;
 
-	private List<TmxTerrain> terrainTypes;
-	private List<TmxTile> tiles;
+	private List<TMXTerrain> terrainTypes;
+	private List<TMXTile> tiles;
 
 	private TMXProperties properties;
 
@@ -72,7 +72,7 @@ public class TMXTileSet {
 		if (nodes != null) {
 			ArrayList<XMLElement> list = nodes.list();
 			for (XMLElement terrain : list) {
-				TmxTerrain terrainType = new TmxTerrain();
+				TMXTerrain terrainType = new TMXTerrain();
 				terrainType.parse(terrain);
 				terrainTypes.add(terrainType);
 			}
@@ -89,7 +89,7 @@ public class TMXTileSet {
 				* (image.getHeight() / tileHeight);
 
 		for (int tID = 0; tID < tileCount; tID++) {
-			TmxTile tile = new TmxTile(tID + firstGID);
+			TMXTile tile = new TMXTile(tID + firstGID);
 			tiles.add(tile);
 		}
 
@@ -100,7 +100,7 @@ public class TMXTileSet {
 			ArrayList<XMLElement> list = nodes.list();
 			for (int i = 0; i < list.size(); i++) {
 				XMLElement tileNode = list.get(i);
-				TmxTile tile = new TmxTile(i);
+				TMXTile tile = new TMXTile(i);
 				tile.parse(tileNode);
 				tiles.get(tile.getID()).parse(tileNode);
 			}
@@ -144,12 +144,12 @@ public class TMXTileSet {
 		return image;
 	}
 
-	public List<TmxTerrain> getTerrainTypes() {
+	public List<TMXTerrain> getTerrainTypes() {
 		return terrainTypes;
 	}
 
-	public TmxTile getTile(int id) {
-		for (TmxTile tile : tiles) {
+	public TMXTile getTile(int id) {
+		for (TMXTile tile : tiles) {
 			if (tile.getID() == id) {
 				return tile;
 			}
@@ -157,7 +157,7 @@ public class TMXTileSet {
 		return null;
 	}
 
-	public List<TmxTile> getTiles() {
+	public List<TMXTile> getTiles() {
 		return tiles;
 	}
 

@@ -6,22 +6,22 @@ import java.util.List;
 import loon.action.map.tmx.TMXProperties;
 import loon.utils.xml.XMLElement;
 
-public class TmxTile {
+public class TMXTile {
 	
 	private int id;
 	private int totalDuration;
 
 	private boolean animated;
 
-	private List<TmxAnimationFrame> frames;
+	private List<TMXAnimationFrame> frames;
 
 	private TMXProperties properties;
 
-	public TmxTile() {
+	public TMXTile() {
 		this(0);
 	}
 
-	public TmxTile(int id) {
+	public TMXTile(int id) {
 		this.id = id;
 
 		frames = new ArrayList<>();
@@ -48,7 +48,7 @@ public class TmxTile {
 				int tileID = frame.getIntAttribute("tileid", 0);
 				int duration = frame.getIntAttribute("duration", 0);
 
-				TmxAnimationFrame animation = new TmxAnimationFrame(tileID,
+				TMXAnimationFrame animation = new TMXAnimationFrame(tileID,
 						duration);
 				frames.add(animation);
 				totalDuration += duration;
@@ -72,7 +72,7 @@ public class TmxTile {
 		return animated;
 	}
 
-	public List<TmxAnimationFrame> getFrames() {
+	public List<TMXAnimationFrame> getFrames() {
 		return frames;
 	}
 

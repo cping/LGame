@@ -4,7 +4,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import loon.LSystem;
-import loon.action.map.tmx.tiles.TmxMapTile;
+import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.utils.Base64Coder;
 import loon.utils.CompressionUtils;
 import loon.utils.MathUtils;
@@ -20,7 +20,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		NONE, GZIP, ZLIB
 	}
 
-	private TmxMapTile[] tileMap;
+	private TMXMapTile[] tileMap;
 
 	private Encoding encoding;
 	private Compression compression;
@@ -47,7 +47,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		if (nodes != null)
 			properties.parse(nodes);
 
-		tileMap = new TmxMapTile[width * height];
+		tileMap = new TMXMapTile[width * height];
 
 		XMLElement dataElement = element.getChildrenByName("data");
 
@@ -108,10 +108,10 @@ public class TMXTileLayer extends TMXMapLayer {
 
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = map.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TmxMapTile(gid, tileSet.getFirstGID(),
+				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(),
 						tileSetIndex);
 			} else
-				tileMap[tileCount] = new TmxMapTile(gid, 0, -1);
+				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 		}
 	}
 
@@ -143,10 +143,10 @@ public class TMXTileLayer extends TMXMapLayer {
 
 				if (tileSetIndex != -1) {
 					TMXTileSet tileSet = map.getTileset(tileSetIndex);
-					tileMap[y * width + x] = new TmxMapTile(gid,
+					tileMap[y * width + x] = new TMXMapTile(gid,
 							tileSet.getFirstGID(), tileSetIndex);
 				} else {
-					tileMap[y * width + x] = new TmxMapTile(gid, 0, -1);
+					tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
 				}
 			}
 		}
@@ -163,10 +163,10 @@ public class TMXTileLayer extends TMXMapLayer {
 
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = map.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TmxMapTile(gid, tileSet.getFirstGID(),
+				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(),
 						tileSetIndex);
 			} else {
-				tileMap[tileCount] = new TmxMapTile(gid, 0, -1);
+				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 			}
 
 			tileCount++;
@@ -177,10 +177,10 @@ public class TMXTileLayer extends TMXMapLayer {
 		int tileSetIndex = map.findTileSetIndex(gid);
 		if (tileSetIndex != -1) {
 			TMXTileSet tileSet = map.getTileset(tileSetIndex);
-			tileMap[y * width + x] = new TmxMapTile(gid, tileSet.getFirstGID(),
+			tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(),
 					tileSetIndex);
 		} else {
-			tileMap[y * width + x] = new TmxMapTile(gid, 0, -1);
+			tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
 		}
 	}
 
@@ -208,7 +208,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		return tileMap[y * width + x].isFlippedDiagonally();
 	}
 
-	public TmxMapTile getTile(int x, int y) {
+	public TMXMapTile getTile(int x, int y) {
 		return tileMap[y * width + x];
 	}
 
