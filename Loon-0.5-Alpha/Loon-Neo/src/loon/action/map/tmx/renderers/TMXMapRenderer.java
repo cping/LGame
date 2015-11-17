@@ -204,7 +204,7 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 		g.setColor(baseColor);
 		renderBackgroundColor(g);
 		for (TMXMapLayer mapLayer : map.getLayers()) {
-			if (mapLayer instanceof TMXTileLayer) {
+			if (mapLayer instanceof TMXTileLayer) {		
 				renderTileLayer(g, (TMXTileLayer) mapLayer);
 			}
 			if (mapLayer instanceof TMXImageLayer) {

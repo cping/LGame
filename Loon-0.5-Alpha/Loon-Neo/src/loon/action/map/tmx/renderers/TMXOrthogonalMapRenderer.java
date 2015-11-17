@@ -26,11 +26,21 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
+		float opacity = imageLayer.getOpacity();
+		if (opacity <= 0f) {
+			return;
+		}
+		if (opacity > 1f) {
+			opacity = 1f;
+		}
+		float tmpAlpha = baseColor.a;
+		baseColor.a *= opacity;
 		LTexture originalTexture = textureMap.get(imageLayer.getImage()
 				.getSource());
 		g.draw(originalTexture, imageLayer.getX(), imageLayer.getY(),
 				imageLayer.getWidth() * map.getTileWidth(),
-				imageLayer.getHeight() * map.getTileHeight());
+				imageLayer.getHeight() * map.getTileHeight(),baseColor);
+		baseColor.a = tmpAlpha;
 	}
 
 	private int lastHashCode = 1;
@@ -40,7 +50,14 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		if (!tileLayer.isVisible()) {
 			return;
 		}
-
+		float opacity = tileLayer.getOpacity();
+		if (opacity <= 0f) {
+			return;
+		}
+		if (opacity > 1f) {
+			opacity = 1f;
+		}
+		
 		int tx = _location.x() / map.getTileWidth();
 		int ty = _location.y() / map.getTileHeight();
 		int windowWidth = (int) (LSystem.viewSize.getWidth()
@@ -53,6 +70,10 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		LTexture current = textureMap.get(map.getTileset(0).getImage()
 				.getSource());
 		LTextureBatch batch = current.getTextureBatch();
+		
+
+		float tmpAlpha = baseColor.a;
+		baseColor.a *= opacity;
 
 		if (onlyTexture) {
 			int hashCode = 1;
@@ -71,6 +92,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			} else {
 				if (batch.existCache()) {
 					batch.postCache(baseColor, 0);
+					baseColor.a = tmpAlpha;
 					return;
 				} else {
 					batch.begin();
@@ -302,6 +324,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		if (onlyTexture) {
 			batch.newCache();
 		}
+		baseColor.a = tmpAlpha;
 	}
 
 }

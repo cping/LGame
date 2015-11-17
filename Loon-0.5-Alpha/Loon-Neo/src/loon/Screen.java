@@ -460,10 +460,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.height = LSystem.viewSize.getHeight();
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
-		// 最先桌面
-		this.fristOrder = DRAW_DESKTOP_PAINT();
-		// 其次精灵
-		this.secondOrder = DRAW_SPRITE_PAINT();
+		// 最先精灵
+		this.fristOrder = DRAW_SPRITE_PAINT();
+		// 其次桌面
+		this.secondOrder = DRAW_DESKTOP_PAINT();
 		// 最后用户
 		this.lastOrder = DRAW_USER_PAINT();
 		this.fristPaintFlag = true;
@@ -1195,11 +1195,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					players.paint(g);
 				}
 				// PS:下列三项允许用户调整顺序
-				// 再后首先，桌面
+				// 首先，精灵
 				if (fristPaintFlag) {
 					fristOrder.paint(g);
 				}
-				// 其次，精灵
+				// 其次，桌面
 				if (secondPaintFlag) {
 					secondOrder.paint(g);
 				}

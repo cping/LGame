@@ -3,9 +3,11 @@ package loon.action.map.tmx;
 import java.util.ArrayList;
 import java.util.List;
 
+import loon.action.map.tmx.renderers.TMXHexagonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXIsometricMapRenderer;
 import loon.action.map.tmx.renderers.TMXMapRenderer;
 import loon.action.map.tmx.renderers.TMXOrthogonalMapRenderer;
+import loon.action.map.tmx.renderers.TMXStaggeredMapRenderer;
 import loon.canvas.LColor;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
@@ -14,7 +16,7 @@ import loon.utils.xml.XMLParser;
 public class TMXMap {
 
 	/**
-	 * 该TiledMap类的渲染方向
+	 * 该TiledMap类的渲染（瓦片显示方向）模式
 	 */
 	public enum Orientation {
 		ORTHOGONAL, ISOMETRIC, STAGGERED, HEXAGONAL
@@ -103,10 +105,19 @@ public class TMXMap {
 		parse(docElement, tilesLocation);
 	}
 
+	/**
+	 * 返回一个tmx的具体渲染对象（此对象为Sprite,可以直接插入Screen,如普通Sprite同样操作）
+	 * 
+	 * @return
+	 */
 	public TMXMapRenderer getMapRenderer() {
 		switch (this.orientation) {
 		case ISOMETRIC:
 			return new TMXIsometricMapRenderer(this);
+		case HEXAGONAL:
+			return new TMXHexagonalMapRenderer(this);
+		case STAGGERED:
+			return new TMXStaggeredMapRenderer(this);
 		default:
 			return new TMXOrthogonalMapRenderer(this);
 		}
@@ -216,7 +227,7 @@ public class TMXMap {
 		gid &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
 
 		for (int i = getNumTileSets() - 1; i >= 0; i--) {
-			if (gid >= getTileset(i).getFirstGID()){
+			if (gid >= getTileset(i).getFirstGID()) {
 				return i;
 			}
 		}
@@ -320,7 +331,7 @@ public class TMXMap {
 		for (XMLElement node : list) {
 
 			String name = node.getName().trim().toLowerCase();
-		
+
 			switch (name) {
 			case "properties":
 				properties.parse(node);

@@ -12,7 +12,7 @@ import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 
-public class TMXIsometricMapRenderer extends TMXMapRenderer {
+public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 	/**
 	 * 
@@ -21,7 +21,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
 	private Vector2f tempVector = new Vector2f();
 
-	public TMXIsometricMapRenderer(TMXMap map) {
+	public TMXStaggeredMapRenderer(TMXMap map) {
 		super(map);
 	}
 
