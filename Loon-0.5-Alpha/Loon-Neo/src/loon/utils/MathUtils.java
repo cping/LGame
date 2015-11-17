@@ -135,7 +135,7 @@ public class MathUtils {
 		}
 		return number;
 	}
-	
+
 	/**
 	 * 判断是否为数字
 	 * 
@@ -229,7 +229,8 @@ public class MathUtils {
 
 	static private final float CEIL = 0.9999999f;
 
-	static private final float BIG_ENOUGH_CEIL = NumberUtils.intBitsToFloat(NumberUtils.floatToRawIntBits(BIG_ENOUGH_INT + 1) - 1);
+	static private final float BIG_ENOUGH_CEIL = NumberUtils
+			.intBitsToFloat(NumberUtils.floatToRawIntBits(BIG_ENOUGH_INT + 1) - 1);
 
 	static private final float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
 
@@ -658,6 +659,7 @@ public class MathUtils {
 	public static int min(int a, int b) {
 		return (a <= b) ? a : b;
 	}
+
 	public static float mix(final float x, final float y, final float m) {
 		return x * (1 - m) + y * m;
 	}
@@ -665,7 +667,7 @@ public class MathUtils {
 	public static int mix(final int x, final int y, final float m) {
 		return Math.round(x * (1 - m) + y * m);
 	}
-	
+
 	static public final float norm(float value, float start, float stop) {
 		return (value - start) / (stop - start);
 	}
@@ -675,7 +677,6 @@ public class MathUtils {
 		return ostart + (ostop - ostart)
 				* ((value - istart) / (istop - istart));
 	}
-
 
 	public static final float sin(float rad) {
 		return sin[(int) (rad * radToIndex) & SIN_MASK];
@@ -691,14 +692,6 @@ public class MathUtils {
 
 	public static final float cosDeg(float deg) {
 		return cos[(int) (deg * degToIndex) & SIN_MASK];
-	}
-
-	public static double atan2(double y, double x) {
-		if (y == 0.0D && x == 0.0D) {
-			return Math.atan2(0.0D, 1.0D);
-		} else {
-			return Math.atan2(y, x);
-		}
 	}
 
 	public static final float atan2(float y, float x) {
@@ -885,7 +878,7 @@ public class MathUtils {
 			return Math.signum(f1) * (r - f2);
 		}
 	}
-	
+
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static String toString(float value) {
@@ -921,7 +914,6 @@ public class MathUtils {
 		}
 		return buf.toString();
 	}
-	
 
 	public final static int round(int div1, int div2) {
 		final int remainder = div1 % div2;
@@ -973,6 +965,40 @@ public class MathUtils {
 			return SHIFT[270 - angle];
 		} else {
 			return -SHIFT[angle - 270];
+		}
+	}
+
+	public final static int parseUnsignedInt(String s) {
+		return parseUnsignedInt(s, 10);
+	}
+
+	public final static int parseUnsignedInt(String s, int radix) {
+		if (s == null) {
+			throw new RuntimeException("null");
+		}
+		int len = s.length();
+		if (len > 0) {
+			char firstChar = s.charAt(0);
+			if (firstChar == '-') {
+				throw new RuntimeException(String.format(
+						"Illegal leading minus sign "
+								+ "on unsigned string %s.", s));
+			} else {
+				if (len <= 5 || (radix == 10 && len <= 9)) {
+					return Integer.parseInt(s, radix);
+				} else {
+					long ell = Long.parseLong(s, radix);
+					if ((ell & 0xffff_ffff_0000_0000L) == 0) {
+						return (int) ell;
+					} else {
+						throw new RuntimeException(String.format(
+								"String value %s exceeds "
+										+ "range of unsigned int.", s));
+					}
+				}
+			}
+		} else {
+			throw new RuntimeException(s);
 		}
 	}
 

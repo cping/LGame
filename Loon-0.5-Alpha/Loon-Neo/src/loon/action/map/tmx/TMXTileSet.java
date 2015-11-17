@@ -1,144 +1,123 @@
-/**
- * 
- * Copyright 2008 - 2011
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email javachenpeng@yahoo.com
- * @version 0.1.0
- */
 package loon.action.map.tmx;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
-import loon.LRelease;
-import loon.LTexture;
-import loon.LTextures;
-import loon.action.sprite.SpriteSheet;
-import loon.canvas.LColor;
-import loon.opengl.TextureUtils;
+import loon.action.map.tmx.tiles.TmxTerrain;
+import loon.action.map.tmx.tiles.TmxTile;
+import loon.geom.Vector2f;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
 
-public class TMXTileSet implements LRelease {
-	// 基础地图
-	private final TMXTiledMap map;
+public class TMXTileSet {
+	
+	private int firstGID;
 
-	// 瓦片索引
-	public int index;
+	private String name;
 
-	public String name;
+	private int tileWidth;
+	private int tileHeight;
+	private int spacing;
+	private int margin;
 
-	public int firstGID;
+	private Vector2f tileOffset;
+	private TMXImage image;
 
-	public int lastGID = Integer.MAX_VALUE;
+	private List<TmxTerrain> terrainTypes;
+	private List<TmxTile> tiles;
 
-	public int tileWidth;
+	private TMXProperties properties;
 
-	public int tileHeight;
+	public TMXTileSet() {
+		tileOffset = new Vector2f();
 
-	public SpriteSheet tiles;
+		terrainTypes = new ArrayList<>();
+		tiles = new ArrayList<>();
 
-	public int tilesAcross;
+		properties = new TMXProperties();
+	}
 
-	public int tilesDown;
+	public void parse(XMLElement element, String tilesLocation) {
 
-	private HashMap<Integer, TMXProperty> props = new HashMap<Integer, TMXProperty>();
-
-	protected int tileSpacing = 0;
-
-	protected int tileMargin = 0;
-
-	public TMXTileSet(TMXTiledMap map, XMLElement element, boolean loadImage)
-			throws RuntimeException {
-		this.map = map;
-		this.name = element.getAttribute("name", null);
-		this.firstGID = element.getIntAttribute("firstgid", 0);
+		this.firstGID = element.getIntAttribute("firstgid", 1);
 		String source = element.getAttribute("source", "");
 		if (!"".equals(source)) {
 			try {
-				XMLDocument doc = XMLParser.parse(map.getTilesLocation()
-						+ "/" + source);
+				XMLDocument doc = XMLParser.parse(tilesLocation + "/" + source);
 				XMLElement docElement = doc.getRoot();
 				element = docElement;
 			} catch (Exception e) {
-				throw new RuntimeException(this.map.tilesLocation + "/"
-						+ source);
+				throw new RuntimeException(tilesLocation + "/" + source);
 			}
 		}
-		String tileWidthString = element.getAttribute("tilewidth", "");
-		String tileHeightString = element.getAttribute("tileheight", "");
-		if (tileWidthString.length() == 0 || tileHeightString.length() == 0) {
-			throw new RuntimeException(
-					"tileWidthString.length == 0 || tileHeightString.length == 0");
-		}
-		tileWidth = Integer.parseInt(tileWidthString);
-		tileHeight = Integer.parseInt(tileHeightString);
 
-		String sv = element.getAttribute("spacing", "");
-		if ((sv != null) && (!"".equals(sv))) {
-			tileSpacing = Integer.parseInt(sv);
-		}
+		tileWidth = element.getIntAttribute("tilewidth", 0);
+		tileHeight = element.getIntAttribute("tileheight", 0);
+		margin = element.getIntAttribute("margin", 0);
+		spacing = element.getIntAttribute("spacing", 0);
 
-		String mv = element.getAttribute("margin", "");
-		if ((mv != null) && (!"".equals(mv))) {
-			tileMargin = Integer.parseInt(mv);
+		name = element.getAttribute("name", "");
+
+		XMLElement nodes = element.getChildrenByName("tileoffset");
+
+		if (nodes != null) {
+			XMLElement childElement = nodes;
+			tileOffset.x = childElement.getFloatAttribute("x", 0);
+			tileOffset.y = childElement.getFloatAttribute("y", 0);
 		}
 
-		ArrayList<XMLElement> list = element.list("image");
-		XMLElement imageNode = list.get(0);
-		String fileName = imageNode.getAttribute("source", null);
+		nodes = element.getChildrenByName("terraintypes");
 
-		LColor trans = null;
-		String t = imageNode.getAttribute("trans", null);
-		if ((t != null) && (t.length() > 0)) {
-			trans = new LColor(Integer.parseInt(t, 16));
-		}
-
-		if (loadImage) {
-			String path = map.getTilesLocation() + '/' + fileName;
-			LTexture image;
-			if (trans != null) {
-				image = TextureUtils.filterColor(path, trans);
-			} else {
-				image = LTextures.loadTexture(path);
+		if (nodes != null) {
+			ArrayList<XMLElement> list = nodes.list();
+			for (XMLElement terrain : list) {
+				TmxTerrain terrainType = new TmxTerrain();
+				terrainType.parse(terrain);
+				terrainTypes.add(terrainType);
 			}
-			setTileSetImage(image);
 		}
 
-		ArrayList<XMLElement> elements = element.list("tile");
-		for (int i = 0; i < elements.size(); i++) {
-			XMLElement tileElement = elements.get(i);
+		nodes = element.getChildrenByName("image");
 
-			int id = tileElement.getIntAttribute("id", 0);
-			id += firstGID;
-			TMXProperty tileProps = new TMXProperty();
+		if (nodes != null) {
+			image = new TMXImage();
+			image.parse(nodes, tilesLocation);
+		}
 
-			XMLElement propsElement = tileElement
-					.getChildrenByName("properties");
-			ArrayList<XMLElement> properties = propsElement.list("property");
-			for (int p = 0; p < properties.size(); p++) {
-				XMLElement propElement = properties.get(p);
-				String name = propElement.getAttribute("name", null);
-				String value = propElement.getAttribute("value", null);
-				tileProps.setProperty(name, value);
+		int tileCount = (image.getWidth() / tileWidth)
+				* (image.getHeight() / tileHeight);
+
+		for (int tID = 0; tID < tileCount; tID++) {
+			TmxTile tile = new TmxTile(tID + firstGID);
+			tiles.add(tile);
+		}
+
+		nodes = element.getChildrenByName("tile");
+
+		if (nodes != null) {
+
+			ArrayList<XMLElement> list = nodes.list();
+			for (int i = 0; i < list.size(); i++) {
+				XMLElement tileNode = list.get(i);
+				TmxTile tile = new TmxTile(i);
+				tile.parse(tileNode);
+				tiles.get(tile.getID()).parse(tileNode);
 			}
-			props.put(id, tileProps);
 		}
+
+		nodes = element.getChildrenByName("properties");
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
+	}
+
+	public int getFirstGID() {
+		return firstGID;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public int getTileWidth() {
@@ -149,54 +128,40 @@ public class TMXTileSet implements LRelease {
 		return tileHeight;
 	}
 
-	public int getTileSpacing() {
-		return tileSpacing;
+	public int getSpacing() {
+		return spacing;
 	}
 
-	public int getTileMargin() {
-		return tileMargin;
+	public int getMargin() {
+		return margin;
 	}
 
-	public void setTileSetImage(LTexture image) {
-		tiles = new SpriteSheet(image, tileWidth, tileHeight, tileSpacing,
-				tileMargin);
-		tilesAcross = tiles.getHorizontalCount();
-		tilesDown = tiles.getVerticalCount();
+	public Vector2f getTileOffset() {
+		return tileOffset;
+	}
 
-		if (tilesAcross <= 0) {
-			tilesAcross = 1;
+	public TMXImage getImage() {
+		return image;
+	}
+
+	public List<TmxTerrain> getTerrainTypes() {
+		return terrainTypes;
+	}
+
+	public TmxTile getTile(int id) {
+		for (TmxTile tile : tiles) {
+			if (tile.getID() == id) {
+				return tile;
+			}
 		}
-		if (tilesDown <= 0) {
-			tilesDown = 1;
-		}
-
-		lastGID = (tilesAcross * tilesDown) + firstGID - 1;
+		return null;
 	}
 
-	public TMXProperty getProperties(int globalID) {
-		return props.get(globalID);
+	public List<TmxTile> getTiles() {
+		return tiles;
 	}
 
-	public int getTileX(int id) {
-		return id % tilesAcross;
-	}
-
-	public int getTileY(int id) {
-		return id / tilesAcross;
-	}
-
-	public void setLimit(int limit) {
-		lastGID = limit;
-	}
-
-	public boolean contains(int gid) {
-		return (gid >= firstGID) && (gid <= lastGID);
-	}
-
-	public void close() {
-		if (tiles != null) {
-			tiles.close();
-			tiles = null;
-		}
+	public TMXProperties getProperties() {
+		return properties;
 	}
 }

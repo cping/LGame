@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 import loon.canvas.LColor;
 import loon.geom.Matrix4;
+import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
 import loon.opengl.MeshDefault;
@@ -205,6 +206,14 @@ public class LTextureBatch implements LRelease {
 			invTexHeight = (1f / texture.height()) * texture.heightRatio;
 		}
 	}
+	
+	public float getInvTexWidth(){
+		return this.invTexWidth;
+	}
+	
+	public float getInvTexHeight(){
+		return this.invTexHeight;
+	}
 
 	public LTexture toTexture() {
 		return texture;
@@ -241,6 +250,11 @@ public class LTextureBatch implements LRelease {
 		vertices[vertexIdx++] = v;
 	}
 
+	public void glVertex2f(Vector2f v) {
+		vertices[vertexIdx++] = v.x;
+		vertices[vertexIdx++] = v.y;
+	}
+	
 	public void glVertex2f(float x, float y) {
 		vertices[vertexIdx++] = x;
 		vertices[vertexIdx++] = y;
@@ -344,7 +358,7 @@ public class LTextureBatch implements LRelease {
 		}
 	}
 
-	private boolean checkTexture(final LTexture texture) {
+	public boolean checkTexture(final LTexture texture) {
 		if (!isLoaded || isCacheLocked) {
 			return false;
 		}
@@ -898,7 +912,7 @@ public class LTextureBatch implements LRelease {
 			glColor4f();
 			glTexCoord2f(xOff, heightRatio);
 
-			glVertex2f(fx2, fx2);
+			glVertex2f(fx2, fy2);
 			glColor4f();
 			glTexCoord2f(widthRatio, heightRatio);
 
@@ -914,7 +928,7 @@ public class LTextureBatch implements LRelease {
 			glColor4f(colors[LTexture.BOTTOM_LEFT]);
 			glTexCoord2f(xOff, heightRatio);
 
-			glVertex2f(fx2, fx2);
+			glVertex2f(fx2, fy2);
 			glColor4f(colors[LTexture.BOTTOM_RIGHT]);
 			glTexCoord2f(widthRatio, heightRatio);
 

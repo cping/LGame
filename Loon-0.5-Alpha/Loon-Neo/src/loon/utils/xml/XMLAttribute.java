@@ -63,8 +63,12 @@ public class XMLAttribute {
 
 	public double getDoubleValue() {
 		try {
+			if (this.value.indexOf('b') != -1) {
+				this.value = value.replace("b", "");
+			}
 			return Double.parseDouble(this.value);
 		} catch (Exception ex) {
+
 			throw new RuntimeException("Attribute '" + this.name
 					+ "' has value '" + this.value
 					+ "' which is not an double !");
@@ -75,7 +79,9 @@ public class XMLAttribute {
 		if (value == null) {
 			return false;
 		}
-		return "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value);
+		String result = value.trim().toLowerCase();
+		return "true".equals(result) || "yes".equals(result)
+				|| !"0".equals(result);
 	}
 
 	public String getName() {

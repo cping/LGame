@@ -92,8 +92,12 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(x == 0 ? 0 : x / n, y == 0 ? 0 : y / n);
 	}
 
-	public final Vector2f mul(float a) {
-		return new Vector2f(x * a, y * a);
+	public final Vector2f mul(float s) {
+		return new Vector2f(x * s, y * s);
+	}
+
+	public final Vector2f mul(float sx, float sy) {
+		return new Vector2f(x * sx, y * sy);
 	}
 
 	public Vector2f mul(Matrix3 mat) {
@@ -172,7 +176,8 @@ public class Vector2f implements Serializable, XY {
 		return angle;
 	}
 
-	public Vector2f rotate(float angle) {
+	public Vector2f newRotate(float angle) {
+
 		float rad = angle * MathUtils.DEG_TO_RAD;
 		float cos = MathUtils.cos(rad);
 		float sin = MathUtils.sin(rad);
@@ -180,9 +185,21 @@ public class Vector2f implements Serializable, XY {
 		float newX = this.x * cos - this.y * sin;
 		float newY = this.x * sin + this.y * cos;
 
-		this.x = newX;
-		this.y = newY;
+		return new Vector2f(newX, newY);
+	}
 
+	public Vector2f rotate(float angle) {
+		if (angle != 0) {
+			float rad = angle * MathUtils.DEG_TO_RAD;
+			float cos = MathUtils.cos(rad);
+			float sin = MathUtils.sin(rad);
+
+			float newX = this.x * cos - this.y * sin;
+			float newY = this.x * sin + this.y * cos;
+
+			this.x = newX;
+			this.y = newY;
+		}
 		return this;
 	}
 

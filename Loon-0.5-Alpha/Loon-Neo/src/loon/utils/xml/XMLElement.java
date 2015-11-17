@@ -139,6 +139,14 @@ public class XMLElement {
 	public Iterator<?> elements() {
 		return this.contents.iterator();
 	}
+	/*
+	public int size() {
+		return this.contents.size();
+	}
+	
+	public XMLElement item(int idx){
+		return (XMLElement) this.getParent().contents.get(idx);
+	}*/
 
 	public ArrayList<XMLElement> list() {
 		ArrayList<XMLElement> lists = new ArrayList<XMLElement>(contents.size());
