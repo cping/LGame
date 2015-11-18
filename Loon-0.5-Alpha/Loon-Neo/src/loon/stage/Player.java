@@ -229,13 +229,12 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 		return this;
 	}
 
-	public boolean visible() {
+	public boolean isVisible() {
 		return isSet(Flag.VISIBLE);
 	}
 
-	public Player setVisible(boolean visible) {
+	public void setVisible(boolean visible) {
 		setFlag(Flag.VISIBLE, visible);
-		return this;
 	}
 
 	public boolean isClose() {
@@ -524,7 +523,7 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 	}
 
 	public final void paint(GLEx gl) {
-		if (!visible()) {
+		if (!isVisible()) {
 			return;
 		}
 		int old = gl.combineColor(baseColor);
@@ -772,7 +771,7 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 	}
 
 	@Override
-	public boolean inContains(int x, int y, int w, int h) {
+	public boolean inContains(float x, float y, float w, float h) {
 		return false;
 	}
 
@@ -781,17 +780,6 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 		return getCollisionBox();
 	}
 
-	@Override
-	public int getContainerWidth() {
-		return 0;
-	}
-
-	@Override
-	public int getContainerHeight() {
-		return 0;
-	}
-
-	
 	@Override
 	public void update(long elapsedTime) {
 		_elapsed = elapsedTime;

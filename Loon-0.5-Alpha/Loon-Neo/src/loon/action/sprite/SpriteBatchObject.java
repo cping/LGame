@@ -32,6 +32,8 @@ import loon.geom.RectBox;
 
 public abstract class SpriteBatchObject extends LObject implements Config,
 		LRelease, ActionBind {
+	
+	boolean visible = true;
 
 	float scaleX = 1, scaleY = 1;
 
@@ -101,6 +103,9 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 	}
 
 	public void draw(SpriteBatch batch, float offsetX, float offsetY) {
+		if(!visible){
+			return;
+		}
 		float tmp = batch.color();
 		batch.setAlpha(_alpha);
 		if (!filterColor.equals(1f, 1f, 1f, 1f)) {
@@ -290,19 +295,19 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		return false;
 	}
 
-	public boolean inContains(int x, int y, int w, int h) {
-		return false;
+	public boolean inContains(float x, float y, float w, float h) {
+		return getCollisionArea().contains(x, y, w, h);
 	}
 
 	public RectBox getRectBox() {
 		return getCollisionArea();
 	}
-
-	public int getContainerWidth() {
-		return 0;
+	
+	public void setVisible(boolean v){
+		this.visible = v;
 	}
-
-	public int getContainerHeight() {
-		return 0;
+	
+	public boolean isVisible(){
+		return this.visible;
 	}
 }

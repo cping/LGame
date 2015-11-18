@@ -137,7 +137,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 				continue;
 			}
 			sawInteractiveChild = true;
-			if (!child.visible()) {
+			if (!child.isVisible()) {
 				continue;
 			}
 			try {

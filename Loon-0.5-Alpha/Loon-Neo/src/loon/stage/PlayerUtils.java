@@ -2,6 +2,11 @@ package loon.stage;
 
 import loon.Director;
 import loon.LSystem;
+import loon.action.ActionBind;
+import loon.action.ActionCallback;
+import loon.action.ActionControl;
+import loon.action.ActionEvent;
+import loon.action.ActionTween;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.font.LFont;
@@ -18,7 +23,53 @@ import loon.utils.timer.LTimerContext;
 
 public class PlayerUtils extends Director {
 
-	public static Player createTextPlayer(LFont font, String text) {
+	public final static void addAction(ActionEvent e, ActionBind act) {
+		ActionControl.getInstance().addAction(e, act);
+	}
+
+	public final static void removeAction(ActionEvent e) {
+		ActionControl.getInstance().removeAction(e);
+	}
+
+	public final static void removeAction(Object tag, ActionBind act) {
+		ActionControl.getInstance().removeAction(tag, act);
+	}
+
+	public final static void removeAllActions(ActionBind act) {
+		ActionControl.getInstance().removeAllActions(act);
+	}
+
+	public final static void stop(ActionBind act) {
+		ActionControl.getInstance().stop(act);
+	}
+
+	public final static void start(ActionBind act) {
+		ActionControl.getInstance().start(act);
+	}
+
+	public final static void paused(boolean pause, ActionBind act) {
+		ActionControl.getInstance().paused(pause, act);
+	}
+
+	public final static ActionTween to(ActionBind target, int tweenType,
+			float duration) {
+		return ActionTween.to(target, tweenType, duration);
+	}
+
+	public final static ActionTween from(ActionBind target, int tweenType,
+			float duration) {
+		return ActionTween.from(target, tweenType, duration);
+	}
+
+	public final static ActionTween set(ActionBind target, int tweenType) {
+		return ActionTween.set(target, tweenType);
+	}
+
+	public final static ActionTween call(ActionCallback callback) {
+		return ActionTween.call(callback);
+	}
+
+	public final static Player createTextPlayer(LFont font, String text) {
 		TextLayout layout = font.getLayoutText(text);
 		Canvas canvas = LSystem
 				.base()
@@ -28,22 +79,23 @@ public class PlayerUtils extends Director {
 		canvas.setColor(LColor.white);
 		canvas.setFont(font);
 		canvas.drawText(text, 0f, 0f);
-		CanvasPlayer player = new CanvasPlayer(LSystem.base().graphics(), canvas);
+		CanvasPlayer player = new CanvasPlayer(LSystem.base().graphics(),
+				canvas);
 		return player;
 	}
 
-	public static Vector2f transform(Vector2f p, Player from, Player to,
+	public final static Vector2f transform(Vector2f p, Player from, Player to,
 			Vector2f result) {
 		PlayerUtils.layerToScreen(from, p, result);
 		PlayerUtils.screenToPlayer(to, result, result);
 		return result;
 	}
 
-	public static Vector2f transform(Vector2f p, Player from, Player to) {
+	public final static Vector2f transform(Vector2f p, Player from, Player to) {
 		return transform(p, from, to, new Vector2f());
 	}
 
-	public static void reparent(Player player, GroupPlayer target) {
+	public final static void reparent(Player player, GroupPlayer target) {
 		Vector2f pos = new Vector2f(player.tx(), player.ty());
 		PlayerUtils.layerToScreen(player.parent(), pos, pos);
 		target.add(player);
@@ -51,7 +103,7 @@ public class PlayerUtils extends Director {
 		player.setTranslation(pos.x, pos.y);
 	}
 
-	public static boolean contains(GroupPlayer group, Player player) {
+	public final static boolean contains(GroupPlayer group, Player player) {
 		while (player != null) {
 			player = player.parent();
 			if (player == group) {
@@ -61,23 +113,24 @@ public class PlayerUtils extends Director {
 		return false;
 	}
 
-	public static GroupPlayer group(Player... children) {
+	public final static GroupPlayer group(Player... children) {
 		GroupPlayer gl = new GroupPlayer();
 		for (Player l : children)
 			gl.add(l);
 		return gl;
 	}
 
-	public static <T extends Player> T addChild(GroupPlayer parent, T child) {
+	public final static <T extends Player> T addChild(GroupPlayer parent,
+			T child) {
 		parent.add(child);
 		return child;
 	}
 
-	public static GroupPlayer addNewGroup(GroupPlayer parent) {
+	public final static GroupPlayer addNewGroup(GroupPlayer parent) {
 		return addChild(parent, new GroupPlayer());
 	}
 
-	public static Player solid(final int color, final float width,
+	public final static Player solid(final int color, final float width,
 			final float height) {
 		return new Player() {
 			@Override
@@ -102,7 +155,7 @@ public class PlayerUtils extends Director {
 		};
 	}
 
-	public static RectBox totalBounds(Player root) {
+	public final static RectBox totalBounds(Player root) {
 		RectBox r = new RectBox(root.originX(), root.originY(), 0, 0);
 		addBounds(root, root, r, new Vector2f());
 		return r;
@@ -126,17 +179,18 @@ public class PlayerUtils extends Director {
 		}
 	}
 
-	public static Vector2f layerToScreen(Player player, XY point, Vector2f into) {
+	public final static Vector2f layerToScreen(Player player, XY point,
+			Vector2f into) {
 		return layerToParent(player, null, point, into);
 	}
 
-	public static Vector2f layerToScreen(Player player, float x, float y) {
+	public final static Vector2f layerToScreen(Player player, float x, float y) {
 		Vector2f into = new Vector2f(x, y);
 		return layerToScreen(player, into, into);
 	}
 
-	public static Vector2f layerToParent(Player player, Player parent, XY point,
-			Vector2f into) {
+	public final static Vector2f layerToParent(Player player, Player parent,
+			XY point, Vector2f into) {
 		into.set(point);
 		while (player != parent) {
 			if (player == null) {
@@ -150,32 +204,34 @@ public class PlayerUtils extends Director {
 		return into;
 	}
 
-	public static Vector2f layerToParent(Player player, Player parent, float x,
-			float y) {
+	public final static Vector2f layerToParent(Player player, Player parent,
+			float x, float y) {
 		Vector2f into = new Vector2f(x, y);
 		return layerToParent(player, parent, into, into);
 	}
 
-	public static Vector2f screenToPlayer(Player player, XY point, Vector2f into) {
+	public final static Vector2f screenToPlayer(Player player, XY point,
+			Vector2f into) {
 		Player parent = player.parent();
 		XY cur = (parent == null) ? point : screenToPlayer(parent, point, into);
 		return parentToPlayer(player, cur, into);
 	}
 
-	public static Vector2f screenToPlayer(Player player, float x, float y) {
+	public final static Vector2f screenToPlayer(Player player, float x, float y) {
 		Vector2f into = new Vector2f(x, y);
 		return screenToPlayer(player, into, into);
 	}
 
-	public static Vector2f parentToPlayer(Player player, XY point, Vector2f into) {
+	public final static Vector2f parentToPlayer(Player player, XY point,
+			Vector2f into) {
 		player.affine().inverseTransform(into.set(point), into);
 		into.x += player.originX();
 		into.y += player.originY();
 		return into;
 	}
 
-	public static Vector2f parentToPlayer(Player parent, Player player, XY point,
-			Vector2f into) {
+	public final static Vector2f parentToPlayer(Player parent, Player player,
+			XY point, Vector2f into) {
 		into.set(point);
 		Player immediateParent = player.parent();
 		if (immediateParent != parent) {
@@ -185,24 +241,24 @@ public class PlayerUtils extends Director {
 		return into;
 	}
 
-	public static Player getHitPlayer(Player root, Vector2f p) {
+	public final static Player getHitPlayer(Player root, Vector2f p) {
 		root.affine().inverseTransform(p, p);
 		p.x += root.originX();
 		p.y += root.originY();
 		return root.hitTest(p);
 	}
 
-	public static boolean hitTest(Player player, XY pos) {
+	public final static boolean hitTest(Player player, XY pos) {
 		return hitTest(player, pos.getX(), pos.getY());
 	}
 
-	public static boolean hitTest(Player player, float x, float y) {
+	public final static boolean hitTest(Player player, float x, float y) {
 		Vector2f point = screenToPlayer(player, x, y);
 		return (point.x() >= 0 && point.y() >= 0 && point.x() <= player.width() && point
 				.y() <= player.height());
 	}
 
-	public static Player playerUnderPoint(Player root, float x, float y) {
+	public final static Player playerUnderPoint(Player root, float x, float y) {
 		Vector2f p = new Vector2f(x, y);
 		root.affine().inverseTransform(p, p);
 		p.x += root.originX();
@@ -210,7 +266,7 @@ public class PlayerUtils extends Director {
 		return layerUnderPoint(root, p);
 	}
 
-	public static int indexInParent(Player player) {
+	public final static int indexInParent(Player player) {
 		GroupPlayer parent = player.parent();
 		if (parent == null) {
 			return -1;
@@ -223,8 +279,8 @@ public class PlayerUtils extends Director {
 		throw new AssertionError();
 	}
 
-	public static void bind(Player player, final Act<LTimerContext> paint,
-			final Port<LTimerContext> onPaint) {
+	public final static void bind(Player player,
+			final Act<LTimerContext> paint, final Port<LTimerContext> onPaint) {
 
 		player.state.connectNotify(new Port<Player.State>() {
 			public void onEmit(Player.State state) {
@@ -238,7 +294,8 @@ public class PlayerUtils extends Director {
 		});
 	}
 
-	public static void bind(Player player, final Act<LTimerContext> update,
+	public final static void bind(Player player,
+			final Act<LTimerContext> update,
 			final Port<LTimerContext> onUpdate, final Act<LTimerContext> paint,
 			final Port<LTimerContext> onPaint) {
 		player.state.connectNotify(new Port<Player.State>() {
@@ -256,7 +313,7 @@ public class PlayerUtils extends Director {
 		});
 	}
 
-	public static int graphDepth(Player player) {
+	public final static int graphDepth(Player player) {
 		int depth = -1;
 		while (player != null) {
 			player = player.parent();
@@ -265,13 +322,13 @@ public class PlayerUtils extends Director {
 		return depth;
 	}
 
-	protected static Player layerUnderPoint(Player player, Vector2f pt) {
+	protected final static Player layerUnderPoint(Player player, Vector2f pt) {
 		float x = pt.x, y = pt.y;
 		if (player instanceof GroupPlayer) {
 			GroupPlayer gl = (GroupPlayer) player;
 			for (int ii = gl.children() - 1; ii >= 0; ii--) {
 				Player child = gl.childAt(ii);
-				if (!child.visible()) {
+				if (!child.isVisible()) {
 					continue;
 				}
 				try {
@@ -292,6 +349,5 @@ public class PlayerUtils extends Director {
 		}
 		return null;
 	}
-	
-	
+
 }

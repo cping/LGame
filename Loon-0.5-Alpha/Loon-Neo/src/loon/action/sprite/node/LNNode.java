@@ -1256,7 +1256,7 @@ public class LNNode extends LObject implements ActionBind {
 	}
 
 	@Override
-	public boolean inContains(int x, int y, int w, int h) {
+	public boolean inContains(float x, float y, float w, float h) {
 		return getCollisionBox().contains(x, y, w, h);
 	}
 
@@ -1265,14 +1265,5 @@ public class LNNode extends LObject implements ActionBind {
 				getHeight());
 	}
 
-	@Override
-	public int getContainerWidth() {
-		return 0;
-	}
-
-	@Override
-	public int getContainerHeight() {
-		return 0;
-	}
 
 }

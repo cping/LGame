@@ -23,9 +23,17 @@ package loon.action;
 import loon.action.map.Field2D;
 import loon.geom.RectBox;
 
+/**
+ * Loon核心接口之一，实现此接口者，才可以通过action包统一操作(接口不要求全部实现
+ * ，但只有实现了的部分，才能进行相应的动作)
+ */
 public interface ActionBind {
 
 	public Field2D getField2D();
+	
+	public void setVisible(boolean v);
+	
+	public boolean isVisible();
 
 	public int x();
 
@@ -51,7 +59,7 @@ public interface ActionBind {
 
 	public float getAlpha();
 
-	public void setAlpha(float a);
+	public void setAlpha(float alpha);
 
 	public void setLocation(float x, float y);
 
@@ -59,7 +67,7 @@ public interface ActionBind {
 
 	public boolean isContainer();
 
-	public boolean inContains(int x, int y, int w, int h);
+	public boolean inContains(float x, float y, float w, float h);
 
 	public RectBox getRectBox();
 

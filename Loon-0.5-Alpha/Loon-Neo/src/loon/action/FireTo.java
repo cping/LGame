@@ -25,17 +25,17 @@ import loon.utils.MathUtils;
 
 public class FireTo extends ActionEvent {
 
-	private double direction;
+	private float direction;
 
-	private int x, y;
+	private float x, y;
 
-	private int vx, vy;
+	private float vx, vy;
 
-	private int endX, endY;
+	private float endX, endY;
 
-	private double speed;
+	private float speed;
 
-	public FireTo(int endX, int endY, double speed) {
+	public FireTo(float endX, float endY, float speed) {
 		this.endX = endX;
 		this.endY = endY;
 		this.speed = speed;
@@ -46,11 +46,11 @@ public class FireTo extends ActionEvent {
 	}
 
 	public void onLoad() {
-		this.x = (int) original.getX();
-		this.y = (int) original.getY();
+		this.x =  original.getX();
+		this.y = original.getY();
 		this.direction = MathUtils.atan2(endY - y, endX - x);
-		this.vx = (int) (MathUtils.cos(direction) * this.speed);
-		this.vy = (int) (MathUtils.sin(direction) * this.speed);
+		this.vx =  (MathUtils.cos(direction) * this.speed);
+		this.vy =  (MathUtils.sin(direction) * this.speed);
 	}
 
 	public void update(long elapsedTime) {

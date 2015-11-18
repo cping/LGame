@@ -243,7 +243,7 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	 * @param speed
 	 * @return
 	 */
-	public FireTo fireTo(int endX, int endY, double speed) {
+	public FireTo fireTo(float endX, float endY, float speed) {
 		failIfNotInLayer();
 		return gameLayer.callFireTo(this, endX, endY, speed);
 	}
@@ -255,7 +255,7 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	 * @param endY
 	 * @return
 	 */
-	public FireTo fireTo(int endX, int endY) {
+	public FireTo fireTo(float endX, float endY) {
 		return fireTo(endX, endY, 10);
 	}
 
@@ -999,7 +999,7 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	}
 
 	@Override
-	public boolean inContains(int x, int y, int w, int h) {
+	public boolean inContains(float x, float y, float w, float h) {
 		return gameLayer.contains(x, y, w, h);
 	}
 

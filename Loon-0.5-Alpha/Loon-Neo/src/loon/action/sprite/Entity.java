@@ -712,23 +712,13 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 	}
 
 	@Override
-	public boolean inContains(int x, int y, int w, int h) {
+	public boolean inContains(float x, float y, float w, float h) {
 		return getCollisionBox().contains(x, y, w, h);
 	}
 
 	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
-	}
-
-	@Override
-	public int getContainerWidth() {
-		return 0;
-	}
-
-	@Override
-	public int getContainerHeight() {
-		return 0;
 	}
 
 	@Override

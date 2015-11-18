@@ -54,6 +54,6 @@ public class FlipTransition extends EaseTransition<FlipTransition> {
 
 	@Override
 	protected Easing def() {
-		return Easing.JUST_LINEAR;
+		return Easing.TIME_LINEAR;
 	}
 }

@@ -17,7 +17,7 @@ public class PageTransition extends EaseTransition<PageTransition> {
 
 	public PageTransition close() {
 		_close = true;
-		_easing = Easing.JUST_EASE_INOUT;
+		_easing = Easing.TIME_EASE_INOUT;
 		return this;
 	}
 
@@ -67,7 +67,7 @@ public class PageTransition extends EaseTransition<PageTransition> {
 
 	@Override
 	protected Easing def() {
-		return Easing.JUST_EASE_IN;
+		return Easing.TIME_EASE_IN;
 	}
 
 	protected void updateAngle(float elapsed) {

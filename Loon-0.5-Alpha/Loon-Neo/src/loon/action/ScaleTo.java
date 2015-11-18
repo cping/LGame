@@ -22,7 +22,6 @@ package loon.action;
 
 import loon.utils.MathUtils;
 
-
 public class ScaleTo extends ActionEvent {
 
 	private float dt;

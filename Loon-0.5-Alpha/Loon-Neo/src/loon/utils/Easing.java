@@ -28,7 +28,7 @@ public class Easing {
 
 	private static final int TYPE_IN_OUT = 2;
 
-	private static final int TYPE_NONE = 3;
+	private static final int TYPE_TIME = 3;
 
 	private static final int FUNCTION_LINEAR = 0;
 
@@ -61,6 +61,12 @@ public class Easing {
 	public static final Easing NONE = new Easing("NONE", TYPE_IN,
 			FUNCTION_LINEAR);
 
+	public static final Easing ELASTIC_INOUT = new Easing("ELASTIC_INOUT",
+			TYPE_IN_OUT, FUNCTION_ELASTIC);
+
+	public static final Easing QUAD_INOUT = new Easing("QUAD_INOUT",
+			TYPE_IN_OUT, FUNCTION_LINEAR);
+
 	public static final Easing REGULAR_IN = new Easing("REGULAR_IN", TYPE_IN,
 			FUNCTION_QUADRADIC);
 
@@ -85,6 +91,21 @@ public class Easing {
 	public static final Easing BACK_OUT = new Easing("BACK_OUT", TYPE_OUT,
 			FUNCTION_BACK);
 
+	public static final Easing CUBIC_IN = new Easing("CUBIC_IN", TYPE_IN,
+			FUNCTION_IN);
+
+	public static final Easing CUBIC_OUT = new Easing("CUBIC_OUT", TYPE_OUT,
+			FUNCTION_OUT);
+
+	public static final Easing CUBIC_INOUT = new Easing("CUBIC_INOUT",
+			TYPE_OUT, FUNCTION_INOUT);
+
+	public static final Easing BOUNCE_IN = new Easing("BOUNCE_IN", TYPE_OUT,
+			FUNCTION_BOUNCE_OUT);
+
+	public static final Easing BOUNCE_INOUT = new Easing("BOUNCE_INOUT",
+			TYPE_IN_OUT, FUNCTION_BOUNCE_OUT);
+
 	public static final Easing BACK_IN_OUT = new Easing("BACK_IN_OUT",
 			TYPE_IN_OUT, FUNCTION_BACK);
 
@@ -97,32 +118,32 @@ public class Easing {
 	public static final Easing ELASTIC_IN_OUT = new Easing("ELASTIC_IN_OUT",
 			TYPE_IN_OUT, FUNCTION_ELASTIC);
 
-	public static final Easing JUST_NONE = new Easing("JUST_NONE", TYPE_NONE,
+	public static final Easing TIME_NONE = new Easing("TIME_NONE", TYPE_TIME,
 			FUNCTION_NONE);
 
-	public static final Easing JUST_LINEAR = new Easing("JUST_LINEAR",
-			TYPE_NONE, FUNCTION_LINEAR);
+	public static final Easing TIME_LINEAR = new Easing("TIME_LINEAR",
+			TYPE_TIME, FUNCTION_LINEAR);
 
-	public static final Easing JUST_EASE_IN = new Easing("JUST_EASE_IN",
-			TYPE_NONE, FUNCTION_IN);
+	public static final Easing TIME_EASE_IN = new Easing("TIME_EASE_IN",
+			TYPE_TIME, FUNCTION_IN);
 
-	public static final Easing JUST_EASE_OUT = new Easing("JUST_EASE_OUT",
-			TYPE_NONE, FUNCTION_OUT);
+	public static final Easing TIME_EASE_OUT = new Easing("TIME_EASE_OUT",
+			TYPE_TIME, FUNCTION_OUT);
 
-	public static final Easing JUST_EASE_INOUT = new Easing("JUST_EASE_INOUT",
-			TYPE_NONE, FUNCTION_INOUT);
+	public static final Easing TIME_EASE_INOUT = new Easing("TIME_EASE_INOUT",
+			TYPE_TIME, FUNCTION_INOUT);
 
-	public static final Easing JUST_EASE_IN_BACK = new Easing(
-			"JUST_EASE_IN_BACK", TYPE_NONE, FUNCTION_IN_BACK);
+	public static final Easing TIME_EASE_IN_BACK = new Easing(
+			"TIME_EASE_IN_BACK", TYPE_TIME, FUNCTION_IN_BACK);
 
-	public static final Easing JUST_EASE_OUT_BACK = new Easing(
-			"JUST_EASE_OUT_BACK", TYPE_NONE, FUNCTION_OUT_BACK);
+	public static final Easing TIME_EASE_OUT_BACK = new Easing(
+			"TIME_EASE_OUT_BACK", TYPE_TIME, FUNCTION_OUT_BACK);
 
-	public static final Easing JUST_BOUNCE_OUT = new Easing("JUST_BOUNCE_OUT",
-			TYPE_NONE, FUNCTION_BOUNCE_OUT);
+	public static final Easing TIME_BOUNCE_OUT = new Easing("TIME_BOUNCE_OUT",
+			TYPE_TIME, FUNCTION_BOUNCE_OUT);
 
-	public static final Easing JUST_EASE_OUT_ELASTIC = new Easing(
-			"JUST_EASE_OUT_ELASTIC", TYPE_NONE, FUNCTION_OUT_ELASTIC);
+	public static final Easing TIME_EASE_OUT_ELASTIC = new Easing(
+			"TIME_EASE_OUT_ELASTIC", TYPE_TIME, FUNCTION_OUT_ELASTIC);
 
 	private final int type;
 
@@ -160,7 +181,11 @@ public class Easing {
 	}
 
 	public final float apply(float time, float duration) {
-		if (TYPE_NONE == type) {
+		return apply(time, duration, true);
+	}
+
+	public final float apply(float time, float duration, boolean mul) {
+		if (TYPE_TIME == type) {
 			return call(function, duration / time);
 		}
 		if (time <= 0 || duration <= 0) {
@@ -174,7 +199,6 @@ public class Easing {
 		float easedT;
 
 		switch (type) {
-
 		default:
 			easedT = t;
 			break;
@@ -198,7 +222,10 @@ public class Easing {
 		if (strength != 1) {
 			easedT = strength * easedT + (1 - strength) * t;
 		}
-		return (easedT * duration);
+		if (mul) {
+			return (easedT * duration);
+		}
+		return easedT;
 	}
 
 	public float applyClamp(float time, float duration) {
@@ -287,8 +314,7 @@ public class Easing {
 		case FUNCTION_OUT_ELASTIC:
 			t2 = 0.3f / 4;
 			t3 = (float) (2 * MathUtils.PI / 0.3);
-			return MathUtils.pow(2, -10 * t)
-					* MathUtils.sin((t - t2) * t3) + 1;
+			return MathUtils.pow(2, -10 * t) * MathUtils.sin((t - t2) * t3) + 1;
 		}
 	}
 

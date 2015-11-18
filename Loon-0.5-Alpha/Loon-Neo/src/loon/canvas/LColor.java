@@ -605,6 +605,21 @@ public class LColor implements Serializable {
 		return new LColor(r * s, g * s, b * s, a * s);
 	}
 
+	public static LColor lerp(LColor value1, LColor value2, float amount) {
+		return new LColor(lerp(value1.getRed(), value2.getRed(), amount), lerp(
+				value1.getGreen(), value2.getGreen(), amount), lerp(
+				value1.getBlue(), value2.getBlue(), amount), lerp(
+				value1.getAlpha(), value2.getAlpha(), amount));
+	}
+
+	private static int lerp(int color1, int color2, float amount) {
+		return color1 + (int) ((color2 - color1) * amount);
+	}
+
+	public LColor lerp(LColor target, float alpha) {
+		return lerp(this, target, alpha);
+	}
+
 	/**
 	 * 返回ARGB
 	 * 
@@ -722,17 +737,6 @@ public class LColor implements Serializable {
 			b = (a * b + 127) / 255;
 			return (a << 24) | (r << 16) | (g << 8) | b;
 		}
-	}
-
-	public static LColor lerp(LColor value1, LColor value2, float amount) {
-		return new LColor(lerp(value1.getRed(), value2.getRed(), amount), lerp(
-				value1.getGreen(), value2.getGreen(), amount), lerp(
-				value1.getBlue(), value2.getBlue(), amount), lerp(
-				value1.getAlpha(), value2.getAlpha(), amount));
-	}
-
-	static int lerp(int i1, int i2, float amount) {
-		return i1 + (int) ((i2 - i1) * amount);
 	}
 
 	public static int[] getRGBs(final int pixel) {

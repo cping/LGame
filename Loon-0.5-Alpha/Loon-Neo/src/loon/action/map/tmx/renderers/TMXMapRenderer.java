@@ -258,23 +258,13 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 	}
 
 	@Override
-	public boolean inContains(int x, int y, int w, int h) {
+	public boolean inContains(float x, float y, float w, float h) {
 		return getCollisionArea().contains(x, y, w, h);
 	}
 
 	@Override
 	public RectBox getRectBox() {
 		return getCollisionArea();
-	}
-
-	@Override
-	public int getContainerWidth() {
-		return getWidth();
-	}
-
-	@Override
-	public int getContainerHeight() {
-		return getHeight();
 	}
 
 	public int hashCode() {

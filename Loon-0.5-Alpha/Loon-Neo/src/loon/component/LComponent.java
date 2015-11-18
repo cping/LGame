@@ -329,11 +329,11 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
 	}
 
-	public boolean contains(int x, int y) {
+	public boolean contains(float x, float y) {
 		return contains(x, y, 0, 0);
 	}
 
-	public boolean contains(int x, int y, int width, int height) {
+	public boolean contains(float x, float y, float width, float height) {
 		return (this.visible)
 				&& (x >= this.screenX
 						&& y >= this.screenY
@@ -341,7 +341,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 						* scaleY)));
 	}
 
-	public boolean intersects(int x1, int y1) {
+	public boolean intersects(float x1, float y1) {
 		return (this.visible)
 				&& (x1 >= this.screenX
 						&& x1 <= this.screenX + this.width * scaleX
@@ -788,7 +788,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 		return true;
 	}
 
-	public boolean inContains(int x, int y, int w, int h) {
+	public boolean inContains(float x, float y, float w, float h) {
 		if (parent != null) {
 			return parent.contains(x, y, w, h);
 		}

@@ -38,7 +38,8 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param obj
 	 * @param paused
 	 */
-	public final static void addActionEvent(ActionEvent action, ActionBind obj, boolean paused) {
+	public final static void addActionEvent(ActionEvent action, ActionBind obj,
+			boolean paused) {
 		ActionControl.getInstance().addAction(action, obj, paused);
 	}
 
@@ -96,7 +97,8 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param actObject
 	 * @return
 	 */
-	public final static ActionEvent getActionEvent(Object tag, ActionBind actObject) {
+	public final static ActionEvent getActionEvent(Object tag,
+			ActionBind actObject) {
 		return ActionControl.getInstance().getAction(tag, actObject);
 	}
 
@@ -115,7 +117,8 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param pause
 	 * @param actObject
 	 */
-	public final static void pauseActionEvent(boolean pause, ActionBind actObject) {
+	public final static void pauseActionEvent(boolean pause,
+			ActionBind actObject) {
 		ActionControl.getInstance().paused(pause, actObject);
 	}
 
@@ -418,4 +421,12 @@ public abstract class LObject implements XY, ZIndex {
 	public abstract int getWidth();
 
 	public abstract int getHeight();
+
+	public int getContainerWidth() {
+		return LSystem.viewSize.getWidth();
+	}
+
+	public int getContainerHeight() {
+		return LSystem.viewSize.getHeight();
+	}
 }

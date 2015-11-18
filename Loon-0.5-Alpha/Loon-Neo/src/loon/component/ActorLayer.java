@@ -285,7 +285,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param speed
 	 * @return
 	 */
-	public FireTo callFireTo(ActionBind o, int x, int y, double speed) {
+	public FireTo callFireTo(ActionBind o, float x, float y, float speed) {
 		if (isClose) {
 			return null;
 		}

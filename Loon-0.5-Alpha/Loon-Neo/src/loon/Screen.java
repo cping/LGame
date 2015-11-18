@@ -23,9 +23,6 @@ package loon;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import loon.action.ActionBind;
-import loon.action.ActionControl;
-import loon.action.ActionEvent;
 import loon.action.collision.GravityHandler;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
@@ -57,7 +54,7 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
-
+	
 	private ArrayList<ScreenListener> screens;
 
 	private boolean useScreenListener;
@@ -102,26 +99,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		for (int i = 0; i < size; i++) {
 			releases.add(rs[i]);
 		}
-		return this;
-	}
-
-	public Screen addAction(ActionEvent e, ActionBind act) {
-		ActionControl.getInstance().addAction(e, act);
-		return this;
-	}
-
-	public Screen removeAction(ActionEvent e) {
-		ActionControl.getInstance().removeAction(e);
-		return this;
-	}
-
-	public Screen removeAction(Object tag, ActionBind act) {
-		ActionControl.getInstance().removeAction(tag, act);
-		return this;
-	}
-
-	public Screen removeAllActions(ActionBind act) {
-		ActionControl.getInstance().removeAllActions(act);
 		return this;
 	}
 
