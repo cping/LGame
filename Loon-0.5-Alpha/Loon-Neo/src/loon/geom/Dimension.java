@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import loon.action.map.Field2D;
+
 public class Dimension {
 
 	public float width = -1, height = -1;
@@ -54,7 +56,7 @@ public class Dimension {
 		}
 		return rect;
 	}
-	
+
 	public Matrix4 getMatrix() {
 		if (dirty) {
 			if (matrix4 == null) {
@@ -80,6 +82,18 @@ public class Dimension {
 
 	public float width() {
 		return width;
+	}
+
+	public Field2D newField2D() {
+		return newField2D(16, 16);
+	}
+
+	public Field2D newField2D(int tileWidth, int tileHeight) {
+		int w = getWidth() / tileWidth;
+		int h = getHeight() / tileHeight;
+		int[][] tmp = new int[h][w];
+		Field2D field2d = new Field2D(tmp, tileWidth, tileHeight);
+		return field2d;
 	}
 
 	public int getHeight() {

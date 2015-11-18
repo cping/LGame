@@ -3,6 +3,7 @@ package loon.action.map.tmx;
 import java.util.ArrayList;
 import java.util.List;
 
+import loon.action.map.Field2D;
 import loon.action.map.tmx.renderers.TMXHexagonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXIsometricMapRenderer;
 import loon.action.map.tmx.renderers.TMXMapRenderer;
@@ -376,4 +377,35 @@ public class TMXMap {
 	public void setTilesLocation(String tilesLocation) {
 		this.tilesLocation = tilesLocation;
 	}
+
+	public List<Field2D> newGIDField2Ds() {
+		return newField2Ds(0);
+	}
+
+	public List<Field2D> newTileSetIDField2Ds() {
+		return newField2Ds(1);
+	}
+
+	public List<Field2D> newIDField2Ds() {
+		return newField2Ds(2);
+	}
+
+	public List<Field2D> newField2Ds(int mode) {
+		ArrayList<Field2D> list = new ArrayList<Field2D>(tileLayers.size());
+		for (TMXTileLayer layer : tileLayers) {
+			switch (mode) {
+			case 0:
+				list.add(layer.newGIDField2D());
+				break;
+			case 1:
+				list.add(layer.newTileSetIDField2D());
+				break;
+			default:
+				list.add(layer.newIDField2D());
+				break;
+			}
+		}
+		return list;
+	}
+
 }

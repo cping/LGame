@@ -49,6 +49,11 @@ public class Array<T> {
 		clear();
 	}
 
+	public Array(Array<T> data) {
+		clear();
+		addAll(data);
+	}
+	
 	public void insertBetween(Array<T> previous, Array<T> next, Array<T> newNode) {
 		insertBetween(previous._items, next._items, newNode._items);
 	}

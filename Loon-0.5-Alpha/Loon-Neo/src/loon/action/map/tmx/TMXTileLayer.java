@@ -4,6 +4,8 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import loon.LSystem;
+import loon.action.map.Field2D;
+import loon.action.map.TileMapConfig;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.utils.Base64Coder;
 import loon.utils.CompressionUtils;
@@ -218,5 +220,41 @@ public class TMXTileLayer extends TMXMapLayer {
 
 	public Compression getCompression() {
 		return compression;
+	}
+
+	public Field2D newGIDField2D() {
+		return newField2D(0);
+	}
+
+	public Field2D newTileSetIDField2D() {
+		return newField2D(1);
+	}
+
+	public Field2D newIDField2D() {
+		return newField2D(2);
+	}
+
+	private Field2D newField2D(int mode) {
+		int[][] tmp = new int[width][height];
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				switch (mode) {
+				case 0:
+					tmp[x][y] = tileMap[y * width + x].getGID();
+					break;
+				case 1:
+					tmp[x][y] = tileMap[y * width + x].getTileSetID();
+					break;
+				default:
+					tmp[x][y] = tileMap[y * width + x].getID();
+					break;
+				}
+			}
+		}
+		Field2D field2d = new Field2D(TileMapConfig.reversalXandY(tmp),
+				getMap().getTileWidth(), getMap().getTileHeight());
+		field2d.setName(name);
+		field2d.Tag = this;
+		return field2d;
 	}
 }

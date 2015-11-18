@@ -30,6 +30,18 @@ import loon.utils.MathUtils;
 
 public class Field2D implements Config {
 
+	public Object Tag;
+
+	private String name = "Field2D";
+
+	public void setName(String n) {
+		this.name = n;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
 	private final static float angular = MathUtils.cos(MathUtils.PI / 4);
 
 	public static int getDirection(float angle) {
@@ -89,7 +101,10 @@ public class Field2D implements Config {
 
 	private int[] limit;
 
-	private int tileWidth, tileHeight;
+	//default size
+	private int tileWidth = 32;
+	
+	private int tileHeight = 32;
 
 	private int width, height;
 
@@ -97,16 +112,16 @@ public class Field2D implements Config {
 		copy(field);
 	}
 
-	public Field2D(String fileName, int w, int h) {
-			set(TileMapConfig.loadAthwartArray(fileName), w, h);
+	public Field2D(String fileName, int tw, int th) {
+		set(TileMapConfig.loadAthwartArray(fileName), tw, th);
 	}
 
 	public Field2D(int[][] data) {
 		this(data, 0, 0);
 	}
 
-	public Field2D(int[][] data, int w, int h) {
-		this.set(data, w, h);
+	public Field2D(int[][] data, int tw, int th) {
+		this.set(data, tw, th);
 	}
 
 	public void copy(Field2D field) {
@@ -114,19 +129,24 @@ public class Field2D implements Config {
 				field.tileHeight);
 	}
 
-	public void set(int[][] data, int w, int h) {
+	public void set(int[][] data, int tw, int th) {
 		this.setMap(data);
-		this.setTileWidth(w);
-		this.setTileHeight(h);
+		this.setTileWidth(tw);
+		this.setTileHeight(th);
 		this.width = data[0].length;
 		this.height = data.length;
 	}
 
-	public void setSize(int w, int h) {
-		this.width = w;
-		this.height = h;
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
+	public void setTile(int tw, int th) {
+		this.tileWidth = tw;
+		this.tileHeight = th;
+	}
+	
 	public int getWidth() {
 		return width;
 	}

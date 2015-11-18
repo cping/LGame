@@ -110,6 +110,9 @@ public class AStarFinder implements Runnable, LRelease {
 				newResult.addAll(result);
 				result = newResult;
 			}
+			if(result==null){
+				return new LinkedList<Vector2f>();
+			}
 			return new LinkedList<Vector2f>(result);
 		}
 	}

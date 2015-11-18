@@ -78,7 +78,7 @@ public class TileMapConfig {
 		int[][] result = new int[col][row];
 		for (int y = 0; y < col; y++) {
 			for (int x = 0; x < row; x++) {
-				result[x][y] = array[y][x];
+				result[y][x] = array[x][y];
 			}
 		}
 		return result;

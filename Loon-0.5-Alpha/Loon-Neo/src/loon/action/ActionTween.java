@@ -35,6 +35,17 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 	};
 
+	/**
+	 * 从当前ActionBind数值到指定目标(大多数时候，调用此状态已经足够)
+	 * 
+	 * @param target
+	 *            具体的操作对象
+	 * @param tweenType
+	 *            需要转变的接口
+	 * @param duration
+	 *            持续时间
+	 * @return
+	 */
 	public static ActionTween to(ActionBind target, int tweenType,
 			float duration) {
 		ActionTween tween = pool.get();
@@ -44,6 +55,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return tween;
 	}
 
+	/**
+	 * 从注入的数值演变到当前值
+	 * 
+	 * @param target
+	 * @param tweenType
+	 * @param duration
+	 * @return
+	 */
 	public static ActionTween from(ActionBind target, int tweenType,
 			float duration) {
 		ActionTween tween = pool.get();
@@ -54,6 +73,13 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return tween;
 	}
 
+	/**
+	 * 直接注入当前对象为指定数值
+	 * 
+	 * @param target
+	 * @param tweenType
+	 * @return
+	 */
 	public static ActionTween set(ActionBind target, int tweenType) {
 		ActionTween tween = pool.get();
 		tween.setup(target, tweenType, 0);
@@ -61,6 +87,12 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return tween;
 	}
 
+	/**
+	 * 直接调用一个ActionCallback方法
+	 * 
+	 * @param callback
+	 * @return
+	 */
 	public static ActionTween call(ActionCallback callback) {
 		ActionTween tween = pool.get();
 		tween.setup(null, -1, 0);
@@ -69,6 +101,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return tween;
 	}
 
+	/**
+	 * 制作一个无状态的空ActionTween对象
+	 * 
+	 * @return
+	 */
 	public static ActionTween mark() {
 		ActionTween tween = pool.get();
 		tween.setup(null, -1, 0);
@@ -108,19 +145,15 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	@Override
 	protected void reset() {
 		super.reset();
-
 		_target = null;
 		type = -1;
 		equation = null;
 		path = null;
-
 		isFrom = isRelative = false;
 		_combinedAttrsSize = _funPointsSize = 0;
-
 		if (accessorBuffer.length != combinedAttrsLimit) {
 			accessorBuffer = new float[combinedAttrsLimit];
 		}
-
 		if (pathBuffer.length != (2 + funPointsLimit) * combinedAttrsLimit) {
 			pathBuffer = new float[(2 + funPointsLimit) * combinedAttrsLimit];
 		}

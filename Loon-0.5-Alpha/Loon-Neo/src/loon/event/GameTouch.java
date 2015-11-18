@@ -20,6 +20,8 @@
  */
 package loon.event;
 
+import loon.geom.Vector2f;
+
 public class GameTouch {
 
 	int type;
@@ -27,7 +29,7 @@ public class GameTouch {
 	float x, y;
 
 	float dx, dy;
-	
+
 	int button;
 
 	int pointer;
@@ -35,20 +37,20 @@ public class GameTouch {
 	int id;
 
 	GameTouch() {
-		
+
 	}
-	
+
 	public GameTouch(float x, float y, int pointer, int id) {
 		this.set(x, y, pointer, id);
 	}
-	
+
 	public void set(float x, float y, int pointer, int id) {
 		this.x = x;
 		this.y = y;
 		this.pointer = pointer;
 		this.id = id;
 	}
-	
+
 	GameTouch(GameTouch touch) {
 		this.type = touch.type;
 		this.x = touch.x;
@@ -124,9 +126,9 @@ public class GameTouch {
 	public float getDY() {
 		return dy;
 	}
-	
+
 	static boolean isDraging;
-	
+
 	public boolean isDown() {
 		return button == SysTouch.TOUCH_DOWN;
 	}
@@ -141,5 +143,9 @@ public class GameTouch {
 
 	public boolean isDrag() {
 		return isDraging;
+	}
+
+	public Vector2f get() {
+		return new Vector2f(x, y);
 	}
 }
