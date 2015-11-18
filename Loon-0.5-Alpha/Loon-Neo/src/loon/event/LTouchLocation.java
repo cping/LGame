@@ -222,7 +222,7 @@ public class LTouchLocation {
 				+ previousPressure;
 	}
 
-	public LTouchLocation clone() {
+	public LTouchLocation cpy() {
 		LTouchLocation varCopy = new LTouchLocation();
 
 		varCopy.id = this.id;

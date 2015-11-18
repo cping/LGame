@@ -21,6 +21,8 @@
 	<extend-configuration-property name="loon.reflect.include"
 		value="loon.canvas.Image" />
 	<extend-configuration-property name="loon.reflect.include"
+		value="loon.utils.ObjectSet" />
+	<extend-configuration-property name="loon.reflect.include"
 		value="loon.utils.ObjectMap" />
 	<extend-configuration-property name="loon.reflect.include"
 		value="loon.utils.OrderedMap" />

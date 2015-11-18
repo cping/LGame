@@ -23,7 +23,6 @@ package loon.action.map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 import loon.LRelease;
 import loon.LSystem;
@@ -36,6 +35,7 @@ import loon.action.map.heuristics.EuclideanNoSQR;
 import loon.action.map.heuristics.Manhattan;
 import loon.action.map.heuristics.Mixing;
 import loon.geom.Vector2f;
+import loon.utils.TArray;
 
 public class AStarFinder implements Runnable, LRelease {
 
@@ -55,7 +55,7 @@ public class AStarFinder implements Runnable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_SHORT = new DiagonalShort();
 
-	private final static HashMap<Integer, LinkedList<Vector2f>> finderLazy = new HashMap<Integer, LinkedList<Vector2f>>(
+	private final static HashMap<Integer, TArray<Vector2f>> finderLazy = new HashMap<Integer, TArray<Vector2f>>(
 			100);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic,
@@ -83,7 +83,7 @@ public class AStarFinder implements Runnable, LRelease {
 		return hashCode;
 	}
 
-	public static LinkedList<Vector2f> find(AStarFindHeuristic heuristic,
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
 			int[][] maps, int[] limits, int x1, int y1, int x2, int y2,
 			boolean flag) {
 		heuristic = (heuristic == null ? ASTAR_MANHATTAN : heuristic);
@@ -92,7 +92,7 @@ public class AStarFinder implements Runnable, LRelease {
 				finderLazy.clear();
 			}
 			int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, flag);
-			LinkedList<Vector2f> result = finderLazy.get(key);
+			TArray<Vector2f> result = finderLazy.get(key);
 			if (result == null) {
 				AStarFinder astar = new AStarFinder(heuristic);
 				Field2D fieldMap = new Field2D(maps);
@@ -106,35 +106,35 @@ public class AStarFinder implements Runnable, LRelease {
 				astar.close();
 			}
 			if (result != null) {
-				LinkedList<Vector2f> newResult = new LinkedList<Vector2f>();
+				TArray<Vector2f> newResult = new TArray<Vector2f>();
 				newResult.addAll(result);
 				result = newResult;
 			}
 			if(result==null){
-				return new LinkedList<Vector2f>();
+				return new TArray<Vector2f>();
 			}
-			return new LinkedList<Vector2f>(result);
+			return new TArray<Vector2f>(result);
 		}
 	}
 
-	public static LinkedList<Vector2f> find(AStarFindHeuristic heuristic,
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
 			int[][] maps, int x1, int y1, int x2, int y2, boolean flag) {
 		return find(heuristic, maps, x1, y1, x2, y2, flag);
 	}
 
-	public static LinkedList<Vector2f> find(AStarFindHeuristic heuristic,
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
 			Field2D maps, int x1, int y1, int x2, int y2, boolean flag) {
 		return find(heuristic, maps.getMap(), maps.getLimit(), x1, y1, x2, y2,
 				flag);
 	}
 
-	public static LinkedList<Vector2f> find(AStarFindHeuristic heuristic,
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
 			Field2D maps, Vector2f start, Vector2f goal, boolean flag) {
 		return find(heuristic, maps.getMap(), maps.getLimit(), start.x(),
 				start.y(), goal.x(), goal.y(), flag);
 	}
 
-	public static LinkedList<Vector2f> find(AStarFindHeuristic heuristic,
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
 			int[][] maps, Vector2f start, Vector2f goal, boolean flag) {
 		return find(heuristic, maps, start.x(), start.y(), goal.x(), goal.y(),
 				flag);
@@ -142,9 +142,9 @@ public class AStarFinder implements Runnable, LRelease {
 
 	private Vector2f goal;
 
-	private LinkedList<ScoredPath> pathes;
+	private TArray<ScoredPath> pathes;
 
-	private LinkedList<Vector2f> path;
+	private TArray<Vector2f> path;
 
 	private HashSet<Vector2f> visitedCache;
 
@@ -210,16 +210,16 @@ public class AStarFinder implements Runnable, LRelease {
 		return false;
 	}
 
-	public LinkedList<Vector2f> findPath() {
+	public TArray<Vector2f> findPath() {
 		Vector2f start = new Vector2f(startX, startY);
 		Vector2f over = new Vector2f(endX, endY);
 		return calc(field, start, over, flag);
 	}
 
-	private LinkedList<Vector2f> calc(Field2D field, Vector2f start,
+	private TArray<Vector2f> calc(Field2D field, Vector2f start,
 			Vector2f goal, boolean flag) {
 		if (start.equals(goal)) {
-			LinkedList<Vector2f> v = new LinkedList<Vector2f>();
+			TArray<Vector2f> v = new TArray<Vector2f>();
 			v.add(start);
 			return v;
 		}
@@ -230,13 +230,13 @@ public class AStarFinder implements Runnable, LRelease {
 			visitedCache.clear();
 		}
 		if (pathes == null) {
-			pathes = new LinkedList<ScoredPath>();
+			pathes = new TArray<ScoredPath>();
 		} else {
 			pathes.clear();
 		}
 		visitedCache.add(start);
 		if (path == null) {
-			path = new LinkedList<Vector2f>();
+			path = new TArray<Vector2f>();
 		} else {
 			path.clear();
 		}
@@ -261,16 +261,16 @@ public class AStarFinder implements Runnable, LRelease {
 		return this.overflow;
 	}
 
-	private LinkedList<Vector2f> astar(Field2D field, boolean flag) {
-		for (int j = 0; pathes.size() > 0; j++) {
+	private TArray<Vector2f> astar(Field2D field, boolean flag) {
+		for (int j = 0; pathes.size > 0; j++) {
 			if (j > overflow) {
 				pathes.clear();
 				continue;
 			}
-			ScoredPath spath = pathes.remove(0);
-			Vector2f current = spath.path.get(spath.path.size() - 1);
+			ScoredPath spath = pathes.removeIndex(0);
+			Vector2f current = spath.path.get(spath.path.size - 1);
 			if (current.equals(goal)) {
-				return new LinkedList<Vector2f>(spath.path);
+				return new TArray<Vector2f>(spath.path);
 			}
 			ArrayList<Vector2f> list = field.neighbors(current, flag);
 			int size = list.size();
@@ -283,7 +283,7 @@ public class AStarFinder implements Runnable, LRelease {
 				if (!field.isHit(next) && !flying) {
 					continue;
 				}
-				LinkedList<Vector2f> path = new LinkedList<Vector2f>(spath.path);
+				TArray<Vector2f> path = new TArray<Vector2f>(spath.path);
 				path.add(next);
 				float score = spath.score
 						+ findHeuristic
@@ -294,12 +294,12 @@ public class AStarFinder implements Runnable, LRelease {
 		return null;
 	}
 
-	private void insert(float score, LinkedList<Vector2f> path) {
-		int size = pathes.size();
-		for (int i = 0; i < size; i += 1) {
+	private void insert(float score, TArray<Vector2f> path) {
+		int size = pathes.size;
+		for (int i = 0; i < size; i ++) {
 			ScoredPath spath = pathes.get(i);
 			if (spath.score >= score) {
-				pathes.add(i, new ScoredPath(score, path));
+				pathes.add(new ScoredPath(score, path));
 				return;
 			}
 		}
@@ -336,9 +336,9 @@ public class AStarFinder implements Runnable, LRelease {
 
 		private float score;
 
-		private LinkedList<Vector2f> path;
+		private TArray<Vector2f> path;
 
-		ScoredPath(float score, LinkedList<Vector2f> path) {
+		ScoredPath(float score, TArray<Vector2f> path) {
 			this.score = score;
 			this.path = path;
 		}

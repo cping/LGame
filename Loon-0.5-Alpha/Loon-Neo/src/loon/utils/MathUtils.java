@@ -980,9 +980,7 @@ public class MathUtils {
 		if (len > 0) {
 			char firstChar = s.charAt(0);
 			if (firstChar == '-') {
-				throw new RuntimeException(String.format(
-						"Illegal leading minus sign "
-								+ "on unsigned string %s.", s));
+				throw new RuntimeException("on unsigned string %s.");
 			} else {
 				if (len <= 5 || (radix == 10 && len <= 9)) {
 					return Integer.parseInt(s, radix);
@@ -991,9 +989,7 @@ public class MathUtils {
 					if ((ell & 0xffff_ffff_0000_0000L) == 0) {
 						return (int) ell;
 					} else {
-						throw new RuntimeException(String.format(
-								"String value %s exceeds "
-										+ "range of unsigned int.", s));
+						throw new RuntimeException("range of unsigned int.");
 					}
 				}
 			}

@@ -22,16 +22,17 @@
 package loon.utils.processes;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import loon.LRelease;
+import loon.utils.LIterator;
+import loon.utils.SortedList;
 import loon.utils.timer.LTimerContext;
 
 public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 
 	private static RealtimeProcessManager instance;
 
-	private LinkedList<GameProcess> processes;
+	private SortedList<GameProcess> processes;
 
 	public static RealtimeProcessManager get() {
 		synchronized (RealtimeProcessManager.class) {
@@ -43,7 +44,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	}
 
 	private RealtimeProcessManager() {
-		this.processes = new LinkedList<GameProcess>();
+		this.processes = new SortedList<GameProcess>();
 	}
 
 	public static RealtimeProcessManager newProcess() {
@@ -58,18 +59,22 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 
 	public void tick(LTimerContext time) {
 		if (processes.size() > 0) {
-			LinkedList<GameProcess> toBeUpdated;
+			SortedList<GameProcess> toBeUpdated;
 			synchronized (this.processes) {
-				toBeUpdated = new LinkedList<GameProcess>(this.processes);
+				toBeUpdated = new SortedList<GameProcess>(this.processes);
 			}
-			LinkedList<GameProcess> deadProcesses = new LinkedList<GameProcess>();
-			for (GameProcess realtimeProcess : toBeUpdated) {
+			SortedList<GameProcess> deadProcesses = new SortedList<GameProcess>();
+			for (LIterator<GameProcess> it = toBeUpdated.listIterator(); it
+					.hasNext();) {
+				GameProcess realtimeProcess = it.next();
 				realtimeProcess.tick(time);
 				if (realtimeProcess.isDead()) {
 					deadProcesses.add(realtimeProcess);
 				}
 			}
-			for (GameProcess realtimeProcess : deadProcesses) {
+			for (LIterator<GameProcess> it = deadProcesses.listIterator(); it
+					.hasNext();) {
+				GameProcess realtimeProcess = it.next();
 				realtimeProcess.finish();
 			}
 			synchronized (this.processes) {
@@ -81,8 +86,9 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	public GameProcess find(String id) {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
-				for (GameProcess p : ps) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it
+						.hasNext();) {
+					GameProcess p = it.next();
 					if (p.getId() == id || p.getId().equals(id)) {
 						return p;
 					}
@@ -95,8 +101,9 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	public void delete(String id) {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
-				for (GameProcess p : ps) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it
+						.hasNext();) {
+					GameProcess p = it.next();
 					if (p.getId() == id || p.getId().equals(id)) {
 						p.kill();
 						processes.remove(p);
@@ -109,7 +116,12 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	public void deleteIndex(String id) {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
+				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(
+						processes.size());
+				for (LIterator<GameProcess> it = processes.listIterator(); it
+						.hasNext();) {
+					ps.add(it.next());
+				}
 				for (GameProcess p : ps) {
 					if (p.getId() == id || p.getId().indexOf(id) != -1) {
 						p.kill();
@@ -124,8 +136,9 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 	public void close() {
 		if (processes != null && processes.size() > 0) {
 			synchronized (this.processes) {
-				ArrayList<GameProcess> ps = new ArrayList<GameProcess>(processes);
-				for (GameProcess p : ps) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it
+						.hasNext();) {
+					GameProcess p = it.next();
 					p.finish();
 				}
 				processes.clear();

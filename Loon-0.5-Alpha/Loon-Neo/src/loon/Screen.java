@@ -21,7 +21,8 @@
 package loon;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+
+
 
 import loon.action.collision.GravityHandler;
 import loon.action.sprite.ISprite;
@@ -47,6 +48,7 @@ import loon.stage.RootPlayer;
 import loon.stage.Stage;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
+import loon.utils.Array;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
@@ -753,7 +755,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 
 	 * @return
 	 */
-	public LinkedList<Screen> getScreens() {
+	public Array<Screen> getScreens() {
 		if (handler != null) {
 			return handler.getScreens();
 		}

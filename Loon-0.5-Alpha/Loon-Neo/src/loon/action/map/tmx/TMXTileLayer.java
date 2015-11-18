@@ -1,14 +1,16 @@
 package loon.action.map.tmx;
 
-import java.nio.IntBuffer;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
-import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.map.TileMapConfig;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.utils.Base64Coder;
-import loon.utils.CompressionUtils;
 import loon.utils.MathUtils;
 import loon.utils.xml.XMLElement;
 
@@ -88,7 +90,11 @@ public class TMXTileLayer extends TMXMapLayer {
 			break;
 
 		case BASE64:
-			parseBase64(dataElement.getContents());
+			try {
+				parseBase64(dataElement.getContents());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 
 		case CSV:
@@ -117,29 +123,38 @@ public class TMXTileLayer extends TMXMapLayer {
 		}
 	}
 
-	private void parseBase64(String base64) {
-		char[] enc = base64.trim().toCharArray();
-		byte[] dec = Base64Coder.decodeBase64(enc);
-		try {
-			if (compression == Compression.GZIP) {
-				dec = CompressionUtils.decompressGZIP(dec);
-			} else
+	private static int byteToInt(byte b) {
+		return b & 0xFF;
+	}
 
-			if (compression == Compression.ZLIB) {
-				dec = CompressionUtils.decompressZLIB(dec);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+	private void parseBase64(String base64) throws Exception {
+		byte[] bytes = Base64Coder.decodeBase64(base64.toCharArray());
+		InputStream is = null;
+		if (compression == null || compression == Compression.NONE) {
+			is = new ByteArrayInputStream(bytes);
+		} else if (compression == Compression.GZIP) {
+			is = new BufferedInputStream(new GZIPInputStream(
+					new ByteArrayInputStream(bytes), bytes.length));
+		} else if (compression == Compression.ZLIB) {
+			is = new BufferedInputStream(new InflaterInputStream(
+					new ByteArrayInputStream(bytes)));
 		}
-
-		IntBuffer intBuffer = LSystem.base().support().getByteBuffer(dec)
-				.asIntBuffer();
-		int[] out = new int[intBuffer.remaining()];
-		intBuffer.get(out);
-
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				int gid = out[y * width + x];
+		byte[] temp = new byte[4];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int read = is.read(temp);
+				while (read < temp.length) {
+					int curr = is.read(temp, read, temp.length - read);
+					if (curr == -1)
+						break;
+					read += curr;
+				}
+				if (read != temp.length) {
+					throw new RuntimeException(
+							"Error Reading TMX Layer Data: Premature end of tile data");
+				}
+				int gid = byteToInt(temp[0]) | byteToInt(temp[1]) << 8
+						| byteToInt(temp[2]) << 16 | byteToInt(temp[3]) << 24;
 
 				int tileSetIndex = map.findTileSetIndex(gid);
 

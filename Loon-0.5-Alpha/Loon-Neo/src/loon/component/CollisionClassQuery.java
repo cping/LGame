@@ -21,7 +21,6 @@
  */
 package loon.component;
 
-
 public class CollisionClassQuery implements CollisionQuery {
 
 	private String flag;

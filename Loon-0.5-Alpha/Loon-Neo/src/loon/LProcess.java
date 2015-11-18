@@ -21,7 +21,8 @@
 package loon;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+
+
 
 import loon.LGame.Status;
 import loon.canvas.LColor;
@@ -39,6 +40,7 @@ import loon.stage.PlayerUtils;
 import loon.stage.RootPlayer;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
+import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -57,7 +59,7 @@ public class LProcess extends PlayerUtils {
 
 	private EmulatorButtons emulatorButtons;
 
-	private final LinkedList<Screen> screens;
+	private final Array<Screen> screens;
 
 	private boolean isInstance;
 
@@ -83,7 +85,7 @@ public class LProcess extends PlayerUtils {
 		super();
 		this.game = game;
 		this.currentInput = new SysInputFactory(this);
-		this.screens = new LinkedList<Screen>();
+		this.screens = new Array<Screen>();
 		this.clear();
 		InputMake input = game.input();
 		if (input != null) {
@@ -660,7 +662,7 @@ public class LProcess extends PlayerUtils {
 	public void runFirstScreen() {
 		int size = screens.size();
 		if (size > 0) {
-			Object o = screens.getFirst();
+			Object o = screens.first();
 			if (o != currentScreen) {
 				setScreen((Screen) o, false);
 			}
@@ -670,7 +672,7 @@ public class LProcess extends PlayerUtils {
 	public void runLastScreen() {
 		int size = screens.size();
 		if (size > 0) {
-			Object o = screens.getLast();
+			Object o = screens.last();
 			if (o != currentScreen) {
 				setScreen((Screen) o, false);
 			}
@@ -722,7 +724,7 @@ public class LProcess extends PlayerUtils {
 		screens.add(screen);
 	}
 
-	public LinkedList<Screen> getScreens() {
+	public Array<Screen> getScreens() {
 		return screens;
 	}
 

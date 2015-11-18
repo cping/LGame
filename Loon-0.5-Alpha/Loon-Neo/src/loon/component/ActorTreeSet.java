@@ -21,27 +21,17 @@
  */
 package loon.component;
 
-import java.util.AbstractSet;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import loon.utils.CollectionUtils;
+import loon.utils.LIterator;
+import loon.utils.SortedList;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public class ActorTreeSet extends AbstractSet {
-
-	private static final Comparator DEFAULT_COMPARATOR = new Comparator() {
-		@Override
-		public int compare(Object o1, Object o2) {
-			return 0;
-		}
-	};
+public class ActorTreeSet {
 
 	boolean isDirty;
 
-	private LinkedList subSets = new LinkedList();
+	private SortedList<ActorSet> subSets = new SortedList<ActorSet>();
 
 	private ActorSet generalSet = new ActorSet();
 
@@ -52,19 +42,27 @@ public class ActorTreeSet extends AbstractSet {
 		this.iterator = new ActorTreeSet.TasIterator();
 	}
 
-	@Override
-	public Iterator iterator() {
+	public void clear() {
+		if (subSets != null) {
+			subSets.clear();
+		}
+		if (generalSet != null) {
+			generalSet.clear();
+		}
+	}
+
+	public LIterator<Actor> iterator() {
 		iterator.reset();
 		return iterator;
 	}
 
-	public Iterator newIterator() {
+	public LIterator<Actor> newIterator() {
 		return new ActorTreeSet.TasIterator();
 	}
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y) {
-		for (Iterator it = newIterator(); it.hasNext();) {
-			Actor a = (Actor) it.next();
+		for (LIterator<Actor> it = newIterator(); it.hasNext();) {
+			Actor a = it.next();
 			if (a.getRectBox().contains(x, y)) {
 				return a;
 			}
@@ -73,7 +71,7 @@ public class ActorTreeSet extends AbstractSet {
 	}
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y, Object tag) {
-		for (Iterator it = newIterator(); it.hasNext();) {
+		for (LIterator<Actor> it = newIterator(); it.hasNext();) {
 			Actor a = (Actor) it.next();
 			if (a.getRectBox().contains(x, y) && a.getTag() == tag) {
 				return a;
@@ -83,7 +81,7 @@ public class ActorTreeSet extends AbstractSet {
 	}
 
 	public Actor getSynchronizedObject(float x, float y) {
-		Iterator<Actor> iter = newIterator();
+		LIterator<Actor> iter = newIterator();
 		Actor tmp = iter.next();
 		if (tmp == null) {
 			return null;
@@ -111,10 +109,9 @@ public class ActorTreeSet extends AbstractSet {
 		return tmp;
 	}
 
-	@Override
 	public int size() {
 		int size = 0;
-		for (Iterator i = this.subSets.iterator(); i.hasNext(); size += ((ActorSet) i
+		for (LIterator<ActorSet> i = this.subSets.listIterator(); i.hasNext(); size += (i
 				.next()).size()) {
 		}
 		return size;
@@ -143,7 +140,7 @@ public class ActorTreeSet extends AbstractSet {
 	public void sendToFront(Actor actor) {
 		if (generalSet != null) {
 			synchronized (generalSet) {
-				Actor[] o = generalSet.toArray(new Actor[0]);
+				Actor[] o = generalSet.toArray();
 				int size = o.length;
 				if (o == null || size <= 0) {
 					return;
@@ -153,10 +150,10 @@ public class ActorTreeSet extends AbstractSet {
 				}
 				for (int i = 0; i < size; i++) {
 					if (o[i] == actor) {
-						o =  CollectionUtils.cut(o, i);
-						o =  CollectionUtils.expand(o, 1, true);
+						o = CollectionUtils.cut(o, i);
+						o = CollectionUtils.expand(o, 1, true);
 						o[size - 1] = actor;
-						Arrays.sort(o, DEFAULT_COMPARATOR);
+						Arrays.sort(o);
 						break;
 					}
 				}
@@ -169,7 +166,7 @@ public class ActorTreeSet extends AbstractSet {
 	public void sendToBack(Actor actor) {
 		if (generalSet != null) {
 			synchronized (generalSet) {
-				Actor[] o = generalSet.toArray(new Actor[0]);
+				Actor[] o = generalSet.toArray();
 				int size = o.length;
 				if (o == null || size <= 0) {
 					return;
@@ -182,7 +179,7 @@ public class ActorTreeSet extends AbstractSet {
 						o = CollectionUtils.cut(o, i);
 						o = CollectionUtils.expand(o, 1, false);
 						o[0] = actor;
-						Arrays.sort(o, DEFAULT_COMPARATOR);
+						Arrays.sort(o);
 						break;
 					}
 				}
@@ -192,22 +189,22 @@ public class ActorTreeSet extends AbstractSet {
 		}
 	}
 
-	class TasIterator implements Iterator {
+	class TasIterator implements LIterator<Actor> {
 
-		private Iterator setIterator;
+		private LIterator<ActorSet> setIterator;
 
 		private ActorSet currentSet;
 
-		private Iterator actorIterator;
+		private LIterator<Actor> actorIterator;
 
 		public TasIterator() {
 			reset();
 		}
 
 		public void reset() {
-			this.setIterator = ActorTreeSet.this.subSets.iterator();
+			this.setIterator = ActorTreeSet.this.subSets.listIterator();
 			for (this.currentSet = (ActorSet) this.setIterator.next(); this.currentSet
-					.isEmpty() && this.setIterator.hasNext(); this.currentSet = (ActorSet) this.setIterator
+					.size() == 0 && this.setIterator.hasNext(); this.currentSet = (ActorSet) this.setIterator
 					.next()) {
 			}
 			this.actorIterator = this.currentSet.iterator();
@@ -219,7 +216,7 @@ public class ActorTreeSet extends AbstractSet {
 		}
 
 		@Override
-		public Object next() {
+		public Actor next() {
 			return this.actorIterator.next();
 		}
 
@@ -232,7 +229,7 @@ public class ActorTreeSet extends AbstractSet {
 			} else {
 				while (this.setIterator.hasNext()) {
 					this.currentSet = (ActorSet) this.setIterator.next();
-					if (!this.currentSet.isEmpty()) {
+					if (this.currentSet.size() != 0) {
 						break;
 					}
 				}

@@ -1,11 +1,10 @@
 package loon.action.map;
 
-import java.util.LinkedList;
-
 import loon.geom.Vector2f;
+import loon.utils.TArray;
 
 public interface AStarFinderListener {
 
-	void pathFound(LinkedList<Vector2f> path);
+	void pathFound(TArray<Vector2f> path);
 
 }

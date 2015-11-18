@@ -226,11 +226,11 @@ public class SpriteBatch extends PixmapFImpl {
 	public void setAlpha(float alpha) {
 		this.alpha = alpha;
 		int intBits = NumberUtils.floatToRawIntBits(color);
-		int r = (intBits & 0xff);
-		int g = ((intBits >>> 8) & 0xff);
-		int b = ((intBits >>> 16) & 0xff);
-		int a = (int) (alpha * 255);
-		color = LColor.toFloatBits(r, g, b, a);
+		float r = (intBits & 0xff)/ 255f;
+		float g = ((intBits >>> 8) & 0xff)/ 255f;
+		float b = ((intBits >>> 16) & 0xff)/ 255f;
+		float a = (int) (alpha * 255)/ 255f;
+		color =  LColor.toFloatBits(r, g, b, a);
 	}
 
 	public float alpha() {

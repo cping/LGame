@@ -24,7 +24,6 @@ package loon.component;
 import java.util.Iterator;
 import java.util.List;
 
-@SuppressWarnings({ "rawtypes" })
 public interface CollisionChecker{
 
 	void initialize(int cellSize);
@@ -39,25 +38,25 @@ public interface CollisionChecker{
 
 	void updateObjectSize(Actor actor);
 
-	List getObjectsAt(float x, float y, String flag);
+	List<Actor> getObjectsAt(float x, float y, String flag);
 
-	List getIntersectingObjects(Actor actor, String flag);
+	List<Actor> getIntersectingObjects(Actor actor, String flag);
 
-	List getObjectsInRange(float x, float y, float r, String flag);
+	List<Actor> getObjectsInRange(float x, float y, float r, String flag);
 
-	List getNeighbours(Actor actor, float distance, boolean d, String flag);
+	List<Actor> getNeighbours(Actor actor, float distance, boolean d, String flag);
 
-	List getObjects(String actor);
+	List<Actor> getObjects(String actor);
 
-	List getObjectsList();
+	List<Actor> getObjectsList();
 
 	Actor getOnlyObjectAt(Actor actor, float x, float y, String flag);
 
 	Actor getOnlyIntersectingObject(Actor actor, String flag);
 
-	Iterator getActorsIterator();
+	Iterator<Actor> getActorsIterator();
 
-	List getActorsList();
+	List<Actor> getActorsList();
 	
 	void dispose();
 }

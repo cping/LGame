@@ -20,7 +20,6 @@
  */
 package loon.action.sprite;
 
-import java.util.LinkedList;
 
 import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
@@ -30,6 +29,7 @@ import loon.action.map.TileMap;
 import loon.event.GameTouch;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
+import loon.utils.TArray;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
@@ -38,7 +38,7 @@ public class MoveObject extends SpriteBatchObject {
 
 	private boolean allDirection;
 
-	private LinkedList<Vector2f> findPath = new LinkedList<Vector2f>();
+	private TArray<Vector2f> findPath = new TArray<Vector2f>();
 
 	private int startX, startY, endX, endY, moveX, moveY;
 
@@ -340,7 +340,7 @@ public class MoveObject extends SpriteBatchObject {
 			synchronized (findPath) {
 				if (endX == startX && endY == startY) {
 					if (findPath != null) {
-						if (findPath.size() > 1) {
+						if (findPath.size > 1) {
 							Vector2f moveStart = findPath.get(0);
 							Vector2f moveEnd = findPath.get(1);
 							startX = tiles.tilesToPixelsX(moveStart.x());
@@ -350,7 +350,7 @@ public class MoveObject extends SpriteBatchObject {
 							moveX = moveEnd.x() - moveStart.x();
 							moveY = moveEnd.y() - moveStart.y();
 							direction = Field2D.getDirection(moveX, moveY);
-							findPath.remove(0);
+							findPath.removeIndex(0);
 						} else {
 							findPath.clear();
 						}
@@ -467,7 +467,7 @@ public class MoveObject extends SpriteBatchObject {
 	}
 
 	public boolean isComplete() {
-		return findPath == null || findPath.size() == 0 || isComplete;
+		return findPath == null || findPath.size == 0 || isComplete;
 	}
 
 	public void setComplete(boolean c) {

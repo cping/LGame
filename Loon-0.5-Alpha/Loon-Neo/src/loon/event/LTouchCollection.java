@@ -20,22 +20,18 @@
  */
 package loon.event;
 
-import java.util.Collection;
-
 import loon.geom.Vector2f;
+import loon.utils.LIterator;
 import loon.utils.RefObject;
+import loon.utils.SortedList;
 
-public class LTouchCollection extends java.util.LinkedList<LTouchLocation> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class LTouchCollection extends SortedList<LTouchLocation> {
 
 	private boolean isConnected;
 
 	public boolean AnyTouch() {
-		for (LTouchLocation location : this) {
+		for (LIterator<LTouchLocation> it = listIterator(); it.hasNext();) {
+			LTouchLocation location = it.next();
 			if ((location.getState() == LTouchLocationState.Pressed)
 					|| (location.getState() == LTouchLocationState.Dragged)) {
 				return true;
@@ -55,7 +51,7 @@ public class LTouchCollection extends java.util.LinkedList<LTouchLocation> {
 	public LTouchCollection() {
 	}
 
-	public LTouchCollection(Collection<LTouchLocation> locations) {
+	public LTouchCollection(SortedList<LTouchLocation> locations) {
 		super(locations);
 	}
 
@@ -66,11 +62,11 @@ public class LTouchCollection extends java.util.LinkedList<LTouchLocation> {
 			case Pressed:
 				t.setState(LTouchLocationState.Dragged);
 				t.setPrevPosition(t.getPosition());
-				this.set(i, t.clone());
+				this.set(i, t.cpy());
 				break;
 			case Dragged:
 				t.setPrevState(LTouchLocationState.Dragged);
-				this.set(i, t.clone());
+				this.set(i, t.cpy());
 				break;
 			case Released:
 			case Invalid:

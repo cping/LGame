@@ -21,19 +21,19 @@
 package loon.action;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
 import loon.geom.Vector2f;
+import loon.utils.TArray;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
 public class MoveTo extends ActionEvent {
 
-	private final static HashMap<Integer, LinkedList<Vector2f>> pathCache = new HashMap<Integer, LinkedList<Vector2f>>(
+	private final static HashMap<Integer, TArray<Vector2f>> pathCache = new HashMap<Integer, TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	private Vector2f startLocation, endLocation;
@@ -42,7 +42,7 @@ public class MoveTo extends ActionEvent {
 
 	private boolean flag, useCache, synchroLayerField;
 
-	private LinkedList<Vector2f> pActorPath;
+	private TArray<Vector2f> pActorPath;
 
 	private int startX, startY, endX, endY, moveX, moveY;
 
@@ -121,7 +121,7 @@ public class MoveTo extends ActionEvent {
 						pathCache.clear();
 					}
 					int key = hashCode();
-					LinkedList<Vector2f> final_path = pathCache.get(key);
+					TArray<Vector2f> final_path = pathCache.get(key);
 					if (final_path == null) {
 						final_path = AStarFinder
 								.find(heuristic,
@@ -136,7 +136,7 @@ public class MoveTo extends ActionEvent {
 												.y()), flag);
 						pathCache.put(key, final_path);
 					}
-					pActorPath = new LinkedList<Vector2f>();
+					pActorPath = new TArray<Vector2f>();
 					pActorPath.addAll(final_path);
 				}
 			} else {
@@ -196,7 +196,7 @@ public class MoveTo extends ActionEvent {
 		startLocation.set(target.getX(), target.getY());
 	}
 
-	public LinkedList<Vector2f> getPath() {
+	public TArray<Vector2f> getPath() {
 		return pActorPath;
 	}
 
@@ -228,7 +228,7 @@ public class MoveTo extends ActionEvent {
 				}
 			}
 			if (endX == startX && endY == startY) {
-				if (pActorPath.size() > 1) {
+				if (pActorPath.size > 1) {
 					Vector2f moveStart = pActorPath.get(0);
 					Vector2f moveEnd = pActorPath.get(1);
 					startX = layerMap.tilesToWidthPixels(moveStart.x());
@@ -242,7 +242,7 @@ public class MoveTo extends ActionEvent {
 								direction);
 					}
 				}
-				pActorPath.remove(0);
+				pActorPath.removeIndex(0);
 			}
 			switch (direction) {
 			case Field2D.TUP:
@@ -319,7 +319,7 @@ public class MoveTo extends ActionEvent {
 	public Vector2f nextPos() {
 		if (pActorPath != null) {
 			synchronized (pActorPath) {
-				int size = pActorPath.size();
+				int size = pActorPath.size;
 				if (size > 0) {
 					pLocation.set(endX, endY);
 				} else {
@@ -342,7 +342,7 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return pActorPath == null || pActorPath.size() == 0 || isComplete
+		return pActorPath == null || pActorPath.size == 0 || isComplete
 				|| original == null;
 	}
 

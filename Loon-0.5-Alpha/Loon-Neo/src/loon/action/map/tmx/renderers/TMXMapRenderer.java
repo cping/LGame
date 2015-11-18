@@ -249,7 +249,7 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 
 	@Override
 	public boolean isBounded() {
-		return true;
+		return false;
 	}
 
 	@Override

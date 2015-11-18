@@ -20,11 +20,9 @@
  */
 package loon.action.map;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import loon.utils.CollectionUtils;
+import loon.utils.SortedList;
+import loon.utils.TArray;
 
 public class ArrayInt2DAStar {
 
@@ -35,6 +33,7 @@ public class ArrayInt2DAStar {
 	}
 
 	public static interface Map {
+		
 		public int[][] adjacent(int[] position);
 
 		public boolean reachable(int[] position);
@@ -65,17 +64,15 @@ public class ArrayInt2DAStar {
 			int result = this.f - another.f;
 			if (result == 0) {
 				result = this.h - another.h;
-				;
 			}
 			return result;
 		}
 	}
 
-	protected static class NodeList extends ArrayList<Node> {
-		private static final long serialVersionUID = 1L;
+	protected static class NodeList extends TArray<Node> {
 
 		public Node find(int[] position) {
-			for (int i = size() - 1; i >= 0; i--) {
+			for (int i = size - 1; i >= 0; i--) {
 				Node node = get(i);
 				if (node.equals(position)) {
 					return node;
@@ -85,18 +82,18 @@ public class ArrayInt2DAStar {
 		}
 
 		public void insert(Node node) {
-			for (int i = size(); i > 0; i--) {
+			for (int i = size; i > 0; i--) {
 				Node n = get(i - 1);
 				if (node.compareTo(n) >= 0) {
-					add(i, node);
+					insert(i, node);
 					return;
 				}
 			}
-			add(0, node);
+			insert(0, node);
 		}
 
 		public void sort(Node node) {
-			for (int i = size() - 1; i >= 0; i--) {
+			for (int i = size - 1; i >= 0; i--) {
 				Node n = get(i);
 				if (n == node) {
 					for (; i > 0; i--) {
@@ -114,7 +111,7 @@ public class ArrayInt2DAStar {
 	}
 
 	public static class Path {
-		public List<int[]> positions;
+		public SortedList<int[]> positions;
 		public int cost;
 	}
 
@@ -129,10 +126,10 @@ public class ArrayInt2DAStar {
 		openNodes.add(new Node(start));
 		Node found = null;
 		for (;;) {
-			if (openNodes.isEmpty()) {
+			if (openNodes.size == 0) {
 				return null;
 			}
-			Node node = openNodes.remove(0);
+			Node node = openNodes.removeIndex(0);
 			int distance = map.distance(node.position, end);
 			if (distance <= endRadius) {
 				found = node;
@@ -172,7 +169,7 @@ public class ArrayInt2DAStar {
 		}
 		Path path = new Path();
 		path.cost = found.g;
-		LinkedList<int[]> positions = new LinkedList<int[]>();
+		SortedList<int[]> positions = new SortedList<int[]>();
 		while (found != null) {
 			positions.addFirst(found.position.clone());
 			found = found.parent;

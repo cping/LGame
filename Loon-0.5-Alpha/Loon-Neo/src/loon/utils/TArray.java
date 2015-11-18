@@ -1,10 +1,6 @@
 package loon.utils;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import loon.utils.reflect.ArrayReflection;
-
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class TArray<T> {
@@ -225,6 +221,10 @@ public class TArray<T> {
 		size -= count;
 	}
 
+	public boolean removeAll(TArray<? extends T> array) {
+		return removeAll(array);
+	}
+
 	public boolean removeAll(TArray<? extends T> array, boolean identity) {
 		int size = this.size;
 		int startSize = size;
@@ -300,7 +300,8 @@ public class TArray<T> {
 		T[] items = this.items;
 		T[] newItems = (T[]) ArrayReflection.newInstance(items.getClass()
 				.getComponentType(), newSize);
-		System.arraycopy(items, 0, newItems, 0, MathUtils.min(size, newItems.length));
+		System.arraycopy(items, 0, newItems, 0,
+				MathUtils.min(size, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}
@@ -385,8 +386,9 @@ public class TArray<T> {
 	}
 
 	public String toString(String separator) {
-		if (size == 0)
+		if (size == 0) {
 			return "";
+		}
 		T[] items = this.items;
 		StringBuilder buffer = new StringBuilder(32);
 		buffer.append(items[0]);
@@ -410,82 +412,4 @@ public class TArray<T> {
 		return new TArray(array);
 	}
 
-	static public class ArrayIterator<T> implements Iterator<T>, Iterable<T> {
-		private final TArray<T> array;
-		private final boolean allowRemove;
-		int index;
-		boolean valid = true;
-
-		public ArrayIterator(TArray<T> array) {
-			this(array, true);
-		}
-
-		public ArrayIterator(TArray<T> array, boolean allowRemove) {
-			this.array = array;
-			this.allowRemove = allowRemove;
-		}
-
-		public boolean hasNext() {
-			if (!valid) {
-				throw new RuntimeException("#iterator() cannot be used nested.");
-			}
-			return index < array.size;
-		}
-
-		public T next() {
-			if (index >= array.size)
-				throw new NoSuchElementException(String.valueOf(index));
-			if (!valid) {
-				throw new RuntimeException("#iterator() cannot be used nested.");
-			}
-			return array.items[index++];
-		}
-
-		public void remove() {
-			if (!allowRemove)
-				throw new RuntimeException("Remove not allowed.");
-			index--;
-			array.removeIndex(index);
-		}
-
-		public void reset() {
-			index = 0;
-		}
-
-		public Iterator<T> iterator() {
-			return this;
-		}
-	}
-
-	static public class ArrayIterable<T> implements Iterable<T> {
-		private final TArray<T> array;
-		private final boolean allowRemove;
-		private ArrayIterator iterator1, iterator2;
-
-		public ArrayIterable(TArray<T> array) {
-			this(array, true);
-		}
-
-		public ArrayIterable(TArray<T> array, boolean allowRemove) {
-			this.array = array;
-			this.allowRemove = allowRemove;
-		}
-
-		public Iterator<T> iterator() {
-			if (iterator1 == null) {
-				iterator1 = new ArrayIterator(array, allowRemove);
-				iterator2 = new ArrayIterator(array, allowRemove);
-			}
-			if (!iterator1.valid) {
-				iterator1.index = 0;
-				iterator1.valid = true;
-				iterator2.valid = false;
-				return iterator1;
-			}
-			iterator2.index = 0;
-			iterator2.valid = true;
-			iterator1.valid = false;
-			return iterator2;
-		}
-	}
 }

@@ -3,7 +3,7 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings("unchecked") 
 public class ObjectSet<T> implements Iterable<T> {
 
 	private static final int PRIME2 = 0xb4b82e39;
@@ -19,7 +19,7 @@ public class ObjectSet<T> implements Iterable<T> {
 	private int stashCapacity;
 	private int pushIterations;
 
-	private ObjectSetIterator iterator1, iterator2;
+	private ObjectSetIterator<T> iterator1, iterator2;
 
 	public ObjectSet() {
 		this(32, 0.8f);
@@ -46,14 +46,15 @@ public class ObjectSet<T> implements Iterable<T> {
 		threshold = (int) (capacity * loadFactor);
 		mask = capacity - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
+		stashCapacity = MathUtils.max(3,
+				(int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(capacity, 8),
 				(int) MathUtils.sqrt(capacity) / 8);
 
 		keyTable = (T[]) new Object[capacity + stashCapacity];
 	}
 
-	public ObjectSet(ObjectSet set) {
+	public ObjectSet(ObjectSet<T> set) {
 		this(set.capacity, set.loadFactor);
 		stashSize = set.stashSize;
 		System.arraycopy(set.keyTable, 0, keyTable, 0, set.keyTable.length);
@@ -137,6 +138,12 @@ public class ObjectSet<T> implements Iterable<T> {
 		ensureCapacity(set.size);
 		for (T key : set)
 			add(key);
+	}
+
+	public void addAll(SortedList<T> list) {
+		ensureCapacity(list.size);
+		for (LIterator<T> it = list.listIterator(); it.hasNext();)
+			add(it.next());
 	}
 
 	private void addResize(T key) {
@@ -362,9 +369,10 @@ public class ObjectSet<T> implements Iterable<T> {
 		threshold = (int) (newSize * loadFactor);
 		mask = newSize - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
+		stashCapacity = MathUtils.max(3,
+				MathUtils.ceil(MathUtils.log(newSize)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(newSize, 8),
-				(int) MathUtils.sqrt(newSize) / 8);
+				MathUtils.sqrt(newSize) / 8);
 
 		T[] oldKeyTable = keyTable;
 
@@ -421,8 +429,8 @@ public class ObjectSet<T> implements Iterable<T> {
 
 	public ObjectSetIterator<T> iterator() {
 		if (iterator1 == null) {
-			iterator1 = new ObjectSetIterator(this);
-			iterator2 = new ObjectSetIterator(this);
+			iterator1 = new ObjectSetIterator<T>(this);
+			iterator2 = new ObjectSetIterator<T>(this);
 		}
 		if (!iterator1.valid) {
 			iterator1.reset();
@@ -437,7 +445,7 @@ public class ObjectSet<T> implements Iterable<T> {
 	}
 
 	static public <T> ObjectSet<T> with(T... array) {
-		ObjectSet set = new ObjectSet();
+		ObjectSet<T> set = new ObjectSet<T>();
 		set.addAll(array);
 		return set;
 	}
@@ -515,7 +523,7 @@ public class ObjectSet<T> implements Iterable<T> {
 		}
 
 		public TArray<K> toArray() {
-			return toArray(new TArray(true, set.size));
+			return toArray(new TArray<K>(true, set.size));
 		}
 	}
 }

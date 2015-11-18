@@ -20,10 +20,10 @@
  */
 package loon.action.map;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import loon.geom.Vector2f;
+import loon.utils.LIterator;
+import loon.utils.SortedList;
+import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -94,10 +94,10 @@ public class AStarFinderPool {
 		search(heuristic, startx, starty, endx, endy, flying, false, callback);
 	}
 
-	public LinkedList<Vector2f> search(AStarFindHeuristic heuristic,
+	public TArray<Vector2f> search(AStarFindHeuristic heuristic,
 			int startX, int startY, int endX, int endY, boolean flying,
 			boolean flag) {
-		LinkedList<Vector2f> result = null;
+		TArray<Vector2f> result = null;
 		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
 				endX, endY, flying, flag);
 		result = astar.findPath();
@@ -105,9 +105,9 @@ public class AStarFinderPool {
 		return result;
 	}
 
-	public LinkedList<Vector2f> search(AStarFindHeuristic heuristic,
+	public TArray<Vector2f> search(AStarFindHeuristic heuristic,
 			int startX, int startY, int endX, int endY, boolean flying) {
-		LinkedList<Vector2f> result = null;
+		TArray<Vector2f> result = null;
 		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
 				endX, endY, flying, false);
 		result = astar.findPath();
@@ -117,10 +117,10 @@ public class AStarFinderPool {
 
 	class TaskQueue {
 
-		private LinkedList<AStarFinder> queue = new LinkedList<AStarFinder>();
+		private SortedList<AStarFinder> queue = new SortedList<AStarFinder>();
 
 		public synchronized AStarFinder contains(AStarFinder element) {
-			for (Iterator<AStarFinder> it = queue.iterator(); it.hasNext();) {
+			for (LIterator<AStarFinder> it = queue.listIterator(); it.hasNext();) {
 				AStarFinder af = it.next();
 				if (af.equals(element)) {
 					return af;

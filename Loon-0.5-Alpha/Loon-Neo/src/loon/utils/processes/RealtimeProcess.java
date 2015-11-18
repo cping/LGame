@@ -21,9 +21,9 @@
  */
 package loon.utils.processes;
 
-import java.util.LinkedList;
-
 import loon.LSystem;
+import loon.utils.LIterator;
+import loon.utils.SortedList;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -37,7 +37,7 @@ public abstract class RealtimeProcess implements GameProcess {
 
 	private RealtimeProcessHost processHost;
 
-	private LinkedList<RealtimeProcess> processesToFireWhenFinished;
+	private SortedList<RealtimeProcess> processesToFireWhenFinished;
 
 	public RealtimeProcess() {
 		this("Process" + System.currentTimeMillis());
@@ -54,7 +54,7 @@ public abstract class RealtimeProcess implements GameProcess {
 
 	public void fireThisWhenFinished(RealtimeProcess realtimeProcess) {
 		if (this.processesToFireWhenFinished == null) {
-			this.processesToFireWhenFinished = new LinkedList<RealtimeProcess>();
+			this.processesToFireWhenFinished = new SortedList<RealtimeProcess>();
 		}
 		this.processesToFireWhenFinished.add(realtimeProcess);
 	}
@@ -116,8 +116,9 @@ public abstract class RealtimeProcess implements GameProcess {
 			kill();
 		}
 		if (this.processesToFireWhenFinished != null) {
-			for (RealtimeProcess realtimeProcess : this.processesToFireWhenFinished) {
-				RealtimeProcessManager.get().addProcess(realtimeProcess);
+			for (LIterator<RealtimeProcess> it = this.processesToFireWhenFinished
+					.listIterator(); it.hasNext();) {
+				RealtimeProcessManager.get().addProcess(it.next());
 			}
 		}
 		if (this.processHost != null) {

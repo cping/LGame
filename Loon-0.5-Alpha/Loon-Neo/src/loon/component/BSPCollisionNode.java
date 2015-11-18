@@ -22,16 +22,17 @@
 package loon.component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import loon.geom.RectBox;
+import loon.utils.ObjectMap;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Keys;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public final class BSPCollisionNode  {
+public final class BSPCollisionNode {
 
-	private HashMap<Actor, ActorNode> actors;
+	private ObjectMap<Actor, ActorNode> actors;
 
 	private BSPCollisionNode parent;
 
@@ -51,7 +52,7 @@ public final class BSPCollisionNode  {
 		this.area = area;
 		this.splitAxis = splitAxis;
 		this.splitPos = splitPos;
-		this.actors = new HashMap<Actor, ActorNode>();
+		this.actors = new ObjectMap<Actor, ActorNode>();
 	}
 
 	public void setChild(int side, BSPCollisionNode child) {
@@ -184,23 +185,27 @@ public final class BSPCollisionNode  {
 	}
 
 	public int numberActors() {
-		return this.actors.size();
+		return this.actors.size;
 	}
 
 	public boolean isEmpty() {
-		return this.actors.isEmpty();
+		return this.actors.size == 0;
 	}
 
-	public Iterator getEntriesIterator() {
-		return this.actors.entrySet().iterator();
+	public Entries<Actor, ActorNode> getEntriesIterator() {
+		return this.actors.entries();
 	}
 
-	public Iterator getActorsIterator() {
-		return this.actors.keySet().iterator();
+	public Keys<Actor> getActorsIterator() {
+		return this.actors.keys();
 	}
 
-	public List getActorsList() {
-		return new ArrayList(this.actors.keySet());
+	public List<Actor> getActorsList() {
+		List<Actor> result = new ArrayList<Actor>();
+		for (Iterator<Actor> key = this.actors.keys(); key.hasNext();) {
+			result.add(key.next());
+		}
+		return result;
 	}
 
 }

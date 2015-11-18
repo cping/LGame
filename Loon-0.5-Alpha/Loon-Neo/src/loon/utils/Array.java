@@ -53,7 +53,7 @@ public class Array<T> {
 		clear();
 		addAll(data);
 	}
-	
+
 	public void insertBetween(Array<T> previous, Array<T> next, Array<T> newNode) {
 		insertBetween(previous._items, next._items, newNode._items);
 	}
@@ -267,6 +267,15 @@ public class Array<T> {
 		return o;
 	}
 
+	public T removeFirst() {
+		if (_close) {
+			return null;
+		}
+		T result = first();
+		remove(0);
+		return result;
+	}
+
 	public boolean remove(int idx) {
 		if (_close) {
 			return false;
@@ -298,6 +307,11 @@ public class Array<T> {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean remove() {
+		int tsSize = _length;
+		return remove(--tsSize);
 	}
 
 	public T pop() {
@@ -486,10 +500,35 @@ public class Array<T> {
 		return newlist;
 	}
 
+	public LIterator<T> listIterator() {
+		return new ListItr(this);
+	}
+
+	private class ListItr implements LIterator<T> {
+
+		private Array<T> list;
+
+		ListItr(Array<T> l) {
+			this.list = l;
+		}
+
+		public boolean hasNext() {
+			return list.hashNext();
+		}
+
+		public T next() {
+			return list.next();
+		}
+
+		public void remove() {
+			list.remove();
+		}
+
+	}
+
 	public void dispose() {
 		_close = true;
 		_length = 0;
 		_items = null;
 	}
-
 }

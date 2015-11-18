@@ -21,7 +21,6 @@
 package loon.component;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import loon.LTexture;
 import loon.action.map.Field2D;
@@ -29,6 +28,7 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.LIterator;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
@@ -169,7 +169,7 @@ public class LLayer extends ActorLayer {
 			if (timer.action(this.elapsedTime = elapsedTime)) {
 				action(elapsedTime);
 				if (!isVSync) {
-					Iterator<?> it = objects.newIterator();
+					LIterator<Actor> it = objects.newIterator();
 					for (; it.hasNext();) {
 						thing = (Actor) it.next();
 						if (!thing.visible) {
@@ -203,9 +203,9 @@ public class LLayer extends ActorLayer {
 
 	public void paintObjects(GLEx g, int minX, int minY, int maxX, int maxY) {
 		synchronized (objects) {
-			Iterator<?> it = objects.iterator();
+			LIterator<Actor> it = objects.iterator();
 			for (; it.hasNext();) {
-				thing = (Actor) it.next();
+				thing = it.next();
 				if (!thing.visible) {
 					continue;
 				}

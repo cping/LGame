@@ -21,11 +21,56 @@
  */
 package loon.component;
 
-import java.util.AbstractSet;
-import java.util.Iterator;
+import loon.utils.CollectionUtils;
+import loon.utils.LIterator;
 
+public class ActorSet {
 
-public class ActorSet extends AbstractSet<Actor> {
+	private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
+	private static int hugeCapacity(int minCapacity) {
+		if (minCapacity < 0) {
+			throw new RuntimeException("Required array size too large");
+		}
+		return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE
+				: MAX_ARRAY_SIZE;
+	}
+
+	public void clear() {
+		LIterator<Actor> e = iterator();
+		while (e.hasNext()) {
+			e.next();
+			e.remove();
+		}
+	}
+
+	public Actor[] toArray() {
+		Actor[] r = new Actor[size()];
+		LIterator<Actor> it = iterator();
+		for (int i = 0; i < r.length; i++) {
+			if (!it.hasNext()) {
+				return CollectionUtils.copyOf(r, i);
+			}
+			r[i] = it.next();
+		}
+		return it.hasNext() ? finishToArray(r, it) : r;
+	}
+
+	private static Actor[] finishToArray(Actor[] r, LIterator<Actor> it) {
+		int i = r.length;
+		while (it.hasNext()) {
+			int cap = r.length;
+			if (i == cap) {
+				int newCap = cap + (cap >> 1) + 1;
+				if (newCap - MAX_ARRAY_SIZE > 0) {
+					newCap = hugeCapacity(cap + 1);
+				}
+				r = CollectionUtils.copyOf(r, newCap);
+			}
+			r[i++] = (Actor) it.next();
+		}
+		return (i == r.length) ? r : CollectionUtils.copyOf(r, i);
+	}
 
 	private ActorSet.ListNode listHeadTail = new ActorSet.ListNode();
 
@@ -149,14 +194,12 @@ public class ActorSet extends AbstractSet<Actor> {
 
 	}
 
-	@Override
 	public int size() {
 		return this.numActors;
 	}
 
-	@Override
-	public Iterator<Actor> iterator() {
-		return new ActorSet.ActorSetIterator();
+	public LIterator<Actor> iterator() {
+		return new ActorSet.ActorSetIterator(this);
 	}
 
 	private class ListNode {
@@ -205,17 +248,20 @@ public class ActorSet extends AbstractSet<Actor> {
 		}
 	}
 
-	private class ActorSetIterator implements Iterator<Actor> {
+	private class ActorSetIterator implements LIterator<Actor> {
 
 		ActorSet.ListNode currentNode;
 
-		public ActorSetIterator() {
-			this.currentNode = ActorSet.this.listHeadTail;
+		ActorSet actorSet;
+		
+		public ActorSetIterator(ActorSet node) {
+			this.currentNode = node.listHeadTail;
+			this.actorSet = node;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return this.currentNode.next != ActorSet.this.listHeadTail;
+			return this.currentNode.next != actorSet.listHeadTail;
 		}
 
 		@Override
@@ -226,7 +272,7 @@ public class ActorSet extends AbstractSet<Actor> {
 
 		@Override
 		public void remove() {
-			ActorSet.this.remove(this.currentNode);
+			actorSet.remove(this.currentNode);
 		}
 	}
 }
