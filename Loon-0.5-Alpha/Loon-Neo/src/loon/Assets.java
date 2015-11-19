@@ -27,6 +27,83 @@ import loon.utils.reply.GoPromise;
 
 public abstract class Assets {
 
+	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来……
+	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
+	private class ImageRunnable implements Runnable {
+
+		private ImageImpl _impl;
+
+		private String _path;
+
+		private Assets _assets;
+
+		ImageRunnable(ImageImpl img, String path, Assets assets) {
+			this._impl = img;
+			this._path = path;
+			this._assets = assets;
+		}
+
+		@Override
+		public void run() {
+			try {
+				_impl.succeed(_assets.load(_path));
+			} catch (Exception e) {
+				_impl.fail(e);
+			}
+		}
+
+	}
+
+	private class TextRunnable implements Runnable {
+
+		private GoPromise<String> _result;
+
+		private String _path;
+
+		private Assets _assets;
+
+		TextRunnable(GoPromise<String> res, String path, Assets assets) {
+			this._result = res;
+			this._path = path;
+			this._assets = assets;
+		}
+
+		@Override
+		public void run() {
+			try {
+				_result.succeed(_assets.getTextSync(_path));
+			} catch (Throwable t) {
+				_result.fail(t);
+			}
+		}
+
+	}
+
+	private class ByteRunnable implements Runnable {
+
+		private GoPromise<byte[]> _result;
+
+		private String _path;
+
+		private Assets _assets;
+
+		ByteRunnable(GoPromise<byte[]> res, String path, Assets assets) {
+			this._result = res;
+			this._path = path;
+			this._assets = assets;
+		}
+
+		@Override
+		public void run() {
+			try {
+				_result.succeed(_assets.getBytesSync(_path));
+			} catch (Throwable t) {
+				_result.fail(t);
+			}
+		}
+
+	}
+
 	protected static String pathPrefix = "assets/";
 
 	public void setPathPrefix(String prefix) {
@@ -57,15 +134,7 @@ public abstract class Assets {
 
 	public Image getImage(final String path) {
 		final ImageImpl image = createImage(true, 0, 0, path);
-		asyn.invokeAsync(new Runnable() {
-			public void run() {
-				try {
-					image.succeed(load(path));
-				} catch (Exception e) {
-					image.fail(e);
-				}
-			}
-		});
+		asyn.invokeAsync(new ImageRunnable(image, path, this));
 		return image;
 	}
 
@@ -92,15 +161,7 @@ public abstract class Assets {
 
 	public GoFuture<String> getText(final String path) {
 		final GoPromise<String> result = asyn.deferredPromise();
-		asyn.invokeAsync(new Runnable() {
-			public void run() {
-				try {
-					result.succeed(getTextSync(path));
-				} catch (Throwable t) {
-					result.fail(t);
-				}
-			}
-		});
+		asyn.invokeAsync(new TextRunnable(result, path, this));
 		return result;
 	}
 
@@ -108,15 +169,7 @@ public abstract class Assets {
 
 	public GoFuture<byte[]> getBytes(final String path) {
 		final GoPromise<byte[]> result = asyn.deferredPromise();
-		asyn.invokeAsync(new Runnable() {
-			public void run() {
-				try {
-					result.succeed(getBytesSync(path));
-				} catch (Throwable t) {
-					result.fail(t);
-				}
-			}
-		});
+		asyn.invokeAsync(new ByteRunnable(result, path, this));
 		return result;
 	}
 

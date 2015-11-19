@@ -63,15 +63,17 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 				toBeUpdated = new SortedList<GameProcess>(this.processes);
 			}
 			final SortedList<GameProcess> deadProcesses = new SortedList<GameProcess>();
-			for (int i = 0; i < toBeUpdated.size; i++) {
-				GameProcess realtimeProcess = toBeUpdated.get(i);
+			for (LIterator<GameProcess> it = toBeUpdated.listIterator(); it
+					.hasNext();) {
+				GameProcess realtimeProcess = it.next();
 				realtimeProcess.tick(time);
 				if (realtimeProcess.isDead()) {
 					deadProcesses.add(realtimeProcess);
 				}
 			}
-			for (int i = 0; i < deadProcesses.size; i++) {
-				GameProcess realtimeProcess = deadProcesses.get(i);
+			for (LIterator<GameProcess> it = deadProcesses.listIterator(); it
+					.hasNext();) {
+				GameProcess realtimeProcess = it.next();
 				realtimeProcess.finish();
 			}
 			synchronized (this.processes) {

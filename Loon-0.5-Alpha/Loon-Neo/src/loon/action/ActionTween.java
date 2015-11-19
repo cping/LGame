@@ -97,7 +97,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		ActionTween tween = pool.get();
 		tween.setup(null, -1, 0);
 		tween.setCallback(callback);
-		tween.setCallbackTriggers(ActionCallback.START);
+		tween.setCallbackTriggers(ActionMode.START);
 		return tween;
 	}
 

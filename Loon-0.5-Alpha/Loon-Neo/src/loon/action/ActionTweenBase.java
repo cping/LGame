@@ -35,7 +35,7 @@ public abstract class ActionTweenBase<T> {
 		delay = duration = repeatDelay = currentTime = deltaTime = 0;
 		isStarted = isInitialized = isFinished = isKilled = isPaused = false;
 		callback = null;
-		callbackTriggers = ActionCallback.COMPLETE;
+		callbackTriggers = ActionMode.COMPLETE;
 		_isAutoRemoveEnabled = _isAutoStartEnabled = true;
 	}
 
@@ -248,8 +248,8 @@ public abstract class ActionTweenBase<T> {
 			step = 0;
 			deltaTime -= delay - currentTime;
 			currentTime = 0;
-			callCallback(ActionCallback.BEGIN);
-			callCallback(ActionCallback.START);
+			callCallback(ActionMode.BEGIN);
+			callCallback(ActionMode.START);
 		}
 	}
 
@@ -261,8 +261,8 @@ public abstract class ActionTweenBase<T> {
 			float delta = 0 - currentTime;
 			deltaTime -= delta;
 			currentTime = 0;
-			callCallback(ActionCallback.BEGIN);
-			callCallback(ActionCallback.START);
+			callCallback(ActionMode.BEGIN);
+			callCallback(ActionMode.START);
 			update(step, step - 1, isIterationStep, delta);
 
 		} else if (!isIterationStep && repeatSize >= 0 && step > repeatSize * 2
@@ -272,8 +272,8 @@ public abstract class ActionTweenBase<T> {
 			float delta = 0 - currentTime;
 			deltaTime -= delta;
 			currentTime = duration;
-			callCallback(ActionCallback.BACK_BEGIN);
-			callCallback(ActionCallback.BACK_START);
+			callCallback(ActionMode.BACK_BEGIN);
+			callCallback(ActionMode.BACK_START);
 			update(step, step + 1, isIterationStep, delta);
 		}
 	}
@@ -291,7 +291,7 @@ public abstract class ActionTweenBase<T> {
 				} else {
 					forceEndValues();
 				}
-				callCallback(ActionCallback.BACK_START);
+				callCallback(ActionMode.BACK_START);
 				update(step, step + 1, isIterationStep, delta);
 
 			} else if (!isIterationStep
@@ -309,7 +309,7 @@ public abstract class ActionTweenBase<T> {
 					forceStartValues();
 				}
 
-				callCallback(ActionCallback.START);
+				callCallback(ActionMode.START);
 				update(step, step - 1, isIterationStep, delta);
 
 			} else if (isIterationStep && currentTime + deltaTime < 0) {
@@ -319,9 +319,9 @@ public abstract class ActionTweenBase<T> {
 				deltaTime -= delta;
 				currentTime = 0;
 				update(step, step + 1, isIterationStep, delta);
-				callCallback(ActionCallback.BACK_END);
+				callCallback(ActionMode.BACK_END);
 				if (step < 0 && repeatSize >= 0) {
-					callCallback(ActionCallback.BACK_COMPLETE);
+					callCallback(ActionMode.BACK_COMPLETE);
 				} else {
 					currentTime = repeatDelay;
 				}
@@ -332,9 +332,9 @@ public abstract class ActionTweenBase<T> {
 				deltaTime -= delta;
 				currentTime = duration;
 				update(step, step - 1, isIterationStep, delta);
-				callCallback(ActionCallback.END);
+				callCallback(ActionMode.END);
 				if (step > repeatSize * 2 && repeatSize >= 0) {
-					callCallback(ActionCallback.COMPLETE);
+					callCallback(ActionMode.COMPLETE);
 				}
 				currentTime = 0;
 

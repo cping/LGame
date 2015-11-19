@@ -429,12 +429,12 @@ public class TArray<T> implements Iterable<T> {
 		return iterable.iterator();
 	}
 
-	public boolean equals(Object object) {
-		if (object == this)
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof TArray))
+		if (!(o instanceof TArray))
 			return false;
-		TArray array = (TArray) object;
+		TArray array = (TArray) o;
 		int n = size;
 		if (n != array.size)
 			return false;

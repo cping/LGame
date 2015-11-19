@@ -34,7 +34,37 @@ import loon.utils.timer.LTimerContext;
 
 public class Display extends LSystemView {
 
-	final static class Logo implements LRelease {
+	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
+	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
+	private final class PaintPort extends Port<LTimerContext> {
+
+		private final Display _display;
+
+		PaintPort(Display d) {
+			this._display = d;
+		}
+
+		@Override
+		public void onEmit(LTimerContext clock) {
+			_display.draw(clock);
+		}
+
+	}
+
+	private final class UpdatePort extends Port<LTimerContext> {
+
+		UpdatePort() {
+		}
+
+		@Override
+		public void onEmit(LTimerContext clock) {
+			RealtimeProcessManager.get().tick(clock);
+			ActionControl.update(clock.timeSinceLastUpdate);
+		}
+
+	}
+	
+	private final class Logo implements LRelease {
 
 		private int centerX = 0, centerY = 0;
 
@@ -126,6 +156,7 @@ public class Display extends LSystemView {
 		}
 	}
 
+
 	public Display(LGame game, int updateRate) {
 		super(game, updateRate);
 		setting = LSystem._base.setting;
@@ -135,17 +166,8 @@ public class Display extends LSystemView {
 		glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget,
 				gl);
 		glEx.update();
-		paint.connect(new Port<LTimerContext>() {
-			public void onEmit(LTimerContext clock) {
-				draw(clock);
-			}
-		}).setPriority(-1);
-		update.connect(new Port<LTimerContext>() {
-			public void onEmit(LTimerContext clock) {
-				RealtimeProcessManager.get().tick(clock);
-				ActionControl.update(clock.timeSinceLastUpdate);
-			}
-		}).setPriority(1);
+		paint.connect(new PaintPort(this)).setPriority(-1);
+		update.connect(new UpdatePort()).setPriority(1);
 		if (!setting.isLogo) {
 			process.start();
 		}

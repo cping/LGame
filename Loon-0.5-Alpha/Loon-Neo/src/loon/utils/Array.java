@@ -429,6 +429,7 @@ public class Array<T> {
 		return buffer.toString();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
@@ -437,13 +438,13 @@ public class Array<T> {
 		if (!(o instanceof Array)) {
 			return false;
 		}
-		Array<?> array = (Array<?>) o;
+		Array array = (Array) o;
 		int n = _length;
 		if (n != array._length) {
 			return false;
 		}
-		ArrayNode<?> items1 = this._items;
-		ArrayNode<?> items2 = array._items;
+		ArrayNode items1 = this._items;
+		ArrayNode items2 = array._items;
 		for (int i = 0; i < n; i++) {
 			Object o1 = items1.next;
 			Object o2 = items2.next;

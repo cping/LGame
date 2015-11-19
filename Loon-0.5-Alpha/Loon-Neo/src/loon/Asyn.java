@@ -28,17 +28,30 @@ import loon.utils.reply.Port;
 public abstract class Asyn {
 
 	public static class Default extends Asyn {
+
+		/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
+		private class CallDefaultPort<T> extends Port<T>{
+			
+			private Default _def;
+			
+			CallDefaultPort(Default d){
+				this._def = d;
+			}
+
+			@Override
+			public void onEmit(Object event) {
+				_def.dispatch();
+			}
+			
+		}
+		
 		private final TArray<Runnable> pending = new TArray<>();
 		private final TArray<Runnable> running = new TArray<>();
 		protected final Log log;
 
 		public Default(Log log, Act<? extends Object> frame) {
 			this.log = log;
-			frame.connect(new Port<Object>() {
-				public void onEmit(Object unused) {
-					dispatch();
-				}
-			}).setPriority(Short.MAX_VALUE);
+			frame.connect(new CallDefaultPort<Object>(this)).setPriority(Short.MAX_VALUE);
 		}
 
 		@Override
@@ -76,34 +89,61 @@ public abstract class Asyn {
 
 	public abstract void invokeLater(Runnable action);
 
+	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
+	private static class DeferredPromiseRunnable<T> implements Runnable {
+
+		private GoPromise<T> _promise;
+
+		private int _mode = 0;
+
+		private T _value;
+
+		private Throwable _cause;
+
+		public DeferredPromiseRunnable(int m, GoPromise<T> p, T val, Throwable c) {
+			this._mode = m;
+			this._promise = p;
+			this._value = val;
+			this._cause = c;
+		}
+
+		@Override
+		public void run() {
+			switch (_mode) {
+			case 0:
+				_promise.succeed(_value);
+				break;
+			default:
+				_promise.fail(_cause);
+				break;
+			}
+		}
+	}
+
+	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
+	private class CallDeferredPromise<T> extends GoPromise<T> {
+
+		private Asyn _asyn;
+
+		public CallDeferredPromise(Asyn a) {
+			this._asyn = a;
+		}
+
+		@Override
+		public void succeed(final T value) {
+			_asyn.invokeLater(new DeferredPromiseRunnable<T>(0, this, value,
+					null));
+		}
+
+		@Override
+		public void fail(final Throwable cause) {
+			_asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null,
+					cause));
+		}
+	}
+
 	public <T> GoPromise<T> deferredPromise() {
-		return new GoPromise<T>() {
-			@Override
-			public void succeed(final T value) {
-				invokeLater(new Runnable() {
-					public void run() {
-						superSucceed(value);
-					}
-				});
-			}
-
-			@Override
-			public void fail(final Throwable cause) {
-				invokeLater(new Runnable() {
-					public void run() {
-						superFail(cause);
-					}
-				});
-			}
-
-			private void superSucceed(T value) {
-				super.succeed(value);
-			}
-
-			private void superFail(Throwable cause) {
-				super.fail(cause);
-			}
-		};
+		return new CallDeferredPromise<T>(this);
 	}
 
 	public abstract boolean isAsyncSupported();
