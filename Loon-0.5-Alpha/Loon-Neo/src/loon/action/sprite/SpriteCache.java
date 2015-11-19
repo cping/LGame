@@ -1,7 +1,6 @@
 package loon.action.sprite;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 import loon.LRelease;
 import loon.LSystem;
@@ -19,6 +18,7 @@ import loon.utils.GLUtils;
 import loon.utils.IntArray;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.TArray;
 
 public class SpriteCache implements LRelease {
 	
@@ -42,13 +42,13 @@ public class SpriteCache implements LRelease {
 	private boolean drawing;
 	private final Matrix4 transformMatrix = new Matrix4();
 	private final Matrix4 projectionMatrix = new Matrix4();
-	private ArrayList<Cache> caches = new ArrayList<Cache>();
+	private TArray<Cache> caches = new TArray<Cache>();
 
 	private final Matrix4 combinedMatrix = new Matrix4();
 	private final ShaderProgram shader;
 
 	private Cache currentCache;
-	private final ArrayList<LTexture> textures = new ArrayList<LTexture>();
+	private final TArray<LTexture> textures = new TArray<LTexture>();
 	private final IntArray counts = new IntArray(8);
 
 	private float color = LColor.white.toFloatBits();
@@ -139,7 +139,7 @@ public class SpriteCache implements LRelease {
 			throw new IllegalStateException(
 					"endCache must be called before begin.");
 		}
-		currentCache = new Cache(caches.size(), mesh.getVerticesBuffer()
+		currentCache = new Cache(caches.size, mesh.getVerticesBuffer()
 				.limit());
 		caches.add(currentCache);
 		mesh.getVerticesBuffer().compact();
@@ -150,8 +150,8 @@ public class SpriteCache implements LRelease {
 			throw new IllegalStateException(
 					"endCache must be called before begin.");
 		}
-		if (cacheID == caches.size() - 1) {
-			Cache oldCache = caches.remove(cacheID);
+		if (cacheID == caches.size - 1) {
+			Cache oldCache = caches.removeIndex(cacheID);
 			mesh.getVerticesBuffer().limit(oldCache.offset);
 			beginCache();
 			return;
@@ -169,7 +169,7 @@ public class SpriteCache implements LRelease {
 		int cacheCount = mesh.getVerticesBuffer().position() - cache.offset;
 		if (cache.textures == null) {
 			cache.maxCount = cacheCount;
-			cache.textureCount = textures.size();
+			cache.textureCount = textures.size;
 			cache.textures = textures.toArray(new LTexture[0]);
 			cache.counts = new int[cache.textureCount];
 			for (int i = 0, n = counts.length; i < n; i++){
@@ -183,7 +183,7 @@ public class SpriteCache implements LRelease {
 								+ cacheCount + " (" + cache.maxCount + " max)");
 			}
 
-			cache.textureCount = textures.size();
+			cache.textureCount = textures.size;
 
 			if (cache.textures.length < cache.textureCount){
 				cache.textures = new LTexture[cache.textureCount];
@@ -201,7 +201,7 @@ public class SpriteCache implements LRelease {
 
 			FloatBuffer vertices = mesh.getVerticesBuffer();
 			vertices.position(0);
-			Cache lastCache = caches.get(caches.size() - 1);
+			Cache lastCache = caches.get(caches.size - 1);
 			vertices.limit(lastCache.offset + lastCache.maxCount);
 		}
 
@@ -225,7 +225,7 @@ public class SpriteCache implements LRelease {
 		checkTexture(texture);
 		int verticesPerImage = mesh.getNumIndices() > 0 ? 4 : 6;
 		int count = length / (verticesPerImage * LSystem.VERTEX_SIZE) * 6;
-		int lastIndex = textures.size() - 1;
+		int lastIndex = textures.size - 1;
 		if (lastIndex < 0 || textures.get(lastIndex) != texture) {
 			textures.add(texture);
 			counts.add(count);

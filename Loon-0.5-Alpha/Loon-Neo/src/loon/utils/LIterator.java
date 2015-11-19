@@ -7,5 +7,4 @@ public interface LIterator<E>{
     E next();
 
     void remove();
-
 }

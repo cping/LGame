@@ -1,11 +1,10 @@
 package loon.action.collision;
 
-import java.util.ArrayList;
-
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class GravityHandler implements LRelease {
 
@@ -35,11 +34,11 @@ public class GravityHandler implements LRelease {
 
 	Gravity[] lazyObjects;
 
-	ArrayList<Gravity> objects;
+	TArray<Gravity> objects;
 
-	ArrayList<Gravity> pendingAdd;
+	TArray<Gravity> pendingAdd;
 
-	ArrayList<Gravity> pendingRemove;
+	TArray<Gravity> pendingRemove;
 
 	public GravityHandler() {
 		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
@@ -47,16 +46,17 @@ public class GravityHandler implements LRelease {
 
 	public GravityHandler(int w, int h) {
 		this.setLimit(w, h);
-		this.objects = new ArrayList<Gravity>(10);
-		this.pendingAdd = new ArrayList<Gravity>(10);
-		this.pendingRemove = new ArrayList<Gravity>(10);
+		this.objects = new TArray<Gravity>(10);
+		this.pendingAdd = new TArray<Gravity>(10);
+		this.pendingRemove = new TArray<Gravity>(10);
 		this.lazyObjects = new Gravity[] {};
 		this.isEnabled = true;
 	}
 
 	public boolean isGravityRunning() {
 		if (objects != null) {
-			for (Gravity g : objects) {
+			for (int i = 0; i < objects.size; i++) {
+				Gravity g = objects.get(i);
 				if (g != null && !g.enabled) {
 					return true;
 				}
@@ -175,7 +175,7 @@ public class GravityHandler implements LRelease {
 
 	public void commits() {
 		boolean changes = false;
-		final int additionCount = pendingAdd.size();
+		final int additionCount = pendingAdd.size;
 		if (additionCount > 0) {
 			final Object[] additionsArray = pendingAdd.toArray();
 			for (int i = 0; i < additionCount; i++) {
@@ -185,7 +185,7 @@ public class GravityHandler implements LRelease {
 			pendingAdd.clear();
 			changes = true;
 		}
-		final int removalCount = pendingRemove.size();
+		final int removalCount = pendingRemove.size;
 		if (removalCount > 0) {
 			final Object[] removalsArray = pendingRemove.toArray();
 			for (int i = 0; i < removalCount; i++) {
@@ -209,7 +209,7 @@ public class GravityHandler implements LRelease {
 	}
 
 	public int getConcreteCount() {
-		return lazyObjects.length + pendingAdd.size() - pendingRemove.size();
+		return lazyObjects.length + pendingAdd.size - pendingRemove.size;
 	}
 
 	public Gravity get(int index) {
@@ -245,7 +245,7 @@ public class GravityHandler implements LRelease {
 	}
 
 	public void removeAll() {
-		final int count = objects.size();
+		final int count = objects.size;
 		final Object[] objectArray = objects.toArray();
 		for (int i = 0; i < count; i++) {
 			pendingRemove.add((Gravity) objectArray[i]);

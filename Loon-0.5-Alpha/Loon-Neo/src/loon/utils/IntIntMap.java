@@ -26,7 +26,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry> {
 	private Keys keys1, keys2;
 
 	public IntIntMap() {
-		this(32, 0.8f);
+		this(CollectionUtils.INITIAL_CAPACITY * 2, 0.8f);
 	}
 
 	public IntIntMap(int initialCapacity) {

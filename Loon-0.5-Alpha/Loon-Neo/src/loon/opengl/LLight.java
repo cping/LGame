@@ -20,9 +20,8 @@
  */
 package loon.opengl;
 
-import java.util.ArrayList;
-
 import loon.canvas.LColor;
+import loon.utils.TArray;
 
 
 public abstract class LLight {
@@ -40,7 +39,7 @@ public abstract class LLight {
 	protected float[][][] lightValue;
 
 	// 光源集合
-	protected ArrayList<Light> lights = new ArrayList<Light>();
+	protected TArray<Light> lights = new TArray<Light>();
 
 	// 默认的主控光源
 	protected Light mainLight;
@@ -156,7 +155,7 @@ public abstract class LLight {
 				for (int component = 0; component < 3; component++) {
 					lightValue[x][y][component] = 0;
 				}
-				for (int i = 0; i < lights.size(); i++) {
+				for (int i = 0; i < lights.size; i++) {
 					float[] effect = (lights.get(i)).getEffectAt(x, y,
 							colouredLights);
 					for (int component = 0; component < 3; component++) {

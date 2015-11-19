@@ -20,7 +20,6 @@
  */
 package loon.opengl;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
@@ -34,6 +33,7 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
+import loon.utils.TArray;
 
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
@@ -137,9 +137,9 @@ public class BMFont implements LRelease {
 		common = br.nextToken();
 		page = br.nextToken();
 
-		ObjectMap<Short, ArrayList<Short>> kerning = new ObjectMap<Short, ArrayList<Short>>(
+		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(
 				64);
-		ArrayList<CharDef> charDefs = new ArrayList<CharDef>(DEFAULT_MAX_CHAR);
+		TArray<CharDef> charDefs = new TArray<CharDef>(DEFAULT_MAX_CHAR);
 
 		int maxChar = 0;
 		boolean done = false;
@@ -166,9 +166,9 @@ public class BMFont implements LRelease {
 					int second = Integer.parseInt(tokens.nextToken());
 					tokens.nextToken();
 					int offset = Integer.parseInt(tokens.nextToken());
-					ArrayList<Short> values = kerning.get(new Short(first));
+					TArray<Short> values = kerning.get(new Short(first));
 					if (values == null) {
-						values = new ArrayList<Short>();
+						values = new TArray<Short>();
 						kerning.put(new Short(first), values);
 					}
 					values.add(new Short((short) ((offset << 8) | second)));
@@ -183,11 +183,11 @@ public class BMFont implements LRelease {
 			chars[def.id] = def;
 		}
 
-		for (Entries<Short, ArrayList<Short>> iter = kerning.entries(); iter.hasNext();) {
-			Entry<Short, ArrayList<Short>> entry = iter.next();
+		for (Entries<Short, TArray<Short>> iter = kerning.entries(); iter.hasNext();) {
+			Entry<Short, TArray<Short>> entry = iter.next();
 			short first = entry.key;
-			ArrayList<Short> valueList = entry.value;
-			short[] valueArray = new short[valueList.size()];
+			TArray<Short> valueList = entry.value;
+			short[] valueArray = new short[valueList.size];
 			int i = 0;
 			for (Iterator<Short> valueIter = valueList.iterator(); valueIter
 					.hasNext(); i++) {

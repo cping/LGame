@@ -24,12 +24,13 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 public class LongArray {
+	
 	public long[] items;
 	public int length;
 	public boolean ordered;
 
 	public LongArray() {
-		this(true, 16);
+		this(true, CollectionUtils.INITIAL_CAPACITY);
 	}
 
 	public LongArray(int capacity) {

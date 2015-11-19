@@ -20,18 +20,17 @@
  */
 package loon.stage;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import loon.geom.Affine2f;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 
-	private final List<Player> children = new ArrayList<>();
+	private final TArray<Player> children = new TArray<Player>();
 	private final Affine2f paintTx = new Affine2f();
 	private final boolean disableClip;
 
@@ -50,7 +49,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	}
 
 	public int children() {
-		return children.size();
+		return children.size;
 	}
 
 	public Player childAt(int index) {
@@ -62,7 +61,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 		if (parent == this) {
 			return;
 		}
-		int count = children.size(), index;
+		int count = children.size, index;
 		if (count == 0 || children.get(count - 1).depth() <= child.depth()) {
 			index = count;
 		} else {
@@ -71,7 +70,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 		if (parent != null) {
 			parent.remove(child);
 		}
-		children.add(index, child);
+		children.insert(index, child);
 		child.setParent(this);
 		if (state.get() == State.ADDED) {
 			child.onAdd();
@@ -104,12 +103,12 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 
 	public void removeAll() {
 		while (!children.isEmpty()) {
-			remove(children.size() - 1);
+			remove(children.size - 1);
 		}
 	}
 
 	public void disposeAll() {
-		Player[] toDispose = children.toArray(new Player[children.size()]);
+		Player[] toDispose = children.toArray(new Player[children.size]);
 		removeAll();
 		for (Player child : toDispose) {
 			child.close();
@@ -131,7 +130,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	public Player hitTestDefault(Vector2f point) {
 		float x = point.x, y = point.y;
 		boolean sawInteractiveChild = false;
-		for (int ii = children.size() - 1; ii >= 0; ii--) {
+		for (int ii = children.size - 1; ii >= 0; ii--) {
 			Player child = children.get(ii);
 			if (!child.interactive()) {
 				continue;
@@ -166,8 +165,8 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	@Override
 	protected void paintClipped(GLEx gl) {
 		paintTx.set(gl.tx());
-		List<Player> children = this.children;
-		for (int ii = 0, ll = children.size(); ii < ll; ii++) {
+		TArray<Player> children = this.children;
+		for (int ii = 0, ll = children.size; ii < ll; ii++) {
 			gl.tx().set(paintTx);
 			children.get(ii).paint(gl);
 		}
@@ -178,21 +177,21 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 		float newDepth = child.depth();
 		boolean leftCorrect = (oldIndex == 0 || children.get(oldIndex - 1)
 				.depth() <= newDepth);
-		boolean rightCorrect = (oldIndex == children.size() - 1 || children
+		boolean rightCorrect = (oldIndex == children.size - 1 || children
 				.get(oldIndex + 1).depth() >= newDepth);
 		if (leftCorrect && rightCorrect) {
 			return oldIndex;
 		}
-		children.remove(oldIndex);
+		children.removeIndex(oldIndex);
 		int newIndex = findInsertion(newDepth);
-		children.add(newIndex, child);
+		children.insert(newIndex, child);
 		return newIndex;
 	}
 
 	@Override
 	void onAdd() {
 		super.onAdd();
-		for (int ii = 0, ll = children.size(); ii < ll; ii++) {
+		for (int ii = 0, ll = children.size; ii < ll; ii++) {
 			children.get(ii).onAdd();
 		}
 	}
@@ -200,7 +199,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	@Override
 	void onRemove() {
 		super.onRemove();
-		for (int ii = 0, ll = children.size(); ii < ll; ii++) {
+		for (int ii = 0, ll = children.size; ii < ll; ii++) {
 			children.get(ii).onRemove();
 		}
 	}
@@ -211,7 +210,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	}
 
 	private void remove(int index) {
-		Player child = children.remove(index);
+		Player child = children.removeIndex(index);
 		child.onRemove();
 		child.setParent(null);
 	}
@@ -227,7 +226,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 				break;
 			}
 		}
-		for (int ii = startIdx, ll = children.size(); ii < ll; ii++) {
+		for (int ii = startIdx, ll = children.size; ii < ll; ii++) {
 			Player c = children.get(ii);
 			if (c == child) {
 				return ii;
@@ -240,7 +239,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	}
 
 	private int findInsertion(float depth) {
-		int low = 0, high = children.size() - 1;
+		int low = 0, high = children.size - 1;
 		while (low <= high) {
 			int mid = (low + high) >>> 1;
 			float midDepth = children.get(mid).depth();
@@ -258,7 +257,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
-		for (int ii = 0, ll = children.size(); ii < ll; ii++) {
+		for (int ii = 0, ll = children.size; ii < ll; ii++) {
 			children.get(ii).update(elapsedTime);
 		}
 	}

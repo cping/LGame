@@ -20,8 +20,6 @@
  */
 package loon.utils.reply;
 
-import java.util.Map;
-
 public class Functions
 {
     public static Function<Boolean, Boolean> NOT = new Function<Boolean, Boolean>() {
@@ -96,16 +94,6 @@ public class Functions
         return new Function<Integer,Boolean>() {
             public Boolean apply (Integer value) {
                 return value <= target;
-            }
-        };
-    }
-
-    public static <K, V> Function<K, V> forMap (final Map<K, ? extends V> map, final V defaultValue)
-    {
-        return new Function<K, V>() {
-            public V apply (K key) {
-                V value = map.get(key);
-                return (value != null || map.containsKey(key)) ? value : defaultValue;
             }
         };
     }

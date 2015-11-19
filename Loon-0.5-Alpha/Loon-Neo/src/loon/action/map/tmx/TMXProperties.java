@@ -1,13 +1,12 @@
 package loon.action.map.tmx;
 
-import java.util.ArrayList;
-
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
+import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
 public class TMXProperties {
@@ -64,11 +63,11 @@ public class TMXProperties {
 	}
 
 	public void parse(XMLElement element) {
-		ArrayList<XMLElement> properties = element.list("property");
+		TArray<XMLElement> properties = element.list("property");
 		if (properties == null) {
 			properties = element.getParent().list("property");
 		}
-		for (int p = 0; p < properties.size(); p++) {
+		for (int p = 0; p < properties.size; p++) {
 			XMLElement property = properties.get(p);
 			String name = property.getAttribute("name", "");
 			String value = property.getAttribute("value", "");

@@ -20,13 +20,12 @@
  */
 package loon.action.sprite;
 
-import java.util.ArrayList;
-
 import loon.LObject;
 import loon.LTexture;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.TArray;
 
 public final class StatusBars extends LObject implements ISprite {
 
@@ -35,12 +34,12 @@ public final class StatusBars extends LObject implements ISprite {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<StatusBar> barCaches;
+	private TArray<StatusBar> barCaches;
 
 	private boolean visible;
 
 	public StatusBars() {
-		this.barCaches = new ArrayList<StatusBar>(
+		this.barCaches = new TArray<StatusBar>(
 				CollectionUtils.INITIAL_CAPACITY);
 		this.visible = true;
 	}
@@ -83,7 +82,7 @@ public final class StatusBars extends LObject implements ISprite {
 	}
 
 	public int size() {
-		return barCaches.size();
+		return barCaches.size;
 	}
 
 	public void hide(StatusBar bar) {
@@ -102,7 +101,7 @@ public final class StatusBars extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		int size = barCaches.size();
+		int size = barCaches.size;
 		if (size > 0) {
 			synchronized (barCaches) {
 				for (int i = 0; i < size; i++) {
@@ -119,7 +118,7 @@ public final class StatusBars extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		int size = barCaches.size();
+		int size = barCaches.size;
 		if (size > 0) {
 			synchronized (barCaches) {
 				for (int i = 0; i < size; i++) {
@@ -158,7 +157,7 @@ public final class StatusBars extends LObject implements ISprite {
 
 	public void close() {
 		this.visible = false;
-		int size = barCaches.size();
+		int size = barCaches.size;
 		for (int i = 0; i < size; i++) {
 			StatusBar bar = barCaches.get(i);
 			if (bar != null) {

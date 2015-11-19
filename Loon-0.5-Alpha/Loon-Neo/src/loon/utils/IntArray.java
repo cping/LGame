@@ -23,14 +23,14 @@ package loon.utils;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-
 public class IntArray {
+	
 	public int[] items;
 	public int length;
 	public boolean ordered;
 
 	public IntArray() {
-		this(true, 16);
+		this(true, CollectionUtils.INITIAL_CAPACITY);
 	}
 
 	public IntArray(int capacity) {

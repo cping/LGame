@@ -20,27 +20,20 @@
  */
 package loon.utils.json;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import loon.Json;
 import loon.Json.TypedArray;
+import loon.utils.TArray;
 
 class JsonArray implements Json.Array {
 
-	private final ArrayList<Object> list;
+	private final TArray<Object> list;
 
 	public JsonArray() {
-		list = new ArrayList<Object>();
+		list = new TArray<Object>();
 	}
 
-	JsonArray(Collection<? extends Object> collection) {
-		list = new ArrayList<Object>(collection);
-	}
-
-	static JsonArray from(Object... contents) {
-		return new JsonArray(Arrays.asList(contents));
+	JsonArray(Object... collection) {
+		list = new TArray<Object>(collection);
 	}
 
 	public static JsonBuilder<JsonArray> builder() {
@@ -55,10 +48,10 @@ class JsonArray implements Json.Array {
 
 	public JsonArray add(int index, java.lang.Object value) {
 		JsonImpl.checkJsonType(value);
-		while (list.size() < index) {
+		while (list.size < index) {
 			list.add(null);
 		}
-		list.add(index, value);
+		list.insert(index, value);
 		return this;
 	}
 
@@ -166,12 +159,12 @@ class JsonArray implements Json.Array {
 
 	@Override
 	public int length() {
-		return list.size();
+		return list.size;
 	}
 
 	@Override
 	public JsonArray remove(int index) {
-		if (index < 0 || index >= list.size())
+		if (index < 0 || index >= list.size)
 			return this;
 		list.remove(index);
 		return this;
@@ -180,7 +173,7 @@ class JsonArray implements Json.Array {
 	@Override
 	public JsonArray set(int index, java.lang.Object value) {
 		JsonImpl.checkJsonType(value);
-		while (list.size() <= index) {
+		while (list.size <= index) {
 			list.add(null);
 		}
 		list.set(index, value);
@@ -194,14 +187,14 @@ class JsonArray implements Json.Array {
 
 	@Override
 	public <T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink) {
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < list.size; i++) {
 			sink.value(list.get(i));
 		}
 		return sink;
 	}
 
 	Object get(int key) {
-		return (key >= 0 && key < list.size()) ? list.get(key) : null;
+		return (key >= 0 && key < list.size) ? list.get(key) : null;
 	}
 
 }

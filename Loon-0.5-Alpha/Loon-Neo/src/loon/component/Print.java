@@ -1,8 +1,5 @@
 package loon.component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
@@ -12,6 +9,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class Print implements LRelease {
 
@@ -36,8 +34,8 @@ public class Print implements LRelease {
 	 * @param width
 	 * @return
 	 */
-	public static List<String> formatMessage(String text, LFont font, int width) {
-		List<String> list = new ArrayList<String>();
+	public static TArray<String> formatMessage(String text, LFont font, int width) {
+		TArray<String> list = new TArray<String>();
 
 		if (text == null) {
 			return list;

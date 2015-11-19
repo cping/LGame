@@ -1,8 +1,5 @@
 package loon.component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.LTexture;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -10,6 +7,7 @@ import loon.opengl.ShadowFont;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 /**
  * 此组件功能近似LMessage，并且允许连续播放文字序列 ，设置角色头像和显示位置，差异在于，此组件不支持彩色文字设置，也就是只允许'\n'符号生效
@@ -251,9 +249,9 @@ public class LMessageBox extends LComponent {
 		private String message;
 		private String comment;
 		private String face;
-		List<String> lines;
+		TArray<String> lines;
 
-		public Message(String text, String comm, String face, List<String> ls) {
+		public Message(String text, String comm, String face, TArray<String> ls) {
 			this.message = text;
 			this.comment = comm;
 			this.face = face;
@@ -290,7 +288,7 @@ public class LMessageBox extends LComponent {
 	}
 
 	protected int messageIndex = 0;
-	protected List<Message> _messageList;
+	protected TArray<Message> _messageList;
 
 	protected long typeDelayTime;
 	protected int renderRow;
@@ -310,18 +308,18 @@ public class LMessageBox extends LComponent {
 
 	private LFont _font;
 
-	public LMessageBox(List<Message> messages, int x, int y, int width,
+	public LMessageBox(TArray<Message> messages, int x, int y, int width,
 			int height) {
 		this(messages, null, LFont.getDefaultFont(), null, x, y, width, height);
 	}
 
-	public LMessageBox(List<Message> messages, LTexture texture, int x, int y,
+	public LMessageBox(TArray<Message> messages, LTexture texture, int x, int y,
 			int width, int height) {
 		this(messages, null, LFont.getDefaultFont(), texture, x, y, width,
 				height);
 	}
 
-	public LMessageBox(List<Message> messages, String typeFlag, LFont font,
+	public LMessageBox(TArray<Message> messages, String typeFlag, LFont font,
 			LTexture box, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this._messageList = messages;
@@ -365,10 +363,9 @@ public class LMessageBox extends LComponent {
 			String face, LTexture box, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		if (messages != null) {
-			_messageList = new ArrayList<LMessageBox.Message>();
+			_messageList = new TArray<LMessageBox.Message>();
 			for (String text : messages) {
-				_messageList.add(new Message(text, null, face, Print
-						.formatMessage(text, font, width)));
+				_messageList.add(new Message(text, null, face, Print.formatMessage(text, font, width)));
 			}
 		}
 		this._box = new DrawMessageBox(new ShadowFont(font, messages,
@@ -394,7 +391,7 @@ public class LMessageBox extends LComponent {
 			this.typeDelayTime = delay;
 			if (this.renderCol > message.lines.get(this.renderRow).length() - 1) {
 
-				if (this.renderRow >= message.lines.size() - 1) {
+				if (this.renderRow >= message.lines.size - 1) {
 					this.finished = true;
 					this.pageBlinkTime = pageTime;
 				} else {
@@ -409,7 +406,7 @@ public class LMessageBox extends LComponent {
 
 	public LMessageBox next() {
 		int size = this.messageIndex + 1;
-		if (size < this._messageList.size()) {
+		if (size < this._messageList.size) {
 			setIndex(++this.messageIndex);
 			restart();
 		}
@@ -418,7 +415,7 @@ public class LMessageBox extends LComponent {
 
 	public LMessageBox setIndex(int index) {
 		int size = this.messageIndex + 1;
-		if (size > 0 && size < this._messageList.size()) {
+		if (size > 0 && size < this._messageList.size) {
 			this.messageIndex = index;
 			restart();
 		}
@@ -497,7 +494,7 @@ public class LMessageBox extends LComponent {
 		if (message.lines.isEmpty()) {
 			this.renderRow = (this.renderCol = 0);
 		} else {
-			this.renderRow = (message.lines.size() - 1);
+			this.renderRow = (message.lines.size - 1);
 			this.renderCol = message.lines.get(this.renderRow).length();
 			this.finished = true;
 		}

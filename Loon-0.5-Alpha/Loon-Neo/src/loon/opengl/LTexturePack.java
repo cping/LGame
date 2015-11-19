@@ -20,8 +20,6 @@
  */
 package loon.opengl;
 
-import java.util.ArrayList;
-
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSystem;
@@ -36,6 +34,7 @@ import loon.geom.Point.Point2i;
 import loon.geom.RectBox;
 import loon.geom.RectBox.Rect2i;
 import loon.utils.ArrayMap;
+import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -233,7 +232,7 @@ public class LTexturePack implements LRelease {
 			colorMask = new LColor(r, g, b, a);
 		}
 		if (fileName != null) {
-			ArrayList<XMLElement> blocks = pack.list("block");
+			TArray<XMLElement> blocks = pack.list("block");
 			for (XMLElement e : blocks) {
 				PackEntry entry = new PackEntry(null);
 				final int id = e.getIntAttribute("id", count);

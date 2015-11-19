@@ -21,8 +21,8 @@
  */
 package loon.component;
 
+
 import java.util.Iterator;
-import java.util.List;
 
 import loon.action.ActionBind;
 import loon.action.ArrowTo;
@@ -38,6 +38,7 @@ import loon.action.sprite.ISprite;
 import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public abstract class ActorLayer extends LContainer {
 
@@ -588,14 +589,14 @@ public abstract class ActorLayer extends LContainer {
 	 * 
 	 * @param objects
 	 */
-	public void removeObjects(List<?> objects) {
+	public void removeObjects(TArray<Actor> objects) {
 		if (isClose) {
 			return;
 		}
 		synchronized (objects) {
-			Iterator<?> iter = objects.iterator();
+			Iterator<Actor> iter = objects.iterator();
 			while (iter.hasNext()) {
-				Actor actor = (Actor) iter.next();
+				Actor actor = iter.next();
 				this.removeObject(actor);
 			}
 		}
@@ -607,7 +608,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param actor
 	 * @return
 	 */
-	public List<?> getCollisionObjects(Actor actor) {
+	public TArray<Actor> getCollisionObjects(Actor actor) {
 		if (isClose) {
 			return null;
 		}
@@ -645,7 +646,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param flag
 	 * @return
 	 */
-	public List<?> getCollisionObjects(String flag) {
+	public TArray<Actor> getCollisionObjects(String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -660,7 +661,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param flag
 	 * @return
 	 */
-	public List<?> getCollisionObjectsAt(float x, float y, String flag) {
+	public TArray<Actor> getCollisionObjectsAt(float x, float y, String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -721,7 +722,7 @@ public abstract class ActorLayer extends LContainer {
 		return objects.getSynchronizedObject(x, y);
 	}
 
-	List<?> getIntersectingObjects(Actor actor, String flag) {
+	TArray<Actor> getIntersectingObjects(Actor actor, String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -735,14 +736,14 @@ public abstract class ActorLayer extends LContainer {
 		return this.collisionChecker.getOnlyIntersectingObject(object, flag);
 	}
 
-	List<?> getObjectsInRange(float x, float y, float r, String flag) {
+	TArray<Actor> getObjectsInRange(float x, float y, float r, String flag) {
 		if (isClose) {
 			return null;
 		}
 		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
 	}
 
-	List<?> getNeighbours(Actor actor, float distance, boolean d, String flag) {
+	TArray<Actor> getNeighbours(Actor actor, float distance, boolean d, String flag) {
 		if (isClose) {
 			return null;
 		}
@@ -774,7 +775,7 @@ public abstract class ActorLayer extends LContainer {
 		return cellCenter;
 	}
 
-	List<?> getCollisionObjects(float x, float y) {
+	TArray<Actor> getCollisionObjects(float x, float y) {
 		if (isClose) {
 			return null;
 		}

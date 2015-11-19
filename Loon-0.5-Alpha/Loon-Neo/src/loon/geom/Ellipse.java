@@ -21,10 +21,9 @@
  */
 package loon.geom;
 
-import java.util.ArrayList;
-
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.TArray;
 
 public class Ellipse extends Shape {
 	/**
@@ -100,7 +99,7 @@ public class Ellipse extends Shape {
 	}
 
 	protected void createPoints() {
-		ArrayList<Float> tempPoints = new ArrayList<Float>();
+		TArray<Float> tempPoints = new TArray<Float>();
 
 		maxX = -Float.MIN_VALUE;
 		maxY = -Float.MIN_VALUE;
@@ -139,7 +138,7 @@ public class Ellipse extends Shape {
 			tempPoints.add(newX);
 			tempPoints.add(newY);
 		}
-		points = new float[tempPoints.size()];
+		points = new float[tempPoints.size];
 		for (int i = 0; i < points.length; i++) {
 			points[i] = tempPoints.get(i);
 		}

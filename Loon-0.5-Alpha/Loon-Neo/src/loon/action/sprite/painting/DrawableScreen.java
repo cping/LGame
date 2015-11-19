@@ -20,8 +20,6 @@
  */
 package loon.action.sprite.painting;
 
-import java.util.ArrayList;
-
 import loon.LGame;
 import loon.LSystem;
 import loon.Screen;
@@ -32,16 +30,17 @@ import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 import loon.utils.timer.GameTime;
 import loon.utils.timer.LTimerContext;
 
 public abstract class DrawableScreen extends Screen {
 
-	private ArrayList<Drawable> drawables;
+	private TArray<Drawable> drawables;
 
-	private ArrayList<Drawable> drawablesToUpdate;
+	private TArray<Drawable> drawablesToUpdate;
 
-	private ArrayList<Drawable> drawablesToDraw;
+	private TArray<Drawable> drawablesToDraw;
 
 	private GameComponentCollection gameCollection;
 
@@ -52,9 +51,9 @@ public abstract class DrawableScreen extends Screen {
 	private final GameTime gameTime = new GameTime();
 
 	public DrawableScreen() {
-		this.drawables = new ArrayList<Drawable>();
-		this.drawablesToUpdate = new ArrayList<Drawable>();
-		this.drawablesToDraw = new ArrayList<Drawable>();
+		this.drawables = new TArray<Drawable>();
+		this.drawablesToUpdate = new TArray<Drawable>();
+		this.drawablesToDraw = new TArray<Drawable>();
 		this.gameCollection = new GameComponentCollection();
 	}
 
@@ -75,7 +74,7 @@ public abstract class DrawableScreen extends Screen {
 		drawable.drawableScreen = this;
 		drawable.loadContent();
 		drawables.add(drawable);
-		for (int i = 0; i < drawables.size(); i++) {
+		for (int i = 0; i < drawables.size; i++) {
 			if (i == index) {
 				drawables.get(i)._enabled = true;
 			} else {
@@ -89,7 +88,7 @@ public abstract class DrawableScreen extends Screen {
 			batch.begin();
 
 			gameCollection.draw(batch, gameTime);
-			if (drawablesToDraw.size() > 0) {
+			if (drawablesToDraw.size > 0) {
 				drawablesToDraw.clear();
 			}
 			for (Drawable drawable : drawables) {
@@ -128,8 +127,8 @@ public abstract class DrawableScreen extends Screen {
 		}
 	}
 
-	public ArrayList<Drawable> getDrawables() {
-		return new ArrayList<Drawable>(drawables);
+	public TArray<Drawable> getDrawables() {
+		return new TArray<Drawable>(drawables);
 	}
 
 	public final void onLoad() {
@@ -182,7 +181,7 @@ public abstract class DrawableScreen extends Screen {
 		}
 
 		gameCollection.update(gameTime);
-		if (drawablesToUpdate.size() > 0) {
+		if (drawablesToUpdate.size > 0) {
 			drawablesToUpdate.clear();
 		}
 		for (Drawable drawable : drawables) {
@@ -194,12 +193,12 @@ public abstract class DrawableScreen extends Screen {
 
 		Drawable drawable;
 		int screenIndex;
-		for (; drawablesToUpdate.size() > 0;) {
+		for (; drawablesToUpdate.size > 0;) {
 
-			screenIndex = drawablesToUpdate.size() - 1;
+			screenIndex = drawablesToUpdate.size - 1;
 			drawable = drawablesToUpdate.get(screenIndex);
 
-			drawablesToUpdate.remove(screenIndex);
+			drawablesToUpdate.removeIndex(screenIndex);
 
 			if (drawable._enabled) {
 				drawable.update(gameTime, otherScreenHasFocus,

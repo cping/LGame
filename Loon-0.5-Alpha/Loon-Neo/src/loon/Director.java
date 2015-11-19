@@ -15,11 +15,10 @@
  */
 package loon;
 
-import java.util.ArrayList;
-
 import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -165,9 +164,9 @@ public class Director extends SoundBox {
 		return createOrigin(o, origin);
 	}
 
-	public static ArrayList<Vector2f> makeOrigins(Origin origin,
+	public static TArray<Vector2f> makeOrigins(Origin origin,
 			LObject... objs) {
-		ArrayList<Vector2f> result = new ArrayList<Vector2f>(objs.length);
+		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
 		for (LObject o : objs) {
 			result.add(createOrigin(o, origin));
 		}

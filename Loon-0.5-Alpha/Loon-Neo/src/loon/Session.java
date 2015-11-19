@@ -20,11 +20,10 @@
  */
 package loon;
 
-import java.util.ArrayList;
-
 import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 /**
  * 游戏记录器，用于记录当前游戏数据
@@ -133,7 +132,7 @@ public class Session {
 
 	private ArrayMap records;
 
-	private ArrayList<Record> recordsList;
+	private TArray<Record> recordsList;
 
 	public Session(String name) {
 		this(name, true);
@@ -151,7 +150,7 @@ public class Session {
 		}
 		this.name = name;
 		this.records = new ArrayMap(10);
-		this.recordsList = new ArrayList<Record>(10);
+		this.recordsList = new TArray<Record>(10);
 		if (gain) {
 			load();
 		}
@@ -171,7 +170,7 @@ public class Session {
 
 	public String getActiveID() {
 		synchronized (recordsList) {
-			for (int i = 0; i < recordsList.size(); i++) {
+			for (int i = 0; i < recordsList.size; i++) {
 				Record record = recordsList.get(i);
 				if (record.active) {
 					return record.name;
@@ -309,10 +308,10 @@ public class Session {
 	public void delete(String name) {
 		synchronized (recordsList) {
 			records.remove(name);
-			for (int i = 0; i < recordsList.size(); i++) {
+			for (int i = 0; i < recordsList.size; i++) {
 				Record record = recordsList.get(i);
 				if (record.name.equals(name)) {
-					recordsList.remove(i);
+					recordsList.removeIndex(i);
 					i--;
 				}
 			}
@@ -332,7 +331,7 @@ public class Session {
 
 	public int getSize() {
 		if (recordsList != null) {
-			return recordsList.size();
+			return recordsList.size;
 		} else {
 			return 0;
 		}
@@ -363,8 +362,8 @@ public class Session {
 	public String encode() {
 		synchronized (recordsList) {
 			StringBuffer sbr = new StringBuffer();
-			sbr.append(recordsList.size()).append(flag).toString();
-			for (int i = 0; i < recordsList.size(); i++) {
+			sbr.append(recordsList.size).append(flag).toString();
+			for (int i = 0; i < recordsList.size; i++) {
 				sbr.append((recordsList.get(i)).encode()).toString();
 			}
 			return sbr.toString();

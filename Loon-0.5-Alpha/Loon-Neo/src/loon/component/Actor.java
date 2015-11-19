@@ -21,8 +21,6 @@
  */
 package loon.component;
 
-import java.util.List;
-
 import loon.LObject;
 import loon.LRelease;
 import loon.LTexture;
@@ -44,6 +42,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 public class Actor extends LObject implements ActionBind, XY, LRelease {
@@ -825,12 +824,12 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 		}
 	}
 
-	public List<?> getNeighbours(float distance, boolean diagonal, String flag) {
+	public TArray<Actor> getNeighbours(float distance, boolean diagonal, String flag) {
 		this.failIfNotInLayer();
 		return this.getLLayer().getNeighbours(this, distance, diagonal, flag);
 	}
 
-	public List<?> getCollisionObjects(float dx, float dy, String flag) {
+	public TArray<Actor> getCollisionObjects(float dx, float dy, String flag) {
 		this.failIfNotInLayer();
 		return this.gameLayer.getCollisionObjectsAt(_location.x + dx,
 				_location.y + dy, flag);
@@ -842,21 +841,21 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 				_location.y + dy, flag);
 	}
 
-	public List<?> getCollisionObjects(float radius, String flag) {
+	public TArray<Actor> getCollisionObjects(float radius, String flag) {
 		this.failIfNotInLayer();
-		List<?> inRange = this.gameLayer.getObjectsInRange(_location.x,
+		TArray<Actor> inRange = this.gameLayer.getObjectsInRange(_location.x,
 				_location.y, radius, flag);
 		inRange.remove(this);
 		return inRange;
 	}
 
-	public List<?> getCollisionObjects() {
+	public TArray<Actor> getCollisionObjects() {
 		return getCollisionObjects(flag);
 	}
 
-	public List<?> getCollisionObjects(String flag) {
+	public TArray<Actor> getCollisionObjects(String flag) {
 		this.failIfNotInLayer();
-		List<?> list = this.gameLayer.getIntersectingObjects(this, flag);
+		TArray<Actor> list = this.gameLayer.getIntersectingObjects(this, flag);
 		list.remove(this);
 		return list;
 	}

@@ -20,18 +20,17 @@
  */
 package loon.utils.json;
 
-import java.util.TreeMap;
-import java.util.Map;
-
 import loon.Json;
 import loon.Json.TypedArray;
+import loon.utils.ObjectMap.Entry;
+import loon.utils.OrderedMap;
 
 class JsonObject implements Json.Object {
 
-	private final Map<String, Object> map;
+	private final OrderedMap<String, Object> map;
 
 	public JsonObject() {
-		map = new TreeMap<String, Object>();
+		map = new OrderedMap<String, Object>();
 	}
 
 	public static JsonBuilder<JsonObject> builder() {
@@ -152,7 +151,7 @@ class JsonObject implements Json.Object {
 
 	@Override
 	public TypedArray<String> keys() {
-		return new JsonStringTypedArray(map.keySet());
+		return new JsonStringTypedArray(map.keys());
 	}
 
 	@Override
@@ -175,8 +174,9 @@ class JsonObject implements Json.Object {
 
 	@Override
 	public <T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink) {
-		for (Map.Entry<String, Object> entry : map.entrySet())
-			sink.value(entry.getKey(), entry.getValue());
+		for (Entry<String, Object> entry: map.entries()){
+			sink.value(entry.key, entry.value);
+		}
 		return sink;
 	}
 

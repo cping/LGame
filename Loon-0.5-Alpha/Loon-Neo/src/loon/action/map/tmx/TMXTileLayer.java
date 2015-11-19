@@ -3,7 +3,6 @@ package loon.action.map.tmx;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -12,6 +11,7 @@ import loon.action.map.TileMapConfig;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.utils.Base64Coder;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
 public class TMXTileLayer extends TMXMapLayer {
@@ -105,8 +105,8 @@ public class TMXTileLayer extends TMXMapLayer {
 
 	private void parseXML(XMLElement element) {
 		XMLElement nodes = element.getChildrenByName("tile");
-		ArrayList<XMLElement> list = nodes.list();
-		for (int tileCount = 0; tileCount < list.size(); tileCount++) {
+		TArray<XMLElement> list = nodes.list();
+		for (int tileCount = 0; tileCount < list.size; tileCount++) {
 			XMLElement tileElement = list.get(tileCount);
 
 			int gid = MathUtils.parseUnsignedInt(tileElement.getAttribute(

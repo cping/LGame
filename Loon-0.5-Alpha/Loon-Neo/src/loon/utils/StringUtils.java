@@ -21,8 +21,6 @@
  */
 package loon.utils;
 
-import java.util.ArrayList;
-
 final public class StringUtils {
 
 	private StringUtils() {
@@ -101,7 +99,7 @@ final public class StringUtils {
 	 * @return
 	 */
 	public static String[] split(String str, Character flag) {
-		ArrayList<String> stringList = new ArrayList<String>();
+		TArray<String> stringList = new TArray<String>();
 		String tempString;
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < str.length(); i++) {
@@ -116,7 +114,7 @@ final public class StringUtils {
 		tempString = sb.toString();
 		stringList.add(tempString);
 		sb.setLength(0);
-		String[] stockArr = new String[stringList.size()];
+		String[] stockArr = new String[stringList.size];
 		stockArr = stringList.toArray(stockArr);
 		return stockArr;
 	}
@@ -129,7 +127,7 @@ final public class StringUtils {
 	 */
 	public static String[] splitCsv(String str)
 	  {
-	    ArrayList<String> stringList = new ArrayList<String>();
+	    TArray<String> stringList = new TArray<String>();
 	    String tempString;
 	    StringBuilder sb = new StringBuilder();
 	    for (int i = 0; i < str.length(); i++)
@@ -173,7 +171,7 @@ final public class StringUtils {
 	    tempString = sb.toString();
 	    stringList.add(tempString);
 	    sb.setLength(0);
-	    String[] stockArr = new String[stringList.size()];
+	    String[] stockArr = new String[stringList.size];
 	    stockArr = stringList.toArray(stockArr);
 	    return stockArr;
 	  }

@@ -1,7 +1,6 @@
 package loon.action.map;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import loon.LObject;
 import loon.LRelease;
@@ -17,6 +16,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class TileMap extends LObject implements ISprite, LRelease {
 
@@ -59,9 +59,9 @@ public class TileMap extends LObject implements ISprite, LRelease {
 
 	private LTexturePack imgPack;
 
-	private ArrayList<TileMap.Tile> arrays = new ArrayList<TileMap.Tile>(10);
+	private TArray<TileMap.Tile> arrays = new TArray<TileMap.Tile>(10);
 
-	private ArrayList<Animation> animations = new ArrayList<Animation>();
+	private TArray<Animation> animations = new TArray<Animation>();
 
 	private final int maxWidth, maxHeight;
 
@@ -148,7 +148,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 				arrays.remove(tile);
 			}
 		}
-		if (animations.size() == 0) {
+		if (animations.size == 0) {
 			playAnimation = false;
 		}
 	}
@@ -343,7 +343,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 				}
 			}
 		} else {
-			if (arrays.size() == 0) {
+			if (arrays.size == 0) {
 				throw new RuntimeException("Not to add any tiles !");
 			}
 			imgPack.glBegin();
@@ -613,7 +613,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 	}
 
 	public void update(long elapsedTime) {
-		if (playAnimation && animations.size() > 0) {
+		if (playAnimation && animations.size > 0) {
 			for (Animation a : animations) {
 				a.update(elapsedTime);
 			}

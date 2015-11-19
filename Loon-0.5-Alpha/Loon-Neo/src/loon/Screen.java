@@ -20,10 +20,6 @@
  */
 package loon;
 
-import java.util.ArrayList;
-
-
-
 import loon.action.collision.GravityHandler;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
@@ -49,6 +45,7 @@ import loon.stage.Stage;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
 import loon.utils.Array;
+import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
@@ -57,18 +54,18 @@ import loon.utils.timer.LTimerContext;
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
 	
-	private ArrayList<ScreenListener> screens;
+	private TArray<ScreenListener> screens;
 
 	private boolean useScreenListener;
 
 	public Screen addScreenListener(ScreenListener l) {
 		if (l != null) {
 			if (screens == null) {
-				screens = new ArrayList<ScreenListener>(10);
+				screens = new TArray<ScreenListener>(10);
 			}
 			screens.add(l);
 		}
-		useScreenListener = (screens != null && screens.size() > 0);
+		useScreenListener = (screens != null && screens.size > 0);
 		return this;
 	}
 
@@ -79,15 +76,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (l != null) {
 			screens.remove(l);
 		}
-		useScreenListener = (screens != null && screens.size() > 0);
+		useScreenListener = (screens != null && screens.size > 0);
 		return this;
 	}
 
-	private ArrayList<LRelease> releases;
+	private TArray<LRelease> releases;
 
 	public Screen putRelease(LRelease r) {
 		if (releases == null) {
-			releases = new ArrayList<LRelease>(10);
+			releases = new TArray<LRelease>(10);
 		}
 		releases.add(r);
 		return this;
@@ -95,7 +92,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public Screen putReleases(LRelease... rs) {
 		if (releases == null) {
-			releases = new ArrayList<LRelease>(10);
+			releases = new TArray<LRelease>(10);
 		}
 		final int size = rs.length;
 		for (int i = 0; i < size; i++) {
@@ -257,7 +254,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private PaintOrder userOrder, spriteOrder, desktopOrder;
 
-	private ArrayList<RectBox> limits = new ArrayList<RectBox>(10);
+	private TArray<RectBox> limits = new TArray<RectBox>(10);
 
 	private boolean replaceLoading;
 
@@ -391,7 +388,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public boolean isClickLimit(int x, int y) {
-		if (limits.size() == 0) {
+		if (limits.size == 0) {
 			return false;
 		}
 		for (RectBox rect : limits) {

@@ -20,13 +20,12 @@
  */
 package loon.opengl;
 
-import java.util.ArrayList;
-
 import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public final class LSTRDictionary {
 
@@ -47,7 +46,7 @@ public final class LSTRDictionary {
 
 	static class Dict implements LRelease {
 
-		ArrayList<Character> dicts;
+		TArray<Character> dicts;
 
 		LSTRFont font;
 
@@ -56,7 +55,7 @@ public final class LSTRDictionary {
 		}
 
 		Dict() {
-			dicts = new ArrayList<Character>(512);
+			dicts = new TArray<Character>(512);
 		}
 
 		public void close() {
@@ -106,15 +105,15 @@ public final class LSTRDictionary {
 				}
 				synchronized (pDict) {
 					cacheList.put(message, font);
-					ArrayList<Character> charas = pDict.dicts;
-					int oldSize = charas.size();
+					TArray<Character> charas = pDict.dicts;
+					int oldSize = charas.size;
 					char[] chars = message.toCharArray();
 					for (int i = 0; i < chars.length; i++) {
 						if (!charas.contains(chars[i])) {
 							charas.add(chars[i]);
 						}
 					}
-					int newSize = charas.size();
+					int newSize = charas.size;
 					if (oldSize != newSize) {
 						if (pDict.font != null) {
 							pDict.font.close();

@@ -20,8 +20,6 @@
  */
 package loon.component;
 
-import java.util.ArrayList;
-
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -30,6 +28,7 @@ import loon.geom.Path;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 
 //0.3.3版新增类,用以进行跨平台手势操作。
@@ -148,11 +147,11 @@ public class LGesture extends LComponent {
 		return null;
 	}
 
-	public ArrayList<Vector2f> getList() {
+	public TArray<Vector2f> getList() {
 		if (goalPath != null) {
 			float[] points = goalPath.getPoints();
 			int size = points.length;
-			ArrayList<Vector2f> result = new ArrayList<Vector2f>(size);
+			TArray<Vector2f> result = new TArray<Vector2f>(size);
 			for (int i = 0; i < size; i++) {
 				result.add(new Vector2f(points[i], points[i + 1]));
 			}

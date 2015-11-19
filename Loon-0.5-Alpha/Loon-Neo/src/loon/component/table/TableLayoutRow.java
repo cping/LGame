@@ -20,10 +20,9 @@
  */
 package loon.component.table;
 
-import java.util.ArrayList;
-
 import loon.component.LComponent;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 
 public class TableLayoutRow {
 
@@ -209,7 +208,7 @@ public class TableLayoutRow {
 
 	public void removeColumn(int column) {
 		int columnAdd = columns[column].getWidth() / (columns.length - 1);
-		ArrayList<TableColumnLayout> newColmns = new ArrayList<TableColumnLayout>();
+		TArray<TableColumnLayout> newColmns = new TArray<TableColumnLayout>();
 		for (int i = 0; i < columns.length; i++) {
 			if (i != column) {
 				columns[i].setWidth(columns[i].getWidth() + columnAdd);

@@ -20,8 +20,6 @@
  */
 package loon.action.sprite;
 
-import java.util.ArrayList;
-
 import loon.LObject;
 import loon.LSystem;
 import loon.Screen;
@@ -45,6 +43,7 @@ import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -61,13 +60,13 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private SpriteBatch batch;
 
-	private ArrayList<SpriteBatchObject> objects;
+	private TArray<SpriteBatchObject> objects;
 
-	private ArrayList<SpriteBatchObject> pendingAdd;
+	private TArray<SpriteBatchObject> pendingAdd;
 
-	private ArrayList<SpriteBatchObject> pendingRemove;
+	private TArray<SpriteBatchObject> pendingRemove;
 
-	private ArrayList<TileMap> tiles = new ArrayList<TileMap>(10);
+	private TArray<TileMap> tiles = new TArray<TileMap>(10);
 
 	private Vector2f offset = new Vector2f();
 
@@ -218,9 +217,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public SpriteBatchScreen() {
 		super();
-		this.objects = new ArrayList<SpriteBatchObject>(10);
-		this.pendingAdd = new ArrayList<SpriteBatchObject>(10);
-		this.pendingRemove = new ArrayList<SpriteBatchObject>(10);
+		this.objects = new TArray<SpriteBatchObject>(10);
+		this.pendingAdd = new TArray<SpriteBatchObject>(10);
+		this.pendingRemove = new TArray<SpriteBatchObject>(10);
 		this.init();
 	}
 
@@ -504,7 +503,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (isClose()) {
 			return;
 		}
-		final int additionCount = pendingAdd.size();
+		final int additionCount = pendingAdd.size;
 		if (additionCount > 0) {
 			for (int i = 0; i < additionCount; i++) {
 				SpriteBatchObject object = pendingAdd.get(i);
@@ -512,7 +511,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			}
 			pendingAdd.clear();
 		}
-		final int removalCount = pendingRemove.size();
+		final int removalCount = pendingRemove.size;
 		if (removalCount > 0) {
 			for (int i = 0; i < removalCount; i++) {
 				SpriteBatchObject object = pendingRemove.get(i);
@@ -536,7 +535,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public void removeTileObjects() {
-		final int count = objects.size();
+		final int count = objects.size;
 		final Object[] objectArray = objects.toArray();
 		for (int i = 0; i < count; i++) {
 			SpriteBatchObject o = (SpriteBatchObject) objectArray[i];
@@ -653,7 +652,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		JumpObject o = null;
 		if (indexTile != null) {
 			o = new JumpObject(x, y, w, h, a, indexTile);
-		} else if (tiles.size() > 0) {
+		} else if (tiles.size > 0) {
 			o = new JumpObject(x, y, w, h, a, tiles.get(0));
 		} else {
 			return null;
@@ -667,7 +666,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		MoveObject o = null;
 		if (indexTile != null) {
 			o = new MoveObject(x, y, w, h, a, indexTile);
-		} else if (tiles.size() > 0) {
+		} else if (tiles.size > 0) {
 			o = new MoveObject(x, y, w, h, a, tiles.get(0));
 		} else {
 			return null;

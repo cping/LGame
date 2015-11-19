@@ -1,11 +1,9 @@
 package loon.stage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.LGame;
 import loon.LProcess;
 import loon.LSystem;
+import loon.utils.TArray;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimerContext;
@@ -16,7 +14,7 @@ public class StageSystem extends PlayerUtils {
 
 	protected Controller _transitor;
 
-	protected final List<Stage> _screens = new ArrayList<Stage>();
+	protected final TArray<Stage> _screens = new TArray<Stage>();
 
 	public static final StageTransition DEF = new StageTransition() {
 		public boolean update(Stage o, Stage n, float elapsed) {
@@ -106,7 +104,7 @@ public class StageSystem extends PlayerUtils {
 		if (top() == newTopStage) {
 			return;
 		}
-		while (_screens.size() > 1 && _screens.get(1) != newTopStage) {
+		while (_screens.size > 1 && _screens.get(1) != newTopStage) {
 			justRemove(_screens.get(1));
 		}
 		remove(top(), trans);
@@ -120,7 +118,7 @@ public class StageSystem extends PlayerUtils {
 		if (_screens.isEmpty()) {
 			addAndShow(stage);
 		} else {
-			final Stage otop = _screens.remove(0);
+			final Stage otop = _screens.removeIndex(0);
 			transition(new Controller(otop, stage, trans) {
 				@Override
 				protected void onComplete() {
@@ -139,8 +137,8 @@ public class StageSystem extends PlayerUtils {
 		if (top() != stage) {
 			return justRemove(stage);
 		}
-		if (_screens.size() > 1) {
-			final Stage otop = _screens.remove(0);
+		if (_screens.size > 1) {
+			final Stage otop = _screens.removeIndex(0);
 			transition(new UnController(otop, top(), trans) {
 				@Override
 				protected void onComplete() {
@@ -164,7 +162,7 @@ public class StageSystem extends PlayerUtils {
 	}
 
 	public int size() {
-		return _screens.size();
+		return _screens.size;
 	}
 
 	protected StageTransition defaultPushTransition() {
@@ -180,7 +178,7 @@ public class StageSystem extends PlayerUtils {
 			throw new IllegalArgumentException(
 					"Cannot add stage to stack twice.");
 		}
-		_screens.add(0, stage);
+		_screens.insert(0, stage);
 		try {
 			stage.onAdded();
 		} catch (RuntimeException e) {

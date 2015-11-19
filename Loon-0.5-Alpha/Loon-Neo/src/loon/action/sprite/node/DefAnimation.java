@@ -20,9 +20,8 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
-
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class DefAnimation extends DefinitionObject {
 
@@ -41,9 +40,10 @@ public class DefAnimation extends DefinitionObject {
 		}
 	}
 
+	@Override
 	public void definitionObjectDidReceiveString(String v) {
 		super.definitionObjectDidReceiveString(v);
-		ArrayList<String> result = getResult(v);
+		TArray<String> result = getResult(v);
 		float time = 3f;
 		for (String list : result) {
 			if (list.length() > 2) {

@@ -1,6 +1,7 @@
 package loon.action;
 
-import java.util.ArrayList;
+import loon.utils.TArray;
+
 
 abstract class ActionTweenPool<T> {
 
@@ -9,11 +10,11 @@ abstract class ActionTweenPool<T> {
 		public void onUnPool(T obj);
 	}
 	
-	private final ArrayList<T> _objects;
+	private final TArray<T> _objects;
 	private final Callback<T> _callback;
 
 	public ActionTweenPool(int initCapacity, Callback<T> _callback) {
-		this._objects = new ArrayList<T>(initCapacity);
+		this._objects = new TArray<T>(initCapacity);
 		this._callback = _callback;
 	}
 
@@ -22,7 +23,7 @@ abstract class ActionTweenPool<T> {
 	public T get() {
 		T obj = null;
 		try {
-			obj = _objects.isEmpty() ? create() : _objects.remove(0);
+			obj = _objects.isEmpty() ? create() : _objects.removeIndex(0);
 		} catch (Exception e) {}
 		if (obj == null) {
 			obj = create();
@@ -48,7 +49,7 @@ abstract class ActionTweenPool<T> {
 	}
 
 	public int size() {
-		return _objects.size();
+		return _objects.size;
 	}
 
 	public void resize(int minCapacity) {

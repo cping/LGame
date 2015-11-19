@@ -21,14 +21,13 @@
  */
 package loon.component;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
 import loon.utils.ObjectSet;
 import loon.utils.SortedList;
+import loon.utils.TArray;
 
 public class BSPCollisionChecker implements CollisionChecker {
 
@@ -112,7 +111,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	@Override
-	public List<Actor> getActorsList() {
+	public TArray<Actor> getActorsList() {
 		if (bspTree != null) {
 			return bspTree.getActorsList();
 		}
@@ -420,11 +419,11 @@ public class BSPCollisionChecker implements CollisionChecker {
 		this.updateObject(object);
 	}
 
-	private List<Actor> getIntersectingObjects(float[] r, CollisionQuery query) {
+	private TArray<Actor> getIntersectingObjects(float[] r, CollisionQuery query) {
 		synchronized (cacheSet) {
 			cacheSet.clear();
 			this.getIntersectingObjects(r, query, cacheSet, this.bspTree);
-			ArrayList<Actor> l = new ArrayList<Actor>(cacheSet.size);
+			TArray<Actor> l = new TArray<Actor>(cacheSet.size);
 			for (Iterator<Actor> it = cacheSet.iterator(); it.hasNext();) {
 				l.add(it.next());
 			}
@@ -574,7 +573,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	@Override
-	public synchronized List<Actor> getObjectsAt(float x, float y, String flag) {
+	public synchronized TArray<Actor> getObjectsAt(float x, float y, String flag) {
 		synchronized (this.pointQuery) {
 			float px = x * this.cellSize + this.cellSize / 2f;
 			float py = y * this.cellSize + this.cellSize / 2f;
@@ -585,7 +584,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	@Override
-	public synchronized List<Actor> getIntersectingObjects(Actor actor,
+	public synchronized TArray<Actor> getIntersectingObjects(Actor actor,
 			String flag) {
 		RectBox r = this.getActorBounds(actor);
 		synchronized (this.actorQuery) {
@@ -595,7 +594,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	@Override
-	public synchronized List<Actor> getObjectsInRange(float x, float y,
+	public synchronized TArray<Actor> getObjectsInRange(float x, float y,
 			float r, String flag) {
 		float halfCell = this.cellSize / 2;
 		float size = 2 * r * this.cellSize;
@@ -609,7 +608,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		synchronized (this.inRangeQuery) {
 			this.inRangeQuery.init(x * this.cellSize + halfCell, y
 					* this.cellSize + halfCell, r * this.cellSize);
-			ArrayList<Actor> rangeResult = new ArrayList<Actor>();
+			TArray<Actor> rangeResult = new TArray<Actor>();
 			Iterator<Actor> it = cacheSet.iterator();
 			for (; it.hasNext();) {
 				Actor a = it.next();
@@ -622,7 +621,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	@Override
-	public synchronized List<Actor> getNeighbours(Actor actor, float distance,
+	public synchronized TArray<Actor> getNeighbours(Actor actor, float distance,
 			boolean diag, String flag) {
 		float x = actor.getX();
 		float y = actor.getY();
@@ -633,14 +632,14 @@ public class BSPCollisionChecker implements CollisionChecker {
 				dPixel * 2 + 1 };
 		synchronized (this.neighbourQuery) {
 			this.neighbourQuery.init(x, y, distance, diag, flag);
-			List<Actor> res = this.getIntersectingObjects(r,
+			TArray<Actor> res = this.getIntersectingObjects(r,
 					this.neighbourQuery);
 			return res;
 		}
 	}
 
 	@Override
-	public synchronized List<Actor> getObjectsList() {
+	public synchronized TArray<Actor> getObjectsList() {
 		return this.getObjects((String) null);
 	}
 
@@ -704,7 +703,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	@Override
-	public synchronized List<Actor> getObjects(String flag) {
+	public synchronized TArray<Actor> getObjects(String flag) {
 		synchronized (cacheSet) {
 			cacheSet.clear();
 		}
@@ -731,7 +730,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 					cacheNodeStack.add(right);
 				}
 			}
-			ArrayList<Actor> result = new ArrayList<Actor>(cacheSet.size);
+			TArray<Actor> result = new TArray<Actor>(cacheSet.size);
 			for (Iterator<Actor> it = cacheSet.iterator(); it.hasNext();) {
 				result.add(it.next());
 			}

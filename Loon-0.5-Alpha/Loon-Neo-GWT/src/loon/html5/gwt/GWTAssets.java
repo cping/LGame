@@ -20,8 +20,6 @@
  */
 package loon.html5.gwt;
 
-import java.util.List;
-
 import loon.Assets;
 import loon.LSystem;
 import loon.Sound;
@@ -31,6 +29,7 @@ import loon.html5.gwt.preloader.Blob;
 import loon.jni.XDomainRequest;
 import loon.utils.ObjectMap;
 import loon.utils.Scale;
+import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 
@@ -77,7 +76,7 @@ public class GWTAssets extends Assets {
 	public Image getImage(String path) {
 		Scale assetScale = (this.assetScale == null) ? Scale.ONE
 				: this.assetScale;
-		List<Scale.ScaledResource> rsrcs = assetScale.getScaledResources(path);
+		TArray<Scale.ScaledResource> rsrcs = assetScale.getScaledResources(path);
 		return localImage(rsrcs.get(0).path, rsrcs.get(0).scale);
 	}
 

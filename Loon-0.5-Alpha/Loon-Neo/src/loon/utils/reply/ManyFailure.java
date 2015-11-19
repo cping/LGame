@@ -22,8 +22,8 @@ package loon.utils.reply;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+
+import loon.utils.TArray;
 
 public class ManyFailure extends RuntimeException
 {
@@ -33,7 +33,7 @@ public class ManyFailure extends RuntimeException
 	 */
 	private static final long serialVersionUID = 1644703706897221876L;
 
-    protected List<Throwable> _failures = new ArrayList<Throwable>();
+    protected TArray<Throwable> _failures = new TArray<Throwable>();
     
 	public Iterable<Throwable> failures () {
         return _failures;
@@ -50,7 +50,7 @@ public class ManyFailure extends RuntimeException
             if (buf.length() > 0) buf.append(", ");
             buf.append(failure.getClass().getName()).append(": ").append(failure.getMessage());
         }
-        return _failures.size() + " failures: " + buf;
+        return _failures.size + " failures: " + buf;
     }
 
     @Override

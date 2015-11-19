@@ -1,6 +1,5 @@
 package loon.action.sprite;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 import loon.LObject;
@@ -14,6 +13,7 @@ import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.LayerSorter;
+import loon.utils.TArray;
 
 public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 
@@ -35,7 +35,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 
 	private IEntity _parent;
 
-	protected ArrayList<IEntity> _childrens;
+	protected TArray<IEntity> _childrens;
 
 	protected LColor _baseColor = new LColor(LColor.white);
 
@@ -384,7 +384,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 		if (this._childrens == null) {
 			return 0;
 		}
-		return this._childrens.size();
+		return this._childrens.size;
 	}
 
 	@Override
@@ -392,7 +392,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 		if (this._childrens == null) {
 			return null;
 		}
-		for (int i = this._childrens.size() - 1; i >= 0; i--) {
+		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			final IEntity child = this._childrens.get(i);
 			if (child.getIndexTag() == idx) {
 				return child;
@@ -422,7 +422,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 		if (this._childrens == null) {
 			return null;
 		}
-		return this._childrens.get(this._childrens.size() - 1);
+		return this._childrens.get(this._childrens.size - 1);
 	}
 
 	@Override
@@ -491,9 +491,9 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 		if (this._childrens == null) {
 			return null;
 		}
-		for (int i = this._childrens.size() - 1; i >= 0; i--) {
+		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			if (this._childrens.get(i).getIndexTag() == idx) {
-				final IEntity removed = this._childrens.remove(i);
+				final IEntity removed = this._childrens.removeIndex(i);
 				return removed;
 			}
 		}
@@ -543,8 +543,8 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 		this._baseColor.reset();
 
 		if (this._childrens != null) {
-			final ArrayList<IEntity> entities = this._childrens;
-			for (int i = entities.size() - 1; i >= 0; i--) {
+			final TArray<IEntity> entities = this._childrens;
+			for (int i = entities.size - 1; i >= 0; i--) {
 				entities.get(i).reset();
 			}
 		}
@@ -635,12 +635,12 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 	}
 
 	private void allocateChildren() {
-		this._childrens = new ArrayList<IEntity>(
+		this._childrens = new TArray<IEntity>(
 				Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
 	protected void onManagedPaint(final GLEx g) {
-		final ArrayList<IEntity> children = this._childrens;
+		final TArray<IEntity> children = this._childrens;
 		if ((children == null) || !this._childrenVisible) {
 			this.prePaint(g);
 			this.paint(g);
@@ -650,7 +650,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 				entitySorter.sort(this._childrens);
 				this._childrenSortPending = false;
 			}
-			final int childCount = children.size();
+			final int childCount = children.size;
 			int i = 0;
 			for (; i < childCount; i++) {
 				final IEntity child = children.get(i);
@@ -671,8 +671,8 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 
 	protected void onManagedUpdate(final long elapsedTime) {
 		if ((this._childrens != null) && !this._childrenIgnoreUpdate) {
-			final ArrayList<IEntity> entities = this._childrens;
-			final int entityCount = entities.size();
+			final TArray<IEntity> entities = this._childrens;
+			final int entityCount = entities.size;
 			for (int i = 0; i < entityCount; i++) {
 				entities.get(i).update(elapsedTime);
 			}
@@ -736,12 +736,12 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 	public void toString(final StringBuilder s) {
 		s.append(this.getClass().getSimpleName());
 
-		if ((this._childrens != null) && (this._childrens.size() > 0)) {
+		if ((this._childrens != null) && (this._childrens.size > 0)) {
 			s.append(" [");
-			final ArrayList<IEntity> entities = this._childrens;
-			for (int i = 0; i < entities.size(); i++) {
+			final TArray<IEntity> entities = this._childrens;
+			for (int i = 0; i < entities.size; i++) {
 				entities.get(i).toString(s);
-				if (i < (entities.size() - 1)) {
+				if (i < (entities.size - 1)) {
 					s.append(", ");
 				}
 			}

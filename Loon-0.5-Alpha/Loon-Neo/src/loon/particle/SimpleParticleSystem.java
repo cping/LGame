@@ -20,7 +20,6 @@
  */
 package loon.particle;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import loon.LSystem;
@@ -31,20 +30,21 @@ import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.GLUtils;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public class SimpleParticleSystem {
 
 	private static final int DEFAULT_PARTICLES = 100;
 
-	private ArrayList<SimpleEmitter> removeMe = new ArrayList<SimpleEmitter>();
+	private TArray<SimpleEmitter> removeMe = new TArray<SimpleEmitter>();
 
 	private class ParticlePool {
 		public SimpleParticle[] particles;
-		public ArrayList<SimpleParticle> available;
+		public TArray<SimpleParticle> available;
 
 		public ParticlePool(SimpleParticleSystem system, int maxParticles) {
 			particles = new SimpleParticle[maxParticles];
-			available = new ArrayList<SimpleParticle>();
+			available = new TArray<SimpleParticle>();
 
 			for (int i = 0; i < particles.length; i++) {
 				particles[i] = createParticle(system);
@@ -66,7 +66,7 @@ public class SimpleParticleSystem {
 
 	protected int maxParticlesPerEmitter;
 
-	protected ArrayList<SimpleEmitter> emitters = new ArrayList<SimpleEmitter>();
+	protected TArray<SimpleEmitter> emitters = new TArray<SimpleEmitter>();
 
 	protected SimpleParticle dummy;
 
@@ -103,7 +103,7 @@ public class SimpleParticleSystem {
 			pool.reset(this);
 		}
 
-		for (int i = 0; i < emitters.size(); i++) {
+		for (int i = 0; i < emitters.size; i++) {
 			SimpleEmitter emitter = emitters.get(i);
 			emitter.resetState();
 		}
@@ -163,7 +163,7 @@ public class SimpleParticleSystem {
 	}
 
 	public int getEmitterCount() {
-		return emitters.size();
+		return emitters.size;
 	}
 
 	public SimpleEmitter getEmitter(int index) {
@@ -183,7 +183,7 @@ public class SimpleParticleSystem {
 	}
 
 	public void removeAllEmitters() {
-		for (int i = 0; i < emitters.size(); i++) {
+		for (int i = 0; i < emitters.size; i++) {
 			removeEmitter(emitters.get(i));
 			i--;
 		}
@@ -219,7 +219,7 @@ public class SimpleParticleSystem {
 		g.save();
 		g.translate(x, y);
 
-		for (int emitterIdx = 0; emitterIdx < emitters.size(); emitterIdx++) {
+		for (int emitterIdx = 0; emitterIdx < emitters.size; emitterIdx++) {
 
 			SimpleEmitter emitter = emitters.get(emitterIdx);
 
@@ -282,9 +282,9 @@ public class SimpleParticleSystem {
 		}
 
 		removeMe.clear();
-		ArrayList<SimpleEmitter> emitters = new ArrayList<SimpleEmitter>(
+		TArray<SimpleEmitter> emitters = new TArray<SimpleEmitter>(
 				this.emitters);
-		for (int i = 0; i < emitters.size(); i++) {
+		for (int i = 0; i < emitters.size; i++) {
 			SimpleEmitter emitter = emitters.get(i);
 			if (emitter.isEnabled()) {
 				emitter.update(this, delta);
@@ -321,9 +321,9 @@ public class SimpleParticleSystem {
 
 	public SimpleParticle getNewParticle(SimpleEmitter emitter, float life) {
 		ParticlePool pool = particlesByEmitter.get(emitter);
-		ArrayList<SimpleParticle> available = pool.available;
-		if (available.size() > 0) {
-			SimpleParticle p = available.remove(available.size() - 1);
+		TArray<SimpleParticle> available = pool.available;
+		if (available.size > 0) {
+			SimpleParticle p = available.removeIndex(available.size - 1);
 			p.init(emitter, life);
 			p.setImage(sprite);
 

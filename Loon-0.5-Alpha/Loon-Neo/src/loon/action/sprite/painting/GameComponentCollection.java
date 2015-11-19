@@ -20,20 +20,20 @@
  */
 package loon.action.sprite.painting;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 
 import loon.action.sprite.SpriteBatch;
+import loon.utils.TArray;
 import loon.utils.timer.GameTime;
 
 public final class GameComponentCollection {
 
-	private ArrayList<IGameComponent> collections;
+	private TArray<IGameComponent> collections;
 
-	private ArrayList<IGameComponent> collectionsToUpdate;
+	private TArray<IGameComponent> collectionsToUpdate;
 
-	private ArrayList<IGameComponent> collectionsToDraw;
+	private TArray<IGameComponent> collectionsToDraw;
 
 	private Comparator<IGameComponent> igameDrawComparator = new Comparator<IGameComponent>() {
 		public int compare(IGameComponent one, IGameComponent two) {
@@ -57,25 +57,25 @@ public final class GameComponentCollection {
 	};
 
 	public GameComponentCollection() {
-		this.collections = new ArrayList<IGameComponent>();
-		this.collectionsToUpdate = new ArrayList<IGameComponent>();
-		this.collectionsToDraw = new ArrayList<IGameComponent>();
+		this.collections = new TArray<IGameComponent>();
+		this.collectionsToUpdate = new TArray<IGameComponent>();
+		this.collectionsToDraw = new TArray<IGameComponent>();
 	}
 
 	public int size() {
-		return collections.size();
+		return collections.size;
 	}
 
 	public void sortDraw() {
-		Collections.sort(collections, igameDrawComparator);
+		Arrays.sort(collections.items, igameDrawComparator);
 	}
 
 	public void sortUpdate() {
-		Collections.sort(collections, igameUpdateComparator);
+		Arrays.sort(collections.items, igameUpdateComparator);
 	}
 
-	public ArrayList<IGameComponent> list() {
-		return new ArrayList<IGameComponent>(collections);
+	public TArray<IGameComponent> list() {
+		return new TArray<IGameComponent>(collections);
 	}
 
 	public IGameComponent get(int idx) {
@@ -86,7 +86,7 @@ public final class GameComponentCollection {
 		if (isClear) {
 			return;
 		}
-		if (collectionsToDraw.size() > 0) {
+		if (collectionsToDraw.size > 0) {
 			collectionsToDraw.clear();
 		}
 		for (IGameComponent drawable : collections) {
@@ -111,7 +111,7 @@ public final class GameComponentCollection {
 		if (isClear) {
 			return;
 		}
-		if (collectionsToUpdate.size() > 0) {
+		if (collectionsToUpdate.size > 0) {
 			collectionsToUpdate.clear();
 		}
 		for (IGameComponent drawable : collections) {
@@ -120,12 +120,12 @@ public final class GameComponentCollection {
 
 		IGameComponent drawable;
 		int screenIndex;
-		for (; collectionsToUpdate.size() > 0;) {
+		for (; collectionsToUpdate.size > 0;) {
 
-			screenIndex = collectionsToUpdate.size() - 1;
+			screenIndex = collectionsToUpdate.size - 1;
 			drawable = collectionsToUpdate.get(screenIndex);
 
-			collectionsToUpdate.remove(screenIndex);
+			collectionsToUpdate.removeIndex(screenIndex);
 
 			if (drawable instanceof IUpdateable) {
 				IUpdateable comp = (IUpdateable) drawable;
@@ -171,7 +171,7 @@ public final class GameComponentCollection {
 		}
 		gc.initialize();
 		boolean result = collections.add(gc);
-		for (int i = 0; i < collections.size(); i++) {
+		for (int i = 0; i < collections.size; i++) {
 			if (collections.get(i) instanceof DrawableGameComponent) {
 				if (i == index) {
 					((DrawableGameComponent) collections.get(i))
@@ -214,7 +214,7 @@ public final class GameComponentCollection {
 		if (isClear) {
 			return false;
 		}
-		IGameComponent comp = collections.remove(idx);
+		IGameComponent comp = collections.removeIndex(idx);
 		boolean result = (comp != null);
 		if (result) {
 			if (comp instanceof DrawableGameComponent) {

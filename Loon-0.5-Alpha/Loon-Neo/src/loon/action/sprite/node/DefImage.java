@@ -20,12 +20,11 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
-
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class DefImage extends DefinitionObject {
 
@@ -71,7 +70,7 @@ public class DefImage extends DefinitionObject {
 
 	public void definitionObjectDidReceiveString(String v) {
 		super.definitionObjectDidReceiveString(v);
-		ArrayList<String> result = getResult(v);
+		TArray<String> result = getResult(v);
 		for (String list : result) {
 			if (list.length() > 2) {
 				String[] values = StringUtils.split(list, '=');

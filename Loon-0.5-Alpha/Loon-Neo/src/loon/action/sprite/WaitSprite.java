@@ -1,15 +1,12 @@
 package loon.action.sprite;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 public class WaitSprite extends LObject implements ISprite {
@@ -31,7 +28,7 @@ public class WaitSprite extends LObject implements ISprite {
 
 		private double r;
 
-		private ArrayList<Object> list;
+		private TArray<RectBox> list;
 
 		int width, height;
 
@@ -53,7 +50,7 @@ public class WaitSprite extends LObject implements ISprite {
 				int r1 = width / 8,
 				r2 = height / 8;
 				this.r = (r1 < r2 ? r1 : r2) / 2;
-				this.list = new ArrayList<Object>(Arrays.asList(new Object[] {
+				this.list = new TArray<RectBox>(new RectBox[] {
 						new RectBox(sx + 3 * r, sy + 0 * r, 2 * r, 2 * r),
 						new RectBox(sx + 5 * r, sy + 1 * r, 2 * r, 2 * r),
 						new RectBox(sx + 6 * r, sy + 3 * r, 2 * r, 2 * r),
@@ -61,7 +58,7 @@ public class WaitSprite extends LObject implements ISprite {
 						new RectBox(sx + 3 * r, sy + 6 * r, 2 * r, 2 * r),
 						new RectBox(sx + 1 * r, sy + 5 * r, 2 * r, 2 * r),
 						new RectBox(sx + 0 * r, sy + 3 * r, 2 * r, 2 * r),
-						new RectBox(sx + 1 * r, sy + 1 * r, 2 * r, 2 * r) }));
+						new RectBox(sx + 1 * r, sy + 1 * r, 2 * r, 2 * r) });
 				break;
 			case 1:
 				this.fill = new LColor(165, 0, 0, 255);
@@ -76,7 +73,7 @@ public class WaitSprite extends LObject implements ISprite {
 		public void next() {
 			switch (style) {
 			case 0:
-				list.add(list.remove(0));
+				list.add(list.removeIndex(0));
 				break;
 			case 1:
 				angle += ANGLE_STEP;
@@ -93,8 +90,7 @@ public class WaitSprite extends LObject implements ISprite {
 				int nx = x + width / 2 - (int) r * 4,
 				ny = y + height / 2 - (int) r * 4;
 				g.translate(nx, ny);
-				for (Iterator<Object> it = list.iterator(); it.hasNext();) {
-					RectBox s = (RectBox) it.next();
+				for (RectBox s : list) {
 					_alpha = _alpha + 0.1f;
 					g.setAlpha(_alpha);
 					g.fillOval(s.x, s.y, s.width, s.height);

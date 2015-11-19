@@ -1,19 +1,17 @@
 package loon.action.map.tmx.tiles;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.action.map.tmx.TMXProperties;
+import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
 public class TMXTile {
-	
+
 	private int id;
 	private int totalDuration;
 
 	private boolean animated;
 
-	private List<TMXAnimationFrame> frames;
+	private TArray<TMXAnimationFrame> frames;
 
 	private TMXProperties properties;
 
@@ -24,7 +22,7 @@ public class TMXTile {
 	public TMXTile(int id) {
 		this.id = id;
 
-		frames = new ArrayList<>();
+		frames = new TArray<>();
 		properties = new TMXProperties();
 	}
 
@@ -37,12 +35,12 @@ public class TMXTile {
 			properties.parse(nodes);
 		}
 		nodes = element.getChildrenByName("animation");
-		
+
 		if (nodes != null) {
 			animated = true;
-			ArrayList<XMLElement> tiles = nodes.list("frame");
+			TArray<XMLElement> tiles = nodes.list("frame");
 
-			for (int i = 0; i < tiles.size(); i++) {
+			for (int i = 0; i < tiles.size; i++) {
 				XMLElement frame = tiles.get(i);
 
 				int tileID = frame.getIntAttribute("tileid", 0);
@@ -65,14 +63,14 @@ public class TMXTile {
 	}
 
 	public int getFrameCount() {
-		return frames.size();
+		return frames.size;
 	}
 
 	public boolean isAnimated() {
 		return animated;
 	}
 
-	public List<TMXAnimationFrame> getFrames() {
+	public TArray<TMXAnimationFrame> getFrames() {
 		return frames;
 	}
 

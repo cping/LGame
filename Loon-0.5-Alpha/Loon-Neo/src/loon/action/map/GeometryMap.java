@@ -20,7 +20,7 @@
  */
 package loon.action.map;
 
-import java.util.List;
+import loon.utils.TArray;
 
 public interface GeometryMap {
 
@@ -38,8 +38,8 @@ public interface GeometryMap {
 
 	public int[] adjacent(int[] position, int orientation);
 
-	public List<int[]> lineRegion(int[] start, int[] end);
+	public TArray<int[]> lineRegion(int[] start, int[] end);
 
-	public List<int[]> circleRegion(int[] center, int radius);
+	public TArray<int[]> circleRegion(int[] center, int radius);
 
 }

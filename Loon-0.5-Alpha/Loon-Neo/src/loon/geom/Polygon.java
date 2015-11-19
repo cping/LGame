@@ -21,10 +21,9 @@
  */
 package loon.geom;
 
-import java.util.ArrayList;
-
 import loon.physics.PPolygon;
 import loon.utils.CollectionUtils;
+import loon.utils.TArray;
 
 public class Polygon extends Shape {
 	/**
@@ -191,13 +190,13 @@ public class Polygon extends Shape {
 		if (hasVertex(x, y) && (!allowDups)) {
 			return;
 		}
-		ArrayList<Float> tempPoints = new ArrayList<Float>();
+		TArray<Float> tempPoints = new TArray<Float>();
 		for (int i = 0; i < points.length; i++) {
 			tempPoints.add(points[i]);
 		}
 		tempPoints.add(x);
 		tempPoints.add(y);
-		int length = tempPoints.size();
+		int length = tempPoints.size;
 		this.points = new float[length];
 		for (int i = 0; i < length; i++) {
 			points[i] = tempPoints.get(i);

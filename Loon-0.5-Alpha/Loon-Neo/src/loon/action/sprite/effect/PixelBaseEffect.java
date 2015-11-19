@@ -1,7 +1,5 @@
 package loon.action.sprite.effect;
 
-import java.util.ArrayList;
-
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -9,6 +7,7 @@ import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 //此像素非真像素，而是指'像素风'……实际是三角形纹理贴图效果……
@@ -25,7 +24,7 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 
 	protected boolean complete;
 
-	protected ArrayList<TriangleEffect[]> triangleEffects = new ArrayList<TriangleEffect[]>();
+	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
 
 	protected LColor color;
 

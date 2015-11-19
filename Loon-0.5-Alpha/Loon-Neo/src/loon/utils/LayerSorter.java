@@ -47,4 +47,11 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 		this.sort(es, s, e, this.zIndexComparator);
 	}
 
+	public void sort(final TArray<T> es) {
+		this.sort(es, this.zIndexComparator);
+	}
+
+	public void sort(final TArray<T> es, final int s, final int e) {
+		this.sort(es, s, e, this.zIndexComparator);
+	}
 }

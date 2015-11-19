@@ -20,11 +20,15 @@
  */
 package loon.utils.reply;
 
-import java.util.HashSet;
+import loon.utils.ObjectSet;
 
+//如果报错，请确认自己的jdk为1.7或以上，因为AutoCloseable这个资源标记是1.7才开始有的
 public interface Closeable extends AutoCloseable {
 
     class Set implements Closeable {
+    	
+        protected ObjectSet<AutoCloseable> _set; 
+    	
         @Override public void close () {
             if (_set != null) {
                 ManyFailure error = null;
@@ -45,7 +49,7 @@ public interface Closeable extends AutoCloseable {
 
         public <T extends AutoCloseable> T add (T c) {
             if (_set == null){
-            	_set = new HashSet<>();
+            	_set = new ObjectSet<>();
             }
             _set.add(c);
             return c;
@@ -57,7 +61,6 @@ public interface Closeable extends AutoCloseable {
             }
         }
 
-        protected HashSet<AutoCloseable> _set; 
     }
 
     class Shutdown {

@@ -20,41 +20,40 @@
  */
 package loon.utils.reply;
 
-import java.util.ArrayList;
-import java.util.List;
+import loon.utils.TArray;
 
 public class CallbackList<T> implements Callback<T> {
 
-	public static <T> List<Callback<T>> createAdd(List<Callback<T>> list,
+	public static <T> TArray<Callback<T>> createAdd(TArray<Callback<T>> list,
 			Callback<T> callback) {
 		if (list == null){
-			list = new ArrayList<Callback<T>>();
+			list = new TArray<Callback<T>>();
 		}
 		list.add(callback);
 		return list;
 	}
 
-	public static <T> List<Callback<T>> dispatchSuccessClear(
-			List<Callback<T>> list, T result) {
+	public static <T> TArray<Callback<T>> dispatchSuccessClear(
+			TArray<Callback<T>> list, T result) {
 		if (list != null) {
-			for (int ii = 0, ll = list.size(); ii < ll; ii++){
+			for (int ii = 0, ll = list.size; ii < ll; ii++){
 				list.get(ii).onSuccess(result);
 			}
 		}
 		return null;
 	}
 
-	public static <T> List<Callback<T>> dispatchFailureClear(
-			List<Callback<T>> list, Throwable cause) {
+	public static <T> TArray<Callback<T>> dispatchFailureClear(
+			TArray<Callback<T>> list, Throwable cause) {
 		if (list != null) {
-			for (int ii = 0, ll = list.size(); ii < ll; ii++){
+			for (int ii = 0, ll = list.size; ii < ll; ii++){
 				list.get(ii).onFailure(cause);
 			}
 		}
 		return null;
 	}
 
-	private ArrayList<Callback<T>> callbacks = new ArrayList<Callback<T>>();
+	private TArray<Callback<T>> callbacks = new TArray<Callback<T>>();
 
 	protected void checkState() {
 		if (callbacks == null) {

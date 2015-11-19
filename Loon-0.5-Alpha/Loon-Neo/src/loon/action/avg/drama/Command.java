@@ -20,10 +20,6 @@
  */
 package loon.action.avg.drama;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
@@ -35,6 +31,7 @@ import loon.utils.ArrayMap.Entry;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class Command extends Conversion implements LRelease {
 
@@ -97,11 +94,11 @@ public class Command extends Conversion implements LRelease {
 
 	private Command innerCommand;
 
-	private List<String> temps;
+	private TArray<String> temps;
 
-	private List<String> printTags;
+	private TArray<String> printTags;
 
-	private List<String> randTags;
+	private TArray<String> randTags;
 
 	private int scriptSize;
 
@@ -218,8 +215,8 @@ public class Command extends Conversion implements LRelease {
 		boolean result = false;
 		conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(false));
 		try {
-			List<String> temps = commandSplit(commandString);
-			int size = temps.size();
+			TArray<String> temps = commandSplit(commandString);
+			int size = temps.size;
 			Object valueA = null;
 			Object valueB = null;
 			String condition = null;
@@ -233,9 +230,9 @@ public class Command extends Conversion implements LRelease {
 				condition = temps.get(2);
 			} else {
 				int count = 0;
-				StringBuffer sbr = new StringBuffer();
-				for (Iterator<String> it = temps.iterator(); it.hasNext();) {
-					String res = it.next();
+				StringBuilder sbr = new StringBuilder();
+				for (int i = 0; i < temps.size; i++) {
+					String res = temps.get(i);
 					if (count > 0) {
 						if (!isCondition(res)) {
 							sbr.append(res);
@@ -387,8 +384,8 @@ public class Command extends Conversion implements LRelease {
 	 */
 	public static String getNameTag(String messages, String startString,
 			String endString) {
-		List<String> results = getNameTags(messages, startString, endString);
-		return (results == null || results.size() == 0) ? null : results.get(0);
+		TArray<String> results = getNameTags(messages, startString, endString);
+		return (results == null || results.size == 0) ? null : results.get(0);
 	}
 
 	/**
@@ -399,8 +396,8 @@ public class Command extends Conversion implements LRelease {
 	 * @param endString
 	 * @return
 	 */
-	public static List<String> getNameTags(String messages, String startString,
-			String endString) {
+	public static TArray<String> getNameTags(String messages,
+			String startString, String endString) {
 		return Command.getNameTags(messages.toCharArray(),
 				startString.toCharArray(), endString.toCharArray());
 	}
@@ -413,17 +410,17 @@ public class Command extends Conversion implements LRelease {
 	 * @param endString
 	 * @return
 	 */
-	public static List<String> getNameTags(char[] messages, char[] startString,
-			char[] endString) {
+	public static TArray<String> getNameTags(char[] messages,
+			char[] startString, char[] endString) {
 		int dlength = messages.length;
 		int slength = startString.length;
 		int elength = endString.length;
-		List<String> tagList = new ArrayList<String>(10);
+		TArray<String> tagList = new TArray<String>(10);
 		boolean lookup = false;
 		int lookupStartIndex = 0;
 		int lookupEndIndex = 0;
 		int length;
-		StringBuffer sbr = new StringBuffer(100);
+		StringBuilder sbr = new StringBuilder(100);
 		for (int i = 0; i < dlength; i++) {
 			char tag = messages[i];
 			if (tag == startString[lookupStartIndex]) {
@@ -542,8 +539,8 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @return
 	 */
-	public List<String> batchToList() {
-		List<String> reslist = new ArrayList<String>(scriptSize);
+	public TArray<String> batchToList() {
+		TArray<String> reslist = new TArray<String>(scriptSize);
 		for (; next();) {
 			String execute = doExecute();
 			if (execute != null) {
@@ -559,7 +556,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String batchToString() {
-		StringBuffer resString = new StringBuffer(scriptSize * 10);
+		StringBuilder resString = new StringBuilder(scriptSize * 10);
 		for (; next();) {
 			String execute = doExecute();
 			if (execute != null) {
@@ -572,14 +569,14 @@ public class Command extends Conversion implements LRelease {
 
 	private void setupSET(String cmd) {
 		if (cmd.startsWith(SET_TAG)) {
-			List<String> temps = commandSplit(cmd);
-			int len = temps.size();
+			TArray<String> temps = commandSplit(cmd);
+			int len = temps.size;
 			String result = null;
 			if (len == 4) {
 				result = temps.get(3).toString();
 			} else if (len > 4) {
-				StringBuffer sbr = new StringBuffer(len);
-				for (int i = 3; i < temps.size(); i++) {
+				StringBuilder sbr = new StringBuilder(len);
+				for (int i = 3; i < temps.size; i++) {
 					sbr.append(temps.get(i));
 				}
 				result = sbr.toString();
@@ -625,8 +622,8 @@ public class Command extends Conversion implements LRelease {
 			randTags = Command.getNameTags(cmd, RAND_TAG + BRACKET_LEFT_TAG,
 					BRACKET_RIGHT_TAG);
 			if (randTags != null) {
-				for (Iterator<String> it = randTags.iterator(); it.hasNext();) {
-					String key = it.next();
+				for (int i=0;i<randTags.size;i++) {
+					String key = randTags.get(i);
 					Object value = setEnvironmentList.get(key);
 					// 已存在变量
 					if (value != null) {
@@ -774,7 +771,7 @@ public class Command extends Conversion implements LRelease {
 			// 标注脚本中代码段标记
 			if (cmd.startsWith(BEGIN_TAG)) {
 				temps = commandSplit(cmd);
-				if (temps.size() == 2) {
+				if (temps.size == 2) {
 					functioning = true;
 					functions.put(temps.get(1), new String[0]);
 					return executeCommand;
@@ -796,7 +793,7 @@ public class Command extends Conversion implements LRelease {
 			if (((!esleflag && !ifing) || (esleflag && ifing))
 					&& cmd.startsWith(CALL_TAG) && !isCall) {
 				temps = commandSplit(cmd);
-				if (temps.size() == 2) {
+				if (temps.size == 2) {
 					String functionName = temps.get(1);
 					String[] funs = (String[]) functions.get(functionName);
 					if (funs != null) {
@@ -907,14 +904,14 @@ public class Command extends Conversion implements LRelease {
 
 			if (cmd.startsWith(FLAG_SAVE_TAG)) {
 				temps = commandSplit(cmd);
-				if (temps != null && temps.size() == 2) {
+				if (temps != null && temps.size == 2) {
 					executeCommand = cmd;
 					saveCommand(null, null);
 					return executeCommand;
 				}
 			} else if (cmd.startsWith(FLAG_LOAD_TAG)) {
 				temps = commandSplit(cmd);
-				if (temps != null && temps.size() == 2) {
+				if (temps != null && temps.size == 2) {
 					executeCommand = cmd;
 					loadCommand(null, -1);
 					return executeCommand;
@@ -926,9 +923,8 @@ public class Command extends Conversion implements LRelease {
 				printTags = Command.getNameTags(executeCommand, PRINT_TAG
 						+ BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
 				if (printTags != null) {
-					for (Iterator<String> it = printTags.iterator(); it
-							.hasNext();) {
-						String key = it.next();
+					for (int i=0;i<printTags.size;i++) {
+						String key = printTags.get(i);
 						Object value = setEnvironmentList.get(key);
 						if (value != null) {
 							executeCommand = StringUtils
@@ -986,7 +982,7 @@ public class Command extends Conversion implements LRelease {
 	public final void saveCommand(String name, ArrayMap other) {
 		isRead = false;
 		addCommand = false;
-		if (name == null && temps != null && temps.size() > 0) {
+		if (name == null && temps != null && temps.size > 0) {
 			name = temps.get(1);
 		}
 		Session session = new Session(getSaveName(name), false);
@@ -1038,10 +1034,11 @@ public class Command extends Conversion implements LRelease {
 	 * @param other
 	 * @return
 	 */
-	public final ArrayMap loadCommand(String name, int line, List<String> other) {
+	public final ArrayMap loadCommand(String name, int line,
+			TArray<String> other) {
 		isRead = false;
 		addCommand = false;
-		if (name == null && temps != null && temps.size() > 0) {
+		if (name == null && temps != null && temps.size > 0) {
 			name = temps.get(1);
 		}
 		Session session = Session.load(getSaveName(name));
@@ -1069,7 +1066,7 @@ public class Command extends Conversion implements LRelease {
 			if (other == null) {
 				return null;
 			} else {
-				final int size = other.size();
+				final int size = other.size;
 				ArrayMap result = new ArrayMap(size);
 				for (int i = 0; i < size; i++) {
 					String otherName = other.get(i);
@@ -1089,8 +1086,8 @@ public class Command extends Conversion implements LRelease {
 	 */
 	private final boolean includeCommand(String cmd) {
 		temps = commandSplit(cmd);
-		StringBuffer sbr = new StringBuffer();
-		for (int i = 1; i < temps.size(); i++) {
+		StringBuilder sbr = new StringBuilder();
+		for (int i = 1; i < temps.size; i++) {
 			sbr.append(temps.get(i));
 		}
 		String fileName = sbr.toString();
@@ -1158,10 +1155,10 @@ public class Command extends Conversion implements LRelease {
 	 * @param src
 	 * @return
 	 */
-	public static List<String> commandSplit(final String src) {
+	public static TArray<String> commandSplit(final String src) {
 		String result = updateOperator(src);
 		String[] cmds = result.split(FLAG);
-		return Arrays.asList(cmds);
+		return new TArray<String>(cmds);
 	}
 
 	/**

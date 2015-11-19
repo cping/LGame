@@ -20,28 +20,27 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
-
 import loon.LRelease;
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.Animation;
+import loon.utils.TArray;
 
 public class LNAnimationTexture implements LRelease{
 
 	protected float _duration;
 
-	private ArrayList<LTexture> _asList;
+	private TArray<LTexture> _asList;
 
-	private ArrayList<Float> _timeList;
+	private TArray<Float> _timeList;
 
 	private String _name;
 
 	protected float _totalDuration;
 
 	public LNAnimationTexture() {
-		this._asList = new ArrayList<LTexture>();
-		this._timeList = new ArrayList<Float>();
+		this._asList = new TArray<LTexture>();
+		this._timeList = new TArray<Float>();
 		this._totalDuration = 0f;
 	}
 
@@ -66,8 +65,8 @@ public class LNAnimationTexture implements LRelease{
 	}
 
 	public LNAnimationTexture(String aName, float duration, Animation as) {
-		this._asList = new ArrayList<LTexture>(as.getTotalFrames());
-		this._timeList = new ArrayList<Float>(as.getTotalFrames());
+		this._asList = new TArray<LTexture>(as.getTotalFrames());
+		this._timeList = new TArray<Float>(as.getTotalFrames());
 		this._name = aName;
 		this._duration = duration;
 		for (int i = 0; i < as.getTotalFrames(); i++) {
@@ -76,8 +75,8 @@ public class LNAnimationTexture implements LRelease{
 	}
 
 	public LNAnimationTexture(String aName, float duration, String... pathList) {
-		this._asList = new ArrayList<LTexture>(pathList.length);
-		this._timeList = new ArrayList<Float>();
+		this._asList = new TArray<LTexture>(pathList.length);
+		this._timeList = new TArray<Float>();
 		this._name = aName;
 		this._duration = duration;
 		for (int i = 0; i < pathList.length; i++) {
@@ -102,7 +101,7 @@ public class LNAnimationTexture implements LRelease{
 	}
 
 	public final int frameCount() {
-		return this._asList.size();
+		return this._asList.size;
 	}
 
 	public final LTexture getFrame(int idx) {
@@ -114,7 +113,7 @@ public class LNAnimationTexture implements LRelease{
 			return this._asList.get(0);
 		}
 		time *= this._totalDuration;
-		for (int i = 0; i < this._timeList.size(); i++) {
+		for (int i = 0; i < this._timeList.size; i++) {
 			float num2 = this._timeList.get(i);
 			if (time > num2) {
 				time -= num2;
@@ -122,7 +121,7 @@ public class LNAnimationTexture implements LRelease{
 				return this._asList.get(i);
 			}
 		}
-		return this._asList.get(this._asList.size() - 1);
+		return this._asList.get(this._asList.size - 1);
 	}
 
 	public final float getFrameTime(int idx) {
@@ -130,7 +129,7 @@ public class LNAnimationTexture implements LRelease{
 	}
 
 	public final void setAnimationTime(float totalTime) {
-		int count = this._timeList.size();
+		int count = this._timeList.size;
 		if (count > 0) {
 			float item = totalTime / ((float) count);
 			this._timeList.clear();

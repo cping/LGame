@@ -20,9 +20,6 @@
  */
 package loon.particle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.opengl.BaseBatch;
 import loon.opengl.GLEx;
 import loon.opengl.Painter;
@@ -31,6 +28,7 @@ import loon.particle.ParticleBuffer.Effector;
 import loon.particle.ParticleBuffer.Initializer;
 import loon.stage.Player;
 import loon.stage.PlayerUtils;
+import loon.utils.TArray;
 import loon.utils.reply.Act;
 import loon.utils.reply.Port;
 import loon.utils.reply.UnitPort;
@@ -46,9 +44,9 @@ public class ParticleEmitter {
 
 	public ParticleGenerator generator;
 
-	public final List<Initializer> initters = new ArrayList<Initializer>();
+	public final TArray<Initializer> initters = new TArray<Initializer>();
 
-	public final List<Effector> effectors = new ArrayList<Effector>();
+	public final TArray<Effector> effectors = new TArray<Effector>();
 
 	public final Act<ParticleEmitter> onExhausted = Act.create();
 
@@ -83,7 +81,7 @@ public class ParticleEmitter {
 		if (_buffer.isFull()){
 			return;
 		}
-		for (int ii = 0, ll = initters.size(); ii < ll; ii++){
+		for (int ii = 0, ll = initters.size; ii < ll; ii++){
 			initters.get(ii).willInit(count);
 		}
 		_buffer.add(count, _time, initters);

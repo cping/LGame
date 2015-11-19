@@ -1,6 +1,5 @@
 package loon.utils;
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
@@ -227,7 +226,7 @@ public class ConfigReader implements Expression {
 			char[] chars = v.toCharArray();
 			int size = chars.length;
 			StringBuffer sbr = new StringBuffer(128);
-			ArrayList<int[]> records = new ArrayList<int[]>(
+			TArray<int[]> records = new TArray<int[]>(
 					CollectionUtils.INITIAL_CAPACITY);
 			for (int i = 0; i < size; i++) {
 				char pValue = chars[i];
@@ -256,7 +255,7 @@ public class ConfigReader implements Expression {
 					break;
 				}
 			}
-			int col = records.size();
+			int col = records.size;
 			int[][] result = new int[col][];
 			for (int i = 0; i < col; i++) {
 				result[i] = records.get(i);

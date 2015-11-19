@@ -20,8 +20,6 @@
  */
 package loon.opengl;
 
-import java.util.ArrayList;
-
 import loon.Graphics;
 import loon.LRelease;
 import loon.LSystem;
@@ -44,6 +42,7 @@ import loon.utils.Array;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class GLEx extends PixmapFImpl implements LRelease {
 
@@ -81,7 +80,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private final LTexture colorTex;
 	protected final RenderTarget target;
 
-	private final ArrayList<RectBox> scissors = new ArrayList<RectBox>();
+	private final TArray<RectBox> scissors = new TArray<RectBox>();
 	private int scissorDepth;
 	private int fillColor = LColor.DEF_COLOR;
 	private int baseColor = LColor.DEF_COLOR;
@@ -1014,35 +1013,35 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public int getClipX() {
-		if (scissors.size() == 0) {
+		if (scissors.size == 0) {
 			return 0;
 		}
 		return scissors.get(scissorDepth).x();
 	}
 
 	public int getClipY() {
-		if (scissors.size() == 0) {
+		if (scissors.size == 0) {
 			return 0;
 		}
 		return scissors.get(scissorDepth).y();
 	}
 
 	public int getClipWidth() {
-		if (scissors.size() == 0) {
+		if (scissors.size == 0) {
 			return 0;
 		}
 		return scissors.get(scissorDepth).width;
 	}
 
 	public int getClipHeight() {
-		if (scissors.size() == 0) {
+		if (scissors.size == 0) {
 			return 0;
 		}
 		return scissors.get(scissorDepth).height;
 	}
 
 	private RectBox pushScissorState(int x, int y, int width, int height) {
-		if (scissorDepth == scissors.size()) {
+		if (scissorDepth == scissors.size) {
 			scissors.add(new RectBox());
 		}
 		RectBox r = scissors.get(scissorDepth);

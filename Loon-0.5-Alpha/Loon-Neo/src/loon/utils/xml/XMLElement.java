@@ -20,11 +20,11 @@
  */
 package loon.utils.xml;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public class XMLElement {
 
@@ -32,13 +32,13 @@ public class XMLElement {
 
 	private ObjectMap<String, XMLAttribute> attributes;
 
-	private ArrayList<Object> contents;
+	private TArray<Object> contents;
 
 	private XMLElement parent;
 
 	XMLElement(String name) {
 		this.attributes = new ObjectMap<String, XMLAttribute>();
-		this.contents = new ArrayList<Object>();
+		this.contents = new TArray<Object>();
 		this.name = name;
 	}
 
@@ -135,19 +135,12 @@ public class XMLElement {
 		return this.attributes.containsKey(name);
 	}
 
-	public Iterator<?> elements() {
+	public Iterator<Object> elements() {
 		return this.contents.iterator();
 	}
 
-	/*
-	 * public int size() { return this.contents.size(); }
-	 * 
-	 * public XMLElement item(int idx){ return (XMLElement)
-	 * this.getParent().contents.get(idx); }
-	 */
-
-	public ArrayList<XMLElement> list() {
-		ArrayList<XMLElement> lists = new ArrayList<XMLElement>(contents.size());
+	public TArray<XMLElement> list() {
+		TArray<XMLElement> lists = new TArray<XMLElement>(contents.size);
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
 			if (!(o instanceof XMLElement)) {
@@ -181,8 +174,8 @@ public class XMLElement {
 		return null;
 	}
 
-	public ArrayList<XMLElement> find(String name) {
-		ArrayList<XMLElement> v = new ArrayList<XMLElement>();
+	public TArray<XMLElement> find(String name) {
+		TArray<XMLElement> v = new TArray<XMLElement>();
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
 			if ((!(o instanceof XMLElement))) {
@@ -205,8 +198,8 @@ public class XMLElement {
 		return v;
 	}
 
-	public ArrayList<XMLElement> list(String name) {
-		ArrayList<XMLElement> v = new ArrayList<XMLElement>();
+	public TArray<XMLElement> list(String name) {
+		TArray<XMLElement> v = new TArray<XMLElement>();
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
 			if ((!(o instanceof XMLElement))
@@ -219,7 +212,7 @@ public class XMLElement {
 	}
 
 	public Iterator<?> elements(String name) {
-		ArrayList<Object> v = new ArrayList<Object>();
+		TArray<Object> v = new TArray<Object>();
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
 			if ((!(o instanceof XMLElement))
@@ -231,7 +224,7 @@ public class XMLElement {
 		return v.iterator();
 	}
 
-	public void addAllTo(ArrayList<XMLElement> list) {
+	public void addAllTo(TArray<XMLElement> list) {
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
 			if ((!(o instanceof XMLElement))

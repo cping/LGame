@@ -1,13 +1,12 @@
 package loon.utils.processes;
 
-import java.util.ArrayList;
-
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public class ProgressMonitor implements ProgressListener {
 
-	private final ArrayList<ProgressListener> _progressListeners = new ArrayList<ProgressListener>();
+	private final TArray<ProgressListener> _progressListeners = new TArray<ProgressListener>();
 	private final ObjectMap<ProgressMonitor, ProgressListener> _childProgressMonitorToProgressListenerMap = new ObjectMap<ProgressMonitor, ProgressListener>();
 
 	public ProgressMonitor() {
@@ -20,7 +19,7 @@ public class ProgressMonitor implements ProgressListener {
 
 	@Override
 	public void onProgressChanged(final int p) {
-		final int progressListenerCount = this._progressListeners.size();
+		final int progressListenerCount = this._progressListeners.size;
 		for (int i = 0; i < progressListenerCount; i++) {
 			this._progressListeners.get(i).onProgressChanged(p);
 		}

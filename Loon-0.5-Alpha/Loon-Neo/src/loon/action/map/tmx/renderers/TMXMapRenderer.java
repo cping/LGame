@@ -43,7 +43,7 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 			if (elapsedDuration >= tile.getFrames().get(currentFrameIndex)
 					.getDuration()) {
 				currentFrameIndex = (currentFrameIndex + 1)
-						% tile.getFrames().size();
+						% tile.getFrames().size;
 				elapsedDuration = 0;
 			}
 		}
@@ -266,7 +266,7 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 	}
 
 	public int hashCode() {
-		int result = map.getTileSets().size();
+		int result = map.getTileSets().size;
 		result = LSystem.unite(result, _location.x);
 		result = LSystem.unite(result, _location.y);
 		result = LSystem.unite(result, map.getTileHeight());

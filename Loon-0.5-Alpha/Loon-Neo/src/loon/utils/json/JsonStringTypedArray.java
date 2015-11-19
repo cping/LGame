@@ -20,29 +20,32 @@
  */
 package loon.utils.json;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import loon.Json;
+import loon.utils.TArray;
+import loon.utils.ObjectMap.Keys;
 
-class JsonStringTypedArray extends ArrayList<String> implements Json.TypedArray<String> {
-  private static final long serialVersionUID = 1L;
+class JsonStringTypedArray extends TArray<String> implements
+		Json.TypedArray<String> {
 
-  public JsonStringTypedArray(Collection<String> contents) {
-    super(contents);
-  }
-  
-  @Override
-  public int length() {
-    return size();
-  }
+	public JsonStringTypedArray(String... contents) {
+		super(contents);
+	}
 
-  @Override
-  public String get(int index, String dflt) {
-    String s = get(index);
-    if (s == null)
-      return dflt;
-    
-    return s;
-  }
+	public JsonStringTypedArray(Keys<String> keys) {
+		super(keys);
+	}
+
+	@Override
+	public int length() {
+		return size;
+	}
+
+	@Override
+	public String get(int index, String dflt) {
+		String s = get(index);
+		if (s == null)
+			return dflt;
+
+		return s;
+	}
 }

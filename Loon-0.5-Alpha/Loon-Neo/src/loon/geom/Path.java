@@ -20,8 +20,9 @@
  */
 package loon.geom;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+
+import loon.utils.TArray;
 
 public class Path extends Shape {
 	/**
@@ -29,7 +30,7 @@ public class Path extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<float[]> localPoints;
+	private TArray<float[]> localPoints;
 
 	private float cx;
 
@@ -37,9 +38,9 @@ public class Path extends Shape {
 
 	private boolean closed;
 
-	private ArrayList<ArrayList<float[]>> holes;
+	private TArray<TArray<float[]>> holes;
 
-	private ArrayList<float[]> hole;
+	private TArray<float[]> hole;
 
 	public Path() {
 		this(0,0);
@@ -47,10 +48,10 @@ public class Path extends Shape {
 	
 	public Path(float sx, float sy) {
 		if (holes == null) {
-			holes = new ArrayList<ArrayList<float[]>>(10);
+			holes = new TArray<TArray<float[]>>(10);
 		}
 		if (localPoints == null) {
-			localPoints = new ArrayList<float[]>(10);
+			localPoints = new TArray<float[]>(10);
 		}
 		this.set(sx, sy);
 	}
@@ -79,7 +80,7 @@ public class Path extends Shape {
 	}
 
 	public void moveTo(float sx, float sy) {
-		hole = new ArrayList<float[]>();
+		hole = new TArray<float[]>();
 		holes.add(hole);
 	}
 
@@ -148,8 +149,8 @@ public class Path extends Shape {
 	}
 
 	protected void createPoints() {
-		points = new float[localPoints.size() * 2];
-		for (int i = 0; i < localPoints.size(); i++) {
+		points = new float[localPoints.size * 2];
+		for (int i = 0; i < localPoints.size; i++) {
 			float[] p = localPoints.get(i);
 			points[(i * 2)] = p[0];
 			points[(i * 2) + 1] = p[1];
@@ -159,24 +160,24 @@ public class Path extends Shape {
 	public Shape transform(Matrix transform) {
 		Path p = new Path(cx, cy);
 		p.localPoints = transform(localPoints, transform);
-		for (int i = 0; i < holes.size(); i++) {
+		for (int i = 0; i < holes.size; i++) {
 			p.holes.add(transform(holes.get(i), transform));
 		}
 		p.closed = this.closed;
 		return p;
 	}
 
-	private ArrayList<float[]> transform(ArrayList<float[]> pts, Matrix t) {
-		float[] in = new float[pts.size() * 2];
-		float[] out = new float[pts.size() * 2];
+	private TArray<float[]> transform(TArray<float[]> pts, Matrix t) {
+		float[] in = new float[pts.size * 2];
+		float[] out = new float[pts.size * 2];
 
-		for (int i = 0; i < pts.size(); i++) {
+		for (int i = 0; i < pts.size; i++) {
 			in[i * 2] = (pts.get(i))[0];
 			in[(i * 2) + 1] = (pts.get(i))[1];
 		}
-		t.transform(in, 0, out, 0, pts.size());
-		ArrayList<float[]> outList = new ArrayList<float[]>();
-		for (int i = 0; i < pts.size(); i++) {
+		t.transform(in, 0, out, 0, pts.size);
+		TArray<float[]> outList = new TArray<float[]>();
+		for (int i = 0; i < pts.size; i++) {
 			outList.add(new float[] { out[(i * 2)], out[(i * 2) + 1] });
 		}
 		return outList;

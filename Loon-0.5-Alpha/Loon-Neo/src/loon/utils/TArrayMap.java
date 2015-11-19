@@ -18,7 +18,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	private Keys keysIter1, keysIter2;
 
 	public TArrayMap() {
-		this(true, 16);
+		this(true, CollectionUtils.INITIAL_CAPACITY);
 	}
 
 	public TArrayMap(int capacity) {

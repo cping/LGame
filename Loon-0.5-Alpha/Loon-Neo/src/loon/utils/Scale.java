@@ -20,9 +20,6 @@
  */
 package loon.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Scale {
 
 	public static class ScaledResource {
@@ -74,8 +71,8 @@ public class Scale {
 		return MathUtils.iceil(invScaled(length));
 	}
 
-	public List<ScaledResource> getScaledResources(String path) {
-		List<ScaledResource> rsrcs = new ArrayList<ScaledResource>();
+	public TArray<ScaledResource> getScaledResources(String path) {
+		TArray<ScaledResource> rsrcs = new TArray<ScaledResource>();
 		rsrcs.add(new ScaledResource(this, computePath(path, factor)));
 		for (float rscale = MathUtils.ifloor(factor); rscale > 1; rscale -= 1) {
 			if (rscale != factor)

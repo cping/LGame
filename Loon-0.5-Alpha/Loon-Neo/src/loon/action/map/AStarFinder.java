@@ -20,7 +20,6 @@
  */
 package loon.action.map;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import loon.LRelease;
@@ -272,8 +271,8 @@ public class AStarFinder implements Runnable, LRelease {
 			if (current.equals(goal)) {
 				return new TArray<Vector2f>(spath.path);
 			}
-			ArrayList<Vector2f> list = field.neighbors(current, flag);
-			int size = list.size();
+			TArray<Vector2f> list = field.neighbors(current, flag);
+			int size = list.size;
 			for (int i = 0; i < size; i++) {
 				Vector2f next = list.get(i);
 				if (visitedCache.contains(next)) {

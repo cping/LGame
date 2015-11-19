@@ -23,11 +23,9 @@
  */
 package loon.component;
 
-import java.util.ArrayList;
-
 import loon.event.ClickListener;
 import loon.utils.MathUtils;
-
+import loon.utils.TArray;
 
 public class UIControls {
 
@@ -67,7 +65,7 @@ public class UIControls {
 		return maxWidth;
 	}
 
-	private final ArrayList<LComponent> _comps;
+	private final TArray<LComponent> _comps;
 
 	public UIControls(LComponent... comps) {
 		this();
@@ -75,7 +73,7 @@ public class UIControls {
 	}
 
 	public UIControls() {
-		this._comps = new ArrayList<LComponent>();
+		this._comps = new TArray<LComponent>();
 	}
 
 	public void add(LComponent comp) {
@@ -104,7 +102,7 @@ public class UIControls {
 	}
 
 	public void setFocusable(boolean focus) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = (LComponent) _comps.get(i);
 			if (comp != null) {
 				comp.setFocusable(focus);
@@ -113,7 +111,7 @@ public class UIControls {
 	}
 
 	public void setEnabled(boolean e) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = (LComponent) _comps.get(i);
 			if (comp != null) {
 				comp.setEnabled(e);
@@ -127,7 +125,7 @@ public class UIControls {
 	 * @param click
 	 */
 	public void SetClick(ClickListener click) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = (LComponent) _comps.get(i);
 			if (comp != null) {
 				comp.SetClick(click);
@@ -136,7 +134,7 @@ public class UIControls {
 	}
 
 	public void setAlpha(float alpha) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = (LComponent) _comps.get(i);
 			if (comp != null) {
 				comp.setAlpha(alpha);
@@ -145,7 +143,7 @@ public class UIControls {
 	}
 
 	public void setScale(float s) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = (LComponent) _comps.get(i);
 			if (comp != null) {
 				comp.setScale(s);
@@ -154,7 +152,7 @@ public class UIControls {
 	}
 
 	public void setVisible(boolean v) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = (LComponent) _comps.get(i);
 			if (comp != null) {
 				comp.setVisible(v);
@@ -163,7 +161,7 @@ public class UIControls {
 	}
 
 	public void setTicked(boolean c) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			Object o = _comps.get(i);
 			if (o != null && o instanceof LCheckBox) {
 				LCheckBox box = (LCheckBox) o;
@@ -173,7 +171,7 @@ public class UIControls {
 	}
 
 	public void setPercentage(float p) {
-		for (int i = 0, n = _comps.size(); i < n; i++) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
 			Object o = _comps.get(i);
 			if (o != null && o instanceof LProgress) {
 				LProgress progress = (LProgress) o;

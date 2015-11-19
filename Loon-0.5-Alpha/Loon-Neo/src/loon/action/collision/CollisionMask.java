@@ -1,13 +1,12 @@
 package loon.action.collision;
 
-import java.util.ArrayList;
-
 import loon.BaseIO;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.geom.Point;
 import loon.geom.Polygon;
+import loon.utils.TArray;
 
 public class CollisionMask {
 
@@ -38,7 +37,7 @@ public class CollisionMask {
 			int startX, int startY, int limitX, int limitY, int interval) {
 		Polygon split = null;
 		Polygon result = null;
-		ArrayList<Point[]> points = new ArrayList<Point[]>();
+		TArray<Point[]> points = new TArray<Point[]>();
 		Point[] tmpPoint;
 		int x1, y1, x2, y2;
 		boolean secondPoint;
@@ -72,7 +71,7 @@ public class CollisionMask {
 		}
 		split = makePolygon(points);
 		if (split != null) {
-			points = new ArrayList<Point[]>();
+			points = new TArray<Point[]>();
 
 			for (int x = startX; x < limitX - interval; x += interval) {
 				secondPoint = false;
@@ -112,10 +111,10 @@ public class CollisionMask {
 	 * @param points
 	 * @return
 	 */
-	private static Polygon makePolygon(ArrayList<Point[]> points) {
+	private static Polygon makePolygon(TArray<Point[]> points) {
 		Polygon polygon = null;
 		if (!points.isEmpty()) {
-			int size = points.size();
+			int size = points.size;
 			polygon = new Polygon();
 			for (int i = 0; i < size; i++) {
 				Point p = (points.get(i))[0];

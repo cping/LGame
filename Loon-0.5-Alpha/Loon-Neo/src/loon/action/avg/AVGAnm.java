@@ -20,7 +20,6 @@
  */
 package loon.action.avg;
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
@@ -32,6 +31,7 @@ import loon.action.avg.drama.Expression;
 import loon.canvas.LColor;
 import loon.geom.Point.Point2i;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 //0.3.3新增类,用以按指定的格式循环播放动画图像
 public class AVGAnm implements Expression, LRelease {
@@ -46,15 +46,15 @@ public class AVGAnm implements Expression, LRelease {
 
 	int width, height, imageWidth, imageHeight;
 
-	ArrayList<Integer> posxTmps = new ArrayList<Integer>();
+	TArray<Integer> posxTmps = new TArray<Integer>();
 
-	ArrayList<Integer> posyTmps = new ArrayList<Integer>();
+	TArray<Integer> posyTmps = new TArray<Integer>();
 
 	int[] posx = null;
 
 	int[] posy = null;
 
-	ArrayList<Integer> time = new ArrayList<Integer>();
+	TArray<Integer> time = new TArray<Integer>();
 
 	int tmp_time = 20;
 
@@ -99,7 +99,7 @@ public class AVGAnm implements Expression, LRelease {
 			return;
 		}
 		this.load = true;
-		this.count = posxTmps.size();
+		this.count = posxTmps.size;
 		this.posx = new int[count];
 		this.posy = new int[count];
 		for (int i = 0; i < count; i++) {
@@ -246,7 +246,7 @@ public class AVGAnm implements Expression, LRelease {
 		return posy;
 	}
 
-	public ArrayList<Integer> getTime() {
+	public TArray<Integer> getTime() {
 		return time;
 	}
 

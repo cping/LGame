@@ -20,7 +20,8 @@
  */
 package loon.action.map;
 
-import java.util.ArrayList;
+import loon.action.sprite.Scene;
+import loon.utils.TArray;
 
 public class Story {
 
@@ -28,7 +29,7 @@ public class Story {
 
 	private String storyName = String.valueOf(timer);
 
-	private ArrayList<Scene> scenes = new ArrayList<Scene>();
+	private TArray<Scene> scenes = new TArray<Scene>();
 
 	public String getStoryName() {
 		return this.storyName;
@@ -55,7 +56,7 @@ public class Story {
 	}
 
 	public int findScene(String name) {
-		for (int i = 0; i < this.scenes.size(); i++) {
+		for (int i = 0; i < this.scenes.size; i++) {
 			if (getScene(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -64,15 +65,15 @@ public class Story {
 	}
 
 	public Scene removeScene(int index) {
-		return this.scenes.remove(index);
+		return this.scenes.removeIndex(index);
 	}
 
 	public int countScenes() {
-		return this.scenes.size();
+		return this.scenes.size;
 	}
 
-	public ArrayList<Scene> getScenes() {
-		return new ArrayList<Scene>(scenes);
+	public TArray<Scene> getScenes() {
+		return new TArray<Scene>(scenes);
 	}
 
 	public long getTimer() {

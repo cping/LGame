@@ -1,7 +1,5 @@
 package loon.action.sprite.effect;
 
-import java.util.ArrayList;
-
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -10,6 +8,7 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 public class FadeDotEffect extends LObject implements ISprite {
@@ -97,7 +96,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 
 	private LColor _color;
 
-	private ArrayList<Dot> _dots = new ArrayList<Dot>();
+	private TArray<Dot> _dots = new TArray<Dot>();
 
 	private int _count = 4;
 
@@ -133,7 +132,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 		this.setColor(c);
 		this._width = w;
 		this._height = h;
-		if (_dots.size() == 0) {
+		if (_dots.size == 0) {
 			for (int i = 0; i < _count; i++) {
 				_dots.add(new Dot(_type, time, rad, _width, _height));
 			}
@@ -160,7 +159,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 		if (_finish) {
 			return _finish;
 		}
-		for (int i = 0; i < _dots.size(); i++) {
+		for (int i = 0; i < _dots.size; i++) {
 			if (!((Dot) _dots.get(i)).finish) {
 				return false;
 			}
@@ -184,7 +183,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 			return;
 		}
 		if (timer.action(elapsedTime)) {
-			for (int i = 0; i < _dots.size(); i++) {
+			for (int i = 0; i < _dots.size; i++) {
 				_dots.get(i).update(elapsedTime);
 			}
 		}
@@ -204,7 +203,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 		}
 		int tmp = g.color();
 		g.setColor(_color);
-		for (int i = 0; i < _dots.size(); i++) {
+		for (int i = 0; i < _dots.size; i++) {
 			((Dot) _dots.get(i)).paint(g);
 		}
 		if (useText) {

@@ -20,10 +20,9 @@
  */
 package loon.action.sprite;
 
-import java.util.ArrayList;
-
 import loon.LTexture;
 import loon.utils.CollectionUtils;
+import loon.utils.TArray;
 
 public class AnimationStorage extends Animation {
 
@@ -46,7 +45,7 @@ public class AnimationStorage extends Animation {
 						Listener.onComplete(store);
 					}
 					store.playAnimations.remove(animation);
-					store.size = store.playAnimations.size();
+					store.size = store.playAnimations.size;
 					store.loopPlay++;
 				} else {
 					if (currentFrameIndex < size - 1) {
@@ -75,14 +74,14 @@ public class AnimationStorage extends Animation {
 
 	private AnimationStorageListener asl;
 
-	private ArrayList<Animation> playAnimations;
+	private TArray<Animation> playAnimations;
 
-	public AnimationStorage(ArrayList<Animation> f) {
+	public AnimationStorage(TArray<Animation> f) {
 		this.asl = new AnimationStorageListener(this);
 		if (f != null) {
 			playAnimations = f;
 		} else {
-			playAnimations = new ArrayList<Animation>(
+			playAnimations = new TArray<Animation>(
 					CollectionUtils.INITIAL_CAPACITY);
 		}
 		for (Animation a : playAnimations) {
@@ -90,13 +89,13 @@ public class AnimationStorage extends Animation {
 				a.Listener = asl;
 			}
 		}
-		this.size = playAnimations.size();
+		this.size = playAnimations.size;
 		this.loopOverToPlay = true;
 		this.loopOverToRemove = false;
 	}
 
 	public AnimationStorage() {
-		this(new ArrayList<Animation>(CollectionUtils.INITIAL_CAPACITY));
+		this(new TArray<Animation>(CollectionUtils.INITIAL_CAPACITY));
 	}
 
 	public Object clone() {

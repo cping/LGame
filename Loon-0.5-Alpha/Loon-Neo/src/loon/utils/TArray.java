@@ -1,9 +1,13 @@
 package loon.utils;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class TArray<T> {
+public class TArray<T> implements Iterable<T> {
 
 	public T[] items;
 
@@ -11,7 +15,7 @@ public class TArray<T> {
 	public boolean ordered;
 
 	public TArray() {
-		this(true, 16);
+		this(true, CollectionUtils.INITIAL_CAPACITY);
 	}
 
 	public TArray(int capacity) {
@@ -39,6 +43,20 @@ public class TArray<T> {
 		System.arraycopy(array, start, items, 0, size);
 	}
 
+	public TArray(SortedList<T> vals) {
+		this();
+		for (LIterator<T> it = vals.listIterator(); it.hasNext();) {
+			add(it.next());
+		}
+	}
+	
+	public TArray(Keys<T> vals) {
+		this();
+		for (T t : vals) {
+			add(t);
+		}
+	}
+	
 	public TArray(Values<T> vals) {
 		this();
 		for (T t : vals) {
@@ -46,12 +64,13 @@ public class TArray<T> {
 		}
 	}
 
-	public void add(T value) {
+	public boolean add(T value) {
 		T[] items = this.items;
 		if (size == items.length) {
 			items = resize(MathUtils.max(8, (int) (size * 1.75f)));
 		}
 		items[size++] = value;
+		return true;
 	}
 
 	public void addAll(TArray<? extends T> array) {
@@ -121,6 +140,10 @@ public class TArray<T> {
 		items[second] = firstValue;
 	}
 
+	public boolean contains(T value) {
+		return contains(value, false);
+	}
+
 	public boolean contains(T value, boolean identity) {
 		T[] items = this.items;
 		int i = size - 1;
@@ -134,6 +157,10 @@ public class TArray<T> {
 					return true;
 		}
 		return false;
+	}
+
+	public int indexOf(T value) {
+		return indexOf(value, false);
 	}
 
 	public int indexOf(T value, boolean identity) {
@@ -248,6 +275,9 @@ public class TArray<T> {
 	}
 
 	public boolean removeAll(TArray<? extends T> array, boolean identity) {
+		if (array.size == 0) {
+			return true;
+		}
 		int size = this.size;
 		int startSize = size;
 		T[] items = this.items;
@@ -279,7 +309,7 @@ public class TArray<T> {
 
 	public T pop() {
 		if (size == 0)
-			throw new IllegalStateException("Array is empty.");
+			throw new IllegalStateException("TArray is empty.");
 		--size;
 		T item = items[size];
 		items[size] = null;
@@ -288,13 +318,13 @@ public class TArray<T> {
 
 	public T peek() {
 		if (size == 0)
-			throw new IllegalStateException("Array is empty.");
+			throw new IllegalStateException("TArray is empty.");
 		return items[size - 1];
 	}
 
 	public T first() {
 		if (size == 0)
-			throw new IllegalStateException("Array is empty.");
+			throw new IllegalStateException("TArray is empty.");
 		return items[0];
 	}
 
@@ -303,6 +333,10 @@ public class TArray<T> {
 		for (int i = 0, n = size; i < n; i++)
 			items[i] = null;
 		size = 0;
+	}
+
+	public boolean isEmpty() {
+		return this.size == 0;
 	}
 
 	public T[] shrink() {
@@ -371,6 +405,30 @@ public class TArray<T> {
 		return (T[]) result;
 	}
 
+	public T[] toArray(T[] a) {
+		int length = this.size;
+		if (a.length < size) {
+			a = (T[]) new Object[length];
+		}
+		Object[] result = a;
+		for (int i = 0; i < length; ++i) {
+			result[i] = get(i);
+		}
+		if (a.length > length) {
+			a[length] = null;
+		}
+		return a;
+	}
+
+	private ArrayIterable iterable;
+
+	public Iterator<T> iterator() {
+		if (iterable == null) {
+			iterable = new ArrayIterable(this);
+		}
+		return iterable.iterator();
+	}
+
 	public boolean equals(Object object) {
 		if (object == this)
 			return true;
@@ -424,4 +482,87 @@ public class TArray<T> {
 		return new TArray(array);
 	}
 
+	static public class ArrayIterator<T> implements Iterator<T>, Iterable<T> {
+
+		private final TArray<T> array;
+		private final boolean allowRemove;
+		int index;
+		boolean valid = true;
+
+		public ArrayIterator(TArray<T> array) {
+			this(array, true);
+		}
+
+		public ArrayIterator(TArray<T> array, boolean allowRemove) {
+			this.array = array;
+			this.allowRemove = allowRemove;
+		}
+
+		public boolean hasNext() {
+			if (!valid) {
+				throw new RuntimeException("#iterator() cannot be used nested.");
+			}
+			return index < array.size;
+		}
+
+		public T next() {
+			if (index >= array.size) {
+				throw new NoSuchElementException(String.valueOf(index));
+			}
+			if (!valid) {
+				throw new RuntimeException("#iterator() cannot be used nested.");
+			}
+			return array.items[index++];
+		}
+
+		@Override
+		public void remove() {
+			if (!allowRemove) {
+				throw new RuntimeException("Remove not allowed.");
+			}
+			index--;
+			array.removeIndex(index);
+		}
+
+		public void reset() {
+			index = 0;
+		}
+
+		public Iterator<T> iterator() {
+			return this;
+		}
+	}
+
+	static public class ArrayIterable<T> implements Iterable<T> {
+
+		private final TArray<T> array;
+		private final boolean allowRemove;
+		private ArrayIterator iterator1, iterator2;
+
+		public ArrayIterable(TArray<T> array) {
+			this(array, true);
+		}
+
+		public ArrayIterable(TArray<T> array, boolean allowRemove) {
+			this.array = array;
+			this.allowRemove = allowRemove;
+		}
+
+		public Iterator<T> iterator() {
+			if (iterator1 == null) {
+				iterator1 = new ArrayIterator(array, allowRemove);
+				iterator2 = new ArrayIterator(array, allowRemove);
+			}
+			if (!iterator1.valid) {
+				iterator1.index = 0;
+				iterator1.valid = true;
+				iterator2.valid = false;
+				return iterator1;
+			}
+			iterator2.index = 0;
+			iterator2.valid = true;
+			iterator1.valid = false;
+			return iterator2;
+		}
+	}
 }

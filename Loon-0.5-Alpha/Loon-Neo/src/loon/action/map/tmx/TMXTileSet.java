@@ -1,11 +1,9 @@
 package loon.action.map.tmx;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.action.map.tmx.tiles.TMXTerrain;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
+import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -24,16 +22,16 @@ public class TMXTileSet {
 	private Vector2f tileOffset;
 	private TMXImage image;
 
-	private List<TMXTerrain> terrainTypes;
-	private List<TMXTile> tiles;
+	private TArray<TMXTerrain> terrainTypes;
+	private TArray<TMXTile> tiles;
 
 	private TMXProperties properties;
 
 	public TMXTileSet() {
 		tileOffset = new Vector2f();
 
-		terrainTypes = new ArrayList<>();
-		tiles = new ArrayList<>();
+		terrainTypes = new TArray<>();
+		tiles = new TArray<>();
 
 		properties = new TMXProperties();
 	}
@@ -70,7 +68,7 @@ public class TMXTileSet {
 		nodes = element.getChildrenByName("terraintypes");
 
 		if (nodes != null) {
-			ArrayList<XMLElement> list = nodes.list();
+			TArray<XMLElement> list = nodes.list();
 			for (XMLElement terrain : list) {
 				TMXTerrain terrainType = new TMXTerrain();
 				terrainType.parse(terrain);
@@ -97,8 +95,8 @@ public class TMXTileSet {
 
 		if (nodes != null) {
 
-			ArrayList<XMLElement> list = nodes.list();
-			for (int i = 0; i < list.size(); i++) {
+			TArray<XMLElement> list = nodes.list();
+			for (int i = 0; i < list.size; i++) {
 				XMLElement tileNode = list.get(i);
 				TMXTile tile = new TMXTile(i);
 				tile.parse(tileNode);
@@ -144,7 +142,7 @@ public class TMXTileSet {
 		return image;
 	}
 
-	public List<TMXTerrain> getTerrainTypes() {
+	public TArray<TMXTerrain> getTerrainTypes() {
 		return terrainTypes;
 	}
 
@@ -157,7 +155,7 @@ public class TMXTileSet {
 		return null;
 	}
 
-	public List<TMXTile> getTiles() {
+	public TArray<TMXTile> getTiles() {
 		return tiles;
 	}
 

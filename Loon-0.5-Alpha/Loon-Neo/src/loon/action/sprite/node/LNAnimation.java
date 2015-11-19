@@ -20,37 +20,37 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
+import loon.utils.TArray;
 
 public class LNAnimation {
 
 	protected float _duration;
 
-	private ArrayList<LNFrameStruct> _fsList;
+	private TArray<LNFrameStruct> _fsList;
 
 	protected String _name;
 
-	private ArrayList<Float> _timeList;
+	private TArray<Float> _timeList;
 
 	protected float _totalDuration;
 
 	public LNAnimation() {
-		this._fsList = new ArrayList<LNFrameStruct>();
-		this._timeList = new ArrayList<Float>();
+		this._fsList = new TArray<LNFrameStruct>();
+		this._timeList = new TArray<Float>();
 		this._totalDuration = 0f;
 	}
 
 	public LNAnimation(String aName, float duration) {
-		this._fsList = new ArrayList<LNFrameStruct>();
-		this._timeList = new ArrayList<Float>();
+		this._fsList = new TArray<LNFrameStruct>();
+		this._timeList = new TArray<Float>();
 		this._totalDuration = 0f;
 		this._name = aName;
 		this._duration = duration;
 	}
 
 	public LNAnimation(String aName, float duration, String... lists) {
-		this._fsList = new ArrayList<LNFrameStruct>();
-		this._timeList = new ArrayList<Float>();
+		this._fsList = new TArray<LNFrameStruct>();
+		this._timeList = new TArray<Float>();
 		this._name = aName;
 		this._duration = duration;
 		for (int i = 0; i < lists.length; i++) {
@@ -70,7 +70,7 @@ public class LNAnimation {
 	}
 
 	public int frameCount() {
-		return this._fsList.size();
+		return this._fsList.size;
 	}
 
 	public LNFrameStruct getFrame(int idx) {
@@ -82,7 +82,7 @@ public class LNAnimation {
 			return this._fsList.get(0);
 		}
 		Time *= this._totalDuration;
-		for (int i = 0; i < this._timeList.size(); i++) {
+		for (int i = 0; i < this._timeList.size; i++) {
 			float num2 = this._timeList.get(i);
 			if (Time > num2) {
 				Time -= num2;
@@ -90,7 +90,7 @@ public class LNAnimation {
 				return this._fsList.get(i);
 			}
 		}
-		return this._fsList.get(this._fsList.size() - 1);
+		return this._fsList.get(this._fsList.size - 1);
 	}
 
 	public float getFrameTime(int idx) {
@@ -98,7 +98,7 @@ public class LNAnimation {
 	}
 
 	public void setAnimationTime(float total) {
-		int count = this._timeList.size();
+		int count = this._timeList.size;
 		if (count > 0) {
 			float item = total / ((float) count);
 			this._timeList.clear();

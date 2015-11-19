@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.util.ArrayList;
-
 import loon.LGame.Status;
 import loon.canvas.LColor;
 import loon.event.Drawable;
@@ -40,6 +38,7 @@ import loon.stage.StageSystem;
 import loon.stage.StageTransition;
 import loon.utils.Array;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
@@ -47,11 +46,11 @@ import loon.utils.timer.LTimerContext;
 
 public class LProcess extends PlayerUtils {
 
-	ArrayList<Updateable> loads;
+	TArray<Updateable> loads;
 
-	ArrayList<Updateable> unloads;
+	TArray<Updateable> unloads;
 
-	ArrayList<Drawable> drawings;
+	TArray<Drawable> drawings;
 
 	EmulatorListener emulatorListener;
 
@@ -141,13 +140,13 @@ public class LProcess extends PlayerUtils {
 		});
 	}
 
-	private final static void callUpdateable(final ArrayList<Updateable> list) {
-		ArrayList<Updateable> loadCache;
+	private final static void callUpdateable(final TArray<Updateable> list) {
+		TArray<Updateable> loadCache;
 		synchronized (list) {
-			loadCache = new ArrayList<Updateable>(list);
+			loadCache = new TArray<Updateable>(list);
 			list.clear();
 		}
-		for (int i = 0; i < loadCache.size(); i++) {
+		for (int i = 0; i < loadCache.size; i++) {
 			Updateable running = loadCache.get(i);
 			synchronized (running) {
 				running.action(null);
@@ -182,7 +181,7 @@ public class LProcess extends PlayerUtils {
 
 	public void load() {
 		if (isInstance) {
-			final int count = loads.size();
+			final int count = loads.size;
 			if (count > 0) {
 				callUpdateable(loads);
 			}
@@ -213,7 +212,7 @@ public class LProcess extends PlayerUtils {
 
 	public void unload() {
 		if (isInstance) {
-			final int count = unloads.size();
+			final int count = unloads.size;
 			if (count > 0) {
 				callUpdateable(unloads);
 			}
@@ -244,7 +243,7 @@ public class LProcess extends PlayerUtils {
 
 	public void drawable(long elapsedTime) {
 		if (isInstance) {
-			final int count = drawings.size();
+			final int count = drawings.size;
 			if (count > 0) {
 				for (int i = 0; i < count; i++) {
 					drawings.get(i).action(elapsedTime);
@@ -443,17 +442,17 @@ public class LProcess extends PlayerUtils {
 
 	public void clear() {
 		if (loads == null) {
-			loads = new ArrayList<Updateable>(10);
+			loads = new TArray<Updateable>(10);
 		} else {
 			loads.clear();
 		}
 		if (unloads == null) {
-			unloads = new ArrayList<Updateable>(10);
+			unloads = new TArray<Updateable>(10);
 		} else {
 			unloads.clear();
 		}
 		if (drawings == null) {
-			drawings = new ArrayList<Drawable>(10);
+			drawings = new TArray<Drawable>(10);
 		} else {
 			drawings.clear();
 		}

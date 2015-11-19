@@ -20,14 +20,13 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
-
 import loon.geom.Vector2f;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class DefinitionObject {
 
-	private ArrayList<String> elementNames;
+	private TArray<String> elementNames;
 
 	public DefinitionObject parentDefinitionObject = null;
 
@@ -47,7 +46,7 @@ public class DefinitionObject {
 	}
 
 	public void definitionObjectDidInit() {
-		this.elementNames = new ArrayList<String>();
+		this.elementNames = new TArray<String>();
 	}
 
 	public void definitionObjectDidReceiveString(String value) {
@@ -66,7 +65,7 @@ public class DefinitionObject {
 	}
 
 	public void undefinedElementDidFinish(String elementName) {
-		String result = this.elementNames.get(this.elementNames.size() - 1);
+		String result = this.elementNames.get(this.elementNames.size - 1);
 		if (result.equalsIgnoreCase(elementName)) {
 			this.elementNames.remove(result);
 		}
@@ -81,9 +80,9 @@ public class DefinitionObject {
 
 	private boolean goto_flag = false;
 
-	protected ArrayList<String> getResult(String v) {
+	protected TArray<String> getResult(String v) {
 		StringBuilder buffer = new StringBuilder();
-		ArrayList<String> result = new ArrayList<String>(20);
+		TArray<String> result = new TArray<String>(20);
 		char[] chars = v.toCharArray();
 		int size = chars.length;
 		for (int i = 0; i < size; i++) {

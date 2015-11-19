@@ -21,7 +21,6 @@
  */
 package loon.utils;
 
-import java.util.ArrayList;
 
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
@@ -225,8 +224,8 @@ public class ArrayMap {
 		return lists;
 	}
 
-	public ArrayList<Entry> toList() {
-		ArrayList<Entry> lists = new ArrayList<ArrayMap.Entry>(size);
+	public TArray<Entry> toList() {
+		TArray<Entry> lists = new TArray<ArrayMap.Entry>(size);
 		for (int i = 0; i < size; i++) {
 			lists.add(valueTables[i]);
 		}

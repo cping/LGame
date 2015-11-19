@@ -20,7 +20,6 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -39,6 +38,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class LNNode extends LObject implements ActionBind {
 
@@ -112,7 +112,7 @@ public class LNNode extends LObject implements ActionBind {
 
 	private LNNode latestInserted = null;
 
-	protected ArrayList<LNAction> _actionList;
+	protected TArray<LNAction> _actionList;
 
 	protected Vector2f _anchor = new Vector2f();
 
@@ -209,7 +209,7 @@ public class LNNode extends LObject implements ActionBind {
 		this._top = 0;
 		this._screen = screen;
 		this._color = new LColor(0xff, 0xff, 0xff, 0xff);
-		this._actionList = new ArrayList<LNAction>();
+		this._actionList = new TArray<LNAction>();
 		this._limitMove = true;
 		this._locked = true;
 		this._size_width = width;
@@ -369,7 +369,7 @@ public class LNNode extends LObject implements ActionBind {
 			if (Call != null) {
 				Call.act(dt);
 			}
-			for (int i = 0; i < _actionList.size(); i++) {
+			for (int i = 0; i < _actionList.size; i++) {
 				if (this._actionList.get(i).isEnd()) {
 					this._actionList.remove(this._actionList.get(i));
 					i--;

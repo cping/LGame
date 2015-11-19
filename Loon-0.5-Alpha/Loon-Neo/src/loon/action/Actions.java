@@ -20,10 +20,9 @@
  */
 package loon.action;
 
-import java.util.ArrayList;
-
 import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
+import loon.utils.TArray;
 
 public class Actions {
 
@@ -65,7 +64,7 @@ public class Actions {
 	}
 
 	private synchronized void removeAction(int index, ActionElement element) {
-		element.actions.remove(index);
+		element.actions.removeIndex(index);
 		if (element.actionIndex >= index) {
 			element.actionIndex--;
 		}
@@ -82,7 +81,7 @@ public class Actions {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			if (element.actions != null) {
-				int limit = element.actions.size();
+				int limit = element.actions.size;
 				for (int i = 0; i < limit; i++) {
 					ActionEvent a = element.actions.get(i);
 					if (a.getTag() == tag && a.getOriginal() == actObject) {
@@ -111,7 +110,7 @@ public class Actions {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			if (element.actions != null) {
-				int limit = element.actions.size();
+				int limit = element.actions.size;
 				for (int i = 0; i < limit; i++) {
 					ActionEvent a = element.actions.get(i);
 					if (a.getTag() == tag)
@@ -132,7 +131,7 @@ public class Actions {
 			synchronized (currentTarget) {
 				if (!currentTarget.paused) {
 					for (currentTarget.actionIndex = 0; currentTarget.actionIndex < currentTarget.actions
-							.size(); currentTarget.actionIndex++) {
+							.size; currentTarget.actionIndex++) {
 						currentTarget.currentAction = currentTarget.actions
 								.get(currentTarget.actionIndex);
 						if (currentTarget.currentAction == null) {
@@ -198,12 +197,12 @@ public class Actions {
 
 		private boolean paused;
 
-		private ArrayList<ActionEvent> actions;
+		private TArray<ActionEvent> actions;
 
 		private ActionEvent currentAction;
 
 		public ActionElement(ActionBind k, boolean v) {
-			this.actions = new ArrayList<ActionEvent>(
+			this.actions = new TArray<ActionEvent>(
 					CollectionUtils.INITIAL_CAPACITY);
 			this.key = k;
 			this.paused = v;

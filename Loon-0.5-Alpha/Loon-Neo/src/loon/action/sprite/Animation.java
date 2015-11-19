@@ -20,8 +20,6 @@
  */
 package loon.action.sprite;
 
-import java.util.ArrayList;
-
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
@@ -30,6 +28,7 @@ import loon.canvas.LColor;
 import loon.event.Updateable;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
+import loon.utils.TArray;
 
 public class Animation implements LRelease {
 
@@ -49,7 +48,7 @@ public class Animation implements LRelease {
 
 	boolean isRunning;
 
-	private ArrayList<AnimationFrame> frames;
+	private TArray<AnimationFrame> frames;
 
 	int loopCount, loopPlay;
 
@@ -60,24 +59,24 @@ public class Animation implements LRelease {
 	int size;
 
 	public Animation() {
-		this(new ArrayList<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0);
+		this(new TArray<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0);
 	}
 
 	public Animation(Animation a) {
 		this.isRunning = a.isRunning;
-		this.frames = new ArrayList<Animation.AnimationFrame>(a.frames);
+		this.frames = new TArray<Animation.AnimationFrame>(a.frames);
 		this.loopCount = a.loopCount;
 		this.loopPlay = a.loopPlay;
 		this.currentFrameIndex = a.currentFrameIndex;
 		this.animTime = a.animTime;
 		this.totalDuration = a.totalDuration;
-		this.size = frames.size();
+		this.size = frames.size;
 	}
 
-	private Animation(ArrayList<AnimationFrame> frames, long totalDuration) {
+	private Animation(TArray<AnimationFrame> frames, long totalDuration) {
 		this.loopCount = -1;
 		this.frames = frames;
-		this.size = frames.size();
+		this.size = frames.size;
 		this.totalDuration = totalDuration;
 		this.isRunning = true;
 		start();

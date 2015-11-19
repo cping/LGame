@@ -1,12 +1,11 @@
 package loon.action.map;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.CollectionUtils;
+import loon.utils.TArray;
 
 public class TileMapConfig {
 	
@@ -48,13 +47,13 @@ public class TileMapConfig {
 		return map;
 	}
 
-	public static List<int[]> loadList(final String fileName) {
+	public static TArray<int[]> loadList(final String fileName) {
 		String result = BaseIO.loadText(fileName);
 		if (result == null) {
 			return null;
 		}
 		StringTokenizer br = new StringTokenizer(result, "\n");
-		List<int[]> records = new ArrayList<int[]>(
+		TArray<int[]> records = new TArray<int[]>(
 				CollectionUtils.INITIAL_CAPACITY);
 
 		for (; br.hasMoreTokens();) {
@@ -85,21 +84,21 @@ public class TileMapConfig {
 	}
 
 	public static int[][] loadAthwartArray(final String fileName) {
-		List<?> list = loadList(fileName);
-		int col = list.size();
+		TArray<int[]> list = loadList(fileName);
+		int col = list.size;
 		int[][] result = new int[col][];
 		for (int i = 0; i < col; i++) {
-			result[i] = (int[]) list.get(i);
+			result[i] = list.get(i);
 		}
 		return result;
 	}
 
 	public static int[][] loadJustArray(final String fileName) {
-		List<?> list = loadList(fileName);
-		int col = list.size();
+		TArray<int[]> list = loadList(fileName);
+		int col = list.size;
 		int[][] mapArray = new int[col][];
 		for (int i = 0; i < col; i++) {
-			mapArray[i] = (int[]) list.get(i);
+			mapArray[i] = list.get(i);
 		}
 		int row = ((mapArray[col > 0 ? col - 1 : 0]).length);
 		int[][] result = new int[row][col];

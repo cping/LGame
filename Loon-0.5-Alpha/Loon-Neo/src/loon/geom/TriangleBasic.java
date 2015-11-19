@@ -20,7 +20,7 @@
  */
 package loon.geom;
 
-import java.util.ArrayList;
+import loon.utils.TArray;
 
 public class TriangleBasic implements Triangle {
 	/**
@@ -255,7 +255,7 @@ public class TriangleBasic implements Triangle {
 
 	private class PointList {
 
-		private ArrayList<Point> points = new ArrayList<Point>();
+		private TArray<Point> points = new TArray<Point>();
 
 		public PointList() {
 		}
@@ -269,7 +269,7 @@ public class TriangleBasic implements Triangle {
 		}
 
 		public int size() {
-			return points.size();
+			return points.size;
 		}
 
 		public Point get(int i) {

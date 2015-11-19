@@ -1,28 +1,27 @@
 package loon.action.map.tmx.objects;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
 public class TMXPolygon {
 	
-	private List<TMXPoint> points;
+	private TArray<TMXPoint> points;
 
 	public TMXPolygon() {
-		points = new ArrayList<>();
+		points = new TArray<TMXPoint>();
 	}
 
 	public TMXPoint getPoint(int index) {
 		return points.get(index);
 	}
 
-	public List<TMXPoint> getPoints() {
+	public TArray<TMXPoint> getPoints() {
 		return points;
 	}
 
 	public int getNumPoints() {
-		return points.size();
+		return points.size;
 	}
 
 	public void parse(XMLElement element) {

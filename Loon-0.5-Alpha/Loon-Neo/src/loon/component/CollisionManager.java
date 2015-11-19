@@ -21,7 +21,6 @@
 package loon.component;
 
 import java.util.Iterator;
-import java.util.List;
 
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
@@ -29,6 +28,7 @@ import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
 import loon.utils.ObjectSet;
 import loon.utils.SortedList;
+import loon.utils.TArray;
 
 public class CollisionManager implements CollisionChecker {
 
@@ -117,7 +117,7 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public List<Actor> getIntersectingObjects(Actor actor, String flag) {
+	public TArray<Actor> getIntersectingObjects(Actor actor, String flag) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(actor, flag);
 			return this.collisionChecker.getIntersectingObjects(actor, flag);
@@ -125,7 +125,7 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public List<Actor> getNeighbours(Actor actor, float distance, boolean diag,
+	public TArray<Actor> getNeighbours(Actor actor, float distance, boolean diag,
 			String flag) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(actor, flag);
@@ -135,8 +135,8 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public List<Actor> getObjects(String flag) {
-		List<Actor> result = this.collisionChecker.getObjects(flag);
+	public TArray<Actor> getObjects(String flag) {
+		TArray<Actor> result = this.collisionChecker.getObjects(flag);
 		Entries<String, SortedList<Actor>> entries = this.freeObjects.entries();
 		for (; entries.hasNext();) {
 			Entry<String, SortedList<Actor>> entry = entries.next();
@@ -151,21 +151,21 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public List<Actor> getObjectsAt(float x, float y, String flag) {
+	public TArray<Actor> getObjectsAt(float x, float y, String flag) {
 		this.makeCollisionObjects(flag, true);
 		return this.collisionChecker.getObjectsAt(x, y, flag);
 
 	}
 
 	@Override
-	public List<Actor> getObjectsInRange(float x, float y, float r, String flag) {
+	public TArray<Actor> getObjectsInRange(float x, float y, float r, String flag) {
 		this.makeCollisionObjects(flag, true);
 		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
 
 	}
 
 	@Override
-	public List<Actor> getObjectsList() {
+	public TArray<Actor> getObjectsList() {
 		return this.getObjects((String) null);
 	}
 
@@ -239,7 +239,7 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public List<Actor> getActorsList() {
+	public TArray<Actor> getActorsList() {
 		return collisionChecker.getActorsList();
 	}
 

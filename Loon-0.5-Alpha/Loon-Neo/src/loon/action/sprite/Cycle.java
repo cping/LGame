@@ -1,7 +1,5 @@
 package loon.action.sprite;
 
-import java.util.ArrayList;
-
 import loon.LObject;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -12,6 +10,7 @@ import loon.geom.Shape;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 public class Cycle extends LObject implements ISprite {
@@ -236,11 +235,11 @@ public class Cycle extends LObject implements ISprite {
 
 	protected boolean isUpdate, isVisible, stopped;
 
-	protected ArrayList<Object[]> data;
+	protected TArray<Object[]> data;
 
 	protected static ObjectMap<Integer, float[]> signatures;
 
-	protected ArrayList<Progress> points;
+	protected TArray<Progress> points;
 
 	private LTimer timer;
 
@@ -283,19 +282,19 @@ public class Cycle extends LObject implements ISprite {
 		this(null, x, y, w, h);
 	}
 
-	public Cycle(ArrayList<Object[]> path, int x, int y, int w, int h) {
+	public Cycle(TArray<Object[]> path, int x, int y, int w, int h) {
 
 		if (path != null) {
 			data.add(path.toArray());
 			isUpdate = true;
 		} else {
-			data = new ArrayList<Object[]>(10);
+			data = new TArray<Object[]>(10);
 		}
 
 		this.setLocation(x, y);
 		this.timer = new LTimer(25);
 		this.color = LColor.white;
-		this.points = new ArrayList<Progress>();
+		this.points = new TArray<Progress>();
 		this.multiplier = 1;
 		this.pointDistance = 0.05f;
 		this.padding = 0;
@@ -327,7 +326,7 @@ public class Cycle extends LObject implements ISprite {
 	public void iterateFrame() {
 		this.frame += this.stepsPerFrame;
 
-		if (this.frame >= this.points.size()) {
+		if (this.frame >= this.points.size) {
 			this.frame = 0;
 		}
 	}
@@ -494,7 +493,7 @@ public class Cycle extends LObject implements ISprite {
 
 		this.setup();
 
-		int pointsLength = points.size();
+		int pointsLength = points.size;
 
 		Progress point;
 		int index;
@@ -552,11 +551,11 @@ public class Cycle extends LObject implements ISprite {
 		this.color = new LColor(pixel);
 	}
 
-	public ArrayList<Object[]> getData() {
+	public TArray<Object[]> getData() {
 		return data;
 	}
 
-	public void setData(ArrayList<Object[]> data) {
+	public void setData(TArray<Object[]> data) {
 		this.data = data;
 	}
 
@@ -616,11 +615,11 @@ public class Cycle extends LObject implements ISprite {
 		this.pointDistance = pointDistance;
 	}
 
-	public ArrayList<Progress> getPoints() {
+	public TArray<Progress> getPoints() {
 		return points;
 	}
 
-	public void setPoints(ArrayList<Progress> points) {
+	public void setPoints(TArray<Progress> points) {
 		this.points = points;
 	}
 

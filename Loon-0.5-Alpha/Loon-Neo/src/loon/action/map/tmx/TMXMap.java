@@ -1,8 +1,5 @@
 package loon.action.map.tmx;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.action.map.Field2D;
 import loon.action.map.tmx.renderers.TMXHexagonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXIsometricMapRenderer;
@@ -10,6 +7,7 @@ import loon.action.map.tmx.renderers.TMXMapRenderer;
 import loon.action.map.tmx.renderers.TMXOrthogonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXStaggeredMapRenderer;
 import loon.canvas.LColor;
+import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -66,22 +64,22 @@ public class TMXMap {
 	private int nextObjectID;
 	private int hexSideLength;
 
-	private List<TMXMapLayer> layers;
-	private List<TMXTileLayer> tileLayers;
-	private List<TMXImageLayer> imageLayers;
-	private List<TMXObjectLayer> objectLayers;
-	private List<TMXTileSet> tileSets;
+	private TArray<TMXMapLayer> layers;
+	private TArray<TMXTileLayer> tileLayers;
+	private TArray<TMXImageLayer> imageLayers;
+	private TArray<TMXObjectLayer> objectLayers;
+	private TArray<TMXTileSet> tileSets;
 
 	private TMXProperties properties;
 
 	public TMXMap(String filePath, String tilesLocation) {
 		version = 1.0f;
 
-		layers = new ArrayList<TMXMapLayer>();
-		tileLayers = new ArrayList<TMXTileLayer>();
-		imageLayers = new ArrayList<TMXImageLayer>();
-		objectLayers = new ArrayList<TMXObjectLayer>();
-		tileSets = new ArrayList<TMXTileSet>();
+		layers = new TArray<TMXMapLayer>();
+		tileLayers = new TArray<TMXTileLayer>();
+		imageLayers = new TArray<TMXImageLayer>();
+		objectLayers = new TArray<TMXObjectLayer>();
+		tileSets = new TArray<TMXTileSet>();
 
 		properties = new TMXProperties();
 
@@ -181,10 +179,10 @@ public class TMXMap {
 	}
 
 	public int getNumLayers() {
-		return layers.size();
+		return layers.size;
 	}
 
-	public List<TMXMapLayer> getLayers() {
+	public TArray<TMXMapLayer> getLayers() {
 		return layers;
 	}
 
@@ -193,10 +191,10 @@ public class TMXMap {
 	}
 
 	public int getNumTileLayers() {
-		return tileLayers.size();
+		return tileLayers.size;
 	}
 
-	public List<TMXTileLayer> getTileLayers() {
+	public TArray<TMXTileLayer> getTileLayers() {
 		return tileLayers;
 	}
 
@@ -205,10 +203,10 @@ public class TMXMap {
 	}
 
 	public int getNumObjectLayers() {
-		return objectLayers.size();
+		return objectLayers.size;
 	}
 
-	public List<TMXObjectLayer> getObjectLayers() {
+	public TArray<TMXObjectLayer> getObjectLayers() {
 		return objectLayers;
 	}
 
@@ -217,10 +215,10 @@ public class TMXMap {
 	}
 
 	public int getNumImageLayers() {
-		return imageLayers.size();
+		return imageLayers.size;
 	}
 
-	public List<TMXImageLayer> getImageLayers() {
+	public TArray<TMXImageLayer> getImageLayers() {
 		return imageLayers;
 	}
 
@@ -250,10 +248,10 @@ public class TMXMap {
 	}
 
 	public int getNumTileSets() {
-		return tileSets.size();
+		return tileSets.size;
 	}
 
-	public List<TMXTileSet> getTileSets() {
+	public TArray<TMXTileSet> getTileSets() {
 		return tileSets;
 	}
 
@@ -327,7 +325,7 @@ public class TMXMap {
 
 		hexSideLength = element.getIntAttribute("hexsidelength", 0);
 
-		ArrayList<XMLElement> list = element.list();
+		TArray<XMLElement> list = element.list();
 
 		for (XMLElement node : list) {
 
@@ -378,20 +376,20 @@ public class TMXMap {
 		this.tilesLocation = tilesLocation;
 	}
 
-	public List<Field2D> newGIDField2Ds() {
+	public TArray<Field2D> newGIDField2Ds() {
 		return newField2Ds(0);
 	}
 
-	public List<Field2D> newTileSetIDField2Ds() {
+	public TArray<Field2D> newTileSetIDField2Ds() {
 		return newField2Ds(1);
 	}
 
-	public List<Field2D> newIDField2Ds() {
+	public TArray<Field2D> newIDField2Ds() {
 		return newField2Ds(2);
 	}
 
-	public List<Field2D> newField2Ds(int mode) {
-		ArrayList<Field2D> list = new ArrayList<Field2D>(tileLayers.size());
+	public TArray<Field2D> newField2Ds(int mode) {
+		TArray<Field2D> list = new TArray<Field2D>(tileLayers.size);
 		for (TMXTileLayer layer : tileLayers) {
 			switch (mode) {
 			case 0:

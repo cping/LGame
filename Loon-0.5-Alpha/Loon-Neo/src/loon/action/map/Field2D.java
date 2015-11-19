@@ -20,12 +20,11 @@
  */
 package loon.action.map;
 
-import java.util.ArrayList;
-
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public class Field2D implements Config {
 
@@ -94,7 +93,7 @@ public class Field2D implements Config {
 
 	}
 
-	private ArrayList<Vector2f> result;
+	private TArray<Vector2f> result;
 
 	private int[][] data;
 
@@ -306,9 +305,9 @@ public class Field2D implements Config {
 		return pos;
 	}
 
-	public ArrayList<Vector2f> neighbors(Vector2f pos, boolean flag) {
+	public TArray<Vector2f> neighbors(Vector2f pos, boolean flag) {
 		if (result == null) {
-			result = new ArrayList<Vector2f>(8);
+			result = new TArray<Vector2f>(8);
 		} else {
 			result.clear();
 		}

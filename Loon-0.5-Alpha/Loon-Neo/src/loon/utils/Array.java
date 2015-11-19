@@ -506,6 +506,7 @@ public class Array<T> {
 		if (iterator == null) {
 			iterator = new ListItr(this);
 		}
+		this.stopNext();
 		return iterator;
 	}
 

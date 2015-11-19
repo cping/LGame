@@ -20,15 +20,14 @@
  */
 package loon;
 
-import java.util.List;
-
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.reply.Callback;
 import loon.utils.reply.CallbackList;
 
 public abstract class SoundImpl<I> implements Sound {
 
-	protected List<Callback<Sound>> callbacks;
+	protected TArray<Callback<Sound>> callbacks;
 	protected Throwable error;
 	protected boolean playing, looping;
 	protected float volume = 1;

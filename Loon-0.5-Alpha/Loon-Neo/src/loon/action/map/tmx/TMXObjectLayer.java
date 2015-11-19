@@ -1,23 +1,21 @@
 package loon.action.map.tmx;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import loon.action.map.tmx.objects.TMXObject;
 import loon.canvas.LColor;
+import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
 public class TMXObjectLayer extends TMXMapLayer {
 
 	private LColor color;
 
-	private List<TMXObject> objects;
+	private TArray<TMXObject> objects;
 
 	public TMXObjectLayer(TMXMap map) {
 		super(map, "", 0, 0, map.getWidth(), map.getHeight(), 1.0f, true,
 				TmxLayerType.OBJECT);
 
-		objects = new ArrayList<>();
+		objects = new TArray<>();
 		color = new LColor(LColor.TRANSPARENT);
 	}
 
@@ -26,14 +24,14 @@ public class TMXObjectLayer extends TMXMapLayer {
 	}
 
 	public int getNumObjects() {
-		return objects.size();
+		return objects.size;
 	}
 
 	public LColor getColor() {
 		return color;
 	}
 
-	public List<TMXObject> getObjects() {
+	public TArray<TMXObject> getObjects() {
 		return objects;
 	}
 
@@ -57,8 +55,8 @@ public class TMXObjectLayer extends TMXMapLayer {
 
 		nodes = element.getChildrenByName("object");
 		if (nodes != null) {
-			ArrayList<XMLElement> list = nodes.list();
-			for (int i = 0; i < list.size(); i++) {
+			TArray<XMLElement> list = nodes.list();
+			for (int i = 0; i < list.size; i++) {
 				XMLElement objectNode = list.get(i);
 
 				TMXObject object = new TMXObject();

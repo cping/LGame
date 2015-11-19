@@ -1,6 +1,9 @@
 package loon.action.sprite;
 
+import loon.action.map.Character;
+import loon.action.map.Item;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 
 public class Scene extends Entity {
 
@@ -18,6 +21,10 @@ public class Scene extends Entity {
 
 	private boolean mBackgroundEnabled = true;
 
+	private TArray<Item> items = new TArray<Item>();
+
+	private TArray<Character> characters = new TArray<Character>();
+
 	public Scene() {
 
 	}
@@ -26,6 +33,72 @@ public class Scene extends Entity {
 		for (int i = 0; i < count; i++) {
 			this.attachChild(new Entity());
 		}
+	}
+
+	public void addItem(Item item) {
+		this.items.add(item);
+	}
+
+	public Item getItem(int index) {
+		return this.items.get(index);
+	}
+
+	public Item getItem(String name) {
+		int index = findItem(name);
+		if (index == -1) {
+			return null;
+		}
+		return getItem(index);
+	}
+
+	public int findItem(String name) {
+		for (int i = 0; i < this.items.size; i++) {
+			if (getItem(i).getName().equalsIgnoreCase(name)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public Item removeItem(int index) {
+		return this.items.removeIndex(index);
+	}
+
+	public int countItems() {
+		return this.items.size;
+	}
+
+	public void addCharacter(Character character) {
+		this.characters.add(character);
+	}
+
+	public Character getCharacter(int index) {
+		return this.characters.get(index);
+	}
+
+	public Character getCharacter(String name) {
+		int index = findCharacter(name);
+		if (index == -1) {
+			return null;
+		}
+		return getCharacter(index);
+	}
+
+	public int findCharacter(String name) {
+		for (int i = 0; i < this.characters.size; i++) {
+			if (getCharacter(i).getName().equalsIgnoreCase(name)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public Character removeCharacter(int index) {
+		return this.characters.removeIndex(index);
+	}
+
+	public int countCharacters() {
+		return this.characters.size;
 	}
 
 	public float getSecondsElapsedTotal() {

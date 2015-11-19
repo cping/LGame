@@ -4,24 +4,13 @@ import java.util.NoSuchElementException;
 
 public class SortedList<E> {
 
-	private ListItr iterator;
-
 	public LIterator<E> listIterator() {
-		if (iterator == null) {
-			iterator = new ListItr();
-		}
-		iterator.reset(0);
-		return iterator;
+		return listIterator(0);
 	}
 
 	public LIterator<E> listIterator(int index) {
-		if (index <= 0) {
-			return listIterator();
-		}
 		checkPositionIndex(index);
-		ListItr list = new ListItr();
-		list.reset(index);
-		return list;
+		return new ListItr(index);
 	}
 
 	private class ListItr implements LIterator<E> {
@@ -30,11 +19,7 @@ public class SortedList<E> {
 		private int nextIndex;
 		private int expectedModCount = modCount;
 
-		ListItr() {
-
-		}
-
-		public void reset(int idx) {
+		ListItr(int idx) {
 			next = (idx == size) ? null : node(idx);
 			nextIndex = idx;
 		}
@@ -75,8 +60,9 @@ public class SortedList<E> {
 		}
 	}
 
-	int modCount = 0;
-	int size = 0;
+	public int modCount = 0;
+
+	public int size = 0;
 
 	Node<E> first;
 

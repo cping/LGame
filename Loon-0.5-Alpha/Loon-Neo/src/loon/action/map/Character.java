@@ -1,14 +1,14 @@
 package loon.action.map;
 
-import java.util.ArrayList;
+import loon.utils.TArray;
 
 public class Character {
 
 	private String name;
 
-	private ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+	private TArray<Attribute> attributes = new TArray<Attribute>();
 
-	private ArrayList<Item> items = new ArrayList<Item>();
+	private TArray<Item> items = new TArray<Item>();
 
 	public String getName() {
 		return this.name;
@@ -35,7 +35,7 @@ public class Character {
 	}
 
 	public int findAttribute(String name) {
-		for (int i = 0; i < this.attributes.size(); i++) {
+		for (int i = 0; i < this.attributes.size; i++) {
 			if (getAttribute(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -44,11 +44,11 @@ public class Character {
 	}
 
 	public void removeAttribute(int index) {
-		this.attributes.remove(index);
+		this.attributes.removeIndex(index);
 	}
 
 	public int countAttributes() {
-		return this.attributes.size();
+		return this.attributes.size;
 	}
 
 	public void addItem(Item item) {
@@ -68,7 +68,7 @@ public class Character {
 	}
 
 	public int findItem(String name) {
-		for (int i = 0; i < this.items.size(); i++) {
+		for (int i = 0; i < this.items.size; i++) {
 			if (getItem(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -77,10 +77,10 @@ public class Character {
 	}
 
 	public Item removeItem(int index) {
-		return this.items.remove(index);
+		return this.items.removeIndex(index);
 	}
 
 	public int countItems() {
-		return this.items.size();
+		return this.items.size;
 	}
 }

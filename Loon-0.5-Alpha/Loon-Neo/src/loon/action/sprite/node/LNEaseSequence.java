@@ -20,10 +20,8 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import loon.utils.Easing;
+import loon.utils.TArray;
 
 public class LNEaseSequence extends LNAction {
 
@@ -31,18 +29,18 @@ public class LNEaseSequence extends LNAction {
 
 	}
 
-	protected ArrayList<LNAction> _actionList;
+	protected TArray<LNAction> _actionList;
 
 	protected int _index;
 
 	public static LNEaseSequence Action(Easing easing,
-			ArrayList<LNAction> actions) {
+			TArray<LNAction> actions) {
 		LNEaseSequence ease = new LNEaseSequence();
 		ease._actionList = actions;
 		ease._duration = 0f;
 		ease._index = 0;
 		ease._easing = easing;
-		for (int i = 0; i < actions.size(); i++) {
+		for (int i = 0; i < actions.size; i++) {
 			actions.get(i)._easing = easing;
 			ease._duration += actions.get(i).getDuration();
 		}
@@ -52,8 +50,8 @@ public class LNEaseSequence extends LNAction {
 	public static LNEaseSequence Action(Easing easing, LNAction... actions) {
 		int size = actions.length;
 		LNEaseSequence ease = new LNEaseSequence();
-		ease._actionList = new ArrayList<LNAction>(size);
-		ease._actionList.addAll(Arrays.asList(actions));
+		ease._actionList = new TArray<LNAction>(size);
+		ease._actionList.addAll(new TArray<LNAction>(actions));
 		ease._duration = 0f;
 		ease._easing = easing;
 		ease._index = 0;
@@ -69,20 +67,20 @@ public class LNEaseSequence extends LNAction {
 		this._index = 0;
 		super._isEnd = false;
 		super._target = node;
-		if (this._actionList.size() > 0) {
+		if (this._actionList.size > 0) {
 			this._actionList.get(0).setTarget(super._target);
 		}
 	}
 
 	public void step(float dt) {
-		if (this._index < this._actionList.size()) {
+		if (this._index < this._actionList.size) {
 			do {
 				this._actionList.get(this._index).step(dt);
 				if (this._actionList.get(this._index).isEnd()) {
 					dt = this._actionList.get(this._index).getElapsed()
 							- this._actionList.get(this._index).getDuration();
 					this._index++;
-					if (this._index >= this._actionList.size()) {
+					if (this._index >= this._actionList.size) {
 						return;
 					}
 					this._actionList.get(this._index).setTarget(super._target);

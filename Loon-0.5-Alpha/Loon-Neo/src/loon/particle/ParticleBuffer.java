@@ -20,11 +20,10 @@
  */
 package loon.particle;
 
-import java.util.List;
-
 import loon.canvas.LColor;
 import loon.opengl.ParticleBatch;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class ParticleBuffer {
 	
@@ -123,10 +122,10 @@ public class ParticleBuffer {
 		return _live >= _maxParticles;
 	}
 
-	public void add(int count, float now, List<? extends Initializer> initters) {
+	public void add(int count, float now, TArray<? extends Initializer> initters) {
 		if (isFull())
 			return;
-		int pp = 0, ppos = 0, icount = initters.size(), initted = 0;
+		int pp = 0, ppos = 0, icount = initters.size, initted = 0;
 		for (int aa = 0; aa < alive.length && initted < count; aa++) {
 			int live = alive[aa], mask = 1;
 			if (live == 0xFFFFFFFF) {
@@ -149,8 +148,8 @@ public class ParticleBuffer {
 		}
 	}
 
-	public int apply(List<? extends Effector> effectors, float now, float dt) {
-		int pp = 0, ppos = 0, ecount = effectors.size(), living = 0;
+	public int apply(TArray<? extends Effector> effectors, float now, float dt) {
+		int pp = 0, ppos = 0, ecount = effectors.size, living = 0;
 		for (int aa = 0; aa < alive.length; aa++) {
 			int live = alive[aa], mask = 1, died = 0;
 			for (int end = pp + 32; pp < end; pp++, ppos += NUM_FIELDS, mask <<= 1) {

@@ -21,14 +21,11 @@
  */
 package loon.component;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import loon.geom.RectBox;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Keys;
+import loon.utils.TArray;
 
 public final class BSPCollisionNode {
 
@@ -200,9 +197,9 @@ public final class BSPCollisionNode {
 		return this.actors.keys();
 	}
 
-	public List<Actor> getActorsList() {
-		List<Actor> result = new ArrayList<Actor>();
-		for (Iterator<Actor> key = this.actors.keys(); key.hasNext();) {
+	public TArray<Actor> getActorsList() {
+		TArray<Actor> result = new TArray<Actor>();
+		for (Keys<Actor> key = this.actors.keys(); key.hasNext();) {
 			result.add(key.next());
 		}
 		return result;

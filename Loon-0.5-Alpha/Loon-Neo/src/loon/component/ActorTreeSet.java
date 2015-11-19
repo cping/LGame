@@ -35,12 +35,8 @@ public class ActorTreeSet {
 
 	private ActorSet generalSet = new ActorSet();
 
-	private ActorTreeSet.TasIterator iterator;
-
 	public ActorTreeSet() {
 		this.subSets.add(this.generalSet);
-		this.iterator = new ActorTreeSet.TasIterator();
-		this.iterator.reset(this.subSets);
 	}
 
 	public void clear() {
@@ -53,8 +49,7 @@ public class ActorTreeSet {
 	}
 
 	public LIterator<Actor> iterator() {
-		iterator.reset(this.subSets);
-		return iterator;
+		return new ActorTreeSet.TasIterator(this.subSets);
 	}
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y) {
@@ -194,11 +189,7 @@ public class ActorTreeSet {
 
 		private LIterator<Actor> actorIterator;
 
-		public TasIterator() {
-	
-		}
-
-		public void reset(SortedList<ActorSet> soered) {
+		TasIterator(SortedList<ActorSet> soered) {
 			this.setIterator = soered.listIterator();
 			for (this.currentSet = this.setIterator.next(); this.currentSet
 					.size() == 0 && this.setIterator.hasNext(); this.currentSet = this.setIterator
@@ -206,6 +197,7 @@ public class ActorTreeSet {
 			}
 			this.actorIterator = this.currentSet.iterator();
 		}
+
 
 		@Override
 		public void remove() {

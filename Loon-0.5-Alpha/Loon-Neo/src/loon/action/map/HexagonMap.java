@@ -20,13 +20,12 @@
  */
 package loon.action.map;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import loon.action.map.ArrayInt2DAStar.TileFactory;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 @SuppressWarnings("unchecked")
 public class HexagonMap<T> implements GeometryMap, Iterable<TileVisit<T>> {
@@ -233,11 +232,11 @@ public class HexagonMap<T> implements GeometryMap, Iterable<TileVisit<T>> {
 	}
 
 	@Override
-	public List<int[]> lineRegion(int[] start, int[] end) {
+	public TArray<int[]> lineRegion(int[] start, int[] end) {
 		int dx = end[0] - start[0];
 		int dy = end[1] - start[1];
 		if (dx == 0 || dy == 0 || dx == -dy) {
-			List<int[]> positions = new ArrayList<int[]>();
+			TArray<int[]> positions = new TArray<int[]>();
 			int ax = dx < 0 ? -dx : dx;
 			int ay = dy < 0 ? -dy : dy;
 			int len = ax < ay ? ay : ax;
@@ -256,8 +255,8 @@ public class HexagonMap<T> implements GeometryMap, Iterable<TileVisit<T>> {
 	}
 
 	@Override
-	public List<int[]> circleRegion(int[] center, int radius) {
-		List<int[]> positions = new ArrayList<int[]>();
+	public TArray<int[]> circleRegion(int[] center, int radius) {
+		TArray<int[]> positions = new TArray<int[]>();
 		int i, j, k;
 		for (j = -radius; j <= radius; j++) {
 			if (j < 0) {

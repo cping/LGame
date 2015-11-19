@@ -20,18 +20,17 @@
  */
 package loon.action.sprite.node;
 
-import java.util.ArrayList;
-
 import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class LNTextureAtlas {
 
-	private ArrayList<RectBox> _rectList;
+	private TArray<RectBox> _rectList;
 
 	private LTexture _texture;
 
@@ -42,7 +41,7 @@ public class LNTextureAtlas {
 	public LNTextureAtlas(LTexture texture, int capacity) {
 		this._texture = texture;
 		this._totalRect = capacity;
-		this._rectList = new ArrayList<RectBox>();
+		this._rectList = new TArray<RectBox>();
 	}
 
 	public void addRect(RectBox rect) {

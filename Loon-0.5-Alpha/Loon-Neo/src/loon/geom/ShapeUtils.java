@@ -20,9 +20,8 @@
  */
 package loon.geom;
 
-import java.util.ArrayList;
-
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class ShapeUtils {
 
@@ -168,14 +167,14 @@ public class ShapeUtils {
 		}
 	}
 
-	public static void calculateConvexHull(ArrayList<Vector2f> points,
-			ArrayList<Vector2f> convexHullPoints) {
-		if (points.size() <= 1) {
+	public static void calculateConvexHull(TArray<Vector2f> points,
+			TArray<Vector2f> convexHullPoints) {
+		if (points.size <= 1) {
 			return;
 		}
 		Vector2f p;
 		Vector2f bot = points.get(0);
-		for (int i = 1; i < points.size(); i++) {
+		for (int i = 1; i < points.size; i++) {
 			Vector2f point = points.get(i);
 			if (point.y < bot.y)
 				bot = point;
@@ -187,7 +186,7 @@ public class ShapeUtils {
 			i = points.get(0) == p ? 1 : 0;
 			Vector2f cand = points.get(i);
 
-			for (i = i + 1; i < points.size(); i++) {
+			for (i = i + 1; i < points.size; i++) {
 				Vector2f point = points.get(i);
 				if (point != p && area(p, cand, point) > 0)
 					cand = points.get(i);

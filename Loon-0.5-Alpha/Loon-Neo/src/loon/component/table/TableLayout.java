@@ -20,13 +20,12 @@
  */
 package loon.component.table;
 
-import java.util.ArrayList;
-
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.LComponent;
 import loon.component.LContainer;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 
 public class TableLayout extends LContainer {
 
@@ -86,7 +85,7 @@ public class TableLayout extends LContainer {
 	}
 
 	public void addRow(int column, int position) {
-		ArrayList<TableLayoutRow> newRows = new ArrayList<TableLayoutRow>();
+		TArray<TableLayoutRow> newRows = new TArray<TableLayoutRow>();
 		int newRowHeight = getHeight() / (tableRows.length + 1);
 		if (canAddRow(newRowHeight)) {
 			if (position == 0) {
@@ -104,7 +103,7 @@ public class TableLayout extends LContainer {
 				newRows.add(new TableLayoutRow(x(), y(), getWidth(),
 						newRowHeight, column));
 			}
-			for (int i = 0; i < newRows.size(); i++) {
+			for (int i = 0; i < newRows.size; i++) {
 				((TableLayoutRow) newRows.get(i))
 						.setY(y() + (i * newRowHeight));
 				((TableLayoutRow) newRows.get(i)).setHeight(newRowHeight);

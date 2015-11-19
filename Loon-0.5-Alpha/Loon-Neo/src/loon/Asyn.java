@@ -20,9 +20,7 @@
  */
 package loon;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import loon.utils.TArray;
 import loon.utils.reply.Act;
 import loon.utils.reply.GoPromise;
 import loon.utils.reply.Port;
@@ -30,8 +28,8 @@ import loon.utils.reply.Port;
 public abstract class Asyn {
 
 	public static class Default extends Asyn {
-		private final List<Runnable> pending = new ArrayList<>();
-		private final List<Runnable> running = new ArrayList<>();
+		private final TArray<Runnable> pending = new TArray<>();
+		private final TArray<Runnable> running = new TArray<>();
 		protected final Log log;
 
 		public Default(Log log, Act<? extends Object> frame) {
@@ -64,7 +62,7 @@ public abstract class Asyn {
 				pending.clear();
 			}
 
-			for (int ii = 0, ll = running.size(); ii < ll; ii++) {
+			for (int ii = 0, ll = running.size; ii < ll; ii++) {
 				Runnable action = running.get(ii);
 				try {
 					action.run();

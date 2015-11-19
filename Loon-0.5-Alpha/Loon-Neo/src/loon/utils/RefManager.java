@@ -20,24 +20,21 @@
  */
 package loon.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import loon.LRelease;
 //引用管理器，作用是保存实现了LRelease接口的对象，然后统一释放。
 public class RefManager implements LRelease {
 
-	public ArrayList<LRelease> objects = new ArrayList<LRelease>(
+	public TArray<LRelease> objects = new TArray<LRelease>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	public RefManager() {
 	}
 
 	public RefManager(LRelease... res) {
-		objects.addAll(Arrays.asList(res));
+		objects.addAll(res);
 	}
 
-	public RefManager(ArrayList<LRelease> res) {
+	public RefManager(TArray<LRelease> res) {
 		objects.addAll(res);
 	}
 

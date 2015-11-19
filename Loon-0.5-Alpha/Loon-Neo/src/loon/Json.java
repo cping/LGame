@@ -22,8 +22,8 @@ package loon;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
+import loon.utils.TArray;
 import loon.utils.json.JsonParserException;
 import loon.utils.json.JsonSink;
 
@@ -36,7 +36,7 @@ public interface Json {
     Writer useVerboseFormat(boolean verbose);
   }
 
-  interface TypedArray<T> extends Iterable<T> {
+  interface TypedArray<T> {
 
     int length();
 
@@ -89,7 +89,7 @@ public interface Json {
             return (index < 0 || index >= data.length) ? dflt : get(index);
           }
           public Iterator<T> iterator() {
-            @SuppressWarnings("unchecked") List<T> list = (List<T>)Arrays.asList(data);
+            @SuppressWarnings("unchecked") TArray<T> list = (TArray<T>)Arrays.asList(data);
             return list.iterator();
           }
         };
