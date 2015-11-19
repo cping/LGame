@@ -20,14 +20,13 @@
  */
 package loon.component;
 
-import java.util.HashMap;
-
 import loon.LTexture;
 import loon.action.map.Field2D;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.ArrayMap;
 import loon.utils.LIterator;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
@@ -169,7 +168,7 @@ public class LLayer extends ActorLayer {
 			if (timer.action(this.elapsedTime = elapsedTime)) {
 				action(elapsedTime);
 				if (!isVSync) {
-					LIterator<Actor> it = objects.newIterator();
+					LIterator<Actor> it = objects.iterator();
 					for (; it.hasNext();) {
 						thing = (Actor) it.next();
 						if (!thing.visible) {
@@ -297,11 +296,11 @@ public class LLayer extends ActorLayer {
 				- object.getHeight());
 	}
 
-	public void setField2DBackground(Field2D field, HashMap<?, ?> pathMap) {
+	public void setField2DBackground(Field2D field, ArrayMap pathMap) {
 		setField2DBackground(field, pathMap, null);
 	}
 
-	public void setField2DBackground(Field2D field, HashMap<?, ?> pathMap,
+	public void setField2DBackground(Field2D field, ArrayMap pathMap,
 			String fileName) {
 		setField2D(field);
 		Image background = null;

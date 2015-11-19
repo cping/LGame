@@ -20,54 +20,53 @@
  */
 package loon;
 
-import java.util.HashMap;
-import java.util.Map;
+import loon.utils.ObjectMap;
 
 public class SaveBatchImpl implements Save.Batch {
 
-  protected final Save storage;
-  private Map<String,String> updates = new HashMap<String,String>();
+	protected final Save storage;
+	private ObjectMap<String, String> updates = new ObjectMap<String, String>();
 
-  public SaveBatchImpl (Save storage) {
-    this.storage = storage;
-  }
+	public SaveBatchImpl(Save storage) {
+		this.storage = storage;
+	}
 
-  public void setItem(String key, String data) {
-    updates.put(key, data);
-  }
+	public void setItem(String key, String data) {
+		updates.put(key, data);
+	}
 
-  public void removeItem(String key) {
-    updates.put(key, null);
-  }
+	public void removeItem(String key) {
+		updates.put(key, null);
+	}
 
-  public void commit() {
-    try {
-      onBeforeCommit();
-      for (Map.Entry<String,String> entry : updates.entrySet()) {
-        String key = entry.getKey(), data = entry.getValue();
-        if (data == null)
-          removeImpl(key);
-        else
-          setImpl(key, data);
-      }
-      onAfterCommit();
+	public void commit() {
+		try {
+			onBeforeCommit();
+			for (ObjectMap.Entry<String, String> entry : updates.entries()) {
+				String key = entry.key, data = entry.value;
+				if (data == null)
+					removeImpl(key);
+				else
+					setImpl(key, data);
+			}
+			onAfterCommit();
 
-    } finally {
-      updates = null;
-    }
-  }
+		} finally {
+			updates = null;
+		}
+	}
 
-  protected void onBeforeCommit() {
-  }
+	protected void onBeforeCommit() {
+	}
 
-  protected void setImpl(String key, String data) {
-    storage.setItem(key, data);
-  }
+	protected void setImpl(String key, String data) {
+		storage.setItem(key, data);
+	}
 
-  protected void removeImpl(String key) {
-    storage.removeItem(key);
-  }
+	protected void removeImpl(String key) {
+		storage.removeItem(key);
+	}
 
-  protected void onAfterCommit() {
-  }
+	protected void onAfterCommit() {
+	}
 }

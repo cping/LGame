@@ -21,7 +21,6 @@
 package loon.action.map;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import loon.LRelease;
@@ -35,6 +34,7 @@ import loon.action.map.heuristics.EuclideanNoSQR;
 import loon.action.map.heuristics.Manhattan;
 import loon.action.map.heuristics.Mixing;
 import loon.geom.Vector2f;
+import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 public class AStarFinder implements Runnable, LRelease {
@@ -55,7 +55,7 @@ public class AStarFinder implements Runnable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_SHORT = new DiagonalShort();
 
-	private final static HashMap<Integer, TArray<Vector2f>> finderLazy = new HashMap<Integer, TArray<Vector2f>>(
+	private final static ObjectMap<Integer, TArray<Vector2f>> finderLazy = new ObjectMap<Integer, TArray<Vector2f>>(
 			100);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic,
@@ -88,7 +88,7 @@ public class AStarFinder implements Runnable, LRelease {
 			boolean flag) {
 		heuristic = (heuristic == null ? ASTAR_MANHATTAN : heuristic);
 		synchronized (finderLazy) {
-			if (finderLazy.size() >= LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
+			if (finderLazy.size >= LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
 				finderLazy.clear();
 			}
 			int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, flag);

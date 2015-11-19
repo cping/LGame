@@ -20,19 +20,15 @@
  */
 package loon.canvas;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.opengl.GLEx;
+import loon.utils.ObjectMap;
 
 public class LGradation implements LRelease {
 
-	private static HashMap<String, LGradation> gradations;
+	private static ObjectMap<String, LGradation> gradations;
 
 	private LColor start;
 
@@ -51,7 +47,7 @@ public class LGradation implements LRelease {
 	public static LGradation getInstance(LColor s, LColor e, int w, int h,
 			int alpha) {
 		if (gradations == null) {
-			gradations = new HashMap<String, LGradation>(10);
+			gradations = new ObjectMap<String, LGradation>(10);
 		}
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, s.getRGB());
@@ -221,13 +217,9 @@ public class LGradation implements LRelease {
 		if (gradations == null) {
 			return;
 		}
-		Set<?> entrys = gradations.entrySet();
-		for (Iterator<?> it = entrys.iterator(); it.hasNext();) {
-			Entry<?, ?> e = (Entry<?, ?>) it.next();
-			LGradation g = (LGradation) e.getValue();
+		for (LGradation g : gradations.values()) {
 			if (g != null) {
 				g.close();
-				g = null;
 			}
 		}
 		gradations.clear();

@@ -21,7 +21,6 @@
 package loon.action.sprite;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import loon.LObject;
 import loon.LSystem;
@@ -45,6 +44,7 @@ import loon.physics.PWorldBox;
 import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -680,7 +680,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		remove(o);
 	}
 
-	private HashMap<SpriteBatchObject, PBody> _Bodys = new HashMap<SpriteBatchObject, PBody>(
+	private ObjectMap<SpriteBatchObject, PBody> _Bodys = new ObjectMap<SpriteBatchObject, PBody>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	public PBody findPhysics(SpriteBatchObject o) {

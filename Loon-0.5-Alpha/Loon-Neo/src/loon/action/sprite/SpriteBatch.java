@@ -1,6 +1,5 @@
 package loon.action.sprite;
 
-import java.util.HashMap;
 
 import loon.LSystem;
 import loon.LTexture;
@@ -20,6 +19,7 @@ import loon.opengl.ShaderProgram;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.ObjectMap;
 
 public class SpriteBatch extends PixmapFImpl {
 
@@ -132,7 +132,7 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 	}
 
-	private HashMap<Integer, SpriteBatch.TextureLine> lineLazy = new HashMap<Integer, SpriteBatch.TextureLine>(
+	private ObjectMap<Integer, SpriteBatch.TextureLine> lineLazy = new ObjectMap<Integer, SpriteBatch.TextureLine>(
 			1000);
 
 	@Override

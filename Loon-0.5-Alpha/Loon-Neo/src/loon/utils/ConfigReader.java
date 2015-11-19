@@ -1,7 +1,6 @@
 package loon.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
@@ -17,7 +16,7 @@ public class ConfigReader implements Expression {
 
 	private String FLAG_I_TAG = "'";
 
-	private final static HashMap<String, ConfigReader> pConfigReaders = new HashMap<String, ConfigReader>();
+	private final static ObjectMap<String, ConfigReader> pConfigReaders = new ObjectMap<String, ConfigReader>();
 
 	public static ConfigReader getInstance(final String path) {
 		synchronized (pConfigReaders) {
@@ -30,14 +29,14 @@ public class ConfigReader implements Expression {
 		}
 	}
 
-	private final HashMap<String, String> pConfigItems = new HashMap<String, String>();
+	private final ObjectMap<String, String> pConfigItems = new ObjectMap<String, String>();
 
 	private StringBuffer values = new StringBuffer();
 
 	private boolean isClose;
 
-	public HashMap<String, String> getContent() {
-		return new HashMap<String, String>(pConfigItems);
+	public ObjectMap<String, String> getContent() {
+		return new ObjectMap<String, String>(pConfigItems);
 	}
 
 	public ConfigReader(final String resName) {

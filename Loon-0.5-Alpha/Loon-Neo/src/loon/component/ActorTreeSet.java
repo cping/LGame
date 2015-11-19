@@ -40,6 +40,7 @@ public class ActorTreeSet {
 	public ActorTreeSet() {
 		this.subSets.add(this.generalSet);
 		this.iterator = new ActorTreeSet.TasIterator();
+		this.iterator.reset(this.subSets);
 	}
 
 	public void clear() {
@@ -52,16 +53,12 @@ public class ActorTreeSet {
 	}
 
 	public LIterator<Actor> iterator() {
-		iterator.reset();
+		iterator.reset(this.subSets);
 		return iterator;
 	}
 
-	public LIterator<Actor> newIterator() {
-		return new ActorTreeSet.TasIterator();
-	}
-
 	public Actor getOnlyCollisionObjectsAt(float x, float y) {
-		for (LIterator<Actor> it = newIterator(); it.hasNext();) {
+		for (LIterator<Actor> it = iterator(); it.hasNext();) {
 			Actor a = it.next();
 			if (a.getRectBox().contains(x, y)) {
 				return a;
@@ -71,7 +68,7 @@ public class ActorTreeSet {
 	}
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y, Object tag) {
-		for (LIterator<Actor> it = newIterator(); it.hasNext();) {
+		for (LIterator<Actor> it = iterator(); it.hasNext();) {
 			Actor a = (Actor) it.next();
 			if (a.getRectBox().contains(x, y) && a.getTag() == tag) {
 				return a;
@@ -81,7 +78,7 @@ public class ActorTreeSet {
 	}
 
 	public Actor getSynchronizedObject(float x, float y) {
-		LIterator<Actor> iter = newIterator();
+		LIterator<Actor> iter = iterator();
 		Actor tmp = iter.next();
 		if (tmp == null) {
 			return null;
@@ -198,13 +195,13 @@ public class ActorTreeSet {
 		private LIterator<Actor> actorIterator;
 
 		public TasIterator() {
-			reset();
+	
 		}
 
-		public void reset() {
-			this.setIterator = ActorTreeSet.this.subSets.listIterator();
-			for (this.currentSet = (ActorSet) this.setIterator.next(); this.currentSet
-					.size() == 0 && this.setIterator.hasNext(); this.currentSet = (ActorSet) this.setIterator
+		public void reset(SortedList<ActorSet> soered) {
+			this.setIterator = soered.listIterator();
+			for (this.currentSet = this.setIterator.next(); this.currentSet
+					.size() == 0 && this.setIterator.hasNext(); this.currentSet = this.setIterator
 					.next()) {
 			}
 			this.actorIterator = this.currentSet.iterator();
@@ -228,7 +225,7 @@ public class ActorTreeSet {
 				return false;
 			} else {
 				while (this.setIterator.hasNext()) {
-					this.currentSet = (ActorSet) this.setIterator.next();
+					this.currentSet = this.setIterator.next();
 					if (this.currentSet.size() != 0) {
 						break;
 					}
@@ -237,5 +234,6 @@ public class ActorTreeSet {
 				return this.actorIterator.hasNext();
 			}
 		}
+
 	}
 }

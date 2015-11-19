@@ -20,15 +20,15 @@
  */
 package loon.action.sprite.node;
 
-import java.util.HashMap;
+import loon.utils.ObjectMap;
 
 public class LNDataCache {
 
 	private static boolean initCache;
 
-	private static HashMap<String, DefImage> imageDictionary;
+	private static ObjectMap<String, DefImage> imageDictionary;
 
-	private static HashMap<String, DefAnimation> animationDictionary;
+	private static ObjectMap<String, DefAnimation> animationDictionary;
 
 	public static DefAnimation animationByKey(String key) {
 		if (!initCache) {
@@ -57,8 +57,8 @@ public class LNDataCache {
 
 	public static void initDataDefinitions() {
 		if (!initCache) {
-			imageDictionary = new HashMap<String, DefImage>();
-			animationDictionary = new HashMap<String, DefAnimation>();
+			imageDictionary = new ObjectMap<String, DefImage>();
+			animationDictionary = new ObjectMap<String, DefAnimation>();
 			initCache = true;
 		}
 	}

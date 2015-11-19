@@ -1,17 +1,16 @@
 package loon.action.sprite;
 
-import java.util.HashMap;
-
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
+import loon.utils.ObjectMap;
 
 public class AnimationHelper {
 
-	private final static HashMap<String, AnimationHelper> animations = new HashMap<String, AnimationHelper>();
+	private final static ObjectMap<String, AnimationHelper> animations = new ObjectMap<String, AnimationHelper>();
 
 	// 角色向下
 	public LTexture[] downImages;
@@ -116,8 +115,8 @@ public class AnimationHelper {
 			images = null;
 			animations.put(
 					key,
-					animation = makeObject(result[0], result[1], result[2],
-							result[3]));
+					animation = makeObject(key, result[0], result[1],
+							result[2], result[3]));
 		}
 		return animation;
 	}
@@ -147,16 +146,16 @@ public class AnimationHelper {
 
 			animations.put(
 					key,
-					animation = makeObject(result[0], result[1], result[3],
-							result[2]));
+					animation = makeObject(key, result[0], result[1],
+							result[3], result[2]));
 		}
 		return animation;
 
 	}
 
-	public final static AnimationHelper makeObject(LTexture[] down,
-			LTexture[] left, LTexture[] right, LTexture[] up) {
-		AnimationHelper animation = new AnimationHelper();
+	public final static AnimationHelper makeObject(String flag,
+			LTexture[] down, LTexture[] left, LTexture[] right, LTexture[] up) {
+		AnimationHelper animation = new AnimationHelper(flag);
 		animation.downImages = down;
 		animation.leftImages = left;
 		animation.rightImages = right;
@@ -174,16 +173,18 @@ public class AnimationHelper {
 		}
 	}
 
-	AnimationHelper() {
+	String flag = null;
 
+	AnimationHelper(String f) {
+		this.flag = f;
 	}
 
-	public AnimationHelper(AnimationHelper animation) {
+	public AnimationHelper(String f, AnimationHelper animation) {
 		leftImages = CollectionUtils.copyOf(animation.leftImages);
 		downImages = CollectionUtils.copyOf(animation.downImages);
 		upImages = CollectionUtils.copyOf(animation.upImages);
-		rightImages = CollectionUtils
-				.copyOf(animation.rightImages);
+		rightImages = CollectionUtils.copyOf(animation.rightImages);
+		this.flag = f;
 	}
 
 	public void dispose() {
@@ -191,6 +192,6 @@ public class AnimationHelper {
 		dispose(upImages);
 		dispose(leftImages);
 		dispose(rightImages);
-		animations.remove(this);
+		animations.remove(flag);
 	}
 }

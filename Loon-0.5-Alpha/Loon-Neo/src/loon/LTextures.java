@@ -1,15 +1,14 @@
 package loon;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import loon.LTexture.Format;
 import loon.event.Updateable;
 import loon.opengl.LSTRDictionary;
+import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public class LTextures {
 
-	private static HashMap<String, LTexture> lazyTextures = new HashMap<String, LTexture>(
+	private static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(
 			100);
 
 	public static LTexture newTexture(String path) {
@@ -27,7 +26,7 @@ public class LTextures {
 	}
 
 	public static int count() {
-		return lazyTextures.size();
+		return lazyTextures.size;
 	}
 
 	public static boolean containsValue(LTexture texture) {
@@ -156,9 +155,11 @@ public class LTextures {
 	}
 
 	public static void destroyAll() {
-		if (lazyTextures.size() > 0) {
-			ArrayList<LTexture> textures = new ArrayList<LTexture>(lazyTextures.values());
-			for (LTexture tex2d : textures) {
+		if (lazyTextures.size > 0) {
+			TArray<LTexture> textures = new TArray<LTexture>(
+					lazyTextures.values());
+			for (int i = 0; i < textures.size; i++) {
+				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.disposed()) {
 					tex2d.refCount = 0;
 					tex2d.close();

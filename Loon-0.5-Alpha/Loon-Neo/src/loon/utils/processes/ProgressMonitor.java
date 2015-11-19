@@ -1,14 +1,14 @@
 package loon.utils.processes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 
 public class ProgressMonitor implements ProgressListener {
 
 	private final ArrayList<ProgressListener> _progressListeners = new ArrayList<ProgressListener>();
-	private final HashMap<ProgressMonitor, ProgressListener> _childProgressMonitorToProgressListenerMap = new HashMap<ProgressMonitor, ProgressListener>();
+	private final ObjectMap<ProgressMonitor, ProgressListener> _childProgressMonitorToProgressListenerMap = new ObjectMap<ProgressMonitor, ProgressListener>();
 
 	public ProgressMonitor() {
 

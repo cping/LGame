@@ -4,9 +4,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import loon.utils.ObjectMap.Entry;
-import loon.utils.reflect.ArrayReflection;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"unchecked","rawtypes"})
 public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	public K[] keys;
 	public V[] values;
@@ -14,6 +13,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	public boolean ordered;
 
 	private Entries entries1, entries2;
+
 	private Values valuesIter1, valuesIter2;
 	private Keys keysIter1, keysIter2;
 
@@ -31,20 +31,8 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 		values = (V[]) new Object[capacity];
 	}
 
-	public TArrayMap(boolean ordered, int capacity, Class keyArrayType,
-			Class valueArrayType) {
-		this.ordered = ordered;
-		keys = (K[]) ArrayReflection.newInstance(keyArrayType, capacity);
-		values = (V[]) ArrayReflection.newInstance(valueArrayType, capacity);
-	}
-
-	public TArrayMap(Class keyArrayType, Class valueArrayType) {
-		this(false, 16, keyArrayType, valueArrayType);
-	}
-
 	public TArrayMap(TArrayMap array) {
-		this(array.ordered, array.size, array.keys.getClass()
-				.getComponentType(), array.values.getClass().getComponentType());
+		this(array.ordered, array.size);
 		size = array.size;
 		System.arraycopy(array.keys, 0, keys, 0, size);
 		System.arraycopy(array.values, 0, values, 0, size);
@@ -329,13 +317,10 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	}
 
 	protected void resize(int newSize) {
-		K[] newKeys = (K[]) ArrayReflection.newInstance(keys.getClass()
-				.getComponentType(), newSize);
+		K[] newKeys = (K[]) new Object[newSize];
 		System.arraycopy(keys, 0, newKeys, 0, MathUtils.min(size, newKeys.length));
 		this.keys = newKeys;
-
-		V[] newValues = (V[]) ArrayReflection.newInstance(values.getClass()
-				.getComponentType(), newSize);
+		V[] newValues = (V[]) new Object[newSize];
 		System.arraycopy(values, 0, newValues, 0,
 				MathUtils.min(size, newValues.length));
 		this.values = newValues;

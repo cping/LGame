@@ -21,10 +21,8 @@
 package loon.opengl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 
 import loon.BaseIO;
 import loon.LRelease;
@@ -33,6 +31,9 @@ import loon.LTexture;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
 
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
@@ -40,7 +41,7 @@ public class BMFont implements LRelease {
 
 	private static final int DEFAULT_MAX_CHAR = 255;
 
-	private HashMap<String, Display> displays;
+	private ObjectMap<String, Display> displays;
 
 	private int lazyHashCode = 1;
 
@@ -127,7 +128,7 @@ public class BMFont implements LRelease {
 
 	private void parse(String text) throws Exception {
 		if (displays == null) {
-			displays = new HashMap<String, Display>(DEFAULT_MAX_CHAR);
+			displays = new ObjectMap<String, Display>(DEFAULT_MAX_CHAR);
 		} else {
 			displays.clear();
 		}
@@ -136,7 +137,7 @@ public class BMFont implements LRelease {
 		common = br.nextToken();
 		page = br.nextToken();
 
-		HashMap<Short, ArrayList<Short>> kerning = new HashMap<Short, ArrayList<Short>>(
+		ObjectMap<Short, ArrayList<Short>> kerning = new ObjectMap<Short, ArrayList<Short>>(
 				64);
 		ArrayList<CharDef> charDefs = new ArrayList<CharDef>(DEFAULT_MAX_CHAR);
 
@@ -182,11 +183,10 @@ public class BMFont implements LRelease {
 			chars[def.id] = def;
 		}
 
-		for (Iterator<Entry<Short, ArrayList<Short>>> iter = kerning.entrySet()
-				.iterator(); iter.hasNext();) {
+		for (Entries<Short, ArrayList<Short>> iter = kerning.entries(); iter.hasNext();) {
 			Entry<Short, ArrayList<Short>> entry = iter.next();
-			short first = (entry.getKey()).shortValue();
-			ArrayList<Short> valueList = entry.getValue();
+			short first = entry.key;
+			ArrayList<Short> valueList = entry.value;
 			short[] valueArray = new short[valueList.size()];
 			int i = 0;
 			for (Iterator<Short> valueIter = valueList.iterator(); valueIter
@@ -248,7 +248,7 @@ public class BMFont implements LRelease {
 			return;
 		}
 
-		if (displays.size() > DEFAULT_MAX_CHAR) {
+		if (displays.size > DEFAULT_MAX_CHAR) {
 			displays.clear();
 		}
 

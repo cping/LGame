@@ -21,22 +21,22 @@
 package loon.opengl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.LFont;
+import loon.utils.ObjectMap;
 
 public final class LSTRDictionary {
 
-	private final static HashMap<String, LFont> cacheList = new HashMap<String, LFont>(
+	private final static ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(
 			20);
 
-	private final static HashMap<LFont, Dict> fontList = new HashMap<LFont, Dict>(
+	private final static ObjectMap<LFont, Dict> fontList = new ObjectMap<LFont, Dict>(
 			20);
 
-	private static HashMap<String, LSTRFont> lazyEnglish = new HashMap<String, LSTRFont>(
+	private static ObjectMap<String, LSTRFont> lazyEnglish = new ObjectMap<String, LSTRFont>(
 			10);
 
 	public final static String added = "0123456789";
@@ -93,7 +93,7 @@ public final class LSTRDictionary {
 
 	public final static Dict bind(final LFont font, final String mes) {
 		final String message = mes + added;
-		if (cacheList.size() > size) {
+		if (cacheList.size > size) {
 			clearStringLazy();
 		}
 		synchronized (fontList) {
@@ -240,7 +240,7 @@ public final class LSTRDictionary {
 	}
 
 	public static LSTRFont getGLFont(LFont f) {
-		if (lazyEnglish.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+		if (lazyEnglish.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			clearEnglishLazy();
 		}
 		String key = makeLazyWestKey(f);

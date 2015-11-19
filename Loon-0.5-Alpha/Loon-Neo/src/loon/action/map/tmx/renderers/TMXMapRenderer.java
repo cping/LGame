@@ -1,8 +1,5 @@
 package loon.action.map.tmx.renderers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -20,6 +17,7 @@ import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 
 public abstract class TMXMapRenderer extends LObject implements ActionBind,
@@ -65,8 +63,8 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 	protected abstract void renderImageLayer(GLEx gl, TMXImageLayer imageLayer);
 
 	protected TMXMap map;
-	protected Map<String, LTexture> textureMap;
-	protected Map<TMXTile, TileAnimator> tileAnimators;
+	protected ObjectMap<String, LTexture> textureMap;
+	protected ObjectMap<TMXTile, TileAnimator> tileAnimators;
 
 	protected boolean visible;
 	protected float scaleX = 1f;
@@ -75,8 +73,8 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 	protected LColor baseColor = new LColor(LColor.white);
 
 	public TMXMapRenderer(TMXMap map) {
-		this.textureMap = new HashMap<String, LTexture>();
-		this.tileAnimators = new HashMap<TMXTile, TileAnimator>();
+		this.textureMap = new ObjectMap<String, LTexture>();
+		this.tileAnimators = new ObjectMap<TMXTile, TileAnimator>();
 		this.visible = true;
 		this.map = map;
 

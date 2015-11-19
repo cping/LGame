@@ -20,8 +20,6 @@
  */
 package loon.opengl;
 
-import java.util.HashMap;
-
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
@@ -34,6 +32,7 @@ import loon.font.TextLayout;
 import loon.utils.GLUtils;
 import loon.utils.IntArray;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
 public class LSTRFont implements LRelease {
@@ -44,11 +43,11 @@ public class LSTRFont implements LRelease {
 
 	private float offsetX = 1, offsetY = 1;
 
-	private HashMap<String, Cache> displays;
+	private ObjectMap<String, Cache> displays;
 
 	private int totalCharSet = 256;
 
-	private HashMap<Character, IntObject> customChars = new HashMap<Character, IntObject>();
+	private ObjectMap<Character, IntObject> customChars = new ObjectMap<Character, IntObject>();
 
 	private IntObject[] charArray = new IntObject[totalCharSet];
 
@@ -106,7 +105,7 @@ public class LSTRFont implements LRelease {
 	
 	public LSTRFont(LFont font, char[] chs) {
 		if (displays == null) {
-			displays = new HashMap<String, Cache>(totalCharSet);
+			displays = new ObjectMap<String, Cache>(totalCharSet);
 		} else {
 			displays.clear();
 		}
@@ -244,7 +243,7 @@ public class LSTRFont implements LRelease {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
-		if (displays.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (displays) {
 				for (Cache cache : displays.values()) {
 					if (cache != null) {
@@ -368,7 +367,7 @@ public class LSTRFont implements LRelease {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
-		if (displays.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (displays) {
 				for (Cache cache : displays.values()) {
 					if (cache != null) {

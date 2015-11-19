@@ -21,11 +21,11 @@
 package loon.action.avg.drama;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import loon.LRelease;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
 public abstract class Conversion implements Expression {
@@ -141,7 +141,7 @@ public abstract class Conversion implements Expression {
 
 	public static class Exp implements LRelease {
 
-		private HashMap<String, Compute> computes = new HashMap<String, Compute>();
+		private ObjectMap<String, Compute> computes = new ObjectMap<String, Compute>();
 
 		private char[] expChr;
 

@@ -154,6 +154,14 @@ public class ArrayMap {
 		return valueTables[index];
 	}
 
+	public void putAll(ArrayMap map) {
+		ensureCapacity();
+		for (int i = 0; i < map.size; i++) {
+			Entry e = map.getEntry(i);
+			put(e.key, e.value);
+		}
+	}
+
 	public Object put(final Object key, final Object value) {
 		int hashCode = 0;
 		int index = 0;
@@ -213,7 +221,7 @@ public class ArrayMap {
 	}
 
 	public Entry[] toEntrys() {
-		Entry[] lists =  CollectionUtils.copyOf(valueTables, size);
+		Entry[] lists = CollectionUtils.copyOf(valueTables, size);
 		return lists;
 	}
 

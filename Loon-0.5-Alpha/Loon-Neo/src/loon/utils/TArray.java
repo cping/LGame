@@ -1,6 +1,6 @@
 package loon.utils;
 
-import loon.utils.reflect.ArrayReflection;
+import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class TArray<T> {
@@ -23,18 +23,8 @@ public class TArray<T> {
 		items = (T[]) new Object[capacity];
 	}
 
-	public TArray(boolean ordered, int capacity, Class arrayType) {
-		this.ordered = ordered;
-		items = (T[]) ArrayReflection.newInstance(arrayType, capacity);
-	}
-
-	public TArray(Class arrayType) {
-		this(true, 16, arrayType);
-	}
-
 	public TArray(TArray<? extends T> array) {
-		this(array.ordered, array.size, array.items.getClass()
-				.getComponentType());
+		this(array.ordered, array.size);
 		size = array.size;
 		System.arraycopy(array.items, 0, items, 0, size);
 	}
@@ -44,15 +34,23 @@ public class TArray<T> {
 	}
 
 	public TArray(boolean ordered, T[] array, int start, int count) {
-		this(ordered, count, (Class) array.getClass().getComponentType());
+		this(ordered, count);
 		size = count;
 		System.arraycopy(array, start, items, 0, size);
 	}
 
+	public TArray(Values<T> vals) {
+		this();
+		for (T t : vals) {
+			add(t);
+		}
+	}
+
 	public void add(T value) {
 		T[] items = this.items;
-		if (size == items.length)
+		if (size == items.length) {
 			items = resize(MathUtils.max(8, (int) (size * 1.75f)));
+		}
 		items[size++] = value;
 	}
 
@@ -221,8 +219,32 @@ public class TArray<T> {
 		size -= count;
 	}
 
+	public boolean remove(T value) {
+		return remove(value, false);
+	}
+
+	public boolean remove(T value, boolean identity) {
+		Object[] items = this.items;
+		if (identity || value == null) {
+			for (int i = 0; i < size; i++) {
+				if (items[i] == value) {
+					removeIndex(i);
+					return true;
+				}
+			}
+		} else {
+			for (int i = 0; i < size; i++) {
+				if (value.equals(items[i])) {
+					removeIndex(i);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public boolean removeAll(TArray<? extends T> array) {
-		return removeAll(array);
+		return removeAll(array, false);
 	}
 
 	public boolean removeAll(TArray<? extends T> array, boolean identity) {
@@ -298,8 +320,7 @@ public class TArray<T> {
 
 	protected T[] resize(int newSize) {
 		T[] items = this.items;
-		T[] newItems = (T[]) ArrayReflection.newInstance(items.getClass()
-				.getComponentType(), newSize);
+		T[] newItems = (T[]) new Object[newSize];
 		System.arraycopy(items, 0, newItems, 0,
 				MathUtils.min(size, newItems.length));
 		this.items = newItems;
@@ -334,6 +355,10 @@ public class TArray<T> {
 		size = newSize;
 	}
 
+	public Object last() {
+		return items[size < 1 ? 0 : size - 1];
+	}
+
 	public T random() {
 		if (size == 0)
 			return null;
@@ -341,13 +366,9 @@ public class TArray<T> {
 	}
 
 	public T[] toArray() {
-		return (T[]) toArray(items.getClass().getComponentType());
-	}
-
-	public <V> V[] toArray(Class type) {
-		V[] result = (V[]) ArrayReflection.newInstance(type, size);
+		Object[] result = new Object[size];
 		System.arraycopy(items, 0, result, 0, size);
-		return result;
+		return (T[]) result;
 	}
 
 	public boolean equals(Object object) {
@@ -397,15 +418,6 @@ public class TArray<T> {
 			buffer.append(items[i]);
 		}
 		return buffer.toString();
-	}
-
-	static public <T> TArray<T> of(Class<T> arrayType) {
-		return new TArray<T>(arrayType);
-	}
-
-	static public <T> TArray<T> of(boolean ordered, int capacity,
-			Class<T> arrayType) {
-		return new TArray<T>(ordered, capacity, arrayType);
 	}
 
 	static public <T> TArray<T> with(T... array) {

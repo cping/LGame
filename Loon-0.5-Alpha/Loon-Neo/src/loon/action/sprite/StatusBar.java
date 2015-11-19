@@ -1,6 +1,5 @@
 package loon.action.sprite;
 
-import java.util.HashMap;
 
 import loon.LObject;
 import loon.LSystem;
@@ -10,12 +9,13 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 
 public class StatusBar extends LObject implements ISprite {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static HashMap<Integer, LTexture> colors = new HashMap<Integer, LTexture>(
+	private final static ObjectMap<Integer, LTexture> colors = new ObjectMap<Integer, LTexture>(
 			10);
 
 	private final static int[] backPos = { 1, 1, 3, 3 };
@@ -72,7 +72,7 @@ public class StatusBar extends LObject implements ISprite {
 	 * @return
 	 */
 	public LTexture loadBarColor(LColor c1, LColor c2, LColor c3) {
-		if (colors.size() > 10) {
+		if (colors.size > 10) {
 			synchronized (colors) {
 				for (LTexture tex2d : colors.values()) {
 					if (tex2d != null) {

@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.util.HashMap;
-
 import loon.canvas.LColor;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
@@ -32,6 +30,7 @@ import loon.opengl.ShaderProgram;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.ObjectMap;
 
 public class LTextureBatch implements LRelease {
 
@@ -43,14 +42,14 @@ public class LTextureBatch implements LRelease {
 
 	static boolean isBatchCacheDitry;
 
-	private final static HashMap<Integer, LTextureBatch> batchPools = new HashMap<Integer, LTextureBatch>(
+	private final static ObjectMap<Integer, LTextureBatch> batchPools = new ObjectMap<Integer, LTextureBatch>(
 			10);
 
 	public final static void clearBatchCaches() {
 		if (LTextureBatch.isBatchCacheDitry) {
-			HashMap<Integer, LTextureBatch> batchCaches;
+			ObjectMap<Integer, LTextureBatch> batchCaches;
 			synchronized (batchPools) {
-				batchCaches = new HashMap<Integer, LTextureBatch>(batchPools);
+				batchCaches = new ObjectMap<Integer, LTextureBatch>(batchPools);
 				batchPools.clear();
 			}
 			for (LTextureBatch bt : batchCaches.values()) {
@@ -86,7 +85,7 @@ public class LTextureBatch implements LRelease {
 
 	public final static LTextureBatch bindBatchCache(final int index,
 			final int texId, final LTexture texture) {
-		if (batchPools.size() > 128) {
+		if (batchPools.size > 128) {
 			clearBatchCaches();
 		}
 		int key = LSystem.unite(index, texId);

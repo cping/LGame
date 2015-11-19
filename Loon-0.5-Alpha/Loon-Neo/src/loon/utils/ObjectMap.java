@@ -49,7 +49,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 		threshold = (int) (capacity * loadFactor);
 		mask = capacity - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
+		stashCapacity = MathUtils.max(3,
+				(int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(capacity, 8),
 				(int) MathUtils.sqrt(capacity) / 8);
 
@@ -396,6 +397,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 		stashSize = 0;
 	}
 
+	public boolean containsValue(Object value) {
+		return containsValue(value, false);
+	}
+
 	public boolean containsValue(Object value, boolean identity) {
 		V[] valueTable = this.valueTable;
 		if (value == null) {
@@ -469,7 +474,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 		threshold = (int) (newSize * loadFactor);
 		mask = newSize - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
+		stashCapacity = MathUtils.max(3,
+				(int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(newSize, 8),
 				(int) MathUtils.sqrt(newSize) / 8);
 
@@ -594,6 +600,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 		keys2.valid = true;
 		keys1.valid = false;
 		return keys2;
+	}
+
+	public boolean isEmpty() {
+		return this.size == 0;
 	}
 
 	static public class Entry<K, V> {

@@ -21,24 +21,23 @@
 package loon.utils.xml;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 import loon.utils.Base64Coder;
+import loon.utils.ObjectMap;
 
 public class XMLElement {
 
 	private String name;
 
-	private HashMap<String, XMLAttribute> attributes;
+	private ObjectMap<String, XMLAttribute> attributes;
 
 	private ArrayList<Object> contents;
 
 	private XMLElement parent;
 
 	XMLElement(String name) {
-		this.attributes = new HashMap<String, XMLAttribute>();
+		this.attributes = new ObjectMap<String, XMLAttribute>();
 		this.contents = new ArrayList<Object>();
 		this.name = name;
 	}
@@ -128,7 +127,7 @@ public class XMLElement {
 		return (this.attributes.get(name)).getBoolValue();
 	}
 
-	public HashMap<String, XMLAttribute> getAttributes() {
+	public ObjectMap<String, XMLAttribute> getAttributes() {
 		return this.attributes;
 	}
 
@@ -139,14 +138,13 @@ public class XMLElement {
 	public Iterator<?> elements() {
 		return this.contents.iterator();
 	}
+
 	/*
-	public int size() {
-		return this.contents.size();
-	}
-	
-	public XMLElement item(int idx){
-		return (XMLElement) this.getParent().contents.get(idx);
-	}*/
+	 * public int size() { return this.contents.size(); }
+	 * 
+	 * public XMLElement item(int idx){ return (XMLElement)
+	 * this.getParent().contents.get(idx); }
+	 */
 
 	public ArrayList<XMLElement> list() {
 		ArrayList<XMLElement> lists = new ArrayList<XMLElement>(contents.size());
@@ -260,11 +258,10 @@ public class XMLElement {
 		return sbr.toString();
 	}
 
+	@Override
 	public String toString() {
-		Set<?> set = this.attributes.keySet();
 		String str1 = "<" + this.name;
-		for (Iterator<?> it = set.iterator(); it.hasNext();) {
-			String str2 = (String) it.next();
+		for (String str2 : attributes.keys()) {
 			str1 = str1 + " " + str2 + " = \"" + getAttribute(str2).getValue()
 					+ "\"";
 		}

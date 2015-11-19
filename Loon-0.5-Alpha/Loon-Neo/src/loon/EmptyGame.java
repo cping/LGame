@@ -20,11 +20,9 @@
  */
 package loon;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import loon.event.InputMake;
 import loon.event.InputMakeImpl;
+import loon.utils.ObjectMap;
 import loon.utils.json.JsonImpl;
 
 public class EmptyGame extends LGame {
@@ -34,7 +32,7 @@ public class EmptyGame extends LGame {
 	}
 
 	private Save save = new Save() {
-		private final Map<String, String> _data = new HashMap<String, String>();
+		private final ObjectMap<String, String> _data = new ObjectMap<String, String>();
 
 		@Override
 		public void setItem(String key, String data) throws RuntimeException {
@@ -58,7 +56,7 @@ public class EmptyGame extends LGame {
 
 		@Override
 		public Iterable<String> keys() {
-			return _data.keySet();
+			return _data.keys();
 		}
 
 		@Override

@@ -21,12 +21,11 @@
 package loon.action.map;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 
 public class Field2D implements Config {
 
@@ -66,10 +65,10 @@ public class Field2D implements Config {
 
 	private static Vector2f vector2;
 
-	final static private Map<Vector2f, Integer> directions = new HashMap<Vector2f, Integer>(
+	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(
 			9);
 
-	final static private Map<Integer, Vector2f> directionValues = new HashMap<Integer, Vector2f>(
+	final static private ObjectMap<Integer, Vector2f> directionValues = new ObjectMap<Integer, Vector2f>(
 			9);
 
 	static {

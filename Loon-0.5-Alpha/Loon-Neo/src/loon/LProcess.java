@@ -22,8 +22,6 @@ package loon;
 
 import java.util.ArrayList;
 
-
-
 import loon.LGame.Status;
 import loon.canvas.LColor;
 import loon.event.Drawable;

@@ -20,8 +20,6 @@
  */
 package loon.action.sprite.node;
 
-import java.util.HashMap;
-
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -30,6 +28,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 
 public class LNSprite extends LNNode {
 
@@ -45,7 +44,7 @@ public class LNSprite extends LNNode {
 
 	protected boolean _flipX = false, _flipY = false;
 
-	protected HashMap<String, LNAnimation> _anims;
+	protected ObjectMap<String, LNAnimation> _anims;
 
 	public LNSprite(RectBox rect) {
 		super(rect);
@@ -178,7 +177,7 @@ public class LNSprite extends LNNode {
 	public final void initWithAnimation(LNAnimation ans, int idx) {
 		if (ans != null) {
 			if (this._anims == null) {
-				this._anims = new HashMap<String, LNAnimation>();
+				this._anims = new ObjectMap<String, LNAnimation>();
 			}
 			this._ans = ans;
 			initWithFrameStruct(this._ans.getFrame(idx));
@@ -192,7 +191,7 @@ public class LNSprite extends LNNode {
 
 	public void setFrame(String animName, int index) {
 		if (this._anims == null) {
-			this._anims = new HashMap<String, LNAnimation>();
+			this._anims = new ObjectMap<String, LNAnimation>();
 		}
 		if (this._anims.containsKey(animName)) {
 			this._ans = this._anims.get(animName);

@@ -21,7 +21,6 @@
 package loon.particle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import loon.LSystem;
@@ -31,6 +30,7 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.GLUtils;
+import loon.utils.ObjectMap;
 
 public class SimpleParticleSystem {
 
@@ -62,7 +62,7 @@ public class SimpleParticleSystem {
 		}
 	}
 
-	protected HashMap<SimpleEmitter, ParticlePool> particlesByEmitter = new HashMap<SimpleEmitter, ParticlePool>();
+	protected ObjectMap<SimpleEmitter, ParticlePool> particlesByEmitter = new ObjectMap<SimpleEmitter, ParticlePool>();
 
 	protected int maxParticlesPerEmitter;
 
@@ -133,7 +133,8 @@ public class SimpleParticleSystem {
 		this(defaultSpriteRef, maxParticles, null);
 	}
 
-	public SimpleParticleSystem(String defaultSpriteRef, int maxParticles, LColor mask) {
+	public SimpleParticleSystem(String defaultSpriteRef, int maxParticles,
+			LColor mask) {
 		this.maxParticlesPerEmitter = maxParticles;
 		this.mask = mask;
 
@@ -210,7 +211,7 @@ public class SimpleParticleSystem {
 		if (!visible) {
 			return;
 		}
-		
+
 		if ((sprite == null) && (defaultImageName != null)) {
 			loadSystemParticleImage();
 		}
@@ -227,12 +228,12 @@ public class SimpleParticleSystem {
 			}
 
 			int mode = g.getBlendMode();
-			
+
 			if (emitter.useAdditive()) {
 				g.setBlendMode(LSystem.MODE_ADD);
 			}
 
-			ParticlePool pool =  particlesByEmitter.get(emitter);
+			ParticlePool pool = particlesByEmitter.get(emitter);
 			LTexture image = emitter.getImage();
 			if (image == null) {
 				image = this.sprite;
@@ -243,7 +244,7 @@ public class SimpleParticleSystem {
 			}
 
 			for (int i = 0; i < pool.particles.length; i++) {
-				if (pool.particles[i].inUse()){
+				if (pool.particles[i].inUse()) {
 					pool.particles[i].paint(g);
 				}
 			}
@@ -256,7 +257,6 @@ public class SimpleParticleSystem {
 				g.setBlendMode(mode);
 			}
 		}
-
 
 		g.translate(-x, -y);
 		g.restore();
@@ -301,10 +301,7 @@ public class SimpleParticleSystem {
 		pCount = 0;
 
 		if (!particlesByEmitter.isEmpty()) {
-			Iterator<SimpleEmitter> it = particlesByEmitter.keySet()
-					.iterator();
-			while (it.hasNext()) {
-				SimpleEmitter emitter = it.next();
+			for (SimpleEmitter emitter : particlesByEmitter.keys()) {
 				if (emitter.isEnabled()) {
 					ParticlePool pool = particlesByEmitter.get(emitter);
 					for (int i = 0; i < pool.particles.length; i++) {
@@ -337,8 +334,7 @@ public class SimpleParticleSystem {
 
 	public void release(SimpleParticle particle) {
 		if (particle != dummy) {
-			ParticlePool pool = particlesByEmitter.get(particle
-					.getEmitter());
+			ParticlePool pool = particlesByEmitter.get(particle.getEmitter());
 			pool.available.add(particle);
 		}
 	}

@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.util.HashMap;
-
 import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -32,6 +30,7 @@ import loon.opengl.BaseBatch;
 import loon.opengl.Painter;
 import loon.utils.GLUtils;
 import loon.utils.NumberUtils;
+import loon.utils.ObjectMap;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.reply.UnitPort;
@@ -71,7 +70,7 @@ public class LTexture extends Painter implements LRelease {
 
 	private boolean isBatch;
 
-	String tmpLazy;
+	String tmpLazy = "tex" + System.currentTimeMillis();
 
 	int refCount;
 
@@ -157,7 +156,7 @@ public class LTexture extends Painter implements LRelease {
 	// _closed是删除标记，disposed是已经真的被删掉
 	private boolean isChild, _closed, disposed;
 
-	HashMap<Integer, LTexture> childs;
+	ObjectMap<Integer, LTexture> childs;
 
 	private LTexture parent;
 
@@ -409,7 +408,7 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, height);
 
 		if (childs == null) {
-			childs = new HashMap<Integer, LTexture>(10);
+			childs = new ObjectMap<Integer, LTexture>(10);
 		}
 
 		synchronized (childs) {
@@ -462,7 +461,7 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, height);
 
 		if (childs == null) {
-			childs = new HashMap<Integer, LTexture>(10);
+			childs = new ObjectMap<Integer, LTexture>(10);
 		}
 
 		synchronized (childs) {
@@ -891,7 +890,7 @@ public class LTexture extends Painter implements LRelease {
 		result = LSystem.unite(result, yOff);
 		result = LSystem.unite(result, widthRatio);
 		result = LSystem.unite(result, heightRatio);
-		result = LSystem.unite(result, childs == null ? 0 : childs.size());
+		result = LSystem.unite(result, childs == null ? 0 : childs.size);
 		return result;
 	}
 

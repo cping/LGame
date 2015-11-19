@@ -500,8 +500,13 @@ public class Array<T> {
 		return newlist;
 	}
 
+	private LIterator<T> iterator;
+
 	public LIterator<T> listIterator() {
-		return new ListItr(this);
+		if (iterator == null) {
+			iterator = new ListItr(this);
+		}
+		return iterator;
 	}
 
 	private class ListItr implements LIterator<T> {

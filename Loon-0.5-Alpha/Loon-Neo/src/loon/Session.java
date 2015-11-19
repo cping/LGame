@@ -21,18 +21,16 @@
 package loon;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
 
+import loon.utils.ArrayMap;
+import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
 
 /**
  * 游戏记录器，用于记录当前游戏数据
  */
 public class Session {
-	
+
 	private Save _save;
 
 	private boolean isPersisted = false;
@@ -103,7 +101,8 @@ public class Session {
 		}
 
 		public void set(int index, final String v) {
-			final String value = StringUtils.replace(v, String.valueOf(flag), "+");
+			final String value = StringUtils.replace(v, String.valueOf(flag),
+					"+");
 			if (index >= values.length) {
 				int size = index + 1;
 				String[] res = new String[size];
@@ -132,7 +131,7 @@ public class Session {
 
 	private String name;
 
-	private HashMap<String, Record> records;
+	private ArrayMap records;
 
 	private ArrayList<Record> recordsList;
 
@@ -151,7 +150,7 @@ public class Session {
 			isPersisted = false;
 		}
 		this.name = name;
-		this.records = new HashMap<String, Record>(10);
+		this.records = new ArrayMap(10);
 		this.recordsList = new ArrayList<Record>(10);
 		if (gain) {
 			load();
@@ -206,7 +205,7 @@ public class Session {
 
 	public void set(String name, int index, String value) {
 		synchronized (recordsList) {
-			Record record = records.get(name);
+			Record record = (Record) records.get(name);
 			if (record == null) {
 				record = new Record(name);
 				records.put(name, record);
@@ -242,7 +241,7 @@ public class Session {
 
 	public void add(String name, String value) {
 		synchronized (recordsList) {
-			Record record = records.get(name);
+			Record record = (Record) records.get(name);
 			if (record == null) {
 				record = new Record(name);
 				records.put(name, record);
@@ -267,7 +266,7 @@ public class Session {
 
 	public String get(String name, int index) {
 		synchronized (recordsList) {
-			Record record = records.get(name);
+			Record record = (Record) records.get(name);
 			if (record == null) {
 				return null;
 			} else {
@@ -322,7 +321,7 @@ public class Session {
 
 	public int getCount(String name) {
 		synchronized (recordsList) {
-			Record record = records.get(name);
+			Record record = (Record) records.get(name);
 			if (record == null) {
 				return 0;
 			} else {
@@ -389,7 +388,7 @@ public class Session {
 
 	public void clear(String name) {
 		synchronized (recordsList) {
-			Record record = records.remove(name);
+			Record record = (Record) records.remove(name);
 			if (record != null) {
 				recordsList.remove(record);
 			}
@@ -398,7 +397,7 @@ public class Session {
 
 	public boolean isActive(String name) {
 		synchronized (recordsList) {
-			Record record = records.get(name);
+			Record record = (Record) records.get(name);
 			if (record != null) {
 				return record.active;
 			} else {
@@ -429,13 +428,11 @@ public class Session {
 		}
 	}
 
-	public HashMap<String, String> getRecords(int index) {
-		HashMap<String, String> result = new HashMap<String, String>(
-				records.size());
-		Set<Entry<String, Record>> set = records.entrySet();
-		for (Iterator<Entry<String, Record>> it = set.iterator(); it.hasNext();) {
-			Entry<String, Record> entry = it.next();
-			result.put(entry.getKey(), entry.getValue().get(index));
+	public ArrayMap getRecords(int index) {
+		ArrayMap result = new ArrayMap(records.size());
+		for (int i = 0; i < records.size(); i++) {
+			Entry entry = records.getEntry(i);
+			result.put(entry.getKey(), ((Record) entry.getValue()).get(index));
 		}
 		return result;
 	}

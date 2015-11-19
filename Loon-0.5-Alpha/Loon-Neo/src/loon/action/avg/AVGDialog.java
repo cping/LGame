@@ -20,22 +20,21 @@
  */
 package loon.action.avg;
 
-import java.util.HashMap;
-
 import loon.BaseIO;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
+import loon.utils.ObjectMap;
 
 final public class AVGDialog {
 
-	private static HashMap<String, LTexture> lazyImages;
+	private static ObjectMap<String, LTexture> lazyImages;
 
 	public final static LTexture getRMXPDialog(String fileName, int width,
 			int height) {
 		if (lazyImages == null) {
-			lazyImages = new HashMap<String, LTexture>(10);
+			lazyImages = new ObjectMap<String, LTexture>(10);
 		}
 		Image dialog = BaseIO.loadImage(fileName);
 		int w = dialog.getWidth();
@@ -71,7 +70,7 @@ final public class AVGDialog {
 	public final static LTexture getRMXPloadBuoyage(Image rmxpImage, int width,
 			int height) {
 		if (lazyImages == null) {
-			lazyImages = new HashMap<String, LTexture>(10);
+			lazyImages = new ObjectMap<String, LTexture>(10);
 		}
 		String keyName = ("buoyage" + width + "|" + height).intern();
 		LTexture lazy = lazyImages.get(keyName);
@@ -137,7 +136,7 @@ final public class AVGDialog {
 	private final static LTexture getRMXPDialog(Image rmxpImage, int width,
 			int height, int size, int offset) {
 		if (lazyImages == null) {
-			lazyImages = new HashMap<String, LTexture>(10);
+			lazyImages = new ObjectMap<String, LTexture>(10);
 		}
 		String keyName = "dialog" + width + "|" + height;
 		LTexture lazy = lazyImages.get(keyName);

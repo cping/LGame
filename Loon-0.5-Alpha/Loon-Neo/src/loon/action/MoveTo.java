@@ -20,20 +20,19 @@
  */
 package loon.action;
 
-import java.util.HashMap;
-
 import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
 import loon.geom.Vector2f;
+import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
 public class MoveTo extends ActionEvent {
 
-	private final static HashMap<Integer, TArray<Vector2f>> pathCache = new HashMap<Integer, TArray<Vector2f>>(
+	private final static ObjectMap<Integer, TArray<Vector2f>> pathCache = new ObjectMap<Integer, TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	private Vector2f startLocation, endLocation;
@@ -117,7 +116,7 @@ public class MoveTo extends ActionEvent {
 				.y())) {
 			if (useCache) {
 				synchronized (pathCache) {
-					if (pathCache.size() > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
+					if (pathCache.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
 						pathCache.clear();
 					}
 					int key = hashCode();

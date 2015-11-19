@@ -198,8 +198,14 @@ public class ActorSet {
 		return this.numActors;
 	}
 
+	private ActorSet.ActorSetIterator iterator;
+
 	public LIterator<Actor> iterator() {
-		return new ActorSet.ActorSetIterator(this);
+		if (iterator == null) {
+			iterator = new ActorSet.ActorSetIterator();
+		}
+		iterator.reset(this);
+		return iterator;
 	}
 
 	private class ListNode {
@@ -253,8 +259,12 @@ public class ActorSet {
 		ActorSet.ListNode currentNode;
 
 		ActorSet actorSet;
-		
-		public ActorSetIterator(ActorSet node) {
+
+		ActorSetIterator() {
+
+		}
+
+		public void reset(ActorSet node) {
 			this.currentNode = node.listHeadTail;
 			this.actorSet = node;
 		}
@@ -274,5 +284,6 @@ public class ActorSet {
 		public void remove() {
 			actorSet.remove(this.currentNode);
 		}
+
 	}
 }

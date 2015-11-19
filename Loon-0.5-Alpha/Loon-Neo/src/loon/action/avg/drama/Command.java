@@ -20,44 +20,35 @@
  */
 package loon.action.avg.drama;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSystem;
 import loon.Session;
 import loon.utils.ArrayMap;
+import loon.utils.ArrayMap.Entry;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public class Command extends Conversion implements Serializable, LRelease {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class Command extends Conversion implements LRelease {
 
 	// 脚本缓存
-	private static HashMap scriptLazy;
+	private static ArrayMap scriptLazy;
 
 	// 脚本数据缓存
-	private static HashMap scriptContext;
+	private static ArrayMap scriptContext;
 
 	// 函数列表
 	private static ArrayMap functions;
 
 	// 变量列表
-	private static HashMap setEnvironmentList;
+	private static ArrayMap setEnvironmentList;
 
 	// 条件分支列表
 	private static ArrayMap conditionEnvironmentList;
@@ -106,11 +97,11 @@ public class Command extends Conversion implements Serializable, LRelease {
 
 	private Command innerCommand;
 
-	private List temps;
+	private List<String> temps;
 
-	private List printTags;
+	private List<String> printTags;
 
-	private List randTags;
+	private List<String> randTags;
 
 	private int scriptSize;
 
@@ -145,7 +136,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 	public static void createCache(boolean free) {
 		if (free) {
 			if (scriptContext == null) {
-				scriptContext = new HashMap(1000);
+				scriptContext = new ArrayMap(1000);
 			} else {
 				scriptContext.clear();
 			}
@@ -155,7 +146,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 				functions.clear();
 			}
 			if (setEnvironmentList == null) {
-				setEnvironmentList = new HashMap(20);
+				setEnvironmentList = new ArrayMap(20);
 			} else {
 				setEnvironmentList.clear();
 			}
@@ -166,13 +157,13 @@ public class Command extends Conversion implements Serializable, LRelease {
 			}
 		} else {
 			if (scriptContext == null) {
-				scriptContext = new HashMap(1000);
+				scriptContext = new ArrayMap(1000);
 			}
 			if (functions == null) {
 				functions = new ArrayMap(20);
 			}
 			if (setEnvironmentList == null) {
-				setEnvironmentList = new HashMap(20);
+				setEnvironmentList = new ArrayMap(20);
 			}
 			if (conditionEnvironmentList == null) {
 				conditionEnvironmentList = new ArrayMap(30);
@@ -223,11 +214,11 @@ public class Command extends Conversion implements Serializable, LRelease {
 	}
 
 	private boolean setupIF(String commandString, String nowPosFlagName,
-			HashMap setEnvironmentList, ArrayMap conditionEnvironmentList) {
+			ArrayMap setEnvironmentList, ArrayMap conditionEnvironmentList) {
 		boolean result = false;
 		conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(false));
 		try {
-			List temps = commandSplit(commandString);
+			List<String> temps = commandSplit(commandString);
 			int size = temps.size();
 			Object valueA = null;
 			Object valueB = null;
@@ -239,12 +230,12 @@ public class Command extends Conversion implements Serializable, LRelease {
 						: setEnvironmentList.get(valueA);
 				valueB = setEnvironmentList.get(valueB) == null ? valueB
 						: setEnvironmentList.get(valueB);
-				condition = (String) temps.get(2);
+				condition = temps.get(2);
 			} else {
 				int count = 0;
 				StringBuffer sbr = new StringBuffer();
-				for (Iterator it = temps.iterator(); it.hasNext();) {
-					String res = (String) it.next();
+				for (Iterator<String> it = temps.iterator(); it.hasNext();) {
+					String res = it.next();
 					if (count > 0) {
 						if (!isCondition(res)) {
 							sbr.append(res);
@@ -396,9 +387,8 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 */
 	public static String getNameTag(String messages, String startString,
 			String endString) {
-		List results = getNameTags(messages, startString, endString);
-		return (results == null || results.size() == 0) ? null
-				: (String) results.get(0);
+		List<String> results = getNameTags(messages, startString, endString);
+		return (results == null || results.size() == 0) ? null : results.get(0);
 	}
 
 	/**
@@ -409,7 +399,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 * @param endString
 	 * @return
 	 */
-	public static List getNameTags(String messages, String startString,
+	public static List<String> getNameTags(String messages, String startString,
 			String endString) {
 		return Command.getNameTags(messages.toCharArray(),
 				startString.toCharArray(), endString.toCharArray());
@@ -423,12 +413,12 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 * @param endString
 	 * @return
 	 */
-	public static List getNameTags(char[] messages, char[] startString,
+	public static List<String> getNameTags(char[] messages, char[] startString,
 			char[] endString) {
 		int dlength = messages.length;
 		int slength = startString.length;
 		int elength = endString.length;
-		List tagList = new ArrayList(10);
+		List<String> tagList = new ArrayList<String>(10);
 		boolean lookup = false;
 		int lookupStartIndex = 0;
 		int lookupEndIndex = 0;
@@ -493,7 +483,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 * 
 	 * @param vars
 	 */
-	public void setVariables(HashMap vars) {
+	public void setVariables(ArrayMap vars) {
 		setEnvironmentList.putAll(vars);
 	}
 
@@ -502,7 +492,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 * 
 	 * @return
 	 */
-	public HashMap getVariables() {
+	public ArrayMap getVariables() {
 		return setEnvironmentList;
 	}
 
@@ -552,8 +542,8 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 * 
 	 * @return
 	 */
-	public List batchToList() {
-		List reslist = new ArrayList(scriptSize);
+	public List<String> batchToList() {
+		List<String> reslist = new ArrayList<String>(scriptSize);
 		for (; next();) {
 			String execute = doExecute();
 			if (execute != null) {
@@ -582,7 +572,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 
 	private void setupSET(String cmd) {
 		if (cmd.startsWith(SET_TAG)) {
-			List temps = commandSplit(cmd);
+			List<String> temps = commandSplit(cmd);
 			int len = temps.size();
 			String result = null;
 			if (len == 4) {
@@ -597,14 +587,14 @@ public class Command extends Conversion implements Serializable, LRelease {
 
 			if (result != null) {
 				// 替换已有变量字符
-				Set set = setEnvironmentList.entrySet();
-				for (Iterator it = set.iterator(); it.hasNext();) {
-					Entry entry = (Entry) it.next();
+				for (int i = 0; i < setEnvironmentList.size(); i++) {
+
+					Entry entry = setEnvironmentList.getEntry(i);
 					if (!(StringUtils.startsWith(result, '"') && StringUtils
 							.endsWith(result, '"'))) {
 						result = StringUtils.replaceMatch(result,
-								(String) entry.getKey(), entry.getValue()
-										.toString());
+								(String) entry.getKey(),
+								(String) entry.getValue());
 					}
 				}
 				// 当为普通字符串时
@@ -635,8 +625,8 @@ public class Command extends Conversion implements Serializable, LRelease {
 			randTags = Command.getNameTags(cmd, RAND_TAG + BRACKET_LEFT_TAG,
 					BRACKET_RIGHT_TAG);
 			if (randTags != null) {
-				for (Iterator it = randTags.iterator(); it.hasNext();) {
-					String key = (String) it.next();
+				for (Iterator<String> it = randTags.iterator(); it.hasNext();) {
+					String key = it.next();
 					Object value = setEnvironmentList.get(key);
 					// 已存在变量
 					if (value != null) {
@@ -807,7 +797,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 					&& cmd.startsWith(CALL_TAG) && !isCall) {
 				temps = commandSplit(cmd);
 				if (temps.size() == 2) {
-					String functionName = (String) temps.get(1);
+					String functionName = temps.get(1);
 					String[] funs = (String[]) functions.get(functionName);
 					if (funs != null) {
 						innerCommand = new Command(scriptName + FLAG
@@ -936,8 +926,9 @@ public class Command extends Conversion implements Serializable, LRelease {
 				printTags = Command.getNameTags(executeCommand, PRINT_TAG
 						+ BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
 				if (printTags != null) {
-					for (Iterator it = printTags.iterator(); it.hasNext();) {
-						String key = (String) it.next();
+					for (Iterator<String> it = printTags.iterator(); it
+							.hasNext();) {
+						String key = it.next();
 						Object value = setEnvironmentList.get(key);
 						if (value != null) {
 							executeCommand = StringUtils
@@ -992,16 +983,15 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 * @param name
 	 * @param other
 	 */
-	public final void saveCommand(String name, HashMap<String, String> other) {
+	public final void saveCommand(String name, ArrayMap other) {
 		isRead = false;
 		addCommand = false;
 		if (name == null && temps != null && temps.size() > 0) {
-			name = (String) temps.get(1);
+			name = temps.get(1);
 		}
 		Session session = new Session(getSaveName(name), false);
-		Set set = setEnvironmentList.entrySet();
-		for (Iterator it = set.iterator(); it.hasNext();) {
-			Entry entry = (Entry) it.next();
+		for (int i = 0; i < setEnvironmentList.size(); i++) {
+			Entry entry = setEnvironmentList.getEntry(i);
 			session.add((String) entry.getKey(), (String) entry.getValue());
 		}
 		session.add("cmd_offsetPos", MathUtils.min(offsetPos + 1, scriptSize));
@@ -1019,9 +1009,8 @@ public class Command extends Conversion implements Serializable, LRelease {
 		session.add("cmd_if_bool", if_bool);
 		session.add("cmd_elseif_bool", elseif_bool);
 		if (other != null) {
-			Set otherSet = other.entrySet();
-			for (Iterator it = otherSet.iterator(); it.hasNext();) {
-				Entry entry = (Entry) it.next();
+			for (int i = 0; i < other.size(); i++) {
+				Entry entry = other.getEntry(i);
 				session.add((String) entry.getKey(), (String) entry.getValue());
 			}
 		}
@@ -1049,11 +1038,11 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 * @param other
 	 * @return
 	 */
-	public final HashMap loadCommand(String name, int line, List<String> other) {
+	public final ArrayMap loadCommand(String name, int line, List<String> other) {
 		isRead = false;
 		addCommand = false;
 		if (name == null && temps != null && temps.size() > 0) {
-			name = (String) temps.get(1);
+			name = temps.get(1);
 		}
 		Session session = Session.load(getSaveName(name));
 		if (session.getSize() > 0) {
@@ -1081,7 +1070,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 				return null;
 			} else {
 				final int size = other.size();
-				HashMap result = new HashMap(size);
+				ArrayMap result = new ArrayMap(size);
 				for (int i = 0; i < size; i++) {
 					String otherName = other.get(i);
 					result.put(otherName, session.get(otherName));
@@ -1121,7 +1110,7 @@ public class Command extends Conversion implements Serializable, LRelease {
 	 */
 	public final static String[] includeFile(String fileName) {
 		if (scriptLazy == null) {
-			scriptLazy = new HashMap(100);
+			scriptLazy = new ArrayMap(100);
 		} else if (scriptLazy.size() > 10000) {
 			scriptLazy.clear();
 		}
@@ -1163,14 +1152,13 @@ public class Command extends Conversion implements Serializable, LRelease {
 
 	}
 
-
 	/**
 	 * 过滤指定脚本文件内容为list
 	 * 
 	 * @param src
 	 * @return
 	 */
-	public static List commandSplit(final String src) {
+	public static List<String> commandSplit(final String src) {
 		String result = updateOperator(src);
 		String[] cmds = result.split(FLAG);
 		return Arrays.asList(cmds);

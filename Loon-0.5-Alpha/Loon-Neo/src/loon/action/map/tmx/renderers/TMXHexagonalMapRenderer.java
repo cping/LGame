@@ -73,7 +73,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		float threeWidth = tileLayer.getWidth() * 3f;
 		float threeHeight = tileLayer.getHeight() * 3f;
 
-		boolean onlyTexture = textureMap.size() == 1;
+		boolean onlyTexture = textureMap.size == 1;
 
 		LTexture current = textureMap.get(map.getTileset(0).getImage()
 				.getSource());

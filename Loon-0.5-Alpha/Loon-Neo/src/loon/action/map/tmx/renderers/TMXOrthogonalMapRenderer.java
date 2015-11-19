@@ -65,7 +65,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		int windowHeight = (int) (LSystem.viewSize.getHeight()
 				/ map.getTileHeight() / scaleY);
 
-		boolean onlyTexture = textureMap.size() == 1;
+		boolean onlyTexture = textureMap.size == 1;
 
 		LTexture current = textureMap.get(map.getTileset(0).getImage()
 				.getSource());

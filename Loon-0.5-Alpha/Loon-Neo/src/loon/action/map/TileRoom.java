@@ -20,8 +20,8 @@
  */
 package loon.action.map;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public class TileRoom {
 
@@ -37,10 +37,12 @@ public class TileRoom {
 			this.room = room;
 		}
 
+		@Override
 		public int hashCode() {
 			return this.room.hashCode() + this.x + this.y;
 		}
 
+		@Override
 		public boolean equals(Object other) {
 			RoomLink o = (RoomLink) other;
 			return (o.room == this.room) && (this.x == o.x) && (this.y == o.y);
@@ -63,9 +65,9 @@ public class TileRoom {
 
 	private int height;
 
-	private HashMap<TileRoom, RoomLink> connected = new HashMap<TileRoom, RoomLink>();
+	private ObjectMap<TileRoom, RoomLink> connected = new ObjectMap<TileRoom, RoomLink>();
 
-	private ArrayList<TileRoom> connectedRooms = new ArrayList<TileRoom>();
+	private TArray<TileRoom> connectedRooms = new TArray<TileRoom>();
 
 	private boolean locked = false;
 
@@ -126,7 +128,7 @@ public class TileRoom {
 				&& (yp < this.y + this.height);
 	}
 
-	public HashMap<TileRoom, RoomLink> connected() {
+	public ObjectMap<TileRoom, RoomLink> connected() {
 		return this.connected;
 	}
 
@@ -138,7 +140,7 @@ public class TileRoom {
 		return this.y + this.height / 2;
 	}
 
-	public ArrayList<TileRoom> connectedRooms() {
+	public TArray<TileRoom> connectedRooms() {
 		return this.connectedRooms;
 	}
 

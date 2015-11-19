@@ -81,7 +81,7 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 		float doubleWidth = tileLayer.getWidth() * 2f;
 		float doubleHeight = tileLayer.getHeight() * 2f;
 
-		boolean onlyTexture = textureMap.size() == 1;
+		boolean onlyTexture = textureMap.size == 1;
 
 		LTexture current = textureMap.get(map.getTileset(0).getImage()
 				.getSource());

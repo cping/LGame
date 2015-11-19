@@ -20,13 +20,12 @@
  */
 package loon;
 
-import java.util.HashMap;
-
 import loon.utils.CollectionUtils;
+import loon.utils.ObjectMap;
 
 public abstract class SoundBox extends BaseIO {
 
-	private HashMap<String, Sound> sounds = new HashMap<String, Sound>(
+	private ObjectMap<String, Sound> sounds = new ObjectMap<String, Sound>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	public void playSound(String path) {

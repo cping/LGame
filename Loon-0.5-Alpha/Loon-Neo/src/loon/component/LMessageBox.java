@@ -1,7 +1,6 @@
 package loon.component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import loon.LTexture;
@@ -9,6 +8,7 @@ import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.ShadowFont;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
 /**
@@ -237,7 +237,7 @@ public class LMessageBox extends LComponent {
 
 	}
 
-	private final static HashMap<String, LTexture> facepools = new HashMap<String, LTexture>();
+	private final static ObjectMap<String, LTexture> facepools = new ObjectMap<String, LTexture>();
 
 	public static void addFaceImage(String name, LTexture tex) {
 		facepools.put(name, tex);

@@ -20,21 +20,21 @@
  */
 package loon.action.sprite.node;
 
-import java.util.HashMap;
 
 import loon.event.SysTouch;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 
 public class LNButton extends LNUI {
 
-	protected HashMap<String, LNNode> _buttonElement = new HashMap<String, LNNode>();
+	protected ObjectMap<String, LNNode> _buttonElement = new ObjectMap<String, LNNode>();
 
-	protected HashMap<String, LNAction> _touchBeganAction = new HashMap<String, LNAction>();
+	protected ObjectMap<String, LNAction> _touchBeganAction = new ObjectMap<String, LNAction>();
 
-	protected HashMap<String, LNAction> _touchClickedAction = new HashMap<String, LNAction>();
+	protected ObjectMap<String, LNAction> _touchClickedAction = new ObjectMap<String, LNAction>();
 
-	protected HashMap<String, LNAction> _touchMoveOutAction = new HashMap<String, LNAction>();
+	protected ObjectMap<String, LNAction> _touchMoveOutAction = new ObjectMap<String, LNAction>();
 
 	public LNFrameStruct fs;
 
@@ -81,7 +81,7 @@ public class LNButton extends LNUI {
 	public void setAlpha(float a) {
 		super._alpha = a;
 		super._color.a = a;
-		for (String name : this._buttonElement.keySet()) {
+		for (String name : this._buttonElement.keys()) {
 			LNNode node = this._buttonElement.get(name);
 			node.setAlpha(a);
 		}
@@ -249,7 +249,7 @@ public class LNButton extends LNUI {
 	public void processTouchPressed() {
 		if (!isPressed) {
 			super.processTouchPressed();
-			for (String str : this._buttonElement.keySet()) {
+			for (String str : this._buttonElement.keys()) {
 				LNNode node = this._buttonElement.get(str);
 				node.stopAllAction();
 				if (this._touchBeganAction.containsKey(str)) {
@@ -265,7 +265,7 @@ public class LNButton extends LNUI {
 		if (isPressed) {
 			super.processTouchReleased();
 			float num = 0f;
-			for (String str : this._buttonElement.keySet()) {
+			for (String str : this._buttonElement.keys()) {
 				LNNode node = this._buttonElement.get(str);
 				node.stopAllAction();
 				if (this._touchClickedAction.containsKey(str)) {
@@ -288,7 +288,7 @@ public class LNButton extends LNUI {
 
 	public void processTouchDragged() {
 		super.processTouchDragged();
-		for (String key : this._buttonElement.keySet()) {
+		for (String key : this._buttonElement.keys()) {
 			LNNode node = this._buttonElement.get(key);
 			node.stopAllAction();
 			if (this._touchBeganAction.containsKey(key)) {
@@ -301,7 +301,7 @@ public class LNButton extends LNUI {
 	public void update(float dt) {
 		super.update(dt);
 		if (isDraging && !SysTouch.isDrag()) {
-			for (String key : this._buttonElement.keySet()) {
+			for (String key : this._buttonElement.keys()) {
 				LNNode node = this._buttonElement.get(key);
 				node.stopAllAction();
 				if (this._touchMoveOutAction.containsKey(key)) {

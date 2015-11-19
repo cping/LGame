@@ -22,8 +22,6 @@ package loon.opengl;
 
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import loon.LRelease;
 import loon.LSystem;
@@ -35,6 +33,7 @@ import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.opengl.VertexAttributes.Usage;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 public class Mesh implements LRelease {
@@ -43,7 +42,7 @@ public class Mesh implements LRelease {
 		VertexArray, VertexBufferObject, VertexBufferObjectSubData,
 	}
 
-	static final Map<LGame, TArray<Mesh>> meshes = new HashMap<LGame, TArray<Mesh>>();
+	static final ObjectMap<LGame, TArray<Mesh>> meshes = new ObjectMap<LGame, TArray<Mesh>>();
 
 	final VertexData vertices;
 	final IndexData indices;
@@ -634,7 +633,7 @@ public class Mesh implements LRelease {
 	public static String getManagedStatus() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Managed meshes/self: { ");
-		for (LGame self : meshes.keySet()) {
+		for (LGame self : meshes.keys()) {
 			builder.append(meshes.get(self).size);
 			builder.append(" ");
 		}

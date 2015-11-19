@@ -20,12 +20,11 @@
  */
 package loon.utils.json;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import loon.Json;
+import loon.utils.ObjectMap;
 
 public class JsonTypedArray<T> implements Json.TypedArray<T> {
   private final Json.Array array;
@@ -35,7 +34,7 @@ public class JsonTypedArray<T> implements Json.TypedArray<T> {
     T get(Json.Array array, int index, T dflt);
   }
 
-  private static Map<Class<?>, Getter<?>> getters = new HashMap<Class<?>, Getter<?>>();
+  private static ObjectMap<Class<?>, Getter<?>> getters = new ObjectMap<Class<?>, Getter<?>>();
   static {
     getters.put(Boolean.class, new Getter<Boolean>() {
       @Override

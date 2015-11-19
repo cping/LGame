@@ -20,10 +20,9 @@
  */
 package loon.canvas;
 
-import java.util.HashMap;
-
 import loon.LRelease;
 import loon.LSystem;
+import loon.utils.ObjectMap;
 
 public class LColorPool implements LRelease {
 
@@ -40,7 +39,7 @@ public class LColorPool implements LRelease {
 
 	private final LColor AlphaColor = new LColor(0f, 0f, 0f, 0f);
 
-	private HashMap<Integer, LColor> ColorMap = new HashMap<Integer, LColor>();
+	private ObjectMap<Integer, LColor> ColorMap = new ObjectMap<Integer, LColor>();
 
 	public LColor getColor(float r, float g, float b, float a) {
 		if (a <= 0.1f) {
