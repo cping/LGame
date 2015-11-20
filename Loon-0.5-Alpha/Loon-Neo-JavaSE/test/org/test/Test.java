@@ -79,7 +79,7 @@ remove(this);
 
 		public void onLoad() {
 
-		//	puspStage(newStage1(), StageSystem.flip());
+			puspStage(newStage1(), StageSystem.flip());
 
 		}
 

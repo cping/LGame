@@ -20,19 +20,12 @@
  */
 package loon.geom;
 
-import java.io.Serializable;
-import java.util.List;
-
 import loon.geom.Matrix4;
 import loon.geom.Vector3f;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
-public class BoundingBox implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2215702906048039413L;
+public class BoundingBox  {
 
 	private final static Vector3f tmpVector = new Vector3f();
 
@@ -176,7 +169,7 @@ public class BoundingBox implements Serializable {
 		return this;
 	}
 
-	public BoundingBox set(List<Vector3f> points) {
+	public BoundingBox set(TArray<Vector3f> points) {
 		this.inf();
 		for (Vector3f l_point : points)
 			this.ext(l_point);

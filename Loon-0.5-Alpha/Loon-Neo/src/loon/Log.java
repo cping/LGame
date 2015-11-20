@@ -69,7 +69,6 @@ public abstract class Log {
 	}
 
 	public void setMinLevel(Level level) {
-		assert level != null;
 		minLevel = level;
 	}
 

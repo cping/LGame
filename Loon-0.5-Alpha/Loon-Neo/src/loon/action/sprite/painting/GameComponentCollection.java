@@ -20,10 +20,10 @@
  */
 package loon.action.sprite.painting;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 import loon.action.sprite.SpriteBatch;
+import loon.utils.InsertionSorter;
 import loon.utils.TArray;
 import loon.utils.timer.GameTime;
 
@@ -35,7 +35,7 @@ public final class GameComponentCollection {
 
 	private TArray<IGameComponent> collectionsToDraw;
 
-	private Comparator<IGameComponent> igameDrawComparator = new Comparator<IGameComponent>() {
+	private final static Comparator<IGameComponent> igameDrawComparator = new Comparator<IGameComponent>() {
 		public int compare(IGameComponent one, IGameComponent two) {
 			if (one instanceof DrawableGameComponent
 					&& two instanceof DrawableGameComponent) {
@@ -46,7 +46,7 @@ public final class GameComponentCollection {
 		}
 	};
 
-	private Comparator<IGameComponent> igameUpdateComparator = new Comparator<IGameComponent>() {
+	private final static Comparator<IGameComponent> igameUpdateComparator = new Comparator<IGameComponent>() {
 		public int compare(IGameComponent one, IGameComponent two) {
 			if (one instanceof GameComponent && two instanceof GameComponent) {
 				return ((GameComponent) one).getUpdateOrder()
@@ -55,7 +55,9 @@ public final class GameComponentCollection {
 			return 0;
 		}
 	};
-
+	
+	private final static InsertionSorter<IGameComponent> _gameComponentSort = new InsertionSorter<IGameComponent>();
+	
 	public GameComponentCollection() {
 		this.collections = new TArray<IGameComponent>();
 		this.collectionsToUpdate = new TArray<IGameComponent>();
@@ -67,11 +69,11 @@ public final class GameComponentCollection {
 	}
 
 	public void sortDraw() {
-		Arrays.sort(collections.items, igameDrawComparator);
+		_gameComponentSort.sort(collections, igameDrawComparator);
 	}
 
 	public void sortUpdate() {
-		Arrays.sort(collections.items, igameUpdateComparator);
+		_gameComponentSort.sort(collections, igameUpdateComparator);
 	}
 
 	public TArray<IGameComponent> list() {

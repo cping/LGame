@@ -20,6 +20,8 @@
  */
 package loon.utils.reply;
 
+import loon.event.Updateable;
+
 public abstract class Bypass {
 
 	protected static final Cons DISPATCHING = new Cons(null, null);
@@ -38,7 +40,6 @@ public abstract class Bypass {
 		if (isDispatching()) {
 			throw new IllegalStateException("System dispatching");
 		}
-		assert _pendingRuns == null;
 		_listeners = null;
 	}
 
@@ -53,7 +54,7 @@ public abstract class Bypass {
 	protected synchronized Cons addCons(final Cons cons) {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
-				public void run() {
+				public void action(Object o) {
 					_listeners = Cons.insert(_listeners, cons);
 					connectionAdded();
 				}
@@ -68,7 +69,7 @@ public abstract class Bypass {
 	protected synchronized void disconnect(final Cons cons) {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
-				public void run() {
+				public void action(Object o) {
 					_listeners = Cons.remove(_listeners, cons);
 					connectionRemoved();
 				}
@@ -82,7 +83,7 @@ public abstract class Bypass {
 	protected synchronized void removeConnection(final GoListener listener) {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
-				public void run() {
+				public void action(Object o){
 					_listeners = Cons.removeAll(_listeners, listener);
 					connectionRemoved();
 				}
@@ -111,7 +112,7 @@ public abstract class Bypass {
 		synchronized (this) {
 			if (_listeners == DISPATCHING) {
 				_pendingRuns = append(_pendingRuns, new Runs() {
-					public void run() {
+					public void action(Object o) {
 						Bypass.this.notify(notifier, a1, a2, a3);
 					}
 				});
@@ -141,7 +142,7 @@ public abstract class Bypass {
 			Runs run;
 			while ((run = nextRun()) != null) {
 				try {
-					run.run();
+					run.action(this);
 				} catch (RuntimeException ex) {
 					exn = ex;
 				}
@@ -175,7 +176,7 @@ public abstract class Bypass {
 		return head;
 	}
 
-	protected static abstract class Runs implements Runnable {
+	protected static abstract class Runs implements Updateable {
 		public Runs next;
 	}
 

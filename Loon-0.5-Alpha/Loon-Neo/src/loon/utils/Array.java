@@ -471,6 +471,10 @@ public class Array<T> {
 		}
 	}
 
+	public T peek() {
+		return last();
+	}
+
 	public void clear() {
 		this._close = false;
 		this._length = 0;
@@ -538,4 +542,5 @@ public class Array<T> {
 		_length = 0;
 		_items = null;
 	}
+
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<map version="0.99b" orientation="orthogonal" width="50" height="50" tilewidth="32" tileheight="32">
+ <tileset name="ScrollerTiles" firstgid="1" tilewidth="32" tileheight="32">
+  <image source="sprites.png"/>
+  <tile id="1">
+   <properties>
+    <property name="blocked" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Layer 0" width="50" height="50">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAAO3YSxICIQxFUWzd/5pdgZLPfYGmM8isDTmQQJXXGOM6LF7O2HENb37rOtG8UY9iDcpQtW/vH6FwRPfO4qw8j6zD+s2ullMcs96quhfV/ex1VNzFFQbSQ+XOOrKe3RyKnq6sXdnXq86DdCj6tNoRNdCmdnCOyt6iZ4OcjwoHWWvWEvl9Zf1WizXHZ2H9ZD3t8PWHtU/u4phZVjrIu/upDur9oN9Sj4N8t3d3WC2kQeWYrUsb6PlQOSz5o/dO1EEYSMespor/1ynHP4v6PIiZmtWlng2F5amOu/RWZg9Ib2bmFXGCQdHTHR0dHR0d3vgC8P5qohAnAAA=
+  </data>
+ </layer>
+</map>

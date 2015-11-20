@@ -138,18 +138,6 @@ class JsonObject implements Json.Object {
 	}
 
 	@Override
-	public <T> TypedArray<T> getArray(String key, Class<T> valueType) {
-		return getArray(key, valueType, null);
-	}
-
-	@Override
-	public <T> TypedArray<T> getArray(String key, Class<T> valueType,
-			TypedArray<T> dflt) {
-		Json.Array array = getArray(key);
-		return array == null ? dflt : new JsonTypedArray<T>(array, valueType);
-	}
-
-	@Override
 	public TypedArray<String> keys() {
 		return new JsonStringTypedArray(map.keys());
 	}

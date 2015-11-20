@@ -20,34 +20,37 @@
  */
 package loon.utils.reply;
 
-public abstract class UnitPort extends Port<Object> implements Runnable
-{
-	
-    public static UnitPort toPort (final Runnable runnable) {
-        return new UnitPort() { public void onEmit () {
-            runnable.run();
-        }};
-    }
+import loon.event.Updateable;
 
-    public abstract void onEmit ();
+public abstract class UnitPort extends Port<Object> implements Updateable {
 
-    public UnitPort andThen (final UnitPort after) {
-        final UnitPort before = this;
-        return new UnitPort() {
-            public void onEmit () {
-                before.onEmit();
-                after.onEmit();
-            }
-        };
-    }
+	public static UnitPort toPort(final Updateable update) {
+		return new UnitPort() {
+			public void onEmit() {
+				update.action(this);
+			}
+		};
+	}
 
-    @Override
-    public final void onEmit (Object event) {
-        onEmit();
-    }
+	public abstract void onEmit();
 
-    @Override
-    public void run () {
-        onEmit();
-    }
+	public UnitPort andThen(final UnitPort after) {
+		final UnitPort before = this;
+		return new UnitPort() {
+			public void onEmit() {
+				before.onEmit();
+				after.onEmit();
+			}
+		};
+	}
+
+	@Override
+	public final void onEmit(Object event) {
+		onEmit();
+	}
+
+	@Override
+	public void action(Object o) {
+		onEmit();
+	}
 }

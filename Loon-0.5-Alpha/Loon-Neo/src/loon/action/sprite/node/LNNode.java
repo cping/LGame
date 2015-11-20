@@ -20,7 +20,6 @@
  */
 package loon.action.sprite.node;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 import loon.LObject;
@@ -37,6 +36,7 @@ import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
+import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -76,7 +76,10 @@ public class LNNode extends LObject implements ActionBind {
 			return match(p2._layer, p1._layer);
 		}
 	};
+	
 	private Comparator<LNNode> comparator = LNNode.DEFAULT_COMPARATOR;
+	
+	private final static InsertionSorter<LNNode> _node_sorter = new InsertionSorter<LNNode>();
 
 	public static interface CallListener {
 
@@ -271,7 +274,7 @@ public class LNNode extends LObject implements ActionBind {
 		}
 		node.setZOrder(z);
 		node.setParent(this);
-		Arrays.sort(childs, comparator);
+		_node_sorter.sort(childs, comparator);
 	}
 
 	public synchronized void add(LNNode node, int index) {
@@ -443,7 +446,7 @@ public class LNNode extends LObject implements ActionBind {
 	}
 
 	public void sortComponents() {
-		Arrays.sort(this.childs, this.comparator);
+		_node_sorter.sort(this.childs, this.comparator);
 	}
 
 	protected void transferFocus(LNNode component) {

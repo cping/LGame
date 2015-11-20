@@ -15,6 +15,12 @@ public abstract class Sorter<T> {
 		this.sort(arrays, 0, arrays.length, c);
 	}
 
+	/**
+	 * Java本地的List接口基本都被我删了，只有这个特意留下，用来移植后提供给用户自定义C#和C++中的List排序
+	 * 
+	 * @param list
+	 * @param c
+	 */
 	public final void sort(final List<T> list, final Comparator<T> c){
 		this.sort(list, 0, list.size(), c);
 	}

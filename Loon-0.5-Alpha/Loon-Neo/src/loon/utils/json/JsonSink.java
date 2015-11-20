@@ -20,26 +20,25 @@
  */
 package loon.utils.json;
 
-import java.util.Collection;
-import java.util.Map;
-
 import loon.Json;
+import loon.utils.ArrayMap;
+import loon.utils.TArray;
 
 public interface JsonSink<I extends JsonSink<I>> {
 
-  I array(Collection<?> c);
+  I array(TArray<Object> c);
 
   I array(Json.Array c);
 
-  I array(String key, Collection<?> c);
+  I array(String key, TArray<Object> c);
 
   I array(String key, Json.Array c);
 
-  I object(Map<?, ?> map);
+  I object(ArrayMap map);
 
   I object(Json.Object map);
 
-  I object(String key, Map<?, ?> map);
+  I object(String key, ArrayMap map);
 
   I object(String key, Json.Object map);
 

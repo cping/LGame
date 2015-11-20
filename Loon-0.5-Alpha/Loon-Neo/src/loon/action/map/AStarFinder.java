@@ -32,11 +32,12 @@ import loon.action.map.heuristics.Euclidean;
 import loon.action.map.heuristics.EuclideanNoSQR;
 import loon.action.map.heuristics.Manhattan;
 import loon.action.map.heuristics.Mixing;
+import loon.event.Updateable;
 import loon.geom.Vector2f;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
-public class AStarFinder implements Runnable, LRelease {
+public class AStarFinder implements Updateable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_CLOSEST = new Closest();
 
@@ -109,7 +110,7 @@ public class AStarFinder implements Runnable, LRelease {
 				newResult.addAll(result);
 				result = newResult;
 			}
-			if(result==null){
+			if (result == null) {
 				return new TArray<Vector2f>();
 			}
 			return new TArray<Vector2f>(result);
@@ -215,8 +216,8 @@ public class AStarFinder implements Runnable, LRelease {
 		return calc(field, start, over, flag);
 	}
 
-	private TArray<Vector2f> calc(Field2D field, Vector2f start,
-			Vector2f goal, boolean flag) {
+	private TArray<Vector2f> calc(Field2D field, Vector2f start, Vector2f goal,
+			boolean flag) {
 		if (start.equals(goal)) {
 			TArray<Vector2f> v = new TArray<Vector2f>();
 			v.add(start);
@@ -295,7 +296,7 @@ public class AStarFinder implements Runnable, LRelease {
 
 	private void insert(float score, TArray<Vector2f> path) {
 		int size = pathes.size;
-		for (int i = 0; i < size; i ++) {
+		for (int i = 0; i < size; i++) {
 			ScoredPath spath = pathes.get(i);
 			if (spath.score >= score) {
 				pathes.add(new ScoredPath(score, path));
@@ -325,7 +326,8 @@ public class AStarFinder implements Runnable, LRelease {
 		return flying;
 	}
 
-	public void run() {
+	@Override
+	public void action(Object o) {
 		if (pathFoundListener != null) {
 			pathFoundListener.pathFound(findPath());
 		}

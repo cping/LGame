@@ -20,13 +20,12 @@
  */
 package loon.action.avg.drama;
 
-import java.util.Arrays;
-import java.util.List;
 
 import loon.LRelease;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public abstract class Conversion implements Expression {
 
@@ -135,8 +134,8 @@ public abstract class Conversion implements Expression {
 		return sbr.toString().trim();
 	}
 
-	public static List<String> splitToList(final String string, final char tag) {
-		return Arrays.asList(StringUtils.split(string, tag));
+	public static TArray<String> splitToList(final String string, final char tag) {
+		return new TArray<String>(StringUtils.split(string, tag));
 	}
 
 	public static class Exp implements LRelease {

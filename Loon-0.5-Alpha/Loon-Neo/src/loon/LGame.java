@@ -176,13 +176,15 @@ public abstract class LGame {
 
 	public abstract InputMake input();
 
-	public abstract Json json();
-
 	public abstract Log log();
 
 	public abstract Save save();
 
 	public abstract Support support();
+
+	public Json json() {
+		return LSystem.json();
+	}
 
 	public final Display display() {
 		return display;

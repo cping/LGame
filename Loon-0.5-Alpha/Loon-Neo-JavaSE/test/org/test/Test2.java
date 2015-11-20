@@ -39,7 +39,7 @@ public class Test2 extends SpriteBatchScreen{
 
 	@Override
 	public void after(SpriteBatch batch) {
-	//	batch.setColor(LColor.blue);
+	
 
 		batch.draw(tex, 66, 66);
 		batch.drawRect(55, 55, 100, 100);

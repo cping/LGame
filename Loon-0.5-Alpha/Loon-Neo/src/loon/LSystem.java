@@ -28,6 +28,7 @@ import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
+import loon.utils.json.JsonImpl;
 
 public class LSystem {
 
@@ -114,6 +115,8 @@ public class LSystem {
 
 	static Platform _platform;
 
+	static JsonImpl _json_instance;
+	
 	public static Platform platform() {
 		return _platform;
 	}
@@ -155,6 +158,13 @@ public class LSystem {
 		if (_platform != null) {
 			_platform.sysDialog(event, title, text, ok, cancel);
 		}
+	}
+
+	public static Json json() {
+		if (_json_instance == null) {
+			_json_instance = new JsonImpl();
+		}
+		return _json_instance;
 	}
 
 	public static boolean isHTML5() {

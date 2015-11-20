@@ -66,7 +66,7 @@ public class AStarFinderPool {
 	private void emptyPathQueue() {
 		AStarFinder task;
 		for (; (task = pathQueue.poll()) != null;) {
-			task.run();
+			task.action(task);
 		}
 	}
 
@@ -94,9 +94,8 @@ public class AStarFinderPool {
 		search(heuristic, startx, starty, endx, endy, flying, false, callback);
 	}
 
-	public TArray<Vector2f> search(AStarFindHeuristic heuristic,
-			int startX, int startY, int endX, int endY, boolean flying,
-			boolean flag) {
+	public TArray<Vector2f> search(AStarFindHeuristic heuristic, int startX,
+			int startY, int endX, int endY, boolean flying, boolean flag) {
 		TArray<Vector2f> result = null;
 		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
 				endX, endY, flying, flag);
@@ -105,8 +104,8 @@ public class AStarFinderPool {
 		return result;
 	}
 
-	public TArray<Vector2f> search(AStarFindHeuristic heuristic,
-			int startX, int startY, int endX, int endY, boolean flying) {
+	public TArray<Vector2f> search(AStarFindHeuristic heuristic, int startX,
+			int startY, int endX, int endY, boolean flying) {
 		TArray<Vector2f> result = null;
 		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
 				endX, endY, flying, false);

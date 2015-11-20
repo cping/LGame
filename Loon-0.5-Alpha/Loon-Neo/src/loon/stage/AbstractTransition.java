@@ -1,11 +1,13 @@
 package loon.stage;
 
+import loon.event.Updateable;
+
 public abstract class AbstractTransition<T extends AbstractTransition<T>>
 		extends StageTransition {
 
 	protected float _duration = defaultDuration();
 
-	protected Runnable _onStart, _onComplete;
+	protected Updateable _onStart, _onComplete;
 
 	public void setDuration(float dt) {
 		this._duration = dt;
@@ -20,12 +22,12 @@ public abstract class AbstractTransition<T extends AbstractTransition<T>>
 		return asT();
 	}
 
-	public T onStart(Runnable action) {
+	public T onStart(Updateable action) {
 		_onStart = action;
 		return asT();
 	}
 
-	public T onComplete(Runnable action) {
+	public T onComplete(Updateable action) {
 		_onComplete = action;
 		return asT();
 	}
@@ -33,14 +35,14 @@ public abstract class AbstractTransition<T extends AbstractTransition<T>>
 	@Override
 	public void init(Stage o, Stage n) {
 		if (_onStart != null) {
-			_onStart.run();
+			_onStart.action(this);
 		}
 	}
 
 	@Override
 	public void complete(Stage o, Stage n) {
 		if (_onComplete != null) {
-			_onComplete.run();
+			_onComplete.action(this);
 		}
 	}
 

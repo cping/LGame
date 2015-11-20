@@ -21,7 +21,6 @@
 package loon.utils.json;
 
 import loon.Json;
-import loon.Json.TypedArray;
 import loon.utils.TArray;
 
 class JsonArray implements Json.Array {
@@ -62,12 +61,6 @@ class JsonArray implements Json.Array {
 	public Json.Array getArray(int key, Json.Array default_) {
 		Object o = get(key);
 		return (o instanceof Json.Array) ? (Json.Array) get(key) : default_;
-	}
-
-	@Override
-	public <T> TypedArray<T> getArray(int index, Class<T> jsonType) {
-		Json.Array array = getArray(index);
-		return array == null ? null : new JsonTypedArray<T>(array, jsonType);
 	}
 
 	public boolean getBoolean(int key) {

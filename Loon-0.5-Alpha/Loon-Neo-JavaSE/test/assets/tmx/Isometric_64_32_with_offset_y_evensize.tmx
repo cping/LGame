@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="isometric" width="10" height="10" tilewidth="64" tileheight="32">
+ <tileset firstgid="1" source="tsx/isometric_grass_and_water.tsx"/>
+ <tileset firstgid="25" source="tsx/green_xoffset_0__yoffset_16.tsx"/>
+ <tileset firstgid="26" source="tsx/blue_xoffset_0__yoffset_0.tsx"/>
+ <tileset firstgid="27" source="tsx/salmon_xoffset_0__yoffset_15.tsx"/>
+ <layer name="grass" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgHMWDBgMAjw2X0pABAAA=
+  </data>
+ </layer>
+ <layer name="green" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgYGCQZIAAGM2AxJfEIk4NIEkkHmn2AgDhnr8zkAEAAA==
+  </data>
+ </layer>
+ <layer name="pink" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC5NmQAXSDNiBNJGY2mCk2QsA2IR8r5ABAAA=
+  </data>
+ </layer>
+ <layer name="blue" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NggAApBgSQQuOTAqSIxNQGw8VeAKnqatqQAQAA
+  </data>
+ </layer>
+</map>

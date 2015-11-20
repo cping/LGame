@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="isometric" width="11" height="9" tilewidth="32" tileheight="16">
+ <tileset firstgid="1" source="tsx/white_grey_xoffset_0__yoffset_0.tsx"/>
+ <layer name="WhiteNGrey_Layer_0" width="11" height="9">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgJAEzIWFixNHVkGIPsXKk8okRR8ekhBG5GAAxthZYjAEAAA==
+  </data>
+ </layer>
+</map>

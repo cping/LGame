@@ -20,19 +20,19 @@
  */
 package loon.utils.json;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Stack;
-
 import loon.Json;
+import loon.utils.Array;
+import loon.utils.ArrayMap;
+import loon.utils.TArray;
 
 final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
-	private Stack<Object> json = new Stack<Object>();
+	
+	private Array<Object> json = new Array<Object>();
 	private T root;
 
 	JsonBuilder(T root) {
 		this.root = root;
-		json.push(root);
+		json.add(root);
 	}
 
 	public T done() {
@@ -40,7 +40,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	}
 
 	@Override
-	public JsonBuilder<T> array(Collection<?> c) {
+	public JsonBuilder<T> array(TArray<Object> c) {
 		return value(c);
 	}
 
@@ -50,7 +50,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	}
 
 	@Override
-	public JsonBuilder<T> array(String key, Collection<?> c) {
+	public JsonBuilder<T> array(String key, TArray<Object> c) {
 		return value(key, c);
 	}
 
@@ -60,7 +60,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	}
 
 	@Override
-	public JsonBuilder<T> object(Map<?, ?> map) {
+	public JsonBuilder<T> object(ArrayMap map) {
 		return value(map);
 	}
 
@@ -70,7 +70,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	}
 
 	@Override
-	public JsonBuilder<T> object(String key, Map<?, ?> map) {
+	public JsonBuilder<T> object(String key, ArrayMap map) {
 		return value(key, map);
 	}
 
@@ -135,7 +135,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> array() {
 		JsonArray a = new JsonArray();
 		value(a);
-		json.push(a);
+		json.add(a);
 		return this;
 	}
 
@@ -143,7 +143,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> object() {
 		JsonObject o = new JsonObject();
 		value(o);
-		json.push(o);
+		json.add(o);
 		return this;
 	}
 
@@ -151,7 +151,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> array(String key) {
 		JsonArray a = new JsonArray();
 		value(key, a);
-		json.push(a);
+		json.add(a);
 		return this;
 	}
 
@@ -159,14 +159,14 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> object(String key) {
 		JsonObject o = new JsonObject();
 		value(key, o);
-		json.push(o);
+		json.add(o);
 		return this;
 	}
 
 	@Override
 	public JsonBuilder<T> end() {
 		if (json.size() == 1) {
-			throw new JsonWriterException("Cannot end the root object or array");
+			throw new RuntimeException("Cannot end the root object or array");
 		}
 		json.pop();
 		return this;
@@ -176,7 +176,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		try {
 			return (JsonObject) json.peek();
 		} catch (ClassCastException e) {
-			throw new JsonWriterException(
+			throw new RuntimeException(
 					"Attempted to write a keyed value to a JsonArray");
 		}
 	}
@@ -185,7 +185,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		try {
 			return (JsonArray) json.peek();
 		} catch (ClassCastException e) {
-			throw new JsonWriterException(
+			throw new RuntimeException(
 					"Attempted to write a non-keyed value to a JsonObject");
 		}
 	}

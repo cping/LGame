@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="isometric" width="10" height="10" tilewidth="32" tileheight="16">
+ <tileset firstgid="1" source="tsx/aqua_xoffset_5__yoffset_1.tsx"/>
+ <tileset firstgid="2" source="tsx/black_xoffset_32__yoffset_32.tsx"/>
+ <tileset firstgid="3" source="tsx/blue_xoffset_17__yoffset_5.tsx"/>
+ <tileset firstgid="4" source="tsx/red_xoffset_5__yoffset_45.tsx"/>
+ <tileset firstgid="5" source="tsx/yellow_xoffset_0__yoffset_0.tsx"/>
+ <layer name="Aqua_Layer_0" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgJAIPdkDIjYxoNCEzcKlDF8emDpsaYt0HAM/cNNqQAQAA
+  </data>
+ </layer>
+ <layer name="Black_Layer_1" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgIA4wEYkHEuCyH10cmzpixHDx8fmbCQcblxoAUJLARpABAAA=
+  </data>
+ </layer>
+ <layer name="Blue_Layer_2" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgoC5gJhLTCqCbjcsuZiLUEJKjtjqQHAB1KWzCkAEAAA==
+  </data>
+ </layer>
+ <layer name="Red_Layer_3" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGBjAQiQm12xkGl0cF59YMVzuYiFCDbIcNjUAHyqnCJABAAA=
+  </data>
+ </layer>
+ <layer name="Yellow_Layer_4" width="10" height="10">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgQABWBuIAPdWxEompaTcxYrjMZyVCDbIcuhoAjAWcAZABAAA=
+  </data>
+ </layer>
+</map>

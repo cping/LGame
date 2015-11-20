@@ -24,13 +24,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import loon.Asyn;
-import loon.Json;
 import loon.LGame;
 import loon.LSetting;
 import loon.Log;
 import loon.Save;
 import loon.Support;
-import loon.utils.json.JsonImpl;
 import loon.utils.reply.Act;
 
 import org.robovm.apple.coregraphics.CGRect;
@@ -57,7 +55,6 @@ public class RoboVMGame extends LGame {
 	private final ExecutorService pool = Executors.newFixedThreadPool(3);
 
 	private final RoboVMLog log = new RoboVMLog();
-	private final Json json = new JsonImpl();
 
 	public static class IOSSetting extends LSetting {
 
@@ -153,11 +150,6 @@ public class RoboVMGame extends LGame {
 	@Override
 	public Asyn asyn() {
 		return syn;
-	}
-
-	@Override
-	public Json json() {
-		return json;
 	}
 
 	@Override

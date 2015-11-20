@@ -46,7 +46,6 @@ public class GLUtils {
 	}
 
 	public static int nextPOT(int value) {
-		assert value < 0x10000;
 		int bit = 0x8000, highest = -1, count = 0;
 		for (int ii = 15; ii >= 0; ii--, bit >>= 1) {
 			if ((value & bit) == 0)

@@ -1,7 +1,5 @@
 package loon.action.sprite;
 
-import java.util.List;
-
 import loon.LTexture;
 import loon.LTextures;
 import loon.LTexture.Format;
@@ -10,6 +8,7 @@ import loon.geom.RectBox;
 import loon.opengl.LTextureRegion;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.TArray;
 
 public class SpriteRegion extends LTextureRegion {
 	
@@ -24,11 +23,11 @@ public class SpriteRegion extends LTextureRegion {
 
 		public final float animationDuration;
 
-		public Animation(float frameDuration, List<LTextureRegion> keyFrames) {
+		public Animation(float frameDuration, TArray<LTextureRegion> keyFrames) {
 			this.frameDuration = frameDuration;
-			this.animationDuration = frameDuration * keyFrames.size();
-			this.keyFrames = new LTextureRegion[keyFrames.size()];
-			for (int i = 0, n = keyFrames.size(); i < n; i++) {
+			this.animationDuration = frameDuration * keyFrames.size;
+			this.keyFrames = new LTextureRegion[keyFrames.size];
+			for (int i = 0, n = keyFrames.size; i < n; i++) {
 				this.keyFrames[i] = keyFrames.get(i);
 			}
 		}

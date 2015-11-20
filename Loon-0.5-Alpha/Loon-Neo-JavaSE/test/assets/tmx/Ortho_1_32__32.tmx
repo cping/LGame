@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="23" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" source="tsx/32_3_tiles.tsx"/>
+ <layer name="Dirt" width="20" height="23">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgHMWjeBSP4lE8ikcxXgwAIrLjGDAHAAA=
+  </data>
+ </layer>
+ <layer name="green" width="20" height="23">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC62UUQrAMAhDg/c/9H630GhSJxRKNc/QbhaAgo4yF/Dl/MFkHp/d+ux0W55iu14nFu8npmI5ft3762LyestTzIT1rklq3Xxa7+TSc0eXvsOml9P7pHM8OqyuNvm3lU7lUl/d95zMipOe96xLZ5Jb487ibZ+pfxKsfQDXiDGPMAcAAA==
+  </data>
+ </layer>
+ <layer name="red" width="20" height="23">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC82USwoAMQhDC73/nWcrQZOoXYzgojU++/Wc2m5wZUyDnJvMObxKr9ZY5VTaVywVy+JdfZx37snhTVnI23CQt+VE3gtW52+4rDju5LJx5Lv/2NWjVtXunlWWg31kYqwXbZnM/8B1enGnhrM+512w2pM9u0zUKvsAvlnwCDAHAAA=
+  </data>
+ </layer>
+</map>

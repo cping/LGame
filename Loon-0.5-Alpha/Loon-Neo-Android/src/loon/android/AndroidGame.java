@@ -190,11 +190,6 @@ public class AndroidGame extends LGame {
 		return syn;
 	}
 
-	@Override
-	public Json json() {
-		return json;
-	}
-
 	void onPause() {
 		state = State.PAUSED;
 		status.emit(Status.PAUSE);

@@ -18,7 +18,7 @@ public class MainActivity extends Loon {
 		setting.width = 480;
 		setting.height = 320;
 		//若启动此模式，则画面等比压缩，不会失真
-		setting.useRatioScaleFactor = true;
+		setting.useRatioScaleFactor = false;
 		//强制一个显示大小(在android模式下，不填则默认全屏，此模式可能会造成画面失真)
 		//setting.width_zoom = getContainerWidth();
 		//setting.height_zoom = getContainerHeight();
@@ -33,7 +33,7 @@ public class MainActivity extends Loon {
 
 			@Override
 			public Screen onScreen() {
-				return new TitleScreen();
+				return new ScreenTest();
 			}
 		});
 	}

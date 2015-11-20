@@ -97,13 +97,11 @@ public class ShaderProgram implements LRelease {
 
 		public int getUniformLocation(String name) {
 			int loc = gl.glGetUniformLocation(id, name);
-			assert loc >= 0 : "Failed to get " + name + " uniform";
 			return loc;
 		}
 
 		public int getAttribLocation(String name) {
 			int loc = gl.glGetAttribLocation(id, name);
-			assert loc >= 0 : "Failed to get " + name + " uniform";
 			return loc;
 		}
 

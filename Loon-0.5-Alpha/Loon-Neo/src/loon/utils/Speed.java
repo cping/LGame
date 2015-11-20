@@ -1,7 +1,5 @@
 package loon.utils;
 
-import java.util.List;
-
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 
@@ -24,7 +22,7 @@ public class Speed {
 		this.set(direction, length);
 	}
 
-	public static Vector2f getVelocity(Vector2f velocity, List<Vector2f> forces) {
+	public static Vector2f getVelocity(Vector2f velocity, TArray<Vector2f> forces) {
 		for (Vector2f v : forces) {
 			velocity.add(v);
 		}

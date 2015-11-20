@@ -52,36 +52,44 @@ public abstract class Graphics {
 	// 用以提供GL渲染服务
 	public final GL20 gl;
 
-	public RenderTarget defaultRenderTarget = new RenderTarget(this) {
+	private class DefaultRender extends RenderTarget {
+
+		private final Graphics _graphics;
+
+		public DefaultRender(Graphics gfx) {
+			super(gfx);
+			_graphics = gfx;
+		}
+
 		public int id() {
-			return defaultFramebuffer();
+			return _graphics.defaultFramebuffer();
 		}
 
 		public int width() {
-			return viewPixelWidth;
+			return _graphics.viewPixelWidth;
 		}
 
 		public int height() {
-			return viewPixelHeight;
+			return _graphics.viewPixelHeight;
 		}
 
 		public float xscale() {
-			return game.setting.scaling() ? LSystem.getScaleWidth()
-					: scale.factor;
+			return _graphics.game.setting.scaling() ? LSystem.getScaleWidth()
+					: _graphics.scale.factor;
 		}
 
 		public float yscale() {
-			return game.setting.scaling() ? LSystem.getScaleHeight()
-					: scale.factor;
+			return _graphics.game.setting.scaling() ? LSystem.getScaleHeight()
+					: _graphics.scale.factor;
 		}
 
 		public boolean flip() {
 			return true;
 		}
 
-		public void close() {
-		}
-	};
+	}
+
+	public RenderTarget defaultRenderTarget = new DefaultRender(this);
 
 	/**
 	 * 返回一个缩放比例，用以让当前设备加载的资源按照此比例进行资源缩放
@@ -131,7 +139,7 @@ public abstract class Graphics {
 	public void restore() {
 		projectionMatrix = matrixsStack.pop();
 	}
-	
+
 	public abstract Dimension screenSize();
 
 	public Canvas createCanvas(float width, float height) {
@@ -167,12 +175,23 @@ public abstract class Graphics {
 	public abstract TextLayout[] layoutText(String text, TextFormat format,
 			TextWrap wrap);
 
+	private class DisposePort extends UnitPort {
+
+		private final LRelease _release;
+
+		DisposePort(LRelease r) {
+			this._release = r;
+		}
+
+		@Override
+		public void onEmit() {
+			_release.close();
+		}
+
+	}
+
 	public void queueForDispose(final LRelease resource) {
-		game.frame.connect(new UnitPort() {
-			public void onEmit() {
-				resource.close();
-			}
-		}).once();
+		game.frame.connect(new DisposePort(resource)).once();
 	}
 
 	public LTexture finalColorTex() {

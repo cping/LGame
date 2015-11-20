@@ -23,7 +23,7 @@ package loon;
 import loon.event.InputMake;
 import loon.event.InputMakeImpl;
 import loon.utils.ObjectMap;
-import loon.utils.json.JsonImpl;
+import loon.utils.reply.Act;
 
 public class EmptyGame extends LGame {
 
@@ -31,7 +31,10 @@ public class EmptyGame extends LGame {
 		super(config, plat);
 	}
 
-	private Save save = new Save() {
+	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来.
+	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
+	private class SaveEmpty implements Save {
+
 		private final ObjectMap<String, String> _data = new ObjectMap<String, String>();
 
 		@Override
@@ -63,11 +66,14 @@ public class EmptyGame extends LGame {
 		public boolean isPersisted() {
 			return true;
 		}
-	};
+
+	}
+
+	private Save save = new SaveEmpty();
 
 	private InputMake input = new InputMakeImpl();
-	private Json json = new JsonImpl();
-	private Log log = new Log() {
+
+	private class LogEmpty extends Log {
 
 		@Override
 		public void onError(Throwable e) {
@@ -82,13 +88,24 @@ public class EmptyGame extends LGame {
 			}
 
 		}
-	};
-	private Asyn exec = new Asyn.Default(log, frame) {
+
+	}
+
+	private Log log = new LogEmpty();
+
+	private class AsynEmpty extends Asyn.Default {
+
+		public AsynEmpty(Log log, Act<? extends Object> frame) {
+			super(log, frame);
+		}
+
 		@Override
 		public void invokeLater(Runnable action) {
 			action.run();
 		}
-	};
+	}
+
+	private Asyn exec = new AsynEmpty(log, frame);
 
 	@Override
 	public Support support() {
@@ -135,11 +152,6 @@ public class EmptyGame extends LGame {
 	@Override
 	public InputMake input() {
 		return input;
-	}
-
-	@Override
-	public Json json() {
-		return json;
 	}
 
 	@Override

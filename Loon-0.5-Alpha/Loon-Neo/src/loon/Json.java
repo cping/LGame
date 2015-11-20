@@ -20,7 +20,6 @@
  */
 package loon;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import loon.utils.TArray;
@@ -29,13 +28,6 @@ import loon.utils.json.JsonSink;
 
 public interface Json {
   
-  interface Writer extends JsonSink<Writer> {
-
-    String write();
-
-    Writer useVerboseFormat(boolean verbose);
-  }
-
   interface TypedArray<T> {
 
     int length();
@@ -89,7 +81,7 @@ public interface Json {
             return (index < 0 || index >= data.length) ? dflt : get(index);
           }
           public Iterator<T> iterator() {
-            @SuppressWarnings("unchecked") TArray<T> list = (TArray<T>)Arrays.asList(data);
+            @SuppressWarnings({ "unchecked", "rawtypes" }) TArray<T> list = (TArray<T>)new TArray(data);
             return list.iterator();
           }
         };
@@ -133,8 +125,6 @@ public interface Json {
     Array getArray(int index);
 
     Array getArray(int index, Array dflt);
-
-    <T> TypedArray<T> getArray(int index, Class<T> jsonType);
 
     boolean isArray(int index);
 
@@ -193,10 +183,6 @@ public interface Json {
 
     Array getArray(String key, Array dflt);
 
-    <T> TypedArray<T> getArray(String key, Class<T> jsonType);
-
-    <T> TypedArray<T> getArray(String key, Class<T> jsonType, TypedArray<T> dflt);
-
     boolean containsKey(String key);
 
     TypedArray<String> keys();
@@ -227,8 +213,6 @@ public interface Json {
   boolean isArray(java.lang.Object o);
 
   boolean isObject(java.lang.Object o);
-
-  Writer newWriter();
 
   Object parse(String json) throws JsonParserException;
 

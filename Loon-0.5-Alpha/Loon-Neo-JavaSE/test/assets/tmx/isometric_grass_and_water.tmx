@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="isometric" width="25" height="25" tilewidth="64" tileheight="32">
+ <tileset firstgid="1" source="tsx/isometric_grass_and_water.tsx"/>
+ <layer name="Tile Layer 1" width="25" height="25">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC32V227DMAxDpTpb13Uvazu0//+lc4AIJU6oPAiJHVsXklJeEfGa9jTPeq/1edpps5y2yHps62X7NuRd/T3hW2PccL+eznfFr2+df83/KjUwxiL+WFOdJx6Mof7Vn+ar2GlNKTGIj77f5J7mqTi5enSffte8fwwPej/Bfcoea8vY4/Q97QIe6h79jfB1Ka6uDvKs/Gbsua69Tsfr+t4Y/WvOGV7DysPA2VN4TgvTj2mfkrfGIr/ENA/i6Z2vrS7y7mKTC8dP7bGHdW/1/TvtL/aaIGaKqeLEfmOOj3j3jmqUvdnlSLzIbyJGxwtr0v5hLkvssdAYeoda0fyVy24+FMcrDxfEcFyzTznTmJPqy/WQm5fEjfgRp6PZ5+akmzcdpt0Zxu1mgPaG455zx/E2cFZ7mziQM6eNTiuO2yPtd3OaXLmeG/Db5UGO2R9O45yp1DJr7/BxGJAXziHOBuWJ/wP+O/nPUD1QL+X3H78y42PECQAA
+  </data>
+ </layer>
+</map>

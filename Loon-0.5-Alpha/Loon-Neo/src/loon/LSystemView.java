@@ -40,7 +40,6 @@ public abstract class LSystemView extends BaseIO {
 		return game;
 	}
 	public LSystemView(LGame g, long updateRate) {
-		assert updateRate > 0 : "updateRate must be greater than zero.";
 		this.updateRate = updateRate;
 		this.game = g;
 		game.frame.connect(new Port<LGame>() {

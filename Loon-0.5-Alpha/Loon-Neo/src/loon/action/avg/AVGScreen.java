@@ -20,8 +20,6 @@
  */
 package loon.action.avg;
 
-import java.util.List;
-
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -51,6 +49,7 @@ import loon.event.Updateable;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
@@ -317,8 +316,8 @@ public abstract class AVGScreen extends Screen {
 				if (!nextScript(result)) {
 					break;
 				}
-				List<?> commands = Conversion.splitToList(result, ' ');
-				int size = commands.size();
+				TArray<String> commands = Conversion.splitToList(result, ' ');
+				int size = commands.size;
 				String cmdFlag = (String) commands.get(0);
 
 				String mesFlag = null, orderFlag = null, lastFlag = null;

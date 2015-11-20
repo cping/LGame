@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="isometric" width="11" height="9" tilewidth="32" tileheight="16">
+ <tileset firstgid="1" source="tsx/green_xoffset_16__yoffset_0.tsx"/>
+ <tileset firstgid="2" source="tsx/red_xoffset_0__yoffset_0.tsx"/>
+ <tileset firstgid="3" source="tsx/salmon_xoffset_13__yoffset0.tsx"/>
+<layer name="Red_Layer_2" width="11" height="9">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgYGBgYkAFuPjYxJlwiOMzB5s6UjADA357CQFs7qbEXHR3kWo3DAAAL9REgowBAAA=
+  </data>
+ </layer>
+ <layer name="Green_Layer_1" width="11" height="9">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgQABGKGZAE2PAIo4OGBmw66fUXFx24TIfG5tYO0g1l5BZxNiPbCYAQfhXaYwBAAA=
+  </data>
+ </layer>
+ <layer name="Salmon_Layer_3" width="11" height="9">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NmgABmBlTAjEUMWRybHLo6UswlF+AyC5e9pPiTkLnoenH5GZc96OoB4ogn64wBAAA=
+  </data>
+ </layer>
+</map>

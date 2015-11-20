@@ -4,18 +4,12 @@ import loon.LSetting;
 import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
-import loon.action.sprite.effect.PixelChopEffect;
-import loon.action.sprite.effect.PixelDarkOutEffect;
-import loon.action.sprite.effect.PixelWindEffect;
-import loon.action.sprite.effect.PixelDarkInEffect;
-import loon.action.sprite.effect.PixelSnowEffect;
+import loon.action.sprite.effect.FadeDotEffect;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
-
-import org.test.Test.ScreenTest;
 
 public class Test4 extends Screen{
 	
@@ -25,6 +19,8 @@ public class Test4 extends Screen{
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.fps = 60;
 		setting.fontName = "黑体";
 		setting.appName = "test";
@@ -41,6 +37,7 @@ public class Test4 extends Screen{
 	@Override
 	public void draw(GLEx g) {
 	
+		g.drawString("abc\ndef\nxyz", 0, 0);
 		
 	}
 	
@@ -50,9 +47,8 @@ public class Test4 extends Screen{
 
 	@Override
 	public void onLoad() {
-		add(new PixelChopEffect(LColor.red,166,66));
-		setBackground(LColor.black);
-		
+setBackground("back1.png");
+add(new FadeDotEffect(0,280,LColor.red));
 	}
 
 	@Override

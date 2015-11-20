@@ -35,7 +35,6 @@ import loon.event.KeyMake;
 import loon.geom.Dimension;
 import loon.jni.NativeSupport;
 import loon.utils.Scale;
-import loon.utils.json.JsonImpl;
 import loon.utils.reply.Port;
 
 public class JavaSEGame extends LGame {
@@ -148,7 +147,6 @@ public class JavaSEGame extends LGame {
 	private final Asyn asyn = new JavaSEAsyn(pool, log, frame);
 
 	private final JavaSESave save;
-	private final JsonImpl json = new JsonImpl();
 	private final JavaSEGraphics graphics;
 	private final JavaSEInputMake input;
 	private final JavaSEAssets assets = new JavaSEAssets(this);
@@ -266,11 +264,6 @@ public class JavaSEGame extends LGame {
 	@Override
 	public JavaSEInputMake input() {
 		return input;
-	}
-
-	@Override
-	public Json json() {
-		return json;
 	}
 
 	@Override

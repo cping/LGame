@@ -21,7 +21,6 @@
 package loon.html5.gwt;
 
 import loon.Asyn;
-import loon.Json;
 import loon.LGame;
 import loon.LSetting;
 import loon.Log;
@@ -171,7 +170,6 @@ public class GWTGame extends LGame {
 
 	private final GWTGraphics graphics;
 	private final GWTInputMake input;
-	private final GWTJson json = new GWTJson();
 	private final GWTSave save;
 
 	private final Loon game;
@@ -313,11 +311,6 @@ public class GWTGame extends LGame {
 	@Override
 	public InputMake input() {
 		return input;
-	}
-
-	@Override
-	public Json json() {
-		return json;
 	}
 
 	@Override

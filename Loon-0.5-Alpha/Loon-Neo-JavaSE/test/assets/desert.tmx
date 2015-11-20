@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="Desert" tilewidth="32" tileheight="32" spacing="3" margin="2">
+  <image source="desert_fixed.png"/>
+ </tileset>
+ <tileset firstgid="49" name="mask" tilewidth="32" tileheight="32" spacing="1" margin="1">
+  <image source="mask_tile.png"/>
+ </tileset>
+ <layer name="Ground" width="40" height="40">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+2YbU/CQAyAi35AMRHEBFACTHnVAdv//3X2kl02mt7tYFwpZh+ekC1d+qxXaMMcAOYReUX6yCBynks4Mn4LBV73Uj9TqxEyRiYKfDg6yAPySLxj5PpAPhmmjhhz/xnpIS8CtfhCvpEV8lshZWIMy4h+O4/fMuAdYvv5cmvy29T40Z48CPjlxMvn9wOnvbiO6Ed7jl7f4ny578GO1G8Dt/MzbMm19Qmpn2T/UU+K7bWUuceRXsGvW/AE5Syqw86qkPhZQ78+lPuFfdc6bK7Q+CZ+Yyj3izdkGMB78WxofPWZWL0nTQL8nqPJMxH0ce1mLqZXzu/iWHxWf7dd2L3NzEjfDIhBiJ9xyotYSb9MoR/ta21+l5zvHsoZLuWXneFHa6mtftxZa/aTrJ9vD3PtZpJ+/4VEgcO9QGul7b/B9oxbWprxB2n/c8AAGQAA
+  </data>
+ </layer>
+ <layer name="Collision" width="40" height="40" opacity="0.4">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3OwQkAIAwEwbRk/83ZgBcMiK8ZyC9wWwW8sJpLP/rO2zc/+vJ26tE36+t+9OXt1KMPAAAA+G0DzDP4YQAZAAA=
+  </data>
+ </layer>
+ <objectgroup name="ObjectLayer" width="40" height="40"/>
+</map>

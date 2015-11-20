@@ -20,8 +20,6 @@
  */
 package loon.component;
 
-import java.util.List;
-
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -29,6 +27,7 @@ import loon.canvas.LColor;
 import loon.event.SysKey;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 public class LSelect extends LContainer {
@@ -127,17 +126,13 @@ public class LSelect extends LContainer {
 		return result;
 	}
 
-	private static String[] getListToStrings(List<String> list) {
-		if (list == null || list.size() == 0)
+	private static String[] getListToStrings(TArray<String> list) {
+		if (list == null || list.size == 0)
 			return null;
-		String[] result = new String[list.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = list.get(i);
-		}
-		return result;
+		return list.toArray();
 	}
 
-	public void setMessage(String message, List<String> list) {
+	public void setMessage(String message, TArray<String> list) {
 		setMessage(message, getListToStrings(list));
 	}
 

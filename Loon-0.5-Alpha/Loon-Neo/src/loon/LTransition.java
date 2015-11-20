@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.util.List;
-
 import loon.action.map.Config;
 import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.CrossEffect;
@@ -37,6 +35,7 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 /**
  * 自0.3.2版起新增的Screen切换过渡效果类，内置有多种过渡特效。
@@ -60,7 +59,7 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newCombinedTransition(
-			final List<LTransition> transitions) {
+			final TArray<LTransition> transitions) {
 
 		if (LSystem._base != null) {
 
@@ -69,13 +68,13 @@ public class LTransition {
 			transition.setTransitionListener(new TransitionListener() {
 
 				public void draw(GLEx g) {
-					for (int i = 0; i < transitions.size(); i++) {
+					for (int i = 0; i < transitions.size; i++) {
 						((LTransition) transitions.get(i)).draw(g);
 					}
 				}
 
 				public void update(long elapsedTime) {
-					for (int i = 0; i < transitions.size(); i++) {
+					for (int i = 0; i < transitions.size; i++) {
 						LTransition t = (LTransition) transitions.get(i);
 						if (!t.completed()) {
 							t.update(elapsedTime);
@@ -84,7 +83,7 @@ public class LTransition {
 				}
 
 				public boolean completed() {
-					for (int i = 0; i < transitions.size(); i++) {
+					for (int i = 0; i < transitions.size; i++) {
 						if (!((LTransition) transitions.get(i)).completed()) {
 							return false;
 						}
@@ -93,7 +92,7 @@ public class LTransition {
 				}
 
 				public void close() {
-					for (int i = 0; i < transitions.size(); i++) {
+					for (int i = 0; i < transitions.size; i++) {
 						((LTransition) transitions.get(i)).close();
 					}
 				}

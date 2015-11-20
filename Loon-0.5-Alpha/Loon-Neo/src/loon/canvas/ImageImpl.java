@@ -49,9 +49,7 @@ public abstract class ImageImpl extends Image {
 	public synchronized void succeed(Data data) {
 		scale = data.scale;
 		pixelWidth = data.pixelWidth;
-		assert pixelWidth > 0;
 		pixelHeight = data.pixelHeight;
-		assert pixelHeight > 0;
 		setBitmap(data.bitmap);
 		((GoPromise<Image>) state).succeed(this); 
 	}
