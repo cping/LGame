@@ -51,18 +51,31 @@ public class MoveTo extends ActionEvent {
 
 	private Vector2f pLocation = new Vector2f();
 
-	public MoveTo(final Field2D map, int x, int y, boolean flag) {
+	public MoveTo(final Field2D map, float x, float y, boolean flag) {
+		this(map, x, y, flag, 4);
+	}
+
+	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed) {
+		this(map, x, y, flag, speed, true, false);
+	}
+
+	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed,
+			boolean cache, boolean synField) {
 		this.startLocation = new Vector2f();
 		this.endLocation = new Vector2f(x, y);
 		this.layerMap = map;
 		this.flag = flag;
-		this.speed = 4;
-		this.useCache = true;
-		this.synchroLayerField = false;
+		this.speed = speed;
+		this.useCache = cache;
+		this.synchroLayerField = synField;
 	}
 
 	public MoveTo(final Field2D map, Vector2f pos, boolean flag) {
-		this(map, pos.x(), pos.y(), flag);
+		this(map, pos, flag, 4);
+	}
+
+	public MoveTo(final Field2D map, Vector2f pos, boolean flag, int speed) {
+		this(map, pos.x(), pos.y(), flag, speed);
 	}
 
 	public void randomPathFinder() {
@@ -139,7 +152,6 @@ public class MoveTo extends ActionEvent {
 					pActorPath.addAll(final_path);
 				}
 			} else {
-
 				pActorPath = AStarFinder.find(heuristic, layerMap,
 						layerMap.pixelsToTilesWidth(startLocation.x()),
 						layerMap.pixelsToTilesHeight(startLocation.y()),
@@ -367,6 +379,14 @@ public class MoveTo extends ActionEvent {
 
 	public void setHeuristic(AStarFindHeuristic heuristic) {
 		this.heuristic = heuristic;
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		MoveTo move = new MoveTo(layerMap, endLocation.x, endLocation.y, flag,
+				speed, useCache, synchroLayerField);
+		move.heuristic = this.heuristic;
+		return move;
 	}
 
 }

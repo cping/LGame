@@ -22,7 +22,6 @@ package loon.action;
 
 import loon.utils.MathUtils;
 
-
 public class FireTo extends ActionEvent {
 
 	private float direction;
@@ -88,6 +87,11 @@ public class FireTo extends ActionEvent {
 
 	public double getDirection() {
 		return direction;
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		return new FireTo(endX, endY, speed);
 	}
 
 }

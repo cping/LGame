@@ -25,7 +25,7 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.utils.Array;
+import loon.utils.TArray;
 
 /**
  * 单纯文字显示用组件(无边框或背景图,但是加入了自动定是替换，并且可以注入多个信息)
@@ -58,7 +58,7 @@ public class LLabels extends LComponent {
 
 	private LFont font;
 
-	public Array<Info> labels = new Array<Info>();
+	public TArray<Info> labels = new TArray<Info>();
 
 	private float speed = 0;
 	
@@ -73,7 +73,7 @@ public class LLabels extends LComponent {
 	}
 
 	public void draw(GLEx g, int x, int y) {
-		for (int i = 0; i < labels.size(); i++) {
+		for (int i = 0; i < labels.size; i++) {
 			Info label = labels.get(i);
 			if (label.length == -1) {
 				g.drawString(label.message, x + label.x,

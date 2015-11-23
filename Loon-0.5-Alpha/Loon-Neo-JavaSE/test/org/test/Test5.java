@@ -47,6 +47,7 @@ import loon.utils.timer.LTimerContext;
 
 public class Test5 extends Screen {
 
+	@Override
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}

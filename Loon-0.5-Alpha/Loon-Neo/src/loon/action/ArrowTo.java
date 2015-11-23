@@ -27,7 +27,7 @@ import loon.utils.MathUtils;
 //0.3.3新增动作，让指定对象做弓箭射出状（抛物线）
 public class ArrowTo extends ActionEvent {
 
-	private float gravity = 200;
+	private float gravity;
 
 	private float startX;
 	private float startY;
@@ -83,8 +83,7 @@ public class ArrowTo extends ActionEvent {
 		} else if (startX < -original.getWidth() * 2
 				|| startY < -original.getHeight() * 2
 				|| startX > LSystem.viewSize.width + original.getWidth() * 2
-				|| startY > LSystem.viewSize.height + original.getHeight()
-						* 2) {
+				|| startY > LSystem.viewSize.height + original.getHeight() * 2) {
 			isComplete = true;
 		}
 		synchronized (original) {
@@ -97,6 +96,11 @@ public class ArrowTo extends ActionEvent {
 
 	public int getDirection() {
 		return dir;
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		return new ArrowTo(endX, endY, speed, gravity);
 	}
 
 }

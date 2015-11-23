@@ -53,18 +53,26 @@ public class PlayerUtils extends Director {
 
 	public final static ActionTween to(ActionBind target, int tweenType,
 			float duration) {
+		removeAllActions(target);
 		return ActionTween.to(target, tweenType, duration);
 	}
 
 	public final static ActionTween from(ActionBind target, int tweenType,
 			float duration) {
+		removeAllActions(target);
 		return ActionTween.from(target, tweenType, duration);
 	}
 
 	public final static ActionTween set(ActionBind target, int tweenType) {
+		removeAllActions(target);
 		return ActionTween.set(target, tweenType);
 	}
 
+	public final static ActionTween set(ActionBind target) {
+		removeAllActions(target);
+		return ActionTween.set(target, -1);
+	}
+	
 	public final static ActionTween call(ActionCallback callback) {
 		return ActionTween.call(callback);
 	}

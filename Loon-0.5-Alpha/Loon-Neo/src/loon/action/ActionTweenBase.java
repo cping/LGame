@@ -219,6 +219,10 @@ public abstract class ActionTweenBase<T> {
 		isFinished = repeatSize >= 0 && (step > repeatSize * 2 || step < 0);
 	}
 
+	protected boolean actionEventOver() {
+		return true;
+	}
+	
 	public void update(float delta) {
 		if (!isStarted || isPaused || isKilled) {
 			return;

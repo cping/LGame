@@ -28,6 +28,25 @@ import loon.utils.MathUtils;
 
 public class SysInputFactory {
 
+	final static IntArray _keys = new IntArray();
+
+	private float _offsetTouchX, _offsetMoveX, _offsetTouchY, _offsetMoveY;
+
+	private final LProcess _handler;
+
+	final static GameTouch finalTouch = new GameTouch();
+
+	final static GameKey finalKey = new GameKey();
+
+	private long _keyTimeMillis;
+
+	private int _halfWidth, _halfHeight;
+
+	static boolean _isDraging;
+
+	final static ActionKey only_key = new ActionKey(
+			ActionKey.DETECT_INITIAL_PRESS_ONLY);
+
 	private static boolean useTouchCollection = false;
 
 	public static void startTouchCollection() {
@@ -50,29 +69,10 @@ public class SysInputFactory {
 		touchCollection.clear();
 	}
 
-	final static IntArray keys = new IntArray();
-
-	private float offsetTouchX, offsetMoveX, offsetTouchY, offsetMoveY;
-
-	private final LProcess handler;
-
-	final static GameTouch finalTouch = new GameTouch();
-
-	final static GameKey finalKey = new GameKey();
-
-	private long keyTimeMillis;
-
-	static boolean isDraging;
-
-	private int halfWidth, halfHeight;
-
-	final static ActionKey only_key = new ActionKey(
-			ActionKey.DETECT_INITIAL_PRESS_ONLY);
-
-	public SysInputFactory(LProcess handler) {
-		this.handler = handler;
-		this.halfWidth = handler.getWidth() / 2;
-		this.halfHeight = handler.getHeight() / 2;
+	public SysInputFactory(LProcess _handler) {
+		this._handler = _handler;
+		this._halfWidth = _handler.getWidth() / 2;
+		this._halfHeight = _handler.getHeight() / 2;
 	}
 
 	public static ActionKey getOnlyKey() {
@@ -82,15 +82,15 @@ public class SysInputFactory {
 	public void callKey(KeyMake.KeyEvent e) {
 		if (e.down) {
 			long curTime = System.currentTimeMillis();
-			if ((curTime - keyTimeMillis) > LSystem.SECOND / 5) {
-				keyTimeMillis = curTime;
+			if ((curTime - _keyTimeMillis) > LSystem.SECOND / 5) {
+				_keyTimeMillis = curTime;
 				finalKey.timer = e.time;
 				finalKey.keyChar = e.keyChar;
 				finalKey.keyCode = e.keyCode;
 				finalKey.type = SysKey.KEY_DOWN;
 				only_key.press();
-				handler.keyDown(finalKey);
-				keys.add(finalKey.keyCode);
+				_handler.keyDown(finalKey);
+				_keys.add(finalKey.keyCode);
 			}
 		} else {
 			finalKey.timer = e.time;
@@ -98,8 +98,8 @@ public class SysInputFactory {
 			finalKey.keyCode = e.keyCode;
 			finalKey.type = SysKey.KEY_UP;
 			only_key.release();
-			handler.keyUp(finalKey);
-			keys.removeValue(finalKey.keyCode);
+			_handler.keyUp(finalKey);
+			_keys.removeValue(finalKey.keyCode);
 		}
 	}
 
@@ -108,17 +108,18 @@ public class SysInputFactory {
 	private EmulatorButtons ebuttons;
 
 	public void callMouse(MouseMake.ButtonEvent event) {
-		float touchX = (event.getX() - handler.getX())
+		float touchX = (event.getX() - _handler.getX())
 				/ LSystem.getScaleWidth();
-		float touchY = (event.getY() - handler.getY())
+		float touchY = (event.getY() - _handler.getY())
 				/ LSystem.getScaleHeight();
+
 		int button = event.button;
 		finalTouch.x = touchX;
 		finalTouch.y = touchY;
 		finalTouch.button = event.button;
 		finalTouch.pointer = 0;
 		finalTouch.id = 0;
-		ebuttons = handler.getEmulatorButtons();
+		ebuttons = _handler.getEmulatorButtons();
 		if (button == -1) {
 			if (buttons > 0) {
 				finalTouch.type = SysTouch.TOUCH_DRAG;
@@ -135,14 +136,15 @@ public class SysInputFactory {
 				}
 			}
 		}
+
 		switch (finalTouch.type) {
 		case SysTouch.TOUCH_DOWN:
 			if (useTouchCollection) {
 				touchCollection.add(finalTouch.id, finalTouch.x, finalTouch.y);
 			}
-			handler.mousePressed(finalTouch);
+			_handler.mousePressed(finalTouch);
 			buttons++;
-			isDraging = false;
+			_isDraging = false;
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.hit(0, touchX, touchY, false);
 			}
@@ -153,28 +155,28 @@ public class SysInputFactory {
 						LTouchLocationState.Released, finalTouch.x,
 						finalTouch.y);
 			}
-			handler.mouseReleased(finalTouch);
+			_handler.mouseReleased(finalTouch);
 			buttons = 0;
-			isDraging = false;
+			_isDraging = false;
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.unhit(0, touchX, touchY);
 			}
 			break;
 		case SysTouch.TOUCH_MOVE:
-			if (!isDraging) {
+			if (!_isDraging) {
 				if (useTouchCollection) {
 					touchCollection.update(finalTouch.id,
 							LTouchLocationState.Dragged, finalTouch.x,
 							finalTouch.y);
 				}
-				handler.mouseMoved(finalTouch);
+				_handler.mouseMoved(finalTouch);
 			}
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.unhit(0, touchX, touchY);
 			}
 			break;
 		case SysTouch.TOUCH_DRAG:
-			ebuttons = handler.getEmulatorButtons();
+			ebuttons = _handler.getEmulatorButtons();
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.hit(0, touchX, touchY, true);
 			}
@@ -183,11 +185,11 @@ public class SysInputFactory {
 						.update(finalTouch.id, LTouchLocationState.Dragged,
 								finalTouch.x, finalTouch.y);
 			}
-			handler.mouseDragged(finalTouch);
+			_handler.mouseDragged(finalTouch);
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.hit(0, touchX, touchY, false);
 			}
-			isDraging = true;
+			_isDraging = true;
 			break;
 		default:
 			if (useTouchCollection) {
@@ -203,50 +205,50 @@ public class SysInputFactory {
 	}
 
 	public void callTouch(TouchMake.Event[] events) {
-		
-		ebuttons = handler.getEmulatorButtons();
+
+		ebuttons = _handler.getEmulatorButtons();
 		int size = events.length;
 
 		for (int i = 0; i < size; i++) {
 			TouchMake.Event e = events[i];
-			float touchX = (e.getX() - handler.getX())
+			float touchX = (e.getX() - _handler.getX())
 					/ LSystem.getScaleWidth();
-			float touchY = (e.getY() - handler.getY())
+			float touchY = (e.getY() - _handler.getY())
 					/ LSystem.getScaleHeight();
 			finalTouch.x = touchX;
 			finalTouch.y = touchY;
 			finalTouch.pointer = i;
 			finalTouch.id = e.id;
-		
+
 			switch (e.kind) {
 			case START:
 				if (useTouchCollection) {
 					touchCollection.add(finalTouch.id, finalTouch.x,
 							finalTouch.y);
 				}
-				offsetTouchX = touchX;
-				offsetTouchY = touchY;
-				if ((touchX < halfWidth) && (touchY < halfHeight)) {
+				_offsetTouchX = touchX;
+				_offsetTouchY = touchY;
+				if ((touchX < _halfWidth) && (touchY < _halfHeight)) {
 					finalTouch.type = SysTouch.UPPER_LEFT;
-				} else if ((touchX >= halfWidth) && (touchY < halfHeight)) {
+				} else if ((touchX >= _halfWidth) && (touchY < _halfHeight)) {
 					finalTouch.type = SysTouch.UPPER_RIGHT;
-				} else if ((touchX < halfWidth) && (touchY >= halfHeight)) {
+				} else if ((touchX < _halfWidth) && (touchY >= _halfHeight)) {
 					finalTouch.type = SysTouch.LOWER_LEFT;
 				} else {
 					finalTouch.type = SysTouch.LOWER_RIGHT;
 				}
 				finalTouch.button = SysTouch.TOUCH_DOWN;
-				handler.mousePressed(finalTouch);
-				isDraging = false;
+				_handler.mousePressed(finalTouch);
+				_isDraging = false;
 				if (ebuttons != null && ebuttons.isVisible()) {
 					ebuttons.hit(i, touchX, touchY, false);
 				}
 				break;
 			case MOVE:
-				offsetMoveX = touchX;
-				offsetMoveY = touchY;
-				finalTouch.dx = offsetTouchX - offsetMoveX;
-				finalTouch.dy = offsetTouchY - offsetMoveY;
+				_offsetMoveX = touchX;
+				_offsetMoveY = touchY;
+				finalTouch.dx = _offsetTouchX - _offsetMoveX;
+				finalTouch.dy = _offsetTouchY - _offsetMoveY;
 				if (MathUtils.abs(finalTouch.dx) > 0.1f
 						|| MathUtils.abs(finalTouch.dy) > 0.1f) {
 					if (useTouchCollection) {
@@ -256,11 +258,11 @@ public class SysInputFactory {
 					}
 					finalTouch.button = SysTouch.TOUCH_MOVE;
 					// a few platforms no such behavior (ios or android)
-					handler.mouseMoved(finalTouch);
-					handler.mouseDragged(finalTouch);
-					isDraging = true;
+					_handler.mouseMoved(finalTouch);
+					_handler.mouseDragged(finalTouch);
+					_isDraging = true;
 				}
-				ebuttons = handler.getEmulatorButtons();
+				ebuttons = _handler.getEmulatorButtons();
 				if (ebuttons != null && ebuttons.isVisible()) {
 					ebuttons.hit(i, touchX, touchY, false);
 				}
@@ -275,8 +277,8 @@ public class SysInputFactory {
 						|| finalTouch.button == SysTouch.TOUCH_MOVE) {
 					finalTouch.button = SysTouch.TOUCH_UP;
 				}
-				handler.mouseReleased(finalTouch);
-				isDraging = false;
+				_handler.mouseReleased(finalTouch);
+				_isDraging = false;
 				if (ebuttons != null && ebuttons.isVisible()) {
 					ebuttons.unhit(i, touchX, touchY);
 				}

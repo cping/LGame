@@ -368,7 +368,7 @@ public class Array<T> {
 	}
 
 	public boolean hashNext() {
-		return _next_count > 0;
+		return _next_count < _length;
 	}
 
 	public int idxNext() {

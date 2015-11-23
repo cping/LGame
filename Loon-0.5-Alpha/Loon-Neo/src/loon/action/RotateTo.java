@@ -20,7 +20,6 @@
  */
 package loon.action;
 
-
 public class RotateTo extends ActionEvent {
 
 	private float dstAngle;
@@ -56,6 +55,11 @@ public class RotateTo extends ActionEvent {
 		if (startAngle >= dstAngle) {
 			isComplete = true;
 		}
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		return new RotateTo(dstAngle, speed);
 	}
 
 }

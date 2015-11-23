@@ -32,7 +32,7 @@ public class FadeTo extends ActionEvent {
 
 	private float opacity;
 
-	public FadeTo(int type, int speed) {
+	public FadeTo(int type, float speed) {
 		this.type = type;
 		this.setSpeed(speed);
 	}
@@ -61,7 +61,7 @@ public class FadeTo extends ActionEvent {
 		return time;
 	}
 
-	public void setSpeed(int delay) {
+	public void setSpeed(float delay) {
 		this.time = delay;
 		if (type == ISprite.TYPE_FADE_IN) {
 			this.currentFrame = this.time;
@@ -92,6 +92,11 @@ public class FadeTo extends ActionEvent {
 		if (opacity > 0) {
 			original.setAlpha((opacity / 255));
 		}
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		return new FadeTo(type, time);
 	}
 
 }

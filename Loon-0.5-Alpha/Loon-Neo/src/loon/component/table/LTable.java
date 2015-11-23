@@ -30,7 +30,7 @@ import loon.component.LContainer;
 import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
-import loon.utils.Array;
+import loon.utils.TArray;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 
@@ -38,7 +38,7 @@ import loon.utils.MathUtils;
  * 
  * Example:
  * 
- * Array<ListItem> list=new Array<ListItem>();
+ * TArray<ListItem> list=new TArray<ListItem>();
  * 
  * ListItem item=new ListItem(); 
  * item.name="test1"; 
@@ -157,7 +157,7 @@ public class LTable extends LContainer {
 		this.setLayer(0);
 	}
 
-	public void setData(Array<ListItem> list, int width) {
+	public void setData(TArray<ListItem> list, int width) {
 		setModel(new SimpleTableModel(list), width);
 	}
 

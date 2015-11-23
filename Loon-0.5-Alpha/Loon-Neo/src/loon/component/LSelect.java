@@ -127,9 +127,14 @@ public class LSelect extends LContainer {
 	}
 
 	private static String[] getListToStrings(TArray<String> list) {
-		if (list == null || list.size == 0)
+		if (list == null || list.size == 0){
 			return null;
-		return list.toArray();
+		}
+		String[] result = new String[list.size];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = list.get(i);
+		}
+		return result;
 	}
 
 	public void setMessage(String message, TArray<String> list) {

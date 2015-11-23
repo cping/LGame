@@ -20,11 +20,11 @@
  */
 package loon.component.table;
 
-import loon.utils.Array;
+import loon.utils.TArray;
 
 public class ListItem {
 
 	public String name;
 	
-	public Array<Object> list = new Array<Object>();
+	public TArray<Object> list = new TArray<Object>();
 }

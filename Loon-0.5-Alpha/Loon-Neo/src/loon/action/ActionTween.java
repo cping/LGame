@@ -1,5 +1,9 @@
 package loon.action;
 
+import loon.LSystem;
+import loon.action.map.Field2D;
+import loon.action.sprite.ISprite;
+import loon.utils.Array;
 import loon.utils.Easing;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
@@ -126,6 +130,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	private boolean isFrom;
 	private boolean isRelative;
+
 	private int _combinedAttrsSize;
 	private int _funPointsSize;
 
@@ -138,14 +143,93 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	private float[] pathBuffer = new float[(2 + funPointsLimit)
 			* combinedAttrsLimit];
 
+	private Array<ActionEvent> actionEvents;
+
 	private ActionTween() {
 		reset();
+	}
+
+	public ActionTween moveTo(float endX, float endY) {
+		return moveTo(endX, endY, false, 8);
+	}
+
+	public ActionTween moveTo(float endX, float endY, int speed) {
+		return moveTo(endX, endY, false, speed);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag, int speed) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY,
+			boolean flag, int speed) {
+		MoveTo move = new MoveTo(map, endX, endY, flag, speed);
+		move.setDelay(0);
+		return event(move);
+	}
+
+	public ActionTween fadeIn(float speed) {
+		return fadeTo(ISprite.TYPE_FADE_IN, speed);
+	}
+
+	public ActionTween fadeOut(float speed) {
+		return fadeTo(ISprite.TYPE_FADE_OUT, speed);
+	}
+
+	public ActionTween fadeTo(int fadeMode, float speed) {
+		FadeTo fade = new FadeTo(fadeMode, (int) speed);
+		fade.setDelay(0);
+		return event(fade);
+	}
+
+	public ActionTween rotateTo(float angle) {
+		return rotateTo(angle, 6f);
+	}
+
+	public ActionTween rotateTo(float angle, float speed) {
+		RotateTo rotate = new RotateTo(angle, speed);
+		rotate.setDelay(0);
+		return event(rotate);
+	}
+
+	public ActionTween scaleTo(float sx, float sy) {
+		return scaleTo(sx, sy, 0.1f);
+	}
+
+	public ActionTween scaleTo(float sx, float sy, float speed) {
+		ScaleTo scale = new ScaleTo(sx, sy);
+		scale.setDelay(0);
+		scale.setSpeed(speed);
+		return event(scale);
+	}
+	
+	@Override
+	public ActionTween delay(float d) {
+		super.delay(delay);
+		DelayTo delay = new DelayTo(d);
+		delay.setDelay(0);
+		return event(delay);
+	}
+
+	
+	public ActionTween event(ActionEvent event) {
+		if (actionEvents == null) {
+			actionEvents = new Array<ActionEvent>();
+		}
+		actionEvents.add(event);
+		return this;
 	}
 
 	@Override
 	protected void reset() {
 		super.reset();
 		_target = null;
+		actionEvents = null;
+		currentActionEvent = null;
 		type = -1;
 		equation = null;
 		path = null;
@@ -337,13 +421,30 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 	}
 
+	private ActionEvent currentActionEvent;
+
+	@Override
+	protected boolean actionEventOver() {
+		if (actionEvents != null && actionEvents.size() > 0) {
+			if (currentActionEvent != null && !currentActionEvent.isComplete()) {
+				return false;
+			}
+			ActionEvent event = actionEvents.first();
+			if (event != currentActionEvent) {
+				actionEvents.remove(0);
+				ActionControl.getInstance().addAction(event, _target);
+				currentActionEvent = event;
+			}
+		}
+		return actionEvents == null || actionEvents.size() == 0;
+	}
+
 	@Override
 	protected void update(int step, int lastStep, boolean isIterationStep,
 			float delta) {
 		if (_target == null || equation == null) {
 			return;
 		}
-
 		if (!isIterationStep && step > lastStep) {
 			ActionType.setValues(_target, type,
 					isReverse(lastStep) ? startValues : targetValues);

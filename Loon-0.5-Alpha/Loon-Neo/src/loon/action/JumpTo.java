@@ -30,11 +30,11 @@ public class JumpTo extends ActionEvent {
 
 	private int moveJump;
 
-	private float g;
+	private float gravity;
 
 	public JumpTo(int m, float g) {
 		this.moveJump = m;
-		this.g = g;
+		this.gravity = g;
 	}
 
 	public boolean isComplete() {
@@ -74,9 +74,9 @@ public class JumpTo extends ActionEvent {
 		original.setLocation(offsetX + (original.getX() + this.moveX), offsetY
 				+ (original.getY() + this.moveY));
 		if (moveJump < 0) {
-			this.moveY += g;
+			this.moveY += gravity;
 		} else {
-			this.moveY -= g;
+			this.moveY -= gravity;
 		}
 		if (moveJump > 0) {
 			if (original.getY() + original.getHeight() > original
@@ -110,6 +110,11 @@ public class JumpTo extends ActionEvent {
 				isComplete = true;
 			}
 		}
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		return new JumpTo(moveJump, gravity);
 	}
 
 }

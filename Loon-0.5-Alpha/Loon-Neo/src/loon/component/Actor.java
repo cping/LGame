@@ -197,7 +197,7 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	 * @return
 	 */
 	public RotateTo rotateTo(float rotate) {
-		return rotateTo(rotate, 2.0F);
+		return rotateTo(rotate, 2f);
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	 * @return
 	 */
 	public JumpTo jumpTo(int jump) {
-		return jumpTo(jump, 0.3F);
+		return jumpTo(jump, 0.3f);
 	}
 
 	/**

@@ -22,16 +22,15 @@ package loon.action;
 
 import loon.utils.MathUtils;
 
-
 public class CircleTo extends ActionEvent {
 
-	private int x;
+	private float x;
 
-	private int y;
+	private float y;
 
-	private int cx;
+	private float cx;
 
-	private int cy;
+	private float cy;
 
 	private int radius;
 
@@ -39,9 +38,19 @@ public class CircleTo extends ActionEvent {
 
 	private float dt;
 
+	private float speed = 0.1f;
+
 	public CircleTo(int radius, int velocity) {
 		this.radius = radius;
 		this.velocity = velocity;
+	}
+
+	public void setSpeed(float s) {
+		this.speed = s;
+	}
+
+	public float getSpeed() {
+		return this.speed;
 	}
 
 	public boolean isComplete() {
@@ -49,21 +58,26 @@ public class CircleTo extends ActionEvent {
 	}
 
 	public void onLoad() {
-		this.cx = (int) original.getX();
-		this.cy = (int) original.getY();
+		this.cx = original.getX();
+		this.cy = original.getY();
 		this.x = (cx + radius);
 		this.y = cy;
 	}
 
 	public void update(long elapsedTime) {
-		dt += MathUtils.max((elapsedTime / 1000), 0.05f);
-		this.x = (int) (this.cx + this.radius
+		dt += MathUtils.max((elapsedTime / 1000f), speed);
+		this.x = (this.cx + this.radius
 				* MathUtils.cos(MathUtils.toRadians(this.velocity * dt)));
-		this.y = (int) (this.cy + this.radius
+		this.y = (this.cy + this.radius
 				* MathUtils.sin(MathUtils.toRadians(this.velocity * dt)));
 		synchronized (original) {
 			original.setLocation(x + offsetX, y + offsetY);
 		}
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		return new CircleTo(radius, velocity);
 	}
 
 }

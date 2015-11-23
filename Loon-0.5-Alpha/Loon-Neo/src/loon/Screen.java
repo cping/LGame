@@ -31,10 +31,12 @@ import loon.component.LLayer;
 import loon.event.Drawable;
 import loon.event.GameKey;
 import loon.event.GameTouch;
+import loon.event.LTouchArea;
 import loon.event.SysInput;
 import loon.event.ScreenListener;
 import loon.event.SysTouch;
 import loon.event.Updateable;
+import loon.event.LTouchArea.Event;
 import loon.geom.Point.Point2i;
 import loon.geom.RectBox;
 import loon.geom.XY;
@@ -44,7 +46,6 @@ import loon.stage.RootPlayer;
 import loon.stage.Stage;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
-import loon.utils.Array;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -53,7 +54,7 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
-	
+
 	private TArray<ScreenListener> screens;
 
 	private boolean useScreenListener;
@@ -78,6 +79,41 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		useScreenListener = (screens != null && screens.size > 0);
 		return this;
+	}
+
+	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
+
+	public void registerTouchArea(final LTouchArea pTouchArea) {
+		this._touchAreas.add(pTouchArea);
+	}
+
+	public boolean unregisterTouchArea(final LTouchArea pTouchArea) {
+		return this._touchAreas.remove(pTouchArea);
+	}
+
+	public void clearTouchAreas() {
+		this._touchAreas.clear();
+	}
+
+	public TArray<LTouchArea> getTouchAreas() {
+		return this._touchAreas;
+	}
+
+	private final void updateTouchArea(final LTouchArea.Event e,
+			final float touchX, final float touchY) {
+		if (this._touchAreas.size == 0) {
+			return;
+		}
+		final TArray<LTouchArea> touchAreas = this._touchAreas;
+		final int touchAreaCount = touchAreas.size;
+		if (touchAreaCount > 0) {
+			for (int i = 0; i < touchAreaCount; i++) {
+				final LTouchArea touchArea = touchAreas.get(i);
+				if (touchArea.contains(touchX, touchY)) {
+					touchArea.onAreaTouched(e, touchX, touchY);
+				}
+			}
+		}
 	}
 
 	private TArray<LRelease> releases;
@@ -752,7 +788,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 
 	 * @return
 	 */
-	public Array<Screen> getScreens() {
+	public TArray<Screen> getScreens() {
 		if (handler != null) {
 			return handler.getScreens();
 		}
@@ -1650,13 +1686,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public final void mousePressed(GameTouch e) {
-
 		if (isLock || isClose || !isLoad) {
 			return;
 		}
-
+		if (isTranslate) {
+			e.offset(tx, ty);
+		}
 		int type = e.getType();
 		int button = e.getButton();
+
+		updateTouchArea(Event.DOWN, e.getX(), e.getY());
+		
 		try {
 			touchType[type] = true;
 			touchButtonPressed = button;
@@ -1687,6 +1727,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		int type = e.getType();
 		int button = e.getButton();
+
+		updateTouchArea(Event.UP, e.getX(), e.getY());
+
 		try {
 			touchType[type] = false;
 			touchButtonReleased = button;
@@ -1715,6 +1758,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (isTranslate) {
 			e.offset(tx, ty);
 		}
+		
+		updateTouchArea(Event.MOVE, e.getX(), e.getY());
+		
 		if (useScreenListener) {
 			for (ScreenListener t : screens) {
 				t.move(e);
@@ -1734,6 +1780,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (isTranslate) {
 			e.offset(tx, ty);
 		}
+
+		updateTouchArea(Event.DRAG, e.getX(), e.getY());
+		
 		if (useScreenListener) {
 			for (ScreenListener t : screens) {
 				t.drag(e);

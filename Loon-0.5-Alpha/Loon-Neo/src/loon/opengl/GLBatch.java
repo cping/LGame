@@ -25,7 +25,7 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.opengl.VertexAttributes.Usage;
-import loon.utils.Array;
+import loon.utils.TArray;
 
 public class GLBatch implements LRelease {
 
@@ -72,7 +72,8 @@ public class GLBatch implements LRelease {
 
 	private VertexAttribute[] buildVertexAttributes(boolean hasNormals,
 			boolean hasColor, int numTexCoords) {
-		Array<VertexAttribute> attribs = new Array<VertexAttribute>();
+		TArray<VertexAttribute> attribs = new TArray<VertexAttribute>(
+				numTexCoords + 2);
 		attribs.add(new VertexAttribute(Usage.Position, 3,
 				ShaderProgram.POSITION_ATTRIBUTE));
 		if (hasNormals) {
@@ -87,8 +88,9 @@ public class GLBatch implements LRelease {
 			attribs.add(new VertexAttribute(Usage.TextureCoordinates, 2,
 					ShaderProgram.TEXCOORD_ATTRIBUTE + i));
 		}
-		VertexAttribute[] array = new VertexAttribute[attribs.size()];
-		for (int i = 0; i < attribs.size(); i++) {
+		final int size = attribs.size;
+		final VertexAttribute[] array = new VertexAttribute[size];
+		for (int i = 0; i < size; i++) {
 			array[i] = attribs.get(i);
 		}
 		return array;
@@ -173,7 +175,8 @@ public class GLBatch implements LRelease {
 			return;
 		}
 		shader.begin();
-		shader.setUniformMatrix("u_projModelView", projModelView.toViewMatrix4());
+		shader.setUniformMatrix("u_projModelView",
+				projModelView.toViewMatrix4());
 		for (int i = 0; i < numTexCoords; i++) {
 			shader.setUniformi(shaderUniformNames[i], i);
 		}

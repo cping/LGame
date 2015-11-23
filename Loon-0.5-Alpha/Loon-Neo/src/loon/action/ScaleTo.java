@@ -32,13 +32,28 @@ public class ScaleTo extends ActionEvent {
 
 	private float endX, endY;
 
+	private float speed;
+
 	public ScaleTo(float s) {
 		this(s, s);
 	}
 
 	public ScaleTo(float sx, float sy) {
+		this(sx, sy, 0.1f);
+	}
+
+	public ScaleTo(float sx, float sy, float sp) {
 		this.endX = sx;
 		this.endY = sy;
+		this.speed = sp;
+	}
+
+	public void setSpeed(float s) {
+		this.speed = s;
+	}
+
+	public float getSpeed() {
+		return speed;
 	}
 
 	public boolean isComplete() {
@@ -58,7 +73,7 @@ public class ScaleTo extends ActionEvent {
 		if (original != null) {
 			synchronized (original) {
 				if (original != null) {
-					dt += MathUtils.max((elapsedTime / 1000), 0.01f);
+					dt += MathUtils.max((elapsedTime / 1000), speed);
 					original.setScale(startX + (deltaX * dt), startY
 							+ (deltaY * dt));
 					isComplete = (deltaX > 0 ? (original.getScaleX() >= endX)
@@ -70,5 +85,10 @@ public class ScaleTo extends ActionEvent {
 		} else {
 			isComplete = true;
 		}
+	}
+
+	@Override
+	public ActionEvent cpy() {
+		return new ScaleTo(endX, endY, speed);
 	}
 }

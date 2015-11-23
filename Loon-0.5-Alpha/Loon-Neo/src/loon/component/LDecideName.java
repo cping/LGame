@@ -23,7 +23,7 @@
  * 
  *          Examples1:
  * 
- *          Array<String> list = new Array<String>(); list.add("赵钱孙李周吴郑王");
+ *          TArray<String> list = new TArray<String>(); list.add("赵钱孙李周吴郑王");
  *          list.add("冯陈褚卫蒋沈韩杨"); list.add("朱秦尤许何吕施张"); list.add("孔曹严华金魏陶姜");
  *          list.add("<>"); LDecideName decideName = new LDecideName(list,0, 0);
  *          add(decideName);
@@ -37,13 +37,13 @@ import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
-import loon.utils.Array;
+import loon.utils.TArray;
 import loon.utils.MathUtils;
 
 /*
  * Examples:
  * 
- *      Array<String> list = new Array<String>();
+ *      TArray<String> list = new TArray<String>();
  *      list.add("赵钱孙李周吴郑王");
  *      list.add("冯陈褚卫蒋沈韩杨"); 
  *      list.add("朱秦尤许何吕施张"); 
@@ -64,7 +64,7 @@ public class LDecideName extends LComponent {
 	private String labelName;
 	private int cursorX = 0;
 	private int cursorY = 0;
-	private Array<String> keyArrays;
+	private TArray<String> keyArrays;
 	private LTexture bgTexture;
 
 	private float dx = 0.1f;
@@ -78,27 +78,27 @@ public class LDecideName extends LComponent {
 
 	private LSTRFont cacheFont;
 
-	public LDecideName(Array<String> mes, int x, int y) {
+	public LDecideName(TArray<String> mes, int x, int y) {
 		this(mes, x, y, 400, 250);
 	}
 
-	public LDecideName(String lable, Array<String> mes, int x, int y,
+	public LDecideName(String lable, TArray<String> mes, int x, int y,
 			int width, int height) {
 		this(lable, "", mes, LFont.getDefaultFont(), x, y, width, height, DefUI
 				.getDefaultTextures(2));
 	}
 
-	public LDecideName(String lable, Array<String> mes, int x, int y,
+	public LDecideName(String lable, TArray<String> mes, int x, int y,
 			int width, int height, LTexture bg) {
 		this(lable, "", mes, LFont.getDefaultFont(), x, y, width, height, bg);
 	}
 
-	public LDecideName(Array<String> mes, int x, int y, int width, int height) {
+	public LDecideName(TArray<String> mes, int x, int y, int width, int height) {
 		this("Name:", "", mes, LFont.getDefaultFont(), x, y, width, height,
 				DefUI.getDefaultTextures(2));
 	}
 
-	public LDecideName(String label, String name, Array<String> mes, LFont f,
+	public LDecideName(String label, String name, TArray<String> mes, LFont f,
 			int x, int y, int width, int height, LTexture bg) {
 		super(x, y, width, height - f.getHeight() - 20);
 		this.font = f;
@@ -110,7 +110,7 @@ public class LDecideName extends LComponent {
 		this.topOffset = font.getHeight() + 20;
 		this.batch = new SpriteBatch();
 		StringBuffer sbr = new StringBuffer();
-		for (int i = 0; i < mes.size(); i++) {
+		for (int i = 0; i < mes.size; i++) {
 			sbr.append(mes.get(i));
 		}
 		this.cacheFont = new LSTRFont(font, sbr.toString());
@@ -135,7 +135,7 @@ public class LDecideName extends LComponent {
 		} else {
 			cacheFont.postCharCache();
 		}
-		for (int j = 0; j < this.keyArrays.size(); j++) {
+		for (int j = 0; j < this.keyArrays.size; j++) {
 			for (int i = 0; i < this.keyArrays.get(j).length(); i++)
 				if (this.keyArrays.get(j).charAt(i) != '　') {
 					if (!_cache) {
@@ -176,7 +176,7 @@ public class LDecideName extends LComponent {
 	}
 
 	private char getArrays(int x, int y) {
-		if (keyArrays.size() <= x) {
+		if (keyArrays.size <= x) {
 			return ' ';
 		}
 		String result = this.keyArrays.get(x);
@@ -259,11 +259,11 @@ public class LDecideName extends LComponent {
 		if (this.cursorX < 0) {
 			this.cursorX = (this.keyArrays.get(0).length() - 1);
 		}
-		if (this.cursorY >= this.keyArrays.size()) {
+		if (this.cursorY >= this.keyArrays.size) {
 			this.cursorY = 0;
 		}
 		if (this.cursorY < 0) {
-			this.cursorY = (this.keyArrays.size() - 1);
+			this.cursorY = (this.keyArrays.size - 1);
 		}
 		if (getArrays(this.cursorY, this.cursorX) == '　') {
 			moving(x, y);
@@ -277,7 +277,7 @@ public class LDecideName extends LComponent {
 				.round(dx * getWidth()));
 		int indexY = (int) ((y - (this.getY() + topOffset)) / MathUtils
 				.round(dy * getHeight()));
-		if ((indexX < 0) || (indexY < 0) || (indexY >= this.keyArrays.size())
+		if ((indexX < 0) || (indexY < 0) || (indexY >= this.keyArrays.size)
 				|| (indexX >= this.keyArrays.get(0).length()))
 			return;
 		if (getArrays(indexY, indexX) != '　') {

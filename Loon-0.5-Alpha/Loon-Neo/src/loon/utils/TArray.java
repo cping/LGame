@@ -399,10 +399,10 @@ public class TArray<T> implements Iterable<T> {
 		return items[MathUtils.random(0, size - 1)];
 	}
 
-	public T[] toArray() {
+	public Object[] toArray() {
 		Object[] result = new Object[size];
 		System.arraycopy(items, 0, result, 0, size);
-		return (T[]) result;
+		return result;
 	}
 
 	public T[] toArray(T[] a) {

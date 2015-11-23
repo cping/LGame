@@ -139,4 +139,6 @@ public abstract class ActionEvent {
 	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 	}
+	
+	public abstract ActionEvent cpy();
 }

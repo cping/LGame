@@ -36,7 +36,6 @@ import loon.stage.PlayerUtils;
 import loon.stage.RootPlayer;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
-import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -56,7 +55,7 @@ public class LProcess extends PlayerUtils {
 
 	private EmulatorButtons emulatorButtons;
 
-	private final Array<Screen> screens;
+	private final TArray<Screen> screens;
 
 	private boolean isInstance;
 
@@ -82,7 +81,7 @@ public class LProcess extends PlayerUtils {
 		super();
 		this.game = game;
 		this.currentInput = new SysInputFactory(this);
-		this.screens = new Array<Screen>();
+		this.screens = new TArray<Screen>();
 		this.clear();
 		InputMake input = game.input();
 		if (input != null) {
@@ -657,7 +656,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runFirstScreen() {
-		int size = screens.size();
+		int size = screens.size;
 		if (size > 0) {
 			Object o = screens.first();
 			if (o != currentScreen) {
@@ -667,7 +666,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runLastScreen() {
-		int size = screens.size();
+		int size = screens.size;
 		if (size > 0) {
 			Object o = screens.last();
 			if (o != currentScreen) {
@@ -677,7 +676,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runPreviousScreen() {
-		int size = screens.size();
+		int size = screens.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				if (currentScreen == screens.get(i)) {
@@ -691,7 +690,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runNextScreen() {
-		int size = screens.size();
+		int size = screens.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				if (currentScreen == screens.get(i)) {
@@ -705,7 +704,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runIndexScreen(int index) {
-		int size = screens.size();
+		int size = screens.size;
 		if (size > 0 && index > -1 && index < size) {
 			Object o = screens.get(index);
 			if (currentScreen != o) {
@@ -721,12 +720,12 @@ public class LProcess extends PlayerUtils {
 		screens.add(screen);
 	}
 
-	public Array<Screen> getScreens() {
+	public TArray<Screen> getScreens() {
 		return screens;
 	}
 
 	public int getScreenCount() {
-		return screens.size();
+		return screens.size;
 	}
 
 	public void setScreen(final Screen screen) {

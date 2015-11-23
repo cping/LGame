@@ -102,6 +102,6 @@ public class SysTouch {
 	}
 
 	public static boolean isDrag() {
-		return SysInputFactory.isDraging;
+		return SysInputFactory._isDraging;
 	}
 }

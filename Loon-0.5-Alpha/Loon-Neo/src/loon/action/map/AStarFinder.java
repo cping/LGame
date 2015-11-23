@@ -251,7 +251,7 @@ public class AStarFinder implements Updateable, LRelease {
 		return astar(field, flag);
 	}
 
-	private int overflow = 1024;
+	private int overflow = 4096;
 
 	public void setOverflow(int over) {
 		this.overflow = over;

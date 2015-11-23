@@ -27,7 +27,7 @@ import loon.event.SysTouch;
 import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
-import loon.utils.Array;
+import loon.utils.TArray;
 
 /**
  * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，
@@ -74,7 +74,7 @@ public class LMenu extends LComponent {
 			this.parent = parent;
 			if (parent != null) {
 				parent.add(this);
-				this.index = parent.items.size();
+				this.index = parent.items.size;
 			}
 			this.label = label;
 			this.keep = keep;
@@ -110,7 +110,7 @@ public class LMenu extends LComponent {
 			this.parent = parent;
 			if (parent != null) {
 				parent.add(this);
-				this.index = parent.items.size();
+				this.index = parent.items.size;
 			}
 			this.label = label;
 			this.keep = keep;
@@ -305,7 +305,7 @@ public class LMenu extends LComponent {
 
 	private int item_top_offset = 0;
 
-	public Array<MenuItem> items = new Array<MenuItem>();
+	public TArray<MenuItem> items = new TArray<MenuItem>();
 
 	private int tabWidth, tabHeight;
 
@@ -493,7 +493,7 @@ public class LMenu extends LComponent {
 			if ((this.active) || (this.width > 0)) {
 				g.draw(mainpanel, 0, 0, this.width, getScreenHeight());
 				if (this.width == this.main_panel_size) {
-					for (int i = 0; i < this.items.size(); i++) {
+					for (int i = 0; i < this.items.size; i++) {
 						this.items.get(i).draw(g);
 					}
 				}
@@ -517,7 +517,7 @@ public class LMenu extends LComponent {
 				float posX = this.getScreenWidth() - this.width;
 				g.draw(mainpanel, posX, 0, this.width, getScreenHeight());
 				if (this.width == this.main_panel_size) {
-					for (int i = 0; i < this.items.size(); i++) {
+					for (int i = 0; i < this.items.size; i++) {
 						this.items.get(i).draw(g);
 					}
 				}
