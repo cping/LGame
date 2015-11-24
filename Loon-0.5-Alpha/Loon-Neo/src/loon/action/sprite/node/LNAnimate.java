@@ -59,7 +59,8 @@ public class LNAnimate extends LNAction {
 			((LNSprite) super._target).setAnimation(_ans);
 		}
 	}
-
+	
+	@Override
 	public void update(float t) {
 		if (super._target instanceof LNSprite) {
 			if (t == 1f) {
@@ -72,8 +73,9 @@ public class LNAnimate extends LNAction {
 			}
 		}
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_ans, _restoreOriginalFrame);
 	}
 }

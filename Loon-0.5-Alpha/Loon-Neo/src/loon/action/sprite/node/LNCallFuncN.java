@@ -32,7 +32,8 @@ public class LNCallFuncN extends LNAction {
 		cn._c = c;
 		return cn;
 	}
-
+	
+	@Override
 	public void step(float dt) {
 		_c.invoke(super._target);
 		super._isEnd = true;
@@ -41,8 +42,9 @@ public class LNCallFuncN extends LNAction {
 	public static interface Callback {
 		void invoke(LNNode node);
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_c);
 	}
 }

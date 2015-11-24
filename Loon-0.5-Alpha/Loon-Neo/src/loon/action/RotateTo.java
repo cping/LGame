@@ -30,6 +30,8 @@ public class RotateTo extends ActionEvent {
 
 	private float speed;
 
+	private boolean minus;
+
 	public RotateTo(float dstAngle, float speed) {
 		this.dstAngle = dstAngle;
 		if (this.dstAngle > 360) {
@@ -47,14 +49,31 @@ public class RotateTo extends ActionEvent {
 	public void onLoad() {
 		startAngle = original.getRotation();
 		diffAngle = 1;
+		if (startAngle >= dstAngle) {
+			minus = true;
+		}
 	}
 
 	public void update(long elapsedTime) {
-		startAngle += diffAngle * speed;
-		original.setRotation(startAngle);
-		if (startAngle >= dstAngle) {
-			isComplete = true;
+		if (minus) {
+			startAngle -= diffAngle * speed;
+			if (startAngle <= dstAngle) {
+				isComplete = true;
+			}
+			if (startAngle <= 0) {
+				startAngle = 0;
+			}
+		} else {
+			startAngle += diffAngle * speed;
+			if (startAngle >= dstAngle) {
+				isComplete = true;
+			}
+			if (startAngle >= 360) {
+				startAngle = 360;
+			}
 		}
+		original.setRotation(startAngle);
+
 	}
 
 	@Override
@@ -62,4 +81,13 @@ public class RotateTo extends ActionEvent {
 		return new RotateTo(dstAngle, speed);
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		return new RotateTo(-dstAngle, speed);
+	}
+
+	@Override
+	public String getName() {
+		return "rotate";
+	}
 }

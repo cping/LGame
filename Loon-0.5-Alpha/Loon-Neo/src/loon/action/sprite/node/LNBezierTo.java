@@ -43,7 +43,8 @@ public class LNBezierTo extends LNBezierBy {
 				c.endPosition.y);
 		return bezier;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super.setTarget(node);
 		_config.controlPoint_1 = _originalconfig.controlPoint_1
@@ -52,7 +53,8 @@ public class LNBezierTo extends LNBezierBy {
 				.sub(_startPosition);
 		_config.endPosition = _originalconfig.endPosition.sub(_startPosition);
 	}
-
+	
+	@Override
 	public LNBezierTo reverse() {
 		LNBezierDef r = new LNBezierDef();
 		r.endPosition = _config.endPosition.negate();

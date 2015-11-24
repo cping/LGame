@@ -686,9 +686,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		int argb = baseColor;
 		if (color != null) {
-			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
-			argb = color == null ? baseColor : ((ialpha << 24) | (color
-					.getARGB() & 0xFFFFFF));
+			argb = color.getARGB(alpha());
 		}
 		texture.addToBatch(batch, argb, tx(), x, y, w, h);
 		return this;
@@ -726,9 +724,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		int argb = baseColor;
 		if (color != null) {
-			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
-			argb = color == null ? baseColor : ((ialpha << 24) | (color
-					.getARGB() & 0xFFFFFF));
+			argb = color.getARGB(alpha());
 		}
 		Affine2f xf = tx();
 		if (rotation != 0) {
@@ -783,9 +779,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		int argb = baseColor;
 		if (color != null) {
-			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
-			argb = color == null ? baseColor : ((ialpha << 24) | (color
-					.getARGB() & 0xFFFFFF));
+			argb = color.getARGB(alpha());
 		}
 		texture.addToBatch(batch, argb, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
 		return this;
@@ -916,9 +910,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 		int argb = baseColor;
 		if (color != null) {
-			int ialpha = (int) (0xFF * MathUtils.clamp(alpha(), 0, 1));
-			argb = color == null ? baseColor : ((ialpha << 24) | (color
-					.getARGB() & 0xFFFFFF));
+			argb = color.getARGB(alpha());
 		}
 		texture.addToBatch(batch, argb, xf, x, y, width, height, srcX, srcY,
 				srcWidth, srcHeight);

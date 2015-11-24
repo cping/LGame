@@ -35,13 +35,16 @@ public class LNBlink extends LNAction {
 		return blink;
 	}
 
+	@Override
 	public void update(float time) {
 		float slice = 1.0f / _times;
 		float m = time % slice;
 		super._target._visible = m > slice / 2 ? true : false;
 	}
 
-	public LNAction copy() {
+	@Override
+	public LNAction cpy() {
 		return Action(_duration, _times);
 	}
+
 }

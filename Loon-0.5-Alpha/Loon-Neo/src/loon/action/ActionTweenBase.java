@@ -7,10 +7,10 @@ public abstract class ActionTweenBase<T> {
 
 	protected ActionBind _target;
 	private int step;
-	private int repeatSize;
 	private boolean isIterationStep;
 	private boolean isBackward;
-
+	
+	protected int repeatSize;
 	protected float delay;
 	protected float duration;
 	private float repeatDelay;

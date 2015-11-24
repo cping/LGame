@@ -32,12 +32,12 @@ public class Actions {
 		this.actions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 	}
 
-	public synchronized void clear() {
+	public void clear() {
 		actions.clear();
 	}
 
-	public synchronized void addAction(ActionEvent action,
-			ActionBind actObject, boolean paused) {
+	public void addAction(ActionEvent action, ActionBind actObject,
+			boolean paused) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element == null) {
 			element = new ActionElement(actObject, paused);
@@ -45,14 +45,18 @@ public class Actions {
 		}
 		element.actions.add(action);
 		action.start(actObject);
+		if (!action.isInit) {
+			action.isInit = true;
+			action.onLoad();
+		}
 	}
 
-	private synchronized void deleteElement(ActionElement element) {
+	private void deleteElement(ActionElement element) {
 		element.actions.clear();
 		actions.remove(element.key);
 	}
 
-	public synchronized void removeAllActions(ActionBind actObject) {
+	public void removeAllActions(ActionBind actObject) {
 		if (actObject == null) {
 			return;
 		}
@@ -63,7 +67,7 @@ public class Actions {
 		}
 	}
 
-	private synchronized void removeAction(int index, ActionElement element) {
+	private void removeAction(int index, ActionElement element) {
 		element.actions.removeIndex(index);
 		if (element.actionIndex >= index) {
 			element.actionIndex--;
@@ -73,11 +77,11 @@ public class Actions {
 		}
 	}
 
-	public synchronized int getCount() {
+	public int getCount() {
 		return actions.size();
 	}
 
-	public synchronized void removeAction(Object tag, ActionBind actObject) {
+	public void removeAction(Object tag, ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			if (element.actions != null) {
@@ -92,7 +96,7 @@ public class Actions {
 		}
 	}
 
-	public synchronized void removeAction(ActionEvent action) {
+	public void removeAction(ActionEvent action) {
 		if (action == null) {
 			return;
 		}
@@ -106,7 +110,7 @@ public class Actions {
 		}
 	}
 
-	public synchronized ActionEvent getAction(Object tag, ActionBind actObject) {
+	public ActionEvent getAction(Object tag, ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			if (element.actions != null) {
@@ -121,7 +125,7 @@ public class Actions {
 		return null;
 	}
 
-	public synchronized void update(long elapsedTime) {
+	public void update(long elapsedTime) {
 		int size = actions.size();
 		for (int i = size - 1; i > -1; --i) {
 			ActionElement currentTarget = (ActionElement) actions.get(i);
@@ -130,8 +134,7 @@ public class Actions {
 			}
 			synchronized (currentTarget) {
 				if (!currentTarget.paused) {
-					for (currentTarget.actionIndex = 0; currentTarget.actionIndex < currentTarget.actions
-							.size; currentTarget.actionIndex++) {
+					for (currentTarget.actionIndex = 0; currentTarget.actionIndex < currentTarget.actions.size; currentTarget.actionIndex++) {
 						currentTarget.currentAction = currentTarget.actions
 								.get(currentTarget.actionIndex);
 						if (currentTarget.currentAction == null) {
@@ -156,34 +159,34 @@ public class Actions {
 		}
 	}
 
-	public synchronized void paused(boolean pause, ActionBind actObject) {
+	public void paused(boolean pause, ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			element.paused = pause;
 		}
 	}
 
-	public synchronized void stop(ActionBind actObject) {
+	public void stop(ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			element.paused = true;
 		}
 	}
 
-	public synchronized void start(ActionBind actObject) {
+	public void start(ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			element.paused = false;
 		}
 	}
 
-	public synchronized void start() {
+	public void start() {
 		for (int i = 0; i < actions.size(); i++) {
 			((ActionElement) actions.get(i)).paused = false;
 		}
 	}
 
-	public synchronized void stop() {
+	public void stop() {
 		for (int i = 0; i < actions.size(); i++) {
 			((ActionElement) actions.get(i)).paused = true;
 		}

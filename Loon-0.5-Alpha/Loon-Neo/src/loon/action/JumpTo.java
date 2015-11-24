@@ -61,6 +61,7 @@ public class JumpTo extends ActionEvent {
 		this.moveY = moveY;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (moveJump < 0) {
 			if (this.moveY > -(moveJump)) {
@@ -117,4 +118,13 @@ public class JumpTo extends ActionEvent {
 		return new JumpTo(moveJump, gravity);
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		return new JumpTo(-moveJump, gravity);
+	}
+
+	@Override
+	public String getName() {
+		return "jump";
+	}
 }

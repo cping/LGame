@@ -552,7 +552,7 @@ public class LColor implements Serializable {
 	 * 
 	 * @return
 	 */
-	public LColor copy() {
+	public LColor cpy() {
 		return new LColor(r, g, b, a);
 	}
 
@@ -627,6 +627,16 @@ public class LColor implements Serializable {
 	 */
 	public int getARGB() {
 		return getARGB(getRed(), getGreen(), getBlue(), getAlpha());
+	}
+
+	/**
+	 * 返回ARGB
+	 * 
+	 * @param alpha
+	 * @return
+	 */
+	public int getARGB(float alpha) {
+		return getARGB(getRed(), getGreen(), getBlue(), (int) (a * alpha * 255));
 	}
 
 	/**

@@ -29,6 +29,7 @@ import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.geom.Affine2f;
 import loon.geom.Point;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -579,17 +580,28 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		if (image == null) {
 			return;
 		}
-		float width = (image.width() * scaleX);
-		float height = (image.height() * scaleY);
+		float width = image.getWidth();
+		float height = image.getHeight();
 		float tmp = g.alpha();
+		boolean update = !(scaleX == 1f && scaleY == 1f);
+		if (update) {
+			g.saveTx();
+			Affine2f tx = g.tx();
+			final float scaleCenterX = this._location.x + width / 2f;
+			final float scaleCenterY = this._location.y + height / 2f;
+			tx.translate(scaleCenterX, scaleCenterY);
+			tx.preScale(scaleX, scaleY);
+			tx.translate(-scaleCenterX, -scaleCenterY);
+		}
 		if (filterColor == null) {
 			if (_alpha > 0 && _alpha < 1) {
 				g.setAlpha(_alpha);
 			}
 			if (LTrans.TRANS_NONE == transform) {
-				g.draw(image, x(), y(), width, height, _rotation);
+				g.draw(image, this._location.x, this._location.y, width,
+						height, _rotation);
 			} else {
-				g.drawRegion(image, 0, 0, getWidth(), getHeight(), transform,
+				g.drawRegion(image, 0, 0, (int) width, (int) height, transform,
 						x(), y(), LTrans.TOP | LTrans.LEFT);
 			}
 		} else {
@@ -597,13 +609,17 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 				g.setAlpha(_alpha);
 			}
 			if (LTrans.TRANS_NONE == transform) {
-				g.draw(image, x(), y(), width, height, filterColor, _rotation);
+				g.draw(image, this._location.x, this._location.y, width,
+						height, filterColor, _rotation);
 			} else {
-				g.drawRegion(image, 0, 0, getWidth(), getHeight(), transform,
+				g.drawRegion(image, 0, 0, (int) width, (int) height, transform,
 						x(), y(), LTrans.TOP | LTrans.LEFT, filterColor);
 			}
 		}
 		g.setAlpha(tmp);
+		if (update) {
+			g.restoreTx();
+		}
 	}
 
 	public boolean isVisible() {

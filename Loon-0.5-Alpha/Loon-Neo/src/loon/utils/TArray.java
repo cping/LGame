@@ -49,14 +49,22 @@ public class TArray<T> implements Iterable<T> {
 			add(it.next());
 		}
 	}
-	
+
+	public TArray(Array<T> vals) {
+		this();
+		for (; vals.hashNext();) {
+			add(vals.next());
+		}
+		vals.stopNext();
+	}
+
 	public TArray(Keys<T> vals) {
 		this();
 		for (T t : vals) {
 			add(t);
 		}
 	}
-	
+
 	public TArray(Values<T> vals) {
 		this();
 		for (T t : vals) {

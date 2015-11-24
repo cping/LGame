@@ -80,4 +80,14 @@ public class CircleTo extends ActionEvent {
 		return new CircleTo(radius, velocity);
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		return cpy();
+	}
+
+	@Override
+	public String getName() {
+		return "circle";
+	}
+
 }

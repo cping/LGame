@@ -29,13 +29,15 @@ public class LNHide extends LNAction {
 	public static LNHide Action() {
 		return new LNHide();
 	}
-
+	
+	@Override
 	public void step(float dt) {
 		super._target._visible = false;
 		super._isEnd = true;
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action();
 	}
 

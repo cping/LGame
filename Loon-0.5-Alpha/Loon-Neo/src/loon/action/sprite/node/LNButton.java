@@ -245,7 +245,8 @@ public class LNButton extends LNUI {
 	public LNCallFunc.Callback ActionCallBack;
 
 	private boolean isPressed, isDraging;
-
+	
+	@Override
 	public void processTouchPressed() {
 		if (!isPressed) {
 			super.processTouchPressed();
@@ -260,7 +261,8 @@ public class LNButton extends LNUI {
 
 		}
 	}
-
+	
+	@Override
 	public void processTouchReleased() {
 		if (isPressed) {
 			super.processTouchReleased();
@@ -285,7 +287,8 @@ public class LNButton extends LNUI {
 			isPressed = false;
 		}
 	}
-
+	
+	@Override
 	public void processTouchDragged() {
 		super.processTouchDragged();
 		for (String key : this._buttonElement.keys()) {
@@ -297,7 +300,8 @@ public class LNButton extends LNUI {
 		}
 		isDraging = true;
 	}
-
+	
+	@Override
 	public void update(float dt) {
 		super.update(dt);
 		if (isDraging && !SysTouch.isDrag()) {

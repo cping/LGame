@@ -36,6 +36,8 @@ public abstract class ActionEvent {
 
 	float offsetX, offsetY;
 
+	float oldX, oldY;
+
 	public ActionEvent() {
 		timer = new LTimer(0);
 	}
@@ -78,6 +80,10 @@ public abstract class ActionEvent {
 			return;
 		}
 		this.original = o;
+		if (original != null) {
+			oldX = original.getX();
+			oldY = original.getY();
+		}
 		this.timer.refresh();
 		this.firstTick = true;
 		this.isComplete = false;
@@ -139,6 +145,15 @@ public abstract class ActionEvent {
 	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 	}
-	
+
 	public abstract ActionEvent cpy();
+
+	public abstract ActionEvent reverse();
+
+	public abstract String getName();
+
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

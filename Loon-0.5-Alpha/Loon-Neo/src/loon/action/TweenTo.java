@@ -34,4 +34,14 @@ public class TweenTo<T> extends ActionEvent {
 	public ActionEvent cpy() {
 		return new TweenTo<T>(_base);
 	}
+
+	@Override
+	public ActionEvent reverse() {
+		return cpy();
+	}
+
+	@Override
+	public String getName() {
+		return "tween";
+	}
 }

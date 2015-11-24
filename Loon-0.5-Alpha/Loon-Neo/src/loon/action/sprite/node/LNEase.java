@@ -44,22 +44,25 @@ public class LNEase extends LNAction {
 		act._easing = e;
 		return action;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super.setTarget(node);
 		if (_action != null) {
 			_action.setTarget(node);
 		}
 	}
-
+	
+	@Override
 	public void step(float dt) {
 		if (_action != null) {
 			_action.step(dt);
 			_isEnd = _action.isEnd();
 		}
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_easing, _action);
 	}
 

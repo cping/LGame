@@ -107,7 +107,7 @@ public class Field2D implements Config {
 	private int width, height;
 
 	public Field2D(Field2D field) {
-		copy(field);
+		cpy(field);
 	}
 
 	public Field2D(String fileName, int tw, int th) {
@@ -122,7 +122,7 @@ public class Field2D implements Config {
 		this.set(data, tw, th);
 	}
 
-	public void copy(Field2D field) {
+	public void cpy(Field2D field) {
 		this.set(CollectionUtils.copyOf(field.data), field.tileWidth,
 				field.tileHeight);
 	}

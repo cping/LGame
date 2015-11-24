@@ -36,19 +36,22 @@ public class LNSpeed extends LNAction {
 		speed._speed = s;
 		return speed;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
 		super._target = node;
 		_other.setTarget(node);
 	}
-
+	
+	@Override
 	public void step(float dt) {
 		super.step(dt);
 		_other.step(dt * _speed);
 	}
-
+	
+	@Override
 	public void update(float t) {
 		_other.update(t);
 		if (_other._isEnd) {
@@ -63,8 +66,9 @@ public class LNSpeed extends LNAction {
 	public void setSpeed(float speed) {
 		this._speed = speed;
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_other, _speed);
 	}
 

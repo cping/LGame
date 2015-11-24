@@ -32,14 +32,16 @@ public class LNRepeatForever extends LNAction {
 		forever._action = action;
 		return forever;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
 		super._target = node;
 		this._action.setTarget(super._target);
 	}
-
+	
+	@Override
 	public void step(float dt) {
 		if (super._firstTick) {
 			super._firstTick = false;
@@ -53,8 +55,9 @@ public class LNRepeatForever extends LNAction {
 			super._elapsed = 0f;
 		}
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_action);
 	}
 }

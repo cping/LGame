@@ -75,10 +75,19 @@ public class Array<T> {
 		}
 	}
 
-	public void addAll(Array<T> data) {
-		for (int i = 0; i < data.size(); i++) {
-			add(data.get(i));
+	public Array<T> reverse() {
+		Array<T> tmp = new Array<T>();
+		for (int i = size() - 1; i > -1; --i) {
+			tmp.add(get(i));
 		}
+		return tmp;
+	}
+
+	public void addAll(Array<T> data) {
+		for (; data.hashNext();) {
+			add(data.next());
+		}
+		data.stopNext();
 	}
 
 	public Array<T> concat(Array<T> data) {
@@ -498,10 +507,9 @@ public class Array<T> {
 		return _close;
 	}
 
-	public Array<T> copy() {
+	public Array<T> cpy() {
 		Array<T> newlist = new Array<T>();
-		newlist._items.next = this._items;
-		newlist._items.previous = this._items;
+		newlist.addAll(this);
 		return newlist;
 	}
 

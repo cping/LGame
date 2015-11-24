@@ -46,7 +46,8 @@ public class LNFadeIn extends LNAction {
 		this._orgOpacity = node._alpha * 255f;
 		this._diff = this._tarOpacity - this._orgOpacity;
 	}
-
+	
+	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
@@ -56,8 +57,9 @@ public class LNFadeIn extends LNAction {
 					.setAlpha(((t * this._diff) + this._orgOpacity) / 255f);
 		}
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_duration);
 	}
 

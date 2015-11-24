@@ -30,8 +30,6 @@ public class FadeTo extends ActionEvent {
 
 	public int type;
 
-	private float opacity;
-
 	public FadeTo(int type, float speed) {
 		this.type = type;
 		this.setSpeed(speed);
@@ -43,14 +41,6 @@ public class FadeTo extends ActionEvent {
 
 	public void setIType(int type) {
 		this.type = type;
-	}
-
-	void setOpacity(float opacity) {
-		this.opacity = opacity;
-	}
-
-	public float getOpacity() {
-		return opacity;
 	}
 
 	public boolean isComplete() {
@@ -66,7 +56,7 @@ public class FadeTo extends ActionEvent {
 		if (type == ISprite.TYPE_FADE_IN) {
 			this.currentFrame = this.time;
 		} else {
-			this.currentFrame = 0;
+			this.currentFrame = 0f;
 		}
 	}
 
@@ -78,20 +68,19 @@ public class FadeTo extends ActionEvent {
 		if (type == ISprite.TYPE_FADE_IN) {
 			currentFrame--;
 			if (currentFrame == 0) {
-				setOpacity(0);
+				original.setAlpha(0f);
 				isComplete = true;
+				return;
 			}
 		} else {
 			currentFrame++;
 			if (currentFrame == time) {
-				setOpacity(0);
+				original.setAlpha(1f);
 				isComplete = true;
+				return;
 			}
 		}
-		setOpacity((currentFrame / time) * 255);
-		if (opacity > 0) {
-			original.setAlpha((opacity / 255));
-		}
+		original.setAlpha(currentFrame / time);
 	}
 
 	@Override
@@ -99,4 +88,19 @@ public class FadeTo extends ActionEvent {
 		return new FadeTo(type, time);
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		FadeTo fade = null;
+		if (type == ISprite.TYPE_FADE_OUT) {
+			fade = new FadeTo(ISprite.TYPE_FADE_IN, time);
+		} else {
+			fade = new FadeTo(ISprite.TYPE_FADE_OUT, time);
+		}
+		return fade;
+	}
+
+	@Override
+	public String getName() {
+		return "fade";
+	}
 }

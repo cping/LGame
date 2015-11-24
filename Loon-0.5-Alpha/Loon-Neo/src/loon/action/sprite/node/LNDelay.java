@@ -31,14 +31,16 @@ public class LNDelay extends LNAction {
 		delay._duration = duration;
 		return delay;
 	}
-
+	
+	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
 		}
 	}
 
-	public LNAction copy() {
+	@Override
+	public LNAction cpy() {
 		return Action(_duration);
 	}
 }

@@ -38,14 +38,16 @@ public class LNTintTo extends LNAction {
 		tint._to = c;
 		return tint;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
 		super._target = node;
 		_from = node.getColor();
 	}
-
+	
+	@Override
 	public void update(float t) {
 		final int fred = _from.getRed();
 		final int fgreen = _from.getGreen();
@@ -62,8 +64,9 @@ public class LNTintTo extends LNAction {
 			super._target.setColor(r, g, b);
 		}
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_duration, _to);
 	}
 }

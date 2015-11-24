@@ -45,11 +45,11 @@ public class FireTo extends ActionEvent {
 	}
 
 	public void onLoad() {
-		this.x =  original.getX();
+		this.x = original.getX();
 		this.y = original.getY();
 		this.direction = MathUtils.atan2(endY - y, endX - x);
-		this.vx =  (MathUtils.cos(direction) * this.speed);
-		this.vy =  (MathUtils.sin(direction) * this.speed);
+		this.vx = (MathUtils.cos(direction) * this.speed);
+		this.vy = (MathUtils.sin(direction) * this.speed);
 	}
 
 	public void update(long elapsedTime) {
@@ -94,4 +94,13 @@ public class FireTo extends ActionEvent {
 		return new FireTo(endX, endY, speed);
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		return new FireTo(oldX, oldY, speed);
+	}
+
+	@Override
+	public String getName() {
+		return "fire";
+	}
 }

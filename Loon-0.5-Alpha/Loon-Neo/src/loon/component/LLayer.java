@@ -24,6 +24,7 @@ import loon.LTexture;
 import loon.action.map.Field2D;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
+import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
@@ -202,6 +203,7 @@ public class LLayer extends ActorLayer {
 
 	public void paintObjects(GLEx g, int minX, int minY, int maxX, int maxY) {
 		synchronized (objects) {
+			boolean update = false;
 			LIterator<Actor> it = objects.iterator();
 			for (; it.hasNext();) {
 				thing = it.next();
@@ -228,12 +230,22 @@ public class LLayer extends ActorLayer {
 				}
 				LTexture actorImage = thing.getImage();
 				if (actorImage != null) {
-					width = (actorImage.getWidth() * thing.scaleX);
-					height = (actorImage.getHeight() * thing.scaleY);
+					width = actorImage.getWidth();
+					height = actorImage.getHeight();
 					isBitmapFilter = (thing.filterColor != null);
 					thing.setLastPaintSeqNum(paintSeq++);
 					angle = thing.getRotation();
 					colorAlpha = thing._alpha;
+					update = !(thing.scaleX == 1f && thing.scaleY == 1f);
+					if (update) {
+						g.saveTx();
+						Affine2f transform = g.tx();
+						float centerX = actorX + width / 2;
+						float centerY = actorY + height / 2;
+						transform.translate(centerX, centerY);
+						transform.preScale(thing.scaleX, thing.scaleY);
+						transform.translate(-centerX, -centerY);
+					}
 					if (isBitmapFilter) {
 						g.draw(actorImage, actorX, actorY, width, height,
 								thing.filterColor, angle);
@@ -245,6 +257,9 @@ public class LLayer extends ActorLayer {
 						if (colorAlpha != 1f) {
 							g.setAlpha(1f);
 						}
+					}
+					if (update) {
+						g.restoreTx();
 					}
 				}
 				if (thing.isConsumerDrawing) {

@@ -91,4 +91,14 @@ public class ScaleTo extends ActionEvent {
 	public ActionEvent cpy() {
 		return new ScaleTo(endX, endY, speed);
 	}
+
+	@Override
+	public ActionEvent reverse() {
+		return new ScaleTo(startX, startY, speed);
+	}
+	
+	@Override
+	public String getName() {
+		return "scale";
+	}
 }

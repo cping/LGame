@@ -446,7 +446,7 @@ public class Pixmap extends Limit implements LRelease {
 	 * 
 	 * @return
 	 */
-	public Object clone() {
+	public Object cpy() {
 		return copy(0, 0, width, height);
 	}
 

@@ -57,7 +57,7 @@ public abstract class LNAction {
 		this._target = node;
 	}
 
-	public abstract LNAction copy();
+	public abstract LNAction cpy();
 
 	public void start() {
 		this.setTarget(this._target);

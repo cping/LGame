@@ -103,4 +103,14 @@ public class ArrowTo extends ActionEvent {
 		return new ArrowTo(endX, endY, speed, gravity);
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		return new ArrowTo(oldX, oldY, speed, gravity);
+	}
+
+	@Override
+	public String getName() {
+		return "arrow";
+	}
+
 }

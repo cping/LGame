@@ -29,14 +29,16 @@ public class LNToggleVisibility extends LNAction {
 	public static LNToggleVisibility Action() {
 		return new LNToggleVisibility();
 	}
-
+	
+	@Override
 	public void step(float dt) {
 		boolean visible = super._target._visible;
 		super._target._visible = !visible;
 		super._isEnd = true;
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action();
 	}
 

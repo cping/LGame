@@ -44,7 +44,8 @@ public class LNMoveTo extends LNAction {
 	public static LNMoveTo Action(float duration, float dx, float dy) {
 		return LNMoveTo.Action(duration, new Vector2f(dx, dy));
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;
@@ -52,7 +53,8 @@ public class LNMoveTo extends LNAction {
 		this._orgPos = node.getPosition();
 		this._diff = this._pos.sub(this._orgPos);
 	}
-
+	
+	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
@@ -61,8 +63,9 @@ public class LNMoveTo extends LNAction {
 			super._target.setPosition(this._diff.mul(t).add(this._orgPos));
 		}
 	}
-
-	public LNAction copy() {
+	
+	@Override
+	public LNAction cpy() {
 		return Action(_duration, _pos);
 	}
 

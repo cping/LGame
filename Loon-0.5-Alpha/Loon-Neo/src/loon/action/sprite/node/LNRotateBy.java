@@ -31,7 +31,8 @@ public class LNRotateBy extends LNRotateTo {
 		by._duration = duration;
 		return by;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;

@@ -5,6 +5,7 @@ import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.utils.Array;
 import loon.utils.Easing;
+import loon.utils.TArray;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
@@ -130,6 +131,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	private boolean isFrom;
 	private boolean isRelative;
+	private boolean isRepeat;
 
 	private int _combinedAttrsSize;
 	private int _funPointsSize;
@@ -206,16 +208,74 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		scale.setSpeed(speed);
 		return event(scale);
 	}
-	
+
+	public ActionTween showTo(boolean v) {
+		ShowTo show = new ShowTo(v);
+		show.setDelay(0);
+		return event(show);
+	}
+
+	public TArray<ActionEvent> getActionEvents() {
+		if (actionEvents == null) {
+			return new TArray<ActionEvent>(0);
+		}
+		return new TArray<ActionEvent>(actionEvents);
+	}
+
 	@Override
 	public ActionTween delay(float d) {
 		super.delay(delay);
-		DelayTo delay = new DelayTo(d);
-		delay.setDelay(0);
-		return event(delay);
+		if (actionEvents != null && d > 0) {
+			DelayTo delay = new DelayTo(d);
+			delay.setDelay(0);
+			return event(delay);
+		} else {
+			return this;
+		}
 	}
 
-	
+	public ActionTween repeat(float time) {
+		return repeat(1, time);
+	}
+
+	@Override
+	public ActionTween repeat(int count, float time) {
+		super.repeat(count, time);
+		if (actionEvents == null) {
+			return this;
+		}
+		isRepeat = true;
+		boolean update = count > 1;
+		ReplayTo replay = new ReplayTo(null, update);
+		if (update) {
+			replay.count = count;
+		}
+		event(replay);
+		return delay(time);
+	}
+
+	@Override
+	public ActionTween repeatBackward(int count, float time) {
+		super.repeatBackward(count, time);
+		if (actionEvents == null) {
+			return this;
+		}
+		isRepeat = true;
+		boolean update = count > 1;
+		ReplayTo replay = new ReplayTo(null, update);
+		if (update) {
+			replay.count = count;
+		}
+		event(replay);
+		return delay(time);
+	}
+
+	/**
+	 * 自定义事件请在此处注入
+	 * 
+	 * @param event
+	 * @return
+	 */
 	public ActionTween event(ActionEvent event) {
 		if (actionEvents == null) {
 			actionEvents = new Array<ActionEvent>();
@@ -423,20 +483,51 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	private ActionEvent currentActionEvent;
 
+	private Array<ActionEvent> repeatList;
+
 	@Override
 	protected boolean actionEventOver() {
-		if (actionEvents != null && actionEvents.size() > 0) {
+		if (actionEvents == null) {
+			return true;
+		}
+		if (actionEvents != null) {
 			if (currentActionEvent != null && !currentActionEvent.isComplete()) {
 				return false;
+			} else if (currentActionEvent != null
+					&& currentActionEvent.isComplete()) {
+				if (repeatList == null) {
+					repeatList = new Array<ActionEvent>();
+				}
+				if (!(currentActionEvent instanceof ReplayTo)) {
+					repeatList.add(currentActionEvent.reverse());
+				}
 			}
 			ActionEvent event = actionEvents.first();
-			if (event != currentActionEvent) {
+			if (event != currentActionEvent && event != null) {
 				actionEvents.remove(0);
+				if (isRepeat) {
+					if (event instanceof ReplayTo && repeatList != null
+							&& repeatList.size() > 0) {
+						ReplayTo replayTo = ((ReplayTo) event);
+						int size = replayTo.count - 1;
+						if (size > 0) {
+							for (int i = 0; i < size; i++) {
+								repeatList.addFront(new ReplayTo(null));
+								repeatList.addFront(new DelayTo(0));
+							}
+						}
+						replayTo.set(repeatList);
+						repeatList.clear();
+					}
+				}
 				ActionControl.getInstance().addAction(event, _target);
 				currentActionEvent = event;
 			}
 		}
-		return actionEvents == null || actionEvents.size() == 0;
+		if (currentActionEvent != null && !currentActionEvent.isComplete()) {
+			return false;
+		}
+		return (actionEvents == null || actionEvents.size() == 0);
 	}
 
 	@Override

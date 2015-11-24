@@ -5,10 +5,12 @@ import loon.utils.timer.LTimer;
 
 public class DelayTo extends ActionEvent {
 
-	private LTimer timer = new LTimer();
+	private LTimer timer;
 
-	public DelayTo(float delay) {
-		timer.setDelay((long) (delay * LSystem.SECOND));
+	private float delay;
+
+	public DelayTo(float d) {
+		this.timer = new LTimer((long) ((this.delay = d) * LSystem.SECOND));
 	}
 
 	@Override
@@ -30,7 +32,16 @@ public class DelayTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new DelayTo(timer.getDelay());
+		return new DelayTo(delay);
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		return cpy();
+	}
+
+	@Override
+	public String getName() {
+		return "delay";
+	}
 }

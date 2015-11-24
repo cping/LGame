@@ -97,7 +97,7 @@ public class LToast extends LComponent {
 	public static final int LENGTH_LONG = 60;
 	public static final LColor ERROR_RED = LColor.maroon;
 	public static final LColor SUCCESS_GRAY = LColor.gray;
-	public static final LColor NORMAL_ORANGE = LColor.orange.copy();
+	public static final LColor NORMAL_ORANGE = LColor.orange.cpy();
 	private final float MAX_OPACITY = 1.0f;
 	private final float OPACITY_INCREMENT = 0.05f;
 	private int _frame_radius = 15;
@@ -107,8 +107,8 @@ public class LToast extends LComponent {
 	private int mDuration;
 	private LTimer timer = new LTimer();
 	private LTimer lock = new LTimer(LSystem.SECOND * 2);
-	private LColor mBackgroundColor = LColor.orange.copy();
-	private LColor mForegroundColor = LColor.white.copy();
+	private LColor mBackgroundColor = LColor.orange.cpy();
+	private LColor mForegroundColor = LColor.white.cpy();
 	private LFont font;
 	private int displayX = 0;
 	private int displayY = 0;

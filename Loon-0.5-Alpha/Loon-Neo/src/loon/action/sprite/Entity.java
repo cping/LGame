@@ -345,7 +345,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 
 	@Override
 	public float getAlpha() {
-		return this._baseColor.a;
+		return super.getAlpha();
 	}
 
 	@Override
@@ -360,8 +360,9 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 	}
 
 	@Override
-	public void setAlpha(final float pAlpha) {
-		this._baseColor.a = pAlpha;
+	public void setAlpha(final float a) {
+		super.setAlpha(a);
+		this._baseColor.a = a;
 		this.onUpdateColor();
 	}
 
@@ -635,8 +636,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 	}
 
 	private void allocateChildren() {
-		this._childrens = new TArray<IEntity>(
-				Entity.CHILDREN_CAPACITY_DEFAULT);
+		this._childrens = new TArray<IEntity>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
 	protected void onManagedPaint(final GLEx g) {
@@ -688,12 +688,12 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 
 	@Override
 	public int getWidth() {
-		return (int) _width;
+		return (int) (_width * this._scaleX);
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) _height;
+		return (int) (_height * this._scaleY);
 	}
 
 	@Override

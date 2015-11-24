@@ -179,6 +179,7 @@ public class MoveTo extends ActionEvent {
 		}
 	}
 
+	@Override
 	public int hashCode() {
 		if (layerMap == null || original == null) {
 			return super.hashCode();
@@ -202,6 +203,7 @@ public class MoveTo extends ActionEvent {
 		return hashCode;
 	}
 
+	@Override
 	public void start(ActionBind target) {
 		super.start(target);
 		startLocation.set(target.getX(), target.getY());
@@ -353,8 +355,7 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return pActorPath == null || pActorPath.size == 0 || isComplete
-				|| original == null;
+		return (pActorPath == null || pActorPath.size == 0 || isComplete || original == null);
 	}
 
 	public boolean isUseCache() {
@@ -385,8 +386,24 @@ public class MoveTo extends ActionEvent {
 	public ActionEvent cpy() {
 		MoveTo move = new MoveTo(layerMap, endLocation.x, endLocation.y, flag,
 				speed, useCache, synchroLayerField);
+		move.oldX = oldX;
+		move.oldY = oldY;
 		move.heuristic = this.heuristic;
 		return move;
 	}
 
+	@Override
+	public ActionEvent reverse() {
+		MoveTo move = new MoveTo(layerMap, oldX, oldY, flag, speed, useCache,
+				synchroLayerField);
+		move.oldX = oldX;
+		move.oldY = oldY;
+		move.heuristic = this.heuristic;
+		return move;
+	}
+
+	@Override
+	public String getName() {
+		return "move";
+	}
 }
