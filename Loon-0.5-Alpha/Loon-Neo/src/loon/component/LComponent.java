@@ -573,13 +573,13 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 	}
 
 	public RectBox getCollisionBox() {
-		if (rect == null) {
-			rect = new RectBox(screenX, screenY, width * scaleX, height
+		if (_rect == null) {
+			_rect = new RectBox(screenX, screenY, width * scaleX, height
 					* scaleY);
 		} else {
-			rect.setBounds(screenX, screenY, width * scaleX, height * scaleY);
+			_rect.setBounds(screenX, screenY, width * scaleX, height * scaleY);
 		}
-		return rect;
+		return _rect;
 	}
 
 	public String getToolTipText() {

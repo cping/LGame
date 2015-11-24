@@ -1,6 +1,5 @@
 package loon.action.sprite;
 
-
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -18,11 +17,11 @@ public class StatusBar extends LObject implements ISprite {
 	private final static ObjectMap<Integer, LTexture> colors = new ObjectMap<Integer, LTexture>(
 			10);
 
-	private final static int[] backPos = { 1, 1, 3, 3 };
+	private final static float[] backPos = { 0, 0, 3, 3 };
 
-	private final static int[] beforePos = { 5, 1, 7, 3 };
+	private final static float[] beforePos = { 5, 0, 7, 3 };
 
-	private final static int[] afterPos = { 1, 5, 3, 7 };
+	private final static float[] afterPos = { 0, 5, 3, 7 };
 
 	private static int quoteCount = 0;
 
@@ -33,6 +32,8 @@ public class StatusBar extends LObject implements ISprite {
 	private int value, valueMax, valueMin;
 
 	private int current, goal;
+
+	private LColor fontColor = new LColor(LColor.white);
 
 	private String hpString;
 
@@ -47,9 +48,7 @@ public class StatusBar extends LObject implements ISprite {
 	}
 
 	public StatusBar(int value, int max, int x, int y, int width, int height) {
-		synchronized (StatusBar.class) {
-			quoteCount++;
-		}
+		quoteCount++;
 		this.value = value;
 		this.valueMax = max;
 		this.valueMin = value;
@@ -195,17 +194,23 @@ public class StatusBar extends LObject implements ISprite {
 
 	public void createUI(GLEx g) {
 		if (visible) {
-			if (showValue) {
-				hpString = "" + value;
-				g.setColor(LColor.white);
-				int current = g.getFont().stringWidth(hpString);
-				int h = (int) g.getFont().getHeight();
-				g.drawString(String.valueOf(value),
-						(x() + width / 2 - current / 2) + 2,
-						(y() + height / 2 - h / 2));
-			}
 			drawBar(g, goal, current, width, getX(), getY());
+			if (showValue) {
+				hpString = String.valueOf(value);
+				int current = g.getFont().stringWidth(hpString);
+				int h = g.getFont().getHeight();
+				g.drawString(hpString, (x() + width / 2 - current / 2) + 2,
+						(y() + height / 2 - h), fontColor);
+			}
 		}
+	}
+	
+	public void setFontColor(LColor c){
+		this.fontColor = c;
+	}
+	
+	public LColor getFontColor(){
+		return this.fontColor;
 	}
 
 	public RectBox getCollisionBox() {

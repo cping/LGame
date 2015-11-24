@@ -235,7 +235,7 @@ public class LLayer extends ActorLayer {
 					isBitmapFilter = (thing.filterColor != null);
 					thing.setLastPaintSeqNum(paintSeq++);
 					angle = thing.getRotation();
-					colorAlpha = thing._alpha;
+					colorAlpha = thing.getAlpha();
 					update = !(thing.scaleX == 1f && thing.scaleY == 1f);
 					if (update) {
 						g.saveTx();

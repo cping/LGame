@@ -455,6 +455,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	@Override
 	public void free() {
 		pool.free(this);
+		ActionControl.getInstance().removeAllActions(_target);
 	}
 
 	@Override

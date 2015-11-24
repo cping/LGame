@@ -31,6 +31,13 @@ import loon.utils.MathUtils;
 
 public abstract class LObject implements XY, ZIndex {
 
+	// 无状态
+	public static final int NOT = -1;
+	// 真
+	public static final int TRUE = 1;
+	// 假
+	public static final int FALSE = 2;
+
 	/**
 	 * 添加一个独立事件，并选择是否暂不启动
 	 * 
@@ -159,11 +166,11 @@ public abstract class LObject implements XY, ZIndex {
 
 	public Object Tag;
 
-	public float _alpha = 1f;
+	protected float _alpha = 1f;
 
-	protected RectBox rect;
+	protected RectBox _rect;
 
-	protected String name;
+	protected String _name;
 
 	protected Vector2f _location = new Vector2f(0, 0);
 
@@ -171,8 +178,35 @@ public abstract class LObject implements XY, ZIndex {
 
 	protected float _rotation;
 
-	public void setTransparency(int _alpha) {
-		setAlpha(_alpha / 255f);
+	private int _objStatus = NOT;
+
+	private static int _sys_seqNo = 0;
+
+	private int _seqNo = 0;
+
+	public LObject() {
+		_seqNo = _sys_seqNo;
+		_sys_seqNo++;
+	}
+
+	public final static int allLObjects() {
+		return _sys_seqNo;
+	}
+
+	public final int getSequenceNo() {
+		return _seqNo;
+	}
+
+	public final void setStatus(int status) {
+		this._objStatus = status;
+	}
+
+	public final int getStatus() {
+		return this._objStatus;
+	}
+
+	public void setTransparency(int a) {
+		setAlpha(a / 255f);
 	}
 
 	public int getTransparency() {
@@ -189,9 +223,12 @@ public abstract class LObject implements XY, ZIndex {
 
 	public void setRotation(float r) {
 		this._rotation = r;
-		if (rect != null) {
-			rect = MathUtils.getBounds(_location.x, _location.y, getWidth(),
-					getHeight(), r, rect);
+		if (_rect != null) {
+			_rect.setBounds(MathUtils.getBounds(_location.x, _location.y,
+					getWidth(), getHeight(), r, _rect));
+		} else {
+			_rect = MathUtils.getBounds(_location.x, _location.y, getWidth(),
+					getHeight(), r, _rect);
 		}
 	}
 
@@ -231,20 +268,20 @@ public abstract class LObject implements XY, ZIndex {
 	}
 
 	protected RectBox getRect(float x, float y, float w, float h) {
-		if (rect == null) {
-			rect = new RectBox(x, y, w, h);
+		if (_rect == null) {
+			_rect = new RectBox(x, y, w, h);
 		} else {
-			rect.setBounds(x, y, w, h);
+			_rect.setBounds(x, y, w, h);
 		}
-		return rect;
+		return _rect;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this._name = name;
 	}
 
 	public String getName() {
-		return name;
+		return _name;
 	}
 
 	public int getLayer() {
@@ -429,4 +466,10 @@ public abstract class LObject implements XY, ZIndex {
 	public int getContainerHeight() {
 		return LSystem.viewSize.getHeight();
 	}
+
+	@Override
+	public int hashCode() {
+		return _seqNo;
+	}
+
 }

@@ -5,10 +5,11 @@ import java.util.StringTokenizer;
 import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.CollectionUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class TileMapConfig {
-	
+
 	private int[][] backMap;
 
 	public int[][] getBackMap() {
@@ -109,4 +110,53 @@ public class TileMapConfig {
 		}
 		return result;
 	}
+
+	public static int[][] stringToIntArrays(String srcStr) {
+		int[][] resArr = null;
+		if ((srcStr == null) || (srcStr.length() == 0)) {
+			return resArr;
+		}
+		try {
+			String[] strLns = StringUtils.split(srcStr, '\n');
+			resArr = new int[strLns.length][];
+			for (int i = 0; i < strLns.length; i++) {
+				String[] strPrms = StringUtils.split(strLns[i], ',');
+				resArr[i] = new int[strPrms.length];
+				for (int j = 0; j < strPrms.length; j++) {
+					resArr[i][j] = stingToInt(strPrms[j]);
+				}
+			}
+		} catch (Exception ex) {
+		}
+		return resArr;
+	}
+
+	private static int stingToInt(String srcStr) {
+		int resNo = 0;
+		try {
+			resNo = Integer.parseInt(srcStr);
+		} catch (Exception ex) {
+		}
+		return resNo;
+	}
+
+	public static String[][] stringToStringArrays(String srcStr) {
+		String[][] resArr = (String[][]) null;
+		if ((srcStr == null) || (srcStr.length() == 0))
+			return resArr;
+		try {
+			String[] strLns = StringUtils.split(srcStr, '\n');
+			resArr = new String[strLns.length][];
+			for (int i = 0; i < strLns.length; i++) {
+				String[] strPrms = StringUtils.split(strLns[i], ',');
+				resArr[i] = new String[strPrms.length];
+				for (int j = 0; j < strPrms.length; j++) {
+					resArr[i][j] = strPrms[j];
+				}
+			}
+		} catch (Exception ex) {
+		}
+		return resArr;
+	}
+
 }

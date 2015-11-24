@@ -114,68 +114,59 @@ final public class StringUtils {
 		tempString = sb.toString();
 		stringList.add(tempString);
 		sb.setLength(0);
-		String[] stockArr = new String[stringList.size];
-		stockArr = stringList.toArray(stockArr);
+		final int size = stringList.size;
+		String[] stockArr = new String[size];
+		for (int i = 0; i < size; i++) {
+			stockArr[i] = stringList.get(i);
+		}
 		return stockArr;
 	}
-	
+
 	/**
 	 * 解析csv文件
 	 * 
 	 * @param str
 	 * @return
 	 */
-	public static String[] splitCsv(String str)
-	  {
-	    TArray<String> stringList = new TArray<String>();
-	    String tempString;
-	    StringBuilder sb = new StringBuilder();
-	    for (int i = 0; i < str.length(); i++)
-	      {
-	        if (str.charAt(i) == '"')
-	          {
-	            i++;
-	            while (i < str.length())
-	              {
-	                if (str.charAt(i) == '"'
-	                    && str.charAt(i + 1) == '"') 
-	                  {
-	                    sb.append('"');
-	                    i = i + 2;
-	                  }
-	                if (str.charAt(i) == '"')
-	                  {
-	                    break;
-	                  }
-	                else
-	                  {
-	                    sb.append(str.charAt(i));
-	                    i++;
-	                  }
-	              }
-	            i++;
-	          }
+	public static String[] splitCsv(String str) {
+		TArray<String> stringList = new TArray<String>();
+		String tempString;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < str.length(); i++) {
+			if (str.charAt(i) == '"') {
+				i++;
+				while (i < str.length()) {
+					if (str.charAt(i) == '"' && str.charAt(i + 1) == '"') {
+						sb.append('"');
+						i = i + 2;
+					}
+					if (str.charAt(i) == '"') {
+						break;
+					} else {
+						sb.append(str.charAt(i));
+						i++;
+					}
+				}
+				i++;
+			}
 
-	        if (str.charAt(i) != ',')
-	          {
-	            sb.append(str.charAt(i));
-	          }
-	        else
-	          {
-	            tempString = sb.toString();
-	            stringList.add(tempString);
-	            sb.setLength(0);
-	          }
-	      }
-	      
-	    tempString = sb.toString();
-	    stringList.add(tempString);
-	    sb.setLength(0);
-	    String[] stockArr = new String[stringList.size];
-	    stockArr = stringList.toArray(stockArr);
-	    return stockArr;
-	  }
-	
+			if (str.charAt(i) != ',') {
+				sb.append(str.charAt(i));
+			} else {
+				tempString = sb.toString();
+				stringList.add(tempString);
+				sb.setLength(0);
+			}
+		}
+
+		tempString = sb.toString();
+		stringList.add(tempString);
+		sb.setLength(0);
+		String[] stockArr = new String[stringList.size];
+		stockArr = stringList.toArray(stockArr);
+		return stockArr;
+	}
+
 	/**
 	 * 过滤指定字符串
 	 * 
