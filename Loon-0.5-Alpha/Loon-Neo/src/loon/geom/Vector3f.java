@@ -31,16 +31,40 @@ public class Vector3f implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1114108169708351982L;
+	
 	public float x;
 
 	public float y;
 
 	public float z;
 
-	public final static Vector3f X = new Vector3f(1, 0, 0);
-	public final static Vector3f Y = new Vector3f(0, 1, 0);
-	public final static Vector3f Z = new Vector3f(0, 0, 1);
-	public final static Vector3f Zero = new Vector3f(0, 0, 0);
+	public final static Vector3f TMP() {
+		return new Vector3f(0, 0, 0);
+	}
+
+	public final static Vector3f X() {
+		return new Vector3f(1, 0, 0);
+	}
+
+	public final static Vector3f Y() {
+		return new Vector3f(0, 1, 0);
+	}
+
+	public final static Vector3f Z() {
+		return new Vector3f(0, 0, 1);
+	}
+
+	public final static Vector3f ZERO() {
+		return new Vector3f(0, 0, 0);
+	}
+
+	public final static Vector3f AXIS_X() {
+		return new Vector3f(1, 0, 0);
+	}
+
+	public final static Vector3f AXIS_Y() {
+		return new Vector3f(0, 1, 0);
+	}
 
 	private final static Matrix4 tmpMat = new Matrix4();
 
@@ -61,6 +85,14 @@ public class Vector3f implements Serializable {
 
 	public Vector3f(final Vector2f vector, float z) {
 		this.set(vector.x, vector.y, z);
+	}
+
+	public Vector3f(float v) {
+		this(v, v, v);
+	}
+
+	public Vector3f(float x, Vector2f v) {
+		this(x, v.getX(), v.getY());
 	}
 
 	public Vector3f set(float x, float y, float z) {
@@ -419,11 +451,9 @@ public class Vector3f implements Serializable {
 		final float ty = target.y - y * dot;
 		final float tz = target.z - z * dot;
 		final float l2 = tx * tx + ty * ty + tz * tz;
-		final float dl = st
-				* ((l2 < 0.0001f) ? 1f : 1f / MathUtils.sqrt(l2));
+		final float dl = st * ((l2 < 0.0001f) ? 1f : 1f / MathUtils.sqrt(l2));
 
-		return scl(MathUtils.cos(theta)).add(tx * dl, ty * dl, tz * dl)
-				.nor();
+		return scl(MathUtils.cos(theta)).add(tx * dl, ty * dl, tz * dl).nor();
 	}
 
 	public String toString() {
@@ -521,6 +551,276 @@ public class Vector3f implements Serializable {
 		this.y = 0;
 		this.z = 0;
 		return this;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public Vector3f setX(float x) {
+		this.x = x;
+		return this;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public Vector3f setY(float y) {
+		this.y = y;
+		return this;
+	}
+
+	public float getZ() {
+		return z;
+	}
+
+	public Vector3f setZ(float z) {
+		this.z = z;
+		return this;
+	}
+
+	public Vector3f add(Vector2f v, float z) {
+		return add(v.x, v.y, z);
+	}
+
+	public Vector3f addSelf(Vector2f v, float z) {
+		return addSelf(v.x, v.y, z);
+	}
+
+	public Vector3f addSelf(float x, float y, float z) {
+		return set(this.x + x, this.y + y, this.z + z);
+	}
+
+	public Vector3f add(float x, Vector2f v) {
+		return add(x, v.x, v.y);
+	}
+
+	public Vector3f addSelf(float x, Vector2f v) {
+		return addSelf(x, v.x, v.y);
+	}
+
+	public Vector3f subtractSelf(float x, float y, float z) {
+		return addSelf(-x, -y, -z);
+	}
+
+	public Vector3f subtract(Vector3f v) {
+		return add(-v.x, -v.y, -v.z);
+	}
+
+	public Vector3f subtractSelf(Vector3f v) {
+		return addSelf(-v.x, -v.y, -v.z);
+	}
+
+	public Vector3f subtract(Vector2f v, float z) {
+		return subtract(v.x, v.y, z);
+	}
+
+	public Vector3f subtract(float x, float y, float z) {
+		return add(-x, -y, -z);
+	}
+
+	public Vector3f subtractSelf(Vector2f v, float z) {
+		return addSelf(-v.x, -v.y, z);
+	}
+
+	public Vector3f subtract(float x, Vector2f v) {
+		return subtract(x, v.x, v.y);
+	}
+
+	public Vector3f subtractSelf(float x, Vector2f v) {
+		return addSelf(-x, -v.x, -v.y);
+	}
+
+	public Vector3f scale(float s) {
+		return scale(s, s, s);
+	}
+
+	public Vector3f scale(float sx, float sy, float sz) {
+		return cpy().scaleSelf(sx, sy, sz);
+	}
+
+	public Vector3f cross(Vector3f v) {
+		return cross(v.x, v.y, v.z);
+	}
+
+	public Vector3f cross(float vx, float vy, float vz) {
+		return cpy().crossSelf(vx, vy, vz);
+	}
+
+	public Vector3f crossSelf(float vx, float vy, float vz) {
+		float x = this.x * vz - this.z * vy;
+		float y = this.z * vx - this.x * vz;
+		float z = this.x * vy - this.y * vx;
+
+		return set(x, y, z);
+	}
+
+	public Vector3f crossSelf(Vector3f v) {
+		return crossSelf(v.x, v.y, v.z);
+	}
+
+	public Vector3f normalize() {
+		return cpy().normalizeSelf();
+	}
+
+	public Vector3f normalizeSelf() {
+		float l = length();
+
+		if (l == 0 || l == 1)
+			return this;
+
+		return set(x / l, y / l, z / l);
+	}
+
+	public float length() {
+		return MathUtils.sqrt(lengthSquared());
+	}
+
+	public float lengthSquared() {
+		return x * x + y * y + z * z;
+	}
+
+	public Vector3f negate() {
+		return new Vector3f(-x, -y, -z);
+	}
+
+	public Vector3f negateSelf() {
+		return set(-x, -y, -z);
+	}
+
+	public float distance(float x, float y, float z) {
+		return MathUtils.sqrt(distanceSquared(x, y, z));
+	}
+
+	public float distanceSquared(float x, float y, float z) {
+		final float x2 = (x - this.x) * (x - this.x);
+		final float y2 = (y - this.y) * (y - this.y);
+		final float z2 = (z - this.z) * (z - this.z);
+
+		return x2 + y2 + z2;
+	}
+
+	public float distance(Vector3f v) {
+		return MathUtils.sqrt(distanceSquared(v));
+	}
+
+	public float distanceSquared(Vector3f v) {
+		return distanceSquared(v.x, v.y, v.z);
+	}
+
+	public float distance(Vector2f v) {
+		return MathUtils.sqrt(distanceSquared(v));
+	}
+
+	public float distanceSquared(Vector2f v) {
+		return distanceSquared(v.x, v.y, 0);
+	}
+
+	public Vector3f addSelf(Vector3f v) {
+		return addSelf(v.x, v.y, v.z);
+	}
+
+	public Vector3f scaleSelf(float s) {
+		return scaleSelf(s, s, s);
+	}
+
+	public Vector3f scaleSelf(float sx, float sy, float sz) {
+		return set(x * sx, y * sy, z * sz);
+	}
+
+	public Vector3f multiply(Matrix3 m) {
+		return cpy().multiplySelf(m);
+	}
+
+	public Vector3f multiplySelf(Matrix3 m) {
+		float rx = x * m.get(0, 0) + y * m.get(0, 1) + z * m.get(0, 2);
+		float ry = x * m.get(1, 0) + y * m.get(1, 1) + z * m.get(1, 2);
+		float rz = x * m.get(2, 0) + y * m.get(2, 1) + z * m.get(2, 2);
+
+		return set(rx, ry, rz);
+	}
+
+	public Vector3f multiply(Matrix4 m) {
+		return cpy().multiplySelf(m);
+	}
+
+	public Vector3f multiplySelf(Matrix4 m) {
+		float rx = x * m.get(0, 0) + y * m.get(1, 0) + z * m.get(2, 0) + 1
+				* m.get(3, 0);
+		float ry = x * m.get(0, 1) + y * m.get(1, 1) + z * m.get(2, 1) + 1
+				* m.get(3, 1);
+		float rz = x * m.get(0, 2) + y * m.get(1, 2) + z * m.get(2, 2) + 1
+				* m.get(3, 2);
+
+		return set(rx, ry, rz);
+	}
+
+	public Vector3f set(float v) {
+		return set(v, v, v);
+	}
+
+	public float getR() {
+		return x;
+	}
+
+	public Vector3f setR(float r) {
+		x = r;
+		return this;
+	}
+
+	public float getG() {
+		return y;
+	}
+
+	public Vector3f setG(float g) {
+		y = g;
+		return this;
+	}
+
+	public float getB() {
+		return z;
+	}
+
+	public Vector3f setB(float b) {
+		z = b;
+		return this;
+	}
+
+	public Vector2f getXX() {
+		return new Vector2f(x, x);
+	}
+
+	public Vector2f getXY() {
+		return new Vector2f(x, y);
+	}
+
+	public Vector2f getXZ() {
+		return new Vector2f(x, z);
+	}
+
+	public Vector2f getYX() {
+		return new Vector2f(y, x);
+	}
+
+	public Vector2f getYY() {
+		return new Vector2f(y, y);
+	}
+
+	public Vector2f getYZ() {
+		return new Vector2f(y, z);
+	}
+
+	public Vector2f getZX() {
+		return new Vector2f(z, x);
+	}
+
+	public Vector2f getZY() {
+		return new Vector2f(z, y);
+	}
+
+	public Vector2f getZZ() {
+		return new Vector2f(z, z);
 	}
 
 }

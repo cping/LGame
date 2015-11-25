@@ -33,7 +33,6 @@ import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.RectBox;
 import loon.geom.Shape;
-import loon.geom.Transforms;
 import loon.geom.Triangle;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
@@ -442,7 +441,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		Affine2f top = tx();
-		Transforms.multiply(top, m00, m01, m10, m11, tx, ty, top);
+		Affine2f.multiply(top, m00, m01, m10, m11, tx, ty, top);
 		return this;
 	}
 
@@ -451,7 +450,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		Affine2f txf = tx();
-		Transforms.multiply(txf, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty,
+		Affine2f.multiply(txf, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty,
 				txf);
 		if (originX != 0 || originY != 0) {
 			txf.translate(-originX, -originY);
@@ -494,7 +493,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		Affine2f txf = tx();
-		Transforms.multiply(xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, txf,
+		Affine2f.multiply(xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, txf,
 				txf);
 		return this;
 	}
@@ -708,7 +707,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			xf.translate(w1, h1);
 			xf.preRotate(rotation);
 			xf.translate(-w1, -h1);
-			Transforms.multiply(tx(), xf, xf);
+			Affine2f.multiply(tx(), xf, xf);
 		}
 		texture.addToBatch(batch, baseColor, xf, x, y, w, h);
 		return this;
@@ -734,7 +733,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			xf.translate(w1, h1);
 			xf.preRotate(rotation);
 			xf.translate(-w1, -h1);
-			Transforms.multiply(tx(), xf, xf);
+			Affine2f.multiply(tx(), xf, xf);
 		}
 		texture.addToBatch(batch, argb, xf, x, y, w, h);
 		return this;
@@ -905,7 +904,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 					break;
 				}
 			}
-			Transforms.multiply(tx(), xf, xf);
+			Affine2f.multiply(tx(), xf, xf);
 		}
 
 		int argb = baseColor;
@@ -956,7 +955,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		Affine2f xf = new Affine2f();
 		xf.setRotation(MathUtils.atan2(dy, dx));
 		xf.setTranslation(x0 + wy, y0 - wx);
-		Transforms.multiply(tx(), xf, xf);
+		Affine2f.multiply(tx(), xf, xf);
 		if (patternTex != null) {
 			batch.addQuad(patternTex, baseColor, xf, 0, 0, length, width);
 		} else {

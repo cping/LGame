@@ -32,6 +32,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>actgame2</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/actgame2</locationURI>
+		</link>
+		<link>
 			<name>avgtest</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/avgtest</locationURI>

@@ -38,11 +38,37 @@ import loon.utils.MathUtils;
  * }
  * </pre>
  */
-public class Affine2f extends AbstractTransform implements LTrans {
+public class Affine2f implements LTrans {
+
+	public final static Affine2f multiply(Affine2f a, Affine2f b, Affine2f into) {
+		return multiply(a.m00, a.m01, a.m10, a.m11, a.tx, a.ty, b.m00, b.m01,
+				b.m10, b.m11, b.tx, b.ty, into);
+	}
+
+	public final static Affine2f multiply(Affine2f a, float m00, float m01,
+			float m10, float m11, float tx, float ty, Affine2f into) {
+		return multiply(a.m00, a.m01, a.m10, a.m11, a.tx, a.ty, m00, m01, m10,
+				m11, tx, ty, into);
+	}
+
+	public final static Affine2f multiply(float m00, float m01, float m10,
+			float m11, float tx, float ty, Affine2f b, Affine2f into) {
+		return multiply(m00, m01, m10, m11, tx, ty, b.m00, b.m01, b.m10, b.m11,
+				b.tx, b.ty, into);
+	}
+
+	public final static Affine2f multiply(float am00, float am01, float am10,
+			float am11, float atx, float aty, float bm00, float bm01,
+			float bm10, float bm11, float btx, float bty, Affine2f into) {
+		into.setTransform(am00 * bm00 + am10 * bm01, am01 * bm00 + am11 * bm01,
+				am00 * bm10 + am10 * bm11, am01 * bm10 + am11 * bm11, am00
+						* btx + am10 * bty + atx, am01 * btx + am11 * bty + aty);
+		return into;
+	}
 
 	private static Matrix4 projectionMatrix = null;
 
-	protected Affine2f(Transform other) {
+	protected Affine2f(Affine2f other) {
 		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(),
 				other.ty());
 	}
@@ -252,23 +278,19 @@ public class Affine2f extends AbstractTransform implements LTrans {
 				other.tx, other.ty);
 	}
 
-	@Override
 	public float uniformScale() {
 		float cp = m00 * m11 - m01 * m10;
 		return (cp < 0f) ? -MathUtils.sqrt(-cp) : MathUtils.sqrt(cp);
 	}
 
-	@Override
 	public float scaleX() {
 		return MathUtils.sqrt(m00 * m00 + m01 * m01);
 	}
 
-	@Override
 	public float scaleY() {
 		return MathUtils.sqrt(m10 * m10 + m11 * m11);
 	}
 
-	@Override
 	public float rotation() {
 		float n00 = m00, n10 = m10;
 		float n01 = m01, n11 = m11;
@@ -299,17 +321,14 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return MathUtils.toRadians(rotation());
 	}
 
-	@Override
 	public float tx() {
 		return this.tx;
 	}
 
-	@Override
 	public float ty() {
 		return this.ty;
 	}
 
-	@Override
 	public void get(float[] matrix) {
 		matrix[0] = m00;
 		matrix[1] = m01;
@@ -319,12 +338,10 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		matrix[5] = ty;
 	}
 
-	@Override
 	public Affine2f setUniformScale(float scale) {
 		return (Affine2f) setScale(scale, scale);
 	}
 
-	@Override
 	public Affine2f setScaleX(float scaleX) {
 		// 计算新的X轴缩放
 		float mult = scaleX / scaleX();
@@ -333,7 +350,6 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f setScaleY(float scaleY) {
 		// 计算新的Y轴缩放
 		float mult = scaleY / scaleY();
@@ -342,7 +358,6 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f setRotation(float angle) {
 		// 提取比例，然后重新应用旋转和缩放在一起
 		float sx = scaleX(), sy = scaleY();
@@ -354,15 +369,14 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f rotate(float angle) {
 		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
-		return Transforms.multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
+		return multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
 	}
 
 	public Affine2f rotate(float angle, float x, float y) {
 		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
-		return Transforms.multiply(this, cosa, sina, -sina, cosa, x, y, this);
+		return multiply(this, cosa, sina, -sina, cosa, x, y, this);
 	}
 
 	public final Affine2f preRotate(final float angle) {
@@ -418,26 +432,22 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f setTranslation(float tx, float ty) {
 		this.tx = tx;
 		this.ty = ty;
 		return this;
 	}
 
-	@Override
 	public Affine2f setTx(float tx) {
 		this.tx = tx;
 		return this;
 	}
 
-	@Override
 	public Affine2f setTy(float ty) {
 		this.ty = ty;
 		return this;
 	}
 
-	@Override
 	public Affine2f setTransform(float m00, float m01, float m10, float m11,
 			float tx, float ty) {
 		this.m00 = m00;
@@ -449,12 +459,10 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f uniformScale(float scale) {
 		return scale(scale, scale);
 	}
 
-	@Override
 	public Affine2f scale(float scaleX, float scaleY) {
 		m00 *= scaleX;
 		m01 *= scaleX;
@@ -487,17 +495,14 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f scaleX(float scaleX) {
-		return Transforms.multiply(this, scaleX, 0, 0, 1, 0, 0, this);
+		return multiply(this, scaleX, 0, 0, 1, 0, 0, this);
 	}
 
-	@Override
 	public Affine2f scaleY(float scaleY) {
-		return Transforms.multiply(this, 1, 0, 0, scaleY, 0, 0, this);
+		return multiply(this, 1, 0, 0, scaleY, 0, 0, this);
 	}
 
-	@Override
 	public Affine2f translate(float tx, float ty) {
 		this.tx += m00 * tx + m10 * ty;
 		this.ty += m11 * ty + m01 * tx;
@@ -524,29 +529,24 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f translateX(float tx) {
-		return Transforms.multiply(this, 1, 0, 0, 1, tx, 0, this);
+		return multiply(this, 1, 0, 0, 1, tx, 0, this);
 	}
 
-	@Override
 	public Affine2f translateY(float ty) {
-		return Transforms.multiply(this, 1, 0, 0, 1, 0, ty, this);
+		return multiply(this, 1, 0, 0, 1, 0, ty, this);
 	}
 
-	@Override
 	public Affine2f shear(float sx, float sy) {
-		return Transforms.multiply(this, 1, sy, sx, 1, 0, 0, this);
+		return multiply(this, 1, sy, sx, 1, 0, 0, this);
 	}
 
-	@Override
 	public Affine2f shearX(float sx) {
-		return Transforms.multiply(this, 1, 0, sx, 1, 0, 0, this);
+		return multiply(this, 1, 0, sx, 1, 0, 0, this);
 	}
 
-	@Override
 	public Affine2f shearY(float sy) {
-		return Transforms.multiply(this, 1, sy, 0, 1, 0, 0, this);
+		return multiply(this, 1, sy, 0, 1, 0, 0, this);
 	}
 
 	public final Affine2f preShear(final float sx, final float sy) {
@@ -599,7 +599,6 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
 	public Affine2f invert() {
 		// 计算行列式，并临时存储数值
 		float det = m00 * m11 - m10 * m01;
@@ -612,29 +611,27 @@ public class Affine2f extends AbstractTransform implements LTrans {
 				(m10 * ty - m11 * tx) * rdet, (m01 * tx - m00 * ty) * rdet);
 	}
 
-	@Override
-	public Transform concatenate(Transform other) {
+	public Affine2f concatenate(Affine2f other) {
 		if (generality() < other.generality()) {
 			return other.preConcatenate(this);
 		}
 		if (other instanceof Affine2f) {
-			return Transforms.multiply(this, (Affine2f) other, new Affine2f());
+			return multiply(this, (Affine2f) other, new Affine2f());
 		} else {
 			Affine2f oaff = new Affine2f(other);
-			return Transforms.multiply(this, oaff, oaff);
+			return multiply(this, oaff, oaff);
 		}
 	}
 
-	@Override
-	public Transform preConcatenate(Transform other) {
+	public Affine2f preConcatenate(Affine2f other) {
 		if (generality() < other.generality()) {
 			return other.concatenate(this);
 		}
 		if (other instanceof Affine2f) {
-			return Transforms.multiply((Affine2f) other, this, new Affine2f());
+			return multiply((Affine2f) other, this, new Affine2f());
 		} else {
 			Affine2f oaff = new Affine2f(other);
-			return Transforms.multiply(oaff, this, oaff);
+			return multiply(oaff, this, oaff);
 		}
 	}
 
@@ -660,8 +657,7 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return this;
 	}
 
-	@Override
-	public Transform lerp(Transform other, float t) {
+	public Affine2f lerp(Affine2f other, float t) {
 		if (generality() < other.generality()) {
 			return other.lerp(this, -t);
 		}
@@ -673,7 +669,6 @@ public class Affine2f extends AbstractTransform implements LTrans {
 						* (ot.tx - tx), ty + t * (ot.ty - ty));
 	}
 
-	@Override
 	public void transform(Vector2f[] src, int srcOff, Vector2f[] dst,
 			int dstOff, int count) {
 		for (int ii = 0; ii < count; ii++) {
@@ -681,7 +676,6 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		}
 	}
 
-	@Override
 	public void transform(float[] src, int srcOff, float[] dst, int dstOff,
 			int count) {
 		for (int ii = 0; ii < count; ii++) {
@@ -703,19 +697,16 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		}
 	}
 
-	@Override
 	public Vector2f transformPoint(Vector2f v, Vector2f into) {
 		float x = v.x(), y = v.y();
 		return into.set(m00 * x + m10 * y + tx, m01 * x + m11 * y + ty);
 	}
 
-	@Override
 	public Vector2f transform(Vector2f v, Vector2f into) {
 		float x = v.x(), y = v.y();
 		return into.set(m00 * x + m10 * y, m01 * x + m11 * y);
 	}
 
-	@Override
 	public Vector2f inverseTransform(Vector2f v, Vector2f into) {
 		float x = v.x(), y = v.y();
 		float det = m00 * m11 - m01 * m10;
@@ -739,14 +730,28 @@ public class Affine2f extends AbstractTransform implements LTrans {
 		return projectionMatrix;
 	}
 
-	@Override
 	public Affine2f cpy() {
 		return new Affine2f(m00, m01, m10, m11, tx, ty);
 	}
 
-	@Override
 	public int generality() {
 		return GENERALITY;
+	}
+
+	public Object tag;
+
+	public Vector2f scale() {
+		return new Vector2f(scaleX(), scaleY());
+	}
+
+	public Vector2f translation() {
+		return new Vector2f(tx(), ty());
+	}
+
+	public Affine2f setScale(float scaleX, float scaleY) {
+		setScaleX(scaleX);
+		setScaleY(scaleY);
+		return this;
 	}
 
 	/** 显示结果上补足了不存在的长高宽坐标，充当完整3x3矩阵…… **/

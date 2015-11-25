@@ -21,7 +21,6 @@
 package loon.particle;
 
 import loon.geom.Affine2f;
-import loon.geom.Transforms;
 import loon.particle.ParticleBuffer.Initializer;
 import loon.stage.Player;
 import loon.utils.MathUtils;
@@ -86,7 +85,7 @@ public class ParticleTransform {
                 xform.setTransform(1, 0, 0, 1, 0, 0);
                 Player xlayer = layer;
                 while (xlayer != null) {
-                    Transforms.multiply(xlayer.affine(), xform, xform);
+                    Affine2f.multiply(xlayer.affine(), xform, xform);
                     xlayer = xlayer.parent();
                 }
                 xform.get(matrix);

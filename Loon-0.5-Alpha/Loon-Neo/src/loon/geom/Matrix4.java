@@ -33,6 +33,14 @@ public class Matrix4 implements Serializable {
 	 */
 	private static final long serialVersionUID = 4331834668907675786L;
 
+	public final static Matrix4 TMP() {
+		return new Matrix4();
+	}
+
+	public final static Matrix4 ZERO() {
+		return new Matrix4();
+	}
+	
 	public static final int M00 = 0;
 
 	public static final int M01 = 4;
@@ -221,6 +229,10 @@ public class Matrix4 implements Serializable {
 		val[M32] = 0;
 		val[M33] = 1;
 		return this;
+	}
+
+	public float get(int x, int y) {
+		return val[x + y * 4];
 	}
 
 	public Matrix4 cpy() {
@@ -479,7 +491,7 @@ public class Matrix4 implements Serializable {
 		float tx = -(right + left) / (right - left);
 		float ty = -(top + bottom) / (top - bottom);
 		float tz = -(far + near) / (far - near);
-		
+
 		val[M00] = x_orth;
 		val[M10] = 0;
 		val[M20] = 0;
@@ -1198,4 +1210,5 @@ public class Matrix4 implements Serializable {
 
 		return m;
 	}
+	
 }

@@ -1324,24 +1324,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
-		if (processing) {
-			if (!isClose) {
-				if (isGravity) {
-					gravityHandler.update(elapsedTime);
-				}
-				if (fristPaintFlag) {
-					fristOrder.update(timer);
-				}
-				if (secondPaintFlag) {
-					secondOrder.update(timer);
-				}
-				if (lastPaintFlag) {
-					lastOrder.update(timer);
-				}
-				if (useScreenListener) {
-					for (ScreenListener t : screens) {
-						t.update(elapsedTime);
-					}
+		if (processing && !isClose) {
+			if (isGravity) {
+				gravityHandler.update(elapsedTime);
+			}
+			if (fristPaintFlag) {
+				fristOrder.update(timer);
+			}
+			if (secondPaintFlag) {
+				secondOrder.update(timer);
+			}
+			if (lastPaintFlag) {
+				lastOrder.update(timer);
+			}
+			if (useScreenListener) {
+				for (ScreenListener t : screens) {
+					t.update(elapsedTime);
 				}
 			}
 		}

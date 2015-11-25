@@ -30,6 +30,15 @@ public class Matrix3 implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 3501619461925966551L;
+
+	public final static Matrix3 TMP() {
+		return new Matrix3();
+	}
+
+	public final static Matrix3 ZERO() {
+		return new Matrix3();
+	}
+
 	public static final int M00 = 0;
 	public static final int M01 = 3;
 	public static final int M02 = 6;
@@ -39,6 +48,7 @@ public class Matrix3 implements Serializable {
 	public static final int M20 = 2;
 	public static final int M21 = 5;
 	public static final int M22 = 8;
+
 	public float[] val = new float[9];
 	private float[] tmp = new float[9];
 
@@ -53,8 +63,8 @@ public class Matrix3 implements Serializable {
 	public Matrix3(float[] values) {
 		this.set(values);
 	}
-	
-	public Matrix3 set (Affine2f affine) {
+
+	public Matrix3 set(Affine2f affine) {
 		float[] val = this.val;
 
 		val[M00] = affine.m00;
@@ -69,6 +79,7 @@ public class Matrix3 implements Serializable {
 
 		return this;
 	}
+
 	public Matrix3 idt() {
 		val[M00] = 1;
 		val[M10] = 0;
@@ -317,6 +328,10 @@ public class Matrix3 implements Serializable {
 	public Matrix3 set(float[] values) {
 		System.arraycopy(values, 0, val, 0, val.length);
 		return this;
+	}
+
+	public float get(int x, int y) {
+		return val[x + y * 3];
 	}
 
 	public Matrix3 trn(Vector2f vector) {

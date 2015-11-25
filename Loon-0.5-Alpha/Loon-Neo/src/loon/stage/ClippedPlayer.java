@@ -20,7 +20,7 @@
  */
 package loon.stage;
 
-import loon.geom.Transform;
+import loon.geom.Affine2f;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -74,7 +74,7 @@ public abstract class ClippedPlayer extends Player {
 		if (disableClip()) {
 			paintClipped(gl);
 		} else {
-			Transform tx = gl.tx();
+			Affine2f tx = gl.tx();
 			float originX = originX(), originY = originY();
 			tx.translate(originX, originY);
 			tx.transform(pos.set(-originX, -originY), pos);

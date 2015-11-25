@@ -33,7 +33,7 @@ public class Vector2f implements Serializable, XY {
 	private static final long serialVersionUID = -1844534518528011982L;
 
 	public final static Vector2f TMP() {
-		return new Vector2f();
+		return new Vector2f(0, 0);
 	}
 
 	public final static Vector2f X() {
@@ -48,14 +48,20 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(0, 0);
 	}
 
-	public final static Vector2f Zero = new Vector2f();
+	public final static Vector2f AXIS_X() {
+		return new Vector2f(1, 0);
+	}
+
+	public final static Vector2f AXIS_Y() {
+		return new Vector2f(0, 1);
+	}
 
 	public float x;
 
 	public float y;
 
 	public Vector2f() {
-
+		this(0, 0);
 	}
 
 	public Vector2f(float x, float y) {
@@ -513,6 +519,10 @@ public class Vector2f implements Serializable, XY {
 		y = 0.0f;
 	}
 
+	public final Vector2f set(float v) {
+		return set(v, v);
+	}
+	
 	public final Vector2f set(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -672,6 +682,7 @@ public class Vector2f implements Serializable, XY {
 		out.y = a.y > b.y ? a.y : b.y;
 	}
 
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -684,6 +695,7 @@ public class Vector2f implements Serializable, XY {
 		return this.x == x && this.y == y;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -778,4 +790,110 @@ public class Vector2f implements Serializable, XY {
 	public static String pointToString(float x, float y) {
 		return MathUtils.toString(x) + MathUtils.toString(y);
 	}
+
+	public Vector2f addSelf(Vector2f v) {
+		return addSelf(v.x, v.y);
+	}
+
+	public Vector2f addSelf(float x, float y) {
+		return set(this.x + x, this.y + y);
+	}
+
+	public Vector2f subtract(float x, float y) {
+		return add(-x, -y);
+	}
+
+	public Vector2f normalizeSelf() {
+		float l = length();
+
+		if (l == 0 || l == 1)
+			return this;
+
+		return set(x / l, y / l);
+	}
+
+	public Vector2f rotateSelf(float angle) {
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+
+		return set(x * cos - y * sin, x * sin + y * cos);
+	}
+
+	public Vector2f negateSelf() {
+		return set(-x, -y);
+	}
+
+	public float dot(float x, float y) {
+		return this.x * x + this.y * y;
+	}
+
+	public float distance(Vector2f v) {
+		return MathUtils.sqrt(distanceSquared(v));
+	}
+
+	public float distanceSquared(Vector2f v) {
+		return (v.x - x) * (v.x - x) + (v.y - y) * (v.y - y);
+	}
+
+	public Vector2f lerpSelf(Vector2f target, float alpha) {
+		final float oneMinusAlpha = 1f - alpha;
+
+		float x = (this.x * oneMinusAlpha) + (target.x * alpha);
+		float y = (this.y * oneMinusAlpha) + (target.y * alpha);
+
+		return set(x, y);
+	}
+
+	public Vector2f perpendicular() {
+		return new Vector2f(y, -x);
+	}
+
+	public Vector2f perpendicularSelf() {
+		return set(y, x);
+	}
+
+	public Vector2f projectSelf(Vector2f v) {
+		return scaleSelf(dot(v) / v.lengthSquared());
+	}
+
+	public Vector2f scaleSelf(float s) {
+		return scaleSelf(s, s);
+	}
+
+	public Vector2f scaleSelf(float sx, float sy) {
+		return set(x * sx, y * sy);
+	}
+
+	public Vector2f reflect(Vector2f axis) {
+		return project(axis).scale(2).subtract(this);
+	}
+
+	public Vector2f subtract(Vector2f v) {
+		return add(-v.x, -v.y);
+	}
+
+	public Vector2f scale(float s) {
+		return scale(s, s);
+	}
+
+	public Vector2f project(Vector2f v) {
+		return scale(dot(v) / v.lengthSquared());
+	}
+
+	public Vector2f scale(float sx, float sy) {
+		return new Vector2f(x * sx, y * sy);
+	}
+
+	public Vector2f reflectSelf(Vector2f axis) {
+		return set(project(axis).scaleSelf(2).subtractSelf(this));
+	}
+
+	public Vector2f subtractSelf(Vector2f v) {
+		return subtractSelf(v.x, v.y);
+	}
+
+	public Vector2f subtractSelf(float x, float y) {
+		return addSelf(-x, -y);
+	}
+
 }

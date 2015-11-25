@@ -2,7 +2,7 @@
  * Copyright 2008 - 2015 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
+ * use this file except in compliance with the License. You may obtain a cpy of
  * the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -25,7 +25,6 @@ import java.io.Serializable;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-
 public class Quaternion implements Serializable {
 
 	/**
@@ -34,6 +33,14 @@ public class Quaternion implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Quaternion tmp1 = new Quaternion(0, 0, 0, 0);
 	private static Quaternion tmp2 = new Quaternion(0, 0, 0, 0);
+
+	public final static Quaternion TMP() {
+		return new Quaternion(0, 0, 0, 0);
+	}
+
+	public final static Quaternion ZERO() {
+		return new Quaternion(0, 0, 0, 0);
+	}
 
 	public float x;
 	public float y;
@@ -54,6 +61,10 @@ public class Quaternion implements Serializable {
 
 	public Quaternion(Vector3f axis, float angle) {
 		this.set(axis, angle);
+	}
+
+	public Quaternion(float pitch, float yaw, float roll) {
+		set(pitch, yaw, roll);
 	}
 
 	public Quaternion set(float x, float y, float z, float w) {
@@ -134,8 +145,8 @@ public class Quaternion implements Serializable {
 
 	public float getPitchRad() {
 		final int pole = getGimbalPole();
-		return pole == 0 ? MathUtils.asin(MathUtils.clamp(2f * (w * x - z
-				* y), -1f, 1f)) : (float) pole * MathUtils.PI * 0.5f;
+		return pole == 0 ? MathUtils.asin(MathUtils.clamp(2f * (w * x - z * y),
+				-1f, 1f)) : (float) pole * MathUtils.PI * 0.5f;
 	}
 
 	public float getPitch() {
@@ -610,8 +621,9 @@ public class Quaternion implements Serializable {
 				axisZ);
 		final float l2 = Quaternion.len2(axisX * d, axisY * d, axisZ * d,
 				this.w);
-		return MathUtils.isZero(l2) ? 0f : (float) (2.0 * MathUtils.acos(MathUtils
-				.clamp((float) (this.w / MathUtils.sqrt(l2)), -1f, 1f)));
+		return MathUtils.isZero(l2) ? 0f : (float) (2.0 * MathUtils
+				.acos(MathUtils.clamp((float) (this.w / MathUtils.sqrt(l2)),
+						-1f, 1f)));
 	}
 
 	public float getAngleAroundRad(final Vector3f axis) {
@@ -626,4 +638,229 @@ public class Quaternion implements Serializable {
 	public float getAngleAround(final Vector3f axis) {
 		return getAngleAround(axis.x, axis.y, axis.z);
 	}
+
+	public Quaternion set(float pitch, float yaw, float roll) {
+		pitch = MathUtils.toRadians(pitch) * 0.5f;
+		yaw = MathUtils.toRadians(yaw) * 0.5f;
+		roll = MathUtils.toRadians(roll) * 0.5f;
+
+		float sinP = MathUtils.sin(pitch);
+		float sinY = MathUtils.sin(yaw);
+		float sinR = MathUtils.sin(roll);
+		float cosP = MathUtils.cos(pitch);
+		float cosY = MathUtils.cos(yaw);
+		float cosR = MathUtils.cos(roll);
+
+		x = sinP * cosY * cosR - cosP * sinY * sinR;
+		y = cosP * sinY * cosR + sinP * cosY * sinR;
+		z = cosP * cosY * sinR - sinP * sinY * cosR;
+		w = cosP * cosY * cosR + sinP * sinY * sinR;
+
+		return this;
+	}
+
+	public Quaternion addSelf(Quaternion q) {
+		return addSelf(q.x, q.y, q.z, q.w);
+	}
+
+	public Quaternion addSelf(float x, float y, float z, float w) {
+		return set(this.x + x, this.y + y, this.z + z, this.w + w);
+	}
+
+	public Quaternion subtract(Quaternion q) {
+		return subtract(q.x, q.y, q.z, q.w);
+	}
+
+	public Quaternion subtract(float x, float y, float z, float w) {
+		return add(-x, -y, -z, -w);
+	}
+
+	public Quaternion subtractSelf(Quaternion q) {
+		return subtractSelf(q.x, q.y, q.z, q.w);
+	}
+
+	public Quaternion subtractSelf(float x, float y, float z, float w) {
+		return addSelf(-x, -y, -z, -w);
+	}
+
+	public Quaternion normalize() {
+		return cpy().normalizeSelf();
+	}
+
+	public float length() {
+		return MathUtils.sqrt(lengthSquared());
+	}
+
+	public float lengthSquared() {
+		return x * x + y * y + z * z + w * w;
+	}
+
+	public Quaternion multiply(Quaternion q) {
+		return cpy().multiplySelf(q);
+	}
+
+	public Quaternion normalizeSelf() {
+		float length = length();
+
+		if (length == 0 || length == 1)
+			return this;
+
+		return set(x / length, y / length, z / length, w / length);
+	}
+
+	public Quaternion multiplySelf(Quaternion q) {
+		float nx = w * q.x + x * q.w + y * q.z - z * q.y;
+		float ny = w * q.y + y * q.w + z * q.x - x * q.z;
+		float nz = w * q.z + z * q.w + x * q.y - y * q.x;
+		float nw = w * q.w - x * q.x - y * q.y - z * q.z;
+
+		return set(nx, ny, nz, nw).normalizeSelf();
+	}
+
+	public Vector3f multiplyInverse(Vector3f v) {
+		return multiplyInverse(v, new Vector3f());
+	}
+
+	public Vector3f multiplyInverse(Vector3f v, Vector3f dest) {
+		invertSelf().multiply(v, dest);
+		invertSelf();
+
+		return dest;
+	}
+
+	public Vector3f multiply(Vector3f v) {
+		return multiply(v, new Vector3f());
+	}
+
+	public Vector3f multiply(Vector3f v, Vector3f dest) {
+		Vector3f temp = Vector3f.TMP();
+
+		Quaternion temp1 = Quaternion.TMP();
+		Quaternion temp2 = Quaternion.TMP();
+		Quaternion temp3 = Quaternion.TMP();
+
+		float length = v.length();
+		v = temp.set(v).normalizeSelf();
+
+		Quaternion q1 = temp1.set(this).conjugateSelf().normalizeSelf();
+		Quaternion qv = temp2.set(v.x, v.y, v.z, 0);
+		Quaternion q = this;
+
+		Quaternion res = temp3.set(q).normalizeSelf()
+				.multiplySelf(qv.multiplySelf(q1).normalizeSelf());
+
+		dest.x = res.x;
+		dest.y = res.y;
+		dest.z = res.z;
+
+		return dest.normalizeSelf().scaleSelf(length);
+	}
+
+	public Quaternion invert() {
+		return cpy().invertSelf();
+	}
+
+	public Quaternion invertSelf() {
+		float norm = lengthSquared();
+
+		if (norm == 0) {
+			return conjugateSelf();
+		}
+
+		x = -x / norm;
+		y = -y / norm;
+		z = -z / norm;
+		w = +w / norm;
+
+		return this;
+	}
+
+	public Quaternion conjugateSelf() {
+		return set(-x, -y, -z, w);
+	}
+
+	public Quaternion lerp(Quaternion target, float alpha) {
+		return cpy().lerpSelf(target, alpha);
+	}
+
+	public Quaternion lerpSelf(Quaternion target, float alpha) {
+		Vector4f temp1 = Vector4f.TMP();
+		Vector4f temp2 = Vector4f.TMP();
+
+		Vector4f start = temp1.set(x, y, z, w);
+		Vector4f end = temp2.set(target.x, target.y, target.z, target.w);
+		Vector4f lerp = start.lerpSelf(end, alpha).normalizeSelf();
+
+		set(lerp.x, lerp.y, lerp.z, lerp.w);
+
+		return this;
+	}
+
+	public Quaternion slerpSelf(Quaternion target, float alpha) {
+		final float dot = dot(target);
+		float scale1, scale2;
+
+		if ((1 - dot) > 0.1) {
+			Quaternion temp = TMP();
+
+			if (dot < 0.0f) {
+				temp.set(-target.x, -target.y, -target.z, -target.w);
+			} else {
+				temp.set(target);
+			}
+			lerpSelf(temp, alpha);
+
+			return this;
+		}
+
+		scale1 = 1f - alpha;
+		scale2 = alpha;
+
+		if (dot < 0.0f)
+			scale2 = -scale2;
+
+		x = (scale1 * x) + (scale2 * target.x);
+		y = (scale1 * y) + (scale2 * target.y);
+		z = (scale1 * z) + (scale2 * target.z);
+		w = (scale1 * w) + (scale2 * target.w);
+
+		return this;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public float getZ() {
+		return z;
+	}
+
+	public void setZ(float z) {
+		this.z = z;
+	}
+
+	public float getW() {
+		return w;
+	}
+
+	public void setW(float w) {
+		this.w = w;
+	}
+
+	public Quaternion set() {
+		return set(0, 0, 0, 1);
+	}
+
 }
