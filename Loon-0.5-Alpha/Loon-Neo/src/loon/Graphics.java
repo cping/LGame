@@ -123,7 +123,7 @@ public abstract class Graphics {
 			projectionMatrix.setToOrtho2D(0, 0, view.getWidth(),
 					view.getHeight());
 		} else if (display != null
-				&& !(affine = display.GL().tx()).equals(lastAffine)) {
+				&& display.GL()!=null&&!(affine = display.GL().tx()).equals(lastAffine)) {
 			projectionMatrix = affine.toViewMatrix4();
 			lastAffine = affine;
 		}

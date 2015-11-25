@@ -37,7 +37,7 @@ public abstract class RealtimeProcess implements GameProcess {
 
 	private RealtimeProcessHost processHost;
 
-	private SortedList<RealtimeProcess> processesToFireWhenFinished;
+	private SortedList<GameProcess> processesToFireWhenFinished;
 
 	public RealtimeProcess() {
 		this("Process" + System.currentTimeMillis());
@@ -48,17 +48,20 @@ public abstract class RealtimeProcess implements GameProcess {
 		this.id = id;
 	}
 
+	@Override
 	public void setProcessHost(RealtimeProcessHost processHost) {
 		this.processHost = processHost;
 	}
 
-	public void fireThisWhenFinished(RealtimeProcess realtimeProcess) {
+	@Override
+	public void fireThisWhenFinished(GameProcess realtimeProcess) {
 		if (this.processesToFireWhenFinished == null) {
-			this.processesToFireWhenFinished = new SortedList<RealtimeProcess>();
+			this.processesToFireWhenFinished = new SortedList<GameProcess>();
 		}
 		this.processesToFireWhenFinished.add(realtimeProcess);
 	}
 
+	@Override
 	public void tick(LTimerContext time) {
 		if (timer.action(time)) {
 			run(time);
@@ -99,24 +102,28 @@ public abstract class RealtimeProcess implements GameProcess {
 
 	public abstract void run(LTimerContext time);
 
+	@Override
 	public void kill() {
 		this.isDead = true;
 	}
 
+	@Override
 	public boolean isDead() {
 		return this.isDead;
 	}
 
+	@Override
 	public String getId() {
 		return this.id;
 	}
 
+	@Override
 	public void finish() {
 		if (!this.isDead) {
 			kill();
 		}
 		if (this.processesToFireWhenFinished != null) {
-			for (LIterator<RealtimeProcess> it = this.processesToFireWhenFinished
+			for (LIterator<GameProcess> it = this.processesToFireWhenFinished
 					.listIterator(); it.hasNext();) {
 				RealtimeProcessManager.get().addProcess(it.next());
 			}

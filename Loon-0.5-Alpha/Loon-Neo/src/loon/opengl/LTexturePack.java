@@ -459,11 +459,16 @@ public class LTexturePack implements LRelease {
 		return (PackEntry) temps.get(name);
 	}
 
-	public void glCache() {
+	public void saveCache() {
 		if (texture != null) {
-			texture.glLock();
-			texture.glCacheCommit();
-			texture.glUnLock();
+			texture.disposeLastCache();
+			texture.newBatchCache();
+		}
+	}
+
+	public void postCache() {
+		if (texture != null) {
+			texture.postLastBatchCache();
 		}
 	}
 

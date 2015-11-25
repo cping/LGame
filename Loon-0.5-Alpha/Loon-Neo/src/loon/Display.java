@@ -34,6 +34,8 @@ import loon.utils.timer.LTimerContext;
 
 public class Display extends LSystemView {
 
+	private final RealtimeProcessManager manager;
+
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
 	private final class PaintPort extends Port<LTimerContext> {
@@ -58,12 +60,12 @@ public class Display extends LSystemView {
 
 		@Override
 		public void onEmit(LTimerContext clock) {
-			RealtimeProcessManager.get().tick(clock);
+			manager.tick(clock);
 			ActionControl.update(clock.timeSinceLastUpdate);
 		}
 
 	}
-	
+
 	private final class Logo implements LRelease {
 
 		private int centerX = 0, centerY = 0;
@@ -156,12 +158,12 @@ public class Display extends LSystemView {
 		}
 	}
 
-
 	public Display(LGame game, int updateRate) {
 		super(game, updateRate);
 		setting = LSystem._base.setting;
 		newDefView(setting.isFPS);
 		process = LSystem._process;
+		manager = RealtimeProcessManager.get();
 		GL20 gl = game.graphics().gl;
 		glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget,
 				gl);

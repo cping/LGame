@@ -55,6 +55,22 @@ import loon.utils.timer.LTimerContext;
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
 
+	public void stopRepaint() {
+		LSystem.AUTO_REPAINT = false;
+	}
+
+	public void startRepaint() {
+		LSystem.AUTO_REPAINT = true;
+	}
+
+	public void stopProcess() {
+		this.processing = false;
+	}
+
+	public void startProcess() {
+		this.processing = true;
+	}
+
 	private TArray<ScreenListener> screens;
 
 	private boolean useScreenListener;
@@ -256,6 +272,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	boolean isNext;
 
 	private int mode, frame;
+
+	private boolean processing = true;
 
 	private LTexture currentScreen;
 
@@ -1306,22 +1324,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
-		if (!isClose) {
-			if (isGravity) {
-				gravityHandler.update(elapsedTime);
-			}
-			if (fristPaintFlag) {
-				fristOrder.update(timer);
-			}
-			if (secondPaintFlag) {
-				secondOrder.update(timer);
-			}
-			if (lastPaintFlag) {
-				lastOrder.update(timer);
-			}
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.update(elapsedTime);
+		if (processing) {
+			if (!isClose) {
+				if (isGravity) {
+					gravityHandler.update(elapsedTime);
+				}
+				if (fristPaintFlag) {
+					fristOrder.update(timer);
+				}
+				if (secondPaintFlag) {
+					secondOrder.update(timer);
+				}
+				if (lastPaintFlag) {
+					lastOrder.update(timer);
+				}
+				if (useScreenListener) {
+					for (ScreenListener t : screens) {
+						t.update(elapsedTime);
+					}
 				}
 			}
 		}
@@ -1696,7 +1716,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int button = e.getButton();
 
 		updateTouchArea(Event.DOWN, e.getX(), e.getY());
-		
+
 		try {
 			touchType[type] = true;
 			touchButtonPressed = button;
@@ -1758,9 +1778,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (isTranslate) {
 			e.offset(tx, ty);
 		}
-		
+
 		updateTouchArea(Event.MOVE, e.getX(), e.getY());
-		
+
 		if (useScreenListener) {
 			for (ScreenListener t : screens) {
 				t.move(e);
@@ -1782,7 +1802,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 
 		updateTouchArea(Event.DRAG, e.getX(), e.getY());
-		
+
 		if (useScreenListener) {
 			for (ScreenListener t : screens) {
 				t.drag(e);

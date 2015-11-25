@@ -35,7 +35,6 @@ import loon.physics.PShape;
 import loon.physics.PSolver;
 import loon.physics.PSortableObject;
 
-
 final public class CollectionUtils {
 
 	final static public int INITIAL_CAPACITY = 12;
@@ -84,7 +83,6 @@ final public class CollectionUtils {
 		return result;
 	}
 
-
 	/**
 	 * copy指定长度的数组数据
 	 * 
@@ -125,7 +123,7 @@ final public class CollectionUtils {
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
 		return tempArr;
 	}
-	
+
 	/**
 	 * copy指定长度的数组数据
 	 * 
@@ -135,6 +133,19 @@ final public class CollectionUtils {
 	 */
 	public static Actor[] copyOf(Actor[] obj, int newSize) {
 		Actor tempArr[] = new Actor[newSize];
+		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param obj
+	 * @param newSize
+	 * @return
+	 */
+	public static Object[] copyOf(Object[] obj, int newSize) {
+		Object tempArr[] = new Object[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
 		return tempArr;
 	}
@@ -300,82 +311,79 @@ final public class CollectionUtils {
 		return tempArr;
 	}
 
-	//--为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
+	// --为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
 	/**
 	 * 
-	public static Object expand(Object obj, int i, boolean flag) {
-		int j = ArrayReflection.getLength(obj);
-		Object obj1 = ArrayReflection.newInstance(obj.getClass().getComponentType(), j
-				+ i);
-		System.arraycopy(obj, 0, obj1, flag ? 0 : i, j);
-		return obj1;
-	}
-
-	public static Object expand(Object obj, int size) {
-		return expand(obj, size, true);
-	}
-
-	public static Object expand(Object obj, int size, boolean flag,
-			Class<?> class1) {
-		if (obj == null) {
-			return ArrayReflection.newInstance(class1, 1);
-		} else {
-			return expand(obj, size, flag);
-		}
-	}
-
-	public static Object cut(Object obj, int size) {
-		int j;
-		if ((j = ArrayReflection.getLength(obj)) == 1) {
-			return ArrayReflection.newInstance(obj.getClass().getComponentType(), 0);
-		}
-		int k;
-		if ((k = j - size - 1) > 0) {
-			System.arraycopy(obj, size + 1, obj, size, k);
-		}
-		j--;
-		Object obj1 = ArrayReflection.newInstance(obj.getClass().getComponentType(), j);
-		System.arraycopy(obj, 0, obj1, 0, j);
-		return obj1;
-	}
-
-	public static Object copyOf(Object src) {
-		int srcLength = ArrayReflection.getLength(src);
-		Class<?> srcComponentType = src.getClass().getComponentType();
-		Object dest = ArrayReflection.newInstance(srcComponentType, srcLength);
-		if (srcComponentType.isArray()) {
-			for (int i = 0; i < ArrayReflection.getLength(src); i++) {
-				ArrayReflection.set(dest, i, copyOf(ArrayReflection.get(src, i)));
-			}
-		} else {
-			System.arraycopy(src, 0, dest, 0, srcLength);
-		}
-		return dest;
-	}
-
-
-	public static Object[] copyOf(Object[] original, int newLength) {
-		return copyOf(original, newLength, original.getClass());
-	}
-
-	public static Object[] copyOf(Object[] original, int newLength,
-			Class<?> newType) {
-		Object[] copy = (newType == Object[].class) ? new Object[newLength]
-				: (Object[]) ArrayReflection.newInstance(newType.getComponentType(),
-						newLength);
-		System.arraycopy(original, 0, copy, 0,
-				MathUtils.min(original.length, newLength));
-		return copy;
-	}
+	 public static Object expand(Object obj, int i, boolean flag) { int j =
+	 * ArrayReflection.getLength(obj); Object obj1 =
+	 * ArrayReflection.newInstance(obj.getClass().getComponentType(), j + i);
+	 * System.arraycopy(obj, 0, obj1, flag ? 0 : i, j); return obj1; }
+	 * 
+	 * public static Object expand(Object obj, int size) { return expand(obj,
+	 * size, true); }
+	 * 
+	 * public static Object expand(Object obj, int size, boolean flag, Class<?>
+	 * class1) { if (obj == null) { return ArrayReflection.newInstance(class1,
+	 * 1); } else { return expand(obj, size, flag); } }
+	 * 
+	 * public static Object cut(Object obj, int size) { int j; if ((j =
+	 * ArrayReflection.getLength(obj)) == 1) { return
+	 * ArrayReflection.newInstance(obj.getClass().getComponentType(), 0); } int
+	 * k; if ((k = j - size - 1) > 0) { System.arraycopy(obj, size + 1, obj,
+	 * size, k); } j--; Object obj1 =
+	 * ArrayReflection.newInstance(obj.getClass().getComponentType(), j);
+	 * System.arraycopy(obj, 0, obj1, 0, j); return obj1; }
+	 * 
+	 * public static Object copyOf(Object src) { int srcLength =
+	 * ArrayReflection.getLength(src); Class<?> srcComponentType =
+	 * src.getClass().getComponentType(); Object dest =
+	 * ArrayReflection.newInstance(srcComponentType, srcLength); if
+	 * (srcComponentType.isArray()) { for (int i = 0; i <
+	 * ArrayReflection.getLength(src); i++) { ArrayReflection.set(dest, i,
+	 * copyOf(ArrayReflection.get(src, i))); } } else { System.arraycopy(src, 0,
+	 * dest, 0, srcLength); } return dest; }
+	 * 
+	 * 
+	 * public static Object[] copyOf(Object[] original, int newLength) { return
+	 * copyOf(original, newLength, original.getClass()); }
+	 * 
+	 * public static Object[] copyOf(Object[] original, int newLength, Class<?>
+	 * newType) { Object[] copy = (newType == Object[].class) ? new
+	 * Object[newLength] : (Object[])
+	 * ArrayReflection.newInstance(newType.getComponentType(), newLength);
+	 * System.arraycopy(original, 0, copy, 0, MathUtils.min(original.length,
+	 * newLength)); return copy; }
 	 */
-	
+
 	public static String[] expand(String[] objs, int size) {
 		return expand(objs, size, true);
 	}
-	
+
 	public static String[] expand(String[] objs, int i, boolean flag) {
 		int size = objs.length;
-		String[] newArrays = new String[size+ i];
+		String[] newArrays = new String[size + i];
+		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
+		return newArrays;
+	}
+
+	public static int[] expand(int[] objs, int size) {
+		return expand(objs, size, true);
+	}
+
+	public static int[] expand(int[] objs, int i, boolean flag) {
+		int size = objs.length;
+		int[] newArrays = new int[size + i];
+		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
+		return newArrays;
+	}
+
+	public static boolean[] expand(boolean[] objs, int size) {
+		return expand(objs, size, true);
+	}
+
+	public static boolean[] expand(boolean[] objs, int i, boolean flag) {
+		int size = objs.length;
+		boolean[] newArrays = new boolean[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -383,14 +391,14 @@ final public class CollectionUtils {
 	public static ISprite[] expand(ISprite[] objs, int size) {
 		return expand(objs, size, true);
 	}
-	
+
 	public static ISprite[] expand(ISprite[] objs, int i, boolean flag) {
 		int size = objs.length;
-		ISprite[] newArrays = new ISprite[size+ i];
+		ISprite[] newArrays = new ISprite[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
-	
+
 	public static ISprite[] cut(ISprite[] objs, int size) {
 		int j;
 		if ((j = objs.length) == 1) {
@@ -405,15 +413,14 @@ final public class CollectionUtils {
 		System.arraycopy(objs, 0, newArrays, 0, j);
 		return newArrays;
 	}
-	
 
 	public static Actor[] expand(Actor[] objs, int i, boolean flag) {
 		int size = objs.length;
-		Actor[] newArrays = new Actor[size+ i];
+		Actor[] newArrays = new Actor[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
-	
+
 	public static Actor[] cut(Actor[] objs, int size) {
 		int j;
 		if ((j = objs.length) == 1) {
@@ -428,14 +435,14 @@ final public class CollectionUtils {
 		System.arraycopy(objs, 0, newArrays, 0, j);
 		return newArrays;
 	}
-	
+
 	public static LComponent[] expand(LComponent[] objs, int size) {
 		return expand(objs, size, true);
 	}
-	
+
 	public static LComponent[] expand(LComponent[] objs, int i, boolean flag) {
 		int size = objs.length;
-		LComponent[] newArrays = new LComponent[size+ i];
+		LComponent[] newArrays = new LComponent[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -454,10 +461,10 @@ final public class CollectionUtils {
 		System.arraycopy(objs, 0, newArrays, 0, j);
 		return newArrays;
 	}
-	
+
 	public static LNNode[] expand(LNNode[] objs, int i, boolean flag) {
 		int size = objs.length;
-		LNNode[] newArrays = new LNNode[size+ i];
+		LNNode[] newArrays = new LNNode[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -476,8 +483,9 @@ final public class CollectionUtils {
 		System.arraycopy(objs, 0, newArrays, 0, j);
 		return newArrays;
 	}
-	
-	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] obj, int newSize) {
+
+	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] obj,
+			int newSize) {
 		PConvexPolygonShape tempArr[] = new PConvexPolygonShape[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
 		return tempArr;
@@ -486,7 +494,7 @@ final public class CollectionUtils {
 	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static PBody[] copyOf(PBody[] obj, int newSize) {
 		PBody tempArr[] = new PBody[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
@@ -496,11 +504,11 @@ final public class CollectionUtils {
 	public static PBody[] copyOf(PBody[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static PJoint[] copyOf(PJoint[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static PJoint[] copyOf(PJoint[] obj, int newSize) {
 		PJoint tempArr[] = new PJoint[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
@@ -510,7 +518,7 @@ final public class CollectionUtils {
 	public static PSolver[] copyOf(PSolver[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static PSolver[] copyOf(PSolver[] obj, int newSize) {
 		PSolver tempArr[] = new PSolver[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
@@ -520,24 +528,23 @@ final public class CollectionUtils {
 	public static PShape[] copyOf(PShape[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static PShape[] copyOf(PShape[] obj, int newSize) {
 		PShape tempArr[] = new PShape[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
 		return tempArr;
 	}
-	
+
 	public static PSortableObject[] copyOf(PSortableObject[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static PSortableObject[] copyOf(PSortableObject[] obj, int newSize) {
 		PSortableObject tempArr[] = new PSortableObject[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
 		return tempArr;
 	}
-	
-	
+
 	public static LTexture[] copyOf(LTexture[] obj, int newSize) {
 		LTexture tempArr[] = new LTexture[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
@@ -547,7 +554,7 @@ final public class CollectionUtils {
 	public static LTexture[] copyOf(LTexture[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] obj, int newSize) {
 		ArrayMap.Entry tempArr[] = new ArrayMap.Entry[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
@@ -557,7 +564,7 @@ final public class CollectionUtils {
 	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 	public static IntHashMap.Entry[] copyOf(IntHashMap.Entry[] obj, int newSize) {
 		IntHashMap.Entry tempArr[] = new IntHashMap.Entry[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
@@ -567,5 +574,5 @@ final public class CollectionUtils {
 	public static IntHashMap.Entry[] copyOf(IntHashMap.Entry[] obj) {
 		return copyOf(obj, obj.length);
 	}
-	
+
 }

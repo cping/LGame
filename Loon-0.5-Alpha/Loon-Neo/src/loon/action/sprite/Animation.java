@@ -21,11 +21,9 @@
 package loon.action.sprite;
 
 import loon.LRelease;
-import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
-import loon.event.Updateable;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.TArray;
@@ -260,13 +258,7 @@ public class Animation implements LRelease {
 		} else {
 			final LTexture texture = getFrame(currentFrameIndex).image;
 			if (!texture.isLoaded()) {
-				Updateable update = new Updateable() {
-					@Override
-					public void action(Object a) {
-						texture.loadTexture();
-					}
-				};
-				LSystem.load(update);
+				texture.loadTexture();
 			}
 			return texture;
 		}

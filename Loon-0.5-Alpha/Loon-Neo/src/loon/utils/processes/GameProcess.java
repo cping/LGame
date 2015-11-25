@@ -27,7 +27,7 @@ public abstract interface GameProcess {
 	
 	public abstract void setProcessHost(RealtimeProcessHost host);
 
-	public abstract void fireThisWhenFinished(RealtimeProcess process);
+	public abstract void fireThisWhenFinished(GameProcess process);
 
 	public abstract void tick(LTimerContext time);
 

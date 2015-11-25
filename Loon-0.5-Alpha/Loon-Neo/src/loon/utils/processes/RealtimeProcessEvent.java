@@ -25,7 +25,7 @@ import loon.utils.timer.LTimerContext;
 
 public abstract interface RealtimeProcessEvent {
 	
-	public abstract void addProcess(RealtimeProcess process);
+	public abstract void addProcess(GameProcess process);
 
 	public abstract void tick(LTimerContext clock);
 }

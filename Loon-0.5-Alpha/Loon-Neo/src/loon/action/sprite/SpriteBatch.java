@@ -1,6 +1,5 @@
 package loon.action.sprite;
 
-
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -226,11 +225,11 @@ public class SpriteBatch extends PixmapFImpl {
 	public void setAlpha(float alpha) {
 		this.alpha = alpha;
 		int intBits = NumberUtils.floatToRawIntBits(color);
-		float r = (intBits & 0xff)/ 255f;
-		float g = ((intBits >>> 8) & 0xff)/ 255f;
-		float b = ((intBits >>> 16) & 0xff)/ 255f;
-		float a = (int) (alpha * 255)/ 255f;
-		color =  LColor.toFloatBits(r, g, b, a);
+		float r = (intBits & 0xff) / 255f;
+		float g = ((intBits >>> 8) & 0xff) / 255f;
+		float b = ((intBits >>> 16) & 0xff) / 255f;
+		float a = (int) (alpha * 255) / 255f;
+		color = LColor.toFloatBits(r, g, b, a);
 	}
 
 	public float alpha() {
@@ -413,23 +412,13 @@ public class SpriteBatch extends PixmapFImpl {
 			} else if (idx == vertices.length) {
 				submit();
 			}
-			if (texture.isScale()) {
-				invTexWidth = (1f / texture.width());
-				invTexHeight = (1f / texture.height());
-			} else {
-				invTexWidth = (1f / texture.width()) * texture.widthRatio;
-				invTexHeight = (1f / texture.height()) * texture.heightRatio;
-			}
+			invTexWidth = (1f / texture.width()) * texture.widthRatio;
+			invTexHeight = (1f / texture.height()) * texture.heightRatio;
 		} else if (texture != lastTexture) {
 			submit();
 			lastTexture = texture;
-			if (texture.isScale()) {
-				invTexWidth = (1f / texture.width());
-				invTexHeight = (1f / texture.height());
-			} else {
-				invTexWidth = (1f / texture.width()) * texture.widthRatio;
-				invTexHeight = (1f / texture.height()) * texture.heightRatio;
-			}
+			invTexWidth = (1f / texture.width()) * texture.widthRatio;
+			invTexHeight = (1f / texture.height()) * texture.heightRatio;
 		} else if (idx == vertices.length) {
 			submit();
 		}

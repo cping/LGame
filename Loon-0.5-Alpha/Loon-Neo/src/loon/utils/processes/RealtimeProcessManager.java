@@ -50,7 +50,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 		return new RealtimeProcessManager();
 	}
 
-	public void addProcess(RealtimeProcess realtimeProcess) {
+	public void addProcess(GameProcess realtimeProcess) {
 		synchronized (this.processes) {
 			this.processes.add(realtimeProcess);
 		}

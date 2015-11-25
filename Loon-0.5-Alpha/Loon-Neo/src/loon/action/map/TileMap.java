@@ -307,7 +307,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 	public void draw(GLEx g, SpriteBatch batch, int offsetX, int offsetY) {
 		final boolean useBatch = (batch != null);
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
-			imgPack.glCache();
+			imgPack.postCache();
 			if (playAnimation) {
 				int[][] maps = field.getMap();
 				for (int i = firstTileX; i < lastTileX; i++) {
@@ -407,10 +407,12 @@ public class TileMap extends LObject implements ISprite, LRelease {
 				}
 			}
 			imgPack.glEnd();
+			imgPack.saveCache();
 			lastOffsetX = offsetX;
 			lastOffsetY = offsetY;
 			dirty = false;
 		}
+		
 		if (listener != null) {
 			listener.draw(g, offsetX, offsetY);
 		}

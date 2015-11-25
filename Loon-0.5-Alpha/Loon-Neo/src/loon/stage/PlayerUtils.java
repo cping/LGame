@@ -11,17 +11,32 @@ import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.font.TextLayout;
+import loon.geom.BooleanValue;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.processes.WaitProcess;
 import loon.utils.reply.Act;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimerContext;
 
 public class PlayerUtils extends Director {
+
+	public final BooleanValue waitGame(WaitProcess.WaitEvent update) {
+		WaitProcess wait = new WaitProcess(60, update);
+		RealtimeProcessManager.get().addProcess(wait);
+		return wait.get();
+	}
+
+	public final BooleanValue waitGame(long time, WaitProcess.WaitEvent update) {
+		WaitProcess wait = new WaitProcess(time, update);
+		RealtimeProcessManager.get().addProcess(wait);
+		return wait.get();
+	}
 
 	public final static void addAction(ActionEvent e, ActionBind act) {
 		ActionControl.getInstance().addAction(e, act);

@@ -24,10 +24,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UTFDataFormatException;
 
-import loon.LRelease;
 import loon.utils.MathUtils;
 
-public class ArrayByte implements LRelease {
+public class ArrayByte {
 
 	public static final int BIG_ENDIAN = 0;
 
@@ -371,7 +370,6 @@ public class ArrayByte implements LRelease {
 		return new String(Base64Coder.encode(data));
 	}
 
-	@Override
 	public void close() {
 		data = null;
 	}

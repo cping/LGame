@@ -603,18 +603,6 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	public void glLock() {
-		if (isBatch) {
-			batch.lock();
-		}
-	}
-
-	public void glUnLock() {
-		if (isBatch) {
-			batch.unLock();
-		}
-	}
-
 	public void draw(float x, float y) {
 		draw(x, y, width(), height());
 	}
@@ -823,6 +811,12 @@ public class LTexture extends Painter implements LRelease {
 	public void postLastBatchCache() {
 		if (isBatch) {
 			batch.postLastCache();
+		}
+	}
+
+	public void disposeLastCache() {
+		if (isBatch) {
+			batch.disposeLastCache();
 		}
 	}
 

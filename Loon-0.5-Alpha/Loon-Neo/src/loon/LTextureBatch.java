@@ -205,12 +205,12 @@ public class LTextureBatch implements LRelease {
 			invTexHeight = (1f / texture.height()) * texture.heightRatio;
 		}
 	}
-	
-	public float getInvTexWidth(){
+
+	public float getInvTexWidth() {
 		return this.invTexWidth;
 	}
-	
-	public float getInvTexHeight(){
+
+	public float getInvTexHeight() {
 		return this.invTexHeight;
 	}
 
@@ -253,7 +253,7 @@ public class LTextureBatch implements LRelease {
 		vertices[vertexIdx++] = v.x;
 		vertices[vertexIdx++] = v.y;
 	}
-	
+
 	public void glVertex2f(float x, float y) {
 		vertices[vertexIdx++] = x;
 		vertices[vertexIdx++] = y;
@@ -379,23 +379,13 @@ public class LTextureBatch implements LRelease {
 			} else if (vertexIdx == vertices.length) {
 				submit();
 			}
-			if (texture.isScale()) {
-				invTexWidth = (1f / texWidth);
-				invTexHeight = (1f / texHeight);
-			} else {
-				invTexWidth = (1f / texWidth) * texture.widthRatio;
-				invTexHeight = (1f / texHeight) * texture.heightRatio;
-			}
+			invTexWidth = (1f / texWidth) * texture.widthRatio;
+			invTexHeight = (1f / texHeight) * texture.heightRatio;
 		} else if (texture != lastTexture) {
 			submit();
 			lastTexture = texture;
-			if (texture.isScale()) {
-				invTexWidth = (1f / texWidth);
-				invTexHeight = (1f / texHeight);
-			} else {
-				invTexWidth = (1f / texWidth) * texture.widthRatio;
-				invTexHeight = (1f / texHeight) * texture.heightRatio;
-			}
+			invTexWidth = (1f / texWidth) * texture.widthRatio;
+			invTexHeight = (1f / texHeight) * texture.heightRatio;
 		} else if (vertexIdx == vertices.length) {
 			submit();
 		}
