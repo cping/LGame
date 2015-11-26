@@ -49,15 +49,15 @@ public class PWorldBox {
 		if (build) {
 			throw new RuntimeException("Build Error !");
 		}
-		this.manager.addBox(true, 0f, 0f, mw, thick, 0, density.get());
-		this.manager.addBox(true, 0f, mh, mw, thick, 0, density.get());
-		this.manager.addBox(true, 0f, 0f, thick, mh, 0, density.get());
-		this.manager.addBox(true, mw, 0f, thick, mh, 0, density.get());
+		this.manager.addBox(true, 0f, 0f, mw, thick, 0, density.result());
+		this.manager.addBox(true, 0f, mh, mw, thick, 0, density.result());
+		this.manager.addBox(true, 0f, 0f, thick, mh, 0, density.result());
+		this.manager.addBox(true, mw, 0f, thick, mh, 0, density.result());
 		this.build = true;
 	}
 
 	public float getDensity() {
-		return density.get();
+		return density.result();
 	}
 
 	public void setDensity(float d) {

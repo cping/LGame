@@ -22,6 +22,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -34,8 +35,14 @@ public class Quaternion implements Serializable {
 	private static Quaternion tmp1 = new Quaternion(0, 0, 0, 0);
 	private static Quaternion tmp2 = new Quaternion(0, 0, 0, 0);
 
+	private static final Array<Quaternion> _quan_cache = new Array<Quaternion>();
+
 	public final static Quaternion TMP() {
-		return new Quaternion(0, 0, 0, 0);
+		Quaternion temp = _quan_cache.pop();
+		if (temp == null) {
+			_quan_cache.add(temp = new Quaternion(0, 0, 0, 0));
+		}
+		return temp;
 	}
 
 	public final static Quaternion ZERO() {
@@ -94,11 +101,6 @@ public class Quaternion implements Serializable {
 
 	public float len() {
 		return MathUtils.sqrt(x * x + y * y + z * z + w * w);
-	}
-
-	@Override
-	public String toString() {
-		return "[" + x + "|" + y + "|" + z + "|" + w + "]";
 	}
 
 	public Quaternion setEulerAngles(float yaw, float pitch, float roll) {
@@ -702,8 +704,9 @@ public class Quaternion implements Serializable {
 	public Quaternion normalizeSelf() {
 		float length = length();
 
-		if (length == 0 || length == 1)
+		if (length == 0 || length == 1) {
 			return this;
+		}
 
 		return set(x / length, y / length, z / length, w / length);
 	}
@@ -861,6 +864,11 @@ public class Quaternion implements Serializable {
 
 	public Quaternion set() {
 		return set(0, 0, 0, 1);
+	}
+
+	@Override
+	public String toString() {
+		return "[" + x + "|" + y + "|" + z + "|" + w + "]";
 	}
 
 }

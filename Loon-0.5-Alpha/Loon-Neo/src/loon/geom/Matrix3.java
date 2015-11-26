@@ -330,8 +330,26 @@ public class Matrix3 implements Serializable {
 		return this;
 	}
 
+	public Matrix3 set(int x, int y, float v) {
+		val[x + y * 3] = v;
+		return this;
+	}
+
 	public float get(int x, int y) {
 		return val[x + y * 3];
+	}
+
+	public Matrix3 izero() {
+		val[M00] = 0;
+		val[M01] = 0;
+		val[M02] = 0;
+		val[M10] = 0;
+		val[M11] = 0;
+		val[M12] = 0;
+		val[M20] = 0;
+		val[M21] = 0;
+		val[M22] = 0;
+		return this;
 	}
 
 	public Matrix3 trn(Vector2f vector) {

@@ -25,6 +25,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
+import loon.action.camera.BaseCamera;
 import loon.canvas.LColor;
 import loon.canvas.PixmapFImpl;
 import loon.font.LFont;
@@ -485,6 +486,16 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		saveTx();
 		Affine2f txf = tx();
 		txf.set(mat4);
+		return this;
+	}
+
+	public GLEx setCamera(BaseCamera came) {
+		Affine2f txf = tx();
+		if (txf != null) {
+			came.setup();
+			this.saveTx();
+			this.set(came.getView().cpy().thisCombine(tx()));
+		}
 		return this;
 	}
 

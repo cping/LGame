@@ -2,6 +2,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.utils.Array;
 import loon.utils.MathUtils;
 
 public class Vector4f implements Serializable, XY {
@@ -11,24 +12,18 @@ public class Vector4f implements Serializable, XY {
 	 */
 	private static final long serialVersionUID = 5987567676643500192L;
 
+	private static final Array<Vector4f> _vec4_cache = new Array<Vector4f>();
+
 	public final static Vector4f TMP() {
-		return new Vector4f(0, 0, 0, 0);
+		Vector4f temp = _vec4_cache.pop();
+		if (temp == null) {
+			_vec4_cache.add(temp = new Vector4f(0, 0, 0, 0));
+		}
+		return temp;
 	}
 
 	public final static Vector4f ZERO() {
 		return new Vector4f(0, 0, 0, 0);
-	}
-
-	public final static Vector4f X() {
-		return new Vector4f(1, 0, 0, 0);
-	}
-
-	public final static Vector4f Y() {
-		return new Vector4f(0, 1, 0, 0);
-	}
-
-	public final static Vector4f Z() {
-		return new Vector4f(0, 0, 1, 0);
 	}
 
 	public final static Vector4f AXIS_X() {
@@ -37,6 +32,10 @@ public class Vector4f implements Serializable, XY {
 
 	public final static Vector4f AXIS_Y() {
 		return new Vector4f(0, 1, 0, 0);
+	}
+
+	public final static Vector4f AXIS_Z() {
+		return new Vector4f(0, 0, 1, 0);
 	}
 
 	public float x, y, z, w;

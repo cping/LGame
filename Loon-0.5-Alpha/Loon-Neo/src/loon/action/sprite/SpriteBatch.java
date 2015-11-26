@@ -54,8 +54,6 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private boolean lockSubmit = false;
 
-	private final Matrix4 combinedMatrix = new Matrix4();
-
 	private MeshDefault mesh;
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
@@ -475,13 +473,12 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	private void setupMatrices() {
-		combinedMatrix.set(LSystem.base().graphics().getProjectionMatrix())
-				.mul(LSystem.base().graphics().getTransformMatrix());
+		final Matrix4 view = LSystem.base().graphics().getViewMatrix();
 		if (customShader != null) {
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
+			customShader.setUniformMatrix("u_projTrans", view);
 			customShader.setUniformi("u_texture", 0);
 		} else {
-			shader.setUniformMatrix("u_projTrans", combinedMatrix);
+			shader.setUniformMatrix("u_projTrans", view);
 			shader.setUniformi("u_texture", 0);
 		}
 	}

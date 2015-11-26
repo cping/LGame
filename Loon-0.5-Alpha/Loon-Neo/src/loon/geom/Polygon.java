@@ -232,12 +232,14 @@ public class Polygon extends Shape {
 
 		return resultPolygon;
 	}
-
+	
+	@Override
 	public void setX(float x) {
 		super.setX(x);
 		pointsDirty = false;
 	}
 
+	@Override
 	public void setY(float y) {
 		super.setY(y);
 		pointsDirty = false;
@@ -246,7 +248,8 @@ public class Polygon extends Shape {
 	protected void createPoints() {
 
 	}
-
+	
+	@Override
 	public boolean closed() {
 		return closed;
 	}

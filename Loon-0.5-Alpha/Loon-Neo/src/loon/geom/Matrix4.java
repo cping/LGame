@@ -231,6 +231,12 @@ public class Matrix4 implements Serializable {
 		return this;
 	}
 
+    public Matrix4 set(int x, int y, float v)
+    {
+    	val[x + y * 4] = v;
+        return this;
+    }
+
 	public float get(int x, int y) {
 		return val[x + y * 4];
 	}
@@ -307,7 +313,27 @@ public class Matrix4 implements Serializable {
 		val[M33] = 1;
 		return this;
 	}
-
+	
+	public Matrix4 izero() {
+		val[M00] = 0;
+		val[M01] = 0;
+		val[M02] = 0;
+		val[M03] = 0;
+		val[M10] = 0;
+		val[M11] = 0;
+		val[M12] = 0;
+		val[M13] = 0;
+		val[M20] = 0;
+		val[M21] = 0;
+		val[M22] = 0;
+		val[M23] = 0;
+		val[M30] = 0;
+		val[M31] = 0;
+		val[M32] = 0;
+		val[M33] = 0;
+		return this;
+	}
+	
 	public Matrix4 inv() {
 		float l_det = val[M30] * val[M21] * val[M12] * val[M03] - val[M20]
 				* val[M31] * val[M12] * val[M03] - val[M30] * val[M11]
@@ -329,8 +355,9 @@ public class Matrix4 implements Serializable {
 				* val[M21] * val[M12] * val[M33] - val[M10] * val[M01]
 				* val[M22] * val[M33] + val[M00] * val[M11] * val[M22]
 				* val[M33];
-		if (l_det == 0f)
+		if (l_det == 0f){
 			throw new RuntimeException("non-invertible matrix");
+		}
 		float inv_det = 1.0f / l_det;
 		tmp[M00] = val[M12] * val[M23] * val[M31] - val[M13] * val[M22]
 				* val[M31] + val[M13] * val[M21] * val[M32] - val[M11]
@@ -447,7 +474,7 @@ public class Matrix4 implements Serializable {
 	public Matrix4 setToProjection(float near, float far, float fovy,
 			float aspectRatio) {
 
-		float l_fd = (float) (1f / MathUtils.tan(fovy * MathUtils.DEG_TO_RAD) / 2f);
+		float l_fd = (1f / MathUtils.tan(fovy * MathUtils.DEG_TO_RAD) / 2f);
 		float l_a1 = (far + near) / (near - far);
 		float l_a2 = (2 * far * near) / (near - far);
 		val[M00] = l_fd / aspectRatio;

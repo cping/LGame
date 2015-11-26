@@ -23,6 +23,7 @@ package loon.geom;
 import java.io.Serializable;
 
 import loon.action.map.Field2D;
+import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -32,16 +33,16 @@ public class Vector2f implements Serializable, XY {
 	 */
 	private static final long serialVersionUID = -1844534518528011982L;
 
+	private static final Array<Vector2f> _vec2_cache = new Array<Vector2f>();
+
 	public final static Vector2f TMP() {
-		return new Vector2f(0, 0);
-	}
-
-	public final static Vector2f X() {
-		return new Vector2f(1, 0);
-	}
-
-	public final static Vector2f Y() {
-		return new Vector2f(0, 1);
+		Vector2f temp = _vec2_cache.pop();
+	
+		if (temp == null) {
+			System.out.println(_vec2_cache.size());
+			_vec2_cache.add(temp = new Vector2f(0, 0));
+		}
+		return temp;
 	}
 
 	public final static Vector2f ZERO() {
@@ -522,7 +523,7 @@ public class Vector2f implements Serializable, XY {
 	public final Vector2f set(float v) {
 		return set(v, v);
 	}
-	
+
 	public final Vector2f set(float x, float y) {
 		this.x = x;
 		this.y = y;

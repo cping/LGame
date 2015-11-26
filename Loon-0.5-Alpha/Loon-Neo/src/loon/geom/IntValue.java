@@ -25,17 +25,18 @@ public class IntValue {
 	private int value;
 
 	public IntValue(int v) {
-		this.value = v;
-	}
-
-	public int get() {
-		return value;
+		this.set(v);
 	}
 
 	public void set(int v) {
 		this.value = v;
 	}
 
+	public int result() {
+		return value;
+	}
+
+	@Override
 	public String toString() {
 		return String.valueOf(value);
 	}

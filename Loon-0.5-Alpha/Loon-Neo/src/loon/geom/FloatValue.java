@@ -22,20 +22,21 @@ package loon.geom;
 
 public class FloatValue {
 
-	private float value;
+	private float value = 0f;
 
 	public FloatValue(float v) {
-		this.value = v;
-	}
-
-	public float get() {
-		return value;
+		this.set(v);
 	}
 
 	public void set(float v) {
 		this.value = v;
 	}
 
+	public float result() {
+		return value;
+	}
+
+	@Override
 	public String toString() {
 		return String.valueOf(value);
 	}

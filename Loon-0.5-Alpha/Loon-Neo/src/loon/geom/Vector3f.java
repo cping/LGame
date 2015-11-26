@@ -22,6 +22,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -31,27 +32,21 @@ public class Vector3f implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1114108169708351982L;
-	
+
 	public float x;
 
 	public float y;
 
 	public float z;
 
+	private static final Array<Vector3f> _vec3_cache = new Array<Vector3f>();
+
 	public final static Vector3f TMP() {
-		return new Vector3f(0, 0, 0);
-	}
-
-	public final static Vector3f X() {
-		return new Vector3f(1, 0, 0);
-	}
-
-	public final static Vector3f Y() {
-		return new Vector3f(0, 1, 0);
-	}
-
-	public final static Vector3f Z() {
-		return new Vector3f(0, 0, 1);
+		Vector3f temp = _vec3_cache.pop();
+		if (temp == null) {
+			_vec3_cache.add(temp = new Vector3f(0, 0, 0));
+		}
+		return temp;
 	}
 
 	public final static Vector3f ZERO() {
@@ -64,6 +59,10 @@ public class Vector3f implements Serializable {
 
 	public final static Vector3f AXIS_Y() {
 		return new Vector3f(0, 1, 0);
+	}
+
+	public final static Vector3f AXIS_Z() {
+		return new Vector3f(0, 0, 1);
 	}
 
 	private final static Matrix4 tmpMat = new Matrix4();
@@ -432,15 +431,23 @@ public class Vector3f implements Serializable {
 	}
 
 	public Vector3f lerp(final Vector3f target, float alpha) {
+		return cpy().lerpSelf(target, alpha);
+	}
+
+	public Vector3f slerp(final Vector3f target, float alpha) {
+		return cpy().slerpSelf(target, alpha);
+	}
+
+	public Vector3f lerpSelf(final Vector3f target, float alpha) {
 		scl(1.0f - alpha);
 		add(target.x * alpha, target.y * alpha, target.z * alpha);
 		return this;
 	}
 
-	public Vector3f slerp(final Vector3f target, float alpha) {
+	public Vector3f slerpSelf(final Vector3f target, float alpha) {
 		final float dot = dot(target);
 		if (dot > 0.9995 || dot < -0.9995) {
-			return lerp(target, alpha);
+			return lerpSelf(target, alpha);
 		}
 
 		final float theta0 = MathUtils.acos(dot);

@@ -20,6 +20,8 @@
  */
 package loon;
 
+import loon.action.camera.BaseCamera;
+import loon.action.camera.EmptyCamera;
 import loon.canvas.Canvas;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
@@ -44,7 +46,7 @@ public abstract class Graphics {
 
 	private Display display = null;
 	private Affine2f affine = null, lastAffine = null;
-	private Matrix4 transformMatrix = null, projectionMatrix = null;
+	private Matrix4 viewMatrix = null;
 	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
 	// 创建一个半永久的纹理，用以批量进行颜色渲染
 	private static LTexture colorTex;
@@ -100,44 +102,33 @@ public abstract class Graphics {
 		return scale;
 	}
 
-	public void setTransformMatrix(Matrix4 t) {
-		this.transformMatrix = t;
-	}
-
-	public void setProjectionMatrix(Matrix4 t) {
-		this.projectionMatrix = t;
-	}
-
-	public Matrix4 getTransformMatrix() {
-		if (transformMatrix == null) {
-			transformMatrix = new Matrix4();
-		}
-		return transformMatrix;
-	}
-
-	public Matrix4 getProjectionMatrix() {
+	public Matrix4 getViewMatrix() {
 		display = game.display();
 		Dimension view = LSystem.viewSize;
-		if (projectionMatrix == null) {
-			projectionMatrix = new Matrix4();
-			projectionMatrix.setToOrtho2D(0, 0, view.getWidth(),
+		if (viewMatrix == null) {
+			viewMatrix = new Matrix4();
+			viewMatrix.setToOrtho2D(0, 0, view.getWidth(),
 					view.getHeight());
-		} else if (display != null
-				&& display.GL()!=null&&!(affine = display.GL().tx()).equals(lastAffine)) {
-			projectionMatrix = affine.toViewMatrix4();
+		} else if (display != null && display.GL() != null
+				&& !(affine = display.GL().tx()).equals(lastAffine)) {
+			viewMatrix = affine.toViewMatrix4();
 			lastAffine = affine;
 		}
-		return projectionMatrix;
+		return viewMatrix;
+	}
+
+	public BaseCamera newCamera() {
+		return new EmptyCamera(getViewMatrix());
 	}
 
 	public void save() {
-		if (projectionMatrix != null) {
-			matrixsStack.add(projectionMatrix = projectionMatrix.cpy());
+		if (viewMatrix != null) {
+			matrixsStack.add(viewMatrix = viewMatrix.cpy());
 		}
 	}
 
 	public void restore() {
-		projectionMatrix = matrixsStack.pop();
+		viewMatrix = matrixsStack.pop();
 	}
 
 	public abstract Dimension screenSize();
@@ -223,8 +214,8 @@ public abstract class Graphics {
 			LSystem.viewSize.setSize(
 					(int) (viewWidth / LSystem.getScaleWidth()),
 					(int) (viewHeight / LSystem.getScaleHeight()));
-			if (projectionMatrix != null) {
-				LSystem.viewSize.getMatrix().mul(projectionMatrix);
+			if (viewMatrix != null) {
+				LSystem.viewSize.getMatrix().mul(viewMatrix);
 			}
 			this.scale = scale;
 			this.viewPixelWidth = viewWidth;

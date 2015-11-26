@@ -325,9 +325,10 @@ public class Array<T> {
 
 	public T pop() {
 		T o = null;
-		int tsSize = _length;
-		remove(--tsSize);
-		o = isEmpty() ? null : get(tsSize - 1);
+		if (!isEmpty()) {
+			o = this._items.previous.data;
+			remove(o);
+		}
 		return o;
 	}
 

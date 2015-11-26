@@ -183,7 +183,7 @@ public abstract class Conversion implements Expression {
 				}
 			} else {
 				try {
-					compute.push(Float.valueOf(new String(expChr, stIdx, lgt))
+					compute.push(Float.parseFloat(new String(expChr, stIdx, lgt))
 					* sign, STACK_NUM);
 				} catch (NumberFormatException e) {
 					compute.push(0, STACK_NUM);
