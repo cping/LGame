@@ -131,7 +131,7 @@ public class ShapeUtils {
 
 	public static void translateVertices(Vector2f[] vertices, Vector2f tx) {
 		for (int i = 0; i < vertices.length; i++) {
-			vertices[i].add(tx.x, tx.y);
+			vertices[i].addSelf(tx.x, tx.y);
 		}
 	}
 

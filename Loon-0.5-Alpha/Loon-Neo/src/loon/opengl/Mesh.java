@@ -489,7 +489,7 @@ public class Mesh implements LRelease {
 				final int idx = index.get(i) * vertexSize + posoff;
 				tmpV.set(verts.get(idx), 0, 0);
 				if (transform != null)
-					tmpV.mul(transform);
+					tmpV.mulSelf(transform);
 				out.ext(tmpV);
 			}
 			break;
@@ -498,7 +498,7 @@ public class Mesh implements LRelease {
 				final int idx = index.get(i) * vertexSize + posoff;
 				tmpV.set(verts.get(idx), verts.get(idx + 1), 0);
 				if (transform != null)
-					tmpV.mul(transform);
+					tmpV.mulSelf(transform);
 				out.ext(tmpV);
 			}
 			break;
@@ -507,7 +507,7 @@ public class Mesh implements LRelease {
 				final int idx = index.get(i) * vertexSize + posoff;
 				tmpV.set(verts.get(idx), verts.get(idx + 1), verts.get(idx + 2));
 				if (transform != null)
-					tmpV.mul(transform);
+					tmpV.mulSelf(transform);
 				out.ext(tmpV);
 			}
 			break;
@@ -537,8 +537,8 @@ public class Mesh implements LRelease {
 				final int idx = index.get(i) * vertexSize + posoff;
 				tmpV.set(verts.get(idx), 0, 0);
 				if (transform != null)
-					tmpV.mul(transform);
-				final float r = tmpV.sub(centerX, centerY, centerZ).len2();
+					tmpV.mulSelf(transform);
+				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
 				if (r > result)
 					result = r;
 			}
@@ -548,8 +548,8 @@ public class Mesh implements LRelease {
 				final int idx = index.get(i) * vertexSize + posoff;
 				tmpV.set(verts.get(idx), verts.get(idx + 1), 0);
 				if (transform != null)
-					tmpV.mul(transform);
-				final float r = tmpV.sub(centerX, centerY, centerZ).len2();
+					tmpV.mulSelf(transform);
+				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
 				if (r > result)
 					result = r;
 			}
@@ -559,8 +559,8 @@ public class Mesh implements LRelease {
 				final int idx = index.get(i) * vertexSize + posoff;
 				tmpV.set(verts.get(idx), verts.get(idx + 1), verts.get(idx + 2));
 				if (transform != null)
-					tmpV.mul(transform);
-				final float r = tmpV.sub(centerX, centerY, centerZ).len2();
+					tmpV.mulSelf(transform);
+				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
 				if (r > result)
 					result = r;
 			}
@@ -713,14 +713,14 @@ public class Mesh implements LRelease {
 		switch (dimensions) {
 		case 1:
 			for (int i = 0; i < count; i++) {
-				tmp.set(vertices[idx], 0, 0).mul(matrix);
+				tmp.set(vertices[idx], 0, 0).mulSelf(matrix);
 				vertices[idx] = tmp.x;
 				idx += vertexSize;
 			}
 			break;
 		case 2:
 			for (int i = 0; i < count; i++) {
-				tmp.set(vertices[idx], vertices[idx + 1], 0).mul(matrix);
+				tmp.set(vertices[idx], vertices[idx + 1], 0).mulSelf(matrix);
 				vertices[idx] = tmp.x;
 				vertices[idx + 1] = tmp.y;
 				idx += vertexSize;
@@ -729,7 +729,7 @@ public class Mesh implements LRelease {
 		case 3:
 			for (int i = 0; i < count; i++) {
 				tmp.set(vertices[idx], vertices[idx + 1], vertices[idx + 2])
-						.mul(matrix);
+						.mulSelf(matrix);
 				vertices[idx] = tmp.x;
 				vertices[idx + 1] = tmp.y;
 				vertices[idx + 2] = tmp.z;
@@ -769,7 +769,7 @@ public class Mesh implements LRelease {
 
 		int idx = offset + (start * vertexSize);
 		for (int i = 0; i < count; i++) {
-			tmp.set(vertices[idx], vertices[idx + 1]).mul(matrix);
+			tmp.set(vertices[idx], vertices[idx + 1]).mulSelf(matrix);
 			vertices[idx] = tmp.x;
 			vertices[idx + 1] = tmp.y;
 			idx += vertexSize;

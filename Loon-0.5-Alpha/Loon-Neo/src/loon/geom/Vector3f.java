@@ -2,7 +2,7 @@
  * Copyright 2008 - 2012
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
+ * use this file except in compliance with the License. You may obtain a cpy of
  * the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -117,50 +117,26 @@ public class Vector3f implements Serializable {
 		return new Vector3f(this);
 	}
 
-	public Vector3f add(final Vector3f vector) {
-		return this.add(vector.x, vector.y, vector.z);
+	public Vector3f addSelf(final Vector3f vector) {
+		return this.addSelf(vector.x, vector.y, vector.z);
 	}
 
-	public Vector3f add(float x, float y, float z) {
+	public Vector3f addSelf(float x, float y, float z) {
 		return this.set(this.x + x, this.y + y, this.z + z);
 	}
 
-	public Vector3f add(float values) {
+	public Vector3f addSelf(float values) {
 		return this.set(this.x + values, this.y + values, this.z + values);
 	}
 
-	public Vector3f sub(final Vector3f a_vec) {
-		return this.sub(a_vec.x, a_vec.y, a_vec.z);
-	}
-
-	public Vector3f sub(float x, float y, float z) {
-		return this.set(this.x - x, this.y - y, this.z - z);
-	}
-
-	public Vector3f sub(float value) {
-		return this.set(this.x - value, this.y - value, this.z - value);
-	}
-
-	public Vector3f scl(float scalar) {
-		return this.set(this.x * scalar, this.y * scalar, this.z * scalar);
-	}
-
-	public Vector3f scl(final Vector3f other) {
-		return this.set(x * other.x, y * other.y, z * other.z);
-	}
-
-	public Vector3f scl(float vx, float vy, float vz) {
-		return this.set(this.x * vx, this.y * vy, this.z * vz);
-	}
-
-	public Vector3f mulAdd(Vector3f vec, float scalar) {
+	public Vector3f mulAddSelf(Vector3f vec, float scalar) {
 		this.x += vec.x * scalar;
 		this.y += vec.y * scalar;
 		this.z += vec.z * scalar;
 		return this;
 	}
 
-	public Vector3f mulAdd(Vector3f vec, Vector3f mulVec) {
+	public Vector3f mulAddSelf(Vector3f vec, Vector3f mulVec) {
 		this.x += vec.x * mulVec.x;
 		this.y += vec.y * mulVec.y;
 		this.z += vec.z * mulVec.z;
@@ -231,12 +207,12 @@ public class Vector3f implements Serializable {
 		return a * a + b * b + c * c;
 	}
 
-	public Vector3f nor() {
+	public Vector3f norSelf() {
 		final float len2 = this.len2();
 		if (len2 == 0f || len2 == 1f) {
 			return this;
 		}
-		return this.scl(1f / MathUtils.sqrt(len2));
+		return this.scaleSelf(1f / MathUtils.sqrt(len2));
 	}
 
 	public static float dot(float x1, float y1, float z1, float x2, float y2,
@@ -252,12 +228,12 @@ public class Vector3f implements Serializable {
 		return this.x * x + this.y * y + this.z * z;
 	}
 
-	public Vector3f crs(final Vector3f vector) {
+	public Vector3f crsSelf(final Vector3f vector) {
 		return this.set(y * vector.z - z * vector.y, z * vector.x - x
 				* vector.z, x * vector.y - y * vector.x);
 	}
 
-	public Vector3f crs(float x, float y, float z) {
+	public Vector3f crsSelf(float x, float y, float z) {
 		return this.set(this.y * z - this.z * y, this.z * x - this.x * z,
 				this.x * y - this.y * x);
 	}
@@ -268,7 +244,7 @@ public class Vector3f implements Serializable {
 				* matrix[2] + y * matrix[5] + z * matrix[8] + matrix[11]);
 	}
 
-	public Vector3f mul(final Matrix4 matrix) {
+	public Vector3f mulSelf(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
 		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z
 				* l_mat[Matrix4.M02] + l_mat[Matrix4.M03], x
@@ -288,7 +264,7 @@ public class Vector3f implements Serializable {
 				* l_mat[Matrix4.M22] + l_mat[Matrix4.M32]);
 	}
 
-	public Vector3f mul(Matrix3 matrix) {
+	public Vector3f mulSelf(Matrix3 matrix) {
 		final float l_mat[] = matrix.val;
 		return set(x * l_mat[Matrix3.M00] + y * l_mat[Matrix3.M01] + z
 				* l_mat[Matrix3.M02], x * l_mat[Matrix3.M10] + y
@@ -306,11 +282,11 @@ public class Vector3f implements Serializable {
 				* l_mat[Matrix3.M22]);
 	}
 
-	public Vector3f mul(final Quaternion quat) {
-		return quat.transform(this);
+	public Vector3f mulSelf(final Quaternion quat) {
+		return quat.transformSelf(this);
 	}
 
-	public Vector3f prj(final Matrix4 matrix) {
+	public Vector3f prjSelf(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
 		final float l_w = 1f / (x * l_mat[Matrix4.M30] + y * l_mat[Matrix4.M31]
 				+ z * l_mat[Matrix4.M32] + l_mat[Matrix4.M33]);
@@ -323,7 +299,7 @@ public class Vector3f implements Serializable {
 				* l_w);
 	}
 
-	public Vector3f rot(final Matrix4 matrix) {
+	public Vector3f rotSelf(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
 		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z
 				* l_mat[Matrix4.M02], x * l_mat[Matrix4.M10] + y
@@ -332,7 +308,7 @@ public class Vector3f implements Serializable {
 				* l_mat[Matrix4.M22]);
 	}
 
-	public Vector3f unrotate(final Matrix4 matrix) {
+	public Vector3f unrotateSelf(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
 		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z
 				* l_mat[Matrix4.M20], x * l_mat[Matrix4.M01] + y
@@ -341,7 +317,7 @@ public class Vector3f implements Serializable {
 				* l_mat[Matrix4.M22]);
 	}
 
-	public Vector3f untransform(final Matrix4 matrix) {
+	public Vector3f untransformSelf(final Matrix4 matrix) {
 		final float l_mat[] = matrix.val;
 		x -= l_mat[Matrix4.M03];
 		y -= l_mat[Matrix4.M03];
@@ -353,23 +329,25 @@ public class Vector3f implements Serializable {
 				* l_mat[Matrix4.M22]);
 	}
 
-	public Vector3f rotate(float degrees, float axisX, float axisY, float axisZ) {
-		return this.mul(tmpMat.setToRotation(axisX, axisY, axisZ, degrees));
-	}
-
-	public Vector3f rotateRad(float radians, float axisX, float axisY,
+	public Vector3f rotateSelf(float degrees, float axisX, float axisY,
 			float axisZ) {
-		return this.mul(tmpMat.setToRotationRad(axisX, axisY, axisZ, radians));
+		return this.mulSelf(tmpMat.setToRotation(axisX, axisY, axisZ, degrees));
 	}
 
-	public Vector3f rotate(final Vector3f axis, float degrees) {
+	public Vector3f rotateRadSelf(float radians, float axisX, float axisY,
+			float axisZ) {
+		return this.mulSelf(tmpMat.setToRotationRad(axisX, axisY, axisZ,
+				radians));
+	}
+
+	public Vector3f rotateSelf(final Vector3f axis, float degrees) {
 		tmpMat.setToRotation(axis, degrees);
-		return this.mul(tmpMat);
+		return this.mulSelf(tmpMat);
 	}
 
-	public Vector3f rotateRad(final Vector3f axis, float radians) {
+	public Vector3f rotateRadSelf(final Vector3f axis, float radians) {
 		tmpMat.setToRotationRad(axis, radians);
-		return this.mul(tmpMat);
+		return this.mulSelf(tmpMat);
 	}
 
 	public boolean isUnit() {
@@ -439,8 +417,8 @@ public class Vector3f implements Serializable {
 	}
 
 	public Vector3f lerpSelf(final Vector3f target, float alpha) {
-		scl(1.0f - alpha);
-		add(target.x * alpha, target.y * alpha, target.z * alpha);
+		scaleSelf(1.0f - alpha);
+		addSelf(target.x * alpha, target.y * alpha, target.z * alpha);
 		return this;
 	}
 
@@ -460,45 +438,46 @@ public class Vector3f implements Serializable {
 		final float l2 = tx * tx + ty * ty + tz * tz;
 		final float dl = st * ((l2 < 0.0001f) ? 1f : 1f / MathUtils.sqrt(l2));
 
-		return scl(MathUtils.cos(theta)).add(tx * dl, ty * dl, tz * dl).nor();
+		return scaleSelf(MathUtils.cos(theta)).addSelf(tx * dl, ty * dl, tz * dl)
+				.norSelf();
 	}
 
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + "]";
 	}
 
-	public Vector3f limit(float limit) {
-		return limit2(limit * limit);
+	public Vector3f limitSelf(float limit) {
+		return limit2Self(limit * limit);
 	}
 
-	public Vector3f limit2(float limit2) {
+	public Vector3f limit2Self(float limit2) {
 		float len2 = len2();
 		if (len2 > limit2) {
-			scl(limit2 / len2);
+			scaleSelf(limit2 / len2);
 		}
 		return this;
 	}
 
-	public Vector3f setLength(float len) {
-		return setLength2(len * len);
+	public Vector3f setLengthSelf(float len) {
+		return setLength2Self(len * len);
 	}
 
-	public Vector3f setLength2(float len2) {
+	public Vector3f setLength2Self(float len2) {
 		float oldLen2 = len2();
-		return (oldLen2 == 0 || oldLen2 == len2) ? this : scl(MathUtils
+		return (oldLen2 == 0 || oldLen2 == len2) ? this : scaleSelf(MathUtils
 				.sqrt(len2 / oldLen2));
 	}
 
-	public Vector3f clamp(float min, float max) {
+	public Vector3f clampSelf(float min, float max) {
 		final float len2 = len2();
 		if (len2 == 0f)
 			return this;
 		float max2 = max * max;
 		if (len2 > max2)
-			return scl(MathUtils.sqrt(max2 / len2));
+			return scaleSelf(MathUtils.sqrt(max2 / len2));
 		float min2 = min * min;
 		if (len2 < min2)
-			return scl(MathUtils.sqrt(min2 / len2));
+			return scaleSelf(MathUtils.sqrt(min2 / len2));
 		return this;
 	}
 
@@ -553,38 +532,19 @@ public class Vector3f implements Serializable {
 		return true;
 	}
 
-	public Vector3f setZero() {
+	public Vector3f zeroSelf() {
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
 		return this;
 	}
 
-	public float getX() {
-		return x;
+	public Vector3f add(Vector3f v) {
+		return add(v.x, v.y, v.z);
 	}
 
-	public Vector3f setX(float x) {
-		this.x = x;
-		return this;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public Vector3f setY(float y) {
-		this.y = y;
-		return this;
-	}
-
-	public float getZ() {
-		return z;
-	}
-
-	public Vector3f setZ(float z) {
-		this.z = z;
-		return this;
+	public Vector3f add(float x, float y, float z) {
+		return cpy().addSelf(x, y, z);
 	}
 
 	public Vector3f add(Vector2f v, float z) {
@@ -593,10 +553,6 @@ public class Vector3f implements Serializable {
 
 	public Vector3f addSelf(Vector2f v, float z) {
 		return addSelf(v.x, v.y, z);
-	}
-
-	public Vector3f addSelf(float x, float y, float z) {
-		return set(this.x + x, this.y + y, this.z + z);
 	}
 
 	public Vector3f add(float x, Vector2f v) {
@@ -724,8 +680,8 @@ public class Vector3f implements Serializable {
 		return distanceSquared(v.x, v.y, 0);
 	}
 
-	public Vector3f addSelf(Vector3f v) {
-		return addSelf(v.x, v.y, v.z);
+	public Vector3f rotate(Vector3f axis, float angle) {
+		return cpy().rotateSelf(axis, angle);
 	}
 
 	public Vector3f scaleSelf(float s) {
@@ -830,4 +786,15 @@ public class Vector3f implements Serializable {
 		return new Vector2f(z, z);
 	}
 
+	public float getX() {
+		return this.x;
+	}
+
+	public float getY() {
+		return this.y;
+	}
+
+	public float getZ() {
+		return this.z;
+	}
 }

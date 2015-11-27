@@ -157,8 +157,8 @@ public class BoundingBox  {
 		max.set(minimum.x > maximum.x ? minimum.x : maximum.x,
 				minimum.y > maximum.y ? minimum.y : maximum.y,
 				minimum.z > maximum.z ? minimum.z : maximum.z);
-		cnt.set(min).add(max).scl(0.5f);
-		dim.set(max).sub(min);
+		cnt.set(min).addSelf(max).scaleSelf(0.5f);
+		dim.set(max).subtractSelf(min);
 		return this;
 	}
 
@@ -208,36 +208,36 @@ public class BoundingBox  {
 	}
 
 	public BoundingBox ext(BoundingBox bounds, Matrix4 transform) {
-		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.min.z).mul(
+		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.min.z).mulSelf(
 				transform));
-		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.max.z).mul(
+		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.max.z).mulSelf(
 				transform));
-		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.min.z).mul(
+		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.min.z).mulSelf(
 				transform));
-		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.max.z).mul(
+		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.max.z).mulSelf(
 				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.min.z).mul(
+		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.min.z).mulSelf(
 				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.max.z).mul(
+		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.max.z).mulSelf(
 				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.min.z).mul(
+		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.min.z).mulSelf(
 				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.max.z).mul(
+		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.max.z).mulSelf(
 				transform));
 		return this;
 	}
 
-	public BoundingBox mul(Matrix4 transform) {
+	public BoundingBox mulSelf(Matrix4 transform) {
 		final float x0 = min.x, y0 = min.y, z0 = min.z, x1 = max.x, y1 = max.y, z1 = max.z;
 		inf();
-		ext(tmpVector.set(x0, y0, z0).mul(transform));
-		ext(tmpVector.set(x0, y0, z1).mul(transform));
-		ext(tmpVector.set(x0, y1, z0).mul(transform));
-		ext(tmpVector.set(x0, y1, z1).mul(transform));
-		ext(tmpVector.set(x1, y0, z0).mul(transform));
-		ext(tmpVector.set(x1, y0, z1).mul(transform));
-		ext(tmpVector.set(x1, y1, z0).mul(transform));
-		ext(tmpVector.set(x1, y1, z1).mul(transform));
+		ext(tmpVector.set(x0, y0, z0).mulSelf(transform));
+		ext(tmpVector.set(x0, y0, z1).mulSelf(transform));
+		ext(tmpVector.set(x0, y1, z0).mulSelf(transform));
+		ext(tmpVector.set(x0, y1, z1).mulSelf(transform));
+		ext(tmpVector.set(x1, y0, z0).mulSelf(transform));
+		ext(tmpVector.set(x1, y0, z1).mulSelf(transform));
+		ext(tmpVector.set(x1, y1, z0).mulSelf(transform));
+		ext(tmpVector.set(x1, y1, z1).mulSelf(transform));
 		return this;
 	}
 

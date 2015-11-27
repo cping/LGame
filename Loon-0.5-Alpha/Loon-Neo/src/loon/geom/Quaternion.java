@@ -103,12 +103,12 @@ public class Quaternion implements Serializable {
 		return MathUtils.sqrt(x * x + y * y + z * z + w * w);
 	}
 
-	public Quaternion setEulerAngles(float yaw, float pitch, float roll) {
-		return setEulerAnglesRad(yaw * MathUtils.DEG_TO_RAD, pitch
+	public Quaternion setEulerAnglesSelf(float yaw, float pitch, float roll) {
+		return setEulerAnglesRadSelf(yaw * MathUtils.DEG_TO_RAD, pitch
 				* MathUtils.DEG_TO_RAD, roll * MathUtils.DEG_TO_RAD);
 	}
 
-	public Quaternion setEulerAnglesRad(float yaw, float pitch, float roll) {
+	public Quaternion setEulerAnglesRadSelf(float yaw, float pitch, float roll) {
 		final float hr = roll * 0.5f;
 		final float shr = MathUtils.sin(hr);
 		final float chr = MathUtils.cos(hr);
@@ -173,7 +173,7 @@ public class Quaternion implements Serializable {
 		return x * x + y * y + z * z + w * w;
 	}
 
-	public Quaternion nor() {
+	public Quaternion norSelf() {
 		float len = len2();
 		if (len != 0.f && !MathUtils.isEqual(len, 1f)) {
 			len = MathUtils.sqrt(len);
@@ -185,17 +185,17 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion conjugate() {
+	public Quaternion conjugateSelf() {
 		x = -x;
 		y = -y;
 		z = -z;
 		return this;
 	}
 
-	public Vector3f transform(Vector3f v) {
+	public Vector3f transformSelf(Vector3f v) {
 		tmp2.set(this);
-		tmp2.conjugate();
-		tmp2.mulLeft(tmp1.set(v.x, v.y, v.z, 0)).mulLeft(this);
+		tmp2.conjugateSelf();
+		tmp2.mulLeftSelf(tmp1.set(v.x, v.y, v.z, 0)).mulLeftSelf(this);
 
 		v.x = tmp2.x;
 		v.y = tmp2.y;
@@ -203,7 +203,7 @@ public class Quaternion implements Serializable {
 		return v;
 	}
 
-	public Quaternion mul(final Quaternion other) {
+	public Quaternion mulSelf(final Quaternion other) {
 		final float newX = this.w * other.x + this.x * other.w + this.y
 				* other.z - this.z * other.y;
 		final float newY = this.w * other.y + this.y * other.w + this.z
@@ -219,7 +219,7 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion mul(final float x, final float y, final float z,
+	public Quaternion mulSelf(final float x, final float y, final float z,
 			final float w) {
 		final float newX = this.w * x + this.x * w + this.y * z - this.z * y;
 		final float newY = this.w * y + this.y * w + this.z * x - this.x * z;
@@ -232,7 +232,7 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion mulLeft(Quaternion other) {
+	public Quaternion mulLeftSelf(Quaternion other) {
 		final float newX = other.w * this.x + other.x * this.w + other.y
 				* this.z - other.z * y;
 		final float newY = other.w * this.y + other.y * this.w + other.z
@@ -248,7 +248,7 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion mulLeft(final float x, final float y, final float z,
+	public Quaternion mulLeftSelf(final float x, final float y, final float z,
 			final float w) {
 		final float newX = w * this.x + x * this.w + y * this.z - z * y;
 		final float newY = w * this.y + y * this.w + z * this.x - x * z;
@@ -261,7 +261,7 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion add(Quaternion quaternion) {
+	public Quaternion addSelf(Quaternion quaternion) {
 		this.x += quaternion.x;
 		this.y += quaternion.y;
 		this.z += quaternion.z;
@@ -269,7 +269,7 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion add(float qx, float qy, float qz, float qw) {
+	public Quaternion addSelf(float qx, float qy, float qz, float qw) {
 		this.x += qx;
 		this.y += qy;
 		this.z += qz;
@@ -345,7 +345,7 @@ public class Quaternion implements Serializable {
 		float l_sin = MathUtils.sin(l_ang / 2);
 		float l_cos = MathUtils.cos(l_ang / 2);
 		return this.set(d * x * l_sin, d * y * l_sin, d * z * l_sin, l_cos)
-				.nor();
+				.norSelf();
 	}
 
 	public Quaternion setFromMatrix(boolean normalizeAxes, Matrix4 matrix) {
@@ -445,7 +445,7 @@ public class Quaternion implements Serializable {
 				- y1 * x2, angle);
 	}
 
-	public Quaternion slerp(Quaternion end, float alpha) {
+	public Quaternion slerpSelf(Quaternion end, float alpha) {
 		final float dot = dot(end);
 		float absDot = dot < 0.f ? -dot : dot;
 		float scale0 = 1 - alpha;
@@ -470,28 +470,28 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion slerp(Quaternion[] q) {
+	public Quaternion slerpSelf(Quaternion[] q) {
 
 		final float w = 1.0f / q.length;
-		set(q[0]).exp(w);
+		set(q[0]).expSelf(w);
 		for (int i = 1; i < q.length; i++) {
-			mul(tmp1.set(q[i]).exp(w));
+			mulSelf(tmp1.set(q[i]).expSelf(w));
 		}
-		nor();
+		norSelf();
 		return this;
 	}
 
-	public Quaternion slerp(Quaternion[] q, float[] w) {
+	public Quaternion slerpSelf(Quaternion[] q, float[] w) {
 
-		set(q[0]).exp(w[0]);
+		set(q[0]).expSelf(w[0]);
 		for (int i = 1; i < q.length; i++) {
-			mul(tmp1.set(q[i]).exp(w[i]));
+			mulSelf(tmp1.set(q[i]).expSelf(w[i]));
 		}
-		nor();
+		norSelf();
 		return this;
 	}
 
-	public Quaternion exp(float alpha) {
+	public Quaternion expSelf(float alpha) {
 
 		float norm = len();
 		float normExp = MathUtils.pow(norm, alpha);
@@ -511,7 +511,7 @@ public class Quaternion implements Serializable {
 		y *= coeff;
 		z *= coeff;
 
-		nor();
+		norSelf();
 
 		return this;
 	}
@@ -564,7 +564,7 @@ public class Quaternion implements Serializable {
 		return this.x * x + this.y * y + this.z * z + this.w * w;
 	}
 
-	public Quaternion mul(float scalar) {
+	public Quaternion mulSelf(float scalar) {
 		this.x *= scalar;
 		this.y *= scalar;
 		this.z *= scalar;
@@ -578,7 +578,7 @@ public class Quaternion implements Serializable {
 
 	public float getAxisAngleRad(Vector3f axis) {
 		if (this.w > 1) {
-			this.nor();
+			this.norSelf();
 		}
 		float angle = (float) (2.0 * MathUtils.acos(this.w));
 		double s = MathUtils.sqrt(1 - this.w * this.w);
@@ -604,17 +604,17 @@ public class Quaternion implements Serializable {
 		return getAngleRad() * MathUtils.RAD_TO_DEG;
 	}
 
-	public void getSwingTwist(final float axisX, final float axisY,
+	public void getSwingTwistSelf(final float axisX, final float axisY,
 			final float axisZ, final Quaternion swing, final Quaternion twist) {
 		final float d = Vector3f.dot(this.x, this.y, this.z, axisX, axisY,
 				axisZ);
-		twist.set(axisX * d, axisY * d, axisZ * d, this.w).nor();
-		swing.set(twist).conjugate().mulLeft(this);
+		twist.set(axisX * d, axisY * d, axisZ * d, this.w).norSelf();
+		swing.set(twist).conjugateSelf().mulLeftSelf(this);
 	}
 
-	public void getSwingTwist(final Vector3f axis, final Quaternion swing,
+	public void getSwingTwistSelf(final Vector3f axis, final Quaternion swing,
 			final Quaternion twist) {
-		getSwingTwist(axis.x, axis.y, axis.z, swing, twist);
+		getSwingTwistSelf(axis.x, axis.y, axis.z, swing, twist);
 	}
 
 	public float getAngleAroundRad(final float axisX, final float axisY,
@@ -661,13 +661,15 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion addSelf(Quaternion q) {
-		return addSelf(q.x, q.y, q.z, q.w);
-	}
+    public Quaternion add(Quaternion q)
+    {
+        return add(q.x, q.y, q.z, q.w);
+    }
 
-	public Quaternion addSelf(float x, float y, float z, float w) {
-		return set(this.x + x, this.y + y, this.z + z, this.w + w);
-	}
+    public Quaternion add(float x, float y, float z, float w)
+    {
+        return cpy().addSelf(x, y, z, w);
+    }
 
 	public Quaternion subtract(Quaternion q) {
 		return subtract(q.x, q.y, q.z, q.w);
@@ -778,10 +780,6 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-	public Quaternion conjugateSelf() {
-		return set(-x, -y, -z, w);
-	}
-
 	public Quaternion lerp(Quaternion target, float alpha) {
 		return cpy().lerpSelf(target, alpha);
 	}
@@ -795,37 +793,6 @@ public class Quaternion implements Serializable {
 		Vector4f lerp = start.lerpSelf(end, alpha).normalizeSelf();
 
 		set(lerp.x, lerp.y, lerp.z, lerp.w);
-
-		return this;
-	}
-
-	public Quaternion slerpSelf(Quaternion target, float alpha) {
-		final float dot = dot(target);
-		float scale1, scale2;
-
-		if ((1 - dot) > 0.1) {
-			Quaternion temp = TMP();
-
-			if (dot < 0.0f) {
-				temp.set(-target.x, -target.y, -target.z, -target.w);
-			} else {
-				temp.set(target);
-			}
-			lerpSelf(temp, alpha);
-
-			return this;
-		}
-
-		scale1 = 1f - alpha;
-		scale2 = alpha;
-
-		if (dot < 0.0f)
-			scale2 = -scale2;
-
-		x = (scale1 * x) + (scale2 * target.x);
-		y = (scale1 * y) + (scale2 * target.y);
-		z = (scale1 * z) + (scale2 * target.z);
-		w = (scale1 * w) + (scale2 * target.w);
 
 		return this;
 	}

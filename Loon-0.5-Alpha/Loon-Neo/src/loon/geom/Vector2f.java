@@ -107,7 +107,7 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(x * sx, y * sy);
 	}
 
-	public Vector2f mul(Matrix3 mat) {
+	public Vector2f mulSelf(Matrix3 mat) {
 		float x = this.x * mat.val[0] + this.y * mat.val[3] + mat.val[6];
 		float y = this.x * mat.val[1] + this.y * mat.val[4] + mat.val[7];
 		this.x = x;

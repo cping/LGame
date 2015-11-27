@@ -641,7 +641,7 @@ public class Matrix4 implements Serializable {
 	}
 
 	public Matrix4 setFromEulerAngles(float yaw, float pitch, float roll) {
-		quat.setEulerAngles(yaw, pitch, roll);
+		quat.setEulerAnglesSelf(yaw, pitch, roll);
 		return set(quat);
 	}
 
@@ -666,10 +666,10 @@ public class Matrix4 implements Serializable {
 	static final Vector3f l_vey = new Vector3f();
 
 	public Matrix4 setToLookAt(Vector3f direction, Vector3f up) {
-		l_vez.set(direction).nor();
-		l_vex.set(direction).nor();
-		l_vex.crs(up).nor();
-		l_vey.set(l_vex).crs(l_vez).nor();
+		l_vez.set(direction).norSelf();
+		l_vex.set(direction).norSelf();
+		l_vex.crsSelf(up).norSelf();
+		l_vey.set(l_vex).crsSelf(l_vez).norSelf();
 		idt();
 		val[M00] = l_vex.x;
 		val[M01] = l_vex.y;
@@ -688,7 +688,7 @@ public class Matrix4 implements Serializable {
 	static final Matrix4 tmpMat = new Matrix4();
 
 	public Matrix4 setToLookAt(Vector3f position, Vector3f target, Vector3f up) {
-		tmpVec.set(target).sub(position);
+		tmpVec.set(target).subtractSelf(position);
 		setToLookAt(tmpVec, up);
 		this.mul(tmpMat.setToTranslation(-position.x, -position.y, -position.z));
 
@@ -700,11 +700,11 @@ public class Matrix4 implements Serializable {
 	static final Vector3f tmpUp = new Vector3f();
 
 	public Matrix4 setToWorld(Vector3f position, Vector3f forward, Vector3f up) {
-		tmpForward.set(forward).nor();
-		right.set(tmpForward).crs(up).nor();
-		tmpUp.set(right).crs(tmpForward).nor();
+		tmpForward.set(forward).norSelf();
+		right.set(tmpForward).crsSelf(up).norSelf();
+		tmpUp.set(right).crsSelf(tmpForward).norSelf();
 
-		this.set(right, tmpUp, tmpForward.scl(-1), position);
+		this.set(right, tmpUp, tmpForward.scaleSelf(-1), position);
 		return this;
 	}
 
@@ -734,11 +734,11 @@ public class Matrix4 implements Serializable {
 		getTranslation(tmpUp);
 		other.getTranslation(right);
 
-		setToScaling(tmpVec.scl(w).add(tmpForward.scl(1 - w)));
+		setToScaling(tmpVec.scaleSelf(w).addSelf(tmpForward.scaleSelf(1 - w)));
 
-		rotate(quat.slerp(quat2, 1 - w));
+		rotate(quat.slerpSelf(quat2, 1 - w));
 
-		setTranslation(tmpUp.scl(w).add(right.scl(1 - w)));
+		setTranslation(tmpUp.scaleSelf(w).addSelf(right.scaleSelf(1 - w)));
 
 		return this;
 	}
@@ -746,21 +746,21 @@ public class Matrix4 implements Serializable {
 	public Matrix4 avg(Matrix4[] t) {
 		final float w = 1.0f / t.length;
 
-		tmpVec.set(t[0].getScale(tmpUp).scl(w));
+		tmpVec.set(t[0].getScale(tmpUp).scaleSelf(w));
 
-		quat.set(t[0].getRotation(quat2).exp(w));
+		quat.set(t[0].getRotation(quat2).expSelf(w));
 
-		tmpForward.set(t[0].getTranslation(tmpUp).scl(w));
+		tmpForward.set(t[0].getTranslation(tmpUp).scaleSelf(w));
 
 		for (int i = 1; i < t.length; i++) {
 
-			tmpVec.add(t[i].getScale(tmpUp).scl(w));
+			tmpVec.addSelf(t[i].getScale(tmpUp).scaleSelf(w));
 
-			quat.mul(t[i].getRotation(quat2).exp(w));
+			quat.mulSelf(t[i].getRotation(quat2).expSelf(w));
 
-			tmpForward.add(t[i].getTranslation(tmpUp).scl(w));
+			tmpForward.addSelf(t[i].getTranslation(tmpUp).scaleSelf(w));
 		}
-		quat.nor();
+		quat.norSelf();
 
 		setToScaling(tmpVec);
 		rotate(quat);
@@ -771,21 +771,21 @@ public class Matrix4 implements Serializable {
 
 	public Matrix4 avg(Matrix4[] t, float[] w) {
 
-		tmpVec.set(t[0].getScale(tmpUp).scl(w[0]));
+		tmpVec.set(t[0].getScale(tmpUp).scaleSelf(w[0]));
 
-		quat.set(t[0].getRotation(quat2).exp(w[0]));
+		quat.set(t[0].getRotation(quat2).expSelf(w[0]));
 
-		tmpForward.set(t[0].getTranslation(tmpUp).scl(w[0]));
+		tmpForward.set(t[0].getTranslation(tmpUp).scaleSelf(w[0]));
 
 		for (int i = 1; i < t.length; i++) {
 
-			tmpVec.add(t[i].getScale(tmpUp).scl(w[i]));
+			tmpVec.addSelf(t[i].getScale(tmpUp).scaleSelf(w[i]));
 
-			quat.mul(t[i].getRotation(quat2).exp(w[i]));
+			quat.mulSelf(t[i].getRotation(quat2).expSelf(w[i]));
 
-			tmpForward.add(t[i].getTranslation(tmpUp).scl(w[i]));
+			tmpForward.addSelf(t[i].getTranslation(tmpUp).scaleSelf(w[i]));
 		}
-		quat.nor();
+		quat.norSelf();
 
 		setToScaling(tmpVec);
 		rotate(quat);
@@ -824,21 +824,21 @@ public class Matrix4 implements Serializable {
 		return this;
 	}
 
-	public Matrix4 scl(Vector3f scale) {
+	public Matrix4 scaleSelf(Vector3f scale) {
 		val[M00] *= scale.x;
 		val[M11] *= scale.y;
 		val[M22] *= scale.z;
 		return this;
 	}
 
-	public Matrix4 scl(float x, float y, float z) {
+	public Matrix4 scaleSelf(float x, float y, float z) {
 		val[M00] *= x;
 		val[M11] *= y;
 		val[M22] *= z;
 		return this;
 	}
 
-	public Matrix4 scl(float scale) {
+	public Matrix4 scaleSelf(float scale) {
 		val[M00] *= scale;
 		val[M11] *= scale;
 		val[M22] *= scale;
