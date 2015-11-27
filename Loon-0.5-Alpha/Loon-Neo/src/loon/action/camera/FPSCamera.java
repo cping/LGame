@@ -23,7 +23,8 @@ public class FPSCamera extends EmptyCamera {
 	}
 
 	public FPSCamera(float fovy, float aspect, float zNear, float zFar) {
-		_viewMatrix4 =  Transforms.createPerspective(fovy, aspect, zNear, zFar);
+		super();
+		_viewMatrix4 = Transforms.createPerspective(fovy, aspect, zNear, zFar);
 
 		position = new Vector3f(0, 0, 1);
 		rotation = new Quaternion();
@@ -125,6 +126,23 @@ public class FPSCamera extends EmptyCamera {
 		position.lerpSelf(p.position, alpha);
 		rotation.slerpSelf(p.rotation, alpha);
 
+		return this;
+	}
+
+	public FPSCamera initProjection(float fovy, float aspect, float zNear,
+			float zFar) {
+		Transforms.createPerspective(fovy, aspect, zNear, zFar, _projMatrix4);
+		return this;
+	}
+
+	public FPSCamera initProjection(float width, float height) {
+		return initProjection(0, width, height, 0, 0.01f, 100f);
+	}
+
+	public FPSCamera initProjection(float left, float right, float bottom,
+			float top, float zNear, float zFar) {
+		Transforms.createFrustum(left, right, bottom, top, zNear, zFar,
+				_projMatrix4);
 		return this;
 	}
 

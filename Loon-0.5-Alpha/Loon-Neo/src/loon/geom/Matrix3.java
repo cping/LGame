@@ -331,12 +331,12 @@ public class Matrix3 implements Serializable {
 	}
 
 	public Matrix3 set(int x, int y, float v) {
-		val[x + y * 3] = v;
+		val[y + x * 3] = v;
 		return this;
 	}
 
 	public float get(int x, int y) {
-		return val[x + y * 3];
+		return val[y + x * 3];
 	}
 
 	public Matrix3 izero() {

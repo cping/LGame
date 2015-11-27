@@ -20,6 +20,8 @@
  */
 package loon;
 
+import loon.action.camera.BaseCamera;
+import loon.action.camera.EmptyCamera;
 import loon.action.collision.GravityHandler;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
@@ -54,6 +56,26 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
+
+	private boolean _isExistCamera = false;
+
+	private BaseCamera _baseCamera;
+
+	public Screen setCamera(BaseCamera came) {
+		_isExistCamera = (came != null);
+		if (_isExistCamera) {
+			_baseCamera = came;
+			_baseCamera.setup();
+		}
+		return this;
+	}
+
+	public BaseCamera getCamera() {
+		if (_baseCamera == null) {
+			_baseCamera = new EmptyCamera();
+		}
+		return _baseCamera;
+	}
 
 	public void stopRepaint() {
 		LSystem.AUTO_REPAINT = false;
@@ -159,11 +181,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	protected static Screen StaticCurrentSceen;
 
+	private RootPlayer _players;
+
+	public final static byte DRAW_EMPTY = -1;
+
 	public final static byte DRAW_USER = 0;
 
 	public final static byte DRAW_SPRITE = 1;
 
 	public final static byte DRAW_DESKTOP = 2;
+
+	public final static byte DRAW_STAGE = 3;
 
 	public final class PaintOrder {
 
@@ -195,6 +223,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					desktop.createUI(g);
 				}
 				break;
+			case DRAW_STAGE:
+				if (stageRun) {
+					_players.paint(g);
+				} else if (stageRun = (LSystem._process != null)
+						&& (_players = LSystem._process.rootPlayer).children() > 0) {
+					_players.paint(g);
+				}
+				break;
+			case DRAW_EMPTY:
+			default:
+				break;
 			}
 		}
 
@@ -215,6 +254,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					desktop.update(c.timeSinceLastUpdate);
 				}
 				break;
+			case DRAW_STAGE:
+				stageRun = (LSystem._process != null && (_players = LSystem._process.rootPlayer)
+						.children() > 0);
+				if (stageRun) {
+					_players.update(c.timeSinceLastUpdate);
+				}
+				break;
+			case DRAW_EMPTY:
+			default:
+				break;
 			}
 		}
 
@@ -224,13 +273,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return LSystem._base;
 	}
 
-	private boolean spriteRun, desktopRun;
+	private boolean spriteRun, desktopRun, stageRun;
+
+	public final boolean isSpriteRunning() {
+		return spriteRun;
+	}
+
+	public final boolean isDesktopRunning() {
+		return desktopRun;
+	}
+
+	public final boolean isStageRunning() {
+		return stageRun;
+	}
 
 	private boolean fristPaintFlag;
 
 	private boolean secondPaintFlag;
 
 	private boolean lastPaintFlag;
+
+	private boolean basePaintFlag;
 
 	public static enum SensorDirection {
 		NONE, LEFT, RIGHT, UP, DOWN;
@@ -246,11 +309,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public final static int SCREEN_NOT_REPAINT = 0;
 
-	public final static int SCREEN_BITMAP_REPAINT = -1;
+	public final static int SCREEN_TEXTURE_REPAINT = 1;
 
-	public final static int SCREEN_CANVAS_REPAINT = -2;
-
-	public final static int SCREEN_COLOR_REPAINT = -3;
+	public final static int SCREEN_COLOR_REPAINT = 2;
 
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler gravityHandler;
@@ -297,6 +358,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private float tx, ty;
 
+	// 舞台对象
+	private PaintOrder baseOrder;
+
 	// 首先绘制的对象
 	private PaintOrder fristOrder;
 
@@ -306,7 +370,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	// 最后绘制的对象
 	private PaintOrder lastOrder;
 
-	private PaintOrder userOrder, spriteOrder, desktopOrder;
+	private PaintOrder userOrder, spriteOrder, desktopOrder, stageOrder;
 
 	private TArray<RectBox> limits = new TArray<RectBox>(10);
 
@@ -337,7 +401,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			this.replaceMethod = m;
 			this.replaceDstScreen = screen;
 
-			screen.setRepaintMode(SCREEN_CANVAS_REPAINT);
+			screen.setRepaintMode(SCREEN_NOT_REPAINT);
 			switch (m) {
 			case FROM_LEFT:
 				dstPos.setLocation(-getWidth(), 0);
@@ -385,7 +449,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 							LSystem.viewSize.getHeight());
 					screen.setClose(false);
 					screen.onLoad();
-					screen.setRepaintMode(SCREEN_CANVAS_REPAINT);
+					screen.setRepaintMode(SCREEN_NOT_REPAINT);
 					screen.onLoaded();
 					screen.setOnLoadState(true);
 					kill();
@@ -460,6 +524,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return userOrder;
 	}
 
+	protected final PaintOrder DRAW_STAGE_PAINT() {
+		if (stageOrder == null) {
+			stageOrder = new PaintOrder(DRAW_STAGE, this);
+		}
+		return stageOrder;
+	}
+
 	protected final PaintOrder DRAW_SPRITE_PAINT() {
 		if (spriteOrder == null) {
 			spriteOrder = new PaintOrder(DRAW_SPRITE, this);
@@ -490,6 +561,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.height = LSystem.viewSize.getHeight();
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
+		// 基础画布为舞台
+		this.baseOrder = DRAW_STAGE_PAINT();
 		// 最先精灵
 		this.fristOrder = DRAW_SPRITE_PAINT();
 		// 其次桌面
@@ -499,6 +572,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.fristPaintFlag = true;
 		this.secondPaintFlag = true;
 		this.lastPaintFlag = true;
+		this.basePaintFlag = true;
 	}
 
 	public boolean contains(float x, float y) {
@@ -516,7 +590,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @param height
 	 */
 	public void onCreate(int width, int height) {
-		this.mode = SCREEN_CANVAS_REPAINT;
+		this.mode = SCREEN_NOT_REPAINT;
 		this.baseInput = this;
 		this.width = width;
 		this.height = height;
@@ -905,7 +979,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 */
 	public Screen setBackground(LTexture background) {
 		if (background != null) {
-			setRepaintMode(SCREEN_BITMAP_REPAINT);
+			setRepaintMode(SCREEN_TEXTURE_REPAINT);
 			LTexture screen = null;
 			if (background.getWidth() != getWidth()
 					|| background.getHeight() != getHeight()) {
@@ -920,7 +994,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				tmp = null;
 			}
 		} else {
-			setRepaintMode(SCREEN_CANVAS_REPAINT);
+			setRepaintMode(SCREEN_NOT_REPAINT);
 		}
 		return this;
 	}
@@ -1207,6 +1281,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				if (isTranslate) {
 					g.translate(tx, ty);
 				}
+				if (_isExistCamera) {
+					g.setCamera(_baseCamera);
+				}
 				// 最下一层渲染，可重载
 				afterUI(g);
 				// 用户自定义的多个渲染接口
@@ -1215,17 +1292,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 						t.draw(g);
 					}
 				}
-				// 记录画笔，避免被(用户自定义)组件污染
-				g.saveBrush();
-				// 最底层，舞台以及表演者
-				LProcess process = LSystem._process;
-				RootPlayer players = process.rootPlayer;
-				if (players.children() > 0) {
-					players.update(elapsedTime);
-					players.paint(g);
+				// PS:下列四项允许用户调整顺序
+				// 基础
+				if (basePaintFlag) {
+					baseOrder.paint(g);
 				}
-				// PS:下列三项允许用户调整顺序
-				// 首先，精灵
+				// 精灵
 				if (fristPaintFlag) {
 					fristOrder.paint(g);
 				}
@@ -1233,8 +1305,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				if (secondPaintFlag) {
 					secondOrder.paint(g);
 				}
-				// 还原画笔
-				g.restoreBrush();
 				// 最后，用户渲染
 				if (lastPaintFlag) {
 					lastOrder.paint(g);
@@ -1242,6 +1312,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				// 最前一层渲染，可重载
 				beforeUI(g);
 			} finally {
+				// 若存在摄影机,则还原camera坐标
+				if (_isExistCamera) {
+					g.restoreTx();
+				}
 				// 还原屏幕矩阵以及画笔
 				g.restore();
 			}
@@ -1327,6 +1401,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (processing && !isClose) {
 			if (isGravity) {
 				gravityHandler.update(elapsedTime);
+			}
+			if (basePaintFlag) {
+				baseOrder.update(timer);
 			}
 			if (fristPaintFlag) {
 				fristOrder.update(timer);
@@ -1829,6 +1906,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return direction;
 	}
 
+	public PaintOrder getBaseOrder() {
+		return baseOrder;
+	}
+
+	public Screen setBaseOrder(PaintOrder bOrder) {
+		if (baseOrder == null) {
+			this.basePaintFlag = false;
+		} else {
+			this.basePaintFlag = true;
+			this.baseOrder = bOrder;
+		}
+		return this;
+	}
+
 	public PaintOrder getFristOrder() {
 		return fristOrder;
 	}
@@ -1925,7 +2016,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				releases.clear();
 			}
 			close();
-			System.gc();
 		}
 	}
 

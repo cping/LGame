@@ -1,6 +1,7 @@
 package loon.action.collision.c2d;
 
 import loon.action.collision.Collision2D;
+import loon.geom.Polygon;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -23,8 +24,26 @@ public class Polygon2D {
 		this.vertices = new TArray<Vector2f>();
 		this.position = new Vector2f();
 		this.center = new Vector2f();
-
 		clearVertices();
+	}
+
+	public Polygon2D(Polygon p) {
+		this.vertices = p.getVertices();
+		this.position = p.getPosition();
+		this.center = p.getCenterPos();
+		this.minX = p.getMinX();
+		this.maxX = p.getMaxX();
+		this.minY = p.getMinY();
+		this.maxY = p.getMaxY();
+		this.rotation = p.getRotation();
+	}
+
+	public Polygon2D(Polygon2D other) {
+		this();
+		setPosition(other.getPosition());
+		setRotation(other.getRotation());
+		vertices.addAll(other.vertices);
+		
 	}
 
 	public void clearVertices() {
@@ -94,10 +113,8 @@ public class Polygon2D {
 		return vertices.get(index);
 	}
 
-	public Polygon2D copy() {
-		Polygon2D p = new Polygon2D();
-		vertices.addAll(p.vertices);
-		return p;
+	public Polygon2D cpy() {
+		return new Polygon2D(this);
 	}
 
 	public int vertexCount() {
@@ -111,16 +128,15 @@ public class Polygon2D {
 	public void setPosition(Vector2f v) {
 		this.position.set(v);
 
-		if (bounds != null){
+		if (bounds != null) {
 			bounds.setPosition(position);
 		}
 	}
 
 	public Vector2f getCenter() {
-		if (vertexCount() == 0){
+		if (vertexCount() == 0) {
 			center.set(position);
-		}
-		else{
+		} else {
 			center.set(position).addSelf((maxX - minX) / 2, (maxY - minY) / 2);
 		}
 
@@ -132,7 +148,7 @@ public class Polygon2D {
 
 		position.set(center);
 
-		if (vertexCount() != 0){
+		if (vertexCount() != 0) {
 			position.subtractSelf((maxX - minX) / 2, (maxY - minY) / 2);
 		}
 	}
@@ -143,8 +159,9 @@ public class Polygon2D {
 
 		center.set(position).addSelf((maxX - minX) / 2, (maxY - minY) / 2);
 
-		if (bounds != null)
+		if (bounds != null) {
 			bounds.setPosition(position);
+		}
 	}
 
 	public Rectangle2D getBounds() {
@@ -153,7 +170,7 @@ public class Polygon2D {
 	}
 
 	private void updateBounds() {
-		if (bounds == null){
+		if (bounds == null) {
 			bounds = new Rectangle2D();
 		}
 
@@ -178,7 +195,7 @@ public class Polygon2D {
 	}
 
 	public void setRotation(float rotation) {
-		if (this.rotation == rotation){
+		if (this.rotation == rotation) {
 			return;
 		}
 		rotate(rotation - this.rotation);
@@ -190,11 +207,11 @@ public class Polygon2D {
 
 	public void rotate(float angle, float originX, float originY) {
 		this.rotation += angle;
-		if (angle == 0 || this instanceof Circle2D){
+		if (angle == 0 || this instanceof Circle2D) {
 			return;
 		}
-		for (Vector2f vertex : vertices){
-			vertex.subtractSelf(originX, originY).rotateSelf(angle)
+		for (Vector2f vertex : vertices) {
+			vertex.subtractSelf(originX, originY).rotate(angle)
 					.addSelf(originX, originY);
 		}
 	}
@@ -227,23 +244,24 @@ public class Polygon2D {
 
 	@Override
 	public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) {
-        	return false;
-        }
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        Polygon2D polygon = (Polygon2D) o;
+		Polygon2D polygon = (Polygon2D) o;
 
-        return NumberUtils.compare(polygon.maxX, maxX) == 0 &&
-               NumberUtils.compare(polygon.maxY, maxY) == 0 &&
-               NumberUtils.compare(polygon.minX, minX) == 0 &&
-               NumberUtils.compare(polygon.minY, minY) == 0 &&
-               NumberUtils.compare(polygon.rotation, rotation) == 0 &&
-               bounds.equals(polygon.bounds) &&
-               center.equals(polygon.center) &&
-               position.equals(polygon.position) &&
-               vertices.equals(polygon.vertices);
-    }
+		return NumberUtils.compare(polygon.maxX, maxX) == 0
+				&& NumberUtils.compare(polygon.maxY, maxY) == 0
+				&& NumberUtils.compare(polygon.minX, minX) == 0
+				&& NumberUtils.compare(polygon.minY, minY) == 0
+				&& NumberUtils.compare(polygon.rotation, rotation) == 0
+				&& bounds.equals(polygon.bounds)
+				&& center.equals(polygon.center)
+				&& position.equals(polygon.position)
+				&& vertices.equals(polygon.vertices);
+	}
 
 	@Override
 	public String toString() {
@@ -251,6 +269,18 @@ public class Polygon2D {
 				+ ", vertices=" + vertices + ", rotation=" + rotation
 				+ ", minX=" + minX + ", minY=" + minY + ", maxX=" + maxX
 				+ ", maxY=" + maxY + ", bounds=" + bounds + '}';
+	}
+
+	public float[] getPoints() {
+		int size = vertexCount() * 2;
+		TArray<Vector2f> list = getVertices();
+		float[] verts = new float[size];
+		for (int i = 0, j = 0; i < size; i += 2, j++) {
+			Vector2f v = list.get(j);
+			verts[i] = v.x;
+			verts[i + 1] = v.y;
+		}
+		return verts;
 	}
 
 	public float getMinX() {
@@ -267,5 +297,9 @@ public class Polygon2D {
 
 	public float getMaxY() {
 		return maxY;
+	}
+	
+	public Polygon getPolygon(){
+		return new Polygon(this);
 	}
 }

@@ -3,6 +3,7 @@ package loon.action.collision;
 import loon.action.collision.c3d.Polygon3D;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class Collision3D {
@@ -136,7 +137,7 @@ public class Collision3D {
 			}
 		}
 
-		overlap = Math.abs(overlap);
+		overlap = MathUtils.abs(overlap);
 
 		if (overlap < response.overlap) {
 			response.overlap = overlap;

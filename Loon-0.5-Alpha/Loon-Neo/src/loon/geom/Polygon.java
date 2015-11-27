@@ -21,8 +21,10 @@
  */
 package loon.geom;
 
+import loon.action.collision.c2d.Polygon2D;
 import loon.physics.PPolygon;
 import loon.utils.CollectionUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class Polygon extends Shape {
@@ -96,6 +98,20 @@ public class Polygon extends Shape {
 	private boolean allowDups = false;
 
 	private boolean closed = true;
+
+	public Polygon(Polygon2D polygon) {
+		this(polygon.getPoints());
+		this.x = polygon.getPosition().x;
+		this.y = polygon.getPosition().y;
+		this.center = new float[2];
+		this.center[0] = polygon.getCenter().x;
+		this.center[1] = polygon.getCenter().y;
+		this.rotation = polygon.getRotation();
+		this.minX = polygon.getMinX();
+		this.maxX = polygon.getMaxX();
+		this.minY = polygon.getMinY();
+		this.maxY = polygon.getMaxY();
+	}
 
 	public Polygon(float[] points) {
 		int length = points.length;
@@ -190,8 +206,9 @@ public class Polygon extends Shape {
 		if (hasVertex(x, y) && (!allowDups)) {
 			return;
 		}
+		int size = points.length;
 		TArray<Float> tempPoints = new TArray<Float>();
-		for (int i = 0; i < points.length; i++) {
+		for (int i = 0; i < size; i++) {
 			tempPoints.add(points[i]);
 		}
 		tempPoints.add(x);
@@ -232,7 +249,7 @@ public class Polygon extends Shape {
 
 		return resultPolygon;
 	}
-	
+
 	@Override
 	public void setX(float x) {
 		super.setX(x);
@@ -245,10 +262,35 @@ public class Polygon extends Shape {
 		pointsDirty = false;
 	}
 
+	public void addVertex(float x, float y) {
+		addPoint(x, y);
+	}
+
+	public void addVertex(Vector2f v) {
+		addVertex(v.x, v.y);
+	}
+
+	public TArray<Vector2f> getVertices() {
+		int size = points.length;
+		TArray<Vector2f> vertices = new TArray<Vector2f>();
+		for (int i = 0; i < size; i += 2) {
+			vertices.add(new Vector2f(points[i], points[i + 1]));
+		}
+		return vertices;
+	}
+
 	protected void createPoints() {
 
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Polygon{" + "points =[" + StringUtils.join(',', points)
+				+ "], center=[" + StringUtils.join(',', center)
+				+ "], rotation=" + rotation + ", minX=" + minX + ", minY="
+				+ minY + ", maxX=" + maxX + ", maxY=" + maxY + '}';
+	}
+
 	@Override
 	public boolean closed() {
 		return closed;
@@ -259,7 +301,11 @@ public class Polygon extends Shape {
 	}
 
 	public PPolygon getPPolygon(float scale) {
-		return new PPolygon(points,scale);
+		return new PPolygon(points, scale);
+	}
+
+	public Polygon2D getPolygon2D() {
+		return new Polygon2D(this);
 	}
 
 	public Polygon copy() {

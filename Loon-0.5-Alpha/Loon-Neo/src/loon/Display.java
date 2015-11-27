@@ -256,7 +256,9 @@ public class Display extends LSystemView {
 
 			int repaintMode = process.getRepaintMode();
 			switch (repaintMode) {
-			case Screen.SCREEN_BITMAP_REPAINT:
+			case Screen.SCREEN_NOT_REPAINT:
+				break;
+			case Screen.SCREEN_TEXTURE_REPAINT:
 				if (process.getX() == 0 && process.getY() == 0) {
 					glEx.draw(process.getBackground(), 0, 0);
 				} else {
@@ -269,10 +271,6 @@ public class Display extends LSystemView {
 				if (c != null) {
 					glEx.clear(c);
 				}
-				break;
-			case Screen.SCREEN_CANVAS_REPAINT:
-				break;
-			case Screen.SCREEN_NOT_REPAINT:
 				break;
 			default:
 				if (process.getX() == 0 && process.getY() == 0) {

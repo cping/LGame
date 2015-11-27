@@ -2,6 +2,7 @@ package loon.action.collision;
 
 import loon.action.collision.c2d.Polygon2D;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public final class Collision2D {
@@ -102,7 +103,7 @@ public final class Collision2D {
 			}
 		}
 
-		overlap = Math.abs(overlap);
+		overlap = MathUtils.abs(overlap);
 
 		if (overlap < response.overlap) {
 			response.overlap = overlap;
@@ -123,10 +124,12 @@ public final class Collision2D {
 		for (Vector2f vertex : vertices) {
 			float dot = vertex.dot(normal);
 
-			if (dot < min)
+			if (dot < min){
 				min = dot;
-			if (dot > max)
+			}
+			if (dot > max){
 				max = dot;
+			}
 		}
 
 		return projection.set(min, max);

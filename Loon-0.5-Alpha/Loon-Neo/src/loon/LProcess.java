@@ -549,7 +549,7 @@ public class LProcess extends PlayerUtils {
 		if (isInstance) {
 			return currentScreen.getRepaintMode();
 		}
-		return Screen.SCREEN_CANVAS_REPAINT;
+		return Screen.SCREEN_NOT_REPAINT;
 	}
 
 	/**
@@ -763,7 +763,7 @@ public class LProcess extends PlayerUtils {
 			currentScreen.setClose(false);
 			currentScreen.setOnLoadState(true);
 			if (screen.getBackground() != null) {
-				currentScreen.setRepaintMode(Screen.SCREEN_BITMAP_REPAINT);
+				currentScreen.setRepaintMode(Screen.SCREEN_TEXTURE_REPAINT);
 			}
 			this.isInstance = true;
 			if (screen instanceof EmulatorListener) {

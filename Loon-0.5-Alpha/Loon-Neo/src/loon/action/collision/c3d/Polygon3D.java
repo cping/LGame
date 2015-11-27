@@ -3,6 +3,7 @@ package loon.action.collision.c3d;
 import loon.action.collision.Collision3D;
 import loon.geom.Quaternion;
 import loon.geom.Vector3f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class Polygon3D {
@@ -63,12 +64,12 @@ public class Polygon3D {
     {
         vertices.add(v);
 
-        minX = Math.min(minX, v.x);
-        minY = Math.min(minY, v.y);
-        minZ = Math.min(minZ, v.z);
-        maxX = Math.max(maxX, v.x);
-        maxY = Math.max(maxY, v.y);
-        maxZ = Math.max(maxZ, v.z);
+        minX = MathUtils.min(minX, v.x);
+        minY = MathUtils.min(minY, v.y);
+        minZ = MathUtils.min(minZ, v.z);
+        maxX = MathUtils.max(maxX, v.x);
+        maxY = MathUtils.max(maxY, v.y);
+        maxZ = MathUtils.max(maxZ, v.z);
     }
 
     private void updateBounds()
@@ -80,12 +81,12 @@ public class Polygon3D {
 
         for (Vector3f v : vertices)
         {
-            minX = Math.min(minX, v.x);
-            minY = Math.min(minY, v.y);
-            minZ = Math.min(minZ, v.z);
-            maxX = Math.max(maxX, v.x);
-            maxY = Math.max(maxY, v.y);
-            maxZ = Math.max(maxZ, v.z);
+            minX = MathUtils.min(minX, v.x);
+            minY = MathUtils.min(minY, v.y);
+            minZ = MathUtils.min(minZ, v.z);
+            maxX = MathUtils.max(maxX, v.x);
+            maxY = MathUtils.max(maxY, v.y);
+            maxZ = MathUtils.max(maxZ, v.z);
         }
 
         if (bounds == null){
@@ -182,7 +183,7 @@ public class Polygon3D {
         return vertices.get(index);
     }
 
-    public Polygon3D copy()
+    public Polygon3D cpy()
     {
         return new Polygon3D(this);
     }

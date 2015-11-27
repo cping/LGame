@@ -493,7 +493,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		Affine2f txf = tx();
 		if (txf != null) {
 			came.setup();
-			this.saveTx();
 			this.set(came.getView().cpy().thisCombine(tx()));
 		}
 		return this;

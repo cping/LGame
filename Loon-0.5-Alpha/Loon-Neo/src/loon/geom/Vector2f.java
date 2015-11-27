@@ -813,13 +813,6 @@ public class Vector2f implements Serializable, XY {
 		return set(x / l, y / l);
 	}
 
-	public Vector2f rotateSelf(float angle) {
-		float cos = MathUtils.cos(angle);
-		float sin = MathUtils.sin(angle);
-
-		return set(x * cos - y * sin, x * sin + y * cos);
-	}
-
 	public Vector2f negateSelf() {
 		return set(-x, -y);
 	}

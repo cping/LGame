@@ -5,15 +5,16 @@ import loon.geom.Matrix4;
 
 public class EmptyCamera extends BaseCamera {
 
+	protected Matrix4 _projMatrix4;
+
 	protected Matrix4 _viewMatrix4;
 
 	public EmptyCamera() {
-		_viewMatrix4 = new Matrix4();
-		_viewMatrix4.setToOrtho2D(0, 0, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		this(LSystem.viewSize.getMatrix().cpy(), new Matrix4());
 	}
 
-	public EmptyCamera(Matrix4 v) {
+	public EmptyCamera(Matrix4 p, Matrix4 v) {
+		_projMatrix4 = p;
 		_viewMatrix4 = v;
 	}
 
@@ -21,4 +22,15 @@ public class EmptyCamera extends BaseCamera {
 	public Matrix4 getView() {
 		return _viewMatrix4;
 	}
+
+	@Override
+	public Matrix4 getProjection() {
+		return _projMatrix4;
+	}
+
+	@Override
+	public Matrix4 getCombine() {
+		return _projMatrix4.mul(_viewMatrix4);
+	}
+
 }

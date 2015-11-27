@@ -35,6 +35,63 @@ final public class StringUtils {
 	}
 
 	/**
+	 * 联合指定对象并输出为字符串
+	 * 
+	 * @param flag
+	 * @param o
+	 * @return
+	 */
+	public static String join(Character flag, Object... o) {
+		StringBuilder sbr = new StringBuilder();
+		int size = o.length;
+		for (int i = 0; i < size; i++) {
+			sbr.append(o[i]);
+			if (i < size - 1) {
+				sbr.append(flag);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 联合指定对象并输出为字符串
+	 * 
+	 * @param flag
+	 * @param o
+	 * @return
+	 */
+	public static String join(Character flag, float[] o) {
+		StringBuilder sbr = new StringBuilder();
+		int size = o.length;
+		for (int i = 0; i < size; i++) {
+			sbr.append(o[i]);
+			if (i < size - 1) {
+				sbr.append(flag);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 联合指定对象并输出为字符串
+	 * 
+	 * @param flag
+	 * @param o
+	 * @return
+	 */
+	public static String join(Character flag, int[] o) {
+		StringBuilder sbr = new StringBuilder();
+		int size = o.length;
+		for (int i = 0; i < size; i++) {
+			sbr.append(o[i]);
+			if (i < size - 1) {
+				sbr.append(flag);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
 	 * 拼接指定对象数组为String
 	 * 
 	 * @param res

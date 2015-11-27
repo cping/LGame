@@ -72,7 +72,7 @@ public class Rectangle2D extends Polygon2D {
 	}
 
 	@Override
-	public Rectangle2D copy() {
+	public Rectangle2D cpy() {
 		return new Rectangle2D(getX(), getY(), width, height);
 	}
 

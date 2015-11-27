@@ -12,4 +12,7 @@ public abstract class BaseCamera {
 
 	public abstract Matrix4 getView();
 
+    public abstract Matrix4 getProjection();
+    
+    public abstract Matrix4 getCombine();
 }

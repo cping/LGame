@@ -20,8 +20,6 @@
  */
 package loon;
 
-import loon.action.camera.BaseCamera;
-import loon.action.camera.EmptyCamera;
 import loon.canvas.Canvas;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
@@ -115,10 +113,6 @@ public abstract class Graphics {
 			lastAffine = affine;
 		}
 		return viewMatrix;
-	}
-
-	public BaseCamera newCamera() {
-		return new EmptyCamera(getViewMatrix());
 	}
 
 	public void save() {

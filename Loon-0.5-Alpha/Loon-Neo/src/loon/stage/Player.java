@@ -37,7 +37,8 @@ import loon.utils.reply.Port;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
-public abstract class Player extends LObject implements ActionBind, XY, LRelease {
+public abstract class Player extends LObject implements ActionBind, XY,
+		LRelease {
 
 	protected int flags;
 
@@ -50,12 +51,11 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 	private float scaleX = 1, scaleY = 1;
 	private final Affine2f affine = new Affine2f();
 
-	
 	private Origin origin = Origin.FIXED;
 	private float originX, originY;
 	protected int baseColor = LColor.DEF_COLOR;
 	protected long _elapsed;
-	
+
 	public static enum State {
 		REMOVED, ADDED, DISPOSED
 	}
@@ -526,6 +526,7 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 		if (!isVisible()) {
 			return;
 		}
+		gl.saveTx();
 		int old = gl.combineColor(baseColor);
 		BaseBatch obatch = gl.pushBatch(batch);
 		gl.concatenate(affine(), originX(), originY());
@@ -534,6 +535,7 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 		} finally {
 			gl.popBatch(obatch);
 			gl.setColor(old);
+			gl.restoreTx();
 		}
 	}
 
@@ -784,7 +786,6 @@ public abstract class Player extends LObject implements ActionBind, XY, LRelease
 	public void update(long elapsedTime) {
 		_elapsed = elapsedTime;
 	}
-	
 
 	public long getElapsed() {
 		return this._elapsed;

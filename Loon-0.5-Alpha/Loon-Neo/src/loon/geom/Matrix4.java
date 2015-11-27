@@ -233,12 +233,12 @@ public class Matrix4 implements Serializable {
 
     public Matrix4 set(int x, int y, float v)
     {
-    	val[x + y * 4] = v;
+    	val[y + x * 4] = v;
         return this;
     }
 
 	public float get(int x, int y) {
-		return val[x + y * 4];
+		return val[y + x * 4];
 	}
 
 	public Matrix4 cpy() {

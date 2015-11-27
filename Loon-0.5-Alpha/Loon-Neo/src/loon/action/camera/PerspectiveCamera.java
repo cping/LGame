@@ -19,6 +19,7 @@ public class PerspectiveCamera extends EmptyCamera {
 	}
 
 	public PerspectiveCamera(float fovy, float aspect, float zNear, float zFar) {
+		super();
 		_viewMatrix4 = Transforms.createPerspective(fovy, aspect, zNear, zFar);
 
 		position = new Vector3f(0, 0, 1);
@@ -151,5 +152,22 @@ public class PerspectiveCamera extends EmptyCamera {
 		this.rotation.set(rotation);
 		return this;
 	}
+
+    public PerspectiveCamera initProjection(float fovy, float aspect, float zNear, float zFar)
+    {
+        Transforms.createPerspective(fovy, aspect, zNear, zFar, _projMatrix4);
+        return this;
+    }
+
+    public PerspectiveCamera initProjection(float width, float height)
+    {
+        return initProjection(0, width, height, 0, 0.01f, 100f);
+    }
+
+    public PerspectiveCamera initProjection(float left, float right, float bottom, float top, float zNear, float zFar)
+    {
+        Transforms.createFrustum(left, right, bottom, top, zNear, zFar, _projMatrix4);
+        return this;
+    }
 
 }

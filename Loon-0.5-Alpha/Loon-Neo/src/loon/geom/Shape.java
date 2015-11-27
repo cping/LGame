@@ -79,6 +79,18 @@ public abstract class Shape implements Serializable, XY {
 		setY(y + deltaY);
 	}
 
+	public int vertexCount() {
+		return points.length / 2;
+	}
+
+	public Vector2f getPosition() {
+		return new Vector2f(getX(), getY());
+	}
+
+	public Vector2f getCenterPos() {
+		return new Vector2f(getCenterX(), getCenterY());
+	}
+
 	public float getX() {
 		return x;
 	}
@@ -159,6 +171,11 @@ public abstract class Shape implements Serializable, XY {
 
 		float yDiff = centerY - getCenterY();
 		setY(y + yDiff);
+	}
+
+	public void setCenter(Vector2f pos) {
+		setCenterX(pos.x);
+		setCenterY(pos.y);
 	}
 
 	public float getMaxX() {
@@ -343,8 +360,8 @@ public abstract class Shape implements Serializable, XY {
 		float thatPoints[] = shape.getPoints();
 		int length = points.length;
 		int thatLength = thatPoints.length;
-		double unknownA;
-		double unknownB;
+		float unknownA;
+		float unknownB;
 
 		if (!closed()) {
 			length -= 2;
@@ -365,9 +382,9 @@ public abstract class Shape implements Serializable, XY {
 					jNext = 0;
 				}
 
-				unknownA = (((points[iNext] - points[i]) * (double) (thatPoints[j + 1] - points[i + 1])) - ((points[iNext + 1] - points[i + 1]) * (thatPoints[j] - points[i])))
+				unknownA = (((points[iNext] - points[i]) * (float) (thatPoints[j + 1] - points[i + 1])) - ((points[iNext + 1] - points[i + 1]) * (thatPoints[j] - points[i])))
 						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j])) - ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
-				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (double) (thatPoints[j + 1] - points[i + 1])) - ((thatPoints[jNext + 1] - thatPoints[j + 1]) * (thatPoints[j] - points[i])))
+				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (float) (thatPoints[j + 1] - points[i + 1])) - ((thatPoints[jNext + 1] - thatPoints[j + 1]) * (thatPoints[j] - points[i])))
 						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j])) - ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
 
 				if (unknownA >= 0 && unknownA <= 1 && unknownB >= 0
