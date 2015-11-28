@@ -490,10 +490,10 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	 * 
 	 * @param distance
 	 */
-	public void move(double distance) {
-		double angle = MathUtils.toRadians(getRotation());
-		int x = (int) MathUtils.round(getX() + MathUtils.cos(angle) * distance);
-		int y = (int) MathUtils.round(getY() + MathUtils.sin(angle) * distance);
+	public void move(float distance) {
+		float angle = MathUtils.toRadians(getRotation());
+		int x =  MathUtils.round(getX() + MathUtils.cos(angle) * distance);
+		int y =  MathUtils.round(getY() + MathUtils.sin(angle) * distance);
 		setLocation(x, y);
 	}
 

@@ -26,7 +26,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.ISprite;
 import loon.event.Updateable;
-import loon.geom.Point.Point2i;
+import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
@@ -222,7 +222,7 @@ public class AVGCG implements LRelease{
 						if (animation.loop && animation.startTime == -1) {
 							animation.start(0, loop);
 						}
-						Point2i point = animation.getPos(System
+						PointI point = animation.getPos(System
 								.currentTimeMillis());
 						if (animation.alpha != 1f) {
 							g.setAlpha(animation.alpha);

@@ -20,23 +20,77 @@
  */
 package loon.geom;
 
+import loon.utils.MathUtils;
+
 /*最简化的整型坐标处理类,以减少对象大小*/
 public class PointI {
 
 	public int x = 0;
 	public int y = 0;
-	
-	public PointI(){
-		
+
+	public PointI() {
+
 	}
 
 	public PointI(int x1, int y1) {
-		this.x = x1;
-		this.y = y1;
+		set(x1, y1);
+	}
+
+	public PointI(PointI p) {
+		this.x = p.x;
+		this.y = p.y;
 	}
 
 	public void set(int x1, int y1) {
 		this.x = x1;
 		this.y = y1;
+	}
+
+	public final boolean equals(int x, int y) {
+		return MathUtils.equal(x, this.x) && MathUtils.equal(y, this.y);
+	}
+
+	public final int length() {
+		return MathUtils.sqrt(MathUtils.mul(x, x) + MathUtils.mul(y, y));
+	}
+
+	public final void negate() {
+		x = -x;
+		y = -y;
+	}
+
+	public final void offset(int x, int y) {
+		this.x += x;
+		this.y += y;
+	}
+
+	public final void set(PointI p) {
+		this.x = p.x;
+		this.y = p.y;
+	}
+
+	public final int distanceTo(PointI p) {
+		final int tx = this.x - p.x;
+		final int ty = this.y - p.y;
+		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+	}
+
+	public final int distanceTo(int x, int y) {
+		final int tx = this.x - x;
+		final int ty = this.y - y;
+		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+	}
+
+	public final int distanceTo(PointI p1, PointI p2) {
+		final int tx = p2.x - p1.x;
+		final int ty = p2.y - p1.y;
+		final int u = MathUtils.div(
+				MathUtils.mul(x - p1.x, tx) + MathUtils.mul(y - p1.y, ty),
+				MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		final int ix = p1.x + MathUtils.mul(u, tx);
+		final int iy = p1.y + MathUtils.mul(u, ty);
+		final int dx = ix - x;
+		final int dy = iy - y;
+		return MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
 	}
 }

@@ -39,7 +39,7 @@ import loon.event.ScreenListener;
 import loon.event.SysTouch;
 import loon.event.Updateable;
 import loon.event.LTouchArea.Event;
-import loon.geom.Point.Point2i;
+import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -352,7 +352,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	// 桌面集合
 	private Desktop desktop;
 
-	private Point2i touch = new Point2i(0, 0);
+	private PointI touch = new PointI(0, 0);
 
 	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
 
@@ -1625,7 +1625,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public abstract void resize(int width, int height);
 
-	public Point2i getTouch() {
+	public PointI getTouch() {
 		touch.set((int) SysTouch.getX(), (int) SysTouch.getY());
 		return touch;
 	}

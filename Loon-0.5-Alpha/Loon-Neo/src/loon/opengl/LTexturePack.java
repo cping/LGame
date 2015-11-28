@@ -30,9 +30,9 @@ import loon.action.sprite.SpriteRegion;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.geom.Point.Point2i;
+import loon.geom.PointI;
 import loon.geom.RectBox;
-import loon.geom.RectBox.Rect2i;
+import loon.geom.RectI;
 import loon.utils.ArrayMap;
 import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
@@ -40,8 +40,8 @@ import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
 
 public class LTexturePack implements LRelease {
-
-	private final Point2i blittedSize = new Point2i();
+	
+	private final PointI blittedSize = new PointI();
 
 	private final ArrayMap temps = new ArrayMap();
 
@@ -363,6 +363,7 @@ public class LTexturePack implements LRelease {
 			int maxWidth = 0;
 			int maxHeight = 0;
 			int totalArea = 0;
+	
 			for (int i = 0; i < temps.size(); i++) {
 				PackEntry entry = (PackEntry) temps.get(i);
 				int width = (int) entry.image.width();
@@ -375,7 +376,8 @@ public class LTexturePack implements LRelease {
 				}
 				totalArea += width * height;
 			}
-			Point2i size = new Point2i(closeTwoPower(maxWidth),
+		
+			PointI size = new PointI(closeTwoPower(maxWidth),
 					closeTwoPower(maxHeight));
 			boolean fitAll = false;
 			loop: while (!fitAll) {
@@ -415,9 +417,11 @@ public class LTexturePack implements LRelease {
 		if (texture != null && !packing) {
 			return texture;
 		}
+		
 		if (fileName != null) {
 			texture = LTextures.loadTexture(fileName, format);
 		} else {
+		
 			Image image = packImage();
 			if (image == null) {
 				return null;
@@ -426,6 +430,7 @@ public class LTexturePack implements LRelease {
 				texture.close();
 				texture = null;
 			}
+		
 			if (colorMask != null) {
 				int[] pixels = image.getPixels();
 				int size = pixels.length;
@@ -493,15 +498,15 @@ public class LTexturePack implements LRelease {
 		return texture != null && texture.isBatchLocked();
 	}
 
-	public Point2i draw(int id, float x, float y) {
+	public PointI draw(int id, float x, float y) {
 		return draw(id, x, y, 0, null);
 	}
 
-	public Point2i draw(int id, float x, float y, LColor color) {
+	public PointI draw(int id, float x, float y, LColor color) {
 		return draw(id, x, y, 0, color);
 	}
 
-	public Point2i draw(int id, float x, float y, float rotation, LColor color) {
+	public PointI draw(int id, float x, float y, float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(id);
 		if (entry == null) {
@@ -524,15 +529,15 @@ public class LTexturePack implements LRelease {
 		return blittedSize;
 	}
 
-	public Point2i draw(int id, float x, float y, float w, float h) {
+	public PointI draw(int id, float x, float y, float w, float h) {
 		return draw(id, x, y, w, h, 0, null);
 	}
 
-	public Point2i draw(int id, float x, float y, float w, float h, LColor color) {
+	public PointI draw(int id, float x, float y, float w, float h, LColor color) {
 		return draw(id, x, y, w, h, 0, color);
 	}
 
-	public Point2i draw(int id, float x, float y, float w, float h,
+	public PointI draw(int id, float x, float y, float w, float h,
 			float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(id);
@@ -555,23 +560,23 @@ public class LTexturePack implements LRelease {
 		return blittedSize;
 	}
 
-	public Point2i draw(int id, float dx1, float dy1, float dx2, float dy2,
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
 			float sx1, float sy1, float sx2, float sy2) {
 		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0);
 	}
 
-	public Point2i draw(int id, float dx1, float dy1, float dx2, float dy2,
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
 			float sx1, float sy1, float sx2, float sy2, float rotation) {
 		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, rotation, null);
 	}
 
-	public Point2i draw(int id, float dx1, float dy1, float dx2, float dy2,
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
 			float sx1, float sy1, float sx2, float sy2, LColor color) {
 		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
 	}
 
 
-	public Point2i draw(int id, float dx1, float dy1, float dx2, float dy2,
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
 			float sx1, float sy1, float sx2, float sy2, float rotation,
 			LColor color) {
 		this.pack();
@@ -595,11 +600,11 @@ public class LTexturePack implements LRelease {
 		return blittedSize;
 	}
 
-	public Point2i draw(String name, float x, float y) {
+	public PointI draw(String name, float x, float y) {
 		return draw(name, x, y, 0, null);
 	}
 
-	public Point2i draw(String name, float x, float y, LColor color) {
+	public PointI draw(String name, float x, float y, LColor color) {
 		return draw(name, x, y, 0, color);
 	}
 
@@ -613,7 +618,7 @@ public class LTexturePack implements LRelease {
 		}
 	}
 
-	public Point2i draw(String name, float x, float y, float rotation,
+	public PointI draw(String name, float x, float y, float rotation,
 			LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
@@ -637,16 +642,16 @@ public class LTexturePack implements LRelease {
 		return blittedSize;
 	}
 
-	public Point2i draw(String name, float x, float y, float w, float h) {
+	public PointI draw(String name, float x, float y, float w, float h) {
 		return draw(name, x, y, w, h, 0, null);
 	}
 
-	public Point2i draw(String name, float x, float y, float w, float h,
+	public PointI draw(String name, float x, float y, float w, float h,
 			LColor color) {
 		return draw(name, x, y, w, h, 0, color);
 	}
 
-	public Point2i draw(String name, float x, float y, float w, float h,
+	public PointI draw(String name, float x, float y, float w, float h,
 			float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
@@ -668,18 +673,18 @@ public class LTexturePack implements LRelease {
 		return blittedSize;
 	}
 
-	public Point2i draw(String name, float dx1, float dy1, float dx2,
+	public PointI draw(String name, float dx1, float dy1, float dx2,
 			float dy2, float sx1, float sy1, float sx2, float sy2) {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0);
 	}
 
-	public Point2i draw(String name, float dx1, float dy1, float dx2,
+	public PointI draw(String name, float dx1, float dy1, float dx2,
 			float dy2, float sx1, float sy1, float sx2, float sy2,
 			float rotation) {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, null);
 	}
 
-	public Point2i draw(String name, float dx1, float dy1, float dx2,
+	public PointI draw(String name, float dx1, float dy1, float dx2,
 			float dy2, float sx1, float sy1, float sx2, float sy2, LColor color) {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
 	}
@@ -700,7 +705,7 @@ public class LTexturePack implements LRelease {
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
 	}
 
-	public Point2i draw(String name, float dx1, float dy1, float dx2,
+	public PointI draw(String name, float dx1, float dy1, float dx2,
 			float dy2, float sx1, float sy1, float sx2, float sy2,
 			float rotation, LColor color) {
 		this.pack();
@@ -740,7 +745,7 @@ public class LTexturePack implements LRelease {
 		return new int[] { entry.width, entry.height };
 	}
 
-	public Rect2i getImageSize(int id) {
+	public RectI.Range getImageSize(int id) {
 		PackEntry entry = getEntry(id);
 		if (entry == null) {
 			return null;
@@ -748,7 +753,7 @@ public class LTexturePack implements LRelease {
 		return entry.bounds;
 	}
 
-	public Rect2i getImageSize(String name) {
+	public RectI.Range getImageSize(String name) {
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
 			return null;
@@ -756,7 +761,7 @@ public class LTexturePack implements LRelease {
 		return entry.bounds;
 	}
 
-	private void nextSize(Point2i size) {
+	private void nextSize(PointI size) {
 		if (size.x > size.y) {
 			size.y <<= 1;
 		} else {
@@ -794,7 +799,7 @@ public class LTexturePack implements LRelease {
 
 	public class PackEntry {
 
-		private final Rect2i bounds = new Rect2i();
+		private final RectI.Range bounds = new RectI.Range();
 
 		private Image image;
 
@@ -821,7 +826,7 @@ public class LTexturePack implements LRelease {
 			return fileName;
 		}
 
-		public Rect2i getBounds() {
+		public RectI.Range getBounds() {
 			return bounds;
 		}
 
@@ -838,7 +843,7 @@ public class LTexturePack implements LRelease {
 
 		private final Node[] child = new Node[2];
 
-		private final Rect2i bounds = new Rect2i();
+		private final RectI.Range bounds = new RectI.Range();
 
 		private PackEntry entry;
 
@@ -964,5 +969,4 @@ public class LTexturePack implements LRelease {
 			texture = null;
 		}
 	}
-
 }

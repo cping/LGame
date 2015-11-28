@@ -25,7 +25,7 @@ import java.io.Serializable;
 import loon.LObject;
 import loon.LRelease;
 import loon.LSystem;
-import loon.geom.Point.Point2i;
+import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
@@ -378,8 +378,8 @@ public class Sprites implements Serializable, LRelease {
 		}
 	}
 
-	public Point2i getMinPos() {
-		Point2i p = new Point2i(0, 0);
+	public PointI getMinPos() {
+		PointI p = new PointI(0, 0);
 		for (int i = 0; i < size; i++) {
 			ISprite sprite = sprites[i];
 			p.x = MathUtils.min(p.x, sprite.x());
@@ -388,8 +388,8 @@ public class Sprites implements Serializable, LRelease {
 		return p;
 	}
 
-	public Point2i getMaxPos() {
-		Point2i p = new Point2i(0, 0);
+	public PointI getMaxPos() {
+		PointI p = new PointI(0, 0);
 		for (int i = 0; i < size; i++) {
 			ISprite sprite = sprites[i];
 			p.x = MathUtils.max(p.x, sprite.x());

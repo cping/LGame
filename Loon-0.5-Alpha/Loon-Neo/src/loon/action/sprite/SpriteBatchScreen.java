@@ -872,9 +872,11 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (isOnLoadComplete()) {
 			batch.begin();
 			before(batch);
+			
 			for (TileMap tile : tiles) {
 				tile.draw(g, batch, offset.x(), offset.y());
 			}
+		
 			for (SpriteBatchObject o : objects) {
 				objX = o.getX() + offset.x;
 				objY = o.getY() + offset.y;
@@ -882,9 +884,11 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 					o.draw(batch, offset.x, offset.y);
 				}
 			}
+	
 			if (content.isVisible()) {
 				content.drawNode(batch);
 			}
+		
 			after(batch);
 			batch.end();
 		}

@@ -25,7 +25,6 @@ import java.util.Random;
 import loon.geom.RectBox;
 
 public class MathUtils {
-
 	final static public Random random = new Random();
 
 	private static final int[] SHIFT = { 0, 1144, 2289, 3435, 4583, 5734, 6888,
@@ -299,11 +298,9 @@ public class MathUtils {
 
 	public static final int ONE_FIXED = 1 << 16;
 
-	public static final int ONE_HALF_FIXED = fromFloat(0.5f);
 
-	public static final double EPSILON = 2.220446049250313E-16d;
+	public static final float EPSILON = 0.001f;
 
-	public static final int EPSILON_FIXED = fromFloat(0.002f);
 
 	public static final int PI_FIXED = 205887;
 
@@ -317,33 +314,14 @@ public class MathUtils {
 		return Math.abs(value) <= 0.00000001;
 	}
 
-	public static int toInt(int x) {
-		return x >> 16;
-	}
-
-	public static double toDouble(int x) {
-		return (double) x / ONE_FIXED;
-	}
-
-	public static float toFloat(int x) {
-		return (float) x / ONE_FIXED;
-	}
-
-	public static int fromInt(int x) {
-		return x << 16;
-	}
-
-	public static int fromFloat(float x) {
-		return (int) (x * ONE_FIXED);
-	}
-
-	public static int fromDouble(double x) {
-		return (int) (x * ONE_FIXED);
-	}
-
 	public static int mul(int x, int y) {
 		long z = (long) x * (long) y;
 		return ((int) (z >> 16));
+	}
+
+	public static float mul(float x, float y) {
+		long z = (long) x * (long) y;
+		return ((float) (z >> 16));
 	}
 
 	public static int mid(int i, int min, int max) {
@@ -355,8 +333,9 @@ public class MathUtils {
 		return (int) ((z / y) >> 16);
 	}
 
-	public static double sqrt(double n) {
-		return Math.round(n);
+	public static float div(float x, float y) {
+		long z = (((long) x) << 32);
+		return (float) ((z / (long) y) >> 16);
 	}
 
 	public static int sqrt(int n) {
@@ -365,10 +344,6 @@ public class MathUtils {
 			s = (s + div(n, s)) >> 1;
 		}
 		return s;
-	}
-
-	public static double round(double n) {
-		return Math.round(n);
 	}
 
 	public static int round(int n) {
@@ -392,9 +367,16 @@ public class MathUtils {
 
 	public static boolean equal(int a, int b) {
 		if (a > b)
-			return a - b <= EPSILON_FIXED;
+			return a - b <= EPSILON;
 		else
-			return b - a <= EPSILON_FIXED;
+			return b - a <= EPSILON;
+	}
+
+	public static boolean equal(float a, float b) {
+		if (a > b) 
+			return a - b <= EPSILON;
+		 else 
+			return b - a <= EPSILON;
 	}
 
 	static final int SK1 = 498;
@@ -997,5 +979,5 @@ public class MathUtils {
 			throw new RuntimeException(s);
 		}
 	}
-
+	
 }

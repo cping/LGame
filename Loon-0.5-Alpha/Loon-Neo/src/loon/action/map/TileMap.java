@@ -346,9 +346,12 @@ public class TileMap extends LObject implements ISprite, LRelease {
 			if (arrays.size == 0) {
 				throw new RuntimeException("Not to add any tiles !");
 			}
+		
 			imgPack.glBegin();
+		
 			firstTileX = field.pixelsToTilesWidth(-offsetX);
 			firstTileY = field.pixelsToTilesHeight(-offsetY);
+
 			lastTileX = firstTileX + field.pixelsToTilesWidth(maxWidth) + 1;
 			lastTileX = MathUtils.min(lastTileX, field.getWidth());
 			lastTileY = firstTileY + field.pixelsToTilesHeight(maxHeight) + 1;

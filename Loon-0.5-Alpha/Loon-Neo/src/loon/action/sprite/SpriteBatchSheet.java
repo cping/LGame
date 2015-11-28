@@ -24,7 +24,7 @@ import loon.LRelease;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
-import loon.geom.RectBox.Rect2i;
+import loon.geom.RectI;
 
 public class SpriteBatchSheet implements LRelease {
 
@@ -42,7 +42,7 @@ public class SpriteBatchSheet implements LRelease {
 	private int x;
 	private int y;
 	private LTexture image;
-	private Rect2i spriteRect, destRect;
+	private RectI.Range spriteRect, destRect;
 
 	public SpriteBatchSheet(String fileName, int hFrames, int vFrames, float r) {
 		this(LTextures.loadTexture(fileName), hFrames, vFrames, r);
@@ -56,8 +56,8 @@ public class SpriteBatchSheet implements LRelease {
 		this.spriteWidth = imgWidth = image.getWidth() / this.hFrames;
 		this.spriteHeight = imgHeight = image.getHeight() / this.vFrames;
 		this.frames = (hFrames * vFrames);
-		this.spriteRect = new Rect2i(0, 0, imgWidth, imgHeight);
-		this.destRect = new Rect2i();
+		this.spriteRect = new RectI.Range(0, 0, imgWidth, imgHeight);
+		this.destRect = new RectI.Range();
 	}
 
 	public boolean animate() {
@@ -229,11 +229,11 @@ public class SpriteBatchSheet implements LRelease {
 		return image;
 	}
 
-	public Rect2i getDestRect() {
+	public RectI.Range getDestRect() {
 		return destRect;
 	}
 
-	public Rect2i getSpriteRect() {
+	public RectI.Range getSpriteRect() {
 		return spriteRect;
 	}
 

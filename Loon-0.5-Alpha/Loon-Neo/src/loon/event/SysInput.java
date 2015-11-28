@@ -20,7 +20,7 @@
  */
 package loon.event;
 
-import loon.geom.Point.Point2i;
+import loon.geom.PointI;
 
 public interface SysInput {
 
@@ -70,7 +70,7 @@ public interface SysInput {
 
 	public abstract void setRepaintMode(int mode);
 
-	public abstract Point2i getTouch();
+	public abstract PointI getTouch();
 
 	public abstract int getWidth();
 

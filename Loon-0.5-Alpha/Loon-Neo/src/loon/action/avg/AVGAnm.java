@@ -29,14 +29,14 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.avg.drama.Expression;
 import loon.canvas.LColor;
-import loon.geom.Point.Point2i;
+import loon.geom.PointI;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 //0.3.3新增类,用以按指定的格式循环播放动画图像
 public class AVGAnm implements Expression, LRelease {
 
-	final Point2i point = new Point2i();
+	final PointI point = new PointI();
 
 	private String path;
 
@@ -294,7 +294,7 @@ public class AVGAnm implements Expression, LRelease {
 		this.loop = false;
 	}
 
-	public Point2i getPos(long elapsedTime) {
+	public PointI getPos(long elapsedTime) {
 		if (startTime != -1) {
 			int frame = getFrame(elapsedTime);
 			point.x = posx[frame];

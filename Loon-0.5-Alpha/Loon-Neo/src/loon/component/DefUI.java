@@ -248,7 +248,7 @@ public class DefUI {
 		Image img = DefUI.getDefaultWindow("window0");
 		int size = img.getHeight();
 		int length = img.getWidth();
-		int bun = (int) MathUtils.round(1.0D * (height - size) / nums);
+		int bun = MathUtils.round(1f * (height - size) / nums);
 		int offset = 0;
 
 		for (int i = 1; i < nums; i++) {
@@ -281,7 +281,7 @@ public class DefUI {
 			int messize, boolean[] oks, LColor[] colors) {
 		Image img = DefUI.getDefaultWindow("window0");
 		int size = (int) img.height();
-		int bun = (int) MathUtils.round(1.0D * (height - size) / messize);
+		int bun = MathUtils.round(1f * (height - size) / messize);
 		for (int i = 0; i < messize; i++) {
 			g.setColor(colors[i]);
 			if (!oks[i]) {
