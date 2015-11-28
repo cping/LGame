@@ -4,7 +4,7 @@ import java.nio.IntBuffer;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.geom.Polygon.Polygon2i;
+import loon.geom.Polygon;
 import loon.geom.RectI;
 import loon.geom.Shape;
 import loon.geom.Triangle2f;
@@ -1572,8 +1572,8 @@ public class Pixmap extends Limit implements LRelease {
 	 * 
 	 * @param p
 	 */
-	public void drawPolygon(Polygon2i p) {
-		drawPolygon(p.xpoints, p.ypoints, p.npoints);
+	public void drawPolygon(Polygon p) {
+		drawShapeImpl(p, 0, 0);
 	}
 
 	/**
@@ -1594,8 +1594,8 @@ public class Pixmap extends Limit implements LRelease {
 	 * 
 	 * @param p
 	 */
-	public void fillPolygon(Polygon2i p) {
-		fillPolygon(p.xpoints, p.ypoints, p.npoints);
+	public void fillPolygon(Polygon p) {
+		fillShapeImpl(p, 0, 0);
 	}
 
 	/**

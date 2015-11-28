@@ -22,7 +22,7 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 
 	protected boolean visible;
 
-	protected boolean complete;
+	protected boolean completed;
 
 	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
 
@@ -57,7 +57,7 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 		this.timer = new LTimer(10);
 		this.frame = 0;
 		this.visible = true;
-		this.complete = false;
+		this.completed = false;
 		this.width = x2;
 		this.height = y2;
 	}
@@ -159,7 +159,7 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (!complete) {
+		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				next();
 			}
@@ -185,12 +185,14 @@ public abstract class PixelBaseEffect extends LObject implements ISprite {
 	}
 
 	public boolean isCompleted() {
-		return complete;
+		return completed;
 	}
 
 	@Override
 	public void close() {
 
+		visible = false;
+		completed = true;
 	}
 
 }

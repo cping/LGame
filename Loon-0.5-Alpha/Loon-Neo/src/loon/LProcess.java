@@ -274,7 +274,7 @@ public class LProcess extends PlayerUtils {
 					LTransition transition = screen.onTransition();
 					if (transition == null) {
 						if (LSystem.isHTML5()) {
-							int rad = MathUtils.random(0, 5);
+							int rad = MathUtils.random(0, 7);
 							switch (rad) {
 							case 0:
 								transition = LTransition.newFadeIn();
@@ -299,9 +299,17 @@ public class LProcess extends PlayerUtils {
 								transition = LTransition
 										.newPixelThunder(LColor.black);
 								break;
+							case 6:
+								transition = LTransition
+										.newFadeTileIn(LColor.black);
+								break;
+							case 7:
+								transition = LTransition
+										.newFadeSpiralIn(LColor.black);
+								break;
 							}
 						} else {
-							int rad = MathUtils.random(0, 8);
+							int rad = MathUtils.random(0, 10);
 							switch (rad) {
 							case 0:
 								transition = LTransition.newFadeIn();
@@ -336,6 +344,14 @@ public class LProcess extends PlayerUtils {
 							case 8:
 								transition = LTransition
 										.newFadeDotIn(LColor.black);
+								break;
+							case 9:
+								transition = LTransition
+										.newFadeTileIn(LColor.black);
+								break;
+							case 10:
+								transition = LTransition
+										.newFadeSpiralIn(LColor.black);
 								break;
 							}
 						}

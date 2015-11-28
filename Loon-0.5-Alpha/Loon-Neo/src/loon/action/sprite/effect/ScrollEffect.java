@@ -28,7 +28,7 @@ public class ScrollEffect extends LObject implements ISprite {
 
 	private LTexture texture;
 
-	private boolean visible, stop;
+	private boolean visible, completed;
 
 	private LTimer timer;
 
@@ -90,7 +90,7 @@ public class ScrollEffect extends LObject implements ISprite {
 	}
 
 	public void update(long elapsedTime) {
-		if (stop) {
+		if (completed) {
 			return;
 		}
 		if (timer.action(elapsedTime)) {
@@ -175,11 +175,11 @@ public class ScrollEffect extends LObject implements ISprite {
 	}
 
 	public boolean isStop() {
-		return stop;
+		return completed;
 	}
 
-	public void setStop(boolean stop) {
-		this.stop = stop;
+	public void setStop(boolean completed) {
+		this.completed = completed;
 	}
 
 	public RectBox getCollisionBox() {
@@ -195,6 +195,8 @@ public class ScrollEffect extends LObject implements ISprite {
 	}
 
 	public void close() {
+		visible = false;
+		completed = true;
 		if (texture != null) {
 			texture.close();
 			texture = null;

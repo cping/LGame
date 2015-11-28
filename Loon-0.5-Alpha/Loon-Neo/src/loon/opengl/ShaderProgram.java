@@ -34,6 +34,7 @@ import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
+import loon.geom.Vector4f;
 import loon.utils.ObjectIntMap;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
@@ -114,6 +115,132 @@ public class ShaderProgram implements LRelease {
 			gl.glDeleteShader(vertexShader);
 			gl.glDeleteShader(fragmentShader);
 			gl.glDeleteProgram(id);
+		}
+
+		public void setUniform(int location, int... values) {
+			if (values.length > 4)
+				throw new RuntimeException(
+						"Uniform component cannot have more than 4 components");
+
+			switch (values.length) {
+			case 1:
+				gl.glUniform1i(location, values[0]);
+				break;
+
+			case 2:
+				gl.glUniform2i(location, values[0], values[1]);
+				break;
+
+			case 3:
+				gl.glUniform3i(location, values[0], values[1], values[2]);
+				break;
+
+			case 4:
+				gl.glUniform4i(location, values[0], values[1], values[2],
+						values[3]);
+				break;
+			}
+
+		}
+
+		public void setUniform(String name, int... values) {
+			setUniform(getUniformLocation(name), values);
+		}
+
+		public void setUniform(String name, float... values) {
+			setUniform(getUniformLocation(name), values);
+		}
+
+		public void setUniform(int location, Vector2f value) {
+			setUniform(location, value.getX(), value.getY());
+		}
+
+		public void setUniform(int location, float... values) {
+			if (values.length > 4)
+				throw new RuntimeException(
+						"Uniform component cannot have more than 4 components");
+
+			switch (values.length) {
+			case 1:
+				gl.glUniform1f(location, values[0]);
+				break;
+
+			case 2:
+				gl.glUniform2f(location, values[0], values[1]);
+				break;
+
+			case 3:
+				gl.glUniform3f(location, values[0], values[1], values[2]);
+				break;
+
+			case 4:
+				gl.glUniform4f(location, values[0], values[1], values[2],
+						values[3]);
+				break;
+			}
+
+		}
+
+		public void setUniform(int location, Vector3f value) {
+			setUniform(location, value.getX(), value.getY(), value.getZ());
+		}
+
+		public void setUniform(int location, LColor value) {
+			setUniform(location, value.getVector4());
+		}
+
+		public void setUniform(int location, Vector4f value) {
+			setUniform(location, value.getX(), value.getY(), value.getZ(),
+					value.getW());
+		}
+
+		public void setUniform(String name, Vector2f value) {
+			setUniform(name, value.getX(), value.getY());
+		}
+
+		public void setUniform(String name, Vector3f value) {
+			setUniform(name, value.getX(), value.getY(), value.getZ());
+		}
+
+		public void setUniform(String name, Vector4f value) {
+			setUniform(name, value.getX(), value.getY(), value.getZ(),
+					value.getW());
+		}
+
+		public void setUniform(String name, LColor value) {
+			setUniform(name, value.getVector4());
+		}
+
+		public void setUniform(int location, Matrix3 value) {
+			setUniform(location, false, value);
+		}
+
+		public void setUniform(int location, boolean transpose, Matrix3 value) {
+			gl.glUniformMatrix3fv(location, 1, transpose, value.val, 0);
+		}
+
+		public void setUniform(int location, Matrix4 value) {
+			setUniform(location, false, value);
+		}
+
+		public void setUniform(int location, boolean transpose, Matrix4 value) {
+			gl.glUniformMatrix3fv(location, 1, transpose, value.val, 0);
+		}
+
+		public void setUniform(String name, boolean transpose, Matrix3 value) {
+			setUniform(getUniformLocation(name), transpose, value);
+		}
+
+		public void setUniform(String name, Matrix3 value) {
+			setUniform(name, false, value);
+		}
+
+		public void setUniform(String name, boolean transpose, Matrix4 value) {
+			setUniform(getUniformLocation(name), transpose, value);
+		}
+
+		public void setUniform(String name, Matrix4 value) {
+			setUniform(name, false, value);
 		}
 
 		private int compileShader(int type, final String shaderSource) {

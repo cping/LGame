@@ -899,4 +899,20 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
+	public float getMinU() {
+		return xOff;
+	}
+
+	public float getMinV() {
+		return yOff;
+	}
+
+	public float getMaxU() {
+		return widthRatio;
+	}
+
+	public float getMaxV() {
+		return heightRatio;
+	}
+
 }

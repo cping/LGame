@@ -1,12 +1,14 @@
 package loon.action;
 
+import loon.utils.MathUtils;
+
 public class ActionLinear implements ActionPath {
 	
 	@Override
 	public float compute(float t, float[] points, int pointsCnt) {
-		int segment = (int) Math.floor((pointsCnt-1) * t);
-		segment = Math.max(segment, 0);
-		segment = Math.min(segment, pointsCnt-2);
+		int segment =  MathUtils.floor((pointsCnt-1) * t);
+		segment = MathUtils.max(segment, 0);
+		segment = MathUtils.min(segment, pointsCnt-2);
 
 		t = t * (pointsCnt-1) - segment;
 

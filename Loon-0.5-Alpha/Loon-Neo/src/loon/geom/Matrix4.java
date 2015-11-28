@@ -21,6 +21,7 @@
 package loon.geom;
 
 import java.io.Serializable;
+import java.nio.FloatBuffer;
 
 import loon.LSystem;
 import loon.Support;
@@ -40,7 +41,7 @@ public class Matrix4 implements Serializable {
 	public final static Matrix4 ZERO() {
 		return new Matrix4();
 	}
-	
+
 	public static final int M00 = 0;
 
 	public static final int M01 = 4;
@@ -231,11 +232,10 @@ public class Matrix4 implements Serializable {
 		return this;
 	}
 
-    public Matrix4 set(int x, int y, float v)
-    {
-    	val[y + x * 4] = v;
-        return this;
-    }
+	public Matrix4 set(int x, int y, float v) {
+		val[y + x * 4] = v;
+		return this;
+	}
 
 	public float get(int x, int y) {
 		return val[y + x * 4];
@@ -313,7 +313,7 @@ public class Matrix4 implements Serializable {
 		val[M33] = 1;
 		return this;
 	}
-	
+
 	public Matrix4 izero() {
 		val[M00] = 0;
 		val[M01] = 0;
@@ -333,7 +333,7 @@ public class Matrix4 implements Serializable {
 		val[M33] = 0;
 		return this;
 	}
-	
+
 	public Matrix4 inv() {
 		float l_det = val[M30] * val[M21] * val[M12] * val[M03] - val[M20]
 				* val[M31] * val[M12] * val[M03] - val[M30] * val[M11]
@@ -355,7 +355,7 @@ public class Matrix4 implements Serializable {
 				* val[M21] * val[M12] * val[M33] - val[M10] * val[M01]
 				* val[M22] * val[M33] + val[M00] * val[M11] * val[M22]
 				* val[M33];
-		if (l_det == 0f){
+		if (l_det == 0f) {
 			throw new RuntimeException("non-invertible matrix");
 		}
 		float inv_det = 1.0f / l_det;
@@ -1237,5 +1237,8 @@ public class Matrix4 implements Serializable {
 
 		return m;
 	}
-	
+
+	public FloatBuffer getAsFloatBuffer() {
+		return LSystem.base().support().newFloatBuffer(val, 0, val.length);
+	}
 }

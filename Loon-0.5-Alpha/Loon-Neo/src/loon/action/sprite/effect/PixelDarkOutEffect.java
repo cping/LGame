@@ -42,7 +42,7 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 
 	@Override
 	public void draw(GLEx g, float tx, float ty) {
-		if (super.complete) {
+		if (super.completed) {
 			return;
 		}
 		float x = t_x - tx;
@@ -59,7 +59,7 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 			de[j].drawPaint(g, x, y);
 		}
 		if (super.frame >= limit) {
-			this.complete = true;
+			this.completed = true;
 		}
 		g.setColor(tmp);
 	}

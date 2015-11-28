@@ -81,8 +81,6 @@ public final class VertexAttribute {
 				ShaderProgram.NORMAL_ATTRIBUTE);
 	}
 
-	/** @deprecated use {@link #ColorPacked()} */
-	@Deprecated
 	public static VertexAttribute Color() {
 		return ColorPacked();
 	}

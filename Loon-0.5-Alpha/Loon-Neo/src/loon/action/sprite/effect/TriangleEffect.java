@@ -34,7 +34,7 @@ public class TriangleEffect extends LObject implements ISprite {
 
 	private boolean visible;
 
-	private boolean complete;
+	private boolean completed;
 
 	public TriangleEffect(float[][] res, float x, float y, float speed) {
 		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), res,
@@ -63,7 +63,7 @@ public class TriangleEffect extends LObject implements ISprite {
 		this.height = h;
 		this.timer = new LTimer(10);
 		this.visible = true;
-		this.complete = false;
+		this.completed = false;
 	}
 
 	public void setDelta(float[][] res) {
@@ -223,7 +223,7 @@ public class TriangleEffect extends LObject implements ISprite {
 	}
 
 	public void update(long elapsedTime) {
-		if (!complete) {
+		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				next();
 			}
@@ -238,7 +238,7 @@ public class TriangleEffect extends LObject implements ISprite {
 	}
 
 	public boolean isCompleted() {
-		return complete;
+		return completed;
 	}
 
 	public LTexture getBitmap() {
@@ -259,7 +259,8 @@ public class TriangleEffect extends LObject implements ISprite {
 
 	@Override
 	public void close() {
-
+		visible = false;
+		completed = true;
 	}
 
 }

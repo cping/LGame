@@ -32,7 +32,7 @@ public class ArcEffect extends LObject implements ISprite {
 
 	private LColor color;
 
-	private boolean visible, complete;
+	private boolean visible, completed;
 
 	private LTimer timer;
 
@@ -58,7 +58,7 @@ public class ArcEffect extends LObject implements ISprite {
 	}
 
 	public boolean isCompleted() {
-		return complete;
+		return completed;
 	}
 
 	public LColor getColor() {
@@ -78,11 +78,11 @@ public class ArcEffect extends LObject implements ISprite {
 	}
 
 	public void update(long elapsedTime) {
-		if (complete) {
+		if (completed) {
 			return;
 		}
 		if (this.count >= this.div) {
-			this.complete = true;
+			this.completed = true;
 		}
 		if (timer.action(elapsedTime)) {
 			count++;
@@ -95,7 +95,7 @@ public class ArcEffect extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		if (complete) {
+		if (completed) {
 			return;
 		}
 		tmpColor = g.color();
@@ -105,7 +105,7 @@ public class ArcEffect extends LObject implements ISprite {
 		g.setColor(color);
 		int tmp = g.getPixSkip();
 		boolean useTex = LSystem.isHTML5();
-		if(useTex){
+		if (useTex) {
 			g.setPixSkip(8);
 		}
 		if (count <= 1) {
@@ -122,7 +122,7 @@ public class ArcEffect extends LObject implements ISprite {
 				g.fillArc(x, y, w, h, 20, 0, this.sign[this.turn] * deg);
 			}
 		}
-		if(useTex){
+		if (useTex) {
 			g.setPixSkip(tmp);
 		}
 		if (_alpha != 1f) {
@@ -133,7 +133,7 @@ public class ArcEffect extends LObject implements ISprite {
 	}
 
 	public void reset() {
-		this.complete = false;
+		this.completed = false;
 		this.count = 0;
 		this.turn = 1;
 	}
@@ -163,7 +163,8 @@ public class ArcEffect extends LObject implements ISprite {
 	}
 
 	public void close() {
-
+		visible = false;
+		completed = true;
 	}
 
 }

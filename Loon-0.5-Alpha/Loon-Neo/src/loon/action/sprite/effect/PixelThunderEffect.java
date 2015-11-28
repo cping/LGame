@@ -35,7 +35,7 @@ public class PixelThunderEffect extends PixelBaseEffect {
 
 	@Override
 	public void draw(GLEx g, float tx, float ty) {
-		if (super.complete) {
+		if (super.completed) {
 			return;
 		}
 		int tmp = g.color();
@@ -59,7 +59,7 @@ public class PixelThunderEffect extends PixelBaseEffect {
 		}
 		g.setColor(tmp);
 		if (super.frame >= limit) {
-			super.complete = true;
+			super.completed = true;
 		}
 	}
 

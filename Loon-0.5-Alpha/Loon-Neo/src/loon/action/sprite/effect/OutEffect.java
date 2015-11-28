@@ -18,7 +18,7 @@ public class OutEffect extends LObject implements ISprite {
 
 	private LTexture texture;
 
-	private boolean visible, complete;
+	private boolean visible, completed;
 
 	private int width, height;
 
@@ -45,7 +45,7 @@ public class OutEffect extends LObject implements ISprite {
 	}
 
 	public void update(long elapsedTime) {
-		if (!complete) {
+		if (!completed) {
 			switch (type) {
 			case Config.DOWN:
 				move_45D_down(multiples);
@@ -73,13 +73,13 @@ public class OutEffect extends LObject implements ISprite {
 				break;
 			}
 			if (!limit.intersects(x(), y(), width, height)) {
-				complete = true;
+				completed = true;
 			}
 		}
 	}
 
 	public boolean isComplete() {
-		return complete;
+		return completed;
 	}
 
 	public int getHeight() {
@@ -94,7 +94,7 @@ public class OutEffect extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		if (!complete) {
+		if (!completed) {
 			float tmp = g.alpha();
 			if (_alpha > 0 && _alpha < 1) {
 				g.setAlpha(_alpha);
@@ -129,6 +129,10 @@ public class OutEffect extends LObject implements ISprite {
 	}
 
 	public void close() {
+
+		visible = false;
+		completed = true;
+	
 		if (texture != null) {
 			texture.close();
 			texture = null;

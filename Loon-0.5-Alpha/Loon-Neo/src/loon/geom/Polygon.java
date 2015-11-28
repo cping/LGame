@@ -23,7 +23,6 @@ package loon.geom;
 
 import loon.action.collision.c2d.Polygon2D;
 import loon.physics.PPolygon;
-import loon.utils.CollectionUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -33,67 +32,7 @@ public class Polygon extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static class Polygon2i {
-
-		public int npoints;
-
-		public int[] xpoints;
-
-		public int[] ypoints;
-
-		private static final int MIN_LENGTH = 4;
-
-		public Polygon2i() {
-			xpoints = new int[MIN_LENGTH];
-			ypoints = new int[MIN_LENGTH];
-		}
-
-		public Polygon2i(int xpoints[], int ypoints[], int npoints) {
-			if (npoints > xpoints.length || npoints > ypoints.length) {
-				throw new IndexOutOfBoundsException(
-						"npoints > xpoints.length || "
-								+ "npoints > ypoints.length");
-			}
-			if (npoints < 0) {
-				throw new NegativeArraySizeException("npoints < 0");
-			}
-			this.npoints = npoints;
-			this.xpoints = CollectionUtils.copyOf(xpoints, npoints);
-			this.ypoints = CollectionUtils.copyOf(ypoints, npoints);
-		}
-
-		public void addPoint(int x, int y) {
-			if (npoints >= xpoints.length || npoints >= ypoints.length) {
-				int newLength = (npoints * 2);
-				if (newLength < MIN_LENGTH) {
-					newLength = MIN_LENGTH;
-				} else if ((newLength & (newLength - 1)) != 0) {
-					newLength = Integer.highestOneBit(newLength);
-				}
-				xpoints = CollectionUtils.copyOf(xpoints, newLength);
-				ypoints = CollectionUtils.copyOf(ypoints, newLength);
-			}
-			xpoints[npoints] = x;
-			ypoints[npoints] = y;
-			npoints++;
-		}
-
-		public int[] getVertices() {
-			int vertice_size = xpoints.length * 2;
-			int[] verts = new int[vertice_size];
-			for (int i = 0, j = 0; i < vertice_size; i += 2, j++) {
-				verts[i] = xpoints[j];
-				verts[i + 1] = ypoints[j];
-			}
-			return verts;
-		}
-
-		public void reset() {
-			npoints = 0;
-			xpoints = new int[MIN_LENGTH];
-			ypoints = new int[MIN_LENGTH];
-		}
-	}
+	public static class Polygon2i {}
 
 	private boolean allowDups = false;
 

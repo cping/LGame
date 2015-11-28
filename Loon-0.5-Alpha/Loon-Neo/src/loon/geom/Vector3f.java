@@ -67,7 +67,12 @@ public class Vector3f implements Serializable {
 
 	private final static Matrix4 tmpMat = new Matrix4();
 
+	private final static Vector3f tmpNormal1 = new Vector3f();
+
+	private final static Vector3f tmpNormal2 = new Vector3f();
+
 	public Vector3f() {
+		this(0, 0, 0);
 	}
 
 	public Vector3f(float x, float y, float z) {
@@ -438,8 +443,8 @@ public class Vector3f implements Serializable {
 		final float l2 = tx * tx + ty * ty + tz * tz;
 		final float dl = st * ((l2 < 0.0001f) ? 1f : 1f / MathUtils.sqrt(l2));
 
-		return scaleSelf(MathUtils.cos(theta)).addSelf(tx * dl, ty * dl, tz * dl)
-				.norSelf();
+		return scaleSelf(MathUtils.cos(theta)).addSelf(tx * dl, ty * dl,
+				tz * dl).norSelf();
 	}
 
 	public String toString() {
@@ -796,5 +801,35 @@ public class Vector3f implements Serializable {
 
 	public float getZ() {
 		return this.z;
+	}
+
+	public final static Vector3f vectorSquareEquation(Vector3f a, Vector3f b,
+			Vector3f c) {
+		float baz = -1 * a.z / b.z;
+		b.scaleSelf(baz).addSelf(a);
+		float caz = -1 * a.z / c.z;
+		c.scaleSelf(caz).addSelf(a);
+		float cby = -1 * b.y / c.y;
+		c.scaleSelf(cby).addSelf(b);
+		float X = c.x;
+		float Y = -1 * X * b.x / b.y;
+		float Z = -1 * (X * a.x + Y * a.y) / a.z;
+		return new Vector3f(X, Y, Z);
+	}
+
+	public final static Vector3f calcNormal(Vector3f zero, Vector3f one,
+			Vector3f two) {
+		tmpNormal1.set(one.x - zero.x, one.y - zero.y, one.z - zero.z);
+		tmpNormal2.set(two.x - zero.x, two.y - zero.y, two.z - zero.z);
+		Vector3f res = new Vector3f();
+		return calcVectorNormal(tmpNormal1, tmpNormal2, res);
+	}
+
+	public final static Vector3f calcVectorNormal(Vector3f one, Vector3f two,
+			Vector3f result) {
+		result.x = two.y * one.z - two.z * one.y;
+		result.y = two.z * one.x - two.x * one.z;
+		result.z = two.x * one.y - two.y * one.x;
+		return result.norSelf();
 	}
 }

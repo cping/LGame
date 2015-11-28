@@ -21,7 +21,9 @@
 package loon.geom;
 
 import java.io.Serializable;
+import java.nio.FloatBuffer;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 
 public class Matrix3 implements Serializable {
@@ -546,4 +548,9 @@ public class Matrix3 implements Serializable {
 		mata[M12] = v12;
 		mata[M22] = v22;
 	}
+
+	public FloatBuffer getAsFloatBuffer() {
+		return LSystem.base().support().newFloatBuffer(val, 0, val.length);
+	}
+
 }

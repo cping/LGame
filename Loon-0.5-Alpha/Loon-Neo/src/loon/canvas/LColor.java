@@ -22,6 +22,8 @@ package loon.canvas;
 
 import java.io.Serializable;
 
+import loon.geom.Vector3f;
+import loon.geom.Vector4f;
 import loon.utils.NumberUtils;
 
 public class LColor implements Serializable {
@@ -786,6 +788,14 @@ public class LColor implements Serializable {
 	public String toCSS() {
 		return "rgba(" + (int) (r * 255) + "," + (int) (g * 255) + ","
 				+ (int) (b * 255) + "," + (int) (a * 255) + ")";
+	}
+
+	public Vector3f getVector3() {
+		return new Vector3f(r, g, b);
+	}
+
+	public Vector4f getVector4() {
+		return new Vector4f(r, g, b, a);
 	}
 
 	public String toString() {

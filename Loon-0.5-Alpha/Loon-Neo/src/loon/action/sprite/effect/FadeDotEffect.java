@@ -29,7 +29,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 
 		private int type;
 
-		private boolean finish, fade_allowed;
+		private boolean finished, fade_allowed;
 
 		private float currentFrame;
 
@@ -66,14 +66,14 @@ public class FadeDotEffect extends LObject implements ISprite {
 				rad -= growSpeed * (elapsedTime / 10) * 0.6f;
 				if (rad <= 0) {
 					rad = 0;
-					finish = true;
+					finished = true;
 				}
 			} else {
 				currentFrame++;
 				rad += growSpeed * (elapsedTime / 10) * 0.4f;
 				if (rad >= 360) {
 					rad = 360;
-					finish = true;
+					finished = true;
 				}
 			}
 		}
@@ -92,21 +92,21 @@ public class FadeDotEffect extends LObject implements ISprite {
 
 	}
 
-	private boolean _finish;
+	private boolean finished;
 
-	private LColor _color;
+	private LColor back;
 
-	private TArray<Dot> _dots = new TArray<Dot>();
+	private TArray<Dot> dots = new TArray<Dot>();
 
-	private int _count = 4;
+	private int count = 4;
 
-	private int _width;
+	private int width;
 
-	private int _height;
+	private int height;
 
-	private boolean _visible;
+	private boolean visible;
 
-	private int _type = ISprite.TYPE_FADE_IN;
+	private int type = ISprite.TYPE_FADE_IN;
 
 	private LTimer timer = new LTimer(0);
 
@@ -126,15 +126,15 @@ public class FadeDotEffect extends LObject implements ISprite {
 
 	public FadeDotEffect(int type, int time, int rad, int count, LColor c,
 			int w, int h) {
-		this._type = type;
-		this._count = count;
-		this._visible = true;
+		this.type = type;
+		this.count = count;
+		this.visible = true;
 		this.setColor(c);
-		this._width = w;
-		this._height = h;
-		if (_dots.size == 0) {
-			for (int i = 0; i < _count; i++) {
-				_dots.add(new Dot(_type, time, rad, _width, _height));
+		this.width = w;
+		this.height = h;
+		if (dots.size == 0) {
+			for (int i = 0; i < count; i++) {
+				dots.add(new Dot(type, time, rad, width, height));
 			}
 		}
 	}
@@ -148,52 +148,55 @@ public class FadeDotEffect extends LObject implements ISprite {
 	}
 
 	public LColor getColor() {
-		return _color;
+		return back;
 	}
 
 	public void setColor(LColor color) {
-		this._color = color;
+		this.back = color;
 	}
 
 	public boolean isCompleted() {
-		if (_finish) {
-			return _finish;
+		if (finished) {
+			return finished;
 		}
-		for (int i = 0; i < _dots.size; i++) {
-			if (!((Dot) _dots.get(i)).finish) {
+		for (int i = 0; i < dots.size; i++) {
+			if (!((Dot) dots.get(i)).finished) {
 				return false;
 			}
 		}
-		return (_finish = true);
+		return (finished = true);
 	}
 
 	public void setVisible(boolean visible) {
-		this._visible = visible;
+		this.visible = visible;
 	}
 
 	public boolean isVisible() {
-		return _visible;
+		return visible;
 	}
 
 	public void update(long elapsedTime) {
-		if (!_visible) {
+		if (!visible) {
 			return;
 		}
-		if (_finish) {
+		if (finished) {
 			return;
 		}
 		if (timer.action(elapsedTime)) {
-			for (int i = 0; i < _dots.size; i++) {
-				_dots.get(i).update(elapsedTime);
+			for (int i = 0; i < dots.size; i++) {
+				dots.get(i).update(elapsedTime);
 			}
 		}
 	}
 
 	public void createUI(GLEx g) {
-		if (!_visible) {
+		if (finished) {
 			return;
 		}
-		if (_finish) {
+		if (!visible) {
+			return;
+		}
+		if (finished) {
 			return;
 		}
 		boolean useText = g.alltextures() && LSystem.isHTML5();
@@ -202,9 +205,9 @@ public class FadeDotEffect extends LObject implements ISprite {
 			g.setPixSkip(10);
 		}
 		int tmp = g.color();
-		g.setColor(_color);
-		for (int i = 0; i < _dots.size; i++) {
-			((Dot) _dots.get(i)).paint(g);
+		g.setColor(back);
+		for (int i = 0; i < dots.size; i++) {
+			((Dot) dots.get(i)).paint(g);
 		}
 		if (useText) {
 			g.setPixSkip(skip);
@@ -217,19 +220,28 @@ public class FadeDotEffect extends LObject implements ISprite {
 	}
 
 	public int getHeight() {
-		return _height;
+		return height;
 	}
 
 	public int getWidth() {
-		return _width;
+		return width;
 	}
 
 	public LTexture getBitmap() {
 		return null;
 	}
 
-	public void close() {
+	public int getCount() {
+		return count;
+	}
 
+	public int getFadeType() {
+		return type;
+	}
+
+	public void close() {
+		visible = false;
+		finished = true;
 	}
 
 }

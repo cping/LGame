@@ -30,7 +30,7 @@ public class PixelChopEffect extends PixelBaseEffect {
 
 	@Override
 	public void draw(GLEx g, float tx, float ty) {
-		if (super.complete) {
+		if (super.completed) {
 			return;
 		}
 		int tmp = g.color();
@@ -48,7 +48,7 @@ public class PixelChopEffect extends PixelBaseEffect {
 		g.drawLine(x1, y1, x2, y2, width);
 		g.setColor(tmp);
 		if (super.frame >= limit) {
-			super.complete = true;
+			super.completed = true;
 		}
 	}
 

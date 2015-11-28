@@ -20,7 +20,7 @@ public class CrossEffect extends LObject implements ISprite {
 
 	private int width, height;
 
-	private boolean visible, complete;
+	private boolean visible, completed;
 
 	private LTexture otexture, ntexture;
 
@@ -74,7 +74,7 @@ public class CrossEffect extends LObject implements ISprite {
 	}
 
 	public boolean isCompleted() {
-		return complete;
+		return completed;
 	}
 
 	public int getHeight() {
@@ -86,11 +86,11 @@ public class CrossEffect extends LObject implements ISprite {
 	}
 
 	public void update(long elapsedTime) {
-		if (complete) {
+		if (completed) {
 			return;
 		}
 		if (this.count > this.maxcount) {
-			this.complete = true;
+			this.completed = true;
 		}
 		if (timer.action(elapsedTime)) {
 			count++;
@@ -103,7 +103,7 @@ public class CrossEffect extends LObject implements ISprite {
 		}
 		float old = g.alpha();
 		try {
-			if (complete) {
+			if (completed) {
 				if (ntexture != null) {
 					if (_alpha > 0 && _alpha < 1) {
 						g.setAlpha(_alpha);
@@ -165,7 +165,7 @@ public class CrossEffect extends LObject implements ISprite {
 	}
 
 	public void reset() {
-		this.complete = false;
+		this.completed = false;
 		this.count = 0;
 	}
 
@@ -194,6 +194,10 @@ public class CrossEffect extends LObject implements ISprite {
 	}
 
 	public void close() {
+
+		visible = false;
+		completed = true;
+
 		if (otexture != null) {
 			otexture.close();
 			otexture = null;
@@ -202,6 +206,7 @@ public class CrossEffect extends LObject implements ISprite {
 			ntexture.close();
 			ntexture = null;
 		}
+		
 	}
 
 }

@@ -42,7 +42,7 @@ public class FadeEffect extends LObject implements ISprite {
 
 	public int type;
 
-	public boolean stop;
+	public boolean finished;
 
 	private float opacity;
 
@@ -98,11 +98,11 @@ public class FadeEffect extends LObject implements ISprite {
 	}
 
 	public boolean isCompleted() {
-		return stop;
+		return finished;
 	}
 
-	public void setStop(boolean stop) {
-		this.stop = stop;
+	public void setStop(boolean finished) {
+		this.finished = finished;
 	}
 
 	public int getType() {
@@ -134,7 +134,7 @@ public class FadeEffect extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		if (stop) {
+		if (finished) {
 			return;
 		}
 		float op = (currentFrame / time);
@@ -153,13 +153,13 @@ public class FadeEffect extends LObject implements ISprite {
 			currentFrame--;
 			if (currentFrame == 0) {
 				setOpacity(0);
-				stop = true;
+				finished = true;
 			}
 		} else {
 			currentFrame++;
 			if (currentFrame == time) {
 				setOpacity(0);
-				stop = true;
+				finished = true;
 			}
 		}
 	}
@@ -192,12 +192,17 @@ public class FadeEffect extends LObject implements ISprite {
 		this.offsetY = offsetY;
 	}
 
+	public int getFadeType() {
+		return type;
+	}
+
 	public LTexture getBitmap() {
 		return null;
 	}
 
 	public void close() {
-
+		visible = false;
+		finished = true;
 	}
 
 }

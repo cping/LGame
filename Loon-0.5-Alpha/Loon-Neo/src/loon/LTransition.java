@@ -26,6 +26,8 @@ import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
+import loon.action.sprite.effect.FadeSpiralEffect;
+import loon.action.sprite.effect.FadeTileEffect;
 import loon.action.sprite.effect.PixelDarkInEffect;
 import loon.action.sprite.effect.PixelDarkOutEffect;
 import loon.action.sprite.effect.PixelThunderEffect;
@@ -371,6 +373,87 @@ public class LTransition {
 
 				public void close() {
 					fadedot.close();
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	public static final LTransition newFadeTileOut(final LColor c) {
+		return newFadeTile(FadeEffect.TYPE_FADE_OUT, c);
+	}
+
+	public static final LTransition newFadeTileIn(final LColor c) {
+		return newFadeTile(FadeEffect.TYPE_FADE_IN, c);
+	}
+
+	public static final LTransition newFadeTile(final int type, final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final FadeTileEffect fadetile = new FadeTileEffect(type, c);
+
+				public void draw(GLEx g) {
+					fadetile.createUI(g);
+				}
+
+				public void update(long elapsedTime) {
+					fadetile.update(elapsedTime);
+				}
+
+				public boolean completed() {
+					return fadetile.isCompleted();
+				}
+
+				public void close() {
+					fadetile.close();
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	public static final LTransition newFadeSpiralOut(final LColor c) {
+		return newFadeSpiral(FadeEffect.TYPE_FADE_OUT, c);
+	}
+
+	public static final LTransition newFadeSpiralIn(final LColor c) {
+		return newFadeSpiral(FadeEffect.TYPE_FADE_IN, c);
+	}
+
+	public static final LTransition newFadeSpiral(final int type, final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final FadeSpiralEffect fadespiral = new FadeSpiralEffect(type,
+						c);
+
+				public void draw(GLEx g) {
+					fadespiral.createUI(g);
+				}
+
+				public void update(long elapsedTime) {
+					fadespiral.update(elapsedTime);
+				}
+
+				public boolean completed() {
+					return fadespiral.isCompleted();
+				}
+
+				public void close() {
+					fadespiral.close();
 				}
 
 			});

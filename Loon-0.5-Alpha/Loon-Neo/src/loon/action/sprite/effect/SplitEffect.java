@@ -23,7 +23,7 @@ public class SplitEffect extends LObject implements ISprite {
 
 	private int width, height, halfWidth, halfHeight, multiples, direction;
 
-	private boolean visible, complete, special;
+	private boolean visible, completed, special;
 
 	private RectBox limit;
 
@@ -89,7 +89,7 @@ public class SplitEffect extends LObject implements ISprite {
 	}
 
 	public void update(long elapsedTime) {
-		if (!complete) {
+		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				switch (direction) {
 				case Config.LEFT:
@@ -112,11 +112,11 @@ public class SplitEffect extends LObject implements ISprite {
 					if (!limit.intersects(v1.x, v1.y, halfHeight, halfWidth)
 							&& !limit.intersects(v2.x, v2.y, halfHeight,
 									halfWidth)) {
-						this.complete = true;
+						this.completed = true;
 					}
 				} else if (!limit.intersects(v1.x, v1.y, halfWidth, halfHeight)
 						&& !limit.intersects(v2.x, v2.y, halfWidth, halfHeight)) {
-					this.complete = true;
+					this.completed = true;
 				}
 			}
 		}
@@ -126,7 +126,7 @@ public class SplitEffect extends LObject implements ISprite {
 		if (!visible) {
 			return;
 		}
-		if (!complete) {
+		if (!completed) {
 			float tmp = g.alpha();
 			if (_alpha > 0 && _alpha < 1f) {
 				g.setAlpha(_alpha);
@@ -163,7 +163,7 @@ public class SplitEffect extends LObject implements ISprite {
 	}
 
 	public boolean isCompleted() {
-		return complete;
+		return completed;
 	}
 
 	public LTexture getBitmap() {
@@ -191,6 +191,8 @@ public class SplitEffect extends LObject implements ISprite {
 	}
 
 	public void close() {
+		visible = false;
+		completed = true;
 		if (texture != null) {
 			texture.close();
 			texture = null;
