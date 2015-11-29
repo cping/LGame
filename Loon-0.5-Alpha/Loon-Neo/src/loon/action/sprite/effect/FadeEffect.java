@@ -28,7 +28,7 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class FadeEffect extends LObject implements ISprite {
+public class FadeEffect extends LObject implements BaseEffect, ISprite {
 	/**
 	 * 
 	 */
@@ -97,6 +97,7 @@ public class FadeEffect extends LObject implements ISprite {
 		this.currentFrame = currentFrame;
 	}
 
+	@Override
 	public boolean isCompleted() {
 		return finished;
 	}
@@ -113,11 +114,13 @@ public class FadeEffect extends LObject implements ISprite {
 		this.type = type;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.opacity = visible ? 255 : 0;
 		this.visible = visible;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
@@ -130,6 +133,7 @@ public class FadeEffect extends LObject implements ISprite {
 		return opacity;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -148,6 +152,7 @@ public class FadeEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void update(long timer) {
 		if (type == TYPE_FADE_IN) {
 			currentFrame--;
@@ -164,14 +169,17 @@ public class FadeEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), getWidth(), getHeight());
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
@@ -196,10 +204,12 @@ public class FadeEffect extends LObject implements ISprite {
 		return type;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public void close() {
 		visible = false;
 		finished = true;

@@ -8,7 +8,7 @@ public interface IKernel extends LRelease {
 
 	public int id();
 
-	public void draw(GLEx g);
+	public void draw(GLEx g,float mx,float my);
 
 	public void update();
 

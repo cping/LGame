@@ -12,7 +12,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
-public class SplitEffect extends LObject implements ISprite {
+public class SplitEffect extends LObject implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -80,14 +80,17 @@ public class SplitEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!completed) {
 			if (timer.action(elapsedTime)) {
@@ -122,6 +125,7 @@ public class SplitEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -158,18 +162,21 @@ public class SplitEffect extends LObject implements ISprite {
 				break;
 
 			}
-            g.setAlpha(tmp);
+			g.setAlpha(tmp);
 		}
 	}
 
+	@Override
 	public boolean isCompleted() {
 		return completed;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return texture;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
@@ -182,14 +189,17 @@ public class SplitEffect extends LObject implements ISprite {
 		this.multiples = multiples;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void close() {
 		visible = false;
 		completed = true;

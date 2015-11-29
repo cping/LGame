@@ -22,7 +22,6 @@ package loon;
 
 import loon.LGame.Status;
 import loon.canvas.LColor;
-import loon.event.Drawable;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.InputMake;
@@ -48,8 +47,6 @@ public class LProcess extends PlayerUtils {
 	TArray<Updateable> loads;
 
 	TArray<Updateable> unloads;
-
-	TArray<Drawable> drawings;
 
 	EmulatorListener emulatorListener;
 
@@ -219,39 +216,6 @@ public class LProcess extends PlayerUtils {
 	}
 
 	// --- UnLoad end ---//
-
-	// --- Drawable start ---//
-
-	public void addDrawing(Drawable d) {
-		synchronized (drawings) {
-			drawings.add(d);
-		}
-	}
-
-	public void removeDrawing(Drawable d) {
-		synchronized (drawings) {
-			drawings.remove(d);
-		}
-	}
-
-	public void removeAllDrawing() {
-		synchronized (drawings) {
-			drawings.clear();
-		}
-	}
-
-	public void drawable(long elapsedTime) {
-		if (isInstance) {
-			final int count = drawings.size;
-			if (count > 0) {
-				for (int i = 0; i < count; i++) {
-					drawings.get(i).action(elapsedTime);
-				}
-				// the date is not to delete
-				// drawings.clear();
-			}
-		}
-	}
 
 	private void setScreen(final Screen screen, boolean put) {
 		if (loadingScreen != null && loadingScreen.isOnLoadComplete()) {
@@ -441,7 +405,6 @@ public class LProcess extends PlayerUtils {
 		if (isInstance) {
 			isInstance = false;
 			unloads.clear();
-			drawings.clear();
 			if (currentScreen != null) {
 				currentScreen.destroy();
 				currentScreen = null;
@@ -465,11 +428,6 @@ public class LProcess extends PlayerUtils {
 			unloads = new TArray<Updateable>(10);
 		} else {
 			unloads.clear();
-		}
-		if (drawings == null) {
-			drawings = new TArray<Drawable>(10);
-		} else {
-			drawings.clear();
 		}
 	}
 

@@ -9,7 +9,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
-public class FadeSpiralEffect extends LObject implements ISprite {
+public class FadeSpiralEffect extends LObject implements BaseEffect,ISprite {
 
 	/**
 	 * 

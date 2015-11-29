@@ -13,7 +13,7 @@ import loon.utils.timer.LTimer;
 /**
  * 0.3.2版新增类，单一色彩的圆弧渐变特效
  */
-public class ArcEffect extends LObject implements ISprite {
+public class ArcEffect extends LObject implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -57,6 +57,7 @@ public class ArcEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
+	@Override
 	public boolean isCompleted() {
 		return completed;
 	}
@@ -69,14 +70,17 @@ public class ArcEffect extends LObject implements ISprite {
 		this.color = color;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (completed) {
 			return;
@@ -91,6 +95,7 @@ public class ArcEffect extends LObject implements ISprite {
 
 	private int tmpColor;
 
+	@Override
 	public void createUI(GLEx g) {
 		if (!visible) {
 			return;
@@ -146,22 +151,27 @@ public class ArcEffect extends LObject implements ISprite {
 		this.turn = turn;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void close() {
 		visible = false;
 		completed = true;

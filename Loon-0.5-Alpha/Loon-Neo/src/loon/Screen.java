@@ -20,6 +20,7 @@
  */
 package loon;
 
+import loon.action.ActionControl;
 import loon.action.camera.BaseCamera;
 import loon.action.camera.EmptyCamera;
 import loon.action.collision.GravityHandler;
@@ -30,7 +31,6 @@ import loon.canvas.LColor;
 import loon.component.Desktop;
 import loon.component.LComponent;
 import loon.component.LLayer;
-import loon.event.Drawable;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
@@ -121,12 +121,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
 
-	public void registerTouchArea(final LTouchArea pTouchArea) {
-		this._touchAreas.add(pTouchArea);
+	public void registerTouchArea(final LTouchArea touchArea) {
+		this._touchAreas.add(touchArea);
 	}
 
-	public boolean unregisterTouchArea(final LTouchArea pTouchArea) {
-		return this._touchAreas.remove(pTouchArea);
+	public boolean unregisterTouchArea(final LTouchArea touchArea) {
+		return this._touchAreas.remove(touchArea);
 	}
 
 	public void clearTouchAreas() {
@@ -653,27 +653,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
-	public Screen addDrawing(Drawable d) {
-		if (handler != null) {
-			handler.addDrawing(d);
-		}
-		return this;
-	}
-
-	public Screen removeDrawing(Drawable d) {
-		if (handler != null) {
-			handler.removeDrawing(d);
-		}
-		return this;
-	}
-
-	public Screen removeAllDrawing() {
-		if (handler != null) {
-			handler.removeAllDrawing();
-		}
-		return this;
-	}
-
 	/**
 	 * 当执行Screen转换时将调用此函数(如果返回的LTransition不为null，则渐变效果会被执行)
 	 * 
@@ -1107,6 +1086,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	/**
+	 * 添加游戏对象
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public Screen add(Object obj) {
+		if (obj instanceof ISprite) {
+			add((ISprite) obj);
+		} else if (obj instanceof LComponent) {
+			add((LComponent) obj);
+		} else if (obj instanceof Stage) {
+			puspStage((Stage) obj);
+		} else if (obj instanceof Updateable) {
+			addLoad((Updateable) obj);
+		}
+		return this;
+	}
+
+	/**
 	 * 添加游戏精灵
 	 * 
 	 * @param sprite
@@ -1115,6 +1113,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen add(ISprite sprite) {
 		if (sprites != null) {
 			sprites.add(sprite);
+			if (sprite instanceof LTouchArea) {
+				registerTouchArea((LTouchArea) sprite);
+			}
 		}
 		return this;
 	}
@@ -1128,6 +1129,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen add(LComponent comp) {
 		if (desktop != null) {
 			desktop.add(comp);
+			if (comp instanceof LTouchArea) {
+				registerTouchArea((LTouchArea) comp);
+			}
 		}
 		return this;
 	}
@@ -1135,6 +1139,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen remove(ISprite sprite) {
 		if (sprites != null) {
 			sprites.remove(sprite);
+			if (sprite instanceof LTouchArea) {
+				unregisterTouchArea((LTouchArea) sprite);
+			}
 		}
 		return this;
 	}
@@ -1142,6 +1149,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen remove(LComponent comp) {
 		if (desktop != null) {
 			desktop.remove(comp);
+			if (comp instanceof LTouchArea) {
+				unregisterTouchArea((LTouchArea) comp);
+			}
 		}
 		return this;
 	}
@@ -1153,6 +1163,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (desktop != null) {
 			desktop.getContentPane().clear();
 		}
+		if (LSystem._process.rootPlayer != null) {
+			LSystem._process.rootPlayer.removeAll();
+		}
+		ActionControl.getInstance().clear();
+		removeAllLoad();
+		removeAllUnLoad();
+		clearTouchAreas();
 		return this;
 	}
 

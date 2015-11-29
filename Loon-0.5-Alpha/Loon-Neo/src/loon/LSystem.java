@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.event.Drawable;
 import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
@@ -288,24 +287,6 @@ public class LSystem {
 	public final static void unload(Updateable u) {
 		if (_process != null) {
 			_process.addUnLoad(u);
-		}
-	}
-
-	public final static void clearUpdate() {
-		if (_process != null) {
-			_process.removeAllDrawing();
-		}
-	}
-
-	public final static void drawing(Drawable d) {
-		if (_process != null) {
-			_process.addDrawing(d);
-		}
-	}
-
-	public final static void clearDrawing() {
-		if (_process != null) {
-			_process.removeAllDrawing();
 		}
 	}
 

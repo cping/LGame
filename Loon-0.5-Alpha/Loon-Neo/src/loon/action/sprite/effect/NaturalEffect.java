@@ -10,7 +10,7 @@ import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class NaturalEffect extends LObject implements ISprite {
+public class NaturalEffect extends LObject implements BaseEffect, ISprite {
 
 	public static enum NaturalType {
 		Rain, Snow, Petal;
@@ -23,13 +23,13 @@ public class NaturalEffect extends LObject implements ISprite {
 
 	private LTexturePack pack;
 
-	private int x, y, width, height, count, layer;
+	private int width, height, count;
 
 	private LTimer timer;
 
 	private IKernel[] kernels;
 
-	private boolean visible = true;
+	private boolean visible = true, completed = false;
 
 	/**
 	 * 返回默认数量的飘雪
@@ -183,8 +183,7 @@ public class NaturalEffect extends LObject implements ISprite {
 
 	public NaturalEffect(NaturalType ntype, int count, int limit, int x, int y,
 			int w, int h) {
-		this.x = x;
-		this.y = y;
+		this.setLocation(x, y);
 		this.width = w;
 		this.height = h;
 		this.count = count;
@@ -215,7 +214,11 @@ public class NaturalEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
+		if (completed) {
+			return;
+		}
 		if (visible && timer.action(elapsedTime)) {
 			for (int i = 0; i < count; i++) {
 				kernels[i].update();
@@ -223,10 +226,11 @@ public class NaturalEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (visible) {
 			for (int i = 0; i < count; i++) {
-				kernels[i].draw(g);
+				kernels[i].draw(g, _location.x, _location.y);
 			}
 		}
 	}
@@ -239,14 +243,17 @@ public class NaturalEffect extends LObject implements ISprite {
 		timer.setDelay(delay);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -255,28 +262,13 @@ public class NaturalEffect extends LObject implements ISprite {
 		this.height = height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
 	public void setWidth(int width) {
 		this.width = width;
-	}
-
-	public float getX() {
-		return x;
-	}
-
-	public void setX(int x) {
-		this.x = x;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(int y) {
-		this.y = y;
 	}
 
 	public IKernel[] getKernels() {
@@ -287,30 +279,26 @@ public class NaturalEffect extends LObject implements ISprite {
 		this.kernels = kernels;
 	}
 
-	public int getLayer() {
-		return layer;
-	}
-
-	public void setLayer(int layer) {
-		this.layer = layer;
-	}
-
+	@Override
 	public RectBox getCollisionBox() {
-		return getRect(x, y, width, height);
+		return getCollisionArea();
 	}
 
-	public int x() {
-		return x;
-	}
-
-	public int y() {
-		return y;
-	}
-
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setStop(boolean stop) {
+		this.completed = stop;
+	}
+
+	@Override
 	public void close() {
 		this.visible = false;
 		if (kernels != null) {
@@ -324,4 +312,5 @@ public class NaturalEffect extends LObject implements ISprite {
 			pack.close();
 		}
 	}
+
 }

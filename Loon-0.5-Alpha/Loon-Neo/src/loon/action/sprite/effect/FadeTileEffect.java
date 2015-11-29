@@ -10,7 +10,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class FadeTileEffect extends LObject implements ISprite {
+public class FadeTileEffect extends LObject implements BaseEffect,ISprite {
 
 	/**
 	 * 

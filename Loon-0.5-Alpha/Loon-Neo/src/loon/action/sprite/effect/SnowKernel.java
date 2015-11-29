@@ -16,7 +16,7 @@ public class SnowKernel implements IKernel {
 
 	private float offsetX, offsetY, speed, x, y, width, height, snowWidth,
 			snowHeight;
-	
+
 	public SnowKernel(LTexturePack pack, int n, int w, int h) {
 		snow = pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "snow_" + n);
 		snowWidth = snow.width();
@@ -67,9 +67,9 @@ public class SnowKernel implements IKernel {
 		}
 	}
 
-	public void draw(GLEx g) {
+	public void draw(GLEx g, float mx, float my) {
 		if (exist) {
-			snow.draw(x, y);
+			snow.draw(mx + x, my + y);
 		}
 	}
 

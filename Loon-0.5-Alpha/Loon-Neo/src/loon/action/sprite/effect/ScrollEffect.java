@@ -13,7 +13,7 @@ import loon.utils.timer.LTimer;
 /**
  * 0.3.2版新增类，用以实现特定图像的滚动播放(循环展示)
  */
-public class ScrollEffect extends LObject implements ISprite {
+public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 
 	/**
 	 * 
@@ -174,14 +174,15 @@ public class ScrollEffect extends LObject implements ISprite {
 		return texture;
 	}
 
-	public boolean isStop() {
-		return completed;
-	}
-
 	public void setStop(boolean completed) {
 		this.completed = completed;
 	}
 
+	@Override
+	public boolean isCompleted() {
+		return completed;
+	}
+	
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}

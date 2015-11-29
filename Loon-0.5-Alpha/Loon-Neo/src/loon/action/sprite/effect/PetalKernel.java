@@ -68,9 +68,9 @@ public class PetalKernel implements IKernel {
 		}
 	}
 
-	public void draw(GLEx g) {
+	public void draw(GLEx g, float mx, float my) {
 		if (exist) {
-			sakura.draw(x, y);
+			sakura.draw(mx + x, my + y);
 		}
 	}
 

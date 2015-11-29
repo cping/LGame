@@ -10,7 +10,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class FadeOvalEffect extends LObject implements ISprite {
+public class FadeOvalEffect extends LObject implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -48,8 +48,8 @@ public class FadeOvalEffect extends LObject implements ISprite {
 		this.ovalColor = oc;
 		this.elapsed = 0;
 		for (int i = 0; i < OVAL_COLORS.length; i++) {
-			OVAL_COLORS[i] = new LColor(ovalColor.r, ovalColor.g,
-					ovalColor.b, 1F - 0.15f * i);
+			OVAL_COLORS[i] = new LColor(ovalColor.r, ovalColor.g, ovalColor.b,
+					1F - 0.15f * i);
 		}
 		this.max_time = time;
 		this.timer = new LTimer(0);
@@ -72,18 +72,22 @@ public class FadeOvalEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
+	@Override
 	public boolean isCompleted() {
 		return finished;
 	}
 
+	@Override
 	public int getHeight() {
 		return (int) ovalHeight;
 	}
 
+	@Override
 	public int getWidth() {
 		return (int) ovalWidth;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (finished) {
 			return;
@@ -92,10 +96,9 @@ public class FadeOvalEffect extends LObject implements ISprite {
 			if (type == TYPE_FADE_IN) {
 				this.elapsed += elapsedTime / 20f;
 				float progress = this.elapsed / this.max_time;
-				this.ovalWidth = (ovalWidth * MathUtils
+				this.ovalWidth = (ovalWidth * MathUtils.pow(1f - progress, 2f));
+				this.ovalHeight = (ovalHeight * MathUtils
 						.pow(1f - progress, 2f));
-				this.ovalHeight = (ovalHeight * MathUtils.pow(1f - progress,
-						2f));
 				if (this.elapsed >= this.max_time / 15f) {
 					this.elapsed = -1;
 					this.ovalWidth = (this.ovalHeight = 0f);
@@ -118,6 +121,7 @@ public class FadeOvalEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (finished) {
 			return;
@@ -159,22 +163,27 @@ public class FadeOvalEffect extends LObject implements ISprite {
 		return type;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), getWidth(), getHeight());
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void close() {
 		this.visible = false;
 		this.finished = true;

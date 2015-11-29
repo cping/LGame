@@ -51,9 +51,9 @@ public class RainKernel implements IKernel {
 		}
 	}
 
-	public void draw(GLEx g) {
+	public void draw(GLEx g, float mx, float my) {
 		if (exist) {
-			rain.draw(x, y);
+			rain.draw(mx + x, my + y);
 		}
 	}
 

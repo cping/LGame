@@ -11,7 +11,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class FadeDotEffect extends LObject implements ISprite {
+public class FadeDotEffect extends LObject implements BaseEffect, ISprite {
 	/**
 	 * 
 	 */
@@ -155,6 +155,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 		this.back = color;
 	}
 
+	@Override
 	public boolean isCompleted() {
 		if (finished) {
 			return finished;
@@ -167,14 +168,17 @@ public class FadeDotEffect extends LObject implements ISprite {
 		return (finished = true);
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -189,6 +193,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (finished) {
 			return;
@@ -215,18 +220,22 @@ public class FadeDotEffect extends LObject implements ISprite {
 		g.setColor(tmp);
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), getWidth(), getHeight());
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
@@ -239,6 +248,7 @@ public class FadeDotEffect extends LObject implements ISprite {
 		return type;
 	}
 
+	@Override
 	public void close() {
 		visible = false;
 		finished = true;

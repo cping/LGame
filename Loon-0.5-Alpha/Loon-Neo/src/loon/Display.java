@@ -289,7 +289,6 @@ public class Display extends LSystemView {
 			}
 
 			process.draw(glEx);
-			process.drawable(clock.timeSinceLastUpdate);
 
 			if (setting.isFPS) {
 				tickFrames();
