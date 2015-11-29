@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.opengl.BaseBatch;
+import loon.opengl.Paint;
 import loon.opengl.Painter;
 import loon.utils.GLUtils;
 import loon.utils.NumberUtils;
@@ -519,6 +520,16 @@ public class LTexture extends Painter implements LRelease {
 			return;
 		}
 		setImageColor(c.r, c.g, c.b, c.a);
+	}
+
+	public void setColor(Paint paint) {
+		if (colors == null) {
+			colors = new LColor[4];
+		}
+		colors[0] = paint.getTopLeftColor();
+		colors[1] = paint.getTopRightColor();
+		colors[2] = paint.getBottomLeftColor();
+		colors[3] = paint.getBottomRightColor();
 	}
 
 	public void setColor(int corner, float r, float g, float b, float a) {

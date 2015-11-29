@@ -308,6 +308,10 @@ public class StageSystem extends PlayerUtils {
 
 	}
 
+	public void removeAll() {
+		_screens.clear();
+	}
+
 	protected class UnController extends Controller {
 		public UnController(Stage o, Stage n, StageTransition trans) {
 			super(o, n, trans);

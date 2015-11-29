@@ -3,6 +3,7 @@ package loon.action.sprite.effect;
 import java.util.Iterator;
 
 import loon.LObject;
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
@@ -10,7 +11,10 @@ import loon.event.LTouchArea;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
+import loon.utils.processes.RealtimeProcess;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
+import loon.utils.timer.LTimerContext;
 
 public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 		ISprite {
@@ -34,8 +38,14 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 
 	private Model model;
 
+	private int existTime = 25;
+
 	public RippleEffect() {
 		this(Model.OVAL, LColor.blue);
+	}
+
+	public RippleEffect(LColor c) {
+		this(Model.OVAL, c);
 	}
 
 	public RippleEffect(Model model) {
@@ -50,8 +60,19 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 		visible = true;
 	}
 
-	public boolean onTouch(float x, float y) {
-		RippleKernel ripple = new RippleKernel(x, y);
+	public boolean addRipplePoint(final float x, final float y) {
+		final RippleKernel ripple = new RippleKernel(x, y, existTime);
+		final RealtimeProcess update = new RealtimeProcess() {
+
+			@Override
+			public void run(LTimerContext time) {
+				RippleKernel rippleOther = new RippleKernel(x, y, existTime);
+				ripples.add(rippleOther);
+				kill();
+			}
+		};
+		update.setDelay(LSystem.SECOND / 5);
+		RealtimeProcessManager.get().addProcess(update);
 		ripples.add(ripple);
 		return true;
 	}
@@ -68,6 +89,9 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 
 	@Override
 	public void createUI(GLEx g) {
+		if (completed) {
+			return;
+		}
 		if (!visible) {
 			return;
 		}
@@ -123,17 +147,26 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 	@Override
 	public void close() {
 		visible = false;
+		completed = true;
+	}
+
+	public int getExistTime() {
+		return existTime;
+	}
+
+	public void setExistTime(int existTime) {
+		this.existTime = existTime;
 	}
 
 	@Override
 	public boolean contains(float x, float y) {
-		return true;
+		return LSystem.viewSize.contains(x, y);
 	}
 
 	@Override
 	public void onAreaTouched(Event e, float touchX, float touchY) {
 		if (e == Event.DOWN) {
-			onTouch(touchX, touchY);
+			addRipplePoint(touchX, touchY);
 		}
 	}
 

@@ -1,9 +1,8 @@
-package loon.opengl;
+package loon.opengl.d3d;
 
 import loon.IDGenerator;
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.utils.NumberUtils;
 
 public class Material {
 	private int id;
@@ -159,15 +158,15 @@ public class Material {
 		result = 31 * result + getSpecularMap().hashCode();
 		result = 31
 				* result
-				+ (getDissolve() != +0.0f ? NumberUtils
-						.floatToIntBits(getDissolve()) : 0);
+				+ (getDissolve() != +0.0f ? Float.floatToIntBits(getDissolve())
+						: 0);
 		result = 31
 				* result
-				+ (getSpecularPower() != +0.0f ? NumberUtils
+				+ (getSpecularPower() != +0.0f ? Float
 						.floatToIntBits(getSpecularPower()) : 0);
 		result = 31
 				* result
-				+ (getIllumination() != +0.0f ? NumberUtils
+				+ (getIllumination() != +0.0f ? Float
 						.floatToIntBits(getIllumination()) : 0);
 		result = 31 * result + getName().hashCode();
 		return result;
@@ -175,20 +174,17 @@ public class Material {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o){
+		if (this == o)
 			return true;
-		}
-		if (o == null || getClass() != o.getClass()){
+		if (o == null || getClass() != o.getClass())
 			return false;
-		}
 
 		Material material = (Material) o;
 
-		return NumberUtils.compare(material.getDissolve(), getDissolve()) == 0
-				&& NumberUtils.compare(material.getSpecularPower(),
+		return Float.compare(material.getDissolve(), getDissolve()) == 0
+				&& Float.compare(material.getSpecularPower(),
 						getSpecularPower()) == 0
-				&& NumberUtils.compare(material.getIllumination(),
-						getIllumination()) == 0
+				&& Float.compare(material.getIllumination(), getIllumination()) == 0
 				&& getAmbient().equals(material.getAmbient())
 				&& getDiffuse().equals(material.getDiffuse())
 				&& getSpecular().equals(material.getSpecular())
@@ -198,4 +194,11 @@ public class Material {
 				&& getName().equals(material.getName());
 	}
 
+	@Override
+	public String toString() {
+		return "Material{" + "ambient=" + ambient + ", diffuse=" + diffuse
+				+ ", specular=" + specular + ", dissolve=" + dissolve
+				+ ", specularPower=" + specularPower + ", illumination="
+				+ illumination + ", name='" + name + '\'' + '}';
+	}
 }

@@ -1163,8 +1163,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (desktop != null) {
 			desktop.getContentPane().clear();
 		}
-		if (LSystem._process.rootPlayer != null) {
-			LSystem._process.rootPlayer.removeAll();
+		if (LSystem._process != null) {
+			if (LSystem._process.rootPlayer != null) {
+				LSystem._process.rootPlayer.removeAll();
+			}
+			if (LSystem._process.stageSystem != null) {
+				LSystem._process.stageSystem.removeAll();
+			}
+		}
+		if (screens != null) {
+			screens.clear();
 		}
 		ActionControl.getInstance().clear();
 		removeAllLoad();
