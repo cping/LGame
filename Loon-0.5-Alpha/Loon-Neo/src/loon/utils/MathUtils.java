@@ -798,6 +798,10 @@ public class MathUtils {
 		return value;
 	}
 
+	public static float clamp(final float v) {
+		return v < 0f ? 0f : (v > 1f ? 1f : v);
+	}
+
 	public static float distance(float value1, float value2) {
 		return Math.abs(value1 - value2);
 	}

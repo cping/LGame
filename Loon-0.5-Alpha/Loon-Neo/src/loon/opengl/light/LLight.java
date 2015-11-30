@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-package loon.opengl;
+package loon.opengl.light;
 
 import loon.canvas.LColor;
 import loon.utils.TArray;

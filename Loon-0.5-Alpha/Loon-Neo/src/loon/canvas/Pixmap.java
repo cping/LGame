@@ -1605,7 +1605,7 @@ public class Pixmap extends Limit implements LRelease {
 	 * @param yPoints
 	 * @param nPoints
 	 */
-	protected void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
 		int[] xPointsCopy;
 		if (translateX == 0) {
 			xPointsCopy = xPoints;
