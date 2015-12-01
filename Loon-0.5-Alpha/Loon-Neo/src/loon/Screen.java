@@ -1105,6 +1105,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	/**
+	 * 删除指定对象
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public Screen remove(Object obj) {
+		if (obj instanceof ISprite) {
+			remove((ISprite) obj);
+		} else if (obj instanceof LComponent) {
+			remove((LComponent) obj);
+		} else if (obj instanceof Stage) {
+			popTo((Stage) obj);
+		} else if (obj instanceof Updateable) {
+			removeLoad((Updateable) obj);
+		}
+		return this;
+	}
+
+	/**
 	 * 添加游戏精灵
 	 * 
 	 * @param sprite
@@ -1136,6 +1155,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
+	public boolean contains(ISprite sprite) {
+		if (sprites != null) {
+			return sprites.contains(sprite);
+		}
+		return false;
+	}
+
 	public Screen remove(ISprite sprite) {
 		if (sprites != null) {
 			sprites.remove(sprite);
@@ -1146,6 +1172,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
+	public boolean contains(LComponent sprite) {
+		if (desktop != null) {
+			return desktop.contains(sprite);
+		}
+		return false;
+	}
+
 	public Screen remove(LComponent comp) {
 		if (desktop != null) {
 			desktop.remove(comp);
@@ -1154,6 +1187,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			}
 		}
 		return this;
+	}
+
+	public boolean contains(Object obj) {
+		if (obj instanceof ISprite) {
+			return contains((ISprite) obj);
+		} else if (obj instanceof LComponent) {
+			return contains((LComponent) obj);
+		}
+		return false;
 	}
 
 	public Screen removeAll() {

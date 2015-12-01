@@ -20,7 +20,13 @@
  */
 package loon;
 
-public class EmptyObject extends LObject {
+import loon.action.ActionBind;
+import loon.action.map.Field2D;
+import loon.geom.RectBox;
+
+public class EmptyObject extends LObject implements ActionBind {
+
+	private boolean visible;
 
 	public void update(long elapsedTime) {
 
@@ -32,6 +38,59 @@ public class EmptyObject extends LObject {
 
 	public int getHeight() {
 		return 0;
+	}
+
+	@Override
+	public Field2D getField2D() {
+		return null;
+	}
+
+	@Override
+	public void setVisible(boolean v) {
+		this.visible = v;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return visible;
+	}
+
+	private float scaleX = 1f, scaleY = 1f;
+
+	@Override
+	public float getScaleX() {
+		return scaleX;
+	}
+
+	@Override
+	public float getScaleY() {
+		return scaleY;
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		this.scaleX = sx;
+		this.scaleY = sy;
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return false;
+	}
+
+	@Override
+	public boolean inContains(float x, float y, float w, float h) {
+		return false;
+	}
+
+	@Override
+	public RectBox getRectBox() {
+		return getCollisionArea();
 	}
 
 }

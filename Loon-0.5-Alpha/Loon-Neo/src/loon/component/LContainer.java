@@ -42,11 +42,12 @@ public abstract class LContainer extends LComponent {
 		this.setFocusable(false);
 	}
 
+	@Override
 	public boolean isContainer() {
 		return true;
 	}
-
-	public synchronized void add(LComponent comp) {
+	
+	public  void add(LComponent comp) {
 		if (this == comp) {
 			return;
 		}
@@ -74,7 +75,7 @@ public abstract class LContainer extends LComponent {
 		this.latestInserted = comp;
 	}
 
-	public synchronized void add(LComponent comp, int index) {
+	public  void add(LComponent comp, int index) {
 		if (comp.getContainer() != null) {
 			throw new IllegalStateException(comp
 					+ " already reside in another container!!!");
@@ -96,7 +97,7 @@ public abstract class LContainer extends LComponent {
 		this.latestInserted = comp;
 	}
 
-	public synchronized boolean contains(LComponent comp) {
+	public  boolean contains(LComponent comp) {
 		if (comp == null) {
 			return false;
 		}
@@ -111,7 +112,7 @@ public abstract class LContainer extends LComponent {
 		return false;
 	}
 
-	public synchronized int remove(LComponent comp) {
+	public  int remove(LComponent comp) {
 		for (int i = 0; i < this.childCount; i++) {
 			if (this.childs[i] == comp) {
 				this.remove(i);
@@ -121,7 +122,7 @@ public abstract class LContainer extends LComponent {
 		return -1;
 	}
 
-	public synchronized LComponent remove(int index) {
+	public  LComponent remove(int index) {
 		LComponent comp = this.childs[index];
 
 		this.desktop.setComponentStat(comp, false);
@@ -143,11 +144,12 @@ public abstract class LContainer extends LComponent {
 		this.childCount = 0;
 	}
 
-	public synchronized void replace(LComponent oldComp, LComponent newComp) {
+	public  void replace(LComponent oldComp, LComponent newComp) {
 		int index = this.remove(oldComp);
 		this.add(newComp, index);
 	}
 
+	@Override
 	public void update(long timer) {
 		if (isClose) {
 			return;
@@ -167,6 +169,7 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
+	@Override
 	public void validatePosition() {
 		if (isClose) {
 			return;
@@ -188,6 +191,7 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
+	@Override
 	protected void validateSize() {
 		super.validateSize();
 
@@ -196,6 +200,7 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -203,7 +208,7 @@ public abstract class LContainer extends LComponent {
 		if (!this.isVisible()) {
 			return;
 		}
-		synchronized (childs) {
+		synchronized(childs) {
 			super.createUI(g);
 			if (this.elastic) {
 				g.setClip(this.getScreenX(), this.getScreenY(),

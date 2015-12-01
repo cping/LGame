@@ -16,37 +16,27 @@ import loon.utils.TArray;
 /*
  * 以下为简单用例:
  * 
-		LTexture texture = DefUI.getGameWinFrame(200, 200);
-		LMessageBox box = new LMessageBox(new String[] { 
-				"人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。", 
-				"明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" },
-				texture, 66, 66, 180, 180);
-		box.getMessageBox().setOffset(10, 10);
-		add(box);
-		box.SetClick(new ClickListener() {
-
-			@Override
-			public void UpClick(LComponent comp, float x, float y) {
-
-			}
-
-			@Override
-			public void DragClick(LComponent comp, float x, float y) {
-
-			}
-
-			@Override
-			public void DownClick(LComponent comp, float x, float y) {
-				LMessageBox box = (LMessageBox) comp;
-				box.next();
-			}
-
-			@Override
-			public void DoClick(LComponent comp) {
-
-			}
-		});
-	
+ * LTexture texture = DefUI.getGameWinFrame(200, 200); LMessageBox box = new
+ * LMessageBox(new String[] { "人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",
+ * "明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" }, texture, 66, 66, 180, 180);
+ * box.getMessageBox().setOffset(10, 10); add(box); box.SetClick(new
+ * ClickListener() {
+ * 
+ * @Override public void UpClick(LComponent comp, float x, float y) {
+ * 
+ * }
+ * 
+ * @Override public void DragClick(LComponent comp, float x, float y) {
+ * 
+ * }
+ * 
+ * @Override public void DownClick(LComponent comp, float x, float y) {
+ * LMessageBox box = (LMessageBox) comp; box.next(); }
+ * 
+ * @Override public void DoClick(LComponent comp) {
+ * 
+ * } });
+ * 
  * } });
  */
 public class LMessageBox extends LComponent {
@@ -313,8 +303,8 @@ public class LMessageBox extends LComponent {
 		this(messages, null, LFont.getDefaultFont(), null, x, y, width, height);
 	}
 
-	public LMessageBox(TArray<Message> messages, LTexture texture, int x, int y,
-			int width, int height) {
+	public LMessageBox(TArray<Message> messages, LTexture texture, int x,
+			int y, int width, int height) {
 		this(messages, null, LFont.getDefaultFont(), texture, x, y, width,
 				height);
 	}
@@ -365,7 +355,8 @@ public class LMessageBox extends LComponent {
 		if (messages != null) {
 			_messageList = new TArray<LMessageBox.Message>();
 			for (String text : messages) {
-				_messageList.add(new Message(text, null, face, Print.formatMessage(text, font, width)));
+				_messageList.add(new Message(text, null, face, Print
+						.formatMessage(text, font, width)));
 			}
 		}
 		this._box = new DrawMessageBox(new ShadowFont(font, messages,
@@ -404,15 +395,36 @@ public class LMessageBox extends LComponent {
 
 	}
 
-	public LMessageBox next() {
-		int size = this.messageIndex + 1;
-		if (size < this._messageList.size) {
-			setIndex(++this.messageIndex);
-			restart();
+	public void reset() {
+		messageIndex = 0;
+		stopMessage = false;
+		restart();
+	}
+
+	public LMessageBox loop() {
+		if (finished) {
+			int size = this.messageIndex + 1;
+			if (size < this._messageList.size) {
+				setIndex(++this.messageIndex);
+				restart();
+			} else {
+				reset();
+			}
 		}
 		return this;
 	}
-
+	
+	public LMessageBox next() {
+		if (finished) {
+			int size = this.messageIndex + 1;
+			if (size < this._messageList.size) {
+				setIndex(++this.messageIndex);
+				restart();
+			}
+		}
+		return this;
+	}
+	
 	public LMessageBox setIndex(int index) {
 		int size = this.messageIndex + 1;
 		if (size > 0 && size < this._messageList.size) {

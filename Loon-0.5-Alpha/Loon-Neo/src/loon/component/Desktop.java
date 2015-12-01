@@ -202,7 +202,7 @@ public class Desktop implements LRelease {
 			// 获得当前窗体下鼠标坐标
 			LComponent comp = this.findComponent(this.input.getTouchX(),
 					this.input.getTouchY());
-			if(comp!=null){
+			if (comp != null) {
 
 			}
 			if (comp != null) {
@@ -426,7 +426,6 @@ public class Desktop implements LRelease {
 		return null;
 	}
 
-	
 	public LLayer getTopLayer() {
 		LComponent[] components = contentPane.getComponents();
 		int size = components.length;
@@ -491,6 +490,10 @@ public class Desktop implements LRelease {
 					"Can't set invisible component as modal component!");
 		}
 		this.modal = comp;
+	}
+
+	public boolean contains(LComponent comp) {
+		return contentPane.contains(comp);
 	}
 
 	public LComponent get() {

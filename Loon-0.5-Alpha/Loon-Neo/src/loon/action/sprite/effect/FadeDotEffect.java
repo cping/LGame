@@ -119,6 +119,10 @@ public class FadeDotEffect extends LObject implements BaseEffect, ISprite {
 		this(ISprite.TYPE_FADE_IN, 280, c);
 	}
 
+	public FadeDotEffect(int type, LColor c) {
+		this(type, 280, c);
+	}
+
 	public FadeDotEffect(int type, int time, LColor c) {
 		this(type, time, time, 5, c, LSystem.viewSize.getWidth(),
 				LSystem.viewSize.getHeight());

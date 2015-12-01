@@ -31,6 +31,10 @@ import loon.utils.json.JsonImpl;
 
 public class LSystem {
 
+	public static EmptyObject newEmptyObject() {
+		return new EmptyObject();
+	}
+	
 	public static String FONT_NAME = "Dialog";
 
 	public static String ENCODING = "UTF-8";

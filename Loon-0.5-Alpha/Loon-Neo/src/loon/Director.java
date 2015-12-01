@@ -20,16 +20,15 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
-import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 
 public class Director extends SoundBox {
 
-	public final static void addRealtimeProcess(RealtimeProcess realtimeProcess) {
-		RealtimeProcessManager.get().addProcess(realtimeProcess);
+	public final static void addProcess(GameProcess process) {
+		RealtimeProcessManager.get().addProcess(process);
 	}
 
-	public final static void removeRealtimeProcess(String id) {
+	public final static void removeProcess(String id) {
 		RealtimeProcessManager.get().delete(id);
 	}
 
