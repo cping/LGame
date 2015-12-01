@@ -1,7 +1,5 @@
 package loon.opengl.d3d.shaders;
 
-import java.awt.image.renderable.RenderContext;
-
 import loon.action.camera.BaseCamera;
 import loon.canvas.LColor;
 import loon.geom.Matrix3;
@@ -9,6 +7,7 @@ import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.opengl.ShaderProgram;
+import loon.opengl.d3d.RenderContext;
 import loon.opengl.d3d.Renderable;
 import loon.opengl.d3d.Shader;
 import loon.utils.TArray;

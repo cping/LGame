@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.opengl.BaseBatch;
+import loon.opengl.GL20;
 import loon.opengl.Paint;
 import loon.opengl.Painter;
 import loon.utils.GLUtils;
@@ -283,6 +284,15 @@ public class LTexture extends Painter implements LRelease {
 		}
 		_drawing = false;
 
+	}
+
+	public void bind() {
+		GLUtils.bindTexture(LSystem.base().graphics().gl, id);
+	}
+
+	public void bind(int unit) {
+		LSystem.base().graphics().gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
+		GLUtils.bindTexture(LSystem.base().graphics().gl, id);
 	}
 
 	public boolean isClose() {
@@ -925,5 +935,4 @@ public class LTexture extends Painter implements LRelease {
 	public float getMaxV() {
 		return heightRatio;
 	}
-
 }

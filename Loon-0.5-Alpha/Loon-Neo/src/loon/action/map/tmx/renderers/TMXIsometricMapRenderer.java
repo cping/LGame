@@ -73,11 +73,13 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		if (opacity > 1f) {
 			opacity = 1f;
 		}
-		
+
 		int tx = _location.x() / map.getTileWidth();
 		int ty = _location.y() / map.getTileHeight();
-		int windowWidth = LSystem.viewSize.getWidth() / map.getTileWidth();
-		int windowHeight = LSystem.viewSize.getHeight() / map.getTileHeight();
+		float windowWidth = LSystem.viewSize.getWidth() / map.getTileWidth()
+				* 2f;
+		float windowHeight = LSystem.viewSize.getHeight() / map.getTileHeight()
+				* 2f;
 		float doubleWidth = tileLayer.getWidth() * 2f;
 		float doubleHeight = tileLayer.getHeight() * 2f;
 
@@ -86,10 +88,10 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		LTexture current = textureMap.get(map.getTileset(0).getImage()
 				.getSource());
 		LTextureBatch batch = current.getTextureBatch();
-	
+
 		float tmpAlpha = baseColor.a;
 		baseColor.a *= opacity;
-		
+
 		if (onlyTexture) {
 			int hashCode = 1;
 			hashCode = LSystem.unite(hashCode, tx);

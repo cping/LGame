@@ -68,8 +68,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 		int tx = _location.x() / map.getTileWidth();
 		int ty = _location.y() / map.getTileHeight();
-		int windowWidth = LSystem.viewSize.getWidth() / map.getTileWidth();
-		int windowHeight = LSystem.viewSize.getHeight() / map.getTileHeight();
+		float windowWidth = LSystem.viewSize.getWidth() / map.getTileWidth()
+				* 3f;
+		float windowHeight = LSystem.viewSize.getHeight() / map.getTileHeight()* 3f;
 		float threeWidth = tileLayer.getWidth() * 3f;
 		float threeHeight = tileLayer.getHeight() * 3f;
 

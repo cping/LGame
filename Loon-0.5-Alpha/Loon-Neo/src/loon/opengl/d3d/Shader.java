@@ -1,7 +1,5 @@
 package loon.opengl.d3d;
 
-import java.awt.image.renderable.RenderContext;
-
 import loon.LRelease;
 import loon.action.camera.BaseCamera;
 

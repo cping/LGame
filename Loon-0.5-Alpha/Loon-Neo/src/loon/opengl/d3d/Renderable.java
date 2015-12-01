@@ -8,7 +8,9 @@ import loon.opengl.light.Lights;
 public class Renderable {
 
 	public final Matrix4 worldTransform = new Matrix4();
-
+	
+	public Shader shader;
+	
 	public Mesh mesh;
 
 	public int meshPartOffset;
