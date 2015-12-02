@@ -139,7 +139,7 @@ public class PConvexPolygonShape extends PShape {
 		for (int i = 0; i < numVertices; i++) {
 			vers[i].set(localVers[i].x, localVers[i].y);
 			_mAng.mulEqual(vers[i]);
-			vers[i].addLocal(_pos);
+			vers[i].addSelf(_pos);
 			nors[i].set(localNors[i].x, localNors[i].y);
 			_mAng.mulEqual(nors[i]);
 		}

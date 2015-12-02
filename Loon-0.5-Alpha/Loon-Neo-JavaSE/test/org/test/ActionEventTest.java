@@ -9,7 +9,7 @@ import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.ActionType;
 import loon.action.sprite.Sprite;
-import loon.action.sprite.StatusBar;
+import loon.action.sprite.SpriteLabel;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.javase.Loon;
@@ -17,7 +17,7 @@ import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.timer.LTimerContext;
 
-public class Test6 extends Screen {
+public class ActionEventTest extends Screen {
 
 	@Override
 	public LTransition onTransition() {
@@ -26,11 +26,13 @@ public class Test6 extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
-
 	}
 
 	@Override
 	public void onLoad() {
+		
+		SpriteLabel label = new SpriteLabel("Plase touch screen", 120, 20);
+		add(label);
 		
 		// 构建一个球体的精灵
 		final Sprite sprite = new Sprite("ball.png");
@@ -162,7 +164,7 @@ public class Test6 extends Screen {
 
 			@Override
 			public Screen onScreen() {
-				return new Test6();
+				return new ActionEventTest();
 			}
 		});
 	}

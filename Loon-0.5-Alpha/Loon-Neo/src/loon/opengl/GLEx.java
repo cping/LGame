@@ -1512,7 +1512,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param centerX
 	 * @param centerY
 	 * @param r
-	 * @param a
+	 * @param Aa
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
 		if (useAlltextures) {
@@ -1529,7 +1529,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param centerX
 	 * @param centerY
 	 * @param r
-	 * @param a
+	 * @param Aa
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height) {
 		if (useAlltextures) {

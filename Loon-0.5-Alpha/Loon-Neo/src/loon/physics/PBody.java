@@ -228,7 +228,7 @@ public class PBody {
 			}
 			s._rem = true;
 			s._parent = null;
-			s._localPos.addLocal(pos);
+			s._localPos.addSelf(pos);
 			if (i != numShapes - 1) {
 				System.arraycopy(shapes, i + 1, shapes, i, numShapes - i - 1);
 			}
@@ -264,7 +264,7 @@ public class PBody {
 			PShape s = shapes[i];
 			s._pos.set(s._localPos.x, s._localPos.y);
 			mAng.mulEqual(s._pos);
-			s._pos.addLocal(pos);
+			s._pos.addSelf(pos);
 			s._localAng = (s._localAng + twoPI) % twoPI;
 			s._ang = ang + s._localAng;
 			s._mAng.setRotate(s._ang);

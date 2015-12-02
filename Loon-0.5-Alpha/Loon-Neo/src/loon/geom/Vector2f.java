@@ -560,18 +560,6 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
-	public final Vector2f addLocal(Vector2f v) {
-		x += v.x;
-		y += v.y;
-		return this;
-	}
-
-	public final Vector2f addLocal(float x, float y) {
-		this.x += x;
-		this.y += y;
-		return this;
-	}
-
 	public final Vector2f subLocal(Vector2f v) {
 		x -= v.x;
 		y -= v.y;
@@ -792,12 +780,16 @@ public class Vector2f implements Serializable, XY {
 		return MathUtils.toString(x) + MathUtils.toString(y);
 	}
 
-	public Vector2f addSelf(Vector2f v) {
-		return addSelf(v.x, v.y);
+	public final Vector2f addSelf(Vector2f v) {
+		this.x += v.x;
+		this.y += v.y;
+		return this;
 	}
 
-	public Vector2f addSelf(float x, float y) {
-		return set(this.x + x, this.y + y);
+	public final Vector2f addSelf(float x, float y) {
+		this.x += x;
+		this.y += y;
+		return this;
 	}
 
 	public Vector2f subtract(float x, float y) {

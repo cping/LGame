@@ -1,28 +1,21 @@
 package org.test;
 
 import loon.LSetting;
+import loon.LTexture;
 import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
-import loon.action.ActionBind;
-import loon.action.ActionListener;
-import loon.action.ActionTween;
-import loon.action.ActionType;
-import loon.action.sprite.Sprite;
+import loon.component.DefUI;
+import loon.component.LComponent;
+import loon.component.LMessageBox;
+import loon.event.ClickListener;
 import loon.event.GameTouch;
-import loon.event.LTouchArea;
-import loon.event.Updateable;
-import loon.geom.BooleanValue;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
-import loon.utils.Easing;
-import loon.utils.processes.WaitProcess;
-import loon.utils.processes.WaitProcess.WaitEvent;
 import loon.utils.timer.LTimerContext;
 
-public class Test7 extends Screen {
+public class LMessageBoxTest extends Screen {
 
-	@Override
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}
@@ -34,7 +27,38 @@ public class Test7 extends Screen {
 
 	@Override
 	public void onLoad() {
-		
+
+		LTexture texture = DefUI.getGameWinFrame(200, 200);
+		LMessageBox box = new LMessageBox(new String[] {
+				"人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",
+				"明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" }, texture, 66, 66, 180,
+				180);
+		box.getMessageBox().setOffset(10, 10);
+		add(box);
+		centerOn(box);
+		box.SetClick(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+				LMessageBox box = (LMessageBox) comp;
+				box.loop();
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		});
 	}
 
 	@Override
@@ -46,13 +70,12 @@ public class Test7 extends Screen {
 	public void resize(int width, int height) {
 
 	}
-	
-	BooleanValue value;
 
 	@Override
 	public void touchDown(GameTouch e) {
 
 	}
+
 	@Override
 	public void touchUp(GameTouch e) {
 
@@ -88,20 +111,18 @@ public class Test7 extends Screen {
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.fps = 60;
 		setting.fontName = "黑体";
 		setting.appName = "test";
 		setting.emulateTouch = false;
-		setting.width = 640;
-		setting.height = 480;
-
 		Loon.register(setting, new LazyLoading.Data() {
 
 			@Override
 			public Screen onScreen() {
-				return new Test7();
+				return new LMessageBoxTest();
 			}
 		});
 	}
-
 }

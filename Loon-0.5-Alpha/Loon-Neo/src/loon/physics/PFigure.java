@@ -142,8 +142,8 @@ public class PFigure {
 		for (int i = 0; i < numVertices; i++) {
 			if (v[i].crossPoint && v[i].pair != null) {
 				reverseVertices(v[i], v[i].pair);
-				v[i].v.addLocal(v[i].epsilon);
-				v[i].pair.v.addLocal(v[i].pair.epsilon);
+				v[i].v.addSelf(v[i].epsilon);
+				v[i].pair.v.addSelf(v[i].pair.epsilon);
 				if (checkCrossEdge(v[i].v, v[i].next.v, v[i].pair.v,
 						v[i].pair.prev.v) != null) {
 					float tx = v[i].v.x;

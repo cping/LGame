@@ -28,7 +28,7 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 	private Vector2f orthoToIso(float x, float y) {
 		tempVector.x = (x - y) * map.getTileWidth() / 2 + _location.x;
 		tempVector.y = (x + y) * map.getTileHeight() / 2 + _location.y;
-		return tempVector.addLocal(map.getWidth() * map.getTileWidth() / 2, 0);
+		return tempVector.addSelf(map.getWidth() * map.getTileWidth() / 2, 0);
 	}
 
 	@Override
@@ -208,15 +208,15 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 					if (_rotation != 0f) {
 
-						batch.glVertex2f(orthoToIso(x, y).addLocal(
+						batch.glVertex2f(orthoToIso(x, y).addSelf(
 								-tileWidth / 2, 0).newRotate(_rotation));
 						batch.glColor4f();
 						batch.glTexCoord2f(xOff + uvCorrectionX, yOff
 								+ uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(flipZ ? tileWidth : 0,
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(flipZ ? tileWidth : 0,
 										flipZ ? 0 : tileHeight)
 								.newRotate(_rotation));
 						batch.glColor4f();
@@ -224,16 +224,16 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 								- uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(tileWidth, tileHeight)
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(tileWidth, tileHeight)
 								.newRotate(_rotation));
 						batch.glColor4f();
 						batch.glTexCoord2f(widthRatio - uvCorrectionX,
 								heightRatio - uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(flipZ ? 0 : tileWidth,
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(flipZ ? 0 : tileWidth,
 										flipZ ? tileHeight : 0)
 								.newRotate(_rotation));
 						batch.glColor4f();
@@ -242,15 +242,15 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 					} else if (scaleX != 1f || srcY != 1f) {
 
-						batch.glVertex2f(orthoToIso(x, y).addLocal(
+						batch.glVertex2f(orthoToIso(x, y).addSelf(
 								-tileWidth / 2, 0).mul(scaleX, scaleY));
 						batch.glColor4f();
 						batch.glTexCoord2f(xOff + uvCorrectionX, yOff
 								+ uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(flipZ ? tileWidth : 0,
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(flipZ ? tileWidth : 0,
 										flipZ ? 0 : tileHeight)
 								.mul(scaleX, scaleY));
 						batch.glColor4f();
@@ -258,16 +258,16 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 								- uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(tileWidth, tileHeight)
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(tileWidth, tileHeight)
 								.mul(scaleX, scaleY));
 						batch.glColor4f();
 						batch.glTexCoord2f(widthRatio - uvCorrectionX,
 								heightRatio - uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(flipZ ? 0 : tileWidth,
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(flipZ ? 0 : tileWidth,
 										flipZ ? tileHeight : 0)
 								.mul(scaleX, scaleY));
 						batch.glColor4f();
@@ -276,15 +276,15 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 					} else {
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
+								.addSelf(-tileWidth / 2, 0)
 								.mul(scaleX, scaleY).newRotate(_rotation));
 						batch.glColor4f();
 						batch.glTexCoord2f(xOff + uvCorrectionX, yOff
 								+ uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(flipZ ? tileWidth : 0,
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(flipZ ? tileWidth : 0,
 										flipZ ? 0 : tileHeight)
 								.mul(scaleX, scaleY).newRotate(_rotation));
 						batch.glColor4f();
@@ -292,16 +292,16 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 								- uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(tileWidth, tileHeight)
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(tileWidth, tileHeight)
 								.mul(scaleX, scaleY).newRotate(_rotation));
 						batch.glColor4f();
 						batch.glTexCoord2f(widthRatio - uvCorrectionX,
 								heightRatio - uvCorrectionY);
 
 						batch.glVertex2f(orthoToIso(x, y)
-								.addLocal(-tileWidth / 2, 0)
-								.addLocal(flipZ ? 0 : tileWidth,
+								.addSelf(-tileWidth / 2, 0)
+								.addSelf(flipZ ? 0 : tileWidth,
 										flipZ ? tileHeight : 0)
 								.mul(scaleX, scaleY).newRotate(_rotation));
 						batch.glColor4f();
@@ -310,27 +310,27 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 					}
 				} else {
-					batch.glVertex2f(orthoToIso(x, y).addLocal(-tileWidth / 2,
+					batch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2,
 							0));
 					batch.glColor4f();
 					batch.glTexCoord2f(xOff + uvCorrectionX, yOff
 							+ uvCorrectionY);
 
-					batch.glVertex2f(orthoToIso(x, y).addLocal(-tileWidth / 2,
-							0).addLocal(flipZ ? tileWidth : 0,
+					batch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2,
+							0).addSelf(flipZ ? tileWidth : 0,
 							flipZ ? 0 : tileHeight));
 					batch.glColor4f();
 					batch.glTexCoord2f(xOff + uvCorrectionX, heightRatio
 							- uvCorrectionY);
 
-					batch.glVertex2f(orthoToIso(x, y).addLocal(-tileWidth / 2,
-							0).addLocal(tileWidth, tileHeight));
+					batch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2,
+							0).addSelf(tileWidth, tileHeight));
 					batch.glColor4f();
 					batch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio
 							- uvCorrectionY);
 
-					batch.glVertex2f(orthoToIso(x, y).addLocal(-tileWidth / 2,
-							0).addLocal(flipZ ? 0 : tileWidth,
+					batch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2,
+							0).addSelf(flipZ ? 0 : tileWidth,
 							flipZ ? tileHeight : 0));
 					batch.glColor4f();
 					batch.glTexCoord2f(widthRatio - uvCorrectionX, yOff

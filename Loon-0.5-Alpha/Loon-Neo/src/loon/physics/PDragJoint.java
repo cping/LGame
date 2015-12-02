@@ -33,7 +33,7 @@ public class PDragJoint extends PJoint {
 		localAnchor = new Vector2f(px - b.pos.x, py - b.pos.y);
 		b.mAng.transpose().mulEqual(localAnchor);
 		anchor = b.mAng.mul(localAnchor);
-		anchor.addLocal(b.pos);
+		anchor.addSelf(b.pos);
 		type = PJointType.DRAG_JOINT;
 		mass = new PTransformer();
 	}

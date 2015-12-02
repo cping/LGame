@@ -37,7 +37,7 @@ import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.GameTime;
 import loon.utils.timer.LTimerContext;
 
-public class Test {
+public class StageTest {
 
 	public static class ScreenTest extends Screen implements EmulatorListener {
 
@@ -214,7 +214,7 @@ remove(this);
 									kill();
 								}
 							};
-							addRealtimeProcess(process);
+							addProcess(process);
 
 							process.setDelay(0);
 							

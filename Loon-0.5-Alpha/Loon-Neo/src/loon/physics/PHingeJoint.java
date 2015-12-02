@@ -55,9 +55,9 @@ public class PHingeJoint extends PJoint {
 		b1.mAng.transpose().mulEqual(localAnchor1);
 		b2.mAng.transpose().mulEqual(localAnchor2);
 		anchor1 = b1.mAng.mul(localAnchor1);
-		anchor1.addLocal(b1.pos);
+		anchor1.addSelf(b1.pos);
 		anchor2 = b2.mAng.mul(localAnchor2);
-		anchor2.addLocal(b2.pos);
+		anchor2.addSelf(b2.pos);
 		type = PJointType.HINGE_JOINT;
 		mass = new PTransformer();
 		impulse = new Vector2f();
@@ -249,7 +249,7 @@ public class PHingeJoint extends PJoint {
 		Vector2f relVel = PTransformer.calcRelativeVelocity(b1, b2, relAnchor1,
 				relAnchor2);
 		Vector2f force = mass.mul(relVel).negate();
-		impulse.addLocal(force);
+		impulse.addSelf(force);
 		b1.applyImpulse(force.x, force.y, anchor1.x, anchor1.y);
 		b2.applyImpulse(-force.x, -force.y, anchor2.x, anchor2.y);
 		if (enableMotor) {

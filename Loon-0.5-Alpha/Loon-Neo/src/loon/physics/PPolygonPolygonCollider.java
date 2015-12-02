@@ -76,9 +76,9 @@ public class PPolygonPolygonCollider implements PCollider {
 			c = 1;
 		float d = dist0 / (dist0 - dist1);
 		line[1] = new PWContactedVertex();
-		line[1].v = clips[1].v.sub(clips[0].v).cpy();
+		line[1].v = clips[1].v.sub(clips[0].v);
 		line[1].v.mulLocal(d);
-		line[1].v.addLocal(clips[0].v);
+		line[1].v.addSelf(clips[0].v);
 		line[1].data = clips[c].data;
 		return line;
 	}

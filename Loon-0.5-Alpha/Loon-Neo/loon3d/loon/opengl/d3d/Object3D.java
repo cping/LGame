@@ -5,6 +5,7 @@ import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.opengl.PreBoxViewer3D;
 
 public class Object3D extends LObject implements ISprite {
 

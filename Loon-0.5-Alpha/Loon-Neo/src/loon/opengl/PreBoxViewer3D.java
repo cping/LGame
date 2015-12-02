@@ -1,4 +1,4 @@
-package loon.opengl.d3d;
+package loon.opengl;
 
 import java.util.StringTokenizer;
 
@@ -6,7 +6,6 @@ import loon.BaseIO;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.geom.Vector3f;
-import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -288,7 +287,7 @@ public class PreBoxViewer3D {
 		}
 	}
 
-	void rotate(float x, float y, float z, float ax, float ay, float az) {
+	public void rotate(float x, float y, float z, float ax, float ay, float az) {
 		float rz = 0.0f;
 		float[][] matrix = null;
 
@@ -323,7 +322,7 @@ public class PreBoxViewer3D {
 		}
 	}
 
-	void draw(GLEx g) {
+	public void draw(GLEx g) {
 		int n = 0;
 
 		zValue = new int[faces];
