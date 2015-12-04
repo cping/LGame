@@ -155,7 +155,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			config.copy(this.setting);
 		}
 		this.setting = config;
-		//gwt中提供的AnimationScheduler默认不能设置间隔，所以转个能设置的默认（走setTimeout）
+		// gwt中提供的AnimationScheduler默认不能设置间隔，所以转个能设置的默认（走setTimeout）
 		if (config.fps != 60 && config.repaint == Repaint.AnimationScheduler) {
 			config.repaint = Repaint.RequestAnimationFrame;
 		}
@@ -559,6 +559,52 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	public native static float backingStorePixelRatio() /*-{
 		return $wnd.webkitBackingStorePixelRatio || 1;
+	}-*/;
+	
+	public boolean supportsDisplayModeChange () {
+		return supportsFullscreenJSNI();
+	}
+
+	private native boolean supportsFullscreenJSNI () /*-{
+		if ("fullscreenEnabled" in $doc) {
+			return $doc.fullscreenEnabled;
+		}
+		if ("webkitFullscreenEnabled" in $doc) {
+			return $doc.webkitFullscreenEnabled;
+		}
+		if ("mozFullScreenEnabled" in $doc) {
+			return $doc.mozFullScreenEnabled;
+		}
+		if ("msFullscreenEnabled" in $doc) {
+			return $doc.msFullscreenEnabled;
+		}
+		return false;
+	}-*/;
+	
+	public boolean isFullscreen () {
+		return isFullscreenJSNI();
+	}
+
+	private native boolean isFullscreenJSNI() /*-{
+		if ("fullscreenElement" in $doc) {
+			return $doc.fullscreenElement != null;
+		}
+		if ("msFullscreenElement" in $doc) {
+			return $doc.msFullscreenElement != null;
+		}
+		if ("webkitFullscreenElement" in $doc) {
+			return $doc.webkitFullscreenElement != null;
+		}
+		if ("mozFullScreenElement" in $doc) {
+			return $doc.mozFullScreenElement != null;
+		}
+		if ("webkitIsFullScreen" in $doc) {
+			return $doc.webkitIsFullScreen;
+		}
+		if ("mozFullScreen" in $doc) {
+			return $doc.mozFullScreen;
+		}
+		return false
 	}-*/;
 
 	public boolean isHdpi() {
