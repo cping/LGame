@@ -37,9 +37,7 @@ public class Vector2f implements Serializable, XY {
 
 	public final static Vector2f TMP() {
 		Vector2f temp = _vec2_cache.pop();
-	
 		if (temp == null) {
-			System.out.println(_vec2_cache.size());
 			_vec2_cache.add(temp = new Vector2f(0, 0));
 		}
 		return temp;

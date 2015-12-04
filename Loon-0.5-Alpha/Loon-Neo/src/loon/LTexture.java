@@ -935,4 +935,5 @@ public class LTexture extends Painter implements LRelease {
 	public float getMaxV() {
 		return heightRatio;
 	}
+
 }

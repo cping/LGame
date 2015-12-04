@@ -455,13 +455,17 @@ public class SpriteBatch extends PixmapFImpl {
 		case NonPremultiplied:
 			GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
 			break;
+		case Null:
+			break;
 		}
-		mesh.post(size, customShader != null ? customShader : shader, vertices,
+		mesh.post(name,size, customShader != null ? customShader : shader, vertices,
 				idx, count);
 		GLUtils.setBlendMode(gl, old);
 		idx = 0;
 		LSystem.mainBeginDraw();
 	}
+	
+	private final static String name = "batch";
 
 	public void close() {
 		if (ownsShader && shader != null) {

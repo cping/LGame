@@ -27,15 +27,18 @@ import loon.utils.ObjectMap;
 
 public class MeshDefault {
 
+	private int type = GL20.GL_TRIANGLES;
+
 	private boolean running = false;
 
 	private boolean stop_main_readering = false;
-	
-	private final ObjectMap<Integer, Mesh> meshLazy = new ObjectMap<Integer, Mesh>(
+
+	private final static ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(
 			10);
 
-	public Mesh getMesh(final int size) {
-		Mesh mesh = meshLazy.get(size);
+	public Mesh getMesh(String n, int size) {
+		final String name = n + size; 
+		Mesh mesh = meshLazy.get(name);
 		if (mesh == null) {
 			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
 					size * 6, new VertexAttribute(Usage.Position, 2,
@@ -44,26 +47,49 @@ public class MeshDefault {
 							ShaderProgram.COLOR_ATTRIBUTE),
 					new VertexAttribute(Usage.TextureCoordinates, 2,
 							ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-			int len = size * 6;
-			short[] indices = new short[len];
-			short j = 0;
-			for (int i = 0; i < len; i += 6, j += 4) {
-				indices[i] = j;
-				indices[i + 1] = (short) (j + 1);
-				indices[i + 2] = (short) (j + 2);
-				indices[i + 3] = (short) (j + 2);
-				indices[i + 4] = (short) (j + 3);
-				indices[i + 5] = j;
-			}
-			mesh.setIndices(indices);
-			meshLazy.put(size, mesh);
+			resetIndices(size, mesh);
+			meshLazy.put(name, mesh);
 		}
 		return mesh;
 	}
 
-	public void post(final int size, ShaderProgram shader, float[] vertices,
-			int vertexIdx, int count) {
-		//防止与主画面渲染器GLEx冲突
+	private void resetIndices(int size, Mesh mesh) {
+		int len = size * 6;
+		short[] indices = new short[len];
+		short j = 0;
+		for (int i = 0; i < len; i += 6, j += 4) {
+			indices[i] = j;
+			indices[i + 1] = (short) (j + 1);
+			indices[i + 2] = (short) (j + 2);
+			indices[i + 3] = (short) (j + 2);
+			indices[i + 4] = (short) (j + 3);
+			indices[i + 5] = j;
+		}
+		mesh.setIndices(indices);
+	}
+	
+	public void setGLType(int type){
+		this.type = type;
+	}
+	
+	public int getGLType(){
+		return this.type;
+	}
+
+	public void setIndices(String name, int size, short[] indices) {
+		
+		Mesh mesh = getMesh(name, size);
+		mesh.setIndices(indices);
+	}
+
+	public void resetIndices(String name, int size) {
+		Mesh mesh = getMesh(name, size);
+		resetIndices(size, mesh);
+	}
+
+	public void post(final String name, final int size, ShaderProgram shader,
+			float[] vertices, int vertexIdx, int count) {
+		// 防止与主画面渲染器GLEx冲突
 		this.running = LSystem.mainDrawRunning();
 		if (!running) {
 			shader.glUseProgramBind();
@@ -71,11 +97,12 @@ public class MeshDefault {
 			LSystem.mainEndDraw();
 			stop_main_readering = true;
 		}
-		Mesh mesh = getMesh(size);
-		mesh.setVertices(vertices, 0, vertexIdx);
+		Mesh mesh = getMesh(name, size);
+
+		mesh.setVertices( vertices, 0, vertexIdx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
-		mesh.render(shader, GL20.GL_TRIANGLES, 0, count);
+		mesh.render(shader, type, 0, count);
 		if (!running) {
 			shader.glUseProgramUnBind();
 		} else if (stop_main_readering) {

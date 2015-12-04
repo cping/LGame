@@ -304,8 +304,8 @@ public class LTextureBatch implements LRelease {
 		}
 		if (vertexIdx > 0) {
 			if (tx != 0 || ty != 0) {
-				Matrix4 project = LSystem.base().graphics()
-						.getViewMatrix().cpy();
+				Matrix4 project = LSystem.base().graphics().getViewMatrix()
+						.cpy();
 				project.translate(tx, ty, 0);
 				if (drawing) {
 					setupMatrices(project);
@@ -424,11 +424,15 @@ public class LTextureBatch implements LRelease {
 		case NonPremultiplied:
 			GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
 			break;
+		case Null:
+			break;
 		}
-		mesh.post(size, customShader != null ? customShader : shader, vertices,
-				vertexIdx, count);
+		mesh.post(name, size, customShader != null ? customShader : shader,
+				vertices, vertexIdx, count);
 		GLUtils.setBlendMode(gl, old);
 	}
+
+	private final static String name = "texbatch";
 
 	private void setupMatrices(Matrix4 view) {
 		combinedMatrix.set(view);
@@ -525,9 +529,11 @@ public class LTextureBatch implements LRelease {
 			case NonPremultiplied:
 				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
 				break;
+			case Null:
+				break;
 			}
-			mesh.post(size, globalShader, cache.vertices, cache.vertexIdx,
-					cache.count);
+			mesh.post(name, size, globalShader, cache.vertices,
+					cache.vertexIdx, cache.count);
 			GLUtils.setBlendMode(gl, old);
 		} else if (color != null) {
 			globalShader.setUniformf("v_color", oldColor);
@@ -536,10 +542,22 @@ public class LTextureBatch implements LRelease {
 		LSystem.mainBeginDraw();
 	}
 
+	public void setIndices(short[] indices) {
+		mesh.getMesh(name, size).setIndices(indices);
+	}
+
+	public void resetIndices() {
+		mesh.resetIndices(name, size);
+	}
+
+	public void setGLType(int type) {
+		mesh.setGLType(type);
+	}
+
 	public void postLastCache() {
 		if (lastCache != null) {
-			commit(LSystem.base().graphics().getViewMatrix(), lastCache,
-					null, lastBlendState);
+			commit(LSystem.base().graphics().getViewMatrix(), lastCache, null,
+					lastBlendState);
 		}
 	}
 
@@ -945,6 +963,47 @@ public class LTextureBatch implements LRelease {
 			return;
 		}
 		setImageColor(c.r, c.g, c.b, c.a);
+	}
+
+	public void draw(short[] indexArray, float[] vertexArray, float[] uvArray,
+			float x, float y, float sx, float sy, LColor color) {
+		int length = vertexArray.length;
+		if (indexArray.length < 1024) {
+			short[] indices = new short[1024];
+			for (int i = 0; i < indexArray.length; i++) {
+				indices[i] = indexArray[i];
+			}
+			for (int i = 0; i < indexArray.length; i++) {
+				indices[i + indexArray.length] = indexArray[i];
+			}
+			setIndices(indices);
+		} else if (indexArray.length < 2048) {
+			short[] indices = new short[2048];
+			for (int i = 0; i < indexArray.length; i++) {
+				indices[i] = indexArray[i];
+			}
+			for (int i = 0; i < indexArray.length; i++) {
+				indices[i + indexArray.length] = indexArray[i];
+			}
+			setIndices(indices);
+		} else if (indexArray.length < 4096) {
+			short[] indices = new short[4096];
+			for (int i = 0; i < indexArray.length; i++) {
+				indices[i] = indexArray[i];
+			}
+			for (int i = 0; i < indexArray.length; i++) {
+				indices[i + indexArray.length] = indexArray[i];
+			}
+			setIndices(indices);
+		}
+		for (int q = 0; q < 4; q++) {
+			for (int idx = 0; idx < length; idx += 2) {
+				glVertex2f(vertexArray[idx] * sx + x, vertexArray[idx + 1] * sy
+						+ y);
+				glColor4f(color.r, color.g, color.b, color.a);
+				glTexCoord2f(uvArray[idx], uvArray[idx + 1]);
+			}
+		}
 	}
 
 	public void setColor(int corner, float r, float g, float b, float a) {

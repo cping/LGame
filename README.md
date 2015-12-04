@@ -2,9 +2,11 @@
 
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 
-#2015-11-29
+#2015-12-03
 
-PS:下周开始搞C#版（也就是MonoGame和Unity3D的封装版），等2D部分稳定了再翻过头来写3D支持……
+PS:正在全力开发C#版（也就是MonoGame和Unity3D的封装版），等2D部分稳定了再翻过头来写3D支持，另外增加了Live2D伪3D模型的全平台支持（移植于官方Android包，重写了渲染部分，完美支持所有live2d建模）
+
+![LGame](https://raw.github.com/cping/LGame/master/live2dsupport.png "live2d_support")
 
 关于LGame的0.5版（(临时目录为：Loon-0.5-Alpha)，开发中的重大改版，此版本有重大升级，以及引入3D模块。另外，此版本开始将不支持Java多线程交互(因为跨平台移植不方便……)，请不要在游戏中交互使用Thread，否则将导致游戏无法一键迁移到其他平台(在旧版中，也有个别示例游戏用了，所以这部分例子有待重写)）:
 

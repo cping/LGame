@@ -903,6 +903,8 @@ public class SpriteCache implements LRelease {
 		case NonPremultiplied:
 			GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
 			break;
+		case Null:
+			break;
 		}
 		shader.end();
 		LSystem.base().graphics().gl.glDepthMask(true);

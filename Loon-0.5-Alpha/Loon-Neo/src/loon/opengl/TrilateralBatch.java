@@ -164,6 +164,15 @@ public class TrilateralBatch extends BaseBatch {
 				indicesLen, indexBase);
 	}
 
+	public void addTris(LTexture tex, int tint, Affine2f xf,
+			float[] xys, float[] sxys, int xysOffset, int xysLen,
+			short[] indices, int indicesOffset, int indicesLen, int indexBase) {
+		setTexture(tex);
+		prepare(tint, xf);
+		addTris(xys, sxys, xysOffset, xysLen, indices, indicesOffset,
+				indicesLen, indexBase);
+	}
+
 	public void addTris(float[] xys, int xysOffset, int xysLen, float tw,
 			float th, int[] indices, int indicesOffset, int indicesLen,
 			int indexBase) {
@@ -173,6 +182,19 @@ public class TrilateralBatch extends BaseBatch {
 			float x = xys[ii], y = xys[ii + 1];
 			offset = add(verts, add(verts, offset, stables), x, y, x / tw, y
 					/ th);
+		}
+		vertPos = offset;
+
+		addElems(vertIdx, indices, indicesOffset, indicesLen, indexBase);
+	}
+
+	public void addTris(float[] xys, float[] sxys, int xysOffset, int xysLen,
+			short[] indices, int indicesOffset, int indicesLen, int indexBase) {
+		int vertIdx = beginPrimitive(xysLen / 2, indicesLen), offset = vertPos;
+		float[] verts = vertices, stables = stableAttrs;
+		for (int ii = xysOffset, ll = ii + xysLen; ii < ll; ii += 2) {
+			offset = add(verts, add(verts, offset, stables), xys[ii],
+					xys[ii + 1], sxys[ii], sxys[ii + 1]);
 		}
 		vertPos = offset;
 
@@ -328,7 +350,17 @@ public class TrilateralBatch extends BaseBatch {
 		}
 		elemPos = offset;
 	}
-
+	
+	protected final void addElems(int vertIdx, short[] indices,
+			int indicesOffset, int indicesLen, int indexBase) {
+		short[] data = elements;
+		int offset = elemPos;
+		for (int ii = indicesOffset, ll = ii + indicesLen; ii < ll; ii++) {
+			data[offset++] = (short) (vertIdx + indices[ii] - indexBase);
+		}
+		elemPos = offset;
+	}
+	
 	private final void expandVerts(int vertCount) {
 		int newVerts = vertices.length / vertexSize();
 		while (newVerts < vertCount) {

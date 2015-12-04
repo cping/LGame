@@ -178,6 +178,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		batch.end();
 		return this;
 	}
+	
+	public BaseBatch batch(){
+		return batch;
+	}
 
 	public boolean running() {
 		if (isClosed) {
