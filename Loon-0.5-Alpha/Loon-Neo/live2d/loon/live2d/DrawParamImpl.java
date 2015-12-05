@@ -4,19 +4,16 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
 import loon.canvas.LColor;
-import loon.geom.Vector2f;
+import loon.live2d.framework.L2DModelMatrix;
 import loon.live2d.graphics.*;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
+import loon.opengl.GLEx;
 import loon.utils.ListMap;
 
 public class DrawParamImpl extends DrawParam {
 
 	private LColor color = new LColor(LColor.white);
-
-	private Vector2f _location = new Vector2f();
-
-	private Vector2f _scale = new Vector2f(0.3f, 0.3f);
 
 	private ListMap<Integer, LTexture> textures = new ListMap<Integer, LTexture>(
 			32);
@@ -26,7 +23,8 @@ public class DrawParamImpl extends DrawParam {
 	}
 
 	@Override
-	public void drawTexture(final int textureNo, final int indexCount,
+	public void drawTexture(final L2DModelMatrix matrix, final GLEx gl,
+			final int textureNo, final int indexCount,
 			final short[] indexArray, final float[] vertexArray,
 			final float[] uvArray, final float opacity,
 			final int colorCompositionType) {
@@ -73,6 +71,9 @@ public class DrawParamImpl extends DrawParam {
 			LTextureBatch batch = texture.getTextureBatch();
 			batch.setBlendState(BlendState.Null);
 			batch.begin();
+			if (this._scale.x == 1f && this._scale.y == 1f) {
+				batch.setBatchMatrix(matrix.getArray());
+			}
 			batch.setGLType(GL20.GL_TRIANGLES);
 			batch.draw(indexArray, vertexArray, uvArray, _location.x,
 					_location.y, _scale.x, _scale.y, color);
@@ -92,22 +93,6 @@ public class DrawParamImpl extends DrawParam {
 			}
 		}
 		textures.clear();
-	}
-
-	public Vector2f getLocation() {
-		return _location;
-	}
-
-	public void setLocation(float x, float y) {
-		this._location.set(x, y);
-	}
-
-	public Vector2f getScale() {
-		return _scale;
-	}
-
-	public void setScale(float sx, float sy) {
-		this._scale.set(sx, sy);
 	}
 
 }

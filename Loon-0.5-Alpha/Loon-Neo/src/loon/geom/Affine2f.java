@@ -160,6 +160,28 @@ public class Affine2f implements LTrans {
 		return this;
 
 	}
+	
+	public Affine2f combined4x4(float[] vals) {
+		float[] m = vals;
+
+		float m00 = m[Matrix4.M00] * this.m00 + m[Matrix4.M01] * this.m10;
+		float m01 = m[Matrix4.M00] * this.m11 + m[Matrix4.M11] * this.m10;
+		float tx = m[Matrix4.M00] * this.m01 + m[Matrix4.M01] * this.m11;
+		float m10 = m[Matrix4.M00] * this.tx + m[Matrix4.M01] * this.ty
+				+ m[Matrix4.M02];
+		float m11 = m[Matrix4.M10] * this.tx + m[Matrix4.M11] * this.ty
+				+ m[Matrix4.M12];
+
+		m[Matrix4.M00] = m00;
+		m[Matrix4.M01] = m01;
+		m[Matrix4.M03] = tx;
+		m[Matrix4.M10] = m10;
+		m[Matrix4.M11] = m11;
+		m[Matrix4.M13] = ty;
+
+		return this;
+
+	}
 
 	public static final int GENERALITY = 4;
 	/* x scale */
@@ -229,6 +251,16 @@ public class Affine2f implements LTrans {
 		return this;
 	}
 
+	public Affine2f setValue3x3(float[] vals) {
+		m00 = vals[Matrix3.M00];
+		m01 = vals[Matrix3.M01];
+		tx = vals[Matrix3.M02];
+		m10 = vals[Matrix3.M10];
+		m11 = vals[Matrix3.M11];
+		ty = vals[Matrix3.M12];
+		return this;
+	}
+
 	public Affine2f set(Matrix4 matrix) {
 		float[] other = matrix.val;
 		m00 = other[Matrix4.M00];
@@ -237,6 +269,16 @@ public class Affine2f implements LTrans {
 		m10 = other[Matrix4.M10];
 		m11 = other[Matrix4.M11];
 		ty = other[Matrix4.M13];
+		return this;
+	}
+
+	public Affine2f setValue4x4(float[] vals) {
+		m00 = vals[Matrix4.M00];
+		m01 = vals[Matrix4.M01];
+		tx = vals[Matrix4.M03];
+		m10 = vals[Matrix4.M10];
+		m11 = vals[Matrix4.M11];
+		ty = vals[Matrix4.M13];
 		return this;
 	}
 

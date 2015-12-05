@@ -3,11 +3,13 @@ package loon.live2d;
 import loon.live2d.base.*;
 import loon.live2d.context.*;
 import loon.live2d.draw.*;
+import loon.live2d.framework.L2DModelMatrix;
 import loon.live2d.graphics.*;
 import loon.live2d.id.*;
 import loon.live2d.model.*;
 import loon.live2d.model.PartsData.PartsDataContext;
 import loon.live2d.param.*;
+import loon.opengl.GLEx;
 import loon.utils.ListMap;
 import loon.utils.TArray;
 
@@ -23,7 +25,7 @@ public class ModelContext
     boolean h;
     ALive2DModel i;
     int j;
-    private static final int F = 32;
+
     int k;
     ParamID[] l;
     float[] m;
@@ -266,7 +268,7 @@ public class ModelContext
         return b;
     }
     
-    public void draw(final DrawParam dp) {
+    public void draw(final L2DModelMatrix matrix,final GLEx gl,final DrawParam dp) {
         if (this.z == null) {
              return;
         }
@@ -279,7 +281,7 @@ public class ModelContext
                     final IDrawContext drawContext = (IDrawContext) this.x.get(n);
                     if (drawContext.exist()) {
                         drawContext.j = ((PartsData.PartsDataContext)this.y.get(drawContext.f)).getPartsOpacity();
-                        drawData.loadDraw(dp, this, drawContext);
+                        drawData.loadDraw(matrix,gl,dp, this, drawContext);
                     }
                     final short n2 = this.B[n];
                     if (n2 <= n) {
@@ -303,7 +305,6 @@ public class ModelContext
         return this.addFloatParam(paramID, 0.0f, -1000000.0f, 1000000.0f);
     }
     
-    @Deprecated
     public int getBaseIndex(final BaseDataID baseID) {
         return this.getBaseDataIndex(baseID);
     }

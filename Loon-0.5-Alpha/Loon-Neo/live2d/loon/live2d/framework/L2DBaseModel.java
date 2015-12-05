@@ -1,5 +1,6 @@
 package loon.live2d.framework;
 
+import loon.LSystem;
 import loon.live2d.ALive2DModel;
 import loon.live2d.Live2D;
 import loon.live2d.motion.AMotion;
@@ -50,10 +51,12 @@ public class L2DBaseModel {
 	}
 
 	public void setAlpha(float a) {
-		if (a > 0.999)
+		if (a > 0.999) {
 			a = 1;
-		if (a < 0.001)
+		}
+		if (a < 0.001) {
 			a = 0;
+		}
 		alpha = a;
 	}
 
@@ -93,6 +96,12 @@ public class L2DBaseModel {
 		accelX = x;
 		accelY = y;
 		accelZ = z;
+	}
+
+	public void onDrag(float x, float y) {
+		float nx = x / LSystem.viewSize.width * 2f;
+		float ny = y / LSystem.viewSize.height * 2f;
+		setDrag(nx < 1f ? -nx : nx, ny < 1f ? ny : -ny);
 	}
 
 	public void setDrag(float x, float y) {
@@ -194,12 +203,14 @@ public class L2DBaseModel {
 	}
 
 	public boolean hitTestSimple(String drawID, float testX, float testY) {
-		if (alpha < 1)
-			return false;// 透明時は当たり判定なし。
+		if (alpha < 1) {
+			return false;
+		}
 
 		int drawIndex = live2DModel.getDrawDataIndex(drawID);
-		if (drawIndex < 0)
-			return false;// 存在しない場合はfalse
+		if (drawIndex < 0) {
+			return false;
+		}
 		float[] points = live2DModel.getTransformedPoints(drawIndex);
 
 		float left = live2DModel.getCanvasWidth();

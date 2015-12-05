@@ -1,10 +1,17 @@
 package loon.live2d.graphics;
 
 import loon.canvas.LColor;
+import loon.geom.Vector2f;
+import loon.live2d.framework.L2DModelMatrix;
+import loon.opengl.GLEx;
 import loon.utils.TArray;
 
 public abstract class DrawParam {
 
+	protected Vector2f _location = new Vector2f();
+
+	protected Vector2f _scale = new Vector2f(1f, 1f);
+	
 	protected int size;
 	protected float alpha;
 	protected float red;
@@ -29,7 +36,7 @@ public abstract class DrawParam {
 		this.list = new TArray<LColor>(size);
 	}
 
-	public abstract void drawTexture(final int p0, final int p1,
+	public abstract void drawTexture(final L2DModelMatrix matrix, final GLEx g,final int p0, final int p1,
 			final short[] p2, final float[] p3, final float[] p4,
 			final float p5, final int p6);
 
@@ -113,6 +120,21 @@ public abstract class DrawParam {
 		for (; this.list.size < n + 1;) {
 			this.list.add(new LColor());
 		}
+	}
+	public Vector2f getLocation() {
+		return _location;
+	}
+
+	public void setLocation(float x, float y) {
+		this._location.set(x, y);
+	}
+
+	public Vector2f getScale() {
+		return _scale;
+	}
+
+	public void setScale(float sx, float sy) {
+		this._scale.set(sx, sy);
 	}
 
 }

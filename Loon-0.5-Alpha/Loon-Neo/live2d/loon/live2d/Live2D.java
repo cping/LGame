@@ -28,7 +28,7 @@ public class Live2D
     public static int L2D_ERROR_MODEL_DATA_UNKNOWN_FORMAT;
     public static int L2D_ERROR_DDTEXTURE_SETUP_TRANSFORM_FAILED;
     static boolean a;
-    static int b;
+    static int errorNo;
     
     static {
         c = false;
@@ -77,12 +77,12 @@ public class Live2D
     }
     
     public static void setError(final int errorNo) {
-        Live2D.b = errorNo;
+        Live2D.errorNo = errorNo;
     }
     
     public static int getError() {
-        final int b = Live2D.b;
-        Live2D.b = 0;
+        final int b = Live2D.errorNo;
+        Live2D.errorNo = 0;
         return b;
     }
 }

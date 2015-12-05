@@ -3,7 +3,6 @@ package loon.live2d.framework;
 public class LAppDefine {
 
 	public static boolean DEBUG_LOG = false;
-	public static boolean DEBUG_DRAW_HIT_AREA = false;
 
 	public static final float VIEW_MAX_SCALE = 2f;
 	public static final float VIEW_MIN_SCALE = 0.8f;

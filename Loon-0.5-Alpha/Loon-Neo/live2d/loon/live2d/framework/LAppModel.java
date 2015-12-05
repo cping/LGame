@@ -8,6 +8,7 @@ import loon.live2d.util.ModelSettingJson;
 import loon.live2d.util.UtSystem;
 import loon.opengl.GLEx;
 import loon.utils.ListMap;
+import loon.utils.MathUtils;
 
 public class LAppModel extends L2DBaseModel {
 
@@ -43,7 +44,7 @@ public class LAppModel extends L2DBaseModel {
 		mainMotionManager.setReservePriority(0);
 
 		int max = modelSetting.getMotionNum(LAppDefine.MOTION_GROUP_DANCE);
-		danceNumber = (int) (Math.random() * max);
+		danceNumber = (int) (MathUtils.random() * max);
 
 		startMotion(LAppDefine.MOTION_GROUP_DANCE, danceNumber,
 				LAppDefine.PRIORITY_IDLE);
@@ -120,7 +121,7 @@ public class LAppModel extends L2DBaseModel {
 
 		long timeMSec = UtSystem.getUserTimeMSec() - startTimeMSec;
 		double timeSec = timeMSec / 1000.0;
-		double t = timeSec * 2 * Math.PI;// 2Ï€t
+		double t = timeSec * 2 * MathUtils.PI;
 
 		synchronized (lock) {
 			if (mainMotionManager.isFinished()) {
@@ -160,15 +161,15 @@ public class LAppModel extends L2DBaseModel {
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_EYE_BALL_Y, dragY, 1);
 
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_X,
-				(float) (15 * Math.sin(t / 6.5345)), 0.5f);
+				(float) (15 * MathUtils.sin(t / 6.5345)), 0.5f);
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_Y,
-				(float) (8 * Math.sin(t / 3.5345)), 0.5f);
+				(float) (8 * MathUtils.sin(t / 3.5345)), 0.5f);
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_Z,
-				(float) (10 * Math.sin(t / 5.5345)), 0.5f);
+				(float) (10 * MathUtils.sin(t / 5.5345)), 0.5f);
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_BODY_ANGLE_X,
-				(float) (4 * Math.sin(t / 15.5345)), 0.5f);
+				(float) (4 * MathUtils.sin(t / 15.5345)), 0.5f);
 		live2DModel.setParamFloat(L2DStandardID.PARAM_BREATH,
-				(float) (0.5f + 0.5f * Math.sin(t / 3.2345)), 1);
+				(float) (0.5f + 0.5f * MathUtils.sin(t / 3.2345)), 1);
 
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_Z, 90 * accelX,
 				0.5f);
@@ -187,12 +188,17 @@ public class LAppModel extends L2DBaseModel {
 		live2DModel.update();
 	}
 
+	public void reset() {
+	}
+
 	public void startRandomMotion(String name, int priority) {
 		int max = modelSetting.getMotionNum(name);
-		int no = (int) (Math.random() * max);
+		int no = (int) (MathUtils.random() * max);
 
 		startMotion(name, no, priority);
 	}
+
+	private float width, height;
 
 	String modelHomeDir;
 
@@ -225,26 +231,45 @@ public class LAppModel extends L2DBaseModel {
 
 		ListMap<String, Float> layout = new ListMap<String, Float>();
 		if (modelSetting.getLayout(layout)) {
-			if (layout.get("width") != null)
-				modelMatrix.setWidth(layout.get("width"));
-			if (layout.get("height") != null)
-				modelMatrix.setHeight(layout.get("height"));
-			if (layout.get("x") != null)
+			if (layout.get("width") != null) {
+				modelMatrix.setWidth(width = layout.get("width"));
+
+			}
+			if (layout.get("height") != null) {
+				modelMatrix.setHeight(height = layout.get("height"));
+			}
+			if (layout.get("x") != null) {
 				modelMatrix.setX(layout.get("x"));
-			if (layout.get("y") != null)
+
+			}
+			if (layout.get("y") != null) {
 				modelMatrix.setY(layout.get("y"));
-			if (layout.get("center_x") != null)
+			}
+			if (layout.get("center_x") != null) {
 				modelMatrix.centerX(layout.get("center_x"));
-			if (layout.get("center_y") != null)
+			}
+			if (layout.get("center_y") != null) {
 				modelMatrix.centerY(layout.get("center_y"));
-			if (layout.get("top") != null)
+			}
+			if (layout.get("top") != null) {
 				modelMatrix.top(layout.get("top"));
-			if (layout.get("bottom") != null)
+
+			}
+			if (layout.get("bottom") != null) {
 				modelMatrix.bottom(layout.get("bottom"));
-			if (layout.get("left") != null)
+			}
+			if (layout.get("left") != null) {
 				modelMatrix.left(layout.get("left"));
-			if (layout.get("right") != null)
+			}
+			if (layout.get("right") != null) {
 				modelMatrix.right(layout.get("right"));
+			}
+			if (width <= 0) {
+				width = 2f;
+			}
+			if (height <= 0) {
+				height = 2f;
+			}
 		}
 
 		for (int i = 0; i < modelSetting.getInitParamNum(); i++) {
@@ -263,6 +288,21 @@ public class LAppModel extends L2DBaseModel {
 
 		updating = false;
 		initialized = true;
+
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHieght() {
+		return height;
+	}
+
+	public void setPosition(float x, float y) {
+		float nx = width / 2 - x / LSystem.viewSize.width * width / 2;
+		float ny = height / 2 - y / LSystem.viewSize.height * height / 2;
+		this.modelMatrix.setPosition(-nx, ny);
 	}
 
 	public void setExpression(String name) {
@@ -274,13 +314,28 @@ public class LAppModel extends L2DBaseModel {
 	}
 
 	public void setRandomExpression() {
-		int no = (int) (Math.random() * expressions.size);
+		int no = (int) (MathUtils.random() * expressions.size);
 		String[] keys = expressions.keys;
 		setExpression(keys[no]);
 	}
 
 	public void draw(GLEx gl) {
-		live2DModel.draw();
+		alpha += accAlpha;
+		if (alpha < 0) {
+			alpha = 0;
+			accAlpha = 0;
+		} else if (alpha > 1) {
+			alpha = 1;
+			accAlpha = 0;
+		}
+		if (alpha < 0.001) {
+			return;
+		}
+		if (alpha < 0.999) {
+			live2DModel.draw(modelMatrix, gl);
+		} else {
+			live2DModel.draw(modelMatrix, gl);
+		}
 	}
 
 	public boolean hitTest(String id, float testX, float testY) {

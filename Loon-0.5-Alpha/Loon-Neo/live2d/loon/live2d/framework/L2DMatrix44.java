@@ -1,6 +1,7 @@
 package loon.live2d.framework;
 
 import loon.geom.Matrix4;
+import loon.utils.CollectionUtils;
 
 public class L2DMatrix44 {
 
@@ -20,7 +21,7 @@ public class L2DMatrix44 {
 	}
 
 	public float[] getCopyMatrix() {
-		return _val.clone();
+		return CollectionUtils.copyOf(_val);
 	}
 
 	public void setMatrix(float _val[]) {

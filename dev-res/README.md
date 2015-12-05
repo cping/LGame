@@ -28,3 +28,8 @@
 * Ceylon: RedHat开发的面向对象静态类型编程语言。[官网](http://ceylon-lang.org/)
 * Kotlin: JetBrain针对JVM、安卓和浏览器提供的静态类型编程语言。[官网](http://kotlinlang.org/)
 * Xtend: 一种静态编程语言，能够将其代码转换为简洁高效的Java代码，并基于JVM运行。[官网](http://www.eclipse.org/xtend)
+
+### 无版权的游戏资源下载（原作者已经放弃版权，可以随意使用的资源）
+
+* opengameart: 一个完全无版权问题的游戏资源下载站。[地址](http://opengameart.org/) 
+* 在线RPG角色生成器。[地址](http://gaurav.munjal.us/Universal-LPC-Spritesheet-Character-Generator/#)

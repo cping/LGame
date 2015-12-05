@@ -1,11 +1,14 @@
 package loon.live2d;
 
 import loon.BaseIO;
+import loon.geom.Vector2f;
 import loon.live2d.draw.*;
+import loon.live2d.framework.L2DModelMatrix;
 import loon.live2d.graphics.*;
 import loon.live2d.id.*;
 import loon.live2d.io.*;
 import loon.live2d.model.*;
+import loon.opengl.GLEx;
 import loon.utils.ArrayByte;
 
 public abstract class ALive2DModel {
@@ -110,18 +113,17 @@ public abstract class ALive2DModel {
 	}
 
 	public void releaseModelTextureNo(final int no) {
-		
+
 	}
 
 	public abstract void deleteTextures();
 
-	public abstract void draw();
+	public abstract void draw(L2DModelMatrix matrix, GLEx g);
 
 	public static void loadModel_exe(final ALive2DModel ret,
 			final String filepath) {
 		try {
-			final ArrayByte bin = new ArrayByte(
-					BaseIO.loadBytes(filepath));
+			final ArrayByte bin = new ArrayByte(BaseIO.loadBytes(filepath));
 			loadModel_exe(ret, bin);
 			bin.close();
 		} catch (Exception ex) {
@@ -129,8 +131,7 @@ public abstract class ALive2DModel {
 		}
 	}
 
-	public static void loadModel_exe(final ALive2DModel ret,
-			final ArrayByte bin) {
+	public static void loadModel_exe(final ALive2DModel ret, final ArrayByte bin) {
 		try {
 			final BReader bReader = new BReader(bin);
 			final byte f = bReader.readByte();
@@ -144,7 +145,7 @@ public abstract class ALive2DModel {
 			if (ver > 11) {
 				ret.f |= 0x2;
 				throw new Live2DException(
-								"Model load error , Illegal data version error.\n");
+						"Model load error , Illegal data version error.\n");
 			}
 			final ModelImpl modelImpl = (ModelImpl) bReader.reader();
 			if (ver >= 8 && bReader.readInt() != -2004318072) {
@@ -316,6 +317,40 @@ public abstract class ALive2DModel {
 	}
 
 	public abstract DrawParam getDrawParam();
+
+	public DrawParam setScale(float sx, float sy) {
+		DrawParam param = getDrawParam();
+		if (param != null) {
+			param.setScale(sx, sy);
+			return param;
+		}
+		return null;
+	}
+
+	public DrawParam setLocation(float x, float y) {
+		DrawParam param = getDrawParam();
+		if (param != null) {
+			param.setLocation(x, y);
+			return param;
+		}
+		return null;
+	}
+
+	public Vector2f getDrawParamScale() {
+		DrawParam param = getDrawParam();
+		if (param != null) {
+			return param.getScale();
+		}
+		return new Vector2f(1f, 1f);
+	}
+
+	public Vector2f getDrawParamLocation() {
+		DrawParam param = getDrawParam();
+		if (param != null) {
+			return param.getLocation();
+		}
+		return new Vector2f(0, 0);
+	}
 
 	public int getDrawDataIndex(final String drawDataID) {
 		return this.e.getDrawDataIndex(DrawDataID.getID(drawDataID));

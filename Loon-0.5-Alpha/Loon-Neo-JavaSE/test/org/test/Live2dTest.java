@@ -77,49 +77,41 @@ public class Live2dTest extends Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void touchDown(GameTouch e) {
-		// TODO Auto-generated method stub
-
+		model.onDrag(e.getX(), e.getY());
 	}
 
 	@Override
 	public void touchUp(GameTouch e) {
-		// TODO Auto-generated method stub
-
+		model.setDrag(0, 0);
 	}
 
 	@Override
 	public void touchMove(GameTouch e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void touchDrag(GameTouch e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
 
 	}
 

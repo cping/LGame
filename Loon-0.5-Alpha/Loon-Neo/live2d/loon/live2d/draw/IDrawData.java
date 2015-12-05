@@ -1,9 +1,11 @@
 package loon.live2d.draw;
 
 import loon.live2d.*;
+import loon.live2d.framework.L2DModelMatrix;
 import loon.live2d.graphics.*;
 import loon.live2d.id.*;
 import loon.live2d.io.*;
+import loon.opengl.GLEx;
 
 public abstract class IDrawData implements IOBase
 {
@@ -112,7 +114,7 @@ public abstract class IDrawData implements IOBase
         return IDrawData.x;
     }
     
-    public abstract void loadDraw(final DrawParam p0, final ModelContext p1, final IDrawContext p2);
+    public abstract void loadDraw(L2DModelMatrix matrix,final GLEx g,final DrawParam p0, final ModelContext p1, final IDrawContext p2);
     
     public abstract int e();
     

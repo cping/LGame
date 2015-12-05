@@ -3,9 +3,11 @@ package loon.live2d.draw;
 import loon.live2d.*;
 import loon.live2d.base.*;
 import loon.live2d.context.*;
+import loon.live2d.framework.L2DModelMatrix;
 import loon.live2d.graphics.*;
 import loon.live2d.id.*;
 import loon.live2d.io.*;
+import loon.opengl.GLEx;
 import loon.utils.ListMap;
 import loon.utils.TArray;
 
@@ -23,9 +25,9 @@ public class DrawDataImpl extends IDrawData {
 	int g;
 	int h;
 	int i;
-	ListMap j;
+	ListMap<String, Integer> listMap;
 	short[] k;
-	TArray l;
+	TArray<?> l;
 	float[] m;
 	int n;
 	boolean o;
@@ -42,7 +44,7 @@ public class DrawDataImpl extends IDrawData {
 		this.f = -1;
 		this.g = 0;
 		this.h = 0;
-		this.j = null;
+		this.listMap = null;
 		this.o = true;
 		++loon.live2d.draw.DrawDataImpl.a;
 	}
@@ -105,17 +107,17 @@ public class DrawDataImpl extends IDrawData {
 		for (int i = this.h * 3 - 1; i >= 0; --i) {
 			this.k[i] = (short) array[i];
 		}
-		this.l = (TArray) br.reader();
+		this.l = (TArray<?>) br.reader();
 		this.m = (float[]) br.reader();
 		if (br.getVersion() >= 8) {
 			this.i = br.readInt();
 			if (this.i != 0) {
 				if ((this.i & 0x1) != 0x0) {
 					final int e = br.readInt();
-					if (this.j == null) {
-						this.j = new ListMap();
+					if (this.listMap == null) {
+						this.listMap = new ListMap<String, Integer>();
 					}
-					this.j.put("BK_OPTION_COLOR", new Integer(e));
+					this.listMap.put("BK_OPTION_COLOR", new Integer(e));
 				}
 				if ((this.i & 0x1E) != 0x0) {
 					this.n = (this.i & 0x1E) >> 1;
@@ -157,9 +159,9 @@ public class DrawDataImpl extends IDrawData {
 			break;
 		}
 		case 2: {
-			for (int j = this.g - 1; j >= 0; --j) {
-				final int n3 = j << 1;
-				final int n4 = j * 2;
+			for (int listMap = this.g - 1; listMap >= 0; --listMap) {
+				final int n3 = listMap << 1;
+				final int n4 = listMap * 2;
 				final float n5 = this.m[n3];
 				final float n6 = this.m[n3 + 1];
 				a.b[n4] = n5;
@@ -212,9 +214,9 @@ public class DrawDataImpl extends IDrawData {
 			if (!b) {
 				super.b(modelContext, a);
 				if (this.existBaseId()) {
-					final BaseDataID j = this.getBaseId();
+					final BaseDataID listMap = this.getBaseId();
 					if (a.a == -2) {
-						a.a = modelContext.getBaseDataIndex(j);
+						a.a = modelContext.getBaseDataIndex(listMap);
 					}
 					if (a.a < 0) {
 						if (Live2D.L2D_VERBOSE) {
@@ -245,7 +247,7 @@ public class DrawDataImpl extends IDrawData {
 	}
 
 	@Override
-	public void loadDraw(final DrawParam drawParam, final ModelContext modelContext,
+	public void loadDraw(L2DModelMatrix matrix,final GLEx g,final DrawParam drawParam, final ModelContext modelContext,
 			final IDrawContext drawContext) {
 		if (!loon.live2d.draw.DrawDataImpl.q && this != drawContext.d()) {
 			throw new AssertionError();
@@ -261,14 +263,14 @@ public class DrawDataImpl extends IDrawData {
 		final float n = this.c(modelContext, a) * drawContext.j * drawContext.l;
 		final float[] array = (a.c != null) ? a.c : a.b;
 		drawParam.setCulling(this.o);
-		drawParam.drawTexture(f, 3 * this.h, this.k, array, this.m, n, this.n);
+		drawParam.drawTexture(matrix,g,f, 3 * this.h, this.k, array, this.m, n, this.n);
 	}
 
-	public Object a(final String s) {
-		if (this.j == null) {
+	public Object getObject(final String s) {
+		if (this.listMap == null) {
 			return null;
 		}
-		return this.j.get(s);
+		return this.listMap.get(s);
 	}
 
 	public short[] h() {

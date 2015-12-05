@@ -170,6 +170,8 @@ public class LTextureBatch implements LRelease {
 
 	LTexture texture;
 
+	private Matrix4 batchMatrix;
+
 	private int vertexIdx;
 
 	private int texWidth, texHeight;
@@ -181,6 +183,28 @@ public class LTextureBatch implements LRelease {
 	public void setLocation(float tx, float ty) {
 		this.tx = tx;
 		this.ty = ty;
+	}
+
+	/**
+	 * 使用独立的矩阵渲染纹理(这个函数是专门为Live2d增加的，因为官方API本身的矩阵限制，没法和loon已有的view做混合运算（
+	 * 否则会产生奇怪的效果(因为是2D框架，不需要处理长宽高，所以我默认只用了一个2d矩阵，和live2d的矩阵相乘后会混乱的……)）)
+	 * 
+	 * @param val
+	 */
+	public void setBatchMatrix(float[] val) {
+		if (batchMatrix == null) {
+			batchMatrix = new Matrix4(val);
+		} else {
+			batchMatrix.set(val);
+		}
+	}
+
+	public void setBatchMatrix(Matrix4 m) {
+		if (batchMatrix == null) {
+			batchMatrix = new Matrix4(m);
+		} else {
+			batchMatrix.set(m);
+		}
 	}
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
@@ -435,7 +459,11 @@ public class LTextureBatch implements LRelease {
 	private final static String name = "texbatch";
 
 	private void setupMatrices(Matrix4 view) {
-		combinedMatrix.set(view);
+		if (batchMatrix != null) {
+			combinedMatrix.set(batchMatrix);
+		} else {
+			combinedMatrix.set(view);
+		}
 		if (customShader != null) {
 			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
 			customShader.setUniformi("u_texture", 0);
@@ -507,7 +535,11 @@ public class LTextureBatch implements LRelease {
 			globalShader.setUniformf("v_color", color.r, color.g, color.b,
 					color.a);
 		}
-		combinedMatrix.set(view);
+		if (batchMatrix != null) {
+			combinedMatrix.set(batchMatrix);
+		} else {
+			combinedMatrix.set(view);
+		}
 		if (globalShader != null) {
 			globalShader.setUniformMatrix("u_projTrans", combinedMatrix);
 			globalShader.setUniformi("u_texture", 0);
