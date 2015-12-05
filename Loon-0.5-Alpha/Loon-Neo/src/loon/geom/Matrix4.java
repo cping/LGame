@@ -268,6 +268,13 @@ public class Matrix4 implements Serializable {
 		return this;
 	}
 
+	public Matrix4 mul(Affine2f aff) {
+		Matrix4 m = new Matrix4();
+		m.set(aff);
+		support.mul(val, m.val);
+		return this;
+	}
+
 	public Matrix4 mulLeft(Matrix4 matrix) {
 		tmpMat.set(matrix);
 		support.mul(tmpMat.val, this.val);

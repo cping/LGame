@@ -304,6 +304,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx clearBrushs() {
+		if (isClosed) {
+			return this;
+		}
+		brushStack.clear();
+		return this;
+	}
+
 	public GLEx restoreBrush() {
 		if (isClosed) {
 			return this;
@@ -349,10 +357,17 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-
 		if (lastTrans != null) {
 			affineStack.add(lastTrans = lastTrans.cpy());
 		}
+		return this;
+	}
+
+	public GLEx clearTxs() {
+		if (isClosed) {
+			return this;
+		}
+		affineStack.clear();
 		return this;
 	}
 
@@ -361,6 +376,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		lastTrans = affineStack.pop();
+		return this;
+	}
+
+	public GLEx restoreTxDef() {
+		if (isClosed) {
+			return this;
+		}
+		lastTrans = new Affine2f();
+		affineStack.pop();
 		return this;
 	}
 
@@ -703,6 +727,16 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		texture.addToBatch(batch, argb, tx(), x, y, w, h);
 		return this;
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), rotation);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h,

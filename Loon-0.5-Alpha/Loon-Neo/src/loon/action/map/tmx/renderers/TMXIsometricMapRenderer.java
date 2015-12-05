@@ -10,6 +10,7 @@ import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
+import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 
 public class TMXIsometricMapRenderer extends TMXMapRenderer {
@@ -108,6 +109,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 				batch.begin();
 			} else {
 				if (batch.existCache()) {
+					batch.setBlendState(BlendState.AlphaBlend);
 					batch.postCache(baseColor, 0);
 					baseColor.a = tmpAlpha;
 					return;
@@ -119,7 +121,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		} else {
 			batch.begin();
 		}
-
+		batch.setBlendState(BlendState.AlphaBlend);
 		batch.setColor(baseColor);
 		for (int x = 0; x < tileLayer.getWidth(); x++) {
 			for (int y = 0; y < tileLayer.getHeight(); y++) {
@@ -152,6 +154,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 					current = texture;
 					batch = current.getTextureBatch();
 					batch.begin();
+					batch.setBlendState(BlendState.AlphaBlend);
 					batch.checkTexture(current);
 				}
 
