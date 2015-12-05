@@ -16,6 +16,10 @@ public final class ClassReflection {
 		return c.getSimpleName();
 	}
 
+	static public Class<?>[] getInterfaces(Class<?> c) {
+		return c.getInterfaces();
+	}
+
 	static public boolean isInstance(Class<?> c, Object obj) {
 		return c.isInstance(obj);
 	}

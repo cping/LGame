@@ -28,6 +28,30 @@ final public class StringUtils {
 	private StringUtils() {
 	}
 
+	public static boolean equals(String a, String b) {
+		if (a == null || b == null) {
+			return (a == b);
+		} else {
+			return a.equals(b);
+		}
+	}
+
+	public static String rtrim(String s) {
+		int off = s.length() - 1;
+		while (off >= 0 && s.charAt(off) <= ' ') {
+			off--;
+		}
+		return off < s.length() - 1 ? s.substring(0, off + 1) : s;
+	}
+
+	public static String ltrim(String s) {
+		int off = 0;
+		while (off < s.length() && s.charAt(off) <= ' ') {
+			off++;
+		}
+		return off > 0 ? s.substring(off) : s;
+	}
+
 	public final static boolean startsWith(String n, char tag) {
 		return n.charAt(0) == tag;
 	}
@@ -158,29 +182,27 @@ final public class StringUtils {
 	 * @return
 	 */
 	public static String[] split(String str, Character flag) {
-		TArray<String> stringList = new TArray<String>();
-		String tempString;
-		StringBuilder sb = new StringBuilder();
-		final char[] chars = str.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			char ch = chars[i];
-			if (ch != flag) {
-				sb.append(ch);
-			} else {
-				tempString = sb.toString();
-				stringList.add(tempString);
-				sb.setLength(0);
+		if (str == null || str.length() == 0) {
+			return new String[0];
+		}
+		int count = 1;
+		for (int i = 0; i < str.length(); i++) {
+			if (str.charAt(i) == flag) {
+				count++;
 			}
 		}
-		tempString = sb.toString();
-		stringList.add(tempString);
-		sb.setLength(0);
-		final int size = stringList.size;
-		String[] stockArr = new String[size];
-		for (int i = 0; i < size; i++) {
-			stockArr[i] = stringList.get(i);
+		String[] results = new String[count];
+		int index = 0;
+		for (int i = 0; i < count; i++) {
+			int nextIndex = str.indexOf(flag, index);
+			if (nextIndex == -1) {
+				results[i] = str.substring(index);
+			} else {
+				results[i] = str.substring(index, nextIndex);
+				index = nextIndex + 1;
+			}
 		}
-		return stockArr;
+		return results;
 	}
 
 	public static String[] split(String str, String c) {
