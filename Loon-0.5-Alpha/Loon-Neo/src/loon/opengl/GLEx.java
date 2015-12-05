@@ -178,8 +178,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		batch.end();
 		return this;
 	}
-	
-	public BaseBatch batch(){
+
+	public BaseBatch batch() {
 		return batch;
 	}
 
@@ -798,6 +798,33 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh,
+			float sx, float sy, float sw, float sh, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		if (rotation == 0) {
+			texture.addToBatch(batch, baseColor, tx(), dx, dy, dw, dh, sx, sy,
+					sw, sh);
+			return this;
+		}
+		Affine2f xf = tx();
+		if (rotation != 0) {
+			xf = new Affine2f();
+			float w1 = dx + dw / 2;
+			float h1 = dy + dh / 2;
+			xf.translate(w1, h1);
+			xf.preRotate(rotation);
+			xf.translate(-w1, -h1);
+			Affine2f.multiply(tx(), xf, xf);
+		}
+		texture.addToBatch(batch, baseColor, xf, dx, dy, dw, dh, sx, sy, sw, sh);
+		return this;
+	}
+
 	public GLEx drawFlip(LTexture texture, float x, float y, LColor color) {
 		if (isClosed) {
 			return this;
@@ -983,11 +1010,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
-			fillRectNative(x, y, width, height);
-		} else {
-			setRect(x, y, width, height, true);
-		}
+		fillRectNative(x, y, width, height);
 		return this;
 	}
 
