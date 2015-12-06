@@ -25,14 +25,19 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import loon.LSystem;
+
 import org.robovm.apple.foundation.NSData;
 import org.robovm.apple.foundation.NSDataReadingOptions;
 import org.robovm.apple.foundation.NSErrorException;
-import org.robovm.apple.foundation.NSRange;
 
 import static loon.jni.OpenAL.*;
 
 public class CAFLoader {
+
+	private static final NSDataReadingOptions READ_OPTS = new NSDataReadingOptions(
+			NSDataReadingOptions.MappedIfSafe.value()
+					| NSDataReadingOptions.Uncached.value());
 
 	public static class CAFDesc {
 
@@ -87,50 +92,56 @@ public class CAFLoader {
 	}
 
 	public static void load(File path, int bufferId) {
-		NSData data;
+		NSData data = null;
 		try {
 			data = NSData.read(path, READ_OPTS);
-
-			ByteBuffer buf = data.asByteBuffer().order(ByteOrder.BIG_ENDIAN);
-			if (!getString(buf, 4).equals("caff")) {
-				throw new RuntimeException("Input file not CAFF: " + path);
-			}
-			buf.position(buf.position() + 4);
-			CAFDesc desc = null;
-			int offset = 8, dataOffset = 0, dataLength = 0;
-			do {
-				String type = getString(buf, 4);
-				int size = (int) buf.getLong();
-				offset += 12;
-
-				if (type.equals("data")) {
-					dataOffset = offset;
-					dataLength = size;
-				} else if (type.equals("desc")) {
-					desc = new CAFDesc(buf);
-					if ("ima4".equalsIgnoreCase(desc.formatID))
-						throw new RuntimeException(
-								"Cannot use compressed CAFF. "
-										+ "Use AIFC for compressed audio on iOS.");
-				}
-
-				offset += size;
-				buf.position(offset);
-			} while (dataOffset == 0);
-
-			ByteBuffer adata = data.getSubdata(
-					new NSRange(dataOffset, dataLength)).asByteBuffer();
-			alBufferData(bufferId, desc.getALFormat(), adata, dataLength,
-					(int) desc.sampleRate);
-
-			data.dispose();
-
-			int error = alGetError();
-			if (error != AL_NO_ERROR) {
-				throw new RuntimeException("AL error " + error);
-			}
+			load(data.asByteBuffer(), path.getName(), bufferId);
 		} catch (NSErrorException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e.toString());
+		} finally {
+			if (data != null) {
+				data.dispose();
+			}
+		}
+	}
+
+	public static void load(ByteBuffer data, String source, int bufferId) {
+		ByteBuffer buf = data.duplicate().order(ByteOrder.BIG_ENDIAN);
+		if (!getString(buf, 4).equals("caff")) {
+			throw new RuntimeException("Input file not CAFF: " + source);
+		}
+		buf.position(buf.position() + 4);
+		CAFDesc desc = null;
+		int offset = 8, dataOffset = 0, dataLength = 0;
+		do {
+			String type = getString(buf, 4);
+			int size = (int) buf.getLong();
+			offset += 12;
+			if (type.equals("data")) {
+				if (size <= 0) {
+					size = buf.limit() - offset;
+				}
+				dataOffset = offset;
+				dataLength = size;
+
+			} else if (type.equals("desc")) {
+				desc = new CAFDesc(buf);
+				if ("ima4".equalsIgnoreCase(desc.formatID))
+					throw new RuntimeException("Cannot use compressed CAFF. "
+							+ "Use AIFC for compressed audio on iOS.");
+			}
+
+			offset += size;
+			buf.position(offset);
+		} while (dataOffset == 0);
+		data.position(dataOffset);
+		data.limit(dataLength);
+		data.compact();
+		alBufferData(bufferId, desc.getALFormat(), data, dataLength,
+				(int) desc.sampleRate);
+		int error = alGetError();
+		if (error != AL_NO_ERROR) {
+			throw new RuntimeException("AL error " + error);
 		}
 	}
 
@@ -138,13 +149,9 @@ public class CAFLoader {
 		byte[] data = new byte[length];
 		buf.get(data);
 		try {
-			return new String(data, "UTF-8");
+			return new String(data, LSystem.ENCODING);
 		} catch (UnsupportedEncodingException uee) {
 			throw new RuntimeException(uee);
 		}
 	}
-
-	private static final NSDataReadingOptions READ_OPTS = new NSDataReadingOptions(
-			NSDataReadingOptions.MappedIfSafe.value()
-					| NSDataReadingOptions.Uncached.value());
 }

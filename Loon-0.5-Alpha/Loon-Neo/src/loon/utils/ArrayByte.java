@@ -32,8 +32,6 @@ public class ArrayByte {
 
 	public static final int LITTLE_ENDIAN = 1;
 
-	public int type;
-
 	private byte[] data;
 
 	private int position;
@@ -49,8 +47,8 @@ public class ArrayByte {
 	}
 
 	public ArrayByte(String base64) {
-		if(!Base64Coder.isBase64(base64)){
-			throw new RuntimeException("it is not base64 :" + base64 );
+		if (!Base64Coder.isBase64(base64)) {
+			throw new RuntimeException("it is not base64 :" + base64);
 		}
 		this.data = Base64Coder.decodeBase64(base64.toCharArray());
 		reset();
@@ -62,10 +60,10 @@ public class ArrayByte {
 	}
 
 	public void reset() {
-		reset(BIG_ENDIAN);
+		setOrder(BIG_ENDIAN);
 	}
 
-	public void reset(int type) {
+	public void setOrder(int type) {
 		position = 0;
 		byteOrder = type;
 	}
@@ -179,7 +177,7 @@ public class ArrayByte {
 
 	public short readShort() throws IndexOutOfBoundsException {
 		checkAvailable(2);
-		if (byteOrder == type) {
+		if (byteOrder == LITTLE_ENDIAN) {
 			return (short) ((data[position++] & 0xff) | ((data[position++] & 0xff) << 8));
 		} else {
 			return (short) (((data[position++] & 0xff) << 8) | (data[position++] & 0xff));
@@ -188,7 +186,7 @@ public class ArrayByte {
 
 	public int readInt() throws IndexOutOfBoundsException {
 		checkAvailable(4);
-		if (byteOrder == type) {
+		if (byteOrder == LITTLE_ENDIAN) {
 			return (data[position++] & 0xff) | ((data[position++] & 0xff) << 8)
 					| ((data[position++] & 0xff) << 16)
 					| ((data[position++] & 0xff) << 24);
@@ -200,9 +198,13 @@ public class ArrayByte {
 		}
 	}
 
+	public double readDouble() throws IndexOutOfBoundsException {
+		return NumberUtils.longBitsToDouble(readLong());
+	}
+
 	public long readLong() throws IndexOutOfBoundsException {
 		checkAvailable(8);
-		if (byteOrder == type) {
+		if (byteOrder == LITTLE_ENDIAN) {
 			return (readInt() & 0xffffffffL)
 					| ((readInt() & 0xffffffffL) << 32L);
 		} else {
@@ -282,7 +284,7 @@ public class ArrayByte {
 
 	public void writeShort(int v) {
 		ensureCapacity(2);
-		if (byteOrder == type) {
+		if (byteOrder == LITTLE_ENDIAN) {
 			data[position++] = (byte) (v & 0xff);
 			data[position++] = (byte) ((v >> 8) & 0xff);
 		} else {
@@ -293,7 +295,7 @@ public class ArrayByte {
 
 	public void writeInt(int v) {
 		ensureCapacity(4);
-		if (byteOrder == type) {
+		if (byteOrder == LITTLE_ENDIAN) {
 			data[position++] = (byte) (v & 0xff);
 			data[position++] = (byte) ((v >> 8) & 0xff);
 			data[position++] = (byte) ((v >> 16) & 0xff);
@@ -308,7 +310,7 @@ public class ArrayByte {
 
 	public void writeLong(long v) {
 		ensureCapacity(8);
-		if (byteOrder == type) {
+		if (byteOrder == LITTLE_ENDIAN) {
 			writeInt((int) (v & 0xffffffffL));
 			writeInt((int) (v >>> 32));
 		} else {
@@ -357,16 +359,8 @@ public class ArrayByte {
 		}
 	}
 
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-	
 	@Override
-	public String toString(){
+	public String toString() {
 		return new String(Base64Coder.encode(data));
 	}
 

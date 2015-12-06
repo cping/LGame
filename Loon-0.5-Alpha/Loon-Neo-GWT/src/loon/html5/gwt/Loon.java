@@ -839,4 +839,5 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		}
 		return cur_browserType;
 	}
+
 }

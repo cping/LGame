@@ -1,5 +1,7 @@
 package loon.live2d.base;
 
+import java.nio.ByteBuffer;
+
 import loon.live2d.*;
 import loon.live2d.context.*;
 import loon.live2d.id.*;

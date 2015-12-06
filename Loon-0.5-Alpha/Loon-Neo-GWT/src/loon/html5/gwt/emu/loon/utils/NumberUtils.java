@@ -23,6 +23,10 @@ public class NumberUtils {
 	public static float intBitsToFloat (int value) {
 		return Numbers.intBitsToFloat(value);
 	}
+
+	public static double longBitsToDouble (long value) {
+		return Numbers.longBitsToDouble(value);
+	}	
 	
 	public static int compare(float f1, float f2) {
 		if (f1 < f2) {

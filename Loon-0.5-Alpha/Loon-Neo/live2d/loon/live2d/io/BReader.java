@@ -1,7 +1,5 @@
 package loon.live2d.io;
 
-import java.nio.*;
-
 import loon.LSystem;
 import loon.live2d.base.*;
 import loon.live2d.id.*;
@@ -11,35 +9,28 @@ import loon.utils.TArray;
 
 public class BReader {
 	
-	ArrayByte a;
-	byte[] b;
-	ByteBuffer c;
-	byte[] d;
+	ArrayByte buffers;
+	byte[] _bytes;
 	int _skip;
-	int f;
+	int _flag;
 	int _ver;
 	TArray<Object> objs;
 
 	public BReader(final ArrayByte in) {
-		this.b = new byte[8];
-		this.c = ByteBuffer.wrap(this.b);
-		this.d = new byte[1000];
+		this._bytes = new byte[1000];
 		this._skip = 0;
-		this.f = 0;
+		this._flag = 0;
 		this._ver = 0;
 		this.objs = new TArray<Object>();
-		this.a = in;
+		this.buffers = in;
 	}
 
 	public BReader(final ArrayByte in, final int version) {
-		this.b = new byte[8];
-		this.c = LSystem.base().support().getByteBuffer(this.b);
-		this.d = new byte[1000];
+		this._bytes = new byte[1000];
 		this._skip = 0;
-		this.f = 0;
+		this._flag = 0;
 		this.objs = new TArray<Object>();
 		this._ver = version;
-		this.a = in;
 	}
 
 	public int getVersion() {
@@ -51,7 +42,7 @@ public class BReader {
 	}
 
 	public int readDataSize() {
-		return readDataSize(this.a);
+		return readDataSize(this.buffers);
 	}
 
 	public static int readDataSize(final ArrayByte inputStream) {
@@ -84,9 +75,7 @@ public class BReader {
 	public double readDouble() {
 		try {
 			this.reset();
-			this.a.read(this.b, 0, 8);
-			this.c.position(0);
-			return this.c.getDouble();
+			return buffers.readDouble();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -96,9 +85,7 @@ public class BReader {
 	public float readerFloat() {
 		try {
 			this.reset();
-			this.a.read(this.b, 0, 4);
-			this.c.position(0);
-			return this.c.getFloat();
+			return buffers.readFloat();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -108,9 +95,7 @@ public class BReader {
 	public int readInt() {
 		try {
 			this.reset();
-			this.a.read(this.b, 0, 4);
-			this.c.position(0);
-			return this.c.getInt();
+			return buffers.readInt();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -120,7 +105,7 @@ public class BReader {
 	public byte readByte() {
 		try {
 			this.reset();
-			return (byte) this.a.readByte();
+			return (byte) this.buffers.readByte();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -130,9 +115,7 @@ public class BReader {
 	public short readShort() {
 		try {
 			this.reset();
-			this.a.read(this.b, 0, 2);
-			this.c.position(0);
-			return this.c.getShort();
+			return buffers.readShort();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -142,9 +125,7 @@ public class BReader {
 	public long readLong() {
 		try {
 			this.reset();
-			this.a.read(this.b, 0, 8);
-			this.c.position(0);
-			return this.c.getLong();
+			return buffers.readLong();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -154,7 +135,7 @@ public class BReader {
 	public boolean readExist() {
 		try {
 			this.reset();
-			return this.a.readByte() != 0;
+			return this.buffers.readByte() != 0;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -164,12 +145,12 @@ public class BReader {
 	public String readString() {
 		try {
 			this.reset();
-			final int b = this.readDataSize();
-			if (this.d.length < b) {
-				this.d = new byte[b];
+			final int size = this.readDataSize();
+			if (this._bytes.length < size) {
+				this._bytes = new byte[size];
 			}
-			this.a.read(this.d, 0, b);
-			return new String(this.d, 0, b, "UTF-8");
+			this.buffers.read(this._bytes, 0, size);
+			return new String(this._bytes, 0, size, LSystem.ENCODING);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -334,12 +315,12 @@ public class BReader {
 	public boolean readBool() {
 		try {
 			if (this._skip == 0) {
-				this.f = this.a.readByte();
+				this._flag = this.buffers.readByte();
 			} else if (this._skip == 8) {
-				this.f = this.a.readByte();
+				this._flag = this.buffers.readByte();
 				this._skip = 0;
 			}
-			return (this.f >> 7 - this._skip++ & 0x1) == 0x1;
+			return (this._flag >> 7 - this._skip++ & 0x1) == 0x1;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
