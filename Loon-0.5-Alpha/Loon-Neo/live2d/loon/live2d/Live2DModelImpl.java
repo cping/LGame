@@ -16,7 +16,7 @@ public class Live2DModelImpl extends ALive2DModel {
 
 	@Override
 	public void draw(L2DModelMatrix matrix,GLEx g) {
-		this.e.draw(matrix,g, this.impl);
+		this.modeContext.draw(matrix,g, this.impl);
 	}
 
 	@Override

@@ -12,9 +12,9 @@ public class ModelImpl implements loon.live2d.io.IOBase
 	private static final long serialVersionUID = 1L;
 	static int a;
     ParamDefSet b;
-    TArray list;
-    int d;
-    int e;
+    TArray<PartsData> list;
+    int width;
+    int heigth;
     
     static {
         ModelImpl.a = 0;
@@ -23,8 +23,8 @@ public class ModelImpl implements loon.live2d.io.IOBase
     public ModelImpl() {
         this.b = null;
         this.list = null;
-        this.d = 400;
-        this.e = 400;
+        this.width = 400;
+        this.heigth = 400;
         ++ModelImpl.a;
     }
     
@@ -33,31 +33,32 @@ public class ModelImpl implements loon.live2d.io.IOBase
             this.b = new ParamDefSet();
         }
         if (this.list == null) {
-            this.list = new TArray();
+            this.list = new TArray<PartsData>();
         }
     }
     
     public float getCanvasWidth() {
-        return this.d;
+        return this.width;
     }
     
     public float getCanvasHeight() {
-        return this.e;
+        return this.heigth;
     }
     
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void readV2(final BReader br) {
         this.b = (ParamDefSet)br.reader();
         this.list = (TArray)br.reader();
-        this.d = br.readInt();
-        this.e = br.readInt();
+        this.width = br.readInt();
+        this.heigth = br.readInt();
     }
     
     public void addPartsData(final PartsData parts) {
         this.list.add(parts);
     }
     
-    public TArray getPartsDataList() {
+    public TArray<PartsData> getPartsDataList() {
         return this.list;
     }
     

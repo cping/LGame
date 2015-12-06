@@ -12,63 +12,62 @@ import loon.opengl.GLEx;
 import loon.utils.ArrayByte;
 
 public abstract class ALive2DModel {
-	public static final int a = 1;
-	public static final int b = 2;
-	protected static int c;
-	protected ModelImpl d;
-	protected ModelContext e;
-	protected int f;
+
+	protected static int idNo;
+	protected ModelImpl modelImpl;
+	protected ModelContext modeContext;
+	protected int flagError;
 
 	static {
-		ALive2DModel.c = 0;
+		ALive2DModel.idNo = 0;
 	}
 
 	public ALive2DModel() {
-		this.d = null;
-		this.e = null;
-		this.f = 0;
-		++ALive2DModel.c;
-		this.e = new ModelContext(this);
+		this.modelImpl = null;
+		this.modeContext = null;
+		this.flagError = 0;
+		++ALive2DModel.idNo;
+		this.modeContext = new ModelContext(this);
 	}
 
 	public void setModelImpl(final ModelImpl m) {
-		this.d = m;
+		this.modelImpl = m;
 	}
 
 	public ModelImpl getModelImpl() {
-		if (this.d == null) {
-			(this.d = new ModelImpl()).initDirect();
+		if (this.modelImpl == null) {
+			(this.modelImpl = new ModelImpl()).initDirect();
 		}
-		return this.d;
+		return this.modelImpl;
 	}
 
 	public float getCanvasWidth() {
-		if (this.d == null) {
+		if (this.modelImpl == null) {
 			return 0.0f;
 		}
-		return this.d.getCanvasWidth();
+		return this.modelImpl.getCanvasWidth();
 	}
 
 	public float getCanvasHeight() {
-		if (this.d == null) {
+		if (this.modelImpl == null) {
 			return 0.0f;
 		}
-		return this.d.getCanvasHeight();
+		return this.modelImpl.getCanvasHeight();
 	}
 
 	public float getParamFloat(final String paramID) {
-		return this.e
-				.getParamFloat(this.e.getParamIndex(ParamID.getID(paramID)));
+		return this.modeContext
+				.getParamFloat(this.modeContext.getParamIndex(ParamID.getID(paramID)));
 	}
 
 	public void setParamFloat(final String paramID, final float value) {
-		this.e.setParamFloat(this.e.getParamIndex(ParamID.getID(paramID)),
+		this.modeContext.setParamFloat(this.modeContext.getParamIndex(ParamID.getID(paramID)),
 				value);
 	}
 
 	public void setParamFloat(final String paramID, final float value,
 			final float weight) {
-		this.setParamFloat(this.e.getParamIndex(ParamID.getID(paramID)), value,
+		this.setParamFloat(this.modeContext.getParamIndex(ParamID.getID(paramID)), value,
 				weight);
 	}
 
@@ -78,7 +77,7 @@ public abstract class ALive2DModel {
 
 	public void addToParamFloat(final String paramID, final float value,
 			final float weight) {
-		this.addToParamFloat(this.e.getParamIndex(ParamID.getID(paramID)),
+		this.addToParamFloat(this.modeContext.getParamIndex(ParamID.getID(paramID)),
 				value, weight);
 	}
 
@@ -88,24 +87,24 @@ public abstract class ALive2DModel {
 
 	public void multParamFloat(final String paramID, final float mult,
 			final float weight) {
-		this.multParamFloat(this.e.getParamIndex(ParamID.getID(paramID)), mult,
+		this.multParamFloat(this.modeContext.getParamIndex(ParamID.getID(paramID)), mult,
 				weight);
 	}
 
 	public void loadParam() {
-		this.e.loadParam();
+		this.modeContext.loadParam();
 	}
 
 	public void saveParam() {
-		this.e.saveParam();
+		this.modeContext.saveParam();
 	}
 
 	public void init() {
-		this.e.init();
+		this.modeContext.init();
 	}
 
 	public void update() {
-		this.e.update();
+		this.modeContext.update();
 	}
 
 	public int generateModelTextureNo() {
@@ -143,37 +142,37 @@ public abstract class ALive2DModel {
 			final byte ver = bReader.readByte();
 			bReader.setVersion(ver);
 			if (ver > 11) {
-				ret.f |= 0x2;
+				ret.flagError |= 0x2;
 				throw new Live2DException(
 						"Model load error , Illegal data version error.\n");
 			}
 			final ModelImpl modelImpl = (ModelImpl) bReader.reader();
 			if (ver >= 8 && bReader.readInt() != -2004318072) {
-				ret.f |= 0x1;
+				ret.flagError |= 0x1;
 				throw new Live2DException("Model load error , EOF not found.");
 			}
 			ret.setModelImpl(modelImpl);
 			ret.getModelContext().init();
-		} catch (Exception e) {
-			throw new Live2DException(e, "Model load error , Unknown error ");
+		} catch (Exception modeContext) {
+			throw new Live2DException(modeContext, "Model load error , Unknown error ");
 		}
 	}
 
 	public int getParamIndex(final String paramID) {
-		return this.e.getParamIndex(ParamID.getID(paramID));
+		return this.modeContext.getParamIndex(ParamID.getID(paramID));
 	}
 
 	public float getParamFloat(final int paramIndex) {
-		return this.e.getParamFloat(paramIndex);
+		return this.modeContext.getParamFloat(paramIndex);
 	}
 
 	public void setParamFloat(final int paramIndex, final float value) {
-		this.e.setParamFloat(paramIndex, value);
+		this.modeContext.setParamFloat(paramIndex, value);
 	}
 
 	public void setParamFloat(final int paramIndex, final float value,
 			final float weight) {
-		this.e.setParamFloat(paramIndex, this.e.getParamFloat(paramIndex)
+		this.modeContext.setParamFloat(paramIndex, this.modeContext.getParamFloat(paramIndex)
 				* (1.0f - weight) + value * weight);
 	}
 
@@ -183,7 +182,7 @@ public abstract class ALive2DModel {
 
 	public void addToParamFloat(final int paramIndex, final float value,
 			final float weight) {
-		this.e.setParamFloat(paramIndex, this.e.getParamFloat(paramIndex)
+		this.modeContext.setParamFloat(paramIndex, this.modeContext.getParamFloat(paramIndex)
 				+ value * weight);
 	}
 
@@ -193,16 +192,16 @@ public abstract class ALive2DModel {
 
 	public void multParamFloat(final int paramIndex, final float mult,
 			final float weight) {
-		this.e.setParamFloat(paramIndex, this.e.getParamFloat(paramIndex)
+		this.modeContext.setParamFloat(paramIndex, this.modeContext.getParamFloat(paramIndex)
 				* (1.0f + (mult - 1.0f) * weight));
 	}
 
 	public ModelContext getModelContext() {
-		return this.e;
+		return this.modeContext;
 	}
 
 	public int getErrorFlags() {
-		return this.f;
+		return this.flagError;
 	}
 
 	public void setupPartsOpacityGroup_alphaImpl(final String[] paramGroup,
@@ -283,7 +282,7 @@ public abstract class ALive2DModel {
 	}
 
 	public void setPartsOpacity(final String partsID, final float opacity) {
-		final int partsDataIndex = this.e.getPartsDataIndex(PartsDataID
+		final int partsDataIndex = this.modeContext.getPartsDataIndex(PartsDataID
 				.getID(partsID));
 		if (partsDataIndex < 0) {
 			return;
@@ -292,19 +291,19 @@ public abstract class ALive2DModel {
 	}
 
 	public void setPartsOpacity(final int partsIndex, final float opacity) {
-		this.e.setPartsOpacity(partsIndex, opacity);
+		this.modeContext.setPartsOpacity(partsIndex, opacity);
 	}
 
 	public int getPartsDataIndex(final String partsID) {
-		return this.e.getPartsDataIndex(PartsDataID.getID(partsID));
+		return this.modeContext.getPartsDataIndex(PartsDataID.getID(partsID));
 	}
 
 	public int getPartsDataIndex(final PartsDataID partsID) {
-		return this.e.getPartsDataIndex(partsID);
+		return this.modeContext.getPartsDataIndex(partsID);
 	}
 
 	public float getPartsOpacity(final String partsID) {
-		final int partsDataIndex = this.e.getPartsDataIndex(PartsDataID
+		final int partsDataIndex = this.modeContext.getPartsDataIndex(PartsDataID
 				.getID(partsID));
 		if (partsDataIndex < 0) {
 			return 0.0f;
@@ -313,7 +312,7 @@ public abstract class ALive2DModel {
 	}
 
 	public float getPartsOpacity(final int partsIndex) {
-		return this.e.getPartsOpacity(partsIndex);
+		return this.modeContext.getPartsOpacity(partsIndex);
 	}
 
 	public abstract DrawParam getDrawParam();
@@ -353,15 +352,15 @@ public abstract class ALive2DModel {
 	}
 
 	public int getDrawDataIndex(final String drawDataID) {
-		return this.e.getDrawDataIndex(DrawDataID.getID(drawDataID));
+		return this.modeContext.getDrawDataIndex(DrawDataID.getID(drawDataID));
 	}
 
 	public IDrawData getDrawData(final int drawIndex) {
-		return this.e.getDrawData(drawIndex);
+		return this.modeContext.getDrawData(drawIndex);
 	}
 
 	public float[] getTransformedPoints(final int drawIndex) {
-		final IDrawContext drawContext = this.e.getDrawContext(drawIndex);
+		final IDrawContext drawContext = this.modeContext.getDrawContext(drawIndex);
 		if (drawContext instanceof DrawDataImpl.aa) {
 			return ((DrawDataImpl.aa) drawContext).a();
 		}
@@ -369,7 +368,7 @@ public abstract class ALive2DModel {
 	}
 
 	public short[] getIndexArray(final int drawIndex) {
-		final IDrawData drawData = this.e.getDrawData(drawIndex);
+		final IDrawData drawData = this.modeContext.getDrawData(drawIndex);
 		if (drawData instanceof DrawDataImpl) {
 			return ((DrawDataImpl) drawData).h();
 		}

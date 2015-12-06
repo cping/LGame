@@ -120,8 +120,8 @@ public class LAppModel extends L2DBaseModel {
 		}
 
 		long timeMSec = UtSystem.getUserTimeMSec() - startTimeMSec;
-		double timeSec = timeMSec / 1000.0;
-		double t = timeSec * 2 * MathUtils.PI;
+		float timeSec = timeMSec / 1000f;
+		float t = timeSec * 2 * MathUtils.PI;
 
 		synchronized (lock) {
 			if (mainMotionManager.isFinished()) {
@@ -161,15 +161,15 @@ public class LAppModel extends L2DBaseModel {
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_EYE_BALL_Y, dragY, 1);
 
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_X,
-				(float) (15 * MathUtils.sin(t / 6.5345)), 0.5f);
+				(15 * MathUtils.sin(t / 6.5345f)), 0.5f);
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_Y,
-				(float) (8 * MathUtils.sin(t / 3.5345)), 0.5f);
+				(8 * MathUtils.sin(t / 3.5345f)), 0.5f);
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_Z,
-				(float) (10 * MathUtils.sin(t / 5.5345)), 0.5f);
+				(10 * MathUtils.sin(t / 5.5345f)), 0.5f);
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_BODY_ANGLE_X,
-				(float) (4 * MathUtils.sin(t / 15.5345)), 0.5f);
+				(4 * MathUtils.sin(t / 15.5345f)), 0.5f);
 		live2DModel.setParamFloat(L2DStandardID.PARAM_BREATH,
-				(float) (0.5f + 0.5f * MathUtils.sin(t / 3.2345)), 1);
+				(0.5f + 0.5f * MathUtils.sin(t / 3.2345f)), 1f);
 
 		live2DModel.addToParamFloat(L2DStandardID.PARAM_ANGLE_Z, 90 * accelX,
 				0.5f);
@@ -271,6 +271,7 @@ public class LAppModel extends L2DBaseModel {
 				height = 2f;
 			}
 		}
+
 
 		for (int i = 0; i < modelSetting.getInitParamNum(); i++) {
 			String id = modelSetting.getInitParamID(i);

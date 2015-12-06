@@ -759,10 +759,10 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		int x1 = x;
 		int y1 = y + r;
-		int x2 = x - (int) (r * MathUtils.cos(MathUtils.PI / 6.0));
-		int y2 = y - (int) (r * MathUtils.sin(MathUtils.PI / 6.0));
-		int x3 = x + (int) (r * MathUtils.cos(MathUtils.PI / 6.0));
-		int y3 = y - (int) (r * MathUtils.sin(MathUtils.PI / 6.0));
+		int x2 = x - (int) (r * MathUtils.cos(MathUtils.PI / 6f));
+		int y2 = y - (int) (r * MathUtils.sin(MathUtils.PI / 6f));
+		int x3 = x + (int) (r * MathUtils.cos(MathUtils.PI / 6f));
+		int y3 = y - (int) (r * MathUtils.sin(MathUtils.PI / 6f));
 		int[] xpos = new int[3];
 		xpos[0] = x1;
 		xpos[1] = x2;

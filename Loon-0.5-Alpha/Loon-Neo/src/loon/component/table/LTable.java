@@ -665,7 +665,7 @@ public class LTable extends LContainer {
 	}
 
 	public int isOnColumn(int x) {
-		double sum = 0;
+		float sum = 0;
 		for (int col = 0; col < columns.length - 1; col++) {
 			sum += getColumnWidth(col) + cellSpacing;
 			if (MathUtils.abs(sum - x) < 5)

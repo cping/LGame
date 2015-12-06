@@ -34,10 +34,6 @@ public class MathUtils {
 			45889, 47615, 49385, 51202, 53070, 54991, 56970, 59009, 61113,
 			63287, 65536 };
 
-	public static float log10(float v) {
-		return (float) Math.log10(v);
-	}
-
 	public static int ifloor(float v) {
 		int iv = (int) v;
 		return (v >= 0f || iv == v || iv == Integer.MIN_VALUE) ? iv : (iv - 1);
@@ -322,6 +318,14 @@ public class MathUtils {
 		return ((float) (z >> 16));
 	}
 
+	public static final int mulDiv(int f1, int f2, int f3) {
+		return (int) ((long) f1 * f2 / f3);
+	}
+
+	public static final long mulDiv(long f1, long f2, long f3) {
+		return f1 * f2 / f3;
+	}
+
 	public static int mid(int i, int min, int max) {
 		return MathUtils.max(i, MathUtils.min(min, max));
 	}
@@ -405,31 +409,7 @@ public class MathUtils {
 	static final int CK1 = 2328;
 
 	static final int CK2 = 32551;
-
-	private static double reduceSinAngle(double radians) {
-		radians %= PI * 2.0;
-		if (Math.abs(radians) > PI) {
-			radians = radians - (PI * 2.0);
-		}
-		if (Math.abs(radians) > PI / 2) {
-			radians = PI - radians;
-		}
-		return radians;
-	}
-
-	public static double sin(double radians) {
-		radians = reduceSinAngle(radians);
-		if (Math.abs(radians) <= PI / 4) {
-			return Math.sin(radians);
-		} else {
-			return Math.cos(PI / 2 - radians);
-		}
-	}
-
-	public static double cos(double radians) {
-		return sin(radians + PI / 2);
-	}
-
+	
 	public static int cos(int f) {
 		int sign = 1;
 		if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED)) {
@@ -570,10 +550,6 @@ public class MathUtils {
 	static public final float dist(float x1, float y1, float z1, float x2,
 			float y2, float z2) {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1) + sq(z2 - z1));
-	}
-
-	static public final double abs(double n) {
-		return Math.abs(n);
 	}
 
 	static public final float abs(float n) {
@@ -790,6 +766,12 @@ public class MathUtils {
 				+ (2.0 * value1 - 5.0 * value2 + 4.0 * value3 - value4)
 				* amountSquared + (3.0 * value2 - value1 - 3.0 * value3 + value4)
 				* amountCubed));
+	}
+
+	public static final int clamp(int value, int min, int max) {
+		value = (value > max) ? max : value;
+		value = (value < min) ? min : value;
+		return value;
 	}
 
 	public static float clamp(float value, float min, float max) {

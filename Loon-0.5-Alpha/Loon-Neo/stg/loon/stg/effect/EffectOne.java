@@ -66,8 +66,8 @@ public class EffectOne implements LRelease {
 			sinX = new double[20];
 			cosX = new double[20];
 			for (int j = 0; j < 20; j++) {
-				sinX[j] = MathUtils.sin((3.1415926535897931d * j) / 10D);
-				cosX[j] = MathUtils.cos((3.1415926535897931d * j) / 10D);
+				sinX[j] = MathUtils.sin((MathUtils.PI * j) / 10f);
+				cosX[j] = MathUtils.cos((MathUtils.PI * j) / 10f);
 			}
 		}
 		this.time = 0;

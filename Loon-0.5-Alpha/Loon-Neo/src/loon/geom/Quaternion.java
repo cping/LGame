@@ -451,11 +451,11 @@ public class Quaternion implements Serializable {
 		float scale0 = 1 - alpha;
 		float scale1 = alpha;
 		if ((1 - absDot) > 0.1) {
-			final double angle = MathUtils.acos(absDot);
-			final double invSinTheta = 1f / MathUtils.sin(angle);
+			final float angle = MathUtils.acos(absDot);
+			final float invSinTheta = 1f / MathUtils.sin(angle);
 
-			scale0 = (float) (MathUtils.sin((1 - alpha) * angle) * invSinTheta);
-			scale1 = (float) (MathUtils.sin((alpha * angle)) * invSinTheta);
+			scale0 = (MathUtils.sin((1 - alpha) * angle) * invSinTheta);
+			scale1 = (MathUtils.sin((alpha * angle)) * invSinTheta);
 		}
 
 		if (dot < 0.f) {
@@ -661,15 +661,13 @@ public class Quaternion implements Serializable {
 		return this;
 	}
 
-    public Quaternion add(Quaternion q)
-    {
-        return add(q.x, q.y, q.z, q.w);
-    }
+	public Quaternion add(Quaternion q) {
+		return add(q.x, q.y, q.z, q.w);
+	}
 
-    public Quaternion add(float x, float y, float z, float w)
-    {
-        return cpy().addSelf(x, y, z, w);
-    }
+	public Quaternion add(float x, float y, float z, float w) {
+		return cpy().addSelf(x, y, z, w);
+	}
 
 	public Quaternion subtract(Quaternion q) {
 		return subtract(q.x, q.y, q.z, q.w);

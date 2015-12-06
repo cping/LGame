@@ -14,7 +14,7 @@ public class BaseDataListImpl extends IBaseData
 	 */
 	private static final long serialVersionUID = 1L;
 	loon.live2d.param.ParamIOList a;
-    TArray b;
+    TArray list;
     static float[] c;
     static float[] d;
     static float[] e;
@@ -37,12 +37,12 @@ public class BaseDataListImpl extends IBaseData
     
     public BaseDataListImpl() {
         this.a = null;
-        this.b = null;
+        this.list = null;
     }
     
     public void init() {
         (this.a = new loon.live2d.param.ParamIOList()).init();
-        this.b = new TArray();
+        this.list = new TArray();
     }
     
     @Override
@@ -54,7 +54,7 @@ public class BaseDataListImpl extends IBaseData
     public void readV2(final BReader br) {
         super.readV2(br);
         this.a = (loon.live2d.param.ParamIOList)br.reader();
-        this.b = (TArray)br.reader();
+        this.list = (TArray)br.reader();
         super.a(br);
     }
     
@@ -86,11 +86,11 @@ public class BaseDataListImpl extends IBaseData
         final float[] tmpT_ArrayRef = modelContext.getTmpT_ArrayRef();
         this.a.a(tmpPivotTableIndicesRef, tmpT_ArrayRef, a2);
         if (a2 <= 0) {
-            a.b.a((loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[0]));
+            a.b.a((loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[0]));
         }
         else if (a2 == 1) {
-            final loon.live2d.base.Vertex a3 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[0]);
-            final loon.live2d.base.Vertex a4 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[1]);
+            final loon.live2d.base.Vertex a3 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[0]);
+            final loon.live2d.base.Vertex a4 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[1]);
             final float n = tmpT_ArrayRef[0];
             a.b.a = a3.a + (a4.a - a3.a) * n;
             a.b.b = a3.b + (a4.b - a3.b) * n;
@@ -99,10 +99,10 @@ public class BaseDataListImpl extends IBaseData
             a.b.e = a3.e + (a4.e - a3.e) * n;
         }
         else if (a2 == 2) {
-            final loon.live2d.base.Vertex a5 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[0]);
-            final loon.live2d.base.Vertex a6 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[1]);
-            final loon.live2d.base.Vertex a7 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[2]);
-            final loon.live2d.base.Vertex a8 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[3]);
+            final loon.live2d.base.Vertex a5 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[0]);
+            final loon.live2d.base.Vertex a6 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[1]);
+            final loon.live2d.base.Vertex a7 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[2]);
+            final loon.live2d.base.Vertex a8 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[3]);
             final float n2 = tmpT_ArrayRef[0];
             final float n3 = tmpT_ArrayRef[1];
             final float n4 = a5.a + (a6.a - a5.a) * n2;
@@ -117,14 +117,14 @@ public class BaseDataListImpl extends IBaseData
             a.b.e = n8 + (a7.e + (a8.e - a7.e) * n2 - n8) * n3;
         }
         else if (a2 == 3) {
-            final loon.live2d.base.Vertex a9 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[0]);
-            final loon.live2d.base.Vertex a10 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[1]);
-            final loon.live2d.base.Vertex a11 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[2]);
-            final loon.live2d.base.Vertex a12 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[3]);
-            final loon.live2d.base.Vertex a13 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[4]);
-            final loon.live2d.base.Vertex a14 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[5]);
-            final loon.live2d.base.Vertex a15 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[6]);
-            final loon.live2d.base.Vertex a16 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[7]);
+            final loon.live2d.base.Vertex a9 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[0]);
+            final loon.live2d.base.Vertex a10 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[1]);
+            final loon.live2d.base.Vertex a11 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[2]);
+            final loon.live2d.base.Vertex a12 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[3]);
+            final loon.live2d.base.Vertex a13 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[4]);
+            final loon.live2d.base.Vertex a14 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[5]);
+            final loon.live2d.base.Vertex a15 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[6]);
+            final loon.live2d.base.Vertex a16 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[7]);
             final float n9 = tmpT_ArrayRef[0];
             final float n10 = tmpT_ArrayRef[1];
             final float n11 = tmpT_ArrayRef[2];
@@ -150,22 +150,22 @@ public class BaseDataListImpl extends IBaseData
             a.b.e = (1.0f - n11) * (n24 + (n25 - n24) * n10) + n11 * (n26 + (a15.e + (a16.e - a15.e) * n9 - n26) * n10);
         }
         else if (a2 == 4) {
-            final loon.live2d.base.Vertex a17 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[0]);
-            final loon.live2d.base.Vertex a18 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[1]);
-            final loon.live2d.base.Vertex a19 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[2]);
-            final loon.live2d.base.Vertex a20 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[3]);
-            final loon.live2d.base.Vertex a21 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[4]);
-            final loon.live2d.base.Vertex a22 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[5]);
-            final loon.live2d.base.Vertex a23 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[6]);
-            final loon.live2d.base.Vertex a24 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[7]);
-            final loon.live2d.base.Vertex a25 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[8]);
-            final loon.live2d.base.Vertex a26 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[9]);
-            final loon.live2d.base.Vertex a27 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[10]);
-            final loon.live2d.base.Vertex a28 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[11]);
-            final loon.live2d.base.Vertex a29 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[12]);
-            final loon.live2d.base.Vertex a30 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[13]);
-            final loon.live2d.base.Vertex a31 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[14]);
-            final loon.live2d.base.Vertex a32 =  (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[15]);
+            final loon.live2d.base.Vertex a17 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[0]);
+            final loon.live2d.base.Vertex a18 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[1]);
+            final loon.live2d.base.Vertex a19 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[2]);
+            final loon.live2d.base.Vertex a20 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[3]);
+            final loon.live2d.base.Vertex a21 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[4]);
+            final loon.live2d.base.Vertex a22 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[5]);
+            final loon.live2d.base.Vertex a23 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[6]);
+            final loon.live2d.base.Vertex a24 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[7]);
+            final loon.live2d.base.Vertex a25 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[8]);
+            final loon.live2d.base.Vertex a26 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[9]);
+            final loon.live2d.base.Vertex a27 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[10]);
+            final loon.live2d.base.Vertex a28 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[11]);
+            final loon.live2d.base.Vertex a29 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[12]);
+            final loon.live2d.base.Vertex a30 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[13]);
+            final loon.live2d.base.Vertex a31 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[14]);
+            final loon.live2d.base.Vertex a32 =  (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[15]);
             final float n27 = tmpT_ArrayRef[0];
             final float n28 = tmpT_ArrayRef[1];
             final float n29 = tmpT_ArrayRef[2];
@@ -225,7 +225,7 @@ public class BaseDataListImpl extends IBaseData
             }
             final loon.live2d.base.Vertex[] array2 = new loon.live2d.base.Vertex[n66];
             for (int l = 0; l < n66; ++l) {
-                array2[l] = (loon.live2d.base.Vertex)this.b.get(tmpPivotTableIndicesRef[l]);
+                array2[l] = (loon.live2d.base.Vertex)this.list.get(tmpPivotTableIndicesRef[l]);
             }
             float a33 = 0.0f;
             float b = 0.0f;
@@ -245,7 +245,7 @@ public class BaseDataListImpl extends IBaseData
             a.b.d = d;
             a.b.e = e;
         }
-        final loon.live2d.base.Vertex a34 = (loon.live2d.base.Vertex) this.b.get(tmpPivotTableIndicesRef[0]);
+        final loon.live2d.base.Vertex a34 = (loon.live2d.base.Vertex) this.list.get(tmpPivotTableIndicesRef[0]);
         a.b.f = a34.f;
         a.b.g = a34.g;
     }
@@ -287,7 +287,7 @@ public class BaseDataListImpl extends IBaseData
                     }
                     final float[] e = loon.live2d.base.BaseDataListImpl.e;
                     this.a(modelContext, baseData, baseContext2, c, d2, e);
-                    final float n = (float)UtMath.getAngleNotAbs(d2, e);
+                    final float n = UtMath.getAngleNotAbs(d2, e);
                     baseData.a(modelContext, baseContext2, c, c, 1, 0, 2);
                     a.c.a = c[0];
                     a.c.b = c[1];

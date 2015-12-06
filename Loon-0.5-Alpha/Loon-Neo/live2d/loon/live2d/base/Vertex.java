@@ -4,7 +4,12 @@ import loon.live2d.io.*;
 
 public class Vertex implements loon.live2d.io.IOBase
 {
-    float a;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	float a;
     float b;
     float c;
     float d;
