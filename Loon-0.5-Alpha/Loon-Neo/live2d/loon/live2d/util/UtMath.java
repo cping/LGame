@@ -10,7 +10,7 @@ public class UtMath {
 	public static float e;
 	static final double[] f;
 
-	public static float a(final float n) {
+	public static float fixed(final float n) {
 		if (n < 0.0f) {
 			return 0.0f;
 		}

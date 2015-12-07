@@ -15,7 +15,7 @@ public class BaseDataImpl extends IBaseData
 	int a;
     int b;
     loon.live2d.param.ParamIOList c;
-    TArray d;
+    TArray<Object> list;
     static boolean[] e;
     
     static {
@@ -26,20 +26,21 @@ public class BaseDataImpl extends IBaseData
         this.a = 0;
         this.b = 0;
         this.c = null;
-        this.d = null;
+        this.list = null;
     }
     
     public void init() {
         (this.c = new loon.live2d.param.ParamIOList()).init();
     }
     
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void readV2(final BReader br) {
         super.readV2(br);
         this.b = br.readInt();
         this.a = br.readInt();
         this.c = (loon.live2d.param.ParamIOList)br.reader();
-        this.d = (TArray)br.reader();
+        this.list = (TArray)br.reader();
         super.a(br);
     }
     
@@ -72,7 +73,7 @@ public class BaseDataImpl extends IBaseData
         final int c = this.c();
         final boolean[] e = loon.live2d.base.BaseDataImpl.e;
         e[0] = false;
-        loon.live2d.util.ModelContextUtil.loadModel(modelContext, this.c, e, c, this.d, a.b, 0, 2);
+        loon.live2d.util.ModelContextUtil.loadModel(modelContext, this.c, e, c, this.list, a.b, 0, 2);
         baseContext.b(e[0]);
         this.a(modelContext, this.c, baseContext, e);
     }

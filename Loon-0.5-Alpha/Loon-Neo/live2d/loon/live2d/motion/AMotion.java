@@ -83,25 +83,25 @@ public abstract class AMotion
     }
     
     public void updateParam(final ALive2DModel model, final MotionQueueManager.MotionQueueEnt motionQueueEnt) {
-        if (!motionQueueEnt.b || motionQueueEnt.c) {
+        if (!motionQueueEnt.b || motionQueueEnt.finished) {
             return;
         }
         final long userTimeMSec = UtSystem.getUserTimeMSec();
-        if (motionQueueEnt.d < 0L) {
-            motionQueueEnt.d = userTimeMSec;
+        if (motionQueueEnt.timeMSecStart < 0L) {
+            motionQueueEnt.timeMSecStart = userTimeMSec;
             motionQueueEnt.e = userTimeMSec;
             final int durationMSec = this.getDurationMSec();
             if (motionQueueEnt.f < 0L) {
-                motionQueueEnt.f = ((durationMSec <= 0) ? -1L : (motionQueueEnt.d + durationMSec));
+                motionQueueEnt.f = ((durationMSec <= 0) ? -1L : (motionQueueEnt.timeMSecStart + durationMSec));
             }
         }
-        final float n = this.c * ((this.a == 0) ? 1.0f : UtMath.a((userTimeMSec - motionQueueEnt.e) / this.a)) * ((this.b == 0 || motionQueueEnt.f < 0L) ? 1.0f : UtMath.a((motionQueueEnt.f - userTimeMSec) / this.b));
+        final float n = this.c * ((this.a == 0) ? 1.0f : UtMath.fixed((userTimeMSec - motionQueueEnt.e) / this.a)) * ((this.b == 0 || motionQueueEnt.f < 0L) ? 1.0f : UtMath.fixed((motionQueueEnt.f - userTimeMSec) / this.b));
         if (!AMotion.d && (0.0f > n || n > 1.0f)) {
             throw new AssertionError();
         }
         this.updateParamExe(model, userTimeMSec, n, motionQueueEnt);
         if (motionQueueEnt.f > 0L && motionQueueEnt.f < userTimeMSec) {
-            motionQueueEnt.c = true;
+            motionQueueEnt.finished = true;
         }
     }
     

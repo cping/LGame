@@ -1,11 +1,12 @@
 package loon.live2d;
 
+import loon.live2d.base.IBaseData;
+import loon.live2d.draw.IDrawData;
 import loon.live2d.id.*;
 import loon.live2d.io.*;
 import loon.live2d.model.*;
 import loon.utils.TArray;
 
-@SuppressWarnings("rawtypes")
 public class Live2DObject implements IOBase
 {
     /**
@@ -15,8 +16,8 @@ public class Live2DObject implements IOBase
 
 	PartsDataID _partsDataID;
 
-	TArray _listBase;
-    TArray _listDraw;
+	TArray<IBaseData> _listBase;
+    TArray<IDrawData> _listDraw;
     static int index;
     
     static {
@@ -30,19 +31,20 @@ public class Live2DObject implements IOBase
         ++loon.live2d.Live2DObject.index;
     }
     
-    public TArray listBase() {
+    public TArray<IBaseData> listBase() {
         return this._listBase;
     }
     
-    public TArray listDraw() {
+    public TArray<IDrawData> listDraw() {
         return this._listDraw;
     }
     
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public void readV2(final BReader br) {
         this._partsDataID = (PartsDataID)br.reader();
         this._listDraw = (TArray)br.reader();
-        this._listBase = (TArray)br.reader();
+        this._listBase = ((TArray)br.reader());
     }
     
     public void update(final PartsData partsData) {

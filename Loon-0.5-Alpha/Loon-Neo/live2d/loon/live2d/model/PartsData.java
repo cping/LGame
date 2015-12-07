@@ -17,8 +17,8 @@ public class PartsData implements loon.live2d.io.IOBase
     boolean b;
     boolean c;
     PartsDataID d;
-    TArray e;
-    TArray f;
+    TArray<IBaseData> e;
+    TArray<IDrawData> f;
     
     static {
         PartsData.a = 0;
@@ -34,11 +34,12 @@ public class PartsData implements loon.live2d.io.IOBase
     }
     
     public void initDirect() {
-        this.e = new TArray();
-        this.f = new TArray();
+        this.e = new TArray<IBaseData>();
+        this.f = new TArray<IDrawData>();
     }
     
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public void readV2(final BReader br) {
         this.c = br.readBool();
         this.b = br.readBool();
@@ -67,12 +68,12 @@ public class PartsData implements loon.live2d.io.IOBase
         this.f.add(drawData);
     }
     
-    public void setBaseData(final TArray _baseDataList) {
-        this.e = _baseDataList;
+    public void setBaseData(final TArray<IBaseData> baseDataList) {
+        this.e = baseDataList;
     }
     
-    public void setDrawData(final TArray _drawDataList) {
-        this.f = _drawDataList;
+    public void setDrawData(final TArray<IDrawData> drawDataList) {
+        this.f = drawDataList;
     }
     
     public boolean isVisible() {
@@ -91,11 +92,11 @@ public class PartsData implements loon.live2d.io.IOBase
         this.c = v;
     }
     
-    public TArray getBaseData() {
+    public TArray<IBaseData> getBaseData() {
         return this.e;
     }
     
-    public TArray getDrawData() {
+    public TArray<IDrawData> getDrawData() {
         return this.f;
     }
     

@@ -22,6 +22,7 @@ package loon;
 
 import loon.LTexture.Format;
 import loon.canvas.Image;
+import loon.utils.ArrayByte;
 
 public abstract class BaseIO {
 
@@ -67,6 +68,14 @@ public abstract class BaseIO {
 			}
 		}
 		return null;
+	}
+
+	public static ArrayByte loadArrayByte(String path) {
+		final byte[] buffer = loadBytes(path);
+		if (buffer == null) {
+			return new ArrayByte(1);
+		}
+		return new ArrayByte(buffer);
 	}
 
 	public static byte[] loadBytes(String path) {

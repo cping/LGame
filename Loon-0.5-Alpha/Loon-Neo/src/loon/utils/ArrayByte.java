@@ -128,6 +128,11 @@ public class ArrayByte {
 		}
 	}
 
+	public int read() throws IndexOutOfBoundsException {
+		checkAvailable(1);
+		return data[position++];
+	}
+	
 	public byte readByte() throws IndexOutOfBoundsException {
 		checkAvailable(1);
 		return data[position++];

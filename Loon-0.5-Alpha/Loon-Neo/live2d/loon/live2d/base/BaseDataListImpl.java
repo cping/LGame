@@ -1,7 +1,5 @@
 package loon.live2d.base;
 
-import java.nio.ByteBuffer;
-
 import loon.live2d.*;
 import loon.live2d.context.*;
 import loon.live2d.id.*;
@@ -16,7 +14,7 @@ public class BaseDataListImpl extends IBaseData
 	 */
 	private static final long serialVersionUID = 1L;
 	loon.live2d.param.ParamIOList a;
-    TArray list;
+    TArray<Object> list;
     static float[] c;
     static float[] d;
     static float[] e;
@@ -44,7 +42,7 @@ public class BaseDataListImpl extends IBaseData
     
     public void init() {
         (this.a = new loon.live2d.param.ParamIOList()).init();
-        this.list = new TArray();
+        this.list = new TArray<Object>();
     }
     
     @Override
@@ -52,7 +50,8 @@ public class BaseDataListImpl extends IBaseData
         return 1;
     }
     
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public void readV2(final BReader br) {
         super.readV2(br);
         this.a = (loon.live2d.param.ParamIOList)br.reader();

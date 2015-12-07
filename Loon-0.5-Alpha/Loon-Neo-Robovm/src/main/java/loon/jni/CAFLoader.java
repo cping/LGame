@@ -136,7 +136,6 @@ public class CAFLoader {
 		} while (dataOffset == 0);
 		data.position(dataOffset);
 		data.limit(dataLength);
-		data.compact();
 		alBufferData(bufferId, desc.getALFormat(), data, dataLength,
 				(int) desc.sampleRate);
 		int error = alGetError();

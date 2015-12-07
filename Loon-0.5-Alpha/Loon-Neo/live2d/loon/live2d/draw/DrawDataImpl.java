@@ -241,7 +241,7 @@ public class DrawDataImpl extends IDrawData {
 		} catch (Live2DException ex) {
 			throw ex;
 		} catch (Exception e) {
-			throw new Live2DException(e, "DrawError" + this.i().toString()
+			throw new Live2DException(e, "DrawError" + this.getDrawDataID().toString()
 					+ " DDTexture/catch@setupTransform");
 		}
 	}

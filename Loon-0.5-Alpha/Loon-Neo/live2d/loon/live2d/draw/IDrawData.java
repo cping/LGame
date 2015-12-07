@@ -66,7 +66,7 @@ public abstract class IDrawData implements IOBase
     public void b(final ModelContext modelContext, final IDrawContext drawContext) {
     }
     
-    public DrawDataID i() {
+    public DrawDataID getDrawDataID() {
         return this.A;
     }
     

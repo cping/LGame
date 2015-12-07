@@ -10,7 +10,7 @@ public class Live2DMotion extends AMotion
 {
     static final String e = "VISIBLE:";
     static final String f = "LAYOUT:";
-    TArray list;
+    TArray<Motion> list;
     float h;
     int i;
     int j;
@@ -28,7 +28,7 @@ public class Live2DMotion extends AMotion
     }
     
     public Live2DMotion() {
-        this.list = new TArray();
+        this.list = new TArray<Motion>();
         this.m = Live2DMotion.o++;
         this.h = 30.0f;
         this.i = 0;
@@ -245,11 +245,11 @@ public class Live2DMotion extends AMotion
     
     @Override
     public void updateParamExe(final ALive2DModel model, final long timeMSec, final float _weight, final MotionQueueManager.MotionQueueEnt motionQueueEnt) {
-        final float n = (timeMSec - motionQueueEnt.d) * this.h / 1000.0f;
+        final float n = (timeMSec - motionQueueEnt.timeMSecStart) * this.h / 1000.0f;
         final int n2 = (int)n;
         final float n3 = n - n2;
-        final int n4 = (int)((this.a == 0) ? 1.0f : UtMath.a((timeMSec - motionQueueEnt.e) / this.a));
-        final int n5 = (int)((this.b == 0 || motionQueueEnt.f < 0L) ? 1.0f : UtMath.a((motionQueueEnt.f - timeMSec) / this.b));
+        final int n4 = (int)((this.a == 0) ? 1.0f : UtMath.fixed((timeMSec - motionQueueEnt.e) / this.a));
+        final int n5 = (int)((this.b == 0 || motionQueueEnt.f < 0L) ? 1.0f : UtMath.fixed((motionQueueEnt.f - timeMSec) / this.b));
         for (int i = 0; i < this.list.size; ++i) {
             final Motion motion = (Motion) this.list.get(i);
             final int length = motion.l.length;
@@ -281,14 +281,14 @@ public class Live2DMotion extends AMotion
                         n10 = n4;
                     }
                     else {
-                        n10 = ((motion.n == 0) ? 1.0f : UtMath.a((timeMSec - motionQueueEnt.e) / motion.n));
+                        n10 = ((motion.n == 0) ? 1.0f : UtMath.fixed((timeMSec - motionQueueEnt.e) / motion.n));
                     }
                     float n11;
                     if (motion.o < 0) {
                         n11 = n5;
                     }
                     else {
-                        n11 = ((motion.o == 0 || motionQueueEnt.f < 0L) ? 1.0f : UtMath.a((motionQueueEnt.f - timeMSec) / motion.o));
+                        n11 = ((motion.o == 0 || motionQueueEnt.f < 0L) ? 1.0f : UtMath.fixed((motionQueueEnt.f - timeMSec) / motion.o));
                     }
                     value = paramFloat + (n9 - paramFloat) * (this.c * n10 * n11);
                 }
@@ -297,11 +297,11 @@ public class Live2DMotion extends AMotion
         }
         if (n2 >= this.i) {
             if (this.l) {
-                motionQueueEnt.d = timeMSec;
+                motionQueueEnt.timeMSecStart = timeMSec;
                 motionQueueEnt.e = timeMSec;
             }
             else {
-                motionQueueEnt.c = true;
+                motionQueueEnt.finished = true;
             }
         }
         this.n = this.c;
