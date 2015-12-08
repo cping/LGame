@@ -110,7 +110,6 @@ public class ArrayByte {
 		if (position < 0 || position > data.length) {
 			throw new IndexOutOfBoundsException();
 		}
-
 		this.position = position;
 	}
 
