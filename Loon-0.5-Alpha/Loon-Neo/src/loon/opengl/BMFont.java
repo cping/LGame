@@ -94,6 +94,14 @@ public class BMFont implements LRelease {
 					tx + width, ty + height);
 		}
 
+		public void draw(GLEx g, float x, float y) {
+			if (isClose) {
+				return;
+			}
+			g.draw(displayList, x + xoffset, y + yoffset, width, height, tx,
+					ty, width, height);
+		}
+
 		public int getKerning(int point) {
 			if (kerning == null) {
 				return 0;
@@ -132,6 +140,7 @@ public class BMFont implements LRelease {
 		} else {
 			displays.clear();
 		}
+
 		StringTokenizer br = new StringTokenizer(text, LSystem.LS);
 		info = br.nextToken();
 		common = br.nextToken();
@@ -144,7 +153,7 @@ public class BMFont implements LRelease {
 		int maxChar = 0;
 		boolean done = false;
 		for (; !done;) {
-			String line = br.nextToken();
+			String line = br.hasMoreTokens() ? br.nextToken() : null;
 			if (line == null) {
 				done = true;
 			} else {
@@ -183,7 +192,8 @@ public class BMFont implements LRelease {
 			chars[def.id] = def;
 		}
 
-		for (Entries<Short, TArray<Short>> iter = kerning.entries(); iter.hasNext();) {
+		for (Entries<Short, TArray<Short>> iter = kerning.entries(); iter
+				.hasNext();) {
 			Entry<Short, TArray<Short>> entry = iter.next();
 			short first = entry.key;
 			TArray<Short> valueList = entry.value;
@@ -326,6 +336,48 @@ public class BMFont implements LRelease {
 			displayList.postCache(display.cache);
 		}
 
+	}
+
+	public void drawString(GLEx g, float x, float y, String text) {
+		drawString(g, x, y, text, null);
+	}
+
+	public void drawString(GLEx g, float x, float y, String text, LColor col) {
+		drawString(g, x, y, text, col, 0, text.length() - 1);
+	}
+
+	private void drawString(GLEx g, float tx, float ty, String text, LColor c,
+			int startIndex, int endIndex) {
+		if (isClose) {
+			return;
+		}
+		int x = 0, y = 0;
+		CharDef lastCharDef = null;
+		char[] data = text.toCharArray();
+		for (int i = 0; i < data.length; i++) {
+			int id = data[i];
+			if (id == '\n') {
+				x = 0;
+				y += getLineHeight();
+				continue;
+			}
+			if (id >= chars.length) {
+				continue;
+			}
+			CharDef charDef = chars[id];
+			if (charDef == null) {
+				continue;
+			}
+
+			if (lastCharDef != null) {
+				x += lastCharDef.getKerning(id);
+			}
+			lastCharDef = charDef;
+			if ((i >= startIndex) && (i <= endIndex)) {
+				charDef.draw(g, tx + x, ty + y);
+			}
+			x += charDef.advance;
+		}
 	}
 
 	public int getHeight(String text) {

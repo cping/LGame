@@ -42,6 +42,16 @@ public class LClickButton extends LComponent {
 
 	private String text = null;
 
+	public LClickButton make(String text, int width, int height) {
+		return new LClickButton(text, 0, 0, width, height);
+	}
+
+	public LClickButton make(String text, int width, int height, LTexture idle,
+			LTexture hover, LTexture clicked) {
+		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
+				0, width, height, idle, hover, clicked);
+	}
+
 	public LClickButton(String text, int x, int y, int width, int height) {
 		this(text, LFont.getDefaultFont(), LColor.white, x, y, width, height,
 				DefUI.getDefaultTextures(7), DefUI.getDefaultTextures(8), DefUI
@@ -87,15 +97,16 @@ public class LClickButton extends LComponent {
 		if (text != null) {
 			LFont old = g.getFont();
 			g.setFont(font);
-			g.drawString(text,
+			g.drawString(
+					text,
 					x + getOffsetLeft() + (getWidth() - font.stringWidth(text))
 							/ 2,
-					(y + getOffsetTop() + (getHeight() - font.getHeight())
-							/ 2) - 5, fontColor);
+					(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2) - 5,
+					fontColor);
 			g.setFont(old);
 		}
 	}
-	
+
 	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
@@ -114,30 +125,30 @@ public class LClickButton extends LComponent {
 	public boolean isTouchPressed() {
 		return this.pressed;
 	}
-	
+
 	@Override
 	protected void processTouchDragged() {
-			this.over = this.pressed = this.intersects(this.input.getTouchX(),
-					this.input.getTouchY());
+		this.over = this.pressed = this.intersects(this.input.getTouchX(),
+				this.input.getTouchY());
 	}
 
 	@Override
 	protected void processTouchClicked() {
-			this.doClick();
+		this.doClick();
 	}
 
 	@Override
 	protected void processTouchPressed() {
-			this.downClick();
-			this.pressed = true;
+		this.downClick();
+		this.pressed = true;
 	}
 
 	@Override
 	protected void processTouchReleased() {
-			this.upClick();
-			this.pressed = false;
+		this.upClick();
+		this.pressed = false;
 	}
-	
+
 	@Override
 	protected void processTouchEntered() {
 		this.over = true;
@@ -147,7 +158,7 @@ public class LClickButton extends LComponent {
 	protected void processTouchExited() {
 		this.over = this.pressed = false;
 	}
-	
+
 	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
