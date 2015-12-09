@@ -21,8 +21,10 @@ public class Live2dTest extends Screen {
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
-		setting.width = 640;
-		setting.height = 480;
+		setting.width = 480;
+		setting.height = 320;
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.fps = 60;
 		setting.fontName = "黑体";
 		setting.appName = "Live2dTest";
@@ -45,13 +47,15 @@ public class Live2dTest extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
-		if (model != null) {
-			if (timer.action(elapsedTime)) {
-				model.update();
+		if (isTransitionCompleted() && isOnLoadComplete()) {
+			if (model != null) {
+				if (timer.action(elapsedTime)) {
+					model.update();
+				}
+				// g.scale(0.5f, 0.5f);
+				model.draw(g);
 			}
-			model.draw(g);
 		}
-
 	}
 
 	LAppModel model;
@@ -67,7 +71,9 @@ public class Live2dTest extends Screen {
 		LAppLive2DManager manager = new LAppLive2DManager();
 
 		model = manager.loadModel(modelSettingPath);
+		// model.getLive2DModel().setScale(0.2f, 0.2f);
 		// model.draw();
+		add(MultiScreenTest.getBackButton(this));
 	}
 
 	@Override

@@ -20,8 +20,11 @@
  */
 package loon;
 
+import java.io.IOException;
+
 import loon.LTexture.Format;
 import loon.canvas.Image;
+import loon.canvas.TGA;
 import loon.utils.ArrayByte;
 
 public abstract class BaseIO {
@@ -61,6 +64,22 @@ public abstract class BaseIO {
 	public static Image loadImage(String path, boolean syn) {
 		final LGame base = LSystem._base;
 		if (base != null) {
+			String ext = LSystem.getExtension(path);
+			if ("tga".equalsIgnoreCase(ext)) {
+				Image tmp = null;
+				try {
+					TGA.State tga = TGA.load(path);
+					if (tga != null) {
+						tmp = Image.createImage(tga.width, tga.height);
+						tmp.setPixels(tga.pixels, tga.width, tga.height);
+						tga.close();
+						tga = null;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return tmp;
+			}
 			if (syn) {
 				return base.assets().getImageSync(path);
 			} else {

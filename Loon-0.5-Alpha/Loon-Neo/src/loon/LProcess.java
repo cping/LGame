@@ -35,6 +35,7 @@ import loon.stage.PlayerUtils;
 import loon.stage.RootPlayer;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
+import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -52,7 +53,9 @@ public class LProcess extends PlayerUtils {
 
 	private EmulatorButtons emulatorButtons;
 
-	private final TArray<Screen> screens;
+	private final ListMap<CharSequence, Screen> _screenMap;
+
+	private final TArray<Screen> _screens;
 
 	private boolean isInstance;
 
@@ -78,7 +81,8 @@ public class LProcess extends PlayerUtils {
 		super();
 		this.game = game;
 		this.currentInput = new SysInputFactory(this);
-		this.screens = new TArray<Screen>();
+		this._screens = new TArray<Screen>();
+		this._screenMap = new ListMap<CharSequence, Screen>();
 		this.clear();
 		InputMake input = game.input();
 		if (input != null) {
@@ -363,7 +367,7 @@ public class LProcess extends PlayerUtils {
 			RealtimeProcessManager.get().addProcess(process);
 
 			if (put) {
-				screens.add(screen);
+				_screens.add(screen);
 			}
 			loadingScreen = null;
 		}
@@ -429,6 +433,7 @@ public class LProcess extends PlayerUtils {
 		} else {
 			unloads.clear();
 		}
+		clearScreens();
 	}
 
 	public void calls() {
@@ -576,6 +581,14 @@ public class LProcess extends PlayerUtils {
 		this.transition = t;
 	}
 
+	public final boolean isTransitioning() {
+		return waitTransition;
+	}
+
+	public boolean isTransitionCompleted() {
+		return !waitTransition;
+	}
+
 	public final LTransition getTransition() {
 		return this.transition;
 	}
@@ -625,14 +638,43 @@ public class LProcess extends PlayerUtils {
 		return 0;
 	}
 
-	public synchronized Screen getScreen() {
+	public Screen getScreen() {
 		return currentScreen;
 	}
 
+	public void clearScreens() {
+		_screenMap.clear();
+		_screens.clear();
+	}
+
+	public void addScreen(CharSequence name, Screen screen) {
+		if (!_screenMap.containsKey(name)) {
+			_screenMap.put(name, screen);
+			addScreen(screen);
+		}
+	}
+
+	public Screen getScreen(CharSequence name) {
+		Screen screen = _screenMap.get(name);
+		if (screen != null) {
+			return screen;
+		}
+		return null;
+	}
+
+	public Screen runScreen(CharSequence name) {
+		Screen screen = getScreen(name);
+		if (screen != null) {
+			setScreen(screen);
+			return screen;
+		}
+		return null;
+	}
+
 	public void runFirstScreen() {
-		int size = screens.size;
+		int size = _screens.size;
 		if (size > 0) {
-			Object o = screens.first();
+			Screen o = _screens.first();
 			if (o != currentScreen) {
 				setScreen((Screen) o, false);
 			}
@@ -640,22 +682,22 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runLastScreen() {
-		int size = screens.size;
+		int size = _screens.size;
 		if (size > 0) {
-			Object o = screens.last();
+			Screen o = _screens.last();
 			if (o != currentScreen) {
-				setScreen((Screen) o, false);
+				setScreen(o, false);
 			}
 		}
 	}
 
 	public void runPreviousScreen() {
-		int size = screens.size;
+		int size = _screens.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-				if (currentScreen == screens.get(i)) {
+				if (currentScreen == _screens.get(i)) {
 					if (i - 1 > -1) {
-						setScreen(screens.get(i - 1), false);
+						setScreen(_screens.get(i - 1), false);
 						return;
 					}
 				}
@@ -664,12 +706,12 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runNextScreen() {
-		int size = screens.size;
+		int size = _screens.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-				if (currentScreen == screens.get(i)) {
+				if (currentScreen == _screens.get(i)) {
 					if (i + 1 < size) {
-						setScreen(screens.get(i + 1), false);
+						setScreen(_screens.get(i + 1), false);
 						return;
 					}
 				}
@@ -678,28 +720,37 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void runIndexScreen(int index) {
-		int size = screens.size;
+		int size = _screens.size;
 		if (size > 0 && index > -1 && index < size) {
-			Object o = screens.get(index);
+			Object o = _screens.get(index);
 			if (currentScreen != o) {
-				setScreen(screens.get(index), false);
+				setScreen(_screens.get(index), false);
 			}
 		}
+	}
+
+	public boolean containsScreen(final Screen screen) {
+		if (screen == null) {
+			throw new RuntimeException("Cannot create a [IScreen] instance !");
+		}
+		return _screens.contains(screen);
 	}
 
 	public void addScreen(final Screen screen) {
 		if (screen == null) {
 			throw new RuntimeException("Cannot create a [IScreen] instance !");
 		}
-		screens.add(screen);
+		if (!_screens.contains(screen)) {
+			_screens.add(screen);
+		}
 	}
 
 	public TArray<Screen> getScreens() {
-		return screens;
+		return _screens;
 	}
 
 	public int getScreenCount() {
-		return screens.size;
+		return _screens.size;
 	}
 
 	public void setScreen(final Screen screen) {
@@ -711,10 +762,6 @@ public class LProcess extends PlayerUtils {
 		} else {
 			setScreen(screen, true);
 		}
-	}
-
-	public boolean isScreenTransitionCompleted() {
-		return !waitTransition;
 	}
 
 	public int getHeight() {
@@ -745,7 +792,7 @@ public class LProcess extends PlayerUtils {
 			} else {
 				setEmulatorListener(null);
 			}
-			this.screens.add(screen);
+			this._screens.add(screen);
 		}
 	}
 

@@ -277,7 +277,7 @@ public class StageSystem extends PlayerUtils {
 
 		public void paint(LTimerContext clock) {
 			LProcess process = LSystem.getProcess();
-			if (process != null && process.isScreenTransitionCompleted()) {
+			if (process != null && process.isTransitionCompleted()) {
 				if (_skipFrames > 0) {
 					_skipFrames -= 1;
 				} else {

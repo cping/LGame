@@ -397,7 +397,7 @@ public class TArray<T> implements Iterable<T> {
 		size = newSize;
 	}
 
-	public Object last() {
+	public T last() {
 		return items[size < 1 ? 0 : size - 1];
 	}
 

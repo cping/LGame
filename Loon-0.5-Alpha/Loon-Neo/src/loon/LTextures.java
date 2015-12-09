@@ -15,14 +15,14 @@ public class LTextures {
 		if (LSystem._base == null) {
 			return null;
 		}
-		return LSystem._base.assets().getImageSync(path).texture();
+		return BaseIO.loadImage(path).texture();
 	}
 
 	public static LTexture newTexture(String path, Format config) {
 		if (LSystem._base == null) {
 			return null;
 		}
-		return LSystem._base.assets().getImageSync(path).createTexture(config);
+		return BaseIO.loadImage(path).createTexture(config);
 	}
 
 	public static int count() {
@@ -67,9 +67,7 @@ public class LTextures {
 				texture.refCount++;
 				return texture;
 			}
-			final LGame base = LSystem._base;
-			texture = base.assets().getImageSync(fileName)
-					.createTexture(config);
+			texture = BaseIO.loadImage(fileName).createTexture(config);
 			texture.tmpLazy = fileName;
 			lazyTextures.put(key, texture);
 			return texture;
@@ -87,8 +85,7 @@ public class LTextures {
 				texture.refCount++;
 				return texture;
 			}
-			final LGame base = LSystem._base;
-			texture = base.assets().getImageSync(fileName).texture();
+			texture = BaseIO.loadImage(fileName).texture();
 			texture.tmpLazy = fileName;
 			lazyTextures.put(key, texture);
 			return texture;

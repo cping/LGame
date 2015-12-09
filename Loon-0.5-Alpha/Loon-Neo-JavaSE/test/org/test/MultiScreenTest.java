@@ -1,42 +1,28 @@
 package org.test;
 
 import loon.LSetting;
-import loon.LTexture;
 import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
-import loon.component.DefUI;
+import loon.component.LClickButton;
 import loon.component.LComponent;
-import loon.component.LMessageBox;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class LMessageBoxTest extends Screen {
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class MultiScreenTest extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
 
 	}
 
-	@Override
-	public void onLoad() {
-
-		LTexture texture = DefUI.getGameWinFrame(200, 200);
-		LMessageBox box = new LMessageBox(new String[] {
-				"人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",
-				"明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" }, texture, 66, 66, 180,
-				180);
-		box.getMessageBox().setOffset(10, 10);
-		add(box);
-		centerOn(box);
-		box.SetClick(new ClickListener() {
+	public static LClickButton getBackButton(final Screen screen) {
+		LClickButton back = new LClickButton("Back", screen.getWidth() - 100,
+				screen.getHeight() - 70, 80, 50);
+		back.SetClick(new ClickListener() {
 
 			@Override
 			public void UpClick(LComponent comp, float x, float y) {
@@ -50,8 +36,7 @@ public class LMessageBoxTest extends Screen {
 
 			@Override
 			public void DownClick(LComponent comp, float x, float y) {
-				LMessageBox box = (LMessageBox) comp;
-				box.loop();
+				screen.runScreen("main");
 			}
 
 			@Override
@@ -59,9 +44,66 @@ public class LMessageBoxTest extends Screen {
 
 			}
 		});
-		add(MultiScreenTest.getBackButton(this));
-		
+		return back;
+	}
 
+	@Override
+	public void onLoad() {
+		// 预先设定多个Screen，并赋予名称
+		addScreen("main", this);
+		addScreen("messagebox", new LMessageBoxTest());
+		addScreen("live2d", new Live2dTest());
+
+		// 增加按钮与监听
+		LClickButton click = new LClickButton("MessageBox", 100, 50, 150, 50);
+		click.SetClick(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+				runScreen("messagebox");
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		});
+		add(click);
+
+		click = new LClickButton("live2d", 100, 120, 150, 50);
+		click.SetClick(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+				runScreen("live2d");
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		});
+		add(click);
 	}
 
 	@Override
@@ -109,6 +151,10 @@ public class LMessageBoxTest extends Screen {
 
 	}
 
+	public LTransition onTransition() {
+		return LTransition.newEmpty();
+	}
+
 	public static void main(String[] args) {
 		LSetting setting = new LSetting();
 		setting.isFPS = true;
@@ -124,7 +170,7 @@ public class LMessageBoxTest extends Screen {
 
 			@Override
 			public Screen onScreen() {
-				return new LMessageBoxTest();
+				return new MultiScreenTest();
 			}
 		});
 	}

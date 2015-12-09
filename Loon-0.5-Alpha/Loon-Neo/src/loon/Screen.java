@@ -668,7 +668,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @param g
 	 * @return
 	 */
-	public synchronized GravityHandler setGravity(boolean g) {
+	public GravityHandler setGravity(boolean g) {
 		if (g && gravityHandler == null) {
 			gravityHandler = new GravityHandler();
 		}
@@ -681,7 +681,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 
 	 * @return
 	 */
-	public synchronized boolean isGravity() {
+	public boolean isGravity() {
 		return this.isGravity;
 	}
 
@@ -783,6 +783,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	/**
+	 * 是否处于过渡中
+	 * 
+	 * @return
+	 */
+	public boolean isTransitioning() {
+		if (handler != null) {
+			return handler.isTransitioning();
+		}
+		// 如果过渡效果不存在，则返回是否加载完毕
+		return isLoad;
+	}
+
+	/**
+	 * 过度是否完成
+	 */
+	public boolean isTransitionCompleted() {
+		if (handler != null) {
+			return handler.isTransitionCompleted();
+		}
+		// 如果过渡效果不存在，则返回是否加载完毕
+		return isLoad;
+	}
+
+	/**
 	 * 获得当前资源加载是否完成
 	 */
 	public boolean isOnLoadComplete() {
@@ -838,6 +862,53 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen runNextScreen() {
 		if (handler != null) {
 			handler.runNextScreen();
+		}
+		return this;
+	}
+
+	/**
+	 * 添加指定名称的Screen到当前Screen，但不立刻执行
+	 * 
+	 * @param name
+	 * @param screen
+	 * @return
+	 */
+	public Screen addScreen(CharSequence name, Screen screen) {
+		if (handler != null) {
+			handler.addScreen(name, screen);
+		}
+		return this;
+	}
+
+	/**
+	 * 获得指定名称的Screen
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Screen getScreen(CharSequence name) {
+		if (handler != null) {
+			return handler.getScreen(name);
+		}
+		return this;
+	}
+
+	/**
+	 * 执行指定名称的Screen
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Screen runScreen(CharSequence name) {
+		if (handler != null) {
+			return handler.runScreen(name);
+		}
+		return this;
+	}
+
+	public Screen clearScreen() {
+		if (handler != null) {
+			handler.clearScreens();
 		}
 		return this;
 	}
