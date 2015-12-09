@@ -77,7 +77,7 @@ public class Curve extends Shape {
 		}
 	}
 
-	public Shape transform(Matrix transform) {
+	public Shape transform(Matrix3 transform) {
 		float[] pts = new float[8];
 		float[] dest = new float[8];
 		pts[0] = p1.x;

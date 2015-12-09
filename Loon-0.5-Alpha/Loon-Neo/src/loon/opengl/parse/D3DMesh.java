@@ -25,7 +25,7 @@ import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
 
 import loon.BaseIO;
-import loon.geom.Matrix;
+import loon.geom.Matrix3;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
@@ -592,7 +592,7 @@ public class D3DMesh {
 			return -sind[-((int) a) % 360];
 	}
 
-	public static Matrix getRotationMatrix(float ax, float ay, float az) {
+	public static Matrix3 getRotationMatrix(float ax, float ay, float az) {
 		float cosax = getCos(ax);
 		float sinax = getSin(ax);
 		float cosay = getCos(ay);
@@ -602,13 +602,13 @@ public class D3DMesh {
 		float tx[] = { 1, 0, 0, 0, cosax, -sinax, 0, sinax, cosax };
 		float ty[] = { cosay, 0, sinay, 0, 1.f, 0.f, -sinay, 0, cosay };
 		float tz[] = { cosaz, -sinaz, 0, sinaz, cosaz, 0, 0, 0, 1 };
-		Matrix Rx = new Matrix(tx);
-		Matrix Ry = new Matrix(ty);
-		Matrix Rz = new Matrix(tz);
-		Matrix result = new Matrix();
-		Matrix tmpresult = new Matrix();
-		Matrix.mul(tmpresult, Rx, Ry);
-		Matrix.mul(result, tmpresult, Rz);
+		Matrix3 Rx = new Matrix3(tx);
+		Matrix3 Ry = new Matrix3(ty);
+		Matrix3 Rz = new Matrix3(tz);
+		Matrix3 result = new Matrix3();
+		Matrix3 tmpresult = new Matrix3();
+		Matrix3.mul(tmpresult, Rx, Ry);
+		Matrix3.mul(result, tmpresult, Rz);
 		return result;
 	}
 
@@ -628,7 +628,7 @@ public class D3DMesh {
 		float tmpV[] = new float[3];
 		float tmpRes[] = new float[3];
 
-		Matrix m = getRotationMatrix(-90, angle_y, 0);
+		Matrix3 m = getRotationMatrix(-90, angle_y, 0);
 
 		float v1[] = new float[4];
 
@@ -669,7 +669,7 @@ public class D3DMesh {
 					tmpV[1] = v1[1];
 					tmpV[2] = v1[2];
 
-					Matrix.mul(tmpRes, m, tmpV);
+					Matrix3.mul(tmpRes, m, tmpV);
 
 					buffVerts[j * 3] = tmpRes[0] * scale;
 					buffVerts[j * 3 + 1] = tmpRes[1] * scale;
@@ -1291,7 +1291,7 @@ public class D3DMesh {
 		this.mTangentsBinormals.position(0);
 	}
 
-	public void applyMatrix(Matrix matrix) {
+	public void applyMatrix(Matrix3 matrix) {
 		float position[] = new float[3];
 		float normal[] = new float[3];
 		float result[] = new float[3];
@@ -1306,13 +1306,13 @@ public class D3DMesh {
 			normal[1] = this.mVertices.get(i * D3DMesh.nbFloatPerVertex + 4);
 			normal[2] = this.mVertices.get(i * D3DMesh.nbFloatPerVertex + 5);
 
-			Matrix.mul(result, matrix, position);
+			Matrix3.mul(result, matrix, position);
 
 			this.mVertices.put(i * D3DMesh.nbFloatPerVertex + 0, result[0]);
 			this.mVertices.put(i * D3DMesh.nbFloatPerVertex + 1, result[1]);
 			this.mVertices.put(i * D3DMesh.nbFloatPerVertex + 2, result[2]);
 
-			Matrix.mul(result, matrix, normal);
+			Matrix3.mul(result, matrix, normal);
 
 			this.mVertices.put(i * D3DMesh.nbFloatPerVertex + 3, result[0]);
 			this.mVertices.put(i * D3DMesh.nbFloatPerVertex + 4, result[1]);

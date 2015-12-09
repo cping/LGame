@@ -175,7 +175,7 @@ public class Polygon extends Shape {
 		pointsDirty = true;
 	}
 
-	public Shape transform(Matrix transform) {
+	public Shape transform(Matrix3 transform) {
 		checkPoints();
 
 		Polygon resultPolygon = new Polygon();

@@ -315,7 +315,7 @@ public class Line extends Shape {
 		return lenSq;
 	}
 
-	public Shape transform(Matrix transform) {
+	public Shape transform(Matrix3 transform) {
 		float[] temp = new float[4];
 		createPoints();
 		transform.transform(points, 0, temp, 0, 2);

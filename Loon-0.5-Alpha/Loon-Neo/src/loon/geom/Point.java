@@ -45,7 +45,7 @@ public class Point extends Shape {
 		this.setLocation(p);
 	}
 
-	public Shape transform(Matrix transform) {
+	public Shape transform(Matrix3 transform) {
 		float result[] = new float[points.length];
 		transform.transform(points, 0, result, 0, points.length / 2);
 		return new Point(points[0], points[1]);

@@ -26,6 +26,7 @@ import java.nio.FloatBuffer;
 import loon.LSystem;
 import loon.Support;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 
 public class Matrix4 implements Serializable {
 
@@ -1247,5 +1248,32 @@ public class Matrix4 implements Serializable {
 
 	public FloatBuffer getAsFloatBuffer() {
 		return LSystem.base().support().newFloatBuffer(val, 0, val.length);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Matrix3) || o == null) {
+			return false;
+		}
+		if (this == o) {
+			return true;
+		}
+		Matrix3 comp = (Matrix3) o;
+		for (int i = 0; i < 16; i++) {
+			if (NumberUtils.compare(this.val[i], comp.val[i]) != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		for (int j = 0; j < 16; j++) {
+			final long val = NumberUtils.floatToIntBits(this.val[j]);
+			result += 31 * result + (int) (val ^ (val >>> 32));
+		}
+		return result;
 	}
 }

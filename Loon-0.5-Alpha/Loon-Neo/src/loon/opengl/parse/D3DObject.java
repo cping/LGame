@@ -21,7 +21,7 @@
  */
 package loon.opengl.parse;
 
-import loon.geom.Matrix;
+import loon.geom.Matrix3;
 
 public class D3DObject {
 	public D3DIRendererElement[] mRenderElement;
@@ -97,21 +97,21 @@ public class D3DObject {
 					tmpy = mesh.mVertices.get(a * 3 + 2);
 
 					isOnTrack = isOnTrack
-							| Matrix.isOnTriange(x1, y1, x2, y2, x3, y3,
+							| Matrix3.isOnTriange(x1, y1, x2, y2, x3, y3,
 									tmpx, tmpy);
 
 					tmpx = mesh.mVertices.get(b * 3);
 					tmpy = mesh.mVertices.get(b * 3 + 2);
 
 					isOnTrack = isOnTrack
-							| Matrix.isOnTriange(x1, y1, x2, y2, x3, y3,
+							| Matrix3.isOnTriange(x1, y1, x2, y2, x3, y3,
 									tmpx, tmpy);
 
 					tmpx = mesh.mVertices.get(c * 3);
 					tmpy = mesh.mVertices.get(c * 3 + 2);
 
 					isOnTrack = isOnTrack
-							| Matrix.isOnTriange(x1, y1, x2, y2, x3, y3,
+							| Matrix3.isOnTriange(x1, y1, x2, y2, x3, y3,
 									tmpx, tmpy);
 
 					if (isOnTrack) {

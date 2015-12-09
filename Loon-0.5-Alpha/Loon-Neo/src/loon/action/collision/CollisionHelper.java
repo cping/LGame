@@ -8,11 +8,12 @@ import loon.geom.Line;
 import loon.geom.Point;
 import loon.geom.RectBox;
 import loon.geom.Shape;
+import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.utils.MathUtils;
 
-public final class CollisionHelper {
+public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 检查两个坐标值是否在指定的碰撞半径内

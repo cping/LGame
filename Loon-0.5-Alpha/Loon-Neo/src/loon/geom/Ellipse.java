@@ -162,7 +162,7 @@ public class Ellipse extends Shape {
 		return bits ^ ((bits >> 32));
 	}
 
-	public Shape transform(Matrix transform) {
+	public Shape transform(Matrix3 transform) {
 		checkPoints();
 
 		Polygon resultPolygon = new Polygon();

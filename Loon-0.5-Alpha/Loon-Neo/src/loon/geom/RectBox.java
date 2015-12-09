@@ -531,7 +531,7 @@ public class RectBox extends Shape {
 
 	}
 
-	public Shape transform(Matrix transform) {
+	public Shape transform(Matrix3 transform) {
 		checkPoints();
 		Polygon resultPolygon = new Polygon();
 		float result[] = new float[points.length];

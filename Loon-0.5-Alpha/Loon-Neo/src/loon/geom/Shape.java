@@ -70,7 +70,7 @@ public abstract class Shape implements Serializable, XY {
 		setY(y);
 	}
 
-	public abstract Shape transform(Matrix transform);
+	public abstract Shape transform(Matrix3 transform);
 
 	protected abstract void createPoints();
 
@@ -455,7 +455,7 @@ public abstract class Shape implements Serializable, XY {
 		trianglesDirty = false;
 	}
 
-	private void callTransform(Matrix m) {
+	private void callTransform(Matrix3 m) {
 		if (points != null) {
 			float[] result = new float[points.length];
 			m.transform(points, 0, result, 0, points.length / 2);
@@ -470,7 +470,7 @@ public abstract class Shape implements Serializable, XY {
 
 	public void setScale(float sx, float sy) {
 		if (scaleX != sx || scaleY != sy) {
-			Matrix m = new Matrix();
+			Matrix3 m = new Matrix3();
 			m.scale(scaleX = sx, scaleY = sy);
 			this.callTransform(m);
 		}
@@ -486,7 +486,7 @@ public abstract class Shape implements Serializable, XY {
 
 	public void setRotation(float r) {
 		if (rotation != r) {
-			this.callTransform(Matrix.createRotateTransform(
+			this.callTransform(Matrix3.createRotateTransform(
 					rotation = (r / 180f * MathUtils.PI), this.center[0],
 					this.center[1]));
 		}
@@ -494,7 +494,7 @@ public abstract class Shape implements Serializable, XY {
 
 	public void setRotation(float r, float x, float y) {
 		if (rotation != r) {
-			this.callTransform(Matrix.createRotateTransform(
+			this.callTransform(Matrix3.createRotateTransform(
 					rotation = (r / 180f * MathUtils.PI), x, y));
 		}
 	}

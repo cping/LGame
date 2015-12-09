@@ -28,7 +28,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import loon.canvas.Image;
-import loon.geom.Matrix;
+import loon.geom.Matrix3;
 
 
 public class D3DMaterial {
@@ -93,7 +93,7 @@ public class D3DMaterial {
 		float centerY = width / 2.f;
 		for (int i = 0; i < width; i++)
 			for (int j = 0; j < width; j++) {
-				if (Matrix.distance2d(i, j, centerX, centerY) < radius) {
+				if (Matrix3.distance2d(i, j, centerX, centerY) < radius) {
 					mTextureData.put(r);
 					mTextureData.put(g);
 					mTextureData.put(b);

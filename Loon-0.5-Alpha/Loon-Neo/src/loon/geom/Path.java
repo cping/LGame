@@ -157,7 +157,7 @@ public class Path extends Shape {
 		}
 	}
 
-	public Shape transform(Matrix transform) {
+	public Shape transform(Matrix3 transform) {
 		Path p = new Path(cx, cy);
 		p.localPoints = transform(localPoints, transform);
 		for (int i = 0; i < holes.size; i++) {
@@ -167,7 +167,7 @@ public class Path extends Shape {
 		return p;
 	}
 
-	private TArray<float[]> transform(TArray<float[]> pts, Matrix t) {
+	private TArray<float[]> transform(TArray<float[]> pts, Matrix3 t) {
 		float[] in = new float[pts.size * 2];
 		float[] out = new float[pts.size * 2];
 
