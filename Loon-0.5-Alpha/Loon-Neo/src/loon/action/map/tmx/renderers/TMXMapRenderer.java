@@ -142,12 +142,12 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 	}
 
 	@Override
-	public int getWidth() {
+	public float getWidth() {
 		return map.getWidth() * map.getTileWidth();
 	}
 
 	@Override
-	public int getHeight() {
+	public float getHeight() {
 		return map.getHeight() * map.getTileHeight();
 	}
 

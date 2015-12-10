@@ -120,12 +120,12 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 	}
 
 	@Override
-	public int getWidth() {
+	public float getWidth() {
 		return getContainerWidth();
 	}
 
 	@Override
-	public int getHeight() {
+	public float getHeight() {
 		return getContainerHeight();
 	}
 

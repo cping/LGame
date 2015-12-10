@@ -36,7 +36,7 @@ public abstract class LContainer extends LComponent {
 	private int childCount = 0;
 
 	private LComponent latestInserted = null;
-
+	
 	public LContainer(int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.setFocusable(false);

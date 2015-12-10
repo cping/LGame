@@ -388,11 +388,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public boolean setClip(int x, int y, int width, int height) {
+	public boolean setClip(float x, float y, float width, float height) {
 		return startClipped(x, y, width, height);
 	}
 
-	public boolean startClipped(int x1, int y1, int w1, int h1) {
+	public boolean startClipped(float x1, float y1, float w1, float h1) {
 		if (isClosed) {
 			return false;
 		}

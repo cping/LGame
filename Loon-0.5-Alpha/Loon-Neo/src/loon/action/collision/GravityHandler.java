@@ -83,8 +83,8 @@ public class GravityHandler implements LRelease {
 				final float accelerationY = g.accelerationY;
 				final float angularVelocity = g.angularVelocity;
 
-				bindWidth = g.bind.getWidth();
-				bindHeight = g.bind.getHeight();
+				bindWidth = (int) g.bind.getWidth();
+				bindHeight = (int) g.bind.getHeight();
 				bindX = g.bind.getX();
 				bindY = g.bind.getY();
 

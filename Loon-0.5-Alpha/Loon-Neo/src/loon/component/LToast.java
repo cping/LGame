@@ -70,11 +70,11 @@ public class LToast extends LComponent {
 				return (LToast) owner;
 			} else if (owner instanceof LContainer) {
 				toast = new LToast(font, text, duration, owner.x(), owner.y(),
-						owner.getWidth(), owner.getHeight());
+						(int) owner.getWidth(), (int) owner.getHeight());
 				((LContainer) owner).add(toast);
 			} else {
 				toast = new LToast(font, text, duration, owner.x(), owner.y(),
-						owner.getWidth(), owner.getHeight());
+						(int) owner.getWidth(), (int) owner.getHeight());
 			}
 		} else {
 			toast = new LToast(font, text, duration, 0, 0,
@@ -154,8 +154,8 @@ public class LToast extends LComponent {
 		if (!isVisible()) {
 			return;
 		}
-		int w = this.getWidth();
-		int h = this.getHeight();
+		int w = (int) this.getWidth();
+		int h = (int) this.getHeight();
 		int oc = g.color();
 		float oa = g.alpha();
 		LFont f = g.getFont();

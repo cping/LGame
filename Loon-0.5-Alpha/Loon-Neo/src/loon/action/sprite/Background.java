@@ -24,11 +24,11 @@ public abstract class Background extends LObject implements ISprite {
 		this._visible = true;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return _screen.getWidth();
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return _screen.getHeight();
 	}
 

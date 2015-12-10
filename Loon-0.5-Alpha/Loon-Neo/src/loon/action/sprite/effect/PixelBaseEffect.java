@@ -162,13 +162,13 @@ public abstract class PixelBaseEffect extends LObject implements BaseEffect, ISp
 	}
 
 	@Override
-	public int getWidth() {
-		return (int) width;
+	public float getWidth() {
+		return width;
 	}
 
 	@Override
-	public int getHeight() {
-		return (int) height;
+	public float getHeight() {
+		return height;
 	}
 
 	public int getLimit() {

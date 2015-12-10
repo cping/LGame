@@ -37,12 +37,12 @@ public abstract class ClippedPlayer extends Player {
 	}
 
 	@Override
-	public float width() {
+	public float getWidth() {
 		return this.width;
 	}
 
 	@Override
-	public float height() {
+	public float getHeight() {
 		return this.height;
 	}
 
@@ -53,16 +53,14 @@ public abstract class ClippedPlayer extends Player {
 		return this;
 	}
 
-	public ClippedPlayer setWidth(float width) {
+	public void setWidth(float width) {
 		this.width = width;
 		checkOrigin();
-		return this;
 	}
 
-	public ClippedPlayer setHeight(float height) {
+	public void setHeight(float height) {
 		this.height = height;
 		checkOrigin();
-		return this;
 	}
 
 	protected boolean disableClip() {

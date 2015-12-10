@@ -79,12 +79,12 @@ public class CrossEffect extends LObject implements BaseEffect, ISprite {
 	}
 
 	@Override
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
 	@Override
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 

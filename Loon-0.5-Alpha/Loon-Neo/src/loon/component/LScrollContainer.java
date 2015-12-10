@@ -124,16 +124,16 @@ public class LScrollContainer extends LContainer {
 	}
 
 	@Override
-	public void setWidth(int width) {
-		int scrollBarWidth = verticalScrollbar == null ? 0 : verticalScrollbar
+	public void setWidth(float width) {
+		float scrollBarWidth = verticalScrollbar == null ? 0 : verticalScrollbar
 				.getWidth();
 		super.setWidth(width - scrollBarWidth);
 		fitScrollBarSize();
 	}
 
 	@Override
-	public void setHeight(int height) {
-		int scrollbarHeight = horizontalScrollbar == null ? 0
+	public void setHeight(float height) {
+		float scrollbarHeight = horizontalScrollbar == null ? 0
 				: horizontalScrollbar.getHeight();
 		super.setHeight(height - scrollbarHeight);
 		fitScrollBarSize();

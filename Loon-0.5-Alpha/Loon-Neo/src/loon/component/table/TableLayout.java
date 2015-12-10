@@ -42,6 +42,7 @@ public class TableLayout extends LContainer {
 		prepareTable(cols, rows);
 	}
 
+	@Override
 	protected void renderComponents(GLEx g) {
 		for (int i = 0; i < getComponentCount(); i++) {
 			getComponents()[i].createUI(g);
@@ -65,10 +66,10 @@ public class TableLayout extends LContainer {
 	private void prepareTable(int cols, int rows) {
 		tableRows = new TableLayoutRow[rows];
 		if (rows > 0 && cols > 0) {
-			int rowHeight = getHeight() / rows;
+			int rowHeight = (int)(getHeight() / rows);
 			for (int i = 0; i < rows; i++) {
 				tableRows[i] = new TableLayoutRow(x(), y() + (i * rowHeight),
-						getWidth(), rowHeight, cols);
+						(int)getWidth(), rowHeight, cols);
 			}
 		}
 	}
@@ -86,21 +87,21 @@ public class TableLayout extends LContainer {
 
 	public void addRow(int column, int position) {
 		TArray<TableLayoutRow> newRows = new TArray<TableLayoutRow>();
-		int newRowHeight = getHeight() / (tableRows.length + 1);
+		int newRowHeight = (int) (getHeight() / (tableRows.length + 1));
 		if (canAddRow(newRowHeight)) {
 			if (position == 0) {
-				newRows.add(new TableLayoutRow(x(), y(), getWidth(),
+				newRows.add(new TableLayoutRow(x(), y(), (int)getWidth(),
 						newRowHeight, column));
 			}
 			for (int i = 0; i < tableRows.length; i++) {
 				if (i == position && position != 0) {
-					newRows.add(new TableLayoutRow(x(), y(), getWidth(),
+					newRows.add(new TableLayoutRow(x(), y(), (int)getWidth(),
 							newRowHeight, column));
 				}
 				newRows.add(tableRows[i]);
 			}
 			if (position == tableRows.length && position != 0) {
-				newRows.add(new TableLayoutRow(x(), y(), getWidth(),
+				newRows.add(new TableLayoutRow(x(), y(), (int)getWidth(),
 						newRowHeight, column));
 			}
 			for (int i = 0; i < newRows.size; i++) {
@@ -157,10 +158,10 @@ public class TableLayout extends LContainer {
 	}
 
 	@Override
-	public void setWidth(int width) {
+	public void setWidth(float width) {
 		boolean couldShrink = true;
 		for (int i = 0; i < tableRows.length; i++) {
-			if (!tableRows[i].setWidth(width)) {
+			if (!tableRows[i].setWidth((int)width)) {
 				couldShrink = false;
 			}
 		}
@@ -170,10 +171,10 @@ public class TableLayout extends LContainer {
 	}
 
 	@Override
-	public void setHeight(int height) {
+	public void setHeight(float height) {
 		super.setHeight(height);
 		for (int i = 0; i < tableRows.length; i++) {
-			tableRows[i].setHeight(height);
+			tableRows[i].setHeight((int)height);
 		}
 	}
 

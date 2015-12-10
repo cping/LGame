@@ -241,12 +241,12 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 		return false;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return (int) ((dstWidth > 1 ? (int) dstWidth : animation
 				.getSpriteImage().width()) * scaleX);
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return (int) ((dstHeight > 1 ? (int) dstHeight : animation
 				.getSpriteImage().height()) * scaleY);
 	}

@@ -82,11 +82,11 @@ public class OutEffect extends LObject implements ISprite {
 		return completed;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return width;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return height;
 	}
 

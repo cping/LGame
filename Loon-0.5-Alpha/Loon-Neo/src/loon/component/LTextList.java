@@ -335,7 +335,7 @@ public class LTextList extends LComponent {
 				g.draw(bgTexture, x, y, getWidth(), getHeight());
 			}
 
-			this.drawNum = ((getHeight() - 10) / fontSize);
+			this.drawNum = (int) ((getHeight() - 10) / fontSize);
 			this.loop = 0;
 			this.selectList = -1;
 
@@ -396,9 +396,9 @@ public class LTextList extends LComponent {
 				this.loop += 1;
 			}
 
-			this.scrollBarX = (x + getWidth() + 1);
+			this.scrollBarX = (int) (x + getWidth() + 1);
 
-			this.scrollBarHeight_max = (getHeight() - this.scrollButtonHeight * 2);
+			this.scrollBarHeight_max = (int) (getHeight() - this.scrollButtonHeight * 2);
 
 			if ((this.drawNum < this.num) && (this.drawNum > 0)) {
 				this.scrollBarHeight = (this.scrollBarHeight_max / this.num / this.drawNum);
@@ -458,7 +458,7 @@ public class LTextList extends LComponent {
 
 			}
 
-			this.scrollButtonX = (x + getWidth());
+			this.scrollButtonX = (int) (x + getWidth());
 			this.scrollButtonY = y;
 
 			if (scrollFlagATexture == null) {
@@ -494,8 +494,8 @@ public class LTextList extends LComponent {
 				}
 				this.scrollUpButtonON = true;
 			}
-			this.scrollButtonX = (x + getWidth());
-			this.scrollButtonY = (y + getHeight() - this.scrollButtonHeight);
+			this.scrollButtonX = (int)(x + getWidth());
+			this.scrollButtonY = (int)(y + getHeight() - this.scrollButtonHeight);
 			this.scrollDownButtonON = false;
 			if ((!this.scrollBarDrag) && isFocusable()
 					&& (mouseX > this.scrollButtonX)

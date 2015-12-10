@@ -1,15 +1,27 @@
 package loon.component.layout;
 
+import loon.Screen;
+import loon.component.LComponent;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
-public interface LayoutManager {
+public abstract class LayoutManager {
 
-	void layoutElements(LayoutPort root, TArray<LayoutPort> children);
+	public final void layoutElements(final Screen root,
+			final LComponent... children) {
+		int size = children.length;
+		LayoutPort[] ports = new LayoutPort[size];
+		for (int i = 0; i < size; i++) {
+			ports[i] = children[i].getLayoutPort();
+		}
+		layoutElements(root.getLayoutPort(), ports);
+	}
 
-	SizeValue calculateConstraintWidth(LayoutPort root,
+	abstract void layoutElements(LayoutPort root, LayoutPort... children);
+
+	abstract SizeValue calculateConstraintWidth(LayoutPort root,
 			TArray<LayoutPort> children);
 
-	SizeValue calculateConstraintHeight(LayoutPort root,
+	abstract SizeValue calculateConstraintHeight(LayoutPort root,
 			TArray<LayoutPort> children);
 }

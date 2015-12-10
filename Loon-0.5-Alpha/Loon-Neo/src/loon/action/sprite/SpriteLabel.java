@@ -71,26 +71,32 @@ public class SpriteLabel extends LObject implements ISprite {
 		}
 	}
 
-	public int getWidth() {
+	@Override
+	public float getWidth() {
 		return width;
 	}
 
-	public int getHeight() {
+	@Override
+	public float getHeight() {
 		return height;
 	}
 
+	@Override
 	public void update(long timer) {
 
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}

@@ -32,11 +32,11 @@ public class EmptyObject extends LObject implements ActionBind {
 
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return 0;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return 0;
 	}
 

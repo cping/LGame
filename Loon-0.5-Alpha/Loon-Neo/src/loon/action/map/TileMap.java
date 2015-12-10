@@ -555,11 +555,11 @@ public class TileMap extends LObject implements ISprite, LRelease {
 		return field.getTileHeight();
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return field.getHeight() * field.getTileWidth();
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return field.getWidth() * field.getTileHeight();
 	}
 

@@ -714,11 +714,11 @@ public class Cycle extends LObject implements ISprite {
 		this.height = h;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return (int) height;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return (int) width;
 	}
 

@@ -20,9 +20,10 @@
  */
 package loon.geom;
 
+import loon.component.layout.BoxSize;
 import loon.utils.MathUtils;
 
-public class RectBox extends Shape {
+public class RectBox extends Shape implements BoxSize{
 
 	/**
 	 * 
@@ -40,7 +41,7 @@ public class RectBox extends Shape {
 	public boolean isEmpty() {
 		return getWidth() <= 0 || height() <= 0;
 	}
-	
+
 	public int width;
 
 	public int height;
@@ -319,10 +320,12 @@ public class RectBox extends Shape {
 		return new float[] { x, y, width, height };
 	}
 
+	@Override
 	public RectBox getRect() {
 		return this;
 	}
 
+	@Override
 	public float getHeight() {
 		return height;
 	}
@@ -331,6 +334,7 @@ public class RectBox extends Shape {
 		this.height = (int) height;
 	}
 
+	@Override
 	public float getWidth() {
 		return width;
 	}
@@ -339,10 +343,12 @@ public class RectBox extends Shape {
 		this.width = (int) width;
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RectBox) {
 			RectBox rect = (RectBox) obj;
@@ -367,6 +373,7 @@ public class RectBox extends Shape {
 	 * @param y
 	 * @return
 	 */
+	@Override
 	public boolean contains(float x, float y) {
 		return contains(x, y, 0, 0);
 	}
@@ -450,7 +457,8 @@ public class RectBox extends Shape {
 		int y1 = (int) MathUtils.max(this.y, y);
 		int x2 = (int) MathUtils.min(this.x + this.width - 1, x + width - 1);
 		int y2 = (int) MathUtils.min(this.y + this.height - 1, y + height - 1);
-		setBounds(x1, y1, MathUtils.max(0, x2 - x1 + 1), MathUtils.max(0, y2 - y1 + 1));
+		setBounds(x1, y1, MathUtils.max(0, x2 - x1 + 1),
+				MathUtils.max(0, y2 - y1 + 1));
 	}
 
 	/**

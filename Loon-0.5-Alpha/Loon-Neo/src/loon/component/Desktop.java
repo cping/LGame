@@ -450,11 +450,11 @@ public class Desktop implements LRelease {
 		return null;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return this.contentPane.getWidth();
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return this.contentPane.getHeight();
 	}
 
@@ -467,7 +467,7 @@ public class Desktop implements LRelease {
 	}
 
 	public void setContentPane(LContainer pane) {
-		pane.setBounds(0, 0, this.getWidth(), this.getHeight());
+		pane.setBounds(0, 0, (int)this.getWidth(), (int)this.getHeight());
 		this.contentPane = pane;
 		this.setDesktop(this.contentPane);
 	}

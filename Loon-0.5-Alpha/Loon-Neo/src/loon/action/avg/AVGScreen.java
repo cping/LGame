@@ -179,7 +179,7 @@ public abstract class AVGScreen extends Screen {
 		}
 		this.message = new LMessage(dialog, 0, 0);
 		this.message.setFontColor(LColor.white);
-		int size = message.getWidth() / (message.getMessageFont().getSize());
+		int size = (int) (message.getWidth() / (message.getMessageFont().getSize()));
 		if (size % 2 != 0) {
 			size = size - 3;
 		} else {

@@ -39,7 +39,7 @@ public class LMessage extends LContainer {
 
 	private long printTime, totalDuration;
 
-	private int dx, dy, dw, dh;
+	private float dx, dy, dw, dh;
 
 	private Print print;
 
@@ -153,7 +153,7 @@ public class LMessage extends LContainer {
 		return print.isComplete();
 	}
 
-	public void setPauseIconAnimationLocation(int dx, int dy) {
+	public void setPauseIconAnimationLocation(float dx, float dy) {
 		this.dx = dx;
 		this.dy = dy;
 	}
@@ -263,8 +263,8 @@ public class LMessage extends LContainer {
 	}
 
 	private void updateIcon() {
-		this.setPauseIconAnimationLocation(getScreenX() + getWidth() - dw / 2
-				- 20, getScreenY() + getHeight() - dh - 10);
+		this.setPauseIconAnimationLocation((int)(getScreenX() + getWidth() - dw / 2
+				- 20), (int)(getScreenY() + getHeight() - dh - 10));
 	}
 
 	public LColor getFontColor() {

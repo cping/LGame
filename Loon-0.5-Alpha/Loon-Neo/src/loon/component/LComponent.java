@@ -28,6 +28,9 @@ import loon.LTextures;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.component.layout.BoxSize;
+import loon.component.layout.LayoutConstraints;
+import loon.component.layout.LayoutPort;
 import loon.event.ClickListener;
 import loon.event.SysInput;
 import loon.event.SysKey;
@@ -39,7 +42,8 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
-public abstract class LComponent extends LObject implements ActionBind, XY {
+public abstract class LComponent extends LObject implements ActionBind, XY,
+		BoxSize {
 
 	public static interface CallListener {
 
@@ -83,11 +87,10 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 	// 渲染状态
 	public boolean customRendering;
 
-	// 透明度
-	protected float alpha = 1.0f;
-
 	// 居中位置，组件坐标与大小
-	private int cam_x, cam_y, width, height;
+	private int cam_x, cam_y;
+
+	private float width, height;
 
 	// 屏幕位置
 	protected int screenX, screenY;
@@ -115,6 +118,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 	protected boolean isLimitMove;
 
 	protected LTexture background;
+
+	protected LayoutConstraints constraints = null;
 
 	/**
 	 * 构造可用组件
@@ -159,15 +164,15 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 		}
 		int tempX = x;
 		int tempY = y;
-		int tempWidth = getWidth() - screenRect.width;
-		int tempHeight = getHeight() - screenRect.height;
+		int tempWidth = (int) (getWidth() - screenRect.width);
+		int tempHeight = (int) (getHeight() - screenRect.height);
 
 		int limitX = tempX + tempWidth;
 		int limitY = tempY + tempHeight;
 
 		if (width >= screenRect.width) {
 			if (limitX > tempWidth) {
-				tempX = screenRect.width - width;
+				tempX = (int) (screenRect.width - width);
 			} else if (limitX < 1) {
 				tempX = x();
 			}
@@ -176,7 +181,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 		}
 		if (height >= screenRect.height) {
 			if (limitY > tempHeight) {
-				tempY = screenRect.height - height;
+				tempY = (int) (screenRect.height - height);
 			} else if (limitY < 1) {
 				tempY = y();
 			}
@@ -192,8 +197,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 		if (!this.isLimitMove) {
 			return false;
 		}
-		int width = getWidth() - screenRect.width;
-		int height = getHeight() - screenRect.height;
+		int width = (int) (getWidth() - screenRect.width);
+		int height = (int) (getHeight() - screenRect.height);
 		int limitX = x + width;
 		int limitY = y + height;
 		if (getWidth() >= screenRect.width) {
@@ -262,8 +267,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 			return;
 		}
 		boolean update = _rotation != 0 || !(scaleX == 1f && scaleY == 1f);
-		final int width = this.getWidth();
-		final int height = this.getHeight();
+		final int width = (int) this.getWidth();
+		final int height = (int) this.getHeight();
 		if (this.elastic) {
 			g.setClip(this.screenX, this.screenY, width, height);
 		}
@@ -284,9 +289,9 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 			}
 		}
 		// 变更透明度
-		if (alpha > 0.1 && alpha < 1.0) {
+		if (_alpha > 0.1 && _alpha < 1.0) {
 			float tmp = g.alpha();
-			g.setAlpha(alpha);
+			g.setAlpha(_alpha);
 			if (background != null) {
 				g.draw(background, this.screenX, this.screenY, width, height);
 			}
@@ -556,20 +561,28 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 		return this.screenY;
 	}
 
-	protected void setHeight(int height) {
+	public void setHeight(float height) {
 		this.height = height;
 	}
 
-	protected void setWidth(int width) {
+	public void setWidth(float width) {
 		this.width = width;
 	}
 
-	public int getWidth() {
-		return (int) (this.width * scaleX);
+	public float getWidth() {
+		return (this.width * scaleX);
 	}
 
-	public int getHeight() {
-		return (int) (this.height * scaleY);
+	public float getHeight() {
+		return (this.height * scaleY);
+	}
+
+	public int width() {
+		return (int) getWidth();
+	}
+
+	public int height() {
+		return (int) getHeight();
 	}
 
 	public RectBox getCollisionBox() {
@@ -666,14 +679,6 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 		}
 	}
 
-	public float getAlpha() {
-		return alpha;
-	}
-
-	public void setAlpha(float alpha) {
-		this.alpha = alpha;
-	}
-
 	public LTexture[] getImageUI() {
 		return this.imageUI;
 	}
@@ -710,8 +715,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 	}
 
 	public void setBackground(LColor color) {
-		setBackground(TextureUtils
-				.createTexture(getWidth(), getHeight(), color));
+		setBackground(TextureUtils.createTexture((int) getWidth(),
+				(int) getHeight(), color));
 	}
 
 	public void setBackground(LTexture background) {
@@ -827,12 +832,33 @@ public abstract class LComponent extends LObject implements ActionBind, XY {
 		return getCollisionBox();
 	}
 
-	public int getContainerWidth() {
+	@Override
+	public float getContainerWidth() {
 		return parent.getWidth();
 	}
 
-	public int getContainerHeight() {
+	@Override
+	public float getContainerHeight() {
 		return parent.getHeight();
 	}
 
+	public LayoutConstraints getConstraints() {
+		if (constraints == null) {
+			constraints = new LayoutConstraints();
+		}
+		return constraints;
+	}
+
+	public LayoutPort getLayoutPort() {
+		return new LayoutPort(this, getConstraints());
+	}
+
+	public LayoutPort getLayoutPort(final RectBox newBox,
+			final LayoutConstraints newBoxConstraints) {
+		return new LayoutPort(newBox, newBoxConstraints);
+	}
+
+	public LayoutPort getLayoutPort(final LayoutPort src) {
+		return new LayoutPort(src);
+	}
 }

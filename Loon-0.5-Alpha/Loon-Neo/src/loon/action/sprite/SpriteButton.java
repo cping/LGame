@@ -185,12 +185,12 @@ public class SpriteButton extends LObject implements ISprite {
 	}
 
 	@Override
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 
 	@Override
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 

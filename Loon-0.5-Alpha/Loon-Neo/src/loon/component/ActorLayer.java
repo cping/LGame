@@ -351,8 +351,8 @@ public abstract class ActorLayer extends LContainer {
 		if (isClose) {
 			return null;
 		}
-		tmpField = new Field2D(new int[getHeight() / tileHeight][getWidth()
-				/ tileWidth], tileWidth, tileHeight);
+		tmpField = new Field2D(new int[(int)(getHeight() / tileHeight)][(int)(getWidth()
+				/ tileWidth)], tileWidth, tileHeight);
 		return tmpField;
 	}
 
@@ -473,8 +473,8 @@ public abstract class ActorLayer extends LContainer {
 		if (count <= 0) {
 			throw new RuntimeException("count <= 0 !");
 		}
-		int layerWidth = getWidth();
-		int layerHeight = getHeight();
+		int layerWidth = (int) getWidth();
+		int layerHeight = (int) getHeight();
 		int actorWidth = nw > min_size ? nw : min_size;
 		int actorHeight = nh > min_size ? nh : min_size;
 		int x = nx / actorWidth;
@@ -755,11 +755,11 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	int getHeightInPixels() {
-		return this.getHeight() * this.cellSize;
+		return (int) (this.getHeight() * this.cellSize);
 	}
 
 	int getWidthInPixels() {
-		return this.getWidth() * this.cellSize;
+		return (int) (this.getWidth() * this.cellSize);
 	}
 
 	int toCellCeil(float pixel) {

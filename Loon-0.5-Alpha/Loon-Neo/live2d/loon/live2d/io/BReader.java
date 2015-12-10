@@ -45,23 +45,23 @@ public class BReader {
 		return readDataSize(this.buffers);
 	}
 
-	public static int readDataSize(final ArrayByte inputStream) {
+	public static int readDataSize(final ArrayByte in) {
 		try {
-			final int read = inputStream.readByte();
+			final int read = in.readByte();
 			if ((read & 0x80) == 0x0) {
 				return read & 0xFF;
 			}
 			final int read2;
-			if (((read2 = inputStream.readByte()) & 0x80) == 0x0) {
+			if (((read2 = in.readByte()) & 0x80) == 0x0) {
 				return (read & 0x7F) << 7 | (read2 & 0x7F);
 			}
 			final int read3;
-			if (((read3 = inputStream.readByte()) & 0x80) == 0x0) {
+			if (((read3 = in.readByte()) & 0x80) == 0x0) {
 				return (read & 0x7F) << 14 | (read2 & 0x7F) << 7
 						| (read3 & 0xFF);
 			}
 			final int read4;
-			if (((read4 = inputStream.readByte()) & 0x80) == 0x0) {
+			if (((read4 = in.readByte()) & 0x80) == 0x0) {
 				return (read & 0x7F) << 21 | (read2 & 0x7F) << 14
 						| (read3 & 0x7F) << 7 | (read4 & 0xFF);
 			}

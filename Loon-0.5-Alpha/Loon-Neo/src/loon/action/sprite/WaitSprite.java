@@ -269,7 +269,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		if (cycle != null) {
 			return cycle.getCollisionBox().height;
 		} else {
@@ -277,7 +277,7 @@ public class WaitSprite extends LObject implements ISprite {
 		}
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		if (cycle != null) {
 			return cycle.getCollisionBox().width;
 		} else {

@@ -307,12 +307,14 @@ public class LTable extends LContainer {
 		mousePressed(getTouchX(), getTouchY());
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
 		mouseExited(getTouchX(), getTouchY());
 	}
 
-	public int getHeight() {
+	@Override
+	public float getHeight() {
 		if (model == null) {
 			return super.getHeight();
 		}
@@ -326,7 +328,8 @@ public class LTable extends LContainer {
 		return height;
 	}
 
-	public int getWidth() {
+	@Override
+	public float getWidth() {
 		if (model == null) {
 			return super.getWidth();
 		}
@@ -353,7 +356,7 @@ public class LTable extends LContainer {
 			int x = displayX;
 			int y = displayY;
 			y += cellHeight;
-			int size = getHeight() / (cellHeight + cellSpacing);
+			int size = (int) (getHeight() / (cellHeight + cellSpacing));
 			int wid = 0;
 			for (int i = 0; i < model.getColumnCount(); i++) {
 				wid += getColumnWidth(i);
@@ -612,7 +615,7 @@ public class LTable extends LContainer {
 			throw new IllegalStateException("The table has no model!");
 		}
 		for (int i = 0; i < columns.length; i++) {
-			columns[i].setWidth(getWidth() / columns.length);
+			columns[i].setWidth((int)(getWidth() / columns.length));
 		}
 	}
 

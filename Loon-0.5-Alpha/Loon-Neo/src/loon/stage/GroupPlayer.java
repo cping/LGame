@@ -85,7 +85,7 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	}
 
 	public void addCenterAt(Player child, float tx, float ty) {
-		add(child.setTranslation(tx - child.width() / 2, ty - child.height()
+		add(child.setTranslation(tx - child.getWidth() / 2, ty - child.getHeight()
 				/ 2));
 	}
 

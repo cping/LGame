@@ -23,6 +23,7 @@ public class MultiScreenTest extends Screen {
 	}
 
 	public static LClickButton getBackButton(final Screen screen) {
+
 		LClickButton back = new LClickButton("Back", screen.getWidth() - 100,
 				screen.getHeight() - 70, 80, 50);
 		back.SetClick(new ClickListener() {
@@ -42,7 +43,7 @@ public class MultiScreenTest extends Screen {
 
 			}
 
-			//事件锁，让点击唯一化
+			// 事件锁，让点击唯一化
 			ActionKey click = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 			@Override
@@ -51,24 +52,24 @@ public class MultiScreenTest extends Screen {
 
 					// 为按钮设置一个旋转动画，每次前进36度
 					set(comp).rotateTo(360, 36f).start()
-							.setActionListener(new ActionListener() { //监听动作事件
+							.setActionListener(new ActionListener() { // 监听动作事件
 
-								//事件完毕后，调用screen标记为main的
-								@Override
-								public void stop(ActionBind o) {
-									screen.runScreen("main");
-								}
+										// 事件完毕后，调用screen标记为main的
+										@Override
+										public void stop(ActionBind o) {
+											screen.runScreen("main");
+										}
 
-								@Override
-								public void start(ActionBind o) {
+										@Override
+										public void start(ActionBind o) {
 
-								}
+										}
 
-								@Override
-								public void process(ActionBind o) {
+										@Override
+										public void process(ActionBind o) {
 
-								}
-							});
+										}
+									});
 					click.press();
 				}
 
@@ -79,14 +80,16 @@ public class MultiScreenTest extends Screen {
 
 	@Override
 	public void onLoad() {
+
 		// 预先设定多个Screen，并赋予名称
 		addScreen("main", this);
 		addScreen("messagebox", new LMessageBoxTest());
 		addScreen("live2d", new Live2dTest());
 
 		// 增加按钮与监听
-		LClickButton click = new LClickButton("MessageBox", 100, 50, 150, 50);
-		click.SetClick(new ClickListener() {
+		LClickButton click1 = new LClickButton("MessageBox", 100, 50, 150, 50);
+
+		click1.SetClick(new ClickListener() {
 
 			@Override
 			public void UpClick(LComponent comp, float x, float y) {
@@ -108,10 +111,10 @@ public class MultiScreenTest extends Screen {
 
 			}
 		});
-		add(click);
+		add(click1);
 
-		click = new LClickButton("live2d", 100, 120, 150, 50);
-		click.SetClick(new ClickListener() {
+		LClickButton click2 = new LClickButton("live2d", 100, 120, 150, 50);
+		click2.SetClick(new ClickListener() {
 
 			@Override
 			public void UpClick(LComponent comp, float x, float y) {
@@ -133,7 +136,9 @@ public class MultiScreenTest extends Screen {
 
 			}
 		});
-		add(click);
+		add(click2);
+
+
 	}
 
 	@Override

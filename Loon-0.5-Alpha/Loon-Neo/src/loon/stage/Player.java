@@ -25,6 +25,7 @@ import loon.LRelease;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.component.layout.BoxSize;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -38,7 +39,7 @@ import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
 public abstract class Player extends LObject implements ActionBind, XY,
-		LRelease {
+		BoxSize, LRelease {
 
 	protected int flags;
 
@@ -315,10 +316,10 @@ public abstract class Player extends LObject implements ActionBind, XY,
 
 	public float originX() {
 		if (isSet(Flag.ODIRTY)) {
-			float width = width();
+			float width = getWidth();
 			if (width > 0) {
 				this.originX = origin.ox(width);
-				this.originY = origin.oy(height());
+				this.originY = origin.oy(getHeight());
 				setFlag(Flag.ODIRTY, false);
 			}
 		}
@@ -327,9 +328,9 @@ public abstract class Player extends LObject implements ActionBind, XY,
 
 	public float originY() {
 		if (isSet(Flag.ODIRTY)) {
-			float height = height();
+			float height = getHeight();
 			if (height > 0) {
-				this.originX = origin.ox(width());
+				this.originX = origin.ox(getWidth());
 				this.originY = origin.oy(height);
 				setFlag(Flag.ODIRTY, false);
 			}
@@ -463,29 +464,31 @@ public abstract class Player extends LObject implements ActionBind, XY,
 	}
 
 	@Override
-	public int getWidth() {
-		return (int) height();
+	public float getWidth() {
+		return 0;
 	}
 
 	@Override
-	public int getHeight() {
-		return (int) width();
-	}
-
-	public float width() {
+	public float getHeight() {
 		return 0;
 	}
 
-	public float height() {
-		return 0;
+	@Override
+	public void setWidth(float w) {
+
+	}
+
+	@Override
+	public void setHeight(float h) {
+
 	}
 
 	public float scaledWidth() {
-		return scaleX() * width();
+		return scaleX() * getWidth();
 	}
 
 	public float scaledHeight() {
-		return scaleX() * height();
+		return scaleX() * getHeight();
 	}
 
 	public Player hitTest(Vector2f p) {
@@ -494,7 +497,7 @@ public abstract class Player extends LObject implements ActionBind, XY,
 	}
 
 	public Player hitTestDefault(Vector2f p) {
-		return (p.x >= 0 && p.y >= 0 && p.x < width() && p.y < height()) ? this
+		return (p.x >= 0 && p.y >= 0 && p.x < getWidth() && p.y < getHeight()) ? this
 				: null;
 	}
 

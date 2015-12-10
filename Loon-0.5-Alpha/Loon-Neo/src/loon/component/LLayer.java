@@ -327,7 +327,7 @@ public class LLayer extends ActorLayer {
 				tmp = null;
 			}
 		} else {
-			background = Image.createImage(getWidth(), getHeight());
+			background = Image.createImage((int)getWidth(), (int)getHeight());
 		}
 		Canvas g = background.getCanvas();
 		for (int i = 0; i < field.getWidth(); i++) {
@@ -365,8 +365,8 @@ public class LLayer extends ActorLayer {
 		if (image == null) {
 			return null;
 		}
-		int layerWidth = getWidth();
-		int layerHeight = getHeight();
+		int layerWidth = (int)getWidth();
+		int layerHeight = (int)getHeight();
 		int tileWidth = image.getWidth();
 		int tileHeight = image.getHeight();
 

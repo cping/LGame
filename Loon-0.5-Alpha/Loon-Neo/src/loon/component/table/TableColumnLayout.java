@@ -182,7 +182,7 @@ public class TableColumnLayout {
 
 	public int getMinWidth() {
 		if (component != null) {
-			return leftMargin + rightMargin + component.getWidth();
+			return (int) (leftMargin + rightMargin + component.getWidth());
 		}
 		return 1;
 	}
@@ -193,7 +193,7 @@ public class TableColumnLayout {
 
 	public int getMinHeight() {
 		if (component != null) {
-			return topMargin + bottomMargin + component.getHeight();
+			return (int) (topMargin + bottomMargin + component.getHeight());
 		}
 		return 1;
 	}

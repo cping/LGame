@@ -417,25 +417,25 @@ public abstract class LObject implements XY, ZIndex {
 		this._location = _location;
 	}
 
-	public static void centerOn(final LObject object, int w, int h) {
+	public static void centerOn(final LObject object, float w, float h) {
 		object.setLocation(w / 2 - object.getWidth() / 2,
 				h / 2 - object.getHeight() / 2);
 	}
 
-	public static void topOn(final LObject object, int w, int h) {
+	public static void topOn(final LObject object, float w, float h) {
 		object.setLocation(w / 2 - h / 2, 0);
 	}
 
-	public static void leftOn(final LObject object, int w, int h) {
+	public static void leftOn(final LObject object, float w, float h) {
 		object.setLocation(0, h / 2 - object.getHeight() / 2);
 	}
 
-	public static void rightOn(final LObject object, int w, int h) {
+	public static void rightOn(final LObject object, float w, float h) {
 		object.setLocation(w - object.getWidth(), h / 2 - object.getHeight()
 				/ 2);
 	}
 
-	public static void bottomOn(final LObject object, int w, int h) {
+	public static void bottomOn(final LObject object, float w, float h) {
 		object.setLocation(w / 2 - object.getWidth() / 2,
 				h - object.getHeight());
 	}
@@ -459,16 +459,16 @@ public abstract class LObject implements XY, ZIndex {
 	public void bottomOn(final LObject object) {
 		bottomOn(object, getWidth(), getHeight());
 	}
+	
+	public abstract float getWidth();
 
-	public abstract int getWidth();
+	public abstract float getHeight();
 
-	public abstract int getHeight();
-
-	public int getContainerWidth() {
+	public float getContainerWidth() {
 		return LSystem.viewSize.getWidth();
 	}
 
-	public int getContainerHeight() {
+	public float getContainerHeight() {
 		return LSystem.viewSize.getHeight();
 	}
 

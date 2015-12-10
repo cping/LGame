@@ -37,6 +37,7 @@ import loon.action.ScaleTo;
 import loon.action.map.Field2D;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
+import loon.component.layout.BoxSize;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -45,7 +46,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Actor extends LObject implements ActionBind, XY, LRelease {
+public class Actor extends LObject implements ActionBind, XY, LRelease, BoxSize {
 
 	private String flag = "Actor";
 
@@ -469,20 +470,28 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 		}
 	}
 
-	@Override
-	public int getWidth() {
+	public int width() {
 		if (image != null) {
-			return image.getWidth();
+			return (int) (image.getWidth() * scaleX);
 		}
-		return getRectBox().width;
+		return (int) (getRectBox().width * scaleX);
+	}
+
+	public int height() {
+		if (image != null) {
+			return (int) (image.getHeight() * scaleY);
+		}
+		return (int) (getRectBox().height * scaleY);
 	}
 
 	@Override
-	public int getHeight() {
-		if (image != null) {
-			return image.getHeight();
-		}
-		return getRectBox().height;
+	public float getWidth() {
+		return width();
+	}
+
+	@Override
+	public float getHeight() {
+		return height();
 	}
 
 	/**
@@ -492,8 +501,8 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	 */
 	public void move(float distance) {
 		float angle = MathUtils.toRadians(getRotation());
-		int x =  MathUtils.round(getX() + MathUtils.cos(angle) * distance);
-		int y =  MathUtils.round(getY() + MathUtils.sin(angle) * distance);
+		int x = MathUtils.round(getX() + MathUtils.cos(angle) * distance);
+		int y = MathUtils.round(getY() + MathUtils.sin(angle) * distance);
 		setLocation(x, y);
 	}
 
@@ -576,7 +585,7 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 		}
 	}
 
-	private float limitValue(float v, int limit) {
+	private float limitValue(float v, float limit) {
 		if (v < 0) {
 			v = 0;
 		}
@@ -824,7 +833,8 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 		}
 	}
 
-	public TArray<Actor> getNeighbours(float distance, boolean diagonal, String flag) {
+	public TArray<Actor> getNeighbours(float distance, boolean diagonal,
+			String flag) {
 		this.failIfNotInLayer();
 		return this.getLLayer().getNeighbours(this, distance, diagonal, flag);
 	}
@@ -1003,12 +1013,12 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 	}
 
 	@Override
-	public int getContainerWidth() {
+	public float getContainerWidth() {
 		return gameLayer.getWidth();
 	}
 
 	@Override
-	public int getContainerHeight() {
+	public float getContainerHeight() {
 		return gameLayer.getHeight();
 	}
 
@@ -1018,6 +1028,16 @@ public class Actor extends LObject implements ActionBind, XY, LRelease {
 
 	public void setFlag(String flag) {
 		this.flag = flag;
+	}
+
+	@Override
+	public void setWidth(float w) {
+		this.scaleX = w / getWidth();
+	}
+
+	@Override
+	public void setHeight(float h) {
+		this.scaleY = h / getHeight();
 	}
 
 }

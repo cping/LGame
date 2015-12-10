@@ -225,11 +225,11 @@ public class StatusBar extends LObject implements ISprite {
 		this.showValue = showHP;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 

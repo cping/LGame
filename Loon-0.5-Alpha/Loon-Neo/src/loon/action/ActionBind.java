@@ -53,9 +53,9 @@ public interface ActionBind {
 
 	public void setRotation(float r);
 
-	public int getWidth();
+	public float getWidth();
 
-	public int getHeight();
+	public float getHeight();
 
 	public float getAlpha();
 
@@ -71,7 +71,7 @@ public interface ActionBind {
 
 	public RectBox getRectBox();
 
-	public int getContainerWidth();
+	public float getContainerWidth();
 
-	public int getContainerHeight();
+	public float getContainerHeight();
 }

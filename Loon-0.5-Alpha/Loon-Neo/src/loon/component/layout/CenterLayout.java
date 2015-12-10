@@ -1,23 +1,22 @@
 package loon.component.layout;
 
-import loon.geom.RectBox;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
-public class CenterLayout implements LayoutManager {
+public class CenterLayout extends LayoutManager {
 
 	public void layoutElements(final LayoutPort rootElement,
-			final TArray<LayoutPort> elements) {
+			final LayoutPort... elements) {
 
-		if (rootElement == null || elements == null || elements.size == 0) {
+		if (rootElement == null || elements == null || elements.length == 0) {
 			return;
 		}
 
-		RectBox rootBox = rootElement.getBox();
+		BoxSize rootBox = rootElement.getBox();
 		LayoutConstraints rootBoxConstraints = rootElement.getBoxConstraints();
 
-		RectBox box = elements.get(0).getBox();
-		LayoutConstraints constraint = elements.get(0).getBoxConstraints();
+		BoxSize box = elements[0].getBox();
+		LayoutConstraints constraint = elements[0].getBoxConstraints();
 
 		if (constraint.getWidth() != null
 				&& constraint.getWidth().hasHeightSuffix()) {
@@ -39,8 +38,8 @@ public class CenterLayout implements LayoutManager {
 		}
 	}
 
-	void handleHorizontalAlignment(final RectBox rootBox,
-			final LayoutConstraints rootBoxConstraints, final RectBox box,
+	void handleHorizontalAlignment(final BoxSize rootBox,
+			final LayoutConstraints rootBoxConstraints, final BoxSize box,
 			final LayoutConstraints constraint) {
 		if (constraint.getWidth() != null) {
 			handleWidthConstraint(rootBox, rootBoxConstraints, box, constraint);
@@ -56,8 +55,8 @@ public class CenterLayout implements LayoutManager {
 		}
 	}
 
-	void handleVerticalAlignment(final RectBox rootBox,
-			final LayoutConstraints rootBoxConstraints, final RectBox box,
+	void handleVerticalAlignment(final BoxSize rootBox,
+			final LayoutConstraints rootBoxConstraints, final BoxSize box,
 			final LayoutConstraints constraint) {
 		if (constraint.getHeight() != null) {
 			handleHeightConstraint(rootBox, rootBoxConstraints, box, constraint);
@@ -73,17 +72,17 @@ public class CenterLayout implements LayoutManager {
 		}
 	}
 
-	private void handleWidthConstraint(final RectBox rootBox,
-			final LayoutConstraints rootBoxConstraints, final RectBox box,
+	private void handleWidthConstraint(final BoxSize rootBox,
+			final LayoutConstraints rootBoxConstraints, final BoxSize box,
 			final LayoutConstraints constraint) {
-		int rootBoxX = rootBox.x()
+		int rootBoxX = (int) (rootBox.getX()
 				+ rootBoxConstraints.getPaddingLeft().getValueAsInt(
-						rootBox.getWidth());
-		int rootBoxWidth = rootBox.width()
+						rootBox.getWidth()));
+		int rootBoxWidth = (int) (rootBox.getWidth()
 				- rootBoxConstraints.getPaddingLeft().getValueAsInt(
 						rootBox.getWidth())
 				- rootBoxConstraints.getPaddingRight().getValueAsInt(
-						rootBox.getWidth());
+						rootBox.getWidth()));
 
 		int boxWidth = (int) constraint.getWidth().getValue(rootBoxWidth);
 		if (constraint.getWidth().hasHeightSuffix()) {
@@ -103,17 +102,17 @@ public class CenterLayout implements LayoutManager {
 		}
 	}
 
-	private void handleHeightConstraint(final RectBox rootBox,
-			final LayoutConstraints rootBoxConstraints, final RectBox box,
+	private void handleHeightConstraint(final BoxSize rootBox,
+			final LayoutConstraints rootBoxConstraints, final BoxSize box,
 			final LayoutConstraints constraint) {
-		int rootBoxY = rootBox.y()
+		int rootBoxY = (int) (rootBox.getY()
 				+ rootBoxConstraints.getPaddingTop().getValueAsInt(
-						rootBox.getHeight());
-		int rootBoxHeight = rootBox.height()
+						rootBox.getHeight()));
+		int rootBoxHeight = (int) (rootBox.getHeight()
 				- rootBoxConstraints.getPaddingTop().getValueAsInt(
 						rootBox.getHeight())
 				- rootBoxConstraints.getPaddingBottom().getValueAsInt(
-						rootBox.getHeight());
+						rootBox.getHeight()));
 
 		int boxHeight = (int) constraint.getHeight().getValue(rootBoxHeight);
 		if (constraint.getHeight().hasWidthSuffix()) {

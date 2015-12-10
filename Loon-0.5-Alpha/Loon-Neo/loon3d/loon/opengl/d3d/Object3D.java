@@ -93,12 +93,12 @@ public class Object3D extends LObject implements ISprite {
 	}
 
 	@Override
-	public int getWidth() {
+	public float getWidth() {
 		return getContainerWidth();
 	}
 
 	@Override
-	public int getHeight() {
+	public float getHeight() {
 		return getContainerHeight();
 	}
 

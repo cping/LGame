@@ -59,49 +59,56 @@ public class LayoutConstraints {
 		return x;
 	}
 
-	public final void setX(final SizeValue newX) {
+	public final LayoutConstraints setX(final SizeValue newX) {
 		this.x = newX;
+		return this;
 	}
 
 	public final SizeValue getY() {
 		return y;
 	}
 
-	public final void setY(final SizeValue newY) {
+	public final LayoutConstraints setY(final SizeValue newY) {
 		this.y = newY;
+		return this;
 	}
 
 	public final SizeValue getHeight() {
 		return height;
 	}
 
-	public final void setHeight(final SizeValue newHeight) {
+	public final LayoutConstraints setHeight(final SizeValue newHeight) {
 		this.height = newHeight;
+		return this;
 	}
 
 	public final SizeValue getWidth() {
 		return width;
 	}
 
-	public final void setWidth(final SizeValue newWidth) {
+	public final LayoutConstraints setWidth(final SizeValue newWidth) {
 		this.width = newWidth;
+		return this;
 	}
 
 	public final HorizontalAlign getHorizontalAlign() {
 		return horizontalAlign;
 	}
 
-	public final void setHorizontalAlign(
+	public final LayoutConstraints setHorizontalAlign(
 			final HorizontalAlign newHorizontalAlign) {
 		this.horizontalAlign = newHorizontalAlign;
+		return this;
 	}
 
 	public final VerticalAlign getVerticalAlign() {
 		return verticalAlign;
 	}
 
-	public final void setVerticalAlign(final VerticalAlign newVerticalAlign) {
+	public final LayoutConstraints setVerticalAlign(
+			final VerticalAlign newVerticalAlign) {
 		this.verticalAlign = newVerticalAlign;
+		return this;
 	}
 
 	public SizeValue getPaddingLeft() {
@@ -120,51 +127,59 @@ public class LayoutConstraints {
 		return paddingBottom;
 	}
 
-	public void setPaddingLeft(final SizeValue paddingLeftParam) {
+	public LayoutConstraints setPaddingLeft(final SizeValue paddingLeftParam) {
 		paddingLeft = paddingLeftParam;
+		return this;
 	}
 
-	public void setPaddingRight(final SizeValue paddingRightParam) {
+	public LayoutConstraints setPaddingRight(final SizeValue paddingRightParam) {
 		paddingRight = paddingRightParam;
+		return this;
 	}
 
-	public void setPaddingTop(final SizeValue paddingTopParam) {
+	public LayoutConstraints setPaddingTop(final SizeValue paddingTopParam) {
 		paddingTop = paddingTopParam;
+		return this;
 	}
 
-	public void setPaddingBottom(final SizeValue paddingBottomParam) {
+	public LayoutConstraints setPaddingBottom(final SizeValue paddingBottomParam) {
 		paddingBottom = paddingBottomParam;
+		return this;
 	}
 
-	public void setPadding(final SizeValue topBottomParam,
+	public LayoutConstraints setPadding(final SizeValue topBottomParam,
 			final SizeValue leftRightParam) {
 		paddingLeft = leftRightParam;
 		paddingRight = leftRightParam;
 		paddingTop = topBottomParam;
 		paddingBottom = topBottomParam;
+		return this;
 	}
 
-	public void setPadding(final SizeValue topParam,
+	public LayoutConstraints setPadding(final SizeValue topParam,
 			final SizeValue leftRightParam, final SizeValue bottomParam) {
 		paddingLeft = leftRightParam;
 		paddingRight = leftRightParam;
 		paddingTop = topParam;
 		paddingBottom = bottomParam;
+		return this;
 	}
 
-	public void setPadding(final SizeValue topParam,
+	public LayoutConstraints setPadding(final SizeValue topParam,
 			final SizeValue rightParam, final SizeValue bottomParam,
 			final SizeValue leftParam) {
 		paddingLeft = leftParam;
 		paddingRight = rightParam;
 		paddingTop = topParam;
 		paddingBottom = bottomParam;
+		return this;
 	}
 
-	public void setPadding(final SizeValue padding) {
+	public LayoutConstraints setPadding(final SizeValue padding) {
 		paddingLeft = padding;
 		paddingRight = padding;
 		paddingTop = padding;
 		paddingBottom = padding;
+		return this;
 	}
 }

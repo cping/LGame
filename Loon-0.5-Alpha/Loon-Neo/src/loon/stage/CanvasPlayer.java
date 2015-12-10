@@ -49,12 +49,12 @@ public class CanvasPlayer extends ImagePlayer {
 	}
 
 	@Override
-	public float width() {
+	public float getWidth() {
 		return (forceWidth < 0) ? canvas.width : forceWidth;
 	}
 
 	@Override
-	public float height() {
+	public float getHeight() {
 		return (forceHeight < 0) ? canvas.height : forceHeight;
 	}
 

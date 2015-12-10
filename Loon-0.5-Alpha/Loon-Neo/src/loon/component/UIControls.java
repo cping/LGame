@@ -51,7 +51,7 @@ public class UIControls {
 		int maxHeight = 0;
 		LComponent[] list = c.getComponents();
 		for (int i = 0; i < list.length; i++) {
-			maxHeight = MathUtils.max(maxHeight, list[i].getHeight());
+			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
 		}
 		return maxHeight;
 	}
@@ -60,7 +60,7 @@ public class UIControls {
 		int maxWidth = 0;
 		LComponent[] list = c.getComponents();
 		for (int i = 0; i < list.length; i++) {
-			maxWidth = MathUtils.max(maxWidth, list[i].getWidth());
+			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
 		}
 		return maxWidth;
 	}

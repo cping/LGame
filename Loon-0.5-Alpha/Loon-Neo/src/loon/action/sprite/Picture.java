@@ -68,11 +68,11 @@ public class Picture extends LObject implements ISprite {
 		return false;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 

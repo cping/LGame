@@ -81,11 +81,11 @@ public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 		return timer.getDelay();
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 

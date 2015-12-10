@@ -469,8 +469,8 @@ public class Sprites implements Serializable, LRelease {
 				int layerX = spr.x();
 				int layerY = spr.y();
 
-				int layerWidth = spr.getWidth();
-				int layerHeight = spr.getHeight();
+				float layerWidth = spr.getWidth();
+				float layerHeight = spr.getHeight();
 
 				if (layerX + layerWidth < minX || layerX > maxX
 						|| layerY + layerHeight < minY || layerY > maxY) {

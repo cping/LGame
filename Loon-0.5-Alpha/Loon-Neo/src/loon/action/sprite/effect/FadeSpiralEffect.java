@@ -224,12 +224,12 @@ public class FadeSpiralEffect extends LObject implements BaseEffect,ISprite {
 	}
 
 	@Override
-	public int getWidth() {
+	public float getWidth() {
 		return getContainerWidth();
 	}
 
 	@Override
-	public int getHeight() {
+	public float getHeight() {
 		return getContainerHeight();
 	}
 

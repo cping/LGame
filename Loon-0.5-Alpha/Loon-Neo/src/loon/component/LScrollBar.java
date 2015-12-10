@@ -128,7 +128,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustVerticalLeftSlider() {
-		setSliderWidth(getWidth() - (getSliderMargin() * 2));
+		setSliderWidth((int)(getWidth() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 
@@ -148,7 +148,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustVerticalRightSlider() {
-		setSliderWidth(getWidth() - (getSliderMargin() * 2));
+		setSliderWidth((int)(getWidth() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 		double ratioHeight = (double) getHeight()
@@ -167,10 +167,10 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustHorizontalTopSlider() {
-		setSliderHeight(getHeight() - (getSliderMargin() * 2));
+		setSliderHeight((int)(getHeight() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
-		double ratioWidth = (double) getWidth()
+		float ratioWidth =  getWidth()
 				/ scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
 		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)));
@@ -189,11 +189,11 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustHorizontalBottomSlider() {
-		setSliderHeight(getHeight() - (getSliderMargin() * 2));
+		setSliderHeight((int)(getHeight() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 
-		double ratioWidth = (double) getWidth()
+		float ratioWidth = getWidth()
 				/ scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
 		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)));
@@ -312,7 +312,7 @@ public class LScrollBar extends LComponent {
 
 	protected void moveVerticalSlider(int newY) {
 		int minY = y() + getSliderMargin();
-		int maxY = y() + getHeight() - (getSliderHeight() + getSliderMargin());
+		int maxY = (int) (y() + getHeight() - (getSliderHeight() + getSliderMargin()));
 		if (newY < minY) {
 			setSliderY(minY);
 		} else if (newY > maxY) {
@@ -336,7 +336,7 @@ public class LScrollBar extends LComponent {
 
 	protected void moveHorizontalSlider(int newX) {
 		int minX = x() + getSliderMargin();
-		int maxX = x() + getWidth() - (getSliderWidth() + getSliderMargin());
+		int maxX = (int) (x() + getWidth() - (getSliderWidth() + getSliderMargin()));
 		if (newX < minX) {
 			setSliderX(minX);
 		} else if (newX > maxX) {
@@ -348,10 +348,10 @@ public class LScrollBar extends LComponent {
 	}
 
 	protected void updateScrollContainerX() {
-		double ratio = (double) ((scrollContainer.getInnerWidth()) - getWidth())
+		float ratio = ((scrollContainer.getInnerWidth()) - getWidth())
 				/ (getWidth() - getSliderWidth() - (getSliderMargin() * 2));
 		if (Double.isNaN(ratio) || Double.isInfinite(ratio)) {
-			ratio = 0.0;
+			ratio = 0.0f;
 		}
 		int relativeSliderX = getSliderX() - (x() + getSliderMargin());
 		scrollContainer.moveScrollX((int) (relativeSliderX * ratio));
@@ -369,12 +369,13 @@ public class LScrollBar extends LComponent {
 		adjustSlider();
 	}
 	@Override
-	public void setWidth(int width) {
+	public void setWidth(float width) {
 		super.setWidth(width);
 		adjustSlider();
 	}
+	
 	@Override
-	public void setHeight(int height) {
+	public void setHeight(float height) {
 		super.setHeight(height);
 		adjustSlider();
 	}

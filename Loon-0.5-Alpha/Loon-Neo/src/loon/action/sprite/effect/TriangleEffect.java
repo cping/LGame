@@ -214,11 +214,11 @@ public class TriangleEffect extends LObject implements ISprite {
 		return timer.getDelay();
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return (int) height;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return (int) width;
 	}
 

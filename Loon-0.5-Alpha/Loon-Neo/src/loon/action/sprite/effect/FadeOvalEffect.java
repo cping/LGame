@@ -78,13 +78,13 @@ public class FadeOvalEffect extends LObject implements BaseEffect, ISprite {
 	}
 
 	@Override
-	public int getHeight() {
-		return (int) ovalHeight;
+	public float getHeight() {
+		return ovalHeight;
 	}
 
 	@Override
-	public int getWidth() {
-		return (int) ovalWidth;
+	public float getWidth() {
+		return ovalWidth;
 	}
 
 	@Override

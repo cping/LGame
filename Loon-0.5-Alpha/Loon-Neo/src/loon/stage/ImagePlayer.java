@@ -110,7 +110,7 @@ public class ImagePlayer extends Player {
 	}
 
 	@Override
-	public float width() {
+	public float getWidth() {
 		if (forceWidth >= 0) {
 			return forceWidth;
 		}
@@ -121,7 +121,7 @@ public class ImagePlayer extends Player {
 	}
 
 	@Override
-	public float height() {
+	public float getHeight() {
 		if (forceHeight >= 0) {
 			return forceHeight;
 		}
@@ -145,7 +145,7 @@ public class ImagePlayer extends Player {
 	@Override
 	protected void paintImpl(GLEx gl) {
 		if (painter != null) {
-			float dwidth = width(), dheight = height();
+			float dwidth = getWidth(), dheight = getHeight();
 			if (region == null) {
 				gl.draw(painter, 0, 0, dwidth, dheight);
 			} else {

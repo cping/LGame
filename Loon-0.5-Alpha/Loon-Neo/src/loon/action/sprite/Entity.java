@@ -9,13 +9,15 @@ import loon.LTextures;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.component.layout.BoxSize;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
-public class Entity extends LObject implements ActionBind, IEntity, LRelease {
+public class Entity extends LObject implements ActionBind, IEntity, LRelease,
+		BoxSize {
 
 	/**
 	 * 
@@ -687,13 +689,13 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 	}
 
 	@Override
-	public int getWidth() {
-		return (int) (_width * this._scaleX);
+	public float getWidth() {
+		return (_width * this._scaleX);
 	}
 
 	@Override
-	public int getHeight() {
-		return (int) (_height * this._scaleY);
+	public float getHeight() {
+		return (_height * this._scaleY);
 	}
 
 	@Override
@@ -747,6 +749,16 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease {
 			}
 			s.append("]");
 		}
+	}
+
+	@Override
+	public void setWidth(float w) {
+		this._scaleX = (w / getWidth());
+	}
+
+	@Override
+	public void setHeight(float h) {
+		this._scaleY = (h / getHeight());
 	}
 
 }

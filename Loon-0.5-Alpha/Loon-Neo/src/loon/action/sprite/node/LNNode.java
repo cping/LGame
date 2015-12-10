@@ -29,18 +29,20 @@ import loon.action.map.Field2D;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.canvas.LColor;
+import loon.component.layout.BoxSize;
 import loon.event.GameTouch;
 import loon.event.SysInput;
 import loon.event.SysKey;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.utils.CollectionUtils;
 import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class LNNode extends LObject implements ActionBind {
+public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 
 	public void down(GameTouch e) {
 
@@ -76,9 +78,9 @@ public class LNNode extends LObject implements ActionBind {
 			return match(p2._layer, p1._layer);
 		}
 	};
-	
+
 	private Comparator<LNNode> comparator = LNNode.DEFAULT_COMPARATOR;
-	
+
 	private final static InsertionSorter<LNNode> _node_sorter = new InsertionSorter<LNNode>();
 
 	public static interface CallListener {
@@ -121,27 +123,27 @@ public class LNNode extends LObject implements ActionBind {
 
 	protected LColor _color;
 
-	protected int _size_width, _size_height;
+	protected float _size_width, _size_height;
 
-	protected int _orig_width, _orig_height;
+	protected float _orig_width, _orig_height;
 
-	protected void setWidth(int w) {
+	public void setWidth(float w) {
 		this._size_width = w;
 		if (_orig_width == 0) {
 			this._orig_width = w;
 		}
 	}
 
-	protected void setHieght(int h) {
+	public void setHeight(float h) {
 		this._size_height = h;
 		if (_orig_height == 0) {
 			this._orig_height = h;
 		}
 	}
 
-	void setNodeSize(int w, int h) {
+	void setNodeSize(float w, float h) {
 		setWidth(w);
-		setHieght(h);
+		setHeight(h);
 	}
 
 	protected int _top;
@@ -817,30 +819,30 @@ public class LNNode extends LObject implements ActionBind {
 		return _screenRect.height;
 	}
 
-	public int getWidth() {
-		return (int) (_size_width * scale[0]);
+	public float getWidth() {
+		return (_size_width * scale[0]);
 	}
 
-	public int getHeight() {
-		return (int) (_size_height * scale[1]);
+	public float getHeight() {
+		return (_size_height * scale[1]);
 	}
 
-	public void moveCamera(int x, int y) {
+	public void moveCamera(float x, float y) {
 		if (!this._limitMove) {
 			setLocation(x, y);
 			return;
 		}
-		int tempX = x;
-		int tempY = y;
-		int tempWidth = (getWidth() - _screenRect.width);
-		int tempHeight = (getHeight() - _screenRect.height);
+		int tempX = (int) x;
+		int tempY = (int) y;
+		int tempWidth = (int) (getWidth() - _screenRect.width);
+		int tempHeight = (int) (getHeight() - _screenRect.height);
 
 		int limitX = tempX + tempWidth;
 		int limitY = tempY + tempHeight;
 
 		if (_size_width >= _screenRect.width) {
 			if (limitX > tempWidth) {
-				tempX = (_screenRect.width - _size_width);
+				tempX = (int) (_screenRect.width - _size_width);
 			} else if (limitX < 1) {
 				tempX = _location.x();
 			}
@@ -849,7 +851,7 @@ public class LNNode extends LObject implements ActionBind {
 		}
 		if (_size_height >= _screenRect.height) {
 			if (limitY > tempHeight) {
-				tempY = (_screenRect.height - _size_height);
+				tempY = (int) (_screenRect.height - _size_height);
 			} else if (limitY < 1) {
 				tempY = _location.y();
 			}
@@ -861,14 +863,14 @@ public class LNNode extends LObject implements ActionBind {
 		this.setLocation(cam_x, cam_y);
 	}
 
-	protected boolean isNotMoveInScreen(int x, int y) {
+	protected boolean isNotMoveInScreen(float x, float y) {
 		if (!this._limitMove) {
 			return false;
 		}
-		int width = (getWidth() - _screenRect.width);
-		int height = (getHeight() - _screenRect.height);
-		int limitX = x + width;
-		int limitY = y + height;
+		int width = (int) (getWidth() - _screenRect.width);
+		int height = (int) (getHeight() - _screenRect.height);
+		int limitX = (int) x + width;
+		int limitY = (int) y + height;
 		if (getWidth() >= _screenRect.width) {
 			if (limitX >= width - 1) {
 				return true;
@@ -898,17 +900,17 @@ public class LNNode extends LObject implements ActionBind {
 		return true;
 	}
 
-	public boolean contains(int x, int y) {
+	public boolean contains(float x, float y) {
 		return contains(x, y, 0, 0);
 	}
 
-	public boolean contains(int x, int y, int width, int height) {
+	public boolean contains(float x, float y, float width, float height) {
 		return (this._visible)
 				&& (x >= pos[0] && y >= pos[1]
 						&& ((x + width) <= (pos[0] + getWidth())) && ((y + height) <= (pos[1] + getHeight())));
 	}
 
-	public boolean intersects(int x1, int y1) {
+	public boolean intersects(float x1, float y1) {
 		return (this._visible)
 				&& (x1 >= pos[0] && x1 <= pos[0] + getWidth() && y1 >= pos[1] && y1 <= pos[1]
 						+ getHeight());
@@ -1126,8 +1128,9 @@ public class LNNode extends LObject implements ActionBind {
 
 	public RectBox getRectBox() {
 		if (_rotation != 0) {
-			int[] result = MathUtils.getLimit(_location.getX(), _location.getY(),
-					getWidth(), getHeight(), MathUtils.toDegrees(_rotation));
+			int[] result = MathUtils.getLimit(_location.getX(),
+					_location.getY(), getWidth(), getHeight(),
+					MathUtils.toDegrees(_rotation));
 			if (temp_rect == null) {
 				temp_rect = new RectBox(result[0], result[1], result[2],
 						result[3]);
@@ -1267,6 +1270,5 @@ public class LNNode extends LObject implements ActionBind {
 		return getRect(getLocation().x(), getLocation().y(), getWidth(),
 				getHeight());
 	}
-
 
 }

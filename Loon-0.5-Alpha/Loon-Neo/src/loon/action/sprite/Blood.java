@@ -153,11 +153,11 @@ public class Blood extends LObject implements ISprite {
 		this.ySpeed = speed;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return 0;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return 0;
 	}
 

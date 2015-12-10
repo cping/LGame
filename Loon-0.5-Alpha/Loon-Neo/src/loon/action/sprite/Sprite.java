@@ -29,6 +29,7 @@ import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.component.layout.BoxSize;
 import loon.geom.Affine2f;
 import loon.geom.Point;
 import loon.geom.RectBox;
@@ -37,7 +38,8 @@ import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.MathUtils;
 
-public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
+public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
+		BoxSize {
 
 	/**
 	 * 
@@ -344,9 +346,9 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 	 * @return
 	 */
 	public static int centerX(Sprite sprite, int x) {
-		int newX = x - (sprite.getWidth() / 2);
+		int newX = (int) (x - (sprite.getWidth() / 2));
 		if (newX + sprite.getWidth() >= LSystem.viewSize.getWidth()) {
-			return LSystem.viewSize.getWidth() - sprite.getWidth() - 1;
+			return (int) (LSystem.viewSize.getWidth() - sprite.getWidth() - 1);
 		}
 		if (newX < 0) {
 			return x;
@@ -373,9 +375,9 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 	 * @return
 	 */
 	public static int centerY(Sprite sprite, int y) {
-		int newY = y - (sprite.getHeight() / 2);
+		int newY = (int) (y - (sprite.getHeight() / 2));
 		if (newY + sprite.getHeight() >= LSystem.viewSize.getHeight()) {
-			return LSystem.viewSize.getHeight() - sprite.getHeight() - 1;
+			return (int) (LSystem.viewSize.getHeight() - sprite.getHeight() - 1);
 		}
 		if (newY < 0) {
 			return y;
@@ -490,7 +492,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		return animation.getSpriteImage();
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		LTexture si = animation.getSpriteImage();
 		if (si == null) {
 			return -1;
@@ -498,7 +500,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 		return (int) (si.width() * scaleX);
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		LTexture si = animation.getSpriteImage();
 		if (si == null) {
 			return -1;
@@ -709,5 +711,15 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans {
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;
 		this.scaleY = sy;
+	}
+
+	@Override
+	public void setWidth(float w) {
+		this.scaleX = (w / getWidth());
+	}
+
+	@Override
+	public void setHeight(float h) {
+		this.scaleY = (h / getHeight());
 	}
 }

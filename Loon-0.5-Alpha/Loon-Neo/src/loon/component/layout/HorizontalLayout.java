@@ -1,13 +1,12 @@
 package loon.component.layout;
 
-import loon.geom.RectBox;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
-public class HorizontalLayout implements LayoutManager {
+public class HorizontalLayout extends LayoutManager {
 
 	public final void layoutElements(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+			final LayoutPort... children) {
 		if (isInvalid(root, children)) {
 			return;
 		}
@@ -17,10 +16,10 @@ public class HorizontalLayout implements LayoutManager {
 		int rootBoxWidth = getRootBoxWidth(root);
 		int rootBoxHeight = getRootBoxHeight(root);
 
-		int x = rootBoxX;
-		for (int i = 0; i < children.size; i++) {
-			LayoutPort current = children.get(i);
-			RectBox box = current.getBox();
+		int getX = rootBoxX;
+		for (int i = 0; i < children.length; i++) {
+			LayoutPort current = children[i];
+			BoxSize box = current.getBox();
 			LayoutConstraints boxConstraints = current.getBoxConstraints();
 
 			int elementWidth;
@@ -30,12 +29,14 @@ public class HorizontalLayout implements LayoutManager {
 						boxConstraints, 0);
 				box.setHeight(elementHeight);
 
-				elementWidth = calcElementWidth(children, rootBoxWidth,
+				elementWidth = calcElementWidth(
+						new TArray<LayoutPort>(children), rootBoxWidth,
 						boxConstraints, elementHeight);
 				box.setWidth(elementWidth);
 			} else if (hasHeightConstraint(boxConstraints)
 					&& boxConstraints.getHeight().hasWidthSuffix()) {
-				elementWidth = calcElementWidth(children, rootBoxWidth,
+				elementWidth = calcElementWidth(
+						new TArray<LayoutPort>(children), rootBoxWidth,
 						boxConstraints, 0);
 				box.setWidth(elementWidth);
 
@@ -43,7 +44,8 @@ public class HorizontalLayout implements LayoutManager {
 						boxConstraints, elementWidth);
 				box.setHeight(elementHeight);
 			} else {
-				elementWidth = calcElementWidth(children, rootBoxWidth,
+				elementWidth = calcElementWidth(
+						new TArray<LayoutPort>(children), rootBoxWidth,
 						boxConstraints, 0);
 				box.setWidth(elementWidth);
 
@@ -54,14 +56,14 @@ public class HorizontalLayout implements LayoutManager {
 
 			box.setY(processVerticalAlignment(rootBoxY, rootBoxHeight, box,
 					boxConstraints));
-			box.setX(x);
+			box.setX(getX);
 
-			x += elementWidth;
+			getX += elementWidth;
 		}
 	}
 
 	private int processHeightConstraint(final int rootBoxHeight,
-			final RectBox box, final LayoutConstraints constraint,
+			final BoxSize box, final LayoutConstraints constraint,
 			final int elementWidth) {
 		if (hasHeightConstraint(constraint)) {
 			if (constraint.getHeight().hasWidthSuffix()) {
@@ -94,15 +96,15 @@ public class HorizontalLayout implements LayoutManager {
 	}
 
 	private int processVerticalAlignment(final int rootBoxY,
-			final int rootBoxHeight, final RectBox box,
+			final int rootBoxHeight, final BoxSize box,
 			final LayoutConstraints boxConstraints) {
 		if (VerticalAlign.center.equals(boxConstraints.getVerticalAlign())) {
-			return rootBoxY + ((rootBoxHeight - box.height()) / 2);
+			return (int) (rootBoxY + ((rootBoxHeight - box.getHeight()) / 2));
 		} else if (VerticalAlign.top.equals(boxConstraints.getVerticalAlign())) {
 			return rootBoxY;
 		} else if (VerticalAlign.bottom.equals(boxConstraints
 				.getVerticalAlign())) {
-			return rootBoxY + (rootBoxHeight - box.height());
+			return (int) (rootBoxY + (rootBoxHeight - box.getHeight()));
 		} else {
 			return rootBoxY;
 		}
@@ -154,35 +156,33 @@ public class HorizontalLayout implements LayoutManager {
 	}
 
 	private boolean isInvalid(final LayoutPort root,
-			final TArray<LayoutPort> children) {
-		return root == null || children == null || children.size == 0;
+			final LayoutPort... children) {
+		return root == null || children == null || children.length == 0;
 	}
 
 	private int getRootBoxX(final LayoutPort root) {
-		return root.getBox().x()
-				+ root.getBoxConstraints().getPaddingLeft()
-						.getValueAsInt(root.getBox().getWidth());
+		return (int) (root.getBox().getX() + root.getBoxConstraints()
+				.getPaddingLeft().getValueAsInt(root.getBox().getWidth()));
 	}
 
 	private int getRootBoxY(final LayoutPort root) {
-		return root.getBox().y()
-				+ root.getBoxConstraints().getPaddingTop()
-						.getValueAsInt(root.getBox().getHeight());
+		return (int) (root.getBox().getY() + root.getBoxConstraints()
+				.getPaddingTop().getValueAsInt(root.getBox().getHeight()));
 	}
 
 	private int getRootBoxWidth(final LayoutPort root) {
-		return root.getBox().width()
+		return (int) (root.getBox().getWidth()
 				- root.getBoxConstraints().getPaddingLeft()
-						.getValueAsInt(root.getBox().getWidth())
-				- root.getBoxConstraints().getPaddingRight()
-						.getValueAsInt(root.getBox().getWidth());
+						.getValueAsInt(root.getBox().getWidth()) - root
+				.getBoxConstraints().getPaddingRight()
+				.getValueAsInt(root.getBox().getWidth()));
 	}
 
 	private int getRootBoxHeight(final LayoutPort root) {
-		return root.getBox().height()
+		return (int) (root.getBox().getHeight()
 				- root.getBoxConstraints().getPaddingTop()
-						.getValueAsInt(root.getBox().getHeight())
-				- root.getBoxConstraints().getPaddingBottom()
-						.getValueAsInt(root.getBox().getHeight());
+						.getValueAsInt(root.getBox().getHeight()) - root
+				.getBoxConstraints().getPaddingBottom()
+				.getValueAsInt(root.getBox().getHeight()));
 	}
 }

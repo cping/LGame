@@ -1,23 +1,22 @@
 package loon.component.layout;
 
-import loon.geom.RectBox;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
-public class OverlayLayout implements LayoutManager {
-
+public class OverlayLayout extends LayoutManager {
+	
 	public final void layoutElements(final LayoutPort rootElement,
-			final TArray<LayoutPort> elements) {
+			final LayoutPort... elements) {
 
-		if (rootElement == null || elements == null || elements.size == 0) {
+		if (rootElement == null || elements == null || elements.length == 0) {
 			return;
 		}
 
-		RectBox rootBox = rootElement.getBox();
+		BoxSize rootBox = rootElement.getBox();
 
-		for (int i = 0; i < elements.size; i++) {
-			LayoutPort p = elements.get(i);
-			RectBox box = p.getBox();
+		for (int i = 0; i < elements.length; i++) {
+			LayoutPort p = elements[i];
+			BoxSize box = p.getBox();
 			box.setX(rootBox.getX());
 			box.setY(rootBox.getY());
 			box.setWidth(rootBox.getWidth());

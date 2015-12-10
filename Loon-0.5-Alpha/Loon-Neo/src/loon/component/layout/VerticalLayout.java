@@ -1,26 +1,24 @@
 package loon.component.layout;
 
-import loon.geom.RectBox;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
-public class VerticalLayout implements LayoutManager {
-
+public class VerticalLayout extends LayoutManager {
+	
 	public void layoutElements(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+			final LayoutPort... children) {
 		if (isInvalid(root, children)) {
 			return;
 		}
-
 		int rootBoxX = getRootBoxX(root);
 		int rootBoxY = getRootBoxY(root);
 		int rootBoxWidth = getRootBoxWidth(root);
 		int rootBoxHeight = getRootBoxHeight(root);
 
-		int y = rootBoxY;
-		for (int i = 0; i < children.size; i++) {
-			RectBox currentBox = children.get(i).getBox();
-			LayoutConstraints currentBoxConstraints = children.get(i)
+		int getY = rootBoxY;
+		for (int i = 0; i < children.length; i++) {
+			BoxSize currentBox = children[i].getBox();
+			LayoutConstraints currentBoxConstraints = children[i]
 					.getBoxConstraints();
 
 			int elementHeight;
@@ -31,13 +29,14 @@ public class VerticalLayout implements LayoutManager {
 						currentBoxConstraints, 0);
 				currentBox.setWidth(elementWidth);
 
-				elementHeight = calcElementHeight(children, rootBoxHeight,
-						currentBoxConstraints, elementWidth);
+				elementHeight = calcElementHeight(new TArray<LayoutPort>(
+						children), rootBoxHeight, currentBoxConstraints,
+						elementWidth);
 				currentBox.setHeight(elementHeight);
 			} else if (hasWidthConstraint(currentBoxConstraints)
 					&& currentBoxConstraints.getWidth().hasHeightSuffix()) {
-				elementHeight = calcElementHeight(children, rootBoxHeight,
-						currentBoxConstraints, 0);
+				elementHeight = calcElementHeight(new TArray<LayoutPort>(
+						children), rootBoxHeight, currentBoxConstraints, 0);
 				currentBox.setHeight(elementHeight);
 
 				int elementWidth = processWidthConstraints(rootBoxWidth,
@@ -48,16 +47,16 @@ public class VerticalLayout implements LayoutManager {
 						currentBoxConstraints, 0);
 				currentBox.setWidth(elementWidth);
 
-				elementHeight = calcElementHeight(children, rootBoxHeight,
-						currentBoxConstraints, 0);
+				elementHeight = calcElementHeight(new TArray<LayoutPort>(
+						children), rootBoxHeight, currentBoxConstraints, 0);
 				currentBox.setHeight(elementHeight);
 			}
 
 			currentBox.setX(processHorizontalAlignment(rootBoxX, rootBoxWidth,
-					currentBox.width(), currentBoxConstraints));
-			currentBox.setY(y);
+					(int) currentBox.getWidth(), currentBoxConstraints));
+			currentBox.setY(getY);
 
-			y += elementHeight;
+			getY += elementHeight;
 		}
 	}
 
@@ -172,35 +171,33 @@ public class VerticalLayout implements LayoutManager {
 	}
 
 	private boolean isInvalid(final LayoutPort root,
-			final TArray<LayoutPort> children) {
-		return root == null || children == null || children.size == 0;
+			final LayoutPort... children) {
+		return root == null || children == null || children.length == 0;
 	}
 
 	private int getRootBoxX(final LayoutPort root) {
-		return root.getBox().x()
-				+ root.getBoxConstraints().getPaddingLeft()
-						.getValueAsInt(root.getBox().getWidth());
+		return (int) (root.getBox().getX() + root.getBoxConstraints()
+				.getPaddingLeft().getValueAsInt(root.getBox().getWidth()));
 	}
 
 	private int getRootBoxY(final LayoutPort root) {
-		return root.getBox().y()
-				+ root.getBoxConstraints().getPaddingTop()
-						.getValueAsInt(root.getBox().getHeight());
+		return (int) (root.getBox().getY() + root.getBoxConstraints()
+				.getPaddingTop().getValueAsInt(root.getBox().getHeight()));
 	}
 
 	private int getRootBoxWidth(final LayoutPort root) {
-		return root.getBox().width()
+		return (int) (root.getBox().getWidth()
 				- root.getBoxConstraints().getPaddingLeft()
-						.getValueAsInt(root.getBox().getWidth())
-				- root.getBoxConstraints().getPaddingRight()
-						.getValueAsInt(root.getBox().getWidth());
+						.getValueAsInt(root.getBox().getWidth()) - root
+				.getBoxConstraints().getPaddingRight()
+				.getValueAsInt(root.getBox().getWidth()));
 	}
 
 	private int getRootBoxHeight(final LayoutPort root) {
-		return root.getBox().height()
+		return (int) (root.getBox().getHeight()
 				- root.getBoxConstraints().getPaddingTop()
-						.getValueAsInt(root.getBox().getHeight())
-				- root.getBoxConstraints().getPaddingBottom()
-						.getValueAsInt(root.getBox().getHeight());
+						.getValueAsInt(root.getBox().getHeight()) - root
+				.getBoxConstraints().getPaddingBottom()
+				.getValueAsInt(root.getBox().getHeight()));
 	}
 }

@@ -34,9 +34,9 @@ public interface ISprite extends Serializable, LRelease, XY {
 
 	public static final int TYPE_FADE_OUT = 1;
 
-	public abstract int getWidth();
+	public abstract float getWidth();
 
-	public abstract int getHeight();
+	public abstract float getHeight();
 
 	public abstract float getAlpha();
 

@@ -100,12 +100,12 @@ public class FadeTileEffect extends LObject implements BaseEffect,ISprite {
 	}
 
 	@Override
-	public int getHeight() {
+	public float getHeight() {
 		return getContainerWidth();
 	}
 
 	@Override
-	public int getWidth() {
+	public float getWidth() {
 		return getContainerHeight();
 	}
 

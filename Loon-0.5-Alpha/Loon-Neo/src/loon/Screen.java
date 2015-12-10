@@ -31,6 +31,9 @@ import loon.canvas.LColor;
 import loon.component.Desktop;
 import loon.component.LComponent;
 import loon.component.LLayer;
+import loon.component.layout.LayoutConstraints;
+import loon.component.layout.LayoutManager;
+import loon.component.layout.LayoutPort;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
@@ -57,6 +60,8 @@ import loon.utils.timer.LTimerContext;
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
 
+	private LayoutConstraints _rootConstraints;
+
 	private boolean _isExistCamera = false;
 
 	private BaseCamera _baseCamera;
@@ -75,6 +80,33 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			_baseCamera = new EmptyCamera();
 		}
 		return _baseCamera;
+	}
+
+	public LayoutConstraints getRootConstraints() {
+		if (_rootConstraints == null) {
+			_rootConstraints = new LayoutConstraints();
+		}
+		return _rootConstraints;
+	}
+
+	public LayoutPort getLayoutPort() {
+		return new LayoutPort(getBox(), getRootConstraints());
+	}
+
+	public LayoutPort getLayoutPort(final RectBox newBox,
+			final LayoutConstraints newBoxConstraints) {
+		return new LayoutPort(newBox, newBoxConstraints);
+	}
+
+	public LayoutPort getLayoutPort(final LayoutPort src) {
+		return new LayoutPort(src);
+	}
+
+	public void layoutElements(final LayoutManager manager,
+			final LComponent... comps) {
+		if (manager != null) {
+			manager.layoutElements(this, comps);
+		}
 	}
 
 	public void stopRepaint() {
@@ -1161,6 +1193,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return null;
 	}
 
+	public Screen add(Object... obj) {
+		for (int i = 0; i < obj.length; i++) {
+			add(obj[i]);
+		}
+		return this;
+	}
+
 	/**
 	 * 添加游戏对象
 	 * 
@@ -1179,7 +1218,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		return this;
 	}
-
+	
+	public Screen remove(Object... obj) {
+		for (int i = 0; i < obj.length; i++) {
+			remove(obj[i]);
+		}
+		return this;
+	}
+	
 	/**
 	 * 删除指定对象
 	 * 

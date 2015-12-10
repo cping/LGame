@@ -24,6 +24,10 @@ public class SizeValue {
 
 	private boolean hasHeightSuffix;
 
+	public SizeValue(final int size) {
+		this(size + "px");
+	}
+
 	public SizeValue(final String valueParam) {
 		if (valueParam != null) {
 			if (valueParam.endsWith(PERCENT + WIDTH_SUFFIX)) {

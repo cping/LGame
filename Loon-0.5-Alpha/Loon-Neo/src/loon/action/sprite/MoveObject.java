@@ -186,7 +186,7 @@ public class MoveObject extends SpriteBatchObject {
 		if (tiles.isHit(nextX, nextY)) {
 			px += speed;
 			if (px > tiles.getWidth() - tiles.getTileWidth()) {
-				px = tiles.getWidth() - tiles.getTileWidth();
+				px = (int) (tiles.getWidth() - tiles.getTileWidth());
 			}
 			movingLength += speed;
 			setLocation(px, py);
@@ -250,7 +250,7 @@ public class MoveObject extends SpriteBatchObject {
 		if (tiles.isHit(nextX, nextY)) {
 			py += speed;
 			if (py > tiles.getHeight() - tiles.getTileHeight()) {
-				py = tiles.getHeight() - tiles.getTileHeight();
+				py = (int) (tiles.getHeight() - tiles.getTileHeight());
 			}
 			movingLength += speed;
 			setLocation(px, py);
@@ -429,12 +429,12 @@ public class MoveObject extends SpriteBatchObject {
 					int sx = tiles.tilesToPixelsX(tile.x);
 					int sy = tiles.tilesToPixelsY(tile.y);
 					if (sx > 0) {
-						sx = sx - getWidth();
+						sx = (int) (sx - getWidth());
 					} else if (sx < 0) {
 						sx = tiles.tilesToPixelsX(tile.x);
 					}
 					if (sy > 0) {
-						sy = sy - getHeight();
+						sy = (int) (sy - getHeight());
 					} else if (sy < 0) {
 						sy = tiles.tilesToPixelsY(tile.y);
 					}

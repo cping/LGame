@@ -177,12 +177,12 @@ public class PlayerUtils extends Director {
 			final float height) {
 		return new Player() {
 			@Override
-			public float width() {
+			public float getWidth() {
 				return width;
 			}
 
 			@Override
-			public float height() {
+			public float getHeight() {
 				return height;
 			}
 
@@ -206,7 +206,7 @@ public class PlayerUtils extends Director {
 
 	protected static void addBounds(Player root, Player l, RectBox bounds,
 			Vector2f scratch) {
-		float w = l.width(), h = l.height();
+		float w = l.getWidth(), h = l.getHeight();
 		if (w != 0 || h != 0) {
 			bounds.add(PlayerUtils.layerToParent(l, root, scratch.set(0, 0),
 					scratch));
@@ -297,8 +297,8 @@ public class PlayerUtils extends Director {
 
 	public final static boolean hitTest(Player player, float x, float y) {
 		Vector2f point = screenToPlayer(player, x, y);
-		return (point.x() >= 0 && point.y() >= 0 && point.x() <= player.width() && point
-				.y() <= player.height());
+		return (point.x() >= 0 && point.y() >= 0 && point.x() <= player.getWidth() && point
+				.y() <= player.getHeight());
 	}
 
 	public final static Player playerUnderPoint(Player root, float x, float y) {
@@ -387,7 +387,7 @@ public class PlayerUtils extends Director {
 				}
 			}
 		}
-		if (x >= 0 && x < player.width() && y >= 0 && y < player.height()) {
+		if (x >= 0 && x < player.getWidth() && y >= 0 && y < player.getHeight()) {
 			return player;
 		}
 		return null;
