@@ -169,7 +169,7 @@ public class LToast extends LComponent {
 		g.setColor(LColor.DEF_COLOR);
 		g.setFont(font);
 		g.drawString(mText, displayX + (cellWidth - font.stringWidth(mText))
-				/ 2 - 2, displayY, mForegroundColor);
+				/ 2, displayY + 2, mForegroundColor);
 		g.setColor(oc);
 		g.setAlpha(oa);
 		g.setFont(f);

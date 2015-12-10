@@ -30,17 +30,17 @@ import loon.font.LFont;
 import loon.opengl.GLEx;
 
 /*
-*          新增类，用以列表方式显示指定数据，本身有默认UI，用户也可以自行注入图片进行替换.
-* 
-*          Example1:
-* 
-*          LTextList list = new LTextList(0,0,150,100); 
-*          list.add("图灵测试");
-*          list.add("人月神话");
-*          list.add("费雪效应"); 
-*          list.add("ABC");
-*          list.add("EFG");
-*/          
+ *          新增类，用以列表方式显示指定数据，本身有默认UI，用户也可以自行注入图片进行替换.
+ * 
+ *          Example1:
+ * 
+ *          LTextList list = new LTextList(0,0,150,100); 
+ *          list.add("图灵测试");
+ *          list.add("人月神话");
+ *          list.add("费雪效应"); 
+ *          list.add("ABC");
+ *          list.add("EFG");
+ */
 public class LTextList extends LComponent {
 
 	public final int LIST_SPACE_TOP = 5;
@@ -289,6 +289,14 @@ public class LTextList extends LComponent {
 		return num < max ? this.number[num] : this.number[max - 1];
 	}
 
+	public String getSelectName() {
+		int idx = get();
+		if (idx != -1) {
+			return name[idx];
+		}
+		return "unkown";
+	}
+
 	/**
 	 * 获得选中数据所在列的数据标识
 	 * 
@@ -313,7 +321,7 @@ public class LTextList extends LComponent {
 	}
 
 	private void drawString(GLEx g, String str, int x, int y) {
-		g.drawString(str, x, y - 5);
+		g.drawString(str, x, y);
 	}
 
 	public void draw(GLEx g, int x, int y, float mouseX, float mouseY) {
@@ -382,8 +390,8 @@ public class LTextList extends LComponent {
 							g.fillRect(x + 1, this.drawY, getWidth() - 2,
 									fontSize + 2);
 						} else {
-							g.draw(this.choiceTexture, x + 2,
-									this.drawY, getWidth() - 2, fontSize + 2);
+							g.draw(this.choiceTexture, x + 2, this.drawY,
+									getWidth() - 2, fontSize + 2);
 						}
 						g.setColor(this.choiceStringColor);
 						drawString(g, this.name[i], this.drawX, this.drawY);
@@ -452,9 +460,8 @@ public class LTextList extends LComponent {
 				g.fillRect(this.scrollBarX, this.scrollBarY,
 						this.scrollButtonWidth, this.scrollBarHeight);
 			} else {
-				g.draw(this.scrollTexture, this.scrollBarX,
-						this.scrollBarY, this.scrollButtonWidth,
-						this.scrollBarHeight);
+				g.draw(this.scrollTexture, this.scrollBarX, this.scrollBarY,
+						this.scrollButtonWidth, this.scrollBarHeight);
 
 			}
 
@@ -494,8 +501,8 @@ public class LTextList extends LComponent {
 				}
 				this.scrollUpButtonON = true;
 			}
-			this.scrollButtonX = (int)(x + getWidth());
-			this.scrollButtonY = (int)(y + getHeight() - this.scrollButtonHeight);
+			this.scrollButtonX = (int) (x + getWidth());
+			this.scrollButtonY = (int) (y + getHeight() - this.scrollButtonHeight);
 			this.scrollDownButtonON = false;
 			if ((!this.scrollBarDrag) && isFocusable()
 					&& (mouseX > this.scrollButtonX)

@@ -69,6 +69,8 @@ public class MultiScreenTest extends Screen {
 										@Override
 										public void stop(ActionBind o) {
 											screen.runScreen("main");
+											// 还原当前动作角色旋转角度为0
+											o.setRotation(0);
 										}
 
 										@Override
@@ -121,7 +123,7 @@ public class MultiScreenTest extends Screen {
 
 	final String[] names = { "MessageBox", "Live2d", "Action", "Effect",
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
-			"Layout", "Table","Menu","Names" };
+			"Layout", "Table", "Menu", "Names" ,"Toast","List"};
 
 	@Override
 	public void onLoad() {
@@ -144,7 +146,8 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new TableTest());
 		addScreen(names[index++], new MenuTest());
 		addScreen(names[index++], new DecideNameTest());
-		
+		addScreen(names[index++], new ToastTest());
+		addScreen(names[index++], new ListTest());
 		// 默认按钮大小为120x30
 		int btnWidth = 120;
 		int btnHeight = 30;
@@ -236,6 +239,10 @@ public class MultiScreenTest extends Screen {
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
+		//原始大小
+		setting.width = 480;
+		setting.height = 320;
+		//缩放为
 		setting.width_zoom = 640;
 		setting.height_zoom = 480;
 		setting.fps = 60;
