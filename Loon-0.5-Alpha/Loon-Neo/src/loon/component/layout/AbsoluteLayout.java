@@ -45,26 +45,39 @@ public class AbsoluteLayout extends LayoutManager {
 				if (cons.getWidth() != null
 						&& cons.getWidth().hasHeightSuffix()) {
 					if (cons.getHeight() != null) {
-						box.setHeight(cons.getHeight().getValueAsInt(
-								rootBoxHeight));
+						if (_allow) {
+							box.setHeight(cons.getHeight().getValueAsInt(
+									rootBoxHeight));
+						}
 					}
-					box.setWidth(cons.getWidth().getValueAsInt(box.getHeight()));
+					if (_allow) {
+						box.setWidth(cons.getWidth().getValueAsInt(
+								box.getHeight()));
+					}
 				} else if (cons.getHeight() != null
 						&& cons.getHeight().hasWidthSuffix()) {
 					if (cons.getWidth() != null) {
-						box.setWidth(cons.getWidth()
-								.getValueAsInt(rootBoxWidth));
+						if (_allow) {
+							box.setWidth(cons.getWidth().getValueAsInt(
+									rootBoxWidth));
+						}
 					}
-					box.setHeight(cons.getHeight()
-							.getValueAsInt(box.getWidth()));
+					if (_allow) {
+						box.setHeight(cons.getHeight().getValueAsInt(
+								box.getWidth()));
+					}
 				} else {
 					if (cons.getWidth() != null) {
-						box.setWidth(cons.getWidth()
-								.getValueAsInt(rootBoxWidth));
+						if (_allow) {
+							box.setWidth(cons.getWidth().getValueAsInt(
+									rootBoxWidth));
+						}
 					}
 					if (cons.getHeight() != null) {
-						box.setHeight(cons.getHeight().getValueAsInt(
-								rootBoxHeight));
+						if (_allow) {
+							box.setHeight(cons.getHeight().getValueAsInt(
+									rootBoxHeight));
+						}
 					}
 				}
 
@@ -74,12 +87,12 @@ public class AbsoluteLayout extends LayoutManager {
 		}
 	}
 
-	public final SizeValue calculateConstraintWidth(final LayoutPort root,
+	final SizeValue calculateConstraintWidth(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		return null;
 	}
 
-	public final SizeValue calculateConstraintHeight(final LayoutPort root,
+	final SizeValue calculateConstraintHeight(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		return null;
 	}

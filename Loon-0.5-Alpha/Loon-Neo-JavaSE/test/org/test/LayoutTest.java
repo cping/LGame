@@ -5,13 +5,17 @@ import loon.LazyLoading;
 import loon.Screen;
 import loon.component.LClickButton;
 import loon.component.layout.HorizontalLayout;
+import loon.component.layout.LayoutManager;
+import loon.component.layout.VerticalLayout;
 import loon.event.GameTouch;
-import loon.geom.SizeValue;
+import loon.event.LTouchArea;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
 public class LayoutTest extends Screen {
+
+	private LayoutManager layout;
 
 	@Override
 	public void draw(GLEx g) {
@@ -22,24 +26,52 @@ public class LayoutTest extends Screen {
 	public void onLoad() {
 
 		// 产生四个按钮(按钮大小和位置会根据布局改变，所以此处无需设置按钮大小)
-		LClickButton test1 = LClickButton.make("test1");
-		LClickButton test2 = LClickButton.make("test2");
-		LClickButton test3 = LClickButton.make("test3");
-		LClickButton test4 = LClickButton.make("test4");
+		final LClickButton test1 = LClickButton.make("test1");
+		final LClickButton test2 = LClickButton.make("test2");
+		final LClickButton test3 = LClickButton.make("test3");
+		final LClickButton test4 = LClickButton.make("test4");
 		// 添加按钮
 		add(test1, test2, test3, test4);
 
 		// 设定留空大小
-		getRootConstraints().setPadding(new SizeValue(50));
+		getRootConstraints().setPadding(50);
 
 		// 单独设置下方间隔
-		getRootConstraints().setPaddingBottom(new SizeValue(100));
+		getRootConstraints().setPaddingBottom(100);
 
 		// 布局器为水平方式
-		HorizontalLayout centerLayout = new HorizontalLayout();
-
+		layout = new HorizontalLayout();
+		//如果不需要自动改变对象大小，可以设置禁止改变布局大小(不过，那样就请自行设定组件大小比率)
+		//layout.setChangeSize(false);
 		// 执行布局
-		layoutElements(centerLayout, test1, test2, test3, test4);
+		layoutElements(layout, test1, test2, test3, test4);
+
+		// 构建一个触屏监听
+		registerTouchArea(new LTouchArea() {
+
+			@Override
+			public void onAreaTouched(Event e, float touchX, float touchY) {
+
+				// 当触发屏幕点击时
+				if (e == Event.DOWN) {
+					// 每次点击转换一次布局方式
+					if (layout instanceof HorizontalLayout) {
+						layout = new VerticalLayout();
+					} else {
+						layout = new HorizontalLayout();
+					}
+					//layout.setChangeSize(false);
+					// 执行布局
+					layoutElements(layout, test1, test2, test3, test4);
+				}
+			}
+
+			// 让所有区域点击都有效
+			@Override
+			public boolean contains(float x, float y) {
+				return true;
+			}
+		});
 	}
 
 	@Override

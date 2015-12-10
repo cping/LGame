@@ -7,6 +7,16 @@ import loon.utils.TArray;
 
 public abstract class LayoutManager {
 
+	protected boolean _allow = true;
+
+	public final void setChangeSize(boolean allow) {
+		this._allow = allow;
+	}
+
+	public final boolean isAllowChangeSize() {
+		return _allow;
+	}
+
 	public final void layoutElements(final Screen root,
 			final LComponent... children) {
 		int size = children.length;
@@ -17,7 +27,7 @@ public abstract class LayoutManager {
 		layoutElements(root.getLayoutPort(), ports);
 	}
 
-	abstract void layoutElements(LayoutPort root, LayoutPort... children);
+	public abstract void layoutElements(LayoutPort root, LayoutPort... children);
 
 	abstract SizeValue calculateConstraintWidth(LayoutPort root,
 			TArray<LayoutPort> children);

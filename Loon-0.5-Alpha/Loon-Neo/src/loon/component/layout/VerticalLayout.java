@@ -4,7 +4,7 @@ import loon.geom.SizeValue;
 import loon.utils.TArray;
 
 public class VerticalLayout extends LayoutManager {
-	
+
 	public void layoutElements(final LayoutPort root,
 			final LayoutPort... children) {
 		if (isInvalid(root, children)) {
@@ -27,29 +27,41 @@ public class VerticalLayout extends LayoutManager {
 					&& currentBoxConstraints.getHeight().hasWidthSuffix()) {
 				int elementWidth = processWidthConstraints(rootBoxWidth,
 						currentBoxConstraints, 0);
-				currentBox.setWidth(elementWidth);
+				if (_allow) {
+					currentBox.setWidth(elementWidth);
+				}
 
 				elementHeight = calcElementHeight(new TArray<LayoutPort>(
 						children), rootBoxHeight, currentBoxConstraints,
 						elementWidth);
-				currentBox.setHeight(elementHeight);
+				if (_allow) {
+					currentBox.setHeight(elementHeight);
+				}
 			} else if (hasWidthConstraint(currentBoxConstraints)
 					&& currentBoxConstraints.getWidth().hasHeightSuffix()) {
 				elementHeight = calcElementHeight(new TArray<LayoutPort>(
 						children), rootBoxHeight, currentBoxConstraints, 0);
-				currentBox.setHeight(elementHeight);
+				if (_allow) {
+					currentBox.setHeight(elementHeight);
+				}
 
 				int elementWidth = processWidthConstraints(rootBoxWidth,
 						currentBoxConstraints, elementHeight);
-				currentBox.setWidth(elementWidth);
+				if (_allow) {
+					currentBox.setWidth(elementWidth);
+				}
 			} else {
 				int elementWidth = processWidthConstraints(rootBoxWidth,
 						currentBoxConstraints, 0);
-				currentBox.setWidth(elementWidth);
+				if (_allow) {
+					currentBox.setWidth(elementWidth);
+				}
 
 				elementHeight = calcElementHeight(new TArray<LayoutPort>(
 						children), rootBoxHeight, currentBoxConstraints, 0);
-				currentBox.setHeight(elementHeight);
+				if (_allow) {
+					currentBox.setHeight(elementHeight);
+				}
 			}
 
 			currentBox.setX(processHorizontalAlignment(rootBoxX, rootBoxWidth,

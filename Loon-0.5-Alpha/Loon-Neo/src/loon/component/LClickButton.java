@@ -249,6 +249,40 @@ public class LClickButton extends LComponent {
 		this.fontColor = fontColor;
 	}
 
+	public LTexture getIdleClick() {
+		return idleClick;
+	}
+
+	public void setIdleClick(LTexture idleClick) {
+		this.idleClick = idleClick;
+	}
+
+	public LTexture getHoverClick() {
+		return hoverClick;
+	}
+
+	public void setHoverClick(LTexture hoverClick) {
+		this.hoverClick = hoverClick;
+	}
+
+	public LTexture getClickedClick() {
+		return clickedClick;
+	}
+
+	public void setClickedClick(LTexture clickedClick) {
+		this.clickedClick = clickedClick;
+	}
+
+	public void setTexture(LTexture clickedClick) {
+		this.clickedClick = clickedClick;
+		this.idleClick = clickedClick;
+		this.hoverClick = clickedClick;
+	}
+
+	public void setTexture(String path) {
+		setTexture(LTextures.loadTexture(path));
+	}
+
 	@Override
 	public String getUIName() {
 		return "ClickButton";

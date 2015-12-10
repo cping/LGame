@@ -27,31 +27,43 @@ public class HorizontalLayout extends LayoutManager {
 					&& boxConstraints.getWidth().hasHeightSuffix()) {
 				int elementHeight = processHeightConstraint(rootBoxHeight, box,
 						boxConstraints, 0);
-				box.setHeight(elementHeight);
+				if (_allow) {
+					box.setHeight(elementHeight);
+				}
 
 				elementWidth = calcElementWidth(
 						new TArray<LayoutPort>(children), rootBoxWidth,
 						boxConstraints, elementHeight);
-				box.setWidth(elementWidth);
+				if (_allow) {
+					box.setWidth(elementWidth);
+				}
 			} else if (hasHeightConstraint(boxConstraints)
 					&& boxConstraints.getHeight().hasWidthSuffix()) {
 				elementWidth = calcElementWidth(
 						new TArray<LayoutPort>(children), rootBoxWidth,
 						boxConstraints, 0);
-				box.setWidth(elementWidth);
+				if (_allow) {
+					box.setWidth(elementWidth);
+				}
 
 				int elementHeight = processHeightConstraint(rootBoxHeight, box,
 						boxConstraints, elementWidth);
-				box.setHeight(elementHeight);
+				if (_allow) {
+					box.setHeight(elementHeight);
+				}
 			} else {
 				elementWidth = calcElementWidth(
 						new TArray<LayoutPort>(children), rootBoxWidth,
 						boxConstraints, 0);
-				box.setWidth(elementWidth);
+				if (_allow) {
+					box.setWidth(elementWidth);
+				}
 
 				int elementHeight = processHeightConstraint(rootBoxHeight, box,
 						boxConstraints, 0);
-				box.setHeight(elementHeight);
+				if (_allow) {
+					box.setHeight(elementHeight);
+				}
 			}
 
 			box.setY(processVerticalAlignment(rootBoxY, rootBoxHeight, box,

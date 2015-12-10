@@ -256,8 +256,8 @@ public class TDMain extends Screen {
 			this.setFlag("Enemy");
 			this.setDelay(300);
 			this.setImage(fileName);
-			this.hpBar = new StatusBar(hp, hp, (this.getWidth() - 25) / 2,
-					this.getHeight() + 5, 25, 5);
+			this.hpBar = new StatusBar(hp, hp, (this.width() - 25) / 2,
+					this.height() + 5, 25, 5);
 			this.startX = sx;
 			this.startY = sy;
 			this.endX = ex;
@@ -308,9 +308,9 @@ public class TDMain extends Screen {
 
 			// 坐标矫正，用以让角色居于瓦片中心
 			final int offsetX = (getLLayer().getField2D().getTileWidth() - this
-					.getWidth()) / 2;
+					.width()) / 2;
 			final int offsetY = (getLLayer().getField2D().getTileWidth() - this
-					.getHeight()) / 2;
+					.height()) / 2;
 			// 初始化角色在Layer中坐标
 			setLocation(startX + offsetX, startY + offsetY);
 			// 命令角色向指定坐标自行移动(参数为false为四方向寻径，为true时八方向)，并返回移动控制器
@@ -391,8 +391,8 @@ public class TDMain extends Screen {
 			setActorDrag(false);
 			setDelay(500);
 			// 设定Menu背景
-			Image image = Image.createImage(this.getWidth(),
-					this.getHeight());
+			Image image = Image.createImage(this.width(),
+					this.height());
 			Canvas g = image.getCanvas();
 			g.setColor(0, 0, 0, 125);
 			g.fillRect(0, 0, getWidth(), getHeight());
@@ -626,6 +626,7 @@ public class TDMain extends Screen {
 		menu.setY(0);
 		// 添加menu到Screen
 		add(menu);
+
 	}
 
 

@@ -109,6 +109,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
+	public void layoutElements(final LayoutManager manager,
+			final LayoutPort... ports) {
+		if (manager != null) {
+			manager.layoutElements(getLayoutPort(), ports);
+		}
+	}
+
 	public void stopRepaint() {
 		LSystem.AUTO_REPAINT = false;
 	}
@@ -1218,14 +1225,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		return this;
 	}
-	
+
 	public Screen remove(Object... obj) {
 		for (int i = 0; i < obj.length; i++) {
 			remove(obj[i]);
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 删除指定对象
 	 * 

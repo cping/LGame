@@ -4,7 +4,7 @@ import loon.geom.SizeValue;
 import loon.utils.TArray;
 
 public class OverlayLayout extends LayoutManager {
-	
+
 	public final void layoutElements(final LayoutPort rootElement,
 			final LayoutPort... elements) {
 
@@ -19,17 +19,19 @@ public class OverlayLayout extends LayoutManager {
 			BoxSize box = p.getBox();
 			box.setX(rootBox.getX());
 			box.setY(rootBox.getY());
-			box.setWidth(rootBox.getWidth());
-			box.setHeight(rootBox.getHeight());
+			if (_allow) {
+				box.setWidth(rootBox.getWidth());
+				box.setHeight(rootBox.getHeight());
+			}
 		}
 	}
 
-	public final SizeValue calculateConstraintWidth(final LayoutPort root,
+	final SizeValue calculateConstraintWidth(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		return null;
 	}
 
-	public final SizeValue calculateConstraintHeight(final LayoutPort root,
+	final SizeValue calculateConstraintHeight(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		return null;
 	}
