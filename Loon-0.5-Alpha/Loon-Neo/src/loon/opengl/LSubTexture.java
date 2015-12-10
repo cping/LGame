@@ -2,8 +2,6 @@ package loon.opengl;
 
 import loon.LTexture;
 
-
-
 public class LSubTexture {
 
 	private LTexture parent;
@@ -19,7 +17,7 @@ public class LSubTexture {
 	}
 
 	public LTexture get() {
-		return this.parent.copy(x, y, getWidth(), getHeight());
+		return this.parent.copy(x, y, getWidth() - 1, getHeight() - 1);
 	}
 
 	public LTexture getParent() {

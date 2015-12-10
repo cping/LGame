@@ -33,12 +33,8 @@ import loon.utils.TArray;
  * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，
  * 若setSupportScroll(true)则支持滚动)
  * 
- * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); 
- * panel.add("ABC");
- * panel.add("EFG"); 
- * panel.add("ABC"); 
- * panel.add("EFG"); 
- * panel.add("ABC");
+ * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); panel.add("ABC");
+ * panel.add("EFG"); panel.add("ABC"); panel.add("EFG"); panel.add("ABC");
  * panel.add("EFG");
  */
 public class LMenu extends LComponent {
@@ -59,9 +55,12 @@ public class LMenu extends LComponent {
 		public float xslot;
 		public float itemWidth;
 		public float itemHeight;
+		public float offsetX;
+		public float offsetY;
 		private boolean clicked;
 		private boolean localpos = false, localsize = false;
 
+		private LFont _font;
 		private MenuItemClick _itemclick;
 
 		MenuItem(LMenu parent, LTexture tex, String label, MenuItemClick click) {
@@ -79,6 +78,7 @@ public class LMenu extends LComponent {
 			this.label = label;
 			this.keep = keep;
 			this._itemclick = click;
+			this._font = LFont.getDefaultFont();
 			if (tex == null) {
 				this.keep = false;
 			}
@@ -115,12 +115,34 @@ public class LMenu extends LComponent {
 			this.label = label;
 			this.keep = keep;
 			this._itemclick = click;
+			this._font = LFont.getDefaultFont();
 			if (tex == null) {
 				this.keep = false;
 			}
 		}
 
+		public MenuItem setOffsetX(float x) {
+			this.offsetX = x;
+			return this;
+		}
+
+		public MenuItem setOffsetY(float y) {
+			this.offsetY = y;
+			return this;
+		}
+
+		public MenuItem setFont(LFont font) {
+			this._font = font;
+			return this;
+		}
+
+		public LFont getFont() {
+			return this._font;
+		}
+
 		public void draw(GLEx g) {
+			g.saveBrush();
+			g.setFont(_font);
 			if (this.parent != null) {
 				if (!localpos) {
 					this.x = (this.parent.cellWidth * this.xslot
@@ -156,7 +178,7 @@ public class LMenu extends LComponent {
 						this.itemHeight = this.texture.getHeight();
 					}
 				}
-				if (bounds().contains(SysTouch.getX(),SysTouch.getY())
+				if (bounds().contains(SysTouch.getX(), SysTouch.getY())
 						&& SysTouch.isDown()) {
 					g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
 					if (SysTouch.isDown() && (!this.clicked)) {
@@ -165,8 +187,6 @@ public class LMenu extends LComponent {
 						}
 						this.clicked = true;
 					}
-				} else {
-					g.setColor(1f, 1f, 1f, 1f);
 				}
 				if (!SysTouch.isDown()) {
 					this.clicked = false;
@@ -179,17 +199,15 @@ public class LMenu extends LComponent {
 				if (this.label != null) {
 					g.drawString(
 							label,
-							this.x
-									+ 3f
-									+ (itemWidth / 2 - font.stringWidth(label) / 2),
-							this.y + this.parent.paddingy + this.parent.scroll - font.getAscent()
-									- 2) ;
+							(this.x + 3f + (itemWidth / 2 - font
+									.stringWidth(label) / 2)) + offsetX,
+							(this.y + this.parent.paddingy + this.parent.scroll
+									- font.getAscent() - 2)
+									+ offsetY);
 				}
 
-				g.setColor(1f, 1f, 1f, 1f);
-
 			} else {
-				if (bounds().contains(SysTouch.getX(),SysTouch.getY())
+				if (bounds().contains(SysTouch.getX(), SysTouch.getY())
 						&& SysTouch.isDown()) {
 					g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
 					if (SysTouch.isDown() && (!this.clicked)) {
@@ -198,8 +216,6 @@ public class LMenu extends LComponent {
 						}
 						this.clicked = true;
 					}
-				} else {
-					g.setColor(1f, 1f, 1f, 1f);
 				}
 				if (!SysTouch.isDown()) {
 					this.clicked = false;
@@ -209,16 +225,14 @@ public class LMenu extends LComponent {
 							this.itemHeight);
 				}
 				if (this.label != null) {
-					g.drawString(
-							this.label,
-							this.x
-									+ (itemWidth / 2 - font.stringWidth(label) / 2 - font.getAscent()),
-							this.y - 2);
+					g.drawString(this.label,
+							(this.x + (itemWidth / 2 - font.stringWidth(label)
+									/ 2 - font.getAscent()))
+									+ offsetX, (this.y - 2) + offsetY);
 				}
 
-				g.setColor(1f, 1f, 1f, 1f);
-
 			}
+			g.restoreBrush();
 		}
 
 		private RectBox itemrect;
@@ -473,21 +487,20 @@ public class LMenu extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		LFont oldfont = g.getFont();
-		int oldcolor = g.color();
-		int oldalpha = g.color();
 		g.setAlpha(alphaMenu);
 		switch (type) {
 		case MOVE_LEFT:
 			if ((selected == this) || (selected == null)) {
 				g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight);
 				if (label != null) {
+					g.setAlpha(1f);
 					g.drawString(
 							this.label,
 							this.width
 									+ (tabWidth / 2 - font.stringWidth(label) / 2),
 							getTaby() + (tabHeight / 2 - font.getHeight() / 2)
 									- 5);
+					g.setAlpha(alphaMenu);
 				}
 			}
 			if ((this.active) || (this.width > 0)) {
@@ -506,11 +519,13 @@ public class LMenu extends LComponent {
 				float posX = this.getScreenWidth() - this.width - this.tabWidth;
 				g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight);
 				if (label != null) {
+					g.setAlpha(1f);
 					g.drawString(
 							this.label,
 							posX + (tabWidth / 2 - font.stringWidth(label) / 2),
 							getTaby() + (tabHeight / 2 - font.getHeight() / 2)
 									- 5);
+					g.setAlpha(this.alphaMenu);
 				}
 			}
 			if ((this.active) || (this.width > 0)) {
@@ -525,9 +540,6 @@ public class LMenu extends LComponent {
 
 			break;
 		}
-		g.setAlpha(oldalpha);
-		g.setColor(oldcolor);
-		g.setFont(oldfont);
 	}
 
 	private boolean mouseSelect = false;
@@ -599,7 +611,6 @@ public class LMenu extends LComponent {
 				}
 			}
 		}
-
 	}
 
 	public boolean isMouseSelect() {

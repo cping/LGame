@@ -1319,11 +1319,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (points.length == 0) {
 				return this;
 			}
+			int argb = LColor.combine(fillColor, baseColor);
 			glBegin(GL20.GL_TRIANGLES);
 			for (int i = 0; i < tris.getTriangleCount(); i++) {
 				for (int p = 0; p < 3; p++) {
 					float[] pt = tris.getTrianglePoint(i, p);
-					glColor(baseColor);
+					glColor(argb);
 					glVertex2f(pt[0] + x, pt[1] + y);
 				}
 			}
@@ -1958,19 +1959,19 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float cy = y1 + (height / 2.0f);
 			glBegin(GL20.GL_TRIANGLE_FAN);
 			int step = 360 / segments;
-			glColor(baseColor);
+			int argb = LColor.combine(fillColor, baseColor);
+			glColor(argb);
 			glVertex2f(cx, cy);
 			for (float a = start; a < (end + step); a += step) {
 				float ang = a;
 				if (ang > end) {
 					ang = end;
 				}
-
 				float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang))
 						* width / 2.0f));
 				float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang))
 						* height / 2.0f));
-				glColor(baseColor);
+				glColor(argb);
 				glVertex2f(x, y);
 			}
 			glEnd();

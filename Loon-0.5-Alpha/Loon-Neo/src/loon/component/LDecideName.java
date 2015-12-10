@@ -70,6 +70,8 @@ public class LDecideName extends LComponent {
 	private float dx = 0.1f;
 	private float dy = 0.1f;
 
+	private float labelOffsetX, labelOffsetY;
+
 	private int maxNameString = 5;
 
 	private char enterFlagString = '>', clearFlagString = '<';
@@ -127,7 +129,8 @@ public class LDecideName extends LComponent {
 		}
 		float posX = x + leftOffset;
 		if (labelName != null) {
-			g.drawString(labelName + this.name, posX, y, LColor.orange);
+			g.drawString(labelName + this.name, posX + labelOffsetX, y
+					+ labelOffsetY, LColor.orange);
 		}
 		float posY = y + topOffset;
 		if (!_cache) {
@@ -420,11 +423,28 @@ public class LDecideName extends LComponent {
 		return font;
 	}
 
+	public float getLabelOffsetX() {
+		return labelOffsetX;
+	}
+
+	public void setLabelOffsetX(float x) {
+		this.labelOffsetX = x;
+	}
+
+	public float getLabelOffsetY() {
+		return labelOffsetY;
+	}
+
+	public void setLabelOffsetY(float y) {
+		this.labelOffsetY = y;
+	}
+
 	@Override
 	public String getUIName() {
 		return "DecideName";
 	}
 
+	@Override
 	public void close() {
 		super.close();
 		if (cacheFont != null) {

@@ -8,6 +8,7 @@ import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
+import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.layout.LayoutManager;
@@ -21,6 +22,11 @@ import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
 
 public class MultiScreenTest extends Screen {
+
+	@Override
+	public LTransition onTransition() {
+		return LTransition.newPixelThunder(LColor.yellow);
+	}
 
 	@Override
 	public void draw(GLEx g) {
@@ -115,7 +121,7 @@ public class MultiScreenTest extends Screen {
 
 	final String[] names = { "MessageBox", "Live2d", "Action", "Effect",
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
-			"Layout" };
+			"Layout", "Table","Menu","Names" };
 
 	@Override
 	public void onLoad() {
@@ -135,7 +141,10 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new SpriteBatchScreenTest());
 		addScreen(names[index++], new BMFontTest());
 		addScreen(names[index++], new LayoutTest());
-
+		addScreen(names[index++], new TableTest());
+		addScreen(names[index++], new MenuTest());
+		addScreen(names[index++], new DecideNameTest());
+		
 		// 默认按钮大小为120x30
 		int btnWidth = 120;
 		int btnHeight = 30;
@@ -158,12 +167,15 @@ public class MultiScreenTest extends Screen {
 
 			@Override
 			public void run(LTimerContext time) {
-				// 穷举按钮事件
-				for (ActionTween tween : tweens) {
-					// 淡出事件，开始执行
-					tween.fadeOut(10f).start();
-					// 删除单独进程（否则会不断执行）
-					kill();
+				// 当Screen过渡动画播放完毕后
+				if (isTransitionCompleted()) {
+					// 穷举按钮事件
+					for (ActionTween tween : tweens) {
+						// 淡出事件，开始执行
+						tween.fadeOut(10f).start();
+						// 删除单独进程（否则会不断执行）
+						kill();
+					}
 				}
 
 			}
@@ -217,10 +229,6 @@ public class MultiScreenTest extends Screen {
 	@Override
 	public void close() {
 
-	}
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
 	}
 
 	public static void main(String[] args) {

@@ -161,16 +161,21 @@ public class LToast extends LComponent {
 		LFont f = g.getFont();
 		g.setColor(mBackgroundColor);
 		g.setAlpha(opacity);
-		g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+		if (LSystem.isHTML5()) {
+			g.fillRect(displayX, displayY, w, h);
+		} else {
+			g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+		}
 		g.setColor(LColor.DEF_COLOR);
 		g.setFont(font);
 		g.drawString(mText, displayX + (cellWidth - font.stringWidth(mText))
-				/ 2, displayY, mForegroundColor);
+				/ 2 - 2, displayY, mForegroundColor);
 		g.setColor(oc);
 		g.setAlpha(oa);
 		g.setFont(f);
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
 		if (timer.action(elapsedTime)) {
@@ -204,7 +209,9 @@ public class LToast extends LComponent {
 		timer.setDelay(this.mDuration);
 	}
 
+	@Override
 	public void setBackground(LColor backgroundColor) {
+		super.setBackground(backgroundColor);
 		mBackgroundColor = backgroundColor;
 	}
 
@@ -218,6 +225,15 @@ public class LToast extends LComponent {
 
 	public boolean isAutoClose() {
 		return autoClose;
+	}
+
+	public LFont getFont() {
+		return font;
+	}
+
+	public LToast setFont(LFont f) {
+		this.font = f;
+		return this;
 	}
 
 	public void setAutoClose(boolean autoClose) {

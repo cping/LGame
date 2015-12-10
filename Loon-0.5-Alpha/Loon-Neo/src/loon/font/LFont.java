@@ -25,7 +25,7 @@ public class LFont {
 	private TextLayout textLayout = null;
 
 	LFont() {
-		this("Dialog", Style.PLAIN, 20, true);
+		this(LSystem.FONT_NAME, Style.PLAIN, 20, true);
 	}
 
 	LFont(String name, Style style, int size, boolean antialias) {
@@ -33,7 +33,7 @@ public class LFont {
 	}
 
 	public static LFont getFont(int size) {
-		return LFont.getFont("Dialog", size);
+		return LFont.getFont(LSystem.FONT_NAME, size);
 	}
 
 	public static LFont getFont(String familyName, int size) {
