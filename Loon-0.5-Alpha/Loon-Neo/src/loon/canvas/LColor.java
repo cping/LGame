@@ -797,7 +797,12 @@ public class LColor implements Serializable {
 	public Vector4f getVector4() {
 		return new Vector4f(r, g, b, a);
 	}
+	
+	public Alpha getAlphaObject(){
+		return new Alpha(a);
+	}
 
+	@Override
 	public String toString() {
 		String value = Integer.toHexString(((int) (255 * r) << 24)
 				| ((int) (255 * g) << 16) | ((int) (255 * b) << 8)

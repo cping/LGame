@@ -517,6 +517,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return false;
 	}
 
+	public RectBox getBox() {
+		return new RectBox(this.getX(), this.getY(), this.getWidth(),
+				this.getHeight());
+	}
+
 	protected final PaintOrder DRAW_USER_PAINT() {
 		if (userOrder == null) {
 			userOrder = new PaintOrder(DRAW_USER, this);
@@ -2107,6 +2112,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					t.dispose();
 				}
 			}
+			touchButtonPressed = SysInput.NO_BUTTON;
+			touchButtonReleased = SysInput.NO_BUTTON;
+			keyButtonPressed = SysInput.NO_KEY;
+			keyButtonReleased = SysInput.NO_KEY;
 			useScreenListener = false;
 			replaceLoading = false;
 			replaceDelay.setDelay(10);

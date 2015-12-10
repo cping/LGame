@@ -4,8 +4,11 @@ import loon.LSetting;
 import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
+import loon.action.ActionBind;
+import loon.action.ActionListener;
 import loon.component.LClickButton;
 import loon.component.LComponent;
+import loon.event.ActionKey;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
 import loon.javase.Loon;
@@ -36,11 +39,38 @@ public class MultiScreenTest extends Screen {
 
 			@Override
 			public void DownClick(LComponent comp, float x, float y) {
-				screen.runScreen("main");
+
 			}
+
+			//事件锁，让点击唯一化
+			ActionKey click = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 			@Override
 			public void DoClick(LComponent comp) {
+				if (!click.isPressed()) {
+
+					// 为按钮设置一个旋转动画，每次前进36度
+					set(comp).rotateTo(360, 36f).start()
+							.setActionListener(new ActionListener() { //监听动作事件
+
+								//事件完毕后，调用screen标记为main的
+								@Override
+								public void stop(ActionBind o) {
+									screen.runScreen("main");
+								}
+
+								@Override
+								public void start(ActionBind o) {
+
+								}
+
+								@Override
+								public void process(ActionBind o) {
+
+								}
+							});
+					click.press();
+				}
 
 			}
 		});

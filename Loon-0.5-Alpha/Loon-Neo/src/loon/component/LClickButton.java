@@ -46,6 +46,23 @@ public class LClickButton extends LComponent {
 		return new LClickButton(text, 0, 0, width, height);
 	}
 
+	public LClickButton make(String text, int width, int height, String clickPath) {
+		LTexture texture = LTextures.loadTexture(clickPath);
+		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
+				0, width, height, texture, texture, texture);
+	}
+	
+	public LClickButton make(String text, int width, int height, LTexture clicked) {
+		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
+				0, width, height, clicked, clicked, clicked);
+	}
+	
+	public LClickButton make(String text, int width, int height, 
+			LTexture hover, LTexture clicked) {
+		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
+				0, width, height, hover, hover, clicked);
+	}
+	
 	public LClickButton make(String text, int width, int height, LTexture idle,
 			LTexture hover, LTexture clicked) {
 		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
@@ -65,6 +82,12 @@ public class LClickButton extends LComponent {
 				.getDefaultTextures(9));
 	}
 
+	public LClickButton(String text, LFont font, LColor color, int x, int y,
+			int width, int height, String path) {
+		this(text, font, color, x, y, width, height, LTextures.loadTexture(path),
+				LTextures.loadTexture(path), LTextures.loadTexture(path));
+	}
+	
 	public LClickButton(String text, LFont font, LColor color, int x, int y,
 			int width, int height, String a, String b, String c) {
 		this(text, font, color, x, y, width, height, LTextures.loadTexture(a),

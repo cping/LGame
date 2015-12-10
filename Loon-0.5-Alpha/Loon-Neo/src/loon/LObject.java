@@ -24,6 +24,7 @@ import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
 import loon.action.map.Field2D;
+import loon.canvas.Alpha;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -211,6 +212,10 @@ public abstract class LObject implements XY, ZIndex {
 
 	public int getTransparency() {
 		return (int) (_alpha * 255);
+	}
+
+	public Alpha getAlphaObject() {
+		return new Alpha(_alpha);
 	}
 
 	public void setAlpha(float a) {
