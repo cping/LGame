@@ -539,6 +539,9 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		if (!this._visible) {
 			return;
 		}
+		if (_alpha < 0.01) {
+			return;
+		}
 		float tmp = batch.alpha();
 		batch.setAlpha(_alpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {

@@ -131,12 +131,20 @@ public class LayoutConstraints {
 		return setPaddingLeft(new SizeValue(padding));
 	}
 
+	public LayoutConstraints setPaddingLeft(final String padding) {
+		return setPaddingLeft(new SizeValue(padding));
+	}
+
 	public LayoutConstraints setPaddingLeft(final SizeValue paddingLeftParam) {
 		paddingLeft = paddingLeftParam;
 		return this;
 	}
 
 	public LayoutConstraints setPaddingRight(final int padding) {
+		return setPaddingRight(new SizeValue(padding));
+	}
+
+	public LayoutConstraints setPaddingRight(final String padding) {
 		return setPaddingRight(new SizeValue(padding));
 	}
 
@@ -149,12 +157,20 @@ public class LayoutConstraints {
 		return setPaddingTop(new SizeValue(padding));
 	}
 
+	public LayoutConstraints setPaddingTop(final String padding) {
+		return setPaddingTop(new SizeValue(padding));
+	}
+
 	public LayoutConstraints setPaddingTop(final SizeValue paddingTopParam) {
 		paddingTop = paddingTopParam;
 		return this;
 	}
 
 	public LayoutConstraints setPaddingBottom(final int padding) {
+		return setPaddingBottom(new SizeValue(padding));
+	}
+
+	public LayoutConstraints setPaddingBottom(final String padding) {
 		return setPaddingBottom(new SizeValue(padding));
 	}
 
@@ -165,6 +181,12 @@ public class LayoutConstraints {
 
 	public LayoutConstraints setPadding(final int topBottomParam,
 			final int leftRightParam) {
+		return setPadding(new SizeValue(topBottomParam), new SizeValue(
+				leftRightParam));
+	}
+
+	public LayoutConstraints setPadding(final String topBottomParam,
+			final String leftRightParam) {
 		return setPadding(new SizeValue(topBottomParam), new SizeValue(
 				leftRightParam));
 	}
@@ -184,6 +206,12 @@ public class LayoutConstraints {
 				new SizeValue(leftRightParam), new SizeValue(bottomParam));
 	}
 
+	public LayoutConstraints setPadding(final String topParam,
+			final String leftRightParam, final String bottomParam) {
+		return setPadding(new SizeValue(topParam),
+				new SizeValue(leftRightParam), new SizeValue(bottomParam));
+	}
+
 	public LayoutConstraints setPadding(final SizeValue topParam,
 			final SizeValue leftRightParam, final SizeValue bottomParam) {
 		paddingLeft = leftRightParam;
@@ -199,6 +227,13 @@ public class LayoutConstraints {
 				new SizeValue(bottomParam), new SizeValue(leftParam));
 	}
 
+	public LayoutConstraints setPadding(final String topParam,
+			final String rightParam, final String bottomParam,
+			final String leftParam) {
+		return setPadding(new SizeValue(topParam), new SizeValue(rightParam),
+				new SizeValue(bottomParam), new SizeValue(leftParam));
+	}
+
 	public LayoutConstraints setPadding(final SizeValue topParam,
 			final SizeValue rightParam, final SizeValue bottomParam,
 			final SizeValue leftParam) {
@@ -210,6 +245,10 @@ public class LayoutConstraints {
 	}
 
 	public LayoutConstraints setPadding(final int padding) {
+		return setPadding(new SizeValue(padding));
+	}
+
+	public LayoutConstraints setPadding(final String padding) {
 		return setPadding(new SizeValue(padding));
 	}
 

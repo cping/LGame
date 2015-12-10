@@ -17,7 +17,7 @@ public class SpriteBatchTest extends Screen {
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}
-	
+
 	private LTexture texture = LTexture.createTexture("ball.png");
 
 	@Override
@@ -25,13 +25,13 @@ public class SpriteBatchTest extends Screen {
 		SpriteBatch batch = new SpriteBatch();
 		batch.begin();
 		batch.fill(new Circle(155, 55, 100));
-		batch.draw(texture, 127,127);
+		batch.draw(texture, 127, 127);
 		batch.end();
 	}
 
 	@Override
 	public void onLoad() {
-
+		add(MultiScreenTest.getBackButton(this));
 	}
 
 	@Override

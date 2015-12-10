@@ -578,6 +578,9 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		if (!visible) {
 			return;
 		}
+		if (_alpha < 0.01) {
+			return;
+		}
 		image = animation.getSpriteImage();
 		if (image == null) {
 			return;
@@ -586,41 +589,45 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		float height = image.getHeight();
 		float tmp = g.alpha();
 		boolean update = !(scaleX == 1f && scaleY == 1f);
-		if (update) {
-			g.saveTx();
-			Affine2f tx = g.tx();
-			final float scaleCenterX = this._location.x + width / 2f;
-			final float scaleCenterY = this._location.y + height / 2f;
-			tx.translate(scaleCenterX, scaleCenterY);
-			tx.preScale(scaleX, scaleY);
-			tx.translate(-scaleCenterX, -scaleCenterY);
-		}
-		if (filterColor == null) {
-			if (_alpha > 0 && _alpha < 1) {
-				g.setAlpha(_alpha);
+		try {
+			if (update) {
+				g.saveTx();
+				Affine2f tx = g.tx();
+				final float scaleCenterX = this._location.x + width / 2f;
+				final float scaleCenterY = this._location.y + height / 2f;
+				tx.translate(scaleCenterX, scaleCenterY);
+				tx.preScale(scaleX, scaleY);
+				tx.translate(-scaleCenterX, -scaleCenterY);
 			}
-			if (LTrans.TRANS_NONE == transform) {
-				g.draw(image, this._location.x, this._location.y, width,
-						height, _rotation);
+			if (filterColor == null) {
+				if (_alpha > 0 && _alpha < 1) {
+					g.setAlpha(_alpha);
+				}
+				if (LTrans.TRANS_NONE == transform) {
+					g.draw(image, this._location.x, this._location.y, width,
+							height, _rotation);
+				} else {
+					g.drawRegion(image, 0, 0, (int) width, (int) height,
+							transform, x(), y(), LTrans.TOP | LTrans.LEFT);
+				}
 			} else {
-				g.drawRegion(image, 0, 0, (int) width, (int) height, transform,
-						x(), y(), LTrans.TOP | LTrans.LEFT);
+				if (_alpha > 0 && _alpha < 1) {
+					g.setAlpha(_alpha);
+				}
+				if (LTrans.TRANS_NONE == transform) {
+					g.draw(image, this._location.x, this._location.y, width,
+							height, filterColor, _rotation);
+				} else {
+					g.drawRegion(image, 0, 0, (int) width, (int) height,
+							transform, x(), y(), LTrans.TOP | LTrans.LEFT,
+							filterColor);
+				}
 			}
-		} else {
-			if (_alpha > 0 && _alpha < 1) {
-				g.setAlpha(_alpha);
+		} finally {
+			g.setAlpha(tmp);
+			if (update) {
+				g.restoreTx();
 			}
-			if (LTrans.TRANS_NONE == transform) {
-				g.draw(image, this._location.x, this._location.y, width,
-						height, filterColor, _rotation);
-			} else {
-				g.drawRegion(image, 0, 0, (int) width, (int) height, transform,
-						x(), y(), LTrans.TOP | LTrans.LEFT, filterColor);
-			}
-		}
-		g.setAlpha(tmp);
-		if (update) {
-			g.restoreTx();
 		}
 	}
 

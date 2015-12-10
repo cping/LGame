@@ -580,6 +580,9 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	}
 
 	protected void paint(final GLEx g) {
+		if (_alpha < 0.01) {
+			return;
+		}
 		boolean exist = _image != null || (_width > 0 && _height > 0);
 		if (exist) {
 			boolean update = _rotation != 0

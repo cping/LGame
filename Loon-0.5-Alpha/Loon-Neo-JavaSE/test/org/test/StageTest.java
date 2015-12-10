@@ -81,6 +81,7 @@ remove(this);
 
 			puspStage(newStage1(), StageSystem.flip());
 
+			add(MultiScreenTest.getBackButton(this));
 		}
 
 		boolean flag;

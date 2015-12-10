@@ -100,6 +100,8 @@ public class ActionEventTest extends Screen {
 				return true;
 			}
 		});
+		
+		add(MultiScreenTest.getBackButton(this));
 
 	}
 

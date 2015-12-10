@@ -166,7 +166,12 @@ public class Desktop implements LRelease {
 	}
 
 	public void createUI(GLEx g) {
-		this.contentPane.createUI(g);
+		try {
+			g.saveTx();
+			this.contentPane.createUI(g);
+		} finally {
+			g.restoreTx();
+		}
 	}
 
 	/**
@@ -467,7 +472,7 @@ public class Desktop implements LRelease {
 	}
 
 	public void setContentPane(LContainer pane) {
-		pane.setBounds(0, 0, (int)this.getWidth(), (int)this.getHeight());
+		pane.setBounds(0, 0, (int) this.getWidth(), (int) this.getHeight());
 		this.contentPane = pane;
 		this.setDesktop(this.contentPane);
 	}

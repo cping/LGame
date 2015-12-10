@@ -29,6 +29,7 @@ public class TileMapTest extends Screen{
 		TMXMapRenderer sprite = tmx.getMapRenderer();
 	    sprite.setLocation(-200, -150);
 		add(sprite);
+		add(MultiScreenTest.getBackButton(this));
 	}
 
 	@Override

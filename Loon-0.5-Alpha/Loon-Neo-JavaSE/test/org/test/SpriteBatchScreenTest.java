@@ -29,7 +29,7 @@ public class SpriteBatchScreenTest extends SpriteBatchScreen {
 
 	@Override
 	public void create() {
-
+add(MultiScreenTest.getBackButton(this));
 	}
 
 	LTexture tex = LTexture.createTexture("back1.png");

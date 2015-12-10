@@ -85,6 +85,8 @@ public class EffectTest extends Screen {
 		};
 		// 加入一个单独的游戏进程
 		addProcess(process);
+		
+		add(MultiScreenTest.getBackButton(this));
 	}
 
 	@Override

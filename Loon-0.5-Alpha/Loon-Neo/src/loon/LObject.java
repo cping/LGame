@@ -186,6 +186,7 @@ public abstract class LObject implements XY, ZIndex {
 	private int _seqNo = 0;
 
 	public LObject() {
+		_name = getClass().getSimpleName();
 		_seqNo = _sys_seqNo;
 		_sys_seqNo++;
 	}
@@ -286,7 +287,7 @@ public abstract class LObject implements XY, ZIndex {
 	}
 
 	public String getName() {
-		return _name;
+		return _name==null?getClass().getSimpleName():_name;
 	}
 
 	public int getLayer() {

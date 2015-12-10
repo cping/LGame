@@ -266,59 +266,69 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		if (!this.visible) {
 			return;
 		}
+		if (_alpha < 0.01) {
+			return;
+		}
 		boolean update = _rotation != 0 || !(scaleX == 1f && scaleY == 1f);
-		final int width = (int) this.getWidth();
-		final int height = (int) this.getHeight();
-		if (this.elastic) {
-			g.setClip(this.screenX, this.screenY, width, height);
-		}
-		if (update) {
-			g.saveTx();
-			if (!(scaleX == 1f && scaleY == 1f)) {
-				Affine2f transform = g.tx();
-				float centerX = this.screenX + width / 2;
-				float centerY = this.screenY + height / 2;
-				transform.translate(centerX, centerY);
-				transform.preScale(scaleX, scaleY);
-				transform.translate(-centerX, -centerY);
+		try {
+			final int width = (int) this.getWidth();
+			final int height = (int) this.getHeight();
+			if (this.elastic) {
+				g.setClip(this.screenX, this.screenY, width, height);
 			}
-			if (_rotation != 0) {
-				float centerX = this.screenX + width / 2;
-				float centerY = this.screenY + height / 2;
-				g.rotate(centerX, centerY, _rotation);
+			if (update) {
+				g.saveTx();
+				if (!(scaleX == 1f && scaleY == 1f)) {
+					Affine2f transform = g.tx();
+					float centerX = this.screenX + width / 2;
+					float centerY = this.screenY + height / 2;
+					transform.translate(centerX, centerY);
+					transform.preScale(scaleX, scaleY);
+					transform.translate(-centerX, -centerY);
+				}
+				if (_rotation != 0) {
+					float centerX = this.screenX + width / 2;
+					float centerY = this.screenY + height / 2;
+					g.rotate(centerX, centerY, _rotation);
+				}
 			}
-		}
-		// 变更透明度
-		if (_alpha > 0.1 && _alpha < 1.0) {
-			float tmp = g.alpha();
-			g.setAlpha(_alpha);
-			if (background != null) {
-				g.draw(background, this.screenX, this.screenY, width, height);
-			}
-			if (this.customRendering) {
-				this.createCustomUI(g, this.screenX, this.screenY, width,
-						height);
+			// 变更透明度
+			if (_alpha > 0.1 && _alpha < 1.0) {
+				float tmp = g.alpha();
+				g.setAlpha(_alpha);
+				if (background != null) {
+					g.draw(background, this.screenX, this.screenY, width,
+							height);
+				}
+				if (this.customRendering) {
+					this.createCustomUI(g, this.screenX, this.screenY, width,
+							height);
+				} else {
+					this.createUI(g, this.screenX, this.screenY, this,
+							this.imageUI);
+				}
+				g.setAlpha(tmp);
+				// 不变更
 			} else {
-				this.createUI(g, this.screenX, this.screenY, this, this.imageUI);
+				if (background != null) {
+					g.draw(background, this.screenX, this.screenY, width,
+							height);
+				}
+				if (this.customRendering) {
+					this.createCustomUI(g, this.screenX, this.screenY, width,
+							height);
+				} else {
+					this.createUI(g, this.screenX, this.screenY, this,
+							this.imageUI);
+				}
 			}
-			g.setAlpha(tmp);
-			// 不变更
-		} else {
-			if (background != null) {
-				g.draw(background, this.screenX, this.screenY, width, height);
+		} finally {
+			if (update) {
+				g.restoreTx();
 			}
-			if (this.customRendering) {
-				this.createCustomUI(g, this.screenX, this.screenY, width,
-						height);
-			} else {
-				this.createUI(g, this.screenX, this.screenY, this, this.imageUI);
+			if (this.elastic) {
+				g.clearClip();
 			}
-		}
-		if (update) {
-			g.restoreTx();
-		}
-		if (this.elastic) {
-			g.clearClip();
 		}
 	}
 

@@ -529,6 +529,9 @@ public abstract class Player extends LObject implements ActionBind, XY,
 		if (!isVisible()) {
 			return;
 		}
+		if (_alpha < 0.01) {
+			return;
+		}
 		gl.saveTx();
 		int old = gl.combineColor(baseColor);
 		BaseBatch obatch = gl.pushBatch(batch);
@@ -607,139 +610,167 @@ public abstract class Player extends LObject implements ActionBind, XY,
 		return true;
 	}
 
+	@Override
 	public void move_45D_up() {
 		move_45D_up(1);
 	}
 
+	@Override
 	public void move_45D_up(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.UP, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move_45D_left() {
 		move_45D_left(1);
 	}
 
+	@Override
 	public void move_45D_left(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.LEFT, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move_45D_right() {
 		move_45D_right(1);
 	}
 
+	@Override
 	public void move_45D_right(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.RIGHT, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move_45D_down() {
 		move_45D_down(1);
 	}
 
+	@Override
 	public void move_45D_down(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.DOWN, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move_up() {
 		move_up(1);
 	}
 
+	@Override
 	public void move_up(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.TUP, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move_left() {
 		move_left(1);
 	}
 
+	@Override
 	public void move_left(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.TLEFT, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move_right() {
 		move_right(1);
 	}
 
+	@Override
 	public void move_right(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.TRIGHT, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move_down() {
 		move_down(1);
 	}
 
+	@Override
 	public void move_down(int multiples) {
 		_location.set(affine.tx, affine.ty);
 		_location.move_multiples(Field2D.TDOWN, multiples);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move(Vector2f v) {
 		_location.set(affine.tx, affine.ty);
 		_location.move(v);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void move(float x, float y) {
 		_location.set(affine.tx, affine.ty);
 		_location.move(x, y);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public void setLocation(float x, float y) {
 		_location.setLocation(x, y);
 		affine.setTranslation(_location.x, _location.y);
 	}
 
+	@Override
 	public int x() {
 		return (int) _location.getX();
 	}
 
+	@Override
 	public int y() {
 		return (int) _location.getY();
 	}
 
+	@Override
 	public float getX() {
 		return _location.getX();
 	}
 
+	@Override
 	public float getY() {
 		return _location.getY();
 	}
 
+	@Override
 	public void setX(Integer x) {
 		affine.setTx(x);
 		_location.setX(x.intValue());
 	}
 
+	@Override
 	public void setX(float x) {
 		affine.setTx(x);
 		_location.setX(x);
 	}
 
+	@Override
 	public void setY(Integer y) {
 		affine.setTy(y);
 		_location.setY(y.intValue());
 	}
 
+	@Override
 	public void setY(float y) {
 		affine.setTy(y);
 		_location.setY(y);
 	}
 
+	@Override
 	public void setLocation(Vector2f l) {
 		affine.setTranslation(l.x, l.y);
 		_location.set(l);
