@@ -39,31 +39,31 @@ public class PlayerUtils extends Director {
 	}
 
 	public final static void addAction(ActionEvent e, ActionBind act) {
-		ActionControl.getInstance().addAction(e, act);
+		ActionControl.get().addAction(e, act);
 	}
 
 	public final static void removeAction(ActionEvent e) {
-		ActionControl.getInstance().removeAction(e);
+		ActionControl.get().removeAction(e);
 	}
 
 	public final static void removeAction(Object tag, ActionBind act) {
-		ActionControl.getInstance().removeAction(tag, act);
+		ActionControl.get().removeAction(tag, act);
 	}
 
 	public final static void removeAllActions(ActionBind act) {
-		ActionControl.getInstance().removeAllActions(act);
+		ActionControl.get().removeAllActions(act);
 	}
 
 	public final static void stop(ActionBind act) {
-		ActionControl.getInstance().stop(act);
+		ActionControl.get().stop(act);
 	}
 
 	public final static void start(ActionBind act) {
-		ActionControl.getInstance().start(act);
+		ActionControl.get().start(act);
 	}
 
 	public final static void paused(boolean pause, ActionBind act) {
-		ActionControl.getInstance().paused(pause, act);
+		ActionControl.get().paused(pause, act);
 	}
 
 	public final static ActionTween to(ActionBind target, int tweenType,

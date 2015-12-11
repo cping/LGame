@@ -97,6 +97,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private LTexture patternTex;
 	private Affine2f lastTrans;
 	private BrushSave lastBrush;
+	private float scaleX, scaleY;
 
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
@@ -118,7 +119,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		this.scale(target.xscale(), target.yscale());
+		this.scale(scaleX = target.xscale(), scaleY = target.yscale());
 		this.font = LFont.getDefaultFont();
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = this.font;
@@ -338,6 +339,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
 		setFont(LFont.getDefaultFont());
 		setLineWidth(1f);
+		brushStack.pop();
 		return this;
 	}
 
@@ -384,6 +386,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		lastTrans = new Affine2f();
+		scale(scaleX, scaleY);
 		affineStack.pop();
 		return this;
 	}
@@ -484,6 +487,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (originX != 0 || originY != 0) {
 			txf.translate(-originX, -originY);
 		}
+		return this;
+	}
+
+	public Affine2f getAffine() {
+		return lastTrans;
+	}
+
+	public GLEx setAffine(Affine2f aff) {
+		if (isClosed) {
+			return this;
+		}
+		lastTrans = aff;
 		return this;
 	}
 

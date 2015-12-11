@@ -201,7 +201,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 			obj.free();
 		}
 		pool.free(this);
-		ActionControl.getInstance().removeAllActions(_target);
+		ActionControl.get().removeAllActions(_target);
 	}
 
 	@Override

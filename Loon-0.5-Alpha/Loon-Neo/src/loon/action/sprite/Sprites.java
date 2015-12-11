@@ -489,7 +489,7 @@ public class Sprites implements Serializable, LRelease {
 				g.clearClip();
 			}
 		} finally {
-			g.restoreTx();
+			g.restoreTxDef();
 		}
 	}
 

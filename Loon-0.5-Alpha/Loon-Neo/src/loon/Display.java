@@ -244,12 +244,11 @@ public class Display extends LSystemView {
 		if (!process.next()) {
 			return;
 		}
-
-		glEx.saveTx();
-		glEx.begin();
-
-		glEx.reset(cred, cgreen, cblue, calpha);
 		try {
+			glEx.saveTx();
+			glEx.begin();
+			glEx.reset(cred, cgreen, cblue, calpha);
+
 			process.load();
 			process.calls();
 			process.runTimer(clock);

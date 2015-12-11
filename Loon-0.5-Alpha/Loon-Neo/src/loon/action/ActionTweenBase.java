@@ -44,7 +44,7 @@ public abstract class ActionTweenBase<T> {
 		currentTime = 0;
 		isStarted = true;
 		TweenTo<T> act = new TweenTo<T>(this);
-		ActionControl.getInstance().addAction(act, _target);
+		ActionControl.get().addAction(act, _target);
 		return act;
 	}
 

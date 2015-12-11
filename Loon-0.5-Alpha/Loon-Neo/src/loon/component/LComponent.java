@@ -324,7 +324,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 			}
 		} finally {
 			if (update) {
-				g.restoreTx();
+				g.restoreTxDef();
 			}
 			if (this.elastic) {
 				g.clearClip();

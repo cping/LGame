@@ -1345,7 +1345,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (screens != null) {
 			screens.clear();
 		}
-		ActionControl.getInstance().clear();
+		ActionControl.get().clear();
 		removeAllLoad();
 		removeAllUnLoad();
 		clearTouchAreas();

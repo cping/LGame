@@ -45,10 +45,6 @@ public class Actions {
 		}
 		element.actions.add(action);
 		action.start(actObject);
-		if (!action.isInit) {
-			action.isInit = true;
-			action.onLoad();
-		}
 	}
 
 	private void deleteElement(ActionElement element) {

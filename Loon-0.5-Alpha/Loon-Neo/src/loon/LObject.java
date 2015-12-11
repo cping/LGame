@@ -48,7 +48,7 @@ public abstract class LObject implements XY, ZIndex {
 	 */
 	public final static void addActionEvent(ActionEvent action, ActionBind obj,
 			boolean paused) {
-		ActionControl.getInstance().addAction(action, obj, paused);
+		ActionControl.get().addAction(action, obj, paused);
 	}
 
 	/**
@@ -58,7 +58,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param obj
 	 */
 	public final static void addActionEvent(ActionEvent action, ActionBind obj) {
-		ActionControl.getInstance().addAction(action, obj);
+		ActionControl.get().addAction(action, obj);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param actObject
 	 */
 	public final static void removeActionEvents(ActionBind actObject) {
-		ActionControl.getInstance().removeAllActions(actObject);
+		ActionControl.get().removeAllActions(actObject);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @return
 	 */
 	public final static int getActionEventCount() {
-		return ActionControl.getInstance().getCount();
+		return ActionControl.get().getCount();
 	}
 
 	/**
@@ -86,7 +86,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param actObject
 	 */
 	public final static void removeActionEvent(Object tag, ActionBind actObject) {
-		ActionControl.getInstance().removeAction(tag, actObject);
+		ActionControl.get().removeAction(tag, actObject);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param action
 	 */
 	public final static void removeActionEvent(ActionEvent action) {
-		ActionControl.getInstance().removeAction(action);
+		ActionControl.get().removeAction(action);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public abstract class LObject implements XY, ZIndex {
 	 */
 	public final static ActionEvent getActionEvent(Object tag,
 			ActionBind actObject) {
-		return ActionControl.getInstance().getAction(tag, actObject);
+		return ActionControl.get().getAction(tag, actObject);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param actObject
 	 */
 	public final static void stopActionEvent(ActionBind actObject) {
-		ActionControl.getInstance().stop(actObject);
+		ActionControl.get().stop(actObject);
 	}
 
 	/**
@@ -127,7 +127,7 @@ public abstract class LObject implements XY, ZIndex {
 	 */
 	public final static void pauseActionEvent(boolean pause,
 			ActionBind actObject) {
-		ActionControl.getInstance().paused(pause, actObject);
+		ActionControl.get().paused(pause, actObject);
 	}
 
 	/**
@@ -136,7 +136,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param pause
 	 */
 	public final static void pauseActionEvent(boolean pause) {
-		ActionControl.getInstance().setPause(pause);
+		ActionControl.get().setPause(pause);
 	}
 
 	/**
@@ -145,7 +145,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @return
 	 */
 	public final static boolean isPauseActionEvent() {
-		return ActionControl.getInstance().isPause();
+		return ActionControl.get().isPause();
 	}
 
 	/**
@@ -154,7 +154,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * @param actObject
 	 */
 	public final static void startActionEvent(ActionBind actObject) {
-		ActionControl.getInstance().start(actObject);
+		ActionControl.get().start(actObject);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public abstract class LObject implements XY, ZIndex {
 	 * 
 	 */
 	public final static void stopActionEvent() {
-		ActionControl.getInstance().stop();
+		ActionControl.get().stop();
 	}
 
 	public Object Tag;

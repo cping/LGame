@@ -51,7 +51,7 @@ public abstract class ActionEvent {
 	}
 
 	public void paused(boolean pause) {
-		ActionControl.getInstance().paused(pause, original);
+		ActionControl.get().paused(pause, original);
 	}
 
 	public void step(long elapsedTime) {

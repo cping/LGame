@@ -12,7 +12,7 @@ public class ActionControl {
 
 	private boolean pause;
 
-	public static ActionControl getInstance() {
+	public static ActionControl get() {
 		if (instanceAction != null) {
 			return instanceAction;
 		}

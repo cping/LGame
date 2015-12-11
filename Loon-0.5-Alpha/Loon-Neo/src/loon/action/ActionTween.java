@@ -455,7 +455,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	@Override
 	public void free() {
 		pool.free(this);
-		ActionControl.getInstance().removeAllActions(_target);
+		ActionControl.get().removeAllActions(_target);
 	}
 
 	@Override
@@ -521,7 +521,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 						repeatList.clear();
 					}
 				}
-				ActionControl.getInstance().addAction(event, _target);
+				ActionControl.get().addAction(event, _target);
 				currentActionEvent = event;
 			}
 		}

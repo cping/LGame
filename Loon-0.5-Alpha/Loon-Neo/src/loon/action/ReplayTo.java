@@ -74,7 +74,7 @@ public class ReplayTo extends ActionEvent {
 						repeatList.addAll(tmp);
 					}
 				}
-				ActionControl.getInstance().addAction(event, original);
+				ActionControl.get().addAction(event, original);
 				currentEvent = event;
 			} else {
 				isComplete = true;
