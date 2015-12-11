@@ -79,6 +79,8 @@ remove(this);
 
 		public void onLoad() {
 
+			//设置默认字体大小为20号字
+			LFont.setDefaultFont(LFont.getFont(20));
 			puspStage(newStage1(), StageSystem.flip());
 
 			add(MultiScreenTest.getBackButton(this));

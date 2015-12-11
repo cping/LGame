@@ -21,6 +21,7 @@
 package loon.component;
 
 import loon.LTexture;
+import loon.LTextures;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
@@ -65,6 +66,12 @@ public class LScrollBar extends LComponent {
 
 	public LScrollBar(int orientation, int x, int y, int width, int height) {
 		this(DefUI.getDefaultTextures(2), DefUI.getDefaultTextures(8),
+				orientation, x, y, width, height);
+	}
+
+	public LScrollBar(String patha, String pathb, int orientation, int x,
+			int y, int width, int height) {
+		this(LTextures.loadTexture(patha), LTextures.loadTexture(pathb),
 				orientation, x, y, width, height);
 	}
 
@@ -128,7 +135,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustVerticalLeftSlider() {
-		setSliderWidth((int)(getWidth() - (getSliderMargin() * 2)));
+		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 
@@ -148,7 +155,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustVerticalRightSlider() {
-		setSliderWidth((int)(getWidth() - (getSliderMargin() * 2)));
+		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 		double ratioHeight = (double) getHeight()
@@ -167,11 +174,10 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustHorizontalTopSlider() {
-		setSliderHeight((int)(getHeight() - (getSliderMargin() * 2)));
+		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
-		float ratioWidth =  getWidth()
-				/ scrollContainer.getInnerWidth();
+		float ratioWidth = getWidth() / scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
 		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)));
 	}
@@ -189,16 +195,16 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustHorizontalBottomSlider() {
-		setSliderHeight((int)(getHeight() - (getSliderMargin() * 2)));
+		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)));
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 
-		float ratioWidth = getWidth()
-				/ scrollContainer.getInnerWidth();
+		float ratioWidth = getWidth() / scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
 		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)));
 	}
 
+	@Override
 	public void setSize(int w, int h) {
 		super.setSize(w, h);
 		adjustSlider();
@@ -264,16 +270,19 @@ public class LScrollBar extends LComponent {
 		this.sliderMargin = sliderMargin;
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		super.processTouchDragged();
 		touchDragged(getTouchX(), getTouchY());
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		super.processKeyPressed();
 		touchDown(getTouchX(), getTouchY());
 	}
 
+	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
 		touchDown(getTouchX(), getTouchY());
@@ -368,12 +377,13 @@ public class LScrollBar extends LComponent {
 		super.setY(y);
 		adjustSlider();
 	}
+
 	@Override
 	public void setWidth(float width) {
 		super.setWidth(width);
 		adjustSlider();
 	}
-	
+
 	@Override
 	public void setHeight(float height) {
 		super.setHeight(height);
@@ -384,7 +394,7 @@ public class LScrollBar extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (scrollBar == null || slider == null) {
-			g.fillRect(x, y, getWidth()+2, getHeight()+2, scrollBarColor);
+			g.fillRect(x, y, getWidth() + 2, getHeight() + 2, scrollBarColor);
 			g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight, sliderColor);
 		} else {
 			g.fillRect(x, y, getWidth(), getHeight(), scrollBarColor);

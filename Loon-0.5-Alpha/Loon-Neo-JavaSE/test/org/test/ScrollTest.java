@@ -4,22 +4,20 @@ import loon.LSetting;
 import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
-import loon.component.LMenu;
-import loon.component.LMenu.MenuItem;
-import loon.component.LMenu.MenuItemClick;
-import loon.component.LToast;
-import loon.component.LToast.Style;
+import loon.canvas.LColor;
+import loon.component.LPaper;
+import loon.component.LScrollBar;
+import loon.component.LScrollContainer;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class MenuTest extends Screen {
+public class ScrollTest extends Screen {
 
-	@Override
 	public LTransition onTransition() {
-		return LTransition.newEmpty();
+		return LTransition.newPixelWind(LColor.white);
 	}
 
 	@Override
@@ -32,20 +30,18 @@ public class MenuTest extends Screen {
 
 		//设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		LFont font = LFont.getFont(18);
-		LMenu panel = new LMenu(LMenu.MOVE_LEFT, "我是菜单", 120, 50);
-		panel.setCellWidth(64);
-		MenuItem item = panel.add("保存记录", "ball.png", new MenuItemClick() {
-
-			@Override
-			public void onClick(MenuItem item) {
-				add(LToast.makeText("保存完毕", Style.SUCCESS));
-			}
-		});
-		item.setFont(font).offsetX = 3;
-		panel.add("读取记录").setFont(font).offsetX = 3;
-		panel.add("离开").setFont(font).offsetX = 3;
-		add(panel);
+		// 构建一个滚动容器（背景图片可以自行设置）
+		LScrollContainer container = new LScrollContainer(50, 50, 240, 200);
+		LPaper p = new LPaper("back1.png");
+		p.setLocked(false);
+		container.add(p);
+		
+		// 添加滚轴(图片可以自行设置,具体显示位置可以矫正LScrollBar)
+		container.addScrollbar(new LScrollBar(LScrollBar.RIGHT));
+		container.addScrollbar(new LScrollBar(LScrollBar.BOTTOM));
+		// 也可以禁止显示滚轴
+		// container.setShowScroll(true);
+		add(container);
 
 		add(MultiScreenTest.getBackButton(this));
 	}
@@ -96,23 +92,26 @@ public class MenuTest extends Screen {
 	}
 
 	public static void main(String[] args) {
+
 		LSetting setting = new LSetting();
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
-		setting.fps = 60;
-		setting.fontName = "黑体";
-		setting.appName = "test";
-		setting.emulateTouch = false;
 		setting.width = 480;
 		setting.height = 320;
-
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
+		setting.fps = 60;
+		setting.fontName = "黑体";
+		setting.appName = "Live2dTest";
+		setting.emulateTouch = false;
 		Loon.register(setting, new LazyLoading.Data() {
 
 			@Override
 			public Screen onScreen() {
-				return new MenuTest();
+				return new ScrollTest();
 			}
 		});
+
 	}
 }

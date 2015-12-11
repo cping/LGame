@@ -6,6 +6,7 @@ import loon.LazyLoading;
 import loon.Screen;
 import loon.component.LDecideName;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -25,6 +26,9 @@ public class DecideNameTest extends Screen {
 
 	@Override
 	public void onLoad() {
+
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
 		TArray<String> list = new TArray<String>();
 		list.add("赵钱孙李周吴郑王");
 		list.add("冯陈褚卫蒋沈韩杨");

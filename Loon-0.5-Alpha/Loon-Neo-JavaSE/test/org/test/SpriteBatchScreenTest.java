@@ -9,6 +9,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.event.GameKey;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 
 public class SpriteBatchScreenTest extends SpriteBatchScreen {
@@ -29,7 +30,10 @@ public class SpriteBatchScreenTest extends SpriteBatchScreen {
 
 	@Override
 	public void create() {
-add(MultiScreenTest.getBackButton(this));
+
+		// 设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
+		add(MultiScreenTest.getBackButton(this));
 	}
 
 	LTexture tex = LTexture.createTexture("back1.png");

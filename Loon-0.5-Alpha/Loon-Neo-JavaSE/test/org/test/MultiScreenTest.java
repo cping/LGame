@@ -15,6 +15,7 @@ import loon.component.layout.LayoutManager;
 import loon.event.ActionKey;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -123,11 +124,14 @@ public class MultiScreenTest extends Screen {
 
 	final String[] names = { "MessageBox", "Live2d", "Action", "Effect",
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
-			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite","TexturePack","LNode" };
+			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
+			"TexturePack", "LNode", "Scroll" };
 
 	@Override
 	public void onLoad() {
 
+		//设置默认字体大小为15号字
+		LFont.setDefaultFont(LFont.getFont(15));
 		int index = 0;
 		// 构建一个通用的监听器
 		MyClickListener clickListener = new MyClickListener();
@@ -151,9 +155,10 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new SpriteTest());
 		addScreen(names[index++], new LTexturePackTest());
 		addScreen(names[index++], new NodeTest());
-		// 默认按钮大小为120x30
-		int btnWidth = 120;
-		int btnHeight = 30;
+		addScreen(names[index++], new ScrollTest());
+		// 默认按钮大小为100x30
+		int btnWidth = 100;
+		int btnHeight = 25;
 		// 添加一组按钮布局，并返回按钮对象
 		TArray<LClickButton> clicks = LayoutManager.elementButtons(this, names,
 				15, 25, btnWidth, btnHeight, clickListener,

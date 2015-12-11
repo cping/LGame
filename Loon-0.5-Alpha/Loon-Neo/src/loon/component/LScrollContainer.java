@@ -21,6 +21,7 @@
 package loon.component;
 
 import loon.LTexture;
+import loon.LTextures;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -45,6 +46,10 @@ public class LScrollContainer extends LContainer {
 		this(DefUI.getDefaultTextures(8), x, y, w, h);
 	}
 
+	public LScrollContainer(String path, int x, int y, int w, int h) {
+		this(LTextures.loadTexture(path), x, y, w, h);
+	}
+
 	public LScrollContainer(LTexture texture, int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.backgroundTexture = texture;
@@ -52,6 +57,7 @@ public class LScrollContainer extends LContainer {
 		this.setLayer(100);
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -62,23 +68,27 @@ public class LScrollContainer extends LContainer {
 
 		LComponent[] childs = getComponents();
 		synchronized (childs) {
-			if (backgroundTexture == null) {
-				g.setColor(LColor.gray);
-				g.fillRect(x(), y(), getWidth(), getHeight());
-			} else {
-				g.draw(backgroundTexture, x(), y(), getWidth(),
-						getHeight());
-			}
-			g.translate(-scrollX, -scrollY);
-			super.createUI(g);
-			g.translate(scrollX, scrollY);
-			if (showScroll) {
-				if (verticalScrollbar != null) {
-					verticalScrollbar.paint(g);
+			try {
+				g.saveTx();
+				if (backgroundTexture == null) {
+					g.setColor(LColor.gray);
+					g.fillRect(x(), y(), getWidth(), getHeight());
+				} else {
+					g.draw(backgroundTexture, x(), y(), getWidth(), getHeight());
 				}
-				if (horizontalScrollbar != null) {
-					horizontalScrollbar.paint(g);
+				g.translate(-scrollX, -scrollY);
+				super.createUI(g);
+				g.translate(scrollX, scrollY);
+				if (showScroll) {
+					if (verticalScrollbar != null) {
+						verticalScrollbar.paint(g);
+					}
+					if (horizontalScrollbar != null) {
+						horizontalScrollbar.paint(g);
+					}
 				}
+			} finally {
+				g.restoreTx();
 			}
 		}
 	}
@@ -113,11 +123,13 @@ public class LScrollContainer extends LContainer {
 		return scrollY;
 	}
 
+	@Override
 	public void add(LComponent comp) {
 		super.add(comp);
 		scrollContainerRealSizeChanged();
 	}
 
+	@Override
 	public synchronized void add(LComponent comp, int index) {
 		super.add(comp, index);
 		scrollContainerRealSizeChanged();
@@ -125,8 +137,8 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	public void setWidth(float width) {
-		float scrollBarWidth = verticalScrollbar == null ? 0 : verticalScrollbar
-				.getWidth();
+		float scrollBarWidth = verticalScrollbar == null ? 0
+				: verticalScrollbar.getWidth();
 		super.setWidth(width - scrollBarWidth);
 		fitScrollBarSize();
 	}
@@ -208,6 +220,7 @@ public class LScrollContainer extends LContainer {
 		horizontalScrollbar = scrollBar;
 		scrollBar.setScrollContainer(this);
 	}
+
 	@Override
 	protected void processTouchDragged() {
 		super.processTouchDragged();
@@ -218,6 +231,7 @@ public class LScrollContainer extends LContainer {
 			verticalScrollbar.processTouchDragged();
 		}
 	}
+
 	@Override
 	protected void processTouchPressed() {
 		super.processKeyPressed();
@@ -228,6 +242,7 @@ public class LScrollContainer extends LContainer {
 			verticalScrollbar.processTouchPressed();
 		}
 	}
+
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();

@@ -9,6 +9,7 @@ import loon.component.layout.LayoutManager;
 import loon.component.layout.VerticalLayout;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
@@ -25,6 +26,8 @@ public class LayoutTest extends Screen {
 	@Override
 	public void onLoad() {
 
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
 		// 产生四个按钮(按钮大小和位置会根据布局改变，所以此处无需设置按钮大小)
 		final LClickButton test1 = LClickButton.make("test1");
 		final LClickButton test2 = LClickButton.make("test2");

@@ -6,6 +6,7 @@ import loon.LazyLoading;
 import loon.Screen;
 import loon.action.sprite.Sprite;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
@@ -23,6 +24,8 @@ public class SpriteTest extends Screen {
 
 	@Override
 	public void onLoad() {
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
 		// 添加一个精灵，动画按照45x29每格拆分
 		Sprite sprite = new Sprite("dog.png", 45, 29);
 		// 最多允许播放20帧

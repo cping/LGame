@@ -11,6 +11,7 @@ import loon.component.LToast.Style;
 import loon.component.layout.HorizontalLayout;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
@@ -65,6 +66,8 @@ public class ToastTest extends Screen {
 	@Override
 	public void onLoad() {
 
+		// 设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
 		MyClickListener clickListener = new MyClickListener();
 
 		// 产生四个按钮(按钮大小和位置会根据布局改变，所以此处无需设置按钮大小)
@@ -89,7 +92,7 @@ public class ToastTest extends Screen {
 		test1.SetClick(clickListener);
 		test2.SetClick(clickListener);
 		test3.SetClick(clickListener);
-		
+
 		add(MultiScreenTest.getBackButton(this));
 	}
 

@@ -15,6 +15,7 @@ import loon.action.sprite.node.LNSequence;
 import loon.action.sprite.node.LNSprite;
 import loon.event.GameKey;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.utils.Easing;
 
@@ -28,6 +29,8 @@ public class NodeTest extends SpriteBatchScreen {
 
 	public void create() {
 
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
 		// 直接载入图片到节点(直接加载大图)
 		sprite = LNSprite.GInitWithFilename("assets/ccc.png");
 		// 支持拖拽

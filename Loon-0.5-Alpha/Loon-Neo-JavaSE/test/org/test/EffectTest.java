@@ -13,6 +13,7 @@ import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.Array;
@@ -54,6 +55,9 @@ public class EffectTest extends Screen {
 
 	@Override
 	public void onLoad() {
+
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
 		// 设置背景图片
 		setBackground("back1.png");
 		// 插入不同的精灵特效

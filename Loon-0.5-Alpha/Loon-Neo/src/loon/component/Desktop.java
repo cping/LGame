@@ -292,6 +292,7 @@ public class Desktop implements LRelease {
 		// 返回子容器
 		LContainer panel = (this.modal == null) ? this.contentPane
 				: ((LContainer) this.modal);
+	
 		LComponent comp = panel.findComponent(x, y);
 		return comp;
 	}

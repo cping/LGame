@@ -10,6 +10,7 @@ import loon.component.LComponent;
 import loon.component.LMessageBox;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
@@ -28,6 +29,8 @@ public class LMessageBoxTest extends Screen {
 	@Override
 	public void onLoad() {
 
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
 		LTexture texture = DefUI.getGameWinFrame(200, 200);
 		LMessageBox box = new LMessageBox(new String[] {
 				"人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",

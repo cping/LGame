@@ -29,14 +29,15 @@ public abstract class LContainer extends LComponent {
 
 	protected boolean locked;
 
-	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
+	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(
+			false);
 
 	private LComponent[] childs = new LComponent[0];
 
 	private int childCount = 0;
 
 	private LComponent latestInserted = null;
-	
+
 	public LContainer(int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.setFocusable(false);
@@ -46,8 +47,8 @@ public abstract class LContainer extends LComponent {
 	public boolean isContainer() {
 		return true;
 	}
-	
-	public  void add(LComponent comp) {
+
+	public void add(LComponent comp) {
 		if (this == comp) {
 			return;
 		}
@@ -58,8 +59,7 @@ public abstract class LContainer extends LComponent {
 			comp.setContainer(null);
 		}
 		comp.setContainer(this);
-		this.childs = CollectionUtils.expand(this.childs, 1,
-				false);
+		this.childs = CollectionUtils.expand(this.childs, 1, false);
 		this.childs[0] = comp;
 		this.childCount++;
 		this.desktop.setDesktop(comp);
@@ -75,7 +75,7 @@ public abstract class LContainer extends LComponent {
 		this.latestInserted = comp;
 	}
 
-	public  void add(LComponent comp, int index) {
+	public void add(LComponent comp, int index) {
 		if (comp.getContainer() != null) {
 			throw new IllegalStateException(comp
 					+ " already reside in another container!!!");
@@ -97,7 +97,7 @@ public abstract class LContainer extends LComponent {
 		this.latestInserted = comp;
 	}
 
-	public  boolean contains(LComponent comp) {
+	public boolean contains(LComponent comp) {
 		if (comp == null) {
 			return false;
 		}
@@ -112,7 +112,7 @@ public abstract class LContainer extends LComponent {
 		return false;
 	}
 
-	public  int remove(LComponent comp) {
+	public int remove(LComponent comp) {
 		for (int i = 0; i < this.childCount; i++) {
 			if (this.childs[i] == comp) {
 				this.remove(i);
@@ -122,7 +122,7 @@ public abstract class LContainer extends LComponent {
 		return -1;
 	}
 
-	public  LComponent remove(int index) {
+	public LComponent remove(int index) {
 		LComponent comp = this.childs[index];
 
 		this.desktop.setComponentStat(comp, false);
@@ -144,7 +144,7 @@ public abstract class LContainer extends LComponent {
 		this.childCount = 0;
 	}
 
-	public  void replace(LComponent oldComp, LComponent newComp) {
+	public void replace(LComponent oldComp, LComponent newComp) {
 		int index = this.remove(oldComp);
 		this.add(newComp, index);
 	}
@@ -208,7 +208,7 @@ public abstract class LContainer extends LComponent {
 		if (!this.isVisible()) {
 			return;
 		}
-		synchronized(childs) {
+		synchronized (childs) {
 			super.createUI(g);
 			if (this.elastic) {
 				g.setClip(this.getScreenX(), this.getScreenY(),
@@ -236,10 +236,8 @@ public abstract class LContainer extends LComponent {
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			if (this.childs[i] == comp) {
-				this.childs = CollectionUtils
-						.cut(this.childs, i);
-				this.childs = CollectionUtils.expand(
-						this.childs, 1, false);
+				this.childs = CollectionUtils.cut(this.childs, i);
+				this.childs = CollectionUtils.expand(this.childs, 1, false);
 				this.childs[0] = comp;
 				this.sortComponents();
 				break;
@@ -256,10 +254,8 @@ public abstract class LContainer extends LComponent {
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			if (this.childs[i] == comp) {
-				this.childs = CollectionUtils
-						.cut(this.childs, i);
-				this.childs = CollectionUtils.expand(
-						this.childs, 1, true);
+				this.childs = CollectionUtils.cut(this.childs, i);
+				this.childs = CollectionUtils.expand(this.childs, 1, true);
 				this.childs[this.childCount - 1] = comp;
 				this.sortComponents();
 				break;
@@ -341,6 +337,14 @@ public abstract class LContainer extends LComponent {
 			if (this.childs[i].intersects(x1, y1)) {
 				LComponent comp = (!this.childs[i].isContainer()) ? this.childs[i]
 						: ((LContainer) this.childs[i]).findComponent(x1, y1);
+				LContainer container = comp.getContainer();
+				if (container != null && container instanceof LScrollContainer) {
+					if (container.contains(comp)
+							&& (comp.getWidth() >= container.getWidth() || comp
+									.getHeight() >= container.getHeight())) {
+						return comp.getContainer();
+					}
+				}
 				return comp;
 			}
 		}
