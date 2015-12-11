@@ -229,12 +229,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private void init() {
 		setNode(new LNNode(this, LSystem.viewSize.getRect()));
-		// 最先绘制用户画面
-		setFristOrder(DRAW_USER_PAINT());
-		// 其次绘制精灵
-		setSecondOrder(DRAW_SPRITE_PAINT());
-		// 最后绘制桌面
-		setLastOrder(DRAW_DESKTOP_PAINT());
 	}
 
 	public void setNode(LNNode node) {
@@ -589,6 +583,12 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	@Override
 	public final void onLoaded() {
+		// 最先绘制用户画面
+		setFristOrder(DRAW_USER_PAINT());
+		// 其次绘制精灵
+		setSecondOrder(DRAW_SPRITE_PAINT());
+		// 最后绘制桌面
+		setLastOrder(DRAW_DESKTOP_PAINT());
 		create();
 	}
 
