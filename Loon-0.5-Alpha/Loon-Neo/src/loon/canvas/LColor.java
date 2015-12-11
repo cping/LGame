@@ -358,6 +358,7 @@ public class LColor implements Serializable {
 		return setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
+	@Override
 	public int hashCode() {
 		int result = (r != +0.0f ? NumberUtils.floatToIntBits(r) : 0);
 		result = 31 * result + (g != +0.0f ? NumberUtils.floatToIntBits(g) : 0);
@@ -366,6 +367,7 @@ public class LColor implements Serializable {
 		return result;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;

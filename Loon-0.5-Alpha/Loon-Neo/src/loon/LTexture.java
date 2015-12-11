@@ -739,7 +739,9 @@ public class LTexture extends Painter implements LRelease {
 			float y1, float x2, float y2, LColor c) {
 		if (isBatch) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
+
 			final boolean update = checkUpdateColor(c);
+
 			if (update) {
 				setImageColor(c);
 			}
@@ -819,6 +821,12 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	private boolean checkUpdateColor(LColor c) {
+		if (c == null) {
+			setColor(TOP_LEFT, 1f, 1f, 1f, 1f);
+			setColor(TOP_RIGHT, 1f, 1f, 1f, 1f);
+			setColor(BOTTOM_LEFT, 1f, 1f, 1f, 1f);
+			setColor(BOTTOM_RIGHT, 1f, 1f, 1f, 1f);
+		}
 		return c != null && !LColor.white.equals(c);
 	}
 

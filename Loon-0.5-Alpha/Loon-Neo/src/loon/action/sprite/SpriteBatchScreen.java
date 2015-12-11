@@ -82,7 +82,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private LNNode selectedNode;
 
-	private LNNode[] clickNode = new LNNode[1];
+	private LNNode[] clickNode;
 
 	private boolean isClicked;
 
@@ -217,10 +217,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public SpriteBatchScreen() {
 		super();
-		this.objects = new TArray<SpriteBatchObject>(10);
-		this.pendingAdd = new TArray<SpriteBatchObject>(10);
-		this.pendingRemove = new TArray<SpriteBatchObject>(10);
-		this.init();
 	}
 
 	public SpriteBatch getSpriteBatch() {
@@ -228,6 +224,10 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	private void init() {
+		this.objects = new TArray<SpriteBatchObject>(10);
+		this.pendingAdd = new TArray<SpriteBatchObject>(10);
+		this.pendingRemove = new TArray<SpriteBatchObject>(10);
+		this.clickNode = new LNNode[1];
 		setNode(new LNNode(this, LSystem.viewSize.getRect()));
 	}
 
@@ -570,6 +570,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public final void onLoad() {
+		init();
 		if (batch == null) {
 			batch = new SpriteBatch(3000);
 		}
@@ -806,6 +807,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	@Override
 	public final void alter(LTimerContext timer) {
+		if (content == null) {
+			return;
+		}
 		for (int i = 0; i < keySize; i++) {
 			ActionKey act = (ActionKey) keyActions.get(i);
 			if (act.isPressed()) {
@@ -868,6 +872,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	@Override
 	public final void draw(GLEx g) {
+		if (content == null) {
+			return;
+		}
 		if (isOnLoadComplete()) {
 			try {
 				batch.begin();
@@ -986,6 +993,12 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			pendingRemove.clear();
 			pendingRemove = null;
 		}
+		updateListener = null;
+		usePhysics = false;
+		_manager = null;
+		_box = null;
+		_fixed = false;
+		keyActions.clear();
 		tiles.clear();
 		dispose();
 	}

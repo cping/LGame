@@ -24,6 +24,7 @@ import loon.BaseIO;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextureBatch;
 import loon.LTextures;
 import loon.LTexture.Format;
 import loon.action.sprite.SpriteRegion;
@@ -488,6 +489,10 @@ public class LTexturePack implements LRelease {
 		}
 	}
 
+	public LTextureBatch getTextureBatch() {
+		return	texture.getTextureBatch();
+	}
+	
 	public void glEnd() {
 		if (count > 0) {
 			texture.glEnd();
