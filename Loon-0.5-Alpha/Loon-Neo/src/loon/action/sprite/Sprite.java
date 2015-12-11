@@ -65,6 +65,8 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 
 	private float scaleX = 1, scaleY = 1;
 
+	private int maxFrame;
+
 	/**
 	 * 默认构造函数
 	 * 
@@ -395,7 +397,8 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 	 * @param timer
 	 */
 	private void setAnimation(Animation myAnimation, LTexture[] images,
-			int maxFrame, long timer) {
+			int max, long timer) {
+		this.maxFrame = max;
 		if (maxFrame != -1) {
 			for (int i = 0; i < maxFrame; i++) {
 				myAnimation.addFrame(images[i], timer);
@@ -581,7 +584,12 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		if (_alpha < 0.01) {
 			return;
 		}
+
+		if (animation.getCurrentFrameIndex() > maxFrame) {
+			animation.reset();
+		}
 		image = animation.getSpriteImage();
+
 		if (image == null) {
 			return;
 		}
@@ -599,10 +607,10 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 				tx.preScale(scaleX, scaleY);
 				tx.translate(-scaleCenterX, -scaleCenterY);
 			}
+			if (_alpha > 0 && _alpha < 1) {
+				g.setAlpha(_alpha);
+			}
 			if (filterColor == null) {
-				if (_alpha > 0 && _alpha < 1) {
-					g.setAlpha(_alpha);
-				}
 				if (LTrans.TRANS_NONE == transform) {
 					g.draw(image, this._location.x, this._location.y, width,
 							height, _rotation);
@@ -611,9 +619,6 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 							transform, x(), y(), LTrans.TOP | LTrans.LEFT);
 				}
 			} else {
-				if (_alpha > 0 && _alpha < 1) {
-					g.setAlpha(_alpha);
-				}
 				if (LTrans.TRANS_NONE == transform) {
 					g.draw(image, this._location.x, this._location.y, width,
 							height, filterColor, _rotation);
@@ -715,9 +720,21 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		return getCollisionBox();
 	}
 
+	public void setScale(float s) {
+		this.setScale(s, s);
+	}
+
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;
 		this.scaleY = sy;
+	}
+
+	public int getMaxFrame() {
+		return maxFrame;
+	}
+
+	public void setMaxFrame(int maxFrame) {
+		this.maxFrame = maxFrame;
 	}
 
 	@Override
@@ -729,4 +746,5 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 	public void setHeight(float h) {
 		this.scaleY = (h / getHeight());
 	}
+
 }

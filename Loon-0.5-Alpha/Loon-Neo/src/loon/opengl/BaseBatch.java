@@ -69,9 +69,9 @@ public abstract class BaseBatch extends LTextureBind {
 			float displayHeight = forefather.getDisplayHeight()
 					* forefather.heightRatio;
 			float xOff = ((sx / displayWidth) * forefather.widthRatio)
-					+ forefather.xOff;
+					+ forefather.xOff + tex.xOff;
 			float yOff = ((sy / displayHeight) * forefather.heightRatio)
-					+ forefather.yOff;
+					+ forefather.yOff + tex.yOff;
 			float widthRatio = ((sw / displayWidth) * forefather.widthRatio)
 					+ xOff;
 			float heightRatio = ((sh / displayHeight) * forefather.heightRatio)

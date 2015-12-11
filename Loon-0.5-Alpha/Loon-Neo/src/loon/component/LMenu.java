@@ -21,9 +21,11 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.event.SysTouch;
+import loon.event.Updateable;
 import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -41,6 +43,26 @@ public class LMenu extends LComponent {
 
 	public static interface MenuItemClick {
 		public void onClick(MenuItem item);
+	}
+
+	private class ClickMenu implements Updateable {
+
+		private MenuItemClick click;
+
+		private MenuItem item;
+
+		ClickMenu(MenuItemClick c, MenuItem i) {
+			this.click = c;
+			this.item = i;
+		}
+
+		@Override
+		public void action(Object a) {
+			if (click != null && item != null) {
+				click.onClick(item);
+			}
+		}
+
 	}
 
 	public class MenuItem {
@@ -141,98 +163,107 @@ public class LMenu extends LComponent {
 		}
 
 		public void draw(GLEx g) {
-			g.saveBrush();
-			g.setFont(_font);
-			if (this.parent != null) {
-				if (!localpos) {
-					this.x = (this.parent.cellWidth * this.xslot
-							+ this.parent.cellWidth / this.itemWidth + this.xslot
-							* this.parent.paddingx)
-							- this.parent.item_left_offset;
-					this.y = (this.parent.cellHeight * this.yslot
-							+ this.parent.cellHeight / this.itemHeight + this.yslot
-							* this.parent.paddingy);
+			float tmp = g.alpha();
+			int color = g.color();
+			LFont font = g.getFont();
+			try {
+				g.setFont(_font);
+				if (this.parent != null) {
+					if (!localpos) {
+						this.x = (this.parent.cellWidth * this.xslot
+								+ this.parent.cellWidth / this.itemWidth + this.xslot
+								* this.parent.paddingx)
+								- this.parent.item_left_offset;
+						this.y = (this.parent.cellHeight * this.yslot
+								+ this.parent.cellHeight / this.itemHeight + this.yslot
+								* this.parent.paddingy);
 
-					if (x > Float.MAX_VALUE) {
-						x = 0;
-					} else if (x < Float.MIN_VALUE) {
-						x = 0;
-					}
-					if (y > Float.MAX_VALUE) {
-						y = 0;
-					} else if (y < Float.MIN_VALUE) {
-						y = 0;
-					}
-				}
-				if (parent.type == LMenu.MOVE_RIGHT) {
-					float posX = parent.getScreenWidth()
-							- parent.main_panel_size;
-					this.x = posX + x;
-				}
-				if (!localsize) {
-					if (!this.keep || texture == null) {
-						this.itemWidth = this.parent.cellWidth;
-						this.itemHeight = this.parent.cellHeight;
-					} else {
-						this.itemWidth = this.texture.getWidth();
-						this.itemHeight = this.texture.getHeight();
-					}
-				}
-				if (bounds().contains(SysTouch.getX(), SysTouch.getY())
-						&& SysTouch.isDown()) {
-					g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
-					if (SysTouch.isDown() && (!this.clicked)) {
-						if (this._itemclick != null) {
-							this._itemclick.onClick(this);
+						if (x > Float.MAX_VALUE) {
+							x = 0;
+						} else if (x < Float.MIN_VALUE) {
+							x = 0;
 						}
-						this.clicked = true;
-					}
-				}
-				if (!SysTouch.isDown()) {
-					this.clicked = false;
-				}
-				if (texture != null) {
-					g.draw(this.texture, this.x + 3f, this.y
-							+ this.parent.paddingy + this.parent.scroll,
-							this.itemWidth, this.itemHeight);
-				}
-				if (this.label != null) {
-					g.drawString(
-							label,
-							(this.x + 3f + (itemWidth / 2 - font
-									.stringWidth(label) / 2)) + offsetX,
-							(this.y + this.parent.paddingy + this.parent.scroll
-									- font.getAscent() - 2)
-									+ offsetY);
-				}
-
-			} else {
-				if (bounds().contains(SysTouch.getX(), SysTouch.getY())
-						&& SysTouch.isDown()) {
-					g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
-					if (SysTouch.isDown() && (!this.clicked)) {
-						if (this._itemclick != null) {
-							this._itemclick.onClick(this);
+						if (y > Float.MAX_VALUE) {
+							y = 0;
+						} else if (y < Float.MIN_VALUE) {
+							y = 0;
 						}
-						this.clicked = true;
 					}
-				}
-				if (!SysTouch.isDown()) {
-					this.clicked = false;
-				}
-				if (texture != null) {
-					g.draw(this.texture, this.x, this.y, this.itemWidth,
-							this.itemHeight);
-				}
-				if (this.label != null) {
-					g.drawString(this.label,
-							(this.x + (itemWidth / 2 - font.stringWidth(label)
-									/ 2 - font.getAscent()))
-									+ offsetX, (this.y - 2) + offsetY);
-				}
+					if (parent.type == LMenu.MOVE_RIGHT) {
+						float posX = parent.getScreenWidth()
+								- parent.main_panel_size;
+						this.x = posX + x;
+					}
+					if (!localsize) {
+						if (!this.keep || texture == null) {
+							this.itemWidth = this.parent.cellWidth;
+							this.itemHeight = this.parent.cellHeight;
+						} else {
+							this.itemWidth = this.texture.getWidth();
+							this.itemHeight = this.texture.getHeight();
+						}
+					}
+					if (bounds().contains(SysTouch.getX(), SysTouch.getY())
+							&& SysTouch.isDown()) {
+						g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
+						if (SysTouch.isDown() && (!this.clicked)) {
+							ClickMenu menu = new ClickMenu(this._itemclick,
+									this);
+							LSystem.load(menu);
+							this.clicked = true;
+						}
+					}
+					if (!SysTouch.isDown()) {
+						this.clicked = false;
+					}
+					if (texture != null) {
+						g.draw(this.texture, this.x + 3f, this.y
+								+ this.parent.paddingy + this.parent.scroll,
+								this.itemWidth, this.itemHeight);
+					}
+					if (this.label != null) {
+						g.drawString(
+								label,
+								(this.x + 3f + (itemWidth / 2 - font
+										.stringWidth(label) / 2)) + offsetX,
+								(this.y + this.parent.paddingy
+										+ this.parent.scroll - font.getAscent() - 2)
+										+ offsetY);
+					}
 
+				} else {
+					if (bounds().contains(SysTouch.getX(), SysTouch.getY())
+							&& SysTouch.isDown()) {
+						g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
+						if (SysTouch.isDown() && (!this.clicked)) {
+							ClickMenu menu = new ClickMenu(this._itemclick,
+									this);
+							LSystem.load(menu);
+							this.clicked = true;
+						}
+					}
+					if (!SysTouch.isDown()) {
+						this.clicked = false;
+					}
+					if (texture != null) {
+						g.draw(this.texture, this.x, this.y, this.itemWidth,
+								this.itemHeight);
+					}
+					if (this.label != null) {
+						g.drawString(
+								this.label,
+								(this.x + (itemWidth / 2
+										- font.stringWidth(label) / 2 - font
+											.getAscent())) + offsetX,
+								(this.y - 2) + offsetY);
+					}
+
+				}
+			} finally {
+				g.setAlpha(tmp);
+				g.setColor(color);
+				g.setFont(font);
 			}
-			g.restoreBrush();
 		}
 
 		private RectBox itemrect;
@@ -487,58 +518,69 @@ public class LMenu extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		g.setAlpha(alphaMenu);
-		switch (type) {
-		case MOVE_LEFT:
-			if ((selected == this) || (selected == null)) {
-				g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight);
-				if (label != null) {
-					g.setAlpha(1f);
-					g.drawString(
-							this.label,
-							this.width
-									+ (tabWidth / 2 - font.stringWidth(label) / 2),
-							getTaby() + (tabHeight / 2 - font.getHeight() / 2)
-									- 5);
-					g.setAlpha(alphaMenu);
-				}
-			}
-			if ((this.active) || (this.width > 0)) {
-				g.draw(mainpanel, 0, 0, this.width, getScreenHeight());
-				if (this.width == this.main_panel_size) {
-					for (int i = 0; i < this.items.size; i++) {
-						this.items.get(i).draw(g);
+		try {
+			g.saveBrush();
+			g.setAlpha(alphaMenu);
+			switch (type) {
+			case MOVE_LEFT:
+				if ((selected == this) || (selected == null)) {
+					g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight);
+					if (label != null) {
+						g.setAlpha(1f);
+						g.drawString(
+								this.label,
+								this.width
+										+ (tabWidth / 2 - font
+												.stringWidth(label) / 2),
+								getTaby()
+										+ (tabHeight / 2 - font.getHeight() / 2)
+										- 5);
+						g.setAlpha(alphaMenu);
 					}
 				}
-			}
-
-			break;
-
-		case MOVE_RIGHT:
-			if ((selected == this) || (selected == null)) {
-				float posX = this.getScreenWidth() - this.width - this.tabWidth;
-				g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight);
-				if (label != null) {
-					g.setAlpha(1f);
-					g.drawString(
-							this.label,
-							posX + (tabWidth / 2 - font.stringWidth(label) / 2),
-							getTaby() + (tabHeight / 2 - font.getHeight() / 2)
-									- 5);
-					g.setAlpha(this.alphaMenu);
-				}
-			}
-			if ((this.active) || (this.width > 0)) {
-				float posX = this.getScreenWidth() - this.width;
-				g.draw(mainpanel, posX, 0, this.width, getScreenHeight());
-				if (this.width == this.main_panel_size) {
-					for (int i = 0; i < this.items.size; i++) {
-						this.items.get(i).draw(g);
+				if ((this.active) || (this.width > 0)) {
+					g.draw(mainpanel, 0, 0, this.width, getScreenHeight());
+					if (this.width == this.main_panel_size) {
+						for (int i = 0; i < this.items.size; i++) {
+							this.items.get(i).draw(g);
+						}
 					}
 				}
-			}
 
-			break;
+				break;
+
+			case MOVE_RIGHT:
+				if ((selected == this) || (selected == null)) {
+					float posX = this.getScreenWidth() - this.width
+							- this.tabWidth;
+					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight);
+					if (label != null) {
+						g.setAlpha(1f);
+						g.drawString(
+								this.label,
+								posX
+										+ (tabWidth / 2 - font
+												.stringWidth(label) / 2),
+								getTaby()
+										+ (tabHeight / 2 - font.getHeight() / 2)
+										- 5);
+						g.setAlpha(this.alphaMenu);
+					}
+				}
+				if ((this.active) || (this.width > 0)) {
+					float posX = this.getScreenWidth() - this.width;
+					g.draw(mainpanel, posX, 0, this.width, getScreenHeight());
+					if (this.width == this.main_panel_size) {
+						for (int i = 0; i < this.items.size; i++) {
+							this.items.get(i).draw(g);
+						}
+					}
+				}
+
+				break;
+			}
+		} finally {
+			g.restoreBrush();
 		}
 	}
 

@@ -108,9 +108,8 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	}
 
 	public void disposeAll() {
-		Player[] toDispose = children.toArray(new Player[children.size]);
 		removeAll();
-		for (Player child : toDispose) {
+		for (Player child : children) {
 			child.close();
 		}
 	}

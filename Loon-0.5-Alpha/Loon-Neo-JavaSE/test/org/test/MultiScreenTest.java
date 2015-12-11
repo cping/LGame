@@ -123,7 +123,7 @@ public class MultiScreenTest extends Screen {
 
 	final String[] names = { "MessageBox", "Live2d", "Action", "Effect",
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
-			"Layout", "Table", "Menu", "Names" ,"Toast","List"};
+			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite" };
 
 	@Override
 	public void onLoad() {
@@ -148,13 +148,14 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new DecideNameTest());
 		addScreen(names[index++], new ToastTest());
 		addScreen(names[index++], new ListTest());
+		addScreen(names[index++], new SpriteTest());
 		// 默认按钮大小为120x30
 		int btnWidth = 120;
 		int btnHeight = 30;
 		// 添加一组按钮布局，并返回按钮对象
 		TArray<LClickButton> clicks = LayoutManager.elementButtons(this, names,
 				15, 25, btnWidth, btnHeight, clickListener,
-				LSystem.viewSize.getHeight() - btnHeight * 2);
+				LSystem.viewSize.getHeight() - btnHeight);
 
 		TArray<ActionTween> tweens = new TArray<ActionTween>();
 
@@ -239,10 +240,10 @@ public class MultiScreenTest extends Screen {
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
-		//原始大小
+		// 原始大小
 		setting.width = 480;
 		setting.height = 320;
-		//缩放为
+		// 缩放为
 		setting.width_zoom = 640;
 		setting.height_zoom = 480;
 		setting.fps = 60;

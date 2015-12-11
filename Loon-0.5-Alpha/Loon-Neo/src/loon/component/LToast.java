@@ -159,20 +159,24 @@ public class LToast extends LComponent {
 		int oc = g.color();
 		float oa = g.alpha();
 		LFont f = g.getFont();
-		g.setColor(mBackgroundColor);
-		g.setAlpha(opacity);
-		if (LSystem.isHTML5()) {
-			g.fillRect(displayX, displayY, w, h);
-		} else {
-			g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+		try {
+			g.setColor(mBackgroundColor);
+			g.setAlpha(opacity);
+			if (LSystem.isHTML5()) {
+				g.fillRect(displayX, displayY, w, h);
+			} else {
+				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+			}
+			g.setColor(LColor.DEF_COLOR);
+			g.setFont(font);
+			g.drawString(mText, displayX
+					+ (cellWidth - font.stringWidth(mText)) / 2, displayY + 2,
+					mForegroundColor);
+		} finally {
+			g.setColor(oc);
+			g.setAlpha(oa);
+			g.setFont(f);
 		}
-		g.setColor(LColor.DEF_COLOR);
-		g.setFont(font);
-		g.drawString(mText, displayX + (cellWidth - font.stringWidth(mText))
-				/ 2, displayY + 2, mForegroundColor);
-		g.setColor(oc);
-		g.setAlpha(oa);
-		g.setFont(f);
 	}
 
 	@Override

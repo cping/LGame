@@ -46,6 +46,7 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.stage.PlayerUtils;
 import loon.stage.RootPlayer;
 import loon.stage.Stage;
@@ -2165,6 +2166,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					t.dispose();
 				}
 			}
+			limits.clear();
+			_touchAreas.clear();
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
 			keyButtonPressed = SysInput.NO_KEY;
@@ -2178,17 +2181,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			isNext = false;
 			isGravity = false;
 			isLock = true;
+			_isExistCamera = false;
 			if (screens != null) {
 				screens.clear();
 				screens = null;
 			}
 			if (sprites != null) {
 				sprites.close();
+				sprites.clear();
 				sprites = null;
 			}
 			if (desktop != null) {
 				desktop.close();
+				desktop.clear();
 				desktop = null;
+			}
+			if (_players != null) {
+				_players.close();
+			}
+			if (LSystem._base != null && LSystem._process.stageSystem != null) {
+				LSystem._process.stageSystem.removeAll();
 			}
 			if (currentScreen != null) {
 				LTexture parent = currentScreen.getParent();
@@ -2215,6 +2227,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				}
 				releases.clear();
 			}
+			LSTRDictionary.dispose();
 			close();
 		}
 	}

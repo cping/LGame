@@ -31,6 +31,7 @@ import loon.event.SysInputFactory;
 import loon.event.TouchMake;
 import loon.event.Updateable;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.stage.PlayerUtils;
 import loon.stage.RootPlayer;
 import loon.stage.StageSystem;
@@ -354,6 +355,7 @@ public class LProcess extends PlayerUtils {
 					if (!LSystem._base.display().showLogo) {
 						startTransition();
 						screen.setClose(false);
+						screen.resetBase();
 						screen.onLoad();
 						screen.onLoaded();
 						screen.setOnLoadState(true);
@@ -414,10 +416,8 @@ public class LProcess extends PlayerUtils {
 				currentScreen = null;
 			}
 			RealtimeProcessManager.get().close();
+			LSTRDictionary.dispose();
 			LTextures.destroyAll();
-			// LImage.disposeAll();
-			// ScreenUtils.disposeAll();
-			// GLMesh.disposeAll();
 		}
 		LSystem._base.log().debug("The Loon Game Engine is End");
 	}

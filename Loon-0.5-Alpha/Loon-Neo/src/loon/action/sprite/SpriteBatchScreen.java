@@ -229,11 +229,11 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private void init() {
 		setNode(new LNNode(this, LSystem.viewSize.getRect()));
-		//最先绘制用户画面
+		// 最先绘制用户画面
 		setFristOrder(DRAW_USER_PAINT());
-		//其次绘制精灵
+		// 其次绘制精灵
 		setSecondOrder(DRAW_SPRITE_PAINT());
-		//最后绘制桌面
+		// 最后绘制桌面
 		setLastOrder(DRAW_DESKTOP_PAINT());
 	}
 
@@ -868,29 +868,27 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	@Override
 	public final void draw(GLEx g) {
-
 		if (isOnLoadComplete()) {
-			batch.begin();
-			before(batch);
-			
-			for (TileMap tile : tiles) {
-				tile.draw(g, batch, offset.x(), offset.y());
-			}
-		
-			for (SpriteBatchObject o : objects) {
-				objX = o.getX() + offset.x;
-				objY = o.getY() + offset.y;
-				if (contains(objX, objY)) {
-					o.draw(batch, offset.x, offset.y);
+			try {
+				batch.begin();
+				before(batch);
+				for (TileMap tile : tiles) {
+					tile.draw(g, batch, offset.x(), offset.y());
 				}
+				for (SpriteBatchObject o : objects) {
+					objX = o.getX() + offset.x;
+					objY = o.getY() + offset.y;
+					if (contains(objX, objY)) {
+						o.draw(batch, offset.x, offset.y);
+					}
+				}
+				if (content.isVisible()) {
+					content.drawNode(batch);
+				}
+				after(batch);
+			} finally {
+				batch.end();
 			}
-	
-			if (content.isVisible()) {
-				content.drawNode(batch);
-			}
-		
-			after(batch);
-			batch.end();
 		}
 
 	}

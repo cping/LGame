@@ -505,6 +505,13 @@ public class Desktop implements LRelease {
 		return this.contentPane.get();
 	}
 
+	public void clear() {
+		if (contentPane != null) {
+			contentPane.clear();
+		}
+	}
+	
+	@Override
 	public void close() {
 		if (contentPane != null) {
 			contentPane.close();
