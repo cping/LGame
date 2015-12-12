@@ -34,7 +34,7 @@ public class ActionEventTest extends Screen {
 
 		//设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		SpriteLabel label = new SpriteLabel("Plase touch screen", 120, 20);
+		SpriteLabel label = new SpriteLabel("Plase touch the screen", 120, 20);
 		add(label);
 		
 		// 构建一个球体的精灵

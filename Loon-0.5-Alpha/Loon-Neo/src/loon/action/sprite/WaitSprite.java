@@ -216,13 +216,13 @@ public class WaitSprite extends LObject implements ISprite {
 			}
 			break;
 		case 7:
-			width = 60;
-			height = 60;
+			width = 70;
+			height = 80;
 			offset = 12;
 			if (srcWidth < srcHeight) {
 				padding = -80;
 			} else {
-				padding = -120;
+				padding = -110;
 			}
 			break;
 		case 8:
