@@ -31,7 +31,7 @@ import loon.utils.json.JsonImpl;
 
 public class LSystem {
 
-	public static EmptyObject newEmptyObject() {
+	public final static EmptyObject newEmptyObject() {
 		return new EmptyObject();
 	}
 	

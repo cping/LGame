@@ -24,6 +24,7 @@ import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
+import loon.utils.res.ResourceLocal;
 
 public abstract class Assets {
 
@@ -121,6 +122,10 @@ public abstract class Assets {
 	protected static final String[] SUFFIXES = { ".wav", ".mp3" };
 
 	protected final Asyn asyn;
+
+	public final ResourceLocal getJsonResource(String path) {
+		return new ResourceLocal(path);
+	}
 
 	public Image getImageSync(String path) {
 		ImageImpl image = createImage(false, 0, 0, path);

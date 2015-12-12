@@ -385,7 +385,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		lastTrans = new Affine2f();
+		if (lastTrans == null) {
+			lastTrans = new Affine2f();
+		} else {
+			lastTrans.idt();
+		}
 		scale(scaleX, scaleY);
 		affineStack.pop();
 		return this;
@@ -2420,6 +2424,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 	}
 
+	@Override
 	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
 		drawLine(x1, y1, x2, y2, getPixSkip());
 	}
@@ -2435,6 +2440,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 								+ this.lineWidth);
 			}
 		}
+	}
+
+	public float getScaleX() {
+		return scaleX;
+	}
+
+	public float getScaleY() {
+		return scaleY;
 	}
 
 	@Override
