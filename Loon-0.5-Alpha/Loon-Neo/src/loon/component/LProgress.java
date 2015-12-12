@@ -99,13 +99,13 @@ public class LProgress extends LComponent {
 			case GAME:
 				size = getWidth() * (1 - percentage);
 				float posY = getHeight() / 2;
-				batch.draw(bgTexture, x + getHeight() / 2 + 1, y - posY, size,
-						getHeight(), 90);
+				batch.draw(bgTexture, x + getHeight() / 2  + getWidth() / 2,
+						y - posY, size, getHeight(), 90);
 				batch.setColor(color);
 				size = getWidth() * percentage;
-				batch.draw(bgProgressTexture, x + 1 + getHeight() / 2, y
-						+ getWidth() - size - posY, getWidth() * percentage,
-						getHeight(), 90);
+				batch.draw(bgProgressTexture, x  + getHeight() / 2
+						+ getWidth() / 2, y + getWidth() - size - posY,
+						getWidth() * percentage, getHeight(), 90);
 				batch.resetColor();
 				break;
 			case UI:
@@ -184,7 +184,7 @@ public class LProgress extends LComponent {
 	public float getPercentage() {
 		return this.percentage;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

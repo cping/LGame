@@ -125,12 +125,12 @@ public class MultiScreenTest extends Screen {
 	final String[] names = { "MessageBox", "Live2d", "Action", "Effect",
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
-			"TexturePack", "LNode", "Scroll","Cycle" };
+			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea","Progress" };
 
 	@Override
 	public void onLoad() {
 
-		//设置默认字体大小为15号字
+		// 设置默认字体大小为15号字
 		LFont.setDefaultFont(LFont.getFont(15));
 		int index = 0;
 		// 构建一个通用的监听器
@@ -157,6 +157,8 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new NodeTest());
 		addScreen(names[index++], new ScrollTest());
 		addScreen(names[index++], new CycleTest());
+		addScreen(names[index++], new TextAreaTest());
+		addScreen(names[index++], new ProgressTest());
 		// 默认按钮大小为100x30
 		int btnWidth = 100;
 		int btnHeight = 25;

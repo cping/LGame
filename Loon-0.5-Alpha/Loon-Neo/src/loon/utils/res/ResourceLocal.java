@@ -43,6 +43,22 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		if (path != null) {
 			_path = path;
 			_initFlag = false;
+			Json.Object jsonObj = LSystem.base().json()
+					.parse(BaseIO.loadText(path));
+			Json.Array resList = jsonObj.getArray("resources");
+			for (int i = 0; i < resList.length(); i++) {
+				Json.Object resItem = resList.getObject(i);
+				String itemName = resItem.getString("name");
+				String itemType = resItem.getString("type");
+				String itemUrl = resItem.getString("url");
+				ResourceItem item = new ResourceItem(itemName, itemType,
+						itemUrl);
+				if (itemType.equals("sheet")) {
+					String subkeys = resItem.getString("subkeys");
+					item.subkeys = subkeys;
+				}
+				_resourceTable.put(item.name(), item);
+			}
 		}
 	}
 
@@ -68,14 +84,11 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		ResourceItem item = getResItem(name, ResourceType.TYPE_IMAGE);
 		if (false == _dataTable.containsKey(name)) {
 			String url = item.url();
-
 			image = Image.createImage(url);
 			_dataTable.put(name, image);
-
 		} else {
 			image = (Image) _dataTable.get(name);
 		}
-
 		return image;
 	}
 
@@ -149,9 +162,6 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 			url = item.url();
 		} else {
 			url = name;
-			if (url.charAt(0) != '/') {
-				url = '/' + url;
-			}
 		}
 		return url;
 	}
@@ -168,9 +178,6 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 			item = _resourceTable.get(name);
 		} else {
 			String url = name;
-			if (url.charAt(0) != '/') {
-				url = '/' + url;
-			}
 			item = new ResourceItem(name, type, url);
 			_resourceTable.put(name, item);
 		}

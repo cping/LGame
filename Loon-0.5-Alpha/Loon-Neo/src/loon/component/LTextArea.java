@@ -42,7 +42,7 @@ public class LTextArea extends LComponent {
 
 	public static final int TYPE_UP = 1;
 
-	private LTexture bgLTexture;
+	private LTexture bgTexture;
 	private int leftOffset, topOffset;
 
 	private int showType;
@@ -120,7 +120,7 @@ public class LTextArea extends LComponent {
 		this.setWidthLimit(w);
 		this.setWaitFlag(true);
 		this.setSlideMessage(true);
-		this.bgLTexture = bg;
+		this.bgTexture = bg;
 	}
 
 	public void set(int mMax) {
@@ -310,8 +310,8 @@ public class LTextArea extends LComponent {
 	}
 
 	public void draw(GLEx g, int dx, int dy, int d_type, int lines) {
-		if (bgLTexture != null) {
-			g.draw(bgLTexture, dx, dy, getWidth(), getHeight());
+		if (bgTexture != null) {
+			g.draw(bgTexture, dx, dy, getWidth(), getHeight());
 		}
 		LFont oldFont = g.getFont();
 		int oldColor = g.color();
@@ -509,6 +509,16 @@ public class LTextArea extends LComponent {
 		this.countFrame = countFrame;
 	}
 
+	@Override
+	public void setBackground(LTexture texture) {
+		this.bgTexture = texture;
+	}
+
+	@Override
+	public LTexture getBackground() {
+		return this.bgTexture;
+	}
+
 	private void drawString(GLEx g, String str, int x, int y, LColor color) {
 		g.drawString(str, x + leftOffset + 5,
 				(y - 5) + topOffset + font.getAscent() / 2, color);
@@ -534,6 +544,14 @@ public class LTextArea extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		draw(g, x, y, showType, postLine);
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		if (bgTexture != null) {
+			bgTexture.close();
+		}
 	}
 
 	@Override
