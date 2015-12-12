@@ -493,7 +493,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		if (setting.useImmersiveMode && AndroidGame.getSDKVersion() >= 19) {
 			try {
 				Class<?> vlistener = Class
-						.forName("com.badlogic.gdx.backends.android.AndroidVisibilityListener");
+						.forName("loon.android.AndroidVisibilityListener");
 				Object o = vlistener.newInstance();
 				java.lang.reflect.Method method = vlistener.getDeclaredMethod(
 						"createListener", AndroidBase.class);
@@ -506,9 +506,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 					| android.content.pm.ActivityInfo.CONFIG_KEYBOARD_HIDDEN;
 			android.content.pm.ActivityInfo info = this.getPackageManager()
 					.getActivityInfo(
-							new android.content.ComponentName(context,
-									this.getPackageName() + "."
-											+ this.getLocalClassName()), 0);
+							new android.content.ComponentName(context, this.getClass()), 0);
 			if ((info.configChanges & REQUIRED_CONFIG_CHANGES) != REQUIRED_CONFIG_CHANGES) {
 				new android.app.AlertDialog.Builder(this)
 						.setMessage(
