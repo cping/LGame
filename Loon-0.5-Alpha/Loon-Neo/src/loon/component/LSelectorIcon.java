@@ -46,6 +46,10 @@ public class LSelectorIcon extends LComponent {
 
 	private LColor borderColor = new LColor(LColor.black);
 
+	public LSelectorIcon(float x, float y, int size) {
+		this((int) x, (int) y, size);
+	}
+
 	public LSelectorIcon(int x, int y, int size) {
 		super(x, y, size, size);
 		this.minX = 0;
@@ -67,10 +71,8 @@ public class LSelectorIcon extends LComponent {
 				pSize - 2);
 		g.setColor(borderColor.getRed(), borderColor.getGreen(),
 				borderColor.getBlue(), (int) alpha);
-		g.strokeRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
-				pSize);
-		g.strokeRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
-				pSize - 2);
+		g.strokeRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1,
+				pSize + 1, pSize + 1);
 		g.setFillColor(fill);
 		g.setStrokeColor(stroke);
 	}
@@ -85,10 +87,8 @@ public class LSelectorIcon extends LComponent {
 				pSize - 2);
 		g.setColor(borderColor.getRed(), borderColor.getGreen(),
 				borderColor.getBlue(), (int) alpha);
-		g.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
-				pSize);
-		g.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
-				pSize - 2);
+		g.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize + 1,
+				pSize + 1);
 		g.setColor(color);
 	}
 
@@ -102,10 +102,8 @@ public class LSelectorIcon extends LComponent {
 				pSize - 2);
 		batch.setColor(borderColor.getRed(), borderColor.getGreen(),
 				borderColor.getBlue(), (int) alpha);
-		batch.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
-				pSize);
-		batch.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
-				pSize - 2);
+		batch.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1,
+				pSize + 1, pSize + 1);
 		batch.setColor(color);
 	}
 
@@ -201,6 +199,7 @@ public class LSelectorIcon extends LComponent {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
 		if (increaseAlpha) {

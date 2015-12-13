@@ -385,11 +385,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (lastTrans == null) {
-			lastTrans = new Affine2f();
-		} else {
-			lastTrans.idt();
-		}
+		lastTrans = new Affine2f();
 		scale(scaleX, scaleY);
 		affineStack.pop();
 		return this;

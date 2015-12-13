@@ -25,7 +25,17 @@ import loon.utils.processes.RealtimeProcessManager;
 public class Director extends SoundBox {
 
 	public final static void addProcess(GameProcess process) {
+		if (process == null) {
+			return;
+		}
 		RealtimeProcessManager.get().addProcess(process);
+	}
+
+	public final static void removeProcess(GameProcess process) {
+		if (process == null) {
+			return;
+		}
+		removeProcess(process.getId());
 	}
 
 	public final static void removeProcess(String id) {
@@ -39,7 +49,7 @@ public class Director extends SoundBox {
 	public final static GameProcess find(String id) {
 		return RealtimeProcessManager.get().find(id);
 	}
-	
+
 	public enum Origin {
 		CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, LEFT_CENTER, TOP_CENTER, BOTTOM_CENTER, RIGHT_CENTER
 	}
@@ -163,8 +173,7 @@ public class Director extends SoundBox {
 		return createOrigin(o, origin);
 	}
 
-	public static TArray<Vector2f> makeOrigins(Origin origin,
-			LObject... objs) {
+	public static TArray<Vector2f> makeOrigins(Origin origin, LObject... objs) {
 		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
 		for (LObject o : objs) {
 			result.add(createOrigin(o, origin));

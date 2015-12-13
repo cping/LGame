@@ -22,6 +22,8 @@ import loon.utils.timer.LTimerContext;
 
 public class EffectTest extends Screen {
 
+	RealtimeProcess process;
+	
 	Array<BaseEffect> effects = new Array<BaseEffect>();
 
 	public LTransition onTransition() {
@@ -66,7 +68,7 @@ public class EffectTest extends Screen {
 		effects.add(new FadeOvalEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeTileEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeSpiralEffect(ISprite.TYPE_FADE_IN, LColor.black));
-		RealtimeProcess process = new RealtimeProcess() {
+		process = new RealtimeProcess() {
 
 			@Override
 			public void run(LTimerContext time) {
@@ -135,6 +137,6 @@ public class EffectTest extends Screen {
 
 	@Override
 	public void close() {
-
+		removeProcess(process);
 	}
 }

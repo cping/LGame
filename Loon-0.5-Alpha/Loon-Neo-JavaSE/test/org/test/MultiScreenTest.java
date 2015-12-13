@@ -125,7 +125,7 @@ public class MultiScreenTest extends Screen {
 	final String[] names = { "MessageBox", "Live2d", "Action", "Effect",
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
-			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea","Progress","Particle" };
+			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea","Progress","Particle","SelectIcon" };
 
 	@Override
 	public void onLoad() {
@@ -160,6 +160,7 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new TextAreaTest());
 		addScreen(names[index++], new ProgressTest());
 		addScreen(names[index++], new ParticleTest());
+		addScreen(names[index++], new SelectIconTest());
 		// 默认按钮大小为100x30
 		int btnWidth = 100;
 		int btnHeight = 25;
