@@ -1,0 +1,288 @@
+{
+	"groups":[
+		{
+			"keys":"0ui_bg,probarbg,probartop",
+			"name":"preload"
+		},
+		{
+			"keys":"0ui_btn,welbg,welbtn,wellogo,liantiao,loadbg,loadl,loadr,gamebgsound,loaderClose,loaderOpen",
+			"name":"welcomeload"
+		},
+		{
+			"keys":"map,backToIndex,flag0,flag1,heroIcon,gkxz,xx,gushimoshi,wujinmoshi,wujinmoshi2,NumFont0,NumFontda,mapbgsound",
+			"name":"maps"
+		},
+		{
+			"keys":"buildTooljson,buildToolpng,Base02,Base03,uiinfo,backToMaps,uiskillbg,uiskilloff,uiskillon,uiskill1,uiskill2,uiskill1off,uiskill2off,mb,victory,lose,tryagain,quitgame,NumFont,NumFont2,NumFont3,lifeBarBg,lifeBar,stone1png,stone1json",
+			"name":"uiLoad"
+		},
+		{
+			"keys":"Monster01png,Monster01json,Monster02png,Monster02json,Monster03png,Monster03json,Monster04png,Monster04json,Monster05png,Monster05json,Monster06png,Monster06json,Monster07png,Monster07json,Monster08png,Monster08json,Monster09png,Monster09json,Monster10png,Monster10json,Monster11png,Monster11json,Monster12png,Monster12json,Monster13png,Monster13json,Monster14png,Monster14json,Monster15png,Monster15json,Boss01png,Boss01json,Boss02png,Boss02json",
+			"name":"monsterLoad"
+		},
+		{
+			"keys":"towerspng,towersjson,ArrowShooter01png,ArrowShooter01json,ArrowShooter02png,ArrowShooter02json,ArrowShooter031png,ArrowShooter031json,ArrowShooter032png,ArrowShooter032json,Arrow01png,Arrow01json,Arrow032png,Arrow032json,ShieldSoilder01png,ShieldSoilder01json,MagicBullet010203png,MagicBullet010203json,MagicWizard010203png,MagicWizard010203json,Explo01png,Explo01json,Explo02png,Explo02json,Explo031png,Explo031json,ExploTower01json,ExploTower01png,ExploTower02json,ExploTower02png,ExploTower031json,ExploTower031png,ZenYuan1json,ZenYuan1png,ZenYuan2json,ZenYuan2png",
+			"name":"towerLoad"
+		},
+		{
+			"keys":"victorysd,bo_start,building,select,sell_tower,arrow_fire1,arrow_fire2,arrow_hit1,arrow_hit2,explo_firestart1,explo_fireend1,magic_fire1,shield_fire1,shield_fire2,shield_fire3,monster_die1,monster_die2,monster_die3,monster_die4,arrow_ready1,arrow_ready2,arrow_ready3,shield_ready1,shield_ready2,shield_ready3,magic_ready1,magic_ready2,magic_ready3,explo_ready1,explo_ready2,explo_ready3",
+			"name":"soundLoad"
+		},
+		{
+			"keys":"map0,map0json,map0bg,cuizi,men",
+			"name":"guanka01load"
+		},
+		{
+			"keys":"map1,map1json,map0bg",
+			"name":"guanka02load"
+		},
+		{
+			"keys":"map2,map2json,map0bg",
+			"name":"guanka03load"
+		},
+		{
+			"keys":"map3,map3json,map0bg",
+			"name":"guanka04load"
+		},
+		{
+			"keys":"map4,map4json,map0bg",
+			"name":"guanka05load"
+		},
+		{
+			"keys":"map5,map5json,map0bg",
+			"name":"guanka06load"
+		}
+	],
+	"//": "初始界面-主界面-主地图界面-关卡资源",
+	"resources":[
+		{"name":"0ui_bg","type":"image","url":"assets/0ui_bg.jpg"},
+		{"name":"probarbg","type":"image","url":"assets/probarbg.png"},
+		{"name":"probartop","type":"image","url":"assets/probartop.png"},
+		
+
+		{"name":"0ui_btn","type":"image","url":"assets/0ui_btn.png"},
+		{"name":"welbg","type":"image","url":"assets/welbg.jpg"},
+		{"name":"welbtn","type":"image","url":"assets/welbtn.png"},
+		{"name":"wellogo","type":"image","url":"assets/wellogo.png"},
+		{"name":"liantiao","type":"image","url":"assets/liantiao.png"},
+		{"name":"loadbg","type":"image","url":"assets/loadbg.jpg"},
+		{"name":"loadl","type":"image","url":"assets/loadl.png"},
+		{"name":"loadr","type":"image","url":"assets/loadr.png"},
+		{"name":"gamebgsound","type":"sound","soundType":"music","url":"assets/sound/gamebgsound.mp3"},
+		{"name":"loaderClose","type":"sound","soundType":"effect","url":"assets/sound/loaderClose.mp3"},
+		{"name":"loaderOpen","type":"sound","soundType":"effect","url":"assets/sound/loaderOpen.mp3"},
+
+
+		{"name":"map","type":"image","url":"assets/map.jpg"},
+		{"name":"backToIndex","type":"image","url":"assets/backToIndex.png"},
+		{"name":"flag0","type":"image","url":"assets/flag0.png"},
+		{"name":"flag1","type":"image","url":"assets/flag1.png"},
+		{"name":"heroIcon","type":"image","url":"assets/heroIcon.png"},
+		{"name":"gkxz","type":"image","url":"assets/gkxz.png"},
+		{"name":"xx","type":"image","url":"assets/xx.png"},
+		{"name":"gushimoshi","type":"image","url":"assets/gushimoshi.png"},
+		{"name":"wujinmoshi","type":"image","url":"assets/wujinmoshi.png"},
+		{"name":"wujinmoshi2","type":"image","url":"assets/wujinmoshi2.png"},
+		{"name":"NumFont0","type":"font","url":"assets/NumFont0.fnt"},
+		{"name":"NumFontda","type":"font","url":"assets/NumFontda.fnt"},
+		{"name":"mapbgsound","type":"sound","soundType":"music","url":"assets/sound/mapbgsound.mp3"},
+
+
+
+
+
+
+
+		
+
+
+		{"name":"map0","type":"image","url":"assets/map0.jpg"},
+		{"name":"map0json","type":"json","url":"assets/map0.json"},
+		{"name":"map0bg","type":"sound","soundType":"music","url":"assets/sound/map0bg.mp3"},
+		{"name":"cuizi","type":"image","url":"assets/cuizi.png"},
+		{"name":"men","type":"image","url":"assets/men.png"},
+
+		{"name":"map1","type":"image","url":"assets/map1.jpg"},
+		{"name":"map1json","type":"json","url":"assets/map1.json"},
+
+		{"name":"map2","type":"image","url":"assets/map2.jpg"},
+		{"name":"map2json","type":"json","url":"assets/map2.json"},
+
+		{"name":"map3","type":"image","url":"assets/map3.jpg"},
+		{"name":"map3json","type":"json","url":"assets/map3.json"},
+
+		{"name":"map4","type":"image","url":"assets/map4.jpg"},
+		{"name":"map4json","type":"json","url":"assets/map4.json"},
+
+		{"name":"map5","type":"image","url":"assets/map5.jpg"},
+		{"name":"map5json","type":"json","url":"assets/map5.json"},
+
+
+		
+
+
+
+		
+
+
+
+		{"name":"buildTooljson","type":"sheet","url":"assets/build/buildTool.json"},
+		{"name":"buildToolpng","type":"image","url":"assets/build/buildTool.png"},
+		{"name":"Base02","type":"image","url":"assets/build/Base02.png"},
+		{"name":"Base03","type":"image","url":"assets/build/Base03.png"},
+		{"name":"uiinfo","type":"image","url":"assets/uiinfo.png"},
+		{"name":"backToMaps","type":"image","url":"assets/backToMaps.png"},
+		{"name":"uiskillbg","type":"image","url":"assets/uiskillbg.png"},
+		{"name":"uiskilloff","type":"image","url":"assets/uiskilloff.png"},
+		{"name":"uiskillon","type":"image","url":"assets/uiskillon.png"},
+		{"name":"uiskill1","type":"image","url":"assets/uiskill1.png"},
+		{"name":"uiskill2","type":"image","url":"assets/uiskill2.png"},
+		{"name":"uiskill1off","type":"image","url":"assets/uiskill1off.png"},
+		{"name":"uiskill2off","type":"image","url":"assets/uiskill2off.png"},
+		{"name":"mb","type":"image","url":"assets/mb.png"},
+		{"name":"victory","type":"image","url":"assets/victory.png"},
+		{"name":"lose","type":"image","url":"assets/lose.png"},
+		{"name":"tryagain","type":"image","url":"assets/tryagain.png"},
+		{"name":"quitgame","type":"image","url":"assets/quitgame.png"},
+		{"name":"NumFont","type":"font","url":"assets/NumFont.fnt"},
+		{"name":"NumFont2","type":"font","url":"assets/NumFont2.fnt"},
+		{"name":"NumFont3","type":"font","url":"assets/NumFont3.fnt"},
+		{"name":"lifeBarBg","type":"image","url":"assets/lifeBarBg.png"},
+		{"name":"lifeBar","type":"image","url":"assets/lifeBar.png"},
+		{"name":"stone1png","type":"image","url":"assets/stone1.png"},
+		{"name":"stone1json","type":"json","url":"assets/stone1.json"},
+
+
+
+
+
+
+
+		{"name":"Monster01png","type":"image","url":"assets/monsters/Monster01.png"},
+		{"name":"Monster01json","type":"json","url":"assets/monsters/Monster01.json"},
+		{"name":"Monster02png","type":"image","url":"assets/monsters/Monster02.png"},
+		{"name":"Monster02json","type":"json","url":"assets/monsters/Monster02.json"},
+		{"name":"Monster03png","type":"image","url":"assets/monsters/Monster03.png"},
+		{"name":"Monster03json","type":"json","url":"assets/monsters/Monster03.json"},
+		{"name":"Monster04png","type":"image","url":"assets/monsters/Monster04.png"},
+		{"name":"Monster04json","type":"json","url":"assets/monsters/Monster04.json"},
+		{"name":"Monster05png","type":"image","url":"assets/monsters/Monster05.png"},
+		{"name":"Monster05json","type":"json","url":"assets/monsters/Monster05.json"},
+		{"name":"Monster06png","type":"image","url":"assets/monsters/Monster06.png"},
+		{"name":"Monster06json","type":"json","url":"assets/monsters/Monster06.json"},
+		{"name":"Monster07png","type":"image","url":"assets/monsters/Monster07.png"},
+		{"name":"Monster07json","type":"json","url":"assets/monsters/Monster07.json"},
+		{"name":"Monster08png","type":"image","url":"assets/monsters/Monster08.png"},
+		{"name":"Monster08json","type":"json","url":"assets/monsters/Monster08.json"},
+		{"name":"Monster09png","type":"image","url":"assets/monsters/Monster09.png"},
+		{"name":"Monster09json","type":"json","url":"assets/monsters/Monster09.json"},
+		{"name":"Monster10png","type":"image","url":"assets/monsters/Monster10.png"},
+		{"name":"Monster10json","type":"json","url":"assets/monsters/Monster10.json"},
+		{"name":"Monster11png","type":"image","url":"assets/monsters/Monster11.png"},
+		{"name":"Monster11json","type":"json","url":"assets/monsters/Monster11.json"},
+		{"name":"Monster12png","type":"image","url":"assets/monsters/Monster12.png"},
+		{"name":"Monster12json","type":"json","url":"assets/monsters/Monster12.json"},
+		{"name":"Monster13png","type":"image","url":"assets/monsters/Monster13.png"},
+		{"name":"Monster13json","type":"json","url":"assets/monsters/Monster13.json"},
+		{"name":"Monster14png","type":"image","url":"assets/monsters/Monster14.png"},
+		{"name":"Monster14json","type":"json","url":"assets/monsters/Monster14.json"},
+		{"name":"Monster15png","type":"image","url":"assets/monsters/Monster15.png"},
+		{"name":"Monster15json","type":"json","url":"assets/monsters/Monster15.json"},
+		{"name":"Boss01png","type":"image","url":"assets/monsters/Boss01.png"},
+		{"name":"Boss01json","type":"json","url":"assets/monsters/Boss01.json"},
+		{"name":"Boss02png","type":"image","url":"assets/monsters/Boss02.png"},
+		{"name":"Boss02json","type":"json","url":"assets/monsters/Boss02.json"},
+
+
+
+
+
+
+
+		{"name":"towerspng","type":"image","url":"assets/towers/towers.png"},
+		{"name":"towersjson","type":"sheet","url":"assets/towers/towers.json"},
+		{"name":"ArrowShooter01png","type":"image","url":"assets/towers/ArrowShooter01.png"},
+		{"name":"ArrowShooter01json","type":"json","url":"assets/towers/ArrowShooter01.json"},
+		{"name":"ArrowShooter02png","type":"image","url":"assets/towers/ArrowShooter02.png"},
+		{"name":"ArrowShooter02json","type":"json","url":"assets/towers/ArrowShooter02.json"},
+		{"name":"ArrowShooter031png","type":"image","url":"assets/towers/ArrowShooter03_1.png"},
+		{"name":"ArrowShooter031json","type":"json","url":"assets/towers/ArrowShooter03_1.json"},
+		{"name":"ArrowShooter032png","type":"image","url":"assets/towers/ArrowShooter03_2.png"},
+		{"name":"ArrowShooter032json","type":"json","url":"assets/towers/ArrowShooter03_2.json"},
+		{"name":"Arrow01png","type":"image","url":"assets/weapon/Arrow01.png"},
+		{"name":"Arrow01json","type":"json","url":"assets/weapon/Arrow01.json"},
+		{"name":"Arrow032png","type":"image","url":"assets/weapon/Arrow032.png"},
+		{"name":"Arrow032json","type":"json","url":"assets/weapon/Arrow032.json"},
+		{"name":"ShieldSoilder01png","type":"image","url":"assets/soilders/ShieldSoilder01.png"},
+		{"name":"ShieldSoilder01json","type":"json","url":"assets/soilders/ShieldSoilder01.json"},
+		{"name":"MagicBullet010203png","type":"image","url":"assets/weapon/MagicBullet010203.png"},
+		{"name":"MagicBullet010203json","type":"json","url":"assets/weapon/MagicBullet010203.json"},
+		{"name":"MagicWizard010203png","type":"image","url":"assets/soilders/MagicWizard010203.png"},
+		{"name":"MagicWizard010203json","type":"json","url":"assets/soilders/MagicWizard010203.json"},
+		{"name":"Explo01png","type":"image","url":"assets/weapon/Explo01.png"},
+		{"name":"Explo01json","type":"json","url":"assets/weapon/Explo01.json"},
+		{"name":"Explo02png","type":"image","url":"assets/weapon/Explo02.png"},
+		{"name":"Explo02json","type":"json","url":"assets/weapon/Explo02.json"},
+		{"name":"Explo031png","type":"image","url":"assets/weapon/Explo03_1.png"},
+		{"name":"Explo031json","type":"json","url":"assets/weapon/Explo03_1.json"},
+		{"name":"ExploTower01json","type":"json","url":"assets/towers/ExploTower01.json"},
+		{"name":"ExploTower01png","type":"image","url":"assets/towers/ExploTower01.png"},
+		{"name":"ExploTower02json","type":"json","url":"assets/towers/ExploTower02.json"},
+		{"name":"ExploTower02png","type":"image","url":"assets/towers/ExploTower02.png"},
+		{"name":"ExploTower031json","type":"json","url":"assets/towers/ExploTower03_1.json"},
+		{"name":"ExploTower031png","type":"image","url":"assets/towers/ExploTower03_1.png"},
+		{"name":"ZenYuan1json","type":"json","url":"assets/soilders/ZenYuan1.json"},
+		{"name":"ZenYuan1png","type":"image","url":"assets/soilders/ZenYuan1.png"},
+		{"name":"ZenYuan2json","type":"json","url":"assets/soilders/ZenYuan2.json"},
+		{"name":"ZenYuan2png","type":"image","url":"assets/soilders/ZenYuan2.png"},
+
+
+
+
+
+
+
+
+
+		{"name":"victorysd","type":"sound","soundType":"music","url":"assets/sound/victory.mp3"},
+		{"name":"bo_start","type":"sound","soundType":"effect","url":"assets/sound/bo_start.mp3"},
+		{"name":"building","type":"sound","soundType":"effect","url":"assets/sound/building.mp3"},
+		{"name":"select","type":"sound","soundType":"effect","url":"assets/sound/select.mp3"},
+		{"name":"sell_tower","type":"sound","soundType":"effect","url":"assets/sound/sell_tower.mp3"},
+
+		{"name":"arrow_fire1","type":"sound","soundType":"effect","url":"assets/sound/arrow_fire1.mp3"},
+		{"name":"arrow_fire2","type":"sound","soundType":"effect","url":"assets/sound/arrow_fire2.mp3"},
+		{"name":"arrow_hit1","type":"sound","soundType":"effect","url":"assets/sound/arrow_hit1.mp3"},
+		{"name":"arrow_hit2","type":"sound","soundType":"effect","url":"assets/sound/arrow_hit2.mp3"},
+		{"name":"explo_firestart1","type":"sound","soundType":"effect","url":"assets/sound/explo_firestart1.mp3"},
+		{"name":"explo_fireend1","type":"sound","soundType":"effect","url":"assets/sound/explo_fireend1.mp3"},
+		{"name":"magic_fire1","type":"sound","soundType":"effect","url":"assets/sound/magic_fire1.mp3"},
+		{"name":"shield_fire1","type":"sound","soundType":"effect","url":"assets/sound/shield_fire1.mp3"},
+		{"name":"shield_fire2","type":"sound","soundType":"effect","url":"assets/sound/shield_fire2.mp3"},
+		{"name":"shield_fire3","type":"sound","soundType":"effect","url":"assets/sound/shield_fire3.mp3"},
+
+		{"name":"monster_die1","type":"sound","soundType":"effect","url":"assets/sound/monster_die1.mp3"},
+		{"name":"monster_die2","type":"sound","soundType":"effect","url":"assets/sound/monster_die2.mp3"},
+		{"name":"monster_die3","type":"sound","soundType":"effect","url":"assets/sound/monster_die3.mp3"},
+		{"name":"monster_die4","type":"sound","soundType":"effect","url":"assets/sound/monster_die4.mp3"},
+
+		{"name":"arrow_ready1","type":"sound","soundType":"effect","url":"assets/sound/arrow_ready1.mp3"},
+		{"name":"arrow_ready2","type":"sound","soundType":"effect","url":"assets/sound/arrow_ready2.mp3"},
+		{"name":"arrow_ready3","type":"sound","soundType":"effect","url":"assets/sound/arrow_ready3.mp3"},
+		{"name":"shield_ready1","type":"sound","soundType":"effect","url":"assets/sound/shield_ready1.mp3"},
+		{"name":"shield_ready2","type":"sound","soundType":"effect","url":"assets/sound/shield_ready2.mp3"},
+		{"name":"shield_ready3","type":"sound","soundType":"effect","url":"assets/sound/shield_ready3.mp3"},
+		{"name":"magic_ready1","type":"sound","soundType":"effect","url":"assets/sound/magic_ready1.mp3"},
+		{"name":"magic_ready2","type":"sound","soundType":"effect","url":"assets/sound/magic_ready2.mp3"},
+		{"name":"magic_ready3","type":"sound","soundType":"effect","url":"assets/sound/magic_ready3.mp3"},
+		{"name":"explo_ready1","type":"sound","soundType":"effect","url":"assets/sound/explo_ready1.mp3"},
+		{"name":"explo_ready2","type":"sound","soundType":"effect","url":"assets/sound/explo_ready2.mp3"},
+		{"name":"explo_ready3","type":"sound","soundType":"effect","url":"assets/sound/explo_ready3.mp3"}
+
+
+
+
+
+		
+	]
+}

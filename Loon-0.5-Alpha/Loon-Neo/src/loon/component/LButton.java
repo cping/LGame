@@ -29,9 +29,10 @@ import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
 public class LButton extends LComponent {
+
 	private String text = null;
 
-	private boolean over, pressed, exception;
+	private boolean over, pressed, exception, selected;
 
 	private int pressedTime, offsetLeft, offsetTop, type;
 
@@ -151,6 +152,10 @@ public class LButton extends LComponent {
 			return;
 		}
 		super.update(elapsedTime);
+		if(selected){
+			this.pressed = true;
+			return;
+		}
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
 			this.pressed = false;
 		}
@@ -172,27 +177,37 @@ public class LButton extends LComponent {
 		this.text = st;
 	}
 
+	public void checked() {
+		this.pressed = true;
+		this.selected = true;
+	}
+
+	public void unchecked() {
+		this.pressed = false;
+		this.selected = false;
+	}
+
 	@Override
 	protected void processTouchDragged() {
-			this.over = this.pressed = this.intersects(this.input.getTouchX(),
-					this.input.getTouchY());
+		this.over = this.pressed = this.intersects(this.input.getTouchX(),
+				this.input.getTouchY());
 	}
 
 	@Override
 	protected void processTouchClicked() {
-			this.doClick();
+		this.doClick();
 	}
 
 	@Override
 	protected void processTouchPressed() {
-			this.downClick();
-			this.pressed = true;
+		this.downClick();
+		this.pressed = true;
 	}
 
 	@Override
 	protected void processTouchReleased() {
-			this.upClick();
-			this.pressed = false;
+		this.upClick();
+		this.pressed = false;
 	}
 
 	@Override

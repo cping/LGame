@@ -34,13 +34,19 @@ public class LClickButton extends LComponent {
 
 	private LFont font;
 
-	private boolean over, pressed;
+	private boolean over, pressed, grayButton, selected;
 
 	private int pressedTime, offsetLeft, offsetTop;
 
 	private LColor fontColor;
 
 	private String text = null;
+
+	public static LClickButton make(LTexture texture) {
+		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
+				0, texture.getWidth(), texture.getHeight(), texture, texture,
+				texture);
+	}
 
 	public static LClickButton make(String text) {
 		return new LClickButton(text, 0, 0, 1, 1);
@@ -115,14 +121,27 @@ public class LClickButton extends LComponent {
 
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		if (!isEnabled()) {
-			g.draw(clickedClick, x, y, getWidth(), getHeight());
-		} else if (isTouchPressed()) {
-			g.draw(idleClick, x, y, getWidth(), getHeight());
-		} else if (isTouchOver()) {
-			g.draw(hoverClick, x, y, getWidth(), getHeight());
+
+		if (grayButton) {
+			if (!isEnabled()) {
+				g.draw(clickedClick, x, y, getWidth(), getHeight(), LColor.gray);
+			} else if (isTouchPressed()) {
+				g.draw(idleClick, x, y, getWidth(), getHeight());
+			} else if (isTouchOver()) {
+				g.draw(hoverClick, x, y, getWidth(), getHeight());
+			} else {
+				g.draw(idleClick, x, y, getWidth(), getHeight(), LColor.gray);
+			}
 		} else {
-			g.draw(idleClick, x, y, getWidth(), getHeight());
+			if (!isEnabled()) {
+				g.draw(clickedClick, x, y, getWidth(), getHeight());
+			} else if (isTouchPressed()) {
+				g.draw(idleClick, x, y, getWidth(), getHeight());
+			} else if (isTouchOver()) {
+				g.draw(hoverClick, x, y, getWidth(), getHeight());
+			} else {
+				g.draw(idleClick, x, y, getWidth(), getHeight());
+			}
 		}
 		if (text != null) {
 			LFont old = g.getFont();
@@ -143,9 +162,23 @@ public class LClickButton extends LComponent {
 			return;
 		}
 		super.update(elapsedTime);
+		if (selected) {
+			pressed = true;
+			return;
+		}
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
 			this.pressed = false;
 		}
+	}
+
+	public void checked() {
+		this.pressed = true;
+		this.selected = true;
+	}
+
+	public void unchecked() {
+		this.pressed = false;
+		this.selected = false;
 	}
 
 	public boolean isTouchOver() {
@@ -281,6 +314,14 @@ public class LClickButton extends LComponent {
 
 	public void setTexture(String path) {
 		setTexture(LTextures.loadTexture(path));
+	}
+
+	public boolean isGrayButton() {
+		return grayButton;
+	}
+
+	public void setGrayButton(boolean g) {
+		this.grayButton = g;
 	}
 
 	@Override

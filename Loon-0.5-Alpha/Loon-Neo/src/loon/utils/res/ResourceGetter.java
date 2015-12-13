@@ -3,6 +3,8 @@ package loon.utils.res;
 import loon.Json;
 import loon.canvas.Image;
 import loon.event.EventDispatcher;
+import loon.utils.TArray;
+import loon.utils.ObjectMap.Keys;
 
 public abstract class ResourceGetter extends EventDispatcher {
 	
@@ -18,5 +20,9 @@ public abstract class ResourceGetter extends EventDispatcher {
 
 	abstract public String getURL(String name);
 
+	abstract public TArray<String> getGroupKeys(String name);
+	
+	abstract public Keys<String> getGroupNames(String name);
+	
 	abstract public void release(String name);
 }

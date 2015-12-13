@@ -66,6 +66,9 @@ final class JsonParser {
 	}
 
 	JsonParser(String s) throws JsonParserException {
+		if (s == null) {
+			throw new JsonParserException(new Exception(), "The json is null !", 0, 0, 0);
+		}
 		this.string = s;
 		this.bufferLength = s.length();
 		eof = (s.length() == 0);

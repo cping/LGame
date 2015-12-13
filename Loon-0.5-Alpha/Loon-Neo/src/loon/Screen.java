@@ -55,6 +55,7 @@ import loon.stage.StageTransition;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -385,6 +386,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	private SensorDirection direction = SensorDirection.NONE;
 
 	private SysInput baseInput;
+
+	// json资源加载器(全局有效)
+	private static ResourceLocal localRes;
 
 	// 精灵集合
 	private Sprites sprites;
@@ -2359,6 +2363,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			return desktop.isAutoDestory();
 		}
 		return false;
+	}
+
+	public ResourceLocal getResourceConfig(String path) {
+		if (localRes != null) {
+			localRes.init(path);
+			return localRes;
+		}
+		if (LSystem._base == null) {
+			return localRes = new ResourceLocal(path);
+		}
+		return localRes = LSystem._base.assets().getJsonResource(path);
 	}
 
 	public abstract void resume();

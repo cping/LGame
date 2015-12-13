@@ -10,9 +10,13 @@ import loon.canvas.Image;
 import loon.event.EventDispatcher;
 import loon.event.IEventListener;
 import loon.utils.ObjectMap;
+import loon.utils.ObjectMap.Keys;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class ResourceLocal extends ResourceGetter implements IEventListener {
+
+	private ObjectMap<String, TArray<String>> _groupTable;
 
 	private ObjectMap<String, ResourceItem> _resourceTable;
 
@@ -30,36 +34,69 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 	public ResourceLocal() {
 		_resourceTable = new ObjectMap<String, ResourceItem>();
 		_dataTable = new ObjectMap<String, Object>();
+		_groupTable = new ObjectMap<String, TArray<String>>();
 	}
 
 	private void init() {
-		if (!_initFlag && _path != null) {
-			init(_path);
+		init(_path);
+	}
+
+	public void init(String path) {
+		if ((!StringUtils.isEmpty(path) && !path.equals(_path)) || !_initFlag) {
+			_path = path;
+			String jsonText = BaseIO.loadText(path);
+			if (jsonText == null && path.indexOf('.') == -1) {
+				jsonText = BaseIO.loadText(path + ".json");
+			}
+			Json.Object jsonObj = LSystem.base().json().parse(jsonText);
+			Json.Array groupsList = jsonObj.getArray("groups");
+
+			if (groupsList != null && groupsList.length() > 0) {
+				for (int i = 0; i < groupsList.length(); i++) {
+					Json.Object group = groupsList.getObject(i);
+					String groupName = group.getString("name");
+					if (groupName == null) {
+						groupName = "G" + System.currentTimeMillis();
+					}
+					String keyStrings = group.getString("keys");
+					String[] keys = StringUtils.split(keyStrings, ',');
+					int size = keys.length;
+					TArray<String> list = new TArray<String>(size);
+					for (int j = 0; j < size; j++) {
+						String result = keys[j];
+						if (!StringUtils.isEmpty(result)) {
+							list.add(result);
+						}
+					}
+					_groupTable.put(groupName, list);
+				}
+			}
+			Json.Array resList = jsonObj.getArray("resources");
+			if (resList != null && resList.length() > 0) {
+				for (int i = 0; i < resList.length(); i++) {
+					Json.Object resItem = resList.getObject(i);
+					String itemName = resItem.getString("name");
+					String itemType = resItem.getString("type");
+					String itemUrl = resItem.getString("url");
+					ResourceItem item = new ResourceItem(itemName, itemType,
+							itemUrl);
+					if (itemType.equals("sheet")) {
+						String subkeys = resItem.getString("subkeys");
+						item.subkeys = subkeys;
+					}
+					_resourceTable.put(item.name(), item);
+				}
+			}
 			_initFlag = true;
 		}
 	}
 
-	public void init(String path) {
-		if (path != null) {
-			_path = path;
-			_initFlag = false;
-			Json.Object jsonObj = LSystem.base().json()
-					.parse(BaseIO.loadText(path));
-			Json.Array resList = jsonObj.getArray("resources");
-			for (int i = 0; i < resList.length(); i++) {
-				Json.Object resItem = resList.getObject(i);
-				String itemName = resItem.getString("name");
-				String itemType = resItem.getString("type");
-				String itemUrl = resItem.getString("url");
-				ResourceItem item = new ResourceItem(itemName, itemType,
-						itemUrl);
-				if (itemType.equals("sheet")) {
-					String subkeys = resItem.getString("subkeys");
-					item.subkeys = subkeys;
-				}
-				_resourceTable.put(item.name(), item);
-			}
-		}
+	public TArray<String> getGroupKeys(String name) {
+		return _groupTable.get(name);
+	}
+
+	public Keys<String> getGroupNames(String name) {
+		return _groupTable.keys();
 	}
 
 	@Override
@@ -98,7 +135,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		Texture tex = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_TEXTURE);
 		if (false == _dataTable.containsKey(name)) {
-			tex = new Texture(LTextures.loadTexture(item.url()));
+			tex = new Texture(item.url());
 			_dataTable.put(name, tex);
 
 		} else {
@@ -168,7 +205,12 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 
 	@Override
 	public void release(String name) {
-		_dataTable.remove(name);
+		Object obj = _dataTable.remove(name);
+		if (obj != null) {
+			if (obj instanceof Texture) {
+				((Texture) obj).close();
+			}
+		}
 	}
 
 	private ResourceItem getResItem(String name, String type) {

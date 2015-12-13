@@ -315,6 +315,10 @@ public class TArray<T> implements Iterable<T> {
 		return size != startSize;
 	}
 
+	public TArray<T> cpy() {
+		return new TArray<T>(items);
+	}
+
 	public T pop() {
 		if (size == 0)
 			throw new IllegalStateException("TArray is empty.");
@@ -573,4 +577,5 @@ public class TArray<T> implements Iterable<T> {
 			return iterator2;
 		}
 	}
+
 }
