@@ -124,6 +124,7 @@ public class LControl extends LComponent {
 		final float relativeY = MathUtils.bringToBounds(0, baseHeight,
 				SysTouch.getY() - getScreenY())
 				/ baseHeight - 0.5f;
+
 		onUpdateControlDot(relativeX, relativeY);
 	}
 
@@ -135,6 +136,7 @@ public class LControl extends LComponent {
 	private void position(final float x, final float y, final int direction) {
 		this.centerX = dotWidth * 0.5f + x * baseWidth;
 		this.centerY = dotHeight * 0.5f + y * baseHeight;
+
 		if (control != null) {
 			switch (direction) {
 			case Config.TUP:
@@ -173,7 +175,7 @@ public class LControl extends LComponent {
 			return;
 		}
 		if (this.allowDiagonal) {
-			final float angle = MathUtils.toRadians(MathUtils.atan2(x, y)) + 180;
+			final float angle = MathUtils.toDegrees(MathUtils.atan2(x, y)) + 180;
 			if (LAccelerometer.checkAngle(0, angle) || LAccelerometer.checkAngle(360, angle)) {
 				position(0, -SIDE, Config.TUP);
 			} else if (LAccelerometer.checkAngle(45, angle)) {

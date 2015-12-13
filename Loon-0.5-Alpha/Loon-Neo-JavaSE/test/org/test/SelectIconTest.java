@@ -37,20 +37,18 @@ public class SelectIconTest extends Screen {
 			@Override
 			public void onAreaTouched(Event e, float touchX, float touchY) {
 				if (e == Event.DOWN) {
-					//只要不是点中back按钮
-					if (!back.contains(touchX, touchY)) {
-						LSelectorIcon selectIcon = new LSelectorIcon(touchX,
-								touchY, 48);
-						selectIcon.setBackgroundColor(LColor.blue);
-						selectIcon.setBorderColor(LColor.red);
-						add(selectIcon);
-					}
+					LSelectorIcon selectIcon = new LSelectorIcon(touchX,
+							touchY, 48);
+					selectIcon.setBackgroundColor(LColor.blue);
+					selectIcon.setBorderColor(LColor.red);
+					add(selectIcon);
 				}
 			}
 
+			// 只要不是点中back按钮
 			@Override
 			public boolean contains(float x, float y) {
-				return true;
+				return !back.contains(x, y);
 			}
 		});
 
