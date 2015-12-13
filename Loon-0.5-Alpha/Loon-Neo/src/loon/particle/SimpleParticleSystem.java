@@ -22,19 +22,30 @@ package loon.particle;
 
 import java.util.Iterator;
 
+import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
+import loon.geom.RectBox;
+import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.GLUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
-public class SimpleParticleSystem {
+public class SimpleParticleSystem extends LObject implements ISprite {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private static final int DEFAULT_PARTICLES = 100;
+
+	private int state = LSystem.MODE_ADD;
 
 	private TArray<SimpleEmitter> removeMe = new TArray<SimpleEmitter>();
 
@@ -73,10 +84,6 @@ public class SimpleParticleSystem {
 	private int pCount;
 
 	private boolean usePoints;
-
-	private float x;
-
-	private float y;
 
 	private boolean removeCompletedEmitters = true;
 
@@ -190,20 +197,19 @@ public class SimpleParticleSystem {
 	}
 
 	public float getPositionX() {
-		return x;
+		return _location.x;
 	}
 
 	public float getPositionY() {
-		return y;
+		return _location.y;
 	}
 
 	public void setPosition(float x, float y) {
-		this.x = x;
-		this.y = y;
+		this.setLocation(x, y);
 	}
 
 	public void render(GLEx g) {
-		render(g, x, y);
+		render(g, _location.x, _location.y);
 	}
 
 	public void render(GLEx g, float x, float y) {
@@ -216,7 +222,7 @@ public class SimpleParticleSystem {
 			loadSystemParticleImage();
 		}
 
-		g.save();
+		g.saveTx();
 		g.translate(x, y);
 
 		for (int emitterIdx = 0; emitterIdx < emitters.size; emitterIdx++) {
@@ -231,6 +237,8 @@ public class SimpleParticleSystem {
 
 			if (emitter.useAdditive()) {
 				g.setBlendMode(LSystem.MODE_ADD);
+			} else {
+				g.setBlendMode(state);
 			}
 
 			ParticlePool pool = particlesByEmitter.get(emitter);
@@ -243,6 +251,8 @@ public class SimpleParticleSystem {
 				image.glBegin();
 			}
 
+			image.getTextureBatch().setBlendState(BlendState.Null);
+
 			for (int i = 0; i < pool.particles.length; i++) {
 				if (pool.particles[i].inUse()) {
 					pool.particles[i].paint(g);
@@ -253,13 +263,12 @@ public class SimpleParticleSystem {
 				image.glEnd();
 			}
 
-			if (emitter.useAdditive()) {
-				g.setBlendMode(mode);
-			}
+			g.setBlendMode(mode);
+
 		}
 
 		g.translate(-x, -y);
-		g.restore();
+		g.restoreTx();
 
 	}
 
@@ -363,6 +372,44 @@ public class SimpleParticleSystem {
 				pool.particles[i].move(x, y);
 			}
 		}
+	}
+
+	public int getState() {
+		return state;
+	}
+
+	public void setState(int s) {
+		this.state = s;
+	}
+
+	@Override
+	public void createUI(GLEx g) {
+		render(g);
+	}
+
+	@Override
+	public RectBox getCollisionBox() {
+		return getCollisionArea();
+	}
+
+	@Override
+	public LTexture getBitmap() {
+		return null;
+	}
+
+	@Override
+	public float getWidth() {
+		return getContainerWidth();
+	}
+
+	@Override
+	public float getHeight() {
+		return getContainerHeight();
+	}
+
+	@Override
+	public void close() {
+
 	}
 
 }
