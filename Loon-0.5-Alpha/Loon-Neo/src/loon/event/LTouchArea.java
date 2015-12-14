@@ -8,5 +8,5 @@ public interface LTouchArea {
 
 	public boolean contains(final float x, final float y);
 
-	public void onAreaTouched(Event e, final float touchX, final float touchY);
+	public void onAreaTouched(final Event e, final float touchX, final float touchY);
 }

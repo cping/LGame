@@ -11,6 +11,7 @@
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_logo.png" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_pad_ui.png" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_pad_ui.txt" />
+	<extend-configuration-property name="loon.files.classpath" value="assets/loon_par.png" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_natural.png" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_natural.txt" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_ui.png" />

@@ -26,6 +26,11 @@
 			<locationURI>WORKSPACE_LOC/avgtest</locationURI>
 		</link>
 		<link>
+			<name>samples</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/samples</locationURI>
+		</link>
+		<link>
 			<name>tdtest</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/tdtest</locationURI>

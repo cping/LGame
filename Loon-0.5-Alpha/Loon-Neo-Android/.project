@@ -42,6 +42,11 @@
 			<locationURI>WORKSPACE_LOC/avgtest</locationURI>
 		</link>
 		<link>
+			<name>samples</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/samples</locationURI>
+		</link>
+		<link>
 			<name>src_core</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/Loon-Neo/src</locationURI>
