@@ -70,7 +70,7 @@ public class SpriteSheet implements LRelease {
 		}
 		if (!target.isLoaded()) {
 			Updateable update = new Updateable() {
-				
+
 				@Override
 				public void action(Object a) {
 					target.loadTexture();
@@ -117,8 +117,8 @@ public class SpriteSheet implements LRelease {
 			throw new RuntimeException("SubTexture2D out of sheet bounds: " + x
 					+ "," + y);
 		}
-		return target.copy(x * (tw + spacing) + margin, y
-				* (th + spacing) + margin, tw, th);
+		return target.copy(x * (tw + spacing) + margin, y * (th + spacing)
+				+ margin, tw, th);
 	}
 
 	public int getHorizontalCount() {
@@ -191,6 +191,38 @@ public class SpriteSheet implements LRelease {
 		this.target = target;
 	}
 
+	public int getTileWidth() {
+		return tw;
+	}
+
+	public void setTileWidth(int tw) {
+		this.tw = tw;
+	}
+
+	public int getTileHeight() {
+		return th;
+	}
+
+	public void setTileHeight(int th) {
+		this.th = th;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
 	public void close() {
 		if (subImages != null) {
 			synchronized (subImages) {
@@ -207,4 +239,5 @@ public class SpriteSheet implements LRelease {
 			target = null;
 		}
 	}
+
 }

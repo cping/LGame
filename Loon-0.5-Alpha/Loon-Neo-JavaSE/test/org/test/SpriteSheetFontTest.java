@@ -4,18 +4,19 @@ import loon.LSetting;
 import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
+import loon.action.sprite.SpriteSheet;
+import loon.action.sprite.SpriteSheetFont;
+import loon.canvas.LColor;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.javase.Loon;
-import loon.opengl.BMFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class BMFontTest extends Screen {
+public class SpriteSheetFontTest extends Screen {
 
-	BMFont font;
+	SpriteSheetFont font;
 
-	@Override
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}
@@ -23,8 +24,8 @@ public class BMFontTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 		if (font != null) {
-			font.drawString(g, 60, 66, "ABCFGHAX");
-			font.drawString(g, 60, 166, "ZXXC\n01234");
+			font.drawString(g, 80, 25, "FONT EXAMPLE", LColor.red);
+			font.drawString(g, 80, 50, "MORE COMPLETE LINE");
 		}
 	}
 
@@ -32,13 +33,9 @@ public class BMFontTest extends Screen {
 	public void onLoad() {
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		try {
-			font = new BMFont("info.fnt", "info.png");
-			// 放大2倍
-			font.setFontScale(2f);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		SpriteSheet sheet = new SpriteSheet("spriteSheetFont.png", 32, 32);
+		font = new SpriteSheetFont(sheet, ' ');
+		font.setFontScale(0.5f);
 		add(MultiScreenTest.getBackButton(this));
 	}
 
@@ -88,24 +85,26 @@ public class BMFontTest extends Screen {
 	}
 
 	public static void main(String[] args) {
+
 		LSetting setting = new LSetting();
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
+		setting.width = 480;
+		setting.height = 320;
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.fps = 60;
 		setting.fontName = "黑体";
-		setting.appName = "test";
+		setting.appName = "Live2dTest";
 		setting.emulateTouch = false;
-		setting.width = 640;
-		setting.height = 480;
-
 		Loon.register(setting, new LazyLoading.Data() {
 
 			@Override
 			public Screen onScreen() {
-				return new BMFontTest();
+				return new SpriteSheetFontTest();
 			}
 		});
-	}
 
+	}
 }

@@ -41,6 +41,8 @@ public class BMFont implements LRelease {
 
 	private static final int DEFAULT_MAX_CHAR = 255;
 
+	private float fontScale = 2f;
+
 	private ObjectMap<String, Display> displays;
 
 	private int lazyHashCode = 1;
@@ -90,16 +92,18 @@ public class BMFont implements LRelease {
 			if (isClose) {
 				return;
 			}
-			displayList.draw(x + xoffset, y + yoffset, width, height, tx, ty,
+			displayList.draw((x + xoffset) * fontScale, (y + yoffset)
+					* fontScale, width * fontScale, height * fontScale, tx, ty,
 					tx + width, ty + height);
 		}
 
-		public void draw(GLEx g, float x, float y) {
+		public void draw(GLEx g, float sx, float sy, float x, float y) {
 			if (isClose) {
 				return;
 			}
-			g.draw(displayList, x + xoffset, y + yoffset, width, height, tx,
-					ty, width, height);
+			g.draw(displayList, sx + (x + xoffset) * fontScale, sy
+					+ (y + yoffset) * fontScale, width * fontScale, height
+					* fontScale, tx, ty, width, height);
 		}
 
 		public int getKerning(int point) {
@@ -292,7 +296,7 @@ public class BMFont implements LRelease {
 				int id = data[i];
 				if (id == '\n') {
 					x = 0;
-					y += getLineHeight();
+					y += lineHeight;
 					continue;
 				}
 				if (id >= chars.length) {
@@ -358,7 +362,7 @@ public class BMFont implements LRelease {
 			int id = data[i];
 			if (id == '\n') {
 				x = 0;
-				y += getLineHeight();
+				y += lineHeight;
 				continue;
 			}
 			if (id >= chars.length) {
@@ -374,7 +378,7 @@ public class BMFont implements LRelease {
 			}
 			lastCharDef = charDef;
 			if ((i >= startIndex) && (i <= endIndex)) {
-				charDef.draw(g, tx + x, ty + y);
+				charDef.draw(g, tx, ty, x, y);
 			}
 			x += charDef.advance;
 		}
@@ -415,8 +419,8 @@ public class BMFont implements LRelease {
 			display.height = MathUtils.max(charDef.height + charDef.yoffset,
 					display.height);
 		}
-		display.height += lines * getLineHeight();
-		return display.height;
+		display.height += lines * lineHeight;
+		return (int) (display.height * fontScale);
 	}
 
 	public int getWidth(String text) {
@@ -463,7 +467,7 @@ public class BMFont implements LRelease {
 			display.width = MathUtils.max(display.width, width);
 		}
 
-		return display.width;
+		return (int) (display.width * fontScale);
 	}
 
 	public String getCommon() {
@@ -479,7 +483,15 @@ public class BMFont implements LRelease {
 	}
 
 	public int getLineHeight() {
-		return lineHeight;
+		return (int) (lineHeight * fontScale);
+	}
+
+	public float getFontScale() {
+		return this.fontScale;
+	}
+
+	public void setFontScale(float s) {
+		this.fontScale = s;
 	}
 
 	public void close() {
