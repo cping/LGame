@@ -222,9 +222,6 @@ public class SimpleParticleSystem extends LObject implements ISprite {
 			loadSystemParticleImage();
 		}
 
-		g.saveTx();
-		g.translate(x, y);
-
 		for (int emitterIdx = 0; emitterIdx < emitters.size; emitterIdx++) {
 
 			SimpleEmitter emitter = emitters.get(emitterIdx);
@@ -250,7 +247,7 @@ public class SimpleParticleSystem extends LObject implements ISprite {
 			if (!emitter.isOriented() && !emitter.usePoints(this)) {
 				image.glBegin();
 			}
-
+			image.getTextureBatch().setLocation(x, y);
 			image.getTextureBatch().setBlendState(BlendState.Null);
 
 			for (int i = 0; i < pool.particles.length; i++) {
@@ -267,8 +264,6 @@ public class SimpleParticleSystem extends LObject implements ISprite {
 
 		}
 
-		g.translate(-x, -y);
-		g.restoreTx();
 
 	}
 
@@ -374,11 +369,11 @@ public class SimpleParticleSystem extends LObject implements ISprite {
 		}
 	}
 
-	public int getState() {
+	public int getBlendingState() {
 		return state;
 	}
 
-	public void setState(int s) {
+	public void setBlendingState(int s) {
 		this.state = s;
 	}
 

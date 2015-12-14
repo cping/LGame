@@ -2,6 +2,7 @@ package org.test;
 
 import loon.LSetting;
 import loon.LSystem;
+import loon.LTexture;
 import loon.LTextures;
 import loon.LTransition;
 import loon.LazyLoading;
@@ -10,11 +11,22 @@ import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
-import loon.particle.SimpleFireEmitter;
+import loon.particle.SimpleConfigurableEmitter;
+import loon.particle.SimpleParticleConfig;
 import loon.particle.SimpleParticleSystem;
 import loon.utils.timer.LTimerContext;
 
-public class ParticleTest extends Screen {
+public class ParticleConfigTest extends Screen {
+
+	private LTexture image;
+
+	private SimpleParticleSystem trail;
+
+	private SimpleParticleSystem fire;
+
+	private float rx = 100;
+
+	private float ry = 200;
 
 	@Override
 	public LTransition onTransition() {
@@ -23,28 +35,41 @@ public class ParticleTest extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
-
+		if (isOnLoadComplete()) {
+			((SimpleConfigurableEmitter) trail.getEmitter(0)).setPosition(
+					rx + 14, ry + 35);
+			trail.setPosition(rx + 14, ry + 35);
+			trail.render(g);
+			image.draw(rx-10, ry - 40);
+			fire.setPosition(rx + 14, ry + 35);
+			fire.render(g);
+		}
 	}
 
 	@Override
 	public void onLoad() {
-
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
+		try {
+			fire = SimpleParticleConfig.loadConfiguredSystem("system.xml");
+			fire.setBlendingState(LSystem.MODE_ALPHA_ONE);
+			trail = SimpleParticleConfig.loadConfiguredSystem("smoketrail.xml");
+			trail.setBlendingState(LSystem.MODE_ALPHA_ONE);
+			image = LTextures.loadTexture("rocket.png");
 
-		SimpleParticleSystem particleSystem = new SimpleParticleSystem(
-				LTextures.loadTexture("particle.tga"));
-		particleSystem.setBlendingState(LSystem.MODE_ALPHA_ONE);
-		particleSystem.addEmitter(new SimpleFireEmitter(300, 300, 25));
-		particleSystem.addEmitter(new SimpleFireEmitter(100, 300, 30));
-		particleSystem.addEmitter(new SimpleFireEmitter(200, 300, 20));
-		add(particleSystem);
-		
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		add(MultiScreenTest.getBackButton(this));
 	}
 
 	@Override
 	public void alter(LTimerContext timer) {
+		if (isOnLoadComplete()) {
+			long delta = timer.timeSinceLastUpdate;
+			fire.update(delta);
+			trail.update(delta);
+		}
 
 	}
 
@@ -55,7 +80,12 @@ public class ParticleTest extends Screen {
 
 	@Override
 	public void touchDown(GameTouch e) {
-
+		if (isOnLoadComplete()) {
+			fire.reset();
+			trail.reset();
+			rx = e.x();
+			ry = e.y();
+		}
 	}
 
 	@Override
@@ -104,7 +134,7 @@ public class ParticleTest extends Screen {
 
 			@Override
 			public Screen onScreen() {
-				return new ParticleTest();
+				return new ParticleConfigTest();
 			}
 		});
 	}

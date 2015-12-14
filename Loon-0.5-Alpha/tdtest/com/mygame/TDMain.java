@@ -201,8 +201,10 @@ public class TDMain extends Screen {
 			// 当敌人存在
 			if (!es.isEmpty()) {
 				Enemy target = (Enemy) es.get(0);
+				// 删除原有炮台事件
+				removeActionEvents();
 				// 旋转炮台对准Enemy坐标
-				setRotation((int) MathUtils.toDegrees(MathUtils.atan2(
+				setRotation(MathUtils.toDegrees(MathUtils.atan2(
 						(target.getY() - this.getY()),
 						(target.getX() - this.getX()))));
 
@@ -391,8 +393,7 @@ public class TDMain extends Screen {
 			setActorDrag(false);
 			setDelay(500);
 			// 设定Menu背景
-			Image image = Image.createImage(this.width(),
-					this.height());
+			Image image = Image.createImage(this.width(), this.height());
 			Canvas g = image.getCanvas();
 			g.setColor(0, 0, 0, 125);
 			g.fillRect(0, 0, getWidth(), getHeight());
@@ -512,7 +513,7 @@ public class TDMain extends Screen {
 			// 锁定MapLayer中角色拖拽
 			setActorDrag(false);
 
-			pathMap.put(0,  Image.createImage("assets/sand.png"));
+			pathMap.put(0, Image.createImage("assets/sand.png"));
 			pathMap.put(1, Image.createImage("assets/sandTurn1.png"));
 			pathMap.put(2, Image.createImage("assets/sandTurn2.png"));
 			pathMap.put(3, Image.createImage("assets/sandTurn3.png"));
@@ -629,67 +630,64 @@ public class TDMain extends Screen {
 
 	}
 
-
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchDown(GameTouch e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchUp(GameTouch e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchMove(GameTouch e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchDrag(GameTouch e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void draw(GLEx g) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void alter(LTimerContext timer) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -191,9 +191,12 @@ public class LLayer extends ActorLayer {
 		if (x == 0 && y == 0) {
 			paint(g);
 		} else {
-			g.translate(x, y);
-			paint(g);
-			g.translate(-x, -y);
+			try {
+				g.translate(x, y);
+				paint(g);
+			} finally {
+				g.translate(-x, -y);
+			}
 		}
 	}
 
@@ -237,29 +240,33 @@ public class LLayer extends ActorLayer {
 					angle = thing.getRotation();
 					colorAlpha = thing.getAlpha();
 					update = !(thing.scaleX == 1f && thing.scaleY == 1f);
-					if (update) {
-						g.saveTx();
-						Affine2f transform = g.tx();
-						float centerX = actorX + width / 2;
-						float centerY = actorY + height / 2;
-						transform.translate(centerX, centerY);
-						transform.preScale(thing.scaleX, thing.scaleY);
-						transform.translate(-centerX, -centerY);
-					}
-					if (isBitmapFilter) {
-						g.draw(actorImage, actorX, actorY, width, height,
-								thing.filterColor, angle);
-					} else {
-						if (colorAlpha != 1f) {
-							g.setAlpha(colorAlpha);
+					try {
+						if (update) {
+							g.saveTx();
+							Affine2f transform = g.tx();
+							float centerX = actorX + width / 2;
+							float centerY = actorY + height / 2;
+							transform.translate(centerX, centerY);
+							transform.preScale(thing.scaleX, thing.scaleY);
+							transform.translate(-centerX, -centerY);
 						}
-						g.draw(actorImage, actorX, actorY, width, height, angle);
-						if (colorAlpha != 1f) {
-							g.setAlpha(1f);
+						if (isBitmapFilter) {
+							g.draw(actorImage, actorX, actorY, width, height,
+									thing.filterColor, angle);
+						} else {
+							if (colorAlpha != 1f) {
+								g.setAlpha(colorAlpha);
+							}
+							g.draw(actorImage, actorX, actorY, width, height,
+									angle);
+							if (colorAlpha != 1f) {
+								g.setAlpha(1f);
+							}
 						}
-					}
-					if (update) {
-						g.restoreTx();
+					} finally {
+						if (update) {
+							g.restoreTx();
+						}
 					}
 				}
 				if (thing.isConsumerDrawing) {
@@ -269,14 +276,17 @@ public class LLayer extends ActorLayer {
 							thing.actorListener.draw(g);
 						}
 					} else {
-						g.saveTx();
-						g.translate(actorX, actorY);
-						thing.draw(g);
-						if (isListener) {
-							thing.actorListener.draw(g);
+						try {
+							g.saveTx();
+							g.translate(actorX, actorY);
+							thing.draw(g);
+							if (isListener) {
+								thing.actorListener.draw(g);
+							}
+						} finally {
+							g.translate(-actorX, -actorY);
+							g.restoreTx();
 						}
-						g.translate(-actorX, -actorY);
-						g.restoreTx();
 					}
 				}
 			}
@@ -327,7 +337,7 @@ public class LLayer extends ActorLayer {
 				tmp = null;
 			}
 		} else {
-			background = Image.createImage((int)getWidth(), (int)getHeight());
+			background = Image.createImage((int) getWidth(), (int) getHeight());
 		}
 		Canvas g = background.getCanvas();
 		for (int i = 0; i < field.getWidth(); i++) {
@@ -365,8 +375,8 @@ public class LLayer extends ActorLayer {
 		if (image == null) {
 			return null;
 		}
-		int layerWidth = (int)getWidth();
-		int layerHeight = (int)getHeight();
+		int layerWidth = (int) getWidth();
+		int layerHeight = (int) getHeight();
 		int tileWidth = image.getWidth();
 		int tileHeight = image.getHeight();
 

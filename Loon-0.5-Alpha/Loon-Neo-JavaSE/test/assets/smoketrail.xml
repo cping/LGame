@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system additive="false" points="false">
+  <emitter imageName="" name="Smoker">
+    <spawnInterval enabled="true" max="50.0" min="50.0"/>
+    <spawnCount enabled="true" max="15.0" min="15.0"/>
+    <initialLife enabled="true" max="1200.0" min="800.0"/>
+    <initialSize enabled="true" max="5.0" min="1.0"/>
+    <xOffset enabled="true" max="5.0" min="-5.0"/>
+    <yOffset enabled="true" max="5.0" min="-5.0"/>
+    <initialDistance enabled="false" max="0.0" min="0.0"/>
+    <speed enabled="true" max="0.0" min="0.0"/>
+    <length enabled="false" max="1000.0" min="1000.0"/>
+    <spread linear="false" value="360.0"/>
+    <angularOffset linear="false" value="0.0"/>
+    <growthFactor linear="false" value="42.0"/>
+    <gravityFactor linear="false" value="0.0"/>
+    <windFactor linear="false" value="0.0"/>
+    <startAlpha linear="false" value="255.0"/>
+    <endAlpha linear="false" value="0.0"/>
+    <color>
+      <step b="0.0" g="0.2" offset="0.0" r="0.4"/>
+      <step b="0.8" g="0.8" offset="0.856" r="0.8"/>
+      <step b="1.0" g="1.0" offset="1.0" r="1.0"/>
+    </color>
+  </emitter>
+</system>
