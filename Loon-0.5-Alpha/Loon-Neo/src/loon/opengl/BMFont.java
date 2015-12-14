@@ -29,6 +29,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
@@ -37,11 +38,11 @@ import loon.utils.TArray;
 
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
-public class BMFont implements LRelease {
+public class BMFont implements IFont, LRelease {
 
 	private static final int DEFAULT_MAX_CHAR = 255;
 
-	private float fontScale = 2f;
+	private float fontScale = 1f;
 
 	private ObjectMap<String, Display> displays;
 
@@ -51,7 +52,7 @@ public class BMFont implements LRelease {
 
 	private CharDef[] chars;
 
-	private int lineHeight;
+	private int lineHeight, halfHeight;
 
 	private boolean isClose;
 
@@ -242,20 +243,21 @@ public class BMFont implements LRelease {
 
 		if (def.id != (short) ' ') {
 			lineHeight = MathUtils.max(def.height + def.yoffset, lineHeight);
+			halfHeight = lineHeight / 2;
 		}
 
 		return def;
 	}
 
-	public void drawString(float x, float y, String text) {
-		drawString(x, y, text, null);
+	public void drawString(String text, float x, float y) {
+		drawString(text, x, y, null);
 	}
 
-	public void drawString(float x, float y, String text, LColor col) {
-		drawBatchString(x, y, text, col, 0, text.length() - 1);
+	public void drawString(String text, float x, float y, LColor col) {
+		drawBatchString(text, x, y, col, 0, text.length() - 1);
 	}
 
-	private void drawBatchString(float tx, float ty, String text, LColor c,
+	private void drawBatchString(String text, float tx, float ty, LColor c,
 			int startIndex, int endIndex) {
 
 		if (isClose) {
@@ -281,7 +283,7 @@ public class BMFont implements LRelease {
 
 		if (display == null) {
 
-			int x = 0, y = 0;
+			int x = 0, y = halfHeight;
 
 			displayList.glBegin();
 			displayList.setBatchPos(tx, ty);
@@ -342,20 +344,20 @@ public class BMFont implements LRelease {
 
 	}
 
-	public void drawString(GLEx g, float x, float y, String text) {
-		drawString(g, x, y, text, null);
+	public void drawString(GLEx g, String text, float x, float y) {
+		drawString(g, text, x, y, null);
 	}
 
-	public void drawString(GLEx g, float x, float y, String text, LColor col) {
-		drawString(g, x, y, text, col, 0, text.length() - 1);
+	public void drawString(GLEx g, String text, float x, float y, LColor col) {
+		drawString(g, text, x, y, col, 0, text.length() - 1);
 	}
 
-	private void drawString(GLEx g, float tx, float ty, String text, LColor c,
+	private void drawString(GLEx g, String text, float tx, float ty, LColor c,
 			int startIndex, int endIndex) {
 		if (isClose) {
 			return;
 		}
-		int x = 0, y = 0;
+		int x = 0, y = halfHeight;
 		CharDef lastCharDef = null;
 		char[] data = text.toCharArray();
 		for (int i = 0; i < data.length; i++) {
@@ -384,7 +386,7 @@ public class BMFont implements LRelease {
 		}
 	}
 
-	public int getHeight(String text) {
+	public int stringHeight(String text) {
 		if (text == null) {
 			return 0;
 		}
@@ -423,7 +425,7 @@ public class BMFont implements LRelease {
 		return (int) (display.height * fontScale);
 	}
 
-	public int getWidth(String text) {
+	public int stringWidth(String text) {
 		if (text == null) {
 			return 0;
 		}
@@ -482,7 +484,8 @@ public class BMFont implements LRelease {
 		return page;
 	}
 
-	public int getLineHeight() {
+	@Override
+	public int getHeight() {
 		return (int) (lineHeight * fontScale);
 	}
 
@@ -492,6 +495,16 @@ public class BMFont implements LRelease {
 
 	public void setFontScale(float s) {
 		this.fontScale = s;
+	}
+
+	@Override
+	public float getAscent() {
+		return (lineHeight + halfHeight) * this.fontScale;
+	}
+
+	@Override
+	public int getSize() {
+		return (int) ((lineHeight + halfHeight) * this.fontScale);
 	}
 
 	public void close() {

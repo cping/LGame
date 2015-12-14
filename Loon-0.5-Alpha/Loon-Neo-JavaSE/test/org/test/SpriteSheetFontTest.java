@@ -24,8 +24,8 @@ public class SpriteSheetFontTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 		if (font != null) {
-			font.drawString(g, 80, 25, "FONT EXAMPLE", LColor.red);
-			font.drawString(g, 80, 50, "MORE COMPLETE LINE");
+			font.drawString(g, "FONT EXAMPLE", 80, 25, LColor.red);
+			font.drawString(g, "MORE COMPLETE LINE", 80, 50);
 		}
 	}
 

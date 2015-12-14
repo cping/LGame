@@ -17,6 +17,7 @@ import loon.event.ClickListener;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.javase.Loon;
+import loon.opengl.BMFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -126,13 +127,26 @@ public class MultiScreenTest extends Screen {
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
 			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea", "Progress",
-			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont" ,"ParConfig"};
+			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
+			"ParConfig", "RippleTouch" };
+
+	static BMFont info_font;
 
 	@Override
 	public void onLoad() {
-
-		// 设置默认字体大小为15号字
+		// 设置默认字体大小为15
 		LFont.setDefaultFont(LFont.getFont(15));
+		// 使用图片字体
+		if (info_font == null) {
+			try {
+				// 加载
+				info_font = new BMFont("info.fnt", "info.png");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// 缩放为0.6倍
+			info_font.setFontScale(0.6f);
+		}
 		int index = 0;
 		// 构建一个通用的监听器
 		MyClickListener clickListener = new MyClickListener();
@@ -166,6 +180,7 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new JSonResTest());
 		addScreen(names[index++], new SpriteSheetFontTest());
 		addScreen(names[index++], new ParticleConfigTest());
+		addScreen(names[index++], new RippleTouchTest());
 		// 默认按钮大小为100x30
 		int btnWidth = 100;
 		int btnHeight = 25;
@@ -179,6 +194,8 @@ public class MultiScreenTest extends Screen {
 		// 首先让按钮不可见
 		for (LClickButton btn : clicks) {
 			btn.setAlpha(0);
+			// 使用图片字体
+			btn.setFont(info_font);
 			// 为按钮设置事件，并加载入一个集合
 			tweens.add(set(btn));
 		}

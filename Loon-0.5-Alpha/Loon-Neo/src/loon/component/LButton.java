@@ -24,6 +24,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -36,7 +37,7 @@ public class LButton extends LComponent {
 
 	private int pressedTime, offsetLeft, offsetTop, type;
 
-	private LFont font = LFont.getDefaultFont();
+	private IFont font = LFont.getDefaultFont();
 
 	private LColor fontColor = LColor.white;
 
@@ -129,11 +130,9 @@ public class LButton extends LComponent {
 			}
 		}
 		if (text != null) {
-			LFont old = g.getFont();
 			int tmp = g.color();
-			g.setFont(font);
 			g.setColor(fontColor);
-			g.drawString(
+			font.drawString(g,
 					text,
 					x + button.getOffsetLeft()
 							+ (button.getWidth() - font.stringWidth(text)) / 2,
@@ -141,7 +140,6 @@ public class LButton extends LComponent {
 							+ button.getOffsetTop()
 							+ (button.getHeight() - font.getHeight() - font
 									.getAscent()) / 2);
-			g.setFont(old);
 			g.setColor(tmp);
 		}
 	}
@@ -245,7 +243,7 @@ public class LButton extends LComponent {
 		return "Button";
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 

@@ -33,6 +33,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
@@ -81,7 +82,7 @@ public class LTextArea extends LComponent {
 
 	private int[] slideX;
 	private boolean center;
-	private LFont font = LFont.getDefaultFont();
+	private IFont font;
 	private int countFrame;
 	private LColor triangleColor = LColor.orange;
 	private LColor tmpcolor = new LColor(LColor.white);
@@ -94,11 +95,11 @@ public class LTextArea extends LComponent {
 		this(LTextArea.TYPE_DOWN, max, LFont.getDefaultFont(), x, y, w, h);
 	}
 
-	public LTextArea(int max, LFont font, int x, int y, int w, int h) {
+	public LTextArea(int max, IFont font, int x, int y, int w, int h) {
 		this(LTextArea.TYPE_DOWN, max, font, x, y, w, h);
 	}
 
-	public LTextArea(int type, int max, LFont font, int x, int y, int w, int h) {
+	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h) {
 		this(type, max, font, x, y, w, h, DefUI.getDefaultTextures(4));
 	}
 
@@ -111,7 +112,7 @@ public class LTextArea extends LComponent {
 		this(LTextArea.TYPE_DOWN, w, LFont.getDefaultFont(), x, y, w, h, bg);
 	}
 
-	public LTextArea(int type, int max, LFont font, int x, int y, int w, int h,
+	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h,
 			LTexture bg) {
 		super(x, y, w, h);
 		this.font = font;
@@ -164,7 +165,7 @@ public class LTextArea extends LComponent {
 		}
 	}
 
-	public void setFont(LFont changeFont) {
+	public void setFont(IFont changeFont) {
 		this.font = changeFont;
 	}
 
@@ -313,9 +314,7 @@ public class LTextArea extends LComponent {
 		if (bgTexture != null) {
 			g.draw(bgTexture, dx, dy, getWidth(), getHeight());
 		}
-		LFont oldFont = g.getFont();
 		int oldColor = g.color();
-		g.setFont(this.font);
 		this.countFrame += 1;
 		int index = num;
 		for (int i = 0; i < this.max - 1; i++) {
@@ -442,7 +441,6 @@ public class LTextArea extends LComponent {
 			this.num = (this.max - 1);
 		}
 		g.setColor(oldColor);
-		g.setFont(oldFont);
 	}
 
 	public void setWaitFlag(boolean w) {
@@ -520,7 +518,7 @@ public class LTextArea extends LComponent {
 	}
 
 	private void drawString(GLEx g, String str, int x, int y, LColor color) {
-		g.drawString(str, x + leftOffset + 5,
+		font.drawString(g, str, x + leftOffset + 5,
 				(y - 5) + topOffset + font.getAscent() / 2, color);
 	}
 

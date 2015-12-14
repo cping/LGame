@@ -24,6 +24,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
@@ -32,7 +33,7 @@ public class LClickButton extends LComponent {
 
 	private LTexture idleClick, hoverClick, clickedClick;
 
-	private LFont font;
+	private IFont font;
 
 	private boolean over, pressed, grayButton, selected;
 
@@ -87,27 +88,27 @@ public class LClickButton extends LComponent {
 						.getDefaultTextures(9));
 	}
 
-	public LClickButton(String text, LFont font, LColor color, int x, int y,
+	public LClickButton(String text, IFont font, LColor color, int x, int y,
 			int width, int height) {
 		this(text, font, color, x, y, width, height, DefUI
 				.getDefaultTextures(7), DefUI.getDefaultTextures(8), DefUI
 				.getDefaultTextures(9));
 	}
 
-	public LClickButton(String text, LFont font, LColor color, int x, int y,
+	public LClickButton(String text, IFont font, LColor color, int x, int y,
 			int width, int height, String path) {
 		this(text, font, color, x, y, width, height, LTextures
 				.loadTexture(path), LTextures.loadTexture(path), LTextures
 				.loadTexture(path));
 	}
 
-	public LClickButton(String text, LFont font, LColor color, int x, int y,
+	public LClickButton(String text, IFont font, LColor color, int x, int y,
 			int width, int height, String a, String b, String c) {
 		this(text, font, color, x, y, width, height, LTextures.loadTexture(a),
 				LTextures.loadTexture(b), LTextures.loadTexture(c));
 	}
 
-	public LClickButton(String text, LFont font, LColor color, int x, int y,
+	public LClickButton(String text, IFont font, LColor color, int x, int y,
 			int width, int height, LTexture idle, LTexture hover,
 			LTexture clicked) {
 		super(x, y, width, height);
@@ -144,15 +145,13 @@ public class LClickButton extends LComponent {
 			}
 		}
 		if (text != null) {
-			LFont old = g.getFont();
-			g.setFont(font);
-			g.drawString(
+			font.drawString(
+					g,
 					text,
 					x + getOffsetLeft() + (getWidth() - font.stringWidth(text))
 							/ 2,
 					(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2) - 5,
 					fontColor);
-			g.setFont(old);
 		}
 	}
 
@@ -262,11 +261,11 @@ public class LClickButton extends LComponent {
 		this.offsetTop = offsetTop;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 
-	public void setFont(LFont font) {
+	public void setFont(IFont font) {
 		this.font = font;
 	}
 

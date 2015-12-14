@@ -1,6 +1,7 @@
 package loon.component;
 
 import loon.LTexture;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.ShadowFont;
@@ -68,7 +69,7 @@ public class LMessageBox extends LComponent {
 
 		private String flagType = defalut_flagType;
 
-		protected DrawMessageBox(ShadowFont font, LTexture face, LTexture box,
+		protected DrawMessageBox(IFont font, LTexture face, LTexture box,
 				int w, int h) {
 			super(font);
 			super.init(w, h);
@@ -133,15 +134,15 @@ public class LMessageBox extends LComponent {
 			drawMessage(g, message, this._boxX + this.messageX + offsetX,
 					this._boxY + this.messageY + offsetY);
 			if (isPage && flagType != null) {
-				this.font.drawString(g, this._boxX + this.pageX + this.offsetX,
-						this._boxY + this.pageY
-								+ this.font.getStrFont().getHeight(message)
-								+ this.offsetY, flagType, this.fontColor);
+				this.font.drawString(g, flagType, this._boxX + this.pageX
+						+ this.offsetX, this._boxY + this.pageY
+						+ this.font.stringHeight(message)
+						+ this.offsetY, this.fontColor);
 			}
 		}
 
 		private void drawMessage(GLEx g, String message, float x, float y) {
-			this.font.drawString(g, x, y, message, this.fontColor);
+			this.font.drawString(g, message, x, y, this.fontColor);
 		}
 
 		private void drawFace(GLEx g, float x, float y) {
@@ -296,7 +297,7 @@ public class LMessageBox extends LComponent {
 
 	protected int pageTime = 300;
 
-	private LFont _font;
+	private IFont _font;
 
 	public LMessageBox(TArray<Message> messages, int x, int y, int width,
 			int height) {
@@ -368,8 +369,12 @@ public class LMessageBox extends LComponent {
 		this._font = font;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return this._font;
+	}
+
+	public void setFont(IFont font) {
+		this._font = font;
 	}
 
 	public DrawMessageBox getMessageBox() {
@@ -413,7 +418,7 @@ public class LMessageBox extends LComponent {
 		}
 		return this;
 	}
-	
+
 	public LMessageBox next() {
 		if (finished) {
 			int size = this.messageIndex + 1;
@@ -424,7 +429,7 @@ public class LMessageBox extends LComponent {
 		}
 		return this;
 	}
-	
+
 	public LMessageBox setIndex(int index) {
 		int size = this.messageIndex + 1;
 		if (size > 0 && size < this._messageList.size) {

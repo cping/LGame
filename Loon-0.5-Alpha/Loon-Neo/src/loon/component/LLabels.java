@@ -23,6 +23,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -36,7 +37,7 @@ public class LLabels extends LComponent {
 		this(LFont.getDefaultFont(), x, y, width, height);
 	}
 
-	public LLabels(LFont font, int x, int y, int width, int height) {
+	public LLabels(IFont font, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.font = font;
 	}
@@ -56,7 +57,7 @@ public class LLabels extends LComponent {
 		float speed;
 	}
 
-	private LFont font;
+	private IFont font;
 
 	public TArray<Info> labels = new TArray<Info>();
 
@@ -76,14 +77,14 @@ public class LLabels extends LComponent {
 		for (int i = 0; i < labels.size; i++) {
 			Info label = labels.get(i);
 			if (label.length == -1) {
-				g.drawString(label.message, x + label.x,
+				font.drawString(g,label.message, x + label.x,
 						y + label.y - font.getHeight() / 2 + 5, label.color);
 			} else {
 				label.stateTime += speed;
 				if (label.stateTime > label.length) {
 					labels.remove(label);
 				} else {
-					g.drawString(label.message, x + label.x,
+					font.drawString(g,label.message, x + label.x,
 							y + label.y - font.getHeight() / 2 + 5, label.color);
 				}
 			}

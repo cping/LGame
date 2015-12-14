@@ -1,9 +1,10 @@
 package loon.action.sprite;
 
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.opengl.GLEx;
 
-public class SpriteSheetFont {
+public class SpriteSheetFont implements IFont {
 
 	private SpriteSheet font;
 
@@ -29,15 +30,15 @@ public class SpriteSheetFont {
 		numChars = horizontalCount * verticalCount;
 	}
 
-	public void drawString(float x, float y, String text) {
-		drawString(x, y, text, LColor.white);
+	public void drawString(String text, float x, float y) {
+		drawString(text, x, y, LColor.white);
 	}
 
-	public void drawString(float x, float y, String text, LColor col) {
-		drawString(x, y, text, col, 0, text.length() - 1);
+	public void drawString(String text, float x, float y, LColor col) {
+		drawString(text, x, y, col, 0, text.length() - 1);
 	}
 
-	public void drawString(float x, float y, String text, LColor col,
+	public void drawString(String text, float x, float y, LColor col,
 			int startIndex, int endIndex) {
 		char[] data = text.toCharArray();
 		for (int i = 0; i < data.length; i++) {
@@ -60,15 +61,15 @@ public class SpriteSheetFont {
 		}
 	}
 
-	public void drawString(GLEx gl, float x, float y, String text) {
-		drawString(x, y, text, LColor.white);
+	public void drawString(GLEx gl, String text, float x, float y) {
+		drawString(gl, text, x, y, LColor.white);
 	}
 
-	public void drawString(GLEx gl, float x, float y, String text, LColor col) {
-		drawString(x, y, text, col, 0, text.length() - 1);
+	public void drawString(GLEx gl, String text, float x, float y, LColor col) {
+		drawString(gl, text, x, y, col, 0, text.length() - 1);
 	}
 
-	public void drawString(GLEx gl, float x, float y, String text, LColor col,
+	public void drawString(GLEx gl, String text, float x, float y, LColor col,
 			int startIndex, int endIndex) {
 		char[] data = text.toCharArray();
 		for (int i = 0; i < data.length; i++) {
@@ -98,15 +99,26 @@ public class SpriteSheetFont {
 		this.fontScale = s;
 	}
 
-	public int getHeight(String text) {
+	public int stringHeight(String text) {
 		return (int) (charHeight * fontScale);
 	}
 
-	public int getWidth(String text) {
+	@Override
+	public int stringWidth(String text) {
 		return (int) (charWidth * fontScale * text.length());
 	}
 
-	public int getLineHeight() {
+	public int getHeight() {
 		return (int) (charHeight * fontScale);
+	}
+
+	@Override
+	public float getAscent() {
+		return (charWidth + charHeight/2) * this.fontScale;
+	}
+
+	@Override
+	public int getSize() {
+		return (int) ((charWidth + charHeight/2) * this.fontScale);
 	}
 }

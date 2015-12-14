@@ -26,6 +26,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.event.SysTouch;
 import loon.event.Updateable;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -82,15 +83,20 @@ public class LMenu extends LComponent {
 		private boolean clicked;
 		private boolean localpos = false, localsize = false;
 
-		private LFont _font;
+		private IFont _font;
 		private MenuItemClick _itemclick;
 
 		MenuItem(LMenu parent, LTexture tex, String label, MenuItemClick click) {
-			this(parent, tex, false, label, click);
+			this(LFont.getDefaultFont(), parent, tex, false, label, click);
 		}
 
-		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
+		MenuItem(IFont font, LMenu parent, LTexture tex, String label,
 				MenuItemClick click) {
+			this(font, parent, tex, false, label, click);
+		}
+
+		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep,
+				String label, MenuItemClick click) {
 			this.texture = tex;
 			this.parent = parent;
 			if (parent != null) {
@@ -100,7 +106,7 @@ public class LMenu extends LComponent {
 			this.label = label;
 			this.keep = keep;
 			this._itemclick = click;
-			this._font = LFont.getDefaultFont();
+			this._font = font;
 			if (tex == null) {
 				this.keep = false;
 			}
@@ -108,11 +114,18 @@ public class LMenu extends LComponent {
 
 		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
 				float x, float y, MenuItemClick click) {
-			this(parent, tex, true, label, x, y, 0, 0, click);
+			this(LFont.getDefaultFont(), parent, tex, true, label, x, y, 0, 0,
+					click);
 		}
 
-		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
-				float x, float y, float w, float h, MenuItemClick click) {
+		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep,
+				String label, float x, float y, MenuItemClick click) {
+			this(font, parent, tex, true, label, x, y, 0, 0, click);
+		}
+
+		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep,
+				String label, float x, float y, float w, float h,
+				MenuItemClick click) {
 			this.x = x;
 			this.y = y;
 			this.itemWidth = w;
@@ -137,7 +150,7 @@ public class LMenu extends LComponent {
 			this.label = label;
 			this.keep = keep;
 			this._itemclick = click;
-			this._font = LFont.getDefaultFont();
+			this._font = font;
 			if (tex == null) {
 				this.keep = false;
 			}
@@ -153,21 +166,20 @@ public class LMenu extends LComponent {
 			return this;
 		}
 
-		public MenuItem setFont(LFont font) {
+		public MenuItem setFont(IFont font) {
 			this._font = font;
 			return this;
 		}
 
-		public LFont getFont() {
+		public IFont getFont() {
 			return this._font;
 		}
 
 		public void draw(GLEx g) {
 			float tmp = g.alpha();
 			int color = g.color();
-			LFont font = g.getFont();
+			IFont font = g.getFont();
 			try {
-				g.setFont(_font);
 				if (this.parent != null) {
 					if (!localpos) {
 						this.x = (this.parent.cellWidth * this.xslot
@@ -222,7 +234,8 @@ public class LMenu extends LComponent {
 								this.itemWidth, this.itemHeight);
 					}
 					if (this.label != null) {
-						g.drawString(
+						font.drawString(
+								g,
 								label,
 								(this.x + 3f + (itemWidth / 2 - font
 										.stringWidth(label) / 2)) + offsetX,
@@ -250,7 +263,8 @@ public class LMenu extends LComponent {
 								this.itemHeight);
 					}
 					if (this.label != null) {
-						g.drawString(
+						font.drawString(
+								g,
 								this.label,
 								(this.x + (itemWidth / 2
 										- font.stringWidth(label) / 2 - font
@@ -262,7 +276,6 @@ public class LMenu extends LComponent {
 			} finally {
 				g.setAlpha(tmp);
 				g.setColor(color);
-				g.setFont(font);
 			}
 		}
 
@@ -320,7 +333,7 @@ public class LMenu extends LComponent {
 
 	}
 
-	private LFont font;
+	private IFont font;
 	private float width;
 	private float main_panel_size;
 	private float tabY;
@@ -368,38 +381,38 @@ public class LMenu extends LComponent {
 		this(move_type, LFont.getDefaultFont(), label, w, h);
 	}
 
-	public LMenu(int move_type, LFont font, String label, int width, int height) {
+	public LMenu(int move_type, IFont font, String label, int width, int height) {
 		this(move_type, font, label, width, height,
 				DefUI.getDefaultTextures(4), DefUI.getDefaultTextures(2), 0, 0,
 				true);
 	}
 
-	public LMenu(int move_type, LFont font, String label, int width,
+	public LMenu(int move_type, IFont font, String label, int width,
 			int height, String tabfile, String mainfile) {
 		this(move_type, font, label, width, height, LTextures
 				.loadTexture(tabfile), LTextures.loadTexture(mainfile), 0, 0,
 				false);
 	}
 
-	public LMenu(int move_type, LFont font, String label, int width,
+	public LMenu(int move_type, IFont font, String label, int width,
 			int height, String tabfile, String mainfile, int taby, int mainsize) {
 		this(move_type, font, label, width, height, LTextures
 				.loadTexture(tabfile), LTextures.loadTexture(mainfile), taby,
 				mainsize, false);
 	}
 
-	public LMenu(int move_type, LFont font, String label, int width,
+	public LMenu(int move_type, IFont font, String label, int width,
 			int height, LTexture tab, LTexture main, int taby) {
 		this(move_type, font, label, width, height, tab, main, taby, 0, false);
 	}
 
-	public LMenu(int move_type, LFont font, String label, int width,
+	public LMenu(int move_type, IFont font, String label, int width,
 			int height, LTexture tab, LTexture main, int taby, int mainsize) {
 		this(move_type, font, label, width, height, tab, main, taby, mainsize,
 				false);
 	}
 
-	public LMenu(int move_type, LFont font, String label, int width,
+	public LMenu(int move_type, IFont font, String label, int width,
 			int height, LTexture tab, LTexture main, int taby, int mainsize,
 			boolean defUI) {
 		super(0, 0, width, height);
@@ -497,7 +510,7 @@ public class LMenu extends LComponent {
 
 	public MenuItem add(String label, LTexture texture, float x, float y,
 			float w, float h, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, texture, false, label, x, y, w, h,
+		return add(new LMenu.MenuItem(font,this, texture, false, label, x, y, w, h,
 				click));
 	}
 
@@ -527,7 +540,8 @@ public class LMenu extends LComponent {
 					g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight);
 					if (label != null) {
 						g.setAlpha(1f);
-						g.drawString(
+						font.drawString(
+								g,
 								this.label,
 								this.width
 										+ (tabWidth / 2 - font
@@ -556,7 +570,8 @@ public class LMenu extends LComponent {
 					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight);
 					if (label != null) {
 						g.setAlpha(1f);
-						g.drawString(
+						font.drawString(
+								g,
 								this.label,
 								posX
 										+ (tabWidth / 2 - font

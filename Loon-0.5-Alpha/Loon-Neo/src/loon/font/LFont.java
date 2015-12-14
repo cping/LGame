@@ -1,9 +1,13 @@
 package loon.font;
 
 import loon.LSystem;
+import loon.canvas.LColor;
 import loon.font.Font.Style;
+import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
+import loon.utils.StringUtils;
 
-public class LFont {
+public class LFont implements IFont {
 
 	private static LFont defaultFont;
 
@@ -57,12 +61,28 @@ public class LFont {
 		return textLayout;
 	}
 
+	@Override
+	public void drawString(GLEx g, String string, float x, float y) {
+		drawString(g, string, x, y, LColor.white);
+	}
+	
+	@Override
+	public void drawString(GLEx g, String string, float x, float y, LColor c) {
+		if (c == null || c.a <= 0.01) {
+			return;
+		}
+		if (StringUtils.isEmpty(string)) {
+			return;
+		}
+		LSTRDictionary.drawString(g, this, string, x, y, 0, c);
+	}
+
 	private String lastText = tmp;
 
 	private void initLayout(String text) {
 		if (textLayout == null || !text.equals(lastText)) {
-			textLayout = LSystem.base().graphics().layoutText(tmp,
-					this.textFormat);
+			textLayout = LSystem.base().graphics()
+					.layoutText(tmp, this.textFormat);
 		}
 	}
 
@@ -122,11 +142,13 @@ public class LFont {
 		return textFormat.font.name;
 	}
 
+	@Override
 	public int getHeight() {
 		initLayout(tmp);
 		return textLayout.bounds.height;
 	}
 
+	@Override
 	public float getAscent() {
 		initLayout(tmp);
 		return textLayout.ascent();

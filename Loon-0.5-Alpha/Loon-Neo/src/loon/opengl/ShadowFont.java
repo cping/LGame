@@ -1,9 +1,10 @@
 package loon.opengl;
 
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 
-public class ShadowFont {
+public class ShadowFont implements IFont {
 
 	private boolean withShadow = false;
 	private LColor shadowColor = new LColor(0f, 0f, 0f, 1f);
@@ -39,7 +40,7 @@ public class ShadowFont {
 		this.withShadow = shadow;
 	}
 
-	public void drawString(float x, float y, String text, LColor color) {
+	public void drawString(String text, float x, float y, LColor color) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * color.a);
 			strfont.drawString(text, x, y, shadowColor);
@@ -47,7 +48,13 @@ public class ShadowFont {
 		strfont.drawString(text, x, y, color);
 	}
 
-	public void drawString(GLEx g, float x, float y, String text, LColor color) {
+	@Override
+	public void drawString(GLEx g, String text, float x, float y) {
+		drawString(g, text, x, y, LColor.white);
+	}
+
+	@Override
+	public void drawString(GLEx g, String text, float x, float y, LColor color) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * color.a);
 			strfont.drawString(g, text, x, y, shadowColor);
@@ -115,4 +122,30 @@ public class ShadowFont {
 	public float getShadowAlpha() {
 		return shadowAlpha;
 	}
+
+	@Override
+	public int stringWidth(String width) {
+		return strfont.getWidth(width);
+	}
+
+	@Override
+	public int stringHeight(String height) {
+		return strfont.getHeight(height);
+	}
+
+	@Override
+	public int getHeight() {
+		return strfont.getHeight();
+	}
+
+	@Override
+	public float getAscent() {
+		return strfont.getAscent();
+	}
+
+	@Override
+	public int getSize() {
+		return strfont.getSize();
+	}
+
 }

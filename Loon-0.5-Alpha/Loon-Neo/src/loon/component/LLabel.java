@@ -3,16 +3,18 @@ package loon.component;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.Font.Style;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
-
 /**
- * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢) PS:具体位置可用setOffsetLeft和setOffsetTop进一步微调
+ * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢)
+ * PS:具体位置可用setOffsetLeft和setOffsetTop进一步微调
  * 
  * Example1:
  * 
- * LLabel label = LLabel.make(LabelAlignment.CENTER,"ABC",0,0,200,100,LColor.red);
+ * LLabel label =
+ * LLabel.make(LabelAlignment.CENTER,"ABC",0,0,200,100,LColor.red);
  * 
  * Example2:
  * 
@@ -27,7 +29,7 @@ public class LLabel extends LComponent {
 
 	private LColor color;
 
-	private LFont font;
+	private IFont font;
 
 	private float backalpha = 1f, offsetLeft = 0, offsetTop = 0;
 
@@ -39,7 +41,7 @@ public class LLabel extends LComponent {
 
 	public static LLabel make(LabelAlignment alignment, String mes, int x,
 			int y, int size, LTexture tex, LColor c) {
-		LFont font = LFont.getFont(size);
+		IFont font = LFont.getFont(size);
 		return new LLabel(alignment, font, c, tex, mes, x, y, 0, 0);
 	}
 
@@ -66,7 +68,7 @@ public class LLabel extends LComponent {
 	}
 
 	public static LLabel make(LabelAlignment alignment, String mes, int x,
-			int y, LFont font) {
+			int y, IFont font) {
 		return new LLabel(alignment, font, LColor.white, mes, x, y);
 	}
 
@@ -124,13 +126,13 @@ public class LLabel extends LComponent {
 		this(alignment, LFont.getFont(size), c, mes, x, y);
 	}
 
-	public LLabel(LabelAlignment alignment, LFont font, LColor c, String mes,
+	public LLabel(LabelAlignment alignment, IFont font, LColor c, String mes,
 			int x, int y) {
 		this(alignment, font, c, null, mes, x, y, font.stringWidth(mes), font
 				.getHeight());
 	}
 
-	public LLabel(LabelAlignment alignment, LFont font, LColor c, LTexture bg,
+	public LLabel(LabelAlignment alignment, IFont font, LColor c, LTexture bg,
 			String mes, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.labelAlignment = alignment;
@@ -154,7 +156,6 @@ public class LLabel extends LComponent {
 	}
 
 	public void draw(GLEx g, int x, int y) {
-		LFont oldFont = g.getFont();
 		LColor oldColor = g.getColor();
 		float oldAlpha = g.getAlpha();
 		if (backalpha != 1f) {
@@ -168,27 +169,27 @@ public class LLabel extends LComponent {
 		}
 		if (text != null && text.length() > 0) {
 			g.setColor(color);
-			g.setFont(font);
 			switch (labelAlignment) {
 			case CENTER:
-				g.drawString(text, x
-						+ (getWidth() / 2 - font.stringWidth(text) / 2)
-						+ offsetLeft, y
-						+ (getHeight() / 2 - font.getHeight() / 2) + offsetTop);
+				font.drawString(g, text,
+						x + (getWidth() / 2 - font.stringWidth(text) / 2)
+								+ offsetLeft,
+						y + (getHeight() / 2 - font.getHeight() / 2)
+								+ offsetTop);
 				break;
 			case LEFT:
-				g.drawString(text, x + offsetLeft, y
+				font.drawString(g, text, x + offsetLeft, y
 						+ (getHeight() / 2 - font.getHeight() / 2) + offsetTop);
 				break;
 			case RIGHT:
-				g.drawString(text, x + getWidth() - font.stringWidth(text)
-						+ offsetLeft, y
-						+ (getHeight() / 2 - font.getHeight() / 2) + offsetTop);
+				font.drawString(g, text,
+						x + getWidth() - font.stringWidth(text) + offsetLeft, y
+								+ (getHeight() / 2 - font.getHeight() / 2)
+								+ offsetTop);
 				break;
 			default:
 				break;
 			}
-			g.setFont(oldFont);
 			g.setColor(oldColor);
 		}
 	}
@@ -201,7 +202,7 @@ public class LLabel extends LComponent {
 		this.color = color;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 

@@ -2,8 +2,8 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.opengl.GLEx;
-import loon.opengl.ShadowFont;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -21,7 +21,7 @@ public class BaseBox extends AbstractBox {
 	protected static final LColor FOCUSED_COLOR = new LColor(LColor.yellow);
 	protected String wideFlag;
 	protected MenuMode mode;
-	
+
 	public static enum MenuMode {
 		NORMAL, OTHER;
 	}
@@ -32,7 +32,7 @@ public class BaseBox extends AbstractBox {
 
 	public static class BoxItem {
 
-		private ShadowFont font;
+		private IFont font;
 		private String text;
 
 		private boolean isEnable;
@@ -42,7 +42,7 @@ public class BaseBox extends AbstractBox {
 		private float y1;
 		private float y2;
 
-		public BoxItem(ShadowFont font, String text, boolean isEnable,
+		public BoxItem(IFont font, String text, boolean isEnable,
 				TextAlignment align) {
 			this.font = font;
 			this.text = text;
@@ -50,11 +50,11 @@ public class BaseBox extends AbstractBox {
 			this.align = align;
 		}
 
-		public BoxItem(ShadowFont font, String text) {
+		public BoxItem(IFont font, String text) {
 			this(font, text, true, TextAlignment.LEFT);
 		}
 
-		public BoxItem(ShadowFont font, String text, TextAlignment align) {
+		public BoxItem(IFont font, String text, TextAlignment align) {
 			this(font, text, true, align);
 		}
 
@@ -83,16 +83,16 @@ public class BaseBox extends AbstractBox {
 		}
 
 		public int getItemWidth() {
-			return this.font.getFont().stringWidth(this.text);
+			return this.font.stringWidth(this.text);
 		}
 
 		public int getItemHeight() {
-			return this.font.getFont().getHeight();
+			return this.font.getHeight();
 		}
 
 		public void setMenuCoordinates(float x, float y) {
 			this.x1 = x;
-			this.x2 = (x + this.font.getFont().stringWidth(this.text));
+			this.x2 = (x + this.font.stringWidth(this.text));
 			this.y1 = y;
 			this.y2 = (y + 31.0F);
 		}
@@ -121,24 +121,24 @@ public class BaseBox extends AbstractBox {
 			return false;
 		}
 
-		public void draw(LColor color) {
-			this.font.drawString(this.x1, this.y1, this.text, color);
+		public void draw(GLEx g, LColor color) {
+			this.font.drawString(g, this.text, this.x1, this.y1, color);
 		}
-		
+
 		@Override
 		public String toString() {
 			return this.text;
 		}
 	}
 
-	public BaseBox(ShadowFont font, int w, int h, int numberOfMenus) {
+	public BaseBox(IFont font, int w, int h, int numberOfMenus) {
 		super(font);
 		this.numberOfMenus = numberOfMenus;
 		this.menuItems = new BoxItem[numberOfMenus];
 		init(w, h);
 	}
 
-	public BaseBox(ShadowFont font, int w, int h, String[] menuItems) {
+	public BaseBox(IFont font, int w, int h, String[] menuItems) {
 		super(font);
 		this.numberOfMenus = menuItems.length;
 		this.menuItems = new BoxItem[menuItems.length];
@@ -148,28 +148,28 @@ public class BaseBox extends AbstractBox {
 		init(w, h);
 	}
 
-	public BaseBox(ShadowFont font, int w, int h) {
+	public BaseBox(IFont font, int w, int h) {
 		super(font);
 		this.numberOfMenus = 1;
 		this.menuItems = new BoxItem[] { new BoxItem(font, "") };
 		init(w, h);
 	}
-	
+
 	@Override
 	protected void init(int w, int h) {
 		super.init(w, h);
-		this.itemsOffsetX = (this.font.getFont().stringWidth("H") * 0.5f);
+		this.itemsOffsetX = (this.font.stringWidth("H") * 0.5f);
 		this.mode = MenuMode.NORMAL;
 		this.wideFlag = "n";
 		this._boxWidth = (MathUtils.round(this.itemsOffsetX * 2f) + this.font
-				.getFont().stringWidth("HHHH"));
+				.stringWidth("HHHH"));
 		this.dirty();
 	}
-	
+
 	@Override
 	public void dirty() {
 		if (this.mode == MenuMode.NORMAL) {
-			int lh = this.font.getFont().getHeight();
+			int lh = this.font.getHeight();
 			this.lineHeight = (lh * 1.134146f);
 			this._boxHeight = (lh / 2 + MathUtils.round(this.lineHeight
 					* this.numberOfMenus));
@@ -185,7 +185,7 @@ public class BaseBox extends AbstractBox {
 	public String getMenuMode() {
 		return this.mode.name();
 	}
-	
+
 	@Override
 	public void setLocation(float x, float y) {
 		super.setLocation(x, y);
@@ -216,7 +216,7 @@ public class BaseBox extends AbstractBox {
 					color = this.fontColor;
 				}
 			}
-			this.menuItems[i].draw(color);
+			this.menuItems[i].draw(g, color);
 		}
 	}
 
@@ -241,8 +241,8 @@ public class BaseBox extends AbstractBox {
 			switch (this.menuItems[i].getAlign()) {
 			case LEFT:
 				this.menuItems[i].setMenuCoordinates(this._boxX
-						+ this.itemsOffsetX, this._boxY + this.itemsOffsetY + lh
-						* i);
+						+ this.itemsOffsetX, this._boxY + this.itemsOffsetY
+						+ lh * i);
 				break;
 			case CENTER:
 				int itemW = getMenuItemWidth(i);
@@ -252,8 +252,8 @@ public class BaseBox extends AbstractBox {
 				break;
 			case RIGHT:
 				this.menuItems[i].setMenuCoordinates(this._boxX
-						+ this.itemsOffsetX, this._boxY + this.itemsOffsetY + lh
-						* i);
+						+ this.itemsOffsetX, this._boxY + this.itemsOffsetY
+						+ lh * i);
 				break;
 			}
 		}

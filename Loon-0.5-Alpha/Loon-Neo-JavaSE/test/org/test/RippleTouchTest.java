@@ -4,41 +4,35 @@ import loon.LSetting;
 import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
+import loon.action.sprite.effect.RippleEffect;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.javase.Loon;
-import loon.opengl.BMFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class BMFontTest extends Screen {
+public class RippleTouchTest extends Screen {
 
-	BMFont font;
-
-	@Override
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}
 
 	@Override
 	public void draw(GLEx g) {
-		if (font != null) {
-			font.drawString(g, "ABCFGHAX", 60, 66);
-			font.drawString(g, "ZXXC\n01234",60, 166);
-		}
+
 	}
 
 	@Override
-	public void onLoad() {
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
-		try {
-			font = new BMFont("info.fnt", "info.png");
-			// 放大2倍
-			font.setFontScale(2f);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void onLoaded() {
+		// 改变默认渲染顺序
+		// 首先绘制桌面组件
+		setSecondOrder(DRAW_DESKTOP_PAINT());
+		// 其次绘制用户界面
+		setFristOrder(DRAW_USER_PAINT());
+		// 最后绘制精灵
+		setLastOrder(DRAW_SPRITE_PAINT());
+		// 构建Ripple特效并注入Screen
+		RippleEffect ripple = new RippleEffect();
+		add(ripple);
 		add(MultiScreenTest.getBackButton(this));
 	}
 
@@ -88,24 +82,32 @@ public class BMFontTest extends Screen {
 	}
 
 	public static void main(String[] args) {
+
 		LSetting setting = new LSetting();
 		setting.isFPS = true;
 		setting.isLogo = false;
 		setting.logoPath = "loon_logo.png";
+		setting.width = 480;
+		setting.height = 320;
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.fps = 60;
 		setting.fontName = "黑体";
-		setting.appName = "test";
+		setting.appName = "Live2dTest";
 		setting.emulateTouch = false;
-		setting.width = 640;
-		setting.height = 480;
-
 		Loon.register(setting, new LazyLoading.Data() {
 
 			@Override
 			public Screen onScreen() {
-				return new BMFontTest();
+				return new RippleTouchTest();
 			}
 		});
+	}
+
+	@Override
+	public void onLoad() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

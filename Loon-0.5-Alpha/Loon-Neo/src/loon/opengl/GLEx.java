@@ -2179,7 +2179,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (c == null || c.a <= 0) {
+		if (c == null || c.a <=  0.01) {
 			return this;
 		}
 		if (StringUtils.isEmpty(string)) {

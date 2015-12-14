@@ -2,6 +2,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -18,12 +19,12 @@ public abstract class AbstractBox implements XY {
 	protected float _borderW;
 	protected LColor borderColor = new LColor(LColor.white);
 	protected float _alpha = 1f;
-	protected ShadowFont font;
+	protected IFont font;
 	protected LColor fontColor = new LColor(LColor.white);
 	protected LTexture _textureBox;
 	protected int _radius;
 
-	protected AbstractBox(ShadowFont font) {
+	protected AbstractBox(IFont font) {
 		this.font = font;
 	}
 
