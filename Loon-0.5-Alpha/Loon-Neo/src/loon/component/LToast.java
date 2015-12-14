@@ -4,6 +4,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -48,21 +49,21 @@ public class LToast extends LComponent {
 				Style.NORMAL);
 	}
 
-	public static LToast makeText(LFont font, LComponent owner, String text) {
+	public static LToast makeText(IFont font, LComponent owner, String text) {
 		return makeText(font, owner, text, LENGTH_SHORT);
 	}
 
-	public static LToast makeText(LFont font, LComponent owner, String text,
+	public static LToast makeText(IFont font, LComponent owner, String text,
 			Style style) {
 		return makeText(font, owner, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(LFont font, LComponent owner, String text,
+	public static LToast makeText(IFont font, LComponent owner, String text,
 			int duration) {
 		return makeText(font, owner, text, duration, Style.NORMAL);
 	}
 
-	public static LToast makeText(LFont font, LComponent owner, String text,
+	public static LToast makeText(IFont font, LComponent owner, String text,
 			int duration, Style style) {
 		LToast toast = null;
 		if (owner != null) {
@@ -109,7 +110,7 @@ public class LToast extends LComponent {
 	private LTimer lock = new LTimer(LSystem.SECOND * 2);
 	private LColor mBackgroundColor = LColor.orange.cpy();
 	private LColor mForegroundColor = LColor.white.cpy();
-	private LFont font;
+	private IFont font;
 	private int displayX = 0;
 	private int displayY = 0;
 	private int cellHeight = 30;
@@ -117,7 +118,7 @@ public class LToast extends LComponent {
 	private int mType;
 	private boolean autoClose = true;
 
-	public LToast(LFont font, String text, int duration, int x, int y,
+	public LToast(IFont font, String text, int duration, int x, int y,
 			int width, int height) {
 		super(x, y, width, height);
 		this.mType = ISprite.TYPE_FADE_IN;
@@ -158,7 +159,6 @@ public class LToast extends LComponent {
 		int h = (int) this.getHeight();
 		int oc = g.color();
 		float oa = g.alpha();
-		LFont f = g.getFont();
 		try {
 			g.setColor(mBackgroundColor);
 			g.setAlpha(opacity);
@@ -168,14 +168,12 @@ public class LToast extends LComponent {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			}
 			g.setColor(LColor.DEF_COLOR);
-			g.setFont(font);
-			g.drawString(mText, displayX
-					+ (cellWidth - font.stringWidth(mText)) / 2, displayY + 2,
-					mForegroundColor);
+			font.drawString(g, mText,
+					displayX + (cellWidth - font.stringWidth(mText)) / 2,
+					displayY + 2, mForegroundColor);
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(oa);
-			g.setFont(f);
 		}
 	}
 
@@ -231,11 +229,11 @@ public class LToast extends LComponent {
 		return autoClose;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 
-	public LToast setFont(LFont f) {
+	public LToast setFont(IFont f) {
 		this.font = f;
 		return this;
 	}

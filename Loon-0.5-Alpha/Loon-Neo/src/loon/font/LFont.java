@@ -65,7 +65,7 @@ public class LFont implements IFont {
 	public void drawString(GLEx g, String string, float x, float y) {
 		drawString(g, string, x, y, LColor.white);
 	}
-	
+
 	@Override
 	public void drawString(GLEx g, String string, float x, float y, LColor c) {
 		if (c == null || c.a <= 0.01) {
@@ -75,6 +75,18 @@ public class LFont implements IFont {
 			return;
 		}
 		LSTRDictionary.drawString(g, this, string, x, y, 0, c);
+	}
+
+	@Override
+	public void drawString(GLEx g, String string, float x, float y,
+			float angle, LColor c) {
+		if (c == null || c.a <= 0.01) {
+			return;
+		}
+		if (StringUtils.isEmpty(string)) {
+			return;
+		}
+		LSTRDictionary.drawString(g, this, string, x, y, angle, c);
 	}
 
 	private String lastText = tmp;

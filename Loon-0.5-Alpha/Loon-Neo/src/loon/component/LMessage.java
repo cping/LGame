@@ -220,10 +220,7 @@ public class LMessage extends LContainer {
 			return;
 		}
 		tmpColor = g.color();
-		LFont oldFont = g.getFont();
-		g.setFont(messageFont);
 		print.draw(g, fontColor);
-		g.setFont(oldFont);
 		if (print.isComplete() && animation != null) {
 			if (animation.getSpriteImage() != null) {
 				float alpha = g.getAlpha();

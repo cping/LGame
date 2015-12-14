@@ -28,6 +28,7 @@ import loon.LTrans;
 import loon.action.camera.BaseCamera;
 import loon.canvas.LColor;
 import loon.canvas.PixmapFImpl;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Affine2f;
 import loon.geom.Matrix3;
@@ -41,7 +42,6 @@ import loon.geom.XY;
 import loon.utils.Array;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
-import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class GLEx extends PixmapFImpl implements LRelease {
@@ -54,7 +54,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		float baseAlpha = 1f;
 
 		boolean alltextures = false;
-		LFont font = null;
+		IFont font = null;
 		LTexture patternTex = null;
 
 		BrushSave cpy() {
@@ -91,7 +91,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private boolean isClosed = false;
 
 	private Graphics gfx;
-	private LFont font;
+	private IFont font;
 	private BaseBatch batch;
 
 	private LTexture patternTex;
@@ -203,12 +203,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return setColor(LColor.DEF_COLOR);
 	}
 
-	public GLEx setFont(LFont font) {
+	public GLEx setFont(IFont font) {
 		this.font = font;
 		return this;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return this.font;
 	}
 
@@ -2179,13 +2179,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (c == null || c.a <=  0.01) {
-			return this;
-		}
-		if (StringUtils.isEmpty(string)) {
-			return this;
-		}
-		LSTRDictionary.drawString(this, font, string, x, y, rotation, c);
+		font.drawString(this, string, x, y, rotation, c);
 		return this;
 	}
 

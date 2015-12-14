@@ -247,7 +247,7 @@ public class LButton extends LComponent {
 		return font;
 	}
 
-	public void setFont(LFont font) {
+	public void setFont(IFont font) {
 		this.font = font;
 	}
 

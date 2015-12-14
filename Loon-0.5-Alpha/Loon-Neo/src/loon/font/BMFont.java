@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.opengl;
+package loon.font;
 
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -29,7 +29,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
-import loon.font.IFont;
+import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
@@ -344,10 +344,12 @@ public class BMFont implements IFont, LRelease {
 
 	}
 
+	@Override
 	public void drawString(GLEx g, String text, float x, float y) {
 		drawString(g, text, x, y, null);
 	}
 
+	@Override
 	public void drawString(GLEx g, String text, float x, float y, LColor col) {
 		drawString(g, text, x, y, col, 0, text.length() - 1);
 	}
@@ -383,6 +385,24 @@ public class BMFont implements IFont, LRelease {
 				charDef.draw(g, tx, ty, x, y);
 			}
 			x += charDef.advance;
+		}
+	}
+
+	@Override
+	public void drawString(GLEx g, String text, float x, float y,
+			float rotation, LColor c) {
+		if (rotation == 0) {
+			drawString(g, text, x, y, c);
+			return;
+		}
+		try {
+			g.saveTx();
+			float centerX = x + stringWidth(text) / 2;
+			float centerY = y + stringHeight(text) / 2;
+			g.rotate(centerX, centerY, rotation);
+			drawString(g, text, x, y, c);
+		} finally {
+			g.restoreTx();
 		}
 	}
 
@@ -505,6 +525,24 @@ public class BMFont implements IFont, LRelease {
 	@Override
 	public int getSize() {
 		return (int) ((lineHeight + halfHeight) * this.fontScale);
+	}
+
+	@Override
+	public String confineLength(String s, int width) {
+		int length = 0;
+		for (int i = 0; i < s.length(); i++) {
+			length += stringWidth(String.valueOf(s.charAt(i)));
+			if (length >= width) {
+				int pLength = stringWidth("...");
+				while (length + pLength >= width && i >= 0) {
+					length -= stringWidth(String.valueOf(s.charAt(i)));
+					i--;
+				}
+				s = s.substring(0, ++i) + "...";
+				break;
+			}
+		}
+		return s;
 	}
 
 	public void close() {

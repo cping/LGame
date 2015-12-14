@@ -23,6 +23,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
@@ -32,7 +33,7 @@ public class LTextBar extends LComponent {
 
 	private LColor fontColor;
 
-	protected LFont font;
+	protected IFont font;
 
 	protected String text;
 
@@ -62,7 +63,7 @@ public class LTextBar extends LComponent {
 	}
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor c, LFont f) {
+			int x, int y, LColor c, IFont f) {
 		super(x, y, f.stringWidth(txt) + (left != null ? left.getWidth() : 0)
 				+ (right != null ? right.getWidth() : 0),
 				(int) (body != null ? body.getHeight() : f.getHeight()));
@@ -84,9 +85,9 @@ public class LTextBar extends LComponent {
 			LTexture[] buttonImage) {
 		if (hideBackground) {
 			if (left != null) {
-				g.drawString(text, x + left.getWidth(), y, fontColor);
+				font.drawString(g, text, x + left.getWidth(), y, fontColor);
 			} else {
-				g.drawString(text, x, y, fontColor);
+				font.drawString(g, text, x, y, fontColor);
 			}
 		} else {
 			if (left != null) {
@@ -115,9 +116,9 @@ public class LTextBar extends LComponent {
 				g.draw(right, x + left.getWidth() + textWidth() - 1, y);
 			}
 			if (left != null) {
-				g.drawString(text, x + left.getWidth(), y, fontColor);
+				font.drawString(g, text, x + left.getWidth(), y, fontColor);
 			} else {
-				g.drawString(text, x, y, fontColor);
+				font.drawString(g, text, x, y, fontColor);
 			}
 		}
 	}
@@ -150,11 +151,11 @@ public class LTextBar extends LComponent {
 		this.fontColor = fontColor;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 
-	public void setFont(LFont font) {
+	public void setFont(IFont font) {
 		this.font = font;
 	}
 

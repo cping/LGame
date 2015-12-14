@@ -25,6 +25,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.event.SysKey;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -32,7 +33,7 @@ import loon.utils.timer.LTimer;
 
 public class LSelect extends LContainer {
 
-	private LFont messageFont = LFont.getDefaultFont();
+	private IFont messageFont = LFont.getDefaultFont();
 
 	private LColor fontColor = LColor.white;
 
@@ -177,9 +178,7 @@ public class LSelect extends LContainer {
 			return;
 		}
 		LColor oldColor = g.getColor();
-		LFont oldFont = g.getFont();
 		g.setColor(fontColor);
-		g.setFont(messageFont);
 		sizeFont = messageFont.getSize();
 		doubleSizeFont = sizeFont * 2;
 		if (doubleSizeFont == 0) {
@@ -190,7 +189,7 @@ public class LSelect extends LContainer {
 		// g.setAntiAlias(true);
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
-			g.drawString(message, messageLeft,
+			messageFont.drawString(g,message, messageLeft,
 					messageTop - messageFont.getAscent());
 		} else {
 			messageTop = y + top;
@@ -219,8 +218,6 @@ public class LSelect extends LContainer {
 		}
 		// g.setAntiAlias(false);
 		g.setColor(oldColor);
-		g.setFont(oldFont);
-
 	}
 
 	private boolean onClick;
@@ -284,11 +281,11 @@ public class LSelect extends LContainer {
 		this.fontColor = fontColor;
 	}
 
-	public LFont getMessageFont() {
+	public IFont getMessageFont() {
 		return messageFont;
 	}
 
-	public void setMessageFont(LFont messageFont) {
+	public void setMessageFont(IFont messageFont) {
 		this.messageFont = messageFont;
 	}
 

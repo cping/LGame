@@ -212,10 +212,8 @@ public class Print implements LRelease {
 			return;
 		}
 		synchronized (showMessages) {
-
 			this.size = showMessages.length;
-			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : gl
-					.getFont().getSize());
+			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : strings.getSize());
 			this.fontHeight = strings.getHeight();
 			this.tmp_left = isLeft ? 0 : (width - (fontSize * messageLength))
 					/ 2 - (int) (fontSize * 1.5);

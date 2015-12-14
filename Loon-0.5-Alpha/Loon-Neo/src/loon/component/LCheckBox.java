@@ -24,6 +24,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -38,7 +39,7 @@ public class LCheckBox extends LComponent {
 
 	private LColor fontColor;
 
-	private LFont font;
+	private IFont font;
 
 	private boolean pressed = false, over = false, ticked = false;
 
@@ -54,7 +55,7 @@ public class LCheckBox extends LComponent {
 		this(txt, x, y, textcolor, LFont.getDefaultFont());
 	}
 
-	public LCheckBox(String txt, int x, int y, LColor textcolor, LFont font) {
+	public LCheckBox(String txt, int x, int y, LColor textcolor, IFont font) {
 		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
 				.getDefaultTextures(6), DefUI.getDefaultTextures(5).getWidth(),
 				true, textcolor, font);
@@ -78,14 +79,14 @@ public class LCheckBox extends LComponent {
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
-			boolean boxtoleftoftext, LFont font) {
+			boolean boxtoleftoftext, IFont font) {
 		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
 				.getDefaultTextures(6), boxsize, boxtoleftoftext, LColor.white,
 				font);
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
-			boolean boxtoleftoftext, LColor textcolor, LFont font) {
+			boolean boxtoleftoftext, LColor textcolor, IFont font) {
 		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
 				.getDefaultTextures(6), boxsize, boxtoleftoftext, textcolor,
 				font);
@@ -93,7 +94,7 @@ public class LCheckBox extends LComponent {
 
 	public LCheckBox(String txt, int x, int y, String uncheckedFile,
 			String checkedFile, int boxsize, boolean boxtoleftoftext,
-			LColor textcolor, LFont font) {
+			LColor textcolor, IFont font) {
 		this(txt, x, y, LTextures.loadTexture(uncheckedFile), LTextures
 				.loadTexture(checkedFile), boxsize, boxtoleftoftext, textcolor,
 				font);
@@ -101,7 +102,7 @@ public class LCheckBox extends LComponent {
 
 	public LCheckBox(String txt, int x, int y, LTexture unchecked,
 			LTexture checked, int boxsize, boolean boxtoleftoftext,
-			LColor textcolor, LFont font) {
+			LColor textcolor, IFont font) {
 		super(x, y, font.stringWidth(txt) + boxsize, (int) MathUtils.max(
 				font.getHeight(), boxsize));
 		this.text = txt;
@@ -118,11 +119,8 @@ public class LCheckBox extends LComponent {
 			LTexture[] buttonImage) {
 		if (boxtoleftoftext) {
 			if (showtext && text != null) {
-				LFont old = g.getFont();
-				g.setFont(font);
-				g.drawString(text, x + boxsize,y + (font.getHeight() - boxsize) / 2 + 5,
-						fontColor);
-				g.setFont(old);
+				font.drawString(g, text, x + boxsize, y
+						+ (font.getHeight() - boxsize) / 2 + 5, fontColor);
 			}
 			if (!ticked) {
 				g.draw(unchecked, x, y, boxsize, boxsize);
@@ -131,18 +129,16 @@ public class LCheckBox extends LComponent {
 			}
 		} else {
 			if (showtext && text != null) {
-				LFont old = g.getFont();
-				g.setFont(font);
-				g.drawString(text, x + boxsize + 5, y + (font.getHeight() - boxsize) / 2 + 5, fontColor);
-				g.setFont(old);
+				font.drawString(g, text, x + boxsize + 5, y
+						+ (font.getHeight() - boxsize) / 2 + 5, fontColor);
 			}
 			if (!ticked) {
-				g.draw(unchecked, x + font.stringWidth(text) + boxsize + 5,
-						y + font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
+				g.draw(unchecked, x + font.stringWidth(text) + boxsize + 5, y
+						+ font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
 						boxsize);
 			} else {
-				g.draw(checked, x + font.stringWidth(text)  + boxsize + 5,
-						y + font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
+				g.draw(checked, x + font.stringWidth(text) + boxsize + 5, y
+						+ font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
 						boxsize);
 			}
 		}
@@ -168,8 +164,8 @@ public class LCheckBox extends LComponent {
 
 	@Override
 	protected void processTouchDragged() {
-			this.over = this.pressed = this.intersects(this.input.getTouchX(),
-					this.input.getTouchY());
+		this.over = this.pressed = this.intersects(this.input.getTouchX(),
+				this.input.getTouchY());
 	}
 
 	@Override

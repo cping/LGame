@@ -3,6 +3,7 @@ package loon.action.sprite;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.opengl.GLEx;
+import loon.utils.StringUtils;
 
 public class SpriteSheetFont implements IFont {
 
@@ -77,6 +78,11 @@ public class SpriteSheetFont implements IFont {
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
+				if (index == '\n') {
+					//lines++;
+					//display.height = 0;
+					continue;
+				}
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (fontScale == 1f) {
 						gl.draw(font.getSubImage(xPos, yPos), x
@@ -91,6 +97,24 @@ public class SpriteSheetFont implements IFont {
 		}
 	}
 
+	@Override
+	public void drawString(GLEx g, String text, float x, float y,
+			float rotation, LColor c) {
+		if (rotation == 0) {
+			drawString(g, text, x, y, c);
+			return;
+		}
+		try {
+			g.saveTx();
+			float centerX = x + stringWidth(text) / 2;
+			float centerY = y + stringHeight(text) / 2;
+			g.rotate(centerX, centerY, rotation);
+			drawString(g, text, x, y, c);
+		} finally {
+			g.restoreTx();
+		}
+	}
+
 	public float getFontScale() {
 		return this.fontScale;
 	}
@@ -99,8 +123,10 @@ public class SpriteSheetFont implements IFont {
 		this.fontScale = s;
 	}
 
+	@Override
 	public int stringHeight(String text) {
-		return (int) (charHeight * fontScale);
+		int count = StringUtils.charCount(text, '\n');
+		return (int) (charHeight * fontScale * count);
 	}
 
 	@Override
@@ -108,17 +134,37 @@ public class SpriteSheetFont implements IFont {
 		return (int) (charWidth * fontScale * text.length());
 	}
 
+	@Override
 	public int getHeight() {
 		return (int) (charHeight * fontScale);
 	}
 
 	@Override
 	public float getAscent() {
-		return (charWidth + charHeight/2) * this.fontScale;
+		return (charWidth + charHeight / 2) * this.fontScale;
+	}
+
+	@Override
+	public String confineLength(String s, int width) {
+		int length = 0;
+		for (int i = 0; i < s.length(); i++) {
+			length += stringWidth(String.valueOf(s.charAt(i)));
+			if (length >= width) {
+				int pLength = stringWidth("...");
+				while (length + pLength >= width && i >= 0) {
+					length -= stringWidth(String.valueOf(s.charAt(i)));
+					i--;
+				}
+				s = s.substring(0, ++i) + "...";
+				break;
+			}
+		}
+		return s;
 	}
 
 	@Override
 	public int getSize() {
-		return (int) ((charWidth + charHeight/2) * this.fontScale);
+		return (int) ((charWidth + charHeight / 2) * this.fontScale);
 	}
+
 }

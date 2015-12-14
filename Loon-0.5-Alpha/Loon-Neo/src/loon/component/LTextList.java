@@ -23,9 +23,9 @@
 package loon.component;
 
 import loon.LTexture;
-
 import loon.canvas.LColor;
 import loon.event.SysTouch;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
@@ -65,7 +65,7 @@ public class LTextList extends LComponent {
 	private LColor choiceStringColor = LColor.black;
 	private LColor choiceStringBoxColor = LColor.cyan;
 
-	private LFont font = LFont.getDefaultFont();
+	private IFont font = LFont.getDefaultFont();
 	private int selectList;
 
 	public static final int defaultWidth = 150;
@@ -171,7 +171,7 @@ public class LTextList extends LComponent {
 		this.max = 0;
 	}
 
-	public void setFont(LFont newFont) {
+	public void setFont(IFont newFont) {
 		this.font = newFont;
 	}
 
@@ -321,16 +321,14 @@ public class LTextList extends LComponent {
 	}
 
 	private void drawString(GLEx g, String str, int x, int y) {
-		g.drawString(str, x, y);
+		font.drawString(g, str, x, y);
 	}
 
 	public void draw(GLEx g, int x, int y, float mouseX, float mouseY) {
 		if (this.max > 0) {
 
-			LFont oldFont = g.getFont();
 			int oldColor = g.color();
 
-			g.setFont(this.font);
 			int fontSize = font.getSize();
 
 			// 如果没有设置背景，则绘制
@@ -535,7 +533,6 @@ public class LTextList extends LComponent {
 						this.scrollButtonY + 1, this.scrollButtonWidth - 1,
 						this.scrollButtonHeight - 1);
 			}
-			g.setFont(oldFont);
 			g.setColor(oldColor);
 		}
 	}

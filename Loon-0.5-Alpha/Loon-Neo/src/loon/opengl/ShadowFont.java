@@ -62,6 +62,16 @@ public class ShadowFont implements IFont {
 		strfont.drawString(g, text, x, y, color);
 	}
 
+	@Override
+	public void drawString(GLEx g, String string, float x, float y,
+			float rotation, LColor c) {
+		if (this.withShadow) {
+			this.shadowColor.a = (this.shadowAlpha * c.a);
+			strfont.drawString(g, string, x, y, rotation, shadowColor);
+		}
+		strfont.drawString(g, string, x, y, rotation, c);
+	}
+
 	public void setShadowColor(LColor color) {
 		this.shadowColor = color;
 	}
@@ -141,6 +151,24 @@ public class ShadowFont implements IFont {
 	@Override
 	public float getAscent() {
 		return strfont.getAscent();
+	}
+
+	@Override
+	public String confineLength(String s, int width) {
+		int length = 0;
+		for (int i = 0; i < s.length(); i++) {
+			length += stringWidth(String.valueOf(s.charAt(i)));
+			if (length >= width) {
+				int pLength = stringWidth("...");
+				while (length + pLength >= width && i >= 0) {
+					length -= stringWidth(String.valueOf(s.charAt(i)));
+					i--;
+				}
+				s = s.substring(0, ++i) + "...";
+				break;
+			}
+		}
+		return s;
 	}
 
 	@Override

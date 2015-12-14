@@ -37,6 +37,7 @@ package loon.component;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.event.SysKey;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -86,7 +87,7 @@ public class LTextField extends LTextBar {
 	protected int startidx, limit;
 
 	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor textcolor, LFont textfont, int type, int limit) {
+			int x, int y, LColor textcolor, IFont textfont, int type, int limit) {
 		super(txt, left, right, body, x, y, textcolor, textfont);
 		this.INPUT_TYPE = type;
 		this.startidx = txt.length();

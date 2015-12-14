@@ -5,9 +5,9 @@ import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
 import loon.event.GameTouch;
+import loon.font.BMFont;
 import loon.font.LFont;
 import loon.javase.Loon;
-import loon.opengl.BMFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

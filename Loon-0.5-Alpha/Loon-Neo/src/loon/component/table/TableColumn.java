@@ -20,7 +20,7 @@
  */
 package loon.component.table;
 
-import loon.font.LFont;
+import loon.font.IFont;
 import loon.geom.Alignment;
 import loon.utils.MathUtils;
 
@@ -35,10 +35,10 @@ public class TableColumn {
 	private float relativeWidth = -1;
 
 	private Alignment headingAlignment = Alignment.MIDDLE;
-	
+
 	private Alignment entryAlignment = Alignment.LEFT;
 
-	protected TableColumn(String name,LFont font) {
+	protected TableColumn(String name, IFont font) {
 		this.name = name;
 		setWidth(font.stringWidth(name));
 	}

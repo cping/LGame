@@ -26,6 +26,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
@@ -39,7 +40,7 @@ public class LWindow extends LContainer {
 
 	private int barheight;
 
-	private LFont font = LFont.getDefaultFont();
+	private IFont font = LFont.getDefaultFont();
 
 	private LColor fontColor;
 
@@ -94,10 +95,7 @@ public class LWindow extends LContainer {
 		if (visible) {
 			g.draw(barTexture, x, y, w, this.barheight);
 			if (title != null) {
-				LFont old = g.getFont();
-				g.setFont(font);
-				g.drawString(title, x + 5, y, fontColor);
-				g.setFont(old);
+				font.drawString(g,title, x + 5, y, fontColor);
 			}
 			if (animation.getSpriteImage() != null) {
 				g.draw(animation.getSpriteImage(), x, y);
@@ -176,11 +174,11 @@ public class LWindow extends LContainer {
 		this.title = title;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 
-	public void setFont(LFont font) {
+	public void setFont(IFont font) {
 		this.font = font;
 	}
 

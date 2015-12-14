@@ -22,14 +22,15 @@ package loon.component.table;
 
 import loon.canvas.LColor;
 import loon.component.table.LTable.BindIcon;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Alignment;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 
 public class TextCellRenderer implements ICellRenderer {
-	
-	private LFont font = LFont.getDefaultFont();
+
+	private IFont font = LFont.getDefaultFont();
 	private LColor textColor = LColor.white;
 	private Alignment alignment = Alignment.LEFT;
 
@@ -41,28 +42,25 @@ public class TextCellRenderer implements ICellRenderer {
 			s = font.confineLength(s, width - size - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4,
 					font.stringWidth(s));
-			g.setFont(font);
 			g.setColor(textColor);
 			if (icon.texture != null) {
-				g.draw(icon.texture, x + 4, y
-						+ (font.getHeight() - size) / 2, size, size);
-				g.drawString(s, x + size + entryOffset + 4,
-						y - 4);
+				g.draw(icon.texture, x + 4, y + (font.getHeight() - size) / 2,
+						size, size);
+				font.drawString(g, s, x + size + entryOffset + 4, y - 4);
 			} else {
-				g.drawString(s, x + entryOffset, y - 4);
+				font.drawString(g, s, x + entryOffset, y - 4);
 			}
 		} else {
 			String s = value.toString();
 			s = font.confineLength(s, width - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4,
 					font.stringWidth(s));
-			g.setFont(font);
 			g.setColor(textColor);
-			g.drawString(s, x + entryOffset, y - 4);
+			font.drawString(g, s, x + entryOffset, y - 4);
 		}
 	}
 
-	public void setFont(LFont font) {
+	public void setFont(IFont font) {
 		this.font = font;
 	}
 

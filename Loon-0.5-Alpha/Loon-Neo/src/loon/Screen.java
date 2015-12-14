@@ -38,7 +38,6 @@ import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.event.SysInput;
-import loon.event.ScreenListener;
 import loon.event.SysTouch;
 import loon.event.Updateable;
 import loon.event.LTouchArea.Event;
@@ -132,32 +131,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public void startProcess() {
 		this.processing = true;
-	}
-
-	private TArray<ScreenListener> screens;
-
-	private boolean useScreenListener;
-
-	public Screen addScreenListener(ScreenListener l) {
-		if (l != null) {
-			if (screens == null) {
-				screens = new TArray<ScreenListener>(10);
-			}
-			screens.add(l);
-		}
-		useScreenListener = (screens != null && screens.size > 0);
-		return this;
-	}
-
-	public Screen removeScreenListener(ScreenListener l) {
-		if (screens == null) {
-			return this;
-		}
-		if (l != null) {
-			screens.remove(l);
-		}
-		useScreenListener = (screens != null && screens.size > 0);
-		return this;
 	}
 
 	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
@@ -1347,9 +1320,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				LSystem._process.stageSystem.removeAll();
 			}
 		}
-		if (screens != null) {
-			screens.clear();
-		}
 		ActionControl.get().clear();
 		removeAllLoad();
 		removeAllUnLoad();
@@ -1487,12 +1457,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				}
 				// 最下一层渲染，可重载
 				afterUI(g);
-				// 用户自定义的多个渲染接口
-				if (useScreenListener) {
-					for (ScreenListener t : screens) {
-						t.draw(g);
-					}
-				}
 				// PS:下列四项允许用户调整顺序
 				// 基础
 				if (basePaintFlag) {
@@ -1614,11 +1578,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			}
 			if (lastPaintFlag) {
 				lastOrder.update(timer);
-			}
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.update(elapsedTime);
-				}
 			}
 		}
 		this.touchDX = SysTouch.getX() - lastTouchX;
@@ -1902,11 +1861,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int type = e.getType();
 		int code = e.getKeyCode();
 		try {
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.pressed(e);
-				}
-			}
 			this.onKeyDown(e);
 			keyType[type] = true;
 			keyButtonPressed = code;
@@ -1938,11 +1892,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int type = e.getType();
 		int code = e.getKeyCode();
 		try {
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.released(e);
-				}
-			}
 			this.onKeyUp(e);
 			keyType[type] = false;
 			keyButtonReleased = code;
@@ -1997,11 +1946,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			touchType[type] = true;
 			touchButtonPressed = button;
 			touchButtonReleased = SysInput.NO_BUTTON;
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.pressed(e);
-				}
-			}
 			if (!isClickLimit(e)) {
 				touchDown(e);
 			}
@@ -2030,11 +1974,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			touchType[type] = false;
 			touchButtonReleased = button;
 			touchButtonPressed = SysInput.NO_BUTTON;
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.released(e);
-				}
-			}
 			if (!isClickLimit(e)) {
 				touchUp(e);
 			}
@@ -2057,11 +1996,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 		updateTouchArea(Event.MOVE, e.getX(), e.getY());
 
-		if (useScreenListener) {
-			for (ScreenListener t : screens) {
-				t.move(e);
-			}
-		}
 		if (!isClickLimit(e)) {
 			touchMove(e);
 		}
@@ -2079,11 +2013,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 		updateTouchArea(Event.DRAG, e.getX(), e.getY());
 
-		if (useScreenListener) {
-			for (ScreenListener t : screens) {
-				t.drag(e);
-			}
-		}
 		if (!isClickLimit(e)) {
 			touchDrag(e);
 		}
@@ -2165,18 +2094,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public final void destroy() {
 		synchronized (this) {
-			if (useScreenListener) {
-				for (ScreenListener t : screens) {
-					t.dispose();
-				}
-			}
 			limits.clear();
 			_touchAreas.clear();
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
-			useScreenListener = false;
 			replaceLoading = false;
 			replaceDelay.setDelay(10);
 			tx = ty = 0;
@@ -2186,10 +2109,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			isGravity = false;
 			isLock = true;
 			_isExistCamera = false;
-			if (screens != null) {
-				screens.clear();
-				screens = null;
-			}
 			if (sprites != null) {
 				sprites.close();
 				sprites.clear();
@@ -2203,21 +2122,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			if (_players != null) {
 				_players.close();
 			}
+			if (LSystem._base != null && LSystem._process.rootPlayer != null) {
+				LSystem._process.rootPlayer.removeAll();
+			}
 			if (LSystem._base != null && LSystem._process.stageSystem != null) {
 				LSystem._process.stageSystem.removeAll();
 			}
 			if (currentScreen != null) {
-				LTexture parent = currentScreen.getParent();
-				if (parent != null) {
-					parent.closeChildAll();
-					parent.close();
-				} else {
-					currentScreen.close();
-				}
+				LTexture parent = LTexture.firstFather(currentScreen);
+				parent.closeChildAll();
+				parent.close();
 				currentScreen = null;
-			}
-			if (LSystem._base != null && LSystem._process.rootPlayer != null) {
-				LSystem._process.rootPlayer.removeAll();
 			}
 			if (gravityHandler != null) {
 				gravityHandler.close();

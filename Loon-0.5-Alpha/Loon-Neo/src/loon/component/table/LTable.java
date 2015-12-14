@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.component.LComponent;
 import loon.component.LContainer;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
@@ -53,7 +54,7 @@ import loon.utils.MathUtils;
  * item2.list.add("gggggggg");
  * item2.list.add("hhhhhhhhh");
  * list.add(item2);
- * LTable table=new LTable(LFont.getDefaultFont(), 60,60, 300, 300);
+ * LTable table=new LTable(IFont.getDefaultFont(), 60,60, 300, 300);
  * table.setData(list, 100); 
  * add(table);
  * 
@@ -117,7 +118,7 @@ public class LTable extends LContainer {
 
 	private LColor headTextColor = LColor.orange;
 
-	private LFont font;
+	private IFont font;
 
 	private LTexture headerTexture;
 
@@ -134,7 +135,7 @@ public class LTable extends LContainer {
 				.getDefaultTextures(4), x, y, width, height);
 	}
 
-	public LTable(LFont font, int x, int y, int width, int height) {
+	public LTable(IFont font, int x, int y, int width, int height) {
 		this(font, DefUI.getDefaultTextures(7), DefUI.getDefaultTextures(4), x,
 				y, width, height);
 	}
@@ -145,7 +146,7 @@ public class LTable extends LContainer {
 				width, height);
 	}
 
-	public LTable(LFont font, LTexture headerTexture,
+	public LTable(IFont font, LTexture headerTexture,
 			LTexture backgroundTexture, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.font = font;
@@ -467,8 +468,8 @@ public class LTable extends LContainer {
 							+ getColumn(columnIndex).getHeaderAlignment()
 									.alignX(columnWidth - OFFSET,
 											font.stringWidth(s));
-					g.setFont(font);
-					g.drawString(s, x + entryOffset,
+			
+					font.drawString(g,s, x + entryOffset,
 							header.headerY + font.getAscent()/2 - 4,
 							headTextColor);
 					x += columnWidth + cellSpacing;
@@ -487,12 +488,12 @@ public class LTable extends LContainer {
 		this.textColor = textColor;
 	}
 
-	public void setFont(LFont font) {
+	public void setFont(IFont font) {
 		this.font = font;
 		this.cellHeight = font.getHeight();
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 

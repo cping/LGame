@@ -3,8 +3,9 @@ package loon.action.sprite;
 import loon.LObject;
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.font.LFont;
 import loon.font.Font.Style;
+import loon.font.IFont;
+import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
@@ -15,7 +16,7 @@ public class SpriteLabel extends LObject implements ISprite {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private LFont font;
+	private IFont font;
 
 	private boolean visible;
 
@@ -52,22 +53,16 @@ public class SpriteLabel extends LObject implements ISprite {
 
 	public void createUI(GLEx g) {
 		if (visible) {
-			LFont oldFont = g.getFont();
-			int oldColor = g.color();
-			g.setFont(font);
-			g.setColor(color);
 			this.width = font.stringWidth(label);
 			this.height = (int) font.getHeight();
 			if (_alpha > 0 && _alpha < 1) {
 				float tmp = g.alpha();
 				g.setAlpha(_alpha);
-				g.drawString(label, x(), y());
+				font.drawString(g, label, x(), y(), color);
 				g.setAlpha(tmp);
 			} else {
-				g.drawString(label, x(), y());
+				font.drawString(g, label, x(), y(), color);
 			}
-			g.setFont(oldFont);
-			g.setColor(oldColor);
 		}
 	}
 
