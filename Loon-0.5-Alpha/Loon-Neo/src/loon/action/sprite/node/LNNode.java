@@ -37,6 +37,7 @@ import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
@@ -532,6 +533,10 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 
 	}
 
+	public void draw(GLEx gl) {
+
+	}
+	
 	public final void drawNode(SpriteBatch batch) {
 		if (_isClose) {
 			return;
@@ -568,6 +573,42 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		batch.setAlpha(tmp);
 	}
 
+	public final void drawNode(GLEx gl) {
+		if (_isClose) {
+			return;
+		}
+		if (!this._visible) {
+			return;
+		}
+		if (_alpha < 0.01) {
+			return;
+		}
+		float tmp = gl.alpha();
+		gl.setAlpha(_alpha);
+		for (int i = this._childCount - 1; i >= 0; i--) {
+			if (childs[i] != null && childs[i].getZOrder() < 0) {
+				childs[i].drawNode(gl);
+			}
+		}
+		this.draw(gl);
+		int zOrder = 0;
+		for (int i = this._childCount - 1; i >= 0; i--) {
+			LNNode o = this.childs[i];
+			if (o != null) {
+				if (o.getZOrder() >= 0) {
+					if (zOrder == 0) {
+						zOrder = o.getZOrder();
+					} else {
+						zOrder = o.getZOrder();
+					}
+
+					o.drawNode(gl);
+				}
+			}
+		}
+		gl.setAlpha(tmp);
+	}
+	
 	public void setOffset(float x, float y) {
 		this._offset.set(x, y);
 	}

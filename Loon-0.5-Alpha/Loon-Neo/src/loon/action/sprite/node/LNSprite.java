@@ -110,6 +110,7 @@ public class LNSprite extends LNNode {
 		return sprite;
 	}
 
+	@Override
 	public void draw(SpriteBatch batch) {
 		if (super._visible && (this._texture != null)) {
 			pos = super.convertToWorldPos();
@@ -125,11 +126,11 @@ public class LNSprite extends LNNode {
 				}
 				batch.setColor(super._color.r, super._color.g, super._color.b,
 						super._alpha);
-				if (rotation == 0) {
-					batch.draw(_texture, pos[0], pos[1], super._size_width
-							* scale[0], super._size_height * scale[1],
-							super._left, super._top, super._orig_width,
-							super._orig_height, _flipX, _flipY);
+				if (rotation == 0 && scale[0] == 1f && scale[1] == 1f) {
+					batch.draw(_texture, pos[0], pos[1], super._size_width,
+							super._size_height, super._left, super._top,
+							super._orig_width, super._orig_height, _flipX,
+							_flipY);
 				} else {
 					batch.draw(_texture, pos[0], pos[1], _anchor.x, _anchor.y,
 							super._size_width, super._size_height, scale[0],

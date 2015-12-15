@@ -605,6 +605,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return LSystem.viewSize.getRect().contains(x, y, w, h);
 	}
 
+	public boolean intersects(float x, float y) {
+		return LSystem.viewSize.getRect().intersects(x, y);
+	}
+
+	public boolean intersects(float x, float y, float w, float h) {
+		return LSystem.viewSize.getRect().intersects(x, y, w, h);
+	}
+
 	/**
 	 * 当Screen被创建(或再次加载)时将调用此函数
 	 * 

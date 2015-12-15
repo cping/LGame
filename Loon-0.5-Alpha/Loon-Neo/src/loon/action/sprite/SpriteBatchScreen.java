@@ -99,6 +99,11 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private float _dt = 1F / 60F;
 
+	private RectBox _physicsRect;
+
+	private ObjectMap<ActionObject, PBody> _bodys = new ObjectMap<ActionObject, PBody>(
+			CollectionUtils.INITIAL_CAPACITY);
+
 	private void limitWorld(boolean _fixed) {
 		if (_fixed) {
 			if (this._box == null) {
@@ -127,8 +132,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	public boolean isPhysics() {
 		return usePhysics;
 	}
-
-	private RectBox _physicsRect;
 
 	public void setPhysicsRect(float x, float y, float w, float h) {
 		if (this._physicsRect == null) {
@@ -689,12 +692,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		remove(o);
 	}
 
-	private ObjectMap<ActionObject, PBody> _Bodys = new ObjectMap<ActionObject, PBody>(
-			CollectionUtils.INITIAL_CAPACITY);
-
 	public PBody findPhysics(ActionObject o) {
 		if (usePhysics) {
-			PBody body = _Bodys.get(o);
+			PBody body = _bodys.get(o);
 			return body;
 		} else {
 			throw new RuntimeException("You do not set the physics engine !");
@@ -703,7 +703,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public void unbindPhysics(ActionObject o) {
 		if (usePhysics) {
-			PBody body = _Bodys.remove(o);
+			PBody body = _bodys.remove(o);
 			if (body != null) {
 				body.setTag(null);
 				_manager.world.removeBody(body);
@@ -719,8 +719,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return bindPhysics(fix, add(o), 1F);
 	}
 
-	public PBody addTexturePhysics(boolean fix, ActionObject o,
-			float density) throws Exception {
+	public PBody addTexturePhysics(boolean fix, ActionObject o, float density)
+			throws Exception {
 		return bindTexturePhysics(fix, add(o), density);
 	}
 
@@ -734,15 +734,14 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			PBody body = _manager.addBox(fix, o.getRectBox(),
 					MathUtils.toRadians(o.getRotation()), density);
 			body.setTag(o);
-			_Bodys.put(o, body);
+			_bodys.put(o, body);
 			return body;
 		} else {
 			throw new RuntimeException("You do not set the physics engine !");
 		}
 	}
 
-	public PBody addCirclePhysics(boolean fix, ActionObject o,
-			float density) {
+	public PBody addCirclePhysics(boolean fix, ActionObject o, float density) {
 		return bindCirclePhysics(fix, add(o), density);
 	}
 
@@ -754,23 +753,22 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return bindCirclePhysics(fix, add(o), 1F);
 	}
 
-	public PBody bindCirclePhysics(boolean fix, ActionObject o,
-			float density) {
+	public PBody bindCirclePhysics(boolean fix, ActionObject o, float density) {
 		if (usePhysics) {
 			RectBox rect = o.getRectBox();
 			float r = (rect.width + rect.height) / 4;
 			PBody body = _manager.addCircle(fix, o.x(), o.y(), r,
 					MathUtils.toRadians(o.getRotation()), density);
 			body.setTag(o);
-			_Bodys.put(o, body);
+			_bodys.put(o, body);
 			return body;
 		} else {
 			throw new RuntimeException("You do not set the physics engine !");
 		}
 	}
 
-	public PBody bindTexturePhysics(boolean fix, ActionObject o,
-			float density) throws Exception {
+	public PBody bindTexturePhysics(boolean fix, ActionObject o, float density)
+			throws Exception {
 		if (usePhysics) {
 			PBody body = _manager.addShape(fix, o.getAnimation()
 					.getSpriteImage(), MathUtils.toRadians(o.getRotation()),
@@ -780,7 +778,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 						o.y() / _manager.scale);
 			}
 			body.setTag(o);
-			_Bodys.put(o, body);
+			_bodys.put(o, body);
 			return body;
 		} else {
 			throw new RuntimeException("You do not set the physics engine !");
@@ -800,7 +798,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (usePhysics) {
 			body.setTag(o);
 			_manager.addBody(body);
-			_Bodys.put(o, body);
+			_bodys.put(o, body);
 			return body;
 		} else {
 			throw new RuntimeException("You do not set the physics engine !");
@@ -852,7 +850,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 		for (ActionObject o : objects) {
 			if (usePhysics) {
-				PBody body = _Bodys.get(o);
+				PBody body = _bodys.get(o);
 				if (body != null) {
 					PShape shape = body.inner_shapes()[0];
 					final float rotation = (shape.getAngle() * MathUtils.RAD_TO_DEG) % 360;
@@ -874,33 +872,46 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	@Override
 	public final void draw(GLEx g) {
-		if (content == null) {
-			return;
-		}
-		if (batch == null) {
-			return;
-		}
 		if (isOnLoadComplete()) {
-			synchronized (batch) {
-				try {
-					batch.begin();
-					before(batch);
-					for (TileMap tile : tiles) {
-						tile.draw(g, batch, offset.x(), offset.y());
+			if (batch == null) {
+				for (TileMap tile : tiles) {
+					tile.draw(g, batch, offset.x(), offset.y());
+				}
+				for (ActionObject o : objects) {
+					objX = o.getX() + offset.x;
+					objY = o.getY() + offset.y;
+					if (intersects(objX, objY, o.getWidth(), o.getHeight())
+							|| contains(objX, objY)) {
+						o.draw(g, offset.x, offset.y);
 					}
-					for (ActionObject o : objects) {
-						objX = o.getX() + offset.x;
-						objY = o.getY() + offset.y;
-						if (contains(objX, objY)) {
-							o.draw(batch, offset.x, offset.y);
+				}
+				if (content != null && content.isVisible()) {
+					content.drawNode(g);
+				}
+			} else {
+				synchronized (batch) {
+					try {
+						batch.begin();
+						before(batch);
+						for (TileMap tile : tiles) {
+							tile.draw(g, batch, offset.x(), offset.y());
 						}
+						for (ActionObject o : objects) {
+							objX = o.getX() + offset.x;
+							objY = o.getY() + offset.y;
+							if (intersects(objX, objY, o.getWidth(),
+									o.getHeight())
+									|| contains(objX, objY)) {
+								o.draw(batch, offset.x, offset.y);
+							}
+						}
+						if (content != null && content.isVisible()) {
+							content.drawNode(batch);
+						}
+						after(batch);
+					} finally {
+						batch.end();
 					}
-					if (content.isVisible()) {
-						content.drawNode(batch);
-					}
-					after(batch);
-				} finally {
-					batch.end();
 				}
 			}
 		}
@@ -973,7 +984,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (usePhysics) {
 			_manager.setStart(false);
 			_manager.setEnableGravity(false);
-			_Bodys.clear();
+			_bodys.clear();
 		}
 		this.keySize = 0;
 		if (batch != null) {
