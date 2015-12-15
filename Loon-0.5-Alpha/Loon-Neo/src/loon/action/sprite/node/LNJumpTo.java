@@ -37,7 +37,8 @@ public class LNJumpTo extends LNJumpBy {
 		to._jumps = jumps;
 		return to;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;

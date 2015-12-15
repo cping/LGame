@@ -28,6 +28,11 @@ import loon.utils.ObjectMap;
 
 public class LNButton extends LNUI {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected ObjectMap<String, LNNode> _buttonElement = new ObjectMap<String, LNNode>();
 
 	protected ObjectMap<String, LNAction> _touchBeganAction = new ObjectMap<String, LNAction>();
@@ -77,7 +82,8 @@ public class LNButton extends LNUI {
 		button.initCheckboxWithPrssingTexture(fsName1, fsName2, "", "");
 		return button;
 	}
-
+	
+	@Override
 	public void setAlpha(float a) {
 		super._alpha = a;
 		super._color.a = a;

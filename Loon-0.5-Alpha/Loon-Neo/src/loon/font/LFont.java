@@ -89,6 +89,19 @@ public class LFont implements IFont {
 		LSTRDictionary.drawString(g, this, string, x, y, angle, c);
 	}
 
+	@Override
+	public void drawString(GLEx g, String string, float x, float y, float sx,
+			float sy, float ax, float ay, float angle, LColor c) {
+		if (c == null || c.a <= 0.01) {
+			return;
+		}
+		if (StringUtils.isEmpty(string)) {
+			return;
+		}
+		LSTRDictionary.drawString(g, this, string, x, y, sx, sy, ax, ay, angle,
+				c);
+	}
+
 	private String lastText = tmp;
 
 	private void initLayout(String text) {

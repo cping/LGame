@@ -21,9 +21,14 @@
 package loon.action.sprite.node;
 
 import loon.action.sprite.SpriteBatch;
+import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
 public class LNProgressBar extends LNSprite {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private float _percent;
 	private BarType _type;
 
@@ -43,6 +48,7 @@ public class LNProgressBar extends LNSprite {
 
 	private float[] scale;
 
+	@Override
 	public void draw(SpriteBatch batch) {
 		if (super._visible && (super._texture != null)) {
 			pos = super.convertToWorldPos();
@@ -83,6 +89,52 @@ public class LNProgressBar extends LNSprite {
 
 			}
 			batch.resetColor();
+		}
+	}
+
+	@Override
+	public void draw(GLEx g) {
+		if (super._visible && (super._texture != null)) {
+			int color = g.color();
+			pos = super.convertToWorldPos();
+			rotation = super.convertToWorldRot();
+			scale = super.convertToWorldScale();
+			g.setColor(super._color.r, super._color.g, super._color.b,
+					super._alpha);
+			if (this._type == BarType.PROGRESS_BAR_LEFT) {
+				g.draw(_texture, pos[0]-_anchor.x, pos[1]-_anchor.y, _anchor, super._size_width,
+						super._size_height, scale[0], scale[1],
+						MathUtils.toDegrees(rotation), super._left, super._top,
+						super._orig_width * this._percent, super._orig_height,
+						_flipX, _flipY, null);
+			} else if (this._type == BarType.PROGRESS_BAR_RIGHT) {
+				int offsetX = ((int) (super._orig_width * (1f - this._percent)));
+				g.draw(_texture, pos[0]-_anchor.x, pos[1]-_anchor.y, _anchor,
+						super._size_width, super._size_height, scale[0],
+						scale[1], MathUtils.toDegrees(rotation), (super._left)
+								+ offsetX, super._top,
+						(int) (super._orig_width * this._percent),
+						super._orig_height, _flipX, _flipY, null);
+			} else if (this._type == BarType.PROGRESS_BAR_TOP) {
+				g.draw(_texture, pos[0]-_anchor.x, pos[1]-_anchor.y, _anchor, super._size_width,
+						super._size_height, scale[0], scale[1],
+						MathUtils.toDegrees(rotation), super._left, super._top,
+						super._orig_width,
+						(super._orig_height * this._percent), _flipX, _flipY,
+						null);
+			} else if (this._type == BarType.PROGRESS_BAR_BOTTOM) {
+				int offsetY = ((int) (super._orig_height * (1f - this._percent)));
+				g.draw(_texture,  pos[0]-_anchor.x, pos[1]-_anchor.y + offsetY, _anchor,
+						super._size_width, super._size_height, scale[0],
+						scale[1], MathUtils.toDegrees(rotation), super._left,
+						(super._top)
+								+ ((int) (super._orig_height * this._percent)),
+						super._orig_width,
+						(int) (super._orig_height * this._percent), _flipX,
+						_flipY, null);
+
+			}
+			g.setColor(color);
 		}
 	}
 

@@ -21,11 +21,19 @@
 package loon.action.sprite.node;
 
 import loon.action.sprite.SpriteBatch;
+import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Vector2f;
+import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
 public class LNLabel extends LNNode {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private LFont _spriteFont;
 
@@ -76,6 +84,24 @@ public class LNLabel extends LNNode {
 					batch.getColor());
 			batch.setFont(font);
 			batch.resetColor();
+		}
+	}
+
+	private LColor tempColor = new LColor(LColor.white);
+
+	@Override
+	public void draw(GLEx g) {
+		if (super._visible) {
+			pos = super.convertToWorldPos();
+			scale = super.convertToWorldScale();
+			rotation = super.convertToWorldRot();
+			IFont font = g.getFont();
+			g.setFont(_spriteFont);
+			g.drawString(this._text, pos[0], pos[1], scale[0], scale[1],
+					_anchor.x, _anchor.y, MathUtils.toDegrees(rotation),
+					tempColor.setColor(super._color.r, super._color.g,
+							super._color.b, super._alpha));
+			g.setFont(font);
 		}
 	}
 

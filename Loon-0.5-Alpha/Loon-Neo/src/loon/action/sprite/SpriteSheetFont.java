@@ -2,6 +2,7 @@ package loon.action.sprite;
 
 import loon.canvas.LColor;
 import loon.font.IFont;
+import loon.geom.Affine2f;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
@@ -19,7 +20,7 @@ public class SpriteSheetFont implements IFont {
 
 	private int numChars;
 
-	private float fontScale = 1f;
+	private float fontScaleX = 1f, fontScaleY = 1f;
 
 	public SpriteSheetFont(SpriteSheet font, char startingCharacter) {
 		this.font = font;
@@ -48,14 +49,14 @@ public class SpriteSheetFont implements IFont {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
 				if ((i >= startIndex) || (i <= endIndex)) {
-					if (fontScale == 1f) {
+					if (fontScaleX == 1f && fontScaleY == 1f) {
 						font.getSubImage(xPos, yPos).draw(x + (i * charWidth),
 								y, col);
 					} else {
 						font.getSubImage(xPos, yPos).draw(
-								x + (i * charWidth * fontScale), y,
-								charWidth * fontScale, charHeight * fontScale,
-								col);
+								x + (i * charWidth * fontScaleX), y,
+								charWidth * fontScaleX,
+								charHeight * fontScaleY, col);
 					}
 				}
 			}
@@ -79,18 +80,18 @@ public class SpriteSheetFont implements IFont {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
 				if (index == '\n') {
-					//lines++;
-					//display.height = 0;
+					// lines++;
+					// display.height = 0;
 					continue;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
-					if (fontScale == 1f) {
+					if (fontScaleX == 1f && fontScaleY == 1f) {
 						gl.draw(font.getSubImage(xPos, yPos), x
 								+ (i * charWidth), y, col);
 					} else {
 						gl.draw(font.getSubImage(xPos, yPos), x
-								+ (i * charWidth * fontScale), y, charWidth
-								* fontScale, charHeight * fontScale, col);
+								+ (i * charWidth * fontScaleX), y, charWidth
+								* fontScaleX, charHeight * fontScaleY, col);
 					}
 				}
 			}
@@ -115,33 +116,87 @@ public class SpriteSheetFont implements IFont {
 		}
 	}
 
-	public float getFontScale() {
-		return this.fontScale;
+	@Override
+	public void drawString(GLEx gl, String text, float x, float y, float sx,
+			float sy, float ax, float ay, float rotation, LColor c) {
+		final boolean anchor = ax != 0 || ay != 0;
+		final boolean scale = sx != 1f || sy != 1f;
+		final boolean angle = rotation != 0;
+		final boolean update = scale || angle || anchor;
+		try {
+			if (update) {
+				gl.saveTx();
+				Affine2f xf = gl.tx();
+				if (anchor) {
+					xf.translate(ax, ay);
+				}
+				if (scale) {
+					float centerX = x + this.stringWidth(text) / 2;
+					float centerY = y + this.stringHeight(text) / 2;
+					xf.translate(centerX, centerY);
+					xf.preScale(sx, sy);
+					xf.translate(-centerX, -centerY);
+				}
+				if (angle) {
+					float centerX = x + this.stringWidth(text) / 2;
+					float centerY = y + this.stringHeight(text) / 2;
+					xf.translate(centerX, centerY);
+					xf.preRotate(rotation);
+					xf.translate(-centerX, -centerY);
+				}
+			}
+			drawString(gl, text, x, y, c);
+		} finally {
+			if (update) {
+				gl.restoreTx();
+			}
+		}
+	}
+	
+	public float getFontScaleX() {
+		return this.fontScaleX;
+	}
+
+	public float getFontScaleY() {
+		return this.fontScaleX;
 	}
 
 	public void setFontScale(float s) {
-		this.fontScale = s;
+		this.setFontScale(s, s);
+	}
+
+	public void setFontScale(float sx, float sy) {
+		this.fontScaleX = sx;
+		this.fontScaleY = sy;
+	}
+
+	public void setFontScaleX(float x) {
+		this.fontScaleX = x;
+	}
+
+	public void setFontScaleY(float y) {
+		this.fontScaleY = y;
 	}
 
 	@Override
 	public int stringHeight(String text) {
-		int count = StringUtils.charCount(text, '\n');
-		return (int) (charHeight * fontScale * count);
+		int count = StringUtils.charCount(text, '\n') + 1;
+		return (int) (charHeight * fontScaleY * count);
 	}
 
 	@Override
 	public int stringWidth(String text) {
-		return (int) (charWidth * fontScale * text.length());
+		return (int) (charWidth * fontScaleX * text.length());
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) (charHeight * fontScale);
+		return (int) (charHeight * fontScaleY);
 	}
 
 	@Override
 	public float getAscent() {
-		return (charWidth + charHeight / 2) * this.fontScale;
+		return (charWidth + charHeight / 2) * this.fontScaleY;
 	}
 
 	@Override
@@ -164,7 +219,7 @@ public class SpriteSheetFont implements IFont {
 
 	@Override
 	public int getSize() {
-		return (int) ((charWidth + charHeight / 2) * this.fontScale);
+		return (int) ((charWidth + charHeight / 2) * this.fontScaleY);
 	}
 
 }

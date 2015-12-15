@@ -351,7 +351,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			this.selectedNode.processKeyReleased();
 		}
 	}
-
+	
+	@SuppressWarnings("resource")
 	public LNNode findNode(int x, int y) {
 		if (content == null) {
 			return null;

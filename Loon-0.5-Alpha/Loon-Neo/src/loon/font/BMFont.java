@@ -29,6 +29,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
+import loon.geom.Affine2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -42,7 +43,7 @@ public class BMFont implements IFont, LRelease {
 
 	private static final int DEFAULT_MAX_CHAR = 255;
 
-	private float fontScale = 1f;
+	private float fontScaleX = 1f, fontScaleY = 1f;
 
 	private ObjectMap<String, Display> displays;
 
@@ -93,18 +94,18 @@ public class BMFont implements IFont, LRelease {
 			if (isClose) {
 				return;
 			}
-			displayList.draw((x + xoffset) * fontScale, (y + yoffset)
-					* fontScale, width * fontScale, height * fontScale, tx, ty,
-					tx + width, ty + height);
+			displayList.draw((x + xoffset) * fontScaleX, (y + yoffset)
+					* fontScaleY, width * fontScaleX, height * fontScaleY, tx,
+					ty, tx + width, ty + height);
 		}
 
 		public void draw(GLEx g, float sx, float sy, float x, float y) {
 			if (isClose) {
 				return;
 			}
-			g.draw(displayList, sx + (x + xoffset) * fontScale, sy
-					+ (y + yoffset) * fontScale, width * fontScale, height
-					* fontScale, tx, ty, width, height);
+			g.draw(displayList, sx + (x + xoffset) * fontScaleX, sy
+					+ (y + yoffset) * fontScaleX, width * fontScaleX, height
+					* fontScaleY, tx, ty, width, height);
 		}
 
 		public int getKerning(int point) {
@@ -406,6 +407,43 @@ public class BMFont implements IFont, LRelease {
 		}
 	}
 
+	@Override
+	public void drawString(GLEx gl, String text, float x, float y, float sx,
+			float sy, float ax, float ay, float rotation, LColor c) {
+		boolean anchor = ax != 0 || ay != 0;
+		boolean scale = sx != 1f || sy != 1f;
+		boolean angle = rotation != 0;
+		boolean update = scale || angle || anchor;
+		try {
+			if (update) {
+				gl.saveTx();
+				Affine2f xf = gl.tx();
+				if (anchor) {
+					xf.translate(ax, ay);
+				}
+				if (scale) {
+					float centerX = x + this.stringWidth(text) / 2;
+					float centerY = y + this.stringHeight(text) / 2;
+					xf.translate(centerX, centerY);
+					xf.preScale(sx, sy);
+					xf.translate(-centerX, -centerY);
+				}
+				if (angle) {
+					float centerX = x + this.stringWidth(text) / 2;
+					float centerY = y + this.stringHeight(text) / 2;
+					xf.translate(centerX, centerY);
+					xf.preRotate(rotation);
+					xf.translate(-centerX, -centerY);
+				}
+			}
+			drawString(gl, text, x, y, c);
+		} finally {
+			if (update) {
+				gl.restoreTx();
+			}
+		}
+	}
+
 	public int stringHeight(String text) {
 		if (text == null) {
 			return 0;
@@ -442,7 +480,7 @@ public class BMFont implements IFont, LRelease {
 					display.height);
 		}
 		display.height += lines * lineHeight;
-		return (int) (display.height * fontScale);
+		return (int) (display.height * fontScaleY);
 	}
 
 	public int stringWidth(String text) {
@@ -489,7 +527,7 @@ public class BMFont implements IFont, LRelease {
 			display.width = MathUtils.max(display.width, width);
 		}
 
-		return (int) (display.width * fontScale);
+		return (int) (display.width * fontScaleX);
 	}
 
 	public String getCommon() {
@@ -506,25 +544,42 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public int getHeight() {
-		return (int) (lineHeight * fontScale);
+		return (int) (lineHeight * fontScaleY);
 	}
 
-	public float getFontScale() {
-		return this.fontScale;
+	public float getFontScaleX() {
+		return this.fontScaleX;
+	}
+
+	public float getFontScaleY() {
+		return this.fontScaleX;
 	}
 
 	public void setFontScale(float s) {
-		this.fontScale = s;
+		this.setFontScale(s, s);
+	}
+
+	public void setFontScale(float sx, float sy) {
+		this.fontScaleX = sx;
+		this.fontScaleY = sy;
+	}
+
+	public void setFontScaleX(float x) {
+		this.fontScaleX = x;
+	}
+
+	public void setFontScaleY(float y) {
+		this.fontScaleY = y;
 	}
 
 	@Override
 	public float getAscent() {
-		return (lineHeight + halfHeight) * this.fontScale;
+		return (lineHeight + halfHeight) * this.fontScaleY;
 	}
 
 	@Override
 	public int getSize() {
-		return (int) ((lineHeight + halfHeight) * this.fontScale);
+		return (int) ((lineHeight + halfHeight) * this.fontScaleY);
 	}
 
 	@Override

@@ -27,10 +27,16 @@ import loon.action.sprite.SpriteBatch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
+import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 
 public class LNSprite extends LNNode {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private BlendState blendState = BlendState.NonPremultiplied;
 
@@ -72,7 +78,7 @@ public class LNSprite extends LNNode {
 		super._orig_height = struct._orig_height;
 		super.setNodeSize(struct._size_width, struct._size_height);
 		super._anchor.set(struct._anchor);
-		blendState = struct._state;
+		this.blendState = struct._state;
 		if (!struct._place.equals(0, 0)) {
 			setPosition(struct._place);
 		}
@@ -144,6 +150,39 @@ public class LNSprite extends LNNode {
 					batch.submit(blendState);
 					batch.setBlendState(oldState);
 				}
+			}
+		}
+	}
+
+	@Override
+	public void draw(GLEx g) {
+		if (super._visible && (this._texture != null)) {
+			if (this.pos == null) {
+				this.pos = new float[2];
+			}
+			if (this.scale == null) {
+				this.scale = new float[2];
+			}
+			pos = super.convertToWorldPos();
+			if (_screenRect.intersects(pos[0], pos[1], getWidth(), getHeight())
+					|| _screenRect.contains(pos[0], pos[1])) {
+				int color = g.color();
+				if (_parent != null) {
+					rotation = convertToWorldRot();
+					scale = convertToWorldScale();
+				} else {
+					rotation = super._rotation;
+					scale[0] = _scale.x;
+					scale[1] = _scale.y;
+				}
+				g.setColor(super._color.r, super._color.g, super._color.b,
+						super._alpha);
+				g.draw(_texture, pos[0] - _anchor.x, pos[1] - _anchor.y,
+						_anchor, super._size_width, super._size_height,
+						scale[0], scale[1], MathUtils.toDegrees(rotation),
+						super._left, super._top, super._orig_width,
+						super._orig_height, _flipX, _flipY, null);
+				g.setColor(color);
 			}
 		}
 	}

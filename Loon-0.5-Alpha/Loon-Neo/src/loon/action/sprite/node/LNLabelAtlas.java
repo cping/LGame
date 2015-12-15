@@ -22,8 +22,14 @@ package loon.action.sprite.node;
 
 import loon.action.sprite.SpriteBatch;
 import loon.geom.RectBox;
+import loon.opengl.GLEx;
 
 public class LNLabelAtlas extends LNAtlasNode {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private int _charWidth;
 
@@ -56,7 +62,7 @@ public class LNLabelAtlas extends LNAtlasNode {
 	private float[] scale;
 
 	private float rotation;
-	
+
 	@Override
 	public void draw(SpriteBatch batch) {
 		if (super._visible) {
@@ -83,6 +89,36 @@ public class LNLabelAtlas extends LNAtlasNode {
 							- ((size * this._charWidth) / 2)
 							+ (k * this._charWidth), pos[1], rotation,
 							scale[0], scale[1], batch.getColor());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void draw(GLEx g) {
+		if (super._visible) {
+			pos = super.convertToWorldPos();
+			scale = super.convertToWorldScale();
+			rotation = super.convertToWorldRot();
+			int size = _text.length();
+			if (this._type == LabelType.TEXT_ALIGNMENT_LEFT) {
+				for (int i = 0; i < size; i++) {
+					super._textureAtlas.draw(i, g,
+							pos[0] + i * this._charWidth, pos[1], rotation,
+							scale[0], scale[1], null);
+				}
+			} else if (this._type == LabelType.TEXT_ALIGNMENT_RIGHT) {
+				for (int j = 0; j < size; j++) {
+					super._textureAtlas.draw(j, g, pos[0]
+							- (size * this._charWidth) + (j * this._charWidth),
+							pos[1], rotation, scale[0], scale[1], null);
+				}
+			} else {
+				for (int k = 0; k < size; k++) {
+					super._textureAtlas.draw(k, g, pos[0]
+							- ((size * this._charWidth) / 2)
+							+ (k * this._charWidth), pos[1], rotation,
+							scale[0], scale[1], null);
 				}
 			}
 		}

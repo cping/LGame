@@ -38,7 +38,8 @@ public class LNFadeOut extends LNAction {
 		outs._duration = duartion;
 		return outs;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;

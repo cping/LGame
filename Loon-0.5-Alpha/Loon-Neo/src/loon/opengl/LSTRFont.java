@@ -29,6 +29,7 @@ import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.font.TextLayout;
+import loon.geom.Affine2f;
 import loon.utils.GLUtils;
 import loon.utils.IntArray;
 import loon.utils.MathUtils;
@@ -102,7 +103,7 @@ public class LSTRFont implements LRelease {
 	public LSTRFont(LFont font, String[] strings) {
 		this(font, filterStrings(strings).toCharArray());
 	}
-	
+
 	public LSTRFont(LFont font, char[] chs) {
 		if (displays == null) {
 			displays = new ObjectMap<String, Cache>(totalCharSet);
@@ -336,47 +337,46 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void drawString(GLEx gl, String chars, float x, float y) {
-		drawString(gl, x, y, 1f, 1f, 0, chars, LColor.white, 0,
-				chars.length() - 1);
+		drawString(gl, x, y, 1f, 1f, 0, chars, LColor.white);
 	}
 
 	public void drawString(GLEx gl, String chars, float x, float y, LColor color) {
-		drawString(gl, x, y, 1f, 1f, 0, chars, color, 0, chars.length() - 1);
+		drawString(gl, x, y, 1f, 1f, 0, chars, color);
 	}
 
 	public void drawString(GLEx gl, String chars, float x, float y,
 			float rotation, LColor color) {
-		drawString(gl, x, y, 1f, 1f, rotation, chars, color, 0,
-				chars.length() - 1);
+		drawString(gl, x, y, 1f, 1f, rotation, chars, color);
 	}
 
 	public void drawString(GLEx gl, String chars, float x, float y,
 			float rotation) {
-		drawString(gl, x, y, 1f, 1f, rotation, chars, LColor.white, 0,
-				chars.length() - 1);
+		drawString(gl, x, y, 1f, 1f, rotation, chars, LColor.white);
 	}
 
 	public void drawString(GLEx gl, String chars, float x, float y, float sx,
 			float sy, float rotation, LColor c) {
-		drawString(gl, x, y, sx, sy, rotation, chars, c, 0, chars.length() - 1);
+		drawString(gl, x, y, sx, sy, rotation, chars, c);
+	}
+
+	public void drawString(GLEx gl, float x, float y, float sx, float sy,
+			float rotation, String chars, LColor c) {
+		drawString(gl, x, y, sx, sy, 0, 0, rotation, chars, c, 0,
+				chars.length() - 1);
+	}
+
+	public void drawString(GLEx gl, float x, float y, float sx, float sy,
+			float ax, float ay, float rotation, String chars, LColor c) {
+		drawString(gl, x, y, sx, sy, ax, ay, rotation, chars, c, 0,
+				chars.length() - 1);
 	}
 
 	private void drawString(GLEx gl, float x, float y, float sx, float sy,
-			float rotation, String chars, LColor c, int startIndex, int endIndex) {
+			float ax, float ay, float rotation, String chars, LColor c,
+			int startIndex, int endIndex) {
 		make();
 		if (StringUtils.isEmpty(chars)) {
 			return;
-		}
-		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
-			synchronized (displays) {
-				for (Cache cache : displays.values()) {
-					if (cache != null) {
-						cache.close();
-						cache = null;
-					}
-				}
-			}
-			displays.clear();
 		}
 		this.intObject = null;
 		this.charCurrent = 0;
@@ -385,29 +385,60 @@ public class LSTRFont implements LRelease {
 		final LTexture texture = fontBatch.toTexture();
 		int old = gl.color();
 		char[] charList = chars.toCharArray();
-		gl.setColor(c);
-		for (int i = 0; i < charList.length; i++) {
-			charCurrent = charList[i];
-			if (charCurrent < totalCharSet) {
-				intObject = charArray[charCurrent];
-			} else {
-				intObject = customChars.get((char) charCurrent);
-			}
-			if (charCurrent == newLineFlag) {
-				totalHeight += fontSize;
-				totalWidth = 0;
-			}
-			if (intObject != null) {
-				if ((i >= startIndex) || (i <= endIndex)) {
-					gl.draw(texture, x + totalWidth, y + totalHeight,
-							intObject.width * sx, intObject.height * sy,
-							intObject.storedX, intObject.storedY,
-							intObject.width, intObject.height, c, rotation);
+		final boolean anchor = ax != 0 || ay != 0;
+		final boolean scale = sx != 1f || sy != 1f;
+		final boolean angle = rotation != 0;
+		final boolean update = scale || angle || anchor;
+		try {
+			gl.setColor(c);
+			if (update) {
+				gl.saveTx();
+				Affine2f xf = gl.tx();
+				if (anchor) {
+					xf.translate(ax, ay);
 				}
-				totalWidth += intObject.width;
+				if (scale) {
+					float centerX = x + this.getWidth(chars) / 2;
+					float centerY = y + this.getHeight(chars) / 2;
+					xf.translate(centerX, centerY);
+					xf.preScale(sx, sy);
+					xf.translate(-centerX, -centerY);
+				}
+				if (angle) {
+					float centerX = x + this.getWidth(chars) / 2;
+					float centerY = y + this.getHeight(chars) / 2;
+					xf.translate(centerX, centerY);
+					xf.preRotate(rotation);
+					xf.translate(-centerX, -centerY);
+				}
+			}
+			for (int i = 0; i < charList.length; i++) {
+				charCurrent = charList[i];
+				if (charCurrent < totalCharSet) {
+					intObject = charArray[charCurrent];
+				} else {
+					intObject = customChars.get((char) charCurrent);
+				}
+				if (charCurrent == newLineFlag) {
+					totalHeight += fontSize;
+					totalWidth = 0;
+				}
+				if (intObject != null) {
+					if ((i >= startIndex) || (i <= endIndex)) {
+						gl.draw(texture, x + totalWidth, y + totalHeight,
+								intObject.width * sx, intObject.height * sy,
+								intObject.storedX, intObject.storedY,
+								intObject.width, intObject.height, c);
+					}
+					totalWidth += intObject.width;
+				}
+			}
+		} finally {
+			gl.setColor(old);
+			if (update) {
+				gl.restoreTx();
 			}
 		}
-		gl.setColor(old);
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {

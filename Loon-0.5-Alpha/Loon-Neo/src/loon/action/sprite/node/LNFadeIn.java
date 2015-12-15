@@ -38,7 +38,8 @@ public class LNFadeIn extends LNAction {
 		ins._duration = duration;
 		return ins;
 	}
-
+	
+	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
 		super._isEnd = false;

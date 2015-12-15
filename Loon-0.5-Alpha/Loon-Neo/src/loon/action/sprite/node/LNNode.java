@@ -24,8 +24,10 @@ import java.util.Comparator;
 
 import loon.LObject;
 import loon.LSystem;
+import loon.LTexture;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
+import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.canvas.LColor;
@@ -43,7 +45,12 @@ import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class LNNode extends LObject implements ActionBind, XY, BoxSize {
+public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public void down(GameTouch e) {
 
@@ -536,7 +543,7 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 	public void draw(GLEx gl) {
 
 	}
-	
+
 	public final void drawNode(SpriteBatch batch) {
 		if (_isClose) {
 			return;
@@ -608,7 +615,7 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		}
 		gl.setAlpha(tmp);
 	}
-	
+
 	public void setOffset(float x, float y) {
 		this._offset.set(x, y);
 	}
@@ -1071,14 +1078,17 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		}
 	}
 
+	@Override
 	public float getX() {
 		return _location.x;
 	}
 
+	@Override
 	public float getY() {
 		return _location.y;
 	}
 
+	@Override
 	public void setX(Integer x) {
 		if (this._location.x != x || x == 0) {
 			this._location.x = x;
@@ -1086,6 +1096,7 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		}
 	}
 
+	@Override
 	public void setX(float x) {
 		if (this._location.x != x || x == 0) {
 			this._location.x = x;
@@ -1093,6 +1104,7 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		}
 	}
 
+	@Override
 	public void setY(Integer y) {
 		if (this._location.y != y || y == 0) {
 			this._location.y = y;
@@ -1100,6 +1112,7 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		}
 	}
 
+	@Override
 	public void setY(float y) {
 		if (this._location.y != y || y == 0) {
 			this._location.y = y;
@@ -1107,10 +1120,12 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		}
 	}
 
+	@Override
 	public void setLocation(Vector2f _location) {
 		setLocation(_location.x, _location.y);
 	}
 
+	@Override
 	public void setLocation(float dx, float dy) {
 		if (this._location.x != dx || this._location.y != dy || dx == 0
 				|| dy == 0) {
@@ -1119,6 +1134,7 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 		}
 	}
 
+	@Override
 	public void move(float dx, float dy) {
 		if (dx != 0 || dy != 0) {
 			if (dx > -100 && dx < 100 && dy > -100 && dy < 100) {
@@ -1313,6 +1329,16 @@ public class LNNode extends LObject implements ActionBind, XY, BoxSize {
 	public RectBox getCollisionBox() {
 		return getRect(getLocation().x(), getLocation().y(), getWidth(),
 				getHeight());
+	}
+
+	@Override
+	public void createUI(GLEx g) {
+		drawNode(g);
+	}
+
+	@Override
+	public LTexture getBitmap() {
+		return null;
 	}
 
 }

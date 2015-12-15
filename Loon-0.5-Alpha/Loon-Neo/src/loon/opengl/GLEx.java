@@ -736,7 +736,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				texture.height(), color, 0, scaleX, scaleY, null,
 				Direction.TRANS_MIRROR);
 	}
-	
+
 	public GLEx drawFilpScale(LTexture texture, float x, float y, float w,
 			float h, LColor color, float scaleX, float scaleY, float rotation) {
 		if (isClosed) {
@@ -762,7 +762,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				texture.height(), color, 0, scaleX, scaleY, null,
 				Direction.TRANS_FILP);
 	}
-	
+
 	public final GLEx draw(Painter texture, float x, float y, Direction dir) {
 		if (isClosed) {
 			return this;
@@ -1079,6 +1079,29 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			Direction dir) {
 		return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
 				srcHeight, color, rotation, 1f, 1f, origin, dir);
+	}
+
+	public GLEx draw(LTexture texture, float x, float y, Vector2f origin,
+			float width, float height, float scaleX, float scaleY,
+			float rotation, float srcX, float srcY, float srcWidth,
+			float srcHeight, boolean flipX, boolean flipY, LColor color) {
+		if (!flipX && !flipY) {
+			return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+					srcHeight, color, rotation, scaleX, scaleY, origin,
+					Direction.TRANS_NONE);
+		} else if (flipX && !flipY) {
+			return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+					srcHeight, color, rotation, scaleX, scaleY, origin,
+					Direction.TRANS_FILP);
+		} else if (!flipX && flipY) {
+			return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+					srcHeight, color, rotation, scaleX, scaleY, origin,
+					Direction.TRANS_MIRROR);
+		} else {
+			return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+					srcHeight, color, rotation, scaleX, scaleY, origin,
+					Direction.TRANS_MF);
+		}
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float width,
@@ -2325,6 +2348,21 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		font.drawString(this, string, x, y, rotation, c);
+		return this;
+	}
+
+	public GLEx drawString(String mes, float x, float y, float scaleX,
+			float scaleY, float ax, float ay, float rotation, LColor c) {
+		if (isClosed) {
+			return this;
+		}
+		if (c == null) {
+			return this;
+		}
+		if (mes == null || mes.length() == 0) {
+			return this;
+		}
+		font.drawString(this, mes, x, y, scaleX, scaleY, ax, ay, rotation, c);
 		return this;
 	}
 
