@@ -20,7 +20,6 @@
  */
 package loon.action.sprite;
 
-
 import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
@@ -34,7 +33,12 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class MoveObject extends SpriteBatchObject {
+public class MoveObject extends ActionObject {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private boolean allDirection;
 

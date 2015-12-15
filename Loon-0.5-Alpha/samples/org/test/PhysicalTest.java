@@ -1,7 +1,7 @@
 package org.test;
 
 import loon.action.sprite.SpriteBatch;
-import loon.action.sprite.SpriteBatchObject;
+import loon.action.sprite.ActionObject;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.action.sprite.TextureObject;
 import loon.event.GameKey;
@@ -72,7 +72,7 @@ public class PhysicalTest extends SpriteBatchScreen {
 	@Override
 	public void touchDown(GameTouch e) {
 		if (isPhysics()) {
-			SpriteBatchObject o = findObject(e.getX(), e.getY());
+			ActionObject o = findObject(e.getX(), e.getY());
 			if (o == null) {
 				addCirclePhysics(false, new TextureObject(e.x(), e.y(),
 						"ball.png"));

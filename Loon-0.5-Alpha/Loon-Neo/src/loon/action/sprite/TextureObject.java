@@ -4,6 +4,11 @@ import loon.LTexture;
 
 public class TextureObject extends SimpleObject{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public TextureObject(float x, float y,
 			LTexture tex2d) {
 		super(x, y, tex2d.width(), tex2d.height(), Animation.getDefaultAnimation(tex2d), null);

@@ -685,6 +685,84 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx drawScale(Painter texture, float x, float y, float w, float h,
+			LColor color, float scaleX, float scaleY, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, rotation, scaleX,
+				scaleY, null, Direction.TRANS_NONE);
+	}
+
+	public GLEx drawScale(Painter texture, float x, float y, float w, float h,
+			LColor color, float scaleX, float scaleY) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, 0, null,
+				Direction.TRANS_NONE);
+	}
+
+	public GLEx drawMirrorScale(LTexture texture, float x, float y, float w,
+			float h, LColor color, float scaleX, float scaleY, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(),
+				texture.height(), color, rotation, scaleX, scaleY, null,
+				Direction.TRANS_MIRROR);
+	}
+
+	public GLEx drawMirrorScale(LTexture texture, float x, float y, float w,
+			float h, LColor color, float scaleX, float scaleY) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(),
+				texture.height(), color, 0, scaleX, scaleY, null,
+				Direction.TRANS_MIRROR);
+	}
+	
+	public GLEx drawFilpScale(LTexture texture, float x, float y, float w,
+			float h, LColor color, float scaleX, float scaleY, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(),
+				texture.height(), color, rotation, scaleX, scaleY, null,
+				Direction.TRANS_FILP);
+	}
+
+	public GLEx drawFilpScale(LTexture texture, float x, float y, float w,
+			float h, LColor color, float scaleX, float scaleY) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(),
+				texture.height(), color, 0, scaleX, scaleY, null,
+				Direction.TRANS_FILP);
+	}
+	
 	public final GLEx draw(Painter texture, float x, float y, Direction dir) {
 		if (isClosed) {
 			return this;
@@ -886,6 +964,31 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_FILP);
 	}
 
+	public GLEx drawFlip(LTexture texture, float x, float y, float w, float h,
+			LColor color, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(),
+				texture.height(), color, rotation, null, Direction.TRANS_FILP);
+	}
+
+	public GLEx drawFlip(LTexture texture, float x, float y, LColor color,
+			float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, rotation, null,
+				Direction.TRANS_FILP);
+	}
+
 	public GLEx drawMirror(LTexture texture, float x, float y, LColor color) {
 		if (isClosed) {
 			return this;
@@ -896,6 +999,31 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
 				texture.width(), texture.height(), color, 0, null,
 				Direction.TRANS_MIRROR);
+	}
+
+	public GLEx drawMirror(LTexture texture, float x, float y, LColor color,
+			float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
+				texture.width(), texture.height(), color, rotation, null,
+				Direction.TRANS_MIRROR);
+	}
+
+	public GLEx drawMirror(LTexture texture, float x, float y, float w,
+			float h, LColor color, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(),
+				texture.height(), color, rotation, null, Direction.TRANS_MIRROR);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, LColor color,
@@ -949,6 +1077,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, LColor color, float rotation, Vector2f origin,
 			Direction dir) {
+		return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+				srcHeight, color, rotation, 1f, 1f, origin, dir);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float width,
+			float height, float srcX, float srcY, float srcWidth,
+			float srcHeight, LColor color, float rotation, float scaleX,
+			float scaleY, Vector2f origin, Direction dir) {
 		if (isClosed) {
 			return this;
 		}
@@ -964,17 +1100,26 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 		boolean oriDirty = (origin != null && (origin.x != 0 || origin.y != 0));
 
-		if (dirDirty || rotDirty || oriDirty) {
+		boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
+
+		if (dirDirty || rotDirty || oriDirty || scaleDirty) {
 			xf = new Affine2f();
 			if (oriDirty) {
 				xf.translate(origin.x, origin.y);
 			}
+			if (scaleDirty) {
+				float centerX = x + width / 2;
+				float centerY = y + height / 2;
+				xf.translate(centerX, centerY);
+				xf.preScale(scaleX, scaleY);
+				xf.translate(-centerX, -centerY);
+			}
 			if (rotDirty) {
-				float w1 = x + width / 2;
-				float h1 = y + height / 2;
-				xf.translate(w1, h1);
+				float centerX = x + width / 2;
+				float centerY = y + height / 2;
+				xf.translate(centerX, centerY);
 				xf.preRotate(rotation);
-				xf.translate(-w1, -h1);
+				xf.translate(-centerX, -centerY);
 			}
 			if (dirDirty) {
 				switch (dir) {

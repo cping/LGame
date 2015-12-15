@@ -61,11 +61,11 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private SpriteBatch batch;
 
-	private TArray<SpriteBatchObject> objects;
+	private TArray<ActionObject> objects;
 
-	private TArray<SpriteBatchObject> pendingAdd;
+	private TArray<ActionObject> pendingAdd;
 
-	private TArray<SpriteBatchObject> pendingRemove;
+	private TArray<ActionObject> pendingRemove;
 
 	private TArray<TileMap> tiles = new TArray<TileMap>(10);
 
@@ -212,7 +212,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public interface UpdateListener {
 
-		public void act(SpriteBatchObject obj, long elapsedTime);
+		public void act(ActionObject obj, long elapsedTime);
 
 	}
 
@@ -225,9 +225,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	private void init() {
-		this.objects = new TArray<SpriteBatchObject>(10);
-		this.pendingAdd = new TArray<SpriteBatchObject>(10);
-		this.pendingRemove = new TArray<SpriteBatchObject>(10);
+		this.objects = new TArray<ActionObject>(10);
+		this.pendingAdd = new TArray<ActionObject>(10);
+		this.pendingRemove = new TArray<ActionObject>(10);
 		this.clickNode = new LNNode[1];
 		setNode(new LNNode(this, LSystem.viewSize.getRect()));
 	}
@@ -507,7 +507,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		final int additionCount = pendingAdd.size;
 		if (additionCount > 0) {
 			for (int i = 0; i < additionCount; i++) {
-				SpriteBatchObject object = pendingAdd.get(i);
+				ActionObject object = pendingAdd.get(i);
 				objects.add(object);
 			}
 			pendingAdd.clear();
@@ -515,19 +515,19 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		final int removalCount = pendingRemove.size;
 		if (removalCount > 0) {
 			for (int i = 0; i < removalCount; i++) {
-				SpriteBatchObject object = pendingRemove.get(i);
+				ActionObject object = pendingRemove.get(i);
 				objects.remove(object);
 			}
 			pendingRemove.clear();
 		}
 	}
 
-	public SpriteBatchObject add(SpriteBatchObject object) {
+	public ActionObject add(ActionObject object) {
 		pendingAdd.add(object);
 		return object;
 	}
 
-	public SpriteBatchObject remove(SpriteBatchObject object) {
+	public ActionObject remove(ActionObject object) {
 		pendingRemove.add(object);
 		if (usePhysics) {
 			unbindPhysics(object);
@@ -539,7 +539,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		final int count = objects.size;
 		final Object[] objectArray = objects.toArray();
 		for (int i = 0; i < count; i++) {
-			SpriteBatchObject o = (SpriteBatchObject) objectArray[i];
+			ActionObject o = (ActionObject) objectArray[i];
 			pendingRemove.add(o);
 			if (usePhysics) {
 				unbindPhysics(o);
@@ -548,8 +548,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		pendingAdd.clear();
 	}
 
-	public SpriteBatchObject findObject(float x, float y) {
-		for (SpriteBatchObject o : objects) {
+	public ActionObject findObject(float x, float y) {
+		for (ActionObject o : objects) {
 			if ((o.getX() == x && o.getY() == y)
 					|| o.getRectBox().contains(x, y)) {
 				return o;
@@ -653,7 +653,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		tiles.remove(t);
 	}
 
-	public void addTileObject(SpriteBatchObject o) {
+	public void addTileObject(ActionObject o) {
 		add(o);
 	}
 
@@ -685,14 +685,14 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return o;
 	}
 
-	public void removeTileObject(SpriteBatchObject o) {
+	public void removeTileObject(ActionObject o) {
 		remove(o);
 	}
 
-	private ObjectMap<SpriteBatchObject, PBody> _Bodys = new ObjectMap<SpriteBatchObject, PBody>(
+	private ObjectMap<ActionObject, PBody> _Bodys = new ObjectMap<ActionObject, PBody>(
 			CollectionUtils.INITIAL_CAPACITY);
 
-	public PBody findPhysics(SpriteBatchObject o) {
+	public PBody findPhysics(ActionObject o) {
 		if (usePhysics) {
 			PBody body = _Bodys.get(o);
 			return body;
@@ -701,7 +701,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public void unbindPhysics(SpriteBatchObject o) {
+	public void unbindPhysics(ActionObject o) {
 		if (usePhysics) {
 			PBody body = _Bodys.remove(o);
 			if (body != null) {
@@ -711,25 +711,25 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public PBody addPhysics(boolean fix, SpriteBatchObject o, float density) {
+	public PBody addPhysics(boolean fix, ActionObject o, float density) {
 		return bindPhysics(fix, add(o), density);
 	}
 
-	public PBody addPhysics(boolean fix, SpriteBatchObject o) {
+	public PBody addPhysics(boolean fix, ActionObject o) {
 		return bindPhysics(fix, add(o), 1F);
 	}
 
-	public PBody addTexturePhysics(boolean fix, SpriteBatchObject o,
+	public PBody addTexturePhysics(boolean fix, ActionObject o,
 			float density) throws Exception {
 		return bindTexturePhysics(fix, add(o), density);
 	}
 
-	public PBody addTexturePhysics(boolean fix, SpriteBatchObject o)
+	public PBody addTexturePhysics(boolean fix, ActionObject o)
 			throws Exception {
 		return bindTexturePhysics(fix, add(o), 1F);
 	}
 
-	public PBody bindPhysics(boolean fix, SpriteBatchObject o, float density) {
+	public PBody bindPhysics(boolean fix, ActionObject o, float density) {
 		if (usePhysics) {
 			PBody body = _manager.addBox(fix, o.getRectBox(),
 					MathUtils.toRadians(o.getRotation()), density);
@@ -741,20 +741,20 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public PBody addCirclePhysics(boolean fix, SpriteBatchObject o,
+	public PBody addCirclePhysics(boolean fix, ActionObject o,
 			float density) {
 		return bindCirclePhysics(fix, add(o), density);
 	}
 
-	public PBody addCirclePhysics(boolean fix, SpriteBatchObject o) {
+	public PBody addCirclePhysics(boolean fix, ActionObject o) {
 		return bindCirclePhysics(fix, add(o), 1F);
 	}
 
-	public PBody bindCirclePhysics(boolean fix, SpriteBatchObject o) {
+	public PBody bindCirclePhysics(boolean fix, ActionObject o) {
 		return bindCirclePhysics(fix, add(o), 1F);
 	}
 
-	public PBody bindCirclePhysics(boolean fix, SpriteBatchObject o,
+	public PBody bindCirclePhysics(boolean fix, ActionObject o,
 			float density) {
 		if (usePhysics) {
 			RectBox rect = o.getRectBox();
@@ -769,7 +769,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public PBody bindTexturePhysics(boolean fix, SpriteBatchObject o,
+	public PBody bindTexturePhysics(boolean fix, ActionObject o,
 			float density) throws Exception {
 		if (usePhysics) {
 			PBody body = _manager.addShape(fix, o.getAnimation()
@@ -787,16 +787,16 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public PBody bindTexturePhysics(boolean fix, SpriteBatchObject o)
+	public PBody bindTexturePhysics(boolean fix, ActionObject o)
 			throws Exception {
 		return bindTexturePhysics(fix, o, 1F);
 	}
 
-	public PBody bindPhysics(boolean fix, SpriteBatchObject o) {
+	public PBody bindPhysics(boolean fix, ActionObject o) {
 		return bindPhysics(fix, o, 1F);
 	}
 
-	public PBody bindPhysics(PBody body, SpriteBatchObject o) {
+	public PBody bindPhysics(PBody body, ActionObject o) {
 		if (usePhysics) {
 			body.setTag(o);
 			_manager.addBody(body);
@@ -850,7 +850,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 				tile.update(elapsedTime);
 			}
 		}
-		for (SpriteBatchObject o : objects) {
+		for (ActionObject o : objects) {
 			if (usePhysics) {
 				PBody body = _Bodys.get(o);
 				if (body != null) {
@@ -888,7 +888,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 					for (TileMap tile : tiles) {
 						tile.draw(g, batch, offset.x(), offset.y());
 					}
-					for (SpriteBatchObject o : objects) {
+					for (ActionObject o : objects) {
 						objX = o.getX() + offset.x;
 						objY = o.getY() + offset.y;
 						if (contains(objX, objY)) {

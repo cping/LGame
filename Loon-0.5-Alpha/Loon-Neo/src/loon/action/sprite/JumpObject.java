@@ -23,7 +23,12 @@ package loon.action.sprite;
 import loon.action.map.TileMap;
 import loon.geom.Vector2f;
 
-public class JumpObject extends SpriteBatchObject {
+public class JumpObject extends ActionObject {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static interface JumpListener {
 

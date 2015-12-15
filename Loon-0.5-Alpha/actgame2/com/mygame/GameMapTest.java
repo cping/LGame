@@ -28,7 +28,7 @@ import loon.action.map.TileMap;
 import loon.action.sprite.Animation;
 import loon.action.sprite.JumpObject;
 import loon.action.sprite.SpriteBatch;
-import loon.action.sprite.SpriteBatchObject;
+import loon.action.sprite.ActionObject;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.canvas.LColor;
 import loon.component.LPad;
@@ -42,7 +42,7 @@ import loon.geom.Vector2f;
 public class GameMapTest extends SpriteBatchScreen {
 
 	// 敌人用类
-	class Enemy extends SpriteBatchObject {
+	class Enemy extends ActionObject {
 
 		private static final float SPEED = 1;
 
@@ -102,7 +102,7 @@ public class GameMapTest extends SpriteBatchScreen {
 	}
 
 	// 二次跳跃用类（物品）
-	class JumperTwo extends SpriteBatchObject {
+	class JumperTwo extends ActionObject {
 
 		public JumperTwo(float x, float y, Animation animation, TileMap tiles) {
 			super(x, y, 32, 32, animation, tiles);
@@ -118,7 +118,7 @@ public class GameMapTest extends SpriteBatchScreen {
 	}
 
 	// 加速用类（物品）
-	class Accelerator extends SpriteBatchObject {
+	class Accelerator extends ActionObject {
 
 		public Accelerator(float x, float y, Animation animation, TileMap tiles) {
 			super(x, y, 32, 32, animation, tiles);
@@ -134,7 +134,7 @@ public class GameMapTest extends SpriteBatchScreen {
 	}
 
 	// 金币用类（物品）
-	class Coin extends SpriteBatchObject {
+	class Coin extends ActionObject {
 
 		public Coin(float x, float y, Animation animation, TileMap tiles) {
 			super(x, y, 32, 32, animation, tiles);
@@ -327,7 +327,7 @@ public class GameMapTest extends SpriteBatchScreen {
 		// 地图中角色事件监听(每帧都会触发一次此监听)
 		this.updateListener = new UpdateListener() {
 
-			public void act(SpriteBatchObject sprite, long elapsedTime) {
+			public void act(ActionObject sprite, long elapsedTime) {
 
 				// 如果主角与地图上其它对象发生碰撞（以下分别验证）
 				if (hero.isCollision(sprite)) {
@@ -406,7 +406,9 @@ public class GameMapTest extends SpriteBatchScreen {
 
 	}
 
+	
 	public void update(long elapsedTime) {
+
 		if (hero != null) {
 			hero.stop();
 		}

@@ -527,6 +527,46 @@ public class SpriteBatch extends PixmapFImpl {
 		return drawing;
 	}
 
+	public void drawScale(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, rotation, 0, 0, texture.width(), texture.height(),
+				false, false);
+	}
+
+	public void drawScale(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, 0, 0, 0, texture.width(), texture.height(), false,
+				false);
+	}
+
+	public void drawScaleFlipX(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, 0, 0, 0, texture.width(), texture.height(), true, false);
+	}
+
+	public void drawScaleFlipX(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, rotation, 0, 0, texture.width(), texture.height(),
+				true, false);
+	}
+	
+	public void drawScaleFlipY(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, 0, 0, 0, texture.width(), texture.height(), false, true);
+	}
+
+	public void drawScaleFlipY(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, rotation, 0, 0, texture.width(), texture.height(),
+				false, true);
+	}
+	
 	public void draw(LTexture texture, float x, float y, float rotation) {
 		draw(texture, x, y, texture.width() / 2, texture.height() / 2,
 				texture.width(), texture.height(), 1f, 1f, rotation, 0, 0,
@@ -1130,6 +1170,13 @@ public class SpriteBatch extends PixmapFImpl {
 			float height, float rotation) {
 		draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f,
 				rotation, 0, 0, texture.width(), texture.height(), true, false);
+	}
+
+	public void drawFlipX(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, rotation, 0, 0, texture.width(), texture.height(),
+				true, false);
 	}
 
 	public void drawFlipY(LTexture texture, float x, float y, float width,
