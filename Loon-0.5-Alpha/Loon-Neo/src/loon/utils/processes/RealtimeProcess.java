@@ -21,13 +21,14 @@
  */
 package loon.utils.processes;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public abstract class RealtimeProcess implements GameProcess {
+public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	protected boolean isDead;
 
@@ -131,5 +132,9 @@ public abstract class RealtimeProcess implements GameProcess {
 		if (this.processHost != null) {
 			this.processHost.processFinished(this.id, this);
 		}
+	}
+
+	public void close() {
+		finish();
 	}
 }

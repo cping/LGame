@@ -1,12 +1,13 @@
 package loon.utils.processes;
 
+import loon.LRelease;
 import loon.geom.BooleanValue;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public class WaitProcess implements GameProcess {
+public class WaitProcess implements GameProcess, LRelease {
 
 	public interface WaitEvent {
 		public void action(WaitProcess process);
@@ -92,5 +93,9 @@ public class WaitProcess implements GameProcess {
 			this.processHost.processFinished(this.id, this);
 		}
 		value.set(true);
+	}
+
+	public void close() {
+		finish();
 	}
 }

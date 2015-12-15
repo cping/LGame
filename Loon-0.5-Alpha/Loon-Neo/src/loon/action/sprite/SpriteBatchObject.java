@@ -32,7 +32,7 @@ import loon.geom.RectBox;
 
 public abstract class SpriteBatchObject extends LObject implements Config,
 		LRelease, ActionBind {
-	
+
 	boolean visible = true;
 
 	float scaleX = 1, scaleY = 1;
@@ -103,112 +103,111 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 	}
 
 	public void draw(SpriteBatch batch, float offsetX, float offsetY) {
-		if(!visible){
+		if (!visible) {
 			return;
 		}
 		float tmp = batch.color();
-		batch.setAlpha(_alpha);
-		if (!filterColor.equals(1f, 1f, 1f, 1f)) {
+		float alpha = batch.alpha();
+		try {
+			batch.setAlpha(_alpha);
 			batch.setColor(filterColor);
-		}
-		if (scaleX == 1 && scaleY == 1) {
-			if (mirror) {
-				if (getRotation() != 0) {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, getY() + offsetY, getRotation());
+			if (scaleX == 1 && scaleY == 1) {
+				if (mirror) {
+					if (getRotation() != 0) {
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, getRotation());
+						} else {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth,
+									dstHeight, getRotation());
+						}
 					} else {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, getY() + offsetY, dstWidth,
-								dstHeight, getRotation());
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY);
+						} else {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth,
+									dstHeight);
+						}
 					}
 				} else {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, getY() + offsetY);
+					if (getRotation() != 0) {
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, getRotation());
+						} else {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth,
+									dstHeight, getRotation());
+						}
 					} else {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, getY() + offsetY, dstWidth,
-								dstHeight);
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY);
+						} else {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth,
+									dstHeight);
+						}
 					}
 				}
 			} else {
-				if (getRotation() != 0) {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY,
-								getRotation());
+				final float width = animation.getSpriteImage().width();
+				final float height = animation.getSpriteImage().height();
+				if (mirror) {
+					if (getRotation() != 0) {
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY,
+									width * scaleX, height * scaleY,
+									getRotation());
+						} else {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth
+									* scaleX, dstHeight * scaleY, getRotation());
+						}
 					} else {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY, dstWidth,
-								dstHeight, getRotation());
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, width * scaleX, height * scaleY,
+									getY() + offsetY);
+						} else {
+							batch.drawFlipX(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth
+									* scaleX, dstHeight * scaleY);
+						}
 					}
 				} else {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY);
+					if (getRotation() != 0) {
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY,
+									width * scaleX, height * scaleY,
+									getRotation());
+						} else {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth
+									* scaleX, dstHeight * scaleY, getRotation());
+						}
 					} else {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY, dstWidth,
-								dstHeight);
+						if (dstWidth < 1 && dstHeight < 1) {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY,
+									width * scaleX, height * scaleY);
+						} else {
+							batch.draw(animation.getSpriteImage(), getX()
+									+ offsetX, getY() + offsetY, dstWidth
+									* scaleX, dstHeight * scaleY);
+						}
 					}
 				}
 			}
-		} else {
-			final float width = animation.getSpriteImage().width();
-			final float height = animation.getSpriteImage().height();
-			if (mirror) {
-				if (getRotation() != 0) {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, getY() + offsetY, width * scaleX,
-								height * scaleY, getRotation());
-					} else {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, getY() + offsetY, dstWidth * scaleX,
-								dstHeight * scaleY, getRotation());
-					}
-				} else {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, width * scaleX, height * scaleY,
-								getY() + offsetY);
-					} else {
-						batch.drawFlipX(animation.getSpriteImage(), getX()
-								+ offsetX, getY() + offsetY, dstWidth * scaleX,
-								dstHeight * scaleY);
-					}
-				}
-			} else {
-				if (getRotation() != 0) {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY, width
-										* scaleX, height * scaleY,
-								getRotation());
-					} else {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY, dstWidth
-										* scaleX, dstHeight * scaleY,
-								getRotation());
-					}
-				} else {
-					if (dstWidth < 1 && dstHeight < 1) {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY, width
-										* scaleX, height * scaleY);
-					} else {
-						batch.draw(animation.getSpriteImage(),
-								getX() + offsetX, getY() + offsetY, dstWidth
-										* scaleX, dstHeight * scaleY);
-					}
-				}
-			}
+		} finally {
+			batch.setColor(tmp);
+			batch.setAlpha(alpha);
 		}
-		if (_alpha != 1f || !filterColor.equals(1f, 1f, 1f, 1f)) {
-			batch.resetColor();
-		}
-		batch.setAlpha(tmp);
 	}
 
 	public TileMap getTileMap() {
@@ -302,12 +301,12 @@ public abstract class SpriteBatchObject extends LObject implements Config,
 	public RectBox getRectBox() {
 		return getCollisionArea();
 	}
-	
-	public void setVisible(boolean v){
+
+	public void setVisible(boolean v) {
 		this.visible = v;
 	}
-	
-	public boolean isVisible(){
+
+	public boolean isVisible() {
 		return this.visible;
 	}
 }

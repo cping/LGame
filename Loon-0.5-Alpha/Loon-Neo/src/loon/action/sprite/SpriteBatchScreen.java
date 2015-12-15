@@ -34,6 +34,7 @@ import loon.event.SysTouch;
 import loon.geom.AABB;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.physics.PBody;
 import loon.physics.PPhysManager;
@@ -574,6 +575,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (batch == null) {
 			batch = new SpriteBatch(3000);
 		}
+		batch.setBlendState(BlendState.Null);
 		content.setScreen(this);
 		for (LNNode node : content.childs) {
 			if (node != null) {
@@ -875,26 +877,31 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (content == null) {
 			return;
 		}
+		if (batch == null) {
+			return;
+		}
 		if (isOnLoadComplete()) {
-			try {
-				batch.begin();
-				before(batch);
-				for (TileMap tile : tiles) {
-					tile.draw(g, batch, offset.x(), offset.y());
-				}
-				for (SpriteBatchObject o : objects) {
-					objX = o.getX() + offset.x;
-					objY = o.getY() + offset.y;
-					if (contains(objX, objY)) {
-						o.draw(batch, offset.x, offset.y);
+			synchronized (batch) {
+				try {
+					batch.begin();
+					before(batch);
+					for (TileMap tile : tiles) {
+						tile.draw(g, batch, offset.x(), offset.y());
 					}
+					for (SpriteBatchObject o : objects) {
+						objX = o.getX() + offset.x;
+						objY = o.getY() + offset.y;
+						if (contains(objX, objY)) {
+							o.draw(batch, offset.x, offset.y);
+						}
+					}
+					if (content.isVisible()) {
+						content.drawNode(batch);
+					}
+					after(batch);
+				} finally {
+					batch.end();
 				}
-				if (content.isVisible()) {
-					content.drawNode(batch);
-				}
-				after(batch);
-			} finally {
-				batch.end();
 			}
 		}
 

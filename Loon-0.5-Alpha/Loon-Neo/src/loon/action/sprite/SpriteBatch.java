@@ -427,44 +427,47 @@ public class SpriteBatch extends PixmapFImpl {
 		submit(lastBlendState);
 	}
 
-	public void submit(BlendState state) {
+	public synchronized void submit(BlendState state) {
 		if (idx == 0) {
 			return;
 		}
-		LSystem.mainEndDraw();
-		renderCalls++;
-		totalRenderCalls++;
-		int spritesInBatch = idx / 20;
-		if (spritesInBatch > maxSpritesInBatch) {
-			maxSpritesInBatch = spritesInBatch;
-		}
-		int count = spritesInBatch * 6;
 		GL20 gl = LSystem.base().graphics().gl;
-		GLUtils.bindTexture(gl, lastTexture);
 		int old = GLUtils.getBlendMode();
-		switch (lastBlendState) {
-		case Additive:
-			GLUtils.setBlendMode(gl, LSystem.MODE_ALPHA_ONE);
-			break;
-		case AlphaBlend:
-			GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
-			break;
-		case Opaque:
-			GLUtils.setBlendMode(gl, LSystem.MODE_NONE);
-			break;
-		case NonPremultiplied:
-			GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
-			break;
-		case Null:
-			break;
+		try {
+			LSystem.mainEndDraw();
+			renderCalls++;
+			totalRenderCalls++;
+			int spritesInBatch = idx / 20;
+			if (spritesInBatch > maxSpritesInBatch) {
+				maxSpritesInBatch = spritesInBatch;
+			}
+			int count = spritesInBatch * 6;
+			GLUtils.bindTexture(gl, lastTexture);
+			switch (lastBlendState) {
+			case Additive:
+				GLUtils.setBlendMode(gl, LSystem.MODE_ALPHA_ONE);
+				break;
+			case AlphaBlend:
+				GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
+				break;
+			case Opaque:
+				GLUtils.setBlendMode(gl, LSystem.MODE_NONE);
+				break;
+			case NonPremultiplied:
+				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
+				break;
+			case Null:
+				break;
+			}
+			mesh.post(name, size, customShader != null ? customShader : shader,
+					vertices, idx, count);
+		} finally {
+			GLUtils.setBlendMode(gl, old);
+			LSystem.mainBeginDraw();
+			idx = 0;
 		}
-		mesh.post(name,size, customShader != null ? customShader : shader, vertices,
-				idx, count);
-		GLUtils.setBlendMode(gl, old);
-		idx = 0;
-		LSystem.mainBeginDraw();
 	}
-	
+
 	private final static String name = "batch";
 
 	public void close() {
