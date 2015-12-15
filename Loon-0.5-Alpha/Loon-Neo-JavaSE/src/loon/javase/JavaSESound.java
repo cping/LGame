@@ -20,54 +20,113 @@
  */
 package loon.javase;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 
 import loon.SoundImpl;
+import loon.jni.OggClip;
 import loon.utils.MathUtils;
 
-class JavaSESound extends SoundImpl<Clip> {
+class JavaSESound extends SoundImpl<Object> {
 
-	@Override
-	protected boolean playingImpl() {
-		return impl.isActive();
+	private int mode = 0;
+
+	OggClip ogg_clip;
+
+	public JavaSESound() {
+
+	}
+
+	synchronized void loadOgg(InputStream ins) throws IOException {
+		ogg_clip = new OggClip(ins);
+		mode = 1;
 	}
 
 	@Override
-	protected boolean playImpl() {
-		impl.setFramePosition(0);
-		if (looping) {
-			impl.loop(Clip.LOOP_CONTINUOUSLY);
-		} else {
-			impl.start();
+	protected synchronized boolean playingImpl() {
+		switch (mode) {
+		case 0:
+			return (((Clip) impl)).isActive();
+		case 1:
+			return !ogg_clip.stopped();
+		}
+		return false;
+	}
+
+	@Override
+	protected synchronized boolean playImpl() {
+		switch (mode) {
+		case 0:
+			((Clip) impl).setFramePosition(0);
+			if (looping) {
+				((Clip) impl).loop(Clip.LOOP_CONTINUOUSLY);
+			} else {
+				((Clip) impl).start();
+			}
+			break;
+		case 1:
+			if (ogg_clip.stopped()) {
+				ogg_clip.setGain(volume);
+				if (looping) {
+					ogg_clip.loop();
+				} else {
+					ogg_clip.play();
+				}
+			}
+			break;
 		}
 		return true;
 	}
 
 	@Override
-	protected void stopImpl() {
-		impl.stop();
-		impl.flush();
-	}
+	protected synchronized void stopImpl() {
+		switch (mode) {
+		case 0:
+			((Clip) impl).stop();
+			((Clip) impl).flush();
+			break;
+		case 1:
 
-	@Override
-	protected void setLoopingImpl(boolean looping) {
-		this.looping = looping;
-	}
-
-	@Override
-	protected void setVolumeImpl(float volume) {
-		if (impl.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-			FloatControl volctrl = (FloatControl) impl
-					.getControl(FloatControl.Type.MASTER_GAIN);
-			volctrl.setValue(toGain(volume, volctrl.getMinimum(),
-					volctrl.getMaximum()));
+			break;
 		}
 	}
 
 	@Override
-	protected void releaseImpl() {
-		impl.close();
+	protected synchronized void setLoopingImpl(boolean looping) {
+		this.looping = looping;
+	}
+
+	@Override
+	protected synchronized void setVolumeImpl(float volume) {
+		switch (mode) {
+		case 0:
+			if (((Clip) impl).isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+				FloatControl volctrl = (FloatControl) ((Clip) impl)
+						.getControl(FloatControl.Type.MASTER_GAIN);
+				volctrl.setValue(toGain(volume, volctrl.getMinimum(),
+						volctrl.getMaximum()));
+			}
+			break;
+		case 1:
+			this.volume = volume;
+			ogg_clip.setGain(volume);
+			break;
+		}
+	}
+
+	@Override
+	protected synchronized void releaseImpl() {
+		switch (mode) {
+		case 0:
+			((Clip) impl).close();
+			break;
+		case 1:
+			ogg_clip.close();
+			break;
+		}
 	}
 
 	protected static float toGain(float volume, float min, float max) {

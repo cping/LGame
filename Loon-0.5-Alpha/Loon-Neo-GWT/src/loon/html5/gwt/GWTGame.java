@@ -51,10 +51,10 @@ public class GWTGame extends LGame {
 	 * 由于手机版的浏览器对webgl支持实在各种奇葩，不同手机环境差异实在惊人，干脆把常用的刷新方式都写出来，用户自己选……
 	 */
 	public static enum Repaint {
-		//RequestAnimationFrame效率最高
-		//Schedule在某些情况下更适用（有间断时）
-		//AnimationScheduler本质是前两者的api混合，会等待canvas渲染后刷新，虽然效率最低，但是最稳，不容易造成webgl卡死现象
-		//为了稳定考虑，所以默认用这个.
+		// RequestAnimationFrame效率最高
+		// Schedule在某些情况下更适用（有间断时）
+		// AnimationScheduler本质是前两者的api混合，会等待canvas渲染后刷新，虽然效率最低，但是最稳，不容易造成webgl卡死现象
+		// 为了稳定考虑，所以默认用这个.
 		RequestAnimationFrame, Schedule, AnimationScheduler;
 	}
 
@@ -62,8 +62,10 @@ public class GWTGame extends LGame {
 
 		// 经过几天来的实测，webgl对不同浏览器（以及在不同手机环境）下的差异太大，于是把刷新模式也交给用户定制好了……
 		// 暂时来说，canvas还是目前手机版html5的王道，webgl差异不解决，很难推（大家都用chrome世界就完美了……）
-		/**经过几天的反复测试，最终还是默认用gwt提供的AnimationScheduler刷新（本质还是RequestAnimationFrame
-		 * 但是不同平台上综合来说，这个有对象绑定，会匀速刷新canvas，不容易造成卡死……）**/
+		/**
+		 * 经过几天的反复测试，最终还是默认用gwt提供的AnimationScheduler刷新（本质还是RequestAnimationFrame
+		 * 但是不同平台上综合来说，这个有对象绑定，会匀速刷新canvas，不容易造成卡死……）
+		 **/
 		public Repaint repaint = Repaint.AnimationScheduler;
 
 		// 是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
@@ -219,16 +221,26 @@ public class GWTGame extends LGame {
 
 	}
 
+	private double lastUpdate = 0;
+
 	private boolean initGwt = false;
 
 	private void init() {
+		lastUpdate = now();
 		if (!initGwt) {
 			game.initialize();
 			initGwt = true;
 		}
 	}
 
+	public double getLastUpdateTime() {
+		return lastUpdate;
+	}
+
 	public void start() {
+
+		listenForVisibilityChange(this);
+
 		Repaint repaint = game.config.repaint;
 		// 此处使用了三种不同的画面刷新模式，万一有浏览器刷不动，大家可以换模式看看……
 		switch (repaint) {
@@ -271,6 +283,16 @@ public class GWTGame extends LGame {
 			}.schedule(framed);
 			break;
 		}
+
+		startBackgroundUpdate(new TimerCallback() {
+			@Override
+			public void fire() {
+				if (now() - lastUpdate > 500) {
+					lastUpdate = now();
+					emitFrame();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -388,8 +410,41 @@ public class GWTGame extends LGame {
 		return Date.now();
 	}-*/;
 
+	/**
+	 * 检测浏览器窗体是否被隐藏起来
+	 * 
+	 * @return
+	 */
+	private native boolean isHidden() /*-{
+		return $doc.hidden;
+	}-*/;
+
+	/**
+	 * 刷新背景状态监听用
+	 * 
+	 * @param millis
+	 * @param callback
+	 */
+	private native void startBackgroundUpdate(TimerCallback callback) /*-{
+		var fn = function() {
+			callback.@loon.jni.TimerCallback::fire()();
+		};
+		$wnd.setInterval(fn, 1000);
+	}-*/;
+
+	private void visibilityChanged() {
+		dispatchEvent(status, isHidden() ? Status.PAUSE : Status.RESUME);
+	}
+
+	private native void listenForVisibilityChange(GWTGame game) /*-{
+		$doc.addEventListener("visibilitychange", function() {
+			game.@loon.html5.gwt.GWTGame::visibilityChanged()();
+		}, false);
+	}-*/;
+
 	@Override
 	public boolean isMobile() {
 		return super.isMobile() || game.isMobile();
 	}
+
 }

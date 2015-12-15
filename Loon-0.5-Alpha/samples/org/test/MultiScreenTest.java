@@ -125,7 +125,7 @@ public class MultiScreenTest extends Screen {
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
 			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea", "Progress",
 			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
-			"ParConfig", "RippleTouch" };
+			"ParConfig", "RippleTouch","Sound" ,"Gesture"};
 
 	static BMFont info_font;
 
@@ -133,7 +133,7 @@ public class MultiScreenTest extends Screen {
 	public void onLoad() {
 		// 设置默认字体大小为15
 		LFont.setDefaultFont(LFont.getFont(15));
-		// 使用图片字体
+		// 使用图片字体(如果不设置，则loon默认使用当前系统字体)
 		if (info_font == null) {
 			try {
 				// 加载
@@ -178,6 +178,8 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new SpriteSheetFontTest());
 		addScreen(names[index++], new ParticleConfigTest());
 		addScreen(names[index++], new RippleTouchTest());
+		addScreen(names[index++], new SoundTest());
+		addScreen(names[index++], new GestureTest());
 		// 默认按钮大小为100x30
 		int btnWidth = 100;
 		int btnHeight = 25;

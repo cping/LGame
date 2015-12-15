@@ -119,7 +119,7 @@ public abstract class Assets {
 		return pathPrefix;
 	}
 
-	protected static final String[] SUFFIXES = { ".wav", ".mp3" };
+	protected static final String[] SUFFIXES = { ".wav", ".mp3", "ogg" };
 
 	protected final Asyn asyn;
 

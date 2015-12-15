@@ -2147,6 +2147,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				releases.clear();
 			}
 			LSTRDictionary.dispose();
+			release();
 			close();
 		}
 	}

@@ -491,7 +491,7 @@ public class JavaSEAssets extends Assets {
 			for (String suff : SUFFIXES) {
 				final String soundPath = path + suff;
 				try {
-					return _audio.createSound(new ByteArrayInputStream(
+					return _audio.createSound(path,new ByteArrayInputStream(
 							getBytesSync(soundPath)), music);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -500,7 +500,7 @@ public class JavaSEAssets extends Assets {
 			}
 		} else {
 			try {
-				return _audio.createSound(new ByteArrayInputStream(
+				return _audio.createSound(path,new ByteArrayInputStream(
 						getBytesSync(path)), music);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -620,7 +620,7 @@ public class JavaSEAssets extends Assets {
 		}
 
 		public String readString() throws Exception {
-			return new String(readBytes(), "UTF-8");
+			return new String(readBytes(), LSystem.ENCODING);
 		}
 	}
 

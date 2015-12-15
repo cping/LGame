@@ -32,6 +32,7 @@ i:assets/loon_e2.png:1535:image/png
 i:assets/loon_logo.png:2193:image/png
 i:assets/loon_pad_ui.png:3939:image/png
 t:assets/loon_pad_ui.txt:308:text/plain
+i:assets/loon_par.png:1465:image/png
 i:assets/loon_natural.png:2249:image/png
 t:assets/loon_natural.txt:894:text/plain
 i:assets/loon_ui.png:1872:image/png
