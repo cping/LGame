@@ -20,16 +20,21 @@
  */
 package loon.html5.gwt;
 
+import java.nio.ByteBuffer;
+
 import loon.Assets;
 import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.html5.gwt.preloader.Blob;
+import loon.jni.TypedArrayHelper;
 import loon.jni.XDomainRequest;
+import loon.jni.XDomainRequest.Handler;
 import loon.utils.ObjectMap;
 import loon.utils.Scale;
 import loon.utils.TArray;
+import loon.utils.reply.Function;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 
@@ -39,6 +44,7 @@ import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.typedarrays.shared.TypedArrays;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
@@ -53,6 +59,7 @@ public class GWTAssets extends Assets {
 
 	private Scale assetScale = null;
 
+	@Override
 	public void setPathPrefix(String prefix) {
 		if (!prefix.startsWith(GWT_DEF_RES)) {
 			pathPrefix = prefix;
@@ -76,7 +83,8 @@ public class GWTAssets extends Assets {
 	public Image getImage(String path) {
 		Scale assetScale = (this.assetScale == null) ? Scale.ONE
 				: this.assetScale;
-		TArray<Scale.ScaledResource> rsrcs = assetScale.getScaledResources(path);
+		TArray<Scale.ScaledResource> rsrcs = assetScale
+				.getScaledResources(path);
 		return localImage(rsrcs.get(0).path, rsrcs.get(0).scale);
 	}
 
@@ -137,10 +145,19 @@ public class GWTAssets extends Assets {
 			path = GWT_DEF_RES + path;
 		}
 		try {
-			doXhr(path, result);
+			return doXhr(path, XMLHttpRequest.ResponseType.Default).map(
+					new Function<XMLHttpRequest, String>() {
+						public String apply(XMLHttpRequest xhr) {
+							return xhr.getResponseText();
+						}
+					});
 		} catch (JavaScriptException e) {
 			if (Window.Navigator.getUserAgent().indexOf("MSIE") != -1) {
-				doXdr(path, result);
+				return doXdr(path).map(new Function<XDomainRequest, String>() {
+					public String apply(XDomainRequest xdr) {
+						return xdr.getResponseText();
+					}
+				});
 			} else {
 				GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
 				if (gwtFile.preloader.isText(path)) {
@@ -154,7 +171,8 @@ public class GWTAssets extends Assets {
 					String tmp = res.get(path = gwtFile.path());
 					if (tmp == null
 							&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-						tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+						tmp = res.get(path.substring(path.indexOf('/') + 1,
+								path.length()));
 					}
 					if (tmp == null
 							&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
@@ -177,6 +195,45 @@ public class GWTAssets extends Assets {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public GoFuture<byte[]> getBytes(final String path) {
+		String fullpath = getPath(path);
+		if (fullpath.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			fullpath = GWT_DEF_RES + path;
+		}
+		if (!TypedArrays.isSupported()) {
+			final GoPromise<byte[]> result = GoPromise.create();
+			try {
+				result.succeed(getBytesSync(path));
+			} catch (Exception ex) {
+				result.fail(new UnsupportedOperationException(
+						"TypedArrays not supported by this browser."));
+			}
+			return result;
+		}
+		try {
+			return doXhr(fullpath, XMLHttpRequest.ResponseType.ArrayBuffer)
+					.map(new Function<XMLHttpRequest, byte[]>() {
+						public byte[] apply(XMLHttpRequest xhr) {
+							ByteBuffer buffer = TypedArrayHelper.wrap(xhr
+									.getResponseArrayBuffer());
+							byte[] arr = new byte[buffer.remaining()];
+							buffer.get(arr);
+							buffer.position(0);
+							return arr;
+						}
+					});
+		} catch (Exception ex) {
+			final GoPromise<byte[]> result = GoPromise.create();
+			try {
+				result.succeed(getBytesSync(path));
+			} catch (Exception exc) {
+				return null;
+			}
+			return result;
+		}
 	}
 
 	@Override
@@ -258,9 +315,10 @@ public class GWTAssets extends Assets {
 		return (assetScale != null) ? assetScale : game.graphics().scale();
 	}
 
-	private void doXdr(final String path, final GoPromise<String> result) {
+	private GoFuture<XDomainRequest> doXdr(final String path) {
+		final GoPromise<XDomainRequest> result = GoPromise.create();
 		XDomainRequest xdr = XDomainRequest.create();
-		xdr.setHandler(new XDomainRequest.Handler() {
+		xdr.setHandler(new Handler() {
 			@Override
 			public void onTimeout(XDomainRequest xdr) {
 				game.log().error("xdr::onTimeout[" + path + "]()");
@@ -270,15 +328,17 @@ public class GWTAssets extends Assets {
 
 			@Override
 			public void onProgress(XDomainRequest xdr) {
-				if (LOG_XHR_SUCCESS)
+				if (LOG_XHR_SUCCESS) {
 					game.log().debug("xdr::onProgress[" + path + "]()");
+				}
 			}
 
 			@Override
 			public void onLoad(XDomainRequest xdr) {
-				if (LOG_XHR_SUCCESS)
+				if (LOG_XHR_SUCCESS) {
 					game.log().debug("xdr::onLoad[" + path + "]()");
-				result.succeed(xdr.getResponseText());
+				}
+				result.succeed(xdr);
 			}
 
 			@Override
@@ -296,10 +356,18 @@ public class GWTAssets extends Assets {
 			game.log().debug("xdr.send()...");
 		}
 		xdr.send();
+		return result;
 	}
 
-	private void doXhr(final String path, final GoPromise<String> result) {
+	private GoFuture<XMLHttpRequest> doXhr(final String path,
+			final XMLHttpRequest.ResponseType responseType) {
+		final GoPromise<XMLHttpRequest> result = GoPromise.create();
 		XMLHttpRequest xhr = XMLHttpRequest.create();
+		if (LOG_XHR_SUCCESS) {
+			game.log().debug("xhr.open('GET', '" + path + "')...");
+		}
+		xhr.open("GET", path);
+		xhr.setResponseType(responseType);
 		xhr.setOnReadyStateChange(new ReadyStateChangeHandler() {
 			@Override
 			public void onReadyStateChange(XMLHttpRequest xhr) {
@@ -319,19 +387,16 @@ public class GWTAssets extends Assets {
 									"xhr::onReadyStateChange[" + path + "]"
 											+ "(readyState = " + readyState
 											+ "; status = " + status + ")");
-						result.succeed(xhr.getResponseText());
+						result.succeed(xhr);
 					}
 				}
 			}
 		});
 		if (LOG_XHR_SUCCESS) {
-			game.log().debug("xhr.open('GET', '" + path + "')...");
-		}
-		xhr.open("GET", path);
-		if (LOG_XHR_SUCCESS) {
 			game.log().debug("xhr.send()...");
 		}
 		xhr.send();
+		return result;
 	}
 
 	private GWTImage localImage(String path, Scale scale) {

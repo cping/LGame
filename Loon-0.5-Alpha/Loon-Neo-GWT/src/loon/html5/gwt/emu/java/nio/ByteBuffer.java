@@ -31,8 +31,8 @@ import com.google.gwt.typedarrays.shared.Uint8Array;
  * A byte buffer can be created in either one of the following ways:
  * </p>
  * <ul>
- * <li>{@link #allocate(int) Allocate} a new byte array and create a buffer based
- * on it;</li>
+ * <li>{@link #allocate(int) Allocate} a new byte array and create a buffer
+ * based on it;</li>
  * <li>{@link #allocateDirect(int) Allocate} a memory block and create a direct
  * buffer based on it;</li>
  * </ul>
@@ -78,15 +78,15 @@ public final class ByteBuffer extends Buffer implements Comparable<ByteBuffer>,
 	public ByteBuffer wrap(ArrayBuffer arrayBuffer) {
 		return new ByteBuffer(arrayBuffer);
 	}
-	
+
 	final static byte[] convertBytes(ArrayBuffer buffer) {
-        Uint8Array array = TypedArrays.createUint8Array(buffer);
-        byte[] res = new byte[array.length()];
-        for (int i = 0; i < res.length; i++) {
-            res[i] = (byte) (array.get(i));
-        }
-        return res;
-    }
+		Uint8Array array = TypedArrays.createUint8Array(buffer);
+		byte[] res = new byte[array.length()];
+		for (int i = 0; i < res.length; i++) {
+			res[i] = (byte) (array.get(i));
+		}
+		return res;
+	}
 
 	final static ArrayBuffer convertBytes(byte[] data) {
 		Uint8Array push = TypedArrays.createUint8Array(data.length);
@@ -381,7 +381,7 @@ public final class ByteBuffer extends Buffer implements Comparable<ByteBuffer>,
 		// if (position == limit) {
 		// throw new BufferUnderflowException();
 		// }
-		return (byte) byteArray.get(position++);
+		return byteArray.get(position++);
 	}
 
 	/**
@@ -452,7 +452,7 @@ public final class ByteBuffer extends Buffer implements Comparable<ByteBuffer>,
 		// if (index < 0 || index >= limit) {
 		// throw new IndexOutOfBoundsException();
 		// }
-		return (byte) byteArray.get(index);
+		return byteArray.get(index);
 	}
 
 	/**
@@ -1256,5 +1256,12 @@ public final class ByteBuffer extends Buffer implements Comparable<ByteBuffer>,
 
 	public boolean isReadOnly() {
 		return false;
+	}
+
+	public byte[] array() {
+		byte[] arr = new byte[remaining()];
+		get(arr);
+		position(0);
+		return arr;
 	}
 }

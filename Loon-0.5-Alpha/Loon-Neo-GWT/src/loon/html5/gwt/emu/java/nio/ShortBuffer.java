@@ -37,7 +37,7 @@ public final class ShortBuffer extends Buffer
     private final Int16Array shortArray;
 
     static ShortBuffer wrap (ByteBuffer byteBuffer) {
-      return new ShortBuffer((ByteBuffer)byteBuffer.slice());
+      return new ShortBuffer(byteBuffer.slice());
     }
 
     /** Creates a short buffer based on a newly allocated short array.
@@ -121,7 +121,7 @@ public final class ShortBuffer extends Buffer
      */
     public ShortBuffer duplicate () {
       ShortBuffer buf = new ShortBuffer(
-          (ByteBuffer)byteBuffer.duplicate());
+          byteBuffer.duplicate());
       buf.limit = limit;
       buf.position = position;
       buf.mark = mark;
@@ -165,7 +165,7 @@ public final class ShortBuffer extends Buffer
       // if (position == limit) {
       // throw new BufferUnderflowException();
        // }
-      return (short)shortArray.get(position++);
+      return shortArray.get(position++);
     }
 
     /** Reads shorts from the current position into the specified short array and increases the
@@ -216,7 +216,7 @@ public final class ShortBuffer extends Buffer
       // if (index < 0 || index >= limit) {
       // throw new IndexOutOfBoundsException();
       // }
-      return (short)shortArray.get(index);
+      return shortArray.get(index);
     }
 
     /** Indicates whether this buffer is based on a short array and is read/write.

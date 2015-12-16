@@ -124,7 +124,7 @@ public final class FloatBuffer extends Buffer
      */
     public FloatBuffer duplicate () {
       FloatBuffer buf = new FloatBuffer(
-          (ByteBuffer)byteBuffer.duplicate());
+          byteBuffer.duplicate());
       buf.limit = limit;
       buf.position = position;
       buf.mark = mark;

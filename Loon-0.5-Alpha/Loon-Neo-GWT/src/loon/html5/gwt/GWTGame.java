@@ -239,8 +239,6 @@ public class GWTGame extends LGame {
 
 	public void start() {
 
-		listenForVisibilityChange(this);
-
 		Repaint repaint = game.config.repaint;
 		// 此处使用了三种不同的画面刷新模式，万一有浏览器刷不动，大家可以换模式看看……
 		switch (repaint) {
@@ -283,16 +281,6 @@ public class GWTGame extends LGame {
 			}.schedule(framed);
 			break;
 		}
-
-		startBackgroundUpdate(new TimerCallback() {
-			@Override
-			public void fire() {
-				if (now() - lastUpdate > 500) {
-					lastUpdate = now();
-					emitFrame();
-				}
-			}
-		});
 	}
 
 	@Override
@@ -419,31 +407,15 @@ public class GWTGame extends LGame {
 		return $doc.hidden;
 	}-*/;
 
-	/**
-	 * 刷新背景状态监听用
-	 * 
-	 * @param millis
-	 * @param callback
-	 */
-	private native void startBackgroundUpdate(TimerCallback callback) /*-{
-		var fn = function() {
-			callback.@loon.jni.TimerCallback::fire()();
-		};
-		$wnd.setInterval(fn, 1000);
-	}-*/;
-
-	private void visibilityChanged() {
-		dispatchEvent(status, isHidden() ? Status.PAUSE : Status.RESUME);
+	public boolean isShow(){
+		return isHidden();
 	}
-
-	private native void listenForVisibilityChange(GWTGame game) /*-{
-		$doc.addEventListener("visibilitychange", function() {
-			game.@loon.html5.gwt.GWTGame::visibilityChanged()();
-		}, false);
-	}-*/;
-
+	
 	@Override
 	public boolean isMobile() {
+		if (game == null) {
+			return false;
+		}
 		return super.isMobile() || game.isMobile();
 	}
 
