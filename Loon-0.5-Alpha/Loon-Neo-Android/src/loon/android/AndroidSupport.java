@@ -219,6 +219,11 @@ public class AndroidSupport implements Support {
 	}
 
 	@Override
+	public void makeBuffer(byte[] data, int size, int tag) {
+		NativeSupport.makeBuffer(data, size, tag);
+	}
+	
+	@Override
 	public boolean isNative() {
 		return NativeSupport.UseLoonNative();
 	}

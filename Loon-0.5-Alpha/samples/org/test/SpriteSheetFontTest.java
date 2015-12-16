@@ -1,15 +1,12 @@
 package org.test;
 
-import loon.LSetting;
 import loon.LTransition;
-import loon.LazyLoading;
 import loon.Screen;
 import loon.action.sprite.SpriteSheet;
 import loon.action.sprite.SpriteSheetFont;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
 import loon.font.LFont;
-import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

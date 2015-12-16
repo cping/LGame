@@ -29,7 +29,7 @@ import java.nio.ShortBuffer;
 import loon.Support;
 import loon.jni.NativeSupport;
 
-public class RoboVMSupport implements Support{
+public class RoboVMSupport implements Support {
 
 	@Override
 	public void copy(float[] src, Buffer dst, int numFloats) {
@@ -65,7 +65,6 @@ public class RoboVMSupport implements Support{
 	public void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
 		NativeSupport.copy(src, srcOffset, dst, numElements);
 	}
-
 
 	@Override
 	public void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
@@ -217,6 +216,11 @@ public class RoboVMSupport implements Support{
 	@Override
 	public int[] toGray(int[] buffer, int w, int h) {
 		return NativeSupport.toGray(buffer, w, h);
+	}
+
+	@Override
+	public void makeBuffer(byte[] data, int size, int tag) {
+		NativeSupport.makeBuffer(data, size, tag);
 	}
 
 	@Override

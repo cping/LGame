@@ -1,6 +1,7 @@
 package loon.stage;
 
 import loon.Graphics;
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -11,8 +12,16 @@ public class CanvasPlayer extends ImagePlayer {
 	private final Graphics gfx;
 	private Canvas canvas;
 
+	public CanvasPlayer() {
+		this(LSystem.base().graphics(), LSystem.viewSize);
+	}
+
 	public CanvasPlayer(Graphics gfx, Dimension size) {
 		this(gfx, size.width(), size.height());
+	}
+
+	public CanvasPlayer(float width, float height) {
+		this(LSystem.base().graphics(), width, height);
 	}
 
 	public CanvasPlayer(Graphics gfx, float width, float height) {

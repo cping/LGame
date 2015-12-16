@@ -46,6 +46,7 @@ import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.stage.Player;
 import loon.stage.PlayerUtils;
 import loon.stage.RootPlayer;
 import loon.stage.Stage;
@@ -54,12 +55,16 @@ import loon.stage.StageTransition;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.reply.Closeable;
+import loon.utils.reply.Port;
 import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
+
+	protected final Closeable.Set _conns = new Closeable.Set();
 
 	private LayoutConstraints _rootConstraints;
 
@@ -166,6 +171,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				}
 			}
 		}
+	}
+
+	public Screen add(Port<LTimerContext> timer) {
+		if (LSystem._base != null && LSystem._base.display() != null) {
+			_conns.add(LSystem._base.display().update.connect(timer));
+		}
+		return this;
 	}
 
 	private TArray<LRelease> releases;
@@ -1204,6 +1216,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			add((ISprite) obj);
 		} else if (obj instanceof LComponent) {
 			add((LComponent) obj);
+		} else if (obj instanceof Player) {
+			add((Player) obj);
 		} else if (obj instanceof Stage) {
 			puspStage((Stage) obj);
 		} else if (obj instanceof Updateable) {
@@ -1212,7 +1226,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
-	public Screen remove(Object... obj) {
+	public Screen remove(LObject... obj) {
 		for (int i = 0; i < obj.length; i++) {
 			remove(obj[i]);
 		}
@@ -1230,10 +1244,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			remove((ISprite) obj);
 		} else if (obj instanceof LComponent) {
 			remove((LComponent) obj);
+		} else if (obj instanceof Player) {
+			remove((Player) obj);
 		} else if (obj instanceof Stage) {
 			popTo((Stage) obj);
 		} else if (obj instanceof Updateable) {
 			removeLoad((Updateable) obj);
+		}
+		return this;
+	}
+
+	public Screen add(Player player) {
+		if (LSystem._process != null && LSystem._process.rootPlayer != null) {
+			LSystem._process.rootPlayer.add(player);
+			if (player instanceof LTouchArea) {
+				registerTouchArea((LTouchArea) player);
+			}
+		}
+		return this;
+	}
+
+	public Screen remove(Player player) {
+		if (LSystem._process != null && LSystem._process.rootPlayer != null) {
+			LSystem._process.rootPlayer.remove(player);
+			if (player instanceof LTouchArea) {
+				unregisterTouchArea((LTouchArea) player);
+			}
 		}
 		return this;
 	}
@@ -2028,6 +2064,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public abstract void touchDrag(GameTouch e);
 
+	@Override
 	public boolean isMoving() {
 		return SysTouch.isDrag();
 	}
@@ -2130,10 +2167,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			if (_players != null) {
 				_players.close();
 			}
-			if (LSystem._base != null && LSystem._process.rootPlayer != null) {
+			if (LSystem._process != null && LSystem._process.rootPlayer != null) {
 				LSystem._process.rootPlayer.removeAll();
 			}
-			if (LSystem._base != null && LSystem._process.stageSystem != null) {
+			if (LSystem._process != null
+					&& LSystem._process.stageSystem != null) {
 				LSystem._process.stageSystem.removeAll();
 			}
 			if (currentScreen != null) {
@@ -2155,13 +2193,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				releases.clear();
 			}
 			LSTRDictionary.dispose();
+			_conns.close();
 			release();
 			close();
 		}
 	}
 
 	public Display getDisplay() {
-		return LSystem.base().display();
+		return LSystem._base.display();
 	}
 
 	public RootPlayer getRootPlayer() {
@@ -2173,7 +2212,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public Screen puspStageUp(Stage stage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stage,
 					LSystem._process.stageSystem.newSlide().up());
 		}
@@ -2181,7 +2220,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public Screen puspStageRight(Stage stage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stage,
 					LSystem._process.stageSystem.newSlide().right());
 		}
@@ -2189,7 +2228,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public Screen puspStageLeft(Stage stage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stage,
 					LSystem._process.stageSystem.newSlide().left());
 		}
@@ -2197,7 +2236,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public Screen puspStageDown(Stage stage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stage,
 					LSystem._process.stageSystem.newSlide().down());
 		}
@@ -2205,21 +2244,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public Screen puspStage(Stage stage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stage);
 		}
 		return this;
 	}
 
 	public Screen puspStage(Stage stage, StageTransition trans) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stage, trans);
 		}
 		return this;
 	}
 
 	public Screen puspStage(Iterable<? extends Stage> stages) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stages);
 		}
 		return this;
@@ -2227,49 +2266,49 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public Screen puspStage(Iterable<? extends Stage> stages,
 			StageTransition trans) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.push(stages, trans);
 		}
 		return this;
 	}
 
 	public Screen popTo(Stage newTopStage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.popTo(newTopStage);
 		}
 		return this;
 	}
 
 	public Screen popTo(Stage newTopStage, StageTransition trans) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.popTo(newTopStage, trans);
 		}
 		return this;
 	}
 
 	public Screen replace(Stage stage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.replace(stage);
 		}
 		return this;
 	}
 
 	public Screen replace(Stage stage, StageTransition trans) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.replace(stage, trans);
 		}
 		return this;
 	}
 
 	public boolean remove(Stage stage) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.popTo(stage);
 		}
 		return false;
 	}
 
 	public boolean remove(Stage stage, StageTransition trans) {
-		if (LSystem._base != null) {
+		if (LSystem._process != null) {
 			LSystem._process.stageSystem.remove(stage);
 		}
 		return false;

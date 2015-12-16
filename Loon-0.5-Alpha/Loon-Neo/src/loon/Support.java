@@ -47,6 +47,8 @@ public interface Support {
 	
 	public boolean isNative();
 
+	public void makeBuffer(byte[] data, int size, int tag);
+	
 	public void copy(float[] src, Buffer dst, int numFloats);
 
 	public void copy(float[] src, Buffer dst, int offset, int numFloats);
