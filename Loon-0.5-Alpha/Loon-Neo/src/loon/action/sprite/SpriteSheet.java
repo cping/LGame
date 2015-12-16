@@ -94,6 +94,16 @@ public class SpriteSheet implements LRelease {
 	public LTexture[][] getTextures() {
 		return subImages;
 	}
+	
+	public boolean contains(int x,int y){
+		if ((x < 0) || (x >= subImages.length)) {
+			return false;
+		}
+		if ((y < 0) || (y >= subImages[0].length)) {
+			return false;
+		}
+		return true;
+	}
 
 	private void checkImage(int x, int y) {
 		update();

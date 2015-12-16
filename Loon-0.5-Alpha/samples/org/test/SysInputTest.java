@@ -1,21 +1,16 @@
 package org.test;
 
-import loon.LSetting;
+import loon.LSystem;
 import loon.LTransition;
-import loon.LazyLoading;
 import loon.Screen;
-import loon.action.sprite.SpriteSheet;
-import loon.action.sprite.SpriteSheetFont;
-import loon.canvas.LColor;
+import loon.component.LClickButton;
 import loon.event.GameTouch;
+import loon.event.KeyMake.TextType;
 import loon.font.LFont;
-import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class SpriteSheetFontTest extends Screen {
-
-	SpriteSheetFont font;
+public class SysInputTest extends Screen {
 
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
@@ -23,20 +18,61 @@ public class SpriteSheetFontTest extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
-		if (font != null) {
-			font.drawString(g, "FONT EXAMPLE \nTEST NEW LINES", 80, 25, LColor.red);
-			font.drawString(g, "MORE COMPLETE LINE", 80, 100);
-		}
+
 	}
 
 	@Override
 	public void onLoad() {
-		// 设置默认字体大小为20号字
+		// 设置默认字体大小为20
 		LFont.setDefaultFont(LFont.getFont(20));
-		SpriteSheet sheet = new SpriteSheet("spriteSheetFont.png", 32, 32);
-		font = new SpriteSheetFont(sheet, ' ');
-		font.setFontScale(0.5f);
+
+		LClickButton click = new LClickButton("Input", 66, 66, 150, 30) {
+
+			@Override
+			public void upClick() {
+
+				LSystem.sysText(new TextEvent() {
+
+					@Override
+					public void input(String text) {
+
+					}
+
+					@Override
+					public void cancel() {
+
+					}
+				}, TextType.DEFAULT, "测试", "什么也不说");
+
+			}
+		};
+
+		add(click);
+
+		LClickButton click2 = new LClickButton("Dialog", 66, 166, 150, 30) {
+
+			@Override
+			public void upClick() {
+				LSystem.sysDialog(new ClickEvent() {
+
+					@Override
+					public void clicked() {
+
+					}
+
+					@Override
+					public void cancel() {
+
+					}
+				}, "什么也不提", "提示", "是", "否");
+
+			}
+		};
+
+		add(click2);
+
 		add(MultiScreenTest.getBackButton(this));
+
 	}
 
 	@Override
@@ -83,4 +119,5 @@ public class SpriteSheetFontTest extends Screen {
 	public void close() {
 
 	}
+
 }

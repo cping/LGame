@@ -125,7 +125,7 @@ public class MultiScreenTest extends Screen {
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
 			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea", "Progress",
 			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
-			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical","LNode2" };
+			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical","LNode2","Input" };
 
 	static BMFont info_font;
 
@@ -182,6 +182,7 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new GestureTest());
 		addScreen(names[index++], new PhysicalTest());
 		addScreen(names[index++], new Node2Test());
+		addScreen(names[index++], new SysInputTest());
 		// 默认按钮大小为100x30
 		int btnWidth = 100;
 		int btnHeight = 25;

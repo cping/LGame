@@ -57,6 +57,11 @@ public class LClickButton extends LComponent {
 		return new LClickButton(text, 0, 0, width, height);
 	}
 
+	public static LClickButton make(String text, int x, int y, int width,
+			int height) {
+		return new LClickButton(text, x, y, width, height);
+	}
+
 	public static LClickButton make(String text, int width, int height,
 			String clickPath) {
 		LTexture texture = LTextures.loadTexture(clickPath);

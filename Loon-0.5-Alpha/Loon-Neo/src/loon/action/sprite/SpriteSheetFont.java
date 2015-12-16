@@ -71,27 +71,36 @@ public class SpriteSheetFont implements IFont {
 		drawString(gl, text, x, y, col, 0, text.length() - 1);
 	}
 
-	public void drawString(GLEx gl, String text, float x, float y, LColor col,
-			int startIndex, int endIndex) {
+	public void drawString(GLEx gl, String text, final float x, final float y,
+			LColor col, int startIndex, int endIndex) {
 		char[] data = text.toCharArray();
+		int lines = 0;
+		float sx = x;
+		float sy = y;
+		float widthSize = charWidth * fontScaleX;
+		float heightSize = charHeight * fontScaleY;
 		for (int i = 0; i < data.length; i++) {
-			int index = data[i] - startingCharacter;
+			char flag = data[i];
+			int index = flag - startingCharacter;
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
-				if (index == '\n') {
-					// lines++;
-					// display.height = 0;
+				if ('\n' == flag) {
+					lines += getHeight();
+					sx = x;
 					continue;
+				} else {
+					sx += widthSize;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
-					if (fontScaleX == 1f && fontScaleY == 1f) {
-						gl.draw(font.getSubImage(xPos, yPos), x
-								+ (i * charWidth), y, col);
-					} else {
-						gl.draw(font.getSubImage(xPos, yPos), x
-								+ (i * charWidth * fontScaleX), y, charWidth
-								* fontScaleX, charHeight * fontScaleY, col);
+					if (font.contains(xPos, yPos)) {
+						if (fontScaleX == 1f && fontScaleY == 1f) {
+							gl.draw(font.getSubImage(xPos, yPos), sx, sy
+									+ lines, col);
+						} else {
+							gl.draw(font.getSubImage(xPos, yPos), sx, sy
+									+ lines, widthSize, heightSize, col);
+						}
 					}
 				}
 			}
@@ -152,7 +161,7 @@ public class SpriteSheetFont implements IFont {
 			}
 		}
 	}
-	
+
 	public float getFontScaleX() {
 		return this.fontScaleX;
 	}
