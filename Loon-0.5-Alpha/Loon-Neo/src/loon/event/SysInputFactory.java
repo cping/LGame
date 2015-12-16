@@ -69,6 +69,13 @@ public class SysInputFactory {
 		touchCollection.clear();
 	}
 
+	public void resetSysTouch() {
+		if (finalTouch.button == SysTouch.TOUCH_UP) {
+			finalTouch.id = -1;
+			finalTouch.button = -1;
+		}
+	}
+
 	public SysInputFactory(LProcess _handler) {
 		this._handler = _handler;
 		this._halfWidth = _handler.getWidth() / 2;
@@ -139,6 +146,7 @@ public class SysInputFactory {
 
 		switch (finalTouch.type) {
 		case SysTouch.TOUCH_DOWN:
+			finalTouch.button = SysTouch.TOUCH_DOWN;
 			if (useTouchCollection) {
 				touchCollection.add(finalTouch.id, finalTouch.x, finalTouch.y);
 			}
@@ -150,6 +158,7 @@ public class SysInputFactory {
 			}
 			break;
 		case SysTouch.TOUCH_UP:
+			finalTouch.button = SysTouch.TOUCH_UP;
 			if (useTouchCollection) {
 				touchCollection.update(finalTouch.id,
 						LTouchLocationState.Released, finalTouch.x,
@@ -163,6 +172,7 @@ public class SysInputFactory {
 			}
 			break;
 		case SysTouch.TOUCH_MOVE:
+			finalTouch.button = SysTouch.TOUCH_MOVE;
 			if (!_isDraging) {
 				if (useTouchCollection) {
 					touchCollection.update(finalTouch.id,
@@ -176,6 +186,7 @@ public class SysInputFactory {
 			}
 			break;
 		case SysTouch.TOUCH_DRAG:
+			finalTouch.button = SysTouch.TOUCH_DRAG;
 			ebuttons = _handler.getEmulatorButtons();
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.hit(0, touchX, touchY, true);
@@ -285,6 +296,10 @@ public class SysInputFactory {
 				break;
 			case CANCEL:
 			default:
+				if (finalTouch.button == SysTouch.TOUCH_DOWN
+						|| finalTouch.button == SysTouch.TOUCH_MOVE) {
+					finalTouch.button = SysTouch.TOUCH_UP;
+				}
 				if (useTouchCollection) {
 					touchCollection.update(finalTouch.id,
 							LTouchLocationState.Invalid, finalTouch.x,

@@ -29,6 +29,7 @@ import loon.event.Updateable;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
@@ -180,6 +181,8 @@ public class LMenu extends LComponent {
 			int color = g.color();
 			IFont font = g.getFont();
 			try {
+				boolean check = (SysTouch.isDown() || SysTouch.isDrag());
+				Vector2f pos = SysTouch.getLocation();
 				if (this.parent != null) {
 					if (!localpos) {
 						this.x = (this.parent.cellWidth * this.xslot
@@ -215,17 +218,16 @@ public class LMenu extends LComponent {
 							this.itemHeight = this.texture.getHeight();
 						}
 					}
-					if (bounds().contains(SysTouch.getX(), SysTouch.getY())
-							&& SysTouch.isDown()) {
+					if (bounds().contains(pos.x, pos.y) && check) {
 						g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
-						if (SysTouch.isDown() && (!this.clicked)) {
+						if (check && (!this.clicked)) {
 							ClickMenu menu = new ClickMenu(this._itemclick,
 									this);
 							LSystem.load(menu);
 							this.clicked = true;
 						}
 					}
-					if (!SysTouch.isDown()) {
+					if (!check) {
 						this.clicked = false;
 					}
 					if (texture != null) {
@@ -245,17 +247,16 @@ public class LMenu extends LComponent {
 					}
 
 				} else {
-					if (bounds().contains(SysTouch.getX(), SysTouch.getY())
-							&& SysTouch.isDown()) {
+					if (bounds().contains(pos.x, pos.y) && (check)) {
 						g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
-						if (SysTouch.isDown() && (!this.clicked)) {
+						if (check && (!this.clicked)) {
 							ClickMenu menu = new ClickMenu(this._itemclick,
 									this);
 							LSystem.load(menu);
 							this.clicked = true;
 						}
 					}
-					if (!SysTouch.isDown()) {
+					if (!check) {
 						this.clicked = false;
 					}
 					if (texture != null) {
@@ -510,8 +511,8 @@ public class LMenu extends LComponent {
 
 	public MenuItem add(String label, LTexture texture, float x, float y,
 			float w, float h, MenuItemClick click) {
-		return add(new LMenu.MenuItem(font,this, texture, false, label, x, y, w, h,
-				click));
+		return add(new LMenu.MenuItem(font, this, texture, false, label, x, y,
+				w, h, click));
 	}
 
 	public MenuItem add(MenuItem item) {

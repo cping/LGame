@@ -22,9 +22,11 @@ package loon.stage;
 
 import java.util.Iterator;
 
+import loon.event.SysTouch;
 import loon.geom.Affine2f;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -85,8 +87,8 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	}
 
 	public void addCenterAt(Player child, float tx, float ty) {
-		add(child.setTranslation(tx - child.getWidth() / 2, ty - child.getHeight()
-				/ 2));
+		add(child.setTranslation(tx - child.getWidth() / 2,
+				ty - child.getHeight() / 2));
 	}
 
 	public void addFloorAt(Player child, float tx, float ty) {
@@ -129,8 +131,8 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	public Player hitTestDefault(Vector2f point) {
 		float x = point.x, y = point.y;
 		boolean sawInteractiveChild = false;
-		for (int ii = children.size - 1; ii >= 0; ii--) {
-			Player child = children.get(ii);
+		for (int i = children.size - 1; i >= 0; i--) {
+			Player child = children.get(i);
 			if (!child.interactive()) {
 				continue;
 			}
@@ -165,9 +167,9 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	protected void paintClipped(GLEx gl) {
 		paintTx.set(gl.tx());
 		TArray<Player> children = this.children;
-		for (int ii = 0, ll = children.size; ii < ll; ii++) {
+		for (int i = 0, ll = children.size; i < ll; i++) {
 			gl.tx().set(paintTx);
-			children.get(ii).paint(gl);
+			children.get(i).paint(gl);
 		}
 	}
 
@@ -176,8 +178,8 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 		float newDepth = child.depth();
 		boolean leftCorrect = (oldIndex == 0 || children.get(oldIndex - 1)
 				.depth() <= newDepth);
-		boolean rightCorrect = (oldIndex == children.size - 1 || children
-				.get(oldIndex + 1).depth() >= newDepth);
+		boolean rightCorrect = (oldIndex == children.size - 1 || children.get(
+				oldIndex + 1).depth() >= newDepth);
 		if (leftCorrect && rightCorrect) {
 			return oldIndex;
 		}
@@ -190,16 +192,16 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	@Override
 	void onAdd() {
 		super.onAdd();
-		for (int ii = 0, ll = children.size; ii < ll; ii++) {
-			children.get(ii).onAdd();
+		for (int i = 0, ll = children.size; i < ll; i++) {
+			children.get(i).onAdd();
 		}
 	}
 
 	@Override
 	void onRemove() {
 		super.onRemove();
-		for (int ii = 0, ll = children.size; ii < ll; ii++) {
-			children.get(ii).onRemove();
+		for (int i = 0, ll = children.size; i < ll; i++) {
+			children.get(i).onRemove();
 		}
 	}
 
@@ -216,19 +218,19 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 
 	private int findChild(Player child, float depth) {
 		int startIdx = findInsertion(depth);
-		for (int ii = startIdx - 1; ii >= 0; ii--) {
-			Player c = children.get(ii);
+		for (int i = startIdx - 1; i >= 0; i--) {
+			Player c = children.get(i);
 			if (c == child) {
-				return ii;
+				return i;
 			}
 			if (c.depth() != depth) {
 				break;
 			}
 		}
-		for (int ii = startIdx, ll = children.size; ii < ll; ii++) {
-			Player c = children.get(ii);
+		for (int i = startIdx, ll = children.size; i < ll; i++) {
+			Player c = children.get(i);
 			if (c == child) {
-				return ii;
+				return i;
 			}
 			if (c.depth() != depth) {
 				break;
@@ -256,8 +258,27 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
-		for (int ii = 0, ll = children.size; ii < ll; ii++) {
-			children.get(ii).update(elapsedTime);
+		for (int i = 0, ll = children.size; i < ll; i++) {
+			Player player = children.get(i);
+			player.update(elapsedTime);
+			if (player.hasEventListeners()) {
+				Vector2f pos = SysTouch.getLocation();
+				player = player.hitTestDefault(pos);
+				if (player != null) {
+					Array<Pointer> updates = player.events();
+					for (; updates.hashNext();) {
+						Pointer p = updates.next();
+						if (SysTouch.isDown()) {
+							p.onStart(pos.x, pos.y);
+						} else if (SysTouch.isUp()) {
+							p.onEnd(pos.x, pos.y);
+						} else if (SysTouch.isDrag()) {
+							p.onDrag(pos.x, pos.y);
+						}
+					}
+					updates.stopNext();
+				}
+			}
 		}
 	}
 

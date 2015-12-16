@@ -40,7 +40,7 @@ public class ImagePlayer extends Player {
 	public ImagePlayer(String path) {
 		setPainter(LTextures.loadTexture(path));
 	}
-	
+
 	public ImagePlayer(Painter painter) {
 		setPainter(painter);
 	}
@@ -57,6 +57,7 @@ public class ImagePlayer extends Player {
 	}
 
 	public ImagePlayer setPainter(Painter painter) {
+		setSize(painter);
 		if (this.painter != painter) {
 			if (this.painter != null) {
 				this.painter.texture().release();
@@ -93,6 +94,8 @@ public class ImagePlayer extends Player {
 	}
 
 	public ImagePlayer setSize(float width, float height) {
+		setWidth(width);
+		setHeight(height);
 		forceWidth = width;
 		forceHeight = height;
 		checkOrigin();
@@ -139,9 +142,9 @@ public class ImagePlayer extends Player {
 
 	@Override
 	public void update(long elapsedTime) {
-		
+
 	}
-	
+
 	@Override
 	protected void paintImpl(GLEx gl) {
 		if (painter != null) {
@@ -159,6 +162,5 @@ public class ImagePlayer extends Player {
 	protected void finalize() {
 		setPainter((Painter) null);
 	}
-
 
 }

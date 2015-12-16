@@ -421,6 +421,10 @@ public class LProcess extends PlayerUtils {
 		}
 		LSystem._base.log().debug("The Loon Game Engine is End");
 	}
+	
+	public void resetTouch(){
+		currentInput.resetSysTouch();
+	}
 
 	public void clear() {
 		if (loads == null) {

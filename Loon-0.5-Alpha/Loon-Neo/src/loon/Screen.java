@@ -53,6 +53,7 @@ import loon.stage.Stage;
 import loon.stage.StageSystem;
 import loon.stage.StageTransition;
 import loon.utils.TArray;
+import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Closeable;
@@ -187,6 +188,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			releases = new TArray<LRelease>(10);
 		}
 		releases.add(r);
+		return this;
+	}
+
+	public Screen removeRelease(LRelease r) {
+		if (releases == null) {
+			releases = new TArray<LRelease>(10);
+		}
+		releases.remove(r);
 		return this;
 	}
 
@@ -1222,13 +1231,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			puspStage((Stage) obj);
 		} else if (obj instanceof Updateable) {
 			addLoad((Updateable) obj);
-		}
-		return this;
-	}
-
-	public Screen remove(LObject... obj) {
-		for (int i = 0; i < obj.length; i++) {
-			remove(obj[i]);
+		} else if (obj instanceof GameProcess) {
+			addProcess((GameProcess) obj);
+		} else if (obj instanceof LRelease) {
+			putRelease((LRelease) obj);
 		}
 		return this;
 	}
@@ -1250,9 +1256,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			popTo((Stage) obj);
 		} else if (obj instanceof Updateable) {
 			removeLoad((Updateable) obj);
+		} else if (obj instanceof GameProcess) {
+			removeProcess((GameProcess) obj);
+		}  else if(obj instanceof LRelease){
+			removeRelease((LRelease)obj);
 		}
 		return this;
 	}
+	
+	public Screen remove(Object... obj) {
+		for (int i = 0; i < obj.length; i++) {
+			remove(obj[i]);
+		}
+		return this;
+	}
+
 
 	public Screen add(Player player) {
 		if (LSystem._process != null && LSystem._process.rootPlayer != null) {
@@ -2168,7 +2186,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				_players.close();
 			}
 			if (LSystem._process != null && LSystem._process.rootPlayer != null) {
-				LSystem._process.rootPlayer.removeAll();
+				LSystem._process.rootPlayer.disposeAll();
 			}
 			if (LSystem._process != null
 					&& LSystem._process.stageSystem != null) {

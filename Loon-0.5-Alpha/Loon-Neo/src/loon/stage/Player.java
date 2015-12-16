@@ -32,8 +32,9 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.BaseBatch;
 import loon.opengl.GLEx;
+import loon.opengl.Painter;
+import loon.utils.Array;
 import loon.utils.MathUtils;
-import loon.utils.reply.Act;
 import loon.utils.reply.Port;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
@@ -41,17 +42,28 @@ import loon.utils.reply.VarView;
 public abstract class Player extends LObject implements ActionBind, XY,
 		BoxSize, LRelease {
 
-	protected int flags;
+	public interface Pointer {
 
-	private String name;
+		public void onStart(float x, float y);
+
+		public void onDrag(float x, float y);
+
+		public void onEnd(float x, float y);
+
+	}
+
+	protected int flags;
+	protected float width, height;
+
 	private GroupPlayer parent;
-	private Act<Object> events;
+	private Array<Pointer> events;
 	private HitTester hitTester;
 	private BaseBatch batch;
 
 	private float scaleX = 1, scaleY = 1;
 	private final Affine2f affine = new Affine2f();
 
+	private RectBox tempRect;
 	private Origin origin = Origin.FIXED;
 	private float originX, originY;
 	protected int baseColor = LColor.DEF_COLOR;
@@ -178,42 +190,19 @@ public abstract class Player extends LObject implements ActionBind, XY,
 		setFlag(Flag.VISIBLE, true);
 	}
 
-	public String name() {
-		if (name == null) {
-			name = getClass().getName();
-			name = name.substring(name.lastIndexOf(".") + 1).intern();
-		}
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public GroupPlayer parent() {
 		return parent;
 	}
 
-	public Act<Object> events() {
-		if (events == null)
-			events = new Act<Object>() {
-				@Override
-				protected void connectionAdded() {
-					setInteractive(true);
-				}
-
-				@Override
-				protected void connectionRemoved() {
-					if (!hasConnections() && deactivateOnNoListeners()) {
-						setInteractive(false);
-					}
-				}
-			};
+	public Array<Pointer> events() {
+		if (events == null) {
+			events = new Array<Pointer>();
+		}
 		return events;
 	}
 
 	public boolean hasEventListeners() {
-		return events != null && events.hasConnections();
+		return events != null && events.size() > 0;
 	}
 
 	public boolean interactive() {
@@ -463,24 +452,29 @@ public abstract class Player extends LObject implements ActionBind, XY,
 		super.setRotation(_rotation);
 	}
 
+	protected void setSize(Painter p) {
+		setWidth(p.width());
+		setHeight(p.height());
+	}
+
 	@Override
 	public float getWidth() {
-		return 0;
+		return width;
 	}
 
 	@Override
 	public float getHeight() {
-		return 0;
+		return height;
 	}
 
 	@Override
 	public void setWidth(float w) {
-
+		this.width = w;
 	}
 
 	@Override
 	public void setHeight(float h) {
-
+		this.height = h;
 	}
 
 	public float scaledWidth() {
@@ -497,8 +491,14 @@ public abstract class Player extends LObject implements ActionBind, XY,
 	}
 
 	public Player hitTestDefault(Vector2f p) {
-		return (p.x >= 0 && p.y >= 0 && p.x < getWidth() && p.y < getHeight()) ? this
-				: null;
+		if (tempRect == null) {
+			tempRect = new RectBox(getX() + tx(), getY() + ty(), getWidth()
+					* getScaleX(), getHeight() * getScaleY());
+		} else {
+			tempRect.setBounds(getX() + tx(), getY() + ty(), getWidth()
+					* getScaleX(), getHeight() * getScaleY());
+		}
+		return tempRect.contains(p) ? this : null;
 	}
 
 	public Player setHitTester(HitTester tester) {
@@ -553,7 +553,7 @@ public abstract class Player extends LObject implements ActionBind, XY,
 
 	@Override
 	public String toString() {
-		StringBuilder bldr = new StringBuilder(name());
+		StringBuilder bldr = new StringBuilder(getName());
 		bldr.append(" @ ").append(hashCode());
 		bldr.append(" [tx=").append(affine());
 		if (hitTester != null) {

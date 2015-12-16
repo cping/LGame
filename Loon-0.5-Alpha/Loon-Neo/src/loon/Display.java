@@ -301,6 +301,7 @@ public class Display extends LSystemView {
 		} finally {
 			glEx.end();
 			glEx.restoreTx();
+			process.resetTouch();
 		}
 
 	}
