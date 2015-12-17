@@ -317,7 +317,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		lastBrush = brushStack.pop();
+		lastBrush = brushStack.previousPop();
 		if (lastBrush != null) {
 			this.baseAlpha = lastBrush.baseAlpha;
 			this.baseColor = lastBrush.baseColor;
@@ -327,19 +327,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			this.setFont(lastBrush.font);
 			this.setLineWidth(lastBrush.lineWidth);
 		}
-		return this;
-	}
-
-	public GLEx restoreBrushDef() {
-		baseAlpha = 1f;
-		baseColor = LColor.DEF_COLOR;
-		fillColor = LColor.DEF_COLOR;
-		patternTex = null;
-		useAlltextures = LSystem.isHTML5();
-		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
-		setFont(LFont.getDefaultFont());
-		setLineWidth(1f);
-		brushStack.pop();
 		return this;
 	}
 
@@ -377,7 +364,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		lastTrans = affineStack.pop();
+		lastTrans = affineStack.previousPop();
 		return this;
 	}
 
@@ -391,6 +378,19 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx restoreBrushDef() {
+		baseAlpha = 1f;
+		baseColor = LColor.DEF_COLOR;
+		fillColor = LColor.DEF_COLOR;
+		patternTex = null;
+		useAlltextures = LSystem.isHTML5();
+		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
+		setFont(LFont.getDefaultFont());
+		setLineWidth(1f);
+		brushStack.pop();
+		return this;
+	}
+	
 	public boolean setClip(float x, float y, float width, float height) {
 		return startClipped(x, y, width, height);
 	}

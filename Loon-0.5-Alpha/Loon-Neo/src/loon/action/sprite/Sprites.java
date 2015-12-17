@@ -449,48 +449,42 @@ public class Sprites implements Serializable, LRelease {
 		if (!visible) {
 			return;
 		}
-		try {
-			g.saveTx();
-			float minX, minY, maxX, maxY;
-			if (this.isViewWindowSet) {
-				g.setClip(x, y, this.width, this.height);
-				minX = this.viewX;
-				maxX = minX + this.width;
-				minY = this.viewY;
-				maxY = minY + this.height;
-			} else {
-				minX = x;
-				maxX = x + this.width;
-				minY = y;
-				maxY = y + this.height;
-			}
-			g.translate(x - this.viewX, y - this.viewY);
-			for (int i = 0; i < this.size; i++) {
+		float minX, minY, maxX, maxY;
+		if (this.isViewWindowSet) {
+			g.setClip(x, y, this.width, this.height);
+			minX = this.viewX;
+			maxX = minX + this.width;
+			minY = this.viewY;
+			maxY = minY + this.height;
+		} else {
+			minX = x;
+			maxX = x + this.width;
+			minY = y;
+			maxY = y + this.height;
+		}
+		g.translate(x - this.viewX, y - this.viewY);
+		for (int i = 0; i < this.size; i++) {
 
-				ISprite spr = sprites[i];
-				if (spr.isVisible()) {
+			ISprite spr = sprites[i];
+			if (spr.isVisible()) {
 
-					int layerX = spr.x();
-					int layerY = spr.y();
+				int layerX = spr.x();
+				int layerY = spr.y();
 
-					float layerWidth = spr.getWidth();
-					float layerHeight = spr.getHeight();
+				float layerWidth = spr.getWidth();
+				float layerHeight = spr.getHeight();
 
-					if (layerX + layerWidth < minX || layerX > maxX
-							|| layerY + layerHeight < minY || layerY > maxY) {
-						continue;
-					}
-
-					spr.createUI(g);
+				if (layerX + layerWidth < minX || layerX > maxX
+						|| layerY + layerHeight < minY || layerY > maxY) {
+					continue;
 				}
 
+				spr.createUI(g);
 			}
-			g.translate(-(x - this.viewX), -(y - this.viewY));
-			if (this.isViewWindowSet) {
-				g.clearClip();
-			}
-		} finally {
-			g.restoreTxDef();
+		}
+		g.translate(-(x - this.viewX), -(y - this.viewY));
+		if (this.isViewWindowSet) {
+			g.clearClip();
 		}
 	}
 
@@ -557,7 +551,7 @@ public class Sprites implements Serializable, LRelease {
 	public Screen getScreen() {
 		return _screen;
 	}
-	
+
 	@Override
 	public void close() {
 		this.visible = false;

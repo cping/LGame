@@ -8,7 +8,7 @@ import loon.utils.TArray;
 public class SpriteSheet {
 
 	protected TextureData[] _datas = null;
-	
+
 	private TextureAtlas _ta = null;
 
 	protected SpriteSheet(TextureAtlas ta, String[] frameNames) {
@@ -19,6 +19,11 @@ public class SpriteSheet {
 			LTexture sheet) {
 		TextureAtlas ta = new TextureAtlas(sheet, jsonObj);
 		init(ta, frameNames);
+	}
+
+	protected SpriteSheet(Json.Object jsonObj, LTexture sheet) {
+		TextureAtlas ta = new TextureAtlas(sheet, jsonObj);
+		init(ta, ta.names);
 	}
 
 	public TextureAtlas textureAtlas() {
@@ -35,6 +40,14 @@ public class SpriteSheet {
 
 	public TextureData getSSD(String name) {
 		return _ta.getFrame(name);
+	}
+
+	protected void init(TextureAtlas ta, TArray<String> frameNames) {
+		_ta = ta;
+		_datas = new TextureData[frameNames.size];
+		for (int i = 0; i < frameNames.size; i++) {
+			_datas[i] = _ta.getFrame(frameNames.get(i));
+		}
 	}
 
 	protected void init(TextureAtlas ta, String[] frameNames) {

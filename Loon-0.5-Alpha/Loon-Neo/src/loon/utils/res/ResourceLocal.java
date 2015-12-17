@@ -154,9 +154,22 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 			Json.Object jsonObj = LSystem.base().json()
 					.parse(BaseIO.loadText(url));
 			String imagePath = url;
-			LTexture sheet = LTextures.loadTexture(imagePath);
-			sset = new SpriteSheet(jsonObj,
-					StringUtils.split(item.subkeys, ','), sheet);
+			String ext = LSystem.getExtension(imagePath);
+			LTexture sheet = null;
+			if (!LSystem.isImage(ext)) {
+				sheet = LTextures.loadTexture(StringUtils.replaceIgnoreCase(
+						imagePath, ext, "png"));
+			} else if (StringUtils.isEmpty(ext)) {
+				sheet = LTextures.loadTexture(imagePath + ".png");
+			} else {
+				sheet = LTextures.loadTexture(imagePath);
+			}
+			if (item.subkeys != null) {
+				sset = new SpriteSheet(jsonObj, StringUtils.split(item.subkeys,
+						','), sheet);
+			} else {
+				sset = new SpriteSheet(jsonObj, sheet);
+			}
 			_dataTable.put(name, sset);
 		} else {
 			sset = (SpriteSheet) _dataTable.get(name);

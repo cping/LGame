@@ -332,6 +332,13 @@ public class Array<T> {
 		return o;
 	}
 
+	public T previousPop() {
+		T o = null;
+		o = this._items.previous.data;
+		remove(o);
+		return this._items.previous.data;
+	}
+	
 	public boolean isFirst(Array<T> o) {
 		if (o._items.previous == this._items) {
 			return true;

@@ -2,12 +2,15 @@ package loon.action.sprite;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.LTrans;
 import loon.canvas.LColor;
 import loon.geom.PointF;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.opengl.GLEx.Direction;
 import loon.utils.res.TextureData;
 import loon.utils.res.SpriteSheet;
+import loon.utils.timer.LTimer;
 
 public class MovieClip extends DisplayObject implements LRelease {
 
@@ -20,13 +23,11 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	private SpriteSheet _sheet = null;
 
-	private LColor color = new LColor(LColor.white);
-
-	private int _interval = 0;
+	private LColor _color = new LColor(LColor.white);
 
 	private int _playIndex = 0;
 
-	private long _changeTime = 0;
+	private LTimer _delay;
 
 	private boolean _isStop = false;
 
@@ -36,7 +37,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 		return _isLoop;
 	}
 
-	public void setIsLoop(boolean v) {
+	public void setLoop(boolean v) {
 		if (_isLoop != v) {
 			_isLoop = v;
 		}
@@ -64,7 +65,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	private void init(SpriteSheet sheet, int interval, int anchor) {
 		_sheet = sheet;
-		_interval = interval;
+		_delay = new LTimer(interval);
 		setAnchor(anchor);
 	}
 
@@ -102,10 +103,14 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	@Override
 	protected void enterFrame(long time) {
-		if (time >= _changeTime && false == _isStop) {
-			_changeTime = time + _interval;
+		if (_delay.action(time) && !_isStop) {
 			nextFrame();
 		}
+	}
+
+	public void reset() {
+		_isStop = false;
+		_delay.refresh();
 	}
 
 	public int currentFrame() {
@@ -185,7 +190,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	@Override
 	public void update(long elapsedTime) {
-       enterFrame(elapsedTime);
+		enterFrame(elapsedTime);
 	}
 
 	private RectBox tempRect;
@@ -206,15 +211,12 @@ public class MovieClip extends DisplayObject implements LRelease {
 		if (_anchor == DisplayObject.ANCHOR_CENTER) {
 			x -= _ssd.sourceW() >> 1;
 			y -= _ssd.sourceH() >> 1;
-		} else {
-			x -= _anchorX;
-			y -= _anchorY;
 		}
 		PointF p = local2Global(x, y);
 		if (tempRect == null) {
-			tempRect = new RectBox(p.x, p.y, _ssd.w(), _ssd.h());
+			tempRect = new RectBox(p.x, p.y, getWidth(), getHeight());
 		} else {
-			tempRect.setBounds(p.x, p.y, _ssd.w(), _ssd.h());
+			tempRect.setBounds(p.x, p.y, getWidth(), getHeight());
 		}
 		RectBox rect = null;
 		if (LSystem.getProcess() != null
@@ -225,22 +227,71 @@ public class MovieClip extends DisplayObject implements LRelease {
 		}
 		RectBox drawRect = RectBox.getIntersection(tempRect, rect);
 		if (drawRect != null) {
-			int clipX = (int) (_ssd.x() + drawRect.x - p.x);
-			int clipY = (int) (_ssd.y() + drawRect.y - p.y);
 			int destX = (int) (drawRect.x() * DisplayObject.morphX);
 			int destY = (int) (drawRect.y() * DisplayObject.morphY);
-			g.drawRegion(_sheet.sheet(), clipX, clipY, drawRect.width,
-					drawRect.height, _trans, destX, destY, 0, color);
+			if (_rotation != 0) {
+				g.draw(_sheet.sheet(), destX, destY, drawRect.width,
+						drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(),
+						_ssd.h(), _color, _rotation);
+			} else {
+
+				float rotate = 0;
+				Direction dir = Direction.TRANS_NONE;
+
+				switch (_trans) {
+				case LTrans.TRANS_NONE: {
+					break;
+				}
+				case LTrans.TRANS_ROT90: {
+					rotate = 90;
+					break;
+				}
+				case LTrans.TRANS_ROT180: {
+					rotate = 180;
+					break;
+				}
+				case LTrans.TRANS_ROT270: {
+					rotate = 270;
+					break;
+				}
+				case LTrans.TRANS_MIRROR: {
+					dir = Direction.TRANS_MIRROR;
+					break;
+				}
+				case LTrans.TRANS_MIRROR_ROT90: {
+					dir = Direction.TRANS_MIRROR;
+					rotate = -90;
+					break;
+				}
+				case LTrans.TRANS_MIRROR_ROT180: {
+					dir = Direction.TRANS_MIRROR;
+					rotate = -180;
+					break;
+				}
+				case LTrans.TRANS_MIRROR_ROT270: {
+					dir = Direction.TRANS_MIRROR;
+					rotate = -270;
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("Bad transform");
+				}
+				g.draw(_sheet.sheet(), destX, destY, drawRect.width,
+						drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(),
+						_ssd.h(), _color, rotate, _scaleX, _scaleY,
+						_anchorValue, dir);
+
+			}
 		}
 
 	}
 
 	public LColor getColor() {
-		return color;
+		return _color;
 	}
 
 	public void setColor(LColor color) {
-		this.color = color;
+		this._color = color;
 	}
 
 	@Override

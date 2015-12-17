@@ -8,6 +8,7 @@ import loon.component.layout.BoxSize;
 import loon.event.EventDispatcher;
 import loon.geom.PointF;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
@@ -43,7 +44,7 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 
 	protected int _anchor = DisplayObject.ANCHOR_TOP_LEFT;
 
-	protected float _anchorX, _anchorY;
+	protected Vector2f _anchorValue = new Vector2f();
 
 	public DisplayObject() {
 
@@ -123,19 +124,19 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	}
 
 	public float getAnchorX() {
-		return _anchorX;
+		return _anchorValue.x;
 	}
 
 	public void setAnchorX(float ax) {
-		this._anchorX = ax;
+		this._anchorValue.x = ax;
 	}
 
 	public float getAnchorY() {
-		return _anchorY;
+		return _anchorValue.y;
 	}
 
 	public void setAnchorY(float ay) {
-		this._anchorY = ay;
+		this._anchorValue.y = ay;
 	}
 
 	@Override
@@ -172,8 +173,8 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		switch (_anchor) {
 		case ANCHOR_TOP_LEFT:
 		default:
-			x -= _anchorX;
-			y -= _anchorY;
+			x -= _anchorValue.x;
+			y -= _anchorValue.y;
 			break;
 		case ANCHOR_CENTER:
 			x -= ((int) (_width * _scaleX) >> 1);

@@ -77,6 +77,72 @@ public class Affine2f implements LTrans {
 			int transform, float width, float height) {
 		switch (transform) {
 		case TRANS_ROT90: {
+			float w = x + width / 2;
+			float h = y + height / 2;
+			tx.translate(w, h);
+			tx.rotate(ANGLE_90);
+			tx.translate(-w, -h);
+			break;
+		}
+		case TRANS_ROT180: {
+			float w = x + width / 2;
+			float h = y + height / 2;
+			tx.translate(w, h);
+			tx.rotate(MathUtils.PI);
+			tx.translate(-w, -h);
+			break;
+		}
+		case TRANS_ROT270: {
+			float w = x + width / 2;
+			float h = y + height / 2;
+			tx.translate(w, h);
+			tx.rotate(ANGLE_270);
+			tx.translate(-w, -h);
+			break;
+		}
+		case TRANS_MIRROR: {
+			float w = x + width / 2;
+			float h = y + height / 2;
+			tx.translate(w, h);
+			tx.scale(-1, 1);
+			tx.translate(-w, -h);
+			break;
+		}
+		case TRANS_MIRROR_ROT90: {
+			float w = x + width / 2;
+			float h = y + height / 2;
+			tx.translate(w, h);
+			tx.rotate(ANGLE_90);
+			tx.translate(-w, -h);
+			tx.scale(-1, 1);
+			break;
+		}
+		case TRANS_MIRROR_ROT180: {
+			float w = x + width / 2;
+			float h = y + height / 2;
+			tx.translate(w, h);
+			tx.scale(-1, 1);
+			tx.translate(-w, -h);
+			 w = x + width / 2;
+			 h = y + height / 2;
+			tx.translate(w, h);
+			tx.rotate(MathUtils.PI);
+			tx.translate(-w, -h);
+			break;
+		}
+		case TRANS_MIRROR_ROT270: {
+			tx.rotate(ANGLE_270);
+			tx.scale(-1, 1);
+			break;
+		}
+		}
+		return tx;
+	}
+	
+	public static Affine2f transformRegion(Affine2f tx, float x, float y,
+			int transform, float width, float height) {
+		switch (transform) {
+		case TRANS_ROT90: {
 			float w = height;
 			float h = y;
 			tx.translate(w, h);
