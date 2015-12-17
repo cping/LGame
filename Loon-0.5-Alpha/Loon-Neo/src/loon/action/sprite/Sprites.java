@@ -25,6 +25,7 @@ import java.io.Serializable;
 import loon.LObject;
 import loon.LRelease;
 import loon.LSystem;
+import loon.Screen;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -61,18 +62,18 @@ public class Sprites implements Serializable, LRelease {
 
 	private int width, height;
 
-	public Sprites(int w, int h) {
+	private Screen _screen;
+
+	public Sprites(Screen screen, int w, int h) {
+		this._screen = screen;
 		this.visible = true;
 		this.width = w;
 		this.height = h;
 		this.sprites = new ISprite[capacity];
 	}
 
-	public Sprites() {
-		this.visible = true;
-		this.width = LSystem.viewSize.getWidth();
-		this.height = LSystem.viewSize.getHeight();
-		this.sprites = new ISprite[capacity];
+	public Sprites(Screen screen) {
+		this(screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	/**
@@ -553,6 +554,11 @@ public class Sprites implements Serializable, LRelease {
 		this.sprListerner = sprListerner;
 	}
 
+	public Screen getScreen() {
+		return _screen;
+	}
+	
+	@Override
 	public void close() {
 		this.visible = false;
 		for (ISprite spr : sprites) {
@@ -562,4 +568,5 @@ public class Sprites implements Serializable, LRelease {
 			}
 		}
 	}
+
 }

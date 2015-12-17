@@ -469,11 +469,11 @@ public abstract class LObject implements XY, ZIndex {
 	public abstract float getHeight();
 
 	public float getContainerWidth() {
-		return LSystem.viewSize.getWidth();
+		return LSystem.viewSize.width();
 	}
 
 	public float getContainerHeight() {
-		return LSystem.viewSize.getHeight();
+		return LSystem.viewSize.height();
 	}
 
 	@Override

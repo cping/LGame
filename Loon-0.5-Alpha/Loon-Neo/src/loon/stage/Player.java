@@ -453,8 +453,10 @@ public abstract class Player extends LObject implements ActionBind, XY,
 	}
 
 	protected void setSize(Painter p) {
-		setWidth(p.width());
-		setHeight(p.height());
+		if (p != null) {
+			setWidth(p.width());
+			setHeight(p.height());
+		}
 	}
 
 	@Override

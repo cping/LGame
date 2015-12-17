@@ -33,7 +33,7 @@ public class Desktop implements LRelease {
 	public static final Desktop EMPTY_DESKTOP = new Desktop();
 
 	// 输入设备监听
-	protected final SysInput input;
+	protected final Screen input;
 
 	private LContainer contentPane;
 
@@ -52,9 +52,9 @@ public class Desktop implements LRelease {
 	 * @param width
 	 * @param height
 	 */
-	public Desktop(SysInput input, int width, int height) {
+	public Desktop(Screen screen, int width, int height) {
 		this.contentPane = new LPanel(0, 0, width, height);
-		this.input = input;
+		this.input = screen;
 		this.setDesktop(this.contentPane);
 	}
 
@@ -511,6 +511,10 @@ public class Desktop implements LRelease {
 			contentPane.clear();
 		}
 	}
+
+	public Screen getInput() {
+		return input;
+	}
 	
 	@Override
 	public void close() {
@@ -518,5 +522,6 @@ public class Desktop implements LRelease {
 			contentPane.close();
 		}
 	}
+
 
 }

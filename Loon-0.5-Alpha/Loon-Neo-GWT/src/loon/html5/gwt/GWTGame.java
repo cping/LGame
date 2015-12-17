@@ -221,20 +221,13 @@ public class GWTGame extends LGame {
 
 	}
 
-	private double lastUpdate = 0;
-
 	private boolean initGwt = false;
 
 	private void init() {
-		lastUpdate = now();
 		if (!initGwt) {
 			game.initialize();
 			initGwt = true;
 		}
-	}
-
-	public double getLastUpdateTime() {
-		return lastUpdate;
 	}
 
 	public void start() {

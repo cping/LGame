@@ -214,8 +214,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return elapsedTime / 1000f;
 	}
 
-	protected static Screen StaticCurrentSceen;
-
 	private RootPlayer _players;
 
 	public final static byte DRAW_EMPTY = -1;
@@ -378,8 +376,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	private int width, height, halfWidth, halfHeight;
 
 	private SensorDirection direction = SensorDirection.NONE;
-
-	private SysInput baseInput;
 
 	// json资源加载器(全局有效)
 	private static ResourceLocal localRes;
@@ -555,9 +551,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return false;
 	}
 
+	private RectBox tempRect;
+
 	public RectBox getBox() {
-		return new RectBox(this.getX(), this.getY(), this.getWidth(),
-				this.getHeight());
+		if (tempRect == null) {
+			tempRect = new RectBox(this.getX(), this.getY(), this.getWidth(),
+					this.getHeight());
+		} else {
+			tempRect.setBounds(this.getX(), this.getY(), this.getWidth(),
+					this.getHeight());
+		}
+		return tempRect;
 	}
 
 	protected final PaintOrder DRAW_USER_PAINT() {
@@ -598,7 +602,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	final void resetBase() {
-		Screen.StaticCurrentSceen = this;
 		this.handler = LSystem._process;
 		this.width = LSystem.viewSize.getWidth();
 		this.height = LSystem.viewSize.getHeight();
@@ -642,7 +645,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 */
 	public void onCreate(int width, int height) {
 		this.mode = SCREEN_NOT_REPAINT;
-		this.baseInput = this;
 		this.width = width;
 		this.height = height;
 		this.halfWidth = width / 2;
@@ -651,14 +653,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.isLoad = isLock = isClose = isTranslate = isGravity = false;
 		if (sprites != null) {
 			sprites.close();
+			sprites.removeAll();
 			sprites = null;
 		}
-		this.sprites = new Sprites(width, height);
+		this.sprites = new Sprites(this, width, height);
 		if (desktop != null) {
 			desktop.close();
+			desktop.clear();
 			desktop = null;
 		}
-		this.desktop = new Desktop(baseInput, width, height);
+		this.desktop = new Desktop(this, width, height);
 		this.isNext = true;
 	}
 
@@ -1258,19 +1262,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			removeLoad((Updateable) obj);
 		} else if (obj instanceof GameProcess) {
 			removeProcess((GameProcess) obj);
-		}  else if(obj instanceof LRelease){
-			removeRelease((LRelease)obj);
+		} else if (obj instanceof LRelease) {
+			removeRelease((LRelease) obj);
 		}
 		return this;
 	}
-	
+
 	public Screen remove(Object... obj) {
 		for (int i = 0; i < obj.length; i++) {
 			remove(obj[i]);
 		}
 		return this;
 	}
-
 
 	public Screen add(Player player) {
 		if (LSystem._process != null && LSystem._process.rootPlayer != null) {
@@ -1489,10 +1492,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
+	@Override
 	public float getX() {
 		return this.tx;
 	}
 
+	@Override
 	public float getY() {
 		return this.ty;
 	}
@@ -1804,7 +1809,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public SysInput getInput() {
-		return baseInput;
+		return this;
 	}
 
 	public Screen setNext(boolean next) {

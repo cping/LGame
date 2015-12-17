@@ -163,7 +163,7 @@ public abstract class AVGScreen extends Screen {
 			return;
 		}
 		this.desktop = new Desktop(this, getWidth(), getHeight());
-		this.sprites = new Sprites(getWidth(), getHeight());
+		this.sprites = new Sprites(this, getWidth(), getHeight());
 		if (dialog == null) {
 			Image tmp = Image
 					.createImage(getWidth() - 20, getHeight() / 2 - 20);
@@ -179,7 +179,8 @@ public abstract class AVGScreen extends Screen {
 		}
 		this.message = new LMessage(dialog, 0, 0);
 		this.message.setFontColor(LColor.white);
-		int size = (int) (message.getWidth() / (message.getMessageFont().getSize()));
+		int size = (int) (message.getWidth() / (message.getMessageFont()
+				.getSize()));
 		if (size % 2 != 0) {
 			size = size - 3;
 		} else {

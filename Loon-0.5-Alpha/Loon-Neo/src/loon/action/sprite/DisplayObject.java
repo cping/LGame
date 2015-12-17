@@ -1,6 +1,9 @@
 package loon.action.sprite;
 
+import loon.LTexture;
 import loon.LTrans;
+import loon.action.ActionBind;
+import loon.action.map.Field2D;
 import loon.component.layout.BoxSize;
 import loon.event.EventDispatcher;
 import loon.geom.PointF;
@@ -8,22 +11,25 @@ import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public abstract class DisplayObject extends EventDispatcher implements XY,
-		BoxSize {
+public abstract class DisplayObject extends EventDispatcher implements ISprite,
+		ActionBind, XY, BoxSize {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static float morphX = 1f, morphY = 1f;
-
+	
 	protected boolean _visible = true;
 
 	protected RectBox _scrollRect = null;
 
-	protected float _x = 0;
-
-	protected float _y = 0;
-
 	protected float _width = 0;
 
 	protected float _height = 0;
+
+	protected float _scaleX = 1f, _scaleY = 1f;
 
 	protected boolean _inStage = false;
 
@@ -41,18 +47,12 @@ public abstract class DisplayObject extends EventDispatcher implements XY,
 
 	}
 
-	public float getX() {
-		return _x;
-	}
-
-	public float getY() {
-		return _y;
-	}
-
+	@Override
 	public float getWidth() {
 		return _width;
 	}
 
+	@Override
 	public float getHeight() {
 		return _height;
 	}
@@ -69,6 +69,7 @@ public abstract class DisplayObject extends EventDispatcher implements XY,
 		return _visible;
 	}
 
+	@Override
 	public void setVisible(boolean v) {
 		_visible = v;
 	}
@@ -119,26 +120,53 @@ public abstract class DisplayObject extends EventDispatcher implements XY,
 		_anchor = anchor;
 	}
 
-	abstract public void paint(GLEx g);
+	@Override
+	abstract public void createUI(GLEx g);
+
+	@Override
+	public float getScaleX() {
+		return _scaleX;
+	}
+
+	@Override
+	public float getScaleY() {
+		return _scaleY;
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		this._scaleX = sx;
+		this._scaleY = sy;
+	}
+
 
 	public void setPosition(int x, int y) {
-		_x = x;
-		_y = y;
+		setLocation(x, y);
+	}
+
+	@Override
+	public RectBox getRectBox() {
+		return getBounds();
 	}
 
 	public RectBox getBounds() {
-		float x = _x;
-		float y = _y;
+		float x = _location.x;
+		float y = _location.y;
 		switch (_anchor) {
 		case ANCHOR_CENTER:
-			x -= ((int) _width >> 1);
-			y -= ((int) _height >> 1);
+			x -= ((int) (_width * _scaleX) >> 1);
+			y -= ((int) (_height * _scaleY) >> 1);
 			break;
 		}
-		RectBox rect = new RectBox(x, y, _width, _height);
-		return rect;
+		if (_rect == null) {
+			_rect = new RectBox(x, y, _width * _scaleX, _height * _scaleY);
+		} else {
+			_rect.setBounds(x, y, _width * _scaleX, _height * _scaleY);
+		}
+		return _rect;
 	}
 
+	@SuppressWarnings("resource")
 	public PointF local2Global(float x, float y) {
 		float gX = x;
 		float gY = y;
@@ -155,15 +183,6 @@ public abstract class DisplayObject extends EventDispatcher implements XY,
 		return new PointF(gX, gY);
 	}
 
-	@Override
-	public void setX(float x) {
-		this._x = x;
-	}
-
-	@Override
-	public void setY(float y) {
-		this._y = y;
-	}
 
 	@Override
 	public void setWidth(float w) {
@@ -175,10 +194,45 @@ public abstract class DisplayObject extends EventDispatcher implements XY,
 		this._height = h;
 	}
 
+	@Override
+	public boolean isVisible() {
+		return _visible;
+	}
+
+	@Override
+	public boolean inContains(float x, float y, float w, float h) {
+		return getRectBox().contains(x, y, w, h);
+	}
+
 	abstract protected void enterFrame(long time);
 
 	abstract protected void addedToStage();
 
 	abstract protected void removedFromStage();
+
+	@Override
+	public RectBox getCollisionBox() {
+		return getBounds();
+	}
+
+	@Override
+	public LTexture getBitmap() {
+		return null;
+	}
+
+	@Override
+	public Field2D getField2D() {
+		return null;
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return false;
+	}
 
 }
