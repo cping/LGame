@@ -1,15 +1,19 @@
 package org.test;
 
+import loon.LTrans;
 import loon.LTransition;
 import loon.Screen;
+import loon.action.sprite.MovieClip;
 import loon.action.sprite.Sprite;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimerContext;
 
-public class SpriteTest extends Screen {
+public class MoveClipTest extends Screen {
 
+	@Override
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}
@@ -21,31 +25,36 @@ public class SpriteTest extends Screen {
 
 	@Override
 	public void onLoad() {
-		//设置默认字体大小为20号字
+
+		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		// 添加一个精灵，动画按照45x29每格拆分
-		Sprite sprite = new Sprite("dog.png", 45, 29);
-		sprite.Tag = "zzzzzzzzzzzzz";
-		// 最多允许播放20帧
-		sprite.setMaxFrame(20);
-		sprite.setLocation(165, 165);
-		// 缩放2倍
-		sprite.setScale(2f);
-		// 镜像垂直显示
-		sprite.setTransform(Sprite.TRANS_MIRROR);
-	
 		
-		Sprite sprite2 = new Sprite("dog.png", 45, 29);
-		sprite2.Tag = "ccccccccccccccc";
-		// 最多允许播放20帧
-		sprite2.setMaxFrame(20);
-		sprite2.setLocation(65, 165);
-		// 缩放2倍
-		sprite2.setScale(2f);
-		// 镜像垂直显示
-		sprite2.setTransform(Sprite.TRANS_MIRROR_ROT90);
-		add(sprite2);
-		add(sprite);
+		ResourceLocal res = getResourceConfig("resource.json");
+		MovieClip c = new MovieClip(res.getSheet("Monster01json"), 128);
+		c.setLoop(true);
+		c.setScale(2f, 2f);
+		c.setLocation(155, 55);
+		c.setTrans(LTrans.TRANS_MIRROR_ROT270);
+		add(c);
+
+		MovieClip c2 = new MovieClip(res.getSheet("Monster01json"), 128);
+		c2.setLoop(true);
+		c2.setLocation(255, 55);
+		c2.setScale(2f, 2f);
+		c2.setTrans(LTrans.TRANS_MIRROR);
+		add(c2);
+
+		MovieClip c3 = new MovieClip(res.getSheet("Monster02json"), 128);
+		c3.setLoop(true);
+		c3.setLocation(155, 155);
+		c3.setScale(2f, 2f);
+		add(c3);
+
+		Sprite c4 = new Sprite(res.getSheet("Monster02json"), 255, 155, 128);
+		c4.setScale(2f, 2f);
+		add(c4);
+		
+
 		add(MultiScreenTest.getBackButton(this));
 	}
 

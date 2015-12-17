@@ -377,9 +377,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private SensorDirection direction = SensorDirection.NONE;
 
-	// json资源加载器(全局有效)
-	private static ResourceLocal localRes;
-
 	// 精灵集合
 	private Sprites sprites;
 
@@ -2352,14 +2349,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public ResourceLocal getResourceConfig(String path) {
-		if (localRes != null) {
-			localRes.init(path);
-			return localRes;
-		}
 		if (LSystem._base == null) {
-			return localRes = new ResourceLocal(path);
+			return new ResourceLocal(path);
 		}
-		return localRes = LSystem._base.assets().getJsonResource(path);
+		return LSystem._base.assets().getJsonResource(path);
 	}
 
 	public abstract void resume();

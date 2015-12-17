@@ -158,10 +158,10 @@
 
 
 
-		{"name":"Monster01png","type":"image","url":"assets/monsters/Monster01.png"},
-		{"name":"Monster01json","type":"json","url":"assets/monsters/Monster01.json"},
-		{"name":"Monster02png","type":"image","url":"assets/monsters/Monster02.png"},
-		{"name":"Monster02json","type":"json","url":"assets/monsters/Monster02.json"},
+		{"name":"Monster01png","type":"image","url":"assets/monsters/monster01.png"},
+		{"name":"Monster01json","type":"json","url":"assets/monsters/monster01.json"},
+		{"name":"Monster02png","type":"image","url":"assets/monsters/monster02.png"},
+		{"name":"Monster02json","type":"json","url":"assets/monsters/monster02.json"},
 		{"name":"Monster03png","type":"image","url":"assets/monsters/Monster03.png"},
 		{"name":"Monster03json","type":"json","url":"assets/monsters/Monster03.json"},
 		{"name":"Monster04png","type":"image","url":"assets/monsters/Monster04.png"},

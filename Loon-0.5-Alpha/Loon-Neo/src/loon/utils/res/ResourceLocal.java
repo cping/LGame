@@ -145,9 +145,9 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 	}
 
 	@Override
-	public SpriteSheet getSheet(String name) {
+	public MovieSpriteSheet getSheet(String name) {
 		init();
-		SpriteSheet sset = null;
+		MovieSpriteSheet sset = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_SHEET);
 		if (false == _dataTable.containsKey(name)) {
 			String url = item.url();
@@ -165,14 +165,14 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 				sheet = LTextures.loadTexture(imagePath);
 			}
 			if (item.subkeys != null) {
-				sset = new SpriteSheet(jsonObj, StringUtils.split(item.subkeys,
+				sset = new MovieSpriteSheet(jsonObj, StringUtils.split(item.subkeys,
 						','), sheet);
 			} else {
-				sset = new SpriteSheet(jsonObj, sheet);
+				sset = new MovieSpriteSheet(jsonObj, sheet);
 			}
 			_dataTable.put(name, sset);
 		} else {
-			sset = (SpriteSheet) _dataTable.get(name);
+			sset = (MovieSpriteSheet) _dataTable.get(name);
 		}
 		return sset;
 	}

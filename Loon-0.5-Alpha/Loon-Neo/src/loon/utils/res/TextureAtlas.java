@@ -12,7 +12,7 @@ public class TextureAtlas {
 	protected LTexture _img = null;
 
 	protected ListMap<String, TextureData> _frames = null;
-	
+
 	protected TArray<String> names = new TArray<String>();
 
 	public LTexture img() {
@@ -98,14 +98,14 @@ public class TextureAtlas {
 			return frames;
 		} else {
 			TypedArray<String> keys = jsonObj.keys();
-		
 			for (int i = 0; i < keys.length(); i++) {
 				String key = keys.get(i);
 				if ("res".equals(key)) {
 					Json.Object jsonObject = jsonObj.getObject(key);
 					TypedArray<String> resKeys = jsonObject.keys();
 					int charAmount = resKeys.length();
-					ListMap<String, TextureData> frames = new ListMap<String, TextureData>(charAmount);
+					ListMap<String, TextureData> frames = new ListMap<String, TextureData>(
+							charAmount);
 					for (int j = 0; j < charAmount; j++) {
 						String name = resKeys.get(j);
 						names.add(name);
@@ -137,15 +137,13 @@ public class TextureAtlas {
 						data.offY *= DisplayObject.morphY;
 						data.sourceH *= DisplayObject.morphY;
 						frames.put(name, data);
-						
+
 					}
-					System.out.println(frames.size);
 					return frames;
 
 				}
 
 			}
-	
 
 			return null;
 		}

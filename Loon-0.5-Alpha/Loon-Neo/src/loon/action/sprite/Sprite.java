@@ -37,6 +37,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.MathUtils;
+import loon.utils.res.MovieSpriteSheet;
 
 public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		BoxSize {
@@ -290,6 +291,37 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		this.setLocation(x, y);
 		this.spriteName = spriteName;
 		this.setAnimation(animation, images, maxFrame, timer);
+		this.visible = true;
+		this.transform = LTrans.TRANS_NONE;
+	}
+
+	/**
+	 * 以资源SpriteSheet构建精灵
+	 * 
+	 * @param sheet
+	 * @param x
+	 * @param y
+	 * @param timer
+	 */
+	public Sprite(MovieSpriteSheet sheet, float x, float y, long timer) {
+		this("Sprite" + System.currentTimeMillis(), sheet, x, y, timer);
+	}
+
+	/**
+	 * 以资源SpriteSheet构建精灵
+	 * 
+	 * @param spriteName
+	 * @param sheet
+	 * @param x
+	 * @param y
+	 * @param timer
+	 */
+	public Sprite(String spriteName, MovieSpriteSheet sheet, float x, float y,
+			long timer) {
+		this.setLocation(x, y);
+		this.spriteName = spriteName;
+		LTexture[] texs = sheet.getTextures();
+		this.setAnimation(animation, texs, texs.length, timer);
 		this.visible = true;
 		this.transform = LTrans.TRANS_NONE;
 	}
@@ -688,18 +720,6 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		this.scaleY = scaleY;
 	}
 
-	public void close() {
-		this.visible = false;
-		if (image != null) {
-			image.close();
-			image = null;
-		}
-		if (animation != null) {
-			animation.close();
-			animation = null;
-		}
-	}
-
 	public Field2D getField2D() {
 		return null;
 	}
@@ -747,4 +767,16 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		this.scaleY = (h / getHeight());
 	}
 
+	@Override
+	public void close() {
+		this.visible = false;
+		if (image != null) {
+			image.close();
+			image = null;
+		}
+		if (animation != null) {
+			animation.close();
+			animation = null;
+		}
+	}
 }

@@ -14,7 +14,7 @@ public abstract class ResourceGetter extends EventDispatcher {
 
 	abstract public Image getImage(String name);
 	
-	abstract public SpriteSheet getSheet(String name);
+	abstract public MovieSpriteSheet getSheet(String name);
 
 	abstract public FontSheet getFontSheet(String name);
 

@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.TArray;
+import loon.utils.res.MovieSpriteSheet;
 
 public class Animation implements LRelease {
 
@@ -170,9 +171,22 @@ public class Animation implements LRelease {
 	}
 
 	/**
+	 * 转化MovieSpriteSheet为动画资源
+	 * 
+	 * @param sheet
+	 * @param maxFrame
+	 * @param timer
+	 * @return
+	 */
+	public static Animation getDefaultAnimation(MovieSpriteSheet sheet,
+			int maxFrame, int timer) {
+		return getDefaultAnimation(sheet.getTextures(), maxFrame, timer);
+	}
+
+	/**
 	 * 克隆一个独立动画
 	 */
-	public Object clone() {
+	public Animation cpy() {
 		return new Animation(frames, totalDuration);
 	}
 
@@ -351,6 +365,7 @@ public class Animation implements LRelease {
 			this.endTimer = endTimer;
 		}
 
+		@Override
 		public void close() {
 			if (image != null) {
 				LTexture father = image.getParent();
@@ -362,7 +377,8 @@ public class Animation implements LRelease {
 			}
 		}
 	}
-
+	
+	@Override
 	public void close() {
 		if (frames != null) {
 			for (AnimationFrame frame : frames) {

@@ -9,7 +9,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.opengl.GLEx.Direction;
 import loon.utils.res.TextureData;
-import loon.utils.res.SpriteSheet;
+import loon.utils.res.MovieSpriteSheet;
 import loon.utils.timer.LTimer;
 
 public class MovieClip extends DisplayObject implements LRelease {
@@ -21,7 +21,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	private TextureData _ssd = null;
 
-	private SpriteSheet _sheet = null;
+	private MovieSpriteSheet _sheet = null;
 
 	private LColor _color = new LColor(LColor.white);
 
@@ -55,15 +55,15 @@ public class MovieClip extends DisplayObject implements LRelease {
 		}
 	}
 
-	public MovieClip(SpriteSheet sheet, int interval) {
+	public MovieClip(MovieSpriteSheet sheet, int interval) {
 		init(sheet, interval, DisplayObject.ANCHOR_TOP_LEFT);
 	}
 
-	public MovieClip(SpriteSheet sheet, int interval, int anchor) {
+	public MovieClip(MovieSpriteSheet sheet, int interval, int anchor) {
 		init(sheet, interval, anchor);
 	}
 
-	private void init(SpriteSheet sheet, int interval, int anchor) {
+	private void init(MovieSpriteSheet sheet, int interval, int anchor) {
 		_sheet = sheet;
 		_delay = new LTimer(interval);
 		setAnchor(anchor);
@@ -229,59 +229,58 @@ public class MovieClip extends DisplayObject implements LRelease {
 		if (drawRect != null) {
 			int destX = (int) (drawRect.x() * DisplayObject.morphX);
 			int destY = (int) (drawRect.y() * DisplayObject.morphY);
-			if (_rotation != 0) {
-				g.draw(_sheet.sheet(), destX, destY, drawRect.width,
-						drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(),
-						_ssd.h(), _color, _rotation);
-			} else {
 
-				float rotate = 0;
-				Direction dir = Direction.TRANS_NONE;
+			float rotate = 0;
+			Direction dir = Direction.TRANS_NONE;
 
-				switch (_trans) {
-				case LTrans.TRANS_NONE: {
-					break;
-				}
-				case LTrans.TRANS_ROT90: {
-					rotate = 90;
-					break;
-				}
-				case LTrans.TRANS_ROT180: {
-					rotate = 180;
-					break;
-				}
-				case LTrans.TRANS_ROT270: {
-					rotate = 270;
-					break;
-				}
-				case LTrans.TRANS_MIRROR: {
-					dir = Direction.TRANS_MIRROR;
-					break;
-				}
-				case LTrans.TRANS_MIRROR_ROT90: {
-					dir = Direction.TRANS_MIRROR;
-					rotate = -90;
-					break;
-				}
-				case LTrans.TRANS_MIRROR_ROT180: {
-					dir = Direction.TRANS_MIRROR;
-					rotate = -180;
-					break;
-				}
-				case LTrans.TRANS_MIRROR_ROT270: {
-					dir = Direction.TRANS_MIRROR;
-					rotate = -270;
-					break;
-				}
-				default:
-					throw new IllegalArgumentException("Bad transform");
-				}
-				g.draw(_sheet.sheet(), destX, destY, drawRect.width,
-						drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(),
-						_ssd.h(), _color, rotate, _scaleX, _scaleY,
-						_anchorValue, dir);
-
+			switch (_trans) {
+			case LTrans.TRANS_NONE: {
+				break;
 			}
+			case LTrans.TRANS_ROT90: {
+				rotate = 90;
+				break;
+			}
+			case LTrans.TRANS_ROT180: {
+				rotate = 180;
+				break;
+			}
+			case LTrans.TRANS_ROT270: {
+				rotate = 270;
+				break;
+			}
+			case LTrans.TRANS_MIRROR: {
+				dir = Direction.TRANS_MIRROR;
+				break;
+			}
+			case LTrans.TRANS_MIRROR_ROT90: {
+				dir = Direction.TRANS_MIRROR;
+				rotate = -90;
+				break;
+			}
+			case LTrans.TRANS_MIRROR_ROT180: {
+				dir = Direction.TRANS_MIRROR;
+				rotate = -180;
+				break;
+			}
+			case LTrans.TRANS_MIRROR_ROT270: {
+				dir = Direction.TRANS_MIRROR;
+				rotate = -270;
+				break;
+			}
+			default:
+				throw new IllegalArgumentException("Bad transform");
+			}
+			float r = rotate + _rotation;
+			if (r > 360) {
+				rotate = r - 360;
+			} else {
+				rotate += _rotation;
+			}
+			g.draw(_sheet.sheet(), destX, destY, drawRect.width,
+					drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(), _ssd.h(),
+					_color, rotate, _scaleX, _scaleY, _anchorValue, dir);
+
 		}
 
 	}

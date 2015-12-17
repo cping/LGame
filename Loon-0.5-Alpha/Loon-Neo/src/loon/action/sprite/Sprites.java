@@ -561,6 +561,7 @@ public class Sprites implements Serializable, LRelease {
 				spr = null;
 			}
 		}
+		clear();
 	}
 
 }
