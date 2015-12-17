@@ -187,7 +187,7 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new DepthTest());
 		addScreen(names[index++], new CanvasLayerTest());
 		addScreen(names[index++], new PlayerClickTest());
-		addScreen(names[index++], new MoveClipTest());
+		addScreen(names[index++], new MovieClipTest());
 		// 默认按钮大小为100x30
 		int btnWidth = 100;
 		int btnHeight = 25;

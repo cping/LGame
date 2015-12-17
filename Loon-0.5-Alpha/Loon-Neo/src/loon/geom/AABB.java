@@ -20,7 +20,7 @@
  */
 package loon.geom;
 
-public class AABB {
+public class AABB implements XY{
 
 	public float minX, minY;
 
@@ -51,6 +51,16 @@ public class AABB {
 		this.minY = minY;
 		this.maxX = maxX;
 		this.maxY = maxY;
+	}
+
+	@Override
+	public float getX() {
+		return minX;
+	}
+
+	@Override
+	public float getY() {
+		return minY;
 	}
 
 }

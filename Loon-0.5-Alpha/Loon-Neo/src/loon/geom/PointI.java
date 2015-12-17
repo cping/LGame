@@ -23,7 +23,7 @@ package loon.geom;
 import loon.utils.MathUtils;
 
 /*最简化的整型坐标处理类,以减少对象大小*/
-public class PointI {
+public class PointI implements XY {
 
 	public int x = 0;
 	public int y = 0;
@@ -92,5 +92,15 @@ public class PointI {
 		final int dx = ix - x;
 		final int dy = iy - y;
 		return MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
 	}
 }

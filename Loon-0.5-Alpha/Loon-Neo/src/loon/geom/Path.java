@@ -183,6 +183,7 @@ public class Path extends Shape {
 		return outList;
 	}
 
+	@Override
 	public boolean closed() {
 		return closed;
 	}

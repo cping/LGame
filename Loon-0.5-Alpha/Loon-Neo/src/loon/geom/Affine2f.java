@@ -38,7 +38,7 @@ import loon.utils.MathUtils;
  * }
  * </pre>
  */
-public class Affine2f implements LTrans {
+public class Affine2f implements LTrans, XY {
 
 	public final static Affine2f multiply(Affine2f a, Affine2f b, Affine2f into) {
 		return multiply(a.m00, a.m01, a.m10, a.m11, a.tx, a.ty, b.m00, b.m01,
@@ -123,8 +123,8 @@ public class Affine2f implements LTrans {
 			tx.translate(w, h);
 			tx.scale(-1, 1);
 			tx.translate(-w, -h);
-			 w = x + width / 2;
-			 h = y + height / 2;
+			w = x + width / 2;
+			h = y + height / 2;
 			tx.translate(w, h);
 			tx.rotate(MathUtils.PI);
 			tx.translate(-w, -h);
@@ -138,7 +138,7 @@ public class Affine2f implements LTrans {
 		}
 		return tx;
 	}
-	
+
 	public static Affine2f transformRegion(Affine2f tx, float x, float y,
 			int transform, float width, float height) {
 		switch (transform) {
@@ -226,7 +226,7 @@ public class Affine2f implements LTrans {
 		return this;
 
 	}
-	
+
 	public Affine2f combined4x4(float[] vals) {
 		float[] m = vals;
 
@@ -860,6 +860,16 @@ public class Affine2f implements LTrans {
 		setScaleX(scaleX);
 		setScaleY(scaleY);
 		return this;
+	}
+
+	@Override
+	public float getX() {
+		return tx();
+	}
+
+	@Override
+	public float getY() {
+		return ty();
 	}
 
 	/** 显示结果上补足了不存在的长高宽坐标，充当完整3x3矩阵…… **/

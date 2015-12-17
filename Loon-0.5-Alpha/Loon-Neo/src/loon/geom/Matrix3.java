@@ -28,7 +28,7 @@ import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Matrix3 implements Serializable {
+public class Matrix3 implements Serializable, XY {
 
 	/**
 	 * 
@@ -1201,6 +1201,16 @@ public class Matrix3 implements Serializable {
 	}
 
 	@Override
+	public float getX() {
+		return tmp[M02];
+	}
+
+	@Override
+	public float getY() {
+		return tmp[M12];
+	}
+
+	@Override
 	public int hashCode() {
 		int result = 17;
 		for (int j = 0; j < 9; j++) {
@@ -1209,4 +1219,5 @@ public class Matrix3 implements Serializable {
 		}
 		return result;
 	}
+
 }

@@ -38,7 +38,8 @@ public class TriangleBasic implements Triangle {
 
 	public TriangleBasic() {
 	}
-
+	
+	@Override
 	public void addPolyPoint(float x, float y) {
 		Point p = new Point(x, y);
 		if (!poly.contains(p)) {
@@ -54,20 +55,23 @@ public class TriangleBasic implements Triangle {
 		return new float[] { poly.get(index).x, poly.get(index).y };
 	}
 
+	@Override
 	public boolean triangulate() {
 		tried = true;
 
 		boolean worked = process(poly, tris);
 		return worked;
 	}
-
+	
+	@Override
 	public int getTriangleCount() {
 		if (!tried) {
 			throw new RuntimeException("this not Triangle !");
 		}
 		return tris.size() / 3;
 	}
-
+	
+	@Override
 	public float[] getTrianglePoint(int t, int i) {
 		if (!tried) {
 			throw new RuntimeException("this not Triangle !");

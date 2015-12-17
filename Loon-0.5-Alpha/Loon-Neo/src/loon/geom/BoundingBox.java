@@ -25,7 +25,7 @@ import loon.geom.Vector3f;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class BoundingBox  {
+public class BoundingBox implements XY {
 
 	private final static Vector3f tmpVector = new Vector3f();
 
@@ -114,6 +114,16 @@ public class BoundingBox  {
 		return out.set(dim);
 	}
 
+	@Override
+	public float getX() {
+		return min.x;
+	}
+
+	@Override
+	public float getY() {
+		return min.y;
+	}
+
 	public float getWidth() {
 		return dim.x;
 	}
@@ -187,9 +197,12 @@ public class BoundingBox  {
 	}
 
 	public BoundingBox ext(Vector3f point) {
-		return this.set(min.set(min(min.x, point.x), min(min.y, point.y),
-				min(min.z, point.z)), max.set(MathUtils.max(max.x, point.x),
-				MathUtils.max(max.y, point.y), MathUtils.max(max.z, point.z)));
+		return this.set(
+				min.set(min(min.x, point.x), min(min.y, point.y),
+						min(min.z, point.z)),
+				max.set(MathUtils.max(max.x, point.x),
+						MathUtils.max(max.y, point.y),
+						MathUtils.max(max.z, point.z)));
 	}
 
 	public BoundingBox clr() {
@@ -287,4 +300,5 @@ public class BoundingBox  {
 	static final float max(final float a, final float b) {
 		return a > b ? a : b;
 	}
+
 }

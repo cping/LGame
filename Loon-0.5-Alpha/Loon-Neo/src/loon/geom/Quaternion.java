@@ -26,7 +26,7 @@ import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Quaternion implements Serializable {
+public class Quaternion implements XY, Serializable {
 
 	/**
 	 * 

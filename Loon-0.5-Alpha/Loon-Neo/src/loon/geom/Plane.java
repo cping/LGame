@@ -2,7 +2,7 @@ package loon.geom;
 
 import loon.utils.NumberUtils;
 
-public class Plane {
+public class Plane implements XY {
 
 	public enum Side {
 		FRONT, BACK, ON_PLANE
@@ -35,7 +35,7 @@ public class Plane {
 
 	public static Vector3f intersection(Plane p1, Plane p2, Plane p3,
 			Vector3f dest) {
-		if (dest == null){
+		if (dest == null) {
 			dest = new Vector3f();
 		}
 
@@ -113,15 +113,26 @@ public class Plane {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o){
+		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()){
+		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
 
 		Plane plane = (Plane) o;
-		return NumberUtils.compare(plane.d, d) == 0 && normal.equals(plane.normal);
+		return NumberUtils.compare(plane.d, d) == 0
+				&& normal.equals(plane.normal);
+	}
+
+	@Override
+	public float getX() {
+		return normal.x;
+	}
+
+	@Override
+	public float getY() {
+		return normal.y;
 	}
 
 	@Override

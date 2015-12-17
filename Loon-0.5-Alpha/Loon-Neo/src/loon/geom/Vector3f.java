@@ -26,7 +26,7 @@ import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Vector3f implements Serializable {
+public class Vector3f implements Serializable, XY {
 
 	/**
 	 * 

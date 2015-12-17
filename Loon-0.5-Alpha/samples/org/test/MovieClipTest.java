@@ -11,7 +11,7 @@ import loon.opengl.GLEx;
 import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimerContext;
 
-public class MoveClipTest extends Screen {
+public class MovieClipTest extends Screen {
 
 	@Override
 	public LTransition onTransition() {

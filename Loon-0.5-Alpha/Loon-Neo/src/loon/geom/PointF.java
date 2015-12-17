@@ -23,7 +23,7 @@ package loon.geom;
 import loon.utils.MathUtils;
 
 /*最简化的浮点坐标处理类,以减少对象大小*/
-public class PointF {
+public class PointF implements XY {
 
 	public float x = 0;
 	public float y = 0;
@@ -92,5 +92,15 @@ public class PointF {
 		final float dx = ix - x;
 		final float dy = iy - y;
 		return MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
 	}
 }

@@ -1,6 +1,6 @@
 package loon.geom;
 
-public class Transform {
+public class Transform implements XY{
 
 	private Matrix4 _matrix4;
 
@@ -140,7 +140,17 @@ public class Transform {
 	}
 
 	public Transform invertSelf() {
-		_matrix4.inv().inv();
+		_matrix4.inv();
 		return this;
+	}
+
+	@Override
+	public float getX() {
+		return _matrix4.getX();
+	}
+
+	@Override
+	public float getY() {
+		return _matrix4.getY();
 	}
 }

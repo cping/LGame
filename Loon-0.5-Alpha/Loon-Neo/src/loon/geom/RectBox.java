@@ -23,7 +23,7 @@ package loon.geom;
 import loon.component.layout.BoxSize;
 import loon.utils.MathUtils;
 
-public class RectBox extends Shape implements BoxSize{
+public class RectBox extends Shape implements BoxSize {
 
 	/**
 	 * 
