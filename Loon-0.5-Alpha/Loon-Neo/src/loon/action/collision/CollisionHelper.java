@@ -1,7 +1,5 @@
 package loon.action.collision;
 
-import loon.action.collision.c2d.Polygon2D;
-import loon.action.collision.c3d.Polygon3D;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.geom.Line;
@@ -317,14 +315,5 @@ public final class CollisionHelper extends ShapeUtils {
 		float radiusSumSq = (r1 + r2) * (r1 + r2);
 
 		return distance <= radiusSumSq;
-	}
-
-	public boolean checkPolygonPolygon(Polygon2D p1, Polygon2D p2) {
-		return Collision2D.checkPolygonCollision(p1, p2, null);
-	}
-
-	public final static boolean checkPolyhedronPolyhedron(Polygon3D p1,
-			Polygon3D p2) {
-		return Collision3D.checkPolyhedronCollision(p1, p2);
 	}
 }

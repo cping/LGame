@@ -21,7 +21,6 @@
  */
 package loon.geom;
 
-import loon.action.collision.c2d.Polygon2D;
 import loon.physics.PPolygon;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -37,20 +36,6 @@ public class Polygon extends Shape {
 	private boolean allowDups = false;
 
 	private boolean closed = true;
-
-	public Polygon(Polygon2D polygon) {
-		this(polygon.getPoints());
-		this.x = polygon.getPosition().x;
-		this.y = polygon.getPosition().y;
-		this.center = new float[2];
-		this.center[0] = polygon.getCenter().x;
-		this.center[1] = polygon.getCenter().y;
-		this.rotation = polygon.getRotation();
-		this.minX = polygon.getMinX();
-		this.maxX = polygon.getMaxX();
-		this.minY = polygon.getMinY();
-		this.maxY = polygon.getMaxY();
-	}
 
 	public Polygon(float[] points) {
 		int length = points.length;
@@ -243,11 +228,7 @@ public class Polygon extends Shape {
 		return new PPolygon(points, scale);
 	}
 
-	public Polygon2D getPolygon2D() {
-		return new Polygon2D(this);
-	}
-
-	public Polygon copy() {
+	public Polygon cpy() {
 		float[] copyPoints = new float[points.length];
 		System.arraycopy(points, 0, copyPoints, 0, copyPoints.length);
 		return new Polygon(copyPoints);

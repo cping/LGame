@@ -185,7 +185,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	@Override
 	public void update(long elapsedTime) {
-
+       enterFrame(elapsedTime);
 	}
 
 	private RectBox tempRect;
@@ -206,6 +206,9 @@ public class MovieClip extends DisplayObject implements LRelease {
 		if (_anchor == DisplayObject.ANCHOR_CENTER) {
 			x -= _ssd.sourceW() >> 1;
 			y -= _ssd.sourceH() >> 1;
+		} else {
+			x -= _anchorX;
+			y -= _anchorY;
 		}
 		PointF p = local2Global(x, y);
 		if (tempRect == null) {
@@ -220,8 +223,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 		} else {
 			rect = LSystem.viewSize.getRect();
 		}
-		RectBox drawRect = RectBox.getIntersection(tempRect,
-				rect);
+		RectBox drawRect = RectBox.getIntersection(tempRect, rect);
 		if (drawRect != null) {
 			int clipX = (int) (_ssd.x() + drawRect.x - p.x);
 			int clipY = (int) (_ssd.y() + drawRect.y - p.y);

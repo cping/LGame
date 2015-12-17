@@ -20,7 +20,7 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	private static final long serialVersionUID = 1L;
 
 	public static float morphX = 1f, morphY = 1f;
-	
+
 	protected boolean _visible = true;
 
 	protected RectBox _scrollRect = null;
@@ -42,6 +42,8 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	public static final int ANCHOR_CENTER = LTrans.HCENTER | LTrans.VCENTER;
 
 	protected int _anchor = DisplayObject.ANCHOR_TOP_LEFT;
+
+	protected float _anchorX, _anchorY;
 
 	public DisplayObject() {
 
@@ -120,6 +122,22 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		_anchor = anchor;
 	}
 
+	public float getAnchorX() {
+		return _anchorX;
+	}
+
+	public void setAnchorX(float ax) {
+		this._anchorX = ax;
+	}
+
+	public float getAnchorY() {
+		return _anchorY;
+	}
+
+	public void setAnchorY(float ay) {
+		this._anchorY = ay;
+	}
+
 	@Override
 	abstract public void createUI(GLEx g);
 
@@ -139,7 +157,6 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		this._scaleY = sy;
 	}
 
-
 	public void setPosition(int x, int y) {
 		setLocation(x, y);
 	}
@@ -153,6 +170,11 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		float x = _location.x;
 		float y = _location.y;
 		switch (_anchor) {
+		case ANCHOR_TOP_LEFT:
+		default:
+			x -= _anchorX;
+			y -= _anchorY;
+			break;
 		case ANCHOR_CENTER:
 			x -= ((int) (_width * _scaleX) >> 1);
 			y -= ((int) (_height * _scaleY) >> 1);
@@ -183,7 +205,6 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		return new PointF(gX, gY);
 	}
 
-
 	@Override
 	public void setWidth(float w) {
 		this._width = w;
@@ -209,6 +230,8 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	abstract protected void addedToStage();
 
 	abstract protected void removedFromStage();
+
+	abstract protected void onScaleChange(float scaleX, float scaleY);
 
 	@Override
 	public RectBox getCollisionBox() {

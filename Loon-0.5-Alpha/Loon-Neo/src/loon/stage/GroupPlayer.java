@@ -268,12 +268,14 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 					Array<Pointer> updates = player.events();
 					for (; updates.hashNext();) {
 						Pointer p = updates.next();
-						if (SysTouch.isDown()) {
-							p.onStart(pos.x, pos.y);
-						} else if (SysTouch.isUp()) {
-							p.onEnd(pos.x, pos.y);
-						} else if (SysTouch.isDrag()) {
-							p.onDrag(pos.x, pos.y);
+						if (p != null) {
+							if (SysTouch.isDown()) {
+								p.onStart(pos.x, pos.y);
+							} else if (SysTouch.isUp()) {
+								p.onEnd(pos.x, pos.y);
+							} else if (SysTouch.isDrag()) {
+								p.onDrag(pos.x, pos.y);
+							}
 						}
 					}
 					updates.stopNext();

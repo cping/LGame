@@ -15,12 +15,14 @@ public class MovieSprite extends DisplayObject {
 
 	}
 
+	@Override
 	protected void addedToStage() {
 		for (DisplayObject object : _childs) {
 			object.addedToStage();
 		}
 	}
 
+	@Override
 	protected void removedFromStage() {
 		for (DisplayObject object : _childs) {
 			object.removedFromStage();
@@ -72,7 +74,7 @@ public class MovieSprite extends DisplayObject {
 		if (index < 0 || index >= _childs.size) {
 			return null;
 		}
-		return (DisplayObject) _childs.get(index);
+		return _childs.get(index);
 	}
 
 	public DisplayObject getChildByName(String name) {
@@ -94,31 +96,41 @@ public class MovieSprite extends DisplayObject {
 		_childs.clear();
 	}
 
+	@Override
 	protected void enterFrame(long time) {
 		for (DisplayObject object : _childs) {
 			object.enterFrame(time);
 		}
 	}
 
-	protected void onScaleChange(double scaleX, double scaleY) {
-
+	protected void onScaleChange(float scaleX, float scaleY) {
+		for (DisplayObject object : _childs) {
+			object.onScaleChange(scaleX, scaleY);
+		}
 	}
 
 	@Override
-	public void close() {
-
+	public void update(long elapsedTime) {
+		for (DisplayObject object : _childs) {
+			object.enterFrame(elapsedTime);
+		}
 	}
 
 	@Override
 	public void createUI(GLEx g) {
-
 		for (DisplayObject object : _childs) {
-
 			if (object.isVisible()) {
 				object.createUI(g);
 			}
 		}
+	}
 
+	@Override
+	public void close() {
+		for (DisplayObject object : _childs) {
+			object.close();
+		}
+		_childs.clear();
 	}
 
 }
