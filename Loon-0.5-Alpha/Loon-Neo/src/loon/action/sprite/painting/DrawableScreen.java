@@ -85,25 +85,31 @@ public abstract class DrawableScreen extends Screen {
 
 	public void draw(GLEx g) {
 		if (isOnLoadComplete()) {
-			batch.begin();
-
-			gameCollection.draw(batch, gameTime);
-			if (drawablesToDraw.size > 0) {
-				drawablesToDraw.clear();
-			}
-			for (Drawable drawable : drawables) {
-				drawablesToDraw.add(drawable);
-			}
-			for (Drawable drawable : drawablesToDraw) {
-				if (drawable._enabled) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
+			if (batch != null) {
+				synchronized (batch) {
+					try {
+						batch.begin();
+						gameCollection.draw(batch, gameTime);
+						if (drawablesToDraw.size > 0) {
+							drawablesToDraw.clear();
+						}
+						for (Drawable drawable : drawables) {
+							drawablesToDraw.add(drawable);
+						}
+						for (Drawable drawable : drawablesToDraw) {
+							if (drawable._enabled) {
+								if (drawable.getDrawableState() == DrawableState.Hidden) {
+									continue;
+								}
+								drawable.draw(batch, gameTime);
+							}
+						}
+						draw(batch);
+					} finally {
+						batch.end();
 					}
-					drawable.draw(batch, gameTime);
 				}
 			}
-			draw(batch);
-			batch.end();
 		}
 	}
 
@@ -131,6 +137,7 @@ public abstract class DrawableScreen extends Screen {
 		return new TArray<Drawable>(drawables);
 	}
 
+	@Override
 	public final void onLoad() {
 		LGame game = LSystem.base();
 		if (game != null) {
@@ -169,6 +176,7 @@ public abstract class DrawableScreen extends Screen {
 
 	public abstract void released(GameKey e);
 
+	@Override
 	public final void alter(LTimerContext timer) {
 		if (!isOnLoadComplete()) {
 			return;
@@ -222,7 +230,9 @@ public abstract class DrawableScreen extends Screen {
 
 	public abstract void update(GameTime gameTime);
 
+	@Override
 	public final void onKeyDown(GameKey e) {
+		super.onKeyDown(e);
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
 				if (drawable != null) {
@@ -236,7 +246,9 @@ public abstract class DrawableScreen extends Screen {
 		pressed(e);
 	}
 
+	@Override
 	public final void onKeyUp(GameKey e) {
+		super.onKeyUp(e);
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
 				if (drawable != null) {
@@ -250,6 +262,7 @@ public abstract class DrawableScreen extends Screen {
 		released(e);
 	}
 
+	@Override
 	public final void touchDown(GameTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -264,6 +277,7 @@ public abstract class DrawableScreen extends Screen {
 		pressed(e);
 	}
 
+	@Override
 	public final void touchUp(GameTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -278,6 +292,7 @@ public abstract class DrawableScreen extends Screen {
 		released(e);
 	}
 
+	@Override
 	public final void touchMove(GameTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
 			if (drawable._enabled) {
@@ -292,6 +307,7 @@ public abstract class DrawableScreen extends Screen {
 		move(e);
 	}
 
+	@Override
 	public final void touchDrag(GameTouch e) {
 		drag(e);
 	}

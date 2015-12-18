@@ -59,7 +59,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private ArrayMap keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 
-	private SpriteBatch batch;
+	private SpriteBatch _batch;
 
 	private TArray<ActionObject> objects;
 
@@ -94,6 +94,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	private PPhysManager _manager;
 
 	private PWorldBox _box;
+
+	private boolean _useGLEx = false;
 
 	private boolean _fixed = false;
 
@@ -224,7 +226,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public SpriteBatch getSpriteBatch() {
-		return batch;
+		return _batch;
 	}
 
 	private void init() {
@@ -351,7 +353,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			this.selectedNode.processKeyReleased();
 		}
 	}
-	
+
 	@SuppressWarnings("resource")
 	public LNNode findNode(int x, int y) {
 		if (content == null) {
@@ -576,10 +578,10 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public final void onLoad() {
 		init();
-		if (batch == null) {
-			batch = new SpriteBatch(3000);
+		if (_batch == null) {
+			_batch = new SpriteBatch(3000);
 		}
-		batch.setBlendState(BlendState.Null);
+		_batch.setBlendState(BlendState.Null);
 		content.setScreen(this);
 		for (LNNode node : content.childs) {
 			if (node != null) {
@@ -874,9 +876,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	@Override
 	public final void draw(GLEx g) {
 		if (isOnLoadComplete()) {
-			if (batch == null) {
+			if (_batch == null || _useGLEx) {
 				for (TileMap tile : tiles) {
-					tile.draw(g, batch, offset.x(), offset.y());
+					tile.draw(g, _batch, offset.x(), offset.y());
 				}
 				for (ActionObject o : objects) {
 					objX = o.getX() + offset.x;
@@ -890,12 +892,12 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 					content.drawNode(g);
 				}
 			} else {
-				synchronized (batch) {
+				synchronized (_batch) {
 					try {
-						batch.begin();
-						before(batch);
+						_batch.begin();
+						before(_batch);
 						for (TileMap tile : tiles) {
-							tile.draw(g, batch, offset.x(), offset.y());
+							tile.draw(g, _batch, offset.x(), offset.y());
 						}
 						for (ActionObject o : objects) {
 							objX = o.getX() + offset.x;
@@ -903,15 +905,15 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 							if (intersects(objX, objY, o.getWidth(),
 									o.getHeight())
 									|| contains(objX, objY)) {
-								o.draw(batch, offset.x, offset.y);
+								o.draw(_batch, offset.x, offset.y);
 							}
 						}
 						if (content != null && content.isVisible()) {
-							content.drawNode(batch);
+							content.drawNode(_batch);
 						}
-						after(batch);
+						after(_batch);
 					} finally {
-						batch.end();
+						_batch.end();
 					}
 				}
 			}
@@ -919,9 +921,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	}
 
-	public abstract void after(SpriteBatch batch);
+	public abstract void after(SpriteBatch _batch);
 
-	public abstract void before(SpriteBatch batch);
+	public abstract void before(SpriteBatch _batch);
 
 	@Override
 	public final void onKeyDown(GameKey e) {
@@ -980,6 +982,14 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return super.isAutoDestory();
 	}
 
+	public boolean isUseGLEx() {
+		return _useGLEx;
+	}
+
+	public void setUseGLEx(boolean u) {
+		this._useGLEx = u;
+	}
+
 	@Override
 	public void close() {
 		if (usePhysics) {
@@ -988,9 +998,9 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			_bodys.clear();
 		}
 		this.keySize = 0;
-		if (batch != null) {
-			batch.close();
-			batch = null;
+		if (_batch != null) {
+			_batch.close();
+			_batch = null;
 		}
 		if (content != null) {
 			content.close();

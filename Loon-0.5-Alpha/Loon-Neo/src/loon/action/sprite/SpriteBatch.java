@@ -274,6 +274,84 @@ public class SpriteBatch extends PixmapFImpl {
 		this.lockSubmit = lockSubmit;
 	}
 
+	public void drawString(LFont spriteFont, String text, float px, float py,
+			LColor color, float rotation, float originx, float originy,
+			float scale) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
+		}
+		int heigh = ((spriteFont.getHeight() - 2));
+		if (rotation == 0f) {
+			drawString(text, px - (originx * scale), (py + heigh)
+					- (originy * scale), scale, scale, originx, originy,
+					rotation, color);
+		} else {
+			drawString(text, px, (py + heigh), scale, scale, originx, originy,
+					rotation, color);
+		}
+		setFont(old);
+	}
+
+	public void drawString(LFont spriteFont, String text, Vector2f position,
+			LColor color, float rotation, Vector2f origin, float scale) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
+		}
+		int heigh = ((spriteFont.getHeight() - 2));
+		if (rotation == 0f) {
+			drawString(text, position.x - (origin.x * scale),
+					(position.y + heigh) - (origin.y * scale), scale, scale,
+					origin.x, origin.y, rotation, color);
+		} else {
+			drawString(text, position.x, (position.y + heigh), scale, scale,
+					origin.x, origin.y, rotation, color);
+		}
+		setFont(old);
+	}
+
+	public void drawString(LFont spriteFont, String text, Vector2f position,
+			LColor color) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
+		}
+		int heigh = (spriteFont.getHeight() - 2);
+		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
+				color);
+		setFont(old);
+	}
+
+	public void drawString(LFont spriteFont, String text, float x, float y,
+			LColor color) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
+		}
+		int heigh = (spriteFont.getHeight() - 2);
+		drawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color);
+		setFont(old);
+	}
+
+	public void drawString(LFont spriteFont, String text, Vector2f position,
+			LColor color, float rotation, Vector2f origin, Vector2f scale) {
+		LFont old = font;
+		if (spriteFont != null) {
+			setFont(spriteFont);
+		}
+		int heigh = ((spriteFont.getHeight() - 2));
+		if (rotation == 0f) {
+			drawString(text, position.x - (origin.x * scale.x),
+					(position.y + heigh) - (origin.y * scale.y), scale.x,
+					scale.y, origin.x, origin.y, rotation, color);
+		} else {
+			drawString(text, position.x, (position.y + heigh), scale.x,
+					scale.y, origin.x, origin.y, rotation, color);
+		}
+		setFont(old);
+	}
+
 	public final void drawString(String mes, Vector2f position) {
 		drawString(mes, position.x, position.y, getColor());
 	}
@@ -553,7 +631,7 @@ public class SpriteBatch extends PixmapFImpl {
 				scaleY, rotation, 0, 0, texture.width(), texture.height(),
 				true, false);
 	}
-	
+
 	public void drawScaleFlipY(LTexture texture, float x, float y, float width,
 			float height, float scaleX, float scaleY) {
 		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
@@ -566,7 +644,7 @@ public class SpriteBatch extends PixmapFImpl {
 				scaleY, rotation, 0, 0, texture.width(), texture.height(),
 				false, true);
 	}
-	
+
 	public void draw(LTexture texture, float x, float y, float rotation) {
 		draw(texture, x, y, texture.width() / 2, texture.height() / 2,
 				texture.width(), texture.height(), 1f, 1f, rotation, 0, 0,
