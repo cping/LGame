@@ -20,9 +20,10 @@ public class BMFontTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 		if (font != null) {
-			font.drawString(g, "ABCFGHAX", 60, 66);
-			font.drawString(g, "ZXXC\n01234",60, 166);
+			font.drawString(g, "ABCFGHAX", 60, 66 - font.getAscent());
+			font.drawString(g, "ZXXC\n01234", 60, 166);
 		}
+		g.drawString("ABCFGHAX", 160, 66 - g.getFont().getAscent());
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class BMFontTest extends Screen {
 		try {
 			font = new BMFont("info.fnt", "info.png");
 			// 放大2倍
-			font.setFontScale(2f);
+			// font.setFontScale(2f);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

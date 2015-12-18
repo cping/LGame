@@ -600,6 +600,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	final void resetBase() {
+		LSTRDictionary.dispose();
 		this.handler = LSystem._process;
 		this.width = LSystem.viewSize.getWidth();
 		this.height = LSystem.viewSize.getHeight();

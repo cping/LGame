@@ -277,6 +277,7 @@ public class LMenu extends LComponent {
 			} finally {
 				g.setAlpha(tmp);
 				g.setColor(color);
+				g.setFont(font);
 			}
 		}
 
@@ -532,8 +533,8 @@ public class LMenu extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
+		float alpha = g.alpha();
 		try {
-			g.saveBrush();
 			g.setAlpha(alphaMenu);
 			switch (type) {
 			case MOVE_LEFT:
@@ -596,7 +597,7 @@ public class LMenu extends LComponent {
 				break;
 			}
 		} finally {
-			g.restoreBrush();
+			g.setAlpha(alpha);
 		}
 	}
 

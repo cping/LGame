@@ -41,6 +41,24 @@ import loon.utils.TArray;
 // 但缺点在于，没有提供图像的文字不能被渲染).
 public class BMFont implements IFont, LRelease {
 
+	private static BMFont _font;
+
+	public static BMFont getDefaultFont() {
+		if (_font == null) {
+			try {
+				_font = new BMFont(LSystem.FRAMEWORK_IMG_NAME + "deffont.fnt",
+						LSystem.FRAMEWORK_IMG_NAME + "deffont.png");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return _font;
+	}
+
+	public static void setDefaultFont(BMFont font) {
+		_font = font;
+	}
+
 	private static final int DEFAULT_MAX_CHAR = 255;
 
 	private float fontScaleX = 1f, fontScaleY = 1f;
@@ -244,7 +262,7 @@ public class BMFont implements IFont, LRelease {
 
 		if (def.id != (short) ' ') {
 			lineHeight = MathUtils.max(def.height + def.yoffset, lineHeight);
-			halfHeight = lineHeight / 2;
+			halfHeight = lineHeight >> 1;
 		}
 
 		return def;
@@ -284,7 +302,7 @@ public class BMFont implements IFont, LRelease {
 
 		if (display == null) {
 
-			int x = 0, y = halfHeight;
+			int x = 0, y = 0;
 
 			displayList.glBegin();
 			displayList.setBatchPos(tx, ty);
@@ -360,7 +378,7 @@ public class BMFont implements IFont, LRelease {
 		if (isClose) {
 			return;
 		}
-		int x = 0, y = halfHeight;
+		int x = 0, y = 0;
 		CharDef lastCharDef = null;
 		char[] data = text.toCharArray();
 		for (int i = 0; i < data.length; i++) {
@@ -544,7 +562,7 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public int getHeight() {
-		return (int) (lineHeight * fontScaleY);
+		return (int) (lineHeight * fontScaleY) - halfHeight;
 	}
 
 	public float getFontScaleX() {
@@ -574,12 +592,12 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public float getAscent() {
-		return (lineHeight + halfHeight) * this.fontScaleY;
+		return (int) (lineHeight * this.fontScaleY) - halfHeight / 3;
 	}
 
 	@Override
 	public int getSize() {
-		return (int) ((lineHeight + halfHeight) * this.fontScaleY);
+		return (int) (lineHeight * this.fontScaleY) - halfHeight / 4;
 	}
 
 	@Override
