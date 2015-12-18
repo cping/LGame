@@ -51,6 +51,7 @@ public class SpriteLabel extends LObject implements ISprite {
 		this.font = font;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (visible) {
 			this.width = font.stringWidth(label);

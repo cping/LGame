@@ -141,7 +141,7 @@ public class MultiScreenTest extends Screen {
 			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
 			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical",
 			"LNode2", "Input", "Depth", "Canvas", "PlayerClick", "MoveClip",
-			"TextureImage" };
+			"TextureImage","Session" };
 
 	static BMFont info_font;
 
@@ -204,7 +204,9 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new PlayerClickTest());
 		addScreen(names[index++], new MovieClipTest());
 		addScreen(names[index++], new TextureImageTest());
-		// 默认按钮大小为100x30
+		addScreen(names[index++], new SessionTest());
+		
+		// 默认按钮大小为100x25
 		int btnWidth = 100;
 		int btnHeight = 25;
 		// 添加一组按钮布局，并返回按钮对象
