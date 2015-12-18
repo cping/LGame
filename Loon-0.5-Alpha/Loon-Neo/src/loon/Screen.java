@@ -46,6 +46,7 @@ import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.opengl.LTextureImage;
 import loon.stage.Player;
 import loon.stage.PlayerUtils;
 import loon.stage.RootPlayer;
@@ -1497,6 +1498,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	@Override
 	public float getY() {
 		return this.ty;
+	}
+
+	protected LTextureImage createTextureImage(float width, float height) {
+		if (LSystem._base == null) {
+			return null;
+		}
+		return new LTextureImage(LSystem._base.graphics(), LSystem._base
+				.display().GL().batch(), width, height, true);
 	}
 
 	protected void afterUI(GLEx g) {

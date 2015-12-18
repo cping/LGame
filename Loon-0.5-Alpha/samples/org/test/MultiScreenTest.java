@@ -1,5 +1,6 @@
 package org.test;
 
+import loon.LObject;
 import loon.LSystem;
 import loon.LTransition;
 import loon.Screen;
@@ -101,10 +102,23 @@ public class MultiScreenTest extends Screen {
 		@Override
 		public void DownClick(LComponent comp, float x, float y) {
 			if (comp instanceof LClickButton) {
-				LClickButton click = (LClickButton) comp;
-				String text = click.getText();
-				// 由于将按钮名与Screen名设定的一样，所以直接调用按钮名就可以运行指定Scrren了
-				runScreen(text);
+				// 查看LObject状态设置
+				switch (comp.getStatus()) {
+				case LObject.NOT: // 如果对象无状态设置
+					LClickButton click = (LClickButton) comp;
+					String text = click.getText();
+					// 由于将按钮名与Screen名设定的一样，所以直接调用按钮名就可以运行指定Scrren了
+					runScreen(text);
+					break;
+				case LObject.FALSE: // 切换新的示例Screen
+					// wait code
+					break;
+				case LObject.TRUE:// 退出
+					LSystem.exit();
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
@@ -125,8 +139,9 @@ public class MultiScreenTest extends Screen {
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
 			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea", "Progress",
 			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
-			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical","LNode2",
-			"Input","Depth","Canvas","PlayerClick","MoveClip"};
+			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical",
+			"LNode2", "Input", "Depth", "Canvas", "PlayerClick", "MoveClip",
+			"TextureImage" };
 
 	static BMFont info_font;
 
@@ -188,6 +203,7 @@ public class MultiScreenTest extends Screen {
 		addScreen(names[index++], new CanvasLayerTest());
 		addScreen(names[index++], new PlayerClickTest());
 		addScreen(names[index++], new MovieClipTest());
+		addScreen(names[index++], new TextureImageTest());
 		// 默认按钮大小为100x30
 		int btnWidth = 100;
 		int btnHeight = 25;
@@ -206,6 +222,37 @@ public class MultiScreenTest extends Screen {
 			// 为按钮设置事件，并加载入一个集合
 			tweens.add(set(btn));
 		}
+
+		// 设置一个退出按钮
+		LClickButton exitClick = LClickButton.make(48, 48, "cross.png",
+				"cross_effect.png", "cross_effect.png");
+		// 设定一个特殊状态为true
+		exitClick.setStatus(LObject.TRUE);
+		// 设置监听
+		exitClick.SetClick(clickListener);
+		// 初始透明度0
+		exitClick.setAlpha(0);
+		// 按钮置顶
+		topOn(exitClick);
+		// 偏移Screen大小-按钮大小-5
+		exitClick.setX(getWidth() - exitClick.getWidth() - 5);
+		add(exitClick);
+		tweens.add(set(exitClick));
+
+		// 设置一个下页按钮
+		LClickButton nextClick = LClickButton.make("NEXT", 45, 25);
+		// 设定一个特殊状态为false
+		nextClick.setStatus(LObject.FALSE);
+		// 设置监听
+		nextClick.SetClick(clickListener);
+		// 初始透明度0
+		nextClick.setAlpha(0);
+		nextClick.setFont(info_font);
+		// 偏移Screen大小-按钮大小-5
+		nextClick.setX(getWidth() - nextClick.getWidth() - 5);
+		nextClick.setY(getHeight() - nextClick.getHeight() - 24);
+		add(nextClick);
+		tweens.add(set(nextClick));
 
 		// 设定一个游戏进程，半秒后让按钮导入
 		RealtimeProcess process = new RealtimeProcess() {

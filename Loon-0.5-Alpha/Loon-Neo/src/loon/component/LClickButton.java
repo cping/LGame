@@ -43,6 +43,19 @@ public class LClickButton extends LComponent {
 
 	private String text = null;
 
+	public static LClickButton make(int width, int height, String idle,
+			String hover, String clicked) {
+		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
+				0, width, height, LTextures.loadTexture(idle),
+				LTextures.loadTexture(hover), LTextures.loadTexture(clicked));
+	}
+
+	public static LClickButton make(int width, int height, LTexture idle,
+			LTexture hover, LTexture clicked) {
+		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
+				0, width, height, idle, hover, clicked);
+	}
+
 	public static LClickButton make(LTexture texture) {
 		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
 				0, texture.getWidth(), texture.getHeight(), texture, texture,
