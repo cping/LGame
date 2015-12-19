@@ -281,7 +281,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = ((spriteFont.getHeight() - 2));
+		int heigh = 2;
 		if (rotation == 0f) {
 			drawString(text, px - (originx * scale), (py + heigh)
 					- (originy * scale), scale, scale, originx, originy,
@@ -299,7 +299,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = ((spriteFont.getHeight() - 2));
+		int heigh = 2;
 		if (rotation == 0f) {
 			drawString(text, position.x - (origin.x * scale),
 					(position.y + heigh) - (origin.y * scale), scale, scale,
@@ -317,7 +317,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = (spriteFont.getHeight() - 2);
+		int heigh = 2;
 		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
 				color);
 		setFont(old);
@@ -329,7 +329,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = (spriteFont.getHeight() - 2);
+		int heigh = 2;
 		drawString(text, x, (y + heigh), 1f, 1f, 0f, 0f, 0f, color);
 		setFont(old);
 	}
@@ -340,7 +340,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
-		int heigh = ((spriteFont.getHeight() - 2));
+		int heigh = 2;
 		if (rotation == 0f) {
 			drawString(text, position.x - (origin.x * scale.x),
 					(position.y + heigh) - (origin.y * scale.y), scale.x,
@@ -404,7 +404,6 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!lockSubmit) {
 			submit();
 		}
-		
 		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
 				rotation, c);
 	}

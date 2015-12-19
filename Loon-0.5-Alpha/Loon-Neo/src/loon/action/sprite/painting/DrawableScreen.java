@@ -22,6 +22,7 @@ package loon.action.sprite.painting;
 
 import loon.LGame;
 import loon.LSystem;
+import loon.LTransition;
 import loon.Screen;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
@@ -36,6 +37,11 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class DrawableScreen extends Screen {
 
+	@Override
+	public LTransition onTransition(){
+		return LTransition.newEmpty();
+	}
+
 	private TArray<Drawable> drawables;
 
 	private TArray<Drawable> drawablesToUpdate;
@@ -49,7 +55,7 @@ public abstract class DrawableScreen extends Screen {
 	private SpriteBatch batch;
 
 	private final GameTime gameTime = new GameTime();
-
+	
 	public DrawableScreen() {
 		this.drawables = new TArray<Drawable>();
 		this.drawablesToUpdate = new TArray<Drawable>();
