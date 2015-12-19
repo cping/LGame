@@ -661,16 +661,21 @@ public class LSTRFont implements LRelease {
 		return sbr.toString();
 	}
 
+	@Override
 	public void close() {
 		if (fontBatch != null) {
 			fontBatch.destoryAll();
+			fontBatch.close();
 		}
+		fontBatch = null;
 		for (Cache c : displays.values()) {
 			if (c != null) {
 				c.close();
 				c = null;
 			}
 		}
+		displays.clear();
+		displays = null;
 		initChars = false;
 	}
 

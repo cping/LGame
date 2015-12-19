@@ -24,6 +24,26 @@ import loon.geom.Vector2f;
 
 public class SysTouch {
 
+	public static void startTouchCollection() {
+		SysInputFactory.startTouchCollection();
+	}
+
+	public static void stopTouchCollection() {
+		SysInputFactory.stopTouchCollection();
+	}
+
+	public static LTouchCollection getTouchState() {
+		return SysInputFactory.getTouchState();
+	}
+
+	public static void resetTouch() {
+		SysInputFactory.resetTouch();
+	}
+
+	public static ActionKey getOnlyKey() {
+		return SysInputFactory.getOnlyKey();
+	}
+	
 	public static final int TOUCH_DOWN = 0;
 
 	public static final int TOUCH_UP = 1;

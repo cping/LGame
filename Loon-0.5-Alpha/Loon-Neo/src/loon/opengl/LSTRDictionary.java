@@ -32,7 +32,7 @@ public final class LSTRDictionary {
 	private final static ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(
 			20);
 
-	private final static ObjectMap<LFont, Dict> fontList = new ObjectMap<LFont, Dict>(
+	private final static ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(
 			20);
 
 	private static ObjectMap<String, LSTRFont> lazyEnglish = new ObjectMap<String, LSTRFont>(
@@ -58,6 +58,19 @@ public final class LSTRDictionary {
 			dicts = new TArray<Character>(512);
 		}
 
+		public boolean include(String mes) {
+			final char[] chars = mes.toCharArray();
+			int size = chars.length;
+			for (int i = 0; i < size; i++) {
+				char flag = chars[i];
+				if (!dicts.contains(flag)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		@Override
 		public void close() {
 			if (font != null) {
 				font.close();
@@ -97,20 +110,25 @@ public final class LSTRDictionary {
 		}
 		synchronized (fontList) {
 			LFont cFont = cacheList.get(message);
-			Dict pDict = fontList.get(font);
-			if (cFont == null || pDict == null) {
+			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_"
+					+ font.getSize();
+			Dict pDict = fontList.get(fontFlag);
+			if ((cFont == null || pDict == null || (pDict != null && !pDict
+					.include(mes)))) {
 				if (pDict == null) {
 					pDict = Dict.newDict();
-					fontList.put(font, pDict);
+					fontList.put(fontFlag, pDict);
 				}
 				synchronized (pDict) {
 					cacheList.put(message, font);
 					TArray<Character> charas = pDict.dicts;
 					int oldSize = charas.size;
 					char[] chars = message.toCharArray();
-					for (int i = 0; i < chars.length; i++) {
-						if (!charas.contains(chars[i])) {
-							charas.add(chars[i]);
+					int size = chars.length;
+					for (int i = 0; i < size; i++) {
+						char flag = chars[i];
+						if (!charas.contains(flag)) {
+							charas.add(flag);
 						}
 					}
 					int newSize = charas.size;
@@ -127,6 +145,7 @@ public final class LSTRDictionary {
 					}
 				}
 			}
+
 			return pDict;
 		}
 	}

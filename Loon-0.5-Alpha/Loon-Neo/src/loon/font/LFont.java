@@ -189,10 +189,23 @@ public class LFont implements IFont {
 		return textLayout.leading();
 	}
 
+	private int hash = 1;
+
+	@Override
+	public int hashCode() {
+		if (hash == 1) {
+			hash = LSystem.unite(textFormat.font.name.hashCode(), hash);
+			hash = LSystem.unite(textFormat.font.style.ordinal(), hash);
+			hash = LSystem.unite((int) textFormat.font.size, hash);
+		}
+		return hash;
+	}
+
 	public TextLayout getLayoutText(String text) {
 		return LSystem.base().graphics().layoutText(text, this.textFormat);
 	}
 
+	@Override
 	public String confineLength(String s, int width) {
 		int length = 0;
 		for (int i = 0; i < s.length(); i++) {

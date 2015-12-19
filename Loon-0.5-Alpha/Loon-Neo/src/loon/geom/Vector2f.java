@@ -35,6 +35,8 @@ public class Vector2f implements Serializable, XY {
 
 	private static final Array<Vector2f> _vec2_cache = new Array<Vector2f>();
 
+	public final static Vector2f STATIC_ZERO = new Vector2f();
+
 	public final static Vector2f TMP() {
 		Vector2f temp = _vec2_cache.pop();
 		if (temp == null) {

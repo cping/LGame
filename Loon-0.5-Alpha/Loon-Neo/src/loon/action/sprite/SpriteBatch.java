@@ -404,6 +404,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!lockSubmit) {
 			submit();
 		}
+		
 		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
 				rotation, c);
 	}
