@@ -1,0 +1,113 @@
+//在脚本中预设变量
+set back = "assets/background.png"
+//在LGame脚本中允许中文变量
+set 女性角色常态 = "assets/r0.png"
+set 女性角色惊异 = "assets/r1.png"
+set 女性角色微笑 = "assets/r2.png"
+
+fadein black
+gb print(back) 
+cg print(女性角色微笑) 220
+mes 啦啦啦，啦啦啦，我是编程的大行家～
+mesleft 20
+mes <oC#，C++/,Java，Ruby/>全学啦～
+mesleft 0
+mes 从汇编玩到机器码，咱复制粘贴有妙法～谷歌微软算个啥？～上天与下地全抄到啊～～微软谷歌算个啥？～啊～
+cg del
+noname
+mes 哈哈哈哈哈，真是大言不惭的【企鹅娘】。
+cg print(女性角色惊异) 20
+姓名0
+mes 什么人？竟敢与【本宫】如此讲话？！
+flash 255,255,255
+cg print(p) 220 -80 
+name1
+mes 什么人？小姑娘，太孤陋寡闻了吧？
+name0
+mes 你是？……
+fadeout yellow
+name1
+mes <y俺？/>
+mes 俺乃，传说中的<r【珍禽】/>，<o鹏凌三千/>大人是也！ 
+name0
+mes 什，什么，你就是【鹏凌三千】？！……
+name1
+mes 然也！
+cg print(女性角色惊异) to print(女性角色常态)
+name0
+mes <o完全/>，没听说过……
+name1
+mes 什，什么？连俺也没听说过，居然也敢枉谈【编程】二字吗？！……
+name0
+cg print(女性角色常态) to print(女性角色微笑)
+cg print(女性角色微笑) 20
+mes 切，你以为你是谁？【本宫】在此，诸神让位！（更何况，编程同一只“<o八哥/>”有什么关系？……）
+name1
+mes ……呃，小妮子不知深浅，难道你不知道自己正生存在俺创建的“脚本”中吗？
+name0
+mes 脚本？是脚本又怎么样，在这简陋的脚本环境里（命令就那么十几个），你能奈我何？
+name1
+mes 看来，你还不知【自定义脚本】方式的存在吧？
+name0
+cg print(女性角色微笑) to print(女性角色惊异)
+mes 【自定义脚本】，那是什么玩意？！
+name1
+mes 就是这么个玩意。
+name0
+//调用自定义命令，命令写成中英文或其它字符皆可。
+自定义命令.星星
+mes 啊，怎么回事？！我美丽的容颜呢？！（文档里没有这个脚本命令啊？！）
+name1
+mes 俺不过是自定义了一个显示<y六芒星/>的命令，刚好挡住你的蠢脸罢了。
+name0
+mes 可恶啊！还来！快把我风华绝代的脸庞还来啊！！！
+name1
+mes 还来？很容易，让星星消失时只要说……
+shake 30
+mes 去死吧，星星！！！
+自定义命令.去死吧，星星
+shake 0
+mes 看，星星消失了吧？
+name0
+mes 这样也行？！
+name1
+mes 那还用说，实际上自定义脚本的自由度是相当大的，甚至改什么都可以。
+mes 比如说，默认情况下俺可以这样询问问题……
+select print(sel0)
+in
+  A.很帅。
+  B.超级帅。
+  C.帅到天下无帅。
+out
+if sel0==0
+	mes 你选择的很不错。
+else if sel0==1
+	mes 你选的相当不错。
+else if sel0==2
+	mes 你选择的太正确了。
+endif
+name0
+cg print(女性角色惊异) to print(女性角色常态)
+mes (--|||)……
+name1
+mes 不过面对复杂的用户需求时，可能还是不够，所以我们可以自定义选择项。
+mes 比如说……
+mes 我是天才你同意吗？
+自定义命令.关于天才
+cg print(女性角色常态) to print(女性角色惊异)
+name0
+mes 你是真理部养的鸟吗？……
+name1
+mes 咳，总之什么都可以重新定义，看这个消息框不爽自己换个样子也没什么。
+mes 其实，俺还有很多想说的，不过最近赶文档赶得太狠，暂时没有精力写太多了……
+name0
+cg print(女性角色惊异) to print(女性角色常态)
+mes 你说完了？
+name1
+mes 暂时说完了。
+name0
+fadein red
+cg del print(p) 
+mes 世界，和平了！(死“<o八哥/>”，这次完蛋了吧？！)
+fadeout black
+exit

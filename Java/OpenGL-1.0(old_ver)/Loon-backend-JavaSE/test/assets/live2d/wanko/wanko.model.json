@@ -1,0 +1,40 @@
+﻿{
+    "version":"Sample 1.0.0",
+    "name":"wanko",
+    "model":"wanko.moc",
+    "textures":
+    [
+		"wanko.1024/texture_00.png"
+    ],
+	"hit_areas":
+	[
+		{"name":"body","id":"D_REF.PT_SOBA_01"}
+	],
+	"layout":
+	{
+		"center_x":0,
+		"y":1.8,
+		"width":2.9
+	},
+	"motions":
+	{
+		"idle":
+		[
+			{"file":"motions/idle_00.mtn" ,"fade_in":500, "fade_out":200},
+			{"file":"motions/idle_01.mtn" ,"fade_in":500, "fade_out":200},
+			{"file":"motions/idle_02.mtn" ,"fade_in":500, "fade_out":200},
+			{"file":"motions/idle_03.mtn" ,"fade_in":500, "fade_out":200}
+        ],
+       "shake":
+		[
+			{ "file":"motions/shake_00.mtn","fade_in":500 ,"fade_out":0},
+			{ "file":"motions/shake_01.mtn","fade_in":500 ,"fade_out":0}
+		],
+		"tap_body":
+		[
+			{"file":"motions/tapBody_00.mtn"	,"fade_in":500,"fade_out":0},
+			{"file":"motions/tapBody_01.mtn"	,"fade_in":500,"fade_out":0},
+			{"file":"motions/tapBody_02.mtn"	,"fade_in":500,"fade_out":0}
+		]
+	}
+}

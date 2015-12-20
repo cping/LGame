@@ -1,0 +1,73 @@
+﻿{
+	"version":"Sample 1.0.0",
+	"name":"shizuku",
+	"model":"shizuku.moc",
+	"textures":
+	[
+		"shizuku.1024/texture_00.png",
+		"shizuku.1024/texture_01.png",
+		"shizuku.1024/texture_02.png",
+		"shizuku.1024/texture_03.png",
+		"shizuku.1024/texture_04.png",
+		"shizuku.1024/texture_05.png"
+	],
+	"physics":"shizuku.physics.json",
+	"pose":"shizuku.pose.json",
+	"expressions":
+	[
+		{"name":"F00","file":"expressions/F00.exp.json"},
+		{"name":"F01","file":"expressions/F01.exp.json"},
+		{"name":"F02","file":"expressions/F02.exp.json"},
+		{"name":"F03","file":"expressions/F03.exp.json"} 
+	],
+	"layout":
+	{
+		"center_x":0,
+		"y":1.2,
+		"width":2.4
+	},
+	"hit_areas":
+	[
+		{"name":"head", "id":"D_REF.FACE"},
+		{"name":"body", "id":"D_REF.BODY"}
+	],
+	"motions":
+	{
+		"idle":
+		[
+			{"file":"motions/idle_00.mtn" ,"fade_in":2000, "fade_out":2000},
+			{"file":"motions/idle_01.mtn" ,"fade_in":2000, "fade_out":2000},
+			{"file":"motions/idle_02.mtn" ,"fade_in":2000, "fade_out":2000}
+		],
+		"tap_body":
+		[
+			{ "file":"motions/tapBody_00.mtn", "sound":"sounds/tapBody_00.wav" ,"fade_out":0},
+			{ "file":"motions/tapBody_01.mtn", "sound":"sounds/tapBody_01.wav" ,"fade_out":0},
+			{ "file":"motions/tapBody_02.mtn", "sound":"sounds/tapBody_02.wav" ,"fade_out":0}
+		],
+		"pinch_in":
+		[
+			{ "file":"motions/pinchIn_00.mtn", "sound":"sounds/pinchIn_00.wav" ,"fade_out":0},
+			{ "file":"motions/pinchIn_01.mtn", "sound":"sounds/pinchIn_01.wav" ,"fade_out":0},
+			{ "file":"motions/pinchIn_02.mtn", "sound":"sounds/pinchIn_02.wav" ,"fade_out":0}
+		],
+		"pinch_out":
+		[
+			{ "file":"motions/pinchOut_00.mtn", "sound":"sounds/pinchOut_00.wav" ,"fade_out":0},
+			{ "file":"motions/pinchOut_01.mtn", "sound":"sounds/pinchOut_01.wav" ,"fade_out":0},
+			{ "file":"motions/pinchOut_02.mtn", "sound":"sounds/pinchOut_02.wav" ,"fade_out":0}
+		],
+		"shake":
+		[
+			{ "file":"motions/shake_00.mtn", "sound":"sounds/shake_00.wav","fade_in":500 ,"fade_out":0},
+			{ "file":"motions/shake_01.mtn", "sound":"sounds/shake_01.wav","fade_in":500 ,"fade_out":0},
+			{ "file":"motions/shake_02.mtn", "sound":"sounds/shake_02.wav","fade_in":500 ,"fade_out":0}
+		],
+		"flick_head":
+		[
+			{ "file":"motions/flickHead_00.mtn", "sound":"sounds/flickHead_00.wav" ,"fade_out":0},
+			{ "file":"motions/flickHead_01.mtn", "sound":"sounds/flickHead_01.wav" ,"fade_out":0},
+			{ "file":"motions/flickHead_02.mtn", "sound":"sounds/flickHead_02.wav" ,"fade_out":0}
+		]
+	}
+}

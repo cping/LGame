@@ -400,7 +400,6 @@ public class AndroidAssets extends Assets {
 		return new SDRes(path);
 	}
 
-
 	private InputStream filestream(String path) {
 		try {
 			File file = new File(path);
@@ -411,9 +410,10 @@ public class AndroidAssets extends Assets {
 						DEF_RES, ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
+				} else {
+					return classLoader.getResourceAsStream(path);
 				}
 			}
-			return null;
 		} catch (Throwable t) {
 			return null;
 		}
@@ -638,8 +638,7 @@ public class AndroidAssets extends Assets {
 			resName = resName.replace('\\', '/');
 		}
 		String fileName = resName.toLowerCase();
-		if (fileName.startsWith(DEF_RES)
-				|| fileName.startsWith('/' + DEF_RES)) {
+		if (fileName.startsWith(DEF_RES) || fileName.startsWith('/' + DEF_RES)) {
 			boolean flag = resName.startsWith("/");
 			String file;
 			if (flag) {

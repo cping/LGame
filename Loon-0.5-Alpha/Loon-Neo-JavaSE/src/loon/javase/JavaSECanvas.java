@@ -41,6 +41,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Path;
 import loon.canvas.Pattern;
+import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.utils.MathUtils;
 
@@ -186,6 +187,9 @@ class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas drawText(String text, float x, float y) {
+		if (_font == null) {
+			_font = LFont.getDefaultFont();
+		}
 		return fillText(_font.getLayoutText(text), x, y);
 	}
 

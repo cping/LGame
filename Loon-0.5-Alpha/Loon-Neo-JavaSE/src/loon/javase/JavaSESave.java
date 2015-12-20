@@ -101,7 +101,10 @@ class JavaSESave implements Save {
   }
 
   private void maybePersistPreferences() {
-    if (preferences instanceof MemoryPreferences) return;
+    if (preferences instanceof MemoryPreferences) {
+    	System.out.println("FDFD");
+    	return;
+    }
     try {
       preferences.flush();
       isPersisted = true;
@@ -111,9 +114,6 @@ class JavaSESave implements Save {
     }
   }
 
-  /**
-   * Wraps a HashMap up as Preferences for in-memory use.
-   */
   private class MemoryPreferences extends AbstractPreferences
   {
     MemoryPreferences() {

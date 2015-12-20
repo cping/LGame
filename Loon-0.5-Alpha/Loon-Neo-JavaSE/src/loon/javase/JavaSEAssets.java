@@ -387,9 +387,10 @@ public class JavaSEAssets extends Assets {
 						DEF_RES, ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
+				} else {
+					return classLoader.getResourceAsStream(path);
 				}
 			}
-			return null;
 		} catch (Throwable t) {
 			return null;
 		}
@@ -491,7 +492,7 @@ public class JavaSEAssets extends Assets {
 			for (String suff : SUFFIXES) {
 				final String soundPath = path + suff;
 				try {
-					return _audio.createSound(path,new ByteArrayInputStream(
+					return _audio.createSound(path, new ByteArrayInputStream(
 							getBytesSync(soundPath)), music);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -500,7 +501,7 @@ public class JavaSEAssets extends Assets {
 			}
 		} else {
 			try {
-				return _audio.createSound(path,new ByteArrayInputStream(
+				return _audio.createSound(path, new ByteArrayInputStream(
 						getBytesSync(path)), music);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -524,10 +525,18 @@ public class JavaSEAssets extends Assets {
 		final String serachPath = getPath(path);
 		URL url = classLoader.getResource(serachPath);
 		if (url != null) {
-			return url.getProtocol().equals("file") ? new FileResource(
-					this,
-					new File(URLDecoder.decode(url.getPath(), LSystem.ENCODING)))
-					: new URLResource(this, url);
+			boolean isFile = url.getProtocol().equals("file");
+			if (isFile) {
+				File file = new File(URLDecoder.decode(url.getPath(),
+						LSystem.ENCODING));
+				if (file.exists()) {
+					return new FileResource(this, file);
+				} else {
+					return new URLResource(this, serachPath);
+				}
+			} else {
+				return new URLResource(this, serachPath);
+			}
 		} else {
 			File file = resolvePath(serachPath);
 			if (file.exists()) {
@@ -625,25 +634,28 @@ public class JavaSEAssets extends Assets {
 	}
 
 	protected static class URLResource extends Resource {
-		public final URL url;
+		public final String url;
 
 		private JavaSEAssets assets;
 
-		public URLResource(JavaSEAssets assets, URL url) {
+		public URLResource(JavaSEAssets assets, String url) {
 			this.url = url;
 			this.assets = assets;
 		}
 
+		@Override
 		public InputStream openStream() throws IOException {
-			return url.openStream();
+			return assets.strRes(url);
 		}
 
+		@Override
 		public BufferedImage readImage() throws IOException {
-			return ImageIO.read(assets.strRes(url.getFile()));
+			return ImageIO.read(assets.strRes(url));
 		}
 	}
 
 	protected static class FileResource extends Resource {
+
 		public final File file;
 
 		private JavaSEAssets assets;
