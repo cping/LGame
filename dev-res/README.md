@@ -32,4 +32,17 @@
 ### 无版权的游戏资源下载（原作者已经放弃版权，可以随意使用的资源）
 
 * opengameart: 一个完全无版权问题的游戏资源下载站。[地址](http://opengameart.org/) 
+* kenney: 一个无版权问题的游戏资源下载站。[地址](http://kenney.nl/) 
+* gameart2d: 一个【版权问题不大】的游戏资源下载站，个人最喜欢，也确实都是公开且免费的资源，但是它的资源【撞车率】较高，做同类游戏时很容易和人发生冲突……[地址](http://www.gameart2d.com/) 
+* indiegamemusic: 一个无版权问题的游音频下载站。[地址](http://www.indiegamemusic.com/) 
+* openmusicarchive: 无版权问题的音频资源下载站。[地址](http://openmusicarchive.org/)
+* freesound: 无版权问题的音频资源下载站。[地址](http://freesound.org/)
 * 在线RPG角色生成器。[地址](http://gaurav.munjal.us/Universal-LPC-Spritesheet-Character-Generator/#)
+
+### 免费的开发辅助工具
+
+* gimp: 经典的免费图像资源开发工具，基本可以替代PS使用（不想被人发现使用破解版PS时，可以用它充数……）。[地址](http://www.gimp.org/)
+* live2d: 伪3D人物动态表情开发工具(基本上就是设计AVG游戏动态角色用的)。[地址](http://www.live2d.com/)
+* mapeditor: 瓦片地图开发工具。[地址](http://mapeditor.org/)
+* bfxr: 音频制作工具。[地址](http://www.bfxr.net/)
+* audiotool: 音频制作工具。[地址](http://www.audiotool.com/)
