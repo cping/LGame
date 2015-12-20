@@ -30,6 +30,7 @@ import loon.LTexture;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
+import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -60,6 +61,8 @@ public class BMFont implements IFont, LRelease {
 	}
 
 	private static final int DEFAULT_MAX_CHAR = 255;
+
+	private PointI _offset = new PointI();
 
 	private float fontScaleX = 1f, fontScaleY = 1f;
 
@@ -305,7 +308,7 @@ public class BMFont implements IFont, LRelease {
 			int x = 0, y = 0;
 
 			displayList.glBegin();
-			displayList.setBatchPos(tx, ty);
+			displayList.setBatchPos(tx + _offset.x, ty + _offset.y);
 
 			if (c != null) {
 				displayList.setImageColor(c);
@@ -356,8 +359,8 @@ public class BMFont implements IFont, LRelease {
 			displays.put(key, display);
 
 		} else if (display.cache != null) {
-			display.cache.x = tx;
-			display.cache.y = ty;
+			display.cache.x = tx + _offset.x;
+			display.cache.y = ty + _offset.y;
 			displayList.postCache(display.cache);
 		}
 
@@ -401,7 +404,7 @@ public class BMFont implements IFont, LRelease {
 			}
 			lastCharDef = charDef;
 			if ((i >= startIndex) && (i <= endIndex)) {
-				charDef.draw(g, tx, ty, x, y);
+				charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y);
 			}
 			x += charDef.advance;
 		}
@@ -462,6 +465,7 @@ public class BMFont implements IFont, LRelease {
 		}
 	}
 
+	@Override
 	public int stringHeight(String text) {
 		if (text == null) {
 			return 0;
@@ -501,6 +505,7 @@ public class BMFont implements IFont, LRelease {
 		return (int) (display.height * fontScaleY);
 	}
 
+	@Override
 	public int stringWidth(String text) {
 		if (text == null) {
 			return 0;
@@ -618,6 +623,27 @@ public class BMFont implements IFont, LRelease {
 		return s;
 	}
 
+	@Override
+	public PointI getOffset() {
+		return _offset;
+	}
+
+	@Override
+	public void setOffset(PointI val) {
+		_offset.set(val);
+	}
+
+	@Override
+	public void setOffsetX(int x) {
+		_offset.x = x;
+	}
+
+	@Override
+	public void setOffsetY(int y) {
+		_offset.y = y;
+	}
+
+	@Override
 	public void close() {
 		this.isClose = true;
 		if (displayList != null) {

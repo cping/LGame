@@ -3,6 +3,7 @@ package loon.font;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.Font.Style;
+import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.StringUtils;
@@ -23,6 +24,10 @@ public class LFont implements IFont {
 	}
 
 	private final static String tmp = "H";
+
+	private String lastText = tmp;
+
+	private PointI _offset = new PointI();
 
 	private TextFormat textFormat = null;
 
@@ -62,23 +67,24 @@ public class LFont implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float x, float y) {
-		drawString(g, string, x, y, LColor.white);
+	public void drawString(GLEx g, String string, float tx, float ty) {
+		drawString(g, string, tx, ty, LColor.white);
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float x, float y, LColor c) {
+	public void drawString(GLEx g, String string, float tx, float ty, LColor c) {
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, x, y, 0, c);
+		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y
+				+ ty, 0, c);
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float x, float y,
+	public void drawString(GLEx g, String string, float tx, float ty,
 			float angle, LColor c) {
 		if (c == null || c.a <= 0.01) {
 			return;
@@ -86,11 +92,12 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, x, y, angle, c);
+		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y + ty,
+				angle, c);
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float x, float y, float sx,
+	public void drawString(GLEx g, String string, float tx, float ty, float sx,
 			float sy, float ax, float ay, float angle, LColor c) {
 		if (c == null || c.a <= 0.01) {
 			return;
@@ -98,11 +105,9 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, x, y, sx, sy, ax, ay, angle,
-				c);
+		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y + ty,
+				sx, sy, ax, ay, angle, c);
 	}
-
-	private String lastText = tmp;
 
 	private void initLayout(String text) {
 		if (textLayout == null || !text.equals(lastText)) {
@@ -221,6 +226,26 @@ public class LFont implements IFont {
 			}
 		}
 		return s;
+	}
+
+	@Override
+	public PointI getOffset() {
+		return _offset;
+	}
+
+	@Override
+	public void setOffset(PointI val) {
+		_offset.set(val);
+	}
+
+	@Override
+	public void setOffsetX(int x) {
+		_offset.x = x;
+	}
+
+	@Override
+	public void setOffsetY(int y) {
+		_offset.y = y;
 	}
 
 }

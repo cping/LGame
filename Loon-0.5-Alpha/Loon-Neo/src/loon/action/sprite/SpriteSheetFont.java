@@ -3,6 +3,7 @@ package loon.action.sprite;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.geom.Affine2f;
+import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
@@ -21,6 +22,8 @@ public class SpriteSheetFont implements IFont {
 	private int numChars;
 
 	private float fontScaleX = 1f, fontScaleY = 1f;
+
+	private PointI _offset = new PointI();
 
 	public SpriteSheetFont(SpriteSheet font, char startingCharacter) {
 		this.font = font;
@@ -50,12 +53,13 @@ public class SpriteSheetFont implements IFont {
 				int yPos = (index / horizontalCount);
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (fontScaleX == 1f && fontScaleY == 1f) {
-						font.getSubImage(xPos, yPos).draw(x + (i * charWidth),
-								y, col);
+						font.getSubImage(xPos, yPos).draw(
+								x + (i * charWidth) + _offset.x, y + _offset.y,
+								col);
 					} else {
 						font.getSubImage(xPos, yPos).draw(
-								x + (i * charWidth * fontScaleX), y,
-								charWidth * fontScaleX,
+								x + (i * charWidth * fontScaleX) + _offset.x,
+								y + _offset.y, charWidth * fontScaleX,
 								charHeight * fontScaleY, col);
 					}
 				}
@@ -63,10 +67,12 @@ public class SpriteSheetFont implements IFont {
 		}
 	}
 
+	@Override
 	public void drawString(GLEx gl, String text, float x, float y) {
 		drawString(gl, text, x, y, LColor.white);
 	}
 
+	@Override
 	public void drawString(GLEx gl, String text, float x, float y, LColor col) {
 		drawString(gl, text, x, y, col, 0, text.length() - 1);
 	}
@@ -75,8 +81,8 @@ public class SpriteSheetFont implements IFont {
 			LColor col, int startIndex, int endIndex) {
 		char[] data = text.toCharArray();
 		int lines = 0;
-		float sx = x;
-		float sy = y;
+		float sx = x + _offset.x;
+		float sy = y + _offset.y;
 		float widthSize = charWidth * fontScaleX;
 		float heightSize = charHeight * fontScaleY;
 		for (int i = 0; i < data.length; i++) {
@@ -229,6 +235,26 @@ public class SpriteSheetFont implements IFont {
 	@Override
 	public int getSize() {
 		return (int) ((charWidth + charHeight / 2) * this.fontScaleY);
+	}
+
+	@Override
+	public PointI getOffset() {
+		return _offset;
+	}
+
+	@Override
+	public void setOffset(PointI val) {
+		_offset.set(val);
+	}
+
+	@Override
+	public void setOffsetX(int x) {
+		_offset.x = x;
+	}
+
+	@Override
+	public void setOffsetY(int y) {
+		_offset.y = y;
 	}
 
 }

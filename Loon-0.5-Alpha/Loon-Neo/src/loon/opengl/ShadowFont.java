@@ -3,15 +3,16 @@ package loon.opengl;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.geom.PointI;
 
 public class ShadowFont implements IFont {
 
 	private boolean withShadow = false;
 	private LColor shadowColor = new LColor(0f, 0f, 0f, 1f);
 	private float shadowAlpha = 1f;
-	private int offsetX = 2;
-	private int offsetY = 2;
 	private LSTRFont strfont;
+
+	private PointI _offset = new PointI();
 
 	public LSTRFont getStrFont() {
 		return strfont;
@@ -43,9 +44,9 @@ public class ShadowFont implements IFont {
 	public void drawString(String text, float x, float y, LColor color) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * color.a);
-			strfont.drawString(text, x, y, shadowColor);
+			strfont.drawString(text, x + _offset.x, y + _offset.y, shadowColor);
 		}
-		strfont.drawString(text, x, y, color);
+		strfont.drawString(text, x + _offset.x, y + _offset.y, color);
 	}
 
 	@Override
@@ -57,9 +58,10 @@ public class ShadowFont implements IFont {
 	public void drawString(GLEx g, String text, float x, float y, LColor color) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * color.a);
-			strfont.drawString(g, text, x, y, shadowColor);
+			strfont.drawString(g, text, x + _offset.x, y + _offset.y,
+					shadowColor);
 		}
-		strfont.drawString(g, text, x, y, color);
+		strfont.drawString(g, text, x + _offset.x, y + _offset.y, color);
 	}
 
 	@Override
@@ -67,40 +69,29 @@ public class ShadowFont implements IFont {
 			float rotation, LColor c) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * c.a);
-			strfont.drawString(g, string, x, y, rotation, shadowColor);
+			strfont.drawString(g, string, x + _offset.x, y + _offset.y,
+					rotation, shadowColor);
 		}
-		strfont.drawString(g, string, x, y, rotation, c);
+		strfont.drawString(g, string, x + _offset.x, y + _offset.y, rotation, c);
 	}
 
 	public void drawString(GLEx g, String string, float x, float y, float sx,
 			float sy, float ax, float ay, float rotation, LColor c) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * c.a);
-			strfont.drawString(g, x, y, sx, sy, ax, ay, rotation, string,
-					shadowColor);
+			strfont.drawString(g, x + _offset.x, y + _offset.y, sx, sy, ax, ay,
+					rotation, string, shadowColor);
 		}
-		strfont.drawString(g, x, y, sx, sy, ax, ay, rotation, string, c);
+		strfont.drawString(g, x + _offset.x, y + _offset.y, sx, sy, ax, ay,
+				rotation, string, c);
 	}
 
 	public void setShadowColor(LColor color) {
 		this.shadowColor = color;
 	}
 
-	public void setShadowOffset(int offset) {
-		this.offsetX = offset;
-		this.offsetY = offset;
-	}
-
 	public void setShadowAlpha(float alpha) {
 		this.shadowAlpha = alpha;
-	}
-
-	public void setShadowOffsetX(int offsetX) {
-		this.offsetX = offsetX;
-	}
-
-	public void setShadowOffsetY(int offsetY) {
-		this.offsetY = offsetY;
 	}
 
 	public void setShadow(boolean shadow) {
@@ -121,22 +112,6 @@ public class ShadowFont implements IFont {
 
 	public void setWithShadow(boolean withShadow) {
 		this.withShadow = withShadow;
-	}
-
-	public int getOffsetX() {
-		return offsetX;
-	}
-
-	public void setOffsetX(int offsetX) {
-		this.offsetX = offsetX;
-	}
-
-	public int getOffsetY() {
-		return offsetY;
-	}
-
-	public void setOffsetY(int offsetY) {
-		this.offsetY = offsetY;
 	}
 
 	public float getShadowAlpha() {
@@ -184,6 +159,26 @@ public class ShadowFont implements IFont {
 	@Override
 	public int getSize() {
 		return strfont.getSize();
+	}
+
+	@Override
+	public PointI getOffset() {
+		return _offset;
+	}
+
+	@Override
+	public void setOffset(PointI val) {
+		_offset.set(val);
+	}
+
+	@Override
+	public void setOffsetX(int x) {
+		_offset.x = x;
+	}
+
+	@Override
+	public void setOffsetY(int y) {
+		_offset.y = y;
 	}
 
 }

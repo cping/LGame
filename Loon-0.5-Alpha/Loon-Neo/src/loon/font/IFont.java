@@ -1,6 +1,7 @@
 package loon.font;
 
 import loon.canvas.LColor;
+import loon.geom.PointI;
 import loon.opengl.GLEx;
 
 public interface IFont {
@@ -24,6 +25,14 @@ public interface IFont {
 	float getAscent();
 
 	int getSize();
+
+	PointI getOffset();
+
+	void setOffset(PointI val);
+
+	void setOffsetX(int x);
+
+	void setOffsetY(int y);
 
 	String confineLength(String s, int width);
 }
