@@ -1,4 +1,4 @@
-# Java游戏开发领域常用资源
+# Java游戏开发领域常用资源 (不定期更新:上次更新日期 2015-12-21)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -29,15 +29,26 @@
 * Kotlin: JetBrain针对JVM、安卓和浏览器提供的静态类型编程语言。[官网](http://kotlinlang.org/)
 * Xtend: 一种静态编程语言，能够将其代码转换为简洁高效的Java代码，并基于JVM运行。[官网](http://www.eclipse.org/xtend)
 
-### 无版权的游戏资源下载（原作者已经放弃版权，可以随意使用的资源）
+### 无版权的游戏资源下载（原作者已经放弃版权，或者声明可以随意使用的资源）
 
-* opengameart: 一个完全无版权问题的游戏资源下载站。[地址](http://opengameart.org/) 
-* kenney: 一个无版权问题的游戏资源下载站。[地址](http://kenney.nl/) 
-* gameart2d: 一个【版权问题不大】的游戏资源下载站，个人最喜欢，也确实都是公开且免费的资源，但是它的资源【撞车率】较高，做同类游戏时很容易和人发生冲突……[地址](http://www.gameart2d.com/) 
-* indiegamemusic: 一个无版权问题的游音频下载站。[地址](http://www.indiegamemusic.com/) 
-* openmusicarchive: 无版权问题的音频资源下载站。[地址](http://openmusicarchive.org/)
-* freesound: 无版权问题的音频资源下载站。[地址](http://freesound.org/)
-* 在线RPG角色生成器。[地址](http://gaurav.munjal.us/Universal-LPC-Spritesheet-Character-Generator/#)
+PS:使用下列免费资源时，建议注明引用的资源出处，免得引发不必要的版权官司（比如被人投诉说你抄袭资源之类，游戏介绍中注明了资源出处，直接声明使用的资源来源，省得麻烦）……
+
+* opengameart: 一个欧美的完全无版权问题的游戏资源下载站。[地址](http://opengameart.org/) 
+* k-after: 日式AVG（galgame）游戏的免费背景素材下载站。  [地址](http://k-after.at.webry.info/)  
+* tokudaya: 日式AVG（galgame）游戏的免费人设下载站。 [地址](http://tokudaya.net/index.html) 
+* nicovideo: 这个站点各种图像和音频资源都有，内容很杂。 [地址](http://commons.nicovideo.jp/search/material/image)
+* 星宝转生: 全图片资源公开的AVG（galgame），注明来源即可随意使用。 [地址](http://www.jewel-s.jp/)
+* kenney: 一个无版权问题的游戏图片资源下载站。[地址](http://kenney.nl/) 
+* nantoka: 一个日本的游戏图片资源（仓库）站。[地址](http://nantoka.main.jp/)
+* gameart2d: 一个【版权问题不大】的游戏图片资源下载站，确实都是公开且免费的资源，但是它的资源【撞车率】较高，做同类游戏时很容易和人发生冲突…… [地址](http://www.gameart2d.com/) 
+* members.jcom.home: 主要提供怪物类图片的日本资源站。 [地址](http://members.jcom.home.ne.jp/hide.mats/new_m.htm)
+* 音人: 一个日本的游戏音频资源下载站（PS:该站协议要求在非营利场合使用，也就是不能直接收费）。 [地址](http://on-jin.com/)
+* 炼狱庭院:  一个日本的游戏音频资源下载站。 [地址](http://www.rengoku-teien.com/index.html)
+* 魔王魂:  一个日本的游戏音频资源下载站。（此站也有大量收费资源，注意看清链接类型，并不是所有资源都能下载的）  [地址](http://maoudamashii.jokersounds.com/)
+* indiegamemusic: 一个欧美的无版权问题的游音频下载站。[地址](http://www.indiegamemusic.com/) 
+* openmusicarchive: 一个欧美的无版权问题的音频资源下载站。[地址](http://openmusicarchive.org/)
+* freesound: 欧美的无版权问题的音频资源下载站。[地址](http://freesound.org/)
+* 欧美的在线RPG角色生成器。[地址](http://gaurav.munjal.us/Universal-LPC-Spritesheet-Character-Generator/#)
 
 ### 免费的开发辅助工具
 
