@@ -50,22 +50,23 @@ public class ShaderProgram implements LRelease {
 
 		public Mini(GL20 gl, String vertexSource, String fragmentSource) {
 			this.gl = gl;
-
+			String glslVersion = "#version " + gl.getGlslVersion() + "\n";
 			int id = 0, vertexShader = 0, fragmentShader = 0;
 			try {
 				id = gl.glCreateProgram();
-				if (id == 0)
+				if (id == 0) {
 					throw new RuntimeException("Failed to create program: "
 							+ gl.glGetError());
+				}
 				gl.checkError("glCreateProgram");
 
-				vertexShader = compileShader(GL20.GL_VERTEX_SHADER,
-						vertexSource);
+				vertexShader = compileShader(GL20.GL_VERTEX_SHADER, glslVersion
+						+ vertexSource);
 				gl.glAttachShader(id, vertexShader);
 				gl.checkError("glAttachShader / vertex");
 
 				fragmentShader = compileShader(GL20.GL_FRAGMENT_SHADER,
-						fragmentSource);
+						glslVersion + fragmentSource);
 				gl.glAttachShader(id, fragmentShader);
 				gl.checkError("glAttachShader / fragment");
 
@@ -331,10 +332,15 @@ public class ShaderProgram implements LRelease {
 			throw new IllegalArgumentException(
 					"fragment shader must not be null");
 		}
+		String glslVersion = "#version 100\n";
+		if (LSystem.base() != null && LSystem.base().graphics() != null) {
+			glslVersion = "#version "
+					+ LSystem.base().graphics().gl.getGlslVersion() + "\n";
+		}
 		this.intbuf = LSystem.base().support().newIntBuffer(1);
 		this.vertexShaderSource = vertexShader;
 		this.fragmentShaderSource = fragmentShader;
-		compileShaders(vertexShader, fragmentShader);
+		compileShaders(glslVersion + vertexShader, glslVersion + fragmentShader);
 		if (isCompiled()) {
 			fetchAttributesAndUniforms();
 			addManagedShader(LSystem.base(), this);

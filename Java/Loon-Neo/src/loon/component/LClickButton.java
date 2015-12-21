@@ -138,6 +138,7 @@ public class LClickButton extends LComponent {
 		this.clickedClick = clicked;
 	}
 
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 
@@ -344,6 +345,22 @@ public class LClickButton extends LComponent {
 	@Override
 	public String getUIName() {
 		return "ClickButton";
+	}
+
+	@Override
+	public void close() {
+		if (idleClick != null) {
+			idleClick.close();
+			idleClick = null;
+		}
+		if (hoverClick != null) {
+			hoverClick.close();
+			hoverClick = null;
+		}
+		if (clickedClick != null) {
+			clickedClick.close();
+			clickedClick = null;
+		}
 	}
 
 }

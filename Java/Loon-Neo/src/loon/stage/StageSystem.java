@@ -2,13 +2,14 @@ package loon.stage;
 
 import loon.LGame;
 import loon.LProcess;
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.TArray;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimerContext;
 
-public class StageSystem extends PlayerUtils {
+public class StageSystem extends PlayerUtils implements LRelease {
 
 	protected final GroupPlayer _rootLayer;
 
@@ -17,6 +18,7 @@ public class StageSystem extends PlayerUtils {
 	protected final TArray<Stage> _screens = new TArray<Stage>();
 
 	public static final StageTransition DEF = new StageTransition() {
+		@Override
 		public boolean update(Stage o, Stage n, float elapsed) {
 			return true;
 		}
@@ -245,13 +247,26 @@ public class StageSystem extends PlayerUtils {
 		}
 	}
 
-	protected class Controller {
+	protected class Controller implements LRelease {
 
 		protected final Stage _oscreen, _nscreen;
 		protected final StageTransition _trans;
 		protected Closeable _onPaint = Closeable.Shutdown.DEF;
 		protected int _skipFrames = transSkipFrames();
 		protected float _elapsed;
+
+		@Override
+		public void close() {
+			if (_oscreen != null) {
+				_oscreen.close();
+			}
+			if (_nscreen != null) {
+				_nscreen.close();
+			}
+			if (_onPaint != null) {
+				_onPaint.close();
+			}
+		}
 
 		public Controller(Stage o, Stage n, StageTransition trans) {
 			_oscreen = o;
@@ -312,6 +327,20 @@ public class StageSystem extends PlayerUtils {
 		_screens.clear();
 	}
 
+	public void disposeAll() {
+		for (Stage stage : _screens) {
+			stage.close();
+		}
+		if (_rootLayer != null) {
+			_rootLayer.disposeAll();
+		}
+		if (_transitor != null) {
+			_transitor.close();
+			_transitor = null;
+		}
+		removeAll();
+	}
+
 	protected class UnController extends Controller {
 		public UnController(Stage o, Stage n, StageTransition trans) {
 			super(o, n, trans);
@@ -321,6 +350,11 @@ public class StageSystem extends PlayerUtils {
 		protected void showNewScreen() {
 			justShow(_nscreen);
 		}
+	}
+
+	@Override
+	public void close() {
+		disposeAll();
 	}
 
 }

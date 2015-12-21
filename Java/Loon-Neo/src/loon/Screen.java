@@ -2198,11 +2198,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				_players.close();
 			}
 			if (LSystem._process != null && LSystem._process.rootPlayer != null) {
-				LSystem._process.rootPlayer.disposeAll();
+				LSystem._process.rootPlayer.close();
 			}
 			if (LSystem._process != null
 					&& LSystem._process.stageSystem != null) {
-				LSystem._process.stageSystem.removeAll();
+				LSystem._process.stageSystem.close();
 			}
 			if (currentScreen != null) {
 				LTexture parent = LTexture.firstFather(currentScreen);
@@ -2222,7 +2222,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				}
 				releases.clear();
 			}
-			LSTRDictionary.dispose();
 			_conns.close();
 			release();
 			close();

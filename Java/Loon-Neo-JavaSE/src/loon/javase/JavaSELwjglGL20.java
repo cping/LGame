@@ -1324,4 +1324,8 @@ final class JavaSELwjglGL20 extends loon.opengl.GL20 {
 		throw new UnsupportedOperationException("NYI - not in LWJGL.");
 	}
 
+	@Override
+	public int getGlslVersion() {
+		return 120;
+	}
 }

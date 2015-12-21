@@ -1,12 +1,13 @@
 package loon.stage;
 
 import loon.LProcess;
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.reply.Act;
 import loon.utils.reply.Closeable;
 import loon.utils.timer.LTimerContext;
 
-public abstract class Stage extends PlayerUtils {
+public abstract class Stage extends PlayerUtils implements LRelease {
 
 	protected Closeable.Set _closeList = new Closeable.Set();
 
@@ -73,6 +74,14 @@ public abstract class Stage extends PlayerUtils {
 			return process.getStageSystem();
 		}
 		return null;
+	}
+
+	@Override
+	public void close() {
+		_closeList.close();
+		update.clearConnections();
+		paint.clearConnections();
+		players.close();
 	}
 
 	public abstract void onAdded();

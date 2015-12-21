@@ -840,7 +840,7 @@ public abstract class GL20 {
 	public abstract boolean isExtensionAvailable(String extension);
 
 	public abstract boolean isFunctionAvailable(String function);
-	
+
 	public abstract int getSwapInterval();
 
 	public abstract void glActiveTexture(int texture);
@@ -1285,4 +1285,7 @@ public abstract class GL20 {
 
 	public abstract void glViewport(int x, int y, int width, int height);
 
+	public int getGlslVersion() {
+		return 100;
+	}
 }

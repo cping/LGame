@@ -1227,6 +1227,7 @@ public class LTextureBatch implements LRelease {
 		}
 	}
 
+	@Override
 	public void close() {
 		isClosed = true;
 		isLoaded = false;
