@@ -2,7 +2,9 @@
 
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 
-#2015-12-19
+#2015-12-20
+
+BTW：刚刚开了个新坑，准备加个NScripter的脚本实现（扩展包形式，不在核心jar中），以后NScripter或ONS的游戏，可以直接导入到Loon中来，作为自己的游戏使用了，能干什么用大家懂的……（理论上讲，多大的游戏都可以搬来，不过HTML5之类环境中，太大的还是不建议，毕竟网页加载几G资源不现实……）。
 
 目前使用opengles2.0的loon-0.5-java版本，大体上已经可用，API也已经基本冻结，下周针对不同环境微调下细节，就会正式发布Java版。现有的alpha文件夹则将会删除java实现部分，而转为存放C#版的alpha实现。
 
