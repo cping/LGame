@@ -72,6 +72,14 @@ public class ArrayByte {
 		return data;
 	}
 
+	public byte get(int idx) {
+		return data[idx];
+	}
+
+	public byte get() {
+		return data[position++];
+	}
+
 	public int getByteOrder() {
 		return byteOrder;
 	}
@@ -131,7 +139,7 @@ public class ArrayByte {
 		checkAvailable(1);
 		return data[position++];
 	}
-	
+
 	public byte readByte() throws IndexOutOfBoundsException {
 		checkAvailable(1);
 		return data[position++];
@@ -264,6 +272,11 @@ public class ArrayByte {
 		}
 	}
 
+	public void writeByte(byte v) {
+		ensureCapacity(1);
+		data[position++] = v;
+	}
+	
 	public void writeByte(int v) {
 		ensureCapacity(1);
 		data[position++] = (byte) v;
@@ -361,6 +374,10 @@ public class ArrayByte {
 				writeByte(0x80 | (0x3f & ch));
 			}
 		}
+	}
+
+	public int limit() {
+		return data == null ? 0 : data.length;
 	}
 
 	@Override
