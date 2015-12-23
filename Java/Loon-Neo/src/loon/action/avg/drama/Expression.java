@@ -59,6 +59,9 @@ public interface Expression {
 	// 多选标记
 	String SELECTS_TAG = "selects";
 
+	// 跳转标记
+	String GOTO_TAG = "goto";
+	
 	// 打印标记
 	String PRINT_TAG = "print";
 

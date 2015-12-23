@@ -92,11 +92,11 @@ public abstract class AbstractBox implements XY {
 		}
 	}
 
-	protected void setFontColor(LColor color) {
+	public void setFontColor(LColor color) {
 		this.fontColor = color;
 	}
 
-	protected void setBorderColor(LColor color) {
+	public void setBorderColor(LColor color) {
 		this.borderColor = color;
 	}
 }

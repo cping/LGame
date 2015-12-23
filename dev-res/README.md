@@ -1,4 +1,4 @@
-# Java游戏开发领域常用资源 (不定期更新:上次更新日期 2015-12-21)
+# Java游戏开发领域常用资源 (不定期更新:上次更新日期 2015-12-22)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -39,6 +39,8 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * tokudaya: 日式AVG（galgame）游戏的免费人设下载站。 [地址](http://tokudaya.net/index.html) 
 * nicovideo: 这个站点各种图像和音频资源都有，内容很杂。 [地址](http://commons.nicovideo.jp/search/material/image)
 * 星宝转生: 全图片资源公开的AVG（galgame），注明来源即可随意使用。 [地址](http://www.jewel-s.jp/)
+* 月风: 包含游戏图片以及音频的综合资源站。[地址](http://moonwind.pw/)
+* stock.freem: 包含游戏图片以及音频的综合资源站，资源有免费、个人开发、标准商用三种类型，免费的不太多。[地址](http://stock.freem.ne.jp/)
 * kenney: 一个无版权问题的游戏图片资源下载站。[地址](http://kenney.nl/) 
 * nantoka: 一个日本的游戏图片资源（仓库）站。[地址](http://nantoka.main.jp/)
 * gameart2d: 一个【版权问题不大】的游戏图片资源下载站，确实都是公开且免费的资源，但是它的资源【撞车率】较高，做同类游戏时很容易和人发生冲突…… [地址](http://www.gameart2d.com/) 

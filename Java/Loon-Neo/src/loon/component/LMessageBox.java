@@ -1,6 +1,7 @@
 package loon.component;
 
 import loon.LTexture;
+import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -134,10 +135,13 @@ public class LMessageBox extends LComponent {
 			drawMessage(g, message, this._boxX + this.messageX + offsetX,
 					this._boxY + this.messageY + offsetY);
 			if (isPage && flagType != null) {
-				this.font.drawString(g, flagType, this._boxX + this.pageX
-						+ this.offsetX, this._boxY + this.pageY
-						+ this.font.stringHeight(message)
-						+ this.offsetY, this.fontColor);
+				this.font.drawString(
+						g,
+						flagType,
+						this._boxX + this.pageX + this.offsetX,
+						this._boxY + this.pageY
+								+ this.font.stringHeight(message)
+								+ this.offsetY, this.fontColor);
 			}
 		}
 
@@ -273,6 +277,7 @@ public class LMessageBox extends LComponent {
 			this.face = face;
 		}
 
+		@Override
 		public String toString() {
 			return this.message;
 		}
@@ -375,6 +380,20 @@ public class LMessageBox extends LComponent {
 
 	public void setFont(IFont font) {
 		this._font = font;
+	}
+
+	public LMessageBox setFontColor(LColor color) {
+		if (_box != null) {
+			_box.setFontColor(color);
+		}
+		return this;
+	}
+
+	public LMessageBox setBoxAlpha(float alpha) {
+		if (_box != null) {
+			_box.setBoxAlpha(alpha);
+		}
+		return this;
 	}
 
 	public DrawMessageBox getMessageBox() {

@@ -91,6 +91,9 @@ public class LSystem {
 
 	public static int MODE_NONE = 10;
 
+	// 兆秒
+	final static public long MSEC = 1;
+	
 	// 秒
 	final static public long SECOND = 1000;
 

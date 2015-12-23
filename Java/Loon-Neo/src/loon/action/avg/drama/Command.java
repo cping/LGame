@@ -74,9 +74,9 @@ public class Command extends Conversion implements LRelease {
 
 	private boolean isClose;
 
-	private String executeCommand;
+	private String executeCommand = null;
 
-	private String nowPosFlagName;
+	private String nowPosFlagName = null;
 
 	private boolean addCommand;
 
@@ -622,7 +622,7 @@ public class Command extends Conversion implements LRelease {
 			randTags = Command.getNameTags(cmd, RAND_TAG + BRACKET_LEFT_TAG,
 					BRACKET_RIGHT_TAG);
 			if (randTags != null) {
-				for (int i=0;i<randTags.size;i++) {
+				for (int i = 0; i < randTags.size; i++) {
 					String key = randTags.get(i);
 					Object value = setEnvironmentList.get(key);
 					// 已存在变量
@@ -923,7 +923,7 @@ public class Command extends Conversion implements LRelease {
 				printTags = Command.getNameTags(executeCommand, PRINT_TAG
 						+ BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
 				if (printTags != null) {
-					for (int i=0;i<printTags.size;i++) {
+					for (int i = 0; i < printTags.size; i++) {
 						String key = printTags.get(i);
 						Object value = setEnvironmentList.get(key);
 						if (value != null) {
@@ -947,6 +947,31 @@ public class Command extends Conversion implements LRelease {
 				if (isCache) {
 					// 注入脚本缓存
 					scriptContext.put(cacheCommandName, executeCommand);
+				}
+			}
+			// 跳转到指定脚本位置
+			if (cmd.startsWith(GOTO_TAG)) {
+				temps = commandSplit(cmd);
+				if (temps != null && temps.size == 2) {
+					String gotoFlag = temps.get(1);
+					// 如果是数字，跳转到指定行数
+					if (MathUtils.isNan(gotoFlag)) {
+						offsetPos = (int) Double.parseDouble(gotoFlag);
+					} else {// 如果不是，跳转向指定标记
+						int idx = 0;
+						int size = scriptList.length;
+						for (int i = 0; i < size; i++) {
+							String line = scriptList[i];
+							Object varName = setEnvironmentList.get(line);
+							if (line.equals(gotoFlag)) {
+								idx = i;
+							} else if (varName != null
+									&& gotoFlag.equals((String) varName)) {
+								idx = i;
+							}
+						}
+						offsetPos = idx;
+					}
 				}
 			}
 		} catch (Exception ex) {
