@@ -522,12 +522,37 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public boolean gotoIndex(final int offset) {
-		boolean result = offset < scriptSize && offset > 0
-				&& offset != offsetPos;
+		boolean result = offset < scriptSize && offset > -1;
 		if (result) {
 			offsetPos = offset;
 		}
 		return result;
+	}
+
+	/**
+	 * 跳转向指定索引位置
+	 * 
+	 * @param gotoFlag
+	 * @return
+	 */
+	public boolean gotoIndex(final String gotoFlag) {
+		int idx = -1;
+		for (int i = 0; i < scriptSize; i++) {
+			String line = scriptList[i];
+			Object varName = setEnvironmentList.get(line);
+			if (line.equals(gotoFlag)) {
+				idx = i;
+				break;
+			} else if (varName != null && gotoFlag.equals((String) varName)) {
+				idx = i;
+				break;
+			}
+		}
+		if (idx != -1) {
+			offsetPos = idx;
+		}
+		return idx == -1;
+
 	}
 
 	public int getIndex() {
@@ -677,7 +702,6 @@ public class Command extends Conversion implements LRelease {
 		this.isInnerCommand = (innerCommand != null);
 		this.if_bool = false;
 		this.elseif_bool = false;
-
 		try {
 			// 执行call命令
 			if (isInnerCommand && isCall) {
@@ -956,21 +980,9 @@ public class Command extends Conversion implements LRelease {
 					String gotoFlag = temps.get(1);
 					// 如果是数字，跳转到指定行数
 					if (MathUtils.isNan(gotoFlag)) {
-						offsetPos = (int) Double.parseDouble(gotoFlag);
+						gotoIndex((int) Double.parseDouble(gotoFlag));
 					} else {// 如果不是，跳转向指定标记
-						int idx = 0;
-						int size = scriptList.length;
-						for (int i = 0; i < size; i++) {
-							String line = scriptList[i];
-							Object varName = setEnvironmentList.get(line);
-							if (line.equals(gotoFlag)) {
-								idx = i;
-							} else if (varName != null
-									&& gotoFlag.equals((String) varName)) {
-								idx = i;
-							}
-						}
-						offsetPos = idx;
+						gotoIndex(gotoFlag);
 					}
 				}
 			}
@@ -1211,7 +1223,7 @@ public class Command extends Conversion implements LRelease {
 			scriptLazy.clear();
 			scriptLazy = null;
 		}
-		System.gc();
+		
 	}
 
 	public boolean isClose() {

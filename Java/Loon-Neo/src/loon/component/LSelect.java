@@ -146,6 +146,10 @@ public class LSelect extends LContainer {
 		setMessage(null, selects);
 	}
 
+	public void setMessage(TArray<String> list) {
+		setMessage(null, list);
+	}
+	
 	public void setMessage(String message, String[] selects) {
 		this.message = message;
 		this.selects = selects;
@@ -225,7 +229,7 @@ public class LSelect extends LContainer {
 	public boolean isClick() {
 		return onClick;
 	}
-
+	
 	@Override
 	protected void processTouchClicked() {
 		if (!input.isMoving()) {
@@ -237,6 +241,27 @@ public class LSelect extends LContainer {
 		} else {
 			this.onClick = false;
 		}
+	}
+
+	@Override
+	protected void processTouchPressed() {
+		this.downClick();
+	}
+
+	@Override
+	protected void processTouchReleased() {
+		this.upClick();
+	}
+
+	@Override
+	protected void processTouchDragged() {
+		if (!locked) {
+			if (getContainer() != null) {
+				getContainer().sendToFront(this);
+			}
+			this.move(this.input.getTouchDX(), this.input.getTouchDY());
+		}
+		this.dragClick();
 	}
 
 	@Override
@@ -252,7 +277,6 @@ public class LSelect extends LContainer {
 				selectFlag = selectSize;
 			}
 		}
-
 	}
 
 	@Override
@@ -262,16 +286,6 @@ public class LSelect extends LContainer {
 		}
 	}
 
-	@Override
-	protected void processTouchDragged() {
-		processTouchMoved();
-		if (!locked) {
-			if (getContainer() != null) {
-				getContainer().sendToFront(this);
-			}
-			this.move(this.input.getTouchDX(), this.input.getTouchDY());
-		}
-	}
 
 	public LColor getFontColor() {
 		return fontColor;

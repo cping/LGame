@@ -4,11 +4,20 @@ set back = "assets/background.png"
 set 女性角色常态 = "assets/r0.png"
 set 女性角色惊异 = "assets/r1.png"
 set 女性角色微笑 = "assets/r2.png"
-
 fadein black
 gb print(back) 
 cg print(女性角色微笑) 220
 mes 啦啦啦，啦啦啦，我是编程的大行家～
+select {跳转到标记1,label1,跳转到标记2,label2}
+//跳转标记1
+label1
+mes 另外，我知道，你刚刚选择了标签1
+goto label3
+//跳转标记二
+label2
+mes 再者，我了解，你方才选择了标签2
+label3
+mes 总之，百川到海，殊途同归。
 mesleft 20
 mes <oC#，C++/,Java，Ruby/>全学啦～
 mesleft 0

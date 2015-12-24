@@ -38,11 +38,10 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.Desktop;
-import loon.component.LButton;
 import loon.component.LComponent;
 import loon.component.LMessage;
-import loon.component.LPaper;
 import loon.component.LSelect;
+import loon.event.ClickListener;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.Updateable;
@@ -56,6 +55,59 @@ import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 public abstract class AVGScreen extends Screen {
+
+	private int clickcount = 0;
+
+	private class SelectClick implements ClickListener {
+
+		private TArray<String> _items;
+
+		public SelectClick(TArray<String> items) {
+			_items = items;
+		}
+
+		@Override
+		public void DoClick(LComponent comp) {
+
+		}
+
+		@Override
+		public void DownClick(LComponent comp, float x, float y) {
+		}
+
+		@Override
+		public void UpClick(LComponent comp, float x, float y) {
+			if (_items != null && comp instanceof LSelect) {
+				if ((LSystem.base() != null && LSystem.base().isMobile()) ? clickcount++ >= 1
+						: clickcount > -1) {
+					LSelect select = (LSelect) comp;
+					int idx = select.getResultIndex();
+					if (idx < 0) {
+						idx = 0;
+					}
+					String gotoFlag = _items.get(idx);
+					if (MathUtils.isNan(gotoFlag)) {
+						command.gotoIndex((int) Double.parseDouble(gotoFlag));
+					} else {
+						command.gotoIndex(gotoFlag);
+					}
+					select.SetClick(null);
+					select.setVisible(false);
+					limitClick = false;
+					scrFlag = false;
+					isSelectMessage = false;
+					clickcount = 0;
+					nextScript();
+				}
+			}
+		}
+
+		@Override
+		public void DragClick(LComponent comp, float x, float y) {
+
+		}
+
+	}
 
 	private boolean isSelectMessage, scrFlag, isRunning, running;
 
@@ -310,6 +362,9 @@ public abstract class AVGScreen extends Screen {
 	public void nextScript() {
 		if (command != null && !isClose() && running) {
 			for (; isRunning = command.next();) {
+				if (isSelectMessage) {
+					continue;
+				}
 				String result = command.doExecute();
 				if (result == null) {
 					continue;
@@ -541,13 +596,54 @@ public abstract class AVGScreen extends Screen {
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECT)) {
-					selectMessage = mesFlag;
+					if (mesFlag != null) {
+						mesFlag = mesFlag.trim();
+						if (mesFlag.startsWith("{") && mesFlag.endsWith("}")) {
+							final String selectList = mesFlag.substring(1,
+									mesFlag.length() - 1).trim();
+							if (message.isVisible()) {
+								message.setVisible(false);
+							}
+							select.setVisible(true);
+							scrFlag = true;
+							isSelectMessage = true;
+							limitClick = true;
+							String[] list = StringUtils.split(selectList, ',');
+							final int selectLength = list.length;
+							final int len = selectLength / 2;
+							final TArray<String> selects = new TArray<String>(
+									len);
+							final TArray<String> items = new TArray<String>(len);
+							for (int i = 0; i < selectLength; i++) {
+								if (i % 2 == 0) {
+									selects.add(list[i]);
+								} else {
+									items.add(list[i]);
+								}
+							}
+							select.setMessage(selects);
+							addProcess(new RealtimeProcess() {
+
+								@Override
+								public void run(LTimerContext time) {
+									select.SetClick(new SelectClick(items));
+									kill();
+								}
+							});
+							break;
+						} else {
+							selectMessage = mesFlag;
+						}
+					} else {
+						selectMessage = mesFlag;
+					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECTS)) {
 					if (message.isVisible()) {
 						message.setVisible(false);
 					}
+					select.SetClick(null);
 					select.setVisible(true);
 					scrFlag = true;
 					isSelectMessage = true;
@@ -647,9 +743,9 @@ public abstract class AVGScreen extends Screen {
 
 	public abstract void onExit();
 
-	private int count = 0;
-
 	private LTimer autoTimer = new LTimer(LSystem.SECOND);
+
+	private boolean limitClick = false;
 
 	private void playAutoNext() {
 		if (!autoTimer.action(elapsedTime)) {
@@ -668,6 +764,9 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public void click() {
+		if (limitClick) {
+			return;
+		}
 		if (!running) {
 			return;
 		}
@@ -690,15 +789,13 @@ public abstract class AVGScreen extends Screen {
 		} else if (scrFlag && select.getResultIndex() != -1) {
 			onSelect(selectMessage, select.getResultIndex());
 			isNext = select.intersects(getTouchX(), getTouchY());
-			if (isNext) {
-				if (count++ >= 1) {
-					message.setVisible(false);
-					select.setVisible(false);
-					isSelectMessage = false;
-					selectMessage = null;
-					count = 0;
-					return;
-				}
+			if ((LSystem.base() != null && LSystem.base().isMobile()) ? clickcount++ >= 1
+					: clickcount > -1) {
+				message.setVisible(false);
+				select.setVisible(false);
+				isSelectMessage = false;
+				selectMessage = null;
+				clickcount = 0;
 			}
 		}
 		if (isNext && !isSelectMessage) {
@@ -871,15 +968,9 @@ public abstract class AVGScreen extends Screen {
 		this.locked = locked;
 	}
 
-	final private LTimer autoUpdate = new LTimer(3 * LSystem.MINUTE);
-
 	@Override
 	public void alter(LTimerContext timer) {
-		synchronized (AVGScreen.class) {
-			if (autoUpdate.action(timer)) {
-				System.gc();
-			}
-		}
+
 	}
 
 	@Override
@@ -895,36 +986,23 @@ public abstract class AVGScreen extends Screen {
 	@Override
 	public void touchDown(GameTouch touch) {
 		if (desktop != null) {
-			LComponent[] cs = desktop.getContentPane().getComponents();
-			for (int i = 0; i < cs.length; i++) {
-				if (cs[i] instanceof LButton) {
-					LButton btn = ((LButton) cs[i]);
-					if (btn != null && btn.isVisible()) {
-						if (btn.intersects(touch.x(), touch.y())) {
-							btn.doClick();
-						}
-					}
-				} else if (cs[i] instanceof LPaper) {
-					LPaper paper = ((LPaper) cs[i]);
-					if (paper != null && paper.isVisible()) {
-						if (paper.intersects(touch.x(), touch.y())) {
-							paper.doClick();
-						}
-					}
-				}
-			}
+			desktop.processEvents();
 		}
 		click();
 	}
 
 	@Override
 	public void touchMove(GameTouch e) {
-
+		if (desktop != null) {
+			desktop.processEvents();
+		}
 	}
 
 	@Override
 	public void touchUp(GameTouch e) {
-
+		if (desktop != null) {
+			desktop.processEvents();
+		}
 	}
 
 	public boolean isAutoPlay() {
@@ -943,15 +1021,28 @@ public abstract class AVGScreen extends Screen {
 		return autoTimer.getDelay();
 	}
 
+	public LTimer getAutoTimer() {
+		return autoTimer;
+	}
+
+	public void setAutoTimer(LTimer autoTimer) {
+		this.autoTimer = autoTimer;
+	}
+
+	public boolean isLimitClick() {
+		return limitClick;
+	}
+
+	public void setLimitClick(boolean limitClick) {
+		this.limitClick = limitClick;
+	}
+
 	@Override
 	public void close() {
 		running = false;
-		try {
-			if (avgProcess != null) {
-				avgProcess.kill();
-				avgProcess = null;
-			}
-		} catch (Exception e) {
+		if (avgProcess != null) {
+			avgProcess.kill();
+			avgProcess = null;
 		}
 		if (desktop != null) {
 			desktop.close();
