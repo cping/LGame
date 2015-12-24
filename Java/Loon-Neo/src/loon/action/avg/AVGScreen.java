@@ -243,8 +243,8 @@ public abstract class AVGScreen extends Screen {
 				getHeight() - message.getHeight() - 10);
 		this.message.setTopOffset(-5);
 		this.message.setVisible(false);
-		this.select = new LSelect(dialog, 0, 0);
-		this.select.setLocation(message.x(), message.y());
+		this.select = new LSelect(dialog, message.x(), message.y());
+		this.select.setTopOffset(5);
 		this.scrCG = new AVGCG();
 		this.desktop.add(message);
 		this.desktop.add(select);
@@ -598,9 +598,21 @@ public abstract class AVGScreen extends Screen {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECT)) {
 					if (mesFlag != null) {
 						mesFlag = mesFlag.trim();
-						if (mesFlag.startsWith("{") && mesFlag.endsWith("}")) {
-							final String selectList = mesFlag.substring(1,
-									mesFlag.length() - 1).trim();
+						int selectStart = mesFlag.indexOf("{");
+						int selectEnd = mesFlag.lastIndexOf("}");
+						if (selectStart != -1 && selectEnd != -1) {
+							String messageInfo = null;
+							if (mesFlag.startsWith("\"")) {
+								int startFlag = mesFlag.indexOf('"');
+								int endFlag = mesFlag.lastIndexOf('"');
+								if (startFlag != -1 && endFlag != -1
+										&& endFlag > startFlag) {
+									messageInfo = mesFlag.substring(
+											startFlag + 1, endFlag);
+								}
+							}
+							final String selectList = mesFlag.substring(
+									selectStart + 1, selectEnd).trim();
 							if (message.isVisible()) {
 								message.setVisible(false);
 							}
@@ -621,7 +633,7 @@ public abstract class AVGScreen extends Screen {
 									items.add(list[i]);
 								}
 							}
-							select.setMessage(selects);
+							select.setMessage(messageInfo, selects);
 							addProcess(new RealtimeProcess() {
 
 								@Override
@@ -1000,6 +1012,13 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public void touchUp(GameTouch e) {
+		if (desktop != null) {
+			desktop.processEvents();
+		}
+	}
+
+	@Override
+	public void touchDrag(GameTouch e) {
 		if (desktop != null) {
 			desktop.processEvents();
 		}
