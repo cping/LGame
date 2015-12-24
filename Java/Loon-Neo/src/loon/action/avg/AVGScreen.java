@@ -119,7 +119,13 @@ public abstract class AVGScreen extends Screen {
 
 	private String dialogFileName;
 
-	private boolean locked;
+	// 若需要任意处点击皆可继续脚本，此标记应为true
+	private boolean screenClick = false;
+
+	// 若需要点击触发脚本继续的功能暂时失效，此处应为true
+	private boolean limitClick = false;
+
+	private LTimer autoTimer = new LTimer(LSystem.SECOND);
 
 	private LColor color;
 
@@ -504,6 +510,10 @@ public abstract class AVGScreen extends Screen {
 						color = LColor.orange;
 					} else if (mesFlag.equalsIgnoreCase("pink")) {
 						color = LColor.pink;
+					} else if (mesFlag.equalsIgnoreCase("magenta")) {
+						color = LColor.magenta;
+					}else {
+						color = new LColor(mesFlag);
 					}
 					if (sprites != null) {
 						sprites.removeAll();
@@ -755,10 +765,6 @@ public abstract class AVGScreen extends Screen {
 
 	public abstract void onExit();
 
-	private LTimer autoTimer = new LTimer(LSystem.SECOND);
-
-	private boolean limitClick = false;
-
 	private void playAutoNext() {
 		if (!autoTimer.action(elapsedTime)) {
 			return;
@@ -782,9 +788,6 @@ public abstract class AVGScreen extends Screen {
 		if (!running) {
 			return;
 		}
-		if (locked) {
-			return;
-		}
 		if (message.isVisible() && !message.isComplete()) {
 			return;
 		}
@@ -793,7 +796,7 @@ public abstract class AVGScreen extends Screen {
 			if (!scrFlag) {
 				scrFlag = true;
 			}
-			if (message.isVisible()) {
+			if (!screenClick && message.isVisible()) {
 				isNext = message.intersects(getTouchX(), getTouchY());
 			} else {
 				isNext = true;
@@ -973,11 +976,11 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public boolean isLocked() {
-		return locked;
+		return limitClick;
 	}
 
 	public void setLocked(boolean locked) {
-		this.locked = locked;
+		this.limitClick = locked;
 	}
 
 	@Override
@@ -1054,6 +1057,19 @@ public abstract class AVGScreen extends Screen {
 
 	public void setLimitClick(boolean limitClick) {
 		this.limitClick = limitClick;
+	}
+
+	public boolean isScreenClick() {
+		return screenClick;
+	}
+
+	/**
+	 * 此标记用于判断是否next仅在点击message时继续（true不是，false是）
+	 * 
+	 * @param screenClick
+	 */
+	public void setScreenClick(boolean screenClick) {
+		this.screenClick = screenClick;
 	}
 
 	@Override

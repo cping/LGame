@@ -24,7 +24,9 @@ import java.io.Serializable;
 
 import loon.geom.Vector3f;
 import loon.geom.Vector4f;
+import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 
 public class LColor implements Serializable {
 
@@ -66,6 +68,59 @@ public class LColor implements Serializable {
 		int newG = (((curColor >> 8) & 0xFF) * (((dstColor >> 8) & 0xFF) + 1)) & 0xFF00;
 		int newB = (((curColor & 0xFF) * ((dstColor & 0xFF) + 1)) >> 8) & 0xFF;
 		return newA | newR | newG | newB;
+	}
+
+	/**
+	 * 获得RGB565格式数据
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static int rgb565(float r, float g, float b) {
+		return ((int) (r * 31) << 11) | ((int) (g * 63) << 5) | (int) (b * 31);
+	}
+
+	/**
+	 * 获得RGBA4444格式数据
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @param a
+	 * @return
+	 */
+	public static int rgba4444(float r, float g, float b, float a) {
+		return ((int) (r * 15) << 12) | ((int) (g * 15) << 8)
+				| ((int) (b * 15) << 4) | (int) (a * 15);
+	}
+
+	/**
+	 * 获得RGB888格式数据
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static int rgb888(float r, float g, float b) {
+		return ((int) (r * 255) << 16) | ((int) (g * 255) << 8)
+				| (int) (b * 255);
+	}
+
+	/**
+	 * 获得RGBA8888格式数据
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @param a
+	 * @return
+	 */
+	public static int rgba8888(float r, float g, float b, float a) {
+		return ((int) (r * 255) << 24) | ((int) (g * 255) << 16)
+				| ((int) (b * 255) << 8) | (int) (a * 255);
 	}
 
 	public static int argb(int a, int r, int g, int b) {
@@ -181,59 +236,6 @@ public class LColor implements Serializable {
 		return bytes;
 	}
 
-	/**
-	 * 获得RGB565格式数据
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @return
-	 */
-	public static int rgb565(float r, float g, float b) {
-		return ((int) (r * 31) << 11) | ((int) (g * 63) << 5) | (int) (b * 31);
-	}
-
-	/**
-	 * 获得RGBA4444格式数据
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param a
-	 * @return
-	 */
-	public static int rgba4444(float r, float g, float b, float a) {
-		return ((int) (r * 15) << 12) | ((int) (g * 15) << 8)
-				| ((int) (b * 15) << 4) | (int) (a * 15);
-	}
-
-	/**
-	 * 获得RGB888格式数据
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @return
-	 */
-	public static int rgb888(float r, float g, float b) {
-		return ((int) (r * 255) << 16) | ((int) (g * 255) << 8)
-				| (int) (b * 255);
-	}
-
-	/**
-	 * 获得RGBA8888格式数据
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param a
-	 * @return
-	 */
-	public static int rgba8888(float r, float g, float b, float a) {
-		return ((int) (r * 255) << 24) | ((int) (g * 255) << 16)
-				| ((int) (b * 255) << 8) | (int) (a * 255);
-	}
-
 	public final static LColor silver = new LColor(0xffc0c0c0);
 
 	public final static LColor lightBlue = new LColor(0xffadd8e6);
@@ -319,6 +321,30 @@ public class LColor implements Serializable {
 		this(LColor.white);
 	}
 
+	public LColor(String c) {
+		if (MathUtils.isNan(c)) {
+			setColor((int) Double.parseDouble(c));
+		} else if (c.startsWith("rgb")) {
+			int start = c.indexOf('(');
+			int end = c.lastIndexOf(')');
+			if (start != -1 && end != -1 && end > start) {
+				String result = c.substring(start + 1, end).trim();
+				String[] list = StringUtils.split(result, ',');
+				if (list.length == 3) {
+					setColor(Integer.parseInt(list[0]),
+							Integer.parseInt(list[1]),
+							Integer.parseInt(list[2]));
+				} else if (list.length == 4) {
+					setColor(Integer.parseInt(list[0]),
+							Integer.parseInt(list[1]),
+							Integer.parseInt(list[2]),
+							Integer.parseInt(list[3]));
+				}
+			}
+		} else {
+			setColor(hexToColor(c));
+		}
+	}
 	public LColor(LColor color) {
 		this(color.r, color.g, color.b, color.a);
 	}
@@ -787,6 +813,20 @@ public class LColor implements Serializable {
 		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 	}
 
+	public static LColor hexToColor(String c) {
+		try {
+			if (c.startsWith("#")) {
+				return hexToColor(c.substring(1));
+			} else {
+				return new LColor(Integer.parseInt(c.substring(0, 2), 16),
+						Integer.parseInt(c.substring(2, 4), 16),
+						Integer.parseInt(c.substring(4, 6), 16));
+			}
+		} catch (Exception e) {
+			return new LColor();
+		}
+	}
+
 	public String toCSS() {
 		return "rgba(" + (int) (r * 255) + "," + (int) (g * 255) + ","
 				+ (int) (b * 255) + "," + (int) (a * 255) + ")";
@@ -799,8 +839,8 @@ public class LColor implements Serializable {
 	public Vector4f getVector4() {
 		return new Vector4f(r, g, b, a);
 	}
-	
-	public Alpha getAlphaObject(){
+
+	public Alpha getAlphaObject() {
 		return new Alpha(a);
 	}
 
