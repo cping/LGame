@@ -527,6 +527,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		return animation.getSpriteImage();
 	}
 
+	@Override
 	public float getWidth() {
 		LTexture si = animation.getSpriteImage();
 		if (si == null) {
@@ -535,6 +536,7 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		return (int) (si.width() * scaleX);
 	}
 
+	@Override
 	public float getHeight() {
 		LTexture si = animation.getSpriteImage();
 		if (si == null) {
@@ -772,11 +774,9 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		this.visible = false;
 		if (image != null) {
 			image.close();
-			image = null;
 		}
 		if (animation != null) {
 			animation.close();
-			animation = null;
 		}
 	}
 }

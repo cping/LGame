@@ -1243,6 +1243,7 @@ public class LTextureBatch implements LRelease {
 		if (lastCache != null) {
 			lastCache.close();
 		}
+		mesh.dispose(name, size);
 	}
 
 	public void destoryAll() {

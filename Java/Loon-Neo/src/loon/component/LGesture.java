@@ -72,6 +72,7 @@ public class LGesture extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
+		g.saveBrush();
 		if (visible && goalPath != null) {
 			int tmp = g.color();
 			g.setLineWidth(lineWidth);
@@ -80,6 +81,7 @@ public class LGesture extends LComponent {
 			g.resetLineWidth();
 			g.setColor(tmp);
 		}
+		g.restoreBrush();
 	}
 
 	@Override

@@ -384,7 +384,6 @@ public class Animation implements LRelease {
 			for (AnimationFrame frame : frames) {
 				if (frame != null) {
 					frame.close();
-					frame = null;
 				}
 			}
 			frames.clear();
