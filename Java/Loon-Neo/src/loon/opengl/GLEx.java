@@ -135,10 +135,16 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public int getWidth() {
+		if (target != null) {
+			return (int) (target.width() / target.xscale());
+		}
 		return LSystem.viewSize.getWidth();
 	}
 
 	public int getHeight() {
+		if (target != null) {
+			return (int) (target.height() / target.yscale());
+		}
 		return LSystem.viewSize.getHeight();
 	}
 
@@ -390,7 +396,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		brushStack.pop();
 		return this;
 	}
-	
+
 	public boolean setClip(float x, float y, float width, float height) {
 		return startClipped(x, y, width, height);
 	}

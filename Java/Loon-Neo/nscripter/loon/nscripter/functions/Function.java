@@ -1,16 +1,16 @@
-package loon.nscripter.variables;
+package loon.nscripter.functions;
 
 import loon.utils.TArray;
+import loon.utils.processes.GameProcess;
 
-public abstract class Variable {
+public abstract class Function {
 
 	protected String _name;
 
 	protected TArray<String> _parameters;
 	
-	public Variable(String name,String par){
+	public Function(String name){
 	     _parameters = new TArray<String>();
-         _parameters.add(par);
          _name = name;
 	}
 
@@ -30,12 +30,16 @@ public abstract class Variable {
 		return _parameters;
 	}
 
-	public String get() {
+	String get() {
 		return _parameters.get(0);
 	}
 
-	public boolean set(String param) {
+	boolean set(String param) {
 		_parameters.set(0, param);
 		return true;
 	}
+	
+    abstract GameProcess run();
+
+    abstract String parse(String param);
 }

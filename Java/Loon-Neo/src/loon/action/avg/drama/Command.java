@@ -354,7 +354,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @return
 	 */
-	public synchronized String[] getReads() {
+	public String[] getReads() {
 		String result = readBuffer.toString();
 		result = result.replaceAll(SELECTS_TAG, "");
 		return StringUtils.split(result, FLAG_CHAR);
@@ -366,7 +366,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param index
 	 * @return
 	 */
-	public synchronized String getRead(int index) {
+	public String getRead(int index) {
 		try {
 			return getReads()[index];
 		} catch (Exception e) {
@@ -693,7 +693,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @return
 	 */
-	public synchronized String doExecute() {
+	public String doExecute() {
 		if (isClose) {
 			return null;
 		}
@@ -1223,7 +1223,7 @@ public class Command extends Conversion implements LRelease {
 			scriptLazy.clear();
 			scriptLazy = null;
 		}
-		
+
 	}
 
 	public boolean isClose() {
