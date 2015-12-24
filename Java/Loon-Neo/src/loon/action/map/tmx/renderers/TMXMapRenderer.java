@@ -23,6 +23,8 @@ import loon.utils.TimeUtils;
 public abstract class TMXMapRenderer extends LObject implements ActionBind,
 		ISprite {
 
+	protected int lastHashCode = 1;
+
 	protected static class TileAnimator {
 
 		private TMXTile tile;
@@ -196,13 +198,13 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 	public void createUI(GLEx g) {
 		float tmp = g.alpha();
 		float tmpAlpha = baseColor.a;
-		int color  = g.color();
+		int color = g.color();
 		g.setAlpha(_alpha);
 		baseColor.a = _alpha;
 		g.setColor(baseColor);
 		renderBackgroundColor(g);
 		for (TMXMapLayer mapLayer : map.getLayers()) {
-			if (mapLayer instanceof TMXTileLayer) {		
+			if (mapLayer instanceof TMXTileLayer) {
 				renderTileLayer(g, (TMXTileLayer) mapLayer);
 			}
 			if (mapLayer instanceof TMXImageLayer) {
@@ -265,6 +267,7 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 		return getCollisionArea();
 	}
 
+	@Override
 	public int hashCode() {
 		int result = map.getTileSets().size;
 		result = LSystem.unite(result, _location.x);
@@ -280,8 +283,16 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 
 	@Override
 	public void close() {
+		visible = false;
+		if (textureMap != null) {
+			textureMap.clear();
+		}
+		if (tileAnimators != null) {
+			tileAnimators.clear();
+		}
 		for (LTexture texture : textureMap.values()) {
 			texture.close();
 		}
+		lastHashCode = 1;
 	}
 }

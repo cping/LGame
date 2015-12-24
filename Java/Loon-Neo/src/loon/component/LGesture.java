@@ -30,7 +30,6 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-
 //0.3.3版新增类,用以进行跨平台手势操作。
 public class LGesture extends LComponent {
 
@@ -46,7 +45,7 @@ public class LGesture extends LComponent {
 
 	private Path goalPath;
 
-	private LColor color = LColor.orange;
+	private LColor color = new LColor(LColor.orange);
 
 	private int lineWidth;
 
@@ -61,23 +60,25 @@ public class LGesture extends LComponent {
 	}
 
 	public LGesture() {
-		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), true);
+		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
+				true);
 	}
 
 	public LGesture(boolean flag) {
-		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), flag);
+		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
+				flag);
 	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (visible && goalPath != null) {
-			g.saveBrush();
+			int tmp = g.color();
 			g.setLineWidth(lineWidth);
 			g.setColor(color);
 			g.draw(goalPath);
 			g.resetLineWidth();
-			g.restoreBrush();
+			g.setColor(tmp);
 		}
 	}
 
@@ -189,20 +190,21 @@ public class LGesture extends LComponent {
 		}
 		return new float[] { 0, 0 };
 	}
-	
+
 	@Override
 	public void dragClick() {
 		if (Click != null) {
 			Click.DragClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
+
 	@Override
 	public void downClick() {
 		if (Click != null) {
 			Click.DownClick(this, input.getTouchX(), input.getTouchY());
 		}
 	}
-	
+
 	@Override
 	public void upClick() {
 		if (Click != null) {

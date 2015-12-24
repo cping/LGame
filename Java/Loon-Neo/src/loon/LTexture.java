@@ -917,17 +917,6 @@ public class LTexture extends Painter implements LRelease {
 		return result;
 	}
 
-	@Override
-	public void close() {
-		_closed = true;
-		if (!isChildAllClose()) {
-			return;
-		}
-		if (LTextures.removeTexture(this, true) == -1) {
-			free();
-		}
-	}
-
 	public float getMinU() {
 		return xOff;
 	}
@@ -942,6 +931,22 @@ public class LTexture extends Painter implements LRelease {
 
 	public float getMaxV() {
 		return heightRatio;
+	}
+
+	@Override
+	public void close() {
+		_closed = true;
+		if (batch != null) {
+			batch.close();
+			batch = null;
+		}
+		isBatch = false;
+		if (!isChildAllClose()) {
+			return;
+		}
+		if (LTextures.removeTexture(this, true) == -1) {
+			free();
+		}
 	}
 
 }

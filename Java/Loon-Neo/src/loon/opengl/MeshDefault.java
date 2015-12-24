@@ -33,11 +33,11 @@ public class MeshDefault {
 
 	private boolean stop_main_readering = false;
 
-	private final static ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(
+	private final ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(
 			10);
 
 	public Mesh getMesh(String n, int size) {
-		final String name = n + size; 
+		final String name = n + size;
 		Mesh mesh = meshLazy.get(name);
 		if (mesh == null) {
 			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
@@ -67,17 +67,16 @@ public class MeshDefault {
 		}
 		mesh.setIndices(indices);
 	}
-	
-	public void setGLType(int type){
+
+	public void setGLType(int type) {
 		this.type = type;
 	}
-	
-	public int getGLType(){
+
+	public int getGLType() {
 		return this.type;
 	}
 
 	public void setIndices(String name, int size, short[] indices) {
-		
 		Mesh mesh = getMesh(name, size);
 		mesh.setIndices(indices);
 	}
@@ -98,8 +97,7 @@ public class MeshDefault {
 			stop_main_readering = true;
 		}
 		Mesh mesh = getMesh(name, size);
-
-		mesh.setVertices( vertices, 0, vertexIdx);
+		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
 		mesh.render(shader, type, 0, count);
@@ -108,5 +106,22 @@ public class MeshDefault {
 		} else if (stop_main_readering) {
 			LSystem.mainBeginDraw();
 		}
+	}
+
+	public void dispose(String name, int size) {
+		final String key = name + size;
+		Mesh mesh = meshLazy.remove(key);
+		if (mesh != null) {
+			mesh.close();
+		}
+	}
+
+	public void dispose() {
+		for (Mesh mesh : meshLazy.values()) {
+			if (mesh != null) {
+				mesh.close();
+			}
+		}
+		meshLazy.clear();
 	}
 }

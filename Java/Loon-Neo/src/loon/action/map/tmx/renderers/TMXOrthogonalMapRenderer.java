@@ -44,8 +44,6 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		baseColor.a = tmpAlpha;
 	}
 
-	private int lastHashCode = 1;
-
 	@SuppressWarnings("resource")
 	protected void renderTileLayer(GLEx g, TMXTileLayer tileLayer) {
 		synchronized (this) {

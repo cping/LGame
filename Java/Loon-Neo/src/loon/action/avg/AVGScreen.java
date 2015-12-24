@@ -82,22 +82,22 @@ public abstract class AVGScreen extends Screen {
 						: clickcount > -1) {
 					LSelect select = (LSelect) comp;
 					int idx = select.getResultIndex();
-					if (idx < 0) {
-						idx = 0;
+					if (idx != -1) {
+						String gotoFlag = _items.get(idx);
+						if (MathUtils.isNan(gotoFlag)) {
+							command.gotoIndex((int) Double
+									.parseDouble(gotoFlag));
+						} else {
+							command.gotoIndex(gotoFlag);
+						}
+						select.SetClick(null);
+						select.setVisible(false);
+						limitClick = false;
+						scrFlag = false;
+						isSelectMessage = false;
+						clickcount = 0;
+						nextScript();
 					}
-					String gotoFlag = _items.get(idx);
-					if (MathUtils.isNan(gotoFlag)) {
-						command.gotoIndex((int) Double.parseDouble(gotoFlag));
-					} else {
-						command.gotoIndex(gotoFlag);
-					}
-					select.SetClick(null);
-					select.setVisible(false);
-					limitClick = false;
-					scrFlag = false;
-					isSelectMessage = false;
-					clickcount = 0;
-					nextScript();
 				}
 			}
 		}
