@@ -56,6 +56,19 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class AVGScreen extends Screen {
 
+	// AVG文字显示速度
+	public enum SpeedMode {
+		SuperSlow, // 超级慢
+		Slow, // 慢
+		FewSlow, // 慢一点点
+		Normal, // 普通
+		Fast, // 快
+		Quickly, // 很快
+		Flash, // 神速
+	}
+
+	private SpeedMode speedMode = SpeedMode.Normal;
+
 	private int clickcount = 0;
 
 	private class SelectClick implements ClickListener {
@@ -201,7 +214,34 @@ public abstract class AVGScreen extends Screen {
 			public void run(LTimerContext time) {
 				if (running) {
 					if (desktop != null) {
-						desktop.update(time.timeSinceLastUpdate);
+						switch (speedMode) {
+						default:
+						case Normal:
+							desktop.update(LSystem.SECOND / 2);
+							break;
+						case SuperSlow:
+							desktop.update(LSystem.MSEC * 20);
+							break;
+						case Slow:
+							desktop.update(LSystem.MSEC * 40);
+							break;
+						case FewSlow:
+							desktop.update(LSystem.MSEC * 60);
+							break;
+						case Fast:
+							desktop.update(LSystem.SECOND);
+							break;
+						case Quickly:
+							for (int i = 0; i < 2; i++) {
+								desktop.update(LSystem.SECOND);
+							}
+							break;
+						case Flash:
+							for (int i = 0; i < 3; i++) {
+								desktop.update(LSystem.SECOND);
+							}
+							break;
+						}
 					}
 					if (sprites != null) {
 						sprites.update(time.timeSinceLastUpdate);
@@ -212,6 +252,10 @@ public abstract class AVGScreen extends Screen {
 				}
 			}
 		};
+		if (speedMode == SpeedMode.Flash || speedMode == SpeedMode.Quickly
+				|| speedMode == SpeedMode.Fast) {
+			delay = 0;
+		}
 		avgProcess.setDelay(delay);
 		RealtimeProcessManager.get().addProcess(avgProcess);
 	}
@@ -512,17 +556,17 @@ public abstract class AVGScreen extends Screen {
 						color = LColor.pink;
 					} else if (mesFlag.equalsIgnoreCase("magenta")) {
 						color = LColor.magenta;
-					}else {
+					} else {
 						color = new LColor(mesFlag);
 					}
 					if (sprites != null) {
 						sprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
 							sprites.add(FadeEffect.getInstance(
-									ISprite.TYPE_FADE_IN, color));
+									ISprite.TYPE_FADE_IN, 30, color));
 						} else {
 							sprites.add(FadeEffect.getInstance(
-									ISprite.TYPE_FADE_OUT, color));
+									ISprite.TYPE_FADE_OUT, 30, color));
 						}
 					}
 					continue;
@@ -706,7 +750,6 @@ public abstract class AVGScreen extends Screen {
 					} else {
 						color = null;
 					}
-
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_GB)) {
@@ -874,15 +917,22 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public void setPause(int pause) {
-		this.delay = pause;
+		setDelay(pause);
 	}
 
 	public int getDelay() {
 		return delay;
 	}
 
-	public void setDelay(int delay) {
-		this.delay = delay;
+	public void setDelay(int d) {
+		this.delay = d;
+		if (speedMode == SpeedMode.Flash || speedMode == SpeedMode.Quickly
+				|| speedMode == SpeedMode.Fast) {
+			delay = 0;
+		}
+		if (avgProcess != null) {
+			avgProcess.setDelay(delay);
+		}
 	}
 
 	@Override
@@ -1070,6 +1120,19 @@ public abstract class AVGScreen extends Screen {
 	 */
 	public void setScreenClick(boolean screenClick) {
 		this.screenClick = screenClick;
+	}
+
+	public SpeedMode getSpeedMode() {
+		return speedMode;
+	}
+
+	/**
+	 * 设置当前AVG的文字显示速度默认
+	 * 
+	 * @param m
+	 */
+	public void setSpeedMode(SpeedMode m) {
+		this.speedMode = m;
 	}
 
 	@Override

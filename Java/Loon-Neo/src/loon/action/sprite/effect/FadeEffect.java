@@ -59,6 +59,11 @@ public class FadeEffect extends LObject implements BaseEffect, ISprite {
 				LSystem.viewSize.getHeight());
 	}
 
+	public static FadeEffect getInstance(int type, int timer, LColor c) {
+		return new FadeEffect(c, timer, type, LSystem.viewSize.getWidth(),
+				LSystem.viewSize.getHeight());
+	}
+
 	public static FadeEffect getInstance(int type, LColor c, int w, int h) {
 		return new FadeEffect(c, 120, type, w, h);
 	}

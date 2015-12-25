@@ -246,7 +246,6 @@ public class Print implements LRelease {
 				if (text == '\0') {
 					continue;
 				}
-
 				if (interceptCount < interceptMaxString) {
 					interceptCount++;
 					continue;
