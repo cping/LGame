@@ -518,10 +518,12 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		}
 	}
 
+	@Override
 	public void setLocation(Vector2f _location) {
 		setLocation(_location.x, _location.y);
 	}
 
+	@Override
 	public void setLocation(float dx, float dy) {
 		if (this.getX() != dx || this.getY() != dy || dx == 0 || dy == 0) {
 			super.setLocation(dx, dy);
@@ -529,6 +531,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		}
 	}
 
+	@Override
 	public void move(float dx, float dy) {
 		if (dx != 0 || dy != 0) {
 			if (dx > -100 && dx < 100 && dy > -100 && dy < 100) {

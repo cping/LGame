@@ -67,6 +67,27 @@ public abstract class AVGScreen extends Screen {
 		Flash, // 神速
 	}
 
+	public SpeedMode toSpeedMode(String name) {
+		String key = name.trim().toLowerCase();
+		if ("superslow".equals(key)) {
+			return SpeedMode.SuperSlow;
+		} else if ("slow".equals(key)) {
+			return SpeedMode.Slow;
+		} else if ("fewslow".equals(key)) {
+			return SpeedMode.FewSlow;
+		} else if ("normal".equals(key)) {
+			return SpeedMode.Normal;
+		} else if ("fast".equals(key)) {
+			return SpeedMode.Fast;
+		} else if ("quickly".equals(key)) {
+			return SpeedMode.Quickly;
+		} else if ("flash".equals(key)) {
+			return SpeedMode.Flash;
+		} else {
+			return SpeedMode.Normal;
+		}
+	}
+
 	private SpeedMode speedMode = SpeedMode.Normal;
 
 	private int clickcount = 0;
@@ -252,10 +273,7 @@ public abstract class AVGScreen extends Screen {
 				}
 			}
 		};
-		if (speedMode == SpeedMode.Flash || speedMode == SpeedMode.Quickly
-				|| speedMode == SpeedMode.Fast) {
-			delay = 0;
-		}
+		setSpeedMode(speedMode);
 		avgProcess.setDelay(delay);
 		RealtimeProcessManager.get().addProcess(avgProcess);
 	}
@@ -436,6 +454,64 @@ public abstract class AVGScreen extends Screen {
 					mesFlag = (String) commands.get(1);
 					orderFlag = (String) commands.get(2);
 					lastFlag = (String) commands.get(3);
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_SPEED)) {
+					if (mesFlag != null) {
+						setSpeedMode(toSpeedMode(mesFlag));
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESMOVE)) {
+					// 空值时复位
+					if (mesFlag == null) {
+						int mesSize = (int) (message.getWidth() / (message
+								.getMessageFont().getSize()));
+						if (mesSize % 2 != 0) {
+							mesSize = mesSize - 3;
+						} else {
+							mesSize = mesSize - 4;
+						}
+						this.message.setMessageLength(mesSize);
+						this.message.setLocation(
+								(getWidth() - message.getWidth()) / 2,
+								getHeight() - message.getHeight() - 10);
+						this.message.setTopOffset(-5);
+						this.select.setTopOffset(5);
+					} else if (mesFlag != null) {
+						if (orderFlag != null) {
+							if (MathUtils.isNan(mesFlag)
+									&& (MathUtils.isNan(orderFlag))) {
+								float x = Float.parseFloat(mesFlag);
+								float y = Float.parseFloat(orderFlag);
+								message.setLocation(x, y);
+								select.setLocation(x, y);
+							}
+						} else {
+							if (mesFlag.indexOf(',') == -1
+									&& MathUtils.isNan(mesFlag)) {
+								float v = Float.parseFloat(mesFlag);
+								message.setX(v);
+								select.setX(v);
+							} else {
+								String[] res = StringUtils.split(mesFlag, ',');
+								String v1=res[0].trim();
+								String v2=res[1].trim();
+								if (res.length == 1 && MathUtils.isNan(v1)) {
+									float v = Float.parseFloat(v1);
+									message.setX(v);
+									select.setX(v);
+								} else if (res.length == 2
+										&& MathUtils.isNan(v1)
+										&& MathUtils.isNan(v2)) {
+									float x = Float.parseFloat(v1);
+									float y = Float.parseFloat(v2);
+									message.setLocation(x, y);
+									select.setLocation(x, y);
+								}
+							}
+						}
+					}
+					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_APLAY)) {
 					autoPlay = true;
@@ -1133,6 +1209,10 @@ public abstract class AVGScreen extends Screen {
 	 */
 	public void setSpeedMode(SpeedMode m) {
 		this.speedMode = m;
+		if (speedMode == SpeedMode.Flash || speedMode == SpeedMode.Quickly
+				|| speedMode == SpeedMode.Fast) {
+			delay = 0;
+		}
 	}
 
 	@Override

@@ -22,38 +22,62 @@ package loon.action.avg.drama;
 
 public interface CommandType {
 
+	// 画面等待
 	String L_WAIT = "wait";
 
+	// 显示信息
 	String L_MES = "mes";
 
-	String L_SELLEN = "selleft";
+	// 信息框移动
+	String L_MESMOVE = "mesmove";
 
-	String L_SELTOP = "seltop";
-
+	// 信息框每行最多显示字数
 	String L_MESLEN = "meslen";
 
+	// 停止信息显示
 	String L_MESTOP = "mestop";
 
-	String L_MESLEFT = "mesleft";
-
-	String L_MESCOLOR = "mescolor";
-
+	// 信息框中文字顶部偏移
 	String L_MESSTOP = "messtop";
 
+	// 信息框中文字左侧偏移
+	String L_MESLEFT = "mesleft";
+
+	// 信息框中文字颜色
+	String L_MESCOLOR = "mescolor";
+
+	// 选择方式1:格式[select "如果你想要跳转，那么？",{跳转到标记1,label1,跳转到标记2,label2}]
 	String L_SELECT = "select";
 
+	/**
+	 * 选择方式2: selects in A.很帅。 B.超级帅。 C.帅到天下无帅。 out
+	 */
 	String L_SELECTS = "selects";
 
+	// 选择框中文字顶部偏移
+	String L_SELTOP = "seltop";
+	// 选择框中文字左侧偏移
+	String L_SELLEN = "selleft";
+
+	// 文字显示速度模式:格式[speed fast]
+	String L_SPEED = "speed";
+
+	// 画面振动
 	String L_SHAKE = "shake";
 
+	// 暂停cg
 	String L_CGWAIT = "cgwait";
 
+	// cg延迟时间
 	String L_SLEEP = "sleep";
 
+	// 画面闪烁
 	String L_FLASH = "flash";
 
+	// 背景
 	String L_GB = "gb";
 
+	// 单独图片
 	String L_CG = "cg";
 
 	String L_PLAY = "play";
@@ -81,7 +105,7 @@ public interface CommandType {
 	String L_PETALSTOP = "petalstop";
 
 	String L_TO = "to";
-	
+
 	String L_APLAY = "aplay";
 
 	String L_ASTOP = "astop";
