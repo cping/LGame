@@ -95,10 +95,13 @@ public class PreloaderBundleGenerator extends Generator {
 					source = new ResourcesWrapper(getPath(assetPath).replace(
 							assetOutputPath, "").replace("../", ""));
 					if (!source.exists()) {
-						throw new RuntimeException(
-								"assets path '"
-										+ assetPath
-										+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+						source = new ResourcesWrapper(assetPath);
+						if (!source.exists()) {
+							throw new RuntimeException(
+									"assets path '"
+											+ assetPath
+											+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+						}
 					}
 				}
 			}

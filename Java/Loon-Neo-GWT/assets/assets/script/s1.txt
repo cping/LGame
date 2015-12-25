@@ -8,10 +8,12 @@ fadein black
 gb print(back) 
 cg print(女性角色微笑) 220
 mes 啦啦啦，啦啦啦，我是编程的大行家～
-select {跳转到标记1,label1,跳转到标记2,label2}
+//不加提示信息格式如下例:select {跳转到标记1,label1,跳转到标记2,label2}
+select "如果你想要跳转，那么？",{跳转到标记1,label1,跳转到标记2,label2}
 //跳转标记1
 label1
 mes 另外，我知道，你刚刚选择了标签1
+//跳向label3，避开label2
 goto label3
 //跳转标记二
 label2
