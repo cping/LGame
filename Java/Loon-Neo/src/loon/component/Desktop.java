@@ -91,33 +91,39 @@ public class Desktop implements LRelease {
 		return removed;
 	}
 
-	public int removeTag(Object tag) {
-		int removed = this.removeComponentTag(this.contentPane, tag);
-		if (removed != -1) {
+	public boolean removeTag(Object tag) {
+		boolean removed = this.removeComponentTag(this.contentPane, tag);
+		if (removed) {
 			this.processTouchMotionEvent();
 		}
 		return removed;
 	}
 
-	public void removeUIName(String uiName) {
-		if (contentPane != null) {
-			contentPane.removeUIName(uiName);
-		}
-	}
-	
-	public int removeName(String name) {
-		int removed = this.removeComponentName(this.contentPane, name);
-		if (removed != -1) {
+	public boolean removeUIName(String uiName) {
+		boolean removed = this.removeComponentUIName(this.contentPane, uiName);
+		if (removed) {
 			this.processTouchMotionEvent();
 		}
 		return removed;
 	}
 
-	private int removeComponentName(LContainer container, String name) {
+	public boolean removeName(String name) {
+		boolean removed = this.removeComponentName(this.contentPane, name);
+		if (removed) {
+			this.processTouchMotionEvent();
+		}
+		return removed;
+	}
+
+	private boolean removeComponentUIName(LContainer container, String name) {
+		return container.removeUIName(name);
+	}
+
+	private boolean removeComponentName(LContainer container, String name) {
 		return container.removeName(name);
 	}
 
-	private int removeComponentTag(LContainer container, Object tag) {
+	private boolean removeComponentTag(LContainer container, Object tag) {
 		return container.removeTag(tag);
 	}
 

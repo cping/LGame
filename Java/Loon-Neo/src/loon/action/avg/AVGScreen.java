@@ -268,6 +268,14 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public final void onLoaded() {
+		// 不同场合需要不同的渲染策略，此处将用户渲染至于底层
+		// 最先绘制用户画面
+		setFristOrder(DRAW_USER_PAINT());
+		// 其次绘制精灵
+		setSecondOrder(DRAW_SPRITE_PAINT());
+		// 最后绘制桌面
+		setLastOrder(DRAW_DESKTOP_PAINT());
+
 		LSystem.load(new Updateable() {
 
 			@Override
@@ -512,13 +520,9 @@ public abstract class AVGScreen extends Screen {
 					if (mesFlag != null) {
 						if ("clear".equalsIgnoreCase(mesFlag)) {
 							if (orderFlag == null) {
-								desktop.removeUIName("ClickButton");
+								super.getDesktop().removeUIName("ClickButton");
 							} else {
-								LComponent[] comps = desktop.getContentPane()
-										.getComponents();
-								if (comps != null) {
-									desktop.removeTag("opt" + orderFlag);
-								}
+								super.getDesktop().removeTag("opt" + orderFlag);
 							}
 						} else {
 							String text = null;
@@ -571,7 +575,7 @@ public abstract class AVGScreen extends Screen {
 								click.Tag = "opt"
 										+ (click.getText() == null ? command
 												.getIndex() : click.getText());
-								desktop.add(click);
+								super.getDesktop().add(click);
 							}
 						}
 					}
@@ -1128,8 +1132,7 @@ public abstract class AVGScreen extends Screen {
 		}
 	}
 
-	@Override
-	public Desktop getDesktop() {
+	public Desktop getAvgDesktop() {
 		return desktop;
 	}
 
@@ -1205,8 +1208,7 @@ public abstract class AVGScreen extends Screen {
 		scrCG.sleepMax = sleepMax;
 	}
 
-	@Override
-	public Sprites getSprites() {
+	public Sprites getAvgSprites() {
 		return sprites;
 	}
 

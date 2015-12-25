@@ -113,7 +113,8 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public int remove(LComponent comp) {
-		for (int i = 0; i < this.childCount; i++) {
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
 			if (this.childs[i] == comp) {
 				this.remove(i);
 				return i;
@@ -122,34 +123,40 @@ public abstract class LContainer extends LComponent {
 		return -1;
 	}
 
-	public int removeTag(Object tag) {
-		for (int i = 0; i < this.childCount; i++) {
+	public boolean removeTag(Object tag) {
+		boolean flag = false;
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
 			if (this.childs[i].Tag == tag || tag.equals(this.childs[i].Tag)) {
 				this.remove(i);
-				return i;
+				flag = true;
 			}
 		}
-		return -1;
+		return flag;
 	}
 
-	public int removeUIName(String name) {
-		for (int i = 0; i < this.childCount; i++) {
+	public boolean removeUIName(String name) {
+		boolean flag = false;
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
 			if (name.equals(this.childs[i].getUIName())) {
 				this.remove(i);
-				return i;
+				flag = true;
 			}
 		}
-		return -1;
+		return flag;
 	}
 
-	public int removeName(String name) {
-		for (int i = 0; i < this.childCount; i++) {
+	public boolean removeName(String name) {
+		boolean flag = false;
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
 			if (name.equals(this.childs[i].getName())) {
 				this.remove(i);
-				return i;
+				flag = true;
 			}
 		}
-		return -1;
+		return flag;
 	}
 
 	public LComponent remove(int index) {
