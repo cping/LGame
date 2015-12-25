@@ -2,6 +2,8 @@
 
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 
+BWT：想自己开发游戏又找不到美工的网友，可以见dev-res目录，小弟已经列举了很多的开放资源，并且在不断更新（都是无版权问题的资源，要么就是作者放弃版权的，要么就是只要注明来源，就可以免费使用的）。
+
 #2015-12-21
 
 目前使用opengles2.0的loon-0.5-java版本，大体上已经可用，API也已经基本冻结，下周针对不同环境微调下细节，就会正式发布Java版。现有的alpha文件夹则将会删除java实现部分，而转为存放C#版的alpha实现。
