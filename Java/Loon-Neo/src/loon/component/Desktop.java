@@ -91,6 +91,36 @@ public class Desktop implements LRelease {
 		return removed;
 	}
 
+	public int removeTag(Object tag) {
+		int removed = this.removeComponentTag(this.contentPane, tag);
+		if (removed != -1) {
+			this.processTouchMotionEvent();
+		}
+		return removed;
+	}
+
+	public void removeUIName(String uiName) {
+		if (contentPane != null) {
+			contentPane.removeUIName(uiName);
+		}
+	}
+	
+	public int removeName(String name) {
+		int removed = this.removeComponentName(this.contentPane, name);
+		if (removed != -1) {
+			this.processTouchMotionEvent();
+		}
+		return removed;
+	}
+
+	private int removeComponentName(LContainer container, String name) {
+		return container.removeName(name);
+	}
+
+	private int removeComponentTag(LContainer container, Object tag) {
+		return container.removeTag(tag);
+	}
+
 	private int removeComponent(LContainer container, LComponent comp) {
 		int removed = container.remove(comp);
 		LComponent[] components = container.getComponents();
@@ -292,7 +322,7 @@ public class Desktop implements LRelease {
 		// 返回子容器
 		LContainer panel = (this.modal == null) ? this.contentPane
 				: ((LContainer) this.modal);
-	
+
 		LComponent comp = panel.findComponent(x, y);
 		return comp;
 	}
@@ -515,13 +545,12 @@ public class Desktop implements LRelease {
 	public Screen getInput() {
 		return input;
 	}
-	
+
 	@Override
 	public void close() {
 		if (contentPane != null) {
 			contentPane.close();
 		}
 	}
-
 
 }

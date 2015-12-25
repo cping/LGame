@@ -345,7 +345,7 @@ public class Sprites implements Serializable, LRelease {
 		boolean removed = false;
 
 		for (int i = size; i > 0; i--) {
-			if (sprite.equals(sprites[i - 1])) {
+			if ((sprite == sprites[i - 1]) || (sprite.equals(sprites[i - 1]))) {
 				removed = true;
 				size--;
 				sprites[i - 1] = sprites[size];

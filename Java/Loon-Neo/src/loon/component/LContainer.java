@@ -122,6 +122,36 @@ public abstract class LContainer extends LComponent {
 		return -1;
 	}
 
+	public int removeTag(Object tag) {
+		for (int i = 0; i < this.childCount; i++) {
+			if (this.childs[i].Tag == tag || tag.equals(this.childs[i].Tag)) {
+				this.remove(i);
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public int removeUIName(String name) {
+		for (int i = 0; i < this.childCount; i++) {
+			if (name.equals(this.childs[i].getUIName())) {
+				this.remove(i);
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public int removeName(String name) {
+		for (int i = 0; i < this.childCount; i++) {
+			if (name.equals(this.childs[i].getName())) {
+				this.remove(i);
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public LComponent remove(int index) {
 		LComponent comp = this.childs[index];
 

@@ -38,6 +38,7 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.Desktop;
+import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LMessage;
 import loon.component.LSelect;
@@ -111,7 +112,7 @@ public abstract class AVGScreen extends Screen {
 
 		@Override
 		public void UpClick(LComponent comp, float x, float y) {
-			if (_items != null && comp instanceof LSelect) {
+			if (_items != null && command != null && comp instanceof LSelect) {
 				if ((LSystem.base() != null && LSystem.base().isMobile()) ? clickcount++ >= 1
 						: clickcount > -1) {
 					LSelect select = (LSelect) comp;
@@ -212,6 +213,52 @@ public abstract class AVGScreen extends Screen {
 			this.dialog = LTextures.loadTexture(dialogFileName);
 		}
 		this.running = true;
+	}
+
+	private final void setOpt(LClickButton click, String order) {
+		int startFlag = order.indexOf('{');
+		int endFlag = order.lastIndexOf('}');
+
+		if (startFlag != -1 && endFlag != -1 && endFlag > startFlag) {
+
+			String gotoMes = order.substring(startFlag + 1, endFlag).trim();
+
+			final String[] result = StringUtils.split(gotoMes, ',');
+			if (result.length > 1) {
+				click.setTexture(LTextures.loadTexture(result[1]));
+				click.setGrayButton(true);
+			}
+			click.SetClick(new ClickListener() {
+
+				@Override
+				public void UpClick(LComponent comp, float x, float y) {
+					if (command != null) {
+						command.gotoIndex(result[0]);
+						nextScript();
+					}
+				}
+
+				@Override
+				public void DragClick(LComponent comp, float x, float y) {
+
+				}
+
+				@Override
+				public void DownClick(LComponent comp, float x, float y) {
+
+				}
+
+				@Override
+				public void DoClick(LComponent comp) {
+
+				}
+			});
+
+		} else {
+
+			click.setTexture(LTextures.loadTexture(order));
+			click.setGrayButton(true);
+		}
 	}
 
 	@Override
@@ -461,6 +508,76 @@ public abstract class AVGScreen extends Screen {
 					}
 					continue;
 				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_OPTION)) {
+					if (mesFlag != null) {
+						if ("clear".equalsIgnoreCase(mesFlag)) {
+							if (orderFlag == null) {
+								desktop.removeUIName("ClickButton");
+							} else {
+								LComponent[] comps = desktop.getContentPane()
+										.getComponents();
+								if (comps != null) {
+									desktop.removeTag("opt" + orderFlag);
+								}
+							}
+						} else {
+							String text = null;
+							LClickButton click = null;
+							if (mesFlag.indexOf(',') != -1) {
+								String[] optSize = StringUtils.split(mesFlag,
+										',');
+								if (optSize.length == 4) {
+									click = new LClickButton(text,
+											(int) Float.parseFloat(optSize[0]
+													.trim()),
+											(int) Float.parseFloat(optSize[1]
+													.trim()),
+											(int) Float.parseFloat(optSize[2]
+													.trim()),
+											(int) Float.parseFloat(optSize[3]
+													.trim()));
+									// 载入跳转地址与图片
+									if (orderFlag != null) {
+										setOpt(click, orderFlag);
+									}
+								}
+							} else {
+								text = StringUtils.replace(mesFlag, "\"", "");
+								if (orderFlag != null) {
+									String[] optSize = StringUtils.split(
+											orderFlag, ',');
+									if (optSize.length == 4) {
+										click = new LClickButton(text,
+												(int) Float
+														.parseFloat(optSize[0]
+																.trim()),
+												(int) Float
+														.parseFloat(optSize[1]
+																.trim()),
+												(int) Float
+														.parseFloat(optSize[2]
+																.trim()),
+												(int) Float
+														.parseFloat(optSize[3]
+																.trim()));
+										// 载入图片
+										if (lastFlag != null) {
+											setOpt(click, lastFlag);
+										}
+									}
+								}
+							}
+							if (click != null) {
+								click.Tag = "opt"
+										+ (click.getText() == null ? command
+												.getIndex() : click.getText());
+								desktop.add(click);
+							}
+						}
+					}
+
+					continue;
+				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESMOVE)) {
 					// 空值时复位
 					if (mesFlag == null) {
@@ -494,8 +611,8 @@ public abstract class AVGScreen extends Screen {
 								select.setX(v);
 							} else {
 								String[] res = StringUtils.split(mesFlag, ',');
-								String v1=res[0].trim();
-								String v2=res[1].trim();
+								String v1 = res[0].trim();
+								String v2 = res[1].trim();
 								if (res.length == 1 && MathUtils.isNan(v1)) {
 									float v = Float.parseFloat(v1);
 									message.setX(v);

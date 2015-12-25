@@ -57,9 +57,9 @@ public class NovelLayer {
 			_ibitmap = _nbitmap;
 			_nbitmap = null;
 			blackout_count++;
-			if (_bOutCallBack != null)
+			if (_bOutCallBack != null){
 				_bOutCallBack.onFinish();
-
+			}
 		}
 	}
 
@@ -83,8 +83,9 @@ public class NovelLayer {
 			_ibitmap = _nbitmap;
 			_nbitmap = null;
 			blackout_count++;
-			if (_bOutCallBack != null)
+			if (_bOutCallBack != null){
 				_bOutCallBack.onFinish();
+			}
 
 		}
 	}
