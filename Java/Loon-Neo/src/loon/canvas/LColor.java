@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import loon.geom.Vector3f;
 import loon.geom.Vector4f;
+import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
@@ -236,6 +237,8 @@ public class LColor implements Serializable {
 		return bytes;
 	}
 
+	private static ListMap<String, LColor> colorMap;
+
 	public final static LColor silver = new LColor(0xffc0c0c0);
 
 	public final static LColor lightBlue = new LColor(0xffadd8e6);
@@ -309,19 +312,23 @@ public class LColor implements Serializable {
 
 	public final static LColor magenta = new LColor(1.0f, 0.0f, 1.0f, 1.0f);
 
-	public float r;
+	public float r = 0.0f;
 
-	public float g;
+	public float g = 0.0f;
 
-	public float b;
+	public float b = 0.0f;
 
 	public float a = 1.0f;
 
-	public LColor() {
-		this(LColor.white);
-	}
-
+	/**
+	 * 转换字符串为color
+	 * 
+	 * @param c
+	 */
 	public LColor(String c) {
+		if (c == null) {
+			return;
+		}
 		if (MathUtils.isNan(c)) {
 			setColor((int) Double.parseDouble(c));
 		} else if (c.startsWith("rgb")) {
@@ -342,9 +349,54 @@ public class LColor implements Serializable {
 				}
 			}
 		} else {
-			setColor(hexToColor(c));
+			if (colorMap == null) {
+				colorMap = new ListMap<String, LColor>();
+				colorMap.put("silver", silver);
+				colorMap.put("lightblue", lightBlue);
+				colorMap.put("lightcoral", lightCoral);
+				colorMap.put("lightcyan", lightCyan);
+				colorMap.put("lightgoldenrodyellow", lightGoldenrodYellow);
+				colorMap.put("lightgreen", lightGreen);
+				colorMap.put("lightpink", lightPink);
+				colorMap.put("lightseagreen", lightSeaGreen);
+				colorMap.put("lightskyblue", lightSkyBlue);
+				colorMap.put("lightslategray", lightSlateGray);
+				colorMap.put("lightsteelblue", lightSteelBlue);
+				colorMap.put("lightyellow", lightYellow);
+				colorMap.put("limegreen", limeGreen);
+				colorMap.put("linen", linen);
+				colorMap.put("maroon", maroon);
+				colorMap.put("mediumAquamarine", mediumAquamarine);
+				colorMap.put("mediumblue", mediumBlue);
+				colorMap.put("wheat", wheat);
+				colorMap.put("gold", gold);
+				colorMap.put("white", white);
+				colorMap.put("yellow", yellow);
+				colorMap.put("red", red);
+				colorMap.put("blue", blue);
+				colorMap.put("cornflowerblue", cornFlowerBlue);
+				colorMap.put("black", black);
+				colorMap.put("gray", gray);
+				colorMap.put("cyan", cyan);
+				colorMap.put("darkgray", darkGray);
+				colorMap.put("lightgray", lightGray);
+				colorMap.put("pink", pink);
+				colorMap.put("orange", orange);
+				colorMap.put("magenta", magenta);
+			}
+			LColor color = colorMap.get(c.trim().toLowerCase());
+			if (color != null) {
+				setColor(color);
+			} else {
+				setColor(hexToColor(c));
+			}
 		}
 	}
+
+	public LColor() {
+		this(LColor.white);
+	}
+
 	public LColor(LColor color) {
 		this(color.r, color.g, color.b, color.a);
 	}
@@ -814,6 +866,20 @@ public class LColor implements Serializable {
 	}
 
 	public static LColor hexToColor(String c) {
+		try {
+			if (c.startsWith("#")) {
+				return hexToColor(c.substring(1));
+			} else {
+				return new LColor(Integer.parseInt(c.substring(0, 2), 16),
+						Integer.parseInt(c.substring(2, 4), 16),
+						Integer.parseInt(c.substring(4, 6), 16));
+			}
+		} catch (Exception e) {
+			return new LColor();
+		}
+	}
+
+	public static LColor stringToColor(String c) {
 		try {
 			if (c.startsWith("#")) {
 				return hexToColor(c.substring(1));

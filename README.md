@@ -2,6 +2,8 @@
 
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 
+* 本引擎开发环境是JDK 1.8，低版本JRE不能识别高版本编译的jar，如果直接使用jar（而非导入代码），请注意替换为高版本。
+
 BWT：想自己开发游戏又找不到美工的网友，可以见dev-res目录，小弟已经列举了很多的开放资源，并且在不断更新（都是无版权问题的资源，要么就是作者放弃版权的，要么就是只要注明来源，就可以免费使用的）。
 
 #2015-12-21

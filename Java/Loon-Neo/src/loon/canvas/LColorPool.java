@@ -28,7 +28,7 @@ public class LColorPool implements LRelease {
 
 	private static LColorPool pool;
 
-	public static LColorPool $() {
+	public static LColorPool get() {
 		synchronized (LColorPool.class) {
 			if (pool == null) {
 				pool = new LColorPool();
@@ -92,6 +92,7 @@ public class LColorPool implements LRelease {
 		return getColor(r, g, b, 1f);
 	}
 
+	@Override
 	public void close() {
 		if (ColorMap != null) {
 			ColorMap.clear();

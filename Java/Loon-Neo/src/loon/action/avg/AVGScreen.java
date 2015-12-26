@@ -23,6 +23,7 @@ package loon.action.avg;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.LTransition;
 import loon.Screen;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
@@ -128,6 +129,9 @@ public abstract class AVGScreen extends Screen {
 
 		void parameters(String[] pars);
 
+		/**
+		 * 此处传参与执行并未设定在一起，方便用户异步调用.
+		 */
 		void call();
 
 		boolean completed();
@@ -199,7 +203,7 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	/**
-	 * 默认任务（同时任务接口实现示例，Task主要就是给用户自行扩展的）
+	 * 默认任务（同时也是任务接口实现示例，Task主要就是给用户自行扩展的）
 	 */
 	private void defTask() {
 		// 使用方式，脚本中调用: task toast 字符串
@@ -228,6 +232,56 @@ public abstract class AVGScreen extends Screen {
 			@Override
 			public void parameters(String[] pars) {
 				parameter = StringUtils.replace(pars[0], "\"", "");
+			}
+		});
+		/**
+		 * 使用方式，脚本中调用: task trans 渐变效果名 颜色
+		 * 
+		 * @see LTransition
+		 */
+		putTask("trans", new Task() {
+
+			private String transStr, colorStr;
+
+			private LTransition transition;
+
+			@Override
+			public boolean completed() {
+				boolean stop = transition.getTransitionListener().completed();
+				if (stop) {
+					getSprites().remove(
+							transition.getTransitionListener().getSprite());
+				}
+				return stop;
+			}
+
+			@Override
+			public void call() {
+				transition = LTransition.newTransition(transStr, colorStr);
+				getSprites()
+						.add(transition.getTransitionListener().getSprite());
+			}
+
+			@Override
+			public void parameters(String[] pars) {
+				if (pars.length >= 2) {
+					transStr = pars[0];
+					colorStr = pars[1];
+					System.out.println(colorStr+","+transStr);
+				} else if (pars.length == 1) {
+					transStr = pars[0];
+					if (transStr.indexOf(',') != -1) {
+						String[] list = StringUtils.split(transStr, ',');
+						transStr = list[0];
+						colorStr = list[1];
+					} else {
+						colorStr = null;
+					}
+				} else {
+					// 字符串为null时，loon会调用默认特效设置FadeIn
+					transStr = null;
+					colorStr = null;
+				}
 			}
 		});
 	}
@@ -678,6 +732,7 @@ public abstract class AVGScreen extends Screen {
 						scrCG.clear();
 						getSprites().removeAll();
 						getDesktop().removeAll();
+						_currentTasks.clear();
 					}
 					continue;
 				}
@@ -686,10 +741,10 @@ public abstract class AVGScreen extends Screen {
 						Task task = getTask(mesFlag.trim());
 						if (task != null) {
 							// 注入参数
-							int len = commands.size - 1;
+							int len = commands.size - 2;
 							String[] args = new String[len];
 							for (int i = 0; i < len; i++) {
-								args[i] = commands.get(i + 1);
+								args[i] = commands.get(i + 2);
 							}
 							// 注入参数
 							task.parameters(args);
@@ -931,29 +986,8 @@ public abstract class AVGScreen extends Screen {
 
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEOUT)
 						|| cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-					scrFlag = true;
-					LColor color = LColor.black;
-					if (mesFlag.equalsIgnoreCase("red")) {
-						color = LColor.red;
-					} else if (mesFlag.equalsIgnoreCase("yellow")) {
-						color = LColor.yellow;
-					} else if (mesFlag.equalsIgnoreCase("white")) {
-						color = LColor.white;
-					} else if (mesFlag.equalsIgnoreCase("black")) {
-						color = LColor.black;
-					} else if (mesFlag.equalsIgnoreCase("cyan")) {
-						color = LColor.cyan;
-					} else if (mesFlag.equalsIgnoreCase("green")) {
-						color = LColor.green;
-					} else if (mesFlag.equalsIgnoreCase("orange")) {
-						color = LColor.orange;
-					} else if (mesFlag.equalsIgnoreCase("pink")) {
-						color = LColor.pink;
-					} else if (mesFlag.equalsIgnoreCase("magenta")) {
-						color = LColor.magenta;
-					} else {
-						color = new LColor(mesFlag);
-					}
+					this.scrFlag = true;
+					this.color = new LColor(mesFlag);
 					if (sprites != null) {
 						sprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
@@ -1567,6 +1601,13 @@ public abstract class AVGScreen extends Screen {
 	 */
 	public void setMobileSelectValidLimit(int v) {
 		this._mobile_select_valid_limit = v;
+	}
+
+	/**
+	 * 清空当前任务
+	 */
+	public void clearCurrentTasks() {
+		_currentTasks.clear();
 	}
 
 	public Array<Task> getCurrentTasks() {

@@ -35,9 +35,9 @@ public interface CommandType {
 	// 写法:opt "跳转一下" 25,25,100,100 {label1,assets/background.png}
 	// 写法:opt "跳转一下" 25,25,100,100
 	// {label1,assets/background.png,assets/background1.png,assets/background2.png}
-	// 用法3: 清楚所有opt按钮
+	// 用法3: 清除所有opt按钮
 	// 写法:opt clear
-	// 用法4: 清楚带有指定标或者出现在指定行的按钮
+	// 用法4: 清除带有指定标或者出现在指定行的按钮
 	// 写法:opt clear 跳转一下
 	// 写法:opt clear 11(删除第11行出现的选择按钮添加)
 	String L_OPTION = "opt";
