@@ -134,12 +134,36 @@ public abstract class LContainer extends LComponent {
 		}
 		return flag;
 	}
+	
+	public boolean removeNotTag(Object tag) {
+		boolean flag = false;
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
+			if (!tag.equals(this.childs[i].Tag)) {
+				this.remove(i);
+				flag = true;
+			}
+		}
+		return flag;
+	}
 
 	public boolean removeUIName(String name) {
 		boolean flag = false;
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
 			if (name.equals(this.childs[i].getUIName())) {
+				this.remove(i);
+				flag = true;
+			}
+		}
+		return flag;
+	}
+	
+	public boolean removeNotUIName(String name) {
+		boolean flag = false;
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
+			if (!name.equals(this.childs[i].getUIName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -158,7 +182,19 @@ public abstract class LContainer extends LComponent {
 		}
 		return flag;
 	}
-
+	
+	public boolean removeNotName(String name) {
+		boolean flag = false;
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
+			if (!name.equals(this.childs[i].getName())) {
+				this.remove(i);
+				flag = true;
+			}
+		}
+		return flag;
+	}
+	
 	public LComponent remove(int index) {
 		LComponent comp = this.childs[index];
 

@@ -229,6 +229,10 @@ public class LToast extends LComponent {
 		return autoClose;
 	}
 
+	public float getOpacity() {
+		return opacity;
+	}
+
 	public IFont getFont() {
 		return font;
 	}

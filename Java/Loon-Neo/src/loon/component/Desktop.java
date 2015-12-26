@@ -115,6 +115,30 @@ public class Desktop implements LRelease {
 		return removed;
 	}
 
+	public boolean removeNotTag(Object tag) {
+		boolean removed = this.removeComponentNotTag(this.contentPane, tag);
+		if (removed) {
+			this.processTouchMotionEvent();
+		}
+		return removed;
+	}
+
+	public boolean removeNotUIName(String uiName) {
+		boolean removed = this.removeComponentNotUIName(this.contentPane, uiName);
+		if (removed) {
+			this.processTouchMotionEvent();
+		}
+		return removed;
+	}
+
+	public boolean removeNotName(String name) {
+		boolean removed = this.removeComponentNotName(this.contentPane, name);
+		if (removed) {
+			this.processTouchMotionEvent();
+		}
+		return removed;
+	}
+	
 	private boolean removeComponentUIName(LContainer container, String name) {
 		return container.removeUIName(name);
 	}
@@ -125,6 +149,18 @@ public class Desktop implements LRelease {
 
 	private boolean removeComponentTag(LContainer container, Object tag) {
 		return container.removeTag(tag);
+	}
+
+	private boolean removeComponentNotName(LContainer container, String name) {
+		return container.removeNotName(name);
+	}
+
+	private boolean removeComponentNotUIName(LContainer container, String name) {
+		return container.removeNotUIName(name);
+	}
+	
+	private boolean removeComponentNotTag(LContainer container, Object tag) {
+		return container.removeNotTag(tag);
 	}
 
 	private int removeComponent(LContainer container, LComponent comp) {
@@ -542,6 +578,10 @@ public class Desktop implements LRelease {
 		return this.contentPane.get();
 	}
 
+	public void removeAll(){
+		clear();
+	}
+	
 	public void clear() {
 		if (contentPane != null) {
 			contentPane.clear();

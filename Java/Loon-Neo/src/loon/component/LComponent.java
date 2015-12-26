@@ -778,6 +778,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		this.autoDestroy = autoDestroy;
 	}
 
+	@Override
 	public Field2D getField2D() {
 		return null;
 	}

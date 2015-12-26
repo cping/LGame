@@ -42,20 +42,96 @@ import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LMessage;
 import loon.component.LSelect;
+import loon.component.LToast;
+import loon.component.LToast.Style;
 import loon.event.ClickListener;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.Updateable;
 import loon.opengl.GLEx;
+import loon.utils.Array;
+import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 public abstract class AVGScreen extends Screen {
+
+	// 文字显示速度
+	private SpeedMode _speedMode = SpeedMode.Normal;
+
+	// 屏幕点击计数(为了手机环境选择时防止误点的计数器)
+	private int _clickcount = 0;
+
+	// 手机屏幕手机遇到选择框时，需要点击的次数(归0则无限制，此参数的作用在于防止触屏误点选项)
+	private int _mobile_select_valid_limit = 1;
+
+	// 当前任务集合
+	private Array<Task> _currentTasks = new Array<AVGScreen.Task>();
+
+	// 任务集合
+	private ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(
+			20);
+
+	private boolean isSelectMessage, scrFlag, isRunning, running;
+
+	private int delay;
+
+	private String scriptName;
+
+	private String selectMessage;
+
+	private String dialogFileName;
+
+	// 若需要任意处点击皆可继续脚本，此标记应为true
+	private boolean screenClick = false;
+
+	// 若需要点击触发脚本继续的功能暂时失效，此处应为true
+	private boolean limitClick = false;
+
+	// 自动播放的延迟时间
+	private LTimer autoTimer = new LTimer(LSystem.SECOND);
+
+	private LColor color;
+
+	protected Command command;
+
+	protected LTexture dialog;
+
+	protected AVGCG scrCG;
+
+	protected LSelect select;
+
+	protected LMessage message;
+
+	protected Desktop desktop;
+
+	protected Sprites sprites;
+
+	private RealtimeProcess avgProcess;
+
+	private boolean autoPlay;
+
+	/**
+	 * 此为AVG中特定任务接口，此接口需要实现使用，共有三个API，一个用来从脚本注入参数,
+	 * 一个调用具体任务，一个返回是否完成的状态，只有任务完成后才能继续脚本。
+	 * 
+	 * PS : 再次强调，Task不执行完，是不能继续触发脚本的
+	 *
+	 */
+	public interface Task {
+
+		void parameters(String[] pars);
+
+		void call();
+
+		boolean completed();
+	}
 
 	// AVG文字显示速度
 	public enum SpeedMode {
@@ -66,6 +142,131 @@ public abstract class AVGScreen extends Screen {
 		Fast, // 快
 		Quickly, // 很快
 		Flash, // 神速
+	}
+
+	private class SelectClick implements ClickListener {
+
+		private TArray<String> _items;
+
+		public SelectClick(TArray<String> items) {
+			_items = items;
+		}
+
+		@Override
+		public void DoClick(LComponent comp) {
+
+		}
+
+		@Override
+		public void DownClick(LComponent comp, float x, float y) {
+		}
+
+		@Override
+		public void UpClick(LComponent comp, float x, float y) {
+			if (tasking()) {
+				return;
+			}
+			if (_items != null && command != null && comp instanceof LSelect) {
+				if ((LSystem.base() != null && LSystem.base().isMobile()) ? _clickcount++ >= _mobile_select_valid_limit
+						: _clickcount > -1) {
+					LSelect select = (LSelect) comp;
+					int idx = select.getResultIndex();
+					if (idx != -1) {
+						String gotoFlag = _items.get(idx);
+						if (MathUtils.isNan(gotoFlag)) {
+							command.gotoIndex((int) Double
+									.parseDouble(gotoFlag));
+						} else {
+							command.gotoIndex(gotoFlag);
+						}
+						select.SetClick(null);
+						select.setVisible(false);
+						limitClick = false;
+						scrFlag = false;
+						isSelectMessage = false;
+						_clickcount = 0;
+						nextScript();
+					}
+				}
+			}
+		}
+
+		@Override
+		public void DragClick(LComponent comp, float x, float y) {
+
+		}
+
+	}
+
+	/**
+	 * 默认任务（同时任务接口实现示例，Task主要就是给用户自行扩展的）
+	 */
+	private void defTask() {
+		// 使用方式，脚本中调用: task toast 字符串
+		putTask("toast", new Task() {
+
+			private String parameter;
+
+			private LToast toast;
+
+			@Override
+			public boolean completed() {
+				boolean stop = toast.isStop()
+						&& (toast.getOpacity() <= 0.1f || !toast.isVisible());
+				if (stop) {
+					getDesktop().remove(toast);
+				}
+				return stop;
+			}
+
+			@Override
+			public void call() {
+				toast = LToast.makeText(parameter, Style.ERROR);
+				getDesktop().add(toast);
+			}
+
+			@Override
+			public void parameters(String[] pars) {
+				parameter = StringUtils.replace(pars[0], "\"", "");
+			}
+		});
+	}
+
+	/**
+	 * 以键值对方式添加任务（主要是方便脚本调用）
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void putTask(String key, Task value) {
+		_tasks.put(key, value);
+	}
+
+	/**
+	 * 返回指定键值对应的具体任务
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Task getTask(String key) {
+		return _tasks.get(key);
+	}
+
+	/**
+	 * 删除指定任务
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Task removeTask(String key) {
+		return _tasks.removeKey(key);
+	}
+
+	/**
+	 * 清空任务
+	 */
+	public void clearTask() {
+		_tasks.clear();
 	}
 
 	public SpeedMode toSpeedMode(String name) {
@@ -89,99 +290,6 @@ public abstract class AVGScreen extends Screen {
 		}
 	}
 
-	private SpeedMode speedMode = SpeedMode.Normal;
-
-	private int clickcount = 0;
-
-	private class SelectClick implements ClickListener {
-
-		private TArray<String> _items;
-
-		public SelectClick(TArray<String> items) {
-			_items = items;
-		}
-
-		@Override
-		public void DoClick(LComponent comp) {
-
-		}
-
-		@Override
-		public void DownClick(LComponent comp, float x, float y) {
-		}
-
-		@Override
-		public void UpClick(LComponent comp, float x, float y) {
-			if (_items != null && command != null && comp instanceof LSelect) {
-				if ((LSystem.base() != null && LSystem.base().isMobile()) ? clickcount++ >= 1
-						: clickcount > -1) {
-					LSelect select = (LSelect) comp;
-					int idx = select.getResultIndex();
-					if (idx != -1) {
-						String gotoFlag = _items.get(idx);
-						if (MathUtils.isNan(gotoFlag)) {
-							command.gotoIndex((int) Double
-									.parseDouble(gotoFlag));
-						} else {
-							command.gotoIndex(gotoFlag);
-						}
-						select.SetClick(null);
-						select.setVisible(false);
-						limitClick = false;
-						scrFlag = false;
-						isSelectMessage = false;
-						clickcount = 0;
-						nextScript();
-					}
-				}
-			}
-		}
-
-		@Override
-		public void DragClick(LComponent comp, float x, float y) {
-
-		}
-
-	}
-
-	private boolean isSelectMessage, scrFlag, isRunning, running;
-
-	private int delay;
-
-	private String scriptName;
-
-	private String selectMessage;
-
-	private String dialogFileName;
-
-	// 若需要任意处点击皆可继续脚本，此标记应为true
-	private boolean screenClick = false;
-
-	// 若需要点击触发脚本继续的功能暂时失效，此处应为true
-	private boolean limitClick = false;
-
-	private LTimer autoTimer = new LTimer(LSystem.SECOND);
-
-	private LColor color;
-
-	protected Command command;
-
-	protected LTexture dialog;
-
-	protected AVGCG scrCG;
-
-	protected LSelect select;
-
-	protected LMessage message;
-
-	protected Desktop desktop;
-
-	protected Sprites sprites;
-
-	private RealtimeProcess avgProcess;
-
-	private boolean autoPlay;
-
 	public AVGScreen(final String initscript, final String initdialog) {
 		this(initscript, LTextures.loadTexture(initdialog));
 	}
@@ -204,58 +312,101 @@ public abstract class AVGScreen extends Screen {
 		this.scriptName = initscript;
 	}
 
-	@Override
-	public void onCreate(int width, int height) {
-		super.onCreate(width, height);
-		this.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
-		this.delay = 30;
-		if (dialog == null && dialogFileName != null) {
-			this.dialog = LTextures.loadTexture(dialogFileName);
+	private class OptClick implements ClickListener {
+
+		private String label;
+
+		public OptClick(String gotoFlag) {
+			label = gotoFlag;
 		}
-		this.running = true;
+
+		@Override
+		public void UpClick(LComponent comp, float x, float y) {
+			if (command != null && label != null) {
+				command.gotoIndex(label);
+				nextScript();
+			}
+		}
+
+		@Override
+		public void DragClick(LComponent comp, float x, float y) {
+
+		}
+
+		@Override
+		public void DownClick(LComponent comp, float x, float y) {
+
+		}
+
+		@Override
+		public void DoClick(LComponent comp) {
+
+		}
+
 	}
 
+	/**
+	 * 添加选项按钮到游戏中
+	 * 
+	 * @param click
+	 */
+	private void addOpt(final LClickButton click) {
+		if (command != null) {
+			GameProcess process = new RealtimeProcess() {
+
+				@Override
+				public void run(LTimerContext time) {
+					click.Tag = CommandType.L_OPTION
+							+ (click.getText() == null ? command.getIndex()
+									: click.getText());
+					getDesktop().add(click);
+					kill();
+				}
+			};
+			addProcess(process);
+		}
+	}
+
+	/**
+	 * 设置选项按钮为脚本中参数
+	 * 
+	 * @param click
+	 * @param order
+	 */
 	private final void setOpt(LClickButton click, String order) {
 		int startFlag = order.indexOf('{');
 		int endFlag = order.lastIndexOf('}');
-
 		if (startFlag != -1 && endFlag != -1 && endFlag > startFlag) {
-
 			String gotoMes = order.substring(startFlag + 1, endFlag).trim();
-
 			final String[] result = StringUtils.split(gotoMes, ',');
 			if (result.length > 1) {
-				click.setTexture(LTextures.loadTexture(result[1]));
-				click.setGrayButton(true);
+				// 只有单图时,全部按钮为一张图片(索引0存放跳转点，非按钮图)
+				if (result.length == 2) {
+					click.setTexture(LTextures.loadTexture(result[1]));
+					click.setGrayButton(true);
+				} else if (result.length == 3) { // 有两张图时
+					LTexture texIdle = LTextures.loadTexture(result[1]);
+					LTexture texClick = LTextures.loadTexture(result[2]);
+					// 空闲时
+					click.setIdleClick(texIdle);
+					// 鼠标徘徊
+					click.setHoverClick(texClick);
+					// 鼠标按下
+					click.setClickedClick(texClick);
+				} else if (result.length == 4) { // 有三张图时
+					LTexture texIdle = LTextures.loadTexture(result[1]);
+					LTexture texHover = LTextures.loadTexture(result[2]);
+					LTexture texClick = LTextures.loadTexture(result[3]);
+					// 空闲时
+					click.setIdleClick(texIdle);
+					// 鼠标徘徊
+					click.setHoverClick(texHover);
+					// 鼠标按下
+					click.setClickedClick(texClick);
+				}
 			}
-			click.SetClick(new ClickListener() {
-
-				@Override
-				public void UpClick(LComponent comp, float x, float y) {
-					if (command != null) {
-						command.gotoIndex(result[0]);
-						nextScript();
-					}
-				}
-
-				@Override
-				public void DragClick(LComponent comp, float x, float y) {
-
-				}
-
-				@Override
-				public void DownClick(LComponent comp, float x, float y) {
-
-				}
-
-				@Override
-				public void DoClick(LComponent comp) {
-
-				}
-			});
-
+			click.SetClick(new OptClick(result[0]));
 		} else {
-
 			click.setTexture(LTextures.loadTexture(order));
 			click.setGrayButton(true);
 		}
@@ -263,7 +414,12 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public final void onLoad() {
-
+		this.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
+		this.delay = 30;
+		if (dialog == null && dialogFileName != null) {
+			this.dialog = LTextures.loadTexture(dialogFileName);
+		}
+		this.running = true;
 	}
 
 	@Override
@@ -280,6 +436,7 @@ public abstract class AVGScreen extends Screen {
 
 			@Override
 			public void action(Object a) {
+				defTask();
 				initAVG();
 				onLoading();
 			}
@@ -290,7 +447,7 @@ public abstract class AVGScreen extends Screen {
 			public void run(LTimerContext time) {
 				if (running) {
 					if (desktop != null) {
-						switch (speedMode) {
+						switch (_speedMode) {
 						default:
 						case Normal:
 							desktop.update(LSystem.SECOND / 2);
@@ -328,9 +485,10 @@ public abstract class AVGScreen extends Screen {
 				}
 			}
 		};
-		setSpeedMode(speedMode);
+		setSpeedMode(_speedMode);
 		avgProcess.setDelay(delay);
 		RealtimeProcessManager.get().addProcess(avgProcess);
+
 	}
 
 	private synchronized void initDesktop() {
@@ -430,8 +588,9 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public Screen removeAll() {
+		super.removeAll();
 		sprites.removeAll();
-		desktop.getContentPane().clear();
+		desktop.clear();
 		return this;
 	}
 
@@ -495,6 +654,7 @@ public abstract class AVGScreen extends Screen {
 				if (!nextScript(result)) {
 					break;
 				}
+
 				TArray<String> commands = Conversion.splitToList(result, ' ');
 				int size = commands.size;
 				String cmdFlag = (String) commands.get(0);
@@ -510,19 +670,60 @@ public abstract class AVGScreen extends Screen {
 					orderFlag = (String) commands.get(2);
 					lastFlag = (String) commands.get(3);
 				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_CLEAR)) {
+					if (desktop != null) {
+						message.setVisible(false);
+						select.setVisible(false);
+						sprites.clear();
+						scrCG.clear();
+						getSprites().removeAll();
+						getDesktop().removeAll();
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_TASK)) {
+					if (mesFlag != null) {
+						Task task = getTask(mesFlag.trim());
+						if (task != null) {
+							// 注入参数
+							int len = commands.size - 1;
+							String[] args = new String[len];
+							for (int i = 0; i < len; i++) {
+								args[i] = commands.get(i + 1);
+							}
+							// 注入参数
+							task.parameters(args);
+							// 执行任务
+							task.call();
+							// 添加到当前任务集合中
+							_currentTasks.add(task);
+						}
+					}
+					continue;
+				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SPEED)) {
 					if (mesFlag != null) {
 						setSpeedMode(toSpeedMode(mesFlag));
 					}
 					continue;
 				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_LOCK)) {
+					setLimitClick(true);
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_UNLOCK)) {
+					setLimitClick(false);
+					continue;
+				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_OPTION)) {
 					if (mesFlag != null) {
-						if ("clear".equalsIgnoreCase(mesFlag)) {
+						if (CommandType.L_CLEAR.equalsIgnoreCase(mesFlag)
+								|| CommandType.L_DEL.equalsIgnoreCase(mesFlag)) {
 							if (orderFlag == null) {
 								super.getDesktop().removeUIName("ClickButton");
 							} else {
-								super.getDesktop().removeTag("opt" + orderFlag);
+								super.getDesktop().removeTag(
+										CommandType.L_OPTION + orderFlag);
 							}
 						} else {
 							String text = null;
@@ -572,10 +773,7 @@ public abstract class AVGScreen extends Screen {
 								}
 							}
 							if (click != null) {
-								click.Tag = "opt"
-										+ (click.getText() == null ? command
-												.getIndex() : click.getText());
-								super.getDesktop().add(click);
+								addOpt(click);
 							}
 						}
 					}
@@ -1006,6 +1204,9 @@ public abstract class AVGScreen extends Screen {
 	public abstract void onExit();
 
 	private void playAutoNext() {
+		if (tasking()) {
+			return;
+		}
 		if (!autoTimer.action(elapsedTime)) {
 			return;
 		}
@@ -1021,7 +1222,15 @@ public abstract class AVGScreen extends Screen {
 		nextScript();
 	}
 
+	private boolean tasking() {
+		return _currentTasks.size() > 0;
+	}
+
 	public void click() {
+		// 如果存在未完成任务，则不允许继续脚本
+		if (tasking()) {
+			return;
+		}
 		if (limitClick) {
 			return;
 		}
@@ -1044,21 +1253,19 @@ public abstract class AVGScreen extends Screen {
 		} else if (scrFlag && select.getResultIndex() != -1) {
 			onSelect(selectMessage, select.getResultIndex());
 			isNext = select.intersects(getTouchX(), getTouchY());
-			if ((LSystem.base() != null && LSystem.base().isMobile()) ? clickcount++ >= 1
-					: clickcount > -1) {
+			if ((LSystem.base() != null && LSystem.base().isMobile()) ? _clickcount++ >= _mobile_select_valid_limit
+					: _clickcount > -1) {
 				message.setVisible(false);
 				select.setVisible(false);
 				isSelectMessage = false;
 				selectMessage = null;
-				clickcount = 0;
+				_clickcount = 0;
 			}
 		}
 		if (isNext && !isSelectMessage) {
 			nextScript();
 		}
 	}
-
-	protected boolean initNextScript = true;
 
 	public void initCommandConfig(String fileName) {
 		if (fileName == null) {
@@ -1071,9 +1278,7 @@ public abstract class AVGScreen extends Screen {
 			command.formatCommand(fileName);
 		}
 		initCommandConfig(command);
-		if (initNextScript) {
-			nextScript();
-		}
+		nextScript();
 	}
 
 	public boolean isScrFlag() {
@@ -1123,8 +1328,8 @@ public abstract class AVGScreen extends Screen {
 
 	public void setDelay(int d) {
 		this.delay = d;
-		if (speedMode == SpeedMode.Flash || speedMode == SpeedMode.Quickly
-				|| speedMode == SpeedMode.Fast) {
+		if (_speedMode == SpeedMode.Flash || _speedMode == SpeedMode.Quickly
+				|| _speedMode == SpeedMode.Fast) {
 			delay = 0;
 		}
 		if (avgProcess != null) {
@@ -1230,7 +1435,15 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public void alter(LTimerContext timer) {
-
+		if (_currentTasks.size() > 0) {
+			for (; _currentTasks.hashNext();) {
+				Task task = _currentTasks.next();
+				if (task.completed()) {
+					_currentTasks.remove(task);
+				}
+			}
+			_currentTasks.stopNext();
+		}
 	}
 
 	@Override
@@ -1300,8 +1513,13 @@ public abstract class AVGScreen extends Screen {
 		return limitClick;
 	}
 
-	public void setLimitClick(boolean limitClick) {
-		this.limitClick = limitClick;
+	/**
+	 * 档次参数为true时，将无法点击消息框或画面触发脚本继续
+	 * 
+	 * @param limitClick
+	 */
+	public void setLimitClick(boolean lc) {
+		this.limitClick = lc;
 	}
 
 	public boolean isScreenClick() {
@@ -1318,7 +1536,7 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public SpeedMode getSpeedMode() {
-		return speedMode;
+		return _speedMode;
 	}
 
 	/**
@@ -1327,11 +1545,36 @@ public abstract class AVGScreen extends Screen {
 	 * @param m
 	 */
 	public void setSpeedMode(SpeedMode m) {
-		this.speedMode = m;
-		if (speedMode == SpeedMode.Flash || speedMode == SpeedMode.Quickly
-				|| speedMode == SpeedMode.Fast) {
+		this._speedMode = m;
+		if (_speedMode == SpeedMode.Flash || _speedMode == SpeedMode.Quickly
+				|| _speedMode == SpeedMode.Fast) {
 			delay = 0;
 		}
+	}
+
+	public int getClickcount() {
+		return _clickcount;
+	}
+
+	public int getMobileSelectValidLimit() {
+		return _mobile_select_valid_limit;
+	}
+
+	/**
+	 * 此处限制移动环境时，遇到选择时需要点击的次数
+	 * 
+	 * @param v
+	 */
+	public void setMobileSelectValidLimit(int v) {
+		this._mobile_select_valid_limit = v;
+	}
+
+	public Array<Task> getCurrentTasks() {
+		return _currentTasks;
+	}
+
+	public ListMap<String, AVGScreen.Task> getTasks() {
+		return _tasks;
 	}
 
 	@Override
@@ -1362,6 +1605,9 @@ public abstract class AVGScreen extends Screen {
 				dialog = null;
 			}
 		}
+		_currentTasks.clear();
+		_tasks.clear();
+
 	}
 
 }

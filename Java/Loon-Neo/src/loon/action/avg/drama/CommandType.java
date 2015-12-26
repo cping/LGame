@@ -20,22 +20,43 @@
  */
 package loon.action.avg.drama;
 
+/*
+ * 针对AVGScreen的游戏脚本命令，具体可以结合AVG示例使用
+ */
 public interface CommandType {
 
 	// 增加选项按钮
-	// 用法1: 创建选项,字符显示"跳转一下",选项x=25,y=25,width=100,height=100,选中后跳转向标签label1
+	// 用法1:
+	// 创建选项,字符显示"跳转一下",选项x=25,y=25,width=100,height=100,选中后跳转向标签label1(内部调用goto指令)
 	// 写法:opt "跳转一下" 25,25,100,100 {label1}
 	// 用法2:
 	// 创建选项,字符显示"跳转一下",选项x=25,y=25,width=100,height=100,选中后跳转向标签label1,按钮图使用assets/background.png
+	// (最多可以注入三张按钮图，分别为鼠标（或触屏）空闲时图，徘徊时图，以及按下时图，以','分割即可)
 	// 写法:opt "跳转一下" 25,25,100,100 {label1,assets/background.png}
+	// 写法:opt "跳转一下" 25,25,100,100
+	// {label1,assets/background.png,assets/background1.png,assets/background2.png}
 	// 用法3: 清楚所有opt按钮
 	// 写法:opt clear
 	// 用法4: 清楚带有指定标或者出现在指定行的按钮
-	// 写法:opt clear 跳转一下 (opt clear 11)
+	// 写法:opt clear 跳转一下
+	// 写法:opt clear 11(删除第11行出现的选择按钮添加)
 	String L_OPTION = "opt";
+	
+	// 清空屏幕
+	String L_CLEAR = "clear";
+	
+	// 锁定AVGScreen的点击出发脚本功能，让点击无法触发脚本继续
+	String L_LOCK = "lock";
+
+	// 解除锁定AVGScreen的点击出发脚本功能，让脚本可以继续
+	String L_UNLOCK = "unlock";
 
 	// 画面等待
 	String L_WAIT = "wait";
+
+	// 运行任务(任务需要设定好后，手动注入AVGScreen才能生效)
+	// 格式:task 任务名
+	String L_TASK = "task";
 
 	// 显示信息
 	String L_MES = "mes";
@@ -71,7 +92,8 @@ public interface CommandType {
 	// 选择框中文字左侧偏移
 	String L_SELLEN = "selleft";
 
-	// 文字显示速度模式:格式[speed fast]
+	// 文字显示速度模式:格式[speed fast](有7个参数,SuperSlow, Slow,FewSlow, Normal,
+	// Fast,Quickly, Flash)
 	String L_SPEED = "speed";
 
 	// 画面振动
