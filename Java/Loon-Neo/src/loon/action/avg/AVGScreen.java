@@ -267,7 +267,6 @@ public abstract class AVGScreen extends Screen {
 				if (pars.length >= 2) {
 					transStr = pars[0];
 					colorStr = pars[1];
-					System.out.println(colorStr+","+transStr);
 				} else if (pars.length == 1) {
 					transStr = pars[0];
 					if (transStr.indexOf(',') != -1) {
@@ -469,7 +468,7 @@ public abstract class AVGScreen extends Screen {
 	@Override
 	public final void onLoad() {
 		this.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
-		this.delay = 30;
+		this.delay = 60;
 		if (dialog == null && dialogFileName != null) {
 			this.dialog = LTextures.loadTexture(dialogFileName);
 		}
@@ -1042,23 +1041,7 @@ public abstract class AVGScreen extends Screen {
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESCOLOR)) {
 					if (mesFlag != null) {
-						if (mesFlag.equalsIgnoreCase("red")) {
-							message.setFontColor(LColor.red);
-						} else if (mesFlag.equalsIgnoreCase("yellow")) {
-							message.setFontColor(LColor.yellow);
-						} else if (mesFlag.equalsIgnoreCase("white")) {
-							message.setFontColor(LColor.white);
-						} else if (mesFlag.equalsIgnoreCase("black")) {
-							message.setFontColor(LColor.black);
-						} else if (mesFlag.equalsIgnoreCase("cyan")) {
-							message.setFontColor(LColor.cyan);
-						} else if (mesFlag.equalsIgnoreCase("green")) {
-							message.setFontColor(LColor.green);
-						} else if (mesFlag.equalsIgnoreCase("orange")) {
-							message.setFontColor(LColor.orange);
-						} else if (mesFlag.equalsIgnoreCase("pink")) {
-							message.setFontColor(LColor.pink);
-						}
+						message.setFontColor(new LColor(mesFlag));
 					}
 					continue;
 				}

@@ -27,6 +27,7 @@ public class SampleTest  {
 
 			@Override
 			public Screen onScreen() {
+				//此Screen位于sample文件夹下，引入资源即可加载
 				return new MultiScreenTest();
 			}
 		});

@@ -349,46 +349,48 @@ public class LColor implements Serializable {
 				}
 			}
 		} else {
-			if (colorMap == null) {
-				colorMap = new ListMap<String, LColor>();
-				colorMap.put("silver", silver);
-				colorMap.put("lightblue", lightBlue);
-				colorMap.put("lightcoral", lightCoral);
-				colorMap.put("lightcyan", lightCyan);
-				colorMap.put("lightgoldenrodyellow", lightGoldenrodYellow);
-				colorMap.put("lightgreen", lightGreen);
-				colorMap.put("lightpink", lightPink);
-				colorMap.put("lightseagreen", lightSeaGreen);
-				colorMap.put("lightskyblue", lightSkyBlue);
-				colorMap.put("lightslategray", lightSlateGray);
-				colorMap.put("lightsteelblue", lightSteelBlue);
-				colorMap.put("lightyellow", lightYellow);
-				colorMap.put("limegreen", limeGreen);
-				colorMap.put("linen", linen);
-				colorMap.put("maroon", maroon);
-				colorMap.put("mediumAquamarine", mediumAquamarine);
-				colorMap.put("mediumblue", mediumBlue);
-				colorMap.put("wheat", wheat);
-				colorMap.put("gold", gold);
-				colorMap.put("white", white);
-				colorMap.put("yellow", yellow);
-				colorMap.put("red", red);
-				colorMap.put("blue", blue);
-				colorMap.put("cornflowerblue", cornFlowerBlue);
-				colorMap.put("black", black);
-				colorMap.put("gray", gray);
-				colorMap.put("cyan", cyan);
-				colorMap.put("darkgray", darkGray);
-				colorMap.put("lightgray", lightGray);
-				colorMap.put("pink", pink);
-				colorMap.put("orange", orange);
-				colorMap.put("magenta", magenta);
-			}
-			LColor color = colorMap.get(c.trim().toLowerCase());
-			if (color != null) {
-				setColor(color);
-			} else {
-				setColor(hexToColor(c));
+			synchronized (this) {
+				if (colorMap == null) {
+					colorMap = new ListMap<String, LColor>();
+					colorMap.put("limegreen", limeGreen);
+					colorMap.put("linen", linen);
+					colorMap.put("maroon", maroon);
+					colorMap.put("mediumAquamarine", mediumAquamarine);
+					colorMap.put("mediumblue", mediumBlue);
+					colorMap.put("wheat", wheat);
+					colorMap.put("gold", gold);
+					colorMap.put("white", white);
+					colorMap.put("yellow", yellow);
+					colorMap.put("red", red);
+					colorMap.put("blue", blue);
+					colorMap.put("cornflowerblue", cornFlowerBlue);
+					colorMap.put("black", black);
+					colorMap.put("gray", gray);
+					colorMap.put("cyan", cyan);
+					colorMap.put("darkgray", darkGray);
+					colorMap.put("lightgray", lightGray);
+					colorMap.put("pink", pink);
+					colorMap.put("orange", orange);
+					colorMap.put("magenta", magenta);
+					colorMap.put("silver", silver);
+					colorMap.put("lightblue", lightBlue);
+					colorMap.put("lightcoral", lightCoral);
+					colorMap.put("lightcyan", lightCyan);
+					colorMap.put("lightgoldenrodyellow", lightGoldenrodYellow);
+					colorMap.put("lightgreen", lightGreen);
+					colorMap.put("lightpink", lightPink);
+					colorMap.put("lightseagreen", lightSeaGreen);
+					colorMap.put("lightskyblue", lightSkyBlue);
+					colorMap.put("lightslategray", lightSlateGray);
+					colorMap.put("lightsteelblue", lightSteelBlue);
+					colorMap.put("lightyellow", lightYellow);
+				}
+				LColor color = colorMap.get(c.trim().toLowerCase());
+				if (color != null) {
+					setColor(color);
+				} else {
+					setColor(hexToColor(c));
+				}
 			}
 		}
 	}
