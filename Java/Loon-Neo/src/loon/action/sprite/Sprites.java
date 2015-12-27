@@ -343,9 +343,39 @@ public class Sprites implements Serializable, LRelease {
 			return false;
 		}
 		boolean removed = false;
-
 		for (int i = size; i > 0; i--) {
 			if ((sprite == sprites[i - 1]) || (sprite.equals(sprites[i - 1]))) {
+				removed = true;
+				size--;
+				sprites[i - 1] = sprites[size];
+				sprites[size] = null;
+				if (size == 0) {
+					sprites = new ISprite[0];
+				} else {
+					compressCapacity(2);
+				}
+				return removed;
+			}
+		}
+		return removed;
+	}
+
+	/**
+	 * 删除指定名称的精灵
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public boolean removeName(String name) {
+		if (name == null) {
+			return false;
+		}
+		if (sprites == null) {
+			return false;
+		}
+		boolean removed = false;
+		for (int i = size; i > 0; i--) {
+			if ((name.equals(sprites[i - 1].getName()))) {
 				removed = true;
 				size--;
 				sprites[i - 1] = sprites[size];

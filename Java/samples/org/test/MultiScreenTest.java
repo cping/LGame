@@ -31,6 +31,7 @@ public class MultiScreenTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 
+
 	}
 
 	public static LClickButton getBackButton(final Screen screen) {

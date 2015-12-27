@@ -24,7 +24,9 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.Screen;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprites;
 import loon.event.Updateable;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
@@ -34,6 +36,8 @@ import loon.utils.StringUtils;
 
 public class AVGCG implements LRelease{
 
+	protected Sprites actionRole;
+	
 	private long charaShowDelay = 60;
 
 	private LTexture background;
@@ -44,7 +48,8 @@ public class AVGCG implements LRelease{
 
 	int sleep, sleepMax, shakeNumber;
 
-	public AVGCG() {
+	public AVGCG(Screen screen) {
+		this.actionRole = new Sprites(screen);
 		this.charas = new ArrayMap(10);
 		this.style = true;
 		this.loop = true;
@@ -247,6 +252,7 @@ public class AVGCG implements LRelease{
 				}
 			}
 		}
+		actionRole.createUI(g);
 	}
 
 	public void clear() {
@@ -290,6 +296,11 @@ public class AVGCG implements LRelease{
 		this.loop = loop;
 	}
 
+	public Sprites getSprites() {
+		return actionRole;
+	}
+
+	@Override
 	public void close() {
 		synchronized (charas) {
 			if (style) {
@@ -308,9 +319,8 @@ public class AVGCG implements LRelease{
 					}
 				}
 				charas.clear();
-				System.gc();
 			}
+			actionRole.clear();
 		}
 	}
-
 }

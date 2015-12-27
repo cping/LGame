@@ -294,7 +294,7 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void oval(float x, float y, float radius) {
-		oval(x, y, radius, 40);
+		oval(x, y, radius, 32);
 	}
 
 	public void oval(float x, float y, float radius, int segments) {
@@ -351,7 +351,7 @@ public class GLRenderer implements LRelease {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
 		if (vertices.length < 6) {
-			System.out.println(vertices.length);
+			
 			throw new IllegalArgumentException(
 					"Polygons must contain at least 3 points.");
 		}
@@ -390,6 +390,49 @@ public class GLRenderer implements LRelease {
 		}
 	}
 
+	public void polygon(float[] xs,float[] ys,int size ) {
+		if (_currType != GLType.Line) {
+			throw new RuntimeException("Must call begin(GLType.Line)");
+		}
+		if (xs.length < 6||ys.length<6) {
+			throw new IllegalArgumentException(
+					"Polygons must contain at least 3 points.");
+		}
+		if (xs.length % 2 != 0||ys.length % 2 != 0) {
+			throw new IllegalArgumentException(
+					"Polygons must have a pair number of vertices.");
+		}
+		final int numFloats = size;
+
+		float colorFloat = _color.toFloatBits();
+		checkDirty();
+		checkFlush(numFloats);
+
+		float firstX = xs[0];
+		float firstY = ys[0];
+
+		for (int i = 0; i < numFloats; i ++) {
+			float x1 = xs[i];
+			float y1 = ys[i];
+
+			float x2;
+			float y2;
+
+			if (i + 2 >= numFloats) {
+				x2 = firstX;
+				y2 = firstY;
+			} else {
+				x2 = xs[i + 2];
+				y2 = ys[i + 2];
+			}
+
+			_renderer.color(colorFloat);
+			_renderer.vertex(x1, y1, 0);
+			_renderer.color(colorFloat);
+			_renderer.vertex(x2, y2, 0);
+		}
+	}
+	
 	public void polyline(float[] vertices) {
 		polyline(vertices, 0, vertices.length);
 	}
@@ -430,10 +473,34 @@ public class GLRenderer implements LRelease {
 			_renderer.vertex(x2, y2, 0);
 		}
 	}
+	
+	public void polyline(float[] xs,float[] ys,int count) {
+		if (_currType != GLType.Line) {
+			throw new RuntimeException("Must call begin(GLType.Line)");
+		}
+		checkDirty();
+		checkFlush(count);
+		float colorFloat = _color.toFloatBits();
+		for (int i = 0;i<count;i++) {
+			float x1 = xs[i];
+			float y1 = ys[i];
+
+			float x2;
+			float y2;
+
+			x2 = xs[i + 2];
+			y2 = ys[i + 2];
+
+			_renderer.color(colorFloat);
+			_renderer.vertex(x1, y1, 0);
+			_renderer.color(colorFloat);
+			_renderer.vertex(x2, y2, 0);
+		}
+	}
 
 	public void drawShape(Shape shape, float x, float y) {
 		Triangle tris = shape.getTriangles();
-		if (tris.getTriangleCount() == 0) {
+		if (tris == null || tris.getTriangleCount() == 0) {
 			return;
 		}
 		float[] points = shape.getPoints();
@@ -451,7 +518,7 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void arc(float x, float y, float radius, float start, float degrees) {
-		arc(x, y, radius, start, degrees, 40);
+		arc(x, y, radius, start, degrees, 32);
 	}
 
 	public void arc(float x, float y, float radius, float start, float end,

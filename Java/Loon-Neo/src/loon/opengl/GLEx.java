@@ -34,7 +34,6 @@ import loon.geom.Affine2f;
 import loon.geom.Ellipse;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
-import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Triangle2f;
@@ -338,6 +337,19 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx restoreBrushDef() {
+		baseAlpha = 1f;
+		baseColor = LColor.DEF_COLOR;
+		fillColor = LColor.DEF_COLOR;
+		patternTex = null;
+		useAlltextures = LSystem.isHTML5();
+		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
+		setFont(LFont.getDefaultFont());
+		setLineWidth(1f);
+		brushStack.pop();
+		return this;
+	}
+
 	public GLEx save() {
 		this.saveTx();
 		this.saveBrush();
@@ -383,19 +395,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		lastTrans = new Affine2f();
 		scale(scaleX, scaleY);
 		affineStack.pop();
-		return this;
-	}
-
-	public GLEx restoreBrushDef() {
-		baseAlpha = 1f;
-		baseColor = LColor.DEF_COLOR;
-		fillColor = LColor.DEF_COLOR;
-		patternTex = null;
-		useAlltextures = LSystem.isHTML5();
-		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
-		setFont(LFont.getDefaultFont());
-		setLineWidth(1f);
-		brushStack.pop();
 		return this;
 	}
 
@@ -1883,7 +1882,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (useAlltextures) {
 			fillPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
-			fill(new Polygon(xPoints, yPoints, nPoints));
+			glBegin(GLType.Filled);
+			glRenderer.polygon(xPoints, yPoints, nPoints);
+			glEnd();
 		}
 		return this;
 	}
@@ -1902,7 +1903,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (useAlltextures) {
 			drawPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
-			draw(new Polygon(xPoints, yPoints, nPoints));
+			glBegin(GLType.Line);
+			glRenderer.polygon(xPoints, yPoints, nPoints);
+			glEnd();
 		}
 		return this;
 	}

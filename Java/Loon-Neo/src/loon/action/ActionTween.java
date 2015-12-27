@@ -169,9 +169,23 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween moveTo(Field2D map, float endX, float endY,
 			boolean flag, int speed) {
-		MoveTo move = new MoveTo(map, endX, endY, flag, speed);
-		move.setDelay(0);
-		return event(move);
+		if (map.inside(endX, endY)) {
+			MoveTo move = new MoveTo(map, endX, endY, flag, speed);
+			move.setDelay(0);
+			return event(move);
+		} else {
+			MoveBy moveby = new MoveBy(endX, endY, speed);
+			return event(moveby);
+		}
+	}
+
+	public ActionTween moveBy(float endX, float endY) {
+		return moveBy(endX, endY, 8);
+	}
+
+	public ActionTween moveBy(float endX, float endY, int speed) {
+		MoveBy moveby = new MoveBy(endX, endY, speed);
+		return event(moveby);
 	}
 
 	public ActionTween fadeIn(float speed) {

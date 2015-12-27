@@ -34,34 +34,37 @@ public interface ISprite extends Serializable, LRelease, XY {
 
 	public static final int TYPE_FADE_OUT = 1;
 
-	public abstract float getWidth();
+	float getWidth();
 
-	public abstract float getHeight();
+	float getHeight();
 
-	public abstract float getAlpha();
+	float getAlpha();
 
-	public abstract int x();
+	int x();
 
-	public abstract int y();
+	int y();
 
-	public abstract float getX();
+	float getX();
 
-	public abstract float getY();
+	float getY();
 
-	public abstract void setVisible(boolean visible);
+	void setVisible(boolean v);
 
-	public abstract boolean isVisible();
+	boolean isVisible();
 
-	public abstract void createUI(GLEx g);
+	void createUI(GLEx g);
 
-	public abstract void update(long elapsedTime);
+	void update(long elapsedTime);
 
-	public abstract int getLayer();
+	int getLayer();
 
-	public abstract void setLayer(int layer);
+	void setLayer(int layer);
 
-	public abstract RectBox getCollisionBox();
+	RectBox getCollisionBox();
 
-	public abstract LTexture getBitmap();
+	LTexture getBitmap();
 
+    String getName();
+
+    void setName(String s);
 }

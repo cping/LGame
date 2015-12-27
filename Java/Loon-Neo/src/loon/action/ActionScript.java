@@ -7,15 +7,15 @@ import loon.utils.StringUtils;
  * 一个非常简单的动作脚本字符串设置模式，以"move()->delay()->move()-..."这类方式,
  * 设置一个 具体ActionTween的行为.只支持常用命令.
  * 
- * 用例:移动到127,127位置(true为八方走法，false为四方走法),旋转360度,延迟2秒后,淡入(60帧完成),淡出(90帧完成)
- * 写法：move(127,127,true)->rotate(360)->delay(2)->fadein(60)->fadeout(90)
+ * 用例:移动到127,127位置,每次移动16个像素(true为八方走法，false为四方走法),旋转360度,延迟2秒后,淡入(60帧完成),淡出(90帧完成)
+ * 写法：move(127,127,true,16)->rotate(360)->delay(2)->fadein(60)->fadeout(90)
  * 
  * 在Screen可以写作如下格式:
  * 
  * 	@Override
 	 public void onLoad() {
 		 Sprite sprite = new Sprite("assets/ball.png");
-		 ActionScript script = act(sprite, "move(127,127,true)->rotate(360)->delay(2f)->fadein(60)->fadeout(90)");
+		 ActionScript script = act(sprite, "move(127,127,true,16)->rotate(360)->delay(2f)->fadein(60)->fadeout(90)");
 		 add(sprite);
 		 script.start();
 	 }
@@ -31,13 +31,15 @@ public class ActionScript {
 		_src = script;
 	}
 
-	public ActionTween start() {
+	public TweenTo<ActionTween> start() {
 		if (_tween != null) {
 			if (_src != null) {
 				String result = StringUtils.replace(_src, LSystem.LS, "");
 				String[] list = StringUtils.split(result, "->");
+
 				for (String cmd : list) {
 					if (cmd.length() > 0) {
+
 						int start = cmd.indexOf('(');
 						int end = cmd.lastIndexOf(')');
 						String name = null;
@@ -87,6 +89,20 @@ public class ActionScript {
 													.toBoolean(parameters[2]),
 											(int) Float
 													.parseFloat(parameters[3]));
+								}
+							}
+						} else if ("moveby".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 2) {
+									_tween.moveBy(
+											Float.parseFloat(parameters[0]),
+											Float.parseFloat(parameters[1]));
+								} else if (parameters.length == 3) {
+									_tween.moveBy(Float
+											.parseFloat(parameters[0]), Float
+											.parseFloat(parameters[1]),
+											(int) Float
+													.parseFloat(parameters[2]));
 								}
 							}
 						} else if ("rotate".equals(name)
@@ -174,9 +190,9 @@ public class ActionScript {
 					}
 				}
 			}
-			_tween.start();
+			return _tween.start();
 		}
-		return _tween;
+		return null;
 	}
 
 	public ActionTween getTween() {

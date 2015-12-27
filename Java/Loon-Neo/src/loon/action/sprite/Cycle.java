@@ -52,7 +52,7 @@ public class Cycle extends LObject implements ISprite {
 							+ ((MathUtils.sin(angle) * innerRadius) + cy)
 							* scale);
 					path.close();
-					g.draw(path);
+					g.drawPolyline(path);
 				}
 			};
 			cycle.setLineWidth(5);
@@ -103,6 +103,7 @@ public class Cycle extends LObject implements ISprite {
 				public void step(GLEx g, float x, float y, float progress,
 						int index, int frame, LColor color, float alpha) {
 
+					float tmp = g.alpha();
 					float cx = this.padding + 50, cy = this.padding + 50, angle = (MathUtils.PI / 180)
 							* (progress * 360);
 					alpha = MathUtils.max(0.5f, alpha);
@@ -117,7 +118,7 @@ public class Cycle extends LObject implements ISprite {
 							* scale, getY()
 							+ ((MathUtils.sin(angle) * 35) + cy) * scale);
 					path.close();
-					g.draw(path);
+					g.drawPolyline(path);
 					if (path == null) {
 						path = new Path(getX()
 								+ ((MathUtils.cos(-angle) * 32) + cx) * scale,
@@ -133,8 +134,8 @@ public class Cycle extends LObject implements ISprite {
 							* scale, getY()
 							+ ((MathUtils.sin(-angle) * 27) + cy) * scale);
 					path.close();
-					g.draw(path);
-					g.setAlpha(1);
+					g.drawPolyline(path);
+					g.setAlpha(tmp);
 				}
 			};
 			cycle.setColor(0x05E2FF);
@@ -517,6 +518,7 @@ public class Cycle extends LObject implements ISprite {
 				g.setLineWidth(lineWidth);
 			}
 			if (scaleX != 1 || scaleY != 1) {
+				g.saveTx();
 				g.scale(scaleX, scaleY);
 			}
 			tmpColor = g.color();
@@ -533,7 +535,7 @@ public class Cycle extends LObject implements ISprite {
 				g.resetLineWidth();
 			}
 			if (scaleX != 1 || scaleY != 1) {
-				g.restore();
+				g.restoreTx();
 			}
 		}
 

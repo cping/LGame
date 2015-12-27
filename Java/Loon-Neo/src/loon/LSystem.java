@@ -264,7 +264,7 @@ public class LSystem {
 		if (game != null) {
 			GLEx gl = game.GL();
 			if (gl.running()) {
-				gl.restore();
+				gl.restoreTx();
 				gl.end();
 				gl.freeBatchBuffer();
 			}

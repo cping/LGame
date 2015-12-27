@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.geom.RectI;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
@@ -99,9 +100,9 @@ public class Field2D implements Config {
 
 	private int[] limit;
 
-	//default size
+	// default size
 	private int tileWidth = 32;
-	
+
 	private int tileHeight = 32;
 
 	private int width, height;
@@ -133,6 +134,7 @@ public class Field2D implements Config {
 		this.setTileHeight(th);
 		this.width = data[0].length;
 		this.height = data.length;
+
 	}
 
 	public void setSize(int width, int height) {
@@ -144,7 +146,7 @@ public class Field2D implements Config {
 		this.tileWidth = tw;
 		this.tileHeight = th;
 	}
-	
+
 	public int getWidth() {
 		return width;
 	}
@@ -245,6 +247,11 @@ public class Field2D implements Config {
 			}
 		}
 		return true;
+	}
+
+	public boolean inside(float x, float y) {
+		RectI rect = new RectI(0, 0, width * tileWidth, height * tileHeight);
+		return rect.inside((int) x, (int) y);
 	}
 
 	public boolean isHit(int px, int py) {

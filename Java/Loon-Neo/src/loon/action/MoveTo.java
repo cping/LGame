@@ -121,6 +121,7 @@ public class MoveTo extends ActionEvent {
 		return new float[] { endX, endY };
 	}
 
+	@Override
 	public void onLoad() {
 		if (layerMap == null || original == null) {
 			return;
@@ -227,8 +228,10 @@ public class MoveTo extends ActionEvent {
 		return layerMap;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
-		if (layerMap == null || original == null || pActorPath == null) {
+		if (layerMap == null || original == null || pActorPath == null
+				|| pActorPath.size == 0) {
 			return;
 		}
 		synchronized (pActorPath) {

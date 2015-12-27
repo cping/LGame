@@ -293,6 +293,7 @@ public abstract class LObject implements XY, ZIndex {
 		return _name;
 	}
 
+	@Override
 	public int getLayer() {
 		return _layer;
 	}

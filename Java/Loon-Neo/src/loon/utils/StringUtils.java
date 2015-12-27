@@ -21,8 +21,6 @@
  */
 package loon.utils;
 
-import java.util.StringTokenizer;
-
 final public class StringUtils {
 
 	private StringUtils() {
@@ -221,18 +219,29 @@ final public class StringUtils {
 		return results;
 	}
 
-	public static String[] split(String str, String c) {
-		TArray<String> stringList = new TArray<String>();
-		StringTokenizer stk = new StringTokenizer(str, c);
-		for (; stk.hasMoreTokens();) {
-			stringList.add(stk.nextToken());
+	public static String[] split(String s, String separator) {
+		int sepLength = separator.length();
+		if (sepLength == 0) {
+			return new String[] { s };
 		}
-		final int size = stringList.size;
-		String[] stockArr = new String[size];
-		for (int i = 0; i < size; i++) {
-			stockArr[i] = stringList.get(i);
+		TArray<String> tokens = new TArray<>();
+		int length = s.length();
+		int start = 0;
+		do {
+			int p = s.indexOf(separator, start);
+			if (p == -1) {
+				p = length;
+			}
+			if (p > start) {
+				tokens.add(s.substring(start, p));
+			}
+			start = p + sepLength;
+		} while (start < length);
+		String[] result = new String[tokens.size];
+		for (int i = 0; i < tokens.size; i++) {
+			result[i] = tokens.get(i);
 		}
-		return stockArr;
+		return result;
 	}
 
 	/**

@@ -25,9 +25,12 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.LTransition;
 import loon.Screen;
+import loon.action.ActionBind;
+import loon.action.ActionListener;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
 import loon.action.avg.drama.Conversion;
+import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.effect.FadeEffect;
@@ -110,9 +113,9 @@ public abstract class AVGScreen extends Screen {
 
 	protected LMessage message;
 
-	protected Desktop desktop;
+	protected Desktop messageDesktop;
 
-	protected Sprites sprites;
+	protected Sprites effectSprites;
 
 	private RealtimeProcess avgProcess;
 
@@ -206,7 +209,13 @@ public abstract class AVGScreen extends Screen {
 	 * 默认任务（同时也是任务接口实现示例，Task主要就是给用户自行扩展的）
 	 */
 	private void defTask() {
-		// 使用方式，脚本中调用: task toast 字符串
+		/**
+		 * 展示一个简易消息框
+		 * 
+		 * 使用方式，脚本中调用: task toast 字符串
+		 * 
+		 * @example task toast 你获得了500万
+		 */
 		putTask("toast", new Task() {
 
 			private String parameter;
@@ -235,8 +244,11 @@ public abstract class AVGScreen extends Screen {
 			}
 		});
 		/**
+		 * 添加一个指定的过渡效果.
+		 * 
 		 * 使用方式，脚本中调用: task trans 渐变效果名 颜色
 		 * 
+		 * @example task trans fadein black
 		 * @see LTransition
 		 */
 		putTask("trans", new Task() {
@@ -281,6 +293,105 @@ public abstract class AVGScreen extends Screen {
 					transStr = null;
 					colorStr = null;
 				}
+			}
+		});
+		/**
+		 * 添加一个精灵 (精灵可以用[clear 精灵名]或者[del 精灵名]方式删除)
+		 * 
+		 * 使用方式，脚本中调用(不必全部填写): task sprite {图像来源,精灵名称,x坐标,y坐标} {loon的action脚本命令}
+		 * 
+		 * @example task sprite {assets/c.png,55,55} {move(155,155,true,16)->delay(3f)->move(25,125,true)}
+		 */
+		putTask("sprite", new Task() {
+
+			private float x, y;
+
+			private String scriptName, scriptSource, scripteContext;
+
+			private boolean isCompleted;
+
+			@Override
+			public boolean completed() {
+				return isCompleted;
+			}
+
+			@Override
+			public void call() {
+				Entity entity = Entity.make(scriptSource, x, y);
+				if (scriptName != null) {
+					entity.setName(scriptName);
+				} else {
+					entity.setName(scriptSource);
+				}
+				if (scripteContext != null) {
+					act(entity, scripteContext).start().setActionListener(
+							new ActionListener() {
+
+								@Override
+								public void stop(ActionBind o) {
+									isCompleted = true;
+								}
+
+								@Override
+								public void start(ActionBind o) {
+
+								}
+
+								@Override
+								public void process(ActionBind o) {
+
+								}
+							});
+				} else {
+					isCompleted = true;
+				}
+				scrCG.actionRole.add(entity);
+			}
+
+			@Override
+			public void parameters(String[] pars) {
+				String scriptInfo = pars[0].trim();
+				int start = scriptInfo.indexOf('{');
+				int end = scriptInfo.lastIndexOf('}');
+				if (start != -1 && end != -1 && end > start) {
+					scriptInfo = scriptInfo.substring(start + 1, end);
+				}
+				String[] list = StringUtils.split(scriptInfo, ',');
+				if (list.length == 1) {
+					scriptSource = list[0];
+				} else if (list.length == 2) {
+					scriptSource = list[0];
+					if (MathUtils.isNan(list[1])) {
+						x = y = Float.parseFloat(list[1]);
+					}
+				} else if (list.length == 3) {
+					scriptSource = list[0];
+					if (MathUtils.isNan(list[1])) {
+						x = Float.parseFloat(list[1]);
+					}
+					if (MathUtils.isNan(list[2])) {
+						y = Float.parseFloat(list[2]);
+					}
+				} else if (list.length == 4) {
+					scriptSource = list[0];
+					scriptName = list[1];
+					if (MathUtils.isNan(list[2])) {
+						x = Float.parseFloat(list[2]);
+					}
+					if (MathUtils.isNan(list[3])) {
+						y = Float.parseFloat(list[3]);
+					}
+				}
+				if (pars.length > 1) {
+					scriptInfo = pars[1].trim();
+					start = scriptInfo.indexOf('{');
+					end = scriptInfo.lastIndexOf('}');
+					if (start != -1 && end != -1 && end > start) {
+						scriptInfo = scriptInfo.substring(start + 1, end);
+					}
+					scripteContext = scriptInfo;
+				}
+
 			}
 		});
 	}
@@ -499,38 +610,38 @@ public abstract class AVGScreen extends Screen {
 			@Override
 			public void run(LTimerContext time) {
 				if (running) {
-					if (desktop != null) {
+					if (messageDesktop != null) {
 						switch (_speedMode) {
 						default:
 						case Normal:
-							desktop.update(LSystem.SECOND / 2);
+							messageDesktop.update(LSystem.SECOND / 2);
 							break;
 						case SuperSlow:
-							desktop.update(LSystem.MSEC * 20);
+							messageDesktop.update(LSystem.MSEC * 20);
 							break;
 						case Slow:
-							desktop.update(LSystem.MSEC * 40);
+							messageDesktop.update(LSystem.MSEC * 40);
 							break;
 						case FewSlow:
-							desktop.update(LSystem.MSEC * 60);
+							messageDesktop.update(LSystem.MSEC * 60);
 							break;
 						case Fast:
-							desktop.update(LSystem.SECOND);
+							messageDesktop.update(LSystem.SECOND);
 							break;
 						case Quickly:
 							for (int i = 0; i < 2; i++) {
-								desktop.update(LSystem.SECOND);
+								messageDesktop.update(LSystem.SECOND);
 							}
 							break;
 						case Flash:
 							for (int i = 0; i < 3; i++) {
-								desktop.update(LSystem.SECOND);
+								messageDesktop.update(LSystem.SECOND);
 							}
 							break;
 						}
 					}
-					if (sprites != null) {
-						sprites.update(time.timeSinceLastUpdate);
+					if (effectSprites != null) {
+						effectSprites.update(time.timeSinceLastUpdate);
 					}
 					if (autoPlay) {
 						playAutoNext();
@@ -545,11 +656,11 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	private synchronized void initDesktop() {
-		if (desktop != null && sprites != null) {
+		if (messageDesktop != null && effectSprites != null) {
 			return;
 		}
-		this.desktop = new Desktop(this, getWidth(), getHeight());
-		this.sprites = new Sprites(this, getWidth(), getHeight());
+		this.messageDesktop = new Desktop(this, getWidth(), getHeight());
+		this.effectSprites = new Sprites(this, getWidth(), getHeight());
 		if (dialog == null) {
 			Image tmp = Image
 					.createImage(getWidth() - 20, getHeight() / 2 - 20);
@@ -579,9 +690,9 @@ public abstract class AVGScreen extends Screen {
 		this.message.setVisible(false);
 		this.select = new LSelect(dialog, message.x(), message.y());
 		this.select.setTopOffset(5);
-		this.scrCG = new AVGCG();
-		this.desktop.add(message);
-		this.desktop.add(select);
+		this.scrCG = new AVGCG(this);
+		this.messageDesktop.add(message);
+		this.messageDesktop.add(select);
 		this.select.setVisible(false);
 	}
 
@@ -611,39 +722,39 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public Screen add(LComponent c) {
-		if (desktop == null) {
+		if (messageDesktop == null) {
 			initDesktop();
 		}
-		desktop.add(c);
+		messageDesktop.add(c);
 		return this;
 	}
 
 	@Override
 	public Screen add(ISprite s) {
-		if (sprites == null) {
+		if (effectSprites == null) {
 			initDesktop();
 		}
-		sprites.add(s);
+		effectSprites.add(s);
 		return this;
 	}
 
 	@Override
 	public Screen remove(ISprite sprite) {
-		sprites.remove(sprite);
+		effectSprites.remove(sprite);
 		return this;
 	}
 
 	@Override
 	public Screen remove(LComponent comp) {
-		desktop.remove(comp);
+		messageDesktop.remove(comp);
 		return this;
 	}
 
 	@Override
 	public Screen removeAll() {
 		super.removeAll();
-		sprites.removeAll();
-		desktop.clear();
+		effectSprites.removeAll();
+		messageDesktop.clear();
 		return this;
 	}
 
@@ -658,11 +769,11 @@ public abstract class AVGScreen extends Screen {
 		if (scrCG.sleep == 0) {
 			scrCG.paint(g);
 			drawScreen(g);
-			if (desktop != null) {
-				desktop.createUI(g);
+			if (messageDesktop != null) {
+				messageDesktop.createUI(g);
 			}
-			if (sprites != null) {
-				sprites.createUI(g);
+			if (effectSprites != null) {
+				effectSprites.createUI(g);
 			}
 		} else {
 			scrCG.sleep--;
@@ -723,34 +834,48 @@ public abstract class AVGScreen extends Screen {
 					orderFlag = (String) commands.get(2);
 					lastFlag = (String) commands.get(3);
 				}
-				if (cmdFlag.equalsIgnoreCase(CommandType.L_CLEAR)) {
-					if (desktop != null) {
-						message.setVisible(false);
-						select.setVisible(false);
-						sprites.clear();
-						scrCG.clear();
-						getSprites().removeAll();
-						getDesktop().removeAll();
-						_currentTasks.clear();
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_CLEAR)
+						|| cmdFlag.equalsIgnoreCase(CommandType.L_DEL)) {
+					if (orderFlag == null) {
+						if (messageDesktop != null) {
+							message.setVisible(false);
+							select.setVisible(false);
+							effectSprites.clear();
+							scrCG.clear();
+							getSprites().removeAll();
+							getDesktop().removeAll();
+							_currentTasks.clear();
+						}
+					} else {
+						effectSprites.removeName(orderFlag);
+						messageDesktop.removeName(orderFlag);
+						scrCG.remove(orderFlag);
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_TASK)) {
 					if (mesFlag != null) {
-						Task task = getTask(mesFlag.trim());
-						if (task != null) {
-							// 注入参数
-							int len = commands.size - 2;
-							String[] args = new String[len];
-							for (int i = 0; i < len; i++) {
-								args[i] = commands.get(i + 2);
+						mesFlag = mesFlag.trim();
+						// 如果是clear或del则清除任务
+						if (CommandType.L_CLEAR.equalsIgnoreCase(mesFlag)
+								|| CommandType.L_DEL.equalsIgnoreCase(mesFlag)) {
+							_currentTasks.clear();
+						} else {
+							Task task = getTask(mesFlag);
+							if (task != null) {
+								// 注入参数
+								int len = commands.size - 2;
+								String[] args = new String[len];
+								for (int i = 0; i < len; i++) {
+									args[i] = commands.get(i + 2);
+								}
+								// 注入参数
+								task.parameters(args);
+								// 执行任务
+								task.call();
+								// 添加到当前任务集合中
+								_currentTasks.add(task);
 							}
-							// 注入参数
-							task.parameters(args);
-							// 执行任务
-							task.call();
-							// 添加到当前任务集合中
-							_currentTasks.add(task);
 						}
 					}
 					continue;
@@ -909,10 +1034,9 @@ public abstract class AVGScreen extends Screen {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOW)
 						|| cmdFlag.equalsIgnoreCase(CommandType.L_RAIN)
 						|| cmdFlag.equalsIgnoreCase(CommandType.L_PETAL)) {
-					if (sprites != null) {
+					if (effectSprites != null) {
 						boolean flag = false;
-						ISprite[] ss = sprites.getSprites();
-
+						ISprite[] ss = effectSprites.getSprites();
 						for (int i = 0; i < ss.length; i++) {
 							ISprite s = ss[i];
 							if (s instanceof NaturalEffect) {
@@ -922,13 +1046,16 @@ public abstract class AVGScreen extends Screen {
 						}
 						if (!flag) {
 							if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOW)) {
-								sprites.add(NaturalEffect.getSnowEffect());
+								effectSprites
+										.add(NaturalEffect.getSnowEffect());
 							} else if (cmdFlag
 									.equalsIgnoreCase(CommandType.L_RAIN)) {
-								sprites.add(NaturalEffect.getRainEffect());
+								effectSprites
+										.add(NaturalEffect.getRainEffect());
 							} else if (cmdFlag
 									.equalsIgnoreCase(CommandType.L_PETAL)) {
-								sprites.add(NaturalEffect.getPetalEffect());
+								effectSprites.add(NaturalEffect
+										.getPetalEffect());
 							}
 						}
 
@@ -938,26 +1065,25 @@ public abstract class AVGScreen extends Screen {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOWSTOP)
 						|| cmdFlag.equalsIgnoreCase(CommandType.L_RAINSTOP)
 						|| cmdFlag.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
-					if (sprites != null) {
-						ISprite[] ss = sprites.getSprites();
-
+					if (effectSprites != null) {
+						ISprite[] ss = effectSprites.getSprites();
 						for (int i = 0; i < ss.length; i++) {
 							ISprite s = ss[i];
 							if (s instanceof NaturalEffect) {
 								if (cmdFlag
 										.equalsIgnoreCase(CommandType.L_SNOWSTOP)) {
 									if (((NaturalEffect) s).getKernels()[0] instanceof SnowKernel) {
-										sprites.remove(s);
+										effectSprites.remove(s);
 									}
 								} else if (cmdFlag
 										.equalsIgnoreCase(CommandType.L_RAINSTOP)) {
 									if (((NaturalEffect) s).getKernels()[0] instanceof RainKernel) {
-										sprites.remove(s);
+										effectSprites.remove(s);
 									}
 								} else if (cmdFlag
 										.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
 									if (((NaturalEffect) s).getKernels()[0] instanceof PetalKernel) {
-										sprites.remove(s);
+										effectSprites.remove(s);
 									}
 								}
 							}
@@ -987,13 +1113,13 @@ public abstract class AVGScreen extends Screen {
 						|| cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
 					this.scrFlag = true;
 					this.color = new LColor(mesFlag);
-					if (sprites != null) {
-						sprites.removeAll();
+					if (effectSprites != null) {
+						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-							sprites.add(FadeEffect.getInstance(
+							effectSprites.add(FadeEffect.getInstance(
 									ISprite.TYPE_FADE_IN, 30, color));
 						} else {
-							sprites.add(FadeEffect.getInstance(
+							effectSprites.add(FadeEffect.getInstance(
 									ISprite.TYPE_FADE_OUT, 30, color));
 						}
 					}
@@ -1355,7 +1481,7 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public Desktop getAvgDesktop() {
-		return desktop;
+		return messageDesktop;
 	}
 
 	public LTexture getDialog() {
@@ -1431,7 +1557,7 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public Sprites getAvgSprites() {
-		return sprites;
+		return effectSprites;
 	}
 
 	public void setCommandGo(boolean isRunning) {
@@ -1475,30 +1601,30 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public void touchDown(GameTouch touch) {
-		if (desktop != null) {
-			desktop.processEvents();
+		if (messageDesktop != null) {
+			messageDesktop.processEvents();
 		}
 		click();
 	}
 
 	@Override
 	public void touchMove(GameTouch e) {
-		if (desktop != null) {
-			desktop.processEvents();
+		if (messageDesktop != null) {
+			messageDesktop.processEvents();
 		}
 	}
 
 	@Override
 	public void touchUp(GameTouch e) {
-		if (desktop != null) {
-			desktop.processEvents();
+		if (messageDesktop != null) {
+			messageDesktop.processEvents();
 		}
 	}
 
 	@Override
 	public void touchDrag(GameTouch e) {
-		if (desktop != null) {
-			desktop.processEvents();
+		if (messageDesktop != null) {
+			messageDesktop.processEvents();
 		}
 	}
 
@@ -1608,13 +1734,13 @@ public abstract class AVGScreen extends Screen {
 			avgProcess.kill();
 			avgProcess = null;
 		}
-		if (desktop != null) {
-			desktop.close();
-			desktop = null;
+		if (messageDesktop != null) {
+			messageDesktop.close();
+			messageDesktop = null;
 		}
-		if (sprites != null) {
-			sprites.close();
-			sprites = null;
+		if (effectSprites != null) {
+			effectSprites.close();
+			effectSprites = null;
 		}
 		if (command != null) {
 			command = null;
@@ -1631,7 +1757,6 @@ public abstract class AVGScreen extends Screen {
 		}
 		_currentTasks.clear();
 		_tasks.clear();
-
 	}
 
 }
