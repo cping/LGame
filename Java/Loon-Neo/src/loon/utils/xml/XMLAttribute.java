@@ -20,6 +20,8 @@
  */
 package loon.utils.xml;
 
+import loon.utils.StringUtils;
+
 public class XMLAttribute {
 
 	private String name;
@@ -79,9 +81,7 @@ public class XMLAttribute {
 		if (value == null) {
 			return false;
 		}
-		String result = value.trim().toLowerCase();
-		return "true".equals(result) || "yes".equals(result)
-				|| !"0".equals(result);
+		return StringUtils.toBoolean(value);
 	}
 
 	public String getName() {

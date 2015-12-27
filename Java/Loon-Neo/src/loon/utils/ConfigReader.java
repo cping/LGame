@@ -145,8 +145,7 @@ public class ConfigReader implements Expression {
 		if (v == null) {
 			return fallback;
 		}
-		return "true".equalsIgnoreCase(v) || "yes".equalsIgnoreCase(v)
-				|| "ok".equalsIgnoreCase(v);
+		return StringUtils.toBoolean(v);
 	}
 
 	public int getIntValue(String name) {

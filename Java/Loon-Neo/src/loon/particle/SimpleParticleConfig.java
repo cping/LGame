@@ -8,6 +8,7 @@ import loon.geom.Vector2f;
 import loon.particle.SimpleConfigurableEmitter.LinearInterpolator;
 import loon.particle.SimpleConfigurableEmitter.RandomValue;
 import loon.particle.SimpleConfigurableEmitter.SimpleValue;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
@@ -256,7 +257,7 @@ public class SimpleParticleConfig {
 				((LinearInterpolator) value).setCurve(curve);
 				((LinearInterpolator) value).setMin(Integer.parseInt(min));
 				((LinearInterpolator) value).setMax(Integer.parseInt(max));
-				((LinearInterpolator) value).setActive("true".equals(active));
+				((LinearInterpolator) value).setActive(StringUtils.toBoolean(active));
 			}
 		}
 	}

@@ -2614,9 +2614,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public void close() {
 		this.isClosed = true;
 		this.useBegin = false;
-		if (batch != null) {
-			batch.close();
-		}
 		if (glRenderer != null) {
 			glRenderer.close();
 		}
