@@ -1426,6 +1426,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @return
 	 */
 	public GLEx draw(Shape shape, float x, float y) {
+		if (shape == null) {
+			return this;
+		}
 		if (useAlltextures) {
 			drawShapeImpl(shape, x, y);
 		} else {
@@ -1433,10 +1436,72 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (points.length == 0) {
 				return this;
 			}
-			glBegin(GLType.Line);
 			int argb = LColor.combine(fillColor, baseColor);
+			if (points.length == 2) {
+				glBegin(GLType.Point);
+				glRenderer.setColor(argb);
+				glRenderer.point(points[0], points[1]);
+				glEnd();
+			} else if (points.length == 4) {
+				glBegin(GLType.Line);
+				glRenderer.setColor(argb);
+				glRenderer.line(points[0], points[1], points[2], points[3]);
+				glEnd();
+			} else {
+				if (points.length < 6 || points.length % 2 != 0) {
+					return drawPolyline(shape, x, y);
+				}
+				glBegin(GLType.Line);
+				glRenderer.setColor(argb);
+				glRenderer.polygon(points);
+				glEnd();
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制不连线的Shape
+	 * 
+	 * @param shape
+	 * @return
+	 */
+	public GLEx drawPolyline(Shape shape) {
+		return drawPolyline(shape, 0, 0);
+	}
+
+	/**
+	 * 绘制不连线的Shape
+	 * 
+	 * @param shape
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public GLEx drawPolyline(Shape shape, float x, float y) {
+		if (shape == null) {
+			return this;
+		}
+		if (useAlltextures) {
+			final float[] points = shape.getPoints();
+			int size = points.length;
+			int len = size / 2;
+			final float[] xps = new float[len];
+			final float[] yps = new float[len];
+			for (int i = 0, j = 0; i < size; i += 2, j++) {
+				xps[j] = points[i] + x;
+				yps[j] = points[i + 1] + y;
+			}
+			drawPolylineImpl(xps, yps, len);
+		} else {
+			float[] points = shape.getPoints();
+			if (points.length == 0) {
+				return this;
+			}
+			int argb = LColor.combine(fillColor, baseColor);
+			glBegin(GLType.Line);
 			glRenderer.setColor(argb);
-			glRenderer.polygon(points);
+			glRenderer.polyline(points);
 			glEnd();
 		}
 		return this;
@@ -1461,6 +1526,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @return
 	 */
 	public GLEx fill(Shape shape, float x, float y) {
+		if (shape == null) {
+			return this;
+		}
 		if (useAlltextures) {
 			fillShapeImpl(shape, x, y);
 		} else {

@@ -351,6 +351,7 @@ public class GLRenderer implements LRelease {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
 		if (vertices.length < 6) {
+			System.out.println(vertices.length);
 			throw new IllegalArgumentException(
 					"Polygons must contain at least 3 points.");
 		}
@@ -381,6 +382,47 @@ public class GLRenderer implements LRelease {
 				x2 = vertices[i + 2];
 				y2 = vertices[i + 3];
 			}
+
+			_renderer.color(colorFloat);
+			_renderer.vertex(x1, y1, 0);
+			_renderer.color(colorFloat);
+			_renderer.vertex(x2, y2, 0);
+		}
+	}
+
+	public void polyline(float[] vertices) {
+		polyline(vertices, 0, vertices.length);
+	}
+
+	public void polyline(float[] vertices, int offset, int count) {
+		if (_currType != GLType.Line) {
+			throw new RuntimeException("Must call begin(GLType.Line)");
+		}
+		if (count < 4) {
+			if (count == 2) {
+				line(vertices[0], vertices[1], vertices[0] + 1, vertices[1] + 1);
+				return;
+			}
+			throw new IllegalArgumentException(
+					"Polylines must contain at least 2 points.");
+		}
+		if (count % 2 != 0) {
+			throw new IllegalArgumentException(
+					"Polylines must have an even number of vertices.");
+		}
+		checkDirty();
+		checkFlush(count);
+
+		float colorFloat = _color.toFloatBits();
+		for (int i = offset, n = offset + count - 2; i < n; i += 2) {
+			float x1 = vertices[i];
+			float y1 = vertices[i + 1];
+
+			float x2;
+			float y2;
+
+			x2 = vertices[i + 2];
+			y2 = vertices[i + 3];
 
 			_renderer.color(colorFloat);
 			_renderer.vertex(x1, y1, 0);
@@ -422,8 +464,8 @@ public class GLRenderer implements LRelease {
 			throw new RuntimeException(
 					"Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
-        float arcAngle = end - start;
-    	if (arcAngle < 0) {
+		float arcAngle = end - start;
+		if (arcAngle < 0) {
 			start = 360 - arcAngle;
 			arcAngle = 360 + arcAngle;
 		}

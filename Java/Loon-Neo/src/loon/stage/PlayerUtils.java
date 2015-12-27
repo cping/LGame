@@ -6,6 +6,7 @@ import loon.action.ActionBind;
 import loon.action.ActionCallback;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
+import loon.action.ActionScript;
 import loon.action.ActionTween;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
@@ -106,6 +107,18 @@ public class PlayerUtils extends Director {
 
 	public final static ActionTween set(ActionBind target, boolean removeActions) {
 		return set(target, -1, removeActions);
+	}
+
+	public final static ActionScript act(ActionBind target,
+			String script) {
+		ActionTween tween = set(target, true);
+		return new ActionScript(tween, script);
+	}
+
+	public final static ActionScript act(ActionBind target,
+			boolean removeActions, String script) {
+		ActionTween tween = set(target, -1, removeActions);
+		return new ActionScript(tween, script);
 	}
 
 	public final static ActionTween call(ActionCallback callback) {
@@ -297,8 +310,9 @@ public class PlayerUtils extends Director {
 
 	public final static boolean hitTest(Player player, float x, float y) {
 		Vector2f point = screenToPlayer(player, x, y);
-		return (point.x() >= 0 && point.y() >= 0 && point.x() <= player.getWidth() && point
-				.y() <= player.getHeight());
+		return (point.x() >= 0 && point.y() >= 0
+				&& point.x() <= player.getWidth() && point.y() <= player
+				.getHeight());
 	}
 
 	public final static Player playerUnderPoint(Player root, float x, float y) {

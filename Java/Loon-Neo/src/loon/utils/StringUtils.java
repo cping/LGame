@@ -28,6 +28,22 @@ final public class StringUtils {
 	private StringUtils() {
 	}
 
+	public static boolean isBoolean(String o) {
+		String str = o.trim().toLowerCase();
+		return str.equals("true") || str.equals("false") || str.equals("yes")
+				|| str.equals("no") || str.equals("ok");
+	}
+
+	public static boolean toBoolean(String o) {
+		String str = o.trim().toLowerCase();
+		if (str.equals("true") || str.equals("yes") || str.equals("ok")) {
+			return true;
+		} else if (MathUtils.isNan(str)) {
+			return Double.parseDouble(str) > 0;
+		}
+		return false;
+	}
+
 	public static boolean equals(String a, String b) {
 		if (a == null || b == null) {
 			return (a == b);

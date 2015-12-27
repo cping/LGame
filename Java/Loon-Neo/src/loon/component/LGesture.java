@@ -77,7 +77,7 @@ public class LGesture extends LComponent {
 			int tmp = g.color();
 			g.setLineWidth(lineWidth);
 			g.setColor(color);
-			g.draw(goalPath);
+			g.drawPolyline(goalPath);
 			g.resetLineWidth();
 			g.setColor(tmp);
 		}

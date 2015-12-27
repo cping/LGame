@@ -498,7 +498,10 @@ public abstract class PixmapFImpl {
 			yps[j] = points[i + 1] + y1;
 		}
 		drawPolylineImpl(xps, yps, len);
-		drawLineImpl(xps[len - 1], yps[len - 1], xps[0], yps[0]);
+		int length = len - 1;
+		if (xps.length > 0 && length < xps.length) {
+			drawLineImpl(xps[length], yps[length], xps[0], yps[0]);
+		}
 	}
 
 	protected void fillShapeImpl(Shape shape, float x1, float y1) {
