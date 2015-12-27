@@ -1,4 +1,4 @@
-# Java游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2015-12-25)
+# Java游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2015-12-27)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -16,6 +16,7 @@
 * CodenameOne: 最初源自XMLVM的Java跨平台项目（XMLVM目前已经停止开发），原始版本的运行原理是转换Java代码为XML描述的中间语言，然后再转换为具体环境下的本地开发语言，并不具备具体平台的API支持功能。但是，CodenameOne为其增加了WP、Android以及IOS的本地环境API（不过提供的仅仅是CodenameOne自己的封装包，而不是完整的官方API，这点与Robovm差异很大），所以也就可以直接让程序运行于上述平台之上。[项目地址](https://github.com/codenameone/CodenameOne/)
 * avian: 基于openjdk二次开发，Java运行时环境的轻量级二次封装库，据作者说未来将会完整支持IOS和Android平台(目前也可以跑IOS，但需要越狱……)。[项目地址](https://github.com/ReadyTalk/avian/)
 * GWT: 经典的Java to JavaScript代码转换，以及页面开发工具，附带有较为完善的JS仿写Java的本地支持库，可以满足大多数【平台无关】的Java代码直接转换到浏览器环境。[项目地址](https://github.com/gwtproject/gwt/)
+* TeaVM: 新一代的Java to JavaScript(更准确的说，是Bytecode to JavaScript)转换项目。相比GWT而言，TeaVM支持反射，支持对象的同步和异步，能在JS上模拟出真实的Thread功能，也不必配置gwt.xml描述java文件就可以编译，并且支持scala和kotlin脚本，更有比GWT更完整的Java类库实现，优化也比GWT做的更好（GWT是Java代码转译为JS，而TeaVM是直接把bytecode转译为JS，在浏览器运行时等于是面向过程的瀑布式运行，所以解释时损耗更少），通常teaVM转换的JS代码，在执行效率上，要比GWT转换的高10%左右。唯一的缺点是，还在开发阶段，不够成熟，所以bug比较多…… [项目地址](https://github.com/konsoletyper/teavm/)
 * j2obj: 仿造GWT原理的Java to Objective-C代码转换器，在IOS上拥有较为完整的JRE本地支持，可以满足大多数【平台无关】的Java代码直接转换到IOS环境。[项目地址](https://github.com/google/j2objc/)
 * openjdk: 完全开源的JDK（JRE）支持库，运行API上与Oracle版并无区别，但是实现上全部开源，也没有商用限制，也就是用户可以自行删减内容，方便精简出游戏专用JRE（而官方版在使用协议上是不能自行精简的）。 [完整编译版地址](https://github.com/alexkasko/openjdk-unofficial-builds/)
 
