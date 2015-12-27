@@ -31,14 +31,16 @@ import loon.canvas.PixmapFImpl;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Affine2f;
+import loon.geom.Ellipse;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
+import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Shape;
-import loon.geom.Triangle;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.opengl.GLRenderer.GLType;
 import loon.utils.Array;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
@@ -131,7 +133,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {
-		this(gfx, target, createDefaultBatch(gl), LSystem.isHTML5());
+		this(gfx, target, createDefaultBatch(gl), false);
 	}
 
 	public int getWidth() {
@@ -1328,7 +1330,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private boolean useBegin;
 
-	private GLBatch glBatch;
+	private GLRenderer glRenderer;
 
 	private boolean useAlltextures;
 
@@ -1337,17 +1339,17 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * 
 	 * @param mode
 	 */
-	private GLEx glBegin(int mode) {
+	private GLEx glBegin(GLType mode) {
 		if (!useAlltextures) {
 			if (running()) {
 				saveTx();
 				end();
 			}
 			GLUtils.disableTextures(batch.gl);
-			if (glBatch == null) {
-				glBatch = new GLBatch(3000, false, true, 0);
+			if (glRenderer == null) {
+				glRenderer = new GLRenderer(this);
 			}
-			this.glBatch.begin(lastTrans, mode);
+			this.glRenderer.begin(lastTrans, mode);
 			this.useBegin = true;
 		}
 		return this;
@@ -1362,42 +1364,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			useBegin = false;
 			return this;
 		}
-		int tmp = getBlendMode();
-		if (baseColor != LColor.DEF_COLOR) {
-			setBlendMode(LSystem.MODE_SPEED);
-		}
-		glBatch.end();
-		setBlendMode(tmp);
+		glRenderer.end();
 		useBegin = false;
 		if (!running()) {
 			restoreTx();
 			begin();
 		}
-		return this;
-	}
-
-	/**
-	 * 添加二维纹理
-	 * 
-	 * @param x
-	 * @param y
-	 */
-	private final GLEx glVertex2f(float x, float y) {
-		if (useAlltextures) {
-			return this;
-		}
-		if (!useBegin) {
-			return this;
-		}
-		glBatch.vertex(x, y, 0);
-		return this;
-	}
-
-	private GLEx glColor(int c) {
-		if (useAlltextures) {
-			return this;
-		}
-		glBatch.color(new LColor(c));
 		return this;
 	}
 
@@ -1423,14 +1395,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				y2++;
 			}
 			if (use) {
-				glBegin(GL20.GL_LINES);
+				glBegin(GLType.Line);
 			}
-			{
-				glColor(baseColor);
-				glVertex2f(x1, y1);
-				glColor(baseColor);
-				glVertex2f(x2, y2);
-			}
+			int argb = LColor.combine(fillColor, baseColor);
+			glRenderer.setColor(argb);
+			glRenderer.line(x1, y1, x2, y2);
 			if (use) {
 				glEnd();
 			}
@@ -1464,15 +1433,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (points.length == 0) {
 				return this;
 			}
-			glBegin(GL20.GL_LINE_STRIP);
-			for (int i = 0; i < points.length; i += 2) {
-				glColor(baseColor);
-				glVertex2f(points[i] + x, points[i + 1] + y);
-			}
-			if (shape.closed()) {
-				glColor(baseColor);
-				glVertex2f(points[0] + x, points[1] + y);
-			}
+			glBegin(GLType.Line);
+			int argb = LColor.combine(fillColor, baseColor);
+			glRenderer.setColor(argb);
+			glRenderer.polygon(points);
 			glEnd();
 		}
 		return this;
@@ -1500,23 +1464,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (useAlltextures) {
 			fillShapeImpl(shape, x, y);
 		} else {
-			Triangle tris = shape.getTriangles();
-			if (tris.getTriangleCount() == 0) {
-				return this;
-			}
-			float[] points = shape.getPoints();
-			if (points.length == 0) {
-				return this;
-			}
 			int argb = LColor.combine(fillColor, baseColor);
-			glBegin(GL20.GL_TRIANGLES);
-			for (int i = 0; i < tris.getTriangleCount(); i++) {
-				for (int p = 0; p < 3; p++) {
-					float[] pt = tris.getTrianglePoint(i, p);
-					glColor(argb);
-					glVertex2f(pt[0] + x, pt[1] + y);
-				}
-			}
+			glBegin(GLType.Filled);
+			glRenderer.setColor(argb);
+			glRenderer.drawShape(shape, x, y);
 			glEnd();
 		}
 		return this;
@@ -1605,13 +1556,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx drawTriangle(final float x1, final float y1, final float x2,
 			final float y2, final float x3, final float y3) {
-		glBegin(GL20.GL_LINE_LOOP);
-		glColor(baseColor);
-		glVertex2f(x1, y1);
-		glColor(baseColor);
-		glVertex2f(x2, y2);
-		glColor(baseColor);
-		glVertex2f(x3, y3);
+		glBegin(GLType.Line);
+		int argb = LColor.combine(fillColor, baseColor);
+		glRenderer.setColor(argb);
+		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		glEnd();
 		return this;
 	}
@@ -1628,13 +1576,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx fillTriangle(final float x1, final float y1, final float x2,
 			final float y2, final float x3, final float y3) {
-		glBegin(GL20.GL_TRIANGLES);
-		glColor(baseColor);
-		glVertex2f(x1, y1);
-		glColor(baseColor);
-		glVertex2f(x2, y2);
-		glColor(baseColor);
-		glVertex2f(x3, y3);
+		glBegin(GLType.Filled);
+		int argb = LColor.combine(fillColor, baseColor);
+		glRenderer.setColor(argb);
+		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		glEnd();
 		return this;
 	}
@@ -1801,9 +1746,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (useAlltextures) {
 			drawPointImpl(x, y);
 		} else {
-			glBegin(GL20.GL_POINTS);
-			glColor(baseColor);
-			glVertex2f(x, y);
+			glBegin(GLType.Point);
+			int argb = LColor.combine(fillColor, baseColor);
+			glRenderer.setColor(argb);
+			glRenderer.point(x, y);
 			glEnd();
 		}
 		return this;
@@ -1822,9 +1768,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			drawPointImpl(x, y);
 			setColor(tmp);
 		} else {
-			glBegin(GL20.GL_POINTS);
-			glColor(color);
-			glVertex2f(x, y);
+			glBegin(GLType.Point);
+			int argb = LColor.combine(baseColor, color);
+			glRenderer.setColor(argb);
+			glRenderer.point(x, y);
 			glEnd();
 		}
 		return this;
@@ -1843,10 +1790,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				drawPointImpl(x[i], y[i]);
 			}
 		} else {
-			glBegin(GL20.GL_POINTS);
+			glBegin(GLType.Point);
+			int argb = LColor.combine(fillColor, baseColor);
+			glRenderer.setColor(argb);
 			for (int i = 0; i < size; i++) {
-				glColor(baseColor);
-				glVertex2f(x[i], y[i]);
+				glRenderer.point(x[i], y[i]);
 			}
 			glEnd();
 		}
@@ -1860,30 +1808,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param yPoints
 	 * @param nPoints
 	 */
-	public GLEx fillPolygon(float xPoints[], float yPoints[], int nPoints) {
-		return $fillPolygon(xPoints, yPoints, nPoints, true);
-	}
-
-	private final GLEx $fillPolygon(float[] xPoints, float[] yPoints,
-			int nPoints, boolean use) {
+	public final GLEx fillPolygon(float[] xPoints, float[] yPoints, int nPoints) {
 		if (isClosed) {
 			return this;
 		}
 		if (useAlltextures) {
 			fillPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
-			if (use) {
-				glBegin(GL20.GL_TRIANGLE_FAN);
-			}
-			{
-				for (int i = 0; i < nPoints; i++) {
-					glColor(baseColor);
-					glVertex2f(xPoints[i], yPoints[i]);
-				}
-			}
-			if (use) {
-				glEnd();
-			}
+			fill(new Polygon(xPoints, yPoints, nPoints));
 		}
 		return this;
 	}
@@ -1896,28 +1828,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param nPoints
 	 */
 	public GLEx drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
-		return $drawPolygon(xPoints, yPoints, nPoints, true);
-
-	}
-
-	private GLEx $drawPolygon(float[] xPoints, float[] yPoints, int nPoints,
-			boolean use) {
 		if (isClosed) {
 			return this;
 		}
 		if (useAlltextures) {
 			drawPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
-			if (use) {
-				glBegin(GL20.GL_LINE_LOOP);
-			}
-			for (int i = 0; i < nPoints; i++) {
-				glColor(baseColor);
-				glVertex2f(xPoints[i], yPoints[i]);
-			}
-			if (use) {
-				glEnd();
-			}
+			draw(new Polygon(xPoints, yPoints, nPoints));
 		}
 		return this;
 	}
@@ -2086,23 +2003,24 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			while (end < start) {
 				end += 360;
 			}
-			float cx = x1 + (width / 2.0f);
-			float cy = y1 + (height / 2.0f);
-			glBegin(GL20.GL_LINE_STRIP);
-			int step = 360 / segments;
-			for (float a = start; a < (end + step); a += step) {
-				float ang = a;
-				if (ang > end) {
-					ang = end;
+			float radiusW = width / 2.0f;
+			float radiusH = height / 2.0f;
+			float cx = x1 + radiusW;
+			float cy = y1 + radiusH;
+			if ((int) radiusW == (int) radiusH) {
+				glBegin(GLType.Line);
+				int argb = LColor.combine(fillColor, baseColor);
+				glRenderer.setColor(argb);
+				if (end - start == 360) {
+					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
+				} else {
+					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH),
+							start, end, segments);
 				}
-				float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang))
-						* width / 2.0f));
-				float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang))
-						* height / 2.0f));
-				glColor(baseColor);
-				glVertex2f(x, y);
+				glEnd();
+			} else {
+				draw(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
 			}
-			glEnd();
 		}
 		return this;
 	}
@@ -2144,24 +2062,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			while (end < start) {
 				end += 360;
 			}
-			float cx = x1 + (width / 2.0f);
-			float cy = y1 + (height / 2.0f);
-			glBegin(GL20.GL_TRIANGLE_FAN);
-			int step = 360 / segments;
+			float radiusW = width / 2.0f;
+			float radiusH = height / 2.0f;
+			float cx = x1 + radiusW;
+			float cy = y1 + radiusH;
+			glBegin(GLType.Filled);
 			int argb = LColor.combine(fillColor, baseColor);
-			glColor(argb);
-			glVertex2f(cx, cy);
-			for (float a = start; a < (end + step); a += step) {
-				float ang = a;
-				if (ang > end) {
-					ang = end;
-				}
-				float x = (cx + (MathUtils.cos(MathUtils.toRadians(ang))
-						* width / 2.0f));
-				float y = (cy + (MathUtils.sin(MathUtils.toRadians(ang))
-						* height / 2.0f));
-				glColor(argb);
-				glVertex2f(x, y);
+			glRenderer.setColor(argb);
+			if (end - start == 360) {
+				glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
+			} else {
+				glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start,
+						end, segments);
 			}
 			glEnd();
 		}
@@ -2589,7 +2501,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setAlltextures(boolean all) {
-		this.useAlltextures = LSystem.isHTML5() ? true : all;
+		this.useAlltextures = all;
 		return this;
 	}
 
@@ -2608,6 +2520,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		drawLine(x1, y1, x2, y2, getPixSkip());
 	}
 
+	@Override
 	protected void drawPointNative(float x, float y, int skip) {
 		if (!inside(x, y)) {
 			if (patternTex != null) {
@@ -2632,6 +2545,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	@Override
 	public void close() {
 		this.isClosed = true;
+		this.useBegin = false;
+		if (batch != null) {
+			batch.close();
+		}
+		if (glRenderer != null) {
+			glRenderer.close();
+		}
 	}
 
 }

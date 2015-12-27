@@ -164,14 +164,11 @@ public class TriangleEffect extends LObject implements ISprite {
 
 	public void draw(GLEx g, float x, float y) {
 		float[][] res = drawing(x, y);
-		boolean at = g.alltextures();
-		g.setAlltextures(true);
 		for (int i = 0; i < res.length; i++) {
 			int index = (i + 1) % 3;
 			g.drawLine(width - res[i][0], height - res[i][1], width
 					- res[index][0], height - res[index][1], 2);
 		}
-		g.setAlltextures(at);
 	}
 
 	public void drawPaint(GLEx g, float x, float y) {

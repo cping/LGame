@@ -242,87 +242,48 @@ public class LProcess extends PlayerUtils {
 					// 使用：返回: 设定或者自定义一个LTransition对象.
 					LTransition transition = screen.onTransition();
 					if (transition == null) {
-						if (LSystem.isHTML5()) {
-							int rad = MathUtils.random(0, 7);
-							switch (rad) {
-							case 0:
-								transition = LTransition.newFadeIn();
-								break;
-							case 1:
-								transition = LTransition
-										.newSplitRandom(LColor.black);
-								break;
-							case 2:
-								transition = LTransition
-										.newCrossRandom(LColor.black);
-								break;
-							case 3:
-								transition = LTransition
-										.newPixelWind(LColor.white);
-								break;
-							case 4:
-								transition = LTransition
-										.newPixelDarkOut(LColor.black);
-								break;
-							case 5:
-								transition = LTransition
-										.newPixelThunder(LColor.black);
-								break;
-							case 6:
-								transition = LTransition
-										.newFadeTileIn(LColor.black);
-								break;
-							case 7:
-								transition = LTransition
-										.newFadeSpiralIn(LColor.black);
-								break;
-							}
-						} else {
-							int rad = MathUtils.random(0, 10);
-							switch (rad) {
-							case 0:
-								transition = LTransition.newFadeIn();
-								break;
-							case 1:
-								transition = LTransition.newArc();
-								break;
-							case 2:
-								transition = LTransition
-										.newSplitRandom(LColor.black);
-								break;
-							case 3:
-								transition = LTransition
-										.newCrossRandom(LColor.black);
-								break;
-							case 4:
-								transition = LTransition
-										.newFadeOvalIn(LColor.black);
-								break;
-							case 5:
-								transition = LTransition
-										.newPixelWind(LColor.white);
-								break;
-							case 6:
-								transition = LTransition
-										.newPixelDarkOut(LColor.black);
-								break;
-							case 7:
-								transition = LTransition
-										.newPixelThunder(LColor.black);
-								break;
-							case 8:
-								transition = LTransition
-										.newFadeDotIn(LColor.black);
-								break;
-							case 9:
-								transition = LTransition
-										.newFadeTileIn(LColor.black);
-								break;
-							case 10:
-								transition = LTransition
-										.newFadeSpiralIn(LColor.black);
-								break;
-							}
+						int rad = MathUtils.random(0, 10);
+						switch (rad) {
+						case 0:
+							transition = LTransition.newFadeIn();
+							break;
+						case 1:
+							transition = LTransition.newArc();
+							break;
+						case 2:
+							transition = LTransition
+									.newSplitRandom(LColor.black);
+							break;
+						case 3:
+							transition = LTransition
+									.newCrossRandom(LColor.black);
+							break;
+						case 4:
+							transition = LTransition
+									.newFadeOvalIn(LColor.black);
+							break;
+						case 5:
+							transition = LTransition.newPixelWind(LColor.white);
+							break;
+						case 6:
+							transition = LTransition
+									.newPixelDarkOut(LColor.black);
+							break;
+						case 7:
+							transition = LTransition
+									.newPixelThunder(LColor.black);
+							break;
+						case 8:
+							transition = LTransition.newFadeDotIn(LColor.black);
+							break;
+						case 9:
+							transition = LTransition
+									.newFadeTileIn(LColor.black);
+							break;
+						case 10:
+							transition = LTransition
+									.newFadeSpiralIn(LColor.black);
+							break;
 						}
 					}
 					setTransition(transition);
@@ -421,8 +382,8 @@ public class LProcess extends PlayerUtils {
 		}
 		LSystem._base.log().debug("The Loon Game Engine is End");
 	}
-	
-	public void resetTouch(){
+
+	public void resetTouch() {
 		currentInput.resetSysTouch();
 	}
 

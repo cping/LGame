@@ -162,11 +162,7 @@ public class LToast extends LComponent {
 		try {
 			g.setColor(mBackgroundColor);
 			g.setAlpha(opacity);
-			if (LSystem.isHTML5()) {
-				g.fillRect(displayX, displayY, w, h);
-			} else {
-				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
-			}
+			g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			g.setColor(LColor.DEF_COLOR);
 			font.drawString(g, mText,
 					displayX + (cellWidth - font.stringWidth(mText)) / 2,

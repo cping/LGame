@@ -61,6 +61,7 @@ public class Circle extends Ellipse {
 	 * 返回当前圆形的中心X点
 	 * 
 	 */
+	@Override
 	public float getCenterX() {
 		return getX() + radius;
 	}
@@ -68,6 +69,7 @@ public class Circle extends Ellipse {
 	/**
 	 * 返回当前圆形的中心Y点
 	 */
+	@Override
 	public float getCenterY() {
 		return getY() + radius;
 	}
@@ -133,12 +135,14 @@ public class Circle extends Ellipse {
 				&& contains(line.getX2(), line.getY2());
 	}
 
+	@Override
 	protected void findCenter() {
 		center = new float[2];
 		center[0] = x + radius;
 		center[1] = y + radius;
 	}
 
+	@Override
 	protected void calculateRadius() {
 		boundingCircleRadius = radius;
 	}

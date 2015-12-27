@@ -33,11 +33,11 @@ public class FadeOvalEffect extends LObject implements BaseEffect, ISprite {
 	}
 
 	public FadeOvalEffect(int type, float w, float h) {
-		this(type, LColor.black, 1500, w, h);
+		this(type, LColor.black, 2200, w, h);
 	}
 
 	public FadeOvalEffect(int type, LColor oc, float w, float h) {
-		this(type, oc, 1500, w, h);
+		this(type, oc, 2200, w, h);
 	}
 
 	public FadeOvalEffect(int type, LColor oc, int time, float w, float h) {
@@ -136,21 +136,13 @@ public class FadeOvalEffect extends LObject implements BaseEffect, ISprite {
 				g.setPixSkip(10);
 			}
 			int old = g.color();
-			if (usetex) {
-				g.setColor(OVAL_COLORS[0]);
-				float w = this.ovalWidth + 4 * this.ovalWidth * 0.1f;
-				float h = this.ovalHeight + 4 * this.ovalWidth * 0.1f;
+			int size = OVAL_COLORS.length;
+			for (int i = size - 1; i >= 0; i--) {
+				g.setColor(OVAL_COLORS[i]);
+				float w = this.ovalWidth + i * this.ovalWidth * 0.1f;
+				float h = this.ovalHeight + i * this.ovalWidth * 0.1f;
 				g.fillOval(g.getWidth() / 2 - w / 2f, g.getHeight() / 2 - h
 						/ 2f, w, h);
-			} else {
-				int size = OVAL_COLORS.length;
-				for (int i = size - 1; i >= 0; i--) {
-					g.setColor(OVAL_COLORS[i]);
-					float w = this.ovalWidth + i * this.ovalWidth * 0.1f;
-					float h = this.ovalHeight + i * this.ovalWidth * 0.1f;
-					g.fillOval(g.getWidth() / 2 - w / 2f, g.getHeight() / 2 - h
-							/ 2f, w, h);
-				}
 			}
 			g.setColor(old);
 			if (usetex) {

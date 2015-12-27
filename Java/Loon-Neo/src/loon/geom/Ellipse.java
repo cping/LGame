@@ -39,6 +39,10 @@ public class Ellipse extends Shape {
 
 	private float radius2;
 
+	private float _start = 0;
+
+	private float _end = 359;
+
 	public Ellipse(float centerPointX, float centerPointY, float radius1,
 			float radius2) {
 		this.set(centerPointX, centerPointY, radius1, radius2);
@@ -47,6 +51,13 @@ public class Ellipse extends Shape {
 	public Ellipse(float centerPointX, float centerPointY, float radius1,
 			float radius2, int segmentCount) {
 		this.set(centerPointX, centerPointY, radius1, radius2, segmentCount);
+	}
+
+	public Ellipse(float centerPointX, float centerPointY, float radius1,
+			float radius2, float start, float end,int segmentCount) {
+		_start = start;
+		_end = end;
+		set(centerPointX, centerPointY, radius1, radius2, segmentCount);
 	}
 
 	public void set(float centerPointX, float centerPointY, float radius1,
@@ -98,6 +109,7 @@ public class Ellipse extends Shape {
 		}
 	}
 
+	@Override
 	protected void createPoints() {
 		TArray<Float> tempPoints = new TArray<Float>();
 
@@ -106,8 +118,8 @@ public class Ellipse extends Shape {
 		minX = Float.MAX_VALUE;
 		minY = Float.MAX_VALUE;
 
-		float start = 0;
-		float end = 359;
+		float start = _start;
+		float end = _end;
 
 		float cx = x + radius1;
 		float cy = y + radius2;
@@ -119,6 +131,7 @@ public class Ellipse extends Shape {
 			if (ang > end) {
 				ang = end;
 			}
+			 
 			float newX = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * radius1));
 			float newY = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * radius2));
 
@@ -144,16 +157,19 @@ public class Ellipse extends Shape {
 		}
 	}
 
+	@Override
 	protected void findCenter() {
 		center = new float[2];
 		center[0] = x + radius1;
 		center[1] = y + radius2;
 	}
 
+	@Override
 	protected void calculateRadius() {
 		boundingCircleRadius = (radius1 > radius2) ? radius1 : radius2;
 	}
 
+	@Override
 	public int hashCode() {
 		int bits = NumberUtils.floatToIntBits(getX());
 		bits += NumberUtils.floatToIntBits(getY()) * 37;
@@ -162,6 +178,23 @@ public class Ellipse extends Shape {
 		return bits ^ ((bits >> 32));
 	}
 
+	public float getStart() {
+		return _start;
+	}
+
+	public void setStart(float start) {
+		this._start = start;
+	}
+
+	public float getEnd() {
+		return _end;
+	}
+
+	public void setEnd(float end) {
+		this._end = end;
+	}
+
+	@Override
 	public Shape transform(Matrix3 transform) {
 		checkPoints();
 

@@ -59,7 +59,7 @@ public class LTransition {
 	 * 常用特效枚举列表
 	 */
 	public enum TransType {
-		FadeIn, FadeOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
+		FadeIn, FadeOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
 	}
 
 	/**
@@ -75,6 +75,14 @@ public class LTransition {
 				return TransType.FadeIn;
 			} else if ("fadeout".equals(key)) {
 				return TransType.FadeOut;
+			} else if ("fadeovalin".equals(key)) {
+				return TransType.FadeOvalIn;
+			} else if ("fadeovalout".equals(key)) {
+				return TransType.FadeOvalOut;
+			} else if ("fadedotin".equals(key)) {
+				return TransType.FadeDotIn;
+			} else if ("fadedotout".equals(key)) {
+				return TransType.FadeDotOut;
 			} else if ("fadetilein".equals(key)) {
 				return TransType.FadeTileIn;
 			} else if ("fadetileout".equals(key)) {
@@ -143,6 +151,18 @@ public class LTransition {
 			break;
 		case FadeOut:
 			transition = newFadeOut(c);
+			break;
+		case FadeOvalIn:
+			transition = newFadeOvalIn(c);
+			break;
+		case FadeOvalOut:
+			transition = newFadeOvalOut(c);
+			break;
+		case FadeDotIn:
+			transition = newFadeDotIn(c);
+			break;
+		case FadeDotOut:
+			transition = newFadeDotOut(c);
 			break;
 		case FadeTileIn:
 			transition = newFadeTileIn(c);

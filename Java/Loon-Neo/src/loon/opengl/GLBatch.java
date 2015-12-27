@@ -133,6 +133,11 @@ public class GLBatch implements LRelease {
 		this.primitiveType = primitiveType;
 	}
 
+	public void color(float color) {
+		vertices[vertexIdx + colorOffset] = color;
+	}
+
+	
 	public void color(LColor color) {
 		vertices[vertexIdx + colorOffset] = color.toFloatBits();
 	}
