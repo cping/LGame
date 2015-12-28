@@ -569,9 +569,10 @@ public final class NativeSupport {
 	public static void disposeUnsafeByteBuffer(ByteBuffer buffer) {
 		int size = buffer.capacity();
 		synchronized (unsafeBuffers) {
-			if (!unsafeBuffers.remove(buffer))
+			if (!unsafeBuffers.remove(buffer)) {
 				throw new IllegalArgumentException(
 						"buffer not allocated with newUnsafeByteBuffer or already disposed");
+			}
 		}
 		allocatedUnsafe -= size;
 		freeMemory(buffer);
@@ -608,9 +609,10 @@ public final class NativeSupport {
 	private static void freeMemory(Buffer buffer) {
 		if (useLoonNative) {
 			bufferFreeDirect(buffer);
+		} else {
+			buffer.clear();
+			buffer = null;
 		}
-		buffer.clear();
-		buffer = null;
 	}
 
 	public static void clear(Buffer buffer) {

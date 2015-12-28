@@ -443,9 +443,10 @@ public final class NativeSupport {
 	private static void freeMemory(Buffer buffer) {
 		if (useLoonNative) {
 			bufferFreeDirect(buffer);
+		} else {
+			buffer.clear();
+			buffer = null;
 		}
-		buffer.clear();
-		buffer = null;
 	}
 
 	public static void clear(Buffer buffer) {
