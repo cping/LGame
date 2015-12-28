@@ -202,6 +202,7 @@ public class GLBatch implements LRelease {
 		return maxVertices;
 	}
 
+	@Override
 	public void close() {
 		if (ownsShader && shader != null) {
 			shader.close();

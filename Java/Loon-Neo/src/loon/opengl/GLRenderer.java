@@ -82,7 +82,6 @@ public class GLRenderer implements LRelease {
 		if (_currType != GLType.Point) {
 			throw new RuntimeException("Must call begin(GLType.Point)");
 		}
-		checkDirty();
 		checkFlush(1);
 		_renderer.color(_color);
 		_renderer.vertex(x, y, z);
@@ -92,7 +91,6 @@ public class GLRenderer implements LRelease {
 		if (_currType != GLType.Line) {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
-		checkDirty();
 		checkFlush(2);
 		float colorFloat = _color.toFloatBits();
 		_renderer.color(colorFloat);
@@ -105,7 +103,6 @@ public class GLRenderer implements LRelease {
 		if (_currType != GLType.Line) {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
-		checkDirty();
 		checkFlush(2);
 		float colorFloat = _color.toFloatBits();
 		_renderer.color(colorFloat);
@@ -119,7 +116,6 @@ public class GLRenderer implements LRelease {
 		if (_currType != GLType.Line) {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
-		checkDirty();
 		checkFlush(segments * 2 + 2);
 		float subdiv_step = 1f / segments;
 		float subdiv_step2 = subdiv_step * subdiv_step;
@@ -173,7 +169,6 @@ public class GLRenderer implements LRelease {
 			throw new RuntimeException(
 					"Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
-		checkDirty();
 		checkFlush(6);
 		float colorFloat = _color.toFloatBits();
 		if (_currType == GLType.Line) {
@@ -207,7 +202,6 @@ public class GLRenderer implements LRelease {
 					"Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 
-		checkDirty();
 		checkFlush(8);
 		float colorFloat = _color.toFloatBits();
 		if (_currType == GLType.Line) {
@@ -253,7 +247,6 @@ public class GLRenderer implements LRelease {
 			throw new RuntimeException(
 					"Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
-		checkDirty();
 		checkFlush(8);
 
 		if (_currType == GLType.Line) {
@@ -303,7 +296,6 @@ public class GLRenderer implements LRelease {
 		if (_currType != GLType.Filled && _currType != GLType.Line)
 			throw new RuntimeException(
 					"Must call begin(GLType.Filled) or begin(GLType.Line)");
-		checkDirty();
 		checkFlush(segments * 2 + 2);
 		float angle = 2 * 3.1415926f / segments;
 		float cos = MathUtils.cos(angle);
@@ -351,7 +343,7 @@ public class GLRenderer implements LRelease {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
 		if (vertices.length < 6) {
-			
+
 			throw new IllegalArgumentException(
 					"Polygons must contain at least 3 points.");
 		}
@@ -362,7 +354,6 @@ public class GLRenderer implements LRelease {
 		final int numFloats = vertices.length;
 
 		float colorFloat = _color.toFloatBits();
-		checkDirty();
 		checkFlush(numFloats);
 
 		float firstX = vertices[0];
@@ -390,28 +381,27 @@ public class GLRenderer implements LRelease {
 		}
 	}
 
-	public void polygon(float[] xs,float[] ys,int size ) {
+	public void polygon(float[] xs, float[] ys, int size) {
 		if (_currType != GLType.Line) {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
-		if (xs.length < 6||ys.length<6) {
+		if (xs.length < 3 || ys.length < 3) {
 			throw new IllegalArgumentException(
 					"Polygons must contain at least 3 points.");
 		}
-		if (xs.length % 2 != 0||ys.length % 2 != 0) {
+		if (xs.length % 2 != 0 || ys.length % 2 != 0) {
 			throw new IllegalArgumentException(
 					"Polygons must have a pair number of vertices.");
 		}
 		final int numFloats = size;
 
 		float colorFloat = _color.toFloatBits();
-		checkDirty();
 		checkFlush(numFloats);
 
 		float firstX = xs[0];
 		float firstY = ys[0];
 
-		for (int i = 0; i < numFloats; i ++) {
+		for (int i = 0; i < numFloats; i++) {
 			float x1 = xs[i];
 			float y1 = ys[i];
 
@@ -432,7 +422,7 @@ public class GLRenderer implements LRelease {
 			_renderer.vertex(x2, y2, 0);
 		}
 	}
-	
+
 	public void polyline(float[] vertices) {
 		polyline(vertices, 0, vertices.length);
 	}
@@ -453,7 +443,6 @@ public class GLRenderer implements LRelease {
 			throw new IllegalArgumentException(
 					"Polylines must have an even number of vertices.");
 		}
-		checkDirty();
 		checkFlush(count);
 
 		float colorFloat = _color.toFloatBits();
@@ -473,15 +462,14 @@ public class GLRenderer implements LRelease {
 			_renderer.vertex(x2, y2, 0);
 		}
 	}
-	
-	public void polyline(float[] xs,float[] ys,int count) {
+
+	public void polyline(float[] xs, float[] ys, int count) {
 		if (_currType != GLType.Line) {
 			throw new RuntimeException("Must call begin(GLType.Line)");
 		}
-		checkDirty();
 		checkFlush(count);
 		float colorFloat = _color.toFloatBits();
-		for (int i = 0;i<count;i++) {
+		for (int i = 0; i < count; i++) {
 			float x1 = xs[i];
 			float y1 = ys[i];
 
@@ -523,7 +511,6 @@ public class GLRenderer implements LRelease {
 
 	public void arc(float x, float y, float radius, float start, float end,
 			int segments) {
-		checkDirty();
 		if (segments <= 0) {
 			throw new IllegalArgumentException("segments must be >= 0.");
 		}
@@ -586,12 +573,6 @@ public class GLRenderer implements LRelease {
 		cy = 0;
 		_renderer.color(colorFloat);
 		_renderer.vertex(x + cx, y + cy, 0);
-	}
-
-	private void checkDirty() {
-		GLType type = _currType;
-		end();
-		begin(_affine, type);
 	}
 
 	private void checkFlush(int newVertices) {

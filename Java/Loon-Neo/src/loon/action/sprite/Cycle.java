@@ -100,6 +100,7 @@ public class Cycle extends LObject implements ISprite {
 
 				private Path path;
 
+				@Override
 				public void step(GLEx g, float x, float y, float progress,
 						int index, int frame, LColor color, float alpha) {
 
@@ -716,22 +717,27 @@ public class Cycle extends LObject implements ISprite {
 		this.height = h;
 	}
 
+	@Override
 	public float getWidth() {
 		return (int) height;
 	}
 
+	@Override
 	public float getHeight() {
 		return (int) width;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return isVisible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.isVisible = visible;
 	}
 
+	@Override
 	public void close() {
 
 	}

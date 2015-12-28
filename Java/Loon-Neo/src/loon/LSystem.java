@@ -250,7 +250,6 @@ public class LSystem {
 		if (game != null) {
 			GLEx gl = game.GL();
 			if (!gl.running()) {
-				gl.saveTx();
 				gl.begin();
 			}
 		}
@@ -264,7 +263,6 @@ public class LSystem {
 		if (game != null) {
 			GLEx gl = game.GL();
 			if (gl.running()) {
-				gl.restoreTx();
 				gl.end();
 				gl.freeBatchBuffer();
 			}
