@@ -68,24 +68,29 @@ public class PetalKernel implements IKernel {
 		}
 	}
 
+	@Override
 	public void draw(GLEx g, float mx, float my) {
 		if (exist) {
 			sakura.draw(mx + x, my + y);
 		}
 	}
 
+	@Override
 	public LTexture get() {
 		return sakura;
 	}
 
+	@Override
 	public float getHeight() {
 		return sakuraHeight;
 	}
 
+	@Override
 	public float getWidth() {
 		return sakuraWidth;
 	}
 
+	@Override
 	public void close() {
 		if (sakura != null) {
 			sakura.close();

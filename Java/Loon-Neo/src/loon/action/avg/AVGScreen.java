@@ -300,7 +300,8 @@ public abstract class AVGScreen extends Screen {
 		 * 
 		 * 使用方式，脚本中调用(不必全部填写): task sprite {图像来源,精灵名称,x坐标,y坐标} {loon的action脚本命令}
 		 * 
-		 * @example task sprite {assets/c.png,55,55} {move(155,155,true,16)->delay(3f)->move(25,125,true)}
+		 * @example task sprite {assets/c.png,55,55}
+		 *          {move(155,155,true,16)->delay(3f)->move(25,125,true)}
 		 */
 		putTask("sprite", new Task() {
 
@@ -755,6 +756,7 @@ public abstract class AVGScreen extends Screen {
 		super.removeAll();
 		effectSprites.removeAll();
 		messageDesktop.clear();
+		_currentTasks.clear();
 		return this;
 	}
 
@@ -1587,6 +1589,7 @@ public abstract class AVGScreen extends Screen {
 			}
 			_currentTasks.stopNext();
 		}
+		scrCG.update(timer);
 	}
 
 	@Override

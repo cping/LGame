@@ -33,6 +33,7 @@ import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.timer.LTimerContext;
 
 public class AVGCG implements LRelease {
 
@@ -182,6 +183,10 @@ public class AVGCG implements LRelease {
 		LSystem.load(remove);
 	}
 
+	public void update(LTimerContext context) {
+		actionRole.update(context.timeSinceLastUpdate);
+	}
+
 	public void paint(GLEx g) {
 		if (background != null) {
 			if (shakeNumber > 0) {
@@ -258,6 +263,7 @@ public class AVGCG implements LRelease {
 	public void clear() {
 		synchronized (charas) {
 			charas.clear();
+			actionRole.clear();
 		}
 	}
 
@@ -300,6 +306,10 @@ public class AVGCG implements LRelease {
 		return actionRole;
 	}
 
+	public Sprites getActionRole() {
+		return actionRole;
+	}
+
 	@Override
 	public void close() {
 		synchronized (charas) {
@@ -323,4 +333,5 @@ public class AVGCG implements LRelease {
 			actionRole.clear();
 		}
 	}
+
 }
