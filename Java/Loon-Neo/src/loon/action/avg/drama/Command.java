@@ -356,7 +356,7 @@ public class Command extends Conversion implements LRelease {
 	 */
 	public String[] getReads() {
 		String result = readBuffer.toString();
-		result = result.replaceAll(SELECTS_TAG, "");
+		result = StringUtils.replace(result, SELECTS_TAG, "");
 		return StringUtils.split(result, FLAG_CHAR);
 	}
 
@@ -851,7 +851,7 @@ public class Command extends Conversion implements LRelease {
 					// 存在if判断
 					if (value.length > 1 && IF_TAG.equals(value[1])) {
 						esleover = esleflag = setupIF(
-								cmd.replaceAll(ELSE_TAG, "").trim(),
+								StringUtils.replace(cmd, ELSE_TAG, "").trim(),
 								nowPosFlagName, setEnvironmentList,
 								conditionEnvironmentList);
 						addCommand = false;

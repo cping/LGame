@@ -31,6 +31,7 @@ import loon.action.avg.drama.Expression;
 import loon.canvas.LColor;
 import loon.geom.PointI;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 //0.3.3新增类,用以按指定的格式循环播放动画图像
@@ -80,7 +81,7 @@ public class AVGAnm implements Expression, LRelease {
 
 	public void open(String text) {
 		try {
-			StringTokenizer reader = new StringTokenizer(text,LSystem.LS);
+			StringTokenizer reader = new StringTokenizer(text, LSystem.LS);
 			String script = null;
 			for (; reader.hasMoreTokens();) {
 				script = reader.nextToken().trim();
@@ -120,7 +121,7 @@ public class AVGAnm implements Expression, LRelease {
 			final String key = op[0].trim();
 			final String value = op[1].trim();
 			if ("path".equalsIgnoreCase(key)) {
-				path = value.replaceAll("\"", "");
+				path = StringUtils.replace(value, "\"", "");
 				if (texture != null) {
 					texture.close();
 					texture = null;

@@ -34,10 +34,10 @@ import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class AVGCG implements LRelease{
+public class AVGCG implements LRelease {
 
 	protected Sprites actionRole;
-	
+
 	private long charaShowDelay = 60;
 
 	private LTexture background;
@@ -80,7 +80,7 @@ public class AVGCG implements LRelease{
 	private final static String _update(final String n) {
 		String name = n;
 		if (StringUtils.startsWith(name, '"')) {
-			name = name.replaceAll("\"", "");
+			name = StringUtils.replace(name, "\"", "");
 		}
 		return name;
 	}

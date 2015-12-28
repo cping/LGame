@@ -1,4 +1,4 @@
-# Java游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2015-12-27)
+# Java游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2015-12-28)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -46,6 +46,7 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * stock.freem: 日站，包含游戏图片以及音频的综合资源站，资源有免费、个人开发、标准商用三种类型，免费的不太多。[地址](http://stock.freem.ne.jp/)
 * 空彩: 日站，全部都是背景图资源。 [地址](http://loo.sakura.ne.jp/photo.html) 
 * あひる小屋: 日站，提供RMXP和RMVX风格的图片资源，包括行走图以及立绘。[地址](http://momomohouse.moo.jp/) 
+* 背景写真补完会：日站，全部是背景图。[地址](http://masato.ciao.jp/haikei/furemu.html)
 * kenney: 一个欧美的无版权问题的游戏图片资源下载站。[地址](http://kenney.nl/) 
 * nantoka: 一个日本的游戏图片资源（仓库）站，资源很杂。[地址](http://nantoka.main.jp/)
 * BlueForest: 一个日本的游戏图片站，以脸图以及Q版立绘为主。[地址](http://blue-forest.sakura.ne.jp/index.html)
