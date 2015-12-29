@@ -30,16 +30,16 @@ public abstract class Function {
 		return _parameters;
 	}
 
-	String get() {
+	public String get() {
 		return _parameters.get(0);
 	}
 
-	boolean set(String param) {
+	public boolean set(String param) {
 		_parameters.set(0, param);
 		return true;
 	}
 	
-    abstract GameProcess run();
+	public abstract GameProcess run();
 
-    abstract String parse(String param);
+    public abstract String parse(String param);
 }

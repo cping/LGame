@@ -1,4 +1,4 @@
-# Java游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2015-12-28)
+# Java游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2015-12-29)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -59,6 +59,8 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * indiegamemusic: 一个欧美的无版权问题的游音频下载站。[地址](http://www.indiegamemusic.com/) 
 * openmusicarchive: 一个欧美的无版权问题的音频资源下载站。[地址](http://openmusicarchive.org/)
 * freesound: 欧美的无版权问题的音频资源下载站。[地址](http://freesound.org/)
+* hmix: 日本的音频资源站，非商用不受限制，商用的话则要求购买。[地址](http://www.hmix.net/)
+* whitecafe: 日站，大触的blog，经常发点免费图片资源出来。[地址](http://whitecafe.sakura.ne.jp/)
 * 欧美的在线RPG角色生成器。[地址](http://gaurav.munjal.us/Universal-LPC-Spritesheet-Character-Generator/#)
 
 ### 免费的开发辅助工具

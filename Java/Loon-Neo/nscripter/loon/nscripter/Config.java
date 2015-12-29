@@ -34,13 +34,13 @@ public class Config {
 		return null;
 	}
 
-	public static interface UserVariables {
+	public static class UserVariables {
 		public static ObjectMap<NumVariable, Integer> NumVarList = new ObjectMap<NumVariable, Integer>();
 		public static ObjectMap<String, String> StringVarList = new ObjectMap<String, String>();
 		public static ObjectMap<String, Integer[][]> ArrayVarList = new ObjectMap<String, Integer[][]>();
 	}
 
-	public static interface Parsing {
+	public static class Parsing {
 		public static boolean Wait = false;
 
 		public static TArray<String> ScriptText = new TArray<String>();
@@ -49,7 +49,7 @@ public class Config {
 		public static Array<SubroutineLevel> SubroutinesLevels = new Array<SubroutineLevel>();
 	}
 
-	public static interface UserDefine {
+	public static class UserDefine {
 		public static TArray<Procedure> ProceduresList = new TArray<Procedure>();
 
 		public static TArray<UserFunctionsVariables> UserFunctionsVariablesList = new TArray<UserFunctionsVariables>();
@@ -57,7 +57,7 @@ public class Config {
 		public static int UserFunctionsLevel = 0;
 	}
 
-	public static interface Drawing {
+	public static class Drawing {
 		public static boolean IsVideoPlaying = false;
 
 		public static boolean IsCompatibilityOn = true;
@@ -74,7 +74,7 @@ public class Config {
 		public static LColor TintColor = new LColor(LColor.white);
 	}
 
-	public static interface Delay {
+	public static class Delay {
 		public static boolean Sleeping = false;
 
 		public static boolean StartOnTouch = false;
@@ -84,7 +84,7 @@ public class Config {
 		public static int ElapsedTime = 0;
 	}
 
-	public static interface SaveSystem {
+	public static class SaveSystem {
 		public static String SaveMenuTitle = "Save";
 		public static String LoadMenuTitle = "Load";
 		public static String SlotTitle = "Slot";
@@ -94,7 +94,7 @@ public class Config {
 		public static boolean IsSaveEnabled = false;
 	}
 
-	public static interface RightMenu {
+	public static class RightMenu {
 		public static ObjectMap<String, String> RightMenuList = new ObjectMap<String, String>();
 
 		public static int TextFontWidth = 0;
@@ -113,12 +113,12 @@ public class Config {
 		public static Vector2f StartPosition = new Vector2f();
 	}
 
-	public static interface Choices {
+	public static class Choices {
 		public static LColor mouseoverColor = new LColor();
 		public static LColor mouseoffColor = new LColor();
 	}
 
-	public static interface TextWindow {
+	public static class TextWindow {
 		public static UserEffect WindowEffect = new UserEffect();
 
 		public static ObjectMap<Integer, String> FontsList = new ObjectMap<Integer, String>();
@@ -157,7 +157,7 @@ public class Config {
 		public static boolean WaitForClickPressed = false;
 	}
 
-	public static interface UserButtons {
+	public static class UserButtons {
 		public static LTexture ButtonsBuffer = null;
 
 		public static ObjectMap<Integer, UserButton> ButtonsList = new ObjectMap<Integer, UserButton>();
@@ -169,11 +169,11 @@ public class Config {
 		public static int TimeSpend = 0;
 	}
 
-	public static interface TopMenu {
+	public static class TopMenu {
 		public static TArray<MenuItem> MenuList = new TArray<MenuItem>();
 	}
 
-	public static interface LogMode {
+	public static class LogMode {
 		public static Sprite PageUpAc = new Sprite();
 		public static Sprite PageUpInAc = new Sprite();
 		public static Sprite PageDownAc = new Sprite();
