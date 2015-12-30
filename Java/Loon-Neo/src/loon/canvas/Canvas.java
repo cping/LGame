@@ -125,6 +125,33 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas drawText(String text, float x, float y);
 
+	public Canvas drawText(String message, float x, float y, int c1, int c2) {
+		int tmp = getFillColor();
+		setFillColor(c1);
+		drawText(message, x + 1, y);
+		drawText(message, x - 1, y);
+		drawText(message, x, y + 1);
+		drawText(message, x, y - 1);
+		setFillColor(c2);
+		drawText(message, x, y);
+		setFillColor(tmp);
+		return this;
+	}
+
+	public Canvas drawText(String message, float x, float y, LColor c1,
+			LColor c2) {
+		int tmp = getFillColor();
+		setColor(c1);
+		drawText(message, x + 1, y);
+		drawText(message, x - 1, y);
+		drawText(message, x, y + 1);
+		drawText(message, x, y - 1);
+		setColor(c2);
+		drawText(message, x, y);
+		setFillColor(tmp);
+		return this;
+	}
+
 	public abstract Canvas fillCircle(float x, float y, float radius);
 
 	public abstract Canvas fillPath(Path path);

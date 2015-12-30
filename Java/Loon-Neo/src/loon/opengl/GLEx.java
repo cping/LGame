@@ -2334,6 +2334,20 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	/**
+	 * 输出字符串
+	 * 
+	 * @param mes
+	 * @param x
+	 * @param y
+	 * @param scaleX
+	 * @param scaleY
+	 * @param ax
+	 * @param ay
+	 * @param rotation
+	 * @param c
+	 * @return
+	 */
 	public GLEx drawString(String mes, float x, float y, float scaleX,
 			float scaleY, float ax, float ay, float rotation, LColor c) {
 		if (isClosed) {
@@ -2346,6 +2360,59 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		font.drawString(this, mes, x, y, scaleX, scaleY, ax, ay, rotation, c);
+		return this;
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param message
+	 * @param x
+	 * @param y
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	public GLEx drawString(String message, float x, float y, int c1, int c2) {
+		if (isClosed) {
+			return this;
+		}
+		int tmp = baseColor;
+		setColor(c1);
+		drawString(message, x + 1, y);
+		drawString(message, x - 1, y);
+		drawString(message, x, y + 1);
+		drawString(message, x, y - 1);
+		setColor(c2);
+		drawString(message, x, y);
+		setColor(tmp);
+		return this;
+	}
+
+	/**
+	 * 输出字符串
+	 * 
+	 * @param message
+	 * @param x
+	 * @param y
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	public GLEx drawString(String message, float x, float y, LColor c1,
+			LColor c2) {
+		if (isClosed) {
+			return this;
+		}
+		int tmp = baseColor;
+		setColor(c1);
+		drawString(message, x + 1, y);
+		drawString(message, x - 1, y);
+		drawString(message, x, y + 1);
+		drawString(message, x, y - 1);
+		setColor(c2);
+		drawString(message, x, y);
+		setColor(tmp);
 		return this;
 	}
 
@@ -2599,10 +2666,20 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 	}
 
+	/**
+	 * width的缩放比例
+	 * 
+	 * @return
+	 */
 	public float getScaleX() {
 		return scaleX;
 	}
 
+	/**
+	 * height的缩放比率
+	 * 
+	 * @return
+	 */
 	public float getScaleY() {
 		return scaleY;
 	}

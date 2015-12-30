@@ -66,6 +66,75 @@ import loon.utils.timer.LTimerContext;
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
 
+	/**受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉.**/
+	/**但是，TeaVM之类的Bytecode to JS转码器是支持的.因此视情况有恢复可能性，但千万注意，恢复此部分函数的话。[不保证完整的跨平台性]**/
+	/*private boolean isDrawing;
+
+	@Deprecated
+	public void yieldDraw() {
+		notifyDraw();
+		waitUpdate();
+	}
+	
+	@Deprecated
+	public void yieldUpdate() {
+		notifyUpdate();
+		waitDraw();
+	}
+	
+	@Deprecated
+	public synchronized void notifyDraw() {
+		this.isDrawing = true;
+		this.notifyAll();
+	}
+	
+	@Deprecated
+	public synchronized void notifyUpdate() {
+		this.isDrawing = false;
+		this.notifyAll();
+	}
+	
+	@Deprecated
+	public synchronized void waitDraw() {
+		for (; !isDrawing;) {
+			try {
+				this.wait();
+			} catch (InterruptedException ex) {
+			}
+		}
+	}
+	
+	@Deprecated
+	public synchronized void waitUpdate() {
+		for (; isDrawing;) {
+			try {
+				this.wait();
+			} catch (InterruptedException ex) {
+			}
+		}
+	}
+	
+	@Deprecated
+	public synchronized void waitFrame(int i) {
+		for (int wait = frame + i; frame < wait;) {
+			try {
+				super.wait();
+			} catch (Exception ex) {
+			}
+		}
+	}
+	
+	@Deprecated
+	public synchronized void waitTime(long i) {
+		for (long time = System.currentTimeMillis() + i; System
+				.currentTimeMillis() < time;)
+			try {
+				super.wait(time - System.currentTimeMillis());
+			} catch (Exception ex) {
+			}
+	}*/
+	/**受限函数结束**/
+	
 	protected final Closeable.Set _conns = new Closeable.Set();
 
 	private LayoutConstraints _rootConstraints;
