@@ -80,6 +80,7 @@ public class SRPGDamageExpectView extends SRPGDrawView {
 	}
 
 	private void drawLazy(Canvas g) {
+		float offsetY = -15;
 		g.setFont(deffont);
 		LGradation.getInstance(LColor.blue, LColor.black, super.width,
 				super.height).drawHeight(g, 0, 0);
@@ -92,12 +93,12 @@ public class SRPGDamageExpectView extends SRPGDrawView {
 			g.fillRect(5 + 0, 2 + 0, i, 3);
 		}
 		g.setColor(LColor.white);
-		g.drawText("ATTACK", 5 + 0, 15 + 0);
-		g.drawText(status.name, 5 + 0, 75 + 0);
+		g.drawText("ATTACK", 5 + 0, 15 + offsetY);
+		g.drawText(status.name, 5 + 0, 75 + offsetY);
 		g.drawText(String.valueOf(status.hp) + " / "
-				+ String.valueOf(status.max_hp), 5 + 0, 90 + 0);
+				+ String.valueOf(status.max_hp), 5 + 0, 90 + offsetY);
 		g.setColor(LColor.white);
-		g.drawText("DEFENCE", 115 + 0, 15 + 0);
+		g.drawText("DEFENCE", 115 + 0, 15 + offsetY);
 		if (defender != null) {
 			SRPGStatus status1 = defender.getActorStatus();
 			g.setColor(LColor.black);
@@ -108,11 +109,11 @@ public class SRPGDamageExpectView extends SRPGDrawView {
 				g.fillRect(115 + 0, 2 + 0, hp, 3);
 			}
 			g.setColor(LColor.white);
-			g.drawText(status1.name, 115 + 0, 75 + 0);
+			g.drawText(status1.name, 115 + 0, 75 + offsetY);
 			g.drawText(String.valueOf(status1.hp) + " / "
-					+ String.valueOf(status1.max_hp), 115 + 0, 90 + 0);
+					+ String.valueOf(status1.max_hp), 115 + 0, 90 + offsetY);
 		} else {
-			g.drawText("- Nothing -", 115 + 0, 75 + 0);
+			g.drawText("- Nothing -", 115 + 0, 75 + offsetY);
 		}
 		LColor color = LColor.white;
 		String s = "";
@@ -147,20 +148,20 @@ public class SRPGDamageExpectView extends SRPGDrawView {
 			s = "---";
 			break;
 		}
-		g.drawText("Ability", 230 + 0, 15 + 0);
-		g.drawText(ab.getAbilityName(), 230 + 0, 35 + 0);
+		g.drawText("Ability", 230 + 0, 15 + offsetY);
+		g.drawText(ab.getAbilityName(), 230 + 0, 35 + offsetY);
 		g.drawText(s, 230 + 0, 60 + 0);
-		g.drawText("STR", 230 + 0, 75 + 0);
-		g.drawText("HIT", 230 + 0, 90 + 0);
+		g.drawText("STR", 230 + 0, 75 + offsetY);
+		g.drawText("HIT", 230 + 0, 90 + offsetY);
 		String s1 = dd.getHitrateExpectString();
 		String s2 = dd.getDamageExpectString() + dd.getHelperString();
 		if (defender == null) {
 			s1 = "---";
 			s2 = "---";
 		}
-		g.drawText(s1, 260 + 0, 90 + 0);
+		g.drawText(s1, 260 + 0, 90 + offsetY);
 		g.setColor(color);
-		g.drawText(s2, 260 + 0, 75 + 0);
+		g.drawText(s2, 260 + 0, 75 + offsetY);
 	}
 
 	@Override

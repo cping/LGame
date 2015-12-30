@@ -44,8 +44,11 @@ public class SRPGMessage {
 	private void set(String s, LFont font, int x, int y, int w, int h) {
 		this.str = s;
 		this.font = font;
+		
 		this.print = new Print(new Vector2f(x, y), font, w, h);
+		
 		this.print.setWait(false);
+	
 		this.setMessage(s);
 		this.setTipIcon(LSystem.FRAMEWORK_IMG_NAME + "creese.png");
 		this.setDelay(100);
@@ -120,7 +123,7 @@ public class SRPGMessage {
 	}
 
 	public void setEnglish(boolean e) {
-		print.setEnglish(true);
+		print.setEnglish(e);
 	}
 
 	public boolean isEnglish() {

@@ -329,7 +329,7 @@ public class Print implements LRelease {
 		}
 	}
 
-	public void draw(GLEx g, LColor old) {
+	public synchronized void draw(GLEx g, LColor old) {
 		if (!visible) {
 			return;
 		}

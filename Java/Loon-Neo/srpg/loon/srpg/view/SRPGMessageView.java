@@ -84,7 +84,9 @@ public class SRPGMessageView extends SRPGView implements LRelease {
 			int w, int h, int offsetLeft, int offsetTop, boolean isLeft) {
 		this.max = mes.length;
 		this.message = new SRPGMessage[max];
+
 		boolean isEnglish = (languageIndex == 3);
+	
 		for (int i = 0; i < max; i++) {
 			message[i] = new SRPGMessage(mes[i], font, x, y, w, h);
 			message[i].setEnglish(isEnglish);
@@ -98,11 +100,8 @@ public class SRPGMessageView extends SRPGView implements LRelease {
 			} else {
 				message[i].setMessageLength(font.stringWidth(mes[i])
 						/ mes[i].length() * 2 - 2);
-				message[i].setLeftOffset(-20);
 			}
-			message[i].setTopOffset(15);
 			if (isLeft) {
-				message[i].left();
 				if (!isEnglish) {
 					if (languageIndex == 0 || languageIndex == 1) {
 						message[i].setMessageLength(message[i]

@@ -473,6 +473,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return null;
 	}
 
+	@Override
 	public void setSize(int w, int h) {
 		if (content != null) {
 			this.content.setSize(w, h);

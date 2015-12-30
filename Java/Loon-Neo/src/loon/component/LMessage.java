@@ -215,7 +215,7 @@ public class LMessage extends LContainer {
 	private int tmpColor;
 
 	@Override
-	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
+	protected synchronized void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (!visible) {
 			return;
 		}

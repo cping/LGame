@@ -111,6 +111,7 @@ public class SRPGActorStatusView extends SRPGDrawView {
 		if (s.team != 0) {
 			color = LColor.red;
 		}
+		float offsetY = -15;
 		LGradation.getInstance(color, LColor.black, super.width, super.height)
 				.drawHeight(g, 0, 0);
 		g.setColor(LColor.black);
@@ -145,15 +146,15 @@ public class SRPGActorStatusView extends SRPGDrawView {
 			index++;
 		}
 		g.setColor(LColor.white);
-		g.drawText(s.name, 130 + 0, 20 + 0);
-		g.drawText(s.jobname, 130 + 0, 40 + 0);
+		g.drawText(s.name, 130 + 0, 20 + offsetY);
+		g.drawText(s.jobname, 130 + 0, 40 + offsetY);
 		for (int i = 0; i < bstatus.length; i++) {
-			g.drawText(bstatus[i][0], 130 + 0, 60 + 20 * i + 0);
+			g.drawText(bstatus[i][0], 130 + 0, 60 + 20 * i + offsetY);
 			g.drawText(bstatus[i][1], (190 - widths[i][0]) + 0,
-					60 + 20 * i + 0);
-			g.drawText(bstatus[i][2], 205 + 0, 60 + 20 * i + 0);
+					60 + 20 * i + offsetY);
+			g.drawText(bstatus[i][2], 205 + 0, 60 + 20 * i + offsetY);
 			g.drawText(bstatus[i][3], (255 - widths[i][1]) + 0,
-					60 + 20 * i + 0);
+					60 + 20 * i + offsetY);
 		}
 
 		g.setFont(statusFont);
@@ -172,7 +173,7 @@ public class SRPGActorStatusView extends SRPGDrawView {
 				if (statusName.length() > 6) {
 					statusName = statusName.substring(0, 6);
 				}
-				g.drawText(statusName, 130 + 0 + 45 * size, 117 + 0);
+				g.drawText(statusName, 130 + 0 + 45 * size, 117 + offsetY);
 				size++;
 			}
 			if (max >= 4) {
@@ -182,8 +183,8 @@ public class SRPGActorStatusView extends SRPGDrawView {
 		} while (true);
 		g.setColor(LColor.white);
 		for (int i = 0; i < status.length; i++) {
-			g.drawText(status[i][0], 220 + 0, 153 + i * 18 + 0);
-			g.drawText(status[i][1], (300 - swidth[i]) + 0, 153 + i * 18 + 0);
+			g.drawText(status[i][0], 220 + 0, 153 + i * 18 + offsetY);
+			g.drawText(status[i][1], (300 - swidth[i]) + 0, 153 + i * 18 + offsetY);
 		}
 
 		int[] abilitys = s.ability;
@@ -201,7 +202,7 @@ public class SRPGActorStatusView extends SRPGDrawView {
 				}
 			}
 			g.setColor(colorAbility);
-			g.drawText(leader, 220 + 0, 135 + 0);
+			g.drawText(leader, 220 + 0, 135 + offsetY);
 			g.setColor(LColor.white);
 		}
 		acolor[0] = colorAbility;
@@ -254,10 +255,10 @@ public class SRPGActorStatusView extends SRPGDrawView {
 		for (index = 0; index < cstatus.length; index++) {
 			if (cstatus[index][0] != null) {
 				g.setColor(acolor[index]);
-				g.drawText(cstatus[index][0], 5 + 0, 135 + index * 18 + 0);
-				g.drawText(cstatus[index][1], 130 + 0, 135 + index * 18 + 0);
-				g.drawText(cstatus[index][2], 165 + 0, 135 + index * 18 + 0);
-				g.drawText(cstatus[index][3], 190 + 0, 135 + index * 18 + 0);
+				g.drawText(cstatus[index][0], 5 + 0, 135 + index * 18 + offsetY);
+				g.drawText(cstatus[index][1], 130 + 0, 135 + index * 18 + offsetY);
+				g.drawText(cstatus[index][2], 165 + 0, 135 + index * 18 + offsetY);
+				g.drawText(cstatus[index][3], 190 + 0, 135 + index * 18 + offsetY);
 			}
 		}
 	}

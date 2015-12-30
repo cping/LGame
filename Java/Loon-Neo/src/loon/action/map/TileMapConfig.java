@@ -53,13 +53,12 @@ public class TileMapConfig {
 		if (result == null) {
 			return null;
 		}
-		StringTokenizer br = new StringTokenizer(result, "\n");
+		StringTokenizer br = new StringTokenizer(result, LSystem.LS);
 		TArray<int[]> records = new TArray<int[]>(
 				CollectionUtils.INITIAL_CAPACITY);
-
 		for (; br.hasMoreTokens();) {
-			result = br.nextToken();
-			if (!"".equals(result)) {
+			result = StringUtils.replace(br.nextToken().trim(),LSystem.LS, "");
+			if (!StringUtils.isEmpty(result)) {
 				String[] stringArray = result.split(",");
 				int size = stringArray.length;
 				int[] intArray = new int[size];

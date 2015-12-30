@@ -74,10 +74,10 @@ import loon.srpg.view.SRPGMiniStatusView;
 import loon.utils.ArrayMap;
 import loon.utils.timer.LTimerContext;
 
-/**因为使用线程实现了游戏中的同步与异步，所以此Screen暂时无法运行在HTML5(GWT实现版)平台,有待重写.**/
-@Deprecated 
+/** 因为使用线程实现了游戏中的同步与异步，所以此Screen暂时无法运行在HTML5(GWT实现版)平台,有待重写. **/
+@Deprecated
 public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
-	
+
 	private boolean isDrawing;
 
 	@Deprecated
@@ -85,25 +85,25 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 		notifyDraw();
 		waitUpdate();
 	}
-	
+
 	@Deprecated
 	public void yieldUpdate() {
 		notifyUpdate();
 		waitDraw();
 	}
-	
+
 	@Deprecated
 	public synchronized void notifyDraw() {
 		this.isDrawing = true;
 		this.notifyAll();
 	}
-	
+
 	@Deprecated
 	public synchronized void notifyUpdate() {
 		this.isDrawing = false;
 		this.notifyAll();
 	}
-	
+
 	@Deprecated
 	public synchronized void waitDraw() {
 		for (; !isDrawing;) {
@@ -113,7 +113,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			}
 		}
 	}
-	
+
 	@Deprecated
 	public synchronized void waitUpdate() {
 		for (; isDrawing;) {
@@ -123,7 +123,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			}
 		}
 	}
-	
+
 	@Deprecated
 	public synchronized void waitFrame(int i) {
 		for (int wait = getFrame() + i; getFrame() < wait;) {
@@ -133,7 +133,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			}
 		}
 	}
-	
+
 	@Deprecated
 	public synchronized void waitTime(long i) {
 		for (long time = System.currentTimeMillis() + i; System
@@ -143,7 +143,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			} catch (Exception ex) {
 			}
 	}
-	
+
 	public static int TILE_WIDTH, TILE_HEIGHT;
 
 	private LTexture cursor, messageImage;
@@ -216,15 +216,18 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 	private String fileName;
 
-	private LFont choiceFont = LFont.getFont(LSystem.FONT_NAME,Style.PLAIN, 22);
+	private LFont choiceFont = LFont
+			.getFont(LSystem.FONT_NAME, Style.PLAIN, 22);
 
 	private LFont simpleFont = LFont.getFont("Dialog", Style.PLAIN, 12);
-	
-	@Override
-	public void alter(LTimerContext timer){};
 
 	@Override
-	public void touchDrag(GameTouch e) {};
+	public void alter(LTimerContext timer) {
+	};
+
+	@Override
+	public void touchDrag(GameTouch e) {
+	};
 
 	// 配置主菜单
 	private final String[][] menuItems = new String[4][2];
@@ -301,7 +304,6 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 		SRPGData.getInstnace().initActors(srpgActors);
 	}
 
-
 	/**
 	 * 查找指定角色
 	 * 
@@ -363,10 +365,12 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 		// 已进行回合数为0
 		srpgTeams.setPhase(0);
 		boolean battleStop = false;
+
 		for (; isEventLoop && !isClose();) {
 			if (!isEventLoop) {
 				break;
 			}
+
 			// 处理选择的战场事件
 			if (srpgEvent.queueExist() && battleStop) {
 				callSRPGBattleProcEvent(srpgEvent);
@@ -1013,8 +1017,8 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 	 */
 	private LTexture createTempImage() {
 		if (messageImage == null) {
-			Image tmp = Image.createImage(getWidth() - 40,
-					getHeight() / 2 - 20);
+			Image tmp = Image
+					.createImage(getWidth() - 40, getHeight() / 2 - 20);
 			Canvas g = tmp.getCanvas();
 			g.setColor(0, 0, 0, 125);
 			g.fillRect(0, 0, tmp.getWidth(), tmp.getHeight());
@@ -2896,12 +2900,12 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 	private final void drawGrid(GLEx g) {
 		for (int x = 0; x < srpgField.getWidth() + 1; x++) {
-			g.drawLine(x * tileWidth - cam_x, 0 - cam_y,x * tileWidth - cam_x, srpgField.getHeight()
-					* tileWidth - cam_y);
+			g.drawLine(x * tileWidth - cam_x, 0 - cam_y, x * tileWidth - cam_x,
+					srpgField.getHeight() * tileWidth - cam_y);
 		}
 		for (int y = 0; y < srpgField.getHeight() + 1; y++) {
-			g.drawLine(0 - cam_x, y * tileHeight - cam_y,srpgField.getWidth() * tileWidth - cam_x, y
-					* tileHeight - cam_y);
+			g.drawLine(0 - cam_x, y * tileHeight - cam_y, srpgField.getWidth()
+					* tileWidth - cam_x, y * tileHeight - cam_y);
 		}
 	}
 
@@ -3012,14 +3016,20 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 	public final void setHelper(String[] message, int x, int y, int w, int h,
 			int offsetLeft, int offsetTop, boolean flag) {
+
 		if (srpgHelper == null) {
+
 			srpgHelper = new SRPGMessageView(message, language_index,
 					DEFAULT_FONT, x, y, w, h, offsetLeft, offsetTop);
 		} else {
+
 			srpgHelper.set(message, language_index, DEFAULT_FONT, x, y, w, h,
 					offsetLeft, offsetTop, false);
+
 		}
+
 		srpgHelper.setBackground((LTexture) null);
+
 		if (flag) {
 			srpgHelper.printWait(this);
 		} else {
@@ -3387,6 +3397,12 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 	@Override
 	public final void onLoad() {
+		// 最先绘制用户画面
+		setFristOrder(DRAW_USER_PAINT());
+		// 其次绘制精灵
+		setSecondOrder(DRAW_SPRITE_PAINT());
+		// 最后绘制桌面
+		setLastOrder(DRAW_DESKTOP_PAINT());
 		this.maxLevel = 99;
 		this.maxExp = 100;
 		this.srpgAvgView = new SRPGAvgView(this, createTempImage(), getWidth(),
@@ -3420,29 +3436,31 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 		this.isBattleMode = true;
 		this.isEventLoop = true;
 		this.onLoading();
+
 	}
 
-	public abstract void onLoading();
+	public void onLoading() {
+
+	}
 
 	@Override
 	public void run() {
-		try {
-			for (; startSrpgProcess();) {
-				try {
-					super.wait();
-				} catch (Exception ex) {
-				}
+		for (; startSrpgProcess();) {
+			try {
+				super.wait();
+			} catch (Exception ex) {
 			}
-			if (isBattleMode) {
-				mainProcess();
+		}
+
+		if (isBattleMode) {
+
+			mainProcess();
+		}
+		for (; endSrpgProcess();) {
+			try {
+				super.wait();
+			} catch (Exception ex) {
 			}
-			for (; endSrpgProcess();) {
-				try {
-					super.wait();
-				} catch (Exception ex) {
-				}
-			}
-		} catch (Exception e) {
 		}
 	}
 
@@ -3515,10 +3533,12 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			isSrpgNoMove = true;
 			srpgAvgView.setCommand(fileName, map);
 			if (isBattleStart) {
+			
 				srpgAvgView.printWaitBattle();
 			} else {
 				srpgAvgView.printWait();
 			}
+		
 			isSrpgNoMove = false;
 		}
 	}
@@ -3929,7 +3949,6 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			} catch (Exception e) {
 			}
 		}
-		close();
 		LGradation.dispose();
 	}
 

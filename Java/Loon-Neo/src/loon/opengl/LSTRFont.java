@@ -27,6 +27,7 @@ import loon.LTextureBatch;
 import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
+import loon.event.Updateable;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
@@ -39,6 +40,10 @@ import loon.utils.StringUtils;
 public class LSTRFont implements LRelease {
 
 	private char newLineFlag = '\n';
+
+	private LTexture texture;
+
+	private boolean isDrawing;
 
 	private boolean useCache;
 
@@ -113,98 +118,107 @@ public class LSTRFont implements LRelease {
 		this.useCache = true;
 		this.font = font;
 		this.additionalChars = chs;
-		make();
+		this.make();
 	}
 
-	private LTexture texture;
-
-	private void make() {
+	private synchronized void make() {
 		if (initChars) {
 			return;
 		}
-		this.fontSize = (int) font.getSize();
-		this.ascent = font.getAscent();
-		if (additionalChars != null && additionalChars.length > totalCharSet) {
-			textureWidth *= 2;
+		if (isDrawing) {
+			return;
 		}
-		Canvas canvas = LSystem.base().graphics()
-				.createCanvas(textureWidth, textureHeight);
-		canvas.setColor(LColor.white);
-		canvas.setFont(font);
-		int rowHeight = 0;
-		int positionX = 0;
-		int positionY = 0;
-		int customCharsLength = (additionalChars != null) ? additionalChars.length
-				: 0;
-		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
-		StringBuilder sbr = new StringBuilder(totalCharSet);
-		for (int i = 0; i < totalCharSet + customCharsLength; i++) {
-			char ch = (i < totalCharSet) ? (char) i : additionalChars[i
-					- totalCharSet];
+		isDrawing = true;
+		Updateable update = new Updateable() {
 
-			TextLayout layout = font.getLayoutText(String.valueOf(ch));
+			@Override
+			public void action(Object a) {
+				LSTRFont.this.fontSize = (int) font.getSize();
+				LSTRFont.this.ascent = font.getAscent();
+				if (additionalChars != null
+						&& additionalChars.length > totalCharSet) {
+					textureWidth *= 2;
+				}
+				Canvas canvas = LSystem.base().graphics()
+						.createCanvas(textureWidth, textureHeight);
+				canvas.setColor(LColor.white);
+				canvas.setFont(font);
+				int rowHeight = 0;
+				int positionX = 0;
+				int positionY = 0;
+				int customCharsLength = (additionalChars != null) ? additionalChars.length
+						: 0;
+				LSTRFont.this.totalCharSet = customCharsLength == 0 ? totalCharSet
+						: 0;
+				StringBuilder sbr = new StringBuilder(totalCharSet);
+				for (int i = 0; i < totalCharSet + customCharsLength; i++) {
+					char ch = (i < totalCharSet) ? (char) i : additionalChars[i
+							- totalCharSet];
 
-			int charwidth = layout.charWidth(ch);
+					TextLayout layout = font.getLayoutText(String.valueOf(ch));
 
-			if (charwidth <= 0) {
-				charwidth = 1;
+					int charwidth = layout.charWidth(ch);
+
+					if (charwidth <= 0) {
+						charwidth = 1;
+					}
+
+					int charheight = (int) layout.getHeight();
+					if (charheight <= 0) {
+						charheight = fontSize;
+					}
+
+					IntObject newIntObject = new IntObject();
+
+					newIntObject.width = charwidth;
+					newIntObject.height = charheight;
+
+					if (positionX + newIntObject.width >= textureWidth) {
+						layout = font.getLayoutText(sbr.toString());
+						canvas.fillText(layout, 0, positionY);
+						sbr.delete(0, sbr.length());
+						positionX = 0;
+						positionY += rowHeight;
+						rowHeight = 0;
+					}
+
+					newIntObject.storedX = positionX;
+					newIntObject.storedY = positionY;
+
+					if (newIntObject.height > fontHeight) {
+						fontHeight = newIntObject.height;
+					}
+
+					if (newIntObject.height > rowHeight) {
+						rowHeight = newIntObject.height;
+					}
+
+					sbr.append(ch);
+
+					positionX += newIntObject.width;
+
+					if (i < totalCharSet) {
+						charArray[i] = newIntObject;
+					} else {
+						customChars.put(ch, newIntObject);
+					}
+				}
+				if (sbr.length() > 0) {
+					TextLayout layout = font.getLayoutText(sbr.toString());
+					canvas.fillText(layout, 0, positionY);
+					sbr = null;
+				}
+				LTextureBatch tmpbatch = fontBatch;
+				fontBatch = new LTextureBatch(texture = canvas.toTexture());
+				fontBatch.setBlendState(BlendState.AlphaBlend);
+				if (tmpbatch != null) {
+					tmpbatch.close();
+				}
+				initChars = true;
+				isDrawing = false;
 			}
-
-			int charheight = (int) layout.getHeight();
-			if (charheight <= 0) {
-				charheight = fontSize;
-			}
-
-			IntObject newIntObject = new IntObject();
-
-			newIntObject.width = charwidth;
-			newIntObject.height = charheight;
-
-			if (positionX + newIntObject.width >= textureWidth) {
-				layout = font.getLayoutText(sbr.toString());
-				canvas.fillText(layout, 0, positionY);
-				sbr.delete(0, sbr.length());
-				positionX = 0;
-				positionY += rowHeight;
-				rowHeight = 0;
-			}
-
-			newIntObject.storedX = positionX;
-			newIntObject.storedY = positionY;
-
-			if (newIntObject.height > fontHeight) {
-				fontHeight = newIntObject.height;
-			}
-
-			if (newIntObject.height > rowHeight) {
-				rowHeight = newIntObject.height;
-			}
-
-			sbr.append(ch);
-
-			positionX += newIntObject.width;
-
-			if (i < totalCharSet) {
-				charArray[i] = newIntObject;
-			} else {
-				customChars.put(ch, newIntObject);
-			}
-
-		}
-		if (sbr.length() > 0) {
-			TextLayout layout = font.getLayoutText(sbr.toString());
-			canvas.fillText(layout, 0, positionY);
-			sbr = null;
-		}
-
-		LTextureBatch tmpbatch = fontBatch;
-		fontBatch = new LTextureBatch(
-				texture = canvas.toTexture(LTexture.Format.LINEAR));
-		fontBatch.setBlendState(BlendState.AlphaBlend);
-		if (tmpbatch != null) {
-			tmpbatch.destoryAll();
-		}
-		initChars = true;
+		};
+		LSystem.load(update);
 	}
 
 	public LTexture getTexture() {
@@ -241,6 +255,9 @@ public class LSTRFont implements LRelease {
 			float ay, float rotation, String chars, LColor c, int startIndex,
 			int endIndex) {
 		make();
+		if (processing()) {
+			return;
+		}
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
@@ -375,6 +392,9 @@ public class LSTRFont implements LRelease {
 			float ax, float ay, float rotation, String chars, LColor c,
 			int startIndex, int endIndex) {
 		make();
+		if (processing()) {
+			return;
+		}
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
@@ -443,6 +463,9 @@ public class LSTRFont implements LRelease {
 
 	public void addChar(char c, float x, float y, LColor color) {
 		make();
+		if (processing()) {
+			return;
+		}
 		this.charCurrent = c;
 		if (charCurrent < totalCharSet) {
 			intObject = charArray[charCurrent];
@@ -474,11 +497,17 @@ public class LSTRFont implements LRelease {
 
 	public void startChar() {
 		make();
+		if (processing()) {
+			return;
+		}
 		fontBatch.begin();
 	}
 
 	public void stopChar() {
 		make();
+		if (processing()) {
+			return;
+		}
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
@@ -488,8 +517,15 @@ public class LSTRFont implements LRelease {
 		}
 	}
 
+	private boolean processing() {
+		return fontBatch == null || isDrawing;
+	}
+
 	public void postCharCache() {
 		make();
+		if (processing()) {
+			return;
+		}
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
@@ -501,6 +537,9 @@ public class LSTRFont implements LRelease {
 
 	public Cache saveCharCache() {
 		make();
+		if (processing()) {
+			return null;
+		}
 		fontBatch.disposeLastCache();
 		return fontBatch.newCache();
 	}
@@ -541,6 +580,9 @@ public class LSTRFont implements LRelease {
 
 	public int getWidth(String s) {
 		make();
+		if (processing()) {
+			return font.stringWidth(s);
+		}
 		int totalWidth = 0;
 		IntObject intObject = null;
 		int currentChar = 0;
@@ -566,6 +608,9 @@ public class LSTRFont implements LRelease {
 
 	public int getHeight(String s) {
 		make();
+		if (processing()) {
+			return font.stringHeight(s);
+		}
 		int currentChar = 0;
 		char[] charList = s.toCharArray();
 		int lines = 0;
@@ -662,21 +707,30 @@ public class LSTRFont implements LRelease {
 	}
 
 	@Override
-	public void close() {
-		if (fontBatch != null) {
-			fontBatch.destoryAll();
-			fontBatch.close();
-		}
-		fontBatch = null;
-		for (Cache c : displays.values()) {
-			if (c != null) {
-				c.close();
-				c = null;
+	public synchronized void close() {
+		isDrawing = true;
+		Updateable update = new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				if (fontBatch != null) {
+					fontBatch.destoryAll();
+					fontBatch.close();
+				}
+				fontBatch = null;
+				for (Cache c : displays.values()) {
+					if (c != null) {
+						c.close();
+						c = null;
+					}
+				}
+				displays.clear();
+				displays = null;
+				initChars = false;
+				isDrawing = false;
 			}
-		}
-		displays.clear();
-		displays = null;
-		initChars = false;
+		};
+		LSystem.load(update);
 	}
 
 }

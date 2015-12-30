@@ -102,6 +102,7 @@ public class SRPGMiniStatusView extends SRPGDrawView {
 		if (status.max_mp > 0) {
 			mp = (width * status.mp) / status.max_mp;
 		}
+		float offsetY = -15;
 		g.setColor(LColor.black);
 		g.fillRect(5 + 0, 6 + 0, width, 3);
 		g.setColor(255, 128, 96);
@@ -109,30 +110,30 @@ public class SRPGMiniStatusView extends SRPGDrawView {
 		g.setColor(LColor.white);
 		g.setFont(deffont);
 
-		g.drawText(status.name, 5 + 0, 23 + 0);
-		g.drawText(status.jobname, 5 + 0, 40 + 0);
+		g.drawText(status.name, 5 + 0, 23 + offsetY);
+		g.drawText(status.jobname, 5 + 0, 40 + offsetY);
 
-		g.drawText("LV", 5 + 0, 55 + 0);
-		g.drawText(String.valueOf(status.level), (55 - spans[0]) + 0, 55 + 0);
+		g.drawText("LV", 5 + 0, 55 + offsetY);
+		g.drawText(String.valueOf(status.level), (55 - spans[0]) + 0, 55 + offsetY);
 
-		g.drawText("EXP", 80 + 0, 55 + 0);
-		g.drawText(String.valueOf(status.exp), (120 - spans[1]) + 0, 55 + 0);
+		g.drawText("EXP", 80 + 0, 55 + offsetY);
+		g.drawText(String.valueOf(status.exp), (120 - spans[1]) + 0, 55 + offsetY);
 
 		int size = 5 + 0;
-		g.drawText("HP", size, 70 + 0);
+		g.drawText("HP", size, 70 + offsetY);
 		size += 55 - spans[2];
-		g.drawText(String.valueOf(status.hp), size, 70 + 0);
+		g.drawText(String.valueOf(status.hp), size, 70 + offsetY);
 		size += 8 + spans[3];
-		g.drawText("/", size, 70 + 0);
-		g.drawText(String.valueOf(status.max_hp), size + 15 + 0, 70 + 0);
+		g.drawText("/", size, 70 + offsetY);
+		g.drawText(String.valueOf(status.max_hp), size + 15 + 0, 70 + offsetY);
 
 		size = 5 + 0;
-		g.drawText("MP", size, 85 + 0);
+		g.drawText("MP", size, 85 + offsetY);
 		size += 55 - spans[4];
-		g.drawText(String.valueOf(status.mp), size, 85 + 0);
+		g.drawText(String.valueOf(status.mp), size, 85 + offsetY);
 		size += 8 + spans[5];
-		g.drawText("/", size, 85 + 0);
-		g.drawText(String.valueOf(status.max_mp), size + 15 + 0, 85 + 0);
+		g.drawText("/", size, 85 + offsetY);
+		g.drawText(String.valueOf(status.max_mp), size + 15 + 0, 85 + offsetY);
 	}
 
 	@Override
