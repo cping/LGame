@@ -1,10 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -25,6 +18,13 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
 // 默认的风系魔法特效
 public class SRPGWindEffect extends SRPGEffect {
 
@@ -55,24 +55,24 @@ public class SRPGWindEffect extends SRPGEffect {
 			if (sd[i] != null) {
 				continue;
 			}
-			if (LSystem.random.nextInt(100) >= rand) {
+			if (MathUtils.random.nextInt(100) >= rand) {
 				break;
 			}
 			float[][] res = { { 0.0f, 10f }, { 8f, -5f }, { -8f, -5f } };
-			int index = LSystem.random.nextInt(3) + 1;
+			int index = MathUtils.random.nextInt(3) + 1;
 			for (int j = 0; j < res.length; j++) {
 				for (int c = 0; c < res[j].length; c++) {
 					res[j][c] *= index;
 				}
 			}
-			int r = LSystem.random.nextInt(32) + 16;
+			int r = MathUtils.random.nextInt(32) + 16;
 			float d = r / 10;
 			sd[i] = new TriangleEffect(res, r, d,
-					LSystem.random.nextInt(24) + 24);
-			sd[i].setPosY(LSystem.random.nextInt(LSystem.screenRect.height));
+					MathUtils.random.nextInt(24) + 24);
+			sd[i].setPosY(MathUtils.random(LSystem.viewSize.height));
 			sd[i].setPosX(-30f);
-			colors[i] = new LColor(0, 128 + LSystem.random.nextInt(128),
-					LSystem.random.nextInt(128));
+			colors[i] = new LColor(0, 128 + MathUtils.random.nextInt(128),
+					MathUtils.random.nextInt(128));
 		}
 
 		for (int j = 0; j < sd.length; j++) {
@@ -84,7 +84,7 @@ public class SRPGWindEffect extends SRPGEffect {
 				continue;
 			}
 			sd[j].drawPaint(g, 0, 0);
-			if (sd[j].getPosX() > LSystem.screenRect.width) {
+			if (sd[j].getPosX() > LSystem.viewSize.width) {
 				sd[j] = null;
 			}
 		}

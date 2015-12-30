@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,13 @@ import loon.utils.MathUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
 // 默认为冰弹魔法效果，当然也可以通过改变颜色作为其他效果使用.
 public class SRPGIceEffect extends SRPGEffect {
 
@@ -91,17 +90,17 @@ public class SRPGIceEffect extends SRPGEffect {
 		next();
 		g.setColor(color);
 		if (super.frame < max) {
-			arrow.drawPaint(g, s_x - tx, LSystem.screenRect.height - s_y - ty);
+			arrow.drawPaint(g, s_x - tx, LSystem.viewSize.height - s_y - ty);
 		} else if (super.frame < max + 20) {
 			for (int j = 0; j < dif.length; j++) {
-				dif[j].drawPaint(g, t_x - tx, LSystem.screenRect.height - (t_y
+				dif[j].drawPaint(g, t_x - tx, LSystem.viewSize.height - (t_y
 						- ty));
 			}
 		} else {
 			for (int j = 0; j < child.length; j++) {
 				for (int i = 0; i < child[j].length; i++) {
 					child[j][i].drawPaint(g, t_x - tx,
-							LSystem.screenRect.height - (t_y - ty));
+							LSystem.viewSize.height - (t_y - ty));
 				}
 			}
 		}

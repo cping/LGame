@@ -1,10 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -25,6 +18,12 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+
 // 默认的落雷魔法效果
 public class SRPGThunderEffect extends SRPGEffect {
 
@@ -45,7 +44,7 @@ public class SRPGThunderEffect extends SRPGEffect {
 		int y = t_y - ty;
 		int f = super.frame;
 		if (f <= 20) {
-			int size = y - (LSystem.screenRect.width * (20 - super.frame)) / 20;
+			int size = (int) (y - (LSystem.viewSize.width * (20 - super.frame)) / 20);
 			g.setColor(color);
 			g.setAlpha(0.5F);
 			g.drawLine(x, size - 100, x, size);

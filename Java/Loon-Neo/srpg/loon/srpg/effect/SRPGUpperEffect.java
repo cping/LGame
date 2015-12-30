@@ -1,10 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -26,6 +19,13 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
 public class SRPGUpperEffect extends SRPGEffect {
 
 	private int t_x;
@@ -43,10 +43,10 @@ public class SRPGUpperEffect extends SRPGEffect {
 		float[][] res = { { 8f, 0.0f }, { -4f, 6f }, { -4f, -6f } };
 		this.force = new TriangleEffect[16];
 		for (int k = 0; k < force.length; k++) {
-			float d = LSystem.random.nextInt(256) + 10;
+			float d = MathUtils.random.nextInt(256) + 10;
 			d /= 50f;
 			force[k] = new TriangleEffect(res, 0.0f, d, 36f);
-			force[k].setPosX(LSystem.random.nextInt(32) - 15);
+			force[k].setPosX(MathUtils.random.nextInt(32) - 15);
 		}
 		this.setExist(true);
 	}
@@ -59,7 +59,7 @@ public class SRPGUpperEffect extends SRPGEffect {
 		if (super.frame < 20) {
 			for (int i = 0; i < force.length; i++) {
 				force[i]
-						.draw(g, t_x - x, LSystem.screenRect.height - (t_y - y));
+						.draw(g, t_x - x, LSystem.viewSize.height - (t_y - y));
 			}
 		} else {
 			setExist(false);

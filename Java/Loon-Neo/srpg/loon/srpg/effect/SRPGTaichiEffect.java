@@ -1,10 +1,3 @@
-package loon.srpg.effect;
-
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.timer.LTimer;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -25,6 +18,12 @@ import loon.core.timer.LTimer;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.timer.LTimer;
+
 public class SRPGTaichiEffect extends SRPGEffect {
 
 	private LTimer timer;

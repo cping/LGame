@@ -22,25 +22,26 @@ package loon.srpg.view;
 
 import java.util.List;
 
+import loon.LRelease;
 import loon.LSystem;
-import loon.Touch;
+import loon.LTexture;
 import loon.action.avg.AVGCG;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
 import loon.action.avg.drama.Conversion;
-import loon.core.LRelease;
-import loon.core.graphics.component.LMessage;
-import loon.core.graphics.component.LSelect;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
+import loon.canvas.LColor;
+import loon.component.LMessage;
+import loon.component.LSelect;
+import loon.event.SysTouch;
+import loon.opengl.GLEx;
 import loon.srpg.SRPGScreen;
 import loon.srpg.SRPGType;
 import loon.srpg.actor.SRPGActor;
 import loon.srpg.effect.SRPGEffectFactory;
+import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
-import loon.utils.collection.ArrayMap;
+import loon.utils.TArray;
 
 public class SRPGAvgView extends SRPGView implements LRelease {
 
@@ -95,7 +96,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 		this.width = w;
 		this.height = h;
 		this.mesImage = img;
-		this.scrCG = new AVGCG();
+		this.scrCG = new AVGCG(screen);
 		this.setMessageImage(img, false);
 		this.screen.add(message);
 		this.reset();
@@ -109,8 +110,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 				this.message.setBackground(img);
 			}
 			this.message.setFontColor(LColor.white);
-			int size = message.getWidth()
-					/ (message.getMessageFont().getSize());
+			int size = message.width() / (message.getMessageFont().getSize());
 			if (size % 2 != 0) {
 				size = size - 3;
 			} else {
@@ -185,7 +185,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 				scrFlag = true;
 			}
 			if (message.isVisible()) {
-				isNext = Touch.isDown();
+				isNext = SysTouch.isDown();
 			} else {
 				isNext = true;
 			}
@@ -248,8 +248,9 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 						continue;
 					}
 					onNext(result);
-					List<?> commands = Conversion.splitToList(result, " ");
-					int size = commands.size();
+					TArray<String> commands = Conversion.splitToList(result,
+							' ');
+					int size = commands.size;
 					String cmdFlag = (String) commands.get(0);
 					String mesFlag = null, orderFlag = null, lastFlag = null, otherFlag = null;
 					if (size == 2) {
@@ -385,7 +386,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_FLASH)) {
 						scrFlag = true;
-						String[] colors = mesFlag.split(",");
+						String[] colors = StringUtils.split(mesFlag, ',');
 						if (color == null && colors != null
 								&& colors.length == 3) {
 							color = new LColor(Integer.valueOf(colors[0])
@@ -406,13 +407,13 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 						}
 						if (scrCG != null
 								&& scrCG.count() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
-							scrCG.dispose();
+							scrCG.close();
 						}
 						if (mesFlag.equalsIgnoreCase(CommandType.L_DEL)) {
 							if (orderFlag != null) {
 								scrCG.remove(orderFlag);
 							} else {
-								scrCG.dispose();
+								scrCG.close();
 							}
 						} else if (lastFlag != null
 								&& CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
@@ -464,9 +465,9 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 						}
 						if ("movecamera".equalsIgnoreCase(cmdFlag)) {
 							if (mesFlag != null) {
-								List<?> moves = Conversion.splitToList(mesFlag,
-										",");
-								if (moves.size() == 3) {
+								TArray<String> moves = Conversion.splitToList(mesFlag,
+										',');
+								if (moves.size == 3) {
 									setExist(false);
 									String x = (String) moves.get(0);
 									String y = (String) moves.get(1);
@@ -485,9 +486,9 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 							}
 						} else if ("moveactor".equalsIgnoreCase(cmdFlag)) {
 							if (mesFlag != null) {
-								List<?> moves = Conversion.splitToList(mesFlag,
-										",");
-								if (moves.size() == 2) {
+								TArray<String> moves = Conversion.splitToList(mesFlag,
+										',');
+								if (moves.size == 2) {
 									setExist(false);
 									String id = (String) moves.get(0);
 									String i = (String) moves.get(1);
@@ -600,11 +601,12 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 						if ("help".equalsIgnoreCase(cmdFlag)) {
 							if (mesFlag != null) {
 								setExist(false);
-								List<?> mes = Conversion.splitToList(mesFlag, "|");
+								TArray<String> mes = Conversion.splitToList(
+										mesFlag, '|');
 								if (orderFlag != null) {
-									List<?> location = Conversion.splitToList(
-											orderFlag, ",");
-									if (location.size() == 2) {
+									TArray<String> location = Conversion
+											.splitToList(orderFlag, ',');
+									if (location.size == 2) {
 										String x = (String) location.get(0);
 										String y = (String) location.get(1);
 										try {
@@ -879,18 +881,18 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 	}
 
 	@Override
-	public void dispose() {
+	public void close() {
 		isRunning = false;
 		isClose = true;
 		if (scrCG != null) {
-			scrCG.dispose();
+			scrCG.close();
 			scrCG = null;
 		}
 		if (select != null) {
-			select.dispose();
+			select.close();
 		}
 		if (message != null) {
-			message.dispose();
+			message.close();
 		}
 	}
 

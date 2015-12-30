@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,13 @@ import loon.utils.MathUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
 // 某些事物内聚的效果
 public class SRPGCohesionEffect extends SRPGEffect {
 
@@ -65,7 +64,7 @@ public class SRPGCohesionEffect extends SRPGEffect {
 		g.setColor(color);
 		for (int j = 0; j < de.length; j++) {
 			de[j].drawPaint(g, t_x - tx,
-					(LSystem.screenRect.height - (t_y - ty)));
+					(LSystem.viewSize.height - (t_y - ty)));
 		}
 		if (super.frame > 40) {
 			setExist(false);

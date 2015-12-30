@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,14 @@ import loon.utils.MathUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
+
 // 一组箭头划过特效，也可用于刀剑等效果.
 public class SRPGArrowsEffect extends SRPGEffect {
 
@@ -100,7 +100,7 @@ public class SRPGArrowsEffect extends SRPGEffect {
 			}
 			for (int i = 0; i < arrow[j].length; i++) {
 				arrow[j][i].drawPaint(g, s_x - x,
-						(LSystem.screenRect.height - (s_y - y)));
+						(LSystem.viewSize.height - (s_y - y)));
 			}
 			max[j]--;
 		}

@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,14 @@ import loon.utils.MathUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
+
 // 默认的基础魔法技能打击效果
 public class SRPGStrikeEffect extends SRPGEffect {
 
@@ -82,10 +82,10 @@ public class SRPGStrikeEffect extends SRPGEffect {
 		next();
 		g.setColor(color);
 		if (super.frame < max) {
-			arrow.drawPaint(g, s_x - x, LSystem.screenRect.height - (s_y - y));
+			arrow.drawPaint(g, s_x - x, LSystem.viewSize.height - (s_y - y));
 		} else {
 			for (int i = 0; i < dif.length; i++) {
-				dif[i].drawPaint(g, t_x - x, LSystem.screenRect.height
+				dif[i].drawPaint(g, t_x - x, LSystem.viewSize.height
 						- (t_y - y));
 			}
 		}

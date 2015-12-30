@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,13 @@ import loon.utils.MathUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
 // 掠夺某些事物的效果
 public class SRPGForceEffect extends SRPGEffect {
 
@@ -58,8 +57,8 @@ public class SRPGForceEffect extends SRPGEffect {
 		for (int i = 0; i < arrow.length; i++) {
 			max[i] = 0;
 			exist[i] = true;
-			int r1 = (x2 + (LSystem.random.nextInt(64)) - 32);
-			int r2 = (y2 + (LSystem.random.nextInt(64)) - 32);
+			int r1 = (x2 + (MathUtils.random.nextInt(64)) - 32);
+			int r2 = (y2 + (MathUtils.random.nextInt(64)) - 32);
 			float d = r1 - x1;
 			float d1 = r2 - y1;
 			float d2 = MathUtils.sqrt(MathUtils.pow(d, 2f)
@@ -88,7 +87,7 @@ public class SRPGForceEffect extends SRPGEffect {
 			}
 			flag = true;
 			if (j * 1 <= super.frame) {
-				arrow[j].drawPaint(g, s_x - tx, LSystem.screenRect.height
+				arrow[j].drawPaint(g, s_x - tx, LSystem.viewSize.height
 						- (s_y - ty));
 				max[j]--;
 			}

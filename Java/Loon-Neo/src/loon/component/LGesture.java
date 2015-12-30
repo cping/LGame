@@ -260,6 +260,11 @@ public class LGesture extends LComponent {
 		return autoClear;
 	}
 
+	/**
+	 * 不愿意清除绘制的内容时，可以设置此项为false
+	 * 
+	 * @param autoClear
+	 */
 	public void setAutoClear(boolean autoClear) {
 		this.autoClear = autoClear;
 	}

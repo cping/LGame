@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,14 @@ import loon.utils.MathUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
+
 // 默认的爆炸效果
 public class SRPGBlastEffect extends SRPGEffect {
 
@@ -68,7 +68,7 @@ public class SRPGBlastEffect extends SRPGEffect {
 			for (int l = 0; l < de[j].length; l++) {
 				if (j != 0 || super.frame > 20) {
 					de[j][l].drawPaint(g, t_x - x,
-							(LSystem.screenRect.height - (t_y - y)));
+							(LSystem.viewSize.height - (t_y - y)));
 				}
 			}
 		}

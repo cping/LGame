@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-import loon.utils.MathUtils;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,14 @@ import loon.utils.MathUtils;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
+
 // 默认的魔法效果之一，用以模拟吸血蝙蝠吸血
 public class SRPGBloodEffect extends SRPGEffect {
 
@@ -46,9 +46,9 @@ public class SRPGBloodEffect extends SRPGEffect {
 		float[][] res = { { 8f, 0.0f }, { -4f, 6f }, { -4f, -6f } };
 		this.force = new TriangleEffect[960];
 		for (int k = 0; k < force.length; k++) {
-			float d = LSystem.random.nextInt(100) + 100;
+			float d = MathUtils.random.nextInt(100) + 100;
 			d /= 30f;
-			float d1 = LSystem.random.nextInt(360);
+			float d1 = MathUtils.random.nextInt(360);
 			float d2 = MathUtils.cos((d1 * 3.1415926535897931f) / 180f) * d;
 			float d3 = MathUtils.sin((d1 * 3.1415926535897931f) / 180f) * d;
 			force[k] = new TriangleEffect(res, d2, d3, 36f);
@@ -65,7 +65,7 @@ public class SRPGBloodEffect extends SRPGEffect {
 		if (super.frame < 120) {
 			for (int j = 0; j < super.frame * 8; j++) {
 				if (j + 120 > super.frame * 8) {
-					force[j].drawPaint(g, x, (LSystem.screenRect.height - y));
+					force[j].drawPaint(g, x, (LSystem.viewSize.height - y));
 				}
 			}
 		}

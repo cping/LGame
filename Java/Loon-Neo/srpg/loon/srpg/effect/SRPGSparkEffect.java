@@ -1,10 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -25,6 +18,11 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 // 令角色身体冒出火花，可用于升级，治疗等特效
 public class SRPGSparkEffect extends SRPGEffect {
@@ -76,8 +74,8 @@ public class SRPGSparkEffect extends SRPGEffect {
 		next();
 		g.setColor(color);
 		if (value > max && super.frame % wait == 0) {
-			effpos[max][0] = left + LSystem.random.nextInt(width);
-			effpos[max][1] = top + LSystem.random.nextInt(height);
+			effpos[max][0] = left + MathUtils.random.nextInt(width);
+			effpos[max][1] = top + MathUtils.random.nextInt(height);
 			effframe[max] = 0;
 			max++;
 		}

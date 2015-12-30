@@ -1,14 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.device.LFont;
-import loon.core.graphics.device.LGradation;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.timer.LTimer;
-import loon.srpg.SRPGType;
-
-
 /**
  * 
  * Copyright 2008 - 2011
@@ -30,6 +19,17 @@ import loon.srpg.SRPGType;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.canvas.LGradation;
+import loon.font.IFont;
+import loon.opengl.GLEx;
+import loon.srpg.SRPGType;
+import loon.utils.MathUtils;
+import loon.utils.timer.LTimer;
+
 public class SRPGPhaseEffect extends SRPGEffect {
 
 	private LTimer timer;
@@ -54,7 +54,7 @@ public class SRPGPhaseEffect extends SRPGEffect {
 		this.mes = mes.toCharArray();
 		this.fontLenght = mes.length() - 1;
 		this.twidth = SRPGType.DEFAULT_BIG_FONT.stringWidth(mes);
-		this.index = LSystem.random.nextInt(4);
+		this.index = MathUtils.random.nextInt(4);
 	}
 
 	@Override
@@ -94,13 +94,13 @@ public class SRPGPhaseEffect extends SRPGEffect {
 			break;
 		}
 		LGradation
-				.getInstance(color, LColor.black, LSystem.screenRect.width, 80)
-				.drawHeight(g, 0, (LSystem.screenRect.height - 80) / 2);
-		LFont old = g.getFont();
+				.getInstance(color, LColor.black, LSystem.viewSize.getWidth(), 80)
+				.drawHeight(g, 0, (LSystem.viewSize.getHeight() - 80) / 2);
+		IFont old = g.getFont();
 		g.setFont(SRPGType.DEFAULT_BIG_FONT);
 		g.drawString(sbr.toString(),
-				(LSystem.screenRect.width - twidth) / 2,
-				(LSystem.screenRect.height ) / 2 + 10, LColor.white);
+				(LSystem.viewSize.width - twidth) / 2,
+				(LSystem.viewSize.height ) / 2 + 10, LColor.white);
 		g.setFont(old);
 
 	}

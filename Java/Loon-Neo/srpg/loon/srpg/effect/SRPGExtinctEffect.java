@@ -22,10 +22,10 @@ package loon.srpg.effect;
 
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.srpg.SRPGType;
 import loon.utils.MathUtils;
-
 
 public class SRPGExtinctEffect extends SRPGEffect {
 
@@ -70,12 +70,12 @@ public class SRPGExtinctEffect extends SRPGEffect {
 		next();
 		g.setColor(color);
 		if (super.frame < 120) {
-			g.fillRect(0, 0, LSystem.screenRect.width,
-					LSystem.screenRect.height);
-			LFont old = g.getFont();
+			g.fillRect(0, 0, LSystem.viewSize.width,
+					LSystem.viewSize.height);
+			IFont old = g.getFont();
 			g.setFont(SRPGType.DEFAULT_BIG_FONT);
-			g.drawString(mes, (LSystem.screenRect.width - w) / 2,
-					(LSystem.screenRect.height - h) / 2,
+			g.drawString(mes, (LSystem.viewSize.width - w) / 2,
+					(LSystem.viewSize.height - h) / 2,
 					LColor.red);
 			g.setFont(old);
 		} else {
@@ -84,7 +84,7 @@ public class SRPGExtinctEffect extends SRPGEffect {
 				for (int i = 0; i < de[j].length; i++)
 					if (j != 0 || super.frame > 120) {
 						de[j][i].drawPaint(g, t_x - x,
-								LSystem.screenRect.height - (t_y - y));
+								LSystem.viewSize.height - (t_y - y));
 					}
 
 			}

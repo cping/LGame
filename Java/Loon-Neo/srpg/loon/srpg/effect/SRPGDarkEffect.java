@@ -1,9 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -24,6 +18,12 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+
 // 一个默认的黑暗魔法特效
 public class SRPGDarkEffect extends SRPGEffect {
 
@@ -56,12 +56,12 @@ public class SRPGDarkEffect extends SRPGEffect {
 		g.setColor(LColor.black);
 		if (super.frame < 40) {
 			for (int i = 0; i < sd.length; i++) {
-				sd[i].drawPaint(g, x, (LSystem.screenRect.height - y));
+				sd[i].drawPaint(g, x, (LSystem.viewSize.height - y));
 			}
 		} else {
 			int r = ((super.frame - 40) * 220) / 40;
 			g.setColor(r, 0, 0);
-			sd[0].drawPaint(g, x, (LSystem.screenRect.height - y));
+			sd[0].drawPaint(g, x, (LSystem.viewSize.height - y));
 		}
 		if (super.frame > 80) {
 			setExist(false);

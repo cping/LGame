@@ -1,8 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.opengl.GLEx;
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -23,6 +18,11 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.opengl.GLEx;
+
 // 角色消失或出现用特效，较适合魔法传送等时机使用
 public class SRPGFadeEffect extends SRPGEffect {
 
@@ -59,7 +59,7 @@ public class SRPGFadeEffect extends SRPGEffect {
 		g.setColor((255 * super.frame) / 80, (255 * super.frame) / 80,
 				(255 * super.frame) / 80);
 		for (int j = 0; j < de.length; j++) {
-			de[j].drawPaint(g, x, LSystem.screenRect.height - y);
+			de[j].drawPaint(g, x, LSystem.viewSize.height - y);
 		}
 		if (super.frame >= 80) {
 			setExist(false);

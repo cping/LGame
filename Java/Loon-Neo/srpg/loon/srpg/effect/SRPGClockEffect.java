@@ -1,11 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -26,6 +18,12 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+
 // 时钟特效，用以启动时间魔法等效果
 public class SRPGClockEffect extends SRPGEffect {
 
@@ -64,7 +62,7 @@ public class SRPGClockEffect extends SRPGEffect {
 		clock[1].setVectorSpeed(360f - d);
 		for (int j1 = 0; j1 < clock.length; j1++) {
 			clock[j1].drawPaint(g, x + 100,
-					(LSystem.screenRect.height - y - 50));
+					(LSystem.viewSize.height - y - 50));
 		}
 		if (super.frame > 200) {
 			setExist(false);

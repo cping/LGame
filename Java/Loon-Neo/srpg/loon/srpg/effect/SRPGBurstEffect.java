@@ -1,10 +1,3 @@
-package loon.srpg.effect;
-
-import loon.LSystem;
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -25,6 +18,13 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
+
 // 用以模拟一个角色的爆炸效果
 public class SRPGBurstEffect extends SRPGEffect {
 
@@ -56,15 +56,15 @@ public class SRPGBurstEffect extends SRPGEffect {
 		for (int i = 0; i < v; i++) {
 			pos[i][0] = x1;
 			pos[i][1] = y1;
-			float f = LSystem.random.nextInt(50);
-			float f1 = LSystem.random.nextInt(50);
-			int j1 = LSystem.random.nextInt(50);
+			float f = MathUtils.random.nextInt(50);
+			float f1 = MathUtils.random.nextInt(50);
+			int j1 = MathUtils.random.nextInt(50);
 			f += j1;
 			f1 += 49 - j1;
-			if (LSystem.random.nextInt(2) == 0) {
+			if (MathUtils.random.nextInt(2) == 0) {
 				f *= -1F;
 			}
-			if (LSystem.random.nextInt(2) == 0) {
+			if (MathUtils.random.nextInt(2) == 0) {
 				f1 *= -1F;
 			}
 			vector[i][0] = f / 100F;

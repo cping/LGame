@@ -1,9 +1,3 @@
-package loon.srpg.effect;
-
-import loon.core.graphics.device.LColor;
-import loon.core.graphics.opengl.GLEx;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -24,6 +18,11 @@ import loon.core.graphics.opengl.GLEx;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+
 // 默认使用的斩击特效
 public class SRPGChopEffect extends SRPGEffect {
 

@@ -1,9 +1,3 @@
-package loon.srpg.effect;
-
-import loon.core.graphics.device.LColor;
-import loon.srpg.actor.SRPGActor;
-
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -24,6 +18,11 @@ import loon.srpg.actor.SRPGActor;
  * @email：ceponline@yahoo.com.cn
  * @version 0.1
  */
+package loon.srpg.effect;
+
+import loon.canvas.LColor;
+import loon.srpg.actor.SRPGActor;
+
 public final class SRPGEffectFactory {
 
 	// 斩击
