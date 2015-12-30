@@ -45,6 +45,7 @@ public class Picture extends LObject implements ISprite {
 		this.visible = true;
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		if (visible) {
 			float tmp = g.alpha();
@@ -53,6 +54,15 @@ public class Picture extends LObject implements ISprite {
 			}
 			g.draw(image, x(), y());
 			g.setAlpha(tmp);
+		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Picture) {
+			return equals((Picture) o);
+		} else {
+			return false;
 		}
 	}
 
@@ -68,25 +78,31 @@ public class Picture extends LObject implements ISprite {
 		return false;
 	}
 
+	@Override
 	public float getHeight() {
 		return height;
 	}
 
+	@Override
 	public float getWidth() {
 		return width;
 	}
 
+	@Override
 	public void update(long timer) {
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
+	@Override
 	public void close() {
 		if (image != null) {
 			image.close();
@@ -106,10 +122,12 @@ public class Picture extends LObject implements ISprite {
 		this.height = (int) image.height();
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return image;
 	}

@@ -27,6 +27,10 @@ import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
 
+/**
+ * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
+ * 
+ */
 public class Desktop implements LRelease {
 
 	// 空桌面布局

@@ -33,6 +33,10 @@ import loon.utils.CollectionUtils;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 
+/**
+ * 精灵组件总父类，用来注册，控制，以及渲染所有精灵组件（所有默认【不支持】触屏的组件，被置于此。不过，当LNode系列组件和SpriteBatchScreen合用时，也支持触屏.）
+ * 
+ */
 public class Sprites implements Serializable, LRelease {
 
 	public static interface SpriteListener {
