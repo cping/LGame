@@ -49,7 +49,7 @@ public class GWTScriptLoader {
 	 * @param elem
 	 * @param state
 	 */
-	public native void setCrossOrigin(Element elem, String state) /*-{
+	public static native void setCrossOrigin(Element elem, String state) /*-{
 		if ('crossOrigin' in elem)
 			elem.setAttribute('crossOrigin', state);
 	}-*/;

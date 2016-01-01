@@ -20,6 +20,7 @@
  */
 package loon.html5.gwt.preloader;
 
+import loon.html5.gwt.GWTScriptLoader;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 
 import com.google.gwt.dom.client.ImageElement;
@@ -32,7 +33,7 @@ import com.google.gwt.xhr.client.XMLHttpRequest.ResponseType;
 
 public class AssetDownloader extends IDownloader {
 
-	public AssetDownloader(){
+	public AssetDownloader() {
 		super();
 	}
 
@@ -130,6 +131,12 @@ public class AssetDownloader extends IDownloader {
 
 	public void loadImage(final String url, final String mimeType,
 			final AssetLoaderListener<ImageElement> listener) {
+		loadImage(url, mimeType, null, listener);
+	}
+
+	public void loadImage(final String url, final String mimeType,
+			final String crossOrigin,
+			final AssetLoaderListener<ImageElement> listener) {
 		if (useBrowserCache || useInlineBase64) {
 			loadBinary(url, new AssetLoaderListener<Blob>() {
 				@Override
@@ -145,6 +152,9 @@ public class AssetDownloader extends IDownloader {
 				@Override
 				public void onSuccess(Blob result) {
 					final ImageElement image = createImage();
+					if (null != crossOrigin) {
+						GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
+					}
 					hookImgListener(image, new ImgEventListener() {
 						@Override
 						public void onEvent(NativeEvent event) {
@@ -166,6 +176,9 @@ public class AssetDownloader extends IDownloader {
 			});
 		} else {
 			final ImageElement image = createImage();
+			if (null != crossOrigin) {
+				GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
+			}
 			hookImgListener(image, new ImgEventListener() {
 				@Override
 				public void onEvent(NativeEvent event) {

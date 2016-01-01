@@ -151,7 +151,7 @@ public class LocalAssetResources {
 						+ "lJUFyBc82zMEqyVAYAAAAABJRU5ErkJggg==");
 		final String txt_assets_loon_deffont_fnt = ("info face=\"Courier New Bold\" size=16 bold=1 italic=0 charset=\"\" unicode=0 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=1,1φ"
 				+ "common lineHeight=19 base=26 scaleW=256 scaleH=256 pages=1 packed=0φ"
-				+ "page id=0 file=\"defaultfont.png\"φ"
+				+ "page id=0 file=\"loon_deffont.png\"φ"
 				+ "chars count=189φ"
 				+ "char id=32   x=0     y=0     width=0     height=0     xoffset=0     yoffset=14    xadvance=9     page=0  chnl=0φ"
 				+ "char id=253   x=0     y=0     width=12     height=16     xoffset=0     yoffset=2    xadvance=9     page=0  chnl=0φ"
@@ -344,7 +344,7 @@ public class LocalAssetResources {
 				+ "char id=45   x=75     y=86     width=9     height=3     xoffset=1     yoffset=8    xadvance=9     page=0  chnl=0φ"
 				+ "char id=46   x=84     y=86     width=3     height=3     xoffset=3     yoffset=12    xadvance=9     page=0  chnl=0φ"
 				+ "kernings count=-1φ").replace('φ', '\n');
-		putText("assets/loon_deffont.fnt", txt_assets_loon_deffont_fnt);
+		putText("assets/loon_deffont.txt", txt_assets_loon_deffont_fnt);
 		putImage(
 				"assets/loon_deffont.png",
 				"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAmVBMVEX///8AAAD/////////////////////////////////////////////////////////////////"
