@@ -99,8 +99,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private LTexture patternTex;
 	private Affine2f lastTrans;
 	private BrushSave lastBrush;
-	private float scaleX, scaleY;
-
+	private float scaleX = 1f, scaleY = 1f;
+	private float offsetStringX = 0, offsetStringY = 0;
+	
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
 	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的
@@ -2259,6 +2260,30 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	/**
+	 * 统一偏移drawString的X轴
+	 * @return
+	 */
+	public float getOffsetStringX() {
+		return offsetStringX;
+	}
+
+	public void setOffsetStringX(float offsetStringX) {
+		this.offsetStringX = offsetStringX;
+	}
+
+	/**
+	 * 统一偏移drawString的Y轴
+	 * @return
+	 */
+	public float getOffsetStringY() {
+		return offsetStringY;
+	}
+
+	public void setOffsetStringY(float offsetStringY) {
+		this.offsetStringY = offsetStringY;
+	}
+	
+	/**
 	 * 输出字符串
 	 * 
 	 * @param string
@@ -2330,7 +2355,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		font.drawString(this, string, x, y, rotation, c);
+		font.drawString(this, string, x + offsetStringX, y + offsetStringY,
+				rotation, c);
 		return this;
 	}
 
@@ -2359,7 +2385,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (mes == null || mes.length() == 0) {
 			return this;
 		}
-		font.drawString(this, mes, x, y, scaleX, scaleY, ax, ay, rotation, c);
+		font.drawString(this, mes, x + offsetStringX, y + offsetStringY,
+				scaleX, scaleY, ax, ay, rotation, c);
 		return this;
 	}
 

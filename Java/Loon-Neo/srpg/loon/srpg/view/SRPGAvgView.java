@@ -342,16 +342,9 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 						}
 						scrFlag = true;
 						final String nMessage = mesFlag;
-						LSystem.load(new Updateable() {
-
-							@Override
-							public void action(Object a) {
-								message.setMessage(StringUtils.replace(
-										nMessage, "&", " "));
-								message.setVisible(true);
-							}
-						});
-
+						message.setMessage(StringUtils.replace(nMessage, "&",
+								" "));
+						message.setVisible(true);
 						break;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESSTOP)) {
@@ -377,15 +370,9 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 						}
 						scrFlag = true;
 						isSelectMessage = true;
-						LSystem.load(new Updateable() {
-
-							@Override
-							public void action(Object a) {
-								String[] selects = command.getReads();
-								select.setMessage(selectMessage, selects);
-								select.setVisible(true);
-							}
-						});
+						String[] selects = command.getReads();
+						select.setMessage(selectMessage, selects);
+						select.setVisible(true);
 						break;
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_CGWAIT)) {

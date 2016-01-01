@@ -4,6 +4,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.event.Updateable;
 import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -34,13 +35,13 @@ public class Print implements LRelease {
 	 * @param width
 	 * @return
 	 */
-	public static TArray<String> formatMessage(String text, LFont font, int width) {
+	public static TArray<String> formatMessage(String text, LFont font,
+			int width) {
 		TArray<String> list = new TArray<String>();
 
 		if (text == null) {
 			return list;
 		}
-
 
 		char c1 = '〜';
 		char c2 = 65374;
@@ -141,34 +142,61 @@ public class Print implements LRelease {
 		setMessage(context, font, false);
 	}
 
+	private class PrintUpdate implements Updateable {
+
+		Print _print;
+
+		boolean _isComplete = false;
+
+		private LFont _font = null;
+
+		private String _context = null;
+
+		private PrintUpdate(Print print, String context, LFont font,
+				boolean isComplete) {
+			_print = print;
+			_context = context;
+			_font = font;
+			_isComplete = isComplete;
+		}
+
+		@Override
+		public void action(Object a) {
+			if (_context == null) {
+				return;
+			}
+			if (_print.strings != null) {
+				_print.strings.close();
+			}
+			_print.strings = new LSTRFont(_font, _context);
+			_print.lazyHashCade = 1;
+			_print.wait = 0;
+			_print.visible = false;
+			_print.showMessages = new char[] { '\0' };
+			_print.interceptMaxString = 0;
+			_print.next = 0;
+			_print.messageCount = 0;
+			_print.interceptCount = 0;
+			_print.size = 0;
+			_print.tmp_left = 0;
+			_print.left = 0;
+			_print.fontSize = 0;
+			_print.fontHeight = 0;
+			_print.messages = _context;
+			_print.next = _context.length();
+			_print.onComplete = false;
+			_print.newLine = false;
+			_print.messageCount = 0;
+			_print.messageBuffer.delete(0, messageBuffer.length());
+			if (_isComplete) {
+				_print.complete();
+			}
+			_print.visible = true;
+		}
+	}
+
 	public void setMessage(String context, LFont font, boolean isComplete) {
-		if (strings != null) {
-			strings.close();
-		}
-		this.strings = new LSTRFont(font, context);
-		this.lazyHashCade = 1;
-		this.wait = 0;
-		this.visible = false;
-		this.showMessages = new char[] { '\0' };
-		this.interceptMaxString = 0;
-		this.next = 0;
-		this.messageCount = 0;
-		this.interceptCount = 0;
-		this.size = 0;
-		this.tmp_left = 0;
-		this.left = 0;
-		this.fontSize = 0;
-		this.fontHeight = 0;
-		this.messages = context;
-		this.next = context.length();
-		this.onComplete = false;
-		this.newLine = false;
-		this.messageCount = 0;
-		this.messageBuffer.delete(0, messageBuffer.length());
-		if (isComplete) {
-			this.complete();
-		}
-		this.visible = true;
+		LSystem.load(new PrintUpdate(this, context, font, isComplete));
 	}
 
 	public String getMessage() {
@@ -213,7 +241,8 @@ public class Print implements LRelease {
 		}
 		synchronized (showMessages) {
 			this.size = showMessages.length;
-			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : strings.getSize());
+			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : strings
+					.getSize());
 			this.fontHeight = strings.getHeight();
 			this.tmp_left = isLeft ? 0 : (width - (fontSize * messageLength))
 					/ 2 - (int) (fontSize * 1.5);

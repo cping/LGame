@@ -16,6 +16,6 @@
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_natural.txt" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_ui.png" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_wbar.png" />
-	<extend-configuration-property name="loon.files.classpath" value="assets/loon_deffont.fnt" />
+	<extend-configuration-property name="loon.files.classpath" value="assets/loon_deffont.txt" />
 	<extend-configuration-property name="loon.files.classpath" value="assets/loon_deffont.png" />
 </module>

@@ -1246,7 +1246,7 @@ public class LTextureBatch implements LRelease {
 		mesh.dispose(name, size);
 	}
 
-	public void destoryAll() {
+	public synchronized void destoryAll() {
 		close();
 		destroy();
 	}

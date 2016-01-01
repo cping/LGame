@@ -110,11 +110,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public LSTRFont(LFont font, char[] chs) {
-		if (displays == null) {
-			displays = new ObjectMap<String, Cache>(totalCharSet);
-		} else {
-			displays.clear();
-		}
+		this.displays = new ObjectMap<String, Cache>(totalCharSet);
 		this.useCache = true;
 		this.font = font;
 		this.additionalChars = chs;
@@ -715,17 +711,14 @@ public class LSTRFont implements LRelease {
 			public void action(Object a) {
 				if (fontBatch != null) {
 					fontBatch.destoryAll();
-					fontBatch.close();
 				}
 				fontBatch = null;
 				for (Cache c : displays.values()) {
 					if (c != null) {
 						c.close();
-						c = null;
 					}
 				}
 				displays.clear();
-				displays = null;
 				initChars = false;
 				isDrawing = false;
 			}

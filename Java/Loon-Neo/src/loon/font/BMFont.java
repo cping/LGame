@@ -47,7 +47,7 @@ public class BMFont implements IFont, LRelease {
 	public static BMFont getDefaultFont() {
 		if (_font == null) {
 			try {
-				_font = new BMFont(LSystem.FRAMEWORK_IMG_NAME + "deffont.fnt",
+				_font = new BMFont(LSystem.FRAMEWORK_IMG_NAME + "deffont.txt",
 						LSystem.FRAMEWORK_IMG_NAME + "deffont.png");
 			} catch (Exception e) {
 				e.printStackTrace();
