@@ -34,11 +34,20 @@ public class IndexBufferObject implements IndexData {
 	boolean isBound = false;
 	final int usage;
 
+	private final boolean empty;
+
+	public IndexBufferObject(int maxIndices) {
+		this(true, maxIndices);
+	}
+
 	public IndexBufferObject(boolean isStatic, int maxIndices) {
+		empty = maxIndices == 0;
+		if (empty) {
+			maxIndices = 1;
+		}
 		byteBuffer = LSystem.base().support()
 				.newUnsafeByteBuffer(maxIndices * 2);
 		isDirect = true;
-
 		buffer = byteBuffer.asShortBuffer();
 		buffer.flip();
 		byteBuffer.flip();
@@ -46,26 +55,17 @@ public class IndexBufferObject implements IndexData {
 		usage = isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW;
 	}
 
-	public IndexBufferObject(int maxIndices) {
-		byteBuffer = LSystem.base().support()
-				.newUnsafeByteBuffer(maxIndices * 2);
-		this.isDirect = true;
-
-		buffer = byteBuffer.asShortBuffer();
-		buffer.flip();
-		byteBuffer.flip();
-		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
-		usage = GL20.GL_STATIC_DRAW;
-	}
-
+	@Override
 	public int getNumIndices() {
-		return buffer.limit();
+		return empty ? 0 : buffer.limit();
 	}
 
+	@Override
 	public int getNumMaxIndices() {
-		return buffer.capacity();
+		return empty ? 0 : buffer.capacity();
 	}
 
+	@Override
 	public void setIndices(short[] indices, int offset, int count) {
 		isDirty = true;
 		buffer.clear();
@@ -82,6 +82,7 @@ public class IndexBufferObject implements IndexData {
 		}
 	}
 
+	@Override
 	public void setIndices(ShortBuffer indices) {
 		isDirty = true;
 		int pos = indices.position();
@@ -100,15 +101,17 @@ public class IndexBufferObject implements IndexData {
 		}
 	}
 
+	@Override
 	public ShortBuffer getBuffer() {
 		isDirty = true;
 		return buffer;
 	}
 
+	@Override
 	public void bind() {
-		if (bufferHandle == 0) {
+		if (bufferHandle == 0)
 			throw new RuntimeException("No buffer allocated!");
-		}
+
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER,
 				bufferHandle);
 		if (isDirty) {
@@ -121,21 +124,24 @@ public class IndexBufferObject implements IndexData {
 		isBound = true;
 	}
 
+	@Override
 	public void unbind() {
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER,
 				0);
 		isBound = false;
 	}
 
+	@Override
 	public void invalidate() {
 		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
 		isDirty = true;
 	}
 
+	@Override
 	public void close() {
-		GL20 gl = LSystem.base().graphics().gl;
-		gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
-		gl.glDeleteBuffer(bufferHandle);
+		GL20 gl20 = LSystem.base().graphics().gl;
+		gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		gl20.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;
 		LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
 	}

@@ -389,9 +389,10 @@ public class Mesh implements LRelease {
 			unbind(shader);
 	}
 
-	public void close() {
-		if (meshes.get(LSystem.base()) != null) {
-			meshes.get(LSystem.base()).removeValue(this, true);
+	public synchronized void close() {
+		TArray<Mesh> mesh = meshes.get(LSystem.base()) ;
+		if (mesh != null) {
+			mesh.removeValue(this);
 		}
 		vertices.close();
 		indices.close();
@@ -400,10 +401,11 @@ public class Mesh implements LRelease {
 	public VertexAttribute getVertexAttribute(int usage) {
 		VertexAttributes attributes = vertices.getAttributes();
 		int len = attributes.size();
-		for (int i = 0; i < len; i++)
-			if (attributes.get(i).usage == usage)
+		for (int i = 0; i < len; i++){
+			if (attributes.get(i).usage == usage){
 				return attributes.get(i);
-
+			}
+		}
 		return null;
 	}
 

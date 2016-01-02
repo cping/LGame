@@ -754,26 +754,19 @@ public class LSTRFont implements LRelease {
 
 	@Override
 	public synchronized void close() {
-		isDrawing = true;
-		Updateable update = new Updateable() {
-
-			@Override
-			public void action(Object a) {
-				for (Cache c : displays.values()) {
-					if (c != null) {
-						c.close();
-					}
-				}
-				displays.clear();
-				if (fontBatch != null) {
-					fontBatch.destroy();
-				}
-				fontBatch = null;
-				initChars = false;
-				isDrawing = false;
+		for (Cache c : displays.values()) {
+			if (c != null) {
+				c.close();
 			}
-		};
-		LSystem.load(update);
+		}
+		displays.clear();
+		if (fontBatch != null) {
+			fontBatch.close();
+			fontBatch.destroy();
+		}
+		fontBatch = null;
+		isDrawing = false;
+		initChars = false;
 	}
 
 }

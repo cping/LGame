@@ -566,13 +566,21 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch() {
-		makeBatch();
+		makeBatch(null);
 		return batch;
 	}
 
-	void makeBatch() {
+	public LTextureBatch getTextureBatch(String name) {
+		makeBatch(name);
+		return batch;
+	}
+
+	void makeBatch(String name) {
 		if (!isBatch) {
 			batch = new LTextureBatch(this);
+			if (!StringUtils.isEmpty(name)) {
+				batch.setTextureBatchName(name);
+			}
 			isBatch = true;
 		}
 	}
@@ -598,7 +606,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void glBegin() {
-		makeBatch();
+		makeBatch(null);
 		batch.begin();
 	}
 

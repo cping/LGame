@@ -200,15 +200,17 @@ public class VertexBufferObjectSubData implements VertexData {
 		isDirty = true;
 	}
 
+
+	public int getBufferHandle() {
+		return bufferHandle;
+	}
+	
+
 	@Override
 	public void close() {
 		GL20 gl = LSystem.base().graphics().gl;
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		gl.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;
-	}
-
-	public int getBufferHandle() {
-		return bufferHandle;
 	}
 }

@@ -68,7 +68,7 @@ public class DrawParamImpl extends DrawParam {
 				}
 			}
 			LSystem.base().graphics().gl.glBlendFunc(sfactor, dfactor);
-			LTextureBatch batch = texture.getTextureBatch();
+			LTextureBatch batch = texture.getTextureBatch("drawlive2d");
 			batch.setBlendState(BlendState.Null);
 			batch.begin();
 			if (this._scale.x == 1f && this._scale.y == 1f) {

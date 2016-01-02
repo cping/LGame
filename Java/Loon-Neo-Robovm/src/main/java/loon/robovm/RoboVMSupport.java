@@ -228,4 +228,14 @@ public class RoboVMSupport implements Support {
 		return NativeSupport.UseLoonNative();
 	}
 
+	@Override
+	public void openNative() {
+		NativeSupport.OpenLoonNative();
+	}
+
+	@Override
+	public void closeNative() {
+		NativeSupport.CloseLoonNative();
+	}
+
 }

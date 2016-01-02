@@ -97,7 +97,7 @@ public final class NativeSupport {
 	}
 
 	public static void OpenLoonNative() {
-		useLoonNative = false;
+		useLoonNative = true;
 	}
 
 	public static void CloseLoonNative() {

@@ -32,20 +32,24 @@ import loon.canvas.LColor;
 
 public final class NativeSupport implements Support {
 
+	@Override
 	public void makeBuffer(byte[] data, int size, int tag) {
 		for (int i = 0; i < size; i++) {
 			data[i] ^= tag;
 		}
 	}
 
+	@Override
 	public void copy(float[] src, Buffer dst, int numFloats) {
 		copy(src, dst, 0, numFloats);
 	}
 
+	@Override
 	public void copy(float[] src, Buffer dst, int offset, int numFloats) {
 		putBuffer(dst, src, offset, numFloats);
 	}
 
+	@Override
 	public IntBuffer newIntBuffer(final int[] src) {
 		if (src == null) {
 			return null;
@@ -56,16 +60,19 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
+	@Override
 	public FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
 		FloatBuffer buffer = newFloatBuffer(numFloats);
 		copy(src, buffer, offset, numFloats);
 		return buffer;
 	}
 
+	@Override
 	public void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
+	@Override
 	public void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
@@ -74,6 +81,7 @@ public final class NativeSupport implements Support {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
+	@Override
 	public void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
@@ -82,6 +90,7 @@ public final class NativeSupport implements Support {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
+	@Override
 	public void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
@@ -145,6 +154,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
+	@Override
 	public ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
 		int size = src.length;
 		dst.clear();
@@ -153,6 +163,7 @@ public final class NativeSupport implements Support {
 		return dst;
 	}
 
+	@Override
 	public FloatBuffer replaceFloats(FloatBuffer dst, float[] src) {
 		int size = src.length;
 		dst.clear();
@@ -161,40 +172,43 @@ public final class NativeSupport implements Support {
 		return dst;
 	}
 
+	@Override
 	public ByteBuffer getByteBuffer(byte[] bytes) {
-
 		ByteBuffer buffer = newByteBuffer(bytes.length).put(bytes);
 		buffer.position(0);
 		return buffer;
 
 	}
 
+	@Override
 	public FloatBuffer getFloatBuffer(float[] floats) {
-
 		FloatBuffer buffer = newFloatBuffer(floats.length).put(floats);
 		buffer.position(0);
 		return buffer;
-
 	}
 
+	@Override
 	public ByteBuffer newByteBuffer(int numBytes) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numBytes);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer;
 	}
 
+	@Override
 	public FloatBuffer newFloatBuffer(int numFloats) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numFloats * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asFloatBuffer();
 	}
 
+	@Override
 	public ShortBuffer newShortBuffer(int numShorts) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts * 2);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asShortBuffer();
 	}
 
+	@Override
 	public IntBuffer newIntBuffer(int numInts) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numInts * 4);
 		buffer.order(ByteOrder.nativeOrder());
@@ -208,10 +222,12 @@ public final class NativeSupport implements Support {
 
 	private int allocatedUnsafe = 0;
 
+	@Override
 	public int getAllocatedBytesUnsafe() {
 		return allocatedUnsafe;
 	}
 
+	@Override
 	public void disposeUnsafeByteBuffer(ByteBuffer buffer) {
 		freeMemory(buffer);
 	}
@@ -220,6 +236,7 @@ public final class NativeSupport implements Support {
 		return newByteBuffer(numBytes);
 	}
 
+	@Override
 	public ByteBuffer allocateDirect(final int capacity) {
 		return ByteBuffer.allocateDirect(capacity);
 	}
@@ -229,10 +246,12 @@ public final class NativeSupport implements Support {
 		buffer = null;
 	}
 
+	@Override
 	public void clear(Buffer buffer) {
 		buffer.clear();
 	}
 
+	@Override
 	public final void filterColor(int maxPixel, int pixelStart, int pixelEnd,
 			int[] src, int[] dst, int[] colors, int c1, int c2) {
 
@@ -275,6 +294,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public void filterFractions(int size, float[] fractions, int width,
 			int height, int[] pixels, int numElements) {
 
@@ -317,6 +337,7 @@ public final class NativeSupport implements Support {
 	public final int M32 = 11;
 	public final int M33 = 15;
 
+	@Override
 	public void mul(float[] mata, float[] matb) {
 
 		float[] tmp = new float[16];
@@ -356,6 +377,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public void mulVec(float[] mat, float[] vec) {
 
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02]
@@ -370,6 +392,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs,
 			int stride) {
 
@@ -381,6 +404,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public void prj(float[] mat, float[] vec) {
 
 		float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2]
@@ -397,6 +421,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public void prj(float[] mat, float[] vecs, int offset, int numVecs,
 			int stride) {
 
@@ -408,6 +433,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public void rot(float[] mat, float[] vec) {
 
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02];
@@ -419,6 +445,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public void rot(float[] mat, float[] vecs, int offset, int numVecs,
 			int stride) {
 
@@ -430,6 +457,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public boolean inv(float[] values) {
 
 		float[] tmp = new float[16];
@@ -538,6 +566,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public float det(float[] values) {
 
 		return values[M30] * values[M21] * values[M12] * values[M03]
@@ -567,6 +596,7 @@ public final class NativeSupport implements Support {
 
 	}
 
+	@Override
 	public int[] toColorKey(int[] buffer, int colorKey) {
 
 		int size = buffer.length;
@@ -580,6 +610,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
+	@Override
 	public int[] toColorKeys(int[] buffer, int[] colors) {
 
 		int length = colors.length;
@@ -596,6 +627,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
+	@Override
 	public int[] toColorKeyLimit(int[] buffer, int start, int end) {
 
 		int sred = LColor.getRed(start);
@@ -619,6 +651,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
+	@Override
 	public int[] toGray(int[] buffer, int w, int h) {
 
 		int size = w * h;
@@ -646,5 +679,15 @@ public final class NativeSupport implements Support {
 	@Override
 	public boolean isNative() {
 		return false;
+	}
+
+	@Override
+	public void openNative() {
+		// noop
+	}
+
+	@Override
+	public void closeNative() {
+		// noop
 	}
 }

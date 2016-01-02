@@ -456,8 +456,16 @@ public class LTextureBatch implements LRelease {
 		GLUtils.setBlendMode(gl, old);
 	}
 
-	private final static String name = "texbatch";
+	private String name = "texbatch";
 
+	public void setTextureBatchName(String n){
+		this.name = n;
+	}
+	
+	public String getTextureBatchName(){
+		return this.name;
+	}
+	
 	private void setupMatrices(Matrix4 view) {
 		if (batchMatrix != null) {
 			combinedMatrix.set(batchMatrix);
@@ -1230,7 +1238,7 @@ public class LTextureBatch implements LRelease {
 	@Override
 	public void close() {
 		isClosed = true;
-		mesh.dispose(name, size);
+		isLoaded = false;
 		if (shader != null) {
 			shader.close();
 		}
@@ -1243,12 +1251,6 @@ public class LTextureBatch implements LRelease {
 		if (lastCache != null) {
 			lastCache.close();
 		}
-		isLoaded = false;
-	}
-
-	public synchronized void destoryAll() {
-		destroy();
-		close();
 	}
 
 	public void destroy() {

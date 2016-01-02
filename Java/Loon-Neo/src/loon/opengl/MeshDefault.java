@@ -33,7 +33,7 @@ public class MeshDefault {
 
 	private boolean stop_main_readering = false;
 
-	private final ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(
+	private final static ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(
 			10);
 
 	public Mesh getMesh(String n, int size) {
@@ -116,6 +116,10 @@ public class MeshDefault {
 		}
 	}
 
+	public int size() {
+		return meshLazy.size;
+	}
+	
 	public void dispose() {
 		for (Mesh mesh : meshLazy.values()) {
 			if (mesh != null) {
@@ -124,4 +128,5 @@ public class MeshDefault {
 		}
 		meshLazy.clear();
 	}
+
 }
