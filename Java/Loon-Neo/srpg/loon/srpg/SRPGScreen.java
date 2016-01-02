@@ -3533,7 +3533,6 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			isSrpgNoMove = true;
 			srpgAvgView.setCommand(fileName, map);
 			if (isBattleStart) {
-			
 				srpgAvgView.printWaitBattle();
 			} else {
 				srpgAvgView.printWait();

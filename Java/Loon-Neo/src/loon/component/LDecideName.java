@@ -115,7 +115,7 @@ public class LDecideName extends LComponent {
 		for (int i = 0; i < mes.size; i++) {
 			sbr.append(mes.get(i));
 		}
-		this.cacheFont = new LSTRFont(font, sbr.toString());
+		this.cacheFont = new LSTRFont(font, sbr.toString(), true);
 
 	}
 

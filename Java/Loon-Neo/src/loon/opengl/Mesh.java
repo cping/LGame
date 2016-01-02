@@ -37,7 +37,7 @@ import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 public class Mesh implements LRelease {
-	
+
 	public enum VertexDataType {
 		VertexArray, VertexBufferObject, VertexBufferObjectSubData,
 	}
@@ -238,10 +238,10 @@ public class Mesh implements LRelease {
 				count = vertices.length - destOffset;
 		}
 		if (srcOffset < 0 || count <= 0 || (srcOffset + count) > max
-				|| destOffset < 0 || destOffset >= vertices.length){
+				|| destOffset < 0 || destOffset >= vertices.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		if ((vertices.length - destOffset) < count){
+		if ((vertices.length - destOffset) < count) {
 			throw new IllegalArgumentException(
 					"not enough room in vertices array, has " + vertices.length
 							+ " floats, needs " + count);
@@ -357,7 +357,7 @@ public class Mesh implements LRelease {
 			return;
 		}
 		if (autoBind) {
-		
+
 			bind(shader);
 		}
 		if (isVertexArray) {
@@ -367,19 +367,21 @@ public class Mesh implements LRelease {
 				int oldLimit = buffer.limit();
 				buffer.position(offset);
 				buffer.limit(offset + count);
-				LSystem.base().graphics().gl.glDrawElements(primitiveType, count,
-						GL20.GL_UNSIGNED_SHORT, buffer);
+				LSystem.base().graphics().gl.glDrawElements(primitiveType,
+						count, GL20.GL_UNSIGNED_SHORT, buffer);
 				buffer.position(oldPosition);
 				buffer.limit(oldLimit);
 			} else {
-				LSystem.base().graphics().gl.glDrawArrays(primitiveType, offset, count);
+				LSystem.base().graphics().gl.glDrawArrays(primitiveType,
+						offset, count);
 			}
 		} else {
 			if (indices.getNumIndices() > 0) {
-				LSystem.base().graphics().gl.glDrawElements(primitiveType, count,
-						GL20.GL_UNSIGNED_SHORT, offset * 2);
+				LSystem.base().graphics().gl.glDrawElements(primitiveType,
+						count, GL20.GL_UNSIGNED_SHORT, offset * 2);
 			} else {
-				LSystem.base().graphics().gl.glDrawArrays(primitiveType, offset, count);
+				LSystem.base().graphics().gl.glDrawArrays(primitiveType,
+						offset, count);
 			}
 		}
 
@@ -388,8 +390,9 @@ public class Mesh implements LRelease {
 	}
 
 	public void close() {
-		if (meshes.get(LSystem.base()) != null)
+		if (meshes.get(LSystem.base()) != null) {
 			meshes.get(LSystem.base()).removeValue(this, true);
+		}
 		vertices.close();
 		indices.close();
 	}
@@ -538,7 +541,8 @@ public class Mesh implements LRelease {
 				tmpV.set(verts.get(idx), 0, 0);
 				if (transform != null)
 					tmpV.mulSelf(transform);
-				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
+				final float r = tmpV.subtractSelf(centerX, centerY, centerZ)
+						.len2();
 				if (r > result)
 					result = r;
 			}
@@ -549,7 +553,8 @@ public class Mesh implements LRelease {
 				tmpV.set(verts.get(idx), verts.get(idx + 1), 0);
 				if (transform != null)
 					tmpV.mulSelf(transform);
-				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
+				final float r = tmpV.subtractSelf(centerX, centerY, centerZ)
+						.len2();
 				if (r > result)
 					result = r;
 			}
@@ -560,7 +565,8 @@ public class Mesh implements LRelease {
 				tmpV.set(verts.get(idx), verts.get(idx + 1), verts.get(idx + 2));
 				if (transform != null)
 					tmpV.mulSelf(transform);
-				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
+				final float r = tmpV.subtractSelf(centerX, centerY, centerZ)
+						.len2();
 				if (r > result)
 					result = r;
 			}
@@ -571,8 +577,8 @@ public class Mesh implements LRelease {
 
 	public float calculateRadius(final float centerX, final float centerY,
 			final float centerZ, int offset, int count, final Matrix4 transform) {
-		return  MathUtils.sqrt(calculateRadiusSquared(centerX, centerY,
-				centerZ, offset, count, transform));
+		return MathUtils.sqrt(calculateRadiusSquared(centerX, centerY, centerZ,
+				offset, count, transform));
 	}
 
 	public float calculateRadius(final Vector3f center, int offset, int count,
@@ -802,7 +808,7 @@ public class Mesh implements LRelease {
 					VertexAttribute a = getVertexAttribute(usage[i]);
 					if (a == null)
 						continue;
-					for (int j = 0; j < a.numComponents; j++){
+					for (int j = 0; j < a.numComponents; j++) {
 						checks[++idx] = (short) (a.offset + j);
 					}
 					attrs[++ai] = new VertexAttribute(a.usage, a.numComponents,

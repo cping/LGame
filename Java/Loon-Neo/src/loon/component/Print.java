@@ -14,6 +14,10 @@ import loon.utils.TArray;
 
 public class Print implements LRelease {
 
+	public enum Mode {
+		NONE, LEFT, RIGHT, CENTER
+	}
+
 	// they is other char flags
 	private final static char[] _wrapchars = { '\u3002', '\u3001', '\uff0c',
 			'\uff0e', '\u300d', '\uff3d', '\u3011', '\u300f', '\u30fc',
@@ -110,7 +114,7 @@ public class Print implements LRelease {
 
 	private float alpha;
 
-	private int size, wait, tmp_left, left, fontSize, fontHeight;
+	private int size, wait, tmp_dir, left, fontSize, fontHeight;
 
 	private Vector2f vector;
 
@@ -118,11 +122,14 @@ public class Print implements LRelease {
 
 	private LSTRFont strings;
 
-	private boolean isEnglish, isLeft, isWait;
+	private boolean isEnglish, isWait;
 
 	private float iconX, iconY;
 
 	private int lazyHashCade = 1;
+
+	// 默认0，左1,右2
+	private Mode dirmode = Mode.NONE;
 
 	public Print(Vector2f vector, LFont font, int width, int height) {
 		this("", font, vector, width, height);
@@ -168,7 +175,7 @@ public class Print implements LRelease {
 			if (_print.strings != null) {
 				_print.strings.close();
 			}
-			_print.strings = new LSTRFont(_font, _context);
+			_print.strings = new LSTRFont(_font, _context, true);
 			_print.lazyHashCade = 1;
 			_print.wait = 0;
 			_print.visible = false;
@@ -178,7 +185,7 @@ public class Print implements LRelease {
 			_print.messageCount = 0;
 			_print.interceptCount = 0;
 			_print.size = 0;
-			_print.tmp_left = 0;
+			_print.tmp_dir = 0;
 			_print.left = 0;
 			_print.fontSize = 0;
 			_print.fontHeight = 0;
@@ -244,9 +251,24 @@ public class Print implements LRelease {
 			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : strings
 					.getSize());
 			this.fontHeight = strings.getHeight();
-			this.tmp_left = isLeft ? 0 : (width - (fontSize * messageLength))
-					/ 2 - (int) (fontSize * 1.5);
-			this.left = tmp_left;
+			switch (dirmode) {
+			default:
+			case NONE:
+				this.tmp_dir = 0;
+				break;
+			case LEFT:
+				this.tmp_dir = (width - (fontSize * messageLength)) / 2
+						- (int) (fontSize * 1.5);
+				break;
+			case RIGHT:
+				this.tmp_dir = (fontSize * messageLength) / 2;
+				break;
+			case CENTER:
+				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2
+						+ (int) (fontSize * 4);
+				break;
+			}
+			this.left = tmp_dir;
 			this.index = offset = font = tmp_font = 0;
 
 			int hashCode = 1;
@@ -285,12 +307,12 @@ public class Print implements LRelease {
 				if (showMessages[i] == 'n'
 						&& showMessages[i > 0 ? i - 1 : 0] == '\\') {
 					index = 0;
-					left = tmp_left;
+					left = tmp_dir;
 					offset++;
 					continue;
 				} else if (text == '\n') {
 					index = 0;
-					left = tmp_left;
+					left = tmp_dir;
 					offset++;
 					continue;
 				} else if (text == '<') {
@@ -312,7 +334,7 @@ public class Print implements LRelease {
 					continue;
 				} else if (index > messageLength) {
 					index = 0;
-					left = tmp_left;
+					left = tmp_dir;
 					offset++;
 					newLine = false;
 				} else if (text == '\\') {
@@ -503,12 +525,24 @@ public class Print implements LRelease {
 		this.visible = visible;
 	}
 
-	public boolean isLeft() {
-		return isLeft;
+	public Mode getTextMode() {
+		return dirmode;
 	}
 
-	public void setLeft(boolean isLeft) {
-		this.isLeft = isLeft;
+	public void setTextMode(Mode mode) {
+		this.dirmode = mode;
+	}
+
+	public void left() {
+		setTextMode(Mode.LEFT);
+	}
+
+	public void right() {
+		setTextMode(Mode.RIGHT);
+	}
+
+	public void center() {
+		setTextMode(Mode.CENTER);
 	}
 
 	public boolean isWait() {

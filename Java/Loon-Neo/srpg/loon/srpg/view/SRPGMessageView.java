@@ -101,6 +101,7 @@ public class SRPGMessageView extends SRPGView implements LRelease {
 				message[i].setMessageLength(font.stringWidth(mes[i])
 						/ mes[i].length() * 2 - 2);
 			}
+			message[i].center();
 			if (isLeft) {
 				if (!isEnglish) {
 					if (languageIndex == 0 || languageIndex == 1) {

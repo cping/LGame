@@ -29,15 +29,15 @@ public class ShadowFont implements IFont {
 			String[] dest = new String[size];
 			dest[size - 1] = append;
 			System.arraycopy(messages, 0, dest, 0, messages.length);
-			this.strfont = new LSTRFont(font, dest);
+			this.strfont = new LSTRFont(font, dest, true);
 		} else {
-			this.strfont = new LSTRFont(font, messages);
+			this.strfont = new LSTRFont(font, messages, true);
 		}
 		this.withShadow = shadow;
 	}
 
 	public ShadowFont(LFont font, String message, String append, boolean shadow) {
-		this.strfont = new LSTRFont(font, message + append);
+		this.strfont = new LSTRFont(font, message + append, true);
 		this.withShadow = shadow;
 	}
 

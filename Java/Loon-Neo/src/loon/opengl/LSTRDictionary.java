@@ -84,7 +84,7 @@ public final class LSTRDictionary {
 
 	}
 
-	public static void clearStringLazy() {
+	public synchronized static void clearStringLazy() {
 		synchronized (cacheList) {
 			if (cacheList != null) {
 				cacheList.clear();
@@ -103,7 +103,8 @@ public final class LSTRDictionary {
 
 	private final static int size = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
 
-	public final static Dict bind(final LFont font, final String mes) {
+	public synchronized final static Dict bind(final LFont font,
+			final String mes) {
 		final String message = mes + added;
 		if (cacheList.size > size) {
 			clearStringLazy();
@@ -141,7 +142,7 @@ public final class LSTRDictionary {
 						for (int i = 0; i < newSize; i++) {
 							sbr.append(charas.get(i));
 						}
-						pDict.font = new LSTRFont(font, sbr.toString());
+						pDict.font = new LSTRFont(font, sbr.toString(), false);
 					}
 				}
 			}
@@ -150,8 +151,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final static void drawString(LFont font, String message, float x,
-			float y, float angle, LColor c) {
+	public synchronized final static void drawString(LFont font,
+			String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -160,9 +161,9 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final static void drawString(LFont font, String message, float x,
-			float y, float sx, float sy, float ax, float ay, float angle,
-			LColor c) {
+	public synchronized final static void drawString(LFont font,
+			String message, float x, float y, float sx, float sy, float ax,
+			float ay, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -171,8 +172,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final static void drawString(GLEx gl, LFont font, String message,
-			float x, float y, float angle, LColor c) {
+	public synchronized final static void drawString(GLEx gl, LFont font,
+			String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -181,8 +182,9 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final static void drawString(GLEx gl, LFont font, String message,
-			float x, float y, float sx, float sy, float angle, LColor c) {
+	public synchronized final static void drawString(GLEx gl, LFont font,
+			String message, float x, float y, float sx, float sy, float angle,
+			LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -191,9 +193,9 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final static void drawString(GLEx gl, LFont font, String message,
-			float x, float y, float sx, float sy, float ax, float ay,
-			float angle, LColor c) {
+	public synchronized final static void drawString(GLEx gl, LFont font,
+			String message, float x, float y, float sx, float sy, float ax,
+			float ay, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -210,7 +212,8 @@ public final class LSTRDictionary {
 	 * @param text
 	 * @return
 	 */
-	public static String makeStringLazyKey(final LFont font, final String text) {
+	public synchronized static String makeStringLazyKey(final LFont font,
+			final String text) {
 		int hashCode = 0;
 		hashCode = LSystem.unite(hashCode, font.getSize());
 		hashCode = LSystem.unite(hashCode, font.getStyle());
@@ -240,7 +243,7 @@ public final class LSTRDictionary {
 	 * @param font
 	 * @return
 	 */
-	private static String makeLazyWestKey(LFont font) {
+	private synchronized static String makeLazyWestKey(LFont font) {
 		if (lazyKey == null) {
 			lazyKey = new StringBuffer();
 			lazyKey.append(font.getFontName().toLowerCase());
@@ -258,7 +261,7 @@ public final class LSTRDictionary {
 	/**
 	 * 清空西文字体缓存
 	 */
-	public static void clearEnglishLazy() {
+	public synchronized static void clearEnglishLazy() {
 		synchronized (lazyEnglish) {
 			for (LSTRFont str : lazyEnglish.values()) {
 				if (str != null) {
@@ -269,20 +272,20 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public static LSTRFont getGLFont(LFont f) {
+	public synchronized static LSTRFont getGLFont(LFont f) {
 		if (lazyEnglish.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			clearEnglishLazy();
 		}
 		String key = makeLazyWestKey(f);
 		LSTRFont font = lazyEnglish.get(key);
 		if (font == null) {
-			font = new LSTRFont(f);
+			font = new LSTRFont(f, false);
 			lazyEnglish.put(key, font);
 		}
 		return font;
 	}
 
-	public final static void dispose() {
+	public synchronized final static void dispose() {
 		clearEnglishLazy();
 		clearStringLazy();
 	}

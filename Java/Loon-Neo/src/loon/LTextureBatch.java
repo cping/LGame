@@ -1230,7 +1230,7 @@ public class LTextureBatch implements LRelease {
 	@Override
 	public void close() {
 		isClosed = true;
-		isLoaded = false;
+		mesh.dispose(name, size);
 		if (shader != null) {
 			shader.close();
 		}
@@ -1243,12 +1243,12 @@ public class LTextureBatch implements LRelease {
 		if (lastCache != null) {
 			lastCache.close();
 		}
-		mesh.dispose(name, size);
+		isLoaded = false;
 	}
 
 	public synchronized void destoryAll() {
-		close();
 		destroy();
+		close();
 	}
 
 	public void destroy() {

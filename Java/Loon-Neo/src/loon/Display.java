@@ -150,7 +150,8 @@ public class Display extends LSystemView {
 
 	private void newDefView(boolean show) {
 		if (show && fpsFont == null) {
-			this.fpsFont = new LSTRFont(LFont.getDefaultFont(), pFontString);
+			this.fpsFont = new LSTRFont(LFont.getDefaultFont(), pFontString,
+					false);
 		}
 		showLogo = setting.isLogo;
 		if (showLogo && !StringUtils.isEmpty(setting.logoPath)) {

@@ -316,23 +316,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 					}
 					if (cmdFlag.equalsIgnoreCase(CommandType.L_MESCOLOR)) {
 						if (mesFlag != null) {
-							if (mesFlag.equalsIgnoreCase("red")) {
-								message.setFontColor(LColor.red);
-							} else if (mesFlag.equalsIgnoreCase("yellow")) {
-								message.setFontColor(LColor.yellow);
-							} else if (mesFlag.equalsIgnoreCase("white")) {
-								message.setFontColor(LColor.white);
-							} else if (mesFlag.equalsIgnoreCase("black")) {
-								message.setFontColor(LColor.black);
-							} else if (mesFlag.equalsIgnoreCase("cyan")) {
-								message.setFontColor(LColor.cyan);
-							} else if (mesFlag.equalsIgnoreCase("green")) {
-								message.setFontColor(LColor.green);
-							} else if (mesFlag.equalsIgnoreCase("orange")) {
-								message.setFontColor(LColor.orange);
-							} else if (mesFlag.equalsIgnoreCase("pink")) {
-								message.setFontColor(LColor.pink);
-							}
+							message.setFontColor(new LColor(mesFlag));
 						}
 						continue;
 					}
@@ -616,14 +600,17 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 											int ny = Integer.valueOf(y)
 													.intValue();
 											screen.setHelper(
-													(String[]) mes.toArray(),
+													mes.toArray(new String[0]),
 													nx, ny, true);
 										} catch (Exception e) {
 										}
 									}
 								} else {
-									screen.setHelper((String[]) mes.toArray(),
-											true);
+									String[] list = new String[mes.size];
+									for (int i = 0; i < mes.size; i++) {
+										list[i] = mes.get(i).toString();
+									}
+									screen.setHelper(list, true);
 								}
 								setExist(true);
 								continue;

@@ -27,28 +27,40 @@ import java.nio.ShortBuffer;
 import loon.LSystem;
 
 public class IndexArray implements IndexData {
-	IntBuffer tmpHandle;
+
+	static IntBuffer tmpHandle;
 
 	ShortBuffer buffer;
 	ByteBuffer byteBuffer;
 
+	private final boolean empty;
+
 	public IndexArray(int maxIndices) {
+		if (tmpHandle == null) {
+			tmpHandle = LSystem.base().support().newIntBuffer(1);
+		}
+		empty = maxIndices == 0;
+		if (empty) {
+			maxIndices = 1;
+		}
 		byteBuffer = LSystem.base().support()
 				.newUnsafeByteBuffer(maxIndices * 2);
-		tmpHandle = LSystem.base().support().newIntBuffer(1);
 		buffer = byteBuffer.asShortBuffer();
 		buffer.flip();
 		byteBuffer.flip();
 	}
 
+	@Override
 	public int getNumIndices() {
-		return buffer.limit();
+		return empty ? 0 : buffer.limit();
 	}
 
+	@Override
 	public int getNumMaxIndices() {
-		return buffer.capacity();
+		return empty ? 0 : buffer.capacity();
 	}
 
+	@Override
 	public void setIndices(short[] indices, int offset, int count) {
 		buffer.clear();
 		buffer.put(indices, offset, count);
@@ -57,6 +69,7 @@ public class IndexArray implements IndexData {
 		byteBuffer.limit(count << 1);
 	}
 
+	@Override
 	public void setIndices(ShortBuffer indices) {
 		int pos = indices.position();
 		buffer.clear();
@@ -68,19 +81,24 @@ public class IndexArray implements IndexData {
 		byteBuffer.limit(buffer.limit() << 1);
 	}
 
+	@Override
 	public ShortBuffer getBuffer() {
 		return buffer;
 	}
 
+	@Override
 	public void bind() {
 	}
 
+	@Override
 	public void unbind() {
 	}
 
+	@Override
 	public void invalidate() {
 	}
 
+	@Override
 	public void close() {
 		LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
 	}
