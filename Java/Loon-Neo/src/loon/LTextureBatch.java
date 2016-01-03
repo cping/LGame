@@ -34,6 +34,10 @@ import loon.utils.ObjectMap;
 
 public class LTextureBatch implements LRelease {
 
+	private final static String defName = "texbatch";
+
+	private String name = defName;
+
 	private boolean isClosed;
 
 	public boolean isCacheLocked;
@@ -456,16 +460,14 @@ public class LTextureBatch implements LRelease {
 		GLUtils.setBlendMode(gl, old);
 	}
 
-	private String name = "texbatch";
-
-	public void setTextureBatchName(String n){
+	public void setTextureBatchName(String n) {
 		this.name = n;
 	}
-	
-	public String getTextureBatchName(){
+
+	public String getTextureBatchName() {
 		return this.name;
 	}
-	
+
 	private void setupMatrices(Matrix4 view) {
 		if (batchMatrix != null) {
 			combinedMatrix.set(batchMatrix);
@@ -1250,6 +1252,9 @@ public class LTextureBatch implements LRelease {
 		}
 		if (lastCache != null) {
 			lastCache.close();
+		}
+		if (!defName.equals(name) || !LSystem.base().support().isNative()) {
+			mesh.dispose(name, size);
 		}
 	}
 

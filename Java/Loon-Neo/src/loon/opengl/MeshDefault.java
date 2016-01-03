@@ -108,18 +108,10 @@ public class MeshDefault {
 		}
 	}
 
-	public void dispose(String name, int size) {
-		final String key = name + size;
-		Mesh mesh = meshLazy.remove(key);
-		if (mesh != null) {
-			mesh.close();
-		}
-	}
-
 	public int size() {
 		return meshLazy.size;
 	}
-	
+
 	public void dispose() {
 		for (Mesh mesh : meshLazy.values()) {
 			if (mesh != null) {
@@ -127,6 +119,14 @@ public class MeshDefault {
 			}
 		}
 		meshLazy.clear();
+	}
+
+	public void dispose(String name, int size) {
+		final String key = name + size;
+		Mesh mesh = meshLazy.remove(key);
+		if (mesh != null) {
+			mesh.close();
+		}
 	}
 
 }
