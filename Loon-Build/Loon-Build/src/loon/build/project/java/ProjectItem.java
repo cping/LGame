@@ -7,6 +7,7 @@ public class ProjectItem {
 	public String mainClass;
 	public String name;
 	public String dir;
+	public String outSrc;
 	public List<Object> depends;
 	public List<Object> cp;
 	public List<Object> jars;

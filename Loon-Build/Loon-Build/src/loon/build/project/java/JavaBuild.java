@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import loon.build.packer.ZipFileMake;
 import loon.build.sys.JDK;
 import loon.build.sys.LSystem;
 import loon.build.sys.Log;
@@ -20,6 +21,8 @@ import loon.build.tools.ParseData;
 import loon.build.tools.StringUtils;
 
 public class JavaBuild {
+
+	public static String sourceFileName = "src";
 
 	private Set<String> built, builds;
 	private Projects prjList;
@@ -121,16 +124,16 @@ public class JavaBuild {
 		javac.setSource(getParam("source", "1.8"));
 		javac.setEncoding(getParam("encoding", LSystem.ENCODING));
 		javac.setDebug(new Boolean(getParam("debug", "false")));
-		File srcDir = new File(path.getCanonicalPath(), "/src");
+		File srcDir = new File(path.getCanonicalPath(), "/" + sourceFileName);
 		if (!srcDir.exists()) {
 			throw new RuntimeException("src dir not found:"
 					+ srcDir.getCanonicalPath());
 		}
-		javac.setSrcdir(path.getCanonicalPath() + "/src");
+		javac.setSrcdir(path.getCanonicalPath() + "/" + sourceFileName);
 		File buildDir = new File(path.getCanonicalPath() + "/build");
 		buildDir.mkdirs();
-		String outputPath = buildDir.getCanonicalPath();
-		javac.setDestdir(outputPath);
+		String buildOutputPath = buildDir.getCanonicalPath();
+		javac.setDestdir(buildOutputPath);
 		JavaPath cp = new JavaPath(project);
 		if (prj.classpaths != null) {
 			for (Object o : prj.classpaths) {
@@ -192,7 +195,7 @@ public class JavaBuild {
 		copy.setProject(project);
 		copy.setTodir(buildDir);
 		JavaFileSet fileSet = new JavaFileSet();
-		fileSet.addFile(new File(path.getCanonicalPath() + "/src"));
+		fileSet.addFile(new File(path.getCanonicalPath() + "/" + sourceFileName));
 		fileSet.setExcludesEndsWith(".java");
 		fileSet.ignoreEclipsePrjFile = true;
 		copy.addFileset(fileSet);
@@ -238,6 +241,18 @@ public class JavaBuild {
 					run.addArg(o1.toString());
 				}
 				run.execute();
+			}
+		}
+
+		if (prj.outSrc != null && StringUtils.toBoolean(prj.outSrc)) {
+			// 打包源码
+			File file = new File(path.getCanonicalPath() + "/" + sourceFileName);
+			if (file.exists()) {
+				ZipFileMake make = new ZipFileMake();
+				File output = addPath(prjList.sourceDir, outputDir);
+				String sourceFilePath = output.getCanonicalPath();
+				make.zipFolder(file.getCanonicalPath(), sourceFilePath + "/"
+						+ prjName + "-source.jar");
 			}
 		}
 	}
@@ -353,7 +368,7 @@ public class JavaBuild {
 		File dir = args.length > 0 ? new File(args[0]).getAbsoluteFile()
 				.getParentFile() : new File(".");
 		log("Current Dir:" + dir.getCanonicalPath());
-		File srcDir = new File(dir, "src");
+		File srcDir = new File(dir, sourceFileName);
 		if (srcDir.exists() && srcDir.isDirectory()) {
 
 		} else {
@@ -396,7 +411,7 @@ public class JavaBuild {
 			outputDir = ".";
 		}
 		if (javaHome == null) {
-			//不必非要jdk进行编译
+			// 不必非要jdk进行编译
 			String javaPath = new JDK(false).find(0);
 			if (!javaPath.isEmpty()) {
 				log("found latest JDK:" + javaPath);

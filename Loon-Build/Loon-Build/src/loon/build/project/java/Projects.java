@@ -42,6 +42,7 @@ public class Projects {
 				prj.classpaths = (List<Object>)m.get("classpath");
 				prj.manifests = (List<Object>) m.get("manifests");
 				prj.mainClass = (String) m.get("main");
+				prj.outSrc = (String) m.get("src");
 				prj.run = (List<Object>) m.get("run");
 	
 			}
