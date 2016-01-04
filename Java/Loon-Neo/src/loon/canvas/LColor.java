@@ -285,6 +285,8 @@ public class LColor implements Serializable {
 
 	public static final LColor white = new LColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+	public final static LColor transparent = white;
+
 	public static final LColor yellow = new LColor(1.0f, 1.0f, 0.0f, 1.0f);
 
 	public static final LColor red = new LColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -384,6 +386,7 @@ public class LColor implements Serializable {
 					colorMap.put("lightslategray", lightSlateGray);
 					colorMap.put("lightsteelblue", lightSteelBlue);
 					colorMap.put("lightyellow", lightYellow);
+					colorMap.put("transparent", transparent);
 				}
 				LColor color = colorMap.get(c.trim().toLowerCase());
 				if (color != null) {
@@ -910,6 +913,46 @@ public class LColor implements Serializable {
 
 	public Alpha getAlphaObject() {
 		return new Alpha(a);
+	}
+
+	/**
+	 * 按照特定百分比改变当前色彩，并返回一个新的LColor对象
+	 * 
+	 * @param percent 最大值为1f，最小值为0f
+	 * @return
+	 */
+	public LColor percent(float percent) {
+		if (percent < -1) {
+			return new LColor(0, 0, 0, getAlpha());
+		}
+		if (percent > 1) {
+			return new LColor(255, 255, 255, getAlpha());
+		}
+		if (percent < 0) {
+			percent = 1 + percent;
+			int r = MathUtils.max(0,
+					MathUtils.min(255, (int) ((getRed() * percent) + 0.5)));
+			int g = MathUtils.max(0,
+					MathUtils.min(255, (int) ((getGreen() * percent) + 0.5)));
+			int b = MathUtils.max(0,
+					MathUtils.min(255, (int) ((getBlue() * percent) + 0.5)));
+			return new LColor(r, g, b, getAlpha());
+		} else if (percent > 0) {
+			int r = MathUtils.max(
+					0,
+					MathUtils.min(255, (int) (((255 - getRed()) * percent)
+							+ getRed() + 0.5)));
+			int g = MathUtils.max(
+					0,
+					MathUtils.min(255, (int) (((255 - getGreen()) * percent)
+							+ getGreen() + 0.5)));
+			int b = MathUtils.max(
+					0,
+					MathUtils.min(255, (int) (((255 - getBlue()) * percent)
+							+ getBlue() + 0.5)));
+			return new LColor(r, g, b, getAlpha());
+		}
+		return new LColor(getRed(), getGreen(), getBlue(), getAlpha());
 	}
 
 	@Override

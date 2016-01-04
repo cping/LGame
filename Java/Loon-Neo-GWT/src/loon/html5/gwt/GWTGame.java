@@ -225,6 +225,9 @@ public class GWTGame extends LGame {
 
 	private void init() {
 		if (!initGwt) {
+			if (game != null && game.isMobile()) {
+				Window.scrollTo(0, 1);
+			}
 			game.initialize();
 			initGwt = true;
 		}
@@ -400,10 +403,10 @@ public class GWTGame extends LGame {
 		return $doc.hidden;
 	}-*/;
 
-	public boolean isShow(){
+	public boolean isShow() {
 		return isHidden();
 	}
-	
+
 	@Override
 	public boolean isMobile() {
 		if (game == null) {
