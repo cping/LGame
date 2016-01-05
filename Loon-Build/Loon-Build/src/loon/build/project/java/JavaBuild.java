@@ -13,6 +13,7 @@ import java.util.Set;
 
 import loon.build.packer.ZipFileMake;
 import loon.build.sys.JDK;
+import loon.build.sys.JVM;
 import loon.build.sys.LSystem;
 import loon.build.sys.Log;
 import loon.build.tools.ArrayMap;
@@ -406,19 +407,14 @@ public class JavaBuild {
 		}
 		String pb1 = (String) params.get("sourceDir");
 		String outputDir = (String) params.get("outputDir");
-		String javaHome = (String) params.get("javaHome");
+		String javaHome = JVM.getJavaHome((String) params.get("javaHome"));
 		if (outputDir == null) {
 			outputDir = ".";
 		}
-		if (javaHome == null) {
-			// 不必非要jdk进行编译
-			String javaPath = new JDK(false).find(0);
-			if (!javaPath.isEmpty()) {
-				log("found latest JDK:" + javaPath);
-				javaHome = javaPath;
-			} else {
-				log("didnot found JDK");
-			}
+		if (!StringUtils.isEmpty(javaHome)) {
+			log("found latest JDK:" + javaHome);
+		} else {
+			log("didnot found JDK");
 		}
 		Object prjList = params.get("list");
 		Projects prjs1 = new Projects();

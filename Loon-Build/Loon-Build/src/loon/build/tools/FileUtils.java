@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2012
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.3.3
+ */
 package loon.build.tools;
 
 import java.io.BufferedInputStream;
@@ -32,26 +52,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- * Copyright 2008 - 2012
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @project loon
- * @author cping
- * @email：javachenpeng@yahoo.com
- * @version 0.3.3
- */
 final public class FileUtils {
 
 	/**
@@ -1109,5 +1109,55 @@ final public class FileUtils {
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
+	}
+
+	public static void copyDirectory(File source, File target)
+			throws IOException {
+		if (source == null) {
+			return;
+		}
+		if (!target.exists()) {
+			target.mkdirs();
+		}
+
+		String[] files = source.list();
+		if (files != null) {
+			for (String fileName : source.list()) {
+				File s = new File(source, fileName);
+				File t = new File(target, fileName);
+				if (s.isDirectory()) {
+					copyDirectory(s, t);
+				} else {
+					copy(s, t);
+				}
+			}
+		}
+	}
+
+	public static void copy(File source, File target) throws IOException {
+		try (InputStream in = new FileInputStream(source);
+				OutputStream out = new FileOutputStream(target)) {
+			byte[] buf = new byte[1024];
+			int length;
+			while ((length = in.read(buf)) > 0) {
+				out.write(buf, 0, length);
+			}
+		}
+	}
+
+	public static boolean deleteDirectory(File directory) {
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			if (null != files) {
+				for (File file : files) {
+					if (file.isDirectory()) {
+						deleteDirectory(file);
+					} else {
+						file.delete();
+					}
+				}
+			}
+		}
+		return directory.delete();
 	}
 }
