@@ -112,21 +112,21 @@ public class MeshDefault {
 		return meshLazy.size;
 	}
 
-	public void dispose() {
-		for (Mesh mesh : meshLazy.values()) {
-			if (mesh != null) {
-				mesh.close();
-			}
-		}
-		meshLazy.clear();
-	}
-
 	public void dispose(String name, int size) {
 		final String key = name + size;
 		Mesh mesh = meshLazy.remove(key);
 		if (mesh != null) {
 			mesh.close();
 		}
+	}
+
+	public static void dispose() {
+		for (Mesh mesh : meshLazy.values()) {
+			if (mesh != null) {
+				mesh.close();
+			}
+		}
+		meshLazy.clear();
 	}
 
 }

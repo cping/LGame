@@ -260,10 +260,10 @@ public class Display extends LSystemView {
 				break;
 			case Screen.SCREEN_TEXTURE_REPAINT:
 				if (process.getX() == 0 && process.getY() == 0) {
-					glEx.draw(process.getBackground(), 0, 0);
+					glEx.draw(process.getBackground(), 0, 0, width(), height());
 				} else {
 					glEx.draw(process.getBackground(), process.getX(),
-							process.getY());
+							process.getY(), width(), height());
 				}
 				break;
 			case Screen.SCREEN_COLOR_REPAINT:
@@ -276,14 +276,15 @@ public class Display extends LSystemView {
 				if (process.getX() == 0 && process.getY() == 0) {
 					glEx.draw(process.getBackground(), repaintMode / 2
 							- MathUtils.random(repaintMode), repaintMode / 2
-							- MathUtils.random(repaintMode));
+							- MathUtils.random(repaintMode), width(), height());
 				} else {
 					glEx.draw(
 							process.getBackground(),
 							process.getX() + repaintMode / 2
 									- MathUtils.random(repaintMode),
 							process.getY() + repaintMode / 2
-									- MathUtils.random(repaintMode));
+									- MathUtils.random(repaintMode), width(),
+							height());
 				}
 				break;
 			}
@@ -346,4 +347,11 @@ public class Display extends LSystemView {
 		return glEx;
 	}
 
+	public float width() {
+		return LSystem.viewSize.width();
+	}
+
+	public float height() {
+		return LSystem.viewSize.height;
+	}
 }

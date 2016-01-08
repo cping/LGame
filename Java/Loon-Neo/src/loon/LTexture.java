@@ -503,7 +503,7 @@ public class LTexture extends Painter implements LRelease {
 					+ copy.xOff;
 			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 					+ copy.yOff;
-
+			
 			isChild = true;
 			childs.put(hashCode, copy);
 

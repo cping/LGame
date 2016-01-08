@@ -1153,13 +1153,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen setBackground(LTexture background) {
 		if (background != null) {
 			setRepaintMode(SCREEN_TEXTURE_REPAINT);
-			LTexture screen = null;
-			if (background.getWidth() != getWidth()
-					|| background.getHeight() != getHeight()) {
-				screen = background.scale(getWidth(), getHeight());
-			} else {
-				screen = background;
-			}
+			LTexture screen = background;
 			LTexture tmp = currentScreen;
 			currentScreen = screen;
 			if (tmp != null) {

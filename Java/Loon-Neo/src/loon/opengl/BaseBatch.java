@@ -43,7 +43,13 @@ public abstract class BaseBatch extends LTextureBind {
 					: tex.widthRatio;
 			float uv = tex.getFormat().repeatY ? h / forefather.height()
 					: tex.heightRatio;
-			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
+			if (w < forefather.width() || h < forefather.height()) {
+				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2,
+						uv);
+			} else {
+				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff,
+						forefather.widthRatio, forefather.heightRatio);
+			}
 		}
 	}
 
