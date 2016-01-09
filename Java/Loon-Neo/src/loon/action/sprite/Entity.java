@@ -64,7 +64,11 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	protected LTexture _image;
 
 	public Entity() {
-		this(null);
+		this((LTexture) null);
+	}
+
+	public Entity(final String path) {
+		this(LTextures.loadTexture(path));
 	}
 
 	public Entity(final LTexture texture) {
@@ -99,6 +103,14 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 
 	public boolean isDisposed() {
 		return this._disposed;
+	}
+
+	public void setTexture(String path) {
+		this._image = LTextures.loadTexture(path);
+	}
+
+	public void setTexture(LTexture tex) {
+		this._image = tex;
 	}
 
 	@Override
@@ -762,6 +774,11 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	@Override
 	public void setHeight(float h) {
 		this._scaleY = (h / getHeight());
+	}
+
+	public void setSize(int w, int h) {
+		setWidth(w);
+		setHeight(h);
 	}
 
 }

@@ -722,22 +722,27 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		this.scaleY = scaleY;
 	}
 
+	@Override
 	public Field2D getField2D() {
 		return null;
 	}
 
+	@Override
 	public boolean isBounded() {
 		return false;
 	}
 
+	@Override
 	public boolean isContainer() {
 		return false;
 	}
 
+	@Override
 	public boolean inContains(float x, float y, float w, float h) {
 		return getCollisionBox().contains(x, y, w, h);
 	}
 
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}
@@ -746,9 +751,15 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		this.setScale(s, s);
 	}
 
+	@Override
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;
 		this.scaleY = sy;
+	}
+
+	public void setSize(float width, float height) {
+		this.scaleX = getWidth() / width;
+		this.scaleY = getHeight() / height;
 	}
 
 	public int getMaxFrame() {

@@ -20,6 +20,8 @@
  */
 package loon;
 
+import loon.utils.NumberUtils;
+
 public class LSetting {
 
 	// 是否显示FPS帧率
@@ -58,7 +60,6 @@ public class LSetting {
 
 	public String fontName = LSystem.FONT_NAME;
 
-	
 	public void copy(LSetting setting) {
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
@@ -93,13 +94,22 @@ public class LSetting {
 				&& this.height_zoom > 0
 				&& (this.width_zoom != this.width || this.height_zoom != this.height);
 	}
-	
+
 	public int getShowWidth() {
 		return this.width_zoom > 0 ? this.width_zoom : this.width;
 	}
 
 	public int getShowHeight() {
 		return this.height_zoom > 0 ? this.height_zoom : this.height;
+	}
+
+	/**
+	 * 判断设备是否宽屏
+	 * 
+	 * @return
+	 */
+	public boolean wideScreen() {
+		return NumberUtils.compare(getShowWidth() / getShowHeight(), 1.777777f) == 0;
 	}
 
 }
