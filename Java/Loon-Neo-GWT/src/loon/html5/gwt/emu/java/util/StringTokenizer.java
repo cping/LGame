@@ -13,61 +13,123 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package java.util;
 
-public class StringTokenizer {
-	private final String deli;
-	private final String s;
-	private final int len;
+public class StringTokenizer implements Enumeration<Object> {
 
-	private int pos;
-	private String next;
+	private String string;
 
-	public StringTokenizer (String s, String deli) {
-		this.s = s;
-		this.deli = deli;
-		len = s.length();
+	private String delimiters;
+
+	private boolean returnDelimiters;
+
+	private int position;
+
+	public StringTokenizer(String string) {
+		this(string, " \t\n\r\f", false);
 	}
 
-	public StringTokenizer (String s) {
-		this(s, " \t\n\r\f");
-
+	public StringTokenizer(String string, String delimiters) {
+		this(string, delimiters, false);
 	}
 
-	public String nextToken () {
-		if (!hasMoreTokens()) {
-			throw new NoSuchElementException();
+	public StringTokenizer(String string, String delimiters,
+			boolean returnDelimiters) {
+		if (string == null) {
+			throw new NullPointerException("string == null");
 		}
-		String result = next;
-		next = null;
-		return result;
+		this.string = string;
+		this.delimiters = delimiters;
+		this.returnDelimiters = returnDelimiters;
+		this.position = 0;
 	}
 
-	public boolean hasMoreElements () {
+	public int countTokens() {
+		int count = 0;
+		boolean inToken = false;
+		for (int i = position, length = string.length(); i < length; i++) {
+			if (delimiters.indexOf(string.charAt(i), 0) >= 0) {
+				if (returnDelimiters) {
+					count++;
+				}
+				if (inToken) {
+					count++;
+					inToken = false;
+				}
+			} else {
+				inToken = true;
+			}
+		}
+		if (inToken) {
+			count++;
+		}
+		return count;
+	}
+
+	@Override
+	public boolean hasMoreElements() {
 		return hasMoreTokens();
 	}
 
-	public boolean hasMoreTokens () {
-		if (next != null) {
-			return true;
+	public boolean hasMoreTokens() {
+		if (delimiters == null) {
+			throw new NullPointerException("delimiters == null");
 		}
-		// skip leading delimiters
-		while (pos < len && deli.indexOf(s.charAt(pos)) != -1) {
-			pos++;
+		int length = string.length();
+		if (position < length) {
+			if (returnDelimiters) {
+				return true;
+			}
+			for (int i = position; i < length; i++) {
+				if (delimiters.indexOf(string.charAt(i), 0) == -1) {
+					return true;
+				}
+			}
 		}
+		return false;
+	}
 
-		if (pos >= len) {
-			return false;
-		}
+	@Override
+	public Object nextElement() {
+		return nextToken();
+	}
 
-		int p0 = pos++;
-		while (pos < len && deli.indexOf(s.charAt(pos)) == -1) {
-			pos++;
+	public String nextToken() {
+		if (delimiters == null) {
+			throw new NullPointerException("delimiters == null");
 		}
+		int i = position;
+		int length = string.length();
 
-		next = s.substring(p0, pos++);
-		return true;
+		if (i < length) {
+			if (returnDelimiters) {
+				if (delimiters.indexOf(string.charAt(position), 0) >= 0)
+					return String.valueOf(string.charAt(position++));
+				for (position++; position < length; position++)
+					if (delimiters.indexOf(string.charAt(position), 0) >= 0)
+						return string.substring(i, position);
+				return string.substring(i);
+			}
+
+			while (i < length && delimiters.indexOf(string.charAt(i), 0) >= 0) {
+				i++;
+			}
+			position = i;
+			if (i < length) {
+				for (position++; position < length; position++) {
+					if (delimiters.indexOf(string.charAt(position), 0) >= 0) {
+						return string.substring(i, position);
+					}
+				}
+				return string.substring(i);
+			}
+		}
+		throw new NoSuchElementException();
+	}
+
+	public String nextToken(String delims) {
+		this.delimiters = delims;
+		return nextToken();
 	}
 
 }

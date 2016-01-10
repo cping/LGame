@@ -498,6 +498,10 @@ public class SortedList<E> {
 		}
 	}
 
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
 	public Object[] toArray() {
 		Object[] result = new Object[size];
 		int i = 0;

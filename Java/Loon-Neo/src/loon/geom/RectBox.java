@@ -237,10 +237,12 @@ public class RectBox extends Shape implements BoxSize {
 		this.height = other.height;
 	}
 
+	@Override
 	public float getMinX() {
 		return getX();
 	}
 
+	@Override
 	public float getMinY() {
 		return getY();
 	}
@@ -614,6 +616,21 @@ public class RectBox extends Shape implements BoxSize {
 
 	public RectBox cpy() {
 		return new RectBox(this.x, this.y, this.width, this.height);
+	}
+
+	public RectBox createIntersection(RectBox rectBox) {
+		RectBox dest = new RectBox();
+		dest.intersection(rectBox);
+		intersect(this, rectBox, dest);
+		return dest;
+	}
+
+	public static void intersect(RectBox src1, RectBox src2, RectBox dest) {
+		float x1 = MathUtils.max(src1.getMinX(), src2.getMinX());
+		float y1 = MathUtils.max(src1.getMinY(), src2.getMinY());
+		float x2 = MathUtils.min(src1.getMaxX(), src2.getMaxX());
+		float y2 = MathUtils.min(src1.getMaxY(), src2.getMaxY());
+		dest.setBounds(x1, y1, x2 - x1, y2 - y1);
 	}
 
 }

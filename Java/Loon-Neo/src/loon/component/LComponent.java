@@ -25,6 +25,7 @@ import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
@@ -53,6 +54,10 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	public ClickListener Click;
 
+	public void addClickListener(ClickListener c) {
+		Click = c;
+	}
+	
 	public void SetClick(ClickListener c) {
 		Click = c;
 	}
@@ -141,6 +146,10 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 			this.height = 10;
 		}
 
+	}
+
+	public Screen getScreen() {
+		return desktop.input;
 	}
 
 	public int getScreenWidth() {

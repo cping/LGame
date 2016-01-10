@@ -47,6 +47,8 @@ public class LCheckBox extends LComponent {
 
 	private String text;
 
+	private LColor color = new LColor(LColor.white);
+
 	public LCheckBox(String txt, int x, int y) {
 		this(txt, x, y, LColor.white);
 	}
@@ -123,9 +125,9 @@ public class LCheckBox extends LComponent {
 						+ (font.getHeight() - boxsize) / 2 + 5, fontColor);
 			}
 			if (!ticked) {
-				g.draw(unchecked, x, y, boxsize, boxsize);
+				g.draw(unchecked, x, y, boxsize, boxsize, color);
 			} else {
-				g.draw(checked, x, y, boxsize, boxsize);
+				g.draw(checked, x, y, boxsize, boxsize, color);
 			}
 		} else {
 			if (showtext && text != null) {
@@ -135,15 +137,29 @@ public class LCheckBox extends LComponent {
 			if (!ticked) {
 				g.draw(unchecked, x + font.stringWidth(text) + boxsize + 5, y
 						+ font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
-						boxsize);
+						boxsize, color);
 			} else {
 				g.draw(checked, x + font.stringWidth(text) + boxsize + 5, y
 						+ font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
-						boxsize);
+						boxsize, color);
 			}
 		}
 	}
 
+	@Override
+	public boolean isSelected() {
+		return super.isSelected() || isTicked();
+	}
+	
+	public void setColor(LColor c) {
+		this.color = c;
+	}
+
+	public LColor getColor() {
+		return this.color;
+	}
+
+	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
 			return;
@@ -164,8 +180,10 @@ public class LCheckBox extends LComponent {
 
 	@Override
 	protected void processTouchDragged() {
-		this.over = this.pressed = this.intersects(this.input.getTouchX(),
-				this.input.getTouchY());
+		if (input != null) {
+			this.over = this.pressed = this.intersects(this.input.getTouchX(),
+					this.input.getTouchY());
+		}
 	}
 
 	@Override
