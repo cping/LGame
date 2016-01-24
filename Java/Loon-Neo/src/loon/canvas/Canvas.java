@@ -23,6 +23,7 @@ package loon.canvas;
 import loon.Graphics;
 import loon.LRelease;
 import loon.LTexture;
+import loon.canvas.Paint.Style;
 import loon.font.LFont;
 import loon.font.TextLayout;
 
@@ -97,6 +98,38 @@ public abstract class Canvas implements LRelease {
 	public abstract Path createPath();
 
 	public abstract Gradient createGradient(Gradient.Config config);
+
+	public Canvas rect(float x, float y, float w, float h, Paint paint) {
+		if (paint == null) {
+			fillRect(x, y, w, h);
+		} else {
+			int tmp = getStrokeColor();
+			setStrokeWidth(paint.strokeWidth);
+			int fill = getFillColor();
+			int stroke = getStrokeColor();
+			Style style = paint.style;
+			switch (style) {
+			case FILL:
+				setFillColor(paint.color);
+				fillRect(x, y, w, h);
+				break;
+			case STROKE:
+				setStrokeColor(paint.color);
+				strokeRect(x, y, w, h);
+				break;
+			case FILL_AND_STROKE:
+				setFillColor(paint.color);
+				setStrokeColor(paint.color);
+				fillRect(x, y, w, h);
+				strokeRect(x, y, w, h);
+				break;
+			}
+			setFillColor(fill);
+			setStrokeColor(stroke);
+			setStrokeWidth(tmp);
+		}
+		return this;
+	}
 
 	public Canvas draw(Drawable image, float x, float y) {
 		return draw(image, x, y, image.width(), image.height());

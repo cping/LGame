@@ -2,7 +2,7 @@ package loon.opengl;
 
 import loon.canvas.LColor;
 
-public class Paint {
+public class GLPaint {
 
 	public enum Gradient {
 		LINEAR_TOP_TO_BOTTOM, LINEAR_LEFT_TO_RIGHT, DIAGONAL_LEFT_TO_RIGHT, DIAGONAL_RIGHT_TO_LEFT
@@ -13,12 +13,12 @@ public class Paint {
 	private LColor bottomLeft;
 	private LColor bottomRight;
 
-	public Paint(Paint paint) {
+	public GLPaint(GLPaint paint) {
 		this();
 		setColor(paint);
 	}
 
-	public Paint(LColor topLeft, LColor topRight, LColor bottomLeft,
+	public GLPaint(LColor topLeft, LColor topRight, LColor bottomLeft,
 			LColor bottomRight) {
 		this.topLeft = topLeft.cpy();
 		this.topRight = topRight.cpy();
@@ -26,15 +26,15 @@ public class Paint {
 		this.bottomRight = bottomRight.cpy();
 	}
 
-	public Paint(LColor color) {
+	public GLPaint(LColor color) {
 		this(color, color, color, color);
 	}
 
-	public Paint() {
+	public GLPaint() {
 		this(LColor.white);
 	}
 
-	public Paint(LColor c1, LColor c2, Gradient gradient) {
+	public GLPaint(LColor c1, LColor c2, Gradient gradient) {
 		this();
 
 		switch (gradient) {
@@ -107,7 +107,7 @@ public class Paint {
 		setBottomRightColor(color);
 	}
 
-	public void setColor(Paint paint) {
+	public void setColor(GLPaint paint) {
 		setTopLeftColor(paint.getTopLeftColor());
 		setTopRightColor(paint.getTopRightColor());
 		setBottomLeftColor(paint.getBottomLeftColor());

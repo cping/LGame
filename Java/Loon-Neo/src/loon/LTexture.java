@@ -28,7 +28,7 @@ import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.opengl.BaseBatch;
 import loon.opengl.GL20;
-import loon.opengl.Paint;
+import loon.opengl.GLPaint;
 import loon.opengl.Painter;
 import loon.utils.GLUtils;
 import loon.utils.NumberUtils;
@@ -532,7 +532,7 @@ public class LTexture extends Painter implements LRelease {
 		setImageColor(c.r, c.g, c.b, c.a);
 	}
 
-	public void setColor(Paint paint) {
+	public void setColor(GLPaint paint) {
 		if (colors == null) {
 			colors = new LColor[4];
 		}

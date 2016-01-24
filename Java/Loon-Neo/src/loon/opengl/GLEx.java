@@ -27,7 +27,9 @@ import loon.LTexture;
 import loon.LTrans;
 import loon.action.camera.BaseCamera;
 import loon.canvas.LColor;
+import loon.canvas.Paint;
 import loon.canvas.PixmapFImpl;
+import loon.canvas.Paint.Style;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Affine2f;
@@ -36,6 +38,7 @@ import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
+import loon.geom.RectF.Range;
 import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
@@ -101,7 +104,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private BrushSave lastBrush;
 	private float scaleX = 1f, scaleY = 1f;
 	private float offsetStringX = 0, offsetStringY = 0;
-	
+
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
 	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的
@@ -691,6 +694,123 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public final GLEx clear(LColor color) {
 		GLUtils.setClearColor(batch.gl, color);
+		return this;
+	}
+
+	public GLEx rect(Range rect, float x, float y, Paint paint) {
+		int tmp = baseColor;
+		float line = getLineWidth();
+		Style style = Style.FILL;
+		if (paint != null) {
+			setLineWidth(paint.strokeWidth);
+			style = paint.style;
+			setColor(paint.color);
+		}
+		switch (style) {
+		case FILL:
+			fillRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
+					rect.height());
+			break;
+		case STROKE:
+			drawRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
+					rect.height());
+			break;
+		case FILL_AND_STROKE:
+			fillRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
+					rect.height());
+			drawRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
+					rect.height());
+			break;
+		}
+		setColor(tmp);
+		setLineWidth(line);
+		return this;
+	}
+
+	public GLEx drawBitmap(Painter texture, Range src, Range des, Paint paint) {
+		int tmp = baseColor;
+		if (paint != null) {
+			if (paint.style == Style.FILL) {
+				setColor(paint.color);
+			}
+		}
+		draw(texture, des.x(), des.y(), des.width(), des.height(), src.x(),
+				src.y(), src.width(), src.height());
+		setColor(tmp);
+		return this;
+	}
+
+	public GLEx drawBitmap(Painter texture, Range des, Paint paint) {
+		int tmp = baseColor;
+		if (paint != null) {
+			if (paint.style == Style.FILL) {
+				setColor(paint.color);
+			}
+		}
+		draw(texture, des.x(), des.y(), des.width(), des.height());
+		setColor(tmp);
+		return this;
+	}
+
+	public GLEx drawBitmap(Painter texture, float x, float y, Paint paint) {
+		int tmp = baseColor;
+		if (paint != null) {
+			if (paint.style == Style.FILL) {
+				setColor(paint.color);
+			}
+		}
+		draw(texture, x, y);
+		setColor(tmp);
+		return this;
+	}
+
+	/**
+	 * 渲染指定字符串到屏幕（此函数显示，与旧版drawString渲染位置相同）
+	 * 
+	 * @param message
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public GLEx drawText(String message, float x, float y) {
+		return drawText(message, x, y, 0, null);
+	}
+
+	/**
+	 * 渲染指定字符串到屏幕（此函数显示，与旧版drawString渲染位置相同）
+	 * 
+	 * @param message
+	 * @param x
+	 * @param y
+	 * @param paint
+	 * @return
+	 */
+	public GLEx drawText(String message, float x, float y, Paint paint) {
+		return drawText(message, x, y, 0, paint);
+	}
+
+	/**
+	 * 渲染指定字符串到屏幕（此函数显示，与旧版drawString渲染位置相同）
+	 * 
+	 * @param message
+	 * @param x
+	 * @param y
+	 * @param rotation
+	 * @param paint
+	 * @return
+	 */
+	public GLEx drawText(String message, float x, float y, float rotation,
+			Paint paint) {
+		if (paint != null && paint.getFont() != null) {
+			IFont tmpFont = paint.getFont();
+			tmpFont.drawString(this, message, x + offsetStringX, y
+					+ offsetStringY - tmpFont.getAscent() - 1, rotation,
+					tmpColor.setColor(paint.color));
+		} else if (font != null) {
+			font.drawString(this, message, x + offsetStringX, y + offsetStringY
+					- font.getAscent() - 1, rotation,
+					tmpColor.setColor(paint.color));
+		}
 		return this;
 	}
 
@@ -2261,6 +2381,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	/**
 	 * 统一偏移drawString的X轴
+	 * 
 	 * @return
 	 */
 	public float getOffsetStringX() {
@@ -2273,6 +2394,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	/**
 	 * 统一偏移drawString的Y轴
+	 * 
 	 * @return
 	 */
 	public float getOffsetStringY() {
@@ -2282,7 +2404,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public void setOffsetStringY(float offsetStringY) {
 		this.offsetStringY = offsetStringY;
 	}
-	
+
+	/**
+	 * PS:此处drawString，相比旧版做了一些改变，旧版是按照java标注的drawstring函数绘制字符串，
+	 * 减去ascent值后再进行显示，而目前版本则按照xna的字符模式，不再减去该值，所以默认显示位置有所变化。如果要实现
+	 * loon-0.5以前版本的drawString功能，请使用drawText函数.(最关键的是，loon文字显示默认使用本机字体，
+	 * 而非强制导入ttf或者图片字体，因此ascent这个值，随着运行环境不同，会有细微变化，所以使用旧版drawString
+	 * 显示字符位置，会随着系统出现微妙变化，而新版中则希望样式更为统一(如果减去size值，可以相对固定位置，但不一定能和
+	 * 当前系统字体的实际大小配合，显示位置同样可能存在细微差异，始终无位移始终最稳妥)).
+	 */
 	/**
 	 * 输出字符串
 	 * 
@@ -2355,8 +2485,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		font.drawString(this, string, x + offsetStringX, y + offsetStringY,
-				rotation, c);
+		if (font != null) {
+			font.drawString(this, string, x + offsetStringX, y + offsetStringY,
+					rotation, c);
+		}
 		return this;
 	}
 
