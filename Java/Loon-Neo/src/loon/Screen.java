@@ -65,7 +65,34 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
-
+	
+	/**
+	 * 最后绘制用户界面
+	 */
+	public void lastUserDraw(){
+		setFristOrder(DRAW_SPRITE_PAINT());
+		setSecondOrder(DRAW_DESKTOP_PAINT());
+		setLastOrder(DRAW_USER_PAINT());
+   }
+	
+	/**
+	 * 优先绘制用户界面
+	 */
+	public void fristUserDraw(){
+		setFristOrder(DRAW_USER_PAINT());
+		setSecondOrder(DRAW_SPRITE_PAINT());
+		setLastOrder(DRAW_DESKTOP_PAINT());
+	}
+	
+	/**
+	 * 把用户渲染置于精灵与桌面之间
+	 */
+	public void centerUserDraw(){
+		setFristOrder(DRAW_SPRITE_PAINT());
+		setSecondOrder(DRAW_USER_PAINT());
+		setLastOrder(DRAW_DESKTOP_PAINT());
+	}
+	
 	/**受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉.**/
 	/**但是，TeaVM之类的Bytecode to JS转码器是支持的.因此视情况有恢复可能性，但千万注意，恢复此部分函数的话。[不保证完整的跨平台性]**/
 	/*private boolean isDrawing;

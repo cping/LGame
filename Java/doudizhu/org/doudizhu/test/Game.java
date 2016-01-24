@@ -1,10 +1,12 @@
 package org.doudizhu.test;
 
 import loon.LSetting;
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.LazyLoading;
 import loon.Screen;
+import loon.component.LToast;
 import loon.event.GameTouch;
 import loon.javase.Loon;
 import loon.opengl.GLEx;
@@ -36,12 +38,22 @@ public class Game extends Screen {
 		if (handle != null) {
 			switch (idx) {
 			case 0:
-
 				mode = 0;
 				break;
 			case 1:
-
 				mode = 1;
+				break;
+			case 2:
+				LSystem.exit();
+				break;
+			case 3:
+				handle.add(LToast.makeText("你的牌太小！"));
+				break;
+			case 4:
+				handle.add(LToast.makeText("出牌不符合规则！"));
+				break;
+			case 5:
+				handle.add(LToast.makeText("请出牌！"));
 				break;
 			default:
 				break;
@@ -65,11 +77,13 @@ public class Game extends Screen {
 		default:
 			break;
 		}
-		
+
 	}
 
 	@Override
 	public void onLoad() {
+		//把用户渲染置于画布顶层
+		fristUserDraw();
 		handle = this;
 		mv = new MenuView();
 		gv = new GameView();
@@ -107,8 +121,7 @@ public class Game extends Screen {
 		default:
 			break;
 		}
-		
-	
+
 	}
 
 	@Override

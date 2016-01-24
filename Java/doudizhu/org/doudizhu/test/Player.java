@@ -65,7 +65,7 @@ public class Player {
 
 	// 绘制玩家手中的牌
 	public void paint(GLEx canvas) {
-		System.out.println("id:" + playerId);
+	//	System.out.println("id:" + playerId);
 		RectF.Range src = new RectF.Range();
 		RectF.Range des = new RectF.Range();
 
