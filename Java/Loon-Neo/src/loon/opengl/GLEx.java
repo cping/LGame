@@ -38,7 +38,8 @@ import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
-import loon.geom.RectF.Range;
+import loon.geom.RectF;
+import loon.geom.RectI;
 import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
@@ -697,7 +698,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public GLEx rect(Range rect, float x, float y, Paint paint) {
+	public GLEx rect(RectF.Range rect, float x, float y, Paint paint) {
+		return rect(rect.x(), rect.y(), rect.width(), rect.height(), x, y,
+				paint);
+	}
+
+	public GLEx rect(RectI.Range rect, float x, float y, Paint paint) {
+		return rect(rect.x(), rect.y(), rect.width(), rect.height(), x, y,
+				paint);
+	}
+
+	public GLEx rect(float sx, float sy, float sw, float sh, float x, float y,
+			Paint paint) {
 		int tmp = baseColor;
 		float line = getLineWidth();
 		Style style = Style.FILL;
@@ -708,18 +720,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		switch (style) {
 		case FILL:
-			fillRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
-					rect.height());
+			fillRect(sx + x / 2, sy + y / 2, sw, sh);
 			break;
 		case STROKE:
-			drawRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
-					rect.height());
+			drawRect(sx + x / 2, sy + y / 2, sw, sh);
 			break;
 		case FILL_AND_STROKE:
-			fillRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
-					rect.height());
-			drawRect(rect.getX() + x / 2, rect.getY() + y / 2, rect.width(),
-					rect.height());
+			fillRect(sx + x / 2, sy + y / 2, sw, sh);
+			drawRect(sx + x / 2, sy + y / 2, sw, sh);
 			break;
 		}
 		setColor(tmp);
@@ -727,7 +735,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public GLEx drawBitmap(Painter texture, Range src, Range des, Paint paint) {
+	public GLEx drawBitmap(Painter texture, RectF.Range src, RectF.Range des,
+			Paint paint) {
 		int tmp = baseColor;
 		if (paint != null) {
 			if (paint.style == Style.FILL) {
@@ -740,7 +749,33 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public GLEx drawBitmap(Painter texture, Range des, Paint paint) {
+	public GLEx drawBitmap(Painter texture, RectF.Range des, Paint paint) {
+		int tmp = baseColor;
+		if (paint != null) {
+			if (paint.style == Style.FILL) {
+				setColor(paint.color);
+			}
+		}
+		draw(texture, des.x(), des.y(), des.width(), des.height());
+		setColor(tmp);
+		return this;
+	}
+
+	public GLEx drawBitmap(Painter texture, RectI.Range src, RectI.Range des,
+			Paint paint) {
+		int tmp = baseColor;
+		if (paint != null) {
+			if (paint.style == Style.FILL) {
+				setColor(paint.color);
+			}
+		}
+		draw(texture, des.x(), des.y(), des.width(), des.height(), src.x(),
+				src.y(), src.width(), src.height());
+		setColor(tmp);
+		return this;
+	}
+
+	public GLEx drawBitmap(Painter texture, RectI.Range des, Paint paint) {
 		int tmp = baseColor;
 		if (paint != null) {
 			if (paint.style == Style.FILL) {
