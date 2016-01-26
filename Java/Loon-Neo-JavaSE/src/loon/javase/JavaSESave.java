@@ -34,126 +34,155 @@ import loon.SaveBatchImpl;
 
 class JavaSESave implements Save {
 
-  private final Log log;
-  private final Preferences preferences;
-  private boolean isPersisted;
+	private final Log log;
+	private final String storageFileName;
+	private Preferences preferences;
+	private boolean isPersisted;
 
-  JavaSESave(Log log, String storageFileName) {
-    this.log = log;
-    Preferences prefs = null;
-    try {
-      isPersisted = Preferences.userRoot().nodeExists(storageFileName);
-      prefs = Preferences.userRoot().node(storageFileName);
-    } catch (Exception e) {
-      log.warn("Couldn't open Preferences: " + e.getMessage());
-      isPersisted = false;
-      prefs = new MemoryPreferences();
-    }
+	JavaSESave(Log log, String storage) {
+		this.log = log;
+		this.storageFileName = storage;
+	}
 
-    preferences = prefs;
-  }
+	private void init() {
+		if (preferences == null) {
+			Preferences prefs = null;
+			try {
+				Preferences tmp = Preferences.userRoot();
+				isPersisted = tmp.nodeExists(storageFileName);
+				prefs = tmp.node(storageFileName);
+			} catch (Exception e) {
+				log.warn("Couldn't open Preferences: " + e.getMessage());
+				isPersisted = false;
+				prefs = new MemoryPreferences();
+			}
+			preferences = prefs;
+		}
+	}
 
-  @Override
-  public void setItem(String key, String value) {
-    preferences.put(key, value);
-    maybePersistPreferences();
-  }
+	@Override
+	public void setItem(String key, String value) {
+		init();
+		preferences.put(key, value);
+		maybePersistPreferences();
+	}
 
-  @Override
-  public void removeItem(String key) {
-    preferences.remove(key);
-    maybePersistPreferences();
-  }
+	@Override
+	public void removeItem(String key) {
+		init();
+		preferences.remove(key);
+		maybePersistPreferences();
+	}
 
-  @Override
-  public String getItem(String key) {
-    return preferences.get(key, null);
-  }
+	@Override
+	public String getItem(String key) {
+		init();
+		return preferences.get(key, null);
+	}
 
-  @Override
-  public Batch startBatch() {
-    return new SaveBatchImpl(this) {
-      @Override protected void setImpl(String key, String data) {
-        preferences.put(key, data);
-      }
-      @Override protected void removeImpl(String key) {
-        preferences.remove(key);
-      }
-      @Override protected void onAfterCommit() {
-        maybePersistPreferences();
-      }
-    };
-  }
+	@Override
+	public Batch startBatch() {
+		return new SaveBatchImpl(this) {
+			@Override
+			protected void setImpl(String key, String data) {
+				init();
+				preferences.put(key, data);
+			}
 
-  @Override
-  public Iterable<String> keys() {
-    try {
-      return Arrays.asList(preferences.keys());
-    } catch (Exception e) {
-      log.warn("Error reading preferences: " + e.getMessage());
-      return Collections.emptyList();
-    }
-  }
+			@Override
+			protected void removeImpl(String key) {
+				init();
+				preferences.remove(key);
+			}
 
-  @Override
-  public boolean isPersisted() {
-    return isPersisted;
-  }
+			@Override
+			protected void onAfterCommit() {
+				init();
+				maybePersistPreferences();
+			}
+		};
+	}
 
-  private void maybePersistPreferences() {
-    if (preferences instanceof MemoryPreferences) {
-    	System.out.println("FDFD");
-    	return;
-    }
-    try {
-      preferences.flush();
-      isPersisted = true;
-    } catch (Exception e) {
-      log.info("Error persisting properties: " + e.getMessage());
-      isPersisted = false;
-    }
-  }
+	@Override
+	public Iterable<String> keys() {
+		init();
+		try {
+			return Arrays.asList(preferences.keys());
+		} catch (Exception e) {
+			log.warn("Error reading preferences: " + e.getMessage());
+			return Collections.emptyList();
+		}
+	}
 
-  private class MemoryPreferences extends AbstractPreferences
-  {
-    MemoryPreferences() {
-      super(null, "");
-    }
-    @Override protected void putSpi (String key, String value) {
-      _values.put(key,  value);
-    }
+	@Override
+	public boolean isPersisted() {
+		return isPersisted;
+	}
 
-    @Override protected String getSpi (String key) {
-      return _values.get(key);
-    }
+	private void maybePersistPreferences() {
+		init();
+		if (preferences instanceof MemoryPreferences) {
+			return;
+		}
+		try {
+			preferences.flush();
+			isPersisted = true;
+		} catch (Exception e) {
+			log.info("Error persisting properties: " + e.getMessage());
+			isPersisted = false;
+		}
+	}
 
-    @Override protected void removeSpi (String key) {
-      _values.remove(key);
-    }
+	private class MemoryPreferences extends AbstractPreferences {
+		MemoryPreferences() {
+			super(null, "");
+		}
 
-    @Override protected void removeNodeSpi () throws BackingStoreException {
-      throw new BackingStoreException("Not implemented");
-    }
+		@Override
+		protected void putSpi(String key, String value) {
+			_values.put(key, value);
+		}
 
-    @Override protected String[] keysSpi () throws BackingStoreException {
-      return _values.keySet().toArray(new String[_values.size()]);
-    }
+		@Override
+		protected String getSpi(String key) {
+			return _values.get(key);
+		}
 
-    @Override protected String[] childrenNamesSpi () throws BackingStoreException {
-      throw new BackingStoreException("Not implemented");
-    }
+		@Override
+		protected void removeSpi(String key) {
+			_values.remove(key);
+		}
 
-    @Override protected AbstractPreferences childSpi (String name) {
-      throw new RuntimeException("Not implemented");
-    }
+		@Override
+		protected void removeNodeSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
 
-    @Override protected void syncSpi () throws BackingStoreException {
-      throw new BackingStoreException("Not implemented");
-    }
+		@Override
+		protected String[] keysSpi() throws BackingStoreException {
+			return _values.keySet().toArray(new String[_values.size()]);
+		}
 
-    @Override protected void flushSpi () throws BackingStoreException {
-      throw new BackingStoreException("Not implemented");
-    }
-    protected Map<String, String> _values = new HashMap<String, String>();
-  }
+		@Override
+		protected String[] childrenNamesSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
+
+		@Override
+		protected AbstractPreferences childSpi(String name) {
+			throw new RuntimeException("Not implemented");
+		}
+
+		@Override
+		protected void syncSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
+
+		@Override
+		protected void flushSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
+
+		protected Map<String, String> _values = new HashMap<String, String>();
+	}
 }

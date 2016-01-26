@@ -15,7 +15,7 @@ public class Paint {
 	private int textSize = 20;
 
 	private LFont textFont;
-	
+
 	public int alpha = 255;
 
 	public int strokeWidth = 1;
@@ -26,6 +26,14 @@ public class Paint {
 
 	public Paint() {
 		this.textFont = LFont.getDefaultFont();
+	}
+
+	public void setRGB(int r, int g, int b) {
+		this.color = LColor.getRGB(r, g, b);
+	}
+	
+	public void setARGB(int r, int g, int b, int a) {
+		this.color = LColor.getARGB(r, g, b, a);
 	}
 
 	public void setColor(int c) {
@@ -81,6 +89,9 @@ public class Paint {
 
 	public LFont setFont(LFont font) {
 		this.textFont = font;
+		if (font != null) {
+			this.textSize = font.getSize();
+		}
 		return this.textFont;
 	}
 

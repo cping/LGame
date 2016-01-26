@@ -6,10 +6,11 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
+/**
+ * 此类区别于Actor，无法协调运作，然后却比其它Component组件更适合作为游戏精灵操作.
+ */
 public class LRole extends LComponent {
 
-	private float x;
-	private float y;
 	private float startX;
 	private float startY;
 	private float vecX;
@@ -23,8 +24,8 @@ public class LRole extends LComponent {
 	private boolean bOpaque;
 
 	public void init() {
-		this.x = this.startX;
-		this.y = this.startY;
+		this.setX(this.startX);
+		this.setY(this.startY);
 		this.bSelect = false;
 		this.bVisible = true;
 		this.vecX = 0.0F;
@@ -128,11 +129,11 @@ public class LRole extends LComponent {
 	}
 
 	public float getXMiddle() {
-		return this.x + this.getWidth() / 2f;
+		return this.getX() + this.getWidth() / 2f;
 	}
 
 	public float getYMiddle() {
-		return this.y + this.getHeight() / 2f;
+		return this.getY() + this.getHeight() / 2f;
 	}
 
 	public boolean intersects(float x, float y, float width, float height) {

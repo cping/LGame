@@ -77,10 +77,10 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 
 	@Override
 	protected void init() {
-		if(game.setting instanceof JavaSetting){
-			JavaSetting setting = (JavaSetting)game.setting;
+		if (game.setting instanceof JavaSetting) {
+			JavaSetting setting = (JavaSetting) game.setting;
 			Display.setVSyncEnabled(setting.vSyncEnabled);
-		}else{
+		} else {
 			Display.setVSyncEnabled(true);
 		}
 		if (game.setting.width_zoom > 0 && game.setting.height_zoom > 0) {
@@ -215,10 +215,22 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 					&& mode.getWidth() == width && mode.getHeight() == height){
 				return;
 			}
-			if (!fullscreen){
+			if (!fullscreen) {
+				DisplayMode deskMode = Display.getDesktopDisplayMode();
+				if (width > deskMode.getWidth()) {
+					game.log().debug(
+							"Capping window width at desktop width: " + width
+									+ " -> " + deskMode.getWidth());
+					width = deskMode.getWidth();
+				}
+				if (height > deskMode.getHeight()) {
+					game.log().debug(
+							"Capping window height at desktop height: "
+									+ height + " -> " + deskMode.getHeight());
+					height = deskMode.getHeight();
+				}
 				mode = new DisplayMode(width, height);
-			}
-			else {
+			} else {
 				DisplayMode matching = null;
 				for (DisplayMode dm : Display.getAvailableDisplayModes()) {
 					if (dm.getWidth() == width && dm.getHeight() == height
@@ -235,10 +247,11 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 											.getAvailableDisplayModes()));
 				}
 			}
+
 			game.log().debug(
-					"Loon display mode: " + mode + ", fullscreen: "
+					"Updating display mode: " + mode + ", fullscreen: "
 							+ fullscreen);
-			Scale scale;
+			Scale scale = Scale.ONE;
 			if (fullscreen) {
 				Display.setDisplayModeAndFullscreen(mode);
 				scale = Scale.ONE;
@@ -247,7 +260,6 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 				scale = new Scale(Display.getPixelScaleFactor());
 			}
 			updateViewport(scale, mode.getWidth(), mode.getHeight());
-
 		} catch (LWJGLException ex) {
 			throw new RuntimeException(ex);
 		}

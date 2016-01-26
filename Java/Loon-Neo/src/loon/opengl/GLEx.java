@@ -844,7 +844,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else if (font != null) {
 			font.drawString(this, message, x + offsetStringX, y + offsetStringY
 					- font.getAscent() - 1, rotation,
-					tmpColor.setColor(paint.color));
+					tmpColor.setColor(baseColor));
 		}
 		return this;
 	}
