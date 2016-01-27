@@ -26,6 +26,46 @@ final public class StringUtils {
 	private StringUtils() {
 	}
 
+	/**
+	 * 一个仿C#的String.format实现（因为GWT不支持String.format）
+	 * 
+	 * @param format
+	 * @param params
+	 * @return
+	 */
+	public static final String format(String format, Object... params) {
+		StringBuilder b = new StringBuilder();
+		int p = 0;
+		for (;;) {
+			int i = format.indexOf('{', p);
+			if (i == -1) {
+				break;
+			}
+			int idx = format.indexOf('}', i + 1);
+			if (idx == -1) {
+				break;
+			}
+			if (p != i) {
+				b.append(format.substring(p, i));
+			}
+			String nstr = format.substring(i + 1, idx);
+			try {
+				int n = Integer.parseInt(nstr);
+				if (n >= 0 && n < params.length) {
+					b.append(params[n]);
+				} else {
+					b.append('{').append(nstr).append('}');
+				}
+			} catch (NumberFormatException e) {
+				b.append('{').append(nstr).append('}');
+			}
+			p = idx + 1;
+		}
+		b.append(format.substring(p));
+
+		return b.toString();
+	}
+
 	public static boolean isBoolean(String o) {
 		String str = o.trim().toLowerCase();
 		return str.equals("true") || str.equals("false") || str.equals("yes")
@@ -36,6 +76,8 @@ final public class StringUtils {
 		String str = o.trim().toLowerCase();
 		if (str.equals("true") || str.equals("yes") || str.equals("ok")) {
 			return true;
+		} else if (str.equals("no") || str.equals("false")) {
+			return false;
 		} else if (MathUtils.isNan(str)) {
 			return Double.parseDouble(str) > 0;
 		}
@@ -48,6 +90,10 @@ final public class StringUtils {
 		} else {
 			return a.equals(b);
 		}
+	}
+
+	public static String trim(String text) {
+		return (rtrim(ltrim(text.trim()))).trim();
 	}
 
 	public static String rtrim(String s) {
