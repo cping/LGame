@@ -19,7 +19,7 @@ public class RocSSprite implements ISprite {
 
 	private String _name = "RocSSprite";
 
-	private boolean _visible = true;
+	private boolean _visible = true, _loopScript = false;
 
 	private RocScript _script;
 
@@ -71,7 +71,7 @@ public class RocSSprite implements ISprite {
 								return;
 							}
 						}
-						if (_script.isCompleted()) {
+						if (_loopScript && _script.isCompleted()) {
 							_script.reset();
 						}
 					}
@@ -167,8 +167,31 @@ public class RocSSprite implements ISprite {
 		this._name = s;
 	}
 
+	/**
+	 * 返回脚本解释器
+	 * 
+	 * @return
+	 */
 	public RocScript getScript() {
 		return _script;
+	}
+
+	/**
+	 * 如果此函数为true，则循环解析脚本
+	 * 
+	 * @return
+	 */
+	public boolean isLoopScript() {
+		return _loopScript;
+	}
+
+	/**
+	 * 如果此函数为true，则循环解析脚本
+	 * 
+	 * @param l
+	 */
+	public void setLoopScript(boolean l) {
+		this._loopScript = l;
 	}
 
 }

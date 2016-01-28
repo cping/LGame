@@ -38,8 +38,8 @@ public class RocFunctions {
 			_rocFunctions.put(funName, rfunction);
 		}
 	}
-	
-	public void remove(String name){
+
+	public void remove(String name) {
 		if (!StringUtils.isEmpty(name)) {
 			String funName = name.trim().toLowerCase();
 			_system_functs.remove(funName);
@@ -76,13 +76,11 @@ public class RocFunctions {
 				}
 			}
 		}
-		for (int i = 0; i < _rocFunctions.size(); i++) {
-			IRocFunction roc = (IRocFunction) _rocFunctions.get(i);
-			if (roc != null) {
-				Object o = roc.call(name, value);
-				if (o != null) {
-					return o;
-				}
+		IRocFunction roc = (IRocFunction) _rocFunctions.get(key);
+		if (roc != null) {
+			Object o = roc.call(value);
+			if (o != null) {
+				return o;
 			}
 		}
 		return "unkown";
