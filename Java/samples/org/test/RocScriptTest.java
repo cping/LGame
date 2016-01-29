@@ -42,6 +42,15 @@ public class RocScriptTest extends Screen {
 		command.line("label(testing)");
 		command.line("wait 3000");
 		command.line("dellabel()");
+		command.line("function getNum(x) begin");
+		command.line("return (x + 1)");
+		command.line("end");
+		command.line("t = getNum(9)");
+		command.line("print t");
+		command.line("function hello() begin");
+		command.line("return \"Hello World!\"");
+		command.line("end");
+		command.line("println hello()");
 		command.line("print 'end'");
 		String cmd = command.toString();
 
@@ -52,6 +61,7 @@ public class RocScriptTest extends Screen {
 		sprite.setLoopScript(true);
 		// 获得脚本执行器
 		RocScript script = sprite.getScript();
+		script.setDebug(false);
 		// 在脚本外部注入变量(循环模式下，每次循环会清空数据，所以此处注入仅有第一次运行脚本会生效)
 		script.addVar("testvar", "ABCDEFG");
 		// 获得脚本执行器的函数列表

@@ -7,6 +7,8 @@ import loon.utils.TArray;
 
 public class RocFunctions {
 
+	public final static int JUMP_TYPE = -443;
+
 	// 系统函数
 	final TArray<String> _system_functs = new TArray<String>(10);
 
@@ -23,6 +25,7 @@ public class RocFunctions {
 		_system_functs.add("isnumber");
 		_system_functs.add("ischinese");
 		_system_functs.add("indexof");
+		_system_functs.add("jump");
 	}
 
 	/**
@@ -47,7 +50,7 @@ public class RocFunctions {
 		}
 	}
 
-	public Object getValue(String name, String value) {
+	public Object getValue(RocScript script, String name, String value) {
 		if (name == null) {
 			return value;
 		}
@@ -75,6 +78,8 @@ public class RocFunctions {
 					return split[0].indexOf(split[1]) != -1;
 				}
 			}
+		}else if ("jump".equals(key)) {
+			script._sleep = JUMP_TYPE;
 		}
 		IRocFunction roc = (IRocFunction) _rocFunctions.get(key);
 		if (roc != null) {
@@ -84,7 +89,7 @@ public class RocFunctions {
 				return o;
 			}
 		}
-		return "unkown";
+		return name;
 	}
 
 }

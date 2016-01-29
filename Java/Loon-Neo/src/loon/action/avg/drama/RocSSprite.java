@@ -71,6 +71,10 @@ public class RocSSprite implements ISprite {
 							_result = _script.next();
 							long waitTime = _script.waitSleep();
 							if (waitTime != -1) {
+								if(waitTime == RocFunctions.JUMP_TYPE){
+									_script.reset();
+									return;
+								}
 								_waitTimer.setDelay(waitTime);
 								return;
 							}

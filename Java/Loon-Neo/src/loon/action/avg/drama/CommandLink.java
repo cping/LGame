@@ -1,12 +1,20 @@
 package loon.action.avg.drama;
 
+import loon.BaseIO;
 import loon.LSystem;
 
 public class CommandLink {
 
 	private StringBuffer _commands = null;
 
-	private int _lineCount;
+	private int _lineCount = 0;
+
+	public CommandLink(String fileName) {
+		String context = BaseIO.loadText(fileName);
+		_commands = new StringBuffer(context.length());
+		_commands.append(context.toString());
+		_lineCount = -1;
+	}
 
 	public CommandLink() {
 		_commands = new StringBuffer(1024);

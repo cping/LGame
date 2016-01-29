@@ -75,7 +75,7 @@ public class RocScript {
 		errors[UNKNOWN] = "Unknown error";
 		String err = errors[error] + ": " + textIdx + "\nLine number: "
 				+ textLine + "\nItem: " + item + "\nItem Type: " + itemType
-				+ "\ncommType: " + commType;
+				+ "\ncommType: " + commType + "\npreviousitem: " + previousItem;
 		if (scriptLog != null) {
 			scriptLog.err(err);
 		}
@@ -161,14 +161,14 @@ public class RocScript {
 	private ArrayMap functs;
 
 	private char[] _temp_contexts;
-	private long _sleep = -1;
+	protected long _sleep = -1;
 
 	private boolean _stop = false;
 
 	private int textIdx;
 	private int textLine;
 
-	private String item;
+	private String item, previousItem;
 	private int itemType;
 	private int commType;
 	private int macroType = -1;
@@ -305,13 +305,16 @@ public class RocScript {
 
 	private String filtrScript(String script) {
 		StringBuffer out = new StringBuffer();
-		String[] context = script.split("[\r\n\t]");
+		String[] context = StringUtils.split(script, new char[] { '\r', '\n',
+				'\t' }, true);
 		for (String c : context) {
-			if ((c.toLowerCase().startsWith("print") || c.toLowerCase()
-					.startsWith("println"))
-					&& c.indexOf("\"") != -1
-					&& c.indexOf(",") == -1) {
-				char[] chars = c.toCharArray();
+			if (c == null) {
+				continue;
+			}
+			String cmd = c.toLowerCase().trim();
+			if (cmd.startsWith("print") && cmd.indexOf("\"") != -1
+					&& cmd.indexOf(",") == -1) {
+				char[] chars = cmd.toCharArray();
 				boolean flag = false;
 				for (int i = 0; i < chars.length; i++) {
 					if (chars[i] == '"') {
@@ -323,12 +326,12 @@ public class RocScript {
 						}
 					}
 				}
-				c = new String(chars);
+				cmd = new String(chars);
 			}
-			if (c.indexOf('{') != -1) {
-				splitFlag(c, out, '{');
+			if (cmd.indexOf('{') != -1) {
+				splitFlag(cmd, out, '{');
 			} else {
-				out.append(c);
+				out.append(cmd);
 			}
 			out.append(LSystem.LS);
 		}
@@ -458,84 +461,181 @@ public class RocScript {
 	 * @throws ScriptException
 	 */
 	public Object next() throws ScriptException {
-		debug("Starting script...");
-
-		if (nextItem() && !_stop) {
-			if (item != null) {
-				item = item.trim();
+		try {
+			debug("Starting script...");
+			if (_sleep != -1) {
+				return null;
 			}
-			switch (itemType) {
-			// 变量
-			case VARIABLE:
-				assignVar();
-				break;
-			// 函数
-			case FUNCT:
-				execFunct();
-				nextItem();
-				break;
-			// 具体表达式变量
-			case COMMAND:
-				switch (commType) {
-				case PRINT:
-					print();
+			for (; !isCompleted() && nextItem() && !_stop;) {
+				if (item != null) {
+					item = item.trim();
+				}
+				switch (itemType) {
+				// 变量
+				case VARIABLE:
+					assignVar();
 					break;
-				case PRINTLN:
-					println();
+				// 函数
+				case FUNCT:
+					execFunct();
+					nextItem();
 					break;
-				case INPUT:
+				// 具体表达式变量
+				case COMMAND:
+					switch (commType) {
+					case PRINT:
+						print();
+						break;
+					case PRINTLN:
+						println();
+						break;
+					case INPUT:
+						break;
+					case IF:
+						execIf();
+						break;
+					case FOR:
+						execFor();
+						break;
+					case END:
+						if (endCommand(false)) {
+							return null;
+						}
+						break;
+					case WHILE:
+						execWhile();
+						break;
+					case RETURN:
+						debug("Returning");
+						nextItem();
+						Object o = analysis();
+						endCommand(true);
+						return o;
+					case FUNCTION:
+						newFunction();
+						break;
+					case ELSE:
+						execElse();
+						break;
+					case WAIT:
+						debug("waiting");
+						break;
+					}
+					debug("Done with command");
 					break;
-				case IF:
-					execIf();
-					break;
-				case FOR:
-					execFor();
-					break;
-				case END:
-					if (endCommand(false)) {
-						return null;
+				// 宏指令
+				case MACROS:
+					switch (macroType) {
+					case 0:
+						callMacros();
+						itemType = EOL;
+						break;
+					case 1:
+						itemType = EOL;
+						break;
 					}
 					break;
-				case WHILE:
-					execWhile();
-					break;
-				case RETURN:
-					debug("Returning");
-					nextItem();
-					Object o = analysis();
-					endCommand(true);
-					return o;
-				case FUNCTION:
-					newFunction();
-					break;
-				case ELSE:
-					execElse();
-					break;
-				case WAIT:
-					debug("waiting");
-					break;
 				}
-				debug("Done with command");
-				break;
-			// 宏指令
-			case MACROS:
-				switch (macroType) {
-				case 0:
-					callMacros();
-					itemType = EOL;
-					break;
-				case 1:
-					itemType = EOL;
-					break;
-				}
-				break;
-			}
 
-			// 判定解析完毕
-			if (itemType != EOL && itemType != EOP) {
-				handleError(UNEXPITEM);
+				// 判定解析完毕
+				if (itemType != EOL && itemType != EOP) {
+					handleError(UNEXPITEM);
+				}
+				if (_sleep != -1) {
+					return null;
+				}
 			}
+		} finally {
+			previousItem = item;
 		}
+
+		return null;
+	}
+
+	public Object running() throws ScriptException {
+		try {
+			debug("Starting script...");
+
+			if (nextItem() && !_stop) {
+				if (item != null) {
+					item = item.trim();
+				}
+				switch (itemType) {
+				// 变量
+				case VARIABLE:
+					assignVar();
+					break;
+				// 函数
+				case FUNCT:
+					execFunct();
+					nextItem();
+					break;
+				// 具体表达式变量
+				case COMMAND:
+					switch (commType) {
+					case PRINT:
+						print();
+						break;
+					case PRINTLN:
+						println();
+						break;
+					case INPUT:
+						break;
+					case IF:
+						execIf();
+						break;
+					case FOR:
+						execFor();
+						break;
+					case END:
+						if (endCommand(false)) {
+							return null;
+						}
+						break;
+					case WHILE:
+						execWhile();
+						break;
+					case RETURN:
+						debug("Returning");
+						nextItem();
+						Object o = analysis();
+						endCommand(true);
+						return o;
+					case FUNCTION:
+						newFunction();
+						break;
+					case ELSE:
+						execElse();
+						break;
+					case WAIT:
+						debug("waiting");
+						break;
+					}
+					debug("Done with command");
+					break;
+				// 宏指令
+				case MACROS:
+					switch (macroType) {
+					case 0:
+						callMacros();
+						itemType = EOL;
+						break;
+					case 1:
+						itemType = EOL;
+						break;
+					}
+					break;
+				}
+
+				// 判定解析完毕
+				if (itemType != EOL && itemType != EOP) {
+					handleError(UNEXPITEM);
+				}
+			}
+		} finally {
+			previousItem = item;
+		}
+
 		return null;
 	}
 
@@ -928,7 +1028,7 @@ public class RocScript {
 					}
 				}
 			} else if (value.indexOf(",") != -1) {
-				String[] split = StringUtils.split(value, ",");
+				String[] split = StringUtils.split(value, ',');
 				StringBuilder sbr = new StringBuilder();
 				for (String s : split) {
 					if (s.indexOf("\"") == -1 && value.indexOf("/") == -1
@@ -950,7 +1050,7 @@ public class RocScript {
 				}
 
 			}
-			Object reuslt = _rocFunctions.getValue(key, value);
+			Object reuslt = _rocFunctions.getValue(this, key, value);
 			return reuslt == null ? "unkown" : reuslt;
 		}
 
@@ -1745,13 +1845,13 @@ public class RocScript {
 
 	private void assignVar() throws ScriptException {
 		debug("Assign variable");
-		String var;
-		var = item;
+		String var = item;
 		if (!Character.isLetter(var.charAt(0))) {
 			handleError(UNKOWN);
 			return;
 		}
 		nextItem();
+
 		if (!item.equals("=")) {
 			handleError(EQUALEXPECTED);
 			return;
@@ -1759,7 +1859,9 @@ public class RocScript {
 
 		nextItem();
 
-		vars.last().put(var, analysis());
+		Object obj = analysis();
+
+		vars.last().put(var, obj);
 	}
 
 	private void passBack() {
@@ -1889,7 +1991,7 @@ public class RocScript {
 								} else {
 									if (o != null && o instanceof Json.Object) {
 										String[] splits = StringUtils.split(
-												packName, ",");
+												packName, ',');
 										Object v = null;
 										for (String s : splits) {
 											if (v == null) {
@@ -1945,7 +2047,7 @@ public class RocScript {
 								}
 							} else {
 								if (obj != null && obj instanceof Json.Object) {
-									String[] splits = StringUtils.split(n, ",");
+									String[] splits = StringUtils.split(n, ',');
 									Object v = null;
 									for (String s : splits) {
 										if (v == null) {
@@ -1981,7 +2083,7 @@ public class RocScript {
 					}
 				} else {
 					if (o != null && o instanceof Json.Object) {
-						String[] split = StringUtils.split(packName, ",");
+						String[] split = StringUtils.split(packName, ',');
 						Object v = null;
 						for (String n : split) {
 							if (v == null) {
@@ -2039,9 +2141,6 @@ public class RocScript {
 
 		if (o == null) {
 			o = "unkown";
-		}
-		if (debug) {
-			handleError(UNKOWN);
 		}
 		debug("Get var: " + o);
 		return o;

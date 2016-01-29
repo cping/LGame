@@ -21,6 +21,8 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+
 final public class StringUtils {
 
 	private StringUtils() {
@@ -237,7 +239,7 @@ final public class StringUtils {
 	/**
 	 * 分解字符串
 	 * 
-	 * @param string
+	 * @param str
 	 * @param tag
 	 * @return
 	 */
@@ -265,21 +267,99 @@ final public class StringUtils {
 		return results;
 	}
 
-	public static String[] split(String s, String separator) {
+	/**
+	 * 分解字符串(同时过滤多个符号)
+	 * 
+	 * @param str
+	 * @param flags
+	 * @return
+	 */
+	public static String[] split(String str, char[] flags) {
+		return split(str, flags, false);
+	}
+
+	/**
+	 * 分解字符串(同时过滤多个符号)
+	 * 
+	 * @param str
+	 * @param flags
+	 * @return
+	 */
+	public static String[] split(String str, char[] flags, boolean newline) {
+		if ((flags.length == 0) || (str.length() == 0)) {
+			return new String[0];
+		}
+		char[] chars = str.toCharArray();
+		int maxparts = chars.length + 1;
+		int[] start = new int[maxparts];
+		int[] end = new int[maxparts];
+		int count = 0;
+		start[0] = 0;
+		int s = 0, e;
+		if (CharUtils.equalsOne(chars[0], flags)) {
+			end[0] = 0;
+			count++;
+			s = CharUtils.findFirstDiff(chars, 1, flags);
+			if (s == -1) {
+				return new String[] { "", "" };
+			}
+			start[1] = s;
+		}
+		for (;;) {
+			e = CharUtils.findFirstEqual(chars, s, flags);
+			if (e == -1) {
+				end[count] = chars.length;
+				break;
+			}
+			end[count] = e;
+			count++;
+			s = CharUtils.findFirstDiff(chars, e, flags);
+			if (s == -1) {
+				start[count] = end[count] = chars.length;
+				break;
+			}
+			start[count] = s;
+		}
+		count++;
+		String[] result = null;
+		if (newline) {
+			count *= 2;
+			result = new String[count];
+			for (int i = 0, j = 0; i < count; j++, i += 2) {
+				result[i] = str.substring(start[j], end[j]);
+				result[i + 1] = LSystem.LS;
+			}
+		} else {
+			result = new String[count];
+			for (int i = 0; i < count; i++) {
+				result[i] = str.substring(start[i], end[i]);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 分解字符串
+	 * 
+	 * @param str
+	 * @param separator
+	 * @return
+	 */
+	public static String[] split(String str, String separator) {
 		int sepLength = separator.length();
 		if (sepLength == 0) {
-			return new String[] { s };
+			return new String[] { str };
 		}
-		TArray<String> tokens = new TArray<>();
-		int length = s.length();
+		TArray<String> tokens = new TArray<String>();
+		int length = str.length();
 		int start = 0;
 		do {
-			int p = s.indexOf(separator, start);
+			int p = str.indexOf(separator, start);
 			if (p == -1) {
 				p = length;
 			}
 			if (p > start) {
-				tokens.add(s.substring(start, p));
+				tokens.add(str.substring(start, p));
 			}
 			start = p + sepLength;
 		} while (start < length);
@@ -333,6 +413,36 @@ final public class StringUtils {
 		String[] stockArr = new String[stringList.size];
 		stockArr = stringList.toArray(stockArr);
 		return stockArr;
+	}
+
+	/**
+	 * 以指定大小过滤字符串
+	 * 
+	 * @param str
+	 * @param size
+	 * @return
+	 * @throws NullPointerException
+	 * @throws IllegalArgumentException
+	 */
+	public static String[] splitSize(String str, int size)
+			throws NullPointerException, IllegalArgumentException {
+		if (str == null) {
+			throw new NullPointerException("The str parameter is null.");
+		}
+		if (size <= 0) {
+			throw new IllegalArgumentException(
+					"The size parameter must be more than 0.");
+		}
+		int num = str.length() / size;
+		int mod = str.length() % size;
+		String[] ret = mod > 0 ? new String[num + 1] : new String[num];
+		for (int i = 0; i < num; i++) {
+			ret[i] = str.substring(i * size, (i + 1) * size);
+		}
+		if (mod > 0) {
+			ret[num] = str.substring(num * size);
+		}
+		return ret;
 	}
 
 	/**
@@ -671,7 +781,7 @@ final public class StringUtils {
 		while (i < length) {
 			char c = raw.charAt(i++);
 
-			if (isLetterOrDigit(c) || isEscapeExempt(c)) {
+			if (CharUtils.isLetterOrDigit(c) || CharUtils.isEscapeExempt(c)) {
 				sb.append(c);
 			} else {
 				int i1 = raw.codePointAt(i - 1);
@@ -688,26 +798,6 @@ final public class StringUtils {
 		}
 
 		return sb.toString();
-	}
-
-	private static boolean isLetterOrDigit(char ch) {
-		return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')
-				|| (ch >= '0' && ch <= '9');
-	}
-
-	private static boolean isEscapeExempt(char c) {
-		switch (c) {
-		case '*':
-		case '@':
-		case '-':
-		case '_':
-		case '+':
-		case '.':
-		case '/':
-			return true;
-		default:
-			return false;
-		}
 	}
 
 }
