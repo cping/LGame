@@ -29,6 +29,10 @@ public class RocSSprite implements ISprite {
 
 	private Object _result = null;
 
+	public RocSSprite(CommandLink link) {
+		this(link.toString(), false, false);
+	}
+	
 	public RocSSprite(String script, boolean useScriptFile) {
 		this(script, useScriptFile, false);
 	}

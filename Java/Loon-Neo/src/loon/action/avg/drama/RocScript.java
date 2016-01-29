@@ -2055,4 +2055,65 @@ public class RocScript {
 		this._rocFunctions = roc;
 	}
 
+	/**
+	 * 在脚本外本注入变量
+	 * 
+	 * @param name
+	 * @param obj
+	 */
+	public void addVar(String name, Object obj) {
+		if (vars != null) {
+			vars.last().put(name, obj);
+		}
+	}
+
+	/**
+	 * 获得指定名称的脚本变量
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Object getLastVar(String name) {
+		if (vars != null) {
+			return vars.last().get(name);
+		}
+		return null;
+	}
+
+	/**
+	 * 获得指定名称的脚本变量
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Object getFirstVar(String name) {
+		if (vars != null) {
+			return vars.first().get(name);
+		}
+		return null;
+	}
+
+	/**
+	 * 获得指定名称的脚本变量
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Object getVar(String name) {
+		if (vars != null) {
+			Object result = null;
+			for (; vars.hashNext();) {
+				ArrayMap map = vars.next();
+				if (map != null) {
+					result = map.get(name);
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+			vars.stopNext();
+			return vars.last().get(name);
+		}
+		return null;
+	}
 }

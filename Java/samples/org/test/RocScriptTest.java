@@ -1,7 +1,7 @@
 package org.test;
 
-import loon.LSystem;
 import loon.Screen;
+import loon.action.avg.drama.CommandLink;
 import loon.action.avg.drama.IRocFunction;
 import loon.action.avg.drama.RocFunctions;
 import loon.action.avg.drama.RocSSprite;
@@ -20,45 +20,40 @@ public class RocScriptTest extends Screen {
 
 	@Override
 	public void onLoad() {
-		//以字符串方式，注入一组脚本命令
-		StringBuilder command = new StringBuilder();
-		command.append("print 'testing'");
-		command.append(LSystem.LS);
-		command.append("wait 1000");
-		command.append(LSystem.LS);
-		command.append("print 456");
-		command.append(LSystem.LS);
-		command.append("print 789");
-		command.append(LSystem.LS);
-		command.append("function xyz(x , y) begin");
-		command.append(LSystem.LS);
-		command.append("for i = x, i < y, i + 1 begin");
-		command.append(LSystem.LS);
-		command.append("println i");
-		command.append(LSystem.LS);
-		command.append("end");
-		command.append(LSystem.LS);
-		command.append("end");
-		command.append(LSystem.LS);
-		command.append("xyz(5 , 8)");
-		command.append(LSystem.LS);
-		command.append("print 'end'");
-		command.append(LSystem.LS);
-		command.append("label(testing)");
-		command.append(LSystem.LS);
-		command.append("wait 3000");
-		command.append(LSystem.LS);
-		command.append("dellabel()");
-		command.append(LSystem.LS);
-		command.append("print 'end'");
+		// 以字符串方式，注入一组脚本命令
+		CommandLink command = new CommandLink();
+		command.line("print 'testing'");
+		command.line("wait 1000");
+		command.line("print 456");
+		command.line("print 789");
+		command.line("print testvar");
+		command.line("if testvar == 'ABCDEFG' then");
+		command.line("print 'abcdefg'");
+		command.line("else");
+		command.line("print 'gfedcba'");
+		command.line("end");
+		command.line("function xyz(x , y) begin");
+		command.line("for i = x, i < y, i + 1 begin");
+		command.line("println i");
+		command.line("end");
+		command.line("end");
+		command.line("xyz(5 , 8)");
+		command.line("print 'end'");
+		command.line("label(testing)");
+		command.line("wait 3000");
+		command.line("dellabel()");
+		command.line("print 'end'");
 		String cmd = command.toString();
 
 		// 构建脚本执行器，非文件模式载入（若为true，则表示注入的是文件目录）
 		RocSSprite sprite = new RocSSprite(cmd, false);
+
 		// 无限循环脚本
 		sprite.setLoopScript(true);
 		// 获得脚本执行器
 		RocScript script = sprite.getScript();
+		// 在脚本外部注入变量(循环模式下，每次循环会清空数据，所以此处注入仅有第一次运行脚本会生效)
+		script.addVar("testvar", "ABCDEFG");
 		// 获得脚本执行器的函数列表
 		RocFunctions funs = script.getFunctions();
 		final SpriteLabel label = new SpriteLabel("", 66, 66);
@@ -66,8 +61,8 @@ public class RocScriptTest extends Screen {
 		funs.add("label", new IRocFunction() {
 
 			@Override
-			public Object call(String value) {
-				label.setLabel(value);
+			public Object call(String[] value) {
+				label.setLabel(value[0]);
 				add(label);
 				return value;
 			}
@@ -76,7 +71,7 @@ public class RocScriptTest extends Screen {
 		funs.add("dellabel", new IRocFunction() {
 
 			@Override
-			public Object call(String value) {
+			public Object call(String[] value) {
 				remove(label);
 				return value;
 			}

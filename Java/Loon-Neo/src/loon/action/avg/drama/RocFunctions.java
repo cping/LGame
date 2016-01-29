@@ -78,7 +78,8 @@ public class RocFunctions {
 		}
 		IRocFunction roc = (IRocFunction) _rocFunctions.get(key);
 		if (roc != null) {
-			Object o = roc.call(value);
+			String[] args = StringUtils.split(value, ',');
+			Object o = roc.call(args);
 			if (o != null) {
 				return o;
 			}

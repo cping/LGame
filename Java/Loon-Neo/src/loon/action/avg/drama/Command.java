@@ -172,6 +172,13 @@ public class Command extends Conversion implements LRelease {
 		formatCommand(fileName, Command.includeFile(fileName));
 	}
 
+	public void formatCommand(CommandLink cmd) {
+		String context = cmd.toString();
+		String key = "key" + context.length() + context.charAt(0) + "."
+				+ context.charAt(context.length() - 1);
+		formatCommand(key, Command.includeString(key, context));
+	}
+
 	public void formatCommand(String name, String[] res) {
 		if (!"function".equalsIgnoreCase(name)) {
 			if (functions != null) {
@@ -1158,6 +1165,54 @@ public class Command extends Conversion implements LRelease {
 			try {
 				String text = BaseIO.loadText(fileName);
 				StringTokenizer reader = new StringTokenizer(text, LSystem.LS);
+				String record = null;
+				for (; reader.hasMoreTokens();) {
+					record = reader.nextToken().trim();
+					if (record.length() > 0 && !record.startsWith(FLAG_L_TAG)
+							&& !record.startsWith(FLAG_C_TAG)
+							&& !record.startsWith(FLAG_I_TAG)) {
+						if (index >= length) {
+							result = (String[]) CollectionUtils.expand(result,
+									capacity);
+							length += capacity;
+						}
+						result[index] = record;
+						index++;
+					}
+				}
+				result = CollectionUtils.copyOf(result, index);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				throw new RuntimeException(ex);
+			}
+			scriptLazy.put(key, result);
+			return result;
+		} else {
+			return CollectionUtils.copyOf(result);
+		}
+	}
+
+	/**
+	 * 加载指定字符串为游戏脚本
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public final static String[] includeString(String key, String context) {
+		if (scriptLazy == null) {
+			scriptLazy = new ArrayMap(100);
+		} else if (scriptLazy.size() > 10000) {
+			scriptLazy.clear();
+		}
+		final int capacity = 2000;
+		String[] result = (String[]) scriptLazy.get(key);
+		if (result == null) {
+			result = new String[capacity];
+			int length = capacity;
+			int index = 0;
+			try {
+				StringTokenizer reader = new StringTokenizer(context,
+						LSystem.LS);
 				String record = null;
 				for (; reader.hasMoreTokens();) {
 					record = reader.nextToken().trim();
