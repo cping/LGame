@@ -65,103 +65,68 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
-	
+
 	/**
 	 * 最后绘制用户界面
 	 */
-	public void lastUserDraw(){
+	public void lastUserDraw() {
 		setFristOrder(DRAW_SPRITE_PAINT());
 		setSecondOrder(DRAW_DESKTOP_PAINT());
 		setLastOrder(DRAW_USER_PAINT());
-   }
-	
+	}
+
 	/**
 	 * 优先绘制用户界面
 	 */
-	public void fristUserDraw(){
+	public void fristUserDraw() {
 		setFristOrder(DRAW_USER_PAINT());
 		setSecondOrder(DRAW_SPRITE_PAINT());
 		setLastOrder(DRAW_DESKTOP_PAINT());
 	}
-	
+
 	/**
 	 * 把用户渲染置于精灵与桌面之间
 	 */
-	public void centerUserDraw(){
+	public void centerUserDraw() {
 		setFristOrder(DRAW_SPRITE_PAINT());
 		setSecondOrder(DRAW_USER_PAINT());
 		setLastOrder(DRAW_DESKTOP_PAINT());
 	}
-	
-	/**受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉.**/
-	/**但是，TeaVM之类的Bytecode to JS转码器是支持的.因此视情况有恢复可能性，但千万注意，恢复此部分函数的话。[不保证完整的跨平台性]**/
-	/*private boolean isDrawing;
 
-	@Deprecated
-	public void yieldDraw() {
-		notifyDraw();
-		waitUpdate();
-	}
-	
-	@Deprecated
-	public void yieldUpdate() {
-		notifyUpdate();
-		waitDraw();
-	}
-	
-	@Deprecated
-	public synchronized void notifyDraw() {
-		this.isDrawing = true;
-		this.notifyAll();
-	}
-	
-	@Deprecated
-	public synchronized void notifyUpdate() {
-		this.isDrawing = false;
-		this.notifyAll();
-	}
-	
-	@Deprecated
-	public synchronized void waitDraw() {
-		for (; !isDrawing;) {
-			try {
-				this.wait();
-			} catch (InterruptedException ex) {
-			}
-		}
-	}
-	
-	@Deprecated
-	public synchronized void waitUpdate() {
-		for (; isDrawing;) {
-			try {
-				this.wait();
-			} catch (InterruptedException ex) {
-			}
-		}
-	}
-	
-	@Deprecated
-	public synchronized void waitFrame(int i) {
-		for (int wait = frame + i; frame < wait;) {
-			try {
-				super.wait();
-			} catch (Exception ex) {
-			}
-		}
-	}
-	
-	@Deprecated
-	public synchronized void waitTime(long i) {
-		for (long time = System.currentTimeMillis() + i; System
-				.currentTimeMillis() < time;)
-			try {
-				super.wait(time - System.currentTimeMillis());
-			} catch (Exception ex) {
-			}
-	}*/
-	/**受限函数结束**/
-	
+	/** 受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉. **/
+	/**
+	 * 但是，TeaVM之类的Bytecode to JS转码器是支持的.因此视情况有恢复可能性，但千万注意，恢复此部分函数的话。[不保证完整的跨平台性]
+	 **/
+	/*
+	 * private boolean isDrawing;
+	 * 
+	 * @Deprecated public void yieldDraw() { notifyDraw(); waitUpdate(); }
+	 * 
+	 * @Deprecated public void yieldUpdate() { notifyUpdate(); waitDraw(); }
+	 * 
+	 * @Deprecated public synchronized void notifyDraw() { this.isDrawing =
+	 * true; this.notifyAll(); }
+	 * 
+	 * @Deprecated public synchronized void notifyUpdate() { this.isDrawing =
+	 * false; this.notifyAll(); }
+	 * 
+	 * @Deprecated public synchronized void waitDraw() { for (; !isDrawing;) {
+	 * try { this.wait(); } catch (InterruptedException ex) { } } }
+	 * 
+	 * @Deprecated public synchronized void waitUpdate() { for (; isDrawing;) {
+	 * try { this.wait(); } catch (InterruptedException ex) { } } }
+	 * 
+	 * @Deprecated public synchronized void waitFrame(int i) { for (int wait =
+	 * frame + i; frame < wait;) { try { super.wait(); } catch (Exception ex) {
+	 * } } }
+	 * 
+	 * @Deprecated public synchronized void waitTime(long i) { for (long time =
+	 * System.currentTimeMillis() + i; System .currentTimeMillis() < time;) try
+	 * { super.wait(time - System.currentTimeMillis()); } catch (Exception ex) {
+	 * } }
+	 */
+	/** 受限函数结束 **/
+
 	protected final Closeable.Set _conns = new Closeable.Set();
 
 	private LayoutConstraints _rootConstraints;
@@ -1926,10 +1891,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -1937,6 +1904,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	/**
 	 * 刷新基础设置
 	 */
+	@Override
 	public void refresh() {
 		for (int i = 0; i < touchType.length; i++) {
 			touchType[i] = false;
@@ -1949,6 +1917,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public abstract void resize(int width, int height);
 
+	@Override
 	public PointI getTouch() {
 		touch.set((int) SysTouch.getX(), (int) SysTouch.getY());
 		return touch;
@@ -1958,62 +1927,76 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return LSystem.PAUSED;
 	}
 
+	@Override
 	public int getTouchPressed() {
 		return touchButtonPressed > SysInput.NO_BUTTON ? touchButtonPressed
 				: SysInput.NO_BUTTON;
 	}
 
+	@Override
 	public int getTouchReleased() {
 		return touchButtonReleased > SysInput.NO_BUTTON ? touchButtonReleased
 				: SysInput.NO_BUTTON;
 	}
 
+	@Override
 	public boolean isTouchPressed(int button) {
 		return touchButtonPressed == button;
 	}
 
+	@Override
 	public boolean isTouchReleased(int button) {
 		return touchButtonReleased == button;
 	}
 
+	@Override
 	public int getTouchX() {
 		return (int) SysTouch.getX();
 	}
 
+	@Override
 	public int getTouchY() {
 		return (int) SysTouch.getY();
 	}
 
+	@Override
 	public int getTouchDX() {
 		return (int) touchDX;
 	}
 
+	@Override
 	public int getTouchDY() {
 		return (int) touchDY;
 	}
 
+	@Override
 	public boolean isTouchType(int type) {
 		return touchType[type];
 	}
 
+	@Override
 	public int getKeyPressed() {
 		return keyButtonPressed > SysInput.NO_KEY ? keyButtonPressed
 				: SysInput.NO_KEY;
 	}
 
+	@Override
 	public boolean isKeyPressed(int keyCode) {
 		return keyButtonPressed == keyCode;
 	}
 
+	@Override
 	public int getKeyReleased() {
 		return keyButtonReleased > SysInput.NO_KEY ? keyButtonReleased
 				: SysInput.NO_KEY;
 	}
 
+	@Override
 	public boolean isKeyReleased(int keyCode) {
 		return keyButtonReleased == keyCode;
 	}
 
+	@Override
 	public boolean isKeyType(int type) {
 		return keyType[type];
 	}

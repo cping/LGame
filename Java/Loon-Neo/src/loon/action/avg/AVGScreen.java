@@ -173,12 +173,11 @@ public abstract class AVGScreen extends Screen {
 			if (tasking()) {
 				return;
 			}
-			if (_items != null && command != null && comp instanceof LSelect) {
-				int idx = select.getResultIndex();
+			if (_items != null && command != null && select != null) {
 				if ((LSystem.base() != null && (LSystem.base().isMobile() || LSystem
 						.base().setting.emulateTouch)) ? _clickcount++ >= _mobile_select_valid_limit
 						: _clickcount > -1) {
-					LSelect select = (LSelect) comp;
+					int idx = select.getResultIndex();
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
 						if (MathUtils.isNan(gotoFlag)) {
