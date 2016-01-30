@@ -42,6 +42,8 @@ public class LSystem {
 	public static String APP_NAME = "Loon";
 
 	public static boolean LOW_API = true;
+
+	public static boolean NOT_DRAG = false;
 	
 	public static float EMULATOR_BUTTIN_SCALE = 1f;
 

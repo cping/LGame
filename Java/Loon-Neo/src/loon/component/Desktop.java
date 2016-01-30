@@ -128,7 +128,8 @@ public class Desktop implements LRelease {
 	}
 
 	public boolean removeNotUIName(String uiName) {
-		boolean removed = this.removeComponentNotUIName(this.contentPane, uiName);
+		boolean removed = this.removeComponentNotUIName(this.contentPane,
+				uiName);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -142,7 +143,7 @@ public class Desktop implements LRelease {
 		}
 		return removed;
 	}
-	
+
 	private boolean removeComponentUIName(LContainer container, String name) {
 		return container.removeUIName(name);
 	}
@@ -162,7 +163,7 @@ public class Desktop implements LRelease {
 	private boolean removeComponentNotUIName(LContainer container, String name) {
 		return container.removeNotUIName(name);
 	}
-	
+
 	private boolean removeComponentNotTag(LContainer container, Object tag) {
 		return container.removeNotTag(tag);
 	}
@@ -275,7 +276,9 @@ public class Desktop implements LRelease {
 	private void processTouchMotionEvent() {
 		if (this.hoverComponent != null && this.hoverComponent.isEnabled()
 				&& this.input.isMoving()) {
-			if (this.input.getTouchDY() != 0 || this.input.getTouchDY() != 0) {
+			if (this.input.getTouchDX() != 0
+					|| this.input.getTouchDY() != 0
+					|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 				this.hoverComponent.processTouchDragged();
 			}
 
@@ -283,12 +286,12 @@ public class Desktop implements LRelease {
 			// 获得当前窗体下鼠标坐标
 			LComponent comp = this.findComponent(this.input.getTouchX(),
 					this.input.getTouchY());
+
 			if (comp != null) {
 
-			}
-			if (comp != null) {
 				if (this.input.getTouchDX() != 0
-						|| this.input.getTouchDY() != 0) {
+						|| this.input.getTouchDY() != 0
+						|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 				}
 
@@ -582,10 +585,10 @@ public class Desktop implements LRelease {
 		return this.contentPane.get();
 	}
 
-	public void removeAll(){
+	public void removeAll() {
 		clear();
 	}
-	
+
 	public void clear() {
 		if (contentPane != null) {
 			contentPane.clear();

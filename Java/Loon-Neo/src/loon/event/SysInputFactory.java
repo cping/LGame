@@ -172,6 +172,10 @@ public class SysInputFactory {
 			}
 			break;
 		case SysTouch.TOUCH_MOVE:
+			_offsetMoveX = touchX;
+			_offsetMoveY = touchY;
+			finalTouch.dx = _offsetTouchX - _offsetMoveX;
+			finalTouch.dy = _offsetTouchY - _offsetMoveY;
 			finalTouch.button = SysTouch.TOUCH_MOVE;
 			if (!_isDraging) {
 				if (useTouchCollection) {
@@ -186,6 +190,10 @@ public class SysInputFactory {
 			}
 			break;
 		case SysTouch.TOUCH_DRAG:
+			_offsetMoveX = touchX;
+			_offsetMoveY = touchY;
+			finalTouch.dx = _offsetTouchX - _offsetMoveX;
+			finalTouch.dy = _offsetTouchY - _offsetMoveY;
 			finalTouch.button = SysTouch.TOUCH_DRAG;
 			ebuttons = _handler.getEmulatorButtons();
 			if (ebuttons != null && ebuttons.isVisible()) {
@@ -256,6 +264,7 @@ public class SysInputFactory {
 				}
 				break;
 			case MOVE:
+
 				_offsetMoveX = touchX;
 				_offsetMoveY = touchY;
 				finalTouch.dx = _offsetTouchX - _offsetMoveX;
@@ -267,10 +276,12 @@ public class SysInputFactory {
 								LTouchLocationState.Dragged, finalTouch.x,
 								finalTouch.y);
 					}
-					finalTouch.button = SysTouch.TOUCH_MOVE;
+
 					// a few platforms no such behavior (ios or android)
 					_handler.mouseMoved(finalTouch);
-					_handler.mouseDragged(finalTouch);
+					if (!LSystem.NOT_DRAG) {
+						_handler.mouseDragged(finalTouch);
+					}
 					_isDraging = true;
 				}
 				ebuttons = _handler.getEmulatorButtons();

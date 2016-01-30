@@ -174,10 +174,11 @@ public abstract class AVGScreen extends Screen {
 				return;
 			}
 			if (_items != null && command != null && comp instanceof LSelect) {
-				if ((LSystem.base() != null && LSystem.base().isMobile()) ? _clickcount++ >= _mobile_select_valid_limit
+				int idx = select.getResultIndex();
+				if ((LSystem.base() != null && (LSystem.base().isMobile() || LSystem
+						.base().setting.emulateTouch)) ? _clickcount++ >= _mobile_select_valid_limit
 						: _clickcount > -1) {
 					LSelect select = (LSelect) comp;
-					int idx = select.getResultIndex();
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
 						if (MathUtils.isNan(gotoFlag)) {
@@ -1398,7 +1399,8 @@ public abstract class AVGScreen extends Screen {
 		} else if (scrFlag && select.getResultIndex() != -1) {
 			onSelect(selectMessage, select.getResultIndex());
 			isNext = select.intersects(getTouchX(), getTouchY());
-			if ((LSystem.base() != null && LSystem.base().isMobile()) ? _clickcount++ >= _mobile_select_valid_limit
+			if ((LSystem.base() != null && LSystem.base().isMobile() || LSystem
+					.base().setting.emulateTouch) ? _clickcount++ >= _mobile_select_valid_limit
 					: _clickcount > -1) {
 				message.setVisible(false);
 				select.setVisible(false);

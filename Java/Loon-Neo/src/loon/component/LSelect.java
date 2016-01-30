@@ -128,7 +128,7 @@ public class LSelect extends LContainer {
 	}
 
 	private static String[] getListToStrings(TArray<String> list) {
-		if (list == null || list.size == 0){
+		if (list == null || list.size == 0) {
 			return null;
 		}
 		String[] result = new String[list.size];
@@ -149,7 +149,7 @@ public class LSelect extends LContainer {
 	public void setMessage(TArray<String> list) {
 		setMessage(null, list);
 	}
-	
+
 	public void setMessage(String message, String[] selects) {
 		this.message = message;
 		this.selects = selects;
@@ -193,8 +193,8 @@ public class LSelect extends LContainer {
 		// g.setAntiAlias(true);
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
-			messageFont.drawString(g,message, messageLeft,
-					messageTop - messageFont.getAscent());
+			messageFont.drawString(g, message, messageLeft, messageTop
+					- messageFont.getAscent());
 		} else {
 			messageTop = y + top;
 		}
@@ -225,11 +225,11 @@ public class LSelect extends LContainer {
 	}
 
 	private boolean onClick;
-	
+
 	public boolean isClick() {
 		return onClick;
 	}
-	
+
 	@Override
 	protected void processTouchClicked() {
 		if (!input.isMoving()) {
@@ -251,6 +251,10 @@ public class LSelect extends LContainer {
 	@Override
 	protected void processTouchReleased() {
 		this.upClick();
+		if (LSystem.base() != null
+				&& (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)) {
+			this.processTouchMoved();
+		}
 	}
 
 	@Override
@@ -285,7 +289,6 @@ public class LSelect extends LContainer {
 			this.doClick();
 		}
 	}
-
 
 	public LColor getFontColor() {
 		return fontColor;
