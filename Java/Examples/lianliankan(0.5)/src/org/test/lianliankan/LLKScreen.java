@@ -1,25 +1,29 @@
-package game.test;
+package org.test.lianliankan;
 
 import java.util.LinkedList;
 
+import loon.LSystem;
+import loon.LTexture;
+import loon.LTextures;
+import loon.Screen;
 import loon.action.sprite.ISprite;
-import loon.action.sprite.Label;
 import loon.action.sprite.Picture;
 import loon.action.sprite.Sprite;
+import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.StatusBar;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.Screen;
-import loon.core.graphics.component.LMessage;
-import loon.core.graphics.component.LPaper;
-import loon.core.graphics.component.LSelect;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LTouch;
-import loon.core.resource.LPKResource;
-import loon.core.timer.LTimer;
-import loon.core.timer.LTimerContext;
+import loon.canvas.LColor;
+import loon.component.LMessage;
+import loon.component.LPaper;
+import loon.component.LSelect;
+import loon.event.GameTouch;
+import loon.event.Updateable;
+import loon.font.LFont;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+import loon.utils.timer.LTimer;
+import loon.utils.timer.LTimerContext;
+
 
 public class LLKScreen extends Screen {
 
@@ -61,7 +65,7 @@ public class LLKScreen extends Screen {
 
 	private StatusBar progress;
 
-	private Label stage, time;
+	private SpriteLabel stage, time;
 
 	private Picture role;
 
@@ -93,23 +97,20 @@ public class LLKScreen extends Screen {
 
 	public void onLoad() {
 
-		LPKResource.CACHE = true;
 		images = new LTexture[17];
 		for (int i = 0; i < 8; i++) {
-			images[i] = new LTexture("assets/" + i + ".jpg");
+			images[i] =  LTextures.loadTexture("assets/" + i + ".jpg");
 		}
 
-		final String res = "assets/res.lpk";
-
-		images[8] = LPKResource.openTexture(res, "a0.png");
-		images[9] = LPKResource.openTexture(res, "dot.png");
-		images[10] = LPKResource.openTexture(res, "background.jpg");
-		images[11] = LPKResource.openTexture(res, "role0.png");
-		images[12] = LPKResource.openTexture(res, "role1.png");
-		images[13] = LPKResource.openTexture(res, "role2.png");
-		images[14] = LPKResource.openTexture(res, "win.png");
-		images[15] = LPKResource.openTexture(res, "start.png");
-		images[16] = LPKResource.openTexture(res, "gameover.png");
+		images[8] = LTextures.loadTexture("assets/" +  "a0.png");
+		images[9] = LTextures.loadTexture("assets/" +  "dot.png");
+		images[10] = LTextures.loadTexture("assets/" +  "background.png");
+		images[11] = LTextures.loadTexture("assets/" +  "role0.png");
+		images[12] = LTextures.loadTexture("assets/" +  "role1.png");
+		images[13] = LTextures.loadTexture("assets/" +  "role2.png");
+		images[14] = LTextures.loadTexture("assets/" +  "win.png");
+		images[15] = LTextures.loadTexture("assets/" +  "start.png");
+		images[16] = LTextures.loadTexture("assets/" +  "gameover.png");
 		setBackground(getImage(10));
 		stage(1);
 	}
@@ -255,14 +256,14 @@ public class LLKScreen extends Screen {
 						role.setImage(getImage(12));
 						setMessage(START_MES);
 					} else if (isComplete()) {
-						Runnable runnable = new Runnable() {
-							public void run() {
+					Updateable runnable = new Updateable() {
+							public void action(Object o) {
 
-								stage = new Label("Stage - " + stageNo, 160, 25);
+								stage = new SpriteLabel("Stage - " + stageNo, 160, 5);
 								stage.setColor(LColor.black);
 								stage.setFont(LFont.getFont("Dialog", 1, 20));
 								LLKScreen.this.add(stage);
-								time = new Label("Time", 270, 25);
+								time = new SpriteLabel("Time", 270, 5);
 								time.setColor(LColor.black);
 								time.setFont(LFont.getFont("Dialog", 1, 20));
 								LLKScreen.this.add(time);
@@ -306,7 +307,7 @@ public class LLKScreen extends Screen {
 
 							}
 						};
-						callEvent(runnable);
+						LSystem.load(runnable);
 
 					}
 					count++;
@@ -463,8 +464,8 @@ public class LLKScreen extends Screen {
 		do {
 			getSprites().setVisible(false);
 			for (int i = 0; i < count; i++) {
-				int j = (int) (Math.random() * (double) count);
-				int k = (int) (Math.random() * (double) count);
+				int j = (int) (MathUtils.random() *  count);
+				int k = (int) (MathUtils.random() *  count);
 				LTexture temp = array[k].getBitmap();
 
 				array[k].setImage(array[j].getBitmap());
@@ -487,6 +488,7 @@ public class LLKScreen extends Screen {
 		if (progress != null) {
 			progress.set(progress_number);
 		}
+		
 		wingame = false;
 		overFlag = false;
 		failgame = false;
@@ -496,8 +498,8 @@ public class LLKScreen extends Screen {
 		for (int y = 1; y < yBound - 1; y++) {
 			for (int x = 1; x < xBound - 1; x++)
 				if (grid[y][x].isVisible()) {
-					int nx = offsetX + x * grid[y][x].getWidth();
-					int ny = offsetY + y * grid[y][x].getHeight();
+					float nx = offsetX + x * grid[y][x].getWidth();
+					float ny = offsetY + y * grid[y][x].getHeight();
 					grid[y][x].setLocation(nx, ny);
 					grid[y][x].setBorder(3);
 					temp[count] = grid[y][x];
@@ -814,7 +816,7 @@ public class LLKScreen extends Screen {
 	}
 
 	@Override
-	public void touchDown(LTouch e) {
+	public void touchDown(GameTouch e) {
 		if (!init) {
 			return;
 		}
@@ -846,8 +848,8 @@ public class LLKScreen extends Screen {
 			}
 		}
 
-		Runnable runnable = new Runnable() {
-			public void run() {
+		Updateable runnable = new Updateable() {
+			public void action(Object o) {
 				Grid current = null;
 				try {
 					if (prev != null) {
@@ -902,17 +904,47 @@ public class LLKScreen extends Screen {
 				}
 			}
 		};
-		callEvent(runnable);
+		LSystem.load(runnable);
 		return;
 
 	}
 
-	public void touchMove(LTouch e) {
+	public void touchMove(GameTouch e) {
 
 	}
 
-	public void touchUp(LTouch e) {
+	public void touchUp(GameTouch e) {
 
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void touchDrag(GameTouch e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

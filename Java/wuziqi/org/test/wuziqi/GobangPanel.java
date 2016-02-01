@@ -1,4 +1,4 @@
-package org.test;
+package org.test.wuziqi;
 
 import loon.LSystem;
 import loon.LTexture;

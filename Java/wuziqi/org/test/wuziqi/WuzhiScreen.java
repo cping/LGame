@@ -1,4 +1,4 @@
-package org.test;
+package org.test.wuziqi;
 
 import loon.LTransition;
 import loon.Screen;

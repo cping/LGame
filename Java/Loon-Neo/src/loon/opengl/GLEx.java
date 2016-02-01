@@ -2521,8 +2521,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (font != null) {
-			font.drawString(this, string, x + offsetStringX, y + offsetStringY,
-					rotation, c);
+			font.drawString(this, string, x + offsetStringX, y + offsetStringY, rotation, c);
 		}
 		return this;
 	}
@@ -2552,8 +2551,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (mes == null || mes.length() == 0) {
 			return this;
 		}
-		font.drawString(this, mes, x + offsetStringX, y + offsetStringY,
-				scaleX, scaleY, ax, ay, rotation, c);
+		font.drawString(this, mes, x + offsetStringX, y + offsetStringY, scaleX, scaleY,
+				ax, ay, rotation, c);
 		return this;
 	}
 

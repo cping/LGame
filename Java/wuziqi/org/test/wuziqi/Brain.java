@@ -1,4 +1,4 @@
-package org.test;
+package org.test.wuziqi;
 
 public class Brain {
 	private WuziBoard bd;

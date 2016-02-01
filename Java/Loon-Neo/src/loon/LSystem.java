@@ -60,7 +60,7 @@ public class LSystem {
 	public static boolean AUTO_REPAINT = true;
 
 	public static boolean USE_LOG = true;
-
+	
 	public static boolean LOCK_SCREEN = false;
 	// 包内默认的图片路径
 	final static public String FRAMEWORK_IMG_NAME = "loon_";
@@ -299,6 +299,7 @@ public class LSystem {
 
 	public static final int VERTEX_SIZE = 2 + 1 + 2;
 	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
+
 
 	static public String createVertexShader(boolean hasNormals,
 			boolean hasColors, int numTexCoords) {

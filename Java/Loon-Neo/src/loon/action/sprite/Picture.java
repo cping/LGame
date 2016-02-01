@@ -57,15 +57,6 @@ public class Picture extends LObject implements ISprite {
 		}
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof Picture) {
-			return equals((Picture) o);
-		} else {
-			return false;
-		}
-	}
-
 	public boolean equals(Picture p) {
 		if (image.equals(p.image)) {
 			return true;

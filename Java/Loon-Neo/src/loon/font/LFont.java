@@ -49,6 +49,26 @@ public class LFont implements IFont {
 		return new LFont(familyName, Style.PLAIN, size, true);
 	}
 
+	public static LFont getFont(String familyName, int styleType, int size) {
+		Style style = Style.PLAIN;
+		switch (styleType) {
+		default:
+		case 0:
+			style = Style.PLAIN;
+			break;
+		case 1:
+			style = Style.BOLD;
+			break;
+		case 2:
+			style = Style.ITALIC;
+			break;
+		case 3:
+			style = Style.BOLD_ITALIC;
+			break;
+		}
+		return new LFont(familyName, style, size, true);
+	}
+
 	public static LFont getFont(String familyName, Style style, int size) {
 		return new LFont(familyName, style, size, true);
 	}
@@ -92,8 +112,8 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y + ty,
-				angle, c);
+		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y
+				+ ty, angle, c);
 	}
 
 	@Override
@@ -105,8 +125,8 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y + ty,
-				sx, sy, ax, ay, angle, c);
+		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y
+				+ ty, sx, sy, ax, ay, angle, c);
 	}
 
 	private void initLayout(String text) {

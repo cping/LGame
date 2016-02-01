@@ -27,13 +27,17 @@ public class LTimerContext {
 	public long tick;
 
 	public float alpha;
-	  
+
 	public LTimerContext() {
 		timeSinceLastUpdate = 0;
 	}
 
 	public float getMilliseconds() {
 		return timeSinceLastUpdate / 1000f;
+	}
+
+	public long getTimeSinceLastUpdate() {
+		return timeSinceLastUpdate;
 	}
 
 	@Override

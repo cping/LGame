@@ -182,7 +182,6 @@ public class LSelect extends LContainer {
 			return;
 		}
 		LColor oldColor = g.getColor();
-		g.setColor(fontColor);
 		sizeFont = messageFont.getSize();
 		doubleSizeFont = sizeFont * 2;
 		if (doubleSizeFont == 0) {
@@ -190,7 +189,6 @@ public class LSelect extends LContainer {
 		}
 		messageLeft = (x + doubleSizeFont + sizeFont / 2) + tmpOffset + left
 				+ doubleSizeFont;
-		// g.setAntiAlias(true);
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
 			messageFont.drawString(g, message, messageLeft, messageTop
@@ -212,7 +210,7 @@ public class LSelect extends LContainer {
 					g.setAlpha(1F);
 				}
 				g.drawString(selects[i], messageLeft,
-						nTop - messageFont.getAscent());
+						nTop - messageFont.getAscent(), fontColor);
 				if ((cursor != null) && isSelect) {
 					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2,
 							LColor.white);
@@ -220,7 +218,6 @@ public class LSelect extends LContainer {
 
 			}
 		}
-		// g.setAntiAlias(false);
 		g.setColor(oldColor);
 	}
 

@@ -20,6 +20,8 @@
  */
 package loon;
 
+import java.util.Arrays;
+
 import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -503,7 +505,7 @@ public class LTexture extends Painter implements LRelease {
 					+ copy.xOff;
 			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 					+ copy.yOff;
-			
+
 			isChild = true;
 			childs.put(hashCode, copy);
 
@@ -864,8 +866,11 @@ public class LTexture extends Painter implements LRelease {
 		}
 		if (o instanceof LTexture) {
 			LTexture tmp = (LTexture) o;
-			if (source.equals(source) && this.id == tmp.id
-					&& this.xOff == tmp.xOff && this.yOff == tmp.yOff
+			if (source != null && !source.equals(tmp.source)) {
+				return false;
+			}
+			if (this.id == tmp.id && this.xOff == tmp.xOff
+					&& this.yOff == tmp.yOff
 					&& this.widthRatio == tmp.widthRatio
 					&& this.heightRatio == tmp.heightRatio
 					&& this.config == tmp.config && this.isChild == tmp.isChild
@@ -873,6 +878,10 @@ public class LTexture extends Painter implements LRelease {
 					&& this.displayHeight == tmp.displayHeight
 					&& this.pixelWidth == tmp.pixelWidth
 					&& this.pixelHeight == tmp.pixelHeight) {
+				if (image != null && tmp.image != null) {
+					return Arrays.equals(image.getPixels(),
+							tmp.image.getPixels());
+				}
 				return true;
 			}
 		}

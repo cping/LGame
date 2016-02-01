@@ -1,4 +1,4 @@
-package org.test;
+package org.test.wuziqi;
 
 public class Chess implements Comparable<Chess> {
 	public static final int BLACK = 1;
