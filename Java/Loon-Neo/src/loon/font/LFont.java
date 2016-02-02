@@ -4,8 +4,10 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.Font.Style;
 import loon.geom.PointI;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
 public class LFont implements IFont {
@@ -22,6 +24,9 @@ public class LFont implements IFont {
 	public static void setDefaultFont(LFont font) {
 		defaultFont = font;
 	}
+
+	private ObjectMap<String, Vector2f> fontSizes = new ObjectMap<String, Vector2f>(
+			50);
 
 	private final static String tmp = "H";
 
@@ -224,6 +229,15 @@ public class LFont implements IFont {
 			hash = LSystem.unite((int) textFormat.font.size, hash);
 		}
 		return hash;
+	}
+
+	public Vector2f getOrigin(String text) {
+		Vector2f result = fontSizes.get(text);
+		if (result == null) {
+			result = new Vector2f(stringWidth(text) / 2f, getHeight() / 2f);
+			fontSizes.put(text, result);
+		}
+		return result;
 	}
 
 	public TextLayout getLayoutText(String text) {
