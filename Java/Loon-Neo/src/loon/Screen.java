@@ -652,7 +652,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	static {
-		keyType = new boolean[15];
+		keyType = new boolean[255];
 		touchType = new boolean[15];
 	}
 
@@ -2050,6 +2050,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
+	@Override
 	public void setKeyUp(int button) {
 		try {
 			keyButtonReleased = button;

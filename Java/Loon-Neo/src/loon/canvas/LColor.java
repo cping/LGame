@@ -322,6 +322,18 @@ public class LColor implements Serializable {
 
 	public float a = 1.0f;
 
+	public final static LColor newWhite(){
+		return new LColor(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+	public final static LColor newBlack(){
+		return new LColor(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	
+	public final static LColor newRed(){
+		return new LColor(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+	
 	/**
 	 * 转换字符串为color
 	 * 

@@ -23,12 +23,9 @@ package loon.event;
 import loon.EmulatorButtons;
 import loon.LProcess;
 import loon.LSystem;
-import loon.utils.IntArray;
 import loon.utils.MathUtils;
 
 public class SysInputFactory {
-
-	final static IntArray _keys = new IntArray();
 
 	private float _offsetTouchX, _offsetMoveX, _offsetTouchY, _offsetMoveY;
 
@@ -38,14 +35,9 @@ public class SysInputFactory {
 
 	final static GameKey finalKey = new GameKey();
 
-	private long _keyTimeMillis;
-
 	private int _halfWidth, _halfHeight;
 
 	static boolean _isDraging;
-
-	final static ActionKey only_key = new ActionKey(
-			ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 	private static boolean useTouchCollection = false;
 
@@ -83,30 +75,25 @@ public class SysInputFactory {
 	}
 
 	public static ActionKey getOnlyKey() {
-		return only_key;
+		return SysKey.only_key;
 	}
 
 	public void callKey(KeyMake.KeyEvent e) {
 		if (e.down) {
-			long curTime = System.currentTimeMillis();
-			if ((curTime - _keyTimeMillis) > LSystem.SECOND / 5) {
-				_keyTimeMillis = curTime;
-				finalKey.timer = e.time;
-				finalKey.keyChar = e.keyChar;
-				finalKey.keyCode = e.keyCode;
-				finalKey.type = SysKey.KEY_DOWN;
-				only_key.press();
-				_handler.keyDown(finalKey);
-				_keys.add(finalKey.keyCode);
-			}
+			finalKey.timer = e.time;
+			finalKey.keyChar = e.keyChar;
+			finalKey.keyCode = e.keyCode;
+			finalKey.type = SysKey.DOWN;
+			SysKey.only_key.press();
+			SysKey.addKey(finalKey.keyCode);
+			_handler.keyDown(finalKey);
 		} else {
 			finalKey.timer = e.time;
 			finalKey.keyChar = e.keyChar;
 			finalKey.keyCode = e.keyCode;
-			finalKey.type = SysKey.KEY_UP;
-			only_key.release();
+			finalKey.type = SysKey.UP;
+			SysKey.removeKey(finalKey.keyCode);
 			_handler.keyUp(finalKey);
-			_keys.removeValue(finalKey.keyCode);
 		}
 	}
 

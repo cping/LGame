@@ -29,7 +29,7 @@ public class GameKey {
 	char keyChar;
 
 	double timer;
-	
+
 	GameKey() {
 
 	}
@@ -37,7 +37,7 @@ public class GameKey {
 	public double getTimer() {
 		return timer;
 	}
-	
+
 	GameKey(GameKey key) {
 		this.type = key.type;
 		this.keyCode = key.keyCode;

@@ -24,7 +24,10 @@ import loon.utils.IntArray;
 
 public class SysKey {
 
+	public static boolean USE_ONLY_DOWN = false;
+
 	final static IntArray keys = new IntArray();
+
 	public static final int KEY_DOWN = 0;
 
 	public static final int KEY_UP = 1;
@@ -296,7 +299,7 @@ public class SysKey {
 	public static final int BUTTON_CIRCLE = 255;
 
 	final static GameKey finalKey = new GameKey();
-	
+
 	public static char getKeyChar() {
 		return finalKey.keyChar;
 	}
@@ -337,10 +340,18 @@ public class SysKey {
 	}
 
 	public static boolean isKeyPressed(int key) {
-		if (key == SysKey.ANY_KEY) {
-			return keys.length > 0 && only_key.isPressed();
+		if (USE_ONLY_DOWN) {
+			if (key == SysKey.ANY_KEY) {
+				return keys.length > 0 && only_key.isPressed();
+			} else {
+				return keys.contains(key) && only_key.isPressed();
+			}
 		} else {
-			return keys.contains(key) && only_key.isPressed();
+			if (key == SysKey.ANY_KEY) {
+				return keys.length > 0;
+			} else {
+				return keys.contains(key);
+			}
 		}
 	}
 
