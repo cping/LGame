@@ -840,6 +840,10 @@ public class LTexture extends Painter implements LRelease {
 		return c != null && !LColor.white.equals(c);
 	}
 
+	public Cache saveBatchCache() {
+		return newBatchCache();
+	}
+	
 	public Cache newBatchCache() {
 		if (isBatch) {
 			return batch.newCache();
