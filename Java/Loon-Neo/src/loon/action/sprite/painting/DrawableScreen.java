@@ -121,6 +121,10 @@ public abstract class DrawableScreen extends Screen {
 
 	public abstract void draw(SpriteBatch batch);
 
+	public void fadeBackBufferToBlack(SpriteBatch bth) {
+		drawRectangle(bth, LSystem.viewSize.getRect(), 0f, 0f, 0f, 1f);
+	}
+	
 	public void fadeBackBufferToBlack(SpriteBatch bth, float a) {
 		drawRectangle(bth, LSystem.viewSize.getRect(), 0f, 0f, 0f, a);
 	}
