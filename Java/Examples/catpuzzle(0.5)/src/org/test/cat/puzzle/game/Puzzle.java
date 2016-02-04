@@ -1,20 +1,21 @@
-package com.cat.puzzle.game_free;
+package org.test.cat.puzzle.game;
 
 import java.util.ArrayList;
 
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.graphics.BMFont;
-import loon.core.graphics.LColor;
-import loon.core.graphics.Screen;
-import loon.core.graphics.opengl.GLEx;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
-import loon.core.timer.LTimerContext;
+import loon.LSystem;
+import loon.LTexture;
+import loon.LTextures;
+import loon.Screen;
+import loon.action.sprite.effect.RippleEffect;
+import loon.canvas.LColor;
+import loon.event.GameKey;
+import loon.event.GameTouch;
+import loon.event.SysKey;
+import loon.font.BMFont;
+import loon.geom.RectBox;
+import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.timer.LTimerContext;
 
 public class Puzzle extends Screen {
 
@@ -109,7 +110,7 @@ public class Puzzle extends Screen {
 	private int movesLeft;
 
 	public Puzzle() {
-		LTexture.ALL_LINEAR = true;
+
 	}
 
 	private String pad(int value, int len) {
@@ -134,8 +135,11 @@ public class Puzzle extends Screen {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//优先绘制用户界面
+		fristUserDraw();
+		RippleEffect effect = new RippleEffect();
+		add(effect);
 
-		
 		bottom = LTextures.loadTexture("assets/bottom.png");
 		edge = LTextures.loadTexture("assets/edges.png");
 		logo = LTextures.loadTexture("assets/logo.png");
@@ -153,7 +157,7 @@ public class Puzzle extends Screen {
 		quitRect = new RectBox(468, 415, 100, 30);
 
 		clearBoard();
-		
+
 		setBackground("assets/background.png");
 	}
 
@@ -203,10 +207,11 @@ public class Puzzle extends Screen {
 		}
 	}
 
-	private void drawNumberString(BMFont font, String str, int y) {
-		font.drawString((456 + ((180 - (numbers.getWidth(str))) / 2)), y + 1,
-				str);
-		font.drawString((455 + ((180 - (numbers.getWidth(str))) / 2)), y, str);
+	private void drawNumberString(GLEx g, BMFont font, String str, int y) {
+		font.drawString(g, str,
+				(456 + ((180 - (numbers.stringWidth(str))) / 2)), y + 1);
+		font.drawString(g, str,
+				(455 + ((180 - (numbers.stringWidth(str))) / 2)), y);
 	}
 
 	public void render(GLEx g) {
@@ -475,36 +480,33 @@ public class Puzzle extends Screen {
 
 	public void draw(GLEx g) {
 
-		if(!isOnLoadComplete()){
+		if (!isOnLoadComplete()) {
 			return;
 		}
+		g.saveTx();
 		g.scale(0.8f, 1);
 		bottom.draw(2, 450);
 		edge.draw(9, 0, edge.getWidth(), 450);
-		g.restore();
+		g.restoreTx();
 
 		matchesLabel.draw(460, 10);
 		scoreLabel.draw(480, 130);
 		timeLabel.draw(490, 250);
 		kitty.draw(535, 340);
 
-		font.drawString(470, 386, "HELP", LColor.black);
-		font.drawString(469, 426, "QUIT", LColor.black);
+		font.drawString(g, "HELP", 470, 386, LColor.black);
+		font.drawString(g, "QUIT", 469, 426, LColor.black);
 
-		font.drawString(469, 385, "HELP", LColor.white);
-		font.drawString(468, 425, "QUIT", LColor.white);
+		font.drawString(g, "HELP", 469, 385, LColor.white);
+		font.drawString(g, "QUIT", 468, 425, LColor.white);
 
 		if (numbers != null) {
 			String str = pad(matches, 4);
-			drawNumberString(numbers, str, 50);
+			drawNumberString(g, numbers, str, 50);
 			str = pad(score, 7);
-			drawNumberString(numbers, str, 170);
+			drawNumberString(g, numbers, str, 170);
 			str = pad(time / 60, 2) + ":" + pad(time % 60, 2);
-			drawNumberString(numbers, str, 290);
-		}
-		
-		for(int i=0;i<kitis.length;i++){
-			kitis[i].glBegin();
+			drawNumberString(g, numbers, str, 290);
 		}
 
 		for (int x = 0; x < 8; x++) {
@@ -523,7 +525,7 @@ public class Puzzle extends Screen {
 									(BOARD_TOP + (y * 64)), 54, 44);
 							g.setColor(LColor.black);
 							g.drawOval(BOARD_LEFT + (x * 54),
-									 (BOARD_TOP + (y * 64)), 54, 44);
+									(BOARD_TOP + (y * 64)), 54, 44);
 							g.resetColor();
 						}
 					}
@@ -564,19 +566,14 @@ public class Puzzle extends Screen {
 					if ((state == HINT) && (tiles[x][y][MATCH_HINT] > 0)) {
 						int xp = 11 + (x * 54);
 						int yp = -831 + (y * 64);
-						kitis[tile].draw(xp, yp,tiles[x][y][MATCH_HINT]
+						kitis[tile].draw(xp, yp, tiles[x][y][MATCH_HINT]
 								/ SPIN_SCALAR);
 					} else {
-						kitis[tile].draw( (11 + (x * 54) + xofs),
-								(-831 + (y * 64) + yofs),
-								 (54 * size),  (64 * size));
+						kitis[tile].draw((11 + (x * 54) + xofs), (-831
+								+ (y * 64) + yofs), (54 * size), (64 * size));
 					}
 				}
 			}
-		}
-
-		for(int i=0;i<kitis.length;i++){
-			kitis[i].glEnd();
 		}
 
 		if (starting) {
@@ -594,11 +591,11 @@ public class Puzzle extends Screen {
 			if (gameOverCounter > 0) {
 				g.drawString("Well Done!", 280, 300);
 			} else {
-				String mes = "这是一款直接山寨(Copy)过来的游戏示例";
+				String mes = "这是一款拼图游戏示例";
 				g.drawString(mes,
 						(getWidth() - g.getFont().stringWidth(mes)) / 2, 180);
 				g.drawString("Click to Start", 255,
-						 (385 + (MathUtils.cos(ang) * 8)));
+						(385 + (MathUtils.cos(ang) * 8)));
 			}
 		}
 
@@ -606,7 +603,7 @@ public class Puzzle extends Screen {
 
 	public void alter(LTimerContext timer) {
 
-		if(!isOnLoadComplete()){
+		if (!isOnLoadComplete()) {
 			return;
 		}
 		long delta = timer.timeSinceLastUpdate;
@@ -732,24 +729,24 @@ public class Puzzle extends Screen {
 
 	}
 
-	public void touchDown(LTouch e) {
+	public void touchDown(GameTouch e) {
 		mousePressed(e.getButton(), e.x(), e.y());
 	}
 
-	public void touchUp(LTouch e) {
+	public void touchUp(GameTouch e) {
 
 	}
 
-	public void touchMove(LTouch e) {
+	public void touchMove(GameTouch e) {
 
 	}
 
-	public void touchDrag(LTouch e) {
+	public void touchDrag(GameTouch e) {
 
 	}
 
-	public void onKeyDown(LKey e) {
-		if (e.getKeyCode() == Key.ESCAPE) {
+	public void onKeyDown(GameKey e) {
+		if (e.getKeyCode() == SysKey.ESCAPE) {
 			if (starting) {
 				LSystem.exit();
 			} else {
@@ -758,5 +755,28 @@ public class Puzzle extends Screen {
 		}
 	}
 
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+
+	}
 
 }

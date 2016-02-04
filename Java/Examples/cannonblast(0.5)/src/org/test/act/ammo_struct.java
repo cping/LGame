@@ -1,4 +1,4 @@
-﻿package org.test;
+﻿package org.test.act;
 
 public final class ammo_struct
 {
@@ -16,7 +16,7 @@ public final class ammo_struct
 	public int power;
 	public float accel;
 
-	public ammo_struct clone()
+	public ammo_struct cpy()
 	{
 		ammo_struct varCopy = new ammo_struct();
 

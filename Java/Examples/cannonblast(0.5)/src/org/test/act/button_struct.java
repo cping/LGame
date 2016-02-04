@@ -1,4 +1,4 @@
-﻿package org.test;
+﻿package org.test.act;
 
 public final class button_struct
 {
@@ -13,7 +13,7 @@ public final class button_struct
 	public String text;
 	public int icon;
 
-	public button_struct clone()
+	public button_struct cpy()
 	{
 		button_struct varCopy = new button_struct();
 

@@ -40,6 +40,8 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 
 	private int existTime = 25;
 
+	private float offsetX, offsetY;
+
 	public RippleEffect() {
 		this(Model.OVAL, LColor.blue);
 	}
@@ -58,6 +60,14 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 		ripples = new TArray<RippleKernel>();
 		timer = new LTimer(60);
 		visible = true;
+	}
+
+	public void setDelay(long delay) {
+		this.timer.setDelay(delay);
+	}
+
+	public long getDelay() {
+		return this.timer.getDelay();
 	}
 
 	public boolean addRipplePoint(final float x, final float y) {
@@ -99,7 +109,7 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 		g.setColor(color);
 		for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
 			RippleKernel ripple = it.next();
-			ripple.draw(g, model, _location.x, _location.y);
+			ripple.draw(g, model, _location.x + offsetX, _location.y + offsetY);
 		}
 		g.setColor(tmp);
 	}
@@ -168,6 +178,22 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 		if (e == Event.DOWN) {
 			addRipplePoint(touchX, touchY);
 		}
+	}
+
+	public float getOffsetX() {
+		return offsetX;
+	}
+
+	public void setOffsetX(float offsetX) {
+		this.offsetX = offsetX;
+	}
+
+	public float getOffsetY() {
+		return offsetY;
+	}
+
+	public void setOffsetY(float offsetY) {
+		this.offsetY = offsetY;
 	}
 
 }

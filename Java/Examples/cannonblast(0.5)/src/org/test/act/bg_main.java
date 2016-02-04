@@ -1,8 +1,9 @@
-﻿package org.test;
+﻿package org.test.act;
 
-import loon.core.geom.Vector2f;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
+import loon.LTexture;
+import loon.LTextures;
+import loon.geom.Vector2f;
+
 
 public class bg_main {
 	private Vector2f[] positions;

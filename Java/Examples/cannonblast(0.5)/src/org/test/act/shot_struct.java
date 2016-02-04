@@ -1,4 +1,4 @@
-﻿package org.test;
+﻿package org.test.act;
 
 public final class shot_struct
 {
@@ -26,7 +26,7 @@ public final class shot_struct
 	public int source;
 	public float accel;
 
-	public shot_struct clone()
+	public shot_struct cpy()
 	{
 		shot_struct varCopy = new shot_struct();
 

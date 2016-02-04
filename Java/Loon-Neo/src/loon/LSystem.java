@@ -44,6 +44,8 @@ public class LSystem {
 	public static boolean LOW_API = true;
 
 	public static boolean NOT_DRAG = false;
+
+	public static boolean NOT_MOVE = false;
 	
 	public static float EMULATOR_BUTTIN_SCALE = 1f;
 

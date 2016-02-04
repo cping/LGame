@@ -170,7 +170,9 @@ public class SysInputFactory {
 							LTouchLocationState.Dragged, finalTouch.x,
 							finalTouch.y);
 				}
-				_handler.mouseMoved(finalTouch);
+				if (!LSystem.NOT_MOVE) {
+					_handler.mouseMoved(finalTouch);
+				}
 			}
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.unhit(0, touchX, touchY);
@@ -191,7 +193,9 @@ public class SysInputFactory {
 						.update(finalTouch.id, LTouchLocationState.Dragged,
 								finalTouch.x, finalTouch.y);
 			}
-			_handler.mouseDragged(finalTouch);
+			if (!LSystem.NOT_DRAG) {
+				_handler.mouseDragged(finalTouch);
+			}
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.hit(0, touchX, touchY, false);
 			}
@@ -265,7 +269,9 @@ public class SysInputFactory {
 					}
 
 					// a few platforms no such behavior (ios or android)
-					_handler.mouseMoved(finalTouch);
+					if (!LSystem.NOT_MOVE) {
+						_handler.mouseMoved(finalTouch);
+					}
 					if (!LSystem.NOT_DRAG) {
 						_handler.mouseDragged(finalTouch);
 					}

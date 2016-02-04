@@ -1,4 +1,4 @@
-﻿package org.test;
+﻿package org.test.act;
 
 public final class block_struct
 {
@@ -6,7 +6,7 @@ public final class block_struct
 	public int active;
 	public int hits;
 
-	public block_struct clone()
+	public block_struct cpy()
 	{
 		block_struct varCopy = new block_struct();
 

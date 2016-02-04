@@ -1,4 +1,4 @@
-﻿package org.test;
+﻿package org.test.act;
 
 public final class tile_struct
 {
@@ -7,7 +7,7 @@ public final class tile_struct
 	public int w;
 	public int h;
 
-	public tile_struct clone()
+	public tile_struct cpy()
 	{
 		tile_struct varCopy = new tile_struct();
 

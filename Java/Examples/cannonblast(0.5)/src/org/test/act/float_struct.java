@@ -1,6 +1,6 @@
-﻿package org.test;
+﻿package org.test.act;
 
-import loon.core.graphics.LColor;
+import loon.canvas.LColor;
 
 public final class float_struct
 {
@@ -12,7 +12,7 @@ public final class float_struct
 	public int alpha;
 	public LColor color;
 
-	public float_struct clone()
+	public float_struct cpy()
 	{
 		float_struct varCopy = new float_struct();
 

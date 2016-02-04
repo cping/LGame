@@ -1,4 +1,4 @@
-﻿package org.test;
+﻿package org.test.act;
 
 public final class target_struct
 {
@@ -20,7 +20,7 @@ public final class target_struct
 	public int air;
 	public int explodes;
 
-	public target_struct clone()
+	public target_struct cpy()
 	{
 		target_struct varCopy = new target_struct();
 

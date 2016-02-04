@@ -26,6 +26,8 @@ public class SpriteBatch extends PixmapFImpl {
 		None, FlipHorizontally, FlipVertically;
 	}
 
+	private boolean _use_ascent = false;
+	
 	private float alpha = 1f;
 
 	float[] vertices;
@@ -404,8 +406,16 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!lockSubmit) {
 			submit();
 		}
-		LSTRDictionary.drawString(font, mes, x, y, scaleX, scaleX, ax, ay,
+		LSTRDictionary.drawString(font, mes, x,_use_ascent? y - font.getAscent():y, scaleX, scaleX, ax, ay,
 				rotation, c);
+	}
+	
+	public void setUseAscent(boolean a){
+		this._use_ascent = a;
+	}
+	
+	public boolean getUseAscent(){
+		return this._use_ascent;
 	}
 
 	public void begin() {

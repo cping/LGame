@@ -1,6 +1,7 @@
-﻿package org.test;
+﻿package org.test.act;
 
-import loon.core.geom.Vector2f;
+import loon.geom.Vector2f;
+
 
 public final class me_struct
 {
@@ -31,7 +32,7 @@ public final class me_struct
 	public int streak;
 	public int shaking;
 
-	public me_struct clone()
+	public me_struct cpy()
 	{
 		me_struct varCopy = new me_struct();
 

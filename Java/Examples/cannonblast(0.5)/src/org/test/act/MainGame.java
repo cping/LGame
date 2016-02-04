@@ -1,23 +1,23 @@
-﻿package org.test;
+﻿package org.test.act;
 
+import loon.LSystem;
+import loon.LTexture;
+import loon.LTextures;
+import loon.LTransition;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
 import loon.action.sprite.painting.DrawableScreen;
-import loon.core.LSystem;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LColorPool;
-import loon.core.graphics.opengl.LSTRDictionary;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
-import loon.core.input.LTransition;
-import loon.core.timer.GameTime;
+import loon.canvas.LColor;
+import loon.canvas.LColorPool;
+import loon.event.GameKey;
+import loon.event.GameTouch;
+import loon.geom.RectBox;
+import loon.geom.Vector2f;
+import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
+import loon.utils.timer.GameTime;
 
-public class Main extends DrawableScreen {
+public class MainGame extends DrawableScreen {
 
 	private LColorPool colors = new LColorPool();
 
@@ -72,7 +72,7 @@ public class Main extends DrawableScreen {
 	private int zone_tx;
 	private float zone_x;
 
-	public Main() {
+	public MainGame() {
 
 	}
 
@@ -1157,6 +1157,7 @@ public class Main extends DrawableScreen {
 		if(!isOnLoadComplete()){
 			return;
 		}
+		batch.setUseAscent(true);
 		int num3;
 		int tile;
 		int x;
@@ -1188,10 +1189,9 @@ public class Main extends DrawableScreen {
 				}
 			}
 			this.tiles.glEnd();
+			this.tiles.saveBatchCache();
 		} else {
-			this.tiles.glLock();
-			this.tiles.glCacheCommit();
-			this.tiles.glUnLock();
+			this.tiles.postLastBatchCache();
 		}
 
 		lastOffset = zone_offset;
@@ -1408,7 +1408,7 @@ public class Main extends DrawableScreen {
 		this.me.active = 0;
 		this.me.score = 0;
 
-		this.bg_1.Initialize("assets/bg_1.png", LSystem.screenRect.width, -1);
+		this.bg_1.Initialize("assets/bg_1.png", LSystem.viewSize.getWidth(), -1);
 		this.tiles = LTextures.loadTexture("assets/tiles.png");
 
 		// 缓存需要的字符串
@@ -1424,14 +1424,14 @@ public class Main extends DrawableScreen {
 	}
 
 	@Override
-	public void pressed(LTouch e) {
+	public void pressed(GameTouch e) {
 
 		this.pressed = 1;
 
 	}
 
 	@Override
-	public void released(LTouch e) {
+	public void released(GameTouch e) {
 
 		this.released = 1;
 		if ((this.pressed == 1) && (this.released == 1)) {
@@ -1492,11 +1492,11 @@ public class Main extends DrawableScreen {
 	}
 
 	@Override
-	public void move(LTouch e) {
+	public void drag(GameTouch e) {
 		if ((this.paused == 0) && (this.me.active == 1)) {
 			float posX = me.position.x + getTouchDX();
 			float posY = me.position.y + getTouchDY();
-			if (LSystem.screenRect.contains(posX, posY)) {
+			if (LSystem.viewSize.contains(posX, posY)) {
 				this.me.position.set(posX, posY);
 				this.me.x = this.me.position.x();
 				this.me.y = this.me.position.y();
@@ -1525,7 +1525,7 @@ public class Main extends DrawableScreen {
 	}
 
 	@Override
-	public void drag(LTouch e) {
+	public void move(GameTouch e) {
 	}
 
 	public LTransition onTransition() {
@@ -1533,13 +1533,13 @@ public class Main extends DrawableScreen {
 	}
 
 	@Override
-	public void pressed(LKey e) {
+	public void pressed(GameKey e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void released(LKey e) {
+	public void released(GameKey e) {
 		// TODO Auto-generated method stub
 
 	}
@@ -1564,6 +1564,24 @@ public class Main extends DrawableScreen {
 			}
 		}
 
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

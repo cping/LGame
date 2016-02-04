@@ -1,4 +1,4 @@
-﻿package org.test;
+﻿package org.test.act;
 
 public final class smoke_struct
 {
@@ -15,7 +15,7 @@ public final class smoke_struct
 	public float rot;
 	public int dur;
 
-	public smoke_struct clone()
+	public smoke_struct cpy()
 	{
 		smoke_struct varCopy = new smoke_struct();
 
