@@ -27,7 +27,9 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	private boolean _use_ascent = false;
-	
+
+	private float offsetX, offsetY;
+
 	private float alpha = 1f;
 
 	float[] vertices;
@@ -406,15 +408,16 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!lockSubmit) {
 			submit();
 		}
-		LSTRDictionary.drawString(font, mes, x,_use_ascent? y - font.getAscent():y, scaleX, scaleX, ax, ay,
+		LSTRDictionary.drawString(font, mes, x + offsetX, _use_ascent ? y
+				- font.getAscent() : y + offsetY, scaleX, scaleX, ax, ay,
 				rotation, c);
 	}
-	
-	public void setUseAscent(boolean a){
+
+	public void setUseAscent(boolean a) {
 		this._use_ascent = a;
 	}
-	
-	public boolean getUseAscent(){
+
+	public boolean getUseAscent() {
 		return this._use_ascent;
 	}
 
@@ -1912,6 +1915,22 @@ public class SpriteBatch extends PixmapFImpl {
 	@Override
 	protected void fillRectNative(float x, float y, float width, float height) {
 		draw(colorTexture, x, y, width, height);
+	}
+
+	public float getFontOffsetX() {
+		return offsetX;
+	}
+
+	public void setFontOffsetX(float offsetX) {
+		this.offsetX = offsetX;
+	}
+
+	public float getFontOffsetY() {
+		return offsetY;
+	}
+
+	public void setFontOffsetY(float offsetY) {
+		this.offsetY = offsetY;
 	}
 
 }

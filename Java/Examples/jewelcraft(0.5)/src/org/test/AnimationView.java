@@ -1,8 +1,8 @@
 ﻿package org.test;
 
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.opengl.LTexture;
+import loon.LTexture;
+import loon.geom.RectBox;
+import loon.geom.Vector2f;
 
 public class AnimationView {
 	public float alpha;

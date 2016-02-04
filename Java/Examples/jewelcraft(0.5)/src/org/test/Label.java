@@ -1,9 +1,9 @@
 ﻿package org.test;
 
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
+import loon.canvas.LColor;
+import loon.font.LFont;
+import loon.geom.RectBox;
+import loon.geom.Vector2f;
 
 
 public class Label

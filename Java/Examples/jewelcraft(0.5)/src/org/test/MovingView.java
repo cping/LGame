@@ -1,6 +1,6 @@
 ﻿package org.test;
 
-import loon.core.geom.Vector2f;
+import loon.geom.Vector2f;
 
 public class MovingView
 {
@@ -25,7 +25,7 @@ public class MovingView
 			if (((this.velocity.x * (this.position2.x - this.position.x)) < 0f) || ((this.velocity.y * (this.position2.y - this.position.y)) < 0f))
 			{
 				this.position = this.position2;
-				this.position2 = Vector2f.Zero;
+				this.position2 = Vector2f.ZERO();
 				this.isMoving = false;
 			}
 		}

@@ -1,6 +1,6 @@
 ﻿package org.test;
 
-import loon.core.geom.Vector2f;
+import loon.geom.Vector2f;
 
 public class ScrollView {
 	public boolean isMoving;

@@ -2,26 +2,26 @@
 
 import java.util.ArrayList;
 
+import loon.LSystem;
+import loon.LTexture;
+import loon.LTransition;
+import loon.Session;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.painting.DrawableScreen;
-import loon.core.LSystem;
-import loon.core.event.ActionKey;
-import loon.core.geom.RectBox;
-import loon.core.geom.Vector2f;
-import loon.core.graphics.LColor;
-import loon.core.graphics.LFont;
-import loon.core.graphics.opengl.LTexture;
-import loon.core.input.LInputFactory;
-import loon.core.input.LInputFactory.Key;
-import loon.core.input.LKey;
-import loon.core.input.LTouch;
-import loon.core.input.LTouchCollection;
-import loon.core.input.LTouchLocation;
-import loon.core.input.LTransition;
-import loon.core.store.Session;
-import loon.core.timer.GameTime;
+import loon.canvas.LColor;
+import loon.event.ActionKey;
+import loon.event.GameKey;
+import loon.event.GameTouch;
+import loon.event.LTouchCollection;
+import loon.event.LTouchLocation;
+import loon.event.SysInputFactory;
+import loon.event.SysKey;
+import loon.font.LFont;
+import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.timer.GameTime;
 
 public class MainGame extends DrawableScreen {
 
@@ -156,7 +156,7 @@ public class MainGame extends DrawableScreen {
 
 		session = Session.load(MainGame.class.getName());
 
-		LInputFactory.startTouchCollection();
+		SysInputFactory.startTouchCollection();
 	}
 
 	private void checkMatch() {
@@ -679,9 +679,9 @@ public class MainGame extends DrawableScreen {
 		return LTransition.newEmpty();
 	}
 
-	private ArrayList<LTexture> textures = new ArrayList<LTexture>(10);
 
 	public void draw(SpriteBatch batch) {
+		batch.setFontOffsetY(-5);
 		float gameTime = getGameTime().getTotalGameTime();
 		if (((this.currentView.equalsIgnoreCase("Intro")) || (this.currentView
 				.equalsIgnoreCase("Main"))) && (gameTime <= 10f)) {
@@ -719,15 +719,12 @@ public class MainGame extends DrawableScreen {
 			batch.drawString(this.timeLabel.font, this.timeLabel.text,
 					this.timeLabel.textPosition(), LColor.white);
 			Block block = null;
-			textures.clear();
+		
 			for (int i = 7; i >= 0; --i) {
 				for (int j = 7; j >= 0; --j) {
 					block = this.block[i][j];
 					LTexture newTexture = block.image;
-					if (!textures.contains(newTexture)) {
-						textures.add(newTexture);
-						newTexture.glBegin();
-					}
+				
 					if ((block.backgroundAnimationImages != null)
 							&& (block.alpha != 0)) {
 						block.backgroundAnimationIndex++;
@@ -738,10 +735,7 @@ public class MainGame extends DrawableScreen {
 								.get((block.backgroundAnimationIndex / 5)
 										% block.backgroundAnimationImages
 												.size());
-						if (!textures.contains(newTexture)) {
-							textures.add(newTexture);
-							newTexture.glBegin();
-						}
+		
 						newTexture.draw(block.position.x, block.position.y);
 					} else if ((block.color != -1)
 							|| ((block.item != 0) && (block.alpha != 0))) {
@@ -749,10 +743,7 @@ public class MainGame extends DrawableScreen {
 					}
 				}
 			}
-			for (LTexture tex2d : textures) {
-				tex2d.glEnd();
-			}
-			textures.clear();
+	
 			for (AnimationView view2 : this.animationViews) {
 				if (!view2.isAnimating) {
 					continue;
@@ -761,10 +752,7 @@ public class MainGame extends DrawableScreen {
 				LTexture newTexture = view2.animationImages
 						.get((view2.animationIndex / (view2.animationDelay + 1))
 								% size);
-				if (!textures.contains(newTexture)) {
-					textures.add(newTexture);
-					newTexture.glBegin();
-				}
+	
 				view2.animationTimer -= getGameTime().getElapsedGameTime();
 				if (view2.alpha != 0f) {
 					if (view2.isFramed) {
@@ -780,9 +768,7 @@ public class MainGame extends DrawableScreen {
 					view2.isAnimating = false;
 				}
 			}
-			for (LTexture tex2d : textures) {
-				tex2d.glEnd();
-			}
+		
 
 			for (ImageView view3 : this.levelInfo.subviews) {
 				if (view3.alpha != 0f) {
@@ -2273,25 +2259,25 @@ public class MainGame extends DrawableScreen {
 	}
 
 	@Override
-	public void pressed(LTouch e) {
+	public void pressed(GameTouch e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void released(LTouch e) {
+	public void released(GameTouch e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void move(LTouch e) {
+	public void move(GameTouch e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void drag(LTouch e) {
+	public void drag(GameTouch e) {
 		// TODO Auto-generated method stub
 
 	}
@@ -2299,16 +2285,16 @@ public class MainGame extends DrawableScreen {
 	ActionKey KeyValue = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 	@Override
-	public void pressed(LKey e) {
-		if (e.getKeyCode() == Key.BACK) {
+	public void pressed(GameKey e) {
+		if (e.getKeyCode() == SysKey.BACK) {
 			KeyValue.press();
 		}
 
 	}
 
 	@Override
-	public void released(LKey e) {
-		if (e.getKeyCode() == Key.BACK) {
+	public void released(GameKey e) {
+		if (e.getKeyCode() == SysKey.BACK) {
 			KeyValue.release();
 		}
 
@@ -2316,7 +2302,7 @@ public class MainGame extends DrawableScreen {
 
 	@Override
 	public void update(GameTime gameTime) {
-		if (Key.isKeyPressed(Key.BACK) && KeyValue.isPressed()) {
+		if (SysKey.isKeyPressed(SysKey.BACK) && KeyValue.isPressed()) {
 			if (this.currentView.equalsIgnoreCase("Intro")) {
 				LSystem.exit();
 			} else if (this.currentView.equalsIgnoreCase("Main")) {
@@ -2366,7 +2352,7 @@ public class MainGame extends DrawableScreen {
 			this.mainTopView.transition(this.dt);
 			this.mainBottomView.transition(this.dt);
 		}
-		LTouchCollection state = LInputFactory.getTouchState();
+		LTouchCollection state = SysInputFactory.getTouchState();
 		if (!this.currentView.equalsIgnoreCase("Intro")) {
 			if (this.currentView.equalsIgnoreCase("Main")) {
 				for (LTouchLocation location : state) {
@@ -2984,6 +2970,24 @@ public class MainGame extends DrawableScreen {
 			}
 		}
 
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

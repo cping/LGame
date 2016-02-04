@@ -1,7 +1,7 @@
 package org.test;
 
-import loon.core.graphics.opengl.LTexture;
-import loon.core.graphics.opengl.LTextures;
+import loon.LTexture;
+import loon.LTextures;
 
 public class Global {
 

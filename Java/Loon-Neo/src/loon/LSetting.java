@@ -59,6 +59,9 @@ public class LSetting {
 	public String logoPath = "loon_logo.png";
 
 	public String fontName = LSystem.FONT_NAME;
+	
+	// 当前游戏类型，默认为"未知"
+	public GameType gameType = GameType.UNKOWN;
 
 	public void copy(LSetting setting) {
 		this.isFPS = setting.isFPS;

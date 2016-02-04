@@ -1,6 +1,8 @@
 package loon.utils;
 
-public interface LIterator<E>{
+import java.util.Iterator;
+
+public interface LIterator<E> extends Iterator<E>{
 
     boolean hasNext();
 

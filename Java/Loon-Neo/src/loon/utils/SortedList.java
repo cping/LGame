@@ -1,8 +1,9 @@
 package loon.utils;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class SortedList<E> {
+public class SortedList<E> implements Iterable<E> {
 
 	public LIterator<E> listIterator() {
 		return listIterator(0);
@@ -11,6 +12,11 @@ public class SortedList<E> {
 	public LIterator<E> listIterator(int index) {
 		checkPositionIndex(index);
 		return new ListItr(index);
+	}
+	
+	@Override
+	public Iterator<E> iterator() {
+		return listIterator();
 	}
 
 	private class ListItr implements LIterator<E> {
@@ -24,10 +30,12 @@ public class SortedList<E> {
 			nextIndex = idx;
 		}
 
+		@Override
 		public boolean hasNext() {
 			return nextIndex < size;
 		}
 
+		@Override
 		public E next() {
 			checkForComodification();
 			if (!hasNext()) {
@@ -39,6 +47,7 @@ public class SortedList<E> {
 			return lastReturned.item;
 		}
 
+		@Override
 		public void remove() {
 			checkForComodification();
 			if (lastReturned == null)
@@ -509,5 +518,6 @@ public class SortedList<E> {
 			result[i++] = x.item;
 		return result;
 	}
+
 
 }
