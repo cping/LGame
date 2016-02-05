@@ -1055,6 +1055,19 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx draw(Painter texture, float dx, float dy, float sx, float sy,
+			float sw, float sh) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		texture.addToBatch(batch, baseColor, tx(), dx, dy, sw, sh, sx, sy, sw,
+				sh);
+		return this;
+	}
+
 	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh,
 			float sx, float sy, float sw, float sh) {
 		if (isClosed) {
@@ -1354,6 +1367,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public GLEx drawLine(XY a, XY b, float width) {
 		return drawLine(a.getX(), a.getY(), b.getX(), b.getY(), width);
+	}
+
+	public GLEx drawLine(float x0, float y0, float x1, float y1, LColor color) {
+		int tmp = baseColor;
+		setColor(color);
+		drawLine(x0, y0, x1, y1);
+		setColor(tmp);
+		return this;
 	}
 
 	public GLEx drawLine(float x0, float y0, float x1, float y1, float width) {
@@ -2521,7 +2542,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (font != null) {
-			font.drawString(this, string, x + offsetStringX, y + offsetStringY, rotation, c);
+			font.drawString(this, string, x + offsetStringX, y + offsetStringY,
+					rotation, c);
 		}
 		return this;
 	}
@@ -2551,8 +2573,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (mes == null || mes.length() == 0) {
 			return this;
 		}
-		font.drawString(this, mes, x + offsetStringX, y + offsetStringY, scaleX, scaleY,
-				ax, ay, rotation, c);
+		font.drawString(this, mes, x + offsetStringX, y + offsetStringY,
+				scaleX, scaleY, ax, ay, rotation, c);
 		return this;
 	}
 

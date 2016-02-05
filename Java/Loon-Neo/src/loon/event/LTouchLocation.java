@@ -73,6 +73,14 @@ public class LTouchLocation {
 		position.set(value);
 	}
 
+	public float x() {
+		return position.x;
+	}
+
+	public float y() {
+		return position.y;
+	}
+
 	public float getPressure() {
 		return pressure;
 	}

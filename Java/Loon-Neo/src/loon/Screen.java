@@ -2168,6 +2168,71 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public abstract void touchDrag(GameTouch e);
 
+	/**
+	 * 判定是否点击了指定位置
+	 * 
+	 * @param event
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public boolean inBounds(GameTouch event, float x, float y, float width,
+			float height) {
+		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event
+				.y() < y + height - 1);
+	}
+
+	/**
+	 * 判定是否点击了指定位置
+	 * 
+	 * @param event
+	 * @param o
+	 * @return
+	 */
+	public boolean inBounds(GameTouch event, LObject o) {
+		RectBox rect = o.getCollisionArea();
+		if (rect != null) {
+			return inBounds(event, rect);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 判定是否点击了指定位置
+	 * 
+	 * @param event
+	 * @param o
+	 * @return
+	 */
+	public boolean inBounds(GameTouch event, ISprite o) {
+		return inBounds(event, o.x(), o.y(), o.getWidth(), o.getHeight());
+	}
+
+	/**
+	 * 判定是否点击了指定位置
+	 * 
+	 * @param event
+	 * @param o
+	 * @return
+	 */
+	public boolean inBounds(GameTouch event, LComponent o) {
+		return inBounds(event, o.x(), o.y(), o.getWidth(), o.getHeight());
+	}
+
+	/**
+	 * 判定是否点击了指定位置
+	 * 
+	 * @param event
+	 * @param rect
+	 * @return
+	 */
+	public boolean inBounds(GameTouch event, RectBox rect) {
+		return inBounds(event, rect.x, rect.y, rect.width, rect.height);
+	}
+
 	@Override
 	public boolean isMoving() {
 		return SysTouch.isDrag();
