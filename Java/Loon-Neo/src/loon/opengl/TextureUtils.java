@@ -93,38 +93,38 @@ public class TextureUtils {
 	}
 
 	public static LTexture filterColor(String res, int[] colors, Format format) {
-			Image tmp = BaseIO.loadImage(res);
-			if (tmp.hasAlpha()) {
-				int[] pixels = LSystem.base().support()
-						.toColorKeys(tmp.getPixels(), colors);
-				tmp.setFormat(format);
-				tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
-				LTexture texture = tmp.texture();
-				pixels = null;
-				return texture;
-			} else {
-				Canvas canvas = LSystem.base().graphics()
-						.createCanvas(tmp.width(), tmp.height());
-				canvas.draw(tmp, 0, 0);
-				canvas.close();
-				Image image = canvas.image;
-				if (tmp != null) {
-					tmp.close();
-					tmp = null;
-				}
-				int[] pixels = LSystem.base().support()
-						.toColorKeys(image.getPixels(), colors);
-				image.setFormat(format);
-				image.setPixels(pixels, (int) image.width(), (int) image.height());
-				LTexture texture = image.texture();
-				if (image != null) {
-					image.close();
-					image = null;
-				}
-				pixels = null;
-				return texture;
+		Image tmp = BaseIO.loadImage(res);
+		if (tmp.hasAlpha()) {
+			int[] pixels = LSystem.base().support()
+					.toColorKeys(tmp.getPixels(), colors);
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
+			LTexture texture = tmp.texture();
+			pixels = null;
+			return texture;
+		} else {
+			Canvas canvas = LSystem.base().graphics()
+					.createCanvas(tmp.width(), tmp.height());
+			canvas.draw(tmp, 0, 0);
+			canvas.close();
+			Image image = canvas.image;
+			if (tmp != null) {
+				tmp.close();
+				tmp = null;
 			}
-		
+			int[] pixels = LSystem.base().support()
+					.toColorKeys(image.getPixels(), colors);
+			image.setFormat(format);
+			image.setPixels(pixels, (int) image.width(), (int) image.height());
+			LTexture texture = image.texture();
+			if (image != null) {
+				image.close();
+				image = null;
+			}
+			pixels = null;
+			return texture;
+		}
+
 	}
 
 	public static LTexture filterLimitColor(String res, LColor start, LColor end) {
@@ -133,40 +133,45 @@ public class TextureUtils {
 
 	public static LTexture filterLimitColor(String res, LColor start,
 			LColor end, Format format) {
-			Image tmp = BaseIO.loadImage(res);
-			if (tmp.hasAlpha()) {
-				int[] pixels = LSystem.base().support().toColorKeyLimit(tmp.getPixels(),
-						start.getRGB(), end.getRGB());
+		Image tmp = BaseIO.loadImage(res);
+		if (tmp.hasAlpha()) {
+			int[] pixels = LSystem
+					.base()
+					.support()
+					.toColorKeyLimit(tmp.getPixels(), start.getRGB(),
+							end.getRGB());
 
-				tmp.setFormat(format);
-				tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
-				LTexture texture = tmp.texture();
-				pixels = null;
-				return texture;
-			} else {
-				Canvas canvas = LSystem.base().graphics()
-						.createCanvas(tmp.width(), tmp.height());
-				canvas.draw(tmp, 0, 0);
-				canvas.close();
-				Image image = canvas.image;
-				if (tmp != null) {
-					tmp.close();
-					tmp = null;
-				}
-				int[] pixels = LSystem.base().support().toColorKeyLimit(image.getPixels(),
-						start.getRGB(), end.getRGB());
-				image.setFormat(format);
-				image.setPixels(pixels, (int) image.width(), (int) image.height());
-				LTexture texture = image.texture();
-				if (image != null) {
-					image.close();
-					image = null;
-				}
-				pixels = null;
-				return texture;
+			tmp.setFormat(format);
+			tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
+			LTexture texture = tmp.texture();
+			pixels = null;
+			return texture;
+		} else {
+			Canvas canvas = LSystem.base().graphics()
+					.createCanvas(tmp.width(), tmp.height());
+			canvas.draw(tmp, 0, 0);
+			canvas.close();
+			Image image = canvas.image;
+			if (tmp != null) {
+				tmp.close();
+				tmp = null;
 			}
-		
-	
+			int[] pixels = LSystem
+					.base()
+					.support()
+					.toColorKeyLimit(image.getPixels(), start.getRGB(),
+							end.getRGB());
+			image.setFormat(format);
+			image.setPixels(pixels, (int) image.width(), (int) image.height());
+			LTexture texture = image.texture();
+			if (image != null) {
+				image.close();
+				image = null;
+			}
+			pixels = null;
+			return texture;
+		}
+
 	}
 
 	public static LTexture[] getSplitTextures(String fileName, int tileWidth,
@@ -180,17 +185,22 @@ public class TextureUtils {
 		if (image == null) {
 			return null;
 		}
+		if (tileWidth == 0
+				|| tileHeight == 0
+				|| (tileWidth == image.getWidth() && tileHeight == image
+						.getHeight())) {
+			return new LTexture[] { image };
+		}
 		int frame = 0;
-		int wlength = (int)image.width() / tileWidth;
-		int hlength = (int)image.height() / tileHeight;
+		int wlength = (int) image.width() / tileWidth;
+		int hlength = (int) image.height() / tileHeight;
 		int total = wlength * hlength;
-
+	
 		LTexture[] images = new LTexture[total];
 		for (int y = 0; y < hlength; y++) {
 			for (int x = 0; x < wlength; x++) {
-
-				images[frame] = image.copy((x * tileWidth),
-						(y * tileHeight), tileWidth, tileHeight);
+				images[frame] = image.copy((x * tileWidth), (y * tileHeight),
+						tileWidth, tileHeight);
 				frame++;
 			}
 		}
@@ -213,8 +223,8 @@ public class TextureUtils {
 		LTexture[][] textures = new LTexture[wlength][hlength];
 		for (int y = 0; y < hlength; y++) {
 			for (int x = 0; x < wlength; x++) {
-				textures[x][y] = image.copy((x * tileWidth),
-						(y * tileHeight), tileWidth, tileHeight);
+				textures[x][y] = image.copy((x * tileWidth), (y * tileHeight),
+						tileWidth, tileHeight);
 			}
 		}
 		return textures;

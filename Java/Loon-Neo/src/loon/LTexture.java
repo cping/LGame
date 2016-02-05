@@ -56,6 +56,8 @@ public class LTexture extends Painter implements LRelease {
 
 	private boolean _drawing = false;
 
+	private boolean _scaleSize = false;
+
 	private String source;
 
 	private Image image;
@@ -225,7 +227,17 @@ public class LTexture extends Painter implements LRelease {
 
 	public Image getImage() {
 		if ((image == null || image.isClosed()) && !StringUtils.isEmpty(source)) {
-			return BaseIO.loadImage(source);
+			image = BaseIO.loadImage(source);
+		}
+		int w = getWidth();
+		int h = getHeight();
+		if (w != displayWidth || h != displayHeight) {
+			if (image != null) {
+				Image tmp = image.getSubImage(
+						(int) (this.xOff * this.displayWidth),
+						(int) (this.yOff * this.displayHeight), w, h);
+				return tmp;
+			}
 		}
 		return image;
 	}
@@ -414,7 +426,6 @@ public class LTexture extends Painter implements LRelease {
 			final float height) {
 
 		int hashCode = 1;
-
 		hashCode = LSystem.unite(hashCode, x);
 		hashCode = LSystem.unite(hashCode, y);
 		hashCode = LSystem.unite(hashCode, width);
@@ -440,7 +451,7 @@ public class LTexture extends Painter implements LRelease {
 			copy.config = config;
 			copy.source = source;
 			copy.scale = scale;
-			copy.scaleSize = true;
+			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
 			copy.displayWidth = this.displayWidth * this.widthRatio;
@@ -460,10 +471,8 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	boolean scaleSize = false;
-
 	public boolean isScale() {
-		return scaleSize;
+		return _scaleSize;
 	}
 
 	public LTexture scale(final float width, final float height) {
@@ -494,7 +503,7 @@ public class LTexture extends Painter implements LRelease {
 			copy.config = config;
 			copy.source = source;
 			copy.scale = scale;
-			copy.scaleSize = true;
+			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
 			copy.displayWidth = this.displayWidth * this.widthRatio;
@@ -843,7 +852,7 @@ public class LTexture extends Painter implements LRelease {
 	public Cache saveBatchCache() {
 		return newBatchCache();
 	}
-	
+
 	public Cache newBatchCache() {
 		if (isBatch) {
 			return batch.newCache();
