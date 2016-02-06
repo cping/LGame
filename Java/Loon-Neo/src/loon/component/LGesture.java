@@ -70,6 +70,15 @@ public class LGesture extends LComponent {
 	}
 
 	@Override
+	public void update(long elapsedTime) {
+		if (SysTouch.isUp()) {
+			if (autoClear) {
+				clear();
+			}
+		}
+	}
+
+	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		g.saveBrush();

@@ -25,6 +25,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -33,7 +34,7 @@ public class LMessage extends LContainer {
 
 	private Animation animation;
 
-	private LFont messageFont = LFont.getDefaultFont();
+	private IFont messageFont = LFont.getDefaultFont();
 
 	private LColor fontColor = LColor.white;
 
@@ -170,6 +171,10 @@ public class LMessage extends LContainer {
 		return print.getMessage();
 	}
 
+	public Print getPrint() {
+		return print;
+	}
+
 	@Override
 	protected void processTouchClicked() {
 		this.doClick();
@@ -215,7 +220,8 @@ public class LMessage extends LContainer {
 	private int tmpColor;
 
 	@Override
-	protected synchronized void createCustomUI(GLEx g, int x, int y, int w, int h) {
+	protected synchronized void createCustomUI(GLEx g, int x, int y, int w,
+			int h) {
 		if (!visible) {
 			return;
 		}
@@ -260,8 +266,8 @@ public class LMessage extends LContainer {
 	}
 
 	private void updateIcon() {
-		this.setPauseIconAnimationLocation((int)(getScreenX() + getWidth() - dw / 2
-				- 20), (int)(getScreenY() + getHeight() - dh - 10));
+		this.setPauseIconAnimationLocation((int) (getScreenX() + getWidth()
+				- dw / 2 - 20), (int) (getScreenY() + getHeight() - dh - 10));
 	}
 
 	public LColor getFontColor() {
@@ -272,11 +278,16 @@ public class LMessage extends LContainer {
 		this.fontColor = fontColor;
 	}
 
-	public LFont getMessageFont() {
+	public IFont getMessageFont() {
 		return messageFont;
 	}
 
-	public void setMessageFont(LFont messageFont) {
+	/**
+	 * 注入一个实现了IFont接口的字体
+	 * 
+	 * @param messageFont
+	 */
+	public void setMessageFont(IFont messageFont) {
 		this.messageFont = messageFont;
 	}
 

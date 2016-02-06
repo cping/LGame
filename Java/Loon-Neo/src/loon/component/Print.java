@@ -5,6 +5,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.event.Updateable;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -39,7 +40,7 @@ public class Print implements LRelease {
 	 * @param width
 	 * @return
 	 */
-	public static TArray<String> formatMessage(String text, LFont font,
+	public static TArray<String> formatMessage(String text, IFont font,
 			int width) {
 		TArray<String> list = new TArray<String>();
 
@@ -122,6 +123,8 @@ public class Print implements LRelease {
 
 	private LSTRFont strings;
 
+	private IFont ifont;
+
 	private boolean isEnglish, isWait;
 
 	private float iconX, iconY;
@@ -131,11 +134,11 @@ public class Print implements LRelease {
 	// 默认0，左1,右2
 	private Mode dirmode = Mode.NONE;
 
-	public Print(Vector2f vector, LFont font, int width, int height) {
+	public Print(Vector2f vector, IFont font, int width, int height) {
 		this("", font, vector, width, height);
 	}
 
-	public Print(String context, LFont font, Vector2f vector, int width,
+	public Print(String context, IFont font, Vector2f vector, int width,
 			int height) {
 		this.setMessage(context, font);
 		this.vector = vector;
@@ -145,7 +148,7 @@ public class Print implements LRelease {
 		this.isWait = false;
 	}
 
-	public void setMessage(String context, LFont font) {
+	public void setMessage(String context, IFont font) {
 		setMessage(context, font, false);
 	}
 
@@ -155,11 +158,11 @@ public class Print implements LRelease {
 
 		boolean _isComplete = false;
 
-		private LFont _font = null;
+		private IFont _font = null;
 
 		private String _context = null;
 
-		private PrintUpdate(Print print, String context, LFont font,
+		private PrintUpdate(Print print, String context, IFont font,
 				boolean isComplete) {
 			_print = print;
 			_context = context;
@@ -175,7 +178,13 @@ public class Print implements LRelease {
 			if (_print.strings != null) {
 				_print.strings.close();
 			}
-			_print.strings = new LSTRFont(_font, _context, true);
+			// 如果是默认的loon系统字体
+			if (_font instanceof LFont) {
+				_print.strings = new LSTRFont((LFont) _font, _context, true);
+				// 其他字体(一般是Bitmap Font)
+			} else {
+				_print.ifont = _font;
+			}
 			_print.lazyHashCade = 1;
 			_print.wait = 0;
 			_print.visible = false;
@@ -202,7 +211,7 @@ public class Print implements LRelease {
 		}
 	}
 
-	public void setMessage(String context, LFont font, boolean isComplete) {
+	public void setMessage(String context, IFont font, boolean isComplete) {
 		LSystem.load(new PrintUpdate(this, context, font, isComplete));
 	}
 
@@ -243,9 +252,14 @@ public class Print implements LRelease {
 		if (!visible) {
 			return;
 		}
-		if (strings == null) {
-			return;
+		if (strings == null && ifont != null) {
+			drawBMFont(gl, old);
+		} else if (strings != null) {
+			drawDefFont(gl, old);
 		}
+	}
+
+	public void drawDefFont(GLEx g, LColor old) {
 		synchronized (showMessages) {
 			this.size = showMessages.length;
 			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : strings
@@ -284,7 +298,7 @@ public class Print implements LRelease {
 			if (hashCode == lazyHashCade) {
 				strings.postCharCache();
 				if (iconX != 0 && iconY != 0) {
-					gl.draw(creeseIcon, iconX, iconY);
+					g.draw(creeseIcon, iconX, iconY);
 				}
 				return;
 			}
@@ -363,7 +377,7 @@ public class Print implements LRelease {
 					iconY = (offset * fontHeight) + vector.y + fontSize
 							+ topOffset + strings.getAscent();
 					if (iconX != 0 && iconY != 0) {
-						gl.draw(creeseIcon, iconX, iconY);
+						g.draw(creeseIcon, iconX, iconY);
 					}
 				}
 				index++;
@@ -378,6 +392,116 @@ public class Print implements LRelease {
 				onComplete = true;
 			}
 		}
+	}
+
+	public void drawBMFont(GLEx g, LColor old) {
+		synchronized (showMessages) {
+			this.size = showMessages.length;
+			this.fontSize = (int) (isEnglish ? ifont.getSize() / 2 : ifont
+					.getSize());
+			this.fontHeight = ifont.getHeight();
+			switch (dirmode) {
+			default:
+			case NONE:
+				this.tmp_dir = 0;
+				break;
+			case LEFT:
+				this.tmp_dir = (width - (fontSize * messageLength)) / 2
+						- (int) (fontSize * 1.5);
+				break;
+			case RIGHT:
+				this.tmp_dir = (fontSize * messageLength) / 2;
+				break;
+			case CENTER:
+				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2
+						+ (int) (fontSize * 4);
+				break;
+			}
+			this.left = tmp_dir;
+			this.index = offset = font = tmp_font = 0;
+			fontColor = old;
+			for (int i = 0; i < size; i++) {
+				text = showMessages[i];
+				if (text == '\0') {
+					continue;
+				}
+				if (interceptCount < interceptMaxString) {
+					interceptCount++;
+					continue;
+				} else {
+					interceptMaxString = 0;
+					interceptCount = 0;
+				}
+				if (showMessages[i] == 'n'
+						&& showMessages[i > 0 ? i - 1 : 0] == '\\') {
+					index = 0;
+					left = tmp_dir;
+					offset++;
+					continue;
+				} else if (text == '\n') {
+					index = 0;
+					left = tmp_dir;
+					offset++;
+					continue;
+				} else if (text == '<') {
+					LColor color = getColor(showMessages[i < size - 1 ? i + 1
+							: i]);
+					if (color != null) {
+						interceptMaxString = 1;
+						fontColor = color;
+					}
+					continue;
+				} else if (showMessages[i > 0 ? i - 1 : i] == '<'
+						&& getColor(text) != null) {
+					continue;
+				} else if (text == '/') {
+					if (showMessages[i < size - 1 ? i + 1 : i] == '>') {
+						interceptMaxString = 1;
+						fontColor = old;
+					}
+					continue;
+				} else if (index > messageLength) {
+					index = 0;
+					left = tmp_dir;
+					offset++;
+					newLine = false;
+				} else if (text == '\\') {
+					continue;
+				}
+				String tmpText = String.valueOf(text);
+				tmp_font = ifont.stringWidth(tmpText);
+				if (Character.isLetter(text)) {
+					if (tmp_font < fontSize) {
+						font = fontSize;
+					} else {
+						font = tmp_font;
+					}
+				} else {
+					font = fontSize;
+				}
+				left += font;
+				if (font <= 10 && StringUtils.isSingle(text)) {
+					left += 12;
+				}
+				if (i != size - 1) {
+					ifont.drawString(g, tmpText, vector.x + left + leftOffset,
+							(offset * fontHeight) + vector.y + fontSize
+									+ topOffset, fontColor);
+				} else if (!newLine && !onComplete) {
+					iconX = vector.x + left + leftOffset + iconWidth;
+					iconY = (offset * fontHeight) + vector.y + fontSize
+							+ topOffset + ifont.getAscent();
+					if (iconX != 0 && iconY != 0) {
+						g.draw(creeseIcon, iconX, iconY);
+					}
+				}
+				index++;
+			}
+			if (messageCount == next) {
+				onComplete = true;
+			}
+		}
+
 	}
 
 	public synchronized void draw(GLEx g, LColor old) {
