@@ -29,22 +29,32 @@ class GWTFont {
 
 	public static String toCSS(Font font) {
 		String name = font.name;
+		if (name == null) {
+			name = "monospace";
+		}
+		String familyName = name.toLowerCase();
+		float size = font.size;
 		// 针对不同浏览器（主要是手机），有可能字体不支持，请自行引入font的css解决……
-		if (Loon.self != null && !Loon.self.isDesktop()) {
+		if (Loon.self != null && (!Loon.self.isDesktop())) {
 			if (name != null) {
-				String familyName = name.toLowerCase();
-				if (familyName.equals("serif") || familyName.equals("timesroman")) {
+				if (familyName.equals("serif")
+						|| familyName.equals("timesroman")) {
 					name = "serif";
 				} else if (familyName.equals("sansserif")
 						|| familyName.equals("helvetica")) {
 					name = "sans-serif";
 				} else if (familyName.equals("monospaced")
 						|| familyName.equals("courier")
-						|| familyName.equals("dialog") || familyName.equals("黑体")) {
+						|| familyName.equals("dialog")
+						|| familyName.equals("黑体")) {
 					name = "monospace";
 				}
-			} else {
-				name = "monospace";
+			}
+			// firefox对中文字体识别不全，需要强制转换中文字体
+		} else if (GWTGame.agentInfo.isFirefox()) {
+			if (familyName.equals("黑体")) {
+				name = "helvetica,arial,sans-serif";
+				size += 1;
 			}
 		}
 		if (!name.startsWith("\"") && name.contains(" ")) {
@@ -64,6 +74,6 @@ class GWTFont {
 		default:
 			break;
 		}
-		return style + " " + font.size + "px " + name;
+		return style + " " + size + "px " + name;
 	}
 }
