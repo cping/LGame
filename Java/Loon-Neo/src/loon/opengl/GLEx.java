@@ -449,6 +449,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx scale(float s) {
+		lastTrans.scale(s, s);
+		return this;
+	}
+
 	public GLEx scale(float sx, float sy) {
 		lastTrans.scale(sx, sy);
 		return this;
@@ -846,6 +851,21 @@ public class GLEx extends PixmapFImpl implements LRelease {
 					- font.getAscent() - 1, rotation,
 					tmpColor.setColor(baseColor));
 		}
+		return this;
+	}
+
+	public GLEx drawText(String message, float x, float y, LColor color,
+			float rotation) {
+		return drawText(message, x, y, color.getARGB(), rotation);
+	}
+
+	public GLEx drawText(String message, float x, float y, int color,
+			float rotation) {
+		int tmp = baseColor;
+		setColor(color);
+		font.drawString(this, message, x + offsetStringX, y + offsetStringY
+				- font.getAscent() - 1, rotation, tmpColor.setColor(baseColor));
+		setColor(tmp);
 		return this;
 	}
 

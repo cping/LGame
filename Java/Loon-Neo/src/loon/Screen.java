@@ -37,6 +37,7 @@ import loon.component.layout.LayoutPort;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
+import loon.event.LTouchLocation;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.event.Updateable;
@@ -273,7 +274,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public float getDeltaTime() {
-		return elapsedTime / 1000f;
+		return ((float)elapsedTime) / 1000f;
 	}
 
 	private RootPlayer _players;
@@ -2180,6 +2181,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 */
 	public boolean inBounds(GameTouch event, float x, float y, float width,
 			float height) {
+		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event
+				.y() < y + height - 1);
+	}
+
+	/**
+	 * 判定是否点击了指定位置
+	 * 
+	 * @param event
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public boolean inBounds(LTouchLocation event, float x, float y,
+			float width, float height) {
 		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event
 				.y() < y + height - 1);
 	}
