@@ -248,7 +248,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	private void make() {
-		make(LSystem.isHTML5() ? false : true);
+		make(true);
 	}
 
 	private synchronized void make(boolean asyn) {
@@ -621,21 +621,7 @@ public class LSTRFont implements LRelease {
 
 	public int charWidth(char c) {
 		make();
-		if (c == '\n') {
-			return 0;
-		}
-		if (c >= charArray.length) {
-			return getSize();
-		}
-		if (charCurrent < totalCharSet) {
-			intObject = charArray[charCurrent];
-		} else {
-			intObject = customChars.get((char) charCurrent);
-		}
-		if (intObject != null) {
-			return intObject.width;
-		}
-		return getSize();
+		return font.charWidth(c);
 	}
 
 	public int getWidth(String s) {
