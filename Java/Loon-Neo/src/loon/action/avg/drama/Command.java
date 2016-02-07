@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
 
 import loon.BaseIO;
 import loon.LRelease;
-import loon.LSystem;
 import loon.Session;
 import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
@@ -1174,7 +1173,7 @@ public class Command extends Conversion implements LRelease {
 			int index = 0;
 			try {
 				StringTokenizer reader = new StringTokenizer(context,
-						LSystem.LS);
+						"\r\n");
 				String record = null;
 				for (; reader.hasMoreTokens();) {
 					record = reader.nextToken().trim();

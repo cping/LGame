@@ -34,6 +34,7 @@ import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.StringUtils;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
 import loon.utils.TArray;
@@ -64,6 +65,10 @@ public class BMFont implements IFont, LRelease {
 
 	private PointI _offset = new PointI();
 
+	private int _size = -1;
+
+	private float _ascent = -1;
+
 	private float fontScaleX = 1f, fontScaleY = 1f;
 
 	private ObjectMap<String, Display> displays;
@@ -93,7 +98,7 @@ public class BMFont implements IFont, LRelease {
 
 	private class CharDef {
 
-		short id;
+		int id;
 
 		short tx;
 
@@ -124,6 +129,7 @@ public class BMFont implements IFont, LRelease {
 			if (isClose) {
 				return;
 			}
+
 			g.draw(displayList, sx + (x + xoffset) * fontScaleX, sy
 					+ (y + yoffset) * fontScaleX, width * fontScaleX, height
 					* fontScaleY, tx, ty, width, height);
@@ -168,10 +174,33 @@ public class BMFont implements IFont, LRelease {
 			displays.clear();
 		}
 
-		StringTokenizer br = new StringTokenizer(text, LSystem.LS);
+		StringTokenizer br = new StringTokenizer(text, "\r\n");
 		info = br.nextToken();
 		common = br.nextToken();
 		page = br.nextToken();
+
+		if (info != null && !StringUtils.isEmpty(info)) {
+
+			int size = info.length();
+			char[] chars = info.toCharArray();
+			StringBuilder sbr = new StringBuilder();
+			for (int i = 0; i < size; i++) {
+				char ch = chars[i];
+				if (ch == ' ' && sbr.length() > 0) {
+					String result = sbr.toString().toLowerCase().trim();
+					String[] list = StringUtils.split(result, '=');
+					if (list.length == 2) {
+						if (list[0].equals("size")) {
+							_size = (int) Float.parseFloat(list[1]);
+							break;
+						}
+					}
+					sbr.delete(0, sbr.length());
+				}
+				sbr.append(ch);
+			}
+
+		}
 
 		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(
 				64);
@@ -237,17 +266,12 @@ public class BMFont implements IFont, LRelease {
 	private CharDef parseChar(final String line) throws Exception {
 		CharDef def = new CharDef();
 		StringTokenizer tokens = new StringTokenizer(line, " =");
-
 		tokens.nextToken();
 		tokens.nextToken();
-		def.id = Short.parseShort(tokens.nextToken());
+		def.id = Integer.parseInt(tokens.nextToken());
 		if (def.id < 0) {
 			return null;
 		}
-		if (def.id > DEFAULT_MAX_CHAR) {
-			throw new Exception(def.id + " > " + DEFAULT_MAX_CHAR);
-		}
-
 		tokens.nextToken();
 		def.tx = Short.parseShort(tokens.nextToken());
 		tokens.nextToken();
@@ -394,6 +418,7 @@ public class BMFont implements IFont, LRelease {
 			if (id >= chars.length) {
 				continue;
 			}
+
 			CharDef charDef = chars[id];
 			if (charDef == null) {
 				continue;
@@ -597,12 +622,14 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public float getAscent() {
-		return (int) (lineHeight * this.fontScaleY) - halfHeight / 3;
+		return _ascent == -1 ? (int) (lineHeight * this.fontScaleY)
+				- halfHeight / 3 : _ascent;
 	}
 
 	@Override
 	public int getSize() {
-		return (int) (lineHeight * this.fontScaleY) - halfHeight / 4;
+		return _size == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight
+				/ 4 : _size;
 	}
 
 	@Override
@@ -641,6 +668,16 @@ public class BMFont implements IFont, LRelease {
 	@Override
 	public void setOffsetY(int y) {
 		_offset.y = y;
+	}
+
+	@Override
+	public void setAssent(float assent) {
+		this._ascent = assent;
+	}
+
+	@Override
+	public void setSize(int size) {
+		this._size = size;
 	}
 
 	@Override

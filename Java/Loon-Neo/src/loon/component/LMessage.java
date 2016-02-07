@@ -34,7 +34,7 @@ public class LMessage extends LContainer {
 
 	private Animation animation;
 
-	private IFont messageFont = LFont.getDefaultFont();
+	private IFont messageFont;
 
 	private LColor fontColor = LColor.white;
 
@@ -44,24 +44,35 @@ public class LMessage extends LContainer {
 
 	private Print print;
 
-	public LMessage(int width, int height) {
-		this(0, 0, width, height);
+	public LMessage(IFont font, int width, int height) {
+		this(font, 0, 0, width, height);
 	}
 
 	public LMessage(int x, int y, int width, int height) {
-		this((LTexture) null, x, y, width, height);
+		this(LFont.getDefaultFont(), (LTexture) null, x, y, width, height);
 	}
 
-	public LMessage(String fileName, int x, int y) {
-		this(LTextures.loadTexture(fileName), x, y);
+	public LMessage(IFont font, int x, int y, int width, int height) {
+		this(font, (LTexture) null, x, y, width, height);
+	}
+
+	public LMessage(IFont font, String fileName, int x, int y) {
+		this(font, LTextures.loadTexture(fileName), x, y);
 	}
 
 	public LMessage(LTexture formImage, int x, int y) {
-		this(formImage, x, y, formImage.getWidth(), formImage.getHeight());
+		this(LFont.getDefaultFont(), formImage, x, y, formImage.getWidth(),
+				formImage.getHeight());
 	}
 
-	public LMessage(LTexture formImage, int x, int y, int width, int height) {
+	public LMessage(IFont font, LTexture formImage, int x, int y) {
+		this(font, formImage, x, y, formImage.getWidth(), formImage.getHeight());
+	}
+
+	public LMessage(IFont font, LTexture formImage, int x, int y, int width,
+			int height) {
 		super(x, y, width, height);
+		this.messageFont = (font == null ? LFont.getDefaultFont() : font);
 		this.animation = new Animation();
 		if (formImage == null) {
 			this.setBackground(TextureUtils.createTexture(width, height,

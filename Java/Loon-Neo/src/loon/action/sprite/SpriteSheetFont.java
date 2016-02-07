@@ -11,6 +11,10 @@ public class SpriteSheetFont implements IFont {
 
 	private SpriteSheet font;
 
+	private int _size = -1;
+
+	private float _assent = -1;
+
 	private char startingCharacter;
 
 	private int charWidth;
@@ -211,7 +215,8 @@ public class SpriteSheetFont implements IFont {
 
 	@Override
 	public float getAscent() {
-		return (charWidth + charHeight / 2) * this.fontScaleY;
+		return _assent == -1 ? (charWidth + charHeight / 2) * this.fontScaleY
+				: _assent;
 	}
 
 	@Override
@@ -234,7 +239,8 @@ public class SpriteSheetFont implements IFont {
 
 	@Override
 	public int getSize() {
-		return (int) ((charWidth + charHeight / 2) * this.fontScaleY);
+		return _size == -1 ? (int) ((charWidth + charHeight / 2) * this.fontScaleY)
+				: _size;
 	}
 
 	@Override
@@ -255,6 +261,16 @@ public class SpriteSheetFont implements IFont {
 	@Override
 	public void setOffsetY(int y) {
 		_offset.y = y;
+	}
+
+	@Override
+	public void setAssent(float assent) {
+		this._assent = assent;
+	}
+
+	@Override
+	public void setSize(int size) {
+		this._size = size;
 	}
 
 }

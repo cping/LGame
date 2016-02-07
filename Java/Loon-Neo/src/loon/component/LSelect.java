@@ -33,7 +33,7 @@ import loon.utils.timer.LTimer;
 
 public class LSelect extends LContainer {
 
-	private IFont messageFont = LFont.getDefaultFont();
+	private IFont messageFont;
 
 	private LColor fontColor = LColor.white;
 
@@ -54,27 +54,33 @@ public class LSelect extends LContainer {
 
 	private boolean isAutoAlpha, isSelect;
 
-	public LSelect(int x, int y, int width, int height) {
-		this((LTexture) null, x, y, width, height);
+	public LSelect(IFont font, int x, int y, int width, int height) {
+		this(font, (LTexture) null, x, y, width, height);
 	}
 
-	public LSelect(String fileName) {
-		this(fileName, 0, 0);
+	public LSelect(IFont font, String fileName) {
+		this(font, fileName, 0, 0);
 	}
 
-	public LSelect(String fileName, int x, int y) {
-		this(LTextures.loadTexture(fileName), x, y);
+	public LSelect(IFont font, String fileName, int x, int y) {
+		this(font, LTextures.loadTexture(fileName), x, y);
 	}
 
-	public LSelect(LTexture formImage) {
-		this(formImage, 0, 0);
+	public LSelect(IFont font, LTexture formImage) {
+		this(font, formImage, 0, 0);
+	}
+
+	public LSelect(IFont font, LTexture formImage, int x, int y) {
+		this(font, formImage, x, y, formImage.getWidth(), formImage.getHeight());
 	}
 
 	public LSelect(LTexture formImage, int x, int y) {
-		this(formImage, x, y, formImage.getWidth(), formImage.getHeight());
+		this(LFont.getDefaultFont(), formImage, x, y, formImage.getWidth(),
+				formImage.getHeight());
 	}
 
-	public LSelect(LTexture formImage, int x, int y, int width, int height) {
+	public LSelect(IFont font, LTexture formImage, int x, int y, int width,
+			int height) {
 		super(x, y, width, height);
 		if (formImage == null) {
 			this.setBackground(LTextures.createTexture(width, height,
@@ -83,6 +89,7 @@ public class LSelect extends LContainer {
 		} else {
 			this.setBackground(formImage);
 		}
+		this.messageFont = (font == null ? LFont.getDefaultFont() : font);
 		this.customRendering = true;
 		this.selectFlag = 1;
 		this.tmpOffset = -(width / 10);
@@ -209,7 +216,7 @@ public class LSelect extends LContainer {
 							- (int) (buoyage.getHeight() / 1.5));
 					g.setAlpha(1F);
 				}
-				g.drawString(selects[i], messageLeft,
+				messageFont.drawString(g,selects[i], messageLeft,
 						nTop - messageFont.getAscent(), fontColor);
 				if ((cursor != null) && isSelect) {
 					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2,

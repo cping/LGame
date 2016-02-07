@@ -26,6 +26,7 @@ import loon.LTexture.Format;
 import loon.canvas.Image;
 import loon.canvas.TGA;
 import loon.utils.ArrayByte;
+import loon.utils.ArrayByteReader;
 
 public abstract class BaseIO {
 
@@ -89,6 +90,14 @@ public abstract class BaseIO {
 		return null;
 	}
 
+	public static ArrayByteReader loadArrayByteReader(String path) {
+		final byte[] buffer = loadBytes(path);
+		if (buffer == null) {
+			return new ArrayByteReader(new ArrayByte(1));
+		}
+		return  new ArrayByteReader(new ArrayByte(buffer));
+	}
+	
 	public static ArrayByte loadArrayByte(String path) {
 		final byte[] buffer = loadBytes(path);
 		if (buffer == null) {

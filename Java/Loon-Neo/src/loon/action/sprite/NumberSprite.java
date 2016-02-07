@@ -6,7 +6,6 @@ import loon.LTrans;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.Canvas;
-import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
 import loon.font.IFont;

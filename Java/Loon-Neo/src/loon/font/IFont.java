@@ -21,8 +21,12 @@ public interface IFont {
 	int stringHeight(String height);
 
 	int getHeight();
+	
+	void setAssent(float assent);
 
 	float getAscent();
+	
+	void setSize(int size);
 
 	int getSize();
 

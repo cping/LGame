@@ -3,7 +3,6 @@ package loon.utils;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
-import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
 
@@ -43,8 +42,7 @@ public class ConfigReader implements Expression {
 	}
 
 	public void parse(final String text) {
-
-		StringTokenizer reader = new StringTokenizer(text, LSystem.LS);
+		StringTokenizer reader = new StringTokenizer(text, "\r\n");
 		String record = null;
 		StringBuffer mapBuffer = new StringBuffer();
 		boolean mapFlag = false;
@@ -54,7 +52,6 @@ public class ConfigReader implements Expression {
 			if (record.length() > 0 && !record.startsWith(FLAG_L_TAG)
 					&& !record.startsWith(FLAG_C_TAG)
 					&& !record.startsWith(FLAG_I_TAG)) {
-
 				if (record.startsWith("begin")) {
 					mapBuffer.delete(0, mapBuffer.length());
 					String mes = record.substring(5, record.length()).trim();

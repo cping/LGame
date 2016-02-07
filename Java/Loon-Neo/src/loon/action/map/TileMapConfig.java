@@ -33,7 +33,7 @@ public class TileMapConfig {
 		if (result == null) {
 			return map;
 		}
-		StringTokenizer br = new StringTokenizer(result, LSystem.LS);
+		StringTokenizer br = new StringTokenizer(result, "\r\n");
 		String line = br.nextToken();
 		int width = Integer.parseInt(line);
 		line = br.nextToken();
@@ -53,11 +53,11 @@ public class TileMapConfig {
 		if (result == null) {
 			return null;
 		}
-		StringTokenizer br = new StringTokenizer(result, LSystem.LS);
+		StringTokenizer br = new StringTokenizer(result, "\r\n");
 		TArray<int[]> records = new TArray<int[]>(
 				CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
-			result = StringUtils.replace(br.nextToken().trim(),LSystem.LS, "");
+			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, "");
 			if (!StringUtils.isEmpty(result)) {
 				String[] stringArray = result.split(",");
 				int size = stringArray.length;

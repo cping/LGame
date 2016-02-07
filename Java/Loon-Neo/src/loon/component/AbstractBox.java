@@ -3,10 +3,10 @@ package loon.component;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.IFont;
+import loon.font.ShadowFont;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
-import loon.opengl.ShadowFont;
 
 public abstract class AbstractBox implements XY {
 

@@ -52,6 +52,7 @@ import loon.event.ClickListener;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.Updateable;
+import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.Array;
 import loon.utils.ListMap;
@@ -64,6 +65,9 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
+/*
+ * Loon默认提供的AVG模板，在此Screen中可以直接实现一些简单的AVG游戏操作，并且更容易扩展出自己的AVG游戏系统。
+ */
 public abstract class AVGScreen extends Screen {
 
 	// 文字显示速度
@@ -83,6 +87,8 @@ public abstract class AVGScreen extends Screen {
 			20);
 
 	private boolean isSelectMessage, scrFlag, isRunning, running;
+
+	private IFont _font;
 
 	private int delay;
 
@@ -434,6 +440,12 @@ public abstract class AVGScreen extends Screen {
 		_tasks.clear();
 	}
 
+	/**
+	 * 返回当前字符串的文字显示速度模式
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public SpeedMode toSpeedMode(String name) {
 		String key = name.trim().toLowerCase();
 		if ("superslow".equals(key)) {
@@ -675,7 +687,7 @@ public abstract class AVGScreen extends Screen {
 				tmp = null;
 			}
 		}
-		this.message = new LMessage(dialog, 0, 0);
+		this.message = new LMessage(_font, dialog, 0, 0);
 		this.message.setFontColor(LColor.white);
 		int size = (int) (message.getWidth() / (message.getMessageFont()
 				.getSize()));
@@ -689,12 +701,34 @@ public abstract class AVGScreen extends Screen {
 				getHeight() - message.getHeight() - 10);
 		this.message.setTopOffset(-5);
 		this.message.setVisible(false);
-		this.select = new LSelect(dialog, message.x(), message.y());
+		this.select = new LSelect(_font, dialog, message.x(), message.y());
 		this.select.setTopOffset(5);
 		this.scrCG = new AVGCG(this);
 		this.messageDesktop.add(message);
 		this.messageDesktop.add(select);
 		this.select.setVisible(false);
+	}
+
+	/**
+	 * 设置一个实现了IFont的字体到AVG系统中(一般使用LFont或BMFont)
+	 * 
+	 * @param font
+	 */
+	public void setFont(final IFont font) {
+		this._font = font;
+		if (message != null) {
+			message.setMessageFont(font);
+		}
+		if (select != null) {
+			select.setMessageFont(font);
+		}
+	}
+
+	public IFont getFont() {
+		if (message != null) {
+			return message.getMessageFont();
+		}
+		return this._font;
 	}
 
 	public abstract boolean nextScript(String message);

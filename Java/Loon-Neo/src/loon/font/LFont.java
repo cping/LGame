@@ -38,6 +38,10 @@ public class LFont implements IFont {
 
 	private TextLayout textLayout = null;
 
+	private int _size = -1;
+
+	private float _ascent = -1;
+
 	LFont() {
 		this(LSystem.FONT_NAME, Style.PLAIN, 20, true);
 	}
@@ -186,7 +190,7 @@ public class LFont implements IFont {
 	}
 
 	public int getSize() {
-		return (int) textFormat.font.size;
+		return this._size == -1 ? (int) textFormat.font.size : this._size;
 	}
 
 	public int getStyle() {
@@ -206,7 +210,7 @@ public class LFont implements IFont {
 	@Override
 	public float getAscent() {
 		initLayout(tmp);
-		return textLayout.ascent();
+		return this._ascent == -1 ? textLayout.ascent() : this._ascent;
 	}
 
 	public float getDescent() {
@@ -282,4 +286,13 @@ public class LFont implements IFont {
 		_offset.y = y;
 	}
 
+	@Override
+	public void setAssent(float assent) {
+		this._ascent = assent;
+	}
+
+	@Override
+	public void setSize(int size) {
+		this._size = size;
+	}
 }
