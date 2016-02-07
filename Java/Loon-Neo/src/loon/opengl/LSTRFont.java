@@ -621,6 +621,20 @@ public class LSTRFont implements LRelease {
 
 	public int charWidth(char c) {
 		make();
+		if (c == '\n') {
+			return 0;
+		}
+		if (c >= charArray.length) {
+			return font.charWidth(c);
+		}
+		if (c < totalCharSet) {
+			intObject = charArray[c];
+		} else {
+			intObject = customChars.get((char) c);
+		}
+		if (intObject != null) {
+			return intObject.width;
+		}
 		return font.charWidth(c);
 	}
 
