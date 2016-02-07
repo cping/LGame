@@ -531,6 +531,21 @@ public class BMFont implements IFont, LRelease {
 	}
 
 	@Override
+	public int charWidth(char c) {
+		if (c == '\n') {
+			return 0;
+		}
+		if (c >= chars.length) {
+			return getSize();
+		}
+		CharDef charDef = chars[(int) c];
+		if (charDef == null) {
+			return getSize();
+		}
+		return charDef.width;
+	}
+
+	@Override
 	public int stringWidth(String text) {
 		if (text == null) {
 			return 0;

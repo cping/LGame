@@ -187,11 +187,15 @@ public class ShadowFont implements IFont {
 	@Override
 	public void setAssent(float assent) {
 		this._ascent = assent;
-
 	}
 
 	@Override
 	public void setSize(int size) {
 		this._size = size;
+	}
+
+	@Override
+	public int charWidth(char c) {
+		return strfont.charWidth(c);
 	}
 }

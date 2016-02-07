@@ -273,4 +273,9 @@ public class SpriteSheetFont implements IFont {
 		this._size = size;
 	}
 
+	@Override
+	public int charWidth(char c) {
+		return charWidth;
+	}
+
 }

@@ -53,6 +53,7 @@ import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.Updateable;
 import loon.font.IFont;
+import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.Array;
 import loon.utils.ListMap;
@@ -88,7 +89,7 @@ public abstract class AVGScreen extends Screen {
 
 	private boolean isSelectMessage, scrFlag, isRunning, running;
 
-	private IFont _font;
+	private IFont _font = LFont.getDefaultFont();
 
 	private int delay;
 

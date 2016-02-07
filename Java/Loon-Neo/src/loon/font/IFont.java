@@ -16,16 +16,18 @@ public interface IFont {
 	void drawString(GLEx g, String string, float x, float y, float sx,
 			float sy, float ax, float ay, float rotation, LColor c);
 
+	int charWidth(char c);
+
 	int stringWidth(String width);
 
 	int stringHeight(String height);
 
 	int getHeight();
-	
+
 	void setAssent(float assent);
 
 	float getAscent();
-	
+
 	void setSize(int size);
 
 	int getSize();

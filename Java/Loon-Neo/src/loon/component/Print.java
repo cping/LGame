@@ -95,7 +95,6 @@ public class Print implements LRelease {
 
 	private char[] showMessages;
 
-	private int iconWidth;
 
 	private LColor fontColor = LColor.white;
 
@@ -259,6 +258,8 @@ public class Print implements LRelease {
 		}
 	}
 
+	
+	
 	public void drawDefFont(GLEx g, LColor old) {
 		synchronized (showMessages) {
 			this.size = showMessages.length;
@@ -268,7 +269,7 @@ public class Print implements LRelease {
 			switch (dirmode) {
 			default:
 			case NONE:
-				this.tmp_dir = 0;
+				this.tmp_dir = 2;
 				break;
 			case LEFT:
 				this.tmp_dir = (width - (fontSize * messageLength)) / 2
@@ -371,9 +372,9 @@ public class Print implements LRelease {
 				if (i != size - 1) {
 					strings.addChar(text, vector.x + left + leftOffset,
 							(offset * fontHeight) + vector.y + fontSize
-									+ topOffset, fontColor);
+							+ topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
-					iconX = vector.x + left + leftOffset + iconWidth;
+					iconX = vector.x + left + leftOffset;
 					iconY = (offset * fontHeight) + vector.y + fontSize
 							+ topOffset + strings.getAscent();
 					if (iconX != 0 && iconY != 0) {
@@ -469,7 +470,7 @@ public class Print implements LRelease {
 					continue;
 				}
 				String tmpText = String.valueOf(text);
-				tmp_font = ifont.stringWidth(tmpText);
+				tmp_font = ifont.charWidth(text);
 				if (Character.isLetter(text)) {
 					if (tmp_font < fontSize) {
 						font = fontSize;
@@ -488,7 +489,7 @@ public class Print implements LRelease {
 							(offset * fontHeight) + vector.y + fontSize
 									+ topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
-					iconX = vector.x + left + leftOffset + iconWidth;
+					iconX = vector.x + left + leftOffset;
 					iconY = (offset * fontHeight) + vector.y + fontSize
 							+ topOffset + ifont.getAscent();
 					if (iconX != 0 && iconY != 0) {
@@ -497,9 +498,15 @@ public class Print implements LRelease {
 				}
 				index++;
 			}
+			if (onComplete) {
+				if (iconX != 0 && iconY != 0) {
+					g.draw(creeseIcon, iconX, iconY);
+				}
+			}
 			if (messageCount == next) {
 				onComplete = true;
 			}
+
 		}
 
 	}
@@ -590,7 +597,6 @@ public class Print implements LRelease {
 		if (icon == null) {
 			return;
 		}
-		this.iconWidth = icon.getWidth();
 	}
 
 	public int getMessageLength() {
