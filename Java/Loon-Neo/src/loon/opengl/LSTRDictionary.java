@@ -142,7 +142,8 @@ public final class LSTRDictionary {
 						for (int i = 0; i < newSize; i++) {
 							sbr.append(charas.get(i));
 						}
-						pDict.font = new LSTRFont(font, sbr.toString(), false);
+						//个别浏览器纹理同步会卡出国，只能异步……
+						pDict.font = new LSTRFont(font, sbr.toString(), true);
 					}
 				}
 			}
@@ -279,7 +280,7 @@ public final class LSTRDictionary {
 		String key = makeLazyWestKey(f);
 		LSTRFont font = lazyEnglish.get(key);
 		if (font == null) {
-			font = new LSTRFont(f, false);
+			font = new LSTRFont(f, true);
 			lazyEnglish.put(key, font);
 		}
 		return font;
