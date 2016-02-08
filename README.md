@@ -4,6 +4,14 @@
 
 * 本引擎开发环境是JDK 1.8，低版本JRE不能识别高版本编译的jar，如果直接使用jar（而非导入代码），请注意替换为高版本。
 
+loon-0.5-java-beta下载（总共约50多MB，十几MB的源码及jar资源，四十多MB的游戏示例，暂时不正式releases，因为0.5还不完整，目前只有java部分）:
+
+360网盘:https://yunpan.cn/cxAejmHmsiynn  (访问密码 663d)
+
+自用空间:http://xrpmoon.com/files/loon-Java-beta.7z
+
+PS: 正在制作专用构建工具loon-build，现阶段还无法自动构建全部0.5版项目，beta阶段请根据文件中template自行修改。
+
 BWT：想自己开发游戏又找不到美工的网友，可以见dev-res目录，小弟已经列举了很多的开放资源，并且在不断更新（都是无版权问题的资源，要么就是作者放弃版权的，要么就是只要注明来源，就可以免费使用的）。
 
 #2015-02-04
@@ -93,9 +101,3 @@ Built-in over 30 game example(Part screenshots):
 License : http://www.apache.org/licenses/LICENSE-2.0
 
 #This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
-
-## 代碼貢獻者(拼音首字母排序，不分先後)
-
--   暗夜星辰 
-
--   鹏凌三千 [http://www.xrpmoon.com/blog](http://www.xrpmoon.com/blog)
