@@ -369,7 +369,7 @@ public class GWTGame extends LGame {
 			isChrome : userAgent.indexOf("chrome") != -1,
 			isSafari : $wnd.opera || userAgent.indexOf("safari") != -1,
 			isOpera : userAgent.indexOf("opera") != -1,
-			isIE : userAgent.indexOf("msie") != -1,
+			isIE : userAgent.indexOf("msie") != -1 || userAgent.indexOf("trident") != -1,
 			isMacOS : userAgent.indexOf("mac") != -1,
 			isLinux : userAgent.indexOf("linux") != -1,
 			isWindows : userAgent.indexOf("win") != -1

@@ -143,8 +143,8 @@ public abstract class LGame {
 	protected void emitFrame() {
 		try {
 			frame.emit(this);
-		} catch (Exception e) {
-			log().warn("Frame tick exception", e);
+		} catch (Throwable cause) {
+			log().warn("Frame tick exception", cause);
 		}
 	}
 

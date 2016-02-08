@@ -113,6 +113,7 @@ public class GWTGraphics extends Graphics {
 
 		WebGLRenderingContext glc = WebGLRenderingContext.getContext(canvas,
 				attrs);
+
 		if (glc == null) {
 			throw new RuntimeException("Unable to create GL context");
 		}
