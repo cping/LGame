@@ -33,6 +33,7 @@ import loon.font.TextLayout;
 import loon.geom.Affine2f;
 import loon.utils.GLUtils;
 import loon.utils.IntArray;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
@@ -152,7 +153,7 @@ public class LSTRFont implements LRelease {
 
 	private int totalCharSet = 256;
 
-	private ObjectMap<Character, IntObject> customChars = new ObjectMap<Character, IntObject>();
+	private IntMap<IntObject> customChars = new IntMap<IntObject>();
 
 	private IntObject[] charArray = new IntObject[totalCharSet];
 
@@ -340,7 +341,7 @@ public class LSTRFont implements LRelease {
 					if (charCurrent < totalCharSet) {
 						intObject = charArray[charCurrent];
 					} else {
-						intObject = customChars.get((char) charCurrent);
+						intObject = customChars.get(charCurrent);
 					}
 					if (charCurrent == newLineFlag) {
 						totalHeight += fontSize;
@@ -376,7 +377,7 @@ public class LSTRFont implements LRelease {
 				if (charCurrent < totalCharSet) {
 					intObject = charArray[charCurrent];
 				} else {
-					intObject = customChars.get((char) charCurrent);
+					intObject = customChars.get(charCurrent);
 				}
 				if (charCurrent == newLineFlag) {
 					totalHeight += fontSize;
@@ -483,7 +484,7 @@ public class LSTRFont implements LRelease {
 				if (charCurrent < totalCharSet) {
 					intObject = charArray[charCurrent];
 				} else {
-					intObject = customChars.get((char) charCurrent);
+					intObject = customChars.get(charCurrent);
 				}
 				if (charCurrent == newLineFlag) {
 					totalHeight += fontSize;
@@ -516,7 +517,7 @@ public class LSTRFont implements LRelease {
 		if (charCurrent < totalCharSet) {
 			intObject = charArray[charCurrent];
 		} else {
-			intObject = customChars.get((char) charCurrent);
+			intObject = customChars.get(charCurrent);
 		}
 		if (intObject != null) {
 			if (color != null) {
@@ -624,13 +625,10 @@ public class LSTRFont implements LRelease {
 		if (c == '\n') {
 			return 0;
 		}
-		if (c >= charArray.length) {
-			return font.charWidth(c);
-		}
 		if (c < totalCharSet) {
 			intObject = charArray[c];
 		} else {
-			intObject = customChars.get((char) c);
+			intObject = customChars.get((int)c);
 		}
 		if (intObject != null) {
 			return intObject.width;
@@ -653,7 +651,7 @@ public class LSTRFont implements LRelease {
 			if (currentChar < totalCharSet) {
 				intObject = charArray[currentChar];
 			} else {
-				intObject = customChars.get((char) currentChar);
+				intObject = customChars.get(currentChar);
 			}
 			if (intObject != null) {
 				if (currentChar == newLineFlag) {
@@ -681,7 +679,7 @@ public class LSTRFont implements LRelease {
 			if (currentChar < totalCharSet) {
 				intObject = charArray[currentChar];
 			} else {
-				intObject = customChars.get((char) currentChar);
+				intObject = customChars.get(currentChar);
 			}
 			if (intObject != null) {
 				maxHeight = MathUtils.max(maxHeight, intObject.height);

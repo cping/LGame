@@ -32,6 +32,7 @@ import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
@@ -61,7 +62,11 @@ public class BMFont implements IFont, LRelease {
 		_font = font;
 	}
 
-	private static final int DEFAULT_MAX_CHAR = 255;
+	private static final int DEFAULT_MAX_CHAR = 256;
+
+	private int totalCharSet = DEFAULT_MAX_CHAR;
+
+	private IntMap<CharDef> customChars = new IntMap<CharDef>();
 
 	private PointI _offset = new PointI();
 
@@ -77,7 +82,7 @@ public class BMFont implements IFont, LRelease {
 
 	private LTexture displayList;
 
-	private CharDef[] chars;
+	private CharDef[] charArray;
 
 	private int lineHeight, halfHeight;
 
@@ -241,11 +246,15 @@ public class BMFont implements IFont, LRelease {
 			}
 		}
 
-		this.chars = new CharDef[maxChar + 1];
+		this.charArray = new CharDef[totalCharSet];
 
 		for (Iterator<CharDef> iter = charDefs.iterator(); iter.hasNext();) {
 			CharDef def = iter.next();
-			chars[def.id] = def;
+			if (def.id < totalCharSet) {
+				charArray[def.id] = def;
+			} else {
+				customChars.put(def.id, def);
+			}
 		}
 
 		for (Entries<Short, TArray<Short>> iter = kerning.entries(); iter
@@ -259,7 +268,11 @@ public class BMFont implements IFont, LRelease {
 					.hasNext(); i++) {
 				valueArray[i] = (valueIter.next()).shortValue();
 			}
-			chars[first].kerning = valueArray;
+			if (first < totalCharSet) {
+				charArray[first].kerning = valueArray;
+			} else {
+				customChars.get((int) first).kerning = valueArray;
+			}
 		}
 	}
 
@@ -347,14 +360,15 @@ public class BMFont implements IFont, LRelease {
 					y += lineHeight;
 					continue;
 				}
-				if (id >= chars.length) {
-					continue;
+				CharDef charDef = null;
+				if (id < totalCharSet) {
+					charDef = charArray[id];
+				} else {
+					charDef = customChars.get(id);
 				}
-				CharDef charDef = chars[id];
 				if (charDef == null) {
 					continue;
 				}
-
 				if (lastCharDef != null) {
 					x += lastCharDef.getKerning(id);
 				}
@@ -415,15 +429,15 @@ public class BMFont implements IFont, LRelease {
 				y += lineHeight;
 				continue;
 			}
-			if (id >= chars.length) {
-				continue;
+			CharDef charDef = null;
+			if (id < totalCharSet) {
+				charDef = charArray[id];
+			} else {
+				charDef = customChars.get(id);
 			}
-
-			CharDef charDef = chars[id];
 			if (charDef == null) {
 				continue;
 			}
-
 			if (lastCharDef != null) {
 				x += lastCharDef.getKerning(id);
 			}
@@ -519,7 +533,12 @@ public class BMFont implements IFont, LRelease {
 			if (id == ' ') {
 				continue;
 			}
-			CharDef charDef = chars[id];
+			CharDef charDef = null;
+			if (id < totalCharSet) {
+				charDef = charArray[id];
+			} else {
+				charDef = customChars.get(id);
+			}
 			if (charDef == null) {
 				continue;
 			}
@@ -535,10 +554,12 @@ public class BMFont implements IFont, LRelease {
 		if (c == '\n') {
 			return 0;
 		}
-		if (c >= chars.length) {
-			return getSize();
+		CharDef charDef = null;
+		if (c < totalCharSet) {
+			charDef = charArray[(int) c];
+		} else {
+			charDef = customChars.get((int) c);
 		}
-		CharDef charDef = chars[(int) c];
 		if (charDef == null) {
 			return getSize();
 		}
@@ -571,10 +592,12 @@ public class BMFont implements IFont, LRelease {
 				width = 0;
 				continue;
 			}
-			if (id >= chars.length) {
-				continue;
+			CharDef charDef = null;
+			if (id < totalCharSet) {
+				charDef = charArray[id];
+			} else {
+				charDef = customChars.get(id);
 			}
-			CharDef charDef = chars[id];
 			if (charDef == null) {
 				continue;
 			}
