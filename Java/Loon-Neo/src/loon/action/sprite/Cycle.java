@@ -8,8 +8,8 @@ import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.opengl.GLEx;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
@@ -239,7 +239,7 @@ public class Cycle extends LObject implements ISprite {
 
 	protected TArray<Object[]> data;
 
-	protected static ObjectMap<Integer, float[]> signatures;
+	protected static IntMap<float[]> signatures;
 
 	protected TArray<Progress> points;
 
@@ -311,7 +311,7 @@ public class Cycle extends LObject implements ISprite {
 		this.blockHalfWidth = w / 2;
 		this.blockHalfHeight = h / 2;
 		if (signatures == null) {
-			signatures = new ObjectMap<Integer, float[]>(3);
+			signatures = new IntMap<float[]>(3);
 			signatures.put(ARC, new float[] { 1, 1, 3, 2, 2, 0 });
 			signatures.put(BEZIER, new float[] { 1, 1, 1, 1, 1, 1, 1, 1 });
 			signatures.put(LINE, new float[] { 1, 1, 1, 1 });

@@ -16,9 +16,9 @@ import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
 import loon.utils.GLUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
-import loon.utils.ObjectMap;
 
 public class SpriteBatch extends PixmapFImpl {
 
@@ -133,7 +133,7 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 	}
 
-	private ObjectMap<Integer, SpriteBatch.TextureLine> lineLazy = new ObjectMap<Integer, SpriteBatch.TextureLine>(
+	private IntMap<SpriteBatch.TextureLine> lineLazy = new IntMap<SpriteBatch.TextureLine>(
 			1000);
 
 	@Override

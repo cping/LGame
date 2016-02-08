@@ -28,9 +28,9 @@ import loon.opengl.GL20;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
 import loon.utils.GLUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
-import loon.utils.ObjectMap;
 
 public class LTextureBatch implements LRelease {
 
@@ -46,14 +46,14 @@ public class LTextureBatch implements LRelease {
 
 	static boolean isBatchCacheDitry;
 
-	private final static ObjectMap<Integer, LTextureBatch> batchPools = new ObjectMap<Integer, LTextureBatch>(
+	private final static IntMap<LTextureBatch> batchPools = new IntMap<LTextureBatch>(
 			10);
 
 	public final static void clearBatchCaches() {
 		if (LTextureBatch.isBatchCacheDitry) {
-			ObjectMap<Integer, LTextureBatch> batchCaches;
+			IntMap<LTextureBatch> batchCaches;
 			synchronized (batchPools) {
-				batchCaches = new ObjectMap<Integer, LTextureBatch>(batchPools);
+				batchCaches = new IntMap<LTextureBatch>(batchPools);
 				batchPools.clear();
 			}
 			for (LTextureBatch bt : batchCaches.values()) {

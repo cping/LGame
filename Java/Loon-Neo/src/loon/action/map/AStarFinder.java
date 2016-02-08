@@ -34,7 +34,7 @@ import loon.action.map.heuristics.Manhattan;
 import loon.action.map.heuristics.Mixing;
 import loon.event.Updateable;
 import loon.geom.Vector2f;
-import loon.utils.ObjectMap;
+import loon.utils.IntMap;
 import loon.utils.TArray;
 
 public class AStarFinder implements Updateable, LRelease {
@@ -55,7 +55,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_SHORT = new DiagonalShort();
 
-	private final static ObjectMap<Integer, TArray<Vector2f>> finderLazy = new ObjectMap<Integer, TArray<Vector2f>>(
+	private final static IntMap<TArray<Vector2f>> finderLazy = new IntMap<TArray<Vector2f>>(
 			100);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic,

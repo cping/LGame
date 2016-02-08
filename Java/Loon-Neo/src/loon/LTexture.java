@@ -33,8 +33,8 @@ import loon.opengl.GL20;
 import loon.opengl.GLPaint;
 import loon.opengl.Painter;
 import loon.utils.GLUtils;
+import loon.utils.IntMap;
 import loon.utils.NumberUtils;
-import loon.utils.ObjectMap;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.reply.UnitPort;
@@ -162,7 +162,7 @@ public class LTexture extends Painter implements LRelease {
 	// _closed是删除标记，disposed是已经真的被删掉
 	private boolean isChild, _closed, disposed;
 
-	ObjectMap<Integer, LTexture> childs;
+	IntMap<LTexture> childs;
 
 	private LTexture parent;
 
@@ -432,7 +432,7 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, height);
 
 		if (childs == null) {
-			childs = new ObjectMap<Integer, LTexture>(10);
+			childs = new IntMap<LTexture>(10);
 		}
 
 		synchronized (childs) {
@@ -483,7 +483,7 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, height);
 
 		if (childs == null) {
-			childs = new ObjectMap<Integer, LTexture>(10);
+			childs = new IntMap<LTexture>(10);
 		}
 
 		synchronized (childs) {

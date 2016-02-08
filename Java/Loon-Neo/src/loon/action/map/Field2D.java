@@ -23,6 +23,7 @@ package loon.action.map;
 import loon.geom.RectI;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
@@ -68,7 +69,7 @@ public class Field2D implements Config {
 	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(
 			9);
 
-	final static private ObjectMap<Integer, Vector2f> directionValues = new ObjectMap<Integer, Vector2f>(
+	final static private IntMap<Vector2f> directionValues = new IntMap<Vector2f>(
 			9);
 
 	static {

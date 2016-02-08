@@ -22,7 +22,7 @@ package loon.canvas;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.utils.ObjectMap;
+import loon.utils.IntMap;
 
 public class LColorPool implements LRelease {
 
@@ -39,7 +39,7 @@ public class LColorPool implements LRelease {
 
 	private final LColor AlphaColor = new LColor(0f, 0f, 0f, 0f);
 
-	private ObjectMap<Integer, LColor> ColorMap = new ObjectMap<Integer, LColor>();
+	private IntMap<LColor> ColorMap = new IntMap<LColor>();
 
 	public LColor getColor(float r, float g, float b, float a) {
 		if (a <= 0.1f) {

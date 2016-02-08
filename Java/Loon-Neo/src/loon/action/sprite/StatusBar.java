@@ -7,14 +7,14 @@ import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
 
 public class StatusBar extends LObject implements ISprite {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static ObjectMap<Integer, LTexture> colors = new ObjectMap<Integer, LTexture>(
+	private final static IntMap<LTexture> colors = new IntMap<LTexture>(
 			10);
 
 	private final static float[] backPos = { 0, 0, 3, 3 };
