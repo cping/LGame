@@ -136,6 +136,23 @@ public class JavaBuild {
 		javac.setSrcdir(path.getCanonicalPath() + "/" + sourceFileName);
 		File buildDir = new File(path.getCanonicalPath() + "/build");
 		buildDir.mkdirs();
+		
+		String mainCalss = prj.mainClass;
+		if (mainCalss != null) {
+			// 如果使用loon提供的内部类引用器
+			if ("loon.JarInternal".equals(mainCalss)) {
+				File jarInternalFile = new File(srcDirFile,
+						"/loon/JarInternal.java");
+				if (!jarInternalFile.exists()) {
+					byte[] buffer = Packer.getResourceZipFile(
+							"assets/loon.zip", "loon/JarInternal.java");
+					if (buffer != null) {
+						FileUtils.write(jarInternalFile, buffer);
+					}
+				}
+			}
+		}
+		
 		String buildOutputPath = buildDir.getCanonicalPath();
 		javac.setDestdir(buildOutputPath);
 		JavaPath cp = new JavaPath(project);
@@ -195,21 +212,7 @@ public class JavaBuild {
 				}
 			}
 		}
-		String mainCalss = prj.mainClass;
-		if (mainCalss != null) {
-			// 如果使用loon提供的内部类引用器
-			if ("loon.JarInternal".equals(mainCalss)) {
-				File jarInternalFile = new File(srcDirFile,
-						"/loon/JarInternal.java");
-				if (!jarInternalFile.exists()) {
-					byte[] buffer = Packer.getResourceZipFile(
-							"assets/loon.zip", "loon/JarInternal.java");
-					if (buffer != null) {
-						FileUtils.write(jarInternalFile, buffer);
-					}
-				}
-			}
-		}
+	
 		JarFileCopy copy = new JarFileCopy();
 		copy.setProject(project);
 		copy.setTodir(buildDir);
