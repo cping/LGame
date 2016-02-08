@@ -6,11 +6,15 @@
 
 loon-0.5-java-beta下载（总共约50多MB，十几MB的源码及jar资源，四十多MB的游戏示例，暂时不正式releases，因为0.5还不完整，目前只有java部分）:
 
+Dropbox:https://www.dropbox.com/s/46dfz2hqw1znpud/loon-Java-beta.7z?dl=0
+
 360网盘:https://yunpan.cn/cxAejmHmsiynn  (访问密码 663d)
 
-自用空间:http://xrpmoon.com/files/loon-Java-beta.7z
+其它下载:http://xrpmoon.com/files/loon-Java-beta.7z
 
 PS: 正在制作专用构建工具loon-build，现阶段还无法自动构建全部0.5版项目，beta阶段请根据文件中template自行修改。
+
+现阶段针对windows平台生成的游戏jar文件，可用exe4j或install4j之类打包为exe程序，不过只是暂时的。我准备重写GreenJVM，附带一个超小的loon专用openjdk，以后就可以直接一键构建本地exe了(我初步精简的openjdk，压缩后大约4MB多一点，也就是单纯运行一个Loon的hello world的话，exe有5MB多一点足够了)。
 
 BWT：想自己开发游戏又找不到美工的网友，可以见dev-res目录，小弟已经列举了很多的开放资源，并且在不断更新（都是无版权问题的资源，要么就是作者放弃版权的，要么就是只要注明来源，就可以免费使用的）。
 
