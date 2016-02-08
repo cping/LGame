@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import loon.build.packer.Packer;
 import loon.build.packer.ZipFileMake;
 import loon.build.sys.JDK;
 import loon.build.sys.JVM;
@@ -110,6 +111,8 @@ public class JavaBuild {
 		log("Task " + turnNo + " finish");
 	}
 
+	private File srcDirFile;
+
 	@SuppressWarnings("unchecked")
 	public void buildProject(ProjectItem prj) throws Exception {
 		String prjName = prj.name;
@@ -125,10 +128,10 @@ public class JavaBuild {
 		javac.setSource(getParam("source", "1.8"));
 		javac.setEncoding(getParam("encoding", LSystem.ENCODING));
 		javac.setDebug(new Boolean(getParam("debug", "false")));
-		File srcDir = new File(path.getCanonicalPath(), "/" + sourceFileName);
-		if (!srcDir.exists()) {
+		srcDirFile = new File(path.getCanonicalPath(), "/" + sourceFileName);
+		if (!srcDirFile.exists()) {
 			throw new RuntimeException("src dir not found:"
-					+ srcDir.getCanonicalPath());
+					+ srcDirFile.getCanonicalPath());
 		}
 		javac.setSrcdir(path.getCanonicalPath() + "/" + sourceFileName);
 		File buildDir = new File(path.getCanonicalPath() + "/build");
@@ -192,6 +195,21 @@ public class JavaBuild {
 				}
 			}
 		}
+		String mainCalss = prj.mainClass;
+		if (mainCalss != null) {
+			// 如果使用loon提供的内部类引用器
+			if ("loon.JarInternal".equals(mainCalss)) {
+				File jarInternalFile = new File(srcDirFile,
+						"/loon/JarInternal.java");
+				if (!jarInternalFile.exists()) {
+					byte[] buffer = Packer.getResourceZipFile(
+							"assets/loon.zip", "loon/JarInternal.java");
+					if (buffer != null) {
+						FileUtils.write(jarInternalFile, buffer);
+					}
+				}
+			}
+		}
 		JarFileCopy copy = new JarFileCopy();
 		copy.setProject(project);
 		copy.setTodir(buildDir);
@@ -222,9 +240,9 @@ public class JavaBuild {
 				}
 			}
 		}
-		if (prj.mainClass != null) {
+		if (mainCalss != null) {
 			// 主函数
-			jar.addManifest("Main-Class", prj.mainClass);
+			jar.addManifest("Main-Class", mainCalss);
 		}
 		jar.execute();
 		copyTo(prj, outputDir);
@@ -370,9 +388,7 @@ public class JavaBuild {
 				.getParentFile() : new File(".");
 		log("Current Dir:" + dir.getCanonicalPath());
 		File srcDir = new File(dir, sourceFileName);
-		if (srcDir.exists() && srcDir.isDirectory()) {
-
-		} else {
+		if (!(srcDir.exists() && srcDir.isDirectory())) {
 			log("'src' dir not found, exiting...");
 			return null;
 		}
@@ -403,7 +419,12 @@ public class JavaBuild {
 			String fileContext = readString(new FileInputStream(args[0]),
 					LSystem.ENCODING);
 			ArrayMap map = (ArrayMap) ParseData.parseAll(fileContext);
-			params.putAll(map);
+			if (map != null && params != null) {
+				params.putAll(map);
+			}
+		}
+		if (params == null) {
+			return;
 		}
 		String pb1 = (String) params.get("sourceDir");
 		String outputDir = (String) params.get("outputDir");

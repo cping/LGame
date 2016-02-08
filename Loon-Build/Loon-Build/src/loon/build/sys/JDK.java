@@ -252,12 +252,15 @@ public class JDK {
 					"C:\\");
 		}
 		if (java_home != null && java_home.length() > 0) {
-			int v1 = Integer.parseInt(getVersion(java_home).replace(".", "")
-					.replace("0", ""));
-			int v2 = Integer.parseInt(getVersion(path).replace(".", "")
-					.replace("0", ""));
-			if (v1 > v2) {
-				path = java_home;
+			File file = new File(java_home);
+			if (file.exists()) {
+				int v1 = Integer.parseInt(getVersion(java_home)
+						.replace(".", "").replace("0", ""));
+				int v2 = Integer.parseInt(getVersion(path).replace(".", "")
+						.replace("0", ""));
+				if (v1 > v2) {
+					path = java_home;
+				}
 			}
 		}
 		return path;

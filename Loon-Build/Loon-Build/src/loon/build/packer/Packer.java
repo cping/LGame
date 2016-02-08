@@ -12,9 +12,12 @@ import java.util.Iterator;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import loon.build.tools.FileUtils;
+import loon.build.tools.Resources;
 
 public class Packer {
 
@@ -99,6 +102,30 @@ public class Packer {
 		}
 
 		Packer.outputLJar(assets, out, list, mainClassName);
+	}
+
+	public static byte[] getResourceZipFile(String name, String fileName)
+			throws Exception {
+		InputStream input = Resources.getResourceAsStream(name);
+
+		byte[] buffer = new byte[2048];
+		ZipInputStream it = new ZipInputStream(input);
+		ZipEntry zipentry = null;
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		while ((zipentry = it.getNextEntry()) != null) {
+			String entryName = zipentry.getName();
+			if (entryName.equals(fileName)) {
+				int n;
+				while ((n = it.read(buffer, 0, 1024)) > -1) {
+					out.write(buffer, 0, n);
+				}
+				out.close();
+				break;
+			}
+		}
+		it.close();
+		it = null;
+		return out.toByteArray();
 	}
 
 	public static void outputLJar(String assets, String out,
