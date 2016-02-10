@@ -579,4 +579,9 @@ public class LSystem {
 		return extension.equals("mp3") || extension.equals("ogg")
 				|| extension.equals("wav") || extension.equals("mid");
 	}
+	
+
+	public static boolean checkAngle(float angle, float actual) {
+		return actual > angle - 22.5f && actual < angle + 22.5f;
+	}
 }

@@ -20,6 +20,7 @@
  */
 package loon.html5.gwt;
 
+import loon.Accelerometer;
 import loon.Asyn;
 import loon.LGame;
 import loon.LSetting;
@@ -168,6 +169,7 @@ public class GWTGame extends LGame {
 	public Act<LGame> frame = Act.create();
 	private final GWTLog log = GWT.create(GWTLog.class);
 	private final Asyn syn = new Asyn.Default(log, frame);
+	private final GWTAccelerometer accelerometer = new GWTAccelerometer();
 	private final GWTAssets assets;
 
 	private final GWTGraphics graphics;
@@ -334,6 +336,11 @@ public class GWTGame extends LGame {
 		return support;
 	}
 
+	@Override
+	public Accelerometer accel() {
+		return accelerometer;
+	}
+	
 	private native JavaScriptObject getWindow() /*-{
 		return $wnd;
 	}-*/;
@@ -414,5 +421,6 @@ public class GWTGame extends LGame {
 		}
 		return super.isMobile() || game.isMobile();
 	}
+
 
 }

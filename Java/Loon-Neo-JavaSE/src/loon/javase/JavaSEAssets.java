@@ -664,11 +664,11 @@ public class JavaSEAssets extends Assets {
 			this.assets = assets;
 			this.file = file;
 		}
-
+		@Override
 		public InputStream openStream() throws IOException {
 			return assets.strRes(file.getPath());
 		}
-
+		@Override
 		public BufferedImage readImage() throws IOException {
 			return ImageIO.read(assets.strRes(file.getPath()));
 		}

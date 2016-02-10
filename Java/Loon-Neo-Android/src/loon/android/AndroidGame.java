@@ -20,6 +20,7 @@
  */
 package loon.android;
 
+import loon.Accelerometer;
 import loon.Asyn;
 import loon.Json;
 import loon.LGame;
@@ -111,6 +112,7 @@ public class AndroidGame extends LGame {
 	protected final AndroidInputMake input;
 	protected final AndroidLog log;
 	protected final AndroidSave save;
+	protected final AndroidAccelerometer accelerometer;
 	protected final Json json;
 	protected final long start = System.nanoTime();
 
@@ -130,6 +132,7 @@ public class AndroidGame extends LGame {
 		this.json = new JsonImpl();
 		this.input = new AndroidInputMake(this);
 		this.save = new AndroidSave(this);
+		this.accelerometer = new AndroidAccelerometer(game);
 		this.initProcess();
 	}
 
@@ -190,6 +193,16 @@ public class AndroidGame extends LGame {
 		return syn;
 	}
 
+	@Override
+	public Accelerometer accel() {
+		return accelerometer;
+	}
+
+	@Override
+	public Support support() {
+		return support;
+	}
+
 	void onPause() {
 		state = State.PAUSED;
 		status.emit(Status.PAUSE);
@@ -207,11 +220,6 @@ public class AndroidGame extends LGame {
 
 	void processFrame() {
 		emitFrame();
-	}
-
-	@Override
-	public Support support() {
-		return support;
 	}
 
 	/**

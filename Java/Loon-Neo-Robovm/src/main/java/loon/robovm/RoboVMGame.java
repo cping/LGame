@@ -23,6 +23,7 @@ package loon.robovm;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import loon.Accelerometer;
 import loon.Asyn;
 import loon.LGame;
 import loon.LSetting;
@@ -109,6 +110,7 @@ public class RoboVMGame extends LGame {
 	private final RoboVMGraphics graphics;
 	private final RoboVMInputMake input;
 	private final RoboVMSave save;
+	private final RobmVMAccelerometer accelerometer;
 
 	protected RoboVMGame(Loon game, IOSSetting config, CGRect initBounds) {
 		super(config, game);
@@ -116,6 +118,7 @@ public class RoboVMGame extends LGame {
 		this.assets = new RoboVMAssets(this);
 		this.graphics = new RoboVMGraphics(this, initBounds);
 		this.input = new RoboVMInputMake(this);
+		this.accelerometer = new RobmVMAccelerometer(this);
 		this.save = new RoboVMSave(this);
 		this.initProcess();
 	}
@@ -172,6 +175,16 @@ public class RoboVMGame extends LGame {
 		return save;
 	}
 
+	@Override
+	public Accelerometer accel() {
+		return accelerometer;
+	}
+
+	@Override
+	public Support support() {
+		return support();
+	}
+
 	void processFrame() {
 		emitFrame();
 	}
@@ -212,11 +225,6 @@ public class RoboVMGame extends LGame {
 		String systemVersion = UIDevice.getCurrentDevice().getSystemVersion();
 		int version = Integer.parseInt(systemVersion.split("\\.")[0]);
 		return version;
-	}
-
-	@Override
-	public Support support() {
-		return support();
 	}
 
 }

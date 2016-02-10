@@ -81,7 +81,7 @@ public class Matrix4 implements Serializable, XY {
 	private Support support;
 
 	private void init() {
-		if (support == null) {
+		if (LSystem.base() != null && support == null) {
 			support = LSystem.base().support();
 		}
 	}

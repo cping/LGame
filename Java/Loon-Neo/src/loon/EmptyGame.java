@@ -163,5 +163,12 @@ public class EmptyGame extends LGame {
 	public Save save() {
 		return save;
 	}
+	
+	Accelerometer accelerometer = new AccelerometerDefault();
+
+	@Override
+	public Accelerometer accel() {
+		return accelerometer;
+	}
 
 }

@@ -20,7 +20,6 @@
  */
 package loon.component;
 
-import loon.LAccelerometer;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -176,21 +175,21 @@ public class LControl extends LComponent {
 		}
 		if (this.allowDiagonal) {
 			final float angle = MathUtils.toDegrees(MathUtils.atan2(x, y)) + 180;
-			if (LAccelerometer.checkAngle(0, angle) || LAccelerometer.checkAngle(360, angle)) {
+			if (LSystem.checkAngle(0, angle) || LSystem.checkAngle(360, angle)) {
 				position(0, -SIDE, Config.TUP);
-			} else if (LAccelerometer.checkAngle(45, angle)) {
+			} else if (LSystem.checkAngle(45, angle)) {
 				position(-DIAGONAL, -DIAGONAL, Config.LEFT);
-			} else if (LAccelerometer.checkAngle(90, angle)) {
+			} else if (LSystem.checkAngle(90, angle)) {
 				position(-SIDE, 0, Config.TLEFT);
-			} else if (LAccelerometer.checkAngle(135, angle)) {
+			} else if (LSystem.checkAngle(135, angle)) {
 				position(-DIAGONAL, DIAGONAL, Config.DOWN);
-			} else if (LAccelerometer.checkAngle(180, angle)) {
+			} else if (LSystem.checkAngle(180, angle)) {
 				position(0, SIDE, Config.TDOWN);
-			} else if (LAccelerometer.checkAngle(225, angle)) {
+			} else if (LSystem.checkAngle(225, angle)) {
 				position(DIAGONAL, DIAGONAL, Config.RIGHT);
-			} else if (LAccelerometer.checkAngle(270, angle)) {
+			} else if (LSystem.checkAngle(270, angle)) {
 				position(SIDE, 0, Config.TRIGHT);
-			} else if (LAccelerometer.checkAngle(315, angle)) {
+			} else if (LSystem.checkAngle(315, angle)) {
 				position(DIAGONAL, -DIAGONAL, Config.UP);
 			} else {
 				position(0, 0, Config.EMPTY);

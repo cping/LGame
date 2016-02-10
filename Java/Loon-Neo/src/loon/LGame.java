@@ -179,6 +179,8 @@ public abstract class LGame {
 	public abstract Log log();
 
 	public abstract Save save();
+	
+	public abstract Accelerometer accel(); 
 
 	public abstract Support support();
 

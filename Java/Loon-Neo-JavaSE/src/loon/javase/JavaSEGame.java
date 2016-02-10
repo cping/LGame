@@ -146,6 +146,7 @@ public class JavaSEGame extends LGame {
 	private final JavaSELog log = new JavaSELog();
 	private final Asyn asyn = new JavaSEAsyn(pool, log, frame);
 
+	private final JavaSEAccelerometer accelerometer = new JavaSEAccelerometer();
 	private final JavaSESave save;
 	private final JavaSEGraphics graphics;
 	private final JavaSEInputMake input;
@@ -275,7 +276,12 @@ public class JavaSEGame extends LGame {
 	public Save save() {
 		return save;
 	}
-
+	
+	@Override
+	public Accelerometer accel() {
+		return accelerometer;
+	}
+	
 	@Override
 	public Support support() {
 		return support;
