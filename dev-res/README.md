@@ -1,4 +1,4 @@
-# Java(Android)游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2016-02-01)
+# Java(Android)游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2016-02-10)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -8,7 +8,7 @@
 * playn: 2D的Java游戏引擎。 [项目地址](https://github.com/threerings/playn/)
 * LWJGL: 目前最常用的，对OpenGL/CL/AL等渲染API进行本地封装的Java开发包。[官网](http://lwjgl.org/)
 * JavaFX: Java官方目前最推荐的UI库，号称是Swing以及Applet的后继者，也可以用于游戏开发官方提供有Android环境的本地支持库，通过Robovm也可以支持IOS平台。[官网](http://www.oracle.com/technetwork/java/javase/overview/javafx-overview-2158620.html)
-* Scene Builder: 开发JavaFX应用的可视化布局工具。[官网](http://www.oracle.com/technetwork/java/javase/downloads/javafxscenebuilder-ino-2157684.html)
+* Scene Builder: 开发JavaFX应用的可视化布局工具。[下载地址](http://gluonhq.com/open-source/scene-builder/)
 
 ### Java的跨平台工具(仅包含还在更新的)
 
@@ -20,6 +20,12 @@
 * TeaVM: 新一代的Java to JavaScript(更准确的说，是Bytecode to JavaScript)转换项目。相比GWT而言，TeaVM支持反射，支持对象的同步和异步，能在JS上模拟出真实的Thread功能，也不必配置gwt.xml描述java文件就可以编译，并且支持scala和kotlin脚本，更有比GWT更完整的Java类库实现，优化也比GWT做的更好（GWT是Java代码转译为JS，而TeaVM是直接把bytecode转译为JS，在浏览器运行时等于是面向过程的瀑布式运行，所以解释时损耗更少），通常teaVM转换的JS代码，在执行效率上，要比GWT转换的高10%左右。唯一的缺点是，还在开发阶段，不够成熟，所以bug比较多…… [项目地址](https://github.com/konsoletyper/teavm/)
 * j2obj: 仿造GWT原理的Java to Objective-C代码转换器，在IOS上拥有较为完整的JRE本地支持，可以满足大多数【平台无关】的Java代码直接转换到IOS环境。[项目地址](https://github.com/google/j2objc/)
 * openjdk: 完全开源的JDK（JRE）支持库，运行API上与Oracle版并无区别，但是实现上全部开源，也没有商用限制，也就是用户可以自行删减内容，方便精简出游戏专用JRE（而官方版在使用协议上是不能自行精简的）。 [完整编译版地址](https://github.com/alexkasko/openjdk-unofficial-builds/)
+
+### Java的程序打包工具
+
+* packr: 一个基于命令行的Java部署工具，可以把jar和jre混合到windows、mac以及linux平台的可执行文件中去。[官网](https://github.com/libgdx/packr/)
+* izpack: 一个基于Java制作的跨平台部署工具，优点是跨平台，缺点是——这货的运行本身就基于Java，也就是没有jre无法运行…… [官网](http://izpack.org/)
+* Launch4j: 一款支持多平台的Java应用部署工具，可以把jre和jar打包到相应平台的可执行程序中去，附带一提，这和名字近似的install4j不同，是完全免费的。 [官网](http://launch4j.sourceforge.net/)
 
 ### Java的脚本语言支持库(仅包含还在更新的)
 
