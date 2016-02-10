@@ -368,7 +368,8 @@ public class RocScript {
 		if (useFile) {
 			try {
 				String text = BaseIO.loadText(script);
-				size = text.length();
+				charlist = filtrScript(text).toCharArray();
+				size = charlist.length;
 			} catch (Exception exc) {
 				handleError(FILEIOERROR);
 			}

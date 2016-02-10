@@ -58,7 +58,7 @@ public class ArrayByte {
 		this.data = data;
 		reset();
 	}
-
+	
 	public void reset() {
 		setOrder(BIG_ENDIAN);
 	}
@@ -137,7 +137,7 @@ public class ArrayByte {
 
 	public int read() throws IndexOutOfBoundsException {
 		checkAvailable(1);
-		return data[position++];
+		return data[position++] & 0xff;
 	}
 
 	public byte readByte() throws IndexOutOfBoundsException {
@@ -276,7 +276,7 @@ public class ArrayByte {
 		ensureCapacity(1);
 		data[position++] = v;
 	}
-	
+
 	public void writeByte(int v) {
 		ensureCapacity(1);
 		data[position++] = (byte) v;

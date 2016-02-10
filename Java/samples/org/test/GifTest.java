@@ -2,13 +2,13 @@ package org.test;
 
 import loon.LTransition;
 import loon.Screen;
-import loon.action.ActionScript;
-import loon.action.sprite.Sprite;
+import loon.action.sprite.GifAnimation;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class ActionScriptTest extends Screen {
+public class GifTest extends Screen {
 
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
@@ -22,67 +22,58 @@ public class ActionScriptTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		Sprite sprite = new Sprite("assets/ball.png");
-		sprite.setLocation(200,200);
-		
-		add(sprite);
-		
-		ActionScript script = act(sprite,
-				"move(180,600,true)->rotate(360)->delay(2f)->fadein(60)->fadeout(90)");
-		script.start();
+		// 设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
+
+		GifAnimation an = new GifAnimation("33.gif");
+		add(an);
+
+		add(MultiScreenTest.getBackButton(this));
 	}
 
 	@Override
 	public void alter(LTimerContext timer) {
-		
 
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		
 
 	}
 
 	@Override
 	public void touchDown(GameTouch e) {
-		
 
 	}
 
 	@Override
 	public void touchUp(GameTouch e) {
-		
 
 	}
 
 	@Override
 	public void touchMove(GameTouch e) {
-		
 
 	}
 
 	@Override
 	public void touchDrag(GameTouch e) {
-		
 
 	}
 
 	@Override
 	public void resume() {
-		
 
 	}
 
 	@Override
 	public void pause() {
-		
 
 	}
 
 	@Override
 	public void close() {
-		
 
 	}
+
 }
