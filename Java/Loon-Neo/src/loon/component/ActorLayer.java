@@ -21,7 +21,6 @@
  */
 package loon.component;
 
-
 import java.util.Iterator;
 
 import loon.action.ActionBind;
@@ -103,7 +102,8 @@ public abstract class ActorLayer extends LContainer {
 	 * @param y
 	 * @return
 	 */
-	public MoveTo callMoveTo(Field2D field, ActionBind o, boolean flag, int x, int y) {
+	public MoveTo callMoveTo(Field2D field, ActionBind o, boolean flag, int x,
+			int y) {
 		if (isClose) {
 			return null;
 		}
@@ -136,7 +136,8 @@ public abstract class ActorLayer extends LContainer {
 	 * @param h
 	 * @return
 	 */
-	public MoveTo callMoveTo(ActionBind o, boolean flag, int x, int y, int w, int h) {
+	public MoveTo callMoveTo(ActionBind o, boolean flag, int x, int y, int w,
+			int h) {
 		if (isClose) {
 			return null;
 		}
@@ -339,7 +340,7 @@ public abstract class ActorLayer extends LContainer {
 		addActionEvent(arrow, o);
 		return arrow;
 	}
-	
+
 	/**
 	 * 以指定瓦片大小创建数组地图
 	 * 
@@ -351,8 +352,9 @@ public abstract class ActorLayer extends LContainer {
 		if (isClose) {
 			return null;
 		}
-		tmpField = new Field2D(new int[(int)(getHeight() / tileHeight)][(int)(getWidth()
-				/ tileWidth)], tileWidth, tileHeight);
+		tmpField = new Field2D(
+				new int[(int) (getHeight() / tileHeight)][(int) (getWidth() / tileWidth)],
+				tileWidth, tileHeight);
 		return tmpField;
 	}
 
@@ -603,6 +605,35 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	/**
+	 * 删除指定集合中的所有角色
+	 * 
+	 * @param flagName
+	 */
+	public void removeObject(String flagName) {
+		if (isClose) {
+			return;
+		}
+		synchronized (objects) {
+			Iterator<Actor> it = objects.iterator();
+			while (it.hasNext()) {
+				Actor actor = it.next();
+				if (actor == null) {
+					continue;
+				}
+				String flag = actor.getFlag();
+				if (flagName == null || flagName == flag
+						|| flagName.equals(flag)) {
+					if (this.objects.remove(actor)) {
+						this.collisionChecker.removeObject(actor);
+					}
+					removeActionEvents(actor);
+					actor.setLayer((ActorLayer) null);
+				}
+			}
+		}
+	}
+
+	/**
 	 * 获得含有指定角色碰撞的List集合
 	 * 
 	 * @param actor
@@ -743,14 +774,16 @@ public abstract class ActorLayer extends LContainer {
 		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
 	}
 
-	TArray<Actor> getNeighbours(Actor actor, float distance, boolean d, String flag) {
+	TArray<Actor> getNeighbours(Actor actor, float distance, boolean d,
+			String flag) {
 		if (isClose) {
 			return null;
 		}
 		if (distance < 0) {
 			throw new RuntimeException("distance < 0");
 		} else {
-			return this.collisionChecker.getNeighbours(actor, distance, d, flag);
+			return this.collisionChecker
+					.getNeighbours(actor, distance, d, flag);
 		}
 	}
 

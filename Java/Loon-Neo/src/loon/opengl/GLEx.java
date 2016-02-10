@@ -1212,6 +1212,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawMirror(LTexture texture, float x, float y, float w,
+			float h, float rotation) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(),
+				texture.height(), null, rotation, null, Direction.TRANS_MIRROR);
+	}
+
+	public GLEx drawMirror(LTexture texture, float x, float y, float w,
 			float h, LColor color, float rotation) {
 		if (isClosed) {
 			return this;

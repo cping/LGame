@@ -251,14 +251,24 @@ public class LLayer extends ActorLayer {
 							transform.translate(-centerX, -centerY);
 						}
 						if (isBitmapFilter) {
-							g.draw(actorImage, actorX, actorY, width, height,
-									thing.filterColor, angle);
+							if (thing.mirror) {
+								g.drawMirror(actorImage, actorX, actorY, width,
+										height, thing.filterColor, angle);
+							} else {
+								g.draw(actorImage, actorX, actorY, width,
+										height, thing.filterColor, angle);
+							}
 						} else {
 							if (colorAlpha != 1f) {
 								g.setAlpha(colorAlpha);
 							}
-							g.draw(actorImage, actorX, actorY, width, height,
-									angle);
+							if (thing.mirror) {
+								g.drawMirror(actorImage, actorX, actorY, width,
+										height, angle);
+							} else {
+								g.draw(actorImage, actorX, actorY, width,
+										height, angle);
+							}
 							if (colorAlpha != 1f) {
 								g.setAlpha(1f);
 							}

@@ -74,7 +74,7 @@ public class Actor extends LObject implements Comparable<Actor>, ActionBind, XY,
 
 	private Animation animation;
 
-	boolean isAnimation;
+	boolean isAnimation,mirror;
 
 	LColor filterColor;
 
@@ -449,22 +449,22 @@ public class Actor extends LObject implements Comparable<Actor>, ActionBind, XY,
 	 * @param _rotation
 	 */
 	@Override
-	public void setRotation(float _rotation) {
-		if (_rotation >= 360) {
-			if (_rotation < 720) {
-				_rotation -= 360;
+	public void setRotation(float r) {
+		if (r >= 360) {
+			if (r < 720) {
+				r -= 360;
 			} else {
-				_rotation %= 360;
+				r %= 360;
 			}
-		} else if (_rotation < 0) {
-			if (_rotation >= -360) {
-				_rotation += 360;
+		} else if (r < 0) {
+			if (r >= -360) {
+				r += 360;
 			} else {
-				_rotation = 360 + _rotation % 360;
+				r = 360 + r % 360;
 			}
 		}
-		if (this._rotation != _rotation) {
-			this._rotation = _rotation;
+		if (this._rotation != r) {
+			this._rotation = r;
 			this.boundingRect = null;
 			this.sizeChanged();
 		}
@@ -1020,6 +1020,14 @@ public class Actor extends LObject implements Comparable<Actor>, ActionBind, XY,
 	@Override
 	public float getContainerHeight() {
 		return gameLayer.getHeight();
+	}
+	
+	public boolean isMirror(){
+		return mirror;
+	}
+	
+	public void setMirror(boolean m){
+		this.mirror = m;
 	}
 
 	public String getFlag() {
