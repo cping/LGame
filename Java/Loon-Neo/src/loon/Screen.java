@@ -128,6 +128,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 */
 	/** 受限函数结束 **/
 
+	private LTransition _transition;
+
 	protected final Closeable.Set _conns = new Closeable.Set();
 
 	private LayoutConstraints _rootConstraints;
@@ -274,7 +276,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public float getDeltaTime() {
-		return ((float)elapsedTime) / 1000f;
+		return ((float) elapsedTime) / 1000f;
 	}
 
 	private RootPlayer _players;
@@ -775,7 +777,39 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @return
 	 */
 	public LTransition onTransition() {
-		return null;
+		return _transition;
+	}
+
+	/**
+	 * 注入一个渐变特效，在引入Screen时将使用此特效进行渐变.
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public Screen setTransition(LTransition t) {
+		this._transition = t;
+		return this;
+	}
+
+	/**
+	 * 注入一个渐变特效的名称，以及渐变使用的颜色，在引入Screen时将使用此特效进行渐变.
+	 * 
+	 * @param transName
+	 * @param c
+	 * @return
+	 */
+	public Screen setTransition(String transName, LColor c) {
+		this._transition = LTransition.newTransition(transName, c);
+		return this;
+	}
+
+	/**
+	 * @see onTransition
+	 * 
+	 * @return
+	 */
+	public LTransition getTransition() {
+		return this._transition;
 	}
 
 	/**
