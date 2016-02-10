@@ -46,7 +46,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Actor extends LObject implements ActionBind, XY, LRelease, BoxSize {
+public class Actor extends LObject implements Comparable<Actor>, ActionBind, XY, LRelease, BoxSize {
 
 	private String flag = "Actor";
 
@@ -1038,6 +1038,11 @@ public class Actor extends LObject implements ActionBind, XY, LRelease, BoxSize 
 	@Override
 	public void setHeight(float h) {
 		this.scaleY = h / getHeight();
+	}
+
+	@Override
+	public int compareTo(Actor o) {
+		return o.getLayer() - this.getLayer();
 	}
 
 }
