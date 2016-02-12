@@ -128,6 +128,8 @@ public class Display extends LSystemView {
 		}
 	}
 
+	private Runtime runtime;
+
 	private long frameCount;
 
 	private int frameRate, frames;
@@ -291,12 +293,25 @@ public class Display extends LSystemView {
 
 			process.draw(glEx);
 
+			// 显示fps速度
 			if (setting.isFPS) {
 				tickFrames();
 				fpsFont.drawString(glEx, "FPS:" + frameRate, 5, 5, 0,
 						LColor.white);
 			}
-
+			// 显示内存
+			if (setting.isMemory) {
+				if (runtime == null) {
+					runtime = Runtime.getRuntime();
+				}
+				long totalMemory = runtime.totalMemory();
+				long currentMemory = totalMemory - runtime.freeMemory();
+				String memory = ((float) ((currentMemory * 10) >> 20) / 10)
+						+ " of " + ((float) ((runtime.maxMemory() * 10) >> 20) / 10)
+						+ " MB";
+				fpsFont.drawString(glEx, "MEMORY:" + memory, 5, 25, 0,
+						LColor.white);
+			}
 			process.drawEmulator(glEx);
 			process.unload();
 

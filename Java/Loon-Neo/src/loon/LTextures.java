@@ -126,6 +126,7 @@ public class LTextures {
 				}
 				if (!texture.disposed()) {
 					Updateable u = new Updateable() {
+						@Override
 						public void action(Object a) {
 							synchronized (texture) {
 								texture.free();

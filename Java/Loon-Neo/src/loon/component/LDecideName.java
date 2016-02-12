@@ -36,6 +36,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.utils.TArray;
 import loon.utils.MathUtils;
@@ -76,6 +77,8 @@ public class LDecideName extends LComponent {
 
 	private char enterFlagString = '>', clearFlagString = '<';
 
+	private boolean _cache = false;
+	
 	private SpriteBatch batch;
 
 	private LSTRFont cacheFont;
@@ -119,7 +122,6 @@ public class LDecideName extends LComponent {
 
 	}
 
-	private boolean _cache = false;
 
 	public void draw(SpriteBatch g, int x, int y) {
 		LFont oldFont = g.getFont();
@@ -129,8 +131,10 @@ public class LDecideName extends LComponent {
 		}
 		float posX = x + leftOffset;
 		if (labelName != null) {
+			LSTRDictionary.setAsyn(false);
 			g.drawString(labelName + this.name, posX + labelOffsetX, y
 					+ labelOffsetY, LColor.orange);
+			LSTRDictionary.setAsyn(true);
 		}
 		float posY = y + topOffset;
 		if (!_cache) {

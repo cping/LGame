@@ -29,6 +29,8 @@ import loon.utils.TArray;
 
 public final class LSTRDictionary {
 
+	private static boolean tmp_asyn = true;
+
 	private final static ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(
 			20);
 
@@ -142,8 +144,9 @@ public final class LSTRDictionary {
 						for (int i = 0; i < newSize; i++) {
 							sbr.append(charas.get(i));
 						}
-						//个别浏览器纹理同步会卡出国，只能异步……
-						pDict.font = new LSTRFont(font, sbr.toString(), true);
+						// 个别浏览器纹理同步会卡出国，只能异步……
+						pDict.font = new LSTRFont(font, sbr.toString(),
+								tmp_asyn);
 					}
 				}
 			}
@@ -273,6 +276,14 @@ public final class LSTRDictionary {
 		}
 	}
 
+	public synchronized static void setAsyn(boolean asyn) {
+		LSTRDictionary.tmp_asyn = asyn;
+	}
+
+	public synchronized static boolean isAsyn() {
+		return LSTRDictionary.tmp_asyn;
+	}
+
 	public synchronized static LSTRFont getGLFont(LFont f) {
 		if (lazyEnglish.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			clearEnglishLazy();
@@ -280,7 +291,7 @@ public final class LSTRDictionary {
 		String key = makeLazyWestKey(f);
 		LSTRFont font = lazyEnglish.get(key);
 		if (font == null) {
-			font = new LSTRFont(f, true);
+			font = new LSTRFont(f, tmp_asyn);
 			lazyEnglish.put(key, font);
 		}
 		return font;

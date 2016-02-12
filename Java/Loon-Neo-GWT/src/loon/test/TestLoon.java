@@ -298,6 +298,7 @@ remove(this);
 
 		GWTSetting setting = new GWTSetting();
 		setting.fps = 60;
+		setting.isMemory = true;
 		// source size
 		setting.width = 480;
 		setting.height = 320;

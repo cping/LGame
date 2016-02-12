@@ -26,6 +26,9 @@ public class LSetting {
 
 	// 是否显示FPS帧率
 	public boolean isFPS = false;
+	
+	// 是否显示内存
+	public boolean isMemory = false;
 
 	// 是否显示logo（替换logo使用logoPath指定地址）
 	public boolean isLogo = false;
