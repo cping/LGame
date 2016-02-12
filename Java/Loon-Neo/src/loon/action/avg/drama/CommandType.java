@@ -92,8 +92,9 @@ public interface CommandType {
 	// 选择框中文字左侧偏移
 	String L_SELLEN = "selleft";
 
-	// 文字显示速度模式:格式[speed fast](有7个参数,SuperSlow, Slow,FewSlow, Normal,
-	// Fast,Quickly, Flash)
+	// 文字显示速度模式:
+	// 格式:speed fast
+	// 有7个参数,SuperSlow, Slow,FewSlow, Normal, Fast,Quickly, Flash
 	String L_SPEED = "speed";
 
 	// 画面振动

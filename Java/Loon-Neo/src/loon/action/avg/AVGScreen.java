@@ -66,8 +66,10 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-/*
+/**
  * Loon默认提供的AVG模板，在此Screen中可以直接实现一些简单的AVG游戏操作，并且更容易扩展出自己的AVG游戏系统。
+ * 
+ * @see CommandType
  */
 public abstract class AVGScreen extends Screen {
 
@@ -919,7 +921,7 @@ public abstract class AVGScreen extends Screen {
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SPEED)) {
 					if (mesFlag != null) {
-						setSpeedMode(toSpeedMode(mesFlag));
+						setSpeedMode(mesFlag);
 					}
 					continue;
 				}
@@ -1732,6 +1734,15 @@ public abstract class AVGScreen extends Screen {
 				|| _speedMode == SpeedMode.Fast) {
 			delay = 0;
 		}
+	}
+
+	/**
+	 * 设置当前AVG的文字显示速度默认
+	 * 
+	 * @param speedName
+	 */
+	public void setSpeedMode(String speedName) {
+		setSpeedMode(toSpeedMode(speedName));
 	}
 
 	public int getClickcount() {

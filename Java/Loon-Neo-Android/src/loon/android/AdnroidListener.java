@@ -12,6 +12,6 @@ public interface AdnroidListener {
 	
     boolean onKeyDown(int keyCode, KeyEvent event) ;
 
-	public boolean onKeyUp(int keyCode, KeyEvent event) ;
+	boolean onKeyUp(int keyCode, KeyEvent event) ;
 
 }
