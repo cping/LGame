@@ -72,6 +72,7 @@ public class AndroidInputMake extends InputMake {
 		if (kind != null) {
 			final TouchMake.Event[] touches = parseMotionEvent(event, kind);
 			game.asyn().invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					game.input().touchEvents.emit(touches);
 				}
