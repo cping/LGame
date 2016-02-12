@@ -42,21 +42,20 @@ public class TextCellRenderer implements ICellRenderer {
 			s = font.confineLength(s, width - size - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4,
 					font.stringWidth(s));
-			g.setColor(textColor);
 			if (icon.texture != null) {
 				g.draw(icon.texture, x + 4, y + (font.getHeight() - size) / 2,
 						size, size);
-				font.drawString(g, s, x + size + entryOffset + 4, y - 4);
+				font.drawString(g, s, x + size + entryOffset + 4, y - 4,
+						textColor);
 			} else {
-				font.drawString(g, s, x + entryOffset, y - 4);
+				font.drawString(g, s, x + entryOffset, y - 4, textColor);
 			}
 		} else {
 			String s = value.toString();
 			s = font.confineLength(s, width - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4,
 					font.stringWidth(s));
-			g.setColor(textColor);
-			font.drawString(g, s, x + entryOffset, y - 4);
+			font.drawString(g, s, x + entryOffset, y - 4, textColor);
 		}
 	}
 
