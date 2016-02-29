@@ -146,7 +146,7 @@ public class Display extends LSystemView {
 
 	private LSetting setting;
 
-	boolean showLogo = false;
+	boolean showLogo = false, initDrawConfig = false;;
 
 	private Logo logoTex;
 
@@ -164,7 +164,6 @@ public class Display extends LSystemView {
 	public Display(LGame game, int updateRate) {
 		super(game, updateRate);
 		setting = LSystem._base.setting;
-		newDefView(setting.isFPS);
 		process = LSystem._process;
 		manager = RealtimeProcessManager.get();
 		GL20 gl = game.graphics().gl;
@@ -218,6 +217,13 @@ public class Display extends LSystemView {
 	}
 
 	protected void draw(LTimerContext clock) {
+		
+		//fix渲染时机，避免调用渲染在纹理构造前
+		if (!initDrawConfig) {
+			newDefView(setting.isFPS);
+			initDrawConfig = true;
+		}
+		
 		if (showLogo) {
 			try {
 				glEx.save();
@@ -307,7 +313,8 @@ public class Display extends LSystemView {
 				long totalMemory = runtime.totalMemory();
 				long currentMemory = totalMemory - runtime.freeMemory();
 				String memory = ((float) ((currentMemory * 10) >> 20) / 10)
-						+ " of " + ((float) ((runtime.maxMemory() * 10) >> 20) / 10)
+						+ " of "
+						+ ((float) ((runtime.maxMemory() * 10) >> 20) / 10)
 						+ " MB";
 				fpsFont.drawString(glEx, "MEMORY:" + memory, 5, 25, 0,
 						LColor.white);

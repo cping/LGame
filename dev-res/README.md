@@ -47,6 +47,7 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * k-after: 日式AVG（galgame）游戏的免费背景素材下载站。  [地址](http://k-after.at.webry.info/)  
 * tokudaya: 日式AVG（galgame）游戏的免费人设下载站。 [地址](http://tokudaya.net/index.html) 
 * nicovideo: 日本站点，这个站点各种图像和音频资源都有，内容很杂。 [地址](http://commons.nicovideo.jp/search/material/image)
+* 俺得素材库: 日站，人物立绘。[地址](http://ichimedou.sakura.ne.jp/free/freemate.htm)
 * 星宝转生: 日本站点，全图片资源公开的AVG（galgame），注明来源即可随意使用。 [地址](http://www.jewel-s.jp/)
 * 月风: 日站，包含游戏图片以及音频的综合资源站。[地址](http://moonwind.pw/)
 * 森の奥の隠れ里: 日本站点，以RMXP和RMVX素材为主，包括人脸图、行走图、以及图标等素材。[地址](http://fayforest.sakura.ne.jp/resource.html)

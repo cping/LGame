@@ -22,6 +22,10 @@ package loon.utils;
 
 public class Easing {
 
+	public static enum EasingMode {
+		InQuad, OutQuad, InOutQuad, InCubic, OutCubic, InOutCubic, InQuart, OutQuart, InOutQuart, InQuint, OutQuint, InOutQuint, InSine, OutSine, InOutSine, InExp, OutExp, InOutExp, InCirc, OutCirc, InOutCirc, InBack, OutBack, InOutBack, OutBounce, InBounce, InOutBounce, Linear;
+	}
+
 	private static final int TYPE_IN = 0;
 
 	private static final int TYPE_OUT = 1;
@@ -318,4 +322,222 @@ public class Easing {
 		}
 	}
 
+	public static float inQuad(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return max * t * t + min;
+	}
+
+	public static float outQuad(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return -max * t * (t - 2.0f) + min;
+	}
+
+	public static float inOutQuad(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		if (t / 2.0f < 1.0f) {
+			return max / 2.0f * t * t + min;
+		}
+		t -= 1.0f;
+		return -max * (t * (t - 2.0f) - 1.0f) + min;
+	}
+
+	public static float inCubic(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return max * t * t * t + min;
+	}
+
+	public static float outCubic(float t, float totaltime, float max, float min) {
+		max -= min;
+		t = t / totaltime - 1.0f;
+		return max * (t * t * t + 1.0f) + min;
+	}
+
+	public static float inOutCubic(float t, float totaltime, float max,
+			float min) {
+		max -= min;
+		t /= totaltime;
+		if (t / 2.0f < 1.0f) {
+			return max / 2.0f * t * t * t + min;
+		}
+		t -= 2.0f;
+		return max / 2.0f * (t * t * t + 2.0f) + min;
+	}
+
+	public static float inQuart(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return max * t * t * t * t + min;
+	}
+
+	public static float outQuart(float t, float totaltime, float max, float min) {
+		max -= min;
+		t = t / totaltime - 1.0f;
+		return -max * (t * t * t * t - 1.0f) + min;
+	}
+
+	public static float inOutQuart(float t, float totaltime, float max,
+			float min) {
+		max -= min;
+		t /= totaltime;
+		if (t / 2.0f < 1.0f) {
+			return max / 2.0f * t * t * t * t + min;
+		}
+		t -= 2.0f;
+		return -max / 2.0f * (t * t * t * t - 2.0f) + min;
+	}
+
+	public static float inQuint(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return max * t * t * t * t * t + min;
+	}
+
+	public static float outQuint(float t, float totaltime, float max, float min) {
+		max -= min;
+		t = t / totaltime - 1.0f;
+		return max * (t * t * t * t * t + 1.0f) + min;
+	}
+
+	public static float inOutQuint(float t, float totaltime, float max,
+			float min) {
+		max -= min;
+		t /= totaltime;
+		if (t / 2.0f < 1.0f) {
+			return max / 2.0f * t * t * t * t * t + min;
+		}
+		t -= 2.0f;
+		return max / 2.0f * (t * t * t * t * t + 2.0f) + min;
+	}
+
+	public static float inSine(float t, float totaltime, float max, float min) {
+		max -= min;
+		return -max * MathUtils.cos(t * 1.570796326794897f / totaltime) + max
+				+ min;
+	}
+
+	public static float outSine(float t, float totaltime, float max, float min) {
+		max -= min;
+		return max * MathUtils.sin(t * 1.570796326794897f / totaltime) + min;
+	}
+
+	public static float inOutSine(float t, float totaltime, float max, float min) {
+		max -= min;
+		return -max / 2.0f
+				* (MathUtils.cos(t * 3.141592653589793f / totaltime) - 1.0f)
+				+ min;
+	}
+
+	public static float inExp(float t, float totaltime, float max, float min) {
+		max -= min;
+		return t == 0.0f ? min : max
+				* MathUtils.pow(2.0f, 10.0f * (t / totaltime - 1.0f)) + min;
+	}
+
+	public static float outExp(float t, float totaltime, float max, float min) {
+		max -= min;
+		return t == totaltime ? max + min : max
+				* (-MathUtils.pow(2.0f, -10.0f * t / totaltime) + 1.0f) + min;
+	}
+
+	public static float inOutExp(float t, float totaltime, float max, float min) {
+		if (t == 0f) {
+			return min;
+		}
+		if (t == totaltime) {
+			return max;
+		}
+		max -= min;
+		t /= totaltime;
+		if (t / 2.0f < 1.0f) {
+			return max / 2.0f * MathUtils.pow(2.0f, 10.0f * (t - 1.0f)) + min;
+		}
+		t -= 1.0f;
+		return max / 2.0f * (-MathUtils.pow(2.0f, -10.0f * t) + 2.0f) + min;
+	}
+
+	public static float inCirc(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return -max * (MathUtils.sqrt(1.0f - t * t) - 1.0f) + min;
+	}
+
+	public static float outCirc(float t, float totaltime, float max, float min) {
+		max -= min;
+		t = t / totaltime - 1.0f;
+		return max * MathUtils.sqrt(1.0f - t * t) + min;
+	}
+
+	public static float inOutCirc(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		if (t / 2.0f < 1.0f) {
+			return -max / 2.0f * (MathUtils.sqrt(1.0f - t * t) - 1.0f) + min;
+		}
+		t -= 2.0f;
+		return max / 2.0f * (MathUtils.sqrt(1.0f - t * t) + 1.0f) + min;
+	}
+
+	public static float inBack(float t, float totaltime, float max, float min,
+			float s) {
+		max -= min;
+		t /= totaltime;
+		return max * t * t * ((s + 1.0f) * t - s) + min;
+	}
+
+	public static float outBack(float t, float totaltime, float max, float min,
+			float s) {
+		max -= min;
+		t = t / totaltime - 1.0f;
+		return max * (t * t * ((s + 1.0f) * t * s) + 1.0f) + min;
+	}
+
+	public static float inOutBack(float t, float totaltime, float max,
+			float min, float s) {
+		max -= min;
+		s *= 1.525f;
+		if (t / 2.0f < 1.0f) {
+			return max * (t * t * ((s + 1.0f) * t - s)) + min;
+		}
+		t -= 2.0f;
+		return max / 2.0f * (t * t * ((s + 1.0f) * t + s) + 2.0f) + min;
+	}
+
+	public static float outBounce(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		if (t < 0.3636363636363637f) {
+			return max * (7.5625f * t * t) + min;
+		}
+		if (t < 0.7272727272727273f) {
+			t -= 0.5454545454545454f;
+			return max * (7.5625f * t * t + 0.75f) + min;
+		}
+		if (t < 0.9090909090909091f) {
+			t -= 0.8181818181818182f;
+			return max * (7.5625f * t * t + 0.9375f) + min;
+		}
+		t -= 0.9545454545454546f;
+		return max * (7.5625f * t * t + 0.984375f) + min;
+	}
+
+	public static float inBounce(float t, float totaltime, float max, float min) {
+		return max - outBounce(totaltime - t, totaltime, max - min, 0.0f) + min;
+	}
+
+	public static float inOutBounce(float t, float totaltime, float max,
+			float min) {
+		if (t < totaltime / 2.0f) {
+			return inBounce(t * 2.0f, totaltime, max - min, max) * 0.5f + min;
+		}
+		return outBounce(t * 2.0f - totaltime, totaltime, max - min, 0.0f)
+				* 0.5f + min + (max - min) * 0.5f;
+	}
+
+	public static float linear(float t, float totaltime, float max, float min) {
+		return (max - min) * t / totaltime + min;
+	}
 }
