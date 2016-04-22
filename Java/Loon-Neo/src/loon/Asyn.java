@@ -1,12 +1,12 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -25,114 +25,91 @@ import loon.utils.reply.Act;
 import loon.utils.reply.GoPromise;
 import loon.utils.reply.Port;
 
-public abstract class Asyn
-{
-
-    public static class Default extends Asyn
-    {
-
-        /**
-         * 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了……
-         **/
-        private class CallDefaultPort<T> extends Port<T>
-        {
-
+public abstract class Asyn {
+    
+    public static class Default extends Asyn {
+        
+        /** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
+        private class CallDefaultPort<T> extends Port<T>{
+            
             private Default _def;
-
-            CallDefaultPort(Default d)
-            {
+            
+            CallDefaultPort(Default d){
                 this._def = d;
             }
-
+            
             @Override
-            public void onEmit(Object event)
-            {
+            public void onEmit(Object event) {
                 _def.dispatch();
             }
-
+            
         }
-
+        
         private final TArray<Runnable> pending = new TArray<>();
         private final TArray<Runnable> running = new TArray<>();
         protected final Log log;
-
-        public Default(Log log, Act<? extends Object> frame)
-        {
+        
+        public Default(Log log, Act<? extends Object> frame) {
             this.log = log;
             frame.connect(new CallDefaultPort<Object>(this)).setPriority(Short.MAX_VALUE);
         }
-
+        
         @Override
-        public boolean isAsyncSupported()
-        {
+        public boolean isAsyncSupported() {
             return false;
         }
-
+        
         @Override
-        public void invokeAsync(Runnable action)
-        {
+        public void invokeAsync(Runnable action) {
             throw new UnsupportedOperationException();
         }
-
+        
         @Override
-        public synchronized void invokeLater(Runnable action)
-        {
+        public synchronized void invokeLater(Runnable action) {
             pending.add(action);
         }
-
-        private void dispatch()
-        {
-            synchronized(this)
-            {
+        
+        private void dispatch() {
+            synchronized (this) {
                 running.addAll(pending);
                 pending.clear();
             }
-
-            for(int ii = 0, ll = running.size; ii < ll; ii++)
-            {
+            
+            for (int ii = 0, ll = running.size; ii < ll; ii++) {
                 Runnable action = running.get(ii);
-                try
-                {
+                try {
                     action.run();
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     log.warn("invokeLater Runnable failed: " + action, e);
                 }
             }
             running.clear();
         }
     }
-
+    
     public abstract void invokeLater(Runnable action);
-
-    /**
-     * 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了……
-     **/
-    private static class DeferredPromiseRunnable<T> implements Runnable
-    {
-
+    
+    /** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
+    private static class DeferredPromiseRunnable<T> implements Runnable {
+        
         private CallDeferredPromise<T> _promise;
-
+        
         private int _mode = 0;
-
+        
         private T _value;
-
+        
         private Throwable _cause;
-
-        public DeferredPromiseRunnable(int m, CallDeferredPromise<T> p, T val, Throwable c)
-        {
+        
+        public DeferredPromiseRunnable(int m, CallDeferredPromise<T> p, T val, Throwable c) {
             this._mode = m;
             this._promise = p;
             this._value = val;
             this._cause = c;
         }
-
+        
         @Override
-        public void run()
-        {
-            switch(_mode)
-            {
+        public void run() {
+            switch (_mode) {
                 case 0:
                     _promise.invokeSucceed(_value);
                     break;
@@ -142,52 +119,44 @@ public abstract class Asyn
             }
         }
     }
-
-    /**
-     * 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了……
-     **/
-    private class CallDeferredPromise<T> extends GoPromise<T>
-    {
-
+    
+    /** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
+    private class CallDeferredPromise<T> extends GoPromise<T> {
+        
         private Asyn _asyn;
-
-        public CallDeferredPromise(Asyn a)
-        {
+        
+        public CallDeferredPromise(Asyn a) {
             this._asyn = a;
         }
-
+        
         @Override
-        public void succeed(final T value)
-        {
-            _asyn.invokeLater(new DeferredPromiseRunnable<T>(0, this, value, null));
+        public void succeed(final T value) {
+            _asyn.invokeLater(new DeferredPromiseRunnable<T>(0, this, value,
+                    null));
         }
-
+        
         @Override
-        public void fail(final Throwable cause)
-        {
-            _asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null, cause));
+        public void fail(final Throwable cause) {
+            _asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null,
+                    cause));
         }
-
-        public void invokeSucceed(final T value)
-        {
+    
+        public void invokeSucceed(final T value) {
             super.succeed(value);
         }
-
-        public void invokeFail(final Throwable cause)
-        {
+    
+        public void invokeFail(final Throwable cause) {
             super.fail(cause);
         }
     }
-
-    public <T> GoPromise<T> deferredPromise()
-    {
+    
+    public <T> GoPromise<T> deferredPromise() {
         return new CallDeferredPromise<T>(this);
     }
-
+    
     public abstract boolean isAsyncSupported();
-
-    public void invokeAsync(Runnable action)
-    {
+    
+    public void invokeAsync(Runnable action) {
         throw new UnsupportedOperationException();
     }
 }
