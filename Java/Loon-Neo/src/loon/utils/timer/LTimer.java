@@ -54,7 +54,7 @@ public class LTimer implements Serializable {
 
 		return false;
 	}
-	
+
 	public boolean action(LTimerContext context) {
 		if (this.active) {
 			this.currentTick += context.timeSinceLastUpdate;
@@ -64,6 +64,14 @@ public class LTimer implements Serializable {
 			}
 		}
 		return false;
+	}
+
+	public void addPercentage(long elapsedTime) {
+		this.currentTick += elapsedTime;
+	}
+
+	public void addPercentage(LTimerContext context) {
+		this.currentTick += context.timeSinceLastUpdate;
 	}
 
 	public void refresh() {
@@ -108,6 +116,24 @@ public class LTimer implements Serializable {
 
 	public void setCurrentTick(long tick) {
 		this.currentTick = tick;
+	}
+
+	public float getPercentage() {
+		return this.currentTick / this.delay;
+	}
+
+	public float getRemaining() {
+		return this.delay - this.currentTick;
+	}
+
+	public void clamp() {
+		if (this.currentTick > this.delay) {
+			currentTick = delay;
+		}
+	}
+
+	public boolean isCompleted() {
+		return this.currentTick >= this.delay;
 	}
 
 }

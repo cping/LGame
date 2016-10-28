@@ -23,10 +23,21 @@
  */
 package loon.component;
 
+import loon.LTexture;
+import loon.action.ActionBind;
+import loon.action.ActionTween;
+import loon.action.map.Field2D;
+import loon.canvas.LColor;
 import loon.event.ClickListener;
+import loon.stage.PlayerUtils;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
+/**
+ * 组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
+ */
 public class UIControls {
 
 	public static float getChildrenHeight(LContainer c) {
@@ -65,9 +76,17 @@ public class UIControls {
 		return maxWidth;
 	}
 
+	private ObjectMap<ActionBind, ActionTween> tweens = new ObjectMap<ActionBind, ActionTween>(
+			CollectionUtils.INITIAL_CAPACITY);
+
 	private final TArray<LComponent> _comps;
 
 	public UIControls(LComponent... comps) {
+		this();
+		add(comps);
+	}
+
+	public UIControls(TArray<LComponent> comps) {
 		this();
 		add(comps);
 	}
@@ -76,47 +95,83 @@ public class UIControls {
 		this._comps = new TArray<LComponent>();
 	}
 
-	public void add(LComponent comp) {
+	public UIControls add(LComponent comp) {
 		if (comp == null) {
 			throw new IllegalArgumentException("LComponent cannot be null.");
 		}
 		_comps.add(comp);
+		return this;
 	}
 
-	public void add(LComponent... comps) {
+	public UIControls add(TArray<LComponent> comps) {
+		if (comps == null) {
+			throw new IllegalArgumentException("LComponents cannot be null.");
+		}
+		_comps.addAll(comps);
+		return this;
+	}
+
+	public UIControls remove(LComponent comp) {
+		if (comp == null) {
+			throw new IllegalArgumentException("LComponent cannot be null.");
+		}
+		_comps.remove(comp);
+		return this;
+	}
+
+	public UIControls add(LComponent... comps) {
 		if (comps == null) {
 			throw new IllegalArgumentException("LComponents cannot be null.");
 		}
 		for (int i = 0, n = comps.length; i < n; i++) {
 			add(comps[i]);
 		}
+		return this;
 	}
 
-	public void remove(LComponent... comps) {
+	public UIControls remove(LComponent... comps) {
 		if (comps == null) {
 			throw new IllegalArgumentException("LComponents cannot be null.");
 		}
 		for (int i = 0, n = comps.length; i < n; i++) {
-			add(comps[i]);
+			remove(comps[i]);
 		}
+		return this;
 	}
 
-	public void setFocusable(boolean focus) {
+	public UIControls removeAll() {
+		_comps.clear();
+		return this;
+	}
+
+	public UIControls setSize(int w, int h) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
-			LComponent comp = (LComponent) _comps.get(i);
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setSize(w, h);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setFocusable(boolean focus) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setFocusable(focus);
 			}
 		}
+		return this;
 	}
 
-	public void setEnabled(boolean e) {
+	public UIControls setEnabled(boolean e) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
-			LComponent comp = (LComponent) _comps.get(i);
+			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setEnabled(e);
 			}
 		}
+		return this;
 	}
 
 	/**
@@ -124,43 +179,177 @@ public class UIControls {
 	 * 
 	 * @param click
 	 */
-	public void SetClick(ClickListener click) {
+	public UIControls SetClick(ClickListener click) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
-			LComponent comp = (LComponent) _comps.get(i);
+			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.SetClick(click);
 			}
 		}
+		return this;
 	}
 
-	public void setAlpha(float alpha) {
+	public UIControls setAlpha(float alpha) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
-			LComponent comp = (LComponent) _comps.get(i);
+			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setAlpha(alpha);
 			}
 		}
+		return this;
 	}
 
-	public void setScale(float s) {
+	public UIControls setTouchLocked(boolean locked) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
-			LComponent comp = (LComponent) _comps.get(i);
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setTouchLocked(locked);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setKeyLocked(boolean locked) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setKeyLocked(locked);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setScale(float s) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setScale(s);
 			}
 		}
+		return this;
 	}
 
-	public void setVisible(boolean v) {
+	public UIControls setScale(float sx, float sy) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
-			LComponent comp = (LComponent) _comps.get(i);
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setScale(sx, sy);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setX(float x) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setX(x);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setY(float y) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setY(y);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setWidth(int w) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setWidth(w);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setHeight(int h) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setHeight(h);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setRotation(float r) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setRotation(r);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setLocation(float dx, float dy) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setLocation(dx, dy);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setLayer(int z) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setLayer(z);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setBackground(LColor color) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setBackground(color);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setBackground(LTexture tex) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setBackground(tex);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setBackground(String imgPath) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setBackground(imgPath);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setVisible(boolean v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setVisible(v);
 			}
 		}
+		return this;
 	}
 
-	public void setTicked(boolean c) {
+	public UIControls setTicked(boolean c) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			Object o = _comps.get(i);
 			if (o != null && o instanceof LCheckBox) {
@@ -168,9 +357,10 @@ public class UIControls {
 				box.setTicked(c);
 			}
 		}
+		return this;
 	}
 
-	public void setPercentage(float p) {
+	public UIControls setPercentage(float p) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			Object o = _comps.get(i);
 			if (o != null && o instanceof LProgress) {
@@ -178,13 +368,335 @@ public class UIControls {
 				progress.setPercentage(p);
 			}
 		}
+		return this;
 	}
 
-	public void remove(LComponent comp) {
-		if (comp == null) {
-			throw new IllegalArgumentException("LComponent cannot be null.");
+	public UIControls transferFocus() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.transferFocus();
+			}
 		}
-		_comps.remove(comp);
+		return this;
+	}
+
+	public UIControls transferFocusBackward() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.transferFocusBackward();
+			}
+		}
+		return this;
+	}
+
+	public UIControls requestFocus() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.requestFocus();
+			}
+		}
+		return this;
+	}
+
+	public UIControls clearTweens() {
+		for (ActionTween tween : tweens.values()) {
+			tween.free();
+		}
+		tweens.clear();
+		return this;
+	}
+
+	public UIControls startTweens() {
+		for (ActionTween tween : tweens.values()) {
+			tween.start();
+		}
+		return this;
+	}
+
+	public UIControls killTweens() {
+		for (ActionTween tween : tweens.values()) {
+			tween.kill();
+		}
+		return this;
+	}
+
+	public UIControls pauseTweens() {
+		for (ActionTween tween : tweens.values()) {
+			tween.pause();
+		}
+		return this;
+	}
+
+	public UIControls resumeTweens() {
+		for (ActionTween tween : tweens.values()) {
+			tween.resume();
+		}
+		return this;
+	}
+
+	public UIControls fadeOut(float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (comp.getAlpha() <= 0) {
+					if (tween == null) {
+						tween = PlayerUtils.set(comp).fadeIn(speed);
+					} else {
+						tween.fadeIn(speed);
+					}
+				} else {
+					if (tween == null) {
+						tween = PlayerUtils.set(comp).fadeOut(speed);
+					} else {
+						tween.fadeOut(speed);
+					}
+					if (!tweens.containsKey(comp)) {
+						tweens.put(comp, tween);
+					}
+				}
+			}
+		}
+		return this;
+	}
+
+	public UIControls fadeIn(float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (comp.getAlpha() >= 255) {
+					if (tween == null) {
+						tween = PlayerUtils.set(comp).fadeOut(speed);
+					} else {
+						tween.fadeOut(speed);
+					}
+				} else {
+					if (tween == null) {
+						tween = PlayerUtils.set(comp).fadeIn(speed);
+					} else {
+						tween.fadeIn(speed);
+					}
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+			}
+		}
+		return this;
+	}
+
+	public UIControls moveBy(float endX, float endY, int speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).moveBy(endX, endY, speed);
+				} else {
+					tween.moveBy(endX, endY, speed);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+			}
+		}
+		return this;
+	}
+
+	public UIControls moveBy(float endX, float endY) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).moveBy(endX, endY);
+				} else {
+					tween.moveBy(endX, endY);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+			}
+		}
+		return this;
+	}
+
+	public UIControls moveTo(float endX, float endY, int speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).moveTo(endX, endY, speed);
+				} else {
+					tween.moveTo(endX, endY, speed);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls moveTo(float endX, float endY, boolean flag, int speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).moveTo(endX, endY, flag,
+							speed);
+				} else {
+					tween.moveTo(endX, endY, flag, speed);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls moveTo(Field2D map, float endX, float endY, boolean flag,
+			int speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).moveTo(map, endX, endY, flag,
+							speed);
+				} else {
+					tween.moveTo(map, endX, endY, flag, speed);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls delay(float d) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).delay(d);
+				} else {
+					tween.delay(d);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls rotateTo(float angle) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).rotateTo(angle);
+				} else {
+					tween.rotateTo(angle);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls rotateTo(float angle, float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).rotateTo(angle, speed);
+				} else {
+					tween.rotateTo(angle, speed);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls scaleTo(float sx, float sy) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).scaleTo(sx, sy);
+				} else {
+					tween.scaleTo(sx, sy);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls scaleTo(float sx, float sy, float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).scaleTo(sx, sy, speed);
+				} else {
+					tween.scaleTo(sx, sy, speed);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls showTo(boolean v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).showTo(v);
+				} else {
+					tween.showTo(v);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
 	}
 
 }

@@ -57,6 +57,10 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(0, 1);
 	}
 
+	public final static Vector2f at(float x, float y) {
+		return new Vector2f(x, y);
+	}
+	
 	public float x;
 
 	public float y;

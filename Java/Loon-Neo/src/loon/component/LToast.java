@@ -2,6 +2,7 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextures;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.font.IFont;
@@ -21,6 +22,8 @@ public class LToast extends LComponent {
 	public enum Style {
 		NORMAL, SUCCESS, ERROR
 	};
+
+	private LTexture mBackgroundTexture = null;
 
 	public static LToast makeText(String text) {
 		return makeText(LFont.getDefaultFont(), null, text, LENGTH_SHORT);
@@ -162,7 +165,11 @@ public class LToast extends LComponent {
 		try {
 			g.setColor(mBackgroundColor);
 			g.setAlpha(opacity);
-			g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+			if (mBackgroundTexture == null) {
+				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+			} else {
+				g.draw(mBackgroundTexture, displayX, displayY, w, h);
+			}
 			g.setColor(LColor.DEF_COLOR);
 			font.drawString(g, mText,
 					displayX + (cellWidth - font.stringWidth(mText)) / 2,
@@ -171,6 +178,18 @@ public class LToast extends LComponent {
 			g.setColor(oc);
 			g.setAlpha(oa);
 		}
+	}
+
+	public void setBackgroundTexture(LTexture texture) {
+		this.mBackgroundTexture = texture;
+	}
+
+	public void setBackgroundTexture(String filePath) {
+		this.mBackgroundTexture = LTextures.loadTexture(filePath);
+	}
+
+	public LTexture getBackgroundTexture() {
+		return this.mBackgroundTexture;
 	}
 
 	@Override

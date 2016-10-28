@@ -158,7 +158,7 @@ public class TDScreen extends Screen {
 
 		public void addLayer(ActorLayer layer) {
 			// 让角色渐进式出现
-			FadeTo fade = fadeOut();
+			FadeTo fade = fadeIn();
 			// 监听渐进淡出事件
 			fade.setActionListener(new ActionListener() {
 
@@ -280,7 +280,7 @@ public class TDScreen extends Screen {
 			hpBar.update(t);
 			if (hp <= 0 && !removeFlag) {
 				// 设定死亡时渐变
-				FadeTo fade = fadeIn();
+				FadeTo fade = fadeOut();
 				// 渐变时间为30毫秒
 				fade.setSpeed(30);
 				// 监听渐变过程

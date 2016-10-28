@@ -26,6 +26,7 @@ import loon.Screen;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
+import loon.utils.TArray;
 
 /**
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
@@ -259,11 +260,13 @@ public class Desktop implements LRelease {
 		// 鼠标滑动
 		this.processTouchMotionEvent();
 		// 鼠标事件
-		if (this.hoverComponent != null && this.hoverComponent.isEnabled()) {
+		if (this.hoverComponent != null && !this.hoverComponent._touchLocked
+				&& this.hoverComponent.isEnabled()) {
 			this.processTouchEvent();
 		}
 		// 键盘事件
 		if (this.selectedComponent != null
+				&& !this.selectedComponent._keyLocked
 				&& this.selectedComponent.isEnabled()) {
 			this.processKeyEvent();
 		}
@@ -274,10 +277,9 @@ public class Desktop implements LRelease {
 	 * 
 	 */
 	private void processTouchMotionEvent() {
-		if (this.hoverComponent != null && this.hoverComponent.isEnabled()
-				&& this.input.isMoving()) {
-			if (this.input.getTouchDX() != 0
-					|| this.input.getTouchDY() != 0
+		if (this.hoverComponent != null && !this.hoverComponent._touchLocked
+				&& this.hoverComponent.isEnabled() && this.input.isMoving()) {
+			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0
 					|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 				this.hoverComponent.processTouchDragged();
 			}
@@ -287,24 +289,24 @@ public class Desktop implements LRelease {
 			LComponent comp = this.findComponent(this.input.getTouchX(),
 					this.input.getTouchY());
 
-			if (comp != null) {
+			if (comp != null && !comp._touchLocked) {
 
 				if (this.input.getTouchDX() != 0
 						|| this.input.getTouchDY() != 0
 						|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 				}
-
 				if (this.hoverComponent == null) {
 					comp.processTouchEntered();
-
-				} else if (comp != this.hoverComponent) {
+				} else if (comp != this.hoverComponent
+						&& !this.hoverComponent._touchLocked) {
 					this.hoverComponent.processTouchExited();
 					comp.processTouchEntered();
 				}
 
 			} else {
-				if (this.hoverComponent != null) {
+				if (this.hoverComponent != null
+						&& !this.hoverComponent._touchLocked) {
 					this.hoverComponent.processTouchExited();
 				}
 			}
@@ -320,11 +322,14 @@ public class Desktop implements LRelease {
 		int pressed = this.input.getTouchPressed(), released = this.input
 				.getTouchReleased();
 		if (pressed > SysInput.NO_BUTTON) {
-			if (!isClicked) {
+			if (!isClicked && this.hoverComponent != null
+					&& !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchPressed();
 			}
 			this.clickComponent[0] = this.hoverComponent;
-			if (this.hoverComponent.isFocusable()) {
+			if (this.hoverComponent != null
+					&& !this.hoverComponent._touchLocked
+					&& this.hoverComponent.isFocusable()) {
 				if ((pressed == SysTouch.TOUCH_DOWN || pressed == SysTouch.TOUCH_UP)
 						&& this.hoverComponent != this.selectedComponent) {
 					this.selectComponent(this.hoverComponent);
@@ -332,10 +337,13 @@ public class Desktop implements LRelease {
 			}
 		}
 		if (released > SysInput.NO_BUTTON) {
-			if (!isClicked) {
+			if (!isClicked && this.hoverComponent != null
+					&& !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchReleased();
 				// 当释放鼠标时，点击事件生效
-				if (this.clickComponent[0] == this.hoverComponent) {
+				if (this.clickComponent[0] == this.hoverComponent
+						&& this.hoverComponent != null
+						&& !this.hoverComponent._touchLocked) {
 					this.hoverComponent.processTouchClicked();
 				}
 			}
@@ -348,10 +356,14 @@ public class Desktop implements LRelease {
 	 * 
 	 */
 	private void processKeyEvent() {
-		if (this.input.getKeyPressed() != SysInput.NO_KEY) {
+		if (this.selectedComponent != null
+				&& !this.selectedComponent._keyLocked
+				&& this.input.getKeyPressed() != SysInput.NO_KEY) {
 			this.selectedComponent.keyPressed();
 		}
-		if (this.input.getKeyReleased() != SysInput.NO_KEY
+		if (this.selectedComponent != null
+				&& !this.selectedComponent._keyLocked
+				&& this.input.getKeyReleased() != SysInput.NO_KEY
 				&& this.selectedComponent != null) {
 			this.selectedComponent.processKeyReleased();
 		}
@@ -533,6 +545,68 @@ public class Desktop implements LRelease {
 			}
 		}
 		return null;
+	}
+
+	public UIControls createUIControls() {
+		UIControls controls = null;
+		if (contentPane != null && contentPane.getComponents() != null) {
+			controls = new UIControls(contentPane.getComponents());
+		}
+		return controls;
+	}
+
+	public UIControls findUINamesToUIControls(String... uiName) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane.getComponents() != null) {
+			TArray<LComponent> comps = contentPane.findUINames(uiName);
+			controls = new UIControls(comps);
+		}
+		return controls;
+	}
+
+	public UIControls findNotUINamesToUIControls(String... uiName) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane.getComponents() != null) {
+			TArray<LComponent> comps = contentPane.findNotUINames(uiName);
+			controls = new UIControls(comps);
+		}
+		return controls;
+	}
+
+	public UIControls findNamesToUIControls(String... name) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane.getComponents() != null) {
+			TArray<LComponent> comps = contentPane.findNames(name);
+			controls = new UIControls(comps);
+		}
+		return controls;
+	}
+
+	public UIControls findNotNamesToUIControls(String... name) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane.getComponents() != null) {
+			TArray<LComponent> comps = contentPane.findNotNames(name);
+			controls = new UIControls(comps);
+		}
+		return controls;
+	}
+
+	public UIControls findTagsToUIControls(Object... o) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane.getComponents() != null) {
+			TArray<LComponent> comps = contentPane.findTags(o);
+			controls = new UIControls(comps);
+		}
+		return controls;
+	}
+
+	public UIControls findNotTagsToUIControls(Object... o) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane.getComponents() != null) {
+			TArray<LComponent> comps = contentPane.findNotTags(o);
+			controls = new UIControls(comps);
+		}
+		return controls;
 	}
 
 	public float getWidth() {

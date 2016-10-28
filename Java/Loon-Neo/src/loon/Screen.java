@@ -291,6 +291,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public final static byte DRAW_STAGE = 3;
 
+	// 希望Screen中所有组件的update暂停的时间
+	private LTimer pauseTimer = new LTimer(LSystem.SECOND);
+	// 是否已经暂停
+	private boolean isTimerPaused = false;
+
 	public final class PaintOrder {
 
 		private byte type;
@@ -1725,8 +1730,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
+	/**
+	 * 暂停进程处理指定时间
+	 * 
+	 * @param delay
+	 */
+	public void processSleep(long delay) {
+		pauseTimer.setDelay(delay);
+		isTimerPaused = true;
+	}
+
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
+		// 如果Screen设置了计时器暂停
+		if (isTimerPaused) {
+			// 开始累加时间
+			pauseTimer.addPercentage(timer);
+			// 当还在暂停中，则不处理所有update事件，直接退出此进程
+			if (!pauseTimer.isCompleted()) {
+				return;
+			} else {
+				// 还原计时器暂停
+				isTimerPaused = false;
+				pauseTimer.refresh();
+			}
+		}
 		if (processing && !isClose) {
 			if (isGravity) {
 				gravityHandler.update(elapsedTime);

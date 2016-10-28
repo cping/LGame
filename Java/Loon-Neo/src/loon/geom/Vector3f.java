@@ -71,6 +71,10 @@ public class Vector3f implements Serializable, XY {
 
 	private final static Vector3f tmpNormal2 = new Vector3f();
 
+	public final static Vector3f at(float x, float y, float z) {
+		return new Vector3f(x, y, z);
+	}
+
 	public Vector3f() {
 		this(0, 0, 0);
 	}

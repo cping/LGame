@@ -32,9 +32,11 @@ import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 /**
- * 精灵组件总父类，用来注册，控制，以及渲染所有精灵组件（所有默认【不支持】触屏的组件，被置于此。不过，当LNode系列组件和SpriteBatchScreen合用时，也支持触屏.）
+ * 精灵精灵总父类，用来注册，控制，以及渲染所有精灵精灵（所有默认【不支持】触屏的精灵，被置于此。不过，
+ * 当LNode系列精灵和SpriteBatchScreen合用时，也支持触屏.）
  * 
  */
 public class Sprites implements Serializable, LRelease {
@@ -62,17 +64,17 @@ public class Sprites implements Serializable, LRelease {
 
 	private ISprite[] sprites;
 
-	private int size;
+	private int _size;
 
-	private int width, height;
+	private int _width, _height;
 
 	private Screen _screen;
 
 	public Sprites(Screen screen, int w, int h) {
 		this._screen = screen;
 		this.visible = true;
-		this.width = w;
-		this.height = h;
+		this._width = w;
+		this._height = h;
 		this.sprites = new ISprite[capacity];
 	}
 
@@ -86,13 +88,13 @@ public class Sprites implements Serializable, LRelease {
 	 * @param sprite
 	 */
 	public void sendToFront(ISprite sprite) {
-		if (this.size <= 1 || this.sprites[0] == sprite) {
+		if (this._size <= 1 || this.sprites[0] == sprite) {
 			return;
 		}
 		if (sprites[0] == sprite) {
 			return;
 		}
-		for (int i = 0; i < this.size; i++) {
+		for (int i = 0; i < this._size; i++) {
 			if (this.sprites[i] == sprite) {
 				this.sprites = CollectionUtils.cut(this.sprites, i);
 				this.sprites = CollectionUtils.expand(this.sprites, 1, false);
@@ -109,17 +111,17 @@ public class Sprites implements Serializable, LRelease {
 	 * @param sprite
 	 */
 	public void sendToBack(ISprite sprite) {
-		if (this.size <= 1 || this.sprites[this.size - 1] == sprite) {
+		if (this._size <= 1 || this.sprites[this._size - 1] == sprite) {
 			return;
 		}
-		if (sprites[this.size - 1] == sprite) {
+		if (sprites[this._size - 1] == sprite) {
 			return;
 		}
-		for (int i = 0; i < this.size; i++) {
+		for (int i = 0; i < this._size; i++) {
 			if (this.sprites[i] == sprite) {
 				this.sprites = CollectionUtils.cut(this.sprites, i);
 				this.sprites = CollectionUtils.expand(this.sprites, 1, true);
-				this.sprites[this.size - 1] = sprite;
+				this.sprites[this._size - 1] = sprite;
 				this.sortSprites();
 				break;
 			}
@@ -142,7 +144,7 @@ public class Sprites implements Serializable, LRelease {
 	private void expandCapacity(int capacity) {
 		if (sprites.length < capacity) {
 			ISprite[] bagArray = new ISprite[capacity];
-			System.arraycopy(sprites, 0, bagArray, 0, size);
+			System.arraycopy(sprites, 0, bagArray, 0, _size);
 			sprites = bagArray;
 		}
 	}
@@ -153,9 +155,9 @@ public class Sprites implements Serializable, LRelease {
 	 * @param capacity
 	 */
 	private void compressCapacity(int capacity) {
-		if (capacity + this.size < sprites.length) {
-			ISprite[] newArray = new ISprite[this.size + 2];
-			System.arraycopy(sprites, 0, newArray, 0, this.size);
+		if (capacity + this._size < sprites.length) {
+			ISprite[] newArray = new ISprite[this._size + 2];
+			System.arraycopy(sprites, 0, newArray, 0, this._size);
 			sprites = newArray;
 		}
 	}
@@ -210,24 +212,24 @@ public class Sprites implements Serializable, LRelease {
 		if (sprite == null) {
 			return false;
 		}
-		if (index > this.size) {
-			index = this.size;
+		if (index > this._size) {
+			index = this._size;
 		}
-		if (index == this.size) {
+		if (index == this._size) {
 			this.add(sprite);
 		} else {
 			System.arraycopy(this.sprites, index, this.sprites, index + 1,
-					this.size - index);
+					this._size - index);
 			this.sprites[index] = sprite;
-			if (++this.size >= this.sprites.length) {
-				expandCapacity((size + 1) * 2);
+			if (++this._size >= this.sprites.length) {
+				expandCapacity((_size + 1) * 2);
 			}
 		}
 		return sprites[index] != null;
 	}
 
 	public ISprite getSprite(int index) {
-		if (index < 0 || index > size || index >= sprites.length) {
+		if (index < 0 || index > _size || index >= sprites.length) {
 			return null;
 		}
 		return sprites[index];
@@ -239,7 +241,7 @@ public class Sprites implements Serializable, LRelease {
 	 * @return
 	 */
 	public ISprite getTopSprite() {
-		if (size > 0) {
+		if (_size > 0) {
 			return sprites[0];
 		}
 		return null;
@@ -251,8 +253,8 @@ public class Sprites implements Serializable, LRelease {
 	 * @return
 	 */
 	public ISprite getBottomSprite() {
-		if (size > 0) {
-			return sprites[size - 1];
+		if (_size > 0) {
+			return sprites[_size - 1];
 		}
 		return null;
 	}
@@ -268,10 +270,10 @@ public class Sprites implements Serializable, LRelease {
 			return false;
 		}
 
-		if (this.size == this.sprites.length) {
-			expandCapacity((size + 1) * 2);
+		if (this._size == this.sprites.length) {
+			expandCapacity((_size + 1) * 2);
 		}
-		return (sprites[size++] = sprite) != null;
+		return (sprites[_size++] = sprite) != null;
 	}
 
 	/**
@@ -282,6 +284,94 @@ public class Sprites implements Serializable, LRelease {
 	 */
 	public void append(ISprite sprite) {
 		add(sprite);
+	}
+
+	/**
+	 * 返回一组拥有指定标签的精灵
+	 * 
+	 * @param tags
+	 * @return
+	 */
+	public TArray<Sprite> findTags(Object... tags) {
+		TArray<Sprite> list = new TArray<Sprite>();
+		final int size = this._size;
+		for (Object tag : tags) {
+			for (int i = size - 1; i > -1; i--) {
+				if (this.sprites[i] instanceof Sprite) {
+					Sprite sp = (Sprite) this.sprites[i];
+					if (sp.Tag == tag || tag.equals(sp.Tag)) {
+						list.add(sp);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组没有指定标签的精灵
+	 * 
+	 * @param tags
+	 * @return
+	 */
+	public TArray<Sprite> findNotTags(Object... tags) {
+		TArray<Sprite> list = new TArray<Sprite>();
+		final int size = this._size;
+		for (Object tag : tags) {
+			for (int i = size - 1; i > -1; i--) {
+			if (this.sprites[i] instanceof Sprite) {
+				Sprite sp = (Sprite) this.sprites[i];
+				if (!tag.equals(sp.Tag)) {
+					list.add(sp);
+				}
+			}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组指定名的精灵
+	 * 
+	 * @param names
+	 * @return
+	 */
+	public TArray<Sprite> findNames(String... names) {
+		TArray<Sprite> list = new TArray<Sprite>();
+		final int size = this._size;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (this.sprites[i] instanceof Sprite) {
+					Sprite sp = (Sprite) this.sprites[i];
+					if (name.equals(sp.getName())) {
+						list.add(sp);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组没有指定名的精灵
+	 * 
+	 * @param names
+	 * @return
+	 */
+	public TArray<Sprite> findNotNames(String... names) {
+		TArray<Sprite> list = new TArray<Sprite>();
+		final int size = this._size;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (this.sprites[i] instanceof Sprite) {
+					Sprite sp = (Sprite) this.sprites[i];
+					if (!name.equals(sp.getName())) {
+						list.add(sp);
+					}
+				}
+			}
+		}
+		return list;
 	}
 
 	/**
@@ -297,7 +387,7 @@ public class Sprites implements Serializable, LRelease {
 		if (sprites == null) {
 			return false;
 		}
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _size; i++) {
 			if (sprites[i] != null && sprite.equals(sprites[i])) {
 				return true;
 			}
@@ -313,11 +403,11 @@ public class Sprites implements Serializable, LRelease {
 	 */
 	public ISprite remove(int index) {
 		ISprite removed = this.sprites[index];
-		int size = this.size - index - 1;
+		int size = this._size - index - 1;
 		if (size > 0) {
 			System.arraycopy(this.sprites, index + 1, this.sprites, index, size);
 		}
-		this.sprites[--this.size] = null;
+		this.sprites[--this._size] = null;
 		if (size == 0) {
 			sprites = new ISprite[0];
 		}
@@ -347,13 +437,13 @@ public class Sprites implements Serializable, LRelease {
 			return false;
 		}
 		boolean removed = false;
-		for (int i = size; i > 0; i--) {
+		for (int i = _size; i > 0; i--) {
 			if ((sprite == sprites[i - 1]) || (sprite.equals(sprites[i - 1]))) {
 				removed = true;
-				size--;
-				sprites[i - 1] = sprites[size];
-				sprites[size] = null;
-				if (size == 0) {
+				_size--;
+				sprites[i - 1] = sprites[_size];
+				sprites[_size] = null;
+				if (_size == 0) {
 					sprites = new ISprite[0];
 				} else {
 					compressCapacity(2);
@@ -378,13 +468,13 @@ public class Sprites implements Serializable, LRelease {
 			return false;
 		}
 		boolean removed = false;
-		for (int i = size; i > 0; i--) {
+		for (int i = _size; i > 0; i--) {
 			if ((name.equals(sprites[i - 1].getName()))) {
 				removed = true;
-				size--;
-				sprites[i - 1] = sprites[size];
-				sprites[size] = null;
-				if (size == 0) {
+				_size--;
+				sprites[i - 1] = sprites[_size];
+				sprites[_size] = null;
+				if (_size == 0) {
 					sprites = new ISprite[0];
 				} else {
 					compressCapacity(2);
@@ -402,21 +492,21 @@ public class Sprites implements Serializable, LRelease {
 	 * @param endIndex
 	 */
 	public void remove(int startIndex, int endIndex) {
-		int numMoved = this.size - endIndex;
+		int numMoved = this._size - endIndex;
 		System.arraycopy(this.sprites, endIndex, this.sprites, startIndex,
 				numMoved);
-		int newSize = this.size - (endIndex - startIndex);
-		while (this.size != newSize) {
-			this.sprites[--this.size] = null;
+		int newSize = this._size - (endIndex - startIndex);
+		while (this._size != newSize) {
+			this.sprites[--this._size] = null;
 		}
-		if (size == 0) {
+		if (_size == 0) {
 			sprites = new ISprite[0];
 		}
 	}
 
 	public PointI getMinPos() {
 		PointI p = new PointI(0, 0);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _size; i++) {
 			ISprite sprite = sprites[i];
 			p.x = MathUtils.min(p.x, sprite.x());
 			p.y = MathUtils.min(p.y, sprite.y());
@@ -426,7 +516,7 @@ public class Sprites implements Serializable, LRelease {
 
 	public PointI getMaxPos() {
 		PointI p = new PointI(0, 0);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _size; i++) {
 			ISprite sprite = sprites[i];
 			p.x = MathUtils.max(p.x, sprite.x());
 			p.y = MathUtils.max(p.y, sprite.y());
@@ -442,7 +532,7 @@ public class Sprites implements Serializable, LRelease {
 		for (int i = 0; i < sprites.length; i++) {
 			sprites[i] = null;
 		}
-		size = 0;
+		_size = 0;
 	}
 
 	/**
@@ -453,7 +543,7 @@ public class Sprites implements Serializable, LRelease {
 	public void update(long elapsedTime) {
 
 		boolean listerner = (sprListerner != null);
-		for (int i = size - 1; i >= 0; i--) {
+		for (int i = _size - 1; i >= 0; i--) {
 
 			ISprite child = sprites[i];
 			if (child.isVisible()) {
@@ -485,19 +575,19 @@ public class Sprites implements Serializable, LRelease {
 		}
 		float minX, minY, maxX, maxY;
 		if (this.isViewWindowSet) {
-			g.setClip(x, y, this.width, this.height);
+			g.setClip(x, y, this._width, this._height);
 			minX = this.viewX;
-			maxX = minX + this.width;
+			maxX = minX + this._width;
 			minY = this.viewY;
-			maxY = minY + this.height;
+			maxY = minY + this._height;
 		} else {
 			minX = x;
-			maxX = x + this.width;
+			maxX = x + this._width;
 			minY = y;
-			maxY = y + this.height;
+			maxY = y + this._height;
 		}
 		g.translate(x - this.viewX, y - this.viewY);
-		for (int i = 0; i < this.size; i++) {
+		for (int i = 0; i < this._size; i++) {
 
 			ISprite spr = sprites[i];
 			if (spr.isVisible()) {
@@ -534,8 +624,8 @@ public class Sprites implements Serializable, LRelease {
 		this.isViewWindowSet = true;
 		this.viewX = x;
 		this.viewY = y;
-		this.width = width;
-		this.height = height;
+		this._width = width;
+		this._height = height;
 	}
 
 	/**
@@ -550,20 +640,57 @@ public class Sprites implements Serializable, LRelease {
 		this.viewY = y;
 	}
 
+
+	public SpriteControls findNamesToSpriteControls(String... names) {
+		SpriteControls controls = null;
+		if (sprites != null) {
+			TArray<Sprite> sps = findNames(names);
+			controls = new SpriteControls(sps);
+		}
+		return controls;
+	}
+
+	public SpriteControls findNotUINamesToUIControls(String... names) {
+		SpriteControls controls = null;
+		if (sprites != null) {
+			TArray<Sprite> sps = findNotNames(names);
+			controls = new SpriteControls(sps);
+		}
+		return controls;
+	}
+
+	public SpriteControls findTagsToSpriteControls(Object... o) {
+		SpriteControls controls = null;
+		if (sprites != null) {
+			TArray<Sprite> sps = findTags(o);
+			controls = new SpriteControls(sps);
+		}
+		return controls;
+	}
+
+	public SpriteControls findNotTagsToUIControls(Object... o) {
+		SpriteControls controls = null;
+		if (sprites != null) {
+			TArray<Sprite> sps = findNotTags(o);
+			controls = new SpriteControls(sps);
+		}
+		return controls;
+	}
+	
 	public ISprite[] getSprites() {
 		return this.sprites;
 	}
 
 	public int size() {
-		return this.size;
+		return this._size;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public boolean isVisible() {

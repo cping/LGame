@@ -38,6 +38,10 @@ public class Vector4f implements Serializable, XY {
 		return new Vector4f(0, 0, 1, 0);
 	}
 
+	public final static Vector4f at(float x, float y, float z, float w) {
+		return new Vector4f(x, y, z, w);
+	}
+
 	public float x, y, z, w;
 
 	public Vector4f() {

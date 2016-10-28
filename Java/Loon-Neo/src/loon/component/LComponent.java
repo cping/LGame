@@ -46,6 +46,24 @@ import loon.opengl.TextureUtils;
 public abstract class LComponent extends LObject implements ActionBind, XY,
 		BoxSize {
 
+	//组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
+	protected boolean _touchLocked = false , _keyLocked = false;
+	
+	public void setTouchLocked(boolean locked){
+		this._touchLocked = locked;
+	}
+
+	public boolean isTouchLocked(){
+		return this._touchLocked;
+	}
+	public void setKeyLocked(boolean locked){
+		this._keyLocked = locked;
+	}
+
+	public boolean isKeyLocked(){
+		return this._keyLocked;
+	}
+	
 	public static interface CallListener {
 
 		public void act(long elapsedTime);
@@ -412,11 +430,11 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		return this.visible;
 	}
 
-	public void setVisible(boolean visible) {
-		if (this.visible == visible) {
+	public void setVisible(boolean v) {
+		if (this.visible == v) {
 			return;
 		}
-		this.visible = visible;
+		this.visible = v;
 		this.desktop.setComponentStat(this, this.visible);
 	}
 

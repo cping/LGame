@@ -6,7 +6,6 @@ import loon.LTransition;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
-import loon.action.ActionTween;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LComponent;
@@ -215,7 +214,7 @@ public class MultiScreenTest extends Screen {
 				15, 25, btnWidth, btnHeight, clickListener,
 				LSystem.viewSize.getHeight() - btnHeight);
 
-		final TArray<ActionTween> tweens = new TArray<ActionTween>();
+		//final TArray<ActionTween> tweens = new TArray<ActionTween>();
 
 		// 首先让按钮不可见
 		for (LClickButton btn : clicks) {
@@ -223,7 +222,7 @@ public class MultiScreenTest extends Screen {
 			// 使用图片字体
 			btn.setFont(info_font);
 			// 为按钮设置事件，并加载入一个集合
-			tweens.add(set(btn));
+			//tweens.add(set(btn));
 		}
 
 		// 设置一个退出按钮
@@ -240,7 +239,7 @@ public class MultiScreenTest extends Screen {
 		// 偏移Screen大小-按钮大小-5
 		exitClick.setX(getWidth() - exitClick.getWidth() - 5);
 		add(exitClick);
-		tweens.add(set(exitClick));
+	//	tweens.add(set(exitClick));
 
 		// 设置一个下页按钮
 		LClickButton nextClick = LClickButton.make("NEXT", 45, 25);
@@ -255,7 +254,7 @@ public class MultiScreenTest extends Screen {
 		nextClick.setX(getWidth() - nextClick.getWidth() - 5);
 		nextClick.setY(getHeight() - nextClick.getHeight() - 24);
 		add(nextClick);
-		tweens.add(set(nextClick));
+	//	tweens.add(set(nextClick));
 
 		// 设定一个游戏进程，半秒后让按钮导入
 		RealtimeProcess process = new RealtimeProcess() {
@@ -265,12 +264,17 @@ public class MultiScreenTest extends Screen {
 				// 当Screen过渡动画播放完毕后
 				if (isTransitionCompleted()) {
 					// 穷举按钮事件
-					for (ActionTween tween : tweens) {
+					/*for (ActionTween tween : tweens) {
 						// 淡出事件，开始执行
 						tween.fadeOut(10f).start();
 						// 删除单独进程（否则会不断执行）
 						kill();
-					}
+					}*/
+	
+					getDesktop().//获得组件控制器
+					findUINamesToUIControls("ClickButton").//查找出所有组件名称为 ClickButton 的（此处可查找多个）
+					fadeIn(10).delay(1f).rotateTo(360).startTweens(); //组件淡入，速度10，间隔1秒，旋转360，开始动画
+					kill();
 				}
 
 			}

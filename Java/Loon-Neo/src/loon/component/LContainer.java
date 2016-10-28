@@ -24,6 +24,7 @@ package loon.component;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.LayerSorter;
+import loon.utils.TArray;
 
 public abstract class LContainer extends LComponent {
 
@@ -97,6 +98,121 @@ public abstract class LContainer extends LComponent {
 		this.latestInserted = comp;
 	}
 
+	/**
+	 * 返回一组拥有指定标签的组件
+	 * 
+	 * @param tags
+	 * @return
+	 */
+	public TArray<LComponent> findTags(Object... tags) {
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (Object tag : tags) {
+			for (int i = size - 1; i > -1; i--) {
+				if (this.childs[i].Tag == tag || tag.equals(this.childs[i].Tag)) {
+					list.add(this.childs[i]);
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组没有指定标签的组件
+	 * 
+	 * @param tags
+	 * @return
+	 */
+	public TArray<LComponent> findNotTags(Object... tags) {
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (Object tag : tags) {
+			for (int i = size - 1; i > -1; i--) {
+				if (!tag.equals(this.childs[i].Tag)) {
+					list.add(this.childs[i]);
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组拥有指定组件名称的组件
+	 * 
+	 * @param names
+	 * @return
+	 */
+	public TArray<LComponent> findUINames(String... names) {
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (name.equals(this.childs[i].getUIName())) {
+					list.add(this.childs[i]);
+				}
+			}
+		}
+		return list;
+	}
+
+
+	/**
+	 * 返回一组没有指定名称的组件
+	 * 
+	 * @param names
+	 * @return
+	 */
+	public TArray<LComponent> findNotUINames(String... names) {
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (!name.equals(this.childs[i].getUIName())) {
+					list.add(this.childs[i]);
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组指定名的组件
+	 * 
+	 * @param names
+	 * @return
+	 */
+	public TArray<LComponent> findNames(String... names) {
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (name.equals(this.childs[i].getName())) {
+					list.add(this.childs[i]);
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组没有指定名的组件
+	 * 
+	 * @param names
+	 * @return
+	 */
+	public TArray<LComponent> findNotNames(String... names) {
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (!name.equals(this.childs[i].getName())) {
+					list.add(this.childs[i]);
+				}
+			}
+		}
+		return list;
+	}
+
 	public boolean contains(LComponent comp) {
 		if (comp == null) {
 			return false;
@@ -134,7 +250,7 @@ public abstract class LContainer extends LComponent {
 		}
 		return flag;
 	}
-	
+
 	public boolean removeNotTag(Object tag) {
 		boolean flag = false;
 		final int size = this.childCount;
@@ -158,7 +274,7 @@ public abstract class LContainer extends LComponent {
 		}
 		return flag;
 	}
-	
+
 	public boolean removeNotUIName(String name) {
 		boolean flag = false;
 		final int size = this.childCount;
@@ -182,7 +298,7 @@ public abstract class LContainer extends LComponent {
 		}
 		return flag;
 	}
-	
+
 	public boolean removeNotName(String name) {
 		boolean flag = false;
 		final int size = this.childCount;
@@ -194,7 +310,7 @@ public abstract class LContainer extends LComponent {
 		}
 		return flag;
 	}
-	
+
 	public LComponent remove(int index) {
 		LComponent comp = this.childs[index];
 

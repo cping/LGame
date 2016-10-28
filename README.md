@@ -2,9 +2,11 @@
 
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 
-* 本引擎开发环境是JDK 1.8，低版本JRE不能识别高版本编译的jar，如果直接使用jar（而非导入代码），请注意替换为高版本。
+* 本引擎开发环境是JDK 1.8，设置的最低运行环境为JRE 1.7，请注意低版本JRE不能识别高版本编译的jar，如果直接使用jar（而非导入代码），而无法运行，请注意替换为高版本JRE，或者以源码编译为低版本类库。
 
-loon-0.5-java-beta下载（总共约50多MB，十几MB的源码及jar资源，四十多MB的游戏示例，暂时不正式releases，因为0.5还不完整，目前只有java部分）:
+* BTW : 前一阵病了(自2016年3月起)，严重干眼症+结膜炎，用了6个月环孢素滴眼液，干眼总算缓解了，11月开始继续垒码……
+
+loon-0.5-java-beta下载（总共约50多MB，十几MB的源码及jar资源，四十多MB的游戏示例，暂时不正式releases，因为0.5还不完整，目前只有java部分，并且还在修改中）:
 
 Dropbox:https://www.dropbox.com/s/46dfz2hqw1znpud/loon-Java-beta.7z?dl=0
 
@@ -14,28 +16,11 @@ Dropbox:https://www.dropbox.com/s/46dfz2hqw1znpud/loon-Java-beta.7z?dl=0
 
 PS: 正在制作专用构建工具loon-build，现阶段还无法自动构建全部0.5版项目，beta阶段请根据文件中template自行修改。
 
-现阶段针对windows平台生成的游戏jar文件，可用exe4j或install4j之类打包为exe程序，不过只是暂时的。我准备重写GreenJVM，附带一个超小的loon专用openjdk，以后就可以直接一键构建本地exe了(我初步精简的openjdk，压缩后大约4MB多一点，也就是单纯运行一个Loon的hello world的话，exe有5MB多一点足够了)。
+附带一提，针对windows平台生成的游戏jar文件，可用exe4j或install4j之类打包为exe程序，不过只是暂时的。我准备重写GreenJVM，附带一个超小的loon专用openjdk，以后就可以直接一键构建本地exe了(我初步精简的openjdk，压缩后大约4MB多一点，也就是单纯运行一个Loon的hello world的话，exe有5MB多一点足够了)。
 
 BWT：想自己开发游戏又找不到美工的网友，可以见dev-res目录，小弟已经列举了很多的开放资源，并且在不断更新（都是无版权问题的资源，要么就是作者放弃版权的，要么就是只要注明来源，就可以免费使用的）。
 
-#2015-02-04
-
-快过年了，公布下2016年开发目标，去年有事耽误了，今年争取赶工，主要四点。
-
-1、固定并发布LGame-Java的0.5版（此版发布后，除了修复bug，将很长时间不会进行任何改变，因为要扩展多平台） 
-2、开发MonoGame以及Unity3D移植版（C#版），以及适配相关平台。（这部分比较慢是因为等Java部分的开发，途中改过几次，所以暂缓发布，否则API不统一需要来回改，平白耽误时间）
-3、开发Java->C#的LGame专用转换工具（基本上就是GWT的转换原理，只是后台绑定LGame）。以及绑定IKVM到相关平台。（此处自带转换工具以及IKVM允许用户二选一，差异在于前者是代码转换，后者是字节码转换。视情况使用(主要是IKVM性能问题，目前版本和xamarin交互不太好)）
-4、开发一键转换工具，将任意LGame的Java代码转换为任意平台的项目，并可以打包发布。
-
-然后，还有一个同步进行的分支小项目，就是简化现有Loon包，还原以前废弃的Loon-Simple项目。此项目暂定只有Java版，体积约为现有LGame包的1/3-2/5，将只使用系统原生API，不支持GLES，但是会增加JavaFX以及CodeNameOne的支持，同时HTML5部分将使用TeaVM而不是GWT。
-
-另外Multi-OS Engine太强大了，不单跨平台，编译的程序体积小，而且完全免费，Java部分相信很多人都会转投moe的怀抱了，moe详细资源可见小弟在dev-res下的表述，节后我就会发出LGame的java-moe支持库。
-__________
-
-目前使用opengles2.0的loon-0.5-java版本，大体上已经可用，API也已经基本冻结，正在微调细节，很快会正式发布Java版。
-
-![LGame](https://raw.github.com/cping/LGame/master/live2dsupport.png "live2d_support")
-
+##Loon Game 0.5 ver 开发目标
 关于LGame的0.5版，是一次重大改版，此版本有较大结构升级，并引入了3D模块。另外，此版本开始将不支持Java多线程交互(为了跨平台移植不方便，当然，主要是因为html5方面)，建议不要在游戏中交互使用Thread，否则将导致游戏无法一键迁移到其他平台(在旧版中，也有个别示例游戏用了，所以这部分例子有待重写，或者等到TeaVM的支持包发布后才能使用）,0.5版主要变化如下:
 
 1、此版有两套核心库。一者为Java版核心库，以JavaSE、Robovm、J2Objc以及GWT等不同本地方式，分别实现核心库的本地方法，然后跨平台移植。而另一套，则为C#版核心库，走Xamarin(具体来说，其实是走MonoGame实现(因为基于MonoGame开发的游戏，将可以免费使用Xamarin，主要是为了混免费许可方便。另外，以前已经写过一个XNA版本的实现，不搞MonoGame版，代码就浪费了))、以及Unity（二次封装）分别实现核心库的本地方法，然后走代码转化工具，直接Java2C#跨平台。后续还会添加C++版本，以及其它语言的实现版本，毕竟Loon-0.5改版后核心库基本从本地环境脱离，只有算法，没有了具体的实现，分别在不同平台进行实现就可以完成跨平台开发（不过，需要GLSL脚本的支持，否则部分特效将没有办法实现，所以不能跑GLSL的就没办法了）。等上述版本稳定后，也会移植到C++环境去。
@@ -58,9 +43,18 @@ __________
 
 暂时来说，两模式的切换是走xml配置来决定的，需要手动修改些许参数，不过稍后小弟会增加开发工具，直接让用户选择导出方式，不必改变任何配置就能自行切换。
 
+8、关于Java版本到其它语法版本的自动转换：
+
+这个代码转换工具不难做，无论是语法翻译，或者字节码翻译，都有现成的第三方工具，只要把对应语法版本的基础库开发完毕，然后整合一下第三方工具就可以实现。
+
+但无论是走语法翻译，还是走ikvm字节码翻译，原则上都不推荐使用java标准类库。因为用ikvm完全转换Java代码的话，同时还需要用到ikvm的java支持库(也就是openjdk那些dll)，本来mono支持库就大，再加上ikvm的，打个hello world出来，打包后不多出20MB左右的支持库也基本没戏。走语法翻译打包大小上要好很多，也容易自动化精简代码，不过无法完整重现java支持库（只会实现部分常用java包，比如字符处理和集合处理部分）。
+
+所以如果想最小化运行程序，最好只用LGame自带的类库，否则以后打包到某些平台时，大小可能难以控制，甚至无法转换程序到对应平台。
+
 PS:正在全力开发C#版（也就是MonoGame和Unity3D的封装版,等2D部分稳定了再翻过头来写3D支持,另外增加了Live2D伪3D模型的全平台支持(移植于官方Android包，重写了渲染部分，完美支持所有live2d建模)
 
 另外，还有个新坑，准备加个NScripter的脚本实现（扩展包形式，不在核心jar中），以后NScripter或ONS的游戏，可以直接导入到Loon中来，作为自己的游戏使用了，能干什么用大家懂的（理论上讲，多大的游戏都可以搬来，不过HTML5之类环境中，太大的还是不建议，毕竟网页加载几G资源不现实）。
+
 _________
 
 #LGame (formal name : Loon)
@@ -69,11 +63,7 @@ A fast, simple & powerful game framework, powered by Java (also supports C# and 
 
 Please see [XRPMoon.com](http://www.xrpmoon.com) for downloads, build and installation instructions and other documentation.
 
-20140906:
-
 LGame Project Restart,The game's just started.
-
-<a href="https://ripple.com//send?to=rGmaiL8f7VDRrYouZokr5qv61b5zvhePcp&name=cping&label=Thank you donate to LGame&amount=100/XRP&dt=20140906"><img src="https://raw.github.com/cping/LGame/master/rippledonate.png" alt="RippleDonate" /></a>
 
 源自中國本土的Java遊戲引擎項目
 
@@ -101,6 +91,8 @@ Built-in over 30 game example(Part screenshots):
 ![LGame](https://raw.github.com/cping/LGame/master/e3x.png "3")
 
 ![LGame](https://raw.github.com/cping/LGame/master/e4x.png "4")
+
+![LGame](https://raw.github.com/cping/LGame/master/live2dsupport.png "live2d_support")
 
 License : http://www.apache.org/licenses/LICENSE-2.0
 

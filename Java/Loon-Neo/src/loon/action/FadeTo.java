@@ -53,7 +53,7 @@ public class FadeTo extends ActionEvent {
 
 	public void setSpeed(float delay) {
 		this.time = delay;
-		if (type == ISprite.TYPE_FADE_IN) {
+		if (type == ISprite.TYPE_FADE_OUT) {
 			this.currentFrame = this.time;
 		} else {
 			this.currentFrame = 0f;
@@ -65,7 +65,7 @@ public class FadeTo extends ActionEvent {
 	}
 
 	public void update(long elapsedTime) {
-		if (type == ISprite.TYPE_FADE_IN) {
+		if (type == ISprite.TYPE_FADE_OUT) {
 			currentFrame--;
 			if (currentFrame == 0) {
 				original.setAlpha(0f);
@@ -91,10 +91,10 @@ public class FadeTo extends ActionEvent {
 	@Override
 	public ActionEvent reverse() {
 		FadeTo fade = null;
-		if (type == ISprite.TYPE_FADE_OUT) {
-			fade = new FadeTo(ISprite.TYPE_FADE_IN, time);
-		} else {
+		if (type == ISprite.TYPE_FADE_IN) {
 			fade = new FadeTo(ISprite.TYPE_FADE_OUT, time);
+		} else {
+			fade = new FadeTo(ISprite.TYPE_FADE_IN, time);
 		}
 		return fade;
 	}

@@ -72,7 +72,6 @@ public class LMenu extends LComponent {
 		LMenu parent;
 		int index;
 		String label;
-		boolean keep = false;
 		public float x;
 		public float y;
 		public float yslot;
@@ -81,7 +80,10 @@ public class LMenu extends LComponent {
 		public float itemHeight;
 		public float offsetX;
 		public float offsetY;
-		private boolean clicked;
+		
+		boolean keep = false;
+		private boolean visible = true;
+		private boolean clicked = false;
 		private boolean localpos = false, localsize = false;
 
 		private IFont _font;
@@ -157,6 +159,14 @@ public class LMenu extends LComponent {
 			}
 		}
 
+		public boolean isVisible() {
+			return this.visible;
+		}
+
+		public void setVisible(boolean v) {
+			this.visible = v;
+		}
+		
 		public MenuItem setOffsetX(float x) {
 			this.offsetX = x;
 			return this;
@@ -177,6 +187,9 @@ public class LMenu extends LComponent {
 		}
 
 		public void draw(GLEx g) {
+			if(!visible){
+				return;
+			}
 			float tmp = g.alpha();
 			int color = g.color();
 			IFont font = g.getFont();
