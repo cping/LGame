@@ -169,19 +169,19 @@ public class Director extends SoundBox {
 		}
 	}
 
-	public static Vector2f makeOrigin(LObject o, Origin origin) {
+	public static Vector2f makeOrigin(LObject<?> o, Origin origin) {
 		return createOrigin(o, origin);
 	}
 
-	public static TArray<Vector2f> makeOrigins(Origin origin, LObject... objs) {
+	public static TArray<Vector2f> makeOrigins(Origin origin, LObject<?>... objs) {
 		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
-		for (LObject o : objs) {
+		for (LObject<?> o : objs) {
 			result.add(createOrigin(o, origin));
 		}
 		return result;
 	}
 
-	private static Vector2f createOrigin(LObject o, Origin origin) {
+	private static Vector2f createOrigin(LObject<?> o, Origin origin) {
 		Vector2f v = new Vector2f(o.x(), o.y());
 		switch (origin) {
 		case CENTER:
@@ -216,8 +216,8 @@ public class Director extends SoundBox {
 		}
 	}
 
-	public static void setPoisiton(LObject objToBePositioned,
-			LObject objStable, Position position) {
+	public static void setPoisiton(LObject<?> objToBePositioned,
+			LObject<?> objStable, Position position) {
 		float atp_W = objToBePositioned.getWidth();
 		float atp_H = objToBePositioned.getHeight();
 		float obj_X = objStable.getX();
@@ -228,7 +228,7 @@ public class Director extends SoundBox {
 				obj_YH, position);
 	}
 
-	public static void setPoisiton(LObject objToBePositioned, float x, float y,
+	public static void setPoisiton(LObject<?> objToBePositioned, float x, float y,
 			float width, float height, Position position) {
 		float atp_W = objToBePositioned.getWidth();
 		float atp_H = objToBePositioned.getHeight();
@@ -240,7 +240,7 @@ public class Director extends SoundBox {
 				obj_YH, position);
 	}
 
-	private static void setLocation(LObject objToBePositioned, float atp_W,
+	private static void setLocation(LObject<?> objToBePositioned, float atp_W,
 			float atp_H, float obj_X, float obj_Y, float obj_XW, float obj_YH,
 			Position position) {
 		switch (position) {

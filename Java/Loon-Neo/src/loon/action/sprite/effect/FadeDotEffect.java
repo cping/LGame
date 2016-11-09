@@ -11,7 +11,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class FadeDotEffect extends LObject implements BaseEffect, ISprite {
+public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 	/**
 	 * 
 	 */
@@ -78,14 +78,15 @@ public class FadeDotEffect extends LObject implements BaseEffect, ISprite {
 			}
 		}
 
-		public void paint(GLEx g) {
+		public void paint(GLEx g, float offsetX, float offsetY) {
 			if (rad > 0 && rad < 360) {
 				float a = g.alpha();
 				if (!fade_allowed) {
 					float alpha = currentFrame / time;
 					g.setAlpha(alpha);
 				}
-				g.fillOval(x - rad, y - rad, rad * 2, rad * 2);
+				g.fillOval(x - rad + offsetX, y - rad + offsetY, rad * 2,
+						rad * 2);
 				g.setAlpha(a);
 			}
 		}
@@ -199,6 +200,11 @@ public class FadeDotEffect extends LObject implements BaseEffect, ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (finished) {
 			return;
 		}
@@ -216,7 +222,7 @@ public class FadeDotEffect extends LObject implements BaseEffect, ISprite {
 		int tmp = g.color();
 		g.setColor(back);
 		for (int i = 0; i < dots.size; i++) {
-			((Dot) dots.get(i)).paint(g);
+			((Dot) dots.get(i)).paint(g, offsetX, offsetY);
 		}
 		if (useText) {
 			g.setPixSkip(skip);

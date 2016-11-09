@@ -9,7 +9,7 @@ import loon.action.sprite.ISprite;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class OutEffect extends LObject implements ISprite {
+public class OutEffect extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 
@@ -91,6 +91,10 @@ public class OutEffect extends LObject implements ISprite {
 	}
 
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+	
+	public void createUI(GLEx g,float offsetX,float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -99,7 +103,7 @@ public class OutEffect extends LObject implements ISprite {
 			if (_alpha > 0 && _alpha < 1) {
 				g.setAlpha(_alpha);
 			}
-			g.draw(texture, x(), y());
+			g.draw(texture, x()+offsetX, y()+offsetY);
 			g.setAlpha(tmp);
 		}
 	}

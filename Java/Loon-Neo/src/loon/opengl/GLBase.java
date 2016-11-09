@@ -24,13 +24,13 @@ import loon.LRelease;
 
 public abstract class GLBase implements LRelease {
 
-	public boolean begun; 
-	
+	public boolean begun;
+
 	public abstract void init();
-	
+
 	public abstract void freeBuffer();
-	
-	public boolean running(){
+
+	public boolean running() {
 		return begun;
 	}
 
@@ -43,25 +43,23 @@ public abstract class GLBase implements LRelease {
 	}
 
 	public void flush() {
-		
+
 	}
 
 	public void end() {
-	
 		try {
 			flush();
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			ex.printStackTrace();
-		}	finally {
-		
+		} finally {
 			begun = false;
 		}
-	
+
 	}
 
 	@Override
 	public void close() {
-		if (begun){
+		if (begun) {
 			throw new IllegalStateException(getClass().getSimpleName()
 					+ " close() without end()");
 		}

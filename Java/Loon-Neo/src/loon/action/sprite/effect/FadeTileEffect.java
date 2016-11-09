@@ -10,7 +10,8 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class FadeTileEffect extends LObject implements BaseEffect,ISprite {
+public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
+		ISprite {
 
 	/**
 	 * 
@@ -232,6 +233,10 @@ public class FadeTileEffect extends LObject implements BaseEffect,ISprite {
 	}
 
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (completed) {
 			return;
 		}
@@ -245,14 +250,17 @@ public class FadeTileEffect extends LObject implements BaseEffect,ISprite {
 				if (usefore) {
 					if (conversions[x][y]) {
 						g.setColor(back);
-						g.fillRect(x * twidth, y * hwidth, twidth, hwidth);
+						g.fillRect((x * twidth) + offsetX, (y * hwidth)
+								+ offsetY, twidth, hwidth);
 					} else if (!conversions[x][y] && filledObject(x, y)) {
 						g.setColor(fore);
-						g.fillRect(x * twidth, y * hwidth, twidth, hwidth);
+						g.fillRect((x * twidth) + offsetX, (y * hwidth)
+								+ offsetY, twidth, hwidth);
 					}
 				} else {
 					if (conversions[x][y]) {
-						g.fillRect(x * twidth, y * hwidth, twidth, hwidth);
+						g.fillRect((x * twidth) + offsetX, (y * hwidth)
+								+ offsetY, twidth, hwidth);
 					}
 				}
 			}

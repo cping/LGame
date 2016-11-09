@@ -115,15 +115,15 @@ public class Scene extends Entity {
 		this.clearChildScene();
 	}
 
-	protected void onManagedPaint(final GLEx gl) {
+	protected void onManagedPaint(final GLEx gl, float offsetX, float offsetY) {
 		final Scene childScene = this._childScene;
 		if (childScene == null || !this._childSceneModalDraw) {
 			if (this.mBackgroundEnabled) {
-				super.onManagedPaint(gl);
+				super.onManagedPaint(gl, offsetX, offsetY);
 			}
 		}
 		if (childScene != null) {
-			childScene.createUI(gl);
+			childScene.createUI(gl, offsetX, offsetY);
 		}
 	}
 

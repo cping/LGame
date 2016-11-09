@@ -9,7 +9,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
-public class FadeSpiralEffect extends LObject implements BaseEffect,ISprite {
+public class FadeSpiralEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -104,6 +104,11 @@ public class FadeSpiralEffect extends LObject implements BaseEffect,ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -115,7 +120,8 @@ public class FadeSpiralEffect extends LObject implements BaseEffect,ISprite {
 		for (int x = 0; x < tilewidth; x++) {
 			for (int y = 0; y < tileheight; y++) {
 				if (conversions[x][y]) {
-					g.fillRect(x * twidth, y * hwidth, twidth, hwidth);
+					g.fillRect((x * twidth) + offsetX, (y * hwidth) + offsetY,
+							twidth, hwidth);
 				}
 			}
 		}

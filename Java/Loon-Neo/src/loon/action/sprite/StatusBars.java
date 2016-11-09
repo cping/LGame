@@ -27,7 +27,7 @@ import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.TArray;
 
-public final class StatusBars extends LObject implements ISprite {
+public final class StatusBars extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 
@@ -39,8 +39,7 @@ public final class StatusBars extends LObject implements ISprite {
 	private boolean visible;
 
 	public StatusBars() {
-		this.barCaches = new TArray<StatusBar>(
-				CollectionUtils.INITIAL_CAPACITY);
+		this.barCaches = new TArray<StatusBar>(CollectionUtils.INITIAL_CAPACITY);
 		this.visible = true;
 	}
 
@@ -98,6 +97,10 @@ public final class StatusBars extends LObject implements ISprite {
 	}
 
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}

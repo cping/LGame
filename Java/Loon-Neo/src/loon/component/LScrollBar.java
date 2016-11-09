@@ -58,6 +58,8 @@ public class LScrollBar extends LComponent {
 
 	protected int sliderMargin = 3;
 
+	protected float offsetX, offsetY;
+
 	protected final int MAX_SLIDER_SIZE = 20;
 
 	public LScrollBar(int orientation) {
@@ -394,16 +396,36 @@ public class LScrollBar extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		if (scrollBar == null || slider == null) {
-			g.fillRect(x, y, getWidth() + 2, getHeight() + 2, scrollBarColor);
-			g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight, sliderColor);
+			g.fillRect(x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2,
+					getHeight() + 2, scrollBarColor);
+			g.fillRect(sliderX - 1 + offsetX, sliderY - 1 + offsetY,
+					sliderWidth, sliderHeight, sliderColor);
 		} else {
-			g.fillRect(x, y, getWidth(), getHeight(), scrollBarColor);
-			g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight, sliderColor);
+			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2,
+					getHeight() + 2);
+			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY,
+					sliderWidth, sliderHeight);
 		}
 	}
 
 	public void paint(GLEx g) {
 		createUI(g, x(), y(), null, null);
+	}
+
+	public float getOffsetX() {
+		return offsetX;
+	}
+
+	public void setOffsetX(float offsetX) {
+		this.offsetX = offsetX;
+	}
+
+	public float getOffsetY() {
+		return offsetY;
+	}
+
+	public void setOffsetY(float offsetY) {
+		this.offsetY = offsetY;
 	}
 
 	@Override

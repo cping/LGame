@@ -25,7 +25,7 @@ import loon.utils.reply.Act;
 
 public abstract class InputMake {
 
-	public LObject tag;
+	public LObject<?> tag;
 
 	public boolean mouseEnabled = true;
 
@@ -84,7 +84,7 @@ public abstract class InputMake {
 		mouseEvents.emit(event);
 	}
 
-	public abstract void callback(LObject o);
+	public abstract void callback(LObject<?> o);
 
 
 }

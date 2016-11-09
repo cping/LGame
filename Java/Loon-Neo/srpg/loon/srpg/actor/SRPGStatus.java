@@ -20,7 +20,6 @@
  */
 package loon.srpg.actor;
 
-import loon.LSystem;
 import loon.LTexture;
 import loon.srpg.SRPGType;
 import loon.utils.CollectionUtils;

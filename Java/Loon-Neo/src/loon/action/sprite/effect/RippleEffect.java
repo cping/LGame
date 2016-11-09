@@ -16,7 +16,7 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
+public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEffect,
 		ISprite {
 
 	public enum Model {
@@ -99,6 +99,11 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float sx, float sy) {
 		if (completed) {
 			return;
 		}
@@ -109,7 +114,8 @@ public class RippleEffect extends LObject implements LTouchArea, BaseEffect,
 		g.setColor(color);
 		for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
 			RippleKernel ripple = it.next();
-			ripple.draw(g, model, _location.x + offsetX, _location.y + offsetY);
+			ripple.draw(g, model, _location.x + offsetX + sx, _location.y
+					+ offsetY + sy);
 		}
 		g.setColor(tmp);
 	}

@@ -24,7 +24,7 @@ import loon.utils.StringUtils;
  *	add(number);
  * 
  */
-public class NumberSprite extends LObject implements ActionBind, ISprite,
+public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprite,
 		LTrans, BoxSize {
 
 	/**
@@ -244,7 +244,12 @@ public class NumberSprite extends LObject implements ActionBind, ISprite,
 		this.unit = (int) MathUtils.max(unit, h);
 	}
 
-	LTexture tex;
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		if (visible) {
+			drawNumber(g, x() + (int) offsetX, y() + (int) offsetY, label);
+		}
+	}
 
 	@Override
 	public void createUI(GLEx g) {

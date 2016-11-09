@@ -11,7 +11,8 @@ import loon.utils.timer.LTimer;
 /**
  * 0.3.2起新增类，百叶窗特效 0--竖屏,1--横屏
  */
-public class CrossEffect extends LObject implements BaseEffect, ISprite {
+public class CrossEffect extends LObject<ISprite> implements BaseEffect,
+		ISprite {
 
 	/**
 	 * 
@@ -103,6 +104,11 @@ public class CrossEffect extends LObject implements BaseEffect, ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -113,7 +119,7 @@ public class CrossEffect extends LObject implements BaseEffect, ISprite {
 					if (_alpha > 0 && _alpha < 1) {
 						g.setAlpha(_alpha);
 					}
-					g.draw(ntexture, x(), y());
+					g.draw(ntexture, x() + offsetX, y() + offsetY);
 				}
 				return;
 			}
@@ -138,10 +144,10 @@ public class CrossEffect extends LObject implements BaseEffect, ISprite {
 					}
 					left = i * 2 * part;
 					right = width - ((i + 1) * 2 - 1) * part;
-					g.draw(tmp, x() + left, y(), part, height, left, 0, left
-							+ part, height);
-					g.draw(tmp, x() + right, y(), part, height, right, 0, right
-							+ part, height);
+					g.draw(tmp, x() + left + offsetX, y() + offsetY, part,
+							height, left, 0, left + part, height);
+					g.draw(tmp, x() + right + offsetX, y() + offsetY, part,
+							height, right, 0, right + part, height);
 				}
 				break;
 			case 1:
@@ -157,9 +163,10 @@ public class CrossEffect extends LObject implements BaseEffect, ISprite {
 					}
 					int up = i * 2 * part;
 					int down = height - ((i + 1) * 2 - 1) * part;
-					g.draw(tmp, 0, up, width, part, 0, up, width, up + part);
-					g.draw(tmp, 0, down, width, part, 0, down, width, down
+					g.draw(tmp, offsetX, up, width, part, 0, up, width, up
 							+ part);
+					g.draw(tmp, offsetY, down, width, part, 0, down, width,
+							down + part);
 				}
 				break;
 			}

@@ -13,7 +13,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Cycle extends LObject implements ISprite {
+public class Cycle extends LObject<ISprite> implements ISprite {
 
 	public final static Cycle getSample(int type, float srcWidth,
 			float srcHeight, float width, float height, float offset,
@@ -392,32 +392,34 @@ public class Cycle extends LObject implements ISprite {
 	}
 
 	private final void step(GLEx g, Progress e, int index, int frame,
-			LColor color, float alpha) {
+			LColor color, float alpha, float offsetX, float offsetY) {
 		switch (stepType) {
 		case 0:
-			g.fillOval(x() + e.x - blockHalfWidth, y() + e.y - blockHalfHeight,
-					blockWidth, blockHeight);
+			g.fillOval(x() + e.x - blockHalfWidth + offsetX, y() + e.y
+					- blockHalfHeight + offsetY, blockWidth, blockHeight);
 			break;
 		case 1:
-			g.fillRect(x() + e.x - blockHalfWidth, y() + e.y - blockHalfHeight,
-					blockWidth, blockHeight);
+			g.fillRect(x() + e.x - blockHalfWidth + offsetX, y() + e.y
+					- blockHalfHeight + offsetY, blockWidth, blockHeight);
 			break;
 		case 2:
 			if (last != null) {
-				float[] xs = { x() + last.x, x() + e.x };
-				float[] ys = { y() + last.y, y() + e.y };
+				float[] xs = { x() + last.x + offsetX, x() + e.x + offsetX };
+				float[] ys = { y() + last.y + offsetY, y() + e.y + offsetY };
 				g.drawPolygon(xs, ys, 2);
 			}
 			last = e;
 			break;
 		case 3:
 			if (last != null) {
-				g.drawLine(x() + last.x, y() + last.y, x() + e.x, y() + e.y);
+				g.drawLine(x() + last.x + offsetX, y() + last.y + offsetY, x()
+						+ e.x + offsetX, y() + e.y + offsetY);
 			}
 			last = e;
 			break;
 		case 4:
-			step(g, e.x, e.y, e.progress, index, frame, color, alpha);
+			step(g, e.x + offsetX, e.y + offsetY, e.progress, index, frame,
+					color, alpha);
 			break;
 		}
 	}
@@ -487,8 +489,12 @@ public class Cycle extends LObject implements ISprite {
 	}
 
 	private int tmpColor;
-	
+
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!isVisible) {
 			return;
 		}
@@ -527,7 +533,7 @@ public class Cycle extends LObject implements ISprite {
 				g.setAlpha(_alpha);
 			}
 			g.setColor(color);
-			step(g, point, indexD, frameD, color, _alpha);
+			step(g, point, indexD, frameD, color, _alpha, offsetX, offsetY);
 			if (_alpha != 1f) {
 				g.setAlpha(1f);
 			}

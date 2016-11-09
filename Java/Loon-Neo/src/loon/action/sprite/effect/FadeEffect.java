@@ -28,7 +28,7 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class FadeEffect extends LObject implements BaseEffect, ISprite {
+public class FadeEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 	/**
 	 * 
 	 */
@@ -149,6 +149,11 @@ public class FadeEffect extends LObject implements BaseEffect, ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float sx, float sy) {
 		if (!visible) {
 			return;
 		}
@@ -160,7 +165,8 @@ public class FadeEffect extends LObject implements BaseEffect, ISprite {
 		if (opacity > 0) {
 			int old = g.color();
 			g.setColor(color.r, color.g, color.b, opacity);
-			g.fillRect(offsetX + this.x(), offsetY + this.y(), width, height);
+			g.fillRect(offsetX + this.x() + sx, offsetY + this.y() + sy, width,
+					height);
 			g.setColor(old);
 			return;
 		}

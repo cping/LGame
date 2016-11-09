@@ -6,7 +6,7 @@ import loon.Sound;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class SpriteButton extends LObject implements ISprite {
+public class SpriteButton extends LObject<ISprite> implements ISprite {
 
 	public interface ButtonFunc {
 		public void func(ButtonFunc b);
@@ -156,13 +156,19 @@ public class SpriteButton extends LObject implements ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (visible) {
 			float old = getAlpha();
 			if (_alpha > 0f && _alpha < 1f) {
 				setAlpha(_alpha);
 			}
-			g.draw(image, x(), y(), width * scale, height * scale, rectSrc.x,
-					rectSrc.y, rectSrc.width, rectSrc.height);
+			g.draw(image, x() + offsetX, y() + offsetY, width * scale, height
+					* scale, rectSrc.x, rectSrc.y, rectSrc.width,
+					rectSrc.height);
 			if (_alpha != 1f) {
 				setAlpha(old);
 			}

@@ -10,12 +10,11 @@ import loon.opengl.GLEx;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 
-public class StatusBar extends LObject implements ISprite {
+public class StatusBar extends LObject<ISprite> implements ISprite {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static IntMap<LTexture> colors = new IntMap<LTexture>(
-			10);
+	private final static IntMap<LTexture> colors = new IntMap<LTexture>(10);
 
 	private final static float[] backPos = { 0, 0, 3, 3 };
 
@@ -193,6 +192,10 @@ public class StatusBar extends LObject implements ISprite {
 	}
 
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (visible) {
 			drawBar(g, goal, current, width, getX(), getY());
 			if (showValue) {
@@ -204,12 +207,12 @@ public class StatusBar extends LObject implements ISprite {
 			}
 		}
 	}
-	
-	public void setFontColor(LColor c){
+
+	public void setFontColor(LColor c) {
 		this.fontColor = c;
 	}
-	
-	public LColor getFontColor(){
+
+	public LColor getFontColor() {
 		return this.fontColor;
 	}
 

@@ -13,7 +13,7 @@ import loon.utils.timer.LTimer;
 /**
  * 0.3.2版新增类，用以实现特定图像的滚动播放(循环展示)
  */
-public class ScrollEffect extends LObject implements BaseEffect,ISprite {
+public class ScrollEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -112,6 +112,10 @@ public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 	}
 
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+	
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -124,9 +128,9 @@ public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 		case Config.TDOWN:
 			for (int i = -1; i < 1; i++) {
 				for (int j = 0; j < 1; j++) {
-					g.draw(texture, x() + (j * width), y()
-							+ (i * height + backgroundLoop), width, height, 0,
-							0, width, height);
+					g.draw(texture, x() + (j * width) + offsetX, y()
+							+ (i * height + backgroundLoop) + offsetY, width,
+							height, 0, 0, width, height);
 				}
 			}
 			break;
@@ -134,8 +138,9 @@ public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 		case Config.TRIGHT:
 			for (int j = -1; j < 1; j++) {
 				for (int i = 0; i < 1; i++) {
-					g.draw(texture, x() + (j * width + backgroundLoop), y()
-							+ (i * height), width, height, 0, 0, width, height);
+					g.draw(texture, x() + (j * width + backgroundLoop)
+							+ offsetX, y() + (i * height) + offsetY, width,
+							height, 0, 0, width, height);
 				}
 			}
 			break;
@@ -143,9 +148,9 @@ public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 		case Config.TUP:
 			for (int i = -1; i < 1; i++) {
 				for (int j = 0; j < 1; j++) {
-					g.draw(texture, x() + (j * width), y()
-							- (i * height + backgroundLoop), width, height, 0,
-							0, width, height);
+					g.draw(texture, x() + (j * width) + offsetX, y()
+							- (i * height + backgroundLoop) + offsetY, width,
+							height, 0, 0, width, height);
 				}
 			}
 			break;
@@ -153,8 +158,9 @@ public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 		case Config.TLEFT:
 			for (int j = -1; j < 1; j++) {
 				for (int i = 0; i < 1; i++) {
-					g.draw(texture, x() - (j * width + backgroundLoop), y()
-							+ (i * height), width, height, 0, 0, width, height);
+					g.draw(texture, x() - (j * width + backgroundLoop)
+							+ offsetX, y() + (i * height) + offsetY, width,
+							height, 0, 0, width, height);
 				}
 			}
 			break;
@@ -182,7 +188,7 @@ public class ScrollEffect extends LObject implements BaseEffect,ISprite {
 	public boolean isCompleted() {
 		return completed;
 	}
-	
+
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}

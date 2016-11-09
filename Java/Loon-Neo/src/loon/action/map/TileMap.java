@@ -18,7 +18,7 @@ import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class TileMap extends LObject implements ISprite, LRelease {
+public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 
 	/**
 	 * 
@@ -97,14 +97,13 @@ public class TileMap extends LObject implements ISprite, LRelease {
 	}
 
 	public TileMap(Field2D field) {
-		this(field, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight(),
+		this(field, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
 				Format.LINEAR);
 	}
 
 	public TileMap(Field2D field, Format format) {
-		this(field, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight(), format);
+		this(field, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
+				format);
 	}
 
 	public TileMap(Field2D field, int mWidth, int mHeight, Format format) {
@@ -327,8 +326,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 												field.getTileWidth(),
 												field.getTileHeight());
 									} else {
-										g.draw(
-												tile.animation.getSpriteImage(),
+										g.draw(tile.animation.getSpriteImage(),
 												field.tilesToWidthPixels(i)
 														+ offsetX,
 												field.tilesToHeightPixels(j)
@@ -346,9 +344,9 @@ public class TileMap extends LObject implements ISprite, LRelease {
 			if (arrays.size == 0) {
 				throw new RuntimeException("Not to add any tiles !");
 			}
-		
+
 			imgPack.glBegin();
-		
+
 			firstTileX = field.pixelsToTilesWidth(-offsetX);
 			firstTileY = field.pixelsToTilesHeight(-offsetY);
 
@@ -377,9 +375,8 @@ public class TileMap extends LObject implements ISprite, LRelease {
 															.getTileWidth(),
 													field.getTileHeight());
 										} else {
-											g.draw(
-													tile.animation
-															.getSpriteImage(),
+											g.draw(tile.animation
+													.getSpriteImage(),
 													field.tilesToWidthPixels(i)
 															+ offsetX,
 													field.tilesToHeightPixels(j)
@@ -415,7 +412,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 			lastOffsetY = offsetY;
 			dirty = false;
 		}
-		
+
 		if (listener != null) {
 			listener.draw(g, offsetX, offsetY);
 		}
@@ -437,7 +434,7 @@ public class TileMap extends LObject implements ISprite, LRelease {
 		return field.isHit(v);
 	}
 
-	public Vector2f getTileCollision(LObject o, float newX, float newY) {
+	public Vector2f getTileCollision(LObject<?> o, float newX, float newY) {
 		newX = MathUtils.ceil(newX);
 		newY = MathUtils.ceil(newY);
 
@@ -593,6 +590,22 @@ public class TileMap extends LObject implements ISprite, LRelease {
 
 	public boolean isVisible() {
 		return visible;
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		if (!visible) {
+			return;
+		}
+		if (getX() != 0 || getY() != 0) {
+			g.translate(getX(), getY());
+		}
+		draw(g, null, (int) (offsetX + offset.getX()),
+				(int) (offsetY + offset.getY()));
+		if (getX() != 0 || getY() != 0) {
+			g.translate(-getX(), -getY());
+		}
+
 	}
 
 	public void createUI(GLEx g) {

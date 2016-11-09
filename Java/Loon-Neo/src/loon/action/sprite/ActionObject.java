@@ -32,8 +32,8 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public abstract class ActionObject extends LObject implements Config,
-		LRelease, ActionBind, ISprite {
+public abstract class ActionObject extends LObject<ISprite> implements Config, LRelease,
+		ActionBind, ISprite {
 
 	/**
 	 * 
@@ -344,11 +344,18 @@ public abstract class ActionObject extends LObject implements Config,
 		return this.filterColor;
 	}
 
-	public void setSize(int width, int height) {
+	public void setSize(float width, float height) {
 		this.dstWidth = width;
 		this.dstHeight = height;
 	}
 
+	public void setWidth(float w){
+		this.dstWidth = w;
+	}
+	
+	public void setHeight(float h){
+		this.dstHeight = h;
+	}
 	public boolean isCollision(ActionObject o) {
 		RectBox src = getCollisionArea();
 		RectBox dst = o.getCollisionArea();
@@ -433,6 +440,11 @@ public abstract class ActionObject extends LObject implements Config,
 	@Override
 	public void createUI(GLEx g) {
 		draw(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		draw(g, offsetX, offsetY);
 	}
 
 	@Override

@@ -19,6 +19,8 @@ public class RocSSprite implements ISprite {
 
 	private String _name = "RocSSprite";
 
+	private Object tag;
+	
 	private boolean _visible = true, _loopScript = false;
 
 	private RocScript _script;
@@ -146,6 +148,11 @@ public class RocSSprite implements ISprite {
 	}
 
 	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		
+	}
+
+	@Override
 	public int getLayer() {
 		return 0;
 	}
@@ -200,6 +207,15 @@ public class RocSSprite implements ISprite {
 	 */
 	public void setLoopScript(boolean l) {
 		this._loopScript = l;
+	}
+	
+	@Override
+	public Object getTag() {
+		return tag;
+	}
+	
+	public void setTag(Object t){
+		this.tag = t;
 	}
 
 }

@@ -10,7 +10,7 @@ public class MovieSprite extends DisplayObject {
 	 */
 	private static final long serialVersionUID = 1L;
 	private TArray<DisplayObject> _childs = new TArray<DisplayObject>();
-
+	
 	public MovieSprite() {
 
 	}
@@ -118,9 +118,14 @@ public class MovieSprite extends DisplayObject {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		for (DisplayObject object : _childs) {
 			if (object.isVisible()) {
-				object.createUI(g);
+				object.createUI(g, offsetX, offsetY);
 			}
 		}
 	}

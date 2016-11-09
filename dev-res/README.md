@@ -1,4 +1,4 @@
-# Java(Android)游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2016-02-10)
+# Java(Android)游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2016-11-04)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -43,6 +43,7 @@
 PS:使用下列免费资源时，建议注明引用的资源出处，免得引发不必要的版权官司（比如被人投诉说你抄袭资源之类，游戏介绍中注明了资源出处，直接声明使用的资源来源，省得麻烦）……
 
 * opengameart: 一个欧美的完全无版权问题的游戏资源下载站。[地址](http://opengameart.org/) 
+* 猫手製アイコン屋: 日式素材下载站。 [地址](http://www007.upp.so-net.ne.jp/nekoteya/)
 * 消失点: 日式AVG（galgame）以及RMXP和RMVX素材站，素材以背景图和地图为主。[地址](http://www.aj.undo.jp/)  
 * k-after: 日式AVG（galgame）游戏的免费背景素材下载站。  [地址](http://k-after.at.webry.info/)  
 * tokudaya: 日式AVG（galgame）游戏的免费人设下载站。 [地址](http://tokudaya.net/index.html) 

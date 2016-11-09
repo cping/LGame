@@ -45,13 +45,14 @@ import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize {
+public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY, BoxSize {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	
 	public void down(GameTouch e) {
 
 	}
@@ -159,8 +160,6 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	protected int _left;
 
 	protected float _alpha;
-
-	protected LNNode _parent = null;
 
 	protected float _rotationAlongX;
 
@@ -376,7 +375,7 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 		}
 		float dt = (float) elapsedTime / 1000f;
 		synchronized (childs) {
-			if (_parent != null) {
+			if (_super != null) {
 				validatePosition();
 			}
 			if (Call != null) {
@@ -633,8 +632,8 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	public float[] convertToWorldPos() {
 		pos[0] = _offset.x + _location.x;
 		pos[1] = _offset.y + _location.y;
-		if (this._parent != null) {
-			float[] result = this._parent.convertToWorldPos();
+		if (this._super != null) {
+			float[] result = this._super.convertToWorldPos();
 			pos[0] += result[0];
 			pos[1] += result[1];
 		}
@@ -646,8 +645,8 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	public float[] convertToWorldScale() {
 		scale[0] = _scale.x;
 		scale[1] = _scale.y;
-		if (this._parent != null) {
-			float[] result = this._parent.convertToWorldScale();
+		if (this._super != null) {
+			float[] result = this._super.convertToWorldScale();
 			scale[0] *= result[0];
 			scale[1] *= result[1];
 		}
@@ -656,8 +655,8 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 
 	public float convertToWorldRot() {
 		float num = 0f;
-		if (this._parent != null) {
-			num += this._parent.convertToWorldRot();
+		if (this._super != null) {
+			num += this._super.convertToWorldRot();
 		}
 		return (num + this._rotation);
 	}
@@ -803,11 +802,11 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	}
 
 	public LNNode getParent() {
-		return this._parent;
+		return this._super;
 	}
 
 	public void setParent(LNNode v) {
-		this._parent = v;
+		this._super = v;
 	}
 
 	public Vector2f getPosition() {
@@ -992,8 +991,8 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	}
 
 	public boolean isEnabled() {
-		return (this._parent == null) ? this._enabled
-				: (this._enabled && this._parent.isEnabled());
+		return (this._super == null) ? this._enabled
+				: (this._enabled && this._super.isEnabled());
 	}
 
 	public void setEnabled(boolean b) {
@@ -1027,14 +1026,14 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	}
 
 	public void transferFocus() {
-		if (this.isSelected() && this._parent != null) {
-			this._parent.transferFocus(this);
+		if (this.isSelected() && this._super != null) {
+			this._super.transferFocus(this);
 		}
 	}
 
 	public void transferFocusBackward() {
-		if (this.isSelected() && this._parent != null) {
-			this._parent.transferFocusBackward(this);
+		if (this.isSelected() && this._super != null) {
+			this._super.transferFocusBackward(this);
 		}
 	}
 
@@ -1047,11 +1046,11 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	}
 
 	public LNNode getContainer() {
-		return this._parent;
+		return this._super;
 	}
 
 	final void setContainer(LNNode node) {
-		this._parent = node;
+		this._super = node;
 		this.validatePosition();
 	}
 
@@ -1138,8 +1137,8 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	public void move(float dx, float dy) {
 		if (dx != 0 || dy != 0) {
 			if (dx > -100 && dx < 100 && dy > -100 && dy < 100) {
-				if (_parent != null && _limitMove) {
-					if (_parent.contains((int) (pos[0] + dx),
+				if (_super != null && _limitMove) {
+					if (_super.contains((int) (pos[0] + dx),
 							(int) (pos[1] + dy), _size_width, _size_height)) {
 						this._location.move(dx, dy);
 						this.validatePosition();
@@ -1170,7 +1169,7 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 		if (_isClose) {
 			return;
 		}
-		if (_parent != null) {
+		if (_super != null) {
 			this._screenX = (int) pos[0];
 			this._screenY = (int) pos[1];
 		} else {
@@ -1292,8 +1291,8 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 
 	public void close() {
 		this._isClose = true;
-		if (this._parent != null) {
-			this._parent.removeNode(this);
+		if (this._super != null) {
+			this._super.removeNode(this);
 		}
 		this._selected = false;
 		this._visible = false;
@@ -1334,6 +1333,15 @@ public class LNNode extends LObject implements ISprite, ActionBind, XY, BoxSize 
 	@Override
 	public void createUI(GLEx g) {
 		drawNode(g);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		float ox = this.getX();
+		float oy = this.getY();
+		this.setLocation(offsetX + ox, offsetY + oy);
+		drawNode(g);
+		this.setLocation(ox, oy);
 	}
 
 	@Override

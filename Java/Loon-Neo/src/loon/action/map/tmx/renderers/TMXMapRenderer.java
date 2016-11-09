@@ -20,7 +20,7 @@ import loon.opengl.GLEx;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 
-public abstract class TMXMapRenderer extends LObject implements ActionBind,
+public abstract class TMXMapRenderer extends LObject<ISprite> implements ActionBind,
 		ISprite {
 
 	protected int lastHashCode = 1;
@@ -192,6 +192,32 @@ public abstract class TMXMapRenderer extends LObject implements ActionBind,
 	@Override
 	public boolean isVisible() {
 		return visible;
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		float tmp = g.alpha();
+		float tmpAlpha = baseColor.a;
+		int color = g.color();
+		g.setAlpha(_alpha);
+		baseColor.a = _alpha;
+		g.setColor(baseColor);
+		renderBackgroundColor(g);
+		float ox = getX();
+		float oy = getY();
+		setLocation(ox + offsetX, oy + offsetY);
+		for (TMXMapLayer mapLayer : map.getLayers()) {
+			if (mapLayer instanceof TMXTileLayer) {
+				renderTileLayer(g, (TMXTileLayer) mapLayer);
+			}
+			if (mapLayer instanceof TMXImageLayer) {
+				renderImageLayer(g, (TMXImageLayer) mapLayer);
+			}
+		}
+		setLocation(ox, oy);
+		baseColor.a = tmpAlpha;
+		g.setColor(color);
+		g.setAlpha(tmp);
 	}
 
 	@Override

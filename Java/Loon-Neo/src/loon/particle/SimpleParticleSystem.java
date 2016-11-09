@@ -36,12 +36,13 @@ import loon.utils.GLUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
-public class SimpleParticleSystem extends LObject implements ISprite {
+public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
 
 	private static final int DEFAULT_PARTICLES = 100;
 
@@ -264,7 +265,6 @@ public class SimpleParticleSystem extends LObject implements ISprite {
 
 		}
 
-
 	}
 
 	private void loadSystemParticleImage() {
@@ -380,6 +380,11 @@ public class SimpleParticleSystem extends LObject implements ISprite {
 	@Override
 	public void createUI(GLEx g) {
 		render(g);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		render(g, offsetX, offsetY);
 	}
 
 	@Override

@@ -71,13 +71,15 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 					deadProcesses.add(realtimeProcess);
 				}
 			}
-			for (LIterator<GameProcess> it = deadProcesses.listIterator(); it
-					.hasNext();) {
-				GameProcess realtimeProcess = it.next();
-				realtimeProcess.finish();
-			}
-			synchronized (this.processes) {
-				this.processes.removeAll(deadProcesses);
+			if (deadProcesses.size > 0) {
+				for (LIterator<GameProcess> it = deadProcesses.listIterator(); it
+						.hasNext();) {
+					GameProcess realtimeProcess = it.next();
+					realtimeProcess.finish();
+				}
+				synchronized (this.processes) {
+					this.processes.removeAll(deadProcesses);
+				}
 			}
 		}
 	}

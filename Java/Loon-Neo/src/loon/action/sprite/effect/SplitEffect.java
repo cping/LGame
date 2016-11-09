@@ -12,7 +12,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
-public class SplitEffect extends LObject implements BaseEffect, ISprite {
+public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -127,6 +127,11 @@ public class SplitEffect extends LObject implements BaseEffect, ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -135,11 +140,11 @@ public class SplitEffect extends LObject implements BaseEffect, ISprite {
 			if (_alpha > 0 && _alpha < 1f) {
 				g.setAlpha(_alpha);
 			}
-			final float x1 = v1.x + getX();
-			final float y1 = v1.y + getY();
+			final float x1 = v1.x + getX() + offsetX;
+			final float y1 = v1.y + getY() + offsetY;
 
-			final float x2 = v2.x + getX();
-			final float y2 = v2.y + getY();
+			final float x2 = v2.x + getX() + offsetX;
+			final float y2 = v2.y + getY() + offsetY;
 
 			switch (direction) {
 			case Config.LEFT:

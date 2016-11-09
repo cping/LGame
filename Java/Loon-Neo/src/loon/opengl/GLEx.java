@@ -417,8 +417,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		int width = (int) (w1 * LSystem.getScaleWidth());
 		int height = (int) (h1 * LSystem.getScaleHeight());
 		batch.flush();
-		RectBox r = pushScissorState(x, target.height() - y - height, width,
-				height);
+		RectBox r = pushScissorState(x, target.flip() ? target.height() - y
+				- height : y, width, height);
 		batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
 		if (scissorDepth == 1) {
 			GLUtils.enablecissorTest(batch.gl);
@@ -1016,6 +1016,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return draw(texture, x, y, texture.width(), texture.height(), rotation);
 	}
 
+	public GLEx draw(Painter texture, float x, float y, LColor color,
+			float rotation, Vector2f pivot) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), color,
+				rotation, pivot);
+	}
+
 	public GLEx draw(Painter texture, float x, float y, float w, float h,
 			float rotation) {
 		if (isClosed) {
@@ -1035,6 +1047,36 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			Affine2f.multiply(tx(), xf, xf);
 		}
 		texture.addToBatch(batch, baseColor, xf, x, y, w, h);
+		return this;
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h,
+			LColor color, float rotation, Vector2f pivot) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		int argb = baseColor;
+		if (color != null) {
+			argb = color.getARGB(alpha());
+		}
+		Affine2f xf = tx();
+		if (rotation != 0) {
+			xf = new Affine2f();
+			float w1 = x + w / 2;
+			float h1 = y + h / 2;
+			if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
+				w1 = x + pivot.x;
+				h1 = y + pivot.y;
+			}
+			xf.translate(w1, h1);
+			xf.preRotate(rotation);
+			xf.translate(-w1, -h1);
+			Affine2f.multiply(tx(), xf, xf);
+		}
+		texture.addToBatch(batch, argb, xf, x, y, w, h);
 		return this;
 	}
 
@@ -1317,6 +1359,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, LColor color, float rotation, float scaleX,
 			float scaleY, Vector2f origin, Direction dir) {
+		return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
+				srcHeight, color, rotation, scaleX, scaleY, origin, null, dir);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float width,
+			float height, float srcX, float srcY, float srcWidth,
+			float srcHeight, LColor color, float rotation, float scaleX,
+			float scaleY, Vector2f origin, Vector2f pivot, Direction dir) {
 		if (isClosed) {
 			return this;
 		}
@@ -1328,7 +1378,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 		boolean dirDirty = (dir != null && dir != Direction.TRANS_NONE);
 
-		boolean rotDirty = (rotation != 0);
+		boolean rotDirty = (rotation != 0 || pivot != null);
 
 		boolean oriDirty = (origin != null && (origin.x != 0 || origin.y != 0));
 
@@ -1342,6 +1392,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (scaleDirty) {
 				float centerX = x + width / 2;
 				float centerY = y + height / 2;
+				if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
+					centerX = x + pivot.x;
+					centerX = y + pivot.y;
+				}
 				xf.translate(centerX, centerY);
 				xf.preScale(scaleX, scaleY);
 				xf.translate(-centerX, -centerY);
@@ -1349,6 +1403,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (rotDirty) {
 				float centerX = x + width / 2;
 				float centerY = y + height / 2;
+				if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
+					centerX = x + pivot.x;
+					centerX = y + pivot.y;
+				}
 				xf.translate(centerX, centerY);
 				xf.preRotate(rotation);
 				xf.translate(-centerX, -centerY);
@@ -2731,10 +2789,56 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y_dst
 	 * @param anchor
 	 * @param c
+	 * @return
 	 */
 	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor,
 			LColor c) {
+		return drawRegion(texture, x_src, y_src, width, height, transform,
+				x_dst, y_dst, anchor, c, 0);
+	}
+
+	/**
+	 * 渲染纹理为指定状态
+	 * 
+	 * @param texture
+	 * @param x_src
+	 * @param y_src
+	 * @param width
+	 * @param height
+	 * @param transform
+	 * @param x_dst
+	 * @param y_dst
+	 * @param anchor
+	 * @param c
+	 */
+	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+			int height, int transform, int x_dst, int y_dst, int anchor,
+			LColor c, float radius) {
+		return drawRegion(texture, x_src, y_src, width, height, transform,
+				x_dst, y_dst, anchor, c, null, radius);
+	}
+
+	/**
+	 * 渲染纹理为指定状态
+	 * 
+	 * @param texture
+	 * @param x_src
+	 * @param y_src
+	 * @param width
+	 * @param height
+	 * @param transform
+	 * @param x_dst
+	 * @param y_dst
+	 * @param anchor
+	 * @param c
+	 * @param pivot
+	 * @param radius
+	 * @return
+	 */
+	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+			int height, int transform, int x_dst, int y_dst, int anchor,
+			LColor c, Vector2f pivot, float radius) {
 		if (isClosed) {
 			return this;
 		}
@@ -2745,7 +2849,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		int dW = width, dH = height;
 
-		float rotate = 0;
+		float rotate = radius;
 		Direction dir = Direction.TRANS_NONE;
 
 		switch (transform) {
@@ -2753,17 +2857,17 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			break;
 		}
 		case LTrans.TRANS_ROT90: {
-			rotate = 90;
+			rotate = 90 + radius;
 			dW = height;
 			dH = width;
 			break;
 		}
 		case LTrans.TRANS_ROT180: {
-			rotate = 180;
+			rotate = 180 + radius;
 			break;
 		}
 		case LTrans.TRANS_ROT270: {
-			rotate = 270;
+			rotate = 270 + radius;
 			dW = height;
 			dH = width;
 			break;
@@ -2774,19 +2878,19 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		case LTrans.TRANS_MIRROR_ROT90: {
 			dir = Direction.TRANS_MIRROR;
-			rotate = -90;
+			rotate = -90 + radius;
 			dW = height;
 			dH = width;
 			break;
 		}
 		case LTrans.TRANS_MIRROR_ROT180: {
 			dir = Direction.TRANS_MIRROR;
-			rotate = -180;
+			rotate = -180 + radius;
 			break;
 		}
 		case LTrans.TRANS_MIRROR_ROT270: {
 			dir = Direction.TRANS_MIRROR;
-			rotate = -270;
+			rotate = -270 + radius;
 			dW = height;
 			dH = width;
 			break;
@@ -2840,9 +2944,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			throw new IllegalArgumentException("Bad Anchor");
 		}
 
-		draw(texture, x_dst, y_dst, width, height, x_src, y_src, x_src + width,
-				y_src + height, c, rotate, null, dir);
-		return this;
+		return draw(texture, x_dst, y_dst, width, height, x_src, y_src, x_src
+				+ width, y_src + height, c, rotate, 1f, 1f, null, pivot, dir);
 	}
 
 	public GLEx setLineWidth(float width) {

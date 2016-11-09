@@ -13,7 +13,7 @@ import loon.utils.timer.LTimer;
 /**
  * 0.3.2版新增类，单一色彩的圆弧渐变特效
  */
-public class ArcEffect extends LObject implements BaseEffect, ISprite {
+public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -97,6 +97,11 @@ public class ArcEffect extends LObject implements BaseEffect, ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+	
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -114,7 +119,7 @@ public class ArcEffect extends LObject implements BaseEffect, ISprite {
 			g.setPixSkip(8);
 		}
 		if (count <= 1) {
-			g.fillRect(x(), y(), width, height);
+			g.fillRect(x() + offsetX, y() + offsetY, width, height);
 		} else {
 			float deg = 360f / this.div * this.count;
 			if (deg < 360) {
@@ -124,7 +129,8 @@ public class ArcEffect extends LObject implements BaseEffect, ISprite {
 				float y = getY() + (height / 2 - length);
 				float w = width / 2 + length - x;
 				float h = height / 2 + length - y;
-				g.fillArc(x, y, w, h, 20, 0, this.sign[this.turn] * deg);
+				g.fillArc(x + offsetX, y + offsetY, w, h, 20, 0,
+						this.sign[this.turn] * deg);
 			}
 		}
 		if (useTex) {

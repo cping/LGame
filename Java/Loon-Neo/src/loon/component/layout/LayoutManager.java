@@ -12,7 +12,7 @@ import loon.utils.TArray;
 public abstract class LayoutManager {
 
 	public final static void elements(final Screen root,
-			final TArray<LObject> objs, int sx, int sy, int bwidth,
+			final TArray<LObject<?>> objs, int sx, int sy, int bwidth,
 			int bheight, int maxHeight) {
 		final int offsetX = 2;
 		final int offsetY = 2;
@@ -21,7 +21,7 @@ public abstract class LayoutManager {
 	}
 
 	public final static void elements(final Screen root,
-			final TArray<LObject> objs, int sx, int sy, int bwidth, int bheight) {
+			final TArray<LObject<?>> objs, int sx, int sy, int bwidth, int bheight) {
 		final int offsetX = 2;
 		final int offsetY = 2;
 		elements(root, objs, sx, sy, bwidth, bheight, offsetX, offsetY,
@@ -29,12 +29,12 @@ public abstract class LayoutManager {
 	}
 
 	public final static void elements(final Screen root,
-			final TArray<LObject> objs, int sx, int sy, int bwidth,
+			final TArray<LObject<?>> objs, int sx, int sy, int bwidth,
 			int bheight, int offsetX, int offsetY, int maxHeight) {
 		int x = sx;
 		int y = sy;
 		for (int i = 0; i < objs.size; i++) {
-			LObject obj = objs.get(i);
+			LObject<?> obj = objs.get(i);
 			obj.setLocation(x + offsetX, y + offsetY);
 			root.add(obj);
 			y += bheight + offsetY;

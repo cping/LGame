@@ -64,7 +64,17 @@ public interface IEntity extends ISprite, ZIndex {
 	public void setRotationCenterY(final float ry);
 
 	public void setRotationCenter(final float rx, final float ry);
+	
+	public float getPivotX();
 
+	public float getPivotY();
+
+	public void setPivotX(final float rx);
+
+	public void setPivotY(final float ry);
+
+	public void setPivot(final float rx, final float ry);
+	
 	public boolean isScaled();
 
 	public float getScaleX();
@@ -176,4 +186,5 @@ public interface IEntity extends ISprite, ZIndex {
 
 	public void createUI(final GLEx gl);
 
+	public void createUI(final GLEx gl, final float offsetX, final float offsetY);
 }

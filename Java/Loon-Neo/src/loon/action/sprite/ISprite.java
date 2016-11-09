@@ -54,6 +54,8 @@ public interface ISprite extends Serializable, LRelease, XY {
 
 	void createUI(GLEx g);
 
+	void createUI(GLEx g, float offsetX, float offsetY);
+
 	void update(long elapsedTime);
 
 	int getLayer();
@@ -64,7 +66,9 @@ public interface ISprite extends Serializable, LRelease, XY {
 
 	LTexture getBitmap();
 
-    String getName();
+	String getName();
 
-    void setName(String s);
+	Object getTag();
+
+	void setName(String s);
 }

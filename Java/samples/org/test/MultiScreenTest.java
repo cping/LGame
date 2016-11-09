@@ -273,6 +273,7 @@ public class MultiScreenTest extends Screen {
 	
 					getDesktop().//获得组件控制器
 					findUINamesToUIControls("ClickButton").//查找出所有组件名称为 ClickButton 的（此处可查找多个）
+					//fadeIn(10).startTweens();
 					fadeIn(10).delay(1f).rotateTo(360).startTweens(); //组件淡入，速度10，间隔1秒，旋转360，开始动画
 					kill();
 				}

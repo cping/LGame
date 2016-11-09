@@ -30,7 +30,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.utils.MathUtils;
 
-public abstract class LObject implements XY, ZIndex {
+public abstract class LObject<T> implements XY, ZIndex {
 
 	// 无状态
 	public static final int NOT = -1;
@@ -38,6 +38,32 @@ public abstract class LObject implements XY, ZIndex {
 	public static final int TRUE = 1;
 	// 假
 	public static final int FALSE = 2;
+
+	protected T _super = null;
+
+	public void setSuper(T s) {
+		this._super = s;
+	}
+
+	public T getSuper() {
+		return this._super;
+	}
+
+	public boolean hasSuper() {
+		return this._super != null;
+	}
+
+	public boolean hasParent() {
+		return this._super != null;
+	}
+
+	public T getParent() {
+		return this._super;
+	}
+
+	public void setParent(final T e) {
+		this._super = e;
+	}
 
 	/**
 	 * 添加一个独立事件，并选择是否暂不启动
@@ -228,6 +254,9 @@ public abstract class LObject implements XY, ZIndex {
 
 	public void setRotation(float r) {
 		this._rotation = r;
+		if (_rotation > 360f) {
+			_rotation = 0f;
+		}
 		if (_rect != null) {
 			_rect.setBounds(MathUtils.getBounds(_location.x, _location.y,
 					getWidth(), getHeight(), r, _rect));
@@ -422,46 +451,46 @@ public abstract class LObject implements XY, ZIndex {
 		this._location = _location;
 	}
 
-	public static void centerOn(final LObject object, float w, float h) {
+	public static void centerOn(final LObject<?> object, float w, float h) {
 		object.setLocation(w / 2 - object.getWidth() / 2,
 				h / 2 - object.getHeight() / 2);
 	}
 
-	public static void topOn(final LObject object, float w, float h) {
+	public static void topOn(final LObject<?> object, float w, float h) {
 		object.setLocation(w / 2 - h / 2, 0);
 	}
 
-	public static void leftOn(final LObject object, float w, float h) {
+	public static void leftOn(final LObject<?> object, float w, float h) {
 		object.setLocation(0, h / 2 - object.getHeight() / 2);
 	}
 
-	public static void rightOn(final LObject object, float w, float h) {
+	public static void rightOn(final LObject<?> object, float w, float h) {
 		object.setLocation(w - object.getWidth(), h / 2 - object.getHeight()
 				/ 2);
 	}
 
-	public static void bottomOn(final LObject object, float w, float h) {
+	public static void bottomOn(final LObject<?> object, float w, float h) {
 		object.setLocation(w / 2 - object.getWidth() / 2,
 				h - object.getHeight());
 	}
 
-	public void centerOn(final LObject object) {
+	public void centerOn(final LObject<?> object) {
 		centerOn(object, getWidth(), getHeight());
 	}
 
-	public void topOn(final LObject object) {
+	public void topOn(final LObject<?> object) {
 		topOn(object, getWidth(), getHeight());
 	}
 
-	public void leftOn(final LObject object) {
+	public void leftOn(final LObject<?> object) {
 		leftOn(object, getWidth(), getHeight());
 	}
 
-	public void rightOn(final LObject object) {
+	public void rightOn(final LObject<?> object) {
 		rightOn(object, getWidth(), getHeight());
 	}
 
-	public void bottomOn(final LObject object) {
+	public void bottomOn(final LObject<?> object) {
 		bottomOn(object, getWidth(), getHeight());
 	}
 
@@ -475,6 +504,14 @@ public abstract class LObject implements XY, ZIndex {
 
 	public float getContainerHeight() {
 		return LSystem.viewSize.height();
+	}
+
+	public Object getTag() {
+		return Tag;
+	}
+
+	public void setTag(Object t) {
+		this.Tag = t;
 	}
 
 	@Override

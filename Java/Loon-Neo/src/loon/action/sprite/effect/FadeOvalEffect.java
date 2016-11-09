@@ -10,7 +10,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class FadeOvalEffect extends LObject implements BaseEffect, ISprite {
+public class FadeOvalEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	/**
 	 * 
@@ -123,6 +123,11 @@ public class FadeOvalEffect extends LObject implements BaseEffect, ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float sx, float sy) {
 		if (finished) {
 			return;
 		}
@@ -141,8 +146,8 @@ public class FadeOvalEffect extends LObject implements BaseEffect, ISprite {
 				g.setColor(OVAL_COLORS[i]);
 				float w = this.ovalWidth + i * this.ovalWidth * 0.1f;
 				float h = this.ovalHeight + i * this.ovalWidth * 0.1f;
-				g.fillOval(g.getWidth() / 2 - w / 2f, g.getHeight() / 2 - h
-						/ 2f, w, h);
+				g.fillOval((g.getWidth() / 2 - w / 2f) + sx,
+						(g.getHeight() / 2 - h / 2f) + sy, w, h);
 			}
 			g.setColor(old);
 			if (usetex) {

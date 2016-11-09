@@ -46,6 +46,8 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 
 	protected Vector2f _anchorValue = new Vector2f();
 
+	protected Vector2f _pivotValue = new Vector2f(-1, -1);
+
 	public DisplayObject() {
 
 	}
@@ -136,11 +138,30 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	}
 
 	public void setAnchorY(float ay) {
-		this._anchorValue.y = ay;
+		this._pivotValue.y = ay;
+	}
+
+	public float getPivotX() {
+		return _pivotValue.x;
+	}
+
+	public void setPivotX(float ax) {
+		this._pivotValue.x = ax;
+	}
+
+	public float getPivotY() {
+		return _pivotValue.y;
+	}
+
+	public void setPivotY(float ay) {
+		this._pivotValue.y = ay;
 	}
 
 	@Override
 	abstract public void createUI(GLEx g);
+
+	@Override
+	abstract public void createUI(GLEx g, float offsetX, float offsetY);
 
 	@Override
 	public float getScaleX() {
@@ -194,7 +215,7 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		float gX = x;
 		float gY = y;
 		DisplayObject parent = this.getParent();
-		while (parent != null) {
+		for (; parent != null;) {
 			gX += parent.getX();
 			gY += parent.getY();
 			if (parent != parent.getParent()) {

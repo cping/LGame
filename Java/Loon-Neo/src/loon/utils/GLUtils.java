@@ -1,8 +1,12 @@
 package loon.utils;
 
+import java.nio.ByteBuffer;
+
 import loon.LSystem;
 import loon.LTexture;
+import loon.Support;
 import loon.canvas.LColor;
+import loon.canvas.Pixmap;
 import loon.opengl.GL20;
 
 public class GLUtils {
@@ -304,4 +308,45 @@ public class GLUtils {
 		}
 	}
 
+	public static byte[] getFrameBufferPixels(final GL20 gl, boolean flipY) {
+		final int w = LSystem.viewSize.getWidth();
+		final int h = LSystem.viewSize.getHeight();
+		return getFrameBufferPixels(gl, 0, 0, w, h, flipY);
+	}
+
+	public static Pixmap getFrameBufferPixmap(final GL20 gl, int x, int y,
+			int w, int h, boolean flipY) {
+		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+		Support support = LSystem.base().support();
+		final Pixmap pixmap = new Pixmap(w, h, true);
+		byte[] buffer = getFrameBufferPixels(gl, x, y, w, h, flipY);
+		pixmap.convertByteBufferToPixmap(support.getByteBuffer(buffer));
+		return pixmap;
+	}
+
+	public static byte[] getFrameBufferPixels(final GL20 gl, int x, int y,
+			int w, int h, boolean flipY) {
+		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+		Support support = LSystem.base().support();
+		final ByteBuffer pixels = support.newByteBuffer(w * h * 4);
+		gl.glReadPixels(x, y, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
+		final int numBytes = w * h * 4;
+		byte[] buffer = new byte[numBytes];
+		if (flipY) {
+			final int numBytesPerLine = w * 4;
+			for (int i = 0; i < h; i++) {
+				pixels.position((h - i - 1) * numBytesPerLine);
+				pixels.get(buffer, i * numBytesPerLine, numBytesPerLine);
+			}
+		} else {
+			pixels.clear();
+			pixels.get(buffer);
+		}
+		return buffer;
+	}
+
+	public static Pixmap getScreenshot(int x, int y, int w, int h, boolean flipY) {
+		return getFrameBufferPixmap(LSystem.base().graphics().gl, 0, 0, w, h,
+				flipY);
+	}
 }

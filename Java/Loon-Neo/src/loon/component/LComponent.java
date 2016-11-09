@@ -43,27 +43,28 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
-public abstract class LComponent extends LObject implements ActionBind, XY,
-		BoxSize {
+public abstract class LComponent extends LObject<LContainer> implements
+		ActionBind, XY, BoxSize {
 
-	//组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
-	protected boolean _touchLocked = false , _keyLocked = false;
-	
-	public void setTouchLocked(boolean locked){
+	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
+	protected boolean _touchLocked = false, _keyLocked = false;
+
+	public void setTouchLocked(boolean locked) {
 		this._touchLocked = locked;
 	}
 
-	public boolean isTouchLocked(){
+	public boolean isTouchLocked() {
 		return this._touchLocked;
 	}
-	public void setKeyLocked(boolean locked){
+
+	public void setKeyLocked(boolean locked) {
 		this._keyLocked = locked;
 	}
 
-	public boolean isKeyLocked(){
+	public boolean isKeyLocked() {
 		return this._keyLocked;
 	}
-	
+
 	public static interface CallListener {
 
 		public void act(long elapsedTime);
@@ -75,7 +76,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	public void addClickListener(ClickListener c) {
 		Click = c;
 	}
-	
+
 	public void SetClick(ClickListener c) {
 		Click = c;
 	}
@@ -94,9 +95,6 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		return Call;
 	}
 
-	// 容器
-	private LContainer parent;
-
 	private LTexture[] imageUI;
 
 	protected boolean elastic;
@@ -107,16 +105,21 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	protected boolean isFull;
 
+	private boolean isSelectDraw = false;
 	// 渲染状态
 	public boolean customRendering;
 
 	// 居中位置，组件坐标与大小
 	private int cam_x, cam_y;
 
-	private float width, height;
-
+	private float _width, _height;
+	// 缩放比例
+	private float scaleX = 1f, scaleY = 1f;
 	// 屏幕位置
 	protected int screenX, screenY;
+
+	// 中心点
+	protected float pivotX = -1, pivotY = -1;
 
 	// 操作提示
 	protected String tooltip;
@@ -140,7 +143,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	protected boolean isLimitMove;
 
-	protected LTexture background;
+	protected LTexture _background;
 
 	protected LayoutConstraints constraints = null;
 
@@ -154,14 +157,14 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	 */
 	public LComponent(int x, int y, int width, int height) {
 		this.setLocation(x, y);
-		this.width = width;
-		this.height = height;
+		this._width = width;
+		this._height = height;
 		this.screenRect = LSystem.viewSize.getRect();
-		if (this.width == 0) {
-			this.width = 10;
+		if (this._width == 0) {
+			this._width = 10;
 		}
-		if (this.height == 0) {
-			this.height = 10;
+		if (this._height == 0) {
+			this._height = 10;
 		}
 
 	}
@@ -197,18 +200,18 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		int limitX = tempX + tempWidth;
 		int limitY = tempY + tempHeight;
 
-		if (width >= screenRect.width) {
+		if (_width >= screenRect.width) {
 			if (limitX > tempWidth) {
-				tempX = (int) (screenRect.width - width);
+				tempX = (int) (screenRect.width - _width);
 			} else if (limitX < 1) {
 				tempX = x();
 			}
 		} else {
 			return;
 		}
-		if (height >= screenRect.height) {
+		if (_height >= screenRect.height) {
 			if (limitY > tempHeight) {
-				tempY = (int) (screenRect.height - height);
+				tempY = (int) (screenRect.height - _height);
 			} else if (limitY < 1) {
 				tempY = y();
 			}
@@ -270,7 +273,7 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		if (isClose) {
 			return;
 		}
-		if (parent != null) {
+		if (_super != null) {
 			validatePosition();
 		}
 		if (Call != null) {
@@ -308,15 +311,19 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 					g.saveTx();
 					if (!(scaleX == 1f && scaleY == 1f)) {
 						Affine2f transform = g.tx();
-						float centerX = this.screenX + width / 2;
-						float centerY = this.screenY + height / 2;
+						float centerX = pivotX == -1 ? this.screenX + width / 2
+								: this.screenX + pivotX;
+						float centerY = pivotY == -1 ? this.screenY + height
+								/ 2 : this.screenY + pivotY;
 						transform.translate(centerX, centerY);
 						transform.preScale(scaleX, scaleY);
 						transform.translate(-centerX, -centerY);
 					}
 					if (_rotation != 0) {
-						float centerX = this.screenX + width / 2;
-						float centerY = this.screenY + height / 2;
+						float centerX = pivotX == -1 ? this.screenX + width / 2
+								: this.screenX + pivotX;
+						float centerY = pivotY == -1 ? this.screenY + height
+								/ 2 : this.screenY + pivotY;
 						g.rotate(centerX, centerY, _rotation);
 					}
 				}
@@ -324,8 +331,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 				if (_alpha > 0.1 && _alpha < 1.0) {
 					float tmp = g.alpha();
 					g.setAlpha(_alpha);
-					if (background != null) {
-						g.draw(background, this.screenX, this.screenY, width,
+					if (_background != null) {
+						g.draw(_background, this.screenX, this.screenY, width,
 								height);
 					}
 					if (this.customRendering) {
@@ -338,8 +345,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 					g.setAlpha(tmp);
 					// 不变更
 				} else {
-					if (background != null) {
-						g.draw(background, this.screenX, this.screenY, width,
+					if (_background != null) {
+						g.draw(_background, this.screenX, this.screenY, width,
 								height);
 					}
 					if (this.customRendering) {
@@ -349,6 +356,13 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 						this.createUI(g, this.screenX, this.screenY, this,
 								this.imageUI);
 					}
+				}
+				if (isDrawSelect()) {
+					int tmp = g.color();
+					g.setColor(LColor.red);
+					g.drawRect(this.screenX, this.screenY, width - 1f,
+							height - 1f);
+					g.setColor(tmp);
 				}
 			} finally {
 				if (update) {
@@ -381,36 +395,36 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		return (this.visible)
 				&& (x >= this.screenX
 						&& y >= this.screenY
-						&& ((x + width) <= (this.screenX + this.width * scaleX)) && ((y + height) <= (this.screenY + this.height
+						&& ((x + width) <= (this.screenX + this._width * scaleX)) && ((y + height) <= (this.screenY + this._height
 						* scaleY)));
 	}
 
 	public boolean intersects(float x1, float y1) {
 		return (this.visible)
 				&& (x1 >= this.screenX
-						&& x1 <= this.screenX + this.width * scaleX
+						&& x1 <= this.screenX + this._width * scaleX
 						&& y1 >= this.screenY && y1 <= this.screenY
-						+ this.height * scaleY);
+						+ this._height * scaleY);
 	}
 
 	public boolean intersects(LComponent comp) {
 		return (this.visible)
 				&& (comp.isVisible())
-				&& (this.screenX + this.width * scaleX >= comp.screenX
-						&& this.screenX <= comp.screenX + comp.width
-						&& this.screenY + this.height * scaleY >= comp.screenY && this.screenY <= comp.screenY
-						+ comp.height);
+				&& (this.screenX + this._width * scaleX >= comp.screenX
+						&& this.screenX <= comp.screenX + comp._width
+						&& this.screenY + this._height * scaleY >= comp.screenY && this.screenY <= comp.screenY
+						+ comp._height);
 	}
 
 	public void close() {
 		this.isClose = true;
 		this.desktop.setComponentStat(this, false);
-		if (this.parent != null) {
-			this.parent.remove(this);
+		if (this._super != null) {
+			this._super.remove(this);
 		}
 		this.desktop = Desktop.EMPTY_DESKTOP;
 		this.input = null;
-		this.parent = null;
+		this._super = null;
 		if (imageUI != null) {
 			for (int i = 0; i < imageUI.length; i++) {
 				imageUI[i].close();
@@ -418,9 +432,9 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 			}
 			this.imageUI = null;
 		}
-		if (background != null) {
-			this.background.close();
-			this.background = null;
+		if (_background != null) {
+			this._background.close();
+			this._background = null;
 		}
 		this.selected = false;
 		this.visible = false;
@@ -439,8 +453,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public boolean isEnabled() {
-		return (this.parent == null) ? this.enabled
-				: (this.enabled && this.parent.isEnabled());
+		return (this._super == null) ? this.enabled
+				: (this.enabled && this._super.isEnabled());
 	}
 
 	public void setEnabled(boolean b) {
@@ -464,14 +478,14 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public void transferFocus() {
-		if (this.isSelected() && this.parent != null) {
-			this.parent.transferFocus(this);
+		if (this.isSelected() && this._super != null) {
+			this._super.transferFocus(this);
 		}
 	}
 
 	public void transferFocusBackward() {
-		if (this.isSelected() && this.parent != null) {
-			this.parent.transferFocusBackward(this);
+		if (this.isSelected() && this._super != null) {
+			this._super.transferFocusBackward(this);
 		}
 	}
 
@@ -484,11 +498,11 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public LContainer getContainer() {
-		return this.parent;
+		return this._super;
 	}
 
 	final void setContainer(LContainer container) {
-		this.parent = container;
+		this._super = container;
 
 		this.validatePosition();
 	}
@@ -504,14 +518,14 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	public void setBounds(float dx, float dy, int width, int height) {
 		setLocation(dx, dy);
-		if (this.width != width || this.height != height) {
-			this.width = width;
-			this.height = height;
-			if (width == 0) {
-				width = 1;
+		if (this._width != width || this._height != height) {
+			this._width = width;
+			this._height = height;
+			if (_width == 0) {
+				_width = 1;
 			}
-			if (height == 0) {
-				height = 1;
+			if (_height == 0) {
+				_height = 1;
 			}
 			this.validateSize();
 		}
@@ -569,14 +583,14 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public void setSize(int w, int h) {
-		if (this.width != w || this.height != h) {
-			this.width = w;
-			this.height = h;
-			if (this.width == 0) {
-				this.width = 1;
+		if (this._width != w || this._height != h) {
+			this._width = w;
+			this._height = h;
+			if (this._width == 0) {
+				this._width = 1;
 			}
-			if (this.height == 0) {
-				this.height = 1;
+			if (this._height == 0) {
+				this._height = 1;
 			}
 			this.validateSize();
 		}
@@ -586,9 +600,9 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public void validatePosition() {
-		if (parent != null) {
-			this.screenX = _location.x() + this.parent.getScreenX();
-			this.screenY = _location.y() + this.parent.getScreenY();
+		if (_super != null) {
+			this.screenX = _location.x() + this._super.getScreenX();
+			this.screenY = _location.y() + this._super.getScreenY();
 		} else {
 			this.screenX = _location.x();
 			this.screenY = _location.y();
@@ -604,19 +618,19 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public void setHeight(float height) {
-		this.height = height;
+		this._height = height;
 	}
 
 	public void setWidth(float width) {
-		this.width = width;
+		this._width = width;
 	}
 
 	public float getWidth() {
-		return (this.width * scaleX);
+		return (this._width * scaleX);
 	}
 
 	public float getHeight() {
-		return (this.height * scaleY);
+		return (this._height * scaleY);
 	}
 
 	public int width() {
@@ -629,10 +643,10 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	public RectBox getCollisionBox() {
 		if (_rect == null) {
-			_rect = new RectBox(screenX, screenY, width * scaleX, height
+			_rect = new RectBox(screenX, screenY, _width * scaleX, _height
 					* scaleY);
 		} else {
-			_rect.setBounds(screenX, screenY, width * scaleX, height * scaleY);
+			_rect.setBounds(screenX, screenY, _width * scaleX, _height * scaleY);
 		}
 		return _rect;
 	}
@@ -727,8 +741,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	public void setImageUI(LTexture[] imageUI, boolean processUI) {
 		if (imageUI != null) {
-			this.width = (int) imageUI[0].width();
-			this.height = (int) imageUI[0].height();
+			this._width = (int) imageUI[0].width();
+			this._height = (int) imageUI[0].height();
 		}
 
 		this.imageUI = imageUI;
@@ -736,8 +750,8 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	public void setImageUI(int index, LTexture imageUI) {
 		if (imageUI != null) {
-			this.width = (int) imageUI.width();
-			this.height = (int) imageUI.height();
+			this._width = (int) imageUI.width();
+			this._height = (int) imageUI.height();
 		}
 		this.imageUI[index] = imageUI;
 	}
@@ -745,11 +759,11 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	public abstract String getUIName();
 
 	public LTexture getBackground() {
-		return background;
+		return _background;
 	}
 
 	public void clearBackground() {
-		this.setBackground(TextureUtils.createTexture(1, 1, LColor.white));
+		this.setBackground(LSystem.base().graphics().finalColorTex());
 	}
 
 	public void setBackground(String fileName) {
@@ -757,28 +771,33 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public void setBackground(LColor color) {
-		setBackground(TextureUtils.createTexture((int) getWidth(),
-				(int) getHeight(), color));
+		setBackground(TextureUtils.createTexture(1, 1, color));
 	}
 
-	public void setBackground(LTexture background) {
-		if (background == null) {
+	public void setBackgroundString(String color) {
+		setBackground(new LColor(color));
+	}
+
+	public void setBackground(LTexture b) {
+		if (b == null) {
 			return;
 		}
-		LTexture oldImage = this.background;
-		if (oldImage != background && oldImage != null) {
-			oldImage.close();
-			oldImage = null;
+		LTexture oldImage = this._background;
+		if (oldImage != b && oldImage != null) {
+			if (!b.equals(LSystem.base().graphics().finalColorTex())) {
+				oldImage.close();
+				oldImage = null;
+			}
 		}
-		this.background = background;
+		this._background = b;
 		this.setAlpha(1.0F);
-		this.width = (int) background.width();
-		this.height = (int) background.height();
-		if (this.width <= 0) {
-			this.width = 1;
+		this._width = b.getWidth() > 1 ? b.getWidth() : this._width;
+		this._height = b.getHeight() > 1 ? b.getHeight() : this._height;
+		if (this._width <= 0) {
+			this._width = 1;
 		}
-		if (this.height <= 0) {
-			this.height = 1;
+		if (this._height <= 0) {
+			this._height = 1;
 		}
 	}
 
@@ -810,7 +829,13 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 		return null;
 	}
 
-	float scaleX = 1, scaleY = 1;
+	public boolean isDrawSelect() {
+		return this.isSelectDraw;
+	}
+
+	public void setDrawSelect(boolean select) {
+		this.isSelectDraw = select;
+	}
 
 	public void setScale(final float s) {
 		this.setScale(s, s);
@@ -837,36 +862,36 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 	}
 
 	public boolean inContains(float x, float y, float w, float h) {
-		if (parent != null) {
-			return parent.contains(x, y, w, h);
+		if (_super != null) {
+			return _super.contains(x, y, w, h);
 		}
 		return false;
 	}
 
 	public float getTouchX() {
-		if (parent == null) {
+		if (_super == null) {
 			return SysTouch.getX() - getX();
 		} else {
-			if (parent instanceof LScrollContainer) {
+			if (_super instanceof LScrollContainer) {
 				return SysTouch.getX()
-						+ ((LScrollContainer) parent).getScrollX()
-						- parent.getX() - getX();
+						+ ((LScrollContainer) _super).getScrollX()
+						- _super.getX() - getX();
 			} else {
-				return SysTouch.getX() - parent.getX() - getX();
+				return SysTouch.getX() - _super.getX() - getX();
 			}
 		}
 	}
 
 	public float getTouchY() {
-		if (parent == null) {
+		if (_super == null) {
 			return SysTouch.getY() - getY();
 		} else {
-			if (parent instanceof LScrollContainer) {
+			if (_super instanceof LScrollContainer) {
 				return SysTouch.getY()
-						+ ((LScrollContainer) parent).getScrollY()
-						- parent.getY() - getY();
+						+ ((LScrollContainer) _super).getScrollY()
+						- _super.getY() - getY();
 			} else {
-				return SysTouch.getY() - parent.getY() - getY();
+				return SysTouch.getY() - _super.getY() - getY();
 			}
 		}
 	}
@@ -877,12 +902,56 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	@Override
 	public float getContainerWidth() {
-		return parent.getWidth();
+		if (_super == null) {
+			return screenRect.getWidth();
+		}
+		return _super.getWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return parent.getHeight();
+		if (_super == null) {
+			return screenRect.getHeight();
+		}
+		return _super.getHeight();
+	}
+
+	public void setPivotX(float pX) {
+		pivotX = pX;
+	}
+
+	public void setPivotY(float pY) {
+		pivotY = pY;
+	}
+
+	public float getPivotX() {
+		return pivotX;
+	}
+
+	public float getPivotY() {
+		return pivotY;
+	}
+
+	public void setPivot(float pX, float pY) {
+		setPivotX(pX);
+		setPivotY(pY);
+	}
+
+	public void show() {
+		visible = true;
+	}
+
+	public void hide() {
+		visible = false;
+	}
+
+	public boolean toggleVisible() {
+		if (visible) {
+			hide();
+		} else {
+			show();
+		}
+		return visible;
 	}
 
 	public LayoutConstraints getConstraints() {
@@ -903,5 +972,11 @@ public abstract class LComponent extends LObject implements ActionBind, XY,
 
 	public LayoutPort getLayoutPort(final LayoutPort src) {
 		return new LayoutPort(src);
+	}
+
+	@Override
+	public String toString() {
+		return getName() + " pos=" + _location + " size=" + "(" + getWidth()
+				+ "," + getHeight() + ")";
 	}
 }

@@ -197,6 +197,11 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	@Override
 	public void createUI(GLEx g) {
+		this.createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!_visible) {
 			return;
 		}
@@ -206,8 +211,8 @@ public class MovieClip extends DisplayObject implements LRelease {
 		if (_ssd == null) {
 			return;
 		}
-		float x = _location.x + _ssd.offX();
-		float y = _location.y + _ssd.offY();
+		float x = _location.x + _ssd.offX() + offsetX;
+		float y = _location.y + _ssd.offY() + offsetY;
 		if (_anchor == DisplayObject.ANCHOR_CENTER) {
 			x -= _ssd.sourceW() >> 1;
 			y -= _ssd.sourceH() >> 1;
@@ -279,7 +284,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 			}
 			g.draw(_sheet.sheet(), destX, destY, drawRect.width,
 					drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(), _ssd.h(),
-					_color, rotate, _scaleX, _scaleY, _anchorValue, dir);
+					_color, rotate, _scaleX, _scaleY, _anchorValue,_pivotValue, dir);
 
 		}
 

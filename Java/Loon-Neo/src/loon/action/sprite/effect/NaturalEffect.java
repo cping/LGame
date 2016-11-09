@@ -10,7 +10,7 @@ import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class NaturalEffect extends LObject implements BaseEffect, ISprite {
+public class NaturalEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	public static enum NaturalType {
 		Rain, Snow, Petal;
@@ -228,9 +228,15 @@ public class NaturalEffect extends LObject implements BaseEffect, ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+	
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (visible) {
 			for (int i = 0; i < count; i++) {
-				kernels[i].draw(g, _location.x, _location.y);
+				kernels[i]
+						.draw(g, _location.x + offsetX, _location.y + offsetY);
 			}
 		}
 	}

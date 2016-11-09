@@ -9,7 +9,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class TriangleEffect extends LObject implements ISprite {
+public class TriangleEffect extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 
@@ -46,8 +46,8 @@ public class TriangleEffect extends LObject implements ISprite {
 		this(w, h, res, null, x, y, speed);
 	}
 
-	public TriangleEffect(float w, float h, float[][] res, float[] ads, float x,
-			float y, float speed) {
+	public TriangleEffect(float w, float h, float[][] res, float[] ads,
+			float x, float y, float speed) {
 		this.setDelta(res);
 		this.v_speed = speed;
 		this.pos = new float[2];
@@ -179,7 +179,7 @@ public class TriangleEffect extends LObject implements ISprite {
 		for (int i = 0; i < size; i++) {
 			xs[i] = width - res[i][0];
 			ys[i] = height - res[i][1];
-		
+
 		}
 		g.fillPolygon(xs, ys, 3);
 	}
@@ -227,29 +227,39 @@ public class TriangleEffect extends LObject implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
-		draw(g, this.getX(), this.getY());
+		draw(g, this.getX() + offsetX, this.getY() + offsetY);
 	}
 
 	public boolean isCompleted() {
 		return completed;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), width, height);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}

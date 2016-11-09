@@ -28,6 +28,7 @@ import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
+import loon.utils.timer.LTimer;
 
 public class Animation implements LRelease {
 
@@ -53,9 +54,11 @@ public class Animation implements LRelease {
 
 	int currentFrameIndex;
 
-	long animTime, totalDuration;
+	long animTime = 0, totalDuration = 0;
 
 	int size;
+
+	private LTimer intervalTime = new LTimer(0);
 
 	public Animation() {
 		this(new TArray<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0);
@@ -171,6 +174,23 @@ public class Animation implements LRelease {
 	}
 
 	/**
+	 * 转化一组地址字符串为动画图像
+	 * 
+	 * @param paths
+	 * @param maxFrame
+	 * @param timer
+	 * @return
+	 */
+	public static Animation getDefaultAnimation(String[] paths, int maxFrame,
+			int timer) {
+		LTexture[] res = new LTexture[paths.length];
+		for (int i = 0; i < paths.length; i++) {
+			res[i] = LTextures.loadTexture(paths[i]);
+		}
+		return getDefaultAnimation(res, maxFrame, timer);
+	}
+
+	/**
 	 * 转化MovieSpriteSheet为动画资源
 	 * 
 	 * @param sheet
@@ -217,9 +237,17 @@ public class Animation implements LRelease {
 	 * 
 	 */
 	public synchronized void start() {
+		play(0);
+	}
+
+	/**
+	 * 开始执行动画
+	 * 
+	 */
+	public synchronized void play(int idx) {
 		animTime = 0;
 		if (size > 0) {
-			currentFrameIndex = 0;
+			currentFrameIndex = idx;
 		}
 	}
 
@@ -243,7 +271,7 @@ public class Animation implements LRelease {
 		if (loopCount != -1 && loopPlay > loopCount) {
 			return;
 		}
-		if (isRunning) {
+		if (isRunning && intervalTime.action(timer)) {
 			if (size > 0) {
 				animTime += timer;
 				if (animTime > totalDuration) {
@@ -354,6 +382,22 @@ public class Animation implements LRelease {
 		this.loopCount = loopCount;
 	}
 
+	public void setDelay(long d) {
+		intervalTime.setDelay(d);
+	}
+	
+	public void setInterval(long d) {
+		setDelay(d);
+	}
+
+	public long getDelay() {
+		return intervalTime.getDelay();
+	}
+
+	public long getInterval() {
+		return getDelay();
+	}
+
 	private class AnimationFrame implements LRelease {
 
 		LTexture image;
@@ -377,7 +421,7 @@ public class Animation implements LRelease {
 			}
 		}
 	}
-	
+
 	@Override
 	public void close() {
 		if (frames != null) {

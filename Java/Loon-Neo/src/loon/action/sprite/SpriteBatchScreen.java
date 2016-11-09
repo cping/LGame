@@ -71,7 +71,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private Vector2f offset = new Vector2f();
 
-	private LObject follow;
+	private LObject<?> follow;
 
 	private TileMap indexTile;
 
@@ -573,7 +573,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		this.indexTile = indexTile;
 	}
 
-	public void follow(LObject o) {
+	public void follow(LObject<?> o) {
 		this.follow = o;
 	}
 

@@ -322,18 +322,18 @@ public class LColor implements Serializable {
 
 	public float a = 1.0f;
 
-	public final static LColor newWhite(){
+	public final static LColor newWhite() {
 		return new LColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	public final static LColor newBlack(){
+	public final static LColor newBlack() {
 		return new LColor(0.0f, 0.0f, 0.0f, 1.0f);
 	}
-	
-	public final static LColor newRed(){
+
+	public final static LColor newRed() {
 		return new LColor(1.0f, 0.0f, 0.0f, 1.0f);
 	}
-	
+
 	/**
 	 * 转换字符串为color
 	 * 
@@ -343,8 +343,8 @@ public class LColor implements Serializable {
 		if (c == null) {
 			return;
 		}
-		if (MathUtils.isNan(c)) {
-			setColor((int) Double.parseDouble(c));
+		if (c.startsWith("#")) {
+			setColor(hexToColor(c));
 		} else if (c.startsWith("rgb")) {
 			int start = c.indexOf('(');
 			int end = c.lastIndexOf(')');
@@ -362,6 +362,8 @@ public class LColor implements Serializable {
 							Integer.parseInt(list[3]));
 				}
 			}
+		} else if (MathUtils.isNan(c)) {
+			setColor((int) Double.parseDouble(c));
 		} else {
 			synchronized (this) {
 				if (colorMap == null) {
@@ -887,6 +889,7 @@ public class LColor implements Serializable {
 			if (c.startsWith("#")) {
 				return hexToColor(c.substring(1));
 			} else {
+				System.out.println("GFGF");
 				return new LColor(Integer.parseInt(c.substring(0, 2), 16),
 						Integer.parseInt(c.substring(2, 4), 16),
 						Integer.parseInt(c.substring(4, 6), 16));
@@ -897,17 +900,7 @@ public class LColor implements Serializable {
 	}
 
 	public static LColor stringToColor(String c) {
-		try {
-			if (c.startsWith("#")) {
-				return hexToColor(c.substring(1));
-			} else {
-				return new LColor(Integer.parseInt(c.substring(0, 2), 16),
-						Integer.parseInt(c.substring(2, 4), 16),
-						Integer.parseInt(c.substring(4, 6), 16));
-			}
-		} catch (Exception e) {
-			return new LColor();
-		}
+		return hexToColor(c);
 	}
 
 	public String toCSS() {
@@ -930,7 +923,8 @@ public class LColor implements Serializable {
 	/**
 	 * 按照特定百分比改变当前色彩，并返回一个新的LColor对象
 	 * 
-	 * @param percent 最大值为1f，最小值为0f
+	 * @param percent
+	 *            最大值为1f，最小值为0f
 	 * @return
 	 */
 	public LColor percent(float percent) {

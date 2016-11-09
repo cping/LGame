@@ -1,9 +1,11 @@
 package loon.canvas;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.Support;
 import loon.geom.Polygon;
 import loon.geom.RectI;
 import loon.geom.Shape;
@@ -90,7 +92,7 @@ public class Pixmap extends Limit implements LRelease {
 	private int xorRGB;
 
 	private float _baseAlpha = 1f;
-	
+
 	private boolean _hasAlpha;
 
 	private RectI defClip;
@@ -1456,7 +1458,7 @@ public class Pixmap extends Limit implements LRelease {
 				drawPoint(_drawPixels, col + rowOffset);
 			}
 		}
-        return this;  
+		return this;
 	}
 
 	public Pixmap clearRect(int x, int y, int width, int height) {
@@ -1483,7 +1485,7 @@ public class Pixmap extends Limit implements LRelease {
 				drawPoint(xRight, yBottom);
 			}
 		});
-       return this;
+		return this;
 	}
 
 	/**
@@ -1505,7 +1507,7 @@ public class Pixmap extends Limit implements LRelease {
 					drawLineImpl(xLeft, xRight, yBottom);
 			}
 		});
-        return this;
+		return this;
 	}
 
 	/**
@@ -1960,6 +1962,37 @@ public class Pixmap extends Limit implements LRelease {
 			return -1;
 		} else {
 			return this._drawPixels[y * _width + x];
+		}
+	}
+
+	public ByteBuffer convertPixmapToByteBuffer() {
+		Support support = LSystem.base().support();
+		ByteBuffer buffer = support.newByteBuffer(_width * _height * 4);
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < getWidth(); x++) {
+				int pixel = this._drawPixels[y * _width + x];
+				buffer.put((byte) ((pixel >> 16) & 0xFF));
+				buffer.put((byte) ((pixel >> 8) & 0xFF));
+				buffer.put((byte) (pixel & 0xFF));
+				buffer.put((byte) ((pixel >> 24) & 0xFF));
+			}
+		}
+		buffer.flip();
+		return buffer;
+	}
+
+	public void convertByteBufferToPixmap(ByteBuffer buffer) {
+		int idx = 0;
+		int dst = 0;
+		for (int y = 0; y < _height; y++) {
+			for (int x = 0; x < _width; x++) {
+				int r = buffer.get(idx++);
+				int g = buffer.get(idx++);
+				int b = buffer.get(idx++);
+				int a = buffer.get(idx++);
+				this._drawPixels[dst + x] = a << 24 | r << 16 | g << 8 | b;
+			}
+			dst += _width;
 		}
 	}
 

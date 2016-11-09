@@ -46,7 +46,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Actor extends LObject implements Comparable<Actor>, ActionBind, XY, LRelease, BoxSize {
+public class Actor extends LObject<Actor> implements Comparable<Actor>, ActionBind, XY, LRelease, BoxSize {
 
 	private String flag = "Actor";
 
@@ -62,7 +62,7 @@ public class Actor extends LObject implements Comparable<Actor>, ActionBind, XY,
 
 	private LTexture image;
 
-	Object data, tag;
+	Object data;
 
 	private RectBox boundingRect;
 
@@ -726,14 +726,6 @@ public class Actor extends LObject implements Comparable<Actor>, ActionBind, XY,
 			return gameLayer.getRandomLayerLocation(this);
 		}
 		return null;
-	}
-
-	public void setTag(Object o) {
-		this.tag = o;
-	}
-
-	public Object getTag() {
-		return this.tag;
 	}
 
 	public void sendToFront() {

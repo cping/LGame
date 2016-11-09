@@ -39,7 +39,7 @@ import loon.utils.reply.Port;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
-public abstract class Player extends LObject implements ActionBind, XY,
+public abstract class Player extends LObject<GroupPlayer> implements ActionBind, XY,
 		BoxSize, LRelease {
 
 	public interface Pointer {
@@ -55,7 +55,6 @@ public abstract class Player extends LObject implements ActionBind, XY,
 	protected int flags;
 	protected float width, height;
 
-	private GroupPlayer parent;
 	private Array<Pointer> events;
 	private HitTester hitTester;
 	private BaseBatch batch;
@@ -191,7 +190,7 @@ public abstract class Player extends LObject implements ActionBind, XY,
 	}
 
 	public GroupPlayer parent() {
-		return parent;
+		return _super;
 	}
 
 	public Array<Pointer> events() {
@@ -211,8 +210,8 @@ public abstract class Player extends LObject implements ActionBind, XY,
 
 	public Player setInteractive(boolean interactive) {
 		if (interactive() != interactive) {
-			if (interactive && parent != null) {
-				parent.setInteractive(interactive);
+			if (interactive && _super != null) {
+				_super.setInteractive(interactive);
 			}
 			setFlag(Flag.INTERACTIVE, interactive);
 		}
@@ -258,8 +257,8 @@ public abstract class Player extends LObject implements ActionBind, XY,
 
 	@Override
 	public void close() {
-		if (parent != null) {
-			parent.remove(this);
+		if (_super != null) {
+			_super.remove(this);
 		}
 		setState(State.DISPOSED);
 		setBatch(null);
@@ -358,8 +357,8 @@ public abstract class Player extends LObject implements ActionBind, XY,
 		float oldDepth = this._layer;
 		if (depth != oldDepth) {
 			this._layer = depth;
-			if (parent != null)
-				parent.depthChanged(this, oldDepth);
+			if (_super != null)
+				_super.depthChanged(this, oldDepth);
 		}
 		return this;
 	}
@@ -574,10 +573,6 @@ public abstract class Player extends LObject implements ActionBind, XY,
 
 	void onRemove() {
 		setState(State.REMOVED);
-	}
-
-	void setParent(GroupPlayer parent) {
-		this.parent = parent;
 	}
 
 	protected static enum Flag {

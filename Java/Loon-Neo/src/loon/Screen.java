@@ -34,6 +34,7 @@ import loon.component.LLayer;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.event.FrameLoopEvent;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
@@ -588,7 +589,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		replaceLoading = false;
 	}
 
-	public Screen addTouchLimit(LObject c) {
+	public Screen addTouchLimit(LObject<?> c) {
 		if (c != null) {
 			limits.add(c.getCollisionArea());
 		}
@@ -1220,6 +1221,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
+	/**
+	 * 设定背景颜色
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public Screen setBackgroundString(String c) {
+		return setBackground(new LColor(c));
+	}
+
 	public LColor getColor() {
 		return color;
 	}
@@ -1528,27 +1539,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return false;
 	}
 
-	public Screen centerOn(final LObject object) {
+	public Screen centerOn(final LObject<?> object) {
 		LObject.centerOn(object, getWidth(), getHeight());
 		return this;
 	}
 
-	public Screen topOn(final LObject object) {
+	public Screen topOn(final LObject<?> object) {
 		LObject.topOn(object, getWidth(), getHeight());
 		return this;
 	}
 
-	public Screen leftOn(final LObject object) {
+	public Screen leftOn(final LObject<?> object) {
 		LObject.leftOn(object, getWidth(), getHeight());
 		return this;
 	}
 
-	public Screen rightOn(final LObject object) {
+	public Screen rightOn(final LObject<?> object) {
 		LObject.rightOn(object, getWidth(), getHeight());
 		return this;
 	}
 
-	public Screen bottomOn(final LObject object) {
+	public Screen bottomOn(final LObject<?> object) {
 		LObject.bottomOn(object, getWidth(), getHeight());
 		return this;
 	}
@@ -1740,6 +1751,52 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		isTimerPaused = true;
 	}
 
+	private boolean initLoopEvents = false;
+
+	private TArray<FrameLoopEvent> loopEvents;
+
+	private void allocateLoopEvents() {
+		if (loopEvents == null) {
+			loopEvents = new TArray<FrameLoopEvent>();
+		}
+	}
+
+	public void addFrameLoop(TArray<FrameLoopEvent> events) {
+		allocateLoopEvents();
+		loopEvents.addAll(events);
+		initLoopEvents = true;
+	}
+
+	public void addFrameLoop(float second, FrameLoopEvent event) {
+		allocateLoopEvents();
+		if (event != null) {
+			event.setSecond(second);
+		}
+		loopEvents.add(event);
+		initLoopEvents = true;
+	}
+
+	public void addFrameLoop(FrameLoopEvent event) {
+		allocateLoopEvents();
+		loopEvents.add(event);
+		initLoopEvents = true;
+	}
+
+	public void removeFrameLoop(FrameLoopEvent event) {
+		allocateLoopEvents();
+		loopEvents.remove(event);
+		initLoopEvents = (loopEvents.size <= 0);
+	}
+
+	public void clearFrameLoop() {
+		if (loopEvents == null) {
+			initLoopEvents = false;
+			return;
+		}
+		loopEvents.clear();
+		initLoopEvents = false;
+	}
+
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
 		// 如果Screen设置了计时器暂停
@@ -1770,6 +1827,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			}
 			if (lastPaintFlag) {
 				lastOrder.update(timer);
+			}
+		}
+		//处理直接加入screen中的循环
+		if (initLoopEvents) {
+			if (loopEvents != null && loopEvents.size > 0) {
+				final TArray<FrameLoopEvent> toUpdated;
+				synchronized (this.loopEvents) {
+					toUpdated = new TArray<FrameLoopEvent>(this.loopEvents);
+				}
+				final TArray<FrameLoopEvent> deadEvents = new TArray<FrameLoopEvent>();
+				for (FrameLoopEvent eve : toUpdated) {
+					eve.call(elapsedTime, this);
+					if (eve.isDead()) {
+						deadEvents.add(eve);
+					}
+				}
+				if (deadEvents.size > 0) {
+					for (FrameLoopEvent dead : deadEvents) {
+						dead.completed();
+					}
+					synchronized (this.loopEvents) {
+						this.loopEvents.removeAll(deadEvents);
+					}
+				}
 			}
 		}
 		this.touchDX = SysTouch.getX() - lastTouchX;
@@ -2270,7 +2351,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @param o
 	 * @return
 	 */
-	public boolean inBounds(GameTouch event, LObject o) {
+	public boolean inBounds(GameTouch event, LObject<?> o) {
 		RectBox rect = o.getCollisionArea();
 		if (rect != null) {
 			return inBounds(event, rect);
@@ -2432,6 +2513,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				gravityHandler.close();
 				gravityHandler = null;
 			}
+			clearFrameLoop();
 			if (releases != null) {
 				for (LRelease r : releases) {
 					if (r != null) {

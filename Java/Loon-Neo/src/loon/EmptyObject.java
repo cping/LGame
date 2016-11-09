@@ -24,7 +24,7 @@ import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.geom.RectBox;
 
-public class EmptyObject extends LObject implements ActionBind {
+public class EmptyObject extends LObject<Object> implements ActionBind {
 
 	private boolean visible;
 

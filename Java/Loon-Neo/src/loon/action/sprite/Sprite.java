@@ -36,16 +36,23 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
+import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 
-public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
-		BoxSize {
+public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
+		LTrans, BoxSize {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1982110847888726016L;
+
+	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(
+			false);
+
+	private TArray<ISprite> _childList = null;
 
 	// 默认每帧刷新时间
 	final static private long defaultTimer = 150;
@@ -67,6 +74,8 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 	private float scaleX = 1, scaleY = 1;
 
 	private int maxFrame;
+
+	private Vector2f _pivot = new Vector2f(-1, -1);
 
 	/**
 	 * 默认构造函数
@@ -612,6 +621,10 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 	private LColor filterColor;
 
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -624,50 +637,83 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 		}
 		image = animation.getSpriteImage();
 
-		if (image == null) {
+		final boolean notImg = image == null;
+		if (animation != null && animation.size > 0 && notImg) {
 			return;
 		}
-		float width = image.getWidth();
-		float height = image.getHeight();
-		float tmp = g.alpha();
-		boolean update = !(scaleX == 1f && scaleY == 1f);
+
+		float width = notImg ? getContainerWidth() : image.getWidth();
+		float height = notImg ? getContainerHeight() : image.getHeight();
+		int tmp = g.color();
+		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
 		try {
+			float nx = this._location.x + offsetX;
+			float ny = this._location.y + offsetY;
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				final float scaleCenterX = this._location.x + width / 2f;
-				final float scaleCenterY = this._location.y + height / 2f;
-				tx.translate(scaleCenterX, scaleCenterY);
-				tx.preScale(scaleX, scaleY);
-				tx.translate(-scaleCenterX, -scaleCenterY);
+				if ((scaleX != 1) || (scaleY != 1)) {
+					final float scaleCenterX = nx + width / 2f;
+					final float scaleCenterY = ny + height / 2f;
+					tx.translate(scaleCenterX, scaleCenterY);
+					tx.preScale(scaleX, scaleY);
+					tx.translate(-scaleCenterX, -scaleCenterY);
+				}
+				if (_rotation != 0) {
+					final float rotationCenterX = this._pivot.x == -1 ? (nx + width / 2f)
+							: nx + this._pivot.x;
+					final float rotationCenterY = this._pivot.y == -1 ? (ny + height / 2f)
+							: ny + this._pivot.y;
+					tx.translate(rotationCenterX, rotationCenterY);
+					tx.preRotate(_rotation);
+					tx.translate(-rotationCenterX, -rotationCenterY);
+				}
 			}
 			if (_alpha > 0 && _alpha < 1) {
 				g.setAlpha(_alpha);
 			}
-			if (filterColor == null) {
-				if (LTrans.TRANS_NONE == transform) {
-					g.draw(image, this._location.x, this._location.y, width,
-							height, _rotation);
+			if (!notImg) {
+				if (filterColor == null) {
+					if (LTrans.TRANS_NONE == transform) {
+						g.draw(image, nx, ny, width, height, null, _rotation,
+								_pivot);
+					} else {
+						g.drawRegion(image, 0, 0, (int) width, (int) height,
+								transform, (int) nx, (int) ny, LTrans.TOP
+										| LTrans.LEFT, null, _pivot, 0);
+					}
 				} else {
-					g.drawRegion(image, 0, 0, (int) width, (int) height,
-							transform, x(), y(), LTrans.TOP | LTrans.LEFT);
+					if (LTrans.TRANS_NONE == transform) {
+						g.draw(image, nx, ny, width, height, filterColor,
+								_rotation, _pivot);
+					} else {
+						g.drawRegion(image, 0, 0, (int) width, (int) height,
+								transform, (int) nx, (int) ny, LTrans.TOP
+										| LTrans.LEFT, filterColor, _pivot, 0);
+					}
 				}
-			} else {
-				if (LTrans.TRANS_NONE == transform) {
-					g.draw(image, this._location.x, this._location.y, width,
-							height, filterColor, _rotation);
-				} else {
-					g.drawRegion(image, 0, 0, (int) width, (int) height,
-							transform, x(), y(), LTrans.TOP | LTrans.LEFT,
-							filterColor);
+			}
+			if (_childList != null && _childList.size > 0) {
+				for (ISprite spr : _childList) {
+					if (spr != null) {
+						spr.createUI(g, this.getScreenX(), this.getScreenY());
+					}
 				}
 			}
 		} finally {
-			g.setAlpha(tmp);
+			g.setColor(tmp);
 			if (update) {
 				g.restoreTx();
 			}
 		}
+	}
+
+	public float getScreenX() {
+		return _super != null ? _super.getX() + getX() : getX();
+	}
+
+	public float getScreenY() {
+		return _super != null ? _super.getY() + getY() : getY();
 	}
 
 	public boolean isVisible() {
@@ -720,6 +766,26 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 
 	public void setScaleY(float scaleY) {
 		this.scaleY = scaleY;
+	}
+
+	public void setPivotX(float pX) {
+		_pivot.setX(pX);
+	}
+
+	public void setPivotY(float pY) {
+		_pivot.setY(pY);
+	}
+
+	public float getPivotX() {
+		return _pivot.getX();
+	}
+
+	public float getPivotY() {
+		return _pivot.getY();
+	}
+
+	public void setPivot(float pX, float pY) {
+		_pivot.set(pX, pY);
 	}
 
 	@Override
@@ -778,6 +844,21 @@ public class Sprite extends LObject implements ActionBind, ISprite, LTrans,
 	@Override
 	public void setHeight(float h) {
 		this.scaleY = (h / getHeight());
+	}
+
+	public void addChild(ISprite spr) {
+		if (_childList == null) {
+			_childList = new TArray<ISprite>();
+		}
+		_childList.add(spr);
+		childSorter.sort(_childList);
+	}
+
+	public void removeChild(ISprite spr) {
+		if (_childList == null) {
+			_childList = new TArray<ISprite>();
+		}
+		_childList.remove(spr);
 	}
 
 	@Override

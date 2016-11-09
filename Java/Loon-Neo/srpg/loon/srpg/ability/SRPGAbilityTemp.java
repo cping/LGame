@@ -23,7 +23,6 @@ package loon.srpg.ability;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import loon.LSystem;
 import loon.canvas.LColor;
 import loon.srpg.SRPGType;
 import loon.srpg.actor.SRPGActor;

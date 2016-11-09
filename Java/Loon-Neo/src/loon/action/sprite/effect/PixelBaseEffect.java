@@ -11,13 +11,13 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 //此像素非真像素，而是指'像素风'……实际是三角形纹理贴图效果……
-public abstract class PixelBaseEffect extends LObject implements BaseEffect, ISprite {
+public abstract class PixelBaseEffect extends LObject<ISprite> implements
+		BaseEffect, ISprite {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
 
 	protected boolean visible;
 
@@ -128,6 +128,11 @@ public abstract class PixelBaseEffect extends LObject implements BaseEffect, ISp
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
@@ -136,7 +141,7 @@ public abstract class PixelBaseEffect extends LObject implements BaseEffect, ISp
 		if (useTex) {
 			g.setPixSkip(4);
 		}
-		draw(g, this.x(), this.y());
+		draw(g, this.x() + offsetX, this.y() + offsetY);
 		if (useTex) {
 			g.setPixSkip(tmp);
 		}

@@ -9,7 +9,7 @@ import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class WaitSprite extends LObject implements ISprite {
+public class WaitSprite extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 
@@ -81,14 +81,14 @@ public class WaitSprite extends LObject implements ISprite {
 			}
 		}
 
-		public void draw(GLEx g, int x, int y) {
+		public void draw(GLEx g, float x, float y) {
 			LColor oldColor = g.getColor();
 			g.setColor(color);
 			switch (style) {
 			case 0:
 				float _alpha = 0.0f;
-				int nx = x + width / 2 - (int) r * 4,
-				ny = y + height / 2 - (int) r * 4;
+				float nx = x + width / 2 - (int) r * 4;
+				float ny = y + height / 2 - (int) r * 4;
 				g.translate(nx, ny);
 				for (RectBox s : list) {
 					_alpha = _alpha + 0.1f;
@@ -250,21 +250,27 @@ public class WaitSprite extends LObject implements ISprite {
 				offset, padding);
 	}
 
+	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
 		if (style < 2) {
 			if (_alpha > 0.1 && _alpha < 1.0) {
 				g.setAlpha(_alpha);
-				wait.draw(g, x(), y());
+				wait.draw(g, x() + offsetX, y() + offsetY);
 				g.setAlpha(1.0F);
 			} else {
-				wait.draw(g, x(), y());
+				wait.draw(g, x() + offsetX, y() + offsetY);
 			}
 		} else {
 			if (cycle != null) {
-				cycle.createUI(g);
+				cycle.createUI(g, offsetX, offsetY);
 			}
 		}
 	}

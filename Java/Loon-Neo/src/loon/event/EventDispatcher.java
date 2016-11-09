@@ -1,10 +1,11 @@
 package loon.event;
 
 import loon.LObject;
+import loon.action.sprite.ISprite;
 import loon.utils.ListMap;
 import loon.utils.TArray;
 
-public class EventDispatcher extends LObject {
+public class EventDispatcher extends LObject<ISprite> {
 
 	public class EventType {
 

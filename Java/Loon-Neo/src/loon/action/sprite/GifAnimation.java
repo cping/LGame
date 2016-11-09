@@ -9,7 +9,7 @@ import loon.opengl.GLEx;
 import loon.utils.ArrayByte;
 import loon.utils.GifDecoder;
 
-public class GifAnimation extends LObject implements ISprite {
+public class GifAnimation extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 
@@ -93,8 +93,14 @@ public class GifAnimation extends LObject implements ISprite {
 
 	@Override
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (_visible) {
-			g.draw(_animation.getSpriteImage(), getX(), getY());
+			g.draw(_animation.getSpriteImage(), getX() + offsetX, getY()
+					+ offsetY);
 		}
 
 	}

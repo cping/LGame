@@ -1,0 +1,139 @@
+allprojects {
+    group = 'LoonGame'
+    version = '0.5'
+
+    apply plugin: "idea"
+    apply plugin: "eclipse"
+
+    project.ext {
+       ver_retrolambda = "2.3.0"
+       ver_robovm = "2.2.0"
+       ver_streams = "1.0.3"
+       ver_moe = "1.2.4"
+       ver_moePlugin = "1.2.4"
+       ver_gwt = "2.8.0"
+       ver_gwtPlugin = "0.6"
+       ver_lwjgl = "2.9.3"
+       ver_lwjgl3 = "3.1.0"
+       ver_appleExtension = "1.4"
+       ver_androidPlugin = "2.2.2"
+       ver_androidSdk = 23;
+       ver_androidBuildTools = "23.0.3"
+       ver_androidSupport = "+"
+    }
+
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "de.richsource.gradle.plugins:gwt-gradle-plugin:0.6"
+        classpath "com.android.tools.build:gradle:2.2.2"
+        classpath "me.tatarka:gradle-retrolambda:3.2.5"
+        classpath "me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2"
+    }
+
+    configurations.classpath.exclude group: "com.android.tools.external.lombok"
+}
+
+eclipse {
+    project.name = 'LoonGame'
+}
+
+subprojects {
+    apply plugin: "maven"
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/google-snapshots/" }
+    }
+}
+
+project(":Java:Loon-Neo") {
+    apply plugin: "java"
+}
+
+project(":Java:Loon-Neo-GWT") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(":Java:Loon-Neo")
+        compile "com.google.gwt:gwt-user:${ver_gwt}"
+        compile "com.google.gwt:gwt-dev:${ver_gwt}"
+    }
+    
+    sourceSets.main.java.exclude "**/System.java"
+}
+
+project(":Java:Loon-Neo-Android") {
+
+    apply plugin: "me.tatarka.retrolambda"
+    apply plugin: "com.android.library"
+
+    dependencies {
+        provided project(":Java:Loon-Neo")
+        compile "com.annimon:stream:${ver_streams}"
+        retrolambdaConfig "net.orfjackal.retrolambda:retrolambda:${ver_retrolambda}"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+project(":Java:Loon-Neo-Robovm") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(":Java:Loon-Neo")
+        compile "com.mobidevelop.robovm:robovm-rt:${ver_robovm}"
+        compile "com.mobidevelop.robovm:robovm-objc:${ver_robovm}"
+        compile "com.mobidevelop.robovm:robovm-cocoatouch:${ver_robovm}"
+    }
+}
+
+project(":Java:Loon-Neo-JavaSE") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(":Java:Loon-Neo")
+        compile "org.lwjgl.lwjgl:lwjgl:${ver_lwjgl}"
+        compile "org.lwjgl.lwjgl:lwjgl_util:${ver_lwjgl}"
+        compile "org.lwjgl:lwjgl:${ver_lwjgl}:natives-windows"
+        compile "org.lwjgl:lwjgl:${ver_lwjgl}:natives-macos"
+        compile "org.lwjgl:lwjgl:${ver_lwjgl}:natives-linux"
+    }
+}
+
+
+project(":Java:Loon-Neo-Jwjgl3") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(":Java:Loon-Neo")
+        compile "org.lwjgl:lwjgl:${ver_lwjgl3}"
+        compile "org.lwjgl:lwjgl-stb:${ver_lwjgl3}"
+        compile "org.lwjgl:lwjgl-glfw:${ver_lwjgl3}"
+        compile "org.lwjgl:lwjgl-jemalloc:${ver_lwjgl3}"
+        compile "org.lwjgl:lwjgl-opengl:${ver_lwjgl3}"
+      
+        compile "org.lwjgl:lwjgl:${ver_lwjgl3}:natives-windows"
+        compile "org.lwjgl:lwjgl:${ver_lwjgl3}:natives-macos"
+        compile "org.lwjgl:lwjgl:${ver_lwjgl3}:natives-linux"
+        compile "org.lwjgl:lwjgl-stb:${ver_lwjgl3}:natives-windows"
+        compile "org.lwjgl:lwjgl-stb:${ver_lwjgl3}:natives-macos"
+        compile "org.lwjgl:lwjgl-stb:${ver_lwjgl3}:natives-linux"
+        compile "org.lwjgl:lwjgl-glfw:${ver_lwjgl3}:natives-windows"
+        compile "org.lwjgl:lwjgl-glfw:${ver_lwjgl3}:natives-macos"
+        compile "org.lwjgl:lwjgl-glfw:${ver_lwjgl3}:natives-linux"
+        compile "org.lwjgl:lwjgl-jemalloc:${ver_lwjgl3}:natives-windows"
+        compile "org.lwjgl:lwjgl-jemalloc:${ver_lwjgl3}:natives-macos"
+        compile "org.lwjgl:lwjgl-jemalloc:${ver_lwjgl3}:natives-linux"
+    }
+}

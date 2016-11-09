@@ -1,0 +1,30 @@
+android {
+
+   sourceSets.main.java.srcDirs = ["src"]
+   sourceSets.main.resources.srcDirs = ["src"]
+
+    compileSdkVersion 22
+    buildToolsVersion "${ver_androidBuildTools}"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
+        }
+    }
+}
+
+retrolambda {
+    defaultMethods true
+}

@@ -11,12 +11,13 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
 import loon.geom.Affine2f;
+import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
-public class Entity extends LObject implements ActionBind, IEntity, LRelease,
+public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRelease,
 		BoxSize {
 
 	/**
@@ -26,19 +27,21 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
-	protected boolean _disposed;
+
+	protected boolean _disposed = false;
 	protected boolean _visible = true;
-	protected boolean _ignoreUpdate;
+	protected boolean _ignoreUpdate = false;
 	protected boolean _childrenVisible = true;
-	protected boolean _childrenIgnoreUpdate;
-	protected boolean _childrenSortPending;
+	protected boolean _childrenIgnoreUpdate = false;
+	protected boolean _childrenSortPending = false;
 
 	protected int _idxTag = IEntity.TAG_INVALID;
 
-	private IEntity _parent;
 
+	protected boolean repaintDraw = false;
 	protected TArray<IEntity> _childrens;
 
+	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
 
 	protected float _rotationCenterX = -1;
@@ -106,11 +109,15 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	}
 
 	public void setTexture(String path) {
-		this._image = LTextures.loadTexture(path);
+		setTexture(LTextures.loadTexture(path));
 	}
 
 	public void setTexture(LTexture tex) {
 		this._image = tex;
+		if (_image != null) {
+			this._width = _image.width();
+			this._height = _image.height();
+		}
 	}
 
 	@Override
@@ -154,21 +161,6 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	}
 
 	@Override
-	public boolean hasParent() {
-		return this._parent != null;
-	}
-
-	@Override
-	public IEntity getParent() {
-		return this._parent;
-	}
-
-	@Override
-	public void setParent(final IEntity e) {
-		this._parent = e;
-	}
-
-	@Override
 	public int getIndexTag() {
 		return this._idxTag;
 	}
@@ -207,6 +199,32 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	public void setRotationCenter(final float sx, final float sy) {
 		this._rotationCenterX = sx;
 		this._rotationCenterY = sy;
+	}
+
+	@Override
+	public float getPivotX() {
+		return this._rotationCenterX;
+	}
+
+	@Override
+	public float getPivotY() {
+		return this._rotationCenterY;
+	}
+
+	@Override
+	public void setPivotX(final float rx) {
+		this._rotationCenterX = rx;
+	}
+
+	@Override
+	public void setPivotY(final float ry) {
+		this._rotationCenterY = ry;
+	}
+
+	@Override
+	public void setPivot(final float rx, final float ry) {
+		this._rotationCenterX = rx;
+		this._rotationCenterY = ry;
 	}
 
 	@Override
@@ -442,7 +460,7 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 
 	@Override
 	public boolean detachSelf() {
-		final IEntity parent = this._parent;
+		final IEntity parent = this._super;
 		if (parent != null) {
 			return parent.detachChild(this);
 		} else {
@@ -537,8 +555,14 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 
 	@Override
 	public final void createUI(final GLEx g) {
+		this.createUI(g, 0, 0);
+	}
+
+	@Override
+	public final void createUI(final GLEx g, final float offsetX,
+			final float offsetY) {
 		if (this._visible) {
-			this.onManagedPaint(g);
+			this.onManagedPaint(g, offsetX, offsetY);
 		}
 	}
 
@@ -560,7 +584,10 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 		if (this._childrens != null) {
 			final TArray<IEntity> entities = this._childrens;
 			for (int i = entities.size - 1; i >= 0; i--) {
-				entities.get(i).reset();
+				IEntity e = entities.get(i);
+				if (e != null) {
+					e.reset();
+				}
 			}
 		}
 	}
@@ -569,6 +596,10 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	public void close() {
 		if (!this._disposed) {
 			this._disposed = true;
+			if (_image != null) {
+				_image.close();
+				_image = null;
+			}
 		}
 	}
 
@@ -592,25 +623,33 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	}
 
 	protected void paint(final GLEx g) {
+		paint(g, 0, 0);
+	}
+
+	protected void paint(final GLEx g, float offsetX, float offsetY) {
 		if (_alpha < 0.01) {
 			return;
 		}
-		boolean exist = _image != null || (_width > 0 && _height > 0);
+		boolean exist = _image != null || (_width > 0 && _height > 0)
+				|| repaintDraw;
 		if (exist) {
 			boolean update = _rotation != 0
 					|| !(_scaleX == 1f && _scaleY == 1f)
 					|| !(_skewX == 0 && _skewY == 0);
+			float nx = offsetX + this._location.x;
+			float ny = offsetY + this._location.y;
 			if (update) {
 				g.saveTx();
+				g.saveBrush();
 				Affine2f tx = g.tx();
 				final float _rotation = this._rotation;
 				final float scaleX = this._scaleX;
 				final float scaleY = this._scaleY;
 				if ((scaleX != 1) || (scaleY != 1)) {
-					final float scaleCenterX = this._scaleCenterX == -1 ? (this._location.x + this._width / 2f)
-							: this._rotationCenterX;
-					final float scaleCenterY = this._scaleCenterY == -1 ? (this._location.y + this._height / 2f)
-							: this._rotationCenterY;
+					final float scaleCenterX = this._scaleCenterX == -1 ? (nx + this._width / 2f)
+							: nx + this._rotationCenterX;
+					final float scaleCenterY = this._scaleCenterY == -1 ? (ny + this._height / 2f)
+							: ny + this._rotationCenterY;
 					tx.translate(scaleCenterX, scaleCenterY);
 					tx.preScale(scaleX, scaleY);
 					tx.translate(-scaleCenterX, -scaleCenterY);
@@ -618,34 +657,59 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 				final float skewX = this._skewX;
 				final float skewY = this._skewY;
 				if ((skewX != 0) || (skewY != 0)) {
-					final float skewCenterX = this._skewCenterX == -1 ? (this._location.x + this._width / 2f)
-							: this._rotationCenterX;
-					final float skewCenterY = this._skewCenterY == -1 ? (this._location.y + this._height / 2f)
-							: this._rotationCenterY;
+					final float skewCenterX = this._skewCenterX == -1 ? (nx + this._width / 2f)
+							: nx + this._rotationCenterX;
+					final float skewCenterY = this._skewCenterY == -1 ? (ny + this._height / 2f)
+							: ny + this._rotationCenterY;
 					tx.translate(skewCenterX, skewCenterY);
 					tx.preShear(skewX, skewY);
 					tx.translate(-skewCenterX, -skewCenterY);
 				}
 				if (_rotation != 0) {
-					final float rotationCenterX = this._rotationCenterX == -1 ? (this._location.x + this._width / 2f)
-							: this._rotationCenterX;
-					final float rotationCenterY = this._rotationCenterY == -1 ? (this._location.y + this._height / 2f)
-							: this._rotationCenterY;
+					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + this._width / 2f)
+							: nx + this._rotationCenterX;
+					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + this._height / 2f)
+							: ny + this._rotationCenterY;
 					tx.translate(rotationCenterX, rotationCenterY);
 					tx.preRotate(_rotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 			}
-			if (_image != null) {
-				g.draw(_image, _location.x, _location.y, _baseColor);
+			if (repaintDraw) {
+				float tmp = g.alpha();
+				g.setAlpha(_alpha);
+				repaint(g, offsetX, offsetY);
+				g.setAlpha(tmp);
 			} else {
-				g.fillRect(_location.x, _location.y, _width, _height,
-						_baseColor);
+				if (_image != null) {
+					if (_shear == null) {
+						g.draw(_image, nx, ny, _baseColor);
+					} else {
+						g.draw(_image, nx, ny, _width, _height, _shear.x,
+								_shear.y, _shear.width, _shear.height,
+								_baseColor);
+					}
+				} else {
+					g.fillRect(nx, ny, _width, _height, _baseColor);
+				}
 			}
 			if (update) {
+				g.restoreBrush();
 				g.restoreTx();
 			}
 		}
+	}
+
+	public void setRepaint(boolean r) {
+		this.repaintDraw = r;
+	}
+
+	public boolean isRepaint() {
+		return this.repaintDraw;
+	}
+
+	protected void repaint(GLEx g, float offsetX, float offsetY) {
+
 	}
 
 	protected void postPaint(final GLEx g) {
@@ -656,11 +720,11 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 		this._childrens = new TArray<IEntity>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
-	protected void onManagedPaint(final GLEx g) {
+	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
 		final TArray<IEntity> children = this._childrens;
 		if ((children == null) || !this._childrenVisible) {
 			this.prePaint(g);
-			this.paint(g);
+			this.paint(g, offsetX, offsetY);
 			this.postPaint(g);
 		} else {
 			if (this._childrenSortPending) {
@@ -672,16 +736,16 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 			for (; i < childCount; i++) {
 				final IEntity child = children.get(i);
 				if (child.getLayer() < 0) {
-					child.createUI(g);
+					child.createUI(g, offsetX, offsetY);
 				} else {
 					break;
 				}
 			}
 			this.prePaint(g);
-			this.paint(g);
+			this.paint(g, offsetX, offsetY);
 			this.postPaint(g);
 			for (; i < childCount; i++) {
-				children.get(i).createUI(g);
+				children.get(i).createUI(g, offsetX, offsetY);
 			}
 		}
 	}
@@ -769,16 +833,42 @@ public class Entity extends LObject implements ActionBind, IEntity, LRelease,
 	@Override
 	public void setWidth(float w) {
 		this._scaleX = (w / getWidth());
+		this._width = w;
 	}
 
 	@Override
 	public void setHeight(float h) {
 		this._scaleY = (h / getHeight());
+		this._height = h;
 	}
 
-	public void setSize(int w, int h) {
+	public void setSize(float w, float h) {
 		setWidth(w);
 		setHeight(h);
 	}
 
+	public Dimension getDimension() {
+		return new Dimension(this._width, this._height);
+	}
+
+	private void allocateShear() {
+		if (_shear == null) {
+			_shear = new RectBox(0, 0, this._width, this._height);
+		}
+	}
+
+	public RectBox getShear() {
+		allocateShear();
+		return _shear;
+	}
+
+	public void setShear(RectBox s) {
+		allocateShear();
+		this._shear.setBounds(s);
+	}
+
+	public void setShear(float x, float y, float w, float h) {
+		allocateShear();
+		this._shear.setBounds(x, y, w, h);
+	}
 }

@@ -8,7 +8,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class Blood extends LObject implements ISprite {
+public class Blood extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 
@@ -86,8 +86,12 @@ public class Blood extends LObject implements ISprite {
 	}
 
 	private int tmpColor;
-	
+
 	public void createUI(GLEx g) {
+		createUI(g, 0, 0);
+	}
+
+	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}

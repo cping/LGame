@@ -122,7 +122,7 @@ public class LNSprite extends LNNode {
 			pos = super.convertToWorldPos();
 			if (_screenRect.intersects(pos[0], pos[1], getWidth(), getHeight())
 					|| _screenRect.contains(pos[0], pos[1])) {
-				if (_parent != null) {
+				if (_super != null) {
 					rotation = convertToWorldRot();
 					scale = convertToWorldScale();
 				} else {
@@ -167,7 +167,7 @@ public class LNSprite extends LNNode {
 			if (_screenRect.intersects(pos[0], pos[1], getWidth(), getHeight())
 					|| _screenRect.contains(pos[0], pos[1])) {
 				int color = g.color();
-				if (_parent != null) {
+				if (_super != null) {
 					rotation = convertToWorldRot();
 					scale = convertToWorldScale();
 				} else {
