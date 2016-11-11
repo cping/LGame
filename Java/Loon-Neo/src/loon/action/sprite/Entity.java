@@ -17,8 +17,8 @@ import loon.opengl.GLEx;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
-public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRelease,
-		BoxSize {
+public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
+		LRelease, BoxSize {
 
 	/**
 	 * 
@@ -26,7 +26,6 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 	private static final long serialVersionUID = 1L;
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
-
 
 	protected boolean _disposed = false;
 	protected boolean _visible = true;
@@ -37,8 +36,7 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 
 	protected int _idxTag = IEntity.TAG_INVALID;
 
-
-	protected boolean repaintDraw = false;
+	protected boolean _repaintDraw = false;
 	protected TArray<IEntity> _childrens;
 
 	protected RectBox _shear;
@@ -47,8 +45,8 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 	protected float _rotationCenterX = -1;
 	protected float _rotationCenterY = -1;
 
-	protected float _scaleX = 1;
-	protected float _scaleY = 1;
+	protected float _scaleX = 1f;
+	protected float _scaleY = 1f;
 
 	protected float _scaleCenterX = -1;
 	protected float _scaleCenterY = -1;
@@ -114,10 +112,6 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 
 	public void setTexture(LTexture tex) {
 		this._image = tex;
-		if (_image != null) {
-			this._width = _image.width();
-			this._height = _image.height();
-		}
 	}
 
 	@Override
@@ -611,13 +605,6 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 		}
 	}
 
-	@Override
-	public String toString() {
-		final StringBuilder stringBuilder = new StringBuilder();
-		this.toString(stringBuilder);
-		return stringBuilder.toString();
-	}
-
 	protected void prePaint(final GLEx g) {
 
 	}
@@ -631,7 +618,7 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 			return;
 		}
 		boolean exist = _image != null || (_width > 0 && _height > 0)
-				|| repaintDraw;
+				|| _repaintDraw;
 		if (exist) {
 			boolean update = _rotation != 0
 					|| !(_scaleX == 1f && _scaleY == 1f)
@@ -645,6 +632,7 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 				final float _rotation = this._rotation;
 				final float scaleX = this._scaleX;
 				final float scaleY = this._scaleY;
+
 				if ((scaleX != 1) || (scaleY != 1)) {
 					final float scaleCenterX = this._scaleCenterX == -1 ? (nx + this._width / 2f)
 							: nx + this._rotationCenterX;
@@ -675,15 +663,22 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 			}
-			if (repaintDraw) {
+			if (_repaintDraw) {
+				boolean elastic = (_shear != null);
+				if (elastic) {
+					g.setClip(_shear.x, _shear.y, _shear.width, _shear.height);
+				}
 				float tmp = g.alpha();
 				g.setAlpha(_alpha);
 				repaint(g, offsetX, offsetY);
 				g.setAlpha(tmp);
+				if (elastic) {
+					g.clearClip();
+				}
 			} else {
 				if (_image != null) {
 					if (_shear == null) {
-						g.draw(_image, nx, ny, _baseColor);
+						g.draw(_image, nx, ny, _width, _height, _baseColor);
 					} else {
 						g.draw(_image, nx, ny, _width, _height, _shear.x,
 								_shear.y, _shear.width, _shear.height,
@@ -701,11 +696,11 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 	}
 
 	public void setRepaint(boolean r) {
-		this.repaintDraw = r;
+		this._repaintDraw = r;
 	}
 
 	public boolean isRepaint() {
-		return this.repaintDraw;
+		return this._repaintDraw;
 	}
 
 	protected void repaint(GLEx g, float offsetX, float offsetY) {
@@ -758,6 +753,11 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 				entities.get(i).update(elapsedTime);
 			}
 		}
+		onUpdate(elapsedTime);
+	}
+
+	protected void onUpdate(final long elapsedTime) {
+
 	}
 
 	@Override
@@ -789,7 +789,7 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 
 	@Override
 	public boolean isContainer() {
-		return false;
+		return _childrens != null && _childrens.size > 0;
 	}
 
 	@Override
@@ -813,32 +813,20 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 		return _image;
 	}
 
-	@Override
-	public void toString(final StringBuilder s) {
-		s.append(this.getClass().getSimpleName());
-
-		if ((this._childrens != null) && (this._childrens.size > 0)) {
-			s.append(" [");
-			final TArray<IEntity> entities = this._childrens;
-			for (int i = 0; i < entities.size; i++) {
-				entities.get(i).toString(s);
-				if (i < (entities.size - 1)) {
-					s.append(", ");
-				}
-			}
-			s.append("]");
+	public void clearImage() {
+		if (_image != null) {
+			_image.close();
+			_image = null;
 		}
 	}
 
 	@Override
 	public void setWidth(float w) {
-		this._scaleX = (w / getWidth());
 		this._width = w;
 	}
 
 	@Override
 	public void setHeight(float h) {
-		this._scaleY = (h / getHeight());
 		this._height = h;
 	}
 
@@ -857,6 +845,10 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 		}
 	}
 
+	public RectBox getClip() {
+		return getShear();
+	}
+
 	public RectBox getShear() {
 		allocateShear();
 		return _shear;
@@ -870,5 +862,40 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity, LRe
 	public void setShear(float x, float y, float w, float h) {
 		allocateShear();
 		this._shear.setBounds(x, y, w, h);
+	}
+
+	public void setClip(float x, float y, float w, float h) {
+		setShear(x, y, w, h);
+	}
+
+	@Override
+	public void setParent(ISprite s) {
+		if (s instanceof IEntity) {
+			setParent((IEntity) s);
+		}
+	}
+
+	@Override
+	public void toString(final StringBuilder s) {
+		s.append(this.getClass().getSimpleName());
+
+		if ((this._childrens != null) && (this._childrens.size > 0)) {
+			s.append(" [");
+			final TArray<IEntity> entities = this._childrens;
+			for (int i = 0; i < entities.size; i++) {
+				entities.get(i).toString(s);
+				if (i < (entities.size - 1)) {
+					s.append(", ");
+				}
+			}
+			s.append("]");
+		}
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder stringBuilder = new StringBuilder();
+		this.toString(stringBuilder);
+		return stringBuilder.toString();
 	}
 }

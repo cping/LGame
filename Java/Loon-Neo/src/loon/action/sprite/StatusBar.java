@@ -1,16 +1,14 @@
 package loon.action.sprite;
 
-import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 
-public class StatusBar extends LObject<ISprite> implements ISprite {
+public class StatusBar extends Entity {
 
 	private static final long serialVersionUID = 1L;
 
@@ -24,9 +22,7 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 
 	private static int quoteCount = 0;
 
-	protected boolean hit, visible, showValue, dead;
-
-	private int width, height;
+	protected boolean hit, showValue, dead;
 
 	private int value, valueMax, valueMin;
 
@@ -35,8 +31,6 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 	private LColor fontColor = new LColor(LColor.white);
 
 	private String hpString;
-
-	private LTexture texture;
 
 	public StatusBar(int width, int height) {
 		this(0, 0, width, height);
@@ -53,12 +47,12 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 		this.valueMin = value;
 		this.current = (width * value) / valueMax;
 		this.goal = (width * valueMin) / valueMax;
-		this.width = width;
-		this.height = height;
-		this.visible = true;
+		this.setWidth(width);
+		this.setHeight(height);
 		this.hit = true;
-		this.texture = loadBarColor(LColor.gray, LColor.red, LColor.orange);
+		this.setTexture(loadBarColor(LColor.gray, LColor.red, LColor.orange));
 		this.setLocation(x, y);
+		this.setRepaint(true);
 	}
 
 	/**
@@ -104,57 +98,57 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 			}
 			colors.put(hash, texture);
 		}
-		return (this.texture = texture);
+		return (this._image = texture);
 	}
 
 	public void set(int v) {
 		this.value = v;
 		this.valueMax = v;
 		this.valueMin = v;
-		this.current = (width * value) / valueMax;
-		this.goal = (width * valueMin) / valueMax;
+		this.current = (int) ((_width * value) / valueMax);
+		this.goal = (int) ((_width * valueMin) / valueMax);
 	}
 
 	public void empty() {
 		this.value = 0;
 		this.valueMin = 0;
-		this.current = (width * value) / valueMax;
-		this.goal = (width * valueMin) / valueMax;
+		this.current = (int) ((_width * value) / valueMax);
+		this.goal = (int) ((_width * valueMin) / valueMax);
 	}
 
 	private void drawBar(GLEx g, float v1, float v2, float size, float x,
 			float y) {
-		float cv1 = (width * v1) / size;
+		float cv1 = (_width * v1) / size;
 		float cv2;
 		if (v1 == v2) {
 			cv2 = cv1;
 		} else {
-			cv2 = (width * v2) / size;
+			cv2 = (_width * v2) / size;
 		}
-		if (cv1 < width || cv2 < height) {
-			g.draw(texture, x, y, width, height, backPos[0], backPos[1],
+		if (cv1 < _width || cv2 < _height) {
+			g.draw(_image, x, y, _width, _height, backPos[0], backPos[1],
 					backPos[2], backPos[3]);
 		}
 		if (valueMin < value) {
-			if (cv1 == width) {
-				g.draw(texture, x, y, cv1, height, beforePos[0], beforePos[1],
+			if (cv1 == _width) {
+				g.draw(_image, x, y, cv1, _height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			} else {
 				if (!dead) {
-					g.draw(texture, x, y, cv2, height, afterPos[0],
+					g.draw(_image, x, y, cv2, _height, afterPos[0],
 							afterPos[1], afterPos[2], afterPos[3]);
 				}
-				g.draw(texture, x, y, cv1, height, beforePos[0], beforePos[1],
+				g.draw(_image, x, y, cv1, _height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			}
 		} else {
-			if (cv2 == width) {
-				g.draw(texture, x, y, cv2, height, beforePos[0], beforePos[1],
+			if (cv2 == _width) {
+				g.draw(_image, x, y, cv2, _height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			} else {
-				g.draw(texture, x, y, cv1, height, afterPos[0], afterPos[1],
+				g.draw(_image, x, y, cv1, _height, afterPos[0], afterPos[1],
 						afterPos[2], afterPos[3]);
-				g.draw(texture, x, y, cv2, height, beforePos[0], beforePos[1],
+				g.draw(_image, x, y, cv2, _height, beforePos[0], beforePos[1],
 						beforePos[2], beforePos[3]);
 			}
 		}
@@ -167,8 +161,8 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 
 	public void setUpdate(int val) {
 		valueMin = MathUtils.mid(0, val, valueMax);
-		current = (width * value) / valueMax;
-		goal = (width * valueMin) / valueMax;
+		current = (int) ((_width * value) / valueMax);
+		goal = (int) ((_width * valueMin) / valueMax);
 	}
 
 	public void setDead(boolean d) {
@@ -181,30 +175,25 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 		}
 		if (current > goal) {
 			current--;
-			value = MathUtils.mid(valueMin, ((current * valueMax) / width),
-					value);
+			value = MathUtils.mid(valueMin,
+					(int) ((current * valueMax) / _width), value);
 		} else {
 			current++;
-			value = MathUtils.mid(value, ((current * valueMax) / width),
+			value = MathUtils.mid(value, (int) ((current * valueMax) / _width),
 					valueMin);
 		}
 		return true;
 	}
 
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (visible) {
-			drawBar(g, goal, current, width, getX(), getY());
-			if (showValue) {
-				hpString = String.valueOf(value);
-				int current = g.getFont().stringWidth(hpString);
-				int h = g.getFont().getHeight();
-				g.drawString(hpString, (x() + width / 2 - current / 2) + 2,
-						(y() + height / 2 - h), fontColor);
-			}
+	@Override
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		drawBar(g, goal, current, _width, getX(), getY());
+		if (showValue) {
+			hpString = String.valueOf(value);
+			int current = g.getFont().stringWidth(hpString);
+			int h = g.getFont().getHeight();
+			g.drawString(hpString, (x() + _width / 2 - current / 2) + 2, (y()
+					+ _height / 2 - h), fontColor);
 		}
 	}
 
@@ -216,10 +205,6 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 		return this.fontColor;
 	}
 
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), width, height);
-	}
-
 	public boolean isShowHP() {
 		return showValue;
 	}
@@ -228,24 +213,9 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 		this.showValue = showHP;
 	}
 
-	public float getWidth() {
-		return width;
-	}
-
-	public float getHeight() {
-		return height;
-	}
-
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	public void update(long elapsedTime) {
-		if (visible && hit) {
+	@Override
+	public void onUpdate(long elapsedTime) {
+		if (_visible && hit) {
 			state();
 		}
 	}
@@ -256,8 +226,8 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 
 	public void setMaxValue(int valueMax) {
 		this.valueMax = valueMax;
-		this.current = (width * value) / valueMax;
-		this.goal = (width * valueMin) / valueMax;
+		this.current = (int) ((_width * value) / valueMax);
+		this.goal = (int) ((_width * valueMin) / valueMax);
 		this.state();
 	}
 
@@ -267,8 +237,8 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 
 	public void setMinValue(int valueMin) {
 		this.valueMin = valueMin;
-		this.current = (width * value) / valueMax;
-		this.goal = (width * valueMin) / valueMax;
+		this.current = (int) ((_width * value) / valueMax);
+		this.goal = (int) ((_width * valueMin) / valueMax);
 		this.state();
 	}
 
@@ -288,11 +258,9 @@ public class StatusBar extends LObject<ISprite> implements ISprite {
 		this.hit = hit;
 	}
 
-	public LTexture getBitmap() {
-		return texture;
-	}
-
+	@Override
 	public void close() {
+		super.close();
 		synchronized (colors) {
 			quoteCount--;
 			if (quoteCount <= 0) {

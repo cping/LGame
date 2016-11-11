@@ -1,14 +1,11 @@
 package loon.action.sprite;
 
-import loon.LObject;
-import loon.LTexture;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class Blood extends LObject<ISprite> implements ISprite {
+public class Blood extends Entity {
 
 	/**
 	 * 
@@ -27,17 +24,13 @@ public class Blood extends LObject<ISprite> implements ISprite {
 
 	private Drop[] drops;
 
-	private boolean visible;
-
-	private LColor color;
-
 	public Blood(int x, int y) {
 		this(LColor.red, x, y);
 	}
 
 	public Blood(LColor c, int x, int y) {
 		this.setLocation(x, y);
-		this.color = c;
+		this.setColor(c);
 		this.timer = new LTimer(20);
 		this.drops = new Drop[20];
 		this.limit = 50;
@@ -48,7 +41,7 @@ public class Blood extends LObject<ISprite> implements ISprite {
 		this.xSpeed = 0F;
 		this.ySpeed = 0.5F;
 		this.step = 0;
-		this.visible = true;
+		this.setRepaint(true);
 	}
 
 	public void setBoolds(int index, float x, float y, float xs, float ys) {
@@ -61,8 +54,9 @@ public class Blood extends LObject<ISprite> implements ISprite {
 		drops[index].xspeed = xs;
 		drops[index].yspeed = ys;
 	}
-
-	public void update(long elapsedTime) {
+	
+	@Override
+	public void onUpdate(final long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			for (int i = 0; i < drops.length; ++i) {
 				drops[i].xspeed += xSpeed;
@@ -72,10 +66,11 @@ public class Blood extends LObject<ISprite> implements ISprite {
 			}
 			step++;
 			if (step > limit) {
-				this.visible = false;
+				setVisible(false);
 			}
 		}
 	}
+	
 
 	public void setDelay(long delay) {
 		timer.setDelay(delay);
@@ -87,19 +82,13 @@ public class Blood extends LObject<ISprite> implements ISprite {
 
 	private int tmpColor;
 
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
+	@Override
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		tmpColor = g.color();
 		if (_alpha > 0 && _alpha < 1) {
 			g.setAlpha(_alpha);
 		}
-		g.setColor(color);
+		g.setColor(_baseColor);
 		for (int i = 0; i < drops.length; ++i) {
 			g.fillOval((int) drops[i].x, (int) drops[i].y, 2, 2);
 		}
@@ -107,14 +96,6 @@ public class Blood extends LObject<ISprite> implements ISprite {
 			g.setAlpha(1f);
 		}
 		g.setColor(tmpColor);
-	}
-
-	public LColor getColor() {
-		return color;
-	}
-
-	public void setColor(LColor color) {
-		this.color = color;
 	}
 
 	public int getStep() {
@@ -133,14 +114,6 @@ public class Blood extends LObject<ISprite> implements ISprite {
 		this.limit = limit;
 	}
 
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	public RectBox getCollisionBox() {
-		return null;
-	}
-
 	public float getXSpeed() {
 		return xSpeed;
 	}
@@ -155,26 +128,6 @@ public class Blood extends LObject<ISprite> implements ISprite {
 
 	public void setYSpeed(float speed) {
 		this.ySpeed = speed;
-	}
-
-	public float getHeight() {
-		return 0;
-	}
-
-	public float getWidth() {
-		return 0;
-	}
-
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	public void close() {
-
 	}
 
 }

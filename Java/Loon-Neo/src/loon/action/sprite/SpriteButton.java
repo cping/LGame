@@ -1,12 +1,11 @@
 package loon.action.sprite;
 
-import loon.LObject;
 import loon.LTexture;
 import loon.Sound;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class SpriteButton extends LObject<ISprite> implements ISprite {
+public class SpriteButton extends Entity {
 
 	public interface ButtonFunc {
 		public void func(ButtonFunc b);
@@ -16,10 +15,6 @@ public class SpriteButton extends LObject<ISprite> implements ISprite {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public boolean visible = false;
-
-	protected LTexture image = null;
 
 	protected RectBox rectSrc = null;
 
@@ -37,23 +32,20 @@ public class SpriteButton extends LObject<ISprite> implements ISprite {
 
 	protected boolean downed = false;
 
-	protected float scale = 1;
-
 	protected Sound sound;
 
 	private int width, height;
 
-	public SpriteButton(LTexture texture, float scale, int width, int height,
+	public SpriteButton(LTexture tex, float scale, int width, int height,
 			String clickse, Sound sound, String storage, String target,
 			boolean countpage, String exp, ButtonFunc func, int size) {
-		this.image = texture;
-		this.scale = scale;
+		this.setTexture(tex);
+		this.setRepaint(true);
 		this.sound = sound;
-		if (image == null) {
+		if (tex == null) {
 			rectSrc = new RectBox(0, 0, width, height);
 		} else {
-			rectSrc = new RectBox(0, 0, image.getWidth() / size,
-					image.getHeight());
+			rectSrc = new RectBox(0, 0, tex.getWidth() / size, tex.getHeight());
 		}
 		this.width = width;
 		this.height = height;
@@ -111,21 +103,24 @@ public class SpriteButton extends LObject<ISprite> implements ISprite {
 		}
 	}
 
-	public void clear() {
-		if (image != null) {
-			image.close();
-			image = null;
+	public void on() {
+		if (_image != null) {
+			float width = _image.getWidth();
+			rectSrc.setBounds(width / 2, 0, width, _image.getHeight());
+		} else {
+			float width = getWidth();
+			rectSrc.setBounds(width / 2, 0, width, getHeight());
 		}
 	}
 
-	public void on() {
-		int width = image.getWidth();
-		rectSrc.setBounds(width / 2, 0, width, image.getHeight());
-	}
-
 	public void off() {
-		int width = image.getWidth();
-		rectSrc.setBounds(0, 0, width / 2, image.getHeight());
+		if (_image != null) {
+			float width = _image.getWidth();
+			rectSrc.setBounds(0, 0, width / 2, _image.getHeight());
+		} else {
+			float width = getWidth();
+			rectSrc.setBounds(0, 0, width / 2, getHeight());
+		}
 	}
 
 	public void setPos(int x, int y) {
@@ -137,67 +132,14 @@ public class SpriteButton extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void close() {
-		if (image != null) {
-			image.close();
-			image = null;
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (_image == null) {
+			g.fillRect(x() + offsetX, y() + offsetY, width, height, _baseColor);
+		} else {
+			g.draw(_image, x() + offsetX, y() + offsetY, width, height,
+					rectSrc.x, rectSrc.y, rectSrc.width, rectSrc.height,
+					_baseColor);
 		}
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return this.visible;
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (visible) {
-			float old = getAlpha();
-			if (_alpha > 0f && _alpha < 1f) {
-				setAlpha(_alpha);
-			}
-			g.draw(image, x() + offsetX, y() + offsetY, width * scale, height
-					* scale, rectSrc.x, rectSrc.y, rectSrc.width,
-					rectSrc.height);
-			if (_alpha != 1f) {
-				setAlpha(old);
-			}
-		}
-	}
-
-	@Override
-	public void update(long elapsedTime) {
-
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return super.getCollisionArea();
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return image;
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
-	}
-
-	@Override
-	public float getHeight() {
-		return height;
 	}
 
 }

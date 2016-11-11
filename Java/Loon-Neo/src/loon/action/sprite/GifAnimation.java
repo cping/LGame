@@ -1,15 +1,13 @@
 package loon.action.sprite;
 
 import loon.BaseIO;
-import loon.LObject;
 import loon.LTexture;
 import loon.geom.Dimension;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.ArrayByte;
 import loon.utils.GifDecoder;
 
-public class GifAnimation extends LObject<ISprite> implements ISprite {
+public class GifAnimation extends Entity {
 
 	/**
 	 * 
@@ -18,11 +16,7 @@ public class GifAnimation extends LObject<ISprite> implements ISprite {
 
 	private GifDecoder _gifDecoder;
 
-	private int _width, _height;
-
 	private Animation _animation;
-
-	private boolean _visible = true;
 
 	public GifAnimation(ArrayByte bytes) {
 		loadData(bytes);
@@ -44,6 +38,7 @@ public class GifAnimation extends LObject<ISprite> implements ISprite {
 			_animation.addFrame(_gifDecoder.getFrame(i).texture(),
 					delay == 0 ? 100 : delay);
 		}
+		setRepaint(true);
 		return _animation;
 	}
 
@@ -52,57 +47,14 @@ public class GifAnimation extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void update(long elapsedTime) {
-		if (_visible) {
-			_animation.update(elapsedTime);
-		}
-	}
-
-	public Animation getAnimation() {
-		return _animation;
+	public void onUpdate(long elapsedTime) {
+		_animation.update(elapsedTime);
+		setTexture(_animation.getSpriteImage());
 	}
 
 	@Override
-	public boolean isVisible() {
-		return _visible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this._visible = visible;
-	}
-
-	public GifDecoder getGifDecoder() {
-		return _gifDecoder;
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), _width, _height);
-	}
-
-	@Override
-	public float getWidth() {
-		return _height;
-	}
-
-	@Override
-	public float getHeight() {
-		return _width;
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (_visible) {
-			g.draw(_animation.getSpriteImage(), getX() + offsetX, getY()
-					+ offsetY);
-		}
-
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		g.draw(_animation.getSpriteImage(), getX() + offsetX, getY() + offsetY);
 	}
 
 	@Override
@@ -110,12 +62,19 @@ public class GifAnimation extends LObject<ISprite> implements ISprite {
 		return _animation.getSpriteImage();
 	}
 
+	public Animation getAnimation() {
+		return _animation;
+	}
+
+	public GifDecoder getGifDecoder() {
+		return _gifDecoder;
+	}
+
 	@Override
 	public void close() {
 		if (_gifDecoder != null) {
 			_gifDecoder = null;
 		}
-
 	}
 
 }

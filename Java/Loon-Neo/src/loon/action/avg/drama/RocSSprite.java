@@ -20,7 +20,7 @@ public class RocSSprite implements ISprite {
 	private String _name = "RocSSprite";
 
 	private Object tag;
-	
+
 	private boolean _visible = true, _loopScript = false;
 
 	private RocScript _script;
@@ -34,7 +34,7 @@ public class RocSSprite implements ISprite {
 	public RocSSprite(CommandLink link) {
 		this(link.toString(), false, false);
 	}
-	
+
 	public RocSSprite(String script, boolean useScriptFile) {
 		this(script, useScriptFile, false);
 	}
@@ -73,7 +73,7 @@ public class RocSSprite implements ISprite {
 							_result = _script.next();
 							long waitTime = _script.waitSleep();
 							if (waitTime != -1) {
-								if(waitTime == RocFunctions.JUMP_TYPE){
+								if (waitTime == RocFunctions.JUMP_TYPE) {
 									_script.reset();
 									return;
 								}
@@ -149,7 +149,7 @@ public class RocSSprite implements ISprite {
 
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-		
+
 	}
 
 	@Override
@@ -208,14 +208,28 @@ public class RocSSprite implements ISprite {
 	public void setLoopScript(boolean l) {
 		this._loopScript = l;
 	}
-	
+
 	@Override
 	public Object getTag() {
 		return tag;
 	}
-	
-	public void setTag(Object t){
+
+	public void setTag(Object t) {
 		this.tag = t;
+	}
+
+	@Override
+	public void setParent(ISprite s) {
+
+	}
+
+	@Override
+	public ISprite getParent() {
+		return null;
+	}
+
+	public String toString() {
+		return _script.toString();
 	}
 
 }

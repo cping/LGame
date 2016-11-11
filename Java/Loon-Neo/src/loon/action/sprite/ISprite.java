@@ -69,6 +69,10 @@ public interface ISprite extends Serializable, LRelease, XY {
 	String getName();
 
 	Object getTag();
+	
+	ISprite getParent();
 
+	void setParent(ISprite s);
+	
 	void setName(String s);
 }

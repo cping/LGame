@@ -1349,4 +1349,12 @@ public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY, 
 		return null;
 	}
 
+	@Override
+	public void setParent(ISprite s) {
+		if(s instanceof LNNode){
+			setContainer((LNNode)s);
+		}
+	}
+
+
 }

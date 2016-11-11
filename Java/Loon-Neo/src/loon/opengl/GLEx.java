@@ -654,6 +654,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else {
 			this.baseColor = c;
 		}
+		this.setAlpha(LColor.getAlpha(this.baseColor));
 		this.fillColor = c;
 		this.patternTex = null;
 		return this;

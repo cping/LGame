@@ -2216,4 +2216,9 @@ public class RocScript {
 		}
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return "{" + new String(_temp_contexts) + "}";
+	}
 }

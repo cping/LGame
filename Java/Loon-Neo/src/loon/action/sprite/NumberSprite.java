@@ -1,16 +1,9 @@
 package loon.action.sprite;
 
-import loon.LObject;
-import loon.LTexture;
-import loon.LTrans;
-import loon.action.ActionBind;
-import loon.action.map.Field2D;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
-import loon.component.layout.BoxSize;
 import loon.font.IFont;
 import loon.font.LFont;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -24,15 +17,12 @@ import loon.utils.StringUtils;
  *	add(number);
  * 
  */
-public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprite,
-		LTrans, BoxSize {
+public class NumberSprite extends Entity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private boolean visible = true;
 
 	private String label;
 	// 0
@@ -77,10 +67,6 @@ public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprit
 
 	private int unit;
 
-	private LColor color;
-
-	private float scaleX = 1f, scaleY = 1f;
-
 	public NumberSprite(String mes) {
 		this(mes, LColor.white);
 	}
@@ -95,19 +81,13 @@ public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprit
 
 	public NumberSprite(String mes, LColor color, int unit) {
 		this.label = mes;
-		this.color = color;
+		this.setColor(color);
 		this.unit = unit;
+		this.setRepaint(true);
 	}
 
 	public void setUnit(int unit) {
 		this.unit = unit;
-	}
-
-	public void setColor(LColor color) {
-		if (color == null) {
-			return;
-		}
-		this.color = color;
 	}
 
 	public int getUnit() {
@@ -142,7 +122,7 @@ public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprit
 
 	public void drawNumber(GLEx g, int x, int y, int[][] num) {
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 6; j++) {
 				if (num[j][i] == 1) {
@@ -187,7 +167,7 @@ public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprit
 	public void drawNumber(Canvas g, int x, int y, int[][] num) {
 		int tmp1 = g.getFillColor();
 		int tmp2 = g.getStrokeColor();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 6; j++) {
 				if (num[j][i] == 1) {
@@ -212,7 +192,7 @@ public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprit
 			} else {
 				int tmp1 = g.getFillColor();
 				int tmp2 = g.getStrokeColor();
-				g.setColor(color);
+				g.setColor(_baseColor);
 				if (StringUtils.isChinese(number.charAt(0))) {
 					size = unit * 5;
 					offset = unit * 2;
@@ -236,107 +216,19 @@ public class NumberSprite extends LObject<ISprite> implements ActionBind, ISprit
 
 	@Override
 	public void setWidth(float w) {
+		super.setWidth(w);
 		this.unit = (int) MathUtils.max(unit, w);
 	}
 
 	@Override
 	public void setHeight(float h) {
+		super.setHeight(h);
 		this.unit = (int) MathUtils.max(unit, h);
 	}
 
 	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (visible) {
-			drawNumber(g, x() + (int) offsetX, y() + (int) offsetY, label);
-		}
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		if (visible) {
-			drawNumber(g, x(), y(), label);
-		}
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getCollisionArea();
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
-	public Field2D getField2D() {
-		return null;
-	}
-
-	@Override
-	public void setVisible(boolean v) {
-		this.visible = v;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public float getScaleX() {
-		return scaleX;
-	}
-
-	@Override
-	public float getScaleY() {
-		return scaleY;
-	}
-
-	@Override
-	public void setScale(float sx, float sy) {
-		this.scaleX = sx;
-		this.scaleY = sy;
-	}
-
-	@Override
-	public boolean isBounded() {
-		return false;
-	}
-
-	@Override
-	public boolean isContainer() {
-		return false;
-	}
-
-	@Override
-	public boolean inContains(float x, float y, float w, float h) {
-		return false;
-	}
-
-	@Override
-	public RectBox getRectBox() {
-		return getRect(x(), y(), unit, unit);
-	}
-
-	@Override
-	public void update(long elapsedTime) {
-
-	}
-
-	@Override
-	public float getWidth() {
-		return unit;
-	}
-
-	@Override
-	public float getHeight() {
-		return unit;
-	}
-
-	@Override
-	public void close() {
-
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		drawNumber(g, x() + (int) offsetX, y() + (int) offsetY, label);
 	}
 
 }

@@ -1,6 +1,8 @@
 package org.test;
 
+import loon.LSetting;
 import loon.LTransition;
+import loon.LazyLoading;
 import loon.Screen;
 import loon.action.sprite.Sprite;
 import loon.event.FrameLoopEvent;
@@ -41,8 +43,9 @@ public class FrameLoopTest extends Screen {
 
 			role.addChild(s);
 		}
+
 		role.setPivot(55, 72);
-		role.setLocation(155, 55);
+		role.setLocation(175, 75);
 
 		// 添加一个事件到循环中
 		addFrameLoop(new FrameLoopEvent() {

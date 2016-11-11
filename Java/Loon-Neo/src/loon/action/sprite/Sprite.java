@@ -516,9 +516,16 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	/**
 	 * 变更动画
 	 */
-	public void update(long timer) {
+	public void update(long elapsedTime) {
 		if (visible) {
-			animation.update(timer);
+			animation.update(elapsedTime);
+			if (_childList != null && _childList.size > 0) {
+				for (ISprite spr : _childList) {
+					if (spr != null) {
+						spr.update(elapsedTime);
+					}
+				}
+			}
 		}
 	}
 
@@ -644,9 +651,10 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 
 		float width = notImg ? getContainerWidth() : image.getWidth();
 		float height = notImg ? getContainerHeight() : image.getHeight();
-		int tmp = g.color();
+
 		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
 		try {
+			g.saveBrush();
 			float nx = this._location.x + offsetX;
 			float ny = this._location.y + offsetY;
 			if (update) {
@@ -659,7 +667,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 					tx.preScale(scaleX, scaleY);
 					tx.translate(-scaleCenterX, -scaleCenterY);
 				}
-				if (_rotation != 0) {
+				if (_rotation != 0 && notImg) {
 					final float rotationCenterX = this._pivot.x == -1 ? (nx + width / 2f)
 							: nx + this._pivot.x;
 					final float rotationCenterY = this._pivot.y == -1 ? (ny + height / 2f)
@@ -669,9 +677,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 			}
-			if (_alpha > 0 && _alpha < 1) {
-				g.setAlpha(_alpha);
-			}
+			g.setAlpha(_alpha);
 			if (!notImg) {
 				if (filterColor == null) {
 					if (LTrans.TRANS_NONE == transform) {
@@ -696,12 +702,22 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 			if (_childList != null && _childList.size > 0) {
 				for (ISprite spr : _childList) {
 					if (spr != null) {
-						spr.createUI(g, this.getScreenX(), this.getScreenY());
+						float px = 0, py = 0;
+						ISprite parent = spr.getParent();
+						if (parent != null) {
+							px += parent.getX();
+							py += parent.getY();
+							for (; (parent = parent.getParent()) != null;) {
+								px += parent.getX();
+								py += parent.getY();
+							}
+						}
+						spr.createUI(g, px, py);
 					}
 				}
 			}
 		} finally {
-			g.setColor(tmp);
+			g.restoreBrush();
 			if (update) {
 				g.restoreTx();
 			}
@@ -709,11 +725,27 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	}
 
 	public float getScreenX() {
-		return _super != null ? _super.getX() + getX() : getX();
+		float x = 0;
+		ISprite parent = _super;
+		if (parent != null) {
+			x += parent.getX();
+			for (; (parent = parent.getParent()) != null;) {
+				x += parent.getX();
+			}
+		}
+		return x;
 	}
 
 	public float getScreenY() {
-		return _super != null ? _super.getY() + getY() : getY();
+		float y = 0;
+		ISprite parent = _super;
+		if (parent != null) {
+			y += parent.getY();
+			for (; (parent = parent.getParent()) != null;) {
+				y += parent.getY();
+			}
+		}
+		return y;
 	}
 
 	public boolean isVisible() {
@@ -850,6 +882,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 		if (_childList == null) {
 			_childList = new TArray<ISprite>();
 		}
+		spr.setParent(this);
 		_childList.add(spr);
 		childSorter.sort(_childList);
 	}

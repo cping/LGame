@@ -20,14 +20,11 @@
  */
 package loon.action.sprite;
 
-import loon.LObject;
-import loon.LTexture;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.TArray;
 
-public final class StatusBars extends LObject<ISprite> implements ISprite {
+public final class StatusBars extends Entity {
 
 	/**
 	 * 
@@ -36,11 +33,9 @@ public final class StatusBars extends LObject<ISprite> implements ISprite {
 
 	private TArray<StatusBar> barCaches;
 
-	private boolean visible;
-
 	public StatusBars() {
 		this.barCaches = new TArray<StatusBar>(CollectionUtils.INITIAL_CAPACITY);
-		this.visible = true;
+		this.setRepaint(true);
 	}
 
 	public StatusBar addBar(int value, int maxValue, int x, int y, int w, int h) {
@@ -96,20 +91,14 @@ public final class StatusBars extends LObject<ISprite> implements ISprite {
 		}
 	}
 
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
+	@Override
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		int size = barCaches.size;
 		if (size > 0) {
 			synchronized (barCaches) {
 				for (int i = 0; i < size; i++) {
 					StatusBar bar = barCaches.get(i);
-					if (bar != null && bar.visible) {
+					if (bar != null && bar.isVisible()) {
 						bar.createUI(g);
 					}
 				}
@@ -117,16 +106,14 @@ public final class StatusBars extends LObject<ISprite> implements ISprite {
 		}
 	}
 
-	public void update(long elapsedTime) {
-		if (!visible) {
-			return;
-		}
+	@Override
+	public void onUpdate(long elapsedTime) {
 		int size = barCaches.size;
 		if (size > 0) {
 			synchronized (barCaches) {
 				for (int i = 0; i < size; i++) {
 					StatusBar bar = barCaches.get(i);
-					if (bar != null && bar.visible) {
+					if (bar != null) {
 						bar.update(elapsedTime);
 					}
 				}
@@ -134,32 +121,9 @@ public final class StatusBars extends LObject<ISprite> implements ISprite {
 		}
 	}
 
-	public void setVisible(boolean v) {
-		this.visible = v;
-	}
-
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public RectBox getCollisionBox() {
-		return null;
-	}
-
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	public float getWidth() {
-		return 0;
-	}
-
-	public float getHeight() {
-		return 0;
-	}
-
+	@Override
 	public void close() {
-		this.visible = false;
+		super.close();
 		int size = barCaches.size;
 		for (int i = 0; i < size; i++) {
 			StatusBar bar = barCaches.get(i);
