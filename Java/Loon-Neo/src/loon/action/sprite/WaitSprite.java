@@ -1,15 +1,13 @@
 package loon.action.sprite;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class WaitSprite extends LObject<ISprite> implements ISprite {
+public class WaitSprite extends Entity {
 
 	/**
 	 * 
@@ -120,8 +118,6 @@ public class WaitSprite extends LObject<ISprite> implements ISprite {
 
 	private LTimer delay;
 
-	private boolean visible;
-
 	private DrawWait wait;
 
 	private int style;
@@ -136,8 +132,8 @@ public class WaitSprite extends LObject<ISprite> implements ISprite {
 		this.style = s;
 		this.wait = new DrawWait(s, w, h);
 		this.delay = new LTimer(120);
-		this._alpha = 1f;
-		this.visible = true;
+		this.setRepaint(true);
+		this.setSize(w, h);
 		if (s > 1) {
 			int width = w / 2;
 			int height = h / 2;
@@ -251,30 +247,16 @@ public class WaitSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (style < 2) {
+			wait.draw(g, x() + offsetX, y() + offsetY);
+		} else if (cycle != null) {
+			cycle.createUI(g, offsetX, offsetY);
+		}
+
 	}
 
 	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
-		if (style < 2) {
-			if (_alpha > 0.1 && _alpha < 1.0) {
-				g.setAlpha(_alpha);
-				wait.draw(g, x() + offsetX, y() + offsetY);
-				g.setAlpha(1.0F);
-			} else {
-				wait.draw(g, x() + offsetX, y() + offsetY);
-			}
-		} else {
-			if (cycle != null) {
-				cycle.createUI(g, offsetX, offsetY);
-			}
-		}
-	}
-
 	public float getHeight() {
 		if (cycle != null) {
 			return cycle.getCollisionBox().height;
@@ -283,6 +265,7 @@ public class WaitSprite extends LObject<ISprite> implements ISprite {
 		}
 	}
 
+	@Override
 	public float getWidth() {
 		if (cycle != null) {
 			return cycle.getCollisionBox().width;
@@ -291,10 +274,8 @@ public class WaitSprite extends LObject<ISprite> implements ISprite {
 		}
 	}
 
-	public void update(long elapsedTime) {
-		if (!visible) {
-			return;
-		}
+	@Override
+	public void onUpdate(long elapsedTime) {
 		if (cycle != null) {
 			if (cycle.x() != x() || cycle.y() != y()) {
 				cycle.setLocation(x(), y());
@@ -307,48 +288,44 @@ public class WaitSprite extends LObject<ISprite> implements ISprite {
 		}
 	}
 
+	@Override
 	public void setAlpha(float a) {
 		if (cycle != null) {
 			cycle.setAlpha(a);
 		} else {
-			this._alpha = a;
+			super.setAlpha(a);
 		}
 	}
 
+	@Override
 	public float getAlpha() {
 		if (cycle != null) {
 			return cycle.getAlpha();
 		} else {
-			return _alpha;
+			return super.getAlpha();
 		}
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		if (cycle != null) {
 			return cycle.getCollisionBox();
 		} else {
-			return getRect(x(), y(), getWidth(), getHeight());
+			return super.getCollisionBox();
 		}
 	}
 
+	@Override
 	public boolean isVisible() {
-		return cycle != null ? cycle.isVisible() : visible;
+		return cycle != null ? cycle.isVisible() : super.isVisible();
 	}
 
-	public void setVisible(boolean visible) {
+	@Override
+	public void setVisible(boolean pVisible) {
+		super.setVisible(pVisible);
 		if (cycle != null) {
-			cycle.setVisible(visible);
-		} else {
-			this.visible = visible;
+			cycle.setVisible(pVisible);
 		}
-	}
-
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	public void close() {
-
 	}
 
 }

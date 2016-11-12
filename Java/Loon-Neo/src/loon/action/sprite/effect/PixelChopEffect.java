@@ -34,7 +34,7 @@ public class PixelChopEffect extends PixelBaseEffect {
 			return;
 		}
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		float x = t_x - tx;
 		float y = t_y - ty;
 		int f = super.frame;

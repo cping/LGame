@@ -1,7 +1,5 @@
 package loon.action.sprite;
 
-import loon.LObject;
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.geom.Path;
 import loon.geom.Polygon;
@@ -13,7 +11,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Cycle extends LObject<ISprite> implements ISprite {
+public class Cycle extends Entity {
 
 	public final static Cycle getSample(int type, float srcWidth,
 			float srcHeight, float width, float height, float offset,
@@ -235,7 +233,7 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 
 	protected float trailLength, stepsPerFrame;
 
-	protected boolean isUpdate, isVisible, stopped;
+	protected boolean isUpdate, stopped;
 
 	protected TArray<Object[]> data;
 
@@ -247,15 +245,10 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 
 	private Polygon poly;
 
-	private LColor color;
-
 	private Progress last;
-
-	protected float scaleX, scaleY;
 
 	protected float blockWidth, blockHeight, blockHalfWidth, blockHalfHeight;
 
-	protected float width, height;
 
 	class Progress {
 
@@ -293,9 +286,11 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 			data = new TArray<Object[]>(10);
 		}
 
+		this.setRepaint(true);
+		this.setSize(w, h);
 		this.setLocation(x, y);
 		this.timer = new LTimer(25);
-		this.color = LColor.white;
+		this.setColor(LColor.white);
 		this.points = new TArray<Progress>();
 		this.multiplier = 1;
 		this.pointDistance = 0.05f;
@@ -303,9 +298,6 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 		this.stepType = 0;
 		this.stepsPerFrame = 1;
 		this.trailLength = 1;
-		this.scaleX = 1;
-		this.scaleY = 1;
-		this._alpha = 1;
 		this.blockWidth = w;
 		this.blockHeight = h;
 		this.blockHalfWidth = w / 2;
@@ -317,7 +309,6 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 			signatures.put(LINE, new float[] { 1, 1, 1, 1 });
 		}
 		this.setup();
-		this.isVisible = true;
 
 	}
 
@@ -429,7 +420,8 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 
 	}
 
-	public void update(long elapsedTime) {
+	@Override
+	public void onUpdate(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			this.iterateFrame();
 		}
@@ -490,14 +482,9 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 
 	private int tmpColor;
 
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
 
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!isVisible) {
-			return;
-		}
+	@Override
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 
 		this.setup();
 
@@ -524,40 +511,29 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 			if (lineWidth > 0) {
 				g.setLineWidth(lineWidth);
 			}
-			if (scaleX != 1 || scaleY != 1) {
+			if (_scaleX != 1 || _scaleY != 1) {
 				g.saveTx();
-				g.scale(scaleX, scaleY);
+				g.scale(_scaleX, _scaleY);
 			}
 			tmpColor = g.color();
 			if (_alpha > 0 && _alpha < 1) {
 				g.setAlpha(_alpha);
 			}
-			g.setColor(color);
-			step(g, point, indexD, frameD, color, _alpha, offsetX, offsetY);
+			g.setTint(_baseColor);
+			step(g, point, indexD, frameD, _baseColor, _alpha, offsetX, offsetY);
 			if (_alpha != 1f) {
 				g.setAlpha(1f);
 			}
-			g.setColor(tmpColor);
+			g.setTint(tmpColor);
 			if (lineWidth > 0) {
 				g.resetLineWidth();
 			}
-			if (scaleX != 1 || scaleY != 1) {
+			if (_scaleX != 1 || _scaleY != 1) {
 				g.restoreTx();
 			}
 		}
 
-	}
-
-	public LColor getColor() {
-		return color;
-	}
-
-	public void setColor(LColor color) {
-		this.color = color;
-	}
-
-	public void setColor(int pixel) {
-		this.color = new LColor(pixel);
+	
 	}
 
 	public TArray<Object[]> getData() {
@@ -632,22 +608,6 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 		this.points = points;
 	}
 
-	public float getScaleX() {
-		return scaleX;
-	}
-
-	public void setScaleX(float scaleX) {
-		this.scaleX = scaleX;
-	}
-
-	public float getScaleY() {
-		return scaleY;
-	}
-
-	public void setScaleY(float scaleY) {
-		this.scaleY = scaleY;
-	}
-
 	public float getStepsPerFrame() {
 		return stepsPerFrame;
 	}
@@ -694,10 +654,6 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 		this.blockHalfWidth = blockWidth / 2;
 	}
 
-	public LTexture getBitmap() {
-		return null;
-	}
-
 	public Shape getShape() {
 		if (isUpdate) {
 			setup();
@@ -709,42 +665,11 @@ public class Cycle extends LObject<ISprite> implements ISprite {
 		return poly;
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		Shape shape = getShape();
 		return getRect(shape.getX(), shape.getY(), shape.getWidth(),
 				shape.getHeight());
 	}
 
-	public void setWidth(float w) {
-		this.width = w;
-	}
-
-	public void setHeight(float h) {
-		this.height = h;
-	}
-
-	@Override
-	public float getWidth() {
-		return (int) height;
-	}
-
-	@Override
-	public float getHeight() {
-		return (int) width;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.isVisible = visible;
-	}
-
-	@Override
-	public void close() {
-
-	}
 }

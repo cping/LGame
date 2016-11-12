@@ -139,6 +139,8 @@ public interface IEntity extends ISprite, ZIndex {
 
 	public void setColor(final LColor c);
 
+	public void setColor(final int c); 
+
 	public void setColor(final float r, final float g, final float b);
 
 	public void setColor(final float r, final float g, final float b,

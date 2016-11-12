@@ -1,31 +1,23 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
-import loon.action.sprite.ISprite;
+import loon.action.sprite.Entity;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 //此像素非真像素，而是指'像素风'……实际是三角形纹理贴图效果……
-public abstract class PixelBaseEffect extends LObject<ISprite> implements
-		BaseEffect, ISprite {
+public abstract class PixelBaseEffect extends Entity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected boolean visible;
-
 	protected boolean completed;
 
 	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
-
-	protected LColor color;
 
 	protected float[] start;
 
@@ -34,8 +26,6 @@ public abstract class PixelBaseEffect extends LObject<ISprite> implements
 	protected int frame;
 
 	protected LTimer timer;
-
-	protected float width, height;
 
 	protected int limit = 90;
 
@@ -52,13 +42,12 @@ public abstract class PixelBaseEffect extends LObject<ISprite> implements
 	public PixelBaseEffect(LColor c, float x1, float y1, float x2, float y2) {
 		this.reset();
 		this.setEffectPosition(x1, y1, x2, y2);
-		this.color = c;
+		this.setSize(x2,y2);
+		this.setColor(c);
 		this.timer = new LTimer(10);
 		this.frame = 0;
-		this.visible = true;
 		this.completed = false;
-		this.width = x2;
-		this.height = y2;
+		this.setRepaint(true);
 	}
 
 	public void setEffectDelay(long timer) {
@@ -74,13 +63,9 @@ public abstract class PixelBaseEffect extends LObject<ISprite> implements
 		}
 	}
 
+	@Override
 	public void reset() {
-		this.start = new float[2];
-		this.target = new float[2];
-		this.frame = 0;
-	}
-
-	public void update() {
+		super.reset();
 		this.start = new float[2];
 		this.target = new float[2];
 		this.frame = 0;
@@ -108,34 +93,8 @@ public abstract class PixelBaseEffect extends LObject<ISprite> implements
 		return _rotation;
 	}
 
-	public LColor getColor() {
-		return color;
-	}
-
-	public void setColor(LColor color) {
-		this.color = color;
-	}
-
 	@Override
-	public void setVisible(boolean v) {
-		this.visible = v;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		int tmp = g.getPixSkip();
 		boolean useTex = g.alltextures() && LSystem.isHTML5();
 		if (useTex) {
@@ -148,32 +107,12 @@ public abstract class PixelBaseEffect extends LObject<ISprite> implements
 	}
 
 	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), width, height);
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				next();
 			}
 		}
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
-	}
-
-	@Override
-	public float getHeight() {
-		return height;
 	}
 
 	public int getLimit() {
@@ -190,8 +129,7 @@ public abstract class PixelBaseEffect extends LObject<ISprite> implements
 
 	@Override
 	public void close() {
-
-		visible = false;
+		super.close();
 		completed = true;
 	}
 

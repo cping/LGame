@@ -1,16 +1,13 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
-import loon.action.sprite.ISprite;
-import loon.geom.RectBox;
+import loon.action.sprite.Entity;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class NaturalEffect extends LObject<ISprite> implements BaseEffect, ISprite {
+public class NaturalEffect extends Entity implements BaseEffect {
 
 	public static enum NaturalType {
 		Rain, Snow, Petal;
@@ -23,13 +20,13 @@ public class NaturalEffect extends LObject<ISprite> implements BaseEffect, ISpri
 
 	private LTexturePack pack;
 
-	private int width, height, count;
+	private int count;
 
 	private LTimer timer;
 
 	private IKernel[] kernels;
 
-	private boolean visible = true, completed = false;
+	private boolean completed = false;
 
 	/**
 	 * 返回默认数量的飘雪
@@ -184,8 +181,8 @@ public class NaturalEffect extends LObject<ISprite> implements BaseEffect, ISpri
 	public NaturalEffect(NaturalType ntype, int count, int limit, int x, int y,
 			int w, int h) {
 		this.setLocation(x, y);
-		this.width = w;
-		this.height = h;
+		this.setSize(w, h);
+		this.setRepaint(true);
 		this.count = count;
 		this.timer = new LTimer(80);
 		this.pack = new LTexturePack(LSystem.FRAMEWORK_IMG_NAME + "natural.txt");
@@ -215,30 +212,23 @@ public class NaturalEffect extends LObject<ISprite> implements BaseEffect, ISpri
 	}
 
 	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (completed) {
 			return;
 		}
-		if (visible && timer.action(elapsedTime)) {
+		if (timer.action(elapsedTime)) {
 			for (int i = 0; i < count; i++) {
 				kernels[i].update();
 			}
 		}
 	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
 	
 	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (visible) {
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 			for (int i = 0; i < count; i++) {
 				kernels[i]
 						.draw(g, _location.x + offsetX, _location.y + offsetY);
 			}
-		}
 	}
 
 	public long getDelay() {
@@ -249,50 +239,12 @@ public class NaturalEffect extends LObject<ISprite> implements BaseEffect, ISpri
 		timer.setDelay(delay);
 	}
 
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
-	public float getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
 	public IKernel[] getKernels() {
 		return kernels;
 	}
 
 	public void setKernels(IKernel[] kernels) {
 		this.kernels = kernels;
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getCollisionArea();
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
 	}
 
 	@Override
@@ -306,7 +258,7 @@ public class NaturalEffect extends LObject<ISprite> implements BaseEffect, ISpri
 
 	@Override
 	public void close() {
-		this.visible = false;
+		super.close();
 		if (kernels != null) {
 			int size = kernels.length;
 			for (int i = 0; i < size; i++) {

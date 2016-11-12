@@ -1,29 +1,23 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
+import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
-		ISprite {
+public class FadeTileEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final int twidth = 64;
-	private final int hwidth = 32;
+	private int tilewidth, tileheight;
 
-	private int width, height;
-
-	private boolean visible, completed;
+	private boolean completed;
 
 	private int count;
 
@@ -53,17 +47,23 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 
 	public FadeTileEffect(int type, int count, int speed, LColor back,
 			LColor fore) {
+		this(type, count, speed, back, fore, 64, 32);
+	}
+
+	public FadeTileEffect(int type, int count, int speed, LColor back,
+			LColor fore, int w, int h) {
 		this.type = type;
 		this.count = count;
 		this.speed = speed;
+		this.setSize(w, h);
 		this.timer = new LTimer(60);
-		this.width = ((LSystem.viewSize.getWidth() / twidth)) + 1;
-		this.height = ((LSystem.viewSize.getHeight() / hwidth)) + 1;
-		this.conversions = new boolean[width][height];
-		this.temp = new boolean[width][height];
+		this.tilewidth = (int) (((LSystem.viewSize.getWidth() / w)) + 1);
+		this.tileheight = (int) (((LSystem.viewSize.getHeight() / h)) + 1);
+		this.conversions = new boolean[tilewidth][tileheight];
+		this.temp = new boolean[tilewidth][tileheight];
 		this.back = back;
 		this.fore = fore;
-		this.visible = true;
+		this.setRepaint(true);
 		this.reset();
 	}
 
@@ -72,7 +72,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 			if (conversions[x - 1][y]) {
 				return true;
 			}
-		} else if (x < width - 1) {
+		} else if (x < tilewidth - 1) {
 			if (conversions[x + 1][y]) {
 				return true;
 			}
@@ -80,7 +80,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 			if (conversions[x][y - 1]) {
 				return true;
 			}
-		} else if (y < height - 1) {
+		} else if (y < tileheight - 1) {
 			if (conversions[x][y + 1]) {
 				return true;
 			}
@@ -101,17 +101,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 	}
 
 	@Override
-	public float getHeight() {
-		return getContainerWidth();
-	}
-
-	@Override
-	public float getWidth() {
-		return getContainerHeight();
-	}
-
-	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (completed) {
 			return;
 		}
@@ -119,13 +109,13 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 			int count = 0;
 			if (ISprite.TYPE_FADE_OUT == type) {
 				for (int i = 0; i < speed; i++) {
-					for (int x = 0; x < width; x++) {
-						for (int y = 0; y < height; y++) {
+					for (int x = 0; x < tilewidth; x++) {
+						for (int y = 0; y < tileheight; y++) {
 							temp[x][y] = false;
 						}
 					}
-					for (int x = 0; x < width; x++) {
-						for (int y = 0; y < height; y++) {
+					for (int x = 0; x < tilewidth; x++) {
+						for (int y = 0; y < tileheight; y++) {
 							if (!temp[x][y] && conversions[x][y]) {
 								temp[x][y] = true;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
@@ -134,7 +124,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 										temp[x - 1][y] = true;
 									}
 								}
-								if (x < width - 1
+								if (x < tilewidth - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x + 1][y]) {
 										conversions[x + 1][y] = true;
@@ -147,7 +137,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 										temp[x][y - 1] = true;
 									}
 								}
-								if (y < height - 1
+								if (y < tileheight - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x][y + 1]) {
 										conversions[x][y + 1] = true;
@@ -160,8 +150,8 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 					}
 				}
 
-				for (int x = 0; x < width; x++) {
-					for (int y = 0; y < height; y++) {
+				for (int x = 0; x < tilewidth; x++) {
+					for (int y = 0; y < tileheight; y++) {
 						if (!conversions[x][y]) {
 							count++;
 							break;
@@ -173,13 +163,13 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 				}
 			} else {
 				for (int i = 0; i < speed; i++) {
-					for (int x = 0; x < width; x++) {
-						for (int y = 0; y < height; y++) {
+					for (int x = 0; x < tilewidth; x++) {
+						for (int y = 0; y < tileheight; y++) {
 							temp[x][y] = true;
 						}
 					}
-					for (int x = 0; x < width; x++) {
-						for (int y = 0; y < height; y++) {
+					for (int x = 0; x < tilewidth; x++) {
+						for (int y = 0; y < tileheight; y++) {
 							if (temp[x][y] && !conversions[x][y]) {
 								temp[x][y] = false;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
@@ -188,7 +178,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 										temp[x - 1][y] = false;
 									}
 								}
-								if (x < width - 1
+								if (x < tilewidth - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x + 1][y]) {
 										conversions[x + 1][y] = false;
@@ -201,7 +191,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 										temp[x][y - 1] = false;
 									}
 								}
-								if (y < height - 1
+								if (y < tileheight - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x][y + 1]) {
 										conversions[x][y + 1] = false;
@@ -213,18 +203,18 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 						}
 					}
 				}
-				for (int x = 0; x < width; x++) {
-					for (int y = 0; y < height; y++) {
+				for (int x = 0; x < tilewidth; x++) {
+					for (int y = 0; y < tileheight; y++) {
 						if (!conversions[x][y]) {
 							count++;
 							break;
 						}
 					}
 				}
-				if (tmpflag >= height) {
+				if (tmpflag >= tileheight) {
 					completed = true;
 				}
-				if (count >= width) {
+				if (count >= tilewidth) {
 					tmpflag++;
 				}
 
@@ -232,35 +222,29 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 		}
 	}
 
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	public void createUI(GLEx g, float offsetX, float offsetY) {
+	@Override
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (completed) {
-			return;
-		}
-		if (!visible) {
 			return;
 		}
 		int tmp = g.color();
 		g.setColor(back);
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < tilewidth; x++) {
+			for (int y = 0; y < tileheight; y++) {
 				if (usefore) {
 					if (conversions[x][y]) {
 						g.setColor(back);
-						g.fillRect((x * twidth) + offsetX, (y * hwidth)
-								+ offsetY, twidth, hwidth);
+						g.fillRect((x * _width) + offsetX, (y * _height)
+								+ offsetY, _width, _height);
 					} else if (!conversions[x][y] && filledObject(x, y)) {
 						g.setColor(fore);
-						g.fillRect((x * twidth) + offsetX, (y * hwidth)
-								+ offsetY, twidth, hwidth);
+						g.fillRect((x * _width) + offsetX, (y * _height)
+								+ offsetY, _width, _height);
 					}
 				} else {
 					if (conversions[x][y]) {
-						g.fillRect((x * twidth) + offsetX, (y * hwidth)
-								+ offsetY, twidth, hwidth);
+						g.fillRect((x * _width) + offsetX, (y * _height)
+								+ offsetY, _width, _height);
 					}
 				}
 			}
@@ -268,52 +252,34 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 		g.setColor(tmp);
 	}
 
+	@Override
 	public void reset() {
+		super.reset();
 		this.completed = false;
 		this.tmpflag = 0;
 		if (ISprite.TYPE_FADE_OUT == type) {
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			for (int x = 0; x < tilewidth; x++) {
+				for (int y = 0; y < tileheight; y++) {
 					conversions[x][y] = false;
 					temp[x][y] = false;
 				}
 			}
 			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, width) - 1][MathUtils.random(1,
-						height) - 1] = true;
+				conversions[MathUtils.random(1, tilewidth) - 1][MathUtils
+						.random(1, tileheight) - 1] = true;
 			}
 		} else {
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			for (int x = 0; x < tilewidth; x++) {
+				for (int y = 0; y < tileheight; y++) {
 					conversions[x][y] = true;
 					temp[x][y] = true;
 				}
 			}
 			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, width) - 1][MathUtils.random(1,
-						height) - 1] = false;
+				conversions[MathUtils.random(1, tilewidth) - 1][MathUtils
+						.random(1, tileheight) - 1] = false;
 			}
 		}
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getCollisionArea();
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
 	}
 
 	public int getFadeType() {
@@ -326,7 +292,7 @@ public class FadeTileEffect extends LObject<ISprite> implements BaseEffect,
 
 	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		completed = true;
 		conversions = null;
 		temp = null;

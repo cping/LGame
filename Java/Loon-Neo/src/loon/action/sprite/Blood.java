@@ -85,9 +85,6 @@ public class Blood extends Entity {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		tmpColor = g.color();
-		if (_alpha > 0 && _alpha < 1) {
-			g.setAlpha(_alpha);
-		}
 		g.setColor(_baseColor);
 		for (int i = 0; i < drops.length; ++i) {
 			g.fillOval((int) drops[i].x, (int) drops[i].y, 2, 2);

@@ -20,21 +20,16 @@
  */
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
-import loon.action.sprite.ISprite;
+import loon.action.sprite.Entity;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class FadeEffect extends LObject<ISprite> implements BaseEffect, ISprite {
+public class FadeEffect extends Entity implements BaseEffect {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public LColor color;
 
 	public float time;
 
@@ -44,15 +39,7 @@ public class FadeEffect extends LObject<ISprite> implements BaseEffect, ISprite 
 
 	public boolean finished;
 
-	private float opacity;
-
 	private int offsetX, offsetY;
-
-	private int width;
-
-	private int height;
-
-	private boolean visible;
 
 	public static FadeEffect getInstance(int type, LColor c) {
 		return getInstance(type, c, LSystem.viewSize.getWidth(),
@@ -74,12 +61,11 @@ public class FadeEffect extends LObject<ISprite> implements BaseEffect, ISprite 
 	}
 
 	public FadeEffect(LColor c, int delay, int type, int w, int h) {
-		this.visible = true;
 		this.type = type;
 		this.setDelay(delay);
 		this.setColor(c);
-		this.width = w;
-		this.height = h;
+		this.setSize(w, h);
+		this.setRepaint(true);
 	}
 
 	public float getDelay() {
@@ -93,14 +79,6 @@ public class FadeEffect extends LObject<ISprite> implements BaseEffect, ISprite 
 		} else {
 			this.currentFrame = 0;
 		}
-	}
-
-	public LColor getColor() {
-		return color;
-	}
-
-	public void setColor(LColor color) {
-		this.color = color;
 	}
 
 	public float getCurrentFrame() {
@@ -129,79 +107,34 @@ public class FadeEffect extends LObject<ISprite> implements BaseEffect, ISprite 
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.opacity = visible ? 255 : 0;
-		this.visible = visible;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setOpacity(float opacity) {
-		this.opacity = opacity;
-	}
-
-	public float getOpacity() {
-		return opacity;
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float sx, float sy) {
-		if (!visible) {
-			return;
-		}
+	public void repaint(GLEx g, float sx, float sy) {
 		if (finished) {
 			return;
 		}
 		float op = (currentFrame / time);
-		setOpacity(op);
-		if (opacity > 0) {
-			int old = g.color();
-			g.setColor(color.r, color.g, color.b, opacity);
-			g.fillRect(offsetX + this.x() + sx, offsetY + this.y() + sy, width,
-					height);
-			g.setColor(old);
-			return;
-		}
+		int old = g.color();
+		g.setTint(_baseColor.r, _baseColor.g, _baseColor.b, op);
+		g.fillRect(offsetX + this.x() + sx, offsetY + this.y() + sy, _width,
+				_height);
+		g.setTint(old);
+		return;
 	}
 
 	@Override
-	public void update(long timer) {
+	public void onUpdate(long timer) {
 		if (type == TYPE_FADE_IN) {
 			currentFrame--;
 			if (currentFrame == 0) {
-				setOpacity(0);
+				setAlpha(0);
 				finished = true;
 			}
 		} else {
 			currentFrame++;
 			if (currentFrame == time) {
-				setOpacity(0);
+				setAlpha(0);
 				finished = true;
 			}
 		}
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), getWidth(), getHeight());
-	}
-
-	@Override
-	public float getHeight() {
-		return height;
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
 	}
 
 	public int getOffsetX() {
@@ -225,13 +158,8 @@ public class FadeEffect extends LObject<ISprite> implements BaseEffect, ISprite 
 	}
 
 	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		finished = true;
 	}
 

@@ -49,6 +49,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -1015,6 +1016,64 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		return dm.heightPixels;
 	}
 
+
+	/**
+	 * 获得状态栏的高度
+	 * 
+	 * @return
+	 */
+	public int getStatusHeight() {
+		int statusHeight = -1;
+		try {
+			Class<?> clazz = Class.forName("com.android.internal.R$dimen");
+			Object object = clazz.newInstance();
+			int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
+			statusHeight = this.getResources().getDimensionPixelSize(height);
+		} catch (Exception e) {
+		}
+		return statusHeight;
+	}
+
+	/**
+	 * 获取当前屏幕截图，包含状态栏
+	 * 
+	 * @return
+	 */
+	public Bitmap snapShotWithStatusBar() {
+		View view = getWindow().getDecorView();
+		view.setDrawingCacheEnabled(true);
+		view.buildDrawingCache();
+		Bitmap bmp = view.getDrawingCache();
+		int width = getContainerWidth();
+		int height = getContainerHeight();
+		Bitmap bp = null;
+		bp = Bitmap.createBitmap(bmp, 0, 0, width, height);
+		view.destroyDrawingCache();
+		return bp;
+	}
+
+	/**
+	 * 获取当前屏幕截图，不包含状态栏
+	 * 
+	 * @return
+	 */
+	public Bitmap snapShotWithoutStatusBar() {
+		View view = getWindow().getDecorView();
+		view.setDrawingCacheEnabled(true);
+		view.buildDrawingCache();
+		Bitmap bmp = view.getDrawingCache();
+		Rect frame = new Rect();
+		getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+		int statusBarHeight = frame.top;
+		int width = getContainerWidth();
+		int height = getContainerHeight();
+		Bitmap bp = null;
+		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height - statusBarHeight);
+		view.destroyDrawingCache();
+		return bp;
+
+	}
+	
 	@Override
 	public void close() {
 		try {

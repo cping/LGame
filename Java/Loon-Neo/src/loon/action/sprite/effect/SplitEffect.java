@@ -1,18 +1,17 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
-import loon.action.sprite.ISprite;
+import loon.action.sprite.Entity;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
-public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite {
+public class SplitEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 
@@ -21,13 +20,11 @@ public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite
 
 	private Vector2f v1, v2;
 
-	private int width, height, halfWidth, halfHeight, multiples, direction;
+	private int halfWidth, halfHeight, multiples, direction;
 
-	private boolean visible, completed, special;
+	private boolean completed, special;
 
 	private RectBox limit;
-
-	private LTexture texture;
 
 	private LTimer timer;
 
@@ -40,16 +37,15 @@ public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite
 	}
 
 	public SplitEffect(LTexture t, RectBox limit, int d) {
-		this.texture = t;
-		this.width = (int) texture.width();
-		this.height = (int) texture.height();
-		this.halfWidth = width / 2;
-		this.halfHeight = height / 2;
+		this.setRepaint(true);
+		this.setTexture(t);
+		this.setSize(t.width(), t.height());
+		this.halfWidth = (int) (_width / 2f);
+		this.halfHeight = (int) (_height / 2f);
 		this.multiples = 2;
 		this.direction = d;
 		this.limit = limit;
 		this.timer = new LTimer(10);
-		this.visible = true;
 		this.v1 = new Vector2f();
 		this.v2 = new Vector2f();
 		switch (direction) {
@@ -81,17 +77,7 @@ public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite
 	}
 
 	@Override
-	public float getHeight() {
-		return height;
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
-	}
-
-	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				switch (direction) {
@@ -126,20 +112,8 @@ public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite
 	}
 
 	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (!completed) {
-			float tmp = g.alpha();
-			if (_alpha > 0 && _alpha < 1f) {
-				g.setAlpha(_alpha);
-			}
 			final float x1 = v1.x + getX() + offsetX;
 			final float y1 = v1.y + getY() + offsetY;
 
@@ -151,39 +125,28 @@ public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite
 			case Config.RIGHT:
 			case Config.TUP:
 			case Config.TDOWN:
-				g.draw(texture, x1, y1, width, halfHeight, 0, 0, width,
+				g.draw(_image, x1, y1, _width, halfHeight, 0, 0, _width,
 						halfHeight);
-				g.draw(texture, x2, y2, width, halfHeight, 0, halfHeight,
-						width, height);
+				g.draw(_image, x2, y2, _width, halfHeight, 0, halfHeight,
+						_width, _height);
 				break;
 			case Config.UP:
 			case Config.DOWN:
 			case Config.TLEFT:
 			case Config.TRIGHT:
-				g.draw(texture, x1, y1, halfWidth, height, 0, 0, halfWidth,
-						height);
-				g.draw(texture, x2, y2, halfWidth, height, halfWidth, 0, width,
-						height);
+				g.draw(_image, x1, y1, halfWidth, _height, 0, 0, halfWidth,
+						_height);
+				g.draw(_image, x2, y2, halfWidth, _height, halfWidth, 0,
+						_width, _height);
 				break;
 
 			}
-			g.setAlpha(tmp);
 		}
 	}
 
 	@Override
 	public boolean isCompleted() {
 		return completed;
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return texture;
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), width, height);
 	}
 
 	public int getMultiples() {
@@ -195,23 +158,9 @@ public class SplitEffect extends LObject<ISprite> implements BaseEffect, ISprite
 	}
 
 	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		completed = true;
-		if (texture != null) {
-			texture.close();
-			texture = null;
-		}
 	}
 
 }

@@ -386,6 +386,12 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 	}
 
 	@Override
+	public void setColor(final int pColor) {
+		this._baseColor.setColor(pColor);
+		this.onUpdateColor();
+	}
+	
+	@Override
 	public void setAlpha(final float a) {
 		super.setAlpha(a);
 		this._baseColor.a = a;

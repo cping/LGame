@@ -1,17 +1,15 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
+import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISprite {
+public class FadeDotEffect extends Entity implements BaseEffect {
 	/**
 	 * 
 	 */
@@ -95,17 +93,9 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 
 	private boolean finished;
 
-	private LColor back;
-
 	private TArray<Dot> dots = new TArray<Dot>();
 
 	private int count = 4;
-
-	private int width;
-
-	private int height;
-
-	private boolean visible;
 
 	private int type = ISprite.TYPE_FADE_IN;
 
@@ -133,13 +123,12 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 			int w, int h) {
 		this.type = type;
 		this.count = count;
-		this.visible = true;
 		this.setColor(c);
-		this.width = w;
-		this.height = h;
+		this.setSize(w, h);
+		this.setRepaint(true);
 		if (dots.size == 0) {
 			for (int i = 0; i < count; i++) {
-				dots.add(new Dot(type, time, rad, width, height));
+				dots.add(new Dot(type, time, rad, w, h));
 			}
 		}
 	}
@@ -152,13 +141,6 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 		timer.setDelay(delay);
 	}
 
-	public LColor getColor() {
-		return back;
-	}
-
-	public void setColor(LColor color) {
-		this.back = color;
-	}
 
 	@Override
 	public boolean isCompleted() {
@@ -174,20 +156,7 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void update(long elapsedTime) {
-		if (!visible) {
-			return;
-		}
+	public void onUpdate(long elapsedTime) {
 		if (finished) {
 			return;
 		}
@@ -199,16 +168,8 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 	}
 
 	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (finished) {
-			return;
-		}
-		if (!visible) {
 			return;
 		}
 		if (finished) {
@@ -220,7 +181,7 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 			g.setPixSkip(10);
 		}
 		int tmp = g.color();
-		g.setColor(back);
+		g.setColor(_baseColor);
 		for (int i = 0; i < dots.size; i++) {
 			((Dot) dots.get(i)).paint(g, offsetX, offsetY);
 		}
@@ -228,26 +189,6 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 			g.setPixSkip(skip);
 		}
 		g.setColor(tmp);
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), getWidth(), getHeight());
-	}
-
-	@Override
-	public float getHeight() {
-		return height;
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
 	}
 
 	public int getCount() {
@@ -260,7 +201,7 @@ public class FadeDotEffect extends LObject<ISprite> implements BaseEffect, ISpri
 
 	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		finished = true;
 	}
 

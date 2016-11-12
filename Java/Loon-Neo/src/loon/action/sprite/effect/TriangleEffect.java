@@ -1,22 +1,17 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
-import loon.action.sprite.ISprite;
-import loon.geom.RectBox;
+import loon.action.sprite.Entity;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
-public class TriangleEffect extends LObject<ISprite> implements ISprite {
+public class TriangleEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private float width, height;
 
 	private float[][] delta;
 
@@ -31,8 +26,6 @@ public class TriangleEffect extends LObject<ISprite> implements ISprite {
 	private float v_speed;
 
 	private LTimer timer;
-
-	private boolean visible;
 
 	private boolean completed;
 
@@ -59,10 +52,9 @@ public class TriangleEffect extends LObject<ISprite> implements ISprite {
 		} else {
 			this.setAverage(ads);
 		}
-		this.width = w;
-		this.height = h;
+		this.setRepaint(true);
+		this.setSize(w, h);
 		this.timer = new LTimer(10);
-		this.visible = true;
 		this.completed = false;
 	}
 
@@ -166,8 +158,8 @@ public class TriangleEffect extends LObject<ISprite> implements ISprite {
 		float[][] res = drawing(x, y);
 		for (int i = 0; i < res.length; i++) {
 			int index = (i + 1) % 3;
-			g.drawLine(width - res[i][0], height - res[i][1], width
-					- res[index][0], height - res[index][1], 2);
+			g.drawLine(_width - res[i][0], _height - res[i][1], _width
+					- res[index][0], _height - res[index][1], 2);
 		}
 	}
 
@@ -177,8 +169,8 @@ public class TriangleEffect extends LObject<ISprite> implements ISprite {
 		float ys[] = new float[3];
 		final int size = res.length;
 		for (int i = 0; i < size; i++) {
-			xs[i] = width - res[i][0];
-			ys[i] = height - res[i][1];
+			xs[i] = _width - res[i][0];
+			ys[i] = _height - res[i][1];
 
 		}
 		g.fillPolygon(xs, ys, 3);
@@ -211,15 +203,8 @@ public class TriangleEffect extends LObject<ISprite> implements ISprite {
 		return timer.getDelay();
 	}
 
-	public float getHeight() {
-		return (int) height;
-	}
-
-	public float getWidth() {
-		return (int) width;
-	}
-
-	public void update(long elapsedTime) {
+	@Override
+	public void onUpdate(long elapsedTime) {
 		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				next();
@@ -228,45 +213,18 @@ public class TriangleEffect extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		draw(g, this.getX() + offsetX, this.getY() + offsetY);
 	}
 
+	@Override
 	public boolean isCompleted() {
 		return completed;
 	}
 
 	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), width, height);
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		completed = true;
 	}
 

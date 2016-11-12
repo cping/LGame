@@ -644,6 +644,11 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	@Override
 	public void glReadPixels(int x, int y, int width, int height, int format,
 			int type, Buffer pixels) {
+		if ((format != WebGLRenderingContext.RGBA)
+				|| (type != WebGLRenderingContext.UNSIGNED_BYTE)) {
+			throw new RuntimeException(
+					"Only format RGBA and type UNSIGNED_BYTE are currently supported for glReadPixels(...). Create an issue when you need other formats.");
+		}
 		glc.readPixels(x, y, width, height, format, type,
 				getTypedArray(pixels, type, -1));
 	}

@@ -1,27 +1,22 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LTexture;
 import loon.LTextures;
-import loon.action.sprite.ISprite;
-import loon.geom.RectBox;
+import loon.action.sprite.Entity;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
 /**
  * 0.3.2起新增类，百叶窗特效 0--竖屏,1--横屏
  */
-public class CrossEffect extends LObject<ISprite> implements BaseEffect,
-		ISprite {
+public class CrossEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private int width, height;
-
-	private boolean visible, completed;
+	private boolean completed;
 
 	private LTexture otexture, ntexture;
 
@@ -55,15 +50,15 @@ public class CrossEffect extends LObject<ISprite> implements BaseEffect,
 		this.code = c;
 		this.otexture = o;
 		this.ntexture = n;
-		this.width = (int) o.width();
-		this.height = (int) o.height();
-		if (width > height) {
+		_width = (int) o.width();
+		_height = (int) o.height();
+		if (_width > _height) {
 			maxcount = 16;
 		} else {
 			maxcount = 8;
 		}
 		this.timer = new LTimer(160);
-		this.visible = true;
+		this.setRepaint(true);
 	}
 
 	public void setDelay(long delay) {
@@ -80,17 +75,7 @@ public class CrossEffect extends LObject<ISprite> implements BaseEffect,
 	}
 
 	@Override
-	public float getHeight() {
-		return height;
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
-	}
-
-	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (completed) {
 			return;
 		}
@@ -103,80 +88,61 @@ public class CrossEffect extends LObject<ISprite> implements BaseEffect,
 	}
 
 	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (completed) {
+			if (ntexture != null) {
+				g.draw(ntexture, x() + offsetX, y() + offsetY);
+			}
 			return;
 		}
-		float old = g.alpha();
-		try {
-			if (completed) {
-				if (ntexture != null) {
-					if (_alpha > 0 && _alpha < 1) {
-						g.setAlpha(_alpha);
+		part = 0;
+		left = 0;
+		right = 0;
+		tmp = null;
+		switch (code) {
+		default:
+			part = (int) (_width / this.maxcount / 2);
+			for (int i = 0; i <= this.maxcount; i++) {
+				if (i <= this.count) {
+					tmp = this.ntexture;
+					if (tmp == null) {
+						continue;
 					}
-					g.draw(ntexture, x() + offsetX, y() + offsetY);
+				} else {
+					tmp = this.otexture;
 				}
-				return;
+				left = i * 2 * part;
+				right = (int) (_width - ((i + 1) * 2 - 1) * part);
+				g.draw(tmp, x() + left + offsetX, y() + offsetY, part, _height,
+						left, 0, left + part, _height);
+				g.draw(tmp, x() + right + offsetX, y() + offsetY, part,
+						_height, right, 0, right + part, _height);
 			}
-			if (_alpha > 0 && _alpha < 1) {
-				g.setAlpha(_alpha);
-			}
-			part = 0;
-			left = 0;
-			right = 0;
-			tmp = null;
-			switch (code) {
-			default:
-				part = width / this.maxcount / 2;
-				for (int i = 0; i <= this.maxcount; i++) {
-					if (i <= this.count) {
-						tmp = this.ntexture;
-						if (tmp == null) {
-							continue;
-						}
-					} else {
-						tmp = this.otexture;
+			break;
+		case 1:
+			part = (int) (_height / this.maxcount / 2);
+			for (int i = 0; i <= this.maxcount; i++) {
+				if (i <= this.count) {
+					tmp = this.ntexture;
+					if (tmp == null) {
+						continue;
 					}
-					left = i * 2 * part;
-					right = width - ((i + 1) * 2 - 1) * part;
-					g.draw(tmp, x() + left + offsetX, y() + offsetY, part,
-							height, left, 0, left + part, height);
-					g.draw(tmp, x() + right + offsetX, y() + offsetY, part,
-							height, right, 0, right + part, height);
+				} else {
+					tmp = this.otexture;
 				}
-				break;
-			case 1:
-				part = height / this.maxcount / 2;
-				for (int i = 0; i <= this.maxcount; i++) {
-					if (i <= this.count) {
-						tmp = this.ntexture;
-						if (tmp == null) {
-							continue;
-						}
-					} else {
-						tmp = this.otexture;
-					}
-					int up = i * 2 * part;
-					int down = height - ((i + 1) * 2 - 1) * part;
-					g.draw(tmp, offsetX, up, width, part, 0, up, width, up
-							+ part);
-					g.draw(tmp, offsetY, down, width, part, 0, down, width,
-							down + part);
-				}
-				break;
+				int up = i * 2 * part;
+				int down = (int) (_height - ((i + 1) * 2 - 1) * part);
+				g.draw(tmp, offsetX, up, _width, part, 0, up, _width, up + part);
+				g.draw(tmp, offsetY, down, _width, part, 0, down, _width, down
+						+ part);
 			}
-		} finally {
-			g.setAlpha(old);
+			break;
 		}
 
 	}
 
 	public void reset() {
+		super.reset();
 		this.completed = false;
 		this.count = 0;
 	}
@@ -184,21 +150,6 @@ public class CrossEffect extends LObject<ISprite> implements BaseEffect,
 	@Override
 	public LTexture getBitmap() {
 		return otexture;
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), width, height);
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
 	}
 
 	public int getMaxCount() {
@@ -212,7 +163,7 @@ public class CrossEffect extends LObject<ISprite> implements BaseEffect,
 	@Override
 	public void close() {
 
-		visible = false;
+		super.close();
 		completed = true;
 
 		if (otexture != null) {

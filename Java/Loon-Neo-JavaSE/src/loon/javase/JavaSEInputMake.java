@@ -134,7 +134,7 @@ public class JavaSEInputMake extends InputMake {
 	}
 
 	@Override
-	public void callback(LObject o) {
+	public void callback(LObject<?> o) {
 
 	}
 }

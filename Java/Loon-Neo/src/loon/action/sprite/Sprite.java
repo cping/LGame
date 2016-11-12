@@ -653,8 +653,8 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 		float height = notImg ? getContainerHeight() : image.getHeight();
 
 		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
+		int tmp = g.color();
 		try {
-			g.saveBrush();
 			float nx = this._location.x + offsetX;
 			float ny = this._location.y + offsetY;
 			if (update) {
@@ -717,7 +717,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 				}
 			}
 		} finally {
-			g.restoreBrush();
+			g.setColor(tmp);
 			if (update) {
 				g.restoreTx();
 			}

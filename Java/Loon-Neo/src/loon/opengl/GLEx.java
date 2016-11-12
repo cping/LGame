@@ -660,6 +660,24 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx setTint(int r, int g, int b) {
+		return setColor(LColor.getRGB(r, g, b));
+	}
+
+	public GLEx setTint(int r, int g, int b, int a) {
+		return setColor(LColor.getARGB(r, g, b, a));
+	}
+
+	public GLEx setTint(float r, float g, float b, float a) {
+		return setColor(LColor.getARGB((int) (r > 1 ? r : r * 255),
+				(int) (g > 1 ? g : r * 255), (int) (b > 1 ? b : b * 255),
+				(int) (a > 1 ? a : a * 255)));
+	}
+
+	public GLEx setTint(LColor color) {
+		return this.setTint(color.getARGB());
+	}
+	
 	public GLEx setTint(int c) {
 		if (this.baseAlpha != 1f) {
 			this.baseColor = c;

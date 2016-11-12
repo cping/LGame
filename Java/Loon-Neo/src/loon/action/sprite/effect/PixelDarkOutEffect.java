@@ -48,7 +48,7 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 		float x = t_x - tx;
 		float y = t_y - ty;
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		if (super.frame == 40) {
 			de[0].setMoveX(5f);
 			de[1].setMoveX(-5f);

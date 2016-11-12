@@ -736,7 +736,7 @@ public class GWTInputMake extends InputMake {
 	private static final int KEY_SINGLE_QUOTE = 222;
 
 	@Override
-	public void callback(LObject o) {
+	public void callback(LObject<?> o) {
 
 	}
 }

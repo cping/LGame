@@ -1,28 +1,20 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
+import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
-public class FadeSpiralEffect extends LObject<ISprite> implements BaseEffect, ISprite {
+public class FadeSpiralEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private boolean visible;
-
 	private boolean finished;
-
-	private final int twidth = 64;
-	private final int hwidth = 32;
-
 	private int tilewidth;
 	private int tileheight;
 	private int speed;
@@ -36,8 +28,6 @@ public class FadeSpiralEffect extends LObject<ISprite> implements BaseEffect, IS
 
 	private int type;
 
-	private LColor color;
-
 	private LTimer timer;
 
 	public FadeSpiralEffect(int type) {
@@ -49,18 +39,26 @@ public class FadeSpiralEffect extends LObject<ISprite> implements BaseEffect, IS
 	}
 
 	public FadeSpiralEffect(int type, int speed, LColor c) {
-		this.type = type;
-		this.speed = speed;
-		this.color = c;
-		this.timer = new LTimer(30);
-		this.tilewidth = LSystem.viewSize.getWidth() / twidth + 1;
-		this.tileheight = LSystem.viewSize.getHeight() / hwidth + 1;
-		this.conversions = new boolean[tilewidth][tileheight];
-		this.visible = true;
-		this.reset();
+		this(type, speed, c, 64, 32);
 	}
 
+	public FadeSpiralEffect(int type, int speed, LColor c, int w, int h) {
+		this.type = type;
+		this.speed = speed;
+		this.setColor(c);
+		this.timer = new LTimer(30);
+		this.setSize(w, h);
+		this.tilewidth = (int) (LSystem.viewSize.getWidth() / w + 1);
+		this.tileheight = (int) (LSystem.viewSize.getHeight() / h + 1);
+		this.conversions = new boolean[tilewidth][tileheight];
+		this.reset();
+		this.setRepaint(true);
+	}
+
+	@Override
 	public void reset() {
+		int tmp = _baseColor.getARGB();
+		super.reset();
 		if (type == ISprite.TYPE_FADE_IN) {
 			for (int x = 0; x < tilewidth; x++) {
 				for (int y = 0; y < tileheight; y++) {
@@ -78,6 +76,7 @@ public class FadeSpiralEffect extends LObject<ISprite> implements BaseEffect, IS
 		cx = 0;
 		cy = 0;
 		tilescovered = 0;
+		_baseColor.setColor(tmp);
 	}
 
 	public float getDelay() {
@@ -93,57 +92,27 @@ public class FadeSpiralEffect extends LObject<ISprite> implements BaseEffect, IS
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (finished) {
 			return;
 		}
-		int tmp = g.color();
-		g.setColor(color);
 		for (int x = 0; x < tilewidth; x++) {
 			for (int y = 0; y < tileheight; y++) {
 				if (conversions[x][y]) {
-					g.fillRect((x * twidth) + offsetX, (y * hwidth) + offsetY,
-							twidth, hwidth);
+					g.fillRect((x * _width) + offsetX, (y * _height) + offsetY,
+							_width, _height, _baseColor);
 				}
 			}
 		}
-		g.setColor(tmp);
 	}
 
 	@Override
-	public RectBox getCollisionBox() {
-		return getCollisionArea();
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
 	public boolean isCompleted() {
 		return finished;
 	}
 
 	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (finished) {
 			return;
 		}
@@ -230,18 +199,8 @@ public class FadeSpiralEffect extends LObject<ISprite> implements BaseEffect, IS
 	}
 
 	@Override
-	public float getWidth() {
-		return getContainerWidth();
-	}
-
-	@Override
-	public float getHeight() {
-		return getContainerHeight();
-	}
-
-	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		finished = true;
 		conversions = null;
 	}

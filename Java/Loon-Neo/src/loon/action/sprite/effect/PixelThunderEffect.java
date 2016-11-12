@@ -39,11 +39,11 @@ public class PixelThunderEffect extends PixelBaseEffect {
 			return;
 		}
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		float x = t_x - tx;
 		float y = t_y - ty;
 		int f = super.frame;
-		g.setColor(color);
+		g.setColor(_baseColor);
 		if (f <= 20) {
 			float size = y - (getWidth() * (20 - super.frame)) / 20;
 			g.setAlpha(0.5f);

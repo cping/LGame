@@ -125,7 +125,7 @@ public class RoboVMAssets extends Assets {
 				continue;
 			}
 			try {
-				UIImage img = new UIImage(fullPath);
+				UIImage img =  UIImage.getImage(fullPath.toString());
 				if (img != null) {
 					return toData(rsrc.scale, img);
 				}

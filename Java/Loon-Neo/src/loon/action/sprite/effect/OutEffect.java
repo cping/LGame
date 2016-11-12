@@ -1,26 +1,21 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.map.Config;
-import loon.action.sprite.ISprite;
+import loon.action.sprite.Entity;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class OutEffect extends LObject<ISprite> implements ISprite {
+public class OutEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private LTexture texture;
-
-	private boolean visible, completed;
-
-	private int width, height;
+	private boolean completed;
 
 	private int type, multiples;
 
@@ -35,16 +30,16 @@ public class OutEffect extends LObject<ISprite> implements ISprite {
 	}
 
 	public OutEffect(LTexture t, RectBox limit, int code) {
-		this.texture = t;
+		this.setTexture(t);
+		this.setSize(t.width(), t.height());
+		this.setRepaint(true);
 		this.type = code;
-		this.width = (int)t.width();
-		this.height = (int)t.height();
 		this.multiples = 1;
 		this.limit = limit;
-		this.visible = true;
 	}
 
-	public void update(long elapsedTime) {
+	@Override
+	public void onUpdate(long elapsedTime) {
 		if (!completed) {
 			switch (type) {
 			case Config.DOWN:
@@ -72,7 +67,7 @@ public class OutEffect extends LObject<ISprite> implements ISprite {
 				move_right(multiples);
 				break;
 			}
-			if (!limit.intersects(x(), y(), width, height)) {
+			if (!limit.intersects(x(), y(), _width, _height)) {
 				completed = true;
 			}
 		}
@@ -82,38 +77,11 @@ public class OutEffect extends LObject<ISprite> implements ISprite {
 		return completed;
 	}
 
-	public float getHeight() {
-		return width;
-	}
-
-	public float getWidth() {
-		return height;
-	}
-
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-	
-	public void createUI(GLEx g,float offsetX,float offsetY) {
-		if (!visible) {
-			return;
-		}
+	@Override
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (!completed) {
-			float tmp = g.alpha();
-			if (_alpha > 0 && _alpha < 1) {
-				g.setAlpha(_alpha);
-			}
-			g.draw(texture, x()+offsetX, y()+offsetY);
-			g.setAlpha(tmp);
+			g.draw(_image, x() + offsetX, y() + offsetY);
 		}
-	}
-
-	public LTexture getBitmap() {
-		return texture;
-	}
-
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), width, height);
 	}
 
 	public int getMultiples() {
@@ -124,23 +92,15 @@ public class OutEffect extends LObject<ISprite> implements ISprite {
 		this.multiples = multiples;
 	}
 
-	public boolean isVisible() {
-		return visible;
+	@Override
+	public boolean isCompleted() {
+		return completed;
 	}
 
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
+	@Override
 	public void close() {
-
-		visible = false;
+		super.close();
 		completed = true;
-	
-		if (texture != null) {
-			texture.close();
-			texture = null;
-		}
 	}
 
 }

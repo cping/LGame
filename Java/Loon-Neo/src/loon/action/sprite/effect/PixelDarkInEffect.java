@@ -49,7 +49,7 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 		float x = t_x - tx;
 		float y = t_y - ty;
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		if (super.frame < 40) {
 			int size = ts.length;
 			for (int i = 0; i < size; i++) {

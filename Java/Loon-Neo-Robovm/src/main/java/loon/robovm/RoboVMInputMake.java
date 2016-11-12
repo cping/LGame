@@ -75,7 +75,7 @@ public class RoboVMInputMake extends InputMake {
 	}
 	
 	@Override
-	public void callback(LObject o) {
+	public void callback(LObject<?> o) {
 
 	}
 }

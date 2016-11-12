@@ -44,7 +44,7 @@ public class PixelWindEffect extends PixelBaseEffect{
 			super.completed = true;
 		}
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		for (int i = 0; i < sd.length; i++) {
 			if (sd[i] != null) {
 				continue;
@@ -62,11 +62,11 @@ public class PixelWindEffect extends PixelBaseEffect{
 			int x = MathUtils.random(32) + 16;
 			float y = x / 10;
 			sd[i] = new TriangleEffect(res, x, y, MathUtils.random(24) + 24);
-			sd[i].setPosY(MathUtils.random(height));
+			sd[i].setPosY(MathUtils.random(_height));
 			sd[i].setPosX(0f);
-			colors[i] = new LColor(color.getRed(),
-					(int) (color.g * (128 + MathUtils.random(128))),
-					(int) (color.b * MathUtils.random(128)));
+			colors[i] = new LColor(_baseColor.getRed(),
+					(int) (_baseColor.g * (128 + MathUtils.random(128))),
+					(int) (_baseColor.b * MathUtils.random(128)));
 		}
 
 		for (int j = 0; j < sd.length; j++) {
@@ -78,7 +78,7 @@ public class PixelWindEffect extends PixelBaseEffect{
 				continue;
 			}
 			sd[j].drawPaint(g, 0, 0);
-			if (sd[j].getPosX() > width || sd[j].getPosY() > height) {
+			if (sd[j].getPosX() > _width || sd[j].getPosY() > _height) {
 				sd[j] = null;
 			}
 		}

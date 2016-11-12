@@ -1,11 +1,8 @@
 package loon.action.sprite.effect;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
-import loon.action.sprite.ISprite;
+import loon.action.sprite.Entity;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
@@ -13,7 +10,7 @@ import loon.utils.timer.LTimer;
 /**
  * 0.3.2版新增类，单一色彩的圆弧渐变特效
  */
-public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
+public class ArcEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 
@@ -28,11 +25,7 @@ public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	private int[] sign = { 1, -1 };
 
-	private int width, height;
-
-	private LColor color;
-
-	private boolean visible, completed;
+	private boolean completed;
 
 	private LTimer timer;
 
@@ -42,11 +35,10 @@ public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 
 	public ArcEffect(LColor c, int x, int y, int width, int height) {
 		this.setLocation(x, y);
-		this.width = width;
-		this.height = height;
+		this.setSize(width, height);
 		this.timer = new LTimer(200);
-		this.color = c == null ? LColor.black : c;
-		this.visible = true;
+		this.setColor(c == null ? LColor.black : c);
+		this.setRepaint(true);
 	}
 
 	public void setDelay(long delay) {
@@ -62,26 +54,8 @@ public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 		return completed;
 	}
 
-	public LColor getColor() {
-		return color;
-	}
-
-	public void setColor(LColor color) {
-		this.color = color;
-	}
-
 	@Override
-	public float getHeight() {
-		return height;
-	}
-
-	@Override
-	public float getWidth() {
-		return width;
-	}
-
-	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (completed) {
 			return;
 		}
@@ -96,39 +70,28 @@ public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 	private int tmpColor;
 
 	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-	
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
-			return;
-		}
+	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (completed) {
 			return;
 		}
 		tmpColor = g.color();
-		if (_alpha > 0 && _alpha < 1f) {
-			g.setAlpha(_alpha);
-		}
-		g.setColor(color);
+		g.setColor(_baseColor);
 		int tmp = g.getPixSkip();
 		boolean useTex = LSystem.isHTML5();
 		if (useTex) {
 			g.setPixSkip(8);
 		}
 		if (count <= 1) {
-			g.fillRect(x() + offsetX, y() + offsetY, width, height);
+			g.fillRect(x() + offsetX, y() + offsetY, _width, _height);
 		} else {
 			float deg = 360f / this.div * this.count;
 			if (deg < 360) {
-				float length = MathUtils.sqrt(MathUtils.pow(width / 2, 2.0f)
-						+ MathUtils.pow(height / 2, 2.0f));
-				float x = getX() + (width / 2 - length);
-				float y = getY() + (height / 2 - length);
-				float w = width / 2 + length - x;
-				float h = height / 2 + length - y;
+				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f)
+						+ MathUtils.pow(_height / 2, 2.0f));
+				float x = getX() + (_width / 2 - length);
+				float y = getY() + (_height / 2 - length);
+				float w = _width / 2 + length - x;
+				float h = _height / 2 + length - y;
 				g.fillArc(x + offsetX, y + offsetY, w, h, 20, 0,
 						this.sign[this.turn] * deg);
 			}
@@ -136,14 +99,12 @@ public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 		if (useTex) {
 			g.setPixSkip(tmp);
 		}
-		if (_alpha != 1f) {
-			g.setAlpha(1f);
-		}
 		g.setColor(tmpColor);
-
 	}
 
+	@Override
 	public void reset() {
+		super.reset();
 		this.completed = false;
 		this.count = 0;
 		this.turn = 1;
@@ -158,28 +119,8 @@ public class ArcEffect extends LObject<ISprite> implements BaseEffect, ISprite {
 	}
 
 	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getRect(x(), y(), width, height);
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		completed = true;
 	}
 

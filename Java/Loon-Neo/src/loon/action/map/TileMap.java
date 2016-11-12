@@ -598,27 +598,18 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 			return;
 		}
 		if (getX() != 0 || getY() != 0) {
-			g.translate(getX(), getY());
+			g.translate(getX() + offsetX, getY() + offsetY);
 		}
 		draw(g, null, (int) (offsetX + offset.getX()),
 				(int) (offsetY + offset.getY()));
 		if (getX() != 0 || getY() != 0) {
-			g.translate(-getX(), -getY());
+			g.translate(-getX() + offsetX, -getY() + offsetY);
 		}
 
 	}
 
 	public void createUI(GLEx g) {
-		if (!visible) {
-			return;
-		}
-		if (getX() != 0 || getY() != 0) {
-			g.translate(getX(), getY());
-		}
-		draw(g);
-		if (getX() != 0 || getY() != 0) {
-			g.translate(-getX(), -getY());
-		}
+		createUI(g, 0, 0);
 	}
 
 	public RectBox getCollisionBox() {

@@ -96,7 +96,7 @@ public class PixelSnowEffect extends PixelBaseEffect {
 		float x = t_x - tx;
 		float y = t_y - ty;
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		if (onlySnow) {
 			for (int i = 0; i < dif.length; i++) {
 				g.setColor(colors[i]);
