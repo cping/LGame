@@ -15,11 +15,6 @@ import loon.opengl.GLEx;
 public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		ActionBind, XY, BoxSize {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static float morphX = 1f, morphY = 1f;
 
 	protected boolean _visible = true;

@@ -14,11 +14,6 @@ import loon.utils.timer.LTimer;
 
 public class MovieClip extends DisplayObject implements LRelease {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private TextureData _ssd = null;
 
 	private MovieSpriteSheet _sheet = null;

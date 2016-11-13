@@ -13,11 +13,6 @@ import loon.utils.timer.LTimer;
 
 public class SplitEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private Vector2f v1, v2;
 
 	private int halfWidth, halfHeight, multiples, direction;

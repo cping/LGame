@@ -25,11 +25,6 @@ import loon.geom.Vector2f;
 
 public class JumpObject extends ActionObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static interface JumpListener {
 
 		public void update(long elapsedTime);

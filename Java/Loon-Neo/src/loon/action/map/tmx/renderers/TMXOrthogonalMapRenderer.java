@@ -14,10 +14,6 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
 public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public TMXOrthogonalMapRenderer(TMXMap map) {
 		super(map);

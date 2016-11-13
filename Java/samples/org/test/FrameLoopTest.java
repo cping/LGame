@@ -7,6 +7,7 @@ import loon.Screen;
 import loon.action.sprite.Sprite;
 import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimerContext;
@@ -26,6 +27,11 @@ public class FrameLoopTest extends Screen {
 
 	@Override
 	public void onLoad() {
+
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
+		
+		add(MultiScreenTest.getBackButton(this,1));
 
 		float layoutRadius = 70;
 		float radianUnit = MathUtils.PI / 2;

@@ -331,6 +331,14 @@ public abstract class LObject<T> implements XY, ZIndex {
 		this._layer = z;
 	}
 
+	public void setZ(int z) {
+		setLayer(-z);
+	}
+	
+	public void setZOrder(int z) {
+		setLayer(-z);
+	}
+
 	public void move_45D_up() {
 		move_45D_up(1);
 	}

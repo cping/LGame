@@ -20,10 +20,6 @@ import loon.utils.TArray;
 
 public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2419037580406911982L;
 
 	public static interface DrawListener {
 

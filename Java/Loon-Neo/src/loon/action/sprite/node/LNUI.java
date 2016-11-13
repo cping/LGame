@@ -24,11 +24,6 @@ import loon.geom.Vector2f;
 
 public class LNUI extends LNNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public float _bold;
 
 	protected int _touchID;

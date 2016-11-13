@@ -26,10 +26,7 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
 public class FadeEffect extends Entity implements BaseEffect {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 
 	public float time;
 

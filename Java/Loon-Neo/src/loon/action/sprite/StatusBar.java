@@ -10,8 +10,6 @@ import loon.utils.MathUtils;
 
 public class StatusBar extends Entity {
 
-	private static final long serialVersionUID = 1L;
-
 	private final static IntMap<LTexture> colors = new IntMap<LTexture>(10);
 
 	private final static float[] backPos = { 0, 0, 3, 3 };

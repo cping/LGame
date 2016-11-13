@@ -71,7 +71,7 @@ public class SysInputTest extends Screen {
 
 		add(click2);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 
 	}
 

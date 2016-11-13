@@ -73,7 +73,7 @@ public class LayoutTest extends Screen {
 			}
 		});
 		
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

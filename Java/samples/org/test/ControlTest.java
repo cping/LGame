@@ -71,7 +71,7 @@ public class ControlTest extends Screen {
 		});
 		add(c);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

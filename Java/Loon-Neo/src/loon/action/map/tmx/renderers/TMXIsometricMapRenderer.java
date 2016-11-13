@@ -15,11 +15,6 @@ import loon.opengl.GLEx;
 
 public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private Vector2f tempVector = new Vector2f();
 
 	public TMXIsometricMapRenderer(TMXMap map) {

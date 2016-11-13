@@ -25,10 +25,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
 public class LNProgressBar extends LNSprite {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
 	private float _percent;
 	private BarType _type;
 

@@ -37,7 +37,7 @@ public class ParticleTest extends Screen {
 		particleSystem.addEmitter(new SimpleFireEmitter(200, 300, 20));
 		add(particleSystem);
 		
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

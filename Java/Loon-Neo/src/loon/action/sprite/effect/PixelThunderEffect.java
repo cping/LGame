@@ -6,11 +6,6 @@ import loon.opengl.GLEx;
 
 public class PixelThunderEffect extends PixelBaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private float t_x, t_y;
 
 	private float width = 3;

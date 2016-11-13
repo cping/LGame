@@ -10,11 +10,6 @@ import loon.opengl.GLEx;
 
 public class OutEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private boolean completed;
 
 	private int type, multiples;

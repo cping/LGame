@@ -28,7 +28,7 @@ public class SessionTest extends Screen {
 		session.set("count", count += 1);
 		session.save();
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

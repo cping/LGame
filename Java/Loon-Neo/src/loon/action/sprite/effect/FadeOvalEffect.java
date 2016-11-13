@@ -9,10 +9,6 @@ import loon.utils.timer.LTimer;
 
 public class FadeOvalEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private static final LColor[] OVAL_COLORS = new LColor[5];
 
 	private float max_time;

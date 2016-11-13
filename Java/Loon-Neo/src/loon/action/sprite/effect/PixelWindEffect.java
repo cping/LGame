@@ -7,13 +7,7 @@ import loon.utils.MathUtils;
 
 public class PixelWindEffect extends PixelBaseEffect{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private int rand;
-
 
 	private TriangleEffect[] sd;
 

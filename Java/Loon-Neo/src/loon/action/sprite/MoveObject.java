@@ -35,11 +35,6 @@ import loon.utils.timer.LTimer;
 
 public class MoveObject extends ActionObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private boolean allDirection;
 
 	private TArray<Vector2f> findPath = new TArray<Vector2f>();

@@ -28,11 +28,6 @@ import loon.utils.ObjectMap;
 
 public class LNButton extends LNUI {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	protected ObjectMap<String, LNNode> _buttonElement = new ObjectMap<String, LNNode>();
 
 	protected ObjectMap<String, LNAction> _touchBeganAction = new ObjectMap<String, LNAction>();

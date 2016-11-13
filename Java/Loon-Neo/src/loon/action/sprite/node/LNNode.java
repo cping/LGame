@@ -45,14 +45,9 @@ import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY, BoxSize {
+public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY,
+		BoxSize {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	
 	public void down(GameTouch e) {
 
 	}
@@ -1351,10 +1346,11 @@ public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY, 
 
 	@Override
 	public void setParent(ISprite s) {
-		if(s instanceof LNNode){
-			setContainer((LNNode)s);
+		if (s instanceof LNNode) {
+			setContainer((LNNode) s);
+		} else if (s instanceof ISprite) {
+			setContainer(new SpriteToNode(s));
 		}
 	}
-
 
 }

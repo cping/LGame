@@ -22,6 +22,8 @@ import loon.utils.timer.LTimerContext;
 
 public class MultiScreenTest extends Screen {
 
+	private int page = 0;
+
 	@Override
 	public LTransition onTransition() {
 		return LTransition.newPixelThunder(LColor.yellow);
@@ -30,10 +32,9 @@ public class MultiScreenTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 
-
 	}
 
-	public static LClickButton getBackButton(final Screen screen) {
+	public static LClickButton getBackButton(final Screen screen, final int page) {
 
 		LClickButton back = new LClickButton("Back", screen.getWidth() - 100,
 				screen.getHeight() - 70, 80, 50);
@@ -68,7 +69,10 @@ public class MultiScreenTest extends Screen {
 										// 事件完毕后，调用screen标记为main的
 										@Override
 										public void stop(ActionBind o) {
-											screen.runScreen("main");
+											Screen s = screen.runScreen("main");
+											if (s != null) {
+												s.index = page;
+											}
 											// 还原当前动作角色旋转角度为0
 											o.setRotation(0);
 										}
@@ -134,19 +138,22 @@ public class MultiScreenTest extends Screen {
 
 	}
 
-	final String[] names = { "MessageBox", "Live2d", "Action", "Effect",
+	final String[] page0 = { "MessageBox", "Live2d", "Action", "Effect",
 			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
 			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea", "Progress",
 			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
 			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical",
 			"LNode2", "Input", "Depth", "Canvas", "PlayerClick", "MoveClip",
-			"TextureImage","Session" };
+			"TextureImage", "Session" };
+
+	final String[] page1 = { "Animation","FrameLoop","Script" };
 
 	static BMFont info_font;
 
 	@Override
 	public void onLoad() {
+		String[][] pages = { page0, page1 };
 		// 设置默认字体大小为15
 		LFont.setDefaultFont(LFont.getFont(15));
 		// 使用图片字体(如果不设置，则loon默认使用当前系统字体)
@@ -163,58 +170,68 @@ public class MultiScreenTest extends Screen {
 		int index = 0;
 		// 构建一个通用的监听器
 		MyClickListener clickListener = new MyClickListener();
-		// 预先设定多个Screen，并赋予名称
-		addScreen("main", this);
-		addScreen(names[index++], new LMessageBoxTest());
-		addScreen(names[index++], new Live2dTest());
-		addScreen(names[index++], new ActionEventTest());
-		addScreen(names[index++], new EffectTest());
-		addScreen(names[index++], new StageTest.ScreenTest());
-		addScreen(names[index++], new TileMapTest());
-		addScreen(names[index++], new SpriteBatchTest());
-		addScreen(names[index++], new SpriteBatchScreenTest());
-		addScreen(names[index++], new BMFontTest());
-		addScreen(names[index++], new LayoutTest());
-		addScreen(names[index++], new TableTest());
-		addScreen(names[index++], new MenuTest());
-		addScreen(names[index++], new DecideNameTest());
-		addScreen(names[index++], new ToastTest());
-		addScreen(names[index++], new ListTest());
-		addScreen(names[index++], new SpriteTest());
-		addScreen(names[index++], new LTexturePackTest());
-		addScreen(names[index++], new NodeTest());
-		addScreen(names[index++], new ScrollTest());
-		addScreen(names[index++], new CycleTest());
-		addScreen(names[index++], new TextAreaTest());
-		addScreen(names[index++], new ProgressTest());
-		addScreen(names[index++], new ParticleTest());
-		addScreen(names[index++], new SelectIconTest());
-		addScreen(names[index++], new ControlTest());
-		addScreen(names[index++], new JSonResTest());
-		addScreen(names[index++], new SpriteSheetFontTest());
-		addScreen(names[index++], new ParticleConfigTest());
-		addScreen(names[index++], new RippleTouchTest());
-		addScreen(names[index++], new SoundTest());
-		addScreen(names[index++], new GestureTest());
-		addScreen(names[index++], new PhysicalTest());
-		addScreen(names[index++], new Node2Test());
-		addScreen(names[index++], new SysInputTest());
-		addScreen(names[index++], new DepthTest());
-		addScreen(names[index++], new CanvasLayerTest());
-		addScreen(names[index++], new PlayerClickTest());
-		addScreen(names[index++], new MovieClipTest());
-		addScreen(names[index++], new TextureImageTest());
-		addScreen(names[index++], new SessionTest());
-		
+		Screen screen = getScreen("main");
+		if (screen == null) {
+			// 预先设定多个Screen，并赋予名称
+			addScreen("main", this);
+		} else {
+			page = screen.index;
+		}
+		if (page == 0) {
+			addScreen(page0[index++], new LMessageBoxTest());
+			addScreen(page0[index++], new Live2dTest());
+			addScreen(page0[index++], new ActionEventTest());
+			addScreen(page0[index++], new EffectTest());
+			addScreen(page0[index++], new StageTest.ScreenTest());
+			addScreen(page0[index++], new TileMapTest());
+			addScreen(page0[index++], new SpriteBatchTest());
+			addScreen(page0[index++], new SpriteBatchScreenTest());
+			addScreen(page0[index++], new BMFontTest());
+			addScreen(page0[index++], new LayoutTest());
+			addScreen(page0[index++], new TableTest());
+			addScreen(page0[index++], new MenuTest());
+			addScreen(page0[index++], new DecideNameTest());
+			addScreen(page0[index++], new ToastTest());
+			addScreen(page0[index++], new ListTest());
+			addScreen(page0[index++], new SpriteTest());
+			addScreen(page0[index++], new LTexturePackTest());
+			addScreen(page0[index++], new NodeTest());
+			addScreen(page0[index++], new ScrollTest());
+			addScreen(page0[index++], new CycleTest());
+			addScreen(page0[index++], new TextAreaTest());
+			addScreen(page0[index++], new ProgressTest());
+			addScreen(page0[index++], new ParticleTest());
+			addScreen(page0[index++], new SelectIconTest());
+			addScreen(page0[index++], new ControlTest());
+			addScreen(page0[index++], new JSonResTest());
+			addScreen(page0[index++], new SpriteSheetFontTest());
+			addScreen(page0[index++], new ParticleConfigTest());
+			addScreen(page0[index++], new RippleTouchTest());
+			addScreen(page0[index++], new SoundTest());
+			addScreen(page0[index++], new GestureTest());
+			addScreen(page0[index++], new PhysicalTest());
+			addScreen(page0[index++], new Node2Test());
+			addScreen(page0[index++], new SysInputTest());
+			addScreen(page0[index++], new DepthTest());
+			addScreen(page0[index++], new CanvasLayerTest());
+			addScreen(page0[index++], new PlayerClickTest());
+			addScreen(page0[index++], new MovieClipTest());
+			addScreen(page0[index++], new TextureImageTest());
+			addScreen(page0[index++], new SessionTest());
+		} else if (page == 1) {
+			addScreen(page1[index++], new AnimationTest());
+			addScreen(page1[index++], new FrameLoopTest());
+			addScreen(page1[index++], new RocScriptTest());
+		}
 		// 默认按钮大小为100x25
 		int btnWidth = 100;
 		int btnHeight = 25;
 		// 添加一组按钮布局，并返回按钮对象
-		TArray<LClickButton> clicks = LayoutManager.elementButtons(this, names,
-				15, 25, btnWidth, btnHeight, clickListener,
+		TArray<LClickButton> clicks = LayoutManager.elementButtons(this,
+				pages[page], 15, 25, btnWidth, btnHeight, clickListener,
 				LSystem.viewSize.getHeight() - btnHeight);
 
-		//final TArray<ActionTween> tweens = new TArray<ActionTween>();
+		// final TArray<ActionTween> tweens = new TArray<ActionTween>();
 
 		// 首先让按钮不可见
 		for (LClickButton btn : clicks) {
@@ -222,7 +239,7 @@ public class MultiScreenTest extends Screen {
 			// 使用图片字体
 			btn.setFont(info_font);
 			// 为按钮设置事件，并加载入一个集合
-			//tweens.add(set(btn));
+			// tweens.add(set(btn));
 		}
 
 		// 设置一个退出按钮
@@ -239,10 +256,11 @@ public class MultiScreenTest extends Screen {
 		// 偏移Screen大小-按钮大小-5
 		exitClick.setX(getWidth() - exitClick.getWidth() - 5);
 		add(exitClick);
-	//	tweens.add(set(exitClick));
+		// tweens.add(set(exitClick));
 
 		// 设置一个下页按钮
-		LClickButton nextClick = LClickButton.make("NEXT", 45, 25);
+		LClickButton nextClick = LClickButton.make(page == 0 ? "NEXT" : "BACK",
+				45, 25);
 		// 设定一个特殊状态为false
 		nextClick.setStatus(LObject.FALSE);
 		// 设置监听
@@ -253,8 +271,35 @@ public class MultiScreenTest extends Screen {
 		// 偏移Screen大小-按钮大小-5
 		nextClick.setX(getWidth() - nextClick.getWidth() - 5);
 		nextClick.setY(getHeight() - nextClick.getHeight() - 24);
+		nextClick.SetClick(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+				if (((LClickButton) comp).getText().equals("NEXT")) {
+					runScreen("main").index = page + 1;
+				} else {
+					runScreen("main").index = page - 1;
+				}
+			}
+		});
 		add(nextClick);
-	//	tweens.add(set(nextClick));
+
+		// tweens.add(set(nextClick));
 
 		// 设定一个游戏进程，半秒后让按钮导入
 		RealtimeProcess process = new RealtimeProcess() {
@@ -264,17 +309,17 @@ public class MultiScreenTest extends Screen {
 				// 当Screen过渡动画播放完毕后
 				if (isTransitionCompleted()) {
 					// 穷举按钮事件
-					/*for (ActionTween tween : tweens) {
-						// 淡出事件，开始执行
-						tween.fadeOut(10f).start();
-						// 删除单独进程（否则会不断执行）
-						kill();
-					}*/
-	
-					getDesktop().//获得组件控制器
-					findUINamesToUIControls("ClickButton").//查找出所有组件名称为 ClickButton 的（此处可查找多个）
-					//fadeIn(10).startTweens();
-					fadeIn(10).delay(1f).rotateTo(360).startTweens(); //组件淡入，速度10，间隔1秒，旋转360，开始动画
+					/*
+					 * for (ActionTween tween : tweens) { // 淡出事件，开始执行
+					 * tween.fadeOut(10f).start(); // 删除单独进程（否则会不断执行） kill(); }
+					 */
+
+					getDesktop().// 获得组件控制器
+							findUINamesToUIControls("ClickButton").// 查找出所有组件名称为
+																	// ClickButton
+																	// 的（此处可查找多个）
+							// fadeIn(10).startTweens();
+							fadeIn(10).delay(1f).rotateTo(360).startTweens(); // 组件淡入，速度10，间隔1秒，旋转360，开始动画
 					kill();
 				}
 

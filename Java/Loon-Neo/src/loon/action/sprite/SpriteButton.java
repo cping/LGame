@@ -11,11 +11,6 @@ public class SpriteButton extends Entity {
 		public void func(ButtonFunc b);
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	protected RectBox rectSrc = null;
 
 	protected String clickse;

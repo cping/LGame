@@ -8,12 +8,7 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 public class WaitSprite extends Entity {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+	
 	private final class DrawWait {
 
 		private final float sx = 1.0f, sy = 1.0f;

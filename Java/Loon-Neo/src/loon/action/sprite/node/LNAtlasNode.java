@@ -24,11 +24,6 @@ import loon.LTexture;
 
 public class LNAtlasNode extends LNNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	protected int _itemHeight;
 
 	protected int _itemsPerColumn;

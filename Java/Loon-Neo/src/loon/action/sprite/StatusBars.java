@@ -26,11 +26,6 @@ import loon.utils.TArray;
 
 public final class StatusBars extends Entity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private TArray<StatusBar> barCaches;
 
 	public StatusBars() {

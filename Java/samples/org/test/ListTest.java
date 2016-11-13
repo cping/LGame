@@ -70,7 +70,7 @@ public class ListTest extends Screen {
 		list.SetClick(clickListener);
 		add(list);
 		
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

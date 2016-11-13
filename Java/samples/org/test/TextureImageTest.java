@@ -84,7 +84,7 @@ public class TextureImageTest extends Screen {
 		getRootPlayer().addAt(new ImagePlayer(baseGround), 3 * width, 0);
 		
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

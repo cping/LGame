@@ -40,7 +40,7 @@ public class ScrollTest extends Screen {
 		// container.setShowScroll(true);
 		add(container);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

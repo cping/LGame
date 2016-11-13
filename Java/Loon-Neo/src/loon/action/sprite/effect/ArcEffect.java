@@ -12,11 +12,6 @@ import loon.utils.timer.LTimer;
  */
 public class ArcEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private int count;
 
 	private int div = 10;

@@ -889,7 +889,6 @@ public class LColor implements Serializable {
 			if (c.startsWith("#")) {
 				return hexToColor(c.substring(1));
 			} else {
-				System.out.println("GFGF");
 				return new LColor(Integer.parseInt(c.substring(0, 2), 16),
 						Integer.parseInt(c.substring(2, 4), 16),
 						Integer.parseInt(c.substring(4, 6), 16));

@@ -46,7 +46,7 @@ public class SpriteTest extends Screen {
 		sprite2.setTransform(Sprite.TRANS_MIRROR_ROT90);
 		add(sprite2);
 		add(sprite);
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

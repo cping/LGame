@@ -6,11 +6,6 @@ import loon.opengl.GLEx;
 
 public class PixelDarkOutEffect extends PixelBaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private float t_x;
 
 	private float t_y;

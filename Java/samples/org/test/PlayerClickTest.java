@@ -49,7 +49,7 @@ public class PlayerClickTest extends Screen {
 
 		add(player);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

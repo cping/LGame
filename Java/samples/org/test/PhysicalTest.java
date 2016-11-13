@@ -31,7 +31,7 @@ public class PhysicalTest extends SpriteBatchScreen {
 		// getPhysicsManager().getWorld();
 		// 刷新速度30fps
 		setTimeStep(1f / 30f);
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

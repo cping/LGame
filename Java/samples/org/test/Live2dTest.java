@@ -47,7 +47,7 @@ public class Live2dTest extends Screen {
 		model = manager.loadModel(modelSettingPath);
 		// model.getLive2DModel().setScale(0.2f, 0.2f);
 		// model.draw();
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

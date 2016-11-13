@@ -5,11 +5,6 @@ import loon.LTextures;
 
 public class ImageBackground extends Background {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public ImageBackground(LTexture tex, float x, float y, float w, float h) {
 		super(x, y, w, h);
 		setRepaint(true);

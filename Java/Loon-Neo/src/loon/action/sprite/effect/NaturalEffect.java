@@ -7,16 +7,14 @@ import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
+/**
+ * 自由场景特效
+ */
 public class NaturalEffect extends Entity implements BaseEffect {
 
 	public static enum NaturalType {
 		Rain, Snow, Petal;
 	}
-
-	/**
-	 * 自由场景特效
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private LTexturePack pack;
 

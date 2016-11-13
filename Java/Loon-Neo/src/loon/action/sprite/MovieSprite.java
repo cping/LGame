@@ -4,11 +4,7 @@ import loon.opengl.GLEx;
 import loon.utils.TArray;
 
 public class MovieSprite extends DisplayObject {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
 	private TArray<DisplayObject> _childs = new TArray<DisplayObject>();
 	
 	public MovieSprite() {

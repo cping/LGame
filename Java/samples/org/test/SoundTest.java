@@ -37,7 +37,7 @@ public class SoundTest extends Screen{
 		};
 		add(click2);
 		
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 
 		
 	}

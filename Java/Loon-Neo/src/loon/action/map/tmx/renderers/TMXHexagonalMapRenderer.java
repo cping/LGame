@@ -15,11 +15,6 @@ import loon.utils.MathUtils;
 
 public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public TMXHexagonalMapRenderer(TMXMap map) {
 		super(map);
 	}

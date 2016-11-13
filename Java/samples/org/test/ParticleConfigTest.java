@@ -57,7 +57,7 @@ public class ParticleConfigTest extends Screen {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

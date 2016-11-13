@@ -24,11 +24,6 @@ import loon.action.map.TileMap;
 
 public abstract class SimpleObject extends ActionObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public SimpleObject(float x, float y, float w, float h,
 			Animation animation, TileMap tiles) {
 		super(x, y, w, h, animation, tiles);

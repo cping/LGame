@@ -14,11 +14,6 @@ import loon.utils.timer.LTimer;
  */
 public class ScrollEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private int backgroundLoop;
 
 	private int count;

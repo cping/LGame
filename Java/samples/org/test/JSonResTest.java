@@ -53,7 +53,7 @@ public class JSonResTest extends Screen {
 		// 执行布局
 		layoutElements(layout, quitgame, tryagain, gushimoshi);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

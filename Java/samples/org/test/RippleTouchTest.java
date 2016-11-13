@@ -30,7 +30,7 @@ public class RippleTouchTest extends Screen {
 		// 构建Ripple特效并注入Screen
 		RippleEffect ripple = new RippleEffect();
 		add(ripple);
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

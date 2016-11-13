@@ -10,11 +10,6 @@ import loon.utils.timer.LTimer;
 
 public class FadeTileEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private int tilewidth, tileheight;
 
 	private boolean completed;

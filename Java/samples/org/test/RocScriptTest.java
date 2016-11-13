@@ -8,6 +8,7 @@ import loon.action.avg.drama.RocSSprite;
 import loon.action.avg.drama.RocScript;
 import loon.action.sprite.SpriteLabel;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -20,6 +21,12 @@ public class RocScriptTest extends Screen {
 
 	@Override
 	public void onLoad() {
+
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
+		
+		add(MultiScreenTest.getBackButton(this,1));
+
 		// 以字符串方式，注入一组脚本命令
 		CommandLink command = new CommandLink();
 		command.line("print 'testing'");

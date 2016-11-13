@@ -46,7 +46,7 @@ public class TableTest extends Screen {
 		table.setData(list, 100);
 		add(table);
 		
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 
 	}
 

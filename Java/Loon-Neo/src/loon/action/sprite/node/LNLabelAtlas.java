@@ -26,11 +26,6 @@ import loon.opengl.GLEx;
 
 public class LNLabelAtlas extends LNAtlasNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private int _charWidth;
 
 	private char _startchar;

@@ -42,7 +42,7 @@ public class TextAreaTest extends Screen {
 		// addString为在前一行追加数据
 		// area.addString("1",LColor.red);
 		add(area);
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 		
 	}
 

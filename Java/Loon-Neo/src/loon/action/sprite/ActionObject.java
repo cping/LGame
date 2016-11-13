@@ -35,11 +35,6 @@ import loon.opengl.GLEx;
 public abstract class ActionObject extends LObject<ISprite> implements Config, LRelease,
 		ActionBind, ISprite {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	boolean visible = true;
 
 	float scaleX = 1, scaleY = 1;

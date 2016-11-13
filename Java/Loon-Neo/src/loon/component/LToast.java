@@ -161,7 +161,6 @@ public class LToast extends LComponent {
 		int w = (int) this.getWidth();
 		int h = (int) this.getHeight();
 		int oc = g.color();
-		float oa = g.alpha();
 		try {
 			g.setColor(mBackgroundColor);
 			g.setAlpha(opacity);
@@ -176,7 +175,6 @@ public class LToast extends LComponent {
 					displayY + 2, mForegroundColor);
 		} finally {
 			g.setColor(oc);
-			g.setAlpha(oa);
 		}
 	}
 

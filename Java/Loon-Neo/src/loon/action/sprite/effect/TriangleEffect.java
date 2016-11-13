@@ -8,11 +8,6 @@ import loon.utils.timer.LTimer;
 
 public class TriangleEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private float[][] delta;
 
 	private float[] pos;

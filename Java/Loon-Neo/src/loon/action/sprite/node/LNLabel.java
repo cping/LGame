@@ -30,11 +30,6 @@ import loon.utils.MathUtils;
 
 public class LNLabel extends LNNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private LFont _spriteFont;
 
 	private String _text;

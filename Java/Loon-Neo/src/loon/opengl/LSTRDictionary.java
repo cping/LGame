@@ -25,6 +25,8 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.utils.ObjectMap;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
 import loon.utils.TArray;
 
 public final class LSTRDictionary {
@@ -40,7 +42,8 @@ public final class LSTRDictionary {
 	private static ObjectMap<String, LSTRFont> lazyEnglish = new ObjectMap<String, LSTRFont>(
 			10);
 
-	public final static String added = "0123456789";
+	//每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
+	public final static String added = "0123456789abcdefgABCDEFG:.!?@#$%^&*(){}[]<>\"'";
 
 	public final static char split = '$';
 
@@ -105,6 +108,30 @@ public final class LSTRDictionary {
 
 	private final static int size = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
 
+	public final static boolean checkMessage(String key, String message) {
+		final char[] chars = message.toCharArray();
+		final char[] list = key.toCharArray();
+		int size = chars.length;
+		int limit = list.length;
+		int idx = 0;
+		for (int j = 0; j < limit; j++) {
+			char name = list[j];
+			for (int i = 0; i < size; i++) {
+				char flag = chars[i];
+				if (flag == name) {
+					idx++;
+				}
+				if (idx >= limit) {
+					return true;
+				}
+			}
+			if (idx >= limit) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public synchronized final static Dict bind(final LFont font,
 			final String mes) {
 		final String message = mes + added;
@@ -113,9 +140,21 @@ public final class LSTRDictionary {
 		}
 		synchronized (fontList) {
 			LFont cFont = cacheList.get(message);
+			if (cFont == null) {
+				for (Entries<String, LFont> it = cacheList.iterator(); it
+						.hasNext();) {
+					Entry<String, LFont> obj = it.next();
+					String key = obj.key;
+					if (checkMessage(key, message)) {
+						cFont = obj.value;
+						break;
+					}
+				}
+			}
 			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_"
 					+ font.getSize();
 			Dict pDict = fontList.get(fontFlag);
+			//判定当前font与字体和已存在的文字图片纹理，是否和缓存的font适配
 			if ((cFont == null || pDict == null || (pDict != null && !pDict
 					.include(mes)))) {
 				if (pDict == null) {
@@ -135,6 +174,7 @@ public final class LSTRDictionary {
 						}
 					}
 					int newSize = charas.size;
+					//如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
 					if (oldSize != newSize) {
 						if (pDict.font != null) {
 							pDict.font.close();

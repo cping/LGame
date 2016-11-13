@@ -6,6 +6,7 @@ import loon.font.Font.Style;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 
 /**
  * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢)
@@ -135,6 +136,9 @@ public class LLabel extends LComponent {
 	public LLabel(LabelAlignment alignment, IFont font, LColor c, LTexture bg,
 			String mes, int x, int y, int width, int height) {
 		super(x, y, width, height);
+		if (font != null && font instanceof LFont) {
+			LSTRDictionary.bind((LFont) font, mes);
+		}
 		this.labelAlignment = alignment;
 		this.background = bg;
 		this.color = c;

@@ -40,7 +40,7 @@ public class EffectTest extends Screen {
 		// 设置背景图片
 		setBackground("back1.png");
 		// 插入不同的精灵特效
-		effects.add(new FadeEffect(ISprite.TYPE_FADE_IN, LColor.black));
+		effects.add(new FadeSpiralEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeDotEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeOvalEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeTileEffect(ISprite.TYPE_FADE_IN, LColor.black));
@@ -69,7 +69,7 @@ public class EffectTest extends Screen {
 		// 加入一个单独的游戏进程
 		addProcess(process);
 		
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override
@@ -115,5 +115,6 @@ public class EffectTest extends Screen {
 	@Override
 	public void close() {
 		removeProcess(process);
+		effects.clear();
 	}
 }

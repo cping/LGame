@@ -44,11 +44,6 @@ import loon.utils.res.MovieSpriteSheet;
 public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 		LTrans, BoxSize {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1982110847888726016L;
-
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(
 			false);
 
@@ -507,10 +502,15 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	 */
 	public void setAnimation(Animation animation) {
 		this.animation = animation;
+		this.maxFrame = animation.getTotalFrames();
 	}
 
 	public Animation getAnimation() {
 		return animation;
+	}
+
+	protected void onUpdate(long elapsedTime) {
+
 	}
 
 	/**
@@ -519,6 +519,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	public void update(long elapsedTime) {
 		if (visible) {
 			animation.update(elapsedTime);
+			onUpdate(elapsedTime);
 			if (_childList != null && _childList.size > 0) {
 				for (ISprite spr : _childList) {
 					if (spr != null) {
@@ -627,10 +628,12 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 
 	private LColor filterColor;
 
+	@Override
 	public void createUI(GLEx g) {
 		createUI(g, 0, 0);
 	}
 
+	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
@@ -748,10 +751,12 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 		return y;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
@@ -780,10 +785,12 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 		this.filterColor = filterColor;
 	}
 
+	@Override
 	public LTexture getBitmap() {
 		return this.image;
 	}
 
+	@Override
 	public float getScaleX() {
 		return scaleX;
 	}
@@ -832,7 +839,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 
 	@Override
 	public boolean isContainer() {
-		return false;
+		return _childList != null && _childList.size > 0;
 	}
 
 	@Override

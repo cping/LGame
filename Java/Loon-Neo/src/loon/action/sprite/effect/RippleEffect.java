@@ -23,11 +23,6 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 		OVAL, RECT;
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private TArray<RippleKernel> ripples;
 
 	private LTimer timer;

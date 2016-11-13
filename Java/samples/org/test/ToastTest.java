@@ -90,7 +90,7 @@ public class ToastTest extends Screen {
 		test2.SetClick(clickListener);
 		test3.SetClick(clickListener);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

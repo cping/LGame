@@ -28,7 +28,7 @@ public class GifTest extends Screen {
 		GifAnimation an = new GifAnimation("33.gif");
 		add(an);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

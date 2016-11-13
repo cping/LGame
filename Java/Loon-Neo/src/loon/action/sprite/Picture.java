@@ -5,11 +5,6 @@ import loon.LTextures;
 
 public class Picture extends Entity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1982153514439690901L;
-
 	public Picture(String fileName) {
 		this(fileName, 0, 0);
 	}

@@ -47,7 +47,7 @@ public class Node2Test extends Screen {
 				LNMoveBy.Action(1f, 225, 125)), LNRotateBy.Action(0.5f, 360),
 				LNEnd.Action()));
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 
 	}
 

@@ -46,8 +46,7 @@ public class LClickButton extends LComponent {
 	public static LClickButton makePath(String path) {
 		LTexture tex = LTextures.loadTexture(path);
 		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
-				0, tex.getWidth(), tex.getHeight(), tex, tex,
-				tex);
+				0, tex.getWidth(), tex.getHeight(), tex, tex, tex);
 	}
 
 	public static LClickButton make(int width, int height, String idle,
@@ -68,7 +67,7 @@ public class LClickButton extends LComponent {
 				0, texture.getWidth(), texture.getHeight(), texture, texture,
 				texture);
 	}
-	
+
 	public static LClickButton make(String text) {
 		return new LClickButton(text, 0, 0, 1, 1);
 	}
@@ -148,36 +147,42 @@ public class LClickButton extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-
-		if (grayButton) {
-			if (!isEnabled()) {
-				g.draw(clickedClick, x, y, getWidth(), getHeight(), LColor.gray);
-			} else if (isTouchPressed()) {
-				g.draw(idleClick, x, y, getWidth(), getHeight());
-			} else if (isTouchOver()) {
-				g.draw(hoverClick, x, y, getWidth(), getHeight());
+		int tmp = g.color();
+		try {
+			if (grayButton) {
+				if (!isEnabled()) {
+					g.draw(clickedClick, x, y, getWidth(), getHeight(),
+							LColor.gray);
+				} else if (isTouchPressed()) {
+					g.draw(idleClick, x, y, getWidth(), getHeight());
+				} else if (isTouchOver()) {
+					g.draw(hoverClick, x, y, getWidth(), getHeight());
+				} else {
+					g.draw(idleClick, x, y, getWidth(), getHeight(),
+							LColor.gray);
+				}
 			} else {
-				g.draw(idleClick, x, y, getWidth(), getHeight(), LColor.gray);
+				if (!isEnabled()) {
+					g.draw(clickedClick, x, y, getWidth(), getHeight());
+				} else if (isTouchPressed()) {
+					g.draw(idleClick, x, y, getWidth(), getHeight());
+				} else if (isTouchOver()) {
+					g.draw(hoverClick, x, y, getWidth(), getHeight());
+				} else {
+					g.draw(idleClick, x, y, getWidth(), getHeight());
+				}
 			}
-		} else {
-			if (!isEnabled()) {
-				g.draw(clickedClick, x, y, getWidth(), getHeight());
-			} else if (isTouchPressed()) {
-				g.draw(idleClick, x, y, getWidth(), getHeight());
-			} else if (isTouchOver()) {
-				g.draw(hoverClick, x, y, getWidth(), getHeight());
-			} else {
-				g.draw(idleClick, x, y, getWidth(), getHeight());
+			if (text != null) {
+				font.drawString(
+						g,
+						text,
+						x + getOffsetLeft()
+								+ (getWidth() - font.stringWidth(text)) / 2,
+						(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2) - 5,
+						fontColor);
 			}
-		}
-		if (text != null) {
-			font.drawString(
-					g,
-					text,
-					x + getOffsetLeft() + (getWidth() - font.stringWidth(text))
-							/ 2,
-					(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2) - 5,
-					fontColor);
+		} finally {
+			g.setColor(tmp);
 		}
 	}
 

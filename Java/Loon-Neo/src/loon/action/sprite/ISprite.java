@@ -20,15 +20,13 @@
  */
 package loon.action.sprite;
 
-import java.io.Serializable;
-
 import loon.LRelease;
 import loon.LTexture;
 import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public interface ISprite extends Serializable, LRelease, XY {
+public interface ISprite extends LRelease, XY {
 
 	public static final int TYPE_FADE_IN = 0;
 

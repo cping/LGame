@@ -9,11 +9,6 @@ import loon.utils.GifDecoder;
 
 public class GifAnimation extends Entity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private GifDecoder _gifDecoder;
 
 	private Animation _animation;

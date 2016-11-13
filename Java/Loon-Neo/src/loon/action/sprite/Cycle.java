@@ -29,8 +29,6 @@ public class Cycle extends Entity {
 		case 0:
 			cycle = new Cycle() {
 
-				private static final long serialVersionUID = 1L;
-
 				private Path path;
 
 				public void step(GLEx g, float x, float y, float progress,
@@ -93,8 +91,6 @@ public class Cycle extends Entity {
 		case 3:
 
 			cycle = new Cycle() {
-
-				private static final long serialVersionUID = 1L;
 
 				private Path path;
 
@@ -213,11 +209,6 @@ public class Cycle extends Entity {
 		cycle.setHeight(height * scale);
 		return cycle;
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4197405628446701982L;
 
 	public static final int OTHER = 0, DIM = 1, DEGREE = 2, RADIUS = 3;
 

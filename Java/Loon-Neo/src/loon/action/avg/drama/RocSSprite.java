@@ -12,11 +12,6 @@ import loon.utils.timer.LTimer;
  */
 public class RocSSprite implements ISprite {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private String _name = "RocSSprite";
 
 	private Object tag;

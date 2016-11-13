@@ -33,7 +33,7 @@ public class SpriteSheetFontTest extends Screen {
 		SpriteSheet sheet = new SpriteSheet("spriteSheetFont.png", 32, 32);
 		font = new SpriteSheetFont(sheet, ' ');
 		font.setFontScale(0.5f);
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

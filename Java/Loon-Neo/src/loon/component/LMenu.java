@@ -31,6 +31,7 @@ import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 
 /**
@@ -80,7 +81,7 @@ public class LMenu extends LComponent {
 		public float itemHeight;
 		public float offsetX;
 		public float offsetY;
-		
+
 		boolean keep = false;
 		private boolean visible = true;
 		private boolean clicked = false;
@@ -166,7 +167,7 @@ public class LMenu extends LComponent {
 		public void setVisible(boolean v) {
 			this.visible = v;
 		}
-		
+
 		public MenuItem setOffsetX(float x) {
 			this.offsetX = x;
 			return this;
@@ -187,10 +188,9 @@ public class LMenu extends LComponent {
 		}
 
 		public void draw(GLEx g) {
-			if(!visible){
+			if (!visible) {
 				return;
 			}
-			float tmp = g.alpha();
 			int color = g.color();
 			IFont font = g.getFont();
 			try {
@@ -232,7 +232,7 @@ public class LMenu extends LComponent {
 						}
 					}
 					if (bounds().contains(pos.x, pos.y) && check) {
-						g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
+						g.setTint(0.5f, 0.5f, 0.5f, 1.0f);
 						if (check && (!this.clicked)) {
 							ClickMenu menu = new ClickMenu(this._itemclick,
 									this);
@@ -261,7 +261,7 @@ public class LMenu extends LComponent {
 
 				} else {
 					if (bounds().contains(pos.x, pos.y) && (check)) {
-						g.setColor(0.5f, 0.5f, 0.5f, 1.0f);
+						g.setTint(0.5f, 0.5f, 0.5f, 1.0f);
 						if (check && (!this.clicked)) {
 							ClickMenu menu = new ClickMenu(this._itemclick,
 									this);
@@ -288,7 +288,6 @@ public class LMenu extends LComponent {
 
 				}
 			} finally {
-				g.setAlpha(tmp);
 				g.setColor(color);
 				g.setFont(font);
 			}
@@ -540,11 +539,14 @@ public class LMenu extends LComponent {
 		item.yslot = this.yslot;
 		this.items.add(item);
 		this.xslot += 1;
+		if (item._font != null && item._font instanceof LFont) {
+			LSTRDictionary.bind((LFont) item._font, item.label);
+		}
 		return item;
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
+	public synchronized void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		float alpha = g.alpha();
 		try {

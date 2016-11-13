@@ -320,220 +320,235 @@ public class LTextList extends LComponent {
 		}
 	}
 
-	private void drawString(GLEx g, String str, int x, int y) {
+	private synchronized void drawString(GLEx g, String str, int x, int y) {
 		font.drawString(g, str, x, y);
 	}
 
-	public void draw(GLEx g, int x, int y, float mouseX, float mouseY) {
-		if (this.max > 0) {
+	public synchronized void draw(GLEx g, int x, int y, float mouseX,
+			float mouseY) {
+		try {
+			g.saveBrush();
+			if (this.max > 0) {
 
-			int oldColor = g.color();
+				int fontSize = font.getSize();
 
-			int fontSize = font.getSize();
-
-			// 如果没有设置背景，则绘制
-			if (bgTexture == null) {
-				g.setColor(this.listColor);
-				g.fillRect(x, y, getWidth(), getHeight());
-				g.setColor(255, 255, 255);
-				g.drawRect(x, y, getWidth(), getHeight());
-			} else {
-				g.draw(bgTexture, x, y, getWidth(), getHeight());
-			}
-
-			this.drawNum = (int) ((getHeight() - 10) / fontSize);
-			this.loop = 0;
-			this.selectList = -1;
-
-			for (int i = this.scrollList; i < this.drawNum + this.scrollList; i++) {
-				if (i >= this.num)
-					break;
-				this.drawX = (x + 5);
-				this.drawY = (y + 5 + this.loop * fontSize);
-
-				if (!this.scrollBarDrag) {
-					if ((mouseY > this.drawY)
-							&& (mouseY <= this.drawY + fontSize)
-							&& (mouseX > this.drawX)
-							&& (mouseX < this.drawX + getWidth())) {
-						this.selectList = i;
-					}
-
+				// 如果没有设置背景，则绘制
+				if (bgTexture == null) {
+					g.setTint(this.listColor);
+					g.fillRect(x, y, getWidth(), getHeight());
+					g.setTint(255, 255, 255);
+					g.drawRect(x, y, getWidth(), getHeight());
+				} else {
+					g.draw(bgTexture, x, y, getWidth(), getHeight());
 				}
 
-				// 计算是否选中当前行
-				if (!this.lengthCheck[i]) {
-					this.lengthCheck[i] = true;
-					if (this.name[i] != null) {
-						while (font.stringWidth(this.name[i]) > getWidth()) {
-							this.name[i] = this.name[i].substring(0,
-									this.name[i].length() - 1);
+				this.drawNum = (int) ((getHeight() - 10) / fontSize);
+				this.loop = 0;
+				this.selectList = -1;
+
+				for (int i = this.scrollList; i < this.drawNum
+						+ this.scrollList; i++) {
+					if (i >= this.num)
+						break;
+					this.drawX = (x + 5);
+					this.drawY = (y + 5 + this.loop * fontSize);
+
+					if (!this.scrollBarDrag) {
+						if ((mouseY > this.drawY)
+								&& (mouseY <= this.drawY + fontSize)
+								&& (mouseX > this.drawX)
+								&& (mouseX < this.drawX + getWidth())) {
+							this.selectList = i;
+						}
+
+					}
+
+					// 计算是否选中当前行
+					if (!this.lengthCheck[i]) {
+						this.lengthCheck[i] = true;
+						if (this.name[i] != null) {
+							while (font.stringWidth(this.name[i]) > getWidth()) {
+								this.name[i] = this.name[i].substring(0,
+										this.name[i].length() - 1);
+							}
+						}
+					}
+
+					if ((this.selectList == i)
+							|| ((this.useHold) && (this.hold == i))) {
+						if ((this.useHold) && (this.hold == i)) {
+							g.setTint(255, 255, 0);
+							g.fillRect(x + 1, this.drawY, getWidth() - 1,
+									fontSize);
+							g.setTint(LColor.black);
+							drawString(g, this.name[i], this.drawX, this.drawY);
+							this.hold = -1;
+						}
+						// 选中指定列时
+						if (this.selectList == i) {
+							if (choiceTexture == null) {
+								g.setTint(this.choiceStringBoxColor);
+								g.fillRect(x + 1, this.drawY, getWidth() - 2,
+										fontSize + 2);
+							} else {
+								g.draw(this.choiceTexture, x + 2, this.drawY,
+										getWidth() - 2, fontSize + 2);
+							}
+							g.setTint(this.choiceStringColor);
+							drawString(g, this.name[i], this.drawX, this.drawY);
+						}
+					} else {
+						g.setTint(this.color[i]);
+						drawString(g, this.name[i], this.drawX, this.drawY);
+					}
+
+					this.loop += 1;
+				}
+
+				this.scrollBarX = (int) (x + getWidth() + 1);
+
+				this.scrollBarHeight_max = (int) (getHeight() - this.scrollButtonHeight * 2);
+
+				if ((this.drawNum < this.num) && (this.drawNum > 0)) {
+					this.scrollBarHeight = (this.scrollBarHeight_max / this.num / this.drawNum);
+					this.scrollBarHeight = (this.scrollBarHeight_max
+							* this.drawNum / this.num);
+					if (this.scrollBarHeight < 8)
+						this.scrollBarHeight = 8;
+
+					this.scrollBarY = (y + this.scrollButtonHeight + 1);
+					this.scrollBarY += (this.scrollBarHeight_max - this.scrollBarHeight)
+							* this.scrollList / (this.num - this.drawNum);
+				} else {
+					this.scrollBarHeight = this.scrollBarHeight_max;
+					this.scrollBarY = (y + this.scrollButtonHeight + 1);
+				}
+
+				if (this.scrollBarDrag) {
+					if (mouseY < this.scrollBarY + this.scrollBarHeight / 3) {
+						for (int i = 0; i < 5; i++) {
+							if (this.scrollList <= 0)
+								break;
+							this.scrollList -= 1;
+						}
+					}
+
+					if (mouseY > this.scrollBarY + this.scrollBarHeight * 2 / 3) {
+						for (int i = 0; i < 5; i++) {
+							if (this.scrollList >= this.num - this.drawNum)
+								break;
+							this.scrollList += 1;
 						}
 					}
 				}
 
-				if ((this.selectList == i)
-						|| ((this.useHold) && (this.hold == i))) {
-					if ((this.useHold) && (this.hold == i)) {
-						g.setColor(255, 255, 0);
-						g.fillRect(x + 1, this.drawY, getWidth() - 1, fontSize);
-						g.setColor(LColor.black);
-						drawString(g, this.name[i], this.drawX, this.drawY);
-						this.hold = -1;
-					}
-					// 选中指定列时
-					if (this.selectList == i) {
-						if (choiceTexture == null) {
-							g.setColor(this.choiceStringBoxColor);
-							g.fillRect(x + 1, this.drawY, getWidth() - 2,
-									fontSize + 2);
-						} else {
-							g.draw(this.choiceTexture, x + 2, this.drawY,
-									getWidth() - 2, fontSize + 2);
-						}
-						g.setColor(this.choiceStringColor);
-						drawString(g, this.name[i], this.drawX, this.drawY);
+				if (SysTouch.isDrag()) {
+					if ((mouseX > this.scrollBarX)
+							&& (mouseX <= this.scrollBarX
+									+ this.scrollButtonWidth)
+							&& (mouseY > y + this.scrollButtonHeight)
+							&& (mouseY < y + getHeight()
+									- this.scrollButtonHeight)) {
+						this.scrollBarDrag = true;
 					}
 				} else {
-					g.setColor(this.color[i]);
-					drawString(g, this.name[i], this.drawX, this.drawY);
+					this.scrollBarDrag = false;
 				}
 
-				this.loop += 1;
-			}
+				if (scrollTexture == null) {
+					if (this.scrollBarDrag) {
+						g.setTint(0, 255, 255);
+					} else {
+						g.setTint(255, 255, 255);
+					}
+					g.fillRect(this.scrollBarX, this.scrollBarY,
+							this.scrollButtonWidth, this.scrollBarHeight);
+				} else {
+					g.draw(this.scrollTexture, this.scrollBarX,
+							this.scrollBarY, this.scrollButtonWidth,
+							this.scrollBarHeight);
 
-			this.scrollBarX = (int) (x + getWidth() + 1);
+				}
 
-			this.scrollBarHeight_max = (int) (getHeight() - this.scrollButtonHeight * 2);
+				this.scrollButtonX = (int) (x + getWidth());
+				this.scrollButtonY = y;
 
-			if ((this.drawNum < this.num) && (this.drawNum > 0)) {
-				this.scrollBarHeight = (this.scrollBarHeight_max / this.num / this.drawNum);
-				this.scrollBarHeight = (this.scrollBarHeight_max * this.drawNum / this.num);
-				if (this.scrollBarHeight < 8)
-					this.scrollBarHeight = 8;
+				if (scrollFlagATexture == null) {
+					if (this.scrollUpButtonON) {
+						g.setTint(LColor.gray);
+					} else {
+						g.setTint(LColor.black);
+					}
+					g.fillRect(this.scrollButtonX + 1, this.scrollButtonY + 1,
+							this.scrollButtonWidth, this.scrollButtonHeight);
+					g.setTint(255, 255, 255);
+					this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
+					this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
+					this.px[2] = (this.scrollButtonX + 1 + this.scrollButtonWidth * 5 / 6);
+					this.py[0] = (this.scrollButtonY + 1 + this.scrollButtonHeight * 5 / 6);
+					this.py[1] = (this.scrollButtonY + 1 + this.scrollButtonHeight / 6);
+					this.py[2] = (this.scrollButtonY + 1 + this.scrollButtonHeight * 5 / 6);
+					g.fillPolygon(this.px, this.py, 3);
+				} else {
+					g.draw(this.scrollFlagATexture, this.scrollButtonX + 1,
+							this.scrollButtonY + 1, this.scrollButtonWidth - 1,
+							this.scrollButtonHeight - 1);
+				}
 
-				this.scrollBarY = (y + this.scrollButtonHeight + 1);
-				this.scrollBarY += (this.scrollBarHeight_max - this.scrollBarHeight)
-						* this.scrollList / (this.num - this.drawNum);
-			} else {
-				this.scrollBarHeight = this.scrollBarHeight_max;
-				this.scrollBarY = (y + this.scrollButtonHeight + 1);
-			}
-
-			if (this.scrollBarDrag) {
-				if (mouseY < this.scrollBarY + this.scrollBarHeight / 3) {
-					for (int i = 0; i < 5; i++) {
-						if (this.scrollList <= 0)
-							break;
+				this.scrollUpButtonON = false;
+				if ((!this.scrollBarDrag)
+						&& isFocusable()
+						&& (mouseX > this.scrollButtonX)
+						&& (mouseX <= this.scrollButtonX
+								+ this.scrollButtonWidth)
+						&& (mouseY > this.scrollButtonY)
+						&& (mouseY < this.scrollButtonY
+								+ this.scrollButtonHeight)) {
+					if (this.scrollList > 0) {
 						this.scrollList -= 1;
 					}
+					this.scrollUpButtonON = true;
 				}
-
-				if (mouseY > this.scrollBarY + this.scrollBarHeight * 2 / 3) {
-					for (int i = 0; i < 5; i++) {
-						if (this.scrollList >= this.num - this.drawNum)
-							break;
+				this.scrollButtonX = (int) (x + getWidth());
+				this.scrollButtonY = (int) (y + getHeight() - this.scrollButtonHeight);
+				this.scrollDownButtonON = false;
+				if ((!this.scrollBarDrag)
+						&& isFocusable()
+						&& (mouseX > this.scrollButtonX)
+						&& (mouseX <= this.scrollButtonX
+								+ this.scrollButtonWidth)
+						&& (mouseY > this.scrollButtonY)
+						&& (mouseY < this.scrollButtonY
+								+ this.scrollButtonHeight)) {
+					if (this.scrollList < this.num - this.drawNum) {
 						this.scrollList += 1;
 					}
+					this.scrollDownButtonON = true;
 				}
-			}
-
-			if (SysTouch.isDrag()) {
-				if ((mouseX > this.scrollBarX)
-						&& (mouseX <= this.scrollBarX + this.scrollButtonWidth)
-						&& (mouseY > y + this.scrollButtonHeight)
-						&& (mouseY < y + getHeight() - this.scrollButtonHeight)) {
-					this.scrollBarDrag = true;
-				}
-			} else {
-				this.scrollBarDrag = false;
-			}
-
-			if (scrollTexture == null) {
-				if (this.scrollBarDrag) {
-					g.setColor(0, 255, 255);
+				if (scrollFlagBTexture == null) {
+					if (this.scrollDownButtonON) {
+						g.setTint(LColor.gray);
+					} else {
+						g.setTint(LColor.black);
+					}
+					g.fillRect(this.scrollButtonX + 1, this.scrollButtonY - 1,
+							this.scrollButtonWidth, this.scrollButtonHeight);
+					g.setTint(LColor.white);
+					this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
+					this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
+					this.px[2] = (this.scrollButtonX + 1 + this.scrollButtonWidth * 5 / 6);
+					this.py[0] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
+					this.py[1] = (this.scrollButtonY - 1 + this.scrollButtonHeight * 5 / 6);
+					this.py[2] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
+					g.fillPolygon(this.px, this.py, 3);
 				} else {
-					g.setColor(255, 255, 255);
+					g.draw(this.scrollFlagBTexture, this.scrollButtonX + 1,
+							this.scrollButtonY + 1, this.scrollButtonWidth - 1,
+							this.scrollButtonHeight - 1);
 				}
-				g.fillRect(this.scrollBarX, this.scrollBarY,
-						this.scrollButtonWidth, this.scrollBarHeight);
-			} else {
-				g.draw(this.scrollTexture, this.scrollBarX, this.scrollBarY,
-						this.scrollButtonWidth, this.scrollBarHeight);
-
 			}
-
-			this.scrollButtonX = (int) (x + getWidth());
-			this.scrollButtonY = y;
-
-			if (scrollFlagATexture == null) {
-				if (this.scrollUpButtonON) {
-					g.setColor(LColor.gray);
-				} else {
-					g.setColor(LColor.black);
-				}
-				g.fillRect(this.scrollButtonX + 1, this.scrollButtonY + 1,
-						this.scrollButtonWidth, this.scrollButtonHeight);
-				g.setColor(255, 255, 255);
-				this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
-				this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
-				this.px[2] = (this.scrollButtonX + 1 + this.scrollButtonWidth * 5 / 6);
-				this.py[0] = (this.scrollButtonY + 1 + this.scrollButtonHeight * 5 / 6);
-				this.py[1] = (this.scrollButtonY + 1 + this.scrollButtonHeight / 6);
-				this.py[2] = (this.scrollButtonY + 1 + this.scrollButtonHeight * 5 / 6);
-				g.fillPolygon(this.px, this.py, 3);
-			} else {
-				g.draw(this.scrollFlagATexture, this.scrollButtonX + 1,
-						this.scrollButtonY + 1, this.scrollButtonWidth - 1,
-						this.scrollButtonHeight - 1);
-			}
-
-			this.scrollUpButtonON = false;
-			if ((!this.scrollBarDrag) && isFocusable()
-					&& (mouseX > this.scrollButtonX)
-					&& (mouseX <= this.scrollButtonX + this.scrollButtonWidth)
-					&& (mouseY > this.scrollButtonY)
-					&& (mouseY < this.scrollButtonY + this.scrollButtonHeight)) {
-				if (this.scrollList > 0) {
-					this.scrollList -= 1;
-				}
-				this.scrollUpButtonON = true;
-			}
-			this.scrollButtonX = (int) (x + getWidth());
-			this.scrollButtonY = (int) (y + getHeight() - this.scrollButtonHeight);
-			this.scrollDownButtonON = false;
-			if ((!this.scrollBarDrag) && isFocusable()
-					&& (mouseX > this.scrollButtonX)
-					&& (mouseX <= this.scrollButtonX + this.scrollButtonWidth)
-					&& (mouseY > this.scrollButtonY)
-					&& (mouseY < this.scrollButtonY + this.scrollButtonHeight)) {
-				if (this.scrollList < this.num - this.drawNum) {
-					this.scrollList += 1;
-				}
-				this.scrollDownButtonON = true;
-			}
-			if (scrollFlagBTexture == null) {
-				if (this.scrollDownButtonON) {
-					g.setColor(LColor.gray);
-				} else {
-					g.setColor(LColor.black);
-				}
-				g.fillRect(this.scrollButtonX + 1, this.scrollButtonY - 1,
-						this.scrollButtonWidth, this.scrollButtonHeight);
-				g.setColor(LColor.white);
-				this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
-				this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
-				this.px[2] = (this.scrollButtonX + 1 + this.scrollButtonWidth * 5 / 6);
-				this.py[0] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
-				this.py[1] = (this.scrollButtonY - 1 + this.scrollButtonHeight * 5 / 6);
-				this.py[2] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
-				g.fillPolygon(this.px, this.py, 3);
-			} else {
-				g.draw(this.scrollFlagBTexture, this.scrollButtonX + 1,
-						this.scrollButtonY + 1, this.scrollButtonWidth - 1,
-						this.scrollButtonHeight - 1);
-			}
-			g.setColor(oldColor);
+		} finally {
+			g.restoreBrush();
 		}
 	}
 
@@ -548,17 +563,16 @@ public class LTextList extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		if (getContainer() == null
-				|| !(getContainer() instanceof LScrollContainer)) {
-			draw(g, x, y, SysTouch.getX(), SysTouch.getY());
-		} else {
-			draw(g,
-					x,
-					y,
-					((LScrollContainer) getContainer()).getScrollX()
-							+ SysTouch.getX(),
-					((LScrollContainer) getContainer()).getScrollY()
-							+ SysTouch.getY());
+		synchronized (this) {
+			if (getContainer() == null
+					|| !(getContainer() instanceof LScrollContainer)) {
+				draw(g, x, y, SysTouch.getX(), SysTouch.getY());
+			} else {
+				draw(g, x, y, ((LScrollContainer) getContainer()).getScrollX()
+						+ SysTouch.getX(),
+						((LScrollContainer) getContainer()).getScrollY()
+								+ SysTouch.getY());
+			}
 		}
 	}
 

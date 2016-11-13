@@ -36,6 +36,7 @@ import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 
 public class LTextArea extends LComponent {
 
@@ -216,7 +217,9 @@ public class LTextArea extends LComponent {
 	public void put(String mes) {
 		this.over = false;
 		this.numBak = this.num;
-
+		if (font != null && font instanceof LFont) {
+			LSTRDictionary.bind((LFont) font, mes);
+		}
 		this.message[this.num] = mes;
 		if ((this.cr[this.num] == 0) && (this.cg[this.num] == 0)
 				&& (this.cb[this.num] == 0)) {

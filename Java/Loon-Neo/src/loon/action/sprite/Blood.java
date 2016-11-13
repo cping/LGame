@@ -7,11 +7,6 @@ import loon.utils.timer.LTimer;
 
 public class Blood extends Entity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	class Drop {
 		public float x, y, xspeed, yspeed;
 	}

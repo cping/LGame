@@ -55,11 +55,6 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ActionB
 		}
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1528067125246764520L;
-
 	protected abstract void renderTileLayer(GLEx gl, TMXTileLayer tileLayer);
 
 	protected abstract void renderImageLayer(GLEx gl, TMXImageLayer imageLayer);

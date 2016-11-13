@@ -6,12 +6,7 @@ import loon.opengl.GLEx;
 import loon.utils.TArray;
 
 public class Scene extends Entity {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+	
 	private long secondsElapsedTotal;
 
 	protected Scene _parentScene;

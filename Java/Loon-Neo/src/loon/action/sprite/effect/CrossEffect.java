@@ -11,11 +11,6 @@ import loon.utils.timer.LTimer;
  */
 public class CrossEffect extends Entity implements BaseEffect {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private boolean completed;
 
 	private LTexture otexture, ntexture;

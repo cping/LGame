@@ -57,7 +57,7 @@ public class CycleTest extends Screen {
 		// 注入进程
 		addProcess(process);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

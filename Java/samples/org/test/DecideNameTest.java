@@ -41,7 +41,7 @@ public class DecideNameTest extends Screen {
 		centerOn(decideName);
 		add(decideName);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

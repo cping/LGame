@@ -54,7 +54,7 @@ public class ProgressTest extends Screen {
 		progress4.setPercentage(0.65f);
 		add(progress4);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 
 	}
 

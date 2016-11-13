@@ -33,11 +33,6 @@ import loon.utils.ObjectMap;
 
 public class LNSprite extends LNNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private BlendState blendState = BlendState.NonPremultiplied;
 
 	private float rotation;

@@ -43,7 +43,7 @@ public class MenuTest extends Screen {
 		panel.add("离开").setFont(font).offsetX = 2;
 		add(panel);
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

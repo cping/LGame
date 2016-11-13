@@ -37,7 +37,7 @@ public class BMFontTest extends Screen {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

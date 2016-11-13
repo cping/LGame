@@ -29,7 +29,7 @@ public class SpriteBatchScreenTest extends SpriteBatchScreen {
 
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	LTexture tex = LTexture.createTexture("back1.png");

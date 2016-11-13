@@ -68,6 +68,8 @@ import loon.utils.timer.LTimerContext;
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
 
+	public int index = 0;
+
 	/**
 	 * 最后绘制用户界面
 	 */
@@ -474,7 +476,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private PaintOrder userOrder, spriteOrder, desktopOrder, stageOrder;
 
-	private TArray<RectBox> limits = new TArray<RectBox>(10);
+	private TArray<RectBox> _limits = new TArray<RectBox>(10);
 
 	private boolean replaceLoading;
 
@@ -591,14 +593,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public Screen addTouchLimit(LObject<?> c) {
 		if (c != null) {
-			limits.add(c.getCollisionArea());
+			_limits.add(c.getCollisionArea());
 		}
 		return this;
 	}
 
 	public Screen addTouchLimit(RectBox r) {
 		if (r != null) {
-			limits.add(r);
+			_limits.add(r);
 		}
 		return this;
 	}
@@ -608,10 +610,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public boolean isClickLimit(int x, int y) {
-		if (limits.size == 0) {
+		if (_limits.size == 0) {
 			return false;
 		}
-		for (RectBox rect : limits) {
+		for (RectBox rect : _limits) {
 			if (rect.contains(x, y)) {
 				return true;
 			}
@@ -1829,7 +1831,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				lastOrder.update(timer);
 			}
 		}
-		//处理直接加入screen中的循环
+		// 处理直接加入screen中的循环
 		if (initLoopEvents) {
 			if (loopEvents != null && loopEvents.size > 0) {
 				final TArray<FrameLoopEvent> toUpdated;
@@ -2033,6 +2035,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			this.handler.setScreen(screen);
 		}
 		return this;
+	}
+
+	public int getScreenWidth() {
+		return width;
+	}
+
+	public int getScreenHeight() {
+		return height;
 	}
 
 	@Override
@@ -2468,7 +2478,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public final void destroy() {
 		synchronized (this) {
-			limits.clear();
+			index = 0;
+			_limits.clear();
 			_touchAreas.clear();
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;

@@ -27,7 +27,7 @@ public class SelectIconTest extends Screen {
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
 
-		final LClickButton back = MultiScreenTest.getBackButton(this);
+		final LClickButton back = MultiScreenTest.getBackButton(this,0);
 
 		registerTouchArea(new LTouchArea() {
 

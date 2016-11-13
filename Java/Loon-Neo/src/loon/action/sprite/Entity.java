@@ -20,15 +20,11 @@ import loon.utils.TArray;
 public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 		LRelease, BoxSize {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
 	protected boolean _disposed = false;
 	protected boolean _visible = true;
+	protected boolean _deform = true;
 	protected boolean _ignoreUpdate = false;
 	protected boolean _childrenVisible = true;
 	protected boolean _childrenIgnoreUpdate = false;
@@ -390,7 +386,7 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 		this._baseColor.setColor(pColor);
 		this.onUpdateColor();
 	}
-	
+
 	@Override
 	public void setAlpha(final float a) {
 		super.setAlpha(a);
@@ -626,9 +622,9 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 		boolean exist = _image != null || (_width > 0 && _height > 0)
 				|| _repaintDraw;
 		if (exist) {
-			boolean update = _rotation != 0
-					|| !(_scaleX == 1f && _scaleY == 1f)
-					|| !(_skewX == 0 && _skewY == 0);
+			boolean update = (_rotation != 0
+					|| !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
+					&& _deform;
 			float nx = offsetX + this._location.x;
 			float ny = offsetY + this._location.y;
 			if (update) {
@@ -873,11 +869,21 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 	public void setClip(float x, float y, float w, float h) {
 		setShear(x, y, w, h);
 	}
+	
+	public boolean isDeform(){
+		return _deform;
+	}
+	
+	public void setDeform(boolean d){
+		this._deform = d;
+	}
 
 	@Override
 	public void setParent(ISprite s) {
 		if (s instanceof IEntity) {
 			setParent((IEntity) s);
+		} else if (s instanceof ISprite) {
+			setParent(new SpriteToEntity(s));
 		}
 	}
 

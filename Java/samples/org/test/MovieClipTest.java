@@ -55,7 +55,7 @@ public class MovieClipTest extends Screen {
 		add(c4);
 		
 
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

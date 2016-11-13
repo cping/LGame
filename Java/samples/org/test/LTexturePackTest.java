@@ -151,7 +151,7 @@ public class LTexturePackTest extends Screen {
 		moveList.add(new Move(enemyImgId, 1, getWidth() - show_size, 136));
 		moveList.add(new Move(enemyImgId, 1, getWidth() - show_size, 220));
 		
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 
 	}
 

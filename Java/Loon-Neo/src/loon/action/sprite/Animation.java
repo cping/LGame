@@ -59,7 +59,7 @@ public class Animation implements LRelease {
 	int size;
 
 	private LTimer intervalTime = new LTimer(0);
-
+	
 	public Animation() {
 		this(new TArray<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0);
 	}
@@ -188,6 +188,17 @@ public class Animation implements LRelease {
 			res[i] = LTextures.loadTexture(paths[i]);
 		}
 		return getDefaultAnimation(res, maxFrame, timer);
+	}
+
+	/**
+	 * 转化一组地址字符串为动画图像
+	 * 
+	 * @param paths
+	 * @param timer
+	 * @return
+	 */
+	public static Animation getDefaultAnimation(String[] paths, int timer) {
+		return getDefaultAnimation(paths, paths.length, timer);
 	}
 
 	/**
@@ -385,7 +396,7 @@ public class Animation implements LRelease {
 	public void setDelay(long d) {
 		intervalTime.setDelay(d);
 	}
-	
+
 	public void setInterval(long d) {
 		setDelay(d);
 	}

@@ -19,11 +19,6 @@ import loon.utils.StringUtils;
  */
 public class NumberSprite extends Entity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private String label;
 	// 0
 	public static final int[][] ZERO = { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 1 },

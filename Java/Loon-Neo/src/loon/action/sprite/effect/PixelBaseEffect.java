@@ -10,11 +10,6 @@ import loon.utils.timer.LTimer;
 //此像素非真像素，而是指'像素风'……实际是三角形纹理贴图效果……
 public abstract class PixelBaseEffect extends Entity {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	protected boolean completed;
 
 	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
@@ -48,6 +43,7 @@ public abstract class PixelBaseEffect extends Entity {
 		this.frame = 0;
 		this.completed = false;
 		this.setRepaint(true);
+		this.setDeform(false);
 	}
 
 	public void setEffectDelay(long timer) {

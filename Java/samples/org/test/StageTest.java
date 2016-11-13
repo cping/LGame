@@ -64,7 +64,7 @@ remove(this);
 			LFont.setDefaultFont(LFont.getFont(20));
 			puspStage(newStage1(), StageSystem.flip());
 
-			add(MultiScreenTest.getBackButton(this));
+			add(MultiScreenTest.getBackButton(this,0));
 		}
 
 		boolean flag;

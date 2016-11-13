@@ -32,7 +32,7 @@ public class SpriteBatchTest extends Screen {
 
 		//设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		add(MultiScreenTest.getBackButton(this));
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override
