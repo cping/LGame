@@ -339,7 +339,7 @@ public class LTextList extends LComponent {
 					g.setTint(255, 255, 255);
 					g.drawRect(x, y, getWidth(), getHeight());
 				} else {
-					g.draw(bgTexture, x, y, getWidth(), getHeight());
+					g.draw(bgTexture, x, y, getWidth(), getHeight(), baseColor);
 				}
 
 				this.drawNum = (int) ((getHeight() - 10) / fontSize);
@@ -392,7 +392,7 @@ public class LTextList extends LComponent {
 										fontSize + 2);
 							} else {
 								g.draw(this.choiceTexture, x + 2, this.drawY,
-										getWidth() - 2, fontSize + 2);
+										getWidth() - 2, fontSize + 2, baseColor);
 							}
 							g.setTint(this.choiceStringColor);
 							drawString(g, this.name[i], this.drawX, this.drawY);
@@ -466,7 +466,7 @@ public class LTextList extends LComponent {
 				} else {
 					g.draw(this.scrollTexture, this.scrollBarX,
 							this.scrollBarY, this.scrollButtonWidth,
-							this.scrollBarHeight);
+							this.scrollBarHeight, baseColor);
 
 				}
 
@@ -492,7 +492,7 @@ public class LTextList extends LComponent {
 				} else {
 					g.draw(this.scrollFlagATexture, this.scrollButtonX + 1,
 							this.scrollButtonY + 1, this.scrollButtonWidth - 1,
-							this.scrollButtonHeight - 1);
+							this.scrollButtonHeight - 1, baseColor);
 				}
 
 				this.scrollUpButtonON = false;
@@ -544,7 +544,7 @@ public class LTextList extends LComponent {
 				} else {
 					g.draw(this.scrollFlagBTexture, this.scrollButtonX + 1,
 							this.scrollButtonY + 1, this.scrollButtonWidth - 1,
-							this.scrollButtonHeight - 1);
+							this.scrollButtonHeight - 1, baseColor);
 				}
 			}
 		} finally {

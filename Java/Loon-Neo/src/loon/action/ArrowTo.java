@@ -54,8 +54,9 @@ public class ArrowTo extends ActionEvent {
 		this(tx, ty, 3f, 200f);
 	}
 
+	@Override
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public void onLoad() {
@@ -78,13 +79,13 @@ public class ArrowTo extends ActionEvent {
 			if (startX < -original.getWidth() || startY < -original.getHeight()
 					|| startX > original.getContainerWidth()
 					|| startY > original.getContainerHeight()) {
-				isComplete = true;
+				_isCompleted = true;
 			}
 		} else if (startX < -original.getWidth() * 2
 				|| startY < -original.getHeight() * 2
 				|| startX > LSystem.viewSize.width + original.getWidth() * 2
 				|| startY > LSystem.viewSize.height + original.getHeight() * 2) {
-			isComplete = true;
+			_isCompleted = true;
 		}
 		synchronized (original) {
 			float slope = vy / vx;

@@ -2,13 +2,10 @@ package loon.action.sprite.effect;
 
 import java.util.Iterator;
 
-import loon.LObject;
 import loon.LSystem;
-import loon.LTexture;
-import loon.action.sprite.ISprite;
+import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.event.LTouchArea;
-import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -16,8 +13,7 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEffect,
-		ISprite {
+public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	public enum Model {
 		OVAL, RECT;
@@ -27,9 +23,7 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 
 	private LTimer timer;
 
-	private boolean visible, completed;
-
-	private LColor color;
+	private boolean completed;
 
 	private Model model;
 
@@ -51,10 +45,10 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 
 	public RippleEffect(Model m, LColor c) {
 		model = m;
-		color = c;
+		setColor(c);
 		ripples = new TArray<RippleKernel>();
 		timer = new LTimer(60);
-		visible = true;
+		setRepaint(true);
 	}
 
 	public void setDelay(long delay) {
@@ -83,30 +77,12 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = true;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
-	}
-
-	@Override
-	public void createUI(GLEx g, float sx, float sy) {
+	public void repaint(GLEx g, float sx, float sy) {
 		if (completed) {
 			return;
 		}
-		if (!visible) {
-			return;
-		}
 		int tmp = g.color();
-		g.setColor(color);
+		g.setColor(_baseColor);
 		for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
 			RippleKernel ripple = it.next();
 			ripple.draw(g, model, _location.x + offsetX + sx, _location.y
@@ -116,7 +92,7 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 	}
 
 	@Override
-	public void update(long elapsedTime) {
+	public void onUpdate(long elapsedTime) {
 		if (completed) {
 			return;
 		}
@@ -130,15 +106,6 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 		}
 	}
 
-	@Override
-	public float getWidth() {
-		return getContainerWidth();
-	}
-
-	@Override
-	public float getHeight() {
-		return getContainerHeight();
-	}
 
 	@Override
 	public boolean isCompleted() {
@@ -146,18 +113,8 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 	}
 
 	@Override
-	public RectBox getCollisionBox() {
-		return getCollisionArea();
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
 	public void close() {
-		visible = false;
+		super.close();
 		completed = true;
 	}
 
@@ -196,5 +153,4 @@ public class RippleEffect extends LObject<ISprite> implements LTouchArea, BaseEf
 	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 	}
-
 }

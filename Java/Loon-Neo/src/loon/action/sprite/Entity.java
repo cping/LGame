@@ -622,6 +622,8 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 		boolean exist = _image != null || (_width > 0 && _height > 0)
 				|| _repaintDraw;
 		if (exist) {
+			int blend = g.getBlendMode();
+			g.setBlendMode(_blend);
 			boolean update = (_rotation != 0
 					|| !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
 					&& _deform;
@@ -694,6 +696,7 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 				g.restoreBrush();
 				g.restoreTx();
 			}
+			g.setBlendMode(blend);
 		}
 	}
 
@@ -869,12 +872,12 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 	public void setClip(float x, float y, float w, float h) {
 		setShear(x, y, w, h);
 	}
-	
-	public boolean isDeform(){
+
+	public boolean isDeform() {
 		return _deform;
 	}
-	
-	public void setDeform(boolean d){
+
+	public void setDeform(boolean d) {
 		this._deform = d;
 	}
 
@@ -910,4 +913,5 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 		this.toString(stringBuilder);
 		return stringBuilder.toString();
 	}
+
 }

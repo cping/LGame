@@ -12,7 +12,7 @@ public class EffectTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		isComplete = _effect.isCompleted();
+		_isCompleted = _effect.isCompleted();
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class EffectTo extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	@Override

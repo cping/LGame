@@ -55,7 +55,6 @@ import loon.utils.MathUtils;
  */
 public class LDecideName extends LComponent {
 
-	private LColor selectColor = new LColor(0, 150, 0, 150);
 	private LColor fontColor = LColor.white;
 
 	private LFont font;
@@ -107,6 +106,7 @@ public class LDecideName extends LComponent {
 			int x, int y, int width, int height, LTexture bg) {
 		super(x, y, width, height - f.getHeight() - 20);
 		this.font = f;
+		this.baseColor = new LColor(0, 150, 0, 150);
 		this.labelName = label;
 		this.name = name;
 		this.keyArrays = mes;
@@ -168,7 +168,7 @@ public class LDecideName extends LComponent {
 			cacheFont.saveCharCache();
 			_cache = true;
 		}
-		g.setColor(selectColor);
+		g.setColor(baseColor);
 		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()),
 				posY + MathUtils.round((this.cursorY * dy) * getHeight()),
 				MathUtils.round(dx * getWidth()),
@@ -294,7 +294,7 @@ public class LDecideName extends LComponent {
 	}
 
 	public void setSelectColor(LColor selectColor) {
-		this.selectColor = selectColor;
+		this.baseColor = selectColor;
 	}
 
 	public void setFontColor(LColor fontColor) {

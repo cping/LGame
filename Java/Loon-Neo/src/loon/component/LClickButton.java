@@ -151,25 +151,36 @@ public class LClickButton extends LComponent {
 		try {
 			if (grayButton) {
 				if (!isEnabled()) {
-					g.draw(clickedClick, x, y, getWidth(), getHeight(),
-							LColor.gray);
+					g.draw(clickedClick,
+							x,
+							y,
+							getWidth(),
+							getHeight(),
+							baseColor == null ? LColor.gray : baseColor
+									.mul(LColor.gray));
 				} else if (isTouchPressed()) {
-					g.draw(idleClick, x, y, getWidth(), getHeight());
+					g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
 				} else if (isTouchOver()) {
-					g.draw(hoverClick, x, y, getWidth(), getHeight());
+					g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
 				} else {
-					g.draw(idleClick, x, y, getWidth(), getHeight(),
-							LColor.gray);
+					g.draw(idleClick,
+							x,
+							y,
+							getWidth(),
+							getHeight(),
+							baseColor == null ? LColor.gray : baseColor
+									.mul(LColor.gray));
 				}
 			} else {
 				if (!isEnabled()) {
-					g.draw(clickedClick, x, y, getWidth(), getHeight());
+					g.draw(clickedClick, x, y, getWidth(), getHeight(),
+							baseColor);
 				} else if (isTouchPressed()) {
-					g.draw(idleClick, x, y, getWidth(), getHeight());
+					g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
 				} else if (isTouchOver()) {
-					g.draw(hoverClick, x, y, getWidth(), getHeight());
+					g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
 				} else {
-					g.draw(idleClick, x, y, getWidth(), getHeight());
+					g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
 				}
 			}
 			if (text != null) {

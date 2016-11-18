@@ -817,6 +817,16 @@ public abstract class Player extends LObject<GroupPlayer> implements ActionBind,
 	public void update(long elapsedTime) {
 		_elapsed = elapsedTime;
 	}
+	
+	@Override
+	public void setColor(LColor c){
+		this.baseColor = c.getARGB();
+	}
+
+	@Override
+	public LColor getColor(){
+		return new LColor(baseColor);
+	}
 
 	public long getElapsed() {
 		return this._elapsed;

@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2016
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.utils.timer;
 
 import loon.utils.Easing;
@@ -5,18 +25,31 @@ import loon.utils.Easing.EasingMode;
 
 public class EaseTimer {
 
-	private final int _duration;
-	private int _timer = 0;
+	private final float _duration;
+	private float _timer = 0;
+	private float _delta = 0;
 	private EasingMode _mode;
 	private boolean _finished = false;
 	private float _progress = 0.0f;
+	private float _delay = 1f / 60f;
+	private float _timeInAfter = 0;
+	private final static EasingMode defaultEase = EasingMode.Linear;
 
-	public EaseTimer(int duration) {
-		this(duration, EasingMode.Linear);
+	public EaseTimer(float duration) {
+		this(duration, 1f / 60f, defaultEase);
 	}
 
-	public EaseTimer(int duration, EasingMode mode) {
+	public EaseTimer(float duration, EasingMode mode) {
+		this(duration, 1f / 60f, mode);
+	}
+
+	public EaseTimer(float duration, float delay) {
+		this(duration, delay, defaultEase);
+	}
+
+	public EaseTimer(float duration, float delay, EasingMode mode) {
 		this._duration = duration;
+		this._delay = delay;
 		this._mode = mode;
 	}
 
@@ -26,10 +59,20 @@ public class EaseTimer {
 		this._mode = timer._mode;
 		this._finished = timer._finished;
 		this._progress = timer._progress;
+		this._delay = timer._delay;
+		this._delta = timer._delta;
+		this._timeInAfter = timer._timeInAfter;
 	}
 
-	public void update(int delta) {
-		this._timer += delta;
+	public void update(long elapsedTime) {
+		if (this._finished) {
+			return;
+		}
+		this._delta = (elapsedTime / 1000f);
+		this._timer += _delta;
+		if (this._timer >= _delay) {
+			_timeInAfter += _delta / _duration;
+		}
 		if (this._timer >= this._duration) {
 			this._timer = this._duration;
 			this._finished = true;
@@ -152,21 +195,36 @@ public class EaseTimer {
 		this._timer = 0;
 		this._progress = 0.0f;
 		this._finished = false;
+		this._delta = 0;
+		this._delay = 1f / 60f;
+		this._timeInAfter = 0;
 	}
 
 	public EasingMode getEasingMode() {
 		return this._mode;
 	}
 
-	public int getDuration() {
+	public float getTimeInAfter() {
+		return this._timeInAfter;
+	}
+
+	public float getDelta() {
+		return this._delta;
+	}
+
+	public float getDelay() {
+		return this._delay;
+	}
+
+	public float getDuration() {
 		return this._duration;
 	}
 
-	public int getTimer() {
+	public float getTimer() {
 		return this._timer;
 	}
 
-	public boolean isFinished() {
+	public boolean isCompleted() {
 		return this._finished;
 	}
 

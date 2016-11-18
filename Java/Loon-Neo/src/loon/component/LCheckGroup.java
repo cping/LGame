@@ -52,7 +52,9 @@ public class LCheckGroup extends LComponent {
 		checks.add(check);
 	}
 
+	@Override
 	public void setColor(LColor c) {
+		super.setColor(c);
 		for (LCheckBox check : checks) {
 			check.setColor(c);
 		}

@@ -32,8 +32,8 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public abstract class ActionObject extends LObject<ISprite> implements Config, LRelease,
-		ActionBind, ISprite {
+public abstract class ActionObject extends LObject<ISprite> implements Config,
+		LRelease, ActionBind, ISprite {
 
 	boolean visible = true;
 
@@ -215,8 +215,9 @@ public abstract class ActionObject extends LObject<ISprite> implements Config, L
 			return;
 		}
 		int tmp = gl.color();
-		float alpha = gl.alpha();
+		int blend = gl.getBlendMode();
 		try {
+			gl.setBlendMode(_blend);
 			gl.setAlpha(_alpha);
 			if (scaleX == 1 && scaleY == 1) {
 				if (mirror) {
@@ -318,7 +319,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Config, L
 			}
 		} finally {
 			gl.setColor(tmp);
-			gl.setAlpha(alpha);
+			gl.setBlendMode(blend);
 		}
 	}
 
@@ -336,7 +337,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Config, L
 	}
 
 	public LColor getFilterColor() {
-		return this.filterColor;
+		return new LColor(this.filterColor);
 	}
 
 	public void setSize(float width, float height) {
@@ -344,13 +345,14 @@ public abstract class ActionObject extends LObject<ISprite> implements Config, L
 		this.dstHeight = height;
 	}
 
-	public void setWidth(float w){
+	public void setWidth(float w) {
 		this.dstWidth = w;
 	}
-	
-	public void setHeight(float h){
+
+	public void setHeight(float h) {
 		this.dstHeight = h;
 	}
+
 	public boolean isCollision(ActionObject o) {
 		RectBox src = getCollisionArea();
 		RectBox dst = o.getCollisionArea();
@@ -452,6 +454,17 @@ public abstract class ActionObject extends LObject<ISprite> implements Config, L
 		return animation.getSpriteImage();
 	}
 
+	@Override
+	public void setColor(LColor c) {
+		setFilterColor(c);
+	}
+
+	@Override
+	public LColor getColor() {
+		return getFilterColor();
+	}
+
+	@Override
 	public void close() {
 		if (animation != null) {
 			animation.close();

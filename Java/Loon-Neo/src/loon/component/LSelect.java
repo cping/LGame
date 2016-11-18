@@ -199,7 +199,7 @@ public class LSelect extends LContainer {
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
 			messageFont.drawString(g, message, messageLeft, messageTop
-					- messageFont.getAscent());
+					- messageFont.getAscent(), fontColor);
 		} else {
 			messageTop = y + top;
 		}
@@ -213,11 +213,11 @@ public class LSelect extends LContainer {
 				if ((buoyage != null) && isSelect) {
 					g.setAlpha(autoAlpha);
 					g.draw(buoyage, nLeft, nTop
-							- (int) (buoyage.getHeight() / 1.5));
+							- (int) (buoyage.getHeight() / 1.5), baseColor);
 					g.setAlpha(1F);
 				}
-				messageFont.drawString(g,selects[i], messageLeft,
-						nTop - messageFont.getAscent(), fontColor);
+				messageFont.drawString(g, selects[i], messageLeft, nTop
+						- messageFont.getAscent(), fontColor);
 				if ((cursor != null) && isSelect) {
 					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2,
 							LColor.white);

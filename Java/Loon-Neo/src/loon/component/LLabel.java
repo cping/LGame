@@ -28,8 +28,6 @@ public class LLabel extends LComponent {
 		LEFT, CENTER, RIGHT
 	}
 
-	private LColor color;
-
 	private IFont font;
 
 	private float backalpha = 1f, offsetLeft = 0, offsetTop = 0;
@@ -141,7 +139,7 @@ public class LLabel extends LComponent {
 		}
 		this.labelAlignment = alignment;
 		this.background = bg;
-		this.color = c;
+		this.baseColor = c;
 		this.font = font;
 		this.text = mes;
 		if (bg != null && (width == 0 || height == 0)) {
@@ -172,7 +170,7 @@ public class LLabel extends LComponent {
 			g.setAlpha(oldAlpha);
 		}
 		if (text != null && text.length() > 0) {
-			g.setColor(color);
+			g.setColor(baseColor);
 			switch (labelAlignment) {
 			case CENTER:
 				font.drawString(g, text,
@@ -196,14 +194,6 @@ public class LLabel extends LComponent {
 			}
 			g.setColor(oldColor);
 		}
-	}
-
-	public LColor getColor() {
-		return color;
-	}
-
-	public void setColor(LColor color) {
-		this.color = color;
 	}
 
 	public IFont getFont() {

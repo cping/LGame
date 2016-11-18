@@ -3,15 +3,18 @@
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
 * jMonkeyEngine: 目前最完善的Java3D游戏开发引擎，也可以跨平台，不过非台式机效率有限…… [项目地址](https://github.com/jMonkeyEngine/jmonkeyengine/)
+* Slick2D: 最早出现的Java2D游戏引擎之一，只支持桌面游戏开发。[项目地址](http://slick.ninjacave.com/)
 * libGDX: 支持2D/3D的Java跨平台框架。[项目地址](https://github.com/libgdx/libgdx/)
 * LGame: 包括Java/C#/C++等多种语法版本，可能运行于全平台，并且支持2D/3D（含Live2D这类伪3D模型的导入）的游戏引擎。 [项目地址](https://github.com/cping/lgame/)
-* playn: 2D的Java游戏引擎。 [项目地址](https://github.com/threerings/playn/)
+* playn: 2D的Java游戏引擎，支持多平台。 [项目地址](https://github.com/threerings/playn/)
+* FXGL: Java / JavaFX / Kotlin Game Library (Engine)  [项目地址](https://github.com/AlmasB/FXGL/)
 * LWJGL: 目前最常用的，对OpenGL/CL/AL等渲染API进行本地封装的Java开发包。[官网](http://lwjgl.org/)
 * JavaFX: Java官方目前最推荐的UI库，号称是Swing以及Applet的后继者，也可以用于游戏开发官方提供有Android环境的本地支持库，通过Robovm也可以支持IOS平台。[官网](http://www.oracle.com/technetwork/java/javase/overview/javafx-overview-2158620.html)
 * Scene Builder: 开发JavaFX应用的可视化布局工具。[下载地址](http://gluonhq.com/open-source/scene-builder/)
 
 ### Java的跨平台工具(仅包含还在更新的)
 
+* IKVM: 基于Mono衍生的Java版封装库以及字节码转换工具。[下载地址](http://weblog.ikvm.net/)
 * Robovm: 基于LLVM开发，运行时转换字节码为本地机器码，并提供有完善的本地API支持，为IOS提供了完整的Java运行时环境，附带可视化IDE。 [官网](https://robovm.com/)
 * Multi-OS Engine: 由Intel推出的，免费的Java跨平台工具（特意注明了： It’s free! ），使用AOT静态代码转换方式的Java跨平台工具（目前支持Android和IOS），现阶段只有预览版，程序示例:https://github.com/moe-java-samples/moe-java-samples。另外，这玩意还有很强的跨平台补丁功能（而且不必改变原有Java文件，可以直接注明替换），比如LibGDXMissileCommand的示例中，演示了直接通过add_moe_support.patch打补丁方式，转换libgdx项目到它的IOS支持库。[官网](https://software.intel.com/en-us/multi-os-engine/)
 * CodenameOne: 最初源自XMLVM的Java跨平台项目（XMLVM目前已经停止开发），原始版本的运行原理是转换Java代码为XML描述的中间语言，然后再转换为具体环境下的本地开发语言，并不具备具体平台的API支持功能。但是，CodenameOne为其增加了WP、Android以及IOS的本地环境API（不过提供的仅仅是CodenameOne自己的封装包，而不是完整的官方API，这点与Robovm差异很大），所以也就可以直接让程序运行于上述平台之上。[项目地址](https://github.com/codenameone/CodenameOne/)

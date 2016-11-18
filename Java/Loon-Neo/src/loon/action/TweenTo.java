@@ -13,7 +13,7 @@ public class TweenTo<T> extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public void onLoad() {
@@ -21,12 +21,12 @@ public class TweenTo<T> extends ActionEvent {
 	}
 
 	public void update(long elapsedTime) {
-		if (isComplete) {
+		if (_isCompleted) {
 			return;
 		}
 		_base.update(elapsedTime);
 		if (_base.isFinished()) {
-			isComplete = _base.actionEventOver();
+			_isCompleted = _base.actionEventOver();
 		}
 	}
 

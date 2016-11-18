@@ -28,7 +28,7 @@ public abstract class ActionEvent {
 
 	private ActionListener actionListener;
 
-	boolean firstTick, isComplete, isInit;
+	boolean firstTick, _isCompleted, isInit;
 
 	ActionBind original;
 
@@ -86,7 +86,7 @@ public abstract class ActionEvent {
 		}
 		this.timer.refresh();
 		this.firstTick = true;
-		this.isComplete = false;
+		this._isCompleted = false;
 		this.isInit = false;
 		if (actionListener != null) {
 			actionListener.start(o);
@@ -114,7 +114,7 @@ public abstract class ActionEvent {
 	}
 
 	public final void setComplete(boolean isComplete) {
-		this.isComplete = isComplete;
+		this._isCompleted = isComplete;
 	}
 
 	public ActionListener getActionListener() {

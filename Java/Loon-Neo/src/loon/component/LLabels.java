@@ -62,7 +62,7 @@ public class LLabels extends LComponent {
 	public TArray<Info> labels = new TArray<Info>();
 
 	private float speed = 0;
-	
+
 	@Override
 	public void update(long elapsedTime) {
 		if (!visible) {
@@ -77,15 +77,21 @@ public class LLabels extends LComponent {
 		for (int i = 0; i < labels.size; i++) {
 			Info label = labels.get(i);
 			if (label.length == -1) {
-				font.drawString(g,label.message, x + label.x,
-						y + label.y - font.getHeight() / 2 + 5, label.color);
+				font.drawString(
+						g,
+						label.message,
+						x + label.x,
+						y + label.y - font.getHeight() / 2 + 5,
+						baseColor == null ? label.color : baseColor
+								.mul(label.color));
 			} else {
 				label.stateTime += speed;
 				if (label.stateTime > label.length) {
 					labels.remove(label);
 				} else {
-					font.drawString(g,label.message, x + label.x,
-							y + label.y - font.getHeight() / 2 + 5, label.color);
+					font.drawString(g, label.message, x + label.x, y + label.y
+							- font.getHeight() / 2 + 5, baseColor == null ? label.color : baseColor
+									.mul(label.color));
 				}
 			}
 		}
@@ -121,6 +127,5 @@ public class LLabels extends LComponent {
 	public String getUIName() {
 		return "Labels";
 	}
-
 
 }

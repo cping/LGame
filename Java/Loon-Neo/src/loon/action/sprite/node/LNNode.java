@@ -39,8 +39,10 @@ import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.opengl.GL20;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.GLUtils;
 import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -548,6 +550,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY,
 		if (_alpha < 0.01) {
 			return;
 		}
+		int blend = GLUtils.getBlendMode();
+		GL20 gl = LSystem.base().graphics().gl;
+		GLUtils.setBlendMode(gl, _blend);
 		float tmp = batch.alpha();
 		batch.setAlpha(_alpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {
@@ -572,6 +577,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY,
 			}
 		}
 		batch.setAlpha(tmp);
+		GLUtils.setBlendMode(gl, blend);
 	}
 
 	public final void drawNode(GLEx gl) {
@@ -584,7 +590,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY,
 		if (_alpha < 0.01) {
 			return;
 		}
+		int blend = gl.getBlendMode();
 		float tmp = gl.alpha();
+		gl.setBlendMode(_blend);
 		gl.setAlpha(_alpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {
 			if (childs[i] != null && childs[i].getZOrder() < 0) {
@@ -608,6 +616,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY,
 			}
 		}
 		gl.setAlpha(tmp);
+		gl.setBlendMode(blend);
 	}
 
 	public void setOffset(float x, float y) {

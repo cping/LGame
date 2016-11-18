@@ -341,6 +341,7 @@ public class LColor implements Serializable {
 	 */
 	public LColor(String c) {
 		if (c == null) {
+			setColor(LColor.white);
 			return;
 		}
 		if (c.startsWith("#")) {
@@ -417,7 +418,11 @@ public class LColor implements Serializable {
 	}
 
 	public LColor(LColor color) {
-		this(color.r, color.g, color.b, color.a);
+		if (color == null) {
+			setColor(LColor.white);
+			return;
+		}
+		setColor(color.r, color.g, color.b, color.a);
 	}
 
 	public LColor(int r, int g, int b) {

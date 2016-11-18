@@ -116,23 +116,28 @@ public class LButton extends LComponent {
 		LButton button = (LButton) component;
 		if (buttonImage != null) {
 			if (!button.isEnabled()) {
-				g.draw(buttonImage[3], x, y);
+				g.draw(buttonImage[3], x, y, baseColor);
 			} else if (button.isTouchPressed()) {
-				g.draw(buttonImage[2], x, y);
+				g.draw(buttonImage[2], x, y, baseColor);
 			} else if (button.isTouchOver()) {
-				g.draw(buttonImage[1], x, y);
+				g.draw(buttonImage[1], x, y, baseColor);
 			} else {
 				if (type == 1) {
-					g.draw(buttonImage[0], x, y, LColor.gray);
+					g.draw(buttonImage[0],
+							x,
+							y,
+							baseColor == null ? LColor.gray : baseColor
+									.mul(LColor.gray));
 				} else {
-					g.draw(buttonImage[0], x, y);
+					g.draw(buttonImage[0], x, y, baseColor);
 				}
 			}
 		}
 		if (text != null) {
 			int tmp = g.color();
 			g.setColor(fontColor);
-			font.drawString(g,
+			font.drawString(
+					g,
 					text,
 					x + button.getOffsetLeft()
 							+ (button.getWidth() - font.stringWidth(text)) / 2,
@@ -150,7 +155,7 @@ public class LButton extends LComponent {
 			return;
 		}
 		super.update(elapsedTime);
-		if(selected){
+		if (selected) {
 			this.pressed = true;
 			return;
 		}

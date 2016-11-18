@@ -3,9 +3,11 @@ package loon.action;
 import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.utils.Array;
 import loon.utils.Easing;
 import loon.utils.TArray;
+import loon.utils.Easing.EasingMode;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
@@ -210,6 +212,77 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		RotateTo rotate = new RotateTo(angle, speed);
 		rotate.setDelay(0);
 		return event(rotate);
+	}
+
+	public ActionTween colorTo(LColor end) {
+		return colorTo(null, end);
+	}
+
+	public ActionTween colorTo(LColor start, LColor end) {
+		ColorTo color = new ColorTo(start, end, 1f);
+		color.setDelay(0);
+		return event(color);
+	}
+
+	public ActionTween colorTo(LColor start, LColor end, float delay) {
+		return colorTo(start, end, delay, 1f);
+	}
+
+	public ActionTween colorTo(LColor start, LColor end, float duration,
+			float delay) {
+		ColorTo color = new ColorTo(start, end, duration, delay);
+		color.setDelay(0);
+		return event(color);
+	}
+
+	public ActionTween transferTo(float startPos, float endPos,
+			EasingMode mode, boolean controlX, boolean controlY) {
+		TransferTo transfer = new TransferTo(startPos, endPos, 1f, mode,
+				controlX, controlY);
+		transfer.setDelay(0);
+		return event(transfer);
+	}
+
+	public ActionTween transferTo(float startPos, float endPos, float duration,
+			EasingMode mode) {
+		TransferTo transfer = new TransferTo(startPos, endPos, duration, mode);
+		transfer.setDelay(0);
+		return event(transfer);
+	}
+
+	public ActionTween transferTo(float startPos, float endPos, float duration,
+			EasingMode mode, boolean controlX, boolean controlY) {
+		TransferTo transfer = new TransferTo(startPos, endPos, duration, mode,
+				controlX, controlY);
+		transfer.setDelay(0);
+		return event(transfer);
+	}
+
+	public ActionTween transferTo(float startPos, float endPos, float duration,
+			float delay, EasingMode mode, boolean controlX, boolean controlY) {
+		TransferTo transfer = new TransferTo(startPos, endPos, delay, duration,
+				mode, controlX, controlY);
+		transfer.setDelay(0);
+		return event(transfer);
+	}
+
+	public ActionTween shakeTo(float shakeX, float shakeY) {
+		ShakeTo shake = new ShakeTo(shakeX, shakeY);
+		shake.setDelay(0);
+		return event(shake);
+	}
+
+	public ActionTween shakeTo(float shakeX, float shakeY, float duration) {
+		ShakeTo shake = new ShakeTo(shakeX, shakeY, duration);
+		shake.setDelay(0);
+		return event(shake);
+	}
+
+	public ActionTween shakeTo(float shakeX, float shakeY, float duration,
+			float delay) {
+		ShakeTo shake = new ShakeTo(shakeX, shakeY, duration, delay);
+		shake.setDelay(0);
+		return event(shake);
 	}
 
 	public ActionTween scaleTo(float sx, float sy) {

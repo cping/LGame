@@ -26,6 +26,67 @@ public class Easing {
 		InQuad, OutQuad, InOutQuad, InCubic, OutCubic, InOutCubic, InQuart, OutQuart, InOutQuart, InQuint, OutQuint, InOutQuint, InSine, OutSine, InOutSine, InExp, OutExp, InOutExp, InCirc, OutCirc, InOutCirc, InBack, OutBack, InOutBack, OutBounce, InBounce, InOutBounce, Linear;
 	}
 
+	public static EasingMode toEasingMode(String name) {
+		String key = name == null ? "Linear" : name.trim();
+		if ("InQuad".equals(key)) {
+			return EasingMode.InQuad;
+		} else if ("OutQuad".equals(key)) {
+			return EasingMode.OutQuad;
+		} else if ("InOutQuad".equals(key)) {
+			return EasingMode.InOutQuad;
+		} else if ("InCubic".equals(key)) {
+			return EasingMode.InCubic;
+		} else if ("OutCubic".equals(key)) {
+			return EasingMode.OutCubic;
+		} else if ("InOutCubic".equals(key)) {
+			return EasingMode.InOutCubic;
+		} else if ("InQuart".equals(key)) {
+			return EasingMode.InQuart;
+		} else if ("OutQuart".equals(key)) {
+			return EasingMode.OutQuart;
+		} else if ("InOutQuart".equals(key)) {
+			return EasingMode.InOutQuart;
+		} else if ("InQuint".equals(key)) {
+			return EasingMode.InQuint;
+		} else if ("OutQuint".equals(key)) {
+			return EasingMode.OutQuint;
+		} else if ("InOutQuint".equals(key)) {
+			return EasingMode.InOutQuint;
+		} else if ("InSine".equals(key)) {
+			return EasingMode.InSine;
+		} else if ("OutSine".equals(key)) {
+			return EasingMode.OutSine;
+		} else if ("InOutSine".equals(key)) {
+			return EasingMode.InOutSine;
+		} else if ("InExp".equals(key)) {
+			return EasingMode.InExp;
+		} else if ("OutExp".equals(key)) {
+			return EasingMode.OutExp;
+		} else if ("InOutExp".equals(key)) {
+			return EasingMode.InOutExp;
+		} else if ("InCirc".equals(key)) {
+			return EasingMode.InCirc;
+		} else if ("OutCirc".equals(key)) {
+			return EasingMode.OutCirc;
+		} else if ("InOutCirc".equals(key)) {
+			return EasingMode.InOutCirc;
+		} else if ("InBack".equals(key)) {
+			return EasingMode.InBack;
+		} else if ("OutBack".equals(key)) {
+			return EasingMode.OutBack;
+		} else if ("InOutBack".equals(key)) {
+			return EasingMode.InOutBack;
+		} else if ("OutBounce".equals(key)) {
+			return EasingMode.OutBounce;
+		} else if ("InBounce".equals(key)) {
+			return EasingMode.InBounce;
+		} else if ("InOutBounce".equals(key)) {
+			return EasingMode.InOutBounce;
+		} else {
+			return EasingMode.Linear;
+		}
+	}
+
 	private static final int TYPE_IN = 0;
 
 	private static final int TYPE_OUT = 1;

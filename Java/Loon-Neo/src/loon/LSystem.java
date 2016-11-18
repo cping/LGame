@@ -94,7 +94,14 @@ public class LSystem {
 	public static int MODE_ALPHA_ONE = 9;
 
 	public static int MODE_NONE = 10;
+	
+	public static int MODE_MASK = 11;
 
+	public static int MODE_LIGHT = 12;
+	
+	public static int MODE_ALPHA_ADD = 13;
+	
+	public static int MODE_MULTIPLY = 14;
 	// 兆秒
 	final static public long MSEC = 1;
 	

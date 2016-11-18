@@ -4,6 +4,7 @@ import loon.LTexture;
 import loon.LTrans;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
+import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
 import loon.event.EventDispatcher;
 import loon.geom.PointF;
@@ -37,6 +38,8 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 
 	public static final int ANCHOR_CENTER = LTrans.HCENTER | LTrans.VCENTER;
 
+	protected LColor _baseColor = LColor.white;
+	
 	protected int _anchor = DisplayObject.ANCHOR_TOP_LEFT;
 
 	protected Vector2f _anchorValue = new Vector2f();
@@ -240,6 +243,16 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
 		return getRectBox().contains(x, y, w, h);
+	}
+	
+	@Override
+	public void setColor(LColor c){
+		this._baseColor = c;
+	}
+	
+	@Override
+	public LColor getColor(){
+		return new LColor(_baseColor);
 	}
 
 	abstract protected void enterFrame(long time);

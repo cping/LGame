@@ -9,6 +9,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
+import loon.utils.Easing.EasingMode;
 
 public class SpriteControls {
 
@@ -199,11 +200,11 @@ public class SpriteControls {
 			ISprite comp = _sprs.get(i);
 			if (comp != null) {
 				if (comp instanceof Sprite) {
-					((Sprite) comp).setScale(sx,sy);
+					((Sprite) comp).setScale(sx, sy);
 				} else if (comp instanceof Entity) {
-					((Entity) comp).setScale(sx,sy);
+					((Entity) comp).setScale(sx, sy);
 				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setScale(sx,sy);
+					((ActionObject) comp).setScale(sx, sy);
 				}
 			}
 		}
@@ -381,13 +382,15 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(comp);
 				if (comp.getAlpha() >= 255) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind)comp).fadeIn(speed);
+						tween = PlayerUtils.set((ActionBind) comp)
+								.fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind)comp).fadeOut(speed);
+						tween = PlayerUtils.set((ActionBind) comp).fadeOut(
+								speed);
 					} else {
 						tween.fadeOut(speed);
 					}
@@ -407,13 +410,15 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(comp);
 				if (comp.getAlpha() <= 0) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind)comp).fadeOut(speed);
+						tween = PlayerUtils.set((ActionBind) comp).fadeOut(
+								speed);
 					} else {
 						tween.fadeOut(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind)comp).fadeIn(speed);
+						tween = PlayerUtils.set((ActionBind) comp)
+								.fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
@@ -432,7 +437,8 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).moveBy(endX, endY, speed);
+					tween = PlayerUtils.set((ActionBind) comp).moveBy(endX,
+							endY, speed);
 				} else {
 					tween.moveBy(endX, endY, speed);
 				}
@@ -450,7 +456,8 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).moveBy(endX, endY);
+					tween = PlayerUtils.set((ActionBind) comp).moveBy(endX,
+							endY);
 				} else {
 					tween.moveBy(endX, endY);
 				}
@@ -468,7 +475,8 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).moveTo(endX, endY, speed);
+					tween = PlayerUtils.set((ActionBind) comp).moveTo(endX,
+							endY, speed);
 				} else {
 					tween.moveTo(endX, endY, speed);
 				}
@@ -487,8 +495,8 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).moveTo(endX, endY, flag,
-							speed);
+					tween = PlayerUtils.set((ActionBind) comp).moveTo(endX,
+							endY, flag, speed);
 				} else {
 					tween.moveTo(endX, endY, flag, speed);
 				}
@@ -508,8 +516,8 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).moveTo(map, endX, endY, flag,
-							speed);
+					tween = PlayerUtils.set((ActionBind) comp).moveTo(map,
+							endX, endY, flag, speed);
 				} else {
 					tween.moveTo(map, endX, endY, flag, speed);
 				}
@@ -528,7 +536,7 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).delay(d);
+					tween = PlayerUtils.set((ActionBind) comp).delay(d);
 				} else {
 					tween.delay(d);
 				}
@@ -547,7 +555,7 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).rotateTo(angle);
+					tween = PlayerUtils.set((ActionBind) comp).rotateTo(angle);
 				} else {
 					tween.rotateTo(angle);
 				}
@@ -566,7 +574,8 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).rotateTo(angle, speed);
+					tween = PlayerUtils.set((ActionBind) comp).rotateTo(angle,
+							speed);
 				} else {
 					tween.rotateTo(angle, speed);
 				}
@@ -585,7 +594,7 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).scaleTo(sx, sy);
+					tween = PlayerUtils.set((ActionBind) comp).scaleTo(sx, sy);
 				} else {
 					tween.scaleTo(sx, sy);
 				}
@@ -604,7 +613,8 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).scaleTo(sx, sy, speed);
+					tween = PlayerUtils.set((ActionBind) comp).scaleTo(sx, sy,
+							speed);
 				} else {
 					tween.scaleTo(sx, sy, speed);
 				}
@@ -623,7 +633,7 @@ public class SpriteControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind)comp).showTo(v);
+					tween = PlayerUtils.set((ActionBind) comp).showTo(v);
 				} else {
 					tween.showTo(v);
 				}
@@ -634,6 +644,78 @@ public class SpriteControls {
 			}
 		}
 		return this;
+	}
+
+	public SpriteControls colorTo(LColor end) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite comp = _sprs.get(i);
+			if (comp != null && (comp instanceof ActionBind)) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) comp).colorTo(end);
+				} else {
+					tween.colorTo(end);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls shakeTo(float shakeX, float shakeY) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite comp = _sprs.get(i);
+			if (comp != null && (comp instanceof ActionBind)) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) comp).shakeTo(shakeX,
+							shakeY);
+				} else {
+					tween.shakeTo(shakeX, shakeY);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls transferTo(float startPos, float endPos,
+			float duration, EasingMode mode, boolean controlX, boolean controlY) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite comp = _sprs.get(i);
+			if (comp != null && (comp instanceof ActionBind)) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) comp).transferTo(
+							startPos, endPos, duration, mode, controlX,
+							controlY);
+				} else {
+					tween.transferTo(startPos, endPos, duration, mode,
+							controlX, controlY);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public boolean isTweenFinished() {
+		int size = 0;
+		for (ActionTween tween : tweens.values()) {
+			if (tween.isFinished()) {
+				size++;
+			}
+		}
+		return size == tweens.size;
 	}
 
 }

@@ -44,7 +44,7 @@ public class FadeTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public float getSpeed() {
@@ -69,14 +69,14 @@ public class FadeTo extends ActionEvent {
 			currentFrame--;
 			if (currentFrame == 0) {
 				original.setAlpha(0f);
-				isComplete = true;
+				_isCompleted = true;
 				return;
 			}
 		} else {
 			currentFrame++;
 			if (currentFrame == time) {
 				original.setAlpha(1f);
-				isComplete = true;
+				_isCompleted = true;
 				return;
 			}
 		}

@@ -196,15 +196,15 @@ public class BaseBox extends AbstractBox {
 		this.menuItems[menuIndex].setEnable(enable);
 	}
 
-	public void draw(GLEx g, int focusedIndex) {
-		draw(g, this._boxX, this._boxY, focusedIndex);
+	public void draw(GLEx g, int focusedIndex, LColor c) {
+		draw(g, this._boxX, this._boxY, focusedIndex, c);
 	}
 
-	protected void draw(GLEx g, float x, float y, int focusedIndex) {
+	protected void draw(GLEx g, float x, float y, int focusedIndex, LColor c) {
 		if ((focusedIndex >= this.menuItems.length) || (focusedIndex < -1)) {
 			return;
 		}
-		drawBorder(g, x, y);
+		drawBorder(g, x, y, c);
 		for (int i = 0; i < this.menuItems.length; i++) {
 			LColor color;
 			if (!this.menuItems[i].isEnable()) {
@@ -221,10 +221,10 @@ public class BaseBox extends AbstractBox {
 	}
 
 	@Override
-	protected void drawBorder(GLEx g, float x, float y) {
+	protected void drawBorder(GLEx g, float x, float y, LColor c) {
 		this._boxX = x;
 		this._boxY = y;
-		super.drawBorder(g, this._boxX, this._boxY);
+		super.drawBorder(g, this._boxX, this._boxY, c);
 		g.setColor(LColor.green);
 		for (int i = 0; i < this.menuItems.length; i++) {
 			float x1 = this.menuItems[i].getX1();

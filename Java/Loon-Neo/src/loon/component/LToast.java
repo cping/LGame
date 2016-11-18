@@ -167,7 +167,7 @@ public class LToast extends LComponent {
 			if (mBackgroundTexture == null) {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			} else {
-				g.draw(mBackgroundTexture, displayX, displayY, w, h);
+				g.draw(mBackgroundTexture, displayX, displayY, w, h, baseColor);
 			}
 			g.setColor(LColor.DEF_COLOR);
 			font.drawString(g, mText,

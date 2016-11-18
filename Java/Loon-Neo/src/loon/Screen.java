@@ -2242,13 +2242,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int type = e.getType();
 		int button = e.getButton();
 
-		updateTouchArea(Event.DOWN, e.getX(), e.getY());
-
 		try {
 			touchType[type] = true;
 			touchButtonPressed = button;
 			touchButtonReleased = SysInput.NO_BUTTON;
 			if (!isClickLimit(e)) {
+				updateTouchArea(Event.DOWN, e.getX(), e.getY());
 				touchDown(e);
 			}
 		} catch (Exception ex) {
@@ -2270,13 +2269,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int type = e.getType();
 		int button = e.getButton();
 
-		updateTouchArea(Event.UP, e.getX(), e.getY());
-
 		try {
 			touchType[type] = false;
 			touchButtonReleased = button;
 			touchButtonPressed = SysInput.NO_BUTTON;
 			if (!isClickLimit(e)) {
+				updateTouchArea(Event.UP, e.getX(), e.getY());
 				touchUp(e);
 			}
 		} catch (Exception ex) {
@@ -2296,9 +2294,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			e.offset(tx, ty);
 		}
 
-		updateTouchArea(Event.MOVE, e.getX(), e.getY());
-
 		if (!isClickLimit(e)) {
+			updateTouchArea(Event.MOVE, e.getX(), e.getY());
 			touchMove(e);
 		}
 	}
@@ -2313,9 +2310,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			e.offset(tx, ty);
 		}
 
-		updateTouchArea(Event.DRAG, e.getX(), e.getY());
-
 		if (!isClickLimit(e)) {
+			updateTouchArea(Event.DRAG, e.getX(), e.getY());
 			touchDrag(e);
 		}
 	}

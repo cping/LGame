@@ -1,7 +1,7 @@
 package loon.utils.timer;
 
 public abstract class FloatTimerEvent {
-	
+
 	private float delay;
 	private boolean repeat;
 	private float acc;
@@ -16,6 +16,10 @@ public abstract class FloatTimerEvent {
 		this.delay = delay;
 		this.repeat = repeat;
 		this.acc = 0.0F;
+	}
+
+	public void update(long elapsedTime) {
+		this.update(elapsedTime / 1000f);
 	}
 
 	public void update(float delta) {
@@ -42,7 +46,7 @@ public abstract class FloatTimerEvent {
 		this.acc = 0.0F;
 	}
 
-	public boolean isDone() {
+	public boolean isCompleted() {
 		return this.done;
 	}
 

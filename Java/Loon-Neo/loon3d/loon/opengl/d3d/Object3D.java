@@ -3,23 +3,18 @@ package loon.opengl.d3d;
 import loon.LObject;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.opengl.PreBoxViewer3D;
 
-public class Object3D extends LObject implements ISprite {
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3332614785354460231L;
+public class Object3D extends LObject<ISprite> implements ISprite {
 
 	private boolean visible;
 
 	private boolean isPreview = false;
 
-	//轮廓预览模式
+	// 轮廓预览模式
 	private PreBoxViewer3D preview;
 
 	public Object3D(boolean pre) {
@@ -78,6 +73,11 @@ public class Object3D extends LObject implements ISprite {
 	}
 
 	@Override
+	public void createUI(GLEx g, float offsetX, float offsetY) {
+		draw(g);
+	}
+
+	@Override
 	public RectBox getCollisionBox() {
 		return getCollisionArea();
 	}
@@ -105,6 +105,17 @@ public class Object3D extends LObject implements ISprite {
 	@Override
 	public void close() {
 
+	}
+
+	@Override
+	public void setColor(LColor c) {
+		
+	}
+
+	@Override
+	public LColor getColor() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

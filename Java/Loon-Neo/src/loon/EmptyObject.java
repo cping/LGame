@@ -22,6 +22,7 @@ package loon;
 
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 
 public class EmptyObject extends LObject<Object> implements ActionBind {
@@ -91,6 +92,16 @@ public class EmptyObject extends LObject<Object> implements ActionBind {
 	@Override
 	public RectBox getRectBox() {
 		return getCollisionArea();
+	}
+
+	@Override
+	public void setColor(LColor color) {
+		
+	}
+
+	@Override
+	public LColor getColor() {
+		return null;
 	}
 
 }

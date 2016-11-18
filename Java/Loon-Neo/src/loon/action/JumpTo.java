@@ -38,7 +38,7 @@ public class JumpTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public void onLoad() {
@@ -82,10 +82,10 @@ public class JumpTo extends ActionEvent {
 		if (moveJump > 0) {
 			if (original.getY() + original.getHeight() > original
 					.getContainerHeight() + original.getHeight()) {
-				isComplete = true;
+				_isCompleted = true;
 			}
 		} else if (original.getY() + original.getHeight() < 0) {
-			isComplete = true;
+			_isCompleted = true;
 		}
 		boolean isLimit = original.isBounded();
 		if (isLimit) {
@@ -96,19 +96,19 @@ public class JumpTo extends ActionEvent {
 			if (original.getX() > limitWidth) {
 				original.setLocation(offsetX + limitWidth,
 						offsetY + original.getY());
-				isComplete = true;
+				_isCompleted = true;
 			} else if (original.getX() < 0) {
 				original.setLocation(offsetX, offsetY + original.getY());
-				isComplete = true;
+				_isCompleted = true;
 			}
 			if (original.getY() < 0) {
 				original.setLocation(offsetX + original.getX(), offsetY
 						+ limitHeight);
-				isComplete = true;
+				_isCompleted = true;
 			} else if (original.getY() > original.getHeight() - limitHeight) {
 				original.setLocation(offsetX + original.getX(), offsetY
 						+ (original.getContainerHeight() - limitHeight));
-				isComplete = true;
+				_isCompleted = true;
 			}
 		}
 	}

@@ -26,14 +26,17 @@ import java.util.Iterator;
 import loon.action.ActionBind;
 import loon.action.ArrowTo;
 import loon.action.CircleTo;
+import loon.action.ColorTo;
 import loon.action.FadeTo;
 import loon.action.FireTo;
 import loon.action.JumpTo;
 import loon.action.MoveTo;
 import loon.action.RotateTo;
 import loon.action.ScaleTo;
+import loon.action.ShakeTo;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
@@ -339,6 +342,97 @@ public abstract class ActorLayer extends LContainer {
 		ArrowTo arrow = new ArrowTo(tx, ty);
 		addActionEvent(arrow, o);
 		return arrow;
+	}
+
+	/**
+	 * 渐变对象到指定颜色
+	 * 
+	 * @param o
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public ColorTo callColorTo(ActionBind o, LColor start, LColor end) {
+		if (isClose) {
+			return null;
+		}
+		ColorTo color = new ColorTo(start, end, 1f);
+		addActionEvent(color, o);
+		return color;
+	}
+
+	/**
+	 * 渐变对象到指定颜色
+	 * 
+	 * @param o
+	 * @param end
+	 * @param duration
+	 * @return
+	 */
+	public ColorTo callColorTo(ActionBind o, LColor end, float duration) {
+		if (isClose) {
+			return null;
+		}
+		ColorTo color = new ColorTo(o.getColor(), end, duration);
+		addActionEvent(color, o);
+		return color;
+	}
+
+	/**
+	 * 渐变对象到指定颜色
+	 * 
+	 * @param o
+	 * @param start
+	 * @param end
+	 * @param duration
+	 * @param delay
+	 * @return
+	 */
+	public ColorTo callColorTo(ActionBind o, LColor start, LColor end,
+			float duration, float delay) {
+		if (isClose) {
+			return null;
+		}
+		ColorTo color = new ColorTo(start, end, duration, delay);
+		addActionEvent(color, o);
+		return color;
+	}
+
+	/**
+	 * 振动指定对象
+	 * 
+	 * @param o
+	 * @param shakeX
+	 * @param shakeY
+	 * @return
+	 */
+	public ShakeTo callShakeTo(ActionBind o, float shakeX, float shakeY) {
+		if (isClose) {
+			return null;
+		}
+		ShakeTo shake = new ShakeTo(shakeX, shakeY);
+		addActionEvent(shake, o);
+		return shake;
+	}
+
+	/**
+	 * 振动指定对象
+	 * 
+	 * @param o
+	 * @param shakeX
+	 * @param shakeY
+	 * @param duration
+	 * @param delay
+	 * @return
+	 */
+	public ShakeTo callShakeTo(ActionBind o, float shakeX, float shakeY,
+			float duration, float delay) {
+		if (isClose) {
+			return null;
+		}
+		ShakeTo shake = new ShakeTo(shakeX, shakeY, duration, delay);
+		addActionEvent(shake, o);
+		return shake;
 	}
 
 	/**

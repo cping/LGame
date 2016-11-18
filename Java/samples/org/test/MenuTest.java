@@ -2,6 +2,7 @@ package org.test;
 
 import loon.LTransition;
 import loon.Screen;
+import loon.canvas.LColor;
 import loon.component.LMenu;
 import loon.component.LMenu.MenuItem;
 import loon.component.LMenu.MenuItemClick;

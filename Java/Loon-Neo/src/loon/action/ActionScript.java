@@ -1,6 +1,8 @@
 package loon.action;
 
 import loon.LSystem;
+import loon.canvas.LColor;
+import loon.utils.Easing;
 import loon.utils.StringUtils;
 
 /*
@@ -13,12 +15,12 @@ import loon.utils.StringUtils;
  * 在Screen可以写作如下格式:
  * 
  * 	@Override
-	 public void onLoad() {
-		 Sprite sprite = new Sprite("assets/ball.png");
-		 ActionScript script = act(sprite, "move(127,127,true,16)->rotate(360)->delay(2f)->fadein(60)->fadeout(90)");
-		 add(sprite);
-		 script.start();
-	 }
+ public void onLoad() {
+ Sprite sprite = new Sprite("assets/ball.png");
+ ActionScript script = act(sprite, "move(127,127,true,16)->rotate(360)->delay(2f)->fadein(60)->fadeout(90)");
+ add(sprite);
+ script.start();
+ }
  */
 public class ActionScript {
 
@@ -146,6 +148,79 @@ public class ActionScript {
 								}
 							} else {
 								_tween.fadeOut(60);
+							}
+						} else if ("color".equals(name)
+								|| "colorto".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 1) {
+									_tween.colorTo(new LColor(parameters[0]));
+								} else if (parameters.length == 2) {
+									_tween.colorTo(new LColor(parameters[0]),
+											new LColor(parameters[1]));
+								} else if (parameters.length == 3) {
+									_tween.colorTo(new LColor(parameters[0]),
+											new LColor(parameters[1]),
+											Float.parseFloat(parameters[2]));
+								} else if (parameters.length == 4) {
+									_tween.colorTo(new LColor(parameters[0]),
+											new LColor(parameters[1]),
+											Float.parseFloat(parameters[2]),
+											Float.parseFloat(parameters[3]));
+								}
+							} else {
+								_tween.colorTo(LColor.white);
+							}
+						} else if ("shake".equals(name)
+								|| "shaketo".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 2) {
+									_tween.shakeTo(
+											Float.parseFloat(parameters[0]),
+											Float.parseFloat(parameters[1]));
+								} else if (parameters.length == 3) {
+									_tween.shakeTo(
+											Float.parseFloat(parameters[0]),
+											Float.parseFloat(parameters[1]),
+											Float.parseFloat(parameters[2]));
+								} else if (parameters.length == 4) {
+									_tween.shakeTo(
+											Float.parseFloat(parameters[0]),
+											Float.parseFloat(parameters[1]),
+											Float.parseFloat(parameters[2]),
+											Float.parseFloat(parameters[3]));
+								}
+							}
+						} else if ("transfer".equals(name)
+								|| "transferto".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 4) {
+									_tween.transferTo(
+											Float.parseFloat(parameters[0]),
+											Float.parseFloat(parameters[1]),
+											Float.parseFloat(parameters[2]),
+											Easing.toEasingMode(parameters[3]));
+								} else if (parameters.length == 6) {
+									_tween.transferTo(Float
+											.parseFloat(parameters[0]), Float
+											.parseFloat(parameters[1]), Float
+											.parseFloat(parameters[2]), Easing
+											.toEasingMode(parameters[3]),
+											StringUtils
+													.toBoolean(parameters[4]),
+											StringUtils
+													.toBoolean(parameters[5]));
+								} else if (parameters.length == 7) {
+									_tween.transferTo(Float
+											.parseFloat(parameters[0]), Float
+											.parseFloat(parameters[1]), Float
+											.parseFloat(parameters[2]), Float
+											.parseFloat(parameters[3]), Easing
+											.toEasingMode(parameters[4]),
+											StringUtils
+													.toBoolean(parameters[5]),
+											StringUtils
+													.toBoolean(parameters[6]));
+								}
 							}
 						} else if ("scale".equals(name)
 								|| "scaleto".equals(name)) {

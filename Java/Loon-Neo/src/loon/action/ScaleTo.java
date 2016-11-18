@@ -57,7 +57,7 @@ public class ScaleTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public void onLoad() {
@@ -76,14 +76,14 @@ public class ScaleTo extends ActionEvent {
 					dt += MathUtils.max((elapsedTime / 1000), speed);
 					original.setScale(startX + (deltaX * dt), startY
 							+ (deltaY * dt));
-					isComplete = (deltaX > 0 ? (original.getScaleX() >= endX)
+					_isCompleted = (deltaX > 0 ? (original.getScaleX() >= endX)
 							: (original.getScaleX() <= endX))
 							&& (deltaY > 0 ? (original.getScaleY() >= endY)
 									: (original.getScaleY() <= endY));
 				}
 			}
 		} else {
-			isComplete = true;
+			_isCompleted = true;
 		}
 	}
 

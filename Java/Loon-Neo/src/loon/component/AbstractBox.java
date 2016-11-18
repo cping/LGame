@@ -86,9 +86,9 @@ public abstract class AbstractBox implements XY {
 		this._boxY = pos.y;
 	}
 
-	protected void drawBorder(GLEx g, float x, float y) {
+	protected void drawBorder(GLEx g, float x, float y,LColor c) {
 		if (this._textureBox != null) {
-			g.draw(_textureBox, x, y);
+			g.draw(_textureBox, x, y, c);
 		}
 	}
 

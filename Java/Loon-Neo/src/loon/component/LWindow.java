@@ -95,10 +95,10 @@ public class LWindow extends LContainer {
 		if (visible) {
 			g.draw(barTexture, x, y, w, this.barheight);
 			if (title != null) {
-				font.drawString(g,title, x + 5, y, fontColor);
+				font.drawString(g, title, x + 5, y, fontColor);
 			}
 			if (animation.getSpriteImage() != null) {
-				g.draw(animation.getSpriteImage(), x, y);
+				g.draw(animation.getSpriteImage(), x, y, baseColor);
 			}
 			if (x != 0 && y != 0) {
 				g.translate(x, y);
@@ -189,7 +189,7 @@ public class LWindow extends LContainer {
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

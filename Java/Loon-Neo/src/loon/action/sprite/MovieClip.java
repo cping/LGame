@@ -3,7 +3,6 @@ package loon.action.sprite;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTrans;
-import loon.canvas.LColor;
 import loon.geom.PointF;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -17,8 +16,6 @@ public class MovieClip extends DisplayObject implements LRelease {
 	private TextureData _ssd = null;
 
 	private MovieSpriteSheet _sheet = null;
-
-	private LColor _color = new LColor(LColor.white);
 
 	private int _playIndex = 0;
 
@@ -279,19 +276,12 @@ public class MovieClip extends DisplayObject implements LRelease {
 			}
 			g.draw(_sheet.sheet(), destX, destY, drawRect.width,
 					drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(), _ssd.h(),
-					_color, rotate, _scaleX, _scaleY, _anchorValue,_pivotValue, dir);
+					_baseColor, rotate, _scaleX, _scaleY, _anchorValue,_pivotValue, dir);
 
 		}
 
 	}
 
-	public LColor getColor() {
-		return _color;
-	}
-
-	public void setColor(LColor color) {
-		this._color = color;
-	}
 
 	@Override
 	public void close() {

@@ -120,15 +120,16 @@ public class LMessageBox extends LComponent {
 			}
 		}
 
-		public void draw(GLEx g, String message, int row, boolean isPage) {
-			draw(g, this._boxX, this._boxY, message, row, isPage);
+		public void draw(GLEx g, String message, int row, boolean isPage,
+				LColor c) {
+			draw(g, this._boxX, this._boxY, message, row, isPage, c);
 		}
 
 		private void draw(GLEx g, float x, float y, String message, int row,
-				boolean isPage) {
+				boolean isPage, LColor c) {
 			this._boxX = x;
 			this._boxY = y;
-			drawBorder(g, this._boxX, this._boxY);
+			drawBorder(g, this._boxX, this._boxY, c);
 			if (this.drawFace) {
 				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
@@ -510,7 +511,8 @@ public class LMessageBox extends LComponent {
 			this.isPaged = false;
 		}
 
-		this._box.draw(g, _message.toString(), renderRow, this.isPaged);
+		this._box.draw(g, _message.toString(), renderRow, this.isPaged,
+				this.baseColor);
 	}
 
 	public boolean isCompleted() {

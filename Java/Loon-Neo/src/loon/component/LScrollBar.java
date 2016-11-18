@@ -402,9 +402,9 @@ public class LScrollBar extends LComponent {
 					sliderWidth, sliderHeight, sliderColor);
 		} else {
 			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2,
-					getHeight() + 2);
+					getHeight() + 2, baseColor);
 			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY,
-					sliderWidth, sliderHeight);
+					sliderWidth, sliderHeight, baseColor);
 		}
 	}
 

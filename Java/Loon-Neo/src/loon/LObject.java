@@ -28,9 +28,10 @@ import loon.canvas.Alpha;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.opengl.BlendMode;
 import loon.utils.MathUtils;
 
-public abstract class LObject<T> implements XY, ZIndex {
+public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	// 无状态
 	public static final int NOT = -1;

@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.action.map.Field2D;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 
 /**
@@ -47,6 +48,10 @@ public interface ActionBind {
 
 	public float getScaleY();
 
+	public void setColor(LColor color);
+
+	public LColor getColor();
+	
 	public void setScale(float sx, float sy);
 
 	public float getRotation();
@@ -63,6 +68,10 @@ public interface ActionBind {
 
 	public void setLocation(float x, float y);
 
+	public void setX(float x);
+
+	public void setY(float y);
+	
 	public boolean isBounded();
 
 	public boolean isContainer();

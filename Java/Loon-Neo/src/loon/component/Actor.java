@@ -28,12 +28,14 @@ import loon.LTextures;
 import loon.action.ActionBind;
 import loon.action.ArrowTo;
 import loon.action.CircleTo;
+import loon.action.ColorTo;
 import loon.action.FadeTo;
 import loon.action.FireTo;
 import loon.action.JumpTo;
 import loon.action.MoveTo;
 import loon.action.RotateTo;
 import loon.action.ScaleTo;
+import loon.action.ShakeTo;
 import loon.action.map.Field2D;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
@@ -46,7 +48,8 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Actor extends LObject<Actor> implements Comparable<Actor>, ActionBind, XY, LRelease, BoxSize {
+public class Actor extends LObject<Actor> implements Comparable<Actor>,
+		ActionBind, XY, LRelease, BoxSize {
 
 	private String flag = "Actor";
 
@@ -74,7 +77,7 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>, ActionBi
 
 	private Animation animation;
 
-	boolean isAnimation,mirror;
+	boolean isAnimation, mirror;
 
 	LColor filterColor;
 
@@ -177,6 +180,43 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>, ActionBi
 	public FadeTo fadeIn() {
 		failIfNotInLayer();
 		return gameLayer.callFadeInTo(this, 60);
+	}
+
+	/**
+	 * 命令当前角色变化为指定颜色
+	 * 
+	 * @param end
+	 * @return
+	 */
+	public ColorTo colorTo(LColor end) {
+		failIfNotInLayer();
+		return gameLayer.callColorTo(this, getColor(), end);
+	}
+
+	/**
+	 * 命令当前角色变化为指定颜色
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public ColorTo colorTo(LColor start, LColor end) {
+		failIfNotInLayer();
+		return gameLayer.callColorTo(this, start, end);
+	}
+
+	/**
+	 * 命令当前角色变化为指定颜色
+	 * 
+	 * @param start
+	 * @param end
+	 * @param duration
+	 * @param delay
+	 * @return
+	 */
+	public ColorTo colorTo(LColor start, LColor end, float duration, float delay) {
+		failIfNotInLayer();
+		return gameLayer.callColorTo(this, start, end, duration, delay);
 	}
 
 	/**
@@ -293,6 +333,33 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>, ActionBi
 	public ArrowTo arrowTo(float tx, float ty) {
 		failIfNotInLayer();
 		return gameLayer.callArrowTo(this, tx, ty);
+	}
+
+	/**
+	 * 振动指定对象
+	 * 
+	 * @param shakeX
+	 * @param shakeY
+	 * @return
+	 */
+	public ShakeTo shakeTo(float shakeX, float shakeY) {
+		failIfNotInLayer();
+		return gameLayer.callShakeTo(this, shakeX, shakeY);
+	}
+
+	/**
+	 * 振动指定对象
+	 * 
+	 * @param shakeX
+	 * @param shakeY
+	 * @param duration
+	 * @param delay
+	 * @return
+	 */
+	public ShakeTo shakeTo(float shakeX, float shakeY, float duration,
+			float delay) {
+		failIfNotInLayer();
+		return gameLayer.callShakeTo(this, shakeX, shakeY, duration, delay);
 	}
 
 	/**
@@ -1013,12 +1080,12 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>, ActionBi
 	public float getContainerHeight() {
 		return gameLayer.getHeight();
 	}
-	
-	public boolean isMirror(){
+
+	public boolean isMirror() {
 		return mirror;
 	}
-	
-	public void setMirror(boolean m){
+
+	public void setMirror(boolean m) {
 		this.mirror = m;
 	}
 
@@ -1045,4 +1112,13 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>, ActionBi
 		return o.getLayer() - this.getLayer();
 	}
 
+	@Override
+	public void setColor(LColor c) {
+		filterColor = c;
+	}
+
+	@Override
+	public LColor getColor() {
+		return new LColor(filterColor);
+	}
 }

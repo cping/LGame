@@ -71,12 +71,12 @@ public class LScrollContainer extends LContainer {
 			try {
 				g.saveTx();
 				if (backgroundTexture == null) {
-					g.setColor(LColor.gray);
 					g.fillRect(getScreenX(), getScreenY(), getWidth(),
-							getHeight());
+							getHeight(), baseColor == null ? LColor.gray
+									: baseColor.mul(LColor.gray));
 				} else {
 					g.draw(backgroundTexture, getScreenX(), getScreenY(),
-							getWidth(), getHeight());
+							getWidth(), getHeight(), baseColor);
 				}
 				g.translate(-scrollX, -scrollY);
 				super.createUI(g);

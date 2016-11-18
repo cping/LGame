@@ -147,6 +147,8 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	protected LayoutConstraints constraints = null;
 
+	protected LColor baseColor = null;
+
 	/**
 	 * 构造可用组件
 	 * 
@@ -300,6 +302,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 			return;
 		}
 		synchronized (this) {
+			int blend = g.getBlendMode();
 			boolean update = _rotation != 0 || !(scaleX == 1f && scaleY == 1f);
 			try {
 				final int width = (int) this.getWidth();
@@ -327,13 +330,14 @@ public abstract class LComponent extends LObject<LContainer> implements
 						g.rotate(centerX, centerY, _rotation);
 					}
 				}
+				g.setBlendMode(_blend);
 				// 变更透明度
 				if (_alpha > 0.1 && _alpha < 1.0) {
 					float tmp = g.alpha();
 					g.setAlpha(_alpha);
 					if (_background != null) {
 						g.draw(_background, this.screenX, this.screenY, width,
-								height);
+								height, baseColor);
 					}
 					if (this.customRendering) {
 						this.createCustomUI(g, this.screenX, this.screenY,
@@ -347,7 +351,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 				} else {
 					if (_background != null) {
 						g.draw(_background, this.screenX, this.screenY, width,
-								height);
+								height, baseColor);
 					}
 					if (this.customRendering) {
 						this.createCustomUI(g, this.screenX, this.screenY,
@@ -359,7 +363,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 				}
 				if (isDrawSelect()) {
 					int tmp = g.color();
-					g.setColor(LColor.red);
+					g.setColor(baseColor);
 					g.drawRect(this.screenX, this.screenY, width - 1f,
 							height - 1f);
 					g.setColor(tmp);
@@ -371,6 +375,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 				if (this.elastic) {
 					g.clearClip();
 				}
+				g.setBlendMode(blend);
 			}
 		}
 	}
@@ -972,6 +977,16 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public LayoutPort getLayoutPort(final LayoutPort src) {
 		return new LayoutPort(src);
+	}
+
+	@Override
+	public void setColor(LColor c) {
+		this.baseColor = c;
+	}
+
+	@Override
+	public LColor getColor() {
+		return new LColor(this.baseColor);
 	}
 
 	@Override

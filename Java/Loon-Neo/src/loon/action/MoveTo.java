@@ -358,7 +358,7 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return (pActorPath == null || pActorPath.size == 0 || isComplete || original == null);
+		return (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
 	}
 
 	public boolean isUseCache() {

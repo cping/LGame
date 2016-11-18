@@ -315,7 +315,7 @@ public class LTextArea extends LComponent {
 
 	public void draw(GLEx g, int dx, int dy, int d_type, int lines) {
 		if (bgTexture != null) {
-			g.draw(bgTexture, dx, dy, getWidth(), getHeight());
+			g.draw(bgTexture, dx, dy, getWidth(), getHeight(), baseColor);
 		}
 		int oldColor = g.color();
 		this.countFrame += 1;

@@ -11,6 +11,7 @@ import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.Image;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -19,7 +20,6 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
-
 
 	public static interface DrawListener {
 
@@ -74,6 +74,8 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 	private boolean visible;
 
 	private boolean playAnimation;
+
+	private LColor baseColor = LColor.white;
 
 	public TileMap(String fileName, int tileWidth, int tileHeight)
 			throws IOException {
@@ -313,6 +315,8 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 							for (Tile tile : arrays) {
 								if (tile.isAnimation && tile.id == id) {
 									if (useBatch) {
+										LColor tmp = batch.getColor();
+										batch.setColor(baseColor);
 										batch.draw(
 												tile.animation.getSpriteImage(),
 												field.tilesToWidthPixels(i)
@@ -321,6 +325,7 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 														+ offsetY,
 												field.getTileWidth(),
 												field.getTileHeight());
+										batch.setColor(tmp);
 									} else {
 										g.draw(tile.animation.getSpriteImage(),
 												field.tilesToWidthPixels(i)
@@ -328,7 +333,8 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 												field.tilesToHeightPixels(j)
 														+ offsetY,
 												field.getTileWidth(),
-												field.getTileHeight());
+												field.getTileHeight(),
+												baseColor);
 									}
 								}
 							}
@@ -361,6 +367,8 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 								if (tile.id == id) {
 									if (tile.isAnimation) {
 										if (useBatch) {
+											LColor tmp = batch.getColor();
+											batch.setColor(baseColor);
 											batch.draw(
 													tile.animation
 															.getSpriteImage(),
@@ -370,6 +378,7 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 															+ offsetY, field
 															.getTileWidth(),
 													field.getTileHeight());
+											batch.setColor(tmp);
 										} else {
 											g.draw(tile.animation
 													.getSpriteImage(),
@@ -378,7 +387,8 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 													field.tilesToHeightPixels(j)
 															+ offsetY, field
 															.getTileWidth(),
-													field.getTileHeight());
+													field.getTileHeight(),
+													baseColor);
 										}
 									} else {
 										imgPack.draw(tile.imgId,
@@ -387,7 +397,8 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 												field.tilesToHeightPixels(j)
 														+ offsetY,
 												field.getTileWidth(),
-												field.getTileHeight());
+												field.getTileHeight(),
+												baseColor);
 									}
 								}
 							} else if (tile.id == id) {
@@ -395,7 +406,7 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 										field.tilesToWidthPixels(i) + offsetX,
 										field.tilesToHeightPixels(j) + offsetY,
 										field.getTileWidth(),
-										field.getTileHeight());
+										field.getTileHeight(), baseColor);
 							}
 
 						}
@@ -634,6 +645,15 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 
 	public void stopAnimation() {
 		playAnimation = false;
+	}
+	
+	public LColor getColor(){
+		return new LColor(baseColor);
+	}
+
+	@Override
+	public void setColor(LColor c) {
+		this.baseColor = c;
 	}
 
 	public void close() {

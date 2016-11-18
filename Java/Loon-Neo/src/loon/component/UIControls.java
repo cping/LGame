@@ -34,6 +34,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
+import loon.utils.Easing.EasingMode;
 
 /**
  * 组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
@@ -699,4 +700,73 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls colorTo(LColor end) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).colorTo(end);
+				} else {
+					tween.colorTo(end);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls shakeTo(float shakeX, float shakeY) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).shakeTo(shakeX, shakeY);
+				} else {
+					tween.shakeTo(shakeX, shakeY);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls transferTo(float startPos, float endPos, float duration,
+			EasingMode mode, boolean controlX, boolean controlY) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).transferTo(startPos, endPos,
+							duration, mode, controlX, controlY);
+				} else {
+					tween.transferTo(startPos, endPos, duration, mode,
+							controlX, controlY);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public boolean isTweenFinished() {
+		int size = 0;
+		for (ActionTween tween : tweens.values()) {
+			if (tween.isFinished()) {
+				size++;
+			}
+		}
+		return size == tweens.size;
+	}
 }

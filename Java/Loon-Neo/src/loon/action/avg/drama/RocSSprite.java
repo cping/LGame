@@ -3,6 +3,7 @@ package loon.action.avg.drama;
 import loon.LTexture;
 import loon.action.avg.drama.RocScript.ScriptException;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
@@ -223,8 +224,19 @@ public class RocSSprite implements ISprite {
 		return null;
 	}
 
+	@Override
+	public void setColor(LColor c) {
+		
+	}
+
+	@Override
+	public LColor getColor() {
+		return null;
+	}
+	
 	public String toString() {
 		return _script.toString();
 	}
+
 
 }

@@ -28,7 +28,6 @@ import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
-
 public class LPad extends LComponent {
 
 	private boolean isLeft, isRight, isUp, isDown, isClick;
@@ -182,18 +181,19 @@ public class LPad extends LComponent {
 			freeClick();
 		}
 		pack.glBegin();
-		pack.draw(0, x, y, backWidth, backHeight);
+		pack.draw(0, x, y, backWidth, backHeight, baseColor);
 		if (isClick) {
 			if (angle < 360) {
 				angle += 1;
 			} else {
 				angle = 0;
 			}
-			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight,
-					angle, null);
+			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight, angle,
+					baseColor);
 		}
 		pack.draw(1, x + (backWidth - baseWidth) * 0.5f, y
-				+ (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight);
+				+ (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight,
+				baseColor);
 		pack.glEnd();
 	}
 

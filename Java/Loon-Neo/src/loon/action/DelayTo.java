@@ -16,7 +16,7 @@ public class DelayTo extends ActionEvent {
 	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
-			isComplete = true;
+			_isCompleted = true;
 		}
 	}
 
@@ -27,7 +27,7 @@ public class DelayTo extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	@Override

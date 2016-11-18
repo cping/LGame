@@ -91,7 +91,7 @@ public class LTextBar extends LComponent {
 			}
 		} else {
 			if (left != null) {
-				g.draw(left, x, y);
+				g.draw(left, x, y, baseColor);
 			}
 			if (body != null) {
 				if (text != null && text.length() > 0 && !"_".equals(text)) {
@@ -104,16 +104,17 @@ public class LTextBar extends LComponent {
 								last ? overflow : body.getWidth() * 2,
 								body.getHeight(), 0, 0,
 								last ? overflow : body.getWidth(),
-								body.getHeight());
+								body.getHeight(), baseColor);
 					}
 				} else {
 					g.draw(body, x + 1 - body.getWidth() + left.getWidth(), y,
 							body.getWidth() * 2, body.getHeight(), 0, 0,
-							body.getWidth(), body.getHeight());
+							body.getWidth(), body.getHeight(), baseColor);
 				}
 			}
 			if (right != null) {
-				g.draw(right, x + left.getWidth() + textWidth() - 1, y);
+				g.draw(right, x + left.getWidth() + textWidth() - 1, y,
+						baseColor);
 			}
 			if (left != null) {
 				font.drawString(g, text, x + left.getWidth(), y, fontColor);

@@ -28,7 +28,6 @@ import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.opengl.TextureUtils;
 
 public class LMessage extends LContainer {
 
@@ -75,8 +74,7 @@ public class LMessage extends LContainer {
 		this.messageFont = (font == null ? LFont.getDefaultFont() : font);
 		this.animation = new Animation();
 		if (formImage == null) {
-			this.setBackground(TextureUtils.createTexture(width, height,
-					LColor.white));
+			this.setBackground(LSystem.base().graphics().finalColorTex());
 			this.setAlpha(0.3F);
 		} else {
 			this.setBackground(formImage);

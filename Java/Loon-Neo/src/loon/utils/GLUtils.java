@@ -133,6 +133,22 @@ public class GLUtils {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			return;
+		} else if (currentBlendMode == LSystem.MODE_MASK) {
+			GLUtils.enableBlend(gl);
+			gl.glBlendFunc(GL20.GL_ZERO, GL20.GL_SRC_ALPHA);
+			return;
+		}else if (currentBlendMode == LSystem.MODE_LIGHT) {
+			GLUtils.enableBlend(gl);
+			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			return;
+		}else if (currentBlendMode == LSystem.MODE_ALPHA_ADD) {
+			GLUtils.enableBlend(gl);
+			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_DST_ALPHA);
+			return;
+		}else if (currentBlendMode == LSystem.MODE_MULTIPLY) {
+			GLUtils.enableBlend(gl);
+			gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			return;
 		} else if (currentBlendMode == LSystem.MODE_NONE) {
 			GLUtils.disableBlend(gl);
 			gl.glColorMask(true, true, true, false);

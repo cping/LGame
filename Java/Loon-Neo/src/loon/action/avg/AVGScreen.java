@@ -604,7 +604,7 @@ public abstract class AVGScreen extends Screen {
 
 	@Override
 	public final void onLoaded() {
-		// 不同场合需要不同的渲染策略，此处将用户渲染至于底层
+		// 不同场合需要不同的渲染策略，此处将用户渲染置于底层
 		// 最先绘制用户画面
 		setFristOrder(DRAW_USER_PAINT());
 		// 其次绘制精灵

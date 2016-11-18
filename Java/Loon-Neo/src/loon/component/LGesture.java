@@ -45,14 +45,13 @@ public class LGesture extends LComponent {
 
 	private Path goalPath;
 
-	private LColor color = new LColor(LColor.orange);
-
 	private int lineWidth;
 
 	public LGesture(int x, int y, int w, int h, boolean c) {
 		super(x, y, w, h);
 		this.autoClear = c;
 		this.lineWidth = 5;
+		this.baseColor = LColor.orange;
 	}
 
 	public LGesture(int x, int y, int w, int h) {
@@ -85,7 +84,7 @@ public class LGesture extends LComponent {
 		if (visible && goalPath != null) {
 			int tmp = g.color();
 			g.setLineWidth(lineWidth);
-			g.setColor(color);
+			g.setColor(baseColor);
 			g.drawPolyline(goalPath);
 			g.resetLineWidth();
 			g.setColor(tmp);
@@ -247,14 +246,6 @@ public class LGesture extends LComponent {
 
 	public Path getPath() {
 		return goalPath;
-	}
-
-	public LColor getColor() {
-		return color;
-	}
-
-	public void setColor(LColor color) {
-		this.color = color;
 	}
 
 	public int getLineWidth() {

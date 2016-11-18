@@ -44,7 +44,7 @@ public class ReplayTo extends ActionEvent {
 	@Override
 	public void update(long elapsedTime) {
 		if (replays == null) {
-			isComplete = true;
+			_isCompleted = true;
 			return;
 		}
 		if (replays != null) {
@@ -77,7 +77,7 @@ public class ReplayTo extends ActionEvent {
 				ActionControl.get().addAction(event, original);
 				currentEvent = event;
 			} else {
-				isComplete = true;
+				_isCompleted = true;
 			}
 		}
 	}
@@ -88,7 +88,7 @@ public class ReplayTo extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	@Override

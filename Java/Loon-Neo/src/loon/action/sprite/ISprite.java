@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import loon.LRelease;
 import loon.LTexture;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -48,6 +49,10 @@ public interface ISprite extends LRelease, XY {
 
 	void setVisible(boolean v);
 
+	void setColor(LColor c);
+
+	LColor getColor();
+	
 	boolean isVisible();
 
 	void createUI(GLEx g);

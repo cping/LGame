@@ -71,7 +71,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	private int maxFrame;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
-
+	
 	/**
 	 * 默认构造函数
 	 * 
@@ -657,7 +657,9 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 
 		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
 		int tmp = g.color();
+		int blend = g.getBlendMode();
 		try {
+			g.setBlendMode(_blend);
 			float nx = this._location.x + offsetX;
 			float ny = this._location.y + offsetY;
 			if (update) {
@@ -724,6 +726,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 			if (update) {
 				g.restoreTx();
 			}
+			g.setBlendMode(blend);
 		}
 	}
 
@@ -778,7 +781,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	}
 
 	public LColor getFilterColor() {
-		return filterColor;
+		return new LColor(filterColor);
 	}
 
 	public void setFilterColor(LColor filterColor) {
@@ -902,6 +905,16 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	}
 
 	@Override
+	public void setColor(LColor color) {
+		setFilterColor(color);
+	}
+
+	@Override
+	public LColor getColor() {
+		return getFilterColor();
+	}
+	
+	@Override
 	public void close() {
 		this.visible = false;
 		if (image != null) {
@@ -911,4 +924,5 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 			animation.close();
 		}
 	}
+
 }

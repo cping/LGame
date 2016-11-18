@@ -28,7 +28,7 @@ public class MoveBy extends ActionEvent {
 				y -= _speed;
 			}
 			if (_count > 0) {
-				isComplete = true;
+				_isCompleted = true;
 				return;
 			}
 			if (_lastX == x && _lastY == y) {
@@ -48,7 +48,7 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	@Override

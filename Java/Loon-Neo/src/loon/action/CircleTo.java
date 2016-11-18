@@ -54,7 +54,7 @@ public class CircleTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public void onLoad() {

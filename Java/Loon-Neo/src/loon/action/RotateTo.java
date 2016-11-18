@@ -43,7 +43,7 @@ public class RotateTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public void onLoad() {
@@ -58,7 +58,7 @@ public class RotateTo extends ActionEvent {
 		if (minus) {
 			startAngle -= diffAngle * speed;
 			if (startAngle <= dstAngle) {
-				isComplete = true;
+				_isCompleted = true;
 			}
 			if (startAngle <= 0) {
 				startAngle = 0;
@@ -66,7 +66,7 @@ public class RotateTo extends ActionEvent {
 		} else {
 			startAngle += diffAngle * speed;
 			if (startAngle >= dstAngle) {
-				isComplete = true;
+				_isCompleted = true;
 			}
 			if (startAngle >= 360) {
 				startAngle = 360;

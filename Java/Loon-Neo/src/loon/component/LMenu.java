@@ -24,6 +24,7 @@ package loon.component;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.canvas.LColor;
 import loon.event.SysTouch;
 import loon.event.Updateable;
 import loon.font.IFont;
@@ -246,7 +247,8 @@ public class LMenu extends LComponent {
 					if (texture != null) {
 						g.draw(this.texture, this.x + 3f, this.y
 								+ this.parent.paddingy + this.parent.scroll,
-								this.itemWidth, this.itemHeight);
+								this.itemWidth, this.itemHeight,
+								parent.baseColor);
 					}
 					if (this.label != null) {
 						font.drawString(
@@ -256,7 +258,7 @@ public class LMenu extends LComponent {
 										.stringWidth(label) / 2)) + offsetX,
 								(this.y + this.parent.paddingy
 										+ this.parent.scroll - font.getAscent() - 2)
-										+ offsetY);
+										+ offsetY, parent.fontColor);
 					}
 
 				} else {
@@ -274,7 +276,7 @@ public class LMenu extends LComponent {
 					}
 					if (texture != null) {
 						g.draw(this.texture, this.x, this.y, this.itemWidth,
-								this.itemHeight);
+								this.itemHeight, parent.baseColor);
 					}
 					if (this.label != null) {
 						font.drawString(
@@ -283,7 +285,7 @@ public class LMenu extends LComponent {
 								(this.x + (itemWidth / 2
 										- font.stringWidth(label) / 2 - font
 											.getAscent())) + offsetX,
-								(this.y - 2) + offsetY);
+								(this.y - 2) + offsetY, parent.fontColor);
 					}
 
 				}
@@ -351,6 +353,7 @@ public class LMenu extends LComponent {
 	private float width;
 	private float main_panel_size;
 	private float tabY;
+	private LColor fontColor = LColor.white;
 
 	private LTexture mainpanel;
 	private LTexture tab;
@@ -546,15 +549,16 @@ public class LMenu extends LComponent {
 	}
 
 	@Override
-	public synchronized void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public synchronized void createUI(GLEx g, int x, int y,
+			LComponent component, LTexture[] buttonImage) {
 		float alpha = g.alpha();
 		try {
 			g.setAlpha(alphaMenu);
 			switch (type) {
 			case MOVE_LEFT:
 				if ((selected == this) || (selected == null)) {
-					g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight);
+					g.draw(this.tab, this.width, getTaby(), tabWidth,
+							tabHeight, baseColor);
 					if (label != null) {
 						g.setAlpha(1f);
 						font.drawString(
@@ -565,12 +569,13 @@ public class LMenu extends LComponent {
 												.stringWidth(label) / 2),
 								getTaby()
 										+ (tabHeight / 2 - font.getHeight() / 2)
-										- 5);
+										- 5, fontColor);
 						g.setAlpha(alphaMenu);
 					}
 				}
 				if ((this.active) || (this.width > 0)) {
-					g.draw(mainpanel, 0, 0, this.width, getScreenHeight());
+					g.draw(mainpanel, 0, 0, this.width, getScreenHeight(),
+							baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -584,7 +589,8 @@ public class LMenu extends LComponent {
 				if ((selected == this) || (selected == null)) {
 					float posX = this.getScreenWidth() - this.width
 							- this.tabWidth;
-					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight);
+					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight,
+							baseColor);
 					if (label != null) {
 						g.setAlpha(1f);
 						font.drawString(
@@ -595,13 +601,14 @@ public class LMenu extends LComponent {
 												.stringWidth(label) / 2),
 								getTaby()
 										+ (tabHeight / 2 - font.getHeight() / 2)
-										- 5);
+										- 5, fontColor);
 						g.setAlpha(this.alphaMenu);
 					}
 				}
 				if ((this.active) || (this.width > 0)) {
 					float posX = this.getScreenWidth() - this.width;
-					g.draw(mainpanel, posX, 0, this.width, getScreenHeight());
+					g.draw(mainpanel, posX, 0, this.width, getScreenHeight(),
+							baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -850,6 +857,14 @@ public class LMenu extends LComponent {
 	@Override
 	public String getUIName() {
 		return "Menu";
+	}
+
+	public LColor getFontColor() {
+		return fontColor;
+	}
+
+	public void setFontColor(LColor fontColor) {
+		this.fontColor = fontColor;
 	}
 
 	@Override

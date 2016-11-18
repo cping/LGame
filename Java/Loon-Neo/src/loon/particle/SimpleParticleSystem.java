@@ -22,13 +22,11 @@ package loon.particle;
 
 import java.util.Iterator;
 
-import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
-import loon.action.sprite.ISprite;
+import loon.action.sprite.Entity;
 import loon.canvas.LColor;
-import loon.geom.RectBox;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -36,7 +34,7 @@ import loon.utils.GLUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
-public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
+public class SimpleParticleSystem extends Entity {
 
 
 	private static final int DEFAULT_PARTICLES = 100;
@@ -85,8 +83,6 @@ public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 
 	private LTexture sprite;
 
-	private boolean visible = true;
-
 	private String defaultImageName;
 
 	private LColor mask;
@@ -99,6 +95,7 @@ public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 		this(defaultSpriteRef, DEFAULT_PARTICLES);
 	}
 
+	@Override
 	public void reset() {
 		Iterator<ParticlePool> pools = particlesByEmitter.values().iterator();
 		while (pools.hasNext()) {
@@ -110,14 +107,7 @@ public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 			SimpleEmitter emitter = emitters.get(i);
 			emitter.resetState();
 		}
-	}
-
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+		super.reset();
 	}
 
 	public void setRemoveCompletedEmitters(boolean remove) {
@@ -140,14 +130,14 @@ public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 			LColor mask) {
 		this.maxParticlesPerEmitter = maxParticles;
 		this.mask = mask;
-
+        this.setRepaint(true);
 		setDefaultImageName(defaultSpriteRef);
 		dummy = createParticle(this);
 	}
 
 	public SimpleParticleSystem(LTexture defaultSprite, int maxParticles) {
 		this.maxParticlesPerEmitter = maxParticles;
-
+	    this.setRepaint(true);
 		sprite = defaultSprite;
 		dummy = createParticle(this);
 	}
@@ -205,14 +195,11 @@ public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 	}
 
 	public void render(GLEx g) {
-		render(g, _location.x, _location.y);
+		repaint(g, _location.x, _location.y);
 	}
 
-	public void render(GLEx g, float x, float y) {
-
-		if (!visible) {
-			return;
-		}
+	@Override
+	public void repaint(GLEx g, float x, float y) {
 
 		if ((sprite == null) && (defaultImageName != null)) {
 			loadSystemParticleImage();
@@ -275,7 +262,8 @@ public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 		}
 	}
 
-	public void update(long delta) {
+	@Override
+	public void onUpdate(long delta) {
 		if ((sprite == null) && (defaultImageName != null)) {
 			loadSystemParticleImage();
 		}
@@ -372,39 +360,5 @@ public class SimpleParticleSystem extends LObject<ISprite> implements ISprite {
 		this.state = s;
 	}
 
-	@Override
-	public void createUI(GLEx g) {
-		render(g);
-	}
-
-	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		render(g, offsetX, offsetY);
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return getCollisionArea();
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
-	public float getWidth() {
-		return getContainerWidth();
-	}
-
-	@Override
-	public float getHeight() {
-		return getContainerHeight();
-	}
-
-	@Override
-	public void close() {
-
-	}
 
 }

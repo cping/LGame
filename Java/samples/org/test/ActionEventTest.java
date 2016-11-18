@@ -8,11 +8,13 @@ import loon.action.ActionTween;
 import loon.action.ActionType;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteLabel;
+import loon.canvas.LColor;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
+import loon.utils.Easing.EasingMode;
 import loon.utils.timer.LTimerContext;
 
 public class ActionEventTest extends Screen {
@@ -29,11 +31,11 @@ public class ActionEventTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		//设置默认字体大小为20号字
+		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
 		SpriteLabel label = new SpriteLabel("Plase touch the screen", 120, 20);
 		add(label);
-		
+
 		// 构建一个球体的精灵
 		final Sprite sprite = new Sprite("ball.png");
 		sprite.setLocation(66, 66);
@@ -44,13 +46,18 @@ public class ActionEventTest extends Screen {
 		registerTouchArea(new LTouchArea() {
 
 			@Override
-			public void onAreaTouched(final Event e,final float touchX,final float touchY) {
+			public void onAreaTouched(final Event e, final float touchX,
+					final float touchY) {
 				if (e == Event.DOWN) {
 					// 设置一个指定精灵的动画事件
-					set(sprite).moveTo(touchX, touchY, false).// 地图方式，四方走法，移动到触屏位置
-							fadeIn(60) // 动画淡入,速度60
+					set(sprite).transferTo(0, 200, EasingMode.InBack,true,false) //让对象移动200个像素,渐进方式InBack,仅限于x轴允许改变位置
+					.colorTo(LColor.red) //渐变到红色
+					.shakeTo(2f, 3f). //让精灵产生振动，x轴最大移动2，y轴最大移动3
+					        moveTo(touchX, touchY, false).// 地图方式，四方走法(true为8方向)，移动到触屏位置
+							fadeOut(60) // 动画淡出,速度60
 							.delay(1f) // 延迟1秒
-							.fadeOut(60)// 动画淡出
+							.fadeIn(60)// 动画淡入
+							.colorTo(LColor.green) // 渐变到绿色
 							.repeat(0.5f) // 回放上述动作,延迟0.5秒
 							.moveTo(120, 160, false) // 地图方式，四方走法，移动到120,160位置
 							.moveTo(260, 320, true) // 八方走法，移动到260,320位置
@@ -100,8 +107,8 @@ public class ActionEventTest extends Screen {
 				return true;
 			}
 		});
-		
-		add(MultiScreenTest.getBackButton(this,0));
+
+		add(MultiScreenTest.getBackButton(this, 0));
 
 	}
 

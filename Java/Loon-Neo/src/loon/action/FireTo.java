@@ -41,7 +41,7 @@ public class FireTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	public void onLoad() {
@@ -56,7 +56,7 @@ public class FireTo extends ActionEvent {
 		this.x += this.vx;
 		this.y += this.vy;
 		if (x == 0 && y == 0) {
-			isComplete = true;
+			_isCompleted = true;
 			return;
 		}
 		if (original.isContainer() && original.isBounded()) {
@@ -66,18 +66,18 @@ public class FireTo extends ActionEvent {
 					original.setLocation(x + offsetX, y + offsetY);
 				}
 			} else {
-				isComplete = true;
+				_isCompleted = true;
 			}
 		} else {
 			if (x + original.getWidth() < 0) {
-				isComplete = true;
+				_isCompleted = true;
 			} else if (x > original.getContainerWidth() + original.getWidth()) {
-				isComplete = true;
+				_isCompleted = true;
 			}
 			if (y + original.getHeight() < 0) {
-				isComplete = true;
+				_isCompleted = true;
 			} else if (y > original.getContainerHeight() + original.getHeight()) {
-				isComplete = true;
+				_isCompleted = true;
 			}
 			synchronized (original) {
 				original.setLocation(x + offsetX, y + offsetY);

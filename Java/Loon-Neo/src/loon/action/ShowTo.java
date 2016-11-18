@@ -12,7 +12,7 @@ public class ShowTo extends ActionEvent {
 	public void update(long elapsedTime) {
 		if (original.isVisible() != visible) {
 			original.setVisible(visible);
-			this.isComplete = true;
+			this._isCompleted = true;
 		}
 	}
 
@@ -23,7 +23,7 @@ public class ShowTo extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return isComplete;
+		return _isCompleted;
 	}
 
 	@Override
