@@ -11,7 +11,7 @@ allprojects {
        ver_streams = "1.0.3"
        ver_moe = "1.2.4"
        ver_moePlugin = "1.2.4"
-       ver_gwt = "2.8.0"
+       ver_gwt = "2.7.0"
        ver_gwtPlugin = "0.6"
        ver_lwjgl = "2.9.3"
        ver_lwjgl3 = "3.1.0"
@@ -112,7 +112,7 @@ project(":Java:Loon-Neo-JavaSE") {
 }
 
 
-project(":Java:Loon-Neo-Jwjgl3") {
+project(":Java:Loon-Neo-Lwjgl3") {
     apply plugin: "java"
 
     dependencies {

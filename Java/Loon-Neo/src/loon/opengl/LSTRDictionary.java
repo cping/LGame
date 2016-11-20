@@ -338,6 +338,7 @@ public final class LSTRDictionary {
 	}
 
 	public synchronized final static void dispose() {
+		cacheList.clear();
 		clearEnglishLazy();
 		clearStringLazy();
 	}

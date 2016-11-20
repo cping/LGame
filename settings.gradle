@@ -3,7 +3,7 @@ include ":Java:Loon-Neo"
 include ":Java:Loon-Neo-GWT"
 include ":Java:Loon-Neo-Robovm"
 include ":Java:Loon-Neo-JavaSE"
-include ":Java:Loon-Neo-Jwjgl3"
+include ":Java:Loon-Neo-Lwjgl3"
 include ":Java:Loon-Neo-MOE"
 include ":Java:Loon-Neo-Android"
 

@@ -182,6 +182,8 @@ public class LTexture extends Painter implements LRelease {
 		return pixelHeight;
 	}
 
+	static int _countTexture = 0;
+
 	LTexture() {
 		this._isLoaded = false;
 	}
@@ -197,6 +199,7 @@ public class LTexture extends Painter implements LRelease {
 		this.displayWidth = dispWidth;
 		this.displayHeight = dispHeight;
 		this._isLoaded = false;
+		_countTexture++;
 	}
 
 	public float toTexWidth() {
@@ -909,7 +912,10 @@ public class LTexture extends Painter implements LRelease {
 				if (parent == null) {
 					if (!disposed) {
 						disposed = true;
-						GLUtils.deleteTexture(gfx.gl, id);
+						if (_countTexture > 10
+								&& ((LSystem._base != null && LSystem._base.setting.disposeTexture) || id > _countTexture * 3)) {
+							GLUtils.deleteTexture(gfx.gl, id);
+						}
 					}
 					if (image != null) {
 						image.close();
@@ -965,6 +971,7 @@ public class LTexture extends Painter implements LRelease {
 
 	@Override
 	public void close() {
+		_countTexture--;
 		_closed = true;
 		if (batch != null) {
 			batch.close();

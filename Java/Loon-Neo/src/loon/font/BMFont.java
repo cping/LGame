@@ -723,17 +723,14 @@ public class BMFont implements IFont, LRelease {
 		this.isClose = true;
 		if (displayList != null) {
 			displayList.close();
-			displayList = null;
 		}
 		if (displays != null) {
 			for (Display d : displays.values()) {
 				if (d != null && d.cache != null) {
 					d.cache.close();
-					d.cache = null;
 				}
 			}
 			displays.clear();
-			displays = null;
 		}
 	}
 

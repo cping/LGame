@@ -28,7 +28,7 @@ import static loon.opengl.GL20.*;
 public class TrilateralBatch extends BaseBatch {
 
 	protected static final int[] QUAD_INDICES = { 0, 1, 2, 1, 3, 2 };
-	
+
 	public static class Source extends LTextureBind.Source {
 
 		public static final String VERT_UNIFS = "uniform vec2 u_HScreenSize;\n"
@@ -51,15 +51,12 @@ public class TrilateralBatch extends BaseBatch {
 				+ "  a_Matrix[2],      a_Matrix[3],      0,\n"
 				+ "  a_Translation[0], a_Translation[1], 1);\n"
 				+ "gl_Position = vec4(transform * vec3(a_Position, 1.0), 1);\n"
-				+
-				"gl_Position.xy /= u_HScreenSize.xy;\n" +
-				"gl_Position.xy -= 1.0;\n" +
-				"gl_Position.y *= u_Flip;\n";
+				+ "gl_Position.xy /= u_HScreenSize.xy;\n"
+				+ "gl_Position.xy -= 1.0;\n" + "gl_Position.y *= u_Flip;\n";
 
 		public static final String VERT_SETTEX = "v_TexCoord = a_TexCoord;\n";
 
-		public static final String VERT_SETCOLOR =
-		"float red = mod(a_Color.x, 256.0);\n"
+		public static final String VERT_SETCOLOR = "float red = mod(a_Color.x, 256.0);\n"
 				+ "float alpha = (a_Color.x - red) / 256.0;\n"
 				+ "float blue = mod(a_Color.y, 256.0);\n"
 				+ "float green = (a_Color.y - blue) / 256.0;\n"
@@ -84,7 +81,7 @@ public class TrilateralBatch extends BaseBatch {
 	protected int uTexture;
 	protected int uHScreenSize;
 	protected int uFlip;
-	protected int aMatrix, aTranslation, aColor; 
+	protected int aMatrix, aTranslation, aColor;
 	protected int aPosition, aTexCoord;
 
 	protected int verticesId, elementsId;
@@ -145,28 +142,27 @@ public class TrilateralBatch extends BaseBatch {
 		stables[7] = (tint >> 0) & 0xFFFF; // gb
 	}
 
-	public void addTris(LTexture tex, int tint, Affine2f xf,
-			float[] xys, int xysOffset, int xysLen, float tw, float th,
-			int[] indices, int indicesOffset, int indicesLen, int indexBase) {
+	public void addTris(LTexture tex, int tint, Affine2f xf, float[] xys,
+			int xysOffset, int xysLen, float tw, float th, int[] indices,
+			int indicesOffset, int indicesLen, int indexBase) {
 		setTexture(tex);
 		prepare(tint, xf);
 		addTris(xys, xysOffset, xysLen, tw, th, indices, indicesOffset,
 				indicesLen, indexBase);
 	}
 
-
-	public void addTris(LTexture tex, int tint, Affine2f xf,
-			float[] xys, float[] sxys, int xysOffset, int xysLen,
-			int[] indices, int indicesOffset, int indicesLen, int indexBase) {
+	public void addTris(LTexture tex, int tint, Affine2f xf, float[] xys,
+			float[] sxys, int xysOffset, int xysLen, int[] indices,
+			int indicesOffset, int indicesLen, int indexBase) {
 		setTexture(tex);
 		prepare(tint, xf);
 		addTris(xys, sxys, xysOffset, xysLen, indices, indicesOffset,
 				indicesLen, indexBase);
 	}
 
-	public void addTris(LTexture tex, int tint, Affine2f xf,
-			float[] xys, float[] sxys, int xysOffset, int xysLen,
-			short[] indices, int indicesOffset, int indicesLen, int indexBase) {
+	public void addTris(LTexture tex, int tint, Affine2f xf, float[] xys,
+			float[] sxys, int xysOffset, int xysLen, short[] indices,
+			int indicesOffset, int indicesLen, int indexBase) {
 		setTexture(tex);
 		prepare(tint, xf);
 		addTris(xys, sxys, xysOffset, xysLen, indices, indicesOffset,
@@ -289,6 +285,7 @@ public class TrilateralBatch extends BaseBatch {
 		gl.glDisableVertexAttribArray(aTexCoord);
 	}
 
+	@Override
 	public void freeBuffer() {
 		gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
 		gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -350,7 +347,7 @@ public class TrilateralBatch extends BaseBatch {
 		}
 		elemPos = offset;
 	}
-	
+
 	protected final void addElems(int vertIdx, short[] indices,
 			int indicesOffset, int indicesLen, int indexBase) {
 		short[] data = elements;
@@ -360,7 +357,7 @@ public class TrilateralBatch extends BaseBatch {
 		}
 		elemPos = offset;
 	}
-	
+
 	private final void expandVerts(int vertCount) {
 		int newVerts = vertices.length / vertexSize();
 		while (newVerts < vertCount) {
@@ -395,6 +392,27 @@ public class TrilateralBatch extends BaseBatch {
 		into[offset++] = sx;
 		into[offset++] = sy;
 		return offset;
+	}
+
+	public void setVertices(float[] vertices, int pos) {
+		this.vertices = vertices;
+		this.vertPos = pos;
+	}
+
+	public void setElements(int size, int pos) {
+		int len = size * 6;
+		short[] indices = new short[len];
+		short j = 0;
+		for (int i = 0; i < len; i += 6, j += 4) {
+			indices[i] = j;
+			indices[i + 1] = (short) (j + 1);
+			indices[i + 2] = (short) (j + 2);
+			indices[i + 3] = (short) (j + 2);
+			indices[i + 4] = (short) (j + 3);
+			indices[i + 5] = j;
+		}
+		this.elements = indices;
+		this.elemPos = pos;
 	}
 
 }

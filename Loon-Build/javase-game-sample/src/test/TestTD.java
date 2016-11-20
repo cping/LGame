@@ -2,7 +2,7 @@ package org.test;
 
 import com.mygame.TDMain;
 
-import loon.LSetting;
+import loon.javase.JavaSEGame.JavaSetting;
 import loon.LazyLoading;
 import loon.Screen;
 import loon.javase.Loon;
@@ -10,12 +10,14 @@ import loon.javase.Loon;
 public class TestTD {
 
 	public static void main(String[] args) {
-		LSetting setting = new LSetting();
+		JavaSetting setting = new JavaSetting();
 		// 原始大小
 		setting.width = 480;
 		setting.height = 320;
+		setting.isLogo = true;
 		setting.logoPath = "loon_logo.png";
 		setting.isFPS = true;
+        setting.iconPaths = new String[]{"l.png"};
 		//默认字体
 		setting.fontName = "黑体";
 		/**
