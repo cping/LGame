@@ -38,7 +38,6 @@ import loon.event.SysKey;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
-import loon.geom.XY;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
@@ -47,8 +46,7 @@ import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY,
-		BoxSize {
+public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	public void down(GameTouch e) {
 
@@ -332,6 +330,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, ActionBind, XY,
 
 	public synchronized LNNode removeNode(int index) {
 		LNNode node = this.childs[index];
+		if (node != null && node instanceof ActionBind) {
+			removeActionEvents((ActionBind) node);
+		}
 		this._screen.setNodeStat(node, false);
 		node.setContainer(null);
 		this.childs = CollectionUtils.cut(this.childs, index);

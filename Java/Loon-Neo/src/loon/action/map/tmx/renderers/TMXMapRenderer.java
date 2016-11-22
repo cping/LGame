@@ -4,7 +4,6 @@ import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
-import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.TMXImageLayer;
 import loon.action.map.tmx.TMXMap;
@@ -20,7 +19,7 @@ import loon.opengl.GLEx;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 
-public abstract class TMXMapRenderer extends LObject<ISprite> implements ActionBind,
+public abstract class TMXMapRenderer extends LObject<ISprite> implements 
 		ISprite {
 
 	protected int lastHashCode = 1;

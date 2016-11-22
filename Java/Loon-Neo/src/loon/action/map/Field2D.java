@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
@@ -29,6 +30,8 @@ import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 public class Field2D implements Config {
+
+	private RectBox _rect = null;
 
 	public Object Tag;
 
@@ -186,6 +189,14 @@ public class Field2D implements Config {
 
 	public int tilesToHeightPixels(float tiles) {
 		return (int) (tiles * tileHeight);
+	}
+
+	public int getViewWidth() {
+		return tilesToWidthPixels(width);
+	}
+
+	public int getViewHeight() {
+		return tilesToWidthPixels(height);
 	}
 
 	public int getTileHeight() {
@@ -357,6 +368,15 @@ public class Field2D implements Config {
 		} catch (Exception e) {
 			return -1;
 		}
+	}
+
+	public RectBox getRect() {
+		if (_rect == null) {
+			_rect = new RectBox(0, 0, getViewWidth(), getViewHeight());
+		} else {
+			_rect.setSize(getViewWidth(), getViewHeight());
+		}
+		return _rect;
 	}
 
 }

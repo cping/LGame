@@ -2,7 +2,6 @@ package loon.action.sprite;
 
 import loon.LTexture;
 import loon.LTrans;
-import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
@@ -14,7 +13,7 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 
 public abstract class DisplayObject extends EventDispatcher implements ISprite,
-		ActionBind, XY, BoxSize {
+		XY, BoxSize {
 
 	public static float morphX = 1f, morphY = 1f;
 

@@ -12,6 +12,7 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -76,6 +77,8 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 	private boolean playAnimation;
 
 	private LColor baseColor = LColor.white;
+
+	private float scaleX = 1f, scaleY = 1f;
 
 	public TileMap(String fileName, int tileWidth, int tileHeight)
 			throws IOException {
@@ -604,15 +607,43 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 		if (!visible) {
 			return;
 		}
-		if (getX() != 0 || getY() != 0) {
-			g.translate(getX() + offsetX, getY() + offsetY);
+		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
+		int blend = g.getBlendMode();
+		int tmp = g.color();
+		try {
+			g.setBlendMode(_blend);
+			g.setAlpha(_alpha);
+			float newX = this._location.x + offsetX + offset.getX();
+			float newY = this._location.y + offsetY + offset.getY();
+			if (update) {
+				g.saveTx();
+				Affine2f tx = g.tx();
+				if ((scaleX != 1) || (scaleY != 1)) {
+					final float scaleCenterX = newX + getWidth() / 2f;
+					final float scaleCenterY = newY + getHeight() / 2f;
+					tx.translate(scaleCenterX, scaleCenterY);
+					tx.preScale(scaleX, scaleY);
+					tx.translate(-scaleCenterX, -scaleCenterY);
+				}
+				if (_rotation != 0) {
+					final float rotationCenterX = newX + getWidth() / 2f;
+					final float rotationCenterY = newY + getHeight() / 2f;
+					tx.translate(rotationCenterX, rotationCenterY);
+					tx.preRotate(_rotation);
+					tx.translate(-rotationCenterX, -rotationCenterY);
+				}
+			}
+			draw(g, null, (int) (getX() + offsetX + offset.getX()),
+					(int) (getY() + offsetY + offset.getY()));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if (update) {
+				g.restoreTx();
+			}
+			g.setBlendMode(blend);
+			g.setColor(tmp);
 		}
-		draw(g, null, (int) (offsetX + offset.getX()),
-				(int) (offsetY + offset.getY()));
-		if (getX() != 0 || getY() != 0) {
-			g.translate(-getX() + offsetX, -getY() + offsetY);
-		}
-
 	}
 
 	public void createUI(GLEx g) {
@@ -646,14 +677,58 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 	public void stopAnimation() {
 		playAnimation = false;
 	}
-	
-	public LColor getColor(){
+
+	public LColor getColor() {
 		return new LColor(baseColor);
 	}
 
 	@Override
 	public void setColor(LColor c) {
-		this.baseColor = c;
+		if (c != null && !c.equals(baseColor)) {
+			this.baseColor = c;
+			this.dirty = true;
+		}
+	}
+
+	@Override
+	public Field2D getField2D() {
+		return field;
+	}
+
+	@Override
+	public float getScaleX() {
+		return scaleX;
+	}
+
+	@Override
+	public float getScaleY() {
+		return scaleY;
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		this.scaleX = sx;
+		this.scaleY = sy;
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return true;
+	}
+
+	@Override
+	public boolean inContains(float x, float y, float w, float h) {
+		return field.getRect().contains(x, y, w, h);
+	}
+
+	@Override
+	public RectBox getRectBox() {
+		return field.getRect();
 	}
 
 	public void close() {

@@ -56,10 +56,13 @@ public class Actions {
 		if (actObject == null) {
 			return;
 		}
-		ActionElement element = (ActionElement) actions.get(actObject);
-		if (element != null) {
-			element.actions.clear();
-			deleteElement(element);
+		Object o = actions.get(actObject);
+		if (o != null) {
+			ActionElement element = (ActionElement) o;
+			if (element != null) {
+				element.actions.clear();
+				deleteElement(element);
+			}
 		}
 	}
 

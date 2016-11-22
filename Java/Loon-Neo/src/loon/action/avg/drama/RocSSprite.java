@@ -2,6 +2,7 @@ package loon.action.avg.drama;
 
 import loon.LTexture;
 import loon.action.avg.drama.RocScript.ScriptException;
+import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
@@ -226,17 +227,98 @@ public class RocSSprite implements ISprite {
 
 	@Override
 	public void setColor(LColor c) {
-		
+
 	}
 
 	@Override
 	public LColor getColor() {
 		return null;
 	}
-	
+
 	public String toString() {
 		return _script.toString();
 	}
 
+	@Override
+	public Field2D getField2D() {
+
+		return null;
+	}
+
+	@Override
+	public float getScaleX() {
+
+		return 0;
+	}
+
+	@Override
+	public float getScaleY() {
+
+		return 0;
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+	}
+
+	@Override
+	public float getRotation() {
+		return 0;
+	}
+
+	@Override
+	public void setRotation(float r) {
+
+	}
+
+	@Override
+	public void setAlpha(float alpha) {
+
+	}
+
+	@Override
+	public void setLocation(float x, float y) {
+
+	}
+
+	@Override
+	public void setX(float x) {
+
+	}
+
+	@Override
+	public void setY(float y) {
+
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return false;
+	}
+
+	@Override
+	public boolean inContains(float x, float y, float w, float h) {
+		return false;
+	}
+
+	@Override
+	public RectBox getRectBox() {
+		return null;
+	}
+
+	@Override
+	public float getContainerWidth() {
+		return 0;
+	}
+
+	@Override
+	public float getContainerHeight() {
+		return 0;
+	}
 
 }

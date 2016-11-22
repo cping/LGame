@@ -1,12 +1,13 @@
 package loon.action.sprite;
 
+import loon.action.ActionBind;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
 public class MovieSprite extends DisplayObject {
-	
+
 	private TArray<DisplayObject> _childs = new TArray<DisplayObject>();
-	
+
 	public MovieSprite() {
 
 	}
@@ -47,6 +48,7 @@ public class MovieSprite extends DisplayObject {
 
 	public DisplayObject removeChild(DisplayObject object) {
 		if (_childs.remove(object)) {
+			removeActionEvents(object);
 			object.setParent(null);
 		}
 		return object;
@@ -57,8 +59,11 @@ public class MovieSprite extends DisplayObject {
 			return null;
 		}
 		DisplayObject object = _childs.get(index);
+		if (object != null) {
+			removeActionEvents(object);
+			object.setParent(null);
+		}
 		_childs.removeIndex(index);
-		object.setParent(null);
 		return object;
 	}
 
@@ -89,6 +94,16 @@ public class MovieSprite extends DisplayObject {
 	}
 
 	public void removeAllChildren() {
+		if (this._childs == null) {
+			return;
+		}
+		for (int i = this._childs.size - 1; i >= 0; i--) {
+			final DisplayObject removed = this._childs.get(i);
+			// 删除精灵同时，删除缓动动画
+			if (removed != null && removed instanceof ActionBind) {
+				removeActionEvents((ActionBind) removed);
+			}
+		}
 		_childs.clear();
 	}
 

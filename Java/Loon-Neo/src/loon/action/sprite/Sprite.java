@@ -41,8 +41,8 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 
-public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
-		LTrans, BoxSize {
+public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
+		BoxSize {
 
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(
 			false);
@@ -71,7 +71,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	private int maxFrame;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
-	
+
 	/**
 	 * 默认构造函数
 	 * 
@@ -897,11 +897,53 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 		childSorter.sort(_childList);
 	}
 
-	public void removeChild(ISprite spr) {
+	public boolean removeChild(ISprite spr) {
+		if (spr == null) {
+			return true;
+		}
 		if (_childList == null) {
 			_childList = new TArray<ISprite>();
 		}
-		_childList.remove(spr);
+		boolean removed = _childList.remove(spr);
+		// 删除精灵同时，删除缓动动画
+		if (removed && spr instanceof ActionBind) {
+			removeActionEvents((ActionBind) spr);
+		}
+		return removed;
+	}
+
+	public boolean removeChild(int idx) {
+		if (idx < 0) {
+			return true;
+		}
+		if (_childList == null) {
+			_childList = new TArray<ISprite>();
+		}
+		for (int i = this._childList.size - 1; i >= 0; i--) {
+			if (i == idx) {
+				final ISprite removed = this._childList.removeIndex(i);
+				// 删除精灵同时，删除缓动动画
+				if (removed != null && (removed instanceof ActionBind)) {
+					removeActionEvents((ActionBind) removed);
+				}
+				return removed != null;
+			}
+		}
+		return false;
+	}
+
+	public void removeChilds() {
+		if (this._childList == null) {
+			return;
+		}
+		for (int i = this._childList.size - 1; i >= 0; i--) {
+			final ISprite removed = this._childList.get(i);
+			// 删除精灵同时，删除缓动动画
+			if (removed != null && removed instanceof ActionBind) {
+				removeActionEvents((ActionBind) removed);
+			}
+		}
+		this._childList.clear();
 	}
 
 	@Override
@@ -913,7 +955,7 @@ public class Sprite extends LObject<ISprite> implements ActionBind, ISprite,
 	public LColor getColor() {
 		return getFilterColor();
 	}
-	
+
 	@Override
 	public void close() {
 		this.visible = false;

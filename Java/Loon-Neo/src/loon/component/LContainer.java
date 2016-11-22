@@ -21,6 +21,7 @@
  */
 package loon.component;
 
+import loon.action.ActionBind;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.LayerSorter;
@@ -154,7 +155,6 @@ public abstract class LContainer extends LComponent {
 		}
 		return list;
 	}
-
 
 	/**
 	 * 返回一组没有指定名称的组件
@@ -313,13 +313,14 @@ public abstract class LContainer extends LComponent {
 
 	public LComponent remove(int index) {
 		LComponent comp = this.childs[index];
-
+		if (comp != null && comp instanceof ActionBind) {
+			removeActionEvents((ActionBind) comp);
+		}
 		this.desktop.setComponentStat(comp, false);
 		comp.setContainer(null);
 		// comp.dispose();
 		this.childs = CollectionUtils.cut(this.childs, index);
 		this.childCount--;
-
 		return comp;
 	}
 

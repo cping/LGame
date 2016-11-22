@@ -3,7 +3,6 @@ package loon.action.sprite;
 import java.util.Comparator;
 
 import loon.LObject;
-import loon.LRelease;
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.ActionBind;
@@ -17,8 +16,7 @@ import loon.opengl.GLEx;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
-public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
-		LRelease, BoxSize {
+public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
@@ -455,25 +453,10 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 	}
 
 	@Override
-	public boolean detachSelf() {
-		final IEntity parent = this._super;
-		if (parent != null) {
-			return parent.detachChild(this);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public void detachChildren() {
-		if (this._childrens == null) {
+	public void attachChild(final IEntity e) {
+		if (e == null) {
 			return;
 		}
-		this._childrens.clear();
-	}
-
-	@Override
-	public void attachChild(final IEntity e) {
 		if (this._childrens == null) {
 			this.allocateChildren();
 		}
@@ -508,11 +491,44 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 	}
 
 	@Override
+	public boolean detachSelf() {
+		final IEntity parent = this._super;
+		if (parent != null) {
+			return parent.detachChild(this);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public void detachChildren() {
+		if (this._childrens == null) {
+			return;
+		}
+		for (int i = this._childrens.size - 1; i >= 0; i--) {
+			final IEntity removed = this._childrens.get(i);
+			// 删除精灵同时，删除缓动动画
+			if (removed != null && removed instanceof ActionBind) {
+				removeActionEvents((ActionBind) removed);
+			}
+		}
+		this._childrens.clear();
+	}
+
+	@Override
 	public boolean detachChild(final IEntity e) {
+		if (e == null) {
+			return true;
+		}
 		if (this._childrens == null) {
 			return false;
 		}
-		return this._childrens.remove(e);
+		boolean removed = this._childrens.remove(e);
+		// 删除精灵同时，删除缓动动画
+		if (removed && e instanceof ActionBind) {
+			removeActionEvents((ActionBind) e);
+		}
+		return removed;
 	}
 
 	@Override
@@ -523,6 +539,10 @@ public class Entity extends LObject<IEntity> implements ActionBind, IEntity,
 		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			if (this._childrens.get(i).getIndexTag() == idx) {
 				final IEntity removed = this._childrens.removeIndex(i);
+				// 删除精灵同时，删除缓动动画
+				if (removed != null && (removed instanceof ActionBind)) {
+					removeActionEvents((ActionBind) removed);
+				}
 				return removed;
 			}
 		}
