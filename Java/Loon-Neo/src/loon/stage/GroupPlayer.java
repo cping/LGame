@@ -22,6 +22,7 @@ package loon.stage;
 
 import java.util.Iterator;
 
+import loon.action.ActionBind;
 import loon.event.SysTouch;
 import loon.geom.Affine2f;
 import loon.geom.Vector2f;
@@ -212,8 +213,13 @@ public class GroupPlayer extends ClippedPlayer implements Iterable<Player> {
 
 	private void remove(int index) {
 		Player child = children.removeIndex(index);
-		child.onRemove();
-		child.setParent(null);
+		if (child != null) {
+			if (child instanceof ActionBind) {
+				removeActionEvents((ActionBind) child);
+			}
+			child.onRemove();
+			child.setParent(null);
+		}
 	}
 
 	private int findChild(Player child, float depth) {

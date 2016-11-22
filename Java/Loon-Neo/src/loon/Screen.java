@@ -70,6 +70,62 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public int index = 0;
 
+	// Screen中组件渲染顺序,默认舞台最下,精灵其次,桌面在后,用户渲染最上
+	public static enum DrawOrder {
+		STAGE, SPRITE, DESKTOP, USER
+	}
+
+	/**
+	 * 转化DrawOrder为PaintOrder
+	 * 
+	 * @param tree
+	 * @return
+	 */
+	public final PaintOrder toPaintOrder(DrawOrder tree) {
+		PaintOrder order = null;
+		switch (tree) {
+		case STAGE:
+			order = DRAW_STAGE_PAINT();
+			break;
+		case SPRITE:
+			order = DRAW_SPRITE_PAINT();
+			break;
+		case DESKTOP:
+			order = DRAW_DESKTOP_PAINT();
+			break;
+		case USER:
+		default:
+			order = DRAW_USER_PAINT();
+			break;
+		}
+		return order;
+	}
+
+	/**
+	 * 设置Screen中组件渲染顺序
+	 * 
+	 * @param one
+	 * @param two
+	 * @param three
+	 * @param four
+	 */
+	public void setDrawOrder(DrawOrder one, DrawOrder two, DrawOrder three,
+			DrawOrder four) {
+		this.setBaseOrder(toPaintOrder(one));
+		this.setFristOrder(toPaintOrder(two));
+		this.setSecondOrder(toPaintOrder(three));
+		this.setLastOrder(toPaintOrder(four));
+	}
+	
+
+	/**
+	 * 设置为默认渲染顺序
+	 */
+	public void defaultDraw() {
+		setDrawOrder(DrawOrder.STAGE, DrawOrder.SPRITE, DrawOrder.DESKTOP,
+				DrawOrder.USER);
+	}
+
 	/**
 	 * 最后绘制用户界面
 	 */
@@ -96,7 +152,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		setSecondOrder(DRAW_USER_PAINT());
 		setLastOrder(DRAW_DESKTOP_PAINT());
 	}
-
+	
+	/**
+	 * 只保留一个用户渲染接口（即无组件会被渲染出来）
+	 */
+	public void onlyUserDraw() {
+		setBaseOrder(null);
+		setFristOrder(null);
+		setSecondOrder(null);
+		setLastOrder(DRAW_USER_PAINT());
+	}
+	
 	/** 受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉. **/
 	/**
 	 * 但是，TeaVM之类的Bytecode to JS转码器是支持的.因此视情况有恢复可能性，但千万注意，恢复此部分函数的话。[不保证完整的跨平台性]
@@ -789,6 +855,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	/**
+	 * 设置一个空操作的过渡效果
+	 */
+	public void noopTransition() {
+		this._transition = LTransition.newEmpty();
+	}
+
+	/**
 	 * 注入一个渐变特效，在引入Screen时将使用此特效进行渐变.
 	 * 
 	 * @param t
@@ -1246,12 +1319,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return currentScreen;
 	}
 
+	/**
+	 * 获得桌面组件（即UI）管理器
+	 */
 	public Desktop getDesktop() {
 		return desktop;
 	}
+	
+	/**
+	 * @see getDesktop
+	 * 
+	 * @return
+	 */
+	public Desktop UI(){
+		return getDesktop();
+	}
 
+	/**
+	 * 获得精灵组件管理器
+	 * 
+	 * @return
+	 */
 	public Sprites getSprites() {
 		return sprites;
+	}
+	
+	/**
+	 * @see getSprites
+	 * 
+	 * @return
+	 */
+	public Sprites SPRITE(){
+		return getSprites();
 	}
 
 	/**
