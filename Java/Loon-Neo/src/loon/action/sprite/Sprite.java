@@ -665,13 +665,6 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				if ((scaleX != 1) || (scaleY != 1)) {
-					final float scaleCenterX = nx + width / 2f;
-					final float scaleCenterY = ny + height / 2f;
-					tx.translate(scaleCenterX, scaleCenterY);
-					tx.preScale(scaleX, scaleY);
-					tx.translate(-scaleCenterX, -scaleCenterY);
-				}
 				if (_rotation != 0 && notImg) {
 					final float rotationCenterX = this._pivot.x == -1 ? (nx + width / 2f)
 							: nx + this._pivot.x;
@@ -681,27 +674,24 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 					tx.preRotate(_rotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
+				if (((scaleX != 1) || (scaleY != 1)) && notImg) {
+					final float scaleCenterX = nx + width / 2f;
+					final float scaleCenterY = ny + height / 2f;
+					tx.translate(scaleCenterX, scaleCenterY);
+					tx.preScale(scaleX, scaleY);
+					tx.translate(-scaleCenterX, -scaleCenterY);
+				}
 			}
 			g.setAlpha(_alpha);
 			if (!notImg) {
-				if (filterColor == null) {
-					if (LTrans.TRANS_NONE == transform) {
-						g.draw(image, nx, ny, width, height, null, _rotation,
-								_pivot);
-					} else {
-						g.drawRegion(image, 0, 0, (int) width, (int) height,
-								transform, (int) nx, (int) ny, LTrans.TOP
-										| LTrans.LEFT, null, _pivot, 0);
-					}
+				if (LTrans.TRANS_NONE == transform) {
+					g.draw(image, nx, ny, width, height, filterColor,
+							_rotation, _pivot, scaleX, scaleY);
 				} else {
-					if (LTrans.TRANS_NONE == transform) {
-						g.draw(image, nx, ny, width, height, filterColor,
-								_rotation, _pivot);
-					} else {
-						g.drawRegion(image, 0, 0, (int) width, (int) height,
-								transform, (int) nx, (int) ny, LTrans.TOP
-										| LTrans.LEFT, filterColor, _pivot, 0);
-					}
+					g.drawRegion(image, 0, 0, (int) width, (int) height,
+							transform, (int) nx, (int) ny, LTrans.TOP
+									| LTrans.LEFT, filterColor, _pivot, scaleX,
+							scaleY, _rotation);
 				}
 			}
 			if (_childList != null && _childList.size > 0) {

@@ -106,6 +106,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 
 	public void setTexture(LTexture tex) {
 		this._image = tex;
+		this._repaintDraw = (tex == null);
 	}
 
 	@Override
@@ -653,10 +654,18 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 				g.saveTx();
 				g.saveBrush();
 				Affine2f tx = g.tx();
-				final float _rotation = this._rotation;
+				final float rotation = this._rotation;
 				final float scaleX = this._scaleX;
 				final float scaleY = this._scaleY;
-
+				if (rotation != 0) {
+					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + this._width / 2f)
+							: nx + this._rotationCenterX;
+					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + this._height / 2f)
+							: ny + this._rotationCenterY;
+					tx.translate(rotationCenterX, rotationCenterY);
+					tx.preRotate(rotation);
+					tx.translate(-rotationCenterX, -rotationCenterY);
+				}
 				if ((scaleX != 1) || (scaleY != 1)) {
 					final float scaleCenterX = this._scaleCenterX == -1 ? (nx + this._width / 2f)
 							: nx + this._rotationCenterX;
@@ -676,15 +685,6 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 					tx.translate(skewCenterX, skewCenterY);
 					tx.preShear(skewX, skewY);
 					tx.translate(-skewCenterX, -skewCenterY);
-				}
-				if (_rotation != 0) {
-					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + this._width / 2f)
-							: nx + this._rotationCenterX;
-					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + this._height / 2f)
-							: ny + this._rotationCenterY;
-					tx.translate(rotationCenterX, rotationCenterY);
-					tx.preRotate(_rotation);
-					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 			}
 			if (_repaintDraw) {

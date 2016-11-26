@@ -1,10 +1,10 @@
 package loon.action.sprite;
 
+import loon.PlayerUtils;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
-import loon.stage.PlayerUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;

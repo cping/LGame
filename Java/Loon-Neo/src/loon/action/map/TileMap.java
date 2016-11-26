@@ -618,19 +618,19 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				if ((scaleX != 1) || (scaleY != 1)) {
-					final float scaleCenterX = newX + getWidth() / 2f;
-					final float scaleCenterY = newY + getHeight() / 2f;
-					tx.translate(scaleCenterX, scaleCenterY);
-					tx.preScale(scaleX, scaleY);
-					tx.translate(-scaleCenterX, -scaleCenterY);
-				}
 				if (_rotation != 0) {
 					final float rotationCenterX = newX + getWidth() / 2f;
 					final float rotationCenterY = newY + getHeight() / 2f;
 					tx.translate(rotationCenterX, rotationCenterY);
 					tx.preRotate(_rotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
+				}
+				if ((scaleX != 1) || (scaleY != 1)) {
+					final float scaleCenterX = newX + getWidth() / 2f;
+					final float scaleCenterY = newY + getHeight() / 2f;
+					tx.translate(scaleCenterX, scaleCenterY);
+					tx.preScale(scaleX, scaleY);
+					tx.translate(-scaleCenterX, -scaleCenterY);
 				}
 			}
 			draw(g, null, (int) (getX() + offsetX + offset.getX()),

@@ -32,10 +32,6 @@ import loon.event.TouchMake;
 import loon.event.Updateable;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
-import loon.stage.PlayerUtils;
-import loon.stage.RootPlayer;
-import loon.stage.StageSystem;
-import loon.stage.StageTransition;
 import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -72,10 +68,6 @@ public class LProcess extends PlayerUtils {
 
 	private final SysInputFactory currentInput;
 
-	protected final StageSystem stageSystem;
-
-	protected final RootPlayer rootPlayer;
-
 	private final LGame game;
 
 	public LProcess(LGame game) {
@@ -108,18 +100,6 @@ public class LProcess extends PlayerUtils {
 				}
 			});
 		}
-		this.rootPlayer = new RootPlayer();
-		this.stageSystem = new StageSystem(rootPlayer) {
-			@Override
-			protected StageTransition defaultPushTransition() {
-				return newSlide();
-			}
-
-			@Override
-			protected StageTransition defaultPopTransition() {
-				return newSlide().right();
-			}
-		};
 		game.status.connect(new Port<LGame.Status>() {
 
 			@Override
@@ -803,14 +783,6 @@ public class LProcess extends PlayerUtils {
 		if (isInstance) {
 			currentScreen.mouseDragged(e);
 		}
-	}
-
-	public RootPlayer getRootPlayer() {
-		return rootPlayer;
-	}
-
-	public StageSystem getStageSystem() {
-		return stageSystem;
 	}
 
 	public LGame getGame() {

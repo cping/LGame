@@ -22,6 +22,7 @@ package loon.geom;
 
 import loon.component.layout.BoxSize;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 public class RectBox extends Shape implements BoxSize {
 
@@ -41,13 +42,13 @@ public class RectBox extends Shape implements BoxSize {
 	public boolean isEmpty() {
 		return getWidth() <= 0 || height() <= 0;
 	}
-	
-    public void setEmpty() {
-        this.x = 0;
-        this.y = 0;
-        this.width = 0;
-        this.height = 0;
-    }
+
+	public void setEmpty() {
+		this.x = 0;
+		this.y = 0;
+		this.width = 0;
+		this.height = 0;
+	}
 
 	public int width;
 
@@ -62,22 +63,22 @@ public class RectBox extends Shape implements BoxSize {
 		x += offsetX;
 		y += offsetY;
 	}
-	
+
 	public void offset(Point point) {
 		x += point.x;
 		y += point.y;
 	}
-	
+
 	public void offset(PointF point) {
 		x += point.x;
 		y += point.y;
 	}
-	
+
 	public void offset(PointI point) {
 		x += point.x;
 		y += point.y;
 	}
-	
+
 	public void add(float px, float py) {
 		float x1 = MathUtils.min(x, px);
 		float x2 = MathUtils.max(x + width, px);
@@ -429,36 +430,31 @@ public class RectBox extends Shape implements BoxSize {
 	public boolean contains(Vector2f v) {
 		return contains(v.x, v.y);
 	}
-	
+
 	public boolean contains(Point point) {
-        if (this.x < point.x
-            && this.x + this.width > point.x
-            && this.y < point.y
-            && this.y + this.height > point.y) {
-            return true;
-        }
-        return false;
-    }
-	
+		if (this.x < point.x && this.x + this.width > point.x
+				&& this.y < point.y && this.y + this.height > point.y) {
+			return true;
+		}
+		return false;
+	}
+
 	public boolean contains(PointF point) {
-        if (this.x < point.x
-            && this.x + this.width > point.x
-            && this.y < point.y
-            && this.y + this.height > point.y) {
-            return true;
-        }
-        return false;
-    }
-	
+		if (this.x < point.x && this.x + this.width > point.x
+				&& this.y < point.y && this.y + this.height > point.y) {
+			return true;
+		}
+		return false;
+	}
+
 	public boolean contains(PointI point) {
-        if (this.x < point.x
-            && this.x + this.width > point.x
-            && this.y < point.y
-            && this.y + this.height > point.y) {
-            return true;
-        }
-        return false;
-    }
+		if (this.x < point.x && this.x + this.width > point.x
+				&& this.y < point.y && this.y + this.height > point.y) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * 设定矩形选框交集
 	 * 
@@ -682,6 +678,12 @@ public class RectBox extends Shape implements BoxSize {
 		float x2 = MathUtils.min(src1.getMaxX(), src2.getMaxX());
 		float y2 = MathUtils.min(src1.getMaxY(), src2.getMaxY());
 		dest.setBounds(x1, y1, x2 - x1, y2 - y1);
+	}
+
+	@Override
+	public String toString() {
+		return StringUtils.format("RectBox [x:{0},y:{1},width:{2},height:{3}]",
+				x, y, width, height);
 	}
 
 }

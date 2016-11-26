@@ -495,6 +495,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx concatenate(Affine2f xf) {
+		if (isClosed) {
+			return this;
+		}
+		Affine2f.multiply(tx(), xf,xf);
+		return this;
+	}
+	
 	public GLEx concatenate(Affine2f xf, float originX, float originY) {
 		if (isClosed) {
 			return this;
@@ -677,7 +685,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx setTint(LColor color) {
 		return this.setTint(color.getARGB());
 	}
-	
+
 	public GLEx setTint(int c) {
 		if (this.baseAlpha != 1f) {
 			this.baseColor = c;
@@ -1071,6 +1079,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h,
 			LColor color, float rotation, Vector2f pivot) {
+		return draw(texture, x, y, w, h, color, rotation, pivot, 1f, 1f);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h,
+			LColor color, float rotation, Vector2f pivot, float sx, float sy) {
 		if (isClosed) {
 			return this;
 		}
@@ -1082,17 +1095,24 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			argb = color.getARGB(alpha());
 		}
 		Affine2f xf = tx();
-		if (rotation != 0) {
+		if (rotation != 0 || sx != 1f || sy != 1f) {
 			xf = new Affine2f();
-			float w1 = x + w / 2;
-			float h1 = y + h / 2;
+			float centerX = x + w / 2;
+			float centerY = y + h / 2;
 			if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
-				w1 = x + pivot.x;
-				h1 = y + pivot.y;
+				centerX = x + pivot.x;
+				centerX = y + pivot.y;
 			}
-			xf.translate(w1, h1);
-			xf.preRotate(rotation);
-			xf.translate(-w1, -h1);
+			if (rotation != 0) {
+				xf.translate(centerX, centerY);
+				xf.preRotate(rotation);
+				xf.translate(-centerX, -centerY);
+			}
+			if (sx != 1f || sy != 1f) {
+				xf.translate(centerX, centerY);
+				xf.preScale(sx, sy);
+				xf.translate(-centerX, -centerY);
+			}
 			Affine2f.multiply(tx(), xf, xf);
 		}
 		texture.addToBatch(batch, argb, xf, x, y, w, h);
@@ -1408,17 +1428,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (oriDirty) {
 				xf.translate(origin.x, origin.y);
 			}
-			if (scaleDirty) {
-				float centerX = x + width / 2;
-				float centerY = y + height / 2;
-				if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
-					centerX = x + pivot.x;
-					centerX = y + pivot.y;
-				}
-				xf.translate(centerX, centerY);
-				xf.preScale(scaleX, scaleY);
-				xf.translate(-centerX, -centerY);
-			}
 			if (rotDirty) {
 				float centerX = x + width / 2;
 				float centerY = y + height / 2;
@@ -1428,6 +1437,17 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				}
 				xf.translate(centerX, centerY);
 				xf.preRotate(rotation);
+				xf.translate(-centerX, -centerY);
+			}
+			if (scaleDirty) {
+				float centerX = x + width / 2;
+				float centerY = y + height / 2;
+				if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
+					centerX = x + pivot.x;
+					centerX = y + pivot.y;
+				}
+				xf.translate(centerX, centerY);
+				xf.preScale(scaleX, scaleY);
 				xf.translate(-centerX, -centerY);
 			}
 			if (dirDirty) {
@@ -2838,6 +2858,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				x_dst, y_dst, anchor, c, null, radius);
 	}
 
+	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+			int height, int transform, int x_dst, int y_dst, int anchor,
+			LColor c, Vector2f pivot, float radius) {
+		return drawRegion(texture, x_src, y_src, width, height, transform,
+				x_dst, y_dst, anchor, c, pivot, 1f, 1f, radius);
+	}
+
 	/**
 	 * 渲染纹理为指定状态
 	 * 
@@ -2857,7 +2884,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor,
-			LColor c, Vector2f pivot, float radius) {
+			LColor c, Vector2f pivot, float sx, float sy, float radius) {
 		if (isClosed) {
 			return this;
 		}
@@ -2964,7 +2991,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 
 		return draw(texture, x_dst, y_dst, width, height, x_src, y_src, x_src
-				+ width, y_src + height, c, rotate, 1f, 1f, null, pivot, dir);
+				+ width, y_src + height, c, rotate, sx, sy, null, pivot, dir);
 	}
 
 	public GLEx setLineWidth(float width) {

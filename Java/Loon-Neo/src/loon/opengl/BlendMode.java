@@ -22,6 +22,10 @@ public class BlendMode {
 		_blend = LSystem.MODE_MULTIPLY;
 	}
 
+	public void blendLight() {
+		_blend = LSystem.MODE_LIGHT;
+	}
+	
 	public void blendMask() {
 		_blend = LSystem.MODE_MASK;
 	}

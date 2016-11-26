@@ -2,12 +2,12 @@ package org.test;
 
 import loon.LTransition;
 import loon.Screen;
+import loon.action.sprite.Entity;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.stage.ImagePlayer;
 import loon.utils.timer.LTimerContext;
 
 public class DepthTest extends Screen {
@@ -42,9 +42,10 @@ public class DepthTest extends Screen {
 			canvas.setFillColor(fills[i]).fillRect(0, 0, width, height);
 			canvas.setFillColor(0xFF000000).drawText(depth + "/" + i, 5, 15);
 			//添加图层
-			ImagePlayer layer = new ImagePlayer(canvas.toTexture());
+			Entity layer = new Entity(canvas.toTexture());
 			//设置图层层级，并改变显示位置
-			layer.setDepth(depth).setTranslation(200 - 50 * depth,
+			layer.setZOrder(depth);
+			layer.setLocation(200 - 50 * depth,
 					125 + 25 * depth);
 			//添加layer到screen
 			add(layer);

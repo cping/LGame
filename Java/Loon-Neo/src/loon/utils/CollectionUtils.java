@@ -131,6 +131,19 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
+	public static ISprite[] copyOf(ISprite[] obj, int newSize) {
+		ISprite tempArr[] = new ISprite[newSize];
+		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param obj
+	 * @param newSize
+	 * @return
+	 */
 	public static Actor[] copyOf(Actor[] obj, int newSize) {
 		Actor tempArr[] = new Actor[newSize];
 		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));

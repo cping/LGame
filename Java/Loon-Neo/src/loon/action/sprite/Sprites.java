@@ -190,10 +190,10 @@ public class Sprites implements Serializable, LRelease {
 		ISprite[] snapshot = sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
-				String childName = child.getName();
-				if (name.equals(childName)) {
-					return child;
-				}
+			String childName = child.getName();
+			if (name.equals(childName)) {
+				return child;
+			}
 		}
 		return null;
 	}
@@ -227,6 +227,11 @@ public class Sprites implements Serializable, LRelease {
 		return result;
 	}
 
+	public void addAt(ISprite child, float x, float y) {
+		add(child);
+		child.setLocation(x, y);
+	}
+	
 	public ISprite getSprite(int index) {
 		if (index < 0 || index > _size || index >= sprites.length) {
 			return null;
@@ -677,7 +682,7 @@ public class Sprites implements Serializable, LRelease {
 	}
 
 	public ISprite[] getSprites() {
-		return this.sprites;
+		return CollectionUtils.copyOf(this.sprites, this._size);
 	}
 
 	public int size() {

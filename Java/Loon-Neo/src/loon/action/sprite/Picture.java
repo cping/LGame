@@ -2,6 +2,7 @@ package loon.action.sprite;
 
 import loon.LTexture;
 import loon.LTextures;
+import loon.canvas.Image;
 
 public class Picture extends Entity {
 
@@ -17,6 +18,10 @@ public class Picture extends Entity {
 		this(LTextures.loadTexture(fileName), x, y);
 	}
 
+	public Picture(Image image) {
+		this(image.texture(), 0, 0);
+	}
+	
 	public Picture(LTexture image) {
 		this(image, 0, 0);
 	}

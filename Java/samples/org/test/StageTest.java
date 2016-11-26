@@ -11,10 +11,6 @@ import loon.event.Updateable;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
-import loon.stage.ImagePlayer;
-import loon.stage.Player;
-import loon.stage.Stage;
-import loon.stage.StageSystem;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
 
@@ -22,49 +18,11 @@ public class StageTest {
 
 	public static class ScreenTest extends Screen implements EmulatorListener {
 
-		public Stage newStage1() {
-
-			Stage stage = new Stage() {
-
-				@Override
-				public void onAdded() {
-
-					addPlayer(new ImagePlayer("back1.png"));
-
-					Player player = createTextPlayer(LFont.getDefaultFont(),
-							"人民万岁");
-					player.setLocation(155, 155);
-					addPlayer(player);
-				}
-
-				@Override
-				public void onRemoved() {
-
-				}
-
-				@Override
-				public void onShowTransitionCompleted() {
-remove(this);
-				}
-
-				@Override
-				public void onHideTransitionStarted() {
-
-				}
-			};
-
-			return stage;
-		}
 
 		// LTexture texture = loadTexture("loon_wbar.png");
 
 		public void onLoad() {
-
-			//设置默认字体大小为20号字
-			LFont.setDefaultFont(LFont.getFont(20));
-			puspStage(newStage1(), StageSystem.flip());
-
-			add(MultiScreenTest.getBackButton(this,0));
+			
 		}
 
 		boolean flag;
@@ -159,60 +117,7 @@ remove(this);
 
 		@Override
 		public void touchDown(GameTouch e) {
-			// add(new
-			// FadeOvalEffect(FadeOvalEffect.TYPE_FADE_IN,LColor.black));
-
-			Updateable update = new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					Stage stage = new Stage() {
-
-						@Override
-						public void onAdded() {
-
-							addPlayer(new ImagePlayer(AVGDialog.getRMXPDialog(
-									"w6.png", 400, 400)));
-
-						}
-
-						@Override
-						public void onRemoved() {
-
-						}
-
-						@Override
-						public void onShowTransitionCompleted() {
-							RealtimeProcess process = new RealtimeProcess() {
-
-								@Override
-								public void run(LTimerContext time) {
-
-									addPlayer(new ImagePlayer("back1.png"));
-
-									Player player = createTextPlayer(LFont.getDefaultFont(),
-											"人民万岁");
-									player.setLocation(155, 155);
-									addPlayer(player);
-							
-									kill();
-								}
-							};
-							addProcess(process);
-
-							process.setDelay(0);
-							
-						}
-
-						@Override
-						public void onHideTransitionStarted() {
-
-						}
-					};
-					puspStage(stage, StageSystem.flip());
-				}
-			};
-			LSystem.load(update);
+			
 		}
 
 		@Override

@@ -5,51 +5,15 @@ import loon.Screen;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.stage.ImagePlayer;
-import loon.stage.Player;
-import loon.stage.Stage;
 import loon.utils.timer.LTimerContext;
 
 public class ScreenTest extends Screen implements EmulatorListener {
 
-	public Stage newStage1() {
-
-		Stage stage = new Stage() {
-
-			@Override
-			public void onAdded() {
-
-				addPlayer(new ImagePlayer("back1.png"));
-
-				Player player = createTextPlayer(LFont.getFont(30), "ABCDE");
-				player.setLocation(55, 155);
-				addPlayer(player);
-			}
-
-			@Override
-			public void onRemoved() {
-
-			}
-
-			@Override
-			public void onShowTransitionCompleted() {
-				remove(this);
-			}
-
-			@Override
-			public void onHideTransitionStarted() {
-
-			}
-		};
-
-		return stage;
-	}
 
 	// LTexture texture = loadTexture("loon_wbar.png");
 
 	public void onLoad() {
 
-		puspStage(newStage1());
 
 	}
 

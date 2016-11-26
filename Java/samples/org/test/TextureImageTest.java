@@ -4,6 +4,7 @@ import loon.BaseIO;
 import loon.LTexture;
 import loon.LTransition;
 import loon.Screen;
+import loon.action.sprite.Picture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -11,7 +12,6 @@ import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
-import loon.stage.ImagePlayer;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimerContext;
 
@@ -48,7 +48,7 @@ public class TextureImageTest extends Screen {
 				.fillRect(0, nwidth / 2, nwidth, nheight / 2).end().close();
 
 		// 添加纹理图片到Screen
-		add(new ImagePlayer(bg.texture));
+		add(new Picture(bg.texture));
 
 		// 加载指定图片，当图片加载成功后
 		BaseIO.loadImage(imageSrc).state.onSuccess(new Port<Image>() {
@@ -57,31 +57,31 @@ public class TextureImageTest extends Screen {
 
 				// 渲染纹理，并作为表演者加入Screen
 				LTexture imtex = image.texture();
-				getRootPlayer().addAt(new ImagePlayer(imtex), offset, offset);
-				getRootPlayer().addAt(new ImagePlayer(imtex), offset,
+				SPRITE().addAt(new Picture(imtex), offset, offset);
+				SPRITE().addAt(new Picture(imtex), offset,
 						offset + 2 * height);
 
 				LTextureImage surf = createTextureImage(image.width(),
 						image.height());
 				surf.begin().clear().draw(imtex, 0, 0).end().close();
-				getRootPlayer().addAt(new ImagePlayer(surf.texture),
+				SPRITE().addAt(new Picture(surf.texture),
 						offset + width, offset);
-				getRootPlayer().addAt(new ImagePlayer(surf.texture),
+				SPRITE().addAt(new Picture(surf.texture),
 						offset + width, offset + 2 * height);
 
 				Canvas canvas = image.getCanvas();
 				canvas.draw(image, 0, 0);
 				LTexture texture = canvas.toTexture();
-				getRootPlayer().addAt(new ImagePlayer(texture),
+				SPRITE().addAt(new Picture(texture),
 						offset + 2 * width, offset);
-				getRootPlayer().addAt(new ImagePlayer(texture),
+				SPRITE().addAt(new Picture(texture),
 						offset + 2 * width, offset + 2 * height);
 			}
 		});
 
 		// 添加图片并载入Screen
 		Image baseGround = BaseIO.loadImage(imageGroundSrc);
-		getRootPlayer().addAt(new ImagePlayer(baseGround), 3 * width, 0);
+		SPRITE().addAt(new Picture(baseGround), 3 * width, 0);
 		
 
 		add(MultiScreenTest.getBackButton(this,0));

@@ -49,12 +49,6 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LTextureImage;
-import loon.stage.Player;
-import loon.stage.PlayerUtils;
-import loon.stage.RootPlayer;
-import loon.stage.Stage;
-import loon.stage.StageSystem;
-import loon.stage.StageTransition;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
@@ -70,9 +64,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public int index = 0;
 
-	// Screen中组件渲染顺序,默认舞台最下,精灵其次,桌面在后,用户渲染最上
+	// Screen中组件渲染顺序,默认精灵最下,桌面在后,用户渲染最上
 	public static enum DrawOrder {
-		STAGE, SPRITE, DESKTOP, USER
+		 SPRITE, DESKTOP, USER
 	}
 
 	/**
@@ -84,9 +78,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public final PaintOrder toPaintOrder(DrawOrder tree) {
 		PaintOrder order = null;
 		switch (tree) {
-		case STAGE:
-			order = DRAW_STAGE_PAINT();
-			break;
 		case SPRITE:
 			order = DRAW_SPRITE_PAINT();
 			break;
@@ -107,22 +98,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @param one
 	 * @param two
 	 * @param three
-	 * @param four
 	 */
-	public void setDrawOrder(DrawOrder one, DrawOrder two, DrawOrder three,
-			DrawOrder four) {
-		this.setBaseOrder(toPaintOrder(one));
-		this.setFristOrder(toPaintOrder(two));
-		this.setSecondOrder(toPaintOrder(three));
-		this.setLastOrder(toPaintOrder(four));
+	public void setDrawOrder(DrawOrder one, DrawOrder two, DrawOrder three) {
+		this.setFristOrder(toPaintOrder(one));
+		this.setSecondOrder(toPaintOrder(two));
+		this.setLastOrder(toPaintOrder(three));
 	}
-	
 
 	/**
 	 * 设置为默认渲染顺序
 	 */
 	public void defaultDraw() {
-		setDrawOrder(DrawOrder.STAGE, DrawOrder.SPRITE, DrawOrder.DESKTOP,
+		setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP,
 				DrawOrder.USER);
 	}
 
@@ -152,17 +139,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		setSecondOrder(DRAW_USER_PAINT());
 		setLastOrder(DRAW_DESKTOP_PAINT());
 	}
-	
+
 	/**
 	 * 只保留一个用户渲染接口（即无组件会被渲染出来）
 	 */
 	public void onlyUserDraw() {
-		setBaseOrder(null);
 		setFristOrder(null);
 		setSecondOrder(null);
 		setLastOrder(DRAW_USER_PAINT());
 	}
-	
+
 	/** 受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉. **/
 	/**
 	 * 但是，TeaVM之类的Bytecode to JS转码器是支持的.因此视情况有恢复可能性，但千万注意，恢复此部分函数的话。[不保证完整的跨平台性]
@@ -197,6 +183,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 */
 	/** 受限函数结束 **/
 
+	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
+	
 	private LTransition _transition;
 
 	protected final Closeable.Set _conns = new Closeable.Set();
@@ -273,8 +261,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.processing = true;
 	}
 
-	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
-
 	public void registerTouchArea(final LTouchArea touchArea) {
 		this._touchAreas.add(touchArea);
 	}
@@ -348,8 +334,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return ((float) elapsedTime) / 1000f;
 	}
 
-	private RootPlayer _players;
-
 	public final static byte DRAW_EMPTY = -1;
 
 	public final static byte DRAW_USER = 0;
@@ -358,8 +342,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public final static byte DRAW_DESKTOP = 2;
 
-	public final static byte DRAW_STAGE = 3;
-
+	// 每次screen处理事件循环的额外间隔时间
+	private LTimer delayTimer = new LTimer(0);
 	// 希望Screen中所有组件的update暂停的时间
 	private LTimer pauseTimer = new LTimer(LSystem.SECOND);
 	// 是否已经暂停
@@ -395,14 +379,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					desktop.createUI(g);
 				}
 				break;
-			case DRAW_STAGE:
-				if (stageRun) {
-					_players.paint(g);
-				} else if (stageRun = (LSystem._process != null)
-						&& (_players = LSystem._process.rootPlayer).children() > 0) {
-					_players.paint(g);
-				}
-				break;
 			case DRAW_EMPTY:
 			default:
 				break;
@@ -424,13 +400,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				desktopRun = (desktop != null && desktop.size() > 0);
 				if (desktopRun) {
 					desktop.update(c.timeSinceLastUpdate);
-				}
-				break;
-			case DRAW_STAGE:
-				stageRun = (LSystem._process != null && (_players = LSystem._process.rootPlayer)
-						.children() > 0);
-				if (stageRun) {
-					_players.update(c.timeSinceLastUpdate);
 				}
 				break;
 			case DRAW_EMPTY:
@@ -464,8 +433,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	private boolean secondPaintFlag;
 
 	private boolean lastPaintFlag;
-
-	private boolean basePaintFlag;
 
 	public static enum SensorDirection {
 		NONE, LEFT, RIGHT, UP, DOWN;
@@ -528,9 +495,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private float tx, ty;
 
-	// 舞台对象
-	private PaintOrder baseOrder;
-
 	// 首先绘制的对象
 	private PaintOrder fristOrder;
 
@@ -540,7 +504,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	// 最后绘制的对象
 	private PaintOrder lastOrder;
 
-	private PaintOrder userOrder, spriteOrder, desktopOrder, stageOrder;
+	private PaintOrder userOrder, spriteOrder, desktopOrder;
 
 	private TArray<RectBox> _limits = new TArray<RectBox>(10);
 
@@ -707,13 +671,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return userOrder;
 	}
 
-	protected final PaintOrder DRAW_STAGE_PAINT() {
-		if (stageOrder == null) {
-			stageOrder = new PaintOrder(DRAW_STAGE, this);
-		}
-		return stageOrder;
-	}
-
 	protected final PaintOrder DRAW_SPRITE_PAINT() {
 		if (spriteOrder == null) {
 			spriteOrder = new PaintOrder(DRAW_SPRITE, this);
@@ -744,8 +701,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.height = LSystem.viewSize.getHeight();
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
-		// 基础画布为舞台
-		this.baseOrder = DRAW_STAGE_PAINT();
 		// 最先精灵
 		this.fristOrder = DRAW_SPRITE_PAINT();
 		// 其次桌面
@@ -755,7 +710,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.fristPaintFlag = true;
 		this.secondPaintFlag = true;
 		this.lastPaintFlag = true;
-		this.basePaintFlag = true;
 	}
 
 	public boolean contains(float x, float y) {
@@ -1325,13 +1279,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Desktop getDesktop() {
 		return desktop;
 	}
-	
+
 	/**
 	 * @see getDesktop
 	 * 
 	 * @return
 	 */
-	public Desktop UI(){
+	public Desktop UI() {
 		return getDesktop();
 	}
 
@@ -1343,13 +1297,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Sprites getSprites() {
 		return sprites;
 	}
-	
+
 	/**
 	 * @see getSprites
 	 * 
 	 * @return
 	 */
-	public Sprites SPRITE(){
+	public Sprites SPRITE() {
 		return getSprites();
 	}
 
@@ -1435,10 +1389,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			add((ISprite) obj);
 		} else if (obj instanceof LComponent) {
 			add((LComponent) obj);
-		} else if (obj instanceof Player) {
-			add((Player) obj);
-		} else if (obj instanceof Stage) {
-			puspStage((Stage) obj);
 		} else if (obj instanceof Updateable) {
 			addLoad((Updateable) obj);
 		} else if (obj instanceof GameProcess) {
@@ -1460,10 +1410,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			remove((ISprite) obj);
 		} else if (obj instanceof LComponent) {
 			remove((LComponent) obj);
-		} else if (obj instanceof Player) {
-			remove((Player) obj);
-		} else if (obj instanceof Stage) {
-			popTo((Stage) obj);
 		} else if (obj instanceof Updateable) {
 			removeLoad((Updateable) obj);
 		} else if (obj instanceof GameProcess) {
@@ -1477,26 +1423,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen remove(Object... obj) {
 		for (int i = 0; i < obj.length; i++) {
 			remove(obj[i]);
-		}
-		return this;
-	}
-
-	public Screen add(Player player) {
-		if (LSystem._process != null && LSystem._process.rootPlayer != null) {
-			LSystem._process.rootPlayer.add(player);
-			if (player instanceof LTouchArea) {
-				registerTouchArea((LTouchArea) player);
-			}
-		}
-		return this;
-	}
-
-	public Screen remove(Player player) {
-		if (LSystem._process != null && LSystem._process.rootPlayer != null) {
-			LSystem._process.rootPlayer.remove(player);
-			if (player instanceof LTouchArea) {
-				unregisterTouchArea((LTouchArea) player);
-			}
 		}
 		return this;
 	}
@@ -1582,14 +1508,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		if (desktop != null) {
 			desktop.getContentPane().clear();
-		}
-		if (LSystem._process != null) {
-			if (LSystem._process.rootPlayer != null) {
-				LSystem._process.rootPlayer.removeAll();
-			}
-			if (LSystem._process.stageSystem != null) {
-				LSystem._process.stageSystem.removeAll();
-			}
 		}
 		ActionControl.get().clear();
 		removeAllLoad();
@@ -1738,11 +1656,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				}
 				// 最下一层渲染，可重载
 				afterUI(g);
-				// PS:下列四项允许用户调整顺序
-				// 基础
-				if (basePaintFlag) {
-					baseOrder.paint(g);
-				}
+				// PS:下列项允许用户调整顺序
 				// 精灵
 				if (fristPaintFlag) {
 					fristOrder.paint(g);
@@ -1842,6 +1756,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
+	public void setScreenDelay(long delay) {
+		this.delayTimer.setDelay(delay);
+	}
+
+	public long getScreenDelay() {
+		return this.delayTimer.getDelay();
+	}
+
 	/**
 	 * 暂停进程处理指定时间
 	 * 
@@ -1860,6 +1782,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (loopEvents == null) {
 			loopEvents = new TArray<FrameLoopEvent>();
 		}
+	}
+
+	public void loop(FrameLoopEvent event) {
+		addFrameLoop(event);
+	}
+
+	public void loop(float second, FrameLoopEvent event) {
+		addFrameLoop(second, event);
 	}
 
 	public void addFrameLoop(TArray<FrameLoopEvent> events) {
@@ -1913,21 +1843,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				pauseTimer.refresh();
 			}
 		}
-		if (processing && !isClose) {
-			if (isGravity) {
-				gravityHandler.update(elapsedTime);
-			}
-			if (basePaintFlag) {
-				baseOrder.update(timer);
-			}
-			if (fristPaintFlag) {
-				fristOrder.update(timer);
-			}
-			if (secondPaintFlag) {
-				secondOrder.update(timer);
-			}
-			if (lastPaintFlag) {
-				lastOrder.update(timer);
+		if (delayTimer.action(elapsedTime)) {
+			if (processing && !isClose) {
+				if (isGravity) {
+					gravityHandler.update(elapsedTime);
+				}
+				if (fristPaintFlag) {
+					fristOrder.update(timer);
+				}
+				if (secondPaintFlag) {
+					secondOrder.update(timer);
+				}
+				if (lastPaintFlag) {
+					lastOrder.update(timer);
+				}
 			}
 		}
 		// 处理直接加入screen中的循环
@@ -2515,20 +2444,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return direction;
 	}
 
-	public PaintOrder getBaseOrder() {
-		return baseOrder;
-	}
-
-	public Screen setBaseOrder(PaintOrder bOrder) {
-		if (baseOrder == null) {
-			this.basePaintFlag = false;
-		} else {
-			this.basePaintFlag = true;
-			this.baseOrder = bOrder;
-		}
-		return this;
-	}
-
 	public PaintOrder getFristOrder() {
 		return fristOrder;
 	}
@@ -2599,16 +2514,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				desktop.clear();
 				desktop = null;
 			}
-			if (_players != null) {
-				_players.close();
-			}
-			if (LSystem._process != null && LSystem._process.rootPlayer != null) {
-				LSystem._process.rootPlayer.close();
-			}
-			if (LSystem._process != null
-					&& LSystem._process.stageSystem != null) {
-				LSystem._process.stageSystem.close();
-			}
 			if (currentScreen != null) {
 				LTexture parent = LTexture.firstFather(currentScreen);
 				parent.closeChildAll();
@@ -2636,117 +2541,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public Display getDisplay() {
 		return LSystem._base.display();
-	}
-
-	public RootPlayer getRootPlayer() {
-		return LSystem._process.rootPlayer;
-	}
-
-	public StageSystem getStageSystem() {
-		return LSystem._process.stageSystem;
-	}
-
-	public Screen puspStageUp(Stage stage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stage,
-					LSystem._process.stageSystem.newSlide().up());
-		}
-		return this;
-	}
-
-	public Screen puspStageRight(Stage stage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stage,
-					LSystem._process.stageSystem.newSlide().right());
-		}
-		return this;
-	}
-
-	public Screen puspStageLeft(Stage stage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stage,
-					LSystem._process.stageSystem.newSlide().left());
-		}
-		return this;
-	}
-
-	public Screen puspStageDown(Stage stage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stage,
-					LSystem._process.stageSystem.newSlide().down());
-		}
-		return this;
-	}
-
-	public Screen puspStage(Stage stage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stage);
-		}
-		return this;
-	}
-
-	public Screen puspStage(Stage stage, StageTransition trans) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stage, trans);
-		}
-		return this;
-	}
-
-	public Screen puspStage(Iterable<? extends Stage> stages) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stages);
-		}
-		return this;
-	}
-
-	public Screen puspStage(Iterable<? extends Stage> stages,
-			StageTransition trans) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.push(stages, trans);
-		}
-		return this;
-	}
-
-	public Screen popTo(Stage newTopStage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.popTo(newTopStage);
-		}
-		return this;
-	}
-
-	public Screen popTo(Stage newTopStage, StageTransition trans) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.popTo(newTopStage, trans);
-		}
-		return this;
-	}
-
-	public Screen replace(Stage stage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.replace(stage);
-		}
-		return this;
-	}
-
-	public Screen replace(Stage stage, StageTransition trans) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.replace(stage, trans);
-		}
-		return this;
-	}
-
-	public boolean remove(Stage stage) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.popTo(stage);
-		}
-		return false;
-	}
-
-	public boolean remove(Stage stage, StageTransition trans) {
-		if (LSystem._process != null) {
-			LSystem._process.stageSystem.remove(stage);
-		}
-		return false;
 	}
 
 	public Screen setAutoDestory(final boolean a) {

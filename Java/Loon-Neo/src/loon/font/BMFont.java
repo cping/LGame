@@ -478,8 +478,12 @@ public class BMFont implements IFont, LRelease {
 			if (update) {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
-				if (anchor) {
-					xf.translate(ax, ay);
+				if (angle) {
+					float centerX = x + this.stringWidth(text) / 2;
+					float centerY = y + this.stringHeight(text) / 2;
+					xf.translate(centerX, centerY);
+					xf.preRotate(rotation);
+					xf.translate(-centerX, -centerY);
 				}
 				if (scale) {
 					float centerX = x + this.stringWidth(text) / 2;
@@ -488,12 +492,8 @@ public class BMFont implements IFont, LRelease {
 					xf.preScale(sx, sy);
 					xf.translate(-centerX, -centerY);
 				}
-				if (angle) {
-					float centerX = x + this.stringWidth(text) / 2;
-					float centerY = y + this.stringHeight(text) / 2;
-					xf.translate(centerX, centerY);
-					xf.preRotate(rotation);
-					xf.translate(-centerX, -centerY);
+				if (anchor) {
+					xf.translate(ax, ay);
 				}
 			}
 			drawString(gl, text, x, y, c);

@@ -1,10 +1,8 @@
 package org.loon.main;
 
 import test.TitleScreen;
-import loon.LSetting;
 import loon.Screen;
 import loon.android.AndroidGame.AndroidSetting;
-import loon.android.AndroidGame.LMode;
 import loon.android.Loon;
 
 public class MainActivity extends Loon {
@@ -13,6 +11,7 @@ public class MainActivity extends Loon {
 	public void onMain() {
 		AndroidSetting setting = new AndroidSetting();
 		setting.isFPS = true;
+		setting.isMemory  = true;
 		setting.isLogo = false;
 		setting.fullscreen = true;
 		setting.width = 480;
@@ -29,11 +28,12 @@ public class MainActivity extends Loon {
 		setting.fontName = "Dialog";
 		setting.appName = "test";
 		setting.emulateTouch = false;
+		setting.lockBackDestroy = false;
 		register(setting, new Data() {
 
 			@Override
 			public Screen onScreen() {
-				return new ScreenTest();
+				return new TitleScreen();
 			}
 		});
 	}

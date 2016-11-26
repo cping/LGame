@@ -312,6 +312,13 @@ public abstract class LComponent extends LObject<LContainer> implements
 				}
 				if (update) {
 					g.saveTx();
+					if (_rotation != 0) {
+						float centerX = pivotX == -1 ? this.screenX + width / 2
+								: this.screenX + pivotX;
+						float centerY = pivotY == -1 ? this.screenY + height
+								/ 2 : this.screenY + pivotY;
+						g.rotate(centerX, centerY, _rotation);
+					}
 					if (!(scaleX == 1f && scaleY == 1f)) {
 						Affine2f transform = g.tx();
 						float centerX = pivotX == -1 ? this.screenX + width / 2
@@ -321,13 +328,6 @@ public abstract class LComponent extends LObject<LContainer> implements
 						transform.translate(centerX, centerY);
 						transform.preScale(scaleX, scaleY);
 						transform.translate(-centerX, -centerY);
-					}
-					if (_rotation != 0) {
-						float centerX = pivotX == -1 ? this.screenX + width / 2
-								: this.screenX + pivotX;
-						float centerY = pivotY == -1 ? this.screenY + height
-								/ 2 : this.screenY + pivotY;
-						g.rotate(centerX, centerY, _rotation);
 					}
 				}
 				g.setBlendMode(_blend);

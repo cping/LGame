@@ -1,4 +1,4 @@
-package loon.stage;
+package loon.action.sprite;
 
 import loon.Graphics;
 import loon.LSystem;
@@ -7,7 +7,7 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.geom.Dimension;
 
-public class CanvasPlayer extends ImagePlayer {
+public class CanvasPlayer extends Entity {
 
 	private final Graphics gfx;
 	private Canvas canvas;
@@ -26,13 +26,14 @@ public class CanvasPlayer extends ImagePlayer {
 
 	public CanvasPlayer(Graphics gfx, float width, float height) {
 		this.gfx = gfx;
+		this.setRepaint(true);
 		resize(width, height);
 	}
 
 	public CanvasPlayer(Graphics gfx, Canvas canvas) {
 		this.gfx = gfx;
 		this.canvas = canvas;
-		super.setPainter(canvas.image.createTexture(LTexture.Format.DEFAULT));
+		setTexture(canvas.image.createTexture(LTexture.Format.DEFAULT));
 	}
 
 	public void resize(float width, float height) {
@@ -40,6 +41,21 @@ public class CanvasPlayer extends ImagePlayer {
 			canvas.close();
 		}
 		canvas = gfx.createCanvas(width, height);
+		setSize(width, height);
+	}
+
+	@Override
+	public void setTexture(LTexture tex) {
+		setSize(tex.width(),tex.height());
+		if (this.getBitmap() != tex) {
+			if (this.getBitmap() != null) {
+				this.getBitmap().texture().release();
+			}
+			super.setTexture(tex);
+			if (tex != null) {
+				tex.texture().reference();
+			}
+		}
 	}
 
 	public Canvas begin() {
@@ -47,24 +63,14 @@ public class CanvasPlayer extends ImagePlayer {
 	}
 
 	public void end() {
-		LTexture tex = (LTexture) super.getPainter();
+		LTexture tex = super.getBitmap();
 		Image image = canvas.image;
 		if (tex != null && tex.pixelWidth() == image.pixelWidth()
 				&& tex.pixelHeight() == image.pixelHeight()) {
 			tex.update(image);
 		} else {
-			super.setPainter(canvas.image.texture());
+			super.setTexture(canvas.image.texture());
 		}
-	}
-
-	@Override
-	public float getWidth() {
-		return (forceWidth < 0) ? canvas.width : forceWidth;
-	}
-
-	@Override
-	public float getHeight() {
-		return (forceHeight < 0) ? canvas.height : forceHeight;
 	}
 
 	@Override
