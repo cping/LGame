@@ -36,6 +36,7 @@ public class TextureImageTest extends Screen {
 	@Override
 	public void onLoad() {
 
+		setBackground(LColor.red);
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
 		

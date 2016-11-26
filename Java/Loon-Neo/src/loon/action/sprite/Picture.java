@@ -27,9 +27,7 @@ public class Picture extends Entity {
 	}
 
 	public Picture(LTexture image, int x, int y) {
-		if (image != null) {
-			this.setImage(image);
-		}
+		super(image);
 		this.setLocation(x, y);
 	}
 

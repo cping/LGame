@@ -69,7 +69,7 @@ public class CanvasPlayer extends Entity {
 				&& tex.pixelHeight() == image.pixelHeight()) {
 			tex.update(image);
 		} else {
-			super.setTexture(canvas.image.texture());
+			setTexture(canvas.image.texture());
 		}
 	}
 

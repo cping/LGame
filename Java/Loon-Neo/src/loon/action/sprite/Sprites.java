@@ -228,10 +228,12 @@ public class Sprites implements Serializable, LRelease {
 	}
 
 	public void addAt(ISprite child, float x, float y) {
-		add(child);
-		child.setLocation(x, y);
+		if (child != null) {
+			child.setLocation(x, y);
+			add(child);
+		}
 	}
-	
+
 	public ISprite getSprite(int index) {
 		if (index < 0 || index > _size || index >= sprites.length) {
 			return null;

@@ -7,6 +7,7 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprite;
 import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -25,6 +26,11 @@ public class LightImageTest extends Screen {
 
 	@Override
 	public void onLoad() {
+		
+
+		//设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
+		add(MultiScreenTest.getBackButton(this, 1));
 		final int limit = 40;
 		loop(0, new FrameLoopEvent() {
 
@@ -37,6 +43,7 @@ public class LightImageTest extends Screen {
 					Sprite laser = new Sprite("laser/laser0" + ((type % 5) + 1)
 							+ ".png");
 					laser.setStatus(0);
+					
 					type++;
 
 					PointI pos1;

@@ -51,7 +51,110 @@ public class Director extends SoundBox {
 	}
 
 	public enum Origin {
-		CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, LEFT_CENTER, TOP_CENTER, BOTTOM_CENTER, RIGHT_CENTER
+
+		FIXED {
+			public float ox(float width) {
+				return 0;
+			}
+
+			public float oy(float height) {
+				return 0;
+			}
+		},
+
+		CENTER {
+			public float ox(float width) {
+				return width / 2;
+			}
+
+			public float oy(float height) {
+				return height / 2;
+			}
+		},
+
+		TOP_LEFT {
+			public float ox(float width) {
+				return 0;
+			}
+
+			public float oy(float height) {
+				return height;
+			}
+		},
+
+		TOP_RIGHT {
+			public float ox(float width) {
+				return width;
+			}
+
+			public float oy(float height) {
+				return height;
+			}
+		},
+
+		BOTTOM_LEFT {
+			public float ox(float width) {
+				return 0;
+			}
+
+			public float oy(float height) {
+				return 0;
+			}
+		},
+
+		BOTTOM_RIGHT {
+			public float ox(float width) {
+				return width;
+			}
+
+			public float oy(float height) {
+				return 0;
+			}
+		},
+
+		LEFT_CENTER {
+			public float ox(float width) {
+				return 0;
+			}
+
+			public float oy(float height) {
+				return height /2 ;
+			}
+		},
+
+		TOP_CENTER {
+			public float ox(float width) {
+				return width / 2;
+			}
+
+			public float oy(float height) {
+				return height;
+			}
+		},
+
+		BOTTOM_CENTER {
+			public float ox(float width) {
+				return width / 2;
+			}
+
+			public float oy(float height) {
+				return 0;
+			}
+		},
+
+		RIGHT_CENTER {
+			public float ox(float width) {
+				return width;
+			}
+
+			public float oy(float height) {
+				return height / 2;
+			}
+		};
+
+		public abstract float ox(float width);
+
+		public abstract float oy(float height);
 	}
 
 	public enum Position {

@@ -21,6 +21,7 @@
  */
 package loon.component;
 
+import loon.Director.Origin;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -94,6 +95,8 @@ public abstract class LComponent extends LObject<LContainer> implements
 	public CallListener GetCall() {
 		return Call;
 	}
+
+	private Origin _origin = Origin.CENTER;
 
 	private LTexture[] imageUI;
 
@@ -313,18 +316,18 @@ public abstract class LComponent extends LObject<LContainer> implements
 				if (update) {
 					g.saveTx();
 					if (_rotation != 0) {
-						float centerX = pivotX == -1 ? this.screenX + width / 2
-								: this.screenX + pivotX;
-						float centerY = pivotY == -1 ? this.screenY + height
-								/ 2 : this.screenY + pivotY;
+						float centerX = pivotX == -1 ? this.screenX
+								+ _origin.ox(width) : this.screenX + pivotX;
+						float centerY = pivotY == -1 ? this.screenY
+								+ _origin.oy(height) : this.screenY + pivotY;
 						g.rotate(centerX, centerY, _rotation);
 					}
 					if (!(scaleX == 1f && scaleY == 1f)) {
 						Affine2f transform = g.tx();
-						float centerX = pivotX == -1 ? this.screenX + width / 2
-								: this.screenX + pivotX;
-						float centerY = pivotY == -1 ? this.screenY + height
-								/ 2 : this.screenY + pivotY;
+						float centerX = pivotX == -1 ? this.screenX
+								+ _origin.ox(width) : this.screenX + pivotX;
+						float centerY = pivotY == -1 ? this.screenY
+								+ _origin.oy(height) : this.screenY + pivotY;
 						transform.translate(centerX, centerY);
 						transform.preScale(scaleX, scaleY);
 						transform.translate(-centerX, -centerY);
@@ -987,6 +990,14 @@ public abstract class LComponent extends LObject<LContainer> implements
 	@Override
 	public LColor getColor() {
 		return new LColor(this.baseColor);
+	}
+
+	public Origin getOrigin() {
+		return _origin;
+	}
+
+	public void setOrigin(Origin o) {
+		this._origin = o;
 	}
 
 	@Override

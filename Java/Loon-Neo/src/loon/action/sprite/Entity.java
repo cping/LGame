@@ -2,6 +2,7 @@ package loon.action.sprite;
 
 import java.util.Comparator;
 
+import loon.Director.Origin;
 import loon.LObject;
 import loon.LTexture;
 import loon.LTextures;
@@ -20,6 +21,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
+	protected Origin _origin = Origin.CENTER;
 	protected boolean _disposed = false;
 	protected boolean _visible = true;
 	protected boolean _deform = true;
@@ -203,17 +205,19 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	@Override
 	public void setPivotX(final float rx) {
 		this._rotationCenterX = rx;
+		this._scaleCenterX = rx;
 	}
 
 	@Override
 	public void setPivotY(final float ry) {
 		this._rotationCenterY = ry;
+		this._scaleCenterY = ry;
 	}
 
 	@Override
 	public void setPivot(final float rx, final float ry) {
-		this._rotationCenterX = rx;
-		this._rotationCenterY = ry;
+		setPivotX(rx);
+		setPivotY(ry);
 	}
 
 	@Override
@@ -658,19 +662,19 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 				final float scaleX = this._scaleX;
 				final float scaleY = this._scaleY;
 				if (rotation != 0) {
-					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + this._width / 2f)
-							: nx + this._rotationCenterX;
-					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + this._height / 2f)
-							: ny + this._rotationCenterY;
+					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + _origin
+							.ox(this._width)) : nx + this._rotationCenterX;
+					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin
+							.oy(this._height)) : ny + this._rotationCenterY;
 					tx.translate(rotationCenterX, rotationCenterY);
 					tx.preRotate(rotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 				if ((scaleX != 1) || (scaleY != 1)) {
-					final float scaleCenterX = this._scaleCenterX == -1 ? (nx + this._width / 2f)
-							: nx + this._rotationCenterX;
-					final float scaleCenterY = this._scaleCenterY == -1 ? (ny + this._height / 2f)
-							: ny + this._rotationCenterY;
+					final float scaleCenterX = this._scaleCenterX == -1 ? (nx + _origin
+							.ox(this._width)) : nx + this._scaleCenterX;
+					final float scaleCenterY = this._scaleCenterY == -1 ? (ny + _origin
+							.oy(this._height)) : ny + this._scaleCenterY;
 					tx.translate(scaleCenterX, scaleCenterY);
 					tx.preScale(scaleX, scaleY);
 					tx.translate(-scaleCenterX, -scaleCenterY);
@@ -678,10 +682,10 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 				final float skewX = this._skewX;
 				final float skewY = this._skewY;
 				if ((skewX != 0) || (skewY != 0)) {
-					final float skewCenterX = this._skewCenterX == -1 ? (nx + this._width / 2f)
-							: nx + this._rotationCenterX;
-					final float skewCenterY = this._skewCenterY == -1 ? (ny + this._height / 2f)
-							: ny + this._rotationCenterY;
+					final float skewCenterX = this._skewCenterX == -1 ? (nx + _origin
+							.ox(this._width)) : nx + this._skewCenterX;
+					final float skewCenterY = this._skewCenterY == -1 ? (ny + _origin
+							.oy(this._height)) : ny + this._skewCenterY;
 					tx.translate(skewCenterX, skewCenterY);
 					tx.preShear(skewX, skewY);
 					tx.translate(-skewCenterX, -skewCenterY);
@@ -908,6 +912,14 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		} else if (s instanceof ISprite) {
 			setParent(new SpriteToEntity(s));
 		}
+	}
+
+	public Origin getOrigin() {
+		return _origin;
+	}
+
+	public void setOrigin(Origin o) {
+		this._origin = o;
 	}
 
 	@Override

@@ -4,6 +4,9 @@ import loon.canvas.LColor;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
 
+/**
+ * loon的统一字体实现接口，可以通过注入不同的IFont，改变全局或局部字体
+ */
 public interface IFont {
 
 	void drawString(GLEx g, String string, float x, float y);

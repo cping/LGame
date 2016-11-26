@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.Director.Origin;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -46,6 +47,8 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(
 			false);
+
+	private Origin _origin = Origin.CENTER;
 
 	private TArray<ISprite> _childList = null;
 
@@ -666,17 +669,19 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 				g.saveTx();
 				Affine2f tx = g.tx();
 				if (_rotation != 0 && notImg) {
-					final float rotationCenterX = this._pivot.x == -1 ? (nx + width / 2f)
-							: nx + this._pivot.x;
-					final float rotationCenterY = this._pivot.y == -1 ? (ny + height / 2f)
-							: ny + this._pivot.y;
+					final float rotationCenterX = this._pivot.x == -1 ? (nx + _origin
+							.ox(width)) : nx + this._pivot.x;
+					final float rotationCenterY = this._pivot.y == -1 ? (ny + _origin
+							.oy(height)) : ny + this._pivot.y;
 					tx.translate(rotationCenterX, rotationCenterY);
 					tx.preRotate(_rotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 				if (((scaleX != 1) || (scaleY != 1)) && notImg) {
-					final float scaleCenterX = nx + width / 2f;
-					final float scaleCenterY = ny + height / 2f;
+					final float scaleCenterX = this._pivot.x == -1 ? (nx + _origin
+							.ox(width)) : nx + this._pivot.x;
+					final float scaleCenterY = this._pivot.y == -1 ? (ny + _origin
+							.oy(height)) : ny + this._pivot.y;
 					tx.translate(scaleCenterX, scaleCenterY);
 					tx.preScale(scaleX, scaleY);
 					tx.translate(-scaleCenterX, -scaleCenterY);
@@ -944,6 +949,14 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 	@Override
 	public LColor getColor() {
 		return getFilterColor();
+	}
+
+	public Origin getOrigin() {
+		return _origin;
+	}
+
+	public void setOrigin(Origin o) {
+		this._origin = o;
 	}
 
 	@Override

@@ -139,15 +139,15 @@ public class MultiScreenTest extends Screen {
 	}
 
 	final String[] page0 = { "MessageBox", "Live2d", "Action", "Effect",
-			"Stage", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
+			"Emulator", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
 			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
 			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea", "Progress",
 			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
 			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical",
-			"LNode2", "Input", "Depth", "Canvas", "PlayerClick", "MoveClip",
+			"LNode2", "Input", "Depth", "Canvas", "GameMap", "MoveClip",
 			"TextureImage", "Session" };
 
-	final String[] page1 = { "Animation","FrameLoop","Script" };
+	final String[] page1 = { "Animation","FrameLoop","Script","Light" };
 
 	static BMFont info_font;
 
@@ -182,7 +182,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page0[index++], new Live2dTest());
 			addScreen(page0[index++], new ActionEventTest());
 			addScreen(page0[index++], new EffectTest());
-			addScreen(page0[index++], new StageTest.ScreenTest());
+			addScreen(page0[index++], new EmulatorTest());
 			addScreen(page0[index++], new TileMapTest());
 			addScreen(page0[index++], new SpriteBatchTest());
 			addScreen(page0[index++], new SpriteBatchScreenTest());
@@ -214,7 +214,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page0[index++], new SysInputTest());
 			addScreen(page0[index++], new DepthTest());
 			addScreen(page0[index++], new CanvasLayerTest());
-			addScreen(page0[index++], new PlayerClickTest());
+			addScreen(page0[index++], new GameMapTest());
 			addScreen(page0[index++], new MovieClipTest());
 			addScreen(page0[index++], new TextureImageTest());
 			addScreen(page0[index++], new SessionTest());
@@ -222,6 +222,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new AnimationTest());
 			addScreen(page1[index++], new FrameLoopTest());
 			addScreen(page1[index++], new RocScriptTest());
+			addScreen(page1[index++], new LightImageTest());
 		}
 		// 默认按钮大小为100x25
 		int btnWidth = 100;
