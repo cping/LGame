@@ -25,7 +25,6 @@ import java.util.NoSuchElementException;
 
 import loon.LTexture;
 import loon.action.sprite.ISprite;
-import loon.action.sprite.node.LNNode;
 import loon.component.Actor;
 import loon.component.LComponent;
 import loon.physics.PBody;
@@ -471,28 +470,6 @@ final public class CollectionUtils {
 		}
 		j--;
 		LComponent[] newArrays = new LComponent[j];
-		System.arraycopy(objs, 0, newArrays, 0, j);
-		return newArrays;
-	}
-
-	public static LNNode[] expand(LNNode[] objs, int i, boolean flag) {
-		int size = objs.length;
-		LNNode[] newArrays = new LNNode[size + i];
-		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
-		return newArrays;
-	}
-
-	public static LNNode[] cut(LNNode[] objs, int size) {
-		int j;
-		if ((j = objs.length) == 1) {
-			return new LNNode[0];
-		}
-		int k;
-		if ((k = j - size - 1) > 0) {
-			System.arraycopy(objs, size + 1, objs, size, k);
-		}
-		j--;
-		LNNode[] newArrays = new LNNode[j];
 		System.arraycopy(objs, 0, newArrays, 0, j);
 		return newArrays;
 	}

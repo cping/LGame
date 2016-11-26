@@ -1,13 +1,13 @@
 package org.test;
 
 import loon.Screen;
-import loon.action.sprite.node.LNEase;
-import loon.action.sprite.node.LNEnd;
-import loon.action.sprite.node.LNLabel;
-import loon.action.sprite.node.LNMoveBy;
-import loon.action.sprite.node.LNRotateBy;
-import loon.action.sprite.node.LNSequence;
-import loon.action.sprite.node.LNSprite;
+import loon.action.node.LNEase;
+import loon.action.node.LNEnd;
+import loon.action.node.LNLabel;
+import loon.action.node.LNMoveBy;
+import loon.action.node.LNRotateBy;
+import loon.action.node.LNSequence;
+import loon.action.node.LNSprite;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;

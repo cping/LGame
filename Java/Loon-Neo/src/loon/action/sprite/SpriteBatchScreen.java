@@ -25,12 +25,8 @@ import loon.LSystem;
 import loon.Screen;
 import loon.action.map.Config;
 import loon.action.map.TileMap;
-import loon.action.sprite.node.LNAction;
-import loon.action.sprite.node.LNNode;
 import loon.event.ActionKey;
 import loon.event.GameKey;
-import loon.event.SysInput;
-import loon.event.SysTouch;
 import loon.geom.AABB;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -74,18 +70,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	private LObject<?> follow;
 
 	private TileMap indexTile;
-
-	private LNNode content;
-
-	private LNNode modal;
-
-	private LNNode hoverNode;
-
-	private LNNode selectedNode;
-
-	private LNNode[] clickNode;
-
-	private boolean isClicked;
 
 	protected UpdateListener updateListener;
 
@@ -229,282 +213,11 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return _batch;
 	}
 
-	private void init() {
+	protected void init() {
 		this.objects = new TArray<ActionObject>(10);
 		this.pendingAdd = new TArray<ActionObject>(10);
 		this.pendingRemove = new TArray<ActionObject>(10);
-		this.clickNode = new LNNode[1];
-		setNode(new LNNode(this, LSystem.viewSize.getRect()));
-	}
-
-	public void setNode(LNNode node) {
-		if (content == node) {
-			return;
-		}
-		this.content = node;
 		this._dt = 1 / LSystem.base().setting.fps;
-	}
-
-	public LNNode node() {
-		return content;
-	}
-
-	public int size() {
-		return content == null ? 0 : content.getNodeCount();
-	}
-
-	public void runAction(LNAction action) {
-		if (content != null) {
-			content.runAction(action);
-		}
-	}
-
-	public void addNode(LNNode node) {
-		addNode(node, 0);
-	}
-
-	public void add(LNNode node) {
-		addNode(node, 0);
-	}
-
-	public void addNode(LNNode node, int z) {
-		if (node == null) {
-			return;
-		}
-		this.content.addNode(node, z);
-		this.processTouchMotionEvent();
-	}
-
-	public int removeNode(LNNode node) {
-		int removed = this.removeNode(this.content, node);
-		if (removed != -1) {
-			this.processTouchMotionEvent();
-		}
-		return removed;
-	}
-
-	private int removeNode(LNNode container, LNNode node) {
-		int removed = container.removeNode(node);
-		LNNode[] nodes = container.childs;
-		int i = 0;
-		while (removed == -1 && i < nodes.length - 1) {
-			if (nodes[i].isContainer()) {
-				removed = this.removeNode(nodes[i], node);
-			}
-			i++;
-		}
-
-		return removed;
-	}
-
-	private void processEvents() {
-		this.processTouchMotionEvent();
-		if (this.hoverNode != null && this.hoverNode.isEnabled()) {
-			this.processTouchEvent();
-		}
-		if (this.selectedNode != null && this.selectedNode.isEnabled()) {
-			this.processKeyEvent();
-		}
-	}
-
-	private void processTouchMotionEvent() {
-		if (this.hoverNode != null && this.hoverNode.isEnabled()
-				&& SysTouch.isDrag()) {
-			if (getTouchDY() != 0 || getTouchDY() != 0) {
-				this.hoverNode.processTouchDragged();
-			}
-		} else {
-			if (SysTouch.isDrag() || SysTouch.isMove() || SysTouch.isDown()) {
-				LNNode node = this.findNode(getTouchX(), getTouchY());
-				if (node != null) {
-					this.hoverNode = node;
-				}
-			}
-		}
-	}
-
-	private void processTouchEvent() {
-		int pressed = getTouchPressed(), released = getTouchReleased();
-		if (pressed > SysInput.NO_BUTTON) {
-			if (!isClicked) {
-				this.hoverNode.processTouchPressed();
-			}
-			this.clickNode[0] = this.hoverNode;
-			if (this.hoverNode.isFocusable()) {
-				if ((pressed == SysTouch.TOUCH_DOWN || pressed == SysTouch.TOUCH_UP)
-						&& this.hoverNode != this.selectedNode) {
-					this.selectNode(this.hoverNode);
-				}
-			}
-		}
-		if (released > SysInput.NO_BUTTON) {
-			if (!isClicked) {
-				this.hoverNode.processTouchReleased();
-			}
-		}
-		this.isClicked = false;
-	}
-
-	private void processKeyEvent() {
-		if (getKeyPressed() != SysInput.NO_KEY) {
-			this.selectedNode.keyPressed();
-		}
-		if (getKeyReleased() != SysInput.NO_KEY && this.selectedNode != null) {
-			this.selectedNode.processKeyReleased();
-		}
-	}
-
-	@SuppressWarnings("resource")
-	public LNNode findNode(int x, int y) {
-		if (content == null) {
-			return null;
-		}
-		if (this.modal != null && !this.modal.isContainer()) {
-			return content.findNode(x, y);
-		}
-		LNNode panel = (this.modal == null) ? this.content : (this.modal);
-		LNNode node = panel.findNode(x, y);
-		return node;
-	}
-
-	public void clearFocus() {
-		this.deselectNode();
-	}
-
-	void deselectNode() {
-		if (this.selectedNode == null) {
-			return;
-		}
-		this.selectedNode.setSelected(false);
-		this.selectedNode = null;
-	}
-
-	public boolean selectNode(LNNode node) {
-		if (!node.isVisible() || !node.isEnabled() || !node.isFocusable()) {
-			return false;
-		}
-		this.deselectNode();
-		node.setSelected(true);
-		this.selectedNode = node;
-		return true;
-	}
-
-	public void setNodeStat(LNNode node, boolean active) {
-		if (!active) {
-			if (this.hoverNode == node) {
-				this.processTouchMotionEvent();
-			}
-			if (this.selectedNode == node) {
-				this.deselectNode();
-			}
-			this.clickNode[0] = null;
-			if (this.modal == node) {
-				this.modal = null;
-			}
-		} else {
-			this.processTouchMotionEvent();
-		}
-		if (node == null) {
-			return;
-		}
-		if (node.isContainer()) {
-			LNNode[] nodes = (node).childs;
-			int size = (node).getNodeCount();
-			for (int i = 0; i < size; i++) {
-				this.setNodeStat(nodes[i], active);
-			}
-		}
-	}
-
-	public void clearNodesStat(LNNode[] node) {
-		boolean checkTouchMotion = false;
-		for (int i = 0; i < node.length; i++) {
-			if (this.hoverNode == node[i]) {
-				checkTouchMotion = true;
-			}
-
-			if (this.selectedNode == node[i]) {
-				this.deselectNode();
-			}
-
-			this.clickNode[0] = null;
-
-		}
-
-		if (checkTouchMotion) {
-			this.processTouchMotionEvent();
-		}
-	}
-
-	final void validateContainer(LNNode container) {
-		if (content == null) {
-			return;
-		}
-		LNNode[] nodes = container.childs;
-		int size = container.getNodeCount();
-		for (int i = 0; i < size; i++) {
-			if (nodes[i].isContainer()) {
-				this.validateContainer(nodes[i]);
-			}
-		}
-	}
-
-	public LNNode getTopNode() {
-		if (content == null) {
-			return null;
-		}
-		LNNode[] nodes = content.childs;
-		int size = nodes.length;
-		if (size > 1) {
-			return nodes[1];
-		}
-		return null;
-	}
-
-	public LNNode getBottomNode() {
-		if (content == null) {
-			return null;
-		}
-		LNNode[] nodes = content.childs;
-		int size = nodes.length;
-		if (size > 0) {
-			return nodes[size - 1];
-		}
-		return null;
-	}
-
-	@Override
-	public void setSize(int w, int h) {
-		if (content != null) {
-			this.content.setSize(w, h);
-		}
-	}
-
-	public LNNode getHoverNode() {
-		return this.hoverNode;
-	}
-
-	public LNNode getSelectedNode() {
-		return this.selectedNode;
-	}
-
-	public LNNode getModal() {
-		return this.modal;
-	}
-
-	public void setModal(LNNode node) {
-		if (node != null && !node.isVisible()) {
-			throw new RuntimeException(
-					"Can't set invisible node as modal node!");
-		}
-		this.modal = node;
-	}
-
-	public LNNode get() {
-		if (content != null) {
-			return content.get();
-		}
-		return null;
 	}
 
 	public void commits() {
@@ -583,12 +296,12 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			_batch = new SpriteBatch(3000);
 		}
 		_batch.setBlendState(BlendState.Null);
-		content.setScreen(this);
-		for (LNNode node : content.childs) {
-			if (node != null) {
-				node.onSceneActive();
-			}
-		}
+
+		onLoading();
+	}
+
+	protected void onLoading() {
+
 	}
 
 	@Override
@@ -809,9 +522,13 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
+	protected void updating(LTimerContext timer) {
+
+	}
+
 	@Override
-	public final void alter(LTimerContext timer) {
-		if (content == null) {
+	public void alter(LTimerContext timer) {
+		if (!isOnLoadComplete()) {
 			return;
 		}
 		for (int i = 0; i < keySize; i++) {
@@ -822,10 +539,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 					return;
 				}
 			}
-		}
-		if (content.isVisible()) {
-			processEvents();
-			content.update(timer.timeSinceLastUpdate);
 		}
 		if (usePhysics) {
 			if (_dt < 0) {
@@ -852,26 +565,33 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 				tile.update(elapsedTime);
 			}
 		}
-		for (ActionObject o : objects) {
-			if (usePhysics) {
-				PBody body = _bodys.get(o);
-				if (body != null) {
-					PShape shape = body.inner_shapes()[0];
-					final float rotation = (shape.getAngle() * MathUtils.RAD_TO_DEG) % 360;
-					AABB aabb = shape.getAABB();
+		updating(timer);
+		if (objects != null) {
+			for (ActionObject o : objects) {
+				if (usePhysics) {
+					PBody body = _bodys.get(o);
+					if (body != null) {
+						PShape shape = body.inner_shapes()[0];
+						final float rotation = (shape.getAngle() * MathUtils.RAD_TO_DEG) % 360;
+						AABB aabb = shape.getAABB();
 
-					o.setLocation(_manager.getScreenX(aabb.minX),
-							_manager.getScreenY(aabb.minY));
-					o.setRotation(rotation);
+						o.setLocation(_manager.getScreenX(aabb.minX),
+								_manager.getScreenY(aabb.minY));
+						o.setRotation(rotation);
+					}
 				}
-			}
-			o.update(elapsedTime);
-			if (updateListener != null) {
-				updateListener.act(o, elapsedTime);
+				o.update(elapsedTime);
+				if (updateListener != null) {
+					updateListener.act(o, elapsedTime);
+				}
 			}
 		}
 		update(elapsedTime);
 		commits();
+	}
+
+	protected void drawing(GLEx g, SpriteBatch batch) {
+
 	}
 
 	@Override
@@ -889,9 +609,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 						o.draw(g, offset.x, offset.y);
 					}
 				}
-				if (content != null && content.isVisible()) {
-					content.drawNode(g);
-				}
+				drawing(g, _batch);
 			} else {
 				synchronized (_batch) {
 					try {
@@ -909,9 +627,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 								o.draw(_batch, offset.x, offset.y);
 							}
 						}
-						if (content != null && content.isVisible()) {
-							content.drawNode(_batch);
-						}
+						drawing(g, _batch);
 						after(_batch);
 					} finally {
 						_batch.end();
@@ -966,23 +682,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public abstract void dispose();
 
-	@Override
-	public Screen setAutoDestory(final boolean a) {
-		super.setAutoDestory(a);
-		if (content != null) {
-			content.setAutoDestroy(a);
-		}
-		return this;
-	}
-
-	@Override
-	public boolean isAutoDestory() {
-		if (content != null) {
-			return content.isAutoDestory();
-		}
-		return super.isAutoDestory();
-	}
-
 	public boolean isUseGLEx() {
 		return _useGLEx;
 	}
@@ -1002,10 +701,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (_batch != null) {
 			_batch.close();
 			_batch = null;
-		}
-		if (content != null) {
-			content.close();
-			content = null;
 		}
 		if (indexTile != null) {
 			indexTile.close();
