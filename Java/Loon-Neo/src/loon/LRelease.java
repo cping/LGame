@@ -20,11 +20,8 @@
  */
 package loon;
 
-/**
- * 使用java 1.7以后开始提供的AutoCloseable接口重载关闭项 (0.5版前为dispose，为统一Java标准替换为close，另外，使用此接口后，若资源不关闭，在eclipse或netbeans等ide中会有提示)
- */
-public interface LRelease extends AutoCloseable {
+public interface LRelease {
 
-  void close ();
-  
+	void close();
+
 }

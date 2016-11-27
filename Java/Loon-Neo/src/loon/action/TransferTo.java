@@ -5,8 +5,8 @@ import loon.utils.timer.EaseTimer;
 
 public class TransferTo extends ActionEvent {
 
-	private float startPos;
-	private float endPos;
+	private float startPos = -1;
+	private float endPos = -1;
 	private float travelDistance;
 	private float currentPosition;
 
@@ -117,10 +117,10 @@ public class TransferTo extends ActionEvent {
 	@Override
 	public void onLoad() {
 		if (original != null) {
-			if (startPos == 0) {
+			if (startPos == -1) {
 				startPos = original.getX();
 			}
-			if (endPos == 0) {
+			if (endPos == -1) {
 				endPos = original.getY();
 			}
 		}

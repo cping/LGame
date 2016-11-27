@@ -198,11 +198,10 @@ public class LTextureRegion implements LRelease {
 
 	public static LTextureRegion[][] split(LTexture texture, int tileWidth,
 			int tileHeight) {
-		try (LTextureRegion region = new LTextureRegion(texture)) {
-			return region.split(tileWidth, tileHeight);
-		}
+		return new LTextureRegion(texture).split(tileWidth, tileHeight);
 	}
 
+	@Override
 	public void close() {
 		if (texture != null) {
 			texture.release();

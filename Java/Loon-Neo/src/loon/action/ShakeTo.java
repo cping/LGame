@@ -1,5 +1,6 @@
 package loon.action;
 
+import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
 public class ShakeTo extends ActionEvent {
@@ -16,11 +17,16 @@ public class ShakeTo extends ActionEvent {
 	}
 
 	public ShakeTo(float shakeX, float shakeY, float duration) {
-		this(shakeX, shakeY, duration, 1f / 60f);
+		this(shakeX, shakeY, duration, 1f / 60f, EasingMode.Linear);
 	}
 
 	public ShakeTo(float shakeX, float shakeY, float duration, float delay) {
-		this.easeTimer = new EaseTimer(duration, delay);
+		this(shakeX, shakeY, duration, delay, EasingMode.Linear);
+	}
+
+	public ShakeTo(float shakeX, float shakeY, float duration, float delay,
+			EasingMode easing) {
+		this.easeTimer = new EaseTimer(duration, delay, easing);
 		this.shakeX = oldShakeX = shakeX;
 		this.shakeY = oldShakeY = shakeY;
 		this.offsetX = shakeX;

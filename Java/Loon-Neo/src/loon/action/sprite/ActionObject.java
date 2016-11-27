@@ -21,7 +21,6 @@
 package loon.action.sprite;
 
 import loon.LObject;
-import loon.LRelease;
 import loon.LTexture;
 import loon.action.ActionBind;
 import loon.action.map.Attribute;
@@ -33,7 +32,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
 public abstract class ActionObject extends LObject<ISprite> implements Config,
-		LRelease, ActionBind, ISprite {
+		ActionBind, ISprite {
 
 	boolean visible = true;
 

@@ -1,6 +1,9 @@
 package org.test;
 
+import loon.LSetting;
+import loon.LSystem;
 import loon.LTransition;
+import loon.LazyLoading;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -9,12 +12,15 @@ import loon.action.ActionType;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteLabel;
 import loon.canvas.LColor;
+import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.font.LFont;
+import loon.javase.Loon;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.Easing.EasingMode;
+import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 public class ActionEventTest extends Screen {
@@ -33,7 +39,7 @@ public class ActionEventTest extends Screen {
 
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		SpriteLabel label = new SpriteLabel("Plase touch the screen", 120, 20);
+		SpriteLabel label = new SpriteLabel("Plase Touch The Screen", 120, 20);
 		add(label);
 
 		// 构建一个球体的精灵
@@ -41,7 +47,7 @@ public class ActionEventTest extends Screen {
 		sprite.setLocation(66, 66);
 		// Entity sprite=Entity.make("ball.png", 66, 66);
 		add(sprite);
-
+		
 		// 注册一个有界限的触屏监听器
 		registerTouchArea(new LTouchArea() {
 
@@ -50,7 +56,31 @@ public class ActionEventTest extends Screen {
 					final float touchY) {
 				if (e == Event.DOWN) {
 					// 设置一个指定精灵的动画事件
-					set(sprite).transferTo(0, 200, EasingMode.InBack,true,false) //让对象移动200个像素,渐进方式InBack,仅限于x轴允许改变位置
+					set(sprite).shakeTo(2f, 2f).//振动一次，振动范围值x2,y2
+					eventTo(new FrameLoopEvent() { //执行一次循环事件(不执行kill事件不会自行停止)
+						
+						private LTimer timer = new LTimer(LSystem.SECOND);
+						
+						@Override
+						public void invoke(long elapsedTime, Screen e) {
+						
+							//改变Label内容
+							label.setLabel("Call Event");
+							centerOn(label);
+							//间隔一秒后删除此循环事件
+							if(timer.action(elapsedTime)){
+								kill();
+							}
+						}
+						
+						@Override
+						public void completed() {
+							label.setLabel("Plase touch the screen");
+							label.setLocation(120, 20);
+							
+						}
+					}).
+					transferTo(-1, 200, EasingMode.InBack,true,false) //让对象移动200个像素,渐进方式InBack,仅限于x轴允许改变位置(-1时不改变原有x坐标位置)
 					.colorTo(LColor.red) //渐变到红色
 					.shakeTo(2f, 3f). //让精灵产生振动，x轴最大移动2，y轴最大移动3
 					        moveTo(touchX, touchY, false).// 地图方式，四方走法(true为8方向)，移动到触屏位置

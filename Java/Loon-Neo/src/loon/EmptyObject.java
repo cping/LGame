@@ -25,7 +25,7 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 
-public class EmptyObject extends LObject<Object> implements ActionBind {
+public class EmptyObject extends LObject<Object> implements ActionBind,LRelease {
 
 	private boolean visible;
 
@@ -102,6 +102,11 @@ public class EmptyObject extends LObject<Object> implements ActionBind {
 	@Override
 	public LColor getColor() {
 		return null;
+	}
+
+	@Override
+	public void close() {
+		setState(State.DISPOSED);
 	}
 
 }

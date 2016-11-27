@@ -3,7 +3,6 @@ package loon.action.map;
 import java.io.IOException;
 
 import loon.LObject;
-import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTexture.Format;
@@ -20,7 +19,7 @@ import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
+public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public static interface DrawListener {
 

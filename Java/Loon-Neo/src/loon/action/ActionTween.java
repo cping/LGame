@@ -4,6 +4,7 @@ import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
+import loon.event.FrameLoopEvent;
 import loon.utils.Array;
 import loon.utils.Easing;
 import loon.utils.TArray;
@@ -190,6 +191,30 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(moveby);
 	}
 
+	public ActionTween moveBy(float startX, float startY, float endX,
+			float endY, float duration, float delay, EasingMode easing) {
+		MoveBy moveby = new MoveBy(startX, startY, endX, endY, 0, duration,
+				delay, easing);
+		return event(moveby);
+	}
+
+	public ActionTween moveBy(float endX, float endY, EasingMode easing) {
+		MoveBy moveby = new MoveBy(endX, endY,  easing);
+		return event(moveby);
+	}
+	
+	public ActionTween moveBy(float endX, float endY, float duration,
+			float delay, EasingMode easing) {
+		MoveBy moveby = new MoveBy(endX, endY, duration, delay, easing);
+		return event(moveby);
+	}
+
+	public ActionTween moveBy(float endX, float endY, float duration,
+			EasingMode easing) {
+		MoveBy moveby = new MoveBy(endX, endY, duration, easing);
+		return event(moveby);
+	}
+
 	public ActionTween fadeIn(float speed) {
 		return fadeTo(ISprite.TYPE_FADE_IN, speed);
 	}
@@ -235,6 +260,12 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(color);
 	}
 
+	public ActionTween eventTo(FrameLoopEvent e) {
+		EventTo event = new EventTo(e);
+		event.setDelay(0);
+		return event(event);
+	}
+	
 	public ActionTween transferTo(float startPos, float endPos,
 			EasingMode mode, boolean controlX, boolean controlY) {
 		TransferTo transfer = new TransferTo(startPos, endPos, 1f, mode,
@@ -281,6 +312,13 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	public ActionTween shakeTo(float shakeX, float shakeY, float duration,
 			float delay) {
 		ShakeTo shake = new ShakeTo(shakeX, shakeY, duration, delay);
+		shake.setDelay(0);
+		return event(shake);
+	}
+
+	public ActionTween shakeTo(float shakeX, float shakeY, float duration,
+			float delay, EasingMode easing) {
+		ShakeTo shake = new ShakeTo(shakeX, shakeY, duration, delay, easing);
 		shake.setDelay(0);
 		return event(shake);
 	}

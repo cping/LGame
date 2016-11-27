@@ -19,7 +19,16 @@ public abstract class FrameLoopEvent {
 			invoke(elapsedTime, e);
 		}
 	}
+	
+	public void reset(){
+		this.killSelf = false;
+		this.timer.refresh();
+	}
 
+	public void setDelay(long d) {
+		timer.setDelay(d);
+	}
+	
 	public void setSecond(float s) {
 		timer.setDelay((long) (LSystem.SECOND * s));
 	}

@@ -91,6 +91,7 @@ public class GameComponent implements IGameComponent, IUpdateable,
 	protected void dispose(boolean disposing) {
 	}
 
+	@Override
 	public void close() {
 		dispose(true);
 	}

@@ -362,7 +362,7 @@ public class AStarFinder implements Updateable, LRelease {
 			}
 			spath = null;
 			goal = null;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 	}
 }

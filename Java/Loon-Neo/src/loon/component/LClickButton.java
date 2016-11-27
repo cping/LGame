@@ -384,6 +384,7 @@ public class LClickButton extends LComponent {
 			clickedClick.close();
 			clickedClick = null;
 		}
+		super.close();
 	}
 
 }

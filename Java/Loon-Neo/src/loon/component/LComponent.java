@@ -23,6 +23,7 @@ package loon.component;
 
 import loon.Director.Origin;
 import loon.LObject;
+import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -45,7 +46,7 @@ import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
 public abstract class LComponent extends LObject<LContainer> implements
-		ActionBind, XY, BoxSize {
+		ActionBind, XY, BoxSize , LRelease {
 
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
 	protected boolean _touchLocked = false, _keyLocked = false;
@@ -1007,6 +1008,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 				+ "," + getHeight() + ")";
 	}
 
+	@Override
 	public void close() {
 		this.isClose = true;
 		this.desktop.setComponentStat(this, false);

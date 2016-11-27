@@ -67,6 +67,7 @@ public class GifAnimation extends Entity {
 
 	@Override
 	public void close() {
+		super.close();
 		if (_gifDecoder != null) {
 			_gifDecoder = null;
 		}
