@@ -64,7 +64,7 @@ public interface IEntity extends ISprite, ZIndex {
 	public void setRotationCenterY(final float ry);
 
 	public void setRotationCenter(final float rx, final float ry);
-	
+
 	public float getPivotX();
 
 	public float getPivotY();
@@ -74,7 +74,7 @@ public interface IEntity extends ISprite, ZIndex {
 	public void setPivotY(final float ry);
 
 	public void setPivot(final float rx, final float ry);
-	
+
 	public boolean isScaled();
 
 	public float getScaleX();
@@ -139,7 +139,7 @@ public interface IEntity extends ISprite, ZIndex {
 
 	public void setColor(final LColor c);
 
-	public void setColor(final int c); 
+	public void setColor(final int c);
 
 	public void setColor(final float r, final float g, final float b);
 
@@ -152,7 +152,9 @@ public interface IEntity extends ISprite, ZIndex {
 
 	public void onDetached();
 
-	public void attachChild(final IEntity e);
+	public void addChild(final IEntity e);
+
+	public void addChildAt(final IEntity e, float x, float y);
 
 	public IEntity getChildByTag(final int t);
 
@@ -168,13 +170,13 @@ public interface IEntity extends ISprite, ZIndex {
 
 	public void sortChildren(final Comparator<IEntity> c);
 
-	public boolean detachSelf();
+	public boolean removeSelf();
 
-	public boolean detachChild(final IEntity e);
+	public boolean removeChild(final IEntity e);
 
-	public IEntity detachChild(final int t);
+	public IEntity removeChild(final int t);
 
-	public void detachChildren();
+	public void removeChildren();
 
 	public void setUserData(final Object u);
 

@@ -84,6 +84,7 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		_scrollRect = rect;
 	}
 
+	@Override
 	public DisplayObject getParent() {
 		return _parent;
 	}
@@ -96,6 +97,7 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		if (_parent == parent) {
 			return;
 		}
+		super.setParent(parent);
 		boolean isParentInStage = false;
 		DisplayObject obj = parent != null ? parent : _parent;
 		for (; obj != null;) {

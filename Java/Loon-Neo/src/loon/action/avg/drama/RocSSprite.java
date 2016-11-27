@@ -1,5 +1,6 @@
 package loon.action.avg.drama;
 
+import loon.LObject;
 import loon.LTexture;
 import loon.action.avg.drama.RocScript.ScriptException;
 import loon.action.map.Field2D;
@@ -12,11 +13,7 @@ import loon.utils.timer.LTimer;
 /*
  * 这是一个特殊的精灵类，它并不执行任何渲染或者图像操作，而是用于添加一个脚本循环到游戏中去
  */
-public class RocSSprite implements ISprite {
-
-	private String _name = "RocSSprite";
-
-	private Object tag;
+public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	private boolean _visible = true, _loopScript = false;
 
@@ -40,6 +37,7 @@ public class RocSSprite implements ISprite {
 		try {
 			_script = new RocScript(script, useScriptFile);
 			_script.call(debug);
+			setName("RocSSprite");
 		} catch (ScriptException e) {
 			e.printStackTrace();
 		}
@@ -90,11 +88,6 @@ public class RocSSprite implements ISprite {
 	}
 
 	@Override
-	public void close() {
-
-	}
-
-	@Override
 	public float getWidth() {
 		return 1;
 	}
@@ -102,31 +95,6 @@ public class RocSSprite implements ISprite {
 	@Override
 	public float getHeight() {
 		return 1;
-	}
-
-	@Override
-	public float getAlpha() {
-		return 1f;
-	}
-
-	@Override
-	public int x() {
-		return 0;
-	}
-
-	@Override
-	public int y() {
-		return 0;
-	}
-
-	@Override
-	public float getX() {
-		return 0;
-	}
-
-	@Override
-	public float getY() {
-		return 0;
 	}
 
 	@Override
@@ -150,16 +118,6 @@ public class RocSSprite implements ISprite {
 	}
 
 	@Override
-	public int getLayer() {
-		return 0;
-	}
-
-	@Override
-	public void setLayer(int layer) {
-
-	}
-
-	@Override
 	public RectBox getCollisionBox() {
 		return null;
 	}
@@ -167,16 +125,6 @@ public class RocSSprite implements ISprite {
 	@Override
 	public LTexture getBitmap() {
 		return null;
-	}
-
-	@Override
-	public String getName() {
-		return _name;
-	}
-
-	@Override
-	public void setName(String s) {
-		this._name = s;
 	}
 
 	/**
@@ -207,25 +155,6 @@ public class RocSSprite implements ISprite {
 	}
 
 	@Override
-	public Object getTag() {
-		return tag;
-	}
-
-	public void setTag(Object t) {
-		this.tag = t;
-	}
-
-	@Override
-	public void setParent(ISprite s) {
-
-	}
-
-	@Override
-	public ISprite getParent() {
-		return null;
-	}
-
-	@Override
 	public void setColor(LColor c) {
 
 	}
@@ -235,60 +164,28 @@ public class RocSSprite implements ISprite {
 		return null;
 	}
 
+	@Override
 	public String toString() {
 		return _script.toString();
 	}
 
 	@Override
 	public Field2D getField2D() {
-
 		return null;
 	}
 
 	@Override
 	public float getScaleX() {
-
 		return 0;
 	}
 
 	@Override
 	public float getScaleY() {
-
 		return 0;
 	}
 
 	@Override
 	public void setScale(float sx, float sy) {
-	}
-
-	@Override
-	public float getRotation() {
-		return 0;
-	}
-
-	@Override
-	public void setRotation(float r) {
-
-	}
-
-	@Override
-	public void setAlpha(float alpha) {
-
-	}
-
-	@Override
-	public void setLocation(float x, float y) {
-
-	}
-
-	@Override
-	public void setX(float x) {
-
-	}
-
-	@Override
-	public void setY(float y) {
-
 	}
 
 	@Override
@@ -312,13 +209,8 @@ public class RocSSprite implements ISprite {
 	}
 
 	@Override
-	public float getContainerWidth() {
-		return 0;
-	}
-
-	@Override
-	public float getContainerHeight() {
-		return 0;
+	public void close() {
+            setState(State.DISPOSED);
 	}
 
 }

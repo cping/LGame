@@ -33,6 +33,7 @@ public class MovieSprite extends DisplayObject {
 		}
 		_childs.add(object);
 		object.setParent(this);
+		object.setState(State.ADDED);
 		return object;
 	}
 
@@ -43,13 +44,15 @@ public class MovieSprite extends DisplayObject {
 		}
 		_childs.insert(index, object);
 		object.setParent(this);
+		object.setState(State.ADDED);
 		return object;
 	}
 
 	public DisplayObject removeChild(DisplayObject object) {
 		if (_childs.remove(object)) {
-			removeActionEvents(object);
 			object.setParent(null);
+			object.setState(State.REMOVED);
+			removeActionEvents(object);
 		}
 		return object;
 	}
@@ -60,8 +63,9 @@ public class MovieSprite extends DisplayObject {
 		}
 		DisplayObject object = _childs.get(index);
 		if (object != null) {
-			removeActionEvents(object);
 			object.setParent(null);
+			object.setState(State.REMOVED);
+			removeActionEvents(object);
 		}
 		_childs.removeIndex(index);
 		return object;
@@ -99,6 +103,9 @@ public class MovieSprite extends DisplayObject {
 		}
 		for (int i = this._childs.size - 1; i >= 0; i--) {
 			final DisplayObject removed = this._childs.get(i);
+			if (removed != null) {
+				removed.setState(State.REMOVED);
+			}
 			// 删除精灵同时，删除缓动动画
 			if (removed != null && removed instanceof ActionBind) {
 				removeActionEvents((ActionBind) removed);
@@ -147,6 +154,7 @@ public class MovieSprite extends DisplayObject {
 			object.close();
 		}
 		_childs.clear();
+		setState(State.DISPOSED);
 	}
 
 }

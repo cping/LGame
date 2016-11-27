@@ -72,27 +72,37 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	}
 
+	// 点击事件监听
 	public ClickListener Click;
 
 	public void addClickListener(ClickListener c) {
-		Click = c;
+		this.Click = c;
+	}
+
+	public void S(ClickListener c) {
+		addClickListener(c);
 	}
 
 	public void SetClick(ClickListener c) {
-		Click = c;
+		addClickListener(c);
 	}
 
-	public ClickListener GetClick() {
+	public ClickListener getClick() {
 		return Click;
 	}
 
+	// 循环事件监听
 	public CallListener Call;
 
-	public void SetCall(CallListener u) {
-		Call = u;
+	public void SC(CallListener u) {
+		SetCall(u);
 	}
 
-	public CallListener GetCall() {
+	public void SetCall(CallListener u) {
+		this.Call = u;
+	}
+
+	public CallListener getCall() {
 		return Call;
 	}
 
@@ -424,34 +434,12 @@ public abstract class LComponent extends LObject<LContainer> implements
 						+ comp._height);
 	}
 
-	public void close() {
-		this.isClose = true;
-		this.desktop.setComponentStat(this, false);
-		if (this._super != null) {
-			this._super.remove(this);
-		}
-		this.desktop = Desktop.EMPTY_DESKTOP;
-		this.input = null;
-		this._super = null;
-		if (imageUI != null) {
-			for (int i = 0; i < imageUI.length; i++) {
-				imageUI[i].close();
-				imageUI[i] = null;
-			}
-			this.imageUI = null;
-		}
-		if (_background != null) {
-			this._background.close();
-			this._background = null;
-		}
-		this.selected = false;
-		this.visible = false;
-	}
-
+	@Override
 	public boolean isVisible() {
 		return this.visible;
 	}
 
+	@Override
 	public void setVisible(boolean v) {
 		if (this.visible == v) {
 			return;
@@ -539,6 +527,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 	}
 
+	@Override
 	public void setX(Integer x) {
 		if (this.getX() != x || x == 0) {
 			super.setX(x);
@@ -546,6 +535,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 	}
 
+	@Override
 	public void setX(float x) {
 		if (this.getX() != x || x == 0) {
 			super.setX(x);
@@ -553,6 +543,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 	}
 
+	@Override
 	public void setY(Integer y) {
 		if (this.getY() != y || y == 0) {
 			super.setY(y);
@@ -560,6 +551,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 	}
 
+	@Override
 	public void setY(float y) {
 		if (this.getY() != y || y == 0) {
 			super.setY(y);
@@ -625,18 +617,22 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return this.screenY;
 	}
 
+	@Override
 	public void setHeight(float height) {
 		this._height = height;
 	}
 
+	@Override
 	public void setWidth(float width) {
 		this._width = width;
 	}
 
+	@Override
 	public float getWidth() {
 		return (this._width * scaleX);
 	}
 
+	@Override
 	public float getHeight() {
 		return (this._height * scaleY);
 	}
@@ -849,6 +845,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		this.setScale(s, s);
 	}
 
+	@Override
 	public void setScale(final float sx, final float sy) {
 		if (this.scaleX == sx && this.scaleY == sy) {
 			return;
@@ -857,18 +854,22 @@ public abstract class LComponent extends LObject<LContainer> implements
 		this.scaleY = sy;
 	}
 
+	@Override
 	public float getScaleX() {
 		return this.scaleX;
 	}
 
+	@Override
 	public float getScaleY() {
 		return this.scaleY;
 	}
 
+	@Override
 	public boolean isBounded() {
 		return true;
 	}
 
+	@Override
 	public boolean inContains(float x, float y, float w, float h) {
 		if (_super != null) {
 			return _super.contains(x, y, w, h);
@@ -1005,4 +1006,30 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return getName() + " pos=" + _location + " size=" + "(" + getWidth()
 				+ "," + getHeight() + ")";
 	}
+
+	public void close() {
+		this.isClose = true;
+		this.desktop.setComponentStat(this, false);
+		if (this._super != null) {
+			this._super.remove(this);
+		}
+		this.desktop = Desktop.EMPTY_DESKTOP;
+		this.input = null;
+		this._super = null;
+		if (imageUI != null) {
+			for (int i = 0; i < imageUI.length; i++) {
+				imageUI[i].close();
+				imageUI[i] = null;
+			}
+			this.imageUI = null;
+		}
+		if (_background != null) {
+			this._background.close();
+			this._background = null;
+		}
+		this.selected = false;
+		this.visible = false;
+		setState(State.DISPOSED);
+	}
+
 }

@@ -883,11 +883,19 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		this.scaleY = (h / getHeight());
 	}
 
+	public void addChildAt(ISprite spr, float x, float y) {
+		if (spr != null) {
+			spr.setLocation(x, y);
+			addChild(spr);
+		}
+	}
+
 	public void addChild(ISprite spr) {
 		if (_childList == null) {
 			_childList = new TArray<ISprite>();
 		}
 		spr.setParent(this);
+		spr.setState(State.ADDED);
 		_childList.add(spr);
 		childSorter.sort(_childList);
 	}
@@ -900,6 +908,9 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 			_childList = new TArray<ISprite>();
 		}
 		boolean removed = _childList.remove(spr);
+		if (removed) {
+			spr.setState(State.REMOVED);
+		}
 		// 删除精灵同时，删除缓动动画
 		if (removed && spr instanceof ActionBind) {
 			removeActionEvents((ActionBind) spr);
@@ -917,11 +928,15 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		for (int i = this._childList.size - 1; i >= 0; i--) {
 			if (i == idx) {
 				final ISprite removed = this._childList.removeIndex(i);
+				final boolean exist = (removed == null);
+				if (exist) {
+					removed.setState(State.REMOVED);
+				}
 				// 删除精灵同时，删除缓动动画
-				if (removed != null && (removed instanceof ActionBind)) {
+				if (exist && (removed instanceof ActionBind)) {
 					removeActionEvents((ActionBind) removed);
 				}
-				return removed != null;
+				return exist;
 			}
 		}
 		return false;
@@ -933,8 +948,12 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		}
 		for (int i = this._childList.size - 1; i >= 0; i--) {
 			final ISprite removed = this._childList.get(i);
+			boolean exist = (removed == null);
+			if (exist) {
+				removed.setState(State.REMOVED);
+			}
 			// 删除精灵同时，删除缓动动画
-			if (removed != null && removed instanceof ActionBind) {
+			if (exist && removed instanceof ActionBind) {
 				removeActionEvents((ActionBind) removed);
 			}
 		}
@@ -968,6 +987,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		if (animation != null) {
 			animation.close();
 		}
+		setState(State.DISPOSED);
 	}
 
 }

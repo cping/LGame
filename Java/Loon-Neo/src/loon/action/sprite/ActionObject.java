@@ -469,6 +469,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Config,
 		if (animation != null) {
 			animation.close();
 		}
+		setState(State.DISPOSED);
 	}
 
 }

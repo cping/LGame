@@ -285,7 +285,7 @@ public class MovieClip extends DisplayObject implements LRelease {
 
 	@Override
 	public void close() {
-
+       setState(State.DISPOSED);
 	}
 
 }

@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LObject.State;
 import loon.LRelease;
 import loon.LTexture;
 import loon.action.ActionBind;
@@ -79,4 +80,11 @@ public interface ISprite extends ActionBind, LRelease, XY {
 	void setParent(ISprite s);
 
 	void setName(String s);
+
+	void setState(State state);
+
+	State getState();
+
+	boolean isDisposed();
+
 }

@@ -15,7 +15,7 @@ public class SpriteControls {
 
 	public static float getChildrenHeight(Sprites s) {
 		float totalHeight = 0;
-		ISprite[] list = s.getSprites();
+		ISprite[] list = s._sprites;
 		for (int i = 0; i < list.length; i++) {
 			totalHeight += list[i].getHeight();
 		}
@@ -24,7 +24,7 @@ public class SpriteControls {
 
 	public static float getChildrenWidth(Sprites s) {
 		float totalWidth = 0;
-		ISprite[] list = s.getSprites();
+		ISprite[] list = s._sprites;
 		for (int i = 0; i < list.length; i++) {
 			totalWidth += list[i].getWidth();
 		}
@@ -33,7 +33,7 @@ public class SpriteControls {
 
 	public static float getMaxChildHeight(Sprites s) {
 		int maxHeight = 0;
-		ISprite[] list = s.getSprites();
+		ISprite[] list = s._sprites;
 		for (int i = 0; i < list.length; i++) {
 			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
 		}
@@ -42,7 +42,7 @@ public class SpriteControls {
 
 	public static int getMaxChildWidth(Sprites s) {
 		int maxWidth = 0;
-		ISprite[] list = s.getSprites();
+		ISprite[] list = s._sprites;
 		for (int i = 0; i < list.length; i++) {
 			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
 		}

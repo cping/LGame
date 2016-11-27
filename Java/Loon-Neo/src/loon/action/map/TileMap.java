@@ -731,6 +731,7 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 		return field.getRect();
 	}
 
+	@Override
 	public void close() {
 		visible = false;
 		playAnimation = false;
@@ -738,6 +739,7 @@ public class TileMap extends LObject<ISprite> implements ISprite, LRelease {
 		if (imgPack != null) {
 			imgPack.close();
 		}
+		setState(State.DISPOSED);
 	}
 
 }

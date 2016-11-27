@@ -106,6 +106,29 @@ final public class CollectionUtils {
 	 * @param obj
 	 * @return
 	 */
+	public static LComponent[] copyOf(LComponent[] obj) {
+		return copyOf(obj, obj.length);
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param obj
+	 * @param newSize
+	 * @return
+	 */
+	public static LComponent[] copyOf(LComponent[] obj, int newSize) {
+		LComponent tempArr[] = new LComponent[newSize];
+		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param obj
+	 * @return
+	 */
 	public static String[] copyOf(String[] obj) {
 		return copyOf(obj, obj.length);
 	}
@@ -399,7 +422,7 @@ final public class CollectionUtils {
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
-	
+
 	public static ISprite[] expand(ISprite[] objs, int size) {
 		return expand(objs, size, true);
 	}

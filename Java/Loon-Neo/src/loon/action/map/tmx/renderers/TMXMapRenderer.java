@@ -314,5 +314,6 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements
 			texture.close();
 		}
 		lastHashCode = 1;
+		setState(State.DISPOSED);
 	}
 }

@@ -22,7 +22,6 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
 	protected Origin _origin = Origin.CENTER;
-	protected boolean _disposed = false;
 	protected boolean _visible = true;
 	protected boolean _deform = true;
 	protected boolean _ignoreUpdate = false;
@@ -96,10 +95,6 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 
 	protected void onUpdateColor() {
 
-	}
-
-	public boolean isDisposed() {
-		return this._disposed;
 	}
 
 	public void setTexture(String path) {
@@ -458,7 +453,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	}
 
 	@Override
-	public void attachChild(final IEntity e) {
+	public void addChild(final IEntity e) {
 		if (e == null) {
 			return;
 		}
@@ -467,7 +462,16 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		}
 		this._childrens.add(e);
 		e.setParent(this);
+		e.setState(State.ADDED);
 		e.onAttached();
+	}
+
+	@Override
+	public void addChildAt(final IEntity e, float x, float y) {
+		if (e != null) {
+			e.setLocation(x, y);
+			addChild(e);
+		}
 	}
 
 	@Override
@@ -496,22 +500,26 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	}
 
 	@Override
-	public boolean detachSelf() {
+	public boolean removeSelf() {
 		final IEntity parent = this._super;
 		if (parent != null) {
-			return parent.detachChild(this);
+			return parent.removeChild(this);
 		} else {
 			return false;
 		}
 	}
 
 	@Override
-	public void detachChildren() {
+	public void removeChildren() {
 		if (this._childrens == null) {
 			return;
 		}
 		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			final IEntity removed = this._childrens.get(i);
+			if (removed != null) {
+				removed.setState(State.REMOVED);
+				removed.onDetached();
+			}
 			// 删除精灵同时，删除缓动动画
 			if (removed != null && removed instanceof ActionBind) {
 				removeActionEvents((ActionBind) removed);
@@ -521,7 +529,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	}
 
 	@Override
-	public boolean detachChild(final IEntity e) {
+	public boolean removeChild(final IEntity e) {
 		if (e == null) {
 			return true;
 		}
@@ -529,6 +537,10 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 			return false;
 		}
 		boolean removed = this._childrens.remove(e);
+		if (removed) {
+			e.setState(State.REMOVED);
+			e.onDetached();
+		}
 		// 删除精灵同时，删除缓动动画
 		if (removed && e instanceof ActionBind) {
 			removeActionEvents((ActionBind) e);
@@ -537,13 +549,17 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	}
 
 	@Override
-	public IEntity detachChild(final int idx) {
+	public IEntity removeChild(final int idx) {
 		if (this._childrens == null) {
 			return null;
 		}
 		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			if (this._childrens.get(i).getIndexTag() == idx) {
 				final IEntity removed = this._childrens.removeIndex(i);
+				if (removed != null) {
+					removed.setState(State.REMOVED);
+					removed.onDetached();
+				}
 				// 删除精灵同时，删除缓动动画
 				if (removed != null && (removed instanceof ActionBind)) {
 					removeActionEvents((ActionBind) removed);
@@ -610,25 +626,6 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 					e.reset();
 				}
 			}
-		}
-	}
-
-	@Override
-	public void close() {
-		if (!this._disposed) {
-			this._disposed = true;
-			if (_image != null) {
-				_image.close();
-				_image = null;
-			}
-		}
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		if (!this._disposed) {
-			this.close();
 		}
 	}
 
@@ -944,6 +941,25 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		final StringBuilder stringBuilder = new StringBuilder();
 		this.toString(stringBuilder);
 		return stringBuilder.toString();
+	}
+
+	@Override
+	public void close() {
+		if (!isDisposed()) {
+			if (_image != null) {
+				_image.close();
+				_image = null;
+			}
+		}
+		setState(State.DISPOSED);
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		if (!isDisposed()) {
+			this.close();
+		}
 	}
 
 }

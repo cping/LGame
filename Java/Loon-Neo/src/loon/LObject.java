@@ -30,8 +30,40 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.BlendMode;
 import loon.utils.MathUtils;
+import loon.utils.reply.Var;
+import loon.utils.reply.VarView;
 
 public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
+
+	public static enum State {
+		UNKOWN, REMOVED, ADDED, DISPOSED
+	}
+
+	protected final VarView<State> _state = Var.create(State.UNKOWN);
+
+	public final void setState(State state) {
+		((Var<State>) this._state).update(state);
+	}
+
+	public final State getState() {
+		return this._state.get();
+	}
+
+	public final boolean isDisposed() {
+		return _state.get() == State.DISPOSED;
+	}
+
+	public final boolean isRemoved() {
+		return _state.get() == State.REMOVED;
+	}
+
+	public final boolean isAdded() {
+		return _state.get() == State.ADDED;
+	}
+
+	public final boolean isUnkown() {
+		return _state.get() == State.UNKOWN;
+	}
 
 	// 无状态
 	public static final int NOT = -1;
@@ -229,8 +261,24 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		this._objStatus = status;
 	}
 
+	public final void setLife(int status) {
+		setStatus(status);
+	}
+
+	public final void addLife() {
+		setStatus(_objStatus++);
+	}
+
 	public final int getStatus() {
 		return this._objStatus;
+	}
+
+	public final void removeLife() {
+		setStatus(_objStatus--);
+	}
+
+	public final int getLife() {
+		return getStatus();
 	}
 
 	public void setTransparency(int a) {
@@ -335,7 +383,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public void setZ(int z) {
 		setLayer(-z);
 	}
-	
+
 	public void setZOrder(int z) {
 		setLayer(-z);
 	}

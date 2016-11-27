@@ -26,7 +26,7 @@ public class Scene extends Entity {
 
 	public Scene(final int count) {
 		for (int i = 0; i < count; i++) {
-			this.attachChild(new Entity());
+			this.addChild(new Entity());
 		}
 	}
 
@@ -158,6 +158,7 @@ public class Scene extends Entity {
 		this._childScene = null;
 	}
 
+	@Override
 	protected void onManagedUpdate(final long elapsedTime) {
 		this.secondsElapsedTotal += elapsedTime;
 		final Scene childScene = this._childScene;

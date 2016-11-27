@@ -43,7 +43,7 @@ public class UIControls {
 
 	public static float getChildrenHeight(LContainer c) {
 		float totalHeight = 0;
-		LComponent[] list = c.getComponents();
+		LComponent[] list = c._childs;
 		for (int i = 0; i < list.length; i++) {
 			totalHeight += list[i].getHeight();
 		}
@@ -52,7 +52,7 @@ public class UIControls {
 
 	public static float getChildrenWidth(LContainer c) {
 		float totalWidth = 0;
-		LComponent[] list = c.getComponents();
+		LComponent[] list = c._childs;
 		for (int i = 0; i < list.length; i++) {
 			totalWidth += list[i].getWidth();
 		}
@@ -61,7 +61,7 @@ public class UIControls {
 
 	public static float getMaxChildHeight(LContainer c) {
 		int maxHeight = 0;
-		LComponent[] list = c.getComponents();
+		LComponent[] list = c._childs;
 		for (int i = 0; i < list.length; i++) {
 			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
 		}
@@ -70,7 +70,7 @@ public class UIControls {
 
 	public static int getMaxChildWidth(LContainer c) {
 		int maxWidth = 0;
-		LComponent[] list = c.getComponents();
+		LComponent[] list = c._childs;
 		for (int i = 0; i < list.length; i++) {
 			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
 		}

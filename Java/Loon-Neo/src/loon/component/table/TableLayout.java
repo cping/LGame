@@ -45,7 +45,7 @@ public class TableLayout extends LContainer {
 	@Override
 	protected void renderComponents(GLEx g) {
 		for (int i = 0; i < getComponentCount(); i++) {
-			getComponents()[i].createUI(g);
+			super._childs[i].createUI(g);
 		}
 		if (grid) {
 			int tmp = g.color();

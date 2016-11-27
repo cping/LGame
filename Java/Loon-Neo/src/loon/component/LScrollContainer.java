@@ -66,7 +66,7 @@ public class LScrollContainer extends LContainer {
 			return;
 		}
 
-		LComponent[] childs = getComponents();
+		LComponent[] childs = super._childs;
 		synchronized (childs) {
 			try {
 				g.saveTx();
@@ -191,8 +191,8 @@ public class LScrollContainer extends LContainer {
 	public int getInnerWidth() {
 		int maxX = 0;
 		for (int i = 0; i < getComponentCount(); i++) {
-			maxX = (int) MathUtils.max(x() + getComponents()[i].getX()
-					+ getComponents()[i].getWidth(), maxX);
+			maxX = (int) MathUtils.max(x() + super._childs[i].getX()
+					+ super._childs[i].getWidth(), maxX);
 		}
 		return maxX;
 	}
@@ -200,8 +200,8 @@ public class LScrollContainer extends LContainer {
 	public int getInnerHeight() {
 		int maxY = 0;
 		for (int i = 0; i < getComponentCount(); i++) {
-			maxY = (int) MathUtils.max(y() + getComponents()[i].getY()
-					+ getComponents()[i].getHeight(), maxY);
+			maxY = (int) MathUtils.max(y() + super._childs[i].getY()
+					+ super._childs[i].getHeight(), maxY);
 		}
 		return maxY;
 	}

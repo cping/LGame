@@ -24,9 +24,9 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 		keys = new TArray(capacity);
 	}
 
-	public OrderedMap(ObjectMap<? extends K, ? extends V> map) {
+	public OrderedMap(OrderedMap<? extends K, ? extends V> map) {
 		super(map);
-		keys = new TArray(capacity);
+		keys = new TArray(map.keys);
 	}
 
 	public V put(K key, V value) {
@@ -35,16 +35,19 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 		return super.put(key, value);
 	}
 
+	@Override
 	public V remove(K key) {
 		keys.removeValue(key, false);
 		return super.remove(key);
 	}
 
+	@Override
 	public void clear(int maximumCapacity) {
 		keys.clear();
 		super.clear(maximumCapacity);
 	}
 
+	@Override
 	public void clear() {
 		keys.clear();
 		super.clear();
@@ -54,10 +57,12 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 		return keys;
 	}
 
+	@Override
 	public Entries<K, V> iterator() {
 		return entries();
 	}
 
+	@Override
 	public Entries<K, V> entries() {
 		if (entries1 == null) {
 			entries1 = new OrderedMapEntries(this);
@@ -75,6 +80,7 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 		return entries2;
 	}
 
+	@Override
 	public Values<V> values() {
 		if (values1 == null) {
 			values1 = new OrderedMapValues(this);
@@ -92,6 +98,7 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 		return values2;
 	}
 
+	@Override
 	public Keys<K> keys() {
 		if (keys1 == null) {
 			keys1 = new OrderedMapKeys(this);
@@ -109,9 +116,11 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 		return keys2;
 	}
 
+	@Override
 	public String toString() {
-		if (size == 0)
+		if (size == 0) {
 			return "{}";
+		}
 		StringBuilder buffer = new StringBuilder(32);
 		buffer.append('{');
 		TArray<K> keys = this.keys;
@@ -135,16 +144,20 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 			keys = map.keys;
 		}
 
+		@Override
 		public void reset() {
 			nextIndex = 0;
 			hasNext = map.size > 0;
 		}
 
+		@Override
 		public Entry next() {
-			if (!hasNext)
+			if (!hasNext) {
 				throw new NoSuchElementException();
-			if (!valid)
+			}
+			if (!valid) {
 				throw new RuntimeException("#iterator() cannot be used nested.");
+			}
 			entry.key = keys.get(nextIndex);
 			entry.value = map.get(entry.key);
 			nextIndex++;
@@ -152,11 +165,13 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 			return entry;
 		}
 
+		@Override
 		public void remove() {
 			if (currentIndex < 0)
 				throw new IllegalStateException(
 						"next must be called before remove.");
 			map.remove(entry.key);
+			nextIndex--;
 		}
 	}
 
@@ -168,27 +183,35 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 			keys = map.keys;
 		}
 
+		@Override
 		public void reset() {
 			nextIndex = 0;
 			hasNext = map.size > 0;
 		}
 
+		@Override
 		public K next() {
-			if (!hasNext)
+			if (!hasNext) {
 				throw new NoSuchElementException();
-			if (!valid)
+			}
+			if (!valid) {
 				throw new RuntimeException("#iterator() cannot be used nested.");
+			}
 			K key = keys.get(nextIndex);
+			currentIndex = nextIndex;
 			nextIndex++;
 			hasNext = nextIndex < map.size;
 			return key;
 		}
 
+		@Override
 		public void remove() {
 			if (currentIndex < 0)
 				throw new IllegalStateException(
 						"next must be called before remove.");
 			map.remove(keys.get(nextIndex - 1));
+			nextIndex = currentIndex;
+			currentIndex = -1;
 		}
 	}
 
@@ -200,27 +223,36 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> {
 			keys = map.keys;
 		}
 
+		@Override
 		public void reset() {
 			nextIndex = 0;
 			hasNext = map.size > 0;
 		}
 
+		@Override
 		public V next() {
-			if (!hasNext)
+			if (!hasNext) {
 				throw new NoSuchElementException();
-			if (!valid)
+			}
+			if (!valid) {
 				throw new RuntimeException("#iterator() cannot be used nested.");
+			}
 			V value = (V) map.get(keys.get(nextIndex));
+			currentIndex = nextIndex;
 			nextIndex++;
 			hasNext = nextIndex < map.size;
 			return value;
 		}
 
+		@Override
 		public void remove() {
-			if (currentIndex < 0)
+			if (currentIndex < 0) {
 				throw new IllegalStateException(
 						"next must be called before remove.");
-			map.remove(keys.get(nextIndex - 1));
+			}
+			map.remove(keys.get(currentIndex));
+			nextIndex = currentIndex;
+			currentIndex = -1;
 		}
 	}
 }

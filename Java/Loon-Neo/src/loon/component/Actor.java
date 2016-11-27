@@ -982,10 +982,12 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 		}
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
@@ -1037,18 +1039,6 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 
 	public void setAnimation(boolean isAnimation) {
 		this.isAnimation = isAnimation;
-	}
-
-	@Override
-	public void close() {
-		if (image != null) {
-			image.close();
-			image = null;
-		}
-		if (animation != null) {
-			animation.close();
-			animation = null;
-		}
 	}
 
 	@Override
@@ -1121,4 +1111,16 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 	public LColor getColor() {
 		return new LColor(filterColor);
 	}
+	
+	@Override
+	public void close() {
+		if (image != null) {
+			image.close();
+		}
+		if (animation != null) {
+			animation.close();
+		}
+		setState(State.DISPOSED);
+	}
+
 }

@@ -500,6 +500,7 @@ public abstract class ActorLayer extends LContainer {
 		synchronized (objects) {
 			if (this.objects.add(object)) {
 				object.addLayer(x, y, this);
+				object.setState(State.ADDED);
 				this.collisionChecker.addObject(object);
 				object.addLayer(this);
 			}
@@ -675,8 +676,11 @@ public abstract class ActorLayer extends LContainer {
 			if (this.objects.remove(object)) {
 				this.collisionChecker.removeObject(object);
 			}
-			removeActionEvents(object);
-			object.setLayer((ActorLayer) null);
+			if (object != null) {
+				object.setState(State.REMOVED);
+				removeActionEvents(object);
+				object.setLayer((ActorLayer) null);
+			}
 		}
 	}
 
@@ -720,6 +724,7 @@ public abstract class ActorLayer extends LContainer {
 					if (this.objects.remove(actor)) {
 						this.collisionChecker.removeObject(actor);
 					}
+					actor.setState(State.REMOVED);
 					removeActionEvents(actor);
 					actor.setLayer((ActorLayer) null);
 				}

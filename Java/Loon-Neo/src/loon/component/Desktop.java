@@ -77,6 +77,13 @@ public class Desktop implements LRelease {
 		return contentPane.getComponentCount();
 	}
 
+	public void addAt(LComponent comp, float x, float y) {
+		if (comp != null) {
+			comp.setLocation(x, y);
+			add(comp);
+		}
+	}
+
 	public void add(LComponent comp) {
 		if (comp == null) {
 			return;
@@ -171,7 +178,7 @@ public class Desktop implements LRelease {
 
 	private int removeComponent(LContainer container, LComponent comp) {
 		int removed = container.remove(comp);
-		LComponent[] components = container.getComponents();
+		LComponent[] components = container._childs;
 		int i = 0;
 		while (removed == -1 && i < components.length - 1) {
 			if (components[i].isContainer()) {
@@ -216,7 +223,7 @@ public class Desktop implements LRelease {
 		if (!this.contentPane.isVisible()) {
 			return;
 		}
-		LComponent[] components = contentPane.getComponents();
+		LComponent[] components = contentPane._childs;
 		for (int i = 0; i < components.length; i++) {
 			LComponent component = components[i];
 			if (component != null && component.intersects(x, y)) {
@@ -231,7 +238,7 @@ public class Desktop implements LRelease {
 		if (!this.contentPane.isVisible()) {
 			return;
 		}
-		LComponent[] components = contentPane.getComponents();
+		LComponent[] components = contentPane._childs;
 		for (int i = 0; i < components.length; i++) {
 			LComponent component = components[i];
 			if (component != null && component.intersects(x, y)) {
@@ -383,7 +390,6 @@ public class Desktop implements LRelease {
 		// 返回子容器
 		LContainer panel = (this.modal == null) ? this.contentPane
 				: ((LContainer) this.modal);
-
 		LComponent comp = panel.findComponent(x, y);
 		return comp;
 	}
@@ -426,7 +432,7 @@ public class Desktop implements LRelease {
 
 	void setDesktop(LComponent comp) {
 		if (comp.isContainer()) {
-			LComponent[] child = ((LContainer) comp).getComponents();
+			LComponent[] child = ((LContainer) comp)._childs;
 			for (int i = 0; i < child.length; i++) {
 				this.setDesktop(child[i]);
 			}
@@ -459,7 +465,7 @@ public class Desktop implements LRelease {
 		}
 
 		if (comp.isContainer()) {
-			LComponent[] components = ((LContainer) comp).getComponents();
+			LComponent[] components = ((LContainer) comp)._childs;
 			int size = ((LContainer) comp).getComponentCount();
 			for (int i = 0; i < size; i++) {
 				this.setComponentStat(components[i], active);
@@ -496,7 +502,7 @@ public class Desktop implements LRelease {
 	}
 
 	final void validateContainer(LContainer container) {
-		LComponent[] components = container.getComponents();
+		LComponent[] components = container._childs;
 		int size = container.getComponentCount();
 		for (int i = 0; i < size; i++) {
 			if (components[i].isContainer()) {
@@ -506,7 +512,7 @@ public class Desktop implements LRelease {
 	}
 
 	public LComponent getTopComponent() {
-		LComponent[] components = contentPane.getComponents();
+		LComponent[] components = contentPane._childs;
 		int size = components.length;
 		if (size > 1) {
 			return components[1];
@@ -515,7 +521,7 @@ public class Desktop implements LRelease {
 	}
 
 	public LComponent getBottomComponent() {
-		LComponent[] components = contentPane.getComponents();
+		LComponent[] components = contentPane._childs;
 		int size = components.length;
 		if (size > 0) {
 			return components[size - 1];
@@ -524,7 +530,7 @@ public class Desktop implements LRelease {
 	}
 
 	public LLayer getTopLayer() {
-		LComponent[] components = contentPane.getComponents();
+		LComponent[] components = contentPane._childs;
 		int size = components.length;
 		for (int i = 0; i < size; i++) {
 			LComponent comp = components[i];
@@ -536,7 +542,7 @@ public class Desktop implements LRelease {
 	}
 
 	public LLayer getBottomLayer() {
-		LComponent[] components = contentPane.getComponents();
+		LComponent[] components = contentPane._childs;
 		int size = components.length;
 		for (int i = size; i > 0; i--) {
 			LComponent comp = components[i - 1];
@@ -549,15 +555,15 @@ public class Desktop implements LRelease {
 
 	public UIControls createUIControls() {
 		UIControls controls = null;
-		if (contentPane != null && contentPane.getComponents() != null) {
-			controls = new UIControls(contentPane.getComponents());
+		if (contentPane != null && contentPane._childs != null) {
+			controls = new UIControls(contentPane._childs);
 		}
 		return controls;
 	}
 
 	public UIControls findUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane.getComponents() != null) {
+		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findUINames(uiName);
 			controls = new UIControls(comps);
 		}
@@ -566,7 +572,7 @@ public class Desktop implements LRelease {
 
 	public UIControls findNotUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane.getComponents() != null) {
+		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNotUINames(uiName);
 			controls = new UIControls(comps);
 		}
@@ -575,7 +581,7 @@ public class Desktop implements LRelease {
 
 	public UIControls findNamesToUIControls(String... name) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane.getComponents() != null) {
+		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNames(name);
 			controls = new UIControls(comps);
 		}
@@ -584,7 +590,7 @@ public class Desktop implements LRelease {
 
 	public UIControls findNotNamesToUIControls(String... name) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane.getComponents() != null) {
+		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNotNames(name);
 			controls = new UIControls(comps);
 		}
@@ -593,7 +599,7 @@ public class Desktop implements LRelease {
 
 	public UIControls findTagsToUIControls(Object... o) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane.getComponents() != null) {
+		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findTags(o);
 			controls = new UIControls(comps);
 		}
@@ -602,7 +608,7 @@ public class Desktop implements LRelease {
 
 	public UIControls findNotTagsToUIControls(Object... o) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane.getComponents() != null) {
+		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNotTags(o);
 			controls = new UIControls(comps);
 		}

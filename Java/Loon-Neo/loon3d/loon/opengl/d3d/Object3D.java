@@ -104,67 +104,63 @@ public class Object3D extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void close() {
-
-	}
-
-	@Override
 	public void setColor(LColor c) {
-		
+
 	}
 
 	@Override
 	public LColor getColor() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public Field2D getField2D() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public float getScaleX() {
-		// TODO Auto-generated method stub
+
 		return 0;
 	}
 
 	@Override
 	public float getScaleY() {
-		// TODO Auto-generated method stub
+
 		return 0;
 	}
 
 	@Override
 	public void setScale(float sx, float sy) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public boolean isBounded() {
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 
 	@Override
 	public boolean isContainer() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public RectBox getRectBox() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void close() {
+		setState(State.DISPOSED);
 	}
 
 }

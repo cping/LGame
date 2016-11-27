@@ -248,6 +248,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 			node.setContainer(null);
 		}
 		node.setContainer(this);
+		node.setState(State.ADDED);
 		int index = 0;
 		boolean flag = false;
 		for (int i = 0; i < this._childCount; i++) {
@@ -285,6 +286,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 					+ " already reside in another node!!!");
 		}
 		node.setContainer(this);
+		node.setState(State.ADDED);
 		LNNode[] newChilds = new LNNode[this.childs.length + 1];
 		this._childCount++;
 		int ctr = 0;
@@ -333,6 +335,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 		this._screen.setNodeStat(node, false);
 		node.setContainer(null);
+		node.setState(State.REMOVED);
 		this.childs = NodeScreen.cut(this.childs, index);
 		this._childCount--;
 		return node;
@@ -1291,7 +1294,8 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	public boolean isAutoDestory() {
 		return _autoDestroy;
 	}
-
+	
+	@Override
 	public void close() {
 		this._isClose = true;
 		if (this._super != null) {
@@ -1311,6 +1315,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 				}
 			}
 		}
+		setState(State.DISPOSED);
 	}
 
 	@Override

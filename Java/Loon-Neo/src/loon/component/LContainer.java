@@ -31,10 +31,10 @@ public abstract class LContainer extends LComponent {
 
 	protected boolean locked;
 
+	protected LComponent[] _childs = new LComponent[0];
+	
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(
 			false);
-
-	private LComponent[] childs = new LComponent[0];
 
 	private int childCount = 0;
 
@@ -61,8 +61,9 @@ public abstract class LContainer extends LComponent {
 			comp.setContainer(null);
 		}
 		comp.setContainer(this);
-		this.childs = CollectionUtils.expand(this.childs, 1, false);
-		this.childs[0] = comp;
+		comp.setState(State.ADDED);
+		this._childs = CollectionUtils.expand(this._childs, 1, false);
+		this._childs[0] = comp;
 		this.childCount++;
 		this.desktop.setDesktop(comp);
 		if (desktop != null) {
@@ -83,17 +84,18 @@ public abstract class LContainer extends LComponent {
 					+ " already reside in another container!!!");
 		}
 		comp.setContainer(this);
-		LComponent[] newChilds = new LComponent[this.childs.length + 1];
+		comp.setState(State.ADDED);
+		LComponent[] newChilds = new LComponent[this._childs.length + 1];
 		this.childCount++;
 		int ctr = 0;
 		for (int i = 0; i < this.childCount; i++) {
 			if (i != index) {
-				newChilds[i] = this.childs[ctr];
+				newChilds[i] = this._childs[ctr];
 				ctr++;
 			}
 		}
-		this.childs = newChilds;
-		this.childs[index] = comp;
+		this._childs = newChilds;
+		this._childs[index] = comp;
 		this.desktop.setDesktop(comp);
 		this.sortComponents();
 		this.latestInserted = comp;
@@ -110,8 +112,8 @@ public abstract class LContainer extends LComponent {
 		final int size = this.childCount;
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
-				if (this.childs[i].Tag == tag || tag.equals(this.childs[i].Tag)) {
-					list.add(this.childs[i]);
+				if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
+					list.add(this._childs[i]);
 				}
 			}
 		}
@@ -129,8 +131,8 @@ public abstract class LContainer extends LComponent {
 		final int size = this.childCount;
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
-				if (!tag.equals(this.childs[i].Tag)) {
-					list.add(this.childs[i]);
+				if (!tag.equals(this._childs[i].Tag)) {
+					list.add(this._childs[i]);
 				}
 			}
 		}
@@ -148,8 +150,8 @@ public abstract class LContainer extends LComponent {
 		final int size = this.childCount;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
-				if (name.equals(this.childs[i].getUIName())) {
-					list.add(this.childs[i]);
+				if (name.equals(this._childs[i].getUIName())) {
+					list.add(this._childs[i]);
 				}
 			}
 		}
@@ -167,8 +169,8 @@ public abstract class LContainer extends LComponent {
 		final int size = this.childCount;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
-				if (!name.equals(this.childs[i].getUIName())) {
-					list.add(this.childs[i]);
+				if (!name.equals(this._childs[i].getUIName())) {
+					list.add(this._childs[i]);
 				}
 			}
 		}
@@ -186,8 +188,8 @@ public abstract class LContainer extends LComponent {
 		final int size = this.childCount;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
-				if (name.equals(this.childs[i].getName())) {
-					list.add(this.childs[i]);
+				if (name.equals(this._childs[i].getName())) {
+					list.add(this._childs[i]);
 				}
 			}
 		}
@@ -205,8 +207,8 @@ public abstract class LContainer extends LComponent {
 		final int size = this.childCount;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
-				if (!name.equals(this.childs[i].getName())) {
-					list.add(this.childs[i]);
+				if (!name.equals(this._childs[i].getName())) {
+					list.add(this._childs[i]);
 				}
 			}
 		}
@@ -217,11 +219,11 @@ public abstract class LContainer extends LComponent {
 		if (comp == null) {
 			return false;
 		}
-		if (childs == null) {
+		if (_childs == null) {
 			return false;
 		}
 		for (int i = 0; i < this.childCount; i++) {
-			if (childs[i] != null && comp.equals(childs[i])) {
+			if (_childs[i] != null && comp.equals(_childs[i])) {
 				return true;
 			}
 		}
@@ -231,7 +233,7 @@ public abstract class LContainer extends LComponent {
 	public int remove(LComponent comp) {
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
-			if (this.childs[i] == comp) {
+			if (this._childs[i] == comp) {
 				this.remove(i);
 				return i;
 			}
@@ -243,7 +245,7 @@ public abstract class LContainer extends LComponent {
 		boolean flag = false;
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
-			if (this.childs[i].Tag == tag || tag.equals(this.childs[i].Tag)) {
+			if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
 				this.remove(i);
 				flag = true;
 			}
@@ -255,7 +257,7 @@ public abstract class LContainer extends LComponent {
 		boolean flag = false;
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
-			if (!tag.equals(this.childs[i].Tag)) {
+			if (!tag.equals(this._childs[i].Tag)) {
 				this.remove(i);
 				flag = true;
 			}
@@ -267,7 +269,7 @@ public abstract class LContainer extends LComponent {
 		boolean flag = false;
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
-			if (name.equals(this.childs[i].getUIName())) {
+			if (name.equals(this._childs[i].getUIName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -279,7 +281,7 @@ public abstract class LContainer extends LComponent {
 		boolean flag = false;
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
-			if (!name.equals(this.childs[i].getUIName())) {
+			if (!name.equals(this._childs[i].getUIName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -291,7 +293,7 @@ public abstract class LContainer extends LComponent {
 		boolean flag = false;
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
-			if (name.equals(this.childs[i].getName())) {
+			if (name.equals(this._childs[i].getName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -303,7 +305,7 @@ public abstract class LContainer extends LComponent {
 		boolean flag = false;
 		final int size = this.childCount;
 		for (int i = size - 1; i > -1; i--) {
-			if (!name.equals(this.childs[i].getName())) {
+			if (!name.equals(this._childs[i].getName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -312,25 +314,27 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public LComponent remove(int index) {
-		LComponent comp = this.childs[index];
+		LComponent comp = this._childs[index];
+		this.desktop.setComponentStat(comp, false);
+		comp.setContainer(null);
+		comp.setState(State.REMOVED);
 		if (comp != null && comp instanceof ActionBind) {
 			removeActionEvents((ActionBind) comp);
 		}
-		this.desktop.setComponentStat(comp, false);
-		comp.setContainer(null);
 		// comp.dispose();
-		this.childs = CollectionUtils.cut(this.childs, index);
+		this._childs = CollectionUtils.cut(this._childs, index);
 		this.childCount--;
 		return comp;
 	}
 
 	public void clear() {
-		this.desktop.clearComponentsStat(this.childs);
+		this.desktop.clearComponentsStat(this._childs);
 		for (int i = 0; i < this.childCount; i++) {
-			this.childs[i].setContainer(null);
-			// this.childs[i].dispose();
+			this._childs[i].setContainer(null);
+			this._childs[i].setState(State.REMOVED);
+			// this._childs[i].dispose();
 		}
-		this.childs = new LComponent[0];
+		this._childs = new LComponent[0];
 		this.childCount = 0;
 	}
 
@@ -347,11 +351,11 @@ public abstract class LContainer extends LComponent {
 		if (!this.isVisible()) {
 			return;
 		}
-		synchronized (childs) {
+		synchronized (_childs) {
 			super.update(timer);
 			LComponent component;
 			for (int i = 0; i < this.childCount; i++) {
-				component = childs[i];
+				component = _childs[i];
 				if (component != null) {
 					component.update(timer);
 				}
@@ -366,14 +370,14 @@ public abstract class LContainer extends LComponent {
 		}
 		super.validatePosition();
 		for (int i = 0; i < this.childCount; i++) {
-			this.childs[i].validatePosition();
+			this._childs[i].validatePosition();
 		}
 		if (!this.elastic) {
 			for (int i = 0; i < this.childCount; i++) {
-				if (this.childs[i].getX() > this.getWidth()
-						|| this.childs[i].getY() > this.getHeight()
-						|| this.childs[i].getX() + this.childs[i].getWidth() < 0
-						|| this.childs[i].getY() + this.childs[i].getHeight() < 0) {
+				if (this._childs[i].getX() > this.getWidth()
+						|| this._childs[i].getY() > this.getHeight()
+						|| this._childs[i].getX() + this._childs[i].getWidth() < 0
+						|| this._childs[i].getY() + this._childs[i].getHeight() < 0) {
 					setElastic(true);
 					break;
 				}
@@ -386,7 +390,7 @@ public abstract class LContainer extends LComponent {
 		super.validateSize();
 
 		for (int i = 0; i < this.childCount; i++) {
-			this.childs[i].validateSize();
+			this._childs[i].validateSize();
 		}
 	}
 
@@ -398,7 +402,7 @@ public abstract class LContainer extends LComponent {
 		if (!this.isVisible()) {
 			return;
 		}
-		synchronized (childs) {
+		synchronized (_childs) {
 			super.createUI(g);
 			if (this.elastic) {
 				g.setClip(this.getScreenX(), this.getScreenY(),
@@ -413,22 +417,22 @@ public abstract class LContainer extends LComponent {
 
 	protected void renderComponents(GLEx g) {
 		for (int i = this.childCount - 1; i >= 0; i--) {
-			this.childs[i].createUI(g);
+			this._childs[i].createUI(g);
 		}
 	}
 
 	public void sendToFront(LComponent comp) {
-		if (this.childCount <= 1 || this.childs[0] == comp) {
+		if (this.childCount <= 1 || this._childs[0] == comp) {
 			return;
 		}
-		if (childs[0] == comp) {
+		if (_childs[0] == comp) {
 			return;
 		}
 		for (int i = 0; i < this.childCount; i++) {
-			if (this.childs[i] == comp) {
-				this.childs = CollectionUtils.cut(this.childs, i);
-				this.childs = CollectionUtils.expand(this.childs, 1, false);
-				this.childs[0] = comp;
+			if (this._childs[i] == comp) {
+				this._childs = CollectionUtils.cut(this._childs, i);
+				this._childs = CollectionUtils.expand(this._childs, 1, false);
+				this._childs[0] = comp;
 				this.sortComponents();
 				break;
 			}
@@ -436,17 +440,17 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public void sendToBack(LComponent comp) {
-		if (this.childCount <= 1 || this.childs[this.childCount - 1] == comp) {
+		if (this.childCount <= 1 || this._childs[this.childCount - 1] == comp) {
 			return;
 		}
-		if (childs[this.childCount - 1] == comp) {
+		if (_childs[this.childCount - 1] == comp) {
 			return;
 		}
 		for (int i = 0; i < this.childCount; i++) {
-			if (this.childs[i] == comp) {
-				this.childs = CollectionUtils.cut(this.childs, i);
-				this.childs = CollectionUtils.expand(this.childs, 1, true);
-				this.childs[this.childCount - 1] = comp;
+			if (this._childs[i] == comp) {
+				this._childs = CollectionUtils.cut(this._childs, i);
+				this._childs = CollectionUtils.expand(this._childs, 1, true);
+				this._childs[this.childCount - 1] = comp;
 				this.sortComponents();
 				break;
 			}
@@ -454,12 +458,12 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public void sortComponents() {
-		compSorter.sort(this.childs);
+		compSorter.sort(this._childs);
 	}
 
 	protected void transferFocus(LComponent component) {
 		for (int i = 0; i < this.childCount; i++) {
-			if (component == this.childs[i]) {
+			if (component == this._childs[i]) {
 				int j = i;
 				do {
 					if (--i < 0) {
@@ -468,7 +472,7 @@ public abstract class LContainer extends LComponent {
 					if (i == j) {
 						return;
 					}
-				} while (!this.childs[i].requestFocus());
+				} while (!this._childs[i].requestFocus());
 
 				break;
 			}
@@ -477,7 +481,7 @@ public abstract class LContainer extends LComponent {
 
 	protected void transferFocusBackward(LComponent component) {
 		for (int i = 0; i < this.childCount; i++) {
-			if (component == this.childs[i]) {
+			if (component == this._childs[i]) {
 				int j = i;
 				do {
 					if (++i >= this.childCount) {
@@ -486,7 +490,7 @@ public abstract class LContainer extends LComponent {
 					if (i == j) {
 						return;
 					}
-				} while (!this.childs[i].requestFocus());
+				} while (!this._childs[i].requestFocus());
 
 				break;
 			}
@@ -496,7 +500,7 @@ public abstract class LContainer extends LComponent {
 	public boolean isSelected() {
 		if (!super.isSelected()) {
 			for (int i = 0; i < this.childCount; i++) {
-				if (this.childs[i].isSelected()) {
+				if (this._childs[i].isSelected()) {
 					return true;
 				}
 			}
@@ -524,9 +528,9 @@ public abstract class LContainer extends LComponent {
 			return null;
 		}
 		for (int i = 0; i < this.childCount; i++) {
-			if (this.childs[i].intersects(x1, y1)) {
-				LComponent comp = (!this.childs[i].isContainer()) ? this.childs[i]
-						: ((LContainer) this.childs[i]).findComponent(x1, y1);
+			if (this._childs[i].intersects(x1, y1)) {
+				LComponent comp = (!this._childs[i].isContainer()) ? this._childs[i]
+						: ((LContainer) this._childs[i]).findComponent(x1, y1);
 				LContainer container = comp.getContainer();
 				if (container != null && container instanceof LScrollContainer) {
 					if (container.contains(comp)
@@ -546,7 +550,7 @@ public abstract class LContainer extends LComponent {
 	}
 
 	public LComponent[] getComponents() {
-		return this.childs;
+		return CollectionUtils.copyOf(this._childs);
 	}
 
 	public LComponent get() {
@@ -557,8 +561,8 @@ public abstract class LContainer extends LComponent {
 	public void close() {
 		super.close();
 		if (autoDestroy) {
-			if (childs != null) {
-				for (LComponent c : childs) {
+			if (_childs != null) {
+				for (LComponent c : _childs) {
 					if (c != null) {
 						c.close();
 						c = null;
