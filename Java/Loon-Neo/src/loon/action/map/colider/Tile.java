@@ -21,7 +21,17 @@
 package loon.action.map.colider;
 
 public interface Tile {
+	
+	public Tile at(int x,int y);
+	
+	public void setX(int x);
 
+	public void setY(int y);
+
+	public void setWidth(int w);
+
+	public void setHeight(int h);
+	
 	public int getX();
 
 	public int getY();

@@ -38,11 +38,16 @@ public class CircleTo extends ActionEvent {
 
 	private float dt;
 
-	private float speed = 0.1f;
+	private float speed;
 
 	public CircleTo(int radius, int velocity) {
+		this(radius, velocity, 0.1f);
+	}
+
+	public CircleTo(int radius, int velocity, float speed) {
 		this.radius = radius;
 		this.velocity = velocity;
+		this.speed = speed;
 	}
 
 	public void setSpeed(float s) {
@@ -56,7 +61,8 @@ public class CircleTo extends ActionEvent {
 	public boolean isComplete() {
 		return _isCompleted;
 	}
-
+	
+	@Override
 	public void onLoad() {
 		this.cx = original.getX();
 		this.cy = original.getY();
@@ -64,6 +70,7 @@ public class CircleTo extends ActionEvent {
 		this.y = cy;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		dt += MathUtils.max((elapsedTime / 1000f), speed);
 		this.x = (this.cx + this.radius
@@ -77,7 +84,9 @@ public class CircleTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new CircleTo(radius, velocity);
+		CircleTo circle = new CircleTo(radius, velocity, speed);
+		circle.set(this);
+		return circle;
 	}
 
 	@Override

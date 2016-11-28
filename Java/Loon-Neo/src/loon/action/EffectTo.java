@@ -27,7 +27,9 @@ public class EffectTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new EffectTo(_effect);
+		EffectTo eff = new EffectTo(_effect);
+		eff.set(this);
+		return eff;
 	}
 
 	@Override

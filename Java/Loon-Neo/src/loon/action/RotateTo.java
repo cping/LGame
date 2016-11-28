@@ -24,13 +24,17 @@ public class RotateTo extends ActionEvent {
 
 	private float dstAngle;
 
-	private float diffAngle;
-
 	private float startAngle;
 
-	private float speed;
-
 	private boolean minus;
+
+	private float diffAngle = 1f;
+
+	private float speed = 6f;
+
+	public RotateTo(float dstAngle) {
+		this(dstAngle, 6f);
+	}
 
 	public RotateTo(float dstAngle, float speed) {
 		this.dstAngle = dstAngle;
@@ -40,6 +44,9 @@ public class RotateTo extends ActionEvent {
 			this.dstAngle = 0;
 		}
 		this.speed = speed;
+		if (startAngle >= dstAngle) {
+			minus = true;
+		}
 	}
 
 	public boolean isComplete() {
@@ -48,10 +55,17 @@ public class RotateTo extends ActionEvent {
 
 	public void onLoad() {
 		startAngle = original.getRotation();
-		diffAngle = 1;
 		if (startAngle >= dstAngle) {
 			minus = true;
 		}
+	}
+
+	public float getDiffAngle() {
+		return this.diffAngle;
+	}
+
+	public void setDiffAngle(float diff) {
+		this.diffAngle = diff;
 	}
 
 	public void update(long elapsedTime) {
@@ -78,12 +92,16 @@ public class RotateTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new RotateTo(dstAngle, speed);
+		RotateTo r = new RotateTo(dstAngle, speed);
+		r.set(this);
+		return r;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new RotateTo(-dstAngle, speed);
+		RotateTo r = new RotateTo(-dstAngle, speed);
+		r.set(this);
+		return r;
 	}
 
 	@Override

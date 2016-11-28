@@ -102,8 +102,7 @@ public class MoveBy extends ActionEvent {
 		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed,
 				easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode());
-		move.oldX = oldX;
-		move.oldY = oldY;
+		move.set(this);
 		return move;
 	}
 
@@ -112,8 +111,7 @@ public class MoveBy extends ActionEvent {
 		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed,
 				easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode());
-		move.oldX = oldX;
-		move.oldY = oldY;
+		move.set(this);
 		return move;
 	}
 

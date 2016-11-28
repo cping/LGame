@@ -100,8 +100,19 @@ public class PlayerUtils extends Director {
 		return set(target, -1, removeActions);
 	}
 
-	public final static ActionScript act(ActionBind target,
-			String script) {
+	public final static ActionTween on(ActionBind target) {
+		return set(target);
+	}
+
+	public final static ActionTween on(ActionBind target, boolean removeActions) {
+		return set(target, -1, removeActions);
+	}
+
+	public final static void off(ActionBind act) {
+		removeAllActions(act);
+	}
+
+	public final static ActionScript act(ActionBind target, String script) {
 		ActionTween tween = set(target, true);
 		return new ActionScript(tween, script);
 	}

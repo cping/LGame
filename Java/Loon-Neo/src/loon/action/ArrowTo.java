@@ -91,7 +91,7 @@ public class ArrowTo extends ActionEvent {
 			float slope = vy / vx;
 			float theta = MathUtils.atan(slope);
 			original.setRotation(theta * MathUtils.RAD_TO_DEG);
-			original.setLocation(startX, startY);
+			original.setLocation(startX + offsetX, startY + offsetY);
 		}
 	}
 
@@ -101,12 +101,16 @@ public class ArrowTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new ArrowTo(endX, endY, speed, gravity);
+		ArrowTo arrow = new ArrowTo(endX, endY, speed, gravity);
+		arrow.set(this);
+		return arrow;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new ArrowTo(oldX, oldY, speed, gravity);
+		ArrowTo arrow = new ArrowTo(oldX, oldY, speed, gravity);
+		arrow.set(this);
+		return arrow;
 	}
 
 	@Override

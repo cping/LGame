@@ -33,6 +33,12 @@ public class JumpTo extends ActionEvent {
 	private float gravity;
 
 	public JumpTo(int m, float g) {
+		this(0, 0, m, g);
+	}
+
+	public JumpTo(int x, int y, int m, float g) {
+		this.moveX = x;
+		this.moveY = y;
 		this.moveJump = m;
 		this.gravity = g;
 	}
@@ -115,12 +121,16 @@ public class JumpTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new JumpTo(moveJump, gravity);
+		JumpTo jump = new JumpTo(moveJump, gravity);
+		jump.set(this);
+		return jump;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new JumpTo(-moveJump, gravity);
+		JumpTo jump = new JumpTo(-moveJump, gravity);
+		jump.set(this);
+		return jump;
 	}
 
 	@Override

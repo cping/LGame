@@ -21,6 +21,7 @@
 package loon.utils.timer;
 
 import loon.utils.Easing;
+import loon.utils.MathUtils;
 import loon.utils.Easing.EasingMode;
 
 public class EaseTimer {
@@ -68,7 +69,7 @@ public class EaseTimer {
 		if (this._finished) {
 			return;
 		}
-		this._delta = (elapsedTime / 1000f);
+		this._delta = MathUtils.min(elapsedTime / 1000f, 0.1f);
 		this._timer += _delta;
 		if (this._timer >= _delay) {
 			_timeInAfter += _delta / _duration;

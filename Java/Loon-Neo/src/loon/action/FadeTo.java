@@ -43,6 +43,7 @@ public class FadeTo extends ActionEvent {
 		this.type = type;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return _isCompleted;
 	}
@@ -85,7 +86,9 @@ public class FadeTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new FadeTo(type, time);
+		FadeTo fade = new FadeTo(type, time);
+		fade.set(this);
+		return fade;
 	}
 
 	@Override
@@ -96,6 +99,7 @@ public class FadeTo extends ActionEvent {
 		} else {
 			fade = new FadeTo(ISprite.TYPE_FADE_IN, time);
 		}
+		fade.set(this);
 		return fade;
 	}
 

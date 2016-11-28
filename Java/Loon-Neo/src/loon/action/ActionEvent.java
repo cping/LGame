@@ -146,6 +146,13 @@ public abstract class ActionEvent {
 		this.offsetY = offsetY;
 	}
 
+	public void set(ActionEvent e) {
+		setOffset(e.offsetX, e.offsetY);
+		oldX = e.oldX;
+		oldY = e.oldY;
+		tag = e.tag;
+	}
+
 	public abstract ActionEvent cpy();
 
 	public abstract ActionEvent reverse();

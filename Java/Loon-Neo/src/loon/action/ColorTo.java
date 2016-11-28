@@ -32,6 +32,10 @@ public class ColorTo extends ActionEvent {
 	private LColor start, end;
 	private EaseTimer easeTimer;
 
+	public ColorTo(LColor endColor) {
+		this(null, endColor, 1f);
+	}
+
 	public ColorTo(LColor endColor, float duration) {
 		this(null, endColor, duration);
 	}
@@ -153,16 +157,20 @@ public class ColorTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new ColorTo(new LColor(startRed, startGreen, startBlue,
+		ColorTo color = new ColorTo(new LColor(startRed, startGreen, startBlue,
 				startAlpha), new LColor(endRed, endGreen, endBlue, endAlpha),
 				easeTimer.getDuration());
+		color.set(this);
+		return color;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new ColorTo(new LColor(endRed, endGreen, endBlue, endAlpha),
-				new LColor(startRed, startGreen, startBlue, startAlpha),
-				easeTimer.getDuration());
+		ColorTo color = new ColorTo(new LColor(endRed, endGreen, endBlue,
+				endAlpha), new LColor(startRed, startGreen, startBlue,
+				startAlpha), easeTimer.getDuration());
+		color.set(this);
+		return color;
 	}
 
 	@Override

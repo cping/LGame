@@ -1,5 +1,7 @@
 package loon.utils.timer;
 
+import loon.utils.MathUtils;
+
 public abstract class FloatTimerEvent {
 
 	private float delay;
@@ -19,7 +21,7 @@ public abstract class FloatTimerEvent {
 	}
 
 	public void update(long elapsedTime) {
-		this.update(elapsedTime / 1000f);
+		this.update(MathUtils.min(elapsedTime / 1000f, 0.1f));
 	}
 
 	public void update(float delta) {

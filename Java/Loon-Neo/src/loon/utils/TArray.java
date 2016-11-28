@@ -404,7 +404,7 @@ public class TArray<T> implements Iterable<T> {
 		return newItems;
 	}
 
-	public void reverse() {
+	public TArray<T> reverse() {
 		T[] items = this.items;
 		for (int i = 0, lastIndex = size - 1, n = size / 2; i < n; i++) {
 			int ii = lastIndex - i;
@@ -412,9 +412,10 @@ public class TArray<T> implements Iterable<T> {
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
+		return this;
 	}
 
-	public void shuffle() {
+	public TArray<T> shuffle() {
 		T[] items = this.items;
 		for (int i = size - 1; i >= 0; i--) {
 			int ii = MathUtils.random(i);
@@ -422,6 +423,7 @@ public class TArray<T> implements Iterable<T> {
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
+		return this;
 	}
 
 	public void truncate(int newSize) {

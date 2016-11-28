@@ -93,7 +93,9 @@ public class ReplayTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new ReplayTo(_cache_list, replay);
+		ReplayTo r = new ReplayTo(_cache_list, replay);
+		r.set(this);
+		return r;
 	}
 
 	@Override
@@ -101,7 +103,9 @@ public class ReplayTo extends ActionEvent {
 		if (_cache_list == null || _cache_list.size() == 0) {
 			return null;
 		}
-		return new ReplayTo(_cache_list.reverse(), replay);
+		ReplayTo r = new ReplayTo(_cache_list.reverse(), replay);
+		r.set(this);
+		return r;
 	}
 
 	@Override

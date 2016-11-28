@@ -100,10 +100,10 @@ public class TransferTo extends ActionEvent {
 		if (original != null) {
 			synchronized (original) {
 				if (this.controllingX) {
-					this.original.setX(getCurrentPos());
+					this.original.setX(getCurrentPos() + offsetX);
 				}
 				if (this.controllingY) {
-					this.original.setY(getCurrentPos());
+					this.original.setY(getCurrentPos() + offsetY);
 				}
 			}
 		}
@@ -133,16 +133,20 @@ public class TransferTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new TransferTo(this.startPos, this.endPos,
+		TransferTo t = new TransferTo(this.startPos, this.endPos,
 				easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode(), this.controllingX, this.controllingY);
+		t.set(this);
+		return t;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new TransferTo(this.endPos, this.startPos,
+		TransferTo t = new TransferTo(this.endPos, this.startPos,
 				easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode(), this.controllingX, this.controllingY);
+		t.set(this);
+		return t;
 	}
 
 	@Override

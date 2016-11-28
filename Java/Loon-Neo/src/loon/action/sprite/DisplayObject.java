@@ -209,7 +209,6 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 		return _rect;
 	}
 
-	@SuppressWarnings("resource")
 	public PointF local2Global(float x, float y) {
 		float gX = x;
 		float gY = y;

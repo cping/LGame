@@ -40,7 +40,6 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		baseColor.a = tmpAlpha;
 	}
 
-	@SuppressWarnings("resource")
 	protected void renderTileLayer(GLEx g, TMXTileLayer tileLayer) {
 		synchronized (this) {
 			if (!tileLayer.isVisible()) {

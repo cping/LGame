@@ -20,20 +20,23 @@
  */
 package loon.action.map.colider;
 
-public class TileHelper {
+public class TileHelper implements Tile {
+
+	protected int tileX = 0;
+
+	protected int tileY = 0;
 
 	protected int tileWidth = 0;
 
 	protected int tileHeight = 0;
 
-	public TileHelper(int tileWidth, int tileHeight) {
-		super();
-		this.tileWidth = tileWidth;
-		this.tileHeight = tileHeight;
+	public TileHelper(int x, int y) {
+		this(x, y, 32, 32);
 	}
 
-	public TileHelper(int tileWidth, int tileHeight, int offsetX, int offsetY) {
-		super();
+	public TileHelper(int x, int y, int tileWidth, int tileHeight) {
+		this.tileX = x;
+		this.tileY = y;
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
 	}
@@ -53,4 +56,50 @@ public class TileHelper {
 	public void setTileSizeY(int tileSizeY) {
 		this.tileHeight = tileSizeY;
 	}
+
+	@Override
+	public int getX() {
+		return tileY;
+	}
+
+	@Override
+	public int getY() {
+		return tileY;
+	}
+
+	@Override
+	public int getWidth() {
+		return tileWidth;
+	}
+
+	@Override
+	public int getHeight() {
+		return tileHeight;
+	}
+
+	@Override
+	public void setX(int x) {
+		this.tileX = x;
+	}
+
+	@Override
+	public void setY(int y) {
+		this.tileY = y;
+	}
+
+	@Override
+	public void setWidth(int w) {
+		this.setWidth(w);
+	}
+
+	@Override
+	public void setHeight(int h) {
+		this.setHeight(h);
+	}
+
+	@Override
+	public Tile at(int x, int y) {
+		return new TileHelper(x, y, tileWidth, tileHeight);
+	}
+
 }

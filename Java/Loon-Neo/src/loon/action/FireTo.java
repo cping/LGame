@@ -91,7 +91,9 @@ public class FireTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new FireTo(endX, endY, speed);
+		FireTo fire =new FireTo(endX, endY, speed);
+		fire.set(this);
+		return fire;
 	}
 
 	@Override

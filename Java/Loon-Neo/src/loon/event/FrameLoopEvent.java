@@ -7,11 +7,11 @@ import loon.utils.timer.LTimer;
 public abstract class FrameLoopEvent {
 
 	private boolean killSelf = false;
-	
+
 	private LTimer timer = new LTimer(0);
 
 	public abstract void invoke(long elapsedTime, Screen e);
-	
+
 	public abstract void completed();
 
 	public final void call(long elapsedTime, Screen e) {
@@ -19,18 +19,21 @@ public abstract class FrameLoopEvent {
 			invoke(elapsedTime, e);
 		}
 	}
-	
-	public void reset(){
+
+	public FrameLoopEvent reset() {
 		this.killSelf = false;
 		this.timer.refresh();
+		return this;
 	}
 
-	public void setDelay(long d) {
+	public FrameLoopEvent setDelay(long d) {
 		timer.setDelay(d);
+		return this;
 	}
-	
-	public void setSecond(float s) {
+
+	public FrameLoopEvent setSecond(float s) {
 		timer.setDelay((long) (LSystem.SECOND * s));
+		return this;
 	}
 
 	public float getSecond() {
@@ -40,12 +43,13 @@ public abstract class FrameLoopEvent {
 	public LTimer getTimer() {
 		return timer;
 	}
-	
-	public void kill(){
+
+	public FrameLoopEvent kill() {
 		killSelf = true;
+		return this;
 	}
-	
-	public boolean isDead(){
+
+	public boolean isDead() {
 		return killSelf;
 	}
 

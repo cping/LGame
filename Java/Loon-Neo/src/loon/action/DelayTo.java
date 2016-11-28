@@ -32,7 +32,9 @@ public class DelayTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new DelayTo(delay);
+		DelayTo d = new DelayTo(delay);
+		d.set(this);
+		return d;
 	}
 
 	@Override

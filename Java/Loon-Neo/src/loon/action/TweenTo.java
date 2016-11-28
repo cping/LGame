@@ -32,7 +32,9 @@ public class TweenTo<T> extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new TweenTo<T>(_base);
+		TweenTo<T> t = new TweenTo<T>(_base);
+		t.set(this);
+		return t;
 	}
 
 	@Override

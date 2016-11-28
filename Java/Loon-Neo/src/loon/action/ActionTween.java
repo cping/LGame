@@ -3,8 +3,11 @@ package loon.action;
 import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.effect.BaseEffect;
 import loon.canvas.LColor;
 import loon.event.FrameLoopEvent;
+import loon.event.Updateable;
+import loon.geom.Vector2f;
 import loon.utils.Array;
 import loon.utils.Easing;
 import loon.utils.TArray;
@@ -154,6 +157,18 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		reset();
 	}
 
+	public ActionTween flashTo() {
+		return event(new FlashTo());
+	}
+
+	public ActionTween flashTo(float duration) {
+		return event(new FlashTo(duration));
+	}
+
+	public ActionTween flashTo(float duration, float delay, EasingMode easing) {
+		return event(new FlashTo(duration, delay, easing));
+	}
+
 	public ActionTween moveTo(float endX, float endY) {
 		return moveTo(endX, endY, false, 8);
 	}
@@ -163,22 +178,40 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8);
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed);
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed,
+				0, 0);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag,
+			float offsetX, float offsetY) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8,
+				offsetX, offsetY);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag, int speed,
+			float offsetX, float offsetY) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed,
+				offsetX, offsetY);
 	}
 
 	public ActionTween moveTo(Field2D map, float endX, float endY,
 			boolean flag, int speed) {
+		return moveTo(map, endX, endY, flag, speed, 0, 0);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY,
+			boolean flag, int speed, float offsetX, float offsetY) {
 		if (map.inside(endX, endY)) {
 			MoveTo move = new MoveTo(map, endX, endY, flag, speed);
 			move.setDelay(0);
+			move.setOffset(offsetX, offsetY);
 			return event(move);
 		} else {
-			MoveBy moveby = new MoveBy(endX, endY, speed);
-			return event(moveby);
+			return moveBy(endX, endY, speed);
 		}
 	}
 
@@ -199,10 +232,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveBy(float endX, float endY, EasingMode easing) {
-		MoveBy moveby = new MoveBy(endX, endY,  easing);
+		MoveBy moveby = new MoveBy(endX, endY, easing);
 		return event(moveby);
 	}
-	
+
 	public ActionTween moveBy(float endX, float endY, float duration,
 			float delay, EasingMode easing) {
 		MoveBy moveby = new MoveBy(endX, endY, duration, delay, easing);
@@ -265,7 +298,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		event.setDelay(0);
 		return event(event);
 	}
-	
+
 	public ActionTween transferTo(float startPos, float endPos,
 			EasingMode mode, boolean controlX, boolean controlY) {
 		TransferTo transfer = new TransferTo(startPos, endPos, 1f, mode,
@@ -323,6 +356,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(shake);
 	}
 
+	public ActionTween scaleTo(float s) {
+		return scaleTo(s, s, 0.1f);
+	}
+
 	public ActionTween scaleTo(float sx, float sy) {
 		return scaleTo(sx, sy, 0.1f);
 	}
@@ -338,6 +375,137 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		ShowTo show = new ShowTo(v);
 		show.setDelay(0);
 		return event(show);
+	}
+
+	public ActionTween arrowTo(float x, float y) {
+		return event(new ArrowTo(x, y));
+	}
+
+	public ActionTween arrowTo(float tx, float ty, float speed, float g) {
+		return event(new ArrowTo(tx, ty, speed, g));
+	}
+
+	public ActionTween circleTo(int radius, int velocity) {
+		return event(new CircleTo(radius, velocity));
+	}
+
+	public ActionTween circleTo(int radius, int velocity, float speed) {
+		return event(new CircleTo(radius, velocity, speed));
+	}
+
+	public ActionTween effectTo(BaseEffect eff) {
+		return event(new EffectTo(eff));
+	}
+
+	public ActionTween fireTo(float endX, float endY, float speed) {
+		return event(new FireTo(endX, endY, speed));
+	}
+
+	public ActionTween jumpTo(int moveJump, float gravity) {
+		return event(new JumpTo(moveJump, gravity));
+	}
+
+	public ActionTween parallelTo(ActionEvent... eves) {
+		return event(new ParallelTo(eves));
+	}
+
+	public ActionTween parallelTo(TArray<ActionEvent> list) {
+		return event(new ParallelTo(list));
+	}
+
+	public ActionTween updateTo(Updateable u) {
+		return event(new UpdateTo(u));
+	}
+
+	public ActionTween moveRoundTo(float angle, float radius,
+			Vector2f centerPoint, EasingMode easing) {
+		return event(new MoveRoundTo(angle, radius, centerPoint, easing));
+	}
+
+	public ActionTween moveRoundTo(float angle, float radius,
+			Vector2f centerPoint, float duration, EasingMode easing) {
+		return event(new MoveRoundTo(angle, radius, centerPoint, duration,
+				easing));
+	}
+
+	public ActionTween moveRoundTo(float startAngle, float angle,
+			float startRadius, float radius, Vector2f centerPoint,
+			Vector2f startPoint, float duration, float delay, EasingMode easing) {
+		return event(new MoveRoundTo(startAngle, angle, startRadius, radius,
+				centerPoint, startPoint, duration, delay, easing));
+	}
+
+	public ActionTween moveOvalTo(float angle, float width, float height,
+			Vector2f centerPoint, float duration, EasingMode easing) {
+		return event(new MoveOvalTo(0, angle, width, height, centerPoint,
+				duration, easing));
+	}
+
+	public ActionTween moveOvalTo(float startAngle, float angle, float width,
+			float height, Vector2f centerPoint, float duration,
+			EasingMode easing) {
+		return event(new MoveOvalTo(startAngle, angle, width, height,
+				centerPoint, duration, easing));
+	}
+
+	public ActionTween moveOvalTo(float startAngle, float angle, float width,
+			float height, Vector2f centerPoint, Vector2f startPoint,
+			float duration, float delay, EasingMode easing) {
+		return event(new MoveOvalTo(startAngle, angle, width, height,
+				centerPoint, startPoint, duration, delay, easing));
+	}
+
+	public ActionTween loop(int count) {
+		return loop(count, false);
+	}
+
+	public ActionTween loop(int count, boolean reverse) {
+		if (actionEvents == null) {
+			return this;
+		}
+		if (count < 1) {
+			return this;
+		}
+		if (count == 1) {
+			count++;
+		}
+		ActionEvent e = null;
+		Array<ActionEvent> tmps = new Array<ActionEvent>();
+		for (int i = 0; i < count - 1; i++) {
+			for (; actionEvents.hashNext();) {
+				ActionEvent tmp = actionEvents.next();
+				if (tmp != null) {
+					e = tmp;
+				}
+				tmps.add(reverse ? e.reverse() : e.cpy());
+			}
+			actionEvents.stopNext();
+		}
+		actionEvents.addAll(tmps);
+		return this;
+	}
+
+	public ActionTween loopLast(int count) {
+		return loopLast(count, false);
+	}
+
+	public ActionTween loopLast(int count, boolean reverse) {
+		if (actionEvents == null) {
+			return this;
+		}
+		if (count < 1) {
+			return this;
+		}
+		if (count == 1) {
+			count++;
+		}
+		Array<ActionEvent> tmps = new Array<ActionEvent>();
+		for (int i = 0; i < count - 1; i++) {
+			tmps.add(reverse ? actionEvents.last().reverse() : actionEvents
+					.last().cpy());
+		}
+		actionEvents.addAll(tmps);
+		return this;
 	}
 
 	public TArray<ActionEvent> getActionEvents() {

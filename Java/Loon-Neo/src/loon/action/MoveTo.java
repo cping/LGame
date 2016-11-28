@@ -389,8 +389,7 @@ public class MoveTo extends ActionEvent {
 	public ActionEvent cpy() {
 		MoveTo move = new MoveTo(layerMap, endLocation.x, endLocation.y, flag,
 				speed, useCache, synchroLayerField);
-		move.oldX = oldX;
-		move.oldY = oldY;
+		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;
 	}
@@ -399,8 +398,7 @@ public class MoveTo extends ActionEvent {
 	public ActionEvent reverse() {
 		MoveTo move = new MoveTo(layerMap, oldX, oldY, flag, speed, useCache,
 				synchroLayerField);
-		move.oldX = oldX;
-		move.oldY = oldY;
+		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;
 	}

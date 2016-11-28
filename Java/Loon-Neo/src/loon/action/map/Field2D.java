@@ -20,6 +20,8 @@
  */
 package loon.action.map;
 
+import loon.action.map.colider.Tile;
+import loon.action.map.colider.TileHelper;
 import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.geom.Vector2f;
@@ -36,6 +38,8 @@ public class Field2D implements Config {
 	public Object Tag;
 
 	private String name = "Field2D";
+
+	private Tile tileImpl;
 
 	public void setName(String n) {
 		this.name = n;
@@ -132,13 +136,22 @@ public class Field2D implements Config {
 				field.tileHeight);
 	}
 
+	public Tile getTile(int x, int y) {
+		return tileImpl.at(x, y);
+	}
+
 	public void set(int[][] data, int tw, int th) {
 		this.setMap(data);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
 		this.width = data[0].length;
 		this.height = data.length;
-
+		if (tileImpl == null) {
+			this.tileImpl = new TileHelper(tileWidth, tileHeight);
+		} else {
+			this.tileImpl.setWidth(tileWidth);
+			this.tileImpl.setHeight(tileHeight);
+		}
 	}
 
 	public void setSize(int width, int height) {
@@ -377,6 +390,14 @@ public class Field2D implements Config {
 			_rect.setSize(getViewWidth(), getViewHeight());
 		}
 		return _rect;
+	}
+
+	public Tile getTileImpl() {
+		return tileImpl;
+	}
+
+	public void setTileImpl(Tile tileImpl) {
+		this.tileImpl = tileImpl;
 	}
 
 }

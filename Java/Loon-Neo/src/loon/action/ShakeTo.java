@@ -72,8 +72,10 @@ public class ShakeTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new ShakeTo(easeTimer.getDuration(), shakeTimer, oldShakeX,
-				oldShakeY);
+		ShakeTo shake = new ShakeTo(easeTimer.getDuration(), shakeTimer,
+				oldShakeX, oldShakeY);
+		shake.set(this);
+		return shake;
 	}
 
 	@Override

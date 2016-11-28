@@ -28,12 +28,16 @@ public class ShowTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new ShowTo(visible);
+		ShowTo show = new ShowTo(visible);
+		show.set(this);
+		return show;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new ShowTo(!visible);
+		ShowTo show = new ShowTo(!visible);
+		show.set(this);
+		return show;
 	}
 
 	@Override
