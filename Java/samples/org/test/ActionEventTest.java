@@ -1,22 +1,24 @@
 package org.test;
 
-import loon.LSetting;
 import loon.LSystem;
 import loon.LTransition;
-import loon.LazyLoading;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.ActionType;
+import loon.action.ColorTo;
+import loon.action.RotateTo;
+import loon.action.ScaleTo;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteLabel;
 import loon.canvas.LColor;
 import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
+import loon.event.Updateable;
 import loon.font.LFont;
-import loon.javase.Loon;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.Easing.EasingMode;
@@ -39,7 +41,7 @@ public class ActionEventTest extends Screen {
 
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-		SpriteLabel label = new SpriteLabel("Plase Touch The Screen", 120, 20);
+		final SpriteLabel label = new SpriteLabel("Plase Touch The Screen", 120, 20);
 		add(label);
 
 		// 构建一个球体的精灵
@@ -55,9 +57,31 @@ public class ActionEventTest extends Screen {
 			public void onAreaTouched(final Event e, final float touchX,
 					final float touchY) {
 				if (e == Event.DOWN) {
-					// 设置一个指定精灵的动画事件
-					set(sprite).shakeTo(2f, 2f).//振动一次，振动范围值x2,y2
-					eventTo(new FrameLoopEvent() { //执行一次循环事件(不执行kill事件不会自行停止)
+					// 设置一个指定精灵的动画事件(set或on函数设置指定对象的连续缓动动画，off或removeAllActions函数关闭所有缓动动画)
+					on(sprite).
+					moveTo(330, 66).moveTo(66,66).loop(1). //移动到330,66位置后再移动到66,66，循环上述动画1次
+					moveOvalTo(360f, 100, 20, new Vector2f(130,60), 1f, EasingMode.Linear).//椭圆形移动,初始x为0,旋转360,椭圆宽100,高20,以130,60为中心,移动1秒
+					moveRoundTo(360, 90, new Vector2f(130,60),3f, EasingMode.Linear) //做环绕移动，旋转360度,半径90个像素，以130,130为中心点,移动3秒,缓动方式Linear
+					.loopLast(2)//重复2次上述最后一个动画事件
+					.parallelTo(new ScaleTo(2f),new RotateTo(360),new ColorTo(LColor.blue)) //同时执行缩放和旋转以及变色
+					.scaleTo(1f)//缩放回原始大小
+					.colorTo(LColor.white) //变回原始颜色
+					.flashTo(2f)//精灵闪烁2秒
+					.updateTo(new Updateable() { //执行一次Updateable(updateTo命令只会执行一次)
+						
+						@Override
+						public void action(Object a) {
+
+							//改变Label内容
+							label.setLabel("Call Updateable");
+							centerOn(label);
+						
+							
+						}
+					}).
+					shakeTo(2f, 2f).//振动一次，振动范围值x2,y2
+					//同时执行缩放与旋转事件
+					eventTo(new FrameLoopEvent() { //执行一次循环事件(FrameLoopEvent不执行kill事件不会自行停止)
 						
 						private LTimer timer = new LTimer(LSystem.SECOND);
 						
@@ -75,15 +99,17 @@ public class ActionEventTest extends Screen {
 						
 						@Override
 						public void completed() {
-							label.setLabel("Plase touch the screen");
+							label.setLabel("Plase Touch The Screen");
 							label.setLocation(120, 20);
 							
 						}
 					}).
-					transferTo(-1, 200, EasingMode.InBack,true,false) //让对象移动200个像素,渐进方式InBack,仅限于x轴允许改变位置(-1时不改变原有x坐标位置)
+					moveTo(66,66)
+					.transferTo(-1, 200, EasingMode.InBack,true,false) //让对象移动200个像素,渐进方式InBack,仅限于x轴允许改变位置(-1时不改变原有对象x或y坐标初始位置)
 					.colorTo(LColor.red) //渐变到红色
 					.shakeTo(2f, 3f). //让精灵产生振动，x轴最大移动2，y轴最大移动3
-					        moveTo(touchX, touchY, false).// 地图方式，四方走法(true为8方向)，移动到触屏位置
+					        moveTo(touchX, touchY, false).// 地图方式，四方走法(true为8方向)，移动到触屏位置.
+					        //若需限制地图行走区域,请注入Field2D对象(一个简单的，2维数组方式的地形存储器),矫正显示位置请注入offsetX和offsetY参数
 							fadeOut(60) // 动画淡出,速度60
 							.delay(1f) // 延迟1秒
 							.fadeIn(60)// 动画淡入
