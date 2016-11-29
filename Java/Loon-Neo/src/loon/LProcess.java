@@ -652,6 +652,16 @@ public class LProcess extends PlayerUtils {
 			float ny = (newY - offY);
 			final int r = (int) getRotation();
 			switch (r) {
+			case -90:
+				offX = oldH / 2f - newW / 2f;
+				offY = oldW / 2f - newH / 2f;
+				nx = (newX - offY);
+				ny = (newY - offX);
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(
+						-90);
+				_tmpLocaltion.set(-(_tmpLocaltion.x - getWidth()),
+						MathUtils.abs(_tmpLocaltion.y));
+				break;
 			case 0:
 			case 360:
 				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY());
@@ -666,11 +676,12 @@ public class LProcess extends PlayerUtils {
 				_tmpLocaltion.set(-_tmpLocaltion.x,
 						MathUtils.abs(_tmpLocaltion.y - getHeight()));
 				break;
+			case -180:
 			case 180:
 				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY())
 						.rotate(getRotation()).addSelf(getWidth(), getHeight());
 				break;
-			default: //原则上不处理非水平角度的触点
+			default: // 原则上不处理非水平角度的触点
 				_tmpLocaltion.set(newX, newY);
 				break;
 			}

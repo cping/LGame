@@ -271,11 +271,20 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween rotateTo(float angle, float diff, float speed) {
-		RotateTo rotate = new RotateTo(angle, diff, speed);
-		rotate.setDelay(0);
-		return event(rotate);
+		return event(new RotateTo(angle, diff, speed));
 	}
 
+	public ActionTween rotateTo(float angle, float diff, float speed,
+			EasingMode easing) {
+		return event(new RotateTo(angle, diff, speed, easing));
+	}
+
+	public ActionTween rotateTo(float startRotation, float dstAngle,
+			float diffAngle, float duration, float delay, EasingMode easing) {
+		return event(new RotateTo(startRotation, dstAngle, diffAngle, duration,
+				delay, easing));
+	}
+	
 	public ActionTween colorTo(LColor end) {
 		return colorTo(null, end);
 	}
@@ -335,9 +344,9 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween shakeTo(float shake) {
-		return shakeTo(shake,shake);
+		return shakeTo(shake, shake);
 	}
-	
+
 	public ActionTween shakeTo(float shakeX, float shakeY) {
 		ShakeTo shake = new ShakeTo(shakeX, shakeY);
 		shake.setDelay(0);

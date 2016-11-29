@@ -768,6 +768,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		this.desktop = new Desktop(this, width, height);
 		this.isNext = true;
+		this.index = 0;
+		this.tx = ty = 0;
+		this.isTranslate = false;
+		this._visible = true;
+		this._rotation = 0;
+		this._scaleX = _scaleY = _alpha = 1f;
+		this._baseColor = null;
+		this._isExistCamera = false;
 	}
 
 	public Screen addLoad(Updateable u) {

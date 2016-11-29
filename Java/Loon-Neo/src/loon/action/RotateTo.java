@@ -20,55 +20,66 @@
  */
 package loon.action;
 
+import loon.utils.Easing.EasingMode;
+import loon.utils.timer.EaseTimer;
+
 public class RotateTo extends ActionEvent {
 
-	private float dstAngle;
-
-	private float startAngle;
-
-	private boolean minus;
-
 	private float diffAngle = 1f;
-
-	private float speed = 6f;
+	private float startRotation;
+	private float dstAngle;
+	private float currentRotation;
+	private EaseTimer easeTimer;
 
 	public RotateTo(float dstAngle) {
-		this(dstAngle, 6f);
+		this(dstAngle, 3f);
+	}
+
+	public RotateTo(float dstAngle, float speed, EasingMode easing) {
+		this(0, dstAngle, 1f, speed, 1f / 60f, easing);
 	}
 
 	public RotateTo(float dstAngle, float speed) {
-		this(dstAngle, 1f, 6f);
+		this(0, dstAngle, 1f, speed, 1f / 60f, EasingMode.Linear);
 	}
 
-	public RotateTo(float dstAngle, float diff, float speed) {
+	public RotateTo(float dstAngle, float diffAngle, float speed,
+			EasingMode easing) {
+		this(0, dstAngle, diffAngle, 3f, 1f / 60f, easing);
+	}
+
+	public RotateTo(float dstAngle, float diffAngle, float speed) {
+		this(0, dstAngle, diffAngle, 3f, 1f / 60f, EasingMode.Linear);
+	}
+
+	public RotateTo(float startRotation, float dstAngle, float diffAngle,
+			float duration, float delay, EasingMode easing) {
+		this.startRotation = startRotation;
 		this.dstAngle = dstAngle;
-		this.diffAngle = diff;
-		if (this.dstAngle > 360) {
-			this.dstAngle = 360;
-		} else if (this.dstAngle < 0) {
-			this.dstAngle = 0;
-		}
-		this.speed = speed;
-		if (startAngle >= dstAngle) {
-			minus = true;
-		}
-		if (startAngle == dstAngle) {
-			_isCompleted = true;
-		}
+		this.diffAngle = diffAngle;
+		this.easeTimer = new EaseTimer(duration, delay, easing);
+		this._isCompleted = (startRotation - dstAngle == 0);
 	}
 
+	@Override
 	public boolean isComplete() {
 		return _isCompleted;
 	}
 
+	@Override
 	public void onLoad() {
-		startAngle = original.getRotation();
-		if (startAngle >= dstAngle) {
-			minus = true;
-		}
-		if (startAngle == dstAngle) {
+		startRotation = original.getRotation();
+	}
+
+	public void update(long elapsedTime) {
+		easeTimer.update(elapsedTime);
+		if (easeTimer.isCompleted()) {
 			_isCompleted = true;
+			original.setRotation(dstAngle);
+			return;
 		}
+		original.setRotation(currentRotation = (startRotation + (dstAngle - startRotation)
+				* easeTimer.getProgress() * diffAngle));
 	}
 
 	public float getDiffAngle() {
@@ -79,38 +90,24 @@ public class RotateTo extends ActionEvent {
 		this.diffAngle = diff;
 	}
 
-	public void update(long elapsedTime) {
-		if (minus) {
-			startAngle -= diffAngle * speed;
-			if (startAngle <= dstAngle) {
-				_isCompleted = true;
-			}
-			if (startAngle <= 0) {
-				startAngle = 0;
-			}
-		} else {
-			startAngle += diffAngle * speed;
-			if (startAngle >= dstAngle) {
-				_isCompleted = true;
-			}
-			if (startAngle >= 360) {
-				startAngle = 360;
-			}
-		}
-		original.setRotation(startAngle);
-
+	public float getRotation() {
+		return currentRotation;
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		RotateTo r = new RotateTo(dstAngle, speed);
+		RotateTo r = new RotateTo(startRotation, dstAngle, diffAngle,
+				easeTimer.getDuration(), easeTimer.getDelay(),
+				easeTimer.getEasingMode());
 		r.set(this);
 		return r;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		RotateTo r = new RotateTo(-dstAngle, speed);
+		RotateTo r = new RotateTo(dstAngle, startRotation, diffAngle,
+				easeTimer.getDuration(), easeTimer.getDelay(),
+				easeTimer.getEasingMode());
 		r.set(this);
 		return r;
 	}
