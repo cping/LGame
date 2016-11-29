@@ -267,7 +267,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween rotateTo(float angle, float speed) {
-		RotateTo rotate = new RotateTo(angle, speed);
+		return rotateTo(angle, 1f, speed);
+	}
+
+	public ActionTween rotateTo(float angle, float diff, float speed) {
+		RotateTo rotate = new RotateTo(angle, diff, speed);
 		rotate.setDelay(0);
 		return event(rotate);
 	}
@@ -330,6 +334,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(transfer);
 	}
 
+	public ActionTween shakeTo(float shake) {
+		return shakeTo(shake,shake);
+	}
+	
 	public ActionTween shakeTo(float shakeX, float shakeY) {
 		ShakeTo shake = new ShakeTo(shakeX, shakeY);
 		shake.setDelay(0);

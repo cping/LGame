@@ -459,12 +459,23 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx scale(float sx, float sy, float rx, float ry) {
+		Affine2f aff = tx();
+		if (aff != null) {
+			aff.translate(rx, ry);
+			aff.preScale(sx, sy);
+			aff.translate(-rx, -ry);
+		}
+		return this;
+	}
+
 	public GLEx rotate(float rx, float ry, float angle) {
 		Affine2f aff = tx();
 		if (aff != null) {
 			aff.translate(rx, ry);
 			aff.preRotate(angle);
 			aff.translate(-rx, -ry);
+
 		}
 		return this;
 	}
@@ -499,10 +510,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		Affine2f.multiply(tx(), xf,xf);
+		Affine2f.multiply(tx(), xf, xf);
 		return this;
 	}
-	
+
 	public GLEx concatenate(Affine2f xf, float originX, float originY) {
 		if (isClosed) {
 			return this;

@@ -142,4 +142,9 @@ public class PlayerUtils extends Director {
 		return player;
 	}
 
+	public final static boolean isActionCompleted(ActionBind bind) {
+		return ActionControl.get().isCompleted(bind);
+	}
+
+
 }

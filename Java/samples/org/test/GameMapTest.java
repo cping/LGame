@@ -364,6 +364,7 @@ public class GameMapTest extends SpriteBatchScreen {
 				}
 			}
 		};
+		selfAction().shakeTo(3f, 3f).start();
 
 	}
 

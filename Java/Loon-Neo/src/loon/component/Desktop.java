@@ -63,6 +63,10 @@ public class Desktop implements LRelease {
 		this.setDesktop(this.contentPane);
 	}
 
+	public Desktop(Screen screen, float width, float height) {
+		this(screen, (int) width, (int) height);
+	}
+
 	/**
 	 * 空桌面布局
 	 * 

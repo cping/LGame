@@ -38,6 +38,7 @@ public class ShakeTo extends ActionEvent {
 		easeTimer.update(elapsedTime);
 		if (easeTimer.isCompleted()) {
 			_isCompleted = true;
+			original.setLocation(this.startOffsetX, this.startOffsetY);
 			return;
 		}
 		this.shakeX += easeTimer.getTimeInAfter() * easeTimer.getDelta();

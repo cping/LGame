@@ -37,7 +37,12 @@ public class RotateTo extends ActionEvent {
 	}
 
 	public RotateTo(float dstAngle, float speed) {
+		this(dstAngle, 1f, 6f);
+	}
+
+	public RotateTo(float dstAngle, float diff, float speed) {
 		this.dstAngle = dstAngle;
+		this.diffAngle = diff;
 		if (this.dstAngle > 360) {
 			this.dstAngle = 360;
 		} else if (this.dstAngle < 0) {
@@ -46,6 +51,9 @@ public class RotateTo extends ActionEvent {
 		this.speed = speed;
 		if (startAngle >= dstAngle) {
 			minus = true;
+		}
+		if (startAngle == dstAngle) {
+			_isCompleted = true;
 		}
 	}
 
@@ -57,6 +65,9 @@ public class RotateTo extends ActionEvent {
 		startAngle = original.getRotation();
 		if (startAngle >= dstAngle) {
 			minus = true;
+		}
+		if (startAngle == dstAngle) {
+			_isCompleted = true;
 		}
 	}
 

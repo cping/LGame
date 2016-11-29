@@ -23,6 +23,7 @@ package loon.event;
 import loon.EmulatorButtons;
 import loon.LProcess;
 import loon.LSystem;
+import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 
 public class SysInputFactory {
@@ -102,12 +103,10 @@ public class SysInputFactory {
 	private EmulatorButtons ebuttons;
 
 	public void callMouse(MouseMake.ButtonEvent event) {
-		float touchX = (event.getX() - _handler.getX())
-				/ LSystem.getScaleWidth();
-		float touchY = (event.getY() - _handler.getY())
-				/ LSystem.getScaleHeight();
-
-		int button = event.button;
+		final Vector2f pos = _handler.convertXY(event.getX(), event.getY());
+		final float touchX = pos.x;
+		final float touchY = pos.y;
+		final int button = event.button;
 		finalTouch.x = touchX;
 		finalTouch.y = touchY;
 		finalTouch.button = event.button;

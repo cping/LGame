@@ -147,7 +147,7 @@ public class MultiScreenTest extends Screen {
 			"LNode2", "Input", "Depth", "Canvas", "GameMap", "MoveClip",
 			"TextureImage", "Session" };
 
-	final String[] page1 = { "Animation","FrameLoop","Script","Light" };
+	final String[] page1 = {"Screen",  "Animation","FrameLoop","Script","Light" };
 
 	static BMFont info_font;
 
@@ -219,6 +219,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page0[index++], new TextureImageTest());
 			addScreen(page0[index++], new SessionTest());
 		} else if (page == 1) {
+			addScreen(page1[index++], new Test());
 			addScreen(page1[index++], new AnimationTest());
 			addScreen(page1[index++], new FrameLoopTest());
 			addScreen(page1[index++], new RocScriptTest());

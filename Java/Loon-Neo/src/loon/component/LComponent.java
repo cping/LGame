@@ -46,7 +46,7 @@ import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
 public abstract class LComponent extends LObject<LContainer> implements
-		ActionBind, XY, BoxSize , LRelease {
+		ActionBind, XY, BoxSize, LRelease {
 
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
 	protected boolean _touchLocked = false, _keyLocked = false;
@@ -76,16 +76,17 @@ public abstract class LComponent extends LObject<LContainer> implements
 	// 点击事件监听
 	public ClickListener Click;
 
-	public void addClickListener(ClickListener c) {
+	public LComponent addClickListener(ClickListener c) {
 		this.Click = c;
+		return this;
 	}
 
-	public void S(ClickListener c) {
-		addClickListener(c);
+	public LComponent S(ClickListener c) {
+		return addClickListener(c);
 	}
 
-	public void SetClick(ClickListener c) {
-		addClickListener(c);
+	public LComponent SetClick(ClickListener c) {
+		return addClickListener(c);
 	}
 
 	public ClickListener getClick() {
@@ -95,12 +96,14 @@ public abstract class LComponent extends LObject<LContainer> implements
 	// 循环事件监听
 	public CallListener Call;
 
-	public void SC(CallListener u) {
+	public LComponent SC(CallListener u) {
 		SetCall(u);
+		return this;
 	}
 
-	public void SetCall(CallListener u) {
+	public LComponent SetCall(CallListener u) {
 		this.Call = u;
+		return this;
 	}
 
 	public CallListener getCall() {

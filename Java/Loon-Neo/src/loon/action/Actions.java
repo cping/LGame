@@ -36,6 +36,33 @@ public class Actions {
 		actions.clear();
 	}
 
+	public boolean isCompleted(ActionBind k) {
+		ActionElement eles = (ActionElement) actions.getValue(k);
+		if (eles == null) {
+			return true;
+		}
+		TArray<ActionEvent> eves = eles.actions;
+		if (eves == null || eves.size == 0) {
+			return true;
+		}
+		int count = 0;
+		for (int i = 0, size = eves.size; i < size; i++) {
+			ActionEvent e = eves.get(i);
+			if (e != null && e.isComplete()) {
+				count++;
+			}
+		}
+		return count == eves.size;
+	}
+
+	public boolean containsKey(ActionBind k) {
+		return actions.containsKey(k);
+	}
+
+	public boolean containsValue(ActionEvent v) {
+		return actions.containsValue(v);
+	}
+
 	public void addAction(ActionEvent action, ActionBind actObject,
 			boolean paused) {
 		ActionElement element = (ActionElement) actions.get(actObject);

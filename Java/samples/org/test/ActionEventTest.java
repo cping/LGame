@@ -59,7 +59,7 @@ public class ActionEventTest extends Screen {
 				if (e == Event.DOWN) {
 					// 设置一个指定精灵的动画事件(set或on函数设置指定对象的连续缓动动画，off或removeAllActions函数关闭所有缓动动画)
 					on(sprite).
-					moveTo(330, 66).moveTo(66,66).loop(1). //移动到330,66位置后再移动到66,66，循环上述动画1次
+					moveTo(330, 66).moveTo(66,66).loop(1). //移动到330x66位置后再移动到66,66，循环上述动画1次
 					moveOvalTo(360f, 100, 20, new Vector2f(130,60), 1f, EasingMode.Linear).//椭圆形移动,初始x为0,旋转360,椭圆宽100,高20,以130,60为中心,移动1秒
 					moveRoundTo(360, 90, new Vector2f(130,60),3f, EasingMode.Linear) //做环绕移动，旋转360度,半径90个像素，以130,130为中心点,移动3秒,缓动方式Linear
 					.loopLast(2)//重复2次上述最后一个动画事件
@@ -80,7 +80,6 @@ public class ActionEventTest extends Screen {
 						}
 					}).
 					shakeTo(2f, 2f).//振动一次，振动范围值x2,y2
-					//同时执行缩放与旋转事件
 					eventTo(new FrameLoopEvent() { //执行一次循环事件(FrameLoopEvent不执行kill事件不会自行停止)
 						
 						private LTimer timer = new LTimer(LSystem.SECOND);

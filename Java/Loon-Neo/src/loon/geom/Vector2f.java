@@ -60,7 +60,7 @@ public class Vector2f implements Serializable, XY {
 	public final static Vector2f at(float x, float y) {
 		return new Vector2f(x, y);
 	}
-	
+
 	public float x;
 
 	public float y;
@@ -139,6 +139,16 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(this.x + x, this.y + y);
 	}
 
+	public Vector2f addSelfX(float x) {
+		this.x = this.x + x;
+		return this;
+	}
+
+	public Vector2f addSelfY(float y) {
+		this.y = this.y + y;
+		return this;
+	}
+	
 	public float dot(Vector2f v) {
 		return x * v.x + y * v.y;
 	}
@@ -213,6 +223,7 @@ public class Vector2f implements Serializable, XY {
 		}
 		return this;
 	}
+
 
 	public Vector2f lerp(Vector2f target, float alpha) {
 		Vector2f r = this.mul(1.0f - alpha);

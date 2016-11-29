@@ -106,6 +106,10 @@ public class AVGCG implements LRelease {
 				LSystem.viewSize.getHeight());
 	}
 
+	public void add(final String resName, float x, float y, float w, float h) {
+		add(resName, (int) x, (int) y, (int) w, (int) h);
+	}
+
 	public void add(final String resName, int x, int y, int w, int h) {
 		String path = _update(resName);
 		synchronized (charas) {

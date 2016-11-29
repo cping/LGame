@@ -1,77 +1,171 @@
 package org.test;
 
 import loon.Screen;
-import loon.action.sprite.ColorBackground;
-import loon.canvas.LColor;
+import loon.component.LClickButton;
+import loon.component.LComponent;
+import loon.event.ClickListener;
 import loon.event.GameTouch;
+import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class Test extends Screen{
+public class Test extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onLoad() {
-	add(new ColorBackground(LColor.white, 66, 66, 99, 99));
+
+		// 设置默认字体大小为20号字
+		LFont.setDefaultFont(LFont.getFont(20));
+
+		add(MultiScreenTest.getBackButton(this, 1));
+		setBackground("back1.png");
+		add(new LClickButton("Scale", 66, 66, 120, 50).S(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+				if (isActionCompleted()) { //如果Screen动画执行完毕则执行(改变Screen会影响全局，所以最好检查下是否有动画在播放，以免某些动画中途停止，导致Screen混乱
+					//影响整个布局)
+					selfAction().scaleTo(0.6f).start(); //缩放为60%
+				}
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		}));
+		add(new LClickButton("Shake", 256, 66, 120, 50).S(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+				if (isActionCompleted()) {
+					selfAction().shakeTo(2f).start();
+				}
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		}));
+		add(new LClickButton("Rotate", 66, 166, 120, 50).S(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+				if (isActionCompleted()) {
+					selfAction().rotateTo(180).start();
+				}
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		}));
+		add(new LClickButton("Reset", 256, 166, 120, 50).S(new ClickListener() {
+
+			@Override
+			public void UpClick(LComponent comp, float x, float y) {
+				if (isActionCompleted()) {
+					selfAction().rotateTo(0).scaleTo(1f).start();
+				}
+			}
+
+			@Override
+			public void DragClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DownClick(LComponent comp, float x, float y) {
+
+			}
+
+			@Override
+			public void DoClick(LComponent comp) {
+
+			}
+		}));
 	}
 
 	@Override
 	public void alter(LTimerContext timer) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchDown(GameTouch e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchUp(GameTouch e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchMove(GameTouch e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touchDrag(GameTouch e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }

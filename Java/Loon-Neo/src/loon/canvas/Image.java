@@ -42,8 +42,16 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 		return haveToClose;
 	}
 
+	public static Canvas createCanvas(float w, float h) {
+		return createCanvas((int) w, (int) h);
+	}
+
 	public static Canvas createCanvas(int w, int h) {
 		return LSystem.base().graphics().createCanvas(w, h);
+	}
+
+	public static Image createImage(float w, float h) {
+		return createImage((int) w, (int) h);
 	}
 
 	public static Image createImage(int w, int h) {

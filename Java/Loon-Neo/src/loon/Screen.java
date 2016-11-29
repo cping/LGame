@@ -21,6 +21,7 @@
 package loon;
 
 import loon.action.ActionControl;
+import loon.action.ActionTween;
 import loon.action.camera.BaseCamera;
 import loon.action.camera.EmptyCamera;
 import loon.action.collision.GravityHandler;
@@ -49,6 +50,7 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LTextureImage;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
@@ -62,11 +64,13 @@ import loon.utils.timer.LTimerContext;
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
 
+	private ScreenAction _screenAction = null;
+
 	public int index = 0;
 
 	// Screen中组件渲染顺序,默认精灵最下,桌面在后,用户渲染最上
 	public static enum DrawOrder {
-		 SPRITE, DESKTOP, USER
+		SPRITE, DESKTOP, USER
 	}
 
 	/**
@@ -109,8 +113,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 设置为默认渲染顺序
 	 */
 	public void defaultDraw() {
-		setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP,
-				DrawOrder.USER);
+		setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP, DrawOrder.USER);
 	}
 
 	/**
@@ -184,7 +187,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	/** 受限函数结束 **/
 
 	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
-	
+
 	private LTransition _transition;
 
 	protected final Closeable.Set _conns = new Closeable.Set();
@@ -455,7 +458,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler gravityHandler;
 
-	private LColor color;
+	private LColor _backgroundColor;
 
 	private float lastTouchX, lastTouchY, touchDX, touchDY;
 
@@ -470,6 +473,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			keyButtonReleased = SysInput.NO_KEY;
 
 	boolean isNext;
+
+	private RectBox _rectBox;
+
+	private LColor _baseColor;
+
+	private float _alpha = 1f;
+	private float _rotation = 0;
+	private float _scaleX = 1f, _scaleY = 1f;
+
+	private boolean _visible = true;
 
 	private int mode, frame;
 
@@ -1242,10 +1255,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 */
 	public Screen setBackground(LColor c) {
 		setRepaintMode(SCREEN_COLOR_REPAINT);
-		if (color == null) {
-			color = new LColor(c);
+		if (_backgroundColor == null) {
+			_backgroundColor = new LColor(c);
 		} else {
-			color.setColor(c.r, c.g, c.b, c.a);
+			_backgroundColor.setColor(c.r, c.g, c.b, c.a);
 		}
 		return this;
 	}
@@ -1260,8 +1273,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return setBackground(new LColor(c));
 	}
 
-	public LColor getColor() {
-		return color;
+	public LColor getBackgroundColor() {
+		return _backgroundColor;
 	}
 
 	/**
@@ -1599,19 +1612,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this.mode = mode;
 	}
 
-	public Screen setLocation(float x, float y) {
+	public void setLocation(float x, float y) {
+		pos(x, y);
+	}
+
+	public Screen pos(float x, float y) {
 		this.tx = x;
 		this.ty = y;
 		this.isTranslate = (tx != 0 || ty != 0);
 		return this;
 	}
 
-	public Screen setX(float x) {
+	public void setX(float x) {
+		this.posX(x);
+	}
+
+	public Screen posX(float x) {
 		setLocation(x, ty);
 		return this;
 	}
 
-	public Screen setY(float y) {
+	public void setY(float y) {
+		this.posY(y);
+	}
+
+	public Screen posY(float y) {
 		setLocation(tx, y);
 		return this;
 	}
@@ -1644,9 +1669,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private final void repaint(GLEx g) {
 		if (!isClose) {
+			if (!_visible) {
+				return;
+			}
 			try {
 				// 记录屏幕矩阵以及画笔
 				g.save();
+				if (_baseColor != null) {
+					g.setColor(_baseColor);
+				}
+				if (_alpha != 1f) {
+					g.setAlpha(_alpha);
+				}
+				if (_rotation != 0) {
+					g.rotate(getX() + getHalfWidth(), getY() + getHalfHeight(),
+							_rotation);
+				}
+				if (_scaleX != 1f || _scaleY != 1f) {
+					g.scale(_scaleX, _scaleY, getX() + getHalfWidth(), getY()
+							+ getHalfHeight());
+				}
 				// 偏移屏幕
 				if (isTranslate) {
 					g.translate(tx, ty);
@@ -1695,9 +1737,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			} else if (replaceDstScreen.isOnLoadComplete()) {
 				if (isScreenFrom) {
 					repaint(g);
-					if (replaceDstScreen.color != null) {
+					if (replaceDstScreen._backgroundColor != null) {
 						tmpColor = g.color();
-						g.setColor(replaceDstScreen.color);
+						g.setColor(replaceDstScreen._backgroundColor);
 						g.fillRect(dstPos.x(), dstPos.y(), getWidth(),
 								getHeight());
 						g.setColor(tmpColor);
@@ -1717,9 +1759,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 						g.clearClip();
 					}
 				} else {
-					if (replaceDstScreen.color != null) {
+					if (replaceDstScreen._backgroundColor != null) {
 						tmpColor = g.color();
-						g.setColor(replaceDstScreen.color);
+						g.setColor(replaceDstScreen._backgroundColor);
 						g.fillRect(0, 0, getWidth(), getHeight());
 						g.setColor(tmpColor);
 					}
@@ -1728,9 +1770,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 								getWidth(), getHeight());
 					}
 					replaceDstScreen.createUI(g);
-					if (color != null) {
+					if (_backgroundColor != null) {
 						tmpColor = g.color();
-						g.setColor(color);
+						g.setColor(_backgroundColor);
 						g.fillRect(dstPos.x(), dstPos.y(), getWidth(),
 								getHeight());
 						g.setColor(tmpColor);
@@ -2489,6 +2531,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public final void destroy() {
 		synchronized (this) {
 			index = 0;
+			_rotation = 0;
+			_scaleX = _scaleY = _alpha = 1f;
+			_baseColor = null;
+			_visible = false;
 			_limits.clear();
 			_touchAreas.clear();
 			touchButtonPressed = SysInput.NO_BUTTON;
@@ -2525,6 +2571,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				gravityHandler = null;
 			}
 			clearFrameLoop();
+			if (_screenAction != null) {
+				removeAllActions(_screenAction);
+			}
 			if (releases != null) {
 				for (LRelease r : releases) {
 					if (r != null) {
@@ -2562,6 +2611,117 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			return new ResourceLocal(path);
 		}
 		return LSystem._base.assets().getJsonResource(path);
+	}
+
+	public boolean isRotated() {
+		return this._rotation != 0;
+	}
+
+	public void setRotation(float r) {
+		this._rotation = r;
+		if (_rotation > 360f) {
+			_rotation = 0f;
+		}
+	}
+
+	public float getRotation() {
+		return _rotation;
+	}
+
+	public boolean isScaled() {
+		return (this._scaleX != 1) || (this._scaleY != 1);
+	}
+
+	public float getScaleX() {
+		return this._scaleX;
+	}
+
+	public float getScaleY() {
+		return this._scaleY;
+	}
+
+	public void setScaleX(final float sx) {
+		this._scaleX = sx;
+	}
+
+	public void setScaleY(final float sy) {
+		this._scaleY = sy;
+	}
+
+	public void setScale(final float pScale) {
+		this._scaleX = pScale;
+		this._scaleY = pScale;
+	}
+
+	public void setScale(final float sx, final float sy) {
+		this._scaleX = sx;
+		this._scaleY = sy;
+	}
+
+	public boolean isVisible() {
+		return this._visible;
+	}
+
+	public void setVisible(final boolean v) {
+		this._visible = v;
+	}
+
+	public boolean isTxUpdate() {
+		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || tx != 0
+				|| ty != 0;
+	}
+
+	public void setAlpha(float a) {
+		this._alpha = a;
+	}
+
+	public float getAlpha() {
+		return this._alpha;
+	}
+
+	public void setColor(LColor color) {
+		this._baseColor = color;
+	}
+
+	public LColor getColor() {
+		return this._baseColor;
+	}
+
+	public RectBox getRectBox() {
+		if (_rectBox != null) {
+			_rectBox.setBounds(MathUtils.getBounds(getX() * _scaleX, getY()
+					* _scaleY, getWidth() * _scaleX, getHeight() * _scaleY,
+					_rotation, _rectBox));
+		} else {
+			_rectBox = MathUtils.getBounds(getX() * _scaleX, getY() * _scaleY,
+					getWidth() * _scaleX, getHeight() * _scaleY, _rotation,
+					_rectBox);
+		}
+		return _rectBox;
+	}
+
+	public ScreenAction getScreenAction() {
+		synchronized (this) {
+			if (_screenAction == null) {
+				_screenAction = new ScreenAction(this);
+			} else {
+				_screenAction.set(this);
+			}
+			return _screenAction;
+		}
+	}
+
+	public boolean isActionCompleted() {
+		return _screenAction == null || isActionCompleted(getScreenAction());
+	}
+
+	/**
+	 * 返回Screen的动作事件
+	 * 
+	 * @return
+	 */
+	public ActionTween selfAction() {
+		return set(getScreenAction(), false);
 	}
 
 	public abstract void resume();

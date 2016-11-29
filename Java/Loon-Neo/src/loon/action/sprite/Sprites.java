@@ -70,6 +70,10 @@ public class Sprites implements Serializable, LRelease {
 
 	private Screen _screen;
 
+	public Sprites(Screen screen, float width, float height) {
+		this(screen, (int) width, (int) height);
+	}
+
 	public Sprites(Screen screen, int w, int h) {
 		this._screen = screen;
 		this._visible = true;

@@ -30,6 +30,7 @@ import loon.event.MouseMake;
 import loon.event.SysInputFactory;
 import loon.event.TouchMake;
 import loon.event.Updateable;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.ListMap;
@@ -56,7 +57,7 @@ public class LProcess extends PlayerUtils {
 
 	private boolean isInstance;
 
-	private int id, width, height;
+	private int id;
 
 	private boolean waitTransition;
 
@@ -425,6 +426,28 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void draw(GLEx g) {
+		int repaintMode = getRepaintMode();
+		switch (repaintMode) {
+		case Screen.SCREEN_NOT_REPAINT:
+			break;
+		case Screen.SCREEN_TEXTURE_REPAINT:
+			g.draw(getBackground(), getX(), getY(), getWidth(), getHeight(),
+					getColor(), getRotation(), null, getScaleX(), getScaleY());
+			break;
+		case Screen.SCREEN_COLOR_REPAINT:
+			LColor c = getBackgroundColor();
+			if (c != null) {
+				g.clear(c);
+			}
+			break;
+		default:
+			g.draw(getBackground(),
+					repaintMode / 2 - MathUtils.random(repaintMode),
+					repaintMode / 2 - MathUtils.random(repaintMode),
+					getWidth(), getHeight(), getColor(), getRotation(), null,
+					getScaleX(), getScaleY());
+			break;
+		}
 		if (isInstance) {
 			if (waitTransition) {
 				if (transition != null) {
@@ -457,11 +480,32 @@ public class LProcess extends PlayerUtils {
 		}
 	}
 
-	public LColor getColor() {
+	public LColor getBackgroundColor() {
 		if (isInstance) {
-			return currentScreen.getColor();
+			return currentScreen.getBackgroundColor();
 		}
 		return null;
+	}
+
+	public float getScaleX() {
+		if (isInstance) {
+			return currentScreen.getScaleX();
+		}
+		return 1f;
+	}
+
+	public float getScaleY() {
+		if (isInstance) {
+			return currentScreen.getScaleY();
+		}
+		return 1f;
+	}
+
+	public float getRotation() {
+		if (isInstance) {
+			return currentScreen.getRotation();
+		}
+		return 0;
 	}
 
 	public LTexture getBackground() {
@@ -571,6 +615,13 @@ public class LProcess extends PlayerUtils {
 		}
 	}
 
+	public LColor getColor() {
+		if (isInstance) {
+			return currentScreen.getColor();
+		}
+		return LColor.white;
+	}
+
 	public float getX() {
 		if (isInstance) {
 			return currentScreen.getX();
@@ -583,6 +634,51 @@ public class LProcess extends PlayerUtils {
 			return currentScreen.getY();
 		}
 		return 0;
+	}
+
+	private final Vector2f _tmpLocaltion = new Vector2f();
+
+	public Vector2f convertXY(float x, float y) {
+		float newX = ((x - getX()) / (LSystem.getScaleWidth()));
+		float newY = ((y - getY()) / (LSystem.getScaleHeight()));
+		if (isInstance && currentScreen.isTxUpdate()) {
+			float oldW = getWidth();
+			float oldH = getHeight();
+			float newW = getWidth() * getScaleX();
+			float newH = getHeight() * getScaleY();
+			float offX = oldW / 2f - newW / 2f;
+			float offY = oldH / 2f - newH / 2f;
+			float nx = (newX - offX);
+			float ny = (newY - offY);
+			final int r = (int) getRotation();
+			switch (r) {
+			case 0:
+			case 360:
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY());
+				break;
+			case 90:
+				offX = oldH / 2f - newW / 2f;
+				offY = oldW / 2f - newH / 2f;
+				nx = (newX - offY);
+				ny = (newY - offX);
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY())
+						.rotate(90);
+				_tmpLocaltion.set(-_tmpLocaltion.x,
+						MathUtils.abs(_tmpLocaltion.y - getHeight()));
+				break;
+			case 180:
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY())
+						.rotate(getRotation()).addSelf(getWidth(), getHeight());
+				break;
+			default: //原则上不处理非水平角度的触点
+				_tmpLocaltion.set(newX, newY);
+				break;
+			}
+
+		} else {
+			_tmpLocaltion.set(newX, newY);
+		}
+		return _tmpLocaltion;
 	}
 
 	public Screen getScreen() {
@@ -712,11 +808,17 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public int getHeight() {
-		return height;
+		if (isInstance) {
+			return currentScreen.getHeight();
+		}
+		return 0;
 	}
 
 	public int getWidth() {
-		return width;
+		if (isInstance) {
+			return currentScreen.getWidth();
+		}
+		return 0;
 	}
 
 	public void setCurrentScreen(final Screen screen) {

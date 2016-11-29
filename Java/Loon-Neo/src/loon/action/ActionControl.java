@@ -53,6 +53,14 @@ public class ActionControl {
 		actions.removeAllActions(actObject);
 	}
 
+	public boolean containsKey(ActionBind actObject) {
+		return actions.containsKey(actObject);
+	}
+
+	public boolean isCompleted(ActionBind actObject) {
+		return actions.isCompleted(actObject);
+	}
+	
 	public int getCount() {
 		return actions.getCount();
 	}
