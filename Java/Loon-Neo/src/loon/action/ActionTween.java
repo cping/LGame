@@ -177,46 +177,86 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return moveTo(endX, endY, false, 8);
 	}
 
+	public ActionTween moveTo(float endX, float endY, ActionListener l) {
+		return moveTo(endX, endY, false, 8, l);
+	}
+
 	public ActionTween moveTo(float endX, float endY, int speed) {
 		return moveTo(endX, endY, false, speed);
 	}
 
+	public ActionTween moveTo(float endX, float endY, int speed,
+			ActionListener l) {
+		return moveTo(endX, endY, false, speed, l);
+	}
+
 	public ActionTween moveTo(float endX, float endY, boolean flag) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0);
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0,
+				null);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag,
+			ActionListener l) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0,
+				l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed) {
 		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed,
-				0, 0);
+				0, 0, null);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag, int speed,
+			ActionListener l) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed,
+				0, 0, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag,
 			float offsetX, float offsetY) {
 		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8,
-				offsetX, offsetY);
+				offsetX, offsetY, null);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag,
+			float offsetX, float offsetY, ActionListener l) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8,
+				offsetX, offsetY, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed,
 			float offsetX, float offsetY) {
 		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed,
-				offsetX, offsetY);
+				offsetX, offsetY, null);
+	}
+
+	public ActionTween moveTo(float endX, float endY, boolean flag, int speed,
+			float offsetX, float offsetY, ActionListener l) {
+		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed,
+				offsetX, offsetY, l);
 	}
 
 	public ActionTween moveTo(Field2D map, float endX, float endY,
 			boolean flag, int speed) {
-		return moveTo(map, endX, endY, flag, speed, 0, 0);
+		return moveTo(map, endX, endY, flag, speed, 0, 0, null);
 	}
 
 	public ActionTween moveTo(Field2D map, float endX, float endY,
-			boolean flag, int speed, float offsetX, float offsetY) {
+			boolean flag, int speed, ActionListener l) {
+		return moveTo(map, endX, endY, flag, speed, 0, 0, l);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY,
+			boolean flag, int speed, float offsetX, float offsetY,
+			ActionListener l) {
 		if (map != null && map.inside(endX, endY)) {
 			MoveTo move = new MoveTo(map, endX, endY, flag, speed);
 			move.setDelay(0);
 			move.setOffset(offsetX, offsetY);
-			return event(move);
+			return event(move, l);
 		} else {
 			return moveBy(endX, endY, speed, EasingMode.Linear, offsetX,
-					offsetY);
+					offsetY, l);
 		}
 	}
 
@@ -224,47 +264,83 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return moveBy(endX, endY, 8);
 	}
 
+	public ActionTween moveBy(float endX, float endY, ActionListener l) {
+		return moveBy(endX, endY, 8, l);
+	}
+
 	public ActionTween moveBy(float endX, float endY, int speed) {
-		MoveBy moveby = new MoveBy(endX, endY, speed);
-		return event(moveby);
+		return event(new MoveBy(endX, endY, speed), null);
+	}
+
+	public ActionTween moveBy(float endX, float endY, int speed,
+			ActionListener l) {
+		return event(new MoveBy(endX, endY, speed), l);
 	}
 
 	public ActionTween moveBy(float endX, float endY, float duration,
 			float delay, EasingMode easing, float offsetX, float offsetY) {
-		MoveBy moveby = new MoveBy(-1f, -1f, endX, endY, 0, duration, delay,
-				easing, offsetX, offsetY);
-		return event(moveby);
+		return event(new MoveBy(-1f, -1f, endX, endY, 0, duration, delay,
+				easing, offsetX, offsetY));
+	}
+
+	public ActionTween moveBy(float endX, float endY, float duration,
+			float delay, EasingMode easing, float offsetX, float offsetY,
+			ActionListener l) {
+		return event(new MoveBy(-1f, -1f, endX, endY, 0, duration, delay,
+				easing, offsetX, offsetY), l);
 	}
 
 	public ActionTween moveBy(float endX, float endY, int speed,
 			EasingMode easing, float offsetX, float offsetY) {
-		MoveBy moveby = new MoveBy(endX, endY, speed, easing, offsetX, offsetY);
-		return event(moveby);
+		return moveBy(endX, endY, speed, easing, offsetX, offsetY, null);
+	}
+
+	public ActionTween moveBy(float endX, float endY, int speed,
+			EasingMode easing, float offsetX, float offsetY, ActionListener l) {
+		return event(new MoveBy(endX, endY, speed, easing, offsetX, offsetY), l);
 	}
 
 	public ActionTween moveBy(float startX, float startY, float endX,
 			float endY, float duration, float delay, EasingMode easing,
 			float offsetX, float offsetY) {
-		MoveBy moveby = new MoveBy(startX, startY, endX, endY, 0, duration,
-				delay, easing, offsetX, offsetY);
-		return event(moveby);
+		return event(new MoveBy(startX, startY, endX, endY, 0, duration, delay,
+				easing, offsetX, offsetY), null);
+	}
+
+	public ActionTween moveBy(float startX, float startY, float endX,
+			float endY, float duration, float delay, EasingMode easing,
+			float offsetX, float offsetY, ActionListener l) {
+		return event(new MoveBy(startX, startY, endX, endY, 0, duration, delay,
+				easing, offsetX, offsetY), l);
 	}
 
 	public ActionTween moveBy(float endX, float endY, EasingMode easing) {
-		MoveBy moveby = new MoveBy(endX, endY, easing);
-		return event(moveby);
+		return event(new MoveBy(endX, endY, easing));
+	}
+
+	public ActionTween moveBy(float endX, float endY, EasingMode easing,
+			ActionListener l) {
+		return event(new MoveBy(endX, endY, easing), l);
 	}
 
 	public ActionTween moveBy(float endX, float endY, float duration,
 			float delay, EasingMode easing) {
-		MoveBy moveby = new MoveBy(endX, endY, duration, delay, easing);
-		return event(moveby);
+		return event(new MoveBy(endX, endY, duration, delay, easing));
+	}
+
+	public ActionTween moveBy(float endX, float endY, float duration,
+			float delay, EasingMode easing, ActionListener l) {
+		return event(new MoveBy(endX, endY, duration, delay, easing), l);
 	}
 
 	public ActionTween moveBy(float endX, float endY, float duration,
 			EasingMode easing) {
-		MoveBy moveby = new MoveBy(endX, endY, duration, easing);
-		return event(moveby);
+		return event(new MoveBy(endX, endY, duration, easing));
+	}
+
+	public ActionTween moveBy(float endX, float endY, float duration,
+			EasingMode easing, ActionListener l) {
+		return event(new MoveBy(endX, endY, duration, easing), l);
 	}
 
 	public ActionTween fadeIn(float speed) {
@@ -276,9 +352,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween fadeTo(int fadeMode, float speed) {
-		FadeTo fade = new FadeTo(fadeMode, (int) speed);
-		fade.setDelay(0);
-		return event(fade);
+		return event(new FadeTo(fadeMode, (int) speed));
 	}
 
 	public ActionTween rotateTo(float angle) {
@@ -440,8 +514,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new CircleTo(radius, velocity));
 	}
 
-	public ActionTween circleTo(int radius, int velocity, float speed) {
-		return event(new CircleTo(radius, velocity, speed));
+	public ActionTween circleTo(float centerX, float cenertY, int radius,
+			int velocity) {
+		return circleTo(-1, -1, radius, velocity, 0.1f);
+	}
+
+	public ActionTween circleTo(float centerX, float cenertY, int radius,
+			int velocity, float speed) {
+		return event(new CircleTo(centerX, cenertY, radius, velocity, speed));
 	}
 
 	public ActionTween effectTo(BaseEffect eff) {
@@ -506,6 +586,98 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 				centerPoint, startPoint, duration, delay, easing));
 	}
 
+	/**
+	 * 监听所有指定名称的已注入事件
+	 * 
+	 * @param name
+	 * @param listener
+	 * @return
+	 */
+	public ActionTween listenTags(Object tag, ActionListener listener) {
+		if (actionEvents == null || tag == null) {
+			return this;
+		}
+		for (; actionEvents.hashNext();) {
+			ActionEvent tmp = actionEvents.next();
+			if (tmp != null) {
+				if (tag.equals(tmp.tag) || tmp.tag == tag) {
+					tmp.setActionListener(listener);
+				}
+			}
+		}
+		actionEvents.stopNext();
+		return this;
+	}
+
+	/**
+	 * 监听所有指定名称的已注入事件
+	 * 
+	 * @param name
+	 * @param listener
+	 * @return
+	 */
+	public ActionTween listenNames(String name, ActionListener listener) {
+		if (actionEvents == null || name == null) {
+			return this;
+		}
+		String findName = name.trim().toLowerCase();
+		for (; actionEvents.hashNext();) {
+			ActionEvent tmp = actionEvents.next();
+			if (tmp != null) {
+				if (findName.equals(tmp.getName())) {
+					tmp.setActionListener(listener);
+				}
+			}
+		}
+		actionEvents.stopNext();
+		return this;
+	}
+	
+	/**
+	 * 停止所有指定名的动画
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public ActionTween killNames(String name) {
+		if (actionEvents == null || name == null) {
+			return this;
+		}
+		String findName = name.trim().toLowerCase();
+		for (; actionEvents.hashNext();) {
+			ActionEvent tmp = actionEvents.next();
+			if (tmp != null) {
+				if (findName.equals(tmp.getName())) {
+					tmp.kill();
+				}
+			}
+		}
+		actionEvents.stopNext();
+		return this;
+	}
+
+	/**
+	 * 停止所有包含指定标记的动画
+	 * 
+	 * @param tag
+	 * @return
+	 */
+	public ActionTween killTags(Object tag) {
+		if (actionEvents == null || tag == null) {
+			return this;
+		}
+		for (; actionEvents.hashNext();) {
+			ActionEvent tmp = actionEvents.next();
+			if (tmp != null) {
+				if (tag.equals(tmp.tag) || tmp.tag == tag) {
+					tmp.kill();
+				}
+			}
+		}
+		actionEvents.stopNext();
+		return this;
+	}
+	
 	public ActionTween loop(int count) {
 		return loop(count, false);
 	}
@@ -621,10 +793,26 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween event(ActionEvent event) {
+		return event(event, null);
+	}
+
+	/**
+	 * 注入缓动动画事件(自定义事件也请在此处注入)
+	 * 
+	 * @param event
+	 * @param listener
+	 * @return
+	 */
+	public ActionTween event(ActionEvent event, ActionListener listener) {
 		if (actionEvents == null) {
 			actionEvents = new Array<ActionEvent>();
 		}
-		actionEvents.add(event);
+		if (event != null) {
+			actionEvents.add(event);
+			if (listener != null) {
+				event.setActionListener(listener);
+			}
+		}
 		return this;
 	}
 

@@ -335,7 +335,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public float getDeltaTime() {
-		return ((float) elapsedTime) / 1000f;
+		return MathUtils.min(((float) elapsedTime) / 1000f, 0.1f);
+	}
+
+	public long getElapsedTime() {
+		return elapsedTime;
 	}
 
 	public final static byte DRAW_EMPTY = -1;
@@ -2691,7 +2695,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public RectBox getBox() {
 		return getRectBox();
 	}
-	
+
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
 			_rectBox.setBounds(MathUtils.getBounds(getX() * _scaleX, getY()

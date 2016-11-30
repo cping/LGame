@@ -1,7 +1,9 @@
 package org.test;
 
+import loon.LSetting;
 import loon.LSystem;
 import loon.LTransition;
+import loon.LazyLoading;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -22,6 +24,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.Easing.EasingMode;
+import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -59,6 +62,33 @@ public class ActionEventTest extends Screen {
 				if (e == Event.DOWN) {
 					// 设置一个指定精灵的动画事件(set或on函数设置指定对象的连续缓动动画，off或removeAllActions函数关闭所有缓动动画)
 					on(sprite).
+					circleTo(50,50,100, 90).//环绕50,50位置，半径100,每次移动30个像素，做不间断的旋转
+					listenNames("circle", new ActionListener() { //监听已经注入的，所有名称为circle的对象
+						
+						private LTimer timer = new LTimer(1500);
+						
+						@Override
+						public void stop(ActionBind o) {
+							
+							
+						}
+						
+						@Override
+						public void start(ActionBind o) {
+							
+							
+						}
+						
+						@Override
+						public void process(ActionBind o) {
+							if(timer.action(elapsedTime)){
+								//停止所有circleTo事件
+								stopActionNames(o, "circle");
+							}
+							
+						}
+					}).
+					arrowTo(199f,66f,100f). //向指定位置做弓弩发射移动（也就是做抛物线,由于加入了g值，所以此位置非停止位置而是经过位置）,重力100
 					moveTo(330, 66).moveTo(66,66).loop(1). //移动到330x66位置后再移动到66,66，循环上述动画1次
 					moveOvalTo(360f, 100, 20, new Vector2f(130,60), 1f, EasingMode.Linear).//椭圆形移动,初始x为0,旋转360,椭圆宽100,高20,以130,60为中心,移动1秒
 					moveRoundTo(360, 90, new Vector2f(130,60),3f, EasingMode.Linear) //做环绕移动，旋转360度,半径90个像素，以130,130为中心点,移动3秒,缓动方式Linear

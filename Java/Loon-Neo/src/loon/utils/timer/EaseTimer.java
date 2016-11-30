@@ -64,6 +64,11 @@ public class EaseTimer {
 		this._delta = timer._delta;
 		this._timeInAfter = timer._timeInAfter;
 	}
+	
+	public boolean action(long elapsedTime){
+		update(elapsedTime);
+		return isCompleted();
+	}
 
 	public void update(long elapsedTime) {
 		if (this._finished) {

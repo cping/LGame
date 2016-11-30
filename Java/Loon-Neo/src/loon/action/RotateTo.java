@@ -32,7 +32,7 @@ public class RotateTo extends ActionEvent {
 	private EaseTimer easeTimer;
 
 	public RotateTo(float dstAngle) {
-		this(dstAngle, 3f);
+		this(dstAngle, 2f);
 	}
 
 	public RotateTo(float dstAngle, float speed, EasingMode easing) {
@@ -45,11 +45,11 @@ public class RotateTo extends ActionEvent {
 
 	public RotateTo(float dstAngle, float diffAngle, float speed,
 			EasingMode easing) {
-		this(0, dstAngle, diffAngle, 3f, 1f / 60f, easing);
+		this(0, dstAngle, diffAngle, 2f, 1f / 60f, easing);
 	}
 
 	public RotateTo(float dstAngle, float diffAngle, float speed) {
-		this(0, dstAngle, diffAngle, 3f, 1f / 60f, EasingMode.Linear);
+		this(0, dstAngle, diffAngle, 2f, 1f / 60f, EasingMode.Linear);
 	}
 
 	public RotateTo(float startRotation, float dstAngle, float diffAngle,

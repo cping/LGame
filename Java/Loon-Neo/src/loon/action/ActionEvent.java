@@ -151,6 +151,8 @@ public abstract class ActionEvent {
 		oldX = e.oldX;
 		oldY = e.oldY;
 		tag = e.tag;
+		actionListener = e.actionListener;
+		original = e.original;
 	}
 	
 	public void kill() {

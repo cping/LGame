@@ -127,6 +127,18 @@ public class PlayerUtils extends Director {
 		return ActionTween.call(callback);
 	}
 
+	public final static boolean isActionCompleted(ActionBind bind) {
+		return ActionControl.get().isCompleted(bind);
+	}
+
+	public final static boolean stopActionNames(ActionBind k, String name) {
+		return ActionControl.get().stopNames(k, name);
+	}
+
+	public final static boolean stopActionTags(ActionBind k, Object tag) {
+		return ActionControl.get().stopTags(k, tag);
+	}
+
 	public final static CanvasPlayer createTextPlayer(LFont font, String text) {
 		TextLayout layout = font.getLayoutText(text);
 		Canvas canvas = LSystem
@@ -141,10 +153,5 @@ public class PlayerUtils extends Director {
 				canvas);
 		return player;
 	}
-
-	public final static boolean isActionCompleted(ActionBind bind) {
-		return ActionControl.get().isCompleted(bind);
-	}
-
 
 }

@@ -65,6 +65,14 @@ public class ActionControl {
 		return actions.getCount();
 	}
 
+	public boolean stopNames(ActionBind k, String name) {
+		return actions.stopNames(k, name);
+	}
+
+	public boolean stopTags(ActionBind k, Object tag) {
+		return actions.stopTags(k, tag);
+	}
+	
 	public void removeAction(Object tag, ActionBind actObject) {
 		actions.removeAction(tag, actObject);
 	}

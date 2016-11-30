@@ -36,6 +36,46 @@ public class Actions {
 		actions.clear();
 	}
 
+	public boolean stopNames(ActionBind k, String name) {
+		ActionElement eles = (ActionElement) actions.getValue(k);
+		if (eles == null || name == null) {
+			return true;
+		}
+		TArray<ActionEvent> eves = eles.actions;
+		if (eves == null || eves.size == 0) {
+			return true;
+		}
+		int count = 0;
+		for (int i = 0, size = eves.size; i < size; i++) {
+			ActionEvent e = eves.get(i);
+			if (e != null && name.trim().toLowerCase().equals(e.getName())) {
+				e.kill();
+				count++;
+			}
+		}
+		return count > 0;
+	}
+
+	public boolean stopTags(ActionBind k, Object tag) {
+		ActionElement eles = (ActionElement) actions.getValue(k);
+		if (eles == null || tag == null) {
+			return true;
+		}
+		TArray<ActionEvent> eves = eles.actions;
+		if (eves == null || eves.size == 0) {
+			return true;
+		}
+		int count = 0;
+		for (int i = 0, size = eves.size; i < size; i++) {
+			ActionEvent e = eves.get(i);
+			if (e != null && (tag.equals(e.getTag()) || tag == e.getTag())) {
+				e.kill();
+				count++;
+			}
+		}
+		return count > 0;
+	}
+
 	public boolean isCompleted(ActionBind k) {
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null) {

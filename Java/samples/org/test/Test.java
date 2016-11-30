@@ -1,5 +1,7 @@
 package org.test;
 
+import loon.LSetting;
+import loon.LazyLoading;
 import loon.Screen;
 import loon.component.LClickButton;
 import loon.component.LComponent;
@@ -78,7 +80,7 @@ public class Test extends Screen {
 			@Override
 			public void UpClick(LComponent comp, float x, float y) {
 				if (isActionCompleted()) {
-					selfAction().rotateTo(180).start();
+					selfAction().rotateTo(-180).scaleTo(0.6f).start();
 				}
 			}
 
