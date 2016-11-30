@@ -24,6 +24,10 @@ public class FlashTo extends ActionEvent {
 		this(duration, delay, EasingMode.Linear);
 	}
 
+	public FlashTo(float duration, EasingMode easing) {
+		this(duration, 1f / 60f, easing);
+	}
+
 	public FlashTo(float duration, float delay, EasingMode easing) {
 		this.easeTimer = new EaseTimer(duration, delay, easing);
 		this.interval = delay;
@@ -56,8 +60,8 @@ public class FlashTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		FlashTo flash = new FlashTo(easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode());
+		FlashTo flash = new FlashTo(easeTimer.getDuration(),
+				easeTimer.getDelay(), easeTimer.getEasingMode());
 		flash.set(this);
 		return flash;
 	}

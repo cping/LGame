@@ -20,6 +20,7 @@
  */
 package loon;
 
+import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
 import loon.action.camera.BaseCamera;
@@ -662,19 +663,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			}
 		}
 		return false;
-	}
-
-	private RectBox tempRect;
-
-	public RectBox getBox() {
-		if (tempRect == null) {
-			tempRect = new RectBox(this.getX(), this.getY(), this.getWidth(),
-					this.getHeight());
-		} else {
-			tempRect.setBounds(this.getX(), this.getY(), this.getWidth(),
-					this.getHeight());
-		}
-		return tempRect;
 	}
 
 	protected final PaintOrder DRAW_USER_PAINT() {
@@ -1512,6 +1500,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			}
 		}
 		return this;
+	}
+
+	public boolean contains(ActionBind obj) {
+		return getRectBox().contains(obj.getX(), obj.getY(), obj.getWidth(),
+				obj.getHeight());
 	}
 
 	public boolean contains(Object obj) {
@@ -2695,6 +2688,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this._baseColor;
 	}
 
+	public RectBox getBox() {
+		return getRectBox();
+	}
+	
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
 			_rectBox.setBounds(MathUtils.getBounds(getX() * _scaleX, getY()

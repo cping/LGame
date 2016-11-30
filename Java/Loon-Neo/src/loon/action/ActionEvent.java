@@ -152,7 +152,11 @@ public abstract class ActionEvent {
 		oldY = e.oldY;
 		tag = e.tag;
 	}
-
+	
+	public void kill() {
+		this._isCompleted = true;
+	}
+	
 	public abstract ActionEvent cpy();
 
 	public abstract ActionEvent reverse();

@@ -165,6 +165,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new FlashTo(duration));
 	}
 
+	public ActionTween flashTo(float duration, EasingMode easing) {
+		return event(new FlashTo(duration, easing));
+	}
+
 	public ActionTween flashTo(float duration, float delay, EasingMode easing) {
 		return event(new FlashTo(duration, delay, easing));
 	}
@@ -205,13 +209,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween moveTo(Field2D map, float endX, float endY,
 			boolean flag, int speed, float offsetX, float offsetY) {
-		if (map.inside(endX, endY)) {
+		if (map != null && map.inside(endX, endY)) {
 			MoveTo move = new MoveTo(map, endX, endY, flag, speed);
 			move.setDelay(0);
 			move.setOffset(offsetX, offsetY);
 			return event(move);
 		} else {
-			return moveBy(endX, endY, speed);
+			return moveBy(endX, endY, speed, EasingMode.Linear, offsetX,
+					offsetY);
 		}
 	}
 
@@ -224,10 +229,24 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(moveby);
 	}
 
+	public ActionTween moveBy(float endX, float endY, float duration,
+			float delay, EasingMode easing, float offsetX, float offsetY) {
+		MoveBy moveby = new MoveBy(-1f, -1f, endX, endY, 0, duration, delay,
+				easing, offsetX, offsetY);
+		return event(moveby);
+	}
+
+	public ActionTween moveBy(float endX, float endY, int speed,
+			EasingMode easing, float offsetX, float offsetY) {
+		MoveBy moveby = new MoveBy(endX, endY, speed, easing, offsetX, offsetY);
+		return event(moveby);
+	}
+
 	public ActionTween moveBy(float startX, float startY, float endX,
-			float endY, float duration, float delay, EasingMode easing) {
+			float endY, float duration, float delay, EasingMode easing,
+			float offsetX, float offsetY) {
 		MoveBy moveby = new MoveBy(startX, startY, endX, endY, 0, duration,
-				delay, easing);
+				delay, easing, offsetX, offsetY);
 		return event(moveby);
 	}
 
@@ -284,7 +303,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new RotateTo(startRotation, dstAngle, diffAngle, duration,
 				delay, easing));
 	}
-	
+
 	public ActionTween colorTo(LColor end) {
 		return colorTo(null, end);
 	}
@@ -398,8 +417,23 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new ArrowTo(x, y));
 	}
 
+	public ActionTween arrowTo(float x, float y, float g) {
+		return event(new ArrowTo(x, y, g));
+	}
+
+	public ActionTween arrowTo(float x, float y, float speed, float g,
+			EasingMode easing) {
+		return event(new ArrowTo(x, y, speed, g, easing));
+	}
+
 	public ActionTween arrowTo(float tx, float ty, float speed, float g) {
 		return event(new ArrowTo(tx, ty, speed, g));
+	}
+
+	public ActionTween arrowTo(float st, float sy, float tx, float ty,
+			float speed, float g, float duration, float delay, EasingMode easing) {
+		return event(new ArrowTo(st, sy, tx, ty, speed, g, duration, delay,
+				easing));
 	}
 
 	public ActionTween circleTo(int radius, int velocity) {

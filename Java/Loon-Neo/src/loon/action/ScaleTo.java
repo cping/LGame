@@ -28,7 +28,7 @@ public class ScaleTo extends ActionEvent {
 
 	private float deltaX, deltaY;
 
-	private float startX = -1f, startY=-1f;
+	private float startX = -1f, startY = -1f;
 
 	private float endX, endY;
 
@@ -45,7 +45,7 @@ public class ScaleTo extends ActionEvent {
 	public ScaleTo(float sx, float sy, float sp) {
 		this(-1, -1, sx, sy, sp);
 	}
-	
+
 	public ScaleTo(float stx, float sty, float sx, float sy, float sp) {
 		this.startX = stx;
 		this.startY = sty;
@@ -101,14 +101,14 @@ public class ScaleTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		ScaleTo scale = new ScaleTo(endX, endY, speed);
+		ScaleTo scale = new ScaleTo(startX, startY, endX, endY, speed);
 		scale.set(this);
 		return scale;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		ScaleTo scale = new ScaleTo(startX, startY, speed);
+		ScaleTo scale = new ScaleTo(endX, endY, startX, startY, speed);
 		scale.set(this);
 		return scale;
 	}

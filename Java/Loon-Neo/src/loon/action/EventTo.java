@@ -35,7 +35,9 @@ public class EventTo extends ActionEvent {
 		_event.setDelay(getDelay());
 	}
 
+	@Override
 	public void kill() {
+		super.kill();
 		_event.kill();
 	}
 

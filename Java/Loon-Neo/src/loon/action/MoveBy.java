@@ -5,36 +5,44 @@ import loon.utils.timer.EaseTimer;
 
 public class MoveBy extends ActionEvent {
 
-	private int _speed = 1, _count = 0;
+	private int _speed = 1;
 
-	private float _startX = -1, _startY = -1, _endX, _endY, _lastX, _lastY;
+	private float _startX = -1, _startY = -1, _endX, _endY;
 
 	private EaseTimer easeTimer;
 
 	public MoveBy(float endX, float endY, float duration, float delay,
 			EasingMode easing) {
-		this(-1, -1, endX, endY, 0, duration, delay, easing);
+		this(-1, -1, endX, endY, 0, duration, delay, easing, 0, 0);
 	}
 
 	public MoveBy(float endX, float endY, EasingMode easing) {
-		this(-1, -1, endX, endY, 0, 1f, 1f / 60f, easing);
+		this(-1, -1, endX, endY, 0, 1f, 1f / 60f, easing, 0, 0);
 	}
 
 	public MoveBy(float endX, float endY, float duration, EasingMode easing) {
-		this(-1, -1, endX, endY, 0, duration, 1f / 60f, easing);
+		this(-1, -1, endX, endY, 0, duration, 1f / 60f, easing, 0, 0);
 	}
 
 	public MoveBy(float endX, float endY, int speed) {
-		this(-1, -1, endX, endY, speed, 1f, 1f / 60f, EasingMode.Linear);
+		this(-1, -1, endX, endY, speed, 1f, 1f / 60f, EasingMode.Linear, 0, 0);
+	}
+
+	public MoveBy(float endX, float endY, int speed, EasingMode easing,
+			float sx, float sy) {
+		this(-1, -1, endX, endY, speed, 1f, 1f / 60f, easing, sx, sy);
 	}
 
 	public MoveBy(float startX, float startY, float endX, float endY,
-			int speed, float duration, float delay, EasingMode easing) {
+			int speed, float duration, float delay, EasingMode easing,
+			float sx, float sy) {
 		this._startX = startX;
 		this._startY = startY;
 		this._endX = endX;
 		this._endY = endY;
 		this._speed = speed;
+		this.offsetX = sx;
+		this.offsetY = sy;
 		this.easeTimer = new EaseTimer(duration, delay, easing);
 		this.setDelay(0);
 	}
@@ -55,29 +63,44 @@ public class MoveBy extends ActionEvent {
 			} else {
 				float x = original.getX();
 				float y = original.getY();
-				if (x < _endX) {
-					x += _speed;
-				} else if (x > _endX + _speed) {
-					x -= _speed;
+				int dirX = (int) (_endX - _startX);
+				int dirY = (int) (_endY - _startY);
+				int count = 0;
+				if (dirX > 0) {
+					if (x >= _endX) {
+						count++;
+					} else {
+						x += _speed;
+					}
+				} else if (dirX < 0) {
+					if (x <= _endX) {
+						count++;
+					} else {
+						x -= _speed;
+					}
+				} else {
+					count++;
 				}
-				if (y < _endY) {
-					y += _speed;
-				} else if (y > _endY + _speed) {
-					y -= _speed;
+				if (dirY > 0) {
+					if (y >= _endY) {
+						count++;
+					} else {
+						y += _speed;
+					}
+				} else if (dirY < 0) {
+					if (y <= _endY) {
+						count++;
+					} else {
+						y -= _speed;
+					}
+				} else {
+					count++;
 				}
-				if (_count > 0) {
-					_isCompleted = true;
-					return;
-				}
-				if (_lastX == x && _lastY == y) {
-					_count++;
-				}
-				_lastX = x;
-				_lastY = y;
 				original.setLocation(x + offsetX, y + offsetY);
+				_isCompleted = (count == 2);
 			}
 		}
-		return;
+
 	}
 
 	@Override
@@ -101,7 +124,7 @@ public class MoveBy extends ActionEvent {
 	public ActionEvent cpy() {
 		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed,
 				easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode());
+				easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}
@@ -110,7 +133,7 @@ public class MoveBy extends ActionEvent {
 	public ActionEvent reverse() {
 		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed,
 				easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode());
+				easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}
