@@ -2,6 +2,9 @@ package loon.utils.timer;
 
 import loon.event.Updateable;
 
+/**
+ * 计时器(也就是俗称的秒表，需要正常计算时间的游戏都会用到)
+ */
 public class StopwatchTimer {
 
 	private long from;

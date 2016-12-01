@@ -38,6 +38,8 @@ import loon.event.ClickListener;
 import loon.event.SysInput;
 import loon.event.SysKey;
 import loon.event.SysTouch;
+import loon.event.Touched;
+import loon.event.TouchedClick;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -76,17 +78,56 @@ public abstract class LComponent extends LObject<LContainer> implements
 	// 点击事件监听
 	public ClickListener Click;
 
+	private TouchedClick _touchListener;
+
+	private final TouchedClick makeTouched() {
+		if (_touchListener == null) {
+			_touchListener = new TouchedClick();
+		}
+		if (Click != null) {
+			_touchListener.addClickListener(Click);
+		}
+		this.Click = _touchListener;
+		return _touchListener;
+	}
+
+	public LComponent all(Touched t) {
+		makeTouched().setAllTouch(t);
+		return this;
+	}
+
+	public LComponent down(Touched t) {
+		makeTouched().setDownTouch(t);
+		return this;
+	}
+
+	public LComponent up(Touched t) {
+		makeTouched().setUpTouch(t);
+		return this;
+	}
+
+	public LComponent drag(Touched t) {
+		makeTouched().setDragTouch(t);
+		return this;
+	}
+
+	public LComponent A(ClickListener c) {
+		return addClickListener(c);
+	}
+	
 	public LComponent addClickListener(ClickListener c) {
 		this.Click = c;
+		makeTouched();
 		return this;
 	}
 
 	public LComponent S(ClickListener c) {
-		return addClickListener(c);
+		return SetClick(c);
 	}
 
 	public LComponent SetClick(ClickListener c) {
-		return addClickListener(c);
+		this.Click = c;
+		return this;
 	}
 
 	public ClickListener getClick() {

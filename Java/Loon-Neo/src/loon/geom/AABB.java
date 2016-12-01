@@ -65,6 +65,19 @@ public class AABB implements XY {
 		return minY;
 	}
 
+	public boolean contains(Circle circle) {
+		float xmin = circle.x - circle.radius;
+		float xmax = xmin + 2f * circle.radius;
+
+		float ymin = circle.y - circle.radius;
+		float ymax = ymin + 2f * circle.radius;
+
+		return ((xmin > minX && xmin < minX + maxX) && (xmax > minX && xmax < minX
+				+ maxX))
+				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY
+						+ maxY));
+	}
+
 	@Override
 	public String toString() {
 		return StringUtils.format("AABB [minX:{0},minY:{1},maxX:{2},maxY:{3}]",

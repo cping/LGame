@@ -45,8 +45,17 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	}
 
 	public RealtimeProcess(String id) {
+		this(id, LSystem.SECOND);
+	}
+
+	public RealtimeProcess(long delay) {
+		this("Process" + System.currentTimeMillis(), delay);
+	}
+	
+	public RealtimeProcess(String id, long delay) {
 		this.isDead = false;
 		this.id = id;
+		this.timer.setDelay(delay);
 	}
 
 	@Override

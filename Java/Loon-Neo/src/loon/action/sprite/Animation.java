@@ -59,7 +59,7 @@ public class Animation implements LRelease {
 	int size;
 
 	private LTimer intervalTime = new LTimer(0);
-	
+
 	public Animation() {
 		this(new TArray<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0);
 	}

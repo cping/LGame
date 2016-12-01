@@ -588,4 +588,23 @@ final public class CollectionUtils {
 		return copyOf(obj, obj.length);
 	}
 
+	/**
+	 * 反转数组自身
+	 * 
+	 * @param arrays
+	 */
+	public static <T> void reverse(T[] arrays) {
+		for (int i = 0, size = arrays.length; i < size; i++) {
+			int idx = i;
+			int last = size - 1 - i;
+			if (idx == last || idx > last) {
+				break;
+			}
+			T obj = arrays[idx];
+			T swap = arrays[last];
+			arrays[idx] = swap;
+			arrays[last] = obj;
+		}
+	}
+
 }

@@ -147,6 +147,19 @@ public class RectF implements XY {
 					&& y >= top && y < bottom;
 		}
 
+		public boolean contains(Circle circle) {
+			float xmin = circle.x - circle.radius;
+			float xmax = xmin + 2f * circle.radius;
+
+			float ymin = circle.y - circle.radius;
+			float ymax = ymin + 2f * circle.radius;
+
+			return ((xmin > getX() && xmin < getX() + width()) && (xmax > getX() && xmax < getX()
+					+ width()))
+					&& ((ymin > getY() && ymin < getY() + height()) && (ymax > getY() && ymax < getY()
+							+ height()));
+		}
+
 		public boolean contains(float left, float top, float right, float bottom) {
 			return this.left < this.right && this.top < this.bottom
 					&& this.left <= left && this.top <= top

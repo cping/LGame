@@ -7,6 +7,7 @@ import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.timer.CountdownTimer;
 
 /*
  * 显示大写数字
@@ -18,6 +19,8 @@ import loon.utils.StringUtils;
  * 
  */
 public class NumberSprite extends Entity {
+
+	private CountdownTimer countdownTimer;
 
 	private String label;
 	// 0
@@ -75,10 +78,24 @@ public class NumberSprite extends Entity {
 	}
 
 	public NumberSprite(String mes, LColor color, int unit) {
-		this.label = mes;
+		this(null, mes, color, unit);
+	}
+
+	public NumberSprite(CountdownTimer time, LColor color, int unit) {
+		this(time, null, color, unit);
+	}
+
+	public NumberSprite(CountdownTimer timer, String mes, LColor color, int unit) {
+		this.countdownTimer = timer;
+		this.label = timer == null ? mes : timer.getTime();
 		this.setColor(color);
 		this.unit = unit;
 		this.setRepaint(true);
+		if (label != null) {
+			int size = label.length() * unit;
+			super.setWidth(size * 3);
+			super.setHeight(2 * unit * 6);
+		}
 	}
 
 	public void setUnit(int unit) {
@@ -219,6 +236,21 @@ public class NumberSprite extends Entity {
 	public void setHeight(float h) {
 		super.setHeight(h);
 		this.unit = (int) MathUtils.max(unit, h);
+	}
+
+	@Override
+	protected void onUpdate(long elapsedTime) {
+		if (countdownTimer != null) {
+			label = countdownTimer.getTime();
+		}
+	}
+
+	public void setCountdownTimer(CountdownTimer timer) {
+		this.countdownTimer = timer;
+	}
+
+	public CountdownTimer getCountdownTimer() {
+		return this.countdownTimer;
 	}
 
 	@Override
