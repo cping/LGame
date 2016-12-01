@@ -101,6 +101,7 @@ public class CountdownTimer extends RealtimeProcess {
 	public void run(LTimerContext time) {
 		_millisecond -= MathUtils.min(time.getTimeSinceLastUpdate(), 60f);
 		if (_millisecond <= 0) {
+			kill();
 		}
 	}
 }
