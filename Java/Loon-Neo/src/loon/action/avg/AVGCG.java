@@ -241,7 +241,7 @@ public class AVGCG implements LRelease {
 						if (animation.alpha != 1f) {
 							g.setAlpha(animation.alpha);
 						}
-						g.draw(animation.texture, chara.x, chara.y,
+						g.draw(animation.texture, chara.getX(), chara.getY(),
 								animation.width, animation.height, point.x,
 								point.y, point.x + animation.imageWidth,
 								point.y + animation.imageHeight,

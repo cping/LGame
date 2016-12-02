@@ -35,9 +35,15 @@ public class MultiScreenTest extends Screen {
 	}
 
 	public static LClickButton getBackButton(final Screen screen, final int page) {
+		return getBackButton(screen, page, screen.getWidth() - 100,
+				screen.getHeight() - 70);
+	}
 
-		LClickButton back = new LClickButton("Back", screen.getWidth() - 100,
-				screen.getHeight() - 70, 80, 50);
+	public static LClickButton getBackButton(final Screen screen,
+			final int page, final int x, int y) {
+
+		LClickButton back = new LClickButton("Back", x, y, 80, 50);
+		back.setLayer(130);
 		back.SetClick(new ClickListener() {
 
 			@Override
@@ -147,7 +153,8 @@ public class MultiScreenTest extends Screen {
 			"LNode2", "Input", "Depth", "Canvas", "GameMap", "MoveClip",
 			"TextureImage", "Session" };
 
-	final String[] page1 = {"Screen",  "Animation","FrameLoop","Script","Light","Countdown" };
+	final String[] page1 = { "Screen", "Animation", "FrameLoop", "Script",
+			"Light", "Countdown","AVG" };
 
 	static BMFont info_font;
 
@@ -225,6 +232,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new RocScriptTest());
 			addScreen(page1[index++], new LightImageTest());
 			addScreen(page1[index++], new CountdownTest());
+			addScreen(page1[index++], new TitleScreen());
 		}
 		// 默认按钮大小为100x25
 		int btnWidth = 100;

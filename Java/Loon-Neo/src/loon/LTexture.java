@@ -882,6 +882,9 @@ public class LTexture extends Painter implements LRelease {
 		}
 		if (o instanceof LTexture) {
 			LTexture tmp = (LTexture) o;
+			if (this == tmp) {
+				return true;
+			}
 			if (source != null && !source.equals(tmp.source)) {
 				return false;
 			}

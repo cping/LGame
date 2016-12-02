@@ -55,6 +55,8 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(
 			false);
 
+	private boolean _stopUpdate = false;
+
 	protected float _width, _height;
 
 	protected LTexture _image;
@@ -772,6 +774,9 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	}
 
 	protected void onManagedUpdate(final long elapsedTime) {
+		if (_stopUpdate) {
+			return;
+		}
 		if ((this._childrens != null) && !this._childrenIgnoreUpdate) {
 			final TArray<IEntity> entities = this._childrens;
 			final int entityCount = entities.size;
@@ -830,7 +835,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 
 	@Override
 	public RectBox getCollisionBox() {
-		return getRect(getLocation().x(), getLocation().y(), getWidth(),
+		return getRect(x(), y(), getWidth(),
 				getHeight());
 	}
 
@@ -943,6 +948,14 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		return stringBuilder.toString();
 	}
 
+	public boolean isStopUpdate() {
+		return _stopUpdate;
+	}
+
+	public void setStopUpdate(boolean s) {
+		this._stopUpdate = s;
+	}
+
 	@Override
 	public void close() {
 		if (!isDisposed()) {
@@ -951,7 +964,9 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 				_image = null;
 			}
 		}
+		_stopUpdate = false;
 		setState(State.DISPOSED);
+		removeActionEvents(this);
 	}
 
 	@Override

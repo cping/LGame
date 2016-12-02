@@ -19,11 +19,15 @@ import loon.utils.MathUtils;
  */
 public class Pixmap extends Limit implements LRelease {
 
+	private Canvas tmpCanvas = null;
+
 	public Image getImage() {
-		Canvas canvas = LSystem.base().graphics()
-				.createCanvas(getWidth(), getHeight());
-		canvas.image.setPixmap(this);
-		return canvas.image;
+		if (tmpCanvas == null) {
+			tmpCanvas = LSystem.base().graphics()
+					.createCanvas(getWidth(), getHeight());
+		}
+		tmpCanvas.image.setPixmap(this);
+		return tmpCanvas.image;
 	}
 
 	public static Pixmap createImage(int w, int h) {
@@ -1996,18 +2000,22 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	@Override
 	public String toString() {
-		int h = this._height;
-		int w = this._width;
-		StringBuffer output = new StringBuffer(size);
-		for (int y = 0; y < h; y++) {
-			for (int x = 0; x < w; x++) {
-				int val = this.getData(x, y);
-				output.append(val >= 0 ? ' ' + val : "" + val);
+		StringBuilder sbr = new StringBuilder();
+		for (int y = 0; y < _height; y++) {
+			sbr.append('{');
+			for (int x = 0; x < _width; x++) {
+				int p = getData(x, y);
+				sbr.append(p);
+				if (x < _width - 1) {
+					sbr.append(',');
+				}
 			}
-			output.append('\n');
+			sbr.append('}');
+			sbr.append(",\n");
 		}
-		return output.toString();
+		return sbr.toString();
 	}
 
 	@Override

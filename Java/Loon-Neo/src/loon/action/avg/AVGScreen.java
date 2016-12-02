@@ -1807,6 +1807,7 @@ public abstract class AVGScreen extends Screen {
 		}
 		_currentTasks.clear();
 		_tasks.clear();
+		AVGDialog.clear();
 	}
 
 }

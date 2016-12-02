@@ -22,7 +22,6 @@ package loon;
 
 import loon.LTexture.Format;
 import loon.event.Updateable;
-import loon.opengl.LSTRDictionary;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
@@ -172,6 +171,24 @@ public class LTextures {
 		return removeTexture(texture.tmpLazy, remove);
 	}
 
+	public static void destroySourceAll() {
+		if (lazyTextures.size > 0) {
+			TArray<LTexture> textures = new TArray<LTexture>(
+					lazyTextures.values());
+			for (int i = 0; i < textures.size; i++) {
+				LTexture tex2d = textures.get(i);
+				if (tex2d != null && !tex2d.disposed()
+						&& tex2d.getSource() != null
+						&& tex2d.getSource().indexOf("<canvas>") == -1) {
+					tex2d.refCount = 0;
+					tex2d.close();
+					lazyTextures.remove(tex2d.tmpLazy);
+					tex2d = null;
+				}
+			}
+		}
+	}
+
 	public static void destroyAll() {
 		if (lazyTextures.size > 0) {
 			TArray<LTexture> textures = new TArray<LTexture>(
@@ -181,11 +198,10 @@ public class LTextures {
 				if (tex2d != null && !tex2d.disposed()) {
 					tex2d.refCount = 0;
 					tex2d.close();
+					lazyTextures.remove(tex2d.tmpLazy);
 					tex2d = null;
 				}
 			}
-			lazyTextures.clear();
 		}
-		LSTRDictionary.dispose();
 	}
 }

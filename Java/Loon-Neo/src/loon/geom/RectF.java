@@ -303,6 +303,10 @@ public class RectF implements XY {
 
 	}
 
+	public RectF(RectF rect) {
+		this(rect.x, rect.y, rect.width, rect.height);
+	}
+	
 	public RectF(Range range) {
 		this(range.x(), range.y(), range.width(), range.height());
 	}

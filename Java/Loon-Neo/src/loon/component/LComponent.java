@@ -26,10 +26,10 @@ import loon.LObject;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
+import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
 import loon.component.layout.LayoutConstraints;
@@ -40,6 +40,7 @@ import loon.event.SysKey;
 import loon.event.SysTouch;
 import loon.event.Touched;
 import loon.event.TouchedClick;
+import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -816,7 +817,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public void setBackground(String fileName) {
-		this.setBackground(LTextures.loadTexture(fileName));
+		this.setBackground(Image.createImage(fileName).texture());
 	}
 
 	public void setBackground(LColor color) {
@@ -831,11 +832,22 @@ public abstract class LComponent extends LObject<LContainer> implements
 		if (b == null) {
 			return;
 		}
-		LTexture oldImage = this._background;
+		final LTexture oldImage = this._background;
 		if (oldImage != b && oldImage != null) {
 			if (!b.equals(LSystem.base().graphics().finalColorTex())) {
-				oldImage.close();
-				oldImage = null;
+				Updateable update = new Updateable() {
+
+					@Override
+					public void action(Object a) {
+						if (oldImage != null) {
+							LTexture parent = LTexture.firstFather(oldImage);
+							parent.closeChildAll();
+							parent.close();
+						}
+					
+					}
+				};
+				LSystem.unload(update);
 			}
 		}
 		this._background = b;

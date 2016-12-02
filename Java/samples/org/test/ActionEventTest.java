@@ -62,7 +62,7 @@ public class ActionEventTest extends Screen {
 				if (e == Event.DOWN) {
 					// 设置一个指定精灵的动画事件(set或on函数设置指定对象的连续缓动动画，off或removeAllActions函数关闭所有缓动动画)
 					on(sprite).
-					circleTo(50,50,100, 90).//环绕50,50位置，半径100,每次移动30个像素，做不间断的旋转
+					circleTo(50,50,100,90).//环绕50,50位置，半径100,每次移动90个像素，做不间断的旋转
 					listenNames("circle", new ActionListener() { //监听已经注入的，所有名称为circle的对象
 						
 						private LTimer timer = new LTimer(1500);

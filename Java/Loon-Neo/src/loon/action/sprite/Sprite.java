@@ -571,7 +571,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 	 * @return
 	 */
 	public Point getMiddlePoint() {
-		return new Point(getLocation().x() + getWidth() / 2, getLocation().y()
+		return new Point(x() + getWidth() / 2, y()
 				+ getHeight() / 2);
 	}
 
@@ -592,7 +592,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 	 * @return
 	 */
 	public RectBox getCollisionBox() {
-		return getRect(getLocation().x(), getLocation().y(), getWidth(),
+		return getRect(x(), y(), getWidth(),
 				getHeight());
 	}
 

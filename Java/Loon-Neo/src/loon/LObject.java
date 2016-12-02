@@ -453,7 +453,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move(Vector2f v) {
-		_location.move(v);
+		move(v.x,v.y);
 	}
 
 	public void move(float x, float y) {
@@ -461,9 +461,13 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setLocation(XY local) {
-		_location.setLocation(local.getX(), local.getY());
+		setLocation(local.getX(), local.getY());
 	}
 
+	public void setLocation(Vector2f v) {
+		setLocation(v.x, v.y);
+	}
+	
 	public void setLocation(float x, float y) {
 		_location.setLocation(x, y);
 	}
@@ -485,7 +489,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setX(Integer x) {
-		_location.setX(x.intValue());
+		setX(x.intValue());
 	}
 
 	public void setX(float x) {
@@ -493,7 +497,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setY(Integer y) {
-		_location.setY(y.intValue());
+		setY(y.intValue());
 	}
 
 	public void setY(float y) {
@@ -502,10 +506,6 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public Vector2f getLocation() {
 		return _location;
-	}
-
-	public void setLocation(Vector2f _location) {
-		this._location = _location;
 	}
 
 	public static void centerOn(final LObject<?> object, float w, float h) {

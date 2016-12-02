@@ -586,6 +586,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 				centerPoint, startPoint, duration, delay, easing));
 	}
 
+	public ActionTween removeActionsTo(ActionBind bind) {
+		return event(new RemoveActionsTo(bind));
+	}
+
+	public ActionTween removeActionsTo() {
+		return removeActionsTo(null);
+	}
+	
 	/**
 	 * 监听所有指定名称的已注入事件
 	 * 

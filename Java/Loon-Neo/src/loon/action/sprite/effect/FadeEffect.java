@@ -27,7 +27,6 @@ import loon.opengl.GLEx;
 
 public class FadeEffect extends Entity implements BaseEffect {
 
-
 	public float time;
 
 	public float currentFrame;

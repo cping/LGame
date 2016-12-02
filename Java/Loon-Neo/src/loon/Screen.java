@@ -29,6 +29,7 @@ import loon.action.collision.GravityHandler;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
+import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.Desktop;
 import loon.component.LComponent;
@@ -1225,16 +1226,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 
 	 * @param screen
 	 */
-	public Screen setBackground(LTexture background) {
+	public Screen setBackground(final LTexture background) {
 		if (background != null) {
 			setRepaintMode(SCREEN_TEXTURE_REPAINT);
-			LTexture screen = background;
-			LTexture tmp = currentScreen;
-			currentScreen = screen;
-			if (tmp != null) {
-				tmp.close();
-				tmp = null;
-			}
+			Updateable update = new Updateable() {
+
+				@Override
+				public void action(Object a) {
+					LTexture screen = background;
+					final LTexture tmp = currentScreen;
+					if (tmp != null) {
+						LTexture parent = LTexture.firstFather(currentScreen);
+						parent.closeChildAll();
+						parent.close();
+					}
+					currentScreen = screen;
+
+				}
+			};
+			LSystem.load(update);
 		} else {
 			setRepaintMode(SCREEN_NOT_REPAINT);
 		}
@@ -1245,7 +1255,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 设定背景图像
 	 */
 	public Screen setBackground(String fileName) {
-		return this.setBackground(LTextures.loadTexture(fileName));
+		return this.setBackground(Image.createImage(fileName).texture());
 	}
 
 	/**
@@ -2565,12 +2575,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				desktop.clear();
 				desktop = null;
 			}
-			if (currentScreen != null) {
-				LTexture parent = LTexture.firstFather(currentScreen);
-				parent.closeChildAll();
-				parent.close();
-				currentScreen = null;
-			}
 			if (gravityHandler != null) {
 				gravityHandler.close();
 				gravityHandler = null;
@@ -2590,6 +2594,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			_conns.close();
 			release();
 			close();
+			if (currentScreen != null) {
+				LTexture parent = LTexture.firstFather(currentScreen);
+				parent.closeChildAll();
+				parent.close();
+			}
+			currentScreen = null;
 		}
 	}
 

@@ -228,11 +228,38 @@ public class LFont implements IFont {
 	@Override
 	public int hashCode() {
 		if (hash == 1) {
+			hash = LSystem.unite(textFormat.font.name.length(), hash);
 			hash = LSystem.unite(textFormat.font.name.hashCode(), hash);
 			hash = LSystem.unite(textFormat.font.style.ordinal(), hash);
 			hash = LSystem.unite((int) textFormat.font.size, hash);
 		}
 		return hash;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (!(o instanceof LFont)) {
+			return false;
+		}
+		LFont font = (LFont) o;
+		if (this == font) {
+			return true;
+		}
+		if (hashCode() == font.hashCode()) {
+			return true;
+		}
+		if (font.textFormat == textFormat) {
+			return true;
+		}
+		if (font.textFormat.font.name.equals(textFormat.font.name)
+				&& font.textFormat.font.size == textFormat.font.size
+				&& font.textFormat.font.style.equals(textFormat.font.style)) {
+			return true;
+		}
+		return false;
 	}
 
 	public Vector2f getOrigin(String text) {

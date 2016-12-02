@@ -104,4 +104,12 @@ public class CountdownTimer extends RealtimeProcess {
 			kill();
 		}
 	}
+
+	public String getSeparator() {
+		return _separator;
+	}
+
+	public void setSeparator(String separator) {
+		this._separator = separator;
+	}
 }

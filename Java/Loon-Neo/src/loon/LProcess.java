@@ -429,15 +429,26 @@ public class LProcess extends PlayerUtils {
 		int repaintMode = getRepaintMode();
 		switch (repaintMode) {
 		case Screen.SCREEN_NOT_REPAINT:
+			if (!isInstance && getBackground() != null) {
+				g.draw(getBackground(), getX(), getY(), getWidth(),
+						getHeight(), getColor(), getRotation(), null,
+						getScaleX(), getScaleY());
+			}
 			break;
 		case Screen.SCREEN_TEXTURE_REPAINT:
 			g.draw(getBackground(), getX(), getY(), getWidth(), getHeight(),
 					getColor(), getRotation(), null, getScaleX(), getScaleY());
 			break;
 		case Screen.SCREEN_COLOR_REPAINT:
-			LColor c = getBackgroundColor();
-			if (c != null) {
-				g.clear(c);
+			if (!isInstance && getBackground() != null) {
+				g.draw(getBackground(), getX(), getY(), getWidth(),
+						getHeight(), getColor(), getRotation(), null,
+						getScaleX(), getScaleY());
+			} else {
+				LColor c = getBackgroundColor();
+				if (c != null) {
+					g.clear(c);
+				}
 			}
 			break;
 		default:
@@ -509,7 +520,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public LTexture getBackground() {
-		if (isInstance) {
+		if (isInstance || currentScreen != null) {
 			return currentScreen.getBackground();
 		}
 		return null;

@@ -299,6 +299,10 @@ public class RectI implements XY {
 
 	}
 
+	public RectI(RectI rect) {
+		this(rect.x, rect.y, rect.width, rect.height);
+	}
+	
 	public RectI(Range range) {
 		this(range.x(), range.y(), range.width(), range.height());
 	}

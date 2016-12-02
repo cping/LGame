@@ -32,6 +32,7 @@ import loon.utils.MathUtils;
 
 public class MoveTo extends ActionEvent {
 
+	//寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
 	private final static IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 

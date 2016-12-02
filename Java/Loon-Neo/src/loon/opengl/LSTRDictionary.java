@@ -31,6 +31,18 @@ import loon.utils.TArray;
 
 public final class LSTRDictionary {
 
+	public static void setAsyn(boolean asyn) {
+		LSTRDictionary.tmp_asyn = asyn;
+	}
+
+	public static boolean isAsyn() {
+		return LSTRDictionary.tmp_asyn;
+	}
+
+	public static boolean asyn() {
+		return LSTRDictionary.tmp_asyn;
+	}
+
 	private static boolean tmp_asyn = true;
 
 	private final static ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(
@@ -39,11 +51,13 @@ public final class LSTRDictionary {
 	private final static ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(
 			20);
 
-	private static ObjectMap<String, LSTRFont> lazyEnglish = new ObjectMap<String, LSTRFont>(
-			10);
+	private final static ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(
+			20);
 
-	//每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
-	public final static String added = "0123456789abcdefgABCDEFG:.!?@#$%^&*(){}[]<>\"'";
+	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
+	public final static String added = "0123456789abcdefgABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:.,!?@#$%^&*(){}[]<>\"'\\/+-";
+
+	private final static char[] checkMessage = added.toCharArray();
 
 	public final static char split = '$';
 
@@ -89,6 +103,18 @@ public final class LSTRDictionary {
 
 	}
 
+	public synchronized static void clearEnglishLazy() {
+		synchronized (englishFontList) {
+			for (Dict d : englishFontList.values()) {
+				if (d != null) {
+					d.close();
+					d = null;
+				}
+			}
+			englishFontList.clear();
+		}
+	}
+
 	public synchronized static void clearStringLazy() {
 		synchronized (cacheList) {
 			if (cacheList != null) {
@@ -132,8 +158,37 @@ public final class LSTRDictionary {
 		return false;
 	}
 
+	private static boolean checkEnglishString(String mes) {
+		int len = mes.length();
+		int count = 0;
+		for (int n = 0; n < len; n++) {
+			for (int i = 0, j = checkMessage.length; i < j; i++) {
+				if (count >= len) {
+					return true;
+				}
+				if (checkMessage[i] == mes.charAt(n)) {
+					count++;
+				}
+			}
+		}
+
+		return count == len;
+	}
+
 	public synchronized final static Dict bind(final LFont font,
 			final String mes) {
+		if (checkEnglishString(mes)) {
+			if (englishFontList.size > size) {
+				clearEnglishLazy();
+			}
+			Dict pDict = englishFontList.get(font);
+			if (pDict == null) {
+				pDict = Dict.newDict();
+				pDict.font = new LSTRFont(font, added, tmp_asyn);
+				englishFontList.put(font, pDict);
+			}
+			return pDict;
+		}
 		final String message = mes + added;
 		if (cacheList.size > size) {
 			clearStringLazy();
@@ -154,7 +209,7 @@ public final class LSTRDictionary {
 			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_"
 					+ font.getSize();
 			Dict pDict = fontList.get(fontFlag);
-			//判定当前font与字体和已存在的文字图片纹理，是否和缓存的font适配
+			// 判定当前font与字体和已存在的文字图片纹理，是否和缓存的font适配
 			if ((cFont == null || pDict == null || (pDict != null && !pDict
 					.include(mes)))) {
 				if (pDict == null) {
@@ -174,7 +229,7 @@ public final class LSTRDictionary {
 						}
 					}
 					int newSize = charas.size;
-					//如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
+					// 如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
 					if (oldSize != newSize) {
 						if (pDict.font != null) {
 							pDict.font.close();
@@ -281,66 +336,11 @@ public final class LSTRDictionary {
 		return lazyKey.toString();
 	}
 
-	/**
-	 * 生成一组西方字符缓存键值
-	 * 
-	 * @param font
-	 * @return
-	 */
-	private synchronized static String makeLazyWestKey(LFont font) {
-		if (lazyKey == null) {
-			lazyKey = new StringBuffer();
-			lazyKey.append(font.getFontName().toLowerCase());
-			lazyKey.append(font.getStyle());
-			lazyKey.append(font.getSize());
-		} else {
-			lazyKey.delete(0, lazyKey.length());
-			lazyKey.append(font.getFontName().toLowerCase());
-			lazyKey.append(font.getStyle());
-			lazyKey.append(font.getSize());
-		}
-		return lazyKey.toString();
-	}
-
-	/**
-	 * 清空西文字体缓存
-	 */
-	public synchronized static void clearEnglishLazy() {
-		synchronized (lazyEnglish) {
-			for (LSTRFont str : lazyEnglish.values()) {
-				if (str != null) {
-					str.close();
-					str = null;
-				}
-			}
-		}
-	}
-
-	public synchronized static void setAsyn(boolean asyn) {
-		LSTRDictionary.tmp_asyn = asyn;
-	}
-
-	public synchronized static boolean isAsyn() {
-		return LSTRDictionary.tmp_asyn;
-	}
-
-	public synchronized static LSTRFont getGLFont(LFont f) {
-		if (lazyEnglish.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
-			clearEnglishLazy();
-		}
-		String key = makeLazyWestKey(f);
-		LSTRFont font = lazyEnglish.get(key);
-		if (font == null) {
-			font = new LSTRFont(f, tmp_asyn);
-			lazyEnglish.put(key, font);
-		}
-		return font;
-	}
-
 	public synchronized final static void dispose() {
 		cacheList.clear();
-		clearEnglishLazy();
 		clearStringLazy();
+		//单纯英文占用空间小,没必要时无需删,避免反复生成
+		//clearEnglishLazy();
 	}
 
 }

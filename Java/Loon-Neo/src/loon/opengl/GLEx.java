@@ -2252,7 +2252,25 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		setColor(argb);
 		return this;
 	}
-
+	
+	/**
+	 * 绘制一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param color
+	 */
+	public final GLEx drawRect(final float x1, final float y1, final float x2,
+			final float y2, int color) {
+		int argb = baseColor;
+		setColor(color);
+		setRect(x1, y1, x2, y2, false);
+		setColor(argb);
+		return this;
+	}
+	
 	/**
 	 * 填充一个矩形
 	 * 
@@ -2269,7 +2287,25 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		setColor(argb);
 		return this;
 	}
+	
+	/**
+	 * 填充一个矩形
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	public final GLEx fillRect(final float x1, final float y1, final float x2,
+			final float y2, int color) {
+		int argb = baseColor;
+		setColor(color);
+		setRect(x1, y1, x2, y2, true);
+		setColor(argb);
+		return this;
+	}
 
+	
 	private float[] temp_xs = new float[4];
 
 	private float[] temp_ys = new float[4];
