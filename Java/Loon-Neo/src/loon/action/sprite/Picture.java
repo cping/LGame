@@ -21,7 +21,7 @@ public class Picture extends Entity {
 	public Picture(Image image) {
 		this(image.texture(), 0, 0);
 	}
-	
+
 	public Picture(LTexture image) {
 		this(image, 0, 0);
 	}
@@ -31,7 +31,11 @@ public class Picture extends Entity {
 		this.setLocation(x, y);
 	}
 
+
 	public boolean equals(Picture p) {
+		if (this == p) {
+			return true;
+		}
 		if (_image.equals(p._image)) {
 			return true;
 		}

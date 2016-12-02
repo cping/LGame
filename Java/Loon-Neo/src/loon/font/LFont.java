@@ -42,6 +42,16 @@ public class LFont implements IFont {
 
 	private float _ascent = -1;
 
+	private boolean useCache;
+
+	public boolean isUseCache() {
+		return useCache;
+	}
+
+	public void setUseCache(boolean u) {
+		this.useCache = u;
+	}
+
 	LFont() {
 		this(LSystem.FONT_NAME, Style.PLAIN, 20, true);
 	}
@@ -108,8 +118,13 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y
-				+ ty, 0, c);
+		if (useCache) {
+			LSTRDictionary.drawString(this, string, _offset.x + tx, _offset.y
+					+ ty, 0, c);
+		} else {
+			LSTRDictionary.drawString(g, this, string, _offset.x + tx,
+					_offset.y + ty, 0, c);
+		}
 	}
 
 	@Override
@@ -121,8 +136,13 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y
-				+ ty, angle, c);
+		if (useCache) {
+			LSTRDictionary.drawString(this, string, _offset.x + tx, _offset.y
+					+ ty, angle, c);
+		} else {
+			LSTRDictionary.drawString(g, this, string, _offset.x + tx,
+					_offset.y + ty, angle, c);
+		}
 	}
 
 	@Override
@@ -134,8 +154,13 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(string)) {
 			return;
 		}
-		LSTRDictionary.drawString(g, this, string, _offset.x + tx, _offset.y
-				+ ty, sx, sy, ax, ay, angle, c);
+		if (useCache) {
+			LSTRDictionary.drawString(this, string, _offset.x + tx, _offset.y
+					+ ty, sx, sy, ax, ay, angle, c);
+		} else {
+			LSTRDictionary.drawString(g, this, string, _offset.x + tx,
+					_offset.y + ty, sx, sy, ax, ay, angle, c);
+		}
 	}
 
 	private void initLayout(String text) {

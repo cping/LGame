@@ -127,6 +127,11 @@ public abstract class LGame {
 		return (type == LGame.Type.ANDROID || type == LGame.Type.IOS || type == LGame.Type.WP);
 	}
 
+	public boolean isHTML5() {
+		Type type = this.type();
+		return type == LGame.Type.HTML5;
+	}
+	
 	public void reportError(String message, Throwable cause) {
 		errors.emit(new Error(message, cause));
 		log().warn(message, cause);

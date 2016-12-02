@@ -139,6 +139,8 @@ public class LSTRFont implements LRelease {
 
 	}
 
+	private int initDraw = -1;
+
 	private char newLineFlag = '\n';
 
 	private LTexture texture;
@@ -308,6 +310,10 @@ public class LSTRFont implements LRelease {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
+		if (initDraw < 1) {
+			initDraw++;
+			return;
+		}
 		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (displays) {
 				for (Cache cache : displays.values()) {
@@ -443,6 +449,10 @@ public class LSTRFont implements LRelease {
 			return;
 		}
 		if (StringUtils.isEmpty(chars)) {
+			return;
+		}
+		if (initDraw < 1) {
+			initDraw++;
 			return;
 		}
 		this.intObject = null;
@@ -628,7 +638,7 @@ public class LSTRFont implements LRelease {
 		if (c < totalCharSet) {
 			intObject = charArray[c];
 		} else {
-			intObject = customChars.get((int)c);
+			intObject = customChars.get((int) c);
 		}
 		if (intObject != null) {
 			return intObject.width;
@@ -779,6 +789,7 @@ public class LSTRFont implements LRelease {
 		fontBatch = null;
 		isDrawing = false;
 		initChars = false;
+		initDraw = -1;
 	}
 
 }

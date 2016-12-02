@@ -105,6 +105,12 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 
 	public void setTexture(LTexture tex) {
 		this._image = tex;
+		if (_width <= 0) {
+			_width = _image.width();
+		}
+		if (_height <= 0) {
+			_height = _image.height();
+		}
 		this._repaintDraw = (tex == null);
 	}
 
@@ -835,8 +841,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 
 	@Override
 	public RectBox getCollisionBox() {
-		return getRect(x(), y(), getWidth(),
-				getHeight());
+		return getRect(x(), y(), getWidth(), getHeight());
 	}
 
 	@Override
