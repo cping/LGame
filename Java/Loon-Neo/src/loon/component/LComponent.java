@@ -1088,6 +1088,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		this.selected = false;
 		this.visible = false;
 		setState(State.DISPOSED);
+		removeActionEvents(this);
 	}
 
 }

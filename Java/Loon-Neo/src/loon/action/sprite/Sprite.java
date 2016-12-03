@@ -988,6 +988,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 			animation.close();
 		}
 		setState(State.DISPOSED);
+		removeActionEvents(this);
 	}
 
 }

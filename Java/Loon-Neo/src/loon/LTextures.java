@@ -154,10 +154,6 @@ public class LTextures {
 						}
 					};
 					LSystem.load(u);
-					if (texture.childs != null) {
-						texture.childs.clear();
-						texture.childs = null;
-					}
 				}
 			} else {
 				texture.refCount--;

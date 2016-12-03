@@ -152,7 +152,6 @@ public abstract class NodeScreen extends SpriteBatchScreen {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	public LNNode findNode(int x, int y) {
 		if (content == null) {
 			return null;

@@ -1121,6 +1121,7 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 			animation.close();
 		}
 		setState(State.DISPOSED);
+		removeActionEvents(this);
 	}
 
 }

@@ -922,6 +922,10 @@ public class LTexture extends Painter implements LRelease {
 						image.close();
 						image = null;
 					}
+					if (childs != null) {
+						childs.clear();
+						childs = null;
+					}
 					_isLoaded = false;
 					_closed = true;
 				}
@@ -975,7 +979,7 @@ public class LTexture extends Painter implements LRelease {
 		close(false);
 	}
 
-	public void close(boolean forcedDdelete) {
+	public void close(boolean forcedDelete) {
 		_closed = true;
 		_countTexture--;
 		if (batch != null) {
@@ -983,17 +987,17 @@ public class LTexture extends Painter implements LRelease {
 			batch = null;
 		}
 		isBatch = false;
-		if (forcedDdelete) {
+		if (forcedDelete) {
 			if (childs != null) {
 				childs.clear();
 			}
 		} else if (!isChildAllClose()) {
 			return;
 		}
-		if (forcedDdelete) {
+		if (forcedDelete) {
 			LTextures.removeTexture(this, true);
 			free();
-			// 此处修成了一个旧版惊天的纹理释放bug,判定引用次数旧版一直写错成==-1,但实际应该<=0就是无引用……
+			// 此处修正了一个旧版惊天的纹理释放bug,判定引用次数旧版一直写错成<=-1,但实际应该<=0就是无引用……
 		} else if (LTextures.removeTexture(this, true) <= 0) {
 			if (LSystem._base.setting.disposeTexture) {
 				free();
