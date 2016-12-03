@@ -1294,29 +1294,6 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	public boolean isAutoDestory() {
 		return _autoDestroy;
 	}
-	
-	@Override
-	public void close() {
-		this._isClose = true;
-		if (this._super != null) {
-			this._super.removeNode(this);
-		}
-		this._selected = false;
-		this._visible = false;
-		if (_screen != null) {
-			this._screen.setNodeStat(this, false);
-		}
-		if (_autoDestroy) {
-			if (childs != null) {
-				for (LNNode c : childs) {
-					if (c != null) {
-						c.close();
-					}
-				}
-			}
-		}
-		setState(State.DISPOSED);
-	}
 
 	@Override
 	public Field2D getField2D() {
@@ -1366,4 +1343,27 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 	}
 
+	@Override
+	public void close() {
+		this._isClose = true;
+		if (this._super != null) {
+			this._super.removeNode(this);
+		}
+		this._selected = false;
+		this._visible = false;
+		if (_screen != null) {
+			this._screen.setNodeStat(this, false);
+		}
+		if (_autoDestroy) {
+			if (childs != null) {
+				for (LNNode c : childs) {
+					if (c != null) {
+						c.close();
+					}
+				}
+			}
+		}
+		setState(State.DISPOSED);
+		removeActionEvents(this);
+	}
 }
