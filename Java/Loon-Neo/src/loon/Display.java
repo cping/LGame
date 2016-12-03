@@ -217,13 +217,13 @@ public class Display extends LSystemView {
 	}
 
 	protected void draw(LTimerContext clock) {
-		
-		//fix渲染时机，避免调用渲染在纹理构造前
+
+		// fix渲染时机，避免调用渲染在纹理构造前
 		if (!initDrawConfig) {
 			newDefView(setting.isFPS);
 			initDrawConfig = true;
 		}
-		
+
 		if (showLogo) {
 			try {
 				glEx.save();
@@ -339,5 +339,17 @@ public class Display extends LSystemView {
 
 	public float height() {
 		return LSystem.viewSize.height;
+	}
+
+	public void close() {
+		if (this.fpsFont != null) {
+			this.fpsFont.close();
+			this.fpsFont = null;
+		}
+		if (this.logoTex != null) {
+			this.logoTex.close();
+			this.logoTex = null;
+		}
+		initDrawConfig = false;
 	}
 }

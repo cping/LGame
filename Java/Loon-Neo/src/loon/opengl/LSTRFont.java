@@ -254,6 +254,8 @@ public class LSTRFont implements LRelease {
 		make(true);
 	}
 
+	private float updateY = 0;
+
 	private synchronized void make(boolean asyn) {
 		if (initChars) {
 			return;
@@ -262,6 +264,7 @@ public class LSTRFont implements LRelease {
 			return;
 		}
 		isDrawing = true;
+		updateY = LSystem.isHTML5() ? 1f : 0;
 		Updateable update = new UpdateStringFont(this);
 		if (asyn) {
 			LSystem.load(update);
@@ -505,7 +508,7 @@ public class LSTRFont implements LRelease {
 						gl.draw(texture, x + totalWidth, y + totalHeight,
 								intObject.width * sx, intObject.height * sy,
 								intObject.storedX, intObject.storedY,
-								intObject.width, intObject.height, c);
+								intObject.width, intObject.height - updateY, c);
 					}
 					totalWidth += intObject.width;
 				}
@@ -521,6 +524,10 @@ public class LSTRFont implements LRelease {
 	public void addChar(char c, float x, float y, LColor color) {
 		make();
 		if (processing()) {
+			return;
+		}
+		if (initDraw < 1) {
+			initDraw++;
 			return;
 		}
 		this.charCurrent = c;
@@ -785,6 +792,8 @@ public class LSTRFont implements LRelease {
 		if (fontBatch != null) {
 			fontBatch.close();
 			fontBatch.destroy();
+			LTextureBatch.isBatchCacheDitry = true;
+			LTextureBatch.clearBatchCaches();
 		}
 		if (texture != null) {
 			texture.close(true);

@@ -995,6 +995,7 @@ public class LTexture extends Painter implements LRelease {
 			return;
 		}
 		if (forcedDelete) {
+			refCount = 0;
 			LTextures.removeTexture(this, true);
 			free();
 			// 此处修正了一个旧版惊天的纹理释放bug,判定引用次数旧版一直写错成<=-1,但实际应该<=0就是无引用……

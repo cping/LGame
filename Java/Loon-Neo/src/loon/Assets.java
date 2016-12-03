@@ -22,11 +22,14 @@ package loon;
 
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 import loon.utils.res.ResourceLocal;
 
 public abstract class Assets {
+
+	private TArray<Sound> soundCache = new TArray<Sound>(10);
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
@@ -159,7 +162,9 @@ public abstract class Assets {
 	public abstract Sound getSound(String path);
 
 	public Sound getMusic(String path) {
-		return getSound(path);
+		Sound sound = getSound(path);
+		soundCache.add(sound);
+		return sound;
 	}
 
 	public abstract String getTextSync(String path) throws Exception;
@@ -197,5 +202,14 @@ public abstract class Assets {
 			path = path.replaceAll("[^/]+/\\.\\./", "");
 		} while (path.length() != pathLen);
 		return path.replace("\\", "/");
+	}
+
+	public void close() {
+		for (Sound s : soundCache) {
+			if (s != null) {
+				s.stop();
+				s.release();
+			}
+		}
 	}
 }

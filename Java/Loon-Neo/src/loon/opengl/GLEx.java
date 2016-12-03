@@ -278,11 +278,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public static BaseBatch createDefaultBatch(GL20 gl) {
-		try {
-			if (UniformBatch.isLikelyToPerform(gl)) {
-				return new UniformBatch(gl);
+		//实践证明,Uniform模式在html5中就是悲剧,太多浏览器中卡成狗,还是交给cpu慢慢算三角踏实……
+		if (!LSystem.isHTML5()) {
+			try {
+				if (UniformBatch.isLikelyToPerform(gl)) {
+					return new UniformBatch(gl);
+				}
+			} catch (Throwable e) {
 			}
-		} catch (Throwable e) {
 		}
 		return new TrilateralBatch(gl);
 	}
@@ -2252,7 +2255,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		setColor(argb);
 		return this;
 	}
-	
+
 	/**
 	 * 绘制一个矩形
 	 * 
@@ -2270,7 +2273,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		setColor(argb);
 		return this;
 	}
-	
+
 	/**
 	 * 填充一个矩形
 	 * 
@@ -2287,7 +2290,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		setColor(argb);
 		return this;
 	}
-	
+
 	/**
 	 * 填充一个矩形
 	 * 
@@ -2305,7 +2308,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	
 	private float[] temp_xs = new float[4];
 
 	private float[] temp_ys = new float[4];

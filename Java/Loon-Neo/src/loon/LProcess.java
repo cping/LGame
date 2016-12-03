@@ -122,7 +122,7 @@ public class LProcess extends PlayerUtils {
 				}
 			}
 		});
-		//当处于html5时，让本地字体渲染的创建过程异步
+		// 当处于html5时，让本地字体渲染的创建过程异步
 		LSTRDictionary.setAsyn(game.isHTML5());
 	}
 
@@ -364,6 +364,10 @@ public class LProcess extends PlayerUtils {
 			RealtimeProcessManager.get().close();
 			LSTRDictionary.dispose();
 			LTextures.destroyAll();
+			if (game != null && game.display() != null) {
+				game.assets().close();
+				game.display().close();
+			}
 		}
 		LSystem._base.log().debug("The Loon Game Engine is End");
 	}

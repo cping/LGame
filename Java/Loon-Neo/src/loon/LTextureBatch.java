@@ -44,7 +44,7 @@ public class LTextureBatch implements LRelease {
 
 	public boolean quad = true;
 
-	static boolean isBatchCacheDitry;
+	public static boolean isBatchCacheDitry;
 
 	private final static IntMap<LTextureBatch> batchPools = new IntMap<LTextureBatch>(
 			10);
@@ -1260,7 +1260,7 @@ public class LTextureBatch implements LRelease {
 
 	public void destroy() {
 		if (texture != null) {
-			texture.close();
+			texture.close(true);
 		}
 	}
 }

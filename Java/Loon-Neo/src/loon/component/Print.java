@@ -9,6 +9,7 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -95,8 +96,7 @@ public class Print implements LRelease {
 
 	private char[] showMessages;
 
-
-	private LColor fontColor = LColor.white;
+	private LColor fontColor = new LColor(LColor.white);
 
 	private int interceptMaxString;
 
@@ -155,18 +155,19 @@ public class Print implements LRelease {
 
 		Print _print;
 
-		boolean _isComplete = false;
+		boolean _isComplete = false, _drawDrawingFont = false;
 
 		private IFont _font = null;
 
 		private String _context = null;
 
 		private PrintUpdate(Print print, String context, IFont font,
-				boolean isComplete) {
+				boolean isComplete, boolean drawFont) {
 			_print = print;
 			_context = context;
 			_font = font;
 			_isComplete = isComplete;
+			_drawDrawingFont = drawFont;
 		}
 
 		@Override
@@ -179,7 +180,12 @@ public class Print implements LRelease {
 			}
 			// 如果是默认的loon系统字体
 			if (_font instanceof LFont) {
-				_print.strings = new LSTRFont((LFont) _font, _context, true);
+				if (_drawDrawingFont) {
+					LSTRDictionary.bind((LFont) _font, _context);
+					_print.ifont = _font;
+				} else {
+					_print.strings = new LSTRFont((LFont) _font, _context, true);
+				}
 				// 其他字体(一般是Bitmap Font)
 			} else {
 				_print.ifont = _font;
@@ -211,7 +217,12 @@ public class Print implements LRelease {
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete) {
-		LSystem.load(new PrintUpdate(this, context, font, isComplete));
+		LSystem.load(new PrintUpdate(this, context, font, isComplete, true));
+	}
+
+	public void setMessage(String context, IFont font, boolean isComplete,
+			boolean drawFont) {
+		LSystem.load(new PrintUpdate(this, context, font, isComplete, drawFont));
 	}
 
 	public String getMessage() {
@@ -258,8 +269,6 @@ public class Print implements LRelease {
 		}
 	}
 
-	
-	
 	public void drawDefFont(GLEx g, LColor old) {
 		synchronized (showMessages) {
 			this.size = showMessages.length;
@@ -372,7 +381,7 @@ public class Print implements LRelease {
 				if (i != size - 1) {
 					strings.addChar(text, vector.x + left + leftOffset,
 							(offset * fontHeight) + vector.y + fontSize
-							+ topOffset, fontColor);
+									+ topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
 					iconX = vector.x + left + leftOffset;
 					iconY = (offset * fontHeight) + vector.y + fontSize
