@@ -175,12 +175,12 @@ public final class LSTRDictionary {
 		return count == len;
 	}
 
+	private static StringBuffer tmpBuffer = null;
+
 	public synchronized final static Dict bind(final LFont font,
 			final String mes) {
 		if (checkEnglishString(mes)) {
-			if (englishFontList.size > size) {
-				clearEnglishLazy();
-			}
+			
 			Dict pDict = englishFontList.get(font);
 			if (pDict == null) {
 				pDict = Dict.newDict();
@@ -235,12 +235,16 @@ public final class LSTRDictionary {
 							pDict.font.close();
 							pDict.font = null;
 						}
-						StringBuffer sbr = new StringBuffer(newSize);
+						if (tmpBuffer == null) {
+							tmpBuffer = new StringBuffer(newSize);
+						} else {
+							tmpBuffer.delete(0, tmpBuffer.length());
+						}
 						for (int i = 0; i < newSize; i++) {
-							sbr.append(charas.get(i));
+							tmpBuffer.append(charas.get(i));
 						}
 						// 个别浏览器纹理同步会卡出国，只能异步……
-						pDict.font = new LSTRFont(font, sbr.toString(),
+						pDict.font = new LSTRFont(font, tmpBuffer.toString(),
 								tmp_asyn);
 					}
 				}
@@ -339,8 +343,7 @@ public final class LSTRDictionary {
 	public synchronized final static void dispose() {
 		cacheList.clear();
 		clearStringLazy();
-		//单纯英文占用空间小,没必要时无需删,避免反复生成
-		//clearEnglishLazy();
+	    clearEnglishLazy();
 	}
 
 }

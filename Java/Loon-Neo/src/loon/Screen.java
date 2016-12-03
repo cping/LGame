@@ -50,7 +50,6 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.opengl.LTextureImage;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -701,7 +700,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	final void resetBase() {
-		LSTRDictionary.dispose();
 		this.handler = LSystem._process;
 		this.width = LSystem.viewSize.getWidth();
 		this.height = LSystem.viewSize.getHeight();

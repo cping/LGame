@@ -143,7 +143,7 @@ public class LTextures {
 						lazyTextures.remove(name);
 					}
 				}
-				if (!texture.disposed()) {
+				if (!texture._disposed) {
 					Updateable u = new Updateable() {
 						@Override
 						public void action(Object a) {
@@ -181,12 +181,13 @@ public class LTextures {
 						&& tex2d.getSource() != null
 						&& tex2d.getSource().indexOf("<canvas>") == -1) {
 					tex2d.refCount = 0;
-					tex2d.close();
+					tex2d.close(true);
 					lazyTextures.remove(tex2d.tmpLazy);
 					tex2d = null;
 				}
 			}
 		}
+		lazyTextures.clear();
 	}
 
 	public static void destroyAll() {
@@ -197,11 +198,12 @@ public class LTextures {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.disposed()) {
 					tex2d.refCount = 0;
-					tex2d.close();
+					tex2d.close(true);
 					lazyTextures.remove(tex2d.tmpLazy);
 					tex2d = null;
 				}
 			}
 		}
+		lazyTextures.clear();
 	}
 }

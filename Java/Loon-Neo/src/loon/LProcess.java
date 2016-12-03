@@ -123,7 +123,7 @@ public class LProcess extends PlayerUtils {
 			}
 		});
 		//当处于html5时，让本地字体渲染的创建过程异步
-		LSTRDictionary.setAsyn(LSystem._base.isHTML5());
+		LSTRDictionary.setAsyn(game.isHTML5());
 	}
 
 	private final static void callUpdateable(final TArray<Updateable> list) {

@@ -122,7 +122,7 @@ final public class AVGDialog {
 				up = null;
 				down = null;
 				image = null;
-				
+
 				LSystem.base()
 						.log()
 						.debug("Converted image to RMXP dialog image:"
@@ -274,12 +274,14 @@ final public class AVGDialog {
 	}
 
 	public static void clear() {
-		for (LTexture tex2d : lazyImages.values()) {
-			if (tex2d != null) {
-				tex2d.close();
-				tex2d = null;
+		if (lazyImages != null) {
+			for (LTexture tex2d : lazyImages.values()) {
+				if (tex2d != null) {
+					tex2d.close();
+					tex2d = null;
+				}
 			}
+			lazyImages.clear();
 		}
-		lazyImages.clear();
 	}
 }

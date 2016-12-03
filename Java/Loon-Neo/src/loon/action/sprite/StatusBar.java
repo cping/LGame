@@ -1,24 +1,12 @@
 package loon.action.sprite;
 
-import loon.LSystem;
-import loon.LTexture;
-import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
-import loon.utils.IntMap;
 import loon.utils.MathUtils;
 
 public class StatusBar extends Entity {
 
-	private final static IntMap<LTexture> colors = new IntMap<LTexture>(10);
-
-	private final static float[] backPos = { 0, 0, 3, 3 };
-
-	private final static float[] beforePos = { 5, 0, 7, 3 };
-
-	private final static float[] afterPos = { 0, 5, 3, 7 };
-
-	private static int quoteCount = 0;
+	private LColor colorback, colorbefore, colorafter;
 
 	protected boolean hit, showValue, dead;
 
@@ -39,7 +27,12 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar(int value, int max, int x, int y, int width, int height) {
-		quoteCount++;
+		this(value, max, x, y, width, height, LColor.gray, LColor.red,
+				LColor.orange);
+	}
+
+	public StatusBar(int value, int max, int x, int y, int width, int height,
+			LColor back, LColor before, LColor after) {
 		this.value = value;
 		this.valueMax = max;
 		this.valueMin = value;
@@ -48,55 +41,11 @@ public class StatusBar extends Entity {
 		this.setWidth(width);
 		this.setHeight(height);
 		this.hit = true;
-		this.setTexture(loadBarColor(LColor.gray, LColor.red, LColor.orange));
+		this.colorback = LColor.gray;
+		this.colorbefore = LColor.red;
+		this.colorafter = LColor.orange;
 		this.setLocation(x, y);
 		this.setRepaint(true);
-	}
-
-	/**
-	 * 顺序为背景，前景，中景
-	 * 
-	 * @param c1
-	 * @param c2
-	 * @param c3
-	 * @return
-	 */
-	public LTexture loadBarColor(LColor c1, LColor c2, LColor c3) {
-		if (colors.size > 10) {
-			synchronized (colors) {
-				for (LTexture tex2d : colors.values()) {
-					if (tex2d != null) {
-						tex2d.close();
-						tex2d = null;
-					}
-				}
-				colors.clear();
-			}
-		}
-		int hash = 1;
-		hash = LSystem.unite(hash, c1.getRGB());
-		hash = LSystem.unite(hash, c2.getRGB());
-		hash = LSystem.unite(hash, c3.getRGB());
-		LTexture texture = null;
-		synchronized (colors) {
-			texture = colors.get(hash);
-		}
-		if (texture == null) {
-			Canvas g = LSystem.base().graphics().createCanvas(8, 8);
-			g.setColor(c1);
-			g.fillRect(0, 0, 4, 4);
-			g.setColor(c2);
-			g.fillRect(4, 0, 4, 4);
-			g.setColor(c3);
-			g.fillRect(0, 4, 4, 4);
-			g.close();
-			texture = g.toTexture();
-			if (g.image != null) {
-				g.image.close();
-			}
-			colors.put(hash, texture);
-		}
-		return (this._image = texture);
 	}
 
 	public void set(int v) {
@@ -124,30 +73,23 @@ public class StatusBar extends Entity {
 			cv2 = (_width * v2) / size;
 		}
 		if (cv1 < _width || cv2 < _height) {
-			g.draw(_image, x, y, _width, _height, backPos[0], backPos[1],
-					backPos[2], backPos[3]);
+			g.fillRect(x, y, _width, _height, colorback);
 		}
 		if (valueMin < value) {
 			if (cv1 == _width) {
-				g.draw(_image, x, y, cv1, _height, beforePos[0], beforePos[1],
-						beforePos[2], beforePos[3]);
+				g.fillRect(x, y, cv1, _height, colorbefore);
 			} else {
 				if (!dead) {
-					g.draw(_image, x, y, cv2, _height, afterPos[0],
-							afterPos[1], afterPos[2], afterPos[3]);
+					g.fillRect(x, y, cv2, _height, colorafter);
 				}
-				g.draw(_image, x, y, cv1, _height, beforePos[0], beforePos[1],
-						beforePos[2], beforePos[3]);
+				g.fillRect(x, y, cv1, _height, colorbefore);
 			}
 		} else {
 			if (cv2 == _width) {
-				g.draw(_image, x, y, cv2, _height, beforePos[0], beforePos[1],
-						beforePos[2], beforePos[3]);
+				g.fillRect(x, y, cv2, _height, colorbefore);
 			} else {
-				g.draw(_image, x, y, cv1, _height, afterPos[0], afterPos[1],
-						afterPos[2], afterPos[3]);
-				g.draw(_image, x, y, cv2, _height, beforePos[0], beforePos[1],
-						beforePos[2], beforePos[3]);
+				g.fillRect(x, y, cv1, _height, colorafter);
+				g.fillRect(x, y, cv2, _height, colorbefore);
 			}
 		}
 	}
@@ -223,7 +165,7 @@ public class StatusBar extends Entity {
 	}
 
 	public void setMaxValue(int valueMax) {
-		this.valueMax = valueMax;
+		this.valueMax = MathUtils.min(valueMax, 0);
 		this.current = (int) ((_width * value) / valueMax);
 		this.goal = (int) ((_width * valueMin) / valueMax);
 		this.state();
@@ -234,7 +176,7 @@ public class StatusBar extends Entity {
 	}
 
 	public void setMinValue(int valueMin) {
-		this.valueMin = valueMin;
+		this.valueMin = MathUtils.min(valueMin, 0);
 		this.current = (int) ((_width * value) / valueMax);
 		this.goal = (int) ((_width * valueMin) / valueMax);
 		this.state();
@@ -256,22 +198,27 @@ public class StatusBar extends Entity {
 		this.hit = hit;
 	}
 
-	@Override
-	public void close() {
-		super.close();
-		synchronized (colors) {
-			quoteCount--;
-			if (quoteCount <= 0) {
-				if (colors != null) {
-					for (LTexture tex2d : colors.values()) {
-						if (tex2d != null) {
-							tex2d.close();
-							tex2d = null;
-						}
-					}
-					colors.clear();
-				}
-			}
-		}
+	public LColor getColorback() {
+		return colorback;
+	}
+
+	public void setColorback(LColor colorback) {
+		this.colorback = colorback;
+	}
+
+	public LColor getColorbefore() {
+		return colorbefore;
+	}
+
+	public void setColorbefore(LColor colorbefore) {
+		this.colorbefore = colorbefore;
+	}
+
+	public LColor getColorafter() {
+		return colorafter;
+	}
+
+	public void setColorafter(LColor colorafter) {
+		this.colorafter = colorafter;
 	}
 }

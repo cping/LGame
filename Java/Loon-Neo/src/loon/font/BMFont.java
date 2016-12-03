@@ -722,7 +722,7 @@ public class BMFont implements IFont, LRelease {
 	public void close() {
 		this.isClose = true;
 		if (displayList != null) {
-			displayList.close();
+			displayList.close(true);
 		}
 		if (displays != null) {
 			for (Display d : displays.values()) {

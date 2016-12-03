@@ -786,6 +786,10 @@ public class LSTRFont implements LRelease {
 			fontBatch.close();
 			fontBatch.destroy();
 		}
+		if (texture != null) {
+			texture.close(true);
+			texture = null;
+		}
 		fontBatch = null;
 		isDrawing = false;
 		initChars = false;

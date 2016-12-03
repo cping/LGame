@@ -160,14 +160,14 @@ public class LTexture extends Painter implements LRelease {
 	private Graphics gfx;
 
 	// _closed是删除标记，disposed是已经真的被删掉
-	private boolean isChild, _closed, disposed;
+	boolean _isChild, _closed, _disposed;
 
 	IntMap<LTexture> childs;
 
 	private LTexture parent;
 
 	public boolean isChild() {
-		return isChild;
+		return _isChild;
 	}
 
 	public LTexture getParent() {
@@ -313,11 +313,11 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isClose() {
-		return disposed || _closed;
+		return _disposed || _closed;
 	}
 
 	public boolean disposed() {
-		return disposed || _closed;
+		return _disposed && _closed;
 	}
 
 	public UnitPort disposeAct() {
@@ -416,7 +416,7 @@ public class LTexture extends Painter implements LRelease {
 
 	protected void finalize() {
 		_isLoaded = false;
-		if (!disposed) {
+		if (!_disposed) {
 			gfx.queueForDispose(this);
 		}
 	}
@@ -468,7 +468,7 @@ public class LTexture extends Painter implements LRelease {
 			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 					+ copy.yOff;
 
-			isChild = true;
+			_isChild = true;
 			childs.put(hashCode, copy);
 			return copy;
 		}
@@ -518,7 +518,7 @@ public class LTexture extends Painter implements LRelease {
 			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 					+ copy.yOff;
 
-			isChild = true;
+			_isChild = true;
 			childs.put(hashCode, copy);
 
 			return copy;
@@ -892,7 +892,8 @@ public class LTexture extends Painter implements LRelease {
 					&& this.yOff == tmp.yOff
 					&& this.widthRatio == tmp.widthRatio
 					&& this.heightRatio == tmp.heightRatio
-					&& this.config == tmp.config && this.isChild == tmp.isChild
+					&& this.config == tmp.config
+					&& this._isChild == tmp._isChild
 					&& this.displayWidth == tmp.displayWidth
 					&& this.displayHeight == tmp.displayHeight
 					&& this.pixelWidth == tmp.pixelWidth
@@ -913,12 +914,9 @@ public class LTexture extends Painter implements LRelease {
 			@Override
 			public void action(Object a) {
 				if (parent == null) {
-					if (!disposed) {
-						disposed = true;
-						if (_countTexture > 10
-								&& ((LSystem._base != null && LSystem._base.setting.disposeTexture) || id > _countTexture * 3)) {
-							GLUtils.deleteTexture(gfx.gl, id);
-						}
+					if (!_disposed) {
+						_disposed = true;
+						GLUtils.deleteTexture(gfx.gl, id);
 					}
 					if (image != null) {
 						image.close();
@@ -974,19 +972,31 @@ public class LTexture extends Painter implements LRelease {
 
 	@Override
 	public void close() {
-		_countTexture--;
+		close(false);
+	}
+
+	public void close(boolean forcedDdelete) {
 		_closed = true;
+		_countTexture--;
 		if (batch != null) {
 			batch.close();
 			batch = null;
 		}
 		isBatch = false;
-		if (!isChildAllClose()) {
+		if (forcedDdelete) {
+			if (childs != null) {
+				childs.clear();
+			}
+		} else if (!isChildAllClose()) {
 			return;
 		}
-		if (LTextures.removeTexture(this, true) == -1) {
+		if (forcedDdelete) {
+			LTextures.removeTexture(this, true);
 			free();
+		} else if (LTextures.removeTexture(this, true) <= 0) {
+			if (LSystem._base.setting.disposeTexture) {
+				free();
+			}
 		}
 	}
-
 }

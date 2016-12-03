@@ -25,6 +25,7 @@ import loon.utils.timer.EaseTimer;
 
 public class RotateTo extends ActionEvent {
 
+	private float speed = 2f;
 	private float diffAngle = 1f;
 	private float startRotation;
 	private float dstAngle;
@@ -78,8 +79,15 @@ public class RotateTo extends ActionEvent {
 			original.setRotation(dstAngle);
 			return;
 		}
+		if (startRotation >= dstAngle) {
+			if (currentRotation <= dstAngle && currentRotation != 0) {
+				currentRotation = dstAngle;
+				_isCompleted = true;
+			}
+		}
 		original.setRotation(currentRotation = (startRotation + (dstAngle - startRotation)
-				* easeTimer.getProgress() * diffAngle));
+				* easeTimer.getProgress() * diffAngle)
+				+ speed);
 	}
 
 	public float getDiffAngle() {
@@ -92,6 +100,14 @@ public class RotateTo extends ActionEvent {
 
 	public float getRotation() {
 		return currentRotation;
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
 	}
 
 	@Override
@@ -116,4 +132,5 @@ public class RotateTo extends ActionEvent {
 	public String getName() {
 		return "rotate";
 	}
+
 }
