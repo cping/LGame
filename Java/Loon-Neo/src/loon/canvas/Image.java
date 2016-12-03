@@ -326,6 +326,11 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 		setPixels(pixmap.getData(), pixmap.getWidth(), pixmap.getHeight());
 	}
 
+	public Image onHaveToClose(boolean c) {
+		this.haveToClose = c;
+		return this;
+	}
+
 	public final void close() {
 		if (!this.isTexture) {
 			this.closeImpl();

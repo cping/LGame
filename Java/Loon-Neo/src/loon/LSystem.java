@@ -34,7 +34,7 @@ public class LSystem {
 	public final static EmptyObject newEmptyObject() {
 		return new EmptyObject();
 	}
-	
+
 	public static String FONT_NAME = "Dialog";
 
 	public static String ENCODING = "UTF-8";
@@ -46,7 +46,7 @@ public class LSystem {
 	public static boolean NOT_DRAG = false;
 
 	public static boolean NOT_MOVE = false;
-	
+
 	public static float EMULATOR_BUTTIN_SCALE = 1f;
 
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
@@ -62,7 +62,7 @@ public class LSystem {
 	public static boolean AUTO_REPAINT = true;
 
 	public static boolean USE_LOG = true;
-	
+
 	public static boolean LOCK_SCREEN = false;
 	// 包内默认的图片路径
 	final static public String FRAMEWORK_IMG_NAME = "loon_";
@@ -94,17 +94,17 @@ public class LSystem {
 	public static int MODE_ALPHA_ONE = 9;
 
 	public static int MODE_NONE = 10;
-	
+
 	public static int MODE_MASK = 11;
 
 	public static int MODE_LIGHT = 12;
-	
+
 	public static int MODE_ALPHA_ADD = 13;
-	
+
 	public static int MODE_MULTIPLY = 14;
 	// 兆秒
 	final static public long MSEC = 1;
-	
+
 	// 秒
 	final static public long SECOND = 1000;
 
@@ -125,6 +125,7 @@ public class LSystem {
 
 	// 是否使用了HTML5环境
 	private static boolean _USE_HTML5 = false;
+	private static boolean _USE_MOBILE = false;
 
 	static LGame _base;
 
@@ -133,7 +134,7 @@ public class LSystem {
 	static Platform _platform;
 
 	static JsonImpl _json_instance;
-	
+
 	public static Platform platform() {
 		return _platform;
 	}
@@ -154,6 +155,7 @@ public class LSystem {
 		LSystem.viewSize.setSize(setting.width, setting.height);
 		_process = new LProcess(game);
 		_USE_HTML5 = (_base.type() == LGame.Type.HTML5);
+		_USE_MOBILE = (_base.isMobile());
 		_base.log().debug("The Loon Game Engine is Begin");
 	}
 
@@ -188,6 +190,10 @@ public class LSystem {
 		return LSystem._USE_HTML5;
 	}
 
+	public static boolean isMobile() {
+		return LSystem._USE_MOBILE;
+	}
+
 	public static float getScaleWidth() {
 		return LSystem.scaleWidth;
 	}
@@ -211,7 +217,7 @@ public class LSystem {
 	public static float invYScaled(float length) {
 		return length / LSystem.getScaleWidth();
 	}
-	
+
 	public static String getFileName(String name) {
 		if (name == null) {
 			return "";
@@ -308,7 +314,6 @@ public class LSystem {
 
 	public static final int VERTEX_SIZE = 2 + 1 + 2;
 	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
-
 
 	static public String createVertexShader(boolean hasNormals,
 			boolean hasColors, int numTexCoords) {
@@ -586,7 +591,6 @@ public class LSystem {
 		return extension.equals("mp3") || extension.equals("ogg")
 				|| extension.equals("wav") || extension.equals("mid");
 	}
-	
 
 	public static boolean checkAngle(float angle, float actual) {
 		return actual > angle - 22.5f && actual < angle + 22.5f;

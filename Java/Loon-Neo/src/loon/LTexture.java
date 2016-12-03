@@ -32,6 +32,7 @@ import loon.opengl.BaseBatch;
 import loon.opengl.GL20;
 import loon.opengl.GLPaint;
 import loon.opengl.Painter;
+import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.NumberUtils;
@@ -58,9 +59,13 @@ public class LTexture extends Painter implements LRelease {
 
 	private boolean _scaleSize = false;
 
+	private int[] _cachePixels;
+
 	private String source;
 
 	private Image image;
+
+	private int imageWidth = 1, imageHeight = 1;
 
 	public float xOff = 0.0f;
 
@@ -164,10 +169,10 @@ public class LTexture extends Painter implements LRelease {
 
 	IntMap<LTexture> childs;
 
-	private LTexture parent;
+	LTexture parent;
 
 	public boolean isChild() {
-		return _isChild;
+		return _isChild || parent != null;
 	}
 
 	public LTexture getParent() {
@@ -199,6 +204,7 @@ public class LTexture extends Painter implements LRelease {
 		this.displayWidth = dispWidth;
 		this.displayHeight = dispHeight;
 		this._isLoaded = false;
+		LTextures.putTexture(this);
 		_countTexture++;
 	}
 
@@ -219,7 +225,7 @@ public class LTexture extends Painter implements LRelease {
 	public void release() {
 		if (config.managed) {
 			if (--refCount == 0) {
-				close();
+				close(true);
 			}
 		}
 	}
@@ -245,15 +251,23 @@ public class LTexture extends Painter implements LRelease {
 		return image;
 	}
 
+	public void reload() {
+		this._isLoaded = false;
+	}
+
 	public void loadTexture() {
 		if (image != null && !_isLoaded) {
 			update(image);
 		} else if (!_isLoaded) {
 			if (!StringUtils.isEmpty(source)
 					&& (source.indexOf('<') == -1 && source.indexOf('>') == -1)) {
-				image = BaseIO.loadImage(source);
-				update(image);
+				image = BaseIO.loadImage(source).onHaveToClose(true);
+			} else if (_cachePixels != null) {
+				image = Image.createCanvas(imageWidth, imageHeight).image
+						.onHaveToClose(true);
+				image.setPixels(_cachePixels, imageWidth, imageHeight);
 			}
+			update(image);
 		}
 	}
 
@@ -290,17 +304,23 @@ public class LTexture extends Painter implements LRelease {
 			} else {
 				image.upload(gfx, LTexture.this);
 			}
+			imageWidth = image.getWidth();
+			imageHeight = image.getHeight();
 			if (config.mipmaps) {
 				gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
 			}
 		}
 		LTextureBatch.isBatchCacheDitry = true;
 		_isLoaded = true;
-		if (image.toClose()) {
+		if (image != null && image.toClose()) {
 			image.destroy();
+			if ((image.getSource() == null || image.getSource().indexOf(
+					"<canvas>") != -1)
+					&& LSystem.isMobile()) {
+				_cachePixels = CollectionUtils.copyOf(image.getPixels());
+			}
 		}
 		_drawing = false;
-
 	}
 
 	public void bind() {
@@ -454,6 +474,8 @@ public class LTexture extends Painter implements LRelease {
 			copy.config = config;
 			copy.source = source;
 			copy.scale = scale;
+			copy.imageWidth = imageWidth;
+			copy.imageHeight = imageHeight;
 			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
@@ -506,6 +528,8 @@ public class LTexture extends Painter implements LRelease {
 			copy.config = config;
 			copy.source = source;
 			copy.scale = scale;
+			copy.imageWidth = imageWidth;
+			copy.imageHeight = imageHeight;
 			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);

@@ -27,6 +27,33 @@ import loon.utils.TArray;
 
 public class LTextures {
 
+	private final static TArray<LTexture> textureList = new TArray<LTexture>(
+			100);
+
+	static void putTexture(LTexture tex2d) {
+		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild()
+				&& !textureList.contains(tex2d)) {
+			textureList.add(tex2d);
+		}
+	}
+
+	public final static void reload() {
+		for (LTexture tex : textureList) {
+			if (tex != null) {
+				tex.reload();
+			}
+		}
+	}
+
+	public final static void close() {
+		for (LTexture tex : textureList) {
+			if (tex != null && !tex.isChild() && !tex.disposed()) {
+				tex.close(true);
+			}
+		}
+		textureList.clear();
+	}
+
 	private static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(
 			100);
 
@@ -34,14 +61,14 @@ public class LTextures {
 		if (LSystem._base == null) {
 			return null;
 		}
-		return BaseIO.loadImage(path).texture();
+		return BaseIO.loadImage(path).onHaveToClose(true).texture();
 	}
 
 	public static LTexture newTexture(String path, Format config) {
 		if (LSystem._base == null) {
 			return null;
 		}
-		return BaseIO.loadImage(path).createTexture(config);
+		return BaseIO.loadImage(path).onHaveToClose(true).createTexture(config);
 	}
 
 	public static int count() {
@@ -86,7 +113,8 @@ public class LTextures {
 				texture.refCount++;
 				return texture;
 			}
-			texture = BaseIO.loadImage(fileName).createTexture(config);
+			texture = BaseIO.loadImage(fileName).onHaveToClose(true)
+					.createTexture(config);
 			texture.tmpLazy = fileName;
 			lazyTextures.put(key, texture);
 			return texture;
@@ -104,7 +132,7 @@ public class LTextures {
 				texture.refCount++;
 				return texture;
 			}
-			texture = BaseIO.loadImage(fileName).texture();
+			texture = BaseIO.loadImage(fileName).onHaveToClose(true).texture();
 			texture.tmpLazy = fileName;
 			lazyTextures.put(key, texture);
 			return texture;

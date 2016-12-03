@@ -361,13 +361,14 @@ public class LProcess extends PlayerUtils {
 				currentScreen.destroy();
 				currentScreen = null;
 			}
-			RealtimeProcessManager.get().close();
-			LSTRDictionary.dispose();
-			LTextures.destroyAll();
 			if (game != null && game.display() != null) {
 				game.assets().close();
 				game.display().close();
 			}
+			RealtimeProcessManager.get().close();
+			LSTRDictionary.dispose();
+			LTextures.destroyAll();
+			LTextures.close();
 		}
 		LSystem._base.log().debug("The Loon Game Engine is End");
 	}
