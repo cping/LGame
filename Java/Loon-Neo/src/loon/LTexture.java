@@ -993,6 +993,7 @@ public class LTexture extends Painter implements LRelease {
 		if (forcedDdelete) {
 			LTextures.removeTexture(this, true);
 			free();
+			// 此处修成了一个旧版惊天的纹理释放bug,判定引用次数旧版一直写错成==-1,但实际应该<=0就是无引用……
 		} else if (LTextures.removeTexture(this, true) <= 0) {
 			if (LSystem._base.setting.disposeTexture) {
 				free();
