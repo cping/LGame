@@ -642,6 +642,9 @@ public class LSTRFont implements LRelease {
 		if (c == '\n') {
 			return 0;
 		}
+		if (processing()) {
+			return font.charWidth(c);
+		}
 		if (c < totalCharSet) {
 			intObject = charArray[c];
 		} else {

@@ -63,7 +63,7 @@ public class LTexture extends Painter implements LRelease {
 
 	private String source;
 
-	private Image image;
+	private Image _image;
 
 	private int imageWidth = 1, imageHeight = 1;
 
@@ -235,39 +235,55 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public Image getImage() {
-		if ((image == null || image.isClosed()) && !StringUtils.isEmpty(source)) {
-			image = BaseIO.loadImage(source);
+		if ((_image == null || _image.isClosed())
+				&& !StringUtils.isEmpty(source)) {
+			_image = BaseIO.loadImage(source);
+		}
+		if (_image == null && _cachePixels != null) {
+			_image = Image.createImage(imageWidth, imageHeight);
+			_image.setPixels(_cachePixels, imageWidth, imageHeight);
 		}
 		int w = getWidth();
 		int h = getHeight();
 		if (w != displayWidth || h != displayHeight) {
-			if (image != null) {
-				Image tmp = image.getSubImage(
+			if (_image != null) {
+				Image tmp = _image.getSubImage(
 						(int) (this.xOff * this.displayWidth),
 						(int) (this.yOff * this.displayHeight), w, h);
 				return tmp;
 			}
 		}
-		return image;
+		return _image;
 	}
 
 	public void reload() {
+		if (_closed || _disposed) {
+			return;
+		}
+		if (parent != null) {
+			parent.reload();
+			return;
+		}
 		this._isLoaded = false;
+		this.loadTexture();
 	}
 
 	public void loadTexture() {
-		if (image != null && !_isLoaded) {
-			update(image);
+		if (parent != null) {
+			parent.loadTexture();
+			return;
+		}
+		if (_image != null && !_isLoaded) {
+			update(_image);
 		} else if (!_isLoaded) {
 			if (!StringUtils.isEmpty(source)
 					&& (source.indexOf('<') == -1 && source.indexOf('>') == -1)) {
-				image = BaseIO.loadImage(source).onHaveToClose(true);
+				_image = BaseIO.loadImage(source);
 			} else if (_cachePixels != null) {
-				image = Image.createCanvas(imageWidth, imageHeight).image
-						.onHaveToClose(true);
-				image.setPixels(_cachePixels, imageWidth, imageHeight);
+				_image = Image.createCanvas(imageWidth, imageHeight).image;
+				_image.setPixels(_cachePixels, imageWidth, imageHeight);
 			}
-			update(image);
+			update(_image);
 		}
 	}
 
@@ -312,14 +328,16 @@ public class LTexture extends Painter implements LRelease {
 		}
 		LTextureBatch.isBatchCacheDitry = true;
 		_isLoaded = true;
+		if (image != null
+				&& (image.getSource() == null || image.getSource().indexOf(
+						"<canvas>") != -1) && LSystem.base() != null
+				&& LSystem.base().setting.saveTexturePixels) {
+			_cachePixels = CollectionUtils.copyOf(image.getPixels());
+		}
 		if (image != null && image.toClose()) {
 			image.destroy();
-			if ((image.getSource() == null || image.getSource().indexOf(
-					"<canvas>") != -1)
-					&& LSystem.isMobile()) {
-				_cachePixels = CollectionUtils.copyOf(image.getPixels());
-			}
 		}
+		_image = image;
 		_drawing = false;
 	}
 
@@ -476,6 +494,8 @@ public class LTexture extends Painter implements LRelease {
 			copy.scale = scale;
 			copy.imageWidth = imageWidth;
 			copy.imageHeight = imageHeight;
+			copy._image = _image;
+			copy._cachePixels = _cachePixels;
 			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
@@ -530,6 +550,8 @@ public class LTexture extends Painter implements LRelease {
 			copy.scale = scale;
 			copy.imageWidth = imageWidth;
 			copy.imageHeight = imageHeight;
+			copy._image = _image;
+			copy._cachePixels = _cachePixels;
 			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
@@ -922,9 +944,9 @@ public class LTexture extends Painter implements LRelease {
 					&& this.displayHeight == tmp.displayHeight
 					&& this.pixelWidth == tmp.pixelWidth
 					&& this.pixelHeight == tmp.pixelHeight) {
-				if (image != null && tmp.image != null) {
-					return Arrays.equals(image.getPixels(),
-							tmp.image.getPixels());
+				if (_image != null && tmp._image != null) {
+					return Arrays.equals(_image.getPixels(),
+							tmp._image.getPixels());
 				}
 				return true;
 			}
@@ -942,14 +964,15 @@ public class LTexture extends Painter implements LRelease {
 						_disposed = true;
 						GLUtils.deleteTexture(gfx.gl, id);
 					}
-					if (image != null) {
-						image.close();
-						image = null;
+					if (_image != null) {
+						_image.close();
+						_image = null;
 					}
 					if (childs != null) {
 						childs.clear();
 						childs = null;
 					}
+					_cachePixels = null;
 					_isLoaded = false;
 					_closed = true;
 				}

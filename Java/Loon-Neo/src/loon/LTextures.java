@@ -39,7 +39,7 @@ public class LTextures {
 
 	public final static void reload() {
 		for (LTexture tex : textureList) {
-			if (tex != null) {
+			if (tex != null && !tex.isLoaded() && !tex.isClose()) {
 				tex.reload();
 			}
 		}

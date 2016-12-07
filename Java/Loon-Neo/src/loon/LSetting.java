@@ -64,6 +64,8 @@ public class LSetting {
 	public String fontName = LSystem.FONT_NAME;
 	
 	public boolean disposeTexture = true;
+
+	public boolean saveTexturePixels = true;
 	
 	// 当前游戏类型，默认为"未知"
 	public GameType gameType = GameType.UNKOWN;

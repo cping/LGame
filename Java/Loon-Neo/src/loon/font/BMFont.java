@@ -66,6 +66,14 @@ public class BMFont implements IFont, LRelease {
 
 	private int totalCharSet = DEFAULT_MAX_CHAR;
 
+	private int _initCount = -1;
+
+	private String _texPath = null;
+
+	private String _imagePath = null;
+
+	private boolean _initParse = false;
+	
 	private IntMap<CharDef> customChars = new IntMap<CharDef>();
 
 	private PointI _offset = new PointI();
@@ -163,13 +171,14 @@ public class BMFont implements IFont, LRelease {
 	}
 
 	public BMFont(String file, LTexture image) throws Exception {
+		this._imagePath = image.getSource();
+		this._texPath = file;
 		this.displayList = image;
-		this.parse(BaseIO.loadText(file));
 	}
 
 	public BMFont(String file, String imgFile) throws Exception {
-		this.displayList = BaseIO.loadTexture(imgFile);
-		this.parse(BaseIO.loadText(file));
+		this._texPath = file;
+		this._imagePath = imgFile;
 	}
 
 	private void parse(String text) throws Exception {
@@ -318,11 +327,14 @@ public class BMFont implements IFont, LRelease {
 
 	private void drawBatchString(String text, float tx, float ty, LColor c,
 			int startIndex, int endIndex) {
-
 		if (isClose) {
 			return;
 		}
-
+		make();
+		if (_initCount < 1) {
+			_initCount++;
+			return;
+		}
 		if (displays.size > DEFAULT_MAX_CHAR) {
 			displays.clear();
 		}
@@ -414,9 +426,28 @@ public class BMFont implements IFont, LRelease {
 		drawString(g, text, x, y, col, 0, text.length() - 1);
 	}
 
+	private void make() {
+		if (!_initParse) {
+			if (displayList == null) {
+				this.displayList = BaseIO.loadTexture(_imagePath);
+			}
+			try {
+				this.parse(BaseIO.loadText(_texPath));
+			} catch (Exception e) {
+				throw new RuntimeException(e.getMessage());
+			}
+			_initParse = true;
+		}
+	}
+
 	private void drawString(GLEx g, String text, float tx, float ty, LColor c,
 			int startIndex, int endIndex) {
 		if (isClose) {
+			return;
+		}
+		make();
+		if (_initCount < 1) {
+			_initCount++;
 			return;
 		}
 		int x = 0, y = 0;
@@ -509,6 +540,7 @@ public class BMFont implements IFont, LRelease {
 		if (text == null) {
 			return 0;
 		}
+		make();
 		Display display = null;
 		for (Display d : displays.values()) {
 			if (d != null && text.equals(d.text)) {
@@ -554,6 +586,7 @@ public class BMFont implements IFont, LRelease {
 		if (c == '\n') {
 			return 0;
 		}
+		make();
 		CharDef charDef = null;
 		if (c < totalCharSet) {
 			charDef = charArray[(int) c];
@@ -571,6 +604,7 @@ public class BMFont implements IFont, LRelease {
 		if (text == null) {
 			return 0;
 		}
+		make();
 		Display display = null;
 		for (Display d : displays.values()) {
 			if (d != null && text.equals(d.text)) {
@@ -723,6 +757,7 @@ public class BMFont implements IFont, LRelease {
 		this.isClose = true;
 		if (displayList != null) {
 			displayList.close(true);
+			displayList = null;
 		}
 		if (displays != null) {
 			for (Display d : displays.values()) {
@@ -732,6 +767,8 @@ public class BMFont implements IFont, LRelease {
 			}
 			displays.clear();
 		}
+        _initCount=-1;
+		_initParse = false;
 	}
 
 }

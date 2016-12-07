@@ -1795,6 +1795,10 @@ public abstract class AVGScreen extends Screen {
 		if (command != null) {
 			command = null;
 		}
+		if (message != null) {
+			message.close();
+			message = null;
+		}
 		if (scrCG != null) {
 			scrCG.close();
 			scrCG = null;

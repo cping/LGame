@@ -217,7 +217,7 @@ public class Print implements LRelease {
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete) {
-		LSystem.load(new PrintUpdate(this, context, font, isComplete, true));
+		setMessage(context, font, isComplete, true);
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete,
