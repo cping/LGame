@@ -230,6 +230,10 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
+	public String src(){
+		return getSource();
+	}
+	
 	public String getSource() {
 		return source;
 	}
@@ -287,6 +291,8 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
+	private int _memorySize = 0;
+
 	public void update(final Image image) {
 		if (image == null) {
 			throw new RuntimeException(
@@ -325,6 +331,11 @@ public class LTexture extends Painter implements LRelease {
 			if (config.mipmaps) {
 				gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
 			}
+		}
+		if (config.mipmaps) {
+			_memorySize = imageWidth * imageHeight * 4 * (1 + 1 / 3);
+		} else {
+			_memorySize = imageWidth * imageHeight * 4;
 		}
 		LTextureBatch.isBatchCacheDitry = true;
 		_isLoaded = true;
@@ -975,6 +986,7 @@ public class LTexture extends Painter implements LRelease {
 					_cachePixels = null;
 					_isLoaded = false;
 					_closed = true;
+					_memorySize = 0;
 				}
 			}
 		};
@@ -1019,6 +1031,10 @@ public class LTexture extends Painter implements LRelease {
 
 	public float getMaxV() {
 		return heightRatio;
+	}
+
+	public int getMemSize() {
+		return _memorySize;
 	}
 
 	@Override

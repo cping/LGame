@@ -30,6 +30,9 @@ public class LTextures {
 	private final static TArray<LTexture> textureList = new TArray<LTexture>(
 			100);
 
+	private static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(
+			100);
+	
 	static void putTexture(LTexture tex2d) {
 		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild()
 				&& !textureList.contains(tex2d)) {
@@ -45,6 +48,16 @@ public class LTextures {
 		}
 	}
 
+	public final static int getMemSize() {
+		int memTotal = 0;
+		for (LTexture tex : textureList) {
+			if (tex != null && !tex.isChild() && !tex.disposed()) {
+				memTotal+=tex.getMemSize();
+			}
+		}
+		return memTotal;
+	}
+
 	public final static void close() {
 		for (LTexture tex : textureList) {
 			if (tex != null && !tex.isChild() && !tex.disposed()) {
@@ -53,9 +66,6 @@ public class LTextures {
 		}
 		textureList.clear();
 	}
-
-	private static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(
-			100);
 
 	public static LTexture newTexture(String path) {
 		if (LSystem._base == null) {

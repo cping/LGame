@@ -854,7 +854,7 @@ public class LColor implements Serializable {
 			return (a << 24) | (r << 16) | (g << 8) | b;
 		}
 	}
-
+	
 	public static int[] getRGBs(final int pixel) {
 		int[] rgbs = new int[3];
 		rgbs[0] = (pixel >> 16) & 0xff;
@@ -863,6 +863,23 @@ public class LColor implements Serializable {
 		return rgbs;
 	}
 
+	public static int[] getRGBAs(final int pixel) {
+		int[] rgbas = new int[4];
+		rgbas[0] = (pixel >> 16) & 0xff;
+		rgbas[1] = (pixel >> 8) & 0xff;
+		rgbas[2] = (pixel) & 0xff;
+		rgbas[3] =  pixel >>> 24;
+		return rgbas;
+	}
+
+	public byte[] toRgbaByteArray() {
+		return new byte[] { (byte) getRed(), (byte) getGreen(), (byte) getBlue(), (byte) getAlpha() };
+	}
+
+	public byte[] toRgbByteArray() {
+		return new byte[] { (byte) getRed(), (byte) getGreen(), (byte) getBlue() };
+	}
+	
 	public int toIntBits() {
 		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
 				| ((int) (255 * g) << 8) | ((int) (255 * r));
