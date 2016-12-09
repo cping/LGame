@@ -15,6 +15,7 @@
  */
 package loon;
 
+import loon.geom.Affine2f;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -118,7 +119,7 @@ public class Director extends SoundBox {
 			}
 
 			public float oy(float height) {
-				return height /2 ;
+				return height / 2;
 			}
 		},
 
@@ -276,7 +277,8 @@ public class Director extends SoundBox {
 		return createOrigin(o, origin);
 	}
 
-	public static TArray<Vector2f> makeOrigins(Origin origin, LObject<?>... objs) {
+	public static TArray<Vector2f> makeOrigins(Origin origin,
+			LObject<?>... objs) {
 		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
 		for (LObject<?> o : objs) {
 			result.add(createOrigin(o, origin));
@@ -331,8 +333,8 @@ public class Director extends SoundBox {
 				obj_YH, position);
 	}
 
-	public static void setPoisiton(LObject<?> objToBePositioned, float x, float y,
-			float width, float height, Position position) {
+	public static void setPoisiton(LObject<?> objToBePositioned, float x,
+			float y, float width, float height, Position position) {
 		float atp_W = objToBePositioned.getWidth();
 		float atp_H = objToBePositioned.getHeight();
 		float obj_X = x;
@@ -401,6 +403,78 @@ public class Director extends SoundBox {
 					objToBePositioned.getY());
 			break;
 		}
+	}
+
+	private static Affine2f _trans = new Affine2f();
+	
+	public static Vector2f local2Global(
+			float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		return local2Global(0, 1f, 1f, 0, 0, false, false, centerX, centerY,posX,posY,resultPoint);
+	}
+
+	public static Vector2f local2Global( boolean filpX, boolean filpY,
+			float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		return local2Global(0, 1f, 1f, 0, 0, filpX, filpY, centerX, centerY,posX,posY,resultPoint);
+	}
+
+	public static Vector2f local2Global( float rotation,
+			float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		return local2Global(rotation, 1f, 1f, 0, 0, false, false, centerX, centerY,posX,posY,resultPoint);
+	}
+	
+	public static Vector2f local2Global(float rotation, boolean filpX, boolean filpY,
+			float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		return local2Global(rotation, 1f, 1f, 0, 0, filpX, filpY, centerX, centerY,posX,posY,resultPoint);
+	}
+
+	public static Vector2f local2Global(float rotation, float scaleX, float scaleY,
+			boolean filpX, boolean filpY, float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		return local2Global(rotation, scaleX, scaleY, 0, 0, filpX, filpY, centerX,
+				centerY,posX,posY,resultPoint);
+	}
+
+	public static Vector2f local2Global(float rotation, float scaleX, float scaleY,
+			float skewX, float skewY, boolean filpX, boolean filpY,
+			float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		_trans.idt();
+		if (rotation != 0) {
+			_trans.translate(centerX, centerY);
+			_trans.preRotate(rotation);
+			_trans.translate(-centerX, -centerY);
+		}
+		if (filpX || filpY) {
+			if (filpX && filpY) {
+				Affine2f.transform(_trans, centerX, centerY,
+						Affine2f.TRANS_ROT180);
+			} else if (filpX) {
+				Affine2f.transform(_trans, centerX, centerY,
+						Affine2f.TRANS_MIRROR);
+			} else if (filpY) {
+				Affine2f.transform(_trans, centerX, centerY,
+						Affine2f.TRANS_MIRROR_ROT180);
+			}
+		}
+		if ((scaleX != 1) || (scaleY != 1)) {
+			_trans.translate(centerX, centerY);
+			_trans.preScale(scaleX, scaleY);
+			_trans.translate(-centerX, -centerY);
+		}
+		if ((skewX != 0) || (skewY != 0)) {
+			_trans.translate(centerX, centerY);
+			_trans.preShear(skewX, skewY);
+			_trans.translate(-centerX, -centerY);
+		}
+		if (resultPoint != null) {
+			_trans.transformPoint(posX, posY, resultPoint);
+			return resultPoint;
+		}
+		return resultPoint;
 	}
 
 }

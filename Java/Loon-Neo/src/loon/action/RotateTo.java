@@ -70,6 +70,9 @@ public class RotateTo extends ActionEvent {
 	@Override
 	public void onLoad() {
 		startRotation = original.getRotation();
+		if ((dstAngle - startRotation) == 0) {
+			_isCompleted = true;
+		}
 	}
 
 	public void update(long elapsedTime) {

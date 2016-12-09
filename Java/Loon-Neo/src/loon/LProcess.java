@@ -439,18 +439,19 @@ public class LProcess extends PlayerUtils {
 			if (!isInstance && getBackground() != null) {
 				g.draw(getBackground(), getX(), getY(), getWidth(),
 						getHeight(), getColor(), getRotation(), null,
-						getScaleX(), getScaleY());
+						getScaleX(), getScaleY(), isFilpX(), isFilpY());
 			}
 			break;
 		case Screen.SCREEN_TEXTURE_REPAINT:
 			g.draw(getBackground(), getX(), getY(), getWidth(), getHeight(),
-					getColor(), getRotation(), null, getScaleX(), getScaleY());
+					getColor(), getRotation(), null, getScaleX(), getScaleY(),
+					isFilpX(), isFilpY());
 			break;
 		case Screen.SCREEN_COLOR_REPAINT:
 			if (!isInstance && getBackground() != null) {
 				g.draw(getBackground(), getX(), getY(), getWidth(),
 						getHeight(), getColor(), getRotation(), null,
-						getScaleX(), getScaleY());
+						getScaleX(), getScaleY(), isFilpX(), isFilpY());
 			} else {
 				LColor c = getBackgroundColor();
 				if (c != null) {
@@ -463,7 +464,7 @@ public class LProcess extends PlayerUtils {
 					repaintMode / 2 - MathUtils.random(repaintMode),
 					repaintMode / 2 - MathUtils.random(repaintMode),
 					getWidth(), getHeight(), getColor(), getRotation(), null,
-					getScaleX(), getScaleY());
+					getScaleX(), getScaleY(), isFilpX(), isFilpY());
 			break;
 		}
 		if (isInstance) {
@@ -517,6 +518,20 @@ public class LProcess extends PlayerUtils {
 			return currentScreen.getScaleY();
 		}
 		return 1f;
+	}
+
+	public boolean isFilpX() {
+		if (isInstance) {
+			return currentScreen.isFilpX();
+		}
+		return false;
+	}
+
+	public boolean isFilpY() {
+		if (isInstance) {
+			return currentScreen.isFilpY();
+		}
+		return false;
 	}
 
 	public float getRotation() {
@@ -654,7 +669,7 @@ public class LProcess extends PlayerUtils {
 		return 0;
 	}
 
-	private final Vector2f _tmpLocaltion = new Vector2f();
+	private final static Vector2f _tmpLocaltion = new Vector2f();
 
 	public Vector2f convertXY(float x, float y) {
 		float newX = ((x - getX()) / (LSystem.getScaleWidth()));
@@ -703,9 +718,13 @@ public class LProcess extends PlayerUtils {
 				_tmpLocaltion.set(newX, newY);
 				break;
 			}
-
 		} else {
 			_tmpLocaltion.set(newX, newY);
+		}
+		if (isFilpX() || isFilpY()) {
+			Director.local2Global(isFilpX(), isFilpY(), getWidth() / 2, getHeight() / 2,
+					_tmpLocaltion.x, _tmpLocaltion.y, _tmpLocaltion);
+			return _tmpLocaltion;
 		}
 		return _tmpLocaltion;
 	}

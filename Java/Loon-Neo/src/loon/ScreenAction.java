@@ -138,7 +138,7 @@ public class ScreenAction implements ActionBind {
 			tmp.setX(y);
 		}
 	}
-
+	
 	@Override
 	public boolean isBounded() {
 		return false;
@@ -170,4 +170,5 @@ public class ScreenAction implements ActionBind {
 		return tmp == null ? LSystem.getProcess().getWidth() : tmp
 				.getScreenHeight();
 	}
+
 }

@@ -486,7 +486,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	private float _alpha = 1f;
 	private float _rotation = 0;
 	private float _scaleX = 1f, _scaleY = 1f;
-
+	private boolean _filpX = false, _filpY = false;
 	private boolean _visible = true;
 
 	private int mode, frame;
@@ -1465,6 +1465,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	/**
+	 * 添加游戏精灵
+	 * 
+	 * @param sprite
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Screen addAt(ISprite sprite, float x, float y) {
+		if (sprites != null) {
+			sprites.addAt(sprite, x, y);
+			if (sprite instanceof LTouchArea) {
+				registerTouchArea((LTouchArea) sprite);
+			}
+		}
+		return this;
+	}
+
+	/**
 	 * 添加游戏组件
 	 * 
 	 * @param comp
@@ -1473,6 +1491,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen add(LComponent comp) {
 		if (desktop != null) {
 			desktop.add(comp);
+			if (comp instanceof LTouchArea) {
+				registerTouchArea((LTouchArea) comp);
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 添加游戏组件
+	 * 
+	 * @param comp
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Screen addAt(LComponent comp, float x, float y) {
+		if (desktop != null) {
+			desktop.addAt(comp, x, y);
 			if (comp instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) comp);
 			}
@@ -1697,6 +1733,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				if (_rotation != 0) {
 					g.rotate(getX() + getHalfWidth(), getY() + getHalfHeight(),
 							_rotation);
+				}
+				if (_filpX || _filpY) {
+					g.filp(getX(), getY(), getWidth(), getHeight(), _filpX,
+							_filpY);
 				}
 				if (_scaleX != 1f || _scaleY != 1f) {
 					g.scale(_scaleX, _scaleY, getX() + getHalfWidth(), getY()
@@ -2728,6 +2768,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
+	public boolean isFilpX() {
+		return _filpX;
+	}
+
+	public void setFilpX(boolean filpX) {
+		this._filpX = filpX;
+	}
+
+	public boolean isFilpY() {
+		return _filpY;
+	}
+
+	public void setFilpY(boolean filpY) {
+		this._filpY = filpY;
+	}
+
+	public void setFilpXY(boolean filpX,boolean filpY){
+		setFilpX(filpX);
+		setFilpY(filpY);
+	}
+	
 	public boolean isActionCompleted() {
 		return _screenAction == null || isActionCompleted(getScreenAction());
 	}
@@ -2753,4 +2814,5 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 
 	 */
 	public abstract void close();
+
 }

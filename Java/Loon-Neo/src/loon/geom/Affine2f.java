@@ -74,6 +74,60 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public static Affine2f transform(Affine2f tx, float x, float y,
+			int transform) {
+		switch (transform) {
+		case TRANS_ROT90: {
+			tx.translate(x, y);
+			tx.rotate(ANGLE_90);
+			tx.translate(-x, -y);
+			break;
+		}
+		case TRANS_ROT180: {
+			tx.translate(x, y);
+			tx.rotate(MathUtils.PI);
+			tx.translate(-x, -y);
+			break;
+		}
+		case TRANS_ROT270: {
+			tx.translate(x, y);
+			tx.rotate(ANGLE_270);
+			tx.translate(-x, -y);
+			break;
+		}
+		case TRANS_MIRROR: {
+			tx.translate(x, y);
+			tx.scale(-1, 1);
+			tx.translate(-x, -y);
+			break;
+		}
+		case TRANS_MIRROR_ROT90: {
+			tx.translate(x, y);
+			tx.rotate(ANGLE_90);
+			tx.translate(-x, -y);
+			tx.scale(-1, 1);
+			break;
+		}
+		case TRANS_MIRROR_ROT180: {
+			tx.translate(x, y);
+			tx.scale(-1, 1);
+			tx.translate(-x, -y);
+			tx.translate(x, y);
+			tx.rotate(MathUtils.PI);
+			tx.translate(-x, -y);
+			break;
+		}
+		case TRANS_MIRROR_ROT270: {
+			tx.translate(x, y);
+			tx.rotate(ANGLE_270);
+			tx.translate(-x, -y);
+			tx.scale(-1, 1);
+			break;
+		}
+		}
+		return tx;
+	}
+
+	public static Affine2f transform(Affine2f tx, float x, float y,
 			int transform, float width, float height) {
 		switch (transform) {
 		case TRANS_ROT90: {
@@ -131,7 +185,11 @@ public class Affine2f implements LTrans, XY {
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
+			float w = x + width / 2;
+			float h = y + height / 2;
+			tx.translate(w, h);
 			tx.rotate(ANGLE_270);
+			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
 		}
@@ -556,6 +614,11 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	public Affine2f setTo(float m00, float m01, float m10, float m11, float tx,
+			float ty) {
+		return setTransform(m00, m01, m10, m11, tx, ty);
+	}
+
 	public Affine2f setTransform(float m00, float m01, float m10, float m11,
 			float tx, float ty) {
 		this.m00 = m00;
@@ -805,6 +868,37 @@ public class Affine2f implements LTrans, XY {
 		}
 	}
 
+	public PointI transformPoint(int pointX, int pointY, PointI resultPoint) {
+		int x = (int) (this.m00 * pointX + this.m01 * pointY + this.tx);
+		int y = (int) (this.m10 * pointX + this.m11 * pointY + this.ty);
+		if (resultPoint != null) {
+			resultPoint.set(x, y);
+			return resultPoint;
+		}
+		return new PointI(x, y);
+	}
+
+	public PointF transformPoint(float pointX, float pointY, PointF resultPoint) {
+		float x = this.m00 * pointX + this.m01 * pointY + this.tx;
+		float y = this.m10 * pointX + this.m11 * pointY + this.ty;
+		if (resultPoint != null) {
+			resultPoint.set(x, y);
+			return resultPoint;
+		}
+		return new PointF(x, y);
+	}
+
+	public Vector2f transformPoint(float pointX, float pointY,
+			Vector2f resultPoint) {
+		float x = this.m00 * pointX + this.m01 * pointY + this.tx;
+		float y = this.m10 * pointX + this.m11 * pointY + this.ty;
+		if (resultPoint != null) {
+			resultPoint.set(x, y);
+			return resultPoint;
+		}
+		return new Vector2f(x, y);
+	}
+	
 	public Vector2f transformPoint(Vector2f v, Vector2f into) {
 		float x = v.x(), y = v.y();
 		return into.set(m00 * x + m10 * y + tx, m01 * x + m11 * y + ty);

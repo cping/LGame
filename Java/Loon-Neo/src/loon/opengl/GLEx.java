@@ -278,7 +278,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public static BaseBatch createDefaultBatch(GL20 gl) {
-		//实践证明,Uniform模式在html5中就是悲剧,太多浏览器中卡成狗,还是交给cpu慢慢算三角踏实……
+		// 实践证明,Uniform模式在html5中就是悲剧,太多浏览器中卡成狗,还是交给cpu慢慢算三角踏实……
 		if (!LSystem.isHTML5()) {
 			try {
 				if (UniformBatch.isLikelyToPerform(gl)) {
@@ -496,6 +496,22 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		tx().preRotate(angle);
+		return this;
+	}
+
+	public GLEx filp(float x, float y, float width, float height,
+			boolean filpX, boolean filpY) {
+		if (isClosed) {
+			return this;
+		}
+		if (filpX && filpY) {
+			Affine2f.transform(tx(), x, y, Affine2f.TRANS_ROT180, width, height);
+		} else if (filpX) {
+			Affine2f.transform(tx(), x, y, Affine2f.TRANS_MIRROR, width, height);
+		} else if (filpY) {
+			Affine2f.transform(tx(), x, y, Affine2f.TRANS_MIRROR_ROT180, width,
+					height);
+		}
 		return this;
 	}
 
@@ -1098,6 +1114,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h,
 			LColor color, float rotation, Vector2f pivot, float sx, float sy) {
+		return draw(texture, x, y, w, h, color, rotation, pivot, sx, sy, false,
+				false);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h,
+			LColor color, float rotation, Vector2f pivot, float sx, float sy,
+			boolean filpX, boolean filpY) {
 		if (isClosed) {
 			return this;
 		}
@@ -1109,7 +1132,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			argb = color.getARGB(alpha());
 		}
 		Affine2f xf = tx();
-		if (rotation != 0 || sx != 1f || sy != 1f) {
+		if (rotation != 0 || sx != 1f || sy != 1f || filpX || filpY) {
 			xf = new Affine2f();
 			float centerX = x + w / 2;
 			float centerY = y + h / 2;
@@ -1126,6 +1149,16 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				xf.translate(centerX, centerY);
 				xf.preScale(sx, sy);
 				xf.translate(-centerX, -centerY);
+			}
+			if (filpX || filpY) {
+				if (filpX && filpY) {
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_ROT180, w, h);
+				} else if (filpX) {
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR, w, h);
+				} else if (filpY) {
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR_ROT180,
+							w, h);
+				}
 			}
 			Affine2f.multiply(tx(), xf, xf);
 		}

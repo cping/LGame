@@ -453,7 +453,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move(Vector2f v) {
-		move(v.x,v.y);
+		move(v.x, v.y);
 	}
 
 	public void move(float x, float y) {
@@ -467,7 +467,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public void setLocation(Vector2f v) {
 		setLocation(v.x, v.y);
 	}
-	
+
 	public void setLocation(float x, float y) {
 		_location.setLocation(x, y);
 	}
