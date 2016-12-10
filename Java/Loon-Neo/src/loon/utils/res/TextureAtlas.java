@@ -1,13 +1,14 @@
 package loon.utils.res;
 
 import loon.Json;
+import loon.LRelease;
 import loon.Json.TypedArray;
 import loon.LTexture;
 import loon.action.sprite.DisplayObject;
 import loon.utils.ListMap;
 import loon.utils.TArray;
 
-public class TextureAtlas {
+public class TextureAtlas implements LRelease {
 
 	protected LTexture _img = null;
 
@@ -146,6 +147,15 @@ public class TextureAtlas {
 			}
 
 			return null;
+		}
+
+	}
+
+	@Override
+	public void close() {
+		if (_img != null) {
+			_img.close();
+			_img = null;
 		}
 
 	}

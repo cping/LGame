@@ -26,8 +26,10 @@ import loon.LObject;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
+import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -1084,6 +1086,10 @@ public abstract class LComponent extends LObject<LContainer> implements
 				+ "," + getHeight() + ")";
 	}
 
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+	
 	@Override
 	public void close() {
 		if (!autoDestroy) {

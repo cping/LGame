@@ -230,10 +230,10 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	public String src(){
+	public String src() {
 		return getSource();
 	}
-	
+
 	public String getSource() {
 		return source;
 	}
@@ -1043,6 +1043,9 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void close(boolean forcedDelete) {
+		if (disposed()) {
+			return;
+		}
 		_closed = true;
 		_countTexture--;
 		if (batch != null) {

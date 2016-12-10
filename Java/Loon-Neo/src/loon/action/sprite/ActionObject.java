@@ -22,7 +22,8 @@ package loon.action.sprite;
 
 import loon.LObject;
 import loon.LTexture;
-import loon.action.ActionBind;
+import loon.PlayerUtils;
+import loon.action.ActionTween;
 import loon.action.map.Attribute;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
@@ -32,7 +33,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
 public abstract class ActionObject extends LObject<ISprite> implements Config,
-		ActionBind, ISprite {
+		ISprite {
 
 	boolean visible = true;
 
@@ -462,7 +463,11 @@ public abstract class ActionObject extends LObject<ISprite> implements Config,
 	public LColor getColor() {
 		return getFilterColor();
 	}
-
+	
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+	
 	@Override
 	public void close() {
 		if (animation != null) {

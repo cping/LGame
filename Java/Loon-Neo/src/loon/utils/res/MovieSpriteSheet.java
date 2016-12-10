@@ -1,11 +1,12 @@
 package loon.utils.res;
 
 import loon.Json;
+import loon.LRelease;
 import loon.LTexture;
 import loon.utils.ListMap;
 import loon.utils.TArray;
 
-public class MovieSpriteSheet {
+public class MovieSpriteSheet implements LRelease {
 
 	protected TextureData[] _datas = null;
 
@@ -92,5 +93,12 @@ public class MovieSpriteSheet {
 		TextureAtlas ta = new TextureAtlas(_ta.img(), frames);
 		MovieSpriteSheet ss = new MovieSpriteSheet(ta, frameNames);
 		return ss;
+	}
+
+	@Override
+	public void close() {
+		if (_ta != null) {
+			_ta.close();
+		}
 	}
 }

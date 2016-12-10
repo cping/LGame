@@ -87,15 +87,15 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public boolean hasParent() {
-		return this._super != null;
+		return hasSuper();
 	}
 
 	public T getParent() {
-		return this._super;
+		return getSuper();
 	}
 
 	public void setParent(final T e) {
-		this._super = e;
+		setSuper(e);
 	}
 
 	/**
@@ -387,7 +387,15 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public void setZOrder(int z) {
 		setLayer(-z);
 	}
+	
+	public int getZOrder(){
+		return MathUtils.abs(getLayer());
+	}
 
+	public int getZ(){
+		return MathUtils.abs(getLayer());
+	}
+	
 	public void move_45D_up() {
 		move_45D_up(1);
 	}

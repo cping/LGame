@@ -26,7 +26,9 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.LTrans;
+import loon.PlayerUtils;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
@@ -978,6 +980,10 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		this._origin = o;
 	}
 
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+	
 	@Override
 	public void close() {
 		this.visible = false;

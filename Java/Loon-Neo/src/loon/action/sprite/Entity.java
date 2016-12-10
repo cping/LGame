@@ -6,7 +6,9 @@ import loon.Director.Origin;
 import loon.LObject;
 import loon.LTexture;
 import loon.LTextures;
+import loon.PlayerUtils;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
@@ -1001,6 +1003,10 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		return stringBuilder.toString();
 	}
 
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+	
 	@Override
 	public void close() {
 		if (!isDisposed()) {

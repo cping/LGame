@@ -405,7 +405,7 @@ public class Director extends SoundBox {
 		}
 	}
 
-	private static Affine2f _trans = new Affine2f();
+	private final static Affine2f _trans = new Affine2f();
 	
 	public static Vector2f local2Global(
 			float centerX, float centerY, float posX, float posY,

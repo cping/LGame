@@ -18,6 +18,34 @@ public class LSpriteUI extends LContainer {
 		this.setLayer(100);
 	}
 
+	public void syncSprite() {
+		if (_sprite != null) {
+			this.setRotation(_sprite.getRotation());
+			this.setAlpha(_sprite.getAlpha());
+			this.setBackground(_sprite.getBitmap());
+			this.setColor(_sprite.getColor());
+			this.setVisible(_sprite.isVisible());
+			this.setScale(_sprite.getScaleX(), _sprite.getScaleY());
+			this.setState(_sprite.getState());
+			this.setTag(_sprite.getTag());
+			this.setLocation(_sprite.getX(), _sprite.getY());
+			this.setLayer(_sprite.getLayer());
+		}
+	}
+
+	public void syncComponent() {
+		if (_sprite != null) {
+			_sprite.setRotation(getRotation());
+			_sprite.setAlpha(getAlpha());
+			_sprite.setColor(getColor());
+			_sprite.setVisible(isVisible());
+			_sprite.setScale(getScaleX(), getScaleY());
+			_sprite.setState(getState());
+			_sprite.setLocation(getX(), getY());
+			_sprite.setLayer(getLayer());
+		}
+	}
+
 	public ISprite getSprite() {
 		return this._sprite;
 	}

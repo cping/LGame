@@ -1811,8 +1811,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
-	private int tmpColor = LColor.DEF_COLOR;
-
 	public synchronized void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -1822,6 +1820,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					|| !replaceDstScreen.isOnLoadComplete()) {
 				repaint(g);
 			} else if (replaceDstScreen.isOnLoadComplete()) {
+				int tmpColor = LColor.DEF_COLOR;
 				if (isScreenFrom) {
 					repaint(g);
 					if (replaceDstScreen._backgroundColor != null) {

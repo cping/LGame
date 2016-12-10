@@ -25,7 +25,9 @@ import loon.LObject;
 import loon.LRelease;
 import loon.LTexture;
 import loon.LTextures;
+import loon.PlayerUtils;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.ArrowTo;
 import loon.action.CircleTo;
 import loon.action.ColorTo;
@@ -1110,6 +1112,10 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 	@Override
 	public LColor getColor() {
 		return new LColor(filterColor);
+	}
+
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
 	}
 	
 	@Override

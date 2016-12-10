@@ -1,8 +1,9 @@
 package loon.action.sprite;
 
-import loon.LRelease;
 import loon.LSystem;
 import loon.LTrans;
+import loon.PlayerUtils;
+import loon.action.ActionTween;
 import loon.geom.PointF;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -11,8 +12,10 @@ import loon.utils.res.TextureData;
 import loon.utils.res.MovieSpriteSheet;
 import loon.utils.timer.LTimer;
 
-public class MovieClip extends DisplayObject implements LRelease {
+public class MovieClip extends DisplayObject {
 
+	private boolean _autoDispose = false;
+	
 	private TextureData _ssd = null;
 
 	private MovieSpriteSheet _sheet = null;
@@ -35,7 +38,6 @@ public class MovieClip extends DisplayObject implements LRelease {
 		}
 	}
 
-	private boolean _autoDispose = false;
 
 	public boolean autoDispsoe() {
 		return _autoDispose;
@@ -276,16 +278,24 @@ public class MovieClip extends DisplayObject implements LRelease {
 			}
 			g.draw(_sheet.sheet(), destX, destY, drawRect.width,
 					drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(), _ssd.h(),
-					_baseColor, rotate, _scaleX, _scaleY, _anchorValue,_pivotValue, dir);
+					_baseColor, rotate, _scaleX, _scaleY, _anchorValue,
+					_pivotValue, dir);
 
 		}
 
 	}
 
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
 
 	@Override
 	public void close() {
-       setState(State.DISPOSED);
+		if (_sheet != null) {
+			_sheet.close();
+		}
+		setState(State.DISPOSED);
+		removeActionEvents(this);
 	}
 
 }
