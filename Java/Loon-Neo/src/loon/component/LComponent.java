@@ -51,6 +51,17 @@ import loon.opengl.TextureUtils;
 public abstract class LComponent extends LObject<LContainer> implements
 		ActionBind, XY, BoxSize, LRelease {
 
+	// 默认锁定当前组件(否则可以拖动)
+	protected boolean locked = true;
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
 	protected boolean _touchLocked = false, _keyLocked = false;
 
@@ -115,7 +126,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	public LComponent A(ClickListener c) {
 		return addClickListener(c);
 	}
-	
+
 	public LComponent addClickListener(ClickListener c) {
 		this.Click = c;
 		makeTouched();
@@ -154,19 +165,19 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	private Origin _origin = Origin.CENTER;
 
-	private LTexture[] imageUI;
+	private LTexture[] _imageUI = null;
 
-	protected boolean elastic;
+	protected boolean elastic = false;
 
-	protected boolean autoDestroy;
+	protected boolean autoDestroy = true;
 
-	protected boolean isClose;
+	protected boolean isClose = false;
 
-	protected boolean isFull;
+	protected boolean isFull = false;
 
 	private boolean isSelectDraw = false;
 	// 渲染状态
-	public boolean customRendering;
+	public boolean customRendering = false;
 
 	// 居中位置，组件坐标与大小
 	private int cam_x, cam_y;
@@ -403,7 +414,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 								width, height);
 					} else {
 						this.createUI(g, this.screenX, this.screenY, this,
-								this.imageUI);
+								this._imageUI);
 					}
 					g.setAlpha(tmp);
 					// 不变更
@@ -417,7 +428,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 								width, height);
 					} else {
 						this.createUI(g, this.screenX, this.screenY, this,
-								this.imageUI);
+								this._imageUI);
 					}
 				}
 				if (isDrawSelect()) {
@@ -746,6 +757,12 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	protected void processTouchDragged() {
+		if (!locked) {
+			if (getContainer() != null) {
+				getContainer().sendToFront(this);
+			}
+			this.move(this.input.getTouchDX(), this.input.getTouchDY());
+		}
 		this.dragClick();
 	}
 
@@ -786,7 +803,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public LTexture[] getImageUI() {
-		return this.imageUI;
+		return this._imageUI;
 	}
 
 	public void setImageUI(LTexture[] imageUI, boolean processUI) {
@@ -795,7 +812,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 			this._height = (int) imageUI[0].height();
 		}
 
-		this.imageUI = imageUI;
+		this._imageUI = imageUI;
 	}
 
 	public void setImageUI(int index, LTexture imageUI) {
@@ -803,7 +820,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 			this._width = (int) imageUI.width();
 			this._height = (int) imageUI.height();
 		}
-		this.imageUI[index] = imageUI;
+		this._imageUI[index] = imageUI;
 	}
 
 	public abstract String getUIName();
@@ -832,8 +849,11 @@ public abstract class LComponent extends LObject<LContainer> implements
 		if (b == null) {
 			return;
 		}
+		if (b == this._background) {
+			return;
+		}
 		final LTexture oldImage = this._background;
-		if (oldImage != b && oldImage != null) {
+		if (oldImage != null && oldImage != b) {
 			if (!b.equals(LSystem.base().graphics().finalColorTex())) {
 				Updateable update = new Updateable() {
 
@@ -844,7 +864,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 							parent.closeChildAll();
 							parent.close();
 						}
-					
+
 					}
 				};
 				LSystem.unload(update);
@@ -1066,6 +1086,12 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	@Override
 	public void close() {
+		if (!autoDestroy) {
+			return;
+		}
+		if (isClose) {
+			return;
+		}
 		this.isClose = true;
 		this.desktop.setComponentStat(this, false);
 		if (this._super != null) {
@@ -1074,12 +1100,12 @@ public abstract class LComponent extends LObject<LContainer> implements
 		this.desktop = Desktop.EMPTY_DESKTOP;
 		this.input = null;
 		this._super = null;
-		if (imageUI != null) {
-			for (int i = 0; i < imageUI.length; i++) {
-				imageUI[i].close();
-				imageUI[i] = null;
+		if (_imageUI != null) {
+			for (int i = 0, size = _imageUI.length; i < size; i++) {
+				_imageUI[i].close();
+				_imageUI[i] = null;
 			}
-			this.imageUI = null;
+			this._imageUI = null;
 		}
 		if (_background != null) {
 			this._background.close();

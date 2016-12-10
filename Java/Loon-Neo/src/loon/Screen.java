@@ -1485,6 +1485,40 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	/**
 	 * 添加游戏组件
 	 * 
+	 * @param s
+	 */
+
+	public Screen addSpriteToUI(ISprite s) {
+		if (desktop != null) {
+			desktop.addSprite(s);
+			if (s instanceof LTouchArea) {
+				registerTouchArea((LTouchArea) s);
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 添加游戏组件
+	 * 
+	 * @param s
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Screen addSpriteToUIAt(ISprite s, float x, float y) {
+		if (desktop != null) {
+			desktop.addSpriteAt(s, x, y);
+			if (s instanceof LTouchArea) {
+				registerTouchArea((LTouchArea) s);
+			}
+		}
+		return this;
+	}
+	
+	/**
+	 * 添加游戏组件
+	 * 
 	 * @param comp
 	 */
 

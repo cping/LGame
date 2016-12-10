@@ -174,6 +174,7 @@ public class LCheckBox extends LComponent {
 			this.over = this.pressed = this.intersects(this.input.getTouchX(),
 					this.input.getTouchY());
 		}
+		super.processTouchDragged();
 	}
 
 	@Override

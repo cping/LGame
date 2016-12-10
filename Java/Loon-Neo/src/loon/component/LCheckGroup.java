@@ -69,6 +69,7 @@ public class LCheckGroup extends LComponent {
 		for (LCheckBox check : checks) {
 			check.processTouchDragged();
 		}
+		super.processTouchDragged();
 	}
 
 	@Override

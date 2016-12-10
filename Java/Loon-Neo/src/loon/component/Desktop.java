@@ -23,6 +23,7 @@ package loon.component;
 
 import loon.LRelease;
 import loon.Screen;
+import loon.action.sprite.ISprite;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
@@ -86,6 +87,14 @@ public class Desktop implements LRelease {
 			comp.setLocation(x, y);
 			add(comp);
 		}
+	}
+
+	public void addSprite(ISprite sprite) {
+		add(new LSpriteUI(sprite));
+	}
+
+	public void addSpriteAt(ISprite sprite, float x, float y) {
+		addAt(new LSpriteUI(sprite), x, y);
 	}
 
 	public void add(LComponent comp) {

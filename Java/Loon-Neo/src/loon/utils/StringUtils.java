@@ -667,11 +667,22 @@ final public class StringUtils {
 		if (value == null || value.length() == 0)
 			return false;
 		for (int i = 0; i < value.length(); i++) {
-			char c = Character.toUpperCase(value.charAt(i));
-			if ('A' <= c && c <= 'Z')
+			char letter = Character.toUpperCase(value.charAt(i));
+			if (('a' <= letter && letter <= 'z')
+					|| ('A' <= letter && letter <= 'Z'))
 				return true;
 		}
 		return false;
+	}
+
+	/**
+	 * 检查是否为纯字母
+	 * 
+	 * @param letter
+	 * @return
+	 */
+	public final static boolean isAlphabet(char letter) {
+		return (('a' <= letter && letter <= 'z') || ('A' <= letter && letter <= 'Z'));
 	}
 
 	/**

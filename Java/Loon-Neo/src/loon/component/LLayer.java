@@ -521,7 +521,6 @@ public class LLayer extends ActorLayer {
 
 	@Override
 	protected void processTouchDragged() {
-		super.processTouchDragged();
 		int dropX = 0;
 		int dropY = 0;
 		if (!locked) {
@@ -592,6 +591,7 @@ public class LLayer extends ActorLayer {
 				}
 			}
 		}
+		super.dragClick();
 	}
 
 	public boolean isTouchPressed() {
@@ -612,14 +612,6 @@ public class LLayer extends ActorLayer {
 
 	public void setLimitMove(boolean isLimitMove) {
 		this.isLimitMove = isLimitMove;
-	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
 	}
 
 	public boolean isTouchClick() {

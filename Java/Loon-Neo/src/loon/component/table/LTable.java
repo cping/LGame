@@ -291,7 +291,6 @@ public class LTable extends LContainer {
 	}
 
 	protected void processTouchDragged() {
-		super.processTouchDragged();
 		mouseDragged(getTouchX(), getTouchY());
 		if (!locked) {
 			if (getContainer() != null) {
@@ -301,6 +300,7 @@ public class LTable extends LContainer {
 				this.move(this.input.getTouchDX(), this.input.getTouchDY());
 			}
 		}
+		super.dragClick();
 	}
 
 	protected void processTouchPressed() {
@@ -732,14 +732,6 @@ public class LTable extends LContainer {
 
 	public void setBackgroundTexture(LTexture backgroundTexture) {
 		this.backgroundTexture = backgroundTexture;
-	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
 	}
 
 	@Override

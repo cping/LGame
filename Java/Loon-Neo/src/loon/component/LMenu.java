@@ -21,6 +21,7 @@
  */
 package loon.component;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -69,7 +70,7 @@ public class LMenu extends LComponent {
 
 	}
 
-	public class MenuItem {
+	public class MenuItem implements LRelease {
 		LTexture texture;
 		LMenu parent;
 		int index;
@@ -347,6 +348,13 @@ public class LMenu extends LComponent {
 			return this.itemHeight;
 		}
 
+		@Override
+		public void close() {
+			if (texture != null) {
+				texture.close();
+				texture = null;
+			}
+		}
 	}
 
 	private IFont font;
@@ -380,7 +388,7 @@ public class LMenu extends LComponent {
 
 	private int item_top_offset = 0;
 
-	public TArray<MenuItem> items = new TArray<MenuItem>();
+	public TArray<MenuItem> items = new TArray<MenuItem>(10);
 
 	private int tabWidth, tabHeight;
 
@@ -870,6 +878,14 @@ public class LMenu extends LComponent {
 	@Override
 	public void close() {
 		super.close();
+		for (int i = 0, size = items.size; i < size; i++) {
+			MenuItem item = items.get(i);
+			if (item != null) {
+				item.close();
+				item = null;
+			}
+		}
+		items.clear();
 		if (!_defUI) {
 			if (tab != null) {
 				tab.close();
@@ -879,5 +895,4 @@ public class LMenu extends LComponent {
 			}
 		}
 	}
-
 }

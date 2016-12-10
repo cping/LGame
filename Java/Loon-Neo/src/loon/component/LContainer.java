@@ -29,10 +29,8 @@ import loon.utils.TArray;
 
 public abstract class LContainer extends LComponent {
 
-	protected boolean locked;
-
 	protected LComponent[] _childs = new LComponent[0];
-	
+
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(
 			false);
 
@@ -112,7 +110,8 @@ public abstract class LContainer extends LComponent {
 		final int size = this.childCount;
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
-				if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
+				if (this._childs[i].Tag == tag
+						|| tag.equals(this._childs[i].Tag)) {
 					list.add(this._childs[i]);
 				}
 			}
@@ -563,7 +562,7 @@ public abstract class LContainer extends LComponent {
 		if (autoDestroy) {
 			if (_childs != null) {
 				for (LComponent c : _childs) {
-					if (c != null) {
+					if (c != null && !c.isClose) {
 						c.close();
 						c = null;
 					}

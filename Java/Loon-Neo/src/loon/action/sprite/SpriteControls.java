@@ -685,6 +685,26 @@ public class SpriteControls {
 		return this;
 	}
 
+	public SpriteControls flashTo(float duration) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite comp = _sprs.get(i);
+			if (comp != null && (comp instanceof ActionBind)) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) comp)
+							.flashTo(duration);
+				} else {
+					tween.flashTo(duration);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
 	public SpriteControls transferTo(float startPos, float endPos,
 			float duration, EasingMode mode, boolean controlX, boolean controlY) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {

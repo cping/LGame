@@ -225,13 +225,13 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	protected void processTouchDragged() {
-		super.processTouchDragged();
 		if (horizontalScrollbar != null) {
 			horizontalScrollbar.processTouchDragged();
 		}
 		if (verticalScrollbar != null) {
 			verticalScrollbar.processTouchDragged();
 		}
+		super.processTouchDragged();
 	}
 
 	@Override

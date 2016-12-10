@@ -115,16 +115,6 @@ public class LPaper extends LContainer {
 	}
 
 	@Override
-	protected void processTouchDragged() {
-		if (!locked) {
-			if (getContainer() != null) {
-				getContainer().sendToFront(this);
-			}
-			this.move(this.input.getTouchDX(), this.input.getTouchDY());
-		}
-	}
-
-	@Override
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
 			this.downClick();
@@ -138,13 +128,6 @@ public class LPaper extends LContainer {
 		}
 	}
 
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
-	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,

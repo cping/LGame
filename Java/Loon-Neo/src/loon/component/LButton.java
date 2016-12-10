@@ -194,6 +194,7 @@ public class LButton extends LComponent {
 	protected void processTouchDragged() {
 		this.over = this.pressed = this.intersects(this.input.getTouchX(),
 				this.input.getTouchY());
+		super.processTouchDragged();
 	}
 
 	@Override

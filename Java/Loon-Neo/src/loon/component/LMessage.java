@@ -260,6 +260,7 @@ public class LMessage extends LContainer {
 			}
 			this.updateIcon();
 		}
+		super.dragClick();
 	}
 
 	public void setPauseIconAnimation(Animation animation) {
@@ -298,14 +299,6 @@ public class LMessage extends LContainer {
 	 */
 	public void setMessageFont(IFont messageFont) {
 		this.messageFont = messageFont;
-	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
 	}
 
 	@Override

@@ -127,16 +127,6 @@ public class LWindow extends LContainer {
 		}
 	}
 
-	protected void processTouchDragged() {
-		if (!locked) {
-			if (getContainer() != null) {
-				getContainer().sendToFront(this);
-			}
-			this.move(this.input.getTouchDX(), this.input.getTouchDY());
-			super.processTouchDragged();
-		}
-	}
-
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
 			super.processTouchPressed();
@@ -147,14 +137,6 @@ public class LWindow extends LContainer {
 		if (!input.isMoving()) {
 			super.processTouchReleased();
 		}
-	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
 	}
 
 	public void createUI(GLEx g, int x, int y, LComponent component,

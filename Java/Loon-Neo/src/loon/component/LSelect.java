@@ -262,17 +262,6 @@ public class LSelect extends LContainer {
 	}
 
 	@Override
-	protected void processTouchDragged() {
-		if (!locked) {
-			if (getContainer() != null) {
-				getContainer().sendToFront(this);
-			}
-			this.move(this.input.getTouchDX(), this.input.getTouchDY());
-		}
-		this.dragClick();
-	}
-
-	@Override
 	protected synchronized void processTouchMoved() {
 		if (selects != null) {
 			int touchY = input.getTouchY();
@@ -308,14 +297,6 @@ public class LSelect extends LContainer {
 
 	public void setMessageFont(IFont messageFont) {
 		this.messageFont = messageFont;
-	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
 	}
 
 	public LTexture getCursor() {

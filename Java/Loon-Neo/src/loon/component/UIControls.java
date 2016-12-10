@@ -738,6 +738,25 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls flashTo(float duration) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).flashTo(duration);
+				} else {
+					tween.flashTo(duration);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
 	public UIControls transferTo(float startPos, float endPos, float duration,
 			EasingMode mode, boolean controlX, boolean controlY) {
 		for (int i = 0, n = _comps.size; i < n; i++) {

@@ -68,7 +68,7 @@ public class LSTRFont implements LRelease {
 			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet
 					: 0;
 			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
-			for (int i = 0; i < strfont.totalCharSet + customCharsLength; i++) {
+			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
 				char ch = (i < strfont.totalCharSet) ? (char) i
 						: strfont.additionalChars[i - strfont.totalCharSet];
 
@@ -84,6 +84,10 @@ public class LSTRFont implements LRelease {
 				int charheight = (int) layout.getHeight();
 				if (charheight <= 0) {
 					charheight = strfont.fontSize;
+				} else if (StringUtils.isAlphabet(ch)) {
+					if (ch == 'i' && charheight > 24) {
+						charheight -= 4;
+					}
 				}
 
 				IntObject newIntObject = new IntObject();

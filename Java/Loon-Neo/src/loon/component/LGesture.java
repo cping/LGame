@@ -146,9 +146,9 @@ public class LGesture extends LComponent {
 					mX = x;
 					mY = y;
 				}
-				dragClick();
 			}
 		}
+		super.dragClick();
 	}
 
 	public float[] getPoints() {
