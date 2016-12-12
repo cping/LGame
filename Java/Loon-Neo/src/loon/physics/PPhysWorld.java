@@ -17,6 +17,7 @@ package loon.physics;
 
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
+import loon.utils.TimeUtils;
 
 public class PPhysWorld {
 
@@ -159,7 +160,7 @@ public class PPhysWorld {
 				}
 		}
 
-		long en = System.nanoTime();
+		long en = nanoTime();
 		collisionDetectionTime = en - st;
 		for (int i = 0; i < numSolvers; i++) {
 			if (solvers[i].rem) {
@@ -167,6 +168,10 @@ public class PPhysWorld {
 				i--;
 			}
 		}
+	}
+	
+	private final static long nanoTime(){
+		return TimeUtils.nanoTime();
 	}
 
 	private void collisionShape(PShape s1, PShape s2, PCollisionChooser cc) {
@@ -298,7 +303,7 @@ public class PPhysWorld {
 	}
 
 	private void solve(float dt) {
-		long st = System.nanoTime();
+		long st = nanoTime();
 		for (int i = 0; i < numSolvers; i++) {
 			solvers[i].preSolve();
 		}
@@ -314,9 +319,9 @@ public class PPhysWorld {
 			}
 		}
 
-		long en = System.nanoTime();
+		long en = nanoTime();
 		collisionSolveTime = en - st;
-		st = System.nanoTime();
+		st = nanoTime();
 		for (int i = 0; i < numBodies; i++)
 			if (!bodies[i].fix) {
 				PBody b = bodies[i];
@@ -325,9 +330,9 @@ public class PPhysWorld {
 				b.correctAngVel = b.angVel * dt;
 			}
 
-		en = System.nanoTime();
+		en = nanoTime();
 		positionUpdateTime += en - st;
-		st = System.nanoTime();
+		st = nanoTime();
 		for (int j = 0; j < iterations; j++) {
 			for (int i = 0; i < numJoints; i++) {
 				joints[i].solvePosition();
@@ -337,9 +342,9 @@ public class PPhysWorld {
 			}
 		}
 
-		en = System.nanoTime();
+		en = nanoTime();
 		collisionSolveTime += en - st;
-		st = System.nanoTime();
+		st = nanoTime();
 		for (int i = 0; i < numBodies; i++) {
 			PBody b = bodies[i];
 			if (b.fix) {
@@ -356,12 +361,12 @@ public class PPhysWorld {
 		for (int i = 0; i < numJoints; i++) {
 			joints[i].update();
 		}
-		en = System.nanoTime();
+		en = nanoTime();
 		positionUpdateTime += en - st;
 	}
 
 	public void step(float dt) {
-		long st = System.nanoTime();
+		long st = nanoTime();
 		for (int i = 0; i < numBodies; i++)
 			if (bodies[i].rem) {
 				removeBody(i);
@@ -389,11 +394,11 @@ public class PPhysWorld {
 				joints[i].update();
 			}
 		}
-		long en = System.nanoTime();
+		long en = nanoTime();
 		positionUpdateTime = en - st;
 		collide(en);
 		solve(dt);
-		long totalEn = System.nanoTime();
+		long totalEn = nanoTime();
 		totalStepTime = totalEn - st;
 	}
 

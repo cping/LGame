@@ -9,7 +9,6 @@
    details. */
 
 package java.io;
-
 public class BufferedReader extends Reader {
 	private final Reader in;
 	private final char[] buffer;

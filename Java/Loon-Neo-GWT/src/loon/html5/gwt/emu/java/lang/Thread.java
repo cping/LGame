@@ -104,8 +104,7 @@ public class Thread implements Runnable {
 					} catch (e) {
 						xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
 					}
-				}
-				else if (window.XMLHttpRequest) {
+				} else if (window.XMLHttpRequest) {
 					xmlHttpReq = new XMLHttpRequest();
 				}
 			} catch (e) {
@@ -123,7 +122,13 @@ public class Thread implements Runnable {
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 			@Override
 			public void onUncaughtException(Throwable e) {
-				javaHandler.uncaughtException(CURRENT_THREAD, e);
+				final Thread th = new Thread() {
+					@Override
+					public String toString() {
+						return "The only thread";
+					}
+				};
+				javaHandler.uncaughtException(th, e);
 			}
 		});
 	}

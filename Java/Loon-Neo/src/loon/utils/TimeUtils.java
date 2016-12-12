@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2016 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,7 +20,9 @@
  */
 package loon.utils;
 
-public final class TimeUtils {
+public class TimeUtils {
+
+	private static final long nanosPerMilli = 1000000L;
 
 	public static enum Unit {
 		NANOS, MICROS, MILLIS, SECONDS
@@ -42,7 +44,7 @@ public final class TimeUtils {
 	}
 
 	public static float currentSeconds() {
-		long timeMillis = System.currentTimeMillis();
+		long timeMillis = millis();
 		return timeMillis / 1000f;
 	}
 
@@ -106,4 +108,27 @@ public final class TimeUtils {
 		return Unit.SECONDS;
 	}
 
+	public final static long nanoTime() {
+		return System.currentTimeMillis() * nanosPerMilli;
+	}
+
+	public final static long millis() {
+		return System.currentTimeMillis();
+	}
+
+	public final static long nanosToMillis(long nanos) {
+		return nanos / nanosPerMilli;
+	}
+
+	public final static long millisToNanos(long millis) {
+		return millis * nanosPerMilli;
+	}
+
+	public final static long timeSinceNanos(long prevTime) {
+		return nanoTime() - prevTime;
+	}
+
+	public final static long timeSinceMillis(long prevTime) {
+		return millis() - prevTime;
+	}
 }
