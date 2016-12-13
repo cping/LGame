@@ -1,4 +1,4 @@
-# Java(Android)游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2016-11-04)
+# Java(Android)游戏开发领域常用资源 (游戏素材，游戏资源，不定期更新:上次更新日期 2016-12-13)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -41,11 +41,12 @@
 * Kotlin: JetBrain针对JVM、安卓和浏览器提供的静态类型编程语言。[官网](http://kotlinlang.org/)
 * Xtend: 一种静态编程语言，能够将其代码转换为简洁高效的Java代码，并基于JVM运行。[官网](http://www.eclipse.org/xtend)
 
-### 无版权的游戏资源下载（原作者已经放弃版权，或者声明可以随意使用的资源）
+### 无版权的游戏资源下载（原作者已经放弃版权，或者声明可以在某些场合免费使用的资源）
 
 PS:使用下列免费资源时，建议注明引用的资源出处，免得引发不必要的版权官司（比如被人投诉说你抄袭资源之类，游戏介绍中注明了资源出处，直接声明使用的资源来源，省得麻烦）……
 
 * opengameart: 一个欧美的完全无版权问题的游戏资源下载站。[地址](http://opengameart.org/) 
+* soundeffect-lab: 一个日本的音频下载站，拥有多种效果音频类型(含游戏与其它场合)，大多数游戏有这网站撑着效果音就足够了，不过资源都是mp3发布，某些场合可能需要自己转码，另外该站已经写明商用免费。[地址](http://soundeffect-lab.info/sound/voice/game.html)
 * 猫手製アイコン屋: 日式素材下载站。 [地址](http://www007.upp.so-net.ne.jp/nekoteya/)
 * 消失点: 日式AVG（galgame）以及RMXP和RMVX素材站，素材以背景图和地图为主。[地址](http://www.aj.undo.jp/)  
 * k-after: 日式AVG（galgame）游戏的免费背景素材下载站。  [地址](http://k-after.at.webry.info/)  
