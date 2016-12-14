@@ -8,6 +8,8 @@
 	<inherits name="com.google.gwt.webgl.WebGL" />
 	<inherits name="loon.gwtref.SimReflect"/>
 	<public path="gwt/resources"/>
+	<!-- 如果用GWT2.8编译时，请将此项替换为emu2.8即可，因为有些2.6和2.7时没有的java类，gwt2.8实现了，用loon提供的会冲突，所以需要替换.
+	     目前没有直接替换，是因为GWT2.8编译的文件对比GWT2.7编译出的，在使用loon时偶尔有些奇怪的性能错误,暂时没必要替换,等gwt官方修正中(如果官方长期不解决，我就改代码修正……). -->
 	<super-source path="gwt/emu" />
 	<source path="gwt">
 		<exclude name="**/emu/**" />
