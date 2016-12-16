@@ -125,7 +125,7 @@ public class MathUtils {
 	 */
 	public static String addZeros(String number, int numDigits) {
 		int length = numDigits - number.length();
-		if (length != 0) {
+		if (length > -1) {
 			number = zeros[length] + number;
 		}
 		return number;
@@ -409,7 +409,7 @@ public class MathUtils {
 	static final int CK1 = 2328;
 
 	static final int CK2 = 32551;
-	
+
 	public static int cos(int f) {
 		int sign = 1;
 		if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED)) {
@@ -845,6 +845,75 @@ public class MathUtils {
 		}
 	}
 
+	public static final int sum(final int[] values) {
+		int sum = 0;
+		for(int i = values.length - 1; i >= 0; i--) {
+			sum += values[i];
+		}
+		return sum;
+	}
+
+	public static final void arraySumInternal(final int[] values) {
+		final int valueCount = values.length;
+		for(int i = 1; i < valueCount; i++) {
+			values[i] = values[i-1] + values[i];
+		}
+	}
+
+	public static final void arraySumInternal(final long[] values) {
+		final int valueCount = values.length;
+		for(int i = 1; i < valueCount; i++) {
+			values[i] = values[i-1] + values[i];
+		}
+	}
+
+	public static final void arraySumInternal(final long[] values, final long factor) {
+		values[0] = values[0] * factor;
+		final int valueCount = values.length;
+		for(int i = 1; i < valueCount; i++) {
+			values[i] = values[i-1] + values[i] * factor;
+		}
+	}
+
+	public static final void arraySumInto(final long[] values, final long[] targetValues, final long factor) {
+		targetValues[0] = values[0] * factor;
+		final int valueCount = values.length;
+		for(int i = 1; i < valueCount; i++) {
+			targetValues[i] = targetValues[i-1] + values[i] * factor;
+		}
+	}
+
+	public static final float arraySum(final float[] values) {
+		float sum = 0;
+		final int valueCount = values.length;
+		for(int i = 0; i < valueCount; i++) {
+			sum += values[i];
+		}
+		return sum;
+	}
+
+	public static final float arrayAverage(final float[] values) {
+		return MathUtils.arraySum(values) / values.length;
+	}
+
+	public static float[] scaleAroundCenter(final float[] vertices, final float scaleX, final float scaleY, final float scaleCenterX, final float scaleCenterY) {
+		if(scaleX != 1 || scaleY != 1) {
+			for(int i = vertices.length - 2; i >= 0; i -= 2) {
+				vertices[i] = scaleCenterX + (vertices[i] - scaleCenterX) * scaleX;
+				vertices[i + 1] = scaleCenterY + (vertices[i + 1] - scaleCenterY) * scaleY;
+			}
+		}
+		return vertices;
+	}
+	
+	public static final boolean isInBounds(final int minValue, final int maxValue, final int val) {
+		return val >= minValue && val <= maxValue;
+	}
+
+	public static final boolean isInBounds(final float minValue, final float maxValue, final float val) {
+		return val >= minValue && val <= maxValue;
+	}
+	
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static String toString(float value) {
@@ -933,11 +1002,13 @@ public class MathUtils {
 			return -SHIFT[angle - 270];
 		}
 	}
-	
+
 	public static float bezierAt(float a, float b, float c, float d, float t) {
-		return (MathUtils.pow(1 - t, 3) * a + 3 * t * (MathUtils.pow(1 - t, 2)) * b + 3 * MathUtils.pow(t, 2) * (1 - t) * c + MathUtils.pow(t, 3) * d);
+		return (MathUtils.pow(1 - t, 3) * a + 3 * t * (MathUtils.pow(1 - t, 2))
+				* b + 3 * MathUtils.pow(t, 2) * (1 - t) * c + MathUtils.pow(t,
+				3) * d);
 	}
-	
+
 	public final static int parseUnsignedInt(String s) {
 		return parseUnsignedInt(s, 10);
 	}

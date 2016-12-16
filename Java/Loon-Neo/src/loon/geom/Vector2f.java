@@ -148,7 +148,7 @@ public class Vector2f implements Serializable, XY {
 		this.y = this.y + y;
 		return this;
 	}
-	
+
 	public float dot(Vector2f v) {
 		return x * v.x + y * v.y;
 	}
@@ -224,7 +224,6 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
-
 	public Vector2f lerp(Vector2f target, float alpha) {
 		Vector2f r = this.mul(1.0f - alpha);
 		r.add(target.tmp().mul(alpha));
@@ -238,6 +237,70 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f(float[] coords) {
 		x = coords[0];
 		y = coords[1];
+	}
+
+	public void move_45D_up() {
+		move_45D_up(1);
+	}
+
+	public void move_45D_up(int multiples) {
+		move_multiples(Field2D.UP, multiples);
+	}
+
+	public void move_45D_left() {
+		move_45D_left(1);
+	}
+
+	public void move_45D_left(int multiples) {
+		move_multiples(Field2D.LEFT, multiples);
+	}
+
+	public void move_45D_right() {
+		move_45D_right(1);
+	}
+
+	public void move_45D_right(int multiples) {
+		move_multiples(Field2D.RIGHT, multiples);
+	}
+
+	public void move_45D_down() {
+		move_45D_down(1);
+	}
+
+	public void move_45D_down(int multiples) {
+		move_multiples(Field2D.DOWN, multiples);
+	}
+
+	public void move_up() {
+		move_up(1);
+	}
+
+	public void move_up(int multiples) {
+		move_multiples(Field2D.TUP, multiples);
+	}
+
+	public void move_left() {
+		move_left(1);
+	}
+
+	public void move_left(int multiples) {
+		move_multiples(Field2D.TLEFT, multiples);
+	}
+
+	public void move_right() {
+		move_right(1);
+	}
+
+	public void move_right(int multiples) {
+		move_multiples(Field2D.TRIGHT, multiples);
+	}
+
+	public void move_down() {
+		move_down(1);
+	}
+
+	public void move_down(int multiples) {
+		move_multiples(Field2D.TDOWN, multiples);
 	}
 
 	public void move(Vector2f vector2D) {

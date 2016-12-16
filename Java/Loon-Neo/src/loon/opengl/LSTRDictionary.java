@@ -180,7 +180,6 @@ public final class LSTRDictionary {
 	public synchronized final static Dict bind(final LFont font,
 			final String mes) {
 		if (checkEnglishString(mes)) {
-			
 			Dict pDict = englishFontList.get(font);
 			if (pDict == null) {
 				pDict = Dict.newDict();

@@ -27,9 +27,9 @@ public class RotateTo extends ActionEvent {
 
 	private float speed = 2f;
 	private float diffAngle = 1f;
-	private float startRotation;
-	private float dstAngle;
-	private float currentRotation;
+	private float startRotation = -1f;
+	private float dstAngle = 0;
+	private float currentRotation = 0;
 	private EaseTimer easeTimer;
 
 	public RotateTo(float dstAngle) {
@@ -37,20 +37,20 @@ public class RotateTo extends ActionEvent {
 	}
 
 	public RotateTo(float dstAngle, float speed, EasingMode easing) {
-		this(0, dstAngle, 1f, speed, 1f / 60f, easing);
+		this(-1f, dstAngle, 1f, speed, 1f / 60f, easing);
 	}
 
 	public RotateTo(float dstAngle, float speed) {
-		this(0, dstAngle, 1f, speed, 1f / 60f, EasingMode.Linear);
+		this(-1f, dstAngle, 1f, speed, 1f / 60f, EasingMode.Linear);
 	}
 
 	public RotateTo(float dstAngle, float diffAngle, float speed,
 			EasingMode easing) {
-		this(0, dstAngle, diffAngle, 2f, 1f / 60f, easing);
+		this(-1f, dstAngle, diffAngle, 2f, 1f / 60f, easing);
 	}
 
 	public RotateTo(float dstAngle, float diffAngle, float speed) {
-		this(0, dstAngle, diffAngle, 2f, 1f / 60f, EasingMode.Linear);
+		this(-1f, dstAngle, diffAngle, 2f, 1f / 60f, EasingMode.Linear);
 	}
 
 	public RotateTo(float startRotation, float dstAngle, float diffAngle,
@@ -69,7 +69,9 @@ public class RotateTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-		startRotation = original.getRotation();
+		if (startRotation == -1f) {
+			startRotation = original.getRotation();
+		}
 		if ((dstAngle - startRotation) == 0) {
 			_isCompleted = true;
 		}

@@ -72,8 +72,11 @@ public class CountdownTimer extends RealtimeProcess {
 			return StringUtils.format(DEF_FORMAT, _separator);
 		}
 		String text = String.valueOf(_millisecond);
-		if (text.length() > 4) {
-			return text.substring(0, 2) + _separator + text.substring(2, 4);
+		final int size = text.length();
+		final int len = size - 3;
+		if (size > 3) {
+			return MathUtils.addZeros(text.substring(0, len), 2) + _separator
+					+ MathUtils.addZeros(text.substring(len, size - 1), 2);
 		} else {
 			return StringUtils.format(DEF_FORMAT, _separator);
 		}

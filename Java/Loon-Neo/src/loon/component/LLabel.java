@@ -7,6 +7,7 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.TArray;
 
 /**
  * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢)
@@ -28,7 +29,11 @@ public class LLabel extends LComponent {
 		LEFT, CENTER, RIGHT
 	}
 
+	private final TArray<String> strings;
+
 	private IFont font;
+
+	private float space = 5f;
 
 	private float backalpha = 1f, offsetLeft = 0, offsetTop = 0;
 
@@ -146,8 +151,12 @@ public class LLabel extends LComponent {
 			setWidth(bg.getWidth());
 			setHeight(bg.getHeight());
 		} else if (width == 0) {
-			setWidth(font.stringWidth(text) + 3);
-			setHeight(font.getSize() / 2);
+			setWidth(font.stringWidth(text) + font.getSize());
+			setHeight(font.stringHeight(text));
+		}
+		strings = Print.formatMessage(text, font, (int) getWidth());
+		if (bg == null) {
+			setHeight((strings.size * font.getHeight()));
 		}
 	}
 
@@ -158,7 +167,6 @@ public class LLabel extends LComponent {
 	}
 
 	public void draw(GLEx g, int x, int y) {
-		LColor oldColor = g.getColor();
 		float oldAlpha = g.getAlpha();
 		if (backalpha != 1f) {
 			g.setAlpha(backalpha);
@@ -170,29 +178,62 @@ public class LLabel extends LComponent {
 			g.setAlpha(oldAlpha);
 		}
 		if (text != null && text.length() > 0) {
-			g.setColor(baseColor);
-			switch (labelAlignment) {
-			case CENTER:
-				font.drawString(g, text,
-						x + (getWidth() / 2 - font.stringWidth(text) / 2)
-								+ offsetLeft,
-						y + (getHeight() / 2 - font.getHeight() / 2)
-								+ offsetTop);
-				break;
-			case LEFT:
-				font.drawString(g, text, x + offsetLeft, y
-						+ (getHeight() / 2 - font.getHeight() / 2) + offsetTop);
-				break;
-			case RIGHT:
-				font.drawString(g, text,
-						x + getWidth() - font.stringWidth(text) + offsetLeft, y
-								+ (getHeight() / 2 - font.getHeight() / 2)
-								+ offsetTop);
-				break;
-			default:
-				break;
+			if (strings.size == 1) {
+				switch (labelAlignment) {
+				case CENTER:
+					font.drawString(g, text,
+							x + (getWidth() / 2 - font.stringWidth(text) / 2)
+									+ offsetLeft,
+							y + (getHeight() / 2 - font.getHeight() / 2)
+									+ offsetTop, baseColor);
+					break;
+				case LEFT:
+					font.drawString(g, text, x + offsetLeft, y
+							+ (getHeight() / 2 - font.getHeight() / 2)
+							+ offsetTop, baseColor);
+					break;
+				case RIGHT:
+					font.drawString(g, text,
+							x + getWidth() - font.stringWidth(text)
+									+ offsetLeft,
+							y + (getHeight() / 2 - font.getHeight() / 2)
+									+ offsetTop, baseColor);
+					break;
+				default:
+					break;
+				}
+			} else {
+				for (int i = 0, size = strings.size; i < size; i++) {
+					String mes = strings.get(i);
+					switch (labelAlignment) {
+					case CENTER:
+						font.drawString(
+								g,
+								mes,
+								x
+										+ (getWidth() / 2 - font
+												.stringWidth(mes) / 2)
+										+ offsetLeft,
+								y + i * (font.stringHeight(mes) + space)
+										+ offsetTop, baseColor);
+						break;
+					case LEFT:
+						font.drawString(g, mes, x + offsetLeft,
+								y + i * (font.stringHeight(mes) + space)
+										+ offsetTop, baseColor);
+						break;
+					case RIGHT:
+						font.drawString(g, mes,
+								x + getWidth() - font.stringWidth(mes)
+										+ offsetLeft,
+								y + i * (font.stringHeight(mes) + space)
+										+ offsetTop, baseColor);
+						break;
+					default:
+						break;
+					}
+				}
 			}
-			g.setColor(oldColor);
 		}
 	}
 
@@ -230,6 +271,14 @@ public class LLabel extends LComponent {
 
 	public void setOffsetTop(float offsetTop) {
 		this.offsetTop = offsetTop;
+	}
+
+	public float getSpace() {
+		return space;
+	}
+
+	public void setSpace(float space) {
+		this.space = space;
 	}
 
 	@Override

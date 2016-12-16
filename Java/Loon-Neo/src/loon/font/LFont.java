@@ -7,6 +7,7 @@ import loon.geom.PointI;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
@@ -183,7 +184,25 @@ public class LFont implements IFont {
 			return 0;
 		}
 		initLayout(message);
-		return textLayout.stringWidth(message);
+		if (message.indexOf('\n') == -1) {
+			return textLayout.stringWidth(message);
+		} else {
+			final char[] buffers = message.toCharArray();
+			StringBuffer sbr = new StringBuffer();
+			int width = 0;
+			for (int i = 0, size = buffers.length; i < size; i++) {
+				char ch = buffers[i];
+				if (ch == '\n') {
+					width = MathUtils.max(
+							textLayout.stringWidth(sbr.toString()), width);
+					sbr.delete(0, sbr.length());
+				} else {
+					sbr.append(ch);
+				}
+			}
+
+			return width;
+		}
 	}
 
 	public int charHeight(char ch) {
@@ -199,7 +218,12 @@ public class LFont implements IFont {
 			return 0;
 		}
 		initLayout(message);
-		return textLayout.bounds.height;
+		if (message.indexOf('\n') == -1) {
+			return textLayout.bounds.height;
+		} else {
+			String[] list = StringUtils.split(message, '\n');
+			return list.length * textLayout.bounds.height;
+		}
 	}
 
 	public boolean isBold() {

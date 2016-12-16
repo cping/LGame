@@ -717,19 +717,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public boolean contains(float x, float y) {
-		return LSystem.viewSize.getRect().contains(x, y);
+		return getRectBox().contains(x, y);
 	}
 
 	public boolean contains(float x, float y, float w, float h) {
-		return LSystem.viewSize.getRect().contains(x, y, w, h);
+		return getRectBox().contains(x, y, w, h);
 	}
 
 	public boolean intersects(float x, float y) {
-		return LSystem.viewSize.getRect().intersects(x, y);
+		return getRectBox().intersects(x, y);
 	}
 
 	public boolean intersects(float x, float y, float w, float h) {
-		return LSystem.viewSize.getRect().intersects(x, y, w, h);
+		return getRectBox().intersects(x, y, w, h);
 	}
 
 	/**
@@ -1515,7 +1515,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 添加游戏组件
 	 * 
@@ -1551,12 +1551,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public boolean contains(ISprite sprite) {
+		boolean can = false;
 		if (sprites != null) {
-			return sprites.contains(sprite);
+			can = sprites.contains(sprite);
 		}
-		return false;
+		return can
+				&& contains(sprite.x(), sprite.y(), sprite.getWidth(),
+						sprite.getHeight());
 	}
-
+	
+	public boolean intersects(ISprite sprite) {
+		boolean can = false;
+		if (sprites != null) {
+			can = sprites.contains(sprite);
+		}
+		return can
+				&& intersects(sprite.x(), sprite.y(), sprite.getWidth(),
+						sprite.getHeight());
+	}
+	
 	public Screen remove(ISprite sprite) {
 		if (sprites != null) {
 			sprites.remove(sprite);
@@ -2817,11 +2830,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		this._filpY = filpY;
 	}
 
-	public void setFilpXY(boolean filpX,boolean filpY){
+	public void setFilpXY(boolean filpX, boolean filpY) {
 		setFilpX(filpX);
 		setFilpY(filpY);
 	}
-	
+
 	public boolean isActionCompleted() {
 		return _screenAction == null || isActionCompleted(getScreenAction());
 	}

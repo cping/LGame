@@ -107,7 +107,7 @@ public class LSystem {
 
 	// 秒
 	final static public long SECOND = 1000;
-
+	
 	// 分
 	final static public long MINUTE = SECOND * 60;
 
@@ -122,7 +122,7 @@ public class LSystem {
 
 	// 理论上一年
 	final static public long YEAR = DAY * 365;
-
+	
 	// 是否使用了HTML5环境
 	private static boolean _USE_HTML5 = false;
 	private static boolean _USE_MOBILE = false;
