@@ -27,13 +27,16 @@ import loon.action.camera.BaseCamera;
 import loon.action.camera.EmptyCamera;
 import loon.action.collision.GravityHandler;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.Desktop;
 import loon.component.LComponent;
+import loon.component.LLabel;
 import loon.component.LLayer;
+import loon.component.LLabel.LabelAlignment;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
@@ -46,8 +49,11 @@ import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.event.Updateable;
 import loon.event.LTouchArea.Event;
+import loon.font.Font.Style;
+import loon.font.IFont;
 import loon.geom.PointI;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
@@ -1550,6 +1556,92 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
+	public LLabel addLabel(String text, float x, float y) {
+		return addLabel(text, Vector2f.at(x, y));
+	}
+
+	public LLabel addLabel(String text, Vector2f pos) {
+		LLabel label = LLabel.make(text, pos.x(), pos.y());
+		add(label);
+		return label;
+	}
+
+	public LLabel addLabel(IFont font, String text, float x, float y) {
+		return addLabel(font, text, Vector2f.at(x, y));
+	}
+
+	public LLabel addLabel(IFont font, String text, Vector2f pos) {
+		return addLabel(font, text, pos, LColor.white);
+	}
+
+	public LLabel addLabel(IFont font, String text, float x, float y,
+			LColor color) {
+		return addLabel(font, text, Vector2f.at(x, y), color);
+	}
+
+	public LLabel addLabel(IFont font, String text, Vector2f pos, LColor color) {
+		LLabel label = LLabel.make(text, font, pos.x(), pos.y(), color);
+		add(label);
+		return label;
+	}
+
+	public LLabel addLabel(LabelAlignment alignment, IFont font, String text,
+			float x, float y, LColor color) {
+		return addLabel(alignment, font, text, Vector2f.at(x, y), color);
+	}
+
+	public LLabel addLabel(LabelAlignment alignment, IFont font, String text,
+			Vector2f pos, LColor color) {
+		LLabel label = LLabel.make(alignment, text, font, pos.x(), pos.y(),
+				color);
+		add(label);
+		return label;
+	}
+
+	public SpriteLabel addSpriteLabel(String text, float x, float y) {
+		return addSpriteLabel(text, Vector2f.at(x, y));
+	}
+
+	public SpriteLabel addSpriteLabel(String text, Vector2f pos) {
+		SpriteLabel label = new SpriteLabel(text, pos.x(), pos.y());
+		add(label);
+		return label;
+	}
+
+	public SpriteLabel addSpriteLabel(String text, float x, float y,
+			LColor color) {
+		return addSpriteLabel(text, Vector2f.at(x, y), color);
+	}
+
+	public SpriteLabel addSpriteLabel(String text, Vector2f pos, LColor color) {
+		SpriteLabel label = new SpriteLabel(text, pos.x(), pos.y());
+		label.setColor(color);
+		add(label);
+		return label;
+	}
+
+	public SpriteLabel addSpriteLabel(IFont font, String text, float x,
+			float y, LColor color) {
+		return addSpriteLabel(font, text, Vector2f.at(x, y), color);
+	}
+
+	public SpriteLabel addSpriteLabel(IFont font, String text, Vector2f pos,
+			LColor color) {
+		SpriteLabel label = new SpriteLabel(font, text, pos.x(), pos.y());
+		label.setColor(color);
+		add(label);
+		return label;
+	}
+
+	public SpriteLabel addSpriteLabel(String fontName, Style type, int size,
+			int x, int y, Style style, String text, Vector2f pos, LColor color) {
+		SpriteLabel label = new SpriteLabel(text, fontName, style, size,
+				pos.x(), pos.y());
+		label.setColor(color);
+		add(label);
+		return label;
+	}
+
 	public boolean contains(ISprite sprite) {
 		boolean can = false;
 		if (sprites != null) {
@@ -1559,7 +1651,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				&& contains(sprite.x(), sprite.y(), sprite.getWidth(),
 						sprite.getHeight());
 	}
-	
+
 	public boolean intersects(ISprite sprite) {
 		boolean can = false;
 		if (sprites != null) {
@@ -1569,7 +1661,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				&& intersects(sprite.x(), sprite.y(), sprite.getWidth(),
 						sprite.getHeight());
 	}
-	
+
 	public Screen remove(ISprite sprite) {
 		if (sprites != null) {
 			sprites.remove(sprite);

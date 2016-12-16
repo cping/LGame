@@ -121,6 +121,16 @@ public class LLabel extends LComponent {
 				null, mes, x, y, 0, 0);
 	}
 
+	public static LLabel make(LabelAlignment alignment, String mes, IFont font,
+			int x, int y, LColor color) {
+		return new LLabel(alignment, font, color, null, mes, x, y, 0, 0);
+	}
+
+	public static LLabel make(String mes, IFont font, int x, int y, LColor color) {
+		return new LLabel(LabelAlignment.CENTER, font, color, null, mes, x, y,
+				0, 0);
+	}
+
 	public static LLabel make(String mes, int x, int y) {
 		return make(mes, x, y, LColor.white);
 	}

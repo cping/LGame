@@ -563,7 +563,7 @@ final public class StringUtils {
 	 * @return
 	 */
 	public static final String replace(String line, String oldString,
-			String newString, int count[]) {
+			String newString, int[] count) {
 		if (line == null)
 			return null;
 		int i = 0;

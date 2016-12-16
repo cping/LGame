@@ -31,8 +31,10 @@ public class Picture extends Entity {
 		this.setLocation(x, y);
 	}
 
-
 	public boolean equals(Picture p) {
+		if (null == p) {
+			return false;
+		}
 		if (this == p) {
 			return true;
 		}

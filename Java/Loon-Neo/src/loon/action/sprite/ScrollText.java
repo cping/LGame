@@ -13,7 +13,7 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 /**
- * 显示滚动文字的精灵(主要就是用来做前情提要滚动，比如:从前有个魔王，魔王认识个勇者，于是XXX。)
+ * 显示滚动文字的精灵(主要就是用来做前情提要滚动，比如:从前有个魔王，魔王认识个勇者，勇者不懂经济，魔王是个学霸，于是XXX这类的……)
  * 
  * 	ScrollText s = new ScrollText("ABCDEFG\nMNBVCXZ");
 		s.setDirection(Direction.LEFT);
@@ -195,5 +195,13 @@ public class ScrollText extends Entity {
 
 	public void setDirection(Direction direction) {
 		this.direction = direction;
+	}
+
+	public float getSpace() {
+		return space;
+	}
+
+	public void setSpace(float space) {
+		this.space = space;
 	}
 }
