@@ -25,7 +25,7 @@ import loon.html5.gwt.preloader.Preloader;
 import com.google.gwt.storage.client.Storage;
 
 public class GWTResources {
-	
+
 	public static enum FileType {
 
 		Classpath,
@@ -38,24 +38,25 @@ public class GWTResources {
 
 		Local;
 	}
-	
-	public static final Storage LocalStorage = Storage.getLocalStorageIfSupported();
+
+	public static final Storage LocalStorage = Storage
+			.getLocalStorageIfSupported();
 
 	final Preloader preloader;
 
-	public GWTResources (Preloader preloader) {
+	public GWTResources(Preloader preloader) {
 		this.preloader = preloader;
 	}
 
-	public GWTResourcesLoader getFileHandle (String path, FileType type) {
+	public GWTResourcesLoader getFileHandle(String path, FileType type) {
 		return new GWTResourcesLoader(preloader, path, type);
 	}
 
-	public GWTResourcesLoader classpath (String path) {
+	public GWTResourcesLoader classpath(String path) {
 		return new GWTResourcesLoader(preloader, path, FileType.Classpath);
 	}
 
-	public GWTResourcesLoader internal (String path) {
+	public GWTResourcesLoader internal(String path) {
 		return new GWTResourcesLoader(preloader, path, FileType.Internal);
 	}
 

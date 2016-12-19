@@ -179,6 +179,9 @@ public class Command extends Conversion implements LRelease {
 	}
 
 	public void formatCommand(String name, String[] res) {
+		if (res == null || res.length == 0) {
+			return;
+		}
 		if (!"function".equalsIgnoreCase(name)) {
 			if (functions != null) {
 				functions.clear();
@@ -1120,6 +1123,10 @@ public class Command extends Conversion implements LRelease {
 		}
 		return null;
 	}
+	
+	public String[] getCommands(){
+		return CollectionUtils.copyOf(scriptList);
+	}
 
 	/**
 	 * 载入其它脚本
@@ -1172,8 +1179,7 @@ public class Command extends Conversion implements LRelease {
 			int length = capacity;
 			int index = 0;
 			try {
-				StringTokenizer reader = new StringTokenizer(context,
-						"\r\n");
+				StringTokenizer reader = new StringTokenizer(context, "\r\n");
 				String record = null;
 				for (; reader.hasMoreTokens();) {
 					record = reader.nextToken().trim();

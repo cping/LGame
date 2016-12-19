@@ -67,7 +67,7 @@ public class ScrollText extends Entity {
 			this.setWidth(font.stringWidth(text) + font.getSize());
 		}
 		if (font != null && font instanceof LFont) {
-			LSTRDictionary.bind((LFont) font, text);
+			LSTRDictionary.get().bind((LFont) font, text);
 		}
 		strings = Print.formatMessage(text, font, (int) getWidth());
 		if (height > 0) {

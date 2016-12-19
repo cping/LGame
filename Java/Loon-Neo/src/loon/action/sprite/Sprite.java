@@ -39,13 +39,14 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
+import loon.utils.Flip;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 
-public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
-		BoxSize {
+public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite,
+		LTrans, BoxSize {
 
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(
 			false);
@@ -71,7 +72,9 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 
 	private int transform;
 
-	private float scaleX = 1, scaleY = 1;
+	private float _scaleX = 1f, _scaleY = 1f;
+
+	private boolean _flipX = false, _flipY = false;
 
 	private int maxFrame;
 
@@ -555,7 +558,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		if (si == null) {
 			return -1;
 		}
-		return (int) (si.width() * scaleX);
+		return (int) (si.width() * _scaleX);
 	}
 
 	@Override
@@ -564,7 +567,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		if (si == null) {
 			return -1;
 		}
-		return (int) (si.height() * scaleY);
+		return (int) (si.height() * _scaleY);
 	}
 
 	/**
@@ -573,8 +576,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 	 * @return
 	 */
 	public Point getMiddlePoint() {
-		return new Point(x() + getWidth() / 2, y()
-				+ getHeight() / 2);
+		return new Point(x() + getWidth() / 2, y() + getHeight() / 2);
 	}
 
 	/**
@@ -594,8 +596,7 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 	 * @return
 	 */
 	public RectBox getCollisionBox() {
-		return getRect(x(), y(), getWidth(),
-				getHeight());
+		return getRect(x(), y(), getWidth(), getHeight());
 	}
 
 	/**
@@ -660,7 +661,8 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 		float width = notImg ? getContainerWidth() : image.getWidth();
 		float height = notImg ? getContainerHeight() : image.getHeight();
 
-		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
+		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f)
+				|| _flipX || _flipY;
 		int tmp = g.color();
 		int blend = g.getBlendMode();
 		try {
@@ -670,35 +672,43 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
+				final float centerX = this._pivot.x == -1 ? (nx + _origin
+						.ox(width)) : nx + this._pivot.x;
+				final float centerY = this._pivot.y == -1 ? (ny + _origin
+						.oy(height)) : ny + this._pivot.y;
 				if (_rotation != 0 && notImg) {
-					final float rotationCenterX = this._pivot.x == -1 ? (nx + _origin
-							.ox(width)) : nx + this._pivot.x;
-					final float rotationCenterY = this._pivot.y == -1 ? (ny + _origin
-							.oy(height)) : ny + this._pivot.y;
-					tx.translate(rotationCenterX, rotationCenterY);
+					tx.translate(centerX, centerY);
 					tx.preRotate(_rotation);
-					tx.translate(-rotationCenterX, -rotationCenterY);
+					tx.translate(-centerX, -centerY);
 				}
-				if (((scaleX != 1) || (scaleY != 1)) && notImg) {
-					final float scaleCenterX = this._pivot.x == -1 ? (nx + _origin
-							.ox(width)) : nx + this._pivot.x;
-					final float scaleCenterY = this._pivot.y == -1 ? (ny + _origin
-							.oy(height)) : ny + this._pivot.y;
-					tx.translate(scaleCenterX, scaleCenterY);
-					tx.preScale(scaleX, scaleY);
-					tx.translate(-scaleCenterX, -scaleCenterY);
+				if (_flipX || _flipY) {
+					if (_flipX && _flipY) {
+						Affine2f.transform(tx, centerX, centerY,
+								Affine2f.TRANS_ROT180);
+					} else if (_flipX) {
+						Affine2f.transform(tx, centerX, centerY,
+								Affine2f.TRANS_MIRROR);
+					} else if (_flipY) {
+						Affine2f.transform(tx, centerX, centerY,
+								Affine2f.TRANS_MIRROR_ROT180);
+					}
+				}
+				if (((_scaleX != 1) || (_scaleY != 1)) && notImg) {
+					tx.translate(centerX, centerY);
+					tx.preScale(_scaleX, _scaleY);
+					tx.translate(-centerX, -centerY);
 				}
 			}
 			g.setAlpha(_alpha);
 			if (!notImg) {
 				if (LTrans.TRANS_NONE == transform) {
 					g.draw(image, nx, ny, width, height, filterColor,
-							_rotation, _pivot, scaleX, scaleY);
+							_rotation, _pivot, _scaleX, _scaleY);
 				} else {
 					g.drawRegion(image, 0, 0, (int) width, (int) height,
 							transform, (int) nx, (int) ny, LTrans.TOP
-									| LTrans.LEFT, filterColor, _pivot, scaleX,
-							scaleY, _rotation);
+									| LTrans.LEFT, filterColor, _pivot,
+							_scaleX, _scaleY, _rotation);
 				}
 			}
 			if (_childList != null && _childList.size > 0) {
@@ -792,19 +802,19 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 
 	@Override
 	public float getScaleX() {
-		return scaleX;
+		return _scaleX;
 	}
 
-	public void setScaleX(float scaleX) {
-		this.scaleX = scaleX;
+	public void setScaleX(float _scaleX) {
+		this._scaleX = _scaleX;
 	}
 
 	public float getScaleY() {
-		return scaleY;
+		return _scaleY;
 	}
 
-	public void setScaleY(float scaleY) {
-		this.scaleY = scaleY;
+	public void setScaleY(float _scaleY) {
+		this._scaleY = _scaleY;
 	}
 
 	public void setPivotX(float pX) {
@@ -858,13 +868,13 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 
 	@Override
 	public void setScale(float sx, float sy) {
-		this.scaleX = sx;
-		this.scaleY = sy;
+		this._scaleX = sx;
+		this._scaleY = sy;
 	}
 
 	public void setSize(float width, float height) {
-		this.scaleX = getWidth() / width;
-		this.scaleY = getHeight() / height;
+		this._scaleX = getWidth() / width;
+		this._scaleY = getHeight() / height;
 	}
 
 	public int getMaxFrame() {
@@ -877,12 +887,12 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 
 	@Override
 	public void setWidth(float w) {
-		this.scaleX = (w / getWidth());
+		this._scaleX = (w / getWidth());
 	}
 
 	@Override
 	public void setHeight(float h) {
-		this.scaleY = (h / getHeight());
+		this._scaleY = (h / getHeight());
 	}
 
 	public void addChildAt(ISprite spr, float x, float y) {
@@ -983,7 +993,36 @@ public class Sprite extends LObject<ISprite> implements ISprite, LTrans,
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
-	
+
+	@Override
+	public Sprite setFlipX(boolean x) {
+		this._flipX = x;
+		return this;
+	}
+
+	@Override
+	public Sprite setFlipY(boolean y) {
+		this._flipY = y;
+		return this;
+	}
+
+	@Override
+	public Sprite setFlipXY(boolean x, boolean y) {
+		setFlipX(x);
+		setFlipY(y);
+		return this;
+	}
+
+	@Override
+	public boolean isFlipX() {
+		return _flipX;
+	}
+
+	@Override
+	public boolean isFlipY() {
+		return _flipY;
+	}
+
 	@Override
 	public void close() {
 		this.visible = false;

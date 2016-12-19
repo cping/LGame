@@ -287,7 +287,9 @@ public class LTexture extends Painter implements LRelease {
 				_image = Image.createCanvas(imageWidth, imageHeight).image;
 				_image.setPixels(_cachePixels, imageWidth, imageHeight);
 			}
-			update(_image);
+			if (_image != null) {
+				update(_image);
+			}
 		}
 	}
 
@@ -463,9 +465,9 @@ public class LTexture extends Painter implements LRelease {
 		return displayHeight;
 	}
 
+	@Override
 	protected void finalize() {
-		_isLoaded = false;
-		if (!_disposed) {
+		if (!_disposed && !_closed) {
 			gfx.queueForDispose(this);
 		}
 	}
@@ -966,27 +968,34 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	void free() {
-		Updateable update = new Updateable() {
+		if (!_isLoaded) {
+			return;
+		}
+		final Updateable update = new Updateable() {
 
 			@Override
 			public void action(Object a) {
 				if (parent == null) {
-					if (!_disposed) {
-						_disposed = true;
-						GLUtils.deleteTexture(gfx.gl, id);
+					synchronized (LTexture.class) {
+						if (LSystem._base.setting.disposeTexture && !_disposed
+								&& _closed && _isLoaded) {
+							GLUtils.deleteTexture(gfx.gl, id);
+							LTextures.delTexture(id);
+							_disposed = true;
+						}
+						if (_image != null) {
+							_image.close();
+							_image = null;
+						}
+						if (childs != null) {
+							childs.clear();
+							childs = null;
+						}
+						_cachePixels = null;
+						_isLoaded = false;
+						_closed = true;
+						_memorySize = 0;
 					}
-					if (_image != null) {
-						_image.close();
-						_image = null;
-					}
-					if (childs != null) {
-						childs.clear();
-						childs = null;
-					}
-					_cachePixels = null;
-					_isLoaded = false;
-					_closed = true;
-					_memorySize = 0;
 				}
 			}
 		};
@@ -1066,9 +1075,7 @@ public class LTexture extends Painter implements LRelease {
 			free();
 			// 此处修正了一个旧版惊天的纹理释放bug,判定引用次数旧版一直写错成<=-1,但实际应该<=0就是无引用……
 		} else if (LTextures.removeTexture(this, true) <= 0) {
-			if (LSystem._base.setting.disposeTexture) {
-				free();
-			}
+			free();
 		}
 	}
 }

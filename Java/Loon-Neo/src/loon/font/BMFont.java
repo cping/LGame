@@ -66,14 +66,14 @@ public class BMFont implements IFont, LRelease {
 
 	private int totalCharSet = DEFAULT_MAX_CHAR;
 
-	private int _initCount = -1;
+	private int _initDraw = -1;
 
 	private String _texPath = null;
 
 	private String _imagePath = null;
 
 	private boolean _initParse = false;
-	
+
 	private IntMap<CharDef> customChars = new IntMap<CharDef>();
 
 	private PointI _offset = new PointI();
@@ -331,8 +331,8 @@ public class BMFont implements IFont, LRelease {
 			return;
 		}
 		make();
-		if (_initCount < 1) {
-			_initCount++;
+		if (_initDraw < 1) {
+			_initDraw++;
 			return;
 		}
 		if (displays.size > DEFAULT_MAX_CHAR) {
@@ -446,8 +446,8 @@ public class BMFont implements IFont, LRelease {
 			return;
 		}
 		make();
-		if (_initCount < 1) {
-			_initCount++;
+		if (_initDraw < 1) {
+			_initDraw++;
 			return;
 		}
 		int x = 0, y = 0;
@@ -767,7 +767,7 @@ public class BMFont implements IFont, LRelease {
 			}
 			displays.clear();
 		}
-        _initCount=-1;
+		_initDraw = -1;
 		_initParse = false;
 	}
 

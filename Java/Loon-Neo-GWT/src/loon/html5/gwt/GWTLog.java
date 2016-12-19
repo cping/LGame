@@ -27,7 +27,7 @@ public class GWTLog extends Log {
 
 	private GWTLog() {
 	}
-	
+
 	@Override
 	protected void callNativeLog(Level level, String msg, Throwable e) {
 		String lmsg = level + ": " + msg;
@@ -41,28 +41,28 @@ public class GWTLog extends Log {
 	}
 
 	private native void sendToBrowserConsole(String msg, Throwable e) /*-{
-		if ($wnd.console && $wnd.console.info) {
-			if (e != null) {
-				$wnd.console.info(msg, e);
-			} else {
-				$wnd.console.info(msg);
-			}
-		}else{
-			if (e != null) {
-				if (window.console) {
-				    window.console.log(msg + ":" + e);
-				} else {
-				    document.title = msg + "," + e;
-				}
-			}else{
-				if (window.console) {
-				    window.console.log(msg);
-				} else {
-				    document.title = msg;
-				}
-			}
-		}
-	}-*/;
+																		if ($wnd.console && $wnd.console.info) {
+																		if (e != null) {
+																		$wnd.console.info(msg, e);
+																		} else {
+																		$wnd.console.info(msg);
+																		}
+																		}else{
+																		if (e != null) {
+																		if (window.console) {
+																		window.console.log(msg + ":" + e);
+																		} else {
+																		document.title = msg + "," + e;
+																		}
+																		}else{
+																		if (window.console) {
+																		window.console.log(msg);
+																		} else {
+																		document.title = msg;
+																		}
+																		}
+																		}
+																		}-*/;
 
 	@Override
 	public void onError(Throwable e) {

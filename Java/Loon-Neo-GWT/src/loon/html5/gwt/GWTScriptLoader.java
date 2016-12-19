@@ -50,9 +50,9 @@ public class GWTScriptLoader {
 	 * @param state
 	 */
 	public static native void setCrossOrigin(Element elem, String state) /*-{
-		if ('crossOrigin' in elem)
-			elem.setAttribute('crossOrigin', state);
-	}-*/;
+																			if ('crossOrigin' in elem)
+																			elem.setAttribute('crossOrigin', state);
+																			}-*/;
 
 	public static void loadBinaryFile(String url,
 			final LoadBinaryListener listener) {
@@ -105,53 +105,53 @@ public class GWTScriptLoader {
 	}
 
 	public static native <T> T get(JavaScriptObject o, Object p)/*-{
-		return o[p];
-	}-*/;
+																return o[p];
+																}-*/;
 
 	public static native String getString(JavaScriptObject o, String s)/*-{
-		return o[s];
-	}-*/;
+																		return o[s];
+																		}-*/;
 
 	public static native int getInt(JavaScriptObject o, String s)/*-{
-		return o[s];
-	}-*/;
+																	return o[s];
+																	}-*/;
 
 	public static native JavaScriptObject put(JavaScriptObject o, Object pname,
 			Object val)/*-{
-		o[pname] = val;
-		return o;
-	}-*/;
+						o[pname] = val;
+						return o;
+						}-*/;
 
 	public static native JavaScriptObject put(JavaScriptObject o, Object pname,
 			int val)/*-{
-		o[pname] = val;
-		return o;
-	}-*/;
+					o[pname] = val;
+					return o;
+					}-*/;
 
 	public static native JavaScriptObject put(JavaScriptObject o, Object pname,
 			double val)/*-{
-		o[pname] = val;
-		return o;
-	}-*/;
+						o[pname] = val;
+						return o;
+						}-*/;
 
 	public static native JavaScriptObject putObject(JavaScriptObject o,
 			String pname, JavaScriptObject val)/*-{
-		o[pname] = val;
-		return o;
-	}-*/;
+												o[pname] = val;
+												return o;
+												}-*/;
 
 	public static native JsArrayString props(JavaScriptObject o)/*-{
-		var props = [];
-		for ( var i in o) {
-			props.push(i + "");
-			;
-		}
-		return props;
-	}-*/;
+																var props = [];
+																for ( var i in o) {
+																props.push(i + "");
+																;
+																}
+																return props;
+																}-*/;
 
 	public static native JavaScriptObject empty()/*-{
-		return {};
-	}-*/;
+													return {};
+													}-*/;
 
 	public static JavaScriptObject obj(Map<String, Object> props) {
 		JavaScriptObject o = empty();
@@ -174,14 +174,14 @@ public class GWTScriptLoader {
 	}
 
 	public static native JavaScriptObject arrayEmpty()/*-{
-		return [];
-	}-*/;
+														return [];
+														}-*/;
 
 	public static native JavaScriptObject arrayPush(JavaScriptObject arr,
 			JavaScriptObject o)/*-{
-		arr.push(o);
-		return arr;
-	}-*/;
+								arr.push(o);
+								return arr;
+								}-*/;
 
 	public static List<String> toList(JsArrayString array) {
 		List<String> list = new ArrayList<String>();
@@ -214,7 +214,7 @@ public class GWTScriptLoader {
 		}
 		return array;
 	}
-	
+
 	public static boolean arrayContains(JsArray<JavaScriptObject> a,
 			JavaScriptObject val) {
 		for (int i = 0; i < a.length(); i++) {
@@ -357,18 +357,18 @@ public class GWTScriptLoader {
 
 	public final native static void putBoolean(JavaScriptObject o, String prop,
 			boolean b)/*-{
-		if (b) {
-			o[prop] = true;
-		} else {
-			o[prop] = false;
-		}
+						if (b) {
+						o[prop] = true;
+						} else {
+						o[prop] = false;
+						}
 
-	}-*/;
+						}-*/;
 
 	public final native static void putNumber(JavaScriptObject o, String prop,
 			double v) /*-{
-		o[prop] = v;
-	}-*/;
+						o[prop] = v;
+						}-*/;
 
 	public static double[] toJavaDoubleArray(JsArrayNumber a) {
 		if (a == null)
@@ -391,8 +391,8 @@ public class GWTScriptLoader {
 	}
 
 	public static native JavaScriptObject evalObject(String s)/*-{
-		return $wnd.eval("(" + s + ")");
-	}-*/;
+																return $wnd.eval("(" + s + ")");
+																}-*/;
 
 	public static String print(JsArrayMixed a) {
 		String s = "JSArray[";
@@ -403,32 +403,32 @@ public class GWTScriptLoader {
 	}
 
 	public static native final void arrayRemoveItem(JsArray<?> a, int i)/*-{
-		a.splice(i, 1)
-	}-*/;
+																		a.splice(i, 1)
+																		}-*/;
 
 	public static native double getDouble(JavaScriptObject o, String p)/*-{
-		return o[p];
-	}-*/;
+																		return o[p];
+																		}-*/;
 
 	public static native final String dump(JavaScriptObject obj,
 			boolean printValues)/*-{
-		var s = "{";
-		for ( var i in obj) {
-			s += i + (printValues ? ": " + obj[i] : "") + ", ";
-		}
-		return s + "}";
-	}-*/;
+								var s = "{";
+								for ( var i in obj) {
+								s += i + (printValues ? ": " + obj[i] : "") + ", ";
+								}
+								return s + "}";
+								}-*/;
 
 	public static native JavaScriptObject window()/*-{
-		return $wnd;
-	}-*/;
+													return $wnd;
+													}-*/;
 
 	public static final native JavaScriptObject toJsFunction(
 			JsArrayMixedCallback c)/*-{
-		return $entry(function() {
-			return c.@loon.html5.gwt.GWTScriptLoader.JsArrayMixedCallback::call(Lcom/google/gwt/core/client/JsArrayMixed;)(arguments);
-		});
-	}-*/;
+									return $entry(function() {
+									return c.@loon.html5.gwt.GWTScriptLoader.JsArrayMixedCallback::call(Lcom/google/gwt/core/client/JsArrayMixed;)(arguments);
+									});
+									}-*/;
 
 	public static void loadFont(String fontJsUrl, Callback<Void, Exception> c) {
 		ScriptInjector.fromUrl(fontJsUrl).setWindow(window()).setCallback(c)

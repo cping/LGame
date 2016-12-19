@@ -30,29 +30,58 @@ public class LTextures {
 	private final static TArray<LTexture> textureList = new TArray<LTexture>(
 			100);
 
-	private static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(
+	private final static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(
 			100);
-	
+
+	public static boolean contains(int id) {
+		synchronized (textureList) {
+			for (LTexture tex : LTextures.textureList) {
+				if (tex.getID() == id) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	static void delTexture(int id) {
+		synchronized (textureList) {
+			for (LTexture tex : LTextures.textureList) {
+				if (tex.getID() == id) {
+					textureList.remove(tex);
+				}
+			}
+		}
+	}
+
 	static void putTexture(LTexture tex2d) {
 		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild()
 				&& !textureList.contains(tex2d)) {
-			textureList.add(tex2d);
+			synchronized (textureList) {
+				textureList.add(tex2d);
+			}
 		}
 	}
 
 	public final static void reload() {
-		for (LTexture tex : textureList) {
+		TArray<LTexture> texs = null;
+		synchronized (textureList) {
+			texs = new TArray<LTexture>(textureList);
+			textureList.clear();
+		}
+		for (LTexture tex : texs) {
 			if (tex != null && !tex.isLoaded() && !tex.isClose()) {
 				tex.reload();
 			}
 		}
+		textureList.addAll(texs);
 	}
 
 	public final static int getMemSize() {
 		int memTotal = 0;
 		for (LTexture tex : textureList) {
 			if (tex != null && !tex.isChild() && !tex.disposed()) {
-				memTotal+=tex.getMemSize();
+				memTotal += tex.getMemSize();
 			}
 		}
 		return memTotal;
@@ -205,7 +234,7 @@ public class LTextures {
 		return removeTexture(texture.tmpLazy, remove);
 	}
 
-	public static void destroySourceAll() {
+	public static void destroySourceAllCache() {
 		if (lazyTextures.size > 0) {
 			TArray<LTexture> textures = new TArray<LTexture>(
 					lazyTextures.values());
@@ -224,7 +253,7 @@ public class LTextures {
 		lazyTextures.clear();
 	}
 
-	public static void destroyAll() {
+	public static void destroyAllCache() {
 		if (lazyTextures.size > 0) {
 			TArray<LTexture> textures = new TArray<LTexture>(
 					lazyTextures.values());
@@ -239,5 +268,10 @@ public class LTextures {
 			}
 		}
 		lazyTextures.clear();
+	}
+
+	public static void dispose() {
+		destroyAllCache();
+		close();
 	}
 }

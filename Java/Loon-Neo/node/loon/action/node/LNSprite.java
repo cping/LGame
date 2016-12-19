@@ -28,10 +28,11 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
+import loon.utils.Flip;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 
-public class LNSprite extends LNNode {
+public class LNSprite extends LNNode implements Flip<LNSprite> {
 
 	private BlendState blendState = BlendState.NonPremultiplied;
 
@@ -263,16 +264,25 @@ public class LNSprite extends LNNode {
 		return _flipX;
 	}
 
-	public void setFlipX(boolean flipX) {
+	public LNSprite setFlipX(boolean flipX) {
 		this._flipX = flipX;
+		return this;
 	}
 
 	public boolean isFlipY() {
 		return _flipY;
 	}
 
-	public void setFlipY(boolean flipY) {
+	public LNSprite setFlipY(boolean flipY) {
 		this._flipY = flipY;
+		return this;
+	}
+
+	@Override
+	public LNSprite setFlipXY(boolean x, boolean y) {
+		setFlipX(x);
+		setFlipY(y);
+		return this;
 	}
 
 	public BlendState getBlendState() {
@@ -282,4 +292,5 @@ public class LNSprite extends LNNode {
 	public void setBlendState(BlendState blendState) {
 		this.blendState = blendState;
 	}
+
 }

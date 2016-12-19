@@ -45,13 +45,13 @@ import com.google.gwt.dom.client.NativeEvent;
 public class GWTImage extends ImageImpl {
 
 	private static native boolean isComplete(ImageElement img) /*-{
-		return img.complete;
-	}-*/;
+																return img.complete;
+																}-*/;
 
 	private static native void setComplete(ImageElement img) /*-{
-		img.complete = true;
-	}-*/;
-	
+																img.complete = true;
+																}-*/;
+
 	public static ImageData scaleImage(ImageElement image, float scale) {
 		return scaleImage(image, scale, scale);
 	}
@@ -255,12 +255,11 @@ public class GWTImage extends ImageImpl {
 
 	@Override
 	public void upload(Graphics gfx, LTexture tex) {
-		if(!isComplete(img)){
+		if (!isComplete(img)) {
 			setComplete(img);
 		}
 		((GWTGraphics) gfx).updateTexture(tex.getID(), img);
 	}
-
 
 	public void getLight(Image buffer, int v) {
 		int width = (int) buffer.width();

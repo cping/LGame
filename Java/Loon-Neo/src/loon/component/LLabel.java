@@ -150,7 +150,7 @@ public class LLabel extends LComponent {
 			String mes, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		if (font != null && font instanceof LFont) {
-			LSTRDictionary.bind((LFont) font, mes);
+			LSTRDictionary.get().bind((LFont) font, mes);
 		}
 		this.labelAlignment = alignment;
 		this.background = bg;

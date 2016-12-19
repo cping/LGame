@@ -26,41 +26,43 @@ import com.google.gwt.user.client.Window;
 
 public interface GWTUrl {
 
-  public static interface Log {
-    static final String DEBUG = "DEBUG";
-    static final String ERROR = "ERROR";
-    static final String FATAL = "FATAL";
-    static final String INFO = "INFO";
-    static final String PARAM_NAME = "log_level";
-    static final String TRACE = "TRACE";
-    static final String WARN = "WARN";
-  }
+	public static interface Log {
+		static final String DEBUG = "DEBUG";
+		static final String ERROR = "ERROR";
+		static final String FATAL = "FATAL";
+		static final String INFO = "INFO";
+		static final String PARAM_NAME = "log_level";
+		static final String TRACE = "TRACE";
+		static final String WARN = "WARN";
+	}
 
-  public static class Renderer {
-    static final String CANVAS = "canvas";
-    static final String GL = "gl";
-    static final String PARAM_NAME = "renderer";
+	public static class Renderer {
+		static final String CANVAS = "canvas";
+		static final String GL = "gl";
+		static final String PARAM_NAME = "renderer";
 
-    static Mode requestedMode() {
-      String renderer = Window.Location.getParameter(PARAM_NAME);
-      if (CANVAS.equals(renderer)) {
-        return Mode.CANVAS;
-      } else if (GL.equals(renderer)) {
-        return Mode.WEBGL;
-      }
-      return Mode.AUTODETECT;
-    }
-  }
+		static Mode requestedMode() {
+			String renderer = Window.Location.getParameter(PARAM_NAME);
+			if (CANVAS.equals(renderer)) {
+				return Mode.CANVAS;
+			} else if (GL.equals(renderer)) {
+				return Mode.WEBGL;
+			}
+			return Mode.AUTODETECT;
+		}
+	}
 
-  public static interface Sound {
-    static final String FLASH = "flash";
-    static final String HTML5 = "html5";
-    static final String NATIVE = "native";
-    static final String WEBAUDIO = "webaudio";
-    static final String PARAM_NAME = "gwt-voices";
-  }
+	public static interface Sound {
+		static final String FLASH = "flash";
+		static final String HTML5 = "html5";
+		static final String NATIVE = "native";
+		static final String WEBAUDIO = "webaudio";
+		static final String PARAM_NAME = "gwt-voices";
+	}
 
-  public static boolean checkGLErrors = "check".equals(Window.Location.getParameter("glerrors"));
+	public static boolean checkGLErrors = "check".equals(Window.Location
+			.getParameter("glerrors"));
 
-  public static boolean quadShader = "quad".equals(Window.Location.getParameter("glshader"));
+	public static boolean quadShader = "quad".equals(Window.Location
+			.getParameter("glshader"));
 }

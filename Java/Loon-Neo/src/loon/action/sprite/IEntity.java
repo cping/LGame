@@ -6,8 +6,9 @@ import loon.ZIndex;
 import loon.action.sprite.IEntity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.Flip;
 
-public interface IEntity extends ISprite, ZIndex {
+public interface IEntity extends ISprite, ZIndex, Flip<IEntity> {
 
 	public static final int TAG_INVALID = Integer.MIN_VALUE;
 

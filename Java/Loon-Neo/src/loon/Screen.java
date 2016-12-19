@@ -74,6 +74,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	private ScreenAction _screenAction = null;
 
 	public int index = 0;
+	
+	public Screen setID(int id){
+		this.index = id;
+		return this;
+	}
+	
+	public int getID(){
+		return this.index; 
+	}
 
 	// Screen中组件渲染顺序,默认精灵最下,桌面在后,用户渲染最上
 	public static enum DrawOrder {
@@ -492,7 +501,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	private float _alpha = 1f;
 	private float _rotation = 0;
 	private float _scaleX = 1f, _scaleY = 1f;
-	private boolean _filpX = false, _filpY = false;
+	private boolean _flipX = false, _flipY = false;
 	private boolean _visible = true;
 
 	private int mode, frame;
@@ -1873,9 +1882,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					g.rotate(getX() + getHalfWidth(), getY() + getHalfHeight(),
 							_rotation);
 				}
-				if (_filpX || _filpY) {
-					g.filp(getX(), getY(), getWidth(), getHeight(), _filpX,
-							_filpY);
+				if (_flipX || _flipY) {
+					g.flip(getX(), getY(), getWidth(), getHeight(), _flipX,
+							_flipY);
 				}
 				if (_scaleX != 1f || _scaleY != 1f) {
 					g.scale(_scaleX, _scaleY, getX() + getHalfWidth(), getY()
@@ -2906,25 +2915,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
-	public boolean isFilpX() {
-		return _filpX;
+	public boolean isFlipX() {
+		return _flipX;
 	}
 
-	public void setFilpX(boolean filpX) {
-		this._filpX = filpX;
+	public Screen setFlipX(boolean flipX) {
+		this._flipX = flipX;
+		return this;
 	}
 
-	public boolean isFilpY() {
-		return _filpY;
+	public boolean isFlipY() {
+		return _flipY;
 	}
 
-	public void setFilpY(boolean filpY) {
-		this._filpY = filpY;
+	public Screen setFlipY(boolean flipY) {
+		this._flipY = flipY;
+		return this;
 	}
 
-	public void setFilpXY(boolean filpX, boolean filpY) {
-		setFilpX(filpX);
-		setFilpY(filpY);
+	public Screen setFlipXY(boolean flipX, boolean flpiY) {
+		setFlipX(flipX);
+		setFlipY(flpiY);
+		return this;
 	}
 
 	public boolean isActionCompleted() {

@@ -105,8 +105,7 @@ public abstract class Graphics {
 		Dimension view = LSystem.viewSize;
 		if (viewMatrix == null) {
 			viewMatrix = new Matrix4();
-			viewMatrix.setToOrtho2D(0, 0, view.getWidth(),
-					view.getHeight());
+			viewMatrix.setToOrtho2D(0, 0, view.getWidth(), view.getHeight());
 		} else if (display != null && display.GL() != null
 				&& !(affine = display.GL().tx()).equals(lastAffine)) {
 			viewMatrix = affine.toViewMatrix4();
@@ -227,7 +226,17 @@ public abstract class Graphics {
 	}
 
 	public int createTexture(LTexture.Format config) {
-		int id = gl.glGenTexture();
+		return createTexture(config, 0);
+	}
+
+	public int createTexture(LTexture.Format config, int count) {
+		int id = gl.glGenTexture() + count;
+		if (LTextures.contains(id)) {
+			return createTexture(config, 1);
+		}
+		if (GLUtils.getCurrentHardwareTextureID() == id) {
+			return createTexture(config, 1);
+		}
 		GLUtils.bindTexture(gl, id);
 		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 				config.magFilter);

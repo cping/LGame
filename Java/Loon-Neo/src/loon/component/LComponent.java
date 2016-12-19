@@ -49,9 +49,10 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
+import loon.utils.Flip;
 
 public abstract class LComponent extends LObject<LContainer> implements
-		ActionBind, XY, BoxSize, LRelease {
+		Flip<LComponent>, ActionBind, XY, BoxSize, LRelease {
 
 	// 默认锁定当前组件(否则可以拖动)
 	protected boolean locked = true;
@@ -185,8 +186,10 @@ public abstract class LComponent extends LObject<LContainer> implements
 	private int cam_x, cam_y;
 
 	private float _width, _height;
+	// 水平设置
+	private boolean _flipX = false, _flipY = false;
 	// 缩放比例
-	private float scaleX = 1f, scaleY = 1f;
+	private float _scaleX = 1f, _scaleY = 1f;
 	// 屏幕位置
 	protected int screenX, screenY;
 
@@ -375,8 +378,10 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 		synchronized (this) {
 			int blend = g.getBlendMode();
-			boolean update = _rotation != 0 || !(scaleX == 1f && scaleY == 1f);
+			boolean update = _rotation != 0
+					|| !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 			try {
+				g.saveBrush();
 				final int width = (int) this.getWidth();
 				final int height = (int) this.getHeight();
 				if (this.elastic) {
@@ -384,22 +389,32 @@ public abstract class LComponent extends LObject<LContainer> implements
 				}
 				if (update) {
 					g.saveTx();
+					Affine2f tx = g.tx();
+					final float centerX = pivotX == -1 ? this.screenX
+							+ _origin.ox(width) : this.screenX + pivotX;
+					final float centerY = pivotY == -1 ? this.screenY
+							+ _origin.oy(height) : this.screenY + pivotY;
 					if (_rotation != 0) {
-						float centerX = pivotX == -1 ? this.screenX
-								+ _origin.ox(width) : this.screenX + pivotX;
-						float centerY = pivotY == -1 ? this.screenY
-								+ _origin.oy(height) : this.screenY + pivotY;
-						g.rotate(centerX, centerY, _rotation);
+						tx.translate(centerX, centerY);
+						tx.preRotate(_rotation);
+						tx.translate(-centerX, -centerY);
 					}
-					if (!(scaleX == 1f && scaleY == 1f)) {
-						Affine2f transform = g.tx();
-						float centerX = pivotX == -1 ? this.screenX
-								+ _origin.ox(width) : this.screenX + pivotX;
-						float centerY = pivotY == -1 ? this.screenY
-								+ _origin.oy(height) : this.screenY + pivotY;
-						transform.translate(centerX, centerY);
-						transform.preScale(scaleX, scaleY);
-						transform.translate(-centerX, -centerY);
+					if (_flipX || _flipY) {
+						if (_flipX && _flipY) {
+							Affine2f.transform(tx, centerX, centerY,
+									Affine2f.TRANS_ROT180);
+						} else if (_flipX) {
+							Affine2f.transform(tx, centerX, centerY,
+									Affine2f.TRANS_MIRROR);
+						} else if (_flipY) {
+							Affine2f.transform(tx, centerX, centerY,
+									Affine2f.TRANS_MIRROR_ROT180);
+						}
+					}
+					if (!(_scaleX == 1f && _scaleY == 1f)) {
+						tx.translate(centerX, centerY);
+						tx.preScale(_scaleX, _scaleY);
+						tx.translate(-centerX, -centerY);
 					}
 				}
 				g.setBlendMode(_blend);
@@ -448,6 +463,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 					g.clearClip();
 				}
 				g.setBlendMode(blend);
+				g.restoreBrush();
 			}
 		}
 	}
@@ -472,24 +488,25 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return (this.visible)
 				&& (x >= this.screenX
 						&& y >= this.screenY
-						&& ((x + width) <= (this.screenX + this._width * scaleX)) && ((y + height) <= (this.screenY + this._height
-						* scaleY)));
+						&& ((x + width) <= (this.screenX + this._width
+								* _scaleX)) && ((y + height) <= (this.screenY + this._height
+						* _scaleY)));
 	}
 
 	public boolean intersects(float x1, float y1) {
 		return (this.visible)
 				&& (x1 >= this.screenX
-						&& x1 <= this.screenX + this._width * scaleX
+						&& x1 <= this.screenX + this._width * _scaleX
 						&& y1 >= this.screenY && y1 <= this.screenY
-						+ this._height * scaleY);
+						+ this._height * _scaleY);
 	}
 
 	public boolean intersects(LComponent comp) {
 		return (this.visible)
 				&& (comp.isVisible())
-				&& (this.screenX + this._width * scaleX >= comp.screenX
+				&& (this.screenX + this._width * _scaleX >= comp.screenX
 						&& this.screenX <= comp.screenX + comp._width
-						&& this.screenY + this._height * scaleY >= comp.screenY && this.screenY <= comp.screenY
+						&& this.screenY + this._height * _scaleY >= comp.screenY && this.screenY <= comp.screenY
 						+ comp._height);
 	}
 
@@ -688,12 +705,12 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	@Override
 	public float getWidth() {
-		return (this._width * scaleX);
+		return (this._width * _scaleX);
 	}
 
 	@Override
 	public float getHeight() {
-		return (this._height * scaleY);
+		return (this._height * _scaleY);
 	}
 
 	public int width() {
@@ -706,10 +723,11 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public RectBox getCollisionBox() {
 		if (_rect == null) {
-			_rect = new RectBox(screenX, screenY, _width * scaleX, _height
-					* scaleY);
+			_rect = new RectBox(screenX, screenY, _width * _scaleX, _height
+					* _scaleY);
 		} else {
-			_rect.setBounds(screenX, screenY, _width * scaleX, _height * scaleY);
+			_rect.setBounds(screenX, screenY, _width * _scaleX, _height
+					* _scaleY);
 		}
 		return _rect;
 	}
@@ -873,7 +891,6 @@ public abstract class LComponent extends LObject<LContainer> implements
 			}
 		}
 		this._background = b;
-		this.setAlpha(1.0F);
 		this._width = b.getWidth() > 1 ? b.getWidth() : this._width;
 		this._height = b.getHeight() > 1 ? b.getHeight() : this._height;
 		if (this._width <= 0) {
@@ -926,21 +943,21 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	@Override
 	public void setScale(final float sx, final float sy) {
-		if (this.scaleX == sx && this.scaleY == sy) {
+		if (this._scaleX == sx && this._scaleY == sy) {
 			return;
 		}
-		this.scaleX = sx;
-		this.scaleY = sy;
+		this._scaleX = sx;
+		this._scaleY = sy;
 	}
 
 	@Override
 	public float getScaleX() {
-		return this.scaleX;
+		return this._scaleX;
 	}
 
 	@Override
 	public float getScaleY() {
-		return this.scaleY;
+		return this._scaleY;
 	}
 
 	@Override
@@ -1086,10 +1103,39 @@ public abstract class LComponent extends LObject<LContainer> implements
 				+ "," + getHeight() + ")";
 	}
 
+	@Override
+	public LComponent setFlipX(boolean x) {
+		this._flipX = x;
+		return this;
+	}
+
+	@Override
+	public LComponent setFlipY(boolean y) {
+		this._flipY = y;
+		return this;
+	}
+
+	@Override
+	public LComponent setFlipXY(boolean x, boolean y) {
+		setFlipX(x);
+		setFlipY(y);
+		return this;
+	}
+
+	@Override
+	public boolean isFlipX() {
+		return _flipX;
+	}
+
+	@Override
+	public boolean isFlipY() {
+		return _flipY;
+	}
+
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
-	
+
 	@Override
 	public void close() {
 		if (!autoDestroy) {

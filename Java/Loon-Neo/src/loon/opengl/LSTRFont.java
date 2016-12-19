@@ -31,14 +31,16 @@ import loon.event.Updateable;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
+import loon.utils.CharArray;
 import loon.utils.GLUtils;
-import loon.utils.IntArray;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
 public class LSTRFont implements LRelease {
+
+	private boolean isClose = false;
 
 	private class UpdateStringFont implements Updateable {
 
@@ -68,6 +70,7 @@ public class LSTRFont implements LRelease {
 			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet
 					: 0;
 			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
+
 			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
 				char ch = (i < strfont.totalCharSet) ? (char) i
 						: strfont.additionalChars[i - strfont.totalCharSet];
@@ -143,15 +146,13 @@ public class LSTRFont implements LRelease {
 
 	}
 
-	private int initDraw = -1;
+	private int _initDraw = -1;
 
 	private char newLineFlag = '\n';
 
 	private LTexture texture;
 
-	private boolean isDrawing;
-
-	private boolean useCache;
+	private boolean useCache, isDrawing, isasyn;
 
 	private float offsetX = 1, offsetY = 1;
 
@@ -212,7 +213,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public LSTRFont(LFont font, String[] strings) {
-		this(font, filterStrings(strings).toCharArray(), true);
+		this(font, StringUtils.unificationStrings(strings).toCharArray(), true);
 	}
 
 	public LSTRFont(LFont font, boolean asyn) {
@@ -224,16 +225,23 @@ public class LSTRFont implements LRelease {
 	}
 
 	public LSTRFont(LFont font, String[] strings, boolean asyn) {
-		this(font, filterStrings(strings).toCharArray(), asyn);
+		this(font, StringUtils.unificationStrings(strings).toCharArray(), asyn);
+	}
+
+	private String text;
+
+	public String getText() {
+		return text;
 	}
 
 	public LSTRFont(LFont font, char[] chs, boolean asyn) {
 		this.displays = new ObjectMap<String, Cache>(totalCharSet);
 		this.useCache = true;
 		this.font = font;
+		this.isasyn = asyn;
 		if (chs != null && chs.length > 0) {
 			int size = chs.length;
-			IntArray chars = new IntArray();
+			CharArray chars = new CharArray();
 			for (int i = 0; i < size; i++) {
 				char ch = chs[i];
 				if (!chars.contains(ch))
@@ -242,25 +250,28 @@ public class LSTRFont implements LRelease {
 			if (chs.length == chars.length) {
 				this.additionalChars = chs;
 			} else {
-				size = chars.length;
-				char[] list = new char[size];
-				for (int i = 0; i < size; i++) {
-					list[i] = (char) chars.get(i);
-				}
-				this.additionalChars = list;
+				this.additionalChars = chars.items;
 			}
-			chars = null;
+			this.text = new String(additionalChars);
 			this.make(asyn);
+			chars = null;
+		}
+		if (text == null || text.length() == 0) {
+			isClose = true;
+			return;
 		}
 	}
 
 	private void make() {
-		make(true);
+		make(isasyn);
 	}
 
 	private float updateY = 0;
 
 	private synchronized void make(boolean asyn) {
+		if (isClose) {
+			return;
+		}
 		if (initChars) {
 			return;
 		}
@@ -310,6 +321,9 @@ public class LSTRFont implements LRelease {
 	private void drawString(float x, float y, float sx, float sy, float ax,
 			float ay, float rotation, String chars, LColor c, int startIndex,
 			int endIndex) {
+		if (isClose) {
+			return;
+		}
 		make();
 		if (processing()) {
 			return;
@@ -317,8 +331,8 @@ public class LSTRFont implements LRelease {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
-		if (initDraw < 1) {
-			initDraw++;
+		if (_initDraw < 1) {
+			_initDraw++;
 			return;
 		}
 		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
@@ -451,6 +465,9 @@ public class LSTRFont implements LRelease {
 	private void drawString(GLEx gl, float x, float y, float sx, float sy,
 			float ax, float ay, float rotation, String chars, LColor c,
 			int startIndex, int endIndex) {
+		if (isClose) {
+			return;
+		}
 		make();
 		if (processing()) {
 			return;
@@ -458,8 +475,8 @@ public class LSTRFont implements LRelease {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
-		if (initDraw < 1) {
-			initDraw++;
+		if (_initDraw < 1) {
+			_initDraw++;
 			return;
 		}
 		this.intObject = null;
@@ -526,12 +543,15 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {
+		if (isClose) {
+			return;
+		}
 		make();
 		if (processing()) {
 			return;
 		}
-		if (initDraw < 1) {
-			initDraw++;
+		if (_initDraw < 1) {
+			_initDraw++;
 			return;
 		}
 		this.charCurrent = c;
@@ -564,15 +584,29 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void startChar() {
+		if (isClose) {
+			return;
+		}
 		make();
 		if (processing()) {
+			return;
+		}
+		if (_initDraw < 1) {
+			_initDraw++;
 			return;
 		}
 		fontBatch.begin();
 	}
 
 	public void stopChar() {
+		if (isClose) {
+			return;
+		}
 		make();
+		if (_initDraw < 1) {
+			_initDraw++;
+			return;
+		}
 		if (processing()) {
 			return;
 		}
@@ -590,6 +624,9 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void postCharCache() {
+		if (isClose) {
+			return;
+		}
 		make();
 		if (processing()) {
 			return;
@@ -604,6 +641,9 @@ public class LSTRFont implements LRelease {
 	}
 
 	public Cache saveCharCache() {
+		if (isClose) {
+			return null;
+		}
 		make();
 		if (processing()) {
 			return null;
@@ -642,6 +682,9 @@ public class LSTRFont implements LRelease {
 	}
 
 	public int charWidth(char c) {
+		if (isClose) {
+			return 0;
+		}
 		make();
 		if (c == '\n') {
 			return 0;
@@ -661,6 +704,9 @@ public class LSTRFont implements LRelease {
 	}
 
 	public int getWidth(String s) {
+		if (isClose) {
+			return 0;
+		}
 		make();
 		if (processing()) {
 			return font.stringWidth(s);
@@ -689,6 +735,9 @@ public class LSTRFont implements LRelease {
 	}
 
 	public int getHeight(String s) {
+		if (isClose) {
+			return 0;
+		}
 		make();
 		if (processing()) {
 			return font.stringHeight(s);
@@ -773,23 +822,23 @@ public class LSTRFont implements LRelease {
 		this.offsetY = offsetY;
 	}
 
-	public final static String filterStrings(String[] messages) {
-		IntArray chars = new IntArray();
-		StringBuilder sbr = new StringBuilder();
-		for (String text : messages) {
-			char[] list = text.toCharArray();
-			for (char ch : list) {
-				if (!chars.contains(ch)) {
-					chars.add(ch);
-					sbr.append(ch);
-				}
-			}
-		}
-		return sbr.toString();
+	public boolean isAsyn() {
+		return isasyn;
+	}
+
+	public void setAsyn(boolean a) {
+		this.isasyn = a;
+	}
+
+	public boolean isClose() {
+		return isClose;
 	}
 
 	@Override
 	public synchronized void close() {
+		if (isClose) {
+			return;
+		}
 		for (Cache c : displays.values()) {
 			if (c != null) {
 				c.close();
@@ -798,18 +847,17 @@ public class LSTRFont implements LRelease {
 		displays.clear();
 		if (fontBatch != null) {
 			fontBatch.close();
-			fontBatch.destroy();
 			LTextureBatch.isBatchCacheDitry = true;
 			LTextureBatch.clearBatchCaches();
 		}
 		if (texture != null) {
 			texture.close(true);
-			texture = null;
 		}
 		fontBatch = null;
 		isDrawing = false;
 		initChars = false;
-		initDraw = -1;
+		_initDraw = -1;
+		isClose = true;
 	}
 
 }

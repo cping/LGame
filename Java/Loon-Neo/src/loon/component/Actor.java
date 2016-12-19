@@ -46,12 +46,13 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.utils.Flip;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Actor extends LObject<Actor> implements Comparable<Actor>,
-		ActionBind, XY, LRelease, BoxSize {
+public class Actor extends LObject<Actor> implements Flip<Actor>,
+		Comparable<Actor>, ActionBind, XY, LRelease, BoxSize {
 
 	private String flag = "Actor";
 
@@ -79,13 +80,15 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 
 	private Animation animation;
 
-	boolean isAnimation, mirror;
+	boolean isAnimation;
 
 	LColor filterColor;
 
 	ActorListener actorListener;
 
 	float scaleX = 1, scaleY = 1;
+
+	boolean flipX = false, flipY = false;
 
 	public Actor(Animation animation) {
 		this(animation, 0, 0);
@@ -1074,11 +1077,11 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 	}
 
 	public boolean isMirror() {
-		return mirror;
+		return isFlipX();
 	}
 
 	public void setMirror(boolean m) {
-		this.mirror = m;
+		this.setFlipX(m);
 	}
 
 	public String getFlag() {
@@ -1114,10 +1117,39 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 		return new LColor(filterColor);
 	}
 
+	@Override
+	public Actor setFlipX(boolean x) {
+		this.flipX = x;
+		return this;
+	}
+
+	@Override
+	public Actor setFlipY(boolean y) {
+		this.flipY = y;
+		return this;
+	}
+
+	@Override
+	public Actor setFlipXY(boolean x, boolean y) {
+		setFlipX(x);
+		setFlipY(y);
+		return this;
+	}
+
+	@Override
+	public boolean isFlipX() {
+		return flipX;
+	}
+
+	@Override
+	public boolean isFlipY() {
+		return flipY;
+	}
+	
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
-	
+
 	@Override
 	public void close() {
 		if (image != null) {
@@ -1129,5 +1161,6 @@ public class Actor extends LObject<Actor> implements Comparable<Actor>,
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
+
 
 }

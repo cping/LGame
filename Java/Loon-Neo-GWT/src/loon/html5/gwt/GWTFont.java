@@ -50,13 +50,7 @@ class GWTFont {
 					name = "monospace";
 				}
 			}
-			// firefox对中文字体识别不全，需要强制转换中文字体
-		} else if (GWTGame.agentInfo.isFirefox()) {
-			if (familyName.equals("黑体")) {
-				name = "helvetica,arial,sans-serif";
-				size += 1;
-			}
-		}
+		} 
 		if (!name.startsWith("\"") && name.contains(" ")) {
 			name = '"' + name + '"';
 		}

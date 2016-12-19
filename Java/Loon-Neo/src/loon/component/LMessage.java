@@ -287,6 +287,10 @@ public class LMessage extends LContainer {
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
 	}
+	
+	public IFont getFont(){
+		return getMessageFont();
+	}
 
 	public IFont getMessageFont() {
 		return messageFont;

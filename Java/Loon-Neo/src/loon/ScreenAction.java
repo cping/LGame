@@ -4,8 +4,9 @@ import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
+import loon.utils.Flip;
 
-public class ScreenAction implements ActionBind {
+public class ScreenAction implements Flip<Screen>, ActionBind {
 
 	public Screen tmp;
 
@@ -13,11 +14,11 @@ public class ScreenAction implements ActionBind {
 		set(screen);
 	}
 
-	public ScreenAction set(Screen screen){
+	public ScreenAction set(Screen screen) {
 		this.tmp = screen;
 		return this;
 	}
-	
+
 	@Override
 	public Field2D getField2D() {
 		return LSystem.viewSize.newField2D();
@@ -138,7 +139,7 @@ public class ScreenAction implements ActionBind {
 			tmp.setX(y);
 		}
 	}
-	
+
 	@Override
 	public boolean isBounded() {
 		return false;
@@ -169,6 +170,40 @@ public class ScreenAction implements ActionBind {
 	public float getContainerHeight() {
 		return tmp == null ? LSystem.getProcess().getWidth() : tmp
 				.getScreenHeight();
+	}
+
+	@Override
+	public Screen setFlipX(boolean x) {
+		if (tmp != null) {
+			return tmp.setFlipX(x);
+		}
+		return null;
+	}
+
+	@Override
+	public Screen setFlipY(boolean y) {
+		if (tmp != null) {
+			return tmp.setFlipY(y);
+		}
+		return null;
+	}
+
+	@Override
+	public Screen setFlipXY(boolean x, boolean y) {
+		if (tmp != null) {
+			return tmp.setFlipXY(x, y);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isFlipX() {
+		return tmp == null ? false : tmp.isFlipX();
+	}
+
+	@Override
+	public boolean isFlipY() {
+		return tmp == null ? false : tmp.isFlipY();
 	}
 
 }

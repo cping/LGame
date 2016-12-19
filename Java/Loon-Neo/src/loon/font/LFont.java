@@ -120,10 +120,10 @@ public class LFont implements IFont {
 			return;
 		}
 		if (useCache) {
-			LSTRDictionary.drawString(this, string, _offset.x + tx, _offset.y
-					+ ty, 0, c);
+			LSTRDictionary.get().drawString(this, string, _offset.x + tx,
+					_offset.y + ty, 0, c);
 		} else {
-			LSTRDictionary.drawString(g, this, string, _offset.x + tx,
+			LSTRDictionary.get().drawString(g, this, string, _offset.x + tx,
 					_offset.y + ty, 0, c);
 		}
 	}
@@ -138,10 +138,10 @@ public class LFont implements IFont {
 			return;
 		}
 		if (useCache) {
-			LSTRDictionary.drawString(this, string, _offset.x + tx, _offset.y
-					+ ty, angle, c);
+			LSTRDictionary.get().drawString(this, string, _offset.x + tx,
+					_offset.y + ty, angle, c);
 		} else {
-			LSTRDictionary.drawString(g, this, string, _offset.x + tx,
+			LSTRDictionary.get().drawString(g, this, string, _offset.x + tx,
 					_offset.y + ty, angle, c);
 		}
 	}
@@ -156,10 +156,10 @@ public class LFont implements IFont {
 			return;
 		}
 		if (useCache) {
-			LSTRDictionary.drawString(this, string, _offset.x + tx, _offset.y
-					+ ty, sx, sy, ax, ay, angle, c);
+			LSTRDictionary.get().drawString(this, string, _offset.x + tx,
+					_offset.y + ty, sx, sy, ax, ay, angle, c);
 		} else {
-			LSTRDictionary.drawString(g, this, string, _offset.x + tx,
+			LSTRDictionary.get().drawString(g, this, string, _offset.x + tx,
 					_offset.y + ty, sx, sy, ax, ay, angle, c);
 		}
 	}
@@ -253,7 +253,7 @@ public class LFont implements IFont {
 	@Override
 	public int getHeight() {
 		initLayout(tmp);
-		return textLayout.bounds.height;
+		return MathUtils.max(getSize() - 2, textLayout.bounds.height);
 	}
 
 	@Override

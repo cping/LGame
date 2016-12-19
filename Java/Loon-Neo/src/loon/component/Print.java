@@ -147,6 +147,8 @@ public class Print implements LRelease {
 		this.isWait = false;
 	}
 
+	private boolean nativeFont = false;
+
 	public void setMessage(String context, IFont font) {
 		setMessage(context, font, false);
 	}
@@ -175,16 +177,20 @@ public class Print implements LRelease {
 			if (_context == null) {
 				return;
 			}
-			if (_print.strings != null) {
+			if (_print.strings != null && !_print.strings.isClose()
+					&& !_drawDrawingFont) {
 				_print.strings.close();
 			}
 			// 如果是默认的loon系统字体
 			if (_font instanceof LFont) {
 				if (_drawDrawingFont) {
-					LSTRDictionary.bind((LFont) _font, _context);
+					LSTRDictionary.Dict dict = LSTRDictionary.get().bind(
+							(LFont) _font, _context);
+					_print.strings = dict.getSTR();
 					_print.ifont = _font;
 				} else {
-					_print.strings = new LSTRFont((LFont) _font, _context, true);
+					_print.strings = new LSTRFont((LFont) _font, _context,
+							LSystem.isHTML5());
 				}
 				// 其他字体(一般是Bitmap Font)
 			} else {
@@ -217,12 +223,13 @@ public class Print implements LRelease {
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete) {
-		setMessage(context, font, isComplete, true);
+		setMessage(context, font, isComplete, false);
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete,
 			boolean drawFont) {
-		LSystem.load(new PrintUpdate(this, context, font, isComplete, drawFont));
+		LSystem.load(new PrintUpdate(this, context, font, isComplete,
+				this.nativeFont = drawFont));
 	}
 
 	public String getMessage() {
@@ -262,7 +269,7 @@ public class Print implements LRelease {
 		if (!visible) {
 			return;
 		}
-		if (strings == null && ifont != null) {
+		if ((strings == null && ifont != null) || nativeFont) {
 			drawBMFont(gl, old);
 		} else if (strings != null) {
 			drawDefFont(gl, old);
@@ -407,9 +414,15 @@ public class Print implements LRelease {
 	public void drawBMFont(GLEx g, LColor old) {
 		synchronized (showMessages) {
 			this.size = showMessages.length;
-			this.fontSize = (int) (isEnglish ? ifont.getSize() / 2 : ifont
-					.getSize());
-			this.fontHeight = ifont.getHeight();
+			if (nativeFont) {
+				this.fontSize = (int) (isEnglish ? strings.getSize() / 2
+						: ifont.getSize());
+				this.fontHeight = strings.getHeight();
+			} else {
+				this.fontSize = (int) (isEnglish ? ifont.getSize() / 2 : ifont
+						.getSize());
+				this.fontHeight = ifont.getHeight();
+			}
 			switch (dirmode) {
 			default:
 			case NONE:

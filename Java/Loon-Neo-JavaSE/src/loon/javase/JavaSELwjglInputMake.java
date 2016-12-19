@@ -167,6 +167,8 @@ public class JavaSELwjglInputMake extends JavaSEInputMake {
 			return SysKey.ENTER;
 		case Keyboard.KEY_LCONTROL:
 			return SysKey.CONTROL_LEFT;
+		case Keyboard.KEY_RCONTROL:
+			return SysKey.CONTROL_RIGHT;
 		case Keyboard.KEY_A:
 			return SysKey.A;
 		case Keyboard.KEY_S:

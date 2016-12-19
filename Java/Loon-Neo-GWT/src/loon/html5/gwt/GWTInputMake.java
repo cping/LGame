@@ -232,21 +232,21 @@ public class GWTInputMake extends InputMake {
 
 	@Override
 	public native boolean hasTouch() /*-{
-		return ('ontouchstart' in $doc.documentElement)
-				|| ($wnd.navigator.userAgent.match(/ipad|iphone|android/i) != null);
-	}-*/;
+										return ('ontouchstart' in $doc.documentElement)
+										|| ($wnd.navigator.userAgent.match(/ipad|iphone|android/i) != null);
+										}-*/;
 
 	@Override
 	public native boolean hasMouse() /*-{
-		return ('onmousedown' in $doc.documentElement)
-				&& ($wnd.navigator.userAgent.match(/ipad|iphone|android/i) == null);
-	}-*/;
+										return ('onmousedown' in $doc.documentElement)
+										&& ($wnd.navigator.userAgent.match(/ipad|iphone|android/i) == null);
+										}-*/;
 
 	@Override
 	public native boolean hasMouseLock() /*-{
-		return !!($doc.body.requestPointerLock
-				|| $doc.body.webkitRequestPointerLock || $doc.body.mozRequestPointerLock);
-	}-*/;
+											return !!($doc.body.requestPointerLock
+											|| $doc.body.webkitRequestPointerLock || $doc.body.mozRequestPointerLock);
+											}-*/;
 
 	void emitFakeMouseUp() {
 		mouseEvents.emit(new MouseMake.ButtonEvent(0, game.time(), 0, 0,
@@ -255,8 +255,8 @@ public class GWTInputMake extends InputMake {
 
 	@Override
 	public native boolean isMouseLocked() /*-{
-		return !!($doc.pointerLockElement || $doc.webkitPointerLockElement || $doc.mozPointerLockElement);
-	}-*/;
+											return !!($doc.pointerLockElement || $doc.webkitPointerLockElement || $doc.mozPointerLockElement);
+											}-*/;
 
 	@Override
 	public void setMouseLocked(boolean locked) {
@@ -302,17 +302,17 @@ public class GWTInputMake extends InputMake {
 		private native void addEventListener(EventCloseHandler closeHandler,
 				JavaScriptObject target, String name, EventHandler handler,
 				boolean capture) /*-{
-			var listener = function(e) {
-				handler.@loon.jni.EventHandler::handleEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
-			};
-			target.addEventListener(name, listener, capture);
-			closeHandler.@loon.html5.gwt.GWTInputMake.EventCloseHandler::setListener(Lcom/google/gwt/core/client/JavaScriptObject;)(listener);
-		}-*/;
+									var listener = function(e) {
+									handler.@loon.jni.EventHandler::handleEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
+									};
+									target.addEventListener(name, listener, capture);
+									closeHandler.@loon.html5.gwt.GWTInputMake.EventCloseHandler::setListener(Lcom/google/gwt/core/client/JavaScriptObject;)(listener);
+									}-*/;
 
 		private native void removeEventListener(JavaScriptObject target,
 				String name, JavaScriptObject listener, boolean capture)/*-{
-			target.removeEventListener(name, listener, capture);
-		}-*/;
+																		target.removeEventListener(name, listener, capture);
+																		}-*/;
 	}
 
 	static HandlerRegistration addEventListener(JavaScriptObject target,
@@ -387,58 +387,58 @@ public class GWTInputMake extends InputMake {
 	}
 
 	private native int getMovementX(NativeEvent nevent) /*-{
-		return nevent.webkitMovementX;
-	}-*/;
+														return nevent.webkitMovementX;
+														}-*/;
 
 	private native int getMovementY(NativeEvent nevent) /*-{
-		return nevent.webkitMovementY;
-	}-*/;
+														return nevent.webkitMovementY;
+														}-*/;
 
 	native void requestMouseLockImpl(Element element) /*-{
-		element.requestPointerLock = (element.requestPointerLock
-				|| element.webkitRequestPointerLock || element.mozRequestPointerLock);
-		if (element.requestPointerLock)
-			element.requestPointerLock();
-	}-*/;
+														element.requestPointerLock = (element.requestPointerLock
+														|| element.webkitRequestPointerLock || element.mozRequestPointerLock);
+														if (element.requestPointerLock)
+														element.requestPointerLock();
+														}-*/;
 
 	private static native float getMouseWheelVelocity(NativeEvent evt) /*-{
-		var delta = 0.0;
-		var agentInfo = @loon.html5.gwt.GWTGame::agentInfo;
+																		var delta = 0.0;
+																		var agentInfo = @loon.html5.gwt.GWTGame::agentInfo;
 
-		if (agentInfo.isFirefox) {
-			if (agentInfo.isMacOS) {
-				delta = 1.0 * evt.detail;
-			} else {
-				delta = 1.0 * evt.detail / 3;
-			}
-		} else if (agentInfo.isOpera) {
-			if (agentInfo.isLinux) {
-				delta = -1.0 * evt.wheelDelta / 80;
-			} else {
-				// on mac
-				delta = -1.0 * evt.wheelDelta / 40;
-			}
-		} else if (agentInfo.isChrome || agentInfo.isSafari || agentInfo.isIE) {
-			delta = -1.0 * evt.wheelDelta / 120;
-			// handle touchpad for chrome
-			if (Math.abs(delta) < 1) {
-				if (agentInfo.isWindows) {
-					delta = -1.0 * evt.wheelDelta;
-				} else if (agentInfo.isMacOS) {
-					delta = -1.0 * evt.wheelDelta / 3;
-				}
-			}
-		}
-		return delta;
-	}-*/;
+																		if (agentInfo.isFirefox) {
+																		if (agentInfo.isMacOS) {
+																		delta = 1.0 * evt.detail;
+																		} else {
+																		delta = 1.0 * evt.detail / 3;
+																		}
+																		} else if (agentInfo.isOpera) {
+																		if (agentInfo.isLinux) {
+																		delta = -1.0 * evt.wheelDelta / 80;
+																		} else {
+																		// on mac
+																		delta = -1.0 * evt.wheelDelta / 40;
+																		}
+																		} else if (agentInfo.isChrome || agentInfo.isSafari || agentInfo.isIE) {
+																		delta = -1.0 * evt.wheelDelta / 120;
+																		// handle touchpad for chrome
+																		if (Math.abs(delta) < 1) {
+																		if (agentInfo.isWindows) {
+																		delta = -1.0 * evt.wheelDelta;
+																		} else if (agentInfo.isMacOS) {
+																		delta = -1.0 * evt.wheelDelta / 3;
+																		}
+																		}
+																		}
+																		return delta;
+																		}-*/;
 
 	protected static native String getMouseWheelEvent() /*-{
-		if (navigator.userAgent.toLowerCase().indexOf('firefox') != -1) {
-			return "DOMMouseScroll";
-		} else {
-			return "mousewheel";
-		}
-	}-*/;
+														if (navigator.userAgent.toLowerCase().indexOf('firefox') != -1) {
+														return "DOMMouseScroll";
+														} else {
+														return "mousewheel";
+														}
+														}-*/;
 
 	protected static int getMouseButton(NativeEvent evt) {
 		switch (evt.getButton()) {
@@ -454,10 +454,10 @@ public class GWTInputMake extends InputMake {
 	}
 
 	private native void unlockImpl() /*-{
-		$doc.exitPointerLock = $doc.exitPointerLock
-				|| $doc.webkitExitPointerLock || $doc.mozExitPointerLock;
-		$doc.exitPointerLock && $doc.exitPointerLock();
-	}-*/;
+										$doc.exitPointerLock = $doc.exitPointerLock
+										|| $doc.webkitExitPointerLock || $doc.mozExitPointerLock;
+										$doc.exitPointerLock && $doc.exitPointerLock();
+										}-*/;
 
 	private TouchMake.Event[] toTouchEvents(TouchMake.Event.Kind kind,
 			NativeEvent nevent) {
@@ -477,8 +477,8 @@ public class GWTInputMake extends InputMake {
 	}
 
 	private static native int getTouchIdentifier(NativeEvent evt, int index) /*-{
-		return evt.changedTouches[index].identifier || 0;
-	}-*/;
+																				return evt.changedTouches[index].identifier || 0;
+																				}-*/;
 
 	private static int keyForCode(int keyCode) {
 		switch (keyCode) {

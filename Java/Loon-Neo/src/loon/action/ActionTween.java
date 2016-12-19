@@ -586,6 +586,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 				centerPoint, startPoint, duration, delay, easing));
 	}
 
+	public ActionTween flipX(boolean x) {
+		return event(new FlipXTo(x));
+	}
+
+	public ActionTween flipY(boolean y) {
+		return event(new FlipYTo(y));
+	}
+
 	public ActionTween removeActionsTo(ActionBind bind) {
 		return event(new RemoveActionsTo(bind));
 	}
@@ -593,7 +601,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	public ActionTween removeActionsTo() {
 		return removeActionsTo(null);
 	}
-	
+
 	/**
 	 * 监听所有指定名称的已注入事件
 	 * 
@@ -640,7 +648,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		actionEvents.stopNext();
 		return this;
 	}
-	
+
 	/**
 	 * 停止所有指定名的动画
 	 * 
@@ -685,7 +693,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		actionEvents.stopNext();
 		return this;
 	}
-	
+
 	public ActionTween loop(int count) {
 		return loop(count, false);
 	}

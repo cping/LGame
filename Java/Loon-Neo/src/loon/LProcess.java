@@ -123,7 +123,7 @@ public class LProcess extends PlayerUtils {
 			}
 		});
 		// 当处于html5时，让本地字体渲染的创建过程异步
-		LSTRDictionary.setAsyn(game.isHTML5());
+		LSTRDictionary.get().setAsyn(game.isHTML5());
 	}
 
 	private final static void callUpdateable(final TArray<Updateable> list) {
@@ -132,7 +132,7 @@ public class LProcess extends PlayerUtils {
 			loadCache = new TArray<Updateable>(list);
 			list.clear();
 		}
-		for (int i = 0; i < loadCache.size; i++) {
+		for (int i = 0, size = loadCache.size; i < size; i++) {
 			Updateable running = loadCache.get(i);
 			synchronized (running) {
 				running.action(null);
@@ -365,10 +365,9 @@ public class LProcess extends PlayerUtils {
 				game.assets().close();
 				game.display().close();
 			}
-			RealtimeProcessManager.get().close();
-			LSTRDictionary.dispose();
-			LTextures.destroyAll();
-			LTextures.close();
+			RealtimeProcessManager.get().dispose();
+			LSTRDictionary.get().dispose();
+			LTextures.dispose();
 		}
 		LSystem._base.log().debug("The Loon Game Engine is End");
 	}
@@ -439,19 +438,19 @@ public class LProcess extends PlayerUtils {
 			if (!isInstance && getBackground() != null) {
 				g.draw(getBackground(), getX(), getY(), getWidth(),
 						getHeight(), getColor(), getRotation(), null,
-						getScaleX(), getScaleY(), isFilpX(), isFilpY());
+						getScaleX(), getScaleY(), isFlipX(), isFlipY());
 			}
 			break;
 		case Screen.SCREEN_TEXTURE_REPAINT:
 			g.draw(getBackground(), getX(), getY(), getWidth(), getHeight(),
 					getColor(), getRotation(), null, getScaleX(), getScaleY(),
-					isFilpX(), isFilpY());
+					isFlipX(), isFlipY());
 			break;
 		case Screen.SCREEN_COLOR_REPAINT:
 			if (!isInstance && getBackground() != null) {
 				g.draw(getBackground(), getX(), getY(), getWidth(),
 						getHeight(), getColor(), getRotation(), null,
-						getScaleX(), getScaleY(), isFilpX(), isFilpY());
+						getScaleX(), getScaleY(), isFlipX(), isFlipY());
 			} else {
 				LColor c = getBackgroundColor();
 				if (c != null) {
@@ -464,7 +463,7 @@ public class LProcess extends PlayerUtils {
 					repaintMode / 2 - MathUtils.random(repaintMode),
 					repaintMode / 2 - MathUtils.random(repaintMode),
 					getWidth(), getHeight(), getColor(), getRotation(), null,
-					getScaleX(), getScaleY(), isFilpX(), isFilpY());
+					getScaleX(), getScaleY(), isFlipX(), isFlipY());
 			break;
 		}
 		if (isInstance) {
@@ -520,16 +519,16 @@ public class LProcess extends PlayerUtils {
 		return 1f;
 	}
 
-	public boolean isFilpX() {
+	public boolean isFlipX() {
 		if (isInstance) {
-			return currentScreen.isFilpX();
+			return currentScreen.isFlipX();
 		}
 		return false;
 	}
 
-	public boolean isFilpY() {
+	public boolean isFlipY() {
 		if (isInstance) {
-			return currentScreen.isFilpY();
+			return currentScreen.isFlipY();
 		}
 		return false;
 	}
@@ -591,6 +590,16 @@ public class LProcess extends PlayerUtils {
 	 */
 	public EmulatorButtons getEmulatorButtons() {
 		return emulatorButtons;
+	}
+
+	public void setScreenID(int id) {
+		if (isInstance) {
+			currentScreen.setID(id);
+		}
+	}
+
+	public int getScreenID() {
+		return isInstance ? -1 : currentScreen.getID();
 	}
 
 	public void setID(int id) {
@@ -721,9 +730,10 @@ public class LProcess extends PlayerUtils {
 		} else {
 			_tmpLocaltion.set(newX, newY);
 		}
-		if (isFilpX() || isFilpY()) {
-			Director.local2Global(isFilpX(), isFilpY(), getWidth() / 2, getHeight() / 2,
-					_tmpLocaltion.x, _tmpLocaltion.y, _tmpLocaltion);
+		if (isFlipX() || isFlipY()) {
+			Director.local2Global(isFlipX(), isFlipY(), getWidth() / 2,
+					getHeight() / 2, _tmpLocaltion.x, _tmpLocaltion.y,
+					_tmpLocaltion);
 			return _tmpLocaltion;
 		}
 		return _tmpLocaltion;

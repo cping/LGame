@@ -24,35 +24,38 @@ import loon.font.Font;
 
 class GWTFontMetrics {
 
-  public final Font font;
+	public final Font font;
 
-  public final float height;
+	public final float height;
 
-  public final float emwidth;
+	public final float emwidth;
 
-  public GWTFontMetrics(Font font, float height, float emwidth) {
-    this.font = font;
-    this.height = height;
-    this.emwidth = emwidth;
-  }
+	public GWTFontMetrics(Font font, float height, float emwidth) {
+		this.font = font;
+		this.height = height;
+		this.emwidth = emwidth;
+	}
 
-  public float ascent() {
-    return 0.7f * height; 
-  }
+	public float ascent() {
+		return 0.7f * height;
+	}
 
-  public float descent() {
-    return height - ascent();
-  }
+	public float descent() {
+		return height - ascent();
+	}
 
-  public float leading() {
-    return 0.1f * height;
-  }
+	public float leading() {
+		return 0.1f * height;
+	}
 
-  public float adjustWidth(float width) {
-    switch (font.style) {
-    case ITALIC:      return width + emwidth/8;
-    case BOLD_ITALIC: return width + emwidth/6;
-    default:          return width; 
-    }
-  }
+	public float adjustWidth(float width) {
+		switch (font.style) {
+		case ITALIC:
+			return width + emwidth / 8;
+		case BOLD_ITALIC:
+			return width + emwidth / 6;
+		default:
+			return width;
+		}
+	}
 }

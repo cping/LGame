@@ -113,7 +113,7 @@ class GWTTextLayout extends TextLayout {
 		int startIdx = idx;
 		for (; idx < words.length; idx++) {
 			String nline = line + " " + words[idx];
-			if (nline.length() * metrics.emwidth > wrap.width){
+			if (nline.length() * metrics.emwidth > wrap.width) {
 				break;
 			}
 			line = nline;
@@ -131,7 +131,7 @@ class GWTTextLayout extends TextLayout {
 			}
 		}
 
-		while (lineWidth > wrap.width && idx > (startIdx + 1)) { 
+		while (lineWidth > wrap.width && idx > (startIdx + 1)) {
 			line = line.substring(0, line.length() - words[--idx].length() - 1);
 			lineWidth = ctx.measureText(line).getWidth();
 		}

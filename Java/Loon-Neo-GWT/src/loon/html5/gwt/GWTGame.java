@@ -108,36 +108,36 @@ public class GWTGame extends LGame {
 
 	public static class AgentInfo extends JavaScriptObject {
 		public final native boolean isFirefox() /*-{
-			return this.isFirefox;
-		}-*/;
+												return this.isFirefox;
+												}-*/;
 
 		public final native boolean isChrome() /*-{
-			return this.isChrome;
-		}-*/;
+												return this.isChrome;
+												}-*/;
 
 		public final native boolean isSafari() /*-{
-			return this.isSafari;
-		}-*/;
+												return this.isSafari;
+												}-*/;
 
 		public final native boolean isOpera() /*-{
-			return this.isOpera;
-		}-*/;
+												return this.isOpera;
+												}-*/;
 
 		public final native boolean isIE() /*-{
-			return this.isIE;
-		}-*/;
+											return this.isIE;
+											}-*/;
 
 		public final native boolean isMacOS() /*-{
-			return this.isMacOS;
-		}-*/;
+												return this.isMacOS;
+												}-*/;
 
 		public final native boolean isLinux() /*-{
-			return this.isLinux;
-		}-*/;
+												return this.isLinux;
+												}-*/;
 
 		public final native boolean isWindows() /*-{
-			return this.isWindows;
-		}-*/;
+												return this.isWindows;
+												}-*/;
 
 		protected AgentInfo() {
 		}
@@ -340,66 +340,66 @@ public class GWTGame extends LGame {
 	public Accelerometer accel() {
 		return accelerometer;
 	}
-	
+
 	private native JavaScriptObject getWindow() /*-{
-		return $wnd;
-	}-*/;
+												return $wnd;
+												}-*/;
 
 	private native void requestAnimationFrame(float frameRate,
 			TimerCallback callback) /*-{
-		var fn = function() {
-			callback.@loon.jni.TimerCallback::fire()();
-		};
-		if (frameRate < 60) {
-			$wnd.setTimeout(fn, 1000 / frameRate);
-		} else {
-			if ($wnd.requestAnimationFrame) {
-				$wnd.requestAnimationFrame(fn);
-			} else if ($wnd.mozRequestAnimationFrame) {
-				$wnd.mozRequestAnimationFrame(fn);
-			} else if ($wnd.webkitRequestAnimationFrame) {
-				$wnd.webkitRequestAnimationFrame(fn);
-			} else if ($wnd.oRequestAnimationFrame) {
-				$wnd.oRequestAnimationFrame(fn);
-			} else if ($wnd.msRequestAnimationFrame) {
-				$wnd.msRequestAnimationFrame(fn);
-			} else {
-				$wnd.setTimeout(fn, 16);
-			}
-		}
-	}-*/;
+									var fn = function() {
+									callback.@loon.jni.TimerCallback::fire()();
+									};
+									if (frameRate < 60) {
+									$wnd.setTimeout(fn, 1000 / frameRate);
+									} else {
+									if ($wnd.requestAnimationFrame) {
+									$wnd.requestAnimationFrame(fn);
+									} else if ($wnd.mozRequestAnimationFrame) {
+									$wnd.mozRequestAnimationFrame(fn);
+									} else if ($wnd.webkitRequestAnimationFrame) {
+									$wnd.webkitRequestAnimationFrame(fn);
+									} else if ($wnd.oRequestAnimationFrame) {
+									$wnd.oRequestAnimationFrame(fn);
+									} else if ($wnd.msRequestAnimationFrame) {
+									$wnd.msRequestAnimationFrame(fn);
+									} else {
+									$wnd.setTimeout(fn, 16);
+									}
+									}
+									}-*/;
 
 	private static native AgentInfo computeAgentInfo() /*-{
-		var userAgent = navigator.userAgent.toLowerCase();
-		return {
-			isFirefox : userAgent.indexOf("firefox") != -1,
-			isChrome : userAgent.indexOf("chrome") != -1,
-			isSafari : $wnd.opera || userAgent.indexOf("safari") != -1,
-			isOpera : userAgent.indexOf("opera") != -1,
-			isIE : userAgent.indexOf("msie") != -1 || userAgent.indexOf("trident") != -1,
-			isMacOS : userAgent.indexOf("mac") != -1,
-			isLinux : userAgent.indexOf("linux") != -1,
-			isWindows : userAgent.indexOf("win") != -1
-		};
-	}-*/;
+														var userAgent = navigator.userAgent.toLowerCase();
+														return {
+														isFirefox : userAgent.indexOf("firefox") != -1,
+														isChrome : userAgent.indexOf("chrome") != -1,
+														isSafari : $wnd.opera || userAgent.indexOf("safari") != -1,
+														isOpera : userAgent.indexOf("opera") != -1,
+														isIE : userAgent.indexOf("msie") != -1 || userAgent.indexOf("trident") != -1,
+														isMacOS : userAgent.indexOf("mac") != -1,
+														isLinux : userAgent.indexOf("linux") != -1,
+														isWindows : userAgent.indexOf("win") != -1
+														};
+														}-*/;
 
 	private static native void disableRightClickImpl(JavaScriptObject target) /*-{
-		target.oncontextmenu = function() {
-			return false;
-		};
-	}-*/;
+																				target.oncontextmenu = function() {
+																				return false;
+																				};
+																				}-*/;
 
 	private static native double initNow() /*-{
-		if (!Date.now)
-			Date.now = function now() {
-				return +(new Date);
-			};
-		return Date.now();
-	}-*/;
+											if (!Date.now)
+											Date.now = function now() {
+											return +(new Date);
+											};
+											return Date.now();
+											}-*/;
 
 	private static native double now() /*-{
-		return Date.now();
-	}-*/;
+										return Date.now();
+										}-*/;
 
 	/**
 	 * 检测浏览器窗体是否被隐藏起来
@@ -407,8 +407,8 @@ public class GWTGame extends LGame {
 	 * @return
 	 */
 	private native boolean isHidden() /*-{
-		return $doc.hidden;
-	}-*/;
+										return $doc.hidden;
+										}-*/;
 
 	public boolean isShow() {
 		return isHidden();
@@ -421,6 +421,5 @@ public class GWTGame extends LGame {
 		}
 		return super.isMobile() || game.isMobile();
 	}
-
 
 }

@@ -161,20 +161,21 @@ public class LToast extends LComponent {
 		int w = (int) this.getWidth();
 		int h = (int) this.getHeight();
 		int oc = g.color();
+		float alpha = g.alpha();
 		try {
-			g.setColor(mBackgroundColor);
 			g.setAlpha(opacity);
+			g.setColor(mBackgroundColor);
 			if (mBackgroundTexture == null) {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			} else {
 				g.draw(mBackgroundTexture, displayX, displayY, w, h, baseColor);
 			}
-			g.setColor(LColor.DEF_COLOR);
 			font.drawString(g, mText,
 					displayX + (cellWidth - font.stringWidth(mText)) / 2,
 					displayY + 2, mForegroundColor);
 		} finally {
 			g.setColor(oc);
+			g.setAlpha(alpha);
 		}
 	}
 

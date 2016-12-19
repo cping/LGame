@@ -6,6 +6,6 @@ import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
 
 public interface GWTProgress {
 
-	 PreloaderCallback getPreloaderCallback(Loon loon, Panel root);
-	
+	PreloaderCallback getPreloaderCallback(Loon loon, Panel root);
+
 }

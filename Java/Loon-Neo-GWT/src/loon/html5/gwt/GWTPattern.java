@@ -28,27 +28,29 @@ import com.google.gwt.dom.client.ImageElement;
 
 class GWTPattern extends Pattern {
 
-  private final ImageElement patimg;
-  private CanvasPattern pattern;
+	private final ImageElement patimg;
+	private CanvasPattern pattern;
 
-  GWTPattern(ImageElement patimg, boolean repeatX, boolean repeatY) {
-    super(repeatX, repeatY);
-    this.patimg = patimg;
-  }
+	GWTPattern(ImageElement patimg, boolean repeatX, boolean repeatY) {
+		super(repeatX, repeatY);
+		this.patimg = patimg;
+	}
 
-  public CanvasPattern pattern (Context2d ctx) {
-    if (pattern == null) {
-      Context2d.Repetition repeat;
-      if (repeatX) {
-        if (repeatY) repeat = Context2d.Repetition.REPEAT;
-        else repeat = Context2d.Repetition.REPEAT_X;
-      } else if (repeatY) {
-        repeat = Context2d.Repetition.REPEAT_Y;
-      } else {
-        repeat = null;
-      }
-      pattern = ctx.createPattern(patimg, repeat);
-    }
-    return pattern;
-  }
+	public CanvasPattern pattern(Context2d ctx) {
+		if (pattern == null) {
+			Context2d.Repetition repeat;
+			if (repeatX) {
+				if (repeatY)
+					repeat = Context2d.Repetition.REPEAT;
+				else
+					repeat = Context2d.Repetition.REPEAT_X;
+			} else if (repeatY) {
+				repeat = Context2d.Repetition.REPEAT_Y;
+			} else {
+				repeat = null;
+			}
+			pattern = ctx.createPattern(patimg, repeat);
+		}
+		return pattern;
+	}
 }

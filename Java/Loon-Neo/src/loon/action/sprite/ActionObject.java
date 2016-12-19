@@ -31,11 +31,14 @@ import loon.action.map.TileMap;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.Flip;
 
-public abstract class ActionObject extends LObject<ISprite> implements Config,
-		ISprite {
+public abstract class ActionObject extends LObject<ISprite> implements
+		Flip<ActionObject>, Config, ISprite {
 
 	boolean visible = true;
+
+	boolean flipX = false, flipY = false;
 
 	float scaleX = 1, scaleY = 1;
 
@@ -68,8 +71,6 @@ public abstract class ActionObject extends LObject<ISprite> implements Config,
 	protected RectBox rectBox;
 
 	protected float dstWidth, dstHeight;
-
-	protected boolean mirror;
 
 	private LColor filterColor = new LColor(1f, 1f, 1f, 1f);
 
@@ -113,97 +114,12 @@ public abstract class ActionObject extends LObject<ISprite> implements Config,
 		try {
 			batch.setAlpha(_alpha);
 			batch.setColor(filterColor);
-			if (scaleX == 1 && scaleY == 1) {
-				if (mirror) {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.drawFlipX(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, getRotation());
-						} else {
-							batch.drawFlipX(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.drawFlipX(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY);
-						} else {
-							batch.drawFlipX(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight);
-						}
-					}
-				} else {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, getRotation());
-						} else {
-							batch.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY);
-						} else {
-							batch.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight);
-						}
-					}
-				}
-			} else {
-				final float width = animation.getSpriteImage().width();
-				final float height = animation.getSpriteImage().height();
-				if (mirror) {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.drawFlipX(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, width, height,
-									scaleX, scaleY, getRotation());
-						} else {
-							batch.drawFlipX(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, scaleX, scaleY, getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.drawScaleFlipX(animation.getSpriteImage(),
-									getX() + offsetX, width, height, getY()
-											+ offsetY, scaleX, scaleY);
-						} else {
-							batch.drawScaleFlipX(animation.getSpriteImage(),
-									getX() + offsetX, getY() + offsetY,
-									dstWidth, dstHeight, scaleX, scaleY);
-						}
-					}
-				} else {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, width, height,
-									scaleX, scaleY, getRotation());
-						} else {
-							batch.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, scaleX, scaleY, getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							batch.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, width, height,
-									scaleX, scaleY);
-						} else {
-							batch.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, scaleX, scaleY);
-						}
-					}
-				}
-			}
+			LTexture texture = animation.getSpriteImage();
+			float width = dstWidth <= 1 ? texture.getWidth() : dstWidth;
+			float hegiht = dstHeight <= 1 ? texture.getHeight() : dstHeight;
+			batch.drawFlip(animation.getSpriteImage(), getX() + offsetX, getY()
+					+ offsetY, width, hegiht, scaleX, scaleY, getRotation(),
+					flipX, flipY);
 		} finally {
 			batch.setColor(tmp);
 			batch.setAlpha(alpha);
@@ -214,111 +130,18 @@ public abstract class ActionObject extends LObject<ISprite> implements Config,
 		if (!visible) {
 			return;
 		}
-		int tmp = gl.color();
+		float alpha = gl.alpha();
 		int blend = gl.getBlendMode();
 		try {
 			gl.setBlendMode(_blend);
 			gl.setAlpha(_alpha);
-			if (scaleX == 1 && scaleY == 1) {
-				if (mirror) {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.drawMirror(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, filterColor,
-									getRotation());
-						} else {
-							gl.drawMirror(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, filterColor, getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.drawMirror(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, filterColor, 0);
-						} else {
-							gl.drawMirror(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, filterColor, 0);
-						}
-					}
-				} else {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, filterColor,
-									getRotation());
-						} else {
-							gl.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, filterColor, getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, filterColor);
-						} else {
-							gl.draw(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, filterColor);
-						}
-					}
-				}
-			} else {
-				final float width = animation.getSpriteImage().width();
-				final float height = animation.getSpriteImage().height();
-				if (mirror) {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.drawMirrorScale(animation.getSpriteImage(),
-									getX() + offsetX, getY() + offsetY, width,
-									height, filterColor, scaleX, scaleY,
-									getRotation());
-						} else {
-							gl.drawMirrorScale(animation.getSpriteImage(),
-									getX() + offsetX, getY() + offsetY,
-									dstWidth, dstHeight, filterColor, scaleX,
-									scaleY, getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.drawMirrorScale(animation.getSpriteImage(),
-									getX() + offsetX, width, height, getY()
-											+ offsetY, filterColor, scaleX,
-									scaleY);
-						} else {
-							gl.drawMirrorScale(animation.getSpriteImage(),
-									getX() + offsetX, getY() + offsetY,
-									dstWidth, dstHeight, filterColor, scaleX,
-									scaleY);
-						}
-					}
-				} else {
-					if (getRotation() != 0) {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, width, height,
-									filterColor, scaleX, scaleY, getRotation());
-						} else {
-							gl.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, filterColor, scaleX, scaleY,
-									getRotation());
-						}
-					} else {
-						if (dstWidth < 1 && dstHeight < 1) {
-							gl.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, width, height,
-									filterColor, scaleX, scaleY);
-						} else {
-							gl.drawScale(animation.getSpriteImage(), getX()
-									+ offsetX, getY() + offsetY, dstWidth,
-									dstHeight, filterColor, scaleX, scaleY);
-						}
-					}
-				}
-			}
+			LTexture texture = animation.getSpriteImage();
+			float width = dstWidth <= 1 ? texture.getWidth() : dstWidth;
+			float hegiht = dstHeight <= 1 ? texture.getHeight() : dstHeight;
+			gl.draw(texture, getX() + offsetX, getY() + offsetY, width, hegiht,
+					filterColor, getRotation(), scaleX, scaleY, flipX, flipY);
 		} finally {
-			gl.setColor(tmp);
+			gl.setAlpha(alpha);
 			gl.setBlendMode(blend);
 		}
 	}
@@ -397,11 +220,11 @@ public abstract class ActionObject extends LObject<ISprite> implements Config,
 	}
 
 	public boolean isMirror() {
-		return mirror;
+		return flipX;
 	}
 
 	public void setMirror(boolean mirror) {
-		this.mirror = mirror;
+		this.flipX = mirror;
 	}
 
 	@Override
@@ -463,11 +286,40 @@ public abstract class ActionObject extends LObject<ISprite> implements Config,
 	public LColor getColor() {
 		return getFilterColor();
 	}
+
+	@Override
+	public ActionObject setFlipX(boolean x) {
+		this.flipX = x;
+		return this;
+	}
+
+	@Override
+	public ActionObject setFlipY(boolean y) {
+		this.flipY = y;
+		return this;
+	}
+
+	@Override
+	public ActionObject setFlipXY(boolean x, boolean y) {
+		setFlipX(x);
+		setFlipY(y);
+		return this;
+	}
+
+	@Override
+	public boolean isFlipX() {
+		return flipX;
+	}
+
+	@Override
+	public boolean isFlipY() {
+		return flipY;
+	}
 	
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
-	
+
 	@Override
 	public void close() {
 		if (animation != null) {

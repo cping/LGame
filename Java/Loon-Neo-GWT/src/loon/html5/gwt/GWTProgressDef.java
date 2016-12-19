@@ -21,8 +21,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class GWTProgressDef {
 
 	private static native boolean isImageComplete(ImageElement img) /*-{
-		return img.complete;
-	}-*/;
+																	return img.complete;
+																	}-*/;
 
 	/**
 	 * 一个基于Canvas的进度抽象类，用于让用户自行在Canvas上绘制出自己需要的进度样式.
@@ -79,17 +79,17 @@ public class GWTProgressDef {
 		}
 
 		private static native double startNow() /*-{
-			if (!Date.now) {
-				Date.now = function now() {
-					return +(new Date);
-				};
-			}
-			return Date.now();
-		}-*/;
+												if (!Date.now) {
+												Date.now = function now() {
+												return +(new Date);
+												};
+												}
+												return Date.now();
+												}-*/;
 
 		private static native double nowTime() /*-{
-			return Date.now();
-		}-*/;
+												return Date.now();
+												}-*/;
 
 	}
 
@@ -196,7 +196,7 @@ public class GWTProgressDef {
 		}
 
 	}
-	
+
 	public static GWTProgress newLogoProcess() {
 		return new LogoProcess();
 	}

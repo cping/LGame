@@ -77,7 +77,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public static enum Direction {
-		TRANS_NONE, TRANS_MIRROR, TRANS_FILP, TRANS_MF;
+		TRANS_NONE, TRANS_MIRROR, TRANS_FLIP, TRANS_MF;
 	}
 
 	private LColor tmpColor = new LColor();
@@ -499,16 +499,16 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public GLEx filp(float x, float y, float width, float height,
-			boolean filpX, boolean filpY) {
+	public GLEx flip(float x, float y, float width, float height,
+			boolean flipX, boolean flipY) {
 		if (isClosed) {
 			return this;
 		}
-		if (filpX && filpY) {
+		if (flipX && flipY) {
 			Affine2f.transform(tx(), x, y, Affine2f.TRANS_ROT180, width, height);
-		} else if (filpX) {
+		} else if (flipX) {
 			Affine2f.transform(tx(), x, y, Affine2f.TRANS_MIRROR, width, height);
-		} else if (filpY) {
+		} else if (flipY) {
 			Affine2f.transform(tx(), x, y, Affine2f.TRANS_MIRROR_ROT180, width,
 					height);
 		}
@@ -978,7 +978,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_MIRROR);
 	}
 
-	public GLEx drawFilpScale(LTexture texture, float x, float y, float w,
+	public GLEx drawFlipScale(LTexture texture, float x, float y, float w,
 			float h, LColor color, float scaleX, float scaleY, float rotation) {
 		if (isClosed) {
 			return this;
@@ -988,10 +988,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(),
 				texture.height(), color, rotation, scaleX, scaleY, null,
-				Direction.TRANS_FILP);
+				Direction.TRANS_FLIP);
 	}
 
-	public GLEx drawFilpScale(LTexture texture, float x, float y, float w,
+	public GLEx drawFlipScale(LTexture texture, float x, float y, float w,
 			float h, LColor color, float scaleX, float scaleY) {
 		if (isClosed) {
 			return this;
@@ -1001,7 +1001,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(),
 				texture.height(), color, 0, scaleX, scaleY, null,
-				Direction.TRANS_FILP);
+				Direction.TRANS_FLIP);
 	}
 
 	public final GLEx draw(Painter texture, float x, float y, Direction dir) {
@@ -1119,8 +1119,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h,
+			LColor color, float rotation, float sx, float sy, boolean flipX,
+			boolean flipY) {
+		return draw(texture, x, y, w, h, color, rotation, null, sx, sy, flipX,
+				flipY);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h,
 			LColor color, float rotation, Vector2f pivot, float sx, float sy,
-			boolean filpX, boolean filpY) {
+			boolean flipX, boolean flipY) {
 		if (isClosed) {
 			return this;
 		}
@@ -1132,7 +1139,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			argb = color.getARGB(alpha());
 		}
 		Affine2f xf = tx();
-		if (rotation != 0 || sx != 1f || sy != 1f || filpX || filpY) {
+		if (rotation != 0 || sx != 1f || sy != 1f || flipX || flipY) {
 			xf = new Affine2f();
 			float centerX = x + w / 2;
 			float centerY = y + h / 2;
@@ -1145,20 +1152,20 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				xf.preRotate(rotation);
 				xf.translate(-centerX, -centerY);
 			}
+			if (flipX || flipY) {
+				if (flipX && flipY) {
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_ROT180, w, h);
+				} else if (flipX) {
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR, w, h);
+				} else if (flipY) {
+					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR_ROT180,
+							w, h);
+				}
+			}
 			if (sx != 1f || sy != 1f) {
 				xf.translate(centerX, centerY);
 				xf.preScale(sx, sy);
 				xf.translate(-centerX, -centerY);
-			}
-			if (filpX || filpY) {
-				if (filpX && filpY) {
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_ROT180, w, h);
-				} else if (filpX) {
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR, w, h);
-				} else if (filpY) {
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR_ROT180,
-							w, h);
-				}
 			}
 			Affine2f.multiply(tx(), xf, xf);
 		}
@@ -1286,7 +1293,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
 				texture.width(), texture.height(), color, 0, null,
-				Direction.TRANS_FILP);
+				Direction.TRANS_FLIP);
 	}
 
 	public GLEx drawFlip(LTexture texture, float x, float y, float w, float h,
@@ -1298,7 +1305,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(),
-				texture.height(), color, rotation, null, Direction.TRANS_FILP);
+				texture.height(), color, rotation, null, Direction.TRANS_FLIP);
 	}
 
 	public GLEx drawFlip(LTexture texture, float x, float y, LColor color,
@@ -1311,7 +1318,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0,
 				texture.width(), texture.height(), color, rotation, null,
-				Direction.TRANS_FILP);
+				Direction.TRANS_FLIP);
 	}
 
 	public GLEx drawMirror(LTexture texture, float x, float y, LColor color) {
@@ -1429,7 +1436,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else if (flipX && !flipY) {
 			return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
 					srcHeight, color, rotation, scaleX, scaleY, origin,
-					Direction.TRANS_FILP);
+					Direction.TRANS_FLIP);
 		} else if (!flipX && flipY) {
 			return draw(texture, x, y, width, height, srcX, srcY, srcWidth,
 					srcHeight, color, rotation, scaleX, scaleY, origin,
@@ -1503,7 +1510,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR, width,
 							height);
 					break;
-				case TRANS_FILP:
+				case TRANS_FLIP:
 					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR_ROT180,
 							width, height);
 					break;

@@ -32,12 +32,11 @@
 package loon.component;
 
 import loon.LTexture;
-import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
-import loon.opengl.LSTRFont;
 import loon.utils.TArray;
 import loon.utils.MathUtils;
 
@@ -67,6 +66,8 @@ public class LDecideName extends LComponent {
 	private TArray<String> keyArrays;
 	private LTexture bgTexture;
 
+	private boolean bind = false;
+
 	private float dx = 0.1f;
 	private float dy = 0.1f;
 
@@ -74,13 +75,9 @@ public class LDecideName extends LComponent {
 
 	private int maxNameString = 5;
 
+	private int initDraw = -1;
+
 	private char enterFlagString = '>', clearFlagString = '<';
-
-	private boolean _cache = false;
-	
-	private SpriteBatch batch;
-
-	private LSTRFont cacheFont;
 
 	public LDecideName(TArray<String> mes, int x, int y) {
 		this(mes, x, y, 400, 250);
@@ -113,60 +110,53 @@ public class LDecideName extends LComponent {
 		this.bgTexture = bg;
 		this.leftOffset = font.getHeight() + 15;
 		this.topOffset = font.getHeight() + 20;
-		this.batch = new SpriteBatch();
-		StringBuffer sbr = new StringBuffer();
-		for (int i = 0; i < mes.size; i++) {
-			sbr.append(mes.get(i));
-		}
-		this.cacheFont = new LSTRFont(font, sbr.toString(), true);
-
 	}
 
+	private void bindString() {
+		if (!bind) {
+			StringBuffer sbr = new StringBuffer();
+			for (int i = 0; i < keyArrays.size; i++) {
+				sbr.append(keyArrays.get(i));
+			}
+			LSTRDictionary.get().bind(font, sbr.toString());
+			bind = true;
+		}
+	}
 
-	public void draw(SpriteBatch g, int x, int y) {
-		LFont oldFont = g.getFont();
-		float oldColor = g.getFloatColor();
+	public void draw(GLEx g, int x, int y) {
+		bindString();
+		if (initDraw < 1) {
+			initDraw++;
+			return;
+		}
+		IFont oldFont = g.getFont();
+		int oldColor = g.color();
 		if (bgTexture != null) {
 			g.draw(bgTexture, x, y, getWidth(), getHeight());
 		}
 		float posX = x + leftOffset;
 		if (labelName != null) {
-			LSTRDictionary.setAsyn(false);
 			g.drawString(labelName + this.name, posX + labelOffsetX, y
 					+ labelOffsetY, LColor.orange);
-			LSTRDictionary.setAsyn(true);
 		}
 		float posY = y + topOffset;
-		if (!_cache) {
-			cacheFont.startChar();
-		} else {
-			cacheFont.postCharCache();
-		}
 		for (int j = 0; j < this.keyArrays.size; j++) {
 			for (int i = 0; i < this.keyArrays.get(j).length(); i++)
 				if (this.keyArrays.get(j).charAt(i) != '　') {
-					if (!_cache) {
-						cacheFont.addChar(
-								this.keyArrays.get(j).charAt(i),
-								posX
-										+ MathUtils.round((i * dx + 0.01f)
-												* getWidth()),
-								posY
-										+ MathUtils
-												.round(((j + 1) * dy - 0.01f)
-														* getHeight())
-										- font.getAscent(), fontColor);
-					}
+					g.drawString(
+							String.valueOf(this.keyArrays.get(j).charAt(i)),
+							posX
+									+ MathUtils.round((i * dx + 0.01f)
+											* getWidth()),
+							posY
+									+ MathUtils.round(((j + 1) * dy - 0.01f)
+											* getHeight()) - font.getAscent(),
+							fontColor);
 					g.drawRect(posX + MathUtils.round((i * dx) * getWidth()),
 							posY + MathUtils.round((j * dy) * getHeight()),
 							MathUtils.round(dx * getWidth()),
 							MathUtils.round(dy * getHeight()));
 				}
-		}
-		if (!_cache) {
-			cacheFont.stopChar();
-			cacheFont.saveCharCache();
-			_cache = true;
 		}
 		g.setColor(baseColor);
 		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()),
@@ -299,9 +289,6 @@ public class LDecideName extends LComponent {
 
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
-		if (_cache) {
-			_cache = false;
-		}
 	}
 
 	public String getLabelName() {
@@ -315,12 +302,8 @@ public class LDecideName extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		if (batch != null) {
-			moveCursor(this.input.getTouchX(), this.input.getTouchY());
-			batch.begin();
-			draw(batch, x, y);
-			batch.end();
-		}
+		moveCursor(this.input.getTouchX(), this.input.getTouchY());
+		draw(g, x, y);
 	}
 
 	public int getCursorX() {
@@ -415,14 +398,6 @@ public class LDecideName extends LComponent {
 		this.topOffset = topOffset;
 	}
 
-	public boolean isFontCache() {
-		return _cache;
-	}
-
-	public void setFontcache(boolean d_cache) {
-		this._cache = d_cache;
-	}
-
 	public LFont getFont() {
 		return font;
 	}
@@ -444,22 +419,16 @@ public class LDecideName extends LComponent {
 	}
 
 	@Override
-	public String getUIName() {
-		return "DecideName";
-	}
-
-	@Override
 	public void close() {
 		super.close();
-		if (cacheFont != null) {
-			cacheFont.close();
-		}
 		if (bgTexture != null) {
 			bgTexture.close();
 		}
-		if (batch != null) {
-			batch.close();
-		}
+	}
+
+	@Override
+	public String getUIName() {
+		return "DecideName";
 	}
 
 }

@@ -54,7 +54,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	protected float _skewCenterX = -1;
 	protected float _skewCenterY = -1;
 
-	protected boolean _filpX = false, _filpY = false;
+	protected boolean _flipX = false, _flipY = false;
 
 	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(
 			false);
@@ -627,8 +627,8 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		this._scaleY = 1f;
 		this._skewX = 0f;
 		this._skewY = 0f;
-		this._filpX = false;
-		this._filpY = false;
+		this._flipX = false;
+		this._flipY = false;
 
 		this._baseColor.reset();
 
@@ -662,7 +662,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 			g.setBlendMode(_blend);
 			boolean update = ((_rotation != 0
 					|| !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
-					|| _filpX || _filpY)
+					|| _flipX || _flipY)
 					&& _deform;
 			float nx = offsetX + this._location.x;
 			float ny = offsetY + this._location.y;
@@ -682,20 +682,20 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 					tx.preRotate(rotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
-				final boolean filpX = this._filpX;
-				final boolean filpY = this._filpY;
-				if (filpX || filpY) {
+				final boolean flipX = this._flipX;
+				final boolean flipY = this._flipY;
+				if (flipX || flipY) {
 					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + _origin
 							.ox(this._width)) : nx + this._rotationCenterX;
 					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin
 							.oy(this._height)) : ny + this._rotationCenterY;
-					if (filpX && filpY) {
+					if (flipX && flipY) {
 						Affine2f.transform(tx, rotationCenterX,
 								rotationCenterY, Affine2f.TRANS_ROT180);
-					} else if (filpX) {
+					} else if (flipX) {
 						Affine2f.transform(tx, rotationCenterX,
 								rotationCenterY, Affine2f.TRANS_MIRROR);
-					} else if (filpY) {
+					} else if (flipY) {
 						Affine2f.transform(tx, rotationCenterX,
 								rotationCenterY, Affine2f.TRANS_MIRROR_ROT180);
 					}
@@ -963,22 +963,35 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		return this;
 	}
 
-	public Entity setFilpX(boolean x) {
-		this._filpX = x;
+	@Override
+	public Entity setFlipX(boolean x) {
+		this._flipX = x;
 		return this;
 	}
 
-	public Entity setFilpY(boolean y) {
-		this._filpY = y;
+	@Override
+	public Entity setFlipY(boolean y) {
+		this._flipY = y;
 		return this;
 	}
 
-	public Entity setFilpXY(boolean x, boolean y) {
-		setFilpX(x);
-		setFilpY(y);
+	@Override
+	public Entity setFlipXY(boolean x, boolean y) {
+		setFlipX(x);
+		setFlipY(y);
 		return this;
 	}
 
+	@Override
+	public boolean isFlipX() {
+		return _flipX;
+	}
+
+	@Override
+	public boolean isFlipY() {
+		return _flipY;
+	}
+	
 	@Override
 	public void toString(final StringBuilder s) {
 		s.append(this.getClass().getSimpleName());
@@ -1006,7 +1019,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
-	
+
 	@Override
 	public void close() {
 		if (!isDisposed()) {
@@ -1027,5 +1040,6 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 			this.close();
 		}
 	}
-	
+
+
 }

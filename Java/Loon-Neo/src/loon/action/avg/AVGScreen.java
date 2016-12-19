@@ -55,6 +55,7 @@ import loon.event.Updateable;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.utils.Array;
 import loon.utils.ListMap;
 import loon.utils.MathUtils;
@@ -1459,6 +1460,10 @@ public abstract class AVGScreen extends Screen {
 			command = new Command(fileName);
 		} else {
 			command.formatCommand(fileName);
+		}
+		if (message.getFont() instanceof LFont) {
+			LSTRDictionary.get().bind((LFont) message.getFont(),
+					command.getCommands());
 		}
 		initCommandConfig(command);
 		nextScript();

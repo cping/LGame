@@ -218,7 +218,7 @@ public class LTextArea extends LComponent {
 		this.over = false;
 		this.numBak = this.num;
 		if (font != null && font instanceof LFont) {
-			LSTRDictionary.bind((LFont) font, mes);
+			LSTRDictionary.get().bind((LFont) font, mes);
 		}
 		this.message[this.num] = mes;
 		if ((this.cr[this.num] == 0) && (this.cg[this.num] == 0)

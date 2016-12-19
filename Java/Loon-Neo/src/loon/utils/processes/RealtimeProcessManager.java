@@ -130,6 +130,10 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 			}
 		}
 	}
+	
+	public void dispose(){
+		close();
+	}
 
 	@Override
 	public void close() {

@@ -122,7 +122,7 @@ public class SRPGChoiceView extends SRPGView {
 				sbr.append(messages[j][i]);
 			}
 		}
-		LSTRDictionary.bind(font, sbr.toString());
+		LSTRDictionary.get().bind(font, sbr.toString());
 		this.dialogImage = image;
 		this.defFont = font;
 		this.choice = messages;

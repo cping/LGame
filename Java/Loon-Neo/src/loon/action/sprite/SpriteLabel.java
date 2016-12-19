@@ -65,7 +65,7 @@ public class SpriteLabel extends Entity {
 		this.label = label;
 		this.setSize(font.stringWidth(label) + 1, font.stringHeight(label) + 1);
 		if (font != null && font instanceof LFont) {
-			LSTRDictionary.bind((LFont) font, label);
+			LSTRDictionary.get().bind((LFont) font, label);
 		}
 	}
 

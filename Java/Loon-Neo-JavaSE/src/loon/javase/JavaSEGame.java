@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 import org.lwjgl.opengl.Display;
 
 import loon.*;
+import loon.canvas.Image;
+import loon.canvas.Pixmap;
 import loon.event.KeyMake;
 import loon.geom.Dimension;
 import loon.jni.NativeSupport;
@@ -41,6 +44,7 @@ public class JavaSEGame extends LGame {
 
 	public static class JavaSetting extends LSetting {
 		public boolean vSyncEnabled = true;
+		public String[] iconPaths = null;
 	}
 
 	final static private boolean osIsLinux;
@@ -207,7 +211,6 @@ public class JavaSEGame extends LGame {
 		this.graphics = createGraphics();
 		this.input = createInput();
 		this.save = new JavaSESave(log, config.appName);
-
 		if (config.activationKey != -1) {
 			input.keyboardEvents.connect(new Port<KeyMake.Event>() {
 				public void onEmit(KeyMake.Event event) {
@@ -221,11 +224,15 @@ public class JavaSEGame extends LGame {
 				}
 			});
 		}
-
+		Display.setInitialBackground(0, 0, 0);
 		this.setTitle(config.appName);
+		this.initProcess();
+		if (setting instanceof JavaSetting) {
+			setIcon(((JavaSetting)setting).iconPaths);
+		}
 		this.graphics.init();
 		this.input.init();
-		this.initProcess();
+
 	}
 
 	public void setTitle(String title) {
@@ -276,12 +283,12 @@ public class JavaSEGame extends LGame {
 	public Save save() {
 		return save;
 	}
-	
+
 	@Override
 	public Accelerometer accel() {
 		return accelerometer;
 	}
-	
+
 	@Override
 	public Support support() {
 		return support;
@@ -354,9 +361,10 @@ public class JavaSEGame extends LGame {
 					} else if (isMacOS()) {
 						systemRuntime.exec("open " + url);
 					} else if (isUnix()) {
-						String[] browsers = { "google-chrome", "firefox", "mozilla",
-								"opera", "epiphany", "konqueror", "netscape", "links",
-								"lynx", "epiphany", "conkeror", "midori", "kazehakase" };
+						String[] browsers = { "google-chrome", "firefox",
+								"mozilla", "opera", "epiphany", "konqueror",
+								"netscape", "links", "lynx", "epiphany",
+								"conkeror", "midori", "kazehakase" };
 						StringBuffer cmd = new StringBuffer();
 						for (int i = 0; i < browsers.length; i++) {
 							cmd.append((i == 0 ? "" : " || ") + browsers[i]
@@ -412,6 +420,32 @@ public class JavaSEGame extends LGame {
 		active = !active;
 	}
 
+	static void setIcon(String[] imagePaths) {
+		if (imagePaths == null || imagePaths.length == 0) {
+			return;
+		}
+		Pixmap[] pixmaps = new Pixmap[imagePaths.length];
+		for (int i = 0; i < imagePaths.length; i++) {
+			pixmaps[i] = Image.createImage(imagePaths[i]).getPixmap();
+		}
+		setIcon(pixmaps);
+		for (Pixmap pixmap : pixmaps) {
+			pixmap.close();
+		}
+	}
+
+	static void setIcon(Pixmap[] pixmap) {
+		if (pixmap == null || pixmap.length == 0) {
+			return;
+		}
+		int size = pixmap.length;
+		ByteBuffer[] buffers = new ByteBuffer[size];
+		for (int i = 0; i < size; i++) {
+			buffers[i] = pixmap[i].convertPixmapToByteBuffer();
+		}
+		Display.setIcon(buffers);
+	}
+
 	public void reset() {
 		boolean wasActive = Display.isActive();
 		while (!Display.isCloseRequested()) {
@@ -424,6 +458,7 @@ public class JavaSEGame extends LGame {
 			if (newActive) {
 				processFrame();
 			}
+			Display.processMessages();
 			Display.update();
 			Display.sync(setting.fps);
 		}

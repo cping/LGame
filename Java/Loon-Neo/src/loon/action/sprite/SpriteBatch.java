@@ -408,7 +408,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!lockSubmit) {
 			submit();
 		}
-		LSTRDictionary.drawString(font, mes, x + offsetX, _use_ascent ? y
+		LSTRDictionary.get().drawString(font, mes, x + offsetX, _use_ascent ? y
 				- font.getAscent() : y + offsetY, scaleX, scaleX, ax, ay,
 				rotation, c);
 	}
@@ -718,6 +718,14 @@ public class SpriteBatch extends PixmapFImpl {
 		draw(texture, pos.x, pos.y, src.width / 2, src.height / 2, src.width,
 				src.height, 1f, 1f, 0, src.x, src.y, src.width, src.height,
 				flipX, flipY, false);
+	}
+
+	public void draw(LTexture texture, float x, float y, float originX,
+			float originY, float width, float height, float scaleX,
+			float scaleY, float rotation, boolean flipX, boolean flipY) {
+		draw(texture, x, y, originX, originY, width, height, scaleX, scaleY,
+				rotation, 0, 0, texture.getWidth(), texture.getHeight(), flipX,
+				flipY, false);
 	}
 
 	public void draw(LTexture texture, float x, float y, float originX,
@@ -1274,6 +1282,14 @@ public class SpriteBatch extends PixmapFImpl {
 			float height, float rotation) {
 		draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f,
 				rotation, 0, 0, texture.width(), texture.height(), false, true);
+	}
+
+	public void drawFlip(LTexture texture, float x, float y, float width,
+			float height, float scaleX, float scaleY, float rotation,
+			boolean flipX, boolean flipY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
+				scaleY, rotation, 0, 0, texture.width(), texture.height(),
+				flipX, flipY);
 	}
 
 	public void draw(LTexture texture, RectBox dstBox, RectBox srcBox, LColor c) {

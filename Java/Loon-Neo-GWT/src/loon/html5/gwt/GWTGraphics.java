@@ -174,22 +174,22 @@ public class GWTGraphics extends Graphics {
 	}
 
 	private native int getScreenWidthJSNI() /*-{
-		return $wnd.screen.width;
-	}-*/;
+											return $wnd.screen.width;
+											}-*/;
 
 	private native int getScreenHeightJSNI() /*-{
-		return $wnd.screen.height;
-	}-*/;
+												return $wnd.screen.height;
+												}-*/;
 
 	private native boolean isFullscreenJSNI() /*-{
-		if ("webkitIsFullScreen" in $doc) {
-			return $doc.webkitIsFullScreen;
-		}
-		if ("mozFullScreen" in $doc) {
-			return $doc.mozFullScreen;
-		}
-		return false
-	}-*/;
+												if ("webkitIsFullScreen" in $doc) {
+												return $doc.webkitIsFullScreen;
+												}
+												if ("mozFullScreen" in $doc) {
+												return $doc.mozFullScreen;
+												}
+												return false
+												}-*/;
 
 	public void setSize(int width, int height) {
 		rootElement.getStyle().setWidth(width, Unit.PX);

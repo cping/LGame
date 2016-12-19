@@ -137,15 +137,15 @@ public class GLUtils {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_ZERO, GL20.GL_SRC_ALPHA);
 			return;
-		}else if (currentBlendMode == LSystem.MODE_LIGHT) {
+		} else if (currentBlendMode == LSystem.MODE_LIGHT) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 			return;
-		}else if (currentBlendMode == LSystem.MODE_ALPHA_ADD) {
+		} else if (currentBlendMode == LSystem.MODE_ALPHA_ADD) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_DST_ALPHA);
 			return;
-		}else if (currentBlendMode == LSystem.MODE_MULTIPLY) {
+		} else if (currentBlendMode == LSystem.MODE_MULTIPLY) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			return;
@@ -289,11 +289,15 @@ public class GLUtils {
 		}
 	}
 
+	public static int getCurrentHardwareTextureID() {
+		return currentHardwareTextureID;
+	}
+
 	public static void bindTexture(final GL20 gl, final int hardwareTextureID) {
 		try {
 			if (GLUtils.currentHardwareTextureID != hardwareTextureID) {
-				GLUtils.currentHardwareTextureID = hardwareTextureID;
 				gl.glBindTexture(GL20.GL_TEXTURE_2D, hardwareTextureID);
+				GLUtils.currentHardwareTextureID = hardwareTextureID;
 			}
 		} catch (Throwable e) {
 		}

@@ -25,37 +25,56 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.utils.ObjectMap;
+import loon.utils.StringUtils;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
 import loon.utils.TArray;
 
 public final class LSTRDictionary {
 
-	public static void setAsyn(boolean asyn) {
-		LSTRDictionary.tmp_asyn = asyn;
+	private static LSTRDictionary instance;
+
+	public final static LSTRDictionary make() {
+		return new LSTRDictionary();
 	}
 
-	public static boolean isAsyn() {
-		return LSTRDictionary.tmp_asyn;
+	public final static LSTRDictionary get() {
+		if (instance != null) {
+			return instance;
+		}
+		synchronized (LSTRDictionary.class) {
+			if (instance == null) {
+				instance = make();
+			}
+			return instance;
+		}
 	}
 
-	public static boolean asyn() {
-		return LSTRDictionary.tmp_asyn;
+	public void setAsyn(boolean asyn) {
+		this.tmp_asyn = asyn;
 	}
 
-	private static boolean tmp_asyn = true;
+	public boolean isAsyn() {
+		return this.tmp_asyn;
+	}
 
-	private final static ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(
+	public boolean asyn() {
+		return this.tmp_asyn;
+	}
+
+	private boolean tmp_asyn = true;
+
+	private final ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(
 			20);
 
-	private final static ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(
+	private final ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(
 			20);
 
-	private final static ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(
+	private final ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(
 			20);
 
 	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
-	public final static String added = "0123456789abcdefgABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:.,!?@#$%^&*(){}[]<>\"'\\/+-";
+	private final static String added = "0123456789abcdefgABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:.^,!?@#$%^&*(){}[]<>\"'\\/+-~～【】，。…？！";
 
 	private final static char[] checkMessage = added.toCharArray();
 
@@ -63,18 +82,22 @@ public final class LSTRDictionary {
 
 	private static StringBuffer lazyKey;
 
-	static class Dict implements LRelease {
+	public static class Dict implements LRelease {
 
 		TArray<Character> dicts;
 
 		LSTRFont font;
 
-		static Dict newDict() {
+		public static Dict newDict() {
 			return new Dict();
 		}
 
-		Dict() {
+		public Dict() {
 			dicts = new TArray<Character>(512);
+		}
+		
+		public LSTRFont getSTR(){
+			return font;
 		}
 
 		public boolean include(String mes) {
@@ -103,7 +126,7 @@ public final class LSTRDictionary {
 
 	}
 
-	public synchronized static void clearEnglishLazy() {
+	public void clearEnglishLazy() {
 		synchronized (englishFontList) {
 			for (Dict d : englishFontList.values()) {
 				if (d != null) {
@@ -115,7 +138,7 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public synchronized static void clearStringLazy() {
+	public void clearStringLazy() {
 		synchronized (cacheList) {
 			if (cacheList != null) {
 				cacheList.clear();
@@ -132,9 +155,9 @@ public final class LSTRDictionary {
 		}
 	}
 
-	private final static int size = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
+	private final int size = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
 
-	public final static boolean checkMessage(String key, String message) {
+	public final boolean checkMessage(String key, String message) {
 		final char[] chars = message.toCharArray();
 		final char[] list = key.toCharArray();
 		int size = chars.length;
@@ -158,7 +181,7 @@ public final class LSTRDictionary {
 		return false;
 	}
 
-	private static boolean checkEnglishString(String mes) {
+	private boolean checkEnglishString(String mes) {
 		int len = mes.length();
 		int count = 0;
 		for (int n = 0; n < len; n++) {
@@ -175,10 +198,13 @@ public final class LSTRDictionary {
 		return count == len;
 	}
 
-	private static StringBuffer tmpBuffer = null;
+	private StringBuffer tmpBuffer = null;
 
-	public synchronized final static Dict bind(final LFont font,
-			final String mes) {
+	public final Dict bind(final LFont font, final String[] messages) {
+		return bind(font, StringUtils.unificationStrings(messages));
+	}
+	
+	public final Dict bind(final LFont font, final String mes) {
 		if (checkEnglishString(mes)) {
 			Dict pDict = englishFontList.get(font);
 			if (pDict == null) {
@@ -188,7 +214,7 @@ public final class LSTRDictionary {
 			}
 			return pDict;
 		}
-		final String message = mes + added;
+		final String message = StringUtils.unificationStrings(mes + added);
 		if (cacheList.size > size) {
 			clearStringLazy();
 		}
@@ -253,8 +279,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public synchronized final static void drawString(LFont font,
-			String message, float x, float y, float angle, LColor c) {
+	public final void drawString(LFont font, String message, float x, float y,
+			float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -263,9 +289,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public synchronized final static void drawString(LFont font,
-			String message, float x, float y, float sx, float sy, float ax,
-			float ay, float angle, LColor c) {
+	public final void drawString(LFont font, String message, float x, float y,
+			float sx, float sy, float ax, float ay, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -274,8 +299,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public synchronized final static void drawString(GLEx gl, LFont font,
-			String message, float x, float y, float angle, LColor c) {
+	public final void drawString(GLEx gl, LFont font, String message, float x,
+			float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -284,9 +309,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public synchronized final static void drawString(GLEx gl, LFont font,
-			String message, float x, float y, float sx, float sy, float angle,
-			LColor c) {
+	public final void drawString(GLEx gl, LFont font, String message, float x,
+			float y, float sx, float sy, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -295,9 +319,9 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public synchronized final static void drawString(GLEx gl, LFont font,
-			String message, float x, float y, float sx, float sy, float ax,
-			float ay, float angle, LColor c) {
+	public final void drawString(GLEx gl, LFont font, String message, float x,
+			float y, float sx, float sy, float ax, float ay, float angle,
+			LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -314,7 +338,7 @@ public final class LSTRDictionary {
 	 * @param text
 	 * @return
 	 */
-	public synchronized static String makeStringLazyKey(final LFont font,
+	public final static String makeStringLazyKey(final LFont font,
 			final String text) {
 		int hashCode = 0;
 		hashCode = LSystem.unite(hashCode, font.getSize());
@@ -339,10 +363,10 @@ public final class LSTRDictionary {
 		return lazyKey.toString();
 	}
 
-	public synchronized final static void dispose() {
+	public final void dispose() {
 		cacheList.clear();
 		clearStringLazy();
-	    clearEnglishLazy();
+		clearEnglishLazy();
 	}
 
 }

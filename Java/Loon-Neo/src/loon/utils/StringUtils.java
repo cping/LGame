@@ -932,4 +932,27 @@ final public class StringUtils {
 		return sb.toString();
 	}
 
+	public final static String unificationStrings(String mes) {
+		CharArray chars = new CharArray();
+		for (int i = 0, size = mes.length(); i < size; i++) {
+			char ch = mes.charAt(i);
+			if (!chars.contains(ch)) {
+				chars.add(ch);
+			}
+		}
+		return chars.getString();
+	}
+
+	public final static String unificationStrings(String[] messages) {
+		CharArray chars = new CharArray();
+		for (String text : messages) {
+			for (int i = 0, size = text.length(); i < size; i++) {
+				char ch = text.charAt(i);
+				if (!chars.contains(ch)) {
+					chars.add(ch);
+				}
+			}
+		}
+		return chars.getString();
+	}
 }

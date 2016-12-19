@@ -551,7 +551,7 @@ public class LMenu extends LComponent {
 		this.items.add(item);
 		this.xslot += 1;
 		if (item._font != null && item._font instanceof LFont) {
-			LSTRDictionary.bind((LFont) item._font, item.label);
+			LSTRDictionary.get().bind((LFont) item._font, item.label);
 		}
 		return item;
 	}

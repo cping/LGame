@@ -94,6 +94,7 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 		}
 		try {
 			System.setProperty("org.lwjgl.opengl.Display.enableHighDPI", "true");
+			Display.setInitialBackground(0, 0, 0);
 			Display.create();
 			checkScaleFactor();
 		} catch (LWJGLException e) {

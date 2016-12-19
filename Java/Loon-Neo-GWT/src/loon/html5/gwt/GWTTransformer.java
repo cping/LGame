@@ -26,5 +26,5 @@ import com.google.gwt.dom.client.ImageElement;
 
 public interface GWTTransformer extends BitmapTransformer {
 
-  ImageElement transform(ImageElement image);
+	ImageElement transform(ImageElement image);
 }
