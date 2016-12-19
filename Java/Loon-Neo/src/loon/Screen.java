@@ -74,14 +74,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	private ScreenAction _screenAction = null;
 
 	public int index = 0;
-	
-	public Screen setID(int id){
+
+	public Screen setID(int id) {
 		this.index = id;
 		return this;
 	}
-	
-	public int getID(){
-		return this.index; 
+
+	public int getID() {
+		return this.index;
 	}
 
 	// Screen中组件渲染顺序,默认精灵最下,桌面在后,用户渲染最上
@@ -508,7 +508,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private boolean processing = true;
 
-	private LTexture currentScreen;
+	private LTexture currentScreenBackground;
 
 	protected LProcess handler;
 
@@ -1247,13 +1247,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				@Override
 				public void action(Object a) {
 					LTexture screen = background;
-					final LTexture tmp = currentScreen;
+					final LTexture tmp = currentScreenBackground;
 					if (tmp != null) {
-						LTexture parent = LTexture.firstFather(currentScreen);
+						LTexture parent = LTexture
+								.firstFather(currentScreenBackground);
 						parent.closeChildAll();
 						parent.close();
 					}
-					currentScreen = screen;
+					currentScreenBackground = screen;
 
 				}
 			};
@@ -1306,7 +1307,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @return
 	 */
 	public LTexture getBackground() {
-		return currentScreen;
+		return currentScreenBackground;
 	}
 
 	/**
@@ -1944,9 +1945,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 								getHeight());
 						g.setColor(tmpColor);
 					}
-					if (replaceDstScreen.currentScreen != null) {
-						g.draw(replaceDstScreen.currentScreen, dstPos.x(),
-								dstPos.y(), getWidth(), getHeight());
+					if (replaceDstScreen.currentScreenBackground != null) {
+						g.draw(replaceDstScreen.currentScreenBackground,
+								dstPos.x(), dstPos.y(), getWidth(), getHeight());
 					}
 					if (dstPos.x() != 0 || dstPos.y() != 0) {
 						g.setClip(dstPos.x(), dstPos.y(), getWidth(),
@@ -1965,8 +1966,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 						g.fillRect(0, 0, getWidth(), getHeight());
 						g.setColor(tmpColor);
 					}
-					if (replaceDstScreen.currentScreen != null) {
-						g.draw(replaceDstScreen.currentScreen, 0, 0,
+					if (replaceDstScreen.currentScreenBackground != null) {
+						g.draw(replaceDstScreen.currentScreenBackground, 0, 0,
 								getWidth(), getHeight());
 					}
 					replaceDstScreen.createUI(g);
@@ -1978,7 +1979,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 						g.setColor(tmpColor);
 					}
 					if (getBackground() != null) {
-						g.draw(currentScreen, dstPos.x(), dstPos.y(),
+						g.draw(currentScreenBackground, dstPos.x(), dstPos.y(),
 								getWidth(), getHeight());
 					}
 					if (dstPos.x() != 0 || dstPos.y() != 0) {
@@ -2728,66 +2729,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
-	public final void destroy() {
-		synchronized (this) {
-			index = 0;
-			_rotation = 0;
-			_scaleX = _scaleY = _alpha = 1f;
-			_baseColor = null;
-			_visible = false;
-			_limits.clear();
-			_touchAreas.clear();
-			touchButtonPressed = SysInput.NO_BUTTON;
-			touchButtonReleased = SysInput.NO_BUTTON;
-			keyButtonPressed = SysInput.NO_KEY;
-			keyButtonReleased = SysInput.NO_KEY;
-			replaceLoading = false;
-			replaceDelay.setDelay(10);
-			tx = ty = 0;
-			isClose = true;
-			isTranslate = false;
-			isNext = false;
-			isGravity = false;
-			isLock = true;
-			_isExistCamera = false;
-			if (sprites != null) {
-				sprites.close();
-				sprites.clear();
-				sprites = null;
-			}
-			if (desktop != null) {
-				desktop.close();
-				desktop.clear();
-				desktop = null;
-			}
-			if (gravityHandler != null) {
-				gravityHandler.close();
-				gravityHandler = null;
-			}
-			clearFrameLoop();
-			if (_screenAction != null) {
-				removeAllActions(_screenAction);
-			}
-			if (releases != null) {
-				for (LRelease r : releases) {
-					if (r != null) {
-						r.close();
-					}
-				}
-				releases.clear();
-			}
-			_conns.close();
-			release();
-			close();
-			if (currentScreen != null) {
-				LTexture parent = LTexture.firstFather(currentScreen);
-				parent.closeChildAll();
-				parent.close();
-			}
-			currentScreen = null;
-		}
-	}
-
 	public Display getDisplay() {
 		return LSystem._base.display();
 	}
@@ -2804,6 +2745,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			return desktop.isAutoDestory();
 		}
 		return false;
+	}
+
+	public ResourceLocal RES(String path) {
+		return getResourceConfig(path);
 	}
 
 	public ResourceLocal getResourceConfig(String path) {
@@ -2867,8 +2812,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public boolean isTxUpdate() {
-		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || tx != 0
-				|| ty != 0;
+		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX
+				|| _flipY || tx != 0 || ty != 0;
 	}
 
 	public void setAlpha(float a) {
@@ -2964,5 +2909,65 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 
 	 */
 	public abstract void close();
+
+	public final void destroy() {
+		synchronized (this) {
+			index = 0;
+			_rotation = 0;
+			_scaleX = _scaleY = _alpha = 1f;
+			_baseColor = null;
+			_visible = false;
+			_limits.clear();
+			_touchAreas.clear();
+			touchButtonPressed = SysInput.NO_BUTTON;
+			touchButtonReleased = SysInput.NO_BUTTON;
+			keyButtonPressed = SysInput.NO_KEY;
+			keyButtonReleased = SysInput.NO_KEY;
+			replaceLoading = false;
+			replaceDelay.setDelay(10);
+			tx = ty = 0;
+			isClose = true;
+			isTranslate = false;
+			isNext = false;
+			isGravity = false;
+			isLock = true;
+			_isExistCamera = false;
+			if (sprites != null) {
+				sprites.close();
+				sprites.clear();
+				sprites = null;
+			}
+			if (desktop != null) {
+				desktop.close();
+				desktop.clear();
+				desktop = null;
+			}
+			if (gravityHandler != null) {
+				gravityHandler.close();
+				gravityHandler = null;
+			}
+			clearFrameLoop();
+			if (_screenAction != null) {
+				removeAllActions(_screenAction);
+			}
+			if (releases != null) {
+				for (LRelease r : releases) {
+					if (r != null) {
+						r.close();
+					}
+				}
+				releases.clear();
+			}
+			_conns.close();
+			release();
+			close();
+			if (currentScreenBackground != null) {
+				LTexture parent = LTexture.firstFather(currentScreenBackground);
+				parent.closeChildAll();
+				parent.close();
+			}
+			currentScreenBackground = null;
+		}
+	}
 
 }

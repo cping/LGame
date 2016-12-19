@@ -320,6 +320,10 @@ public abstract class ActionObject extends LObject<ISprite> implements
 		return PlayerUtils.set(this);
 	}
 
+	public boolean isActionCompleted(){
+		return PlayerUtils.isActionCompleted(this);
+	}
+	
 	@Override
 	public void close() {
 		if (animation != null) {

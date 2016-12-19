@@ -21,12 +21,14 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.utils.StringUtils;
 
 // 与LButton的差异在于，内置有默认UI图片，并且可以选择大小，而不是必须按照图片大小拆分
 public class LClickButton extends LComponent {
@@ -147,53 +149,45 @@ public class LClickButton extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		int tmp = g.color();
-		try {
-			if (grayButton) {
-				if (!isEnabled()) {
-					g.draw(clickedClick,
-							x,
-							y,
-							getWidth(),
-							getHeight(),
-							baseColor == null ? LColor.gray : baseColor
-									.mul(LColor.gray));
-				} else if (isTouchPressed()) {
-					g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
-				} else if (isTouchOver()) {
-					g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
-				} else {
-					g.draw(idleClick,
-							x,
-							y,
-							getWidth(),
-							getHeight(),
-							baseColor == null ? LColor.gray : baseColor
-									.mul(LColor.gray));
-				}
+		if (grayButton) {
+			if (!isEnabled()) {
+				g.draw(clickedClick,
+						x,
+						y,
+						getWidth(),
+						getHeight(),
+						baseColor == null ? LColor.gray : baseColor
+								.mul(LColor.gray));
+			} else if (isTouchPressed()) {
+				g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
+			} else if (isTouchOver()) {
+				g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
 			} else {
-				if (!isEnabled()) {
-					g.draw(clickedClick, x, y, getWidth(), getHeight(),
-							baseColor);
-				} else if (isTouchPressed()) {
-					g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
-				} else if (isTouchOver()) {
-					g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
-				} else {
-					g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
-				}
+				g.draw(idleClick,
+						x,
+						y,
+						getWidth(),
+						getHeight(),
+						baseColor == null ? LColor.gray : baseColor
+								.mul(LColor.gray));
 			}
-			if (text != null) {
-				font.drawString(
-						g,
-						text,
-						x + getOffsetLeft()
-								+ (getWidth() - font.stringWidth(text)) / 2,
-						(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2) - 5,
-						fontColor);
+		} else {
+			if (!isEnabled()) {
+				g.draw(clickedClick, x, y, getWidth(), getHeight(), baseColor);
+			} else if (isTouchPressed()) {
+				g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
+			} else if (isTouchOver()) {
+				g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
+			} else {
+				g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
 			}
-		} finally {
-			g.setColor(tmp);
+		}
+		if (!StringUtils.isEmpty(text)) {
+			font.drawString(g, text,
+					x + getOffsetLeft() + (getWidth() - font.stringWidth(text))
+							/ 2,
+					(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2)
+							- (LSystem.isMobile() ? 0 : 5), fontColor);
 		}
 	}
 

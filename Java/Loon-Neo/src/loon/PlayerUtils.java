@@ -1,5 +1,6 @@
 package loon;
 
+import loon.Log.Level;
 import loon.action.ActionBind;
 import loon.action.ActionCallback;
 import loon.action.ActionControl;
@@ -154,4 +155,63 @@ public class PlayerUtils extends Director {
 		return player;
 	}
 
+	public final static void debug(String msg) {
+		if (LSystem._base != null) {
+			LSystem._base.log().debug(msg);
+		}
+	}
+
+	public final static void debug(String msg, Object... args) {
+		if (LSystem._base != null) {
+			LSystem._base.log().debug(msg, args);
+		}
+	}
+
+	public final static void debug(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.log().debug(msg, throwable);
+		}
+	}
+
+	public final static void info(String msg) {
+		if (LSystem._base != null) {
+			LSystem._base.log().info(msg);
+		}
+	}
+
+	public final static void info(String msg, Object... args) {
+		if (LSystem._base != null) {
+			LSystem._base.log().info(msg, args);
+		}
+	}
+
+	public final static void info(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.log().info(msg, throwable);
+		}
+	}
+
+	public final static void error(String msg) {
+		if (LSystem._base != null) {
+			LSystem._base.log().error(msg);
+		}
+	}
+
+	public final static void error(String msg, Object... args) {
+		if (LSystem._base != null) {
+			LSystem._base.log().error(msg, args);
+		}
+	}
+
+	public final static void error(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.log().error(msg, throwable);
+		}
+	}
+
+	public final static void setLogMinLevel(Level level) {
+		if (LSystem._base != null) {
+			LSystem._base.log().setMinLevel(level);
+		}
+	}
 }

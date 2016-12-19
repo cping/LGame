@@ -253,7 +253,7 @@ public class LFont implements IFont {
 	@Override
 	public int getHeight() {
 		initLayout(tmp);
-		return MathUtils.max(getSize() - 2, textLayout.bounds.height);
+		return MathUtils.max(getSize() / 2, textLayout.bounds.height);
 	}
 
 	@Override

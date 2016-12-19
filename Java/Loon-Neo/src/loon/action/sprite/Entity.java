@@ -1019,6 +1019,10 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
+	
+	public boolean isActionCompleted(){
+		return PlayerUtils.isActionCompleted(this);
+	}
 
 	@Override
 	public void close() {

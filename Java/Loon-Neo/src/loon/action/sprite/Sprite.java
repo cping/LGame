@@ -994,6 +994,10 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite,
 		return PlayerUtils.set(this);
 	}
 
+	public boolean isActionCompleted(){
+		return PlayerUtils.isActionCompleted(this);
+	}
+	
 	@Override
 	public Sprite setFlipX(boolean x) {
 		this._flipX = x;

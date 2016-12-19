@@ -1150,6 +1150,10 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 		return PlayerUtils.set(this);
 	}
 
+	public boolean isActionCompleted(){
+		return PlayerUtils.isActionCompleted(this);
+	}
+	
 	@Override
 	public void close() {
 		if (image != null) {

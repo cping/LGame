@@ -289,6 +289,10 @@ public class MovieClip extends DisplayObject {
 		return PlayerUtils.set(this);
 	}
 
+	public boolean isActionCompleted(){
+		return PlayerUtils.isActionCompleted(this);
+	}
+	
 	@Override
 	public void close() {
 		if (_sheet != null) {

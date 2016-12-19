@@ -628,7 +628,7 @@ final public class StringUtils {
 	 * @return
 	 */
 	public static boolean isEmpty(String param) {
-		return param == null || param.length() == 0 || param.trim().equals("");
+		return param == null || param.length() == 0 || "".equals(param.trim());
 	}
 
 	/**
