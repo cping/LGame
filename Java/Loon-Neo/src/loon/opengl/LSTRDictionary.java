@@ -32,6 +32,8 @@ import loon.utils.TArray;
 
 public final class LSTRDictionary {
 
+	private final int CACHE_SIZE = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
+	
 	private static LSTRDictionary instance;
 
 	public final static LSTRDictionary make() {
@@ -74,9 +76,9 @@ public final class LSTRDictionary {
 			20);
 
 	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
-	private final static String added = "0123456789abcdefgABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:.^,!?@#$%^&*(){}[]<>\"'\\/+-~～【】，。…？！";
+	private final static String ADDED = "0123456789abcdefgABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:.^,!?@#$%^&*(){}[]<>\"'\\/+-~～【】，。…？！";
 
-	private final static char[] checkMessage = added.toCharArray();
+	private final static char[] checkMessage = ADDED.toCharArray();
 
 	public final static char split = '$';
 
@@ -95,8 +97,8 @@ public final class LSTRDictionary {
 		public Dict() {
 			dicts = new TArray<Character>(512);
 		}
-		
-		public LSTRFont getSTR(){
+
+		public LSTRFont getSTR() {
 			return font;
 		}
 
@@ -155,8 +157,6 @@ public final class LSTRDictionary {
 		}
 	}
 
-	private final int size = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
-
 	public final boolean checkMessage(String key, String message) {
 		final char[] chars = message.toCharArray();
 		final char[] list = key.toCharArray();
@@ -203,19 +203,22 @@ public final class LSTRDictionary {
 	public final Dict bind(final LFont font, final String[] messages) {
 		return bind(font, StringUtils.unificationStrings(messages));
 	}
-	
+
 	public final Dict bind(final LFont font, final String mes) {
+		if (StringUtils.isEmpty(mes)) {
+			return new Dict();
+		}
 		if (checkEnglishString(mes)) {
 			Dict pDict = englishFontList.get(font);
 			if (pDict == null) {
 				pDict = Dict.newDict();
-				pDict.font = new LSTRFont(font, added, tmp_asyn);
+				pDict.font = new LSTRFont(font, ADDED, tmp_asyn);
 				englishFontList.put(font, pDict);
 			}
 			return pDict;
 		}
-		final String message = StringUtils.unificationStrings(mes + added);
-		if (cacheList.size > size) {
+		final String message = StringUtils.unificationStrings(mes + ADDED);
+		if (cacheList.size > CACHE_SIZE) {
 			clearStringLazy();
 		}
 		synchronized (fontList) {

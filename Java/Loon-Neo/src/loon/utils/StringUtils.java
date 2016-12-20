@@ -632,6 +632,16 @@ final public class StringUtils {
 	}
 
 	/**
+	 * 判断是否为null
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public static boolean isEmpty(String... param) {
+		return param == null || param.length == 0;
+	}
+
+	/**
 	 * 检查指定字符串中是否存在中文字符。
 	 * 
 	 * @param checkStr
@@ -933,6 +943,9 @@ final public class StringUtils {
 	}
 
 	public final static String unificationStrings(String mes) {
+		if (isEmpty(mes)) {
+			return mes;
+		}
 		CharArray chars = new CharArray();
 		for (int i = 0, size = mes.length(); i < size; i++) {
 			char ch = mes.charAt(i);
@@ -944,6 +957,9 @@ final public class StringUtils {
 	}
 
 	public final static String unificationStrings(String[] messages) {
+		if (isEmpty(messages)) {
+			return "";
+		}
 		CharArray chars = new CharArray();
 		for (String text : messages) {
 			for (int i = 0, size = text.length(); i < size; i++) {

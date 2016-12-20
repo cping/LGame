@@ -94,7 +94,7 @@ public class BMFont implements IFont, LRelease {
 
 	private int lineHeight, halfHeight;
 
-	private boolean isClose;
+	private boolean _isClose;
 
 	private String info, common, page;
 
@@ -130,7 +130,7 @@ public class BMFont implements IFont, LRelease {
 		short[] kerning;
 
 		public void draw(float x, float y) {
-			if (isClose) {
+			if (_isClose) {
 				return;
 			}
 			displayList.draw((x + xoffset) * fontScaleX, (y + yoffset)
@@ -139,7 +139,7 @@ public class BMFont implements IFont, LRelease {
 		}
 
 		public void draw(GLEx g, float sx, float sy, float x, float y) {
-			if (isClose) {
+			if (_isClose) {
 				return;
 			}
 
@@ -327,7 +327,10 @@ public class BMFont implements IFont, LRelease {
 
 	private void drawBatchString(String text, float tx, float ty, LColor c,
 			int startIndex, int endIndex) {
-		if (isClose) {
+		if(_isClose){
+			return;
+		}
+		if(StringUtils.isEmpty(text)){
 			return;
 		}
 		make();
@@ -442,7 +445,10 @@ public class BMFont implements IFont, LRelease {
 
 	private void drawString(GLEx g, String text, float tx, float ty, LColor c,
 			int startIndex, int endIndex) {
-		if (isClose) {
+		if (_isClose) {
+			return;
+		}
+		if(StringUtils.isEmpty(text)){
 			return;
 		}
 		make();
@@ -483,6 +489,12 @@ public class BMFont implements IFont, LRelease {
 	@Override
 	public void drawString(GLEx g, String text, float x, float y,
 			float rotation, LColor c) {
+		if(_isClose){
+			return;
+		}
+		if(StringUtils.isEmpty(text)){
+			return;
+		}
 		if (rotation == 0) {
 			drawString(g, text, x, y, c);
 			return;
@@ -501,6 +513,12 @@ public class BMFont implements IFont, LRelease {
 	@Override
 	public void drawString(GLEx gl, String text, float x, float y, float sx,
 			float sy, float ax, float ay, float rotation, LColor c) {
+		if(_isClose){
+			return;
+		}
+		if(StringUtils.isEmpty(text)){
+			return;
+		}
 		boolean anchor = ax != 0 || ay != 0;
 		boolean scale = sx != 1f || sy != 1f;
 		boolean angle = rotation != 0;
@@ -537,7 +555,7 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public int stringHeight(String text) {
-		if (text == null) {
+		if (StringUtils.isEmpty(text)) {
 			return 0;
 		}
 		make();
@@ -601,7 +619,7 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public int stringWidth(String text) {
-		if (text == null) {
+		if (StringUtils.isEmpty(text)) {
 			return 0;
 		}
 		make();
@@ -751,10 +769,17 @@ public class BMFont implements IFont, LRelease {
 	public void setSize(int size) {
 		this._size = size;
 	}
+	
+	public boolean isClosed(){
+		return _isClose;
+	}
 
 	@Override
 	public void close() {
-		this.isClose = true;
+		if(_isClose){
+			return;
+		}
+		this._isClose = true;
 		if (displayList != null) {
 			displayList.close(true);
 			displayList = null;

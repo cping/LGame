@@ -49,9 +49,11 @@ public class SpriteSheetFont implements IFont {
 
 	public void drawString(String text, float x, float y, LColor col,
 			int startIndex, int endIndex) {
-		char[] data = text.toCharArray();
-		for (int i = 0; i < data.length; i++) {
-			int index = data[i] - startingCharacter;
+		if (StringUtils.isEmpty(text)) {
+			return;
+		}
+		for (int i = 0, size = text.length(); i < size; i++) {
+			int index = text.charAt(i) - startingCharacter;
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
@@ -83,6 +85,9 @@ public class SpriteSheetFont implements IFont {
 
 	public void drawString(GLEx gl, String text, final float x, final float y,
 			LColor col, int startIndex, int endIndex) {
+		if (StringUtils.isEmpty(text)) {
+			return;
+		}
 		char[] data = text.toCharArray();
 		int lines = 0;
 		float sx = x + _offset.x;
@@ -120,6 +125,9 @@ public class SpriteSheetFont implements IFont {
 	@Override
 	public void drawString(GLEx g, String text, float x, float y,
 			float rotation, LColor c) {
+		if (StringUtils.isEmpty(text)) {
+			return;
+		}
 		if (rotation == 0) {
 			drawString(g, text, x, y, c);
 			return;
@@ -138,6 +146,9 @@ public class SpriteSheetFont implements IFont {
 	@Override
 	public void drawString(GLEx gl, String text, float x, float y, float sx,
 			float sy, float ax, float ay, float rotation, LColor c) {
+		if (StringUtils.isEmpty(text)) {
+			return;
+		}
 		final boolean anchor = ax != 0 || ay != 0;
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;

@@ -40,8 +40,6 @@ import loon.utils.StringUtils;
 
 public class LSTRFont implements LRelease {
 
-	private boolean isClose = false;
-
 	private class UpdateStringFont implements Updateable {
 
 		private LSTRFont strfont;
@@ -140,11 +138,13 @@ public class LSTRFont implements LRelease {
 			if (tmpbatch != null) {
 				tmpbatch.close();
 			}
-			strfont.initChars = true;
+			strfont._initChars = true;
 			strfont.isDrawing = false;
 		}
 
 	}
+
+	private boolean _isClose = false;
 
 	private int _initDraw = -1;
 
@@ -200,7 +200,7 @@ public class LSTRFont implements LRelease {
 
 	}
 
-	private boolean initChars = false;
+	private boolean _initChars = false;
 
 	private char[] additionalChars = null;
 
@@ -256,8 +256,8 @@ public class LSTRFont implements LRelease {
 			this.make(asyn);
 			chars = null;
 		}
-		if (text == null || text.length() == 0) {
-			isClose = true;
+		if (StringUtils.isEmpty(text)) {
+			_isClose = true;
 			return;
 		}
 	}
@@ -269,10 +269,10 @@ public class LSTRFont implements LRelease {
 	private float updateY = 0;
 
 	private synchronized void make(boolean asyn) {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
-		if (initChars) {
+		if (_initChars) {
 			return;
 		}
 		if (isDrawing) {
@@ -321,7 +321,10 @@ public class LSTRFont implements LRelease {
 	private void drawString(float x, float y, float sx, float sy, float ax,
 			float ay, float rotation, String chars, LColor c, int startIndex,
 			int endIndex) {
-		if (isClose) {
+		if (_isClose) {
+			return;
+		}
+		if(StringUtils.isEmpty(chars)){
 			return;
 		}
 		make();
@@ -465,7 +468,10 @@ public class LSTRFont implements LRelease {
 	private void drawString(GLEx gl, float x, float y, float sx, float sy,
 			float ax, float ay, float rotation, String chars, LColor c,
 			int startIndex, int endIndex) {
-		if (isClose) {
+		if (_isClose) {
+			return;
+		}
+		if(StringUtils.isEmpty(chars)){
 			return;
 		}
 		make();
@@ -543,7 +549,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
 		make();
@@ -584,7 +590,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void startChar() {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
 		make();
@@ -599,7 +605,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void stopChar() {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
 		make();
@@ -624,7 +630,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public void postCharCache() {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
 		make();
@@ -641,7 +647,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public Cache saveCharCache() {
-		if (isClose) {
+		if (_isClose) {
 			return null;
 		}
 		make();
@@ -682,7 +688,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public int charWidth(char c) {
-		if (isClose) {
+		if (_isClose) {
 			return 0;
 		}
 		make();
@@ -704,7 +710,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public int getWidth(String s) {
-		if (isClose) {
+		if (_isClose) {
 			return 0;
 		}
 		make();
@@ -735,7 +741,7 @@ public class LSTRFont implements LRelease {
 	}
 
 	public int getHeight(String s) {
-		if (isClose) {
+		if (_isClose) {
 			return 0;
 		}
 		make();
@@ -831,12 +837,12 @@ public class LSTRFont implements LRelease {
 	}
 
 	public boolean isClose() {
-		return isClose;
+		return _isClose;
 	}
 
 	@Override
 	public synchronized void close() {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
 		for (Cache c : displays.values()) {
@@ -855,9 +861,9 @@ public class LSTRFont implements LRelease {
 		}
 		fontBatch = null;
 		isDrawing = false;
-		initChars = false;
+		_initChars = false;
 		_initDraw = -1;
-		isClose = true;
+		_isClose = true;
 	}
 
 }

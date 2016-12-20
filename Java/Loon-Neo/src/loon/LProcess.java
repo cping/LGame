@@ -772,6 +772,20 @@ public class LProcess extends PlayerUtils {
 		return null;
 	}
 
+	public void runPopScreen() {
+		int size = _screens.size;
+		if (size > 0) {
+			Screen o = _screens.pop();
+			if (o != currentScreen) {
+				setScreen((Screen) o, false);
+			}
+		}
+	}
+
+	public void runPeekScreen() {
+		runLastScreen();
+	}
+
 	public void runFirstScreen() {
 		int size = _screens.size;
 		if (size > 0) {

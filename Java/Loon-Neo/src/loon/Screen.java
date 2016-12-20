@@ -1024,7 +1024,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public boolean isOnLoadComplete() {
 		return isLoad;
 	}
+	
+	/**
+	 * 顺序运行并删除一个Screen
+	 * 
+	 * @return
+	 */
+	public Screen runPopScreen() {
+		if (handler != null) {
+			handler.runPopScreen();
+		}
+		return this;
+	}
 
+	/**
+	 * 运行最后一个Screen
+	 * 
+	 * @return
+	 */
+	public Screen runPeekScreen() {
+		if (handler != null) {
+			handler.runPeekScreen();
+		}
+		return this;
+	}
+	
 	/**
 	 * 取出第一个Screen并执行
 	 * 
