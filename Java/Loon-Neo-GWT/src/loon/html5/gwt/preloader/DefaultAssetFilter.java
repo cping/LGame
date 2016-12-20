@@ -23,7 +23,7 @@ package loon.html5.gwt.preloader;
 import loon.LSystem;
 
 public class DefaultAssetFilter implements AssetFilter {
-	
+
 	public final static char special_symbols = 'φ';
 
 	private String extension(String file) {
@@ -56,7 +56,6 @@ public class DefaultAssetFilter implements AssetFilter {
 		}
 		return AssetType.Binary;
 	}
-
 
 	@Override
 	public String getBundleName(String file) {

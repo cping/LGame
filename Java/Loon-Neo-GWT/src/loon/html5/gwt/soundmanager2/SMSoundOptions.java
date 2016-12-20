@@ -23,7 +23,7 @@ package loon.html5.gwt.soundmanager2;
 import loon.html5.gwt.soundmanager2.SMSound.SMSoundCallback;
 
 public class SMSoundOptions {
-	public SMSoundOptions () {
+	public SMSoundOptions() {
 	};
 
 	public int volume = 100;

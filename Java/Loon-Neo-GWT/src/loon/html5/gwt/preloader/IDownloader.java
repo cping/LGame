@@ -30,7 +30,7 @@ public abstract class IDownloader {
 	public boolean isUseInlineBase64() {
 		return useInlineBase64;
 	}
-	
+
 	public interface AssetLoaderListener<T> {
 
 		public void onProgress(double amount);
@@ -61,41 +61,40 @@ public abstract class IDownloader {
 	}
 
 	static native void hookImgListener(ImageElement img, ImgEventListener h) /*-{
-		img
-				.addEventListener(
-						'load',
-						function(e) {
-							h.@loon.html5.gwt.preloader.IDownloader.ImgEventListener::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
-						}, false);
-		img
-				.addEventListener(
-						'error',
-						function(e) {
-							h.@loon.html5.gwt.preloader.IDownloader.ImgEventListener::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
-						}, false);
-	}-*/;
+																				img
+																				.addEventListener(
+																				'load',
+																				function(e) {
+																				h.@loon.html5.gwt.preloader.IDownloader.ImgEventListener::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
+																				}, false);
+																				img
+																				.addEventListener(
+																				'error',
+																				function(e) {
+																				h.@loon.html5.gwt.preloader.IDownloader.ImgEventListener::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
+																				}, false);
+																				}-*/;
 
 	static native ImageElement createImage() /*-{
-		return new Image();
-	}-*/;
+												return new Image();
+												}-*/;
 
 	@SuppressWarnings("rawtypes")
 	static native void setOnProgress(XMLHttpRequest req,
 			AssetLoaderListener listener) /*-{
-		var _this = this;
-		this.onprogress = $entry(function(evt) {
-			listener.@loon.html5.gwt.preloader.IDownloader.AssetLoaderListener::onProgress(D)(evt.loaded);
-		});
-	}-*/;
+											var _this = this;
+											this.onprogress = $entry(function(evt) {
+											listener.@loon.html5.gwt.preloader.IDownloader.AssetLoaderListener::onProgress(D)(evt.loaded);
+											});
+											}-*/;
 
 	@SuppressWarnings("rawtypes")
-	static native void setOnProgress(
-			AssetLoaderListener listener) /*-{
-		var _this = this;
-		this.onprogress = $entry(function(evt) {
-			listener.@loon.html5.gwt.preloader.IDownloader.AssetLoaderListener::onProgress(D)(evt.loaded);
-		});
-	}-*/;
-	
+	static native void setOnProgress(AssetLoaderListener listener) /*-{
+																	var _this = this;
+																	this.onprogress = $entry(function(evt) {
+																	listener.@loon.html5.gwt.preloader.IDownloader.AssetLoaderListener::onProgress(D)(evt.loaded);
+																	});
+																	}-*/;
+
 	public abstract void clear();
 }

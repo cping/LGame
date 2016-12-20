@@ -30,7 +30,8 @@ import static com.google.gwt.core.ext.TreeLogger.*;
 
 public class ReflectionCacheGenerator extends Generator {
 	@Override
-	public String generate (TreeLogger logger, GeneratorContext context, String typeName) throws UnableToCompleteException {
+	public String generate(TreeLogger logger, GeneratorContext context,
+			String typeName) throws UnableToCompleteException {
 		TypeOracle oracle = context.getTypeOracle();
 		assert (oracle != null);
 		JClassType type = oracle.findType(typeName);
@@ -44,7 +45,8 @@ public class ReflectionCacheGenerator extends Generator {
 			throw new UnableToCompleteException();
 		}
 
-		ReflectionCacheSourceCreator source = new ReflectionCacheSourceCreator(logger, context, type);
+		ReflectionCacheSourceCreator source = new ReflectionCacheSourceCreator(
+				logger, context, type);
 		return source.create();
 	}
 }

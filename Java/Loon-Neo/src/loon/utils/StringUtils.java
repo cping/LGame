@@ -236,34 +236,41 @@ final public class StringUtils {
 	}
 
 	/**
-	 * 分解字符串
+	 * 以指定字符过滤切割字符串，并返回分割后的字符串数组
 	 * 
 	 * @param str
-	 * @param tag
+	 * @param flag
 	 * @return
 	 */
 	public static String[] split(String str, Character flag) {
-		if (str == null || str.length() == 0) {
-			return new String[0];
+		if (isEmpty(str)) {
+			return new String[] { str };
 		}
-		int count = 1;
-		for (int i = 0; i < str.length(); i++) {
-			if (str.charAt(i) == flag) {
+		int count = 0;
+		int size = str.length();
+		for (int index = 0; index < size; index++) {
+			if (flag == str.charAt(index)) {
 				count++;
 			}
 		}
-		String[] results = new String[count];
-		int index = 0;
-		for (int i = 0; i < count; i++) {
-			int nextIndex = str.indexOf(flag, index);
-			if (nextIndex == -1) {
-				results[i] = str.substring(index);
+		if (str.charAt(size - 1) != flag) {
+			count++;
+		}
+		if (count == 0) {
+			return new String[] { str };
+		}
+		int idx = -1;
+		String[] strings = new String[count];
+		for (int i = 0, len = strings.length; i < len; i++) {
+			int IndexStart = idx + 1;
+			idx = str.indexOf(flag, idx + 1);
+			if (idx == -1) {
+				strings[i] = str.substring(IndexStart).trim();
 			} else {
-				results[i] = str.substring(index, nextIndex);
-				index = nextIndex + 1;
+				strings[i] = str.substring(IndexStart, idx).trim();
 			}
 		}
-		return results;
+		return strings;
 	}
 
 	/**
@@ -325,20 +332,20 @@ final public class StringUtils {
 			count *= 2;
 			result = new String[count];
 			for (int i = 0, j = 0; i < count; j++, i += 2) {
-				result[i] = str.substring(start[j], end[j]);
+				result[i] = str.substring(start[j], end[j]).trim();
 				result[i + 1] = LSystem.LS;
 			}
 		} else {
 			result = new String[count];
 			for (int i = 0; i < count; i++) {
-				result[i] = str.substring(start[i], end[i]);
+				result[i] = str.substring(start[i], end[i]).trim();
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * 分解字符串
+	 * 以指定字符串来分解字符串
 	 * 
 	 * @param str
 	 * @param separator
@@ -415,7 +422,7 @@ final public class StringUtils {
 	}
 
 	/**
-	 * 以指定大小过滤字符串
+	 * 以指定大小过滤字符串，并返回切割后的数组
 	 * 
 	 * @param str
 	 * @param size
@@ -425,8 +432,8 @@ final public class StringUtils {
 	 */
 	public static String[] splitSize(String str, int size)
 			throws NullPointerException, IllegalArgumentException {
-		if (str == null) {
-			throw new NullPointerException("The str parameter is null.");
+		if (isEmpty(str)) {
+			return new String[] { str };
 		}
 		if (size <= 0) {
 			throw new IllegalArgumentException(
@@ -436,10 +443,10 @@ final public class StringUtils {
 		int mod = str.length() % size;
 		String[] ret = mod > 0 ? new String[num + 1] : new String[num];
 		for (int i = 0; i < num; i++) {
-			ret[i] = str.substring(i * size, (i + 1) * size);
+			ret[i] = str.substring(i * size, (i + 1) * size).trim();
 		}
 		if (mod > 0) {
-			ret[num] = str.substring(num * size);
+			ret[num] = str.substring(num * size).trim();
 		}
 		return ret;
 	}

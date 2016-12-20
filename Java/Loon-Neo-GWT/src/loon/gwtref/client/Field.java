@@ -41,9 +41,11 @@ public class Field {
 	final CachedTypeLookup[] elementTypes;
 	final Annotation[] annotations;
 
-	Field (String name, Class enclosingType, Class type, boolean isFinal, boolean isDefaultAccess, boolean isPrivate,
-		boolean isProtected, boolean isPublic, boolean isStatic, boolean isTransient, boolean isVolatile, int getter, int setter,
-		Class[] elementTypes, Annotation[] annotations) {
+	Field(String name, Class enclosingType, Class type, boolean isFinal,
+			boolean isDefaultAccess, boolean isPrivate, boolean isProtected,
+			boolean isPublic, boolean isStatic, boolean isTransient,
+			boolean isVolatile, int getter, int setter, Class[] elementTypes,
+			Annotation[] annotations) {
 		this.name = name;
 		this.enclosingType = new CachedTypeLookup(enclosingType);
 		this.type = new CachedTypeLookup(type);
@@ -67,80 +69,86 @@ public class Field {
 		}
 		this.elementTypes = tmp;
 
-		this.annotations = annotations != null ? annotations : new Annotation[] {};
+		this.annotations = annotations != null ? annotations
+				: new Annotation[] {};
 	}
 
-	public Object get (Object obj) throws IllegalAccessException {
+	public Object get(Object obj) throws IllegalAccessException {
 		return ReflectionCache.getFieldValue(this, obj);
 	}
 
-	public void set (Object obj, Object value) throws IllegalAccessException {
+	public void set(Object obj, Object value) throws IllegalAccessException {
 		ReflectionCache.setFieldValue(this, obj, value);
 	}
 
-	public Type getElementType (int index) {
-		if (elementTypes != null && index >= 0 && index < elementTypes.length) return elementTypes[index].getType();
+	public Type getElementType(int index) {
+		if (elementTypes != null && index >= 0 && index < elementTypes.length)
+			return elementTypes[index].getType();
 		return null;
 	}
 
-	public String getName () {
+	public String getName() {
 		return name;
 	}
 
-	public Type getEnclosingType () {
+	public Type getEnclosingType() {
 		return enclosingType.getType();
 	}
 
-	public Type getType () {
+	public Type getType() {
 		return type.getType();
 	}
 
-	public boolean isSynthetic () {
+	public boolean isSynthetic() {
 		return false;
 	}
 
-	public boolean isFinal () {
+	public boolean isFinal() {
 		return isFinal;
 	}
 
-	public boolean isDefaultAccess () {
+	public boolean isDefaultAccess() {
 		return isDefaultAccess;
 	}
 
-	public boolean isPrivate () {
+	public boolean isPrivate() {
 		return isPrivate;
 	}
 
-	public boolean isProtected () {
+	public boolean isProtected() {
 		return isProtected;
 	}
 
-	public boolean isPublic () {
+	public boolean isPublic() {
 		return isPublic;
 	}
 
-	public boolean isStatic () {
+	public boolean isStatic() {
 		return isStatic;
 	}
 
-	public boolean isTransient () {
+	public boolean isTransient() {
 		return isTransient;
 	}
 
-	public boolean isVolatile () {
+	public boolean isVolatile() {
 		return isVolatile;
 	}
 
-	public Annotation[] getDeclaredAnnotations () {
+	public Annotation[] getDeclaredAnnotations() {
 		return annotations;
 	}
 
 	@Override
-	public String toString () {
-		return "Field [name=" + name + ", enclosingType=" + enclosingType + ", type=" + type + ", isFinal=" + isFinal
-			+ ", isDefaultAccess=" + isDefaultAccess + ", isPrivate=" + isPrivate + ", isProtected=" + isProtected + ", isPublic="
-			+ isPublic + ", isStatic=" + isStatic + ", isTransient=" + isTransient + ", isVolatile=" + isVolatile + ", getter="
-			+ getter + ", setter=" + setter + ", elementTypes=" + Arrays.toString(elementTypes) + ", annotations="
-			+ Arrays.toString(annotations) + "]";
+	public String toString() {
+		return "Field [name=" + name + ", enclosingType=" + enclosingType
+				+ ", type=" + type + ", isFinal=" + isFinal
+				+ ", isDefaultAccess=" + isDefaultAccess + ", isPrivate="
+				+ isPrivate + ", isProtected=" + isProtected + ", isPublic="
+				+ isPublic + ", isStatic=" + isStatic + ", isTransient="
+				+ isTransient + ", isVolatile=" + isVolatile + ", getter="
+				+ getter + ", setter=" + setter + ", elementTypes="
+				+ Arrays.toString(elementTypes) + ", annotations="
+				+ Arrays.toString(annotations) + "]";
 	}
 }

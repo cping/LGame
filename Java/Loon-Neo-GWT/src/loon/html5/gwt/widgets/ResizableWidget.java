@@ -25,9 +25,9 @@ import com.google.gwt.user.client.Element;
 @SuppressWarnings("deprecation")
 public interface ResizableWidget {
 
-	Element getElement ();
+	Element getElement();
 
-	boolean isAttached ();
+	boolean isAttached();
 
-	void onResize (int width, int height);
+	void onResize(int width, int height);
 }

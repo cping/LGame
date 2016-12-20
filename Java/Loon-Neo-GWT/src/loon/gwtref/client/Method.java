@@ -44,9 +44,12 @@ public class Method {
 	final int methodId;
 	final Annotation[] annotations;
 
-	public Method (String name, Class enclosingType,Class returnType, Parameter[] parameters, boolean isAbstract,
-		boolean isFinal, boolean isStatic, boolean isDefaultAccess, boolean isPrivate, boolean isProtected, boolean isPublic,
-		boolean isNative, boolean isVarArgs, boolean isMethod, boolean isConstructor, int methodId, Annotation[] annotations) {
+	public Method(String name, Class enclosingType, Class returnType,
+			Parameter[] parameters, boolean isAbstract, boolean isFinal,
+			boolean isStatic, boolean isDefaultAccess, boolean isPrivate,
+			boolean isProtected, boolean isPublic, boolean isNative,
+			boolean isVarArgs, boolean isMethod, boolean isConstructor,
+			int methodId, Annotation[] annotations) {
 		this.name = name;
 		this.enclosingType = new CachedTypeLookup(enclosingType);
 		this.parameters = parameters != null ? parameters : EMPTY_PARAMS;
@@ -67,105 +70,119 @@ public class Method {
 	}
 
 	/** @return the {@link Class} of the enclosing type. */
-	public Class getEnclosingType () {
+	public Class getEnclosingType() {
 		return enclosingType.getClass();
 	}
 
 	/** @return the {@link Class} of the return type or null. */
-	public Class getReturnType () {
+	public Class getReturnType() {
 		return returnType.getClass();
 	}
 
 	/** @return the list of parameters, can be a zero size array. */
-	public Parameter[] getParameters () {
+	public Parameter[] getParameters() {
 		return parameters;
 	}
 
 	/** @return the name of the method. */
-	public String getName () {
+	public String getName() {
 		return name;
 	}
 
-	public boolean isAbstract () {
+	public boolean isAbstract() {
 		return isAbstract;
 	}
 
-	public boolean isFinal () {
+	public boolean isFinal() {
 		return isFinal;
 	}
 
-	public boolean isDefaultAccess () {
+	public boolean isDefaultAccess() {
 		return isDefaultAccess;
 	}
 
-	public boolean isPrivate () {
+	public boolean isPrivate() {
 		return isPrivate;
 	}
 
-	public boolean isProtected () {
+	public boolean isProtected() {
 		return isProtected;
 	}
 
-	public boolean isPublic () {
+	public boolean isPublic() {
 		return isPublic;
 	}
 
-	public boolean isNative () {
+	public boolean isNative() {
 		return isNative;
 	}
 
-	public boolean isVarArgs () {
+	public boolean isVarArgs() {
 		return isVarArgs;
 	}
 
-	public boolean isStatic () {
+	public boolean isStatic() {
 		return isStatic;
 	}
 
-	public boolean isMethod () {
+	public boolean isMethod() {
 		return isMethod;
 	}
 
-	public boolean isConstructor () {
+	public boolean isConstructor() {
 		return isConstructor;
 	}
 
-	public Annotation[] getDeclaredAnnotations () {
+	public Annotation[] getDeclaredAnnotations() {
 		return annotations;
 	}
 
-	/** Invokes the method on the given object. Ignores the object if this is a static method. Throws an IllegalArgumentException if
-	 * the parameters do not match.
-	 * @param obj the object to invoke the method on or null.
-	 * @param params the parameters to pass to the method or null.
-	 * @return the return value or null if the method does not return anything. */
-	public Object invoke (Object obj, Object... params) {
-		if (parameters.length != (params != null ? params.length : 0)) throw new IllegalArgumentException("Parameter mismatch");
+	/**
+	 * Invokes the method on the given object. Ignores the object if this is a
+	 * static method. Throws an IllegalArgumentException if the parameters do
+	 * not match.
+	 * 
+	 * @param obj
+	 *            the object to invoke the method on or null.
+	 * @param params
+	 *            the parameters to pass to the method or null.
+	 * @return the return value or null if the method does not return anything.
+	 */
+	public Object invoke(Object obj, Object... params) {
+		if (parameters.length != (params != null ? params.length : 0))
+			throw new IllegalArgumentException("Parameter mismatch");
 
 		return ReflectionCache.invoke(this, obj, params);
 	}
 
-	boolean match (String name, Class... types) {
+	boolean match(String name, Class... types) {
 		return this.name.equals(name) && match(types);
 	}
 
-	boolean match (Class... types) {
-		if (types == null) return parameters.length == 0;
-		if (types.length != parameters.length) return false;
+	boolean match(Class... types) {
+		if (types == null)
+			return parameters.length == 0;
+		if (types.length != parameters.length)
+			return false;
 		for (int i = 0; i < types.length; i++) {
 			Type t1 = parameters[i].getType();
 			Type t2 = ReflectionCache.getType(types[i]);
-			if (t1 != t2 && !t1.isAssignableFrom(t2)) return false;
+			if (t1 != t2 && !t1.isAssignableFrom(t2))
+				return false;
 		}
 		return true;
 	}
 
 	@Override
-	public String toString () {
-		return "Method [name=" + name + ", enclosingType=" + enclosingType + ", returnType=" + returnType + ", isAbstract="
-			+ isAbstract + ", isFinal=" + isFinal + ", isStatic=" + isStatic + ", isNative=" + isNative + ", isDefaultAccess="
-			+ isDefaultAccess + ", isPrivate=" + isPrivate + ", isProtected=" + isProtected + ", isPublic=" + isPublic
-			+ ", isVarArgs=" + isVarArgs + ", isMethod=" + isMethod + ", isConstructor=" + isConstructor + ", parameters="
-			+ Arrays.toString(parameters) + "]";
+	public String toString() {
+		return "Method [name=" + name + ", enclosingType=" + enclosingType
+				+ ", returnType=" + returnType + ", isAbstract=" + isAbstract
+				+ ", isFinal=" + isFinal + ", isStatic=" + isStatic
+				+ ", isNative=" + isNative + ", isDefaultAccess="
+				+ isDefaultAccess + ", isPrivate=" + isPrivate
+				+ ", isProtected=" + isProtected + ", isPublic=" + isPublic
+				+ ", isVarArgs=" + isVarArgs + ", isMethod=" + isMethod
+				+ ", isConstructor=" + isConstructor + ", parameters="
+				+ Arrays.toString(parameters) + "]";
 	}
 }

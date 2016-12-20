@@ -15,10 +15,6 @@ import loon.html5.gwt.GWTProgressDef;
 import loon.html5.gwt.Loon;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
-import loon.stage.ImagePlayer;
-import loon.stage.Player;
-import loon.stage.Stage;
-import loon.stage.StageSystem;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
 
@@ -26,51 +22,17 @@ public class TestLoon extends Loon {
 
 	public static class ScreenTest extends Screen implements EmulatorListener {
 
-		public Stage newStage1() {
-
-			Stage stage = new Stage() {
-
-				@Override
-				public void onAdded() {
-
-					addPlayer(new ImagePlayer("back1.png"));
-
-					Player player = createTextPlayer(LFont.getFont(30),
-							"ABCDE");
-					player.setLocation(55,155);
-					addPlayer(player);
-				}
-
-				@Override
-				public void onRemoved() {
-
-				}
-
-				@Override
-				public void onShowTransitionCompleted() {
-remove(this);
-				}
-
-				@Override
-				public void onHideTransitionStarted() {
-
-				}
-			};
-
-			return stage;
-		}
 
 		// LTexture texture = loadTexture("loon_wbar.png");
 
 		public void onLoad() {
 
-			puspStage(newStage1());
 
 		}
 
 		@Override
 		public void draw(GLEx g) {
-	
+
 			/*
 			 * if (text2 == null) { // Image image
 			 * =Image.createImage("loon_wbar.png");
@@ -92,7 +54,7 @@ remove(this);
 			// batch.end();
 			// g.draw(text2,66,66,100,100,270);
 			// g.translate(200, 200);
-			// g.drawString("中国人民", 66, 66);
+			// g.drawString("中国万岁，人民万岁", 66, 66);
 			// g.translate(-200, -200);
 
 			/*
@@ -155,7 +117,7 @@ remove(this);
 
 		@Override
 		public void touchDown(GameTouch e) {
-			
+
 		}
 
 		@Override
@@ -199,100 +161,101 @@ remove(this);
 		@Override
 		public void onUpClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onLeftClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onRightClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onDownClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onTriangleClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onSquareClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onCircleClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onCancelClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unUpClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unLeftClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unRightClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unDownClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unTriangleClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unSquareClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unCircleClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unCancelClick() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 	}
+
 	@Override
 	public void onMain() {
 
@@ -309,14 +272,14 @@ remove(this);
 		setting.isFPS = true;
 		setting.fontName = "黑体";
 		setting.rootId = "embed-loon.test.TestLoon";
-		//按屏幕缩放比例缩放
-		//setting.useRatioScaleFactor = true;
-		//当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
-		setting.jsloadRes = false;
+		// 按屏幕缩放比例缩放
+		// setting.useRatioScaleFactor = true;
+		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
+		setting.jsloadRes = true;
 
-		//设置一个需要的初始化进度条样式（不填则默认）
-	//	setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);
-		
+		// 设置一个需要的初始化进度条样式（不填则默认）
+		// setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);
+
 		register(setting, new Data() {
 
 			@Override

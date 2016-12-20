@@ -17,6 +17,6 @@ package com.google.gwt.webgl.client;
 
 public class WebGLBuffer extends WebGLObject {
 
-  protected WebGLBuffer() {
-  }
+	protected WebGLBuffer() {
+	}
 }

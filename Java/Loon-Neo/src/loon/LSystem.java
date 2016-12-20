@@ -193,6 +193,10 @@ public class LSystem {
 	public static boolean isMobile() {
 		return LSystem._USE_MOBILE;
 	}
+	
+	public static boolean isDesktop(){
+		return !_USE_MOBILE&&!_USE_HTML5;
+	}
 
 	public static float getScaleWidth() {
 		return LSystem.scaleWidth;

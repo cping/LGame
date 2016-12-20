@@ -30,12 +30,14 @@ public class ProgressBar extends Widget implements ResizableWidget {
 	private static final String DEFAULT_TEXT_CLASS_NAME = "gwt-ProgressBar-text";
 
 	private String textClassName = DEFAULT_TEXT_CLASS_NAME;
-	private String textFirstHalfClassName = DEFAULT_TEXT_CLASS_NAME + "-firstHalf";
-	private String textSecondHalfClassName = DEFAULT_TEXT_CLASS_NAME + "-secondHalf";
+	private String textFirstHalfClassName = DEFAULT_TEXT_CLASS_NAME
+			+ "-firstHalf";
+	private String textSecondHalfClassName = DEFAULT_TEXT_CLASS_NAME
+			+ "-secondHalf";
 
 	public abstract static class TextFormatter {
-	
-		protected abstract String getText (ProgressBar bar, double curProgress);
+
+		protected abstract String getText(ProgressBar bar, double curProgress);
 	}
 
 	private Element barElement;
@@ -52,23 +54,25 @@ public class ProgressBar extends Widget implements ResizableWidget {
 
 	private TextFormatter textFormatter;
 
-	public ProgressBar () {
+	public ProgressBar() {
 		this(0.0, 100.0, 0.0);
 	}
 
-	public ProgressBar (double curProgress) {
+	public ProgressBar(double curProgress) {
 		this(0.0, 100.0, curProgress);
 	}
 
-	public ProgressBar (double minProgress, double maxProgress) {
+	public ProgressBar(double minProgress, double maxProgress) {
 		this(minProgress, maxProgress, 0.0);
 	}
 
-	public ProgressBar (double minProgress, double maxProgress, double curProgress) {
+	public ProgressBar(double minProgress, double maxProgress,
+			double curProgress) {
 		this(minProgress, maxProgress, curProgress, null);
 	}
 
-	public ProgressBar (double minProgress, double maxProgress, double curProgress, TextFormatter textFormatter) {
+	public ProgressBar(double minProgress, double maxProgress,
+			double curProgress, TextFormatter textFormatter) {
 		this.minProgress = minProgress;
 		this.maxProgress = maxProgress;
 		this.curProgress = curProgress;
@@ -91,95 +95,100 @@ public class ProgressBar extends Widget implements ResizableWidget {
 		setProgress(curProgress);
 	}
 
-	public double getMaxProgress () {
+	public double getMaxProgress() {
 		return maxProgress;
 	}
 
-	public double getMinProgress () {
+	public double getMinProgress() {
 		return minProgress;
 	}
 
-	public double getPercent () {
+	public double getPercent() {
 		if (maxProgress <= minProgress) {
 			return 0.0;
 		}
-		double percent = (curProgress - minProgress) / (maxProgress - minProgress);
+		double percent = (curProgress - minProgress)
+				/ (maxProgress - minProgress);
 		return Math.max(0.0, Math.min(1.0, percent));
 	}
 
-	public double getProgress () {
+	public double getProgress() {
 		return curProgress;
 	}
 
-	public TextFormatter getTextFormatter () {
+	public TextFormatter getTextFormatter() {
 		return textFormatter;
 	}
 
-	public boolean isTextVisible () {
+	public boolean isTextVisible() {
 		return textVisible;
 	}
 
-	public void onResize (int width, int height) {
+	public void onResize(int width, int height) {
 		if (textVisible) {
-			int textWidth = DOM.getElementPropertyInt(textElement, "offsetWidth");
+			int textWidth = DOM.getElementPropertyInt(textElement,
+					"offsetWidth");
 			int left = (width / 2) - (textWidth / 2);
 			DOM.setStyleAttribute(textElement, "left", left + "px");
 		}
 	}
 
-	public void redraw () {
+	public void redraw() {
 		if (isAttached()) {
 			int width = DOM.getElementPropertyInt(getElement(), "clientWidth");
-			int height = DOM.getElementPropertyInt(getElement(), "clientHeight");
+			int height = DOM
+					.getElementPropertyInt(getElement(), "clientHeight");
 			onResize(width, height);
 		}
 	}
 
-	public void setBarStyleName (String barClassName) {
+	public void setBarStyleName(String barClassName) {
 		DOM.setElementProperty(barElement, "className", barClassName);
 	}
 
-	public void setMaxProgress (double maxProgress) {
+	public void setMaxProgress(double maxProgress) {
 		this.maxProgress = maxProgress;
 		curProgress = Math.min(curProgress, maxProgress);
 		resetProgress();
 	}
 
-	public void setMinProgress (double minProgress) {
+	public void setMinProgress(double minProgress) {
 		this.minProgress = minProgress;
 		curProgress = Math.max(curProgress, minProgress);
 		resetProgress();
 	}
 
-	public void setProgress (double curProgress) {
-		this.curProgress = Math.max(minProgress, Math.min(maxProgress, curProgress));
-		int percent = (int)(100 * getPercent());
+	public void setProgress(double curProgress) {
+		this.curProgress = Math.max(minProgress,
+				Math.min(maxProgress, curProgress));
+		int percent = (int) (100 * getPercent());
 		DOM.setStyleAttribute(barElement, "width", percent + "%");
-		DOM.setElementProperty(textElement, "innerHTML", generateText(curProgress));
+		DOM.setElementProperty(textElement, "innerHTML",
+				generateText(curProgress));
 		updateTextStyle(percent);
 		redraw();
 	}
 
-	public void setTextFirstHalfStyleName (String textFirstHalfClassName) {
+	public void setTextFirstHalfStyleName(String textFirstHalfClassName) {
 		this.textFirstHalfClassName = textFirstHalfClassName;
 		onTextStyleChange();
 	}
 
-	public void setTextFormatter (TextFormatter textFormatter) {
+	public void setTextFormatter(TextFormatter textFormatter) {
 		this.textFormatter = textFormatter;
 	}
 
-	public void setTextSecondHalfStyleName (String textSecondHalfClassName) {
+	public void setTextSecondHalfStyleName(String textSecondHalfClassName) {
 		this.textSecondHalfClassName = textSecondHalfClassName;
 		onTextStyleChange();
 	}
 
-	public void setTextStyleName (String textClassName) {
+	public void setTextStyleName(String textClassName) {
 		this.textClassName = textClassName;
 		onTextStyleChange();
 	}
 
-	public void setTextVisible (boolean textVisible) {
+	public void setTextVisible(boolean textVisible) {
 		this.textVisible = textVisible;
 		if (this.textVisible) {
 			DOM.setStyleAttribute(textElement, "display", "");
@@ -189,48 +198,50 @@ public class ProgressBar extends Widget implements ResizableWidget {
 		}
 	}
 
-	protected String generateText (double curProgress) {
+	protected String generateText(double curProgress) {
 		if (textFormatter != null) {
 			return textFormatter.getText(this, curProgress);
 		} else {
-			return (int)(100 * getPercent()) + "%";
+			return (int) (100 * getPercent()) + "%";
 		}
 	}
 
-	protected Element getBarElement () {
+	protected Element getBarElement() {
 		return barElement;
 	}
 
-	protected Element getTextElement () {
+	protected Element getTextElement() {
 		return textElement;
 	}
 
 	@Override
-	protected void onLoad () {
+	protected void onLoad() {
 		DOM.setStyleAttribute(getElement(), "position", "relative");
 		ResizableWidgetCollection.get().add(this);
 		redraw();
 	}
 
 	@Override
-	protected void onUnload () {
+	protected void onUnload() {
 		ResizableWidgetCollection.get().remove(this);
 	}
 
-	protected void resetProgress () {
+	protected void resetProgress() {
 		setProgress(getProgress());
 	}
 
-	private void onTextStyleChange () {
-		int percent = (int)(100 * getPercent());
+	private void onTextStyleChange() {
+		int percent = (int) (100 * getPercent());
 		updateTextStyle(percent);
 	}
 
-	private void updateTextStyle (int percent) {
+	private void updateTextStyle(int percent) {
 		if (percent < 50) {
-			DOM.setElementProperty(textElement, "className", textClassName + " " + textFirstHalfClassName);
+			DOM.setElementProperty(textElement, "className", textClassName
+					+ " " + textFirstHalfClassName);
 		} else {
-			DOM.setElementProperty(textElement, "className", textClassName + " " + textSecondHalfClassName);
+			DOM.setElementProperty(textElement, "className", textClassName
+					+ " " + textSecondHalfClassName);
 		}
 	}
 }

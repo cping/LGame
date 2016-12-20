@@ -3,6 +3,7 @@ package loon.test;
 import loon.LSystem;
 import loon.LTransition;
 import loon.Screen;
+import loon.action.sprite.AnimationData;
 import loon.canvas.LColor;
 import loon.component.LButton;
 import loon.component.LPaper;
@@ -19,13 +20,13 @@ public class TitleScreen extends Screen {
 	LButton start, end;
 
 	LPaper title;
-	
+
 	public TitleScreen() {
 
 	}
 
 	public void onLoad() {
-
+new AnimationData(new long[]{0,0});
 		setBackground("assets/back1.png");
 
 		start = new LButton("assets/title_start.png", 191, 57) {
@@ -92,7 +93,7 @@ public class TitleScreen extends Screen {
 	}
 
 	public void draw(GLEx g) {
-	
+
 	}
 
 	public void touchDown(GameTouch e) {

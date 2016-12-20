@@ -22,6 +22,7 @@ package loon.html5.gwt.preloader;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,23 +31,59 @@ import java.io.PrintWriter;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import loon.LSystem;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 import loon.utils.Base64Coder;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.ConfigurationProperty;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.dev.resource.Resource;
+import com.google.gwt.resources.client.ClientBundleWithLookup;
+import com.google.gwt.resources.client.DataResource;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ResourcePrototype;
+import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
 public class PreloaderBundleGenerator extends Generator {
+
+	private static final Map<String, String> EXTENSION_MAP = new HashMap<String, String>();
+
+	static {
+		EXTENSION_MAP.put(".png", "image/png");
+		EXTENSION_MAP.put(".gif", "image/gif");
+		EXTENSION_MAP.put(".jpg", "image/jpeg");
+		EXTENSION_MAP.put(".mp3", "audio/mp3");
+		EXTENSION_MAP.put(".json", "text/json");
+	}
+
+	private static FileFilter fileFilter = new FileFilter() {
+		@Override
+		public boolean accept(File file) {
+			if (file.isDirectory()) {
+				if (file.getName().equals(".svn")
+						|| file.getName().equals(".tmp")) {
+					return false;
+				}
+				return true;
+			} else {
+				String extension = LSystem.getExtension(file.getName());
+				return EXTENSION_MAP.containsKey(extension);
+			}
+		}
+	};
 
 	static class Var {
 		String name;
@@ -56,9 +93,9 @@ public class PreloaderBundleGenerator extends Generator {
 	@Override
 	public String generate(TreeLogger logger, GeneratorContext context,
 			String typeName) throws UnableToCompleteException {
-		System.out.println("location : " + new File(".").getAbsolutePath());
+		info(logger, "location : " + new File(".").getAbsolutePath());
 		String assetPath = getAssetPath(context);
-		System.out.println("set assets path : " + assetPath);
+		info(logger, "set assets path : " + assetPath);
 		String assetOutputPath = getAssetOutputPath(context);
 		if (assetOutputPath == null) {
 			assetOutputPath = "war/";
@@ -112,11 +149,11 @@ public class PreloaderBundleGenerator extends Generator {
 							+ assetPath
 							+ "' is not a directory. Check your loon.assetpath property in your GWT project's module gwt.xml file");
 		}
-		System.out.println("Copying resources from " + assetPath + " to "
+		info(logger, "Copying resources from " + assetPath + " to "
 				+ assetOutputPath);
-		System.out.println(source.file.getAbsolutePath());
+		info(logger, source.file.getAbsolutePath());
 		ResourcesWrapper target = new ResourcesWrapper("assets/");
-		System.out.println(target.file.getAbsolutePath());
+		info(logger, target.file.getAbsolutePath());
 		if (!target.file.getAbsolutePath().replace("\\", "/")
 				.endsWith(assetOutputPath + "assets")) {
 			target = new ResourcesWrapper(assetOutputPath + "assets/");
@@ -155,7 +192,7 @@ public class PreloaderBundleGenerator extends Generator {
 			ArrayList<String> list = listFile(source.file());
 			for (String fileName : list) {
 				ResourcesWrapper fileRes = new ResourcesWrapper(fileName);
-				System.out.println("<<" + fileRes.path() + ">>");
+				info(logger, "<<" + fileRes.path() + ">>");
 				String extension = fileRes.extension().toLowerCase();
 				if (LSystem.isText(extension)) {
 					String path = getPath(fileRes.path());
@@ -236,14 +273,14 @@ public class PreloaderBundleGenerator extends Generator {
 					+ "/resources.js");
 			res.writeString(dcode.toString(), false, LSystem.ENCODING);
 
-			return createDummyClass(logger, context);
+			return createDummyClass(logger, context, typeName);
 		}
 
 		copyDirectory(source, target, assetFilter, assets);
 
 		List<String> classpathFiles = getClasspathFiles(context);
 		for (String classpathFile : classpathFiles) {
-			System.out.println(classpathFile);
+			info(logger, classpathFile);
 			if (assetFilter.accept(classpathFile, false)) {
 				try {
 					InputStream is = context.getClass().getClassLoader()
@@ -302,7 +339,7 @@ public class PreloaderBundleGenerator extends Generator {
 			target.child(bundle.getKey() + ".txt").writeString(
 					buffer.toString(), false);
 		}
-		return createDummyClass(logger, context);
+		return createDummyClass(logger, context, typeName);
 	}
 
 	private static ArrayList<String> listFile(File file) {
@@ -488,21 +525,142 @@ public class PreloaderBundleGenerator extends Generator {
 		return classpathFiles;
 	}
 
-	private String createDummyClass(TreeLogger logger, GeneratorContext context) {
+	private String createDummyClass(TreeLogger logger,
+			GeneratorContext context, String typeName) {
 		String packageName = "loon.html5.gwt.preloader";
 		String className = "PreloaderBundleImpl";
-		ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(
-				packageName, className);
-		composer.addImplementedInterface(packageName + ".PreloaderBundle");
 		PrintWriter printWriter = context.tryCreate(logger, packageName,
 				className);
 		if (printWriter == null) {
 			return packageName + "." + className;
 		}
+		ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(
+				packageName, className);
+		composer.addImplementedInterface(packageName + ".PreloaderBundle");
+		composer.addImport(ClientBundleWithLookup.class.getName());
+		composer.addImport(DataResource.class.getName());
+		composer.addImport(GWT.class.getName());
+		composer.addImport(ImageResource.class.getName());
+		composer.addImport(ResourcePrototype.class.getName());
+		composer.addImport(TextResource.class.getName());
+		Set<Resource> resources = preferMp3(getResources(context, packageName,
+				fileFilter));
+		Set<String> methodNames = new HashSet<String>();
 		SourceWriter sourceWriter = composer.createSourceWriter(context,
 				printWriter);
+		sourceWriter.println("public ResourcePrototype[] getResources() {");
+		sourceWriter.indent();
+		sourceWriter.println("return SiteBundle.INSTANCE.getResources();");
+		sourceWriter.outdent();
+		sourceWriter.println("}");
+		sourceWriter
+				.println("public ResourcePrototype getResource(String name) {");
+		sourceWriter.indent();
+		sourceWriter.println("return SiteBundle.INSTANCE.getResource(name);");
+		sourceWriter.outdent();
+		sourceWriter.println("}");
+		sourceWriter
+				.println("static interface SiteBundle extends ClientBundleWithLookup {");
+		sourceWriter.indent();
+		sourceWriter
+				.println("SiteBundle INSTANCE = GWT.create(SiteBundle.class);");
+		for (Resource resource : resources) {
+			String relativePath = resource.getPath();
+			String filename = resource.getPath().substring(
+					resource.getPath().lastIndexOf('/') + 1);
+			String contentType = getContentType(logger, resource);
+			String methodName = stripExtension(filename);
+			if (!isValidMethodName(methodName)) {
+				logger.log(TreeLogger.WARN, "Skipping invalid method name ("
+						+ methodName + ") due to: " + relativePath);
+				continue;
+			}
+			if (!methodNames.add(methodName)) {
+				logger.log(TreeLogger.WARN,
+						"Skipping duplicate method name due to: "
+								+ relativePath);
+				continue;
+			}
+			logger.log(TreeLogger.DEBUG, "Generating method for: "
+					+ relativePath);
+			Class<? extends ResourcePrototype> returnType = getResourcePrototype(contentType);
+			sourceWriter.println();
+			if (returnType == DataResource.class) {
+				if (contentType.startsWith("audio/")) {
+					sourceWriter.println("@DataResource.DoNotEmbed");
+				} else {
+					sourceWriter.println("@DataResource.MimeType(\""
+							+ contentType + "\")");
+				}
+			}
+
+			sourceWriter.println("@Source(\"" + relativePath + "\")");
+
+			sourceWriter.println(returnType.getName() + " " + methodName
+					+ "();");
+		}
+
+		sourceWriter.outdent();
+		sourceWriter.println("}");
+
 		sourceWriter.commit(logger);
+
 		return packageName + "." + className;
+	}
+
+	private HashSet<Resource> preferMp3(HashSet<Resource> files) {
+		HashMap<String, Resource> map = new HashMap<String, Resource>();
+		for (Resource file : files) {
+			String path = stripExtension(file.getPath());
+			if (file.getPath().endsWith(".mp3") || !map.containsKey(path)) {
+				map.put(path, file);
+			}
+		}
+		return new HashSet<Resource>(map.values());
+	}
+
+	private static boolean isValidMethodName(String methodName) {
+		return methodName.matches("^[a-zA-Z_$][a-zA-Z0-9_$]*$");
+	}
+
+	private static String stripExtension(String filename) {
+		return filename.replaceFirst("\\.[^.]+$", "");
+	}
+
+	private HashSet<Resource> getResources(GeneratorContext context,
+			String packName, FileFilter filter) {
+		final String pack = packName.replace('.', '/');
+		HashSet<Resource> resourceList = new HashSet<Resource>();
+		for (String path : context.getResourcesOracle().getPathNames()) {
+			System.out.println("CCCCCCCC:"+path);
+			if (!path.startsWith(pack)) {
+				continue;
+			}
+			String ext = LSystem.getExtension(path);
+			if (EXTENSION_MAP.containsKey(ext)) {
+				resourceList
+						.add(context.getResourcesOracle().getResource(path));
+			}
+		}
+
+		return resourceList;
+	}
+
+	private Class<? extends ResourcePrototype> getResourcePrototype(
+			String contentType) {
+		Class<? extends ResourcePrototype> returnType;
+		if (contentType.startsWith("image/")) {
+			returnType = ImageResource.class;
+		} else if (contentType.startsWith("text/")) {
+			returnType = TextResource.class;
+		} else {
+			returnType = DataResource.class;
+		}
+		return returnType;
+	}
+
+	private void info(TreeLogger logger, String msg) {
+		logger.log(TreeLogger.INFO, msg);
 	}
 
 	private static String readCodeString(File file) throws Exception {
@@ -566,6 +724,22 @@ public class PreloaderBundleGenerator extends Generator {
 			path = LSystem.getFileName(fileName);
 		}
 		return path;
+	}
+
+	private static String getContentType(TreeLogger logger, Resource resource) {
+		String name = resource.getPath().toLowerCase();
+		int pos = name.lastIndexOf('.');
+		String extension = pos == -1 ? "" : name.substring(pos);
+		String contentType = EXTENSION_MAP.get(extension);
+		if (contentType == null) {
+			logger.log(TreeLogger.WARN,
+					"No Content Type mapping for files with '" + extension
+							+ "' extension. Please add a mapping to the "
+							+ PreloaderBundleGenerator.class.getCanonicalName()
+							+ " class.");
+			contentType = "application/octet-stream";
+		}
+		return contentType;
 	}
 
 	private static Var getVarText(String resName, String fileName) {

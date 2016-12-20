@@ -30,8 +30,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
-
-public class ResizableWidgetCollection implements ResizeHandler, Iterable<ResizableWidget> {
+public class ResizableWidgetCollection implements ResizeHandler,
+		Iterable<ResizableWidget> {
 
 	static class ResizableWidgetInfo {
 
@@ -41,34 +41,36 @@ public class ResizableWidgetCollection implements ResizeHandler, Iterable<Resiza
 		private int curClientHeight = 0;
 		private int curClientWidth = 0;
 
-		public ResizableWidgetInfo (ResizableWidget widget) {
+		public ResizableWidgetInfo(ResizableWidget widget) {
 			this.widget = widget;
 			updateSizes();
 		}
 
-		public int getClientHeight () {
+		public int getClientHeight() {
 			return curClientHeight;
 		}
 
-		public int getClientWidth () {
+		public int getClientWidth() {
 			return curClientWidth;
 		}
 
-		public int getOffsetHeight () {
+		public int getOffsetHeight() {
 			return curOffsetHeight;
 		}
 
-		public int getOffsetWidth () {
+		public int getOffsetWidth() {
 			return curOffsetWidth;
 		}
 
-		public boolean updateSizes () {
+		public boolean updateSizes() {
 			int offsetWidth = widget.getElement().getOffsetWidth();
 			int offsetHeight = widget.getElement().getOffsetHeight();
 			int clientWidth = widget.getElement().getClientWidth();
 			int clientHeight = widget.getElement().getClientHeight();
-			if (offsetWidth != curOffsetWidth || offsetHeight != curOffsetHeight || clientWidth != curClientWidth
-				|| clientHeight != curClientHeight) {
+			if (offsetWidth != curOffsetWidth
+					|| offsetHeight != curOffsetHeight
+					|| clientWidth != curClientWidth
+					|| clientHeight != curClientHeight) {
 				this.curOffsetWidth = offsetWidth;
 				this.curOffsetHeight = offsetHeight;
 				this.curClientWidth = clientWidth;
@@ -84,7 +86,7 @@ public class ResizableWidgetCollection implements ResizeHandler, Iterable<Resiza
 
 	private static ResizableWidgetCollection staticCollection = null;
 
-	public static ResizableWidgetCollection get () {
+	public static ResizableWidgetCollection get() {
 		if (staticCollection == null) {
 			staticCollection = new ResizableWidgetCollection();
 		}
@@ -93,8 +95,9 @@ public class ResizableWidgetCollection implements ResizeHandler, Iterable<Resiza
 
 	private Timer resizeCheckTimer = new Timer() {
 		@Override
-		public void run () {
-			if (windowHeight != Window.getClientHeight() || windowWidth != Window.getClientWidth()) {
+		public void run() {
+			if (windowHeight != Window.getClientHeight()
+					|| windowWidth != Window.getClientWidth()) {
 				windowHeight = Window.getClientHeight();
 				windowWidth = Window.getClientWidth();
 				schedule(resizeCheckDelay);
@@ -109,7 +112,6 @@ public class ResizableWidgetCollection implements ResizeHandler, Iterable<Resiza
 		}
 	};
 
-
 	private Map<ResizableWidget, ResizableWidgetInfo> widgets = new HashMap<ResizableWidget, ResizableWidgetInfo>();
 
 	int windowHeight = 0;
@@ -122,60 +124,64 @@ public class ResizableWidgetCollection implements ResizeHandler, Iterable<Resiza
 
 	boolean resizeCheckingEnabled;
 
-	public ResizableWidgetCollection () {
+	public ResizableWidgetCollection() {
 		this(DEFAULT_RESIZE_CHECK_DELAY);
 	}
 
-	public ResizableWidgetCollection (boolean resizeCheckingEnabled) {
+	public ResizableWidgetCollection(boolean resizeCheckingEnabled) {
 		this(DEFAULT_RESIZE_CHECK_DELAY, resizeCheckingEnabled);
 	}
 
-	public ResizableWidgetCollection (int resizeCheckDelay) {
+	public ResizableWidgetCollection(int resizeCheckDelay) {
 		this(resizeCheckDelay, true);
 	}
 
-	protected ResizableWidgetCollection (int resizeCheckDelay, boolean resizeCheckingEnabled) {
+	protected ResizableWidgetCollection(int resizeCheckDelay,
+			boolean resizeCheckingEnabled) {
 		setResizeCheckDelay(resizeCheckDelay);
 		setResizeCheckingEnabled(resizeCheckingEnabled);
 	}
 
-	public void add (ResizableWidget widget) {
+	public void add(ResizableWidget widget) {
 		widgets.put(widget, new ResizableWidgetInfo(widget));
 	}
 
-	public void checkWidgetSize () {
-		for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets.entrySet()) {
+	public void checkWidgetSize() {
+		for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets
+				.entrySet()) {
 			ResizableWidget widget = entry.getKey();
 			ResizableWidgetInfo info = entry.getValue();
 			if (info.updateSizes()) {
-				if (info.getOffsetWidth() > 0 && info.getOffsetHeight() > 0 && widget.isAttached()) {
-					widget.onResize(info.getOffsetWidth(), info.getOffsetHeight());
+				if (info.getOffsetWidth() > 0 && info.getOffsetHeight() > 0
+						&& widget.isAttached()) {
+					widget.onResize(info.getOffsetWidth(),
+							info.getOffsetHeight());
 				}
 			}
 		}
 	}
 
-	public int getResizeCheckDelay () {
+	public int getResizeCheckDelay() {
 		return resizeCheckDelay;
 	}
 
-	public boolean isResizeCheckingEnabled () {
+	public boolean isResizeCheckingEnabled() {
 		return resizeCheckingEnabled;
 	}
 
-	public Iterator<ResizableWidget> iterator () {
+	public Iterator<ResizableWidget> iterator() {
 		return widgets.keySet().iterator();
 	}
 
-	public void remove (ResizableWidget widget) {
+	public void remove(ResizableWidget widget) {
 		widgets.remove(widget);
 	}
 
-	public void setResizeCheckDelay (int resizeCheckDelay) {
+	public void setResizeCheckDelay(int resizeCheckDelay) {
 		this.resizeCheckDelay = resizeCheckDelay;
 	}
 
-	public void setResizeCheckingEnabled (boolean enabled) {
+	public void setResizeCheckingEnabled(boolean enabled) {
 		if (enabled && !resizeCheckingEnabled) {
 			resizeCheckingEnabled = true;
 			if (windowHandler == null) {
@@ -192,7 +198,7 @@ public class ResizableWidgetCollection implements ResizeHandler, Iterable<Resiza
 		}
 	}
 
-	public void updateWidgetSize (ResizableWidget widget) {
+	public void updateWidgetSize(ResizableWidget widget) {
 		if (!widget.isAttached()) {
 			return;
 		}
@@ -204,7 +210,7 @@ public class ResizableWidgetCollection implements ResizeHandler, Iterable<Resiza
 	}
 
 	@Override
-	public void onResize (ResizeEvent event) {
+	public void onResize(ResizeEvent event) {
 		checkWidgetSize();
 	}
 

@@ -21,20 +21,20 @@ package com.google.gwt.webgl.client;
  */
 public class WebGLActiveInfo extends WebGLObject {
 
-  protected WebGLActiveInfo() {
-  }
+	protected WebGLActiveInfo() {
+	}
 
 	/** Gets the size of the requested variable. */
 	public final native int getSize() /*-{
-		return this.size;
-	}-*/;
+										return this.size;
+										}-*/;
 
 	/** Gets the name of the requested variable. */
 	public final native String getName() /*-{
-		return this.name;
-	}-*/;
+											return this.name;
+											}-*/;
 
 	public final native int getType() /*-{
-		return this.type;
-	}-*/;
+										return this.type;
+										}-*/;
 }

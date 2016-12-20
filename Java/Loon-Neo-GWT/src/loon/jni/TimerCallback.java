@@ -22,5 +22,5 @@ package loon.jni;
 
 public interface TimerCallback {
 
-	  void fire();
+	void fire();
 }

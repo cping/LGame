@@ -21,8 +21,8 @@
 package loon.html5.gwt.preloader;
 
 public interface LoaderCallback<T> {
-	
-	public void success (T result);
 
-	public void error ();
+	public void success(T result);
+
+	public void error();
 }

@@ -187,7 +187,7 @@ public class LClickButton extends LComponent {
 					x + getOffsetLeft() + (getWidth() - font.stringWidth(text))
 							/ 2,
 					(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2)
-							- (LSystem.isMobile() ? 0 : 5), fontColor);
+							- (LSystem.isDesktop() ? 5 : 0), fontColor);
 		}
 	}
 

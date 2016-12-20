@@ -26,15 +26,15 @@ public interface AssetFilter {
 
 		public final String code;
 
-		private AssetType (String code) {
+		private AssetType(String code) {
 			this.code = code;
 		}
 	}
 
-	public boolean accept (String file, boolean isDirectory);
+	public boolean accept(String file, boolean isDirectory);
 
-	public AssetType getType (String file);
+	public AssetType getType(String file);
 
-	public String getBundleName (String file);
+	public String getBundleName(String file);
 
 }

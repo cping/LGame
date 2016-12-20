@@ -26,14 +26,14 @@ public class PlaceholderTextBox extends TextBox {
 
 	String placeholder = "";
 
-	public PlaceholderTextBox () {
+	public PlaceholderTextBox() {
 	}
 
-	public String getPlaceholder () {
+	public String getPlaceholder() {
 		return placeholder;
 	}
 
-	public void setPlaceholder (String text) {
+	public void setPlaceholder(String text) {
 		placeholder = (text != null ? text : "");
 		getElement().setPropertyString("placeholder", placeholder);
 	}

@@ -31,7 +31,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class TextInputDialogBox extends DialogBox {
 	private PlaceholderTextBox textBox;
 
-	public TextInputDialogBox (String title, String text, String placeholder) {
+	public TextInputDialogBox(String title, String text, String placeholder) {
 
 		setText(title);
 
@@ -48,14 +48,14 @@ public class TextInputDialogBox extends DialogBox {
 
 		Button ok = new Button("OK");
 		ok.addClickHandler(new ClickHandler() {
-			public void onClick (ClickEvent event) {
+			public void onClick(ClickEvent event) {
 				TextInputDialogBox.this.onPositive();
 			}
 		});
 
 		Button cancel = new Button("Cancel");
 		cancel.addClickHandler(new ClickHandler() {
-			public void onClick (ClickEvent event) {
+			public void onClick(ClickEvent event) {
 				TextInputDialogBox.this.onNegative();
 			}
 		});
@@ -73,14 +73,14 @@ public class TextInputDialogBox extends DialogBox {
 		setWidget(vPanel);
 	}
 
-	protected void onPositive () {
+	protected void onPositive() {
 		if (listener != null) {
 			listener.onPositive(textBox.getText());
 		}
 		this.hide();
 	}
 
-	protected void onNegative () {
+	protected void onNegative() {
 		if (listener != null) {
 			listener.onNegative();
 		}
@@ -89,13 +89,13 @@ public class TextInputDialogBox extends DialogBox {
 
 	TextInputDialogListener listener;
 
-	public void setListener (TextInputDialogListener listener) {
+	public void setListener(TextInputDialogListener listener) {
 		this.listener = listener;
 	}
 
 	public interface TextInputDialogListener {
-		void onPositive (String text);
+		void onPositive(String text);
 
-		void onNegative ();
+		void onNegative();
 	}
 }

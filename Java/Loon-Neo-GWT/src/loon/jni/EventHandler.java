@@ -24,5 +24,5 @@ import com.google.gwt.dom.client.NativeEvent;
 
 public interface EventHandler {
 
-  void handleEvent(NativeEvent evt);
+	void handleEvent(NativeEvent evt);
 }

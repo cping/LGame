@@ -132,6 +132,38 @@ public class MathUtils {
 	}
 
 	/**
+	 * 返回数字的位数长度
+	 * 
+	 * @param num
+	 * @return
+	 */
+	public static int getBitSize(int num) {
+		int numBits = 0;
+		if (num < 10l) {
+			numBits = 1;
+		} else if (num < 100l) {
+			numBits = 2;
+		} else if (num < 1000l) {
+			numBits = 3;
+		} else if (num < 10000l) {
+			numBits = 4;
+		} else if (num < 100000l) {
+			numBits = 5;
+		} else if (num < 1000000l) {
+			numBits = 6;
+		} else if (num < 10000000l) {
+			numBits = 7;
+		} else if (num < 100000000l) {
+			numBits = 8;
+		} else if (num < 1000000000l) {
+			numBits = 9;
+		} else {
+			numBits = (String.valueOf(num).length() - 1);
+		}
+		return numBits;
+	}
+
+	/**
 	 * 判断是否为数字
 	 * 
 	 * @param param
@@ -847,7 +879,7 @@ public class MathUtils {
 
 	public static final int sum(final int[] values) {
 		int sum = 0;
-		for(int i = values.length - 1; i >= 0; i--) {
+		for (int i = values.length - 1; i >= 0; i--) {
 			sum += values[i];
 		}
 		return sum;
@@ -855,38 +887,40 @@ public class MathUtils {
 
 	public static final void arraySumInternal(final int[] values) {
 		final int valueCount = values.length;
-		for(int i = 1; i < valueCount; i++) {
-			values[i] = values[i-1] + values[i];
+		for (int i = 1; i < valueCount; i++) {
+			values[i] = values[i - 1] + values[i];
 		}
 	}
 
 	public static final void arraySumInternal(final long[] values) {
 		final int valueCount = values.length;
-		for(int i = 1; i < valueCount; i++) {
-			values[i] = values[i-1] + values[i];
+		for (int i = 1; i < valueCount; i++) {
+			values[i] = values[i - 1] + values[i];
 		}
 	}
 
-	public static final void arraySumInternal(final long[] values, final long factor) {
+	public static final void arraySumInternal(final long[] values,
+			final long factor) {
 		values[0] = values[0] * factor;
 		final int valueCount = values.length;
-		for(int i = 1; i < valueCount; i++) {
-			values[i] = values[i-1] + values[i] * factor;
+		for (int i = 1; i < valueCount; i++) {
+			values[i] = values[i - 1] + values[i] * factor;
 		}
 	}
 
-	public static final void arraySumInto(final long[] values, final long[] targetValues, final long factor) {
+	public static final void arraySumInto(final long[] values,
+			final long[] targetValues, final long factor) {
 		targetValues[0] = values[0] * factor;
 		final int valueCount = values.length;
-		for(int i = 1; i < valueCount; i++) {
-			targetValues[i] = targetValues[i-1] + values[i] * factor;
+		for (int i = 1; i < valueCount; i++) {
+			targetValues[i] = targetValues[i - 1] + values[i] * factor;
 		}
 	}
 
 	public static final float arraySum(final float[] values) {
 		float sum = 0;
 		final int valueCount = values.length;
-		for(int i = 0; i < valueCount; i++) {
+		for (int i = 0; i < valueCount; i++) {
 			sum += values[i];
 		}
 		return sum;
@@ -896,24 +930,30 @@ public class MathUtils {
 		return MathUtils.arraySum(values) / values.length;
 	}
 
-	public static float[] scaleAroundCenter(final float[] vertices, final float scaleX, final float scaleY, final float scaleCenterX, final float scaleCenterY) {
-		if(scaleX != 1 || scaleY != 1) {
-			for(int i = vertices.length - 2; i >= 0; i -= 2) {
-				vertices[i] = scaleCenterX + (vertices[i] - scaleCenterX) * scaleX;
-				vertices[i + 1] = scaleCenterY + (vertices[i + 1] - scaleCenterY) * scaleY;
+	public static float[] scaleAroundCenter(final float[] vertices,
+			final float scaleX, final float scaleY, final float scaleCenterX,
+			final float scaleCenterY) {
+		if (scaleX != 1 || scaleY != 1) {
+			for (int i = vertices.length - 2; i >= 0; i -= 2) {
+				vertices[i] = scaleCenterX + (vertices[i] - scaleCenterX)
+						* scaleX;
+				vertices[i + 1] = scaleCenterY
+						+ (vertices[i + 1] - scaleCenterY) * scaleY;
 			}
 		}
 		return vertices;
 	}
-	
-	public static final boolean isInBounds(final int minValue, final int maxValue, final int val) {
+
+	public static final boolean isInBounds(final int minValue,
+			final int maxValue, final int val) {
 		return val >= minValue && val <= maxValue;
 	}
 
-	public static final boolean isInBounds(final float minValue, final float maxValue, final float val) {
+	public static final boolean isInBounds(final float minValue,
+			final float maxValue, final float val) {
 		return val >= minValue && val <= maxValue;
 	}
-	
+
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static String toString(float value) {

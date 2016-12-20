@@ -24,4 +24,5 @@
 	<generate-with class="loon.html5.gwt.preloader.PreloaderBundleGenerator">
 		<when-type-assignable class="loon.html5.gwt.preloader.PreloaderBundle"/>
 	</generate-with>
+    <define-linker name="assetcachelinker" class="loon.html5.gwt.preloader.AssetCacheLinker" />
 </module>
