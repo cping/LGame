@@ -1,7 +1,5 @@
 package loon.utils;
 
-import loon.opengl.LSTRDictionary;
-
 /**
  * 一个MD5的本地实现,方便跨平台移植
  */
@@ -13,7 +11,7 @@ public class MD5 {
 		if (_instance != null) {
 			return _instance;
 		}
-		synchronized (LSTRDictionary.class) {
+		synchronized (MD5.class) {
 			if (_instance == null) {
 				_instance = new MD5();
 			}
