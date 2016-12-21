@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.font.BMFont;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -183,11 +184,24 @@ public class LClickButton extends LComponent {
 			}
 		}
 		if (!StringUtils.isEmpty(text)) {
-			font.drawString(g, text,
-					x + getOffsetLeft() + (getWidth() - font.stringWidth(text))
-							/ 2,
-					(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2)
-							- (LSystem.isDesktop() ? 5 : 0), fontColor);
+			if (font instanceof BMFont) {
+				font.drawString(
+						g,
+						text,
+						x + getOffsetLeft()
+								+ (getWidth() - font.stringWidth(text)) / 2,
+						(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2) - 5,
+						fontColor);
+			} else {
+				font.drawString(
+						g,
+						text,
+						x + getOffsetLeft()
+								+ (getWidth() - font.stringWidth(text)) / 2,
+						(y + getOffsetTop() + (getHeight() - font.getHeight()) / 2)
+								- (LSystem.isDesktop() ? 5 : 0), fontColor);
+
+			}
 		}
 	}
 

@@ -35,6 +35,16 @@ import loon.utils.TArray;
  */
 public class Desktop implements LRelease {
 
+	private final static TArray<Desktop> DESKTOP_CACHE = new TArray<Desktop>(8);
+
+	public final static int allDesktopCount() {
+		int size = 0;
+		for (int i = 0, len = DESKTOP_CACHE.size; i < len; i++) {
+			size += DESKTOP_CACHE.get(i).size();
+		}
+		return size;
+	}
+
 	// 空桌面布局
 	public static final Desktop EMPTY_DESKTOP = new Desktop();
 
@@ -62,6 +72,7 @@ public class Desktop implements LRelease {
 		this.contentPane = new LPanel(0, 0, width, height);
 		this.input = screen;
 		this.setDesktop(this.contentPane);
+		DESKTOP_CACHE.add(this);
 	}
 
 	public Desktop(Screen screen, float width, float height) {

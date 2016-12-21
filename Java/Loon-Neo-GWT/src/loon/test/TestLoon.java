@@ -261,7 +261,7 @@ public class TestLoon extends Loon {
 
 		GWTSetting setting = new GWTSetting();
 		setting.fps = 60;
-		setting.isMemory = true;
+		setting.isDebug = true;
 		// source size
 		setting.width = 480;
 		setting.height = 320;
@@ -275,7 +275,7 @@ public class TestLoon extends Loon {
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;
 		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
-		setting.jsloadRes = true;
+		setting.jsloadRes = false;
 
 		// 设置一个需要的初始化进度条样式（不填则默认）
 		// setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);

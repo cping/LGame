@@ -24,11 +24,17 @@ import loon.utils.NumberUtils;
 
 public class LSetting {
 
+	//若此处true,则fps,memory以及sprite数量全部显示
+	public boolean isDebug = false;
+	
 	// 是否显示FPS帧率
 	public boolean isFPS = false;
 	
 	// 是否显示内存
 	public boolean isMemory = false;
+
+	// 是否显示精灵与桌面组件数量
+	public boolean isSprites = false;
 
 	// 是否显示logo（替换logo使用logoPath指定地址）
 	public boolean isLogo = false;

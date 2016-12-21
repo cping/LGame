@@ -33,6 +33,7 @@ import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.Desktop;
+import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LLabel;
 import loon.component.LLayer;
@@ -47,6 +48,7 @@ import loon.event.LTouchArea;
 import loon.event.LTouchLocation;
 import loon.event.SysInput;
 import loon.event.SysTouch;
+import loon.event.Touched;
 import loon.event.Updateable;
 import loon.event.LTouchArea.Event;
 import loon.font.Font.Style;
@@ -710,14 +712,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		touchType = new boolean[15];
 	}
 
-	public Screen() {
-		resetBase();
+	public Screen(int w, int h) {
+		resetSize(w, h);
 	}
 
-	final void resetBase() {
+	public Screen() {
+		this(0, 0);
+	}
+
+	final public void resetSize() {
+		resetSize(0, 0);
+	}
+
+	final public void resetSize(int w, int h) {
 		this.handler = LSystem._process;
-		this.width = LSystem.viewSize.getWidth();
-		this.height = LSystem.viewSize.getHeight();
+		this.width = (w <= 0 ? LSystem.viewSize.getWidth() : w);
+		this.height = (h <= 0 ? LSystem.viewSize.getHeight() : h);
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
 		// 最先精灵
@@ -1024,7 +1034,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public boolean isOnLoadComplete() {
 		return isLoad;
 	}
-	
+
 	/**
 	 * 顺序运行并删除一个Screen
 	 * 
@@ -1048,7 +1058,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 取出第一个Screen并执行
 	 * 
@@ -1588,6 +1598,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			}
 		}
 		return this;
+	}
+
+	public LClickButton addButton(String text, int x, int y, int width,
+			int height) {
+		return LClickButton.make(text, x, y, width, height);
+	}
+
+	public LClickButton addButton(String text, int x, int y, int width,
+			int height, Touched touched) {
+		return (LClickButton) (LClickButton.make(text, x, y, width, height)
+				.up(touched));
 	}
 
 	public LLabel addLabel(String text, float x, float y) {

@@ -21,7 +21,9 @@
 package loon;
 
 import loon.action.ActionControl;
+import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
+import loon.component.Desktop;
 import loon.font.LFont;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
@@ -142,7 +144,7 @@ public class Display extends LSystemView {
 
 	private final LProcess process;
 
-	private final String pFontString = " MEORYFPSB0123456789:.of";
+	private final String pFontString = " MEORYFPSBITED0123456789:.of";
 
 	private LSetting setting;
 
@@ -220,7 +222,7 @@ public class Display extends LSystemView {
 
 		// fix渲染时机，避免调用渲染在纹理构造前
 		if (!initDrawConfig) {
-			newDefView(setting.isFPS);
+			newDefView(setting.isFPS || setting.isLogo || setting.isMemory || setting.isSprites || setting.isDebug);
 			initDrawConfig = true;
 		}
 
@@ -263,14 +265,15 @@ public class Display extends LSystemView {
 			process.runTimer(clock);
 			process.draw(glEx);
 
+			final boolean debug = setting.isDebug ;
 			// 显示fps速度
-			if (setting.isFPS) {
+			if (debug || setting.isFPS) {
 				tickFrames();
 				fpsFont.drawString(glEx, "FPS:" + frameRate, 5, 5, 0,
 						LColor.white);
 			}
 			// 显示内存
-			if (setting.isMemory) {
+			if (debug || setting.isMemory) {
 				if (runtime == null) {
 					runtime = Runtime.getRuntime();
 				}
@@ -282,6 +285,11 @@ public class Display extends LSystemView {
 						+ " MB";
 				fpsFont.drawString(glEx, "MEMORY:" + memory, 5, 25, 0,
 						LColor.white);
+			}
+			if (debug || setting.isSprites) {
+				fpsFont.drawString(glEx, "SPRITE:" + Sprites.allSpritesCount()
+						+ "," + " DESKTOP:" + Desktop.allDesktopCount(), 5, 45,
+						0, LColor.white);
 			}
 			process.drawEmulator(glEx);
 			process.unload();

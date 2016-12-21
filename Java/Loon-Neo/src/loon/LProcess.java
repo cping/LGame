@@ -301,7 +301,7 @@ public class LProcess extends PlayerUtils {
 					if (!LSystem._base.display().showLogo) {
 						startTransition();
 						screen.setClose(false);
-						screen.resetBase();
+						screen.resetSize();
 						screen.onLoad();
 						screen.onLoaded();
 						screen.setOnLoadState(true);
@@ -870,7 +870,7 @@ public class LProcess extends PlayerUtils {
 
 	public void setScreen(final Screen screen) {
 		if (screen.handler == null) {
-			screen.resetBase();
+			screen.resetSize();
 		}
 		if (game.setting.isLogo && game.display().showLogo) {
 			loadingScreen = screen;

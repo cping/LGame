@@ -632,7 +632,6 @@ public class PreloaderBundleGenerator extends Generator {
 		final String pack = packName.replace('.', '/');
 		HashSet<Resource> resourceList = new HashSet<Resource>();
 		for (String path : context.getResourcesOracle().getPathNames()) {
-			System.out.println("CCCCCCCC:"+path);
 			if (!path.startsWith(pack)) {
 				continue;
 			}

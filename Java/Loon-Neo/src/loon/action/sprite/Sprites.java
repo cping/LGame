@@ -41,6 +41,16 @@ import loon.utils.TArray;
  */
 public class Sprites implements Serializable, LRelease {
 
+	private final static TArray<Sprites> SPRITES_CACHE = new TArray<Sprites>(8);
+
+	public final static int allSpritesCount() {
+		int size = 0;
+		for (int i = 0, len = SPRITES_CACHE.size; i < len; i++) {
+			size += SPRITES_CACHE.get(i).size();
+		}
+		return size;
+	}
+
 	public static interface SpriteListener {
 
 		public void update(ISprite spr);
@@ -50,7 +60,7 @@ public class Sprites implements Serializable, LRelease {
 	private static final long serialVersionUID = 7460335325994101982L;
 
 	protected ISprite[] _sprites;
-	
+
 	private int viewX;
 
 	private int viewY;
@@ -80,6 +90,7 @@ public class Sprites implements Serializable, LRelease {
 		this._width = w;
 		this._height = h;
 		this._sprites = new ISprite[capacity];
+		SPRITES_CACHE.add(this);
 	}
 
 	public Sprites(Screen screen) {
@@ -423,7 +434,8 @@ public class Sprites implements Serializable, LRelease {
 		}
 		int size = this._size - index - 1;
 		if (size > 0) {
-			System.arraycopy(this._sprites, index + 1, this._sprites, index, size);
+			System.arraycopy(this._sprites, index + 1, this._sprites, index,
+					size);
 		}
 		this._sprites[--this._size] = null;
 		if (size == 0) {

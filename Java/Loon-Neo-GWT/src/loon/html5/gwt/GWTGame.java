@@ -99,6 +99,9 @@ public class GWTGame extends LGame {
 
 		// 初始化时的进度条样式（不实现则默认加载）
 		public GWTProgress progress = null;
+		
+		// 如果此项为true,则仅以异步加载资源
+		public boolean asynResource = false;
 
 	}
 
@@ -163,7 +166,8 @@ public class GWTGame extends LGame {
 	private final static Support support = new NativeSupport();
 
 	static final AgentInfo agentInfo = computeAgentInfo();
-
+	final GWTSetting gwtconfig;
+	
 	private final double start = initNow();
 
 	public Act<LGame> frame = Act.create();
@@ -187,7 +191,7 @@ public class GWTGame extends LGame {
 			}
 		});
 		this.game = game;
-
+        this.gwtconfig = config;  
 		log.info("Browser orientation: " + game.getOrientation());
 		log.info("Browser screen width: " + game.getContainerWidth()
 				+ ", screen height: " + game.getContainerHeight());

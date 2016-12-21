@@ -21,6 +21,7 @@
 package loon.html5.gwt;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 import loon.Assets;
 import loon.LSystem;
@@ -28,6 +29,7 @@ import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.html5.gwt.preloader.Blob;
+import loon.html5.gwt.preloader.PreloaderBundle;
 import loon.jni.TypedArrayHelper;
 import loon.jni.XDomainRequest;
 import loon.jni.XDomainRequest.Handler;
@@ -40,10 +42,16 @@ import loon.utils.reply.GoPromise;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.ImageData;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.dom.client.CanvasElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.resources.client.DataResource;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ResourcePrototype;
 import com.google.gwt.typedarrays.shared.TypedArrays;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
@@ -51,11 +59,23 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 
 public class GWTAssets extends Assets {
 
+	public interface ImageManifest {
+		int[] imageSize(String path);
+	}
+
+	public void setImageManifest(ImageManifest manifest) {
+		imageManifest = manifest;
+	}
+
 	private final static String GWT_DEF_RES = "assets/";
 
 	private final static boolean LOG_XHR_SUCCESS = false;
 
 	private final GWTGame game;
+
+	private ImageManifest imageManifest;
+
+	private final HashMap<String, PreloaderBundle> clientBundles = new HashMap<String, PreloaderBundle>();
 
 	private Scale assetScale = null;
 
@@ -66,12 +86,19 @@ public class GWTAssets extends Assets {
 		}
 	}
 
+	public void addClientBundle(String regExp, PreloaderBundle clientBundle) {
+		clientBundles.put(regExp, clientBundle);
+	}
+
 	public void setAssetScale(float scaleFactor) {
 		this.assetScale = new Scale(scaleFactor);
 	}
 
 	@Override
 	public Image getImageSync(String path) {
+		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
+			return getBundleImageSync(path);
+		}
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
 			return localImage(pathPrefix + path, rsrc.scale);
 		}
@@ -81,6 +108,9 @@ public class GWTAssets extends Assets {
 
 	@Override
 	public Image getImage(String path) {
+		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
+			return getBundleImage(path);
+		}
 		Scale assetScale = (this.assetScale == null) ? Scale.ONE
 				: this.assetScale;
 		TArray<Scale.ScaledResource> rsrcs = assetScale
@@ -90,16 +120,37 @@ public class GWTAssets extends Assets {
 
 	@Override
 	public Image getRemoteImage(String path) {
+		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
+			return addBundleImage(path, Scale.ONE);
+		}
 		return localImage(path, Scale.ONE);
 	}
 
 	@Override
 	public Image getRemoteImage(String path, int width, int height) {
+		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
+			return addBundleImage(path, Scale.ONE).preload(width, height);
+		}
 		return localImage(path, Scale.ONE).preload(width, height);
 	}
 
 	@Override
 	public Sound getSound(String path) {
+		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
+			String url = pathPrefix + path;
+			PreloaderBundle clientBundle = getBundle(path);
+			if (clientBundle != null) {
+				String key = toKey(path);
+				DataResource resource = (DataResource) getResource(key,
+						clientBundle);
+				if (resource != null) {
+					url = resource.getSafeUri().asString();
+				}
+			} else {
+				url += ".mp3";
+			}
+			return new GWTSound(url);
+		}
 		path = getPath(path);
 		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
 			path = GWT_DEF_RES + path;
@@ -308,7 +359,12 @@ public class GWTAssets extends Assets {
 	GWTAssets(GWTGame game) {
 		super(game.asyn());
 		this.game = game;
-		GWTAssets.pathPrefix = "";
+		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
+			GWTAssets.pathPrefix = GWT.getModuleBaseForStaticFiles()
+					+ "assets/";
+		} else {
+			GWTAssets.pathPrefix = "";
+		}
 	}
 
 	private Scale assetScale() {
@@ -423,9 +479,8 @@ public class GWTAssets extends Assets {
 			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
 		}
 		if (tmp == null) {
-			game.log().warn("file " + path + " not found");
-			return new GWTImage(game.graphics(), scale, createEmptyCanvas(50,
-					50), path);
+			return getBundleImage(GWT.getModuleBaseForStaticFiles() + path,
+					scale);
 		}
 		return new GWTImage(game.graphics(), scale, tmp, path);
 	}
@@ -466,6 +521,82 @@ public class GWTAssets extends Assets {
 		context.setFillStyle("rgba(255,255,255,255)");
 		context.fillRect(0, 0, w, h);
 		return elem;
+	}
+
+	private native void setCrossOrigin(Element elem, String state) /*-{
+		if ('crossOrigin' in elem)
+			elem.setAttribute('crossOrigin', state);
+	}-*/;
+
+	private String toKey(String fullPath) {
+		String key = fullPath.substring(fullPath.lastIndexOf('/') + 1);
+		int dotCharIdx = key.indexOf('.');
+		return dotCharIdx != -1 ? key.substring(0, dotCharIdx) : key;
+	}
+
+	private ResourcePrototype getResource(String key,
+			PreloaderBundle clientBundle) {
+		ResourcePrototype resource = clientBundle.getResource(key);
+		return resource;
+	}
+
+	private PreloaderBundle getBundle(String collection) {
+		PreloaderBundle clientBundle = null;
+		for (HashMap.Entry<String, PreloaderBundle> entry : clientBundles
+				.entrySet()) {
+			String regExp = entry.getKey();
+			if (RegExp.compile(regExp).exec(collection) != null) {
+				clientBundle = entry.getValue();
+			}
+		}
+		return clientBundle;
+	}
+
+	protected GWTImage getBundleImage(String path, Scale scale) {
+		String url = pathPrefix + path;
+		PreloaderBundle clientBundle = getBundle(path);
+		if (clientBundle != null) {
+			String key = toKey(path);
+			ImageResource resource = (ImageResource) getResource(key,
+					clientBundle);
+			if (resource != null) {
+				url = resource.getSafeUri().asString();
+			}
+		}
+		return addBundleImage(url, scale);
+	}
+
+	private GWTImage addBundleImage(String url, Scale scale) {
+		ImageElement img = Document.get().createImageElement();
+		setCrossOrigin(img, "anonymous");
+		img.setSrc(url);
+		return new GWTImage(game.graphics(), scale, img, url);
+	}
+
+	public Image getBundleImage(String path) {
+		Scale assetScale = (this.assetScale == null) ? Scale.ONE
+				: this.assetScale;
+		TArray<Scale.ScaledResource> rsrcs = assetScale
+				.getScaledResources(path);
+		return getBundleImage(rsrcs.get(0).path, rsrcs.get(0).scale);
+	}
+
+	public Image getBundleImageSync(String path) {
+		if (imageManifest == null) {
+			throw new UnsupportedOperationException("getImageSync(" + path
+					+ ")");
+		} else {
+			for (Scale.ScaledResource rsrc : assetScale().getScaledResources(
+					path)) {
+				int[] size = imageManifest.imageSize(rsrc.path);
+				if (size == null)
+					continue;
+				return getBundleImage(rsrc.path, rsrc.scale).preload(size[0],
+						size[1]);
+			}
+			return new GWTImage(game.graphics(), new Throwable(
+					"Image missing from manifest: " + path));
+		}
 	}
 
 }
