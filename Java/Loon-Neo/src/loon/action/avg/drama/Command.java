@@ -633,7 +633,7 @@ public class Command extends Conversion implements LRelease {
 						&& StringUtils.endsWith(result, '"')) {
 					setEnvironmentList.put(temps.get(1),
 							result.substring(1, result.length() - 1));
-				} else if (StringUtils.isChinaLanguage(result.toCharArray())
+				} else if (StringUtils.isChinaLanguage(result)
 						|| StringUtils.isEnglishAndNumeric(result)) {
 					setEnvironmentList.put(temps.get(1), result);
 				} else {

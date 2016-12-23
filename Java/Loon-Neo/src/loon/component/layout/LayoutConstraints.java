@@ -1,5 +1,6 @@
 package loon.component.layout;
 
+import loon.HorizontalAlign;
 import loon.geom.SizeValue;
 
 public class LayoutConstraints {
@@ -26,7 +27,7 @@ public class LayoutConstraints {
 		this.y = null;
 		this.width = null;
 		this.height = null;
-		this.horizontalAlign = HorizontalAlign.left;
+		this.horizontalAlign = HorizontalAlign.LEFT;
 		this.verticalAlign = VerticalAlign.top;
 		paddingLeft = new SizeValue("0px");
 		paddingRight = new SizeValue("0px");

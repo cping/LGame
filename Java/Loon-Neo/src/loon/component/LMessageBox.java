@@ -94,7 +94,7 @@ public class LMessageBox extends LComponent {
 			this._borderW = 3f;
 			this.messageHeight = (this._boxHeight * 0.8f);
 			this.messageY = (this._boxHeight * 0.08f);
-			setFaceDrawMode();
+			this.setFaceDrawMode();
 			this.pageX = (this._boxWidth * 0.95f);
 			this.pageY = (this._boxHeight * 0.75f);
 		}

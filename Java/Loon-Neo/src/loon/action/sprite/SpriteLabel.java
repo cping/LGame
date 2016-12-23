@@ -4,16 +4,15 @@ import loon.canvas.LColor;
 import loon.font.Font.Style;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.font.Text;
+import loon.font.TextOptions;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 
 public class SpriteLabel extends Entity {
 
 	private float _offsetX = 0, _offsetY = 0;
 
-	private IFont font;
-
-	private String label;
+	private final Text _text;
 
 	public SpriteLabel(String label) {
 		this(LFont.getDefaultFont(), label, 0, 0);
@@ -29,7 +28,11 @@ public class SpriteLabel extends Entity {
 	}
 
 	public SpriteLabel(IFont font, String label, int x, int y) {
-		this.font = font;
+		this(font, TextOptions.LEFT(), label, x, y);
+	}
+
+	public SpriteLabel(IFont font, TextOptions opt, String label, int x, int y) {
+		this._text = new Text(font, label, opt);
 		this.setRepaint(true);
 		this.setColor(LColor.white);
 		this.setLocation(x, y);
@@ -41,32 +44,31 @@ public class SpriteLabel extends Entity {
 	}
 
 	public void setFont(IFont font) {
-		this.font = font;
-		this.setLabel(label);
+		this._text.setFont(font);
+		this.setSize(_text.getWidth(), _text.getHeight());
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (font != null) {
-			font.drawString(g, label, x() + offsetX + _offsetX, y() + offsetY
-					+ _offsetY, _baseColor);
-		}
+		_text.paintString(g, getX() + offsetX + _offsetX, getY() + offsetY
+				+ _offsetY, _baseColor);
 	}
 
-	public String getLabel() {
-		return label;
+	public Text getOptions() {
+		return this._text;
 	}
 
-	public void setLabel(int label) {
-		setLabel(String.valueOf(label));
+	public CharSequence getLabel() {
+		return _text.getText();
 	}
 
-	public void setLabel(String label) {
-		this.label = label;
-		this.setSize(font.stringWidth(label) + 1, font.stringHeight(label) + 1);
-		if (font != null && font instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) font, label);
-		}
+	public SpriteLabel setLabel(int label) {
+		return setLabel(String.valueOf(label));
+	}
+
+	public SpriteLabel setLabel(CharSequence label) {
+		_text.setText(label);
+		return this;
 	}
 
 	public float getOffsetX() {

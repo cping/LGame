@@ -451,6 +451,29 @@ final public class StringUtils {
 		return ret;
 	}
 
+	public static final TArray<CharSequence> splitArray(
+			final CharSequence chars, final char flag) {
+		return splitArray(chars, flag, new TArray<CharSequence>());
+	}
+
+	public static final <T extends TArray<CharSequence>> T splitArray(
+			final CharSequence chars, final char flag, final T result) {
+		final int partCount = countOccurrences(chars, flag) + 1;
+		if (partCount == 0) {
+			result.add(chars);
+		} else {
+			int from = 0;
+			int to;
+			for (int i = 0; i < (partCount - 1); i++) {
+				to = indexOf(chars, flag, from);
+				result.add(chars.subSequence(from, to));
+				from = to + 1;
+			}
+			result.add(chars.subSequence(from, chars.length()));
+		}
+		return result;
+	}
+
 	/**
 	 * 过滤指定字符串
 	 * 
@@ -603,25 +626,25 @@ final public class StringUtils {
 	 * @param str
 	 * @return
 	 */
-	public static boolean isChinaLanguage(char[] chars) {
-		int[] ints = new int[2];
-		boolean isChinese = false;
-		int length = chars.length;
-		byte[] bytes = null;
-		for (int i = 0; i < length; i++) {
-			bytes = ("" + chars[i]).getBytes();
-			if (bytes.length == 2) {
-				ints[0] = bytes[0] & 0xff;
-				ints[1] = bytes[1] & 0xff;
-				if (ints[0] >= 0x81 && ints[0] <= 0xFE && ints[1] >= 0x40
-						&& ints[1] <= 0xFE) {
-					isChinese = true;
-				}
-			} else {
-				return false;
+	public static boolean isChinaLanguage(String mes) {
+		int size = mes.length();
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			if (isChinese(mes.charAt(i))) {
+				count++;
 			}
 		}
-		return isChinese;
+		return count >= size;
+	}
+
+	public static boolean containChinaLanguage(String mes) {
+		int size = mes.length();
+		for (int i = 0; i < size; i++) {
+			if (isChinese(mes.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean isChinese(char c) {
@@ -963,6 +986,22 @@ final public class StringUtils {
 		return chars.getString();
 	}
 
+	public final static String unificationCharSequence(CharSequence[] messages) {
+		if (messages == null || messages.length == 0) {
+			return "";
+		}
+		CharArray chars = new CharArray();
+		for (CharSequence text : messages) {
+			for (int i = 0, size = text.length(); i < size; i++) {
+				char ch = text.charAt(i);
+				if (!chars.contains(ch)) {
+					chars.add(ch);
+				}
+			}
+		}
+		return chars.getString();
+	}
+
 	public final static String unificationStrings(String[] messages) {
 		if (isEmpty(messages)) {
 			return "";
@@ -978,4 +1017,140 @@ final public class StringUtils {
 		}
 		return chars.getString();
 	}
+
+	public static final CharSequence padFront(final CharSequence chars,
+			final char padChar, final int len) {
+		final int padCount = len - chars.length();
+		if (padCount <= 0) {
+			return chars;
+		} else {
+			final StringBuilder sb = new StringBuilder();
+
+			for (int i = padCount - 1; i >= 0; i--) {
+				sb.append(padChar);
+			}
+			sb.append(chars);
+
+			return sb.toString();
+		}
+	}
+
+	public static int indexOf(CharSequence s, char ch) {
+		return indexOf(s, ch, 0);
+	}
+
+	public static int indexOf(CharSequence c, char ch, int start) {
+		if (c instanceof String) {
+			return ((String) c).indexOf(ch, start);
+		}
+		return indexOf(c, ch, start, c.length());
+	}
+
+	private static char[] obtain(int len) {
+		return new char[len];
+	}
+
+	public static int indexOf(CharSequence c, char ch, int start, int end) {
+		if ((c instanceof StringBuffer) || (c instanceof StringBuilder)
+				|| (c instanceof String)) {
+			final int INDEX_INCREMENT = 500;
+			char[] temp = obtain(INDEX_INCREMENT);
+
+			while (start < end) {
+				int segend = start + INDEX_INCREMENT;
+				if (segend > end)
+					segend = end;
+
+				getChars(c, start, segend, temp, 0);
+
+				int count = segend - start;
+				for (int i = 0; i < count; i++) {
+					if (temp[i] == ch) {
+						return i + start;
+					}
+				}
+
+				start = segend;
+			}
+			return -1;
+		}
+
+		for (int i = start; i < end; i++) {
+			if (c.charAt(i) == ch) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	public static void getChars(CharSequence c, int start, int end,
+			char[] dest, int destoff) {
+		if (c instanceof String) {
+			((String) c).getChars(start, end, dest, destoff);
+		} else if (c instanceof StringBuffer) {
+			((StringBuffer) c).getChars(start, end, dest, destoff);
+		} else if (c instanceof StringBuilder) {
+			((StringBuilder) c).getChars(start, end, dest, destoff);
+		} else {
+			for (int i = start; i < end; i++) {
+				dest[destoff++] = c.charAt(i);
+			}
+		}
+	}
+
+	public static final int countOccurrences(final CharSequence chars,
+			final char flag) {
+		int count = 0;
+		int lastOccurrence = indexOf(chars, flag, 0);
+		while (lastOccurrence != -1) {
+			count++;
+			lastOccurrence = indexOf(chars, flag, lastOccurrence + 1);
+		}
+		return count;
+	}
+
+	public static boolean isSpace(char c) {
+		switch (c) {
+		case ' ':
+			return true;
+		case '\n':
+			return true;
+		case '\t':
+			return true;
+		case '\f':
+			return true;
+		case '\r':
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	public static int countCharacters(final TArray<CharSequence> chars) {
+		return countCharacters(chars, false);
+	}
+
+	public static int countCharacters(final TArray<CharSequence> chars,
+			final boolean ignoreWhitespaces) {
+		int characters = 0;
+		if (ignoreWhitespaces) {
+			for (int i = chars.size - 1; i >= 0; i--) {
+				final CharSequence text = chars.get(i);
+				for (int j = text.length() - 1; j >= 0; j--) {
+					final char character = text.charAt(j);
+					if (!isSpace(character)) {
+						characters++;
+					}
+				}
+			}
+		} else {
+			for (int i = chars.size - 1; i >= 0; i--) {
+				final CharSequence text = chars.get(i);
+				characters += text.length();
+			}
+		}
+		return characters;
+	}
+
 }

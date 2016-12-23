@@ -148,6 +148,8 @@ public class LSTRFont implements LRelease {
 
 	private int _initDraw = -1;
 
+	private float updateX = 0, updateY = 0;
+
 	private char newLineFlag = '\n';
 
 	private LTexture texture;
@@ -266,8 +268,6 @@ public class LSTRFont implements LRelease {
 		make(isasyn);
 	}
 
-	private float updateY = 0;
-
 	private synchronized void make(boolean asyn) {
 		if (_isClose) {
 			return;
@@ -279,6 +279,7 @@ public class LSTRFont implements LRelease {
 			return;
 		}
 		isDrawing = true;
+		updateX = LSystem.isDesktop() ? 1f : 0;
 		updateY = LSystem.isHTML5() ? 1f : 0;
 		Updateable update = new UpdateStringFont(this);
 		if (asyn) {
@@ -324,7 +325,7 @@ public class LSTRFont implements LRelease {
 		if (_isClose) {
 			return;
 		}
-		if(StringUtils.isEmpty(chars)){
+		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
 		make();
@@ -471,7 +472,7 @@ public class LSTRFont implements LRelease {
 		if (_isClose) {
 			return;
 		}
-		if(StringUtils.isEmpty(chars)){
+		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
 		make();
@@ -532,9 +533,14 @@ public class LSTRFont implements LRelease {
 				}
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
-						gl.draw(texture, x + totalWidth, y + totalHeight,
-								intObject.width * sx, intObject.height * sy,
-								intObject.storedX, intObject.storedY,
+						gl.draw(texture,
+								x + totalWidth,
+								y + totalHeight,
+								intObject.width * sx,
+								intObject.height * sy,
+								StringUtils.isChinese((char) charCurrent) ? intObject.storedX
+										- updateX
+										: intObject.storedX, intObject.storedY,
 								intObject.width, intObject.height - updateY, c);
 					}
 					totalWidth += intObject.width;

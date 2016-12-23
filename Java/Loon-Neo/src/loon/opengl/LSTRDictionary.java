@@ -33,7 +33,7 @@ import loon.utils.TArray;
 public final class LSTRDictionary {
 
 	private final int CACHE_SIZE = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
-	
+
 	private static LSTRDictionary instance;
 
 	public final static LSTRDictionary make() {
@@ -82,7 +82,11 @@ public final class LSTRDictionary {
 
 	public final static char split = '$';
 
-	private static StringBuffer lazyKey;
+	private Dict _lastDict;
+
+	private String _lastMessage;
+
+	private static StringBuffer _lazyKey;
 
 	public static class Dict implements LRelease {
 
@@ -200,6 +204,14 @@ public final class LSTRDictionary {
 
 	private StringBuffer tmpBuffer = null;
 
+	public final Dict bind(final LFont font, final TArray<CharSequence> chars) {
+		CharSequence[] buffers = new CharSequence[chars.size];
+		for (int i = 0, size = buffers.length; i < size; i++) {
+			buffers[i] = chars.get(i);
+		}
+		return bind(font, StringUtils.unificationCharSequence(buffers));
+	}
+
 	public final Dict bind(final LFont font, final String[] messages) {
 		return bind(font, StringUtils.unificationStrings(messages));
 	}
@@ -208,6 +220,10 @@ public final class LSTRDictionary {
 		if (StringUtils.isEmpty(mes)) {
 			return new Dict();
 		}
+		if (mes.equals(_lastMessage) && _lastDict != null) {
+			return _lastDict;
+		}
+		_lastMessage = mes;
 		if (checkEnglishString(mes)) {
 			Dict pDict = englishFontList.get(font);
 			if (pDict == null) {
@@ -215,7 +231,7 @@ public final class LSTRDictionary {
 				pDict.font = new LSTRFont(font, ADDED, tmp_asyn);
 				englishFontList.put(font, pDict);
 			}
-			return pDict;
+			return (_lastDict = pDict);
 		}
 		final String message = StringUtils.unificationStrings(mes + ADDED);
 		if (cacheList.size > CACHE_SIZE) {
@@ -278,7 +294,7 @@ public final class LSTRDictionary {
 				}
 			}
 
-			return pDict;
+			return (_lastDict = pDict);
 		}
 	}
 
@@ -350,20 +366,20 @@ public final class LSTRDictionary {
 		hashCode = LSystem.unite(hashCode, font.getLeading());
 		hashCode = LSystem.unite(hashCode, font.getDescent());
 
-		if (lazyKey == null) {
-			lazyKey = new StringBuffer();
-			lazyKey.append(font.getFontName().toLowerCase());
-			lazyKey.append(hashCode);
-			lazyKey.append(split);
-			lazyKey.append(text);
+		if (_lazyKey == null) {
+			_lazyKey = new StringBuffer();
+			_lazyKey.append(font.getFontName().toLowerCase());
+			_lazyKey.append(hashCode);
+			_lazyKey.append(split);
+			_lazyKey.append(text);
 		} else {
-			lazyKey.delete(0, lazyKey.length());
-			lazyKey.append(font.getFontName().toLowerCase());
-			lazyKey.append(hashCode);
-			lazyKey.append(split);
-			lazyKey.append(text);
+			_lazyKey.delete(0, _lazyKey.length());
+			_lazyKey.append(font.getFontName().toLowerCase());
+			_lazyKey.append(hashCode);
+			_lazyKey.append(split);
+			_lazyKey.append(text);
 		}
-		return lazyKey.toString();
+		return _lazyKey.toString();
 	}
 
 	public final void dispose() {

@@ -2,23 +2,29 @@ package loon.action.sprite;
 
 import loon.LSystem;
 import loon.canvas.LColor;
-import loon.component.Print;
+import loon.font.AutoWrap;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.font.TextOptions;
 import loon.font.Font.Style;
+import loon.font.Text;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
-import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 /**
  * 显示滚动文字的精灵(主要就是用来做前情提要滚动，比如:从前有个魔王，魔王认识个勇者，勇者不懂经济，魔王是个学霸，于是XXX这类的……)
  * 
- * 	ScrollText s = new ScrollText("ABCDEFG\nMNBVCXZ");
-		s.setDirection(Direction.LEFT);
-		add(s);
-		centerOn(s);
+ * ScrollText s = new ScrollText("ABCDEFG\nMNBVCXZ");
+ * s.setDirection(Direction.LEFT); add(s); centerOn(s);
+ * 
+ * or:
+ * 
+ * String[] texts=
+ * {"九阳神功惊俗世","君临天下易筋经","葵花宝典兴国邦","欢喜禅功祸苍生","紫雷刀出乾坤破","如来掌起山河动","浑天玄宇称宝鉴"
+ * ,"天晶不出谁争锋","啦啦啦啦啦"}; ScrollText s = new
+ * ScrollText(texts,TextOptions.VERTICAL_LEFT());
+ * s.setDirection(Direction.LEFT); s.setLocation(115,20); add(s);
  */
 public class ScrollText extends Entity {
 
@@ -28,53 +34,83 @@ public class ScrollText extends Entity {
 
 	private Direction direction = Direction.UP;
 	private boolean stop = false;
-	private final TArray<String> strings;
 	private int speed = 1;
-	private String text = "";
+	private final Text _text;
 	private Vector2f textMove = new Vector2f();
 	private float _offsetX = 0, _offsetY = 0;
 	private float textX = 0, textY = 0;
 	private float space = 5f;
-	private IFont font;
 	private LTimer timer = new LTimer(50);
 
 	public ScrollText(String text) {
-		this(LFont.getDefaultFont(), text, 0, 0, 0, 0);
+		this(text, 0, 0, 0, 0);
+	}
+
+	public ScrollText(String text, TextOptions opt) {
+		this(LFont.getDefaultFont(), opt, text, 0, 0, 0, 0);
+	}
+
+	public ScrollText(String[] texts, TextOptions opt) {
+		this(LFont.getDefaultFont(), opt, texts, 0, 0, 0, 0);
+	}
+
+	public ScrollText(IFont font, String text, TextOptions opt) {
+		this(font, opt, text, 0, 0, 0, 0);
+	}
+
+	public ScrollText(IFont font, String[] texts, TextOptions opt) {
+		this(font, opt, texts, 0, 0, 0, 0);
 	}
 
 	public ScrollText(String text, int width, int height) {
-		this(LFont.getDefaultFont(), text, 0, 0, width, height);
+		this(text, 0, 0, width, height);
 	}
 
 	public ScrollText(String text, int x, int y, int width, int height) {
-		this(LFont.getDefaultFont(), text, x, y, width, height);
+		this(LFont.getDefaultFont(), new TextOptions(), text, x, y, width,
+				height);
+	}
+
+	public ScrollText(TextOptions opt, String text, int x, int y, int width,
+			int height) {
+		this(LFont.getDefaultFont(), opt, text, x, y, width, height);
 	}
 
 	public ScrollText(String text, String font, Style type, int size, int x,
 			int y, int width, int height) {
-		this(LFont.getFont(font, type, size), text, x, y, width, height);
+		this(LFont.getFont(font, type, size), new TextOptions(), text, x, y,
+				width, height);
 	}
 
-	public ScrollText(IFont font, String text, int x, int y, int width,
-			int height) {
-		this.font = font;
+	public ScrollText(IFont font, TextOptions opt, String text, int x, int y,
+			int width, int height) {
+		this(font, opt, new String[] { text }, x, y, width, height);
+	}
+
+	public ScrollText(IFont font, TextOptions opt, String[] text, int x, int y,
+			int width, int height) {
+		if (text.length == 1) {
+			this._text = new Text(font, text[0], opt);
+		} else {
+			StringBuffer sbr = new StringBuffer();
+			for (int i = 0, size = text.length; i < size; i++) {
+				sbr.append(text[i]);
+				sbr.append(LSystem.LS);
+			}
+			this._text = new Text(font, sbr.toString(), opt);
+		}
 		this.setRepaint(true);
 		this.setColor(LColor.white);
 		this.setLocation(x, y);
 		if (width > 0) {
 			this.setWidth(width);
 		} else {
-			this.setWidth(font.stringWidth(text) + font.getSize());
+			this.setWidth(_text.getWidth());
 		}
-		if (font != null && font instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) font, text);
-		}
-		strings = Print.formatMessage(text, font, (int) getWidth());
 		if (height > 0) {
 			this.setHeight(height);
 		} else {
-			this.setHeight((strings.size * (font.getHeight() + space))
-					+ font.getHeight());
+			this.setHeight(_text.getHeight());
 		}
 	}
 
@@ -99,10 +135,20 @@ public class ScrollText extends Entity {
 					break;
 				}
 			}
+
 			boolean intersects = LSystem.getProcess() != null
 					&& LSystem.getProcess().getScreen() != null
 					&& LSystem.getProcess().getScreen()
 							.intersects(textX, textY, getWidth(), getHeight());
+			if (_text.getAutoWrap() == AutoWrap.VERTICAL) {
+				intersects = LSystem.getProcess() != null
+						&& LSystem.getProcess().getScreen() != null
+						&& LSystem
+								.getProcess()
+								.getScreen()
+								.intersects(textX, textY, getHeight(),
+										getWidth());
+			}
 			if (!intersects) {
 				stop = true;
 			}
@@ -113,15 +159,20 @@ public class ScrollText extends Entity {
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		textX = textMove.x + getX() + _offsetX;
 		textY = textMove.y + getY() + _offsetY;
-		for (int i = 0, size = strings.size; i < size; i++) {
-			g.drawString(strings.get(i), textX + offsetX,
-					textY + (i * (font.stringHeight(strings.get(i)) + space))
-							+ offsetY, _baseColor);
-		}
+		_text.paintString(g, textX, textY, _baseColor);
 	}
 
-	public String getText() {
-		return text;
+	public Text getOptions() {
+		return this._text;
+	}
+
+	public CharSequence getText() {
+		return _text.getText();
+	}
+
+	public ScrollText setText(String text) {
+		_text.setText(text);
+		return this;
 	}
 
 	public float getOffsetX() {

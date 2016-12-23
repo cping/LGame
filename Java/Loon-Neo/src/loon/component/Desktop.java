@@ -708,6 +708,7 @@ public class Desktop implements LRelease {
 		if (contentPane != null) {
 			contentPane.close();
 		}
+		DESKTOP_CACHE.remove(this);
 	}
 
 }

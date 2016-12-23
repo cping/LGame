@@ -1,5 +1,6 @@
 package loon.component.layout;
 
+import loon.HorizontalAlign;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
@@ -94,9 +95,9 @@ public class CenterLayout extends LayoutManager {
 			box.setWidth(boxWidth);
 		}
 
-		if (constraint.getHorizontalAlign() == HorizontalAlign.left) {
+		if (constraint.getHorizontalAlign() == HorizontalAlign.LEFT) {
 			box.setX(rootBoxX);
-		} else if (constraint.getHorizontalAlign() == HorizontalAlign.right) {
+		} else if (constraint.getHorizontalAlign() == HorizontalAlign.RIGHT) {
 			box.setX(rootBoxX
 					+ rootBox.getWidth()
 					- rootBoxConstraints.getPaddingRight().getValueAsInt(

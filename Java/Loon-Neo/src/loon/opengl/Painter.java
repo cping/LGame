@@ -21,7 +21,6 @@
 package loon.opengl;
 
 import loon.LTexture;
-import loon.font.TextureSource;
 import loon.geom.Affine2f;
 import loon.geom.Vector2f;
 import loon.utils.reply.GoFuture;

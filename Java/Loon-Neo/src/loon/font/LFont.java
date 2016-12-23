@@ -16,8 +16,14 @@ public class LFont implements IFont {
 	private static LFont defaultFont;
 
 	public static LFont getDefaultFont() {
+		return getDefaultFont(20);
+	}
+
+	public static LFont getDefaultFont(int size) {
 		if (defaultFont == null) {
-			defaultFont = LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, 20);
+			defaultFont = LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, size);
+		} else {
+			defaultFont.setSize(size);
 		}
 		return defaultFont;
 	}

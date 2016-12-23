@@ -18,9 +18,8 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.font;
+package loon.opengl;
 
-import loon.opengl.Painter;
 import loon.utils.reply.GoFuture;
 
 public abstract class TextureSource {

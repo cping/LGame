@@ -37,7 +37,6 @@ import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LLabel;
 import loon.component.LLayer;
-import loon.component.LLabel.LabelAlignment;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
@@ -1640,12 +1639,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return label;
 	}
 
-	public LLabel addLabel(LabelAlignment alignment, IFont font, String text,
+	public LLabel addLabel(HorizontalAlign alignment, IFont font, String text,
 			float x, float y, LColor color) {
 		return addLabel(alignment, font, text, Vector2f.at(x, y), color);
 	}
 
-	public LLabel addLabel(LabelAlignment alignment, IFont font, String text,
+	public LLabel addLabel(HorizontalAlign alignment, IFont font, String text,
 			Vector2f pos, LColor color) {
 		LLabel label = LLabel.make(alignment, text, font, pos.x(), pos.y(),
 				color);

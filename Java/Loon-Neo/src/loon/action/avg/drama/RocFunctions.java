@@ -69,7 +69,7 @@ public class RocFunctions {
 			}
 		} else if ("ischinese".equals(key)) {
 			if (value.indexOf(",") == -1) {
-				return StringUtils.isChinaLanguage(value.toCharArray());
+				return StringUtils.isChinaLanguage(value);
 			}
 		} else if ("indexof".equals(key)) {
 			if (value.indexOf(",") != -1) {

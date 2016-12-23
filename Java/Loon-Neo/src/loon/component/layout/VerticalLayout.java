@@ -1,5 +1,6 @@
 package loon.component.layout;
 
+import loon.HorizontalAlign;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
@@ -118,12 +119,12 @@ public class VerticalLayout extends LayoutManager {
 	private int processHorizontalAlignment(final int rootBoxX,
 			final int rootBoxWidth, final int currentBoxWidth,
 			final LayoutConstraints constraints) {
-		if (HorizontalAlign.center.equals(constraints.getHorizontalAlign())) {
+		if (HorizontalAlign.CENTER.equals(constraints.getHorizontalAlign())) {
 			return rootBoxX + ((rootBoxWidth - currentBoxWidth) / 2);
-		} else if (HorizontalAlign.right.equals(constraints
+		} else if (HorizontalAlign.RIGHT.equals(constraints
 				.getHorizontalAlign())) {
 			return rootBoxX + (rootBoxWidth - currentBoxWidth);
-		} else if (HorizontalAlign.left
+		} else if (HorizontalAlign.LEFT
 				.equals(constraints.getHorizontalAlign())) {
 			return rootBoxX;
 		} else {
