@@ -20,7 +20,6 @@ public class Test extends Screen {
 
 	@Override
 	public void onLoad() {
-
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
 

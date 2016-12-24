@@ -177,9 +177,9 @@ public class LLKTest extends Screen {
 
 		// 设置默认字体大小为20号字
 		LFont.setDefaultFont(LFont.getFont(20));
-
-		add(MultiScreenTest.getBackButton(this, 1));
-
+		
+		add(MultiScreenTest.getBackButton(this,1,getWidth() - 100,25));
+		
 		images = new LTexture[17];
 		for (int i = 0; i < 8; i++) {
 			images[i] = LTextures.loadTexture("assets/llk/" + i + ".jpg");
@@ -196,7 +196,6 @@ public class LLKTest extends Screen {
 		images[16] = LTextures.loadTexture("assets/llk/" + "gameover.png");
 		setBackground(getImage(10));
 		stage(1);
-		putReleases(images);
 	}
 
 	private class AnimateThread extends Thread {
@@ -209,37 +208,35 @@ public class LLKTest extends Screen {
 		}
 
 		public void run() {
-			if (!isClose()) {
-				Grid prev = null;
-				for (int j = 0; j < v.size();) {
-					prev = (Grid) v.remove(0);
-					prev.setVisible(true);
-					v.add(prev);
-					j++;
-					try {
-						sleep(20L);
-					} catch (InterruptedException ire) {
-					}
-				}
-				Grid current = prev;
+			Grid prev = null;
+			for (int j = 0; j < v.size();) {
 				prev = (Grid) v.remove(0);
-				while (!v.isEmpty()) {
-					Grid o = (Grid) v.remove(0);
-					o.setVisible(false);
-					try {
-						sleep(20L);
-					} catch (InterruptedException ire) {
-					}
+				prev.setVisible(true);
+				v.add(prev);
+				j++;
+				try {
+					sleep(20L);
+				} catch (InterruptedException ire) {
 				}
-				prev.setVisible(false);
-				current.setVisible(false);
-				current.setImage(getImage(9));
-				prev.setImage(getImage(9));
-				current.setBorder(1);
-				prev.setBorder(1);
-				if (!findPair()) {
-					refreshs();
+			}
+			Grid current = prev;
+			prev = (Grid) v.remove(0);
+			while (!v.isEmpty()) {
+				Grid o = (Grid) v.remove(0);
+				o.setVisible(false);
+				try {
+					sleep(20L);
+				} catch (InterruptedException ire) {
 				}
+			}
+			prev.setVisible(false);
+			current.setVisible(false);
+			current.setImage(getImage(9));
+			prev.setImage(getImage(9));
+			current.setBorder(1);
+			prev.setBorder(1);
+			if (!findPair()) {
+				refreshs();
 			}
 		}
 
@@ -719,8 +716,6 @@ public class LLKTest extends Screen {
 		return 0;
 	}
 
-	AnimateThread thread;
-
 	private void deletePair(Grid prev, Grid current) {
 		LinkedList<Grid> temp = new LinkedList<Grid>();
 		temp.add(prev);
@@ -1032,7 +1027,9 @@ public class LLKTest extends Screen {
 
 	@Override
 	public void close() {
+	//LTextures.destroySourceAll();
 
 	}
+
 
 }

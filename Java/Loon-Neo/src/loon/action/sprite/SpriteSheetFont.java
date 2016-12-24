@@ -93,7 +93,7 @@ public class SpriteSheetFont implements IFont {
 		float sy = y + _offset.y;
 		float widthSize = charWidth * fontScaleX;
 		float heightSize = charHeight * fontScaleY;
-		for (int i = 0,size=text.length(); i < size; i++) {
+		for (int i = 0, size = text.length(); i < size; i++) {
 			char flag = text.charAt(i);
 			int index = flag - startingCharacter;
 			if (index < numChars) {

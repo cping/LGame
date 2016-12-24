@@ -104,7 +104,6 @@ public class AnimationData {
 				return i;
 			}
 		}
-
 		return frameCount - 1;
 	}
 

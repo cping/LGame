@@ -114,7 +114,6 @@ public class AnimationTest extends Screen {
 							* (getWidth() + WIDTH * 2), MathUtils.random()
 							* (getHeight() - HEIGHT));
 					chr.setZOrder(chr.y());
-
 					chr.speed = MathUtils.round(MathUtils.random() * 2 + 3);
 
 					add(chr);

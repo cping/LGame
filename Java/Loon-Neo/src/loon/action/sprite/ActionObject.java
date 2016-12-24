@@ -83,7 +83,7 @@ public abstract class ActionObject extends LObject<ISprite> implements
 		this.dstHeight = dh;
 		if (dw < 1 && dh < 1) {
 			this.rectBox = new RectBox(x, y,
-					animation.getSpriteImage().width(), animation
+				animation.getSpriteImage().width(), animation
 							.getSpriteImage().height());
 		} else {
 			this.rectBox = new RectBox(x, y, dw, dh);

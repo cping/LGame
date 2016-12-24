@@ -33,7 +33,10 @@ public class LMessageBoxTest extends Screen {
 				"人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",
 				"明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" }, texture, 66, 66, 180,
 				180);
-		box.getMessageBox().setOffset(10, 10);
+		//行间距3
+		box.setLeading(3);
+		//偏移10,10
+		box.setOffset(10, 10);
 		add(box);
 		centerOn(box);
 		box.SetClick(new ClickListener() {
