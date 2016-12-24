@@ -26,34 +26,36 @@ import loon.utils.MathUtils;
 
 public abstract class TextLayout {
 
-  public final String text;
+	public final String text;
 
-  public final TextFormat format;
+	public final TextFormat format;
 
-  public final RectBox bounds;
+	public final RectBox bounds;
 
-  public final Dimension size;
+	public final Dimension size;
 
-  public abstract float ascent ();
+	public abstract float ascent();
 
-  public abstract float descent ();
+	public abstract float descent();
 
-  public abstract float leading ();
-  
-  public abstract int stringWidth(String message);
+	public abstract float leading();
 
-  public abstract int getHeight();
+	public abstract int stringWidth(String message);
+
+	public abstract int getHeight();
 
 	public abstract int charWidth(char ch);
 
-  protected TextLayout (String text, TextFormat format, RectBox bounds, float height) {
-    this.text = text;
-    this.format = format;
-    this.bounds = bounds;
-    this.size = new Dimension(MathUtils.max(bounds.x(), 0) + bounds.width(), height);
-  }
+	protected TextLayout(String text, TextFormat format, RectBox bounds,
+			float height) {
+		this.text = text;
+		this.format = format;
+		this.bounds = bounds;
+		this.size = new Dimension(
+				MathUtils.max(bounds.x(), 0) + bounds.width(), height);
+	}
 
-  public static String normalizeEOL(String text) {
-    return text.replace("\r\n", "\n").replace('\r', '\n');
-  }
+	public static String normalizeEOL(String text) {
+		return text.replace("\r\n", "\n").replace('\r', '\n');
+	}
 }

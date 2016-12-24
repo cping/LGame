@@ -476,6 +476,14 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		setLocation(v.x, v.y);
 	}
 
+	public void setPosition(float x, float y) {
+		setLocation(x, y);
+	}
+
+	public void pos(float x, float y) {
+		setLocation(x, y);
+	}
+	
 	public void setLocation(float x, float y) {
 		_location.setLocation(x, y);
 	}

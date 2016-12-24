@@ -113,7 +113,38 @@ public class Text {
 			}
 			_initNativeDraw = true;
 		}
-		if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
+		if (_textOptions._autoWrap != AutoWrap.VERTICAL && _lines.size == 1) {
+			CharSequence c = _lines.get(0);
+			String mes = null;
+			if (c instanceof String) {
+				mes = (String) c;
+			} else if (c instanceof StringBuffer) {
+				mes = ((StringBuffer) c).toString();
+			} else if (c instanceof StringBuilder) {
+				mes = ((StringBuilder) c).toString();
+			} else {
+				mes = new StringBuffer(c).toString();
+			}
+
+			switch (_textOptions._horizontalAlign) {
+			case CENTER:
+				_font.drawString(
+						g,
+						mes,
+						(getWidth() / 2 - _font.stringWidth(mes) / 2) + offsetX,
+						offsetY, color);
+				break;
+			case LEFT:
+				_font.drawString(g, mes, offsetX, offsetY, color);
+				break;
+			case RIGHT:
+				_font.drawString(g, mes, getWidth() - _font.stringWidth(mes)
+						+ offsetX, offsetY, color);
+				break;
+			default:
+				break;
+			}
+		} else if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
 			float viewX = 0;
 			int idx = 0;
 			for (int i = 0, size = _lines.size; i < size; i++) {

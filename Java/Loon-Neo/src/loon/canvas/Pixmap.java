@@ -5,6 +5,7 @@ import java.nio.IntBuffer;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.LTexture;
 import loon.Support;
 import loon.geom.Polygon;
 import loon.geom.RectI;
@@ -28,6 +29,10 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		tmpCanvas.image.setPixmap(this);
 		return tmpCanvas.image;
+	}
+
+	public LTexture toTexture() {
+		return getImage().texture();
 	}
 
 	public static Pixmap createImage(int w, int h) {
@@ -882,14 +887,34 @@ public class Pixmap extends Limit implements LRelease {
 		if (t == null) {
 			return this;
 		}
+		return fillTriangle(t.xpoints[0], t.ypoints[0], t.xpoints[1],
+				t.ypoints[1], t.xpoints[2], t.ypoints[2]);
+	}
+
+	/**
+	 * 绘制并填充一组三角
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @return
+	 */
+	public Pixmap fillTriangle(float x1, float y1, float x2, float y2,
+			float x3, float y3) {
+		if (_isClosed) {
+			return this;
+		}
 		int[] xpos = new int[3];
 		int[] ypos = new int[3];
-		xpos[0] = x + (int) t.xpoints[0];
-		xpos[1] = x + (int) t.xpoints[1];
-		xpos[2] = x + (int) t.xpoints[2];
-		ypos[0] = y + (int) t.ypoints[0];
-		ypos[1] = y + (int) t.ypoints[1];
-		ypos[2] = y + (int) t.ypoints[2];
+		xpos[0] = (int) x1;
+		xpos[1] = (int) x2;
+		xpos[2] = (int) x3;
+		ypos[0] = (int) y1;
+		ypos[1] = (int) y2;
+		ypos[2] = (int) y3;
 		fillPolygon(xpos, ypos, 3);
 		return this;
 	}

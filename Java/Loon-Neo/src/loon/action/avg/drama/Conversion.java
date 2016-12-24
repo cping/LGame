@@ -97,34 +97,34 @@ public abstract class Conversion implements Expression {
 		}
 		int size = context.length();
 		StringBuffer sbr = new StringBuffer(size * 2);
-		char[] chars = context.toCharArray();
 		boolean notFlag = false;
 		boolean operator;
 		for (int i = 0; i < size; i++) {
-			if (chars[i] == '"' || chars[i] == '\'') {
+			char ch = context.charAt(i);
+			if (ch == '"' || ch == '\'') {
 				notFlag = !notFlag;
 			}
 			if (notFlag) {
-				sbr.append(chars[i]);
+				sbr.append(ch);
 				continue;
 			}
-			if (chars[i] == ' ') {
-				if (i > 0 && chars[i - 1] != ' ') {
+			if (ch == ' ') {
+				if (i > 0 && context.charAt(i - 1) != ' ') {
 					sbr.append(FLAG);
 				}
 			} else {
-				operator = isOperator(chars[i]);
+				operator = isOperator(ch);
 				if (i > 0) {
-					if (operator && !isOperator(chars[i - 1])) {
-						if (chars[i - 1] != ' ') {
+					if (operator && !isOperator(context.charAt(i - 1))) {
+						if (context.charAt(i - 1) != ' ') {
 							sbr.append(FLAG);
 						}
 					}
 				}
-				sbr.append(chars[i]);
+				sbr.append(ch);
 				if (i < size - 1) {
-					if (operator && !isOperator(chars[i + 1])) {
-						if (chars[i + 1] != ' ') {
+					if (operator && !isOperator(context.charAt(i + 1))) {
+						if (context.charAt(i + 1) != ' ') {
 							sbr.append(FLAG);
 						}
 					}

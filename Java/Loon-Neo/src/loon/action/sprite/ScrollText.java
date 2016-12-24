@@ -50,6 +50,10 @@ public class ScrollText extends Entity {
 		this(LFont.getDefaultFont(), opt, text, 0, 0, 0, 0);
 	}
 
+	public ScrollText(String[] texts) {
+		this(texts, TextOptions.LEFT());
+	}
+
 	public ScrollText(String[] texts, TextOptions opt) {
 		this(LFont.getDefaultFont(), opt, texts, 0, 0, 0, 0);
 	}

@@ -23,6 +23,8 @@ package loon.opengl.parse;
 
 import loon.BaseIO;
 import loon.utils.ArrayByte;
+import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 
 public class D3DMdLoader {
 	public static String TAG_TORSO = "tag_torso";
@@ -162,17 +164,17 @@ public class D3DMdLoader {
 				readData(input, readName);
 
 				readData(input, read32);
-				float x = Float.intBitsToFloat(getInt(read32));
+				float x = NumberUtils.intBitsToFloat(getInt(read32));
 
 				readData(input, read32);
-				float y = Float.intBitsToFloat(getInt(read32));
+				float y = NumberUtils.intBitsToFloat(getInt(read32));
 
 				readData(input, read32);
-				float z = Float.intBitsToFloat(getInt(read32));
+				float z = NumberUtils.intBitsToFloat(getInt(read32));
 
 				for (int j = 0; j < 9; j++) {
 					readData(input, read32);
-					rotMatrix[j] = Float.intBitsToFloat(getInt(read32));
+					rotMatrix[j] = NumberUtils.intBitsToFloat(getInt(read32));
 				}
 
 				md3loader.addTag(k, i, getString(readName), scale * x, scale
@@ -286,9 +288,9 @@ public class D3DMdLoader {
 			int surfaceId) {
 		for (int i = 0; i < verticesNumber; i++) {
 			readData(input, read32);
-			float u = Float.intBitsToFloat(getInt(read32));
+			float u = NumberUtils.intBitsToFloat(getInt(read32));
 			readData(input, read32);
-			float v = Float.intBitsToFloat(getInt(read32));
+			float v = NumberUtils.intBitsToFloat(getInt(read32));
 
 			md3loader.addTexCoords(surfaceId, i, u, v);
 		}
@@ -300,11 +302,11 @@ public class D3DMdLoader {
 	}
 
 	private float cos(float v) {
-		return (float) java.lang.Math.cos((double) v);
+		return MathUtils.cos(v);
 	}
 
 	private float sin(float v) {
-		return (float) java.lang.Math.sin((double) v);
+		return MathUtils.sin(v);
 	}
 
 	private void loadXYZNormal(ArrayByte input, D3DIMdLoaderAdapter md3loader,
@@ -328,9 +330,9 @@ public class D3DMdLoader {
 			int zenith = unsignedByteToInt(read8[0]);
 			readData(input, read8);
 			int azimuth = unsignedByteToInt(read8[0]);
-			float lat = (float) zenith * (2 * (float) java.lang.Math.PI)
+			float lat = (float) zenith * (2 * MathUtils.PI)
 					/ 255.0f;
-			float lng = (float) azimuth * (2 * (float) java.lang.Math.PI)
+			float lng = (float) azimuth * (2 * MathUtils.PI)
 					/ 255.0f;
 
 			xn = cos(lng) * sin(lat);

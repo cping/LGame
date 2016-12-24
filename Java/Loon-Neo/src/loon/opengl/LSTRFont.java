@@ -241,6 +241,13 @@ public class LSTRFont implements LRelease {
 		this.useCache = true;
 		this.font = font;
 		this.isasyn = asyn;
+		this.fontSize = font.getSize();
+		this.fontHeight = font.getHeight();
+		this.ascent = font.getAscent();
+		int customCharsLength = (additionalChars != null) ? additionalChars.length
+				: 0;
+		this.totalCharSet = customCharsLength == 0 ? totalCharSet
+				: 0;
 		if (chs != null && chs.length > 0) {
 			int size = chs.length;
 			CharArray chars = new CharArray();
@@ -255,6 +262,10 @@ public class LSTRFont implements LRelease {
 				this.additionalChars = chars.items;
 			}
 			this.text = new String(additionalChars);
+			if (additionalChars != null
+					&& additionalChars.length > totalCharSet) {
+				textureWidth *= 2;
+			}
 			this.make(asyn);
 			chars = null;
 		}

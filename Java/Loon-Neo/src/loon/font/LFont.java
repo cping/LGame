@@ -193,11 +193,10 @@ public class LFont implements IFont {
 		if (message.indexOf('\n') == -1) {
 			return textLayout.stringWidth(message);
 		} else {
-			final char[] buffers = message.toCharArray();
 			StringBuffer sbr = new StringBuffer();
 			int width = 0;
-			for (int i = 0, size = buffers.length; i < size; i++) {
-				char ch = buffers[i];
+			for (int i = 0, size = message.length(); i < size; i++) {
+				char ch = message.charAt(i);
 				if (ch == '\n') {
 					width = MathUtils.max(
 							textLayout.stringWidth(sbr.toString()), width);
@@ -216,7 +215,7 @@ public class LFont implements IFont {
 			return 0;
 		}
 		initLayout(String.valueOf(ch));
-		return textLayout.bounds.height;
+		return getHeight();
 	}
 
 	public int stringHeight(String message) {
@@ -225,10 +224,10 @@ public class LFont implements IFont {
 		}
 		initLayout(message);
 		if (message.indexOf('\n') == -1) {
-			return textLayout.bounds.height;
+			return getHeight();
 		} else {
 			String[] list = StringUtils.split(message, '\n');
-			return list.length * textLayout.bounds.height;
+			return list.length * getHeight();
 		}
 	}
 
@@ -259,7 +258,7 @@ public class LFont implements IFont {
 	@Override
 	public int getHeight() {
 		initLayout(tmp);
-		return MathUtils.max(getSize() / 2, textLayout.bounds.height);
+		return MathUtils.max(getSize(), textLayout.bounds.height);
 	}
 
 	@Override

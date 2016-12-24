@@ -194,12 +194,10 @@ public class BMFont implements IFont, LRelease {
 		page = br.nextToken();
 
 		if (info != null && !StringUtils.isEmpty(info)) {
-
 			int size = info.length();
-			char[] chars = info.toCharArray();
 			StringBuilder sbr = new StringBuilder();
 			for (int i = 0; i < size; i++) {
-				char ch = chars[i];
+				char ch = info.charAt(i);
 				if (ch == ' ' && sbr.length() > 0) {
 					String result = sbr.toString().toLowerCase().trim();
 					String[] list = StringUtils.split(result, '=');
@@ -327,10 +325,10 @@ public class BMFont implements IFont, LRelease {
 
 	private void drawBatchString(String text, float tx, float ty, LColor c,
 			int startIndex, int endIndex) {
-		if(_isClose){
+		if (_isClose) {
 			return;
 		}
-		if(StringUtils.isEmpty(text)){
+		if (StringUtils.isEmpty(text)) {
 			return;
 		}
 		make();
@@ -367,9 +365,8 @@ public class BMFont implements IFont, LRelease {
 			}
 
 			CharDef lastCharDef = null;
-			char[] data = text.toCharArray();
-			for (int i = 0; i < data.length; i++) {
-				int id = data[i];
+			for (int i = 0, size = text.length(); i < size; i++) {
+				int id = text.charAt(i);
 				if (id == '\n') {
 					x = 0;
 					y += lineHeight;
@@ -448,7 +445,7 @@ public class BMFont implements IFont, LRelease {
 		if (_isClose) {
 			return;
 		}
-		if(StringUtils.isEmpty(text)){
+		if (StringUtils.isEmpty(text)) {
 			return;
 		}
 		make();
@@ -458,9 +455,8 @@ public class BMFont implements IFont, LRelease {
 		}
 		int x = 0, y = 0;
 		CharDef lastCharDef = null;
-		char[] data = text.toCharArray();
-		for (int i = 0; i < data.length; i++) {
-			int id = data[i];
+		for (int i = 0, size = text.length(); i < size; i++) {
+			int id = text.charAt(i);
 			if (id == '\n') {
 				x = 0;
 				y += lineHeight;
@@ -489,10 +485,10 @@ public class BMFont implements IFont, LRelease {
 	@Override
 	public void drawString(GLEx g, String text, float x, float y,
 			float rotation, LColor c) {
-		if(_isClose){
+		if (_isClose) {
 			return;
 		}
-		if(StringUtils.isEmpty(text)){
+		if (StringUtils.isEmpty(text)) {
 			return;
 		}
 		if (rotation == 0) {
@@ -513,10 +509,10 @@ public class BMFont implements IFont, LRelease {
 	@Override
 	public void drawString(GLEx gl, String text, float x, float y, float sx,
 			float sy, float ax, float ay, float rotation, LColor c) {
-		if(_isClose){
+		if (_isClose) {
 			return;
 		}
-		if(StringUtils.isEmpty(text)){
+		if (StringUtils.isEmpty(text)) {
 			return;
 		}
 		boolean anchor = ax != 0 || ay != 0;
@@ -769,14 +765,14 @@ public class BMFont implements IFont, LRelease {
 	public void setSize(int size) {
 		this._size = size;
 	}
-	
-	public boolean isClosed(){
+
+	public boolean isClosed() {
 		return _isClose;
 	}
 
 	@Override
 	public void close() {
-		if(_isClose){
+		if (_isClose) {
 			return;
 		}
 		this._isClose = true;

@@ -2882,11 +2882,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
-			_rectBox.setBounds(MathUtils.getBounds(getX() * _scaleX, getY()
-					* _scaleY, getWidth() * _scaleX, getHeight() * _scaleY,
-					_rotation, _rectBox));
+			_rectBox.setBounds(MathUtils.getBounds(getX(), getY(), getWidth()
+					* _scaleX, getHeight() * _scaleY, _rotation, _rectBox));
 		} else {
-			_rectBox = MathUtils.getBounds(getX() * _scaleX, getY() * _scaleY,
+			_rectBox = MathUtils.getBounds(getX(), getY(),
 					getWidth() * _scaleX, getHeight() * _scaleY, _rotation,
 					_rectBox);
 		}

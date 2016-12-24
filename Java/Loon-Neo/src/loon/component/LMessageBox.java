@@ -1,11 +1,13 @@
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.ShadowFont;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
@@ -43,8 +45,6 @@ import loon.utils.TArray;
  */
 public class LMessageBox extends LComponent {
 
-	public final static String defalut_flagType = "▼";
-
 	public static class DrawMessageBox extends AbstractBox {
 
 		private final int DEFAULT_WIDTH;
@@ -68,7 +68,8 @@ public class LMessageBox extends LComponent {
 		private float offsetX;
 		private float offsetY;
 
-		private String flagType = defalut_flagType;
+		private float _leading = 0;
+		private String flagType = LSystem.FLAG_TAG;
 
 		protected DrawMessageBox(IFont font, LTexture face, LTexture box,
 				int w, int h) {
@@ -136,22 +137,54 @@ public class LMessageBox extends LComponent {
 			drawMessage(g, message, this._boxX + this.messageX + offsetX,
 					this._boxY + this.messageY + offsetY);
 			if (isPage && flagType != null) {
-				this.font.drawString(
-						g,
-						flagType,
-						this._boxX + this.pageX + this.offsetX,
-						this._boxY + this.pageY
-								+ this.font.stringHeight(message)
-								+ this.offsetY, this.fontColor);
+				int size = StringUtils.charCount(message, '\n');
+				if (_leading > 0) {
+					this.font.drawString(
+							g,
+							flagType,
+							this._boxX + this.pageX + this.offsetX,
+							this._boxY + this.pageY
+									+ this.font.stringHeight(message)
+									+ this.offsetY
+									+ (this.font.getSize() * 0.10f)
+									+ (size * _leading), this.fontColor);
+				} else {
+					this.font.drawString(
+							g,
+							flagType,
+							this._boxX + this.pageX + this.offsetX,
+							this._boxY + this.pageY
+									+ this.font.stringHeight(message)
+									+ this.offsetY
+									+ (this.font.getSize() * 0.10f),
+							this.fontColor);
+				}
 			}
 		}
 
 		private void drawMessage(GLEx g, String message, float x, float y) {
-			this.font.drawString(g, message, x, y, this.fontColor);
+			if (_leading > 0) {
+				String[] texts = StringUtils.split(message, '\n');
+				for (int i = 0, size = texts.length; i < size; i++) {
+					this.font.drawString(g, texts[i], x,
+							y + (i * (font.getHeight() + _leading)),
+							this.fontColor);
+				}
+			} else {
+				this.font.drawString(g, message, x, y, this.fontColor);
+			}
 		}
 
 		private void drawFace(GLEx g, float x, float y) {
 			g.draw(this.imgFace, x + this.faceCenterX, y + this.faceCenterY);
+		}
+
+		public float getLeading() {
+			return this._leading;
+		}
+
+		public void setLeading(final float leading) {
+			this._leading = leading;
 		}
 
 		@Override
@@ -297,13 +330,15 @@ public class LMessageBox extends LComponent {
 	protected boolean noPaged;
 	protected boolean isPaged;
 	protected int pageBlinkTime;
-	protected DrawMessageBox _box;
+	protected final DrawMessageBox _box;
 
 	protected int delay = 50;
 
 	protected int pageTime = 300;
 
 	private IFont _font;
+
+	private String _tmpString;
 
 	public LMessageBox(TArray<Message> messages, int x, int y, int width,
 			int height) {
@@ -316,9 +351,33 @@ public class LMessageBox extends LComponent {
 				height);
 	}
 
-	public LMessageBox(TArray<Message> messages, String typeFlag, LFont font,
+	public LMessageBox(String[] messages, int x, int y, int width, int height) {
+		this(messages, null, LFont.getDefaultFont(), null, null, x, y, width,
+				height);
+	}
+
+	public LMessageBox(String[] messages, LTexture texture, IFont font, int x,
+			int y, int width, int height) {
+		this(messages, null, font, null, texture, x, y, width, height);
+	}
+
+	public LMessageBox(String[] messages, LTexture texture, int x, int y,
+			int width, int height) {
+		this(messages, null, LFont.getDefaultFont(), null, texture, x, y,
+				width, height);
+	}
+
+	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font,
+			LTexture box, int x, int y) {
+		this(messages, typeFlag, font, box, x, y, 0, 0);
+	}
+
+	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font,
 			LTexture box, int x, int y, int width, int height) {
 		super(x, y, width, height);
+		if (box != null && width == 0 && height == 0) {
+			this.setSize(box.getWidth(), box.getHeight());
+		}
 		this._messageList = messages;
 		StringBuilder sbr = new StringBuilder();
 		if (messages != null) {
@@ -326,21 +385,29 @@ public class LMessageBox extends LComponent {
 				sbr.append(text.message);
 			}
 		}
-		this._box = new DrawMessageBox(new ShadowFont(font, sbr.toString(),
-				typeFlag == null ? defalut_flagType : typeFlag, true), null,
-				box, width, height);
+		this._tmpString = sbr.toString();
+		if (font instanceof LFont) {
+			this._box = new DrawMessageBox(new ShadowFont((LFont) font,
+					_tmpString, typeFlag == null ? LSystem.FLAG_TAG : typeFlag,
+					true), null, box, width(), height());
+		} else {
+			this._box = new DrawMessageBox(font, null, box, width(), height());
+		}
+		this._box.setLocation(x, y);
 		this._font = font;
 	}
 
-	public LMessageBox(String[] messages, int x, int y, int width, int height) {
-		this(messages, null, LFont.getDefaultFont(), null, null, x, y, width,
-				height);
+	public LMessageBox(String[] messages, String typeFlag, IFont font,
+			LTexture box, int x, int y) {
+		this(messages, typeFlag, font, null, box, x, y, 0, 0);
 	}
 
-	public LMessageBox(String[] messages, LTexture texture, int x, int y,
-			int width, int height) {
-		this(messages, null, LFont.getDefaultFont(), null, texture, x, y,
-				width, height);
+	public LMessageBox(String[] messages, IFont font, LTexture box, int x, int y) {
+		this(messages, null, font, null, box, x, y, 0, 0);
+	}
+
+	public LMessageBox(String[] messages, LTexture box, int x, int y) {
+		this(messages, null, LFont.getDefaultFont(), null, box, x, y, 0, 0);
 	}
 
 	/**
@@ -356,23 +423,52 @@ public class LMessageBox extends LComponent {
 	 * @param width
 	 * @param height
 	 */
-	public LMessageBox(String[] messages, String typeFlag, LFont font,
+	public LMessageBox(String[] messages, String typeFlag, IFont font,
 			String face, LTexture box, int x, int y, int width, int height) {
 		super(x, y, width, height);
+		if (box != null && width == 0 && height == 0) {
+			this.setSize(box.getWidth(), box.getHeight());
+		}
 		if (messages != null) {
 			_messageList = new TArray<LMessageBox.Message>();
 			for (String text : messages) {
 				_messageList.add(new Message(text, null, face, Print
-						.formatMessage(text, font, width)));
+						.formatMessage(text, font, width())));
+				_tmpString += text;
 			}
 		}
-		this._box = new DrawMessageBox(new ShadowFont(font, messages,
-				typeFlag == null ? defalut_flagType : typeFlag, true), null,
-				box, width, height);
+		if (font instanceof LFont) {
+			this._box = new DrawMessageBox(new ShadowFont((LFont) font,
+					messages, typeFlag == null ? LSystem.FLAG_TAG : typeFlag,
+					true), null, box, width(), height());
+		} else {
+			this._box = new DrawMessageBox(font, null, box, width(), height());
+		}
+		this._box.setLocation(getX(), getY());
 		if (!StringUtils.isEmpty(face)) {
 			toFaceImage(face);
 		}
 		this._font = font;
+	}
+
+	@Override
+	public void setLocation(float x, float y) {
+		super.setLocation(x, y);
+		if (_box != null) {
+			this._box.setLocation(x, y);
+		}
+	}
+
+	public float getLeading() {
+		return this._box.getLeading();
+	}
+
+	public void setLeading(final float leading) {
+		this._box.setLeading(leading);
+	}
+
+	public String getString() {
+		return this._tmpString;
 	}
 
 	public IFont getFont() {
@@ -399,6 +495,21 @@ public class LMessageBox extends LComponent {
 
 	public DrawMessageBox getMessageBox() {
 		return this._box;
+	}
+
+	public LMessageBox setOffset(float x, float y) {
+		this._box.setOffset(x, y);
+		return this;
+	}
+
+	public LMessageBox setOffsetX(float x) {
+		this._box.setOffsetX(x);
+		return this;
+	}
+
+	public LMessageBox setOffsetY(float y) {
+		this._box.setOffsetY(y);
+		return this;
 	}
 
 	protected void updateType() {
@@ -464,7 +575,7 @@ public class LMessageBox extends LComponent {
 			return;
 		}
 		String str = this._messageList.get(this.messageIndex).getFace();
-		if ((str == null || str.equals("null"))) {
+		if ((str == null || "null".equals(str))) {
 			setFaceImage(null);
 		} else {
 			toFaceImage(str);
@@ -475,7 +586,15 @@ public class LMessageBox extends LComponent {
 
 	private final StringBuilder _message = new StringBuilder();
 
+	private boolean _initNativeDraw = false;
+
 	public void drawMessage(GLEx g) {
+		if (!_initNativeDraw) {
+			if (_font instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) _font, _tmpString);
+			}
+			_initNativeDraw = true;
+		}
 		Message message = _messageList.get(messageIndex);
 		_message.delete(0, _message.length());
 
@@ -510,7 +629,6 @@ public class LMessageBox extends LComponent {
 		} else {
 			this.isPaged = false;
 		}
-
 		this._box.draw(g, _message.toString(), renderRow, this.isPaged,
 				this.baseColor);
 	}

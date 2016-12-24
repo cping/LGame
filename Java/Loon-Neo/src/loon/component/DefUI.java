@@ -29,6 +29,7 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.LGradation;
+import loon.canvas.Pixmap;
 import loon.opengl.LSubTexture;
 import loon.utils.Array;
 import loon.utils.ArrayMap;
@@ -37,6 +38,69 @@ import loon.utils.MathUtils;
 public class DefUI {
 
 	public static String win_frame_UI = LSystem.FRAMEWORK_IMG_NAME + "wbar.png";
+
+	private static Array<LTexture> defaultTextures;
+
+	private static ArrayMap defaultWindowHash;
+
+	/**
+	 * 绘制指定大小的圆形游戏窗口图片
+	 * 
+	 * @param width
+	 * @param height
+	 * @param radius
+	 * @param color
+	 * @return
+	 */
+	public static LTexture getGameWinRound(int width, int height, int radius,
+			LColor color) {
+		Canvas g = LSystem.base().graphics().createCanvas(width, height);
+		g.setColor(color);
+		g.fillRect(0, radius, width, height - 2 * radius);
+		g.fillRect(radius, 0, width - 2 * radius, height);
+		g.fillCircle(radius, radius, radius);
+		g.fillCircle(radius, height - radius, radius);
+		g.fillCircle(width - radius, radius, radius);
+		g.fillCircle(width - radius, height - radius, radius);
+		return g.toTexture();
+	}
+
+	/**
+	 * 绘制指定大小的中空窗体图片
+	 * 
+	 * @param width
+	 * @param height
+	 * @param lineWidth
+	 * @param color
+	 * @return
+	 */
+	public static LTexture getGameWinHollow(int width, int height,
+			int lineWidth, LColor color) {
+		Canvas g = LSystem.base().graphics().createCanvas(width, height);
+		g.setColor(color);
+		g.fillRect(0, 0, lineWidth, height);
+		g.fillRect(width - lineWidth, 0, lineWidth, height);
+		g.fillRect(lineWidth, height - lineWidth, width - lineWidth * 2,
+				lineWidth);
+		g.fillRect(lineWidth, 0, width - lineWidth * 2, lineWidth);
+		return g.toTexture();
+	}
+
+	/**
+	 * 绘制一个菱形的窗体图片
+	 * 
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @return
+	 */
+	public static LTexture getGameWinDiamond(int width, int height, LColor color) {
+		Pixmap pixmap = new Pixmap(width, height, true);
+		pixmap.setColor(color);
+		pixmap.fillTriangle(0, height / 2, width / 2, height, width, height / 2);
+		pixmap.fillTriangle(0, height / 2, width / 2, 0, width, height / 2);
+		return pixmap.toTexture();
+	}
 
 	/**
 	 * 返回一组随机纹理当做背景图
@@ -299,10 +363,6 @@ public class DefUI {
 		g.setAlpha(1f);
 	}
 
-	private static Array<LTexture> defaultTextures;
-
-	private static ArrayMap defaultWindowHash;
-
 	public static Image[] getWindow(String fileName, int frameSize,
 			int cornerSize, int wholeSize, int borderLength) {
 		Image[] texs = new Image[8];
@@ -314,14 +374,15 @@ public class DefUI {
 				pixels[i] = 0;
 			}
 		}
-		Canvas canvas = LSystem.base().graphics().createCanvas(tmp.width(), tmp.height());
+		Canvas canvas = LSystem.base().graphics()
+				.createCanvas(tmp.width(), tmp.height());
 		Image imgs = canvas.image;
-		imgs.setPixels(pixels, (int)tmp.width(), (int)tmp.height());
+		imgs.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		if (tmp != null) {
 			tmp.close();
 			tmp = null;
 		}
-		
+
 		texs[0] = imgs.getSubImage(wholeSize / 2 - borderLength / 2, 0,
 				borderLength, frameSize);
 		texs[1] = imgs.getSubImage(0, wholeSize / 2 - borderLength / 2,

@@ -1084,6 +1084,18 @@ final public class StringUtils {
 		return -1;
 	}
 
+	public static final TArray<CharSequence> getArrays(CharSequence[] chars) {
+		if (chars == null) {
+			return new TArray<CharSequence>(0);
+		}
+		int size = chars.length;
+		TArray<CharSequence> arrays = new TArray<CharSequence>();
+		for (int i = 0; i < size; i++) {
+			arrays.add(chars[i]);
+		}
+		return arrays;
+	}
+
 	public static void getChars(CharSequence c, int start, int end,
 			char[] dest, int destoff) {
 		if (c instanceof String) {

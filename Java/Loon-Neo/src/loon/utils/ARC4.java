@@ -17,7 +17,7 @@ public class ARC4 {
 	 */
 	public ARC4(byte[] key) {
 		this.state = new byte[256];
-		int length = Math.min(256, key.length);
+		int length = MathUtils.min(256, key.length);
 		byte[] keyCopy = new byte[length];
 		System.arraycopy(key, 0, keyCopy, 0, length);
 		this.key = keyCopy;

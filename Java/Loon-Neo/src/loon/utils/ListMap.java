@@ -31,7 +31,7 @@ public class ListMap <K, V> {
 	}
 
 	public void put (K key, V value) {
-		if (size == keys.length) resize(Math.max(8, (int)(size * 1.75f)));
+		if (size == keys.length) resize(MathUtils.max(8, (int)(size * 1.75f)));
 		int index = indexOfKey(key);
 		if (index == -1) index = size++;
 		keys[index] = key;
@@ -39,7 +39,7 @@ public class ListMap <K, V> {
 	}
 
 	public void put (K key, V value, int index) {
-		if (size == keys.length) resize(Math.max(8, (int)(size * 1.75f)));
+		if (size == keys.length) resize(MathUtils.max(8, (int)(size * 1.75f)));
 		int existingIndex = indexOfKey(key);
 		if (existingIndex != -1) removeIndex(existingIndex);
 		System.arraycopy(keys, index, keys, index + 1, size - index);
@@ -57,7 +57,7 @@ public class ListMap <K, V> {
 		if (offset + length > map.size)
 			throw new IllegalArgumentException("offset + length must be <= size: " + offset + " + " + length + " <= " + map.size);
 		int sizeNeeded = size + length - offset;
-		if (sizeNeeded >= keys.length) resize(Math.max(8, (int)(sizeNeeded * 1.75f)));
+		if (sizeNeeded >= keys.length) resize(MathUtils.max(8, (int)(sizeNeeded * 1.75f)));
 		System.arraycopy(map.keys, offset, keys, size, length);
 		System.arraycopy(map.values, offset, values, size, length);
 		size += length;
@@ -133,7 +133,7 @@ public class ListMap <K, V> {
 
 	public void insert (int index, K key, V value) {
 		if (index > size) throw new RuntimeException(String.valueOf(index));
-		if (size == keys.length) resize(Math.max(8, (int)(size * 1.75f)));
+		if (size == keys.length) resize(MathUtils.max(8, (int)(size * 1.75f)));
 		if (ordered) {
 			System.arraycopy(keys, index, keys, index + 1, size - index);
 			System.arraycopy(values, index, values, index + 1, size - index);
@@ -277,16 +277,16 @@ public class ListMap <K, V> {
 
 	public void ensureCapacity (int additionalCapacity) {
 		int sizeNeeded = size + additionalCapacity;
-		if (sizeNeeded >= keys.length) resize(Math.max(8, sizeNeeded));
+		if (sizeNeeded >= keys.length) resize(MathUtils.max(8, sizeNeeded));
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void resize (int newSize) {
 		K[] newKeys = (K[])new Object[newSize];
-		System.arraycopy(keys, 0, newKeys, 0, Math.min(keys.length, newKeys.length));
+		System.arraycopy(keys, 0, newKeys, 0, MathUtils.min(keys.length, newKeys.length));
 		this.keys = newKeys;
 		V[] newValues = (V[])new Object[newSize];
-		System.arraycopy(values, 0, newValues, 0, Math.min(values.length, newValues.length));
+		System.arraycopy(values, 0, newValues, 0, MathUtils.min(values.length, newValues.length));
 		this.values = newValues;
 	}
 

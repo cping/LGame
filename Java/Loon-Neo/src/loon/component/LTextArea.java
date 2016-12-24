@@ -30,6 +30,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
@@ -38,6 +39,9 @@ import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 
+/**
+ * 字符串显示用类,支持多种文字显示特效,个人建议主要用来做信息推送显示
+ */
 public class LTextArea extends LComponent {
 
 	public static final int TYPE_DOWN = 0;
@@ -87,6 +91,7 @@ public class LTextArea extends LComponent {
 	private int countFrame;
 	private LColor triangleColor = LColor.orange;
 	private LColor tmpcolor = new LColor(LColor.white);
+	private String flag = LSystem.FLAG_TAG;
 
 	public LTextArea(int x, int y, int w, int h) {
 		this(w, x, y, w, h);
@@ -418,7 +423,7 @@ public class LTextArea extends LComponent {
 							/ 2 - 2);
 					drawString(
 							g,
-							"▼",
+							flag,
 							this.posx
 									+ this.font
 											.stringWidth(this.getMessage[this.num]),
@@ -545,6 +550,14 @@ public class LTextArea extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		draw(g, x, y, showType, postLine);
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
 	}
 
 	@Override

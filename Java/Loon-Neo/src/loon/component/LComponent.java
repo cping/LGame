@@ -44,12 +44,15 @@ import loon.event.Touched;
 import loon.event.TouchedClick;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
+import loon.geom.PointF;
+import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
+import loon.utils.MathUtils;
 
 public abstract class LComponent extends LObject<LContainer> implements
 		Flip<LComponent>, ActionBind, XY, BoxSize, LRelease {
@@ -636,8 +639,8 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	@Override
-	public void setLocation(Vector2f _location) {
-		setLocation(_location.x, _location.y);
+	public void setLocation(Vector2f location) {
+		setLocation(location.x, location.y);
 	}
 
 	@Override
@@ -722,12 +725,13 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public RectBox getCollisionBox() {
-		if (_rect == null) {
-			_rect = new RectBox(screenX, screenY, _width * _scaleX, _height
-					* _scaleY);
+		validatePosition();
+		if (_rect != null) {
+			_rect.setBounds(MathUtils.getBounds(screenX, screenY, getWidth()
+					* _scaleX, getHeight() * _scaleY, _rotation, _rect));
 		} else {
-			_rect.setBounds(screenX, screenY, _width * _scaleX, _height
-					* _scaleY);
+			_rect = MathUtils.getBounds(screenX, screenY, getWidth() * _scaleX,
+					getHeight() * _scaleY, _rotation, _rect);
 		}
 		return _rect;
 	}
@@ -1132,14 +1136,44 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return _flipY;
 	}
 
+	public boolean isPointInUI(Vector2f v) {
+		return isPointInUI(v.x, v.y);
+	}
+
+	public boolean isPointInUI(PointI p) {
+		return isPointInUI(p.x, p.y);
+	}
+
+	public boolean isPointInUI(PointF p) {
+		return isPointInUI(p.x, p.y);
+	}
+
+	public boolean isPointInUI(float x, float y) {
+		return getRectBox().contains(x, y);
+	}
+
+	public boolean isClickDown() {
+		return input.getTouchPressed() == SysTouch.TOUCH_DOWN
+				|| SysTouch.isDown();
+	}
+
+	public boolean isClickUp() {
+		return input.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
+	}
+
+	public boolean isClickDrag() {
+		return input.getTouchPressed() == SysTouch.TOUCH_DRAG
+				|| SysTouch.isDrag();
+	}
+
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
-	public boolean isActionCompleted(){
+	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
-	
+
 	@Override
 	public void close() {
 		if (!autoDestroy) {
