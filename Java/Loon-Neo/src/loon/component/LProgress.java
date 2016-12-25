@@ -4,6 +4,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
+import loon.event.ValueListener;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureRegion;
 import loon.opengl.TextureUtils;
@@ -23,6 +24,8 @@ public class LProgress extends LComponent {
 	private LTextureRegion bgProgressTexture;
 	private LTextureRegion bgProgressStart;
 
+	private ValueListener listener;
+
 	private float percentage = 1f;
 
 	private LTextureRegion texture;
@@ -39,13 +42,13 @@ public class LProgress extends LComponent {
 		this(ProgressType.GAME, baseColor, x, y, width, height, null, null);
 	}
 
-	public LProgress(ProgressType type, LColor baseColor, int x, int y, int width,
-			int height) {
+	public LProgress(ProgressType type, LColor baseColor, int x, int y,
+			int width, int height) {
 		this(type, baseColor, x, y, width, height, null, null);
 	}
 
-	public LProgress(ProgressType type, LColor baseColor, int x, int y, int width,
-			int height, LTexture bg, LTexture bgProgress) {
+	public LProgress(ProgressType type, LColor baseColor, int x, int y,
+			int width, int height, LTexture bg, LTexture bgProgress) {
 		super(x, y, width, height);
 		this.progressType = type;
 		this.batch = new SpriteBatch();
@@ -92,6 +95,13 @@ public class LProgress extends LComponent {
 		}
 	}
 
+	public void update(final long elapsedTime) {
+		super.update(elapsedTime);
+		if (listener != null) {
+			listener.onChange(this, percentage);
+		}
+	}
+
 	public void draw(SpriteBatch batch, int x, int y) {
 		if (vertical) {
 			float size = 0;
@@ -99,13 +109,13 @@ public class LProgress extends LComponent {
 			case GAME:
 				size = getWidth() * (1 - percentage);
 				float posY = getHeight() / 2;
-				batch.draw(bgTexture, x + getHeight() / 2  + getWidth() / 2,
-						y - posY, size, getHeight(), 90);
+				batch.draw(bgTexture, x + getHeight() / 2 + getWidth() / 2, y
+						- posY, size, getHeight(), 90);
 				batch.setColor(baseColor);
 				size = getWidth() * percentage;
-				batch.draw(bgProgressTexture, x  + getHeight() / 2
-						+ getWidth() / 2, y + getWidth() - size - posY,
-						getWidth() * percentage, getHeight(), 90);
+				batch.draw(bgProgressTexture, x + getHeight() / 2 + getWidth()
+						/ 2, y + getWidth() - size - posY, getWidth()
+						* percentage, getHeight(), 90);
 				batch.resetColor();
 				break;
 			case UI:
@@ -204,6 +214,14 @@ public class LProgress extends LComponent {
 			texture.close();
 			batch.close();
 		}
+	}
+
+	public ValueListener getListener() {
+		return listener;
+	}
+
+	public void setListener(ValueListener listener) {
+		this.listener = listener;
 	}
 
 	@Override

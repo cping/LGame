@@ -406,42 +406,44 @@ public class Director extends SoundBox {
 	}
 
 	private final static Affine2f _trans = new Affine2f();
-	
-	public static Vector2f local2Global(
-			float centerX, float centerY, float posX, float posY,
-			Vector2f resultPoint) {
-		return local2Global(0, 1f, 1f, 0, 0, false, false, centerX, centerY,posX,posY,resultPoint);
+
+	public static Vector2f local2Global(float centerX, float centerY,
+			float posX, float posY, Vector2f resultPoint) {
+		return local2Global(0, 1f, 1f, 0, 0, false, false, centerX, centerY,
+				posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global( boolean flipX, boolean flipY,
+	public static Vector2f local2Global(boolean flipX, boolean flipY,
 			float centerX, float centerY, float posX, float posY,
 			Vector2f resultPoint) {
-		return local2Global(0, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY,posX,posY,resultPoint);
+		return local2Global(0, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY,
+				posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global( float rotation,
-			float centerX, float centerY, float posX, float posY,
-			Vector2f resultPoint) {
-		return local2Global(rotation, 1f, 1f, 0, 0, false, false, centerX, centerY,posX,posY,resultPoint);
-	}
-	
-	public static Vector2f local2Global(float rotation, boolean flipX, boolean flipY,
-			float centerX, float centerY, float posX, float posY,
-			Vector2f resultPoint) {
-		return local2Global(rotation, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY,posX,posY,resultPoint);
+	public static Vector2f local2Global(float rotation, float centerX,
+			float centerY, float posX, float posY, Vector2f resultPoint) {
+		return local2Global(rotation, 1f, 1f, 0, 0, false, false, centerX,
+				centerY, posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global(float rotation, float scaleX, float scaleY,
-			boolean flipX, boolean flipY, float centerX, float centerY, float posX, float posY,
-			Vector2f resultPoint) {
-		return local2Global(rotation, scaleX, scaleY, 0, 0, flipX, flipY, centerX,
-				centerY,posX,posY,resultPoint);
+	public static Vector2f local2Global(float rotation, boolean flipX,
+			boolean flipY, float centerX, float centerY, float posX,
+			float posY, Vector2f resultPoint) {
+		return local2Global(rotation, 1f, 1f, 0, 0, flipX, flipY, centerX,
+				centerY, posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global(float rotation, float scaleX, float scaleY,
-			float skewX, float skewY, boolean flipX, boolean flipY,
-			float centerX, float centerY, float posX, float posY,
-			Vector2f resultPoint) {
+	public static Vector2f local2Global(float rotation, float scaleX,
+			float scaleY, boolean flipX, boolean flipY, float centerX,
+			float centerY, float posX, float posY, Vector2f resultPoint) {
+		return local2Global(rotation, scaleX, scaleY, 0, 0, flipX, flipY,
+				centerX, centerY, posX, posY, resultPoint);
+	}
+
+	public static Vector2f local2Global(float rotation, float scaleX,
+			float scaleY, float skewX, float skewY, boolean flipX,
+			boolean flipY, float centerX, float centerY, float posX,
+			float posY, Vector2f resultPoint) {
 		_trans.idt();
 		if (rotation != 0) {
 			_trans.translate(centerX, centerY);
@@ -477,4 +479,12 @@ public class Director extends SoundBox {
 		return resultPoint;
 	}
 
+	public static boolean inside(RectBox rect, int x, int y) {
+		if (rect != null) {
+			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y
+					&& y < rect.Bottom())
+				return true;
+		}
+		return false;
+	}
 }

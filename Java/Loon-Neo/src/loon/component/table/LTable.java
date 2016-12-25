@@ -291,7 +291,7 @@ public class LTable extends LContainer {
 	}
 
 	protected void processTouchDragged() {
-		mouseDragged(getTouchX(), getTouchY());
+		mouseDragged(getUITouchX(), getUITouchY());
 		if (!locked) {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
@@ -305,13 +305,13 @@ public class LTable extends LContainer {
 
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		mousePressed(getTouchX(), getTouchY());
+		mousePressed(getUITouchX(), getUITouchY());
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		mouseExited(getTouchX(), getTouchY());
+		mouseExited(getUITouchX(), getUITouchY());
 	}
 
 	@Override

@@ -1,11 +1,16 @@
 package loon.component.layout;
 
 import loon.HorizontalAlign;
+import loon.VerticalAlign;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
 public class CenterLayout extends LayoutManager {
 
+	public final static CenterLayout at(){
+		return new CenterLayout();
+	}
+	
 	public void layoutElements(final LayoutPort rootElement,
 			final LayoutPort... elements) {
 
@@ -124,9 +129,9 @@ public class CenterLayout extends LayoutManager {
 		if (_allow) {
 			box.setHeight(boxHeight);
 		}
-		if (constraint.getVerticalAlign() == VerticalAlign.top) {
+		if (constraint.getVerticalAlign() == VerticalAlign.TOP) {
 			box.setY(rootBoxY);
-		} else if (constraint.getVerticalAlign() == VerticalAlign.bottom) {
+		} else if (constraint.getVerticalAlign() == VerticalAlign.BOTTOM) {
 			box.setY(rootBox.getHeight()
 					- rootBoxConstraints.getPaddingTop().getValueAsInt(
 							rootBox.getHeight()) - boxHeight);

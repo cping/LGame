@@ -6,6 +6,10 @@ import loon.utils.TArray;
 
 public class VerticalLayout extends LayoutManager {
 
+	public final static VerticalLayout at(){
+		return new VerticalLayout();
+	}
+	
 	public void layoutElements(final LayoutPort root,
 			final LayoutPort... children) {
 		if (isInvalid(root, children)) {

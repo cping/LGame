@@ -5,6 +5,10 @@ import loon.utils.TArray;
 
 public class AbsoluteLayout extends LayoutManager {
 
+	public final static AbsoluteLayout at(){
+		return new AbsoluteLayout();
+	}
+	
 	private LayoutProcess post;
 
 	public AbsoluteLayout() {

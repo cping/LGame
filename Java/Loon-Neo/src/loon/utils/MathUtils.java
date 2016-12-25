@@ -46,6 +46,14 @@ public class MathUtils {
 
 	public static RectBox getBounds(float x, float y, float width,
 			float height, float rotate, RectBox result) {
+		if (rotate == 0) {
+			if (result == null) {
+				result = new RectBox(x, y, width, height);
+			} else {
+				result.setBounds(x, y, width, height);
+			}
+			return result;
+		}
 		int[] rect = getLimit(x, y, width, height, rotate);
 		if (result == null) {
 			result = new RectBox(rect[0], rect[1], rect[2], rect[3]);

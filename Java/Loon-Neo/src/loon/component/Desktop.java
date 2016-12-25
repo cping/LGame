@@ -24,8 +24,12 @@ package loon.component;
 import loon.LRelease;
 import loon.Screen;
 import loon.action.sprite.ISprite;
+import loon.component.layout.LayoutConstraints;
+import loon.component.layout.LayoutManager;
+import loon.component.layout.LayoutPort;
 import loon.event.SysInput;
 import loon.event.SysTouch;
+import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
@@ -228,6 +232,57 @@ public class Desktop implements LRelease {
 		this.processEvents();
 		// 刷新桌面中子容器组件
 		this.contentPane.update(timer);
+	}
+	
+
+	public LayoutConstraints getRootConstraints() {
+		if (contentPane != null) {
+			return contentPane.getRootConstraints();
+		}
+		return null;
+	}
+
+	public LayoutPort getLayoutPort() {
+		if (contentPane != null) {
+			return contentPane.getLayoutPort();
+		}
+		return null;
+	}
+
+	public LayoutPort getLayoutPort(final RectBox newBox,
+			final LayoutConstraints newBoxConstraints) {
+		if (contentPane != null) {
+			return contentPane.getLayoutPort(newBox,
+					newBoxConstraints);
+		}
+		return null;
+	}
+
+	public LayoutPort getLayoutPort(final LayoutPort src) {
+		if (contentPane != null) {
+			return contentPane.getLayoutPort(src);
+		}
+		return null;
+	}
+
+	public void layoutElements(final LayoutManager manager,
+			final LComponent... comps) {
+		if (contentPane != null) {
+			contentPane.layoutElements(manager, comps);
+		}
+	}
+
+	public void layoutElements(final LayoutManager manager,
+			final LayoutPort... ports) {
+		if (contentPane != null) {
+			contentPane.layoutElements(manager, ports);
+		}
+	}
+
+	public void packLayout(final LayoutManager manager) {
+		if (contentPane != null) {
+			contentPane.packLayout(manager);
+		}
 	}
 
 	public void setAutoDestory(final boolean a) {

@@ -126,15 +126,17 @@ public class LScrollContainer extends LContainer {
 	}
 
 	@Override
-	public void add(LComponent comp) {
+	public LComponent add(LComponent comp) {
 		super.add(comp);
 		scrollContainerRealSizeChanged();
+		return this;
 	}
 
 	@Override
-	public synchronized void add(LComponent comp, int index) {
+	public LComponent add(LComponent comp, int index) {
 		super.add(comp, index);
 		scrollContainerRealSizeChanged();
+		return this;
 	}
 
 	@Override

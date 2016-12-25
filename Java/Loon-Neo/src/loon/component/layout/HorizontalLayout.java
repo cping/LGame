@@ -1,10 +1,15 @@
 package loon.component.layout;
 
+import loon.VerticalAlign;
 import loon.geom.SizeValue;
 import loon.utils.TArray;
 
 public class HorizontalLayout extends LayoutManager {
 
+	public final static HorizontalLayout at(){
+		return new HorizontalLayout();
+	}
+	
 	public final void layoutElements(final LayoutPort root,
 			final LayoutPort... children) {
 		if (isInvalid(root, children)) {
@@ -110,11 +115,11 @@ public class HorizontalLayout extends LayoutManager {
 	private int processVerticalAlignment(final int rootBoxY,
 			final int rootBoxHeight, final BoxSize box,
 			final LayoutConstraints boxConstraints) {
-		if (VerticalAlign.center.equals(boxConstraints.getVerticalAlign())) {
+		if (VerticalAlign.CENTER.equals(boxConstraints.getVerticalAlign())) {
 			return (int) (rootBoxY + ((rootBoxHeight - box.getHeight()) / 2));
-		} else if (VerticalAlign.top.equals(boxConstraints.getVerticalAlign())) {
+		} else if (VerticalAlign.TOP.equals(boxConstraints.getVerticalAlign())) {
 			return rootBoxY;
-		} else if (VerticalAlign.bottom.equals(boxConstraints
+		} else if (VerticalAlign.BOTTOM.equals(boxConstraints
 				.getVerticalAlign())) {
 			return (int) (rootBoxY + (rootBoxHeight - box.getHeight()));
 		} else {

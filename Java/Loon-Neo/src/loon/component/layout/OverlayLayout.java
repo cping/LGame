@@ -5,6 +5,10 @@ import loon.utils.TArray;
 
 public class OverlayLayout extends LayoutManager {
 
+	public final static OverlayLayout at(){
+		return new OverlayLayout();
+	}
+	
 	public final void layoutElements(final LayoutPort rootElement,
 			final LayoutPort... elements) {
 

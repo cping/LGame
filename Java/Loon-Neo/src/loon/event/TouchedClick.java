@@ -13,6 +13,8 @@ public class TouchedClick implements ClickListener {
 
 	private Touched _allTouch;
 
+	private boolean _enabled = true;
+
 	private TArray<ClickListener> clicks;
 
 	public TouchedClick addClickListener(ClickListener c) {
@@ -25,6 +27,9 @@ public class TouchedClick implements ClickListener {
 
 	@Override
 	public void DoClick(LComponent comp) {
+		if (!_enabled) {
+			return;
+		}
 		if (_allTouch != null) {
 			_allTouch.on(SysTouch.getX(), SysTouch.getY());
 		}
@@ -37,6 +42,9 @@ public class TouchedClick implements ClickListener {
 
 	@Override
 	public void DownClick(LComponent comp, float x, float y) {
+		if (!_enabled) {
+			return;
+		}
 		if (_downTouch != null) {
 			_downTouch.on(x, y);
 		}
@@ -49,6 +57,9 @@ public class TouchedClick implements ClickListener {
 
 	@Override
 	public void UpClick(LComponent comp, float x, float y) {
+		if (!_enabled) {
+			return;
+		}
 		if (_upTouch != null) {
 			_upTouch.on(x, y);
 		}
@@ -61,6 +72,9 @@ public class TouchedClick implements ClickListener {
 
 	@Override
 	public void DragClick(LComponent comp, float x, float y) {
+		if (!_enabled) {
+			return;
+		}
 		if (_dragTouch != null) {
 			_dragTouch.on(x, y);
 		}
@@ -103,4 +117,17 @@ public class TouchedClick implements ClickListener {
 		this._allTouch = allTouch;
 	}
 
+	public boolean isEnabled() {
+		return _enabled;
+	}
+
+	public void setEnabled(boolean e) {
+		_enabled = e;
+	}
+
+	public void clear() {
+		if (clicks != null) {
+			clicks.clear();
+		}
+	}
 }

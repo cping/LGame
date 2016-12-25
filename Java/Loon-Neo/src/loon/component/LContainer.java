@@ -22,6 +22,10 @@
 package loon.component;
 
 import loon.action.ActionBind;
+import loon.component.layout.LayoutConstraints;
+import loon.component.layout.LayoutManager;
+import loon.component.layout.LayoutPort;
+import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.LayerSorter;
@@ -30,6 +34,8 @@ import loon.utils.TArray;
 public abstract class LContainer extends LComponent {
 
 	protected LComponent[] _childs = new LComponent[0];
+
+	private LayoutConstraints _rootConstraints;
 
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(
 			false);
@@ -48,12 +54,19 @@ public abstract class LContainer extends LComponent {
 		return true;
 	}
 
-	public void add(LComponent comp) {
+	public LComponent add(LComponent... comps) {
+		for (int i = 0; i < comps.length; i++) {
+			add(comps[i]);
+		}
+		return this;
+	}
+
+	public LComponent add(LComponent comp) {
 		if (this == comp) {
-			return;
+			return this;
 		}
 		if (this.contains(comp)) {
-			return;
+			return this;
 		}
 		if (comp.getContainer() != null) {
 			comp.setContainer(null);
@@ -74,9 +87,10 @@ public abstract class LContainer extends LComponent {
 		}
 		this.sortComponents();
 		this.latestInserted = comp;
+		return this;
 	}
 
-	public void add(LComponent comp, int index) {
+	public LComponent add(LComponent comp, int index) {
 		if (comp.getContainer() != null) {
 			throw new IllegalStateException(comp
 					+ " already reside in another container!!!");
@@ -97,6 +111,7 @@ public abstract class LContainer extends LComponent {
 		this.desktop.setDesktop(comp);
 		this.sortComponents();
 		this.latestInserted = comp;
+		return this;
 	}
 
 	/**
@@ -554,6 +569,44 @@ public abstract class LContainer extends LComponent {
 
 	public LComponent get() {
 		return this.latestInserted;
+	}
+
+	public LayoutConstraints getRootConstraints() {
+		if (_rootConstraints == null) {
+			_rootConstraints = new LayoutConstraints();
+		}
+		return _rootConstraints;
+	}
+
+	public LayoutPort getLayoutPort() {
+		return new LayoutPort(getRectBox(), getRootConstraints());
+	}
+
+	public LayoutPort getLayoutPort(final RectBox newBox,
+			final LayoutConstraints newBoxConstraints) {
+		return new LayoutPort(newBox, newBoxConstraints);
+	}
+
+	public LayoutPort getLayoutPort(final LayoutPort src) {
+		return new LayoutPort(src);
+	}
+
+	public void layoutElements(final LayoutManager manager,
+			final LComponent... comps) {
+		if (manager != null) {
+			manager.layoutElements(this, comps);
+		}
+	}
+
+	public void layoutElements(final LayoutManager manager,
+			final LayoutPort... ports) {
+		if (manager != null) {
+			manager.layoutElements(getLayoutPort(), ports);
+		}
+	}
+
+	public void packLayout(final LayoutManager manager) {
+		layoutElements(manager, _childs);
 	}
 
 	@Override

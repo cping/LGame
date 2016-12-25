@@ -39,12 +39,10 @@ public class LayoutTest extends Screen {
 		// 单独设置下方间隔
 		getRootConstraints().setPaddingBottom(100);
 
-		// 布局器为水平方式
-		layout = new HorizontalLayout();
 		//如果不需要自动改变对象大小，可以设置禁止改变布局大小(不过，那样就请自行设定组件大小比率)
 		//layout.setChangeSize(false);
-		// 执行布局
-		layoutElements(layout, test1, test2, test3, test4);
+		// 执行布局,布局器为水平方式
+		packLayout(HorizontalLayout.at());
 
 		// 构建一个触屏监听
 		registerTouchArea(new LTouchArea() {
@@ -61,7 +59,7 @@ public class LayoutTest extends Screen {
 						layout = new HorizontalLayout();
 					}
 					//layout.setChangeSize(false);
-					// 执行布局
+					// 执行布局(若直接packLayout,则会执行全部组件,那么back按钮也会被自动布局)
 					layoutElements(layout, test1, test2, test3, test4);
 				}
 			}

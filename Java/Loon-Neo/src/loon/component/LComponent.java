@@ -109,6 +109,27 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return _touchListener;
 	}
 
+	public LComponent touchedClear() {
+		if (_touchListener != null) {
+			_touchListener.clear();
+		}
+		_touchListener = null;
+		return this;
+	}
+
+	public boolean isTouchedEnabled() {
+		if (_touchListener != null) {
+			return _touchListener.isEnabled();
+		}
+		return false;
+	}
+
+	public void setTouchedEnabled(boolean e) {
+		if (_touchListener != null) {
+			_touchListener.setEnabled(e);
+		}
+	}
+
 	public LComponent all(Touched t) {
 		makeTouched().setAllTouch(t);
 		return this;
@@ -977,7 +998,23 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return false;
 	}
 
+	public float getTouchDX() {
+		return input == null ? SysTouch.getDX() : input.getTouchDX();
+	}
+
+	public float getTouchDY() {
+		return input == null ? SysTouch.getDY() : input.getTouchDY();
+	}
+
 	public float getTouchX() {
+		return input == null ? SysTouch.getX() : input.getTouchX();
+	}
+
+	public float getTouchY() {
+		return input == null ? SysTouch.getY() : input.getTouchY();
+	}
+
+	public float getUITouchX() {
 		if (_super == null) {
 			return SysTouch.getX() - getX();
 		} else {
@@ -991,7 +1028,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 	}
 
-	public float getTouchY() {
+	public float getUITouchY() {
 		if (_super == null) {
 			return SysTouch.getY() - getY();
 		} else {
@@ -1150,6 +1187,10 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public boolean isPointInUI(float x, float y) {
 		return getRectBox().contains(x, y);
+	}
+
+	public boolean isPointInUI() {
+		return isPointInUI(getTouchX(), getTouchY());
 	}
 
 	public boolean isClickDown() {

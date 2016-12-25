@@ -20,8 +20,11 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Field2D;
+import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.geom.RectBox;
@@ -32,6 +35,8 @@ import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
 public class LLayer extends ActorLayer {
+
+	private Sprites _sprites;
 
 	private float width;
 
@@ -95,6 +100,57 @@ public class LLayer extends ActorLayer {
 		this.setElastic(true);
 		this.setLocked(true);
 		this.setLayer(100);
+	}
+
+	private void allocateSprites() {
+		if (_sprites == null) {
+			this._sprites = new Sprites(getScreen() == null ? LSystem
+					.getProcess().getScreen() : getScreen(), getWidth(),
+					getHeight());
+		}
+	}
+
+	public LLayer addSprite(ISprite s) {
+		allocateSprites();
+		_sprites.add(s);
+		return this;
+	}
+
+	public LLayer addSprite(ISprite... s) {
+		for (int i = 0; i < s.length; i++) {
+			addSprite(s[i]);
+		}
+		return this;
+	}
+
+	public LLayer addSpriteAt(ISprite s, float x, float y) {
+		allocateSprites();
+		_sprites.addAt(s, x, y);
+		return this;
+	}
+
+	public LLayer removeSprite(ISprite s) {
+		allocateSprites();
+		_sprites.remove(s);
+		return this;
+	}
+
+	public LLayer removeSprite(int idx) {
+		allocateSprites();
+		_sprites.remove(idx);
+		return this;
+	}
+
+	public LLayer removeSpriteName(String name) {
+		allocateSprites();
+		_sprites.removeName(name);
+		return this;
+	}
+
+	public LLayer removeSpriteAll() {
+		allocateSprites();
+		_sprites.removeAll();
+		return this;
 	}
 
 	public void setVSync(boolean vsync) {
@@ -173,6 +229,9 @@ public class LLayer extends ActorLayer {
 						thing.update(elapsedTime);
 					}
 				}
+				if (_sprites != null) {
+					_sprites.update(elapsedTime);
+				}
 			}
 		}
 	}
@@ -185,10 +244,16 @@ public class LLayer extends ActorLayer {
 		paintObjects(g, x, y, x + w, y + h);
 		if (x == 0 && y == 0) {
 			paint(g);
+			if (_sprites != null) {
+				_sprites.paint(g, x, y, w, h);
+			}
 		} else {
 			try {
 				g.translate(x, y);
 				paint(g);
+				if (_sprites != null) {
+					_sprites.paint(g, x, y, w, h);
+				}
 			} finally {
 				g.translate(-x, -y);
 			}
@@ -606,6 +671,10 @@ public class LLayer extends ActorLayer {
 				}
 			}
 		}
+		if (_sprites != null) {
+			_sprites.close();
+		}
+		_sprites = null;
 	}
 
 	@Override

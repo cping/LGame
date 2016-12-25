@@ -23,6 +23,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.event.SysTouch;
 import loon.opengl.GLEx;
 
 public class LScrollBar extends LComponent {
@@ -212,6 +213,20 @@ public class LScrollBar extends LComponent {
 		adjustSlider();
 	}
 
+	public void update(final long elapsedTime) {
+		super.update(elapsedTime);
+		if (SysTouch.isDrag()) {
+			if (isPointInUI(getTouchX(), getTouchY())) {
+				touchDragged(getUITouchX(), getUITouchY());
+			}
+		}
+		if (SysTouch.isDown()) {
+			if (isPointInUI(getTouchX(), getTouchY())) {
+				touchDown(getUITouchX(), getUITouchY());
+			}
+		}
+	}
+
 	public int getOrientation() {
 		return orientation;
 	}
@@ -275,19 +290,25 @@ public class LScrollBar extends LComponent {
 	@Override
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		touchDragged(getTouchX(), getTouchY());
+		if (isPointInUI(getTouchX(), getTouchY())) {
+			touchDragged(getUITouchX(), getUITouchY());
+		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
 		super.processKeyPressed();
-		touchDown(getTouchX(), getTouchY());
+		if (isPointInUI(getTouchX(), getTouchY())) {
+			touchDown(getUITouchX(), getUITouchY());
+		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		touchDown(getTouchX(), getTouchY());
+		if (isPointInUI(getTouchX(), getTouchY())) {
+			touchDown(getUITouchX(), getUITouchY());
+		}
 	}
 
 	public boolean touchDown(float screenX, float screenY) {

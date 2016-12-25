@@ -601,6 +601,33 @@ public class Sprites implements Serializable, LRelease {
 	}
 
 	/**
+	 * 单纯渲染精灵
+	 * 
+	 * @param g
+	 */
+	public void paint(final GLEx g, final float minX, final float minY,
+			final float maxX, final float maxY) {
+		float spriteX;
+		float spriteY;
+		float spriteWidth;
+		float spriteHeight;
+		for (int i = 0; i < this._size; i++) {
+			ISprite spr = this._sprites[i];
+			if (spr != null && spr.isVisible()) {
+				spriteX = minX + spr.getX();
+				spriteY = minY + spr.getY();
+				spriteWidth = spr.getWidth();
+				spriteHeight = spr.getHeight();
+				if (spriteX + spriteWidth < minX || spriteX > maxX
+						|| spriteY + spriteHeight < minY || spriteY > maxY) {
+					continue;
+				}
+				spr.createUI(g);
+			}
+		}
+	}
+
+	/**
 	 * 创建UI图像
 	 * 
 	 * @param g

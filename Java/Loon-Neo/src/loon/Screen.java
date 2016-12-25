@@ -40,6 +40,7 @@ import loon.component.LLayer;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.event.ClickListener;
 import loon.event.FrameLoopEvent;
 import loon.event.GameKey;
 import loon.event.GameTouch;
@@ -48,6 +49,7 @@ import loon.event.LTouchLocation;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.event.Touched;
+import loon.event.TouchedClick;
 import loon.event.Updateable;
 import loon.event.LTouchArea.Event;
 import loon.font.Font.Style;
@@ -71,6 +73,91 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
+
+	private ClickListener _clickListener;
+
+	private TouchedClick _touchListener;
+
+	private final TouchedClick makeTouched() {
+		if (_touchListener == null) {
+			_touchListener = new TouchedClick();
+		}
+		if (_clickListener != null) {
+			_touchListener.addClickListener(_clickListener);
+		}
+		this._clickListener = _touchListener;
+		return _touchListener;
+	}
+
+	public Screen addClickListener(ClickListener c) {
+		makeTouched().addClickListener(c);
+		return this;
+	}
+
+	public Screen clearTouched() {
+		if (_touchListener != null) {
+			_touchListener.clear();
+		}
+		_touchListener = null;
+		return this;
+	}
+
+	public boolean isTouchedEnabled() {
+		if (_touchListener != null) {
+			return _touchListener.isEnabled();
+		}
+		return false;
+	}
+
+	public void setTouchedEnabled(boolean e) {
+		if (_touchListener != null) {
+			_touchListener.setEnabled(e);
+		}
+	}
+
+	/**
+	 * 监听所有触屏事件(可以添加多个)
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public Screen all(Touched t) {
+		makeTouched().setAllTouch(t);
+		return this;
+	}
+
+	/**
+	 * 添加所有点击事件(可以添加多个)
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public Screen down(Touched t) {
+		makeTouched().setDownTouch(t);
+		return this;
+	}
+
+	/**
+	 * 监听所有触屏离开事件(可以添加多个)
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public Screen up(Touched t) {
+		makeTouched().setUpTouch(t);
+		return this;
+	}
+
+	/**
+	 * 监听所有触屏拖拽事件(可以添加多个)
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public Screen onDrag(Touched t) {
+		makeTouched().setDragTouch(t);
+		return this;
+	}
 
 	private ScreenAction _screenAction = null;
 
@@ -209,7 +296,54 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	protected final Closeable.Set _conns = new Closeable.Set();
 
-	private LayoutConstraints _rootConstraints;
+	public LayoutConstraints getRootConstraints() {
+		if (desktop != null) {
+			return desktop.getRootConstraints();
+		}
+		return null;
+	}
+
+	public LayoutPort getLayoutPort() {
+		if (desktop != null) {
+			return desktop.getLayoutPort();
+		}
+		return null;
+	}
+
+	public LayoutPort getLayoutPort(final RectBox newBox,
+			final LayoutConstraints newBoxConstraints) {
+		if (desktop != null) {
+			return desktop.getLayoutPort(newBox, newBoxConstraints);
+		}
+		return null;
+	}
+
+	public LayoutPort getLayoutPort(final LayoutPort src) {
+		if (desktop != null) {
+			return desktop.getLayoutPort(src);
+		}
+		return null;
+	}
+
+	public void layoutElements(final LayoutManager manager,
+			final LComponent... comps) {
+		if (desktop != null) {
+		    desktop.layoutElements(manager, comps);
+		}
+	}
+
+	public void layoutElements(final LayoutManager manager,
+			final LayoutPort... ports) {
+		if (desktop != null) {
+		    desktop.layoutElements(manager, ports);
+		}
+	}
+
+	public void packLayout(final LayoutManager manager) {
+		if (desktop != null) {
+			desktop.packLayout(manager);
+		}
+	}
 
 	private boolean _isExistCamera = false;
 
@@ -229,40 +363,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			_baseCamera = new EmptyCamera();
 		}
 		return _baseCamera;
-	}
-
-	public LayoutConstraints getRootConstraints() {
-		if (_rootConstraints == null) {
-			_rootConstraints = new LayoutConstraints();
-		}
-		return _rootConstraints;
-	}
-
-	public LayoutPort getLayoutPort() {
-		return new LayoutPort(getBox(), getRootConstraints());
-	}
-
-	public LayoutPort getLayoutPort(final RectBox newBox,
-			final LayoutConstraints newBoxConstraints) {
-		return new LayoutPort(newBox, newBoxConstraints);
-	}
-
-	public LayoutPort getLayoutPort(final LayoutPort src) {
-		return new LayoutPort(src);
-	}
-
-	public void layoutElements(final LayoutManager manager,
-			final LComponent... comps) {
-		if (manager != null) {
-			manager.layoutElements(this, comps);
-		}
-	}
-
-	public void layoutElements(final LayoutManager manager,
-			final LayoutPort... ports) {
-		if (manager != null) {
-			manager.layoutElements(getLayoutPort(), ports);
-		}
 	}
 
 	public void stopRepaint() {
@@ -1762,12 +1862,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			sprites.removeAll();
 		}
 		if (desktop != null) {
-			desktop.getContentPane().clear();
+			desktop.clear();
 		}
 		ActionControl.get().clear();
 		removeAllLoad();
 		removeAllUnLoad();
 		clearTouchAreas();
+		clearTouched();
+		clearFrameLoop();
 		return this;
 	}
 
@@ -2564,6 +2666,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.DOWN, e.getX(), e.getY());
 				touchDown(e);
+				if (_clickListener != null) {
+					_clickListener.DownClick(getDesktop()
+							.getSelectedComponent(), e.getX(), e.getY());
+				}
 			}
 		} catch (Exception ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
@@ -2591,6 +2697,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.UP, e.getX(), e.getY());
 				touchUp(e);
+				if (_clickListener != null) {
+					_clickListener.UpClick(getDesktop().getSelectedComponent(),
+							e.getX(), e.getY());
+				}
 			}
 		} catch (Exception ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
@@ -2624,10 +2734,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (isTranslate) {
 			e.offset(tx, ty);
 		}
-
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.DRAG, e.getX(), e.getY());
 			touchDrag(e);
+			if (_clickListener != null) {
+				_clickListener.DragClick(getDesktop().getSelectedComponent(),
+						e.getX(), e.getY());
+			}
 		}
 	}
 
@@ -2989,6 +3102,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				gravityHandler.close();
 				gravityHandler = null;
 			}
+			clearTouched();
 			clearFrameLoop();
 			if (_screenAction != null) {
 				removeAllActions(_screenAction);
