@@ -139,7 +139,8 @@ public class LToast extends LComponent {
 		this.displayY = (y + ((height / 2) - (cellHeight / 2)))
 				- font.getHeight() / 2;
 		this.setSize(cellWidth, cellHeight);
-		timer.setDelay(this.mDuration);
+		this.setLayer(1000);
+		this.timer.setDelay(this.mDuration);
 	}
 
 	public void fadeIn() {
@@ -163,8 +164,8 @@ public class LToast extends LComponent {
 		int oc = g.color();
 		float alpha = g.alpha();
 		try {
-			g.setAlpha(opacity);
 			g.setColor(mBackgroundColor);
+			g.setAlpha(opacity);
 			if (mBackgroundTexture == null) {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			} else {

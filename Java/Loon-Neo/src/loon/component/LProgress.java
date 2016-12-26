@@ -7,7 +7,6 @@ import loon.canvas.LColor;
 import loon.event.ValueListener;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureRegion;
-import loon.opengl.TextureUtils;
 
 public class LProgress extends LComponent {
 
@@ -72,8 +71,7 @@ public class LProgress extends LComponent {
 			break;
 		case UI:
 			if (defaultColorTexture == null || defaultColorTexture.isClose()) {
-				defaultColorTexture = TextureUtils.createTexture(1, 1,
-						LColor.white);
+				defaultColorTexture = LSystem.base().graphics().finalColorTex();
 			}
 			this.bgTexture = new LTextureRegion(DefUI.getDefaultTextures(4));
 			this.bgProgressTexture = new LTextureRegion(defaultColorTexture);

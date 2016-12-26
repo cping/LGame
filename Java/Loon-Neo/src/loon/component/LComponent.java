@@ -29,12 +29,14 @@ import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
+import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
 import loon.component.layout.LayoutConstraints;
+import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.event.ClickListener;
 import loon.event.SysInput;
@@ -66,6 +68,14 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public void setLocked(boolean locked) {
 		this.locked = locked;
+	}
+
+	public boolean isDragLocked() {
+		return isLocked();
+	}
+
+	public void setDragLocked(boolean locked){
+		setLocked(locked);
 	}
 
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
@@ -209,11 +219,11 @@ public abstract class LComponent extends LObject<LContainer> implements
 	// 居中位置，组件坐标与大小
 	private int cam_x, cam_y;
 
-	private float _width, _height;
+	protected float _width, _height;
 	// 水平设置
-	private boolean _flipX = false, _flipY = false;
+	protected boolean _flipX = false, _flipY = false;
 	// 缩放比例
-	private float _scaleX = 1f, _scaleY = 1f;
+	protected float _scaleX = 1f, _scaleY = 1f;
 	// 屏幕位置
 	protected int screenX, screenY;
 
@@ -244,7 +254,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	protected LTexture _background;
 
-	protected LayoutConstraints constraints = null;
+	protected LayoutConstraints _rootConstraints = null;
 
 	protected LColor baseColor = null;
 
@@ -271,7 +281,8 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public Screen getScreen() {
-		return desktop.input;
+		return desktop.input == null ? LSystem.getProcess().getScreen()
+				: desktop.input;
 	}
 
 	public int getScreenWidth() {
@@ -397,7 +408,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		if (!this.visible) {
 			return;
 		}
-		if (_alpha < 0.01) {
+		if (_alpha < 0.01f) {
 			return;
 		}
 		synchronized (this) {
@@ -406,6 +417,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 					|| !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 			try {
 				g.saveBrush();
+				g.setAlpha(_alpha);
 				final int width = (int) this.getWidth();
 				final int height = (int) this.getHeight();
 				if (this.elastic) {
@@ -442,35 +454,16 @@ public abstract class LComponent extends LObject<LContainer> implements
 					}
 				}
 				g.setBlendMode(_blend);
-				// 变更透明度
-				if (_alpha > 0.1 && _alpha < 1.0) {
-					float tmp = g.alpha();
-					g.setAlpha(_alpha);
-					if (_background != null) {
-						g.draw(_background, this.screenX, this.screenY, width,
-								height, baseColor);
-					}
-					if (this.customRendering) {
-						this.createCustomUI(g, this.screenX, this.screenY,
-								width, height);
-					} else {
-						this.createUI(g, this.screenX, this.screenY, this,
-								this._imageUI);
-					}
-					g.setAlpha(tmp);
-					// 不变更
+				if (_background != null) {
+					g.draw(_background, this.screenX, this.screenY, width,
+							height, baseColor);
+				}
+				if (this.customRendering) {
+					this.createCustomUI(g, this.screenX, this.screenY, width,
+							height);
 				} else {
-					if (_background != null) {
-						g.draw(_background, this.screenX, this.screenY, width,
-								height, baseColor);
-					}
-					if (this.customRendering) {
-						this.createCustomUI(g, this.screenX, this.screenY,
-								width, height);
-					} else {
-						this.createUI(g, this.screenX, this.screenY, this,
-								this._imageUI);
-					}
+					this.createUI(g, this.screenX, this.screenY, this,
+							this._imageUI);
 				}
 				if (isDrawSelect()) {
 					int tmp = g.color();
@@ -1100,15 +1093,46 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return visible;
 	}
 
-	public LayoutConstraints getConstraints() {
-		if (constraints == null) {
-			constraints = new LayoutConstraints();
+	public LComponent in() {
+		this.setAlpha(0f);
+		this.selfAction().fadeIn(30).start();
+		return this;
+	}
+
+	public LComponent out() {
+		this.selfAction().fadeOut(30).start()
+				.setActionListener(new ActionListener() {
+
+					@Override
+					public void stop(ActionBind o) {
+						if (getParent() != null) {
+							getParent().remove((LComponent) o);
+						}
+						close();
+					}
+
+					@Override
+					public void start(ActionBind o) {
+
+					}
+
+					@Override
+					public void process(ActionBind o) {
+
+					}
+				});
+		return this;
+	}
+
+	public LayoutConstraints getRootConstraints() {
+		if (_rootConstraints == null) {
+			_rootConstraints = new LayoutConstraints();
 		}
-		return constraints;
+		return _rootConstraints;
 	}
 
 	public LayoutPort getLayoutPort() {
-		return new LayoutPort(this, getConstraints());
+		return new LayoutPort(this, getRootConstraints());
 	}
 
 	public LayoutPort getLayoutPort(final RectBox newBox,
@@ -1120,6 +1144,13 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return new LayoutPort(src);
 	}
 
+	public void layoutElements(final LayoutManager manager,
+			final LayoutPort... ports) {
+		if (manager != null) {
+			manager.layoutElements(getLayoutPort(), ports);
+		}
+	}
+	
 	@Override
 	public void setColor(LColor c) {
 		this.baseColor = c;

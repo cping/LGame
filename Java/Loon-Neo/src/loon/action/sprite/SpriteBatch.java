@@ -584,7 +584,7 @@ public class SpriteBatch extends PixmapFImpl {
 	protected void switchTexture(LTexture texture) {
 		submit();
 		lastTexture = texture;
-		if (texture.isScale()) {
+		if (texture.isCopy()) {
 			invTexWidth = (1f / texture.width());
 			invTexHeight = (1f / texture.height());
 		} else {

@@ -225,7 +225,7 @@ public class LTextureBatch implements LRelease {
 		this.texture = tex2d;
 		this.texWidth = (int) texture.width();
 		this.texHeight = (int) texture.height();
-		if (texture.isScale()) {
+		if (texture.isCopy()) {
 			invTexWidth = (1f / texture.width());
 			invTexHeight = (1f / texture.height());
 		} else {

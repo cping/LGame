@@ -25,6 +25,7 @@ import loon.geom.Affine2f;
 
 public abstract class BaseBatch extends LTextureBind {
 
+
 	public void addQuad(LTexture tex, int tint, Affine2f xf, float x, float y,
 			float w, float h) {
 		if (tex == null || tex.disposed()) {
@@ -43,7 +44,8 @@ public abstract class BaseBatch extends LTextureBind {
 					: tex.widthRatio;
 			float uv = tex.getFormat().repeatY ? h / forefather.height()
 					: tex.heightRatio;
-			if (w < forefather.width() || h < forefather.height()) {
+			if ((w < forefather.width() || h < forefather.height())
+					&& !tex.isScale()) {
 				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2,
 						uv);
 			} else {

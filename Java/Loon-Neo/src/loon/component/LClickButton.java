@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.event.CallFunction;
 import loon.font.BMFont;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -33,6 +34,8 @@ import loon.utils.StringUtils;
 
 // 与LButton的差异在于，内置有默认UI图片，并且可以选择大小，而不是必须按照图片大小拆分
 public class LClickButton extends LComponent {
+
+	private CallFunction _function;
 
 	private LTexture idleClick, hoverClick, clickedClick;
 
@@ -145,6 +148,17 @@ public class LClickButton extends LComponent {
 		this.idleClick = idle;
 		this.hoverClick = hover;
 		this.clickedClick = clicked;
+		if (idle == null && hover == null && clicked == null) {
+			idleClick = DefUI.getDefaultTextures(7);
+			hoverClick = DefUI.getDefaultTextures(8);
+			clickedClick = DefUI.getDefaultTextures(9);
+		} else if (idle == null) {
+			idleClick = DefUI.getDefaultTextures(7);
+		} else if (hover == null) {
+			hoverClick = DefUI.getDefaultTextures(8);
+		} else if (clicked == null) {
+			clickedClick = DefUI.getDefaultTextures(9);
+		}
 	}
 
 	@Override
@@ -259,6 +273,9 @@ public class LClickButton extends LComponent {
 	@Override
 	protected void processTouchReleased() {
 		this.upClick();
+		if (_function != null) {
+			_function.call(this);
+		}
 		this.pressed = false;
 	}
 
@@ -372,6 +389,14 @@ public class LClickButton extends LComponent {
 
 	public void setGrayButton(boolean g) {
 		this.grayButton = g;
+	}
+
+	public CallFunction getFunction() {
+		return _function;
+	}
+
+	public void setFunction(CallFunction function) {
+		this._function = function;
 	}
 
 	@Override

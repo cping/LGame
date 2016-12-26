@@ -75,6 +75,14 @@ public class LTextureRegion implements LRelease {
 		this.texture = texture;
 		setRegion(0, 0, texture.width(), texture.height());
 	}
+	
+	public float getWidth(){
+		return getRegionWidth();
+	}
+	
+	public float getHeight(){
+		return getRegionHeight();
+	}
 
 	public void setRegion(int x, int y, int width, int height) {
 		float invTexWidth = 1f;

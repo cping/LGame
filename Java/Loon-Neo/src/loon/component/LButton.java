@@ -24,6 +24,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.event.CallFunction;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -40,6 +41,8 @@ public class LButton extends LComponent {
 	private IFont font = LFont.getDefaultFont();
 
 	private LColor fontColor = LColor.white;
+
+	private CallFunction _function;
 
 	public LButton(String fileName) {
 		this(fileName, null, 0, 0);
@@ -212,6 +215,9 @@ public class LButton extends LComponent {
 	protected void processTouchReleased() {
 		this.upClick();
 		this.pressed = false;
+		if (_function != null) {
+			_function.call(this);
+		}
 	}
 
 	@Override
@@ -257,6 +263,14 @@ public class LButton extends LComponent {
 		this.font = font;
 	}
 
+	public CallFunction getFunction() {
+		return _function;
+	}
+
+	public void setFunction(CallFunction function) {
+		this._function = function;
+	}
+
 	public LColor getFontColor() {
 		return fontColor;
 	}
@@ -280,4 +294,5 @@ public class LButton extends LComponent {
 	public void setOffsetTop(int offsetTop) {
 		this.offsetTop = offsetTop;
 	}
+
 }

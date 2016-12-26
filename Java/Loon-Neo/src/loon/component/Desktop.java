@@ -233,7 +233,6 @@ public class Desktop implements LRelease {
 		// 刷新桌面中子容器组件
 		this.contentPane.update(timer);
 	}
-	
 
 	public LayoutConstraints getRootConstraints() {
 		if (contentPane != null) {
@@ -252,8 +251,7 @@ public class Desktop implements LRelease {
 	public LayoutPort getLayoutPort(final RectBox newBox,
 			final LayoutConstraints newBoxConstraints) {
 		if (contentPane != null) {
-			return contentPane.getLayoutPort(newBox,
-					newBoxConstraints);
+			return contentPane.getLayoutPort(newBox, newBoxConstraints);
 		}
 		return null;
 	}
@@ -282,6 +280,14 @@ public class Desktop implements LRelease {
 	public void packLayout(final LayoutManager manager) {
 		if (contentPane != null) {
 			contentPane.packLayout(manager);
+		}
+	}
+
+	public void packLayout(final LayoutManager manager, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight) {
+		if (contentPane != null) {
+			contentPane.packLayout(manager, spacex, spacey, spaceWidth,
+					spaceHeight);
 		}
 	}
 

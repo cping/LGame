@@ -1,12 +1,29 @@
 package loon.opengl;
 
 import loon.LTexture;
+import loon.LTextures;
 
 public class LSubTexture {
 
 	private LTexture parent;
 
 	private int x, y, x2, y2;
+
+	public LSubTexture(LTexture tex) {
+		this.parent = tex;
+		this.x = 0;
+		this.y = 0;
+		this.x2 = parent.getWidth();
+		this.y2 = parent.getHeight();
+	}
+	
+	public LSubTexture(String path) {
+		this.parent = LTextures.loadTexture(path);
+		this.x = 0;
+		this.y = 0;
+		this.x2 = parent.getWidth();
+		this.y2 = parent.getHeight();
+	}
 
 	public LSubTexture(LTexture parent, int x, int y, int x2, int y2) {
 		this.parent = parent;
@@ -22,6 +39,14 @@ public class LSubTexture {
 
 	public LTexture getParent() {
 		return parent;
+	}
+	
+	public int getX(){
+		return x;
+	}
+	
+	public int getY(){
+		return y;
 	}
 
 	public int getSubX() {

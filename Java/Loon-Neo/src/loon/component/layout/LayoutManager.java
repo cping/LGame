@@ -88,8 +88,9 @@ public abstract class LayoutManager {
 
 	protected boolean _allow = true;
 
-	public final void setChangeSize(boolean allow) {
+	public final LayoutManager setChangeSize(boolean allow) {
 		this._allow = allow;
+		return this;
 	}
 
 	public final boolean isAllowChangeSize() {

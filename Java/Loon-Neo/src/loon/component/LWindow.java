@@ -22,51 +22,270 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.Screen;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
+import loon.component.layout.HorizontalLayout;
+import loon.component.layout.LayoutConstraints;
+import loon.component.layout.VerticalLayout;
+import loon.event.CallFunction;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 
 public class LWindow extends LContainer {
 
-	private String title;
+	private String _title;
 
-	private LTexture barTexture;
+	private LTexture _barTexture;
 
 	private Animation animation = new Animation();
 
-	private int barheight;
+	private int _barheight;
 
 	private IFont font = LFont.getDefaultFont();
 
-	private LColor fontColor;
+	private LColor _fontColor;
 
-	public LWindow(String title, int x, int y, int width, int height) {
-		this(title, LColor.white, DefUI.getDefaultTextures(0), DefUI
-				.getDefaultTextures(1), x, y, width, height, 40);
+	public static LWindow alert(LTexture textureBtn, String title,
+			String firstButton, String secondButton, String closeButton,
+			float x, float y, CallFunction first, CallFunction second,
+			CallFunction close, boolean vertical) {
+		return alert(textureBtn, title, firstButton, secondButton, closeButton,
+				x, y, first, second, close, vertical);
 	}
 
-	public LWindow(String title, int x, int y, int width, int height,
+	public static LWindow alert(String barPath, String backgroundPath,
+			String btnPath, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, float barheight, CallFunction first,
+			CallFunction second, CallFunction close, LColor fontColor,
+			boolean vertical) {
+		return alert(LTextures.loadTexture(barPath),
+				LTextures.loadTexture(backgroundPath),
+				LTextures.loadTexture(btnPath), title, firstButton,
+				secondButton, closeButton, x, y, width, height, barheight,
+				first, second, close, fontColor, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton, float x,
+			float y, CallFunction first, boolean vertical) {
+		return alert(title, firstButton, null, null, x, y, first, null, null,
+				null, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, float x, float y, CallFunction first,
+			CallFunction second, boolean vertical) {
+		return alert(title, firstButton, secondButton, null, x, y, first,
+				second, null, null, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			CallFunction first, CallFunction second, CallFunction close,
+			boolean vertical) {
+		return alert(title, firstButton, secondButton, closeButton, x, y,
+				first, second, close, null, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			CallFunction first, CallFunction second, CallFunction close,
+			LColor fontColor, boolean vertical) {
+		return alert((LTexture) null, (LTexture) null, (LTexture) null, title,
+				firstButton, secondButton, closeButton, x, y,
+				LSystem.viewSize.getWidth() * 0.75f,
+				LSystem.viewSize.getHeight() * 0.45f, 40, first, second, close,
+				fontColor, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float barheight, CallFunction first, CallFunction second,
+			CallFunction close, LColor fontColor, boolean vertical) {
+		return alert((LTexture) null, (LTexture) null, (LTexture) null, title,
+				firstButton, secondButton, closeButton, x, y,
+				LSystem.viewSize.getWidth() * 0.75f,
+				LSystem.viewSize.getHeight() * 0.45f, barheight, first, second,
+				close, fontColor, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton, float x,
+			float y, float width, float height, CallFunction first,
+			boolean vertical) {
+		return alert(title, firstButton, null, null, x, y, width, height,
+				first, null, null, null, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, float x, float y, float width, float height,
+			CallFunction first, CallFunction second, boolean vertical) {
+		return alert(title, firstButton, secondButton, null, x, y, width,
+				height, first, second, null, null, vertical);
+	}
+
+	public static LWindow alert(String firstButton, float x, float y,
+			float width, float height, CallFunction first, boolean vertical) {
+		return alert(null, firstButton, null, null, x, y, width, height, first,
+				null, null, null, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, CallFunction first, CallFunction second,
+			CallFunction close, boolean vertical) {
+		return alert(title, firstButton, secondButton, closeButton, x, y,
+				width, height, first, second, close, null, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, CallFunction first, CallFunction second,
+			CallFunction close, LColor fontColor, boolean vertical) {
+		return alert((LTexture) null, (LTexture) null, (LTexture) null, title,
+				firstButton, secondButton, closeButton, x, y, width, height,
+				40, first, second, close, fontColor, vertical);
+	}
+
+	public static LWindow alert(String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, float barheight, CallFunction first,
+			CallFunction second, CallFunction close, LColor fontColor,
+			boolean vertical) {
+		return alert((LTexture) null, (LTexture) null, (LTexture) null, title,
+				firstButton, secondButton, closeButton, x, y, width, height,
+				barheight, first, second, close, fontColor, vertical);
+	}
+
+	public static LWindow alert(LTexture bar, LTexture background,
+			LTexture textureBtn, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, float barheight, CallFunction first,
+			CallFunction second, CallFunction close, LColor fontColor,
+			boolean vertical) {
+		if (fontColor == null) {
+			fontColor = LColor.white;
+		}
+		LWindow window = new LWindow(title, fontColor, bar, background, x, y,
+				width, height, barheight);
+		Screen screen = window.getScreen();
+		window.setFontColor(fontColor);
+		window.setColor(LColor.lightGray);
+		if (x == 0 && y == 0) {
+			screen.centerOn(window);
+		}
+		int btnWidth = (int) (width * 0.3f);
+		int btnHeight = (int) (height * 0.3f);
+		int count = 0;
+		if (firstButton != null) {
+			LClickButton firstBtn = LClickButton.make(firstButton, btnWidth,
+					btnHeight, textureBtn);
+			firstBtn.setFontColor(fontColor);
+			firstBtn.setFunction(first);
+			window.add(firstBtn);
+			count++;
+		}
+		if (secondButton != null) {
+			LClickButton secondBtn = LClickButton.make(secondButton, btnWidth,
+					btnHeight, textureBtn);
+			secondBtn.setFontColor(fontColor);
+			secondBtn.setFunction(second);
+			window.add(secondBtn);
+			count++;
+		}
+		if (closeButton != null) {
+			LClickButton closeBtn = LClickButton.make(closeButton, btnWidth,
+					btnHeight, textureBtn);
+			closeBtn.setFontColor(fontColor);
+			closeBtn.setFunction(close);
+			window.add(closeBtn);
+			count++;
+		}
+		if (vertical) {
+			int btnSize = btnHeight * count;
+			int per = (int) (100 - (btnSize / width) * 100) / 2;
+			if (per % 2 != 0) {
+				per -= 1;
+			}
+			LayoutConstraints root = window.getRootConstraints();
+			root.setPaddingLeft("5%");
+			root.setPaddingRight("5%");
+			root.setPaddingTop((title == null ? per : (per + 10)) + "%");
+			root.setPaddingBottom(per + "%");
+			window.packLayout(VerticalLayout.at().setChangeSize(true), 0, 0, 0,
+					-2);
+			screen.add(window);
+		} else {
+			int btnSize = btnWidth * count;
+			int per = (int) (100 - (btnSize / width) * 100) / 2;
+			if (per % 2 != 0) {
+				per -= 1;
+			}
+			LayoutConstraints root = window.getRootConstraints();
+			root.setPaddingLeft(per + "%");
+			root.setPaddingRight(per + "%");
+			root.setPaddingTop("35%");
+			root.setPaddingBottom("25%");
+			window.packLayout(HorizontalLayout.at().setChangeSize(
+					!(btnSize < width)));
+			screen.add(window);
+		}
+		window.in();
+		return window;
+	}
+
+	public static LWindow pop(String title, float x, float y) {
+		LWindow window = at(title, x, y);
+		window.getScreen().centerOn(window);
+		window.getScreen().add(window);
+		return window;
+	}
+
+	public static LWindow at(String title, float x, float y) {
+		if (LSystem.getProcess() != null) {
+			return at(title, x, y, LSystem.viewSize.width * 0.75f,
+					LSystem.viewSize.height * 0.45f);
+		}
+		return at(title, x, y, 200, 200);
+	}
+
+	public static LWindow at(String title, float x, float y, float width,
+			float height) {
+		return new LWindow(title, x, y, width, height);
+	}
+
+	public LWindow(String title, float x, float y, float width, float height) {
+		this(title, LColor.white, DefUI.getDefaultTextures(0), DefUI
+				.getDefaultTextures(7), x, y, width, height, 40);
+	}
+
+	public LWindow(String title, float x, float y, float width, float height,
 			String barFile, String backgroundFile) {
 		this(title, LColor.white, LTextures.loadTexture(barFile), LTextures
 				.loadTexture(backgroundFile), x, y, width, height, 40);
 	}
 
 	public LWindow(String txt, LColor color, LTexture bar, LTexture background,
-			int x, int y, int width, int height, int barheight) {
-		super(x, y, width, height);
-		this.customRendering = true;
-		this.barTexture = bar;
-		this.barheight = barheight;
-		this.title = txt;
-		this.fontColor = color;
-		this.setBackground(background.scale(width, height));
+			float x, float y, float width, float height, float barheight) {
+		super((int) x, (int) y, (int) width, (int) height);
+		this._barTexture = bar;
+		if (_barTexture == null) {
+			_barTexture = DefUI.getDefaultTextures(0);
+		}
+		this._barheight = (int) barheight;
+		this._title = txt;
+		this._fontColor = color;
+		this._background = background;
+		if (_background == null) {
+			_background = DefUI.getDefaultTextures(7);
+		}
 		this.setElastic(true);
 		this.setLocked(false);
-		this.setLayer(100);
+		this.setLayer(500);
 	}
 
 	public Animation getAnimation() {
@@ -85,17 +304,62 @@ public class LWindow extends LContainer {
 		animation.addFrame(image, timer);
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
 			this.doClick();
 		}
 	}
 
-	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
+	public void paint(GLEx g) {
+
+	}
+
+	@Override
+	public void update(long elapsedTime) {
 		if (visible) {
-			g.draw(barTexture, x, y, w, this.barheight);
-			if (title != null) {
-				font.drawString(g, title, x + 5, y, fontColor);
+			super.update(elapsedTime);
+			animation.update(elapsedTime);
+		}
+	}
+
+	@Override
+	protected void processTouchClicked() {
+		if (!input.isMoving()) {
+			super.processTouchClicked();
+		}
+	}
+
+	@Override
+	protected void processTouchPressed() {
+		if (!input.isMoving()) {
+			super.processTouchPressed();
+		}
+	}
+
+	@Override
+	protected void processTouchReleased() {
+		if (!input.isMoving()) {
+			super.processTouchReleased();
+		}
+	}
+
+	@Override
+	public void createUI(GLEx g, int x, int y, LComponent component,
+			LTexture[] buttonImage) {
+		if (visible) {
+			if (_background != null) {
+				g.draw(_background, x, y, getWidth(), getHeight(), baseColor);
+			}
+			if (_title != null) {
+				g.draw(_barTexture, x, y, getWidth(), this._barheight,
+						baseColor);
+				font.drawString(
+						g,
+						_title,
+						x + 5,
+						y + (this._barheight - font.getHeight()) / 2
+								- (LSystem.isDesktop() ? 5 : 0), _fontColor);
 			}
 			if (animation.getSpriteImage() != null) {
 				g.draw(animation.getSpriteImage(), x, y, baseColor);
@@ -108,52 +372,41 @@ public class LWindow extends LContainer {
 				paint(g);
 			}
 		}
-	}
-
-	public void paint(GLEx g) {
 
 	}
 
-	public void update(long elapsedTime) {
-		if (visible) {
-			super.update(elapsedTime);
-			animation.update(elapsedTime);
-		}
+	@Override
+	public void setBackground(LTexture back) {
+		_background = back;
 	}
 
-	protected void processTouchClicked() {
-		if (!input.isMoving()) {
-			super.processTouchClicked();
-		}
+	public void setBackground(String path) {
+		setBackground(LTextures.loadTexture(path));
 	}
 
-	protected void processTouchPressed() {
-		if (!input.isMoving()) {
-			super.processTouchPressed();
-		}
+	public LTexture getBarTexture() {
+		return _barTexture;
 	}
 
-	protected void processTouchReleased() {
-		if (!input.isMoving()) {
-			super.processTouchReleased();
-		}
+	public void setBarTexture(LTexture bar) {
+		this._barTexture = bar;
 	}
 
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
-
+	public void setBarTexture(String path) {
+		setBarTexture(LTextures.loadTexture(path));
 	}
-
+	
+	@Override
 	public String getUIName() {
 		return "Window";
 	}
 
 	public String getTitle() {
-		return title;
+		return _title;
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this._title = title;
 	}
 
 	public IFont getFont() {
@@ -165,16 +418,22 @@ public class LWindow extends LContainer {
 	}
 
 	public LColor getFontColor() {
-		return fontColor;
+		return _fontColor;
 	}
 
 	public void setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+		this._fontColor = fontColor;
 	}
 
 	@Override
 	public void close() {
 		super.close();
+		if (_background != null) {
+			_background.close();
+		}
+		if (_barTexture != null) {
+			_barTexture.close();
+		}
 		if (animation != null) {
 			animation.close();
 			animation = null;

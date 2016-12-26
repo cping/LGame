@@ -57,8 +57,10 @@ public class LTexture extends Painter implements LRelease {
 
 	private boolean _drawing = false;
 
-	private boolean _scaleSize = false;
+	private boolean _copySize = false;
 
+	private boolean _scaleSize = false;
+	
 	private int[] _cachePixels;
 
 	private String source;
@@ -509,7 +511,7 @@ public class LTexture extends Painter implements LRelease {
 			copy.imageHeight = imageHeight;
 			copy._image = _image;
 			copy._cachePixels = _cachePixels;
-			copy._scaleSize = true;
+			copy._copySize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
 			copy.displayWidth = this.displayWidth * this.widthRatio;
@@ -529,10 +531,14 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
+	public boolean isCopy() {
+		return _copySize;
+	}
+
 	public boolean isScale() {
 		return _scaleSize;
 	}
-
+	
 	public LTexture scale(final float width, final float height) {
 
 		int hashCode = 1;
@@ -565,6 +571,7 @@ public class LTexture extends Painter implements LRelease {
 			copy.imageHeight = imageHeight;
 			copy._image = _image;
 			copy._cachePixels = _cachePixels;
+			copy._copySize = true;
 			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);

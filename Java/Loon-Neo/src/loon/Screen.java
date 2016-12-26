@@ -328,20 +328,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public void layoutElements(final LayoutManager manager,
 			final LComponent... comps) {
 		if (desktop != null) {
-		    desktop.layoutElements(manager, comps);
+			desktop.layoutElements(manager, comps);
 		}
 	}
 
 	public void layoutElements(final LayoutManager manager,
 			final LayoutPort... ports) {
 		if (desktop != null) {
-		    desktop.layoutElements(manager, ports);
+			desktop.layoutElements(manager, ports);
 		}
 	}
 
 	public void packLayout(final LayoutManager manager) {
 		if (desktop != null) {
 			desktop.packLayout(manager);
+		}
+	}
+
+	public void packLayout(final LayoutManager manager, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight) {
+		if (desktop != null) {
+			desktop.packLayout(manager, spacex, spacey, spaceHeight,
+					spaceHeight);
 		}
 	}
 

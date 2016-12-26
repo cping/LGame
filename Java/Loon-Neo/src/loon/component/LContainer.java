@@ -22,20 +22,18 @@
 package loon.component;
 
 import loon.action.ActionBind;
-import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.LayerSorter;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public abstract class LContainer extends LComponent {
 
 	protected LComponent[] _childs = new LComponent[0];
-
-	private LayoutConstraints _rootConstraints;
 
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(
 			false);
@@ -571,24 +569,24 @@ public abstract class LContainer extends LComponent {
 		return this.latestInserted;
 	}
 
-	public LayoutConstraints getRootConstraints() {
-		if (_rootConstraints == null) {
-			_rootConstraints = new LayoutConstraints();
+	private RectBox getBox() {
+		if (_rect != null) {
+			_rect.setBounds(MathUtils.getBounds(0, 0, getWidth() * _scaleX,
+					getHeight() * _scaleY, _rotation, _rect));
+		} else {
+			_rect = MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight()
+					* _scaleY, _rotation, _rect);
 		}
-		return _rootConstraints;
+		return _rect;
 	}
 
+	@Override
 	public LayoutPort getLayoutPort() {
-		return new LayoutPort(getRectBox(), getRootConstraints());
-	}
-
-	public LayoutPort getLayoutPort(final RectBox newBox,
-			final LayoutConstraints newBoxConstraints) {
-		return new LayoutPort(newBox, newBoxConstraints);
-	}
-
-	public LayoutPort getLayoutPort(final LayoutPort src) {
-		return new LayoutPort(src);
+		if (_super == null) {
+			return new LayoutPort(getBox(), getRootConstraints());
+		} else {
+			return new LayoutPort(this, getRootConstraints());
+		}
 	}
 
 	public void layoutElements(final LayoutManager manager,
@@ -598,15 +596,50 @@ public abstract class LContainer extends LComponent {
 		}
 	}
 
-	public void layoutElements(final LayoutManager manager,
-			final LayoutPort... ports) {
-		if (manager != null) {
-			manager.layoutElements(getLayoutPort(), ports);
+	public void packLayout(final LayoutManager manager) {
+		packLayout(manager, 0, 0, 0, 0);
+	}
+
+	public void packLayout(final LayoutManager manager,final float spacex,
+			final float spacey,final float spaceWidth,final float spaceHeight) {
+		LComponent[] comps = getComponents();
+		CollectionUtils.reverse(comps);
+		layoutElements(manager, comps);
+		if (spacex != 0 || spacey != 0 || spaceWidth != 0 || spaceHeight != 0) {
+			for (int i = 0; i < comps.length; i++) {
+				LComponent comp = comps[i];
+				if (comp != null) {
+					comp.setX(comp.getX() + spacex);
+					comp.setY(comp.getY() + spacey);
+					comp.setWidth(comp.getWidth() + spaceWidth);
+					comp.setHeight(comp.getHeight() + spaceHeight);
+				}
+			}
 		}
 	}
 
-	public void packLayout(final LayoutManager manager) {
-		layoutElements(manager, _childs);
+	@Override
+	public LComponent in() {
+		for (int i = 0; i < _childs.length; i++) {
+			LComponent comp = (LComponent) _childs[i];
+			if (comp != null) {
+				comp.in();
+			}
+		}
+		super.in();
+		return this;
+	}
+
+	@Override
+	public LComponent out() {
+		for (int i = 0; i < _childs.length; i++) {
+			LComponent comp = (LComponent) _childs[i];
+			if (comp != null) {
+				comp.out();
+			}
+		}
+		super.out();
+		return this;
 	}
 
 	@Override
