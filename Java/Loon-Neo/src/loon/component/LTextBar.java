@@ -33,7 +33,7 @@ public class LTextBar extends LComponent {
 
 	private LColor fontColor;
 
-	protected IFont font;
+	protected IFont _font;
 
 	protected String text;
 
@@ -67,10 +67,9 @@ public class LTextBar extends LComponent {
 		super(x, y, f.stringWidth(txt) + (left != null ? left.getWidth() : 0)
 				+ (right != null ? right.getWidth() : 0),
 				(int) (body != null ? body.getHeight() : f.getHeight()));
-
 		this.text = txt;
 		this.fontColor = c;
-		this.font = f;
+		this._font = f;
 		this.left = left;
 		this.right = right;
 		this.body = body;
@@ -85,9 +84,9 @@ public class LTextBar extends LComponent {
 			LTexture[] buttonImage) {
 		if (hideBackground) {
 			if (left != null) {
-				font.drawString(g, text, x + left.getWidth(), y, fontColor);
+				_font.drawString(g, text, x + left.getWidth(), y, fontColor);
 			} else {
-				font.drawString(g, text, x, y, fontColor);
+				_font.drawString(g, text, x, y, fontColor);
 			}
 		} else {
 			if (left != null) {
@@ -117,15 +116,15 @@ public class LTextBar extends LComponent {
 						baseColor);
 			}
 			if (left != null) {
-				font.drawString(g, text, x + left.getWidth(), y, fontColor);
+				_font.drawString(g, text, x + left.getWidth(), y, fontColor);
 			} else {
-				font.drawString(g, text, x, y, fontColor);
+				_font.drawString(g, text, x, y, fontColor);
 			}
 		}
 	}
 
 	public float textWidth() {
-		return font.stringWidth(text);
+		return _font.stringWidth(text);
 	}
 
 	public LTexture getLeft() {
@@ -153,11 +152,11 @@ public class LTextBar extends LComponent {
 	}
 
 	public IFont getFont() {
-		return font;
+		return _font;
 	}
 
 	public void setFont(IFont font) {
-		this.font = font;
+		this._font = font;
 	}
 
 	public String getText() {

@@ -24,6 +24,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.event.CallFunction;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -46,6 +47,8 @@ public class LCheckBox extends LComponent {
 	private long pressedTime = 0;
 
 	private String text;
+
+	private CallFunction _function;
 
 	public LCheckBox(String txt, int x, int y) {
 		this(txt, x, y, LColor.white);
@@ -217,10 +220,21 @@ public class LCheckBox extends LComponent {
 	@Override
 	protected void processTouchReleased() {
 		this.upClick();
+		if (_function != null) {
+			_function.call(this);
+		}
 		this.pressed = false;
 		this.ticked = !ticked;
 	}
 
+	public CallFunction getFunction() {
+		return _function;
+	}
+
+	public void setFunction(CallFunction function) {
+		this._function = function;
+	}
+	
 	public boolean isTicked() {
 		return ticked;
 	}

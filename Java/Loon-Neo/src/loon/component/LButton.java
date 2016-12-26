@@ -214,10 +214,10 @@ public class LButton extends LComponent {
 	@Override
 	protected void processTouchReleased() {
 		this.upClick();
-		this.pressed = false;
 		if (_function != null) {
 			_function.call(this);
 		}
+		this.pressed = false;
 	}
 
 	@Override

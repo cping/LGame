@@ -385,7 +385,8 @@ public final class LSTRDictionary {
 	public final LSTRFont STRFont(LFont font) {
 		if (fontList != null) {
 			for (Dict d : fontList.values()) {
-				if (d.equals(font)) {
+				if (d != null && d.font != null
+						&& d.font.getFont().equals(font)) {
 					return d.font;
 				}
 			}

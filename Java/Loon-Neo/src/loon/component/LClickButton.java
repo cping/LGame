@@ -100,10 +100,22 @@ public class LClickButton extends LComponent {
 				0, width, height, clicked, clicked, clicked);
 	}
 
+	public static LClickButton make(IFont font, String text, int width,
+			int height, LTexture clicked) {
+		return new LClickButton(text, font, LColor.white, 0, 0, width, height,
+				clicked, clicked, clicked);
+	}
+
 	public static LClickButton make(String text, int width, int height,
 			LTexture hover, LTexture clicked) {
 		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
 				0, width, height, hover, hover, clicked);
+	}
+
+	public static LClickButton make(IFont font, String text, int width,
+			int height, LTexture hover, LTexture clicked) {
+		return new LClickButton(text, font, LColor.white, 0, 0, width, height,
+				hover, hover, clicked);
 	}
 
 	public static LClickButton make(String text, int width, int height,

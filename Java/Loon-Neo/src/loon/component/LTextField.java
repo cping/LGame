@@ -42,7 +42,6 @@ import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
-
 public class LTextField extends LTextBar {
 
 	private OnscreenKeyboard keyboard = new DefaultOnscreenKeyboard();
@@ -54,7 +53,7 @@ public class LTextField extends LTextBar {
 	static public class DefaultOnscreenKeyboard implements OnscreenKeyboard {
 		@Override
 		public void show(boolean visible) {
-			//todo
+			// todo
 		}
 	}
 
@@ -83,22 +82,38 @@ public class LTextField extends LTextBar {
 			INPUT_FLOATING_POINT_NUM = INPUT_SIGNED_INTEGER_NUM;
 
 	private String cursor = "_";
+
 	protected int INPUT_TYPE = INPUT_STRING;
 	protected int startidx, limit;
 
-	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor textcolor, IFont textfont, int type, int limit) {
+	public LTextField(IFont font, String txt, LTexture left, LTexture right,
+			LTexture body, int x, int y, LColor textcolor, IFont textfont,
+			int type, int limit) {
 		super(txt, left, right, body, x, y, textcolor, textfont);
+		this._font = font;
 		this.INPUT_TYPE = type;
 		this.startidx = txt.length();
 		this.limit = limit + startidx;
 	}
 
-	public LTextField(String txt, int x, int y, LColor textcolor,
-			int INPUT_TYPE, int limit) {
+	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
+			int x, int y, LColor textcolor, IFont textfont, int type, int limit) {
+		this(LFont.getDefaultFont(), txt, left, right, body, x, y, textcolor,
+				textfont, type, limit);
+	}
+
+	public LTextField(IFont font, String txt, int x, int y, LColor textcolor,
+			int inp, int limit) {
+		this(font, txt, DefUI.getDefaultTextures(10), DefUI
+				.getDefaultTextures(10), DefUI.getDefaultTextures(11), x, y,
+				textcolor, LFont.getDefaultFont(), inp, limit);
+	}
+
+	public LTextField(String txt, int x, int y, LColor textcolor, int inp,
+			int limit) {
 		this(txt, DefUI.getDefaultTextures(10), DefUI.getDefaultTextures(10),
 				DefUI.getDefaultTextures(11), x, y, textcolor, LFont
-						.getDefaultFont(), INPUT_TYPE, limit);
+						.getDefaultFont(), inp, limit);
 	}
 
 	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
@@ -144,7 +159,8 @@ public class LTextField extends LTextBar {
 	}
 
 	public boolean wasEntered() {
-		return this.input.getKeyPressed() == SysKey.ENTER || !this.isFocusable();
+		return this.input.getKeyPressed() == SysKey.ENTER
+				|| !this.isFocusable();
 	}
 
 	public void update(long delta) {

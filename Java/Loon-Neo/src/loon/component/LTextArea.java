@@ -48,7 +48,6 @@ public class LTextArea extends LComponent {
 
 	public static final int TYPE_UP = 1;
 
-	private LTexture bgTexture;
 	private int leftOffset, topOffset;
 
 	private int showType;
@@ -127,7 +126,7 @@ public class LTextArea extends LComponent {
 		this.setWidthLimit(w);
 		this.setWaitFlag(true);
 		this.setSlideMessage(true);
-		this.bgTexture = bg;
+		this._background = bg;
 	}
 
 	public void set(int mMax) {
@@ -319,8 +318,8 @@ public class LTextArea extends LComponent {
 	}
 
 	public void draw(GLEx g, int dx, int dy, int d_type, int lines) {
-		if (bgTexture != null) {
-			g.draw(bgTexture, dx, dy, getWidth(), getHeight(), baseColor);
+		if (_background != null) {
+			g.draw(_background, dx, dy, getWidth(), getHeight(), baseColor);
 		}
 		int oldColor = g.color();
 		this.countFrame += 1;
@@ -517,12 +516,12 @@ public class LTextArea extends LComponent {
 
 	@Override
 	public void setBackground(LTexture texture) {
-		this.bgTexture = texture;
+		this._background = texture;
 	}
 
 	@Override
-	public LTexture getBackground() {
-		return this.bgTexture;
+	public void setBackground(String path){
+		setBackground(LTextures.loadTexture(path));
 	}
 
 	private void drawString(GLEx g, String str, int x, int y, LColor color) {
@@ -563,8 +562,8 @@ public class LTextArea extends LComponent {
 	@Override
 	public void close() {
 		super.close();
-		if (bgTexture != null) {
-			bgTexture.close();
+		if (_background != null) {
+			_background.close();
 		}
 	}
 

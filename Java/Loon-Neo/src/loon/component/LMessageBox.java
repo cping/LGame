@@ -317,6 +317,10 @@ public class LMessageBox extends LComponent {
 		}
 	}
 
+	private final StringBuilder _message = new StringBuilder();
+
+	private boolean _initNativeDraw = false;
+	
 	protected int messageIndex = 0;
 	protected TArray<Message> _messageList;
 
@@ -583,10 +587,6 @@ public class LMessageBox extends LComponent {
 		restart();
 		pauseMessage();
 	}
-
-	private final StringBuilder _message = new StringBuilder();
-
-	private boolean _initNativeDraw = false;
 
 	public void drawMessage(GLEx g) {
 		if (!_initNativeDraw) {

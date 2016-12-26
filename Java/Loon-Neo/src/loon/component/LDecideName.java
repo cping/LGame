@@ -56,7 +56,7 @@ public class LDecideName extends LComponent {
 
 	private LColor fontColor = LColor.white;
 
-	private LFont font;
+	private IFont _font;
 	private String enterFlag;
 
 	private String name;
@@ -66,7 +66,7 @@ public class LDecideName extends LComponent {
 	private TArray<String> keyArrays;
 	private LTexture bgTexture;
 
-	private boolean bind = false;
+	private boolean bind = false, showGrid = false;;
 
 	private float dx = 0.1f;
 	private float dy = 0.1f;
@@ -99,26 +99,28 @@ public class LDecideName extends LComponent {
 				DefUI.getDefaultTextures(2));
 	}
 
-	public LDecideName(String label, String name, TArray<String> mes, LFont f,
+	public LDecideName(String label, String name, TArray<String> mes, IFont f,
 			int x, int y, int width, int height, LTexture bg) {
 		super(x, y, width, height - f.getHeight() - 20);
-		this.font = f;
+		this._font = f;
 		this.baseColor = new LColor(0, 150, 0, 150);
 		this.labelName = label;
 		this.name = name;
 		this.keyArrays = mes;
 		this.bgTexture = bg;
-		this.leftOffset = font.getHeight() + 15;
-		this.topOffset = font.getHeight() + 20;
+		this.leftOffset = _font.getHeight() + 15;
+		this.topOffset = _font.getHeight() + 20;
 	}
 
 	private void bindString() {
 		if (!bind) {
-			StringBuffer sbr = new StringBuffer();
-			for (int i = 0; i < keyArrays.size; i++) {
-				sbr.append(keyArrays.get(i));
+			if (_font instanceof LFont) {
+				StringBuffer sbr = new StringBuffer();
+				for (int i = 0; i < keyArrays.size; i++) {
+					sbr.append(keyArrays.get(i));
+				}
+				LSTRDictionary.get().bind((LFont) _font, sbr.toString());
 			}
-			LSTRDictionary.get().bind(font, sbr.toString());
 			bind = true;
 		}
 	}
@@ -150,12 +152,15 @@ public class LDecideName extends LComponent {
 											* getWidth()),
 							posY
 									+ MathUtils.round(((j + 1) * dy - 0.01f)
-											* getHeight()) - font.getAscent(),
+											* getHeight()) - _font.getAscent(),
 							fontColor);
-					g.drawRect(posX + MathUtils.round((i * dx) * getWidth()),
-							posY + MathUtils.round((j * dy) * getHeight()),
-							MathUtils.round(dx * getWidth()),
-							MathUtils.round(dy * getHeight()));
+					if (showGrid) {
+						g.drawRect(
+								posX + MathUtils.round((i * dx) * getWidth()),
+								posY + MathUtils.round((j * dy) * getHeight()),
+								MathUtils.round(dx * getWidth()),
+								MathUtils.round(dy * getHeight()));
+					}
 				}
 		}
 		g.setColor(baseColor);
@@ -398,8 +403,8 @@ public class LDecideName extends LComponent {
 		this.topOffset = topOffset;
 	}
 
-	public LFont getFont() {
-		return font;
+	public IFont getFont() {
+		return _font;
 	}
 
 	public float getLabelOffsetX() {
@@ -419,16 +424,24 @@ public class LDecideName extends LComponent {
 	}
 
 	@Override
+	public String getUIName() {
+		return "DecideName";
+	}
+
+	public boolean isShowGrid() {
+		return showGrid;
+	}
+
+	public void setShowGrid(boolean showGrid) {
+		this.showGrid = showGrid;
+	}
+
+	@Override
 	public void close() {
 		super.close();
 		if (bgTexture != null) {
 			bgTexture.close();
 		}
-	}
-
-	@Override
-	public String getUIName() {
-		return "DecideName";
 	}
 
 }

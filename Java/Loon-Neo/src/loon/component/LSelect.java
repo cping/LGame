@@ -299,6 +299,14 @@ public class LSelect extends LContainer {
 		this.messageFont = messageFont;
 	}
 
+	public void setFont(IFont newFont) {
+		this.setMessageFont(newFont);
+	}
+
+	public IFont getFont() {
+		return getMessageFont();
+	}
+
 	public LTexture getCursor() {
 		return cursor;
 	}

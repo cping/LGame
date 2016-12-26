@@ -259,4 +259,10 @@ public class ScrollText extends Entity {
 	public void setSpace(float space) {
 		this.space = space;
 	}
+
+	@Override
+	public void close() {
+		super.close();
+		_text.close();
+	}
 }

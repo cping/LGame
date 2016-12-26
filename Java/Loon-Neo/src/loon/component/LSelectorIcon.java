@@ -25,9 +25,12 @@ import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
+import loon.event.CallFunction;
 import loon.opengl.GLEx;
 
 public class LSelectorIcon extends LComponent {
+
+	private CallFunction _function;
 
 	private int x;
 	private int y;
@@ -280,6 +283,22 @@ public class LSelectorIcon extends LComponent {
 
 	public void setBorderColor(LColor borderColor) {
 		this.borderColor = borderColor;
+	}
+
+	@Override
+	public void processTouchReleased() {
+		super.processTouchReleased();
+		if (_function != null) {
+			_function.call(this);
+		}
+	}
+
+	public CallFunction getFunction() {
+		return _function;
+	}
+
+	public void setFunction(CallFunction function) {
+		this._function = function;
 	}
 
 	@Override

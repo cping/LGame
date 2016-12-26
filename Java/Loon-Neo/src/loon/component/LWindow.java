@@ -46,7 +46,7 @@ public class LWindow extends LContainer {
 
 	private int _barheight;
 
-	private IFont font = LFont.getDefaultFont();
+	private IFont _font;
 
 	private LColor _fontColor;
 
@@ -56,6 +56,14 @@ public class LWindow extends LContainer {
 			CallFunction close, boolean vertical) {
 		return alert(textureBtn, title, firstButton, secondButton, closeButton,
 				x, y, first, second, close, vertical);
+	}
+
+	public static LWindow alert(IFont font, LTexture textureBtn, String title,
+			String firstButton, String secondButton, String closeButton,
+			float x, float y, CallFunction first, CallFunction second,
+			CallFunction close, boolean vertical) {
+		return alert(font, textureBtn, title, firstButton, secondButton,
+				closeButton, x, y, first, second, close, vertical);
 	}
 
 	public static LWindow alert(String barPath, String backgroundPath,
@@ -71,16 +79,42 @@ public class LWindow extends LContainer {
 				first, second, close, fontColor, vertical);
 	}
 
+	public static LWindow alert(IFont font, String barPath,
+			String backgroundPath, String btnPath, String title,
+			String firstButton, String secondButton, String closeButton,
+			float x, float y, float width, float height, float barheight,
+			CallFunction first, CallFunction second, CallFunction close,
+			LColor fontColor, boolean vertical) {
+		return alert(font, LTextures.loadTexture(barPath),
+				LTextures.loadTexture(backgroundPath),
+				LTextures.loadTexture(btnPath), title, firstButton,
+				secondButton, closeButton, x, y, width, height, barheight,
+				first, second, close, fontColor, vertical);
+	}
+
 	public static LWindow alert(String title, String firstButton, float x,
 			float y, CallFunction first, boolean vertical) {
 		return alert(title, firstButton, null, null, x, y, first, null, null,
 				null, vertical);
 	}
 
+	public static LWindow alert(IFont font, String title, String firstButton,
+			float x, float y, CallFunction first, boolean vertical) {
+		return alert(font, title, firstButton, null, null, x, y, first, null,
+				null, null, vertical);
+	}
+
 	public static LWindow alert(String title, String firstButton,
 			String secondButton, float x, float y, CallFunction first,
 			CallFunction second, boolean vertical) {
 		return alert(title, firstButton, secondButton, null, x, y, first,
+				second, null, null, vertical);
+	}
+
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, float x, float y, CallFunction first,
+			CallFunction second, boolean vertical) {
+		return alert(font, title, firstButton, secondButton, null, x, y, first,
 				second, null, null, vertical);
 	}
 
@@ -92,12 +126,31 @@ public class LWindow extends LContainer {
 				first, second, close, null, vertical);
 	}
 
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			CallFunction first, CallFunction second, CallFunction close,
+			boolean vertical) {
+		return alert(font, title, firstButton, secondButton, closeButton, x, y,
+				first, second, close, null, vertical);
+	}
+
 	public static LWindow alert(String title, String firstButton,
 			String secondButton, String closeButton, float x, float y,
 			CallFunction first, CallFunction second, CallFunction close,
 			LColor fontColor, boolean vertical) {
 		return alert((LTexture) null, (LTexture) null, (LTexture) null, title,
 				firstButton, secondButton, closeButton, x, y,
+				LSystem.viewSize.getWidth() * 0.75f,
+				LSystem.viewSize.getHeight() * 0.45f, 40, first, second, close,
+				fontColor, vertical);
+	}
+
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			CallFunction first, CallFunction second, CallFunction close,
+			LColor fontColor, boolean vertical) {
+		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null,
+				title, firstButton, secondButton, closeButton, x, y,
 				LSystem.viewSize.getWidth() * 0.75f,
 				LSystem.viewSize.getHeight() * 0.45f, 40, first, second, close,
 				fontColor, vertical);
@@ -114,10 +167,28 @@ public class LWindow extends LContainer {
 				close, fontColor, vertical);
 	}
 
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float barheight, CallFunction first, CallFunction second,
+			CallFunction close, LColor fontColor, boolean vertical) {
+		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null,
+				title, firstButton, secondButton, closeButton, x, y,
+				LSystem.viewSize.getWidth() * 0.75f,
+				LSystem.viewSize.getHeight() * 0.45f, barheight, first, second,
+				close, fontColor, vertical);
+	}
+
 	public static LWindow alert(String title, String firstButton, float x,
 			float y, float width, float height, CallFunction first,
 			boolean vertical) {
 		return alert(title, firstButton, null, null, x, y, width, height,
+				first, null, null, null, vertical);
+	}
+
+	public static LWindow alert(IFont font, String title, String firstButton,
+			float x, float y, float width, float height, CallFunction first,
+			boolean vertical) {
+		return alert(font, title, firstButton, null, null, x, y, width, height,
 				first, null, null, null, vertical);
 	}
 
@@ -128,10 +199,24 @@ public class LWindow extends LContainer {
 				height, first, second, null, null, vertical);
 	}
 
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, float x, float y, float width, float height,
+			CallFunction first, CallFunction second, boolean vertical) {
+		return alert(font, title, firstButton, secondButton, null, x, y, width,
+				height, first, second, null, null, vertical);
+	}
+
 	public static LWindow alert(String firstButton, float x, float y,
 			float width, float height, CallFunction first, boolean vertical) {
 		return alert(null, firstButton, null, null, x, y, width, height, first,
 				null, null, null, vertical);
+	}
+
+	public static LWindow alert(IFont font, String firstButton, float x,
+			float y, float width, float height, CallFunction first,
+			boolean vertical) {
+		return alert(font, null, firstButton, null, null, x, y, width, height,
+				first, null, null, null, vertical);
 	}
 
 	public static LWindow alert(String title, String firstButton,
@@ -139,6 +224,14 @@ public class LWindow extends LContainer {
 			float width, float height, CallFunction first, CallFunction second,
 			CallFunction close, boolean vertical) {
 		return alert(title, firstButton, secondButton, closeButton, x, y,
+				width, height, first, second, close, null, vertical);
+	}
+
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, CallFunction first, CallFunction second,
+			CallFunction close, boolean vertical) {
+		return alert(font, title, firstButton, secondButton, closeButton, x, y,
 				width, height, first, second, close, null, vertical);
 	}
 
@@ -151,6 +244,15 @@ public class LWindow extends LContainer {
 				40, first, second, close, fontColor, vertical);
 	}
 
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, CallFunction first, CallFunction second,
+			CallFunction close, LColor fontColor, boolean vertical) {
+		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null,
+				title, firstButton, secondButton, closeButton, x, y, width,
+				height, 40, first, second, close, fontColor, vertical);
+	}
+
 	public static LWindow alert(String title, String firstButton,
 			String secondButton, String closeButton, float x, float y,
 			float width, float height, float barheight, CallFunction first,
@@ -161,7 +263,28 @@ public class LWindow extends LContainer {
 				barheight, first, second, close, fontColor, vertical);
 	}
 
+	public static LWindow alert(IFont font, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, float barheight, CallFunction first,
+			CallFunction second, CallFunction close, LColor fontColor,
+			boolean vertical) {
+		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null,
+				title, firstButton, secondButton, closeButton, x, y, width,
+				height, barheight, first, second, close, fontColor, vertical);
+	}
+
 	public static LWindow alert(LTexture bar, LTexture background,
+			LTexture textureBtn, String title, String firstButton,
+			String secondButton, String closeButton, float x, float y,
+			float width, float height, float barheight, CallFunction first,
+			CallFunction second, CallFunction close, LColor fontColor,
+			boolean vertical) {
+		return alert(LFont.getDefaultFont(), bar, background, textureBtn,
+				title, firstButton, secondButton, closeButton, x, y, width,
+				height, barheight, first, second, close, fontColor, vertical);
+	}
+
+	public static LWindow alert(IFont font, LTexture bar, LTexture background,
 			LTexture textureBtn, String title, String firstButton,
 			String secondButton, String closeButton, float x, float y,
 			float width, float height, float barheight, CallFunction first,
@@ -170,8 +293,8 @@ public class LWindow extends LContainer {
 		if (fontColor == null) {
 			fontColor = LColor.white;
 		}
-		LWindow window = new LWindow(title, fontColor, bar, background, x, y,
-				width, height, barheight);
+		LWindow window = new LWindow(font, title, fontColor, bar, background,
+				x, y, width, height, barheight);
 		Screen screen = window.getScreen();
 		window.setFontColor(fontColor);
 		window.setColor(LColor.lightGray);
@@ -182,24 +305,24 @@ public class LWindow extends LContainer {
 		int btnHeight = (int) (height * 0.3f);
 		int count = 0;
 		if (firstButton != null) {
-			LClickButton firstBtn = LClickButton.make(firstButton, btnWidth,
-					btnHeight, textureBtn);
+			LClickButton firstBtn = LClickButton.make(font, firstButton,
+					btnWidth, btnHeight, textureBtn);
 			firstBtn.setFontColor(fontColor);
 			firstBtn.setFunction(first);
 			window.add(firstBtn);
 			count++;
 		}
 		if (secondButton != null) {
-			LClickButton secondBtn = LClickButton.make(secondButton, btnWidth,
-					btnHeight, textureBtn);
+			LClickButton secondBtn = LClickButton.make(font, secondButton,
+					btnWidth, btnHeight, textureBtn);
 			secondBtn.setFontColor(fontColor);
 			secondBtn.setFunction(second);
 			window.add(secondBtn);
 			count++;
 		}
 		if (closeButton != null) {
-			LClickButton closeBtn = LClickButton.make(closeButton, btnWidth,
-					btnHeight, textureBtn);
+			LClickButton closeBtn = LClickButton.make(font, closeButton,
+					btnWidth, btnHeight, textureBtn);
 			closeBtn.setFontColor(fontColor);
 			closeBtn.setFunction(close);
 			window.add(closeBtn);
@@ -258,20 +381,36 @@ public class LWindow extends LContainer {
 		return new LWindow(title, x, y, width, height);
 	}
 
-	public LWindow(String title, float x, float y, float width, float height) {
+	public LWindow(IFont font, String title, float x, float y, float width,
+			float height) {
 		this(title, LColor.white, DefUI.getDefaultTextures(0), DefUI
 				.getDefaultTextures(7), x, y, width, height, 40);
 	}
 
+	public LWindow(String title, float x, float y, float width, float height) {
+		this(LFont.getDefaultFont(), title, LColor.white, DefUI
+				.getDefaultTextures(0), DefUI.getDefaultTextures(7), x, y,
+				width, height, 40);
+	}
+
 	public LWindow(String title, float x, float y, float width, float height,
 			String barFile, String backgroundFile) {
-		this(title, LColor.white, LTextures.loadTexture(barFile), LTextures
-				.loadTexture(backgroundFile), x, y, width, height, 40);
+		this(LFont.getDefaultFont(), title, LColor.white, LTextures
+				.loadTexture(barFile), LTextures.loadTexture(backgroundFile),
+				x, y, width, height, 40);
 	}
 
 	public LWindow(String txt, LColor color, LTexture bar, LTexture background,
 			float x, float y, float width, float height, float barheight) {
+		this(LFont.getDefaultFont(), txt, color, bar, background, x, y, width,
+				height, barheight);
+	}
+
+	public LWindow(IFont font, String txt, LColor color, LTexture bar,
+			LTexture background, float x, float y, float width, float height,
+			float barheight) {
 		super((int) x, (int) y, (int) width, (int) height);
+		this._font = font;
 		this._barTexture = bar;
 		if (_barTexture == null) {
 			_barTexture = DefUI.getDefaultTextures(0);
@@ -354,12 +493,11 @@ public class LWindow extends LContainer {
 			if (_title != null) {
 				g.draw(_barTexture, x, y, getWidth(), this._barheight,
 						baseColor);
-				font.drawString(
-						g,
-						_title,
-						x + 5,
-						y + (this._barheight - font.getHeight()) / 2
-								- (LSystem.isDesktop() ? 5 : 0), _fontColor);
+				if (_font != null) {
+					_font.drawString(g, _title, x + 5, y
+							+ (this._barheight - _font.getHeight()) / 2
+							- (LSystem.isDesktop() ? 5 : 0), _fontColor);
+				}
 			}
 			if (animation.getSpriteImage() != null) {
 				g.draw(animation.getSpriteImage(), x, y, baseColor);
@@ -395,7 +533,7 @@ public class LWindow extends LContainer {
 	public void setBarTexture(String path) {
 		setBarTexture(LTextures.loadTexture(path));
 	}
-	
+
 	@Override
 	public String getUIName() {
 		return "Window";
@@ -410,11 +548,11 @@ public class LWindow extends LContainer {
 	}
 
 	public IFont getFont() {
-		return font;
+		return _font;
 	}
 
 	public void setFont(IFont font) {
-		this.font = font;
+		this._font = font;
 	}
 
 	public LColor getFontColor() {

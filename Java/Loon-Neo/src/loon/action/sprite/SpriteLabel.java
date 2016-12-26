@@ -91,4 +91,10 @@ public class SpriteLabel extends Entity {
 		this.setOffsetX(offsetX);
 		this.setOffsetY(offsetY);
 	}
+	
+	@Override
+	public void close(){
+		super.close();
+		_text.close();
+	}
 }

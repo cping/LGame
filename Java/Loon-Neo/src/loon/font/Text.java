@@ -1,9 +1,12 @@
 package loon.font;
 
 import loon.HorizontalAlign;
+import loon.LRelease;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.opengl.LSTRFont;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -12,7 +15,7 @@ import loon.utils.TArray;
 /**
  * 一个统一的文字显示用类，用以统一文字的基础显示效果
  */
-public class Text {
+public class Text implements LRelease {
 
 	private boolean _initNativeDraw;
 	protected IFont _font;
@@ -69,7 +72,6 @@ public class Text {
 	public void setText(final CharSequence chars) {
 		this._chars = chars != null ? chars : "";
 		final IFont font = this._font;
-
 		this._lines.clear();
 		this._lineWidths.clear();
 		if (this._textOptions._autoWrap == AutoWrap.NONE) {
@@ -110,6 +112,19 @@ public class Text {
 		if (!_initNativeDraw) {
 			if (_font instanceof LFont) {
 				LSTRDictionary.get().bind((LFont) _font, _lines);
+			}
+			if (LSystem.isDesktop()) {
+				if (_font instanceof LFont) {
+					LSTRFont strfont = LSTRDictionary.get().STRFont(
+							(LFont) _font);
+					if (strfont != null) {
+						if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
+							strfont.setUpdateX(0);
+						} else {
+							strfont.setUpdateX(1);
+						}
+					}
+				}
 			}
 			_initNativeDraw = true;
 		}
@@ -364,7 +379,23 @@ public class Text {
 		this._textOptions = opt;
 	}
 
+	@Override
 	public String toString() {
 		return new StringBuffer(_chars).toString();
 	}
+
+	public void close() {
+		if (LSystem.isDesktop()) {
+			if (_font instanceof LFont) {
+				LSTRFont font = LSTRDictionary.get().STRFont((LFont) _font);
+				if (font != null) {
+					font.setUpdateX(0);
+				}
+			}
+		}
+		_chars = null;
+		_lines = null;
+		_lineWidths = null;
+	}
+
 }

@@ -65,7 +65,7 @@ public class LTextList extends LComponent {
 	private LColor choiceStringColor = LColor.black;
 	private LColor choiceStringBoxColor = LColor.cyan;
 
-	private IFont font = LFont.getDefaultFont();
+	private IFont _font;
 	private int selectList;
 
 	public static final int defaultWidth = 150;
@@ -106,13 +106,21 @@ public class LTextList extends LComponent {
 
 	public LTextList(int max, int x, int y, int width, int height,
 			int scrollButtonWidth) {
-		this(max, x, y, width, height, scrollButtonWidth, DefUI
-				.getDefaultTextures(2), DefUI.getDefaultTextures(11), DefUI
-				.getDefaultTextures(3), null, null);
+		this(LFont.getDefaultFont(), max, x, y, width, height,
+				scrollButtonWidth, DefUI.getDefaultTextures(2), DefUI
+						.getDefaultTextures(11), DefUI.getDefaultTextures(3),
+				null, null);
+	}
+
+	public LTextList(int max, int x, int y, int width, int height,
+			int scrollButtonWidth, LTexture bg, LTexture choice,
+			LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
+		this(LFont.getDefaultFont(), max, x, y, width, height,
+				scrollButtonWidth, bg, choice, scroll, scrollFlagA, scrollFlagB);
 	}
 
 	/**
-	 * 
+	 * @param font
 	 * 
 	 * @param max
 	 *            允许插入的最大行数
@@ -137,11 +145,12 @@ public class LTextList extends LComponent {
 	 * @param scrollFlagB
 	 *            滚轴上下标识用图(B)
 	 */
-	public LTextList(int max, int x, int y, int width, int height,
+	public LTextList(IFont font, int max, int x, int y, int width, int height,
 			int scrollButtonWidth, LTexture bg, LTexture choice,
 			LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
 		super(x, y, (width - scrollButtonWidth), height);
 		this.reset(max);
+		this._font = font;
 		this.bgTexture = bg;
 		this.choiceTexture = choice;
 		this.scrollTexture = scroll;
@@ -172,7 +181,7 @@ public class LTextList extends LComponent {
 	}
 
 	public void setFont(IFont newFont) {
-		this.font = newFont;
+		this._font = newFont;
 	}
 
 	public void changeName(int position, String nameString, int numberInt) {
@@ -321,7 +330,9 @@ public class LTextList extends LComponent {
 	}
 
 	private synchronized void drawString(GLEx g, String str, int x, int y) {
-		font.drawString(g, str, x, y);
+		if (_font != null) {
+			_font.drawString(g, str, x, y);
+		}
 	}
 
 	public synchronized void draw(GLEx g, int x, int y, float mouseX,
@@ -330,7 +341,7 @@ public class LTextList extends LComponent {
 			g.saveBrush();
 			if (this.max > 0) {
 
-				int fontSize = font.getSize();
+				int fontSize = _font.getSize();
 
 				// 如果没有设置背景，则绘制
 				if (bgTexture == null) {
@@ -367,7 +378,7 @@ public class LTextList extends LComponent {
 					if (!this.lengthCheck[i]) {
 						this.lengthCheck[i] = true;
 						if (this.name[i] != null) {
-							while (font.stringWidth(this.name[i]) > getWidth()) {
+							while (_font.stringWidth(this.name[i]) > getWidth()) {
 								this.name[i] = this.name[i].substring(0,
 										this.name[i].length() - 1);
 							}

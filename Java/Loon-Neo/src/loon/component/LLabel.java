@@ -208,4 +208,10 @@ public class LLabel extends LComponent {
 		return "Label";
 	}
 
+	@Override
+	public void close() {
+		super.close();
+		_text.close();
+	}
+
 }

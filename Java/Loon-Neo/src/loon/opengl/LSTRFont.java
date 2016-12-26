@@ -246,8 +246,7 @@ public class LSTRFont implements LRelease {
 		this.ascent = font.getAscent();
 		int customCharsLength = (additionalChars != null) ? additionalChars.length
 				: 0;
-		this.totalCharSet = customCharsLength == 0 ? totalCharSet
-				: 0;
+		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length > 0) {
 			int size = chs.length;
 			CharArray chars = new CharArray();
@@ -290,7 +289,7 @@ public class LSTRFont implements LRelease {
 			return;
 		}
 		isDrawing = true;
-		updateX = LSystem.isDesktop() ? 1f : 0;
+		updateX = 0;
 		updateY = LSystem.isHTML5() ? 1f : 0;
 		Updateable update = new UpdateStringFont(this);
 		if (asyn) {
@@ -563,6 +562,14 @@ public class LSTRFont implements LRelease {
 				gl.restoreTx();
 			}
 		}
+	}
+
+	public void setUpdateX(float x) {
+		this.updateX = x;
+	}
+
+	public void setUpdateY(float y) {
+		this.updateY = y;
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {
