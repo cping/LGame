@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.component.skin.SelectSkin;
 import loon.event.SysKey;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -81,6 +82,16 @@ public class LSelect extends LContainer {
 
 	public LSelect(IFont font, LTexture formImage, int x, int y, int width,
 			int height) {
+		this(font, formImage, x, y, width, height, LColor.white);
+	}
+
+	public LSelect(SelectSkin skin, int x, int y, int width, int height) {
+		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin
+				.getFontColor());
+	}
+
+	public LSelect(IFont font, LTexture formImage, int x, int y, int width,
+			int height, LColor fontColor) {
 		super(x, y, width, height);
 		if (formImage == null) {
 			this.setBackground(LTextures.createTexture(width, height,
@@ -89,6 +100,7 @@ public class LSelect extends LContainer {
 		} else {
 			this.setBackground(formImage);
 		}
+		this.fontColor = fontColor;
 		this.messageFont = (font == null ? LFont.getDefaultFont() : font);
 		this.customRendering = true;
 		this.selectFlag = 1;

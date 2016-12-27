@@ -74,7 +74,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return isLocked();
 	}
 
-	public void setDragLocked(boolean locked){
+	public void setDragLocked(boolean locked) {
 		setLocked(locked);
 	}
 
@@ -225,8 +225,9 @@ public abstract class LComponent extends LObject<LContainer> implements
 	// 缩放比例
 	protected float _scaleX = 1f, _scaleY = 1f;
 	// 屏幕位置
-	protected int screenX, screenY;
+	protected int _screenX, _screenY;
 
+	private boolean _downClick = false;
 	// 中心点
 	protected float pivotX = -1, pivotY = -1;
 
@@ -421,15 +422,15 @@ public abstract class LComponent extends LObject<LContainer> implements
 				final int width = (int) this.getWidth();
 				final int height = (int) this.getHeight();
 				if (this.elastic) {
-					g.setClip(this.screenX, this.screenY, width, height);
+					g.setClip(this._screenX, this._screenY, width, height);
 				}
 				if (update) {
 					g.saveTx();
 					Affine2f tx = g.tx();
-					final float centerX = pivotX == -1 ? this.screenX
-							+ _origin.ox(width) : this.screenX + pivotX;
-					final float centerY = pivotY == -1 ? this.screenY
-							+ _origin.oy(height) : this.screenY + pivotY;
+					final float centerX = pivotX == -1 ? this._screenX
+							+ _origin.ox(width) : this._screenX + pivotX;
+					final float centerY = pivotY == -1 ? this._screenY
+							+ _origin.oy(height) : this._screenY + pivotY;
 					if (_rotation != 0) {
 						tx.translate(centerX, centerY);
 						tx.preRotate(_rotation);
@@ -455,20 +456,20 @@ public abstract class LComponent extends LObject<LContainer> implements
 				}
 				g.setBlendMode(_blend);
 				if (_background != null) {
-					g.draw(_background, this.screenX, this.screenY, width,
+					g.draw(_background, this._screenX, this._screenY, width,
 							height, baseColor);
 				}
 				if (this.customRendering) {
-					this.createCustomUI(g, this.screenX, this.screenY, width,
+					this.createCustomUI(g, this._screenX, this._screenY, width,
 							height);
 				} else {
-					this.createUI(g, this.screenX, this.screenY, this,
+					this.createUI(g, this._screenX, this._screenY, this,
 							this._imageUI);
 				}
 				if (isDrawSelect()) {
 					int tmp = g.color();
 					g.setColor(baseColor);
-					g.drawRect(this.screenX, this.screenY, width - 1f,
+					g.drawRect(this._screenX, this._screenY, width - 1f,
 							height - 1f);
 					g.setColor(tmp);
 				}
@@ -503,27 +504,27 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public boolean contains(float x, float y, float width, float height) {
 		return (this.visible)
-				&& (x >= this.screenX
-						&& y >= this.screenY
-						&& ((x + width) <= (this.screenX + this._width
-								* _scaleX)) && ((y + height) <= (this.screenY + this._height
+				&& (x >= this._screenX
+						&& y >= this._screenY
+						&& ((x + width) <= (this._screenX + this._width
+								* _scaleX)) && ((y + height) <= (this._screenY + this._height
 						* _scaleY)));
 	}
 
 	public boolean intersects(float x1, float y1) {
 		return (this.visible)
-				&& (x1 >= this.screenX
-						&& x1 <= this.screenX + this._width * _scaleX
-						&& y1 >= this.screenY && y1 <= this.screenY
+				&& (x1 >= this._screenX
+						&& x1 <= this._screenX + this._width * _scaleX
+						&& y1 >= this._screenY && y1 <= this._screenY
 						+ this._height * _scaleY);
 	}
 
 	public boolean intersects(LComponent comp) {
 		return (this.visible)
 				&& (comp.isVisible())
-				&& (this.screenX + this._width * _scaleX >= comp.screenX
-						&& this.screenX <= comp.screenX + comp._width
-						&& this.screenY + this._height * _scaleY >= comp.screenY && this.screenY <= comp.screenY
+				&& (this._screenX + this._width * _scaleX >= comp._screenX
+						&& this._screenX <= comp._screenX + comp._width
+						&& this._screenY + this._height * _scaleY >= comp._screenY && this._screenY <= comp._screenY
 						+ comp._height);
 	}
 
@@ -694,20 +695,20 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public void validatePosition() {
 		if (_super != null) {
-			this.screenX = _location.x() + this._super.getScreenX();
-			this.screenY = _location.y() + this._super.getScreenY();
+			this._screenX = _location.x() + this._super.getScreenX();
+			this._screenY = _location.y() + this._super.getScreenY();
 		} else {
-			this.screenX = _location.x();
-			this.screenY = _location.y();
+			this._screenX = _location.x();
+			this._screenY = _location.y();
 		}
 	}
 
 	public int getScreenX() {
-		return this.screenX;
+		return this._screenX;
 	}
 
 	public int getScreenY() {
-		return this.screenY;
+		return this._screenY;
 	}
 
 	@Override
@@ -741,10 +742,10 @@ public abstract class LComponent extends LObject<LContainer> implements
 	public RectBox getCollisionBox() {
 		validatePosition();
 		if (_rect != null) {
-			_rect.setBounds(MathUtils.getBounds(screenX, screenY, getWidth()
+			_rect.setBounds(MathUtils.getBounds(_screenX, _screenY, getWidth()
 					* _scaleX, getHeight() * _scaleY, _rotation, _rect));
 		} else {
-			_rect = MathUtils.getBounds(screenX, screenY, getWidth() * _scaleX,
+			_rect = MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX,
 					getHeight() * _scaleY, _rotation, _rect);
 		}
 		return _rect;
@@ -788,10 +789,14 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	protected void processTouchPressed() {
 		this.downClick();
+		this._downClick = true;
 	}
 
 	protected void processTouchReleased() {
-		this.upClick();
+		if (this._downClick) {
+			this.upClick();
+			this._downClick = false;
+		}
 	}
 
 	protected void processTouchDragged() {
@@ -1150,7 +1155,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 			manager.layoutElements(getLayoutPort(), ports);
 		}
 	}
-	
+
 	@Override
 	public void setColor(LColor c) {
 		this.baseColor = c;

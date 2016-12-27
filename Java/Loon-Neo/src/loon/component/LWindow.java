@@ -31,6 +31,7 @@ import loon.canvas.LColor;
 import loon.component.layout.HorizontalLayout;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.VerticalLayout;
+import loon.component.skin.WindowSkin;
 import loon.event.CallFunction;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -404,6 +405,12 @@ public class LWindow extends LContainer {
 			float x, float y, float width, float height, float barheight) {
 		this(LFont.getDefaultFont(), txt, color, bar, background, x, y, width,
 				height, barheight);
+	}
+
+	public LWindow(WindowSkin skin, String txt, float x, float y, float width,
+			float height, float barheight) {
+		this(skin.getFont(), txt, skin.getFontColor(), skin.getBarTexture(),
+				skin.getBackgroundTexture(), x, y, width, height, barheight);
 	}
 
 	public LWindow(IFont font, String txt, LColor color, LTexture bar,

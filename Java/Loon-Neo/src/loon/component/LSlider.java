@@ -2,6 +2,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.SliderSkin;
 import loon.event.SysTouch;
 import loon.event.ValueListener;
 import loon.opengl.GLEx;
@@ -33,6 +34,12 @@ public class LSlider extends LComponent {
 				vertical);
 	}
 
+	public LSlider(SliderSkin skin, int x, int y, int width, int height,
+			boolean vertical) {
+		this(skin.getSliderText(), skin.getBarText(), x, y, width, height,
+				vertical);
+	}
+
 	public LSlider(LTexture sliderText, LTexture barText, int x, int y,
 			int width, int height, boolean vertical) {
 		super(x, y, width, height);
@@ -44,7 +51,7 @@ public class LSlider extends LComponent {
 			this.barImage = barText;
 			this._padding = width / 100;
 			this._barImageHeight = height;
-			setWidth((int)(width * 0.12));
+			setWidth((int) (width * 0.12));
 		} else {
 			this.sliderImage = sliderText;
 			this._sliderWidth = height * 0.5f;

@@ -13,7 +13,7 @@ public class TouchedClick implements ClickListener {
 
 	private Touched _allTouch;
 
-	private boolean _enabled = true;
+	private boolean _enabled = true, _downClick = false;
 
 	private TArray<ClickListener> clicks;
 
@@ -53,6 +53,7 @@ public class TouchedClick implements ClickListener {
 				clicks.get(i).DownClick(comp, x, y);
 			}
 		}
+		_downClick = true;
 	}
 
 	@Override
@@ -60,13 +61,16 @@ public class TouchedClick implements ClickListener {
 		if (!_enabled) {
 			return;
 		}
-		if (_upTouch != null) {
-			_upTouch.on(x, y);
-		}
-		if (clicks != null) {
-			for (int i = 0, size = clicks.size; i < size; i++) {
-				clicks.get(i).UpClick(comp, x, y);
+		if (_downClick) {
+			if (_upTouch != null) {
+				_upTouch.on(x, y);
 			}
+			if (clicks != null) {
+				for (int i = 0, size = clicks.size; i < size; i++) {
+					clicks.get(i).UpClick(comp, x, y);
+				}
+			}
+			_downClick = false;
 		}
 	}
 

@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.component.LComponent;
 import loon.component.LContainer;
+import loon.component.skin.TableSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
@@ -148,6 +149,18 @@ public class LTable extends LContainer {
 
 	public LTable(IFont font, LTexture headerTexture,
 			LTexture backgroundTexture, int x, int y, int width, int height) {
+		this(font, headerTexture, backgroundTexture, x, y, width, height,
+				LColor.white);
+	}
+
+	public LTable(TableSkin skin, int x, int y, int width, int height) {
+		this(skin.getFont(), skin.getHeaderTexture(), skin.getBackgroundTexture(), x,
+				y, width, height, skin.getFontColor());
+	}
+
+	public LTable(IFont font, LTexture headerTexture,
+			LTexture backgroundTexture, int x, int y, int width, int height,
+			LColor fontColor) {
 		super(x, y, width, height);
 		this.font = font;
 		this.cellHeight = (int) (font.getHeight() + font.getAscent());
@@ -446,8 +459,8 @@ public class LTable extends LContainer {
 			if (tableHeaderVisible) {
 				header.headerY = displayY;
 				if (headerTexture != null) {
-					g.draw(headerTexture, displayX, displayY, wid,
-							cellHeight, headerBackgroundColor);
+					g.draw(headerTexture, displayX, displayY, wid, cellHeight,
+							headerBackgroundColor);
 					if (gridVisible) {
 						g.setColor(gridColor);
 						g.drawRect(displayX, displayY, wid, cellHeight);
@@ -468,10 +481,9 @@ public class LTable extends LContainer {
 							+ getColumn(columnIndex).getHeaderAlignment()
 									.alignX(columnWidth - OFFSET,
 											font.stringWidth(s));
-			
-					font.drawString(g,s, x + entryOffset,
-							header.headerY + font.getAscent()/2 - 4,
-							headTextColor);
+
+					font.drawString(g, s, x + entryOffset, header.headerY
+							+ font.getAscent() / 2 - 4, headTextColor);
 					x += columnWidth + cellSpacing;
 				}
 			}
@@ -616,7 +628,7 @@ public class LTable extends LContainer {
 			throw new IllegalStateException("The table has no model!");
 		}
 		for (int i = 0; i < columns.length; i++) {
-			columns[i].setWidth((int)(getWidth() / columns.length));
+			columns[i].setWidth((int) (getWidth() / columns.length));
 		}
 	}
 

@@ -150,7 +150,7 @@ public class LTextField extends LTextBar {
 	}
 
 	public String getInput() {
-		String result = text.substring(startidx);
+		String result = _text.substring(startidx);
 		if ((result.endsWith("-") || result.length() == 0)
 				&& INPUT_TYPE != INPUT_STRING) {
 			return "0";
@@ -173,12 +173,12 @@ public class LTextField extends LTextBar {
 			if (nextchar == 0) {
 				return;
 			}
-			boolean isatstart = text.length() == startidx;
-			if (nextchar == '\b' && text.length() != 0 && !isatstart) {
-				text = text.substring(0, text.length() - 1);
+			boolean isatstart = _text.length() == startidx;
+			if (nextchar == '\b' && _text.length() != 0 && !isatstart) {
+				_text = _text.substring(0, _text.length() - 1);
 				return;
 			}
-			if (text.length() == limit) {
+			if (_text.length() == limit) {
 				return;
 			}
 
@@ -202,7 +202,7 @@ public class LTextField extends LTextBar {
 				}
 			}
 			if (valid) {
-				text += nextchar;
+				_text += nextchar;
 			}
 		}
 	}
@@ -223,15 +223,15 @@ public class LTextField extends LTextBar {
 		if (!isFocusable()) {
 			return;
 		}
-		text += cursor;
+		_text += cursor;
 	}
 
 	protected void removeCursor() {
 		if (!isFocusable()) {
 			return;
 		}
-		text = text.substring(0,
-				MathUtils.max(startidx, text.length() - cursor.length()));
+		_text = _text.substring(0,
+				MathUtils.max(startidx, _text.length() - cursor.length()));
 	}
 
 }

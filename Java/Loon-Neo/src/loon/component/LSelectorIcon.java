@@ -45,7 +45,7 @@ public class LSelectorIcon extends LComponent {
 	private float alphaRate;
 	private boolean increaseAlpha;
 
-	private LColor borderColor = new LColor(LColor.black);
+	private LColor borderColor = LColor.black;
 
 	public LSelectorIcon(float x, float y, int size) {
 		this((int) x, (int) y, size);

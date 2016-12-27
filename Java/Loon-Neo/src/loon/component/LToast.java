@@ -5,6 +5,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
+import loon.component.skin.ToastSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -22,8 +23,6 @@ public class LToast extends LComponent {
 	public enum Style {
 		NORMAL, SUCCESS, ERROR
 	};
-
-	private LTexture mBackgroundTexture = null;
 
 	public static LToast makeText(String text) {
 		return makeText(LFont.getDefaultFont(), null, text, LENGTH_SHORT);
@@ -111,8 +110,8 @@ public class LToast extends LComponent {
 	private int mDuration;
 	private LTimer timer = new LTimer();
 	private LTimer lock = new LTimer(LSystem.SECOND * 2);
-	private LColor mBackgroundColor = LColor.orange.cpy();
-	private LColor mForegroundColor = LColor.white.cpy();
+	private LColor mBackgroundColor = LColor.orange;
+	private LColor mForegroundColor = LColor.white;
 	private IFont font;
 	private int displayX = 0;
 	private int displayY = 0;
@@ -123,7 +122,25 @@ public class LToast extends LComponent {
 
 	public LToast(IFont font, String text, int duration, int x, int y,
 			int width, int height) {
+		this(font, LColor.white, text, duration, x, y, width, height);
+	}
+
+	public LToast(IFont font, LColor fontColor, String text, int duration,
+			int x, int y, int width, int height) {
+		this(font, null, fontColor, text, duration, x, y, width, height);
+	}
+
+	public LToast(ToastSkin skin, String text, int duration, int x, int y,
+			int width, int height) {
+		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text,
+				duration, x, y, width, height);
+	}
+
+	public LToast(IFont font, LTexture backgounrd, LColor fontColor,
+			String text, int duration, int x, int y, int width, int height) {
 		super(x, y, width, height);
+		this._background = backgounrd;
+		this.mForegroundColor = fontColor;
 		this.mType = ISprite.TYPE_FADE_IN;
 		this.opacity = 0f;
 		this.mDuration = duration;
@@ -166,10 +183,10 @@ public class LToast extends LComponent {
 		try {
 			g.setColor(mBackgroundColor);
 			g.setAlpha(opacity);
-			if (mBackgroundTexture == null) {
+			if (_background == null) {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			} else {
-				g.draw(mBackgroundTexture, displayX, displayY, w, h, baseColor);
+				g.draw(_background, displayX, displayY, w, h, baseColor);
 			}
 			font.drawString(g, mText,
 					displayX + (cellWidth - font.stringWidth(mText)) / 2,
@@ -180,16 +197,14 @@ public class LToast extends LComponent {
 		}
 	}
 
-	public void setBackgroundTexture(LTexture texture) {
-		this.mBackgroundTexture = texture;
+	@Override
+	public void setBackground(LTexture texture) {
+		this._background = texture;
 	}
 
-	public void setBackgroundTexture(String filePath) {
-		this.mBackgroundTexture = LTextures.loadTexture(filePath);
-	}
-
-	public LTexture getBackgroundTexture() {
-		return this.mBackgroundTexture;
+	@Override
+	public void setBackground(String filePath) {
+		setBackground(LTextures.loadTexture(filePath));
 	}
 
 	@Override

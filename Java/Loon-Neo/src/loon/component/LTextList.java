@@ -24,6 +24,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.TextListSkin;
 import loon.event.SysTouch;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -117,6 +118,14 @@ public class LTextList extends LComponent {
 			LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
 		this(LFont.getDefaultFont(), max, x, y, width, height,
 				scrollButtonWidth, bg, choice, scroll, scrollFlagA, scrollFlagB);
+	}
+
+	public LTextList(TextListSkin skin, int max, int x, int y, int width,
+			int height, int scrollButtonWidth) {
+		this(skin.getFont(), max, x, y, width, height, scrollButtonWidth, skin
+				.getBackgoundTexture(), skin.getChoiceTexture(), skin
+				.getScrollTexture(), skin.getScrollFlagATexture(), skin
+				.getScrollFlagBTexture());
 	}
 
 	/**

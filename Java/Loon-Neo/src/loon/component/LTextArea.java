@@ -34,6 +34,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.component.skin.TextAreaSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -44,8 +45,10 @@ import loon.opengl.LSTRDictionary;
  */
 public class LTextArea extends LComponent {
 
+	// 数据向下推入
 	public static final int TYPE_DOWN = 0;
 
+	// 数据向上推入
 	public static final int TYPE_UP = 1;
 
 	private int leftOffset, topOffset;
@@ -93,7 +96,7 @@ public class LTextArea extends LComponent {
 	private String flag = LSystem.FLAG_TAG;
 
 	public LTextArea(int x, int y, int w, int h) {
-		this(w, x, y, w, h);
+		this(-1, x, y, w, h);
 	}
 
 	public LTextArea(int max, int x, int y, int w, int h) {
@@ -117,12 +120,21 @@ public class LTextArea extends LComponent {
 		this(LTextArea.TYPE_DOWN, w, LFont.getDefaultFont(), x, y, w, h, bg);
 	}
 
+	public LTextArea(TextAreaSkin skin, int type, int max, int x, int y, int w,
+			int h) {
+		this(type, max, skin.getFont(), x, y, w, h);
+	}
+
 	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h,
 			LTexture bg) {
 		super(x, y, w, h);
 		this.font = font;
 		this.postLine = (h / font.getHeight());
-		this.set(max);
+		if (max < 0) {
+			this.set(LSystem.isDesktop() ? postLine - 1 : postLine + 1);
+		} else {
+			this.set(max);
+		}
 		this.setWidthLimit(w);
 		this.setWaitFlag(true);
 		this.setSlideMessage(true);
@@ -520,7 +532,7 @@ public class LTextArea extends LComponent {
 	}
 
 	@Override
-	public void setBackground(String path){
+	public void setBackground(String path) {
 		setBackground(LTextures.loadTexture(path));
 	}
 
