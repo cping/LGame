@@ -25,7 +25,7 @@ package loon.utils;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-public class ArrayMap {
+public class ArrayMap implements IArray{
 
 	static final private float LOAD_FACTOR = 0.75f;
 

@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 @SuppressWarnings("unchecked") 
-public class ObjectSet<T> implements Iterable<T> {
+public class ObjectSet<T> implements Iterable<T> ,IArray {
 
 	private static final int PRIME2 = 0xb4b82e39;
 	private static final int PRIME3 = 0xced1c241;
@@ -526,4 +526,15 @@ public class ObjectSet<T> implements Iterable<T> {
 			return toArray(new TArray<K>(true, set.size));
 		}
 	}
+	
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return size == 0 || keyTable == null;
+	}
+
 }

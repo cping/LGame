@@ -2,7 +2,7 @@ package loon.utils;
 
 import java.util.Arrays;
 
-public class FloatArray {
+public class FloatArray implements IArray {
 	
 	public float[] items;
 	public int length;
@@ -416,6 +416,16 @@ public class FloatArray {
 		return new FloatArray(concat(this.items, this.length, o.items, o.length));
 	}
 
+	@Override
+	public int size() {
+		return length;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return length == 0 || items == null;
+	}
+	
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";

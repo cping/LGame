@@ -40,13 +40,14 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
+import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 
 public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite,
-		LTrans, BoxSize {
+		IArray, LTrans, BoxSize {
 
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(
 			false);
@@ -994,10 +995,10 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite,
 		return PlayerUtils.set(this);
 	}
 
-	public boolean isActionCompleted(){
+	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
-	
+
 	@Override
 	public Sprite setFlipX(boolean x) {
 		this._flipX = x;
@@ -1038,6 +1039,23 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite,
 		}
 		setState(State.DISPOSED);
 		removeActionEvents(this);
+	}
+
+	@Override
+	public int size() {
+		return (_childList == null ? 0 : _childList.size);
+	}
+
+	@Override
+	public void clear() {
+		if (_childList != null) {
+			removeChilds();
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return false;
 	}
 
 }

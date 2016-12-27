@@ -24,6 +24,7 @@ import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
 import loon.geom.Dimension;
+import loon.geom.Vector3f;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
@@ -78,6 +79,15 @@ public class LSystem {
 
 	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api，而不替换删除api……)
 	public final static String version = "0.5";
+	
+    public final String getVersionString()
+    {
+        return version;
+    }
+
+	public final static Vector3f getVersion() {
+		return new Vector3f(0, 5, 0);
+	}
 
 	public static int MODE_NORMAL = 1;
 
@@ -111,7 +121,7 @@ public class LSystem {
 
 	// 秒
 	final static public long SECOND = 1000;
-	
+
 	// 分
 	final static public long MINUTE = SECOND * 60;
 
@@ -126,7 +136,7 @@ public class LSystem {
 
 	// 理论上一年
 	final static public long YEAR = DAY * 365;
-	
+
 	// 是否使用了HTML5环境
 	private static boolean _USE_HTML5 = false;
 	private static boolean _USE_MOBILE = false;
@@ -197,9 +207,9 @@ public class LSystem {
 	public static boolean isMobile() {
 		return LSystem._USE_MOBILE;
 	}
-	
-	public static boolean isDesktop(){
-		return !_USE_MOBILE&&!_USE_HTML5;
+
+	public static boolean isDesktop() {
+		return !_USE_MOBILE && !_USE_HTML5;
 	}
 
 	public static float getScaleWidth() {

@@ -27,7 +27,7 @@ import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class TArray<T> implements Iterable<T> {
+public class TArray<T> implements Iterable<T>,IArray {
 
 	public T[] items;
 
@@ -609,6 +609,11 @@ public class TArray<T> implements Iterable<T> {
 			iterator1.valid = false;
 			return iterator2;
 		}
+	}
+
+	@Override
+	public int size() {
+		return size;
 	}
 
 }

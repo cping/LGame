@@ -3,7 +3,7 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class IntIntMap implements Iterable<IntIntMap.Entry> {
+public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 
 	private static final int PRIME2 = 0xb4b82e39;
 	private static final int PRIME3 = 0xced1c241;
@@ -50,7 +50,8 @@ public class IntIntMap implements Iterable<IntIntMap.Entry> {
 		threshold = (int) (capacity * loadFactor);
 		mask = capacity - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
+		stashCapacity = MathUtils.max(3,
+				(int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(capacity, 8),
 				(int) MathUtils.sqrt(capacity) / 8);
 
@@ -477,7 +478,8 @@ public class IntIntMap implements Iterable<IntIntMap.Entry> {
 		threshold = (int) (newSize * loadFactor);
 		mask = newSize - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
+		stashCapacity = MathUtils.max(3,
+				(int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(newSize, 8),
 				(int) MathUtils.sqrt(newSize) / 8);
 
@@ -542,6 +544,16 @@ public class IntIntMap implements Iterable<IntIntMap.Entry> {
 		}
 		buffer.append('}');
 		return buffer.toString();
+	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return size == 0 || keyTable == null || valueTable == null;
 	}
 
 	public Iterator<Entry> iterator() {

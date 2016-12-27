@@ -15,7 +15,7 @@
  */
 package loon.utils;
 
-public class IntHashMap {
+public class IntHashMap implements IArray {
 
 	Entry[] valueTables;
 

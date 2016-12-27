@@ -3,9 +3,8 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
+public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>>, IArray {
 
 	private static final int PRIME2 = 0xb4b82e39;
 	private static final int PRIME3 = 0xced1c241;
@@ -50,7 +49,8 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 		threshold = (int) (capacity * loadFactor);
 		mask = capacity - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
+		stashCapacity = MathUtils.max(3,
+				(int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(capacity, 8),
 				(int) MathUtils.sqrt(capacity) / 8);
 
@@ -439,7 +439,8 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 		threshold = (int) (newSize * loadFactor);
 		mask = newSize - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
+		stashCapacity = MathUtils.max(3,
+				(int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
 		pushIterations = MathUtils.max(MathUtils.min(newSize, 8),
 				(int) MathUtils.sqrt(newSize) / 8);
 
@@ -720,4 +721,15 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 			super.remove();
 		}
 	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return size == 0 || keyTable == null || valueTable == null;
+	}
+
 }

@@ -3,7 +3,7 @@ package loon.utils;
 import java.util.NoSuchElementException;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class OrderedMap<K, V> extends ObjectMap<K, V> {
+public class OrderedMap<K, V> extends ObjectMap<K, V> implements IArray {
 	final TArray<K> keys;
 
 	private Entries entries1, entries2;

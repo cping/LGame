@@ -3,7 +3,7 @@ package loon.utils;
 import java.util.NoSuchElementException;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class OrderedSet<T> extends ObjectSet<T> {
+public class OrderedSet<T> extends ObjectSet<T> implements IArray {
 	
 	final TArray<T> items;
 	OrderedSetIterator iterator1, iterator2;

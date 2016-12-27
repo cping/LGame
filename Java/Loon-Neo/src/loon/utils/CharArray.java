@@ -3,7 +3,7 @@ package loon.utils;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class CharArray {
+public class CharArray implements IArray {
 
 	public char[] items;
 	public int length;
@@ -262,6 +262,7 @@ public class CharArray {
 		return items[0];
 	}
 
+	@Override
 	public void clear() {
 		length = 0;
 	}
@@ -415,6 +416,16 @@ public class CharArray {
 
 	public CharArray concat(CharArray o) {
 		return new CharArray(concat(this.items, this.length, o.items, o.length));
+	}
+
+	@Override
+	public int size() {
+		return length;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return length == 0 || items == null;
 	}
 
 	public byte[] getBytes() {

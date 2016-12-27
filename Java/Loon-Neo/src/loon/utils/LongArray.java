@@ -23,7 +23,7 @@ package loon.utils;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class LongArray {
+public class LongArray implements IArray {
 	
 	public long[] items;
 	public int length;
@@ -435,6 +435,16 @@ public class LongArray {
 
 	public LongArray concat(LongArray o) {
 		return new LongArray(concat(this.items, this.length, o.items, o.length));
+	}
+
+	@Override
+	public int size() {
+		return length;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return length == 0 || items == null;
 	}
 
 	public byte[] getBytes() {

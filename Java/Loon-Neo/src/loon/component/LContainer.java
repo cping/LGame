@@ -27,11 +27,12 @@ import loon.component.layout.LayoutPort;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public abstract class LContainer extends LComponent {
+public abstract class LContainer extends LComponent implements IArray {
 
 	protected LComponent[] _childs = new LComponent[0];
 
@@ -327,13 +328,15 @@ public abstract class LContainer extends LComponent {
 
 	public LComponent remove(int index) {
 		LComponent comp = this._childs[index];
-		this.desktop.setComponentStat(comp, false);
-		comp.setContainer(null);
-		comp.setState(State.REMOVED);
-		if (comp != null && comp instanceof ActionBind) {
-			removeActionEvents((ActionBind) comp);
+		if (comp != null) {
+			this.desktop.setComponentStat(comp, false);
+			comp.setContainer(null);
+			comp.setState(State.REMOVED);
+			if (comp instanceof ActionBind) {
+				removeActionEvents((ActionBind) comp);
+			}
+			// comp.dispose();
 		}
-		// comp.dispose();
 		this._childs = CollectionUtils.cut(this._childs, index);
 		this.childCount--;
 		return comp;
@@ -342,9 +345,15 @@ public abstract class LContainer extends LComponent {
 	public void clear() {
 		this.desktop.clearComponentsStat(this._childs);
 		for (int i = 0; i < this.childCount; i++) {
-			this._childs[i].setContainer(null);
-			this._childs[i].setState(State.REMOVED);
-			// this._childs[i].dispose();
+			LComponent comp = this._childs[i];
+			if (comp != null) {
+				comp.setContainer(null);
+				comp.setState(State.REMOVED);
+				if (comp instanceof ActionBind) {
+					removeActionEvents((ActionBind) comp);
+				}
+				// comp.dispose();
+			}
 		}
 		this._childs = new LComponent[0];
 		this.childCount = 0;
@@ -600,8 +609,8 @@ public abstract class LContainer extends LComponent {
 		packLayout(manager, 0, 0, 0, 0);
 	}
 
-	public void packLayout(final LayoutManager manager,final float spacex,
-			final float spacey,final float spaceWidth,final float spaceHeight) {
+	public void packLayout(final LayoutManager manager, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight) {
 		LComponent[] comps = getComponents();
 		CollectionUtils.reverse(comps);
 		layoutElements(manager, comps);
@@ -640,6 +649,16 @@ public abstract class LContainer extends LComponent {
 		}
 		super.out();
 		return this;
+	}
+
+	@Override
+	public int size() {
+		return childCount;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return childCount == 0 || _childs == null;
 	}
 
 	@Override

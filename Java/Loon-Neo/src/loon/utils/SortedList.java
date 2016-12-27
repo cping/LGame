@@ -23,7 +23,7 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class SortedList<E> implements Iterable<E> {
+public class SortedList<E> implements Iterable<E>,IArray {
 
 	public LIterator<E> listIterator() {
 		return listIterator(0);

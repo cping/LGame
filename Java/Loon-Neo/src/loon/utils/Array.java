@@ -20,7 +20,7 @@
  */
 package loon.utils;
 
-public class Array<T> {
+public class Array<T> implements IArray {
 
 	public static class ArrayNode<T> {
 

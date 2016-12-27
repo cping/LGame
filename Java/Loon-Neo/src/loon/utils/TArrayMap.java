@@ -25,8 +25,8 @@ import java.util.NoSuchElementException;
 
 import loon.utils.ObjectMap.Entry;
 
-@SuppressWarnings({"unchecked","rawtypes"})
-public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
 	public K[] keys;
 	public V[] values;
 	public int size;
@@ -338,7 +338,8 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	protected void resize(int newSize) {
 		K[] newKeys = (K[]) new Object[newSize];
-		System.arraycopy(keys, 0, newKeys, 0, MathUtils.min(size, newKeys.length));
+		System.arraycopy(keys, 0, newKeys, 0,
+				MathUtils.min(size, newKeys.length));
 		this.keys = newKeys;
 		V[] newValues = (V[]) new Object[newSize];
 		System.arraycopy(values, 0, newValues, 0,
@@ -588,5 +589,15 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 			array.addAll(map.keys, index, map.size - index);
 			return array;
 		}
+	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return size == 0 || keys == null || values == null;
 	}
 }

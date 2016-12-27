@@ -16,10 +16,12 @@ import loon.geom.Affine2f;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
-public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
+public class Entity extends LObject<IEntity> implements IEntity, IArray,
+		BoxSize {
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
@@ -991,7 +993,7 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	public boolean isFlipY() {
 		return _flipY;
 	}
-	
+
 	@Override
 	public void toString(final StringBuilder s) {
 		s.append(this.getClass().getSimpleName());
@@ -1019,8 +1021,8 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
-	
-	public boolean isActionCompleted(){
+
+	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
 
@@ -1045,5 +1047,21 @@ public class Entity extends LObject<IEntity> implements IEntity, BoxSize {
 		}
 	}
 
+	@Override
+	public int size() {
+		return _childrens == null ? 0 : _childrens.size;
+	}
+
+	@Override
+	public void clear() {
+		if (_childrens != null) {
+			removeChildren();
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return (_childrens == null ? true : _childrens.size == 0);
+	}
 
 }

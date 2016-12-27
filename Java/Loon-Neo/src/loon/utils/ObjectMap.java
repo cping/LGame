@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
+public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
 
 	private static final int PRIME2 = 0xb4b82e39;
 	private static final int PRIME3 = 0xced1c241;
@@ -603,7 +603,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	}
 
 	public boolean isEmpty() {
-		return this.size == 0;
+		return this.size == 0 || keyTable == null || valueTable == null;
 	}
 
 	static public class Entry<K, V> {
@@ -766,4 +766,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 			return array;
 		}
 	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
 }

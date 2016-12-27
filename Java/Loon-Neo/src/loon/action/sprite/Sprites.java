@@ -20,16 +20,17 @@
  */
 package loon.action.sprite;
 
-import java.io.Serializable;
-
 import loon.LObject.State;
 import loon.LRelease;
 import loon.LSystem;
 import loon.Screen;
+import loon.action.ActionBind;
+import loon.action.ActionControl;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -39,7 +40,7 @@ import loon.utils.TArray;
  * 当LNode系列精灵和SpriteBatchScreen合用时，也支持触屏.）
  * 
  */
-public class Sprites implements Serializable, LRelease {
+public class Sprites implements IArray, LRelease {
 
 	private final static TArray<Sprites> SPRITES_CACHE = new TArray<Sprites>(8);
 
@@ -56,8 +57,6 @@ public class Sprites implements Serializable, LRelease {
 		public void update(ISprite spr);
 
 	}
-
-	private static final long serialVersionUID = 7460335325994101982L;
 
 	protected ISprite[] _sprites;
 
@@ -431,6 +430,10 @@ public class Sprites implements Serializable, LRelease {
 		ISprite removed = this._sprites[index];
 		if (removed != null) {
 			removed.setState(State.REMOVED);
+			// 删除精灵同时，删除缓动动画
+			if (removed instanceof ActionBind) {
+				ActionControl.get().removeAllActions((ActionBind) removed);
+			}
 		}
 		int size = this._size - index - 1;
 		if (size > 0) {
@@ -471,6 +474,10 @@ public class Sprites implements Serializable, LRelease {
 			ISprite spr = _sprites[i - 1];
 			if ((sprite == spr) || (sprite.equals(spr))) {
 				spr.setState(State.REMOVED);
+				// 删除精灵同时，删除缓动动画
+				if (spr instanceof ActionBind) {
+					ActionControl.get().removeAllActions((ActionBind) spr);
+				}
 				removed = true;
 				_size--;
 				_sprites[i - 1] = _sprites[_size];
@@ -504,6 +511,10 @@ public class Sprites implements Serializable, LRelease {
 			ISprite spr = _sprites[i - 1];
 			if ((name.equals(spr.getName()))) {
 				spr.setState(State.REMOVED);
+				// 删除精灵同时，删除缓动动画
+				if (spr instanceof ActionBind) {
+					ActionControl.get().removeAllActions((ActionBind) spr);
+				}
 				removed = true;
 				_size--;
 				_sprites[i - 1] = _sprites[_size];
@@ -531,6 +542,10 @@ public class Sprites implements Serializable, LRelease {
 				ISprite spr = _sprites[i];
 				if (spr != null) {
 					spr.setState(State.REMOVED);
+					// 删除精灵同时，删除缓动动画
+					if (spr instanceof ActionBind) {
+						ActionControl.get().removeAllActions((ActionBind) spr);
+					}
 				}
 			}
 		}
@@ -572,8 +587,13 @@ public class Sprites implements Serializable, LRelease {
 	 */
 	public void clear() {
 		for (int i = 0; i < _sprites.length; i++) {
-			if (_sprites[i] != null) {
-				_sprites[i].setState(State.REMOVED);
+			ISprite removed = _sprites[i];
+			if (removed != null) {
+				removed.setState(State.REMOVED);
+				// 删除精灵同时，删除缓动动画
+				if (removed instanceof ActionBind) {
+					ActionControl.get().removeAllActions((ActionBind) removed);
+				}
 			}
 			_sprites[i] = null;
 		}
@@ -781,6 +801,11 @@ public class Sprites implements Serializable, LRelease {
 
 	public Screen getScreen() {
 		return _screen;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return _size == 0 || _sprites == null;
 	}
 
 	@Override
