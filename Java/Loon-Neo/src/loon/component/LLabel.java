@@ -3,6 +3,7 @@ package loon.component;
 import loon.HorizontalAlign;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.MessageSkin;
 import loon.font.Font.Style;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -137,6 +138,12 @@ public class LLabel extends LComponent {
 			String mes, int x, int y, int width, int height) {
 		this(alignment, new TextOptions(), font, c, bg, mes, x, y, width,
 				height);
+	}
+
+	public LLabel(MessageSkin skin, HorizontalAlign alignment, TextOptions opt,
+			String mes, int x, int y, int width, int height) {
+		this(alignment, skin.getFont(), skin.getFontColor(), skin
+				.getBackgroundTexture(), mes, x, y, width, height);
 	}
 
 	public LLabel(HorizontalAlign alignment, TextOptions opt, IFont font,

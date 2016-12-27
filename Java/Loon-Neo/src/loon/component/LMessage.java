@@ -25,6 +25,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
+import loon.component.skin.MessageSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -70,7 +71,18 @@ public class LMessage extends LContainer {
 
 	public LMessage(IFont font, LTexture formImage, int x, int y, int width,
 			int height) {
+		this(font, formImage, x, y, width, height, LColor.white);
+	}
+
+	public LMessage(MessageSkin skin, int x, int y, int width, int height) {
+		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height,
+				skin.getFontColor());
+	}
+
+	public LMessage(IFont font, LTexture formImage, int x, int y, int width,
+			int height, LColor color) {
 		super(x, y, width, height);
+		this.fontColor = color;
 		this.messageFont = (font == null ? LFont.getDefaultFont() : font);
 		this.animation = new Animation();
 		if (formImage == null) {
@@ -287,8 +299,8 @@ public class LMessage extends LContainer {
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
 	}
-	
-	public IFont getFont(){
+
+	public IFont getFont() {
 		return getMessageFont();
 	}
 

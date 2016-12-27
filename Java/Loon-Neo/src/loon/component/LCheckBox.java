@@ -24,6 +24,7 @@ package loon.component;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.component.skin.CheckBoxSkin;
 import loon.event.CallFunction;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -101,6 +102,12 @@ public class LCheckBox extends LComponent {
 		this(txt, x, y, LTextures.loadTexture(uncheckedFile), LTextures
 				.loadTexture(checkedFile), boxsize, boxtoleftoftext, textcolor,
 				font);
+	}
+
+	public LCheckBox(CheckBoxSkin skin, String txt, int x, int y, int boxsize,
+			boolean boxtoleftoftext) {
+		this(txt, x, y, skin.getUncheckedTexture(), skin.getCheckedTexture(),
+				boxsize, boxtoleftoftext, skin.getFontColor(), skin.getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, LTexture unchecked,
@@ -234,7 +241,7 @@ public class LCheckBox extends LComponent {
 	public void setFunction(CallFunction function) {
 		this._function = function;
 	}
-	
+
 	public boolean isTicked() {
 		return ticked;
 	}

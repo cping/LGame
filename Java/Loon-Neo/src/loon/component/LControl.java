@@ -24,10 +24,10 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.map.Config;
+import loon.component.skin.ControlSkin;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
-
 
 /**
  * 内置的滑杆控制器，用以操作八方向行走等
@@ -78,19 +78,25 @@ public class LControl extends LComponent {
 
 	public LControl(int x, int y, int bw, int bh, int dw, int dh) {
 		this(x, y, LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME
-				+ "control_base.png"), LTextures.loadTexture(
-				LSystem.FRAMEWORK_IMG_NAME + "control_dot.png"),
+				+ "control_base.png"), LTextures
+				.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "control_dot.png"),
 				bw, bh, dw, dh);
 	}
 
 	public LControl(int x, int y, String basename, String dot, int bw, int bh,
 			int dw, int dh) {
-		this(x, y, LTextures.loadTexture(basename), LTextures
-				.loadTexture(dot), bw, bh, dw, dh);
+		this(x, y, LTextures.loadTexture(basename), LTextures.loadTexture(dot),
+				bw, bh, dw, dh);
 	}
-	
-	public LControl(int x, int y, LTexture basefile, LTexture dot, int bw, int bh,
-			int dw, int dh) {
+
+	public LControl(ControlSkin skin, int x, int y, int bw, int bh, int dw,
+			int dh) {
+		this(x, y, skin.getControlBaseTexture(), skin.getControlDotTexture(),
+				bw, bh, dw, dh);
+	}
+
+	public LControl(int x, int y, LTexture basefile, LTexture dot, int bw,
+			int bh, int dw, int dh) {
 		super(x, y, bw, bh);
 		this.controlBase = basefile;
 		this.controlDot = dot;
@@ -222,8 +228,7 @@ public class LControl extends LComponent {
 		if (visible) {
 			g.setAlpha(0.5f);
 			g.draw(controlBase, x, y, baseWidth, baseHeight);
-			g.draw(controlDot, x + centerX, y + centerY, dotWidth,
-					dotHeight);
+			g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
 			g.setAlpha(1f);
 		}
 	}

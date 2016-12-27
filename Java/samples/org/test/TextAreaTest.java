@@ -39,6 +39,8 @@ public class TextAreaTest extends Screen {
 		area.put("2333333333333", LColor.yellow);
 		area.put("6666666666");
 		area.put("点击我增加数据");	
+		//从下向上刷数据
+		//area.setShowType(LTextArea.TYPE_UP);
 		//清空数据
 		//area.clear();
 		area.up(new Touched() {
@@ -53,7 +55,7 @@ public class TextAreaTest extends Screen {
 		area.setLeftOffset(5);
 		area.setTopOffset(5);
 		// addString为在前一行追加数据
-		// area.addString("1",LColor.red);
+		 area.addString("1",LColor.red);
 		add(area);
 		add(MultiScreenTest.getBackButton(this,0));
 		

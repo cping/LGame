@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.component.skin.MenuSkin;
 import loon.event.SysTouch;
 import loon.event.Updateable;
 import loon.font.IFont;
@@ -440,7 +441,22 @@ public class LMenu extends LComponent {
 	public LMenu(int move_type, IFont font, String label, int width,
 			int height, LTexture tab, LTexture main, int taby, int mainsize,
 			boolean defUI) {
+		this(move_type, font, label, width, height, tab, main, taby, mainsize,
+				defUI, LColor.white);
+	}
+
+	public LMenu(MenuSkin skin, int move_type, String label, int width,
+			int height, int taby, int mainsize, boolean defUI) {
+		this(move_type, skin.getFont(), label, width, height, skin
+				.getTabTexture(), skin.getMainTexture(), taby, mainsize, defUI,
+				skin.getFontColor());
+	}
+
+	public LMenu(int move_type, IFont font, String label, int width,
+			int height, LTexture tab, LTexture main, int taby, int mainsize,
+			boolean defUI, LColor color) {
 		super(0, 0, width, height);
+		this.fontColor = color;
 		this.type = move_type;
 		this.label = label;
 		this.font = font;

@@ -4,13 +4,11 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.IFont;
 
-public class TableSkin {
+public class MessageSkin {
 
 	private IFont font;
 
 	private LTexture backgroundTexture;
-	
-	private LTexture headerTexture;
 	
 	private LColor fontColor;
 
@@ -26,7 +24,7 @@ public class TableSkin {
 		return backgroundTexture;
 	}
 
-	public void setBackgroundTexture(LTexture background) {
+	public void setBackground(LTexture background) {
 		this.backgroundTexture = background;
 	}
 
@@ -38,12 +36,5 @@ public class TableSkin {
 		this.fontColor = fontColor;
 	}
 
-	public LTexture getHeaderTexture() {
-		return headerTexture;
-	}
-
-	public void setHeaderTexture(LTexture headerTexture) {
-		this.headerTexture = headerTexture;
-	}
 
 }

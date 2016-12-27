@@ -34,11 +34,12 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
-import loon.component.skin.TextAreaSkin;
+import loon.component.skin.MessageSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.StringUtils;
 
 /**
  * 字符串显示用类,支持多种文字显示特效,个人建议主要用来做信息推送显示
@@ -120,14 +121,15 @@ public class LTextArea extends LComponent {
 		this(LTextArea.TYPE_DOWN, w, LFont.getDefaultFont(), x, y, w, h, bg);
 	}
 
-	public LTextArea(TextAreaSkin skin, int type, int max, int x, int y, int w,
+	public LTextArea(MessageSkin skin, int type, int max, int x, int y, int w,
 			int h) {
-		this(type, max, skin.getFont(), x, y, w, h);
+		this(type, max, skin.getFont(), x, y, w, h, skin.getBackgroundTexture());
 	}
 
 	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h,
 			LTexture bg) {
 		super(x, y, w, h);
+		this.showType = type;
 		this.font = font;
 		this.postLine = (h / font.getHeight());
 		if (max < 0) {
@@ -226,11 +228,27 @@ public class LTextArea extends LComponent {
 	}
 
 	public void put(String mes, LColor color) {
-		setColor(color.getRed(), color.getGreen(), color.getBlue());
-		put(mes);
+		if (StringUtils.isEmpty(mes)) {
+			return;
+		}
+		String[] messages = StringUtils.split(mes, '\n');
+		for (int i = messages.length - 1; i > -1; i--) {
+			setColor(color.getRed(), color.getGreen(), color.getBlue());
+			putOne(messages[i]);
+		}
 	}
 
 	public void put(String mes) {
+		if (StringUtils.isEmpty(mes)) {
+			return;
+		}
+		String[] messages = StringUtils.split(mes, '\n');
+		for (int i = messages.length - 1; i > -1; i--) {
+			putOne(messages[i]);
+		}
+	}
+
+	private void putOne(String mes) {
 		this.over = false;
 		this.numBak = this.num;
 		if (font != null && font instanceof LFont) {
@@ -440,17 +458,17 @@ public class LTextArea extends LComponent {
 											.stringWidth(this.getMessage[this.num]),
 							this.drawY - this.posy, this.triangleColor);
 				}
-				if (this.brightType[i] == 0) {
+				if (this.brightType[i] == TYPE_DOWN) {
 					this.bright[i] += this.brightSpeed;
 					if (this.bright[i] >= this.brightMax) {
 						this.bright[i] = this.brightMax;
-						this.brightType[i] = 1;
+						this.brightType[i] = TYPE_UP;
 					}
 				} else {
 					this.bright[i] -= this.brightSpeed;
 					if (this.bright[i] < 0) {
 						this.bright[i] = 0;
-						this.brightType[i] = 0;
+						this.brightType[i] = TYPE_DOWN;
 					}
 				}
 			}
@@ -537,8 +555,14 @@ public class LTextArea extends LComponent {
 	}
 
 	private void drawString(GLEx g, String str, int x, int y, LColor color) {
-		font.drawString(g, str, x + leftOffset + 5,
-				(y - 5) + topOffset + font.getAscent() / 2, color);
+		if (showType == TYPE_DOWN) {
+			font.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset
+					+ font.getAscent() / 2, color);
+		} else {
+			font.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset
+					+ font.getAscent() / 2 + getHeight() - font.getHeight(),
+					color);
+		}
 	}
 
 	public int getLeftOffset() {

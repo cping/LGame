@@ -4,6 +4,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
+import loon.component.skin.ProgressSkin;
 import loon.event.ValueListener;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureRegion;
@@ -44,6 +45,11 @@ public class LProgress extends LComponent {
 	public LProgress(ProgressType type, LColor baseColor, int x, int y,
 			int width, int height) {
 		this(type, baseColor, x, y, width, height, null, null);
+	}
+
+	public LProgress(ProgressSkin skin, int x, int y, int width, int height) {
+		this(ProgressType.Custom, skin.getFontColor(), x, y, width, height,
+				skin.getBackgroundTexture(), skin.getProgressTexture());
 	}
 
 	public LProgress(ProgressType type, LColor baseColor, int x, int y,

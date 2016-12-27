@@ -3,6 +3,7 @@ package loon.component;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.MessageSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.ShadowFont;
@@ -320,7 +321,7 @@ public class LMessageBox extends LComponent {
 	private final StringBuilder _message = new StringBuilder();
 
 	private boolean _initNativeDraw = false;
-	
+
 	protected int messageIndex = 0;
 	protected TArray<Message> _messageList;
 
@@ -378,7 +379,17 @@ public class LMessageBox extends LComponent {
 
 	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font,
 			LTexture box, int x, int y, int width, int height) {
+		this(messages, typeFlag, font, box, x, y, width, height, LColor.white);
+	}
+
+	public LMessageBox(MessageSkin skin, TArray<Message> messages,String typeFlag,  int x, int y, int width, int height) {
+		this(messages, typeFlag, skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin.getFontColor());
+	}
+	
+	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font,
+			LTexture box, int x, int y, int width, int height, LColor color) {
 		super(x, y, width, height);
+		this.baseColor = color;
 		if (box != null && width == 0 && height == 0) {
 			this.setSize(box.getWidth(), box.getHeight());
 		}

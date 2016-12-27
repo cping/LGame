@@ -33,6 +33,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.MessageSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -83,15 +84,15 @@ public class LDecideName extends LComponent {
 		this(mes, x, y, 400, 250);
 	}
 
-	public LDecideName(String lable, TArray<String> mes, int x, int y,
+	public LDecideName(String label, TArray<String> mes, int x, int y,
 			int width, int height) {
-		this(lable, "", mes, LFont.getDefaultFont(), x, y, width, height, DefUI
+		this(label, "", mes, LFont.getDefaultFont(), x, y, width, height, DefUI
 				.getDefaultTextures(2));
 	}
 
-	public LDecideName(String lable, TArray<String> mes, int x, int y,
+	public LDecideName(String label, TArray<String> mes, int x, int y,
 			int width, int height, LTexture bg) {
-		this(lable, "", mes, LFont.getDefaultFont(), x, y, width, height, bg);
+		this(label, "", mes, LFont.getDefaultFont(), x, y, width, height, bg);
 	}
 
 	public LDecideName(TArray<String> mes, int x, int y, int width, int height) {
@@ -101,8 +102,20 @@ public class LDecideName extends LComponent {
 
 	public LDecideName(String label, String name, TArray<String> mes, IFont f,
 			int x, int y, int width, int height, LTexture bg) {
+		this(label, name, mes, f, x, y, width, height, bg, LColor.white);
+	}
+
+	public LDecideName(MessageSkin skin, String label, String name,
+			TArray<String> mes, int x, int y, int width, int height) {
+		this(label, name, mes, skin.getFont(), x, y, width, height, skin
+				.getBackgroundTexture(), skin.getFontColor());
+	}
+
+	public LDecideName(String label, String name, TArray<String> mes, IFont f,
+			int x, int y, int width, int height, LTexture bg, LColor color) {
 		super(x, y, width, height - f.getHeight() - 20);
 		this._font = f;
+		this.fontColor = color;
 		this.baseColor = new LColor(0, 150, 0, 150);
 		this.labelName = label;
 		this.name = name;

@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.component.skin.ClickButtonSkin;
 import loon.event.CallFunction;
 import loon.font.BMFont;
 import loon.font.IFont;
@@ -148,6 +149,13 @@ public class LClickButton extends LComponent {
 			int width, int height, String a, String b, String c) {
 		this(text, font, color, x, y, width, height, LTextures.loadTexture(a),
 				LTextures.loadTexture(b), LTextures.loadTexture(c));
+	}
+
+	public LClickButton(ClickButtonSkin skin, String text, int x, int y,
+			int width, int height) {
+		this(text, skin.getFont(), skin.getFontColor(), x, y, width, height,
+				skin.getIdleClickTexture(), skin.getHoverClickTexture(), skin
+						.getClickedTexture());
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y,

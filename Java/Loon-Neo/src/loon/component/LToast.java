@@ -5,7 +5,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
-import loon.component.skin.ToastSkin;
+import loon.component.skin.MessageSkin;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -130,7 +130,7 @@ public class LToast extends LComponent {
 		this(font, null, fontColor, text, duration, x, y, width, height);
 	}
 
-	public LToast(ToastSkin skin, String text, int duration, int x, int y,
+	public LToast(MessageSkin skin, String text, int duration, int x, int y,
 			int width, int height) {
 		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text,
 				duration, x, y, width, height);
