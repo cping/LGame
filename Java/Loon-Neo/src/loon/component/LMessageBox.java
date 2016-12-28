@@ -4,6 +4,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
+import loon.component.skin.SkinManager;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.ShadowFont;
@@ -347,17 +348,17 @@ public class LMessageBox extends LComponent {
 
 	public LMessageBox(TArray<Message> messages, int x, int y, int width,
 			int height) {
-		this(messages, null, LFont.getDefaultFont(), null, x, y, width, height);
+		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, x, y, width, height);
 	}
 
 	public LMessageBox(TArray<Message> messages, LTexture texture, int x,
 			int y, int width, int height) {
-		this(messages, null, LFont.getDefaultFont(), texture, x, y, width,
+		this(messages, null, SkinManager.get().getMessageSkin().getFont(), texture, x, y, width,
 				height);
 	}
 
 	public LMessageBox(String[] messages, int x, int y, int width, int height) {
-		this(messages, null, LFont.getDefaultFont(), null, null, x, y, width,
+		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, null, x, y, width,
 				height);
 	}
 
@@ -368,7 +369,7 @@ public class LMessageBox extends LComponent {
 
 	public LMessageBox(String[] messages, LTexture texture, int x, int y,
 			int width, int height) {
-		this(messages, null, LFont.getDefaultFont(), null, texture, x, y,
+		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, texture, x, y,
 				width, height);
 	}
 
@@ -379,7 +380,7 @@ public class LMessageBox extends LComponent {
 
 	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font,
 			LTexture box, int x, int y, int width, int height) {
-		this(messages, typeFlag, font, box, x, y, width, height, LColor.white);
+		this(messages, typeFlag, font, box, x, y, width, height, SkinManager.get().getMessageSkin().getFontColor());
 	}
 
 	public LMessageBox(MessageSkin skin, TArray<Message> messages,String typeFlag,  int x, int y, int width, int height) {
@@ -422,7 +423,7 @@ public class LMessageBox extends LComponent {
 	}
 
 	public LMessageBox(String[] messages, LTexture box, int x, int y) {
-		this(messages, null, LFont.getDefaultFont(), null, box, x, y, 0, 0);
+		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, box, x, y, 0, 0);
 	}
 
 	/**

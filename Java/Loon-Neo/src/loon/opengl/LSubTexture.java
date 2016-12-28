@@ -16,7 +16,7 @@ public class LSubTexture {
 		this.x2 = parent.getWidth();
 		this.y2 = parent.getHeight();
 	}
-	
+
 	public LSubTexture(String path) {
 		this.parent = LTextures.loadTexture(path);
 		this.x = 0;
@@ -34,18 +34,22 @@ public class LSubTexture {
 	}
 
 	public LTexture get() {
+		if (parent.isClose()) {
+			this.parent = LTextures.newTexture(parent.getSource());
+			return parent.copy(x, y, getWidth() - 1, getHeight() - 1);
+		}
 		return this.parent.copy(x, y, getWidth() - 1, getHeight() - 1);
 	}
 
 	public LTexture getParent() {
 		return parent;
 	}
-	
-	public int getX(){
+
+	public int getX() {
 		return x;
 	}
-	
-	public int getY(){
+
+	public int getY() {
 		return y;
 	}
 

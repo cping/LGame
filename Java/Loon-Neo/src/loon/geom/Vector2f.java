@@ -489,6 +489,10 @@ public class Vector2f implements Serializable, XY {
 		return vectorA;
 	}
 
+	public static Vector2f subNew(Vector2f vectorA, Vector2f vectorB) {
+		return at(vectorA.x - vectorB.x, vectorA.y - vectorB.y);
+	}
+
 	public static Vector2f sub(Vector2f vectorA, Vector2f vectorB) {
 		vectorA.x -= vectorB.x;
 		vectorA.y -= vectorB.y;
@@ -502,6 +506,10 @@ public class Vector2f implements Serializable, XY {
 			vectorA.y /= len;
 		}
 		return vectorA;
+	}
+
+	public static Vector2f addNew(Vector2f vectorA, Vector2f vectorB) {
+		return at(vectorA.x + vectorB.x, vectorA.y + vectorB.y);
 	}
 
 	public static Vector2f add(Vector2f vectorA, Vector2f vectorB) {

@@ -2,7 +2,9 @@ package loon.component.skin;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.font.IFont;
+import loon.font.LFont;
 
 public class ClickButtonSkin {
 
@@ -11,6 +13,24 @@ public class ClickButtonSkin {
 	private LTexture clickedTexture;
 	private IFont font;
 	private LColor fontColor;
+
+	public final static ClickButtonSkin def() {
+		return new ClickButtonSkin();
+	}
+
+	public ClickButtonSkin() {
+		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(7),
+				DefUI.getDefaultTextures(8), DefUI.getDefaultTextures(9));
+	}
+
+	public ClickButtonSkin(IFont font, LColor fontColor, LTexture idle,
+			LTexture hover, LTexture clicked) {
+		this.font = font;
+		this.fontColor = fontColor;
+		this.idleClickTexture = idle;
+		this.hoverClickTexture = hover;
+		this.clickedTexture = clicked;
+	}
 
 	public LTexture getIdleClickTexture() {
 		return idleClickTexture;

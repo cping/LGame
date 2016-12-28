@@ -2,15 +2,34 @@ package loon.component.skin;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.font.IFont;
+import loon.font.LFont;
 
 public class CheckBoxSkin {
-	
+
 	private IFont font;
 	private LColor fontColor;
 
 	private LTexture uncheckedTexture;
 	private LTexture checkedTexture;
+
+	public final static CheckBoxSkin def() {
+		return new CheckBoxSkin();
+	}
+
+	public CheckBoxSkin() {
+		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(5),
+				DefUI.getDefaultTextures(6));
+	}
+
+	public CheckBoxSkin(IFont font, LColor fontColor, LTexture unchecked,
+			LTexture checked) {
+		this.font = font;
+		this.fontColor = fontColor;
+		this.uncheckedTexture = unchecked;
+		this.checkedTexture = checked;
+	}
 
 	public IFont getFont() {
 		return font;

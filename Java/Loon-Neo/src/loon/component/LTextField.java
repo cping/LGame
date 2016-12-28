@@ -36,6 +36,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.SkinManager;
 import loon.event.SysKey;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -87,9 +88,8 @@ public class LTextField extends LTextBar {
 	protected int startidx, limit;
 
 	public LTextField(IFont font, String txt, LTexture left, LTexture right,
-			LTexture body, int x, int y, LColor textcolor, IFont textfont,
-			int type, int limit) {
-		super(txt, left, right, body, x, y, textcolor, textfont);
+			LTexture body, int x, int y, LColor textcolor, int type, int limit) {
+		super(txt, left, right, body, x, y, textcolor, font);
 		this._font = font;
 		this.INPUT_TYPE = type;
 		this.startidx = txt.length();
@@ -97,46 +97,46 @@ public class LTextField extends LTextBar {
 	}
 
 	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor textcolor, IFont textfont, int type, int limit) {
+			int x, int y, LColor textcolor, int type, int limit) {
 		this(LFont.getDefaultFont(), txt, left, right, body, x, y, textcolor,
-				textfont, type, limit);
+				type, limit);
 	}
 
 	public LTextField(IFont font, String txt, int x, int y, LColor textcolor,
 			int inp, int limit) {
-		this(font, txt, DefUI.getDefaultTextures(10), DefUI
-				.getDefaultTextures(10), DefUI.getDefaultTextures(11), x, y,
-				textcolor, LFont.getDefaultFont(), inp, limit);
+		this(font, txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
+				SkinManager.get().getTextBarSkin().getRightTexture(),
+				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y,
+				textcolor, inp, limit);
 	}
 
 	public LTextField(String txt, int x, int y, LColor textcolor, int inp,
 			int limit) {
-		this(txt, DefUI.getDefaultTextures(10), DefUI.getDefaultTextures(10),
-				DefUI.getDefaultTextures(11), x, y, textcolor, LFont
-						.getDefaultFont(), inp, limit);
+		this(txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
+				SkinManager.get().getTextBarSkin().getRightTexture(),
+				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y,
+				textcolor, inp, limit);
 	}
 
 	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor textcolor, int INPUT_TYPE, int limit) {
-		this(txt, left, right, body, x, y, textcolor, LFont.getDefaultFont(),
-				INPUT_TYPE, limit);
+			int x, int y, int type, int limit) {
+		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin()
+				.getFontColor(), type, limit);
 	}
 
-	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, int INPUT_TYPE, int limit) {
-		this(txt, left, right, body, x, y, LColor.black, INPUT_TYPE, limit);
-	}
-
-	public LTextField(String txt, int x, int y, int INPUT_TYPE, int limit) {
-		this(txt, x, y, LColor.black, INPUT_TYPE, limit);
+	public LTextField(String txt, int x, int y, int type, int limit) {
+		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(),
+				type, limit);
 	}
 
 	public LTextField(String txt, int x, int y, int limit) {
-		this(txt, x, y, LColor.black, INPUT_STRING, limit);
+		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(),
+				INPUT_STRING, limit);
 	}
 
 	public LTextField(String txt, int x, int y) {
-		this(txt, x, y, LColor.black, INPUT_STRING, 35);
+		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(),
+				INPUT_STRING, 35);
 	}
 
 	public int getInputType() {
@@ -173,6 +173,7 @@ public class LTextField extends LTextBar {
 			if (nextchar == 0) {
 				return;
 			}
+	
 			boolean isatstart = _text.length() == startidx;
 			if (nextchar == '\b' && _text.length() != 0 && !isatstart) {
 				_text = _text.substring(0, _text.length() - 1);

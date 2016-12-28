@@ -23,9 +23,9 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.SkinManager;
 import loon.component.skin.TextBarSkin;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 
 public class LTextBar extends LComponent {
@@ -45,22 +45,24 @@ public class LTextBar extends LComponent {
 	protected boolean hideBackground = false;
 
 	public LTextBar(String txt, int x, int y, LColor c) {
-		this(txt, DefUI.getDefaultTextures(3), DefUI.getDefaultTextures(3),
-				DefUI.getDefaultTextures(4), x, y, c, LFont.getDefaultFont());
+		this(txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
+				SkinManager.get().getTextBarSkin().getRightTexture(),
+				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y, c,
+				SkinManager.get().getTextBarSkin().getFont());
 	}
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y, LColor c) {
-		this(txt, left, right, body, x, y, c, LFont.getDefaultFont());
+		this(txt, left, right, body, x, y, c, SkinManager.get().getTextBarSkin().getFont());
 	}
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y) {
-		this(txt, left, right, body, x, y, LColor.white);
+		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin().getFontColor());
 	}
 
 	public LTextBar(String txt, int x, int y) {
-		this(txt, x, y, LColor.white);
+		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor());
 	}
 
 	public LTextBar(TextBarSkin skin, String txt, int x, int y, IFont f) {

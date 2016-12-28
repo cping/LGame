@@ -27,6 +27,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MenuSkin;
+import loon.component.skin.SkinManager;
 import loon.event.SysTouch;
 import loon.event.Updateable;
 import loon.font.IFont;
@@ -94,7 +95,8 @@ public class LMenu extends LComponent {
 		private MenuItemClick _itemclick;
 
 		MenuItem(LMenu parent, LTexture tex, String label, MenuItemClick click) {
-			this(LFont.getDefaultFont(), parent, tex, false, label, click);
+			this(SkinManager.get().getMenuSkin().getFont(), parent, tex, false,
+					label, click);
 		}
 
 		MenuItem(IFont font, LMenu parent, LTexture tex, String label,
@@ -121,8 +123,8 @@ public class LMenu extends LComponent {
 
 		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
 				float x, float y, MenuItemClick click) {
-			this(LFont.getDefaultFont(), parent, tex, true, label, x, y, 0, 0,
-					click);
+			this(SkinManager.get().getMenuSkin().getFont(), parent, tex, true,
+					label, x, y, 0, 0, click);
 		}
 
 		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep,
@@ -400,17 +402,18 @@ public class LMenu extends LComponent {
 	private boolean _defUI;
 
 	public LMenu(int move_type, String label) {
-		this(move_type, LFont.getDefaultFont(), label, 100, 50);
+		this(move_type, SkinManager.get().getMenuSkin().getFont(), label, 100,
+				50);
 	}
 
 	public LMenu(int move_type, String label, int w, int h) {
-		this(move_type, LFont.getDefaultFont(), label, w, h);
+		this(move_type, SkinManager.get().getMenuSkin().getFont(), label, w, h);
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width, int height) {
-		this(move_type, font, label, width, height,
-				DefUI.getDefaultTextures(4), DefUI.getDefaultTextures(2), 0, 0,
-				true);
+		this(move_type, font, label, width, height, SkinManager.get()
+				.getMenuSkin().getTabTexture(), SkinManager.get().getMenuSkin()
+				.getMainTexture(), 0, 0, true);
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width,
@@ -442,7 +445,7 @@ public class LMenu extends LComponent {
 			int height, LTexture tab, LTexture main, int taby, int mainsize,
 			boolean defUI) {
 		this(move_type, font, label, width, height, tab, main, taby, mainsize,
-				defUI, LColor.white);
+				defUI, SkinManager.get().getMenuSkin().getFontColor());
 	}
 
 	public LMenu(MenuSkin skin, int move_type, String label, int width,

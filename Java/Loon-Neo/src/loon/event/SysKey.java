@@ -298,26 +298,24 @@ public class SysKey {
 
 	public static final int BUTTON_CIRCLE = 255;
 
-	final static GameKey finalKey = new GameKey();
-
 	public static char getKeyChar() {
-		return finalKey.keyChar;
+		return SysInputFactory.finalKey.keyChar;
 	}
 
 	public static int getKeyCode() {
-		return finalKey.keyCode;
+		return SysInputFactory.finalKey.keyCode;
 	}
 
 	public static int getType() {
-		return finalKey.keyCode;
+		return SysInputFactory.finalKey.keyCode;
 	}
 
 	public static boolean isDown() {
-		return finalKey.isDown();
+		return SysInputFactory.finalKey.isDown();
 	}
 
 	public static boolean isUp() {
-		return finalKey.isUp();
+		return SysInputFactory.finalKey.isUp();
 	}
 
 	public static void clear() {

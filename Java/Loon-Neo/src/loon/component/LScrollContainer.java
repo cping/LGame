@@ -24,6 +24,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
+import loon.component.skin.SkinManager;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -44,7 +45,8 @@ public class LScrollContainer extends LContainer {
 	public boolean showScroll = true;
 
 	public LScrollContainer(int x, int y, int w, int h) {
-		this(DefUI.getDefaultTextures(8), x, y, w, h);
+		this(SkinManager.get().getMessageSkin().getBackgroundTexture(), x, y,
+				w, h);
 	}
 
 	public LScrollContainer(String path, int x, int y, int w, int h) {

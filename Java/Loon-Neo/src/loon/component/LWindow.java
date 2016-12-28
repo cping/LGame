@@ -31,10 +31,10 @@ import loon.canvas.LColor;
 import loon.component.layout.HorizontalLayout;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.VerticalLayout;
+import loon.component.skin.SkinManager;
 import loon.component.skin.WindowSkin;
 import loon.event.CallFunction;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 
 public class LWindow extends LContainer {
@@ -280,9 +280,10 @@ public class LWindow extends LContainer {
 			float width, float height, float barheight, CallFunction first,
 			CallFunction second, CallFunction close, LColor fontColor,
 			boolean vertical) {
-		return alert(LFont.getDefaultFont(), bar, background, textureBtn,
-				title, firstButton, secondButton, closeButton, x, y, width,
-				height, barheight, first, second, close, fontColor, vertical);
+		return alert(SkinManager.get().getWindowSkin().getFont(), bar,
+				background, textureBtn, title, firstButton, secondButton,
+				closeButton, x, y, width, height, barheight, first, second,
+				close, fontColor, vertical);
 	}
 
 	public static LWindow alert(IFont font, LTexture bar, LTexture background,
@@ -384,27 +385,31 @@ public class LWindow extends LContainer {
 
 	public LWindow(IFont font, String title, float x, float y, float width,
 			float height) {
-		this(title, LColor.white, DefUI.getDefaultTextures(0), DefUI
-				.getDefaultTextures(7), x, y, width, height, 40);
+		this(title, SkinManager.get().getWindowSkin().getFontColor(),
+				SkinManager.get().getWindowSkin().getBarTexture(), SkinManager
+						.get().getWindowSkin().getBackgroundTexture(), x, y,
+				width, height, 40);
 	}
 
 	public LWindow(String title, float x, float y, float width, float height) {
-		this(LFont.getDefaultFont(), title, LColor.white, DefUI
-				.getDefaultTextures(0), DefUI.getDefaultTextures(7), x, y,
+		this(SkinManager.get().getWindowSkin().getFont(), title, SkinManager
+				.get().getWindowSkin().getFontColor(), SkinManager.get().getWindowSkin().getBarTexture(), SkinManager
+				.get().getWindowSkin().getBackgroundTexture(), x, y,
 				width, height, 40);
 	}
 
 	public LWindow(String title, float x, float y, float width, float height,
 			String barFile, String backgroundFile) {
-		this(LFont.getDefaultFont(), title, LColor.white, LTextures
+		this(SkinManager.get().getWindowSkin().getFont(), title, SkinManager
+				.get().getWindowSkin().getFontColor(), LTextures
 				.loadTexture(barFile), LTextures.loadTexture(backgroundFile),
 				x, y, width, height, 40);
 	}
 
 	public LWindow(String txt, LColor color, LTexture bar, LTexture background,
 			float x, float y, float width, float height, float barheight) {
-		this(LFont.getDefaultFont(), txt, color, bar, background, x, y, width,
-				height, barheight);
+		this(SkinManager.get().getWindowSkin().getFont(), txt, color, bar,
+				background, x, y, width, height, barheight);
 	}
 
 	public LWindow(WindowSkin skin, String txt, float x, float y, float width,
@@ -420,14 +425,15 @@ public class LWindow extends LContainer {
 		this._font = font;
 		this._barTexture = bar;
 		if (_barTexture == null) {
-			_barTexture = DefUI.getDefaultTextures(0);
+			_barTexture = SkinManager.get().getWindowSkin().getBarTexture();
 		}
 		this._barheight = (int) barheight;
 		this._title = txt;
 		this._fontColor = color;
 		this._background = background;
 		if (_background == null) {
-			_background = DefUI.getDefaultTextures(7);
+			_background = SkinManager
+					.get().getWindowSkin().getBackgroundTexture();
 		}
 		this.setElastic(true);
 		this.setLocked(false);

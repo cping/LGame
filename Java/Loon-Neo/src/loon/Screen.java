@@ -40,6 +40,7 @@ import loon.component.LLayer;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.component.skin.SkinManager;
 import loon.event.ClickListener;
 import loon.event.FrameLoopEvent;
 import loon.event.GameKey;
@@ -73,6 +74,10 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
+
+	public SkinManager skin() {
+		return SkinManager.get();
+	}
 
 	private ClickListener _clickListener;
 

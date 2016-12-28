@@ -48,7 +48,7 @@ public class LProgress extends LComponent {
 	}
 
 	public LProgress(ProgressSkin skin, int x, int y, int width, int height) {
-		this(ProgressType.Custom, skin.getFontColor(), x, y, width, height,
+		this(ProgressType.Custom, skin.getColor(), x, y, width, height,
 				skin.getBackgroundTexture(), skin.getProgressTexture());
 	}
 

@@ -154,8 +154,7 @@ public class Display extends LSystemView {
 
 	private void newDefView(boolean show) {
 		if (show && fpsFont == null) {
-			this.fpsFont = new LSTRFont(LFont.getDefaultFont(), pFontString,
-					true);
+			this.fpsFont = new LSTRFont(LFont.newFont(15), pFontString, true);
 		}
 		showLogo = setting.isLogo;
 		if (showLogo && !StringUtils.isEmpty(setting.logoPath)) {
@@ -222,7 +221,8 @@ public class Display extends LSystemView {
 
 		// fix渲染时机，避免调用渲染在纹理构造前
 		if (!initDrawConfig) {
-			newDefView(setting.isFPS || setting.isLogo || setting.isMemory || setting.isSprites || setting.isDebug);
+			newDefView(setting.isFPS || setting.isLogo || setting.isMemory
+					|| setting.isSprites || setting.isDebug);
 			initDrawConfig = true;
 		}
 
@@ -265,7 +265,7 @@ public class Display extends LSystemView {
 			process.runTimer(clock);
 			process.draw(glEx);
 
-			final boolean debug = setting.isDebug ;
+			final boolean debug = setting.isDebug;
 			// 显示fps速度
 			if (debug || setting.isFPS) {
 				tickFrames();

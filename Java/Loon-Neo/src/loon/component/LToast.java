@@ -6,8 +6,8 @@ import loon.LTextures;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
+import loon.component.skin.SkinManager;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
@@ -25,29 +25,29 @@ public class LToast extends LComponent {
 	};
 
 	public static LToast makeText(String text) {
-		return makeText(LFont.getDefaultFont(), null, text, LENGTH_SHORT);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, LENGTH_SHORT);
 	}
 
 	public static LToast makeText(String text, Style style) {
-		return makeText(LFont.getDefaultFont(), null, text, LENGTH_SHORT, style);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, LENGTH_SHORT, style);
 	}
 
 	public static LToast makeText(String text, int duration) {
-		return makeText(LFont.getDefaultFont(), null, text, duration,
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, duration,
 				Style.NORMAL);
 	}
 
 	public static LToast makeText(LComponent owner, String text) {
-		return makeText(LFont.getDefaultFont(), owner, text, LENGTH_SHORT);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, LENGTH_SHORT);
 	}
 
 	public static LToast makeText(LComponent owner, String text, Style style) {
-		return makeText(LFont.getDefaultFont(), owner, text, LENGTH_SHORT,
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, LENGTH_SHORT,
 				style);
 	}
 
 	public static LToast makeText(LComponent owner, String text, int duration) {
-		return makeText(LFont.getDefaultFont(), owner, text, duration,
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, duration,
 				Style.NORMAL);
 	}
 
@@ -122,7 +122,7 @@ public class LToast extends LComponent {
 
 	public LToast(IFont font, String text, int duration, int x, int y,
 			int width, int height) {
-		this(font, LColor.white, text, duration, x, y, width, height);
+		this(font, SkinManager.get().getMessageSkin().getFontColor(), text, duration, x, y, width, height);
 	}
 
 	public LToast(IFont font, LColor fontColor, String text, int duration,

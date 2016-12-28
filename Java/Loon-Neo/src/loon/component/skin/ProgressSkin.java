@@ -2,12 +2,31 @@ package loon.component.skin;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.DefUI;
+import loon.font.IFont;
+import loon.font.LFont;
 
 public class ProgressSkin {
 
 	private LTexture progressTexture;
 	private LTexture backgroundTexture;
-	private LColor fontColor;
+	private LColor color;
+
+	public final static ProgressSkin def() {
+		return new ProgressSkin();
+	}
+
+	public ProgressSkin() {
+		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(4),
+				DefUI.getDefaultTextures(2));
+	}
+
+	public ProgressSkin(IFont font, LColor c, LTexture progress,
+			LTexture background) {
+		this.color = c;
+		this.progressTexture = progress;
+		this.backgroundTexture = background;
+	}
 
 	public LTexture getProgressTexture() {
 		return progressTexture;
@@ -25,12 +44,12 @@ public class ProgressSkin {
 		this.backgroundTexture = backgroundTexture;
 	}
 
-	public LColor getFontColor() {
-		return fontColor;
+	public LColor getColor() {
+		return color;
 	}
 
-	public void setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+	public void setColor(LColor c) {
+		this.color = c;
 	}
 
 }

@@ -25,9 +25,9 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.CheckBoxSkin;
+import loon.component.skin.SkinManager;
 import loon.event.CallFunction;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -52,47 +52,55 @@ public class LCheckBox extends LComponent {
 	private CallFunction _function;
 
 	public LCheckBox(String txt, int x, int y) {
-		this(txt, x, y, LColor.white);
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin().getFontColor());
 	}
 
 	public LCheckBox(String txt, int x, int y, LColor textcolor) {
-		this(txt, x, y, textcolor, LFont.getDefaultFont());
+		this(txt, x, y, textcolor, SkinManager.get().getCheckBoxSkin()
+				.getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, LColor textcolor, IFont font) {
-		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
-				.getDefaultTextures(6), DefUI.getDefaultTextures(5).getWidth(),
-				true, textcolor, font);
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
+				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
+				.getCheckedTexture(), SkinManager.get().getCheckBoxSkin()
+				.getUncheckedTexture().getWidth(), true, textcolor, font);
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize) {
-		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
-				.getDefaultTextures(6), boxsize, true, LColor.white, LFont
-				.getDefaultFont());
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
+				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
+				.getCheckedTexture(), boxsize, true, SkinManager.get()
+				.getCheckBoxSkin().getFontColor(), SkinManager.get()
+				.getCheckBoxSkin().getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize, LColor textcolor) {
-		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
-				.getDefaultTextures(6), boxsize, true, textcolor, LFont
-				.getDefaultFont());
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
+				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
+				.getCheckedTexture(), boxsize, true, textcolor, SkinManager
+				.get().getCheckBoxSkin().getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
 			boolean boxtoleftoftext) {
-		this(txt, x, y, boxsize, boxtoleftoftext, LFont.getDefaultFont());
+		this(txt, x, y, boxsize, boxtoleftoftext, SkinManager
+				.get().getCheckBoxSkin().getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
 			boolean boxtoleftoftext, IFont font) {
-		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
-				.getDefaultTextures(6), boxsize, boxtoleftoftext, LColor.white,
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
+				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
+				.getCheckedTexture(), boxsize, boxtoleftoftext, SkinManager.get().getCheckBoxSkin().getFontColor(),
 				font);
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
 			boolean boxtoleftoftext, LColor textcolor, IFont font) {
-		this(txt, x, y, DefUI.getDefaultTextures(5), DefUI
-				.getDefaultTextures(6), boxsize, boxtoleftoftext, textcolor,
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
+				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
+				.getCheckedTexture(), boxsize, boxtoleftoftext, textcolor,
 				font);
 	}
 

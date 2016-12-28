@@ -2,6 +2,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.SkinManager;
 import loon.component.skin.SliderSkin;
 import loon.event.SysTouch;
 import loon.event.ValueListener;
@@ -28,10 +29,8 @@ public class LSlider extends LComponent {
 
 	public LSlider(LColor sliderColor, LColor barColor, int x, int y,
 			int width, int height, boolean vertical) {
-		this(DefUI.getGameWinDiamond(100, 100, sliderColor), vertical ? DefUI
-				.getGameWinHollow(30, 100, 12, barColor) : DefUI
-				.getGameWinHollow(100, 30, 12, barColor), x, y, width, height,
-				vertical);
+		this(SkinManager.get().getSliderSkin(sliderColor, barColor, vertical),
+				x, y, width, height, vertical);
 	}
 
 	public LSlider(SliderSkin skin, int x, int y, int width, int height,

@@ -35,6 +35,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
+import loon.component.skin.SkinManager;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -101,7 +102,7 @@ public class LTextArea extends LComponent {
 	}
 
 	public LTextArea(int max, int x, int y, int w, int h) {
-		this(LTextArea.TYPE_DOWN, max, LFont.getDefaultFont(), x, y, w, h);
+		this(LTextArea.TYPE_DOWN, max, SkinManager.get().getMessageSkin().getFont(), x, y, w, h);
 	}
 
 	public LTextArea(int max, IFont font, int x, int y, int w, int h) {
@@ -109,16 +110,16 @@ public class LTextArea extends LComponent {
 	}
 
 	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h) {
-		this(type, max, font, x, y, w, h, DefUI.getDefaultTextures(4));
+		this(type, max, font, x, y, w, h, SkinManager.get().getMessageSkin().getBackgroundTexture());
 	}
 
 	public LTextArea(int x, int y, int w, int h, String bgFile) {
-		this(LTextArea.TYPE_DOWN, w, LFont.getDefaultFont(), x, y, w, h,
+		this(LTextArea.TYPE_DOWN, w, SkinManager.get().getMessageSkin().getFont(), x, y, w, h,
 				LTextures.loadTexture(bgFile));
 	}
 
 	public LTextArea(int x, int y, int w, int h, LTexture bg) {
-		this(LTextArea.TYPE_DOWN, w, LFont.getDefaultFont(), x, y, w, h, bg);
+		this(LTextArea.TYPE_DOWN, w, SkinManager.get().getMessageSkin().getFont(), x, y, w, h, bg);
 	}
 
 	public LTextArea(MessageSkin skin, int type, int max, int x, int y, int w,

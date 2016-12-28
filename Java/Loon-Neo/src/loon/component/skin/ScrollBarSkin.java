@@ -1,12 +1,26 @@
 package loon.component.skin;
 
 import loon.LTexture;
+import loon.component.DefUI;
 
 public class ScrollBarSkin {
 
 	private LTexture scrollBarTexture;
 
 	private LTexture sliderTexture;
+	
+	public static ScrollBarSkin def(){
+		return new ScrollBarSkin();
+	}
+
+	public ScrollBarSkin() {
+		this(DefUI.getDefaultTextures(2), DefUI.getDefaultTextures(8));
+	}
+
+	public ScrollBarSkin(LTexture scrollBar, LTexture slider) {
+		this.scrollBarTexture = scrollBar;
+		this.sliderTexture = slider;
+	}
 
 	public LTexture getScrollBarTexture() {
 		return scrollBarTexture;

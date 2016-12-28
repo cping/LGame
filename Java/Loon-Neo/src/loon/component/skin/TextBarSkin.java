@@ -2,7 +2,9 @@ package loon.component.skin;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.font.IFont;
+import loon.font.LFont;
 
 public class TextBarSkin {
 
@@ -11,6 +13,24 @@ public class TextBarSkin {
 	private LTexture bodyTexture;
 	private IFont font;
 	private LColor fontColor;
+
+	public final static TextBarSkin def() {
+		return new TextBarSkin();
+	}
+
+	public TextBarSkin() {
+		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(3),
+				DefUI.getDefaultTextures(3), DefUI.getDefaultTextures(4));
+	}
+
+	public TextBarSkin(IFont font, LColor fontColor, LTexture left,
+			LTexture right, LTexture body) {
+		this.font = font;
+		this.fontColor = fontColor;
+		this.leftTexture = left;
+		this.rightTexture = right;
+		this.bodyTexture = body;
+	}
 
 	public LTexture getLeftTexture() {
 		return leftTexture;

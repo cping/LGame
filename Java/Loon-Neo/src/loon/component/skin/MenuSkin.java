@@ -2,7 +2,9 @@ package loon.component.skin;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.font.IFont;
+import loon.font.LFont;
 
 public class MenuSkin {
 
@@ -11,6 +13,23 @@ public class MenuSkin {
 	private LTexture mainTexture;
 	private LTexture tabTexture;
 
+	public final static MenuSkin def() {
+		return new MenuSkin();
+	}
+
+	public MenuSkin() {
+		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(2),
+				DefUI.getDefaultTextures(4));
+	}
+
+	public MenuSkin(IFont font, LColor fontColor, LTexture mainTexture,
+			LTexture tabTexture) {
+		this.font = font;
+		this.fontColor = fontColor;
+		this.mainTexture = mainTexture;
+		this.tabTexture = tabTexture;
+	}
+	
 	public IFont getFont() {
 		return font;
 	}

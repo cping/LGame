@@ -26,8 +26,8 @@ import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
+import loon.component.skin.SkinManager;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 
 public class LMessage extends LContainer {
@@ -49,7 +49,7 @@ public class LMessage extends LContainer {
 	}
 
 	public LMessage(int x, int y, int width, int height) {
-		this(LFont.getDefaultFont(), (LTexture) null, x, y, width, height);
+		this(SkinManager.get().getMessageSkin().getFont(), (LTexture) null, x, y, width, height);
 	}
 
 	public LMessage(IFont font, int x, int y, int width, int height) {
@@ -61,7 +61,7 @@ public class LMessage extends LContainer {
 	}
 
 	public LMessage(LTexture formImage, int x, int y) {
-		this(LFont.getDefaultFont(), formImage, x, y, formImage.getWidth(),
+		this(SkinManager.get().getMessageSkin().getFont(), formImage, x, y, formImage.getWidth(),
 				formImage.getHeight());
 	}
 
@@ -71,7 +71,7 @@ public class LMessage extends LContainer {
 
 	public LMessage(IFont font, LTexture formImage, int x, int y, int width,
 			int height) {
-		this(font, formImage, x, y, width, height, LColor.white);
+		this(font, formImage, x, y, width, height, SkinManager.get().getMessageSkin().getFontColor());
 	}
 
 	public LMessage(MessageSkin skin, int x, int y, int width, int height) {
@@ -83,7 +83,7 @@ public class LMessage extends LContainer {
 			int height, LColor color) {
 		super(x, y, width, height);
 		this.fontColor = color;
-		this.messageFont = (font == null ? LFont.getDefaultFont() : font);
+		this.messageFont = (font == null ? SkinManager.get().getMessageSkin().getFont() : font);
 		this.animation = new Animation();
 		if (formImage == null) {
 			this.setBackground(LSystem.base().graphics().finalColorTex());

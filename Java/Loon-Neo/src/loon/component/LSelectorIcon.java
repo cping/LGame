@@ -52,6 +52,10 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public LSelectorIcon(int x, int y, int size) {
+		this(x, y, size, LColor.black, LColor.white);
+	}
+
+	public LSelectorIcon(int x, int y, int size, LColor b, LColor c) {
 		super(x, y, size, size);
 		this.minX = 0;
 		this.minY = 0;
@@ -59,7 +63,8 @@ public class LSelectorIcon extends LComponent {
 		this.maxY = 1;
 		this.pSize = size;
 		this.alphaRate = 3f;
-		this.baseColor = LColor.white;
+		this.borderColor = b;
+		this.baseColor = c;
 	}
 
 	public void draw(Canvas g, int mainX, int mainY) {

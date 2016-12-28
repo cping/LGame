@@ -24,6 +24,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.ScrollBarSkin;
+import loon.component.skin.SkinManager;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
 
@@ -69,7 +70,8 @@ public class LScrollBar extends LComponent {
 	}
 
 	public LScrollBar(int orientation, int x, int y, int width, int height) {
-		this(DefUI.getDefaultTextures(2), DefUI.getDefaultTextures(8),
+		this(SkinManager.get().getScrollBarSkin().getScrollBarTexture(),
+				SkinManager.get().getScrollBarSkin().getSliderTexture(),
 				orientation, x, y, width, height);
 	}
 

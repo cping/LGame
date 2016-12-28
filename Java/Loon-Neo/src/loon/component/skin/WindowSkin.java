@@ -2,7 +2,9 @@ package loon.component.skin;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.font.IFont;
+import loon.font.LFont;
 
 public class WindowSkin {
 
@@ -10,6 +12,23 @@ public class WindowSkin {
 	private LTexture barTexture;
 	private LTexture backgroundTexture;
 	private LColor fontColor;
+
+	public final static WindowSkin def() {
+		return new WindowSkin();
+	}
+
+	public WindowSkin() {
+		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(0),
+				DefUI.getDefaultTextures(7));
+	}
+
+	public WindowSkin(IFont font, LColor fontColor, LTexture bar,
+			LTexture background) {
+		this.font = font;
+		this.fontColor = fontColor;
+		this.barTexture = bar;
+		this.backgroundTexture = background;
+	}
 
 	public IFont getFont() {
 		return font;

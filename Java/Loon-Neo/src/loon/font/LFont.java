@@ -15,15 +15,21 @@ public class LFont implements IFont {
 
 	private static LFont defaultFont;
 
+	public static LFont newFont() {
+		return newFont(20);
+	}
+
+	public static LFont newFont(int size) {
+		return LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, size);
+	}
+
 	public static LFont getDefaultFont() {
 		return getDefaultFont(20);
 	}
 
 	public static LFont getDefaultFont(int size) {
-		if (defaultFont == null) {
+		if (defaultFont == null || defaultFont.getSize() != size) {
 			defaultFont = LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, size);
-		} else {
-			defaultFont.setSize(size);
 		}
 		return defaultFont;
 	}
@@ -375,5 +381,10 @@ public class LFont implements IFont {
 	@Override
 	public void setSize(int size) {
 		this._size = size;
+	}
+
+	@Override
+	public String toString() {
+		return textFormat.toString();
 	}
 }

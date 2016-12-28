@@ -48,10 +48,14 @@ public class LGesture extends LComponent {
 	private int lineWidth;
 
 	public LGesture(int x, int y, int w, int h, boolean c) {
+		this(x, y, w, h, c, LColor.orange);
+	}
+
+	public LGesture(int x, int y, int w, int h, boolean c, LColor col) {
 		super(x, y, w, h);
 		this.autoClear = c;
 		this.lineWidth = 5;
-		this.baseColor = LColor.orange;
+		this.baseColor = col;
 	}
 
 	public LGesture(int x, int y, int w, int h) {

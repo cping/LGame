@@ -66,6 +66,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processTouchDragged() {
+		super.processTouchDragged();
 		for (LCheckBox check : checks) {
 			check.processTouchDragged();
 		}
@@ -74,6 +75,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processTouchEntered() {
+		super.processTouchEntered();
 		for (LCheckBox check : checks) {
 			check.processTouchEntered();
 		}
@@ -81,6 +83,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processTouchExited() {
+		super.processTouchExited();
 		for (LCheckBox check : checks) {
 			check.processTouchExited();
 		}
@@ -88,6 +91,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processKeyPressed() {
+		super.processKeyPressed();
 		for (LCheckBox check : checks) {
 			check.processKeyPressed();
 		}
@@ -95,6 +99,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processKeyReleased() {
+		super.processKeyReleased();
 		for (LCheckBox check : checks) {
 			check.processKeyReleased();
 		}
@@ -102,6 +107,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processTouchClicked() {
+		super.processTouchClicked();
 		for (LCheckBox check : checks) {
 			check.processTouchClicked();
 		}
@@ -109,6 +115,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processTouchPressed() {
+		super.processTouchPressed();
 		for (LCheckBox check : checks) {
 			if (check.contains(SysTouch.getX(), SysTouch.getY())) {
 				check.processTouchPressed();
@@ -119,6 +126,7 @@ public class LCheckGroup extends LComponent {
 
 	@Override
 	protected void processTouchReleased() {
+		super.processTouchReleased();
 		if (selectedBtn != null) {
 			if (selectedBtn.contains(SysTouch.getX(), SysTouch.getY())) {
 				selectedBtn.processTouchReleased();

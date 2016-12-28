@@ -54,6 +54,10 @@ public class TextFormat {
   public TextFormat withAntialias(boolean antialias) {
     return new TextFormat(this.font, antialias);
   }
+  
+  public Font getFont(){
+	  return font;
+  }
 
   @Override public String toString() {
     return "[font=" + font + ", antialias=" + antialias + "]";

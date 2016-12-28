@@ -26,10 +26,10 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.ClickButtonSkin;
+import loon.component.skin.SkinManager;
 import loon.event.CallFunction;
 import loon.font.BMFont;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
@@ -52,27 +52,33 @@ public class LClickButton extends LComponent {
 
 	public static LClickButton makePath(String path) {
 		LTexture tex = LTextures.loadTexture(path);
-		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
-				0, tex.getWidth(), tex.getHeight(), tex, tex, tex);
+		return new LClickButton(null, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, tex.getWidth(), tex.getHeight(), tex,
+				tex, tex);
 	}
 
 	public static LClickButton make(int width, int height, String idle,
 			String hover, String clicked) {
-		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
-				0, width, height, LTextures.loadTexture(idle),
-				LTextures.loadTexture(hover), LTextures.loadTexture(clicked));
+		return new LClickButton(null, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, width, height,
+				LTextures.loadTexture(idle), LTextures.loadTexture(hover),
+				LTextures.loadTexture(clicked));
 	}
 
 	public static LClickButton make(int width, int height, LTexture idle,
 			LTexture hover, LTexture clicked) {
-		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
-				0, width, height, idle, hover, clicked);
+		return new LClickButton(null, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, width, height, idle, hover, clicked);
 	}
 
 	public static LClickButton make(LTexture texture) {
-		return new LClickButton(null, LFont.getDefaultFont(), LColor.white, 0,
-				0, texture.getWidth(), texture.getHeight(), texture, texture,
-				texture);
+		return new LClickButton(null, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, texture.getWidth(), texture.getHeight(),
+				texture, texture, texture);
 	}
 
 	public static LClickButton make(String text) {
@@ -91,51 +97,61 @@ public class LClickButton extends LComponent {
 	public static LClickButton make(String text, int width, int height,
 			String clickPath) {
 		LTexture texture = LTextures.loadTexture(clickPath);
-		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
-				0, width, height, texture, texture, texture);
+		return new LClickButton(text, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, width, height, texture, texture, texture);
 	}
 
 	public static LClickButton make(String text, int width, int height,
 			LTexture clicked) {
-		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
-				0, width, height, clicked, clicked, clicked);
+		return new LClickButton(text, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, width, height, clicked, clicked, clicked);
 	}
 
 	public static LClickButton make(IFont font, String text, int width,
 			int height, LTexture clicked) {
-		return new LClickButton(text, font, LColor.white, 0, 0, width, height,
+		return new LClickButton(text, font, SkinManager.get()
+				.getClickButtonSkin().getFontColor(), 0, 0, width, height,
 				clicked, clicked, clicked);
 	}
 
 	public static LClickButton make(String text, int width, int height,
 			LTexture hover, LTexture clicked) {
-		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
-				0, width, height, hover, hover, clicked);
+		return new LClickButton(text, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, width, height, hover, hover, clicked);
 	}
 
 	public static LClickButton make(IFont font, String text, int width,
 			int height, LTexture hover, LTexture clicked) {
-		return new LClickButton(text, font, LColor.white, 0, 0, width, height,
+		return new LClickButton(text, font, SkinManager.get()
+				.getClickButtonSkin().getFontColor(), 0, 0, width, height,
 				hover, hover, clicked);
 	}
 
 	public static LClickButton make(String text, int width, int height,
 			LTexture idle, LTexture hover, LTexture clicked) {
-		return new LClickButton(text, LFont.getDefaultFont(), LColor.white, 0,
-				0, width, height, idle, hover, clicked);
+		return new LClickButton(text, SkinManager.get().getClickButtonSkin()
+				.getFont(), SkinManager.get().getClickButtonSkin()
+				.getFontColor(), 0, 0, width, height, idle, hover, clicked);
 	}
 
 	public LClickButton(String text, int x, int y, int width, int height) {
-		this(text, LFont.getDefaultFont(), LColor.white, x, y, width, height,
-				DefUI.getDefaultTextures(7), DefUI.getDefaultTextures(8), DefUI
-						.getDefaultTextures(9));
+		this(text, SkinManager.get().getClickButtonSkin().getFont(),
+				SkinManager.get().getClickButtonSkin().getFontColor(), x, y,
+				width, height, SkinManager.get().getClickButtonSkin()
+						.getIdleClickTexture(), SkinManager.get()
+						.getClickButtonSkin().getHoverClickTexture(),
+				SkinManager.get().getClickButtonSkin().getClickedTexture());
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y,
 			int width, int height) {
-		this(text, font, color, x, y, width, height, DefUI
-				.getDefaultTextures(7), DefUI.getDefaultTextures(8), DefUI
-				.getDefaultTextures(9));
+		this(text, font, color, x, y, width, height, SkinManager.get()
+				.getClickButtonSkin().getIdleClickTexture(), SkinManager.get()
+				.getClickButtonSkin().getHoverClickTexture(), SkinManager.get()
+				.getClickButtonSkin().getClickedTexture());
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y,

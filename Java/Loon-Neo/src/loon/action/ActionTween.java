@@ -7,6 +7,7 @@ import loon.action.sprite.effect.BaseEffect;
 import loon.canvas.LColor;
 import loon.event.FrameLoopEvent;
 import loon.event.Updateable;
+import loon.geom.Bezier;
 import loon.geom.Vector2f;
 import loon.utils.Array;
 import loon.utils.Easing;
@@ -584,6 +585,32 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 			float duration, float delay, EasingMode easing) {
 		return event(new MoveOvalTo(startAngle, angle, width, height,
 				centerPoint, startPoint, duration, delay, easing));
+	}
+
+	public ActionTween bezierBy(float duration, Bezier b) {
+		return event(new BezierBy(duration, b));
+	}
+
+	public ActionTween bezierBy(float sx, float sy, float duration, Bezier b) {
+		return event(new BezierBy(sx, sy, duration, b));
+	}
+
+	public ActionTween bezierBy(float sx, float sy, float duration,
+			EasingMode mode, Bezier b) {
+		return event(new BezierBy(sx, sy, duration, mode, b));
+	}
+
+	public ActionTween bezierTo(float duration, Bezier b) {
+		return event(new BezierTo(duration, b));
+	}
+
+	public ActionTween bezierTo(float sx, float sy, float duration, Bezier b) {
+		return event(new BezierTo(sx, sy, duration, b));
+	}
+
+	public ActionTween bezierTo(float sx, float sy, float duration,
+			EasingMode mode, Bezier b) {
+		return event(new BezierTo(sx, sy, duration, mode, b));
 	}
 
 	public ActionTween flipX(boolean x) {
