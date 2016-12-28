@@ -18,9 +18,14 @@ public class TextBarSkin {
 		return new TextBarSkin();
 	}
 
+	public final static TextBarSkin defEmpty() {
+		return new TextBarSkin(LFont.getDefaultFont(), LColor.white, null,
+				null, null);
+	}
+
 	public TextBarSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(3),
-				DefUI.getDefaultTextures(3), DefUI.getDefaultTextures(4));
+		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(7),
+				DefUI.getDefaultTextures(7), DefUI.getDefaultTextures(7));
 	}
 
 	public TextBarSkin(IFont font, LColor fontColor, LTexture left,

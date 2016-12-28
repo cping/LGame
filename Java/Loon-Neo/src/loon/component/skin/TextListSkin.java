@@ -22,8 +22,8 @@ public class TextListSkin {
 
 	public TextListSkin() {
 		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(2),
-				DefUI.getDefaultTextures(11), DefUI.getDefaultTextures(3),
-				DefUI.getDefaultTextures(4), DefUI.getDefaultTextures(2));
+				DefUI.getDefaultTextures(4), DefUI.getDefaultTextures(3),
+				null, null);
 	}
 
 	public TextListSkin(IFont font, LColor fontColor, LTexture bg,

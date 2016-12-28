@@ -34,16 +34,20 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
 import loon.event.SysKey;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
 public class LTextField extends LTextBar {
+
+	public static LTextField at(int x, int y) {
+		return new LTextField("", x, y);
+	}
 
 	private OnscreenKeyboard keyboard = new DefaultOnscreenKeyboard();
 
@@ -75,6 +79,10 @@ public class LTextField extends LTextBar {
 		this.keyboard = keyboard;
 	}
 
+	private char _inputKey;
+
+	private boolean _keyDown = false;
+
 	public static final int INPUT_STRING = 0, INPUT_SIGNED_INTEGER_NUM = 1,
 			INPUT_UNSIGNED_INTEGER_NUM = 2,
 			INPUT_INTEGER = INPUT_SIGNED_INTEGER_NUM,
@@ -94,12 +102,13 @@ public class LTextField extends LTextBar {
 		this.INPUT_TYPE = type;
 		this.startidx = txt.length();
 		this.limit = limit + startidx;
+		this.setFocusable(true);
 	}
 
 	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y, LColor textcolor, int type, int limit) {
-		this(LFont.getDefaultFont(), txt, left, right, body, x, y, textcolor,
-				type, limit);
+		this(SkinManager.get().getTextBarSkin().getFont(), txt, left, right,
+				body, x, y, textcolor, type, limit);
 	}
 
 	public LTextField(IFont font, String txt, int x, int y, LColor textcolor,
@@ -136,7 +145,7 @@ public class LTextField extends LTextBar {
 
 	public LTextField(String txt, int x, int y) {
 		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(),
-				INPUT_STRING, 35);
+				INPUT_STRING, 128);
 	}
 
 	public int getInputType() {
@@ -145,7 +154,6 @@ public class LTextField extends LTextBar {
 
 	public LTextField setInputType(int type) {
 		INPUT_TYPE = type;
-
 		return this;
 	}
 
@@ -163,17 +171,18 @@ public class LTextField extends LTextBar {
 				|| !this.isFocusable();
 	}
 
-	public void update(long delta) {
-		super.update(delta);
-		if (SysKey.isUp()) {
+	@Override
+	public void processKeyReleased() {
+		super.processKeyReleased();
+		if (_keyDown) {
 			if (!isFocusable()) {
 				return;
 			}
-			char nextchar = SysKey.getKeyChar();
+			char nextchar = _inputKey;
 			if (nextchar == 0) {
 				return;
 			}
-	
+
 			boolean isatstart = _text.length() == startidx;
 			if (nextchar == '\b' && _text.length() != 0 && !isatstart) {
 				_text = _text.substring(0, _text.length() - 1);
@@ -182,7 +191,6 @@ public class LTextField extends LTextBar {
 			if (_text.length() == limit) {
 				return;
 			}
-
 			boolean valid = true;
 			if (INPUT_TYPE != INPUT_STRING) {
 				switch (INPUT_TYPE) {
@@ -202,10 +210,23 @@ public class LTextField extends LTextBar {
 					break;
 				}
 			}
-			if (valid) {
-				_text += nextchar;
+			if (valid && SysKey.getKeyCode() != SysKey.BACK
+					&& SysKey.getKeyCode() != SysKey.BACKSPACE) {
+				if (SysKey.getKeyCode() == SysKey.ENTER) {
+					_text += LSystem.LS;
+				} else {
+					_text += nextchar;
+				}
 			}
+			_keyDown = false;
 		}
+	}
+
+	@Override
+	public void processKeyPressed() {
+		super.processKeyPressed();
+		_inputKey = SysKey.getKeyChar();
+		_keyDown = true;
 	}
 
 	@Override
@@ -225,14 +246,17 @@ public class LTextField extends LTextBar {
 			return;
 		}
 		_text += cursor;
+		setText(_text);
 	}
 
 	protected void removeCursor() {
 		if (!isFocusable()) {
 			return;
 		}
-		_text = _text.substring(0,
-				MathUtils.max(startidx, _text.length() - cursor.length()));
+		if (_text.endsWith(cursor)) {
+			_text = _text.substring(0,
+					MathUtils.max(startidx, _text.length() - cursor.length()));
+		}
 	}
 
 }

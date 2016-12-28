@@ -24,10 +24,10 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.SkinManager;
 import loon.component.skin.TextListSkin;
 import loon.event.SysTouch;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 
 /*
@@ -107,16 +107,19 @@ public class LTextList extends LComponent {
 
 	public LTextList(int max, int x, int y, int width, int height,
 			int scrollButtonWidth) {
-		this(LFont.getDefaultFont(), max, x, y, width, height,
-				scrollButtonWidth, DefUI.getDefaultTextures(2), DefUI
-						.getDefaultTextures(11), DefUI.getDefaultTextures(3),
-				null, null);
+		this(SkinManager.get().getTextListSkin().getFont(), max, x, y, width,
+				height, scrollButtonWidth, SkinManager.get().getTextListSkin()
+						.getBackgoundTexture(), SkinManager.get()
+						.getTextListSkin().getChoiceTexture(), SkinManager
+						.get().getTextListSkin().getScrollTexture(),
+				SkinManager.get().getTextListSkin().getScrollFlagATexture(),
+				SkinManager.get().getTextListSkin().getScrollFlagBTexture());
 	}
 
 	public LTextList(int max, int x, int y, int width, int height,
 			int scrollButtonWidth, LTexture bg, LTexture choice,
 			LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
-		this(LFont.getDefaultFont(), max, x, y, width, height,
+		this(SkinManager.get().getTextListSkin().getFont(), max, x, y, width, height,
 				scrollButtonWidth, bg, choice, scroll, scrollFlagA, scrollFlagB);
 	}
 
@@ -475,20 +478,7 @@ public class LTextList extends LComponent {
 					this.scrollBarDrag = false;
 				}
 
-				if (scrollTexture == null) {
-					if (this.scrollBarDrag) {
-						g.setTint(0, 255, 255);
-					} else {
-						g.setTint(255, 255, 255);
-					}
-					g.fillRect(this.scrollBarX, this.scrollBarY,
-							this.scrollButtonWidth, this.scrollBarHeight);
-				} else {
-					g.draw(this.scrollTexture, this.scrollBarX,
-							this.scrollBarY, this.scrollButtonWidth,
-							this.scrollBarHeight, baseColor);
-
-				}
+		
 
 				this.scrollButtonX = (int) (x + getWidth());
 				this.scrollButtonY = y;
@@ -532,40 +522,55 @@ public class LTextList extends LComponent {
 				this.scrollButtonX = (int) (x + getWidth());
 				this.scrollButtonY = (int) (y + getHeight() - this.scrollButtonHeight);
 				this.scrollDownButtonON = false;
-				if ((!this.scrollBarDrag)
-						&& isFocusable()
-						&& (mouseX > this.scrollButtonX)
-						&& (mouseX <= this.scrollButtonX
-								+ this.scrollButtonWidth)
-						&& (mouseY > this.scrollButtonY)
-						&& (mouseY < this.scrollButtonY
-								+ this.scrollButtonHeight)) {
-					if (this.scrollList < this.num - this.drawNum) {
-						this.scrollList += 1;
-					}
-					this.scrollDownButtonON = true;
-				}
-				if (scrollFlagBTexture == null) {
-					if (this.scrollDownButtonON) {
-						g.setTint(LColor.gray);
-					} else {
-						g.setTint(LColor.black);
-					}
-					g.fillRect(this.scrollButtonX + 1, this.scrollButtonY - 1,
-							this.scrollButtonWidth, this.scrollButtonHeight);
-					g.setTint(LColor.white);
-					this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
-					this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
-					this.px[2] = (this.scrollButtonX + 1 + this.scrollButtonWidth * 5 / 6);
-					this.py[0] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
-					this.py[1] = (this.scrollButtonY - 1 + this.scrollButtonHeight * 5 / 6);
-					this.py[2] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
-					g.fillPolygon(this.px, this.py, 3);
+
+			}
+			if (scrollTexture == null) {
+				if (this.scrollBarDrag) {
+					g.setTint(0, 255, 255);
 				} else {
-					g.draw(this.scrollFlagBTexture, this.scrollButtonX + 1,
-							this.scrollButtonY + 1, this.scrollButtonWidth - 1,
-							this.scrollButtonHeight - 1, baseColor);
+					g.setTint(255, 255, 255);
 				}
+				g.fillRect(this.scrollBarX, this.scrollBarY,
+						this.scrollButtonWidth, this.scrollBarHeight);
+			} else {
+				g.draw(this.scrollTexture, this.scrollBarX,
+						this.scrollBarY, this.scrollButtonWidth,
+						this.scrollBarHeight, baseColor);
+
+			}
+			if ((!this.scrollBarDrag)
+					&& isFocusable()
+					&& (mouseX > this.scrollButtonX)
+					&& (mouseX <= this.scrollButtonX
+							+ this.scrollButtonWidth)
+					&& (mouseY > this.scrollButtonY)
+					&& (mouseY < this.scrollButtonY
+							+ this.scrollButtonHeight)) {
+				if (this.scrollList < this.num - this.drawNum) {
+					this.scrollList += 1;
+				}
+				this.scrollDownButtonON = true;
+			}
+			if (scrollFlagBTexture == null) {
+				if (this.scrollDownButtonON) {
+					g.setTint(LColor.gray);
+				} else {
+					g.setTint(LColor.black);
+				}
+				g.fillRect(this.scrollButtonX + 1, this.scrollButtonY - 1,
+						this.scrollButtonWidth, this.scrollButtonHeight);
+				g.setTint(LColor.white);
+				this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
+				this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
+				this.px[2] = (this.scrollButtonX + 1 + this.scrollButtonWidth * 5 / 6);
+				this.py[0] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
+				this.py[1] = (this.scrollButtonY - 1 + this.scrollButtonHeight * 5 / 6);
+				this.py[2] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
+				g.fillPolygon(this.px, this.py, 3);
+			} else {
+				g.draw(this.scrollFlagBTexture, this.scrollButtonX + 1,
+						this.scrollButtonY + 1, this.scrollButtonWidth - 1,
+						this.scrollButtonHeight - 1, baseColor);
 			}
 		} finally {
 			g.restoreBrush();

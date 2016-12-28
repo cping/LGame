@@ -27,16 +27,22 @@ import loon.component.skin.SkinManager;
 import loon.component.skin.TextBarSkin;
 import loon.font.IFont;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class LTextBar extends LComponent {
 
 	private LTexture left, right, body;
+
+	private int _maxWidth = -1;
 
 	private LColor _fontColor;
 
 	protected IFont _font;
 
 	protected String _text;
+
+	protected float _offsetX = 0, _offsetY = 0;
 
 	private boolean over, pressed;
 
@@ -53,12 +59,14 @@ public class LTextBar extends LComponent {
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y, LColor c) {
-		this(txt, left, right, body, x, y, c, SkinManager.get().getTextBarSkin().getFont());
+		this(txt, left, right, body, x, y, c, SkinManager.get()
+				.getTextBarSkin().getFont());
 	}
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y) {
-		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin().getFontColor());
+		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin()
+				.getFontColor());
 	}
 
 	public LTextBar(String txt, int x, int y) {
@@ -72,67 +80,115 @@ public class LTextBar extends LComponent {
 
 	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
 			int x, int y, LColor c, IFont f) {
-		super(x, y, f.stringWidth(txt) + (left != null ? left.getWidth() : 0)
-				+ (right != null ? right.getWidth() : 0),
-				(int) (body != null ? body.getHeight() : f.getHeight()));
-		this._text = txt;
+		this(txt, left, right, body, x, y, c, f, -1);
+	}
+
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
+			int x, int y, LColor c, IFont f, int maxWidth) {
+		super(x, y, 0, 0);
+		int w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0)
+				+ (right != null ? right.getWidth() : 0) * 3;
+		int h = (int) (body != null ? body.getHeight() : f.getHeight());
 		this._fontColor = c;
 		this._font = f;
+		if (maxWidth == -1 && body != null) {
+			this._maxWidth = w;
+		} else {
+			this._maxWidth = maxWidth;
+		}
+		this.setSize(w, h);
 		this.left = left;
 		this.right = right;
 		this.body = body;
+		this.setText(txt);
 	}
 
 	public LTextBar(int x, int y, int width, int height) {
 		super(x, y, width, height);
 	}
 
+	public void setMaxWidth(int w) {
+		this._maxWidth = w;
+	}
+
+	public int getMaxWidth() {
+		return _maxWidth;
+	}
+
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
+		float height = (_messages == null ? getHeight() : _messages.size
+				* _font.getHeight() + 5);
 		if (hideBackground) {
 			if (left != null) {
-				_font.drawString(g, _text, x + left.getWidth(), y, _fontColor);
+				drawString(g, _text, x + left.getWidth() + 5, y, _fontColor);
 			} else {
-				_font.drawString(g, _text, x, y, _fontColor);
+				drawString(g, _text, x + 5, y, _fontColor);
 			}
 		} else {
 			if (left != null) {
-				g.draw(left, x, y, baseColor);
+				g.draw(left, x, y, left.getWidth(),
+						MathUtils.max(body.getHeight(), height), baseColor);
 			}
 			if (body != null) {
-				if (_text != null && _text.length() > 0 && !"_".equals(_text)) {
-					for (float i = 0; i < textWidth(); i += body.getWidth()) {
-						i = i > textWidth() - body.getWidth() ? textWidth() : i;
-						float fit = i / body.getWidth();
-						float overflow = body.getWidth() * (fit % 1);
-						boolean last = overflow != 0;
-						g.draw(body, x + i - overflow + left.getWidth(), y,
-								last ? overflow : body.getWidth() * 2,
-								body.getHeight(), 0, 0,
-								last ? overflow : body.getWidth(),
-								body.getHeight(), baseColor);
-					}
+				if (left != null) {
+					g.draw(body, x + left.getWidth(), y,
+							textWidth() + _font.getSize(),
+							MathUtils.max(body.getHeight(), height), baseColor);
 				} else {
-					g.draw(body, x + 1 - body.getWidth() + left.getWidth(), y,
-							body.getWidth() * 2, body.getHeight(), 0, 0,
-							body.getWidth(), body.getHeight(), baseColor);
+					g.draw(body, x, y, 0, _maxWidth, baseColor);
 				}
 			}
-			if (right != null) {
-				g.draw(right, x + left.getWidth() + textWidth() - 1, y,
-						baseColor);
+			if (right != null && body != null) {
+				float w = 0;
+				if (_messages == null) {
+					w = textWidth();
+				} else {
+					w = textWidth() + _font.getSize();
+				}
+				g.draw(right, x + left.getWidth() + w, y, left.getWidth(),
+						MathUtils.max(body.getHeight(), height), baseColor);
 			}
 			if (left != null) {
-				_font.drawString(g, _text, x + left.getWidth(), y, _fontColor);
+				if (_messages != null) {
+					for (int i = 0, size = _messages.size; i < size; i++) {
+						String text = _messages.get(i);
+						_font.drawString(g, text,
+								x + _offsetX + left.getWidth() + 5,
+								y + _offsetY + i * (_font.stringHeight(text)),
+								_fontColor);
+					}
+				} else {
+					drawString(g, _text, x + left.getWidth() + 5, y, _fontColor);
+				}
 			} else {
-				_font.drawString(g, _text, x, y, _fontColor);
+				if (_messages != null) {
+					for (int i = 0, size = _messages.size; i < size; i++) {
+						String text = _messages.get(i);
+						_font.drawString(g, text, x + _offsetX + 5, y
+								+ _offsetY + i * (_font.stringHeight(text)),
+								_fontColor);
+
+					}
+				} else {
+					drawString(g, _text, x + 5, y, _fontColor);
+				}
 			}
 		}
 	}
 
+	private final void drawString(GLEx g, String mes, float x, float y,
+			LColor fontColor) {
+		_font.drawString(g, mes, x, y, fontColor);
+	}
+
 	public float textWidth() {
-		return _font.stringWidth(_text);
+		if (_messages != null) {
+			return _font.stringWidth(_messages.get(0)) - _font.getSize() / 2;
+		} else {
+			return _font.stringWidth(_text);
+		}
 	}
 
 	public LTexture getLeft() {
@@ -171,8 +227,11 @@ public class LTextBar extends LComponent {
 		return _text;
 	}
 
-	public void setText(String txt) {
-		this._text = txt;
+	private TArray<String> _messages;
+
+	public void setText(String mes) {
+		this._text = mes;
+		this._messages = Print.formatMessage(mes, _font, _maxWidth);
 	}
 
 	@Override
@@ -246,6 +305,22 @@ public class LTextBar extends LComponent {
 	@Override
 	public String getUIName() {
 		return "TextBar";
+	}
+
+	public float getOffsetX() {
+		return _offsetX;
+	}
+
+	public void setOffsetX(float offsetX) {
+		this._offsetX = offsetX;
+	}
+
+	public float getOffsetY() {
+		return _offsetY;
+	}
+
+	public void setOffsetY(float offsetY) {
+		this._offsetY = offsetY;
 	}
 
 }
