@@ -435,6 +435,7 @@ public class LWindow extends LContainer {
 			_background = SkinManager
 					.get().getWindowSkin().getBackgroundTexture();
 		}
+		this._drawBackground = false;
 		this.setElastic(true);
 		this.setLocked(false);
 		this.setLayer(500);

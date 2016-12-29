@@ -619,6 +619,11 @@ public class LColor implements Serializable {
 		return (int) (a * 255);
 	}
 
+	public LColor setAlpha(float alpha) {
+		this.a = alpha;
+		return this;
+	}
+	
 	public LColor brighter(float scale) {
 		scale += 1;
 		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
@@ -652,7 +657,17 @@ public class LColor implements Serializable {
 		this.a *= c.a;
 		return this;
 	}
-
+	
+	public LColor mulAlpha(float a) {
+		this.a *= a;
+		return this;
+	}
+	
+	public LColor mulAlpha(LColor c) {
+		this.a *= c.a;
+		return this;
+	}
+	
 	/**
 	 * 直接复制一个Color
 	 * 

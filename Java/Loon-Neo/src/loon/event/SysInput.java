@@ -59,7 +59,7 @@ public interface SysInput {
 	public final static int LOWER_LEFT = 2;
 
 	public final static int LOWER_RIGHT = 3;
-
+	
 	public abstract void setKeyDown(int code);
 
 	public abstract void setKeyUp(int code);

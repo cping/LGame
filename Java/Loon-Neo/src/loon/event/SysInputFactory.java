@@ -32,6 +32,27 @@ public class SysInputFactory {
 
 	private final LProcess _handler;
 
+	private static OnscreenKeyboard defkeyboard = new DefaultOnscreenKeyboard();
+
+	static public interface OnscreenKeyboard {
+		public void show(boolean visible);
+	}
+
+	static public class DefaultOnscreenKeyboard implements OnscreenKeyboard {
+		@Override
+		public void show(boolean visible) {
+			// todo
+		}
+	}
+
+	public static void setKeyBoard(OnscreenKeyboard keyboard) {
+		defkeyboard = keyboard;
+	}
+
+	public static OnscreenKeyboard getKeyBoard() {
+		return defkeyboard;
+	}
+
 	final static GameTouch finalTouch = new GameTouch();
 
 	final static GameKey finalKey = new GameKey();
@@ -69,15 +90,16 @@ public class SysInputFactory {
 		}
 	}
 
-	public SysInputFactory(LProcess _handler) {
-		this._handler = _handler;
-		this._halfWidth = _handler.getWidth() / 2;
-		this._halfHeight = _handler.getHeight() / 2;
+	public SysInputFactory(LProcess handler) {
+		this._handler = handler;
+		this._halfWidth = handler.getWidth() / 2;
+		this._halfHeight = handler.getHeight() / 2;
 	}
 
 	public static ActionKey getOnlyKey() {
 		return SysKey.only_key;
 	}
+	
 
 	public void callKey(KeyMake.KeyEvent e) {
 		if (e.down) {
@@ -90,8 +112,8 @@ public class SysInputFactory {
 			_handler.keyDown(finalKey);
 		} else {
 			finalKey.timer = e.time;
-			finalKey.keyChar = e.keyChar;
-			finalKey.keyCode = e.keyCode;
+			//finalKey.keyChar = e.keyChar;
+			//finalKey.keyCode = e.keyCode;
 			finalKey.type = SysKey.UP;
 			SysKey.removeKey(finalKey.keyCode);
 			_handler.keyUp(finalKey);

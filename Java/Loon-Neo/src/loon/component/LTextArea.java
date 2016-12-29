@@ -142,6 +142,7 @@ public class LTextArea extends LComponent {
 		this.setWaitFlag(true);
 		this.setSlideMessage(true);
 		this._background = bg;
+		this._drawBackground = false;
 	}
 
 	public void set(int mMax) {

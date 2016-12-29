@@ -155,7 +155,7 @@ public class MultiScreenTest extends Screen {
 
 	final String[] page1 = { "Screen", "Slider", "Alert", "Animation",
 			"FrameLoop", "Script", "SText", "Light", "Countdown", "AVG",
-			"Layer", "LLK" };
+			"Layer", "LLK","TextField" };
 
 	static BMFont info_font;
 
@@ -239,6 +239,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new TitleScreen());
 			addScreen(page1[index++], new TDTest());
 			addScreen(page1[index++], new LLKTest());
+			addScreen(page1[index++], new TextFieldTest());
 		}
 		// 默认按钮大小为100x25
 		int btnWidth = 100;
@@ -251,8 +252,10 @@ public class MultiScreenTest extends Screen {
 		// final TArray<ActionTween> tweens = new TArray<ActionTween>();
 
 		// 首先让按钮不可见
-		for (LClickButton btn : clicks) {
+		for (int i=0;i<clicks.size;i++) {
+			LClickButton btn = clicks.get(i);
 			btn.setAlpha(0);
+			btn.setToolTipText(pages[page][i]);
 			// 使用图片字体
 			btn.setFont(info_font);
 			// 为按钮设置事件，并加载入一个集合

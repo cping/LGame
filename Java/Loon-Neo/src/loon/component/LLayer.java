@@ -95,7 +95,7 @@ public class LLayer extends ActorLayer {
 		this.visible = true;
 		this.customRendering = true;
 		this.isTouchClick = true;
-		this.isLimitMove = true;
+		this._isLimitMove = true;
 		this.isVSync = true;
 		this.setElastic(true);
 		this.setLocked(true);
@@ -625,11 +625,11 @@ public class LLayer extends ActorLayer {
 	}
 
 	public boolean isLimitMove() {
-		return isLimitMove;
+		return _isLimitMove;
 	}
 
 	public void setLimitMove(boolean isLimitMove) {
-		this.isLimitMove = isLimitMove;
+		this._isLimitMove = isLimitMove;
 	}
 
 	public boolean isTouchClick() {

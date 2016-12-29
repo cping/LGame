@@ -2593,6 +2593,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int code = e.getKeyCode();
 		try {
 			this.onKeyDown(e);
+			if (desktop != null) {
+				desktop.keyPressed(e);
+			}
 			keyType[type] = true;
 			keyButtonPressed = code;
 			keyButtonReleased = SysInput.NO_KEY;
@@ -2624,6 +2627,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int code = e.getKeyCode();
 		try {
 			this.onKeyUp(e);
+			if (desktop != null) {
+				desktop.keyReleased(e);
+			}
 			keyType[type] = false;
 			keyButtonReleased = code;
 			keyButtonPressed = SysInput.NO_KEY;

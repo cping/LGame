@@ -38,10 +38,14 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
+import loon.event.GameKey;
+import loon.event.SysInputFactory;
+import loon.event.SysInputFactory.OnscreenKeyboard;
 import loon.event.SysKey;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 public class LTextField extends LTextBar {
 
@@ -49,39 +53,18 @@ public class LTextField extends LTextBar {
 		return new LTextField("", x, y);
 	}
 
-	private OnscreenKeyboard keyboard = new DefaultOnscreenKeyboard();
-
-	static public interface OnscreenKeyboard {
-		public void show(boolean visible);
-	}
-
-	static public class DefaultOnscreenKeyboard implements OnscreenKeyboard {
-		@Override
-		public void show(boolean visible) {
-			// todo
-		}
-	}
-
-	protected void processTouchReleased() {
-		super.processKeyReleased();
-		keyboard.show(true);
-	}
-
+	@Override
 	public String getUIName() {
 		return "TextField";
 	}
 
 	public OnscreenKeyboard getOnscreenKeyboard() {
-		return keyboard;
+		return SysInputFactory.getKeyBoard();
 	}
 
 	public void setOnscreenKeyboard(OnscreenKeyboard keyboard) {
-		this.keyboard = keyboard;
+		SysInputFactory.setKeyBoard(keyboard);
 	}
-
-	private char _inputKey;
-
-	private boolean _keyDown = false;
 
 	public static final int INPUT_STRING = 0, INPUT_SIGNED_INTEGER_NUM = 1,
 			INPUT_UNSIGNED_INTEGER_NUM = 2,
@@ -172,61 +155,61 @@ public class LTextField extends LTextBar {
 	}
 
 	@Override
-	public void processKeyReleased() {
-		super.processKeyReleased();
-		if (_keyDown) {
-			if (!isFocusable()) {
-				return;
-			}
-			char nextchar = _inputKey;
-			if (nextchar == 0) {
-				return;
-			}
+	protected void keyPressed(GameKey key) {
 
-			boolean isatstart = _text.length() == startidx;
-			if (nextchar == '\b' && _text.length() != 0 && !isatstart) {
-				_text = _text.substring(0, _text.length() - 1);
-				return;
-			}
-			if (_text.length() == limit) {
-				return;
-			}
-			boolean valid = true;
-			if (INPUT_TYPE != INPUT_STRING) {
-				switch (INPUT_TYPE) {
-				case INPUT_UNSIGNED_INTEGER_NUM:
-					valid = Character.isDigit(nextchar);
-					break;
-				case INPUT_SIGNED_INTEGER_NUM:
-					valid = Character.isDigit(nextchar) || nextchar == '-'
-							&& isatstart;
-					break;
-				case INPUT_UNSIGNED_FLOATING_POINT_NUM:
-					valid = Character.isDigit(nextchar) || nextchar == '.';
-					break;
-				case INPUT_SIGNED_FLOATING_POINT_NUM:
-					valid = Character.isDigit(nextchar) || nextchar == '.'
-							|| nextchar == '-' && isatstart;
-					break;
-				}
-			}
-			if (valid && SysKey.getKeyCode() != SysKey.BACK
-					&& SysKey.getKeyCode() != SysKey.BACKSPACE) {
-				if (SysKey.getKeyCode() == SysKey.ENTER) {
-					_text += LSystem.LS;
-				} else {
-					_text += nextchar;
-				}
-			}
-			_keyDown = false;
+		if (!isFocusable()) {
+			return;
 		}
+
+		char nextchar = key.getKeyChar();
+		if (nextchar == 0
+				&& (StringUtils.isChinese(nextchar) || StringUtils
+						.isAlphabetNumeric(String.valueOf(nextchar)))) {
+			return;
+		}
+
+		boolean isatstart = _text.length() == startidx;
+		if (nextchar == '\b' && _text.length() != 0 && !isatstart) {
+			_text = _text.substring(0, _text.length() - 1);
+			return;
+		}
+		if (_text.length() == limit) {
+			return;
+		}
+		boolean valid = true;
+		if (INPUT_TYPE != INPUT_STRING) {
+			switch (INPUT_TYPE) {
+			case INPUT_UNSIGNED_INTEGER_NUM:
+				valid = Character.isDigit(nextchar);
+				break;
+			case INPUT_SIGNED_INTEGER_NUM:
+				valid = Character.isDigit(nextchar) || nextchar == '-'
+						&& isatstart;
+				break;
+			case INPUT_UNSIGNED_FLOATING_POINT_NUM:
+				valid = Character.isDigit(nextchar) || nextchar == '.';
+				break;
+			case INPUT_SIGNED_FLOATING_POINT_NUM:
+				valid = Character.isDigit(nextchar) || nextchar == '.'
+						|| nextchar == '-' && isatstart;
+				break;
+			}
+		}
+		if (valid && SysKey.getKeyCode() != SysKey.BACK
+				&& SysKey.getKeyCode() != SysKey.BACKSPACE) {
+			if (SysKey.getKeyCode() == SysKey.ENTER) {
+				_text += LSystem.LS;
+			} else {
+				_text += nextchar;
+			}
+		}
+
 	}
 
 	@Override
-	public void processKeyPressed() {
-		super.processKeyPressed();
-		_inputKey = SysKey.getKeyChar();
-		_keyDown = true;
+	public void processTouchReleased() {
+		super.processTouchReleased();
+		getOnscreenKeyboard().show(true);
 	}
 
 	@Override
@@ -257,6 +240,14 @@ public class LTextField extends LTextBar {
 			_text = _text.substring(0,
 					MathUtils.max(startidx, _text.length() - cursor.length()));
 		}
+	}
+
+	public void setLimit(int l) {
+		this.limit = l;
+	}
+
+	public int getLimit() {
+		return this.limit;
 	}
 
 }

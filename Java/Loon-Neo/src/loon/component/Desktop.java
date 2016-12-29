@@ -22,11 +22,13 @@
 package loon.component;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.Screen;
 import loon.action.sprite.ISprite;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.event.GameKey;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
@@ -65,18 +67,13 @@ public class Desktop implements LRelease {
 
 	private LComponent[] clickComponent = new LComponent[1];
 
+	private LToolTip tooltip;
+
 	/**
-	 * 构造一个可用桌面
-	 * 
-	 * @param input
-	 * @param width
-	 * @param height
+	 * 空桌面控制
 	 */
-	public Desktop(Screen screen, int width, int height) {
-		this.contentPane = new LPanel(0, 0, width, height);
-		this.input = screen;
-		this.setDesktop(this.contentPane);
-		DESKTOP_CACHE.add(this);
+	public Desktop() {
+		this(null, 1, 1);
 	}
 
 	public Desktop(Screen screen, float width, float height) {
@@ -84,13 +81,19 @@ public class Desktop implements LRelease {
 	}
 
 	/**
-	 * 空桌面布局
+	 * 构造一个可用桌面
 	 * 
+	 * @param input
+	 * @param width
+	 * @param height
 	 */
-	private Desktop() {
-		this.contentPane = new LPanel(0, 0, 1, 1);
-		this.input = null;
+	private Desktop(Screen screen, int width, int height) {
+		this.contentPane = new LPanel(0, 0, width, height);
+		this.tooltip = new LToolTip();
+		this.input = screen;
+		this.contentPane.add(this.tooltip);
 		this.setDesktop(this.contentPane);
+		DESKTOP_CACHE.add(this);
 	}
 
 	public int size() {
@@ -344,6 +347,14 @@ public class Desktop implements LRelease {
 		}
 	}
 
+	public void keyPressed(GameKey key) {
+		contentPane.keyPressed(key);
+	}
+
+	public void keyReleased(GameKey key) {
+		contentPane.keyReleased(key);
+	}
+
 	/**
 	 * 事件监听
 	 * 
@@ -374,29 +385,45 @@ public class Desktop implements LRelease {
 			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0
 					|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 				this.hoverComponent.processTouchDragged();
+				if (LSystem.isMobile() || LSystem.base().setting.emulateTouch) {
+					this.tooltip.setToolTipComponent(hoverComponent);
+					this.tooltip.reshow = 0;
+					this.tooltip.initial = 0;
+					this.tooltip.showTip();
+				}
 			}
-
 		} else {
+			int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
+			int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
+			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input
+					.getTouchDX());
+			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input
+					.getTouchDY());
 			// 获得当前窗体下鼠标坐标
-			LComponent comp = this.findComponent(this.input.getTouchX(),
-					this.input.getTouchY());
-
+			LComponent comp = this.findComponent(touchX, touchY);
 			if (comp != null && !comp._touchLocked) {
-
-				if (this.input.getTouchDX() != 0
-						|| this.input.getTouchDY() != 0
-						|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
+				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0
+						|| SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
+					if (!this.tooltip.dismissing && comp.isPointInUI()) {
+						// 刷新提示
+						this.tooltip.dismiss = 0;
+						this.tooltip.dismissing = true;
+					}
 				}
 				if (this.hoverComponent == null) {
+					this.tooltip.setToolTipComponent(comp);
 					comp.processTouchEntered();
 				} else if (comp != this.hoverComponent
 						&& !this.hoverComponent._touchLocked) {
+					this.tooltip.setToolTipComponent(comp);
 					this.hoverComponent.processTouchExited();
 					comp.processTouchEntered();
 				}
 
 			} else {
+				// 如果没有对应的悬停提示数据
+				this.tooltip.setToolTipComponent(null);
 				if (this.hoverComponent != null
 						&& !this.hoverComponent._touchLocked) {
 					this.hoverComponent.processTouchExited();
@@ -404,6 +431,20 @@ public class Desktop implements LRelease {
 			}
 			this.hoverComponent = comp;
 		}
+	}
+
+	public LToolTip getToolTip() {
+		return this.tooltip;
+	}
+
+	/**
+	 * 设置全局通用的提示组件
+	 * 
+	 * @param tip
+	 */
+	public void setToolTip(LToolTip tip) {
+		this.contentPane.replace(this.tooltip, tip);
+		this.tooltip = tip;
 	}
 
 	/**
@@ -414,6 +455,11 @@ public class Desktop implements LRelease {
 		int pressed = this.input.getTouchPressed(), released = this.input
 				.getTouchReleased();
 		if (pressed > SysInput.NO_BUTTON) {
+			if (!LSystem.isMobile() && !LSystem.base().setting.emulateTouch) {
+				this.tooltip.setToolTipComponent(null);
+			}
+			this.tooltip.reshow = 0;
+			this.tooltip.initial = 0;
 			if (!isClicked && this.hoverComponent != null
 					&& !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchPressed();

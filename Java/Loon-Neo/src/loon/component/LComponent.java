@@ -39,6 +39,7 @@ import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.event.ClickListener;
+import loon.event.GameKey;
 import loon.event.SysInput;
 import loon.event.SysKey;
 import loon.event.SysTouch;
@@ -66,16 +67,17 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return locked;
 	}
 
-	public void setLocked(boolean locked) {
+	public LComponent setLocked(boolean locked) {
 		this.locked = locked;
+		return this;
 	}
 
 	public boolean isDragLocked() {
 		return isLocked();
 	}
 
-	public void setDragLocked(boolean locked) {
-		setLocked(locked);
+	public LComponent setDragLocked(boolean locked) {
+		return setLocked(locked);
 	}
 
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
@@ -231,6 +233,8 @@ public abstract class LComponent extends LObject<LContainer> implements
 	// 中心点
 	protected float pivotX = -1, pivotY = -1;
 
+	// 操作提示组件
+	protected LComponent tooltipParent;
 	// 操作提示
 	protected String tooltip;
 
@@ -251,7 +255,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	protected SysInput input;
 
-	protected boolean isLimitMove;
+	protected boolean _isLimitMove = false, _drawBackground = true;
 
 	protected LTexture _background;
 
@@ -282,8 +286,8 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public Screen getScreen() {
-		return desktop.input == null ? LSystem.getProcess().getScreen()
-				: desktop.input;
+		return (desktop == null || desktop.input == null) ? LSystem
+				.getProcess().getScreen() : desktop.input;
 	}
 
 	public int getScreenWidth() {
@@ -301,7 +305,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	 * @param y
 	 */
 	public void moveCamera(int x, int y) {
-		if (!this.isLimitMove) {
+		if (!this._isLimitMove) {
 			setLocation(x, y);
 			return;
 		}
@@ -337,7 +341,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	protected boolean isNotMoveInScreen(int x, int y) {
-		if (!this.isLimitMove) {
+		if (!this._isLimitMove) {
 			return false;
 		}
 		int width = (int) (getWidth() - screenRect.width);
@@ -455,7 +459,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 					}
 				}
 				g.setBlendMode(_blend);
-				if (_background != null) {
+				if (_drawBackground && _background != null) {
 					g.draw(_background, this._screenX, this._screenY, width,
 							height, baseColor);
 				}
@@ -539,7 +543,9 @@ public abstract class LComponent extends LObject<LContainer> implements
 			return;
 		}
 		this.visible = v;
-		this.desktop.setComponentStat(this, this.visible);
+		if (desktop != null) {
+			this.desktop.setComponentStat(this, this.visible);
+		}
 	}
 
 	public boolean isEnabled() {
@@ -745,10 +751,18 @@ public abstract class LComponent extends LObject<LContainer> implements
 			_rect.setBounds(MathUtils.getBounds(_screenX, _screenY, getWidth()
 					* _scaleX, getHeight() * _scaleY, _rotation, _rect));
 		} else {
-			_rect = MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX,
-					getHeight() * _scaleY, _rotation, _rect);
+			_rect = MathUtils.getBounds(_screenX, _screenY, getWidth()
+					* _scaleX, getHeight() * _scaleY, _rotation, _rect);
 		}
 		return _rect;
+	}
+
+	public LComponent getToolTipParent() {
+		return this.tooltipParent;
+	}
+
+	public void setToolTipParent(LComponent tipParent) {
+		this.tooltipParent = tipParent;
 	}
 
 	public String getToolTipText() {
@@ -820,10 +834,15 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	// 键盘操作
 	protected void processKeyPressed() {
-
 	}
 
 	protected void processKeyReleased() {
+	}
+
+	protected void keyPressed(GameKey key) {
+	}
+
+	protected void keyReleased(GameKey key) {
 	}
 
 	void keyPressed() {
@@ -1081,12 +1100,20 @@ public abstract class LComponent extends LObject<LContainer> implements
 		setPivotY(pY);
 	}
 
-	public void show() {
+	public LComponent show() {
 		visible = true;
+		if (!getScreen().contains(this)) {
+			getScreen().add(this);
+		}
+		return this;
 	}
 
-	public void hide() {
+	public LComponent hide() {
 		visible = false;
+		if (getScreen().contains(this)) {
+			getScreen().remove(this);
+		}
+		return this;
 	}
 
 	public boolean toggleVisible() {
@@ -1112,6 +1139,9 @@ public abstract class LComponent extends LObject<LContainer> implements
 					public void stop(ActionBind o) {
 						if (getParent() != null) {
 							getParent().remove((LComponent) o);
+						}
+						if (getScreen() != null) {
+							getScreen().remove((LComponent) o);
 						}
 						close();
 					}
@@ -1172,12 +1202,6 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public void setOrigin(Origin o) {
 		this._origin = o;
-	}
-
-	@Override
-	public String toString() {
-		return getName() + " pos=" + _location + " size=" + "(" + getWidth()
-				+ "," + getHeight() + ")";
 	}
 
 	@Override
@@ -1284,4 +1308,9 @@ public abstract class LComponent extends LObject<LContainer> implements
 		removeActionEvents(this);
 	}
 
+	@Override
+	public String toString() {
+		return getName() + " pos=" + _location + " size=" + " [ "
+				+ getRectBox().toString() + "]";
+	}
 }

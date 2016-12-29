@@ -44,6 +44,10 @@ public class LTextBar extends LComponent {
 
 	protected float _offsetX = 0, _offsetY = 0;
 
+	private String _lastText = null;
+
+	private TArray<String> _messages = null;
+	
 	private boolean over, pressed;
 
 	private int pressedTime;
@@ -107,8 +111,8 @@ public class LTextBar extends LComponent {
 		super(x, y, width, height);
 	}
 
-	public void setMaxWidth(int w) {
-		this._maxWidth = w;
+	public void setMaxWidth(float w) {
+		this._maxWidth = (int) w;
 	}
 
 	public int getMaxWidth() {
@@ -121,8 +125,13 @@ public class LTextBar extends LComponent {
 		float height = (_messages == null ? getHeight() : _messages.size
 				* _font.getHeight() + 5);
 		if (hideBackground) {
-			if (left != null) {
-				drawString(g, _text, x + left.getWidth() + 5, y, _fontColor);
+			if (_messages != null) {
+				for (int i = 0, size = _messages.size; i < size; i++) {
+					String text = _messages.get(i);
+					_font.drawString(g, text, x + _offsetX + 5, y + _offsetY
+							+ i * (_font.stringHeight(text)), _fontColor);
+
+				}
 			} else {
 				drawString(g, _text, x + 5, y, _fontColor);
 			}
@@ -227,11 +236,12 @@ public class LTextBar extends LComponent {
 		return _text;
 	}
 
-	private TArray<String> _messages;
 
 	public void setText(String mes) {
-		this._text = mes;
-		this._messages = Print.formatMessage(mes, _font, _maxWidth);
+		if (!mes.equals(_lastText)) {
+			this._text = mes;
+			this._messages = Print.formatMessage(mes, _font, _maxWidth);
+		}
 	}
 
 	@Override

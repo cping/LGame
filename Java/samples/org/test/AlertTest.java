@@ -22,21 +22,21 @@ public class AlertTest extends Stage {
 
 					@Override
 					public void call(LComponent c) {
-						add(LToast.makeText("1", Style.SUCCESS));
+						LToast.makeText("1", Style.SUCCESS).show();
 
 					}
 				}, new CallFunction() {
 
 					@Override
 					public void call(LComponent c) {
-						add(LToast.makeText("2", Style.SUCCESS));
+						LToast.makeText("2", Style.SUCCESS).show();
 
 					}
 				}, new CallFunction() {
 
 					@Override
 					public void call(LComponent c) {
-						add(LToast.makeText("3", Style.SUCCESS));
+						LToast.makeText("3", Style.SUCCESS).show();
 					}
 					// 按钮横排,禁止拖拽
 				}, false).setLocked(true);
@@ -46,7 +46,7 @@ public class AlertTest extends Stage {
 
 			@Override
 			public void call(LComponent c) {
-				add(LToast.makeText("A", Style.SUCCESS));
+				LToast.makeText("A", Style.SUCCESS).show();
 
 			}
 			// 按钮竖排,不禁止拖拽
@@ -54,7 +54,7 @@ public class AlertTest extends Stage {
 			
 			@Override
 			public void call(LComponent comp) {
-				
+				LToast.makeText("B", Style.SUCCESS).show();
 			}
 		}, true).setLocked(false);
 		
@@ -63,7 +63,7 @@ public class AlertTest extends Stage {
 
 			@Override
 			public void call(LComponent c) {
-				add(LToast.makeText("A", Style.SUCCESS));
+				LToast.makeText("A", Style.SUCCESS).show();
 
 			}
 			// 按钮竖排,不禁止拖拽

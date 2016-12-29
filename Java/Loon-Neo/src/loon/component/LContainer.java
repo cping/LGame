@@ -24,6 +24,7 @@ package loon.component;
 import loon.action.ActionBind;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.event.GameKey;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
@@ -75,8 +76,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs = CollectionUtils.expand(this._childs, 1, false);
 		this._childs[0] = comp;
 		this.childCount++;
-		this.desktop.setDesktop(comp);
 		if (desktop != null) {
+			this.desktop.setDesktop(comp);
 			if (this.input == null) {
 				this.input = desktop.input;
 			}
@@ -659,6 +660,56 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	public boolean isEmpty() {
 		return childCount == 0 || _childs == null;
+	}
+
+	@Override
+	public void keyPressed(GameKey key) {
+		super.keyPressed(key);
+		LComponent[] childs = _childs;
+		for (int i = 0; i < childs.length; i++) {
+			LComponent c = childs[i];
+			if (c != null) {
+				c.keyPressed(key);
+			}
+		}
+	}
+
+	@Override
+	public void keyReleased(GameKey key) {
+		super.keyReleased(key);
+		LComponent[] childs = _childs;
+		for (int i = 0; i < childs.length; i++) {
+			LComponent c = childs[i];
+			if (c != null) {
+				c.keyReleased(key);
+			}
+		}
+	}
+	
+	void toString(StringBuilder buffer, int indent) {
+		buffer.append(super.toString());
+		buffer.append('\n');
+		LComponent[] comps = _childs;
+		for (int i = 0, size = comps.length; i < size; i++) {
+			for (int ii = 0; ii < indent; ii++) {
+				buffer.append("|  ");
+			}
+			LComponent c = comps[i];
+			if (c instanceof LContainer) {
+				((LContainer) c).toString(buffer, indent + 1);
+			} else {
+				buffer.append(c);
+				buffer.append('\n');
+			}
+		}
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder(128);
+		toString(buffer, 1);
+		buffer.setLength(buffer.length() - 1);
+		return buffer.toString();
 	}
 
 	@Override

@@ -65,6 +65,35 @@ import android.widget.FrameLayout;
 
 public abstract class Loon extends Activity implements AndroidBase, Platform,
 		LazyLoading {
+	
+	public static void setOnscreenKeyboardVisible(final boolean visible) {
+		if (Loon.self == null) {
+			return;
+		}
+		Loon.self.runOnUiThread(new Runnable() {
+			public void run() {
+				android.view.inputmethod.InputMethodManager manager = (android.view.inputmethod.InputMethodManager) Loon.self
+						.getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+				if (visible) {
+					AndroidGameViewGL gameview = Loon.self.gameView();
+					if (gameview != null) {
+						gameview.setFocusable(true);
+						gameview.setFocusableInTouchMode(true);
+						manager.showSoftInput(gameview, 0);
+					}
+				} else {
+					AndroidGameViewGL gameview = Loon.self.gameView();
+					if (gameview != null) {
+						gameview.setFocusable(true);
+						gameview.setFocusableInTouchMode(true);
+						manager.hideSoftInputFromWindow(
+								gameview.getWindowToken(), 0);
+					}
+
+				}
+			}
+		});
+	}
 
 	@SuppressLint("SetJavaScriptEnabled")
 	final static class Web extends android.webkit.WebView {
@@ -1016,7 +1045,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		return dm.heightPixels;
 	}
 
-
 	/**
 	 * 获得状态栏的高度
 	 * 
@@ -1027,7 +1055,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		try {
 			Class<?> clazz = Class.forName("com.android.internal.R$dimen");
 			Object object = clazz.newInstance();
-			int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
+			int height = Integer.parseInt(clazz.getField("status_bar_height")
+					.get(object).toString());
 			statusHeight = this.getResources().getDimensionPixelSize(height);
 		} catch (Exception e) {
 		}
@@ -1068,12 +1097,13 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		int width = getContainerWidth();
 		int height = getContainerHeight();
 		Bitmap bp = null;
-		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height - statusBarHeight);
+		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height
+				- statusBarHeight);
 		view.destroyDrawingCache();
 		return bp;
 
 	}
-	
+
 	@Override
 	public void close() {
 		try {

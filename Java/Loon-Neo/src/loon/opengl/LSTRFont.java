@@ -508,7 +508,7 @@ public class LSTRFont implements LRelease {
 		final boolean angle = rotation != 0;
 		final boolean update = scale || angle || anchor;
 		try {
-			gl.setColor(c);
+			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
@@ -541,6 +541,7 @@ public class LSTRFont implements LRelease {
 					totalHeight += fontSize;
 					totalWidth = 0;
 				}
+	
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
 						gl.draw(texture,
@@ -557,7 +558,7 @@ public class LSTRFont implements LRelease {
 				}
 			}
 		} finally {
-			gl.setColor(old);
+			gl.setTint(old);
 			if (update) {
 				gl.restoreTx();
 			}

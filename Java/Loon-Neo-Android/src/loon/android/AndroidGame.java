@@ -28,6 +28,7 @@ import loon.LSetting;
 import loon.LSystem;
 import loon.LSystemView;
 import loon.Support;
+import loon.event.SysInputFactory;
 import loon.utils.json.JsonImpl;
 import android.content.Intent;
 import android.net.Uri;
@@ -37,32 +38,32 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 
 public class AndroidGame extends LGame {
-	
+
 	public static enum LMode {
 		Defalut, Max, Fill, FitFill, Ratio, MaxRatio
 	}
 
 	public static class AndroidSetting extends LSetting {
-		
-		//屏幕显示模式
+
+		// 屏幕显示模式
 		public LMode showMode = LMode.Fill;
-		
-		//是否使用唤醒锁
+
+		// 是否使用唤醒锁
 		public boolean useWakelock = false;
-		
-		//是否隐藏状态栏
+
+		// 是否隐藏状态栏
 		public boolean hideStatusBar = true;
-		
-		//是否启动输入法模式
+
+		// 是否启动输入法模式
 		public boolean useImmersiveMode = false;
-		
-		//是否使用等比屏幕缩放（使用此项，可以保证游戏画面不是失真，而不使用此项，则默认全屏拉伸满屏幕，不管画面是否变形）
+
+		// 是否使用等比屏幕缩放（使用此项，可以保证游戏画面不是失真，而不使用此项，则默认全屏拉伸满屏幕，不管画面是否变形）
 		public boolean useRatioScaleFactor = false;
-		
-		//android事件专用监听器
+
+		// android事件专用监听器
 		public AdnroidListener listener = null;
-		
-		//是否锁定注销功能(若为true，则默认back按键不许退出)
+
+		// 是否锁定注销功能(若为true，则默认back按键不许退出)
 		public boolean lockBackDestroy = false;
 
 	}
@@ -139,6 +140,13 @@ public class AndroidGame extends LGame {
 		this.input = new AndroidInputMake(this);
 		this.save = new AndroidSave(this);
 		this.accelerometer = new AndroidAccelerometer(game);
+		SysInputFactory.setKeyBoard(new SysInputFactory.OnscreenKeyboard() {
+
+			@Override
+			public void show(boolean visible) {
+				Loon.setOnscreenKeyboardVisible(visible);
+			}
+		});
 		this.initProcess();
 	}
 
