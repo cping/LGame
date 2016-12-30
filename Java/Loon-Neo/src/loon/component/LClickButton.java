@@ -29,12 +29,13 @@ import loon.component.skin.ClickButtonSkin;
 import loon.component.skin.SkinManager;
 import loon.event.CallFunction;
 import loon.font.BMFont;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
 // 与LButton的差异在于，内置有默认UI图片，并且可以选择大小，而不是必须按照图片大小拆分
-public class LClickButton extends LComponent {
+public class LClickButton extends LComponent implements FontSet<LClickButton>{
 
 	private CallFunction _function;
 
@@ -365,12 +366,15 @@ public class LClickButton extends LComponent {
 		this.offsetTop = offsetTop;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
-	public void setFont(IFont font) {
+	@Override
+	public LClickButton setFont(IFont font) {
 		this.font = font;
+		return this;
 	}
 
 	public boolean isPressed() {

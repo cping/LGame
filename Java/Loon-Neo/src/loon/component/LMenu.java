@@ -30,6 +30,7 @@ import loon.component.skin.MenuSkin;
 import loon.component.skin.SkinManager;
 import loon.event.SysTouch;
 import loon.event.Updateable;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.RectBox;
@@ -46,7 +47,7 @@ import loon.utils.TArray;
  * panel.add("EFG"); panel.add("ABC"); panel.add("EFG"); panel.add("ABC");
  * panel.add("EFG");
  */
-public class LMenu extends LComponent {
+public class LMenu extends LComponent implements FontSet<LMenu> {
 
 	public static interface MenuItemClick {
 		public void onClick(MenuItem item);
@@ -886,6 +887,17 @@ public class LMenu extends LComponent {
 		return "Menu";
 	}
 
+	@Override
+	public LMenu setFont(IFont font) {
+		this.font = font;
+		return this;
+	}
+
+	@Override
+	public IFont getFont() {
+		return this.font;
+	}
+	
 	public LColor getFontColor() {
 		return fontColor;
 	}
@@ -914,4 +926,5 @@ public class LMenu extends LComponent {
 			}
 		}
 	}
+
 }

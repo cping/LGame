@@ -5,6 +5,7 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.ShadowFont;
@@ -45,7 +46,7 @@ import loon.utils.TArray;
  * 
  * } });
  */
-public class LMessageBox extends LComponent {
+public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public static class DrawMessageBox extends AbstractBox {
 
@@ -491,8 +492,9 @@ public class LMessageBox extends LComponent {
 		return this._font;
 	}
 
-	public void setFont(IFont font) {
+	public LMessageBox setFont(IFont font) {
 		this._font = font;
+		return this;
 	}
 
 	public LMessageBox setFontColor(LColor color) {

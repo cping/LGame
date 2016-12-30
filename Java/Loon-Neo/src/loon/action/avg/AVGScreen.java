@@ -52,6 +52,7 @@ import loon.event.ClickListener;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.Updateable;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -72,7 +73,7 @@ import loon.utils.timer.LTimerContext;
  * 
  * @see CommandType
  */
-public abstract class AVGScreen extends Screen {
+public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	// 文字显示速度
 	private SpeedMode _speedMode = SpeedMode.Normal;
@@ -92,11 +93,11 @@ public abstract class AVGScreen extends Screen {
 
 	private boolean isSelectMessage, scrFlag, isRunning, running;
 
-	private IFont _font = LFont.getDefaultFont();
+	private IFont _font ;
 
 	private int delay;
 
-	private String scriptName;
+	private String _scriptName;
 
 	private String selectMessage;
 
@@ -317,7 +318,7 @@ public abstract class AVGScreen extends Screen {
 
 			private float x, y;
 
-			private String scriptName, scriptSource, scripteContext;
+			private String _scriptName, scriptSource, scripteContext;
 
 			private boolean isCompleted;
 
@@ -329,8 +330,8 @@ public abstract class AVGScreen extends Screen {
 			@Override
 			public void call() {
 				Entity entity = Entity.make(scriptSource, x, y);
-				if (scriptName != null) {
-					entity.setName(scriptName);
+				if (_scriptName != null) {
+					entity.setName(_scriptName);
 				} else {
 					entity.setName(scriptSource);
 				}
@@ -385,7 +386,7 @@ public abstract class AVGScreen extends Screen {
 					}
 				} else if (list.length == 4) {
 					scriptSource = list[0];
-					scriptName = list[1];
+					_scriptName = list[1];
 					if (MathUtils.isNan(list[2])) {
 						x = Float.parseFloat(list[2]);
 					}
@@ -476,10 +477,11 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public AVGScreen(final String initscript, final LTexture img) {
+		this._font = LFont.getDefaultFont();
+		this._scriptName = initscript;
 		if (initscript == null) {
 			return;
 		}
-		this.scriptName = initscript;
 		if (img != null) {
 			this.dialogFileName = img.getSource();
 			this.dialog = img;
@@ -487,10 +489,11 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public AVGScreen(final String initscript) {
+		this._font = LFont.getDefaultFont();
+		this._scriptName = initscript;
 		if (initscript == null) {
 			return;
 		}
-		this.scriptName = initscript;
 	}
 
 	private class OptClick implements ClickListener {
@@ -718,7 +721,7 @@ public abstract class AVGScreen extends Screen {
 	 * 
 	 * @param font
 	 */
-	public void setFont(final IFont font) {
+	public AVGScreen setFont(final IFont font) {
 		this._font = font;
 		if (message != null) {
 			message.setMessageFont(font);
@@ -726,6 +729,7 @@ public abstract class AVGScreen extends Screen {
 		if (select != null) {
 			select.setMessageFont(font);
 		}
+		return this;
 	}
 
 	public IFont getFont() {
@@ -1481,7 +1485,7 @@ public abstract class AVGScreen extends Screen {
 		this.initDesktop();
 		this.initMessageConfig(message);
 		this.initSelectConfig(select);
-		this.initCommandConfig(scriptName);
+		this.initCommandConfig(_scriptName);
 	}
 
 	public abstract void onLoading();
@@ -1562,11 +1566,11 @@ public abstract class AVGScreen extends Screen {
 	}
 
 	public String getScriptName() {
-		return scriptName;
+		return _scriptName;
 	}
 
-	public void setScriptName(String scriptName) {
-		this.scriptName = scriptName;
+	public void setScriptName(String name) {
+		this._scriptName = name;
 	}
 
 	public Command getCommand() {

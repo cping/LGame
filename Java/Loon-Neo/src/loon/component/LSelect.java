@@ -27,13 +27,14 @@ import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.event.SysKey;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class LSelect extends LContainer {
+public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	private IFont messageFont;
 
@@ -77,18 +78,19 @@ public class LSelect extends LContainer {
 	}
 
 	public LSelect(LTexture formImage, int x, int y) {
-		this(SkinManager.get().getMessageSkin().getFont(), formImage, x, y, formImage.getWidth(),
-				formImage.getHeight());
+		this(SkinManager.get().getMessageSkin().getFont(), formImage, x, y,
+				formImage.getWidth(), formImage.getHeight());
 	}
 
 	public LSelect(IFont font, LTexture formImage, int x, int y, int width,
 			int height) {
-		this(font, formImage, x, y, width, height, SkinManager.get().getMessageSkin().getFontColor());
+		this(font, formImage, x, y, width, height, SkinManager.get()
+				.getMessageSkin().getFontColor());
 	}
 
 	public LSelect(MessageSkin skin, int x, int y, int width, int height) {
-		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin
-				.getFontColor());
+		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height,
+				skin.getFontColor());
 	}
 
 	public LSelect(IFont font, LTexture formImage, int x, int y, int width,
@@ -308,12 +310,13 @@ public class LSelect extends LContainer {
 		return messageFont;
 	}
 
-	public void setMessageFont(IFont messageFont) {
+	public LSelect setMessageFont(IFont messageFont) {
 		this.messageFont = messageFont;
+		return this;
 	}
 
-	public void setFont(IFont newFont) {
-		this.setMessageFont(newFont);
+	public LSelect setFont(IFont newFont) {
+		return this.setMessageFont(newFont);
 	}
 
 	public IFont getFont() {

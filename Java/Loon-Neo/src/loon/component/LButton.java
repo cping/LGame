@@ -25,12 +25,13 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.event.CallFunction;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
-public class LButton extends LComponent {
+public class LButton extends LComponent implements FontSet<LButton> {
 
 	private String text = null;
 
@@ -38,7 +39,7 @@ public class LButton extends LComponent {
 
 	private int pressedTime, offsetLeft, offsetTop, type;
 
-	private IFont font = LFont.getDefaultFont();
+	private IFont font;
 
 	private LColor fontColor = LColor.white;
 
@@ -65,13 +66,26 @@ public class LButton extends LComponent {
 	}
 
 	public LButton(LTexture[] img, String text, int row, int col, int x, int y) {
+		this(LFont.getDefaultFont(), img, text, row, col, x, y);
+	}
+
+	public LButton(IFont font, LTexture[] img, String text, int row, int col,
+			int x, int y) {
 		super(x, y, row, col);
-		this.setImages(img);
+		this.font = font;
 		this.text = text;
+		if (img != null) {
+			this.setImages(img);
+		}
 	}
 
 	public LButton(String text, int x, int y, int w, int h) {
+		this(LFont.getDefaultFont(), text, x, y, w, h);
+	}
+
+	public LButton(IFont font, String text, int x, int y, int w, int h) {
 		super(x, y, w, h);
+		this.font = font;
 		this.text = text;
 	}
 
@@ -255,12 +269,15 @@ public class LButton extends LComponent {
 		return "Button";
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
-	public void setFont(IFont font) {
+	@Override
+	public LButton setFont(IFont font) {
 		this.font = font;
+		return this;
 	}
 
 	public CallFunction getFunction() {

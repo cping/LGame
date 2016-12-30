@@ -47,6 +47,7 @@ public abstract class Log {
 			this.id = levelInt;
 		}
 
+		@Override
 		public String toString() {
 			return levelString;
 		}

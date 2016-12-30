@@ -2,6 +2,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -30,7 +31,7 @@ public class BaseBox extends AbstractBox {
 		LEFT, CENTER, RIGHT;
 	}
 
-	public static class BoxItem {
+	public static class BoxItem implements FontSet<BoxItem> {
 
 		private IFont font;
 		private String text;
@@ -128,6 +129,17 @@ public class BaseBox extends AbstractBox {
 		@Override
 		public String toString() {
 			return this.text;
+		}
+
+		@Override
+		public BoxItem setFont(IFont font) {
+			this.font  = font;
+			return this;
+		}
+
+		@Override
+		public IFont getFont() {
+			return this.font;
 		}
 	}
 

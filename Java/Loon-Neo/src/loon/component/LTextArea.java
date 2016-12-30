@@ -36,6 +36,7 @@ import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -45,7 +46,7 @@ import loon.utils.StringUtils;
 /**
  * 字符串显示用类,支持多种文字显示特效,个人建议主要用来做信息推送显示
  */
-public class LTextArea extends LComponent {
+public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	// 数据向下推入
 	public static final int TYPE_DOWN = 0;
@@ -186,8 +187,15 @@ public class LTextArea extends LComponent {
 		}
 	}
 
-	public void setFont(IFont changeFont) {
+	@Override
+	public IFont getFont() {
+		return font;
+	}
+
+	@Override
+	public LTextArea setFont(IFont changeFont) {
 		this.font = changeFont;
+		return this;
 	}
 
 	public void setWidthLimit(int widthLimit) {

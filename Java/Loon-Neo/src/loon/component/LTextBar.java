@@ -128,7 +128,7 @@ public class LTextBar extends LComponent {
 			if (_messages != null) {
 				for (int i = 0, size = _messages.size; i < size; i++) {
 					String text = _messages.get(i);
-					_font.drawString(g, text, x + _offsetX + 5, y + _offsetY
+					drawString(g, text, x + _offsetX + 5, y + _offsetY
 							+ i * (_font.stringHeight(text)), _fontColor);
 
 				}
@@ -163,7 +163,7 @@ public class LTextBar extends LComponent {
 				if (_messages != null) {
 					for (int i = 0, size = _messages.size; i < size; i++) {
 						String text = _messages.get(i);
-						_font.drawString(g, text,
+						drawString(g, text,
 								x + _offsetX + left.getWidth() + 5,
 								y + _offsetY + i * (_font.stringHeight(text)),
 								_fontColor);
@@ -175,7 +175,7 @@ public class LTextBar extends LComponent {
 				if (_messages != null) {
 					for (int i = 0, size = _messages.size; i < size; i++) {
 						String text = _messages.get(i);
-						_font.drawString(g, text, x + _offsetX + 5, y
+						drawString(g, text, x + _offsetX + 5, y
 								+ _offsetY + i * (_font.stringHeight(text)),
 								_fontColor);
 

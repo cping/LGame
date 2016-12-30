@@ -5,6 +5,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.event.Updateable;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Vector2f;
@@ -14,7 +15,7 @@ import loon.opengl.LSTRFont;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class Print implements LRelease {
+public class Print implements FontSet<Print>, LRelease {
 
 	public enum Mode {
 		NONE, LEFT, RIGHT, CENTER
@@ -697,6 +698,17 @@ public class Print implements LRelease {
 		setTextMode(Mode.CENTER);
 	}
 
+	@Override
+	public Print setFont(IFont font) {
+		this.ifont = font;
+		return this;
+	}
+
+	@Override
+	public IFont getFont() {
+		return ifont;
+	}
+	
 	public boolean isWait() {
 		return isWait;
 	}
@@ -712,5 +724,6 @@ public class Print implements LRelease {
 			strings = null;
 		}
 	}
+
 
 }

@@ -748,6 +748,10 @@ public class LProcess extends PlayerUtils {
 		_screens.clear();
 	}
 
+	public void clearScreenMaps() {
+		_screenMap.clear();
+	}
+
 	public void addScreen(CharSequence name, Screen screen) {
 		if (!_screenMap.containsKey(name)) {
 			_screenMap.put(name, screen);

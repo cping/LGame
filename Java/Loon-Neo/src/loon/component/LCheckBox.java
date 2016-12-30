@@ -27,11 +27,12 @@ import loon.canvas.LColor;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.SkinManager;
 import loon.event.CallFunction;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
-public class LCheckBox extends LComponent {
+public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	private LTexture unchecked, checked;
 
@@ -84,24 +85,23 @@ public class LCheckBox extends LComponent {
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
 			boolean boxtoleftoftext) {
-		this(txt, x, y, boxsize, boxtoleftoftext, SkinManager
-				.get().getCheckBoxSkin().getFont());
+		this(txt, x, y, boxsize, boxtoleftoftext, SkinManager.get()
+				.getCheckBoxSkin().getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
 			boolean boxtoleftoftext, IFont font) {
 		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
 				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getCheckedTexture(), boxsize, boxtoleftoftext, SkinManager.get().getCheckBoxSkin().getFontColor(),
-				font);
+				.getCheckedTexture(), boxsize, boxtoleftoftext, SkinManager
+				.get().getCheckBoxSkin().getFontColor(), font);
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize,
 			boolean boxtoleftoftext, LColor textcolor, IFont font) {
 		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
 				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getCheckedTexture(), boxsize, boxtoleftoftext, textcolor,
-				font);
+				.getCheckedTexture(), boxsize, boxtoleftoftext, textcolor, font);
 	}
 
 	public LCheckBox(String txt, int x, int y, String uncheckedFile,
@@ -272,6 +272,19 @@ public class LCheckBox extends LComponent {
 
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+	}
+
+	@Override
+	public LCheckBox setFont(IFont font) {
+		this.font = font;
+		this.setSize((int) (this.font.stringWidth(text) + boxsize),
+				(int) MathUtils.max(font.getHeight(), boxsize));
+		return this;
+	}
+
+	@Override
+	public IFont getFont() {
+		return font;
 	}
 
 	@Override

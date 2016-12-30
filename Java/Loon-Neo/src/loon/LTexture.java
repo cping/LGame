@@ -60,7 +60,7 @@ public class LTexture extends Painter implements LRelease {
 	private boolean _copySize = false;
 
 	private boolean _scaleSize = false;
-	
+
 	private int[] _cachePixels;
 
 	private String source;
@@ -474,6 +474,15 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
+	public LTexture cpy() {
+		return copy();
+	}
+
+	public LTexture cpy(final float x, final float y, final float width,
+			final float height) {
+		return copy(x, y, width, height);
+	}
+
 	public LTexture copy() {
 		return copy(0, 0, width(), height());
 	}
@@ -538,7 +547,7 @@ public class LTexture extends Painter implements LRelease {
 	public boolean isScale() {
 		return _scaleSize;
 	}
-	
+
 	public LTexture scale(final float width, final float height) {
 
 		int hashCode = 1;

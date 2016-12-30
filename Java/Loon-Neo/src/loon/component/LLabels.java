@@ -23,6 +23,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -31,7 +32,7 @@ import loon.utils.TArray;
 /**
  * 单纯文字显示用组件(无边框或背景图,但是加入了自动定是替换，并且可以注入多个信息)
  */
-public class LLabels extends LComponent {
+public class LLabels extends LComponent implements FontSet<LLabels> {
 
 	public LLabels(int x, int y, int width, int height) {
 		this(LFont.getDefaultFont(), x, y, width, height);
@@ -89,8 +90,12 @@ public class LLabels extends LComponent {
 				if (label.stateTime > label.length) {
 					labels.remove(label);
 				} else {
-					font.drawString(g, label.message, x + label.x, y + label.y
-							- font.getHeight() / 2 + 5, baseColor == null ? label.color : baseColor
+					font.drawString(
+							g,
+							label.message,
+							x + label.x,
+							y + label.y - font.getHeight() / 2 + 5,
+							baseColor == null ? label.color : baseColor
 									.mul(label.color));
 				}
 			}
@@ -121,6 +126,17 @@ public class LLabels extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
 		draw(g, x, y);
+	}
+
+	@Override
+	public LLabels setFont(IFont font) {
+		this.font = font;
+		return this;
+	}
+
+	@Override
+	public IFont getFont() {
+		return this.font;
 	}
 
 	@Override

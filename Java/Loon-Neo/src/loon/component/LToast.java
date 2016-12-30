@@ -7,6 +7,7 @@ import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -18,7 +19,7 @@ import loon.utils.timer.LTimer;
  * LToast toast = LToast.makeText(null, "ABCDEFG",Style.ERROR); add(toast);
  * 
  */
-public class LToast extends LComponent {
+public class LToast extends LComponent implements FontSet<LToast> {
 
 	public enum Style {
 		NORMAL, SUCCESS, ERROR
@@ -271,10 +272,12 @@ public class LToast extends LComponent {
 		return opacity;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
+	@Override
 	public LToast setFont(IFont f) {
 		this.font = f;
 		return this;

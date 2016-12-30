@@ -35,6 +35,7 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
@@ -54,7 +55,7 @@ import loon.utils.MathUtils;
  *      LDecideName decideName = new LDecideName(list,0, 0);
  *      add(decideName);
  */
-public class LDecideName extends LComponent {
+public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	private LColor fontColor = LColor.white;
 
@@ -421,6 +422,13 @@ public class LDecideName extends LComponent {
 		this.topOffset = topOffset;
 	}
 
+	@Override
+	public LDecideName setFont(IFont font) {
+		this._font = font;
+		return this;
+	}
+	
+	@Override
 	public IFont getFont() {
 		return _font;
 	}

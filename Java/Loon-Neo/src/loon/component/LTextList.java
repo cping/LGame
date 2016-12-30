@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
 import loon.component.skin.TextListSkin;
 import loon.event.SysTouch;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 
@@ -42,7 +43,7 @@ import loon.opengl.GLEx;
  *          list.add("ABC");
  *          list.add("EFG");
  */
-public class LTextList extends LComponent {
+public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	public final int LIST_SPACE_TOP = 5;
 
@@ -192,10 +193,17 @@ public class LTextList extends LComponent {
 		this.max = 0;
 	}
 
-	public void setFont(IFont newFont) {
+	@Override
+	public LTextList setFont(IFont newFont) {
 		this._font = newFont;
+		return this;
 	}
 
+	@Override
+	public IFont getFont() {
+		return _font;
+	}
+	
 	public void changeName(int position, String nameString, int numberInt) {
 		this.name[position] = nameString;
 		this.number[position] = numberInt;

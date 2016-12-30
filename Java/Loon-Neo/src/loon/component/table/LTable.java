@@ -28,6 +28,7 @@ import loon.component.DefUI;
 import loon.component.LComponent;
 import loon.component.LContainer;
 import loon.component.skin.TableSkin;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
@@ -60,7 +61,7 @@ import loon.utils.MathUtils;
  * add(table);
  * 
  */
-public class LTable extends LContainer {
+public class LTable extends LContainer implements FontSet<LTable>{
 
 	private ITableModel model = null;
 
@@ -500,11 +501,14 @@ public class LTable extends LContainer {
 		this.textColor = textColor;
 	}
 
-	public void setFont(IFont font) {
+	@Override
+	public LTable setFont(IFont font) {
 		this.font = font;
 		this.cellHeight = font.getHeight();
+		return this;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}

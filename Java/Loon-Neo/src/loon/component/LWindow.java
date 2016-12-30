@@ -34,10 +34,11 @@ import loon.component.layout.VerticalLayout;
 import loon.component.skin.SkinManager;
 import loon.component.skin.WindowSkin;
 import loon.event.CallFunction;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 
-public class LWindow extends LContainer {
+public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	private String _title;
 
@@ -565,8 +566,9 @@ public class LWindow extends LContainer {
 		return _font;
 	}
 
-	public void setFont(IFont font) {
+	public LWindow setFont(IFont font) {
 		this._font = font;
+		return this;
 	}
 
 	public LColor getFontColor() {

@@ -27,10 +27,11 @@ import loon.action.sprite.Animation;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 
-public class LMessage extends LContainer {
+public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	private Animation animation;
 
@@ -300,6 +301,7 @@ public class LMessage extends LContainer {
 		this.fontColor = fontColor;
 	}
 
+	@Override
 	public IFont getFont() {
 		return getMessageFont();
 	}
@@ -308,13 +310,19 @@ public class LMessage extends LContainer {
 		return messageFont;
 	}
 
+	@Override
+	public LMessage setFont(IFont font) {
+		return this.setMessageFont(font);
+	}
+	
 	/**
 	 * 注入一个实现了IFont接口的字体
 	 * 
 	 * @param messageFont
 	 */
-	public void setMessageFont(IFont messageFont) {
+	public LMessage setMessageFont(IFont messageFont) {
 		this.messageFont = messageFont;
+		return this;
 	}
 
 	@Override
@@ -340,4 +348,5 @@ public class LMessage extends LContainer {
 			animation = null;
 		}
 	}
+
 }

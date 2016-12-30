@@ -3,10 +3,11 @@ package loon.component.skin;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 
-public class TextBarSkin {
+public class TextBarSkin implements FontSet<TextBarSkin>{
 
 	private LTexture leftTexture;
 	private LTexture rightTexture;
@@ -65,8 +66,9 @@ public class TextBarSkin {
 		return font;
 	}
 
-	public void setFont(IFont font) {
+	public TextBarSkin setFont(IFont font) {
 		this.font = font;
+		return this;
 	}
 
 	public LColor getFontColor() {

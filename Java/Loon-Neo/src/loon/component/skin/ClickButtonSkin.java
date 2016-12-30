@@ -3,10 +3,11 @@ package loon.component.skin;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 
-public class ClickButtonSkin {
+public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 
 	private LTexture idleClickTexture;
 	private LTexture hoverClickTexture;
@@ -56,12 +57,15 @@ public class ClickButtonSkin {
 		this.clickedTexture = c;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
-	public void setFont(IFont font) {
+	@Override
+	public ClickButtonSkin setFont(IFont font) {
 		this.font = font;
+		return this;
 	}
 
 	public LColor getFontColor() {

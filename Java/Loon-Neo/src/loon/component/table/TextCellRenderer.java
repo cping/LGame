@@ -22,13 +22,14 @@ package loon.component.table;
 
 import loon.canvas.LColor;
 import loon.component.table.LTable.BindIcon;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Alignment;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 
-public class TextCellRenderer implements ICellRenderer {
+public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer> {
 
 	private IFont font = LFont.getDefaultFont();
 	private LColor textColor = LColor.white;
@@ -59,8 +60,15 @@ public class TextCellRenderer implements ICellRenderer {
 		}
 	}
 
-	public void setFont(IFont font) {
+	@Override
+	public TextCellRenderer setFont(IFont font) {
 		this.font = font;
+		return this;
+	}
+	
+	@Override
+	public IFont getFont(){
+		return this.font;
 	}
 
 	public void setTextColor(LColor textColor) {

@@ -5,6 +5,8 @@ import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.font.FontSet;
+import loon.font.IFont;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -68,11 +70,11 @@ public class SpriteControls {
 		this._sprs = new TArray<ISprite>();
 	}
 
-	public SpriteControls add(ISprite comp) {
-		if (comp == null) {
+	public SpriteControls add(ISprite spr) {
+		if (spr == null) {
 			throw new IllegalArgumentException("ISprite cannot be null.");
 		}
-		_sprs.add(comp);
+		_sprs.add(spr);
 		return this;
 	}
 
@@ -84,11 +86,11 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls remove(ISprite comp) {
-		if (comp == null) {
+	public SpriteControls remove(ISprite spr) {
+		if (spr == null) {
 			throw new IllegalArgumentException("ISprite cannot be null.");
 		}
-		_sprs.remove(comp);
+		_sprs.remove(spr);
 		return this;
 	}
 
@@ -119,32 +121,25 @@ public class SpriteControls {
 
 	public SpriteControls setSize(int w, int h) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setSize(w, h);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setSize(w, h);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setSize(w, h);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setSize(w, h);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setSize(w, h);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setSize(w, h);
 				}
 			}
 		}
 		return this;
 	}
 
-	public SpriteControls setFilterColor(LColor filterColor) {
+	public SpriteControls setColor(LColor c) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setFilterColor(filterColor);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setColor(filterColor);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setFilterColor(filterColor);
-				}
-
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				spr.setColor(c);
 			}
 		}
 		return this;
@@ -152,10 +147,10 @@ public class SpriteControls {
 
 	public SpriteControls setRunning(boolean running) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setRunning(running);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setRunning(running);
 				}
 			}
 		}
@@ -164,14 +159,14 @@ public class SpriteControls {
 
 	public SpriteControls setAlpha(float alpha) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setAlpha(alpha);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setAlpha(alpha);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setAlpha(alpha);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setAlpha(alpha);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setAlpha(alpha);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setAlpha(alpha);
 				}
 
 			}
@@ -181,14 +176,14 @@ public class SpriteControls {
 
 	public SpriteControls setScale(float s) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setScale(s);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setScale(s);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setScale(s);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setScale(s);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setScale(s);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setScale(s);
 				}
 			}
 		}
@@ -197,14 +192,14 @@ public class SpriteControls {
 
 	public SpriteControls setScale(float sx, float sy) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setScale(sx, sy);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setScale(sx, sy);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setScale(sx, sy);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setScale(sx, sy);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setScale(sx, sy);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setScale(sx, sy);
 				}
 			}
 		}
@@ -213,14 +208,14 @@ public class SpriteControls {
 
 	public SpriteControls setX(float x) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setX(x);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setX(x);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setX(x);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setX(x);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setX(x);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setX(x);
 				}
 			}
 		}
@@ -229,14 +224,14 @@ public class SpriteControls {
 
 	public SpriteControls setY(float y) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setY(y);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setY(y);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setY(y);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setY(y);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setY(y);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setY(y);
 				}
 			}
 		}
@@ -245,14 +240,14 @@ public class SpriteControls {
 
 	public SpriteControls setWidth(int w) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setWidth(w);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setWidth(w);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setWidth(w);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setWidth(w);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setWidth(w);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setWidth(w);
 				}
 			}
 		}
@@ -261,14 +256,26 @@ public class SpriteControls {
 
 	public SpriteControls setHeight(int h) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setHeight(h);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setHeight(h);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setHeight(h);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setHeight(h);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setHeight(h);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setHeight(h);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls setFont(IFont font) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof FontSet<?>) {
+					((FontSet<?>) spr).setFont(font);
 				}
 			}
 		}
@@ -277,14 +284,14 @@ public class SpriteControls {
 
 	public SpriteControls setRotation(float r) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setRotation(r);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setRotation(r);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setRotation(r);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setRotation(r);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setRotation(r);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setRotation(r);
 				}
 			}
 		}
@@ -293,14 +300,14 @@ public class SpriteControls {
 
 	public SpriteControls setLocation(float dx, float dy) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setLocation(dx, dy);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setLocation(dx, dy);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setLocation(dx, dy);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setLocation(dx, dy);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setLocation(dx, dy);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setLocation(dx, dy);
 				}
 			}
 		}
@@ -309,14 +316,14 @@ public class SpriteControls {
 
 	public SpriteControls setLayer(int z) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setLayer(z);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setLayer(z);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setLayer(z);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setLayer(z);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setLayer(z);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setLayer(z);
 				}
 			}
 		}
@@ -325,14 +332,14 @@ public class SpriteControls {
 
 	public SpriteControls setVisible(boolean v) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null) {
-				if (comp instanceof Sprite) {
-					((Sprite) comp).setVisible(v);
-				} else if (comp instanceof Entity) {
-					((Entity) comp).setVisible(v);
-				} else if (comp instanceof ActionObject) {
-					((ActionObject) comp).setVisible(v);
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setVisible(v);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setVisible(v);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setVisible(v);
 				}
 			}
 		}
@@ -377,25 +384,25 @@ public class SpriteControls {
 
 	public SpriteControls fadeOut(float speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
-				if (comp.getAlpha() >= 255) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
+				if (spr.getAlpha() >= 255) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) comp)
+						tween = PlayerUtils.set((ActionBind) spr)
 								.fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) comp).fadeOut(
+						tween = PlayerUtils.set((ActionBind) spr).fadeOut(
 								speed);
 					} else {
 						tween.fadeOut(speed);
 					}
-					if (!tweens.containsKey(comp)) {
-						tweens.put(comp, tween);
+					if (!tweens.containsKey(spr)) {
+						tweens.put(spr, tween);
 					}
 				}
 			}
@@ -405,26 +412,26 @@ public class SpriteControls {
 
 	public SpriteControls fadeIn(float speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
-				if (comp.getAlpha() <= 0) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
+				if (spr.getAlpha() <= 0) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) comp).fadeOut(
+						tween = PlayerUtils.set((ActionBind) spr).fadeOut(
 								speed);
 					} else {
 						tween.fadeOut(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) comp)
+						tween = PlayerUtils.set((ActionBind) spr)
 								.fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 			}
 		}
@@ -433,17 +440,17 @@ public class SpriteControls {
 
 	public SpriteControls moveBy(float endX, float endY, int speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).moveBy(endX,
+					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX,
 							endY, speed);
 				} else {
 					tween.moveBy(endX, endY, speed);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 			}
 		}
@@ -452,17 +459,17 @@ public class SpriteControls {
 
 	public SpriteControls moveBy(float endX, float endY) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).moveBy(endX,
+					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX,
 							endY);
 				} else {
 					tween.moveBy(endX, endY);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 			}
 		}
@@ -471,17 +478,17 @@ public class SpriteControls {
 
 	public SpriteControls moveTo(float endX, float endY, int speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).moveTo(endX,
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX,
 							endY, speed);
 				} else {
 					tween.moveTo(endX, endY, speed);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -491,17 +498,17 @@ public class SpriteControls {
 
 	public SpriteControls moveTo(float endX, float endY, boolean flag, int speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).moveTo(endX,
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX,
 							endY, flag, speed);
 				} else {
 					tween.moveTo(endX, endY, flag, speed);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -512,17 +519,17 @@ public class SpriteControls {
 	public SpriteControls moveTo(Field2D map, float endX, float endY,
 			boolean flag, int speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).moveTo(map,
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(map,
 							endX, endY, flag, speed);
 				} else {
 					tween.moveTo(map, endX, endY, flag, speed);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -532,16 +539,16 @@ public class SpriteControls {
 
 	public SpriteControls delay(float d) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).delay(d);
+					tween = PlayerUtils.set((ActionBind) spr).delay(d);
 				} else {
 					tween.delay(d);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -551,16 +558,16 @@ public class SpriteControls {
 
 	public SpriteControls rotateTo(float angle) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).rotateTo(angle);
+					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle);
 				} else {
 					tween.rotateTo(angle);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -570,17 +577,17 @@ public class SpriteControls {
 
 	public SpriteControls rotateTo(float angle, float speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).rotateTo(angle,
+					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle,
 							speed);
 				} else {
 					tween.rotateTo(angle, speed);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -590,16 +597,16 @@ public class SpriteControls {
 
 	public SpriteControls scaleTo(float sx, float sy) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).scaleTo(sx, sy);
+					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy);
 				} else {
 					tween.scaleTo(sx, sy);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -609,17 +616,17 @@ public class SpriteControls {
 
 	public SpriteControls scaleTo(float sx, float sy, float speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).scaleTo(sx, sy,
+					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy,
 							speed);
 				} else {
 					tween.scaleTo(sx, sy, speed);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -629,16 +636,16 @@ public class SpriteControls {
 
 	public SpriteControls showTo(boolean v) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).showTo(v);
+					tween = PlayerUtils.set((ActionBind) spr).showTo(v);
 				} else {
 					tween.showTo(v);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -648,16 +655,16 @@ public class SpriteControls {
 
 	public SpriteControls colorTo(LColor end) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).colorTo(end);
+					tween = PlayerUtils.set((ActionBind) spr).colorTo(end);
 				} else {
 					tween.colorTo(end);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -667,17 +674,17 @@ public class SpriteControls {
 
 	public SpriteControls shakeTo(float shakeX, float shakeY) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).shakeTo(shakeX,
+					tween = PlayerUtils.set((ActionBind) spr).shakeTo(shakeX,
 							shakeY);
 				} else {
 					tween.shakeTo(shakeX, shakeY);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -687,17 +694,17 @@ public class SpriteControls {
 
 	public SpriteControls flashTo(float duration) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp)
+					tween = PlayerUtils.set((ActionBind) spr)
 							.flashTo(duration);
 				} else {
 					tween.flashTo(duration);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}
@@ -708,19 +715,19 @@ public class SpriteControls {
 	public SpriteControls transferTo(float startPos, float endPos,
 			float duration, EasingMode mode, boolean controlX, boolean controlY) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
-			ISprite comp = _sprs.get(i);
-			if (comp != null && (comp instanceof ActionBind)) {
-				ActionTween tween = tweens.get(comp);
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).transferTo(
+					tween = PlayerUtils.set((ActionBind) spr).transferTo(
 							startPos, endPos, duration, mode, controlX,
 							controlY);
 				} else {
 					tween.transferTo(startPos, endPos, duration, mode,
 							controlX, controlY);
 				}
-				if (!tweens.containsKey(comp)) {
-					tweens.put(comp, tween);
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
 				}
 
 			}

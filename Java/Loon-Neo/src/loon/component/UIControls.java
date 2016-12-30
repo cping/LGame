@@ -30,6 +30,8 @@ import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.event.ClickListener;
+import loon.font.FontSet;
+import loon.font.IFont;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -275,6 +277,26 @@ public class UIControls {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setHeight(h);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setColor(LColor c) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setColor(c);
+			}
+		}
+		return this;
+	}
+
+	public UIControls setFont(IFont font) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof FontSet<?>)) {
+				((FontSet<?>) comp).setFont(font);
 			}
 		}
 		return this;
