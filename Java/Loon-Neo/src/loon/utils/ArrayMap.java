@@ -40,6 +40,11 @@ public class ArrayMap implements IArray{
 	public ArrayMap() {
 		this(CollectionUtils.INITIAL_CAPACITY);
 	}
+	
+	public ArrayMap(ArrayMap map){
+		this();
+		putAll(map);
+	}
 
 	public ArrayMap(int initialCapacity) {
 		if (initialCapacity <= 0) {

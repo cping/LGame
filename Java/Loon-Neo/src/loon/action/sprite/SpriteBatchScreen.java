@@ -674,6 +674,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			}
 		}
 		release(e);
+		releaseActionKeys();
 	}
 
 	public abstract void release(GameKey e);

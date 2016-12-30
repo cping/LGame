@@ -348,11 +348,17 @@ public class Desktop implements LRelease {
 	}
 
 	public void keyPressed(GameKey key) {
-		contentPane.keyPressed(key);
+		if (this.selectedComponent != null
+				&& !this.selectedComponent._keyLocked) {
+			this.selectedComponent.keyPressed(key);
+		}
 	}
 
 	public void keyReleased(GameKey key) {
-		contentPane.keyReleased(key);
+		if (this.selectedComponent != null
+				&& !this.selectedComponent._keyLocked) {
+			this.selectedComponent.keyReleased(key);
+		}
 	}
 
 	/**
