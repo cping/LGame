@@ -26,13 +26,13 @@ import loon.LObject;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextures;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
-import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
 import loon.component.layout.LayoutConstraints;
@@ -45,7 +45,6 @@ import loon.event.SysKey;
 import loon.event.SysTouch;
 import loon.event.Touched;
 import loon.event.TouchedClick;
-import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.PointF;
 import loon.geom.PointI;
@@ -896,7 +895,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public void setBackground(String fileName) {
-		this.setBackground(Image.createImage(fileName).texture());
+		this.setBackground(LTextures.loadTexture(fileName));
 	}
 
 	public void setBackground(LColor color) {
@@ -914,32 +913,17 @@ public abstract class LComponent extends LObject<LContainer> implements
 		if (b == this._background) {
 			return;
 		}
-		final LTexture oldImage = this._background;
-		if (oldImage != null && oldImage != b) {
-			if (!b.equals(LSystem.base().graphics().finalColorTex())) {
-				Updateable update = new Updateable() {
-
-					@Override
-					public void action(Object a) {
-						if (oldImage != null) {
-							LTexture parent = LTexture.firstFather(oldImage);
-							parent.closeChildAll();
-							parent.close();
-						}
-
-					}
-				};
-				LSystem.unload(update);
-			}
-		}
 		this._background = b;
-		this._width = b.getWidth() > 1 ? b.getWidth() : this._width;
-		this._height = b.getHeight() > 1 ? b.getHeight() : this._height;
-		if (this._width <= 0) {
-			this._width = 1;
-		}
-		if (this._height <= 0) {
-			this._height = 1;
+		this._background.setDisabledTexture(true);
+		if (_drawBackground) {
+			this._width = b.getWidth() > 1 ? b.getWidth() : this._width;
+			this._height = b.getHeight() > 1 ? b.getHeight() : this._height;
+			if (this._width <= 0) {
+				this._width = 1;
+			}
+			if (this._height <= 0) {
+				this._height = 1;
+			}
 		}
 	}
 

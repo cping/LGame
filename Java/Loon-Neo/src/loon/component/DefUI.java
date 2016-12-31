@@ -426,6 +426,7 @@ public class DefUI {
 			defaultTextures = new Array<LTexture>();
 			LTexture spritesheet = LTextures
 					.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "ui.png");
+			spritesheet.setDisabledTexture(true);
 			LSubTexture windowbar = new LSubTexture(spritesheet, 0, 0, 512, 32);
 			LSubTexture panelbody = new LSubTexture(spritesheet, 1, 41 - 8, 17,
 					57 - 8);

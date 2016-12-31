@@ -55,6 +55,8 @@ public class LTexture extends Painter implements LRelease {
 		return LTextures.loadTexture(path);
 	}
 
+	private boolean _disabledTexture = false;
+	
 	private boolean _drawing = false;
 
 	private boolean _copySize = false;
@@ -167,14 +169,14 @@ public class LTexture extends Painter implements LRelease {
 	private Graphics gfx;
 
 	// _closed是删除标记，disposed是已经真的被删掉
-	boolean _isChild, _closed, _disposed;
+	boolean _closed, _disposed;
 
 	IntMap<LTexture> childs;
 
 	LTexture parent;
 
 	public boolean isChild() {
-		return _isChild || parent != null;
+		return parent != null;
 	}
 
 	public LTexture getParent() {
@@ -421,12 +423,18 @@ public class LTexture extends Painter implements LRelease {
 	@Override
 	public void addToBatch(BaseBatch batch, int tint, Affine2f tx, float x,
 			float y, float width, float height) {
+		if (isClose()) {
+			return;
+		}
 		batch.addQuad(this, tint, tx, x, y, width, height);
 	}
 
 	@Override
 	public void addToBatch(BaseBatch batch, int tint, Affine2f tx, float dx,
 			float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
+		if (isClose()) {
+			return;
+		}
 		batch.addQuad(this, tint, tx, dx, dy, dw, dh, sx, sy, sw, sh);
 	}
 
@@ -533,8 +541,8 @@ public class LTexture extends Painter implements LRelease {
 					+ copy.xOff;
 			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 					+ copy.yOff;
+			copy._disabledTexture = _disabledTexture;
 
-			_isChild = true;
 			childs.put(hashCode, copy);
 			return copy;
 		}
@@ -592,8 +600,7 @@ public class LTexture extends Painter implements LRelease {
 					+ copy.xOff;
 			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio)
 					+ copy.yOff;
-
-			_isChild = true;
+			copy._disabledTexture = _disabledTexture;
 			childs.put(hashCode, copy);
 
 			return copy;
@@ -952,6 +959,9 @@ public class LTexture extends Painter implements LRelease {
 
 	@Override
 	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
 		if (o == this) {
 			return true;
 		}
@@ -963,12 +973,14 @@ public class LTexture extends Painter implements LRelease {
 			if (source != null && !source.equals(tmp.source)) {
 				return false;
 			}
+			if ((tmp.width() != width()) || (tmp.height() != height())) {
+				return false;
+			}
 			if (this.id == tmp.id && this.xOff == tmp.xOff
 					&& this.yOff == tmp.yOff
 					&& this.widthRatio == tmp.widthRatio
 					&& this.heightRatio == tmp.heightRatio
-					&& this.config == tmp.config
-					&& this._isChild == tmp._isChild
+					&& this.config == tmp.config && this.parent == tmp.parent
 					&& this.displayWidth == tmp.displayWidth
 					&& this.displayHeight == tmp.displayHeight
 					&& this.pixelWidth == tmp.pixelWidth
@@ -984,6 +996,9 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	void free() {
+		if (_disabledTexture) {
+			return;
+		}
 		if (!_isLoaded) {
 			return;
 		}
@@ -1011,6 +1026,11 @@ public class LTexture extends Painter implements LRelease {
 						_isLoaded = false;
 						_closed = true;
 						_memorySize = 0;
+						if (batch != null) {
+							batch.close();
+							batch = null;
+						}
+						isBatch = false;
 					}
 				}
 			}
@@ -1067,17 +1087,24 @@ public class LTexture extends Painter implements LRelease {
 		close(false);
 	}
 
+	public LTexture setDisabledTexture(boolean d) {
+		_disabledTexture = d;
+		return this;
+	}
+
+	public boolean isDisabledTexture() {
+		return _disabledTexture;
+	}
+
 	public void close(boolean forcedDelete) {
-		if (disposed()) {
+		if (_disabledTexture) {
+			return;
+		}
+		if (isClose()) {
 			return;
 		}
 		_closed = true;
 		_countTexture--;
-		if (batch != null) {
-			batch.close();
-			batch = null;
-		}
-		isBatch = false;
 		if (forcedDelete) {
 			if (childs != null) {
 				childs.clear();

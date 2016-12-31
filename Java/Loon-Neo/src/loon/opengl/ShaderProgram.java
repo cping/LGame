@@ -110,7 +110,11 @@ public class ShaderProgram implements LRelease {
 		public void activate() {
 			gl.glUseProgram(id);
 		}
-
+		
+		public void unactivate() {
+			gl.glUseProgram(0);
+		}
+		
 		@Override
 		public void close() {
 			gl.glDeleteShader(vertexShader);

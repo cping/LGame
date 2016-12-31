@@ -89,8 +89,8 @@ public class Desktop implements LRelease {
 	 */
 	private Desktop(Screen screen, int width, int height) {
 		this.contentPane = new LPanel(0, 0, width, height);
-		this.tooltip = new LToolTip();
 		this.input = screen;
+		this.tooltip = new LToolTip();
 		this.contentPane.add(this.tooltip);
 		this.setDesktop(this.contentPane);
 		DESKTOP_CACHE.add(this);
@@ -392,10 +392,12 @@ public class Desktop implements LRelease {
 					|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 				this.hoverComponent.processTouchDragged();
 				if (LSystem.isMobile() || LSystem.base().setting.emulateTouch) {
-					this.tooltip.setToolTipComponent(hoverComponent);
-					this.tooltip.reshow = 0;
-					this.tooltip.initial = 0;
-					this.tooltip.showTip();
+					if (tooltip != null) {
+						this.tooltip.setToolTipComponent(hoverComponent);
+						this.tooltip.reshow = 0;
+						this.tooltip.initial = 0;
+						this.tooltip.showTip();
+					}
 				}
 			}
 		} else {
@@ -411,25 +413,33 @@ public class Desktop implements LRelease {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0
 						|| SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
-					if (!this.tooltip.dismissing && comp.isPointInUI()) {
-						// 刷新提示
-						this.tooltip.dismiss = 0;
-						this.tooltip.dismissing = true;
+					if (tooltip != null) {
+						if (!this.tooltip.dismissing && comp.isPointInUI()) {
+							// 刷新提示
+							this.tooltip.dismiss = 0;
+							this.tooltip.dismissing = true;
+						}
 					}
 				}
 				if (this.hoverComponent == null) {
-					this.tooltip.setToolTipComponent(comp);
+					if (tooltip != null) {
+						this.tooltip.setToolTipComponent(comp);
+					}
 					comp.processTouchEntered();
 				} else if (comp != this.hoverComponent
 						&& !this.hoverComponent._touchLocked) {
-					this.tooltip.setToolTipComponent(comp);
+					if (tooltip != null) {
+						this.tooltip.setToolTipComponent(comp);
+					}
 					this.hoverComponent.processTouchExited();
 					comp.processTouchEntered();
 				}
 
 			} else {
 				// 如果没有对应的悬停提示数据
-				this.tooltip.setToolTipComponent(null);
+				if (tooltip != null) {
+					this.tooltip.setToolTipComponent(null);
+				}
 				if (this.hoverComponent != null
 						&& !this.hoverComponent._touchLocked) {
 					this.hoverComponent.processTouchExited();
@@ -462,10 +472,14 @@ public class Desktop implements LRelease {
 				.getTouchReleased();
 		if (pressed > SysInput.NO_BUTTON) {
 			if (!LSystem.isMobile() && !LSystem.base().setting.emulateTouch) {
-				this.tooltip.setToolTipComponent(null);
+				if (tooltip != null) {
+					this.tooltip.setToolTipComponent(null);
+				}
 			}
-			this.tooltip.reshow = 0;
-			this.tooltip.initial = 0;
+			if (tooltip != null) {
+				this.tooltip.reshow = 0;
+				this.tooltip.initial = 0;
+			}
 			if (!isClicked && this.hoverComponent != null
 					&& !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchPressed();

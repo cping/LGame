@@ -446,6 +446,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton>{
 
 	@Override
 	public void close() {
+		super.close();
 		if (idleClick != null) {
 			idleClick.close();
 			idleClick = null;
@@ -458,7 +459,6 @@ public class LClickButton extends LComponent implements FontSet<LClickButton>{
 			clickedClick.close();
 			clickedClick = null;
 		}
-		super.close();
 	}
 
 }

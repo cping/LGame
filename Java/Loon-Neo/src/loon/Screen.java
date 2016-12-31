@@ -1388,23 +1388,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	public Screen setBackground(final LTexture background) {
 		if (background != null) {
 			setRepaintMode(SCREEN_TEXTURE_REPAINT);
-			Updateable update = new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					LTexture screen = background;
-					final LTexture tmp = currentScreenBackground;
-					if (tmp != null) {
-						LTexture parent = LTexture
-								.firstFather(currentScreenBackground);
-						parent.closeChildAll();
-						parent.close();
-					}
-					currentScreenBackground = screen;
-
-				}
-			};
-			LSystem.load(update);
+			currentScreenBackground = background;
+			currentScreenBackground.setDisabledTexture(true);
 		} else {
 			setRepaintMode(SCREEN_NOT_REPAINT);
 		}
@@ -3138,11 +3123,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			release();
 			close();
 			if (currentScreenBackground != null) {
-				LTexture parent = LTexture.firstFather(currentScreenBackground);
-				parent.closeChildAll();
-				parent.close();
+				currentScreenBackground.close();
+				currentScreenBackground = null;
 			}
-			currentScreenBackground = null;
+		
 		}
 	}
 

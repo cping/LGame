@@ -224,7 +224,7 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete) {
-		setMessage(context, font, isComplete, false);
+		setMessage(context, font, isComplete, LSystem.isDesktop());
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete,

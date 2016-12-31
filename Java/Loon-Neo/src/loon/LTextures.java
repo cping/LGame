@@ -54,7 +54,7 @@ public class LTextures {
 		}
 	}
 
-	static void putTexture(LTexture tex2d) {
+	public static void putTexture(LTexture tex2d) {
 		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild()
 				&& !textureList.contains(tex2d)) {
 			synchronized (textureList) {
@@ -80,7 +80,7 @@ public class LTextures {
 	public final static int getMemSize() {
 		int memTotal = 0;
 		for (LTexture tex : textureList) {
-			if (tex != null && !tex.isChild() && !tex.disposed()) {
+			if (tex != null && !tex.isChild() && !tex.isClose()) {
 				memTotal += tex.getMemSize();
 			}
 		}
@@ -89,7 +89,7 @@ public class LTextures {
 
 	public final static void close() {
 		for (LTexture tex : textureList) {
-			if (tex != null && !tex.isChild() && !tex.disposed()) {
+			if (tex != null && !tex.isChild() && !tex.isClose()) {
 				tex.close(true);
 			}
 		}
@@ -136,7 +136,7 @@ public class LTextures {
 		if (base != null) {
 			LTexture texture = base.graphics().createTexture(width, height,
 					config);
-			return loadTexture(texture);
+			return texture;
 		}
 		return null;
 	}
@@ -148,7 +148,7 @@ public class LTextures {
 		synchronized (lazyTextures) {
 			String key = fileName.trim().toLowerCase();
 			LTexture texture = lazyTextures.get(key);
-			if (texture != null && !texture.disposed()) {
+			if (texture != null && !texture.isClose()) {
 				texture.refCount++;
 				return texture;
 			}
@@ -161,44 +161,7 @@ public class LTextures {
 	}
 
 	public static LTexture loadTexture(String fileName) {
-		if (fileName == null) {
-			return null;
-		}
-		synchronized (lazyTextures) {
-			String key = fileName.trim().toLowerCase();
-			LTexture texture = lazyTextures.get(key);
-			if (texture != null && !texture.disposed()) {
-				texture.refCount++;
-				return texture;
-			}
-			texture = BaseIO.loadImage(fileName).onHaveToClose(true).texture();
-			texture.tmpLazy = fileName;
-			lazyTextures.put(key, texture);
-			return texture;
-		}
-	}
-
-	public static LTexture loadTexture(LTexture texture) {
-		return loadTexture(System.currentTimeMillis(), texture);
-	}
-
-	public static LTexture loadTexture(long id, LTexture tex2d) {
-		if (tex2d == null) {
-			return null;
-		}
-		synchronized (lazyTextures) {
-			String key = tex2d.tmpLazy == null ? String.valueOf(id)
-					: tex2d.tmpLazy;
-			LTexture texture = lazyTextures.get(key);
-			if (texture != null && !texture.disposed()) {
-				texture.refCount++;
-				return texture;
-			}
-			texture = tex2d;
-			texture.tmpLazy = key;
-			lazyTextures.put(key, texture);
-			return texture;
-		}
+		return loadTexture(fileName, Format.LINEAR);
 	}
 
 	public static int removeTexture(String name, final boolean remove) {
@@ -240,7 +203,7 @@ public class LTextures {
 					lazyTextures.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
-				if (tex2d != null && !tex2d.disposed()
+				if (tex2d != null && !tex2d.isClose()
 						&& tex2d.getSource() != null
 						&& tex2d.getSource().indexOf("<canvas>") == -1) {
 					tex2d.refCount = 0;
@@ -259,7 +222,7 @@ public class LTextures {
 					lazyTextures.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
-				if (tex2d != null && !tex2d.disposed()) {
+				if (tex2d != null && !tex2d.isClose()) {
 					tex2d.refCount = 0;
 					tex2d.close(true);
 					lazyTextures.remove(tex2d.tmpLazy);

@@ -146,8 +146,8 @@ public abstract class Graphics {
 		int id = createTexture(config);
 		gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, null);
-		return LTextures.loadTexture(new LTexture(this, id, config, texWidth,
-				texHeight, scale, width, height));
+		return new LTexture(this, id, config, texWidth,
+				texHeight, scale, width, height);
 	}
 
 	public LTexture createTexture(Dimension size, LTexture.Format config) {
@@ -184,6 +184,7 @@ public abstract class Graphics {
 			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width,
 					canvas.height);
 			colorTex = canvas.toTexture(LTexture.Format.NEAREST);
+			colorTex.setDisabledTexture(true);
 		}
 		return colorTex;
 	}

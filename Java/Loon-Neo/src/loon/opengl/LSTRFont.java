@@ -349,6 +349,9 @@ public class LSTRFont implements LRelease {
 			_initDraw++;
 			return;
 		}
+		if (texture.isClose()) {
+			return;
+		}
 		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (displays) {
 				for (Cache cache : displays.values()) {
@@ -496,6 +499,9 @@ public class LSTRFont implements LRelease {
 			_initDraw++;
 			return;
 		}
+		if (texture.isClose()) {
+			return;
+		}
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
@@ -541,7 +547,7 @@ public class LSTRFont implements LRelease {
 					totalHeight += fontSize;
 					totalWidth = 0;
 				}
-	
+
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
 						gl.draw(texture,
@@ -585,6 +591,9 @@ public class LSTRFont implements LRelease {
 			_initDraw++;
 			return;
 		}
+		if (texture.isClose()) {
+			return;
+		}
 		this.charCurrent = c;
 		if (charCurrent < totalCharSet) {
 			intObject = charArray[charCurrent];
@@ -626,6 +635,9 @@ public class LSTRFont implements LRelease {
 			_initDraw++;
 			return;
 		}
+		if (texture.isClose()) {
+			return;
+		}
 		fontBatch.begin();
 	}
 
@@ -639,6 +651,9 @@ public class LSTRFont implements LRelease {
 			return;
 		}
 		if (processing()) {
+			return;
+		}
+		if (texture.isClose()) {
 			return;
 		}
 		GL20 g = LSystem.base().graphics().gl;
@@ -662,6 +677,9 @@ public class LSTRFont implements LRelease {
 		if (processing()) {
 			return;
 		}
+		if (texture.isClose()) {
+			return;
+		}
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
@@ -677,6 +695,9 @@ public class LSTRFont implements LRelease {
 		}
 		make();
 		if (processing()) {
+			return null;
+		}
+		if (texture.isClose()) {
 			return null;
 		}
 		fontBatch.disposeLastCache();
@@ -723,6 +744,9 @@ public class LSTRFont implements LRelease {
 		if (processing()) {
 			return font.charWidth(c);
 		}
+		if (texture.isClose()) {
+			return 0;
+		}
 		if (c < totalCharSet) {
 			intObject = charArray[c];
 		} else {
@@ -741,6 +765,9 @@ public class LSTRFont implements LRelease {
 		make();
 		if (processing()) {
 			return font.stringWidth(s);
+		}
+		if (texture.isClose()) {
+			return 0;
 		}
 		int totalWidth = 0;
 		IntObject intObject = null;
@@ -772,6 +799,9 @@ public class LSTRFont implements LRelease {
 		make();
 		if (processing()) {
 			return font.stringHeight(s);
+		}
+		if (texture.isClose()) {
+			return 0;
 		}
 		int currentChar = 0;
 		char[] charList = s.toCharArray();
