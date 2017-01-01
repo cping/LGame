@@ -111,7 +111,7 @@ final public class AVGDialog {
 					lazyImage.close();
 					lazyImage = null;
 				}
-
+				lazy.setDisabledTexture(true);
 				lazyImages.put(keyName, lazy);
 			} catch (Exception e) {
 				return null;
@@ -237,7 +237,7 @@ final public class AVGDialog {
 					lazyImage.close();
 					lazyImage = null;
 				}
-
+				lazy.setDisabledTexture(true);
 				lazyImages.put(keyName, lazy);
 
 				image.close();
@@ -277,6 +277,7 @@ final public class AVGDialog {
 		if (lazyImages != null) {
 			for (LTexture tex2d : lazyImages.values()) {
 				if (tex2d != null) {
+					tex2d.setDisabledTexture(false);
 					tex2d.close();
 					tex2d = null;
 				}

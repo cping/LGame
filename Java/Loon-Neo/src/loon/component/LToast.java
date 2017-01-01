@@ -18,6 +18,10 @@ import loon.utils.timer.LTimer;
  * 
  * LToast toast = LToast.makeText(null, "ABCDEFG",Style.ERROR); add(toast);
  * 
+ * or:
+ * 
+ * LToast.makeText("ABCDEFG",Style.ERROR).show();
+ * 
  */
 public class LToast extends LComponent implements FontSet<LToast> {
 

@@ -21,7 +21,6 @@
 package loon;
 
 import loon.LTexture.Format;
-import loon.event.Updateable;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
@@ -44,17 +43,18 @@ public class LTextures {
 		}
 	}
 
-	static void delTexture(int id) {
+	static boolean delTexture(int id) {
 		synchronized (textureList) {
 			for (LTexture tex : LTextures.textureList) {
 				if (tex.getID() == id) {
-					textureList.remove(tex);
+					return textureList.remove(tex);
 				}
 			}
 		}
+		return false;
 	}
 
-	public static void putTexture(LTexture tex2d) {
+	static void putTexture(LTexture tex2d) {
 		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild()
 				&& !textureList.contains(tex2d)) {
 			synchronized (textureList) {
@@ -96,6 +96,16 @@ public class LTextures {
 		textureList.clear();
 	}
 
+	public static LTexture createTexture(int width, int height, Format config) {
+		final LGame base = LSystem._base;
+		if (base != null) {
+			LTexture texture = base.graphics().createTexture(width, height,
+					config);
+			return texture;
+		}
+		return null;
+	}
+
 	public static LTexture newTexture(String path) {
 		if (LSystem._base == null) {
 			return null;
@@ -111,15 +121,15 @@ public class LTextures {
 	}
 
 	public static int count() {
-		return lazyTextures.size;
+		return textureList.size;
 	}
 
 	public static boolean containsValue(LTexture texture) {
-		return lazyTextures.containsValue(texture);
+		return textureList.contains(texture);
 	}
 
 	public static int getRefCount(LTexture texture) {
-		return getRefCount(texture.tmpLazy);
+		return texture.refCount;
 	}
 
 	public static int getRefCount(String fileName) {
@@ -128,17 +138,16 @@ public class LTextures {
 		if (texture != null) {
 			return texture.refCount;
 		}
-		return 0;
-	}
-
-	public static LTexture createTexture(int width, int height, Format config) {
-		final LGame base = LSystem._base;
-		if (base != null) {
-			LTexture texture = base.graphics().createTexture(width, height,
-					config);
-			return texture;
+		for (int i = 0, size = textureList.size; i < size; i++) {
+			LTexture tex2d = textureList.get(i);
+			if (tex2d != null) {
+				if (key.equals(tex2d.getSource())
+						|| key.equals(tex2d.getSource().toLowerCase())) {
+					return tex2d.refCount;
+				}
+			}
 		}
-		return null;
+		return 0;
 	}
 
 	public static LTexture loadTexture(String fileName, Format config) {
@@ -164,37 +173,31 @@ public class LTextures {
 		return loadTexture(fileName, Format.LINEAR);
 	}
 
-	public static int removeTexture(String name, final boolean remove) {
+	static LTexture removeTexture(LTexture tex) {
+		LTexture tex2d = lazyTextures.remove(tex.src());
+		if (tex2d == null) {
+			tex2d = lazyTextures.remove(tex.tmpLazy);
+		}
+		return tex2d;
+	}
+
+	static int removeTextureRef(String name, final boolean remove) {
 		final LTexture texture = lazyTextures.get(name);
 		if (texture != null) {
-			if (texture.refCount <= 0) {
-				if (remove) {
-					synchronized (lazyTextures) {
-						lazyTextures.remove(name);
-					}
+			return texture.refCount--;
+		} else {
+			for (int i = 0; i < textureList.size; i++) {
+				LTexture tex = textureList.get(i);
+				if (tex != null && tex.tmpLazy.equals(name)) {
+					return tex.refCount--;
 				}
-				if (!texture._disposed) {
-					Updateable u = new Updateable() {
-						@Override
-						public void action(Object a) {
-							synchronized (texture) {
-								texture.free();
-								LTextureBatch.isBatchCacheDitry = true;
-							}
-						}
-					};
-					LSystem.load(u);
-				}
-			} else {
-				texture.refCount--;
 			}
-			return texture.refCount;
 		}
 		return -1;
 	}
 
-	public static int removeTexture(LTexture texture, final boolean remove) {
-		return removeTexture(texture.tmpLazy, remove);
+	static int removeTextureRef(LTexture texture, final boolean remove) {
+		return removeTextureRef(texture.tmpLazy, remove);
 	}
 
 	public static void destroySourceAllCache() {

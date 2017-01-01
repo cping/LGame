@@ -159,6 +159,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this.gfx;
 	}
 
+	
 	/**
 	 * 启动一系列渲染命令
 	 * 

@@ -24,6 +24,9 @@ import loon.utils.Easing;
 import loon.utils.MathUtils;
 import loon.utils.Easing.EasingMode;
 
+/**
+ * 缓动动画使用的计时器
+ */
 public class EaseTimer {
 
 	private final float _duration;

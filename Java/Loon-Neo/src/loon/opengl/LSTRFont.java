@@ -622,7 +622,7 @@ public class LSTRFont implements LRelease {
 			}
 		}
 	}
-
+	
 	public void startChar() {
 		if (_isClose) {
 			return;

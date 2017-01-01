@@ -295,6 +295,12 @@ public class LTextureBatch implements LRelease {
 		this.lastBlendState = state;
 	}
 
+	private static boolean runningCache = false;
+
+	public final static boolean isRunningCache() {
+		return runningCache;
+	}
+
 	public void begin() {
 		if (!isLoaded) {
 			vertices = new float[size * LSystem.SPRITE_SIZE];
@@ -320,6 +326,7 @@ public class LTextureBatch implements LRelease {
 		}
 		setupMatrices(LSystem.base().graphics().getViewMatrix());
 		drawing = true;
+		runningCache = true;
 	}
 
 	public void end() {
@@ -1256,6 +1263,7 @@ public class LTextureBatch implements LRelease {
 		if (!defName.equals(name) || !LSystem.base().support().isNative()) {
 			mesh.dispose(name, size);
 		}
+		runningCache = false;
 	}
 
 	public void destroy() {

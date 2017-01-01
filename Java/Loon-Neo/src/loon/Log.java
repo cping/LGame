@@ -132,6 +132,21 @@ public abstract class Log {
 			}
 			if (level.id >= minLevel.id) {
 				callNativeLog(level, msg, e);
+				if (LSystem._base != null) {
+					LSetting setting = LSystem._base.setting;
+					LProcess process = LSystem.getProcess();
+					if (process != null
+							&& (setting.isDebug || setting.isDisplayLog)) {
+						if (process != null) {
+							if (e == null) {
+								process.addLog(msg);
+							} else {
+								process.addLog(msg + " [ " + e.getMessage()
+										+ " ] ");
+							}
+						}
+					}
+				}
 			}
 			if (e != null) {
 				onError(e);

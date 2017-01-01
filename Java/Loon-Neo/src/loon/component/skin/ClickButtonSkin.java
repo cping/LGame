@@ -20,8 +20,8 @@ public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 	}
 
 	public ClickButtonSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(7),
-				DefUI.getDefaultTextures(8), DefUI.getDefaultTextures(9));
+		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(7),
+				DefUI.get().getDefaultTextures(8), DefUI.get().getDefaultTextures(9));
 	}
 
 	public ClickButtonSkin(IFont font, LColor fontColor, LTexture idle,

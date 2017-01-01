@@ -46,9 +46,23 @@ public class SkinManager {
 
 	private WindowSkin windowSkin;
 
+	private boolean useDefUpdate = true;
+
+	public boolean isUseDefUpdate() {
+		return useDefUpdate;
+	}
+
+	public void setDefUpdate(boolean u) {
+		this.useDefUpdate = u;
+	}
+
 	public CheckBoxSkin getCheckBoxSkin() {
 		if (checkBoxSkin == null) {
-			setCheckBoxSkin(CheckBoxSkin.def());
+			if (useDefUpdate) {
+				return CheckBoxSkin.def();
+			} else {
+				setCheckBoxSkin(CheckBoxSkin.def());
+			}
 		}
 		return checkBoxSkin;
 	}
@@ -59,7 +73,11 @@ public class SkinManager {
 
 	public ClickButtonSkin getClickButtonSkin() {
 		if (clickButtonSkin == null) {
-			setClickButtonSkin(ClickButtonSkin.def());
+			if (useDefUpdate) {
+				return ClickButtonSkin.def();
+			} else {
+				setClickButtonSkin(ClickButtonSkin.def());
+			}
 		}
 		return clickButtonSkin;
 	}
@@ -70,7 +88,11 @@ public class SkinManager {
 
 	public ControlSkin getControlSkin() {
 		if (controlSkin == null) {
-			setControlSkin(ControlSkin.def());
+			if (useDefUpdate) {
+				return ControlSkin.def();
+			} else {
+				setControlSkin(ControlSkin.def());
+			}
 		}
 		return controlSkin;
 	}
@@ -81,7 +103,11 @@ public class SkinManager {
 
 	public MenuSkin getMenuSkin() {
 		if (menuSkin == null) {
-			setMenuSkin(MenuSkin.def());
+			if (useDefUpdate) {
+				return MenuSkin.def();
+			} else {
+				setMenuSkin(MenuSkin.def());
+			}
 		}
 		return menuSkin;
 	}
@@ -92,7 +118,11 @@ public class SkinManager {
 
 	public MessageSkin getMessageSkin() {
 		if (messageSkin == null) {
-			setMessageSkin(MessageSkin.def());
+			if (useDefUpdate) {
+				return MessageSkin.def();
+			} else {
+				setMessageSkin(MessageSkin.def());
+			}
 		}
 		return messageSkin;
 	}
@@ -103,7 +133,11 @@ public class SkinManager {
 
 	public ProgressSkin getProgressSkin() {
 		if (progressSkin == null) {
-			setProgressSkin(ProgressSkin.def());
+			if (useDefUpdate) {
+				return ProgressSkin.def();
+			} else {
+				setProgressSkin(ProgressSkin.def());
+			}
 		}
 		return progressSkin;
 	}
@@ -114,7 +148,11 @@ public class SkinManager {
 
 	public ScrollBarSkin getScrollBarSkin() {
 		if (scrollBarSkin == null) {
-			setScrollBarSkin(ScrollBarSkin.def());
+			if (useDefUpdate) {
+				return ScrollBarSkin.def();
+			} else {
+				setScrollBarSkin(ScrollBarSkin.def());
+			}
 		}
 		return scrollBarSkin;
 	}
@@ -126,7 +164,11 @@ public class SkinManager {
 	public SliderSkin getSliderSkin(LColor sliderColor, LColor barColor,
 			boolean v) {
 		if (sliderSkin == null) {
-			return SliderSkin.def(sliderColor, barColor, v);
+			if (useDefUpdate) {
+				return SliderSkin.def(sliderColor, barColor, v);
+			} else {
+				return SliderSkin.def(sliderColor, barColor, v);
+			}
 		}
 		return sliderSkin;
 	}
@@ -141,7 +183,11 @@ public class SkinManager {
 
 	public TableSkin getTableSkin() {
 		if (tableSkin == null) {
-			setTableSkin(TableSkin.def());
+			if (useDefUpdate) {
+				return TableSkin.def();
+			} else {
+				setTableSkin(TableSkin.def());
+			}
 		}
 		return tableSkin;
 	}
@@ -152,7 +198,11 @@ public class SkinManager {
 
 	public TextBarSkin getTextBarSkin() {
 		if (textBarSkin == null) {
-			setTextBarSkin(TextBarSkin.def());
+			if (useDefUpdate) {
+				return TextBarSkin.def();
+			} else {
+				setTextBarSkin(TextBarSkin.def());
+			}
 		}
 		return textBarSkin;
 	}
@@ -163,7 +213,11 @@ public class SkinManager {
 
 	public TextListSkin getTextListSkin() {
 		if (textListSkin == null) {
-			setTextListSkin(TextListSkin.def());
+			if (useDefUpdate) {
+				return TextListSkin.def();
+			} else {
+				setTextListSkin(TextListSkin.def());
+			}
 		}
 		return textListSkin;
 	}
@@ -174,7 +228,11 @@ public class SkinManager {
 
 	public WindowSkin getWindowSkin() {
 		if (windowSkin == null) {
-			setWindowSkin(WindowSkin.def());
+			if (useDefUpdate) {
+				return WindowSkin.def();
+			} else {
+				setWindowSkin(WindowSkin.def());
+			}
 		}
 		return windowSkin;
 	}

@@ -19,8 +19,8 @@ public class MenuSkin implements FontSet<MenuSkin>{
 	}
 
 	public MenuSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(2),
-				DefUI.getDefaultTextures(4));
+		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(2),
+				DefUI.get().getDefaultTextures(4));
 	}
 
 	public MenuSkin(IFont font, LColor fontColor, LTexture mainTexture,

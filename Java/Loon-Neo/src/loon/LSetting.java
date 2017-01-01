@@ -24,12 +24,15 @@ import loon.utils.NumberUtils;
 
 public class LSetting {
 
-	//若此处true,则fps,memory以及sprite数量全部显示
+	// 若此处true,则fps,memory以及sprite数量全部显示
 	public boolean isDebug = false;
+	
+	// 此项为true时,将log信息也打印到窗体中
+	public boolean isDisplayLog = false;
 	
 	// 是否显示FPS帧率
 	public boolean isFPS = false;
-	
+
 	// 是否显示内存
 	public boolean isMemory = false;
 
@@ -68,11 +71,11 @@ public class LSetting {
 	public String logoPath = "loon_logo.png";
 
 	public String fontName = LSystem.FONT_NAME;
-	
+
 	public boolean disposeTexture = true;
 
 	public boolean saveTexturePixels = true;
-	
+
 	// 当前游戏类型，默认为"未知"
 	public GameType gameType = GameType.UNKOWN;
 

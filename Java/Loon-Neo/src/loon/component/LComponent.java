@@ -230,7 +230,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	private boolean _downClick = false;
 	// 中心点
-	protected float pivotX = -1, pivotY = -1;
+	protected float _pivotX = -1, _pivotY = -1;
 
 	// 操作提示组件
 	protected LComponent tooltipParent;
@@ -249,8 +249,6 @@ public abstract class LComponent extends LObject<LContainer> implements
 	protected boolean selected = false;
 
 	protected Desktop desktop = Desktop.EMPTY_DESKTOP;
-
-	private RectBox screenRect;
 
 	protected SysInput input;
 
@@ -274,7 +272,6 @@ public abstract class LComponent extends LObject<LContainer> implements
 		this.setLocation(x, y);
 		this._width = width;
 		this._height = height;
-		this.screenRect = LSystem.viewSize.getRect();
 		if (this._width == 0) {
 			this._width = 10;
 		}
@@ -290,11 +287,11 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public int getScreenWidth() {
-		return screenRect.width;
+		return getScreen().getWidth();
 	}
 
 	public int getScreenHeight() {
-		return screenRect.height;
+		return getScreen().getHeight();
 	}
 
 	/**
@@ -310,24 +307,24 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 		int tempX = x;
 		int tempY = y;
-		int tempWidth = (int) (getWidth() - screenRect.width);
-		int tempHeight = (int) (getHeight() - screenRect.height);
+		int tempWidth = (int) (getWidth() - getScreenWidth());
+		int tempHeight = (int) (getHeight() - getScreenHeight());
 
 		int limitX = tempX + tempWidth;
 		int limitY = tempY + tempHeight;
 
-		if (_width >= screenRect.width) {
+		if (_width >= getScreenWidth()) {
 			if (limitX > tempWidth) {
-				tempX = (int) (screenRect.width - _width);
+				tempX = (int) (getScreenWidth() - _width);
 			} else if (limitX < 1) {
 				tempX = x();
 			}
 		} else {
 			return;
 		}
-		if (_height >= screenRect.height) {
+		if (_height >= getScreenHeight()) {
 			if (limitY > tempHeight) {
-				tempY = (int) (screenRect.height - _height);
+				tempY = (int) (getScreenHeight() - _height);
 			} else if (limitY < 1) {
 				tempY = y();
 			}
@@ -343,29 +340,29 @@ public abstract class LComponent extends LObject<LContainer> implements
 		if (!this._isLimitMove) {
 			return false;
 		}
-		int width = (int) (getWidth() - screenRect.width);
-		int height = (int) (getHeight() - screenRect.height);
+		int width = (int) (getWidth() - getScreenWidth());
+		int height = (int) (getHeight() - getScreenHeight());
 		int limitX = x + width;
 		int limitY = y + height;
-		if (getWidth() >= screenRect.width) {
+		if (getWidth() >= getScreenWidth()) {
 			if (limitX >= width - 1) {
 				return true;
 			} else if (limitX <= 1) {
 				return true;
 			}
 		} else {
-			if (!screenRect.contains(x, y, getWidth(), getHeight())) {
+			if (!getScreen().contains(x, y, getWidth(), getHeight())) {
 				return true;
 			}
 		}
-		if (getHeight() >= screenRect.height) {
+		if (getHeight() >= getScreenHeight()) {
 			if (limitY >= height - 1) {
 				return true;
 			} else if (limitY <= 1) {
 				return true;
 			}
 		} else {
-			if (!screenRect.contains(x, y, getWidth(), getHeight())) {
+			if (!getScreen().contains(x, y, getWidth(), getHeight())) {
 				return true;
 			}
 		}
@@ -430,10 +427,10 @@ public abstract class LComponent extends LObject<LContainer> implements
 				if (update) {
 					g.saveTx();
 					Affine2f tx = g.tx();
-					final float centerX = pivotX == -1 ? this._screenX
-							+ _origin.ox(width) : this._screenX + pivotX;
-					final float centerY = pivotY == -1 ? this._screenY
-							+ _origin.oy(height) : this._screenY + pivotY;
+					final float centerX = _pivotX == -1 ? this._screenX
+							+ _origin.ox(width) : this._screenX + _pivotX;
+					final float centerY = _pivotY == -1 ? this._screenY
+							+ _origin.oy(height) : this._screenY + _pivotY;
 					if (_rotation != 0) {
 						tx.translate(centerX, centerY);
 						tx.preRotate(_rotation);
@@ -679,6 +676,15 @@ public abstract class LComponent extends LObject<LContainer> implements
 				this.validatePosition();
 			}
 		}
+	}
+
+	public void setBounds(int x, int y, int w, int h) {
+		setLocation(x, y);
+		setSize(w, h);
+	}
+
+	public void setSize(float w, float h) {
+		setSize((int) w, (int) h);
 	}
 
 	public void setSize(int w, int h) {
@@ -1050,7 +1056,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	@Override
 	public float getContainerWidth() {
 		if (_super == null) {
-			return screenRect.getWidth();
+			return getScreenWidth();
 		}
 		return _super.getWidth();
 	}
@@ -1058,25 +1064,25 @@ public abstract class LComponent extends LObject<LContainer> implements
 	@Override
 	public float getContainerHeight() {
 		if (_super == null) {
-			return screenRect.getHeight();
+			return getScreenHeight();
 		}
 		return _super.getHeight();
 	}
 
 	public void setPivotX(float pX) {
-		pivotX = pX;
+		_pivotX = pX;
 	}
 
 	public void setPivotY(float pY) {
-		pivotY = pY;
+		_pivotY = pY;
 	}
 
 	public float getPivotX() {
-		return pivotX;
+		return _pivotX;
 	}
 
 	public float getPivotY() {
-		return pivotY;
+		return _pivotY;
 	}
 
 	public void setPivot(float pX, float pY) {

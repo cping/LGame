@@ -66,7 +66,7 @@ public class LSystem {
 
 	public static boolean LOCK_SCREEN = false;
 	// 包内默认的图片路径
-	final static public String FRAMEWORK_IMG_NAME = "loon_";
+	public static String FRAMEWORK_IMG_NAME = "loon_";
 
 	// 行分隔符
 	final static public String LS = System.getProperty("line.separator", "\n");
@@ -79,11 +79,10 @@ public class LSystem {
 
 	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api，而不替换删除api……)
 	public final static String version = "0.5";
-	
-    public final String getVersionString()
-    {
-        return version;
-    }
+
+	public final String getVersionString() {
+		return version;
+	}
 
 	public final static Vector3f getVersion() {
 		return new Vector3f(0, 5, 0);

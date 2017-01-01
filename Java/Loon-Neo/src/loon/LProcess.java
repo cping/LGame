@@ -67,6 +67,8 @@ public class LProcess extends PlayerUtils {
 
 	private LTransition transition;
 
+	private LogDisplay logDisplay;
+
 	private final SysInputFactory currentInput;
 
 	private final LGame game;
@@ -274,7 +276,7 @@ public class LProcess extends PlayerUtils {
 					setTransition(transition);
 				}
 			}
-
+			clearLog();
 			screen.setOnLoadState(false);
 			if (currentScreen == null) {
 				currentScreen = screen;
@@ -285,6 +287,9 @@ public class LProcess extends PlayerUtils {
 				}
 			}
 			this.isInstance = true;
+			if (LSystem.base() != null && LSystem.base().display() != null) {
+
+			}
 			if (screen instanceof EmulatorListener) {
 				setEmulatorListener((EmulatorListener) screen);
 			} else {
@@ -961,6 +966,30 @@ public class LProcess extends PlayerUtils {
 		if (isInstance) {
 			currentScreen.mouseDragged(e);
 		}
+	}
+
+	public void clearLog() {
+		if (logDisplay != null) {
+			logDisplay.clear();
+		}
+	}
+
+	public void addLog(String mes) {
+		if (logDisplay == null) {
+			logDisplay = new LogDisplay();
+		}
+		logDisplay.addText(mes);
+	}
+
+	public LogDisplay getLogDisplay() {
+		return logDisplay;
+	}
+
+	public void paintLog(final GLEx g, int x, int y) {
+		if (logDisplay == null) {
+			logDisplay = new LogDisplay();
+		}
+		logDisplay.paint(g, x, y);
 	}
 
 	public LGame getGame() {

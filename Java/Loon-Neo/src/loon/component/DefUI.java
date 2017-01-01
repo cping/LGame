@@ -31,17 +31,36 @@ import loon.canvas.LColor;
 import loon.canvas.LGradation;
 import loon.canvas.Pixmap;
 import loon.opengl.LSubTexture;
-import loon.utils.Array;
+import loon.utils.TArray;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 
 public class DefUI {
 
-	public static String win_frame_UI = LSystem.FRAMEWORK_IMG_NAME + "wbar.png";
+	private static DefUI instance;
 
-	private static Array<LTexture> defaultTextures;
+	public final static DefUI make() {
+		return new DefUI();
+	}
 
-	private static ArrayMap defaultWindowHash;
+	public final static DefUI get() {
+		if (instance != null) {
+			return instance;
+		}
+		synchronized (DefUI.class) {
+			if (instance == null) {
+				instance = make();
+			}
+			return instance;
+		}
+	}
+
+	public final static String win_frame_UI = LSystem.FRAMEWORK_IMG_NAME
+			+ "wbar.png";
+
+	private TArray<LTexture> defaultTextures;
+
+	private ArrayMap defaultWindowHash;
 
 	/**
 	 * 绘制指定大小的圆形游戏窗口图片
@@ -259,7 +278,7 @@ public class DefUI {
 	public void drawFrame(Canvas g, int x, int y, int width, int height) {
 		Image[] corners = new Image[4];
 		for (int i = 0; i < corners.length; i++) {
-			corners[i] = DefUI.getDefaultWindow("window" + (i + 4));
+			corners[i] = getDefaultWindow("window" + (i + 4));
 		}
 		int CornerSize = corners[0].getWidth();
 		for (int a = 0; a < 4; a++) {
@@ -271,23 +290,23 @@ public class DefUI {
 			switch (a) {
 			case 0:
 				length = width;
-				img = DefUI.getDefaultWindow("window0");
+				img = getDefaultWindow("window0");
 				size = img.getWidth();
 				break;
 			case 1:
 				length = height;
-				img = DefUI.getDefaultWindow("window1");
+				img = getDefaultWindow("window1");
 				size = img.getHeight();
 				break;
 			case 2:
 				length = width;
-				img = DefUI.getDefaultWindow("window2");
+				img = getDefaultWindow("window2");
 				size = img.getWidth();
 				StartY = height - img.getHeight();
 				break;
 			case 3:
 				length = height;
-				img = DefUI.getDefaultWindow("window3");
+				img = getDefaultWindow("window3");
 				size = img.getHeight();
 				StartX = width - img.getWidth();
 			}
@@ -309,7 +328,7 @@ public class DefUI {
 
 	private void drawBorder(Canvas g, int x, int y, int width, int height,
 			int nums) {
-		Image img = DefUI.getDefaultWindow("window0");
+		Image img = getDefaultWindow("window0");
 		int size = img.getHeight();
 		int length = img.getWidth();
 		int bun = MathUtils.round(1f * (height - size) / nums);
@@ -326,7 +345,7 @@ public class DefUI {
 	}
 
 	public void drawHorizonLine(Canvas g, int x, int y, int width) {
-		Image img = DefUI.getDefaultWindow("window0");
+		Image img = getDefaultWindow("window0");
 		int length = (int) img.width();
 		for (int j = 0; j <= width; j += length)
 			g.draw(img, x + j, y);
@@ -343,7 +362,7 @@ public class DefUI {
 
 	private void drawChoices(Canvas g, int x, int y, int width, int height,
 			int messize, boolean[] oks, LColor[] colors) {
-		Image img = DefUI.getDefaultWindow("window0");
+		Image img = getDefaultWindow("window0");
 		int size = (int) img.height();
 		int bun = MathUtils.round(1f * (height - size) / messize);
 		for (int i = 0; i < messize; i++) {
@@ -405,12 +424,12 @@ public class DefUI {
 		return texs;
 	}
 
-	public static synchronized void reset() {
+	public void reset() {
 		defaultWindowHash = null;
 		defaultTextures = null;
 	}
 
-	public static synchronized Image getDefaultWindow(String name) {
+	public Image getDefaultWindow(String name) {
 		if (defaultWindowHash == null) {
 			Image[] texs = getWindow(win_frame_UI, 6, 14, 64, 8);
 			defaultWindowHash = new ArrayMap(texs.length);
@@ -421,34 +440,38 @@ public class DefUI {
 		return (Image) defaultWindowHash.get(name);
 	}
 
-	public static synchronized LTexture getDefaultTextures(int index) {
-		if (defaultTextures == null) {
-			defaultTextures = new Array<LTexture>();
-			LTexture spritesheet = LTextures
-					.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "ui.png");
-			spritesheet.setDisabledTexture(true);
-			LSubTexture windowbar = new LSubTexture(spritesheet, 0, 0, 512, 32);
-			LSubTexture panelbody = new LSubTexture(spritesheet, 1, 41 - 8, 17,
+	private LTexture lastTexture;
+
+	public LTexture getDefaultTextures(int index) {
+		if (defaultTextures == null || defaultTextures.size == 0) {
+			if (defaultTextures == null) {
+				defaultTextures = new TArray<LTexture>();
+			}
+			lastTexture = LTextures.newTexture(LSystem.FRAMEWORK_IMG_NAME
+					+ "ui.png");
+			lastTexture.setDisabledTexture(true);
+			LSubTexture windowbar = new LSubTexture(lastTexture, 0, 0, 512, 32);
+			LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17,
 					57 - 8);
-			LSubTexture panelborder = new LSubTexture(spritesheet, 0, 41 - 8,
+			LSubTexture panelborder = new LSubTexture(lastTexture, 0, 41 - 8,
 					1, 512 - 8);
-			LSubTexture buttonleft = new LSubTexture(spritesheet, 17, 41 - 8,
+			LSubTexture buttonleft = new LSubTexture(lastTexture, 17, 41 - 8,
 					33, 72 - 8);
-			LSubTexture buttonbody = new LSubTexture(spritesheet, 34, 41 - 8,
+			LSubTexture buttonbody = new LSubTexture(lastTexture, 34, 41 - 8,
 					48, 72 - 8);
-			LSubTexture checkboxunchecked = new LSubTexture(spritesheet, 49,
+			LSubTexture checkboxunchecked = new LSubTexture(lastTexture, 49,
 					41 - 8, 72, 63 - 8);
-			LSubTexture checkboxchecked = new LSubTexture(spritesheet, 73,
+			LSubTexture checkboxchecked = new LSubTexture(lastTexture, 73,
 					41 - 8, 96, 63 - 8);
-			LSubTexture imagebuttonidle = new LSubTexture(spritesheet, 145,
+			LSubTexture imagebuttonidle = new LSubTexture(lastTexture, 145,
 					41 - 8, 176, 72 - 8);
-			LSubTexture imagebuttonhover = new LSubTexture(spritesheet, 177,
+			LSubTexture imagebuttonhover = new LSubTexture(lastTexture, 177,
 					41 - 8, 208, 72 - 8);
-			LSubTexture imagebuttonactive = new LSubTexture(spritesheet, 209,
+			LSubTexture imagebuttonactive = new LSubTexture(lastTexture, 209,
 					41 - 8, 240, 72 - 8);
-			LSubTexture textfieldleft = new LSubTexture(spritesheet, 218,
+			LSubTexture textfieldleft = new LSubTexture(lastTexture, 218,
 					40 - 8, 233, 72 - 8);
-			LSubTexture textfieldbody = new LSubTexture(spritesheet, 234,
+			LSubTexture textfieldbody = new LSubTexture(lastTexture, 234,
 					40 - 8, 250, 72 - 8);
 			defaultTextures.add(windowbar.get());
 			defaultTextures.add(panelbody.get());
@@ -464,5 +487,21 @@ public class DefUI {
 			defaultTextures.add(textfieldbody.get());
 		}
 		return defaultTextures.get(index);
+	}
+
+	public final void clear() {
+		if (defaultTextures != null) {
+			for (LTexture tex : defaultTextures) {
+				if (tex != null) {
+					tex.setDisabledTexture(false);
+					tex.close();
+				}
+			}
+			defaultTextures.clear();
+		}
+		if (lastTexture != null) {
+			lastTexture.close(true);
+			lastTexture = null;
+		}
 	}
 }

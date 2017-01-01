@@ -118,6 +118,10 @@ public final class LSTRDictionary {
 			return true;
 		}
 
+		public boolean isClose() {
+			return font.isClose();
+		}
+
 		@Override
 		public void close() {
 			if (font != null) {
@@ -220,12 +224,17 @@ public final class LSTRDictionary {
 		if (StringUtils.isEmpty(mes)) {
 			return new Dict();
 		}
-		if (mes.equals(_lastMessage) && _lastDict != null) {
+		if (mes.equals(_lastMessage) && _lastDict != null
+				&& !_lastDict.isClose()) {
 			return _lastDict;
 		}
 		_lastMessage = mes;
 		if (checkEnglishString(mes)) {
 			Dict pDict = englishFontList.get(font);
+			if (pDict != null && pDict.isClose()) {
+				englishFontList.remove(font);
+				pDict = null;
+			}
 			if (pDict == null) {
 				pDict = Dict.newDict();
 				pDict.font = new LSTRFont(font, ADDED, tmp_asyn);
@@ -253,6 +262,10 @@ public final class LSTRDictionary {
 			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_"
 					+ font.getSize();
 			Dict pDict = fontList.get(fontFlag);
+			if (pDict != null && pDict.isClose()) {
+				fontList.remove(fontFlag);
+				pDict = null;
+			}
 			// 判定当前font与字体和已存在的文字图片纹理，是否和缓存的font适配
 			if ((cFont == null || pDict == null || (pDict != null && !pDict
 					.include(mes)))) {

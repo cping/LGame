@@ -224,7 +224,7 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete) {
-		setMessage(context, font, isComplete, LSystem.isDesktop());
+		setMessage(context, font, isComplete, false);
 	}
 
 	public void setMessage(String context, IFont font, boolean isComplete,
@@ -708,7 +708,7 @@ public class Print implements FontSet<Print>, LRelease {
 	public IFont getFont() {
 		return ifont;
 	}
-	
+
 	public boolean isWait() {
 		return isWait;
 	}
@@ -719,11 +719,12 @@ public class Print implements FontSet<Print>, LRelease {
 
 	@Override
 	public void close() {
-		if (strings != null) {
-			strings.close();
-			strings = null;
+		if (!nativeFont) {
+			if (strings != null) {
+				strings.close();
+				strings = null;
+			}
 		}
 	}
-
 
 }

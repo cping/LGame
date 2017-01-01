@@ -20,7 +20,7 @@ public class MessageSkin implements FontSet<MessageSkin>{
 	}
 
 	public MessageSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(2));
+		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(2));
 	}
 
 	public MessageSkin(IFont font, LColor fontColor, LTexture back) {

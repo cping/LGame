@@ -56,7 +56,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	private boolean _disabledTexture = false;
-	
+
 	private boolean _drawing = false;
 
 	private boolean _copySize = false;
@@ -281,6 +281,11 @@ public class LTexture extends Painter implements LRelease {
 			parent.loadTexture();
 			return;
 		}
+		if (childs != null) {
+			for (LTexture tex : childs.values()) {
+				tex._isLoaded = _isLoaded;
+			}
+		}
 		if (_image != null && !_isLoaded) {
 			update(_image);
 		} else if (!_isLoaded) {
@@ -368,10 +373,16 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isClose() {
+		if (parent != null) {
+			return parent.isClose();
+		}
 		return _disposed || _closed;
 	}
 
 	public boolean disposed() {
+		if (parent != null) {
+			return parent.disposed();
+		}
 		return _disposed && _closed;
 	}
 
@@ -996,10 +1007,18 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	void free() {
-		if (_disabledTexture) {
+		if (disposed()) {
 			return;
 		}
 		if (!_isLoaded) {
+			return;
+		}
+		if (parent != null) {
+			parent.free();
+			return;
+		}
+		final int textureId = id;
+		if (!LTextures.contains(textureId)) {
 			return;
 		}
 		final Updateable update = new Updateable() {
@@ -1007,30 +1026,31 @@ public class LTexture extends Painter implements LRelease {
 			@Override
 			public void action(Object a) {
 				if (parent == null) {
-					synchronized (LTexture.class) {
-						if (LSystem._base.setting.disposeTexture && !_disposed
-								&& _closed && _isLoaded) {
-							GLUtils.deleteTexture(gfx.gl, id);
-							LTextures.delTexture(id);
-							_disposed = true;
+					if (LTextures.delTexture(textureId)) {
+						synchronized (LTexture.class) {
+							if (LSystem._base.setting.disposeTexture
+									&& !_disposed && _closed) {
+								GLUtils.deleteTexture(gfx.gl, textureId);
+								_disposed = true;
+							}
+							if (_image != null) {
+								_image.close();
+								_image = null;
+							}
+							if (childs != null) {
+								childs.clear();
+								childs = null;
+							}
+							_cachePixels = null;
+							_isLoaded = false;
+							_closed = true;
+							_memorySize = 0;
+							if (batch != null) {
+								batch.close();
+								batch = null;
+							}
+							isBatch = false;
 						}
-						if (_image != null) {
-							_image.close();
-							_image = null;
-						}
-						if (childs != null) {
-							childs.clear();
-							childs = null;
-						}
-						_cachePixels = null;
-						_isLoaded = false;
-						_closed = true;
-						_memorySize = 0;
-						if (batch != null) {
-							batch.close();
-							batch = null;
-						}
-						isBatch = false;
 					}
 				}
 			}
@@ -1112,13 +1132,20 @@ public class LTexture extends Painter implements LRelease {
 		} else if (!isChildAllClose()) {
 			return;
 		}
+		int size = LTextures.removeTextureRef(this, true);
 		if (forcedDelete) {
 			refCount = 0;
-			LTextures.removeTexture(this, true);
-			free();
-			// 此处修正了一个旧版惊天的纹理释放bug,判定引用次数旧版一直写错成<=-1,但实际应该<=0就是无引用……
-		} else if (LTextures.removeTexture(this, true) <= 0) {
-			free();
+			if (parent != null) {
+				parent.close();
+			} else {
+				free();
+			}
+		} else if (size <= 0) {
+			if (parent != null) {
+				parent.close();
+			} else {
+				free();
+			}
 		}
 	}
 }

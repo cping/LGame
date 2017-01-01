@@ -535,8 +535,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public MenuItem add(String label, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, DefUI.getDefaultTextures(4), label,
-				click));
+		return add(new LMenu.MenuItem(this, SkinManager.get().getMenuSkin()
+				.getTabTexture(), label, click));
 	}
 
 	public MenuItem add(String label, String file, MenuItemClick click) {
@@ -897,7 +897,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	public IFont getFont() {
 		return this.font;
 	}
-	
+
 	public LColor getFontColor() {
 		return fontColor;
 	}

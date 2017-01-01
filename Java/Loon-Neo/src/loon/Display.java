@@ -154,7 +154,8 @@ public class Display extends LSystemView {
 
 	private void newDefView(boolean show) {
 		if (show && fpsFont == null) {
-			this.fpsFont = new LSTRFont(LFont.newFont(15), pFontString, true);
+			this.fpsFont = new LSTRFont(LFont.getFont(LSystem.isHTML5() ? 20
+					: 15), pFontString, true);
 		}
 		showLogo = setting.isLogo;
 		if (showLogo && !StringUtils.isEmpty(setting.logoPath)) {
@@ -290,6 +291,10 @@ public class Display extends LSystemView {
 				fpsFont.drawString(glEx, "SPRITE:" + Sprites.allSpritesCount()
 						+ "," + " DESKTOP:" + Desktop.allDesktopCount(), 5, 45,
 						0, LColor.white);
+			}
+			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
+			if (debug && setting.isDisplayLog) {
+				process.paintLog(glEx, 5, 65);
 			}
 			process.drawEmulator(glEx);
 			process.unload();

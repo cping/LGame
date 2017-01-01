@@ -22,8 +22,8 @@ public class TextListSkin implements FontSet<TextListSkin>{
 	}
 
 	public TextListSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.getDefaultTextures(2),
-				DefUI.getDefaultTextures(4), DefUI.getDefaultTextures(3),
+		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(2),
+				DefUI.get().getDefaultTextures(4), DefUI.get().getDefaultTextures(3),
 				null, null);
 	}
 

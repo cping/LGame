@@ -24,13 +24,12 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
-import loon.component.DefUI;
 import loon.component.LComponent;
 import loon.component.LContainer;
+import loon.component.skin.SkinManager;
 import loon.component.skin.TableSkin;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -61,7 +60,7 @@ import loon.utils.MathUtils;
  * add(table);
  * 
  */
-public class LTable extends LContainer implements FontSet<LTable>{
+public class LTable extends LContainer implements FontSet<LTable> {
 
 	private ITableModel model = null;
 
@@ -127,36 +126,38 @@ public class LTable extends LContainer implements FontSet<LTable>{
 	private LTexture backgroundTexture;
 
 	public LTable(int x, int y) {
-		this(LFont.getDefaultFont(), DefUI.getDefaultTextures(7), DefUI
-				.getDefaultTextures(4), x, y, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		this(SkinManager.get().getTableSkin().getFont(), x, y, LSystem.viewSize
+				.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public LTable(int x, int y, int width, int height) {
-		this(LFont.getDefaultFont(), DefUI.getDefaultTextures(7), DefUI
-				.getDefaultTextures(4), x, y, width, height);
+		this(SkinManager.get().getTableSkin().getFont(), SkinManager.get()
+				.getTableSkin().getHeaderTexture(), SkinManager.get()
+				.getTableSkin().getBackgroundTexture(), x, y, width, height);
 	}
 
 	public LTable(IFont font, int x, int y, int width, int height) {
-		this(font, DefUI.getDefaultTextures(7), DefUI.getDefaultTextures(4), x,
-				y, width, height);
+		this(font, SkinManager.get().getTableSkin().getHeaderTexture(),
+				SkinManager.get().getTableSkin().getBackgroundTexture(), x, y,
+				width, height);
 	}
 
 	public LTable(LTexture headerTexture, LTexture backgroundTexture, int x,
 			int y, int width, int height) {
-		this(LFont.getDefaultFont(), headerTexture, backgroundTexture, x, y,
-				width, height);
+		this(SkinManager.get().getTableSkin().getFont(), headerTexture,
+				backgroundTexture, x, y, width, height);
 	}
 
 	public LTable(IFont font, LTexture headerTexture,
 			LTexture backgroundTexture, int x, int y, int width, int height) {
 		this(font, headerTexture, backgroundTexture, x, y, width, height,
-				LColor.white);
+				SkinManager.get().getTableSkin().getFontColor());
 	}
 
 	public LTable(TableSkin skin, int x, int y, int width, int height) {
-		this(skin.getFont(), skin.getHeaderTexture(), skin.getBackgroundTexture(), x,
-				y, width, height, skin.getFontColor());
+		this(skin.getFont(), skin.getHeaderTexture(), skin
+				.getBackgroundTexture(), x, y, width, height, skin
+				.getFontColor());
 	}
 
 	public LTable(IFont font, LTexture headerTexture,

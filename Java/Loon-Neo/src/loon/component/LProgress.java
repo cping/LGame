@@ -5,6 +5,7 @@ import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.component.skin.ProgressSkin;
+import loon.component.skin.SkinManager;
 import loon.event.ValueListener;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureRegion;
@@ -48,8 +49,8 @@ public class LProgress extends LComponent {
 	}
 
 	public LProgress(ProgressSkin skin, int x, int y, int width, int height) {
-		this(ProgressType.Custom, skin.getColor(), x, y, width, height,
-				skin.getBackgroundTexture(), skin.getProgressTexture());
+		this(ProgressType.Custom, skin.getColor(), x, y, width, height, skin
+				.getBackgroundTexture(), skin.getProgressTexture());
 	}
 
 	public LProgress(ProgressType type, LColor baseColor, int x, int y,
@@ -79,7 +80,8 @@ public class LProgress extends LComponent {
 			if (defaultColorTexture == null || defaultColorTexture.isClose()) {
 				defaultColorTexture = LSystem.base().graphics().finalColorTex();
 			}
-			this.bgTexture = new LTextureRegion(DefUI.getDefaultTextures(4));
+			this.bgTexture = new LTextureRegion(SkinManager.get()
+					.getProgressSkin().getBackgroundTexture());
 			this.bgProgressTexture = new LTextureRegion(defaultColorTexture);
 			break;
 		default:

@@ -35,7 +35,7 @@ import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
 // 与LButton的差异在于，内置有默认UI图片，并且可以选择大小，而不是必须按照图片大小拆分
-public class LClickButton extends LComponent implements FontSet<LClickButton>{
+public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	private CallFunction _function;
 
@@ -186,15 +186,21 @@ public class LClickButton extends LComponent implements FontSet<LClickButton>{
 		this.hoverClick = hover;
 		this.clickedClick = clicked;
 		if (idle == null && hover == null && clicked == null) {
-			idleClick = DefUI.getDefaultTextures(7);
-			hoverClick = DefUI.getDefaultTextures(8);
-			clickedClick = DefUI.getDefaultTextures(9);
+			idleClick = SkinManager.get().getClickButtonSkin()
+					.getIdleClickTexture();
+			hoverClick = SkinManager.get().getClickButtonSkin()
+					.getHoverClickTexture();
+			clickedClick = SkinManager.get().getClickButtonSkin()
+					.getClickedTexture();
 		} else if (idle == null) {
-			idleClick = DefUI.getDefaultTextures(7);
+			idleClick = SkinManager.get().getClickButtonSkin()
+					.getIdleClickTexture();
 		} else if (hover == null) {
-			hoverClick = DefUI.getDefaultTextures(8);
+			hoverClick = SkinManager.get().getClickButtonSkin()
+					.getHoverClickTexture();
 		} else if (clicked == null) {
-			clickedClick = DefUI.getDefaultTextures(9);
+			clickedClick = SkinManager.get().getClickButtonSkin()
+					.getClickedTexture();
 		}
 	}
 

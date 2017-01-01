@@ -32,6 +32,7 @@ import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.component.Desktop;
 import loon.component.LClickButton;
 import loon.component.LComponent;
@@ -3126,7 +3127,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				currentScreenBackground.close();
 				currentScreenBackground = null;
 			}
-		
+			DefUI.get().clear();
 		}
 	}
 
