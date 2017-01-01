@@ -446,6 +446,13 @@ public class DefUI {
 		if (defaultTextures == null || defaultTextures.size == 0) {
 			if (defaultTextures == null) {
 				defaultTextures = new TArray<LTexture>();
+			} else {
+				defaultTextures.clear();
+			}
+			if (lastTexture != null) {
+				lastTexture.setDisabledTexture(false);
+				lastTexture.close(true);
+				lastTexture = null;
 			}
 			lastTexture = LTextures.newTexture(LSystem.FRAMEWORK_IMG_NAME
 					+ "ui.png");
@@ -498,10 +505,6 @@ public class DefUI {
 				}
 			}
 			defaultTextures.clear();
-		}
-		if (lastTexture != null) {
-			lastTexture.close(true);
-			lastTexture = null;
 		}
 	}
 }

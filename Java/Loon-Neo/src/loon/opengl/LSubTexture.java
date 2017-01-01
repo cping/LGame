@@ -34,10 +34,6 @@ public class LSubTexture {
 	}
 
 	public LTexture get() {
-		if (parent.isClose()) {
-			this.parent = LTextures.newTexture(parent.getSource());
-			return parent.copy(x, y, getWidth() - 1, getHeight() - 1);
-		}
 		return this.parent.copy(x, y, getWidth() - 1, getHeight() - 1);
 	}
 

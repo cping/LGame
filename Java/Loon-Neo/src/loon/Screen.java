@@ -30,7 +30,6 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
-import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.component.Desktop;
@@ -1401,7 +1400,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * 设定背景图像
 	 */
 	public Screen setBackground(String fileName) {
-		return this.setBackground(Image.createImage(fileName).texture());
+		return this.setBackground(LTextures.newTexture(fileName));
 	}
 
 	/**

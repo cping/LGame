@@ -174,7 +174,8 @@ public class LTextures {
 	}
 
 	static LTexture removeTexture(LTexture tex) {
-		LTexture tex2d = lazyTextures.remove(tex.src());
+		String key = tex.src().trim().toLowerCase();
+		LTexture tex2d = lazyTextures.remove(key);
 		if (tex2d == null) {
 			tex2d = lazyTextures.remove(tex.tmpLazy);
 		}

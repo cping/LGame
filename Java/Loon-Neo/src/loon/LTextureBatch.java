@@ -589,6 +589,7 @@ public class LTextureBatch implements LRelease {
 		}
 		globalShader.end();
 		LSystem.mainBeginDraw();
+		runningCache = true;
 	}
 
 	public void setIndices(short[] indices) {
@@ -1170,6 +1171,7 @@ public class LTextureBatch implements LRelease {
 			setupMatrices(project);
 		}
 		end();
+		runningCache = true;
 	}
 
 	public void postCache(Cache cache, LColor color, float x, float y) {

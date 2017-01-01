@@ -38,7 +38,10 @@ import loon.utils.IntMap;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
+import loon.utils.processes.RealtimeProcess;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.UnitPort;
+import loon.utils.timer.LTimerContext;
 import static loon.opengl.GL20.*;
 
 public class LTexture extends Painter implements LRelease {
@@ -528,6 +531,7 @@ public class LTexture extends Painter implements LRelease {
 			}
 			final LTexture copy = new LTexture();
 
+			refCount++;
 			copy.parent = LTexture.this;
 			copy.id = id;
 			copy._isLoaded = _isLoaded;
@@ -588,6 +592,7 @@ public class LTexture extends Painter implements LRelease {
 
 			final LTexture copy = new LTexture();
 
+			refCount++;
 			copy.parent = LTexture.this;
 			copy.id = id;
 			copy._isLoaded = _isLoaded;
@@ -1010,6 +1015,9 @@ public class LTexture extends Painter implements LRelease {
 		if (disposed()) {
 			return;
 		}
+		if (_disabledTexture) {
+			return;
+		}
 		if (!_isLoaded) {
 			return;
 		}
@@ -1021,6 +1029,7 @@ public class LTexture extends Painter implements LRelease {
 		if (!LTextures.contains(textureId)) {
 			return;
 		}
+		LTextures.removeTexture(this);
 		final Updateable update = new Updateable() {
 
 			@Override
@@ -1055,7 +1064,23 @@ public class LTexture extends Painter implements LRelease {
 				}
 			}
 		};
-		LSystem.load(update);
+		if (LTextureBatch.isRunningCache() && source.indexOf("<canvas>") == -1) {
+			RealtimeProcess process = new RealtimeProcess() {
+
+				@Override
+				public void run(LTimerContext time) {
+					if (!LTextureBatch.isRunningCache()) {
+						LSystem.load(update);
+						kill();
+					}
+
+				}
+			};
+			process.setDelay(LSystem.SECOND);
+			RealtimeProcessManager.get().addProcess(process);
+		} else {
+			LSystem.load(update);
+		}
 	}
 
 	public int getWidth() {
@@ -1123,8 +1148,6 @@ public class LTexture extends Painter implements LRelease {
 		if (isClose()) {
 			return;
 		}
-		_closed = true;
-		_countTexture--;
 		if (forcedDelete) {
 			if (childs != null) {
 				childs.clear();
@@ -1138,12 +1161,16 @@ public class LTexture extends Painter implements LRelease {
 			if (parent != null) {
 				parent.close();
 			} else {
+				_closed = true;
+				_countTexture--;
 				free();
 			}
 		} else if (size <= 0) {
 			if (parent != null) {
 				parent.close();
 			} else {
+				_closed = true;
+				_countTexture--;
 				free();
 			}
 		}

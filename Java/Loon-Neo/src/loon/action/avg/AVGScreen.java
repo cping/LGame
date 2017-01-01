@@ -93,7 +93,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	private boolean isSelectMessage, scrFlag, isRunning, running;
 
-	private IFont _font ;
+	private IFont _font;
 
 	private int delay;
 
@@ -1636,7 +1636,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 			_currentTasks.stopNext();
 		}
-		scrCG.update(timer);
+		if (scrCG != null) {
+			scrCG.update(timer);
+		}
 	}
 
 	@Override
