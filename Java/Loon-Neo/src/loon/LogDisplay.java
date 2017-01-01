@@ -84,8 +84,8 @@ public class LogDisplay {
 	public void setFont(IFont font) {
 		this._font = font;
 		this._textHeight = font.getSize() + 5;
-		this._displayAmount = (_height / this._textHeight)
-				- (LSystem.isDesktop() ? 5 : 2);
+		this._displayAmount = ((_height - font.getHeight()) / this._textHeight)
+				- 3;
 	}
 
 	public IFont getFont() {

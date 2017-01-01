@@ -903,9 +903,13 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void setCurrentScreen(final Screen screen) {
+		setCurrentScreen(screen, true);
+	}
+
+	public void setCurrentScreen(final Screen screen, boolean closed) {
 		if (screen != null) {
 			this.isInstance = false;
-			if (currentScreen != null) {
+			if (closed && currentScreen != null) {
 				currentScreen.destroy();
 			}
 			this.currentScreen = screen;

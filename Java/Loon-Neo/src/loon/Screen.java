@@ -75,6 +75,8 @@ import loon.utils.timer.LTimerContext;
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		XY {
 
+	private Updateable closeUpdate;
+
 	public SkinManager skin() {
 		return SkinManager.get();
 	}
@@ -733,6 +735,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					screen.setRepaintMode(SCREEN_NOT_REPAINT);
 					screen.onLoaded();
 					screen.setOnLoadState(true);
+
 					kill();
 				}
 			});
@@ -763,7 +766,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private void submitReplaceScreen() {
 		if (handler != null) {
-			handler.setCurrentScreen(replaceDstScreen);
+			handler.setCurrentScreen(replaceDstScreen, false);
+			replaceDstScreen.closeUpdate = new Updateable() {
+
+				@Override
+				public void action(Object a) {
+					destroy();
+				}
+			};
 		}
 		replaceLoading = false;
 	}
@@ -3126,6 +3136,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				currentScreenBackground.close();
 				currentScreenBackground = null;
 			}
+			if (closeUpdate != null) {
+				closeUpdate.action(this);
+			}
+			closeUpdate = null;
 			DefUI.get().clear();
 		}
 	}
