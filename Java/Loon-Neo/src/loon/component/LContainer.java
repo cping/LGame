@@ -602,7 +602,18 @@ public abstract class LContainer extends LComponent implements IArray {
 	public void layoutElements(final LayoutManager manager,
 			final LComponent... comps) {
 		if (manager != null) {
-			manager.layoutElements(this, comps);
+			TArray<LComponent> list = new TArray<LComponent>();
+			for (int i = 0; i < comps.length; i++) {
+				LComponent c = comps[i];
+				if (c != null && !(c instanceof LToolTip)) {
+					list.add(c);
+				}
+			}
+			LComponent[] tmp = new LComponent[list.size];
+			for (int i = 0; i < list.size; i++) {
+				tmp[i] = list.get(i);
+			}
+			manager.layoutElements(this, tmp);
 		}
 	}
 
@@ -618,7 +629,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (spacex != 0 || spacey != 0 || spaceWidth != 0 || spaceHeight != 0) {
 			for (int i = 0; i < comps.length; i++) {
 				LComponent comp = comps[i];
-				if (comp != null) {
+				if (comp != null && !(comp instanceof LToolTip)) {
 					comp.setX(comp.getX() + spacex);
 					comp.setY(comp.getY() + spacey);
 					comp.setWidth(comp.getWidth() + spaceWidth);
@@ -685,7 +696,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 		}
 	}
-	
+
 	void toString(StringBuilder buffer, int indent) {
 		buffer.append(super.toString());
 		buffer.append('\n');

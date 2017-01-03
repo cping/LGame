@@ -34,6 +34,19 @@ import loon.utils.MathUtils;
 
 public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
+	public final static LCheckBox at(String txt, int x, int y) {
+		return new LCheckBox(txt, x, y);
+	}
+
+	public final static LCheckBox at(String txt, int x, int y, LColor c) {
+		return new LCheckBox(txt, x, y, c);
+	}
+
+	public final static LCheckBox at(IFont font, String txt, int x, int y,
+			LColor c) {
+		return new LCheckBox(txt, x, y, c, font);
+	}
+
 	private LTexture unchecked, checked;
 
 	private float boxsize;

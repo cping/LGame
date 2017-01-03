@@ -33,7 +33,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 
 	public SplitEffect(LTexture t, RectBox limit, int d) {
 		this.setRepaint(true);
-		this.setTexture(t);
+		this._image = t;
 		this.setSize(t.width(), t.height());
 		this.halfWidth = (int) (_width / 2f);
 		this.halfHeight = (int) (_height / 2f);
@@ -123,7 +123,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 				g.draw(_image, x1, y1, _width, halfHeight, 0, 0, _width,
 						halfHeight);
 				g.draw(_image, x2, y2, _width, halfHeight, 0, halfHeight,
-						_width, _height);
+						_width, _height - halfHeight);
 				break;
 			case Config.UP:
 			case Config.DOWN:
@@ -131,8 +131,8 @@ public class SplitEffect extends Entity implements BaseEffect {
 			case Config.TRIGHT:
 				g.draw(_image, x1, y1, halfWidth, _height, 0, 0, halfWidth,
 						_height);
-				g.draw(_image, x2, y2, halfWidth, _height, halfWidth, 0,
-						_width, _height);
+				g.draw(_image, x2, y2, halfWidth, _height, halfWidth, 0, _width
+						- halfWidth, _height);
 				break;
 
 			}

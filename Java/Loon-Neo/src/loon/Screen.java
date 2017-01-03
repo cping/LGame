@@ -26,6 +26,7 @@ import loon.action.ActionTween;
 import loon.action.camera.BaseCamera;
 import loon.action.camera.EmptyCamera;
 import loon.action.collision.GravityHandler;
+import loon.action.page.ScreenSwitch;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
@@ -616,6 +617,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private float _alpha = 1f;
 	private float _rotation = 0;
+	private float _pivotX = -1f, _pivotY = -1f;
 	private float _scaleX = 1f, _scaleY = 1f;
 	private boolean _flipX = false, _flipY = false;
 	private boolean _visible = true;
@@ -665,16 +667,133 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private Screen replaceDstScreen;
 
+	private ScreenSwitch screenSwitch;
+
 	private EmptyObject dstPos = new EmptyObject();
 
 	private MoveMethod replaceMethod = MoveMethod.FROM_LEFT;
 
-	// Screen切换方式
+	private boolean isScreenFrom = false;
+
+	// Screen切换方式(单纯移动)
 	public static enum MoveMethod {
-		FROM_LEFT, FROM_UP, FROM_DOWN, FROM_RIGHT, FROM_UPPER_LEFT, FROM_UPPER_RIGHT, FROM_LOWER_LEFT, FROM_LOWER_RIGHT, OUT_LEFT, OUT_UP, OUT_DOWN, OUT_RIGHT, OUT_UPPER_LEFT, OUT_UPPER_RIGHT, OUT_LOWER_LEFT, OUT_LOWER_RIGHT
+		FROM_LEFT, FROM_UP, FROM_DOWN, FROM_RIGHT, FROM_UPPER_LEFT, FROM_UPPER_RIGHT, FROM_LOWER_LEFT, FROM_LOWER_RIGHT, OUT_LEFT, OUT_UP, OUT_DOWN, OUT_RIGHT, OUT_UPPER_LEFT, OUT_UPPER_RIGHT, OUT_LOWER_LEFT, OUT_LOWER_RIGHT;
 	}
 
-	private boolean isScreenFrom = false;
+	// Screen切换方式(渐变效果)
+	public static enum PageMethod {
+		Unkown, Accordion, BackToFore, CubeIn, Depth, Fade, RotateDown, RotateUp, Stack, ZoomIn, ZoomOut;
+	}
+
+	public Screen replaceScreen(final Screen screen) {
+		Screen tmp = null;
+		int rnd = MathUtils.random(0, 10);
+		switch (rnd) {
+		default:
+		case 0:
+			tmp = replaceScreen(screen, PageMethod.ZoomOut);
+			break;
+		case 1:
+			tmp = replaceScreen(screen, PageMethod.ZoomIn);
+			break;
+		case 2:
+			tmp = replaceScreen(screen, PageMethod.Accordion);
+			break;
+		case 3:
+			tmp = replaceScreen(screen, PageMethod.BackToFore);
+			break;
+		case 4:
+			tmp = replaceScreen(screen, PageMethod.CubeIn);
+			break;
+		case 5:
+			tmp = replaceScreen(screen, PageMethod.Depth);
+			break;
+		case 6:
+			tmp = replaceScreen(screen, PageMethod.Fade);
+			break;
+		case 7:
+			tmp = replaceScreen(screen, PageMethod.RotateDown);
+			break;
+		case 8:
+			tmp = replaceScreen(screen, PageMethod.RotateUp);
+			break;
+		case 9:
+			tmp = replaceScreen(screen, PageMethod.Stack);
+			break;
+		case 10:
+			int random = MathUtils.random(0, 15);
+			if (random == 0) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_LEFT);
+			} else if (random == 1) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_UP);
+			} else if (random == 2) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_DOWN);
+			} else if (random == 3) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_RIGHT);
+			} else if (random == 4) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_UPPER_LEFT);
+			} else if (random == 5) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_UPPER_RIGHT);
+			} else if (random == 6) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_LOWER_LEFT);
+			} else if (random == 7) {
+				tmp = replaceScreen(screen, MoveMethod.FROM_LOWER_RIGHT);
+			} else if (random == 8) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_LEFT);
+			} else if (random == 9) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_UP);
+			} else if (random == 10) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_DOWN);
+			} else if (random == 11) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_RIGHT);
+			} else if (random == 12) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_UPPER_LEFT);
+			} else if (random == 13) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_UPPER_RIGHT);
+			} else if (random == 14) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_LOWER_LEFT);
+			} else if (random == 15) {
+				tmp = replaceScreen(screen, MoveMethod.OUT_LOWER_RIGHT);
+			} else {
+				tmp = replaceScreen(screen, MoveMethod.FROM_LEFT);
+			}
+			break;
+		}
+		return tmp;
+	}
+
+	public Screen replaceScreen(final Screen screen, ScreenSwitch screenSwitch) {
+		if (screen != null && screen != this) {
+			screen.setOnLoadState(false);
+			setLock(true);
+			screen.setLock(true);
+			this.replaceDstScreen = screen;
+			this.screenSwitch = screenSwitch;
+			screen.setRepaintMode(SCREEN_NOT_REPAINT);
+
+			RealtimeProcessManager.get().addProcess(new RealtimeProcess() {
+
+				@Override
+				public void run(LTimerContext time) {
+					screen.onCreate(LSystem.viewSize.getWidth(),
+							LSystem.viewSize.getHeight());
+					screen.setClose(false);
+					screen.onLoad();
+					screen.setRepaintMode(SCREEN_NOT_REPAINT);
+					screen.onLoaded();
+					screen.setOnLoadState(true);
+					kill();
+				}
+			});
+
+			replaceLoading = true;
+		}
+		return this;
+	}
+
+	public Screen replaceScreen(final Screen screen, PageMethod m) {
+		return replaceScreen(screen, new ScreenSwitch(m, this, screen));
+	}
 
 	public Screen replaceScreen(final Screen screen, MoveMethod m) {
 		if (screen != null && screen != this) {
@@ -2020,10 +2139,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	private final void repaint(GLEx g) {
+		if (!_visible) {
+			return;
+		}
 		if (!isClose) {
-			if (!_visible) {
-				return;
-			}
 			try {
 				// 记录屏幕矩阵以及画笔
 				g.save();
@@ -2034,16 +2153,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					g.setAlpha(_alpha);
 				}
 				if (_rotation != 0) {
-					g.rotate(getX() + getHalfWidth(), getY() + getHalfHeight(),
-							_rotation);
+					g.rotate(getX()
+							+ (_pivotX == -1 ? getHalfWidth() : _pivotX),
+							getY()
+									+ (_pivotY == -1 ? getHalfHeight()
+											: _pivotY), _rotation);
 				}
 				if (_flipX || _flipY) {
 					g.flip(getX(), getY(), getWidth(), getHeight(), _flipX,
 							_flipY);
 				}
 				if (_scaleX != 1f || _scaleY != 1f) {
-					g.scale(_scaleX, _scaleY, getX() + getHalfWidth(), getY()
-							+ getHalfHeight());
+					g.scale(_scaleX, _scaleY, getX()
+							+ (_pivotX == -1 ? getHalfWidth() : _pivotX),
+							getY()
+									+ (_pivotY == -1 ? getHalfHeight()
+											: _pivotY));
 				}
 				// 偏移屏幕
 				if (isTranslate) {
@@ -2051,6 +2176,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				}
 				if (_isExistCamera) {
 					g.setCamera(_baseCamera);
+				}
+				int repaintMode = getRepaintMode();
+				switch (repaintMode) {
+				case Screen.SCREEN_NOT_REPAINT:
+					if (getBackground() != null) {
+						g.draw(getBackground(), 0, 0);
+					}
+					break;
+				case Screen.SCREEN_TEXTURE_REPAINT:
+					g.draw(getBackground(), 0, 0);
+					break;
+				case Screen.SCREEN_COLOR_REPAINT:
+					if (getBackground() != null) {
+						g.draw(getBackground(), 0, 0);
+					} else {
+						LColor c = getBackgroundColor();
+						if (c != null) {
+							g.clear(c);
+						}
+					}
+					break;
+				default:
+					g.draw(getBackground(),
+							repaintMode / 2 - MathUtils.random(repaintMode),
+							repaintMode / 2 - MathUtils.random(repaintMode));
+					break;
 				}
 				// 最下一层渲染，可重载
 				afterUI(g);
@@ -2088,21 +2239,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			if (replaceDstScreen == null
 					|| !replaceDstScreen.isOnLoadComplete()) {
 				repaint(g);
+			} else if (screenSwitch != null) {
+				replaceDstScreen.createUI(g);
+				repaint(g);
 			} else if (replaceDstScreen.isOnLoadComplete()) {
-				int tmpColor = LColor.DEF_COLOR;
 				if (isScreenFrom) {
 					repaint(g);
-					if (replaceDstScreen._backgroundColor != null) {
-						tmpColor = g.color();
-						g.setColor(replaceDstScreen._backgroundColor);
-						g.fillRect(dstPos.x(), dstPos.y(), getWidth(),
-								getHeight());
-						g.setColor(tmpColor);
-					}
-					if (replaceDstScreen.currentScreenBackground != null) {
-						g.draw(replaceDstScreen.currentScreenBackground,
-								dstPos.x(), dstPos.y(), getWidth(), getHeight());
-					}
 					if (dstPos.x() != 0 || dstPos.y() != 0) {
 						g.setClip(dstPos.x(), dstPos.y(), getWidth(),
 								getHeight());
@@ -2114,28 +2256,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 						g.clearClip();
 					}
 				} else {
-					if (replaceDstScreen._backgroundColor != null) {
-						tmpColor = g.color();
-						g.setColor(replaceDstScreen._backgroundColor);
-						g.fillRect(0, 0, getWidth(), getHeight());
-						g.setColor(tmpColor);
-					}
-					if (replaceDstScreen.currentScreenBackground != null) {
-						g.draw(replaceDstScreen.currentScreenBackground, 0, 0,
-								getWidth(), getHeight());
-					}
 					replaceDstScreen.createUI(g);
-					if (_backgroundColor != null) {
-						tmpColor = g.color();
-						g.setColor(_backgroundColor);
-						g.fillRect(dstPos.x(), dstPos.y(), getWidth(),
-								getHeight());
-						g.setColor(tmpColor);
-					}
-					if (getBackground() != null) {
-						g.draw(currentScreenBackground, dstPos.x(), dstPos.y(),
-								getWidth(), getHeight());
-					}
 					if (dstPos.x() != 0 || dstPos.y() != 0) {
 						g.setClip(dstPos.x(), dstPos.y(), getWidth(),
 								getHeight());
@@ -2292,9 +2413,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			return;
 		}
 		if (replaceLoading) {
+			// 无替换对象
 			if (replaceDstScreen == null
 					|| !replaceDstScreen.isOnLoadComplete()) {
 				process(timer);
+				// 渐进效果替换
+			} else if (screenSwitch != null) {
+				process(timer);
+				if (replaceDelay.action(timer)) {
+					screenSwitch.update(timer.getTimeSinceLastUpdate());
+				}
+				if (screenSwitch.isCompleted()) {
+					submitReplaceScreen();
+				}
+				// 位移替换
 			} else if (replaceDstScreen.isOnLoadComplete()) {
 				process(timer);
 				if (replaceDelay.action(timer)) {
@@ -2944,6 +3076,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return _rotation;
 	}
 
+	public void setPivotX(float pX) {
+		_pivotX = pX;
+	}
+
+	public void setPivotY(float pY) {
+		_pivotY = pY;
+	}
+
+	public float getPivotX() {
+		return _pivotX;
+	}
+
+	public float getPivotY() {
+		return _pivotY;
+	}
+
+	public void setPivot(float pX, float pY) {
+		setPivotX(pX);
+		setPivotY(pY);
+	}
+
 	public boolean isScaled() {
 		return (this._scaleX != 1) || (this._scaleY != 1);
 	}
@@ -3140,6 +3293,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				closeUpdate.action(this);
 			}
 			closeUpdate = null;
+			screenSwitch = null;
 			DefUI.get().clear();
 		}
 	}

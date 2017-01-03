@@ -8,7 +8,7 @@ import loon.utils.timer.LTimerContext;
  * 一个Screen的衍生抽象类,除了create默认都不必实现,纯组件构建游戏时可以使用此类派生画面
  */
 public abstract class Stage extends Screen {
-
+	
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}

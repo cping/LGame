@@ -437,40 +437,6 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public void draw(GLEx g) {
-		int repaintMode = getRepaintMode();
-		switch (repaintMode) {
-		case Screen.SCREEN_NOT_REPAINT:
-			if (!isInstance && getBackground() != null) {
-				g.draw(getBackground(), getX(), getY(), getWidth(),
-						getHeight(), getColor(), getRotation(), null,
-						getScaleX(), getScaleY(), isFlipX(), isFlipY());
-			}
-			break;
-		case Screen.SCREEN_TEXTURE_REPAINT:
-			g.draw(getBackground(), getX(), getY(), getWidth(), getHeight(),
-					getColor(), getRotation(), null, getScaleX(), getScaleY(),
-					isFlipX(), isFlipY());
-			break;
-		case Screen.SCREEN_COLOR_REPAINT:
-			if (!isInstance && getBackground() != null) {
-				g.draw(getBackground(), getX(), getY(), getWidth(),
-						getHeight(), getColor(), getRotation(), null,
-						getScaleX(), getScaleY(), isFlipX(), isFlipY());
-			} else {
-				LColor c = getBackgroundColor();
-				if (c != null) {
-					g.clear(c);
-				}
-			}
-			break;
-		default:
-			g.draw(getBackground(),
-					repaintMode / 2 - MathUtils.random(repaintMode),
-					repaintMode / 2 - MathUtils.random(repaintMode),
-					getWidth(), getHeight(), getColor(), getRotation(), null,
-					getScaleX(), getScaleY(), isFlipX(), isFlipY());
-			break;
-		}
 		if (isInstance) {
 			if (waitTransition) {
 				if (transition != null) {

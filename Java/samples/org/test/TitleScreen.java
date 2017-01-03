@@ -38,7 +38,12 @@ public class TitleScreen extends Screen {
 			public void doClick() {
 				if (!action.isPressed()) {
 					action.press();
-					replaceScreen(new MyAVGScreen(), MoveMethod.FROM_LEFT);
+					//随机使用一个Screen替换效果
+					replaceScreen(new MyAVGScreen());
+					//使用固定Screen过渡效果
+					//replaceScreen(new MyAVGScreen(), PageMode.ZoomOut);
+					//使用单纯Screen移动效果
+					//replaceScreen(new MyAVGScreen(),MoveMethod.FROM_LEFT);
 				}
 			}
 		};
