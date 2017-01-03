@@ -682,12 +682,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	// Screen切换方式(渐变效果)
 	public static enum PageMethod {
-		Unkown, Accordion, BackToFore, CubeIn, Depth, Fade, RotateDown, RotateUp, Stack, ZoomIn, ZoomOut;
+		Unkown, Accordion, BackToFore, CubeIn, Depth, Fade, Rotate, RotateDown, RotateUp, Stack, ZoomIn, ZoomOut;
 	}
 
 	public Screen replaceScreen(final Screen screen) {
 		Screen tmp = null;
-		int rnd = MathUtils.random(0, 10);
+		int rnd = MathUtils.random(0, 11);
 		switch (rnd) {
 		default:
 		case 0:
@@ -721,6 +721,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			tmp = replaceScreen(screen, PageMethod.Stack);
 			break;
 		case 10:
+			tmp = replaceScreen(screen, PageMethod.Rotate);
+			break;
+		case 11:
 			int random = MathUtils.random(0, 15);
 			if (random == 0) {
 				tmp = replaceScreen(screen, MoveMethod.FROM_LEFT);

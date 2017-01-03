@@ -24,6 +24,7 @@ public abstract class BasePage {
 		screen.setPivotY(-1f);
 		screen.setY(0);
 		screen.setX(0);
+		screen.setVisible(true);
 	}
 
 }

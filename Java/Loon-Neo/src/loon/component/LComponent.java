@@ -418,7 +418,11 @@ public abstract class LComponent extends LObject<LContainer> implements
 					|| !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 			try {
 				g.saveBrush();
-				g.setAlpha(_alpha);
+				float screenAlpha = 1f;
+				if (getScreen() != null) {
+					screenAlpha = getScreen().getAlpha();
+				}
+				g.setAlpha(_alpha * screenAlpha);
 				final int width = (int) this.getWidth();
 				final int height = (int) this.getHeight();
 				if (this.elastic) {

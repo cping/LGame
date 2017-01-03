@@ -78,6 +78,10 @@ public class ScreenSwitch {
 			this._targetPage = new ZoomOutPage();
 			this._sourcePage = new ZoomOutPage();
 			break;
+		case Rotate:
+			this._targetPage = new RotatePage();
+			this._sourcePage = new RotatePage();
+			break;
 		default:
 			break;
 		}
