@@ -346,4 +346,16 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 
 	protected abstract void closeImpl();
 
+	public final Image cpy() {
+		return cpy(false);
+	}
+	
+	public final Image cpy(boolean closed) {
+		Canvas canvas = createCanvas(width(), height());
+		canvas.draw(this, 0, 0);
+		if (closed) {
+			this.close();
+		}
+		return canvas.image;
+	}
 }
