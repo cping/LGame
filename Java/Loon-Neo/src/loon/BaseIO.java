@@ -27,6 +27,7 @@ import loon.canvas.Image;
 import loon.canvas.TGA;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteReader;
+import loon.utils.GifDecoder;
 
 public abstract class BaseIO {
 
@@ -81,6 +82,15 @@ public abstract class BaseIO {
 				}
 				return tmp;
 			}
+			//发现有些手机机型对gif解码不全|||……
+			if ("gif".equalsIgnoreCase(ext) && LSystem.isMobile()) {
+				ArrayByte bytes = BaseIO.loadArrayByte(path);
+				GifDecoder gif = new GifDecoder();
+				gif.readStatus(bytes);
+				if (gif.getFrameCount() > 0) {
+					return gif.getImage();
+				}
+			}
 			if (syn) {
 				return base.assets().getImageSync(path);
 			} else {
@@ -95,9 +105,9 @@ public abstract class BaseIO {
 		if (buffer == null) {
 			return new ArrayByteReader(new ArrayByte(1));
 		}
-		return  new ArrayByteReader(new ArrayByte(buffer));
+		return new ArrayByteReader(new ArrayByte(buffer));
 	}
-	
+
 	public static ArrayByte loadArrayByte(String path) {
 		final byte[] buffer = loadBytes(path);
 		if (buffer == null) {

@@ -88,9 +88,12 @@ public class LTextures {
 	}
 
 	public final static void close() {
-		for (LTexture tex : textureList) {
-			if (tex != null && !tex.isChild() && !tex.isClose()) {
-				tex.close(true);
+		if (textureList.size > 0) {
+			TArray<LTexture> tex2d = new TArray<LTexture>(textureList);
+			for (LTexture tex : tex2d) {
+				if (tex != null && !tex.isChild() && !tex.isClose()) {
+					tex.close();
+				}
 			}
 		}
 		textureList.clear();

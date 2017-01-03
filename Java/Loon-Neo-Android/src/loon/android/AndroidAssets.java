@@ -675,6 +675,7 @@ public class AndroidAssets extends Assets {
 		BitmapOptions options = new BitmapOptions();
 		options.inScaled = false;
 		options.inDither = true;
+		options.inMutable = true;
 		options.inPreferredConfig = game.graphics().preferredBitmapConfig;
 		options.inPurgeable = purgeable;
 		options.inInputShareable = true;
