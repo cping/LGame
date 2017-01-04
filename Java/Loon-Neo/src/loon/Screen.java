@@ -3335,7 +3335,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public SpriteControls findSpriteNotTags(Object... o) {
 		if (sprites != null) {
-			return sprites.findTagsToSpriteControls(o);
+			return sprites.findNotTagsToSpriteControls(o);
 		}
 		return new SpriteControls();
 	}
