@@ -31,8 +31,7 @@ final public class AVGDialog {
 
 	private static ObjectMap<String, LTexture> lazyImages;
 
-	public final static LTexture getRMXPDialog(String fileName, int width,
-			int height) {
+	public final static LTexture getRMXPDialog(String fileName, int width, int height) {
 		if (lazyImages == null) {
 			lazyImages = new ObjectMap<String, LTexture>(10);
 		}
@@ -62,17 +61,15 @@ final public class AVGDialog {
 		}
 	}
 
-	public final static LTexture getRMXPloadBuoyage(String fileName, int width,
-			int height) {
+	public final static LTexture getRMXPloadBuoyage(String fileName, int width, int height) {
 		return getRMXPloadBuoyage(BaseIO.loadImage(fileName), width, height);
 	}
 
-	public final static LTexture getRMXPloadBuoyage(Image rmxpImage, int width,
-			int height) {
+	public final static LTexture getRMXPloadBuoyage(Image rmxpImage, int width, int height) {
 		if (lazyImages == null) {
 			lazyImages = new ObjectMap<String, LTexture>(10);
 		}
-		String keyName = ("buoyage" + width + "|" + height).intern();
+		String keyName = "buoyage" + width + "|" + height + "|" + rmxpImage.getSource();
 		LTexture lazy = lazyImages.get(keyName);
 		if (lazy == null) {
 			Image lazyImage;
@@ -86,19 +83,14 @@ final public class AVGDialog {
 			final int k = 1;
 
 			try {
-				image = Image.drawClipImage(rmxpImage, objWidth, objHeight, x1,
-						y1, x2, y2);
+				image = Image.drawClipImage(rmxpImage, objWidth, objHeight, x1, y1, x2, y2);
 				lazyImage = Image.createImage(width, height);
 				Canvas g = lazyImage.getCanvas();
-				left = Image
-						.drawClipImage(image, k, height, 0, 0, k, objHeight);
-				right = Image.drawClipImage(image, k, height, objWidth - k, 0,
-						objWidth, objHeight);
-				center = Image.drawClipImage(image, width, height, k, k,
-						objWidth - k, objHeight - k);
+				left = Image.drawClipImage(image, k, height, 0, 0, k, objHeight);
+				right = Image.drawClipImage(image, k, height, objWidth - k, 0, objWidth, objHeight);
+				center = Image.drawClipImage(image, width, height, k, k, objWidth - k, objHeight - k);
 				up = Image.drawClipImage(image, width, k, 0, 0, objWidth, k);
-				down = Image.drawClipImage(image, width, k, 0, objHeight - k,
-						objWidth, objHeight);
+				down = Image.drawClipImage(image, width, k, 0, objHeight - k, objWidth, objHeight);
 				g.draw(center, 0, 0);
 				g.draw(left, 0, 0);
 				g.draw(right, width - k, 0);
@@ -123,22 +115,18 @@ final public class AVGDialog {
 				down = null;
 				image = null;
 
-				LSystem.base()
-						.log()
-						.debug("Converted image to RMXP dialog image:"
-								+ rmxpImage);
+				LSystem.base().log().debug("Converted image to RMXP dialog image:" + rmxpImage);
 			}
 		}
 		return lazy;
 
 	}
 
-	private final static LTexture getRMXPDialog(Image rmxpImage, int width,
-			int height, int size, int offset) {
+	private final static LTexture getRMXPDialog(Image rmxpImage, int width, int height, int size, int offset) {
 		if (lazyImages == null) {
 			lazyImages = new ObjectMap<String, LTexture>(10);
 		}
-		String keyName = "dialog" + width + "|" + height;
+		String keyName = "dialog" + width + "|" + height + "|" + rmxpImage.getSource();
 		LTexture lazy = lazyImages.get(keyName);
 		if (lazy == null) {
 			try {
@@ -157,52 +145,40 @@ final public class AVGDialog {
 
 				Image messageImage = null;
 
-				image = Image.drawClipImage(rmxpImage, objWidth, objHeight, x1,
-						y1, x2, y2);
+				image = Image.drawClipImage(rmxpImage, objWidth, objHeight, x1, y1, x2, y2);
 
-				Image centerTop = Image.drawClipImage(image, center_size, size,
-						size, 0);
+				Image centerTop = Image.drawClipImage(image, center_size, size, size, 0);
 
-				Image centerDown = Image.drawClipImage(image, center_size,
-						size, size, objHeight - size);
+				Image centerDown = Image.drawClipImage(image, center_size, size, size, objHeight - size);
 
 				Image leftTop = Image.drawClipImage(image, size, size, 0, 0);
 
-				Image leftCenter = Image.drawClipImage(image, size,
-						center_size, 0, size);
+				Image leftCenter = Image.drawClipImage(image, size, center_size, 0, size);
 
-				Image leftDown = Image.drawClipImage(image, size, size, 0,
-						objHeight - size);
+				Image leftDown = Image.drawClipImage(image, size, size, 0, objHeight - size);
 
-				Image rightTop = Image.drawClipImage(image, size, size,
-						objWidth - size, 0);
+				Image rightTop = Image.drawClipImage(image, size, size, objWidth - size, 0);
 
-				Image rightCenter = Image.drawClipImage(image, size,
-						center_size, objWidth - size, size);
+				Image rightCenter = Image.drawClipImage(image, size, center_size, objWidth - size, size);
 
-				Image rightDown = Image.drawClipImage(image, size, size,
-						objWidth - size, objHeight - size);
+				Image rightDown = Image.drawClipImage(image, size, size, objWidth - size, objHeight - size);
 
 				lazyImage = Image.createImage(width, height);
 
-				messageImage = Image.drawClipImage(rmxpImage, 128, 128, 0, 0,
-						128, 128);
+				messageImage = Image.drawClipImage(rmxpImage, 128, 128, 0, 0, 128, 128);
 
 				Canvas g = lazyImage.getCanvas();
 
 				g.setAlpha(0.5f);
 
-				messageImage = Image.getResize(messageImage,
-						width - offset + 1, height - offset + 1);
+				messageImage = Image.getResize(messageImage, width - offset + 1, height - offset + 1);
 
-				g.draw(messageImage,
-						(lazyImage.getWidth() - messageImage.getWidth()) / 2,
+				g.draw(messageImage, (lazyImage.getWidth() - messageImage.getWidth()) / 2,
 						(lazyImage.getHeight() - messageImage.getHeight()) / 2);
 
 				g.setAlpha(1.0f);
 
-				Image tmp = Image
-						.getResize(centerTop, width - (size * 2), size);
+				Image tmp = Image.getResize(centerTop, width - (size * 2), size);
 
 				g.draw(tmp, size, 0);
 				tmp = null;
@@ -213,8 +189,7 @@ final public class AVGDialog {
 
 				g.draw(leftTop, 0, 0);
 
-				tmp = Image.getResize(leftCenter, leftCenter.getWidth(), width
-						- (size * 2));
+				tmp = Image.getResize(leftCenter, leftCenter.getWidth(), width - (size * 2));
 
 				g.draw(tmp, 0, size);
 				tmp = null;
@@ -224,8 +199,7 @@ final public class AVGDialog {
 
 				g.draw(rightTop, right, 0);
 
-				tmp = Image.getResize(rightCenter, leftCenter.getWidth(), width
-						- (size * 2));
+				tmp = Image.getResize(rightCenter, leftCenter.getWidth(), width - (size * 2));
 
 				g.draw(tmp, right, size);
 				tmp = null;
@@ -262,10 +236,7 @@ final public class AVGDialog {
 				rightCenter = null;
 				rightDown = null;
 
-				LSystem.base()
-						.log()
-						.debug("Converted image to RMXP dialog image:"
-								+ rmxpImage);
+				LSystem.base().log().debug("Converted image to RMXP dialog image:" + rmxpImage);
 			} catch (Exception e) {
 
 			}
@@ -283,6 +254,7 @@ final public class AVGDialog {
 				}
 			}
 			lazyImages.clear();
+			lazyImages = null;
 		}
 	}
 }

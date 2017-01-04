@@ -1822,7 +1822,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		_currentTasks.clear();
 		_tasks.clear();
-		AVGDialog.clear();
 	}
 
 }
