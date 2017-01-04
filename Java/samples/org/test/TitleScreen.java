@@ -1,15 +1,12 @@
 package org.test;
 
-import loon.LTransition;
 import loon.Screen;
-import loon.canvas.LColor;
 import loon.component.LButton;
 import loon.component.LPaper;
 import loon.event.ActionKey;
 import loon.event.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.utils.Scale;
 import loon.utils.timer.LTimerContext;
 
 public class TitleScreen extends Screen {
@@ -41,7 +38,7 @@ public class TitleScreen extends Screen {
 					//随机使用一个Screen替换效果
 					replaceScreen(new MyAVGScreen());
 					//使用固定Screen过渡效果
-					//replaceScreen(new MyAVGScreen(), PageMode.ZoomOut);
+					//replaceScreen(new MyAVGScreen(), PageMethod.ZoomOut);
 					//使用单纯Screen移动效果
 					//replaceScreen(new MyAVGScreen(),MoveMethod.FROM_LEFT);
 				}
