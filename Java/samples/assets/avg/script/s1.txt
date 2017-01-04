@@ -4,6 +4,11 @@ set back = "assets/avg/background.png"
 set 女性角色常态 = "assets/avg/r0.png"
 set 女性角色惊异 = "assets/avg/r1.png"
 set 女性角色微笑 = "assets/avg/r2.png"
+set a=6
+set b=7
+if a>b
+mes 这样也成？！
+endif
 fadein black
 gb print(back) 
 cg print(女性角色微笑) 220

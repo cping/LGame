@@ -42,6 +42,7 @@ import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.component.skin.SkinManager;
+import loon.event.ActionKey;
 import loon.event.ClickListener;
 import loon.event.FrameLoopEvent;
 import loon.event.GameKey;
@@ -62,6 +63,8 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
+import loon.utils.ArrayMap;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
@@ -73,8 +76,45 @@ import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
-		XY {
+public abstract class Screen extends PlayerUtils implements SysInput, LRelease, XY {
+
+	private ArrayMap keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
+
+	public void addActionKey(Integer keyCode, ActionKey e) {
+		keyActions.put(keyCode, e);
+	}
+
+	public void removeActionKey(Integer keyCode) {
+		keyActions.remove(keyCode);
+	}
+
+	public void pressActionKey(Integer keyCode) {
+		ActionKey key = (ActionKey) keyActions.getValue(keyCode);
+		if (key != null) {
+			key.press();
+		}
+	}
+
+	public void releaseActionKey(Integer keyCode) {
+		ActionKey key = (ActionKey) keyActions.getValue(keyCode);
+		if (key != null) {
+			key.release();
+		}
+	}
+
+	public void clearActionKey() {
+		keyActions.clear();
+	}
+
+	public void releaseActionKeys() {
+		int keySize = keyActions.size();
+		if (keySize > 0) {
+			for (int i = 0; i < keySize; i++) {
+				ActionKey act = (ActionKey) keyActions.get(i);
+				act.release();
+			}
+		}
+	}
 
 	private Updateable closeUpdate;
 
@@ -265,6 +305,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	/** 受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉. **/
+
 	/**
 	 * 但是，TeaVM之类的Bytecode to JS转码器是支持的.因此视情况有恢复可能性，但千万注意，恢复此部分函数的话。[不保证完整的跨平台性]
 	 **/
@@ -318,8 +359,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return null;
 	}
 
-	public LayoutPort getLayoutPort(final RectBox newBox,
-			final LayoutConstraints newBoxConstraints) {
+	public LayoutPort getLayoutPort(final RectBox newBox, final LayoutConstraints newBoxConstraints) {
 		if (desktop != null) {
 			return desktop.getLayoutPort(newBox, newBoxConstraints);
 		}
@@ -333,15 +373,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return null;
 	}
 
-	public void layoutElements(final LayoutManager manager,
-			final LComponent... comps) {
+	public void layoutElements(final LayoutManager manager, final LComponent... comps) {
 		if (desktop != null) {
 			desktop.layoutElements(manager, comps);
 		}
 	}
 
-	public void layoutElements(final LayoutManager manager,
-			final LayoutPort... ports) {
+	public void layoutElements(final LayoutManager manager, final LayoutPort... ports) {
 		if (desktop != null) {
 			desktop.layoutElements(manager, ports);
 		}
@@ -353,11 +391,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 	}
 
-	public void packLayout(final LayoutManager manager, final float spacex,
-			final float spacey, final float spaceWidth, final float spaceHeight) {
+	public void packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
+			final float spaceHeight) {
 		if (desktop != null) {
-			desktop.packLayout(manager, spacex, spacey, spaceHeight,
-					spaceHeight);
+			desktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
 		}
 	}
 
@@ -413,8 +450,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this._touchAreas;
 	}
 
-	private final void updateTouchArea(final LTouchArea.Event e,
-			final float touchX, final float touchY) {
+	private final void updateTouchArea(final LTouchArea.Event e, final float touchX, final float touchY) {
 		if (this._touchAreas.size == 0) {
 			return;
 		}
@@ -603,11 +639,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	private final static boolean[] touchType, keyType;
 
-	private int touchButtonPressed = SysInput.NO_BUTTON,
-			touchButtonReleased = SysInput.NO_BUTTON;
+	private int touchButtonPressed = SysInput.NO_BUTTON, touchButtonReleased = SysInput.NO_BUTTON;
 
-	private int keyButtonPressed = SysInput.NO_KEY,
-			keyButtonReleased = SysInput.NO_KEY;
+	private int keyButtonPressed = SysInput.NO_KEY, keyButtonReleased = SysInput.NO_KEY;
 
 	boolean isNext;
 
@@ -778,8 +812,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 				@Override
 				public void run(LTimerContext time) {
-					screen.onCreate(LSystem.viewSize.getWidth(),
-							LSystem.viewSize.getHeight());
+					screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 					screen.setClose(false);
 					screen.onLoad();
 					screen.setRepaintMode(SCREEN_NOT_REPAINT);
@@ -850,8 +883,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 				@Override
 				public void run(LTimerContext time) {
-					screen.onCreate(LSystem.viewSize.getWidth(),
-							LSystem.viewSize.getHeight());
+					screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 					screen.setClose(false);
 					screen.onLoad();
 					screen.setRepaintMode(SCREEN_NOT_REPAINT);
@@ -1027,6 +1059,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			desktop = null;
 		}
 		this.desktop = new Desktop(this, width, height);
+		this.keyActions.clear();
 		this.isNext = true;
 		this.index = 0;
 		this.tx = ty = 0;
@@ -1829,15 +1862,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return this;
 	}
 
-	public LClickButton addButton(String text, int x, int y, int width,
-			int height) {
+	public LClickButton addButton(String text, int x, int y, int width, int height) {
 		return LClickButton.make(text, x, y, width, height);
 	}
 
-	public LClickButton addButton(String text, int x, int y, int width,
-			int height, Touched touched) {
-		return (LClickButton) (LClickButton.make(text, x, y, width, height)
-				.up(touched));
+	public LClickButton addButton(String text, int x, int y, int width, int height, Touched touched) {
+		return (LClickButton) (LClickButton.make(text, x, y, width, height).up(touched));
 	}
 
 	public LLabel addLabel(String text, float x, float y) {
@@ -1858,8 +1888,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return addLabel(font, text, pos, LColor.white);
 	}
 
-	public LLabel addLabel(IFont font, String text, float x, float y,
-			LColor color) {
+	public LLabel addLabel(IFont font, String text, float x, float y, LColor color) {
 		return addLabel(font, text, Vector2f.at(x, y), color);
 	}
 
@@ -1869,15 +1898,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return label;
 	}
 
-	public LLabel addLabel(HorizontalAlign alignment, IFont font, String text,
-			float x, float y, LColor color) {
+	public LLabel addLabel(HorizontalAlign alignment, IFont font, String text, float x, float y, LColor color) {
 		return addLabel(alignment, font, text, Vector2f.at(x, y), color);
 	}
 
-	public LLabel addLabel(HorizontalAlign alignment, IFont font, String text,
-			Vector2f pos, LColor color) {
-		LLabel label = LLabel.make(alignment, text, font, pos.x(), pos.y(),
-				color);
+	public LLabel addLabel(HorizontalAlign alignment, IFont font, String text, Vector2f pos, LColor color) {
+		LLabel label = LLabel.make(alignment, text, font, pos.x(), pos.y(), color);
 		add(label);
 		return label;
 	}
@@ -1892,8 +1918,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return label;
 	}
 
-	public SpriteLabel addSpriteLabel(String text, float x, float y,
-			LColor color) {
+	public SpriteLabel addSpriteLabel(String text, float x, float y, LColor color) {
 		return addSpriteLabel(text, Vector2f.at(x, y), color);
 	}
 
@@ -1904,23 +1929,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		return label;
 	}
 
-	public SpriteLabel addSpriteLabel(IFont font, String text, float x,
-			float y, LColor color) {
+	public SpriteLabel addSpriteLabel(IFont font, String text, float x, float y, LColor color) {
 		return addSpriteLabel(font, text, Vector2f.at(x, y), color);
 	}
 
-	public SpriteLabel addSpriteLabel(IFont font, String text, Vector2f pos,
-			LColor color) {
+	public SpriteLabel addSpriteLabel(IFont font, String text, Vector2f pos, LColor color) {
 		SpriteLabel label = new SpriteLabel(font, text, pos.x(), pos.y());
 		label.setColor(color);
 		add(label);
 		return label;
 	}
 
-	public SpriteLabel addSpriteLabel(String fontName, Style type, int size,
-			int x, int y, Style style, String text, Vector2f pos, LColor color) {
-		SpriteLabel label = new SpriteLabel(text, fontName, style, size,
-				pos.x(), pos.y());
+	public SpriteLabel addSpriteLabel(String fontName, Style type, int size, int x, int y, Style style, String text,
+			Vector2f pos, LColor color) {
+		SpriteLabel label = new SpriteLabel(text, fontName, style, size, pos.x(), pos.y());
 		label.setColor(color);
 		add(label);
 		return label;
@@ -1931,9 +1953,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (sprites != null) {
 			can = sprites.contains(sprite);
 		}
-		return can
-				&& contains(sprite.x(), sprite.y(), sprite.getWidth(),
-						sprite.getHeight());
+		return can && contains(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
 	}
 
 	public boolean intersects(ISprite sprite) {
@@ -1941,9 +1961,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (sprites != null) {
 			can = sprites.contains(sprite);
 		}
-		return can
-				&& intersects(sprite.x(), sprite.y(), sprite.getWidth(),
-						sprite.getHeight());
+		return can && intersects(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
 	}
 
 	public Screen remove(ISprite sprite) {
@@ -1974,8 +1992,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public boolean contains(ActionBind obj) {
-		return getRectBox().contains(obj.getX(), obj.getY(), obj.getWidth(),
-				obj.getHeight());
+		return getRectBox().contains(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
 	}
 
 	public boolean contains(Object obj) {
@@ -2016,8 +2033,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		if (sprite.isVisible()) {
 			RectBox rect = sprite.getCollisionBox();
-			if (rect.contains(SysTouch.getX(), SysTouch.getY())
-					|| rect.intersects(SysTouch.getX(), SysTouch.getY())) {
+			if (rect.contains(SysTouch.getX(), SysTouch.getY()) || rect.intersects(SysTouch.getX(), SysTouch.getY())) {
 				return true;
 			}
 		}
@@ -2037,8 +2053,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		if (component.isVisible()) {
 			RectBox rect = component.getCollisionBox();
-			if (rect.contains(SysTouch.getX(), SysTouch.getY())
-					|| rect.intersects(SysTouch.getX(), SysTouch.getY())) {
+			if (rect.contains(SysTouch.getX(), SysTouch.getY()) || rect.intersects(SysTouch.getX(), SysTouch.getY())) {
 				return true;
 			}
 		}
@@ -2129,8 +2144,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		if (LSystem._base == null) {
 			return null;
 		}
-		return new LTextureImage(LSystem._base.graphics(), LSystem._base
-				.display().GL().batch(), width, height, true);
+		return new LTextureImage(LSystem._base.graphics(), LSystem._base.display().GL().batch(), width, height, true);
 	}
 
 	protected void afterUI(GLEx g) {
@@ -2156,22 +2170,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					g.setAlpha(_alpha);
 				}
 				if (_rotation != 0) {
-					g.rotate(getX()
-							+ (_pivotX == -1 ? getHalfWidth() : _pivotX),
-							getY()
-									+ (_pivotY == -1 ? getHalfHeight()
-											: _pivotY), _rotation);
+					g.rotate(getX() + (_pivotX == -1 ? getHalfWidth() : _pivotX),
+							getY() + (_pivotY == -1 ? getHalfHeight() : _pivotY), _rotation);
 				}
 				if (_flipX || _flipY) {
-					g.flip(getX(), getY(), getWidth(), getHeight(), _flipX,
-							_flipY);
+					g.flip(getX(), getY(), getWidth(), getHeight(), _flipX, _flipY);
 				}
 				if (_scaleX != 1f || _scaleY != 1f) {
-					g.scale(_scaleX, _scaleY, getX()
-							+ (_pivotX == -1 ? getHalfWidth() : _pivotX),
-							getY()
-									+ (_pivotY == -1 ? getHalfHeight()
-											: _pivotY));
+					g.scale(_scaleX, _scaleY, getX() + (_pivotX == -1 ? getHalfWidth() : _pivotX),
+							getY() + (_pivotY == -1 ? getHalfHeight() : _pivotY));
 				}
 				// 偏移屏幕
 				if (isTranslate) {
@@ -2201,8 +2208,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 					}
 					break;
 				default:
-					g.draw(getBackground(),
-							repaintMode / 2 - MathUtils.random(repaintMode),
+					g.draw(getBackground(), repaintMode / 2 - MathUtils.random(repaintMode),
 							repaintMode / 2 - MathUtils.random(repaintMode));
 					break;
 				}
@@ -2239,8 +2245,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			return;
 		}
 		if (replaceLoading) {
-			if (replaceDstScreen == null
-					|| !replaceDstScreen.isOnLoadComplete()) {
+			if (replaceDstScreen == null || !replaceDstScreen.isOnLoadComplete()) {
 				repaint(g);
 			} else if (screenSwitch != null) {
 				replaceDstScreen.createUI(g);
@@ -2249,8 +2254,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				if (isScreenFrom) {
 					repaint(g);
 					if (dstPos.x() != 0 || dstPos.y() != 0) {
-						g.setClip(dstPos.x(), dstPos.y(), getWidth(),
-								getHeight());
+						g.setClip(dstPos.x(), dstPos.y(), getWidth(), getHeight());
 						g.translate(dstPos.x(), dstPos.y());
 					}
 					replaceDstScreen.createUI(g);
@@ -2261,8 +2265,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				} else {
 					replaceDstScreen.createUI(g);
 					if (dstPos.x() != 0 || dstPos.y() != 0) {
-						g.setClip(dstPos.x(), dstPos.y(), getWidth(),
-								getHeight());
+						g.setClip(dstPos.x(), dstPos.y(), getWidth(), getHeight());
 						g.translate(dstPos.x(), dstPos.y());
 					}
 					repaint(g);
@@ -2350,6 +2353,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	private final void process(final LTimerContext timer) {
+		for (int i = 0; i < keyActions.size(); i++) {
+			ActionKey act = (ActionKey) keyActions.get(i);
+			if (act.isPressed()) {
+				act.act(elapsedTime);
+				if (act.isReturn) {
+					return;
+				}
+			}
+		}
 		this.elapsedTime = timer.timeSinceLastUpdate;
 		// 如果Screen设置了计时器暂停
 		if (isTimerPaused) {
@@ -2417,8 +2429,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		}
 		if (replaceLoading) {
 			// 无替换对象
-			if (replaceDstScreen == null
-					|| !replaceDstScreen.isOnLoadComplete()) {
+			if (replaceDstScreen == null || !replaceDstScreen.isOnLoadComplete()) {
 				process(timer);
 				// 渐进效果替换
 			} else if (screenSwitch != null) {
@@ -2536,24 +2547,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 						break;
 					case OUT_UPPER_LEFT:
 						dstPos.move_45D_left(replaceScreenSpeed);
-						if (dstPos.x() < -getWidth()
-								|| dstPos.y() <= -getHeight()) {
+						if (dstPos.x() < -getWidth() || dstPos.y() <= -getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_UPPER_RIGHT:
 						dstPos.move_45D_up(replaceScreenSpeed);
-						if (dstPos.x() > getWidth()
-								|| dstPos.y() < -getHeight()) {
+						if (dstPos.x() > getWidth() || dstPos.y() < -getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_LOWER_LEFT:
 						dstPos.move_45D_down(replaceScreenSpeed);
-						if (dstPos.x() < -getWidth()
-								|| dstPos.y() > getHeight()) {
+						if (dstPos.x() < -getWidth() || dstPos.y() > getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
@@ -2643,14 +2651,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	@Override
 	public int getTouchPressed() {
-		return touchButtonPressed > SysInput.NO_BUTTON ? touchButtonPressed
-				: SysInput.NO_BUTTON;
+		return touchButtonPressed > SysInput.NO_BUTTON ? touchButtonPressed : SysInput.NO_BUTTON;
 	}
 
 	@Override
 	public int getTouchReleased() {
-		return touchButtonReleased > SysInput.NO_BUTTON ? touchButtonReleased
-				: SysInput.NO_BUTTON;
+		return touchButtonReleased > SysInput.NO_BUTTON ? touchButtonReleased : SysInput.NO_BUTTON;
 	}
 
 	@Override
@@ -2690,8 +2696,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	@Override
 	public int getKeyPressed() {
-		return keyButtonPressed > SysInput.NO_KEY ? keyButtonPressed
-				: SysInput.NO_KEY;
+		return keyButtonPressed > SysInput.NO_KEY ? keyButtonPressed : SysInput.NO_KEY;
 	}
 
 	@Override
@@ -2701,8 +2706,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	@Override
 	public int getKeyReleased() {
-		return keyButtonReleased > SysInput.NO_KEY ? keyButtonReleased
-				: SysInput.NO_KEY;
+		return keyButtonReleased > SysInput.NO_KEY ? keyButtonReleased : SysInput.NO_KEY;
 	}
 
 	@Override
@@ -2722,6 +2726,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int type = e.getType();
 		int code = e.getKeyCode();
 		try {
+			int keySize = keyActions.size();
+			if (keySize > 0) {
+				int keyCode = e.getKeyCode();
+				for (int i = 0; i < keySize; i++) {
+					Integer c = (Integer) keyActions.getKey(i);
+					if (c == keyCode) {
+						ActionKey act = (ActionKey) keyActions.getValue(c);
+						act.press();
+					}
+				}
+			}
 			this.onKeyDown(e);
 			if (desktop != null) {
 				desktop.keyPressed(e);
@@ -2756,10 +2771,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 		int type = e.getType();
 		int code = e.getKeyCode();
 		try {
+			int keySize = keyActions.size();
+			if (keySize > 0) {
+				int keyCode = e.getKeyCode();
+				for (int i = 0; i < keySize; i++) {
+					Integer c = (Integer) keyActions.getKey(i);
+					if (c == keyCode) {
+						ActionKey act = (ActionKey) keyActions.getValue(c);
+						act.release();
+					}
+				}
+			}
 			this.onKeyUp(e);
 			if (desktop != null) {
 				desktop.keyReleased(e);
 			}
+			this.releaseActionKeys();
 			keyType[type] = false;
 			keyButtonReleased = code;
 			keyButtonPressed = SysInput.NO_KEY;
@@ -2816,8 +2843,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				updateTouchArea(Event.DOWN, e.getX(), e.getY());
 				touchDown(e);
 				if (_clickListener != null) {
-					_clickListener.DownClick(getDesktop()
-							.getSelectedComponent(), e.getX(), e.getY());
+					_clickListener.DownClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
 		} catch (Exception ex) {
@@ -2847,8 +2873,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 				updateTouchArea(Event.UP, e.getX(), e.getY());
 				touchUp(e);
 				if (_clickListener != null) {
-					_clickListener.UpClick(getDesktop().getSelectedComponent(),
-							e.getX(), e.getY());
+					_clickListener.UpClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
 		} catch (Exception ex) {
@@ -2887,8 +2912,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			updateTouchArea(Event.DRAG, e.getX(), e.getY());
 			touchDrag(e);
 			if (_clickListener != null) {
-				_clickListener.DragClick(getDesktop().getSelectedComponent(),
-						e.getX(), e.getY());
+				_clickListener.DragClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
 			}
 		}
 	}
@@ -2905,10 +2929,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @param height
 	 * @return
 	 */
-	public boolean inBounds(GameTouch event, float x, float y, float width,
-			float height) {
-		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event
-				.y() < y + height - 1);
+	public boolean inBounds(GameTouch event, float x, float y, float width, float height) {
+		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event.y() < y + height - 1);
 	}
 
 	/**
@@ -2921,10 +2943,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	 * @param height
 	 * @return
 	 */
-	public boolean inBounds(LTouchLocation event, float x, float y,
-			float width, float height) {
-		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event
-				.y() < y + height - 1);
+	public boolean inBounds(LTouchLocation event, float x, float y, float width, float height) {
+		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event.y() < y + height - 1);
 	}
 
 	/**
@@ -3139,8 +3159,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 	}
 
 	public boolean isTxUpdate() {
-		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX
-				|| _flipY || tx != 0 || ty != 0;
+		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX || _flipY || tx != 0 || ty != 0;
 	}
 
 	public void setAlpha(float a) {
@@ -3165,11 +3184,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
-			_rectBox.setBounds(MathUtils.getBounds(getX(), getY(), getWidth()
-					* _scaleX, getHeight() * _scaleY, _rotation, _rectBox));
+			_rectBox.setBounds(MathUtils.getBounds(getX(), getY(), getWidth() * _scaleX, getHeight() * _scaleY,
+					_rotation, _rectBox));
 		} else {
-			_rectBox = MathUtils.getBounds(getX(), getY(),
-					getWidth() * _scaleX, getHeight() * _scaleY, _rotation,
+			_rectBox = MathUtils.getBounds(getX(), getY(), getWidth() * _scaleX, getHeight() * _scaleY, _rotation,
 					_rectBox);
 		}
 		return _rectBox;
@@ -3288,6 +3306,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease,
 			_conns.close();
 			release();
 			close();
+			keyActions.clear();
 			if (currentScreenBackground != null) {
 				currentScreenBackground.close();
 				currentScreenBackground = null;

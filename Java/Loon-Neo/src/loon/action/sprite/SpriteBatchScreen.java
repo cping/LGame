@@ -25,7 +25,6 @@ import loon.LSystem;
 import loon.Screen;
 import loon.action.map.Config;
 import loon.action.map.TileMap;
-import loon.event.ActionKey;
 import loon.event.GameKey;
 import loon.geom.AABB;
 import loon.geom.RectBox;
@@ -36,7 +35,6 @@ import loon.physics.PBody;
 import loon.physics.PPhysManager;
 import loon.physics.PShape;
 import loon.physics.PWorldBox;
-import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -49,11 +47,8 @@ import loon.utils.timer.LTimerContext;
  */
 public abstract class SpriteBatchScreen extends Screen implements Config {
 
-	private int keySize = 0;
 
 	private float objX = 0, objY = 0;
-
-	private ArrayMap keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 
 	private SpriteBatch _batch;
 
@@ -317,45 +312,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public abstract void create();
 
-	public void addActionKey(Integer keyCode, ActionKey e) {
-		keyActions.put(keyCode, e);
-		keySize = keyActions.size();
-	}
-
-	public void removeActionKey(Integer keyCode) {
-		keyActions.remove(keyCode);
-		keySize = keyActions.size();
-	}
-
-	public void pressActionKey(Integer keyCode) {
-		ActionKey key = (ActionKey) keyActions.getValue(keyCode);
-		if (key != null) {
-			key.press();
-		}
-	}
-
-	public void releaseActionKey(Integer keyCode) {
-		ActionKey key = (ActionKey) keyActions.getValue(keyCode);
-		if (key != null) {
-			key.release();
-		}
-	}
-
-	public void clearActionKey() {
-		keyActions.clear();
-		keySize = 0;
-	}
-
-	public void releaseActionKeys() {
-		keySize = keyActions.size();
-		if (keySize > 0) {
-			for (int i = 0; i < keySize; i++) {
-				ActionKey act = (ActionKey) keyActions.get(i);
-				act.release();
-			}
-		}
-	}
-
 	public void setOffset(TileMap tile, float sx, float sy) {
 		offset.set(sx, sy);
 		tile.setOffset(offset);
@@ -531,15 +487,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (!isOnLoadComplete()) {
 			return;
 		}
-		for (int i = 0; i < keySize; i++) {
-			ActionKey act = (ActionKey) keyActions.get(i);
-			if (act.isPressed()) {
-				act.act(elapsedTime);
-				if (act.isReturn) {
-					return;
-				}
-			}
-		}
 		if (usePhysics) {
 			if (_dt < 0) {
 				_manager.step(timer.getMilliseconds());
@@ -644,17 +591,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	@Override
 	public final void onKeyDown(GameKey e) {
-		keySize = keyActions.size();
-		if (keySize > 0) {
-			int keyCode = e.getKeyCode();
-			for (int i = 0; i < keySize; i++) {
-				Integer code = (Integer) keyActions.getKey(i);
-				if (code == keyCode) {
-					ActionKey act = (ActionKey) keyActions.getValue(code);
-					act.press();
-				}
-			}
-		}
 		press(e);
 	}
 
@@ -662,19 +598,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	@Override
 	public final void onKeyUp(GameKey e) {
-		keySize = keyActions.size();
-		if (keySize > 0) {
-			int keyCode = e.getKeyCode();
-			for (int i = 0; i < keySize; i++) {
-				Integer code = (Integer) keyActions.getKey(i);
-				if (code == keyCode) {
-					ActionKey act = (ActionKey) keyActions.getValue(code);
-					act.release();
-				}
-			}
-		}
 		release(e);
-		releaseActionKeys();
 	}
 
 	public abstract void release(GameKey e);
@@ -698,7 +622,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			_manager.setEnableGravity(false);
 			_bodys.clear();
 		}
-		this.keySize = 0;
 		if (_batch != null) {
 			_batch.close();
 			_batch = null;
@@ -724,7 +647,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		_manager = null;
 		_box = null;
 		_fixed = false;
-		keyActions.clear();
 		tiles.clear();
 		dispose();
 	}
