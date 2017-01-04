@@ -28,6 +28,7 @@ import loon.action.camera.EmptyCamera;
 import loon.action.collision.GravityHandler;
 import loon.action.page.ScreenSwitch;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.SpriteControls;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
@@ -38,6 +39,7 @@ import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LLabel;
 import loon.component.LLayer;
+import loon.component.UIControls;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
@@ -3253,6 +3255,90 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 */
 	public abstract void close();
+
+	public UIControls createUIControls() {
+		if (desktop != null) {
+			return desktop.createUIControls();
+		}
+		return new UIControls();
+	}
+
+	public UIControls findUINames(String... uiName) {
+		if (desktop != null) {
+			return desktop.findUINamesToUIControls(uiName);
+		}
+		return new UIControls();
+	}
+
+	public UIControls findNotUINames(String... uiName) {
+		if (desktop != null) {
+			return desktop.findNotUINamesToUIControls(uiName);
+		}
+		return new UIControls();
+	}
+
+	public UIControls findNames(String... name) {
+		if (desktop != null) {
+			return desktop.findNamesToUIControls(name);
+		}
+		return new UIControls();
+	}
+
+	public UIControls findNotNames(String... name) {
+		if (desktop != null) {
+			return desktop.findNotNamesToUIControls(name);
+		}
+		return new UIControls();
+	}
+
+	public UIControls findTags(Object... o) {
+		if (desktop != null) {
+			return desktop.findTagsToUIControls(o);
+		}
+		return new UIControls();
+	}
+
+	public UIControls findNotTags(Object... o) {
+		if (desktop != null) {
+			return desktop.findNotTagsToUIControls(o);
+		}
+		return new UIControls();
+	}
+
+	public SpriteControls createSpriteControls() {
+		if (sprites != null) {
+			return sprites.createSpriteControls();
+		}
+		return new SpriteControls();
+	}
+
+	public SpriteControls findSpriteNames(String... names) {
+		if (sprites != null) {
+			return sprites.findNamesToSpriteControls(names);
+		}
+		return new SpriteControls();
+	}
+
+	public SpriteControls findSpriteNotNames(String... names) {
+		if (sprites != null) {
+			return sprites.findNotNamesToSpriteControls(names);
+		}
+		return new SpriteControls();
+	}
+
+	public SpriteControls findSpriteTags(Object... o) {
+		if (sprites != null) {
+			return sprites.findTagsToSpriteControls(o);
+		}
+		return new SpriteControls();
+	}
+
+	public SpriteControls findSpriteNotTags(Object... o) {
+		if (sprites != null) {
+			return sprites.findTagsToSpriteControls(o);
+		}
+		return new SpriteControls();
+	}
 
 	public final void destroy() {
 		synchronized (this) {

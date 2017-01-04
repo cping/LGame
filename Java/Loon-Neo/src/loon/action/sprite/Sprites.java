@@ -68,8 +68,7 @@ public class Sprites implements IArray, LRelease {
 
 	private SpriteListener sprListerner;
 
-	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(
-			false);
+	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(false);
 
 	private int capacity = 1000;
 
@@ -230,8 +229,7 @@ public class Sprites implements IArray, LRelease {
 		if (index == this._size) {
 			return this.add(sprite);
 		} else {
-			System.arraycopy(this._sprites, index, this._sprites, index + 1,
-					this._size - index);
+			System.arraycopy(this._sprites, index, this._sprites, index + 1, this._size - index);
 			this._sprites[index] = sprite;
 			if (++this._size >= this._sprites.length) {
 				expandCapacity((_size + 1) * 2);
@@ -437,8 +435,7 @@ public class Sprites implements IArray, LRelease {
 		}
 		int size = this._size - index - 1;
 		if (size > 0) {
-			System.arraycopy(this._sprites, index + 1, this._sprites, index,
-					size);
+			System.arraycopy(this._sprites, index + 1, this._sprites, index, size);
 		}
 		this._sprites[--this._size] = null;
 		if (size == 0) {
@@ -550,8 +547,7 @@ public class Sprites implements IArray, LRelease {
 			}
 		}
 		int numMoved = this._size - endIndex;
-		System.arraycopy(this._sprites, endIndex, this._sprites, startIndex,
-				numMoved);
+		System.arraycopy(this._sprites, endIndex, this._sprites, startIndex, numMoved);
 		int newSize = this._size - (endIndex - startIndex);
 		while (this._size != newSize) {
 			this._sprites[--this._size] = null;
@@ -625,8 +621,7 @@ public class Sprites implements IArray, LRelease {
 	 * 
 	 * @param g
 	 */
-	public void paint(final GLEx g, final float minX, final float minY,
-			final float maxX, final float maxY) {
+	public void paint(final GLEx g, final float minX, final float minY, final float maxX, final float maxY) {
 		float spriteX;
 		float spriteY;
 		float spriteWidth;
@@ -638,8 +633,7 @@ public class Sprites implements IArray, LRelease {
 				spriteY = minY + spr.getY();
 				spriteWidth = spr.getWidth();
 				spriteHeight = spr.getHeight();
-				if (spriteX + spriteWidth < minX || spriteX > maxX
-						|| spriteY + spriteHeight < minY || spriteY > maxY) {
+				if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY || spriteY > maxY) {
 					continue;
 				}
 				spr.createUI(g);
@@ -688,8 +682,7 @@ public class Sprites implements IArray, LRelease {
 				float layerWidth = spr.getWidth() + 1;
 				float layerHeight = spr.getHeight() + 1;
 
-				if (layerX + layerWidth < minX || layerX > maxX
-						|| layerY + layerHeight < minY || layerY > maxY) {
+				if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
 					continue;
 				}
 
@@ -731,20 +724,34 @@ public class Sprites implements IArray, LRelease {
 		this.viewY = y;
 	}
 
+	public SpriteControls createSpriteControls() {
+		SpriteControls controls = null;
+		if (_sprites != null) {
+			controls = new SpriteControls(_sprites);
+		} else {
+			controls = new SpriteControls();
+		}
+		return controls;
+	}
+
 	public SpriteControls findNamesToSpriteControls(String... names) {
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findNames(names);
 			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
 		}
 		return controls;
 	}
 
-	public SpriteControls findNotUINamesToUIControls(String... names) {
+	public SpriteControls findNotNamesToSpriteControls(String... names) {
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findNotNames(names);
 			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
 		}
 		return controls;
 	}
@@ -754,15 +761,19 @@ public class Sprites implements IArray, LRelease {
 		if (_sprites != null) {
 			TArray<ISprite> sps = findTags(o);
 			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
 		}
 		return controls;
 	}
 
-	public SpriteControls findNotTagsToUIControls(Object... o) {
+	public SpriteControls findNotTagsToSpriteControls(Object... o) {
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findNotTags(o);
 			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
 		}
 		return controls;
 	}

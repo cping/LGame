@@ -30,6 +30,7 @@ import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.event.ClickListener;
+import loon.event.Touched;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.utils.CollectionUtils;
@@ -222,6 +223,56 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls setTouch(ClickListener listener) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.SetClick(listener);
+			}
+		}
+		return this;
+	}
+
+	public UIControls addTouch(ClickListener listener) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.addClickListener(listener);
+			}
+		}
+		return this;
+	}
+
+	public UIControls up(Touched touched) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.up(touched);
+			}
+		}
+		return this;
+	}
+
+	public UIControls down(Touched touched) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.down(touched);
+			}
+		}
+		return this;
+	}
+
+	public UIControls all(Touched touched) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.all(touched);
+			}
+		}
+		return this;
+	}
+	
 	public UIControls setScale(float s) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
@@ -800,7 +851,8 @@ public class UIControls {
 		}
 		return this;
 	}
-
+	
+	
 	public boolean isTweenFinished() {
 		int size = 0;
 		for (ActionTween tween : tweens.values()) {

@@ -167,8 +167,7 @@ public class Desktop implements LRelease {
 	}
 
 	public boolean removeNotUIName(String uiName) {
-		boolean removed = this.removeComponentNotUIName(this.contentPane,
-				uiName);
+		boolean removed = this.removeComponentNotUIName(this.contentPane, uiName);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -213,8 +212,7 @@ public class Desktop implements LRelease {
 		int i = 0;
 		while (removed == -1 && i < components.length - 1) {
 			if (components[i].isContainer()) {
-				removed = this
-						.removeComponent((LContainer) components[i], comp);
+				removed = this.removeComponent((LContainer) components[i], comp);
 			}
 			i++;
 		}
@@ -251,8 +249,7 @@ public class Desktop implements LRelease {
 		return null;
 	}
 
-	public LayoutPort getLayoutPort(final RectBox newBox,
-			final LayoutConstraints newBoxConstraints) {
+	public LayoutPort getLayoutPort(final RectBox newBox, final LayoutConstraints newBoxConstraints) {
 		if (contentPane != null) {
 			return contentPane.getLayoutPort(newBox, newBoxConstraints);
 		}
@@ -266,15 +263,13 @@ public class Desktop implements LRelease {
 		return null;
 	}
 
-	public void layoutElements(final LayoutManager manager,
-			final LComponent... comps) {
+	public void layoutElements(final LayoutManager manager, final LComponent... comps) {
 		if (contentPane != null) {
 			contentPane.layoutElements(manager, comps);
 		}
 	}
 
-	public void layoutElements(final LayoutManager manager,
-			final LayoutPort... ports) {
+	public void layoutElements(final LayoutManager manager, final LayoutPort... ports) {
 		if (contentPane != null) {
 			contentPane.layoutElements(manager, ports);
 		}
@@ -286,11 +281,10 @@ public class Desktop implements LRelease {
 		}
 	}
 
-	public void packLayout(final LayoutManager manager, final float spacex,
-			final float spacey, final float spaceWidth, final float spaceHeight) {
+	public void packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
+			final float spaceHeight) {
 		if (contentPane != null) {
-			contentPane.packLayout(manager, spacex, spacey, spaceWidth,
-					spaceHeight);
+			contentPane.packLayout(manager, spacex, spacey, spaceWidth, spaceHeight);
 		}
 	}
 
@@ -348,15 +342,13 @@ public class Desktop implements LRelease {
 	}
 
 	public void keyPressed(GameKey key) {
-		if (this.selectedComponent != null
-				&& !this.selectedComponent._keyLocked) {
+		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
 			this.selectedComponent.keyPressed(key);
 		}
 	}
 
 	public void keyReleased(GameKey key) {
-		if (this.selectedComponent != null
-				&& !this.selectedComponent._keyLocked) {
+		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
 			this.selectedComponent.keyReleased(key);
 		}
 	}
@@ -369,13 +361,11 @@ public class Desktop implements LRelease {
 		// 鼠标滑动
 		this.processTouchMotionEvent();
 		// 鼠标事件
-		if (this.hoverComponent != null && !this.hoverComponent._touchLocked
-				&& this.hoverComponent.isEnabled()) {
+		if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isEnabled()) {
 			this.processTouchEvent();
 		}
 		// 键盘事件
-		if (this.selectedComponent != null
-				&& !this.selectedComponent._keyLocked
+		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
 				&& this.selectedComponent.isEnabled()) {
 			this.processKeyEvent();
 		}
@@ -386,10 +376,10 @@ public class Desktop implements LRelease {
 	 * 
 	 */
 	private void processTouchMotionEvent() {
-		if (this.hoverComponent != null && !this.hoverComponent._touchLocked
-				&& this.hoverComponent.isEnabled() && this.input.isMoving()) {
-			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0
-					|| SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
+		if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isEnabled()
+				&& this.input.isMoving()) {
+			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0 || SysTouch.getDX() != 0
+					|| SysTouch.getDY() != 0) {
 				this.hoverComponent.processTouchDragged();
 				if (LSystem.isMobile() || LSystem.base().setting.emulateTouch) {
 					if (tooltip != null) {
@@ -403,15 +393,12 @@ public class Desktop implements LRelease {
 		} else {
 			int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
 			int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
-			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input
-					.getTouchDX());
-			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input
-					.getTouchDY());
+			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
+			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
 			// 获得当前窗体下鼠标坐标
 			LComponent comp = this.findComponent(touchX, touchY);
 			if (comp != null && !comp._touchLocked) {
-				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0
-						|| SysTouch.getDY() != 0) {
+				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 					if (tooltip != null) {
 						if (!this.tooltip.dismissing && comp.isPointInUI()) {
@@ -426,8 +413,7 @@ public class Desktop implements LRelease {
 						this.tooltip.setToolTipComponent(comp);
 					}
 					comp.processTouchEntered();
-				} else if (comp != this.hoverComponent
-						&& !this.hoverComponent._touchLocked) {
+				} else if (comp != this.hoverComponent && !this.hoverComponent._touchLocked) {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
@@ -440,8 +426,7 @@ public class Desktop implements LRelease {
 				if (tooltip != null) {
 					this.tooltip.setToolTipComponent(null);
 				}
-				if (this.hoverComponent != null
-						&& !this.hoverComponent._touchLocked) {
+				if (this.hoverComponent != null && !this.hoverComponent._touchLocked) {
 					this.hoverComponent.processTouchExited();
 				}
 			}
@@ -468,8 +453,7 @@ public class Desktop implements LRelease {
 	 * 
 	 */
 	private void processTouchEvent() {
-		int pressed = this.input.getTouchPressed(), released = this.input
-				.getTouchReleased();
+		int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
 		if (pressed > SysInput.NO_BUTTON) {
 			if (!LSystem.isMobile() && !LSystem.base().setting.emulateTouch) {
 				if (tooltip != null) {
@@ -480,14 +464,11 @@ public class Desktop implements LRelease {
 				this.tooltip.reshow = 0;
 				this.tooltip.initial = 0;
 			}
-			if (!isClicked && this.hoverComponent != null
-					&& !this.hoverComponent._touchLocked) {
+			if (!isClicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchPressed();
 			}
 			this.clickComponent[0] = this.hoverComponent;
-			if (this.hoverComponent != null
-					&& !this.hoverComponent._touchLocked
-					&& this.hoverComponent.isFocusable()) {
+			if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isFocusable()) {
 				if ((pressed == SysTouch.TOUCH_DOWN || pressed == SysTouch.TOUCH_UP)
 						&& this.hoverComponent != this.selectedComponent) {
 					this.selectComponent(this.hoverComponent);
@@ -495,12 +476,10 @@ public class Desktop implements LRelease {
 			}
 		}
 		if (released > SysInput.NO_BUTTON) {
-			if (!isClicked && this.hoverComponent != null
-					&& !this.hoverComponent._touchLocked) {
+			if (!isClicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchReleased();
 				// 当释放鼠标时，点击事件生效
-				if (this.clickComponent[0] == this.hoverComponent
-						&& this.hoverComponent != null
+				if (this.clickComponent[0] == this.hoverComponent && this.hoverComponent != null
 						&& !this.hoverComponent._touchLocked) {
 					this.hoverComponent.processTouchClicked();
 				}
@@ -514,15 +493,12 @@ public class Desktop implements LRelease {
 	 * 
 	 */
 	private void processKeyEvent() {
-		if (this.selectedComponent != null
-				&& !this.selectedComponent._keyLocked
+		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
 				&& this.input.getKeyPressed() != SysInput.NO_KEY) {
 			this.selectedComponent.keyPressed();
 		}
-		if (this.selectedComponent != null
-				&& !this.selectedComponent._keyLocked
-				&& this.input.getKeyReleased() != SysInput.NO_KEY
-				&& this.selectedComponent != null) {
+		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
+				&& this.input.getKeyReleased() != SysInput.NO_KEY && this.selectedComponent != null) {
 			this.selectedComponent.processKeyReleased();
 		}
 	}
@@ -539,8 +515,7 @@ public class Desktop implements LRelease {
 			return null;
 		}
 		// 返回子容器
-		LContainer panel = (this.modal == null) ? this.contentPane
-				: ((LContainer) this.modal);
+		LContainer panel = (this.modal == null) ? this.contentPane : ((LContainer) this.modal);
 		LComponent comp = panel.findComponent(x, y);
 		return comp;
 	}
@@ -708,6 +683,8 @@ public class Desktop implements LRelease {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {
 			controls = new UIControls(contentPane._childs);
+		} else {
+			controls = new UIControls();
 		}
 		return controls;
 	}
@@ -717,6 +694,8 @@ public class Desktop implements LRelease {
 		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findUINames(uiName);
 			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
 		}
 		return controls;
 	}
@@ -726,6 +705,8 @@ public class Desktop implements LRelease {
 		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNotUINames(uiName);
 			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
 		}
 		return controls;
 	}
@@ -735,6 +716,8 @@ public class Desktop implements LRelease {
 		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNames(name);
 			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
 		}
 		return controls;
 	}
@@ -744,6 +727,8 @@ public class Desktop implements LRelease {
 		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNotNames(name);
 			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
 		}
 		return controls;
 	}
@@ -753,6 +738,8 @@ public class Desktop implements LRelease {
 		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findTags(o);
 			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
 		}
 		return controls;
 	}
@@ -762,6 +749,8 @@ public class Desktop implements LRelease {
 		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNotTags(o);
 			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
 		}
 		return controls;
 	}
@@ -802,8 +791,7 @@ public class Desktop implements LRelease {
 
 	public void setModal(LComponent comp) {
 		if (comp != null && !comp.isVisible()) {
-			throw new RuntimeException(
-					"Can't set invisible component as modal component!");
+			throw new RuntimeException("Can't set invisible component as modal component!");
 		}
 		this.modal = comp;
 	}
