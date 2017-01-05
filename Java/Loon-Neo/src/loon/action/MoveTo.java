@@ -32,7 +32,7 @@ import loon.utils.MathUtils;
 
 public class MoveTo extends ActionEvent {
 
-	//寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
+	// 寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
 	private final static IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 
@@ -62,8 +62,7 @@ public class MoveTo extends ActionEvent {
 		this(map, x, y, flag, speed, true, false);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed,
-			boolean cache, boolean synField) {
+	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed, boolean cache, boolean synField) {
 		this.startLocation = new Vector2f();
 		this.endLocation = new Vector2f(x, y);
 		this.layerMap = map;
@@ -87,8 +86,7 @@ public class MoveTo extends ActionEvent {
 	public void randomPathFinder() {
 		synchronized (MoveTo.class) {
 			AStarFindHeuristic afh = null;
-			int index = MathUtils.random(AStarFindHeuristic.MANHATTAN,
-					AStarFindHeuristic.CLOSEST_SQUARED);
+			int index = MathUtils.random(AStarFindHeuristic.MANHATTAN, AStarFindHeuristic.CLOSEST_SQUARED);
 			switch (index) {
 			case AStarFindHeuristic.MANHATTAN:
 				afh = AStarFinder.ASTAR_EUCLIDEAN;
@@ -139,14 +137,9 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-		if (!moveByMode
-				&& original != null
-				&& LSystem.getProcess() != null
-				&& LSystem.getProcess().getScreen() != null
-				&& !LSystem.getProcess().getScreen().getRectBox()
-						.contains(original.x(), original.y())
-				&& layerMap != null
-				&& !layerMap.inside(original.x(), original.y())) { //处理越界出Field2D二维数组的移动
+		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
+				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
+				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
 			setMoveByMode(true);
 			return;
 		} else if (moveByMode) {
@@ -156,8 +149,7 @@ public class MoveTo extends ActionEvent {
 		if (layerMap == null || original == null) {
 			return;
 		}
-		if (!(original.x() == endLocation.x() && original.y() == endLocation
-				.y())) {
+		if (!(original.x() == endLocation.x() && original.y() == endLocation.y())) {
 			if (useCache) {
 				synchronized (pathCache) {
 					if (pathCache.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
@@ -166,27 +158,19 @@ public class MoveTo extends ActionEvent {
 					int key = hashCode();
 					TArray<Vector2f> final_path = pathCache.get(key);
 					if (final_path == null) {
-						final_path = AStarFinder
-								.find(heuristic,
-										layerMap,
-										layerMap.pixelsToTilesWidth(startLocation
-												.x()),
-										layerMap.pixelsToTilesHeight(startLocation
-												.y()),
-										layerMap.pixelsToTilesWidth(endLocation
-												.x()),
-										layerMap.pixelsToTilesHeight(endLocation
-												.y()), flag);
+						final_path = AStarFinder.find(heuristic, layerMap,
+								layerMap.pixelsToTilesWidth(startLocation.x()),
+								layerMap.pixelsToTilesHeight(startLocation.y()),
+								layerMap.pixelsToTilesWidth(endLocation.x()),
+								layerMap.pixelsToTilesHeight(endLocation.y()), flag);
 						pathCache.put(key, final_path);
 					}
 					pActorPath = new TArray<Vector2f>();
 					pActorPath.addAll(final_path);
 				}
 			} else {
-				pActorPath = AStarFinder.find(heuristic, layerMap,
-						layerMap.pixelsToTilesWidth(startLocation.x()),
-						layerMap.pixelsToTilesHeight(startLocation.y()),
-						layerMap.pixelsToTilesWidth(endLocation.x()),
+				pActorPath = AStarFinder.find(heuristic, layerMap, layerMap.pixelsToTilesWidth(startLocation.x()),
+						layerMap.pixelsToTilesHeight(startLocation.y()), layerMap.pixelsToTilesWidth(endLocation.x()),
 						layerMap.pixelsToTilesHeight(endLocation.y()), flag);
 
 			}
@@ -217,20 +201,15 @@ public class MoveTo extends ActionEvent {
 		}
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, flag);
-		hashCode = LSystem.unite(hashCode,
-				layerMap.pixelsToTilesWidth(original.x()));
-		hashCode = LSystem.unite(hashCode,
-				layerMap.pixelsToTilesHeight(original.y()));
-		hashCode = LSystem.unite(hashCode,
-				layerMap.pixelsToTilesWidth(endLocation.x()));
-		hashCode = LSystem.unite(hashCode,
-				layerMap.pixelsToTilesHeight(endLocation.y()));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(original.x()));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(original.y()));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(endLocation.x()));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(endLocation.y()));
 		hashCode = LSystem.unite(hashCode, layerMap.getWidth());
 		hashCode = LSystem.unite(hashCode, layerMap.getHeight());
 		hashCode = LSystem.unite(hashCode, layerMap.getTileWidth());
 		hashCode = LSystem.unite(hashCode, layerMap.getTileHeight());
-		hashCode = LSystem.unite(hashCode,
-				CollectionUtils.hashCode(layerMap.getMap()));
+		hashCode = LSystem.unite(hashCode, CollectionUtils.hashCode(layerMap.getMap()));
 		return hashCode;
 	}
 
@@ -299,8 +278,7 @@ public class MoveTo extends ActionEvent {
 			original.setLocation(x + offsetX, y + offsetY);
 			_isCompleted = (count == 2);
 		} else {
-			if (layerMap == null || original == null || pActorPath == null
-					|| pActorPath.size == 0) {
+			if (layerMap == null || original == null || pActorPath == null || pActorPath.size == 0) {
 				return;
 			}
 			synchronized (pActorPath) {
@@ -323,8 +301,7 @@ public class MoveTo extends ActionEvent {
 						moveX = moveEnd.x() - moveStart.x();
 						moveY = moveEnd.y() - moveStart.y();
 						if (moveX > -2 && moveY > -2 && moveX < 2 && moveY < 2) {
-							direction = Field2D.getDirection(moveX, moveY,
-									direction);
+							direction = Field2D.getDirection(moveX, moveY, direction);
 						}
 					}
 					pActorPath.removeIndex(0);
@@ -395,8 +372,10 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				}
-				synchronized (original) {
-					original.setLocation(startX + offsetX, startY + offsetY);
+				if (!(original.x() != 0 && original.y() != 0 && startX == 0 && startY == 0 && endX == 0 && endY == 0)) {
+					synchronized (original) {
+						original.setLocation(startX + offsetX, startY + offsetY);
+					}
 				}
 			}
 		}
@@ -428,8 +407,8 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public boolean isComplete() {
-		return moveByMode ? _isCompleted : (pActorPath == null
-				|| pActorPath.size == 0 || _isCompleted || original == null);
+		return moveByMode ? _isCompleted
+				: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
 	}
 
 	public boolean isUseCache() {
@@ -466,8 +445,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveTo move = new MoveTo(layerMap, endLocation.x, endLocation.y, flag,
-				speed, useCache, synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, endLocation.x, endLocation.y, flag, speed, useCache, synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;
@@ -475,8 +453,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, oldX, oldY, flag, speed, useCache,
-				synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, oldX, oldY, flag, speed, useCache, synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;

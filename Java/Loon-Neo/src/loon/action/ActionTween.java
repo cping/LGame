@@ -858,6 +858,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 		return this;
 	}
+	
+	public ActionEvent getCurrentActionEvent(){
+		return this.currentActionEvent;
+	}
 
 	@Override
 	protected void reset() {
