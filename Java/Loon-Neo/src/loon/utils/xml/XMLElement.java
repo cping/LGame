@@ -36,7 +36,11 @@ public class XMLElement {
 
 	private XMLElement parent;
 
-	XMLElement(String name) {
+	public XMLElement() {
+		this(null);
+	}
+
+	public XMLElement(String name) {
 		this.attributes = new ObjectMap<String, XMLAttribute>();
 		this.contents = new TArray<Object>();
 		this.name = name;
@@ -50,14 +54,11 @@ public class XMLElement {
 
 	public int readBinHex(byte[] buffer, int offset, int length) {
 		if (offset < 0) {
-			throw new IllegalArgumentException(
-					"Offset must be non-negative integer.");
+			throw new IllegalArgumentException("Offset must be non-negative integer.");
 		} else if (length < 0) {
-			throw new IllegalArgumentException(
-					"Length must be non-negative integer.");
+			throw new IllegalArgumentException("Length must be non-negative integer.");
 		} else if (buffer.length < offset + length) {
-			throw new IllegalArgumentException(
-					"buffer length is smaller than the sum of offset and length.");
+			throw new IllegalArgumentException("buffer length is smaller than the sum of offset and length.");
 		}
 		if (length == 0) {
 			return 0;
@@ -87,8 +88,7 @@ public class XMLElement {
 
 	public XMLAttribute getAttribute(String name) {
 		if (!this.attributes.containsKey(name))
-			throw new Error("Unknown attribute name '" + name
-					+ "' in element '" + this.name + "' !");
+			throw new Error("Unknown attribute name '" + name + "' in element '" + this.name + "' !");
 		return this.attributes.get(name);
 	}
 
@@ -165,8 +165,7 @@ public class XMLElement {
 	public XMLElement getChildrenByName(String name) {
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
-			if ((!(o instanceof XMLElement))
-					|| (!((XMLElement) o).getName().equals(name))) {
+			if ((!(o instanceof XMLElement)) || (!((XMLElement) o).getName().equals(name))) {
 				continue;
 			}
 			return (XMLElement) o;
@@ -202,8 +201,7 @@ public class XMLElement {
 		TArray<XMLElement> v = new TArray<XMLElement>();
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
-			if ((!(o instanceof XMLElement))
-					|| (!((XMLElement) o).getName().equals(name))) {
+			if ((!(o instanceof XMLElement)) || (!((XMLElement) o).getName().equals(name))) {
 				continue;
 			}
 			v.add((XMLElement) o);
@@ -215,8 +213,7 @@ public class XMLElement {
 		TArray<Object> v = new TArray<Object>();
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
-			if ((!(o instanceof XMLElement))
-					|| (!((XMLElement) o).getName().equals(name))) {
+			if ((!(o instanceof XMLElement)) || (!((XMLElement) o).getName().equals(name))) {
 				continue;
 			}
 			v.add(o);
@@ -227,8 +224,7 @@ public class XMLElement {
 	public void addAllTo(TArray<XMLElement> list) {
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			Object o = e.next();
-			if ((!(o instanceof XMLElement))
-					|| (!((XMLElement) o).getName().equals(name))) {
+			if ((!(o instanceof XMLElement)) || (!((XMLElement) o).getName().equals(name))) {
 				continue;
 			}
 			list.add((XMLElement) o);
@@ -253,28 +249,43 @@ public class XMLElement {
 
 	@Override
 	public String toString() {
-		String str1 = "<" + this.name;
-		for (String str2 : attributes.keys()) {
-			str1 = str1 + " " + str2 + " = \"" + getAttribute(str2).getValue()
-					+ "\"";
+		String str1 = null;
+		if (this.name == null) {
+			str1 = "";
+		} else {
+			str1 = "<" + this.name;
 		}
-		str1 = str1 + ">";
+		for (String str2 : attributes.keys()) {
+			str1 = str1 + " " + str2 + " = \"" + getAttribute(str2).getValue() + "\"";
+		}
+		if (this.name != null) {
+			str1 = str1 + ">";
+		}
 		str1 = str1 + getContents();
-		str1 = str1 + "</" + this.name + ">";
+		if (this.name != null) {
+			str1 = str1 + "</" + this.name + ">";
+		}
 		return str1;
 	}
 
-	XMLAttribute addAttribute(String name, String value) {
+	public XMLAttribute addAttribute(String name, int value) {
+		XMLAttribute attribute = new XMLAttribute(name, String.valueOf(value));
+		this.attributes.put(name, attribute);
+		return attribute;
+	}
+	
+	public XMLAttribute addAttribute(String name, String value) {
 		XMLAttribute attribute = new XMLAttribute(name, value);
 		this.attributes.put(name, attribute);
 		return attribute;
 	}
 
-	void addContents(Object o) {
+	public XMLElement addContents(Object o) {
 		this.contents.add(o);
+		return this;
 	}
 
-	public void dispose() {
+	public XMLElement dispose() {
 		if (attributes != null) {
 			attributes.clear();
 			attributes = null;
@@ -283,6 +294,7 @@ public class XMLElement {
 			contents.clear();
 			contents = null;
 		}
+		return this;
 	}
 
 }

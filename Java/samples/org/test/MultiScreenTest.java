@@ -155,7 +155,7 @@ public class MultiScreenTest extends Screen {
 
 	final String[] page1 = { "Screen", "Slider", "Alert", "Animation",
 			"FrameLoop", "Script", "SText", "Light", "Countdown", "AVG",
-			"Layer", "LLK","TextField","SRPG","PShadow" };
+			"Layer", "LLK","TextField","SRPG","PShadow","Array2DMap" };
 
 	static BMFont info_font;
 
@@ -242,6 +242,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new TextFieldTest());
 			addScreen(page1[index++], new SRPGTest());
 			addScreen(page1[index++], new PShadowTest());
+			addScreen(page1[index++], new MapTest());
 		}
 		// 默认按钮大小为100x25
 		int btnWidth = 100;
@@ -335,9 +336,7 @@ public class MultiScreenTest extends Screen {
 					 * for (ActionTween tween : tweens) { // 淡出事件，开始执行
 					 * tween.fadeOut(10f).start(); // 删除单独进程（否则会不断执行） kill(); }
 					 */
-
-					getDesktop().// 获得组件控制器
-							findUINamesToUIControls("ClickButton").// 查找出所有组件名称为
+							findUINames("ClickButton").// 查找出所有组件名称为
 																	// ClickButton
 																	// 的（此处可查找多个）
 							// fadeIn(10).startTweens();

@@ -66,9 +66,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top,
-				entry.bounds.right - entry.bounds.left, entry.bounds.bottom
-						- entry.bounds.top);
+		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right - entry.bounds.left,
+				entry.bounds.bottom - entry.bounds.top);
 	}
 
 	public LTexture getTextureAll(String name) {
@@ -77,8 +76,7 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top,
-				entry.bounds.right, entry.bounds.bottom);
+		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
 	}
 
 	public LTexture getTexture(int id) {
@@ -87,9 +85,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top,
-				entry.bounds.right - entry.bounds.left, entry.bounds.bottom
-						- entry.bounds.top);
+		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right - entry.bounds.left,
+				entry.bounds.bottom - entry.bounds.top);
 	}
 
 	public LTexture getTextureAll(int id) {
@@ -98,8 +95,7 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top,
-				entry.bounds.right, entry.bounds.bottom);
+		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
 	}
 
 	public SpriteRegion createSpriteRegion(int id) {
@@ -108,9 +104,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right - entry.bounds.left,
-				entry.bounds.bottom - entry.bounds.top);
+		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top,
+				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -120,8 +115,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
+				entry.bounds.bottom);
 		return region;
 	}
 
@@ -131,9 +126,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right - entry.bounds.left,
-				entry.bounds.bottom - entry.bounds.top);
+		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top,
+				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -143,8 +137,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
+				entry.bounds.bottom);
 		return region;
 	}
 
@@ -154,9 +148,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right - entry.bounds.left,
-				entry.bounds.bottom - entry.bounds.top);
+		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top,
+				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -166,8 +159,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
+				entry.bounds.bottom);
 		return region;
 	}
 
@@ -177,9 +170,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right - entry.bounds.left,
-				entry.bounds.bottom - entry.bounds.top);
+		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top,
+				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
 		return region;
 	}
 
@@ -189,8 +181,8 @@ public class LTexturePack implements LRelease {
 		if (entry == null) {
 			return null;
 		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left,
-				entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
+				entry.bounds.bottom);
 		return region;
 	}
 
@@ -207,6 +199,25 @@ public class LTexturePack implements LRelease {
 			throw new RuntimeException(path + " not found !");
 		}
 		set(path);
+	}
+
+	public LTexturePack(String fileName, TArray<LTexturePackClip> clips) {
+		XMLElement doc = new XMLElement("pack");
+		doc.addAttribute("file", fileName);
+		for (int i = 0; i < clips.size; i++) {
+			LTexturePackClip clip = clips.get(i);
+			if (clip != null) {
+				XMLElement block = new XMLElement("block");
+				block.addAttribute("id", clip.id);
+				block.addAttribute("name", clip.name);
+				block.addAttribute("left", clip.rect.x());
+				block.addAttribute("top", clip.rect.y());
+				block.addAttribute("right", clip.rect.width());
+				block.addAttribute("bottom", clip.rect.height());
+				doc.addContents(block);
+			}
+		}
+		set(doc);
 	}
 
 	public LTexturePack(XMLElement pack) {
@@ -282,9 +293,7 @@ public class LTexturePack implements LRelease {
 	}
 
 	public synchronized int putImage(Image image) {
-		return putImage(
-				System.currentTimeMillis() + "|" + String.valueOf((count + 1)),
-				image);
+		return putImage(System.currentTimeMillis() + "|" + String.valueOf((count + 1)), image);
 	}
 
 	public synchronized int putImage(String name, Image image) {
@@ -293,8 +302,7 @@ public class LTexturePack implements LRelease {
 			throw new NullPointerException();
 		}
 		if (image.width() <= 0 || image.height() <= 0) {
-			throw new IllegalArgumentException(
-					"width and height must be positive");
+			throw new IllegalArgumentException("width and height must be positive");
 		}
 		this.temps.put(name, new PackEntry(image));
 		this.packing = true;
@@ -375,8 +383,7 @@ public class LTexturePack implements LRelease {
 				totalArea += width * height;
 			}
 
-			PointI size = new PointI(closeTwoPower(maxWidth),
-					closeTwoPower(maxHeight));
+			PointI size = new PointI(closeTwoPower(maxWidth), closeTwoPower(maxHeight));
 			boolean fitAll = false;
 			loop: while (!fitAll) {
 				int area = size.x * size.y;
@@ -395,8 +402,7 @@ public class LTexturePack implements LRelease {
 				}
 				fitAll = true;
 			}
-			Canvas canvas = LSystem.base().graphics()
-					.createCanvas(size.x, size.y);
+			Canvas canvas = LSystem.base().graphics().createCanvas(size.x, size.y);
 			for (int i = 0; i < temps.size(); i++) {
 				PackEntry entry = (PackEntry) temps.get(i);
 				canvas.draw(entry.image, entry.bounds.left, entry.bounds.top);
@@ -415,7 +421,9 @@ public class LTexturePack implements LRelease {
 		if (texture != null && !packing) {
 			return texture;
 		}
-
+		if (_glex == null) {
+			_glex = LSystem.base().display().GL();
+		}
 		if (fileName != null) {
 			texture = LTextures.loadTexture(fileName, format);
 		} else {
@@ -438,8 +446,7 @@ public class LTexturePack implements LRelease {
 						pixels[i] = 0xffffff;
 					}
 				}
-				image.setPixels(pixels, (int) image.width(),
-						(int) image.height());
+				image.setPixels(pixels, (int) image.width(), (int) image.height());
 			}
 			texture = image.texture();
 			if (image != null) {
@@ -523,17 +530,11 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		if (texture.isBatch()) {
-			texture.draw(x, y, entry.bounds.width(), entry.bounds.height(),
-					entry.bounds.left, entry.bounds.top, entry.bounds.right,
-					entry.bounds.bottom, rotation, color);
+			texture.draw(x, y, entry.bounds.width(), entry.bounds.height(), entry.bounds.left, entry.bounds.top,
+					entry.bounds.right, entry.bounds.bottom, rotation, color);
 		} else {
-			_glex
-					.draw(texture, x, y, entry.bounds.width(),
-							entry.bounds.height(), entry.bounds.left,
-							entry.bounds.top,
-							entry.bounds.right - entry.bounds.left,
-							entry.bounds.bottom - entry.bounds.top, color,
-							rotation);
+			_glex.draw(texture, x, y, entry.bounds.width(), entry.bounds.height(), entry.bounds.left, entry.bounds.top,
+					entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top, color, rotation);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
 		return blittedSize;
@@ -547,7 +548,39 @@ public class LTexturePack implements LRelease {
 		return draw(id, x, y, w, h, 0, color);
 	}
 
-	public PointI draw(int id, float x, float y, float w, float h,
+	public PointI draw(int id, float x, float y, float w, float h, float rotation, LColor color) {
+		this.pack();
+		PackEntry entry = getEntry(id);
+		if (entry == null) {
+			return null;
+		}
+		if (texture.isBatch()) {
+			texture.draw(x, y, w, h, entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom,
+					rotation, color);
+		} else {
+			_glex.draw(texture, x, y, w, h, entry.bounds.left, entry.bounds.top, entry.bounds.right - entry.bounds.left,
+					entry.bounds.bottom - entry.bounds.top, color, rotation);
+		}
+		blittedSize.set(entry.bounds.width(), entry.bounds.height());
+
+		return blittedSize;
+	}
+
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2, float sy2) {
+		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0);
+	}
+
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2, float sy2,
+			float rotation) {
+		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, rotation, null);
+	}
+
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2, float sy2,
+			LColor color) {
+		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
+	}
+
+	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2, float sy2,
 			float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(id);
@@ -555,54 +588,12 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		if (texture.isBatch()) {
-			texture.draw(x, y, w, h, entry.bounds.left, entry.bounds.top,
-					entry.bounds.right, entry.bounds.bottom, rotation, color);
+			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1 + entry.bounds.top, sx2 + entry.bounds.left,
+					sy2 + entry.bounds.top, rotation, color);
 		} else {
-			_glex.draw(texture, x, y, w, h, entry.bounds.left,
-							entry.bounds.top,
-							entry.bounds.right - entry.bounds.left,
-							entry.bounds.bottom - entry.bounds.top, color,
-							rotation);
-		}
-		blittedSize.set(entry.bounds.width(), entry.bounds.height());
-
-		return blittedSize;
-	}
-
-	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2) {
-		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0);
-	}
-
-	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2, float rotation) {
-		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, rotation, null);
-	}
-
-	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2, LColor color) {
-		return draw(id, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
-	}
-
-	public PointI draw(int id, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2, float rotation,
-			LColor color) {
-		this.pack();
-		PackEntry entry = getEntry(id);
-		if (entry == null) {
-			return null;
-		}
-		if (texture.isBatch()) {
-			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1
-					+ entry.bounds.top, sx2 + entry.bounds.left, sy2
-					+ entry.bounds.top, rotation, color);
-		} else {
-			_glex
-					.draw(texture, dx1, dy1, dx2, dy2, sx1 + entry.bounds.left,
-							sy1 + entry.bounds.top,
-							sx2 + entry.bounds.right - entry.bounds.left,
-							sy2 + entry.bounds.bottom - entry.bounds.top,
-							color, rotation);
+			_glex.draw(texture, dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1 + entry.bounds.top,
+					sx2 + entry.bounds.right - entry.bounds.left, sy2 + entry.bounds.bottom - entry.bounds.top, color,
+					rotation);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
 		return blittedSize;
@@ -620,31 +611,23 @@ public class LTexturePack implements LRelease {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (texture.isBatch()) {
-			texture.draw(x, y, entry.bounds.width(), entry.bounds.height(),
-					entry.bounds.left, entry.bounds.top, entry.bounds.right,
-					entry.bounds.bottom, c);
+			texture.draw(x, y, entry.bounds.width(), entry.bounds.height(), entry.bounds.left, entry.bounds.top,
+					entry.bounds.right, entry.bounds.bottom, c);
 		}
 	}
 
-	public PointI draw(String name, float x, float y, float rotation,
-			LColor color) {
+	public PointI draw(String name, float x, float y, float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
 			return null;
 		}
 		if (texture.isBatch()) {
-			texture.draw(x, y, entry.bounds.width(), entry.bounds.height(),
-					entry.bounds.left, entry.bounds.top, entry.bounds.right,
-					entry.bounds.bottom, rotation, color);
+			texture.draw(x, y, entry.bounds.width(), entry.bounds.height(), entry.bounds.left, entry.bounds.top,
+					entry.bounds.right, entry.bounds.bottom, rotation, color);
 		} else {
-			_glex
-					.draw(texture, x, y, entry.bounds.width(),
-							entry.bounds.height(), entry.bounds.left,
-							entry.bounds.top,
-							entry.bounds.right - entry.bounds.left,
-							entry.bounds.bottom - entry.bounds.top, color,
-							rotation);
+			_glex.draw(texture, x, y, entry.bounds.width(), entry.bounds.height(), entry.bounds.left, entry.bounds.top,
+					entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top, color, rotation);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
 		return blittedSize;
@@ -654,84 +637,70 @@ public class LTexturePack implements LRelease {
 		return draw(name, x, y, w, h, 0, null);
 	}
 
-	public PointI draw(String name, float x, float y, float w, float h,
-			LColor color) {
+	public PointI draw(String name, float x, float y, float w, float h, LColor color) {
 		return draw(name, x, y, w, h, 0, color);
 	}
 
-	public PointI draw(String name, float x, float y, float w, float h,
-			float rotation, LColor color) {
+	public PointI draw(String name, float x, float y, float w, float h, float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
 			return null;
 		}
 		if (texture.isBatch()) {
-			texture.draw(x, y, w, h, entry.bounds.left, entry.bounds.top,
-					entry.bounds.right, entry.bounds.bottom, rotation, color);
+			texture.draw(x, y, w, h, entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom,
+					rotation, color);
 		} else {
-			_glex
-					.draw(texture, x, y, w, h, entry.bounds.left,
-							entry.bounds.top,
-							entry.bounds.right - entry.bounds.left,
-							entry.bounds.bottom - entry.bounds.top, color,
-							rotation);
+			_glex.draw(texture, x, y, w, h, entry.bounds.left, entry.bounds.top, entry.bounds.right - entry.bounds.left,
+					entry.bounds.bottom - entry.bounds.top, color, rotation);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
 		return blittedSize;
 	}
 
-	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2) {
+	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
+			float sy2) {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0);
 	}
 
-	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2, float rotation) {
+	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
+			float sy2, float rotation) {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, null);
 	}
 
-	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2, LColor color) {
+	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
+			float sy2, LColor color) {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
 	}
 
-	public void drawOnlyBatch(String name, float dx1, float dy1, float dx2,
-			float dy2, float sx1, float sy1, float sx2, float sy2,
-			LColor[] color) {
+	public void drawOnlyBatch(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
+			float sy2, LColor[] color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
 			return;
 		}
 		if (texture.isBatch()) {
-			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1
-					+ entry.bounds.top, sx2 + entry.bounds.right
-					- entry.bounds.left, sy2 + entry.bounds.bottom
-					- entry.bounds.top, color);
+			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1 + entry.bounds.top,
+					sx2 + entry.bounds.right - entry.bounds.left, sy2 + entry.bounds.bottom - entry.bounds.top, color);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
 	}
 
-	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2,
-			float sx1, float sy1, float sx2, float sy2, float rotation,
-			LColor color) {
+	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
+			float sy2, float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
 			return null;
 		}
 		if (texture.isBatch()) {
-			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1
-					+ entry.bounds.top, sx2 + entry.bounds.right, sy2
-					+ entry.bounds.bottom, rotation, color);
+			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1 + entry.bounds.top, sx2 + entry.bounds.right,
+					sy2 + entry.bounds.bottom, rotation, color);
 		} else {
-			_glex
-					.draw(texture, dx1, dy1, dx2, dy2, sx1 + entry.bounds.left,
-							sy1 + entry.bounds.top,
-							sx2 + entry.bounds.right - entry.bounds.left,
-							sy2 + entry.bounds.bottom - entry.bounds.top,
-							color, rotation);
+			_glex.draw(texture, dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1 + entry.bounds.top,
+					sx2 + entry.bounds.right - entry.bounds.left, sy2 + entry.bounds.bottom - entry.bounds.top, color,
+					rotation);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
 		return blittedSize;
@@ -891,15 +860,11 @@ public class LTexturePack implements LRelease {
 				int dh = bounds.height() - height;
 
 				if (dw > dh) {
-					child[0].bounds.set(bounds.left, bounds.top, bounds.left
-							+ width, bounds.bottom);
-					child[1].bounds.set(bounds.left + width, bounds.top,
-							bounds.right, bounds.bottom);
+					child[0].bounds.set(bounds.left, bounds.top, bounds.left + width, bounds.bottom);
+					child[1].bounds.set(bounds.left + width, bounds.top, bounds.right, bounds.bottom);
 				} else {
-					child[0].bounds.set(bounds.left, bounds.top, bounds.right,
-							bounds.top + height);
-					child[1].bounds.set(bounds.left, bounds.top + height,
-							bounds.right, bounds.bottom);
+					child[0].bounds.set(bounds.left, bounds.top, bounds.right, bounds.top + height);
+					child[1].bounds.set(bounds.left, bounds.top + height, bounds.right, bounds.bottom);
 				}
 				return child[0].insert(entry);
 			} else {
@@ -943,8 +908,7 @@ public class LTexturePack implements LRelease {
 		StringBuffer sbr = new StringBuffer(1000);
 		sbr.append("<?xml version=\"1.0\" standalone=\"yes\" ?>\n");
 		if (colorMask != null) {
-			sbr.append("<pack file=\"" + fileName + "\" mask=\""
-					+ colorMask.getRed() + "," + colorMask.getGreen() + ","
+			sbr.append("<pack file=\"" + fileName + "\" mask=\"" + colorMask.getRed() + "," + colorMask.getGreen() + ","
 					+ colorMask.getBlue() + "\">\n");
 		} else {
 			sbr.append("<pack file=\"" + fileName + "\">\n");
@@ -952,10 +916,8 @@ public class LTexturePack implements LRelease {
 		for (int i = 0; i < temps.size(); i++) {
 			PackEntry e = (PackEntry) temps.get(i);
 			if (e != null && e.bounds != null) {
-				sbr.append("<block id=\"" + i + "\" name=\"" + e.fileName
-						+ "\" left=\"" + e.bounds.left + "\" top=\""
-						+ e.bounds.top + "\" right=\"" + e.bounds.right
-						+ "\" bottom=\"" + e.bounds.bottom + "\"/>\n");
+				sbr.append("<block id=\"" + i + "\" name=\"" + e.fileName + "\" left=\"" + e.bounds.left + "\" top=\""
+						+ e.bounds.top + "\" right=\"" + e.bounds.right + "\" bottom=\"" + e.bounds.bottom + "\"/>\n");
 			}
 		}
 		sbr.append("</pack>");
