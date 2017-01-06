@@ -15,13 +15,13 @@ import loon.component.layout.BoxSize;
 import loon.geom.Affine2f;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
-public class Entity extends LObject<IEntity> implements IEntity, IArray,
-		BoxSize {
+public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize {
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
@@ -41,6 +41,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
 
+	protected Vector2f _offset = new Vector2f();
 	protected float _rotationCenterX = -1;
 	protected float _rotationCenterY = -1;
 
@@ -58,8 +59,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 
 	protected boolean _flipX = false, _flipY = false;
 
-	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(
-			false);
+	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
 
 	private boolean _stopUpdate = false;
 
@@ -76,17 +76,14 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 	}
 
 	public Entity(final LTexture texture) {
-		this(texture, 0, 0, texture == null ? 0 : texture.getWidth(),
-				texture == null ? 0 : texture.getHeight());
+		this(texture, 0, 0, texture == null ? 0 : texture.getWidth(), texture == null ? 0 : texture.getHeight());
 	}
 
 	public Entity(final LTexture texture, final float x, final float y) {
-		this(texture, x, y, texture == null ? 0 : texture.getWidth(),
-				texture == null ? 0 : texture.getHeight());
+		this(texture, x, y, texture == null ? 0 : texture.getWidth(), texture == null ? 0 : texture.getHeight());
 	}
 
-	public Entity(final LTexture texture, final float x, final float y,
-			final float w, final float h) {
+	public Entity(final LTexture texture, final float x, final float y, final float w, final float h) {
 		this.setLocation(x, y);
 		this._width = w;
 		this._height = h;
@@ -357,8 +354,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 
 	@Override
 	public boolean isRotatedOrScaledOrSkewed() {
-		return (this._rotation != 0) || (this._scaleX != 1)
-				|| (this._scaleY != 1) || (this._skewX != 0)
+		return (this._rotation != 0) || (this._scaleX != 1) || (this._scaleY != 1) || (this._skewX != 0)
 				|| (this._skewY != 0);
 	}
 
@@ -414,8 +410,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 	}
 
 	@Override
-	public void setColor(final float r, final float g, final float b,
-			final float a) {
+	public void setColor(final float r, final float g, final float b, final float a) {
 		this._baseColor.setColor(r, g, b, a);
 		this.onUpdateColor();
 	}
@@ -610,8 +605,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 	}
 
 	@Override
-	public final void createUI(final GLEx g, final float offsetX,
-			final float offsetY) {
+	public final void createUI(final GLEx g, final float offsetX, final float offsetY) {
 		if (this._visible) {
 			this.onManagedPaint(g, offsetX, offsetY);
 		}
@@ -657,17 +651,14 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 		if (_alpha < 0.01) {
 			return;
 		}
-		boolean exist = _image != null || (_width > 0 && _height > 0)
-				|| _repaintDraw;
+		boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
 		if (exist) {
 			int blend = g.getBlendMode();
 			g.setBlendMode(_blend);
-			boolean update = ((_rotation != 0
-					|| !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
-					|| _flipX || _flipY)
-					&& _deform;
-			float nx = offsetX + this._location.x;
-			float ny = offsetY + this._location.y;
+			boolean update = ((_rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
+					|| _flipX || _flipY) && _deform;
+			float nx = offsetX + this._location.x + _offset.x;
+			float ny = offsetY + this._location.y + _offset.y;
 			if (update) {
 				g.saveTx();
 				g.saveBrush();
@@ -676,10 +667,10 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 				final float scaleX = this._scaleX;
 				final float scaleY = this._scaleY;
 				if (rotation != 0) {
-					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + _origin
-							.ox(this._width)) : nx + this._rotationCenterX;
-					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin
-							.oy(this._height)) : ny + this._rotationCenterY;
+					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + _origin.ox(this._width))
+							: nx + this._rotationCenterX;
+					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin.oy(this._height))
+							: ny + this._rotationCenterY;
 					tx.translate(rotationCenterX, rotationCenterY);
 					tx.preRotate(rotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
@@ -687,26 +678,23 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 				final boolean flipX = this._flipX;
 				final boolean flipY = this._flipY;
 				if (flipX || flipY) {
-					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + _origin
-							.ox(this._width)) : nx + this._rotationCenterX;
-					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin
-							.oy(this._height)) : ny + this._rotationCenterY;
+					final float rotationCenterX = this._rotationCenterX == -1 ? (nx + _origin.ox(this._width))
+							: nx + this._rotationCenterX;
+					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin.oy(this._height))
+							: ny + this._rotationCenterY;
 					if (flipX && flipY) {
-						Affine2f.transform(tx, rotationCenterX,
-								rotationCenterY, Affine2f.TRANS_ROT180);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_ROT180);
 					} else if (flipX) {
-						Affine2f.transform(tx, rotationCenterX,
-								rotationCenterY, Affine2f.TRANS_MIRROR);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_MIRROR);
 					} else if (flipY) {
-						Affine2f.transform(tx, rotationCenterX,
-								rotationCenterY, Affine2f.TRANS_MIRROR_ROT180);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_MIRROR_ROT180);
 					}
 				}
 				if ((scaleX != 1) || (scaleY != 1)) {
-					final float scaleCenterX = this._scaleCenterX == -1 ? (nx + _origin
-							.ox(this._width)) : nx + this._scaleCenterX;
-					final float scaleCenterY = this._scaleCenterY == -1 ? (ny + _origin
-							.oy(this._height)) : ny + this._scaleCenterY;
+					final float scaleCenterX = this._scaleCenterX == -1 ? (nx + _origin.ox(this._width))
+							: nx + this._scaleCenterX;
+					final float scaleCenterY = this._scaleCenterY == -1 ? (ny + _origin.oy(this._height))
+							: ny + this._scaleCenterY;
 					tx.translate(scaleCenterX, scaleCenterY);
 					tx.preScale(scaleX, scaleY);
 					tx.translate(-scaleCenterX, -scaleCenterY);
@@ -714,10 +702,10 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 				final float skewX = this._skewX;
 				final float skewY = this._skewY;
 				if ((skewX != 0) || (skewY != 0)) {
-					final float skewCenterX = this._skewCenterX == -1 ? (nx + _origin
-							.ox(this._width)) : nx + this._skewCenterX;
-					final float skewCenterY = this._skewCenterY == -1 ? (ny + _origin
-							.oy(this._height)) : ny + this._skewCenterY;
+					final float skewCenterX = this._skewCenterX == -1 ? (nx + _origin.ox(this._width))
+							: nx + this._skewCenterX;
+					final float skewCenterY = this._skewCenterY == -1 ? (ny + _origin.oy(this._height))
+							: ny + this._skewCenterY;
 					tx.translate(skewCenterX, skewCenterY);
 					tx.preShear(skewX, skewY);
 					tx.translate(-skewCenterX, -skewCenterY);
@@ -740,8 +728,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 					if (_shear == null) {
 						g.draw(_image, nx, ny, _width, _height, _baseColor);
 					} else {
-						g.draw(_image, nx, ny, _width, _height, _shear.x,
-								_shear.y, _shear.width, _shear.height,
+						g.draw(_image, nx, ny, _width, _height, _shear.x, _shear.y, _shear.width, _shear.height,
 								_baseColor);
 					}
 				} else {
@@ -1062,6 +1049,18 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray,
 	@Override
 	public boolean isEmpty() {
 		return (_childrens == null ? true : _childrens.size == 0);
+	}
+
+	public Vector2f getOffset() {
+		return _offset;
+	}
+
+	public void setOffset(float x, float y) {
+		this._offset.set(x, y);
+	}
+
+	public void setOffset(Vector2f offset) {
+		this._offset = offset;
 	}
 
 }

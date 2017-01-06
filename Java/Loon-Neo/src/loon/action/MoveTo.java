@@ -59,11 +59,16 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed) {
-		this(map, x, y, flag, speed, true, false);
+		this(map, -1f, -1f, x, y, flag, speed, true, false);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed, boolean cache, boolean synField) {
-		this.startLocation = new Vector2f();
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed) {
+		this(map, sx, sy, x, y, flag, speed, true, false);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed, boolean cache,
+			boolean synField) {
+		this.startLocation = new Vector2f(sx, sy);
 		this.endLocation = new Vector2f(x, y);
 		this.layerMap = map;
 		this.flag = flag;
@@ -445,7 +450,8 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveTo move = new MoveTo(layerMap, endLocation.x, endLocation.y, flag, speed, useCache, synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, flag, speed, useCache,
+				synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;
@@ -453,7 +459,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, oldX, oldY, flag, speed, useCache, synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, flag, speed, useCache, synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;

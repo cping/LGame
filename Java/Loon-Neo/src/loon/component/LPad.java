@@ -23,6 +23,7 @@ package loon.component;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTexture.Format;
+import loon.action.map.Config;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
@@ -47,6 +48,8 @@ public class LPad extends LComponent {
 	}
 
 	public ClickListener listener;
+	
+	private int lastDir = -1;
 
 	private float centerX, centerY;
 
@@ -107,6 +110,7 @@ public class LPad extends LComponent {
 		if (listener != null) {
 			listener.other();
 		}
+		this.lastDir = -1;
 	}
 
 	@Override
@@ -136,6 +140,7 @@ public class LPad extends LComponent {
 				if (listener != null) {
 					listener.right();
 				}
+				this.lastDir = Config.TRIGHT;
 			} else if (x < 0) {
 				this.isLeft = true;
 				this.isClick = true;
@@ -145,6 +150,7 @@ public class LPad extends LComponent {
 				if (listener != null) {
 					listener.left();
 				}
+				this.lastDir = Config.TLEFT;
 			} else if (x == 0) {
 				freeClick();
 			}
@@ -158,6 +164,7 @@ public class LPad extends LComponent {
 				if (listener != null) {
 					listener.down();
 				}
+				this.lastDir = Config.TDOWN;
 			} else if (y < 0) {
 				this.isUp = true;
 				this.isClick = true;
@@ -167,6 +174,7 @@ public class LPad extends LComponent {
 				if (listener != null) {
 					listener.up();
 				}
+				this.lastDir = Config.TUP;
 			} else if (y == 0) {
 				freeClick();
 			}
@@ -195,6 +203,26 @@ public class LPad extends LComponent {
 				+ (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight,
 				baseColor);
 		pack.glEnd();
+	}
+	
+	public boolean isLastLeft(){
+		return lastDir == Config.TLEFT;
+	}
+
+	public boolean isLastRight(){
+		return lastDir == Config.TRIGHT;
+	}
+	
+	public boolean isLastUp(){
+		return lastDir == Config.TUP;
+	}
+	
+	public boolean isLastDown(){
+		return lastDir == Config.TDOWN;
+	}
+	
+	public int getDirection(){
+		return lastDir;
 	}
 
 	public boolean isLeft() {

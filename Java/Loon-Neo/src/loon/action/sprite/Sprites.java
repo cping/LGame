@@ -70,7 +70,7 @@ public class Sprites implements IArray, LRelease {
 
 	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(false);
 
-	private int capacity = 1000;
+	private int capacity = 128;
 
 	private int _size;
 
@@ -229,6 +229,12 @@ public class Sprites implements IArray, LRelease {
 		if (index == this._size) {
 			return this.add(sprite);
 		} else {
+			if (sprite.getWidth() > getWidth()) {
+				setViewWindow(viewX, viewY, (int) sprite.getWidth(), _height);
+			}
+			if (sprite.getHeight() > getHeight()) {
+				setViewWindow(viewX, viewY, _width, (int) sprite.getHeight());
+			}
 			System.arraycopy(this._sprites, index, this._sprites, index + 1, this._size - index);
 			this._sprites[index] = sprite;
 			if (++this._size >= this._sprites.length) {
@@ -289,7 +295,12 @@ public class Sprites implements IArray, LRelease {
 		if (contains(sprite)) {
 			return false;
 		}
-
+		if (sprite.getWidth() > getWidth()) {
+			setViewWindow(viewX, viewY, (int) sprite.getWidth(), _height);
+		}
+		if (sprite.getHeight() > getHeight()) {
+			setViewWindow(viewX, viewY, _width, (int) sprite.getHeight());
+		}
 		if (this._size == this._sprites.length) {
 			expandCapacity((_size + 1) * 2);
 		}
@@ -637,6 +648,15 @@ public class Sprites implements IArray, LRelease {
 					continue;
 				}
 				spr.createUI(g);
+			}
+		}
+	}
+
+	public void paintPos(final GLEx g, final float offsetX, final float offsetY) {
+		for (int i = 0; i < this._size; i++) {
+			ISprite spr = this._sprites[i];
+			if (spr != null && spr.isVisible()) {
+				spr.createUI(g, offsetX, offsetY);
 			}
 		}
 	}

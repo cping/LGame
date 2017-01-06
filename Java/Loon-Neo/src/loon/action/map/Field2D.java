@@ -33,6 +33,8 @@ import loon.utils.TArray;
 
 public class Field2D implements Config {
 
+	private Vector2f offset = new Vector2f();
+	
 	private RectBox _rect = null;
 
 	public Object Tag;
@@ -398,6 +400,22 @@ public class Field2D implements Config {
 
 	public void setTileImpl(Tile tileImpl) {
 		this.tileImpl = tileImpl;
+	}
+
+	public Vector2f getOffset() {
+		return offset;
+	}
+
+	public void setOffset(Vector2f offset) {
+		this.offset = offset;
+	}
+
+	public int offsetXPixel(int x) {
+		return x - offset.x();
+	}
+
+	public int offsetYPixel(int y) {
+		return y - offset.y();
 	}
 
 }

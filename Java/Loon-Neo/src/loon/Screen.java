@@ -934,6 +934,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		replaceLoading = false;
 	}
 
+	public Screen removeTouchLimit() {
+		_limits.clear();
+		return this;
+	}
+
 	public Screen addTouchLimit(LObject<?> c) {
 		if (c != null) {
 			_limits.add(c.getCollisionArea());
@@ -2749,6 +2754,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		} catch (Exception ex) {
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
+			error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -2795,6 +2801,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		} catch (Exception ex) {
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
+			error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -2851,6 +2858,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		} catch (Exception ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
+			error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -2881,6 +2889,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		} catch (Exception ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
+			error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}

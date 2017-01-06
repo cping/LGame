@@ -22,6 +22,8 @@ package loon.event;
 
 public class ActionKey {
 
+	public Updateable _function;
+
 	public static final int NORMAL = 0;
 
 	public static final int DETECT_INITIAL_PRESS_ONLY = 1;
@@ -49,8 +51,14 @@ public class ActionKey {
 		reset();
 	}
 
-	public void act(long elapsedTime) {
+	public void act() {
+		act(0);
+	}
 
+	public void act(long elapsedTime) {
+		if (_function != null) {
+			_function.action(this);
+		}
 	}
 
 	public void reset() {
@@ -80,5 +88,13 @@ public class ActionKey {
 			return true;
 		}
 		return false;
+	}
+
+	public Updateable getFunction() {
+		return _function;
+	}
+
+	public void setFunction(Updateable function) {
+		this._function = function;
 	}
 }
