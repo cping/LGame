@@ -22,7 +22,7 @@ package loon.event;
 
 public class ActionKey {
 
-	public Updateable _function;
+	private Updateable _function;
 
 	public static final int NORMAL = 0;
 

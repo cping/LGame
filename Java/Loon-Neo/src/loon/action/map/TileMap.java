@@ -10,6 +10,7 @@ import loon.LTexture.Format;
 import loon.action.ActionBind;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.MoveControl;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.Sprites;
 import loon.canvas.Image;
@@ -462,20 +463,20 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				field.pixelsToTilesHeight(field.offsetYPixel(py)) + movePy);
 	}
 
-	public boolean isPixelUp(int px, int py) {
-		return isPixelHit(px, py, 0,0);
+	public boolean isPixelTUp(int px, int py) {
+		return isPixelHit(px, py, 0, -1);
 	}
 
-	public boolean isPixelRight(int px, int py) {
+	public boolean isPixelTRight(int px, int py) {
+		return isPixelHit(px, py, 1, 0);
+	}
+
+	public boolean isPixelTLeft(int px, int py) {
 		return isPixelHit(px, py, -1, 0);
 	}
 
-	public boolean isPixelLeft(int px, int py) {
-		return isPixelHit(px, py, 0, 0);
-	}
-
-	public boolean isPixelDown(int px, int py) {
-		return isPixelHit(px, py, 0, 0);
+	public boolean isPixelTDown(int px, int py) {
+		return isPixelHit(px, py, 0, 1);
 	}
 
 	public Vector2f getTileCollision(LObject<?> o, float newX, float newY) {
@@ -799,12 +800,13 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return follow;
 	}
 
-	public void setFollow(ActionBind follow) {
+	public TileMap setFollow(ActionBind follow) {
 		this.follow = follow;
+		return this;
 	}
 
-	public void followAction(ActionBind follow) {
-		setFollow(follow);
+	public TileMap followAction(ActionBind follow) {
+		return setFollow(follow);
 	}
 
 	public float offsetXPixel(float x) {
@@ -813,6 +815,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public float offsetYPixel(float y) {
 		return y - offset.y;
+	}
+
+	public MoveControl followControl(ActionBind bind) {
+		followAction(bind);
+		return new MoveControl(bind, this.field);
 	}
 
 	@Override

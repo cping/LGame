@@ -82,6 +82,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private ArrayMap keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 
+	public boolean containsActionKey(Integer keyCode) {
+		return keyActions.containsKey(keyCode);
+	}
+
 	public void addActionKey(Integer keyCode, ActionKey e) {
 		keyActions.put(keyCode, e);
 	}
@@ -3347,6 +3351,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return sprites.findNotTagsToSpriteControls(o);
 		}
 		return new SpriteControls();
+	}
+
+	public Screen openURL(final String url) {
+		LSystem.base().openURL(url);
+		return this;
 	}
 
 	public final void destroy() {

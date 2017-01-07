@@ -13,15 +13,17 @@ import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.effect.RippleEffect;
 import loon.canvas.LColor;
-import loon.component.LClickButton;
 import loon.component.LPad;
+import loon.event.ActionKey;
+import loon.event.SysKey;
 import loon.event.Touched;
-import loon.font.LFont;
+import loon.event.Updateable;
 import loon.opengl.LTexturePackClip;
 import loon.utils.TArray;
 
 public class MapTest extends Stage {
 
+	//此示例演示了三种角色的地图移动方式，分别是触屏移动,键盘移动,以及虚拟按钮移动
 	@Override
 	public void create() {
 		try {
@@ -60,9 +62,17 @@ public class MapTest extends Stage {
 			final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, map.tilesToPixelsX(3),
 					map.tilesToPixelsY(4), 32, 32);
 			
+			// 播放动画,速度每帧220
+			final long[] frames = {220, 220, 220 };
+			// 左右下上四方向的帧播放顺序(也可以理解为具体播放的帧)
+			final int[] leftIds = { 3, 4, 5 };
+			final int[] rightIds = { 6, 7, 8 };
+			final int[] downIds = {  0, 1, 2 };
+			final int[] upIds = {  9, 10, 11 };
 			
 			// 播放动画,速度每帧220,播放顺序为第0,1,2帧
-			hero.animate(new long[] { 220, 220, 220 }, new int[] { 0, 1, 2 });
+			// hero.animate(new long[]{220, 220, 220 }, new int[]{0, 1, 2});
+			hero.animate(frames, downIds);
 			// 限制精灵到索引1,2,3,5位置的移动
 			map.setLimit(new int[] { 1, 2, 3, 5 });
 			// 设置一个高的z值,避免被精灵遮挡
@@ -74,6 +84,7 @@ public class MapTest extends Stage {
 			// 添加hero到地图上
 			add(hero);
 		
+			// ----触屏移动---
 			// 监听窗体down事件
 			down(new Touched() {
 
@@ -103,17 +114,17 @@ public class MapTest extends Stage {
 							if (lastDirection != move.getDirection() && o.getX() != x && o.getY() != y) {
 								switch (move.getDirection()) {
 								case Field2D.TUP:
-									hero.animate(new long[] { 220, 220, 220 }, new int[] { 9, 10, 11 });
+									hero.animate(frames, upIds);
 									break;
 								default:
 								case Field2D.TDOWN:
-									hero.animate(new long[] { 220, 220, 220 }, new int[] { 0, 1, 2 });
+									hero.animate(frames, downIds);
 									break;
 								case Field2D.TLEFT:
-									hero.animate(new long[] { 220, 220, 220 }, new int[] { 3, 4, 5 });
+									hero.animate(frames, leftIds);
 									break;
 								case Field2D.TRIGHT:
-									hero.animate(new long[] { 220, 220, 220 }, new int[] { 6, 7, 8 });
+									hero.animate(frames, rightIds);
 									break;
 								}
 								lastDirection = move.getDirection();
@@ -125,24 +136,84 @@ public class MapTest extends Stage {
 
 				}
 			});
+
 			//构架移动控制器,注入控制的角色和二维数组
 			final MoveControl mc = new MoveControl(hero,map.getField());
 			mc.start();
 			// 注销窗体时关闭移动控制器
 			putRelease(mc);
+
+			// ----按键移动---
+			//构建键盘监听
+			ActionKey left = new ActionKey();
+			left.setFunction(new Updateable() {
+				
+				@Override
+				public void action(Object a) {
+					if(!mc.isTLeft()){
+						hero.animate(frames, leftIds);
+					}
+					mc.setDirection(Config.TLEFT);
+				
+				}
+			});
+			addActionKey(SysKey.LEFT, left);
 			
-			// 创建虚拟控制器
+			ActionKey right = new ActionKey();
+			right.setFunction(new Updateable() {
+				
+				@Override
+				public void action(Object a) {
+					if(!mc.isTRight()){
+						hero.animate(frames, rightIds);
+					}
+					mc.setDirection(Config.TRIGHT);
+				
+				}
+			});
+			addActionKey(SysKey.RIGHT, right);
+
+			ActionKey up = new ActionKey();
+			up.setFunction(new Updateable() {
+				
+				@Override
+				public void action(Object a) {
+					if(!mc.isTUp()){
+						hero.animate(frames, upIds);
+					}
+					mc.setDirection(Config.TUP);
+				
+				}
+			});
+			addActionKey(SysKey.UP, up);
+			
+			ActionKey down = new ActionKey();
+			down.setFunction(new Updateable() {
+				
+				@Override
+				public void action(Object a) {
+					if(!mc.isTDown()){
+						hero.animate(frames, downIds);
+					}
+					mc.setDirection(Config.TDOWN);
+				
+				}
+			});
+			addActionKey(SysKey.DOWN, down);
+
+			// ----虚拟按键移动---
+			// 创建控制按钮
 			final LPad pad = new LPad(25, 150);
 			// 禁止窗体触屏区域包含pad
 			addTouchLimit(pad);
-			// 监听虚拟按钮事件
+			// 监听事件
 			pad.setListener(new LPad.ClickListener() {
 
 				@Override
 				public void up() {
 					// 只有上一次操作不是同方向时,才执行动画切换,以下同(否则会重复刷新动画状态到初始,也就是老在每次设置的第一帧跑)
 					if (!pad.isLastUp()) {
-						hero.animate(new long[] { 220, 220, 220 }, new int[] { 9, 10, 11 });
+						hero.animate(frames, upIds);
 					}
 					mc.setDirection(Config.TUP);
 				}
@@ -150,20 +221,19 @@ public class MapTest extends Stage {
 				@Override
 				public void right() {
 					if (!pad.isLastRight()) {
-						hero.animate(new long[] { 220, 220, 220 }, new int[] { 6, 7, 8 });
+						hero.animate(frames, rightIds);
 					}
 					mc.setDirection(Config.TRIGHT);
 				}
 
 				@Override
 				public void other() {
-					mc.resetDirection();
 				}
 
 				@Override
 				public void left() {
 					if (!pad.isLastLeft()) {
-						hero.animate(new long[] { 220, 220, 220 }, new int[] { 3, 4, 5 });
+						hero.animate(frames, leftIds);
 					}
 					mc.setDirection(Config.TLEFT);
 				}
@@ -171,7 +241,7 @@ public class MapTest extends Stage {
 				@Override
 				public void down() {
 					if (!pad.isLastDown()) {
-						hero.animate(new long[] { 220, 220, 220 }, new int[] { 0, 1, 2 });
+						hero.animate(frames, downIds);
 					}
 					mc.setDirection(Config.TDOWN);
 				}
@@ -180,12 +250,6 @@ public class MapTest extends Stage {
 		} catch (IOException e) {
 			error(e.getMessage());
 		}
-	
-		LFont.setDefaultFont(LFont.getFont(20));
-		LClickButton click = MultiScreenTest.getBackButton(this, 1);
-		//禁止触屏点击到click位置，也就是防止点击back时自动寻径
-		addTouchLimit(click);
-		add(click);
 	}
 
 }

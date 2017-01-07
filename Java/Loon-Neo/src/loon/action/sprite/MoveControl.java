@@ -16,11 +16,11 @@ public class MoveControl implements LRelease {
 
 	private int _speed = 8;
 
-	private int _px = 0, _py = 0, _direction = -1;
+	private int _px = 0, _py = 0, _direction = -1, _lastDirection = -1;
 
 	private int _moveX = 0, _moveY = 0, _movingLength = 0;
 
-	private boolean _isMoving = false, _running = false;
+	private boolean _isMoving = false, _running = false, _freeDir = true;
 
 	private ActionBind _bind;
 
@@ -59,6 +59,9 @@ public class MoveControl implements LRelease {
 				public void run(LTimerContext time) {
 					if (_running) {
 						call();
+						if (_freeDir) {
+							resetDirection();
+						}
 					} else {
 						kill();
 					}
@@ -79,10 +82,24 @@ public class MoveControl implements LRelease {
 	public final boolean move(ActionBind bind, Field2D field2d, int direction) {
 		boolean notMove = false;
 		this._movingLength = 0;
+		float posX = bind.getX();
+		float posY = bind.getY();
+		posX = posX / field2d.getTileWidth();
+		posY = posY / field2d.getTileHeight();
+		if (posX - (int) posX > 0.4) {
+			posX = field2d.pixelsToTilesWidth(bind.getX()) + 1;
+		} else {
+			posX = field2d.pixelsToTilesWidth(bind.getX());
+		}
+		if (posY - (int) posY > 0.4) {
+			posY = field2d.pixelsToTilesHeight(bind.getY()) + 1;
+		} else {
+			posY = field2d.pixelsToTilesHeight(bind.getY());
+		}
 		this._px = bind.x();
 		this._py = bind.y();
-		this._moveX = field2d.pixelsToTilesWidth(_px);
-		this._moveY = field2d.pixelsToTilesHeight(_py);
+		this._moveX = (int) posX;
+		this._moveY = (int) posY;
 		switch (direction) {
 		case Config.TLEFT:
 			if (moveTLeft(field2d)) {
@@ -128,6 +145,7 @@ public class MoveControl implements LRelease {
 		if (!notMove) {
 			bind.setX(_px);
 			bind.setY(_py);
+			_lastDirection = _direction;
 		}
 		return notMove;
 	}
@@ -410,6 +428,46 @@ public class MoveControl implements LRelease {
 
 	public boolean isRunning() {
 		return _running;
+	}
+
+	public boolean isFreeDir() {
+		return _freeDir;
+	}
+
+	public void setFreeDir(boolean d) {
+		this._freeDir = d;
+	}
+
+	public boolean isLeft() {
+		return _lastDirection == Config.LEFT;
+	}
+
+	public boolean isRight() {
+		return _lastDirection == Config.RIGHT;
+	}
+
+	public boolean isDown() {
+		return _lastDirection == Config.DOWN;
+	}
+
+	public boolean isUp() {
+		return _lastDirection == Config.UP;
+	}
+
+	public boolean isTLeft() {
+		return _lastDirection == Config.TLEFT;
+	}
+
+	public boolean isTRight() {
+		return _lastDirection == Config.TRIGHT;
+	}
+
+	public boolean isTDown() {
+		return _lastDirection == Config.TDOWN;
+	}
+
+	public boolean isTUp() {
+		return _lastDirection == Config.TUP;
 	}
 
 	@Override
