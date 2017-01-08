@@ -24,6 +24,9 @@ import loon.opengl.LTexturePackClip;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
+/**
+ * 一个简单的二维数组地图构造以及显示类.复杂地图请使用tmx包
+ */
 public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private Sprites sprites;
@@ -80,7 +83,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private boolean active, dirty;
 
-	private boolean visible;
+	private boolean visible, roll;
 
 	private boolean playAnimation;
 
@@ -92,6 +95,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
+	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) throws IOException {
+		this(fileName, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
+	}
+
 	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format)
 			throws IOException {
 		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight, format);
@@ -99,6 +106,14 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileMap(int[][] maps, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
 		this(new Field2D(maps, tileWidth, tileHeight), mWidth, mHeight, format);
+	}
+
+	public TileMap(int[][] maps, int tileWidth, int tileHeight, int mWidth, int mHeight) {
+		this(maps, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
+	}
+
+	public TileMap(int[][] maps, int tileWidth, int tileHeight) {
+		this(maps, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public TileMap(Field2D field) {
@@ -111,8 +126,13 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileMap(Field2D field, int mWidth, int mHeight, Format format) {
 		this.field = field;
-		this.maxWidth = mWidth;
-		this.maxHeight = mHeight;
+		if (field != null && mWidth == -1 && mHeight == -1) {
+			this.maxWidth = field.getViewWidth();
+			this.maxHeight = field.getViewHeight();
+		} else {
+			this.maxWidth = mWidth;
+			this.maxHeight = mHeight;
+		}
 		if (field == null) {
 			this.offset = new Vector2f(0, 0);
 		} else {
@@ -125,8 +145,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.active = true;
 		this.dirty = true;
 		this.visible = true;
-		this.sprites = new Sprites(LSystem.getProcess().getScreen(), getWidth(), getHeight());
-		imgPack.setFormat(format);
+		this.sprites = new Sprites(LSystem.getProcess().getScreen(), maxWidth, maxHeight);
+		this.imgPack.setFormat(format);
 	}
 
 	public static TileMap loadCharsMap(String resName, int tileWidth, int tileHeight) {
@@ -339,7 +359,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public void draw(GLEx g) {
-		draw(g, null, offset.x(), offset.y());
+		if (this.roll) {
+			this.offset = this.toRollPosition(this.offset);
+		}
+		draw(g, null, x() + offset.x(), y() + offset.y());
 	}
 
 	public void draw(GLEx g, SpriteBatch batch, int offsetX, int offsetY) {
@@ -655,6 +678,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		try {
 			g.setBlendMode(_blend);
 			g.setAlpha(_alpha);
+			if (this.roll) {
+				this.offset = toRollPosition(this.offset);
+			}
 			float newX = this._location.x + offsetX + offset.getX();
 			float newY = this._location.y + offsetY + offset.getY();
 			if (update) {
@@ -676,12 +702,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				}
 			}
 			followActionObject();
-			int moveX = (int) (getX() + offsetX + offset.getX());
-			int moveY = (int) (getY() + offsetY + offset.getY());
+			int moveX = (int) newX;
+			int moveY = (int) newY;
 			draw(g, null, moveX, moveY);
 			sprites.paintPos(g, moveX, moveY);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			LSystem.base().log().error("Array2D TileMap error !", ex);
 		} finally {
 			if (update) {
 				g.restoreTx();
@@ -817,15 +843,40 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return y - offset.y;
 	}
 
+	public boolean inMap(int x, int y) {
+		return ((((x >= 0) && (x < maxWidth)) && (y >= 0)) && (y < maxHeight));
+	}
+
 	public MoveControl followControl(ActionBind bind) {
 		followAction(bind);
 		return new MoveControl(bind, this.field);
+	}
+
+	public Vector2f toRollPosition(Vector2f pos) {
+		pos.x = pos.x % ((float) (field.getViewWidth()));
+		pos.y = pos.y % ((float) (field.getViewHeight()));
+		if (pos.x < 0f) {
+			pos.x += field.getViewWidth();
+		}
+		if (pos.x < 0f) {
+			pos.y += field.getViewHeight();
+		}
+		return pos;
+	}
+
+	public boolean isRoll() {
+		return roll;
+	}
+
+	public void setRoll(boolean roll) {
+		this.roll = roll;
 	}
 
 	@Override
 	public void close() {
 		visible = false;
 		playAnimation = false;
+		roll = false;
 		animations.clear();
 		if (imgPack != null) {
 			imgPack.close();

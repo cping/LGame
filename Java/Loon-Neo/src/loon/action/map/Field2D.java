@@ -33,8 +33,10 @@ import loon.utils.TArray;
 
 public class Field2D implements Config {
 
-	private Vector2f offset = new Vector2f();
-	
+	private final static float angular = MathUtils.cos(MathUtils.PI / 4);
+
+	private Vector2f _offset = new Vector2f();
+
 	private RectBox _rect = null;
 
 	public Object Tag;
@@ -42,16 +44,6 @@ public class Field2D implements Config {
 	private String name = "Field2D";
 
 	private Tile tileImpl;
-
-	public void setName(String n) {
-		this.name = n;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	private final static float angular = MathUtils.cos(MathUtils.PI / 4);
 
 	public static int getDirection(float angle) {
 		float tup = MathUtils.sin(angle) * 0 + MathUtils.cos(angle) * -1;
@@ -75,11 +67,9 @@ public class Field2D implements Config {
 
 	private static Vector2f vector2;
 
-	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(
-			9);
+	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(9);
 
-	final static private IntMap<Vector2f> directionValues = new IntMap<Vector2f>(
-			9);
+	final static private IntMap<Vector2f> directionValues = new IntMap<Vector2f>(9);
 
 	static {
 		directions.put(new Vector2f(0, 0), Config.EMPTY);
@@ -134,8 +124,7 @@ public class Field2D implements Config {
 	}
 
 	public void cpy(Field2D field) {
-		this.set(CollectionUtils.copyOf(field.data), field.tileWidth,
-				field.tileHeight);
+		this.set(CollectionUtils.copyOf(field.data), field.tileWidth, field.tileHeight);
 	}
 
 	public Tile getTile(int x, int y) {
@@ -374,8 +363,7 @@ public class Field2D implements Config {
 
 	private int get(int[][] data, Vector2f point) {
 		try {
-			if (point.x() >= 0 && point.x() < width && point.y() >= 0
-					&& point.y() < height) {
+			if (point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height) {
 				return data[point.y()][point.x()];
 			} else {
 				return -1;
@@ -403,19 +391,27 @@ public class Field2D implements Config {
 	}
 
 	public Vector2f getOffset() {
-		return offset;
+		return _offset;
 	}
 
 	public void setOffset(Vector2f offset) {
-		this.offset = offset;
+		this._offset = offset;
 	}
 
 	public int offsetXPixel(int x) {
-		return x - offset.x();
+		return x - _offset.x();
 	}
 
 	public int offsetYPixel(int y) {
-		return y - offset.y();
+		return y - _offset.y();
+	}
+
+	public void setName(String n) {
+		this.name = n;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 }

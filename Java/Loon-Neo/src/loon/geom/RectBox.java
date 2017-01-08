@@ -89,7 +89,48 @@ public class RectBox extends Shape implements BoxSize {
 
 	public void add(Vector2f v) {
 		add(v.x, v.y);
+	}
 
+	public void add(RectBox r) {
+		int tx2 = this.width;
+		int ty2 = this.height;
+		if ((tx2 | ty2) < 0) {
+			setBounds(r.x, r.y, r.width, r.height);
+		}
+		int rx2 = r.width;
+		int ry2 = r.height;
+		if ((rx2 | ry2) < 0) {
+			return;
+		}
+		float tx1 = this.x;
+		float ty1 = this.y;
+		tx2 += tx1;
+		ty2 += ty1;
+		float rx1 = r.x;
+		float ry1 = r.y;
+		rx2 += rx1;
+		ry2 += ry1;
+		if (tx1 > rx1) {
+			tx1 = rx1;
+		}
+		if (ty1 > ry1) {
+			ty1 = ry1;
+		}
+		if (tx2 < rx2) {
+			tx2 = rx2;
+		}
+		if (ty2 < ry2) {
+			ty2 = ry2;
+		}
+		tx2 -= tx1;
+		ty2 -= ty1;
+		if (tx2 > Integer.MAX_VALUE) {
+			tx2 = Integer.MAX_VALUE;
+		}
+		if (ty2 > Integer.MAX_VALUE) {
+			ty2 = Integer.MAX_VALUE;
+		}
+		setBounds(tx1, ty1, tx2, ty2);
 	}
 
 	public int Left() {
@@ -128,8 +169,7 @@ public class RectBox extends Shape implements BoxSize {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public void setBoundsFromCenter(float centerX, float centerY,
-			float cornerX, float cornerY) {
+	public void setBoundsFromCenter(float centerX, float centerY, float cornerX, float cornerY) {
 		float halfW = MathUtils.abs(cornerX - centerX);
 		float halfH = MathUtils.abs(cornerY - centerY);
 		setBounds(centerX - halfW, centerY - halfH, halfW * 2.0, halfH * 2.0);
@@ -201,8 +241,8 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public boolean overlaps(RectBox rectangle) {
-		return !(x > rectangle.x + rectangle.width || x + width < rectangle.x
-				|| y > rectangle.y + rectangle.height || y + height < rectangle.y);
+		return !(x > rectangle.x + rectangle.width || x + width < rectangle.x || y > rectangle.y + rectangle.height
+				|| y + height < rectangle.y);
 	}
 
 	private int _ox, _oy, _ow, _oh;
@@ -213,10 +253,8 @@ public class RectBox extends Shape implements BoxSize {
 		if (_matrix == null) {
 			_matrix = new Matrix4();
 		}
-		if (this._ox != this.x || this._oy != this.y || this._ow != this.width
-				|| this._oh != this.height) {
-			return _matrix
-					.setToOrtho2D(this.x, this.y, this.width, this.height);
+		if (this._ox != this.x || this._oy != this.y || this._ow != this.width || this._oh != this.height) {
+			return _matrix.setToOrtho2D(this.x, this.y, this.width, this.height);
 		}
 		return _matrix;
 	}
@@ -317,8 +355,7 @@ public class RectBox extends Shape implements BoxSize {
 		float i_r = MathUtils.min(a_r, b_r);
 		float i_y = MathUtils.max(a_y, b_y);
 		float i_t = MathUtils.min(a_t, b_t);
-		return i_x < i_r && i_y < i_t ? new RectBox(i_x, i_y, i_r - i_x, i_t
-				- i_y) : null;
+		return i_x < i_r && i_y < i_t ? new RectBox(i_x, i_y, i_r - i_x, i_t - i_y) : null;
 	}
 
 	public static RectBox getIntersection(RectBox a, RectBox b, RectBox result) {
@@ -413,8 +450,8 @@ public class RectBox extends Shape implements BoxSize {
 	 * @return
 	 */
 	public boolean contains(float x, float y, float width, float height) {
-		return (x >= this.x && y >= this.y
-				&& ((x + width) <= (this.x + this.width)) && ((y + height) <= (this.y + this.height)));
+		return (x >= this.x && y >= this.y && ((x + width) <= (this.x + this.width))
+				&& ((y + height) <= (this.y + this.height)));
 	}
 
 	/**
@@ -433,8 +470,7 @@ public class RectBox extends Shape implements BoxSize {
 		float ymin = circle.y - circle.radius;
 		float ymax = ymin + 2f * circle.radius;
 		return ((xmin > x && xmin < x + width) && (xmax > x && xmax < x + width))
-				&& ((ymin > y && ymin < y + height) && (ymax > y && ymax < y
-						+ height));
+				&& ((ymin > y && ymin < y + height) && (ymax > y && ymax < y + height));
 	}
 
 	public boolean contains(Vector2f v) {
@@ -442,24 +478,21 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public boolean contains(Point point) {
-		if (this.x < point.x && this.x + this.width > point.x
-				&& this.y < point.y && this.y + this.height > point.y) {
+		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
 			return true;
 		}
 		return false;
 	}
 
 	public boolean contains(PointF point) {
-		if (this.x < point.x && this.x + this.width > point.x
-				&& this.y < point.y && this.y + this.height > point.y) {
+		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
 			return true;
 		}
 		return false;
 	}
 
 	public boolean contains(PointI point) {
-		if (this.x < point.x && this.x + this.width > point.x
-				&& this.y < point.y && this.y + this.height > point.y) {
+		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
 			return true;
 		}
 		return false;
@@ -490,8 +523,7 @@ public class RectBox extends Shape implements BoxSize {
 	 * @return
 	 */
 	public boolean intersects(float x, float y, float width, float height) {
-		return x + width > this.x && x < this.x + this.width
-				&& y + height > this.y && y < this.y + this.height;
+		return x + width > this.x && x < this.x + this.width && y + height > this.y && y < this.y + this.height;
 	}
 
 	/**
@@ -516,8 +548,7 @@ public class RectBox extends Shape implements BoxSize {
 		int y1 = (int) MathUtils.max(this.y, y);
 		int x2 = (int) MathUtils.min(this.x + this.width - 1, x + width - 1);
 		int y2 = (int) MathUtils.min(this.y + this.height - 1, y + height - 1);
-		setBounds(x1, y1, MathUtils.max(0, x2 - x1 + 1),
-				MathUtils.max(0, y2 - y1 + 1));
+		setBounds(x1, y1, MathUtils.max(0, x2 - x1 + 1), MathUtils.max(0, y2 - y1 + 1));
 	}
 
 	/**
@@ -528,8 +559,7 @@ public class RectBox extends Shape implements BoxSize {
 	 * @return
 	 */
 	public boolean inside(int x, int y) {
-		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y)
-				&& ((y - this.y) < this.height);
+		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}
 
 	/**
@@ -654,8 +684,7 @@ public class RectBox extends Shape implements BoxSize {
 	 * @param y2
 	 * @return
 	 */
-	public final boolean intersectsLine(final float x1, final float y1,
-			final float x2, final float y2) {
+	public final boolean intersectsLine(final float x1, final float y1, final float x2, final float y2) {
 		return contains(x1, y1) || contains(x2, y2);
 	}
 
@@ -667,8 +696,7 @@ public class RectBox extends Shape implements BoxSize {
 	 * @return
 	 */
 	public boolean inside(float x, float y) {
-		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y)
-				&& ((y - this.y) < this.height);
+		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}
 
 	public RectBox cpy() {
@@ -692,8 +720,7 @@ public class RectBox extends Shape implements BoxSize {
 
 	@Override
 	public String toString() {
-		return StringUtils.format("RectBox [x:{0},y:{1},width:{2},height:{3}]",
-				x, y, width, height);
+		return StringUtils.format("RectBox [x:{0},y:{1},width:{2},height:{3}]", x, y, width, height);
 	}
 
 }

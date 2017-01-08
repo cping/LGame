@@ -735,7 +735,11 @@ public class MathUtils {
 			final float maxValue, final float v) {
 		return Math.max(minValue, Math.min(maxValue, v));
 	}
-
+	
+    public static final boolean nextBoolean() {
+        return nextInt(1) != 0;
+    }
+    
 	public static final int nextInt(int range) {
 		return range <= 0 ? 0 : random.nextInt(range);
 	}
