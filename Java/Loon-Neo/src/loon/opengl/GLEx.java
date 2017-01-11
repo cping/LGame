@@ -953,7 +953,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_NONE);
 	}
 
-	public GLEx drawMirrorScale(LTexture texture, float x, float y, float w,
+	public GLEx drawMirrorScale(Painter texture, float x, float y, float w,
 			float h, LColor color, float scaleX, float scaleY, float rotation) {
 		if (isClosed) {
 			return this;
@@ -966,7 +966,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_MIRROR);
 	}
 
-	public GLEx drawMirrorScale(LTexture texture, float x, float y, float w,
+	public GLEx drawMirrorScale(Painter texture, float x, float y, float w,
 			float h, LColor color, float scaleX, float scaleY) {
 		if (isClosed) {
 			return this;
@@ -979,7 +979,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_MIRROR);
 	}
 
-	public GLEx drawFlipScale(LTexture texture, float x, float y, float w,
+	public GLEx drawFlipScale(Painter texture, float x, float y, float w,
 			float h, LColor color, float scaleX, float scaleY, float rotation) {
 		if (isClosed) {
 			return this;
@@ -992,7 +992,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_FLIP);
 	}
 
-	public GLEx drawFlipScale(LTexture texture, float x, float y, float w,
+	public GLEx drawFlipScale(Painter texture, float x, float y, float w,
 			float h, LColor color, float scaleX, float scaleY) {
 		if (isClosed) {
 			return this;
@@ -1285,7 +1285,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public GLEx drawFlip(LTexture texture, float x, float y, LColor color) {
+	public GLEx drawFlip(Painter texture, float x, float y, LColor color) {
 		if (isClosed) {
 			return this;
 		}
@@ -1297,7 +1297,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_FLIP);
 	}
 
-	public GLEx drawFlip(LTexture texture, float x, float y, float w, float h,
+	public GLEx drawFlip(Painter texture, float x, float y, float w, float h,
 			LColor color, float rotation) {
 		if (isClosed) {
 			return this;
@@ -1309,7 +1309,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				texture.height(), color, rotation, null, Direction.TRANS_FLIP);
 	}
 
-	public GLEx drawFlip(LTexture texture, float x, float y, LColor color,
+	public GLEx drawFlip(Painter texture, float x, float y, LColor color,
 			float rotation) {
 		if (isClosed) {
 			return this;
@@ -1322,7 +1322,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_FLIP);
 	}
 
-	public GLEx drawMirror(LTexture texture, float x, float y, LColor color) {
+	public GLEx drawMirror(Painter texture, float x, float y, LColor color) {
 		if (isClosed) {
 			return this;
 		}
@@ -1334,7 +1334,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_MIRROR);
 	}
 
-	public GLEx drawMirror(LTexture texture, float x, float y, LColor color,
+	public GLEx drawMirror(Painter texture, float x, float y, LColor color,
 			float rotation) {
 		if (isClosed) {
 			return this;
@@ -1347,7 +1347,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				Direction.TRANS_MIRROR);
 	}
 
-	public GLEx drawMirror(LTexture texture, float x, float y, float w,
+	public GLEx drawMirror(Painter texture, float x, float y, float w,
 			float h, float rotation) {
 		if (isClosed) {
 			return this;
@@ -1359,7 +1359,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				texture.height(), null, rotation, null, Direction.TRANS_MIRROR);
 	}
 
-	public GLEx drawMirror(LTexture texture, float x, float y, float w,
+	public GLEx drawMirror(Painter texture, float x, float y, float w,
 			float h, LColor color, float rotation) {
 		if (isClosed) {
 			return this;
@@ -1426,7 +1426,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				srcHeight, color, rotation, 1f, 1f, origin, dir);
 	}
 
-	public GLEx draw(LTexture texture, float x, float y, Vector2f origin,
+	public GLEx draw(Painter texture, float x, float y, Vector2f origin,
 			float width, float height, float scaleX, float scaleY,
 			float rotation, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY, LColor color) {
@@ -2899,7 +2899,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y_dst
 	 * @param anchor
 	 */
-	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+	public GLEx drawRegion(Painter texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor) {
 		return drawRegion(texture, x_src, y_src, width, height, transform,
 				x_dst, y_dst, anchor, null);
@@ -2920,7 +2920,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param c
 	 * @return
 	 */
-	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+	public GLEx drawRegion(Painter texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor,
 			LColor c) {
 		return drawRegion(texture, x_src, y_src, width, height, transform,
@@ -2941,14 +2941,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param anchor
 	 * @param c
 	 */
-	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+	public GLEx drawRegion(Painter texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor,
 			LColor c, float radius) {
 		return drawRegion(texture, x_src, y_src, width, height, transform,
 				x_dst, y_dst, anchor, c, null, radius);
 	}
 
-	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+	public GLEx drawRegion(Painter texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor,
 			LColor c, Vector2f pivot, float radius) {
 		return drawRegion(texture, x_src, y_src, width, height, transform,
@@ -2972,7 +2972,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param radius
 	 * @return
 	 */
-	public GLEx drawRegion(LTexture texture, int x_src, int y_src, int width,
+	public GLEx drawRegion(Painter texture, int x_src, int y_src, int width,
 			int height, int transform, int x_dst, int y_dst, int anchor,
 			LColor c, Vector2f pivot, float sx, float sy, float radius) {
 		if (isClosed) {
