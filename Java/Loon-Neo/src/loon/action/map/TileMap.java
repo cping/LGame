@@ -316,7 +316,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public void completed() {
 		if (imgPack != null) {
 			imgPack.packed(format);
+			int[] list = imgPack.getIdList();
 			active = true;
+			for (int i = 0, size = list.length; i < size; i++) {
+				int id = list[i];
+				putTile(id, id);
+			}
 		}
 	}
 

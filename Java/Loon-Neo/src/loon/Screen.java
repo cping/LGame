@@ -32,7 +32,9 @@ import loon.action.sprite.SpriteControls;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
+import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.canvas.Pixmap;
 import loon.component.DefUI;
 import loon.component.Desktop;
 import loon.component.LClickButton;
@@ -67,6 +69,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
 import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
+import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
@@ -3356,6 +3359,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen openURL(final String url) {
 		LSystem.base().openURL(url);
 		return this;
+	}
+
+	public LTexture screenshotToTexture() {
+		return screenshotToImage().onHaveToClose(true).texture();
+	}
+
+	public Image screenshotToImage() {
+		Pixmap pixmap = GLUtils.getScreenshot();
+		Image tmp = pixmap.getImage();
+		Image image = Image.getResize(tmp, getWidth(), getHeight());
+		tmp.close();
+		tmp = null;
+		pixmap.close();
+		pixmap = null;
+		return image;
+	}
+
+	public Pixmap screenshotToPixmap() {
+		Pixmap pixmap = GLUtils.getScreenshot();
+		Pixmap image = Pixmap.getResize(pixmap, getWidth(), getHeight());
+		pixmap.close();
+		pixmap = null;
+		return image;
+
 	}
 
 	public final void destroy() {

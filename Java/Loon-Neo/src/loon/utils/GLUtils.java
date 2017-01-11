@@ -157,8 +157,7 @@ public class GLUtils {
 		return;
 	}
 
-	public static void setClearColor(final GL20 gl, float r, float g, float b,
-			float a) {
+	public static void setClearColor(final GL20 gl, float r, float g, float b, float a) {
 		gl.glClearColor(r, g, b, a);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 	}
@@ -315,8 +314,7 @@ public class GLUtils {
 		bindTexture(gl, tex2d.getID());
 	}
 
-	public static void blendFunction(final GL20 gl, final int pSourceBlendMode,
-			final int pDestinationBlendMode) {
+	public static void blendFunction(final GL20 gl, final int pSourceBlendMode, final int pDestinationBlendMode) {
 		try {
 			if (GLUtils.currentSourceBlendMode != pSourceBlendMode
 					|| GLUtils.currentDestinationBlendMode != pDestinationBlendMode) {
@@ -334,9 +332,7 @@ public class GLUtils {
 		return getFrameBufferPixels(gl, 0, 0, w, h, flipY);
 	}
 
-	public static Pixmap getFrameBufferPixmap(final GL20 gl, int x, int y,
-			int w, int h, boolean flipY) {
-		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+	public static Pixmap getFrameBufferPixmap(final GL20 gl, int x, int y, int w, int h, boolean flipY) {
 		Support support = LSystem.base().support();
 		final Pixmap pixmap = new Pixmap(w, h, true);
 		byte[] buffer = getFrameBufferPixels(gl, x, y, w, h, flipY);
@@ -344,11 +340,10 @@ public class GLUtils {
 		return pixmap;
 	}
 
-	public static byte[] getFrameBufferPixels(final GL20 gl, int x, int y,
-			int w, int h, boolean flipY) {
-		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+	public static byte[] getFrameBufferPixels(final GL20 gl, int x, int y, int w, int h, boolean flipY) {
 		Support support = LSystem.base().support();
 		final ByteBuffer pixels = support.newByteBuffer(w * h * 4);
+		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
 		gl.glReadPixels(x, y, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
 		final int numBytes = w * h * 4;
 		byte[] buffer = new byte[numBytes];
@@ -365,8 +360,16 @@ public class GLUtils {
 		return buffer;
 	}
 
+	public static Pixmap getScreenshot() {
+		return getScreenshot(0, 0, (int) (LSystem.viewSize.width * LSystem.getScaleWidth()),
+				(int) (LSystem.viewSize.height * LSystem.getScaleHeight()), true);
+	}
+
+	public static Pixmap getScreenshot(int x, int y, int w, int h) {
+		return getScreenshot(x, y, w, h, true);
+	}
+
 	public static Pixmap getScreenshot(int x, int y, int w, int h, boolean flipY) {
-		return getFrameBufferPixmap(LSystem.base().graphics().gl, 0, 0, w, h,
-				flipY);
+		return getFrameBufferPixmap(LSystem.base().graphics().gl, x, y, w, h, flipY);
 	}
 }

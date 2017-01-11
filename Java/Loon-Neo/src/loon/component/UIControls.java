@@ -273,6 +273,16 @@ public class UIControls {
 		return this;
 	}
 	
+	public boolean isTransparent() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				return (comp.getAlpha() != 1f);
+			}
+		}
+		return false;
+	}
+	
 	public UIControls setScale(float s) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);

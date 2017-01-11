@@ -30,6 +30,10 @@ public class MoveControl implements LRelease {
 		this(bind, map.getField());
 	}
 
+	public MoveControl(ActionBind bind, int[][] map) {
+		this(bind, new Field2D(map));
+	}
+
 	public MoveControl(ActionBind bind, Field2D field2d) {
 		this._bind = bind;
 		this._map = field2d;

@@ -22,8 +22,8 @@ public class LogDisplay {
 	private int _width = 1, _height = 1;
 
 	public LogDisplay() {
-		this(LFont.newFont(LSystem.isHTML5() ? 20 : 15), LSystem.viewSize
-				.getWidth(), LSystem.viewSize.getHeight(), LColor.white);
+		this(LFont.newFont(LSystem.isHTML5() ? 20 : 15), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
+				LColor.white);
 	}
 
 	public LogDisplay(IFont font, int w, int h, LColor color) {
@@ -56,16 +56,13 @@ public class LogDisplay {
 		}
 	}
 
-	private void paintText(GLEx g, String message, int x, int y, int offset,
-			int height) {
-		_font.drawString(g, message, x, y + height
-				- ((offset + 1) * _textHeight), _fontColor);
+	private void paintText(GLEx g, String message, int x, int y, int offset, int height) {
+		_font.drawString(g, message, x, y + height - ((offset + 1) * _textHeight), _fontColor);
 	}
 
 	public void addText(String message) {
-		if (message.length() * _font.getSize() > _width) {
-			TArray<String> mes = Print.formatMessage(message, _font, _width
-					- _font.getSize());
+		if (message != null && (message.length() * _font.getSize() > _width)) {
+			TArray<String> mes = Print.formatMessage(message, _font, _width - _font.getSize());
 			for (String text : mes) {
 				_texts.add(text);
 			}
@@ -84,8 +81,7 @@ public class LogDisplay {
 	public void setFont(IFont font) {
 		this._font = font;
 		this._textHeight = font.getSize() + 5;
-		this._displayAmount = ((_height - font.getHeight()) / this._textHeight)
-				- 3;
+		this._displayAmount = ((_height - font.getHeight()) / this._textHeight) - 3;
 	}
 
 	public IFont getFont() {

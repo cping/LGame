@@ -35,6 +35,8 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.ArrayMap;
+import loon.utils.IntArray;
+import loon.utils.ArrayMap.Entry;
 import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
@@ -467,6 +469,21 @@ public class LTexturePack implements LRelease {
 
 	public PackEntry getEntry(String name) {
 		return (PackEntry) temps.get(name);
+	}
+
+	public int[] getIdList() {
+		if (temps == null || temps.size() == 0) {
+			return new int[] {};
+		}
+		IntArray ints = new IntArray();
+		for (int i = 0; i < temps.size(); i++) {
+			Entry entry = (Entry) temps.getEntry(i);
+			if (entry != null) {
+				PackEntry e = (PackEntry) entry.getValue();
+				ints.add(e.id);
+			}
+		}
+		return ints.toArray();
 	}
 
 	public void saveCache() {
