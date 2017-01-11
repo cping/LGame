@@ -45,6 +45,98 @@ public class Field2D implements Config {
 
 	private Tile tileImpl;
 
+	public static int angle(Vector2f source, Vector2f target) {
+		int nx = target.x() - source.x();
+		int ny = target.y() - source.y();
+		int r = MathUtils.sqrt(nx * nx + ny * ny);
+		float cos = nx / r;
+		int angle = MathUtils.floor(MathUtils.acos(cos) * 180 / MathUtils.PI);
+		if (ny < 0) {
+			angle = 360 - angle;
+		}
+		return angle;
+	}
+
+	public static int getDirection(Vector2f source, Vector2f target, int dirNumber) {
+		int angleValue = angle(source, target);
+		return getDirection(source, target, angleValue, dirNumber);
+	}
+
+	public static int getDirection(Vector2f source, Vector2f target, float angleValue, int dirNumber) {
+		if (dirNumber == 4) {
+			if (angleValue < 90) {
+				return Config.RIGHT;
+			} else if (angleValue < 180) {
+				return Config.DOWN;
+			} else if (angleValue < 270) {
+				return Config.LEFT;
+			} else {
+				return Config.UP;
+			}
+		} else if (dirNumber == 6) {
+			if (angleValue > 337 || angleValue < 23) {
+				return Config.TRIGHT;
+			} else if (angleValue > 270) {
+				return Config.UP;
+			} else if (angleValue > 202) {
+				return Config.LEFT;
+			} else if (angleValue > 157) {
+				return Config.TLEFT;
+			} else if (angleValue > 90) {
+				return Config.DOWN;
+			} else {
+				return Config.RIGHT;
+			}
+		} else if (dirNumber == 8) {
+			if (angleValue > 337 || angleValue < 23) {
+				return Config.TRIGHT;
+			} else if (angleValue > 292) {
+				return Config.UP;
+			} else if (angleValue > 247) {
+				return Config.TUP;
+			} else if (angleValue > 202) {
+				return Config.LEFT;
+			} else if (angleValue > 157) {
+				return Config.TLEFT;
+			} else if (angleValue > 112) {
+				return Config.DOWN;
+			} else if (angleValue > 67) {
+				return Config.TDOWN;
+			} else {
+				return Config.RIGHT;
+			}
+		}
+		return Config.EMPTY;
+	}
+
+	public static int getDirection(Vector2f source, Vector2f target) {
+		if (source.x - target.x > 0) {
+			if (source.y - target.y > 0) {
+				return Config.LEFT;
+			} else if (source.y - target.y < 0) {
+				return Config.DOWN;
+			} else {
+				return Config.TLEFT;
+			}
+		} else if (source.x - target.x < 0) {
+			if (source.y - target.y > 0) {
+				return Config.UP;
+			} else if (source.y - target.y < 0) {
+				return Config.RIGHT;
+			} else {
+				return Config.TRIGHT;
+			}
+		} else {
+			if (source.y - target.y > 0) {
+				return Config.TUP;
+			} else if (source.y - target.y < 0) {
+				return Config.TDOWN;
+			} else {
+				return Config.EMPTY;
+			}
+		}
+	}
+
 	public static int getDirection(float angle) {
 		float tup = MathUtils.sin(angle) * 0 + MathUtils.cos(angle) * -1;
 		float tright = MathUtils.sin(angle) * 1 + MathUtils.cos(angle) * 0;
