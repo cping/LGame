@@ -1,6 +1,5 @@
 package loon.utils;
 
-
 public class MessageQueue {
 
 	private static class Message {
@@ -19,6 +18,10 @@ public class MessageQueue {
 	public MessageQueue(int size) {
 		maxSize = size;
 		messages = new Array<Message>();
+	}
+
+	public Array<Message> getArrays() {
+		return messages.cpy();
 	}
 
 	public void tick() {
@@ -47,7 +50,7 @@ public class MessageQueue {
 
 	public void add(String text) {
 		messages.add(new Message(text));
-		for (;messages.size() > maxSize;) {
+		for (; messages.size() > maxSize;) {
 			messages.remove(0);
 		}
 	}

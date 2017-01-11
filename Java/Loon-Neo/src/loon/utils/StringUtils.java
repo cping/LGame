@@ -22,7 +22,7 @@ package loon.utils;
 
 import loon.LSystem;
 
-final public class StringUtils {
+final public class StringUtils extends CharUtils {
 
 	private StringUtils() {
 	}

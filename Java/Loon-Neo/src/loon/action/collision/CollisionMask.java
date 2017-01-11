@@ -10,6 +10,18 @@ import loon.utils.TArray;
 
 public class CollisionMask {
 
+	public static Hitbox makeHitBox(String res) {
+		return new Hitbox(makePolygon(res));
+	}
+
+	public static Hitbox makeHitBox(Image image) {
+		return new Hitbox(makePolygon(image));
+	}
+
+	public static Hitbox makeHitBox(Pixmap image) {
+		return new Hitbox(makePolygon(image));
+	}
+
 	public static Polygon makePolygon(String res) {
 		return makePolygon(BaseIO.loadImage(res));
 	}
@@ -18,8 +30,7 @@ public class CollisionMask {
 		if (image == null) {
 			throw new RuntimeException("Image is null !");
 		}
-		return makePolygon(image.getPixels(), (int) image.width(),
-				(int) image.height());
+		return makePolygon(image.getPixels(), (int) image.width(), (int) image.height());
 	}
 
 	public static Polygon makePolygon(Pixmap image) {
@@ -33,8 +44,8 @@ public class CollisionMask {
 		return makePolygon(pixels, 0, 0, 0, 0, w, h, 3);
 	}
 
-	public static Polygon makePolygon(int[] pixels, int offsetX, int offsetY,
-			int startX, int startY, int limitX, int limitY, int interval) {
+	public static Polygon makePolygon(int[] pixels, int offsetX, int offsetY, int startX, int startY, int limitX,
+			int limitY, int interval) {
 		Polygon split = null;
 		Polygon result = null;
 		TArray<Point[]> points = new TArray<Point[]>();

@@ -3382,7 +3382,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		pixmap.close();
 		pixmap = null;
 		return image;
+	}
 
+	public Screen exitGame() {
+		LSystem.exit();
+		return this;
 	}
 
 	public final void destroy() {
