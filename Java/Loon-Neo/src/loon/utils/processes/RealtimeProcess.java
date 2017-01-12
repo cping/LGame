@@ -143,6 +143,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		}
 	}
 
+	@Override
 	public void close() {
 		finish();
 	}

@@ -1,6 +1,7 @@
 package loon.utils.processes;
 
 import loon.LRelease;
+import loon.event.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
@@ -9,11 +10,7 @@ import loon.utils.timer.LTimerContext;
 
 public class WaitProcess implements GameProcess, LRelease {
 
-	public interface WaitEvent {
-		public void action(WaitProcess process);
-	}
-
-	protected boolean isDead;
+	protected boolean isDead = false, isAutoKill = true;
 
 	protected final String id;
 
@@ -23,19 +20,30 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	private SortedList<GameProcess> processesToFireWhenFinished;
 
-	private WaitEvent update;
+	private Updateable update;
 
 	private BooleanValue value = new BooleanValue(false);
 
-	public WaitProcess(long delay, WaitEvent update) {
+	private RealtimeProcess _waitProcess;
+
+	public WaitProcess(Updateable update) {
+		this("Process" + System.currentTimeMillis(), 60, update);
+	}
+
+	public WaitProcess(long delay, Updateable update) {
 		this("Process" + System.currentTimeMillis(), delay, update);
 	}
 
-	public WaitProcess(String id, long delay, WaitEvent update) {
+	public WaitProcess(String id, long delay, Updateable update) {
 		this.timer = new LTimer(delay);
 		this.isDead = false;
+		this.isAutoKill = true;
 		this.id = id;
 		this.update = update;
+	}
+
+	public boolean completed() {
+		return value.result();
 	}
 
 	public BooleanValue get() {
@@ -54,11 +62,21 @@ public class WaitProcess implements GameProcess, LRelease {
 		this.processesToFireWhenFinished.add(realtimeProcess);
 	}
 
+	public WaitProcess wait(RealtimeProcess process) {
+		this._waitProcess = process;
+		return this;
+	}
+
 	@Override
 	public void tick(LTimerContext time) {
 		if (timer.action(time)) {
 			if (update != null) {
-				update.action(this);
+				if (!(_waitProcess != null && !_waitProcess.isDead)) {
+					update.action(this);
+					if (isAutoKill) {
+						kill();
+					}
+				}
 			}
 		}
 	}
@@ -84,8 +102,7 @@ public class WaitProcess implements GameProcess, LRelease {
 			kill();
 		}
 		if (this.processesToFireWhenFinished != null) {
-			for (LIterator<GameProcess> it = this.processesToFireWhenFinished
-					.listIterator(); it.hasNext();) {
+			for (LIterator<GameProcess> it = this.processesToFireWhenFinished.listIterator(); it.hasNext();) {
 				RealtimeProcessManager.get().addProcess(it.next());
 			}
 		}
@@ -95,7 +112,17 @@ public class WaitProcess implements GameProcess, LRelease {
 		value.set(true);
 	}
 
+	public boolean isAutoKill() {
+		return isAutoKill;
+	}
+
+	public void setAutoKill(boolean isAutoKill) {
+		this.isAutoKill = isAutoKill;
+	}
+
+	@Override
 	public void close() {
 		finish();
 	}
+
 }

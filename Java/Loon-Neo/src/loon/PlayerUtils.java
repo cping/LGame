@@ -10,6 +10,7 @@ import loon.action.ActionTween;
 import loon.action.sprite.CanvasPlayer;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
+import loon.event.Updateable;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.BooleanValue;
@@ -19,16 +20,35 @@ import loon.utils.processes.WaitProcess;
 
 public class PlayerUtils extends Director {
 
-	public final BooleanValue waitGame(WaitProcess.WaitEvent update) {
-		WaitProcess wait = new WaitProcess(60, update);
-		RealtimeProcessManager.get().addProcess(wait);
-		return wait.get();
+	/**
+	 * 间隔指定时间后，异步执行Updateable中内容(默认仅执行一次)
+	 * 
+	 * @param delay
+	 * @param update
+	 * @return
+	 */
+	public WaitProcess asynWait(final long delay, final Updateable update) {
+		WaitProcess process = new WaitProcess(delay, update);
+		RealtimeProcessManager.get().addProcess(process);
+		return process;
 	}
 
-	public final BooleanValue waitGame(long time, WaitProcess.WaitEvent update) {
-		WaitProcess wait = new WaitProcess(time, update);
-		RealtimeProcessManager.get().addProcess(wait);
-		return wait.get();
+	/**
+	 * 异步执行Updateable中内容(默认仅执行一次)
+	 * 
+	 * @param update
+	 * @return
+	 */
+	public WaitProcess asynWait(final Updateable update) {
+		return asynWait(60, update);
+	}
+
+	public final BooleanValue waitGame(final Updateable update) {
+		return asynWait(update).get();
+	}
+
+	public final BooleanValue waitGame(long time, Updateable update) {
+		return asynWait(time, update).get();
 	}
 
 	public final static void addAction(ActionEvent e, ActionBind act) {
@@ -59,34 +79,29 @@ public class PlayerUtils extends Director {
 		ActionControl.get().paused(pause, act);
 	}
 
-	public final static ActionTween to(ActionBind target, int tweenType,
-			float duration) {
+	public final static ActionTween to(ActionBind target, int tweenType, float duration) {
 		return to(target, tweenType, duration, true);
 	}
 
-	public final static ActionTween to(ActionBind target, int tweenType,
-			float duration, boolean removeActions) {
+	public final static ActionTween to(ActionBind target, int tweenType, float duration, boolean removeActions) {
 		if (removeActions) {
 			removeAllActions(target);
 		}
 		return ActionTween.to(target, tweenType, duration);
 	}
 
-	public final static ActionTween from(ActionBind target, int tweenType,
-			float duration) {
+	public final static ActionTween from(ActionBind target, int tweenType, float duration) {
 		return from(target, tweenType, duration, true);
 	}
 
-	public final static ActionTween from(ActionBind target, int tweenType,
-			float duration, boolean removeActions) {
+	public final static ActionTween from(ActionBind target, int tweenType, float duration, boolean removeActions) {
 		if (removeActions) {
 			removeAllActions(target);
 		}
 		return ActionTween.from(target, tweenType, duration);
 	}
 
-	public final static ActionTween set(ActionBind target, int tweenType,
-			boolean removeActions) {
+	public final static ActionTween set(ActionBind target, int tweenType, boolean removeActions) {
 		if (removeActions) {
 			removeAllActions(target);
 		}
@@ -118,8 +133,7 @@ public class PlayerUtils extends Director {
 		return new ActionScript(tween, script);
 	}
 
-	public final static ActionScript act(ActionBind target,
-			boolean removeActions, String script) {
+	public final static ActionScript act(ActionBind target, boolean removeActions, String script) {
 		ActionTween tween = set(target, -1, removeActions);
 		return new ActionScript(tween, script);
 	}
@@ -142,16 +156,12 @@ public class PlayerUtils extends Director {
 
 	public final static CanvasPlayer createTextPlayer(LFont font, String text) {
 		TextLayout layout = font.getLayoutText(text);
-		Canvas canvas = LSystem
-				.base()
-				.graphics()
-				.createCanvas(MathUtils.ceil(layout.stringWidth(text)),
-						MathUtils.ceil(layout.getHeight()));
+		Canvas canvas = LSystem.base().graphics().createCanvas(MathUtils.ceil(layout.stringWidth(text)),
+				MathUtils.ceil(layout.getHeight()));
 		canvas.setColor(LColor.white);
 		canvas.setFont(font);
 		canvas.drawText(text, 0f, 0f);
-		CanvasPlayer player = new CanvasPlayer(LSystem.base().graphics(),
-				canvas);
+		CanvasPlayer player = new CanvasPlayer(LSystem.base().graphics(), canvas);
 		return player;
 	}
 

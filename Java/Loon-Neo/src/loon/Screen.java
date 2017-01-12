@@ -3361,10 +3361,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	/**
+	 * 截屏并保存在texture
+	 * @return
+	 */
 	public LTexture screenshotToTexture() {
 		return screenshotToImage().onHaveToClose(true).texture();
 	}
 
+	/**
+	 * 截屏screen并保存在image(image存在系统依赖,为系统本地image类组件的封装)
+	 * @return
+	 */
 	public Image screenshotToImage() {
 		Pixmap pixmap = GLUtils.getScreenshot();
 		Image tmp = pixmap.getImage();
@@ -3376,6 +3384,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return image;
 	}
 
+	/**
+	 * 截屏screen并保存在pixmap(pixmap本质上是一个无系统依赖的，仅存在于内存中的像素数组)
+	 * @return
+	 */
 	public Pixmap screenshotToPixmap() {
 		Pixmap pixmap = GLUtils.getScreenshot();
 		Pixmap image = Pixmap.getResize(pixmap, getWidth(), getHeight());
@@ -3384,11 +3396,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return image;
 	}
 
+	/**
+	 * 退出游戏
+	 * 
+	 * @return
+	 */
 	public Screen exitGame() {
 		LSystem.exit();
 		return this;
 	}
 
+	/**
+	 * 注销Screen
+	 */
 	public final void destroy() {
 		synchronized (this) {
 			index = 0;

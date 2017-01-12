@@ -13,6 +13,17 @@ public class StopwatchTimer {
 
 	private long lastStop;
 
+	private long target;
+
+	public StopwatchTimer() {
+		this(0);
+	}
+
+	public StopwatchTimer(long target) {
+		this.target = target;
+		this.reset();
+	}
+
 	public static StopwatchTimer begin() {
 		StopwatchTimer sw = new StopwatchTimer();
 		sw.start();
@@ -28,6 +39,23 @@ public class StopwatchTimer {
 		u.action(null);
 		sw.stop();
 		return sw;
+	}
+
+	public boolean isDoneAndReset() {
+		if (isDone()) {
+			reset();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isDone() {
+		return (System.currentTimeMillis() - from) >= target;
+	}
+
+	public StopwatchTimer reset() {
+		start();
+		return this;
 	}
 
 	public long start() {

@@ -27,12 +27,10 @@ import loon.geom.RectBox;
 public class MathUtils {
 	final static public Random random = new Random();
 
-	private static final int[] SHIFT = { 0, 1144, 2289, 3435, 4583, 5734, 6888,
-			8047, 9210, 10380, 11556, 12739, 13930, 15130, 16340, 17560, 18792,
-			20036, 21294, 22566, 23853, 25157, 26478, 27818, 29179, 30560,
-			31964, 33392, 34846, 36327, 37837, 39378, 40951, 42560, 44205,
-			45889, 47615, 49385, 51202, 53070, 54991, 56970, 59009, 61113,
-			63287, 65536 };
+	private static final int[] SHIFT = { 0, 1144, 2289, 3435, 4583, 5734, 6888, 8047, 9210, 10380, 11556, 12739, 13930,
+			15130, 16340, 17560, 18792, 20036, 21294, 22566, 23853, 25157, 26478, 27818, 29179, 30560, 31964, 33392,
+			34846, 36327, 37837, 39378, 40951, 42560, 44205, 45889, 47615, 49385, 51202, 53070, 54991, 56970, 59009,
+			61113, 63287, 65536 };
 
 	public static int ifloor(float v) {
 		int iv = (int) v;
@@ -44,8 +42,7 @@ public class MathUtils {
 		return (v <= 0f || iv == v || iv == Integer.MAX_VALUE) ? iv : (iv + 1);
 	}
 
-	public static RectBox getBounds(float x, float y, float width,
-			float height, float rotate, RectBox result) {
+	public static RectBox getBounds(float x, float y, float width, float height, float rotate, RectBox result) {
 		if (rotate == 0) {
 			if (result == null) {
 				result = new RectBox(x, y, width, height);
@@ -63,8 +60,7 @@ public class MathUtils {
 		return result;
 	}
 
-	public static RectBox getBounds(float x, float y, float width,
-			float height, float rotate) {
+	public static RectBox getBounds(float x, float y, float width, float height, float rotate) {
 		return getBounds(x, y, width, height, rotate, null);
 	}
 
@@ -94,15 +90,12 @@ public class MathUtils {
 		return value + 1;
 	}
 
-	public static int[] getLimit(float x, float y, float width, float height,
-			float rotate) {
+	public static int[] getLimit(float x, float y, float width, float height, float rotate) {
 		float rotation = MathUtils.toRadians(rotate);
 		float angSin = MathUtils.sin(rotation);
 		float angCos = MathUtils.cos(rotation);
-		int newW = MathUtils.floor((width * MathUtils.abs(angCos))
-				+ (height * MathUtils.abs(angSin)));
-		int newH = MathUtils.floor((height * MathUtils.abs(angCos))
-				+ (width * MathUtils.abs(angSin)));
+		int newW = MathUtils.floor((width * MathUtils.abs(angCos)) + (height * MathUtils.abs(angSin)));
+		int newH = MathUtils.floor((height * MathUtils.abs(angCos)) + (width * MathUtils.abs(angSin)));
 		int centerX = (int) (x + (width / 2));
 		int centerY = (int) (y + (height / 2));
 		int newX = (centerX - (newW / 2));
@@ -110,8 +103,8 @@ public class MathUtils {
 		return new int[] { newX, newY, newW, newH };
 	}
 
-	final static private String[] zeros = { "", "0", "00", "000", "0000",
-			"00000", "000000", "0000000", "00000000", "000000000", "0000000000" };
+	final static private String[] zeros = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
+			"000000000", "0000000000" };
 
 	/**
 	 * 为指定数值补足位数
@@ -195,8 +188,7 @@ public class MathUtils {
 					return false;
 				}
 				for (; i < chars.length; i++) {
-					if ((chars[i] < '0' || chars[i] > '9')
-							&& (chars[i] < 'a' || chars[i] > 'f')
+					if ((chars[i] < '0' || chars[i] > '9') && (chars[i] < 'a' || chars[i] > 'f')
 							&& (chars[i] < 'A' || chars[i] > 'F')) {
 						return false;
 					}
@@ -242,8 +234,7 @@ public class MathUtils {
 			if (chars[i] == 'e' || chars[i] == 'E') {
 				return false;
 			}
-			if (!allowSigns
-					&& (chars[i] == 'd' || chars[i] == 'D' || chars[i] == 'f' || chars[i] == 'F')) {
+			if (!allowSigns && (chars[i] == 'd' || chars[i] == 'D' || chars[i] == 'f' || chars[i] == 'F')) {
 				return foundDigit;
 			}
 			if (chars[i] == 'l' || chars[i] == 'L') {
@@ -316,10 +307,8 @@ public class MathUtils {
 			cos[i] = (float) Math.cos(a);
 		}
 		for (int i = 0; i < 360; i += 90) {
-			sin[(int) (i * degToIndex) & SIN_MASK] = (float) Math.sin(i
-					* DEG_TO_RAD);
-			cos[(int) (i * degToIndex) & SIN_MASK] = (float) Math.cos(i
-					* DEG_TO_RAD);
+			sin[(int) (i * degToIndex) & SIN_MASK] = (float) Math.sin(i * DEG_TO_RAD);
+			cos[(int) (i * degToIndex) & SIN_MASK] = (float) Math.cos(i * DEG_TO_RAD);
 		}
 		for (int i = 0; i < ATAN2_DIM; i++) {
 			for (int j = 0; j < ATAN2_DIM; j++) {
@@ -534,12 +523,10 @@ public class MathUtils {
 		return result;
 	}
 
-	static int log2arr[] = { 26573, 14624, 7719, 3973, 2017, 1016, 510, 256,
-			128, 64, 32, 16, 8, 4, 2, 1, 0, 0, 0 };
+	static int log2arr[] = { 26573, 14624, 7719, 3973, 2017, 1016, 510, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0, 0, 0 };
 
-	static int lnscale[] = { 0, 45426, 90852, 136278, 181704, 227130, 272557,
-			317983, 363409, 408835, 454261, 499687, 545113, 590539, 635965,
-			681391, 726817 };
+	static int lnscale[] = { 0, 45426, 90852, 136278, 181704, 227130, 272557, 317983, 363409, 408835, 454261, 499687,
+			545113, 590539, 635965, 681391, 726817 };
 
 	public static int ln(int x) {
 		int shift = 0;
@@ -587,8 +574,7 @@ public class MathUtils {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1));
 	}
 
-	static public final float dist(float x1, float y1, float z1, float x2,
-			float y2, float z2) {
+	static public final float dist(float x1, float y1, float z1, float x2, float y2, float z2) {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1) + sq(z2 - z1));
 	}
 
@@ -668,10 +654,8 @@ public class MathUtils {
 		return (value - start) / (stop - start);
 	}
 
-	static public final float map(float value, float istart, float istop,
-			float ostart, float ostop) {
-		return ostart + (ostop - ostart)
-				* ((value - istart) / (istop - istart));
+	static public final float map(float value, float istart, float istop, float ostart, float ostop) {
+		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 	}
 
 	public static final float sin(float rad) {
@@ -726,20 +710,18 @@ public class MathUtils {
 		return deg * 360 / TWO_PI;
 	}
 
-	public static final int bringToBounds(final int minValue,
-			final int maxValue, final int v) {
+	public static final int bringToBounds(final int minValue, final int maxValue, final int v) {
 		return Math.max(minValue, Math.min(maxValue, v));
 	}
 
-	public static final float bringToBounds(final float minValue,
-			final float maxValue, final float v) {
+	public static final float bringToBounds(final float minValue, final float maxValue, final float v) {
 		return Math.max(minValue, Math.min(maxValue, v));
 	}
-	
-    public static final boolean nextBoolean() {
-        return nextInt(1) != 0;
-    }
-    
+
+	public static final boolean nextBoolean() {
+		return nextInt(1) != 0;
+	}
+
 	public static final int nextInt(int range) {
 		return range <= 0 ? 0 : random.nextInt(range);
 	}
@@ -796,20 +778,16 @@ public class MathUtils {
 		return (int) (x + 0.5f);
 	}
 
-	public static float barycentric(float value1, float value2, float value3,
-			float amount1, float amount2) {
-		return value1 + (value2 - value1) * amount1 + (value3 - value1)
-				* amount2;
+	public static float barycentric(float value1, float value2, float value3, float amount1, float amount2) {
+		return value1 + (value2 - value1) * amount1 + (value3 - value1) * amount2;
 	}
 
-	public static float catmullRom(float value1, float value2, float value3,
-			float value4, float amount) {
+	public static float catmullRom(float value1, float value2, float value3, float value4, float amount) {
 		double amountSquared = amount * amount;
 		double amountCubed = amountSquared * amount;
 		return (float) (0.5 * (2.0 * value2 + (value3 - value1) * amount
-				+ (2.0 * value1 - 5.0 * value2 + 4.0 * value3 - value4)
-				* amountSquared + (3.0 * value2 - value1 - 3.0 * value3 + value4)
-				* amountCubed));
+				+ (2.0 * value1 - 5.0 * value2 + 4.0 * value3 - value4) * amountSquared
+				+ (3.0 * value2 - value1 - 3.0 * value3 + value4) * amountCubed));
 	}
 
 	public static final int clamp(int value, int min, int max) {
@@ -832,8 +810,7 @@ public class MathUtils {
 		return Math.abs(value1 - value2);
 	}
 
-	public static float hermite(float value1, float tangent1, float value2,
-			float tangent2, float amount) {
+	public static float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {
 		double v1 = value1, v2 = value2, t1 = tangent1, t2 = tangent2, s = amount, result;
 		double sCubed = s * s * s;
 		double sSquared = s * s;
@@ -843,8 +820,7 @@ public class MathUtils {
 		} else if (amount == 1f) {
 			result = value2;
 		} else {
-			result = (2 * v1 - 2 * v2 + t2 + t1) * sCubed
-					+ (3 * v2 - 3 * v1 - 2 * t1 - t2) * sSquared + t1 * s + v1;
+			result = (2 * v1 - 2 * v2 + t2 + t1) * sCubed + (3 * v2 - 3 * v1 - 2 * t1 - t2) * sSquared + t1 * s + v1;
 		}
 		return (float) result;
 	}
@@ -911,8 +887,7 @@ public class MathUtils {
 		}
 	}
 
-	public static final void arraySumInternal(final long[] values,
-			final long factor) {
+	public static final void arraySumInternal(final long[] values, final long factor) {
 		values[0] = values[0] * factor;
 		final int valueCount = values.length;
 		for (int i = 1; i < valueCount; i++) {
@@ -920,8 +895,7 @@ public class MathUtils {
 		}
 	}
 
-	public static final void arraySumInto(final long[] values,
-			final long[] targetValues, final long factor) {
+	public static final void arraySumInto(final long[] values, final long[] targetValues, final long factor) {
 		targetValues[0] = values[0] * factor;
 		final int valueCount = values.length;
 		for (int i = 1; i < valueCount; i++) {
@@ -942,27 +916,22 @@ public class MathUtils {
 		return MathUtils.arraySum(values) / values.length;
 	}
 
-	public static float[] scaleAroundCenter(final float[] vertices,
-			final float scaleX, final float scaleY, final float scaleCenterX,
-			final float scaleCenterY) {
+	public static float[] scaleAroundCenter(final float[] vertices, final float scaleX, final float scaleY,
+			final float scaleCenterX, final float scaleCenterY) {
 		if (scaleX != 1 || scaleY != 1) {
 			for (int i = vertices.length - 2; i >= 0; i -= 2) {
-				vertices[i] = scaleCenterX + (vertices[i] - scaleCenterX)
-						* scaleX;
-				vertices[i + 1] = scaleCenterY
-						+ (vertices[i + 1] - scaleCenterY) * scaleY;
+				vertices[i] = scaleCenterX + (vertices[i] - scaleCenterX) * scaleX;
+				vertices[i + 1] = scaleCenterY + (vertices[i + 1] - scaleCenterY) * scaleY;
 			}
 		}
 		return vertices;
 	}
 
-	public static final boolean isInBounds(final int minValue,
-			final int maxValue, final int val) {
+	public static final boolean isInBounds(final int minValue, final int maxValue, final int val) {
 		return val >= minValue && val <= maxValue;
 	}
 
-	public static final boolean isInBounds(final float minValue,
-			final float maxValue, final float val) {
+	public static final boolean isInBounds(final float minValue, final float maxValue, final float val) {
 		return val >= minValue && val <= maxValue;
 	}
 
@@ -1056,9 +1025,8 @@ public class MathUtils {
 	}
 
 	public static float bezierAt(float a, float b, float c, float d, float t) {
-		return (MathUtils.pow(1 - t, 3) * a + 3 * t * (MathUtils.pow(1 - t, 2))
-				* b + 3 * MathUtils.pow(t, 2) * (1 - t) * c + MathUtils.pow(t,
-				3) * d);
+		return (MathUtils.pow(1 - t, 3) * a + 3 * t * (MathUtils.pow(1 - t, 2)) * b
+				+ 3 * MathUtils.pow(t, 2) * (1 - t) * c + MathUtils.pow(t, 3) * d);
 	}
 
 	public final static int parseUnsignedInt(String s) {
@@ -1125,6 +1093,18 @@ public class MathUtils {
 		}
 		return n - ((x << 1) >>> 31);
 
+	}
+
+	public final static float scale(float value, float maxValue, float maxScale) {
+		return (maxScale / maxValue) * value;
+	}
+
+	public final static float percent(float value, float percent) {
+		return value * (percent * 0.01f);
+	}
+
+	public final static int percent(int value, int percent) {
+		return (int) (value * (percent * 0.01f));
 	}
 
 }
