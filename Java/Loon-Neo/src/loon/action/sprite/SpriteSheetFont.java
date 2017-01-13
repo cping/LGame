@@ -9,7 +9,7 @@ import loon.utils.StringUtils;
 
 public class SpriteSheetFont implements IFont {
 
-	private SpriteSheet font;
+	private SpriteSheet _font;
 
 	private int _size = -1;
 
@@ -30,7 +30,7 @@ public class SpriteSheetFont implements IFont {
 	private PointI _offset = new PointI();
 
 	public SpriteSheetFont(SpriteSheet font, char startingCharacter) {
-		this.font = font;
+		this._font = font;
 		this.startingCharacter = startingCharacter;
 		horizontalCount = font.getHorizontalCount();
 		int verticalCount = font.getVerticalCount();
@@ -47,8 +47,7 @@ public class SpriteSheetFont implements IFont {
 		drawString(text, x, y, col, 0, text.length() - 1);
 	}
 
-	public void drawString(String text, float x, float y, LColor col,
-			int startIndex, int endIndex) {
+	public void drawString(String text, float x, float y, LColor col, int startIndex, int endIndex) {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -59,14 +58,10 @@ public class SpriteSheetFont implements IFont {
 				int yPos = (index / horizontalCount);
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (fontScaleX == 1f && fontScaleY == 1f) {
-						font.getSubImage(xPos, yPos).draw(
-								x + (i * charWidth) + _offset.x, y + _offset.y,
-								col);
+						_font.getSubImage(xPos, yPos).draw(x + (i * charWidth) + _offset.x, y + _offset.y, col);
 					} else {
-						font.getSubImage(xPos, yPos).draw(
-								x + (i * charWidth * fontScaleX) + _offset.x,
-								y + _offset.y, charWidth * fontScaleX,
-								charHeight * fontScaleY, col);
+						_font.getSubImage(xPos, yPos).draw(x + (i * charWidth * fontScaleX) + _offset.x, y + _offset.y,
+								charWidth * fontScaleX, charHeight * fontScaleY, col);
 					}
 				}
 			}
@@ -83,8 +78,8 @@ public class SpriteSheetFont implements IFont {
 		drawString(gl, text, x, y, col, 0, text.length() - 1);
 	}
 
-	public void drawString(GLEx gl, String text, final float x, final float y,
-			LColor col, int startIndex, int endIndex) {
+	public void drawString(GLEx gl, String text, final float x, final float y, LColor col, int startIndex,
+			int endIndex) {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -107,13 +102,11 @@ public class SpriteSheetFont implements IFont {
 					sx += widthSize;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
-					if (font.contains(xPos, yPos)) {
+					if (_font.contains(xPos, yPos)) {
 						if (fontScaleX == 1f && fontScaleY == 1f) {
-							gl.draw(font.getSubImage(xPos, yPos), sx, sy
-									+ lines, col);
+							gl.draw(_font.getSubImage(xPos, yPos), sx, sy + lines, col);
 						} else {
-							gl.draw(font.getSubImage(xPos, yPos), sx, sy
-									+ lines, widthSize, heightSize, col);
+							gl.draw(_font.getSubImage(xPos, yPos), sx, sy + lines, widthSize, heightSize, col);
 						}
 					}
 				}
@@ -122,8 +115,7 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx g, String text, float x, float y,
-			float rotation, LColor c) {
+	public void drawString(GLEx g, String text, float x, float y, float rotation, LColor c) {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -143,8 +135,8 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx gl, String text, float x, float y, float sx,
-			float sy, float ax, float ay, float rotation, LColor c) {
+	public void drawString(GLEx gl, String text, float x, float y, float sx, float sy, float ax, float ay,
+			float rotation, LColor c) {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -225,8 +217,7 @@ public class SpriteSheetFont implements IFont {
 
 	@Override
 	public float getAscent() {
-		return _assent == -1 ? (charWidth + charHeight / 2) * this.fontScaleY
-				: _assent;
+		return _assent == -1 ? (charWidth + charHeight / 2) * this.fontScaleY : _assent;
 	}
 
 	@Override
@@ -249,8 +240,7 @@ public class SpriteSheetFont implements IFont {
 
 	@Override
 	public int getSize() {
-		return _size == -1 ? (int) ((charWidth + charHeight / 2) * this.fontScaleY)
-				: _size;
+		return _size == -1 ? (int) ((charWidth + charHeight / 2) * this.fontScaleY) : _size;
 	}
 
 	@Override
@@ -286,6 +276,13 @@ public class SpriteSheetFont implements IFont {
 	@Override
 	public int charWidth(char c) {
 		return charWidth;
+	}
+
+	@Override
+	public void close() {
+		if (_font != null) {
+			_font.close();
+		}
 	}
 
 }

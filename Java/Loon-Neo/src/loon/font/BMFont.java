@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
-import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
@@ -42,7 +41,7 @@ import loon.utils.TArray;
 
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
-public class BMFont implements IFont, LRelease {
+public class BMFont implements IFont {
 
 	private static BMFont _font;
 
@@ -52,7 +51,7 @@ public class BMFont implements IFont, LRelease {
 				_font = new BMFont(LSystem.FRAMEWORK_IMG_NAME + "deffont.txt",
 						LSystem.FRAMEWORK_IMG_NAME + "deffont.png");
 			} catch (Exception e) {
-				e.printStackTrace();
+				LSystem.base().log().error("BMFont error!", e);
 			}
 		}
 		return _font;
@@ -133,9 +132,8 @@ public class BMFont implements IFont, LRelease {
 			if (_isClose) {
 				return;
 			}
-			displayList.draw((x + xoffset) * fontScaleX, (y + yoffset)
-					* fontScaleY, width * fontScaleX, height * fontScaleY, tx,
-					ty, tx + width, ty + height);
+			displayList.draw((x + xoffset) * fontScaleX, (y + yoffset) * fontScaleY, width * fontScaleX,
+					height * fontScaleY, tx, ty, tx + width, ty + height);
 		}
 
 		public void draw(GLEx g, float sx, float sy, float x, float y) {
@@ -143,9 +141,8 @@ public class BMFont implements IFont, LRelease {
 				return;
 			}
 
-			g.draw(displayList, sx + (x + xoffset) * fontScaleX, sy
-					+ (y + yoffset) * fontScaleX, width * fontScaleX, height
-					* fontScaleY, tx, ty, width, height);
+			g.draw(displayList, sx + (x + xoffset) * fontScaleX, sy + (y + yoffset) * fontScaleX, width * fontScaleX,
+					height * fontScaleY, tx, ty, width, height);
 		}
 
 		public int getKerning(int point) {
@@ -214,8 +211,7 @@ public class BMFont implements IFont, LRelease {
 
 		}
 
-		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(
-				64);
+		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(64);
 		TArray<CharDef> charDefs = new TArray<CharDef>(DEFAULT_MAX_CHAR);
 
 		int maxChar = 0;
@@ -264,15 +260,13 @@ public class BMFont implements IFont, LRelease {
 			}
 		}
 
-		for (Entries<Short, TArray<Short>> iter = kerning.entries(); iter
-				.hasNext();) {
+		for (Entries<Short, TArray<Short>> iter = kerning.entries(); iter.hasNext();) {
 			Entry<Short, TArray<Short>> entry = iter.next();
 			short first = entry.key;
 			TArray<Short> valueList = entry.value;
 			short[] valueArray = new short[valueList.size];
 			int i = 0;
-			for (Iterator<Short> valueIter = valueList.iterator(); valueIter
-					.hasNext(); i++) {
+			for (Iterator<Short> valueIter = valueList.iterator(); valueIter.hasNext(); i++) {
 				valueArray[i] = (valueIter.next()).shortValue();
 			}
 			if (first < totalCharSet) {
@@ -323,8 +317,7 @@ public class BMFont implements IFont, LRelease {
 		drawBatchString(text, x, y, col, 0, text.length() - 1);
 	}
 
-	private void drawBatchString(String text, float tx, float ty, LColor c,
-			int startIndex, int endIndex) {
+	private void drawBatchString(String text, float tx, float ty, LColor c, int startIndex, int endIndex) {
 		if (_isClose) {
 			return;
 		}
@@ -332,6 +325,10 @@ public class BMFont implements IFont, LRelease {
 			return;
 		}
 		make();
+		if (displayList == null || displayList.isClose()) {
+			this.displayList = BaseIO.loadTexture(_imagePath);
+			return;
+		}
 		if (_initDraw < 1) {
 			_initDraw++;
 			return;
@@ -428,20 +425,16 @@ public class BMFont implements IFont, LRelease {
 
 	private void make() {
 		if (!_initParse) {
-			if (displayList == null) {
-				this.displayList = BaseIO.loadTexture(_imagePath);
-			}
 			try {
 				this.parse(BaseIO.loadText(_texPath));
 			} catch (Exception e) {
-				throw new RuntimeException(e.getMessage());
+				LSystem.base().log().error("BMFont error!", e);
 			}
 			_initParse = true;
 		}
 	}
 
-	private void drawString(GLEx g, String text, float tx, float ty, LColor c,
-			int startIndex, int endIndex) {
+	private void drawString(GLEx g, String text, float tx, float ty, LColor c, int startIndex, int endIndex) {
 		if (_isClose) {
 			return;
 		}
@@ -449,6 +442,10 @@ public class BMFont implements IFont, LRelease {
 			return;
 		}
 		make();
+		if (displayList == null || displayList.isClose()) {
+			this.displayList = BaseIO.loadTexture(_imagePath);
+			return;
+		}
 		if (_initDraw < 1) {
 			_initDraw++;
 			return;
@@ -483,8 +480,7 @@ public class BMFont implements IFont, LRelease {
 	}
 
 	@Override
-	public void drawString(GLEx g, String text, float x, float y,
-			float rotation, LColor c) {
+	public void drawString(GLEx g, String text, float x, float y, float rotation, LColor c) {
 		if (_isClose) {
 			return;
 		}
@@ -507,8 +503,8 @@ public class BMFont implements IFont, LRelease {
 	}
 
 	@Override
-	public void drawString(GLEx gl, String text, float x, float y, float sx,
-			float sy, float ax, float ay, float rotation, LColor c) {
+	public void drawString(GLEx gl, String text, float x, float y, float sx, float sy, float ax, float ay,
+			float rotation, LColor c) {
 		if (_isClose) {
 			return;
 		}
@@ -588,8 +584,7 @@ public class BMFont implements IFont, LRelease {
 			if (charDef == null) {
 				continue;
 			}
-			display.height = MathUtils.max(charDef.height + charDef.yoffset,
-					display.height);
+			display.height = MathUtils.max(charDef.height + charDef.yoffset, display.height);
 		}
 		display.height += lines * lineHeight;
 		return (int) (display.height * fontScaleY);
@@ -678,6 +673,7 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public int getHeight() {
+		make();
 		return (int) (lineHeight * fontScaleY) - halfHeight;
 	}
 
@@ -708,14 +704,14 @@ public class BMFont implements IFont, LRelease {
 
 	@Override
 	public float getAscent() {
-		return _ascent == -1 ? (int) (lineHeight * this.fontScaleY)
-				- halfHeight / 3 : _ascent;
+		make();
+		return _ascent == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight / 3 : _ascent;
 	}
 
 	@Override
 	public int getSize() {
-		return _size == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight
-				/ 4 : _size;
+		make();
+		return _size == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight / 4 : _size;
 	}
 
 	@Override

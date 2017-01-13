@@ -27,7 +27,7 @@ public class PlayerUtils extends Director {
 	 * @param update
 	 * @return
 	 */
-	public WaitProcess asynWait(final long delay, final Updateable update) {
+	public final static WaitProcess asynWait(final long delay, final Updateable update) {
 		WaitProcess process = new WaitProcess(delay, update);
 		RealtimeProcessManager.get().addProcess(process);
 		return process;
@@ -39,15 +39,15 @@ public class PlayerUtils extends Director {
 	 * @param update
 	 * @return
 	 */
-	public WaitProcess asynWait(final Updateable update) {
+	public final static WaitProcess asynWait(final Updateable update) {
 		return asynWait(60, update);
 	}
 
-	public final BooleanValue waitGame(final Updateable update) {
+	public final static BooleanValue waitGame(final Updateable update) {
 		return asynWait(update).get();
 	}
 
-	public final BooleanValue waitGame(long time, Updateable update) {
+	public final static BooleanValue waitGame(long time, Updateable update) {
 		return asynWait(time, update).get();
 	}
 

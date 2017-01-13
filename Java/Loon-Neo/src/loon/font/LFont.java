@@ -387,4 +387,9 @@ public class LFont implements IFont {
 	public String toString() {
 		return textFormat.toString();
 	}
+
+	@Override
+	public void close() {
+		
+	}
 }

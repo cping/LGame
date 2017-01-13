@@ -35,7 +35,11 @@ public class Font {
 	public Font(String name, Style style, float size) {
 		this.name = name;
 		this.style = style;
-		this.size = size;
+		if (size % 2 == 0) {
+			this.size = size;
+		} else {
+			this.size = size + 1;
+		}
 	}
 
 	public Font(String name, float size) {
@@ -53,12 +57,11 @@ public class Font {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof Font)){
+		if (!(other instanceof Font)) {
 			return false;
 		}
 		Font ofont = (Font) other;
-		return name.equals(ofont.name) && style == ofont.style
-				&& size == ofont.size;
+		return name.equals(ofont.name) && style == ofont.style && size == ofont.size;
 	}
 
 	@Override

@@ -885,8 +885,13 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 		setHeight(h);
 	}
 
+	public void setBounds(float x, float y, float width, float height) {
+		this.setLocation(x, y);
+		this.setSize(width, height);
+	}
+
 	public Dimension getDimension() {
-		return new Dimension(this._width, this._height);
+		return new Dimension(this._width * this._scaleX, this._height * this._scaleY);
 	}
 
 	private void allocateShear() {

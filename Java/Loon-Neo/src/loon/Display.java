@@ -24,10 +24,9 @@ import loon.action.ActionControl;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.component.Desktop;
-import loon.font.LFont;
+import loon.font.IFont;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRFont;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.processes.RealtimeProcessManager;
@@ -136,15 +135,13 @@ public class Display extends LSystemView {
 
 	private int frameRate, frames;
 
-	private LSTRFont fpsFont;
+	private IFont fpsFont;
 
 	private float cred, cgreen, cblue, calpha;
 
 	private final GLEx glEx;
 
 	private final LProcess process;
-
-	private final String pFontString = " MEORYFPSBITED0123456789:.of";
 
 	private LSetting setting;
 
@@ -154,8 +151,7 @@ public class Display extends LSystemView {
 
 	private void newDefView(boolean show) {
 		if (show && fpsFont == null) {
-			this.fpsFont = new LSTRFont(LFont.getFont(LSystem.isHTML5() ? 20
-					: 15), pFontString, true);
+			this.fpsFont = LSystem.getSystemLogFont();
 		}
 		showLogo = setting.isLogo;
 		if (showLogo && !StringUtils.isEmpty(setting.logoPath)) {

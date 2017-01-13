@@ -1,5 +1,6 @@
 package loon.font;
 
+import loon.LRelease;
 import loon.canvas.LColor;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
@@ -7,7 +8,7 @@ import loon.opengl.GLEx;
 /**
  * loon的统一字体实现接口，可以通过注入不同的IFont，改变全局或局部字体
  */
-public interface IFont {
+public interface IFont extends LRelease {
 
 	void drawString(GLEx g, String string, float x, float y);
 

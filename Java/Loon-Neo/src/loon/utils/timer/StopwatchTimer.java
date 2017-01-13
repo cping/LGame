@@ -50,7 +50,7 @@ public class StopwatchTimer {
 	}
 
 	public boolean isDone() {
-		return (System.currentTimeMillis() - from) >= target;
+		return (currentTime() - from) >= target;
 	}
 
 	public StopwatchTimer reset() {

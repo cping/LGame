@@ -1002,12 +1002,23 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		touchType = new boolean[15];
 	}
 
+	private final String _screenName;
+
+	public Screen(String name, int w, int h) {
+		this._screenName = name;
+		this.resetSize(w, h);
+	}
+
+	public Screen(String name) {
+		this(name, 0, 0);
+	}
+
 	public Screen(int w, int h) {
-		resetSize(w, h);
+		this("unkown", w, h);
 	}
 
 	public Screen() {
-		this(0, 0);
+		this("unkown", 0, 0);
 	}
 
 	final public void resetSize() {
@@ -3363,6 +3374,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 截屏并保存在texture
+	 * 
 	 * @return
 	 */
 	public LTexture screenshotToTexture() {
@@ -3371,6 +3383,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 截屏screen并保存在image(image存在系统依赖,为系统本地image类组件的封装)
+	 * 
 	 * @return
 	 */
 	public Image screenshotToImage() {
@@ -3386,6 +3399,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 截屏screen并保存在pixmap(pixmap本质上是一个无系统依赖的，仅存在于内存中的像素数组)
+	 * 
 	 * @return
 	 */
 	public Pixmap screenshotToPixmap() {
@@ -3404,6 +3418,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen exitGame() {
 		LSystem.exit();
 		return this;
+	}
+
+	/**
+	 * 当前Screen名称
+	 * 
+	 * @return
+	 */
+	public String getScreenName() {
+		return _screenName;
 	}
 
 	/**

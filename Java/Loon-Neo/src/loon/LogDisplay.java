@@ -3,7 +3,6 @@ package loon;
 import loon.canvas.LColor;
 import loon.component.Print;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
@@ -22,8 +21,7 @@ public class LogDisplay {
 	private int _width = 1, _height = 1;
 
 	public LogDisplay() {
-		this(LFont.newFont(LSystem.isHTML5() ? 20 : 15), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
-				LColor.white);
+		this(LSystem.getSystemLogFont(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), LColor.white);
 	}
 
 	public LogDisplay(IFont font, int w, int h, LColor color) {
@@ -72,6 +70,16 @@ public class LogDisplay {
 		if (_texts.size() > _displayAmount) {
 			_texts.removeIndex(0);
 		}
+	}
+
+	public String getText() {
+		StringBuffer sbr = new StringBuffer();
+		if (_texts != null) {
+			for (String text : _texts) {
+				sbr.append(text);
+			}
+		}
+		return sbr.toString();
 	}
 
 	public void clear() {

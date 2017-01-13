@@ -198,4 +198,9 @@ public class ShadowFont implements IFont {
 	public int charWidth(char c) {
 		return strfont.charWidth(c);
 	}
+
+	@Override
+	public void close() {
+		
+	}
 }

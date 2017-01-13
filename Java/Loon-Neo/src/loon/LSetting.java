@@ -20,16 +20,17 @@
  */
 package loon;
 
+import loon.font.IFont;
 import loon.utils.NumberUtils;
 
 public class LSetting {
 
 	// 若此处true,则fps,memory以及sprite数量全部显示
 	public boolean isDebug = false;
-	
+
 	// 此项为true时,将log信息也打印到窗体中
 	public boolean isDisplayLog = false;
-	
+
 	// 是否显示FPS帧率
 	public boolean isFPS = false;
 
@@ -96,6 +97,10 @@ public class LSetting {
 		this.fontName = setting.fontName;
 	}
 
+	public void setSystemLogFont(IFont font) {
+		LSystem.setSystemLogFont(font);
+	}
+
 	public boolean landscape() {
 		return this.height < this.width;
 	}
@@ -109,8 +114,7 @@ public class LSetting {
 	}
 
 	public boolean scaling() {
-		return this.width_zoom > 0
-				&& this.height_zoom > 0
+		return this.width_zoom > 0 && this.height_zoom > 0
 				&& (this.width_zoom != this.width || this.height_zoom != this.height);
 	}
 

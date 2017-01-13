@@ -29,7 +29,9 @@ import loon.utils.TArray;
  */
 public class TileMap extends LObject<ISprite> implements ISprite {
 
-	private Sprites sprites;
+	private LTexture _background;
+
+	private Sprites _sprites;
 
 	public static interface DrawListener {
 
@@ -145,7 +147,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.active = true;
 		this.dirty = true;
 		this.visible = true;
-		this.sprites = new Sprites(LSystem.getProcess().getScreen(), maxWidth, maxHeight);
+		this._sprites = new Sprites(LSystem.getProcess().getScreen(), maxWidth, maxHeight);
 		this.imgPack.setFormat(format);
 	}
 
@@ -344,23 +346,23 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public void add(ISprite sprite) {
-		sprites.add(sprite);
+		_sprites.add(sprite);
 	}
 
 	public void addAt(ISprite sprite, float x, float y) {
-		sprites.addAt(sprite, x, y);
+		_sprites.addAt(sprite, x, y);
 	}
 
 	public void remove(int idx) {
-		sprites.remove(idx);
+		_sprites.remove(idx);
 	}
 
 	public void remove(ISprite sprite) {
-		sprites.remove(sprite);
+		_sprites.remove(sprite);
 	}
 
 	public void remove(int start, int end) {
-		sprites.remove(start, end);
+		_sprites.remove(start, end);
 	}
 
 	public void draw(GLEx g) {
@@ -372,6 +374,15 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public void draw(GLEx g, SpriteBatch batch, int offsetX, int offsetY) {
 		final boolean useBatch = (batch != null);
+		if (useBatch) {
+			if (_background != null) {
+				batch.draw(_background, offsetX, offsetY);
+			}
+		} else {
+			if (_background != null) {
+				g.draw(_background, offsetX, offsetY);
+			}
+		}
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
 			imgPack.postCache();
 			if (playAnimation) {
@@ -710,7 +721,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			int moveX = (int) newX;
 			int moveY = (int) newY;
 			draw(g, null, moveX, moveY);
-			sprites.paintPos(g, moveX, moveY);
+			_sprites.paintPos(g, moveX, moveY);
 		} catch (Exception ex) {
 			LSystem.base().log().error("Array2D TileMap error !", ex);
 		} finally {
@@ -737,7 +748,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public Sprites getSprites() {
-		return sprites;
+		return _sprites;
 	}
 
 	public void update(long elapsedTime) {
@@ -746,7 +757,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				a.update(elapsedTime);
 			}
 		}
-		sprites.update(elapsedTime);
+		_sprites.update(elapsedTime);
 		if (listener != null) {
 			listener.update(elapsedTime);
 		}
@@ -877,6 +888,15 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.roll = roll;
 	}
 
+	public LTexture getBackground() {
+		return this._background;
+	}
+
+	public TileMap setBackground(LTexture bg) {
+		this._background = bg;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		visible = false;
@@ -886,7 +906,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (imgPack != null) {
 			imgPack.close();
 		}
-		sprites.close();
+		if (_sprites != null) {
+			_sprites.close();
+		}
+		if (_background != null) {
+			_background.close();
+		}
 		setState(State.DISPOSED);
 	}
 

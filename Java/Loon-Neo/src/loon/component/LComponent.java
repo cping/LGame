@@ -46,6 +46,7 @@ import loon.event.SysTouch;
 import loon.event.Touched;
 import loon.event.TouchedClick;
 import loon.geom.Affine2f;
+import loon.geom.Dimension;
 import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectBox;
@@ -1259,6 +1260,10 @@ public abstract class LComponent extends LObject<LContainer> implements
 	public boolean isClickDrag() {
 		return input.getTouchPressed() == SysTouch.TOUCH_DRAG
 				|| SysTouch.isDrag();
+	}
+
+	public Dimension getDimension() {
+		return new Dimension(this._width * this._scaleX, this._height * this._scaleY);
 	}
 
 	public ActionTween selfAction() {
