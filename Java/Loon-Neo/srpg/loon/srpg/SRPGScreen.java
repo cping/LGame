@@ -511,7 +511,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			}
 			try {
 				super.wait();
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 			}
 		}
 		// 战场事务结束
@@ -3448,18 +3448,16 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 		for (; startSrpgProcess();) {
 			try {
 				super.wait();
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 			}
 		}
-
 		if (isBattleMode) {
-
 			mainProcess();
 		}
 		for (; endSrpgProcess();) {
 			try {
 				super.wait();
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 			}
 		}
 	}

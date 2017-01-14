@@ -166,62 +166,42 @@ public class PlayerUtils extends Director {
 	}
 
 	public final static void debug(String msg) {
-		if (LSystem._base != null) {
-			LSystem._base.log().debug(msg);
-		}
+		LSystem.debug(msg);
 	}
 
 	public final static void debug(String msg, Object... args) {
-		if (LSystem._base != null) {
-			LSystem._base.log().debug(msg, args);
-		}
+		LSystem.debug(msg, args);
 	}
 
 	public final static void debug(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.log().debug(msg, throwable);
-		}
+		LSystem.debug(msg, throwable);
 	}
 
 	public final static void info(String msg) {
-		if (LSystem._base != null) {
-			LSystem._base.log().info(msg);
-		}
+		LSystem.info(msg);
 	}
 
 	public final static void info(String msg, Object... args) {
-		if (LSystem._base != null) {
-			LSystem._base.log().info(msg, args);
-		}
+		LSystem.info(msg, args);
 	}
 
 	public final static void info(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.log().info(msg, throwable);
-		}
+		LSystem.info(msg, throwable);
 	}
 
 	public final static void error(String msg) {
-		if (LSystem._base != null) {
-			LSystem._base.log().error(msg);
-		}
+		LSystem.error(msg);
 	}
 
 	public final static void error(String msg, Object... args) {
-		if (LSystem._base != null) {
-			LSystem._base.log().error(msg, args);
-		}
+		LSystem.error(msg, args);
 	}
 
 	public final static void error(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.log().error(msg, throwable);
-		}
+		LSystem.error(msg, throwable);
 	}
 
 	public final static void setLogMinLevel(Level level) {
-		if (LSystem._base != null) {
-			LSystem._base.log().setMinLevel(level);
-		}
+		LSystem.setLogMinLevel(level);
 	}
 }

@@ -90,7 +90,7 @@ public class SRPGMessageView extends SRPGView implements LRelease {
 		for (int i = 0; i < max; i++) {
 			message[i] = new SRPGMessage(mes[i], font, x, y, w, h);
 			message[i].setEnglish(isEnglish);
-			message[i].setDelay(180);
+			message[i].setDelay(100);
 			if (isEnglish) {
 				message[i].setMessageLength(font.stringWidth(mes[i])
 						/ mes[i].length() * 4);

@@ -1019,19 +1019,6 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 	}
 
 	@Override
-	public void close() {
-		if (!isDisposed()) {
-			if (_image != null) {
-				_image.close();
-				_image = null;
-			}
-		}
-		_stopUpdate = false;
-		setState(State.DISPOSED);
-		removeActionEvents(this);
-	}
-
-	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
 		if (!isDisposed()) {
@@ -1066,6 +1053,20 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 
 	public void setOffset(Vector2f offset) {
 		this._offset = offset;
+	}
+
+	@Override
+	public void close() {
+		if (!isDisposed()) {
+			if (_image != null) {
+				_image.close();
+				_image = null;
+			}
+		}
+		_stopUpdate = false;
+		setState(State.DISPOSED);
+		removeChildren();
+		removeActionEvents(this);
 	}
 
 }

@@ -115,7 +115,7 @@ final public class AVGDialog {
 				down = null;
 				image = null;
 
-				LSystem.base().log().debug("Converted image to RMXP dialog image:" + rmxpImage);
+				LSystem.debug("Converted image to RMXP dialog image:" + rmxpImage);
 			}
 		}
 		return lazy;
@@ -236,7 +236,7 @@ final public class AVGDialog {
 				rightCenter = null;
 				rightDown = null;
 
-				LSystem.base().log().debug("Converted image to RMXP dialog image:" + rmxpImage);
+				LSystem.debug("Converted image to RMXP dialog image:" + rmxpImage);
 			} catch (Exception e) {
 
 			}

@@ -69,8 +69,7 @@ final public class StringUtils extends CharUtils {
 
 	public static boolean isBoolean(String o) {
 		String str = o.trim().toLowerCase();
-		return str.equals("true") || str.equals("false") || str.equals("yes")
-				|| str.equals("no") || str.equals("ok");
+		return str.equals("true") || str.equals("false") || str.equals("yes") || str.equals("no") || str.equals("ok");
 	}
 
 	public static boolean toBoolean(String o) {
@@ -210,8 +209,7 @@ final public class StringUtils extends CharUtils {
 		int size = chars.length;
 		for (int j = 0; j < size; j++) {
 			char letter = chars[j];
-			if ((97 > letter || letter > 122) && (65 > letter || letter > 90)
-					&& (48 > letter || letter > 57)) {
+			if ((97 > letter || letter > 122) && (65 > letter || letter > 90) && (48 > letter || letter > 57)) {
 				return false;
 			}
 		}
@@ -225,12 +223,8 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static boolean isSingle(final char c) {
-		return (':' == c || '：' == c)
-				|| (',' == c || '，' == c)
-				|| ('"' == c || '“' == c)
-				|| ((0x0020 <= c)
-						&& (c <= 0x007E)
-						&& !((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')))
+		return (':' == c || '：' == c) || (',' == c || '，' == c) || ('"' == c || '“' == c)
+				|| ((0x0020 <= c) && (c <= 0x007E) && !((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')))
 						&& !('0' <= c) && (c <= '9'));
 
 	}
@@ -430,14 +424,12 @@ final public class StringUtils extends CharUtils {
 	 * @throws NullPointerException
 	 * @throws IllegalArgumentException
 	 */
-	public static String[] splitSize(String str, int size)
-			throws NullPointerException, IllegalArgumentException {
+	public static String[] splitSize(String str, int size) throws NullPointerException, IllegalArgumentException {
 		if (isEmpty(str)) {
 			return new String[] { str };
 		}
 		if (size <= 0) {
-			throw new IllegalArgumentException(
-					"The size parameter must be more than 0.");
+			throw new IllegalArgumentException("The size parameter must be more than 0.");
 		}
 		int num = str.length() / size;
 		int mod = str.length() % size;
@@ -451,13 +443,12 @@ final public class StringUtils extends CharUtils {
 		return ret;
 	}
 
-	public static final TArray<CharSequence> splitArray(
-			final CharSequence chars, final char flag) {
+	public static final TArray<CharSequence> splitArray(final CharSequence chars, final char flag) {
 		return splitArray(chars, flag, new TArray<CharSequence>());
 	}
 
-	public static final <T extends TArray<CharSequence>> T splitArray(
-			final CharSequence chars, final char flag, final T result) {
+	public static final <T extends TArray<CharSequence>> T splitArray(final CharSequence chars, final char flag,
+			final T result) {
 		final int partCount = countOccurrences(chars, flag) + 1;
 		if (partCount == 0) {
 			result.add(chars);
@@ -482,8 +473,7 @@ final public class StringUtils extends CharUtils {
 	 * @param newString
 	 * @return
 	 */
-	public static final String replace(String string, String oldString,
-			String newString) {
+	public static final String replace(String string, String oldString, String newString) {
 		if (string == null)
 			return null;
 		if (newString == null)
@@ -517,8 +507,7 @@ final public class StringUtils extends CharUtils {
 	 * @param newString
 	 * @return
 	 */
-	public static final String replaceIgnoreCase(String line, String oldString,
-			String newString) {
+	public static final String replaceIgnoreCase(String line, String oldString, String newString) {
 		if (line == null)
 			return null;
 		String lcLine = line.toLowerCase();
@@ -553,8 +542,7 @@ final public class StringUtils extends CharUtils {
 	 * @param count
 	 * @return
 	 */
-	public static final String replaceIgnoreCase(String line, String oldString,
-			String newString, int count[]) {
+	public static final String replaceIgnoreCase(String line, String oldString, String newString, int count[]) {
 		if (line == null)
 			return null;
 		String lcLine = line.toLowerCase();
@@ -592,8 +580,7 @@ final public class StringUtils extends CharUtils {
 	 * @param count
 	 * @return
 	 */
-	public static final String replace(String line, String oldString,
-			String newString, int[] count) {
+	public static final String replace(String line, String oldString, String newString, int[] count) {
 		if (line == null)
 			return null;
 		int i = 0;
@@ -687,8 +674,7 @@ final public class StringUtils extends CharUtils {
 			char ch = checkStr.charAt(i);
 			if (ch < '\176') {
 				ch = Character.toUpperCase(ch);
-				if (((ch < 'A') || (ch > 'Z')) && ((ch < '0') || (ch > '9'))
-						&& (spStr.indexOf(ch) < 0)) {
+				if (((ch < 'A') || (ch > 'Z')) && ((ch < '0') || (ch > '9')) && (spStr.indexOf(ch) < 0)) {
 					isError = true;
 				}
 			}
@@ -708,8 +694,7 @@ final public class StringUtils extends CharUtils {
 			return false;
 		for (int i = 0; i < value.length(); i++) {
 			char letter = Character.toUpperCase(value.charAt(i));
-			if (('a' <= letter && letter <= 'z')
-					|| ('A' <= letter && letter <= 'Z'))
+			if (('a' <= letter && letter <= 'z') || ('A' <= letter && letter <= 'Z'))
 				return true;
 		}
 		return false;
@@ -736,9 +721,7 @@ final public class StringUtils extends CharUtils {
 			return true;
 		for (int i = 0; i < value.length(); i++) {
 			char letter = value.charAt(i);
-			if (('a' > letter || letter > 'z')
-					&& ('A' > letter || letter > 'Z')
-					&& ('0' > letter || letter > '9'))
+			if (('a' > letter || letter > 'z') && ('A' > letter || letter > 'Z') && ('0' > letter || letter > '9'))
 				return false;
 		}
 		return true;
@@ -752,8 +735,7 @@ final public class StringUtils extends CharUtils {
 	 * @param newString
 	 * @return
 	 */
-	public static String replaceMatch(String line, String oldString,
-			String newString) {
+	public static String replaceMatch(String line, String oldString, String newString) {
 		int i = 0;
 		int j = 0;
 		if ((i = line.indexOf(oldString, i)) >= 0) {
@@ -1018,8 +1000,7 @@ final public class StringUtils extends CharUtils {
 		return chars.getString();
 	}
 
-	public static final CharSequence padFront(final CharSequence chars,
-			final char padChar, final int len) {
+	public static final CharSequence padFront(final CharSequence chars, final char padChar, final int len) {
 		final int padCount = len - chars.length();
 		if (padCount <= 0) {
 			return chars;
@@ -1051,8 +1032,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	public static int indexOf(CharSequence c, char ch, int start, int end) {
-		if ((c instanceof StringBuffer) || (c instanceof StringBuilder)
-				|| (c instanceof String)) {
+		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof String)) {
 			final int INDEX_INCREMENT = 500;
 			char[] temp = obtain(INDEX_INCREMENT);
 
@@ -1096,8 +1076,7 @@ final public class StringUtils extends CharUtils {
 		return arrays;
 	}
 
-	public static void getChars(CharSequence c, int start, int end,
-			char[] dest, int destoff) {
+	public static void getChars(CharSequence c, int start, int end, char[] dest, int destoff) {
 		if (c instanceof String) {
 			((String) c).getChars(start, end, dest, destoff);
 		} else if (c instanceof StringBuffer) {
@@ -1111,8 +1090,7 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	public static final int countOccurrences(final CharSequence chars,
-			final char flag) {
+	public static final int countOccurrences(final CharSequence chars, final char flag) {
 		int count = 0;
 		int lastOccurrence = indexOf(chars, flag, 0);
 		while (lastOccurrence != -1) {
@@ -1143,8 +1121,7 @@ final public class StringUtils extends CharUtils {
 		return countCharacters(chars, false);
 	}
 
-	public static int countCharacters(final TArray<CharSequence> chars,
-			final boolean ignoreWhitespaces) {
+	public static int countCharacters(final TArray<CharSequence> chars, final boolean ignoreWhitespaces) {
 		int characters = 0;
 		if (ignoreWhitespaces) {
 			for (int i = chars.size - 1; i >= 0; i--) {
@@ -1165,4 +1142,11 @@ final public class StringUtils extends CharUtils {
 		return characters;
 	}
 
+	public final static String notLineBreaks(String text) {
+		final int h = text.indexOf('\n');
+		if (h >= 0) {
+			return text.substring(0, h);
+		}
+		return text;
+	}
 }

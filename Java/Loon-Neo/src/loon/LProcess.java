@@ -216,8 +216,7 @@ public class LProcess extends PlayerUtils {
 		synchronized (this) {
 			if (screen == null) {
 				this.isInstance = false;
-				throw new RuntimeException(
-						"Cannot create a [Screen] instance !");
+				throw new RuntimeException("Cannot create a [Screen] instance !");
 			}
 			if (!game.display().showLogo) {
 				if (currentScreen != null) {
@@ -238,38 +237,31 @@ public class LProcess extends PlayerUtils {
 							transition = LTransition.newArc();
 							break;
 						case 2:
-							transition = LTransition
-									.newSplitRandom(LColor.black);
+							transition = LTransition.newSplitRandom(LColor.black);
 							break;
 						case 3:
-							transition = LTransition
-									.newCrossRandom(LColor.black);
+							transition = LTransition.newCrossRandom(LColor.black);
 							break;
 						case 4:
-							transition = LTransition
-									.newFadeOvalIn(LColor.black);
+							transition = LTransition.newFadeOvalIn(LColor.black);
 							break;
 						case 5:
 							transition = LTransition.newPixelWind(LColor.white);
 							break;
 						case 6:
-							transition = LTransition
-									.newPixelDarkOut(LColor.black);
+							transition = LTransition.newPixelDarkOut(LColor.black);
 							break;
 						case 7:
-							transition = LTransition
-									.newPixelThunder(LColor.black);
+							transition = LTransition.newPixelThunder(LColor.black);
 							break;
 						case 8:
 							transition = LTransition.newFadeDotIn(LColor.black);
 							break;
 						case 9:
-							transition = LTransition
-									.newFadeTileIn(LColor.black);
+							transition = LTransition.newFadeTileIn(LColor.black);
 							break;
 						case 10:
-							transition = LTransition
-									.newFadeSpiralIn(LColor.black);
+							transition = LTransition.newFadeSpiralIn(LColor.black);
 							break;
 						}
 					}
@@ -296,8 +288,7 @@ public class LProcess extends PlayerUtils {
 				setEmulatorListener(null);
 			}
 
-			screen.onCreate(LSystem.viewSize.getWidth(),
-					LSystem.viewSize.getHeight());
+			screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 
 			RealtimeProcess process = new RealtimeProcess() {
 
@@ -534,8 +525,7 @@ public class LProcess extends PlayerUtils {
 		this.emulatorListener = emulator;
 		if (emulatorListener != null) {
 			if (emulatorButtons == null) {
-				emulatorButtons = new EmulatorButtons(emulatorListener,
-						LSystem.viewSize.getWidth(),
+				emulatorButtons = new EmulatorButtons(emulatorListener, LSystem.viewSize.getWidth(),
 						LSystem.viewSize.getHeight());
 			} else {
 				emulatorButtons.setEmulatorListener(emulator);
@@ -670,10 +660,8 @@ public class LProcess extends PlayerUtils {
 				offY = oldW / 2f - newH / 2f;
 				nx = (newX - offY);
 				ny = (newY - offX);
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(
-						-90);
-				_tmpLocaltion.set(-(_tmpLocaltion.x - getWidth()),
-						MathUtils.abs(_tmpLocaltion.y));
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(-90);
+				_tmpLocaltion.set(-(_tmpLocaltion.x - getWidth()), MathUtils.abs(_tmpLocaltion.y));
 				break;
 			case 0:
 			case 360:
@@ -684,15 +672,13 @@ public class LProcess extends PlayerUtils {
 				offY = oldW / 2f - newH / 2f;
 				nx = (newX - offY);
 				ny = (newY - offX);
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY())
-						.rotate(90);
-				_tmpLocaltion.set(-_tmpLocaltion.x,
-						MathUtils.abs(_tmpLocaltion.y - getHeight()));
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(90);
+				_tmpLocaltion.set(-_tmpLocaltion.x, MathUtils.abs(_tmpLocaltion.y - getHeight()));
 				break;
 			case -180:
 			case 180:
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY())
-						.rotate(getRotation()).addSelf(getWidth(), getHeight());
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(getRotation()).addSelf(getWidth(),
+						getHeight());
 				break;
 			default: // 原则上不处理非水平角度的触点
 				_tmpLocaltion.set(newX, newY);
@@ -702,9 +688,8 @@ public class LProcess extends PlayerUtils {
 			_tmpLocaltion.set(newX, newY);
 		}
 		if (isFlipX() || isFlipY()) {
-			Director.local2Global(isFlipX(), isFlipY(), getWidth() / 2,
-					getHeight() / 2, _tmpLocaltion.x, _tmpLocaltion.y,
-					_tmpLocaltion);
+			Director.local2Global(isFlipX(), isFlipY(), getWidth() / 2, getHeight() / 2, _tmpLocaltion.x,
+					_tmpLocaltion.y, _tmpLocaltion);
 			return _tmpLocaltion;
 		}
 		return _tmpLocaltion;
@@ -734,6 +719,30 @@ public class LProcess extends PlayerUtils {
 		Screen screen = _screenMap.get(name);
 		if (screen != null) {
 			return screen;
+		}
+		return null;
+	}
+
+	public Screen runScreenClassName(CharSequence name) {
+		for (Screen screen : _screens) {
+			if (screen != null) {
+				if (name.equals(screen.getName())) {
+					setScreen(screen);
+					return screen;
+				}
+			}
+		}
+		return null;
+	}
+
+	public Screen runScreenName(CharSequence name) {
+		for (Screen screen : _screens) {
+			if (screen != null) {
+				if (name.equals(screen.getScreenName())) {
+					setScreen(screen);
+					return screen;
+				}
+			}
 		}
 		return null;
 	}

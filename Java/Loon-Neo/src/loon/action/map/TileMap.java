@@ -723,7 +723,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			draw(g, null, moveX, moveY);
 			_sprites.paintPos(g, moveX, moveY);
 		} catch (Exception ex) {
-			LSystem.base().log().error("Array2D TileMap error !", ex);
+			LSystem.error("Array2D TileMap error !", ex);
 		} finally {
 			if (update) {
 				g.restoreTx();

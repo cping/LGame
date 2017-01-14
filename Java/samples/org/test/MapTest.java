@@ -51,13 +51,13 @@ public class MapTest extends Stage {
 			map.setImagePack("assets/rpg/map.png", clips);
 			// 执行切图
 			map.pack();
-			// 设置数组瓦片索引id和切图id的绑定关系
-			map.putTile(0, 0);
+			// 设置数组瓦片索引id和切图id的绑定关系(不设置时按照setImagePack中注入的切图id自动和地图id匹配)
+			/*map.putTile(0, 0);
 			map.putTile(1, 1);
 			map.putTile(2, 2);
 			map.putTile(3, 3);
 			map.putTile(4, 4);
-			map.putTile(5, 5);
+			map.putTile(5, 5);*/
 			// 注入地图到窗体
 			add(map);
 			// 制作动画角色,切分大小32x32每帧,显示位置到坐标3,4(换算为数组地图位置),显示大小32x32
@@ -249,7 +249,6 @@ public class MapTest extends Stage {
 				}
 			});
 			add(pad);
-			
 		} catch (IOException e) {
 			error(e.getMessage());
 		}

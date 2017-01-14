@@ -32,6 +32,12 @@ import loon.utils.TArray;
 
 public class LTextBar extends LComponent {
 
+	private boolean _drawUI = false;
+
+	private static final LColor FOCUSED = new LColor(0x58543c);
+
+	private static final LColor UNFOCUSED = new LColor(0x817b58);
+
 	private LTexture left, right, body;
 
 	private int _maxWidth = -1;
@@ -47,7 +53,7 @@ public class LTextBar extends LComponent {
 	private String _lastText = null;
 
 	private TArray<String> _messages = null;
-	
+
 	private boolean over, pressed;
 
 	private int pressedTime;
@@ -61,37 +67,40 @@ public class LTextBar extends LComponent {
 				SkinManager.get().getTextBarSkin().getFont());
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor c) {
-		this(txt, left, right, body, x, y, c, SkinManager.get()
-				.getTextBarSkin().getFont());
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor c) {
+		this(txt, left, right, body, x, y, c, SkinManager.get().getTextBarSkin().getFont());
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y) {
-		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin()
-				.getFontColor());
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y) {
+		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin().getFontColor());
+	}
+
+	public LTextBar(IFont font, String txt, int x, int y) {
+		this(SkinManager.get().getTextBarSkin(), txt, x, y, font);
 	}
 
 	public LTextBar(String txt, int x, int y) {
 		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor());
 	}
 
-	public LTextBar(TextBarSkin skin, String txt, int x, int y, IFont f) {
-		this(txt, skin.getLeftTexture(), skin.getRightTexture(), skin
-				.getBodyTexture(), x, y, skin.getFontColor(), skin.getFont());
+	public LTextBar(TextBarSkin skin, String txt, int x, int y, IFont font) {
+		this(txt, skin.getLeftTexture(), skin.getRightTexture(), skin.getBodyTexture(), x, y, skin.getFontColor(),
+				font);
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor c, IFont f) {
+	public LTextBar(TextBarSkin skin, String txt, int x, int y) {
+		this(txt, skin.getLeftTexture(), skin.getRightTexture(), skin.getBodyTexture(), x, y, skin.getFontColor(),
+				skin.getFont());
+	}
+
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor c, IFont f) {
 		this(txt, left, right, body, x, y, c, f, -1);
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor c, IFont f, int maxWidth) {
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor c, IFont f,
+			int maxWidth) {
 		super(x, y, 0, 0);
-		int w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0)
-				+ (right != null ? right.getWidth() : 0) * 3;
+		int w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0) + (right != null ? right.getWidth() : 0) * 3;
 		int h = (int) (body != null ? body.getHeight() : f.getHeight());
 		this._fontColor = c;
 		this._font = f;
@@ -119,76 +128,97 @@ public class LTextBar extends LComponent {
 		return _maxWidth;
 	}
 
+	public boolean isDrawUI() {
+		return _drawUI;
+	}
+
+	public LTextBar setDrawUI(boolean d) {
+		this._drawUI = d;
+		return this;
+	}
+
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
-		float height = (_messages == null ? getHeight() : _messages.size
-				* _font.getHeight() + 5);
-		if (hideBackground) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		float height = (_messages == null ? getHeight() : _messages.size * _font.getHeight() + 5);
+		if (_drawUI) {
+			float width = textWidth() + _font.getSize() + 5;
+			if (isPointInUI()) {
+				g.fillRect(x, y, width, height, FOCUSED);
+			} else {
+				g.fillRect(x, y, width, height, UNFOCUSED);
+			}
 			if (_messages != null) {
 				for (int i = 0, size = _messages.size; i < size; i++) {
 					String text = _messages.get(i);
-					drawString(g, text, x + _offsetX + 5, y + _offsetY
-							+ i * (_font.stringHeight(text)), _fontColor);
+					drawString(g, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)), _fontColor);
 
 				}
 			} else {
 				drawString(g, _text, x + 5, y, _fontColor);
 			}
+			g.drawRect(x, y, width, height, LColor.black);
+			return;
 		} else {
-			if (left != null) {
-				g.draw(left, x, y, left.getWidth(),
-						MathUtils.max(body.getHeight(), height), baseColor);
-			}
-			if (body != null) {
-				if (left != null) {
-					g.draw(body, x + left.getWidth(), y,
-							textWidth() + _font.getSize(),
-							MathUtils.max(body.getHeight(), height), baseColor);
-				} else {
-					g.draw(body, x, y, 0, _maxWidth, baseColor);
-				}
-			}
-			if (right != null && body != null) {
-				float w = 0;
-				if (_messages == null) {
-					w = textWidth();
-				} else {
-					w = textWidth() + _font.getSize();
-				}
-				g.draw(right, x + left.getWidth() + w, y, left.getWidth(),
-						MathUtils.max(body.getHeight(), height), baseColor);
-			}
-			if (left != null) {
+			if (hideBackground) {
 				if (_messages != null) {
 					for (int i = 0, size = _messages.size; i < size; i++) {
 						String text = _messages.get(i);
-						drawString(g, text,
-								x + _offsetX + left.getWidth() + 5,
-								y + _offsetY + i * (_font.stringHeight(text)),
-								_fontColor);
-					}
-				} else {
-					drawString(g, _text, x + left.getWidth() + 5, y, _fontColor);
-				}
-			} else {
-				if (_messages != null) {
-					for (int i = 0, size = _messages.size; i < size; i++) {
-						String text = _messages.get(i);
-						drawString(g, text, x + _offsetX + 5, y
-								+ _offsetY + i * (_font.stringHeight(text)),
+						drawString(g, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
 								_fontColor);
 
 					}
 				} else {
 					drawString(g, _text, x + 5, y, _fontColor);
 				}
+			} else {
+				if (left != null) {
+					g.draw(left, x, y, left.getWidth(), MathUtils.max(body.getHeight(), height), baseColor);
+				}
+				if (body != null) {
+					if (left != null) {
+						g.draw(body, x + left.getWidth(), y, textWidth() + _font.getSize(),
+								MathUtils.max(body.getHeight(), height), baseColor);
+					} else {
+						g.draw(body, x, y, 0, _maxWidth, baseColor);
+					}
+				}
+				if (right != null && body != null) {
+					float w = 0;
+					if (_messages == null) {
+						w = textWidth();
+					} else {
+						w = textWidth() + _font.getSize();
+					}
+					g.draw(right, x + left.getWidth() + w, y, left.getWidth(), MathUtils.max(body.getHeight(), height),
+							baseColor);
+				}
+				if (left != null) {
+					if (_messages != null) {
+						for (int i = 0, size = _messages.size; i < size; i++) {
+							String text = _messages.get(i);
+							drawString(g, text, x + _offsetX + left.getWidth() + 5,
+									y + _offsetY + i * (_font.stringHeight(text)), _fontColor);
+						}
+					} else {
+						drawString(g, _text, x + left.getWidth() + 5, y, _fontColor);
+					}
+				} else {
+					if (_messages != null) {
+						for (int i = 0, size = _messages.size; i < size; i++) {
+							String text = _messages.get(i);
+							drawString(g, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
+									_fontColor);
+
+						}
+					} else {
+						drawString(g, _text, x + 5, y, _fontColor);
+					}
+				}
 			}
 		}
 	}
 
-	private final void drawString(GLEx g, String mes, float x, float y,
-			LColor fontColor) {
+	private final void drawString(GLEx g, String mes, float x, float y, LColor fontColor) {
 		_font.drawString(g, mes, x, y, fontColor);
 	}
 
@@ -236,7 +266,6 @@ public class LTextBar extends LComponent {
 		return _text;
 	}
 
-
 	public void setText(String mes) {
 		if (!mes.equals(_lastText)) {
 			this._text = mes;
@@ -246,8 +275,7 @@ public class LTextBar extends LComponent {
 
 	@Override
 	protected void processTouchDragged() {
-		this.over = this.pressed = this.intersects(this.input.getTouchX(),
-				this.input.getTouchY());
+		this.over = this.pressed = this.intersects(this.input.getTouchX(), this.input.getTouchY());
 		super.processTouchDragged();
 	}
 

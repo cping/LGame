@@ -282,8 +282,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	public synchronized void add(LNNode node, int index) {
 		if (node.getContainer() != null) {
-			throw new IllegalStateException(node
-					+ " already reside in another node!!!");
+			throw new IllegalStateException(node + " already reside in another node!!!");
 		}
 		node.setContainer(this);
 		node.setState(State.ADDED);
@@ -344,7 +343,15 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	public void clear() {
 		this._screen.clearNodesStat(this.childs);
 		for (int i = 0; i < this._childCount; i++) {
-			this.childs[i].setContainer(null);
+			final LNNode removed = this.childs[i];
+			if (removed != null) {
+				removed.setContainer(null);
+				removed.setState(State.REMOVED);
+			}
+			// 删除精灵同时，删除缓动动画
+			if (removed != null && removed instanceof ActionBind) {
+				removeActionEvents((ActionBind) removed);
+			}
 		}
 		this.childs = new LNNode[0];
 		this._childCount = 0;
@@ -513,8 +520,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		for (int i = 0; i < this._childCount; i++) {
 			if (childs[i] != null) {
 				if (this.childs[i].intersects(x1, y1)) {
-					LNNode node = isContainer() ? this.childs[i]
-							: (this.childs[i]).findNode(x1, y1);
+					LNNode node = isContainer() ? this.childs[i] : (this.childs[i]).findNode(x1, y1);
 					return node;
 				}
 			}
@@ -752,22 +758,17 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public void setPositionBL(float x, float y) {
-		this.setPosition(
-				(x + this._anchor.x) - (_screenRect.width / 2),
+		this.setPosition((x + this._anchor.x) - (_screenRect.width / 2),
 				((_screenRect.height / 2) - (((_screenRect.height - y) - this._size_height) + this._anchor.y)));
 	}
 
 	public void setPositionBR(float x, float y) {
-		this.setPosition(
-				(((_screenRect.width - x) - this._size_width) + this._anchor.x)
-						- (_screenRect.width / 2),
-				(_screenRect.height / 2)
-						- (((_screenRect.height - y) - this._size_height) + this._anchor.y));
+		this.setPosition((((_screenRect.width - x) - this._size_width) + this._anchor.x) - (_screenRect.width / 2),
+				(_screenRect.height / 2) - (((_screenRect.height - y) - this._size_height) + this._anchor.y));
 	}
 
 	public void setPositionTL(float x, float y) {
-		this.setPosition(
-				(x + this._anchor.x) - (_screenRect.width / 2),
+		this.setPosition((x + this._anchor.x) - (_screenRect.width / 2),
 				((_screenRect.height / 2) - (_screenRect.height - (y + this._anchor.y))));
 	}
 
@@ -961,25 +962,20 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public boolean contains(float x, float y, float width, float height) {
-		return (this._visible)
-				&& (x >= pos[0] && y >= pos[1]
-						&& ((x + width) <= (pos[0] + getWidth())) && ((y + height) <= (pos[1] + getHeight())));
+		return (this._visible) && (x >= pos[0] && y >= pos[1] && ((x + width) <= (pos[0] + getWidth()))
+				&& ((y + height) <= (pos[1] + getHeight())));
 	}
 
 	public boolean intersects(float x1, float y1) {
 		return (this._visible)
-				&& (x1 >= pos[0] && x1 <= pos[0] + getWidth() && y1 >= pos[1] && y1 <= pos[1]
-						+ getHeight());
+				&& (x1 >= pos[0] && x1 <= pos[0] + getWidth() && y1 >= pos[1] && y1 <= pos[1] + getHeight());
 	}
 
 	public boolean intersects(LNNode node) {
 		float[] nodePos = node.convertToWorldPos();
-		return (this._visible)
-				&& (node._visible)
-				&& (pos[0] + getWidth() >= nodePos[0]
-						&& pos[0] <= nodePos[0] + node.getWidth()
-						&& pos[1] + getWidth() >= nodePos[1] && pos[1] <= nodePos[1]
-						+ node.getHeight());
+		return (this._visible) && (node._visible)
+				&& (pos[0] + getWidth() >= nodePos[0] && pos[0] <= nodePos[0] + node.getWidth()
+						&& pos[1] + getWidth() >= nodePos[1] && pos[1] <= nodePos[1] + node.getHeight());
 	}
 
 	public boolean isVisible() {
@@ -997,8 +993,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public boolean isEnabled() {
-		return (this._super == null) ? this._enabled
-				: (this._enabled && this._super.isEnabled());
+		return (this._super == null) ? this._enabled : (this._enabled && this._super.isEnabled());
 	}
 
 	public void setEnabled(boolean b) {
@@ -1132,8 +1127,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	@Override
 	public void setLocation(float dx, float dy) {
-		if (this._location.x != dx || this._location.y != dy || dx == 0
-				|| dy == 0) {
+		if (this._location.x != dx || this._location.y != dy || dx == 0 || dy == 0) {
 			this._location.set(dx, dy);
 			this.validatePosition();
 		}
@@ -1144,8 +1138,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		if (dx != 0 || dy != 0) {
 			if (dx > -100 && dx < 100 && dy > -100 && dy < 100) {
 				if (_super != null && _limitMove) {
-					if (_super.contains((int) (pos[0] + dx),
-							(int) (pos[1] + dy), _size_width, _size_height)) {
+					if (_super.contains((int) (pos[0] + dx), (int) (pos[1] + dy), _size_width, _size_height)) {
 						this._location.move(dx, dy);
 						this.validatePosition();
 					}
@@ -1193,22 +1186,18 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	public RectBox getRectBox() {
 		if (_rotation != 0) {
-			int[] result = MathUtils.getLimit(_location.getX(),
-					_location.getY(), getWidth(), getHeight(),
+			int[] result = MathUtils.getLimit(_location.getX(), _location.getY(), getWidth(), getHeight(),
 					MathUtils.toDegrees(_rotation));
 			if (temp_rect == null) {
-				temp_rect = new RectBox(result[0], result[1], result[2],
-						result[3]);
+				temp_rect = new RectBox(result[0], result[1], result[2], result[3]);
 			} else {
 				temp_rect.setBounds(result[0], result[1], result[2], result[3]);
 			}
 		} else {
 			if (temp_rect == null) {
-				temp_rect = new RectBox(_location.getX(), _location.getY(),
-						getWidth(), getHeight());
+				temp_rect = new RectBox(_location.getX(), _location.getY(), getWidth(), getHeight());
 			} else {
-				temp_rect.setBounds(_location.getX(), _location.getY(),
-						getWidth(), getHeight());
+				temp_rect.setBounds(_location.getX(), _location.getY(), getWidth(), getHeight());
 			}
 		}
 		return temp_rect;
@@ -1311,8 +1300,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public RectBox getCollisionBox() {
-		return getRect(getLocation().x(), getLocation().y(), getWidth(),
-				getHeight());
+		return getRect(getLocation().x(), getLocation().y(), getWidth(), getHeight());
 	}
 
 	@Override

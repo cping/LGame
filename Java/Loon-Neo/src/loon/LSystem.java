@@ -20,6 +20,7 @@
  */
 package loon;
 
+import loon.Log.Level;
 import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
@@ -80,6 +81,7 @@ public class LSystem {
 
 	/**
 	 * 获得系统画面log中显示的字体(如果未设置则默认为本地字体渲染,字体大小16)
+	 * 
 	 * @return
 	 */
 	public final static IFont getSystemLogFont() {
@@ -530,34 +532,38 @@ public class LSystem {
 		return shader;
 	}
 
-	public static String format(float value) {
+	public final static String format(float value) {
 		String fmt = String.valueOf(value);
 		return fmt.indexOf('.') == -1 ? (fmt + ".0") : fmt;
 	}
 
-	public static int unite(int hashCode, boolean value) {
+	public final static int unite(int hashCode, boolean value) {
 		int v = value ? 1231 : 1237;
 		return unite(hashCode, v);
 	}
 
-	public static int unite(int hashCode, long value) {
+	public final static int unite(int hashCode, long value) {
 		int v = (int) (value ^ (value >>> 32));
 		return unite(hashCode, v);
 	}
 
-	public static int unite(int hashCode, float value) {
+	public final static int unite(int hashCode, float value) {
 		int v = NumberUtils.floatToIntBits(value);
 		return unite(hashCode, v);
 	}
 
-	public static int unite(int hashCode, Object value) {
+	public final static int unite(int hashCode, Object value) {
 		return unite(hashCode, value.hashCode());
 	}
 
-	public static int unite(int hashCode, int value) {
+	public final static int unite(int hashCode, int value) {
 		return 31 * hashCode + value;
 	}
 
+	public final static boolean checkAngle(float angle, float actual) {
+		return actual > angle - 22.5f && actual < angle + 22.5f;
+	}
+	
 	public static boolean isImage(String extension) {
 		return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("bmp")
 				|| extension.equals("gif");
@@ -575,7 +581,63 @@ public class LSystem {
 		return extension.equals("mp3") || extension.equals("ogg") || extension.equals("wav") || extension.equals("mid");
 	}
 
-	public static boolean checkAngle(float angle, float actual) {
-		return actual > angle - 22.5f && actual < angle + 22.5f;
+	public final static void debug(String msg) {
+		if (LSystem._base != null) {
+			LSystem._base.log().debug(msg);
+		}
+	}
+
+	public final static void debug(String msg, Object... args) {
+		if (LSystem._base != null) {
+			LSystem._base.log().debug(msg, args);
+		}
+	}
+
+	public final static void debug(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.log().debug(msg, throwable);
+		}
+	}
+
+	public final static void info(String msg) {
+		if (LSystem._base != null) {
+			LSystem._base.log().info(msg);
+		}
+	}
+
+	public final static void info(String msg, Object... args) {
+		if (LSystem._base != null) {
+			LSystem._base.log().info(msg, args);
+		}
+	}
+
+	public final static void info(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.log().info(msg, throwable);
+		}
+	}
+
+	public final static void error(String msg) {
+		if (LSystem._base != null) {
+			LSystem._base.log().error(msg);
+		}
+	}
+
+	public final static void error(String msg, Object... args) {
+		if (LSystem._base != null) {
+			LSystem._base.log().error(msg, args);
+		}
+	}
+
+	public final static void error(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.log().error(msg, throwable);
+		}
+	}
+
+	public final static void setLogMinLevel(Level level) {
+		if (LSystem._base != null) {
+			LSystem._base.log().setMinLevel(level);
+		}
 	}
 }
