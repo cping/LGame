@@ -1,11 +1,11 @@
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 
 public class TableSkin implements FontSet<TableSkin>{
 
@@ -22,7 +22,7 @@ public class TableSkin implements FontSet<TableSkin>{
 	}
 
 	public TableSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(7),
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(7),
 				DefUI.get().getDefaultTextures(4));
 	}
 

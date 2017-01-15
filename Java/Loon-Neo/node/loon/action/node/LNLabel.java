@@ -20,17 +20,17 @@
  */
 package loon.action.node;
 
+import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
 public class LNLabel extends LNNode {
 
-	private LFont _spriteFont;
+	private IFont _spriteFont;
 
 	private String _text;
 
@@ -38,7 +38,7 @@ public class LNLabel extends LNNode {
 
 	public LNLabel() {
 		this._type = LabelType.TEXT_ALIGNMENT_LEFT;
-		this._spriteFont = LFont.getDefaultFont();
+		this._spriteFont = LSystem.getSystemGameFont();
 		this.setNodeSize(1, 1);
 	}
 
@@ -47,10 +47,10 @@ public class LNLabel extends LNNode {
 	}
 
 	public LNLabel(String text, LabelType type) {
-		this(text, type, LFont.getDefaultFont());
+		this(text, type, LSystem.getSystemGameFont());
 	}
 
-	public LNLabel(String text, LabelType type, LFont spriteFont) {
+	public LNLabel(String text, LabelType type, IFont spriteFont) {
 		super();
 		this._spriteFont = spriteFont;
 		this._type = type;
@@ -72,7 +72,7 @@ public class LNLabel extends LNNode {
 			rotation = super.convertToWorldRot();
 			batch.setColor(super._color.r, super._color.g, super._color.b,
 					super._alpha);
-			LFont font = batch.getFont();
+			IFont font = batch.getFont();
 			batch.setFont(_spriteFont);
 			batch.drawString(this._text, pos[0], pos[1], scale[0], scale[1],
 					_anchor.x, _anchor.y, MathUtils.toDegrees(rotation),

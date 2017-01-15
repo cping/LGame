@@ -31,7 +31,6 @@ import loon.canvas.Paint;
 import loon.canvas.PixmapFImpl;
 import loon.canvas.Paint.Style;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Affine2f;
 import loon.geom.Ellipse;
 import loon.geom.Matrix3;
@@ -127,7 +126,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
 		this.scale(scaleX = target.xscale(), scaleY = target.yscale());
-		this.font = LFont.getDefaultFont();
+		this.font = LSystem.getSystemGameFont();
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = this.font;
 		this.useAlltextures = alltex;
@@ -209,7 +208,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx resetFont() {
-		this.font = LFont.getDefaultFont();
+		this.font = LSystem.getSystemGameFont();
 		return this;
 	}
 
@@ -354,7 +353,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		patternTex = null;
 		useAlltextures = LSystem.isHTML5();
 		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
-		setFont(LFont.getDefaultFont());
+		setFont(LSystem.getSystemGameFont());
 		setLineWidth(1f);
 		brushStack.pop();
 		return this;
@@ -638,7 +637,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return;
 		}
 		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
-		this.font = LFont.getDefaultFont();
+		this.font = LSystem.getSystemGameFont();
 		this.baseColor = LColor.DEF_COLOR;
 		this.fillColor = LColor.DEF_COLOR;
 		this.patternTex = null;
@@ -650,7 +649,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return;
 		}
 		GLUtils.setClearColor(batch.gl, tmpColor.setColor(baseColor));
-		this.font = LFont.getDefaultFont();
+		this.font = LSystem.getSystemGameFont();
 		this.baseColor = LColor.DEF_COLOR;
 		this.fillColor = LColor.DEF_COLOR;
 		this.patternTex = null;

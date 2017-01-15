@@ -4,6 +4,7 @@ import loon.canvas.LColor;
 import loon.component.Print;
 import loon.font.IFont;
 import loon.opengl.GLEx;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class LogDisplay {
@@ -58,8 +59,11 @@ public class LogDisplay {
 		_font.drawString(g, message, x, y + height - ((offset + 1) * _textHeight), _fontColor);
 	}
 
-	public void addText(String message) {
-		if (message != null && (message.length() * _font.getSize() > _width)) {
+	public LogDisplay addText(String message) {
+		if (StringUtils.isEmpty(message)) {
+			return this;
+		}
+		if ((message.length() * _font.getSize() > _width) || (message.indexOf('\n') != -1)) {
 			TArray<String> mes = Print.formatMessage(message, _font, _width - _font.getSize());
 			for (String text : mes) {
 				_texts.add(text);
@@ -70,6 +74,7 @@ public class LogDisplay {
 		if (_texts.size() > _displayAmount) {
 			_texts.removeIndex(0);
 		}
+		return this;
 	}
 
 	public String getText() {

@@ -1,11 +1,11 @@
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 
 public class CheckBoxSkin implements FontSet<CheckBoxSkin>{
 
@@ -20,7 +20,7 @@ public class CheckBoxSkin implements FontSet<CheckBoxSkin>{
 	}
 
 	public CheckBoxSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(5),
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(5),
 				DefUI.get().getDefaultTextures(6));
 	}
 

@@ -4,14 +4,13 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.canvas.PixmapFImpl;
-import loon.font.LFont;
+import loon.font.IFont;
 import loon.geom.Matrix4;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
-import loon.opengl.LSTRDictionary;
 import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
@@ -62,7 +61,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
-	private LFont font = LFont.getDefaultFont();
+	private IFont font = LSystem.getSystemGameFont();
 
 	private LTexture colorTexture;
 
@@ -113,11 +112,9 @@ public class SpriteBatch extends PixmapFImpl {
 		public void update() {
 			pdirection = new Vector2f(pend.x - pstart.x, pend.y - pstart.y);
 			pdirection.nor();
-			pangle = MathUtils.toDegrees(MathUtils.atan2(pend.y - pstart.y,
-					pend.x - pstart.x));
+			pangle = MathUtils.toDegrees(MathUtils.atan2(pend.y - pstart.y, pend.x - pstart.x));
 			plength = MathUtils.ceil(Vector2f.dst(pstart, pend));
-			pcentre = new Vector2f((pend.x + pstart.x) / 2,
-					(pend.y + pstart.y) / 2);
+			pcentre = new Vector2f((pend.x + pstart.x) / 2, (pend.y + pstart.y) / 2);
 			pchanged = false;
 		}
 
@@ -126,15 +123,13 @@ public class SpriteBatch extends PixmapFImpl {
 				update();
 			}
 			if (pstrokeWidth > 0) {
-				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f,
-						pstrokeWidth / 2, plength, pstrokeWidth, 1f, 1f,
-						pangle, 0, 0, 1f, 1f, false, false, true);
+				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f, pstrokeWidth / 2, plength, pstrokeWidth, 1f,
+						1f, pangle, 0, 0, 1f, 1f, false, false, true);
 			}
 		}
 	}
 
-	private IntMap<SpriteBatch.TextureLine> lineLazy = new IntMap<SpriteBatch.TextureLine>(
-			1000);
+	private IntMap<SpriteBatch.TextureLine> lineLazy = new IntMap<SpriteBatch.TextureLine>(1000);
 
 	@Override
 	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
@@ -154,11 +149,11 @@ public class SpriteBatch extends PixmapFImpl {
 		line.draw(this);
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return font;
 	}
 
-	public void setFont(LFont font) {
+	public void setFont(IFont font) {
 		this.font = font;
 	}
 
@@ -171,11 +166,9 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public SpriteBatch(final int size, final ShaderProgram defaultShader) {
-		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight(), 4);
+		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), 4);
 		if (size > 5460) {
-			throw new IllegalArgumentException(
-					"Can't have more than 5460 sprites per batch: " + size);
+			throw new IllegalArgumentException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
 		this.mesh = new MeshDefault();
@@ -200,8 +193,7 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void setColor(int r, int g, int b, int a) {
-		color = LColor.toFloatBits(r, g, b, alpha == 1f ? a
-				: (int) (alpha * 255));
+		color = LColor.toFloatBits(r, g, b, alpha == 1f ? a : (int) (alpha * 255));
 	}
 
 	public void setColor(float r, float g, float b, float a) {
@@ -278,58 +270,50 @@ public class SpriteBatch extends PixmapFImpl {
 		this.lockSubmit = lockSubmit;
 	}
 
-	public void drawString(LFont spriteFont, String text, float px, float py,
-			LColor color, float rotation, float originx, float originy,
-			float scale) {
-		LFont old = font;
+	public void drawString(IFont spriteFont, String text, float px, float py, LColor color, float rotation,
+			float originx, float originy, float scale) {
+		IFont old = font;
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
 		int heigh = 2;
 		if (rotation == 0f) {
-			drawString(text, px - (originx * scale), (py + heigh)
-					- (originy * scale), scale, scale, originx, originy,
+			drawString(text, px - (originx * scale), (py + heigh) - (originy * scale), scale, scale, originx, originy,
 					rotation, color);
 		} else {
-			drawString(text, px, (py + heigh), scale, scale, originx, originy,
-					rotation, color);
+			drawString(text, px, (py + heigh), scale, scale, originx, originy, rotation, color);
 		}
 		setFont(old);
 	}
 
-	public void drawString(LFont spriteFont, String text, Vector2f position,
-			LColor color, float rotation, Vector2f origin, float scale) {
-		LFont old = font;
+	public void drawString(IFont spriteFont, String text, Vector2f position, LColor color, float rotation,
+			Vector2f origin, float scale) {
+		IFont old = font;
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
 		int heigh = 2;
 		if (rotation == 0f) {
-			drawString(text, position.x - (origin.x * scale),
-					(position.y + heigh) - (origin.y * scale), scale, scale,
+			drawString(text, position.x - (origin.x * scale), (position.y + heigh) - (origin.y * scale), scale, scale,
 					origin.x, origin.y, rotation, color);
 		} else {
-			drawString(text, position.x, (position.y + heigh), scale, scale,
-					origin.x, origin.y, rotation, color);
+			drawString(text, position.x, (position.y + heigh), scale, scale, origin.x, origin.y, rotation, color);
 		}
 		setFont(old);
 	}
 
-	public void drawString(LFont spriteFont, String text, Vector2f position,
-			LColor color) {
-		LFont old = font;
+	public void drawString(IFont spriteFont, String text, Vector2f position, LColor color) {
+		IFont old = font;
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
 		int heigh = 2;
-		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f,
-				color);
+		drawString(text, position.x, (position.y + heigh), 1f, 1f, 0f, 0f, 0f, color);
 		setFont(old);
 	}
 
-	public void drawString(LFont spriteFont, String text, float x, float y,
-			LColor color) {
-		LFont old = font;
+	public void drawString(IFont spriteFont, String text, float x, float y, LColor color) {
+		IFont old = font;
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
@@ -338,20 +322,18 @@ public class SpriteBatch extends PixmapFImpl {
 		setFont(old);
 	}
 
-	public void drawString(LFont spriteFont, String text, Vector2f position,
-			LColor color, float rotation, Vector2f origin, Vector2f scale) {
-		LFont old = font;
+	public void drawString(IFont spriteFont, String text, Vector2f position, LColor color, float rotation,
+			Vector2f origin, Vector2f scale) {
+		IFont old = font;
 		if (spriteFont != null) {
 			setFont(spriteFont);
 		}
 		int heigh = 2;
 		if (rotation == 0f) {
-			drawString(text, position.x - (origin.x * scale.x),
-					(position.y + heigh) - (origin.y * scale.y), scale.x,
+			drawString(text, position.x - (origin.x * scale.x), (position.y + heigh) - (origin.y * scale.y), scale.x,
 					scale.y, origin.x, origin.y, rotation, color);
 		} else {
-			drawString(text, position.x, (position.y + heigh), scale.x,
-					scale.y, origin.x, origin.y, rotation, color);
+			drawString(text, position.x, (position.y + heigh), scale.x, scale.y, origin.x, origin.y, rotation, color);
 		}
 		setFont(old);
 	}
@@ -376,28 +358,25 @@ public class SpriteBatch extends PixmapFImpl {
 		drawString(mes, x, y, rotation, getColor());
 	}
 
-	public void drawString(String mes, float x, float y, float rotation,
-			LColor c) {
+	public void drawString(String mes, float x, float y, float rotation, LColor c) {
 		drawString(mes, x, y, 1f, 1f, 0, 0, rotation, c);
 	}
 
-	public void drawString(String mes, float x, float y, float sx, float sy,
-			Vector2f origin, float rotation, LColor c) {
+	public void drawString(String mes, float x, float y, float sx, float sy, Vector2f origin, float rotation,
+			LColor c) {
 		drawString(mes, x, y, sx, sy, origin.x, origin.y, rotation, c);
 	}
 
-	public void drawString(String mes, float x, float y, Vector2f origin,
-			float rotation, LColor c) {
+	public void drawString(String mes, float x, float y, Vector2f origin, float rotation, LColor c) {
 		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, rotation, c);
 	}
 
-	public void drawString(String mes, float x, float y, Vector2f origin,
-			LColor c) {
+	public void drawString(String mes, float x, float y, Vector2f origin, LColor c) {
 		drawString(mes, x, y, 1f, 1f, origin.x, origin.y, 0, c);
 	}
 
-	public void drawString(String mes, float x, float y, float scaleX,
-			float scaleY, float ax, float ay, float rotation, LColor c) {
+	public void drawString(String mes, float x, float y, float scaleX, float scaleY, float ax, float ay, float rotation,
+			LColor c) {
 		checkDrawing();
 		if (c == null) {
 			return;
@@ -408,9 +387,8 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!lockSubmit) {
 			submit();
 		}
-		LSTRDictionary.get().drawString(font, mes, x + offsetX, _use_ascent ? y
-				- font.getAscent() : y + offsetY, scaleX, scaleX, ax, ay,
-				rotation, c);
+		font.drawString(LSystem.base().display().GL(), mes, x + offsetX,
+				_use_ascent ? y - font.getAscent() : y + offsetY, scaleX, scaleX, ax, ay, rotation, c);
 	}
 
 	public void setUseAscent(boolean a) {
@@ -432,8 +410,7 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 		LSystem.mainEndDraw();
 		if (drawing) {
-			throw new IllegalStateException(
-					"SpriteBatch.end must be called before begin.");
+			throw new IllegalStateException("SpriteBatch.end must be called before begin.");
 		}
 		renderCalls = 0;
 		LSystem.base().graphics().gl.glDepthMask(false);
@@ -459,8 +436,7 @@ public class SpriteBatch extends PixmapFImpl {
 			return;
 		}
 		if (!drawing) {
-			throw new IllegalStateException(
-					"SpriteBatch.begin must be called before end.");
+			throw new IllegalStateException("SpriteBatch.begin must be called before end.");
 		}
 		if (idx > 0) {
 			submit();
@@ -550,8 +526,7 @@ public class SpriteBatch extends PixmapFImpl {
 			case Null:
 				break;
 			}
-			mesh.post(name, size, customShader != null ? customShader : shader,
-					vertices, idx, count);
+			mesh.post(name, size, customShader != null ? customShader : shader, vertices, idx, count);
 		} finally {
 			GLUtils.setBlendMode(gl, old);
 			LSystem.mainBeginDraw();
@@ -618,136 +593,110 @@ public class SpriteBatch extends PixmapFImpl {
 		return drawing;
 	}
 
-	public void drawScale(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY, float rotation) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, rotation, 0, 0, texture.width(), texture.height(),
-				false, false);
+	public void drawScale(LTexture texture, float x, float y, float width, float height, float scaleX, float scaleY,
+			float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, 0, 0, texture.width(),
+				texture.height(), false, false);
 	}
 
-	public void drawScale(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, 0, 0, 0, texture.width(), texture.height(), false,
-				false);
+	public void drawScale(LTexture texture, float x, float y, float width, float height, float scaleX, float scaleY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, 0, 0, 0, texture.width(),
+				texture.height(), false, false);
 	}
 
-	public void drawScaleFlipX(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, 0, 0, 0, texture.width(), texture.height(), true, false);
+	public void drawScaleFlipX(LTexture texture, float x, float y, float width, float height, float scaleX,
+			float scaleY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, 0, 0, 0, texture.width(),
+				texture.height(), true, false);
 	}
 
-	public void drawScaleFlipX(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY, float rotation) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, rotation, 0, 0, texture.width(), texture.height(),
-				true, false);
+	public void drawScaleFlipX(LTexture texture, float x, float y, float width, float height, float scaleX,
+			float scaleY, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, 0, 0, texture.width(),
+				texture.height(), true, false);
 	}
 
-	public void drawScaleFlipY(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, 0, 0, 0, texture.width(), texture.height(), false, true);
+	public void drawScaleFlipY(LTexture texture, float x, float y, float width, float height, float scaleX,
+			float scaleY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, 0, 0, 0, texture.width(),
+				texture.height(), false, true);
 	}
 
-	public void drawScaleFlipY(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY, float rotation) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, rotation, 0, 0, texture.width(), texture.height(),
-				false, true);
+	public void drawScaleFlipY(LTexture texture, float x, float y, float width, float height, float scaleX,
+			float scaleY, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, 0, 0, texture.width(),
+				texture.height(), false, true);
 	}
 
 	public void draw(LTexture texture, float x, float y, float rotation) {
-		draw(texture, x, y, texture.width() / 2, texture.height() / 2,
-				texture.width(), texture.height(), 1f, 1f, rotation, 0, 0,
-				texture.width(), texture.height(), false, false);
+		draw(texture, x, y, texture.width() / 2, texture.height() / 2, texture.width(), texture.height(), 1f, 1f,
+				rotation, 0, 0, texture.width(), texture.height(), false, false);
 	}
 
-	public void draw(LTexture texture, float x, float y, float width,
-			float height, float rotation) {
-		if (rotation == 0 && texture.width() == width
-				&& texture.height() == height) {
+	public void draw(LTexture texture, float x, float y, float width, float height, float rotation) {
+		if (rotation == 0 && texture.width() == width && texture.height() == height) {
 			draw(texture, x, y, width, height);
 		} else {
-			draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f,
-					rotation, 0, 0, texture.width(), texture.height(), false,
-					false);
+			draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, 0, 0, texture.width(),
+					texture.height(), false, false);
 		}
 	}
 
-	public void draw(LTexture texture, float x, float y, float rotation,
-			float srcX, float srcY, float srcWidth, float srcHeight) {
-		draw(texture, x, y, srcWidth / 2, srcHeight / 2, texture.width(),
-				texture.height(), 1f, 1f, rotation, srcX, srcY, srcWidth,
-				srcHeight, false, false);
+	public void draw(LTexture texture, float x, float y, float rotation, float srcX, float srcY, float srcWidth,
+			float srcHeight) {
+		draw(texture, x, y, srcWidth / 2, srcHeight / 2, texture.width(), texture.height(), 1f, 1f, rotation, srcX,
+				srcY, srcWidth, srcHeight, false, false);
 	}
 
-	public void draw(LTexture texture, Vector2f pos, Vector2f origin,
-			float width, float height, float scale, float rotation,
-			RectBox src, boolean flipX, boolean flipY) {
-		draw(texture, pos.x, pos.y, origin.x, origin.y, width, height, scale,
-				scale, rotation, src.x, src.y, src.width, src.height, flipX,
-				flipY, false);
+	public void draw(LTexture texture, Vector2f pos, Vector2f origin, float width, float height, float scale,
+			float rotation, RectBox src, boolean flipX, boolean flipY) {
+		draw(texture, pos.x, pos.y, origin.x, origin.y, width, height, scale, scale, rotation, src.x, src.y, src.width,
+				src.height, flipX, flipY, false);
 	}
 
-	public void draw(LTexture texture, Vector2f pos, Vector2f origin,
-			float scale, float rotation, RectBox src, boolean flipX,
+	public void draw(LTexture texture, Vector2f pos, Vector2f origin, float scale, float rotation, RectBox src,
+			boolean flipX, boolean flipY) {
+		draw(texture, pos.x, pos.y, origin.x, origin.y, src.width, src.height, scale, scale, rotation, src.x, src.y,
+				src.width, src.height, flipX, flipY, false);
+	}
+
+	public void draw(LTexture texture, Vector2f pos, Vector2f origin, float scale, RectBox src, boolean flipX,
 			boolean flipY) {
-		draw(texture, pos.x, pos.y, origin.x, origin.y, src.width, src.height,
-				scale, scale, rotation, src.x, src.y, src.width, src.height,
+		draw(texture, pos.x, pos.y, origin.x, origin.y, src.width, src.height, scale, scale, 0, src.x, src.y, src.width,
+				src.height, flipX, flipY, false);
+	}
+
+	public void draw(LTexture texture, Vector2f pos, Vector2f origin, RectBox src, boolean flipX, boolean flipY) {
+		draw(texture, pos.x, pos.y, origin.x, origin.y, src.width, src.height, 1f, 1f, 0, src.x, src.y, src.width,
+				src.height, flipX, flipY, false);
+	}
+
+	public void draw(LTexture texture, Vector2f pos, RectBox src, boolean flipX, boolean flipY) {
+		draw(texture, pos.x, pos.y, src.width / 2, src.height / 2, src.width, src.height, 1f, 1f, 0, src.x, src.y,
+				src.width, src.height, flipX, flipY, false);
+	}
+
+	public void draw(LTexture texture, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
+		draw(texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation, 0, 0, texture.getWidth(),
+				texture.getHeight(), flipX, flipY, false);
+	}
+
+	public void draw(LTexture texture, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, float srcX, float srcY, float srcWidth, float srcHeight,
+			boolean flipX, boolean flipY) {
+		draw(texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth, srcHeight,
 				flipX, flipY, false);
 	}
 
-	public void draw(LTexture texture, Vector2f pos, Vector2f origin,
-			float scale, RectBox src, boolean flipX, boolean flipY) {
-		draw(texture, pos.x, pos.y, origin.x, origin.y, src.width, src.height,
-				scale, scale, 0, src.x, src.y, src.width, src.height, flipX,
-				flipY, false);
+	public void draw(LTexture texture, float x, float y, float originX, float originY, float scaleX, float scaleY,
+			float rotation, float srcX, float srcY, float srcWidth, float srcHeight, boolean flipX, boolean flipY) {
+		draw(texture, x, y, originX, originY, srcWidth, srcHeight, scaleX, scaleY, rotation, srcX, srcY, srcWidth,
+				srcHeight, flipX, flipY, false);
 	}
 
-	public void draw(LTexture texture, Vector2f pos, Vector2f origin,
-			RectBox src, boolean flipX, boolean flipY) {
-		draw(texture, pos.x, pos.y, origin.x, origin.y, src.width, src.height,
-				1f, 1f, 0, src.x, src.y, src.width, src.height, flipX, flipY,
-				false);
-	}
-
-	public void draw(LTexture texture, Vector2f pos, RectBox src,
-			boolean flipX, boolean flipY) {
-		draw(texture, pos.x, pos.y, src.width / 2, src.height / 2, src.width,
-				src.height, 1f, 1f, 0, src.x, src.y, src.width, src.height,
-				flipX, flipY, false);
-	}
-
-	public void draw(LTexture texture, float x, float y, float originX,
-			float originY, float width, float height, float scaleX,
-			float scaleY, float rotation, boolean flipX, boolean flipY) {
-		draw(texture, x, y, originX, originY, width, height, scaleX, scaleY,
-				rotation, 0, 0, texture.getWidth(), texture.getHeight(), flipX,
-				flipY, false);
-	}
-
-	public void draw(LTexture texture, float x, float y, float originX,
-			float originY, float width, float height, float scaleX,
-			float scaleY, float rotation, float srcX, float srcY,
-			float srcWidth, float srcHeight, boolean flipX, boolean flipY) {
-		draw(texture, x, y, originX, originY, width, height, scaleX, scaleY,
-				rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, false);
-	}
-
-	public void draw(LTexture texture, float x, float y, float originX,
-			float originY, float scaleX, float scaleY, float rotation,
-			float srcX, float srcY, float srcWidth, float srcHeight,
-			boolean flipX, boolean flipY) {
-		draw(texture, x, y, originX, originY, srcWidth, srcHeight, scaleX,
-				scaleY, rotation, srcX, srcY, srcWidth, srcHeight, flipX,
-				flipY, false);
-	}
-
-	public void draw(LTexture texture, Vector2f position, RectBox src,
-			LColor c, float rotation, Vector2f origin, Vector2f scale,
-			SpriteEffects effects) {
+	public void draw(LTexture texture, Vector2f position, RectBox src, LColor c, float rotation, Vector2f origin,
+			Vector2f scale, SpriteEffects effects) {
 		float old = color;
 		if (!c.equals(LColor.white)) {
 			setColor(c);
@@ -765,21 +714,17 @@ public class SpriteBatch extends PixmapFImpl {
 			break;
 		}
 		if (src != null) {
-			draw(texture, position.x, position.y, origin.x, origin.y,
-					src.width, src.height, scale.x, scale.y, rotation, src.x,
-					src.y, src.width, src.height, flipX, flipY, true);
+			draw(texture, position.x, position.y, origin.x, origin.y, src.width, src.height, scale.x, scale.y, rotation,
+					src.x, src.y, src.width, src.height, flipX, flipY, true);
 		} else {
-			draw(texture, position.x, position.y, origin.x, origin.y,
-					texture.width(), texture.height(), scale.x, scale.y,
-					rotation, 0, 0, texture.width(), texture.height(), flipX,
-					flipY, true);
+			draw(texture, position.x, position.y, origin.x, origin.y, texture.width(), texture.height(), scale.x,
+					scale.y, rotation, 0, 0, texture.width(), texture.height(), flipX, flipY, true);
 		}
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, Vector2f position, RectBox src,
-			LColor c, float rotation, float sx, float sy, float scale,
-			SpriteEffects effects) {
+	public void draw(LTexture texture, Vector2f position, RectBox src, LColor c, float rotation, float sx, float sy,
+			float scale, SpriteEffects effects) {
 
 		if (src == null && rotation == 0 && scale == 1f && sx == 0 && sy == 0) {
 			draw(texture, position, c);
@@ -803,20 +748,17 @@ public class SpriteBatch extends PixmapFImpl {
 			break;
 		}
 		if (src != null) {
-			draw(texture, position.x, position.y, sx, sy, src.width,
-					src.height, scale, scale, rotation, src.x, src.y,
+			draw(texture, position.x, position.y, sx, sy, src.width, src.height, scale, scale, rotation, src.x, src.y,
 					src.width, src.height, flipX, flipY, true);
 		} else {
-			draw(texture, position.x, position.y, sx, sy, texture.width(),
-					texture.height(), scale, scale, rotation, 0, 0,
-					texture.width(), texture.height(), flipX, flipY, true);
+			draw(texture, position.x, position.y, sx, sy, texture.width(), texture.height(), scale, scale, rotation, 0,
+					0, texture.width(), texture.height(), flipX, flipY, true);
 		}
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, Vector2f position, RectBox src,
-			LColor c, float rotation, Vector2f origin, float scale,
-			SpriteEffects effects) {
+	public void draw(LTexture texture, Vector2f position, RectBox src, LColor c, float rotation, Vector2f origin,
+			float scale, SpriteEffects effects) {
 		float old = color;
 		if (!c.equals(LColor.white)) {
 			setColor(c);
@@ -834,24 +776,19 @@ public class SpriteBatch extends PixmapFImpl {
 			break;
 		}
 		if (src != null) {
-			draw(texture, position.x, position.y, origin.x, origin.y,
-					src.width, src.height, scale, scale, rotation, src.x,
-					src.y, src.width, src.height, flipX, flipY, true);
+			draw(texture, position.x, position.y, origin.x, origin.y, src.width, src.height, scale, scale, rotation,
+					src.x, src.y, src.width, src.height, flipX, flipY, true);
 		} else {
-			draw(texture, position.x, position.y, origin.x, origin.y,
-					texture.width(), texture.height(), scale, scale, rotation,
-					0, 0, texture.width(), texture.height(), flipX, flipY, true);
+			draw(texture, position.x, position.y, origin.x, origin.y, texture.width(), texture.height(), scale, scale,
+					rotation, 0, 0, texture.width(), texture.height(), flipX, flipY, true);
 		}
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, float px, float py, float srcX,
-			float srcY, float srcWidth, float srcHeight, LColor c,
-			float rotation, float originX, float originY, float scale,
-			SpriteEffects effects) {
+	public void draw(LTexture texture, float px, float py, float srcX, float srcY, float srcWidth, float srcHeight,
+			LColor c, float rotation, float originX, float originY, float scale, SpriteEffects effects) {
 
-		if (effects == SpriteEffects.None && rotation == 0f && originX == 0f
-				&& originY == 0f && scale == 1f) {
+		if (effects == SpriteEffects.None && rotation == 0f && originX == 0f && originY == 0f && scale == 1f) {
 			draw(texture, px, py, srcX, srcY, srcWidth, srcHeight, c);
 			return;
 		}
@@ -872,165 +809,23 @@ public class SpriteBatch extends PixmapFImpl {
 		default:
 			break;
 		}
-		draw(texture, px, py, originX, originY, srcWidth, srcHeight, scale,
-				scale, rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY,
-				true);
-		setColor(old);
-	}
-
-	public void draw(LTexture texture, float px, float py, RectBox src,
-			LColor c, float rotation, Vector2f origin, float scale,
-			SpriteEffects effects) {
-		draw(texture, px, py, src, c, rotation, origin.x, origin.y, scale,
-				effects);
-	}
-
-	public void draw(LTexture texture, float px, float py, RectBox src,
-			LColor c, float rotation, float ox, float oy, float scale,
-			SpriteEffects effects) {
-		draw(texture, px, py, src, c, rotation, ox, oy, scale, scale, effects);
-	}
-
-	public void draw(LTexture texture, float px, float py, RectBox src,
-			LColor c, float rotation, float ox, float oy, float scaleX,
-			float scaleY, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		if (src != null) {
-			draw(texture, px, py, ox, oy, src.width, src.height, scaleX,
-					scaleY, rotation, src.x, src.y, src.width, src.height,
-					flipX, flipY, true);
-		} else {
-			draw(texture, px, py, ox, oy, texture.width(), texture.height(),
-					scaleX, scaleY, rotation, 0, 0, texture.width(),
-					texture.height(), flipX, flipY, true);
-		}
-		setColor(old);
-	}
-
-	public void draw(LTexture texture, Vector2f position, LColor c,
-			float rotation, Vector2f origin, Vector2f scale,
-			SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-
-		draw(texture, position.x, position.y, origin.x, origin.y,
-				texture.width(), texture.height(), scale.x, scale.y, rotation,
-				0, 0, texture.width(), texture.height(), flipX, flipY, true);
-
-		setColor(old);
-	}
-
-	public void draw(LTexture texture, Vector2f position, LColor c,
-			float rotation, float originX, float originY, float scale,
-			SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-
-		draw(texture, position.x, position.y, originX, originY,
-				texture.width(), texture.height(), scale, scale, rotation, 0,
-				0, texture.width(), texture.height(), flipX, flipY, true);
-
-		setColor(old);
-	}
-
-	public void draw(LTexture texture, float posX, float posY, float srcX,
-			float srcY, float srcWidth, float srcHeight, LColor c,
-			float rotation, float originX, float originY, float scaleX,
-			float scaleY, SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		draw(texture, posX, posY, originX, originY, srcWidth, srcHeight,
-				scaleX, scaleY, rotation, srcX, srcY, srcWidth, srcHeight,
-				flipX, flipY, true);
-		setColor(old);
-	}
-
-	public void draw(LTexture texture, Vector2f position, float srcX,
-			float srcY, float srcWidth, float srcHeight, LColor c,
-			float rotation, Vector2f origin, Vector2f scale,
-			SpriteEffects effects) {
-		float old = color;
-		if (!c.equals(LColor.white)) {
-			setColor(c);
-		}
-		boolean flipX = false;
-		boolean flipY = false;
-		switch (effects) {
-		case FlipHorizontally:
-			flipX = true;
-			break;
-		case FlipVertically:
-
-			flipY = true;
-			break;
-		default:
-			break;
-		}
-		draw(texture, position.x, position.y, origin.x, origin.y, srcWidth,
-				srcHeight, scale.x, scale.y, rotation, srcX, srcY, srcWidth,
+		draw(texture, px, py, originX, originY, srcWidth, srcHeight, scale, scale, rotation, srcX, srcY, srcWidth,
 				srcHeight, flipX, flipY, true);
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, RectBox dst, RectBox src, LColor c,
-			float rotation, Vector2f origin, SpriteEffects effects) {
+	public void draw(LTexture texture, float px, float py, RectBox src, LColor c, float rotation, Vector2f origin,
+			float scale, SpriteEffects effects) {
+		draw(texture, px, py, src, c, rotation, origin.x, origin.y, scale, effects);
+	}
+
+	public void draw(LTexture texture, float px, float py, RectBox src, LColor c, float rotation, float ox, float oy,
+			float scale, SpriteEffects effects) {
+		draw(texture, px, py, src, c, rotation, ox, oy, scale, scale, effects);
+	}
+
+	public void draw(LTexture texture, float px, float py, RectBox src, LColor c, float rotation, float ox, float oy,
+			float scaleX, float scaleY, SpriteEffects effects) {
 		float old = color;
 		if (!c.equals(LColor.white)) {
 			setColor(c);
@@ -1048,25 +843,145 @@ public class SpriteBatch extends PixmapFImpl {
 			break;
 		}
 		if (src != null) {
-			draw(texture, dst.x, dst.y, origin.x, origin.y, dst.width,
-					dst.height, 1f, 1f, rotation, src.x, src.y, src.width,
+			draw(texture, px, py, ox, oy, src.width, src.height, scaleX, scaleY, rotation, src.x, src.y, src.width,
 					src.height, flipX, flipY, true);
 		} else {
-			draw(texture, dst.x, dst.y, origin.x, origin.y, dst.width,
-					dst.height, 1f, 1f, rotation, 0, 0, texture.width(),
-					texture.height(), flipX, flipY, true);
+			draw(texture, px, py, ox, oy, texture.width(), texture.height(), scaleX, scaleY, rotation, 0, 0,
+					texture.width(), texture.height(), flipX, flipY, true);
 		}
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, float dstX, float dstY, float dstWidth,
-			float dstHeight, float srcX, float srcY, float srcWidth,
-			float srcHeight, LColor c, float rotation, float originX,
-			float originY, SpriteEffects effects) {
-		if (effects == SpriteEffects.None && rotation == 0 && originX == 0
-				&& originY == 0) {
-			draw(texture, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-					srcWidth, srcHeight, c);
+	public void draw(LTexture texture, Vector2f position, LColor c, float rotation, Vector2f origin, Vector2f scale,
+			SpriteEffects effects) {
+		float old = color;
+		if (!c.equals(LColor.white)) {
+			setColor(c);
+		}
+		boolean flipX = false;
+		boolean flipY = false;
+		switch (effects) {
+		case FlipHorizontally:
+			flipX = true;
+			break;
+		case FlipVertically:
+			flipY = true;
+			break;
+		default:
+			break;
+		}
+
+		draw(texture, position.x, position.y, origin.x, origin.y, texture.width(), texture.height(), scale.x, scale.y,
+				rotation, 0, 0, texture.width(), texture.height(), flipX, flipY, true);
+
+		setColor(old);
+	}
+
+	public void draw(LTexture texture, Vector2f position, LColor c, float rotation, float originX, float originY,
+			float scale, SpriteEffects effects) {
+		float old = color;
+		if (!c.equals(LColor.white)) {
+			setColor(c);
+		}
+		boolean flipX = false;
+		boolean flipY = false;
+		switch (effects) {
+		case FlipHorizontally:
+			flipX = true;
+			break;
+		case FlipVertically:
+			flipY = true;
+			break;
+		default:
+			break;
+		}
+
+		draw(texture, position.x, position.y, originX, originY, texture.width(), texture.height(), scale, scale,
+				rotation, 0, 0, texture.width(), texture.height(), flipX, flipY, true);
+
+		setColor(old);
+	}
+
+	public void draw(LTexture texture, float posX, float posY, float srcX, float srcY, float srcWidth, float srcHeight,
+			LColor c, float rotation, float originX, float originY, float scaleX, float scaleY, SpriteEffects effects) {
+		float old = color;
+		if (!c.equals(LColor.white)) {
+			setColor(c);
+		}
+		boolean flipX = false;
+		boolean flipY = false;
+		switch (effects) {
+		case FlipHorizontally:
+			flipX = true;
+			break;
+		case FlipVertically:
+			flipY = true;
+			break;
+		default:
+			break;
+		}
+		draw(texture, posX, posY, originX, originY, srcWidth, srcHeight, scaleX, scaleY, rotation, srcX, srcY, srcWidth,
+				srcHeight, flipX, flipY, true);
+		setColor(old);
+	}
+
+	public void draw(LTexture texture, Vector2f position, float srcX, float srcY, float srcWidth, float srcHeight,
+			LColor c, float rotation, Vector2f origin, Vector2f scale, SpriteEffects effects) {
+		float old = color;
+		if (!c.equals(LColor.white)) {
+			setColor(c);
+		}
+		boolean flipX = false;
+		boolean flipY = false;
+		switch (effects) {
+		case FlipHorizontally:
+			flipX = true;
+			break;
+		case FlipVertically:
+
+			flipY = true;
+			break;
+		default:
+			break;
+		}
+		draw(texture, position.x, position.y, origin.x, origin.y, srcWidth, srcHeight, scale.x, scale.y, rotation, srcX,
+				srcY, srcWidth, srcHeight, flipX, flipY, true);
+		setColor(old);
+	}
+
+	public void draw(LTexture texture, RectBox dst, RectBox src, LColor c, float rotation, Vector2f origin,
+			SpriteEffects effects) {
+		float old = color;
+		if (!c.equals(LColor.white)) {
+			setColor(c);
+		}
+		boolean flipX = false;
+		boolean flipY = false;
+		switch (effects) {
+		case FlipHorizontally:
+			flipX = true;
+			break;
+		case FlipVertically:
+			flipY = true;
+			break;
+		default:
+			break;
+		}
+		if (src != null) {
+			draw(texture, dst.x, dst.y, origin.x, origin.y, dst.width, dst.height, 1f, 1f, rotation, src.x, src.y,
+					src.width, src.height, flipX, flipY, true);
+		} else {
+			draw(texture, dst.x, dst.y, origin.x, origin.y, dst.width, dst.height, 1f, 1f, rotation, 0, 0,
+					texture.width(), texture.height(), flipX, flipY, true);
+		}
+		setColor(old);
+	}
+
+	public void draw(LTexture texture, float dstX, float dstY, float dstWidth, float dstHeight, float srcX, float srcY,
+			float srcWidth, float srcHeight, LColor c, float rotation, float originX, float originY,
+			SpriteEffects effects) {
+		if (effects == SpriteEffects.None && rotation == 0 && originX == 0 && originY == 0) {
+			draw(texture, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, c);
 			return;
 		}
 		float old = color;
@@ -1085,17 +1000,14 @@ public class SpriteBatch extends PixmapFImpl {
 		default:
 			break;
 		}
-		draw(texture, dstX, dstY, originX, originY, dstWidth, dstHeight, 1f,
-				1f, rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY,
-				true);
+		draw(texture, dstX, dstY, originX, originY, dstWidth, dstHeight, 1f, 1f, rotation, srcX, srcY, srcWidth,
+				srcHeight, flipX, flipY, true);
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, float x, float y, float originX,
-			float originY, float width, float height, float scaleX,
-			float scaleY, float rotation, float srcX, float srcY,
-			float srcWidth, float srcHeight, boolean flipX, boolean flipY,
-			boolean off) {
+	public void draw(LTexture texture, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, float srcX, float srcY, float srcWidth, float srcHeight,
+			boolean flipX, boolean flipY, boolean off) {
 
 		if (!checkTexture(texture)) {
 			return;
@@ -1221,8 +1133,7 @@ public class SpriteBatch extends PixmapFImpl {
 		this.idx = idx;
 	}
 
-	public void draw(LTexture texture, float x, float y, float width,
-			float height, float rotation, LColor c) {
+	public void draw(LTexture texture, float x, float y, float width, float height, float rotation, LColor c) {
 		float old = color;
 		if (!c.equals(LColor.white)) {
 			setColor(c);
@@ -1232,64 +1143,51 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void drawFlipX(LTexture texture, float x, float y) {
-		draw(texture, x, y, texture.width(), texture.height(), 0, 0,
-				texture.width(), texture.height(), true, false);
+		draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), true, false);
 	}
 
 	public void drawFlipY(LTexture texture, float x, float y) {
-		draw(texture, x, y, texture.width(), texture.height(), 0, 0,
-				texture.width(), texture.height(), false, true);
+		draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), false, true);
 	}
 
-	public void drawFlipX(LTexture texture, float x, float y, float width,
-			float height) {
-		draw(texture, x, y, width, height, 0, 0, texture.width(),
-				texture.height(), true, false);
+	public void drawFlipX(LTexture texture, float x, float y, float width, float height) {
+		draw(texture, x, y, width, height, 0, 0, texture.width(), texture.height(), true, false);
 	}
 
-	public void drawFlipY(LTexture texture, float x, float y, float width,
-			float height) {
-		draw(texture, x, y, width, height, 0, 0, texture.width(),
-				texture.height(), false, true);
+	public void drawFlipY(LTexture texture, float x, float y, float width, float height) {
+		draw(texture, x, y, width, height, 0, 0, texture.width(), texture.height(), false, true);
 	}
 
 	public void drawFlipX(LTexture texture, float x, float y, float rotation) {
-		draw(texture, x, y, texture.width() / 2, texture.height() / 2,
-				texture.width(), texture.height(), 1f, 1f, rotation, 0, 0,
-				texture.width(), texture.height(), true, false);
-	}
-
-	public void drawFlipY(LTexture texture, float x, float y, float rotation) {
-		draw(texture, x, y, texture.width() / 2, texture.height() / 2,
-				texture.width(), texture.height(), 1f, 1f, rotation, 0, 0,
-				texture.width(), texture.height(), false, true);
-	}
-
-	public void drawFlipX(LTexture texture, float x, float y, float width,
-			float height, float rotation) {
-		draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f,
+		draw(texture, x, y, texture.width() / 2, texture.height() / 2, texture.width(), texture.height(), 1f, 1f,
 				rotation, 0, 0, texture.width(), texture.height(), true, false);
 	}
 
-	public void drawFlipX(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY, float rotation) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, rotation, 0, 0, texture.width(), texture.height(),
-				true, false);
-	}
-
-	public void drawFlipY(LTexture texture, float x, float y, float width,
-			float height, float rotation) {
-		draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f,
+	public void drawFlipY(LTexture texture, float x, float y, float rotation) {
+		draw(texture, x, y, texture.width() / 2, texture.height() / 2, texture.width(), texture.height(), 1f, 1f,
 				rotation, 0, 0, texture.width(), texture.height(), false, true);
 	}
 
-	public void drawFlip(LTexture texture, float x, float y, float width,
-			float height, float scaleX, float scaleY, float rotation,
-			boolean flipX, boolean flipY) {
-		draw(texture, x, y, width / 2, height / 2, width, height, scaleX,
-				scaleY, rotation, 0, 0, texture.width(), texture.height(),
-				flipX, flipY);
+	public void drawFlipX(LTexture texture, float x, float y, float width, float height, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, 0, 0, texture.width(),
+				texture.height(), true, false);
+	}
+
+	public void drawFlipX(LTexture texture, float x, float y, float width, float height, float scaleX, float scaleY,
+			float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, 0, 0, texture.width(),
+				texture.height(), true, false);
+	}
+
+	public void drawFlipY(LTexture texture, float x, float y, float width, float height, float rotation) {
+		draw(texture, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, 0, 0, texture.width(),
+				texture.height(), false, true);
+	}
+
+	public void drawFlip(LTexture texture, float x, float y, float width, float height, float scaleX, float scaleY,
+			float rotation, boolean flipX, boolean flipY) {
+		draw(texture, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, 0, 0, texture.width(),
+				texture.height(), flipX, flipY);
 	}
 
 	public void draw(LTexture texture, RectBox dstBox, RectBox srcBox, LColor c) {
@@ -1297,40 +1195,33 @@ public class SpriteBatch extends PixmapFImpl {
 		if (!c.equals(LColor.white)) {
 			setColor(c);
 		}
-		draw(texture, dstBox.x, dstBox.y, dstBox.width, dstBox.height,
-				srcBox.x, srcBox.y, srcBox.width, srcBox.height, false, false);
+		draw(texture, dstBox.x, dstBox.y, dstBox.width, dstBox.height, srcBox.x, srcBox.y, srcBox.width, srcBox.height,
+				false, false);
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, float x, float y, float width,
-			float height, float srcX, float srcY, float srcWidth,
-			float srcHeight) {
-		draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight,
-				false, false);
+	public void draw(LTexture texture, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight) {
+		draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, false, false);
 	}
 
-	public void draw(LTexture texture, float x, float y, float width,
-			float height, float srcX, float srcY, float srcWidth,
-			float srcHeight, LColor c) {
+	public void draw(LTexture texture, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight, LColor c) {
 		float old = color;
 		if (!c.equals(LColor.white)) {
 			setColor(c);
 		}
-		draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight,
-				false, false);
+		draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, false, false);
 		setColor(old);
 	}
 
-	public void drawEmbedded(LTexture texture, float x, float y, float width,
-			float height, float srcX, float srcY, float srcWidth,
-			float srcHeight, LColor c) {
-		draw(texture, x, y, width - x, height - y, srcX, srcY, srcWidth - srcX,
-				srcHeight - srcY, c);
+	public void drawEmbedded(LTexture texture, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight, LColor c) {
+		draw(texture, x, y, width - x, height - y, srcX, srcY, srcWidth - srcX, srcHeight - srcY, c);
 	}
 
-	public void draw(LTexture texture, float x, float y, float width,
-			float height, float srcX, float srcY, float srcWidth,
-			float srcHeight, boolean flipX, boolean flipY) {
+	public void draw(LTexture texture, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight, boolean flipX, boolean flipY) {
 
 		if (!checkTexture(texture)) {
 			return;
@@ -1392,14 +1283,13 @@ public class SpriteBatch extends PixmapFImpl {
 		if (srcBox == null) {
 			draw(texture, pos.x, pos.y, 0, 0, texture.width(), texture.height());
 		} else {
-			draw(texture, pos.x, pos.y, srcBox.x, srcBox.y, srcBox.width,
-					srcBox.height);
+			draw(texture, pos.x, pos.y, srcBox.x, srcBox.y, srcBox.width, srcBox.height);
 		}
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, float x, float y, float srcX,
-			float srcY, float srcWidth, float srcHeight, LColor c) {
+	public void draw(LTexture texture, float x, float y, float srcX, float srcY, float srcWidth, float srcHeight,
+			LColor c) {
 		float old = color;
 		if (!c.equals(LColor.white)) {
 			setColor(c);
@@ -1408,8 +1298,7 @@ public class SpriteBatch extends PixmapFImpl {
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, float x, float y, float srcX,
-			float srcY, float srcWidth, float srcHeight) {
+	public void draw(LTexture texture, float x, float y, float srcX, float srcY, float srcWidth, float srcHeight) {
 
 		if (!checkTexture(texture)) {
 			return;
@@ -1482,8 +1371,7 @@ public class SpriteBatch extends PixmapFImpl {
 		setColor(old);
 	}
 
-	public void draw(LTexture texture, float x, float y, float width,
-			float height) {
+	public void draw(LTexture texture, float x, float y, float width, float height) {
 
 		if (!checkTexture(texture)) {
 			return;
@@ -1525,8 +1413,7 @@ public class SpriteBatch extends PixmapFImpl {
 		this.idx = idx;
 	}
 
-	public void draw(LTexture texture, float[] spriteVertices, int offset,
-			int length) {
+	public void draw(LTexture texture, float[] spriteVertices, int offset, int length) {
 
 		if (checkTexture(texture)) {
 			return;
@@ -1552,22 +1439,18 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float rotation) {
-		draw(region, x, y, region.getRegionWidth(), region.getRegionHeight(),
-				rotation);
+		draw(region, x, y, region.getRegionWidth(), region.getRegionHeight(), rotation);
 	}
 
-	public void draw(LTextureRegion region, float x, float y, float width,
-			float height, float rotation) {
-		draw(region, x, y, region.getRegionWidth() / 2,
-				region.getRegionHeight() / 2, width, height, 1f, 1f, rotation);
+	public void draw(LTextureRegion region, float x, float y, float width, float height, float rotation) {
+		draw(region, x, y, region.getRegionWidth() / 2, region.getRegionHeight() / 2, width, height, 1f, 1f, rotation);
 	}
 
 	public void draw(LTextureRegion region, float x, float y) {
 		draw(region, x, y, region.getRegionWidth(), region.getRegionHeight());
 	}
 
-	public void draw(LTextureRegion region, float x, float y, float width,
-			float height) {
+	public void draw(LTextureRegion region, float x, float y, float width, float height) {
 
 		if (!checkTexture(region.getTexture())) {
 			return;
@@ -1609,9 +1492,8 @@ public class SpriteBatch extends PixmapFImpl {
 		this.idx = idx;
 	}
 
-	public void draw(LTextureRegion region, float x, float y, float originX,
-			float originY, float width, float height, float scaleX,
-			float scaleY, float rotation) {
+	public void draw(LTextureRegion region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation) {
 
 		if (!checkTexture(region.getTexture())) {
 			return;
@@ -1721,9 +1603,8 @@ public class SpriteBatch extends PixmapFImpl {
 		this.idx = idx;
 	}
 
-	public void draw(LTextureRegion region, float x, float y, float originX,
-			float originY, float width, float height, float scaleX,
-			float scaleY, float rotation, boolean clockwise) {
+	public void draw(LTextureRegion region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, boolean clockwise) {
 
 		if (!checkTexture(region.getTexture())) {
 			return;
@@ -1875,13 +1756,11 @@ public class SpriteBatch extends PixmapFImpl {
 		drawArcImpl(rect.x, rect.y, rect.width, rect.height, start, end);
 	}
 
-	public void drawArc(float x1, float y1, float width, float height,
-			float start, float end) {
+	public void drawArc(float x1, float y1, float width, float height, float start, float end) {
 		drawArcImpl(x1, y1, width, height, start, end);
 	}
 
-	public void fillArc(float x1, float y1, float width, float height,
-			float start, float end) {
+	public void fillArc(float x1, float y1, float width, float height, float start, float end) {
 		fillArcImpl(x1, y1, width, height, start, end);
 	}
 
@@ -1890,14 +1769,12 @@ public class SpriteBatch extends PixmapFImpl {
 
 	}
 
-	public final void drawRoundRect(float x, float y, float width,
-			float height, int radius) {
+	public final void drawRoundRect(float x, float y, float width, float height, int radius) {
 		drawRoundRectImpl(x, y, width, height, radius, radius);
 
 	}
 
-	public final void fillRoundRect(float x, float y, float width,
-			float height, int radius) {
+	public final void fillRoundRect(float x, float y, float width, float height, int radius) {
 		fillRoundRectImpl(x, y, width, height, radius);
 	}
 

@@ -1,5 +1,6 @@
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.Font.Style;
 import loon.font.IFont;
@@ -15,11 +16,11 @@ public class SpriteLabel extends Entity {
 	private final Text _text;
 
 	public SpriteLabel(String label) {
-		this(LFont.getDefaultFont(), label, 0, 0);
+		this(LSystem.getSystemGameFont(), label, 0, 0);
 	}
 
 	public SpriteLabel(String label, int x, int y) {
-		this(LFont.getDefaultFont(), label, x, y);
+		this(LSystem.getSystemGameFont(), label, x, y);
 	}
 
 	public SpriteLabel(String label, String font, Style type, int size, int x,

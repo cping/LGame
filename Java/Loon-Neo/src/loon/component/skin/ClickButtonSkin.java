@@ -1,11 +1,11 @@
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 
 public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 
@@ -20,7 +20,7 @@ public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 	}
 
 	public ClickButtonSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(7),
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(7),
 				DefUI.get().getDefaultTextures(8), DefUI.get().getDefaultTextures(9));
 	}
 

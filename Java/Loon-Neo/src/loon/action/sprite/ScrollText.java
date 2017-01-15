@@ -47,7 +47,7 @@ public class ScrollText extends Entity {
 	}
 
 	public ScrollText(String text, TextOptions opt) {
-		this(LFont.getDefaultFont(), opt, text, 0, 0, 0, 0);
+		this(LSystem.getSystemGameFont(), opt, text, 0, 0, 0, 0);
 	}
 
 	public ScrollText(String[] texts) {
@@ -55,7 +55,7 @@ public class ScrollText extends Entity {
 	}
 
 	public ScrollText(String[] texts, TextOptions opt) {
-		this(LFont.getDefaultFont(), opt, texts, 0, 0, 0, 0);
+		this(LSystem.getSystemGameFont(), opt, texts, 0, 0, 0, 0);
 	}
 
 	public ScrollText(IFont font, String text, TextOptions opt) {
@@ -71,13 +71,13 @@ public class ScrollText extends Entity {
 	}
 
 	public ScrollText(String text, int x, int y, int width, int height) {
-		this(LFont.getDefaultFont(), new TextOptions(), text, x, y, width,
+		this(LSystem.getSystemGameFont(), new TextOptions(), text, x, y, width,
 				height);
 	}
 
 	public ScrollText(TextOptions opt, String text, int x, int y, int width,
 			int height) {
-		this(LFont.getDefaultFont(), opt, text, x, y, width, height);
+		this(LSystem.getSystemGameFont(), opt, text, x, y, width, height);
 	}
 
 	public ScrollText(String text, String font, Style type, int size, int x,

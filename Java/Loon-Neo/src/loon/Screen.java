@@ -3210,6 +3210,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this._baseColor;
 	}
 
+	public IFont getGameFont() {
+		return LSystem.getSystemGameFont();
+	}
+
+	public Screen setGameFont(IFont font) {
+		LSystem.setSystemGameFont(font);
+		return this;
+	}
+
+	public IFont getLogFont() {
+		return LSystem.getSystemLogFont();
+	}
+
+	public Screen setLogFont(IFont font) {
+		LSystem.setSystemLogFont(font);
+		return this;
+	}
+
 	public RectBox getBox() {
 		return getRectBox();
 	}

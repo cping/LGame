@@ -1,11 +1,11 @@
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 
 public class MessageSkin implements FontSet<MessageSkin>{
 
@@ -20,7 +20,7 @@ public class MessageSkin implements FontSet<MessageSkin>{
 	}
 
 	public MessageSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(2));
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(2));
 	}
 
 	public MessageSkin(IFont font, LColor fontColor, LTexture back) {

@@ -28,7 +28,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.event.GameKey;
 import loon.event.GameTouch;
-import loon.font.LFont;
+import loon.font.IFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -63,11 +63,11 @@ public abstract class DrawableScreen extends Screen {
 		this.gameCollection = new GameComponentCollection();
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		if (batch != null) {
 			return batch.getFont();
 		}
-		return LFont.getDefaultFont();
+		return LSystem.getSystemGameFont();
 	}
 
 	public void addDrawable(Drawable drawable) {

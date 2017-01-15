@@ -477,7 +477,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public AVGScreen(final String initscript, final LTexture img) {
-		this._font = LFont.getDefaultFont();
+		this._font = LSystem.getSystemGameFont();
 		this._scriptName = initscript;
 		if (initscript == null) {
 			return;
@@ -489,7 +489,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public AVGScreen(final String initscript) {
-		this._font = LFont.getDefaultFont();
+		this._font = LSystem.getSystemGameFont();
 		this._scriptName = initscript;
 		if (initscript == null) {
 			return;

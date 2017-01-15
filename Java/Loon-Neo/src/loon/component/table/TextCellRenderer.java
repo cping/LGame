@@ -20,18 +20,18 @@
  */
 package loon.component.table;
 
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.table.LTable.BindIcon;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Alignment;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 
 public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer> {
 
-	private IFont font = LFont.getDefaultFont();
+	private IFont font = LSystem.getSystemGameFont();
 	private LColor textColor = LColor.white;
 	private Alignment alignment = Alignment.LEFT;
 

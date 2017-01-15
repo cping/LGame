@@ -200,7 +200,7 @@ public class LToolTip extends LComponent {
 		float posX = tooltip.getScreenX() + tooltip.getWidth() / 2;
 		float posY = tooltip.getScreenY() + tooltip.getHeight() / 2;
 		float width = _text.getWidth() + 5;
-		float height = _text.getHeight() + 5;
+		float height = _text.getHeight() + 8;
 		if (getScreen().contains(posX, posY, width, height)) {
 			if (_background == null) {
 				g.fillRect(posX, posY, width, height, LColor.darkGray);

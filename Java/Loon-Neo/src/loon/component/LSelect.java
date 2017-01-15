@@ -29,7 +29,6 @@ import loon.component.skin.SkinManager;
 import loon.event.SysKey;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
@@ -104,7 +103,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 			this.setBackground(formImage);
 		}
 		this.fontColor = fontColor;
-		this.messageFont = (font == null ? LFont.getDefaultFont() : font);
+		this.messageFont = (font == null ? LSystem.getSystemGameFont() : font);
 		this.customRendering = true;
 		this.selectFlag = 1;
 		this.tmpOffset = -(width / 10);

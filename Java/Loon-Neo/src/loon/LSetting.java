@@ -101,6 +101,14 @@ public class LSetting {
 		LSystem.setSystemLogFont(font);
 	}
 
+	public void setSystemGameFont(IFont font) {
+		LSystem.setSystemGameFont(font);
+	}
+
+	public void setSystemGlobalFont(IFont font) {
+		LSystem.setSystemGlobalFont(font);
+	}
+	
 	public boolean landscape() {
 		return this.height < this.width;
 	}

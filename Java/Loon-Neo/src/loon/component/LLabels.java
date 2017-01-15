@@ -21,11 +21,11 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
@@ -35,7 +35,7 @@ import loon.utils.TArray;
 public class LLabels extends LComponent implements FontSet<LLabels> {
 
 	public LLabels(int x, int y, int width, int height) {
-		this(LFont.getDefaultFont(), x, y, width, height);
+		this(LSystem.getSystemGameFont(), x, y, width, height);
 	}
 
 	public LLabels(IFont font, int x, int y, int width, int height) {

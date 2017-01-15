@@ -21,13 +21,13 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
 import loon.event.CallFunction;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
@@ -66,7 +66,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	public LButton(LTexture[] img, String text, int row, int col, int x, int y) {
-		this(LFont.getDefaultFont(), img, text, row, col, x, y);
+		this(LSystem.getSystemGameFont(), img, text, row, col, x, y);
 	}
 
 	public LButton(IFont font, LTexture[] img, String text, int row, int col,
@@ -80,7 +80,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	public LButton(String text, int x, int y, int w, int h) {
-		this(LFont.getDefaultFont(), text, x, y, w, h);
+		this(LSystem.getSystemGameFont(), text, x, y, w, h);
 	}
 
 	public LButton(IFont font, String text, int x, int y, int w, int h) {

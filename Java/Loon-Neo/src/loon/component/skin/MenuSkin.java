@@ -1,11 +1,11 @@
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 
 public class MenuSkin implements FontSet<MenuSkin>{
 
@@ -19,7 +19,7 @@ public class MenuSkin implements FontSet<MenuSkin>{
 	}
 
 	public MenuSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(2),
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(2),
 				DefUI.get().getDefaultTextures(4));
 	}
 

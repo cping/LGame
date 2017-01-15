@@ -1,10 +1,10 @@
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.IFont;
-import loon.font.LFont;
 
 public class ProgressSkin {
 
@@ -17,7 +17,7 @@ public class ProgressSkin {
 	}
 
 	public ProgressSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(4),
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(4),
 				DefUI.get().getDefaultTextures(2));
 	}
 

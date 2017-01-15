@@ -1,11 +1,11 @@
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 
 public class TextBarSkin implements FontSet<TextBarSkin>{
 
@@ -20,12 +20,12 @@ public class TextBarSkin implements FontSet<TextBarSkin>{
 	}
 
 	public final static TextBarSkin defEmpty() {
-		return new TextBarSkin(LFont.getDefaultFont(), LColor.white, null,
+		return new TextBarSkin(LSystem.getSystemGameFont(), LColor.white, null,
 				null, null);
 	}
 
 	public TextBarSkin() {
-		this(LFont.getDefaultFont(), LColor.white, DefUI.get().getDefaultTextures(7),
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(7),
 				DefUI.get().getDefaultTextures(7), DefUI.get().getDefaultTextures(7));
 	}
 

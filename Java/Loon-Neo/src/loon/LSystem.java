@@ -25,6 +25,7 @@ import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
 import loon.font.IFont;
+import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.geom.Vector3f;
 import loon.opengl.GLEx;
@@ -79,6 +80,8 @@ public class LSystem {
 
 	private static IFont _defaultLogFont = null;
 
+	private static IFont _defaultGameFont = null;
+
 	/**
 	 * 获得系统画面log中显示的字体(如果未设置则默认为本地字体渲染,字体大小16)
 	 * 
@@ -100,6 +103,37 @@ public class LSystem {
 		_defaultLogFont = font;
 	}
 
+	/**
+	 * 设定游戏全局默认使用的字体文字(不含log,如果未设置则默认为本地字体渲染)
+	 * 
+	 * @return
+	 */
+	public final static IFont getSystemGameFont() {
+		if (_defaultGameFont == null) {
+			_defaultGameFont = LFont.getDefaultFont();
+		}
+		return _defaultGameFont;
+	}
+
+	/**
+	 * 设定游戏全局默认使用的字体文字(不含log)
+	 * 
+	 * @param font
+	 */
+	public static void setSystemGameFont(IFont font) {
+		_defaultGameFont = font;
+	}
+
+	/**
+	 * 设定游戏全局默认使用的字体文字
+	 * 
+	 * @param font
+	 */
+	public static void setSystemGlobalFont(IFont font) {
+		LSystem.setSystemLogFont(font);
+		LSystem.setSystemGameFont(font);
+	}
+	
 	// 默认的字符串打印完毕flag
 	public static String FLAG_TAG = "▼";
 

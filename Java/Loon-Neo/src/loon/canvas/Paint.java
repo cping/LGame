@@ -1,5 +1,7 @@
 package loon.canvas;
 
+import loon.LSystem;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.utils.ObjectMap;
 
@@ -14,7 +16,7 @@ public class Paint {
 
 	private int textSize = 20;
 
-	private LFont textFont;
+	private IFont textFont;
 
 	public int alpha = 255;
 
@@ -25,7 +27,7 @@ public class Paint {
 	public Style style = Style.FILL;
 
 	public Paint() {
-		this.textFont = LFont.getDefaultFont();
+		this.textFont = LSystem.getSystemGameFont();
 	}
 
 	public void setRGB(int r, int g, int b) {
@@ -83,11 +85,11 @@ public class Paint {
 		return this.textSize;
 	}
 
-	public LFont getFont() {
+	public IFont getFont() {
 		return textFont;
 	}
 
-	public LFont setFont(LFont font) {
+	public IFont setFont(LFont font) {
 		this.textFont = font;
 		if (font != null) {
 			this.textSize = font.getSize();
