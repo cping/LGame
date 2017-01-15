@@ -31,8 +31,7 @@ import loon.utils.Scale;
 import loon.utils.reply.Function;
 import loon.utils.reply.GoFuture;
 
-public abstract class Image extends TextureSource implements Canvas.Drawable,
-		LRelease {
+public abstract class Image extends TextureSource implements Canvas.Drawable, LRelease {
 
 	private boolean isTexture = false;
 
@@ -68,20 +67,16 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 		return canvas.image;
 	}
 
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x1, int y1, int x2, int y2) {
-		Canvas canvas = LSystem.base().graphics()
-				.createCanvas(objectWidth, objectHeight);
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x1, int y1, int x2,
+			int y2) {
+		Canvas canvas = LSystem.base().graphics().createCanvas(objectWidth, objectHeight);
 		canvas.draw(image, 0, 0, objectWidth, objectHeight, x1, y1, x2, y2);
 		return canvas.image;
 	}
 
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x, int y) {
-		Canvas canvas = LSystem.base().graphics()
-				.createCanvas(objectWidth, objectHeight);
-		canvas.draw(image, 0, 0, objectWidth, objectHeight, x, y, x
-				+ objectWidth, objectHeight + y);
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x, int y) {
+		Canvas canvas = LSystem.base().graphics().createCanvas(objectWidth, objectHeight);
+		canvas.draw(image, 0, 0, objectWidth, objectHeight, x, y, x + objectWidth, objectHeight + y);
 		return canvas.image;
 	}
 
@@ -91,8 +86,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 
 	public Canvas getCanvas() {
 		if (canvas == null) {
-			return canvas = LSystem.base().graphics()
-					.createCanvas(width(), height());
+			return canvas = LSystem.base().graphics().createCanvas(width(), height());
 		}
 		return canvas;
 	}
@@ -151,28 +145,25 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 
 	public LTexture createTexture(LTexture.Format config) {
 		if (!isLoaded()) {
-			throw new IllegalStateException(
-					"Cannot create texture from unready image: " + this);
+			throw new IllegalStateException("Cannot create texture from unready image: " + this);
 		}
 		int texWidth = config.toTexWidth(pixelWidth());
 		int texHeight = config.toTexHeight(pixelHeight());
 		if (texWidth <= 0 || texHeight <= 0) {
-			throw new IllegalArgumentException("Invalid texture size: "
-					+ texWidth + "x" + texHeight + " from: " + this);
+			throw new IllegalArgumentException(
+					"Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
 		this.isTexture = true;
-		LTexture tex = new LTexture(gfx, gfx.createTexture(config), config,
-				texWidth, texHeight, scale(), width(), height());
+		LTexture tex = new LTexture(gfx, gfx.createTexture(config), config, texWidth, texHeight, scale(), width(),
+				height());
 		tex.update(this);
 		return tex;
 	}
 
-	public static abstract class Region extends TextureSource implements
-			Canvas.Drawable {
+	public static abstract class Region extends TextureSource implements Canvas.Drawable {
 	}
 
-	public Region region(final float rx, final float ry, final float rwidth,
-			final float rheight) {
+	public Region region(final float rx, final float ry, final float rwidth, final float rheight) {
 
 		return new Region() {
 			private LTexture tile;
@@ -210,15 +201,13 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 			}
 
 			@Override
-			public void draw(Object ctx, float x, float y, float width,
-					float height) {
-				Image.this.draw(ctx, x, y, width, height, rx, ry, rwidth,
-						rheight);
+			public void draw(Object ctx, float x, float y, float width, float height) {
+				Image.this.draw(ctx, x, y, width, height, rx, ry, rwidth, rheight);
 			}
 
 			@Override
-			public void draw(Object ctx, float dx, float dy, float dw,
-					float dh, float sx, float sy, float sw, float sh) {
+			public void draw(Object ctx, float dx, float dy, float dw, float dh, float sx, float sy, float sw,
+					float sh) {
 				Image.this.draw(ctx, dx, dy, dw, dh, rx + sx, ry + sy, sw, sh);
 			}
 		};
@@ -269,16 +258,13 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 
 	public abstract int[] getPixels(int x, int y, int w, int h);
 
-	public abstract int[] getPixels(int offset, int stride, int x, int y,
-			int width, int height);
+	public abstract int[] getPixels(int offset, int stride, int x, int y, int width, int height);
 
-	public abstract int[] getPixels(int pixels[], int offset, int stride,
-			int x, int y, int width, int height);
+	public abstract int[] getPixels(int pixels[], int offset, int stride, int x, int y, int width, int height);
 
 	public abstract void setPixels(int[] pixels, int width, int height);
 
-	public abstract void setPixels(int[] pixels, int offset, int stride, int x,
-			int y, int width, int height);
+	public abstract void setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height);
 
 	public abstract int[] setPixels(int[] pixels, int x, int y, int w, int h);
 
@@ -292,11 +278,11 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 
 	public abstract void setRGB(int rgb, int x, int y);
 
-	public abstract void getRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize);
+	public abstract void getRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset,
+			int scanSize);
 
-	public abstract void setRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize);
+	public abstract void setRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset,
+			int scanSize);
 
 	public abstract boolean hasAlpha();
 
@@ -316,6 +302,64 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 
 	public int getHeight() {
 		return (int) height();
+	}
+
+	public byte[] getABGRBytes() {
+		return getRGBABytes(true);
+	}
+
+	public byte[] getRGBABytes() {
+		return getRGBABytes(false);
+	}
+	
+	public byte[] getRGBABytes(boolean flag) {
+		int idx = 0;
+		final int bits = 4;
+		final int[] pixesl = getPixels();
+		byte[] buffer = new byte[getWidth() * getHeight() * bits];
+		for (int i = 0, size = buffer.length; i < size; i += bits) {
+			int pixel = pixesl[idx++];
+			if (flag) {
+				buffer[i + 3] = (byte) (LColor.getAlpha(pixel));
+				buffer[i + 2] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i] = (byte) (LColor.getBlue(pixel));
+			} else {
+				buffer[i] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i + 2] = (byte) (LColor.getBlue(pixel));
+				buffer[i + 3] = (byte) (LColor.getAlpha(pixel));
+			}
+		}
+		return buffer;
+	}
+
+	public byte[] getBGRBytes() {
+		return getRGBBytes(true);
+	}
+
+	public byte[] getRGBBytes() {
+		return getRGBBytes(false);
+	}
+	
+	public byte[] getRGBBytes(boolean flag) {
+		int idx = 0;
+		final int bits = 3;
+		final int[] pixesl = getPixels();
+		byte[] buffer = new byte[getWidth() * getHeight() * bits];
+		for (int i = 0, size = buffer.length; i < size; i += bits) {
+			int pixel = pixesl[idx++];
+			if (flag) {
+				buffer[i + 2] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i] = (byte) (LColor.getBlue(pixel));
+			} else {
+				buffer[i] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i + 2] = (byte) (LColor.getBlue(pixel));
+			}
+		}
+		return buffer;
 	}
 
 	public Pixmap getPixmap() {
@@ -349,7 +393,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable,
 	public final Image cpy() {
 		return cpy(false);
 	}
-	
+
 	public final Image cpy(boolean closed) {
 		Canvas canvas = createCanvas(width(), height());
 		canvas.draw(this, 0, 0);

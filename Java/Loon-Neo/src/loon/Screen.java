@@ -20,6 +20,8 @@
  */
 package loon;
 
+import java.io.OutputStream;
+
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
@@ -67,6 +69,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
+import loon.utils.ArrayByte;
 import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
@@ -3387,13 +3390,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Image screenshotToImage() {
-		Pixmap pixmap = GLUtils.getScreenshot();
-		Image tmp = pixmap.getImage();
+		Image tmp = GLUtils.getScreenshot();
 		Image image = Image.getResize(tmp, getWidth(), getHeight());
 		tmp.close();
 		tmp = null;
-		pixmap.close();
-		pixmap = null;
 		return image;
 	}
 
@@ -3403,7 +3403,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Pixmap screenshotToPixmap() {
-		Pixmap pixmap = GLUtils.getScreenshot();
+		Pixmap pixmap = GLUtils.getFrameBufferRGBPixmap();
 		Pixmap image = Pixmap.getResize(pixmap, getWidth(), getHeight());
 		pixmap.close();
 		pixmap = null;
@@ -3417,6 +3417,69 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public Screen exitGame() {
 		LSystem.exit();
+		return this;
+	}
+
+	/**
+	 * 返回video的缓存结果(不设置out对象时才会有效)
+	 * 
+	 * @return
+	 */
+	public ArrayByte getVideoCache() {
+		if (LSystem._base != null && LSystem._base.display() != null) {
+			return LSystem._base.display().getVideoCache();
+		}
+		return new ArrayByte();
+	}
+
+	/**
+	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
+	 * 
+	 * @return
+	 */
+	public Screen startVideo() {
+		if (LSystem._base != null && LSystem._base.display() != null) {
+			LSystem._base.display().startVideo();
+		}
+		return this;
+	}
+
+	/**
+	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
+	 * 
+	 * @param output
+	 * @return
+	 */
+	public Screen startVideo(OutputStream output) {
+		if (LSystem._base != null && LSystem._base.display() != null) {
+			LSystem._base.display().startVideo(output);
+		}
+		return this;
+	}
+
+	/**
+	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
+	 * 
+	 * @param output
+	 * @param delay
+	 * @return
+	 */
+	public Screen startVideo(OutputStream output, long delay) {
+		if (LSystem._base != null && LSystem._base.display() != null) {
+			LSystem._base.display().startVideo(output, delay);
+		}
+		return this;
+	}
+
+	/**
+	 * 结束录像
+	 * 
+	 * @return
+	 */
+	public Screen stopVideo() {
+		if (LSystem._base != null && LSystem._base.display() != null) {
+			LSystem._base.display().startVideo();
+		}
 		return this;
 	}
 

@@ -107,8 +107,7 @@ public class GifDecoder implements LRelease {
 		gifDecoder.readStatus(bytes);
 		for (int i = 0; i < gifDecoder.getFrameCount(); i++) {
 			int delay = gifDecoder.getDelay(i);
-			animation.addFrame(gifDecoder.getFrame(i).texture(),
-					delay == 0 ? 100 : delay);
+			animation.addFrame(gifDecoder.getFrame(i).texture(), delay == 0 ? 100 : delay);
 		}
 		gifDecoder.close();
 		return animation;
@@ -158,8 +157,7 @@ public class GifDecoder implements LRelease {
 						c = new LColor(lastBgColor);
 					}
 					g.setColor(c);
-					g.fillRect(lastRect.x, lastRect.y, lastRect.width,
-							lastRect.height);
+					g.fillRect(lastRect.x, lastRect.y, lastRect.width, lastRect.height);
 					g.close();
 				}
 			}
@@ -257,7 +255,8 @@ public class GifDecoder implements LRelease {
 	protected void decodeImageData() {
 		int NullCode = -1;
 		int npix = iw * ih;
-		int available, clear, code_mask, code_size, end_of_information, in_code, old_code, bits, code, count, i, datum, data_size, first, top, bi, pi;
+		int available, clear, code_mask, code_size, end_of_information, in_code, old_code, bits, code, count, i, datum,
+				data_size, first, top, bi, pi;
 
 		if ((pixels == null) || (pixels.length < npix)) {
 			pixels = new byte[npix];
@@ -331,8 +330,7 @@ public class GifDecoder implements LRelease {
 				prefix[available] = (short) old_code;
 				suffix[available] = (byte) first;
 				available++;
-				if (((available & code_mask) == 0)
-						&& (available < MaxStackSize)) {
+				if (((available & code_mask) == 0) && (available < MaxStackSize)) {
 					code_size++;
 					code_mask += available;
 				}
@@ -588,6 +586,13 @@ public class GifDecoder implements LRelease {
 
 	public String getGifVersion() {
 		return gifVersion;
+	}
+
+	public static boolean isGif(byte[] data) {
+		if (data[0] == 'G' && data[1] == 'I' && data[2] == 'F') {
+			return true;
+		}
+		return false;
 	}
 
 	@Override

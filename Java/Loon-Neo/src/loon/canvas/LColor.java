@@ -93,8 +93,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static int rgba4444(float r, float g, float b, float a) {
-		return ((int) (r * 15) << 12) | ((int) (g * 15) << 8)
-				| ((int) (b * 15) << 4) | (int) (a * 15);
+		return ((int) (r * 15) << 12) | ((int) (g * 15) << 8) | ((int) (b * 15) << 4) | (int) (a * 15);
 	}
 
 	/**
@@ -106,8 +105,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static int rgb888(float r, float g, float b) {
-		return ((int) (r * 255) << 16) | ((int) (g * 255) << 8)
-				| (int) (b * 255);
+		return ((int) (r * 255) << 16) | ((int) (g * 255) << 8) | (int) (b * 255);
 	}
 
 	/**
@@ -120,8 +118,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static int rgba8888(float r, float g, float b, float a) {
-		return ((int) (r * 255) << 24) | ((int) (g * 255) << 16)
-				| ((int) (b * 255) << 8) | (int) (a * 255);
+		return ((int) (r * 255) << 24) | ((int) (g * 255) << 16) | ((int) (b * 255) << 8) | (int) (a * 255);
 	}
 
 	public static int argb(int a, int r, int g, int b) {
@@ -293,8 +290,7 @@ public class LColor implements Serializable {
 
 	public static final LColor blue = new LColor(0.0f, 0.0f, 1.0f, 1.0f);
 
-	public static final LColor cornFlowerBlue = new LColor(0.4f, 0.6f, 0.9f,
-			1.0f);
+	public static final LColor cornFlowerBlue = new LColor(0.4f, 0.6f, 0.9f, 1.0f);
 
 	public static final LColor green = new LColor(0.0f, 1.0f, 0.0f, 1.0f);
 
@@ -353,13 +349,9 @@ public class LColor implements Serializable {
 				String result = c.substring(start + 1, end).trim();
 				String[] list = StringUtils.split(result, ',');
 				if (list.length == 3) {
-					setColor(Integer.parseInt(list[0]),
-							Integer.parseInt(list[1]),
-							Integer.parseInt(list[2]));
+					setColor(Integer.parseInt(list[0]), Integer.parseInt(list[1]), Integer.parseInt(list[2]));
 				} else if (list.length == 4) {
-					setColor(Integer.parseInt(list[0]),
-							Integer.parseInt(list[1]),
-							Integer.parseInt(list[2]),
+					setColor(Integer.parseInt(list[0]), Integer.parseInt(list[1]), Integer.parseInt(list[2]),
 							Integer.parseInt(list[3]));
 				}
 			}
@@ -623,7 +615,7 @@ public class LColor implements Serializable {
 		this.a = alpha;
 		return this;
 	}
-	
+
 	public LColor brighter(float scale) {
 		scale += 1;
 		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
@@ -657,17 +649,17 @@ public class LColor implements Serializable {
 		this.a *= c.a;
 		return this;
 	}
-	
+
 	public LColor mulAlpha(float a) {
 		this.a *= a;
 		return this;
 	}
-	
+
 	public LColor mulAlpha(LColor c) {
 		this.a *= c.a;
 		return this;
 	}
-	
+
 	/**
 	 * 直接复制一个Color
 	 * 
@@ -727,10 +719,9 @@ public class LColor implements Serializable {
 	}
 
 	public static LColor lerp(LColor value1, LColor value2, float amount) {
-		return new LColor(lerp(value1.getRed(), value2.getRed(), amount), lerp(
-				value1.getGreen(), value2.getGreen(), amount), lerp(
-				value1.getBlue(), value2.getBlue(), amount), lerp(
-				value1.getAlpha(), value2.getAlpha(), amount));
+		return new LColor(lerp(value1.getRed(), value2.getRed(), amount),
+				lerp(value1.getGreen(), value2.getGreen(), amount), lerp(value1.getBlue(), value2.getBlue(), amount),
+				lerp(value1.getAlpha(), value2.getAlpha(), amount));
 	}
 
 	private static int lerp(int color1, int color2, float amount) {
@@ -747,7 +738,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public int getARGB() {
-		return getARGB(getRed(), getGreen(), getBlue(), getAlpha());
+		return argb(getAlpha(), getRed(), getGreen(), getBlue());
 	}
 
 	/**
@@ -757,7 +748,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public int getARGB(float alpha) {
-		return getARGB(getRed(), getGreen(), getBlue(), (int) (a * alpha * 255));
+		return argb((int) (a * alpha * 255), getRed(), getGreen(), getBlue());
 	}
 
 	/**
@@ -766,7 +757,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public int getRGB() {
-		return getRGB(getRed(), getGreen(), getBlue());
+		return rgb(getRed(), getGreen(), getBlue());
 	}
 
 	/**
@@ -778,7 +769,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static int getRGB(int r, int g, int b) {
-		return getARGB(r, g, b, 0xff);
+		return rgb(r, g, b);
 	}
 
 	/**
@@ -791,7 +782,7 @@ public class LColor implements Serializable {
 		int r = (pixels >> 16) & 0xff;
 		int g = (pixels >> 8) & 0xff;
 		int b = pixels & 0xff;
-		return getRGB(r, g, b);
+		return rgb(r, g, b);
 	}
 
 	/**
@@ -804,7 +795,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static int getARGB(int r, int g, int b, int alpha) {
-		return (alpha << 24) | (r << 16) | (g << 8) | b;
+		return argb(alpha, r, g, b);
 	}
 
 	/**
@@ -869,7 +860,7 @@ public class LColor implements Serializable {
 			return (a << 24) | (r << 16) | (g << 8) | b;
 		}
 	}
-	
+
 	public static int[] getRGBs(final int pixel) {
 		int[] rgbs = new int[3];
 		rgbs[0] = (pixel >> 16) & 0xff;
@@ -883,7 +874,7 @@ public class LColor implements Serializable {
 		rgbas[0] = (pixel >> 16) & 0xff;
 		rgbas[1] = (pixel >> 8) & 0xff;
 		rgbas[2] = (pixel) & 0xff;
-		rgbas[3] =  pixel >>> 24;
+		rgbas[3] = pixel >>> 24;
 		return rgbas;
 	}
 
@@ -894,22 +885,19 @@ public class LColor implements Serializable {
 	public byte[] toRgbByteArray() {
 		return new byte[] { (byte) getRed(), (byte) getGreen(), (byte) getBlue() };
 	}
-	
+
 	public int toIntBits() {
-		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
-				| ((int) (255 * g) << 8) | ((int) (255 * r));
+		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
 		return color;
 	}
 
 	public static float toFloatBits(float r, float g, float b, float a) {
-		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
-				| ((int) (255 * g) << 8) | ((int) (255 * r));
+		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
 		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
 	}
 
 	public float toFloatBits() {
-		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
-				| ((int) (255 * g) << 8) | ((int) (255 * r));
+		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
 		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
 	}
 
@@ -926,8 +914,7 @@ public class LColor implements Serializable {
 			if (c.startsWith("#")) {
 				return hexToColor(c.substring(1));
 			} else {
-				return new LColor(Integer.parseInt(c.substring(0, 2), 16),
-						Integer.parseInt(c.substring(2, 4), 16),
+				return new LColor(Integer.parseInt(c.substring(0, 2), 16), Integer.parseInt(c.substring(2, 4), 16),
 						Integer.parseInt(c.substring(4, 6), 16));
 			}
 		} catch (Exception e) {
@@ -940,8 +927,7 @@ public class LColor implements Serializable {
 	}
 
 	public String toCSS() {
-		return "rgba(" + (int) (r * 255) + "," + (int) (g * 255) + ","
-				+ (int) (b * 255) + "," + (int) (a * 255) + ")";
+		return "rgba(" + (int) (r * 255) + "," + (int) (g * 255) + "," + (int) (b * 255) + "," + (int) (a * 255) + ")";
 	}
 
 	public Vector3f getVector3() {
@@ -972,26 +958,14 @@ public class LColor implements Serializable {
 		}
 		if (percent < 0) {
 			percent = 1 + percent;
-			int r = MathUtils.max(0,
-					MathUtils.min(255, (int) ((getRed() * percent) + 0.5)));
-			int g = MathUtils.max(0,
-					MathUtils.min(255, (int) ((getGreen() * percent) + 0.5)));
-			int b = MathUtils.max(0,
-					MathUtils.min(255, (int) ((getBlue() * percent) + 0.5)));
+			int r = MathUtils.max(0, MathUtils.min(255, (int) ((getRed() * percent) + 0.5)));
+			int g = MathUtils.max(0, MathUtils.min(255, (int) ((getGreen() * percent) + 0.5)));
+			int b = MathUtils.max(0, MathUtils.min(255, (int) ((getBlue() * percent) + 0.5)));
 			return new LColor(r, g, b, getAlpha());
 		} else if (percent > 0) {
-			int r = MathUtils.max(
-					0,
-					MathUtils.min(255, (int) (((255 - getRed()) * percent)
-							+ getRed() + 0.5)));
-			int g = MathUtils.max(
-					0,
-					MathUtils.min(255, (int) (((255 - getGreen()) * percent)
-							+ getGreen() + 0.5)));
-			int b = MathUtils.max(
-					0,
-					MathUtils.min(255, (int) (((255 - getBlue()) * percent)
-							+ getBlue() + 0.5)));
+			int r = MathUtils.max(0, MathUtils.min(255, (int) (((255 - getRed()) * percent) + getRed() + 0.5)));
+			int g = MathUtils.max(0, MathUtils.min(255, (int) (((255 - getGreen()) * percent) + getGreen() + 0.5)));
+			int b = MathUtils.max(0, MathUtils.min(255, (int) (((255 - getBlue()) * percent) + getBlue() + 0.5)));
 			return new LColor(r, g, b, getAlpha());
 		}
 		return new LColor(getRed(), getGreen(), getBlue(), getAlpha());
@@ -999,9 +973,8 @@ public class LColor implements Serializable {
 
 	@Override
 	public String toString() {
-		String value = Integer.toHexString(((int) (255 * r) << 24)
-				| ((int) (255 * g) << 16) | ((int) (255 * b) << 8)
-				| ((int) (255 * a)));
+		String value = Integer.toHexString(
+				((int) (255 * r) << 24) | ((int) (255 * g) << 16) | ((int) (255 * b) << 8) | ((int) (255 * a)));
 		for (; value.length() < 8;) {
 			value = "0" + value;
 		}

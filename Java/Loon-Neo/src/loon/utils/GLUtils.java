@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import loon.LSystem;
 import loon.LTexture;
 import loon.Support;
+import loon.canvas.Canvas;
+import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.opengl.GL20;
@@ -326,29 +328,66 @@ public class GLUtils {
 		}
 	}
 
-	public static byte[] getFrameBufferPixels(final GL20 gl, boolean flipY) {
+	public static byte[] getFrameBufferRGBAPixels() {
 		final int w = LSystem.viewSize.getWidth();
 		final int h = LSystem.viewSize.getHeight();
-		return getFrameBufferPixels(gl, 0, 0, w, h, flipY);
+		return getFrameBufferPixels(LSystem.base().graphics().gl, 0, 0, w, h, true, true);
 	}
 
-	public static Pixmap getFrameBufferPixmap(final GL20 gl, int x, int y, int w, int h, boolean flipY) {
+	public static byte[] getFrameBufferRGBPixels() {
+		final int w = LSystem.viewSize.getWidth();
+		final int h = LSystem.viewSize.getHeight();
+		return getFrameBufferPixels(LSystem.base().graphics().gl, 0, 0, w, h, true, false);
+	}
+
+	public static byte[] getFrameBufferPixels(final GL20 gl, boolean flipY, boolean alpha) {
+		final int w = LSystem.viewSize.getWidth();
+		final int h = LSystem.viewSize.getHeight();
+		return getFrameBufferPixels(gl, 0, 0, w, h, flipY, alpha);
+	}
+
+	public static Pixmap getFrameBufferRGBAPixmap() {
+		return getFrameBufferPixmap(LSystem.base().graphics().gl, 0, 0,
+				(int) (LSystem.viewSize.width * LSystem.getScaleWidth()),
+				(int) (LSystem.viewSize.height * LSystem.getScaleHeight()), true, true);
+	}
+
+	public static Pixmap getFrameBufferRGBPixmap() {
+		return getFrameBufferPixmap(LSystem.base().graphics().gl, 0, 0,
+				(int) (LSystem.viewSize.width * LSystem.getScaleWidth()),
+				(int) (LSystem.viewSize.height * LSystem.getScaleHeight()), true, false);
+	}
+
+	public static Pixmap getFrameBufferPixmap(final GL20 gl, int x, int y, int w, int h, boolean flipY, boolean alpha) {
 		Support support = LSystem.base().support();
-		final Pixmap pixmap = new Pixmap(w, h, true);
-		byte[] buffer = getFrameBufferPixels(gl, x, y, w, h, flipY);
-		pixmap.convertByteBufferToPixmap(support.getByteBuffer(buffer));
+		final Pixmap pixmap = new Pixmap(w, h, alpha);
+		byte[] buffer = getFrameBufferPixels(gl, x, y, w, h, flipY, alpha);
+		if (alpha) {
+			pixmap.convertByteBufferToPixmap(support.getByteBuffer(buffer));
+		} else {
+			pixmap.convertByteBufferRGBToPixmap(support.getByteBuffer(buffer));
+		}
 		return pixmap;
 	}
 
-	public static byte[] getFrameBufferPixels(final GL20 gl, int x, int y, int w, int h, boolean flipY) {
+	public static byte[] getFrameBufferRGBAPixels(final GL20 gl, int x, int y, int w, int h, boolean flipY) {
+		return getFrameBufferPixels(gl, x, y, w, h, flipY, true);
+	}
+
+	public static byte[] getFrameBufferRGBPixels(final GL20 gl, int x, int y, int w, int h, boolean flipY) {
+		return getFrameBufferPixels(gl, x, y, w, h, flipY, false);
+	}
+
+	public static byte[] getFrameBufferPixels(final GL20 gl, int x, int y, int w, int h, boolean flipY, boolean alpha) {
 		Support support = LSystem.base().support();
-		final ByteBuffer pixels = support.newByteBuffer(w * h * 4);
+		final int bits = alpha ? 4 : 3;
+		final ByteBuffer pixels = support.newByteBuffer(w * h * bits);
 		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
-		gl.glReadPixels(x, y, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
-		final int numBytes = w * h * 4;
+		gl.glReadPixels(x, y, w, h, alpha ? GL20.GL_RGBA : GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
+		final int numBytes = w * h * bits;
 		byte[] buffer = new byte[numBytes];
 		if (flipY) {
-			final int numBytesPerLine = w * 4;
+			final int numBytesPerLine = w * bits;
 			for (int i = 0; i < h; i++) {
 				pixels.position((h - i - 1) * numBytesPerLine);
 				pixels.get(buffer, i * numBytesPerLine, numBytesPerLine);
@@ -360,16 +399,58 @@ public class GLUtils {
 		return buffer;
 	}
 
-	public static Pixmap getScreenshot() {
+	public static Image getFrameBufferRGBImage(int x, int y, int w, int h) {
+		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, true);
+	}
+
+	public static Image getFrameBuffeImage(final GL20 gl, int x, int y, int width, int height, boolean flipY) {
+		Support support = LSystem.base().support();
+		final ByteBuffer pixels = support.newByteBuffer(width * height * 3);
+		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+		gl.glReadPixels(x, y, width, height, GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
+		int idx = 0;
+		final int[] buffer = new int[width * height];
+		if (flipY) {
+			final int offset = -width * 2;
+			int rev = width * (height - 1);
+			for (int j = 0; j < height; j++) {
+				for (int i = 0; i < width; i++) {
+					int r = pixels.get(idx++) & 0xFF;
+					int g = pixels.get(idx++) & 0xFF;
+					int b = pixels.get(idx++) & 0xFF;
+					buffer[rev] = LColor.rgb(r, g, b);
+					rev++;
+				}
+				rev += offset;
+			}
+		} else {
+			int dst = 0;
+			for (int y1 = 0; y1 < height; y1++) {
+				for (int x1 = 0; x1 < width; x1++) {
+					int r = pixels.get(idx++) & 0xFF;
+					int g = pixels.get(idx++) & 0xFF;
+					int b = pixels.get(idx++) & 0xFF;
+					buffer[dst + x1] = LColor.rgb(r, g, b);
+				}
+				dst += width;
+			}
+		}
+		Canvas canvas = Image.createCanvas(width, height);
+		canvas.image.setPixels(buffer, width, height);
+		return canvas.image;
+	}
+
+	public static Image getScreenshot() {
 		return getScreenshot(0, 0, (int) (LSystem.viewSize.width * LSystem.getScaleWidth()),
 				(int) (LSystem.viewSize.height * LSystem.getScaleHeight()), true);
 	}
 
-	public static Pixmap getScreenshot(int x, int y, int w, int h) {
+	public static Image getScreenshot(int x, int y, int w, int h) {
 		return getScreenshot(x, y, w, h, true);
 	}
 
-	public static Pixmap getScreenshot(int x, int y, int w, int h, boolean flipY) {
-		return getFrameBufferPixmap(LSystem.base().graphics().gl, x, y, w, h, flipY);
+	public static Image getScreenshot(int x, int y, int w, int h, boolean flipY) {
+		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, flipY);
 	}
+
 }

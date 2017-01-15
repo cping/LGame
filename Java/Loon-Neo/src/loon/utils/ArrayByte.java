@@ -38,8 +38,10 @@ public class ArrayByte {
 
 	private int byteOrder;
 
+	private boolean expandArray = true;
+
 	public ArrayByte() {
-		this(1024 * 10);
+		this(4096 * 10);
 	}
 
 	public ArrayByte(int length) {
@@ -58,7 +60,7 @@ public class ArrayByte {
 		this.data = data;
 		reset();
 	}
-	
+
 	public void reset() {
 		setOrder(BIG_ENDIAN);
 	}
@@ -66,10 +68,6 @@ public class ArrayByte {
 	public void setOrder(int type) {
 		position = 0;
 		byteOrder = type;
-	}
-
-	public byte[] getData() {
-		return data;
 	}
 
 	public byte get(int idx) {
@@ -102,8 +100,7 @@ public class ArrayByte {
 		if (length != data.length) {
 			byte[] oldData = data;
 			data = new byte[length];
-			System.arraycopy(oldData, 0, data, 0,
-					MathUtils.min(oldData.length, length));
+			System.arraycopy(oldData, 0, data, 0, MathUtils.min(oldData.length, length));
 			if (position > length) {
 				position = length;
 			}
@@ -149,8 +146,7 @@ public class ArrayByte {
 		return read(buffer, 0, buffer.length);
 	}
 
-	public int read(byte[] buffer, int offset, int length)
-			throws IndexOutOfBoundsException {
+	public int read(byte[] buffer, int offset, int length) throws IndexOutOfBoundsException {
 		if (length == 0) {
 			return 0;
 		}
@@ -199,14 +195,11 @@ public class ArrayByte {
 	public int readInt() throws IndexOutOfBoundsException {
 		checkAvailable(4);
 		if (byteOrder == LITTLE_ENDIAN) {
-			return (data[position++] & 0xff) | ((data[position++] & 0xff) << 8)
-					| ((data[position++] & 0xff) << 16)
+			return (data[position++] & 0xff) | ((data[position++] & 0xff) << 8) | ((data[position++] & 0xff) << 16)
 					| ((data[position++] & 0xff) << 24);
 		} else {
-			return ((data[position++] & 0xff) << 24)
-					| ((data[position++] & 0xff) << 16)
-					| ((data[position++] & 0xff) << 8)
-					| (data[position++] & 0xff);
+			return ((data[position++] & 0xff) << 24) | ((data[position++] & 0xff) << 16)
+					| ((data[position++] & 0xff) << 8) | (data[position++] & 0xff);
 		}
 	}
 
@@ -217,11 +210,9 @@ public class ArrayByte {
 	public long readLong() throws IndexOutOfBoundsException {
 		checkAvailable(8);
 		if (byteOrder == LITTLE_ENDIAN) {
-			return (readInt() & 0xffffffffL)
-					| ((readInt() & 0xffffffffL) << 32L);
+			return (readInt() & 0xffffffffL) | ((readInt() & 0xffffffffL) << 32L);
 		} else {
-			return ((readInt() & 0xffffffffL) << 32L)
-					| (readInt() & 0xffffffffL);
+			return ((readInt() & 0xffffffffL) << 32L) | (readInt() & 0xffffffffL);
 		}
 	}
 
@@ -229,8 +220,7 @@ public class ArrayByte {
 		return NumberUtils.intBitsToFloat(readInt());
 	}
 
-	public String readUTF() throws IndexOutOfBoundsException,
-			UTFDataFormatException {
+	public String readUTF() throws IndexOutOfBoundsException, UTFDataFormatException {
 		checkAvailable(2);
 		int utfLength = readShort() & 0xffff;
 		checkAvailable(utfLength);
@@ -268,7 +258,11 @@ public class ArrayByte {
 
 	private void ensureCapacity(int dataSize) {
 		if (position + dataSize > data.length) {
-			setLength(position + dataSize);
+			if (expandArray) {
+				setLength((position + dataSize) * 2);
+			} else {
+				setLength(position + dataSize);
+			}
 		}
 	}
 
@@ -307,6 +301,13 @@ public class ArrayByte {
 		} else {
 			data[position++] = (byte) ((v >> 8) & 0xff);
 			data[position++] = (byte) (v & 0xff);
+		}
+	}
+
+	public void writeInt(byte[] ba, int start, int len) {
+		int end = start + len;
+		for (int i = start; i < end; i++) {
+			writeInt(ba[i]);
 		}
 	}
 
@@ -376,8 +377,25 @@ public class ArrayByte {
 		}
 	}
 
+	public byte[] getData() {
+		return data;
+	}
+
+	public byte[] getBytes() {
+		truncate();
+		return data;
+	}
+
 	public int limit() {
 		return data == null ? 0 : data.length;
+	}
+
+	public boolean isExpandArray() {
+		return expandArray;
+	}
+
+	public void setExpandArray(boolean expandArray) {
+		this.expandArray = expandArray;
 	}
 
 	@Override

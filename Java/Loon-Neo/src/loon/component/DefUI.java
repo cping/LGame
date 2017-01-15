@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.Canvas;
+import loon.canvas.Canvas.Composite;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.LGradation;
@@ -55,12 +56,130 @@ public class DefUI {
 		}
 	}
 
-	public final static String win_frame_UI = LSystem.FRAMEWORK_IMG_NAME
-			+ "wbar.png";
+	public final static String win_frame_UI = LSystem.FRAMEWORK_IMG_NAME + "wbar.png";
 
 	private TArray<LTexture> defaultTextures;
 
 	private ArrayMap defaultWindowHash;
+
+	/**
+	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static LTexture getRoundTexture(String path) {
+		return getRoundImage(path).texture();
+	}
+
+	/**
+	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static Image getRoundImage(String path) {
+		return getRoundImage(path, 128, 3);
+	}
+
+	/**
+	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
+	 * 
+	 * @param path
+	 * @param strokeWidth
+	 * @return
+	 */
+	public static Image getRoundImage(String path, int strokeWidth) {
+		return getRoundImage(path, 128, strokeWidth);
+	}
+
+	/**
+	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
+	 * 
+	 * @param path
+	 * @param radius
+	 * @param strokeWidth
+	 * @return
+	 */
+	public static Image getRoundImage(String path, int radius, int strokeWidth) {
+		Image img = BaseIO.loadImage(path);
+		Image tmp = getRoundImage(img, radius, strokeWidth);
+		if (img != null) {
+			img.close();
+			img = null;
+		}
+		return tmp;
+	}
+
+	/**
+	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
+	 * 
+	 * @param bitmap
+	 * @return
+	 */
+	public static Image getRoundImage(Image bitmap) {
+		return getRoundImage(bitmap, 128, 3);
+	}
+
+	/**
+	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
+	 * 
+	 * @param bitmap
+	 * @param radius
+	 * @return
+	 */
+	public static Image getRoundImage(Image bitmap, int radius) {
+		return getRoundImage(bitmap, radius, 3);
+	}
+
+	/**
+	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
+	 * 
+	 * @param bitmap
+	 * @param radius
+	 * @param strokeWidth
+	 * @return
+	 */
+	public static Image getRoundImage(Image bitmap, int radius, int strokeWidth) {
+		int width = bitmap.getWidth();
+		int height = bitmap.getHeight();
+		float left, top, right, bottom;
+		float dst_left, dst_top, dst_right, dst_bottom;
+		if (width <= height) {
+			top = 0;
+			bottom = width;
+			left = 0;
+			right = width;
+			height = width;
+			dst_left = 0;
+			dst_top = 0;
+			dst_right = width;
+			dst_bottom = width;
+		} else {
+			float clip = (width - height) / 2;
+			left = clip;
+			right = width - clip;
+			top = 0;
+			bottom = height;
+			width = height;
+			dst_left = 0;
+			dst_top = 0;
+			dst_right = height;
+			dst_bottom = height;
+		}
+		Image output = Image.createImage(width, height);
+		Canvas canvas = output.getCanvas();
+		canvas.setColor(LColor.white);
+		canvas.fillRoundRect(dst_left, dst_top, dst_right, dst_bottom, radius);
+		canvas.setCompositeOperation(Composite.SRC_IN);
+		canvas.draw(bitmap, 0, 0, right, bottom, left, top, right, bottom);
+		if (strokeWidth > 0) {
+			canvas.setColor(LColor.black);
+			canvas.setStrokeWidth(strokeWidth);
+			canvas.strokeRoundRect(dst_left, dst_top, dst_right, dst_bottom, radius);
+		}
+		return output;
+	}
 
 	/**
 	 * 绘制指定大小的圆形游戏窗口图片
@@ -71,8 +190,7 @@ public class DefUI {
 	 * @param color
 	 * @return
 	 */
-	public static LTexture getGameWinRound(int width, int height, int radius,
-			LColor color) {
+	public static LTexture getGameWinRound(int width, int height, int radius, LColor color) {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		g.setColor(color);
 		g.fillRect(0, radius, width, height - 2 * radius);
@@ -93,14 +211,12 @@ public class DefUI {
 	 * @param color
 	 * @return
 	 */
-	public static LTexture getGameWinHollow(int width, int height,
-			int lineWidth, LColor color) {
+	public static LTexture getGameWinHollow(int width, int height, int lineWidth, LColor color) {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		g.setColor(color);
 		g.fillRect(0, 0, lineWidth, height);
 		g.fillRect(width - lineWidth, 0, lineWidth, height);
-		g.fillRect(lineWidth, height - lineWidth, width - lineWidth * 2,
-				lineWidth);
+		g.fillRect(lineWidth, height - lineWidth, width - lineWidth * 2, lineWidth);
 		g.fillRect(lineWidth, 0, width - lineWidth * 2, lineWidth);
 		return g.toTexture();
 	}
@@ -140,8 +256,7 @@ public class DefUI {
 	 * @param height
 	 * @return
 	 */
-	public static LTexture getGameRandomBackground(int color, int width,
-			int height) {
+	public static LTexture getGameRandomBackground(int color, int width, int height) {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		g.setColor(color, color, color);
 		g.fillRect(0, 0, width, height);
@@ -158,8 +273,7 @@ public class DefUI {
 				} else {
 					delta -= 0.35;
 				}
-				g.setColor(color + (int) (delta), color + (int) (delta), color
-						+ (int) (delta));
+				g.setColor(color + (int) (delta), color + (int) (delta), color + (int) (delta));
 				if (rand == 0) {
 					g.fillRect(randX + j, randY, 1, 1);
 				} else {
@@ -183,8 +297,7 @@ public class DefUI {
 	 * @return
 	 */
 	public static LTexture getGameWinTable(int width, int height, int size) {
-		return getGameWinTable(width, height, size, LColor.blue, LColor.black,
-				true);
+		return getGameWinTable(width, height, size, LColor.blue, LColor.black, true);
 	}
 
 	/**
@@ -198,12 +311,11 @@ public class DefUI {
 	 * @param drawHeigth
 	 * @return
 	 */
-	public static LTexture getGameWinTable(int width, int height, int size,
-			LColor start, LColor end, boolean drawHeigth) {
+	public static LTexture getGameWinTable(int width, int height, int size, LColor start, LColor end,
+			boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width,
-				height, 125);
+		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(g, 0, 0);
 		} else {
@@ -238,12 +350,10 @@ public class DefUI {
 	 * @param drawHeigth
 	 * @return
 	 */
-	public static LTexture getGameWinFrame(int width, int height, LColor start,
-			LColor end, boolean drawHeigth) {
+	public static LTexture getGameWinFrame(int width, int height, LColor start, LColor end, boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width,
-				height, 125);
+		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(g, 0, 0);
 		} else {
@@ -257,8 +367,7 @@ public class DefUI {
 		return texture;
 	}
 
-	public void drawTable(Canvas g, int x, int y, int width, int height,
-			int size, boolean border) {
+	public void drawTable(Canvas g, int x, int y, int width, int height, int size, boolean border) {
 		boolean[] flags = new boolean[size];
 		for (int i = 0; i < flags.length; i++) {
 			flags[i] = true;
@@ -270,8 +379,7 @@ public class DefUI {
 		}
 	}
 
-	public void drawTable(Canvas g, int x, int y, int width, int height,
-			int size) {
+	public void drawTable(Canvas g, int x, int y, int width, int height, int size) {
 		drawTable(g, x, y, width, height, size, true);
 	}
 
@@ -326,8 +434,7 @@ public class DefUI {
 		g.draw(corners[3], x + width - CornerSize, y);
 	}
 
-	private void drawBorder(Canvas g, int x, int y, int width, int height,
-			int nums) {
+	private void drawBorder(Canvas g, int x, int y, int width, int height, int nums) {
 		Image img = getDefaultWindow("window0");
 		int size = img.getHeight();
 		int length = img.getWidth();
@@ -351,8 +458,7 @@ public class DefUI {
 			g.draw(img, x + j, y);
 	}
 
-	private void drawChoices(Canvas g, int x, int y, int width, int height,
-			int size, boolean[] oks, LColor col) {
+	private void drawChoices(Canvas g, int x, int y, int width, int height, int size, boolean[] oks, LColor col) {
 		LColor[] colors = new LColor[size];
 		for (int i = 0; i < colors.length; i++) {
 			colors[i] = col;
@@ -360,30 +466,27 @@ public class DefUI {
 		drawChoices(g, x, y, width, height, size, oks, colors);
 	}
 
-	private void drawChoices(Canvas g, int x, int y, int width, int height,
-			int messize, boolean[] oks, LColor[] colors) {
+	private void drawChoices(Canvas g, int x, int y, int width, int height, int messize, boolean[] oks,
+			LColor[] colors) {
 		Image img = getDefaultWindow("window0");
 		int size = (int) img.height();
 		int bun = MathUtils.round(1f * (height - size) / messize);
 		for (int i = 0; i < messize; i++) {
 			g.setColor(colors[i]);
 			if (!oks[i]) {
-				setTransmission(g, x, y + bun * i, width, bun, LColor.black,
-						0.7F);
+				setTransmission(g, x, y + bun * i, width, bun, LColor.black, 0.7F);
 			}
 		}
 	}
 
-	private void setTransmission(Canvas g, int x, int y, int w, int h,
-			LColor col, float t) {
+	private void setTransmission(Canvas g, int x, int y, int w, int h, LColor col, float t) {
 		g.setAlpha(t);
 		g.setColor(col);
 		g.fillRect(x, y, w, h);
 		g.setAlpha(1f);
 	}
 
-	public static Image[] getWindow(String fileName, int frameSize,
-			int cornerSize, int wholeSize, int borderLength) {
+	public static Image[] getWindow(String fileName, int frameSize, int cornerSize, int wholeSize, int borderLength) {
 		Image[] texs = new Image[8];
 		Image tmp = BaseIO.loadImage(fileName);
 		int[] pixels = tmp.getPixels();
@@ -393,8 +496,7 @@ public class DefUI {
 				pixels[i] = 0;
 			}
 		}
-		Canvas canvas = LSystem.base().graphics()
-				.createCanvas(tmp.width(), tmp.height());
+		Canvas canvas = LSystem.base().graphics().createCanvas(tmp.width(), tmp.height());
 		Image imgs = canvas.image;
 		imgs.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		if (tmp != null) {
@@ -402,21 +504,14 @@ public class DefUI {
 			tmp = null;
 		}
 
-		texs[0] = imgs.getSubImage(wholeSize / 2 - borderLength / 2, 0,
-				borderLength, frameSize);
-		texs[1] = imgs.getSubImage(0, wholeSize / 2 - borderLength / 2,
-				frameSize, borderLength);
-		texs[2] = imgs.getSubImage(wholeSize / 2 - borderLength / 2, wholeSize
-				- frameSize, borderLength, frameSize);
-		texs[3] = imgs.getSubImage(wholeSize - frameSize, wholeSize / 2
-				- borderLength / 2, frameSize, borderLength);
+		texs[0] = imgs.getSubImage(wholeSize / 2 - borderLength / 2, 0, borderLength, frameSize);
+		texs[1] = imgs.getSubImage(0, wholeSize / 2 - borderLength / 2, frameSize, borderLength);
+		texs[2] = imgs.getSubImage(wholeSize / 2 - borderLength / 2, wholeSize - frameSize, borderLength, frameSize);
+		texs[3] = imgs.getSubImage(wholeSize - frameSize, wholeSize / 2 - borderLength / 2, frameSize, borderLength);
 		texs[4] = imgs.getSubImage(0, 0, cornerSize, cornerSize);
-		texs[5] = imgs.getSubImage(0, wholeSize - cornerSize, cornerSize,
-				cornerSize);
-		texs[6] = imgs.getSubImage(wholeSize - cornerSize, wholeSize
-				- cornerSize, cornerSize, cornerSize);
-		texs[7] = imgs.getSubImage(wholeSize - cornerSize, 0, cornerSize,
-				cornerSize);
+		texs[5] = imgs.getSubImage(0, wholeSize - cornerSize, cornerSize, cornerSize);
+		texs[6] = imgs.getSubImage(wholeSize - cornerSize, wholeSize - cornerSize, cornerSize, cornerSize);
+		texs[7] = imgs.getSubImage(wholeSize - cornerSize, 0, cornerSize, cornerSize);
 		if (imgs != null) {
 			imgs.close();
 			imgs = null;
@@ -454,32 +549,20 @@ public class DefUI {
 				lastTexture.close(true);
 				lastTexture = null;
 			}
-			lastTexture = LTextures.newTexture(LSystem.FRAMEWORK_IMG_NAME
-					+ "ui.png");
+			lastTexture = LTextures.newTexture(LSystem.FRAMEWORK_IMG_NAME + "ui.png");
 			lastTexture.setDisabledTexture(true);
 			LSubTexture windowbar = new LSubTexture(lastTexture, 0, 0, 512, 32);
-			LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17,
-					57 - 8);
-			LSubTexture panelborder = new LSubTexture(lastTexture, 0, 41 - 8,
-					1, 512 - 8);
-			LSubTexture buttonleft = new LSubTexture(lastTexture, 17, 41 - 8,
-					33, 72 - 8);
-			LSubTexture buttonbody = new LSubTexture(lastTexture, 34, 41 - 8,
-					48, 72 - 8);
-			LSubTexture checkboxunchecked = new LSubTexture(lastTexture, 49,
-					41 - 8, 72, 63 - 8);
-			LSubTexture checkboxchecked = new LSubTexture(lastTexture, 73,
-					41 - 8, 96, 63 - 8);
-			LSubTexture imagebuttonidle = new LSubTexture(lastTexture, 145,
-					41 - 8, 176, 72 - 8);
-			LSubTexture imagebuttonhover = new LSubTexture(lastTexture, 177,
-					41 - 8, 208, 72 - 8);
-			LSubTexture imagebuttonactive = new LSubTexture(lastTexture, 209,
-					41 - 8, 240, 72 - 8);
-			LSubTexture textfieldleft = new LSubTexture(lastTexture, 218,
-					40 - 8, 233, 72 - 8);
-			LSubTexture textfieldbody = new LSubTexture(lastTexture, 234,
-					40 - 8, 250, 72 - 8);
+			LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17, 57 - 8);
+			LSubTexture panelborder = new LSubTexture(lastTexture, 0, 41 - 8, 1, 512 - 8);
+			LSubTexture buttonleft = new LSubTexture(lastTexture, 17, 41 - 8, 33, 72 - 8);
+			LSubTexture buttonbody = new LSubTexture(lastTexture, 34, 41 - 8, 48, 72 - 8);
+			LSubTexture checkboxunchecked = new LSubTexture(lastTexture, 49, 41 - 8, 72, 63 - 8);
+			LSubTexture checkboxchecked = new LSubTexture(lastTexture, 73, 41 - 8, 96, 63 - 8);
+			LSubTexture imagebuttonidle = new LSubTexture(lastTexture, 145, 41 - 8, 176, 72 - 8);
+			LSubTexture imagebuttonhover = new LSubTexture(lastTexture, 177, 41 - 8, 208, 72 - 8);
+			LSubTexture imagebuttonactive = new LSubTexture(lastTexture, 209, 41 - 8, 240, 72 - 8);
+			LSubTexture textfieldleft = new LSubTexture(lastTexture, 218, 40 - 8, 233, 72 - 8);
+			LSubTexture textfieldbody = new LSubTexture(lastTexture, 234, 40 - 8, 250, 72 - 8);
 			defaultTextures.add(windowbar.get());
 			defaultTextures.add(panelbody.get());
 			defaultTextures.add(panelborder.get());

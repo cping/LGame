@@ -20,6 +20,14 @@ import loon.utils.MathUtils;
  */
 public class Pixmap extends Limit implements LRelease {
 
+	public final static int SRC_IN = 0;
+
+	public final static int SRC_OUT = 1;
+
+	public final static int SRC_OVER = 2;
+
+	private int _composite = -1;
+
 	private Canvas tmpCanvas = null;
 
 	public Image getImage() {
@@ -1181,6 +1189,35 @@ public class Pixmap extends Limit implements LRelease {
 		return this;
 	}
 
+	public Pixmap fillRoundRect(int x, int y, int width, int height, int radius) {
+		if (radius < 0) {
+			throw new IllegalArgumentException("radius > 0");
+		}
+		if (radius == 0) {
+			fillRect(x, y, width, height);
+			return this;
+		}
+		int mr = MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		int d = radius * 2;
+		int w = width - d;
+		int h = height - d;
+		if (w > 0 && h > 0) {
+			fillRect(x + radius, y, w, radius);
+			fillRect(x, y + radius, radius, h);
+			fillRect(x + width - radius, y + radius, radius, h);
+			fillRect(x + radius, y + height - radius, w, radius);
+			fillRect(x + radius, y + radius, w, h);
+		}
+		fillArc(x + width - d, y + height - d, d, d, 0, 90);
+		fillArc(x, y + height - d, d, d, 90, 180);
+		fillArc(x + width - d, y, d, d, 270, 360);
+		fillArc(x, y, d, d, 180, 270);
+		return this;
+	}
+
 	/**
 	 * 填充一个围绕指定区域旋转的矩形选框
 	 * 
@@ -1195,14 +1232,17 @@ public class Pixmap extends Limit implements LRelease {
 		if (_isClosed) {
 			return this;
 		}
-		fillRect(x + arcWidth / 2, y, width - arcWidth + 1, height);
-		fillRect(x, y + arcHeight / 2 - 1, arcWidth / 2, height - arcHeight);
-		fillRect(x + width - arcWidth / 2, y + arcHeight / 2 - 1, arcWidth / 2, height - arcHeight);
-
-		fillArc(x, y, arcWidth - 1, arcHeight - 1, 90, 90);
-		fillArc(x + width - arcWidth, y, arcWidth - 1, arcHeight - 1, 0, 90);
-		fillArc(x, y + height + -arcHeight, arcWidth - 1, arcHeight - 1, 180, 90);
-		fillArc(x + width - arcWidth, y + height + -arcHeight, arcWidth - 1, arcHeight - 1, 270, 90);
+		int w = width - arcWidth;
+		int h = height - arcHeight;
+		if (w > 0 && h > 0) {
+			fillRect(x + arcWidth / 2, y, w, height);
+			fillRect(x, y + arcHeight / 2 - 1, arcWidth / 2, h);
+			fillRect(x + width - arcWidth / 2, y + arcHeight / 2 - 1, arcWidth / 2, h);
+		}
+		fillArc(x + 1, y, arcWidth - 1, arcHeight - 1, 90, 90);
+		fillArc(x + width - arcWidth - 1, y, arcWidth - 1, arcHeight - 1, 0, 90);
+		fillArc(x + 1, y + height + -arcHeight, arcWidth - 1, arcHeight - 1, 180, 90);
+		fillArc(x + width - arcWidth - 1, y + height + -arcHeight, arcWidth - 1, arcHeight - 1, 270, 90);
 		return this;
 	}
 
@@ -1718,17 +1758,87 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	private void drawPoint(int[] pixels, int pixelIndex) {
-		pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixels[pixelIndex] ^ _baseColor) ^ xorRGB) : _baseColor;
+		int pixel = pixels[pixelIndex];
+		if (_composite == -1) {
+			pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
+			return;
+		} else {
+			switch (_composite) {
+			default:
+			case SRC_IN:
+				if (pixel != _transparent) {
+					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
+				}
+				break;
+			case SRC_OUT:
+				if (pixel == _transparent) {
+					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
+				}
+				break;
+			case SRC_OVER:
+				pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
+				break;
+			}
+
+		}
 	}
 
 	private void drawPoint(int[] pixels, int pixelIndex, int c) {
-		if (_baseAlpha == 1f) {
-			pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixels[pixelIndex] ^ c) ^ xorRGB) : c;
+		int pixel = pixels[pixelIndex];
+		if (_composite == -1) {
+			if (_baseAlpha == 1f) {
+				pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+			} else {
+				int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
+				c = (ialpha << 24) | (c & 0xFFFFFF);
+				pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+			}
+			return;
 		} else {
-			int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-			c = (ialpha << 24) | (c & 0xFFFFFF);
-			pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixels[pixelIndex] ^ c) ^ xorRGB) : c;
+			switch (_composite) {
+			default:
+			case SRC_IN:
+				if (pixel != _transparent) {
+					if (_baseAlpha == 1f) {
+						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+					} else {
+						int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
+						c = (ialpha << 24) | (c & 0xFFFFFF);
+						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+					}
+				}
+				break;
+			case SRC_OUT:
+				if (pixel == _transparent) {
+					if (_baseAlpha == 1f) {
+						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+					} else {
+						int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
+						c = (ialpha << 24) | (c & 0xFFFFFF);
+						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+					}
+				}
+				break;
+			case SRC_OVER:
+				if (_baseAlpha == 1f) {
+					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+				} else {
+					int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
+					c = (ialpha << 24) | (c & 0xFFFFFF);
+					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+				}
+				break;
+			}
 		}
+	}
+
+	public int getComposite() {
+		return this._composite;
+	}
+
+	public Pixmap setComposite(int c) {
+		this._composite = c;
+		return this;
 	}
 
 	private void drawArcPoint(int xPoints[], int yPoints[], int nPoints, RectI bounds, int x, int y) {
@@ -1921,6 +2031,64 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	public byte[] getABGRBytes() {
+		return getRGBABytes(true);
+	}
+
+	public byte[] getRGBABytes() {
+		return getRGBABytes(false);
+	}
+	
+	public byte[] getRGBABytes(boolean flag) {
+		int idx = 0;
+		final int bits = 4;
+		final int[] pixesl = _drawPixels;
+		byte[] buffer = new byte[getWidth() * getHeight() * bits];
+		for (int i = 0, size = buffer.length; i < size; i += bits) {
+			int pixel = pixesl[idx++];
+			if (flag) {
+				buffer[i + 3] = (byte) (LColor.getAlpha(pixel));
+				buffer[i + 2] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i] = (byte) (LColor.getBlue(pixel));
+			} else {
+				buffer[i] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i + 2] = (byte) (LColor.getBlue(pixel));
+				buffer[i + 3] = (byte) (LColor.getAlpha(pixel));
+			}
+		}
+		return buffer;
+	}
+
+	public byte[] getBGRBytes() {
+		return getRGBBytes(true);
+	}
+
+	public byte[] getRGBBytes() {
+		return getRGBBytes(false);
+	}
+	
+	public byte[] getRGBBytes(boolean flag) {
+		int idx = 0;
+		final int bits = 3;
+		final int[] pixesl = _drawPixels;
+		byte[] buffer = new byte[getWidth() * getHeight() * bits];
+		for (int i = 0, size = buffer.length; i < size; i += bits) {
+			int pixel = pixesl[idx++];
+			if (flag) {
+				buffer[i + 2] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i] = (byte) (LColor.getBlue(pixel));
+			} else {
+				buffer[i] = (byte) (LColor.getRed(pixel));
+				buffer[i + 1] = (byte) (LColor.getGreen(pixel));
+				buffer[i + 2] = (byte) (LColor.getBlue(pixel));
+			}
+		}
+		return buffer;
+	}
+
 	public ByteBuffer convertPixmapToByteBuffer() {
 		Support support = LSystem.base().support();
 		ByteBuffer buffer = support.newByteBuffer(_width * _height * 4);
@@ -1936,7 +2104,36 @@ public class Pixmap extends Limit implements LRelease {
 		buffer.flip();
 		return buffer;
 	}
-
+	
+	public ByteBuffer convertPixmapToRGBByteBuffer() {
+		Support support = LSystem.base().support();
+		ByteBuffer buffer = support.newByteBuffer(_width * _height * 3);
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < getWidth(); x++) {
+				int pixel = this._drawPixels[y * _width + x];
+				buffer.put((byte) ((pixel >> 16) & 0xFF));
+				buffer.put((byte) ((pixel >> 8) & 0xFF));
+				buffer.put((byte) (pixel & 0xFF));
+			}
+		}
+		buffer.flip();
+		return buffer;
+	}
+	
+	public void convertByteBufferRGBToPixmap(ByteBuffer buffer) {
+		int idx = 0;
+		int dst = 0;
+		for (int y = 0; y < _height; y++) {
+			for (int x = 0; x < _width; x++) {
+				int r = buffer.get(idx++) & 0xFF;
+				int g = buffer.get(idx++) & 0xFF;
+				int b = buffer.get(idx++) & 0xFF;
+				this._drawPixels[dst + x] = LColor.rgb(r, g, b);
+			}
+			dst += _width;
+		}
+	}
+	
 	public void convertByteBufferToPixmap(ByteBuffer buffer) {
 		int idx = 0;
 		int dst = 0;

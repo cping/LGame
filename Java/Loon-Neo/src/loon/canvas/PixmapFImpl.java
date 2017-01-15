@@ -563,18 +563,17 @@ public abstract class PixmapFImpl {
 
 	protected void fillRoundRectImpl(float x, float y, float width,
 			float height, float arcWidth, float arcHeight) {
-		fillRectNative(x + arcWidth / 2, y, width - arcWidth + 1, height);
-		fillRectNative(x, y + arcHeight / 2 - 1, arcWidth / 2, height
-				- arcHeight);
-		fillRectNative(x + width - arcWidth / 2, y + arcHeight / 2 - 1,
-				arcWidth / 2, height - arcHeight);
-
-		fillArcImpl(x, y, arcWidth - 1, arcHeight - 1, 90, 90);
-		fillArcImpl(x + width - arcWidth, y, arcWidth - 1, arcHeight - 1, 0, 90);
-		fillArcImpl(x, y + height + -arcHeight, arcWidth - 1, arcHeight - 1,
-				180, 90);
-		fillArcImpl(x + width - arcWidth, y + height + -arcHeight,
-				arcWidth - 1, arcHeight - 1, 270, 90);
+		float w = width - arcWidth;
+		float h = height - arcHeight;
+		if (w > 0 && h > 0) {
+			fillRectNative(x + arcWidth / 2, y, w, height);
+			fillRectNative(x, y + arcHeight / 2 - 1, arcWidth / 2, h);
+			fillRectNative(x + width - arcWidth / 2, y + arcHeight / 2 - 1, arcWidth / 2, height - arcHeight);
+		}
+		fillArcImpl(x + 1, y, arcWidth - 1, arcHeight - 1, 90, 90);
+		fillArcImpl(x + width - arcWidth - 1, y, arcWidth - 1, arcHeight - 1, 0, 90);
+		fillArcImpl(x + 1, y + height + -arcHeight, arcWidth - 1, arcHeight - 1, 180, 90);
+		fillArcImpl(x + width - arcWidth - 1, y + height + -arcHeight, arcWidth - 1, arcHeight - 1, 270, 90);
 	}
 
 	protected final void drawRoundRectImpl(float x, float y, float width,
@@ -604,6 +603,7 @@ public abstract class PixmapFImpl {
 
 	protected void fillRoundRectImpl(float x, float y, float width,
 			float height, float radius) {
+
 		if (radius < 0) {
 			throw new IllegalArgumentException("radius > 0");
 		}
@@ -616,11 +616,15 @@ public abstract class PixmapFImpl {
 			radius = mr;
 		}
 		float d = radius * 2;
-		fillRectNative(x + radius, y, width - d, radius);
-		fillRectNative(x, y + radius, radius, height - d);
-		fillRectNative(x + width - radius, y + radius, radius, height - d);
-		fillRectNative(x + radius, y + height - radius, width - d, radius);
-		fillRectNative(x + radius, y + radius, width - d, height - d);
+		float w = width - d;
+		float h = height - d;
+		if (w > 0 && h > 0) {
+			fillRectNative(x + radius, y, w, radius);
+			fillRectNative(x, y + radius, radius, h);
+			fillRectNative(x + width - radius, y + radius, radius, h);
+			fillRectNative(x + radius, y + height - radius, w, radius);
+			fillRectNative(x + radius, y + radius, w, h);
+		}
 		fillArcImpl(x + width - d, y + height - d, d, d, 0, 90);
 		fillArcImpl(x, y + height - d, d, d, 90, 180);
 		fillArcImpl(x + width - d, y, d, d, 270, 360);
