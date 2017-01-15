@@ -400,14 +400,20 @@ public class GLUtils {
 	}
 
 	public static Image getFrameBufferRGBImage(int x, int y, int w, int h) {
-		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, true);
+		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, true, false);
 	}
 
-	public static Image getFrameBuffeImage(final GL20 gl, int x, int y, int width, int height, boolean flipY) {
+	public static Image getFrameBufferRGBAImage(int x, int y, int w, int h) {
+		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, true, true);
+	}
+
+	public static Image getFrameBuffeImage(final GL20 gl, int x, int y, int width, int height, boolean flipY,
+			boolean alpha) {
 		Support support = LSystem.base().support();
-		final ByteBuffer pixels = support.newByteBuffer(width * height * 3);
+		final int bits = alpha ? 4 : 3;
+		final ByteBuffer pixels = support.newByteBuffer(width * height * bits);
 		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
-		gl.glReadPixels(x, y, width, height, GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
+		gl.glReadPixels(x, y, width, height, alpha ? GL20.GL_RGBA : GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
 		int idx = 0;
 		final int[] buffer = new int[width * height];
 		if (flipY) {
@@ -415,10 +421,18 @@ public class GLUtils {
 			int rev = width * (height - 1);
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
-					int r = pixels.get(idx++) & 0xFF;
-					int g = pixels.get(idx++) & 0xFF;
-					int b = pixels.get(idx++) & 0xFF;
-					buffer[rev] = LColor.rgb(r, g, b);
+					if (alpha) {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						int a = pixels.get(idx++) & 0xFF;
+						buffer[rev] = LColor.argb(a, r, g, b);
+					} else {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						buffer[rev] = LColor.rgb(r, g, b);
+					}
 					rev++;
 				}
 				rev += offset;
@@ -427,10 +441,18 @@ public class GLUtils {
 			int dst = 0;
 			for (int y1 = 0; y1 < height; y1++) {
 				for (int x1 = 0; x1 < width; x1++) {
-					int r = pixels.get(idx++) & 0xFF;
-					int g = pixels.get(idx++) & 0xFF;
-					int b = pixels.get(idx++) & 0xFF;
-					buffer[dst + x1] = LColor.rgb(r, g, b);
+					if (alpha) {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						int a = pixels.get(idx++) & 0xFF;
+						buffer[dst + x1] = LColor.argb(a, r, g, b);
+					} else {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						buffer[dst + x1] = LColor.rgb(r, g, b);
+					}
 				}
 				dst += width;
 			}
@@ -450,7 +472,7 @@ public class GLUtils {
 	}
 
 	public static Image getScreenshot(int x, int y, int w, int h, boolean flipY) {
-		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, flipY);
+		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, flipY, LSystem.isDesktop() ? false : true);
 	}
 
 }

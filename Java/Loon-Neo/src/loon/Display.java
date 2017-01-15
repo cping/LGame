@@ -361,7 +361,7 @@ public class Display extends LSystemView {
 			process.unload();
 
 			// 如果存在屏幕录像设置
-			if (videoScreenToGif && gifEncoder != null) {
+			if (videoScreenToGif && !LSystem.PAUSED && gifEncoder != null) {
 				if (videoDelay.action(clock)) {
 					Image tmp = GLUtils.getScreenshot();
 					Image image = null;

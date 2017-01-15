@@ -66,14 +66,11 @@ public final class LSTRDictionary {
 
 	private boolean tmp_asyn = true;
 
-	private final ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(
-			20);
+	private final ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(20);
 
-	private final ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(
-			20);
+	private final ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(20);
 
-	private final ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(
-			20);
+	private final ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(20);
 
 	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
 	private final static String ADDED = " 0123456789abcdefgABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:.^,!?@#$%^&*(){}[]<>\"'\\/+-~～▼【】，。…？！";
@@ -224,8 +221,7 @@ public final class LSTRDictionary {
 		if (StringUtils.isEmpty(mes)) {
 			return new Dict();
 		}
-		if (mes.equals(_lastMessage) && _lastDict != null
-				&& !_lastDict.isClose()) {
+		if (mes.equals(_lastMessage) && _lastDict != null && !_lastDict.isClose()) {
 			return _lastDict;
 		}
 		_lastMessage = mes;
@@ -249,8 +245,7 @@ public final class LSTRDictionary {
 		synchronized (fontList) {
 			LFont cFont = cacheList.get(message);
 			if (cFont == null) {
-				for (Entries<String, LFont> it = cacheList.iterator(); it
-						.hasNext();) {
+				for (Entries<String, LFont> it = cacheList.iterator(); it.hasNext();) {
 					Entry<String, LFont> obj = it.next();
 					String key = obj.key;
 					if (checkMessage(key, message)) {
@@ -259,16 +254,14 @@ public final class LSTRDictionary {
 					}
 				}
 			}
-			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_"
-					+ font.getSize();
+			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_" + font.getSize();
 			Dict pDict = fontList.get(fontFlag);
 			if (pDict != null && pDict.isClose()) {
 				fontList.remove(fontFlag);
 				pDict = null;
 			}
 			// 判定当前font与字体和已存在的文字图片纹理，是否和缓存的font适配
-			if ((cFont == null || pDict == null || (pDict != null && !pDict
-					.include(mes)))) {
+			if ((cFont == null || pDict == null || (pDict != null && !pDict.include(mes)))) {
 				if (pDict == null) {
 					pDict = Dict.newDict();
 					fontList.put(fontFlag, pDict);
@@ -301,8 +294,7 @@ public final class LSTRDictionary {
 							tmpBuffer.append(charas.get(i));
 						}
 						// 个别浏览器纹理同步会卡出国，只能异步……
-						pDict.font = new LSTRFont(font, tmpBuffer.toString(),
-								tmp_asyn);
+						pDict.font = new LSTRFont(font, tmpBuffer.toString(), tmp_asyn);
 					}
 				}
 			}
@@ -311,8 +303,7 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final void drawString(LFont font, String message, float x, float y,
-			float angle, LColor c) {
+	public final void drawString(LFont font, String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -321,8 +312,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final void drawString(LFont font, String message, float x, float y,
-			float sx, float sy, float ax, float ay, float angle, LColor c) {
+	public final void drawString(LFont font, String message, float x, float y, float sx, float sy, float ax, float ay,
+			float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -331,8 +322,7 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final void drawString(GLEx gl, LFont font, String message, float x,
-			float y, float angle, LColor c) {
+	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -341,8 +331,8 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final void drawString(GLEx gl, LFont font, String message, float x,
-			float y, float sx, float sy, float angle, LColor c) {
+	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float sx, float sy, float angle,
+			LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
@@ -351,14 +341,12 @@ public final class LSTRDictionary {
 		}
 	}
 
-	public final void drawString(GLEx gl, LFont font, String message, float x,
-			float y, float sx, float sy, float ax, float ay, float angle,
-			LColor c) {
+	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float sx, float sy, float ax,
+			float ay, float angle, LColor c) {
 		Dict pDict = bind(font, message);
 		if (pDict.font != null) {
 			synchronized (pDict.font) {
-				pDict.font.drawString(gl, x, y, sx, sy, ax, ay, angle, message,
-						c);
+				pDict.font.drawString(gl, x, y, sx, sy, ax, ay, angle, message, c);
 			}
 		}
 	}
@@ -370,8 +358,7 @@ public final class LSTRDictionary {
 	 * @param text
 	 * @return
 	 */
-	public final static String makeStringLazyKey(final LFont font,
-			final String text) {
+	public final static String makeStringLazyKey(final LFont font, final String text) {
 		int hashCode = 0;
 		hashCode = LSystem.unite(hashCode, font.getSize());
 		hashCode = LSystem.unite(hashCode, font.getStyle());
@@ -398,13 +385,16 @@ public final class LSTRDictionary {
 	public final LSTRFont STRFont(LFont font) {
 		if (fontList != null) {
 			for (Dict d : fontList.values()) {
-				if (d != null && d.font != null
-						&& d.font.getFont().equals(font)) {
+				if (d != null && d.font != null && d.font.getFont().equals(font)) {
 					return d.font;
 				}
 			}
 		}
 		return null;
+	}
+
+	public final static String getAddedString() {
+		return ADDED;
 	}
 
 	public final void dispose() {

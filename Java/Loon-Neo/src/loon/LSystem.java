@@ -25,10 +25,10 @@ import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.geom.Vector3f;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRFont;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
 import loon.utils.json.JsonImpl;
@@ -86,7 +86,7 @@ public class LSystem {
 	 */
 	public final static IFont getSystemLogFont() {
 		if (_defaultLogFont == null) {
-			_defaultLogFont = LFont.getFont(16);
+			_defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 		}
 		return _defaultLogFont;
 	}
@@ -563,7 +563,7 @@ public class LSystem {
 	public final static boolean checkAngle(float angle, float actual) {
 		return actual > angle - 22.5f && actual < angle + 22.5f;
 	}
-	
+
 	public static boolean isImage(String extension) {
 		return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("bmp")
 				|| extension.equals("gif");

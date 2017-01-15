@@ -394,7 +394,7 @@ public class LProcess extends PlayerUtils {
 
 	public boolean next() {
 		if (isInstance) {
-			if (currentScreen.next()) {
+			if (currentScreen.next() && !LSystem.PAUSED) {
 				return true;
 			}
 		}

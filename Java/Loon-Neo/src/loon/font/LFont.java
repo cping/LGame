@@ -38,8 +38,7 @@ public class LFont implements IFont {
 		defaultFont = font;
 	}
 
-	private ObjectMap<String, Vector2f> fontSizes = new ObjectMap<String, Vector2f>(
-			50);
+	private ObjectMap<String, Vector2f> fontSizes = new ObjectMap<String, Vector2f>(50);
 
 	private final static String tmp = "H";
 
@@ -105,8 +104,7 @@ public class LFont implements IFont {
 		return new LFont(familyName, style, size, true);
 	}
 
-	public static LFont getFont(String familyName, Style style, int size,
-			boolean antialias) {
+	public static LFont getFont(String familyName, Style style, int size, boolean antialias) {
 		return new LFont(familyName, style, size, antialias);
 	}
 
@@ -119,67 +117,59 @@ public class LFont implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float tx, float ty) {
-		drawString(g, string, tx, ty, LColor.white);
+	public void drawString(GLEx g, String chars, float tx, float ty) {
+		drawString(g, chars, tx, ty, LColor.white);
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float tx, float ty, LColor c) {
+	public void drawString(GLEx g, String chars, float tx, float ty, LColor c) {
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
-		if (StringUtils.isEmpty(string)) {
+		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
 		if (useCache) {
-			LSTRDictionary.get().drawString(this, string, _offset.x + tx,
-					_offset.y + ty, 0, c);
+			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, 0, c);
 		} else {
-			LSTRDictionary.get().drawString(g, this, string, _offset.x + tx,
-					_offset.y + ty, 0, c);
+			LSTRDictionary.get().drawString(g, this, chars, _offset.x + tx, _offset.y + ty, 0, c);
 		}
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float tx, float ty,
+	public void drawString(GLEx g, String chars, float tx, float ty, float angle, LColor c) {
+		if (c == null || c.a <= 0.01) {
+			return;
+		}
+		if (StringUtils.isEmpty(chars)) {
+			return;
+		}
+		if (useCache) {
+			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, angle, c);
+		} else {
+			LSTRDictionary.get().drawString(g, this, chars, _offset.x + tx, _offset.y + ty, angle, c);
+		}
+	}
+
+	@Override
+	public void drawString(GLEx g, String chars, float tx, float ty, float sx, float sy, float ax, float ay,
 			float angle, LColor c) {
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
-		if (StringUtils.isEmpty(string)) {
+		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
 		if (useCache) {
-			LSTRDictionary.get().drawString(this, string, _offset.x + tx,
-					_offset.y + ty, angle, c);
+			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		} else {
-			LSTRDictionary.get().drawString(g, this, string, _offset.x + tx,
-					_offset.y + ty, angle, c);
-		}
-	}
-
-	@Override
-	public void drawString(GLEx g, String string, float tx, float ty, float sx,
-			float sy, float ax, float ay, float angle, LColor c) {
-		if (c == null || c.a <= 0.01) {
-			return;
-		}
-		if (StringUtils.isEmpty(string)) {
-			return;
-		}
-		if (useCache) {
-			LSTRDictionary.get().drawString(this, string, _offset.x + tx,
-					_offset.y + ty, sx, sy, ax, ay, angle, c);
-		} else {
-			LSTRDictionary.get().drawString(g, this, string, _offset.x + tx,
-					_offset.y + ty, sx, sy, ax, ay, angle, c);
+			LSTRDictionary.get().drawString(g, this, chars, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		}
 	}
 
 	private void initLayout(String text) {
 		if (textLayout == null || !text.equals(lastText)) {
-			textLayout = LSystem.base().graphics()
-					.layoutText(tmp, this.textFormat);
+			textLayout = LSystem.base().graphics().layoutText(tmp, this.textFormat);
 		}
 	}
 
@@ -204,8 +194,7 @@ public class LFont implements IFont {
 			for (int i = 0, size = message.length(); i < size; i++) {
 				char ch = message.charAt(i);
 				if (ch == '\n') {
-					width = MathUtils.max(
-							textLayout.stringWidth(sbr.toString()), width);
+					width = MathUtils.max(textLayout.stringWidth(sbr.toString()), width);
 					sbr.delete(0, sbr.length());
 				} else {
 					sbr.append(ch);
@@ -288,6 +277,7 @@ public class LFont implements IFont {
 	@Override
 	public int hashCode() {
 		if (hash == 1) {
+			hash = LSystem.unite(textFormat.font.name.charAt(0), hash);
 			hash = LSystem.unite(textFormat.font.name.length(), hash);
 			hash = LSystem.unite(textFormat.font.name.hashCode(), hash);
 			hash = LSystem.unite(textFormat.font.style.ordinal(), hash);
@@ -314,8 +304,7 @@ public class LFont implements IFont {
 		if (font.textFormat == textFormat) {
 			return true;
 		}
-		if (font.textFormat.font.name.equals(textFormat.font.name)
-				&& font.textFormat.font.size == textFormat.font.size
+		if (font.textFormat.font.name.equals(textFormat.font.name) && font.textFormat.font.size == textFormat.font.size
 				&& font.textFormat.font.style.equals(textFormat.font.style)) {
 			return true;
 		}
@@ -390,6 +379,6 @@ public class LFont implements IFont {
 
 	@Override
 	public void close() {
-		
+
 	}
 }

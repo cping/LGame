@@ -31,8 +31,7 @@ class AndroidFont {
 
 	private static final String[] NO_HACKS = {};
 
-	public static final AndroidFont DEFAULT = new AndroidFont(Typeface.DEFAULT,
-			14, null);
+	public static final AndroidFont DEFAULT = new AndroidFont(Typeface.DEFAULT, 14, null);
 
 	public final Typeface typeface;
 	public final float size;
@@ -51,12 +50,12 @@ class AndroidFont {
 			String familyName = name.toLowerCase();
 			if (familyName.equals("serif") || familyName.equals("timesroman")) {
 				name = "serif";
-			} else if (familyName.equals("sansserif")
-					|| familyName.equals("helvetica")) {
+			} else if (familyName.equals("sansserif") || familyName.equals("helvetica")) {
 				name = "sans-serif";
-			} else if (familyName.equals("monospaced")
-					|| familyName.equals("courier")
-					|| familyName.equals("dialog") || familyName.equals("黑体")) {
+			} else if (familyName.equals("monospaced") || familyName.equals("courier") || familyName.equals("dialog")
+					|| familyName.equals("黑体")) {
+				name = "monospace";
+			} else {
 				name = "monospace";
 			}
 		} else {

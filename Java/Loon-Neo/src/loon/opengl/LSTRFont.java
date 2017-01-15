@@ -20,7 +20,6 @@
  */
 package loon.opengl;
 
-import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
@@ -28,9 +27,11 @@ import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.event.Updateable;
+import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
+import loon.geom.PointI;
 import loon.utils.CharArray;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
@@ -38,7 +39,13 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
-public class LSTRFont implements LRelease {
+public class LSTRFont implements IFont {
+
+	public final static LSTRFont getFont(int size) {
+		return new LSTRFont(LFont.getFont(size), LSTRDictionary.getAddedString(), true);
+	}
+
+	private PointI _offset = new PointI();
 
 	private class UpdateStringFont implements Updateable {
 
@@ -50,34 +57,28 @@ public class LSTRFont implements LRelease {
 
 		@Override
 		public void action(Object a) {
-			strfont.fontSize = (int) strfont.font.getSize();
+			strfont.fontSize = strfont.font.getSize();
 			strfont.ascent = strfont.font.getAscent();
-			if (strfont.additionalChars != null
-					&& strfont.additionalChars.length > strfont.totalCharSet) {
+			if (strfont.additionalChars != null && strfont.additionalChars.length > strfont.totalCharSet) {
 				strfont.textureWidth *= 2;
 			}
-			Canvas canvas = LSystem.base().graphics()
-					.createCanvas(strfont.textureWidth, strfont.textureHeight);
+			Canvas canvas = LSystem.base().graphics().createCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setColor(LColor.white);
 			canvas.setFont(strfont.font);
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
-			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length
-					: 0;
-			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet
-					: 0;
+			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
+			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
 			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
 
 			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
-				char ch = (i < strfont.totalCharSet) ? (char) i
-						: strfont.additionalChars[i - strfont.totalCharSet];
+				char ch = (i < strfont.totalCharSet) ? (char) i : strfont.additionalChars[i - strfont.totalCharSet];
 
-				TextLayout layout = strfont.font.getLayoutText(String
-						.valueOf(ch));
+				TextLayout layout = strfont.font.getLayoutText(String.valueOf(ch));
 
 				int charwidth = layout.charWidth(ch);
-
+		
 				if (charwidth <= 0) {
 					charwidth = 1;
 				}
@@ -132,8 +133,7 @@ public class LSTRFont implements LRelease {
 				sbr = null;
 			}
 			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(
-					strfont.texture = canvas.toTexture());
+			strfont.fontBatch = new LTextureBatch(strfont.texture = canvas.toTexture());
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();
@@ -244,8 +244,7 @@ public class LSTRFont implements LRelease {
 		this.fontSize = font.getSize();
 		this.fontHeight = font.getHeight();
 		this.ascent = font.getAscent();
-		int customCharsLength = (additionalChars != null) ? additionalChars.length
-				: 0;
+		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length > 0) {
 			int size = chs.length;
@@ -261,8 +260,7 @@ public class LSTRFont implements LRelease {
 				this.additionalChars = chars.items;
 			}
 			this.text = new String(additionalChars);
-			if (additionalChars != null
-					&& additionalChars.length > totalCharSet) {
+			if (additionalChars != null && additionalChars.length > totalCharSet) {
 				textureWidth *= 2;
 			}
 			this.make(asyn);
@@ -303,35 +301,35 @@ public class LSTRFont implements LRelease {
 		return texture;
 	}
 
+	@Override
+	public void drawString(GLEx g, String chars, float x, float y, float sx, float sy, float ax, float ay,
+			float rotation, LColor c) {
+		drawString(chars, x, y, sx, sy, ax, ay, rotation, c);
+	}
+
 	public void drawString(String chars, float x, float y) {
-		drawString(x, y, 1f, 1f, 0, 0, 0, chars, LColor.white, 0,
-				chars.length() - 1);
+		drawString(x, y, 1f, 1f, 0, 0, 0, chars, LColor.white, 0, chars.length() - 1);
 	}
 
 	public void drawString(String chars, float x, float y, LColor color) {
 		drawString(x, y, 1f, 1f, 0, 0, 0, chars, color, 0, chars.length() - 1);
 	}
 
-	public void drawString(String chars, float x, float y, float rotation,
-			LColor color) {
-		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, color, 0,
-				chars.length() - 1);
+	public void drawString(String chars, float x, float y, float rotation, LColor color) {
+		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, color, 0, chars.length() - 1);
 	}
 
 	public void drawString(String chars, float x, float y, float rotation) {
-		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, LColor.white, 0,
-				chars.length() - 1);
+		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, LColor.white, 0, chars.length() - 1);
 	}
 
-	public void drawString(String chars, float x, float y, float sx, float sy,
-			float ax, float ay, float rotation, LColor c) {
-		drawString(x, y, sx, sy, ax, ay, rotation, chars, c, 0,
-				chars.length() - 1);
+	public void drawString(String chars, float x, float y, float sx, float sy, float ax, float ay, float rotation,
+			LColor c) {
+		drawString(x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length() - 1);
 	}
 
-	private void drawString(float x, float y, float sx, float sy, float ax,
-			float ay, float rotation, String chars, LColor c, int startIndex,
-			int endIndex) {
+	private void drawString(float mx, float my, float sx, float sy, float ax, float ay, float rotation, String chars,
+			LColor c, int startIndex, int endIndex) {
 		if (_isClose) {
 			return;
 		}
@@ -364,6 +362,8 @@ public class LSTRFont implements LRelease {
 			displays.clear();
 		}
 
+		final float x = mx + _offset.x;
+		final float y = my + _offset.y;
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
@@ -393,13 +393,10 @@ public class LSTRFont implements LRelease {
 					}
 					if (intObject != null) {
 						if ((i >= startIndex) || (i <= endIndex)) {
-							fontBatch.drawQuad(totalWidth, totalHeight,
-									(totalWidth + intObject.width) - offsetX,
-									(totalHeight + intObject.height) - offsetY,
-									intObject.storedX, intObject.storedY,
-									intObject.storedX + intObject.width
-											- offsetX, intObject.storedY
-											+ intObject.height - offsetY);
+							fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
+									(totalHeight + intObject.height) - offsetY, intObject.storedX, intObject.storedY,
+									intObject.storedX + intObject.width - offsetX,
+									intObject.storedY + intObject.height - offsetY);
 						}
 						totalWidth += intObject.width;
 					}
@@ -407,8 +404,7 @@ public class LSTRFont implements LRelease {
 				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 				fontBatch.setColor(old);
 				displays.put(chars, display = fontBatch.newCache());
-			} else if (display != null && fontBatch != null
-					&& fontBatch.toTexture() != null) {
+			} else if (display != null && fontBatch != null && fontBatch.toTexture() != null) {
 				fontBatch.postCache(display, c, x, y, sx, sy, ax, ay, rotation);
 			}
 		} else {
@@ -429,10 +425,8 @@ public class LSTRFont implements LRelease {
 				}
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
-						fontBatch.drawQuad(totalWidth, totalHeight,
-								(totalWidth + intObject.width) - offsetX,
-								(totalHeight + intObject.height) - offsetY,
-								intObject.storedX, intObject.storedY,
+						fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
+								(totalHeight + intObject.height) - offsetY, intObject.storedX, intObject.storedY,
 								intObject.storedX + intObject.width - offsetX,
 								intObject.storedY + intObject.height - offsetY);
 					}
@@ -452,36 +446,29 @@ public class LSTRFont implements LRelease {
 		drawString(gl, x, y, 1f, 1f, 0, chars, color);
 	}
 
-	public void drawString(GLEx gl, String chars, float x, float y,
-			float rotation, LColor color) {
+	public void drawString(GLEx gl, String chars, float x, float y, float rotation, LColor color) {
 		drawString(gl, x, y, 1f, 1f, rotation, chars, color);
 	}
 
-	public void drawString(GLEx gl, String chars, float x, float y,
-			float rotation) {
+	public void drawString(GLEx gl, String chars, float x, float y, float rotation) {
 		drawString(gl, x, y, 1f, 1f, rotation, chars, LColor.white);
 	}
 
-	public void drawString(GLEx gl, String chars, float x, float y, float sx,
-			float sy, float rotation, LColor c) {
+	public void drawString(GLEx gl, String chars, float x, float y, float sx, float sy, float rotation, LColor c) {
 		drawString(gl, x, y, sx, sy, rotation, chars, c);
 	}
 
-	public void drawString(GLEx gl, float x, float y, float sx, float sy,
-			float rotation, String chars, LColor c) {
-		drawString(gl, x, y, sx, sy, 0, 0, rotation, chars, c, 0,
-				chars.length() - 1);
+	public void drawString(GLEx gl, float x, float y, float sx, float sy, float rotation, String chars, LColor c) {
+		drawString(gl, x, y, sx, sy, 0, 0, rotation, chars, c, 0, chars.length() - 1);
 	}
 
-	public void drawString(GLEx gl, float x, float y, float sx, float sy,
-			float ax, float ay, float rotation, String chars, LColor c) {
-		drawString(gl, x, y, sx, sy, ax, ay, rotation, chars, c, 0,
-				chars.length() - 1);
+	public void drawString(GLEx gl, float x, float y, float sx, float sy, float ax, float ay, float rotation,
+			String chars, LColor c) {
+		drawString(gl, x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length() - 1);
 	}
 
-	private void drawString(GLEx gl, float x, float y, float sx, float sy,
-			float ax, float ay, float rotation, String chars, LColor c,
-			int startIndex, int endIndex) {
+	private void drawString(GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,
+			String chars, LColor c, int startIndex, int endIndex) {
 		if (_isClose) {
 			return;
 		}
@@ -502,6 +489,8 @@ public class LSTRFont implements LRelease {
 		if (texture.isClose()) {
 			return;
 		}
+		final float x = mx + _offset.x;
+		final float y = my + _offset.y;
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
@@ -550,15 +539,10 @@ public class LSTRFont implements LRelease {
 
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
-						gl.draw(texture,
-								x + totalWidth,
-								y + totalHeight,
-								intObject.width * sx,
-								intObject.height * sy,
-								StringUtils.isChinese((char) charCurrent) ? intObject.storedX
-										- updateX
-										: intObject.storedX, intObject.storedY,
-								intObject.width, intObject.height - updateY, c);
+						gl.draw(texture, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,
+								StringUtils.isChinese((char) charCurrent) ? intObject.storedX - updateX
+										: intObject.storedX,
+								intObject.storedY, intObject.width, intObject.height - updateY, c);
 					}
 					totalWidth += intObject.width;
 				}
@@ -605,24 +589,20 @@ public class LSTRFont implements LRelease {
 				setImageColor(color);
 			}
 			if (c == newLineFlag) {
-				fontBatch.draw(colors, x, y + fontSize, intObject.width
-						- offsetX, intObject.height - offsetY,
-						intObject.storedX, intObject.storedY, intObject.storedX
-								+ intObject.width - offsetX, intObject.storedY
-								+ intObject.height - offsetY);
+				fontBatch.draw(colors, x, y + fontSize, intObject.width - offsetX, intObject.height - offsetY,
+						intObject.storedX, intObject.storedY, intObject.storedX + intObject.width - offsetX,
+						intObject.storedY + intObject.height - offsetY);
 			} else {
-				fontBatch.draw(colors, x, y, intObject.width - offsetX,
-						intObject.height - offsetY, intObject.storedX,
-						intObject.storedY, intObject.storedX + intObject.width
-								- offsetX, intObject.storedY + intObject.height
-								- offsetY);
+				fontBatch.draw(colors, x, y, intObject.width - offsetX, intObject.height - offsetY, intObject.storedX,
+						intObject.storedY, intObject.storedX + intObject.width - offsetX,
+						intObject.storedY + intObject.height - offsetY);
 			}
 			if (colors != null) {
 				colors = null;
 			}
 		}
 	}
-	
+
 	public void startChar() {
 		if (_isClose) {
 			return;
@@ -724,8 +704,7 @@ public class LSTRFont implements LRelease {
 
 	private void setColor(int corner, float r, float g, float b) {
 		if (colors == null) {
-			colors = new LColor[] { new LColor(1, 1, 1, 1f),
-					new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
+			colors = new LColor[] { new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
 					new LColor(1, 1, 1, 1f) };
 		}
 		colors[corner].r = r;
@@ -919,6 +898,64 @@ public class LSTRFont implements LRelease {
 		_initChars = false;
 		_initDraw = -1;
 		_isClose = true;
+	}
+
+	@Override
+	public int stringWidth(String width) {
+		return getWidth(width);
+	}
+
+	@Override
+	public int stringHeight(String height) {
+		return getHeight(height);
+	}
+
+	@Override
+	public void setAssent(float assent) {
+
+	}
+
+	@Override
+	public void setSize(int size) {
+
+	}
+
+	@Override
+	public PointI getOffset() {
+		return _offset;
+	}
+
+	@Override
+	public void setOffset(PointI val) {
+		_offset.set(val.x, val.y);
+	}
+
+	@Override
+	public void setOffsetX(int x) {
+		_offset.x = x;
+	}
+
+	@Override
+	public void setOffsetY(int y) {
+		_offset.y = y;
+	}
+
+	@Override
+	public String confineLength(String s, int width) {
+		int length = 0;
+		for (int i = 0; i < s.length(); i++) {
+			length += stringWidth(String.valueOf(s.charAt(i)));
+			if (length >= width) {
+				int pLength = stringWidth("...");
+				while (length + pLength >= width && i >= 0) {
+					length -= stringWidth(String.valueOf(s.charAt(i)));
+					i--;
+				}
+				s = s.substring(0, ++i) + "...";
+				break;
+			}
+		}
+		return s;
 	}
 
 }

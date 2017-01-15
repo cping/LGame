@@ -20,6 +20,8 @@
  */
 package loon.font;
 
+import loon.LSystem;
+
 public class Font {
 
 	public static enum Style {
@@ -33,7 +35,25 @@ public class Font {
 	public final float size;
 
 	public Font(String name, Style style, float size) {
-		this.name = name;
+		if (LSystem.isMobile()) {
+			if (name != null) {
+				String familyName = name.toLowerCase();
+				if (familyName.equals("serif") || familyName.equals("timesroman")) {
+					this.name = "serif";
+				} else if (familyName.equals("sansserif") || familyName.equals("helvetica")) {
+					this.name = "sans-serif";
+				} else if (familyName.equals("monospaced") || familyName.equals("courier")
+						|| familyName.equals("dialog") || familyName.equals("黑体")) {
+					this.name = "monospace";
+				} else {
+					this.name = "monospace";
+				}
+			} else {
+				this.name = "monospace";
+			}
+		} else {
+			this.name = name;
+		}
 		this.style = style;
 		if (size % 2 == 0) {
 			this.size = size;
