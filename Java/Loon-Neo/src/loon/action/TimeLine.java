@@ -1,5 +1,6 @@
 package loon.action;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -78,7 +79,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 
 	public TimeLine push(TimeLine timeline) {
 		if (timeline.current != timeline){
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"You forgot to call a few 'end()' statements in your pushed timeline");
 		}
 		timeline.parent = current;
@@ -111,7 +112,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 
 	public TimeLine end() {
 		if (current == this) {
-			throw new RuntimeException("Nothing to end...");
+			throw LSystem.runThrow("Nothing to end...");
 		}
 		current = current.parent;
 		return this;
@@ -164,7 +165,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 			ActionTweenBase<?> obj = children.get(i);
 
 			if (obj.getRepeatCount() < 0) {
-				throw new RuntimeException(
+				throw LSystem.runThrow(
 						"You can't push an object with infinite repetitions in a timeline");
 			}
 			obj.build();

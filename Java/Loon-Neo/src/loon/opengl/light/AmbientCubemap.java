@@ -1,5 +1,6 @@
 package loon.opengl.light;
 
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.Vector3f;
 import loon.utils.MathUtils;
@@ -16,7 +17,7 @@ public class AmbientCubemap {
 
 	public AmbientCubemap(final float copyFrom[]) {
 		if (copyFrom.length != limit) {
-			throw new RuntimeException("Incorrect array size");
+			throw LSystem.runThrow("Incorrect array size");
 		}
 		data = new float[copyFrom.length];
 		System.arraycopy(copyFrom, 0, data, 0, data.length);

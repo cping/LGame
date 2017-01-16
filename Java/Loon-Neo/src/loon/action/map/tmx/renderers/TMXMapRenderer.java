@@ -104,7 +104,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements
 		default:
 			break;
 		}
-		throw new RuntimeException(
+		throw LSystem.runThrow(
 				"A TmxMapRenderer has not yet been implemented for "
 						+ map.getOrientation() + " orientation");
 	}

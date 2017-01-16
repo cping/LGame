@@ -32,6 +32,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 import loon.utils.json.JsonImpl;
 
 public class LSystem {
@@ -133,7 +134,7 @@ public class LSystem {
 		LSystem.setSystemLogFont(font);
 		LSystem.setSystemGameFont(font);
 	}
-	
+
 	// 默认的字符串打印完毕flag
 	public static String FLAG_TAG = "▼";
 
@@ -669,9 +670,25 @@ public class LSystem {
 		}
 	}
 
+	public final static RuntimeException runThrow(String msg) {
+		error(msg);
+		return new RuntimeException(msg);
+	}
+
+	public final static RuntimeException runThrow(String msg, Throwable thr) {
+		error(msg, thr);
+		return new RuntimeException(msg, thr);
+	}
+
+	public final static RuntimeException runThrow(String msg, Object... args) {
+		error(msg, args);
+		return new RuntimeException(StringUtils.format(msg, args));
+	}
+
 	public final static void setLogMinLevel(Level level) {
 		if (LSystem._base != null) {
 			LSystem._base.log().setMinLevel(level);
 		}
 	}
+
 }

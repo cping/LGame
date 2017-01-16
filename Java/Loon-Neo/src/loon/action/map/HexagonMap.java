@@ -22,6 +22,7 @@ package loon.action.map;
 
 import java.util.Iterator;
 
+import loon.LSystem;
 import loon.action.map.ArrayInt2DAStar.TileFactory;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
@@ -307,7 +308,7 @@ public class HexagonMap<T> implements GeometryMap, Iterable<TileVisit<T>> {
 
 		@Override
 		public void remove() {
-			throw new RuntimeException("not supported");
+			throw LSystem.runThrow("not supported");
 		}
 	}
 

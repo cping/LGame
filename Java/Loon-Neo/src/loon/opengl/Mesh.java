@@ -425,8 +425,9 @@ public class Mesh implements LRelease {
 
 	public void calculateBoundingBox(BoundingBox bbox) {
 		final int numVertices = getNumVertices();
-		if (numVertices == 0)
-			throw new RuntimeException("No vertices defined");
+		if (numVertices == 0){
+			throw LSystem.runThrow("No vertices defined");
+		}
 
 		final FloatBuffer verts = vertices.getBuffer();
 		bbox.inf();
@@ -477,9 +478,10 @@ public class Mesh implements LRelease {
 	public BoundingBox extendBoundingBox(final BoundingBox out, int offset,
 			int count, final Matrix4 transform) {
 		int numIndices = getNumIndices();
-		if (offset < 0 || count < 1 || offset + count > numIndices)
-			throw new RuntimeException("Not enough indices ( offset=" + offset
+		if (offset < 0 || count < 1 || offset + count > numIndices){
+			throw LSystem.runThrow("Not enough indices ( offset=" + offset
 					+ ", count=" + count + ", max=" + numIndices + " )");
+		}
 
 		final FloatBuffer verts = vertices.getBuffer();
 		final ShortBuffer index = indices.getBuffer();
@@ -524,8 +526,9 @@ public class Mesh implements LRelease {
 			final float centerY, final float centerZ, int offset, int count,
 			final Matrix4 transform) {
 		int numIndices = getNumIndices();
-		if (offset < 0 || count < 1 || offset + count > numIndices)
-			throw new RuntimeException("Not enough indices");
+		if (offset < 0 || count < 1 || offset + count > numIndices){
+			throw LSystem.runThrow("Not enough indices");
+		}
 
 		final FloatBuffer verts = vertices.getBuffer();
 		final ShortBuffer index = indices.getBuffer();

@@ -295,7 +295,7 @@ public class Matrix3 implements Serializable, XY {
 	public Matrix3 inv() {
 		float det = det();
 		if (det == 0) {
-			throw new RuntimeException("Can't invert a singular matrix");
+			throw LSystem.runThrow("Can't invert a singular matrix");
 		}
 
 		float inv_det = 1.0f / det;

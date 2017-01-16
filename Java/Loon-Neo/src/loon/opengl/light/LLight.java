@@ -20,6 +20,7 @@
  */
 package loon.opengl.light;
 
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.utils.TArray;
 
@@ -148,7 +149,7 @@ public abstract class LLight {
 
 	public void updateLight() {
 		if (mainLight == null) {
-			throw new RuntimeException("the main light is null !");
+			throw LSystem.runThrow("the main light is null !");
 		}
 		for (int y = 0; y < height + 1; y++) {
 			for (int x = 0; x < width + 1; x++) {

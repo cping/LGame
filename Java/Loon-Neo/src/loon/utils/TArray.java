@@ -23,6 +23,7 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
@@ -545,7 +546,7 @@ public class TArray<T> implements Iterable<T>,IArray {
 
 		public boolean hasNext() {
 			if (!valid) {
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			}
 			return index < array.size;
 		}
@@ -555,7 +556,7 @@ public class TArray<T> implements Iterable<T>,IArray {
 				throw new NoSuchElementException(String.valueOf(index));
 			}
 			if (!valid) {
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			}
 			return array.items[index++];
 		}
@@ -563,7 +564,7 @@ public class TArray<T> implements Iterable<T>,IArray {
 		@Override
 		public void remove() {
 			if (!allowRemove) {
-				throw new RuntimeException("Remove not allowed.");
+				throw LSystem.runThrow("Remove not allowed.");
 			}
 			index--;
 			array.removeIndex(index);

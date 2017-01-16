@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
+import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.map.TileMapConfig;
 import loon.action.map.tmx.tiles.TMXMapTile;
@@ -150,7 +151,7 @@ public class TMXTileLayer extends TMXMapLayer {
 					read += curr;
 				}
 				if (read != temp.length) {
-					throw new RuntimeException(
+					throw LSystem.runThrow(
 							"Error Reading TMX Layer Data: Premature end of tile data");
 				}
 				int gid = byteToInt(temp[0]) | byteToInt(temp[1]) << 8

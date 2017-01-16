@@ -3,6 +3,8 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
 
@@ -673,7 +675,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			K[] keyTable = map.keyTable;
 			entry.key = keyTable[nextIndex];
 			entry.value = map.valueTable[nextIndex];
@@ -684,7 +686,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -700,7 +702,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -708,7 +710,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			V value = map.valueTable[nextIndex];
 			currentIndex = nextIndex;
 			findNextIndex();
@@ -737,7 +739,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -745,7 +747,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			K key = map.keyTable[nextIndex];
 			currentIndex = nextIndex;
 			findNextIndex();

@@ -20,6 +20,8 @@
  */
 package loon;
 
+import loon.canvas.LColor;
+
 public abstract class Log {
 
 	public abstract void onError(Throwable e);
@@ -135,14 +137,16 @@ public abstract class Log {
 				if (LSystem._base != null) {
 					LSetting setting = LSystem._base.setting;
 					LProcess process = LSystem.getProcess();
-					if (process != null
-							&& (setting.isDebug || setting.isDisplayLog)) {
+					if (process != null && (setting.isDebug || setting.isDisplayLog)) {
+						LColor color = LColor.white;
+						if (level.id > Level.INFO.id) {
+							color = LColor.red;
+						}
 						if (process != null) {
 							if (e == null) {
-								process.addLog(msg);
+								process.addLog(msg, color);
 							} else {
-								process.addLog(msg + " [ " + e.getMessage()
-										+ " ] ");
+								process.addLog(msg + " [ " + e.getMessage() + " ] ", color);
 							}
 						}
 					}

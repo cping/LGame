@@ -22,6 +22,7 @@ package loon.action.avg.drama;
 
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
@@ -159,7 +160,7 @@ public abstract class Conversion implements Expression {
 				if (MathUtils.isNan(v)) {
 					return Float.parseFloat(v);
 				} else {
-					throw new RuntimeException(v + " not parse !");
+					throw LSystem.runThrow(v + " not parse !");
 				}
 			}
 			return eval(v);

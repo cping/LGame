@@ -20,6 +20,8 @@
  */
 package loon.utils.xml;
 
+import loon.LSystem;
+
 public class XMLTokenizer {
 
 	private String text;
@@ -55,7 +57,7 @@ public class XMLTokenizer {
 		if (this.pointer < this.text.length()) {
 			this.pointer += 1;
 		} else {
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"Tokenizer error: < without > at end of text");
 		}
 		return this.text.substring(j, this.pointer);

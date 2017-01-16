@@ -201,6 +201,18 @@ public class PlayerUtils extends Director {
 		LSystem.error(msg, throwable);
 	}
 
+	public final static RuntimeException runThrow(String msg) {
+		return LSystem.runThrow(msg);
+	}
+
+	public final static RuntimeException runThrow(String msg, Throwable thr) {
+		return LSystem.runThrow(msg, thr);
+	}
+
+	public final static RuntimeException runThrow(String msg, Object... args) {
+		return LSystem.runThrow(msg, args);
+	}
+
 	public final static void setLogMinLevel(Level level) {
 		LSystem.setLogMinLevel(level);
 	}

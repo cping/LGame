@@ -23,6 +23,7 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
 import loon.utils.ObjectMap.Entry;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -471,7 +472,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return index < map.size;
 		}
 
@@ -483,7 +484,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 			if (index >= map.size)
 				throw new NoSuchElementException(String.valueOf(index));
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			entry.key = map.keys[index];
 			entry.value = map.values[index++];
 			return entry;
@@ -510,7 +511,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return index < map.size;
 		}
 
@@ -522,7 +523,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 			if (index >= map.size)
 				throw new NoSuchElementException(String.valueOf(index));
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return map.values[index++];
 		}
 
@@ -556,7 +557,7 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return index < map.size;
 		}
 
@@ -568,10 +569,11 @@ public class TArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 			if (index >= map.size)
 				throw new NoSuchElementException(String.valueOf(index));
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return map.keys[index++];
 		}
 
+		@Override
 		public void remove() {
 			index--;
 			map.removeIndex(index);

@@ -211,7 +211,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw new RuntimeException("Map is no longer active, you can not add new tiles !");
+			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -233,7 +233,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw new RuntimeException("Map is no longer active, you can not add new tiles !");
+			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -251,7 +251,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw new RuntimeException("Map is no longer active, you can not add new tiles !");
+			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -269,7 +269,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw new RuntimeException("Map is no longer active, you can not add new tiles !");
+			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -286,7 +286,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			arrays.add(tile);
 			dirty = true;
 		} else {
-			throw new RuntimeException("Map is no longer active, you can not add new tiles !");
+			LSystem.runThrow("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -414,7 +414,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			}
 		} else {
 			if (arrays.size == 0) {
-				throw new RuntimeException("Not to add any tiles !");
+				throw LSystem.runThrow("Not to add any tiles !");
 			}
 
 			imgPack.glBegin();

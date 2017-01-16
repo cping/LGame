@@ -23,6 +23,7 @@ package loon.component;
 
 import java.util.Iterator;
 
+import loon.LSystem;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
 import loon.utils.ObjectSet;
@@ -69,7 +70,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 		size = MathUtils.min(size + 1, MAX_SIZE);
 		if (node.getLeft() != null || node.getRight() != null) {
-			throw new RuntimeException("Size Error !");
+			throw LSystem.runThrow("Size Error !");
 		}
 	}
 

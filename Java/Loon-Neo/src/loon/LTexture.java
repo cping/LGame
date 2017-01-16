@@ -303,7 +303,7 @@ public class LTexture extends Painter implements LRelease {
 	
 	public void update(final Image image, final boolean closed) {
 		if (image == null) {
-			throw new RuntimeException("the image is null, can not conversion it into texture .");
+			throw LSystem.runThrow("the image is null, can not conversion it into texture .");
 		}
 		if (parent != null) {
 			parent.update(image, closed);

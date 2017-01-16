@@ -117,7 +117,7 @@ public class VertexBufferObjectSubData implements VertexData {
 			LSystem.base().support().copy(vertices, sourceOffset, byteBuffer, count);
 			byteBuffer.position(pos);
 		} else {
-			throw new RuntimeException("Buffer must be allocated direct."); // Should
+			throw LSystem.runThrow("Buffer must be allocated direct."); // Should
 																			// never
 																			// happen
 		}

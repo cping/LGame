@@ -791,7 +791,7 @@ public class Desktop implements LRelease {
 
 	public void setModal(LComponent comp) {
 		if (comp != null && !comp.isVisible()) {
-			throw new RuntimeException("Can't set invisible component as modal component!");
+			throw LSystem.runThrow("Can't set invisible component as modal component!");
 		}
 		this.modal = comp;
 	}

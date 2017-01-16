@@ -2,6 +2,8 @@ package loon.utils;
 
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class OrderedMap<K, V> extends ObjectMap<K, V> implements IArray {
 	final TArray<K> keys;
@@ -156,7 +158,7 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> implements IArray {
 				throw new NoSuchElementException();
 			}
 			if (!valid) {
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			}
 			entry.key = keys.get(nextIndex);
 			entry.value = map.get(entry.key);
@@ -195,7 +197,7 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> implements IArray {
 				throw new NoSuchElementException();
 			}
 			if (!valid) {
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			}
 			K key = keys.get(nextIndex);
 			currentIndex = nextIndex;
@@ -235,7 +237,7 @@ public class OrderedMap<K, V> extends ObjectMap<K, V> implements IArray {
 				throw new NoSuchElementException();
 			}
 			if (!valid) {
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			}
 			V value = (V) map.get(keys.get(nextIndex));
 			currentIndex = nextIndex;

@@ -21,6 +21,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.utils.CollectionUtils;
 import loon.utils.LIterator;
 
@@ -30,7 +31,7 @@ public class ActorSet {
 
 	private static int hugeCapacity(int minCapacity) {
 		if (minCapacity < 0) {
-			throw new RuntimeException("Required array size too large");
+			throw LSystem.runThrow("Required array size too large");
 		}
 		return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE
 				: MAX_ARRAY_SIZE;

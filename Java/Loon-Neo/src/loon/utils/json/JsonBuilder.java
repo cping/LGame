@@ -21,6 +21,7 @@
 package loon.utils.json;
 
 import loon.Json;
+import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.ArrayMap;
 import loon.utils.TArray;
@@ -166,7 +167,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	@Override
 	public JsonBuilder<T> end() {
 		if (json.size() == 1) {
-			throw new RuntimeException("Cannot end the root object or array");
+			throw LSystem.runThrow("Cannot end the root object or array");
 		}
 		json.pop();
 		return this;
@@ -176,7 +177,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		try {
 			return (JsonObject) json.peek();
 		} catch (ClassCastException e) {
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"Attempted to write a keyed value to a JsonArray");
 		}
 	}
@@ -185,7 +186,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		try {
 			return (JsonArray) json.peek();
 		} catch (ClassCastException e) {
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"Attempted to write a non-keyed value to a JsonObject");
 		}
 	}

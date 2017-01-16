@@ -23,6 +23,7 @@ package loon.utils.xml;
 import java.util.Stack;
 
 import loon.BaseIO;
+import loon.LSystem;
 
 public class XMLParser {
 
@@ -90,7 +91,7 @@ public class XMLParser {
 					if (this.topElement.getName().equals(o)) {
 						popElement(index, l);
 					} else {
-						throw new RuntimeException("Expected close of '"
+						throw LSystem.runThrow("Expected close of '"
 								+ this.topElement.getName() + "' instead of "
 								+ context);
 					}
@@ -109,7 +110,7 @@ public class XMLParser {
 					pushElement(el, index, l);
 					break;
 				case CLOSE_TAG:
-					throw new RuntimeException("Syntax Error: " + context);
+					throw LSystem.runThrow("Syntax Error: " + context);
 				case OPEN_CLOSE_TAG:
 					el = new XMLElement(o);
 					pushElement(el, index, l);
@@ -200,8 +201,7 @@ public class XMLParser {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Cannot parse element '" + context
+			throw LSystem.runThrow("Cannot parse element '" + context
 					+ "' - (" + e + ")");
 		}
 	}

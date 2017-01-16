@@ -3,6 +3,8 @@ package loon.utils;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import loon.LSystem;
+
 public class CharArray implements IArray {
 
 	public char[] items;
@@ -377,7 +379,7 @@ public class CharArray implements IArray {
 
 	public static char[] slice(char[] array, int begin, int end) {
 		if (begin > end) {
-			throw new RuntimeException();
+			throw LSystem.runThrow("CharArray begin > end");
 		}
 		if (begin < 0) {
 			begin = array.length + begin;

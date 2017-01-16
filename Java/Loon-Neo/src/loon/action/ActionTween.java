@@ -884,7 +884,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	private void setup(ActionBind target, int tweenType, float duration) {
 		if (duration < 0) {
-			throw new RuntimeException("Duration can't be negative .");
+			throw LSystem.runThrow("Duration can't be negative .");
 		}
 		this._target = target;
 		this.type = tweenType;

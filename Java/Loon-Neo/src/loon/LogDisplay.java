@@ -9,7 +9,18 @@ import loon.utils.TArray;
 
 public class LogDisplay {
 
-	private final TArray<String> _texts;
+	private static class LogDisplayItem {
+		public String text;
+		public LColor color;
+
+		public LogDisplayItem(String mes, LColor col) {
+			this.text = mes;
+			this.color = col;
+		}
+
+	}
+
+	private final TArray<LogDisplayItem> _texts;
 
 	private IFont _font;
 
@@ -26,7 +37,7 @@ public class LogDisplay {
 	}
 
 	public LogDisplay(IFont font, int w, int h, LColor color) {
-		this._texts = new TArray<String>(18);
+		this._texts = new TArray<LogDisplayItem>(18);
 		this._fontColor = color;
 		this.setSize(w, h);
 		this.setFont(font);
@@ -49,27 +60,31 @@ public class LogDisplay {
 		int offset = 0;
 		int height = _texts.size() * _textHeight;
 		for (int i = _texts.size - 1; i > -1; i--) {
-			String mes = _texts.get(i);
-			paintText(g, mes, x, y, offset, height);
+			LogDisplayItem mes = _texts.get(i);
+			paintText(g, mes.text, x, y, offset, height, mes.color);
 			offset++;
 		}
 	}
 
-	private void paintText(GLEx g, String message, int x, int y, int offset, int height) {
-		_font.drawString(g, message, x, y + height - ((offset + 1) * _textHeight), _fontColor);
+	private void paintText(GLEx g, String message, int x, int y, int offset, int height, LColor color) {
+		_font.drawString(g, message, x, y + height - ((offset + 1) * _textHeight), color);
 	}
 
 	public LogDisplay addText(String message) {
+		return addText(message, _fontColor);
+	}
+
+	public LogDisplay addText(String message, LColor color) {
 		if (StringUtils.isEmpty(message)) {
 			return this;
 		}
 		if ((message.length() * _font.getSize() > _width) || (message.indexOf('\n') != -1)) {
 			TArray<String> mes = Print.formatMessage(message, _font, _width - _font.getSize());
 			for (String text : mes) {
-				_texts.add(text);
+				_texts.add(new LogDisplayItem(text, color));
 			}
 		} else {
-			_texts.add(message);
+			_texts.add(new LogDisplayItem(message, color));
 		}
 		if (_texts.size() > _displayAmount) {
 			_texts.removeIndex(0);
@@ -80,8 +95,9 @@ public class LogDisplay {
 	public String getText() {
 		StringBuffer sbr = new StringBuffer();
 		if (_texts != null) {
-			for (String text : _texts) {
-				sbr.append(text);
+			for (int i = 0; i < _texts.size; i++) {
+				sbr.append(_texts.get(i));
+				sbr.append(LSystem.LS);
 			}
 		}
 		return sbr.toString();

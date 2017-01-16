@@ -1,5 +1,6 @@
 package loon.action.map.tmx;
 
+import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.renderers.TMXHexagonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXIsometricMapRenderer;
@@ -97,7 +98,7 @@ public class TMXMap {
 		XMLElement docElement = doc.getRoot();
 
 		if (!docElement.getName().equals("map")) {
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"Invalid TMX map file. The first child must be a <map> element.");
 		}
 

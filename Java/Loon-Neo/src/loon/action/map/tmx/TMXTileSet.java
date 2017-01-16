@@ -1,5 +1,6 @@
 package loon.action.map.tmx;
 
+import loon.LSystem;
 import loon.action.map.tmx.tiles.TMXTerrain;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
@@ -46,7 +47,7 @@ public class TMXTileSet {
 				XMLElement docElement = doc.getRoot();
 				element = docElement;
 			} catch (Exception e) {
-				throw new RuntimeException(tilesLocation + "/" + source);
+				throw LSystem.runThrow(tilesLocation + "/" + source);
 			}
 		}
 

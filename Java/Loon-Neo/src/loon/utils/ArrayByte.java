@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UTFDataFormatException;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 
 public class ArrayByte {
@@ -50,7 +51,7 @@ public class ArrayByte {
 
 	public ArrayByte(String base64) {
 		if (!Base64Coder.isBase64(base64)) {
-			throw new RuntimeException("it is not base64 :" + base64);
+			throw LSystem.runThrow("it is not base64 :" + base64);
 		}
 		this.data = Base64Coder.decodeBase64(base64.toCharArray());
 		reset();

@@ -21,6 +21,8 @@
 package loon.opengl;
 
 import static loon.opengl.GL20.*;
+
+import loon.LSystem;
 import loon.opengl.ShaderProgram.Mini;
 
 public class UniformBatch extends BaseBatch {
@@ -112,7 +114,7 @@ public class UniformBatch extends BaseBatch {
 	public void init() {
 		int maxVecs = usableMaxUniformVectors(gl);
 		if (maxVecs < BASE_VEC4S_PER_QUAD){
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"GL_MAX_VERTEX_UNIFORM_VECTORS too low: have " + maxVecs
 							+ ", need at least " + BASE_VEC4S_PER_QUAD);
 		}

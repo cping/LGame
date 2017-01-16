@@ -23,6 +23,8 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 public class SortedList<E> implements Iterable<E>,IArray {
 
 	public LIterator<E> listIterator() {
@@ -85,7 +87,7 @@ public class SortedList<E> implements Iterable<E>,IArray {
 
 		final void checkForComodification() {
 			if (modCount != expectedModCount)
-				throw new RuntimeException();
+				throw LSystem.runThrow("SortedList error!");
 		}
 	}
 
@@ -199,28 +201,28 @@ public class SortedList<E> implements Iterable<E>,IArray {
 	public E getFirst() {
 		final Node<E> f = first;
 		if (f == null)
-			throw new RuntimeException();
+			throw LSystem.runThrow("SortedList error!");
 		return f.item;
 	}
 
 	public E getLast() {
 		final Node<E> l = last;
 		if (l == null)
-			throw new RuntimeException();
+			throw LSystem.runThrow("SortedList error!");
 		return l.item;
 	}
 
 	public E removeFirst() {
 		final Node<E> f = first;
 		if (f == null)
-			throw new RuntimeException();
+			throw LSystem.runThrow("SortedList error!");
 		return unlinkFirst(f);
 	}
 
 	public E removeLast() {
 		final Node<E> l = last;
 		if (l == null)
-			throw new RuntimeException();
+			throw LSystem.runThrow("SortedList error!");
 		return unlinkLast(l);
 	}
 

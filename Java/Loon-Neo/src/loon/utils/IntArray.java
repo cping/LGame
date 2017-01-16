@@ -23,6 +23,8 @@ package loon.utils;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import loon.LSystem;
+
 public class IntArray implements IArray {
 	
 	public int[] items;
@@ -396,7 +398,7 @@ public class IntArray implements IArray {
 
 	public static int[] slice(int[] array, int begin, int end) {
 		if (begin > end) {
-			throw new RuntimeException();
+			throw LSystem.runThrow("IntArray begin > end");
 		}
 		if (begin < 0) {
 			begin = array.length + begin;

@@ -477,7 +477,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		this.main_panel_size += this.cellWidth + this.paddingx;
 		this._defUI = defUI;
 		if (type > MOVE_RIGHT) {
-			throw new RuntimeException("Type:" + type
+			throw LSystem.runThrow("Type:" + type
 					+ ", The Menu display mode is not supported !");
 		}
 	}

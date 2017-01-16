@@ -120,7 +120,7 @@ public class IndexBufferObjectSubData implements IndexData {
 	@Override
 	public void bind() {
 		if (bufferHandle == 0) {
-			throw new RuntimeException("bufferHandle == 0");
+			throw LSystem.runThrow("bufferHandle == 0");
 		}
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER,
 				bufferHandle);

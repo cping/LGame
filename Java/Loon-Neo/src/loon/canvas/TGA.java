@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import loon.BaseIO;
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.ArrayByte;
 
 public class TGA {
@@ -122,7 +123,7 @@ public class TGA {
 		case 1:
 			hasPalette = true;
 			result = TGA_HEADER_UNCOMPRESSED;
-			throw new RuntimeException("Indexed State is not yet supported !");
+			throw LSystem.runThrow("Indexed State is not yet supported !");
 		case 2:
 			result = TGA_HEADER_UNCOMPRESSED;
 			break;
@@ -132,7 +133,7 @@ public class TGA {
 		case 9:
 			hasPalette = true;
 			result = TGA_HEADER_COMPRESSED;
-			throw new RuntimeException("Indexed State is not yet supported !");
+			throw LSystem.runThrow("Indexed State is not yet supported !");
 		case 10:
 			result = TGA_HEADER_COMPRESSED;
 			break;
@@ -178,7 +179,7 @@ public class TGA {
 		case 8:
 		case 15:
 		case 16:
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"this State with non RGB or RGBA pixels are not yet supported.");
 		case 24:
 		case 32:

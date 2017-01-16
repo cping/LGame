@@ -23,6 +23,8 @@ package loon.opengl;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 public final class VertexAttributes implements Iterable<VertexAttribute> {
 
 	public static final class Usage {
@@ -159,7 +161,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		@Override
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return index < array.length;
 		}
 
@@ -168,13 +170,13 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 			if (index >= array.length)
 				throw new NoSuchElementException(String.valueOf(index));
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return array[index++];
 		}
 
 		@Override
 		public void remove() {
-			throw new RuntimeException("Remove not allowed.");
+			throw LSystem.runThrow("Remove not allowed.");
 		}
 
 		@Override

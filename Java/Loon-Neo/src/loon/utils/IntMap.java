@@ -3,6 +3,8 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class IntMap<V> implements Iterable<IntMap.Entry<V>>, IArray {
 
@@ -707,7 +709,7 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>>, IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			int[] keyTable = map.keyTable;
 			if (nextIndex == INDEX_ZERO) {
 				entry.key = 0;
@@ -723,7 +725,7 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>>, IArray {
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -744,7 +746,7 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>>, IArray {
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -752,7 +754,7 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>>, IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			V value;
 			if (nextIndex == INDEX_ZERO)
 				value = map.zeroValue;
@@ -788,7 +790,7 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>>, IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			int key = nextIndex == INDEX_ZERO ? 0 : map.keyTable[nextIndex];
 			currentIndex = nextIndex;
 			findNextIndex();

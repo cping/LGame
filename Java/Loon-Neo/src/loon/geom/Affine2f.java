@@ -465,7 +465,7 @@ public class Affine2f implements LTrans, XY {
 			float o01 = n01, o11 = n11;
 			float det = o00 * o11 - o10 * o01;
 			if (MathUtils.abs(det) == 0f) {
-				throw new RuntimeException(this.toString());
+				throw LSystem.runThrow(this.toString());
 			}
 			float hrdet = 0.5f / det;
 			n00 = +o11 * hrdet + o00 * 0.5f;
@@ -775,7 +775,7 @@ public class Affine2f implements LTrans, XY {
 		float det = m00 * m11 - m10 * m01;
 		if (MathUtils.abs(det) == 0f) {
 			// 行列式为零时，矩阵将不可逆，无法还原所以报错
-			throw new RuntimeException(this.toString());
+			throw LSystem.runThrow(this.toString());
 		}
 		float rdet = 1f / det;
 		return new Affine2f(+m11 * rdet, -m10 * rdet, -m01 * rdet, +m00 * rdet,
@@ -914,7 +914,7 @@ public class Affine2f implements LTrans, XY {
 		float det = m00 * m11 - m01 * m10;
 		if (MathUtils.abs(det) == 0f) {
 			// 行列式为零时，矩阵将不可逆，无法还原所以报错
-			throw new RuntimeException(this.toString());
+			throw LSystem.runThrow(this.toString());
 		}
 		float rdet = 1 / det;
 		return into.set((x * m11 - y * m10) * rdet, (y * m00 - x * m01) * rdet);

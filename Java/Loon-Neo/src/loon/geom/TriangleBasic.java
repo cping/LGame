@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.TArray;
 
 public class TriangleBasic implements Triangle {
@@ -66,7 +67,7 @@ public class TriangleBasic implements Triangle {
 	@Override
 	public int getTriangleCount() {
 		if (!tried) {
-			throw new RuntimeException("this not Triangle !");
+			throw LSystem.runThrow("this not Triangle !");
 		}
 		return tris.size() / 3;
 	}
@@ -74,7 +75,7 @@ public class TriangleBasic implements Triangle {
 	@Override
 	public float[] getTrianglePoint(int t, int i) {
 		if (!tried) {
-			throw new RuntimeException("this not Triangle !");
+			throw LSystem.runThrow("this not Triangle !");
 		}
 
 		return tris.get((t * 3) + i).toArray();

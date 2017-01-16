@@ -108,11 +108,11 @@ public class SpriteSheet implements LRelease {
 	private void checkImage(int x, int y) {
 		update();
 		if ((x < 0) || (x >= subImages.length)) {
-			throw new RuntimeException("SubImage out of sheet bounds " + x
+			throw LSystem.runThrow("SubImage out of sheet bounds " + x
 					+ "," + y);
 		}
 		if ((y < 0) || (y >= subImages[0].length)) {
-			throw new RuntimeException("SubImage out of sheet bounds " + x
+			throw LSystem.runThrow("SubImage out of sheet bounds " + x
 					+ "," + y);
 		}
 	}
@@ -120,11 +120,11 @@ public class SpriteSheet implements LRelease {
 	public LTexture getImage(int x, int y) {
 		checkImage(x, y);
 		if ((x < 0) || (x >= subImages.length)) {
-			throw new RuntimeException("SubTexture2D out of sheet bounds: " + x
+			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x
 					+ "," + y);
 		}
 		if ((y < 0) || (y >= subImages[0].length)) {
-			throw new RuntimeException("SubTexture2D out of sheet bounds: " + x
+			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x
 					+ "," + y);
 		}
 		return target.copy(x * (tw + spacing) + margin, y * (th + spacing)

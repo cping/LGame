@@ -3,6 +3,8 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 @SuppressWarnings("unchecked") 
 public class ObjectSet<T> implements Iterable<T> ,IArray {
 
@@ -497,7 +499,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -505,7 +507,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			K key = set.keyTable[nextIndex];
 			currentIndex = nextIndex;
 			findNextIndex();

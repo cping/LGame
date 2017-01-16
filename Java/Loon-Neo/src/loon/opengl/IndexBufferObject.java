@@ -109,9 +109,9 @@ public class IndexBufferObject implements IndexData {
 
 	@Override
 	public void bind() {
-		if (bufferHandle == 0)
-			throw new RuntimeException("No buffer allocated!");
-
+		if (bufferHandle == 0){
+			throw LSystem.runThrow("No buffer allocated!");
+		}
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER,
 				bufferHandle);
 		if (isDirty) {

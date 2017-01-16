@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+
 public abstract class Pool<T> {
 	
 	public final int max;
@@ -44,7 +46,7 @@ public abstract class Pool<T> {
 	}
 
 	public void free (T object) {
-		if (object == null) throw new RuntimeException("object cannot be null.");
+		if (object == null) throw LSystem.runThrow("object cannot be null.");
 		if (freeObjects.size() < max) {
 			freeObjects.add(object);
 			peak = MathUtils.max(peak, freeObjects.size());
@@ -54,7 +56,7 @@ public abstract class Pool<T> {
 
 	public void freeAll (Array<T> objects) {
 		if (objects == null){
-			throw new RuntimeException("object cannot be null.");
+			throw LSystem.runThrow("object cannot be null.");
 		}
 		for (;objects.hashNext();) {
 			T object = objects.next();

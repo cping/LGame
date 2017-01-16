@@ -23,6 +23,7 @@ package loon.component;
 
 import loon.LObject;
 import loon.LRelease;
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.PlayerUtils;
@@ -96,7 +97,7 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 
 	public Actor(Animation animation, int x, int y) {
 		if (animation == null) {
-			throw new RuntimeException("Animation is null !");
+			throw LSystem.runThrow("Animation is null !");
 		}
 		this.noSequenceNumber = sequenceNumber++;
 		this.animation = animation;
@@ -1031,7 +1032,7 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 
 	public void setAnimation(Animation animation) {
 		if (animation == null) {
-			throw new RuntimeException("Animation is null !");
+			throw LSystem.runThrow("Animation is null !");
 		}
 		this.animation = animation;
 		this.isAnimation = true;

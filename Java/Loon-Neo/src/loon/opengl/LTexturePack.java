@@ -198,7 +198,7 @@ public class LTexturePack implements LRelease {
 
 	public LTexturePack(String path) {
 		if (path == null || "".equals(path)) {
-			throw new RuntimeException(path + " not found !");
+			throw LSystem.runThrow(path + " not found !");
 		}
 		set(path);
 	}

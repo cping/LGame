@@ -3,6 +3,8 @@ package loon.utils;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 
 	private static final int PRIME2 = 0xb4b82e39;
@@ -685,7 +687,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			int[] keyTable = map.keyTable;
 			if (nextIndex == INDEX_ZERO) {
 				entry.key = 0;
@@ -701,7 +703,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -721,7 +723,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -729,7 +731,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			int value;
 			if (nextIndex == INDEX_ZERO)
 				value = map.zeroValue;
@@ -755,7 +757,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 
 		public boolean hasNext() {
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			return hasNext;
 		}
 
@@ -763,7 +765,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry>, IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			int key = nextIndex == INDEX_ZERO ? 0 : map.keyTable[nextIndex];
 			currentIndex = nextIndex;
 			findNextIndex();

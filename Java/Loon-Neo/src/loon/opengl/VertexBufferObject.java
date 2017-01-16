@@ -85,7 +85,7 @@ public class VertexBufferObject implements VertexData {
 	protected void setBuffer(Buffer data, boolean ownsBuffer,
 			VertexAttributes value) {
 		if (isBound) {
-			throw new RuntimeException(
+			throw LSystem.runThrow(
 					"Cannot change attributes while VBO is bound");
 		}
 		if (this.ownsBuffer && byteBuffer != null) {
@@ -95,7 +95,7 @@ public class VertexBufferObject implements VertexData {
 		if (data instanceof ByteBuffer) {
 			byteBuffer = (ByteBuffer) data;
 		} else {
-			throw new RuntimeException("Only ByteBuffer is currently supported");
+			throw LSystem.runThrow("Only ByteBuffer is currently supported");
 		}
 		this.ownsBuffer = ownsBuffer;
 		final int l = byteBuffer.limit();
@@ -146,7 +146,7 @@ public class VertexBufferObject implements VertexData {
 
 	protected void setUsage(int value) {
 		if (isBound)
-			throw new RuntimeException("Cannot change usage while VBO is bound");
+			throw LSystem.runThrow("Cannot change usage while VBO is bound");
 		usage = value;
 	}
 

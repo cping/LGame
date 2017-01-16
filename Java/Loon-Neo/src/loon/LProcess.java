@@ -216,7 +216,7 @@ public class LProcess extends PlayerUtils {
 		synchronized (this) {
 			if (screen == null) {
 				this.isInstance = false;
-				throw new RuntimeException("Cannot create a [Screen] instance !");
+				throw LSystem.runThrow("Cannot create a [Screen] instance !");
 			}
 			if (!game.display().showLogo) {
 				if (currentScreen != null) {
@@ -830,14 +830,14 @@ public class LProcess extends PlayerUtils {
 
 	public boolean containsScreen(final Screen screen) {
 		if (screen == null) {
-			throw new RuntimeException("Cannot create a [IScreen] instance !");
+			throw LSystem.runThrow("Cannot create a [IScreen] instance !");
 		}
 		return _screens.contains(screen);
 	}
 
 	public void addScreen(final Screen screen) {
 		if (screen == null) {
-			throw new RuntimeException("Cannot create a [IScreen] instance !");
+			throw LSystem.runThrow("Cannot create a [IScreen] instance !");
 		}
 		if (!_screens.contains(screen)) {
 			_screens.add(screen);
@@ -951,6 +951,13 @@ public class LProcess extends PlayerUtils {
 		if (logDisplay != null) {
 			logDisplay.clear();
 		}
+	}
+
+	public void addLog(String mes, LColor col) {
+		if (logDisplay == null) {
+			logDisplay = new LogDisplay();
+		}
+		logDisplay.addText(mes, col);
 	}
 
 	public void addLog(String mes) {

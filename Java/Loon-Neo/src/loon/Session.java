@@ -140,7 +140,7 @@ public class Session {
 
 	public Session(String name, boolean gain) {
 		if (name == null) {
-			throw new RuntimeException("session name can not exist !");
+			throw LSystem.runThrow("session name can not exist !");
 		}
 		try {
 			this._save = LSystem._base.save();

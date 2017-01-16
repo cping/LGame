@@ -22,6 +22,7 @@ package loon.utils;
 
 import java.util.Random;
 
+import loon.LSystem;
 import loon.geom.RectBox;
 
 public class MathUtils {
@@ -1035,13 +1036,13 @@ public class MathUtils {
 
 	public final static int parseUnsignedInt(String s, int radix) {
 		if (s == null) {
-			throw new RuntimeException("null");
+			throw LSystem.runThrow("null");
 		}
 		int len = s.length();
 		if (len > 0) {
 			char firstChar = s.charAt(0);
 			if (firstChar == '-') {
-				throw new RuntimeException("on unsigned string %s.");
+				throw LSystem.runThrow("on unsigned string %s.");
 			} else {
 				if (len <= 5 || (radix == 10 && len <= 9)) {
 					return Integer.parseInt(s, radix);
@@ -1050,12 +1051,12 @@ public class MathUtils {
 					if ((ell & 0xffff_ffff_0000_0000L) == 0) {
 						return (int) ell;
 					} else {
-						throw new RuntimeException("range of unsigned int.");
+						throw LSystem.runThrow("range of unsigned int.");
 					}
 				}
 			}
 		} else {
-			throw new RuntimeException(s);
+			throw LSystem.runThrow(s);
 		}
 	}
 

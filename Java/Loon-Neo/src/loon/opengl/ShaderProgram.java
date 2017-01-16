@@ -55,7 +55,7 @@ public class ShaderProgram implements LRelease {
 			try {
 				id = gl.glCreateProgram();
 				if (id == 0) {
-					throw new RuntimeException("Failed to create program: "
+					throw LSystem.runThrow("Failed to create program: "
 							+ gl.glGetError());
 				}
 				gl.checkError("glCreateProgram");
@@ -76,7 +76,7 @@ public class ShaderProgram implements LRelease {
 				if (linkStatus[0] == GL20.GL_FALSE) {
 					String log = gl.glGetProgramInfoLog(id);
 					gl.glDeleteProgram(id);
-					throw new RuntimeException("Failed to link program: " + log);
+					throw LSystem.runThrow("Failed to link program: " + log);
 				}
 
 				this.id = id;
@@ -124,7 +124,7 @@ public class ShaderProgram implements LRelease {
 
 		public void setUniform(int location, int... values) {
 			if (values.length > 4)
-				throw new RuntimeException(
+				throw LSystem.runThrow(
 						"Uniform component cannot have more than 4 components");
 
 			switch (values.length) {
@@ -162,7 +162,7 @@ public class ShaderProgram implements LRelease {
 
 		public void setUniform(int location, float... values) {
 			if (values.length > 4)
-				throw new RuntimeException(
+				throw LSystem.runThrow(
 						"Uniform component cannot have more than 4 components");
 
 			switch (values.length) {
@@ -251,7 +251,7 @@ public class ShaderProgram implements LRelease {
 		private int compileShader(int type, final String shaderSource) {
 			int shader = gl.glCreateShader(type);
 			if (shader == 0) {
-				throw new RuntimeException("Failed to create shader (" + type
+				throw LSystem.runThrow("Failed to create shader (" + type
 						+ "): " + gl.glGetError());
 			}
 			gl.glShaderSource(shader, shaderSource);
@@ -261,7 +261,7 @@ public class ShaderProgram implements LRelease {
 			if (compiled[0] == GL20.GL_FALSE) {
 				String log = gl.glGetShaderInfoLog(shader);
 				gl.glDeleteShader(shader);
-				throw new RuntimeException("Failed to compile shader (" + type
+				throw LSystem.runThrow("Failed to compile shader (" + type
 						+ "): " + log);
 			}
 			return shader;

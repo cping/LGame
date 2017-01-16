@@ -2,6 +2,8 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LSystem;
+
 public class FloatArray implements IArray {
 	
 	public float[] items;
@@ -375,7 +377,7 @@ public class FloatArray implements IArray {
 
 	public static float[] slice(float[] array, int begin, int end) {
 		if (begin > end) {
-			throw new RuntimeException();
+			throw LSystem.runThrow("FloatArray begin > end");
 		}
 		if (begin < 0) {
 			begin = array.length + begin;

@@ -2,6 +2,8 @@ package loon.utils;
 
 import java.util.NoSuchElementException;
 
+import loon.LSystem;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class OrderedSet<T> extends ObjectSet<T> implements IArray {
 	
@@ -103,7 +105,7 @@ public class OrderedSet<T> extends ObjectSet<T> implements IArray {
 			if (!hasNext)
 				throw new NoSuchElementException();
 			if (!valid)
-				throw new RuntimeException("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("#iterator() cannot be used nested.");
 			T key = items.get(nextIndex);
 			nextIndex++;
 			hasNext = nextIndex < set.size;
