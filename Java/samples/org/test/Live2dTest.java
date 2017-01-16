@@ -4,7 +4,6 @@ import loon.LTransition;
 import loon.Screen;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.live2d.framework.LAppLive2DManager;
 import loon.live2d.framework.LAppModel;
 import loon.opengl.GLEx;
@@ -49,7 +48,6 @@ public class Live2dTest extends Screen {
 		// model.getLive2DModel().setScale(0.2f, 0.2f);
 		// model.draw();
 
-		LFont.setDefaultFont(LFont.getFont(20));
 		add(MultiScreenTest.getBackButton(this,0));
 	}
 

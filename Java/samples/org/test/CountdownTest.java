@@ -6,7 +6,6 @@ import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.event.GameTouch;
 import loon.event.Touched;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.CountdownTimer;
 import loon.utils.timer.LTimerContext;
@@ -21,8 +20,6 @@ public class CountdownTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		add(MultiScreenTest.getBackButton(this, 1));
 		//设置默认倒计时器,倒数30秒
 		final CountdownTimer timer = new CountdownTimer(30);

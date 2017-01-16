@@ -3374,6 +3374,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new SpriteControls();
 	}
 
+	/**
+	 * 查找所有【包含】指定tag的精灵
+	 * 
+	 * @param o
+	 * @return
+	 */
 	public SpriteControls findSpriteTags(Object... o) {
 		if (sprites != null) {
 			return sprites.findTagsToSpriteControls(o);
@@ -3381,6 +3387,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new SpriteControls();
 	}
 
+	/**
+	 * 查找所有【不包含】指定tag的精灵
+	 * 
+	 * @param o
+	 * @return
+	 */
 	public SpriteControls findSpriteNotTags(Object... o) {
 		if (sprites != null) {
 			return sprites.findNotTagsToSpriteControls(o);
@@ -3388,6 +3400,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new SpriteControls();
 	}
 
+	/**
+	 * 打开一个指定web页面
+	 * 
+	 * @param url
+	 * @return
+	 */
 	public Screen openURL(final String url) {
 		LSystem.base().openURL(url);
 		return this;

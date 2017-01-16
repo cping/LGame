@@ -8,7 +8,6 @@ import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -55,9 +54,6 @@ public class ListTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		
 		MyClickListener clickListener = new MyClickListener();
 

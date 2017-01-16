@@ -1,31 +1,15 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LSelectorIcon;
-import loon.event.GameTouch;
 import loon.event.LTouchArea;
-import loon.font.LFont;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class SelectIconTest extends Screen {
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class SelectIconTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
+	public void create() {
 
 		final LClickButton back = MultiScreenTest.getBackButton(this,0);
 
@@ -50,50 +34,7 @@ public class SelectIconTest extends Screen {
 		});
 
 		add(back);
+	
 	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
+	
 }

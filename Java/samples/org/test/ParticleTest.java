@@ -5,7 +5,6 @@ import loon.LTextures;
 import loon.LTransition;
 import loon.Screen;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.particle.SimpleFireEmitter;
 import loon.particle.SimpleParticleSystem;
@@ -25,9 +24,6 @@ public class ParticleTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 
 		SimpleParticleSystem particleSystem = new SimpleParticleSystem(
 				LTextures.loadTexture("particle.tga"));

@@ -1,15 +1,11 @@
 package org.test;
 
-import loon.LTransition;
 import loon.Screen;
-import loon.canvas.LColor;
 import loon.component.LButton;
 import loon.component.LPaper;
 import loon.event.ActionKey;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.utils.Scale;
 import loon.utils.timer.LTimerContext;
 
 public class TitleScreen extends Screen {
@@ -23,11 +19,8 @@ public class TitleScreen extends Screen {
 	}
 
 	public void onLoad() {
-
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		
-		add(MultiScreenTest.getBackButton(this,1));
+		//add(MultiScreenTest.getBackButton(this,1));
 		setBackground("assets/avg/back1.png");
 
 		start = new LButton("assets/avg/title_start.png", 191, 57) {

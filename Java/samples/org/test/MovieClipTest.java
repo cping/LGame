@@ -6,7 +6,6 @@ import loon.Screen;
 import loon.action.sprite.MovieClip;
 import loon.action.sprite.Sprite;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimerContext;
@@ -25,9 +24,6 @@ public class MovieClipTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		
 		ResourceLocal res = getResourceConfig("resource.json");
 		MovieClip c = new MovieClip(res.getSheet("Monster01json"), 128);

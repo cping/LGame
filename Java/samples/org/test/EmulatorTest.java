@@ -1,17 +1,9 @@
 package org.test;
 
 import loon.EmulatorListener;
-import loon.LSystem;
-import loon.LTexture;
-import loon.LTextureBatch;
 import loon.Screen;
-import loon.action.avg.AVGDialog;
 import loon.event.GameTouch;
-import loon.event.Updateable;
-import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRFont;
-import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
 
 public class EmulatorTest extends Screen implements EmulatorListener{
@@ -120,9 +112,6 @@ public class EmulatorTest extends Screen implements EmulatorListener{
 
 	@Override
 	public void onLoad() {
-
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		add(MultiScreenTest.getBackButton(this, 0));
 		
 	}

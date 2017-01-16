@@ -6,7 +6,6 @@ import loon.canvas.LColor;
 import loon.component.LProgress;
 import loon.component.LProgress.ProgressType;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -24,9 +23,6 @@ public class ProgressTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 
 		LProgress progress = new LProgress(ProgressType.UI, LColor.red, 55, 55,
 				100, 15);

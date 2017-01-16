@@ -2,7 +2,6 @@ package org.test;
 
 import loon.LTransition;
 import loon.Screen;
-import loon.canvas.LColor;
 import loon.component.LMenu;
 import loon.component.LMenu.MenuItem;
 import loon.component.LMenu.MenuItemClick;
@@ -27,8 +26,6 @@ public class MenuTest extends Screen {
 
 	@Override
 	public void onLoad() {
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		LFont font = LFont.getFont(18);
 		LMenu panel = new LMenu(LMenu.MOVE_LEFT, "我是菜单", 120, 50);
 		panel.setCellWidth(64);

@@ -7,7 +7,6 @@ import loon.action.sprite.CanvasPlayer;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -28,9 +27,6 @@ public class CanvasLayerTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		// 构建一个CanvasLayer对象，并实时渲染Canvas对象(PS:实时修改渲染对象比较耗费渲染时间，不建议在游戏中出现多个
 		// BTW:最主要是不同运行环境存在的差异较大，不同平台造成的帧率改变可能很多……)
 		final CanvasPlayer canyer = new CanvasPlayer();

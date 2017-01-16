@@ -1,24 +1,11 @@
 package org.test;
 
-import loon.Screen;
+import loon.Stage;
 import loon.component.LClickButton;
-import loon.event.GameTouch;
-import loon.font.LFont;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
-
-public class SoundTest extends Screen{
+public class SoundTest extends Stage{
 
 	@Override
-	public void draw(GLEx g) {
-	
-	}
-
-	@Override
-	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
+	public void create() {
 		
 		LClickButton click1 = new LClickButton("Sound Ogg", 150, 100, 100, 25){
 			
@@ -41,50 +28,5 @@ public class SoundTest extends Screen{
 
 		
 	}
-
-	@Override
-	public void alter(LTimerContext timer) {
 	
-	}
-
-	@Override
-	public void resize(int width, int height) {
-	
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-	
-	}
-
 }

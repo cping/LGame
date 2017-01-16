@@ -9,7 +9,6 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
 import loon.utils.reply.Port;
@@ -37,8 +36,6 @@ public class TextureImageTest extends Screen {
 	public void onLoad() {
 
 		setBackground(LColor.red);
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		
 		float nwidth = 4 * width, nheight = 4 * height;
 		// 创建一个绑定GLEx的Texture图片

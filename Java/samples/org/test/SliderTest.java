@@ -4,7 +4,6 @@ import loon.Stage;
 import loon.action.sprite.Entity;
 import loon.component.LLayer;
 import loon.component.LSlider;
-import loon.font.LFont;
 
 public class SliderTest extends Stage {
 
@@ -20,7 +19,6 @@ public class SliderTest extends Stage {
 		layer.add(slider2);
 		layer.addSpriteAt(new Entity("ccc.png"), 150, 0);
 		layer.addSpriteAt(new Entity("ccc.png"), 200, 350);
-		LFont.setDefaultFont(LFont.getFont(20));
 		layer.add(MultiScreenTest.getBackButton(this, 1));
 		add(layer);
 	}

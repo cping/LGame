@@ -1,29 +1,13 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.Sprite;
-import loon.event.GameTouch;
-import loon.font.LFont;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class SpriteTest extends Screen {
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class SpriteTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
+	public void create() {
 		// 添加一个精灵，动画按照45x29每格拆分
 		Sprite sprite = new Sprite("dog.png", 45, 29);
 		sprite.Tag = "zzzzzzzzzzzzz";
@@ -57,51 +41,7 @@ public class SpriteTest extends Screen {
 		add(ani);
 
 		add(MultiScreenTest.getBackButton(this, 0));
+	
 	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
-
+	
 }

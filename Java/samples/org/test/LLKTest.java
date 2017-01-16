@@ -2,11 +2,9 @@ package org.test;
 
 import java.util.LinkedList;
 
-import loon.LSetting;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
-import loon.LazyLoading;
 import loon.Screen;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Picture;
@@ -15,7 +13,6 @@ import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.StatusBar;
 import loon.canvas.LColor;
-import loon.component.LGesture;
 import loon.component.LMessage;
 import loon.component.LPaper;
 import loon.component.LSelect;
@@ -174,9 +171,6 @@ public class LLKTest extends Screen {
 	private LTexture[] images;
 
 	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		
 		add(MultiScreenTest.getBackButton(this,1,getWidth() - 100,25));
 		

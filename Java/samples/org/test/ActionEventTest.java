@@ -1,9 +1,7 @@
 package org.test;
 
-import loon.LSetting;
 import loon.LSystem;
 import loon.LTransition;
-import loon.LazyLoading;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -19,13 +17,11 @@ import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.event.Updateable;
-import loon.font.LFont;
 import loon.geom.Bezier;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.Easing.EasingMode;
-import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -43,8 +39,6 @@ public class ActionEventTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		final SpriteLabel label = new SpriteLabel("Plase Touch The Screen", 120, 20);
 		add(label);
 

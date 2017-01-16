@@ -6,7 +6,6 @@ import loon.action.sprite.SpriteBatchScreen;
 import loon.action.sprite.TextureObject;
 import loon.event.GameKey;
 import loon.event.GameTouch;
-import loon.font.LFont;
 
 public class PhysicalTest extends SpriteBatchScreen {
 
@@ -22,9 +21,6 @@ public class PhysicalTest extends SpriteBatchScreen {
 
 	@Override
 	public void create() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		setPhysics(true);
 		addPhysics(false, new TextureObject(166, 66, "a4.png"));
 		// 获得物理世界

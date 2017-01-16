@@ -17,7 +17,6 @@ public class ScrollTextTest extends Stage {
 		s.setDirection(Direction.LEFT);
 		s.setLocation(115, 20);
 		add(s);
-		LFont.setDefaultFont(LFont.getFont(20));
 		add(MultiScreenTest.getBackButton(this, 1));
 	}
 

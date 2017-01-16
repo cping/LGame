@@ -6,7 +6,6 @@ import loon.Screen;
 import loon.component.LClickButton;
 import loon.event.GameTouch;
 import loon.event.KeyMake.TextType;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -23,8 +22,6 @@ public class SysInputTest extends Screen {
 
 	@Override
 	public void onLoad() {
-		// 设置默认字体大小为20
-		LFont.setDefaultFont(LFont.getFont(20));
 
 		LClickButton click = new LClickButton("Input", 66, 66, 150, 30) {
 

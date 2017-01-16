@@ -14,7 +14,6 @@ import loon.event.ActionKey;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
 import loon.font.BMFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -163,8 +162,6 @@ public class MultiScreenTest extends Screen {
 	@Override
 	public void onLoad() {
 		String[][] pages = { page0, page1 };
-		// 设置默认字体大小为15
-		LFont.setDefaultFont(LFont.getFont(15));
 		// 使用图片字体(如果不设置，则loon默认使用当前系统字体)
 		if (info_font == null) {
 			try {
@@ -258,9 +255,11 @@ public class MultiScreenTest extends Screen {
 		// 首先让按钮不可见
 		for (int i=0;i<clicks.size;i++) {
 			LClickButton btn = clicks.get(i);
+			//设置按钮头alpha为0(即不显示)
 			btn.setAlpha(0);
+			//设置提示信息为按钮名
 			btn.setToolTipText(pages[page][i]);
-			// 使用图片字体
+			//设置位图字体()
 			btn.setFont(info_font);
 			// 为按钮设置事件，并加载入一个集合
 			// tweens.add(set(btn));
@@ -272,7 +271,7 @@ public class MultiScreenTest extends Screen {
 		// 设定一个特殊状态为true
 		exitClick.setStatus(LObject.TRUE);
 		// 设置监听
-		exitClick.SetClick(clickListener);
+		exitClick.S(clickListener);
 		// 初始透明度0
 		exitClick.setAlpha(0);
 		// 按钮置顶
@@ -314,9 +313,12 @@ public class MultiScreenTest extends Screen {
 
 			@Override
 			public void DoClick(LComponent comp) {
+				//如果按钮文本为next
 				if (((LClickButton) comp).getText().equals("NEXT")) {
+					//索引变更为page+1
 					runScreen("main").index = page + 1;
 				} else {
+					//变更为page-1
 					runScreen("main").index = page - 1;
 				}
 			}

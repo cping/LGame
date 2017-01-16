@@ -7,7 +7,6 @@ import loon.component.LToast;
 import loon.component.LWindow;
 import loon.component.LToast.Style;
 import loon.event.CallFunction;
-import loon.font.LFont;
 
 public class AlertTest extends Stage {
 
@@ -68,7 +67,6 @@ public class AlertTest extends Stage {
 			}
 			// 按钮竖排,不禁止拖拽
 		}, true).setLocked(false);
-		LFont.setDefaultFont(LFont.getFont(20));
 		add(MultiScreenTest.getBackButton(this, 1));
 		
 	}

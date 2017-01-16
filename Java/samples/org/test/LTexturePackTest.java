@@ -4,7 +4,6 @@ import loon.LTransition;
 import loon.Screen;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
@@ -121,8 +120,6 @@ public class LTexturePackTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		// 最先绘制用户画面
 		setFristOrder(DRAW_USER_PAINT());
 		// 不绘制精灵

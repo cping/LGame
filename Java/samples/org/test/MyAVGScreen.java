@@ -1,6 +1,5 @@
 package org.test;
 
-import loon.LTexture;
 import loon.action.avg.AVGDialog;
 import loon.action.avg.AVGScreen;
 import loon.action.avg.drama.Command;
@@ -10,10 +9,7 @@ import loon.component.LMessage;
 import loon.component.LPaper;
 import loon.component.LSelect;
 import loon.event.GameTouch;
-import loon.font.BMFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.utils.Scale;
 
 public class MyAVGScreen extends AVGScreen {
 
@@ -40,9 +36,6 @@ public class MyAVGScreen extends AVGScreen {
 
 	public void onLoading() {
 
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
-		
 		add(MultiScreenTest.getBackButton(this,1,getWidth() - 100,
 				 25));
 		roleName = new LPaper("assets/avg/name0.png", 25, 25);

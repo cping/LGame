@@ -1,9 +1,6 @@
 package org.test;
 
-import loon.LSetting;
-import loon.LSystem;
 import loon.LTransition;
-import loon.LazyLoading;
 import loon.Screen;
 import loon.action.sprite.Animation;
 import loon.action.sprite.Sprite;
@@ -11,7 +8,6 @@ import loon.action.sprite.SpriteLabel;
 import loon.canvas.LColor;
 import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.font.Font.Style;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -85,10 +81,6 @@ public class AnimationTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		
 		add(MultiScreenTest.getBackButton(this,1));
 

@@ -1,32 +1,14 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.component.table.LTable;
 import loon.component.table.ListItem;
-import loon.event.GameTouch;
-import loon.font.LFont;
-import loon.opengl.GLEx;
 import loon.utils.TArray;
-import loon.utils.timer.LTimerContext;
 
-public class TableTest extends Screen {
-
-	@Override
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
-	
-	@Override
-	public void draw(GLEx g) {
-
-	}
+public class TableTest extends Stage {
 
 	@Override
-	public void onLoad() {
-
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
+	public void create() {
 		TArray<ListItem> list = new TArray<ListItem>();
 
 		ListItem item = new ListItem();
@@ -42,56 +24,12 @@ public class TableTest extends Screen {
 		item2.list.add("kkkkkkkk");
 		item2.list.add("xxxxxxxxx");
 		list.add(item2);
-		LTable table = new LTable(LFont.getDefaultFont(), 60, 60, 300, 300);
+		LTable table = new LTable(60, 60, 300, 300);
 		table.setData(list, 100);
 		add(table);
 		
 		add(MultiScreenTest.getBackButton(this,0));
 
 	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
+	
 }

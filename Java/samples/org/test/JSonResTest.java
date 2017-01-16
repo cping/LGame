@@ -5,7 +5,6 @@ import loon.Screen;
 import loon.component.LClickButton;
 import loon.component.layout.VerticalLayout;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimerContext;
@@ -24,9 +23,6 @@ public class JSonResTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		// 加载json配置的资源文件（loon中默认识别的，是一种flash游戏开发中常见的json资源格式，很多flash小游戏都采取这种格式，方便移植，然后你懂的……）
 		ResourceLocal local = getResourceConfig("resource");
 		LClickButton quitgame = LClickButton.make(local.getTexture("quitgame")

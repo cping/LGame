@@ -20,7 +20,6 @@
  */
 package org.test;
 
-import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.RotateTo;
@@ -36,7 +35,6 @@ import loon.event.ActionKey;
 import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.SysKey;
-import loon.font.LFont;
 import loon.geom.Vector2f;
 
 //PS:使用SpriteBatch时，请尽可能使用同一LTexture衍生出的图片，这样后台能有效的合并处理
@@ -163,9 +161,7 @@ public class GameMapTest extends SpriteBatchScreen {
 	private Animation jumpertwoAnimation;
 
 	public void create() {
-	
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
+
 		add(MultiScreenTest.getBackButton(this, 0));
 
 		// 以指定图片创建动画

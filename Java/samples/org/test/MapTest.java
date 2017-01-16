@@ -19,7 +19,6 @@ import loon.event.ActionKey;
 import loon.event.SysKey;
 import loon.event.Touched;
 import loon.event.Updateable;
-import loon.font.LFont;
 import loon.opengl.LTexturePackClip;
 import loon.utils.TArray;
 
@@ -252,7 +251,6 @@ public class MapTest extends Stage {
 		} catch (IOException e) {
 			error(e.getMessage());
 		}
-		LFont.setDefaultFont(LFont.getFont(20));
 		LClickButton click = MultiScreenTest.getBackButton(this, 1);
 		//禁止触屏点击到click位置，也就是防止点击back时自动寻径
 		addTouchLimit(click);

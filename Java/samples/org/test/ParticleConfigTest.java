@@ -6,7 +6,6 @@ import loon.LTextures;
 import loon.LTransition;
 import loon.Screen;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.particle.SimpleConfigurableEmitter;
 import loon.particle.SimpleParticleConfig;
@@ -45,8 +44,6 @@ public class ParticleConfigTest extends Screen {
 
 	@Override
 	public void onLoad() {
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		try {
 			fire = SimpleParticleConfig.loadConfiguredSystem("system.xml");
 			fire.setBlendingState(LSystem.MODE_ALPHA_ONE);

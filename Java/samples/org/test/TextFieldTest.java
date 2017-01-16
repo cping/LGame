@@ -2,7 +2,6 @@ package org.test;
 
 import loon.Stage;
 import loon.component.LTextField;
-import loon.font.LFont;
 
 public class TextFieldTest extends Stage {
 
@@ -16,7 +15,6 @@ public class TextFieldTest extends Stage {
 		//最多允许输入32个字符
 		f.setLimit(32);
 		add(f);
-		LFont.setDefaultFont(LFont.getFont(20));
 		add(MultiScreenTest.getBackButton(this, 1));
 
 	}

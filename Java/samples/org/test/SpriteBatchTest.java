@@ -5,7 +5,6 @@ import loon.LTransition;
 import loon.Screen;
 import loon.action.sprite.SpriteBatch;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.geom.Circle;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
@@ -30,8 +29,6 @@ public class SpriteBatchTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		add(MultiScreenTest.getBackButton(this,0));
 	}
 

@@ -5,7 +5,6 @@ import loon.Stage;
 import loon.action.sprite.effect.PShadowEffect;
 import loon.component.LClickButton;
 import loon.event.FrameLoopEvent;
-import loon.font.LFont;
 
 public class PShadowTest extends Stage {
 
@@ -46,10 +45,6 @@ public class PShadowTest extends Stage {
 
 			}
 		});
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
-
 		add(click);
 	}
 

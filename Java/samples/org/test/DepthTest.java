@@ -6,7 +6,6 @@ import loon.action.sprite.Entity;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -24,8 +23,6 @@ public class DepthTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		//设置layer层级
 		int[] depths = { 0, -1, 1, 3, 2, -4, -3, 4, -2 };
 		//设置填充色

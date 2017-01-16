@@ -7,7 +7,6 @@ import loon.component.LPaper;
 import loon.component.LScrollBar;
 import loon.component.LScrollContainer;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -24,9 +23,6 @@ public class ScrollTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		//设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		// 构建一个滚动容器（背景图片可以自行设置）
 		LScrollContainer container = new LScrollContainer(50, 50, 240, 200);
 		LPaper p = new LPaper("back1.png");

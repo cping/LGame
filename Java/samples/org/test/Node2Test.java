@@ -9,7 +9,6 @@ import loon.action.node.LNRotateBy;
 import loon.action.node.LNSequence;
 import loon.action.node.LNSprite;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.timer.LTimerContext;
@@ -25,8 +24,6 @@ public class Node2Test extends Screen {
 	public void onLoad() {
 		// LNode可以分别渲染在SpriteBatch和GLEx之上，在SpriteBatchScreen中SpriteBatch渲染，在Screen中即GLEx渲染
 		// 而最大的差异在于，普通Screen中的LNode默认不响应触屏事件（因为只在SpriteBatchScreen中做了处理）
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
 		// 直接载入图片到节点(直接加载大图)
 		LNSprite sprite = LNSprite.GInitWithFilename("assets/ccc.png");
 		// 支持拖拽

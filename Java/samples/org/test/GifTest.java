@@ -4,7 +4,6 @@ import loon.LTransition;
 import loon.Screen;
 import loon.action.sprite.GifAnimation;
 import loon.event.GameTouch;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -21,10 +20,6 @@ public class GifTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
-		// 设置默认字体大小为20号字
-		LFont.setDefaultFont(LFont.getFont(20));
-
 		GifAnimation an = new GifAnimation("33.gif");
 		add(an);
 
