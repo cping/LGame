@@ -1,5 +1,8 @@
 package loon.font;
 
+import loon.HorizontalAlign;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -7,12 +10,42 @@ public class FontUtils {
 
 	private static final int UNSPECIFIED = -1;
 
+	public static void drawLeft(GLEx g, IFont font, String s, int x, int y) {
+		drawString(g, font, s, HorizontalAlign.LEFT, x, y, 0, LColor.white);
+	}
+
+	public static void drawCenter(GLEx g, IFont font, String s, int x, int y, int width) {
+		drawString(g, font, s, HorizontalAlign.CENTER, x, y, width, LColor.white);
+	}
+
+	public static void drawCenter(GLEx g, IFont font, String s, int x, int y, int width, LColor color) {
+		drawString(g, font, s, HorizontalAlign.CENTER, x, y, width, color);
+	}
+
+	public static void drawRight(GLEx g, IFont font, String s, int x, int y, int width) {
+		drawString(g, font, s, HorizontalAlign.RIGHT, x, y, width, LColor.white);
+	}
+
+	public static void drawRight(GLEx g, IFont font, String s, int x, int y, int width, LColor color) {
+		drawString(g, font, s, HorizontalAlign.RIGHT, x, y, width, color);
+	}
+
+	public static final void drawString(GLEx g, IFont font, final String s, final HorizontalAlign align,
+			final int x, final int y, final int width, LColor color) {
+		if (align == HorizontalAlign.LEFT) {
+			font.drawString(g, s, x, y, color);
+		} else if (align == HorizontalAlign.CENTER) {
+			font.drawString(g, s, x + (width / 2) - (font.stringWidth(s) / 2), y, color);
+		} else if (align == HorizontalAlign.RIGHT) {
+			font.drawString(g, s, x + width - font.stringWidth(s), y, color);
+		}
+	}
+
 	public static float measureText(final IFont font, final CharSequence chars) {
 		return FontUtils.measureText(font, chars, 0, chars.length());
 	}
 
-	public static float measureText(final IFont font, final CharSequence chars,
-			final int start, final int end) {
+	public static float measureText(final IFont font, final CharSequence chars, final int start, final int end) {
 		final int textLength = end - start;
 		if (textLength <= 0) {
 			return 0;
@@ -20,40 +53,32 @@ public class FontUtils {
 			return font.charWidth(chars.charAt(start));
 		}
 		if (chars instanceof String) {
-			return font.stringWidth(((String) chars).substring(start, end)
-					.toString());
+			return font.stringWidth(((String) chars).substring(start, end).toString());
 		} else {
-			return font.stringWidth(new StringBuffer(chars).substring(start,
-					end).toString());
+			return font.stringWidth(new StringBuffer(chars).substring(start, end).toString());
 		}
 	}
 
-	public static <T extends TArray<CharSequence>> T splitLines(
-			final CharSequence chars, final T result) {
+	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {
 		return StringUtils.splitArray(chars, '\n', result);
 	}
 
-	public static <T extends TArray<CharSequence>> T splitLines(
-			final IFont font, final CharSequence chars, final T result,
-			final AutoWrap autoWrap, final float autoWrapWidth) {
+	public static <T extends TArray<CharSequence>> T splitLines(final IFont font, final CharSequence chars,
+			final T result, final AutoWrap autoWrap, final float autoWrapWidth) {
 		switch (autoWrap) {
 		case VERTICAL:
-			return FontUtils.splitLinesByLetters(font, chars, result,
-					autoWrapWidth);
+			return FontUtils.splitLinesByLetters(font, chars, result, autoWrapWidth);
 		case HORIZONTAL:
-			return FontUtils.splitLinesByWords(font, chars, result,
-					autoWrapWidth);
+			return FontUtils.splitLinesByWords(font, chars, result, autoWrapWidth);
 		default:
 		case NONE:
 		case CJK:
-			return FontUtils
-					.splitLinesByCJK(font, chars, result, autoWrapWidth);
+			return FontUtils.splitLinesByCJK(font, chars, result, autoWrapWidth);
 		}
 	}
 
-	private static <T extends TArray<CharSequence>> T splitLinesByLetters(
-			final IFont font, final CharSequence chars, final T result,
-			final float autoWrapWidth) {
+	private static <T extends TArray<CharSequence>> T splitLinesByLetters(final IFont font, final CharSequence chars,
+			final T result, final float autoWrapWidth) {
 		final int textLength = chars.length();
 
 		int lineStart = 0;
@@ -75,14 +100,12 @@ public class FontUtils {
 			}
 
 			if (charsAvailable) {
-				final float lookaheadLineWidth = FontUtils.measureText(font,
-						chars, lineStart, lastNonWhitespace);
+				final float lookaheadLineWidth = FontUtils.measureText(font, chars, lineStart, lastNonWhitespace);
 
 				final boolean isEndReached = (i == (textLength - 1));
 				if (isEndReached) {
 					if (lookaheadLineWidth <= autoWrapWidth) {
-						result.add(chars.subSequence(lineStart,
-								lastNonWhitespace));
+						result.add(chars.subSequence(lineStart, lastNonWhitespace));
 					} else {
 						result.add(chars.subSequence(lineStart, lineEnd));
 						if (lineStart != i) {
@@ -104,9 +127,8 @@ public class FontUtils {
 		return result;
 	}
 
-	private static <T extends TArray<CharSequence>> T splitLinesByWords(
-			final IFont font, final CharSequence chars, final T result,
-			final float autoWrapWidth) {
+	private static <T extends TArray<CharSequence>> T splitLinesByWords(final IFont font, final CharSequence chars,
+			final T result, final float autoWrapWidth) {
 		final int textLength = chars.length();
 
 		if (textLength == 0) {
@@ -147,8 +169,7 @@ public class FontUtils {
 				break;
 			}
 
-			final float wordWidth = FontUtils.measureText(font, chars,
-					wordStart, wordEnd);
+			final float wordWidth = FontUtils.measureText(font, chars, wordStart, wordEnd);
 
 			final float widthNeeded;
 			if (firstWordInLine) {
@@ -161,8 +182,7 @@ public class FontUtils {
 				if (firstWordInLine) {
 					firstWordInLine = false;
 				} else {
-					lineWidthRemaining -= FontUtils.getAdvance(font,
-							chars, lastWordEnd - 1);
+					lineWidthRemaining -= FontUtils.getAdvance(font, chars, lastWordEnd - 1);
 				}
 				lineWidthRemaining -= widthNeeded;
 				lastWordEnd = wordEnd;
@@ -206,9 +226,8 @@ public class FontUtils {
 		return result;
 	}
 
-	private static <T extends TArray<CharSequence>> T splitLinesByCJK(
-			final IFont font, final CharSequence chars, final T result,
-			final float autoWrapWidth) {
+	private static <T extends TArray<CharSequence>> T splitLinesByCJK(final IFont font, final CharSequence chars,
+			final T result, final float autoWrapWidth) {
 		final int textLength = chars.length();
 
 		int lineStart = 0;
@@ -244,8 +263,7 @@ public class FontUtils {
 
 				lineEnd++;
 
-				final float lineWidth = FontUtils.measureText(font, chars,
-						lineStart, lineEnd);
+				final float lineWidth = FontUtils.measureText(font, chars, lineStart, lineEnd);
 
 				if (lineWidth > autoWrapWidth) {
 					if (lineStart < lineEnd - 1) {
@@ -268,8 +286,7 @@ public class FontUtils {
 		return result;
 	}
 
-	private static float getAdvance(final IFont font,
-			final CharSequence chars, final int idx) {
+	private static float getAdvance(final IFont font, final CharSequence chars, final int idx) {
 		return -font.charWidth(chars.charAt(idx));
 	}
 

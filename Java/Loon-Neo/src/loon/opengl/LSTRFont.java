@@ -373,9 +373,6 @@ public class LSTRFont implements IFont {
 		if (processing()) {
 			return;
 		}
-		if (StringUtils.isEmpty(chars)) {
-			return;
-		}
 		if (_initDraw < 1) {
 			_initDraw++;
 			return;
@@ -510,9 +507,6 @@ public class LSTRFont implements IFont {
 		}
 		make();
 		if (processing()) {
-			return;
-		}
-		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
 		if (_initDraw < 1) {
