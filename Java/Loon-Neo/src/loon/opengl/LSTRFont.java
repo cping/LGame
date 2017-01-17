@@ -25,6 +25,7 @@ import loon.LTexture;
 import loon.LTextureBatch;
 import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
+import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.event.Updateable;
 import loon.font.IFont;
@@ -71,14 +72,19 @@ public class LSTRFont implements IFont {
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
 			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
 			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
-
+			int fixSize = strfont.fontSize / 5;
+			if (fixSize % 2 != 0) {
+				fixSize -= 1;
+			}
+			final boolean clipFont = LSystem.USE_TRUEFONT_CLIP && strfont.fontSize < 20 && LSystem.isMobile();
+			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
 			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
 				char ch = (i < strfont.totalCharSet) ? (char) i : strfont.additionalChars[i - strfont.totalCharSet];
 
 				TextLayout layout = strfont.font.getLayoutText(String.valueOf(ch));
 
 				int charwidth = layout.charWidth(ch);
-		
+
 				if (charwidth <= 0) {
 					charwidth = 1;
 				}
@@ -86,24 +92,46 @@ public class LSTRFont implements IFont {
 				int charheight = (int) layout.getHeight();
 				if (charheight <= 0) {
 					charheight = strfont.fontSize;
-				} else if (StringUtils.isAlphabet(ch)) {
+				}
+				IntObject newIntObject = new IntObject();
+
+				if (clipFont) {
+					if (StringUtils.isAlphabetLower(ch)) {
+						charwidth += fixSize;
+						charheight += fixSize;
+					}
+				} else {
 					if (ch == 'i' && charheight > 24) {
 						charheight -= 4;
 					}
 				}
-
-				IntObject newIntObject = new IntObject();
-
+				
 				newIntObject.width = charwidth;
 				newIntObject.height = charheight;
 
-				if (positionX + newIntObject.width >= strfont.textureWidth) {
-					layout = strfont.font.getLayoutText(sbr.toString());
-					canvas.fillText(layout, 0, positionY);
-					sbr.delete(0, sbr.length());
-					positionX = 0;
-					positionY += rowHeight;
-					rowHeight = 0;
+				if (clipFont) {
+					// 发现部分环境字体如果整体渲染到canvas的话，会导致纹理切的不整齐(实际上就是间距和从系统获取的不符合),
+					// 保险起见一个个字体粘贴……
+					Image image = getFontImage(layout, ch, charwidth, charheight);
+					canvas.draw(image, positionX, positionY);
+					image.close();
+					image = null;
+					if (positionX + newIntObject.width >= strfont.textureWidth) {
+						positionX = 0;
+						positionY += rowHeight;
+						rowHeight = 0;
+					}
+				} else {
+					// 一次渲染一整行本地字体到纹理，这样对系统开销最小，不过某些平台切的不整齐(实际上就是间距和从系统获取的不符合)
+					if (positionX + newIntObject.width >= strfont.textureWidth) {
+						layout = strfont.font.getLayoutText(sbr.toString());
+						canvas.fillText(layout, 0, positionY);
+						sbr.delete(0, sbr.length());
+						positionX = 0;
+						positionY += rowHeight;
+						rowHeight = 0;
+					}
+					sbr.append(ch);
 				}
 
 				newIntObject.storedX = positionX;
@@ -116,11 +144,7 @@ public class LSTRFont implements IFont {
 				if (newIntObject.height > rowHeight) {
 					rowHeight = newIntObject.height;
 				}
-
-				sbr.append(ch);
-
 				positionX += newIntObject.width;
-
 				if (i < strfont.totalCharSet) {
 					strfont.charArray[i] = newIntObject;
 				} else {
@@ -141,6 +165,15 @@ public class LSTRFont implements IFont {
 			strfont._initChars = true;
 			strfont.isDrawing = false;
 		}
+
+	}
+
+	private Image getFontImage(TextLayout layout, char ch, int w, int h) {
+		Canvas canvas = Image.createCanvas(w, h);
+		canvas.setColor(LColor.white);
+		canvas.fillText(layout, 0, 0);
+		canvas.close();
+		return canvas.image;
 
 	}
 

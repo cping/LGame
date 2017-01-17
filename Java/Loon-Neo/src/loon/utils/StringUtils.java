@@ -706,8 +706,26 @@ final public class StringUtils extends CharUtils {
 	 * @param letter
 	 * @return
 	 */
+	public final static boolean isAlphabetUpper(char letter) {
+		return ('A' <= letter && letter <= 'Z');
+	}
+
+	public final static boolean isAlphabetLower(char letter) {
+		return ('a' <= letter && letter <= 'z');
+	}
+
 	public final static boolean isAlphabet(char letter) {
-		return (('a' <= letter && letter <= 'z') || ('A' <= letter && letter <= 'Z'));
+		return isAlphabetUpper(letter) || isAlphabetLower(letter);
+	}
+
+	/**
+	 * 检查是否为数字
+	 * 
+	 * @param letter
+	 * @return
+	 */
+	public static boolean isNumeric(char letter) {
+		return ('0' > letter || letter > '9');
 	}
 
 	/**
@@ -716,8 +734,8 @@ final public class StringUtils extends CharUtils {
 	 * @param value
 	 * @return
 	 */
-	public static boolean isAlphabetNumeric(String value) {
-		if (value == null || value.trim().length() == 0)
+	public static boolean isAlphabetNumeric(CharSequence value) {
+		if (value == null || value.length() == 0)
 			return true;
 		for (int i = 0; i < value.length(); i++) {
 			char letter = value.charAt(i);

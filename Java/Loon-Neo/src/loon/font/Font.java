@@ -46,7 +46,7 @@ public class Font {
 						|| familyName.equals("dialog") || familyName.equals("黑体")) {
 					this.name = "monospace";
 				} else {
-					this.name = "monospace";
+					this.name = name;
 				}
 			} else {
 				this.name = "monospace";
