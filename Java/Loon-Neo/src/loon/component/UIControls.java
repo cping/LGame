@@ -107,6 +107,10 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls add(LComponent... comps) {
+		return add(new TArray<LComponent>(comps));
+	}
+
 	public UIControls add(TArray<LComponent> comps) {
 		if (comps == null) {
 			throw new IllegalArgumentException("LComponents cannot be null.");
@@ -120,16 +124,6 @@ public class UIControls {
 			throw new IllegalArgumentException("LComponent cannot be null.");
 		}
 		_comps.remove(comp);
-		return this;
-	}
-
-	public UIControls add(LComponent... comps) {
-		if (comps == null) {
-			throw new IllegalArgumentException("LComponents cannot be null.");
-		}
-		for (int i = 0, n = comps.length; i < n; i++) {
-			add(comps[i]);
-		}
 		return this;
 	}
 
@@ -193,11 +187,19 @@ public class UIControls {
 		return this;
 	}
 
-	public UIControls setAlpha(float alpha) {
+	public UIControls S(ClickListener click) {
+		return SetClick(click);
+	}
+
+	public UIControls alpha(float a) {
+		return setAlpha(a);
+	}
+
+	public UIControls setAlpha(float a) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
-				comp.setAlpha(alpha);
+				comp.setAlpha(a);
 			}
 		}
 		return this;
@@ -272,7 +274,67 @@ public class UIControls {
 		}
 		return this;
 	}
-	
+
+	public UIControls downClick() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.processTouchPressed();
+			}
+		}
+		return this;
+	}
+
+	public UIControls upClick() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.processTouchReleased();
+			}
+		}
+		return this;
+	}
+
+	public UIControls dragClick() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.processTouchDragged();
+			}
+		}
+		return this;
+	}
+
+	public UIControls allClick() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.processTouchClicked();
+			}
+		}
+		return this;
+	}
+
+	public UIControls keyDown() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.processKeyPressed();
+			}
+		}
+		return this;
+	}
+
+	public UIControls keyUp() {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.processKeyReleased();
+			}
+		}
+		return this;
+	}
+
 	public boolean isTransparent() {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
@@ -282,7 +344,7 @@ public class UIControls {
 		}
 		return false;
 	}
-	
+
 	public UIControls setScale(float s) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
@@ -634,8 +696,7 @@ public class UIControls {
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set(comp).moveTo(endX, endY, flag,
-							speed);
+					tween = PlayerUtils.set(comp).moveTo(endX, endY, flag, speed);
 				} else {
 					tween.moveTo(endX, endY, flag, speed);
 				}
@@ -648,15 +709,13 @@ public class UIControls {
 		return this;
 	}
 
-	public UIControls moveTo(Field2D map, float endX, float endY, boolean flag,
-			int speed) {
+	public UIControls moveTo(Field2D map, float endX, float endY, boolean flag, int speed) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set(comp).moveTo(map, endX, endY, flag,
-							speed);
+					tween = PlayerUtils.set(comp).moveTo(map, endX, endY, flag, speed);
 				} else {
 					tween.moveTo(map, endX, endY, flag, speed);
 				}
@@ -840,18 +899,16 @@ public class UIControls {
 		return this;
 	}
 
-	public UIControls transferTo(float startPos, float endPos, float duration,
-			EasingMode mode, boolean controlX, boolean controlY) {
+	public UIControls transferTo(float startPos, float endPos, float duration, EasingMode mode, boolean controlX,
+			boolean controlY) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set(comp).transferTo(startPos, endPos,
-							duration, mode, controlX, controlY);
+					tween = PlayerUtils.set(comp).transferTo(startPos, endPos, duration, mode, controlX, controlY);
 				} else {
-					tween.transferTo(startPos, endPos, duration, mode,
-							controlX, controlY);
+					tween.transferTo(startPos, endPos, duration, mode, controlX, controlY);
 				}
 				if (!tweens.containsKey(comp)) {
 					tweens.put(comp, tween);
@@ -861,8 +918,7 @@ public class UIControls {
 		}
 		return this;
 	}
-	
-	
+
 	public boolean isTweenFinished() {
 		int size = 0;
 		for (ActionTween tween : tweens.values()) {

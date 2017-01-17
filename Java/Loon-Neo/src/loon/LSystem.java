@@ -688,6 +688,54 @@ public class LSystem {
 		return new RuntimeException(StringUtils.format(msg, args));
 	}
 
+	public final static void d(String msg) {
+		debug(msg);
+	}
+
+	public final static void d(String msg, Object... args) {
+		debug(msg, args);
+	}
+
+	public final static void d(String msg, Throwable throwable) {
+		debug(msg, throwable);
+	}
+
+	public final static void i(String msg) {
+		info(msg);
+	}
+
+	public final static void i(String msg, Object... args) {
+		info(msg, args);
+	}
+
+	public final static void i(String msg, Throwable throwable) {
+		info(msg, throwable);
+	}
+
+	public final static void e(String msg) {
+		error(msg);
+	}
+
+	public final static void e(String msg, Object... args) {
+		error(msg, args);
+	}
+
+	public final static void e(String msg, Throwable throwable) {
+		error(msg, throwable);
+	}
+
+	public final static RuntimeException re(String msg) {
+		return runThrow(msg);
+	}
+
+	public final static RuntimeException re(String msg, Throwable thr) {
+		return runThrow(msg, thr);
+	}
+
+	public final static RuntimeException re(String msg, Object... args) {
+		return runThrow(msg, args);
+	}
+
 	public final static void setLogMinLevel(Level level) {
 		if (LSystem._base != null) {
 			LSystem._base.log().setMinLevel(level);

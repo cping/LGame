@@ -57,8 +57,8 @@ import loon.opengl.TextureUtils;
 import loon.utils.Flip;
 import loon.utils.MathUtils;
 
-public abstract class LComponent extends LObject<LContainer> implements
-		Flip<LComponent>, ActionBind, XY, BoxSize, LRelease {
+public abstract class LComponent extends LObject<LContainer>
+		implements Flip<LComponent>, ActionBind, XY, BoxSize, LRelease {
 
 	// 默认锁定当前组件(否则可以拖动)
 	protected boolean locked = true;
@@ -283,8 +283,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public Screen getScreen() {
-		return (desktop == null || desktop.input == null) ? LSystem
-				.getProcess().getScreen() : desktop.input;
+		return (desktop == null || desktop.input == null) ? LSystem.getProcess().getScreen() : desktop.input;
 	}
 
 	public int getScreenWidth() {
@@ -395,8 +394,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 	}
 
-	public abstract void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage);
+	public abstract void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage);
 
 	/**
 	 * 渲染当前组件画面于指定绘图器之上
@@ -415,8 +413,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		}
 		synchronized (this) {
 			int blend = g.getBlendMode();
-			boolean update = _rotation != 0
-					|| !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+			boolean update = _rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 			try {
 				g.saveBrush();
 				float screenAlpha = 1f;
@@ -432,10 +429,8 @@ public abstract class LComponent extends LObject<LContainer> implements
 				if (update) {
 					g.saveTx();
 					Affine2f tx = g.tx();
-					final float centerX = _pivotX == -1 ? this._screenX
-							+ _origin.ox(width) : this._screenX + _pivotX;
-					final float centerY = _pivotY == -1 ? this._screenY
-							+ _origin.oy(height) : this._screenY + _pivotY;
+					final float centerX = _pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX;
+					final float centerY = _pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY;
 					if (_rotation != 0) {
 						tx.translate(centerX, centerY);
 						tx.preRotate(_rotation);
@@ -443,14 +438,11 @@ public abstract class LComponent extends LObject<LContainer> implements
 					}
 					if (_flipX || _flipY) {
 						if (_flipX && _flipY) {
-							Affine2f.transform(tx, centerX, centerY,
-									Affine2f.TRANS_ROT180);
+							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
 						} else if (_flipX) {
-							Affine2f.transform(tx, centerX, centerY,
-									Affine2f.TRANS_MIRROR);
+							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
 						} else if (_flipY) {
-							Affine2f.transform(tx, centerX, centerY,
-									Affine2f.TRANS_MIRROR_ROT180);
+							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
 						}
 					}
 					if (!(_scaleX == 1f && _scaleY == 1f)) {
@@ -461,21 +453,17 @@ public abstract class LComponent extends LObject<LContainer> implements
 				}
 				g.setBlendMode(_blend);
 				if (_drawBackground && _background != null) {
-					g.draw(_background, this._screenX, this._screenY, width,
-							height, baseColor);
+					g.draw(_background, this._screenX, this._screenY, width, height, baseColor);
 				}
 				if (this.customRendering) {
-					this.createCustomUI(g, this._screenX, this._screenY, width,
-							height);
+					this.createCustomUI(g, this._screenX, this._screenY, width, height);
 				} else {
-					this.createUI(g, this._screenX, this._screenY, this,
-							this._imageUI);
+					this.createUI(g, this._screenX, this._screenY, this, this._imageUI);
 				}
 				if (isDrawSelect()) {
 					int tmp = g.color();
 					g.setColor(baseColor);
-					g.drawRect(this._screenX, this._screenY, width - 1f,
-							height - 1f);
+					g.drawRect(this._screenX, this._screenY, width - 1f, height - 1f);
 					g.setColor(tmp);
 				}
 			} finally {
@@ -509,28 +497,21 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	public boolean contains(float x, float y, float width, float height) {
 		return (this.visible)
-				&& (x >= this._screenX
-						&& y >= this._screenY
-						&& ((x + width) <= (this._screenX + this._width
-								* _scaleX)) && ((y + height) <= (this._screenY + this._height
-						* _scaleY)));
+				&& (x >= this._screenX && y >= this._screenY && ((x + width) <= (this._screenX + this._width * _scaleX))
+						&& ((y + height) <= (this._screenY + this._height * _scaleY)));
 	}
 
 	public boolean intersects(float x1, float y1) {
-		return (this.visible)
-				&& (x1 >= this._screenX
-						&& x1 <= this._screenX + this._width * _scaleX
-						&& y1 >= this._screenY && y1 <= this._screenY
-						+ this._height * _scaleY);
+		return (this.visible) && (x1 >= this._screenX && x1 <= this._screenX + this._width * _scaleX
+				&& y1 >= this._screenY && y1 <= this._screenY + this._height * _scaleY);
 	}
 
 	public boolean intersects(LComponent comp) {
-		return (this.visible)
-				&& (comp.isVisible())
+		return (this.visible) && (comp.isVisible())
 				&& (this._screenX + this._width * _scaleX >= comp._screenX
 						&& this._screenX <= comp._screenX + comp._width
-						&& this._screenY + this._height * _scaleY >= comp._screenY && this._screenY <= comp._screenY
-						+ comp._height);
+						&& this._screenY + this._height * _scaleY >= comp._screenY
+						&& this._screenY <= comp._screenY + comp._height);
 	}
 
 	@Override
@@ -550,8 +531,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public boolean isEnabled() {
-		return (this._super == null) ? this.enabled
-				: (this.enabled && this._super.isEnabled());
+		return (this._super == null) ? this.enabled : (this.enabled && this._super.isEnabled());
 	}
 
 	public void setEnabled(boolean b) {
@@ -758,11 +738,11 @@ public abstract class LComponent extends LObject<LContainer> implements
 	public RectBox getCollisionBox() {
 		validatePosition();
 		if (_rect != null) {
-			_rect.setBounds(MathUtils.getBounds(_screenX, _screenY, getWidth()
-					* _scaleX, getHeight() * _scaleY, _rotation, _rect));
+			_rect.setBounds(MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY,
+					_rotation, _rect));
 		} else {
-			_rect = MathUtils.getBounds(_screenX, _screenY, getWidth()
-					* _scaleX, getHeight() * _scaleY, _rotation, _rect);
+			_rect = MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY, _rotation,
+					_rect);
 		}
 		return _rect;
 	}
@@ -1031,9 +1011,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 			return SysTouch.getX() - getX();
 		} else {
 			if (_super instanceof LScrollContainer) {
-				return SysTouch.getX()
-						+ ((LScrollContainer) _super).getScrollX()
-						- _super.getX() - getX();
+				return SysTouch.getX() + ((LScrollContainer) _super).getScrollX() - _super.getX() - getX();
 			} else {
 				return SysTouch.getX() - _super.getX() - getX();
 			}
@@ -1045,9 +1023,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 			return SysTouch.getY() - getY();
 		} else {
 			if (_super instanceof LScrollContainer) {
-				return SysTouch.getY()
-						+ ((LScrollContainer) _super).getScrollY()
-						- _super.getY() - getY();
+				return SysTouch.getY() + ((LScrollContainer) _super).getScrollY() - _super.getY() - getY();
 			} else {
 				return SysTouch.getY() - _super.getY() - getY();
 			}
@@ -1120,37 +1096,66 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return visible;
 	}
 
+	/**
+	 * 淡入当前组件
+	 * 
+	 * @return
+	 */
 	public LComponent in() {
+		return in(30);
+	}
+
+	/**
+	 * 淡入当前组件
+	 * 
+	 * @param speed
+	 * @return
+	 */
+	public LComponent in(float speed) {
 		this.setAlpha(0f);
-		this.selfAction().fadeIn(30).start();
+		this.selfAction().fadeIn(speed).start();
 		return this;
 	}
 
+	/**
+	 * 淡出当前组件(并且淡出后自动注销)
+	 * 
+	 * @return
+	 */
 	public LComponent out() {
-		this.selfAction().fadeOut(30).start()
-				.setActionListener(new ActionListener() {
+		return out(30);
+	}
 
-					@Override
-					public void stop(ActionBind o) {
-						if (getParent() != null) {
-							getParent().remove((LComponent) o);
-						}
-						if (getScreen() != null) {
-							getScreen().remove((LComponent) o);
-						}
-						close();
-					}
+	/**
+	 * 淡出当前组件(并且淡出后自动注销)
+	 * 
+	 * @param speed
+	 * @return
+	 */
+	public LComponent out(float speed) {
+		this.selfAction().fadeOut(speed).start().setActionListener(new ActionListener() {
 
-					@Override
-					public void start(ActionBind o) {
+			@Override
+			public void stop(ActionBind o) {
+				if (getParent() != null) {
+					getParent().remove((LComponent) o);
+				}
+				if (getScreen() != null) {
+					getScreen().remove((LComponent) o);
+				}
+				close();
+			}
 
-					}
+			@Override
+			public void start(ActionBind o) {
 
-					@Override
-					public void process(ActionBind o) {
+			}
 
-					}
-				});
+			@Override
+			public void process(ActionBind o) {
+
+			}
+		});
 		return this;
 	}
 
@@ -1165,8 +1170,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return new LayoutPort(this, getRootConstraints());
 	}
 
-	public LayoutPort getLayoutPort(final RectBox newBox,
-			final LayoutConstraints newBoxConstraints) {
+	public LayoutPort getLayoutPort(final RectBox newBox, final LayoutConstraints newBoxConstraints) {
 		return new LayoutPort(newBox, newBoxConstraints);
 	}
 
@@ -1174,8 +1178,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 		return new LayoutPort(src);
 	}
 
-	public void layoutElements(final LayoutManager manager,
-			final LayoutPort... ports) {
+	public void layoutElements(final LayoutManager manager, final LayoutPort... ports) {
 		if (manager != null) {
 			manager.layoutElements(getLayoutPort(), ports);
 		}
@@ -1249,8 +1252,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public boolean isClickDown() {
-		return input.getTouchPressed() == SysTouch.TOUCH_DOWN
-				|| SysTouch.isDown();
+		return input.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
 	}
 
 	public boolean isClickUp() {
@@ -1258,8 +1260,7 @@ public abstract class LComponent extends LObject<LContainer> implements
 	}
 
 	public boolean isClickDrag() {
-		return input.getTouchPressed() == SysTouch.TOUCH_DRAG
-				|| SysTouch.isDrag();
+		return input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
 	}
 
 	public Dimension getDimension() {
@@ -1309,7 +1310,6 @@ public abstract class LComponent extends LObject<LContainer> implements
 
 	@Override
 	public String toString() {
-		return getName() + " pos=" + _location + " size=" + " [ "
-				+ getRectBox().toString() + "]";
+		return getName() + " pos=" + _location + " size=" + " [ " + getRectBox().toString() + "]";
 	}
 }

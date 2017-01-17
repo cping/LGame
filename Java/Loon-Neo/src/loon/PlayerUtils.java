@@ -213,6 +213,54 @@ public class PlayerUtils extends Director {
 		return LSystem.runThrow(msg, args);
 	}
 
+	public final static void d(String msg) {
+		LSystem.debug(msg);
+	}
+
+	public final static void d(String msg, Object... args) {
+		LSystem.debug(msg, args);
+	}
+
+	public final static void d(String msg, Throwable throwable) {
+		LSystem.debug(msg, throwable);
+	}
+
+	public final static void i(String msg) {
+		LSystem.info(msg);
+	}
+
+	public final static void i(String msg, Object... args) {
+		LSystem.info(msg, args);
+	}
+
+	public final static void i(String msg, Throwable throwable) {
+		LSystem.info(msg, throwable);
+	}
+
+	public final static void e(String msg) {
+		LSystem.error(msg);
+	}
+
+	public final static void e(String msg, Object... args) {
+		LSystem.error(msg, args);
+	}
+
+	public final static void e(String msg, Throwable throwable) {
+		LSystem.error(msg, throwable);
+	}
+
+	public final static RuntimeException re(String msg) {
+		return LSystem.runThrow(msg);
+	}
+
+	public final static RuntimeException re(String msg, Throwable thr) {
+		return LSystem.runThrow(msg, thr);
+	}
+
+	public final static RuntimeException re(String msg, Object... args) {
+		return LSystem.runThrow(msg, args);
+	}
+	
 	public final static void setLogMinLevel(Level level) {
 		LSystem.setLogMinLevel(level);
 	}
