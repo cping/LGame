@@ -42,6 +42,20 @@ import loon.utils.StringUtils;
 
 public class LSTRFont implements IFont {
 
+	/*
+	 * 获得一个默认的LSTRFont.
+	 * 
+	 * 比如:
+	 * 
+	 * 游戏全局使用默认LSTRFont(除log字体外,log字体需要设置setSystemLogFont)
+	 *
+	 * LSystem.setSystemGameFont(LSTRFont.getDefaultFont());
+	 * 
+	 */
+	public final static LSTRFont getDefaultFont() {
+		return getFont(20);
+	}
+
 	public final static LSTRFont getFont(int size) {
 		return new LSTRFont(LFont.getFont(size), LSTRDictionary.getAddedString(), true);
 	}
@@ -105,7 +119,7 @@ public class LSTRFont implements IFont {
 						charheight -= 4;
 					}
 				}
-				
+
 				newIntObject.width = charwidth;
 				newIntObject.height = charheight;
 

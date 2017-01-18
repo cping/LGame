@@ -176,6 +176,18 @@ public class LSlider extends LComponent {
 		}
 	}
 
+	public void setPercentage(float p) {
+		if (p >= 0f && p <= 1f) {
+			this._value = p;
+		} else {
+			if (p > 1f) {
+				this._value = 1f;
+			} else if (p < 0f) {
+				this._value = 0f;
+			}
+		}
+	}
+	
 	@Override
 	public String getUIName() {
 		return "Slider";

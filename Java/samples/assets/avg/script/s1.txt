@@ -14,7 +14,7 @@ gb print(back)
 cg print(女性角色微笑) 220
 //添加选项
 opt "跳转一下" 25,25,100,50 {label1}
-opt "跳转一下" 25,125,100,50 {label1}
+opt "跳转一下" 25,125,100,50 {label2}
 mes 啦啦啦，啦啦啦，我是编程的大行家～
 //task toast 12345
 //不加提示信息格式如下例:select {跳转到标记1,label1,跳转到标记2,label2}

@@ -335,6 +335,34 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls in() {
+		return in(30);
+	}
+
+	public UIControls in(float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.in(speed);
+			}
+		}
+		return this;
+	}
+
+	public UIControls out() {
+		return out(30);
+	}
+
+	public UIControls out(float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.out(speed);
+			}
+		}
+		return this;
+	}
+
 	public boolean isTransparent() {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
@@ -509,9 +537,14 @@ public class UIControls {
 	public UIControls setPercentage(float p) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			Object o = _comps.get(i);
-			if (o != null && o instanceof LProgress) {
-				LProgress progress = (LProgress) o;
-				progress.setPercentage(p);
+			if (o != null) {
+				if (o instanceof LProgress) {
+					LProgress progress = (LProgress) o;
+					progress.setPercentage(p);
+				} else if (o instanceof LSlider) {
+					LSlider progress = (LSlider) o;
+					progress.setPercentage(p);
+				}
 			}
 		}
 		return this;

@@ -43,13 +43,25 @@ import loon.utils.TArray;
 // 但缺点在于，没有提供图像的文字不能被渲染).
 public class BMFont implements IFont {
 
+	private final static String DEF_BMF_ONT = "deffont";
+
 	private static BMFont _font;
 
+	/*
+	 * 获得一个默认的BMFont.
+	 * 
+	 * 比如:
+	 * 
+	 * 游戏全局使用默认BMFont(除log字体外,log字体需要设置setSystemLogFont)
+	 *
+	 * LSystem.setSystemGameFont(BMFont.getDefaultFont());
+	 * 
+	 */
 	public static BMFont getDefaultFont() {
 		if (_font == null) {
 			try {
-				_font = new BMFont(LSystem.FRAMEWORK_IMG_NAME + "deffont.txt",
-						LSystem.FRAMEWORK_IMG_NAME + "deffont.png");
+				_font = new BMFont(LSystem.FRAMEWORK_IMG_NAME + DEF_BMF_ONT + ".txt",
+						LSystem.FRAMEWORK_IMG_NAME + DEF_BMF_ONT + ".png");
 			} catch (Exception e) {
 				LSystem.error("BMFont error!", e);
 			}
@@ -128,21 +140,21 @@ public class BMFont implements IFont {
 
 		short[] kerning;
 
-		public void draw(float x, float y) {
+		public void draw(float x, float y, LColor c) {
 			if (_isClose) {
 				return;
 			}
 			displayList.draw((x + xoffset) * fontScaleX, (y + yoffset) * fontScaleY, width * fontScaleX,
-					height * fontScaleY, tx, ty, tx + width, ty + height);
+					height * fontScaleY, tx, ty, tx + width, ty + height, c);
 		}
 
-		public void draw(GLEx g, float sx, float sy, float x, float y) {
+		public void draw(GLEx g, float sx, float sy, float x, float y, LColor c) {
 			if (_isClose) {
 				return;
 			}
 
 			g.draw(displayList, sx + (x + xoffset) * fontScaleX, sy + (y + yoffset) * fontScaleX, width * fontScaleX,
-					height * fontScaleY, tx, ty, width, height);
+					height * fontScaleY, tx, ty, width, height, c);
 		}
 
 		public int getKerning(int point) {
@@ -384,7 +396,7 @@ public class BMFont implements IFont {
 				lastCharDef = charDef;
 
 				if ((i >= startIndex) && (i <= endIndex)) {
-					charDef.draw(x, y);
+					charDef.draw(x, y, c);
 				}
 
 				x += charDef.advance;
@@ -473,7 +485,7 @@ public class BMFont implements IFont {
 			}
 			lastCharDef = charDef;
 			if ((i >= startIndex) && (i <= endIndex)) {
-				charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y);
+				charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y, c);
 			}
 			x += charDef.advance;
 		}

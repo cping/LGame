@@ -10,28 +10,48 @@ public class FontUtils {
 
 	private static final int UNSPECIFIED = -1;
 
+	public static void drawLeft(GLEx g, String s, int x, int y) {
+		drawString(g, g.getFont(), s, HorizontalAlign.LEFT, x, y, 0, LColor.white);
+	}
+
 	public static void drawLeft(GLEx g, IFont font, String s, int x, int y) {
 		drawString(g, font, s, HorizontalAlign.LEFT, x, y, 0, LColor.white);
+	}
+
+	public static void drawCenter(GLEx g, String s, int x, int y, int width) {
+		drawString(g, g.getFont(), s, HorizontalAlign.CENTER, x, y, width, LColor.white);
 	}
 
 	public static void drawCenter(GLEx g, IFont font, String s, int x, int y, int width) {
 		drawString(g, font, s, HorizontalAlign.CENTER, x, y, width, LColor.white);
 	}
 
+	public static void drawCenter(GLEx g, String s, int x, int y, int width, LColor color) {
+		drawString(g, g.getFont(), s, HorizontalAlign.CENTER, x, y, width, color);
+	}
+
 	public static void drawCenter(GLEx g, IFont font, String s, int x, int y, int width, LColor color) {
 		drawString(g, font, s, HorizontalAlign.CENTER, x, y, width, color);
+	}
+
+	public static void drawRight(GLEx g, String s, int x, int y, int width) {
+		drawString(g, g.getFont(), s, HorizontalAlign.RIGHT, x, y, width, LColor.white);
 	}
 
 	public static void drawRight(GLEx g, IFont font, String s, int x, int y, int width) {
 		drawString(g, font, s, HorizontalAlign.RIGHT, x, y, width, LColor.white);
 	}
 
+	public static void drawRight(GLEx g, String s, int x, int y, int width, LColor color) {
+		drawString(g, g.getFont(), s, HorizontalAlign.RIGHT, x, y, width, color);
+	}
+
 	public static void drawRight(GLEx g, IFont font, String s, int x, int y, int width, LColor color) {
 		drawString(g, font, s, HorizontalAlign.RIGHT, x, y, width, color);
 	}
 
-	public static final void drawString(GLEx g, IFont font, final String s, final HorizontalAlign align,
-			final int x, final int y, final int width, LColor color) {
+	public static final void drawString(GLEx g, IFont font, final String s, final HorizontalAlign align, final int x,
+			final int y, final int width, LColor color) {
 		if (align == HorizontalAlign.LEFT) {
 			font.drawString(g, s, x, y, color);
 		} else if (align == HorizontalAlign.CENTER) {

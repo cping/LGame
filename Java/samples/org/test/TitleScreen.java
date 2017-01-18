@@ -2,6 +2,7 @@ package org.test;
 
 import loon.Screen;
 import loon.component.LButton;
+import loon.component.LClickButton;
 import loon.component.LPaper;
 import loon.event.ActionKey;
 import loon.event.GameTouch;
@@ -78,6 +79,9 @@ public class TitleScreen extends Screen {
 		title = new LPaper("assets/avg/title.png", -200, 0);
 
 		add(title);
+		
+		LClickButton click = MultiScreenTest.getBackButton(this, 1);
+		add(click);
 	}
 
 	public void alter(LTimerContext c) {

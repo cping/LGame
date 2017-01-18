@@ -80,8 +80,7 @@ public class GameTouch {
 		if (e == this) {
 			return true;
 		}
-		if (e.type == type && e.x == x && e.y == y && e.button == button
-				&& e.pointer == pointer && e.id == id) {
+		if (e.type == type && e.x == x && e.y == y && e.button == button && e.pointer == pointer && e.id == id) {
 			return true;
 		}
 		return false;
@@ -146,6 +145,10 @@ public class GameTouch {
 	}
 
 	public Vector2f get() {
-		return new Vector2f(x, y);
+		return new Vector2f((int) x, (int) y);
+	}
+
+	public String toString() {
+		return "id:" + id + "," + get() + ", point: " + pointer + ", button:" + button;
 	}
 }

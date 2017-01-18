@@ -1,10 +1,12 @@
 package loon.action.sprite;
 
+import loon.LObject;
 import loon.PlayerUtils;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.event.EventDispatcher;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.utils.CollectionUtils;
@@ -157,16 +159,24 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls setAlpha(float alpha) {
+	public SpriteControls alpha(float a) {
+		return setAlpha(a);
+	}
+	
+	public SpriteControls setAlpha(float a) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
-					((Sprite) spr).setAlpha(alpha);
+					((Sprite) spr).setAlpha(a);
 				} else if (spr instanceof Entity) {
-					((Entity) spr).setAlpha(alpha);
+					((Entity) spr).setAlpha(a);
 				} else if (spr instanceof ActionObject) {
-					((ActionObject) spr).setAlpha(alpha);
+					((ActionObject) spr).setAlpha(a);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setAlpha(a);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setAlpha(a);
 				}
 
 			}
@@ -184,6 +194,8 @@ public class SpriteControls {
 					((Entity) spr).setScale(s);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setScale(s);
+				} else if (spr instanceof MovieClip) {
+					((MovieClip) spr).setScale(s, s);
 				}
 			}
 		}
@@ -200,6 +212,8 @@ public class SpriteControls {
 					((Entity) spr).setScale(sx, sy);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setScale(sx, sy);
+				} else if (spr instanceof MovieClip) {
+					((MovieClip) spr).setScale(sx, sy);
 				}
 			}
 		}
@@ -216,6 +230,10 @@ public class SpriteControls {
 					((Entity) spr).setX(x);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setX(x);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setX(x);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setX(x);
 				}
 			}
 		}
@@ -232,6 +250,10 @@ public class SpriteControls {
 					((Entity) spr).setY(y);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setY(y);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setY(y);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setY(y);
 				}
 			}
 		}
@@ -248,6 +270,8 @@ public class SpriteControls {
 					((Entity) spr).setWidth(w);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setWidth(w);
+				} else if (spr instanceof MovieClip) {
+					((MovieClip) spr).setWidth(w);
 				}
 			}
 		}
@@ -264,6 +288,8 @@ public class SpriteControls {
 					((Entity) spr).setHeight(h);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setHeight(h);
+				} else if (spr instanceof MovieClip) {
+					((MovieClip) spr).setHeight(h);
 				}
 			}
 		}
@@ -292,6 +318,10 @@ public class SpriteControls {
 					((Entity) spr).setRotation(r);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setRotation(r);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setRotation(r);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setRotation(r);
 				}
 			}
 		}
@@ -308,6 +338,10 @@ public class SpriteControls {
 					((Entity) spr).setLocation(dx, dy);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setLocation(dx, dy);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setLocation(dx, dy);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setLocation(dx, dy);
 				}
 			}
 		}
@@ -324,6 +358,10 @@ public class SpriteControls {
 					((Entity) spr).setLayer(z);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setLayer(z);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setLayer(z);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setLayer(z);
 				}
 			}
 		}
@@ -389,15 +427,13 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(spr);
 				if (spr.getAlpha() >= 255) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr)
-								.fadeIn(speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr).fadeOut(
-								speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeOut(speed);
 					} else {
 						tween.fadeOut(speed);
 					}
@@ -417,15 +453,13 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(spr);
 				if (spr.getAlpha() <= 0) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr).fadeOut(
-								speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeOut(speed);
 					} else {
 						tween.fadeOut(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr)
-								.fadeIn(speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
@@ -444,8 +478,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX,
-							endY, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX, endY, speed);
 				} else {
 					tween.moveBy(endX, endY, speed);
 				}
@@ -463,8 +496,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX,
-							endY);
+					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX, endY);
 				} else {
 					tween.moveBy(endX, endY);
 				}
@@ -482,8 +514,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX,
-							endY, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX, endY, speed);
 				} else {
 					tween.moveTo(endX, endY, speed);
 				}
@@ -502,8 +533,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX,
-							endY, flag, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX, endY, flag, speed);
 				} else {
 					tween.moveTo(endX, endY, flag, speed);
 				}
@@ -516,15 +546,13 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls moveTo(Field2D map, float endX, float endY,
-			boolean flag, int speed) {
+	public SpriteControls moveTo(Field2D map, float endX, float endY, boolean flag, int speed) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveTo(map,
-							endX, endY, flag, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(map, endX, endY, flag, speed);
 				} else {
 					tween.moveTo(map, endX, endY, flag, speed);
 				}
@@ -581,8 +609,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle,
-							speed);
+					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle, speed);
 				} else {
 					tween.rotateTo(angle, speed);
 				}
@@ -620,8 +647,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy,
-							speed);
+					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy, speed);
 				} else {
 					tween.scaleTo(sx, sy, speed);
 				}
@@ -678,8 +704,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).shakeTo(shakeX,
-							shakeY);
+					tween = PlayerUtils.set((ActionBind) spr).shakeTo(shakeX, shakeY);
 				} else {
 					tween.shakeTo(shakeX, shakeY);
 				}
@@ -698,8 +723,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr)
-							.flashTo(duration);
+					tween = PlayerUtils.set((ActionBind) spr).flashTo(duration);
 				} else {
 					tween.flashTo(duration);
 				}
@@ -712,19 +736,17 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls transferTo(float startPos, float endPos,
-			float duration, EasingMode mode, boolean controlX, boolean controlY) {
+	public SpriteControls transferTo(float startPos, float endPos, float duration, EasingMode mode, boolean controlX,
+			boolean controlY) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).transferTo(
-							startPos, endPos, duration, mode, controlX,
+					tween = PlayerUtils.set((ActionBind) spr).transferTo(startPos, endPos, duration, mode, controlX,
 							controlY);
 				} else {
-					tween.transferTo(startPos, endPos, duration, mode,
-							controlX, controlY);
+					tween.transferTo(startPos, endPos, duration, mode, controlX, controlY);
 				}
 				if (!tweens.containsKey(spr)) {
 					tweens.put(spr, tween);

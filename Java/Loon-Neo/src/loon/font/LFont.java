@@ -23,6 +23,16 @@ public class LFont implements IFont {
 		return LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, size);
 	}
 
+	/*
+	 * 获得一个默认的LFont.
+	 * 
+	 * 比如:
+	 * 
+	 * 游戏全局使用默认LFont(除log字体外,log字体需要设置setSystemLogFont)
+	 *
+	 * LSystem.setSystemGameFont(LFont.getDefaultFont());
+	 * 
+	 */
 	public static LFont getDefaultFont() {
 		return getDefaultFont(20);
 	}
@@ -168,7 +178,7 @@ public class LFont implements IFont {
 	}
 
 	private void initLayout(String text) {
-		if (textLayout == null || !text.equals(lastText)) {
+		if (text == null || textLayout == null || !text.equals(lastText)) {
 			textLayout = LSystem.base().graphics().layoutText(tmp, this.textFormat);
 		}
 	}
@@ -182,7 +192,7 @@ public class LFont implements IFont {
 	}
 
 	public int stringWidth(String message) {
-		if (LSystem.base() == null) {
+		if (LSystem.base() == null || StringUtils.isEmpty(message)) {
 			return 0;
 		}
 		initLayout(message);
@@ -214,7 +224,7 @@ public class LFont implements IFont {
 	}
 
 	public int stringHeight(String message) {
-		if (LSystem.base() == null) {
+		if (LSystem.base() == null || StringUtils.isEmpty(message)) {
 			return 0;
 		}
 		initLayout(message);
