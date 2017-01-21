@@ -20,7 +20,9 @@
  */
 package loon.utils.xml;
 
-public class XMLDocument {
+import loon.LRelease;
+
+public class XMLDocument implements LRelease {
 
 	private String header;
 
@@ -45,6 +47,13 @@ public class XMLDocument {
 	public XMLDocument(String header, XMLElement root) {
 		this.header = header;
 		this.root = root;
+	}
+
+	@Override
+	public void close() {
+		if (root != null) {
+			root.dispose();
+		}
 	}
 
 }

@@ -4,8 +4,17 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import loon.LSystem;
+import loon.event.QueryEvent;
 
 public class CharArray implements IArray {
+
+	public static CharArray range(int start, int end) {
+		CharArray array = new CharArray(end - start);
+		for (int i = start; i < end; i++) {
+			array.add((char) i);
+		}
+		return array;
+	}
 
 	public char[] items;
 	public int length;
@@ -73,8 +82,7 @@ public class CharArray implements IArray {
 	public void addAll(CharArray array, int offset, int length) {
 		if (offset + length > array.length)
 			throw new IllegalArgumentException(
-					"offset + length must be <= length: " + offset + " + "
-							+ length + " <= " + array.length);
+					"offset + length must be <= length: " + offset + " + " + length + " <= " + array.length);
 		addAll(array.items, offset, length);
 	}
 
@@ -92,7 +100,7 @@ public class CharArray implements IArray {
 		length += length;
 	}
 
-	public int get(int index) {
+	public char get(int index) {
 		if (index >= length) {
 			return 0;
 		}
@@ -113,22 +121,19 @@ public class CharArray implements IArray {
 
 	public void incr(int index, char value) {
 		if (index >= length)
-			throw new IndexOutOfBoundsException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
 	}
 
 	public void mul(int index, char value) {
 		if (index >= length)
-			throw new IndexOutOfBoundsException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
 	}
 
 	public void insert(int index, char value) {
 		if (index > length) {
-			throw new IndexOutOfBoundsException("index can't be > length: "
-					+ index + " > " + length);
+			throw new IndexOutOfBoundsException("index can't be > length: " + index + " > " + length);
 		}
 		char[] items = this.items;
 		if (length == items.length)
@@ -143,11 +148,9 @@ public class CharArray implements IArray {
 
 	public void swap(int first, int second) {
 		if (first >= length)
-			throw new IndexOutOfBoundsException("first can't be >= length: "
-					+ first + " >= " + length);
+			throw new IndexOutOfBoundsException("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
-			throw new IndexOutOfBoundsException("second can't be >= length: "
-					+ second + " >= " + length);
+			throw new IndexOutOfBoundsException("second can't be >= length: " + second + " >= " + length);
 		char[] items = this.items;
 		char firstValue = items[first];
 		items[first] = items[second];
@@ -192,8 +195,7 @@ public class CharArray implements IArray {
 
 	public int removeIndex(int index) {
 		if (index >= length) {
-			throw new IndexOutOfBoundsException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
 		}
 		char[] items = this.items;
 		char value = items[index];
@@ -208,18 +210,15 @@ public class CharArray implements IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= length) {
-			throw new IndexOutOfBoundsException("end can't be >= length: "
-					+ end + " >= " + length);
+			throw new IndexOutOfBoundsException("end can't be >= length: " + end + " >= " + length);
 		}
 		if (start > end) {
-			throw new IndexOutOfBoundsException("start can't be > end: "
-					+ start + " > " + end);
+			throw new IndexOutOfBoundsException("start can't be > end: " + start + " > " + end);
 		}
 		char[] items = this.items;
 		int count = end - start + 1;
 		if (ordered) {
-			System.arraycopy(items, start + count, items, start, length
-					- (start + count));
+			System.arraycopy(items, start + count, items, start, length - (start + count));
 		} else {
 			int lastIndex = this.length - 1;
 			for (int i = 0; i < count; i++)
@@ -285,14 +284,14 @@ public class CharArray implements IArray {
 	protected char[] relength(int newlength) {
 		char[] newItems = new char[newlength];
 		char[] items = this.items;
-		System.arraycopy(items, 0, newItems, 0,
-				MathUtils.min(length, newItems.length));
+		System.arraycopy(items, 0, newItems, 0, MathUtils.min(length, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}
 
-	public void sort() {
+	public CharArray sort() {
 		Arrays.sort(items, 0, length);
+		return this;
 	}
 
 	public void reverse() {
@@ -439,13 +438,43 @@ public class CharArray implements IArray {
 		return bytes;
 	}
 
+	public CharArray where(QueryEvent<Character> test) {
+		CharArray list = new CharArray();
+		for (int i = 0; i < length; i++) {
+			Character t = Character.valueOf(get(i));
+			if (test.hit(t)) {
+				list.add(t);
+			}
+		}
+		return list;
+	}
+
+	public Character find(QueryEvent<Character> test) {
+		for (int i = 0; i < length; i++) {
+			Character t = Character.valueOf(get(i));
+			if (test.hit(t)) {
+				return t;
+			}
+		}
+		return null;
+	}
+
+	public boolean remove(QueryEvent<Character> test) {
+		for (int i = length - 1; i > -1; i--) {
+			Character t = get(i);
+			if (test.hit(t)) {
+				return removeValue(t);
+			}
+		}
+		return false;
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
 		}
 		char[] items = this.items;
-		StringBuilder buffer = new StringBuilder(
-				CollectionUtils.INITIAL_CAPACITY);
+		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {

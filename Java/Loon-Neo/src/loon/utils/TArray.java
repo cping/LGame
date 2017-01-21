@@ -24,11 +24,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import loon.LSystem;
+import loon.event.QueryEvent;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class TArray<T> implements Iterable<T>,IArray {
+public class TArray<T> implements Iterable<T>, IArray {
 
 	public T[] items;
 
@@ -109,8 +110,7 @@ public class TArray<T> implements Iterable<T>,IArray {
 	public void addAll(TArray<? extends T> array, int start, int count) {
 		if (start + count > array.size)
 			throw new IllegalArgumentException(
-					"start + count must be <= size: " + start + " + " + count
-							+ " <= " + array.size);
+					"start + count must be <= size: " + start + " + " + count + " <= " + array.size);
 		addAll((T[]) array.items, start, count);
 	}
 
@@ -129,22 +129,19 @@ public class TArray<T> implements Iterable<T>,IArray {
 
 	public T get(int index) {
 		if (index >= size)
-			throw new IndexOutOfBoundsException("index can't be >= size: "
-					+ index + " >= " + size);
+			throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
 		return items[index];
 	}
 
 	public void set(int index, T value) {
 		if (index >= size)
-			throw new IndexOutOfBoundsException("index can't be >= size: "
-					+ index + " >= " + size);
+			throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
 		items[index] = value;
 	}
 
 	public void insert(int index, T value) {
 		if (index > size)
-			throw new IndexOutOfBoundsException("index can't be > size: "
-					+ index + " > " + size);
+			throw new IndexOutOfBoundsException("index can't be > size: " + index + " > " + size);
 		T[] items = this.items;
 		if (size == items.length)
 			items = resize(MathUtils.max(8, (int) (size * 1.75f)));
@@ -158,11 +155,9 @@ public class TArray<T> implements Iterable<T>,IArray {
 
 	public void swap(int first, int second) {
 		if (first >= size)
-			throw new IndexOutOfBoundsException("first can't be >= size: "
-					+ first + " >= " + size);
+			throw new IndexOutOfBoundsException("first can't be >= size: " + first + " >= " + size);
 		if (second >= size)
-			throw new IndexOutOfBoundsException("second can't be >= size: "
-					+ second + " >= " + size);
+			throw new IndexOutOfBoundsException("second can't be >= size: " + second + " >= " + size);
 		T[] items = this.items;
 		T firstValue = items[first];
 		items[first] = items[second];
@@ -253,8 +248,7 @@ public class TArray<T> implements Iterable<T>,IArray {
 
 	public T removeIndex(int index) {
 		if (index >= size)
-			throw new IndexOutOfBoundsException("index can't be >= size: "
-					+ index + " >= " + size);
+			throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
 		T[] items = this.items;
 		T value = (T) items[index];
 		size--;
@@ -268,16 +262,13 @@ public class TArray<T> implements Iterable<T>,IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= size)
-			throw new IndexOutOfBoundsException("end can't be >= size: " + end
-					+ " >= " + size);
+			throw new IndexOutOfBoundsException("end can't be >= size: " + end + " >= " + size);
 		if (start > end)
-			throw new IndexOutOfBoundsException("start can't be > end: "
-					+ start + " > " + end);
+			throw new IndexOutOfBoundsException("start can't be > end: " + start + " > " + end);
 		T[] items = this.items;
 		int count = end - start + 1;
 		if (ordered)
-			System.arraycopy(items, start + count, items, start, size
-					- (start + count));
+			System.arraycopy(items, start + count, items, start, size - (start + count));
 		else {
 			int lastIndex = this.size - 1;
 			for (int i = 0; i < count; i++)
@@ -399,8 +390,7 @@ public class TArray<T> implements Iterable<T>,IArray {
 	protected T[] resize(int newSize) {
 		T[] items = this.items;
 		T[] newItems = (T[]) new Object[newSize];
-		System.arraycopy(items, 0, newItems, 0,
-				MathUtils.min(size, newItems.length));
+		System.arraycopy(items, 0, newItems, 0, MathUtils.min(size, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}
@@ -577,6 +567,34 @@ public class TArray<T> implements Iterable<T>,IArray {
 		public Iterator<T> iterator() {
 			return this;
 		}
+	}
+
+	public TArray<T> where(QueryEvent<T> test) {
+		TArray<T> list = new TArray<T>();
+		for (T t : this) {
+			if (test.hit(t)) {
+				list.add(t);
+			}
+		}
+		return list;
+	}
+	
+	public T find(QueryEvent<T> test) {
+		for (T t : this) {
+			if (test.hit(t)) {
+				return t;
+			}
+		}
+		return null;
+	}
+
+	public boolean remove(QueryEvent<T> test) {
+		for (T t : this) {
+			if (test.hit(t)) {
+				return remove(t);
+			}
+		}
+		return false;
 	}
 
 	static public class ArrayIterable<T> implements Iterable<T> {

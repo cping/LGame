@@ -36,9 +36,7 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.NaturalEffect;
-import loon.action.sprite.effect.PetalKernel;
-import loon.action.sprite.effect.RainKernel;
-import loon.action.sprite.effect.SnowKernel;
+import loon.action.sprite.effect.NaturalEffect.NaturalType;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -1076,6 +1074,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								effectSprites.add(NaturalEffect.getRainEffect());
 							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_PETAL)) {
 								effectSprites.add(NaturalEffect.getPetalEffect());
+							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
+								effectSprites.add(NaturalEffect.getThunderEffect());
 							}
 						}
 
@@ -1089,16 +1089,21 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						for (int i = 0; i < ss.length; i++) {
 							ISprite s = ss[i];
 							if (s instanceof NaturalEffect) {
+								NaturalType naturalType = ((NaturalEffect) s).getNaturalType();
 								if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOWSTOP)) {
-									if (((NaturalEffect) s).getKernels()[0] instanceof SnowKernel) {
+									if (naturalType == NaturalType.Snow) {
 										effectSprites.remove(s);
 									}
 								} else if (cmdFlag.equalsIgnoreCase(CommandType.L_RAINSTOP)) {
-									if (((NaturalEffect) s).getKernels()[0] instanceof RainKernel) {
+									if (naturalType == NaturalType.Rain) {
 										effectSprites.remove(s);
 									}
 								} else if (cmdFlag.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
-									if (((NaturalEffect) s).getKernels()[0] instanceof PetalKernel) {
+									if (naturalType == NaturalType.Petal) {
+										effectSprites.remove(s);
+									}
+								} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
+									if (naturalType == NaturalType.Thunder) {
 										effectSprites.remove(s);
 									}
 								}

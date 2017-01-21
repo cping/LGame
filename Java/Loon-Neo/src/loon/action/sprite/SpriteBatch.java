@@ -852,6 +852,11 @@ public class SpriteBatch extends PixmapFImpl {
 		setColor(old);
 	}
 
+	public void draw(LTexture texture, Vector2f position, LColor c, float rotation, Vector2f origin, float scale,
+			SpriteEffects effects) {
+		draw(texture, position, c, rotation, origin, Vector2f.at(scale, scale), effects);
+	}
+
 	public void draw(LTexture texture, Vector2f position, LColor c, float rotation, Vector2f origin, Vector2f scale,
 			SpriteEffects effects) {
 		float old = color;

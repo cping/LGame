@@ -817,7 +817,15 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 			this.onManagedUpdate(elapsedTime);
 		}
 	}
+	
+	public int width(){
+		return (int)getWidth();
+	}
 
+	public int height(){
+		return (int)getHeight();
+	}
+	
 	@Override
 	public float getWidth() {
 		return (_width * this._scaleX);

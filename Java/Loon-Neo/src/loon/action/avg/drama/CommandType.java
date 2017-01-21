@@ -142,6 +142,9 @@ public interface CommandType {
 	// 花(体现风)
 	String L_PETAL = "petal";
 
+	// 雷
+	String L_THUNDER = "thunder";
+	
 	// 停雪
 	String L_SNOWSTOP = "snowstop";
 
@@ -151,6 +154,9 @@ public interface CommandType {
 	// 消花
 	String L_PETALSTOP = "petalstop";
 
+	// 宁雷
+	String L_THUNDERSTOP = "thunderstop";
+	
 	// 移动到XXX
 	String L_TO = "to";
 

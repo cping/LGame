@@ -720,7 +720,7 @@ public class MathUtils {
 	}
 
 	public static final boolean nextBoolean() {
-		return nextInt(1) != 0;
+		return randomBoolean();
 	}
 
 	public static final int nextInt(int range) {

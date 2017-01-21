@@ -297,6 +297,14 @@ public class LSystem {
 		return length / LSystem.getScaleWidth();
 	}
 
+	public static String getAllFileName(String name) {
+		if (name == null) {
+			return "";
+		}
+		int idx = name.lastIndexOf('.');
+		return idx == -1 ? name : name.substring(0, idx);
+	}
+
 	public static String getFileName(String name) {
 		if (name == null) {
 			return "";
@@ -655,6 +663,24 @@ public class LSystem {
 		}
 	}
 
+	public final static void warn(String msg) {
+		if (LSystem._base != null) {
+			LSystem._base.log().warn(msg);
+		}
+	}
+
+	public final static void warn(String msg, Object... args) {
+		if (LSystem._base != null) {
+			LSystem._base.log().warn(msg, args);
+		}
+	}
+
+	public final static void warn(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.log().warn(msg, throwable);
+		}
+	}
+	
 	public final static void error(String msg) {
 		if (LSystem._base != null) {
 			LSystem._base.log().error(msg);
@@ -710,6 +736,18 @@ public class LSystem {
 
 	public final static void i(String msg, Throwable throwable) {
 		info(msg, throwable);
+	}
+
+	public final static void w(String msg) {
+		warn(msg);
+	}
+
+	public final static void w(String msg, Object... args) {
+		warn(msg, args);
+	}
+
+	public final static void w(String msg, Throwable throwable) {
+		warn(msg, throwable);
 	}
 
 	public final static void e(String msg) {

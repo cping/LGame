@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import loon.event.QueryEvent;
+
 public class Array<T> implements IArray {
 
 	public static class ArrayNode<T> {
@@ -58,8 +60,7 @@ public class Array<T> implements IArray {
 		insertBetween(previous._items, next._items, newNode._items);
 	}
 
-	public void insertBetween(ArrayNode<T> previous, ArrayNode<T> next,
-			ArrayNode<T> newNode) {
+	public void insertBetween(ArrayNode<T> previous, ArrayNode<T> next, ArrayNode<T> newNode) {
 		if (_close) {
 			return;
 		}
@@ -338,7 +339,7 @@ public class Array<T> implements IArray {
 		remove(o);
 		return this._items.previous.data;
 	}
-	
+
 	public boolean isFirst(Array<T> o) {
 		if (o._items.previous == this._items) {
 			return true;
@@ -430,8 +431,7 @@ public class Array<T> implements IArray {
 			return "[]";
 		}
 		ArrayNode<T> o = this._items.next;
-		StringBuilder buffer = new StringBuilder(
-				CollectionUtils.INITIAL_CAPACITY);
+		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
 		buffer.append('[');
 		int count = 0;
 		for (; o != this._items;) {
@@ -551,6 +551,42 @@ public class Array<T> implements IArray {
 			list.remove();
 		}
 
+	}
+
+	public Array<T> where(QueryEvent<T> test) {
+		Array<T> list = new Array<T>();
+		for (; hashNext();) {
+			T t = next();
+			if (test.hit(t)) {
+				list.add(t);
+			}
+		}
+		stopNext();
+		return list;
+	}
+
+	public T find(QueryEvent<T> test) {
+		for (; hashNext();) {
+			T t = next();
+			if (test.hit(t)) {
+				stopNext();
+				return t;
+			}
+		}
+		stopNext();
+		return null;
+	}
+
+	public boolean remove(QueryEvent<T> test) {
+		for (; hashNext();) {
+			T t = next();
+			if (test.hit(t)) {
+				stopNext();
+				return remove(t);
+			}
+		}
+		stopNext();
+		return false;
 	}
 
 	public void dispose() {

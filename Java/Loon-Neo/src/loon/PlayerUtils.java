@@ -237,6 +237,18 @@ public class PlayerUtils extends Director {
 		LSystem.info(msg, throwable);
 	}
 
+	public final static void w(String msg) {
+		LSystem.warn(msg);
+	}
+
+	public final static void w(String msg, Object... args) {
+		LSystem.warn(msg, args);
+	}
+
+	public final static void w(String msg, Throwable throwable) {
+		LSystem.warn(msg, throwable);
+	}
+	
 	public final static void e(String msg) {
 		LSystem.error(msg);
 	}

@@ -32,7 +32,10 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
-
+/**
+ * 一个非常简单的脚本解释器,用来跨平台实现avg游戏脚本解析,以统一loon内部的简单脚本格式,
+ * 同时避免一些第三方框架的跨平台问题.
+ */
 public class Command extends Conversion implements LRelease {
 
 	// 脚本缓存

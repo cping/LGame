@@ -1926,6 +1926,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return label;
 	}
 
+	public LLabel addLabel(HorizontalAlign alignment, String text, float x, float y, LColor color) {
+		return addLabel(alignment, LSystem.getSystemGameFont(), text, Vector2f.at(x, y), color);
+	}
+
 	public LLabel addLabel(HorizontalAlign alignment, IFont font, String text, float x, float y, LColor color) {
 		return addLabel(alignment, font, text, Vector2f.at(x, y), color);
 	}
@@ -3421,6 +3425,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 截屏screen并转化为base64字符串
+	 * 
+	 * @return
+	 */
+	public String screenshotToBase64() {
+		Image tmp = screenshotToImage();
+		String base64 = tmp.getBase64();
+		tmp.close();
+		tmp = null;
+		return base64;
+	}
+
+	/**
 	 * 截屏screen并保存在image(image存在系统依赖,为系统本地image类组件的封装)
 	 * 
 	 * @return
@@ -3538,6 +3555,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			_scaleX = _scaleY = _alpha = 1f;
 			_baseColor = null;
 			_visible = false;
+			_clickListener = null;
+			_touchListener = null;
 			_limits.clear();
 			_touchAreas.clear();
 			touchButtonPressed = SysInput.NO_BUTTON;

@@ -1304,6 +1304,8 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		this.selected = false;
 		this.visible = false;
+		this.Click = null;
+		this._touchListener = null;
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}

@@ -6,9 +6,26 @@ import loon.LTexture;
 import loon.LTextureBatch;
 import loon.Screen;
 import loon.action.avg.AVGDialog;
+import loon.action.sprite.ScrollText;
+import loon.action.sprite.ScrollText.Direction;
+import loon.action.sprite.effect.LightningEffect;
+import loon.action.sprite.effect.PShadowEffect;
+import loon.canvas.LColor;
+import loon.component.DefUI;
+import loon.component.LComponent;
+import loon.component.LMessageBox;
+import loon.component.LTextArea;
+import loon.component.LToast;
+import loon.component.LWindow;
+import loon.component.LToast.Style;
+import loon.event.CallFunction;
+import loon.event.ClickListener;
 import loon.event.GameTouch;
+import loon.event.Touched;
 import loon.event.Updateable;
 import loon.font.LFont;
+import loon.font.TextOptions;
+import loon.geom.Vector2f;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.GWTGame.Repaint;
 import loon.html5.gwt.GWTProgressDef;
@@ -26,8 +43,9 @@ public class TestLoon extends Loon {
 		// LTexture texture = loadTexture("loon_wbar.png");
 
 		public void onLoad() {
-
-
+			//add(new PShadowEffect("battle0.jpg"));
+			add(LightningEffect.addRandom(35,Vector2f.at(33, 33), Vector2f.at(300, 300),LColor.red));
+			
 		}
 
 		@Override
@@ -122,7 +140,7 @@ public class TestLoon extends Loon {
 
 		@Override
 		public void touchUp(GameTouch e) {
-
+			debug("SSS");
 			System.out.println(e.x() + "," + e.y());
 			System.out.println("up");
 		}
@@ -262,6 +280,7 @@ public class TestLoon extends Loon {
 		GWTSetting setting = new GWTSetting();
 		setting.fps = 60;
 		setting.isDebug = true;
+		setting.isDisplayLog = true;
 		// source size
 		setting.width = 480;
 		setting.height = 320;
@@ -275,7 +294,7 @@ public class TestLoon extends Loon {
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;
 		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
-		setting.jsloadRes = false;
+		setting.jsloadRes = true;
 
 		// 设置一个需要的初始化进度条样式（不填则默认）
 		// setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);
@@ -284,7 +303,7 @@ public class TestLoon extends Loon {
 
 			@Override
 			public Screen onScreen() {
-				return new TitleScreen();
+				return new ScreenTest();
 			}
 		});
 

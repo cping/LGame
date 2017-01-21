@@ -190,6 +190,10 @@ public class BMFont implements IFont {
 		this._imagePath = imgFile;
 	}
 
+	public BMFont(String file) throws Exception {
+		this(file, LSystem.getAllFileName(file) + ".png");
+	}
+
 	private void parse(String text) throws Exception {
 		if (displays == null) {
 			displays = new ObjectMap<String, Display>(DEFAULT_MAX_CHAR);

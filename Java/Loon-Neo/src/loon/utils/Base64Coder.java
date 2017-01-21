@@ -58,15 +58,12 @@ public class Base64Coder {
 		return bytes;
 	}
 
-	public static int fromBinHexString(char[] chars, int offset,
-			int charLength, byte[] buffer) {
+	public static int fromBinHexString(char[] chars, int offset, int charLength, byte[] buffer) {
 		int bufIndex = offset;
 		for (int i = 0; i < charLength - 1; i += 2) {
-			buffer[bufIndex] = (chars[i] > '9' ? (byte) (chars[i] - 'A' + 10)
-					: (byte) (chars[i] - '0'));
+			buffer[bufIndex] = (chars[i] > '9' ? (byte) (chars[i] - 'A' + 10) : (byte) (chars[i] - '0'));
 			buffer[bufIndex] <<= 4;
-			buffer[bufIndex] += chars[i + 1] > '9' ? (byte) (chars[i + 1] - 'A' + 10)
-					: (byte) (chars[i + 1] - '0');
+			buffer[bufIndex] += chars[i + 1] > '9' ? (byte) (chars[i + 1] - 'A' + 10) : (byte) (chars[i + 1] - '0');
 			bufIndex++;
 		}
 		if (charLength % 2 != 0)
@@ -168,19 +165,14 @@ public class Base64Coder {
 			k = (byte) (b1 & 0x03);
 
 			encodedIndex = i * 4;
-			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2)
-					: (byte) ((b1) >> 2 ^ 0xc0);
+			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
 
-			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4)
-					: (byte) ((b2) >> 4 ^ 0xf0);
-			byte val3 = ((b3 & SIGN) == 0) ? (byte) (b3 >> 6)
-					: (byte) ((b3) >> 6 ^ 0xfc);
+			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4) : (byte) ((b2) >> 4 ^ 0xf0);
+			byte val3 = ((b3 & SIGN) == 0) ? (byte) (b3 >> 6) : (byte) ((b3) >> 6 ^ 0xfc);
 
 			encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
-			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2
-					| (k << 4)];
-			encodedData[encodedIndex + 2] = LOOKUP_BASE64_ALPHABET[(l << 2)
-					| val3];
+			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
+			encodedData[encodedIndex + 2] = LOOKUP_BASE64_ALPHABET[(l << 2) | val3];
 			encodedData[encodedIndex + 3] = LOOKUP_BASE64_ALPHABET[b3 & 0x3f];
 		}
 
@@ -189,8 +181,7 @@ public class Base64Coder {
 		if (fewerThan24bits == EIGHTBIT) {
 			b1 = binaryData[dataIndex];
 			k = (byte) (b1 & 0x03);
-			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2)
-					: (byte) ((b1) >> 2 ^ 0xc0);
+			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
 			encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
 			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[k << 4];
 			encodedData[encodedIndex + 2] = PAD;
@@ -201,14 +192,11 @@ public class Base64Coder {
 			l = (byte) (b2 & 0x0f);
 			k = (byte) (b1 & 0x03);
 
-			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2)
-					: (byte) ((b1) >> 2 ^ 0xc0);
-			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4)
-					: (byte) ((b2) >> 4 ^ 0xf0);
+			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
+			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4) : (byte) ((b2) >> 4 ^ 0xf0);
 
 			encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
-			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2
-					| (k << 4)];
+			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
 			encodedData[encodedIndex + 2] = LOOKUP_BASE64_ALPHABET[l << 2];
 			encodedData[encodedIndex + 3] = PAD;
 		}
@@ -262,6 +250,10 @@ public class Base64Coder {
 			encodedIndex += 3;
 		}
 		return decodedData;
+	}
+
+	public static byte[] decode(String data) {
+		return decodeBase64(data.toCharArray());
 	}
 
 	public static byte[] decodeBase64(char[] data) {

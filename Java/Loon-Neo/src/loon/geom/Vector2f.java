@@ -28,6 +28,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
 public class Vector2f implements Serializable, XY {
+
 	/**
 	 * 
 	 */
@@ -489,6 +490,10 @@ public class Vector2f implements Serializable, XY {
 		return vectorA;
 	}
 
+	public Vector2f subNew(Vector2f vectorB) {
+		return subNew(this, vectorB);
+	}
+
 	public static Vector2f subNew(Vector2f vectorA, Vector2f vectorB) {
 		return at(vectorA.x - vectorB.x, vectorA.y - vectorB.y);
 	}
@@ -567,8 +572,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public static float angleTo(Vector2f vectorA) {
-		float angle = MathUtils.atan2(vectorA.y, vectorA.x)
-				* MathUtils.RAD_TO_DEG;
+		float angle = MathUtils.atan2(vectorA.y, vectorA.x) * MathUtils.RAD_TO_DEG;
 		if (angle < 0) {
 			angle += 360;
 		}
@@ -628,6 +632,10 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
+	public final Vector2f add(float v) {
+		return new Vector2f(x + v, y + v);
+	}
+
 	public final Vector2f add(Vector2f v) {
 		return new Vector2f(x + v.x, y + v.y);
 	}
@@ -679,8 +687,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public final boolean isValid() {
-		return x != Float.NaN && x != Float.NEGATIVE_INFINITY
-				&& x != Float.POSITIVE_INFINITY && y != Float.NaN
+		return x != Float.NaN && x != Float.NEGATIVE_INFINITY && x != Float.POSITIVE_INFINITY && y != Float.NaN
 				&& y != Float.NEGATIVE_INFINITY && y != Float.POSITIVE_INFINITY;
 	}
 
@@ -779,11 +786,9 @@ public class Vector2f implements Serializable, XY {
 		if (getClass() != obj.getClass())
 			return false;
 		Vector2f other = (Vector2f) obj;
-		if (NumberUtils.floatToIntBits(x) != NumberUtils
-				.floatToIntBits(other.x))
+		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x))
 			return false;
-		if (NumberUtils.floatToIntBits(y) != NumberUtils
-				.floatToIntBits(other.y))
+		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y))
 			return false;
 		return true;
 	}
@@ -968,4 +973,24 @@ public class Vector2f implements Serializable, XY {
 		return addSelf(-x, -y);
 	}
 
+	public static Vector2f transform(Vector2f value, Quaternion rotation) {
+		return transform(value, rotation, null);
+	}
+
+	public static Vector2f transform(Vector2f value, Quaternion rotation, Vector2f result) {
+		if (result == null) {
+			result = new Vector2f();
+		}
+		Vector3f rot1 = new Vector3f(rotation.x + rotation.x, rotation.y + rotation.y, rotation.z + rotation.z);
+		Vector3f rot2 = new Vector3f(rotation.x, rotation.x, rotation.w);
+		Vector3f rot3 = new Vector3f(1, rotation.y, rotation.z);
+		Vector3f rot4 = rot1.mul(rot2);
+		Vector3f rot5 = rot1.mul(rot3);
+		Vector2f v = new Vector2f();
+		v.x = (value.x * (1f - rot5.y - rot5.z) + value.y * (rot4.y - rot4.z));
+		v.y = (value.x * (rot4.y + rot4.z) + value.y * (1f - rot4.x - rot5.z));
+		result.x = v.x;
+		result.y = v.y;
+		return result;
+	}
 }

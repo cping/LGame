@@ -2,22 +2,31 @@ package loon.utils.res;
 
 import loon.Json;
 import loon.canvas.Image;
+import loon.canvas.Pixmap;
 import loon.event.EventDispatcher;
+import loon.font.BMFont;
 import loon.utils.TArray;
 import loon.utils.ObjectMap.Keys;
+import loon.utils.xml.XMLDocument;
 
 public abstract class ResourceGetter extends EventDispatcher {
 	
 	abstract public Json.Object getJson(String name);
 
+	abstract public XMLDocument getXml(String name);
+	
 	abstract public Texture getTexture(String name);
 
 	abstract public Image getImage(String name);
+
+	abstract public Pixmap getPixmap(String name);
 	
 	abstract public MovieSpriteSheet getSheet(String name);
 
 	abstract public FontSheet getFontSheet(String name);
 
+	abstract public BMFont getBMFont(String name);
+	
 	abstract public String getURL(String name);
 
 	abstract public TArray<String> getGroupKeys(String name);

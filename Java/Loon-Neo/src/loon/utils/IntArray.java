@@ -24,8 +24,17 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import loon.LSystem;
+import loon.event.QueryEvent;
 
 public class IntArray implements IArray {
+	
+	public static IntArray range(int start, int end) {
+		IntArray array = new IntArray(end - start);
+		for (int i = start; i < end; i++) {
+			array.add(i);
+		}
+		return array;
+	}
 	
 	public int[] items;
 	public int length;
@@ -310,8 +319,9 @@ public class IntArray implements IArray {
 		return newItems;
 	}
 
-	public void sort() {
+	public IntArray sort() {
 		Arrays.sort(items, 0, length);
+		return this;
 	}
 
 	public void reverse() {
@@ -458,6 +468,37 @@ public class IntArray implements IArray {
 		return bytes;
 	}
 
+	public IntArray where(QueryEvent<Integer> test) {
+		IntArray list = new IntArray();
+		for (int i = 0; i < length; i++) {
+			Integer t = Integer.valueOf(get(i));
+			if (test.hit(t)) {
+				list.add(t);
+			}
+		}
+		return list;
+	}
+
+	public Integer find(QueryEvent<Integer> test) {
+		for (int i = 0; i < length; i++) {
+			Integer t = Integer.valueOf(get(i));
+			if (test.hit(t)) {
+				return t;
+			}
+		}
+		return null;
+	}
+
+	public boolean remove(QueryEvent<Integer> test) {
+		for (int i = length - 1; i > -1; i--) {
+			Integer t = get(i);
+			if (test.hit(t)) {
+				return removeValue(t);
+			}
+		}
+		return false;
+	}
+	
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";

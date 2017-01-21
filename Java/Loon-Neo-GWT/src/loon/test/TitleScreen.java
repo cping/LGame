@@ -37,7 +37,7 @@ new AnimationData(new long[]{0,0});
 			public void doClick() {
 				if (!action.isPressed()) {
 					action.press();
-					replaceScreen(new MyAVGScreen(), MoveMethod.FROM_LEFT);
+					replaceScreen(new MyAVGScreen());
 				}
 			}
 		};

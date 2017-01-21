@@ -901,6 +901,29 @@ public class LColor implements Serializable {
 		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
 	}
 
+	public static LColor hsvToColor(float h, float s, float v) {
+		if (h == 0 && s == 0) {
+			return new LColor(v, v, v);
+		}
+		float c = s * v;
+		float x = c * (1 - MathUtils.abs(h % 2 - 1));
+		float m = v - c;
+
+		if (h < 1) {
+			return new LColor(c + m, x + m, m);
+		} else if (h < 2) {
+			return new LColor(x + m, c + m, m);
+		} else if (h < 3) {
+			return new LColor(m, c + m, x + m);
+		} else if (h < 4) {
+			return new LColor(m, x + m, c + m);
+		} else if (h < 5) {
+			return new LColor(x + m, m, c + m);
+		} else {
+			return new LColor(c + m, m, x + m);
+		}
+	}
+
 	public static String cssColorString(int color) {
 		double a = ((color >> 24) & 0xff) / 255.0;
 		int r = (color >> 16) & 0xff;

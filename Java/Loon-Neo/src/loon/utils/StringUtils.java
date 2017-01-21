@@ -1167,4 +1167,23 @@ final public class StringUtils extends CharUtils {
 		}
 		return text;
 	}
+
+	public final static String notEmptyOne(String... texts) {
+		TArray<String> list = notEmpty(texts);
+		if (list.size > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
+	public final static TArray<String> notEmpty(String... texts) {
+		TArray<String> list = new TArray<String>(10);
+		for (String text : texts) {
+			if (!StringUtils.isEmpty(text)) {
+				list.add(text);
+			}
+		}
+		return list;
+	}
+
 }

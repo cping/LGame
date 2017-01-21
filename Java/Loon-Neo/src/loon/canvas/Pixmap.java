@@ -11,8 +11,11 @@ import loon.geom.Polygon;
 import loon.geom.RectI;
 import loon.geom.Shape;
 import loon.geom.Triangle2f;
+import loon.geom.Vector2f;
+import loon.utils.ArrayByte;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 /**
  * 跨平台处理像素用类(不同平台内部渲染实现通常有细节差异，某些时候不如自己写同一方法更能保证效果一致，比如转换代码到C#或C++平台时,
@@ -2031,6 +2034,30 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	public TArray<Vector2f> getPoints(final Vector2f size, final int interval, final float scale) {
+		final int[] pixels = _drawPixels;
+		final TArray<Vector2f> points = new TArray<Vector2f>();
+		for (int y = 0; y < getHeight(); y += interval) {
+			for (int x = 0; x < getWidth(); x += interval) {
+				int tx = MathUtils.clamp(x + MathUtils.nextInt(-interval / 2, interval / 2), 0, getWidth() - 1);
+				int ty = MathUtils.clamp(y + MathUtils.nextInt(-interval / 2, interval / 2), 0, getHeight() - 1);
+				int color = pixels[getWidth() * ty + tx];
+				if (LColor.getRed(color) == 255) {
+					points.add((new Vector2f(tx, ty).sub(size)).mul(scale));
+				}
+			}
+		}
+		return points;
+	}
+
+	public String getBase64() {
+		return getRGBAsToArrayByte().toString();
+	}
+
+	public ArrayByte getRGBAsToArrayByte() {
+		return new ArrayByte(getRGBABytes());
+	}
+
 	public byte[] getABGRBytes() {
 		return getRGBABytes(true);
 	}
@@ -2038,7 +2065,7 @@ public class Pixmap extends Limit implements LRelease {
 	public byte[] getRGBABytes() {
 		return getRGBABytes(false);
 	}
-	
+
 	public byte[] getRGBABytes(boolean flag) {
 		int idx = 0;
 		final int bits = 4;
@@ -2068,7 +2095,7 @@ public class Pixmap extends Limit implements LRelease {
 	public byte[] getRGBBytes() {
 		return getRGBBytes(false);
 	}
-	
+
 	public byte[] getRGBBytes(boolean flag) {
 		int idx = 0;
 		final int bits = 3;
@@ -2104,7 +2131,7 @@ public class Pixmap extends Limit implements LRelease {
 		buffer.flip();
 		return buffer;
 	}
-	
+
 	public ByteBuffer convertPixmapToRGBByteBuffer() {
 		Support support = LSystem.base().support();
 		ByteBuffer buffer = support.newByteBuffer(_width * _height * 3);
@@ -2119,7 +2146,7 @@ public class Pixmap extends Limit implements LRelease {
 		buffer.flip();
 		return buffer;
 	}
-	
+
 	public void convertByteBufferRGBToPixmap(ByteBuffer buffer) {
 		int idx = 0;
 		int dst = 0;
@@ -2133,7 +2160,7 @@ public class Pixmap extends Limit implements LRelease {
 			dst += _width;
 		}
 	}
-	
+
 	public void convertByteBufferToPixmap(ByteBuffer buffer) {
 		int idx = 0;
 		int dst = 0;

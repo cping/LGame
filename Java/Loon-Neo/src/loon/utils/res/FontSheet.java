@@ -2,11 +2,12 @@ package loon.utils.res;
 
 import loon.BaseIO;
 import loon.Json;
+import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 
-public class FontSheet {
+public class FontSheet implements LRelease {
 
 	private TextureAtlas _texAtlas = null;
 
@@ -32,5 +33,11 @@ public class FontSheet {
 
 	protected void init(Json.Object jsonObj, LTexture sheet) {
 		_texAtlas = new TextureAtlas(sheet, jsonObj);
+	}
+
+	public void close() {
+		if (_texAtlas != null) {
+			_texAtlas.close();
+		}
 	}
 }

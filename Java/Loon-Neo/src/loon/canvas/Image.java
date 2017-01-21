@@ -25,9 +25,13 @@ import loon.Graphics;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
+import loon.geom.Vector2f;
 import loon.opengl.Painter;
 import loon.opengl.TextureSource;
+import loon.utils.ArrayByte;
+import loon.utils.MathUtils;
 import loon.utils.Scale;
+import loon.utils.TArray;
 import loon.utils.reply.Function;
 import loon.utils.reply.GoFuture;
 
@@ -304,14 +308,38 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		return (int) height();
 	}
 
-	public byte[] getABGRBytes() {
+	public TArray<Vector2f> getPoints(final Vector2f size, final int interval, final float scale) {
+		final int[] pixels = getPixels();
+		final TArray<Vector2f> points = new TArray<Vector2f>();
+		for (int y = 0; y < getHeight(); y += interval) {
+			for (int x = 0; x < getWidth(); x += interval) {
+				int tx = MathUtils.clamp(x + MathUtils.nextInt(-interval / 2, interval / 2), 0, getWidth() - 1);
+				int ty = MathUtils.clamp(y + MathUtils.nextInt(-interval / 2, interval / 2), 0, getHeight() - 1);
+				int color = pixels[getWidth() * ty + tx];
+				if (LColor.getRed(color) == 255) {
+					points.add((new Vector2f(tx, ty).sub(size)).mul(scale));
+				}
+			}
+		}
+		return points;
+	}
+
+	public String getBase64() {
+		return getRGBAsToArrayByte().toString();
+	}
+
+	public ArrayByte getRGBAsToArrayByte() {
+		return new ArrayByte(getRGBABytes());
+	}
+
+	public byte[] getBGRABytes() {
 		return getRGBABytes(true);
 	}
 
 	public byte[] getRGBABytes() {
 		return getRGBABytes(false);
 	}
-	
+
 	public byte[] getRGBABytes(boolean flag) {
 		int idx = 0;
 		final int bits = 4;
@@ -341,7 +369,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	public byte[] getRGBBytes() {
 		return getRGBBytes(false);
 	}
-	
+
 	public byte[] getRGBBytes(boolean flag) {
 		int idx = 0;
 		final int bits = 3;
