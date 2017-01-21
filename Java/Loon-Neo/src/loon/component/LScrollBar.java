@@ -71,24 +71,18 @@ public class LScrollBar extends LComponent {
 
 	public LScrollBar(int orientation, int x, int y, int width, int height) {
 		this(SkinManager.get().getScrollBarSkin().getScrollBarTexture(),
-				SkinManager.get().getScrollBarSkin().getSliderTexture(),
-				orientation, x, y, width, height);
+				SkinManager.get().getScrollBarSkin().getSliderTexture(), orientation, x, y, width, height);
 	}
 
-	public LScrollBar(String patha, String pathb, int orientation, int x,
-			int y, int width, int height) {
-		this(LTextures.loadTexture(patha), LTextures.loadTexture(pathb),
-				orientation, x, y, width, height);
+	public LScrollBar(String patha, String pathb, int orientation, int x, int y, int width, int height) {
+		this(LTextures.loadTexture(patha), LTextures.loadTexture(pathb), orientation, x, y, width, height);
 	}
 
-	public LScrollBar(ScrollBarSkin skin, int orientation, int x, int y,
-			int width, int height) {
-		this(skin.getScrollBarTexture(), skin.getSliderTexture(), x, y,
-				orientation, width, height);
+	public LScrollBar(ScrollBarSkin skin, int orientation, int x, int y, int width, int height) {
+		this(skin.getScrollBarTexture(), skin.getSliderTexture(), x, y, orientation, width, height);
 	}
 
-	public LScrollBar(LTexture a, LTexture b, int orientation, int x, int y,
-			int width, int height) {
+	public LScrollBar(LTexture a, LTexture b, int orientation, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.orientation = orientation;
 		this.scrollBar = a;
@@ -146,15 +140,25 @@ public class LScrollBar extends LComponent {
 		adjustVerticalLeftSlider();
 	}
 
+	public void adjustSlider(int sliderX, int sliderY, int sliderWidth, int sliderHeight) {
+		setSliderX(sliderX);
+		setSliderY(sliderY);
+		setSliderWidth(sliderWidth);
+		setSliderHeight(sliderHeight);
+	}
+
+	public void adjustSlider(int sliderWidth, int sliderHeight) {
+		adjustSlider(x() + getSliderMargin(), y() + getSliderMargin(), sliderWidth, sliderHeight);
+	}
+
 	private void adjustVerticalLeftSlider() {
-		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)));
+		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 
-		double ratioHeight = (double) scrollContainer.getHeight()
-				/ scrollContainer.getInnerHeight();
+		float ratioHeight = scrollContainer.getHeight() / scrollContainer.getInnerHeight();
 		ratioHeight = ratioHeight > 1 ? 1 : ratioHeight;
-		setSliderHeight((int) ((ratioHeight * getHeight()) - (getSliderMargin() * 2)));
+		setSliderHeight((int) ((ratioHeight * getHeight()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	private void initVerticalRightScrollBar() {
@@ -167,13 +171,12 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustVerticalRightSlider() {
-		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)));
+		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
-		double ratioHeight = (double) getHeight()
-				/ scrollContainer.getInnerHeight();
+		float ratioHeight = getHeight() / scrollContainer.getInnerHeight();
 		ratioHeight = ratioHeight > 1 ? 1 : ratioHeight;
-		setSliderHeight((int) ((ratioHeight * getHeight()) - (getSliderMargin() * 2)));
+		setSliderHeight((int) ((ratioHeight * getHeight()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	private void initHorizontalTopScrollBar() {
@@ -186,12 +189,12 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustHorizontalTopSlider() {
-		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)));
+		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 		float ratioWidth = getWidth() / scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
-		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)));
+		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	private void initHorizontalBottomScrollBar() {
@@ -207,13 +210,13 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustHorizontalBottomSlider() {
-		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)));
+		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 
 		float ratioWidth = getWidth() / scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
-		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)));
+		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	@Override
@@ -322,10 +325,8 @@ public class LScrollBar extends LComponent {
 
 	public boolean touchDown(float screenX, float screenY) {
 		if (scrollContainer != null) {
-			relativeClickX = (int) (screenX - (x() + getSliderX() + scrollContainer
-					.x()));
-			relativeClickY = (int) (screenY - (y() + getSliderY() + scrollContainer
-					.y()));
+			relativeClickX = (int) (screenX - (x() + getSliderX() + scrollContainer.x()));
+			relativeClickY = (int) (screenY - (y() + getSliderY() + scrollContainer.y()));
 			return true;
 		}
 		return false;
@@ -365,8 +366,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	protected void updateScrollContainerY() {
-		float ratio = (float) ((scrollContainer.getInnerHeight()) - scrollContainer
-				.getHeight())
+		float ratio = (float) ((scrollContainer.getInnerHeight()) - scrollContainer.getHeight())
 				/ (getHeight() - getSliderHeight() - (getSliderMargin() * 2));
 		if (Float.isNaN(ratio) || Float.isInfinite(ratio)) {
 			ratio = 0f;
@@ -423,18 +423,13 @@ public class LScrollBar extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (scrollBar == null || slider == null) {
-			g.fillRect(x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2,
-					getHeight() + 2, scrollBarColor);
-			g.fillRect(sliderX - 1 + offsetX, sliderY - 1 + offsetY,
-					sliderWidth, sliderHeight, sliderColor);
+			g.fillRect(x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, scrollBarColor);
+			g.fillRect(sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, sliderColor);
 		} else {
-			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2,
-					getHeight() + 2, baseColor);
-			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY,
-					sliderWidth, sliderHeight, baseColor);
+			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, baseColor);
+			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, baseColor);
 		}
 	}
 

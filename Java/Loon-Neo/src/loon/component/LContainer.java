@@ -37,8 +37,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	protected LComponent[] _childs = new LComponent[0];
 
-	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(
-			false);
+	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
 	private int childCount = 0;
 
@@ -73,6 +72,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		comp.setContainer(this);
 		comp.setState(State.ADDED);
+		if (comp instanceof LScrollContainer) {
+			((LScrollContainer) comp).scrollContainerRealSizeChanged();
+		}
 		this._childs = CollectionUtils.expand(this._childs, 1, false);
 		this._childs[0] = comp;
 		this.childCount++;
@@ -92,11 +94,13 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public LComponent add(LComponent comp, int index) {
 		if (comp.getContainer() != null) {
-			throw new IllegalStateException(comp
-					+ " already reside in another container!!!");
+			throw new IllegalStateException(comp + " already reside in another container!!!");
 		}
 		comp.setContainer(this);
 		comp.setState(State.ADDED);
+		if (comp instanceof LScrollContainer) {
+			((LScrollContainer) comp).scrollContainerRealSizeChanged();
+		}
 		LComponent[] newChilds = new LComponent[this._childs.length + 1];
 		this.childCount++;
 		int ctr = 0;
@@ -125,8 +129,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		final int size = this.childCount;
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
-				if (this._childs[i].Tag == tag
-						|| tag.equals(this._childs[i].Tag)) {
+				if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
 					list.add(this._childs[i]);
 				}
 			}
@@ -396,8 +399,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		if (!this.elastic) {
 			for (int i = 0; i < this.childCount; i++) {
-				if (this._childs[i].getX() > this.getWidth()
-						|| this._childs[i].getY() > this.getHeight()
+				if (this._childs[i].getX() > this.getWidth() || this._childs[i].getY() > this.getHeight()
 						|| this._childs[i].getX() + this._childs[i].getWidth() < 0
 						|| this._childs[i].getY() + this._childs[i].getHeight() < 0) {
 					setElastic(true);
@@ -427,8 +429,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		synchronized (_childs) {
 			super.createUI(g);
 			if (this.elastic) {
-				g.setClip(this.getScreenX(), this.getScreenY(),
-						this.getWidth(), this.getHeight());
+				g.setClip(this.getScreenX(), this.getScreenY(), this.getWidth(), this.getHeight());
 			}
 			this.renderComponents(g);
 			if (this.elastic) {
@@ -556,8 +557,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				LContainer container = comp.getContainer();
 				if (container != null && container instanceof LScrollContainer) {
 					if (container.contains(comp)
-							&& (comp.getWidth() >= container.getWidth() || comp
-									.getHeight() >= container.getHeight())) {
+							&& (comp.getWidth() >= container.getWidth() || comp.getHeight() >= container.getHeight())) {
 						return comp.getContainer();
 					}
 				}
@@ -581,11 +581,9 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	private RectBox getBox() {
 		if (_rect != null) {
-			_rect.setBounds(MathUtils.getBounds(0, 0, getWidth() * _scaleX,
-					getHeight() * _scaleY, _rotation, _rect));
+			_rect.setBounds(MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _rotation, _rect));
 		} else {
-			_rect = MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight()
-					* _scaleY, _rotation, _rect);
+			_rect = MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _rotation, _rect);
 		}
 		return _rect;
 	}
@@ -599,8 +597,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
-	public void layoutElements(final LayoutManager manager,
-			final LComponent... comps) {
+	public void layoutElements(final LayoutManager manager, final LComponent... comps) {
 		if (manager != null) {
 			TArray<LComponent> list = new TArray<LComponent>();
 			for (int i = 0; i < comps.length; i++) {
@@ -621,8 +618,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		packLayout(manager, 0, 0, 0, 0);
 	}
 
-	public void packLayout(final LayoutManager manager, final float spacex,
-			final float spacey, final float spaceWidth, final float spaceHeight) {
+	public void packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
+			final float spaceHeight) {
 		LComponent[] comps = getComponents();
 		CollectionUtils.reverse(comps);
 		layoutElements(manager, comps);

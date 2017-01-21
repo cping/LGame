@@ -36,12 +36,13 @@ public class CanvasPlayer extends Entity {
 		setTexture(canvas.image.createTexture(LTexture.Format.DEFAULT));
 	}
 
-	public void resize(float width, float height) {
+	public CanvasPlayer resize(float width, float height) {
 		if (canvas != null) {
 			canvas.close();
 		}
 		canvas = gfx.createCanvas(width, height);
 		setSize(width, height);
+		return this;
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class CanvasPlayer extends Entity {
 		return canvas;
 	}
 
-	public void end() {
+	public CanvasPlayer end() {
 		LTexture tex = super.getBitmap();
 		Image image = canvas.image;
 		if (tex != null && tex.pixelWidth() == image.pixelWidth() && tex.pixelHeight() == image.pixelHeight()) {
@@ -70,6 +71,7 @@ public class CanvasPlayer extends Entity {
 		} else {
 			setTexture(canvas.image.texture());
 		}
+		return this;
 	}
 
 	@Override

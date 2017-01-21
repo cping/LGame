@@ -9,5 +9,5 @@ public interface ILightning extends LRelease {
 
 	void update(long elapsedTime);
 	
-	void draw(SpriteBatch spriteBatch);
+	void draw(SpriteBatch spriteBatch,float x,float y);
 }

@@ -58,9 +58,9 @@ public class LightningBranch implements ILightning {
 		}
 	}
 
-	public void draw(SpriteBatch spriteBatch) {
+	public void draw(SpriteBatch batch, float x, float y) {
 		for (LightningBolt bolt : bolts) {
-			bolt.draw(spriteBatch);
+			bolt.draw(batch, x, y);
 		}
 	}
 

@@ -23,6 +23,8 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.action.sprite.ShapeEntity;
+import loon.canvas.LColor;
 import loon.utils.MathUtils;
 
 public abstract class Shape implements Serializable, XY {
@@ -59,6 +61,8 @@ public abstract class Shape implements Serializable, XY {
 	protected AABB aabb;
 
 	protected RectBox rect;
+
+	protected ShapeEntity entity;
 
 	public Shape() {
 		pointsDirty = true;
@@ -337,8 +341,7 @@ public abstract class Shape implements Serializable, XY {
 				y1 = ynew;
 				y2 = yold;
 			}
-			if ((xnew < x) == (x <= xold)
-					&& (y - y1) * (x2 - x1) < (y2 - y1) * (x - x1)) {
+			if ((xnew < x) == (x <= xold) && (y - y1) * (x2 - x1) < (y2 - y1) * (x - x1)) {
 				result = !result;
 			}
 			xold = xnew;
@@ -382,13 +385,16 @@ public abstract class Shape implements Serializable, XY {
 					jNext = 0;
 				}
 
-				unknownA = (((points[iNext] - points[i]) * (float) (thatPoints[j + 1] - points[i + 1])) - ((points[iNext + 1] - points[i + 1]) * (thatPoints[j] - points[i])))
-						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j])) - ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
-				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (float) (thatPoints[j + 1] - points[i + 1])) - ((thatPoints[jNext + 1] - thatPoints[j + 1]) * (thatPoints[j] - points[i])))
-						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j])) - ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
+				unknownA = (((points[iNext] - points[i]) * (float) (thatPoints[j + 1] - points[i + 1]))
+						- ((points[iNext + 1] - points[i + 1]) * (thatPoints[j] - points[i])))
+						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j]))
+								- ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
+				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (float) (thatPoints[j + 1] - points[i + 1]))
+						- ((thatPoints[jNext + 1] - thatPoints[j + 1]) * (thatPoints[j] - points[i])))
+						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j]))
+								- ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
 
-				if (unknownA >= 0 && unknownA <= 1 && unknownB >= 0
-						&& unknownB <= 1) {
+				if (unknownA >= 0 && unknownA <= 1 && unknownB >= 0 && unknownB <= 1) {
 					result = true;
 					break;
 				}
@@ -434,8 +440,7 @@ public abstract class Shape implements Serializable, XY {
 		for (int i = 0; i < points.length; i += 2) {
 			float temp = ((points[i] - center[0]) * (points[i] - center[0]))
 					+ ((points[i + 1] - center[1]) * (points[i + 1] - center[1]));
-			boundingCircleRadius = (boundingCircleRadius > temp) ? boundingCircleRadius
-					: temp;
+			boundingCircleRadius = (boundingCircleRadius > temp) ? boundingCircleRadius : temp;
 		}
 		boundingCircleRadius = MathUtils.sqrt(boundingCircleRadius);
 	}
@@ -486,16 +491,14 @@ public abstract class Shape implements Serializable, XY {
 
 	public void setRotation(float r) {
 		if (rotation != r) {
-			this.callTransform(Matrix3.createRotateTransform(
-					rotation = (r / 180f * MathUtils.PI), this.center[0],
+			this.callTransform(Matrix3.createRotateTransform(rotation = (r / 180f * MathUtils.PI), this.center[0],
 					this.center[1]));
 		}
 	}
 
 	public void setRotation(float r, float x, float y) {
 		if (rotation != r) {
-			this.callTransform(Matrix3.createRotateTransform(
-					rotation = (r / 180f * MathUtils.PI), x, y));
+			this.callTransform(Matrix3.createRotateTransform(rotation = (r / 180f * MathUtils.PI), x, y));
 		}
 	}
 
@@ -604,6 +607,19 @@ public abstract class Shape implements Serializable, XY {
 			aabb.set(minX, minY, maxX, maxY);
 		}
 		return aabb;
+	}
+
+	public ShapeEntity getEntity() {
+		return getEntity(LColor.white, true);
+	}
+
+	public ShapeEntity getEntity(LColor c, boolean fill) {
+		if (entity == null) {
+			entity = new ShapeEntity(this, c, fill);
+		} else {
+			entity.setShape(this);
+		}
+		return entity;
 	}
 
 }

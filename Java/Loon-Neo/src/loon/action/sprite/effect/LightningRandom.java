@@ -12,7 +12,7 @@ import loon.utils.timer.LTimer;
 /**
  * 在指定范围内创造随机数量闪电(就是野比饭初次变超赛2那种效果)
  */
-public class LightningRandom implements ILightning{
+public class LightningRandom implements ILightning {
 
 	private LTimer timer = new LTimer(0);
 	private TArray<Vector2f> particles = new TArray<Vector2f>();
@@ -78,9 +78,9 @@ public class LightningRandom implements ILightning{
 		return points;
 	}
 
-	public void draw(SpriteBatch batch) {
+	public void draw(SpriteBatch batch, float x, float y) {
 		for (LightningBranch bolt : bolts) {
-			bolt.draw(batch);
+			bolt.draw(batch, x, y);
 		}
 	}
 

@@ -131,8 +131,7 @@ public class Circle extends Ellipse {
 	 * @return
 	 */
 	public boolean contains(Line line) {
-		return contains(line.getX1(), line.getY1())
-				&& contains(line.getX2(), line.getY2());
+		return contains(line.getX1(), line.getY1()) && contains(line.getX2(), line.getY2());
 	}
 
 	@Override
@@ -197,8 +196,7 @@ public class Circle extends Ellipse {
 			Vector2f projv = segv.mul(projvl / segvLength);
 			closest = lineSegmentStart.add(projv);
 		}
-		boolean intersects = circleCenter.sub(closest).lengthSquared() <= getRadius()
-				* getRadius();
+		boolean intersects = circleCenter.sub(closest).lengthSquared() <= getRadius() * getRadius();
 		return intersects;
 	}
 }

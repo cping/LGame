@@ -35,12 +35,12 @@ public class LightningBolt implements ILightning {
 	}
 
 	@Override
-	public void draw(SpriteBatch spriteBatch) {
+	public void draw(SpriteBatch spriteBatch, float x, float y) {
 		if (alpha <= 0) {
 			return;
 		}
 		for (LightningLine segment : segments) {
-			segment.draw(spriteBatch, tint.mul(alpha * alphaMultiplier));
+			segment.draw(spriteBatch, x, y, tint.mul(alpha * alphaMultiplier));
 		}
 	}
 
