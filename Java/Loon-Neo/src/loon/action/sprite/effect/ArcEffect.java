@@ -77,18 +77,16 @@ public class ArcEffect extends Entity implements BaseEffect {
 			g.setPixSkip(8);
 		}
 		if (count <= 1) {
-			g.fillRect(x() + offsetX, y() + offsetY, _width, _height);
+			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height);
 		} else {
 			float deg = 360f / this.div * this.count;
 			if (deg < 360) {
-				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f)
-						+ MathUtils.pow(_height / 2, 2.0f));
+				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f) + MathUtils.pow(_height / 2, 2.0f));
 				float x = getX() + (_width / 2 - length);
 				float y = getY() + (_height / 2 - length);
 				float w = _width / 2 + length - x;
 				float h = _height / 2 + length - y;
-				g.fillArc(x + offsetX, y + offsetY, w, h, 20, 0,
-						this.sign[this.turn] * deg);
+				g.fillArc(x + offsetX + _offset.x, y + offsetY + _offset.y, w, h, 20, 0, this.sign[this.turn] * deg);
 			}
 		}
 		if (useTex) {

@@ -24,9 +24,9 @@ public class ShapeEntity extends Entity {
 		int color = g.color();
 		g.setColor(_baseColor);
 		if (_fill) {
-			g.fill(_shape, offsetX, offsetY);
+			g.fill(_shape, drawX(offsetX), drawY(offsetY));
 		} else {
-			g.draw(_shape, offsetX, offsetY);
+			g.draw(_shape, drawX(offsetX), drawY(offsetY));
 		}
 		g.setColor(color);
 	}

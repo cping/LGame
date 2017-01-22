@@ -49,7 +49,7 @@ public class GifAnimation extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		g.draw(_animation.getSpriteImage(), getX() + offsetX, getY() + offsetY);
+		g.draw(_animation.getSpriteImage(), drawX(offsetX), drawY(offsetY));
 	}
 
 	@Override

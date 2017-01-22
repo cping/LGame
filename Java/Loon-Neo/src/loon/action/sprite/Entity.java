@@ -714,7 +714,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 			if (_repaintDraw) {
 				boolean elastic = (_shear != null);
 				if (elastic) {
-					g.setClip(_shear.x, _shear.y, _shear.width, _shear.height);
+					g.setClip(drawX(offsetX + _shear.x), drawY(offsetY + _shear.y), _shear.width, _shear.height);
 				}
 				float tmp = g.alpha();
 				g.setAlpha(_alpha);
@@ -817,15 +817,15 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 			this.onManagedUpdate(elapsedTime);
 		}
 	}
-	
-	public int width(){
-		return (int)getWidth();
+
+	public int width() {
+		return (int) getWidth();
 	}
 
-	public int height(){
-		return (int)getHeight();
+	public int height() {
+		return (int) getHeight();
 	}
-	
+
 	@Override
 	public float getWidth() {
 		return (_width * this._scaleX);
@@ -1061,6 +1061,30 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 
 	public void setOffset(Vector2f offset) {
 		this._offset = offset;
+	}
+
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	public void setOffsetX(float offsetX) {
+		this._offset.setX(offsetX);
+	}
+
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
+	public void setOffsetY(float offsetY) {
+		this._offset.setY(offsetY);
+	}
+
+	protected float drawX(float offsetX) {
+		return offsetX + this._location.x + _offset.x;
+	}
+
+	protected float drawY(float offsetY) {
+		return offsetY + this._location.y + _offset.y;
 	}
 
 	@Override

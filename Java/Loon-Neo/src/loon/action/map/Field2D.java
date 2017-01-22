@@ -397,6 +397,9 @@ public class Field2D implements Config {
 	}
 
 	public static Vector2f getDirection(int type) {
+		if (type > Config.TDOWN) {
+			type = Config.TDOWN;
+		}
 		return directionValues.get(type);
 	}
 

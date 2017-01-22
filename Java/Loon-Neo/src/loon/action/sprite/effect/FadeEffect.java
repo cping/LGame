@@ -35,8 +35,6 @@ public class FadeEffect extends Entity implements BaseEffect {
 
 	public boolean finished;
 
-	private int offsetX, offsetY;
-
 	public static FadeEffect getInstance(int type, LColor c) {
 		return getInstance(type, c, LSystem.viewSize.getWidth(),
 				LSystem.viewSize.getHeight());
@@ -110,7 +108,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 		float op = (currentFrame / time);
 		int old = g.color();
 		g.setTint(_baseColor.r, _baseColor.g, _baseColor.b, op);
-		g.fillRect(offsetX + this.x() + sx, offsetY + this.y() + sy, _width,
+		g.fillRect(drawX(sx), drawY(sy), _width,
 				_height);
 		g.setTint(old);
 		return;
@@ -131,22 +129,6 @@ public class FadeEffect extends Entity implements BaseEffect {
 				finished = true;
 			}
 		}
-	}
-
-	public int getOffsetX() {
-		return offsetX;
-	}
-
-	public void setOffsetX(int offsetX) {
-		this.offsetX = offsetX;
-	}
-
-	public int getOffsetY() {
-		return offsetY;
-	}
-
-	public void setOffsetY(int offsetY) {
-		this.offsetY = offsetY;
 	}
 
 	public int getFadeType() {

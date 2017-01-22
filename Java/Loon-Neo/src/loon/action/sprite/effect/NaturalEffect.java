@@ -279,10 +279,10 @@ public class NaturalEffect extends Entity implements BaseEffect {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (naturalType == NaturalType.Thunder && lightningEffect != null) {
-			lightningEffect.repaint(g, offsetX, offsetY);
+			lightningEffect.repaint(g, drawX(offsetX), drawY(offsetY));
 		} else {
 			for (int i = 0; i < count; i++) {
-				kernels[i].draw(g, _location.x + offsetX, _location.y + offsetY);
+				kernels[i].draw(g, drawX(offsetX), drawY(offsetY));
 			}
 		}
 	}

@@ -96,7 +96,7 @@ public abstract class PixelBaseEffect extends Entity {
 		if (useTex) {
 			g.setPixSkip(4);
 		}
-		draw(g, this.x() + offsetX, this.y() + offsetY);
+		draw(g, drawX(offsetX), drawY(offsetY));
 		if (useTex) {
 			g.setPixSkip(tmp);
 		}

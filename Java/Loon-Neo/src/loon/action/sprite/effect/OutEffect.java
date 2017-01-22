@@ -75,7 +75,7 @@ public class OutEffect extends Entity implements BaseEffect {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (!completed) {
-			g.draw(_image, x() + offsetX, y() + offsetY);
+			g.draw(_image, drawX(offsetX), drawY(offsetY));
 		}
 	}
 

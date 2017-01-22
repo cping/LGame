@@ -127,13 +127,13 @@ public class StatusBar extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		drawBar(g, goal, current, _width, getX(), getY());
+		drawBar(g, goal, current, _width, getX() + offsetX, getY() + offsetY);
 		if (showValue) {
 			hpString = String.valueOf(value);
 			int current = g.getFont().stringWidth(hpString);
 			int h = g.getFont().getHeight();
-			g.drawString(hpString, (x() + _width / 2 - current / 2) + 2, (y()
-					+ _height / 2 - h), fontColor);
+			g.drawString(hpString, (x() + _width / 2 - current / 2) + 2 + _offset.x + offsetX, (y()
+					+ _height / 2 - h) + _offset.y + offsetY, fontColor);
 		}
 	}
 

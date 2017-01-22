@@ -94,8 +94,8 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 		for (int x = 0; x < tilewidth; x++) {
 			for (int y = 0; y < tileheight; y++) {
 				if (conversions[x][y]) {
-					g.fillRect((x * _width) + offsetX, (y * _height) + offsetY,
-							_width, _height, _baseColor);
+					g.fillRect((x * _width) + offsetX + _offset.x, (y * _height) + offsetY + _offset.y, _width, _height,
+							_baseColor);
 				}
 			}
 		}

@@ -11,8 +11,6 @@ import loon.opengl.GLEx;
 
 public class SpriteLabel extends Entity {
 
-	private float _offsetX = 0, _offsetY = 0;
-
 	private final Text _text;
 
 	public SpriteLabel(String label) {
@@ -51,8 +49,7 @@ public class SpriteLabel extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		_text.paintString(g, getX() + offsetX + _offsetX, getY() + offsetY
-				+ _offsetY, _baseColor);
+		_text.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor);
 	}
 
 	public Text getOptions() {
@@ -70,27 +67,6 @@ public class SpriteLabel extends Entity {
 	public SpriteLabel setLabel(CharSequence label) {
 		_text.setText(label);
 		return this;
-	}
-
-	public float getOffsetX() {
-		return _offsetX;
-	}
-
-	public void setOffsetX(float offsetX) {
-		this._offsetX = offsetX;
-	}
-
-	public float getOffsetY() {
-		return _offsetY;
-	}
-
-	public void setOffsetY(float offsetY) {
-		this._offsetY = offsetY;
-	}
-
-	public void setOffset(float offsetX, float offsetY) {
-		this.setOffsetX(offsetX);
-		this.setOffsetY(offsetY);
 	}
 	
 	@Override

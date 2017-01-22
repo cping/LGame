@@ -110,7 +110,7 @@ public class LightningEffect extends Entity {
 		_batch.begin();
 		_batch.setBlendState(BlendState.Additive);
 		for (ILightning bolt : lists) {
-			bolt.draw(_batch,offsetX,offsetY);
+			bolt.draw(_batch, drawX(offsetX), drawY(offsetY));
 		}
 		_batch.end();
 	}

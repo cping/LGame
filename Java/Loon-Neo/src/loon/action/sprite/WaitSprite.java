@@ -244,9 +244,9 @@ public class WaitSprite extends Entity {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (style < 2) {
-			wait.draw(g, x() + offsetX, y() + offsetY);
+			wait.draw(g, drawX(offsetX), drawY(offsetY));
 		} else if (cycle != null) {
-			cycle.createUI(g, offsetX, offsetY);
+			cycle.createUI(g, drawX(offsetX), drawY(offsetY));
 		}
 
 	}

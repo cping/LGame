@@ -229,17 +229,17 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 				if (usefore) {
 					if (conversions[x][y]) {
 						g.setColor(back);
-						g.fillRect((x * _width) + offsetX, (y * _height)
-								+ offsetY, _width, _height);
+						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height)
+								+ offsetY + _offset.y, _width, _height);
 					} else if (!conversions[x][y] && filledObject(x, y)) {
 						g.setColor(fore);
-						g.fillRect((x * _width) + offsetX, (y * _height)
-								+ offsetY, _width, _height);
+						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height)
+								+ offsetY + _offset.y, _width, _height);
 					}
 				} else {
 					if (conversions[x][y]) {
-						g.fillRect((x * _width) + offsetX, (y * _height)
-								+ offsetY, _width, _height);
+						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height)
+								+ offsetY + _offset.y, _width, _height);
 					}
 				}
 			}

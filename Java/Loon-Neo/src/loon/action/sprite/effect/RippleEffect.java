@@ -29,8 +29,6 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	private int existTime = 25;
 
-	private float offsetX, offsetY;
-
 	public RippleEffect() {
 		this(Model.OVAL, LColor.blue);
 	}
@@ -85,8 +83,7 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		g.setColor(_baseColor);
 		for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
 			RippleKernel ripple = it.next();
-			ripple.draw(g, model, _location.x + offsetX + sx, _location.y
-					+ offsetY + sy);
+			ripple.draw(g, model, drawX(sx), drawY(sy));
 		}
 		g.setColor(tmp);
 	}
@@ -105,7 +102,6 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 			}
 		}
 	}
-
 
 	@Override
 	public boolean isCompleted() {
@@ -138,19 +134,4 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		}
 	}
 
-	public float getOffsetX() {
-		return offsetX;
-	}
-
-	public void setOffsetX(float offsetX) {
-		this.offsetX = offsetX;
-	}
-
-	public float getOffsetY() {
-		return offsetY;
-	}
-
-	public void setOffsetY(float offsetY) {
-		this.offsetY = offsetY;
-	}
 }

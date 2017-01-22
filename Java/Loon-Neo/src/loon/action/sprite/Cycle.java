@@ -511,7 +511,7 @@ public class Cycle extends Entity {
 				g.setAlpha(_alpha);
 			}
 			g.setTint(_baseColor);
-			step(g, point, indexD, frameD, _baseColor, _alpha, offsetX, offsetY);
+			step(g, point, indexD, frameD, _baseColor, _alpha, offsetX + _offset.x, offsetY + _offset.y);
 			if (_alpha != 1f) {
 				g.setAlpha(1f);
 			}

@@ -209,7 +209,7 @@ public class TriangleEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		draw(g, this.getX() + offsetX, this.getY() + offsetY);
+		draw(g, drawX(offsetX), drawY(offsetY));
 	}
 
 	@Override

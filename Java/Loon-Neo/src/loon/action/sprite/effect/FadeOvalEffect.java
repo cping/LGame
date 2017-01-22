@@ -36,8 +36,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		this.setColor(oc);
 		this.elapsed = 0;
 		for (int i = 0; i < OVAL_COLORS.length; i++) {
-			OVAL_COLORS[i] = new LColor(oc.r, oc.g, oc.b,
-					1F - 0.15f * i);
+			OVAL_COLORS[i] = new LColor(oc.r, oc.g, oc.b, 1F - 0.15f * i);
 		}
 		this.max_time = time;
 		this.timer = new LTimer(0);
@@ -67,8 +66,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 				this.elapsed += elapsedTime / 20f;
 				float progress = this.elapsed / this.max_time;
 				this._width = (_width * MathUtils.pow(1f - progress, 2f));
-				this._height = (_height * MathUtils
-						.pow(1f - progress, 2f));
+				this._height = (_height * MathUtils.pow(1f - progress, 2f));
 				if (this.elapsed >= this.max_time / 15f) {
 					this.elapsed = -1;
 					this._width = (this._height = 0f);
@@ -77,14 +75,11 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 			} else {
 				this.elapsed += elapsedTime;
 				float progress = this.elapsed / this.max_time;
-				this._width = (LSystem.viewSize.width * MathUtils.pow(
-						progress, 2f));
-				this._height = (LSystem.viewSize.height * MathUtils.pow(
-						progress, 2f));
+				this._width = (LSystem.viewSize.width * MathUtils.pow(progress, 2f));
+				this._height = (LSystem.viewSize.height * MathUtils.pow(progress, 2f));
 				if (this.elapsed >= this.max_time) {
 					this.elapsed = -1;
-					this._width = (this._height = MathUtils.max(
-							LSystem.viewSize.width, LSystem.viewSize.height));
+					this._width = (this._height = MathUtils.max(LSystem.viewSize.width, LSystem.viewSize.height));
 					this.finished = true;
 				}
 			}
@@ -108,8 +103,8 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 				g.setColor(OVAL_COLORS[i]);
 				float w = this._width + i * this._width * 0.1f;
 				float h = this._height + i * this._height * 0.1f;
-				g.fillOval((g.getWidth() / 2 - w / 2f) + sx,
-						(g.getHeight() / 2 - h / 2f) + sy, w, h);
+				g.fillOval((g.getWidth() / 2 - w / 2f) + sx + _offset.x, (g.getHeight() / 2 - h / 2f) + sy + _offset.y,
+						w, h);
 			}
 			g.setColor(old);
 			if (usetex) {

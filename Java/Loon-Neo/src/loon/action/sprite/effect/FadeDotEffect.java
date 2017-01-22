@@ -180,7 +180,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		for (int i = 0; i < dots.size; i++) {
-			((Dot) dots.get(i)).paint(g, offsetX, offsetY);
+			((Dot) dots.get(i)).paint(g, drawX(offsetX), drawY(offsetY));
 		}
 		if (useText) {
 			g.setPixSkip(skip);

@@ -37,7 +37,6 @@ public class ScrollText extends Entity {
 	private int speed = 1;
 	private final Text _text;
 	private Vector2f textMove = new Vector2f();
-	private float _offsetX = 0, _offsetY = 0;
 	private float textX = 0, textY = 0;
 	private float space = 5f;
 	private LTimer timer = new LTimer(50);
@@ -161,8 +160,8 @@ public class ScrollText extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		textX = textMove.x + getX() + _offsetX;
-		textY = textMove.y + getY() + _offsetY;
+		textX = textMove.x + getX() + _offset.x + offsetX;
+		textY = textMove.y + getY() + _offset.y + offsetY;
 		_text.paintString(g, textX, textY, _baseColor);
 	}
 
@@ -177,27 +176,6 @@ public class ScrollText extends Entity {
 	public ScrollText setText(String text) {
 		_text.setText(text);
 		return this;
-	}
-
-	public float getOffsetX() {
-		return _offsetX;
-	}
-
-	public void setOffsetX(float offsetX) {
-		this._offsetX = offsetX;
-	}
-
-	public float getOffsetY() {
-		return _offsetY;
-	}
-
-	public void setOffsetY(float offsetY) {
-		this._offsetY = offsetY;
-	}
-
-	public void setOffset(float offsetX, float offsetY) {
-		this.setOffsetX(offsetX);
-		this.setOffsetY(offsetY);
 	}
 
 	public boolean isStop() {

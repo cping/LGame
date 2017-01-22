@@ -109,11 +109,11 @@ public class SplitEffect extends Entity implements BaseEffect {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (!completed) {
-			final float x1 = v1.x + getX() + offsetX;
-			final float y1 = v1.y + getY() + offsetY;
+			final float x1 = v1.x + getX() + offsetX + _offset.x;
+			final float y1 = v1.y + getY() + offsetY + _offset.y;
 
-			final float x2 = v2.x + getX() + offsetX;
-			final float y2 = v2.y + getY() + offsetY;
+			final float x2 = v2.x + getX() + offsetX + _offset.x;
+			final float y2 = v2.y + getY() + offsetY + _offset.y;
 
 			switch (direction) {
 			case Config.LEFT:

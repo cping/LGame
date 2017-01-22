@@ -255,7 +255,7 @@ public class NumberSprite extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		drawNumber(g, x() + (int) offsetX, y() + (int) offsetY, label);
+		drawNumber(g, (int)drawX(offsetX), (int)drawY(offsetY), label);
 	}
 
 }
