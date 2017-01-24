@@ -3425,6 +3425,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 返回Bundle对象(作用类似Android中同名类,内部为key-value键值对形式的值,用来跨screen传递数据)
+	 * 
+	 * @return
+	 */
+	public Bundle<?> getBundle() {
+		if (LSystem.getProcess() != null) {
+			return LSystem.getProcess().getBundle();
+		}
+		return new EmptyBundle();
+	}
+
+	/**
 	 * 截屏screen并转化为base64字符串
 	 * 
 	 * @return

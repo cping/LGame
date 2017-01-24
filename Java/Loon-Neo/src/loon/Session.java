@@ -22,23 +22,39 @@ package loon;
 
 import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
+import loon.utils.Base64Coder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
  * 游戏记录器，用于记录当前游戏数据
  */
-public class Session {
+public class Session implements Bundle<String> {
 
 	private Save _save;
 
 	private boolean isPersisted = false;
 
 	private String loadData() {
-		return _save.getItem(name);
+		String result = _save.getItem(name);
+		if (Base64Coder.isBase64(result)) {
+			try {
+				result = new String(Base64Coder.decode(result), LSystem.ENCODING);
+			} catch (Exception e) {
+				result = new String(Base64Coder.decode(result));
+			}
+		}
+		return result;
 	}
 
-	private void svaeData(String result) {
+	private void saveData(String result) {
+		if (!Base64Coder.isBase64(result)) {
+			try {
+				result = new String(Base64Coder.encode(result.getBytes()), LSystem.ENCODING);
+			} catch (Exception e) {
+				result = new String(Base64Coder.encode(result.getBytes()));
+			}
+		}
 		_save.setItem(name, result);
 	}
 
@@ -100,8 +116,7 @@ public class Session {
 		}
 
 		public void set(int index, final String v) {
-			final String value = StringUtils.replace(v, String.valueOf(flag),
-					"+");
+			final String value = StringUtils.replace(v, String.valueOf(flag), "+");
 			if (index >= values.length) {
 				int size = index + 1;
 				String[] res = new String[size];
@@ -161,7 +176,7 @@ public class Session {
 	}
 
 	public int loadEncodeSession(String encode) {
-		if (encode != null && !"".equals(encode)) {
+		if (!StringUtils.isEmpty(encode)) {
 			String[] parts = StringUtils.split(encode, flag);
 			return decode(parts, 0);
 		}
@@ -318,6 +333,31 @@ public class Session {
 		}
 	}
 
+	@Override
+	public void put(String key, String value) {
+		add(key, value);
+	}
+
+	@Override
+	public String get(String key, String defaultValue) {
+		String result = get(key);
+		return result == null ? defaultValue : result;
+	}
+
+	@Override
+	public String remove(String key) {
+		String result = get(key);
+		delete(key);
+		return result;
+	}
+
+	@Override
+	public String remove(String key, String defaultValue) {
+		String result = get(key);
+		delete(key);
+		return result == null ? defaultValue : result;
+	}
+
 	public int getCount(String name) {
 		synchronized (recordsList) {
 			Record record = (Record) records.get(name);
@@ -422,8 +462,8 @@ public class Session {
 
 	public void save() {
 		String result = encode();
-		if (result != null && !"".equals(result)) {
-			svaeData(result);
+		if (!StringUtils.isEmpty(result)) {
+			saveData(result);
 		}
 	}
 
@@ -466,4 +506,5 @@ public class Session {
 		} catch (Exception e) {
 		}
 	}
+
 }

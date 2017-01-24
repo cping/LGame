@@ -28,9 +28,22 @@ import loon.canvas.TGA;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteReader;
 import loon.utils.GifDecoder;
+import loon.utils.reply.GoFuture;
 
 public abstract class BaseIO {
 
+	public static GoFuture<String> loadAsynText(String path) {
+		final LGame base = LSystem._base;
+		if (base != null) {
+			try {
+				return base.assets().getText(path);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
+	}
+	
 	public static String loadText(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
@@ -114,6 +127,18 @@ public abstract class BaseIO {
 			return new ArrayByte(1);
 		}
 		return new ArrayByte(buffer);
+	}
+
+	public static GoFuture<byte[]> loadAsynBytes(String path) {
+		final LGame base = LSystem._base;
+		if (base != null) {
+			try {
+				return base.assets().getBytes(path);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 	public static byte[] loadBytes(String path) {

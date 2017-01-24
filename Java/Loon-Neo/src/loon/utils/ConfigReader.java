@@ -3,10 +3,22 @@ package loon.utils;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
+import loon.Bundle;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
 
-public class ConfigReader implements Expression {
+/**
+ * 一个简单的多文本数据存储及读取用类,作用类似于ini文件
+ * 
+ * 存储格式为:
+ * begin name = "key1"
+ * value1
+ * end
+ * begin name = "key2"
+ * value2
+ * end
+ */
+public class ConfigReader implements Expression, Bundle<String> {
 
 	private String FLAG_L_TAG = "//";
 
@@ -49,8 +61,7 @@ public class ConfigReader implements Expression {
 		String mapName = null;
 		for (; reader.hasMoreTokens();) {
 			record = reader.nextToken().trim();
-			if (record.length() > 0 && !record.startsWith(FLAG_L_TAG)
-					&& !record.startsWith(FLAG_C_TAG)
+			if (record.length() > 0 && !record.startsWith(FLAG_L_TAG) && !record.startsWith(FLAG_C_TAG)
 					&& !record.startsWith(FLAG_I_TAG)) {
 				if (record.startsWith("begin")) {
 					mapBuffer.delete(0, mapBuffer.length());
@@ -61,9 +72,7 @@ public class ConfigReader implements Expression {
 					mapFlag = true;
 				} else if (record.startsWith("end")) {
 					mapFlag = false;
-
 					if (mapName != null) {
-
 						pConfigItems.put(mapName, mapBuffer.toString());
 					}
 				} else if (mapFlag) {
@@ -194,14 +203,36 @@ public class ConfigReader implements Expression {
 		return getValue(name, null);
 	}
 
+	@Override
+	public void put(String key, String value) {
+		putItem(key, value);
+	}
+
+	@Override
+	public String get(String key, String defaultValue) {
+		return getValue(key, defaultValue);
+	}
+
+	@Override
+	public String remove(String key) {
+		String result = getValue(key);
+		removeItem(key);
+		return result;
+	}
+
+	@Override
+	public String remove(String key, String defaultValue) {
+		String result = getValue(key, defaultValue);
+		removeItem(key);
+		return result;
+	}
+
 	public Field2D getField2D(String name, int width, int height) {
 		return getField2D(name, width, height, null);
 	}
 
-	public Field2D getField2D(String name, int width, int height,
-			Field2D fallback) {
-		int[][] arrays = getArray2D(name,
-				fallback == null ? null : fallback.getMap());
+	public Field2D getField2D(String name, int width, int height, Field2D fallback) {
+		int[][] arrays = getArray2D(name, fallback == null ? null : fallback.getMap());
 		if (arrays != null) {
 			return new Field2D(arrays, width, height);
 		}
@@ -222,8 +253,7 @@ public class ConfigReader implements Expression {
 			char[] chars = v.toCharArray();
 			int size = chars.length;
 			StringBuffer sbr = new StringBuffer(128);
-			TArray<int[]> records = new TArray<int[]>(
-					CollectionUtils.INITIAL_CAPACITY);
+			TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 			for (int i = 0; i < size; i++) {
 				char pValue = chars[i];
 				switch (pValue) {

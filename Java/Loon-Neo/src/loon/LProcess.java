@@ -59,24 +59,27 @@ public class LProcess extends PlayerUtils {
 
 	private int id;
 
-	private boolean waitTransition;
+	private boolean _waitTransition;
 
-	private boolean running;
+	private boolean _running;
 
-	private Screen currentScreen, loadingScreen;
+	private Screen _currentScreen, _loadingScreen;
 
-	private LTransition transition;
+	private LTransition _transition;
 
-	private LogDisplay logDisplay;
+	private LogDisplay _logDisplay;
+	
+	private final Bundle<?> _bundle;
+	 
+	private final SysInputFactory _currentInput;
 
-	private final SysInputFactory currentInput;
-
-	private final LGame game;
+	private final LGame _game;
 
 	public LProcess(LGame game) {
 		super();
-		this.game = game;
-		this.currentInput = new SysInputFactory(this);
+		this._game = game;
+		this._bundle = new MapBundle();
+		this._currentInput = new SysInputFactory(this);
 		this._screens = new TArray<Screen>();
 		this._screenMap = new ListMap<CharSequence, Screen>();
 		this.clear();
@@ -85,21 +88,21 @@ public class LProcess extends PlayerUtils {
 			if (!game.setting.emulateTouch && !game.isMobile()) {
 				input.mouseEvents.connect(new MouseMake.ButtonSlot() {
 					public void onEmit(MouseMake.ButtonEvent event) {
-						currentInput.callMouse(event);
+						_currentInput.callMouse(event);
 					}
 				});
 			} else {
 				input.touchEvents.connect(new Port<TouchMake.Event[]>() {
 					@Override
 					public void onEmit(TouchMake.Event[] events) {
-						currentInput.callTouch(events);
+						_currentInput.callTouch(events);
 					}
 				});
 			}
 			input.keyboardEvents.connect(new KeyMake.KeyPort() {
 				@Override
 				public void onEmit(KeyMake.KeyEvent e) {
-					currentInput.callKey(e);
+					_currentInput.callKey(e);
 				}
 			});
 		}
@@ -135,16 +138,16 @@ public class LProcess extends PlayerUtils {
 			list.clear();
 		}
 		for (int i = 0, size = loadCache.size; i < size; i++) {
-			Updateable running = loadCache.get(i);
-			synchronized (running) {
-				running.action(null);
+			Updateable _running = loadCache.get(i);
+			synchronized (_running) {
+				_running.action(null);
 			}
 		}
 		loadCache = null;
 	}
 
 	public final SysInputFactory getCurrentSysInput() {
-		return currentInput;
+		return _currentInput;
 	}
 
 	// --- Load start ---//
@@ -210,78 +213,73 @@ public class LProcess extends PlayerUtils {
 	// --- UnLoad end ---//
 
 	private void setScreen(final Screen screen, boolean put) {
-		if (loadingScreen != null && loadingScreen.isOnLoadComplete()) {
+		if (_loadingScreen != null && _loadingScreen.isOnLoadComplete()) {
 			return;
 		}
 		synchronized (this) {
 			if (screen == null) {
 				this.isInstance = false;
-				throw LSystem.runThrow("Cannot create a [Screen] instance !");
+				throw LSystem.re("Cannot create a [Screen] instance !");
 			}
-			if (!game.display().showLogo) {
-				if (currentScreen != null) {
+			if (!_game.display().showLogo) {
+				if (_currentScreen != null) {
 					setTransition(screen.onTransition());
 				} else {
 					// 为了防止画面单调，Loon默认为无设定Transition的，首个Screen随机增加一个特效
 					// 不想使用，或者需要设定的话，请重载Screen的onTransition函数。
 					// 不使用：返回: LTransition.newEmpty()
 					// 使用：返回: 设定或者自定义一个LTransition对象.
-					LTransition transition = screen.onTransition();
-					if (transition == null) {
+					LTransition _transition = screen.onTransition();
+					if (_transition == null) {
 						int rad = MathUtils.random(0, 10);
 						switch (rad) {
 						case 0:
-							transition = LTransition.newFadeIn();
+							_transition = LTransition.newFadeIn();
 							break;
 						case 1:
-							transition = LTransition.newArc();
+							_transition = LTransition.newArc();
 							break;
 						case 2:
-							transition = LTransition.newSplitRandom(LColor.black);
+							_transition = LTransition.newSplitRandom(LColor.black);
 							break;
 						case 3:
-							transition = LTransition.newCrossRandom(LColor.black);
+							_transition = LTransition.newCrossRandom(LColor.black);
 							break;
 						case 4:
-							transition = LTransition.newFadeOvalIn(LColor.black);
+							_transition = LTransition.newFadeOvalIn(LColor.black);
 							break;
 						case 5:
-							transition = LTransition.newPixelWind(LColor.white);
+							_transition = LTransition.newPixelWind(LColor.white);
 							break;
 						case 6:
-							transition = LTransition.newPixelDarkOut(LColor.black);
+							_transition = LTransition.newPixelDarkOut(LColor.black);
 							break;
 						case 7:
-							transition = LTransition.newPixelThunder(LColor.black);
+							_transition = LTransition.newPixelThunder(LColor.black);
 							break;
 						case 8:
-							transition = LTransition.newFadeDotIn(LColor.black);
+							_transition = LTransition.newFadeDotIn(LColor.black);
 							break;
 						case 9:
-							transition = LTransition.newFadeTileIn(LColor.black);
+							_transition = LTransition.newFadeTileIn(LColor.black);
 							break;
 						case 10:
-							transition = LTransition.newFadeSpiralIn(LColor.black);
+							_transition = LTransition.newFadeSpiralIn(LColor.black);
 							break;
 						}
 					}
-					setTransition(transition);
+					setTransition(_transition);
 				}
 			}
 			clearLog();
 			screen.setOnLoadState(false);
-			if (currentScreen == null) {
-				currentScreen = screen;
+			if (_currentScreen == null) {
+				_currentScreen = screen;
 			} else {
-				synchronized (currentScreen) {
-					currentScreen.destroy();
-					currentScreen = screen;
-				}
+				killScreen(screen);
 			}
 			this.isInstance = true;
-			if (LSystem.base() != null && LSystem.base().display() != null) {
 
-			}
 			if (screen instanceof EmulatorListener) {
 				setEmulatorListener((EmulatorListener) screen);
 			} else {
@@ -301,6 +299,7 @@ public class LProcess extends PlayerUtils {
 						screen.onLoad();
 						screen.onLoaded();
 						screen.setOnLoadState(true);
+						screen.resume();
 						endTransition();
 						kill();
 					}
@@ -313,63 +312,73 @@ public class LProcess extends PlayerUtils {
 			if (put) {
 				_screens.add(screen);
 			}
-			loadingScreen = null;
+			_loadingScreen = null;
+		}
+	}
+
+	private void killScreen(Screen screen) {
+		synchronized (_currentScreen) {
+			if (screen == _currentScreen) {
+				screen.pause();
+			}
+			screen.destroy();
+			_currentScreen = screen;
 		}
 	}
 
 	public void start() {
-		if (!running) {
-			if (loadingScreen != null) {
-				setScreen(loadingScreen);
+		if (!_running) {
+			if (_loadingScreen != null) {
+				setScreen(_loadingScreen);
 			}
-			running = true;
+			_running = true;
 		}
 	}
 
 	public void resize(int w, int h) {
 		if (isInstance) {
-			currentScreen.resize(w, h);
+			_currentScreen.resize(w, h);
 		}
 	}
 
 	public void resume() {
 		if (isInstance) {
-			currentScreen.resume();
+			_currentScreen.resume();
 		}
 	}
 
 	public void pause() {
 		if (isInstance) {
-			currentScreen.pause();
+			_currentScreen.pause();
 		}
 	}
 
 	public void stop() {
-		running = false;
+		_running = false;
 		if (isInstance) {
-			currentScreen.stop();
+			_currentScreen.stop();
 		}
 		endTransition();
 		if (isInstance) {
 			isInstance = false;
 			unloads.clear();
-			if (currentScreen != null) {
-				currentScreen.destroy();
-				currentScreen = null;
+			if (_currentScreen != null) {
+				_currentScreen.destroy();
+				_currentScreen = null;
 			}
-			if (game != null && game.display() != null) {
-				game.assets().close();
-				game.display().close();
+			if (_game != null && _game.display() != null) {
+				_game.assets().close();
+				_game.display().close();
 			}
 			RealtimeProcessManager.get().dispose();
 			LSTRDictionary.get().dispose();
 			LTextures.dispose();
 		}
-		LSystem._base.log().debug("The Loon Game Engine is End");
+		LSystem.debug("The Loon Game Engine is End");
 	}
 
 	public void resetTouch() {
-		currentInput.resetSysTouch();
+		_currentInput.resetSysTouch();
 	}
 
 	public void clear() {
@@ -394,7 +403,7 @@ public class LProcess extends PlayerUtils {
 
 	public boolean next() {
 		if (isInstance) {
-			if (currentScreen.next() && !LSystem.PAUSED) {
+			if (_currentScreen.next() && !LSystem.PAUSED) {
 				return true;
 			}
 		}
@@ -403,17 +412,17 @@ public class LProcess extends PlayerUtils {
 
 	public void runTimer(LTimerContext context) {
 		if (isInstance) {
-			if (waitTransition) {
-				if (transition != null) {
-					switch (transition.code) {
+			if (_waitTransition) {
+				if (_transition != null) {
+					switch (_transition.code) {
 					default:
-						if (!currentScreen.isOnLoadComplete()) {
-							transition.update(context.timeSinceLastUpdate);
+						if (!_currentScreen.isOnLoadComplete()) {
+							_transition.update(context.timeSinceLastUpdate);
 						}
 						break;
 					case 1:
-						if (!transition.completed()) {
-							transition.update(context.timeSinceLastUpdate);
+						if (!_transition.completed()) {
+							_transition.update(context.timeSinceLastUpdate);
 						} else {
 							endTransition();
 						}
@@ -421,7 +430,7 @@ public class LProcess extends PlayerUtils {
 					}
 				}
 			} else {
-				currentScreen.runTimer(context);
+				_currentScreen.runTimer(context);
 				return;
 			}
 		}
@@ -429,26 +438,26 @@ public class LProcess extends PlayerUtils {
 
 	public void draw(GLEx g) {
 		if (isInstance) {
-			if (waitTransition) {
-				if (transition != null) {
-					if (transition.isDisplayGameUI) {
-						currentScreen.createUI(g);
+			if (_waitTransition) {
+				if (_transition != null) {
+					if (_transition.isDisplayGameUI) {
+						_currentScreen.createUI(g);
 					}
-					switch (transition.code) {
+					switch (_transition.code) {
 					default:
-						if (!currentScreen.isOnLoadComplete()) {
-							transition.draw(g);
+						if (!_currentScreen.isOnLoadComplete()) {
+							_transition.draw(g);
 						}
 						break;
 					case 1:
-						if (!transition.completed()) {
-							transition.draw(g);
+						if (!_transition.completed()) {
+							_transition.draw(g);
 						}
 						break;
 					}
 				}
 			} else {
-				currentScreen.createUI(g);
+				_currentScreen.createUI(g);
 				return;
 			}
 		}
@@ -462,56 +471,56 @@ public class LProcess extends PlayerUtils {
 
 	public LColor getBackgroundColor() {
 		if (isInstance) {
-			return currentScreen.getBackgroundColor();
+			return _currentScreen.getBackgroundColor();
 		}
 		return null;
 	}
 
 	public float getScaleX() {
 		if (isInstance) {
-			return currentScreen.getScaleX();
+			return _currentScreen.getScaleX();
 		}
 		return 1f;
 	}
 
 	public float getScaleY() {
 		if (isInstance) {
-			return currentScreen.getScaleY();
+			return _currentScreen.getScaleY();
 		}
 		return 1f;
 	}
 
 	public boolean isFlipX() {
 		if (isInstance) {
-			return currentScreen.isFlipX();
+			return _currentScreen.isFlipX();
 		}
 		return false;
 	}
 
 	public boolean isFlipY() {
 		if (isInstance) {
-			return currentScreen.isFlipY();
+			return _currentScreen.isFlipY();
 		}
 		return false;
 	}
 
 	public float getRotation() {
 		if (isInstance) {
-			return currentScreen.getRotation();
+			return _currentScreen.getRotation();
 		}
 		return 0;
 	}
 
 	public LTexture getBackground() {
-		if (isInstance || currentScreen != null) {
-			return currentScreen.getBackground();
+		if (isInstance || _currentScreen != null) {
+			return _currentScreen.getBackground();
 		}
 		return null;
 	}
 
 	public int getRepaintMode() {
 		if (isInstance) {
-			return currentScreen.getRepaintMode();
+			return _currentScreen.getRepaintMode();
 		}
 		return Screen.SCREEN_NOT_REPAINT;
 	}
@@ -555,12 +564,12 @@ public class LProcess extends PlayerUtils {
 
 	public void setScreenID(int id) {
 		if (isInstance) {
-			currentScreen.setID(id);
+			_currentScreen.setID(id);
 		}
 	}
 
 	public int getScreenID() {
-		return isInstance ? -1 : currentScreen.getID();
+		return isInstance ? -1 : _currentScreen.getID();
 	}
 
 	public void setID(int id) {
@@ -572,69 +581,69 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public final void setTransition(LTransition t) {
-		this.transition = t;
+		this._transition = t;
 	}
 
 	public final boolean isTransitioning() {
-		return waitTransition;
+		return _waitTransition;
 	}
 
 	public boolean isTransitionCompleted() {
-		return !waitTransition;
+		return !_waitTransition;
 	}
 
 	public final LTransition getTransition() {
-		return this.transition;
+		return this._transition;
 	}
 
 	private final void startTransition() {
-		if (transition != null) {
-			waitTransition = true;
+		if (_transition != null) {
+			_waitTransition = true;
 			if (isInstance) {
-				currentScreen.setLock(true);
+				_currentScreen.setLock(true);
 			}
 		}
 	}
 
 	private final void endTransition() {
-		if (transition != null) {
-			switch (transition.code) {
+		if (_transition != null) {
+			switch (_transition.code) {
 			default:
-				waitTransition = false;
-				transition.close();
+				_waitTransition = false;
+				_transition.close();
 				break;
 			case 1:
-				if (transition.completed()) {
-					waitTransition = false;
-					transition.close();
+				if (_transition.completed()) {
+					_waitTransition = false;
+					_transition.close();
 				}
 				break;
 			}
 			if (isInstance) {
-				currentScreen.setLock(false);
+				_currentScreen.setLock(false);
 			}
 		} else {
-			waitTransition = false;
+			_waitTransition = false;
 		}
 	}
 
 	public LColor getColor() {
 		if (isInstance) {
-			return currentScreen.getColor();
+			return _currentScreen.getColor();
 		}
 		return LColor.white;
 	}
 
 	public float getX() {
 		if (isInstance) {
-			return currentScreen.getX();
+			return _currentScreen.getX();
 		}
 		return 0;
 	}
 
 	public float getY() {
 		if (isInstance) {
-			return currentScreen.getY();
+			return _currentScreen.getY();
 		}
 		return 0;
 	}
@@ -644,7 +653,7 @@ public class LProcess extends PlayerUtils {
 	public Vector2f convertXY(float x, float y) {
 		float newX = ((x - getX()) / (LSystem.getScaleWidth()));
 		float newY = ((y - getY()) / (LSystem.getScaleHeight()));
-		if (isInstance && currentScreen.isTxUpdate()) {
+		if (isInstance && _currentScreen.isTxUpdate()) {
 			float oldW = getWidth();
 			float oldH = getHeight();
 			float newW = getWidth() * getScaleX();
@@ -696,7 +705,7 @@ public class LProcess extends PlayerUtils {
 	}
 
 	public Screen getScreen() {
-		return currentScreen;
+		return _currentScreen;
 	}
 
 	public void clearScreens() {
@@ -760,7 +769,7 @@ public class LProcess extends PlayerUtils {
 		int size = _screens.size;
 		if (size > 0) {
 			Screen o = _screens.pop();
-			if (o != currentScreen) {
+			if (o != _currentScreen) {
 				setScreen((Screen) o, false);
 			}
 		}
@@ -774,7 +783,7 @@ public class LProcess extends PlayerUtils {
 		int size = _screens.size;
 		if (size > 0) {
 			Screen o = _screens.first();
-			if (o != currentScreen) {
+			if (o != _currentScreen) {
 				setScreen((Screen) o, false);
 			}
 		}
@@ -784,7 +793,7 @@ public class LProcess extends PlayerUtils {
 		int size = _screens.size;
 		if (size > 0) {
 			Screen o = _screens.last();
-			if (o != currentScreen) {
+			if (o != _currentScreen) {
 				setScreen(o, false);
 			}
 		}
@@ -794,7 +803,7 @@ public class LProcess extends PlayerUtils {
 		int size = _screens.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-				if (currentScreen == _screens.get(i)) {
+				if (_currentScreen == _screens.get(i)) {
 					if (i - 1 > -1) {
 						setScreen(_screens.get(i - 1), false);
 						return;
@@ -808,7 +817,7 @@ public class LProcess extends PlayerUtils {
 		int size = _screens.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-				if (currentScreen == _screens.get(i)) {
+				if (_currentScreen == _screens.get(i)) {
 					if (i + 1 < size) {
 						setScreen(_screens.get(i + 1), false);
 						return;
@@ -822,7 +831,7 @@ public class LProcess extends PlayerUtils {
 		int size = _screens.size;
 		if (size > 0 && index > -1 && index < size) {
 			Object o = _screens.get(index);
-			if (currentScreen != o) {
+			if (_currentScreen != o) {
 				setScreen(_screens.get(index), false);
 			}
 		}
@@ -856,8 +865,8 @@ public class LProcess extends PlayerUtils {
 		if (screen.handler == null) {
 			screen.resetSize();
 		}
-		if (game.setting.isLogo && game.display().showLogo) {
-			loadingScreen = screen;
+		if (_game.setting.isLogo && _game.display().showLogo) {
+			_loadingScreen = screen;
 		} else {
 			setScreen(screen, true);
 		}
@@ -865,14 +874,14 @@ public class LProcess extends PlayerUtils {
 
 	public int getHeight() {
 		if (isInstance) {
-			return currentScreen.getHeight();
+			return _currentScreen.getHeight();
 		}
 		return 0;
 	}
 
 	public int getWidth() {
 		if (isInstance) {
-			return currentScreen.getWidth();
+			return _currentScreen.getWidth();
 		}
 		return 0;
 	}
@@ -884,16 +893,16 @@ public class LProcess extends PlayerUtils {
 	public void setCurrentScreen(final Screen screen, boolean closed) {
 		if (screen != null) {
 			this.isInstance = false;
-			if (closed && currentScreen != null) {
-				currentScreen.destroy();
+			if (closed && _currentScreen != null) {
+				_currentScreen.destroy();
 			}
-			this.currentScreen = screen;
-			currentScreen.setLock(false);
-			currentScreen.setLocation(0, 0);
-			currentScreen.setClose(false);
-			currentScreen.setOnLoadState(true);
+			this._currentScreen = screen;
+			_currentScreen.setLock(false);
+			_currentScreen.setLocation(0, 0);
+			_currentScreen.setClose(false);
+			_currentScreen.setOnLoadState(true);
 			if (screen.getBackground() != null) {
-				currentScreen.setRepaintMode(Screen.SCREEN_TEXTURE_REPAINT);
+				_currentScreen.setRepaintMode(Screen.SCREEN_TEXTURE_REPAINT);
 			}
 			this.isInstance = true;
 			if (screen instanceof EmulatorListener) {
@@ -907,78 +916,86 @@ public class LProcess extends PlayerUtils {
 
 	public void keyDown(GameKey e) {
 		if (isInstance) {
-			currentScreen.keyPressed(e);
+			_currentScreen.keyPressed(e);
 		}
 	}
 
 	public void keyUp(GameKey e) {
 		if (isInstance) {
-			currentScreen.keyReleased(e);
+			_currentScreen.keyReleased(e);
 		}
 	}
 
 	public void keyTyped(GameKey e) {
 		if (isInstance) {
-			currentScreen.keyTyped(e);
+			_currentScreen.keyTyped(e);
 		}
 	}
 
 	public void mousePressed(GameTouch e) {
 		if (isInstance) {
-			currentScreen.mousePressed(e);
+			_currentScreen.mousePressed(e);
 		}
 	}
 
 	public void mouseReleased(GameTouch e) {
 		if (isInstance) {
-			currentScreen.mouseReleased(e);
+			_currentScreen.mouseReleased(e);
 		}
 	}
 
 	public void mouseMoved(GameTouch e) {
 		if (isInstance) {
-			currentScreen.mouseMoved(e);
+			_currentScreen.mouseMoved(e);
 		}
 	}
 
 	public void mouseDragged(GameTouch e) {
 		if (isInstance) {
-			currentScreen.mouseDragged(e);
+			_currentScreen.mouseDragged(e);
 		}
 	}
 
 	public void clearLog() {
-		if (logDisplay != null) {
-			logDisplay.clear();
+		if (_logDisplay != null) {
+			_logDisplay.clear();
 		}
 	}
 
 	public void addLog(String mes, LColor col) {
-		if (logDisplay == null) {
-			logDisplay = new LogDisplay();
+		if (_logDisplay == null) {
+			_logDisplay = new LogDisplay();
 		}
-		logDisplay.addText(mes, col);
+		_logDisplay.addText(mes, col);
 	}
 
 	public void addLog(String mes) {
-		if (logDisplay == null) {
-			logDisplay = new LogDisplay();
+		if (_logDisplay == null) {
+			_logDisplay = new LogDisplay();
 		}
-		logDisplay.addText(mes);
+		_logDisplay.addText(mes);
 	}
 
 	public LogDisplay getLogDisplay() {
-		return logDisplay;
+		return _logDisplay;
 	}
 
-	public void paintLog(final GLEx g, int x, int y) {
-		if (logDisplay == null) {
-			logDisplay = new LogDisplay();
+	protected void paintLog(final GLEx g, int x, int y) {
+		if (_logDisplay == null) {
+			_logDisplay = new LogDisplay();
 		}
-		logDisplay.paint(g, x, y);
+		_logDisplay.paint(g, x, y);
 	}
 
+    public Bundle<?> getBundle() {
+        return _bundle;
+    }
+
+    public Screen getCurrentScreen() {
+        return _currentScreen;
+    }
+    
 	public LGame getGame() {
-		return game;
+		return _game;
 	}
 }

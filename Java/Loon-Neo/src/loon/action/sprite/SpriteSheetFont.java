@@ -7,6 +7,9 @@ import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
+/**
+ * 单纯图片字体显示用类(而非标准的bmfont)
+ */
 public class SpriteSheetFont implements IFont {
 
 	private SpriteSheet _font;
@@ -23,20 +26,30 @@ public class SpriteSheetFont implements IFont {
 
 	private int horizontalCount;
 
+	private int verticalCount;
+
 	private int numChars;
 
 	private float fontScaleX = 1f, fontScaleY = 1f;
 
 	private PointI _offset = new PointI();
 
+	public SpriteSheetFont(String fileName, int tileWidth, int tileHeight) {
+		this(new SpriteSheet(fileName, tileWidth, tileHeight), ' ');
+	}
+
+	public SpriteSheetFont(String fileName, int tileWidth, int tileHeight, char startingCharacter) {
+		this(new SpriteSheet(fileName, tileWidth, tileHeight), startingCharacter);
+	}
+
 	public SpriteSheetFont(SpriteSheet font, char startingCharacter) {
 		this._font = font;
 		this.startingCharacter = startingCharacter;
-		horizontalCount = font.getHorizontalCount();
-		int verticalCount = font.getVerticalCount();
-		charWidth = font.getWidth() / horizontalCount;
-		charHeight = font.getHeight() / verticalCount;
-		numChars = horizontalCount * verticalCount;
+		this.horizontalCount = font.getHorizontalCount();
+		this.verticalCount = font.getVerticalCount();
+		this.charWidth = font.getTileWidth();
+		this.charHeight = font.getTileHeight();
+		this.numChars = horizontalCount * verticalCount;
 	}
 
 	public void drawString(String text, float x, float y) {
@@ -51,17 +64,35 @@ public class SpriteSheetFont implements IFont {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
+
+		if (StringUtils.isEmpty(text)) {
+			return;
+		}
+		int lines = 0;
+		float sx = x + _offset.x;
+		float sy = y + _offset.y;
+		float widthSize = charWidth * fontScaleX;
+		float heightSize = charHeight * fontScaleY;
 		for (int i = 0, size = text.length(); i < size; i++) {
-			int index = text.charAt(i) - startingCharacter;
+			char flag = text.charAt(i);
+			int index = flag - startingCharacter;
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
+				if ('\n' == flag) {
+					lines += heightSize + 0.5f;
+					sx = x;
+					continue;
+				} else {
+					sx += widthSize + 0.5f;
+				}
 				if ((i >= startIndex) || (i <= endIndex)) {
-					if (fontScaleX == 1f && fontScaleY == 1f) {
-						_font.getSubImage(xPos, yPos).draw(x + (i * charWidth) + _offset.x, y + _offset.y, col);
-					} else {
-						_font.getSubImage(xPos, yPos).draw(x + (i * charWidth * fontScaleX) + _offset.x, y + _offset.y,
-								charWidth * fontScaleX, charHeight * fontScaleY, col);
+					if (_font.contains(xPos, yPos)) {
+						if (fontScaleX == 1f && fontScaleY == 1f) {
+							_font.getSubImage(xPos, yPos).draw(sx, sy + lines, col);
+						} else {
+							_font.getSubImage(xPos, yPos).draw(sx, sy + lines, widthSize, heightSize, col);
+						}
 					}
 				}
 			}
@@ -95,11 +126,11 @@ public class SpriteSheetFont implements IFont {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
 				if ('\n' == flag) {
-					lines += getHeight();
+					lines += heightSize + 0.5f;
 					sx = x;
 					continue;
 				} else {
-					sx += widthSize;
+					sx += widthSize + 0.5f;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (_font.contains(xPos, yPos)) {
@@ -236,6 +267,14 @@ public class SpriteSheetFont implements IFont {
 			}
 		}
 		return s;
+	}
+
+	public int getHorizontalCount() {
+		return horizontalCount;
+	}
+
+	public int getVerticalCount() {
+		return verticalCount;
 	}
 
 	@Override

@@ -1096,6 +1096,21 @@ public class MathUtils {
 
 	}
 
+	public static float maxAbs(float x, float y) {
+		return MathUtils.abs(x) >= MathUtils.abs(y) ? x : y;
+	}
+
+	public static float minAbs(float x, float y) {
+		return MathUtils.abs(x) <= MathUtils.abs(y) ? x : y;
+	}
+
+	public final static float lerpCut(float progress, float progressLowCut, float progressHighCut, float fromValue,
+			float toValue) {
+		progress = MathUtils.clamp(progress, progressLowCut, progressHighCut);
+		float a = (progress - progressLowCut) / (progressHighCut - progressLowCut);
+		return MathUtils.lerp(fromValue, toValue, a);
+	}
+
 	public final static float scale(float value, float maxValue, float maxScale) {
 		return (maxScale / maxValue) * value;
 	}
