@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -51,12 +51,16 @@ import loon.utils.TArray;
 
 public class GLEx extends PixmapFImpl implements LRelease {
 
+	/*
+	 * 内部类，用来保存与复位GLEx的基本渲染参数
+	 */
 	private class BrushSave {
 		int baseColor = LColor.DEF_COLOR;
 		int fillColor = LColor.DEF_COLOR;
 		int pixSkip = def_skip;
 		float lineWidth = 1f;
 		float baseAlpha = 1f;
+		int blend = LSystem.MODE_NORMAL;
 
 		boolean alltextures = false;
 		IFont font = null;
@@ -71,6 +75,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			save.alltextures = this.alltextures;
 			save.font = this.font;
 			save.patternTex = this.patternTex;
+			save.blend = this.blend;
 			return save;
 		}
 	}
@@ -80,29 +85,31 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	private LColor tmpColor = new LColor();
+
 	private final Array<Affine2f> affineStack = new Array<Affine2f>();
+
 	private final Array<BrushSave> brushStack = new Array<BrushSave>();
-	private final LTexture colorTex;
-	protected final RenderTarget target;
 
 	private final TArray<RectBox> scissors = new TArray<RectBox>();
-	private int scissorDepth;
-	private int fillColor = LColor.DEF_COLOR;
-	private int baseColor = LColor.DEF_COLOR;
 
-	private float baseAlpha = 1f;
-	private float lineWidth = 1f;
+	private final LTexture colorTex;
+
+	protected final RenderTarget target;
+
+	private int scissorDepth;
 
 	private boolean isClosed = false;
 
 	private Graphics gfx;
-	private IFont font;
+
 	private BaseBatch batch;
 
-	private LTexture patternTex;
 	private Affine2f lastTrans;
+
 	private BrushSave lastBrush;
+
 	private float scaleX = 1f, scaleY = 1f;
+
 	private float offsetStringX = 0, offsetStringY = 0;
 
 	/**
@@ -125,12 +132,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
 		this.scale(scaleX = target.xscale(), scaleY = target.yscale());
-		this.font = LSystem.getSystemGameFont();
 		this.lastBrush = new BrushSave();
-		this.lastBrush.font = this.font;
-		this.useAlltextures = alltex;
-		this.lastBrush.alltextures = this.useAlltextures;
+		this.lastBrush.font = LSystem.getSystemGameFont();
+		this.lastBrush.alltextures = alltex;
 		this.lastBrush.pixSkip = LSystem.isHTML5() ? def_skip_html5 : def_skip;
+		this.lastBrush.blend = LSystem.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
 		this.update();
 	}
@@ -206,7 +212,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx resetFont() {
-		this.font = LSystem.getSystemGameFont();
+		this.lastBrush.font = LSystem.getSystemGameFont();
 		return this;
 	}
 
@@ -215,12 +221,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setFont(IFont font) {
-		this.font = font;
+		this.lastBrush.font = font;
 		return this;
 	}
 
 	public IFont getFont() {
-		return this.font;
+		return this.lastBrush.font;
 	}
 
 	public BaseBatch pushBatch(BaseBatch b) {
@@ -276,15 +282,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public static BaseBatch createDefaultBatch(GL20 gl) {
-		// 实践证明,Uniform模式在html5中就是悲剧,太多浏览器中卡成狗,还是交给cpu慢慢算三角踏实……
-		if (!LSystem.isHTML5()) {
-			try {
-				if (UniformBatch.isLikelyToPerform(gl)) {
-					return new UniformBatch(gl);
-				}
-			} catch (Throwable e) {
-			}
-		}
 		return new TrilateralBatch(gl);
 	}
 
@@ -297,6 +294,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
+		lastBrush.blend = mode;
 		GLUtils.setBlendMode(batch.gl, mode);
 		return this;
 	}
@@ -333,26 +331,23 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		lastBrush = brushStack.previousPop();
 		if (lastBrush != null) {
-			this.baseAlpha = lastBrush.baseAlpha;
-			this.baseColor = lastBrush.baseColor;
-			this.fillColor = lastBrush.fillColor;
-			this.patternTex = lastBrush.patternTex;
-			this.useAlltextures = lastBrush.alltextures;
 			this.setFont(lastBrush.font);
 			this.setLineWidth(lastBrush.lineWidth);
+			this.setBlendMode(lastBrush.blend);
 		}
 		return this;
 	}
 
 	public GLEx restoreBrushDef() {
-		baseAlpha = 1f;
-		baseColor = LColor.DEF_COLOR;
-		fillColor = LColor.DEF_COLOR;
-		patternTex = null;
-		useAlltextures = LSystem.isHTML5();
-		setPixSkip(useAlltextures ? def_skip_html5 : def_skip);
-		setFont(LSystem.getSystemGameFont());
-		setLineWidth(1f);
+		this.lastBrush.baseAlpha = 1f;
+		this.lastBrush.baseColor = LColor.DEF_COLOR;
+		this.lastBrush.fillColor = LColor.DEF_COLOR;
+		this.lastBrush.patternTex = null;
+		this.lastBrush.alltextures = LSystem.isHTML5();
+		this.setPixSkip(lastBrush.alltextures ? def_skip_html5 : def_skip);
+		this.setFont(LSystem.getSystemGameFont());
+		this.setLineWidth(1f);
+		this.setBlendMode(LSystem.MODE_NORMAL);
 		brushStack.pop();
 		return this;
 	}
@@ -605,22 +600,22 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	// 以实际渲染颜色的alpha为优先返回
 	public float alpha() {
-		return ((baseColor >> 24) & 0xFF) / 255f;
+		return ((this.lastBrush.baseColor >> 24) & 0xFF) / 255f;
 	}
 
 	public GLEx setAlpha(float alpha) {
 		// fix alpha
 		if (alpha < 0.01f) {
 			alpha = 0.01f;
-			baseAlpha = 0;
+			this.lastBrush.baseAlpha = 0;
 		} else if (alpha > 1f) {
 			alpha = 1f;
-			baseAlpha = 1f;
+			this.lastBrush.baseAlpha = 1f;
 		} else {
-			this.baseAlpha = alpha;
+			this.lastBrush.baseAlpha = alpha;
 		}
 		int ialpha = (int) (0xFF * MathUtils.clamp(alpha, 0, 1));
-		this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
+		this.lastBrush.baseColor = (ialpha << 24) | (this.lastBrush.baseColor & 0xFFFFFF);
 		return this;
 	}
 
@@ -629,31 +624,29 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return;
 		}
 		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
-		this.font = LSystem.getSystemGameFont();
-		this.baseColor = LColor.DEF_COLOR;
-		this.fillColor = LColor.DEF_COLOR;
-		this.patternTex = null;
-		this.lineWidth = 1f;
+		this.setFont(LSystem.getSystemGameFont());
+		this.lastBrush.baseColor = LColor.DEF_COLOR;
+		this.lastBrush.fillColor = LColor.DEF_COLOR;
+		this.lastBrush.baseAlpha = 1f;
+		this.lastBrush.patternTex = null;
+		this.setBlendMode(LSystem.MODE_NORMAL);
+		this.resetLineWidth();
 	}
 
 	public void reset() {
 		if (isClosed) {
 			return;
 		}
-		GLUtils.setClearColor(batch.gl, tmpColor.setColor(baseColor));
-		this.font = LSystem.getSystemGameFont();
-		this.baseColor = LColor.DEF_COLOR;
-		this.fillColor = LColor.DEF_COLOR;
-		this.patternTex = null;
-		this.lineWidth = 1f;
+		tmpColor.setColor(this.lastBrush.baseColor);
+		reset(tmpColor.r, tmpColor.g, tmpColor.b, tmpColor.a);
 	}
 
 	public int color() {
-		return baseColor;
+		return this.lastBrush.baseColor;
 	}
 
 	public LColor getColor() {
-		return new LColor(baseColor);
+		return new LColor(this.lastBrush.baseColor);
 	}
 
 	public GLEx setColor(LColor color) {
@@ -676,16 +669,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setColor(int c) {
-		if (this.baseAlpha != 1f) {
-			this.baseColor = c;
-			int ialpha = (int) (0xFF * MathUtils.clamp(this.baseAlpha, 0, 1));
-			this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
-		} else {
-			this.baseColor = c;
-		}
-		this.setAlpha(LColor.getAlpha(this.baseColor));
-		this.fillColor = c;
-		this.patternTex = null;
+		this.setTint(c);
+		this.setAlpha(LColor.getAlpha(this.lastBrush.baseColor));
+		this.lastBrush.fillColor = c;
+		this.lastBrush.patternTex = null;
 		return this;
 	}
 
@@ -707,32 +694,37 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setTint(int c) {
-		if (this.baseAlpha != 1f) {
-			this.baseColor = c;
-			int ialpha = (int) (0xFF * MathUtils.clamp(this.baseAlpha, 0, 1));
-			this.baseColor = (ialpha << 24) | (baseColor & 0xFFFFFF);
-		} else {
-			this.baseColor = c;
+		if (this.lastBrush.baseColor != c) {
+			end();
 		}
+		if (this.lastBrush.baseAlpha != 1f) {
+			this.lastBrush.baseColor = c;
+			int ialpha = (int) (0xFF * MathUtils.clamp(this.lastBrush.baseAlpha, 0, 1));
+			this.lastBrush.baseColor = (ialpha << 24) | (this.lastBrush.baseColor & 0xFFFFFF);
+		} else {
+			this.lastBrush.baseColor = c;
+		}
+		this.lastBrush.baseAlpha = this.lastBrush.baseAlpha;
+		this.lastBrush.baseColor = this.lastBrush.baseColor;
 		return this;
 	}
 
 	public int combineColor(int c) {
-		int otint = this.baseColor;
+		int otint = this.lastBrush.baseColor;
 		if (c != LColor.DEF_COLOR) {
-			this.baseColor = LColor.combine(c, otint);
+			this.lastBrush.baseColor = LColor.combine(c, otint);
 		}
 		return otint;
 	}
 
 	public GLEx setFillColor(int color) {
-		this.fillColor = color;
-		this.patternTex = null;
+		this.lastBrush.fillColor = color;
+		this.lastBrush.patternTex = null;
 		return this;
 	}
 
 	public GLEx setFillPattern(LTexture texture) {
-		this.patternTex = texture;
+		this.lastBrush.patternTex = texture;
 		return this;
 	}
 
@@ -759,7 +751,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx rect(float sx, float sy, float sw, float sh, float x, float y, Paint paint) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		float line = getLineWidth();
 		Style style = Style.FILL;
 		if (paint != null) {
@@ -785,7 +777,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawBitmap(Painter texture, RectF.Range src, RectF.Range des, Paint paint) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		if (paint != null) {
 			if (paint.style == Style.FILL) {
 				setColor(paint.color);
@@ -797,7 +789,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawBitmap(Painter texture, RectF.Range des, Paint paint) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		if (paint != null) {
 			if (paint.style == Style.FILL) {
 				setColor(paint.color);
@@ -809,7 +801,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawBitmap(Painter texture, RectI.Range src, RectI.Range des, Paint paint) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		if (paint != null) {
 			if (paint.style == Style.FILL) {
 				setColor(paint.color);
@@ -821,7 +813,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawBitmap(Painter texture, RectI.Range des, Paint paint) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		if (paint != null) {
 			if (paint.style == Style.FILL) {
 				setColor(paint.color);
@@ -833,7 +825,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawBitmap(Painter texture, float x, float y, Paint paint) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		if (paint != null) {
 			if (paint.style == Style.FILL) {
 				setColor(paint.color);
@@ -884,9 +876,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			IFont tmpFont = paint.getFont();
 			tmpFont.drawString(this, message, x + offsetStringX, y + offsetStringY - tmpFont.getAscent() - 1, rotation,
 					tmpColor.setColor(paint.color));
-		} else if (font != null) {
-			font.drawString(this, message, x + offsetStringX, y + offsetStringY - font.getAscent() - 1, rotation,
-					tmpColor.setColor(baseColor));
+		} else if (this.lastBrush.font != null) {
+			this.lastBrush.font.drawString(this, message, x + offsetStringX,
+					y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation,
+					tmpColor.setColor(this.lastBrush.baseColor));
 		}
 		return this;
 	}
@@ -896,10 +889,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawText(String message, float x, float y, int color, float rotation) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		setColor(color);
-		font.drawString(this, message, x + offsetStringX, y + offsetStringY - font.getAscent() - 1, rotation,
-				tmpColor.setColor(baseColor));
+		this.lastBrush.font.drawString(this, message, x + offsetStringX,
+				y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation,
+				tmpColor.setColor(this.lastBrush.baseColor));
 		setColor(tmp);
 		return this;
 	}
@@ -1025,7 +1019,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		if (color != null) {
 			argb = color.getARGB(alpha());
 		}
@@ -1070,7 +1064,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			xf.translate(-w1, -h1);
 			Affine2f.multiply(tx(), xf, xf);
 		}
-		texture.addToBatch(batch, baseColor, xf, x, y, w, h);
+		texture.addToBatch(batch, this.lastBrush.baseColor, xf, x, y, w, h);
 		return this;
 	}
 
@@ -1097,7 +1091,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		if (color != null) {
 			argb = color.getARGB(alpha());
 		}
@@ -1142,7 +1136,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		if (color != null) {
 			argb = color.getARGB(alpha());
 		}
@@ -1167,7 +1161,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		texture.addToBatch(batch, baseColor, tx(), x, y, w, h);
+		texture.addToBatch(batch, this.lastBrush.baseColor, tx(), x, y, w, h);
 		return this;
 	}
 
@@ -1178,7 +1172,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		texture.addToBatch(batch, baseColor, tx(), dx, dy, sw, sh, sx, sy, sw, sh);
+		texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, sw, sh, sx, sy, sw, sh);
 		return this;
 	}
 
@@ -1189,7 +1183,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		texture.addToBatch(batch, baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
+		texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
 		return this;
 	}
 
@@ -1202,10 +1196,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (LColor.white.equals(color)) {
-			texture.addToBatch(batch, baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
+			texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
 			return this;
 		}
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		if (color != null) {
 			argb = color.getARGB(alpha());
 		}
@@ -1222,7 +1216,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (rotation == 0) {
-			texture.addToBatch(batch, baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
+			texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
 			return this;
 		}
 		Affine2f xf = tx();
@@ -1235,7 +1229,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			xf.translate(-w1, -h1);
 			Affine2f.multiply(tx(), xf, xf);
 		}
-		texture.addToBatch(batch, baseColor, xf, dx, dy, dw, dh, sx, sy, sw, sh);
+		texture.addToBatch(batch, this.lastBrush.baseColor, xf, dx, dy, dw, dh, sx, sy, sw, sh);
 		return this;
 	}
 
@@ -1451,7 +1445,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			Affine2f.multiply(tx(), xf, xf);
 		}
 
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		if (color != null) {
 			argb = color.getARGB(alpha());
 		}
@@ -1470,7 +1464,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawLine(XY a, XY b) {
-		return drawLine(a.getX(), a.getY(), b.getX(), b.getY(), this.lineWidth);
+		return drawLine(a.getX(), a.getY(), b.getX(), b.getY(), this.lastBrush.lineWidth);
 	}
 
 	public GLEx drawLine(XY a, XY b, float width) {
@@ -1478,7 +1472,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawLine(float x0, float y0, float x1, float y1, LColor color) {
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		setColor(color);
 		drawLine(x0, y0, x1, y1);
 		setColor(tmp);
@@ -1507,10 +1501,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		xf.setRotation(MathUtils.atan2(dy, dx));
 		xf.setTranslation(x0 + wy, y0 - wx);
 		Affine2f.multiply(tx(), xf, xf);
-		if (patternTex != null) {
-			batch.addQuad(patternTex, baseColor, xf, 0, 0, length, width);
+		if (this.lastBrush.patternTex != null) {
+			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, xf, 0, 0, length, width);
 		} else {
-			batch.addQuad(colorTex, LColor.combine(fillColor, baseColor), xf, 0, 0, length, width);
+			batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), xf, 0, 0,
+					length, width);
 		}
 		return this;
 	}
@@ -1533,13 +1528,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx initBatch() {
 		if (batch != null) {
 			batch.init();
-		}
-		return this;
-	}
-
-	public GLEx freeBatchBuffer() {
-		if (batch != null) {
-			batch.freeBuffer();
 		}
 		return this;
 	}
@@ -1590,7 +1578,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			r.setSize(MathUtils.max(MathUtils.min(pr.maxX(), x + width - 1) - r.x, 0),
 					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			setClipImpl(0, 0, r, getWidth(), getHeight());
 		}
 		scissorDepth++;
@@ -1600,7 +1588,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private RectBox popScissorState() {
 		scissorDepth--;
 		RectBox r = scissorDepth == 0 ? null : scissors.get(scissorDepth - 1);
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			if (r == null) {
 				setClipImpl(0, 0, LSystem.viewSize.getRect(), getWidth(), getHeight());
 			} else {
@@ -1614,8 +1602,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private GLRenderer glRenderer;
 
-	private boolean useAlltextures;
-
 	/**
 	 * 图形形状渲染开始
 	 * 
@@ -1623,6 +1609,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @return
 	 */
 	private GLEx beginRenderer(GLType mode) {
+		end();
 		GLUtils.disableTextures(batch.gl);
 		if (glRenderer == null) {
 			glRenderer = new GLRenderer(this);
@@ -1660,8 +1647,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
-			return drawLine(x1, y1, x2, y2, this.lineWidth);
+		if (this.lastBrush.alltextures) {
+			return drawLine(x1, y1, x2, y2, this.lastBrush.lineWidth);
 		} else {
 			if (x1 > x2) {
 				x1++;
@@ -1676,7 +1663,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (use) {
 				beginRenderer(GLType.Line);
 			}
-			int argb = LColor.combine(fillColor, baseColor);
+			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			glRenderer.setColor(argb);
 			glRenderer.line(x1, y1, x2, y2);
 			if (use) {
@@ -1708,14 +1695,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (shape == null) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			drawShapeImpl(shape, x, y);
 		} else {
 			float[] points = shape.getPoints();
 			if (points.length == 0) {
 				return this;
 			}
-			int argb = LColor.combine(fillColor, baseColor);
+			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			if (points.length == 2) {
 				beginRenderer(GLType.Point);
 				glRenderer.setColor(argb);
@@ -1761,7 +1748,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (shape == null) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			final float[] points = shape.getPoints();
 			int size = points.length;
 			int len = size / 2;
@@ -1777,7 +1764,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (points.length == 0) {
 				return this;
 			}
-			int argb = LColor.combine(fillColor, baseColor);
+			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			beginRenderer(GLType.Line);
 			glRenderer.setColor(argb);
 			glRenderer.polyline(points);
@@ -1808,10 +1795,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (shape == null) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			fillShapeImpl(shape, x, y);
 		} else {
-			int argb = LColor.combine(fillColor, baseColor);
+			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			beginRenderer(GLType.Filled);
 			glRenderer.setColor(argb);
 			glRenderer.drawShape(shape, x, y);
@@ -1904,7 +1891,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx drawTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
 		beginRenderer(GLType.Line);
-		int argb = LColor.combine(fillColor, baseColor);
+		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 		glRenderer.setColor(argb);
 		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		endRenderer();
@@ -1924,7 +1911,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
 		beginRenderer(GLType.Filled);
-		int argb = LColor.combine(fillColor, baseColor);
+		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 		glRenderer.setColor(argb);
 		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		endRenderer();
@@ -2058,7 +2045,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param Aa
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			drawOvalImpl(x1, y1, width, height);
 			return this;
 		} else {
@@ -2075,7 +2062,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param Aa
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height) {
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			fillOvalImpl(x1, y1, width, height);
 			return this;
 		} else {
@@ -2090,11 +2077,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y
 	 */
 	public GLEx drawPoint(float x, float y) {
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			drawPointImpl(x, y);
 		} else {
 			beginRenderer(GLType.Point);
-			int argb = LColor.combine(fillColor, baseColor);
+			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			glRenderer.setColor(argb);
 			glRenderer.point(x, y);
 			endRenderer();
@@ -2109,14 +2096,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y
 	 */
 	public GLEx drawPoint(float x, float y, int color) {
-		if (useAlltextures) {
-			int tmp = baseColor;
+		if (this.lastBrush.alltextures) {
+			int tmp = this.lastBrush.baseColor;
 			setColor(color);
 			drawPointImpl(x, y);
 			setColor(tmp);
 		} else {
 			beginRenderer(GLType.Point);
-			int argb = LColor.combine(baseColor, color);
+			int argb = LColor.combine(this.lastBrush.baseColor, color);
 			glRenderer.setColor(argb);
 			glRenderer.point(x, y);
 			endRenderer();
@@ -2132,13 +2119,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param size
 	 */
 	public GLEx drawPoints(float[] x, float[] y, int size) {
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			for (int i = 0; i < size; i++) {
 				drawPointImpl(x[i], y[i]);
 			}
 		} else {
 			beginRenderer(GLType.Point);
-			int argb = LColor.combine(fillColor, baseColor);
+			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			glRenderer.setColor(argb);
 			for (int i = 0; i < size; i++) {
 				glRenderer.point(x[i], y[i]);
@@ -2159,7 +2146,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			fillPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
 			fill(new Polygon(xPoints, yPoints, nPoints));
@@ -2178,7 +2165,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			drawPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
 			draw(new Polygon(xPoints, yPoints, nPoints));
@@ -2209,7 +2196,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param color
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2, LColor color) {
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		setColor(color);
 		setRect(x1, y1, x2, y2, false);
 		setColor(argb);
@@ -2226,7 +2213,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param color
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2, int color) {
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		setColor(color);
 		setRect(x1, y1, x2, y2, false);
 		setColor(argb);
@@ -2242,7 +2229,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx fillRect(final float x1, final float y1, final float x2, final float y2, LColor color) {
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		setColor(color);
 		setRect(x1, y1, x2, y2, true);
 		setColor(argb);
@@ -2258,7 +2245,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx fillRect(final float x1, final float y1, final float x2, final float y2, int color) {
-		int argb = baseColor;
+		int argb = this.lastBrush.baseColor;
 		setColor(color);
 		setRect(x1, y1, x2, y2, true);
 		setColor(argb);
@@ -2282,7 +2269,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			if (fill) {
 				fillRectNative(x, y, width, height);
 			} else {
@@ -2300,10 +2287,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 					tempY = tempHeight;
 					tempHeight = y;
 				}
-				drawLine(tempX, tempY, tempHeight, tempY, this.lineWidth);
-				drawLine(tempX, tempY + 1, tempX, tempHeight, this.lineWidth);
-				drawLine(tempHeight, tempHeight, tempX + 1, tempHeight, this.lineWidth);
-				drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1, this.lineWidth);
+				drawLine(tempX, tempY, tempHeight, tempY, this.lastBrush.lineWidth);
+				drawLine(tempX, tempY + 1, tempX, tempHeight, this.lastBrush.lineWidth);
+				drawLine(tempHeight, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
+				drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1, this.lastBrush.lineWidth);
 			}
 			return this;
 		}
@@ -2368,7 +2355,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			drawArcImpl(x1, y1, width, height, start, end);
 		} else {
 			while (end < start) {
@@ -2380,7 +2367,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float cy = y1 + radiusH;
 			if ((int) radiusW == (int) radiusH) {
 				beginRenderer(GLType.Line);
-				int argb = LColor.combine(fillColor, baseColor);
+				int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 				glRenderer.setColor(argb);
 				if (end - start == 360) {
 					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
@@ -2424,7 +2411,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			fillArcImpl(x1, y1, width, height, start, end);
 		} else {
 			while (end < start) {
@@ -2435,7 +2422,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float cx = x1 + radiusW;
 			float cy = y1 + radiusH;
 			beginRenderer(GLType.Filled);
-			int argb = LColor.combine(fillColor, baseColor);
+			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			glRenderer.setColor(argb);
 			if (end - start == 360) {
 				glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
@@ -2474,7 +2461,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			drawRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
@@ -2528,7 +2515,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (useAlltextures) {
+		if (this.lastBrush.alltextures) {
 			fillRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
@@ -2597,7 +2584,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param position
 	 */
 	public GLEx drawString(String string, Vector2f position) {
-		return drawString(string, position.x, position.y, tmpColor.setColor(baseColor));
+		return drawString(string, position.x, position.y, tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	/**
@@ -2619,7 +2606,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y
 	 */
 	public GLEx drawString(String string, float x, float y) {
-		return drawString(string, x, y, tmpColor.setColor(baseColor));
+		return drawString(string, x, y, tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	/**
@@ -2643,7 +2630,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param rotation
 	 */
 	public GLEx drawString(String string, float x, float y, float rotation) {
-		return drawString(string, x, y, rotation, tmpColor.setColor(baseColor));
+		return drawString(string, x, y, rotation, tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	/**
@@ -2660,8 +2647,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (font != null) {
-			font.drawString(this, string, x + offsetStringX, y + offsetStringY, rotation, c);
+		if (this.lastBrush.font != null) {
+			this.lastBrush.font.drawString(this, string, x + offsetStringX, y + offsetStringY, rotation, c);
 		}
 		return this;
 	}
@@ -2691,7 +2678,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (mes == null || mes.length() == 0) {
 			return this;
 		}
-		font.drawString(this, mes, x + offsetStringX, y + offsetStringY, scaleX, scaleY, ax, ay, rotation, c);
+		this.lastBrush.font.drawString(this, mes, x + offsetStringX, y + offsetStringY, scaleX, scaleY, ax, ay,
+				rotation, c);
 		return this;
 	}
 
@@ -2709,7 +2697,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		setColor(c1);
 		drawString(message, x + 1, y);
 		drawString(message, x - 1, y);
@@ -2735,7 +2723,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		int tmp = baseColor;
+		int tmp = this.lastBrush.baseColor;
 		setColor(c1);
 		drawString(message, x + 1, y);
 		drawString(message, x - 1, y);
@@ -2767,7 +2755,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param rotation
 	 */
 	public GLEx drawChar(char chars, float x, float y, float rotation) {
-		return drawChar(chars, x, y, rotation, tmpColor.setColor(baseColor));
+		return drawChar(chars, x, y, rotation, tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	/**
@@ -2977,8 +2965,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (width != lineWidth) {
-			this.lineWidth = width;
+		if (width != this.lastBrush.lineWidth) {
+			this.lastBrush.lineWidth = width;
 			batch.gl.glLineWidth(width);
 		}
 		return this;
@@ -2988,36 +2976,37 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lineWidth != 1f) {
+		if (this.lastBrush.lineWidth != 1f) {
 			batch.gl.glLineWidth(1f);
-			this.lineWidth = 1f;
+			this.lastBrush.lineWidth = 1f;
 		}
 		return this;
 	}
 
 	public float getLineWidth() {
-		return lineWidth;
+		return this.lastBrush.lineWidth;
 	}
 
 	public boolean disposed() {
 		return this.isClosed;
 	}
 
-	public boolean alltextures() {
-		return this.useAlltextures;
+	public boolean isAlltextures() {
+		return this.lastBrush.alltextures;
 	}
 
 	public GLEx setAlltextures(boolean all) {
-		this.useAlltextures = all;
+		this.lastBrush.alltextures = all;
 		return this;
 	}
 
 	@Override
 	protected void fillRectNative(float x, float y, float width, float height) {
-		if (patternTex != null) {
-			batch.addQuad(patternTex, baseColor, tx(), x, y, width, height);
+		if (this.lastBrush.patternTex != null) {
+			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, tx(), x, y, width, height);
 		} else {
-			batch.addQuad(colorTex, LColor.combine(fillColor, baseColor), tx(), x, y, width, height);
+			batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), tx(), x, y,
+					width, height);
 		}
 	}
 
@@ -3029,11 +3018,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	@Override
 	protected void drawPointNative(float x, float y, int skip) {
 		if (!inside(x, y)) {
-			if (patternTex != null) {
-				batch.addQuad(patternTex, baseColor, lastTrans, x, y, skip + this.lineWidth, skip + this.lineWidth);
+			if (this.lastBrush.patternTex != null) {
+				batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, lastTrans, x, y,
+						skip + this.lastBrush.lineWidth, skip + this.lastBrush.lineWidth);
 			} else {
-				batch.addQuad(colorTex, LColor.combine(fillColor, baseColor), lastTrans, x, y, skip + this.lineWidth,
-						skip + this.lineWidth);
+				batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), lastTrans,
+						x, y, skip + this.lastBrush.lineWidth, skip + this.lastBrush.lineWidth);
 			}
 		}
 	}

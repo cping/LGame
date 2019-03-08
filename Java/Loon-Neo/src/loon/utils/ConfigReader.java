@@ -3,7 +3,7 @@ package loon.utils;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
-import loon.Bundle;
+import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
 
@@ -17,6 +17,8 @@ import loon.action.map.Field2D;
  * begin name = "key2"
  * value2
  * end
+ * key3 = "567"
+ * key4 = "780"
  */
 public class ConfigReader implements Expression, Bundle<String> {
 
@@ -54,7 +56,7 @@ public class ConfigReader implements Expression, Bundle<String> {
 	}
 
 	public void parse(final String text) {
-		StringTokenizer reader = new StringTokenizer(text, "\r\n");
+		StringTokenizer reader = new StringTokenizer(text, LSystem.NL);
 		String record = null;
 		StringBuffer mapBuffer = new StringBuffer();
 		boolean mapFlag = false;

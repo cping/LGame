@@ -22,10 +22,23 @@ package loon.utils.timer;
 
 public class GameTime {
 
+	protected static GameTime _instance = null;
+
+	public static GameTime getInstance() {
+		if (_instance == null) {
+			_instance = new GameTime();
+		}
+		return _instance;
+	}
+
 	float _elapsedTime;
 	float _totalTime;
 
 	boolean _running;
+
+	public static GameTime at() {
+		return new GameTime();
+	}
 
 	public GameTime() {
 		_elapsedTime = _totalTime = 0f;
@@ -36,8 +49,7 @@ public class GameTime {
 		_elapsedTime = elapsedGameTime;
 	}
 
-	public GameTime(float totalRealTime, float elapsedRealTime,
-			boolean isRunningSlowly) {
+	public GameTime(float totalRealTime, float elapsedRealTime, boolean isRunningSlowly) {
 		_totalTime = totalRealTime;
 		_elapsedTime = elapsedRealTime;
 		_running = isRunningSlowly;

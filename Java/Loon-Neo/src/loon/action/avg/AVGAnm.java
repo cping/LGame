@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 
 import loon.BaseIO;
 import loon.LRelease;
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.avg.drama.Expression;
@@ -80,7 +81,7 @@ public class AVGAnm implements Expression, LRelease {
 
 	public void open(String text) {
 		try {
-			StringTokenizer reader = new StringTokenizer(text, "\r\n");
+			StringTokenizer reader = new StringTokenizer(text, LSystem.NL);
 			String script = null;
 			for (; reader.hasMoreTokens();) {
 				script = reader.nextToken().trim();

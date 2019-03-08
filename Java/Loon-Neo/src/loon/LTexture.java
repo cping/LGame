@@ -300,7 +300,7 @@ public class LTexture extends Painter implements LRelease {
 	public void update(final Image image) {
 		update(image, true);
 	}
-	
+
 	public void update(final Image image, final boolean closed) {
 		if (image == null) {
 			throw LSystem.runThrow("the image is null, can not conversion it into texture .");
@@ -656,18 +656,21 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch() {
-		makeBatch(null);
-		return batch;
+		return getTextureBatch(null);
 	}
 
 	public LTextureBatch getTextureBatch(String name) {
-		makeBatch(name);
+		return getTextureBatch(name, 256);
+	}
+
+	public LTextureBatch getTextureBatch(String name, int size) {
+		makeBatch(name, size);
 		return batch;
 	}
 
-	void makeBatch(String name) {
+	void makeBatch(String name, int size) {
 		if (!isBatch) {
-			batch = new LTextureBatch(this);
+			batch = new LTextureBatch(this, size);
 			if (!StringUtils.isEmpty(name)) {
 				batch.setTextureBatchName(name);
 			}
@@ -696,7 +699,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void glBegin() {
-		makeBatch(null);
+		getTextureBatch();
 		batch.begin();
 	}
 
@@ -965,22 +968,22 @@ public class LTexture extends Painter implements LRelease {
 		if (!_isLoaded) {
 			return;
 		}
-		if (parent != null) {
-			parent.free();
-			return;
-		}
 		final int textureId = id;
 		if (!LTextures.contains(textureId)) {
 			return;
 		}
-		LTextures.removeTexture(this);
-		final Updateable update = new Updateable() {
+		if (parent != null) {
+			parent.close();
+			return;
+		}
+		synchronized (LTextures.class) {
+			LTextures.removeTexture(this);
+			final Updateable update = new Updateable() {
 
-			@Override
-			public void action(Object a) {
-				if (parent == null) {
-					if (LTextures.delTexture(textureId)) {
-						synchronized (LTexture.class) {
+				@Override
+				public void action(Object a) {
+					synchronized (LTexture.class) {
+						if (LTextures.delTexture(textureId)) {
 							if (LSystem._base.setting.disposeTexture && !_disposed && _closed) {
 								GLUtils.deleteTexture(gfx.gl, textureId);
 								_disposed = true;
@@ -997,32 +1000,27 @@ public class LTexture extends Painter implements LRelease {
 							_isLoaded = false;
 							_closed = true;
 							_memorySize = 0;
-							if (batch != null) {
-								batch.close();
-								batch = null;
-							}
-							isBatch = false;
+							freeBatch();
+							LSystem.debug(
+									"Texture : " + getSource() + " Closed,Size = " + getWidth() + "," + getHeight());
 						}
 					}
 				}
-			}
-		};
-		if (LTextureBatch.isRunningCache() && source.indexOf("<canvas>") == -1) {
-			RealtimeProcess process = new RealtimeProcess() {
+			};
+			if (!LTextureBatch.isRunningCache() && source.indexOf("<canvas>") == -1) {
+				RealtimeProcess process = new RealtimeProcess() {
 
-				@Override
-				public void run(LTimerContext time) {
-					if (!LTextureBatch.isRunningCache()) {
+					@Override
+					public void run(LTimerContext time) {
 						LSystem.load(update);
 						kill();
 					}
-
-				}
-			};
-			process.setDelay(LSystem.SECOND);
-			RealtimeProcessManager.get().addProcess(process);
-		} else {
-			LSystem.load(update);
+				};
+				process.setDelay(LSystem.SECOND);
+				RealtimeProcessManager.get().addProcess(process);
+			} else {
+				LSystem.load(update);
+			}
 		}
 	}
 
@@ -1068,11 +1066,20 @@ public class LTexture extends Painter implements LRelease {
 		return _memorySize;
 	}
 
+	/**
+	 * 关闭纹理资源（默认非强制关闭）
+	 */
 	@Override
 	public void close() {
 		close(false);
 	}
 
+	/**
+	 * 此值为true时,当前纹理以及其子纹理将无法释放
+	 * 
+	 * @param d
+	 * @return
+	 */
 	public LTexture setDisabledTexture(boolean d) {
 		_disabledTexture = d;
 		return this;
@@ -1082,11 +1089,16 @@ public class LTexture extends Painter implements LRelease {
 		return _disabledTexture;
 	}
 
+	/**
+	 * 布尔值为真时，将强制关闭当前纹理，无论状态
+	 * 
+	 * @param forcedDelete
+	 */
 	public void close(boolean forcedDelete) {
 		if (_disabledTexture) {
 			return;
 		}
-		if (isClose()) {
+		if (disposed()) {
 			return;
 		}
 		if (forcedDelete) {
@@ -1096,18 +1108,19 @@ public class LTexture extends Painter implements LRelease {
 		} else if (!isChildAllClose()) {
 			return;
 		}
-		int size = LTextures.removeTextureRef(this, true);
+		int refCount = LTextures.getRefCount(this);
+		// forcedDelete时强制删除子纹理及父纹理，无论状态
 		if (forcedDelete) {
 			refCount = 0;
 			if (parent != null) {
-				parent.close();
+				parent.close(true);
 			} else {
 				_closed = true;
 				_countTexture--;
 				free();
 			}
-		} else if (size <= 0) {
-			if (parent != null) {
+		} else if (refCount <= 0) {
+			if (parent != null && parent.isChildAllClose()) {
 				parent.close();
 			} else {
 				_closed = true;

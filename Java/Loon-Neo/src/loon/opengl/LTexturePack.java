@@ -949,6 +949,17 @@ public class LTexturePack implements LRelease {
 		this.format = format;
 	}
 
+	public LTexturePack setDisabledTexture(boolean d) {
+		if (this.texture != null) {
+			this.texture.setDisabledTexture(d);
+		}
+		return this;
+	}
+
+	public boolean isDisabledTexture() {
+		return this.texture == null ? false : this.texture.isDisabledTexture();
+	}
+
 	public synchronized void close() {
 		free();
 		if (texture != null) {

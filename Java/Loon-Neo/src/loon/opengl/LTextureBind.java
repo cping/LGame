@@ -44,8 +44,7 @@ public class LTextureBind extends GLBase {
 		}
 
 		protected String textureVaryings() {
-			return ("varying mediump vec2 v_TexCoord;\n"
-					+ "varying lowp vec4 v_Color;\n");
+			return ("varying mediump vec2 v_TexCoord;\n" + "varying lowp vec4 v_Color;\n");
 		}
 
 		protected String textureColor() {
@@ -60,29 +59,35 @@ public class LTextureBind extends GLBase {
 			return "  textureColor *= v_Color.a;\n";
 		}
 
-		protected static final String FRAGMENT_PREAMBLE = "#ifdef GL_ES\n"
-				+ "precision lowp float;\n" + "#else\n" + "#define lowp\n"
-				+ "#define mediump\n" + "#define highp\n" + "#endif\n";
+		protected static final String FRAGMENT_PREAMBLE = "#ifdef GL_ES\n" + "precision lowp float;\n" + "#else\n"
+				+ "#define lowp\n" + "#define mediump\n" + "#define highp\n" + "#endif\n";
 	}
 
 	public final GL20 gl;
-	protected int curTexId;
+	protected int curTexId = -1;
+	protected int lastTexId = -1;
+
+	public int getCurrentTextureID() {
+		return this.curTexId;
+	}
 
 	public void setTexture(final LTexture texture) {
 		final int id = texture.getID();
 		if (!texture.isLoaded()) {
 			texture.loadTexture();
 		}
-		if (curTexId != 0 && curTexId != id) {
+		if (curTexId != -1 && curTexId != id) {
 			flush();
 		}
+		this.lastTexId = this.curTexId;
 		this.curTexId = id;
 	}
 
 	@Override
 	public void end() {
 		super.end();
-		curTexId = 0;
+		lastTexId = -1;
+		curTexId = -1;
 	}
 
 	protected LTextureBind(GL20 gl) {
@@ -98,8 +103,4 @@ public class LTextureBind extends GLBase {
 
 	}
 
-	@Override
-	public void freeBuffer() {
-
-	}
 }

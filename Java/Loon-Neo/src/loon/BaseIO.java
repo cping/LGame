@@ -23,11 +23,16 @@ package loon;
 import java.io.IOException;
 
 import loon.LTexture.Format;
+import loon.action.sprite.Entity;
+import loon.action.sprite.Sprite;
 import loon.canvas.Image;
 import loon.canvas.TGA;
+import loon.geom.Vector2f;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteReader;
 import loon.utils.GifDecoder;
+import loon.utils.StringUtils;
+import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 
 public abstract class BaseIO {
@@ -43,7 +48,7 @@ public abstract class BaseIO {
 		}
 		return null;
 	}
-	
+
 	public static String loadText(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
@@ -91,11 +96,11 @@ public abstract class BaseIO {
 						tga = null;
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw LSystem.runThrow(e.getMessage());
 				}
 				return tmp;
 			}
-			//发现有些手机机型对gif解码不全|||……
+			// 发现有些手机机型对gif解码不全|||……
 			if ("gif".equalsIgnoreCase(ext) && LSystem.isMobile()) {
 				ArrayByte bytes = BaseIO.loadArrayByte(path);
 				GifDecoder gif = new GifDecoder();
@@ -181,4 +186,101 @@ public abstract class BaseIO {
 		return null;
 	}
 
+	public static Sprite createSprite(String path) {
+		return new Sprite(path);
+	}
+
+	public static Sprite createSprite(LTexture tex2d) {
+		return new Sprite(tex2d);
+	}
+
+	public static Sprite createSprite(String path, float scale) {
+		Sprite spr = new Sprite(path);
+		spr.setScale(scale);
+		return spr;
+	}
+
+	public static Sprite createSprite(LTexture tex2d, float scale) {
+		Sprite spr = new Sprite(tex2d);
+		spr.setScale(scale);
+		return spr;
+	}
+
+	public static Sprite createSprite(String path, Vector2f pos) {
+		Sprite spr = new Sprite(path);
+		spr.setLocation(pos);
+		return spr;
+	}
+
+	public static Sprite createSprite(LTexture tex2d, Vector2f pos) {
+		Sprite spr = new Sprite(tex2d);
+		spr.setLocation(pos);
+		return spr;
+	}
+
+	public static Entity createEntity(String path) {
+		return new Entity(path);
+	}
+
+	public static Entity createEntity(LTexture tex2d) {
+		return new Entity(tex2d);
+	}
+
+	public static Entity createEntity(String path, float scale) {
+		Entity spr = new Entity(path);
+		spr.setScale(scale);
+		return spr;
+	}
+
+	public static Entity createEntity(LTexture tex2d, float scale) {
+		Entity spr = new Entity(tex2d);
+		spr.setScale(scale);
+		return spr;
+	}
+
+	public static Entity createEntity(String path, Vector2f pos) {
+		Entity spr = new Entity(path);
+		spr.setLocation(pos);
+		return spr;
+	}
+
+	public static Entity createEntity(LTexture tex2d, Vector2f pos) {
+		Entity spr = new Entity(tex2d);
+		spr.setLocation(pos);
+		return spr;
+	}
+
+	public static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos) {
+		return createMultiSprite(path, pos, 1f);
+	}
+
+	public static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos, float scale) {
+		if (StringUtils.isEmpty(path)) {
+			return new TArray<Sprite>();
+		}
+		final int size = path.length;
+		TArray<Sprite> list = new TArray<Sprite>(path.length);
+		for (int i = 0; i < size; i++) {
+			Sprite sprite = createSprite(path[i], pos[i]);
+			sprite.setScale(scale);
+		}
+		return list;
+	}
+
+	public static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos) {
+		return createMultiEntity(path, pos, 1f);
+	}
+
+	public static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos, float scale) {
+		if (StringUtils.isEmpty(path)) {
+			return new TArray<Entity>();
+		}
+		final int size = path.length;
+		TArray<Entity> list = new TArray<Entity>(path.length);
+		for (int i = 0; i < size; i++) {
+			Entity sprite = createEntity(path[i], pos[i]);
+			sprite.setScale(scale);
+		}
+		return list;
+	}
 }

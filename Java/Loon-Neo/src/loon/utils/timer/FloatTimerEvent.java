@@ -66,6 +66,14 @@ public abstract class FloatTimerEvent {
 
 	public abstract void execute();
 
+	public float getPercentage() {
+		return this.acc / this.delay;
+	}
+
+	public float getRemaining() {
+		return this.delay - this.acc;
+	}
+
 	public float getPercentageRemaining() {
 		if (this.done)
 			return 100.0F;

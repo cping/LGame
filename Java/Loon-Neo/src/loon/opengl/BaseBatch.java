@@ -31,7 +31,9 @@ public abstract class BaseBatch extends LTextureBind {
 		if (tex == null || tex.isClose()) {
 			return;
 		}
+	
 		setTexture(tex);
+
 		if (tex.getParent() == null) {
 			float u2 = tex.getFormat().repeatX ? w / tex.width()
 					: tex.widthRatio;
@@ -60,6 +62,7 @@ public abstract class BaseBatch extends LTextureBind {
 		if (tex == null || tex.isClose()) {
 			return;
 		}
+	
 		setTexture(tex);
 		if (tex.getParent() == null) {
 			float displayWidth = tex.getDisplayWidth() * tex.widthRatio;

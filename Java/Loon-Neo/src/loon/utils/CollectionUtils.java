@@ -412,6 +412,17 @@ final public class CollectionUtils {
 		return newArrays;
 	}
 
+	public static float[] expand(float[] objs, int size) {
+		return expand(objs, size, true);
+	}
+
+	public static float[] expand(float[] objs, int i, boolean flag) {
+		int size = objs.length;
+		float[] newArrays = new float[size + i];
+		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
+		return newArrays;
+	}
+	
 	public static boolean[] expand(boolean[] objs, int size) {
 		return expand(objs, size, true);
 	}

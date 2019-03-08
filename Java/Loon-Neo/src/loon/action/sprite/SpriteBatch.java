@@ -10,6 +10,7 @@ import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
+import loon.opengl.ExpandVertices;
 import loon.opengl.GL20;
 import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
@@ -31,7 +32,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private float alpha = 1f;
 
-	float[] vertices;
+	ExpandVertices expandVertices;
 	int idx = 0;
 	LTexture lastTexture = null;
 	float invTexWidth = 0, invTexHeight = 0;
@@ -42,7 +43,8 @@ public class SpriteBatch extends PixmapFImpl {
 	private ShaderProgram customShader = null;
 	private boolean ownsShader;
 
-	float color = LColor.white.toFloatBits();
+	private float color = LColor.white.toFloatBits();
+
 	private LColor tempColor = new LColor(1, 1, 1, 1);
 
 	public int renderCalls = 0;
@@ -51,7 +53,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	public int maxSpritesInBatch = 0;
 
-	int size;
+	private int size;
 
 	private boolean isLoaded;
 
@@ -158,7 +160,7 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public SpriteBatch() {
-		this(1000, null);
+		this(256, null);
 	}
 
 	public SpriteBatch(int size) {
@@ -170,6 +172,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (size > 5460) {
 			throw new IllegalArgumentException("Can't have more than 5460 sprites per batch: " + size);
 		}
+		this.name = "spritebatch";
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
 		this.mesh = new MeshDefault();
 		this.shader = defaultShader;
@@ -401,7 +404,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	public void begin() {
 		if (!isLoaded) {
-			vertices = new float[size * SpriteRegion.SPRITE_SIZE];
+			expandVertices = new ExpandVertices(size);
 			if (shader == null) {
 				shader = LSystem.createDefaultShader();
 				ownsShader = true;
@@ -410,7 +413,7 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 		LSystem.mainEndDraw();
 		if (drawing) {
-			throw new IllegalStateException("SpriteBatch.end must be called before begin.");
+			throw LSystem.runThrow("SpriteBatch.end must be called before begin.");
 		}
 		renderCalls = 0;
 		LSystem.base().graphics().gl.glDepthMask(false);
@@ -436,7 +439,7 @@ public class SpriteBatch extends PixmapFImpl {
 			return;
 		}
 		if (!drawing) {
-			throw new IllegalStateException("SpriteBatch.begin must be called before end.");
+			throw LSystem.runThrow("SpriteBatch.begin must be called before end.");
 		}
 		if (idx > 0) {
 			submit();
@@ -474,7 +477,7 @@ public class SpriteBatch extends PixmapFImpl {
 			if (tex2d != lastTexture) {
 				submit();
 				lastTexture = tex2d;
-			} else if (idx == vertices.length) {
+			} else if (idx == expandVertices.length()) {
 				submit();
 			}
 			invTexWidth = (1f / texture.width()) * texture.widthRatio;
@@ -484,7 +487,7 @@ public class SpriteBatch extends PixmapFImpl {
 			lastTexture = texture;
 			invTexWidth = (1f / texture.width()) * texture.widthRatio;
 			invTexHeight = (1f / texture.height()) * texture.heightRatio;
-		} else if (idx == vertices.length) {
+		} else if (idx == expandVertices.length()) {
 			submit();
 		}
 		return true;
@@ -526,15 +529,24 @@ public class SpriteBatch extends PixmapFImpl {
 			case Null:
 				break;
 			}
-			mesh.post(name, size, customShader != null ? customShader : shader, vertices, idx, count);
+			mesh.post(name, size, customShader != null ? customShader : shader, expandVertices.getVertices(), idx,
+					count);
+		} catch (Exception e) {
+			throw LSystem.runThrow(e.getMessage());
 		} finally {
+			if (expandVertices.expand(this.idx)) {
+				size = expandVertices.getSize();
+				mesh.reset(name, expandVertices.length());
+			}
 			GLUtils.setBlendMode(gl, old);
 			LSystem.mainBeginDraw();
-			idx = 0;
+			if (!lockSubmit) {
+				idx = 0;
+			}
 		}
 	}
 
-	private final static String name = "batch";
+	private final String name;
 
 	public void close() {
 		if (ownsShader && shader != null) {
@@ -542,6 +554,9 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 		if (customShader != null) {
 			customShader.close();
+		}
+		if (mesh != null) {
+			mesh.dispose(name, size);
 		}
 	}
 
@@ -1111,29 +1126,29 @@ public class SpriteBatch extends PixmapFImpl {
 
 		int idx = this.idx;
 
-		vertices[idx++] = x1;
-		vertices[idx++] = y1;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x1);
+		expandVertices.setVertice(idx++, y1);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v);
 
-		vertices[idx++] = x2;
-		vertices[idx++] = y2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x2);
+		expandVertices.setVertice(idx++, y2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = x3;
-		vertices[idx++] = y3;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x3);
+		expandVertices.setVertice(idx++, y3);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = x4;
-		vertices[idx++] = y4;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x4);
+		expandVertices.setVertice(idx++, y4);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1253,29 +1268,29 @@ public class SpriteBatch extends PixmapFImpl {
 
 		int idx = this.idx;
 
-		vertices[idx++] = x;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v);
 
-		vertices[idx++] = x;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1318,29 +1333,29 @@ public class SpriteBatch extends PixmapFImpl {
 
 		int idx = this.idx;
 
-		vertices[idx++] = x;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v);
 
-		vertices[idx++] = x;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1391,29 +1406,29 @@ public class SpriteBatch extends PixmapFImpl {
 
 		int idx = this.idx;
 
-		vertices[idx++] = x;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v);
 
-		vertices[idx++] = x;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1424,20 +1439,20 @@ public class SpriteBatch extends PixmapFImpl {
 			return;
 		}
 
-		int remainingVertices = vertices.length - idx;
+		int remainingVertices = expandVertices.length() - idx;
 		if (remainingVertices == 0) {
 			submit();
-			remainingVertices = vertices.length;
+			remainingVertices = expandVertices.length();
 		}
 		int vertexCount = MathUtils.min(remainingVertices, length - offset);
-		System.arraycopy(spriteVertices, offset, vertices, idx, vertexCount);
+		System.arraycopy(spriteVertices, offset, expandVertices.getVertices(), idx, vertexCount);
 		offset += vertexCount;
 		idx += vertexCount;
 
 		while (offset < length) {
 			submit();
-			vertexCount = MathUtils.min(vertices.length, length - offset);
-			System.arraycopy(spriteVertices, offset, vertices, 0, vertexCount);
+			vertexCount = MathUtils.min(expandVertices.length(), length - offset);
+			System.arraycopy(spriteVertices, offset, expandVertices.getVertices(), 0, vertexCount);
 			offset += vertexCount;
 			idx += vertexCount;
 		}
@@ -1470,29 +1485,29 @@ public class SpriteBatch extends PixmapFImpl {
 
 		int idx = this.idx;
 
-		vertices[idx++] = x;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v);
 
-		vertices[idx++] = x;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = fy2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, fy2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = fx2;
-		vertices[idx++] = y;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, fx2);
+		expandVertices.setVertice(idx++, y);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1581,29 +1596,29 @@ public class SpriteBatch extends PixmapFImpl {
 
 		int idx = this.idx;
 
-		vertices[idx++] = x1;
-		vertices[idx++] = y1;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x1);
+		expandVertices.setVertice(idx++, y1);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v);
 
-		vertices[idx++] = x2;
-		vertices[idx++] = y2;
-		vertices[idx++] = color;
-		vertices[idx++] = u;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x2);
+		expandVertices.setVertice(idx++, y2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = x3;
-		vertices[idx++] = y3;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x3);
+		expandVertices.setVertice(idx++, y3);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = x4;
-		vertices[idx++] = y4;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v;
+		expandVertices.setVertice(idx++, x4);
+		expandVertices.setVertice(idx++, y4);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1708,37 +1723,35 @@ public class SpriteBatch extends PixmapFImpl {
 
 		int idx = this.idx;
 
-		vertices[idx++] = x1;
-		vertices[idx++] = y1;
-		vertices[idx++] = color;
-		vertices[idx++] = u1;
-		vertices[idx++] = v1;
+		expandVertices.setVertice(idx++, x1);
+		expandVertices.setVertice(idx++, y1);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u1);
+		expandVertices.setVertice(idx++, v1);
 
-		vertices[idx++] = x2;
-		vertices[idx++] = y2;
-		vertices[idx++] = color;
-		vertices[idx++] = u2;
-		vertices[idx++] = v2;
+		expandVertices.setVertice(idx++, x2);
+		expandVertices.setVertice(idx++, y2);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
 
-		vertices[idx++] = x3;
-		vertices[idx++] = y3;
-		vertices[idx++] = color;
-		vertices[idx++] = u3;
-		vertices[idx++] = v3;
+		expandVertices.setVertice(idx++, x3);
+		expandVertices.setVertice(idx++, y3);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u3);
+		expandVertices.setVertice(idx++, v3);
 
-		vertices[idx++] = x4;
-		vertices[idx++] = y4;
-		vertices[idx++] = color;
-		vertices[idx++] = u4;
-		vertices[idx++] = v4;
+		expandVertices.setVertice(idx++, x4);
+		expandVertices.setVertice(idx++, y4);
+		expandVertices.setVertice(idx++, color);
+		expandVertices.setVertice(idx++, u4);
+		expandVertices.setVertice(idx++, v4);
 
 		this.idx = idx;
 	}
 
 	public void drawPoint(int x, int y) {
-
 		drawPointImpl(x, y);
-
 	}
 
 	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {

@@ -20,7 +20,7 @@ public class IOType
     public static final int k = 33;
     
     private static void out(final int n) {
-        LSystem.base().log().debug("FileFormat1 :: not implemented classNo : %d\n", n);
+        LSystem.debug("FileFormat1 :: not implemented classNo : %d\n", n);
     }
     
     public static Object b(final int n) {

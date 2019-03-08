@@ -288,7 +288,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	public final void onLoad() {
 		init();
 		if (_batch == null) {
-			_batch = new SpriteBatch(3000);
+			_batch = new SpriteBatch(512);
 		}
 		_batch.setBlendState(BlendState.Null);
 

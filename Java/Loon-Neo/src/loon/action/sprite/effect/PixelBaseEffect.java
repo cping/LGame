@@ -92,7 +92,7 @@ public abstract class PixelBaseEffect extends Entity {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		int tmp = g.getPixSkip();
-		boolean useTex = g.alltextures() && LSystem.isHTML5();
+		boolean useTex = g.isAlltextures() && LSystem.isHTML5();
 		if (useTex) {
 			g.setPixSkip(4);
 		}

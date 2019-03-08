@@ -28,8 +28,6 @@ public abstract class GLBase implements LRelease {
 
 	public abstract void init();
 
-	public abstract void freeBuffer();
-
 	public boolean running() {
 		return begun;
 	}

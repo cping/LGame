@@ -105,7 +105,7 @@ public class LightningEffect extends Entity {
 			return;
 		}
 		if (_batch == null) {
-			_batch = new SpriteBatch(1000);
+			_batch = new SpriteBatch(512);
 		}
 		_batch.begin();
 		_batch.setBlendState(BlendState.Additive);

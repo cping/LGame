@@ -1,6 +1,4 @@
-package loon;
-
-import loon.utils.ObjectMap;
+package loon.utils;
 
 public class MapBundle implements Bundle<Object> {
 

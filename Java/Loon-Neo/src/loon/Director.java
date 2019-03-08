@@ -237,13 +237,11 @@ public class Director extends SoundBox {
 	}
 
 	public static void confine(RectBox rect, RectBox field) {
-		int x = rect.Right() > field.Right() ? field.Right()
-				- (int) rect.getWidth() : rect.Left();
+		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
 		if (x < field.Left()) {
 			x = field.Left();
 		}
-		int y = (int) (rect.Bottom() > field.Bottom() ? field.Bottom()
-				- rect.getHeight() : rect.Top());
+		int y = (int) (rect.Bottom() > field.Bottom() ? field.Bottom() - rect.getHeight() : rect.Top());
 		if (y < field.Top()) {
 			y = field.Top();
 		}
@@ -251,16 +249,12 @@ public class Director extends SoundBox {
 	}
 
 	public static int[] intersect(RectBox rect1, RectBox rect2) {
-		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right()
-				&& rect1.Top() < rect2.Bottom() && rect2.Top() < rect1.Bottom()) {
-			return new int[] {
-					rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left()
-							: 0,
+		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom()
+				&& rect2.Top() < rect1.Bottom()) {
+			return new int[] { rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
 					rect1.Top() < rect2.Top() ? rect2.Top() - rect1.Top() : 0,
-					rect1.Right() > rect2.Right() ? rect1.Right()
-							- rect2.Right() : 0,
-					rect1.Bottom() > rect2.Bottom() ? rect1.Bottom()
-							- rect2.Bottom() : 0 };
+					rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
+					rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0 };
 		}
 		return null;
 	}
@@ -277,8 +271,7 @@ public class Director extends SoundBox {
 		return createOrigin(o, origin);
 	}
 
-	public static TArray<Vector2f> makeOrigins(Origin origin,
-			LObject<?>... objs) {
+	public static TArray<Vector2f> makeOrigins(Origin origin, LObject<?>... objs) {
 		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
 		for (LObject<?> o : objs) {
 			result.add(createOrigin(o, origin));
@@ -321,33 +314,29 @@ public class Director extends SoundBox {
 		}
 	}
 
-	public static void setPoisiton(LObject<?> objToBePositioned,
-			LObject<?> objStable, Position position) {
+	public static void setPoisiton(LObject<?> objToBePositioned, LObject<?> objStable, Position position) {
 		float atp_W = objToBePositioned.getWidth();
 		float atp_H = objToBePositioned.getHeight();
 		float obj_X = objStable.getX();
 		float obj_Y = objStable.getY();
 		float obj_XW = objStable.getWidth() + obj_X;
 		float obj_YH = objStable.getHeight() + obj_Y;
-		setLocation(objToBePositioned, atp_W, atp_H, obj_X, obj_Y, obj_XW,
-				obj_YH, position);
+		setLocation(objToBePositioned, atp_W, atp_H, obj_X, obj_Y, obj_XW, obj_YH, position);
 	}
 
-	public static void setPoisiton(LObject<?> objToBePositioned, float x,
-			float y, float width, float height, Position position) {
+	public static void setPoisiton(LObject<?> objToBePositioned, float x, float y, float width, float height,
+			Position position) {
 		float atp_W = objToBePositioned.getWidth();
 		float atp_H = objToBePositioned.getHeight();
 		float obj_X = x;
 		float obj_Y = y;
 		float obj_XW = width + obj_X;
 		float obj_YH = height + obj_Y;
-		setLocation(objToBePositioned, atp_W, atp_H, obj_X, obj_Y, obj_XW,
-				obj_YH, position);
+		setLocation(objToBePositioned, atp_W, atp_H, obj_X, obj_Y, obj_XW, obj_YH, position);
 	}
 
-	private static void setLocation(LObject<?> objToBePositioned, float atp_W,
-			float atp_H, float obj_X, float obj_Y, float obj_XW, float obj_YH,
-			Position position) {
+	private static void setLocation(LObject<?> objToBePositioned, float atp_W, float atp_H, float obj_X, float obj_Y,
+			float obj_XW, float obj_YH, Position position) {
 		switch (position) {
 		case CENTER:
 			objToBePositioned.setX((obj_XW / 2f) - atp_W / 2f);
@@ -363,87 +352,69 @@ public class Director extends SoundBox {
 			objToBePositioned.setLocation(obj_X, obj_YH - atp_H);
 			break;
 		case TOP_LEFT_CENTER:
-			objToBePositioned.setLocation(obj_X - atp_W / 2f, obj_YH - atp_H
-					/ 2f);
+			objToBePositioned.setLocation(obj_X - atp_W / 2f, obj_YH - atp_H / 2f);
 			break;
 		case TOP_RIGHT:
 			objToBePositioned.setLocation(obj_XW - atp_W, obj_YH - atp_H);
 			break;
 		case TOP_RIGHT_CENTER:
-			objToBePositioned.setLocation(obj_XW - atp_W / 2f, obj_YH - atp_H
-					/ 2f);
+			objToBePositioned.setLocation(obj_XW - atp_W / 2f, obj_YH - atp_H / 2f);
 			break;
 		case TOP_CENTER:
-			objToBePositioned.setLocation(obj_XW / 2f - atp_W / 2f, obj_YH
-					- atp_H);
+			objToBePositioned.setLocation(obj_XW / 2f - atp_W / 2f, obj_YH - atp_H);
 			break;
 		case BOTTOM_LEFT:
 			objToBePositioned.setLocation(obj_X, obj_Y);
 			break;
 		case BOTTOM_LEFT_CENTER:
-			objToBePositioned.setLocation(obj_X - atp_W / 2f, obj_Y - atp_H
-					/ 2f);
+			objToBePositioned.setLocation(obj_X - atp_W / 2f, obj_Y - atp_H / 2f);
 			break;
 		case BOTTOM_RIGHT:
 			objToBePositioned.setLocation(obj_XW - atp_W, obj_Y);
 			break;
 		case BOTTOM_RIGHT_CENTER:
-			objToBePositioned.setLocation(obj_XW - atp_W / 2f, obj_Y - atp_H
-					/ 2f);
+			objToBePositioned.setLocation(obj_XW - atp_W / 2f, obj_Y - atp_H / 2f);
 			break;
 		case BOTTOM_CENTER:
 			objToBePositioned.setLocation(obj_XW / 2f - atp_W / 2f, obj_Y);
 			break;
 		case RIGHT_CENTER:
-			objToBePositioned.setLocation(obj_XW - atp_W, obj_YH / 2f - atp_H
-					/ 2f);
+			objToBePositioned.setLocation(obj_XW - atp_W, obj_YH / 2f - atp_H / 2f);
 			break;
 		default:
-			objToBePositioned.setLocation(objToBePositioned.getX(),
-					objToBePositioned.getY());
+			objToBePositioned.setLocation(objToBePositioned.getX(), objToBePositioned.getY());
 			break;
 		}
 	}
 
 	private final static Affine2f _trans = new Affine2f();
 
-	public static Vector2f local2Global(float centerX, float centerY,
-			float posX, float posY, Vector2f resultPoint) {
-		return local2Global(0, 1f, 1f, 0, 0, false, false, centerX, centerY,
-				posX, posY, resultPoint);
+	public static Vector2f local2Global(float centerX, float centerY, float posX, float posY, Vector2f resultPoint) {
+		return local2Global(0, 1f, 1f, 0, 0, false, false, centerX, centerY, posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global(boolean flipX, boolean flipY,
-			float centerX, float centerY, float posX, float posY,
+	public static Vector2f local2Global(boolean flipX, boolean flipY, float centerX, float centerY, float posX,
+			float posY, Vector2f resultPoint) {
+		return local2Global(0, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY, posX, posY, resultPoint);
+	}
+
+	public static Vector2f local2Global(float rotation, float centerX, float centerY, float posX, float posY,
 			Vector2f resultPoint) {
-		return local2Global(0, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY,
-				posX, posY, resultPoint);
+		return local2Global(rotation, 1f, 1f, 0, 0, false, false, centerX, centerY, posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global(float rotation, float centerX,
-			float centerY, float posX, float posY, Vector2f resultPoint) {
-		return local2Global(rotation, 1f, 1f, 0, 0, false, false, centerX,
-				centerY, posX, posY, resultPoint);
+	public static Vector2f local2Global(float rotation, boolean flipX, boolean flipY, float centerX, float centerY,
+			float posX, float posY, Vector2f resultPoint) {
+		return local2Global(rotation, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY, posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global(float rotation, boolean flipX,
-			boolean flipY, float centerX, float centerY, float posX,
-			float posY, Vector2f resultPoint) {
-		return local2Global(rotation, 1f, 1f, 0, 0, flipX, flipY, centerX,
-				centerY, posX, posY, resultPoint);
+	public static Vector2f local2Global(float rotation, float scaleX, float scaleY, boolean flipX, boolean flipY,
+			float centerX, float centerY, float posX, float posY, Vector2f resultPoint) {
+		return local2Global(rotation, scaleX, scaleY, 0, 0, flipX, flipY, centerX, centerY, posX, posY, resultPoint);
 	}
 
-	public static Vector2f local2Global(float rotation, float scaleX,
-			float scaleY, boolean flipX, boolean flipY, float centerX,
-			float centerY, float posX, float posY, Vector2f resultPoint) {
-		return local2Global(rotation, scaleX, scaleY, 0, 0, flipX, flipY,
-				centerX, centerY, posX, posY, resultPoint);
-	}
-
-	public static Vector2f local2Global(float rotation, float scaleX,
-			float scaleY, float skewX, float skewY, boolean flipX,
-			boolean flipY, float centerX, float centerY, float posX,
-			float posY, Vector2f resultPoint) {
+	public static Vector2f local2Global(float rotation, float scaleX, float scaleY, float skewX, float skewY,
+			boolean flipX, boolean flipY, float centerX, float centerY, float posX, float posY, Vector2f resultPoint) {
 		_trans.idt();
 		if (rotation != 0) {
 			_trans.translate(centerX, centerY);
@@ -452,14 +423,11 @@ public class Director extends SoundBox {
 		}
 		if (flipX || flipY) {
 			if (flipX && flipY) {
-				Affine2f.transform(_trans, centerX, centerY,
-						Affine2f.TRANS_ROT180);
+				Affine2f.transform(_trans, centerX, centerY, Affine2f.TRANS_ROT180);
 			} else if (flipX) {
-				Affine2f.transform(_trans, centerX, centerY,
-						Affine2f.TRANS_MIRROR);
+				Affine2f.transform(_trans, centerX, centerY, Affine2f.TRANS_MIRROR);
 			} else if (flipY) {
-				Affine2f.transform(_trans, centerX, centerY,
-						Affine2f.TRANS_MIRROR_ROT180);
+				Affine2f.transform(_trans, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
 			}
 		}
 		if ((scaleX != 1) || (scaleY != 1)) {
@@ -481,10 +449,10 @@ public class Director extends SoundBox {
 
 	public static boolean inside(RectBox rect, int x, int y) {
 		if (rect != null) {
-			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y
-					&& y < rect.Bottom())
+			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y && y < rect.Bottom())
 				return true;
 		}
 		return false;
 	}
+
 }

@@ -708,8 +708,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 				}
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex.getMessage());
+			LSystem.runThrow("SRPGAvgView error!",ex);
 		}
 	}
 

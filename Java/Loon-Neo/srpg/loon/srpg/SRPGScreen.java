@@ -3698,7 +3698,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 	public final SRPGActors getSRPGActors() {
 		if (srpgActors == null) {
-			throw new RuntimeException("SRPGActors is NULL !");
+			LSystem.runThrow("SRPGActors is NULL !");
 		}
 		return srpgActors;
 	}

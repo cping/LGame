@@ -33,7 +33,9 @@ import loon.event.Updateable;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.Bundle;
 import loon.utils.ListMap;
+import loon.utils.MapBundle;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -68,9 +70,9 @@ public class LProcess extends PlayerUtils {
 	private LTransition _transition;
 
 	private LogDisplay _logDisplay;
-	
+
 	private final Bundle<?> _bundle;
-	 
+
 	private final SysInputFactory _currentInput;
 
 	private final LGame _game;
@@ -132,18 +134,20 @@ public class LProcess extends PlayerUtils {
 	}
 
 	private final static void callUpdateable(final TArray<Updateable> list) {
-		TArray<Updateable> loadCache;
-		synchronized (list) {
-			loadCache = new TArray<Updateable>(list);
-			list.clear();
-		}
-		for (int i = 0, size = loadCache.size; i < size; i++) {
-			Updateable _running = loadCache.get(i);
-			synchronized (_running) {
-				_running.action(null);
+		synchronized (LProcess.class) {
+			TArray<Updateable> loadCache;
+			synchronized (list) {
+				loadCache = new TArray<Updateable>(list);
+				list.clear();
 			}
+			for (int i = 0, size = loadCache.size; i < size; i++) {
+				Updateable _running = loadCache.get(i);
+				synchronized (_running) {
+					_running.action(null);
+				}
+			}
+			loadCache = null;
 		}
-		loadCache = null;
 	}
 
 	public final SysInputFactory getCurrentSysInput() {
@@ -225,13 +229,13 @@ public class LProcess extends PlayerUtils {
 				if (_currentScreen != null) {
 					setTransition(screen.onTransition());
 				} else {
-					// 为了防止画面单调，Loon默认为无设定Transition的，首个Screen随机增加一个特效
-					// 不想使用，或者需要设定的话，请重载Screen的onTransition函数。
-					// 不使用：返回: LTransition.newEmpty()
-					// 使用：返回: 设定或者自定义一个LTransition对象.
+					// * 为了防止画面单调,Loon默认为未设定Transition时,让首个Screen随机使用一次渐变
+					// * 不想使用,或者需要自行设定的话，请重载Screen的onTransition函数。
+					// * 不使用,返回: LTransition.newEmpty()
+					// * 使用,返回: 设定或者自定义一个LTransition对象.
 					LTransition _transition = screen.onTransition();
 					if (_transition == null) {
-						int rad = MathUtils.random(0, 10);
+						int rad = MathUtils.random(0, 11);
 						switch (rad) {
 						case 0:
 							_transition = LTransition.newFadeIn();
@@ -265,6 +269,9 @@ public class LProcess extends PlayerUtils {
 							break;
 						case 10:
 							_transition = LTransition.newFadeSpiralIn(LColor.black);
+							break;
+						case 11:
+							_transition = LTransition.newFadeSwipeIn(LColor.black);
 							break;
 						}
 					}
@@ -987,14 +994,14 @@ public class LProcess extends PlayerUtils {
 		_logDisplay.paint(g, x, y);
 	}
 
-    public Bundle<?> getBundle() {
-        return _bundle;
-    }
+	public Bundle<?> getBundle() {
+		return _bundle;
+	}
 
-    public Screen getCurrentScreen() {
-        return _currentScreen;
-    }
-    
+	public Screen getCurrentScreen() {
+		return _currentScreen;
+	}
+
 	public LGame getGame() {
 		return _game;
 	}

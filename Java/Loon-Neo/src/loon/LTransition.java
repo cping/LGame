@@ -34,6 +34,7 @@ import loon.action.sprite.effect.PixelDarkOutEffect;
 import loon.action.sprite.effect.PixelThunderEffect;
 import loon.action.sprite.effect.PixelWindEffect;
 import loon.action.sprite.effect.SplitEffect;
+import loon.action.sprite.effect.SwipeEffect;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -59,7 +60,7 @@ public class LTransition {
 	 * 常用特效枚举列表
 	 */
 	public enum TransType {
-		FadeIn, FadeOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
+		FadeIn, FadeOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
 	}
 
 	/**
@@ -87,6 +88,10 @@ public class LTransition {
 				return TransType.FadeTileIn;
 			} else if ("fadetileout".equals(key)) {
 				return TransType.FadeTileOut;
+			} else if ("fadeswipein".equals(key)) {
+				return TransType.FadeSwipeIn;
+			} else if ("fadeswipeout".equals(key)) {
+				return TransType.FadeSwipeOut;
 			} else if ("fadespiralin".equals(key)) {
 				return TransType.FadeSpiralIn;
 			} else if ("fadespiralout".equals(key)) {
@@ -176,6 +181,12 @@ public class LTransition {
 		case FadeSpiralOut:
 			transition = newFadeSpiralOut(c);
 			break;
+		case FadeSwipeIn:
+			transition = newFadeSwipeIn(c);
+			break;
+		case FadeSwipeOut:
+			transition = newFadeSwipeOut(c);
+			break;
 		case PixelDarkIn:
 			transition = newPixelDarkIn(c);
 			break;
@@ -204,8 +215,7 @@ public class LTransition {
 	 * @param transitions
 	 * @return
 	 */
-	public static final LTransition newCombinedTransition(
-			final TArray<LTransition> transitions) {
+	public static final LTransition newCombinedTransition(final TArray<LTransition> transitions) {
 
 		if (LSystem._base != null) {
 
@@ -276,8 +286,8 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newCrossRandom(LColor c) {
-		return newCross(MathUtils.random(0, 1), TextureUtils.createTexture(
-				LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c));
+		return newCross(MathUtils.random(0, 1),
+				TextureUtils.createTexture(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c));
 	}
 
 	/**
@@ -395,8 +405,7 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newSplitRandom(LColor c) {
-		return newSplitRandom(TextureUtils.createTexture(
-				LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c));
+		return newSplitRandom(TextureUtils.createTexture(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c));
 	}
 
 	/**
@@ -654,8 +663,7 @@ public class LTransition {
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final FadeSpiralEffect fadespiral = new FadeSpiralEffect(type,
-						c);
+				final FadeSpiralEffect fadespiral = new FadeSpiralEffect(type, c);
 
 				@Override
 				public void draw(GLEx g) {
@@ -680,6 +688,74 @@ public class LTransition {
 				@Override
 				public ISprite getSprite() {
 					return fadespiral;
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	/**
+	 * 斜滑过渡特效
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static final LTransition newFadeSwipeOut(final LColor c) {
+		return newFadeSwipe(FadeEffect.TYPE_FADE_OUT, c);
+	}
+
+	/**
+	 * 斜滑过渡特效
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static final LTransition newFadeSwipeIn(final LColor c) {
+		return newFadeSwipe(FadeEffect.TYPE_FADE_IN, c);
+	}
+
+	/**
+	 * 斜滑过渡特效
+	 * 
+	 * @param type
+	 * @param c
+	 * @return
+	 */
+	public static final LTransition newFadeSwipe(final int type, final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final SwipeEffect fadeswipe = new SwipeEffect(type, c);
+
+				@Override
+				public void draw(GLEx g) {
+					fadeswipe.createUI(g);
+				}
+
+				@Override
+				public void update(long elapsedTime) {
+					fadeswipe.update(elapsedTime);
+				}
+
+				@Override
+				public boolean completed() {
+					return fadeswipe.isCompleted();
+				}
+
+				@Override
+				public void close() {
+					fadeswipe.close();
+				}
+
+				@Override
+				public ISprite getSprite() {
+					return fadeswipe;
 				}
 
 			});
@@ -837,8 +913,7 @@ public class LTransition {
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final PixelDarkOutEffect darkoutEffect = new PixelDarkOutEffect(
-						c);
+				final PixelDarkOutEffect darkoutEffect = new PixelDarkOutEffect(c);
 
 				@Override
 				public void draw(GLEx g) {
@@ -879,8 +954,7 @@ public class LTransition {
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final PixelThunderEffect thunderEffect = new PixelThunderEffect(
-						c);
+				final PixelThunderEffect thunderEffect = new PixelThunderEffect(c);
 
 				@Override
 				public void draw(GLEx g) {

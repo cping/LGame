@@ -152,7 +152,7 @@ public abstract class DrawableScreen extends Screen {
 		LGame game = LSystem.base();
 		if (game != null) {
 			if (batch == null) {
-				batch = new SpriteBatch();
+				batch = new SpriteBatch(256);
 			}
 			for (Drawable drawable : drawables) {
 				drawable.loadContent();

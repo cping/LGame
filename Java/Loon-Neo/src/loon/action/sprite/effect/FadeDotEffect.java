@@ -172,7 +172,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		if (finished) {
 			return;
 		}
-		boolean useText = g.alltextures() && LSystem.isHTML5();
+		boolean useText = g.isAlltextures() && LSystem.isHTML5();
 		int skip = g.getPixSkip();
 		if (useText) {
 			g.setPixSkip(10);

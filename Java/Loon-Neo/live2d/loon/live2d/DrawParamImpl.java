@@ -15,18 +15,15 @@ public class DrawParamImpl extends DrawParam {
 
 	private LColor color = new LColor(LColor.white);
 
-	private ListMap<Integer, LTexture> textures = new ListMap<Integer, LTexture>(
-			32);
+	private ListMap<Integer, LTexture> textures = new ListMap<Integer, LTexture>(32);
 
 	public DrawParamImpl() {
 
 	}
 
 	@Override
-	public void drawTexture(final L2DModelMatrix matrix, final GLEx gl,
-			final int textureNo, final int indexCount,
-			final short[] indexArray, final float[] vertexArray,
-			final float[] uvArray, final float opacity,
+	public void drawTexture(final L2DModelMatrix matrix, final GLEx gl, final int textureNo, final int indexCount,
+			final short[] indexArray, final float[] vertexArray, final float[] uvArray, final float opacity,
 			final int colorCompositionType) {
 		if (opacity < 0.01) {
 			return;
@@ -59,24 +56,21 @@ public class DrawParamImpl extends DrawParam {
 				float b = this.list.get(textureNo).b;
 				float a = this.list.get(textureNo).a;
 				if (this._updateAlpha) {
-					color.setColor(this.red * opacity * r, this.green * opacity
-							* g, this.blue * opacity * b, this.alpha * opacity
-							* a);
+					color.setColor(this.red * opacity * r, this.green * opacity * g, this.blue * opacity * b,
+							this.alpha * opacity * a);
 				} else {
-					color.setColor(this.red * r, this.green * g, this.blue * b,
-							this.alpha * a * opacity);
+					color.setColor(this.red * r, this.green * g, this.blue * b, this.alpha * a * opacity);
 				}
 			}
 			LSystem.base().graphics().gl.glBlendFunc(sfactor, dfactor);
-			LTextureBatch batch = texture.getTextureBatch("drawlive2d");
+			LTextureBatch batch = texture.getTextureBatch("drawlive2d", 4096);
 			batch.setBlendState(BlendState.Null);
 			batch.begin();
 			if (this._scale.x == 1f && this._scale.y == 1f) {
 				batch.setBatchMatrix(matrix.getArray());
 			}
 			batch.setGLType(GL20.GL_TRIANGLES);
-			batch.draw(indexArray, vertexArray, uvArray, _location.x,
-					_location.y, _scale.x, _scale.y, color);
+			batch.draw(indexArray, vertexArray, uvArray, _location.x, _location.y, _scale.x, _scale.y, color);
 			batch.end();
 		}
 	}

@@ -20,6 +20,7 @@
  */
 package loon.font;
 
+import loon.LSystem;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
@@ -56,6 +57,6 @@ public abstract class TextLayout {
 	}
 
 	public static String normalizeEOL(String text) {
-		return text.replace("\r\n", "\n").replace('\r', '\n');
+		return text.replace(LSystem.NL, "\n").replace('\r', '\n');
 	}
 }

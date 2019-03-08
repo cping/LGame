@@ -201,7 +201,7 @@ public class BMFont implements IFont {
 			displays.clear();
 		}
 
-		StringTokenizer br = new StringTokenizer(text, "\r\n");
+		StringTokenizer br = new StringTokenizer(text, LSystem.NL);
 		info = br.nextToken();
 		common = br.nextToken();
 		page = br.nextToken();

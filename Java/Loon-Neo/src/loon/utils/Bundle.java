@@ -1,4 +1,4 @@
-package loon;
+package loon.utils;
 
 public interface Bundle<T> {
     void put(String key, T value);

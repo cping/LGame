@@ -63,7 +63,7 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * kenney: 一个欧美的无版权问题的游戏图片资源下载站。[地址](http://kenney.nl/) 
 * nantoka: 一个日本的游戏图片资源（仓库）站，资源很杂。[地址](http://nantoka.main.jp/)
 * BlueForest: 一个日本的游戏图片站，以脸图以及Q版立绘为主。[地址](http://blue-forest.sakura.ne.jp/index.html)
-* gameart2d: 一个【版权问题不大】的游戏图片资源下载站，确实都是公开且免费的资源，但是它的资源【撞车率】较高，做同类游戏时很容易和人发生冲突…… [地址](http://www.gameart2d.com/) 
+* gameart2d: 一个游戏图片资源下载站（主要是收费的，采取共享协议，多人一资源）[地址](http://www.gameart2d.com/) 
 * members.jcom.home: 主要提供怪物类图片的日本资源站。 [地址](http://members.jcom.home.ne.jp/hide.mats/new_m.htm)
 * 音人: 一个日本的游戏音频资源下载站（PS:该站协议要求在非营利场合使用，也就用它的资源开发游戏，不能直接收费）。 [地址](http://on-jin.com/)
 * 炼狱庭院:  一个日本的游戏音频资源下载站。 [地址](http://www.rengoku-teien.com/index.html)
@@ -75,12 +75,28 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * hmix: 日本的音频资源站，非商用不受限制，商用的话则要求购买。[地址](http://www.hmix.net/)
 * whitecafe: 日站，大触的blog，经常发点免费图片资源出来。[地址](http://whitecafe.sakura.ne.jp/)
 * 欧美的在线RPG角色生成器。[地址](http://gaurav.munjal.us/Universal-LPC-Spritesheet-Character-Generator/#)
-
-### 免费的开发辅助工具
-
-* gimp: 经典的免费图像资源开发工具，基本可以替代PS使用（不想被人发现使用破解版PS时，可以用它充数……）。[地址](http://www.gimp.org/)
-* live2d: 伪3D人物动态表情开发工具(基本上就是设计AVG游戏动态角色用的)。[地址](http://www.live2d.com/)
+* gimp: 经典的免费图像资源开发工具，基本可以替代PS使用[地址](http://www.gimp.org/)
+* live2d: 伪3D人物动态表情开发工具(基本上就是设计AVG游戏动态角色用的)[地址](http://www.live2d.com/)
 * mapeditor: 瓦片地图开发工具。[地址](http://mapeditor.org/)
+* bmfont: fnt字体生成工具。[地址](http://www.angelcode.com/products/bmfont/)
 * bfxr: 音频制作工具。[地址](http://www.bfxr.net/)
 * audiotool: 音频制作工具。[地址](http://www.audiotool.com/)
 * thumbnailator:纯Java实现的图像缩放处理库。[地址](https://github.com/coobird/thumbnailator)
+
+### 免费的开发辅助工具
+
+* gimp: 经典的免费图像资源开发工具，基本可以替代PS使用[地址](http://www.gimp.org/)
+* live2d: 伪3D人物动态表情开发工具(基本上就是设计AVG游戏动态角色用的)[地址](http://www.live2d.com/)
+* mapeditor: 瓦片地图开发工具。[地址](http://mapeditor.org/)
+* bmfont: fnt字体生成工具。[地址](http://www.angelcode.com/products/bmfont/)
+* bfxr: 音频制作工具。[地址](http://www.bfxr.net/)
+* audiotool: 音频制作工具。[地址](http://www.audiotool.com/)
+* thumbnailator:纯Java实现的图像缩放处理库。[地址](https://github.com/coobird/thumbnailator)
+* Scala: 融合了面向对象和函数式编程思想的静态类型编程语言，也是twitter使用的服务器开发语言之一。[官网](http://www.scala-lang.org/)
+* Groovy: 类型可选（Optionally typed）的动态语言，支持静态类型和静态编译。目前是一个Apache孵化器项目。[官网](http://www.groovy-lang.org/)
+* JRuby: Ruby的Java环境下运行库，包含有较为完整的Ruby语言支持。[项目地址](https://github.com/jruby/jruby/)
+* luajava: Lua脚本的Java本地支持库。 [项目地址](https://github.com/jasonsantos/luajava/)
+* Clojure: 可看做现代版Lisp的动态类型语言。[官网](http://clojure.org/)
+* Ceylon: RedHat开发的面向对象静态类型编程语言。[官网](http://ceylon-lang.org/)
+* Kotlin: JetBrain针对JVM、安卓和浏览器提供的静态类型编程语言。[官网](http://kotlinlang.org/)
+* Xtend: 一种静态编程语言，能够将其代码转换为简洁高效的Java代码，并基于JVM运行。[官网](http://www.eclipse.org/xtend)

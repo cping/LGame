@@ -20,20 +20,30 @@
  */
 package loon.utils.timer;
 
-import java.io.Serializable;
+public class LTimer {
 
-public class LTimer implements Serializable {
+	protected static LTimer _instance = null;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	public static LTimer getInstance() {
+		if (_instance == null) {
+			_instance = new LTimer(0);
+		}
+		return _instance;
+	}
 
 	private boolean active = true;
 
 	private long delay;
 
 	private long currentTick;
+
+	public static LTimer at() {
+		return new LTimer();
+	}
+
+	public static LTimer at(long delay) {
+		return new LTimer(delay);
+	}
 
 	public LTimer() {
 		this(450);
@@ -119,11 +129,11 @@ public class LTimer implements Serializable {
 	}
 
 	public float getPercentage() {
-		return this.currentTick / this.delay;
+		return (float) this.currentTick / (float) this.delay;
 	}
 
 	public float getRemaining() {
-		return this.delay - this.currentTick;
+		return (float) this.delay - (float) this.currentTick;
 	}
 
 	public void clamp() {

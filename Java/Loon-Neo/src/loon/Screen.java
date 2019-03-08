@@ -71,7 +71,9 @@ import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayMap;
+import loon.utils.Bundle;
 import loon.utils.CollectionUtils;
+import loon.utils.ConfigReader;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -1582,7 +1584,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (background != null) {
 			setRepaintMode(SCREEN_TEXTURE_REPAINT);
 			currentScreenBackground = background;
-			currentScreenBackground.setDisabledTexture(true);
 		} else {
 			setRepaintMode(SCREEN_NOT_REPAINT);
 		}
@@ -1593,7 +1594,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 设定背景图像
 	 */
 	public Screen setBackground(String fileName) {
-		return this.setBackground(LTextures.newTexture(fileName));
+		return this.setBackground(LTextures.loadTexture(fileName));
 	}
 
 	/**
@@ -2952,8 +2953,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 		}
 	}
-
+	
 	public abstract void touchDrag(GameTouch e);
+
+	public LComponent getSelectedComponent(){
+		return getDesktop().getSelectedComponent();
+	}
 
 	/**
 	 * 判定是否点击了指定位置
@@ -3212,6 +3217,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public LColor getColor() {
 		return this._baseColor;
+	}
+
+	public Session getSession(String name) {
+		return new Session(name);
+	}
+
+	public ConfigReader getConfigFile(String path) {
+		return new ConfigReader(path);
 	}
 
 	public IFont getGameFont() {

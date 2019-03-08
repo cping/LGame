@@ -33,24 +33,22 @@ public class MeshDefault {
 
 	private boolean stop_main_readering = false;
 
-	private final static ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(
-			10);
+	private final static ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(10);
 
 	public Mesh getMesh(String n, int size) {
 		final String name = n + size;
-		Mesh mesh = meshLazy.get(name);
-		if (mesh == null) {
-			mesh = new Mesh(VertexDataType.VertexArray, false, size * 4,
-					size * 6, new VertexAttribute(Usage.Position, 2,
-							ShaderProgram.POSITION_ATTRIBUTE),
-					new VertexAttribute(Usage.ColorPacked, 4,
-							ShaderProgram.COLOR_ATTRIBUTE),
-					new VertexAttribute(Usage.TextureCoordinates, 2,
-							ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-			resetIndices(size, mesh);
-			meshLazy.put(name, mesh);
+		synchronized (meshLazy) {
+			Mesh mesh = meshLazy.get(name);
+			if (mesh == null || mesh.isClosed()) {
+				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
+						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				resetIndices(size, mesh);
+				meshLazy.put(name, mesh);
+			}
+			return mesh;
 		}
-		return mesh;
 	}
 
 	private void resetIndices(int size, Mesh mesh) {
@@ -86,8 +84,28 @@ public class MeshDefault {
 		resetIndices(size, mesh);
 	}
 
-	public void post(final String name, final int size, ShaderProgram shader,
-			float[] vertices, int vertexIdx, int count) {
+	public void reset(String n, int size) {
+		final String name = n + size;
+		synchronized (meshLazy) {
+			Mesh mesh = meshLazy.get(name);
+			if (mesh != null) {
+				mesh.close();
+				mesh = null;
+			}
+			meshLazy.remove(name);
+			if (mesh == null || mesh.isClosed()) {
+				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
+						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				resetIndices(size, mesh);
+				meshLazy.put(name, mesh);
+			}
+		}
+	}
+
+	public synchronized void post(final String name, final int size, ShaderProgram shader, float[] vertices,
+			int vertexIdx, int count) {
 		// 防止与主画面渲染器GLEx冲突
 		this.running = LSystem.mainDrawRunning();
 		if (!running) {
@@ -112,18 +130,22 @@ public class MeshDefault {
 		return meshLazy.size;
 	}
 
-	public void dispose(String name, int size) {
+	public synchronized void dispose(String name, int size) {
 		final String key = name + size;
-		Mesh mesh = meshLazy.remove(key);
-		if (mesh != null) {
-			mesh.close();
+		synchronized (meshLazy) {
+			Mesh mesh = meshLazy.remove(key);
+			if (mesh != null) {
+				mesh.close();
+			}
 		}
 	}
 
 	public static void dispose() {
-		for (Mesh mesh : meshLazy.values()) {
-			if (mesh != null) {
-				mesh.close();
+		synchronized (meshLazy) {
+			for (Mesh mesh : meshLazy.values()) {
+				if (mesh != null) {
+					mesh.close();
+				}
 			}
 		}
 		meshLazy.clear();

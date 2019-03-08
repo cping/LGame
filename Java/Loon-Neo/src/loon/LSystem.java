@@ -77,10 +77,13 @@ public class LSystem {
 	public static String FRAMEWORK_IMG_NAME = "loon_";
 
 	// 行分隔符
-	final static public String LS = System.getProperty("line.separator", "\n");
+	final public static String LS = System.getProperty("line.separator", "\n");
 
 	// 文件分割符
-	final static public String FS = System.getProperty("file.separator", "/");
+	final public static String FS = System.getProperty("file.separator", "/");
+
+	// 换行标记
+	final public static String NL = "\r\n";
 
 	private static IFont _defaultLogFont = null;
 
@@ -180,25 +183,25 @@ public class LSystem {
 
 	public static int MODE_MULTIPLY = 14;
 	// 兆秒
-	final static public long MSEC = 1;
+	final public static long MSEC = 1;
 
 	// 秒
-	final static public long SECOND = 1000;
+	final public static long SECOND = 1000;
 
 	// 分
-	final static public long MINUTE = SECOND * 60;
+	final public static long MINUTE = SECOND * 60;
 
 	// 小时
-	final static public long HOUR = MINUTE * 60;
+	final public static long HOUR = MINUTE * 60;
 
 	// 天
-	final static public long DAY = HOUR * 24;
+	final public static long DAY = HOUR * 24;
 
 	// 周
-	final static public long WEEK = DAY * 7;
+	final public static long WEEK = DAY * 7;
 
 	// 理论上一年
-	final static public long YEAR = DAY * 365;
+	final public static long YEAR = DAY * 365;
 
 	// 是否使用了HTML5环境
 	private static boolean _USE_HTML5 = false;
@@ -368,7 +371,6 @@ public class LSystem {
 			GLEx gl = game.GL();
 			if (gl.running()) {
 				gl.end();
-				gl.freeBatchBuffer();
 			}
 		}
 	}
@@ -400,9 +402,10 @@ public class LSystem {
 	}
 
 	public static final int VERTEX_SIZE = 2 + 1 + 2;
+	
 	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
-	static public String createVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
+	public static String createVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
 		String shader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
 				+ (hasNormals ? "attribute vec3 " + ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
 				+ (hasColors ? "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
@@ -429,7 +432,7 @@ public class LSystem {
 		return shader;
 	}
 
-	static public String createFragmentShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
+	public static String createFragmentShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
 		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n" + "#endif\n";
 
 		if (hasColors)
@@ -456,42 +459,48 @@ public class LSystem {
 		return shader;
 	}
 
-	static public ShaderProgram createDefaultShader() {
-		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "uniform mat4 u_projTrans;\n" //
-				+ "varying vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "\n" //
-				+ "void main()\n" //
-				+ "{\n" //
-				+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
-				+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
-				+ "#define LOWP lowp\n" //
-				+ "precision mediump float;\n" //
-				+ "#else\n" //
-				+ "#define LOWP \n" //
-				+ "#endif\n" //
-				+ "varying LOWP vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "uniform sampler2D u_texture;\n" //
-				+ "void main()\n"//
-				+ "{\n" //
-				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
-				+ "}";
+	public final static String vertexShaderDef = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+			+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+			+ "uniform mat4 u_projTrans;\n" //
+			+ "varying vec4 v_color;\n" //
+			+ "varying vec2 v_texCoords;\n" //
+			+ "\n" //
+			+ "void main()\n" //
+			+ "{\n" //
+			+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+			+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
+			+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+			+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+			+ "}\n";
+	
+	public final static String fragmentShaderDef = "#ifdef GL_ES\n" //
+			+ "#define LOWP lowp\n" //
+			+ "precision mediump float;\n" //
+			+ "#else\n" //
+			+ "#define LOWP \n" //
+			+ "#endif\n" //
+			+ "varying LOWP vec4 v_color;\n" //
+			+ "varying vec2 v_texCoords;\n" //
+			+ "uniform sampler2D u_texture;\n" //
+			+ "void main()\n"//
+			+ "{\n" //
+			+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+			+ "}";
 
-		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
-		if (shader.isCompiled() == false)
+	public static ShaderProgram createShader(String ver, String fragment) {
+		ShaderProgram shader = new ShaderProgram(ver, fragment);
+		if (shader.isCompiled() == false) {
 			throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+		}
 		return shader;
 	}
 
-	static public String createGlobalVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
+	public static ShaderProgram createDefaultShader() {
+		return createShader(vertexShaderDef, fragmentShaderDef);
+	}
+
+	public static String createGlobalVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
 		String shader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
 				+ (hasNormals ? "attribute vec3 " + ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
 				+ (hasColors ? "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
@@ -518,7 +527,7 @@ public class LSystem {
 		return shader;
 	}
 
-	static public String createGlobalFragmentShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
+	public static String createGlobalFragmentShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
 		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n" + "#endif\n";
 		if (hasColors) {
 			shader += "uniform vec4 v_col;\n";
@@ -542,7 +551,7 @@ public class LSystem {
 		return shader;
 	}
 
-	static public ShaderProgram createGlobalShader() {
+	public static ShaderProgram createGlobalShader() {
 		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
 				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
@@ -570,12 +579,7 @@ public class LSystem {
 				+ "{\n" //
 				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
 				+ "}";
-
-		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
-		if (shader.isCompiled() == false) {
-			throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
-		}
-		return shader;
+		return createShader(vertexShader, fragmentShader);
 	}
 
 	public final static String format(float value) {
@@ -680,7 +684,7 @@ public class LSystem {
 			LSystem._base.log().warn(msg, throwable);
 		}
 	}
-	
+
 	public final static void error(String msg) {
 		if (LSystem._base != null) {
 			LSystem._base.log().error(msg);

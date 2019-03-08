@@ -23,6 +23,7 @@ package loon;
 import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.Base64Coder;
+import loon.utils.Bundle;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -37,6 +38,9 @@ public class Session implements Bundle<String> {
 
 	private String loadData() {
 		String result = _save.getItem(name);
+		if(StringUtils.isEmpty(result)){
+			return result;
+		}
 		if (Base64Coder.isBase64(result)) {
 			try {
 				result = new String(Base64Coder.decode(result), LSystem.ENCODING);
@@ -48,6 +52,9 @@ public class Session implements Bundle<String> {
 	}
 
 	private void saveData(String result) {
+		if(StringUtils.isEmpty(result)){
+			return;
+		}
 		if (!Base64Coder.isBase64(result)) {
 			try {
 				result = new String(Base64Coder.encode(result.getBytes()), LSystem.ENCODING);
@@ -116,6 +123,9 @@ public class Session implements Bundle<String> {
 		}
 
 		public void set(int index, final String v) {
+			if(StringUtils.isEmpty(v)){
+				return;
+			}
 			final String value = StringUtils.replace(v, String.valueOf(flag), "+");
 			if (index >= values.length) {
 				int size = index + 1;
@@ -218,6 +228,9 @@ public class Session implements Bundle<String> {
 	}
 
 	public void set(String name, int index, String value) {
+		if(StringUtils.isEmpty(value)){
+			return;
+		}
 		synchronized (recordsList) {
 			Record record = (Record) records.get(name);
 			if (record == null) {
@@ -254,6 +267,9 @@ public class Session implements Bundle<String> {
 	}
 
 	public void add(String name, String value) {
+		if(StringUtils.isEmpty(value)){
+			return;
+		}
 		synchronized (recordsList) {
 			Record record = (Record) records.get(name);
 			if (record == null) {

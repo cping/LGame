@@ -57,7 +57,7 @@ public class LProgress extends LComponent {
 			int width, int height, LTexture bg, LTexture bgProgress) {
 		super(x, y, width, height);
 		this.progressType = type;
-		this.batch = new SpriteBatch();
+		this.batch = new SpriteBatch(128);
 		this.baseColor = baseColor;
 		switch (progressType) {
 		case GAME:

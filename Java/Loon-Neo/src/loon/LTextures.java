@@ -26,11 +26,9 @@ import loon.utils.TArray;
 
 public class LTextures {
 
-	private final static TArray<LTexture> textureList = new TArray<LTexture>(
-			100);
+	private final static TArray<LTexture> textureList = new TArray<LTexture>(100);
 
-	private final static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(
-			100);
+	private final static ObjectMap<String, LTexture> lazyTextures = new ObjectMap<String, LTexture>(100);
 
 	public static boolean contains(int id) {
 		synchronized (textureList) {
@@ -55,8 +53,7 @@ public class LTextures {
 	}
 
 	static void putTexture(LTexture tex2d) {
-		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild()
-				&& !textureList.contains(tex2d)) {
+		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild() && !textureList.contains(tex2d)) {
 			synchronized (textureList) {
 				textureList.add(tex2d);
 			}
@@ -102,24 +99,21 @@ public class LTextures {
 	public static LTexture createTexture(int width, int height, Format config) {
 		final LGame base = LSystem._base;
 		if (base != null) {
-			LTexture texture = base.graphics().createTexture(width, height,
-					config);
+			LTexture texture = base.graphics().createTexture(width, height, config);
 			return texture;
 		}
 		return null;
 	}
 
 	public static LTexture newTexture(String path) {
-		if (LSystem._base == null) {
-			return null;
-		}
-		return BaseIO.loadImage(path).onHaveToClose(true).texture();
+		return newTexture(path, Format.LINEAR);
 	}
 
 	public static LTexture newTexture(String path, Format config) {
 		if (LSystem._base == null) {
 			return null;
 		}
+		LSystem.debug("Texture : New " + path + " Loaded");
 		return BaseIO.loadImage(path).onHaveToClose(true).createTexture(config);
 	}
 
@@ -144,8 +138,7 @@ public class LTextures {
 		for (int i = 0, size = textureList.size; i < size; i++) {
 			LTexture tex2d = textureList.get(i);
 			if (tex2d != null) {
-				if (key.equals(tex2d.getSource())
-						|| key.equals(tex2d.getSource().toLowerCase())) {
+				if (key.equals(tex2d.getSource()) || key.equals(tex2d.getSource().toLowerCase())) {
 					return tex2d.refCount;
 				}
 			}
@@ -159,15 +152,25 @@ public class LTextures {
 		}
 		synchronized (lazyTextures) {
 			String key = fileName.trim().toLowerCase();
-			LTexture texture = lazyTextures.get(key);
-			if (texture != null && !texture.isClose()) {
+			ObjectMap<String, LTexture> texs = new ObjectMap<String, LTexture>(lazyTextures);
+			LTexture texture = texs.get(key);
+			if (texture == null) {
+				for (LTexture tex : texs.values()) {
+					if (tex.tmpLazy != null && tex.tmpLazy.toLowerCase().equals(key.toLowerCase())) {
+						texture = tex;
+						break;
+					}
+				}
+			}
+			if (texture != null && !texture.disposed()) {
 				texture.refCount++;
 				return texture;
 			}
-			texture = BaseIO.loadImage(fileName).onHaveToClose(true)
-					.createTexture(config);
+			texture = BaseIO.loadImage(fileName).onHaveToClose(true).createTexture(config);
 			texture.tmpLazy = fileName;
 			lazyTextures.put(key, texture);
+		
+			LSystem.debug("Texture : " + fileName + " Loaded");
 			return texture;
 		}
 	}
@@ -206,12 +209,10 @@ public class LTextures {
 
 	public static void destroySourceAllCache() {
 		if (lazyTextures.size > 0) {
-			TArray<LTexture> textures = new TArray<LTexture>(
-					lazyTextures.values());
+			TArray<LTexture> textures = new TArray<LTexture>(lazyTextures.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
-				if (tex2d != null && !tex2d.isClose()
-						&& tex2d.getSource() != null
+				if (tex2d != null && !tex2d.isClose() && tex2d.getSource() != null
 						&& tex2d.getSource().indexOf("<canvas>") == -1) {
 					tex2d.refCount = 0;
 					tex2d.close(true);
@@ -225,8 +226,7 @@ public class LTextures {
 
 	public static void destroyAllCache() {
 		if (lazyTextures.size > 0) {
-			TArray<LTexture> textures = new TArray<LTexture>(
-					lazyTextures.values());
+			TArray<LTexture> textures = new TArray<LTexture>(lazyTextures.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClose()) {

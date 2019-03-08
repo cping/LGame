@@ -29,6 +29,6 @@ public class PlatformManager implements IPlatformManager {
 
 	@Override
 	public void log(String txt) {
-		LSystem.base().log().debug(txt);
+		LSystem.debug(txt);
 	}
 }

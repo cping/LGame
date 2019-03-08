@@ -1,5 +1,7 @@
 package loon;
 
+import loon.utils.Bundle;
+
 public class EmptyBundle implements Bundle<Object> {
 
 	@Override

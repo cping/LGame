@@ -1134,7 +1134,7 @@ public class Command extends Conversion implements LRelease {
 			int length = capacity;
 			int index = 0;
 			try {
-				StringTokenizer reader = new StringTokenizer(context, "\r\n");
+				StringTokenizer reader = new StringTokenizer(context, LSystem.NL);
 				String record = null;
 				for (; reader.hasMoreTokens();) {
 					record = reader.nextToken().trim();

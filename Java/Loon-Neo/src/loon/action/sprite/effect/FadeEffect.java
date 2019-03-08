@@ -66,7 +66,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 		return time;
 	}
 
-	public void setDelay(int delay) {
+	public void setDelay(float delay) {
 		this.time = delay;
 		if (type == TYPE_FADE_IN) {
 			this.currentFrame = this.time;

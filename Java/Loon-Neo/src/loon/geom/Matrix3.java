@@ -672,11 +672,19 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public float getTranslationX() {
-		return this.val[6];
+		return this.val[M02];
 	}
 
 	public float getTranslationY() {
-		return this.val[7];
+		return this.val[M12];
+	}
+	
+	public float getScaleX(){
+		return this.val[M00];
+	}
+	
+	public float getScaleY(){
+		return this.val[M11];
 	}
 
 	public void translation(float x, float y) {

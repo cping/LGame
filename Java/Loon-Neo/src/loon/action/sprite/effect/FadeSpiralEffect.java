@@ -99,6 +99,7 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 				}
 			}
 		}
+
 	}
 
 	@Override

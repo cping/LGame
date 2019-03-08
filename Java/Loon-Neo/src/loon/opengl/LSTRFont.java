@@ -445,6 +445,7 @@ public class LSTRFont implements IFont {
 						totalWidth += intObject.width;
 					}
 				}
+				fontBatch.setBlendState(BlendState.AlphaBlend);
 				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 				fontBatch.setColor(old);
 				displays.put(chars, display = fontBatch.newCache());
@@ -478,6 +479,7 @@ public class LSTRFont implements IFont {
 				}
 			}
 			fontBatch.setColor(old);
+			fontBatch.setBlendState(BlendState.AlphaBlend);
 			fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 		}
 	}
@@ -543,7 +545,9 @@ public class LSTRFont implements IFont {
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
 		final boolean update = scale || angle || anchor;
+		final int blend = gl.getBlendMode();
 		try {
+			gl.setBlendMode(LSystem.MODE_NORMAL);
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
@@ -589,6 +593,7 @@ public class LSTRFont implements IFont {
 				}
 			}
 		} finally {
+			gl.setBlendMode(blend);
 			gl.setTint(old);
 			if (update) {
 				gl.restoreTx();
@@ -629,6 +634,7 @@ public class LSTRFont implements IFont {
 			if (color != null) {
 				setImageColor(color);
 			}
+			fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (c == newLineFlag) {
 				fontBatch.draw(colors, x, y + fontSize, intObject.width - offsetX, intObject.height - offsetY,
 						intObject.storedX, intObject.storedY, intObject.storedX + intObject.width - offsetX,
@@ -729,21 +735,21 @@ public class LSTRFont implements IFont {
 		return fontBatch;
 	}
 
-	private void setImageColor(float r, float g, float b) {
-		setColor(Painter.TOP_LEFT, r, g, b);
-		setColor(Painter.TOP_RIGHT, r, g, b);
-		setColor(Painter.BOTTOM_LEFT, r, g, b);
-		setColor(Painter.BOTTOM_RIGHT, r, g, b);
+	private void setImageColor(float r, float g, float b,float a) {
+		setColor(Painter.TOP_LEFT, r, g, b,a);
+		setColor(Painter.TOP_RIGHT, r, g, b,a);
+		setColor(Painter.BOTTOM_LEFT, r, g, b,a);
+		setColor(Painter.BOTTOM_RIGHT, r, g, b,a);
 	}
 
 	private void setImageColor(LColor c) {
 		if (c == null) {
 			return;
 		}
-		setImageColor(c.r, c.g, c.b);
+		setImageColor(c.r, c.g, c.b,c.a);
 	}
 
-	private void setColor(int corner, float r, float g, float b) {
+	private void setColor(int corner, float r, float g, float b,float a) {
 		if (colors == null) {
 			colors = new LColor[] { new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
 					new LColor(1, 1, 1, 1f) };
@@ -751,6 +757,7 @@ public class LSTRFont implements IFont {
 		colors[corner].r = r;
 		colors[corner].g = g;
 		colors[corner].b = b;
+		colors[corner].a = a;
 	}
 
 	public int charWidth(char c) {

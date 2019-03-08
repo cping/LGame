@@ -690,16 +690,21 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public final static boolean isAlphabet(String value) {
-		if (value == null || value.length() == 0)
+		if (value == null || value.length() == 0) {
 			return false;
-		for (int i = 0; i < value.length(); i++) {
-			char letter = Character.toUpperCase(value.charAt(i));
-			if (('a' <= letter && letter <= 'z') || ('A' <= letter && letter <= 'Z'))
-				return true;
 		}
-		return false;
+		int size = value.length();
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			if (isAlphabet(value.charAt(i))) {
+				count++;
+			} else {
+				break;
+			}
+		}
+		return count >= size;
 	}
-
+	
 	/**
 	 * 检查是否为纯字母
 	 * 

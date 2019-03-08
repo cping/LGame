@@ -1,18 +1,39 @@
 package loon;
 
 public class IDGenerator {
+
+	private static IDGenerator instance;
+
+	public final static IDGenerator make() {
+		return new IDGenerator();
+	}
+
+	public final static IDGenerator get() {
+		if (instance != null) {
+			return instance;
+		}
+		synchronized (IDGenerator.class) {
+			if (instance == null) {
+				instance = make();
+			}
+			return instance;
+		}
+	}
 	
-	private static int _idNo = 0;
+	private final Counter _counter = new Counter();
 
 	private IDGenerator() {
 	}
 
-	public static int generate() {
-		return ++_idNo;
+	public final int generate() {
+		return _counter.increment();
 	}
-	
-	public static int getID(){
-		return _idNo;
+
+	public final int getID() {
+		return _counter.getValue();
 	}
-	
+
+	public final void clear() {
+		_counter.clear();
+	}
 }
