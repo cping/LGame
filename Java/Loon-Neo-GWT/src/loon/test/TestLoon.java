@@ -303,7 +303,7 @@ public class TestLoon extends Loon {
 
 			@Override
 			public Screen onScreen() {
-				return new ScreenTest();
+				return new TitleScreen();
 			}
 		});
 

@@ -5,6 +5,7 @@ import java.util.StringTokenizer;
 import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.CollectionUtils;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -20,10 +21,8 @@ public class TileMapConfig {
 		this.backMap = backMap;
 	}
 
-	public static Field2D loadCharsField(String resName, int tileWidth,
-			int tileHeight) {
-		Field2D field = new Field2D(loadCharsMap(resName), tileWidth,
-				tileHeight);
+	public static Field2D loadCharsField(String resName, int tileWidth, int tileHeight) {
+		Field2D field = new Field2D(loadCharsMap(resName), tileWidth, tileHeight);
 		return field;
 	}
 
@@ -54,8 +53,7 @@ public class TileMapConfig {
 			return null;
 		}
 		StringTokenizer br = new StringTokenizer(result, LSystem.NL);
-		TArray<int[]> records = new TArray<int[]>(
-				CollectionUtils.INITIAL_CAPACITY);
+		TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, "");
 			if (!StringUtils.isEmpty(result)) {
@@ -132,9 +130,11 @@ public class TileMapConfig {
 
 	private static int stingToInt(String srcStr) {
 		int resNo = 0;
-		try {
-			resNo = Integer.parseInt(srcStr);
-		} catch (Exception ex) {
+		if (MathUtils.isNan(srcStr)) {
+			try {
+				resNo = Integer.parseInt(srcStr);
+			} catch (Exception ex) {
+			}
 		}
 		return resNo;
 	}

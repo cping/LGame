@@ -30,6 +30,8 @@ import loon.geom.Dimension;
 import loon.geom.Vector3f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
+import loon.opengl.Mesh;
+import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
@@ -228,6 +230,21 @@ public class LSystem {
 		return _base;
 	}
 
+	public static void resetTextureRes() {
+		resetTextureRes(base());
+	}
+
+	public static void resetTextureRes(final LGame game) {
+		LGame loonMain = game;
+		if (loonMain == null) {
+			loonMain = base();
+		}
+		Mesh.invalidateAllMeshes(loonMain);
+		ShaderProgram.invalidateAllShaderPrograms(loonMain);
+		MeshDefault.dispose();
+		LTextures.reload();
+	}
+
 	protected static void initProcess(LGame game) {
 		_base = game;
 		LSetting setting = _base.setting;
@@ -402,7 +419,7 @@ public class LSystem {
 	}
 
 	public static final int VERTEX_SIZE = 2 + 1 + 2;
-	
+
 	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
 	public static String createVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
@@ -473,7 +490,7 @@ public class LSystem {
 			+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
 			+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "}\n";
-	
+
 	public final static String fragmentShaderDef = "#ifdef GL_ES\n" //
 			+ "#define LOWP lowp\n" //
 			+ "precision mediump float;\n" //

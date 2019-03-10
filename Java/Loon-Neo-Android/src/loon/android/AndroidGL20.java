@@ -467,14 +467,6 @@ public class AndroidGL20 extends GL20 {
 				size, sizeOffset, type, typeOffset, name, nameOffset);
 	}
 
-	@Override
-	public void glGetActiveAttrib(int program, int index, int bufsize,
-			IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-		int namePos = name.position();
-		GLES20.glGetActiveAttrib(program, index, bufsize, length, size, type,
-				name.get());
-		name.position(namePos);
-	}
 
 	@Override
 	public void glGetActiveUniform(int program, int index, int bufsize,
@@ -485,14 +477,6 @@ public class AndroidGL20 extends GL20 {
 				nameOffset);
 	}
 
-	@Override
-	public void glGetActiveUniform(int program, int index, int bufsize,
-			IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-		int namePos = name.position();
-		GLES20.glGetActiveUniform(program, index, bufsize, length, size, type,
-				name.get());
-		name.position(namePos);
-	}
 
 	@Override
 	public void glGetAttachedShaders(int program, int maxcount, int[] count,

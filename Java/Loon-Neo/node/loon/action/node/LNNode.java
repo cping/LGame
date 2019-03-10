@@ -129,6 +129,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	protected float _orig_width, _orig_height;
 
+	@Override
 	public void setWidth(float w) {
 		this._size_width = w;
 		if (_orig_width == 0) {
@@ -136,6 +137,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 	}
 
+	@Override
 	public void setHeight(float h) {
 		this._size_height = h;
 		if (_orig_height == 0) {

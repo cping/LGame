@@ -1004,17 +1004,10 @@ public abstract class GL20 {
 			int[] length, int lengthOffset, int[] size, int sizeOffset,
 			int[] type, int typeOffset, byte[] name, int nameOffset);
 
-	public abstract void glGetActiveAttrib(int program, int index, int bufsize,
-			IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name);
-
 	public abstract void glGetActiveUniform(int program, int index,
 			int bufsize, int[] length, int lengthOffset, int[] size,
 			int sizeOffset, int[] type, int typeOffset, byte[] name,
 			int nameOffset);
-
-	public abstract void glGetActiveUniform(int program, int index,
-			int bufsize, IntBuffer length, IntBuffer size, IntBuffer type,
-			ByteBuffer name);
 
 	public abstract void glGetAttachedShaders(int program, int maxcount,
 			IntBuffer count, IntBuffer shaders);

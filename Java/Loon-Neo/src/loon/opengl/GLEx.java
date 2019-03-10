@@ -645,6 +645,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this.lastBrush.baseColor;
 	}
 
+	public int getTint() {
+		return color();
+	}
+
 	public LColor getColor() {
 		return new LColor(this.lastBrush.baseColor);
 	}

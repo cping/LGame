@@ -116,7 +116,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		}
 		return obj;
 	}
-	
+
 	@Override
 	public Json.Object getJson(String name) {
 		init();
@@ -223,7 +223,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 			try {
 				fs = new BMFont(item.url());
 			} catch (Exception e) {
-				LSystem.e("BMFont " + item.url() + " not found!");
+				LSystem.error("BMFont " + item.url() + " not found!", e);
 			}
 			_dataTable.put(name, fs);
 		} else {
@@ -289,7 +289,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 				((MovieSpriteSheet) obj).close();
 			} else if (obj instanceof XMLDocument) {
 				((XMLDocument) obj).close();
-			}else if (obj instanceof Sound) {
+			} else if (obj instanceof Sound) {
 				((Sound) obj).stop();
 			}
 		}
@@ -316,5 +316,5 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 	public void onReciveEvent(int type, EventDispatcher dispatcher, Object data) {
 		this.dispatchEvent(type, data);
 	}
-	
+
 }

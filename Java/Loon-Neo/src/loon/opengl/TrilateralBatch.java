@@ -36,7 +36,7 @@ public class TrilateralBatch extends BaseBatch {
 
 	}
 
-	private ExpandVertices expandVertices;
+	private final ExpandVertices expandVertices;
 
 	private int idx = 0;
 
@@ -46,20 +46,14 @@ public class TrilateralBatch extends BaseBatch {
 
 	private int maxSpritesInBatch = 0;
 
-	private int maxSize = 512;
-
 	private boolean isLoaded;
 
 	private boolean lockSubmit = false;
 
 	private MeshDefault mesh;
 
-	public void setSize(int s) {
-		this.maxSize = s;
-	}
-
 	public int getSize() {
-		return this.maxSize;
+		return expandVertices.getSize();
 	}
 
 	public void setShaderUniformf(String name, LColor color) {
@@ -100,13 +94,12 @@ public class TrilateralBatch extends BaseBatch {
 			} else {
 				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
 			}
-			mesh.post(name, maxSize, shader, expandVertices.getVertices(), idx, count);
+			mesh.post(name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
 			GLUtils.setBlendMode(gl, tmp);
 		} catch (Exception e) {
 			throw LSystem.runThrow(e.getMessage());
 		} finally {
 			if (expandVertices.expand(this.idx)) {
-				maxSize = expandVertices.getSize();
 				mesh.reset(name, expandVertices.length());
 			}
 			if (!lockSubmit) {
@@ -134,7 +127,12 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	public TrilateralBatch(GL20 gl, Source src) {
+		this(gl, 512, src);
+	}
+
+	public TrilateralBatch(GL20 gl, int maxSize, Source src) {
 		super(gl);
+		this.expandVertices = new ExpandVertices(maxSize);
 		this.source = src;
 		this.viewMatrix = new Matrix4();
 		this.init();
@@ -226,7 +224,6 @@ public class TrilateralBatch extends BaseBatch {
 			}
 		}
 		if (!isLoaded) {
-			expandVertices = new ExpandVertices(maxSize);
 			if (shader == null) {
 				shader = LSystem.createShader(source.vertexShader, source.fragmentShader);
 			}

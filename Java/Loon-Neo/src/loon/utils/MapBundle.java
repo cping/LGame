@@ -1,26 +1,26 @@
 package loon.utils;
 
-public class MapBundle implements Bundle<Object> {
+public class MapBundle<T> implements Bundle<T> {
 
-	private final ObjectMap<String, Object> map;
+	private final ObjectMap<String, T> map;
 
 	public MapBundle() {
 		this.map = new ObjectMap<>(20);
 	}
 
 	@Override
-	public void put(String key, Object value) {
+	public void put(String key, T value) {
 		map.put(key, value);
 	}
 
 	@Override
-	public Object get(String key) {
+	public T get(String key) {
 		return get(key, null);
 	}
 
 	@Override
-	public Object get(String key, Object defaultValue) {
-		Object value = map.get(key);
+	public T get(String key, T defaultValue) {
+		T value = map.get(key);
 		if (value != null) {
 			return value;
 		} else {
@@ -29,13 +29,13 @@ public class MapBundle implements Bundle<Object> {
 	}
 
 	@Override
-	public Object remove(String key) {
+	public T remove(String key) {
 		return remove(key, null);
 	}
 
 	@Override
-	public Object remove(String key, Object defaultValue) {
-		Object value = map.remove(key);
+	public T remove(String key, T defaultValue) {
+		T value = map.remove(key);
 		if (value != null) {
 			return value;
 		} else {

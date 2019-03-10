@@ -42,7 +42,7 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
- * 自0.3.2版起新增的Screen切换过渡效果类，内置有多种过渡特效。
+ * 自0.3.2版起新增的Screen切换过渡效果类，内置有多种Screen过渡特效。
  * 
  * example:
  * 

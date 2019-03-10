@@ -36,7 +36,6 @@ import loon.utils.TArray;
 
 public class SimpleParticleSystem extends Entity {
 
-
 	private static final int DEFAULT_PARTICLES = 100;
 
 	private int state = LSystem.MODE_ADD;
@@ -126,18 +125,17 @@ public class SimpleParticleSystem extends Entity {
 		this(defaultSpriteRef, maxParticles, null);
 	}
 
-	public SimpleParticleSystem(String defaultSpriteRef, int maxParticles,
-			LColor mask) {
+	public SimpleParticleSystem(String defaultSpriteRef, int maxParticles, LColor mask) {
 		this.maxParticlesPerEmitter = maxParticles;
 		this.mask = mask;
-        this.setRepaint(true);
+		this.setRepaint(true);
 		setDefaultImageName(defaultSpriteRef);
 		dummy = createParticle(this);
 	}
 
 	public SimpleParticleSystem(LTexture defaultSprite, int maxParticles) {
 		this.maxParticlesPerEmitter = maxParticles;
-	    this.setRepaint(true);
+		this.setRepaint(true);
 		sprite = defaultSprite;
 		dummy = createParticle(this);
 	}
@@ -257,7 +255,7 @@ public class SimpleParticleSystem extends Entity {
 				sprite = LTextures.loadTexture(defaultImageName);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LSystem.error(e.getMessage(), e);
 			defaultImageName = null;
 		}
 	}
@@ -269,8 +267,7 @@ public class SimpleParticleSystem extends Entity {
 		}
 
 		removeMe.clear();
-		TArray<SimpleEmitter> emitters = new TArray<SimpleEmitter>(
-				this.emitters);
+		TArray<SimpleEmitter> emitters = new TArray<SimpleEmitter>(this.emitters);
 		for (int i = 0; i < emitters.size; i++) {
 			SimpleEmitter emitter = emitters.get(i);
 			if (emitter.isEnabled()) {
@@ -359,6 +356,5 @@ public class SimpleParticleSystem extends Entity {
 	public void setBlendingState(int s) {
 		this.state = s;
 	}
-
 
 }

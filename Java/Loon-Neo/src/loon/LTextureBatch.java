@@ -50,6 +50,9 @@ public class LTextureBatch implements LRelease {
 	private final static IntMap<LTextureBatch> batchPools = new IntMap<LTextureBatch>(10);
 
 	public final static void clearBatchCaches() {
+		if (batchPools == null || batchPools.size == 0) {
+			return;
+		}
 		if (LTextureBatch.isBatchCacheDitry) {
 			IntMap<LTextureBatch> batchCaches;
 			synchronized (batchPools) {
@@ -147,7 +150,7 @@ public class LTextureBatch implements LRelease {
 
 	int count = 0;
 
-	ExpandVertices expandVertices;
+	private final ExpandVertices expandVertices;
 
 	float invTexWidth = 0, invTexHeight = 0;
 
@@ -176,8 +179,6 @@ public class LTextureBatch implements LRelease {
 	private int vertexIdx;
 
 	private int texWidth, texHeight;
-
-	private int size = 0;
 
 	private float tx, ty;
 
@@ -251,7 +252,7 @@ public class LTextureBatch implements LRelease {
 		}
 		this.setTexture(tex);
 		this.shader = defaultShader;
-		this.size = size;
+		this.expandVertices = new ExpandVertices(size);
 		this.mesh = new MeshDefault();
 	}
 
@@ -298,7 +299,6 @@ public class LTextureBatch implements LRelease {
 
 	public void begin() {
 		if (!isLoaded) {
-			expandVertices = new ExpandVertices(size);
 			if (shader == null) {
 				shader = LSystem.createDefaultShader();
 			}
@@ -454,13 +454,12 @@ public class LTextureBatch implements LRelease {
 			case Null:
 				break;
 			}
-			mesh.post(name, size, customShader != null ? customShader : shader, expandVertices.getVertices(), vertexIdx,
+			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader, expandVertices.getVertices(), vertexIdx,
 					count);
 		} catch (Exception e) {
-			throw LSystem.runThrow(e.getMessage());
+			throw LSystem.runThrow(e.getMessage(),e);
 		} finally {
 			if (expandVertices.expand(this.vertexIdx)) {
-				size = expandVertices.getSize();
 				mesh.reset(name, expandVertices.length());
 			}
 			GLUtils.setBlendMode(gl, old);
@@ -580,7 +579,7 @@ public class LTextureBatch implements LRelease {
 			case Null:
 				break;
 			}
-			mesh.post(name, size, globalShader, cache.vertices, cache.vertexIdx, cache.count);
+			mesh.post(name, expandVertices.getSize(), globalShader, cache.vertices, cache.vertexIdx, cache.count);
 			GLUtils.setBlendMode(gl, old);
 		} else if (color != null) {
 			globalShader.setUniformf("v_color", oldColor);
@@ -591,11 +590,11 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public void setIndices(short[] indices) {
-		mesh.getMesh(name, size).setIndices(indices);
+		mesh.getMesh(name, expandVertices.getSize()).setIndices(indices);
 	}
 
 	public void resetIndices() {
-		mesh.resetIndices(name, size);
+		mesh.resetIndices(name, expandVertices.getSize());
 	}
 
 	public void setGLType(int type) {
@@ -1234,7 +1233,7 @@ public class LTextureBatch implements LRelease {
 			lastCache.close();
 		}
 		if (!defName.equals(name)) {
-			mesh.dispose(name, size);
+			mesh.dispose(name, expandVertices.getSize());
 		}
 		runningCache = false;
 	}

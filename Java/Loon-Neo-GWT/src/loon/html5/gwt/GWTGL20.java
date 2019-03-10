@@ -262,23 +262,12 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glGetActiveAttrib(int program, int index, int bufsize,
-			IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-		throw new RuntimeException("NYI glGetActiveAttrib");
-	}
-
-	@Override
 	public void glGetActiveUniform(int program, int index, int bufsize,
 			int[] length, int lengthOffset, int[] size, int sizeOffset,
 			int[] type, int typeOffset, byte[] name, int nameOffset) {
 		throw new RuntimeException("NYI glGetActiveUniform");
 	}
 
-	@Override
-	public void glGetActiveUniform(int program, int index, int bufsize,
-			IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-		throw new RuntimeException("NYI glGetActiveUniform");
-	}
 
 	@Override
 	public void glGetAttachedShaders(int program, int maxcount, int[] count,

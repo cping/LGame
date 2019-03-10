@@ -123,7 +123,11 @@ public class Display extends LSystemView {
 
 		@Override
 		public void onEmit(LTimerContext clock) {
-			_display.draw(clock);
+			synchronized (clock) {
+				if (!LSystem.PAUSED) {
+					_display.draw(clock);
+				}
+			}
 		}
 
 	}
@@ -135,8 +139,12 @@ public class Display extends LSystemView {
 
 		@Override
 		public void onEmit(LTimerContext clock) {
-			manager.tick(clock);
-			ActionControl.update(clock.timeSinceLastUpdate);
+			synchronized (clock) {
+				if (!LSystem.PAUSED) {
+					manager.tick(clock);
+					ActionControl.update(clock.timeSinceLastUpdate);
+				}
+			}
 		}
 
 	}

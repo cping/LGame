@@ -94,7 +94,7 @@ public class TMXTileLayer extends TMXMapLayer {
 			try {
 				parseBase64(dataElement.getContents());
 			} catch (Exception e) {
-				e.printStackTrace();
+				LSystem.error(e.getMessage(),e);
 			}
 			break;
 

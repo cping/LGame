@@ -21,24 +21,21 @@ public class SimpleParticleConfig {
 		public SimpleConfigurableEmitter createEmitter(String name);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path,
-			LColor mask) throws IOException {
+	public static SimpleParticleSystem loadConfiguredSystem(String path, LColor mask) throws IOException {
 		return loadConfiguredSystem(path, null, null, mask);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path)
-			throws IOException {
+	public static SimpleParticleSystem loadConfiguredSystem(String path) throws IOException {
 		return loadConfiguredSystem(path, null, null, null);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path,
-			ConfigurableEmitterFactory factory) throws IOException {
+	public static SimpleParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory)
+			throws IOException {
 		return loadConfiguredSystem(path, factory, null, null);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path,
-			ConfigurableEmitterFactory factory, SimpleParticleSystem system,
-			LColor mask) throws IOException {
+	public static SimpleParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory,
+			SimpleParticleSystem system, LColor mask) throws IOException {
 		if (factory == null) {
 			factory = new ConfigurableEmitterFactory() {
 				public SimpleConfigurableEmitter createEmitter(String name) {
@@ -56,8 +53,7 @@ public class SimpleParticleConfig {
 			}
 
 			if (system == null) {
-				system = new SimpleParticleSystem(LSystem.FRAMEWORK_IMG_NAME
-						+ "par.png", 2000, mask);
+				system = new SimpleParticleSystem(LSystem.FRAMEWORK_IMG_NAME + "par.png", 2000, mask);
 			}
 			boolean additive = docElement.getBoolAttribute("additive", false);
 			if (additive) {
@@ -72,8 +68,7 @@ public class SimpleParticleConfig {
 			for (int i = 0; i < list.size; i++) {
 				XMLElement em = list.get(i);
 
-				SimpleConfigurableEmitter emitter = factory
-						.createEmitter("new");
+				SimpleConfigurableEmitter emitter = factory.createEmitter("new");
 				elementToEmitter(em, emitter);
 
 				system.addEmitter(emitter);
@@ -82,20 +77,18 @@ public class SimpleParticleConfig {
 			system.setRemoveCompletedEmitters(false);
 			return system;
 		} catch (IOException e) {
-			throw e;
+			throw LSystem.runThrow(e.getMessage());
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new IOException("Unable to load particle system config");
+			throw LSystem.runThrow("Unable to load particle system config");
 		}
 	}
 
-	public static SimpleConfigurableEmitter loadEmitter(String path)
-			throws IOException {
+	public static SimpleConfigurableEmitter loadEmitter(String path) throws IOException {
 		return loadEmitter(path, null);
 	}
 
-	public static SimpleConfigurableEmitter loadEmitter(String path,
-			ConfigurableEmitterFactory factory) throws IOException {
+	public static SimpleConfigurableEmitter loadEmitter(String path, ConfigurableEmitterFactory factory)
+			throws IOException {
 		if (factory == null) {
 			factory = new ConfigurableEmitterFactory() {
 				public SimpleConfigurableEmitter createEmitter(String name) {
@@ -123,8 +116,7 @@ public class SimpleParticleConfig {
 		}
 	}
 
-	private static XMLElement getFirstNamedElement(XMLElement element,
-			String name) {
+	private static XMLElement getFirstNamedElement(XMLElement element, String name) {
 		TArray<XMLElement> list = element.list(name);
 		if (list.size == 0) {
 			return null;
@@ -132,8 +124,7 @@ public class SimpleParticleConfig {
 		return list.get(0);
 	}
 
-	private static void elementToEmitter(XMLElement element,
-			SimpleConfigurableEmitter emitter) {
+	private static void elementToEmitter(XMLElement element, SimpleConfigurableEmitter emitter) {
 
 		emitter.name = element.getAttribute("name", "");
 		emitter.setImageName(element.getAttribute("imageName", ""));
@@ -151,46 +142,28 @@ public class SimpleParticleConfig {
 
 		emitter.useAdditive = element.getBoolAttribute("useAdditive", false);
 
-		parseRangeElement(getFirstNamedElement(element, "spawnInterval"),
-				emitter.spawnInterval);
-		parseRangeElement(getFirstNamedElement(element, "spawnCount"),
-				emitter.spawnCount);
-		parseRangeElement(getFirstNamedElement(element, "initialLife"),
-				emitter.initialLife);
-		parseRangeElement(getFirstNamedElement(element, "initialSize"),
-				emitter.initialSize);
-		parseRangeElement(getFirstNamedElement(element, "xOffset"),
-				emitter.xOffset);
-		parseRangeElement(getFirstNamedElement(element, "yOffset"),
-				emitter.yOffset);
-		parseRangeElement(getFirstNamedElement(element, "initialDistance"),
-				emitter.initialDistance);
+		parseRangeElement(getFirstNamedElement(element, "spawnInterval"), emitter.spawnInterval);
+		parseRangeElement(getFirstNamedElement(element, "spawnCount"), emitter.spawnCount);
+		parseRangeElement(getFirstNamedElement(element, "initialLife"), emitter.initialLife);
+		parseRangeElement(getFirstNamedElement(element, "initialSize"), emitter.initialSize);
+		parseRangeElement(getFirstNamedElement(element, "xOffset"), emitter.xOffset);
+		parseRangeElement(getFirstNamedElement(element, "yOffset"), emitter.yOffset);
+		parseRangeElement(getFirstNamedElement(element, "initialDistance"), emitter.initialDistance);
 		parseRangeElement(getFirstNamedElement(element, "speed"), emitter.speed);
-		parseRangeElement(getFirstNamedElement(element, "length"),
-				emitter.length);
-		parseRangeElement(getFirstNamedElement(element, "emitCount"),
-				emitter.emitCount);
+		parseRangeElement(getFirstNamedElement(element, "length"), emitter.length);
+		parseRangeElement(getFirstNamedElement(element, "emitCount"), emitter.emitCount);
 
-		parseValueElement(getFirstNamedElement(element, "spread"),
-				emitter.spread);
-		parseValueElement(getFirstNamedElement(element, "angularOffset"),
-				emitter.angularOffset);
-		parseValueElement(getFirstNamedElement(element, "growthFactor"),
-				emitter.growthFactor);
-		parseValueElement(getFirstNamedElement(element, "gravityFactor"),
-				emitter.gravityFactor);
-		parseValueElement(getFirstNamedElement(element, "windFactor"),
-				emitter.windFactor);
-		parseValueElement(getFirstNamedElement(element, "startAlpha"),
-				emitter.startAlpha);
-		parseValueElement(getFirstNamedElement(element, "endAlpha"),
-				emitter.endAlpha);
+		parseValueElement(getFirstNamedElement(element, "spread"), emitter.spread);
+		parseValueElement(getFirstNamedElement(element, "angularOffset"), emitter.angularOffset);
+		parseValueElement(getFirstNamedElement(element, "growthFactor"), emitter.growthFactor);
+		parseValueElement(getFirstNamedElement(element, "gravityFactor"), emitter.gravityFactor);
+		parseValueElement(getFirstNamedElement(element, "windFactor"), emitter.windFactor);
+		parseValueElement(getFirstNamedElement(element, "startAlpha"), emitter.startAlpha);
+		parseValueElement(getFirstNamedElement(element, "endAlpha"), emitter.endAlpha);
 		parseValueElement(getFirstNamedElement(element, "alpha"), emitter.alpha);
 		parseValueElement(getFirstNamedElement(element, "size"), emitter.size);
-		parseValueElement(getFirstNamedElement(element, "velocity"),
-				emitter.velocity);
-		parseValueElement(getFirstNamedElement(element, "scaleY"),
-				emitter.scaleY);
+		parseValueElement(getFirstNamedElement(element, "velocity"), emitter.velocity);
+		parseValueElement(getFirstNamedElement(element, "scaleY"), emitter.scaleY);
 
 		XMLElement color = getFirstNamedElement(element, "color");
 		emitter.colors.clear();
@@ -209,8 +182,7 @@ public class SimpleParticleConfig {
 		emitter.replay();
 	}
 
-	private static void parseRangeElement(XMLElement element,
-			SimpleConfigurableEmitter.Range range) {
+	private static void parseRangeElement(XMLElement element, SimpleConfigurableEmitter.Range range) {
 		if (element == null) {
 			return;
 		}
@@ -219,8 +191,7 @@ public class SimpleParticleConfig {
 		range.setEnabled(element.getBoolAttribute("enabled", false));
 	}
 
-	private static void parseValueElement(XMLElement element,
-			SimpleConfigurableEmitter.Value value) {
+	private static void parseValueElement(XMLElement element, SimpleConfigurableEmitter.Value value) {
 		if (element == null) {
 			return;
 		}

@@ -81,8 +81,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	// 屏幕点击计数(为了手机环境选择时防止误点的计数器)
 	private int _clickcount = 0;
 
-	// 手机屏幕手机遇到选择框时，需要点击的次数(归0则无限制，此参数的作用在于防止触屏误点选项)
-	private int _mobile_select_valid_limit = 1;
+	// 手机屏幕手机遇到选择框时，需要执行的点击次数限制(0时无限制，此参数的作用在于防止触屏误点选项)
+	private int _mobile_select_valid_limit = 0;
 
 	// 当前任务集合
 	private Array<Task> _currentTasks = new Array<AVGScreen.Task>();
@@ -216,7 +216,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	/**
-	 * 默认任务（同时也是任务接口实现示例，Task主要就是给用户自行扩展的）
+	 * 默认任务（同时也是任务接口实现示例,Task主要就是给用户自行扩展的,以下实现本质上只是示例……）
 	 */
 	private void defTask() {
 		/**
@@ -491,6 +491,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 	}
 
+	/**
+	 * 选项监听
+	 *
+	 */
 	private class OptClick implements ClickListener {
 
 		private String label;

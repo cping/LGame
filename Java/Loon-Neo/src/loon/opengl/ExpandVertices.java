@@ -50,7 +50,7 @@ public class ExpandVertices {
 	}
 	
 	public int getSize() {
-		return vertices.length / vertexSize();
+		return vertices.length / START_VERTS;
 	}
 
 	public boolean expand(int vertPos) {
@@ -80,6 +80,9 @@ public class ExpandVertices {
 	}
 
 	public final void setVertice(int index, float v) {
+		if (expand(index)) {
+			maxSize = getSize();
+		}
 		this.vertices[index] = v;
 	}
 

@@ -266,7 +266,11 @@ public class LTexture extends Painter implements LRelease {
 			parent.reload();
 			return;
 		}
+		this._closed = false;
+		this._disposed = false;
+		this._drawing = false;
 		this._isLoaded = false;
+		this._isReload = true;
 		this.loadTexture();
 	}
 
@@ -275,9 +279,14 @@ public class LTexture extends Painter implements LRelease {
 			parent.loadTexture();
 			return;
 		}
-		if (childs != null) {
+		if (!_isLoaded && childs != null) {
 			for (LTexture tex : childs.values()) {
 				tex._isLoaded = _isLoaded;
+				tex._closed = false;
+				tex._disposed = false;
+				tex._drawing = false;
+				tex._isLoaded = false;
+				tex._isReload = true;
 			}
 		}
 		if (_image != null && !_isLoaded) {
@@ -293,6 +302,7 @@ public class LTexture extends Painter implements LRelease {
 				update(_image);
 			}
 		}
+
 	}
 
 	private int _memorySize = 0;
@@ -302,6 +312,10 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void update(final Image image, final boolean closed) {
+		update(image, closed, true);
+	}
+	
+	public void update(final Image image, final boolean closed,final boolean updated) {
 		if (image == null) {
 			throw LSystem.runThrow("the image is null, can not conversion it into texture .");
 		}
@@ -341,12 +355,13 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			_memorySize = imageWidth * imageHeight * 4;
 		}
-		LTextureBatch.isBatchCacheDitry = true;
-		_isLoaded = true;
-		if (closed) {
+		if (closed && !_isReload) {
 			if (image != null && (image.getSource() == null || image.getSource().indexOf("<canvas>") != -1)
 					&& LSystem.base() != null && LSystem.base().setting.saveTexturePixels) {
-				_cachePixels = CollectionUtils.copyOf(image.getPixels());
+				int[] pixels = image.getPixels();
+				if (pixels != null) {
+					_cachePixels = CollectionUtils.copyOf(pixels);
+				}
 			}
 			if (image != null && image.toClose()) {
 				image.destroy();
@@ -354,6 +369,23 @@ public class LTexture extends Painter implements LRelease {
 		}
 		_image = image;
 		_drawing = false;
+		
+		if(updated){
+			_isLoaded = true;
+			return;
+		}
+		if (_isReload) {
+			_isReload = false;
+			if (childs != null) {
+				for (LTexture tex : childs.values()) {
+					tex.id = id;
+					tex._isLoaded = _isLoaded;
+					tex._isReload = _isReload;
+				}
+			}
+		}
+	
+		LTextureBatch.isBatchCacheDitry = true;
 	}
 
 	public void bind() {

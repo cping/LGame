@@ -91,9 +91,8 @@ public class XMLParser {
 					if (this.topElement.getName().equals(o)) {
 						popElement(index, l);
 					} else {
-						throw LSystem.runThrow("Expected close of '"
-								+ this.topElement.getName() + "' instead of "
-								+ context);
+						throw LSystem.runThrow(
+								"Expected close of '" + this.topElement.getName() + "' instead of " + context);
 					}
 					break;
 				case OPEN_CLOSE_TAG:
@@ -201,8 +200,7 @@ public class XMLParser {
 				}
 			}
 		} catch (Exception e) {
-			throw LSystem.runThrow("Cannot parse element '" + context
-					+ "' - (" + e + ")");
+			throw LSystem.runThrow("Cannot parse element '" + context + "' - (" + e + ")", e);
 		}
 	}
 
@@ -220,8 +218,7 @@ public class XMLParser {
 
 	private void newComment(String comment, XMLListener l, int index) {
 		if (this.topElement != null) {
-			XMLComment c = new XMLComment(comment.substring(4,
-					comment.length() - 3));
+			XMLComment c = new XMLComment(comment.substring(4, comment.length() - 3));
 			this.topElement.addContents(c);
 			if (l != null) {
 				l.addComment(index, c);
@@ -245,8 +242,7 @@ public class XMLParser {
 
 	private XMLDocument parseText(String text, XMLListener l) {
 		int count = 0;
-		for (XMLTokenizer tokenizer = new XMLTokenizer(text); tokenizer
-				.hasMoreElements();) {
+		for (XMLTokenizer tokenizer = new XMLTokenizer(text); tokenizer.hasMoreElements();) {
 			String str = tokenizer.nextElement();
 			if ((str.startsWith("<?")) && (str.endsWith("?>"))) {
 				newProcessing(str, l, count);
@@ -270,7 +266,6 @@ public class XMLParser {
 	public static XMLDocument parse(String file, XMLListener l) {
 		return new XMLParser().parseText(BaseIO.loadText(file), l);
 	}
-
 
 	public void dispose() {
 		if (stack != null) {

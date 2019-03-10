@@ -71,7 +71,7 @@ public class LProcess extends PlayerUtils {
 
 	private LogDisplay _logDisplay;
 
-	private final Bundle<?> _bundle;
+	private final Bundle<Object> _bundle;
 
 	private final SysInputFactory _currentInput;
 
@@ -80,7 +80,7 @@ public class LProcess extends PlayerUtils {
 	public LProcess(LGame game) {
 		super();
 		this._game = game;
-		this._bundle = new MapBundle();
+		this._bundle = new MapBundle<Object>();
 		this._currentInput = new SysInputFactory(this);
 		this._screens = new TArray<Screen>();
 		this._screenMap = new ListMap<CharSequence, Screen>();
@@ -320,11 +320,15 @@ public class LProcess extends PlayerUtils {
 				_screens.add(screen);
 			}
 			_loadingScreen = null;
+
 		}
 	}
 
 	private void killScreen(Screen screen) {
 		synchronized (_currentScreen) {
+			if (_currentScreen != null) {
+				_currentScreen.destroy();
+			}
 			if (screen == _currentScreen) {
 				screen.pause();
 			}
@@ -731,6 +735,10 @@ public class LProcess extends PlayerUtils {
 		}
 	}
 
+	public boolean containsScreen(CharSequence name) {
+		return _screenMap.containsKey(name);
+	}
+
 	public Screen getScreen(CharSequence name) {
 		Screen screen = _screenMap.get(name);
 		if (screen != null) {
@@ -994,7 +1002,12 @@ public class LProcess extends PlayerUtils {
 		_logDisplay.paint(g, x, y);
 	}
 
-	public Bundle<?> getBundle() {
+	public LProcess addBundle(String key, Object val) {
+		_bundle.put(key, val);
+		return this;
+	}
+
+	public Bundle<Object> getBundle() {
 		return _bundle;
 	}
 

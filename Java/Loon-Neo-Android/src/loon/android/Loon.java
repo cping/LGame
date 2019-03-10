@@ -63,9 +63,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
-public abstract class Loon extends Activity implements AndroidBase, Platform,
-		LazyLoading {
-	
+public abstract class Loon extends Activity implements AndroidBase, Platform, LazyLoading {
+
 	public static void setOnscreenKeyboardVisible(final boolean visible) {
 		if (Loon.self == null) {
 			return;
@@ -86,8 +85,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 					if (gameview != null) {
 						gameview.setFocusable(true);
 						gameview.setFocusableInTouchMode(true);
-						manager.hideSoftInputFromWindow(
-								gameview.getWindowToken(), 0);
+						manager.hideSoftInputFromWindow(gameview.getWindowToken(), 0);
 					}
 
 				}
@@ -133,9 +131,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			public void shouldOverrideUrlLoading(String url);
 
 			// 接受请求
-			public void onReceivedHttpAuthRequest(
-					android.webkit.HttpAuthHandler handler, String host,
-					String realm);
+			public void onReceivedHttpAuthRequest(android.webkit.HttpAuthHandler handler, String host, String realm);
 
 		}
 
@@ -157,8 +153,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			this(activity, null, url);
 		}
 
-		public Web(final Loon activity, final WebProcess webProcess,
-				final String url) {
+		public Web(final Loon activity, final WebProcess webProcess, final String url) {
 
 			super(activity);
 			this.url = url;
@@ -172,15 +167,12 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			// 不要背景图
 			java.lang.reflect.Method drawable = null;
 			try {
-				drawable = this.getClass().getMethod("setBackgroundDrawable",
-						android.graphics.drawable.Drawable.class);
+				drawable = this.getClass().getMethod("setBackgroundDrawable", android.graphics.drawable.Drawable.class);
 				drawable.invoke(this, (android.graphics.drawable.Drawable) null);
 			} catch (Exception ex) {
 				try {
-					drawable = this.getClass().getMethod("setBackground",
-							android.graphics.drawable.Drawable.class);
-					drawable.invoke(this,
-							(android.graphics.drawable.Drawable) null);
+					drawable = this.getClass().getMethod("setBackground", android.graphics.drawable.Drawable.class);
+					drawable.invoke(this, (android.graphics.drawable.Drawable) null);
 				} catch (Exception e) {
 
 				}
@@ -208,61 +200,50 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 				setWebViewClient(new android.webkit.WebViewClient() {
 
 					@Override
-					public void onPageStarted(android.webkit.WebView view,
-							String url, Bitmap favicon) {
+					public void onPageStarted(android.webkit.WebView view, String url, Bitmap favicon) {
 						webProcess.onPageStarted(url, favicon);
 						super.onPageStarted(view, url, favicon);
 					}
 
 					@Override
-					public void onPageFinished(android.webkit.WebView view,
-							String url) {
+					public void onPageFinished(android.webkit.WebView view, String url) {
 						webProcess.onPageFinished(url);
 						super.onPageFinished(view, url);
 					}
 
 					@Override
-					public void onLoadResource(android.webkit.WebView view,
-							String url) {
+					public void onLoadResource(android.webkit.WebView view, String url) {
 						webProcess.onLoadResource(url);
 						super.onLoadResource(view, url);
 					}
 
 					@Override
-					public boolean shouldOverrideUrlLoading(
-							android.webkit.WebView view, String url) {
+					public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
 						webProcess.shouldOverrideUrlLoading(url);
 						return super.shouldOverrideUrlLoading(view, url);
 					}
 
 					@Override
-					public void onReceivedHttpAuthRequest(
-							android.webkit.WebView view,
-							android.webkit.HttpAuthHandler handler,
-							String host, String realm) {
-						webProcess.onReceivedHttpAuthRequest(handler, host,
-								realm);
-						super.onReceivedHttpAuthRequest(view, handler, host,
-								realm);
+					public void onReceivedHttpAuthRequest(android.webkit.WebView view,
+							android.webkit.HttpAuthHandler handler, String host, String realm) {
+						webProcess.onReceivedHttpAuthRequest(handler, host, realm);
+						super.onReceivedHttpAuthRequest(view, handler, host, realm);
 					}
 
 				});
 			}
 
 			// 加载进度条
-			final android.widget.ProgressBar progress = new android.widget.ProgressBar(
-					activity);
+			final android.widget.ProgressBar progress = new android.widget.ProgressBar(activity);
 			activity.addView(progress, AndroidLocation.CENTER);
 			setWebChromeClient(new android.webkit.WebChromeClient() {
 				@Override
-				public void onProgressChanged(
-						final android.webkit.WebView view, final int newProgress) {
+				public void onProgressChanged(final android.webkit.WebView view, final int newProgress) {
 					Loon.self.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
 							progress.setProgress(newProgress);
-							progress.setVisibility(newProgress == 100 ? View.GONE
-									: View.VISIBLE);
+							progress.setVisibility(newProgress == 100 ? View.GONE : View.VISIBLE);
 							if (newProgress == 100) {
 								activity.removeView(progress);
 							}
@@ -317,8 +298,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		 */
 		public void addJavaScripts(JavaScript[] sprites) {
 			for (int i = 0; i < sprites.length; i++) {
-				this.addJavascriptInterface(sprites[i].getObject(),
-						sprites[i].getName());
+				this.addJavascriptInterface(sprites[i].getObject(), sprites[i].getName());
 			}
 		}
 
@@ -357,8 +337,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		 */
 		@Override
 		public void loadUrl(String url) {
-			boolean isURL = url.startsWith("http://")
-					|| url.startsWith("https://") || url.startsWith("ftp://");
+			boolean isURL = url.startsWith("http://") || url.startsWith("https://") || url.startsWith("ftp://");
 			if (!isURL) {
 				try {
 					if (activity.getAssets().open(url) != null) {
@@ -420,8 +399,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		return file.getAbsolutePath();
 	}
 
-	private static void retrieveFromAssets(Activity activity, String filename)
-			throws IOException {
+	private static void retrieveFromAssets(Activity activity, String filename) throws IOException {
 		InputStream is = activity.getAssets().open(filename);
 		File outFile = new File(activity.getFilesDir(), filename);
 		makedirs(outFile);
@@ -441,8 +419,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		File parentFile = file.getParentFile();
 		if (parentFile != null) {
 			if (!parentFile.exists() && !parentFile.mkdirs()) {
-				throw new IOException("Creating directories "
-						+ parentFile.getPath() + " failed.");
+				throw new IOException("Creating directories " + parentFile.getPath() + " failed.");
 			}
 		}
 	}
@@ -450,8 +427,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 	private static void checkFile(File file) throws IOException {
 		boolean exists = file.exists();
 		if (exists && !file.isFile()) {
-			throw new IOException("File " + file.getPath()
-					+ " is actually not a file.");
+			throw new IOException("File " + file.getPath() + " is actually not a file.");
 		}
 	}
 
@@ -499,8 +475,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			mode = LMode.MaxRatio;
 			// 若缩放值为无法实现的数值，则默认操作
 		} else if (setting.width_zoom <= 0 || setting.height_zoom <= 0) {
-			updateViewSize(setting.landscape(), setting.width, setting.height,
-					mode);
+			updateViewSize(setting.landscape(), setting.width, setting.height, mode);
 			width = this.maxWidth;
 			height = this.maxHeight;
 			setting.width_zoom = this.maxWidth;
@@ -522,11 +497,9 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		setImmersiveMode(setting.useImmersiveMode);
 		if (setting.useImmersiveMode && AndroidGame.getSDKVersion() >= 19) {
 			try {
-				Class<?> vlistener = Class
-						.forName("loon.android.AndroidVisibilityListener");
+				Class<?> vlistener = Class.forName("loon.android.AndroidVisibilityListener");
 				Object o = vlistener.newInstance();
-				java.lang.reflect.Method method = vlistener.getDeclaredMethod(
-						"createListener", AndroidBase.class);
+				java.lang.reflect.Method method = vlistener.getDeclaredMethod("createListener", AndroidBase.class);
 				method.invoke(o, this);
 			} catch (Exception e) {
 			}
@@ -535,9 +508,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			final int REQUIRED_CONFIG_CHANGES = android.content.pm.ActivityInfo.CONFIG_ORIENTATION
 					| android.content.pm.ActivityInfo.CONFIG_KEYBOARD_HIDDEN;
 			android.content.pm.ActivityInfo info = this.getPackageManager()
-					.getActivityInfo(
-							new android.content.ComponentName(context,
-									this.getClass()), 0);
+					.getActivityInfo(new android.content.ComponentName(context, this.getClass()), 0);
 			if ((info.configChanges & REQUIRED_CONFIG_CHANGES) != REQUIRED_CONFIG_CHANGES) {
 				new android.app.AlertDialog.Builder(this)
 						.setMessage(
@@ -567,8 +538,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (setting != null && setting.lockBackDestroy
-				&& keyCode == KeyEvent.KEYCODE_BACK) {
+		if (setting != null && setting.lockBackDestroy && keyCode == KeyEvent.KEYCODE_BACK) {
 			return true;
 		}
 		if (game != null && game.input != null) {
@@ -583,8 +553,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (setting != null && setting.lockBackDestroy
-				&& keyCode == KeyEvent.KEYCODE_BACK) {
+		if (setting != null && setting.lockBackDestroy && keyCode == KeyEvent.KEYCODE_BACK) {
 			return true;
 		}
 		if (game != null && game.input != null) {
@@ -679,8 +648,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	@SuppressWarnings("deprecation")
 	protected Bitmap.Config preferredBitmapConfig() {
-		ActivityManager activityManager = (ActivityManager) getApplication()
-				.getSystemService(Context.ACTIVITY_SERVICE);
+		ActivityManager activityManager = (ActivityManager) getApplication().getSystemService(Context.ACTIVITY_SERVICE);
 		int memoryClass = activityManager.getMemoryClass();
 		int format = getWindowManager().getDefaultDisplay().getPixelFormat();
 		return (format == PixelFormat.RGBA_4444 || memoryClass <= 16) ? Bitmap.Config.ARGB_4444
@@ -740,8 +708,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	protected void createWakeLock(boolean use) {
 		if (use) {
-			getWindow()
-					.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		}
 	}
 
@@ -751,8 +718,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		}
 		View rootView = getWindow().getDecorView();
 		try {
-			java.lang.reflect.Method m = View.class.getMethod(
-					"setSystemUiVisibility", int.class);
+			java.lang.reflect.Method m = View.class.getMethod("setSystemUiVisibility", int.class);
 			if (AndroidGame.getSDKVersion() <= 13)
 				m.invoke(rootView, 0x0);
 			m.invoke(rootView, 0x1);
@@ -765,8 +731,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		this.frameLayout.setBackgroundColor(LColor.black.getRGB());
 		if (mode == LMode.Defalut) {
 			// 添加游戏View，显示为指定大小，并居中
-			this.addView(view, view.getWidth(), view.getHeight(),
-					AndroidLocation.CENTER);
+			this.addView(view, view.getWidth(), view.getHeight(), AndroidLocation.CENTER);
 		} else if (mode == LMode.Ratio) {
 			// 添加游戏View，显示为屏幕许可范围，并居中
 			this.addView(view, w, h, AndroidLocation.CENTER);
@@ -778,10 +743,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			this.addView(view, w, h, AndroidLocation.CENTER);
 		} else if (mode == LMode.Fill) {
 			// 添加游戏View，显示为全屏，并居中
-			this.addView(view,
-					android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-					android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-					AndroidLocation.CENTER);
+			this.addView(view, android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+					android.view.ViewGroup.LayoutParams.MATCH_PARENT, AndroidLocation.CENTER);
 		} else if (mode == LMode.FitFill) {
 			// 添加游戏View，显示为按比例缩放情况下的最大值，并居中
 			this.addView(view, w, h, AndroidLocation.CENTER);
@@ -791,8 +754,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	protected FrameLayout.LayoutParams createLayoutParams() {
 		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-				android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-				android.view.ViewGroup.LayoutParams.MATCH_PARENT);
+				android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT);
 		layoutParams.gravity = Gravity.CENTER;
 		return layoutParams;
 	}
@@ -801,8 +763,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 	private int zoomWidth, zoomHeight;
 
-	protected void updateViewSize(final boolean landscape, int width,
-			int height, LMode mode) {
+	protected void updateViewSize(final boolean landscape, int width, int height, LMode mode) {
 
 		RectBox d = getScreenDimension();
 
@@ -848,8 +809,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 		} else if (mode == LMode.FitFill) {
 
-			RectBox res = AndroidGraphicsUtils.fitLimitSize(zoomWidth,
-					zoomHeight, maxWidth, maxHeight);
+			RectBox res = AndroidGraphicsUtils.fitLimitSize(zoomWidth, zoomHeight, maxWidth, maxHeight);
 			maxWidth = res.width;
 			maxHeight = res.height;
 			LSystem.setScaleWidth(((float) maxWidth) / zoomWidth);
@@ -880,8 +840,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 			float userAspect = (float) zoomWidth / (float) zoomHeight;
 			float realAspect = (float) maxWidth / (float) maxHeight;
 
-			if ((realAspect < 1 && userAspect > 1)
-					|| (realAspect > 1 && userAspect < 1)) {
+			if ((realAspect < 1 && userAspect > 1) || (realAspect > 1 && userAspect < 1)) {
 				userAspect = (float) zoomHeight / (float) zoomWidth;
 			}
 
@@ -907,10 +866,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 
 		StringBuffer sbr = new StringBuffer();
 		sbr.append("Mode:").append(mode);
-		sbr.append("\nWidth:").append(zoomWidth)
-				.append(",Height:" + zoomHeight);
-		sbr.append("\nMaxWidth:").append(maxWidth)
-				.append(",MaxHeight:" + maxHeight);
+		sbr.append("\nWidth:").append(zoomWidth).append(",Height:" + zoomHeight);
+		sbr.append("\nMaxWidth:").append(maxWidth).append(",MaxHeight:" + maxHeight);
 		Log.d("Android2DSize", sbr.toString());
 	}
 
@@ -918,8 +875,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 	// 从而起到屏蔽-广告屏蔽组件的作用。
 	public void safeguardAndroidADView(android.view.View view) {
 		try {
-			final android.view.ViewGroup vgp = (android.view.ViewGroup) view
-					.getParent().getParent();
+			final android.view.ViewGroup vgp = (android.view.ViewGroup) view.getParent().getParent();
 			if (vgp.getChildAt(1) != null) {
 				vgp.removeViewAt(1);
 			}
@@ -930,12 +886,11 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 	public void setActionBarVisibility(boolean visible) {
 		if (AndroidGame.isAndroidVersionHigher(11)) {
 			try {
-				java.lang.reflect.Method getBarMethod = Activity.class
-						.getMethod("getActionBar");
+				java.lang.reflect.Method getBarMethod = Activity.class.getMethod("getActionBar");
 				Object actionBar = getBarMethod.invoke(this);
 				if (actionBar != null) {
-					java.lang.reflect.Method showHideMethod = actionBar
-							.getClass().getMethod((visible) ? "show" : "hide");
+					java.lang.reflect.Method showHideMethod = actionBar.getClass()
+							.getMethod((visible) ? "show" : "hide");
 					showHideMethod.invoke(actionBar);
 				}
 			} catch (Exception ex) {
@@ -945,8 +900,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 	}
 
 	public View inflate(final int layoutID) {
-		final android.view.LayoutInflater inflater = android.view.LayoutInflater
-				.from(this);
+		final android.view.LayoutInflater inflater = android.view.LayoutInflater.from(this);
 		return inflater.inflate(layoutID, null);
 	}
 
@@ -962,10 +916,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		if (view == null) {
 			return;
 		}
-		android.widget.RelativeLayout viewLayout = new android.widget.RelativeLayout(
-				this);
-		android.widget.RelativeLayout.LayoutParams relativeParams = AndroidGame
-				.createRelativeLayout(location, w, h);
+		android.widget.RelativeLayout viewLayout = new android.widget.RelativeLayout(this);
+		android.widget.RelativeLayout.LayoutParams relativeParams = AndroidGame.createRelativeLayout(location, w, h);
 		viewLayout.addView(view, relativeParams);
 		addView(viewLayout);
 	}
@@ -1002,10 +954,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		}
 		View view = getWindow().getDecorView();
 		try {
-			java.lang.reflect.Method m = View.class.getMethod(
-					"setSystemUiVisibility", int.class);
-			int code = 0x00000100 | 0x00000200 | 0x00000400 | 0x00000002
-					| 0x00000004 | 0x00001000;
+			java.lang.reflect.Method m = View.class.getMethod("setSystemUiVisibility", int.class);
+			int code = 0x00000100 | 0x00000200 | 0x00000400 | 0x00000002 | 0x00000004 | 0x00001000;
 			m.invoke(view, code);
 		} catch (Exception e) {
 		}
@@ -1055,8 +1005,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		try {
 			Class<?> clazz = Class.forName("com.android.internal.R$dimen");
 			Object object = clazz.newInstance();
-			int height = Integer.parseInt(clazz.getField("status_bar_height")
-					.get(object).toString());
+			int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
 			statusHeight = this.getResources().getDimensionPixelSize(height);
 		} catch (Exception e) {
 		}
@@ -1097,8 +1046,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		int width = getContainerWidth();
 		int height = getContainerHeight();
 		Bitmap bp = null;
-		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height
-				- statusBarHeight);
+		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height - statusBarHeight);
 		view.destroyDrawingCache();
 		return bp;
 
@@ -1131,8 +1079,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 	}
 
 	@Override
-	public void sysText(final SysInput.TextEvent event,
-			final KeyMake.TextType textType, final String label,
+	public void sysText(final SysInput.TextEvent event, final KeyMake.TextType textType, final String label,
 			final String initVal) {
 		if (game == null) {
 			event.cancel();
@@ -1141,59 +1088,50 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		game.activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				final AlertDialog.Builder alert = new AlertDialog.Builder(
-						game.activity);
+				final AlertDialog.Builder alert = new AlertDialog.Builder(game.activity);
 				alert.setMessage(label);
 				final EditText input = new EditText(game.activity);
 				final int inputType;
 				switch (textType) {
 				case NUMBER:
-					inputType = InputType.TYPE_CLASS_NUMBER
-							| InputType.TYPE_NUMBER_FLAG_SIGNED;
+					inputType = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED;
 					break;
 				case EMAIL:
-					inputType = InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+					inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 					break;
 				case URL:
-					inputType = InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_URI;
+					inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI;
 					break;
 				case DEFAULT:
 				default:
-					inputType = InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_NORMAL;
+					inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL;
 					break;
 				}
 				input.setInputType(inputType);
 				input.setText(initVal);
 				alert.setView(input);
 
-				alert.setPositiveButton("Ok",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								event.input(input.getText().toString());
-							}
-						});
+				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int whichButton) {
+						event.input(input.getText().toString());
+					}
+				});
 
-				alert.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								event.cancel();
-							}
-						});
+				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int whichButton) {
+						event.cancel();
+					}
+				});
 				alert.show();
 			}
 		});
 	}
 
 	@Override
-	public void sysDialog(final SysInput.ClickEvent event, final String title,
-			final String text, final String ok, final String cancel) {
+	public void sysDialog(final SysInput.ClickEvent event, final String title, final String text, final String ok,
+			final String cancel) {
 		if (game == null) {
 			event.cancel();
 			return;
@@ -1201,25 +1139,20 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		game.activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				AlertDialog.Builder alert = new AlertDialog.Builder(
-						game.activity).setTitle(title).setMessage(text);
-				alert.setPositiveButton(ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								event.clicked();
-							}
-						});
+				AlertDialog.Builder alert = new AlertDialog.Builder(game.activity).setTitle(title).setMessage(text);
+				alert.setPositiveButton(ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int whichButton) {
+						event.clicked();
+					}
+				});
 				if (cancel != null) {
-					alert.setNegativeButton(cancel,
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									event.cancel();
-								}
-							});
+					alert.setNegativeButton(cancel, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int whichButton) {
+							event.cancel();
+						}
+					});
 				}
 				alert.show();
 			}
@@ -1230,11 +1163,9 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		return getDeviceScreenSize(this, useDeviceSize);
 	}
 
-	public static RectI getDeviceScreenSize(Context context,
-			boolean useDeviceSize) {
+	public static RectI getDeviceScreenSize(Context context, boolean useDeviceSize) {
 		RectI rect = new RectI();
-		WindowManager windowManager = (WindowManager) context
-				.getSystemService(Context.WINDOW_SERVICE);
+		WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		android.view.Display display = windowManager.getDefaultDisplay();
 		DisplayMetrics metrics = new DisplayMetrics();
 		display.getMetrics(metrics);
@@ -1248,17 +1179,15 @@ public abstract class Loon extends Activity implements AndroidBase, Platform,
 		int buildInt = AndroidGame.getSDKVersion();
 		if (buildInt >= 14 && buildInt < 17)
 			try {
-				widthPixels = (Integer) android.view.Display.class.getMethod(
-						"getRawWidth").invoke(display);
-				heightPixels = (Integer) android.view.Display.class.getMethod(
-						"getRawHeight").invoke(display);
+				widthPixels = (Integer) android.view.Display.class.getMethod("getRawWidth").invoke(display);
+				heightPixels = (Integer) android.view.Display.class.getMethod("getRawHeight").invoke(display);
 			} catch (Exception ignored) {
 			}
 		if (buildInt >= 17)
 			try {
 				android.graphics.Point realSize = new android.graphics.Point();
-				android.view.Display.class.getMethod("getRealSize",
-						android.graphics.Point.class).invoke(display, realSize);
+				android.view.Display.class.getMethod("getRealSize", android.graphics.Point.class).invoke(display,
+						realSize);
 				widthPixels = realSize.x;
 				heightPixels = realSize.y;
 			} catch (Exception ignored) {

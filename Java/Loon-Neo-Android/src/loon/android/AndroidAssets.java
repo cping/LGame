@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -40,18 +41,11 @@ import loon.canvas.ImageImpl;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.net.http.AndroidHttpClient;
 
 public class AndroidAssets extends Assets {
 
@@ -113,8 +107,7 @@ public class AndroidAssets extends Assets {
 		public InputStream getInputStream() {
 			try {
 				if (classLoader == null) {
-					return (in = AndroidAssets.classLoader
-							.getResourceAsStream(path));
+					return (in = AndroidAssets.classLoader.getResourceAsStream(path));
 				} else {
 					return (in = classLoader.getResourceAsStream(path));
 				}
@@ -313,8 +306,7 @@ public class AndroidAssets extends Assets {
 			} else {
 				path = Loon.self.getCacheDir().getAbsolutePath();
 				path = StringUtils.replaceIgnoreCase(path, "\\", "/");
-				if (StringUtils.startsWith(path, '/')
-						|| StringUtils.startsWith(path, '\\')) {
+				if (StringUtils.startsWith(path, '/') || StringUtils.startsWith(path, '\\')) {
 					path = path.substring(1, path.length());
 				}
 			}
@@ -406,8 +398,7 @@ public class AndroidAssets extends Assets {
 			if (file.exists()) {
 				return new FileInputStream(file);
 			} else {
-				file = new File(StringUtils.replaceIgnoreCase(getPath(path),
-						DEF_RES, ""));
+				file = new File(StringUtils.replaceIgnoreCase(getPath(path), DEF_RES, ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
@@ -431,13 +422,11 @@ public class AndroidAssets extends Assets {
 			if (path.startsWith("sd:")) {
 				in = sdRes(path.substring(3, path.length())).getInputStream();
 			} else if (path.startsWith("class:")) {
-				in = classRes(path.substring(6, path.length()))
-						.getInputStream();
+				in = classRes(path.substring(6, path.length())).getInputStream();
 			} else if (path.startsWith("path:")) {
 				in = fileRes(path.substring(5, path.length())).getInputStream();
 			} else if (path.startsWith("url:")) {
-				in = remoteRes(path.substring(4, path.length()))
-						.getInputStream();
+				in = remoteRes(path.substring(4, path.length())).getInputStream();
 			}
 		}
 		return in;
@@ -497,8 +486,7 @@ public class AndroidAssets extends Assets {
 				try {
 					BitmapOptions options = createOptions(url, false, Scale.ONE);
 					Bitmap bmp = downloadBitmap(url, options);
-					image.succeed(new ImageImpl.Data(options.scale, bmp, bmp
-							.getWidth(), bmp.getHeight()));
+					image.succeed(new ImageImpl.Data(options.scale, bmp, bmp.getWidth(), bmp.getHeight()));
 				} catch (Exception error) {
 					image.fail(error);
 				}
@@ -537,8 +525,7 @@ public class AndroidAssets extends Assets {
 		InputStream is = openAsset(path);
 		try {
 			StringBuilder fileData = new StringBuilder(1000);
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(is));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 			char[] buf = new char[1024];
 			int numRead = 0;
 			while ((numRead = reader.read(buf)) != -1) {
@@ -572,8 +559,7 @@ public class AndroidAssets extends Assets {
 	}
 
 	@Override
-	protected ImageImpl createImage(boolean async, int rwid, int rhei,
-			String source) {
+	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
 		return new AndroidImage(game, async, rwid, rhei, source);
 	}
 
@@ -584,12 +570,9 @@ public class AndroidAssets extends Assets {
 			try {
 				InputStream is = openAsset(rsrc.path);
 				try {
-					BitmapOptions options = createOptions(path, true,
-							rsrc.scale);
-					Bitmap bitmap = BitmapFactory.decodeStream(is, null,
-							options);
-					return new ImageImpl.Data(options.scale, bitmap,
-							bitmap.getWidth(), bitmap.getHeight());
+					BitmapOptions options = createOptions(path, true, rsrc.scale);
+					Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
+					return new ImageImpl.Data(options.scale, bitmap, bitmap.getWidth(), bitmap.getHeight());
 				} finally {
 					is.close();
 				}
@@ -670,12 +653,11 @@ public class AndroidAssets extends Assets {
 		}
 	}
 
-	protected BitmapOptions createOptions(String path, boolean purgeable,
-			Scale scale) {
+	protected BitmapOptions createOptions(String path, boolean purgeable, Scale scale) {
 		BitmapOptions options = new BitmapOptions();
 		options.inScaled = false;
 		options.inDither = true;
-		//options.inMutable = true;
+		options.inMutable = true;
 		options.inPreferredConfig = game.graphics().preferredBitmapConfig;
 		options.inPurgeable = purgeable;
 		options.inInputShareable = true;
@@ -684,43 +666,34 @@ public class AndroidAssets extends Assets {
 		return options;
 	}
 
-	protected Bitmap downloadBitmap(String url, BitmapOptions options)
-			throws Exception {
-		AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-		HttpGet getRequest = new HttpGet(url);
+	protected Bitmap downloadBitmap(String url, BitmapOptions options) throws Exception {
 		try {
-			HttpResponse response = client.execute(getRequest);
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode != HttpStatus.SC_OK) {
-				Header[] headers = response.getHeaders("Location");
-				if (headers != null && headers.length > 0) {
-					return downloadBitmap(
-							headers[headers.length - 1].getValue(), options);
+			URL imageurl = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) imageurl.openConnection();
+			connection.setDoInput(true);
+			connection.setDoOutput(false);
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(5000);
+			connection.setUseCaches(true);
+			connection.connect();
+			int responseCode = connection.getResponseCode();
+			if (responseCode == 200) {
+				InputStream in = connection.getInputStream();
+				try {
+					return BitmapFactory.decodeStream(in, null, options);
+				} finally {
+					if (in != null) {
+						in.close();
+					}
+					if (connection != null) {
+						connection.disconnect();
+					}
 				}
-				throw new Exception("Error " + statusCode
-						+ " while retrieving bitmap from " + url);
 			}
-			HttpEntity entity = response.getEntity();
-			if (entity == null) {
-				throw new Exception("getEntity returned null for " + url);
-			}
-			InputStream in = null;
-			try {
-				in = entity.getContent();
-				return BitmapFactory.decodeStream(in, null, options);
-			} finally {
-				if (in != null) {
-					in.close();
-				}
-				entity.consumeContent();
-			}
-
 		} catch (Exception e) {
-			getRequest.abort();
 			game.reportError("bitmap from " + url, e);
 			throw e;
-		} finally {
-			client.close();
 		}
+		return null;
 	}
 }

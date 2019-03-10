@@ -1082,16 +1082,6 @@ final class Lwjgl3GL20 extends loon.opengl.GL20 {
 	}
 
 	@Override
-	public void glGetActiveAttrib(int program, int index, int bufsize,
-			IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-		IntBuffer typeTmp = BufferUtils.createIntBuffer(2);
-		GL20.glGetActiveAttrib(program, index,
-				BufferUtils.createIntBuffer(256), typeTmp);
-		type.put(typeTmp.get(0));
-		type.rewind();
-	}
-
-	@Override
 	public void glGetActiveUniform(int program, int index, int bufsize,
 			int[] length, int lengthOffset, int[] size, int sizeOffset,
 			int[] type, int typeOffset, byte[] name, int nameOffset) {
@@ -1113,16 +1103,6 @@ final class Lwjgl3GL20 extends loon.opengl.GL20 {
 		// Return size, type
 		bufs.intBuffer.get(size, 0, 1);
 		bufs.intBuffer.get(type, 0, 1);
-	}
-
-	@Override
-	public void glGetActiveUniform(int program, int index, int bufsize,
-			IntBuffer length, IntBuffer size, IntBuffer type, ByteBuffer name) {
-		IntBuffer typeTmp = BufferUtils.createIntBuffer(2);
-		GL20.glGetActiveAttrib(program, index,
-				BufferUtils.createIntBuffer(256), typeTmp);
-		type.put(typeTmp.get(0));
-		type.rewind();
 	}
 
 	@Override

@@ -86,7 +86,16 @@ import loon.utils.res.ResourceLocal;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * LGame游戏的运行与显示主体，用来显示与操作游戏基础画布，精灵，UI以及其他组件
+ */
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease, XY {
+
+	public static interface ReplaceEvent {
+
+		public Screen getScreen(int idx);
+
+	}
 
 	private ArrayMap keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 
@@ -483,6 +492,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen add(Port<LTimerContext> timer) {
 		if (LSystem._base != null && LSystem._base.display() != null) {
 			_conns.add(LSystem._base.display().update.connect(timer));
+		}
+		return this;
+	}
+
+	public Screen remove(Port<LTimerContext> timer) {
+		if (LSystem._base != null && LSystem._base.display() != null) {
+			_conns.remove(LSystem._base.display().update.connect(timer));
 		}
 		return this;
 	}
@@ -1342,6 +1358,49 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return isLoad;
 	}
 
+	private ReplaceEvent revent;
+
+	/**
+	 * 设置一个Screen替换事件的默认布局
+	 * 
+	 * @param re
+	 */
+	public void setReplaceEvent(ReplaceEvent re) {
+		this.revent = re;
+	}
+
+	/**
+	 * 返回Screen替换事件
+	 * 
+	 * @return
+	 */
+	public ReplaceEvent getReplaceEvent() {
+		return this.revent;
+	}
+
+	/**
+	 * 返回指定Screen替换事件中的对应索引的Screen
+	 * 
+	 * @param idx
+	 * @return
+	 */
+	public Screen getReplaceScreen(int idx) {
+		if (revent == null) {
+			return null;
+		}
+		return this.revent.getScreen(idx);
+	}
+
+	/**
+	 * 判断指定名称的Screen是否存在
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public boolean containsScreen(CharSequence name) {
+		return handler != null ? handler.containsScreen(name) : false;
+	}
+
 	/**
 	 * 顺序运行并删除一个Screen
 	 * 
@@ -1444,6 +1503,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return handler.getScreen(name);
 		}
 		return this;
+	}
+
+	/**
+	 * 执行指定替换事件索引的Screen
+	 * 
+	 * @param idx
+	 * @return
+	 */
+	public Screen runEventScreen(int idx) {
+		Screen screen = getReplaceScreen(idx);
+		if (screen != null && handler != null) {
+			handler.setScreen(screen);
+		}
+		return screen;
 	}
 
 	/**
@@ -2953,10 +3026,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 		}
 	}
-	
+
 	public abstract void touchDrag(GameTouch e);
 
-	public LComponent getSelectedComponent(){
+	public LComponent getSelectedComponent() {
 		return getDesktop().getSelectedComponent();
 	}
 

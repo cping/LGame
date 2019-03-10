@@ -51,28 +51,34 @@ public class AndroidGameViewGL extends GLSurfaceView {
 		setRenderer(new Renderer() {
 			@Override
 			public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-				game.graphics().onSurfaceCreated();
-				if (game.display() != null) {
-					game.display().GL().update();
+				if (game != null) {
+					LSystem.resetTextureRes(game);
+					game.graphics().onSurfaceCreated();
+					if (game.display() != null) {
+						game.display().GL().update();
+					}
+					LSystem.d("Created Renderer View");
 				}
 			}
 
 			@Override
 			public void onSurfaceChanged(GL10 gl, int width, int height) {
-				game.graphics().onSizeChanged(width, height);
-				if (game.display() != null) {
-					game.display().GL().update();
-				}
-				if (!started.get()) {
-					startGame();
+				if (game != null) {
+					game.graphics().onSizeChanged(width, height);
+					gl.glViewport(0, 0, width, height);
+					if (!started.get()) {
+						startGame();
+					}
+					LSystem.d("Update Renderer View");
 				}
 			}
 
 			@Override
 			public void onDrawFrame(GL10 gl) {
 				if (!paused.get()) {
-					game.processFrame();
-
+					if (game != null) {
+						game.processFrame();
+					}
 				}
 			}
 		});
@@ -92,8 +98,8 @@ public class AndroidGameViewGL extends GLSurfaceView {
 
 	@Override
 	public void onResume() {
-		super.onResume();
 		paused.set(LSystem.PAUSED = false);
+		super.onResume();
 	}
 
 	@Override

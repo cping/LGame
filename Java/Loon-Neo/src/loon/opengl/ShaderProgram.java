@@ -105,13 +105,11 @@ public class ShaderProgram implements LRelease {
 			throw new IllegalArgumentException("vertex shader must not be null");
 		}
 		if (fragmentShader == null) {
-			throw new IllegalArgumentException(
-					"fragment shader must not be null");
+			throw new IllegalArgumentException("fragment shader must not be null");
 		}
 		String glslVersion = "#version 100\n";
 		if (LSystem.base() != null && LSystem.base().graphics() != null) {
-			glslVersion = "#version "
-					+ LSystem.base().graphics().gl.getGlslVersion() + "\n";
+			glslVersion = "#version " + LSystem.base().graphics().gl.getGlslVersion() + "\n";
 		}
 		this.intbuf = LSystem.base().support().newIntBuffer(1);
 		this.vertexShaderSource = vertexShader;
@@ -125,8 +123,7 @@ public class ShaderProgram implements LRelease {
 
 	private void compileShaders(String vertexShader, String fragmentShader) {
 		vertexShaderHandle = loadShader(GL20.GL_VERTEX_SHADER, vertexShader);
-		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER,
-				fragmentShader);
+		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER, fragmentShader);
 		if (vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
 			isCompiled = false;
 			return;
@@ -224,8 +221,7 @@ public class ShaderProgram implements LRelease {
 		if ((location = uniforms.get(name, -2)) == -2) {
 			location = gl.glGetUniformLocation(program, name);
 			if (location == -1 && pedantic) {
-				throw new IllegalArgumentException("no uniform with name '"
-						+ name + "' in shader");
+				throw new IllegalArgumentException("no uniform with name '" + name + "' in shader");
 			}
 			uniforms.put(name, location);
 		}
@@ -271,16 +267,14 @@ public class ShaderProgram implements LRelease {
 		gl.glUniform3i(location, value1, value2, value3);
 	}
 
-	public void setUniformi(String name, int value1, int value2, int value3,
-			int value4) {
+	public void setUniformi(String name, int value1, int value2, int value3, int value4) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchUniformLocation(name);
 		gl.glUniform4i(location, value1, value2, value3, value4);
 	}
 
-	public void setUniformi(int location, int value1, int value2, int value3,
-			int value4) {
+	public void setUniformi(int location, int value1, int value2, int value3, int value4) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniform4i(location, value1, value2, value3, value4);
@@ -320,91 +314,79 @@ public class ShaderProgram implements LRelease {
 		gl.glUniform2f(location, value1, value2);
 	}
 
-	public void setUniformf(String name, float value1, float value2,
-			float value3) {
+	public void setUniformf(String name, float value1, float value2, float value3) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchUniformLocation(name);
 		gl.glUniform3f(location, value1, value2, value3);
 	}
 
-	public void setUniformf(int location, float value1, float value2,
-			float value3) {
+	public void setUniformf(int location, float value1, float value2, float value3) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniform3f(location, value1, value2, value3);
 	}
 
-	public void setUniformf(String name, float value1, float value2,
-			float value3, float value4) {
+	public void setUniformf(String name, float value1, float value2, float value3, float value4) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchUniformLocation(name);
 		gl.glUniform4f(location, value1, value2, value3, value4);
 	}
 
-	public void setUniformf(int location, float value1, float value2,
-			float value3, float value4) {
+	public void setUniformf(int location, float value1, float value2, float value3, float value4) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniform4f(location, value1, value2, value3, value4);
 	}
 
-	public void setUniform1fv(String name, float[] values, int offset,
-			int length) {
+	public void setUniform1fv(String name, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchUniformLocation(name);
 		gl.glUniform1fv(location, length, values, offset);
 	}
 
-	public void setUniform1fv(int location, float[] values, int offset,
-			int length) {
+	public void setUniform1fv(int location, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniform1fv(location, length, values, offset);
 	}
 
-	public void setUniform2fv(String name, float[] values, int offset,
-			int length) {
+	public void setUniform2fv(String name, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchUniformLocation(name);
 		gl.glUniform2fv(location, length / 2, values, offset);
 	}
 
-	public void setUniform2fv(int location, float[] values, int offset,
-			int length) {
+	public void setUniform2fv(int location, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniform2fv(location, length / 2, values, offset);
 	}
 
-	public void setUniform3fv(String name, float[] values, int offset,
-			int length) {
+	public void setUniform3fv(String name, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchUniformLocation(name);
 		gl.glUniform3fv(location, length / 3, values, offset);
 	}
 
-	public void setUniform3fv(int location, float[] values, int offset,
-			int length) {
+	public void setUniform3fv(int location, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniform3fv(location, length / 3, values, offset);
 	}
 
-	public void setUniform4fv(String name, float[] values, int offset,
-			int length) {
+	public void setUniform4fv(String name, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchUniformLocation(name);
 		gl.glUniform4fv(location, length / 4, values, offset);
 	}
 
-	public void setUniform4fv(int location, float[] values, int offset,
-			int length) {
+	public void setUniform4fv(int location, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniform4fv(location, length / 4, values, offset);
@@ -446,8 +428,7 @@ public class ShaderProgram implements LRelease {
 		gl.glUniformMatrix3fv(location, 1, transpose, matrix.val, 0);
 	}
 
-	public void setUniformMatrix3fv(String name, FloatBuffer buffer, int count,
-			boolean transpose) {
+	public void setUniformMatrix3fv(String name, FloatBuffer buffer, int count, boolean transpose) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		buffer.position(0);
@@ -455,8 +436,7 @@ public class ShaderProgram implements LRelease {
 		gl.glUniformMatrix3fv(location, count, transpose, buffer);
 	}
 
-	public void setUniformMatrix4fv(String name, FloatBuffer buffer, int count,
-			boolean transpose) {
+	public void setUniformMatrix4fv(String name, FloatBuffer buffer, int count, boolean transpose) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		buffer.position(0);
@@ -464,15 +444,13 @@ public class ShaderProgram implements LRelease {
 		gl.glUniformMatrix4fv(location, count, transpose, buffer);
 	}
 
-	public void setUniformMatrix4fv(int location, float[] values, int offset,
-			int length) {
+	public void setUniformMatrix4fv(int location, float[] values, int offset, int length) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniformMatrix4fv(location, length / 16, false, values, offset);
 	}
 
-	public void setUniformMatrix4fv(String name, float[] values, int offset,
-			int length) {
+	public void setUniformMatrix4fv(String name, float[] values, int offset, int length) {
 		setUniformMatrix4fv(fetchUniformLocation(name), values, offset, length);
 	}
 
@@ -492,43 +470,35 @@ public class ShaderProgram implements LRelease {
 		setUniformf(location, values.x, values.y, values.z);
 	}
 
-	public void setVertexAttribute(String name, int size, int type,
-			boolean normalize, int stride, Buffer buffer) {
+	public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, Buffer buffer) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchAttributeLocation(name);
 		if (location == -1) {
 			return;
 		}
-		gl.glVertexAttribPointer(location, size, type, normalize, stride,
-				buffer);
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, buffer);
 	}
 
-	public void setVertexAttribute(int location, int size, int type,
-			boolean normalize, int stride, Buffer buffer) {
+	public void setVertexAttribute(int location, int size, int type, boolean normalize, int stride, Buffer buffer) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
-		gl.glVertexAttribPointer(location, size, type, normalize, stride,
-				buffer);
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, buffer);
 	}
 
-	public void setVertexAttribute(String name, int size, int type,
-			boolean normalize, int stride, int offset) {
+	public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, int offset) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		int location = fetchAttributeLocation(name);
 		if (location == -1)
 			return;
-		gl.glVertexAttribPointer(location, size, type, normalize, stride,
-				offset);
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, offset);
 	}
 
-	public void setVertexAttribute(int location, int size, int type,
-			boolean normalize, int stride, int offset) {
+	public void setVertexAttribute(int location, int size, int type, boolean normalize, int stride, int offset) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
-		gl.glVertexAttribPointer(location, size, type, normalize, stride,
-				offset);
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, offset);
 	}
 
 	public void begin() {
@@ -558,14 +528,16 @@ public class ShaderProgram implements LRelease {
 
 	public void close() {
 		GL20 gl = LSystem.base().graphics().gl;
-		if (!LSystem.mainDrawRunning()) {
-			gl.glUseProgram(0);
-		}
-		gl.glDeleteShader(vertexShaderHandle);
-		gl.glDeleteShader(fragmentShaderHandle);
-		gl.glDeleteProgram(program);
-		if (shaders.get(LSystem.base()) != null) {
-			shaders.get(LSystem.base()).removeValue(this, true);
+		if (gl != null) {
+			if (!LSystem.mainDrawRunning()) {
+				gl.glUseProgram(0);
+			}
+			gl.glDeleteShader(vertexShaderHandle);
+			gl.glDeleteShader(fragmentShaderHandle);
+			gl.glDeleteProgram(program);
+			if (shaders.get(LSystem.base()) != null) {
+				shaders.get(LSystem.base()).removeValue(this, true);
+			}
 		}
 	}
 
@@ -618,6 +590,9 @@ public class ShaderProgram implements LRelease {
 	}
 
 	public static void invalidateAllShaderPrograms(LGame self) {
+		if (shaders == null || shaders.size == 0) {
+			return;
+		}
 		if (LSystem.base().graphics().gl == null) {
 			return;
 		}
@@ -646,8 +621,7 @@ public class ShaderProgram implements LRelease {
 		return builder.toString();
 	}
 
-	public void setAttributef(String name, float value1, float value2,
-			float value3, float value4) {
+	public void setAttributef(String name, float value1, float value2, float value3, float value4) {
 		GL20 gl = LSystem.base().graphics().gl;
 		int location = fetchAttributeLocation(name);
 		gl.glVertexAttrib4f(location, value1, value2, value3, value4);
@@ -707,15 +681,13 @@ public class ShaderProgram implements LRelease {
 		} else {
 
 			gl.glGetProgramiv(program, GL20.GL_ACTIVE_ATTRIBUTES, params, 0);
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
-					params, 1);
+			gl.glGetProgramiv(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, params, 1);
 			int numAttributes = params[0];
 			int maxAttributeLength = params[1];
 			namebytes = new byte[maxAttributeLength];
 			attributeNames = new String[numAttributes];
 			for (int i = 0; i < numAttributes; i++) {
-				gl.glGetActiveAttrib(program, i, maxAttributeLength, length, 0,
-						size, 0, type, 0, namebytes, 0);
+				gl.glGetActiveAttrib(program, i, maxAttributeLength, length, 0, size, 0, type, 0, namebytes, 0);
 				String name = new String(namebytes, 0, length[0]);
 				attributes.put(name, gl.glGetAttribLocation(program, name));
 				attributeTypes.put(name, type[0]);
@@ -723,15 +695,13 @@ public class ShaderProgram implements LRelease {
 				attributeNames[i] = name;
 			}
 			gl.glGetProgramiv(program, GL20.GL_ACTIVE_UNIFORMS, params, 0);
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH,
-					params, 1);
+			gl.glGetProgramiv(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH, params, 1);
 			int numUniforms = params[0];
 			int maxUniformLength = params[1];
 			namebytes = new byte[maxUniformLength];
 			uniformNames = new String[numUniforms];
 			for (int i = 0; i < numUniforms; i++) {
-				gl.glGetActiveUniform(program, i, maxUniformLength, length, 0,
-						size, 0, type, 0, namebytes, 0);
+				gl.glGetActiveUniform(program, i, maxUniformLength, length, 0, size, 0, type, 0, namebytes, 0);
 				String name = new String(namebytes, 0, length[0]);
 				uniforms.put(name, gl.glGetUniformLocation(program, name));
 				uniformTypes.put(name, type[0]);

@@ -32,7 +32,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private float alpha = 1f;
 
-	ExpandVertices expandVertices;
+	private final ExpandVertices expandVertices;
 	int idx = 0;
 	LTexture lastTexture = null;
 	float invTexWidth = 0, invTexHeight = 0;
@@ -53,8 +53,6 @@ public class SpriteBatch extends PixmapFImpl {
 
 	public int maxSpritesInBatch = 0;
 
-	private int size;
-
 	private boolean isLoaded;
 
 	private boolean lockSubmit = false;
@@ -63,7 +61,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
-	private IFont font = LSystem.getSystemGameFont();
+	private IFont font ;
 
 	private LTexture colorTexture;
 
@@ -173,10 +171,11 @@ public class SpriteBatch extends PixmapFImpl {
 			throw new IllegalArgumentException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.name = "spritebatch";
+		this.font = LSystem.getSystemGameFont();
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
 		this.mesh = new MeshDefault();
 		this.shader = defaultShader;
-		this.size = size;
+		this.expandVertices = new ExpandVertices(size);
 	}
 
 	public void setShaderUniformf(String name, LColor color) {
@@ -404,7 +403,6 @@ public class SpriteBatch extends PixmapFImpl {
 
 	public void begin() {
 		if (!isLoaded) {
-			expandVertices = new ExpandVertices(size);
 			if (shader == null) {
 				shader = LSystem.createDefaultShader();
 				ownsShader = true;
@@ -529,13 +527,12 @@ public class SpriteBatch extends PixmapFImpl {
 			case Null:
 				break;
 			}
-			mesh.post(name, size, customShader != null ? customShader : shader, expandVertices.getVertices(), idx,
+			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader, expandVertices.getVertices(), idx,
 					count);
 		} catch (Exception e) {
 			throw LSystem.runThrow(e.getMessage());
 		} finally {
 			if (expandVertices.expand(this.idx)) {
-				size = expandVertices.getSize();
 				mesh.reset(name, expandVertices.length());
 			}
 			GLUtils.setBlendMode(gl, old);
@@ -556,7 +553,7 @@ public class SpriteBatch extends PixmapFImpl {
 			customShader.close();
 		}
 		if (mesh != null) {
-			mesh.dispose(name, size);
+			mesh.dispose(name, expandVertices.getSize());
 		}
 	}
 

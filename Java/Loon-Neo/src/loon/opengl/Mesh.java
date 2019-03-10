@@ -593,6 +593,9 @@ public class Mesh implements LRelease {
 	}
 
 	public static void invalidateAllMeshes(LGame self) {
+		if (gmeshes == null || gmeshes.size == 0) {
+			return;
+		}
 		TArray<Mesh> meshesArray = gmeshes.get(self);
 		if (meshesArray == null) {
 			return;

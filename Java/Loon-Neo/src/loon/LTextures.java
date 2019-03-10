@@ -216,7 +216,6 @@ public class LTextures {
 						&& tex2d.getSource().indexOf("<canvas>") == -1) {
 					tex2d.refCount = 0;
 					tex2d.close(true);
-					lazyTextures.remove(tex2d.tmpLazy);
 					tex2d = null;
 				}
 			}
@@ -232,7 +231,6 @@ public class LTextures {
 				if (tex2d != null && !tex2d.isClose()) {
 					tex2d.refCount = 0;
 					tex2d.close(true);
-					lazyTextures.remove(tex2d.tmpLazy);
 					tex2d = null;
 				}
 			}
