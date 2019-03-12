@@ -2296,16 +2296,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				int repaintMode = getRepaintMode();
 				switch (repaintMode) {
 				case Screen.SCREEN_NOT_REPAINT:
+					//默认将background设置为和窗口一样大小
 					if (getBackground() != null) {
-						g.draw(getBackground(), 0, 0);
+						g.draw(getBackground(), 0, 0, getWidth(), getHeight());
 					}
 					break;
 				case Screen.SCREEN_TEXTURE_REPAINT:
-					g.draw(getBackground(), 0, 0);
+					g.draw(getBackground(), 0, 0, getWidth(), getHeight());
 					break;
 				case Screen.SCREEN_COLOR_REPAINT:
 					if (getBackground() != null) {
-						g.draw(getBackground(), 0, 0);
+						g.draw(getBackground(), 0, 0, getWidth(), getHeight());
 					} else {
 						LColor c = getBackgroundColor();
 						if (c != null) {
@@ -2315,7 +2316,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					break;
 				default:
 					g.draw(getBackground(), repaintMode / 2 - MathUtils.random(repaintMode),
-							repaintMode / 2 - MathUtils.random(repaintMode));
+							repaintMode / 2 - MathUtils.random(repaintMode), getWidth(), getHeight());
 					break;
 				}
 				// 最下一层渲染，可重载

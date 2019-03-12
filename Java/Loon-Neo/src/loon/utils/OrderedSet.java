@@ -30,31 +30,36 @@ public class OrderedSet<T> extends ObjectSet<T> implements IArray {
 		items.addAll(set.items);
 	}
 
+	@Override
 	public boolean add(T key) {
 		if (!contains(key))
 			items.add(key);
 		return super.add(key);
 	}
-
+	
+	@Override
 	public boolean remove(T key) {
 		items.removeValue(key, false);
 		return super.remove(key);
 	}
-
+	
+	@Override
 	public void clear(int maximumCapacity) {
 		items.clear();
 		super.clear(maximumCapacity);
 	}
-
+	
+	@Override
 	public void clear() {
 		items.clear();
 		super.clear();
 	}
-
+	
 	public TArray<T> orderedItems() {
 		return items;
 	}
-
+	
+	@Override
 	public OrderedSetIterator<T> iterator() {
 		if (iterator1 == null) {
 			iterator1 = new OrderedSetIterator(this);
@@ -71,7 +76,8 @@ public class OrderedSet<T> extends ObjectSet<T> implements IArray {
 		iterator1.valid = false;
 		return iterator2;
 	}
-
+	
+	@Override
 	public String toString() {
 		if (size == 0)
 			return "{}";
@@ -100,7 +106,8 @@ public class OrderedSet<T> extends ObjectSet<T> implements IArray {
 			nextIndex = 0;
 			hasNext = set.size > 0;
 		}
-
+		
+		@Override
 		public T next() {
 			if (!hasNext)
 				throw new NoSuchElementException();
@@ -111,7 +118,8 @@ public class OrderedSet<T> extends ObjectSet<T> implements IArray {
 			hasNext = nextIndex < set.size;
 			return key;
 		}
-
+		
+		@Override
 		public void remove() {
 			if (nextIndex < 0)
 				throw new IllegalStateException(

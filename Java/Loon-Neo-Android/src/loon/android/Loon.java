@@ -41,14 +41,12 @@ import loon.geom.RectI;
 import loon.utils.StringUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -646,13 +644,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 	}
 
-	@SuppressWarnings("deprecation")
 	protected Bitmap.Config preferredBitmapConfig() {
-		ActivityManager activityManager = (ActivityManager) getApplication().getSystemService(Context.ACTIVITY_SERVICE);
-		int memoryClass = activityManager.getMemoryClass();
-		int format = getWindowManager().getDefaultDisplay().getPixelFormat();
-		return (format == PixelFormat.RGBA_4444 || memoryClass <= 16) ? Bitmap.Config.ARGB_4444
-				: Bitmap.Config.ARGB_8888;
+		return Bitmap.Config.ARGB_8888;
 	}
 
 	protected float scaleFactor() {

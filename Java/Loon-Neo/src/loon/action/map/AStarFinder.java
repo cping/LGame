@@ -20,10 +20,9 @@
  */
 package loon.action.map;
 
-import java.util.HashSet;
-
 import loon.LRelease;
 import loon.LSystem;
+import loon.action.map.colider.TileImplPathFind;
 import loon.action.map.heuristics.Closest;
 import loon.action.map.heuristics.ClosestSquared;
 import loon.action.map.heuristics.Diagonal;
@@ -35,9 +34,10 @@ import loon.action.map.heuristics.Mixing;
 import loon.event.Updateable;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
+import loon.utils.ObjectSet;
 import loon.utils.TArray;
 
-public class AStarFinder implements Updateable, LRelease {
+public class AStarFinder extends TileImplPathFind implements Updateable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_CLOSEST = new Closest();
 
@@ -146,7 +146,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	private TArray<Vector2f> path;
 
-	private HashSet<Vector2f> visitedCache;
+	private ObjectSet<Vector2f> visitedCache;
 
 	private ScoredPath spath;
 
@@ -225,7 +225,7 @@ public class AStarFinder implements Updateable, LRelease {
 		}
 		this.goal = goal;
 		if (visitedCache == null) {
-			visitedCache = new HashSet<Vector2f>();
+			visitedCache = new ObjectSet<Vector2f>();
 		} else {
 			visitedCache.clear();
 		}

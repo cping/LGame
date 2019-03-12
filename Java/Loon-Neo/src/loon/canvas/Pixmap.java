@@ -3,6 +3,7 @@ package loon.canvas;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import loon.Graphics;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
@@ -15,6 +16,7 @@ import loon.geom.Vector2f;
 import loon.utils.ArrayByte;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.Scale;
 import loon.utils.TArray;
 
 /**
@@ -35,7 +37,11 @@ public class Pixmap extends Limit implements LRelease {
 
 	public Image getImage() {
 		if (tmpCanvas == null) {
-			tmpCanvas = LSystem.base().graphics().createCanvas(getWidth(), getHeight());
+			if (LSystem.base() != null) {
+				Graphics graphics = LSystem.base().graphics();
+				Scale scale = graphics.scale();
+				tmpCanvas = graphics.createCanvas(scale.invScaledCeil(getWidth()), scale.invScaledCeil(getHeight()));
+			}
 		}
 		tmpCanvas.image.setPixmap(this);
 		return tmpCanvas.image;
@@ -118,6 +124,10 @@ public class Pixmap extends Limit implements LRelease {
 
 	public Pixmap(int[] pixelsData, int w, int h, boolean hasAlpha) {
 		this.set(pixelsData, w, h, hasAlpha);
+	}
+
+	public void set(Pixmap pix) {
+		this.set(CollectionUtils.copyOf(pix.getData()), pix.getWidth(), pix.getHeight(), pix.hasAlpha());
 	}
 
 	private void set(int[] pixelsData, int w, int h, boolean hasAlpha) {
