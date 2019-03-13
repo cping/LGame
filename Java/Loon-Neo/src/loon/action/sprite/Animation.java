@@ -89,8 +89,7 @@ public class Animation implements LRelease {
 	}
 
 	public static Animation getDefaultAnimation(final LTexture texture) {
-		return Animation.getDefaultAnimation(new LTexture[] { texture }, 1,
-				65535);
+		return Animation.getDefaultAnimation(new LTexture[] { texture }, 1, 65535);
 	}
 
 	/**
@@ -102,11 +101,8 @@ public class Animation implements LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String fileName, int width,
-			int height, int timer) {
-		return Animation.getDefaultAnimation(
-				TextureUtils.getSplitTextures(fileName, width, height), -1,
-				timer);
+	public static Animation getDefaultAnimation(String fileName, int width, int height, int timer) {
+		return Animation.getDefaultAnimation(TextureUtils.getSplitTextures(fileName, width, height), -1, timer);
 	}
 
 	/**
@@ -119,12 +115,10 @@ public class Animation implements LRelease {
 	 * @param filterColor
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String fileName, int width,
-			int height, int timer, LColor filterColor) {
+	public static Animation getDefaultAnimation(String fileName, int width, int height, int timer, LColor filterColor) {
 		return Animation.getDefaultAnimation(
-				TextureUtils.getSplitTextures(
-						TextureUtils.filterColor(fileName, filterColor), width,
-						height), -1, timer);
+				TextureUtils.getSplitTextures(TextureUtils.filterColor(fileName, filterColor), width, height), -1,
+				timer);
 	}
 
 	/**
@@ -137,11 +131,8 @@ public class Animation implements LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String fileName, int maxFrame,
-			int width, int height, int timer) {
-		return Animation.getDefaultAnimation(
-				TextureUtils.getSplitTextures(fileName, width, height),
-				maxFrame, timer);
+	public static Animation getDefaultAnimation(String fileName, int maxFrame, int width, int height, int timer) {
+		return Animation.getDefaultAnimation(TextureUtils.getSplitTextures(fileName, width, height), maxFrame, timer);
 	}
 
 	/**
@@ -154,8 +145,7 @@ public class Animation implements LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(LTexture[] images,
-			int maxFrame, int timer) {
+	public static Animation getDefaultAnimation(LTexture[] images, int maxFrame, int timer) {
 		if (images == null) {
 			return new Animation();
 		}
@@ -181,8 +171,7 @@ public class Animation implements LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String[] paths, int maxFrame,
-			int timer) {
+	public static Animation getDefaultAnimation(String[] paths, int maxFrame, int timer) {
 		LTexture[] res = new LTexture[paths.length];
 		for (int i = 0; i < paths.length; i++) {
 			res[i] = LTextures.loadTexture(paths[i]);
@@ -209,8 +198,7 @@ public class Animation implements LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(MovieSpriteSheet sheet,
-			int maxFrame, int timer) {
+	public static Animation getDefaultAnimation(MovieSpriteSheet sheet, int maxFrame, int timer) {
 		return getDefaultAnimation(sheet.getTextures(), maxFrame, timer);
 	}
 
@@ -280,6 +268,9 @@ public class Animation implements LRelease {
 	 */
 	public synchronized void update(long timer) {
 		if (loopCount != -1 && loopPlay > loopCount) {
+			return;
+		}
+		if (totalDuration == 0) {
 			return;
 		}
 		if (isRunning && intervalTime.action(timer)) {

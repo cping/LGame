@@ -133,7 +133,7 @@ public class LTimer {
 	}
 
 	public float getRemaining() {
-		return (float) this.delay - (float) this.currentTick;
+		return (float) (this.delay - this.currentTick);
 	}
 
 	public void clamp() {

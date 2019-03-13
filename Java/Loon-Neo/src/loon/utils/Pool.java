@@ -35,7 +35,7 @@ public abstract class Pool<T> {
 	}
 	
 	public Pool (int max) {
-		freeObjects = new Array<T>();
+		this.freeObjects = new Array<T>();
 		this.max = max;
 	}
 

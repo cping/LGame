@@ -281,6 +281,18 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	}
 
 	/**
+	 * 以下参数分别为 精灵图，坐标x,坐标y
+	 * 
+	 * @param image
+	 * @param x
+	 * @param y
+	 * @param timer
+	 */
+	public Sprite(LTexture image, float x, float y) {
+		this(new LTexture[] { image }, -1, x, y, 0);
+	}
+
+	/**
 	 * 以下参数分别为 精灵名，图像数组，最大分解桢数,坐标x,坐标y,平均每桢显示时间
 	 * 
 	 * @param spriteName
@@ -636,6 +648,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		image = animation.getSpriteImage();
 
 		final boolean notImg = image == null;
+
 		if (animation != null && animation.size > 0 && notImg) {
 			return;
 		}

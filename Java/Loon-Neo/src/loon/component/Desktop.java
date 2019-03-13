@@ -33,6 +33,7 @@ import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.CollectionUtils;
 import loon.utils.TArray;
 
 /**
@@ -635,6 +636,10 @@ public class Desktop implements LRelease {
 				this.validateContainer((LContainer) components[i]);
 			}
 		}
+	}
+
+	public LComponent[] getComponents() {
+		return CollectionUtils.copyOf(contentPane._childs);
 	}
 
 	public LComponent getTopComponent() {

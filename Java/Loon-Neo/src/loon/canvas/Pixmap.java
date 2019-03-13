@@ -8,6 +8,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.Support;
+import loon.canvas.NinePatchAbstract.Repeat;
 import loon.geom.Polygon;
 import loon.geom.RectI;
 import loon.geom.Shape;
@@ -47,8 +48,30 @@ public class Pixmap extends Limit implements LRelease {
 		return tmpCanvas.image;
 	}
 
+	public LTexture texture() {
+		return toTexture();
+	}
+
 	public LTexture toTexture() {
 		return getImage().texture();
+	}
+
+	public static Pixmap createImageNicePatch(String path, int x, int y, int w, int h) {
+		return createImageNicePatch(path, null, x, y, w, h);
+	}
+
+	public static Pixmap createImageNicePatch(String path, Repeat repeat, int x, int y, int w, int h) {
+		final PixmapNinePatch np = new PixmapNinePatch(Image.createImage(path).getPixmap(), repeat);
+		Pixmap c = Pixmap.createImage(w, h);
+		np.drawNinePatch(c, x, y, w, h);
+		int[] pixels = c.getData();
+		for (int i = 0; i < pixels.length; i++) {
+			if (pixels[i] == LColor.TRANSPARENT) {
+				pixels[i] = 0;
+			}
+		}
+		c.setData(pixels);
+		return c;
 	}
 
 	public static Pixmap createImage(int w, int h) {
@@ -1454,7 +1477,7 @@ public class Pixmap extends Limit implements LRelease {
 							+ (src_pixel & 0xff) * td) & 0xff;
 
 					int dst_color = _drawPixels[dst_ptr];
-					drawPoint(_drawPixels, dst_ptr, blend(r, g, b, a, dst_color));
+					drawPoint(_drawPixels, dst_ptr, blend(r, g, b, a, dst_color), src_color);
 				} else {
 					drawPoint(_drawPixels, dst_ptr, _transparent);
 				}
@@ -1796,15 +1819,21 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
-	private void drawPoint(int[] pixels, int pixelIndex, int c) {
+	private void drawPoint(int[] pixels, int pixelIndex, int dst) {
+		drawPoint(pixels, pixelIndex, dst, 0);
+	}
+
+	private void drawPoint(int[] pixels, int pixelIndex, int dst, int src) {
 		int pixel = pixels[pixelIndex];
 		if (_composite == -1) {
 			if (_baseAlpha == 1f) {
-				pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+				int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+				pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 			} else {
 				int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-				c = (ialpha << 24) | (c & 0xFFFFFF);
-				pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+				dst = (ialpha << 24) | (dst & 0xFFFFFF);
+				int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+				pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 			}
 			return;
 		} else {
@@ -1813,32 +1842,38 @@ public class Pixmap extends Limit implements LRelease {
 			case SRC_IN:
 				if (pixel != _transparent) {
 					if (_baseAlpha == 1f) {
-						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 					} else {
 						int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-						c = (ialpha << 24) | (c & 0xFFFFFF);
-						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+						dst = (ialpha << 24) | (dst & 0xFFFFFF);
+						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 					}
 				}
 				break;
 			case SRC_OUT:
 				if (pixel == _transparent) {
 					if (_baseAlpha == 1f) {
-						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 					} else {
 						int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-						c = (ialpha << 24) | (c & 0xFFFFFF);
-						pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+						dst = (ialpha << 24) | (dst & 0xFFFFFF);
+						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 					}
 				}
 				break;
 			case SRC_OVER:
 				if (_baseAlpha == 1f) {
-					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+					int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+					pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 				} else {
 					int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-					c = (ialpha << 24) | (c & 0xFFFFFF);
-					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ c) ^ xorRGB) : c;
+					dst = (ialpha << 24) | (dst & 0xFFFFFF);
+					int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+					pixels[pixelIndex] = (newColor == 0) ? src : newColor;
 				}
 				break;
 			}

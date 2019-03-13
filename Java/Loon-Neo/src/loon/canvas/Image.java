@@ -25,10 +25,12 @@ import loon.Graphics;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.NinePatchAbstract.Repeat;
 import loon.geom.Vector2f;
 import loon.opengl.Painter;
 import loon.opengl.TextureSource;
 import loon.utils.ArrayByte;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.TArray;
@@ -59,6 +61,17 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public static Image createImage(int w, int h) {
 		return LSystem.base().graphics().createCanvas(w, h).image;
+	}
+
+	public static Image createImageNicePatch(String path, int x, int y, int w, int h) {
+		return createImageNicePatch(path, null, x, y, w, h);
+	}
+
+	public static Image createImageNicePatch(String path, Repeat repeat, int x, int y, int w, int h) {
+		final ImageNinePatch np = new ImageNinePatch(createImage(path), repeat);
+		Canvas c = Image.createCanvas(w, h);
+		np.drawNinePatch(c, x, y, w, h);
+		return c.image;
 	}
 
 	public static Image createImage(final String path) {
@@ -391,7 +404,11 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	public Pixmap getPixmap() {
-		return new Pixmap(getPixels(), getWidth(), getHeight(), hasAlpha());
+		int[] pixels = CollectionUtils.copyOf(getPixels());
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] = new LColor(pixels[i]).getARGB();
+		}
+		return new Pixmap(pixels, getWidth(), getHeight(), hasAlpha());
 	}
 
 	public void setPixmap(Pixmap pixmap) {

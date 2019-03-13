@@ -21,6 +21,8 @@
 package loon;
 
 import loon.LTexture.Format;
+import loon.canvas.Image;
+import loon.canvas.NinePatchAbstract.Repeat;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
@@ -146,6 +148,39 @@ public class LTextures {
 		return 0;
 	}
 
+	public static LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
+		return loadNinePatchTexture(fileName,null, x, y, w, h, Format.LINEAR);
+	}
+
+	public static LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,
+			Format config) {
+		if (fileName == null) {
+			return null;
+		}
+		synchronized (lazyTextures) {
+			String key = fileName.trim().toLowerCase() + (repeat == null ? "" : repeat);
+			ObjectMap<String, LTexture> texs = new ObjectMap<String, LTexture>(lazyTextures);
+			LTexture texture = texs.get(key);
+			if (texture == null) {
+				for (LTexture tex : texs.values()) {
+					if (tex.tmpLazy != null && tex.tmpLazy.toLowerCase().equals(key.toLowerCase())) {
+						texture = tex;
+						break;
+					}
+				}
+			}
+			if (texture != null && !texture.disposed()) {
+				texture.refCount++;
+				return texture;
+			}
+			texture = Image.createImageNicePatch(fileName, x, y, w, h).onHaveToClose(true).createTexture(config);
+			texture.tmpLazy = fileName;
+			lazyTextures.put(key, texture);
+			LSystem.debug("Texture : " + fileName + " Loaded");
+			return texture;
+		}
+	}
+
 	public static LTexture loadTexture(String fileName, Format config) {
 		if (fileName == null) {
 			return null;
@@ -169,7 +204,7 @@ public class LTextures {
 			texture = BaseIO.loadImage(fileName).onHaveToClose(true).createTexture(config);
 			texture.tmpLazy = fileName;
 			lazyTextures.put(key, texture);
-		
+
 			LSystem.debug("Texture : " + fileName + " Loaded");
 			return texture;
 		}

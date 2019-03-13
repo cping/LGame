@@ -21,7 +21,6 @@
 package loon.component;
 
 import loon.LTexture;
-import loon.LTexture.Format;
 import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.opengl.GLEx;
@@ -31,9 +30,15 @@ public class LPaper extends LContainer {
 	private Animation animation = new Animation();
 
 	public LPaper(LTexture background, int x, int y) {
-		super(x, y, background.getWidth(), background.getHeight());
+		this(background, x, y, background.getWidth(), background.getHeight());
+	}
+
+	public LPaper(LTexture background, int x, int y, int w, int h) {
+		super(x, y, w, h);
 		this.customRendering = true;
-		this.setBackground(background);
+		if (background != null) {
+			this.setBackground(background);
+		}
 		this.setElastic(true);
 		this.setLocked(true);
 		this.setLayer(100);
@@ -52,8 +57,7 @@ public class LPaper extends LContainer {
 	}
 
 	public LPaper(int x, int y, int w, int h) {
-		this(LTextures.createTexture(w < 1 ? w = 1 : w, h < 1 ? h = 1 : h,
-				Format.LINEAR), x, y);
+		this((LTexture) null, x, y, w, h);
 	}
 
 	public Animation getAnimation() {
@@ -128,10 +132,8 @@ public class LPaper extends LContainer {
 		}
 	}
 
-
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 
 	}
 

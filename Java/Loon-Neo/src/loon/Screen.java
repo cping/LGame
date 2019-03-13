@@ -30,6 +30,7 @@ import loon.action.camera.EmptyCamera;
 import loon.action.collision.GravityHandler;
 import loon.action.page.ScreenSwitch;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteControls;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
@@ -43,6 +44,7 @@ import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LLabel;
 import loon.component.LLayer;
+import loon.component.LPaper;
 import loon.component.UIControls;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
@@ -1824,6 +1826,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			add((ISprite) obj);
 		} else if (obj instanceof LComponent) {
 			add((LComponent) obj);
+		} else if (obj instanceof LTexture) {
+			addPaper((LTexture) obj, 0, 0);
 		} else if (obj instanceof Updateable) {
 			addLoad((Updateable) obj);
 		} else if (obj instanceof GameProcess) {
@@ -1845,6 +1849,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			remove((ISprite) obj);
 		} else if (obj instanceof LComponent) {
 			remove((LComponent) obj);
+		} else if (obj instanceof LTexture) {
+			remove((LTexture) obj);
 		} else if (obj instanceof Updateable) {
 			removeLoad((Updateable) obj);
 		} else if (obj instanceof GameProcess) {
@@ -2014,6 +2020,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return label;
 	}
 
+	public Sprite addSprite(LTexture tex, Vector2f pos) {
+		return addSprite(tex, pos.x, pos.y);
+	}
+
+	public Sprite addSprite(LTexture tex, float x, float y) {
+		Sprite sprite = new Sprite(tex, x, y);
+		add(sprite);
+		return sprite;
+	}
+
+	public LPaper addPaper(LTexture tex, Vector2f pos) {
+		return addPaper(tex, pos.x, pos.y);
+	}
+
+	public LPaper addPaper(LTexture tex, float x, float y) {
+		LPaper paper = new LPaper(tex, (int) x, (int) y);
+		add(paper);
+		return paper;
+	}
+
 	public SpriteLabel addSpriteLabel(String text, float x, float y) {
 		return addSpriteLabel(text, Vector2f.at(x, y));
 	}
@@ -2085,6 +2111,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return desktop.contains(sprite);
 		}
 		return false;
+	}
+
+	public Screen remove(LTexture tex) {
+		if (desktop != null) {
+			LComponent textureObject = null;
+			LComponent[] components = desktop.getComponents();
+			for (int i = 0; i < components.length; i++) {
+				LComponent comp = components[i];
+				if (comp != null && comp.getBackground() != null && tex.equals(comp.getBackground())) {
+					textureObject = comp;
+					break;
+				}
+			}
+			if (textureObject != null) {
+				remove(textureObject);
+				if (textureObject instanceof LTouchArea) {
+					unregisterTouchArea((LTouchArea) textureObject);
+				}
+			}
+		}
+		return this;
 	}
 
 	public Screen remove(LComponent comp) {
@@ -2296,7 +2343,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				int repaintMode = getRepaintMode();
 				switch (repaintMode) {
 				case Screen.SCREEN_NOT_REPAINT:
-					//默认将background设置为和窗口一样大小
+					// 默认将background设置为和窗口一样大小
 					if (getBackground() != null) {
 						g.draw(getBackground(), 0, 0, getWidth(), getHeight());
 					}

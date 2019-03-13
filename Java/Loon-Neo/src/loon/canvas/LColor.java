@@ -39,8 +39,8 @@ public class LColor implements Serializable {
 	// 默认色彩
 	public static final int DEF_COLOR = 0xFFFFFFFF;
 
-	// 默认黑色透明区域
-	public final static int TRANSPARENT = 0xff000000;
+	// 默认黑色透明区域                                                                  
+	public final static int TRANSPARENT = 0xFF000000;
 
 	public static float[] toRGBA(int pixel) {
 		int r = (pixel & 0x00FF0000) >> 16;
@@ -340,6 +340,7 @@ public class LColor implements Serializable {
 			setColor(LColor.white);
 			return;
 		}
+		//识别字符串格式颜色
 		if (c.startsWith("#")) {
 			setColor(hexToColor(c));
 		} else if (c.startsWith("rgb")) {
