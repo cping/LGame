@@ -110,7 +110,9 @@ public class AndroidCanvas extends Canvas {
 
 	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
-		canvas.save(android.graphics.Canvas.CLIP_SAVE_FLAG);
+		//api28开始不支持CLIP_SAVE_FLAG在Android Canvas外部使用
+		//canvas.save(android.graphics.Canvas.CLIP_SAVE_FLAG);
+		canvas.save();
 		canvas.clipRect(x, y, x + width, y + height);
 		canvas.drawColor(0, PorterDuff.Mode.SRC);
 		canvas.restore();

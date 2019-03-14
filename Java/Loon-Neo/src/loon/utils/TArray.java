@@ -108,9 +108,10 @@ public class TArray<T> implements Iterable<T>, IArray {
 	}
 
 	public void addAll(TArray<? extends T> array, int start, int count) {
-		if (start + count > array.size)
+		if (start + count > array.size) {
 			throw new IllegalArgumentException(
 					"start + count must be <= size: " + start + " + " + count + " <= " + array.size);
+		}
 		addAll((T[]) array.items, start, count);
 	}
 
@@ -121,8 +122,9 @@ public class TArray<T> implements Iterable<T>, IArray {
 	public void addAll(T[] array, int start, int count) {
 		T[] items = this.items;
 		int sizeNeeded = size + count;
-		if (sizeNeeded > items.length)
+		if (sizeNeeded > items.length){
 			items = resize(MathUtils.max(8, (int) (sizeNeeded * 1.75f)));
+		}
 		System.arraycopy(array, start, items, size, count);
 		size += count;
 	}
@@ -578,7 +580,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		}
 		return list;
 	}
-	
+
 	public T find(QueryEvent<T> test) {
 		for (T t : this) {
 			if (test.hit(t)) {

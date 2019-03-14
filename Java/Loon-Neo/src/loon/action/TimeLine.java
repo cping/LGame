@@ -18,12 +18,27 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 
 		@Override
 		public void onUnPool(TimeLine obj) {
-			obj.reset();
+			try {
+				obj.reset();
+				onSuccess(obj);
+			} catch (Exception ex) {
+				onFailure(ex);
+			}
+		}
+
+		@Override
+		public void onSuccess(TimeLine result) {
+
+		}
+
+		@Override
+		public void onFailure(Throwable cause) {
+			// TODO Auto-generated method stub
+
 		}
 	};
 
-	static final ActionTweenPool<TimeLine> pool = new ActionTweenPool<TimeLine>(
-			10, poolCallback) {
+	static final ActionTweenPool<TimeLine> pool = new ActionTweenPool<TimeLine>(10, poolCallback) {
 		@Override
 		protected TimeLine create() {
 			return new TimeLine();
@@ -50,8 +65,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 		return tl;
 	}
 
-	private final TArray<ActionTweenBase<?>> children = new TArray<ActionTweenBase<?>>(
-			10);
+	private final TArray<ActionTweenBase<?>> children = new TArray<ActionTweenBase<?>>(10);
 	private TimeLine current;
 	private TimeLine parent;
 	private Modes mode;
@@ -78,9 +92,8 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 	}
 
 	public TimeLine push(TimeLine timeline) {
-		if (timeline.current != timeline){
-			throw LSystem.runThrow(
-					"You forgot to call a few 'end()' statements in your pushed timeline");
+		if (timeline.current != timeline) {
+			throw LSystem.runThrow("You forgot to call a few 'end()' statements in your pushed timeline");
 		}
 		timeline.parent = current;
 		current.children.add(timeline);
@@ -165,8 +178,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 			ActionTweenBase<?> obj = children.get(i);
 
 			if (obj.getRepeatCount() < 0) {
-				throw LSystem.runThrow(
-						"You can't push an object with infinite repetitions in a timeline");
+				throw LSystem.runThrow("You can't push an object with infinite repetitions in a timeline");
 			}
 			obj.build();
 
@@ -217,8 +229,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 	}
 
 	@Override
-	protected void update(int step, int lastStep, boolean isIterationStep,
-			float delta) {
+	protected void update(int step, int lastStep, boolean isIterationStep, float delta) {
 
 		if (!isIterationStep && step > lastStep) {
 			float dt = isReverse(lastStep) ? -delta - 1 : delta + 1;

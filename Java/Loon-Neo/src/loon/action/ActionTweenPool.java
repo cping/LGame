@@ -5,7 +5,7 @@ import loon.utils.TArray;
 
 abstract class ActionTweenPool<T> {
 
-	public interface Callback<T> {
+	public interface Callback<T> extends loon.utils.reply.Callback<T> {
 		public void onPool(T obj);
 		public void onUnPool(T obj);
 	}

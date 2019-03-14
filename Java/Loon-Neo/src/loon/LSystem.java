@@ -32,6 +32,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.MeshDefault;
+import loon.opengl.ShaderCmd;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
@@ -43,6 +44,51 @@ public class LSystem {
 		return new EmptyObject();
 	}
 
+	public final static String getGLExVertexShader() {
+		ShaderCmd cmd = ShaderCmd.getCmd("glex_vertex");
+		if (cmd.isCache()) {
+			return cmd.getShader();
+		} else {
+			cmd.putAttributeVec4(ShaderProgram.POSITION_ATTRIBUTE);
+			cmd.putAttributeVec4(ShaderProgram.COLOR_ATTRIBUTE);
+			cmd.putAttributeVec2(ShaderProgram.TEXCOORD_ATTRIBUTE + "0");
+			cmd.putUniformMat4("u_projTrans");
+			cmd.putVaryingVec4("v_color");
+			cmd.putVaryingVec2("v_texCoords");
+			cmd.putMainCmd("   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n"
+					+ "   v_color.a = v_color.a * (255.0/254.0);\n" + "   v_texCoords = "
+					+ ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" + "   gl_Position =  u_projTrans * "
+					+ ShaderProgram.POSITION_ATTRIBUTE + ";");
+			return cmd.getShader();
+		}
+	}
+
+	public final static String getGLExFragmentShader() {
+		ShaderCmd cmd = ShaderCmd.getCmd("glex_fragment");
+		if (cmd.isCache()) {
+			return cmd.getShader();
+		} else {
+			cmd.putVarying("LOWP vec4","v_color");
+			cmd.putVaryingVec2("v_texCoords");
+			cmd.putUniform("sampler2D","u_texture");
+			cmd.putMainLowpCmd("  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);");
+			return cmd.getShader();
+		}
+	}
+
+	public final static String getColorFragmentShader() {
+		ShaderCmd cmd = ShaderCmd.getCmd("color_fragment");
+		if (cmd.isCache()) {
+			return cmd.getShader();
+		} else {
+			cmd.putUniform("LOWP vec4","v_color");
+			cmd.putVaryingVec2("v_texCoords");
+			cmd.putUniform("sampler2D","u_texture");
+			cmd.putMainLowpCmd("  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);");
+			return cmd.getShader();
+		}
+	}
+	
 	public static String FONT_NAME = "Dialog";
 
 	public static String ENCODING = "UTF-8";
@@ -418,92 +464,6 @@ public class LSystem {
 		}
 	}
 
-	public static final int VERTEX_SIZE = 2 + 1 + 2;
-
-	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
-
-	public static String createVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		String shader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
-				+ (hasNormals ? "attribute vec3 " + ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
-				+ (hasColors ? "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + i + ";\n";
-		}
-
-		shader += "uniform mat4 u_projModelView;\n";
-		shader += (hasColors ? "varying vec4 v_col;\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "varying vec2 v_tex" + i + ";\n";
-		}
-
-		shader += "void main() {\n" + "   gl_Position = u_projModelView * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
-				+ (hasColors ? "   v_col = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "   v_tex" + i + " = " + ShaderProgram.TEXCOORD_ATTRIBUTE + i + ";\n";
-		}
-		shader += "   gl_PointSize = 1.0;\n";
-		shader += "}\n";
-		return shader;
-	}
-
-	public static String createFragmentShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n" + "#endif\n";
-
-		if (hasColors)
-			shader += "varying vec4 v_col;\n";
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "varying vec2 v_tex" + i + ";\n";
-			shader += "uniform sampler2D u_sampler" + i + ";\n";
-		}
-
-		shader += "void main() {\n" + "   gl_FragColor = " + (hasColors ? "v_col" : "vec4(1, 1, 1, 1)");
-
-		if (numTexCoords > 0)
-			shader += " * ";
-
-		for (int i = 0; i < numTexCoords; i++) {
-			if (i == numTexCoords - 1) {
-				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ")";
-			} else {
-				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ") *";
-			}
-		}
-
-		shader += ";\n}";
-		return shader;
-	}
-
-	public final static String vertexShaderDef = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-			+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-			+ "uniform mat4 u_projTrans;\n" //
-			+ "varying vec4 v_color;\n" //
-			+ "varying vec2 v_texCoords;\n" //
-			+ "\n" //
-			+ "void main()\n" //
-			+ "{\n" //
-			+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-			+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
-			+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-			+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-			+ "}\n";
-
-	public final static String fragmentShaderDef = "#ifdef GL_ES\n" //
-			+ "#define LOWP lowp\n" //
-			+ "precision mediump float;\n" //
-			+ "#else\n" //
-			+ "#define LOWP \n" //
-			+ "#endif\n" //
-			+ "varying LOWP vec4 v_color;\n" //
-			+ "varying vec2 v_texCoords;\n" //
-			+ "uniform sampler2D u_texture;\n" //
-			+ "void main()\n"//
-			+ "{\n" //
-			+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
-			+ "}";
 
 	public static ShaderProgram createShader(String ver, String fragment) {
 		ShaderProgram shader = new ShaderProgram(ver, fragment);
@@ -511,92 +471,6 @@ public class LSystem {
 			throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
 		}
 		return shader;
-	}
-
-	public static ShaderProgram createDefaultShader() {
-		return createShader(vertexShaderDef, fragmentShaderDef);
-	}
-
-	public static String createGlobalVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		String shader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
-				+ (hasNormals ? "attribute vec3 " + ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
-				+ (hasColors ? "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + i + ";\n";
-		}
-
-		shader += "uniform mat4 u_projModelView;\n";
-		shader += (hasColors ? "uniform vec4 v_col;\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "varying vec2 v_tex" + i + ";\n";
-		}
-
-		shader += "void main() {\n" + "   gl_Position = u_projModelView * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
-				+ (hasColors ? "   v_col = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
-
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "   v_tex" + i + " = " + ShaderProgram.TEXCOORD_ATTRIBUTE + i + ";\n";
-		}
-		shader += "   gl_PointSize = 1.0;\n";
-		shader += "}\n";
-		return shader;
-	}
-
-	public static String createGlobalFragmentShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n" + "#endif\n";
-		if (hasColors) {
-			shader += "uniform vec4 v_col;\n";
-		}
-		for (int i = 0; i < numTexCoords; i++) {
-			shader += "varying vec2 v_tex" + i + ";\n";
-			shader += "uniform sampler2D u_sampler" + i + ";\n";
-		}
-		shader += "void main() {\n" + "   gl_FragColor = " + (hasColors ? "v_col" : "vec4(1, 1, 1, 1)");
-		if (numTexCoords > 0) {
-			shader += " * ";
-		}
-		for (int i = 0; i < numTexCoords; i++) {
-			if (i == numTexCoords - 1) {
-				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ")";
-			} else {
-				shader += " texture2D(u_sampler" + i + ",  v_tex" + i + ") *";
-			}
-		}
-		shader += ";\n}";
-		return shader;
-	}
-
-	public static ShaderProgram createGlobalShader() {
-		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "uniform mat4 u_projTrans;\n" //
-				+ "varying vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "\n" //
-				+ "void main()\n" //
-				+ "{\n" //
-				+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
-				+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
-				+ "#define LOWP lowp\n" //
-				+ "precision mediump float;\n" //
-				+ "#else\n" //
-				+ "#define LOWP \n" //
-				+ "#endif\n" //
-				+ "uniform LOWP vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "uniform sampler2D u_texture;\n" //
-				+ "void main()\n"//
-				+ "{\n" //
-				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
-				+ "}";
-		return createShader(vertexShader, fragmentShader);
 	}
 
 	public final static String format(float value) {

@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.action.sprite;
 
 import loon.LSystem;
@@ -15,11 +35,17 @@ import loon.opengl.GL20;
 import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
+import loon.opengl.TrilateralBatch;
+import loon.opengl.TrilateralBatch.Source;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
+/**
+ * 这是一个纹理批量渲染的实现,其中API可以基本兼容xna(monogame)以及libgdx的同名SpriteBatch类(干什么用大家都懂的)
+ * 
+ */
 public class SpriteBatch extends PixmapFImpl {
 
 	public static enum SpriteEffects {
@@ -61,7 +87,9 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
-	private IFont font ;
+	private IFont font;
+
+	private final Source source;
 
 	private LTexture colorTexture;
 
@@ -158,19 +186,24 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public SpriteBatch() {
-		this(256, null);
+		this(256);
 	}
 
 	public SpriteBatch(int size) {
-		this(size, null);
+		this(TrilateralBatch.DEF_SOURCE, size);
 	}
 
-	public SpriteBatch(final int size, final ShaderProgram defaultShader) {
+	public SpriteBatch(Source src, int size) {
+		this(src, size, null);
+	}
+
+	public SpriteBatch(final Source src, final int size, final ShaderProgram defaultShader) {
 		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), 4);
 		if (size > 5460) {
 			throw new IllegalArgumentException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.name = "spritebatch";
+		this.source = src;
 		this.font = LSystem.getSystemGameFont();
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
 		this.mesh = new MeshDefault();
@@ -404,7 +437,7 @@ public class SpriteBatch extends PixmapFImpl {
 	public void begin() {
 		if (!isLoaded) {
 			if (shader == null) {
-				shader = LSystem.createDefaultShader();
+				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
 				ownsShader = true;
 			}
 			isLoaded = true;
@@ -527,8 +560,8 @@ public class SpriteBatch extends PixmapFImpl {
 			case Null:
 				break;
 			}
-			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader, expandVertices.getVertices(), idx,
-					count);
+			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader,
+					expandVertices.getVertices(), idx, count);
 		} catch (Exception e) {
 			throw LSystem.runThrow(e.getMessage());
 		} finally {

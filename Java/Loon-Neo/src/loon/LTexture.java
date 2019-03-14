@@ -32,6 +32,8 @@ import loon.opengl.BaseBatch;
 import loon.opengl.GL20;
 import loon.opengl.GLPaint;
 import loon.opengl.Painter;
+import loon.opengl.TrilateralBatch;
+import loon.opengl.TrilateralBatch.Source;
 import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
@@ -314,8 +316,8 @@ public class LTexture extends Painter implements LRelease {
 	public void update(final Image image, final boolean closed) {
 		update(image, closed, true);
 	}
-	
-	public void update(final Image image, final boolean closed,final boolean updated) {
+
+	public void update(final Image image, final boolean closed, final boolean updated) {
 		if (image == null) {
 			throw LSystem.runThrow("the image is null, can not conversion it into texture .");
 		}
@@ -369,8 +371,8 @@ public class LTexture extends Painter implements LRelease {
 		}
 		_image = image;
 		_drawing = false;
-		
-		if(updated){
+
+		if (updated) {
 			_isLoaded = true;
 			return;
 		}
@@ -384,7 +386,7 @@ public class LTexture extends Painter implements LRelease {
 				}
 			}
 		}
-	
+
 		LTextureBatch.isBatchCacheDitry = true;
 	}
 
@@ -696,13 +698,18 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch(String name, int size) {
-		makeBatch(name, size);
+		makeBatch(name, TrilateralBatch.DEF_SOURCE, size);
 		return batch;
 	}
 
-	void makeBatch(String name, int size) {
+	public LTextureBatch getTextureBatch(String name, Source source, int size) {
+		makeBatch(name, source, size);
+		return batch;
+	}
+
+	void makeBatch(String name, Source source, int size) {
 		if (!isBatch) {
-			batch = new LTextureBatch(this, size);
+			batch = new LTextureBatch(this, source, size);
 			if (!StringUtils.isEmpty(name)) {
 				batch.setTextureBatchName(name);
 			}

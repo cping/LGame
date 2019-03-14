@@ -31,8 +31,15 @@ public class TrilateralBatch extends BaseBatch {
 
 	public static class Source extends LTextureBind.Source {
 
-		String vertexShader = LSystem.vertexShaderDef;
-		String fragmentShader = LSystem.fragmentShaderDef;
+		@Override
+		public String fragmentShader() {
+			return LSystem.getGLExFragmentShader();
+		}
+
+		@Override
+		public String vertexShader() {
+			return LSystem.getGLExVertexShader();
+		}
 
 	}
 
@@ -119,7 +126,8 @@ public class TrilateralBatch extends BaseBatch {
 		}
 	}
 
-	private final static Source DEF_SOURCE = new Source();
+	public final static Source DEF_SOURCE = new Source();
+
 	private Source source;
 
 	public TrilateralBatch(GL20 gl) {
@@ -225,7 +233,7 @@ public class TrilateralBatch extends BaseBatch {
 		}
 		if (!isLoaded) {
 			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader, source.fragmentShader);
+				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
 			}
 			isLoaded = true;
 		}

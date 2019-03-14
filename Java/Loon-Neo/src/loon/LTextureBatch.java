@@ -28,16 +28,24 @@ import loon.opengl.ExpandVertices;
 import loon.opengl.GL20;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
+import loon.opengl.TrilateralBatch;
+import loon.opengl.TrilateralBatch.Source;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
+/**
+ * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（texture.geTexturetBatch即可获得）,
+ * 方便针对特定纹理的缓存以及渲染.
+ */
 public class LTextureBatch implements LRelease {
 
 	private final static String defName = "texbatch";
 
 	private String name = defName;
+
+	private final Source source;
 
 	private boolean isClosed;
 
@@ -209,16 +217,6 @@ public class LTextureBatch implements LRelease {
 		}
 	}
 
-	private BlendState lastBlendState = BlendState.NonPremultiplied;
-
-	public LTextureBatch(LTexture tex) {
-		this(tex, 256, null);
-	}
-
-	public LTextureBatch(LTexture tex, int size) {
-		this(tex, size, null);
-	}
-
 	public void setTexture(LTexture tex2d) {
 		this.texture = tex2d;
 		this.texWidth = (int) texture.width();
@@ -246,11 +244,26 @@ public class LTextureBatch implements LRelease {
 
 	private MeshDefault mesh;
 
-	public LTextureBatch(LTexture tex, final int size, final ShaderProgram defaultShader) {
+	private BlendState lastBlendState = BlendState.NonPremultiplied;
+
+	public LTextureBatch(LTexture tex) {
+		this(tex, 256, TrilateralBatch.DEF_SOURCE, null);
+	}
+
+	public LTextureBatch(LTexture tex, final Source src) {
+		this(tex, src, 256);
+	}
+
+	public LTextureBatch(LTexture tex, final Source src, int size) {
+		this(tex, size, src, null);
+	}
+
+	public LTextureBatch(LTexture tex, final int size, final Source src, final ShaderProgram defaultShader) {
 		if (size > 5460) {
 			throw new IllegalArgumentException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.setTexture(tex);
+		this.source = src;
 		this.shader = defaultShader;
 		this.expandVertices = new ExpandVertices(size);
 		this.mesh = new MeshDefault();
@@ -300,7 +313,7 @@ public class LTextureBatch implements LRelease {
 	public void begin() {
 		if (!isLoaded) {
 			if (shader == null) {
-				shader = LSystem.createDefaultShader();
+				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
 			}
 			isLoaded = true;
 		}
@@ -454,10 +467,10 @@ public class LTextureBatch implements LRelease {
 			case Null:
 				break;
 			}
-			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader, expandVertices.getVertices(), vertexIdx,
-					count);
+			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader,
+					expandVertices.getVertices(), vertexIdx, count);
 		} catch (Exception e) {
-			throw LSystem.runThrow(e.getMessage(),e);
+			throw LSystem.runThrow(e.getMessage(), e);
 		} finally {
 			if (expandVertices.expand(this.vertexIdx)) {
 				mesh.reset(name, expandVertices.length());
@@ -539,11 +552,11 @@ public class LTextureBatch implements LRelease {
 		LSystem.mainEndDraw();
 		if (color == null) {
 			if (shader == null) {
-				shader = LSystem.createDefaultShader();
+				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
 			}
 			globalShader = shader;
 		} else if (globalShader == null) {
-			globalShader = LSystem.createGlobalShader();
+			globalShader = LSystem.createShader(LSystem.getGLExVertexShader(), LSystem.getColorFragmentShader());
 		}
 		globalShader.begin();
 		float oldColor = getFloatColor();
