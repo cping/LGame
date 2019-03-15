@@ -1147,10 +1147,12 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 		return flipY;
 	}
 	
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
+	@Override
 	public boolean isActionCompleted(){
 		return PlayerUtils.isActionCompleted(this);
 	}

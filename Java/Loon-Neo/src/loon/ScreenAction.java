@@ -1,6 +1,7 @@
 package loon;
 
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
@@ -204,6 +205,16 @@ public class ScreenAction implements Flip<Screen>, ActionBind {
 	@Override
 	public boolean isFlipY() {
 		return tmp == null ? false : tmp.isFlipY();
+	}
+
+	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
 	}
 
 }

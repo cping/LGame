@@ -1018,6 +1018,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}
@@ -1264,11 +1265,13 @@ public abstract class LComponent extends LObject<LContainer>
 	public Dimension getDimension() {
 		return new Dimension(this._width * this._scaleX, this._height * this._scaleY);
 	}
-
+	
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
+	@Override
 	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}

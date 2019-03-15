@@ -196,12 +196,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						} else {
 							command.gotoIndex(gotoFlag);
 						}
-						select.SetClick(null);
-						select.setVisible(false);
-						limitClick = false;
-						scrFlag = false;
-						isSelectMessage = false;
-						_clickcount = 0;
+						clearSelectMessage();
 						nextScript();
 					}
 				}
@@ -507,6 +502,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		public void UpClick(LComponent comp, float x, float y) {
 			if (command != null && label != null) {
 				command.gotoIndex(label);
+				//跳转后清除选择框,防止opt命令和select命令产生组件重叠时产生重复点击
+				clearSelectMessage();
 				nextScript();
 			}
 		}
@@ -528,6 +525,21 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	}
 
+	/**
+	 * 清除默认的选择框标记
+	 */
+	private void clearSelectMessage(){
+		boolean selecting = (select == null);
+		if (!selecting) {
+			select.SetClick(null);
+			select.setVisible(false);
+			limitClick = false;
+			scrFlag = false;
+			isSelectMessage = false;
+			_clickcount = 0;
+		}
+	}
+	
 	/**
 	 * 添加选项按钮到游戏中
 	 * 
@@ -1413,10 +1425,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			if ((LSystem.base() != null && LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)
 					? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) {
 				message.setVisible(false);
-				select.setVisible(false);
-				isSelectMessage = false;
-				selectMessage = null;
-				_clickcount = 0;
+				clearSelectMessage();
 			}
 		}
 		if (isNext && !isSelectMessage) {

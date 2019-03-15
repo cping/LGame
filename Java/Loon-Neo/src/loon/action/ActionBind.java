@@ -83,4 +83,8 @@ public interface ActionBind {
 	public float getContainerWidth();
 
 	public float getContainerHeight();
+
+	public ActionTween selfAction();
+
+	public boolean isActionCompleted();
 }
