@@ -6,8 +6,11 @@ import loon.LObject;
 import loon.LProcess;
 import loon.LSystem;
 import loon.LTexture;
+import loon.PlayerUtils;
+import loon.Screen;
 import loon.LTexture.Format;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
@@ -31,6 +34,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private LTexture _background;
 
+	// 地图的Sprites
+	private Sprites _mapSprites;
+
+	// Screen的Sprites
 	private Sprites _sprites;
 
 	public static interface DrawListener {
@@ -147,7 +154,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.active = true;
 		this.dirty = true;
 		this.visible = true;
-		this._sprites = new Sprites(LSystem.getProcess().getScreen(), maxWidth, maxHeight);
+		this._mapSprites = new Sprites(LSystem.getProcess().getScreen(), maxWidth, maxHeight);
 		this.imgPack.setFormat(format);
 	}
 
@@ -346,23 +353,23 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public void add(ISprite sprite) {
-		_sprites.add(sprite);
+		_mapSprites.add(sprite);
 	}
 
 	public void addAt(ISprite sprite, float x, float y) {
-		_sprites.addAt(sprite, x, y);
+		_mapSprites.addAt(sprite, x, y);
 	}
 
 	public void remove(int idx) {
-		_sprites.remove(idx);
+		_mapSprites.remove(idx);
 	}
 
 	public void remove(ISprite sprite) {
-		_sprites.remove(sprite);
+		_mapSprites.remove(sprite);
 	}
 
 	public void remove(int start, int end) {
-		_sprites.remove(start, end);
+		_mapSprites.remove(start, end);
 	}
 
 	public void draw(GLEx g) {
@@ -721,7 +728,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			int moveX = (int) newX;
 			int moveY = (int) newY;
 			draw(g, null, moveX, moveY);
-			_sprites.paintPos(g, moveX, moveY);
+			_mapSprites.paintPos(g, moveX, moveY);
 		} catch (Exception ex) {
 			LSystem.error("Array2D TileMap error !", ex);
 		} finally {
@@ -747,17 +754,13 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return imgPack.getTexture();
 	}
 
-	public Sprites getSprites() {
-		return _sprites;
-	}
-
 	public void update(long elapsedTime) {
 		if (playAnimation && animations.size > 0) {
 			for (Animation a : animations) {
 				a.update(elapsedTime);
 			}
 		}
-		_sprites.update(elapsedTime);
+		_mapSprites.update(elapsedTime);
 		if (listener != null) {
 			listener.update(elapsedTime);
 		}
@@ -898,6 +901,46 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
+	}
+
+	public Sprites getMapSprites() {
+		return _mapSprites;
+	}
+
+	public TileMap setMapSprites(Sprites s) {
+		_mapSprites = s;
+		return this;
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this._sprites == ss) {
+			return;
+		}
+		this._sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this._sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this._sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+	}
+
+	@Override
 	public void close() {
 		visible = false;
 		playAnimation = false;
@@ -906,8 +949,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (imgPack != null) {
 			imgPack.close();
 		}
-		if (_sprites != null) {
-			_sprites.close();
+		if (_mapSprites != null) {
+			_mapSprites.close();
 		}
 		if (_background != null) {
 			_background.close();

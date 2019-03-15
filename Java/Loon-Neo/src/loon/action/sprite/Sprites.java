@@ -242,6 +242,7 @@ public class Sprites implements IArray, LRelease {
 			}
 			sortSprites();
 			sprite.setState(State.ADDED);
+			sprite.setSprites(this);
 		}
 		boolean result = _sprites[index] != null;
 		return result;
@@ -295,6 +296,7 @@ public class Sprites implements IArray, LRelease {
 		if (contains(sprite)) {
 			return false;
 		}
+		sprite.setSprites(this);
 		if (sprite.getWidth() > getWidth()) {
 			setViewWindow(viewX, viewY, (int) sprite.getWidth(), _height);
 		}

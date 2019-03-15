@@ -27,6 +27,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.LTrans;
 import loon.PlayerUtils;
+import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
@@ -78,6 +79,8 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	private int maxFrame;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
+
+	private Sprites sprites = null;
 
 	/**
 	 * 默认构造函数
@@ -893,6 +896,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 			_childList = new TArray<ISprite>();
 		}
 		spr.setParent(this);
+		spr.setSprites(this.sprites);
 		spr.setState(State.ADDED);
 		_childList.add(spr);
 		childSorter.sort(_childList);
@@ -976,10 +980,12 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		this._origin = o;
 	}
 
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
+	@Override
 	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
@@ -1028,6 +1034,27 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	@Override
 	public boolean isEmpty() {
 		return false;
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this.sprites == ss) {
+			return;
+		}
+		this.sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this.sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this.sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
 	}
 
 	@Override

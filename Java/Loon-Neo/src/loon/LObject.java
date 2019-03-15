@@ -23,6 +23,7 @@ package loon;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
+import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.Alpha;
 import loon.geom.RectBox;
@@ -105,8 +106,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	 * @param obj
 	 * @param paused
 	 */
-	public final static void addActionEvent(ActionEvent action, ActionBind obj,
-			boolean paused) {
+	public final static void addActionEvent(ActionEvent action, ActionBind obj, boolean paused) {
 		ActionControl.get().addAction(action, obj, paused);
 	}
 
@@ -164,8 +164,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	 * @param actObject
 	 * @return
 	 */
-	public final static ActionEvent getActionEvent(Object tag,
-			ActionBind actObject) {
+	public final static ActionEvent getActionEvent(Object tag, ActionBind actObject) {
 		return ActionControl.get().getAction(tag, actObject);
 	}
 
@@ -184,8 +183,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	 * @param pause
 	 * @param actObject
 	 */
-	public final static void pauseActionEvent(boolean pause,
-			ActionBind actObject) {
+	public final static void pauseActionEvent(boolean pause, ActionBind actObject) {
 		ActionControl.get().paused(pause, actObject);
 	}
 
@@ -307,11 +305,9 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 			_rotation = 0f;
 		}
 		if (_rect != null) {
-			_rect.setBounds(MathUtils.getBounds(_location.x, _location.y,
-					getWidth(), getHeight(), r, _rect));
+			_rect.setBounds(MathUtils.getBounds(_location.x, _location.y, getWidth(), getHeight(), r, _rect));
 		} else {
-			_rect = MathUtils.getBounds(_location.x, _location.y, getWidth(),
-					getHeight(), r, _rect);
+			_rect = MathUtils.getBounds(_location.x, _location.y, getWidth(), getHeight(), r, _rect);
 		}
 	}
 
@@ -322,28 +318,23 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public abstract void update(long elapsedTime);
 
 	public void centerOnScreen() {
-		LObject.centerOn(this, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		LObject.centerOn(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public void bottomOnScreen() {
-		LObject.bottomOn(this, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		LObject.bottomOn(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public void leftOnScreen() {
-		LObject.leftOn(this, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		LObject.leftOn(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public void rightOnScreen() {
-		LObject.rightOn(this, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		LObject.rightOn(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public void topOnScreen() {
-		LObject.topOn(this, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		LObject.topOn(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public RectBox getCollisionArea() {
@@ -357,6 +348,26 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 			_rect.setBounds(x, y, w, h);
 		}
 		return _rect;
+	}
+
+	public boolean isContains(LObject<T> o) {
+		return CollisionHelper.contains(this.getCollisionArea(), o.getCollisionArea());
+	}
+
+	public boolean isIntersects(LObject<T> o) {
+		return CollisionHelper.isRectToRect(getCollisionArea(), o.getCollisionArea());
+	}
+
+	public boolean isIntersectsCircle(LObject<T> o) {
+		return CollisionHelper.isRectToCirc(getCollisionArea(), o.getCollisionArea());
+	}
+
+	public boolean isCircleIntersectsCircle(LObject<T> o) {
+		return CollisionHelper.isCircToCirc(getCollisionArea(), o.getCollisionArea());
+	}
+
+	public float getDistance(LObject<T> o) {
+		return CollisionHelper.getDistance(getCollisionArea(), o.getCollisionArea());
 	}
 
 	public void setName(String name) {
@@ -387,15 +398,15 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public void setZOrder(int z) {
 		setLayer(-z);
 	}
-	
-	public int getZOrder(){
+
+	public int getZOrder() {
 		return MathUtils.abs(getLayer());
 	}
 
-	public int getZ(){
+	public int getZ() {
 		return MathUtils.abs(getLayer());
 	}
-	
+
 	public void move_45D_up() {
 		move_45D_up(1);
 	}
@@ -483,7 +494,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public void pos(float x, float y) {
 		setLocation(x, y);
 	}
-	
+
 	public void setLocation(float x, float y) {
 		_location.setLocation(x, y);
 	}
@@ -496,10 +507,12 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		return (int) _location.getY();
 	}
 
+	@Override
 	public float getX() {
 		return _location.getX();
 	}
 
+	@Override
 	public float getY() {
 		return _location.getY();
 	}
@@ -525,8 +538,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public static void centerOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - object.getWidth() / 2,
-				h / 2 - object.getHeight() / 2);
+		object.setLocation(w / 2 - object.getWidth() / 2, h / 2 - object.getHeight() / 2);
 	}
 
 	public static void topOn(final LObject<?> object, float w, float h) {
@@ -538,13 +550,11 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public static void rightOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w - object.getWidth(), h / 2 - object.getHeight()
-				/ 2);
+		object.setLocation(w - object.getWidth(), h / 2 - object.getHeight() / 2);
 	}
 
 	public static void bottomOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - object.getWidth() / 2,
-				h - object.getHeight());
+		object.setLocation(w / 2 - object.getWidth() / 2, h - object.getHeight());
 	}
 
 	public void centerOn(final LObject<?> object) {

@@ -1,6 +1,8 @@
 package loon.action.sprite;
 
+import loon.PlayerUtils;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.opengl.GLEx;
 import loon.utils.IArray;
 import loon.utils.TArray;
@@ -173,4 +175,14 @@ public class MovieSprite extends DisplayObject implements IArray {
 		return _childs == null || _childs.size == 0;
 	}
 
+	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
+	}
+	
 }

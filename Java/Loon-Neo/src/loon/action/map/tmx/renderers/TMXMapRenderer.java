@@ -4,6 +4,9 @@ import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.PlayerUtils;
+import loon.Screen;
+import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.TMXImageLayer;
 import loon.action.map.tmx.TMXMap;
@@ -13,14 +16,16 @@ import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXAnimationFrame;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 
-public abstract class TMXMapRenderer extends LObject<ISprite> implements 
-		ISprite {
+public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
+
+	protected Sprites sprites = null;
 
 	protected int lastHashCode = 1;
 
@@ -38,13 +43,10 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements
 		}
 
 		public void update(long delta) {
-			elapsedDuration += TimeUtils.convert(delta,
-					TimeUtils.getDefaultTimeUnit(), TimeUtils.Unit.MILLIS);
+			elapsedDuration += TimeUtils.convert(delta, TimeUtils.getDefaultTimeUnit(), TimeUtils.Unit.MILLIS);
 
-			if (elapsedDuration >= tile.getFrames().get(currentFrameIndex)
-					.getDuration()) {
-				currentFrameIndex = (currentFrameIndex + 1)
-						% tile.getFrames().size;
+			if (elapsedDuration >= tile.getFrames().get(currentFrameIndex).getDuration()) {
+				currentFrameIndex = (currentFrameIndex + 1) % tile.getFrames().size;
 				elapsedDuration = 0;
 			}
 		}
@@ -104,9 +106,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements
 		default:
 			break;
 		}
-		throw LSystem.runThrow(
-				"A TmxMapRenderer has not yet been implemented for "
-						+ map.getOrientation() + " orientation");
+		throw LSystem
+				.runThrow("A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
 	}
 
 	public void update(long delta) {
@@ -116,8 +117,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements
 	}
 
 	protected void renderBackgroundColor(GLEx gl) {
-		gl.fillRect(_location.x, _location.y,
-				map.getWidth() * map.getTileWidth(),
+		gl.fillRect(_location.x, _location.y, map.getWidth() * map.getTileWidth(),
 				map.getHeight() * map.getTileHeight(), map.getBackgroundColor());
 	}
 
@@ -299,6 +299,37 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements
 		result = LSystem.unite(result, scaleY);
 		result = LSystem.unite(result, _rotation);
 		return result;
+	}
+
+	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this.sprites == ss) {
+			return;
+		}
+		this.sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this.sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this.sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
 	}
 
 	@Override

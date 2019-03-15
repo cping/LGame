@@ -208,13 +208,15 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 
 	@Override
-	public void setBackground(LTexture texture) {
+	public LComponent setBackground(LTexture texture) {
 		this._background = texture;
+		return this;
 	}
 
 	@Override
-	public void setBackground(String filePath) {
+	public LComponent setBackground(String filePath) {
 		setBackground(LTextures.loadTexture(filePath));
+		return this;
 	}
 
 	@Override
@@ -245,23 +247,27 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		}
 	}
 
-	public void setText(String text) {
+	public LComponent setText(String text) {
 		mText = text;
+		return this;
 	}
 
-	public void setDuration(int duration) {
+	public LComponent setDuration(int duration) {
 		this.mDuration = duration;
 		timer.setDelay(this.mDuration);
+		return this;
 	}
 
 	@Override
-	public void setBackground(LColor backgroundColor) {
+	public LComponent setBackground(LColor backgroundColor) {
 		super.setBackground(backgroundColor);
 		mBackgroundColor = backgroundColor;
+		return this;
 	}
 
-	public void setForeground(LColor foregroundColor) {
+	public LComponent setForeground(LColor foregroundColor) {
 		mForegroundColor = foregroundColor;
+		return this;
 	}
 
 	public boolean isStop() {

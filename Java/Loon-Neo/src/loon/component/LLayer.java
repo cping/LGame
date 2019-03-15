@@ -36,7 +36,7 @@ import loon.utils.timer.LTimer;
 
 public class LLayer extends ActorLayer {
 
-	private Sprites _sprites;
+	private Sprites _layerSprites;
 
 	private float width;
 
@@ -103,8 +103,8 @@ public class LLayer extends ActorLayer {
 	}
 
 	private void allocateSprites() {
-		if (_sprites == null) {
-			this._sprites = new Sprites(getScreen() == null ? LSystem
+		if (_layerSprites == null) {
+			this._layerSprites = new Sprites(getScreen() == null ? LSystem
 					.getProcess().getScreen() : getScreen(), getWidth(),
 					getHeight());
 		}
@@ -112,7 +112,7 @@ public class LLayer extends ActorLayer {
 
 	public LLayer addSprite(ISprite s) {
 		allocateSprites();
-		_sprites.add(s);
+		_layerSprites.add(s);
 		return this;
 	}
 
@@ -125,31 +125,31 @@ public class LLayer extends ActorLayer {
 
 	public LLayer addSpriteAt(ISprite s, float x, float y) {
 		allocateSprites();
-		_sprites.addAt(s, x, y);
+		_layerSprites.addAt(s, x, y);
 		return this;
 	}
 
 	public LLayer removeSprite(ISprite s) {
 		allocateSprites();
-		_sprites.remove(s);
+		_layerSprites.remove(s);
 		return this;
 	}
 
 	public LLayer removeSprite(int idx) {
 		allocateSprites();
-		_sprites.remove(idx);
+		_layerSprites.remove(idx);
 		return this;
 	}
 
 	public LLayer removeSpriteName(String name) {
 		allocateSprites();
-		_sprites.removeName(name);
+		_layerSprites.removeName(name);
 		return this;
 	}
 
 	public LLayer removeSpriteAll() {
 		allocateSprites();
-		_sprites.removeAll();
+		_layerSprites.removeAll();
 		return this;
 	}
 
@@ -229,8 +229,8 @@ public class LLayer extends ActorLayer {
 						thing.update(elapsedTime);
 					}
 				}
-				if (_sprites != null) {
-					_sprites.update(elapsedTime);
+				if (_layerSprites != null) {
+					_layerSprites.update(elapsedTime);
 				}
 			}
 		}
@@ -244,15 +244,15 @@ public class LLayer extends ActorLayer {
 		paintObjects(g, x, y, x + w, y + h);
 		if (x == 0 && y == 0) {
 			paint(g);
-			if (_sprites != null) {
-				_sprites.paint(g, x, y, w, h);
+			if (_layerSprites != null) {
+				_layerSprites.paint(g, x, y, w, h);
 			}
 		} else {
 			try {
 				g.translate(x, y);
 				paint(g);
-				if (_sprites != null) {
-					_sprites.paint(g, x, y, w, h);
+				if (_layerSprites != null) {
+					_layerSprites.paint(g, x, y, w, h);
 				}
 			} finally {
 				g.translate(-x, -y);
@@ -671,10 +671,10 @@ public class LLayer extends ActorLayer {
 				}
 			}
 		}
-		if (_sprites != null) {
-			_sprites.close();
+		if (_layerSprites != null) {
+			_layerSprites.close();
 		}
-		_sprites = null;
+		_layerSprites = null;
 	}
 
 	@Override

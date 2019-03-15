@@ -1,9 +1,14 @@
 package loon.opengl.d3d;
 
 import loon.LObject;
+import loon.LSystem;
 import loon.LTexture;
+import loon.PlayerUtils;
+import loon.Screen;
+import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -15,6 +20,8 @@ public class Object3D extends LObject<ISprite> implements ISprite {
 
 	private boolean isPreview = false;
 
+	private Sprites sprites = null;
+	
 	// 轮廓预览模式
 	private PreBoxViewer3D preview;
 
@@ -158,6 +165,37 @@ public class Object3D extends LObject<ISprite> implements ISprite {
 		return null;
 	}
 
+	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this.sprites == ss) {
+			return;
+		}
+		this.sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this.sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this.sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
+	}
+	
 	@Override
 	public void close() {
 		setState(State.DISPOSED);

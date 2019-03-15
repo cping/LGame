@@ -23,7 +23,9 @@ package loon.action.sprite;
 import loon.LObject.State;
 import loon.LRelease;
 import loon.LTexture;
+import loon.Screen;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.XY;
@@ -84,6 +86,16 @@ public interface ISprite extends ActionBind, LRelease, XY {
 	void setState(State state);
 
 	State getState();
+
+	void setSprites(Sprites ss);
+
+	Sprites getSprites();
+
+	Screen getScreen();
+
+	ActionTween selfAction();
+
+	boolean isActionCompleted();
 
 	boolean isDisposed();
 

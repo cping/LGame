@@ -4,14 +4,26 @@ import loon.geom.RectBox;
 
 public class LTexturePackClip {
 
-	public String name = "unkown";
+	public String name;
 
 	public int id = 0;
 
-	public RectBox rect = new RectBox();
+	public final RectBox rect;
+
+	public LTexturePackClip(int id, String name, float x, float y, float size) {
+		this(id, name, x, y, size, size);
+	}
 
 	public LTexturePackClip(int id, String name, float x, float y, float w, float h) {
 		this(id, name, new RectBox(x, y, w + x, h + y));
+	}
+
+	public LTexturePackClip(int id, float x, float y, float size) {
+		this(id, x, y, size, size);
+	}
+
+	public LTexturePackClip(int id, float x, float y, float w, float h) {
+		this(id, "unkown", new RectBox(x, y, w + x, h + y));
 	}
 
 	public LTexturePackClip(int id, String name, RectBox rect) {
@@ -41,7 +53,7 @@ public class LTexturePackClip {
 	}
 
 	public void setRect(RectBox rect) {
-		this.rect = rect;
+		this.rect.setBounds(rect);
 	}
 
 }

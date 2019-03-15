@@ -1,7 +1,9 @@
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
+import loon.Screen;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
@@ -12,8 +14,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public abstract class DisplayObject extends EventDispatcher implements ISprite,
-		XY, BoxSize {
+public abstract class DisplayObject extends EventDispatcher implements ISprite, XY, BoxSize {
 
 	public static float morphX = 1f, morphY = 1f;
 
@@ -38,12 +39,14 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	public static final int ANCHOR_CENTER = LTrans.HCENTER | LTrans.VCENTER;
 
 	protected LColor _baseColor = LColor.white;
-	
+
 	protected int _anchor = DisplayObject.ANCHOR_TOP_LEFT;
 
 	protected Vector2f _anchorValue = new Vector2f();
 
 	protected Vector2f _pivotValue = new Vector2f(-1, -1);
+
+	protected Sprites _sprites = null;
 
 	public DisplayObject() {
 
@@ -244,14 +247,14 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	public boolean inContains(float x, float y, float w, float h) {
 		return getRectBox().contains(x, y, w, h);
 	}
-	
+
 	@Override
-	public void setColor(LColor c){
+	public void setColor(LColor c) {
 		this._baseColor = c;
 	}
-	
+
 	@Override
-	public LColor getColor(){
+	public LColor getColor() {
 		return new LColor(_baseColor);
 	}
 
@@ -286,6 +289,27 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite,
 	@Override
 	public boolean isContainer() {
 		return false;
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this._sprites == ss) {
+			return;
+		}
+		this._sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this._sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this._sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 
 }

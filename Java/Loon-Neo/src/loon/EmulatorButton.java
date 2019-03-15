@@ -72,11 +72,12 @@ public class EmulatorButton {
 		return bounds;
 	}
 
-	public void hit(int nid, float x, float y) {
+	public EmulatorButton hit(int nid, float x, float y) {
 		hit(nid, x, y, false);
+		return this;
 	}
 
-	public void hit(int nid, float x, float y, boolean flag) {
+	public EmulatorButton hit(int nid, float x, float y, boolean flag) {
 		if (flag) {
 			if (nid == id) {
 				onClick = bounds.contains(x, y);
@@ -95,9 +96,10 @@ public class EmulatorButton {
 				}
 			}
 		}
+		return this;
 	}
 
-	public void hit(float x, float y) {
+	public EmulatorButton hit(float x, float y) {
 		if (!onClick) {
 			onClick = bounds.contains(x, y);
 			id = 0;
@@ -105,9 +107,10 @@ public class EmulatorButton {
 				_monitor.call();
 			}
 		}
+		return this;
 	}
 
-	public void unhit(int nid, float x, float y) {
+	public EmulatorButton unhit(int nid, float x, float y) {
 		if (onClick && nid == id) {
 			onClick = false;
 			id = 0;
@@ -115,9 +118,10 @@ public class EmulatorButton {
 				_monitor.free();
 			}
 		}
+		return this;
 	}
 
-	public void unhit() {
+	public EmulatorButton unhit() {
 		if (onClick) {
 			id = 0;
 			onClick = false;
@@ -125,14 +129,17 @@ public class EmulatorButton {
 				_monitor.free();
 			}
 		}
+		return this;
 	}
 
-	public void setX(int x) {
+	public EmulatorButton setX(int x) {
 		this.bounds.setX(x);
+		return this;
 	}
 
-	public void setY(int y) {
+	public EmulatorButton setY(int y) {
 		this.bounds.setY(y);
+		return this;
 	}
 
 	public int getX() {
@@ -143,13 +150,15 @@ public class EmulatorButton {
 		return bounds.y();
 	}
 
-	public void setLocation(int x, int y) {
+	public EmulatorButton setLocation(int x, int y) {
 		this.bounds.setX(x);
 		this.bounds.setY(y);
+		return this;
 	}
 
-	public void setPointerId(int id) {
+	public EmulatorButton setPointerId(int id) {
 		this.id = id;
+		return this;
 	}
 
 	public int getPointerId() {
@@ -160,8 +169,9 @@ public class EmulatorButton {
 		return disabled;
 	}
 
-	public void disable(boolean flag) {
+	public EmulatorButton disable(boolean flag) {
 		this.disabled = flag;
+		return this;
 	}
 
 	public int getHeight() {
@@ -172,24 +182,27 @@ public class EmulatorButton {
 		return bounds.width;
 	}
 
-	public void setSize(float w, float h) {
+	public EmulatorButton setSize(float w, float h) {
 		this.bounds.setWidth(w);
 		this.bounds.setHeight(h);
+		return this;
 	}
 
-	public void setBounds(float x, float y, float w, float h) {
+	public EmulatorButton setBounds(float x, float y, float w, float h) {
 		this.bounds.setBounds(x, y, w, h);
+		return this;
 	}
 
-	public synchronized void setClickImage(LTexture on) {
+	public synchronized EmulatorButton setClickImage(LTexture on) {
 		if (on == null) {
-			return;
+			return this;
 		}
 		if (bitmap != null) {
 			bitmap.close();
 		}
 		this.bitmap = on;
 		this.setSize(on.width(), on.height());
+		return this;
 	}
 
 	public void draw(SpriteBatch batch) {

@@ -21,8 +21,10 @@
 package loon.action.sprite;
 
 import loon.LObject;
+import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
+import loon.Screen;
 import loon.action.ActionTween;
 import loon.action.map.Attribute;
 import loon.action.map.Config;
@@ -33,14 +35,15 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.Flip;
 
-public abstract class ActionObject extends LObject<ISprite> implements
-		Flip<ActionObject>, Config, ISprite {
+public abstract class ActionObject extends LObject<ISprite> implements Flip<ActionObject>, Config, ISprite {
 
 	boolean visible = true;
 
 	boolean flipX = false, flipY = false;
 
 	float scaleX = 1, scaleY = 1;
+
+	Sprites sprites = null;
 
 	public void setScale(final float s) {
 		this.setScale(s, s);
@@ -74,17 +77,14 @@ public abstract class ActionObject extends LObject<ISprite> implements
 
 	private LColor filterColor = new LColor(1f, 1f, 1f, 1f);
 
-	public ActionObject(float x, float y, float dw, float dh,
-			Animation animation, TileMap map) {
+	public ActionObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		this.setLocation(x, y);
 		this.tiles = map;
 		this.animation = animation;
 		this.dstWidth = dw;
 		this.dstHeight = dh;
 		if (dw < 1 && dh < 1) {
-			this.rectBox = new RectBox(x, y,
-				animation.getSpriteImage().width(), animation
-							.getSpriteImage().height());
+			this.rectBox = new RectBox(x, y, animation.getSpriteImage().width(), animation.getSpriteImage().height());
 		} else {
 			this.rectBox = new RectBox(x, y, dw, dh);
 		}
@@ -97,9 +97,7 @@ public abstract class ActionObject extends LObject<ISprite> implements
 		this.dstWidth = animation.getSpriteImage().width();
 		this.dstHeight = animation.getSpriteImage().height();
 		if (dstWidth < 1 && dstHeight < 1) {
-			this.rectBox = new RectBox(x, y,
-					animation.getSpriteImage().width(), animation
-							.getSpriteImage().height());
+			this.rectBox = new RectBox(x, y, animation.getSpriteImage().width(), animation.getSpriteImage().height());
 		} else {
 			this.rectBox = new RectBox(x, y, dstWidth, dstHeight);
 		}
@@ -117,9 +115,8 @@ public abstract class ActionObject extends LObject<ISprite> implements
 			LTexture texture = animation.getSpriteImage();
 			float width = dstWidth <= 1 ? texture.getWidth() : dstWidth;
 			float hegiht = dstHeight <= 1 ? texture.getHeight() : dstHeight;
-			batch.drawFlip(animation.getSpriteImage(), getX() + offsetX, getY()
-					+ offsetY, width, hegiht, scaleX, scaleY, getRotation(),
-					flipX, flipY);
+			batch.drawFlip(animation.getSpriteImage(), getX() + offsetX, getY() + offsetY, width, hegiht, scaleX,
+					scaleY, getRotation(), flipX, flipY);
 		} finally {
 			batch.setColor(tmp);
 			batch.setAlpha(alpha);
@@ -138,8 +135,8 @@ public abstract class ActionObject extends LObject<ISprite> implements
 			LTexture texture = animation.getSpriteImage();
 			float width = dstWidth <= 1 ? texture.getWidth() : dstWidth;
 			float hegiht = dstHeight <= 1 ? texture.getHeight() : dstHeight;
-			gl.draw(texture, getX() + offsetX, getY() + offsetY, width, hegiht,
-					filterColor, getRotation(), scaleX, scaleY, flipX, flipY);
+			gl.draw(texture, getX() + offsetX, getY() + offsetY, width, hegiht, filterColor, getRotation(), scaleX,
+					scaleY, flipX, flipY);
 		} finally {
 			gl.setAlpha(alpha);
 			gl.setBlendMode(blend);
@@ -187,14 +184,12 @@ public abstract class ActionObject extends LObject<ISprite> implements
 
 	@Override
 	public float getWidth() {
-		return (int) ((dstWidth > 1 ? (int) dstWidth : animation
-				.getSpriteImage().width()) * scaleX);
+		return (int) ((dstWidth > 1 ? (int) dstWidth : animation.getSpriteImage().width()) * scaleX);
 	}
 
 	@Override
 	public float getHeight() {
-		return (int) ((dstHeight > 1 ? (int) dstHeight : animation
-				.getSpriteImage().height()) * scaleY);
+		return (int) ((dstHeight > 1 ? (int) dstHeight : animation.getSpriteImage().height()) * scaleY);
 	}
 
 	public Attribute getAttribute() {
@@ -315,15 +310,38 @@ public abstract class ActionObject extends LObject<ISprite> implements
 	public boolean isFlipY() {
 		return flipY;
 	}
-	
+
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
-	public boolean isActionCompleted(){
+	@Override
+	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
-	
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this.sprites == ss) {
+			return;
+		}
+		this.sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this.sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this.sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
+	}
+
 	@Override
 	public void close() {
 		if (animation != null) {

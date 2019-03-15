@@ -93,6 +93,7 @@ public class Desktop implements LRelease {
 		this.input = screen;
 		this.tooltip = new LToolTip();
 		this.contentPane.add(this.tooltip);
+		this.contentPane.setDesktop(this);
 		this.setDesktop(this.contentPane);
 		DESKTOP_CACHE.add(this);
 	}
@@ -120,6 +121,7 @@ public class Desktop implements LRelease {
 		if (comp == null) {
 			return;
 		}
+		comp.setDesktop(this);
 		if (comp.isFull) {
 			this.input.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
 		}

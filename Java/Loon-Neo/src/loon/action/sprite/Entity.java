@@ -4,10 +4,13 @@ import java.util.Comparator;
 
 import loon.Director.Origin;
 import loon.LObject;
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.PlayerUtils;
+import loon.Screen;
 import loon.action.ActionBind;
+import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
@@ -63,6 +66,8 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 
 	private boolean _stopUpdate = false;
 
+	private Sprites _sprites = null;
+	
 	protected float _width, _height;
 
 	protected LTexture _image;
@@ -471,6 +476,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 		}
 		this._childrens.add(e);
 		e.setParent(this);
+		e.setSprites(this._sprites);
 		e.setState(State.ADDED);
 		e.onAttached();
 	}
@@ -1018,10 +1024,12 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
+	@Override
 	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
@@ -1085,6 +1093,68 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 
 	protected float drawY(float offsetY) {
 		return offsetY + this._location.y + _offset.y;
+	}
+
+	public Entity in() {
+		return in(30);
+	}
+
+	public Entity in(float speed) {
+		this.setAlpha(0f);
+		this.selfAction().fadeIn(speed).start();
+		return this;
+	}
+
+	public Entity out() {
+		return out(30);
+	}
+
+	public Entity out(float speed) {
+		this.selfAction().fadeOut(speed).start().setActionListener(new ActionListener() {
+
+			@Override
+			public void stop(ActionBind o) {
+				if (getParent() != null) {
+					getParent().removeChild((IEntity) o);
+				}
+				if (getScreen() != null) {
+					getScreen().remove((ISprite) o);
+				}
+				close();
+			}
+
+			@Override
+			public void start(ActionBind o) {
+
+			}
+
+			@Override
+			public void process(ActionBind o) {
+
+			}
+		});
+		return this;
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this._sprites == ss) {
+			return;
+		}
+		this._sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this._sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this._sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 
 	@Override

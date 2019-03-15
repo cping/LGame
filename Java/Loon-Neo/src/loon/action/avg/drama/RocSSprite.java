@@ -1,10 +1,15 @@
 package loon.action.avg.drama;
 
 import loon.LObject;
+import loon.LSystem;
 import loon.LTexture;
+import loon.PlayerUtils;
+import loon.Screen;
+import loon.action.ActionTween;
 import loon.action.avg.drama.RocScript.ScriptException;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -24,6 +29,8 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	private LTimer _waitTimer = new LTimer(_delay);
 
 	private Object _result = null;
+	
+	private Sprites _sprites = null;
 
 	public RocSSprite(CommandLink link) {
 		this(link.toString(), false, false);
@@ -209,8 +216,40 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this._sprites == ss) {
+			return;
+		}
+		this._sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this._sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this._sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+	}
+	
+	@Override
 	public void close() {
         setState(State.DISPOSED);
 	}
+
 
 }

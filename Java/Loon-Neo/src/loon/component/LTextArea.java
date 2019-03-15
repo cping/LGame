@@ -123,13 +123,11 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this(LTextArea.TYPE_DOWN, w, SkinManager.get().getMessageSkin().getFont(), x, y, w, h, bg);
 	}
 
-	public LTextArea(MessageSkin skin, int type, int max, int x, int y, int w,
-			int h) {
+	public LTextArea(MessageSkin skin, int type, int max, int x, int y, int w, int h) {
 		this(type, max, skin.getFont(), x, y, w, h, skin.getBackgroundTexture());
 	}
 
-	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h,
-			LTexture bg) {
+	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, LTexture bg) {
 		super(x, y, w, h);
 		this.showType = type;
 		this.font = font;
@@ -265,8 +263,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			LSTRDictionary.get().bind((LFont) font, mes);
 		}
 		this.message[this.num] = mes;
-		if ((this.cr[this.num] == 0) && (this.cg[this.num] == 0)
-				&& (this.cb[this.num] == 0)) {
+		if ((this.cr[this.num] == 0) && (this.cg[this.num] == 0) && (this.cb[this.num] == 0)) {
 			this.cr[this.num] = this.default_cr;
 			this.cg[this.num] = this.default_cg;
 			this.cb[this.num] = this.default_cb;
@@ -288,17 +285,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			}
 		}
 
-		if ((this.font != null)
-				&& (this.font.stringWidth(this.message[this.num]) > this.messageWidthLimit)) {
+		if ((this.font != null) && (this.font.stringWidth(this.message[this.num]) > this.messageWidthLimit)) {
 			this.posx = 1;
 			for (;;) {
 				if (this.font.stringWidth(this.message[this.num].substring(0,
 						this.message[this.num].length() - this.posx)) <= this.messageWidthLimit) {
-					this.str = this.message[this.num].substring(
-							this.message[this.num].length() - this.posx,
+					this.str = this.message[this.num].substring(this.message[this.num].length() - this.posx,
 							this.message[this.num].length());
-					this.message[this.num] = this.message[this.num].substring(
-							0, this.message[this.num].length() - this.posx);
+					this.message[this.num] = this.message[this.num].substring(0,
+							this.message[this.num].length() - this.posx);
 					this.over = true;
 					break;
 				}
@@ -324,8 +319,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.slideX[this.num] = -200;
 
 		if (this.over) {
-			setColor(this.cr[this.numBak], this.cg[this.numBak],
-					this.cb[this.numBak]);
+			setColor(this.cr[this.numBak], this.cg[this.numBak], this.cb[this.numBak]);
 			put(this.str);
 		}
 	}
@@ -371,12 +365,10 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			}
 			if (i <= lines) {
 				for (int i2 = 0; i2 < 2; i2++) {
-					if (this.getMessageLength[this.num] < this.message[this.num]
-							.length()) {
+					if (this.getMessageLength[this.num] < this.message[this.num].length()) {
 						String[] temp = this.getMessage;
 						temp[this.num] = (temp[this.num] + this.message[this.num]
-								.substring(this.getMessageLength[this.num],
-										this.getMessageLength[this.num] + 1));
+								.substring(this.getMessageLength[this.num], this.getMessageLength[this.num] + 1));
 						this.getMessageLength[this.num] += 1;
 					}
 				}
@@ -384,8 +376,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				if (d_type == 0) {
 					this.drawY = (dy + i * this.font.getSize());
 				} else {
-					this.drawY = (dy - i * this.font.getSize() - this.font
-							.getSize());
+					this.drawY = (dy - i * this.font.getSize() - this.font.getSize());
 				}
 
 				this.posx = dx;
@@ -442,30 +433,20 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 						}
 					}
 
-					tmpcolor.setColor(this.drawNewCr[this.num],
-							this.drawNewCg[this.num], this.drawNewCb[this.num]);
+					tmpcolor.setColor(this.drawNewCr[this.num], this.drawNewCg[this.num], this.drawNewCb[this.num]);
 
 					this.str = "new";
 					drawString(g, this.str, this.posx, this.drawY, tmpcolor);
 					this.posx += this.font.stringWidth(this.str);
 				}
 				tmpcolor.setColor(50, 50, 50);
-				drawString(g, this.getMessage[this.num], this.posx + 1,
-						this.drawY + 1, tmpcolor);
-				tmpcolor.setColor(this.cr[this.num] + this.bright[i],
-						this.cg[this.num] + this.bright[i], this.cb[this.num]
-								+ this.bright[i]);
-				drawString(g, this.getMessage[this.num], this.posx, this.drawY,
-						tmpcolor);
+				drawString(g, this.getMessage[this.num], this.posx + 1, this.drawY + 1, tmpcolor);
+				tmpcolor.setColor(this.cr[this.num] + this.bright[i], this.cg[this.num] + this.bright[i],
+						this.cb[this.num] + this.bright[i]);
+				drawString(g, this.getMessage[this.num], this.posx, this.drawY, tmpcolor);
 				if ((this.waitFlag) && (i == 0) && index > 0) {
-					this.posy = (this.countFrame * 1 / 3 % this.font.getSize()
-							/ 2 - 2);
-					drawString(
-							g,
-							flag,
-							this.posx
-									+ this.font
-											.stringWidth(this.getMessage[this.num]),
+					this.posy = (this.countFrame * 1 / 3 % this.font.getSize() / 2 - 2);
+					drawString(g, flag, this.posx + this.font.stringWidth(this.getMessage[this.num]),
 							this.drawY - this.posy, this.triangleColor);
 				}
 				if (this.brightType[i] == TYPE_DOWN) {
@@ -542,36 +523,37 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return postLine;
 	}
 
-	public void setPostLine(int postLine) {
+	public LComponent setPostLine(int postLine) {
 		this.postLine = postLine;
+		return this;
 	}
 
 	public int getCountFrame() {
 		return countFrame;
 	}
 
-	public void setCountFrame(int countFrame) {
+	public LComponent setCountFrame(int countFrame) {
 		this.countFrame = countFrame;
+		return this;
 	}
 
 	@Override
-	public void setBackground(LTexture texture) {
+	public LComponent setBackground(LTexture texture) {
 		this._background = texture;
+		return this;
 	}
 
 	@Override
-	public void setBackground(String path) {
-		setBackground(LTextures.loadTexture(path));
+	public LComponent setBackground(String path) {
+		return setBackground(LTextures.loadTexture(path));
 	}
 
 	private void drawString(GLEx g, String str, int x, int y, LColor color) {
 		if (showType == TYPE_DOWN) {
-			font.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset
-					+ font.getAscent() / 2, color);
+			font.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset + font.getAscent() / 2, color);
 		} else {
-			font.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset
-					+ font.getAscent() / 2 + getHeight() - font.getHeight(),
-					color);
+			font.drawString(g, str, x + leftOffset + 5,
+					(y - 5) + topOffset + font.getAscent() / 2 + getHeight() - font.getHeight(), color);
 		}
 	}
 
@@ -579,21 +561,22 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return leftOffset;
 	}
 
-	public void setLeftOffset(int leftOffset) {
+	public LComponent setLeftOffset(int leftOffset) {
 		this.leftOffset = leftOffset;
+		return this;
 	}
 
 	public int getTopOffset() {
 		return topOffset;
 	}
 
-	public void setTopOffset(int topOffset) {
+	public LComponent setTopOffset(int topOffset) {
 		this.topOffset = topOffset;
+		return this;
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		draw(g, x, y, showType, postLine);
 	}
 

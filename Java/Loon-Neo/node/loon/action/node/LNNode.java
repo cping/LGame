@@ -25,10 +25,14 @@ import java.util.Comparator;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
+import loon.PlayerUtils;
+import loon.Screen;
 import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteBatch;
+import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
 import loon.event.GameTouch;
@@ -128,6 +132,8 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	protected float _size_width, _size_height;
 
 	protected float _orig_width, _orig_height;
+	
+	protected Sprites _sprites;
 
 	@Override
 	public void setWidth(float w) {
@@ -250,6 +256,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 			node.setContainer(null);
 		}
 		node.setContainer(this);
+		node.setSprites(this._sprites);
 		node.setState(State.ADDED);
 		int index = 0;
 		boolean flag = false;
@@ -287,6 +294,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 			throw new IllegalStateException(node + " already reside in another node!!!");
 		}
 		node.setContainer(this);
+		node.setSprites(this._sprites);
 		node.setState(State.ADDED);
 		LNNode[] newChilds = new LNNode[this.childs.length + 1];
 		this._childCount++;
@@ -1333,6 +1341,38 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 	}
 
+	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
+	}
+
+	@Override
+	public void setSprites(Sprites ss) {
+		if (this._sprites == ss) {
+			return;
+		}
+		this._sprites = ss;
+	}
+
+	@Override
+	public Sprites getSprites() {
+		return this._sprites;
+	}
+
+	@Override
+	public Screen getScreen() {
+		if (this._sprites == null) {
+			return LSystem.getProcess().getScreen();
+		}
+		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+	}
+	
+	
 	@Override
 	public void close() {
 		this._isClose = true;

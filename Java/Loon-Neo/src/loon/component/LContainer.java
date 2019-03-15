@@ -71,6 +71,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			comp.setContainer(null);
 		}
 		comp.setContainer(this);
+		comp.setDesktop(this.desktop);
 		comp.setState(State.ADDED);
 		if (comp instanceof LScrollContainer) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
@@ -89,6 +90,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		this.sortComponents();
 		this.latestInserted = comp;
+		this.setDesktops(this.desktop);
 		return this;
 	}
 
@@ -631,6 +633,17 @@ public abstract class LContainer extends LComponent implements IArray {
 					comp.setY(comp.getY() + spacey);
 					comp.setWidth(comp.getWidth() + spaceWidth);
 					comp.setHeight(comp.getHeight() + spaceHeight);
+				}
+			}
+		}
+	}
+
+	void setDesktops(Desktop d) {
+		LComponent[] comps = this._childs;
+		if (comps != null) {
+			for (int i = 0; i > comps.length; i++) {
+				if (comps[i] != null) {
+					comps[i].setDesktop(d);
 				}
 			}
 		}

@@ -37,8 +37,7 @@ public class Text implements LRelease {
 		this(font, chars, new TextOptions());
 	}
 
-	public Text(final IFont font, final CharSequence chars,
-			final TextOptions opt) {
+	public Text(final IFont font, final CharSequence chars, final TextOptions opt) {
 		this._font = font;
 		this._textOptions = opt;
 		this.setText(chars);
@@ -54,6 +53,10 @@ public class Text implements LRelease {
 
 	public IFont getFont() {
 		return this._font;
+	}
+
+	public boolean isEmpty() {
+		return this._chars == null || _chars.length() == 0;
 	}
 
 	public CharSequence getText() {
@@ -77,15 +80,13 @@ public class Text implements LRelease {
 		if (this._textOptions._autoWrap == AutoWrap.NONE) {
 			this._lines = FontUtils.splitLines(this._chars, this._lines);
 		} else {
-			this._lines = FontUtils.splitLines(this._font, this._chars,
-					this._lines, this._textOptions._autoWrap,
+			this._lines = FontUtils.splitLines(this._font, this._chars, this._lines, this._textOptions._autoWrap,
 					this._textOptions._autoWrapWidth);
 		}
 		final int lineCount = this._lines.size;
 		float maxLineWidth = 0;
 		for (int i = 0; i < lineCount; i++) {
-			final float lineWidth = FontUtils.measureText(font,
-					this._lines.get(i));
+			final float lineWidth = FontUtils.measureText(font, this._lines.get(i));
 			maxLineWidth = MathUtils.max(maxLineWidth, lineWidth);
 			this._lineWidths.add(lineWidth);
 		}
@@ -97,11 +98,9 @@ public class Text implements LRelease {
 		}
 		this._width = this._lineAlignmentWidth;
 		if (_width <= 0) {
-			_width = _lineWidths.get(0)
-					* StringUtils.countOccurrences(chars, '\n');
+			_width = _lineWidths.get(0) * StringUtils.countOccurrences(chars, '\n');
 		}
-		this._height = lineCount * font.getHeight() + (lineCount - 1)
-				* this._textOptions._leading;
+		this._height = lineCount * font.getHeight() + (lineCount - 1) * this._textOptions._leading;
 		if (_height <= 0) {
 			_height = _font.getHeight();
 		}
@@ -115,8 +114,7 @@ public class Text implements LRelease {
 			}
 			if (LSystem.isDesktop()) {
 				if (_font instanceof LFont) {
-					LSTRFont strfont = LSTRDictionary.get().STRFont(
-							(LFont) _font);
+					LSTRFont strfont = LSTRDictionary.get().STRFont((LFont) _font);
 					if (strfont != null) {
 						if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
 							strfont.setUpdateX(0);
@@ -143,18 +141,13 @@ public class Text implements LRelease {
 
 			switch (_textOptions._horizontalAlign) {
 			case CENTER:
-				_font.drawString(
-						g,
-						mes,
-						(getWidth() / 2 - _font.stringWidth(mes) / 2) + offsetX,
-						offsetY, color);
+				_font.drawString(g, mes, (getWidth() / 2 - _font.stringWidth(mes) / 2) + offsetX, offsetY, color);
 				break;
 			case LEFT:
 				_font.drawString(g, mes, offsetX, offsetY, color);
 				break;
 			case RIGHT:
-				_font.drawString(g, mes, getWidth() - _font.stringWidth(mes)
-						+ offsetX, offsetY, color);
+				_font.drawString(g, mes, getWidth() - _font.stringWidth(mes) + offsetX, offsetY, color);
 				break;
 			default:
 				break;
@@ -178,10 +171,7 @@ public class Text implements LRelease {
 					char ch = mes.charAt(0);
 					float viewY = 0;
 					if (ch != '\n') {
-						viewY = offsetY
-								+ idx
-								* (_font.stringHeight(mes) + _textOptions
-										.getLeading());
+						viewY = offsetY + idx * (_font.stringHeight(mes) + _textOptions.getLeading());
 						idx++;
 					} else {
 						viewX += _font.getSize() + getLeading();
@@ -191,21 +181,14 @@ public class Text implements LRelease {
 					}
 					switch (_textOptions._horizontalAlign) {
 					case CENTER:
-						_font.drawString(
-								g,
-								mes,
-								viewX
-										+ offsetX
-										+ (getWidth() / 2 - _font
-												.stringWidth(mes) / 2), viewY,
+						_font.drawString(g, mes, viewX + offsetX + (getWidth() / 2 - _font.stringWidth(mes) / 2), viewY,
 								color);
 						break;
 					case LEFT:
 						_font.drawString(g, mes, viewX + offsetX, viewY, color);
 						break;
 					case RIGHT:
-						_font.drawString(g, mes, viewX + offsetX + getWidth()
-								- _font.stringWidth(mes), viewY, color);
+						_font.drawString(g, mes, viewX + offsetX + getWidth() - _font.stringWidth(mes), viewY, color);
 						break;
 					default:
 						break;
@@ -214,38 +197,18 @@ public class Text implements LRelease {
 				} else {
 					switch (_textOptions._horizontalAlign) {
 					case CENTER:
-						_font.drawString(
-								g,
-								mes,
-								offsetX
-										+ (getWidth() / 2 - _font
-												.stringWidth(mes) / 2),
-								offsetY
+						_font.drawString(g, mes, offsetX + (getWidth() / 2 - _font.stringWidth(mes) / 2), offsetY
 
-										+ i
-										* (_font.stringHeight(mes) + _textOptions
-												.getLeading()), color);
+								+ i * (_font.stringHeight(mes) + _textOptions.getLeading()), color);
 						break;
 					case LEFT:
-						_font.drawString(
-								g,
-								mes,
-								offsetX,
-								offsetY
-										+ i
-										* (_font.stringHeight(mes) + _textOptions
-												.getLeading()), color);
+						_font.drawString(g, mes, offsetX,
+								offsetY + i * (_font.stringHeight(mes) + _textOptions.getLeading()), color);
 						break;
 					case RIGHT:
-						_font.drawString(
-								g,
-								mes,
-								offsetX + getWidth() - _font.stringWidth(mes),
-								offsetY
+						_font.drawString(g, mes, offsetX + getWidth() - _font.stringWidth(mes), offsetY
 
-										+ i
-										* (_font.stringHeight(mes) + _textOptions
-												.getLeading()), color);
+								+ i * (_font.stringHeight(mes) + _textOptions.getLeading()), color);
 						break;
 					default:
 						break;
@@ -267,37 +230,18 @@ public class Text implements LRelease {
 				}
 				switch (_textOptions._horizontalAlign) {
 				case CENTER:
-					_font.drawString(
-							g,
-							mes,
-							offsetX
-									+ (getWidth() / 2 - _font.stringWidth(mes) / 2),
-							offsetY
+					_font.drawString(g, mes, offsetX + (getWidth() / 2 - _font.stringWidth(mes) / 2), offsetY
 
-									+ i
-									* (_font.stringHeight(mes) + _textOptions
-											.getLeading()), color);
+							+ i * (_font.stringHeight(mes) + _textOptions.getLeading()), color);
 					break;
 				case LEFT:
-					_font.drawString(
-							g,
-							mes,
-							offsetX,
-							offsetY
-									+ i
-									* (_font.stringHeight(mes) + _textOptions
-											.getLeading()), color);
+					_font.drawString(g, mes, offsetX,
+							offsetY + i * (_font.stringHeight(mes) + _textOptions.getLeading()), color);
 					break;
 				case RIGHT:
-					_font.drawString(
-							g,
-							mes,
-							offsetX + getWidth() - _font.stringWidth(mes),
-							offsetY
+					_font.drawString(g, mes, offsetX + getWidth() - _font.stringWidth(mes), offsetY
 
-									+ i
-									* (_font.stringHeight(mes) + _textOptions
-											.getLeading()), color);
+							+ i * (_font.stringHeight(mes) + _textOptions.getLeading()), color);
 					break;
 				default:
 					break;
@@ -384,6 +328,7 @@ public class Text implements LRelease {
 		return new StringBuffer(_chars).toString();
 	}
 
+	@Override
 	public void close() {
 		if (LSystem.isDesktop()) {
 			if (_font instanceof LFont) {

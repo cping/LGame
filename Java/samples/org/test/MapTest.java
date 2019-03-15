@@ -10,6 +10,7 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.sprite.AnimatedEntity;
+import loon.action.sprite.AnimatedEntity.PlayIndex;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.effect.RippleEffect;
 import loon.canvas.LColor;
@@ -70,7 +71,11 @@ public class MapTest extends Stage {
 			final int[] rightIds = { 6, 7, 8 };
 			final int[] downIds = {  0, 1, 2 };
 			final int[] upIds = {  9, 10, 11 };
-			
+			// 也可以这样设置也可以，播放时直接传入key的字符串数值，两种方式都能生效
+			/*hero.setPlayIndex("left", PlayIndex.at(frames,leftIds));
+			hero.setPlayIndex("right", PlayIndex.at(frames,rightIds));
+			hero.setPlayIndex("down", PlayIndex.at(frames,downIds));
+			hero.setPlayIndex("up", PlayIndex.at(frames,upIds));*/
 			// 播放动画,速度每帧220,播放顺序为第0,1,2帧
 			// hero.animate(new long[]{220, 220, 220 }, new int[]{0, 1, 2});
 			hero.animate(frames, downIds);

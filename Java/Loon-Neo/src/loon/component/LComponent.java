@@ -282,10 +282,6 @@ public abstract class LComponent extends LObject<LContainer>
 
 	}
 
-	public Screen getScreen() {
-		return (desktop == null || desktop.input == null) ? LSystem.getProcess().getScreen() : desktop.input;
-	}
-
 	public int getScreenWidth() {
 		return getScreen().getWidth();
 	}
@@ -584,15 +580,6 @@ public abstract class LComponent extends LObject<LContainer>
 		this.validatePosition();
 	}
 
-	final void setDesktop(Desktop desktop) {
-		if (this.desktop == desktop) {
-			return;
-		}
-
-		this.desktop = desktop;
-		this.input = desktop.input;
-	}
-
 	public void setBounds(float dx, float dy, int width, int height) {
 		setLocation(dx, dy);
 		if (this._width != width || this._height != height) {
@@ -881,28 +868,28 @@ public abstract class LComponent extends LObject<LContainer>
 		return _background;
 	}
 
-	public void clearBackground() {
-		this.setBackground(LSystem.base().graphics().finalColorTex());
+	public LComponent clearBackground() {
+		return this.setBackground(LSystem.base().graphics().finalColorTex());
 	}
 
-	public void setBackground(String fileName) {
-		this.setBackground(LTextures.newTexture(fileName));
+	public LComponent setBackground(String fileName) {
+		return this.setBackground(LTextures.newTexture(fileName));
 	}
 
-	public void setBackground(LColor color) {
-		setBackground(TextureUtils.createTexture(1, 1, color));
+	public LComponent setBackground(LColor color) {
+		return setBackground(TextureUtils.createTexture(1, 1, color));
 	}
 
-	public void setBackgroundString(String color) {
-		setBackground(new LColor(color));
+	public LComponent setBackgroundString(String color) {
+		return setBackground(new LColor(color));
 	}
 
-	public void setBackground(LTexture b) {
+	public LComponent setBackground(LTexture b) {
 		if (b == null) {
-			return;
+			return this;
 		}
 		if (b == this._background) {
-			return;
+			return this;
 		}
 		this._background = b;
 		this._background.setDisabledTexture(true);
@@ -916,6 +903,7 @@ public abstract class LComponent extends LObject<LContainer>
 				this._height = 1;
 			}
 		}
+		return this;
 	}
 
 	public int getCamX() {
@@ -1096,6 +1084,16 @@ public abstract class LComponent extends LObject<LContainer>
 		return visible;
 	}
 
+	public LComponent enabled() {
+		this.setEnabled(true);
+		return this;
+	}
+
+	public LComponent disabled() {
+		this.setEnabled(false);
+		return this;
+	}
+
 	/**
 	 * 淡入当前组件
 	 * 
@@ -1273,6 +1271,22 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
+	}
+
+	public void setDesktop(Desktop d) {
+		if (this.desktop == d) {
+			return;
+		}
+		this.desktop = d;
+		this.input = d.input;
+	}
+
+	public Desktop getDesktop() {
+		return this.desktop;
+	}
+
+	public Screen getScreen() {
+		return (desktop == null || desktop.input == null) ? LSystem.getProcess().getScreen() : desktop.input;
 	}
 
 	@Override
