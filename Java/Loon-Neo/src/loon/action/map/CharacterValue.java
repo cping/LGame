@@ -2,6 +2,10 @@ package loon.action.map;
 
 import loon.utils.MathUtils;
 
+/**
+ * 一个基本的游戏角色数值模板,可以套用其扩展自己的游戏属性以及属性变更算法
+ *
+ */
 public abstract class CharacterValue {
 
 	private int maxHealth;
@@ -16,11 +20,20 @@ public abstract class CharacterValue {
 	private int fitness;
 	private int dexterity;
 	private int level;
+	private int team;
+	private int movePoints;
 	private int turnPoints;
+	private int actionPoints; 
+	
+	private boolean isAttack;
+	private boolean isDefense;
+	private boolean isSkill;
+	private boolean isMoved;
+
 	private CharacterInfo info;
 
-	public CharacterValue(CharacterInfo info,int maxHealth, int maxMana, int attack, int defence, int strength, int intelligence,
-			int fitness, int dexterity, int agility) {
+	public CharacterValue(CharacterInfo info, int maxHealth, int maxMana, int attack, int defence, int strength,
+			int intelligence, int fitness, int dexterity, int agility) {
 		this.info = info;
 		this.maxHealth = maxHealth;
 		this.maxMana = maxMana;
@@ -283,5 +296,73 @@ public abstract class CharacterValue {
 
 	public void setAgility(int agility) {
 		this.agility = agility;
+	}
+
+	public int getTeam() {
+		return team;
+	}
+
+	public void setTeam(int team) {
+		this.team = team;
+	}
+
+	public int getMovePoints() {
+		return movePoints;
+	}
+
+	public void setMovePoints(int movePoints) {
+		this.movePoints = movePoints;
+	}
+
+	public boolean isAttack() {
+		return isAttack;
+	}
+
+	public void setAttack(boolean isAttack) {
+		this.isAttack = isAttack;
+	}
+
+	public boolean isDefense() {
+		return isDefense;
+	}
+
+	public void setDefense(boolean isDefense) {
+		this.isDefense = isDefense;
+	}
+
+	public boolean isSkill() {
+		return isSkill;
+	}
+
+	public void setSkill(boolean isSkill) {
+		this.isSkill = isSkill;
+	}
+
+	public boolean isMoved() {
+		return isMoved;
+	}
+
+	public void setMoved(boolean isMoved) {
+		this.isMoved = isMoved;
+	}
+
+	public CharacterInfo getInfo() {
+		return info;
+	}
+
+	public void setInfo(CharacterInfo info) {
+		this.info = info;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public int getActionPoints() {
+		return actionPoints;
+	}
+
+	public void setActionPoints(int actionPoints) {
+		this.actionPoints = actionPoints;
 	}
 }

@@ -44,8 +44,7 @@ public class LGradation implements LRelease {
 		return getInstance(s, e, w, h, 125);
 	}
 
-	public static LGradation getInstance(LColor s, LColor e, int w, int h,
-			int alpha) {
+	public static LGradation getInstance(LColor s, LColor e, int w, int h, int alpha) {
 		if (gradations == null) {
 			gradations = new ObjectMap<String, LGradation>(10);
 		}
@@ -78,16 +77,11 @@ public class LGradation implements LRelease {
 	public synchronized void drawWidth(GLEx g, int x, int y) {
 		try {
 			if (drawTexWidth == null) {
-				Canvas gl = LSystem.base().graphics()
-						.createCanvas(width, height);
+				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				for (int i = 0; i < width; i++) {
-					gl.setColor(
-							(start.getRed() * (width - i)) / width
-									+ (end.getRed() * i) / width,
-							(start.getGreen() * (width - i)) / width
-									+ (end.getGreen() * i) / width,
-							(start.getBlue() * (width - i)) / width
-									+ (end.getBlue() * i) / width, alpha);
+					gl.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
+							(start.getGreen() * (width - i)) / width + (end.getGreen() * i) / width,
+							(start.getBlue() * (width - i)) / width + (end.getBlue() * i) / width, alpha);
 					gl.drawLine(i, 0, i, height);
 				}
 				drawTexWidth = gl.toTexture();
@@ -98,13 +92,9 @@ public class LGradation implements LRelease {
 			g.draw(drawTexWidth, x, y);
 		} catch (Exception ex) {
 			for (int i = 0; i < width; i++) {
-				g.setColor(
-						(start.getRed() * (width - i)) / width
-								+ (end.getRed() * i) / width,
-						(start.getGreen() * (width - i)) / width
-								+ (end.getGreen() * i) / width,
-						(start.getBlue() * (width - i)) / width
-								+ (end.getBlue() * i) / width, alpha);
+				g.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
+						(start.getGreen() * (width - i)) / width + (end.getGreen() * i) / width,
+						(start.getBlue() * (width - i)) / width + (end.getBlue() * i) / width, alpha);
 				g.drawLine(i + x, y, i + x, y + height);
 			}
 		}
@@ -113,16 +103,11 @@ public class LGradation implements LRelease {
 	public synchronized void drawHeight(GLEx g, int x, int y) {
 		try {
 			if (drawTexHeight == null) {
-				Canvas gl = LSystem.base().graphics()
-						.createCanvas(width, height);
+				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				for (int i = 0; i < height; i++) {
-					gl.setColor(
-							(start.getRed() * (height - i)) / height
-									+ (end.getRed() * i) / height,
-							(start.getGreen() * (height - i)) / height
-									+ (end.getGreen() * i) / height,
-							(start.getBlue() * (height - i)) / height
-									+ (end.getBlue() * i) / height, alpha);
+					gl.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
+							(start.getGreen() * (height - i)) / height + (end.getGreen() * i) / height,
+							(start.getBlue() * (height - i)) / height + (end.getBlue() * i) / height, alpha);
 					gl.drawLine(0, i, width, i);
 				}
 				drawTexHeight = gl.toTexture();
@@ -133,13 +118,9 @@ public class LGradation implements LRelease {
 			g.draw(drawTexHeight, x, y);
 		} catch (Exception ex) {
 			for (int i = 0; i < height; i++) {
-				g.setColor(
-						(start.getRed() * (height - i)) / height
-								+ (end.getRed() * i) / height,
-						(start.getGreen() * (height - i)) / height
-								+ (end.getGreen() * i) / height,
-						(start.getBlue() * (height - i)) / height
-								+ (end.getBlue() * i) / height, alpha);
+				g.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
+						(start.getGreen() * (height - i)) / height + (end.getGreen() * i) / height,
+						(start.getBlue() * (height - i)) / height + (end.getBlue() * i) / height, alpha);
 				g.drawLine(x, i + y, x + width, i + y);
 			}
 		}
@@ -148,17 +129,12 @@ public class LGradation implements LRelease {
 	public synchronized void drawWidth(Canvas g, int x, int y) {
 		try {
 			if (drawImgWidth == null) {
-				Canvas gl = LSystem.base().graphics()
-						.createCanvas(width, height);
+				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				drawImgWidth = gl.image;
 				for (int i = 0; i < width; i++) {
-					gl.setColor(
-							(start.getRed() * (width - i)) / width
-									+ (end.getRed() * i) / width,
-							(start.getGreen() * (width - i)) / width
-									+ (end.getGreen() * i) / width,
-							(start.getBlue() * (width - i)) / width
-									+ (end.getBlue() * i) / width, alpha);
+					gl.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
+							(start.getGreen() * (width - i)) / width + (end.getGreen() * i) / width,
+							(start.getBlue() * (width - i)) / width + (end.getBlue() * i) / width, alpha);
 					gl.drawLine(i, 0, i, height);
 				}
 				gl.close();
@@ -167,13 +143,9 @@ public class LGradation implements LRelease {
 			g.draw(drawImgWidth, x, y);
 		} catch (Exception e) {
 			for (int i = 0; i < width; i++) {
-				g.setColor(
-						(start.getRed() * (width - i)) / width
-								+ (end.getRed() * i) / width,
-						(start.getGreen() * (width - i)) / width
-								+ (end.getGreen() * i) / width,
-						(start.getBlue() * (width - i)) / width
-								+ (end.getBlue() * i) / width, alpha);
+				g.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
+						(start.getGreen() * (width - i)) / width + (end.getGreen() * i) / width,
+						(start.getBlue() * (width - i)) / width + (end.getBlue() * i) / width, alpha);
 				g.drawLine(i + x, y, i + x, y + height);
 			}
 		}
@@ -182,17 +154,12 @@ public class LGradation implements LRelease {
 	public synchronized void drawHeight(Canvas g, int x, int y) {
 		try {
 			if (drawImgHeight == null) {
-				Canvas gl = LSystem.base().graphics()
-						.createCanvas(width, height);
+				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				drawImgHeight = gl.image;
 				for (int i = 0; i < height; i++) {
-					gl.setColor(
-							(start.getRed() * (height - i)) / height
-									+ (end.getRed() * i) / height,
-							(start.getGreen() * (height - i)) / height
-									+ (end.getGreen() * i) / height,
-							(start.getBlue() * (height - i)) / height
-									+ (end.getBlue() * i) / height, alpha);
+					gl.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
+							(start.getGreen() * (height - i)) / height + (end.getGreen() * i) / height,
+							(start.getBlue() * (height - i)) / height + (end.getBlue() * i) / height, alpha);
 					gl.drawLine(0, i, width, i);
 				}
 				gl.close();
@@ -201,13 +168,51 @@ public class LGradation implements LRelease {
 			g.draw(drawImgHeight, x, y);
 		} catch (Exception e) {
 			for (int i = 0; i < height; i++) {
-				g.setColor(
-						(start.getRed() * (height - i)) / height
-								+ (end.getRed() * i) / height,
-						(start.getGreen() * (height - i)) / height
-								+ (end.getGreen() * i) / height,
-						(start.getBlue() * (height - i)) / height
-								+ (end.getBlue() * i) / height, alpha);
+				g.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
+						(start.getGreen() * (height - i)) / height + (end.getGreen() * i) / height,
+						(start.getBlue() * (height - i)) / height + (end.getBlue() * i) / height, alpha);
+				g.drawLine(x, i + y, x + width, i + y);
+			}
+		}
+	}
+
+	public synchronized void drawWidth(Pixmap g, int x, int y) {
+		try {
+			if (drawImgWidth == null) {
+				for (int i = 0; i < width; i++) {
+					g.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
+							(start.getGreen() * (width - i)) / width + (end.getGreen() * i) / width,
+							(start.getBlue() * (width - i)) / width + (end.getBlue() * i) / width, alpha);
+					g.drawLine(i, 0, i, height);
+				}
+				drawImgWidth = g.getImage();
+			}
+		} catch (Exception e) {
+			for (int i = 0; i < width; i++) {
+				g.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
+						(start.getGreen() * (width - i)) / width + (end.getGreen() * i) / width,
+						(start.getBlue() * (width - i)) / width + (end.getBlue() * i) / width, alpha);
+				g.drawLine(i + x, y, i + x, y + height);
+			}
+		}
+	}
+
+	public synchronized void drawHeight(Pixmap g, int x, int y) {
+		try {
+			if (drawImgHeight == null) {
+				for (int i = 0; i < height; i++) {
+					g.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
+							(start.getGreen() * (height - i)) / height + (end.getGreen() * i) / height,
+							(start.getBlue() * (height - i)) / height + (end.getBlue() * i) / height, alpha);
+					g.drawLine(0, i, width, i);
+				}
+				drawImgHeight = g.getImage();
+			}
+		} catch (Exception e) {
+			for (int i = 0; i < height; i++) {
+				g.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
+						(start.getGreen() * (height - i)) / height + (end.getGreen() * i) / height,
+						(start.getBlue() * (height - i)) / height + (end.getBlue() * i) / height, alpha);
 				g.drawLine(x, i + y, x + width, i + y);
 			}
 		}

@@ -28,6 +28,7 @@ import loon.action.sprite.Sprite;
 import loon.canvas.Image;
 import loon.canvas.NinePatchAbstract.Repeat;
 import loon.canvas.TGA;
+import loon.component.DefUI;
 import loon.geom.Vector2f;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteReader;
@@ -36,9 +37,9 @@ import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 
-public abstract class BaseIO {
+public abstract class BaseIO extends DefUI {
 
-	public static GoFuture<String> loadAsynText(String path) {
+	public final static GoFuture<String> loadAsynText(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			try {
@@ -50,7 +51,7 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static String loadText(String path) {
+	public final static String loadText(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			try {
@@ -62,35 +63,35 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static LTexture newTexture(String path) {
+	public final static LTexture newTexture(String path) {
 		return LTextures.newTexture(path);
 	}
 
-	public static LTexture newTexture(String path, Format config) {
+	public final static LTexture newTexture(String path, Format config) {
 		return LTextures.newTexture(path, config);
 	}
 
-	public static LTexture loadTexture(String path) {
+	public final static LTexture loadTexture(String path) {
 		return LTextures.loadTexture(path);
 	}
 
-	public static LTexture loadTexture(String path, Format config) {
+	public final static LTexture loadTexture(String path, Format config) {
 		return LTextures.loadTexture(path, config);
 	}
 
-	public static LTexture loadNinePatchTexture(String path, int x, int y, int w, int h) {
+	public final static LTexture loadNinePatchTexture(String path, int x, int y, int w, int h) {
 		return LTextures.loadNinePatchTexture(path, x, y, w, h);
 	}
 
-	public static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h, Format config) {
+	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h, Format config) {
 		return LTextures.loadNinePatchTexture(path, repeat, x, y, w, h, config);
 	}
 
-	public static Image loadImage(String path) {
+	public final static Image loadImage(String path) {
 		return loadImage(path, true);
 	}
 
-	public static Image loadImage(String path, boolean syn) {
+	public final static Image loadImage(String path, boolean syn) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			String ext = LSystem.getExtension(path);
@@ -127,7 +128,7 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static ArrayByteReader loadArrayByteReader(String path) {
+	public final static ArrayByteReader loadArrayByteReader(String path) {
 		final byte[] buffer = loadBytes(path);
 		if (buffer == null) {
 			return new ArrayByteReader(new ArrayByte(1));
@@ -135,7 +136,7 @@ public abstract class BaseIO {
 		return new ArrayByteReader(new ArrayByte(buffer));
 	}
 
-	public static ArrayByte loadArrayByte(String path) {
+	public final static ArrayByte loadArrayByte(String path) {
 		final byte[] buffer = loadBytes(path);
 		if (buffer == null) {
 			return new ArrayByte(1);
@@ -143,7 +144,7 @@ public abstract class BaseIO {
 		return new ArrayByte(buffer);
 	}
 
-	public static GoFuture<byte[]> loadAsynBytes(String path) {
+	public final static GoFuture<byte[]> loadAsynBytes(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			try {
@@ -155,7 +156,7 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static byte[] loadBytes(String path) {
+	public final static byte[] loadBytes(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			try {
@@ -167,7 +168,7 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static Sound loadSound(String path) {
+	public final static Sound loadSound(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			return base.assets().getSound(path);
@@ -175,7 +176,7 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static Sound loadMusic(String path) {
+	public final static Sound loadMusic(String path) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			return base.assets().getMusic(path);
@@ -183,11 +184,11 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static Image loadRemoteImage(String url) {
+	public final static Image loadRemoteImage(String url) {
 		return loadRemoteImage(url, 0, 0);
 	}
 
-	public static Image loadRemoteImage(String url, int w, int h) {
+	public final static Image loadRemoteImage(String url, int w, int h) {
 		final LGame base = LSystem._base;
 		if (base != null) {
 			return base.assets().getRemoteImage(url, w, h);
@@ -195,75 +196,75 @@ public abstract class BaseIO {
 		return null;
 	}
 
-	public static Sprite createSprite(String path) {
+	public final static Sprite createSprite(String path) {
 		return new Sprite(path);
 	}
 
-	public static Sprite createSprite(LTexture tex2d) {
+	public final static Sprite createSprite(LTexture tex2d) {
 		return new Sprite(tex2d);
 	}
 
-	public static Sprite createSprite(String path, float scale) {
+	public final static Sprite createSprite(String path, float scale) {
 		Sprite spr = new Sprite(path);
 		spr.setScale(scale);
 		return spr;
 	}
 
-	public static Sprite createSprite(LTexture tex2d, float scale) {
+	public final static Sprite createSprite(LTexture tex2d, float scale) {
 		Sprite spr = new Sprite(tex2d);
 		spr.setScale(scale);
 		return spr;
 	}
 
-	public static Sprite createSprite(String path, Vector2f pos) {
+	public final static Sprite createSprite(String path, Vector2f pos) {
 		Sprite spr = new Sprite(path);
 		spr.setLocation(pos);
 		return spr;
 	}
 
-	public static Sprite createSprite(LTexture tex2d, Vector2f pos) {
+	public final static Sprite createSprite(LTexture tex2d, Vector2f pos) {
 		Sprite spr = new Sprite(tex2d);
 		spr.setLocation(pos);
 		return spr;
 	}
 
-	public static Entity createEntity(String path) {
+	public final static Entity createEntity(String path) {
 		return new Entity(path);
 	}
 
-	public static Entity createEntity(LTexture tex2d) {
+	public final static Entity createEntity(LTexture tex2d) {
 		return new Entity(tex2d);
 	}
 
-	public static Entity createEntity(String path, float scale) {
+	public final static Entity createEntity(String path, float scale) {
 		Entity spr = new Entity(path);
 		spr.setScale(scale);
 		return spr;
 	}
 
-	public static Entity createEntity(LTexture tex2d, float scale) {
+	public final static Entity createEntity(LTexture tex2d, float scale) {
 		Entity spr = new Entity(tex2d);
 		spr.setScale(scale);
 		return spr;
 	}
 
-	public static Entity createEntity(String path, Vector2f pos) {
+	public final static Entity createEntity(String path, Vector2f pos) {
 		Entity spr = new Entity(path);
 		spr.setLocation(pos);
 		return spr;
 	}
 
-	public static Entity createEntity(LTexture tex2d, Vector2f pos) {
+	public final static Entity createEntity(LTexture tex2d, Vector2f pos) {
 		Entity spr = new Entity(tex2d);
 		spr.setLocation(pos);
 		return spr;
 	}
 
-	public static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos) {
+	public final static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos) {
 		return createMultiSprite(path, pos, 1f);
 	}
 
-	public static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos, float scale) {
+	public final static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos, float scale) {
 		if (StringUtils.isEmpty(path)) {
 			return new TArray<Sprite>();
 		}
@@ -276,11 +277,11 @@ public abstract class BaseIO {
 		return list;
 	}
 
-	public static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos) {
+	public final static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos) {
 		return createMultiEntity(path, pos, 1f);
 	}
 
-	public static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos, float scale) {
+	public final static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos, float scale) {
 		if (StringUtils.isEmpty(path)) {
 			return new TArray<Entity>();
 		}

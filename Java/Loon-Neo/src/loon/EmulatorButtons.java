@@ -36,12 +36,12 @@ public class EmulatorButtons implements LRelease {
 
 	public EmulatorButtons(EmulatorListener el, int w, int h, float scale) {
 		this.emulatorListener = el;
-		if (pack == null ) {
+		if (pack == null) {
 			pack = new LTexturePack();
 			pack.putImage(LSystem.FRAMEWORK_IMG_NAME + "e1.png");
 			pack.putImage(LSystem.FRAMEWORK_IMG_NAME + "e2.png");
 			pack.pack(Format.LINEAR);
-		
+
 		}
 
 		this.dpad = pack.getTextureAll(0);
@@ -393,6 +393,22 @@ public class EmulatorButtons implements LRelease {
 
 	public void setEmulatorListener(EmulatorListener emulator) {
 		this.emulatorListener = emulator;
+	}
+
+	public EmulatorButtons disableDirection() {
+		up.disable(true);
+		left.disable(true);
+		right.disable(true);
+		down.disable(true);
+		return this;
+	}
+
+	public EmulatorButtons disableShapeButton() {
+		triangle.disable(true);
+		cancel.disable(true);
+		circle.disable(true);
+		square.disable(true);
+		return this;
 	}
 
 	public EmulatorButton getCancel() {

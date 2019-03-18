@@ -1,5 +1,6 @@
 package loon.action.map;
 
+import loon.action.sprite.ISprite;
 import loon.utils.TArray;
 
 public class Character extends CharacterValue {
@@ -9,6 +10,8 @@ public class Character extends CharacterValue {
 	private TArray<Attribute> attributes = new TArray<Attribute>();
 
 	private TArray<Item> items = new TArray<Item>();
+
+	private ISprite roleObject;
 
 	public Character(String name) {
 		this(null, name, 100, 100, 5, 5, 5, 5, 5, 5, 5);
@@ -99,5 +102,27 @@ public class Character extends CharacterValue {
 
 	public int countItems() {
 		return this.items.size;
+	}
+
+	public float getX() {
+		if (roleObject != null) {
+			return roleObject.getX();
+		}
+		return 0f;
+	}
+
+	public float getY() {
+		if (roleObject != null) {
+			return roleObject.getY();
+		}
+		return 0f;
+	}
+
+	public ISprite getRoleObject() {
+		return roleObject;
+	}
+
+	public void setRoleObject(ISprite roleObject) {
+		this.roleObject = roleObject;
 	}
 }

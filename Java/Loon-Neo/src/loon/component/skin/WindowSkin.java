@@ -19,8 +19,8 @@ public class WindowSkin implements FontSet<WindowSkin>{
 	}
 
 	public WindowSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(0),
-				DefUI.get().getDefaultTextures(7));
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(0),
+				DefUI.self().getDefaultTextures(7));
 	}
 
 	public WindowSkin(IFont font, LColor fontColor, LTexture bar,

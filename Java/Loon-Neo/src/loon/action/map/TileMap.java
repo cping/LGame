@@ -666,6 +666,14 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return field.getHeight();
 	}
 
+	public void setMapValues(int v) {
+		field.setValues(v);
+	}
+	
+	public Field2D getNewField2D(){
+		return new Field2D(field);
+	}
+
 	public DrawListener getListener() {
 		return listener;
 	}
@@ -740,10 +748,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		}
 	}
 
+	@Override
 	public void createUI(GLEx g) {
 		createUI(g, 0, 0);
 	}
 
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x() + offset.x, y() + offset.y, field.getTileWidth() * field.getWidth(),
 				field.getTileHeight() * field.getHeight());
@@ -788,6 +798,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		}
 	}
 
+	@Override
 	public LColor getColor() {
 		return new LColor(baseColor);
 	}

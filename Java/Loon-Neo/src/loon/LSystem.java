@@ -191,7 +191,9 @@ public class LSystem {
 
 	// 默认的字符串打印完毕flag
 	public static String FLAG_TAG = "▼";
-
+	
+	public static String FLAG_SELECT_TAG = "◆";
+	
 	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api，而不替换删除api……)
 	public final static String version = "0.5";
 

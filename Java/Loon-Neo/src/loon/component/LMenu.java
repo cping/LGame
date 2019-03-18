@@ -716,7 +716,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						selected = null;
 					}
 					this.active = false;
-					mouseSelect = false;
+					this.mouseSelect = false;
 				}
 			}
 		}

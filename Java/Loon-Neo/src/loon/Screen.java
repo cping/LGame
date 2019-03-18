@@ -44,6 +44,7 @@ import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LLabel;
 import loon.component.LLayer;
+import loon.component.LMenuSelect;
 import loon.component.LPaper;
 import loon.component.UIControls;
 import loon.component.layout.LayoutConstraints;
@@ -1970,12 +1971,46 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	public LMenuSelect addMenu(String labels, int x, int y) {
+		LMenuSelect menu = LMenuSelect.makeMenu(labels, x, y);
+		add(menu);
+		return menu;
+	}
+
+	public LMenuSelect addMenu(String[] labels, int x, int y) {
+		LMenuSelect menu = LMenuSelect.makeMenu(labels, x, y);
+		add(menu);
+		return menu;
+	}
+
+	public LMenuSelect addMenu(IFont font, String[] labels, int x, int y) {
+		LMenuSelect menu = LMenuSelect.makeMenu(font, labels, x, y);
+		add(menu);
+		return menu;
+	}
+
+	public LMenuSelect addMenu(IFont font, String[] labels, String path, int x, int y) {
+		LMenuSelect menu = LMenuSelect.makeMenu(font, labels, path, x, y);
+		add(menu);
+		return menu;
+	}
+
+	public LMenuSelect addMenu(IFont font, String[] labels, LTexture bg, int x, int y) {
+		LMenuSelect menu = LMenuSelect.makeMenu(font, labels, bg, x, y);
+		add(menu);
+		return menu;
+	}
+
 	public LClickButton addButton(String text, int x, int y, int width, int height) {
-		return LClickButton.make(text, x, y, width, height);
+		LClickButton click = LClickButton.make(text, x, y, width, height);
+		add(click);
+		return click;
 	}
 
 	public LClickButton addButton(String text, int x, int y, int width, int height, Touched touched) {
-		return (LClickButton) (LClickButton.make(text, x, y, width, height).up(touched));
+		LClickButton click = LClickButton.make(text, x, y, width, height);
+		add(click);
+		return (LClickButton) click.up(touched);
 	}
 
 	public LLabel addLabel(String text, float x, float y) {
@@ -3758,7 +3793,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 			closeUpdate = null;
 			screenSwitch = null;
-			DefUI.get().clear();
+			DefUI.self().clearDefaultUI();
 		}
 	}
 

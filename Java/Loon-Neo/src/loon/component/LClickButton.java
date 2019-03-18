@@ -43,7 +43,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	private IFont font;
 
-	private boolean over, pressed, grayButton, selected;
+	private boolean over, pressed, grayButton;
 
 	private int pressedTime, offsetLeft, offsetTop;
 

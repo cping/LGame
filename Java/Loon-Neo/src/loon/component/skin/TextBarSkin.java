@@ -25,8 +25,8 @@ public class TextBarSkin implements FontSet<TextBarSkin>{
 	}
 
 	public TextBarSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(7),
-				DefUI.get().getDefaultTextures(7), DefUI.get().getDefaultTextures(7));
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(7),
+				DefUI.self().getDefaultTextures(7), DefUI.self().getDefaultTextures(7));
 	}
 
 	public TextBarSkin(IFont font, LColor fontColor, LTexture left,

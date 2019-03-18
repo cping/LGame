@@ -884,6 +884,19 @@ public abstract class LComponent extends LObject<LContainer>
 		return setBackground(new LColor(color));
 	}
 
+	public LComponent setBackground(LTexture b, float w, float h) {
+		if (b == null) {
+			return this;
+		}
+		if (b == this._background) {
+			return this;
+		}
+		this._background = b;
+		this._background.setDisabledTexture(true);
+		this.setSize(w, h);
+		return this;
+	}
+
 	public LComponent setBackground(LTexture b) {
 		if (b == null) {
 			return this;
@@ -1265,7 +1278,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public Dimension getDimension() {
 		return new Dimension(this._width * this._scaleX, this._height * this._scaleY);
 	}
-	
+
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);

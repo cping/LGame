@@ -44,7 +44,7 @@ public class DefUI {
 		return new DefUI();
 	}
 
-	public final static DefUI get() {
+	public final static DefUI self() {
 		if (instance != null) {
 			return instance;
 		}
@@ -68,7 +68,7 @@ public class DefUI {
 	 * @param path
 	 * @return
 	 */
-	public static LTexture getRoundTexture(String path) {
+	public final static LTexture getRoundTexture(String path) {
 		return getRoundImage(path).texture();
 	}
 
@@ -78,7 +78,7 @@ public class DefUI {
 	 * @param path
 	 * @return
 	 */
-	public static Image getRoundImage(String path) {
+	public final static Image getRoundImage(String path) {
 		return getRoundImage(path, 128, 3);
 	}
 
@@ -89,7 +89,7 @@ public class DefUI {
 	 * @param strokeWidth
 	 * @return
 	 */
-	public static Image getRoundImage(String path, int strokeWidth) {
+	public  final static Image getRoundImage(String path, int strokeWidth) {
 		return getRoundImage(path, 128, strokeWidth);
 	}
 
@@ -101,7 +101,7 @@ public class DefUI {
 	 * @param strokeWidth
 	 * @return
 	 */
-	public static Image getRoundImage(String path, int radius, int strokeWidth) {
+	public final static Image getRoundImage(String path, int radius, int strokeWidth) {
 		Image img = BaseIO.loadImage(path);
 		Image tmp = getRoundImage(img, radius, strokeWidth);
 		if (img != null) {
@@ -117,7 +117,7 @@ public class DefUI {
 	 * @param bitmap
 	 * @return
 	 */
-	public static Image getRoundImage(Image bitmap) {
+	public final static Image getRoundImage(Image bitmap) {
 		return getRoundImage(bitmap, 128, 3);
 	}
 
@@ -128,7 +128,7 @@ public class DefUI {
 	 * @param radius
 	 * @return
 	 */
-	public static Image getRoundImage(Image bitmap, int radius) {
+	public final static Image getRoundImage(Image bitmap, int radius) {
 		return getRoundImage(bitmap, radius, 3);
 	}
 
@@ -140,7 +140,7 @@ public class DefUI {
 	 * @param strokeWidth
 	 * @return
 	 */
-	public static Image getRoundImage(Image bitmap, int radius, int strokeWidth) {
+	public final static Image getRoundImage(Image bitmap, int radius, int strokeWidth) {
 		int width = bitmap.getWidth();
 		int height = bitmap.getHeight();
 		float left, top, right, bottom;
@@ -190,7 +190,7 @@ public class DefUI {
 	 * @param color
 	 * @return
 	 */
-	public static LTexture getGameWinRound(int width, int height, int radius, LColor color) {
+	public final static LTexture getGameWinRound(int width, int height, int radius, LColor color) {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		g.setColor(color);
 		g.fillRect(0, radius, width, height - 2 * radius);
@@ -211,7 +211,7 @@ public class DefUI {
 	 * @param color
 	 * @return
 	 */
-	public static LTexture getGameWinHollow(int width, int height, int lineWidth, LColor color) {
+	public final static LTexture getGameWinHollow(int width, int height, int lineWidth, LColor color) {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		g.setColor(color);
 		g.fillRect(0, 0, lineWidth, height);
@@ -229,7 +229,7 @@ public class DefUI {
 	 * @param color
 	 * @return
 	 */
-	public static LTexture getGameWinDiamond(int width, int height, LColor color) {
+	public final static LTexture getGameWinDiamond(int width, int height, LColor color) {
 		Pixmap pixmap = new Pixmap(width, height, true);
 		pixmap.setColor(color);
 		pixmap.fillTriangle(0, height / 2, width / 2, height, width, height / 2);
@@ -244,7 +244,7 @@ public class DefUI {
 	 * @param height
 	 * @return
 	 */
-	public static LTexture getGameRandomBackground(int width, int height) {
+	public final static LTexture getGameRandomBackground(int width, int height) {
 		return getGameRandomBackground(45, width, height);
 	}
 
@@ -256,7 +256,7 @@ public class DefUI {
 	 * @param height
 	 * @return
 	 */
-	public static LTexture getGameRandomBackground(int color, int width, int height) {
+	public final static LTexture getGameRandomBackground(int color, int width, int height) {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		g.setColor(color, color, color);
 		g.fillRect(0, 0, width, height);
@@ -296,7 +296,7 @@ public class DefUI {
 	 * @param size
 	 * @return
 	 */
-	public static LTexture getGameWinTable(int width, int height, int size) {
+	public final static LTexture getGameWinTable(int width, int height, int size) {
 		return getGameWinTable(width, height, size, LColor.blue, LColor.black, true);
 	}
 
@@ -311,7 +311,7 @@ public class DefUI {
 	 * @param drawHeigth
 	 * @return
 	 */
-	public static LTexture getGameWinTable(int width, int height, int size, LColor start, LColor end,
+	public final static LTexture getGameWinTable(int width, int height, int size, LColor start, LColor end,
 			boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
@@ -336,7 +336,7 @@ public class DefUI {
 	 * @param height
 	 * @return
 	 */
-	public static LTexture getGameWinFrame(int width, int height) {
+	public final static LTexture getGameWinFrame(int width, int height) {
 		return getGameWinFrame(width, height, LColor.blue, LColor.black, true);
 	}
 
@@ -350,7 +350,7 @@ public class DefUI {
 	 * @param drawHeigth
 	 * @return
 	 */
-	public static LTexture getGameWinFrame(int width, int height, LColor start, LColor end, boolean drawHeigth) {
+	public final static LTexture getGameWinFrame(int width, int height, LColor start, LColor end, boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
@@ -367,7 +367,30 @@ public class DefUI {
 		return texture;
 	}
 
-	public void drawTable(Canvas g, int x, int y, int width, int height, int size, boolean border) {
+	public final static LTexture getGameWinPixelFrame(int width, int height) {
+		return getGameWinFrame(width, height, LColor.blue, LColor.black, true);
+	}
+
+	public final static LTexture getGameWinPixelFrame(int width, int height, LColor start, LColor end, boolean drawHeigth) {
+		Canvas g = LSystem.base().graphics().createCanvas(width, height);
+		DefUI tool = new DefUI();
+		Pixmap pix = Pixmap.createImage(width, height);
+		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
+		if (drawHeigth) {
+			gradation.drawHeight(pix, 0, 0);
+		} else {
+			gradation.drawWidth(pix, 0, 0);
+		}
+		g.draw(pix.getImage(), 0, 0, width, height);
+		tool.drawFrame(g, 0, 0, width, height);
+		LTexture texture = g.toTexture();
+		if (g.image != null) {
+			g.image.close();
+		}
+		return texture;
+	}
+
+	public final void drawTable(Canvas g, int x, int y, int width, int height, int size, boolean border) {
 		boolean[] flags = new boolean[size];
 		for (int i = 0; i < flags.length; i++) {
 			flags[i] = true;
@@ -379,11 +402,11 @@ public class DefUI {
 		}
 	}
 
-	public void drawTable(Canvas g, int x, int y, int width, int height, int size) {
+	public final void drawTable(Canvas g, int x, int y, int width, int height, int size) {
 		drawTable(g, x, y, width, height, size, true);
 	}
 
-	public void drawFrame(Canvas g, int x, int y, int width, int height) {
+	public final void drawFrame(Canvas g, int x, int y, int width, int height) {
 		Image[] corners = new Image[4];
 		for (int i = 0; i < corners.length; i++) {
 			corners[i] = getDefaultWindow("window" + (i + 4));
@@ -434,7 +457,7 @@ public class DefUI {
 		g.draw(corners[3], x + width - CornerSize, y);
 	}
 
-	private void drawBorder(Canvas g, int x, int y, int width, int height, int nums) {
+	private final void drawBorder(Canvas g, int x, int y, int width, int height, int nums) {
 		Image img = getDefaultWindow("window0");
 		int size = img.getHeight();
 		int length = img.getWidth();
@@ -451,14 +474,14 @@ public class DefUI {
 		}
 	}
 
-	public void drawHorizonLine(Canvas g, int x, int y, int width) {
+	public final void drawHorizonLine(Canvas g, int x, int y, int width) {
 		Image img = getDefaultWindow("window0");
 		int length = (int) img.width();
 		for (int j = 0; j <= width; j += length)
 			g.draw(img, x + j, y);
 	}
 
-	private void drawChoices(Canvas g, int x, int y, int width, int height, int size, boolean[] oks, LColor col) {
+	private final void drawChoices(Canvas g, int x, int y, int width, int height, int size, boolean[] oks, LColor col) {
 		LColor[] colors = new LColor[size];
 		for (int i = 0; i < colors.length; i++) {
 			colors[i] = col;
@@ -466,7 +489,7 @@ public class DefUI {
 		drawChoices(g, x, y, width, height, size, oks, colors);
 	}
 
-	private void drawChoices(Canvas g, int x, int y, int width, int height, int messize, boolean[] oks,
+	private final void drawChoices(Canvas g, int x, int y, int width, int height, int messize, boolean[] oks,
 			LColor[] colors) {
 		Image img = getDefaultWindow("window0");
 		int size = (int) img.height();
@@ -479,14 +502,14 @@ public class DefUI {
 		}
 	}
 
-	private void setTransmission(Canvas g, int x, int y, int w, int h, LColor col, float t) {
+	private final void setTransmission(Canvas g, int x, int y, int w, int h, LColor col, float t) {
 		g.setAlpha(t);
 		g.setColor(col);
 		g.fillRect(x, y, w, h);
 		g.setAlpha(1f);
 	}
 
-	public static Image[] getWindow(String fileName, int frameSize, int cornerSize, int wholeSize, int borderLength) {
+	public final static Image[] getWindow(String fileName, int frameSize, int cornerSize, int wholeSize, int borderLength) {
 		Image[] texs = new Image[8];
 		Image tmp = BaseIO.loadImage(fileName);
 		int[] pixels = tmp.getPixels();
@@ -519,12 +542,12 @@ public class DefUI {
 		return texs;
 	}
 
-	public void reset() {
+	public final void resetDefaultUI() {
 		defaultWindowHash = null;
 		defaultTextures = null;
 	}
 
-	public Image getDefaultWindow(String name) {
+	public final Image getDefaultWindow(String name) {
 		if (defaultWindowHash == null) {
 			Image[] texs = getWindow(win_frame_UI, 6, 14, 64, 8);
 			defaultWindowHash = new ArrayMap(texs.length);
@@ -537,7 +560,7 @@ public class DefUI {
 
 	private LTexture lastTexture;
 
-	public LTexture getDefaultTextures(int index) {
+	public final LTexture getDefaultTextures(int index) {
 		if (defaultTextures == null || defaultTextures.size == 0) {
 			if (defaultTextures == null) {
 				defaultTextures = new TArray<LTexture>();
@@ -579,7 +602,7 @@ public class DefUI {
 		return defaultTextures.get(index);
 	}
 
-	public final void clear() {
+	public final void clearDefaultUI() {
 		if (defaultTextures != null) {
 			for (LTexture tex : defaultTextures) {
 				if (tex != null) {

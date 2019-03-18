@@ -22,8 +22,8 @@ public class TableSkin implements FontSet<TableSkin>{
 	}
 
 	public TableSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(7),
-				DefUI.get().getDefaultTextures(4));
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(7),
+				DefUI.self().getDefaultTextures(4));
 	}
 
 	public TableSkin(IFont font, LColor fontColor, LTexture header,

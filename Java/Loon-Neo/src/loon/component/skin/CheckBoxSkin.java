@@ -20,8 +20,8 @@ public class CheckBoxSkin implements FontSet<CheckBoxSkin>{
 	}
 
 	public CheckBoxSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(5),
-				DefUI.get().getDefaultTextures(6));
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(5),
+				DefUI.self().getDefaultTextures(6));
 	}
 
 	public CheckBoxSkin(IFont font, LColor fontColor, LTexture unchecked,

@@ -335,7 +335,7 @@ public class Field2D implements Config {
 	}
 
 	public int[][] getMap() {
-		return data;
+		return CollectionUtils.copyOf(data);
 	}
 
 	public void setMap(int[][] data) {
@@ -475,6 +475,17 @@ public class Field2D implements Config {
 			_rect.setSize(getViewWidth(), getViewHeight());
 		}
 		return _rect;
+	}
+	
+	public Field2D setValues(int val){
+		int w = data[0].length;
+		int h = data.length;
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				 data[i][j] = val;
+			}
+		}
+		return this;
 	}
 
 	public Tile getTileImpl() {

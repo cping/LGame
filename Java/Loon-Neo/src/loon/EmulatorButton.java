@@ -73,11 +73,17 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton hit(int nid, float x, float y) {
+		if(disabled){
+			return this;
+		}
 		hit(nid, x, y, false);
 		return this;
 	}
 
 	public EmulatorButton hit(int nid, float x, float y, boolean flag) {
+		if(disabled){
+			return this;
+		}
 		if (flag) {
 			if (nid == id) {
 				onClick = bounds.contains(x, y);
@@ -100,6 +106,9 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton hit(float x, float y) {
+		if(disabled){
+			return this;
+		}
 		if (!onClick) {
 			onClick = bounds.contains(x, y);
 			id = 0;
@@ -111,6 +120,9 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton unhit(int nid, float x, float y) {
+		if(disabled){
+			return this;
+		}
 		if (onClick && nid == id) {
 			onClick = false;
 			id = 0;
@@ -122,6 +134,9 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton unhit() {
+		if(disabled){
+			return this;
+		}
 		if (onClick) {
 			id = 0;
 			onClick = false;

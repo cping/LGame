@@ -17,8 +17,8 @@ public class ProgressSkin {
 	}
 
 	public ProgressSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.get().getDefaultTextures(4),
-				DefUI.get().getDefaultTextures(2));
+		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(4),
+				DefUI.self().getDefaultTextures(2));
 	}
 
 	public ProgressSkin(IFont font, LColor c, LTexture progress,
