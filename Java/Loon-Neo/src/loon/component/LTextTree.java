@@ -22,7 +22,9 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.font.FontSet;
 import loon.font.IFont;
+import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -31,16 +33,17 @@ import loon.utils.TArray;
  * 这是一个简单的字符串显示用类,通过输出具有上下级关系的字符串来描述一组事物
  * 
  * LTextTree tree = new LTextTree(30, 100, 400, 400);
- *		      tree.addElement("数学").addSub("微积分").addSub("几何");
- *  add(tree); 
+ * tree.addElement("数学").addSub("微积分").addSub("几何"); add(tree);
  */
-public class LTextTree extends LComponent {
+public class LTextTree extends LComponent implements FontSet<LTextTree>{
 
 	private TArray<TreeElement> list = new TArray<TreeElement>();
 	private TArray<TreeElement> elements = new TArray<TreeElement>();
 	private int totalElementsCount = 0;
 
-	private float space = 8;
+	private IFont _font;
+
+	private float _space = 8;
 
 	private String flagStyle = " => ";
 
@@ -125,9 +128,18 @@ public class LTextTree extends LComponent {
 		this(x, y, width, height, 8f);
 	}
 
+	public LTextTree(IFont font, int x, int y, int width, int height) {
+		this(font, x, y, width, height, 8f);
+	}
+
 	public LTextTree(int x, int y, int width, int height, float space) {
+		this(LFont.getDefaultFont(), x, y, width, height, space);
+	}
+
+	public LTextTree(IFont font, int x, int y, int width, int height, float space) {
 		super(x, y, width, height);
-		this.space = space;
+		this._space = space;
+		this._font = font;
 	}
 
 	public float offsetX = 0;
@@ -136,7 +148,10 @@ public class LTextTree extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		IFont tmp = g.getFont();
+		g.setFont(_font);
 		renderSub(g, offsetX, offsetY, x, y, elements, 0f, g.alpha());
+		g.setFont(tmp);
 	}
 
 	private float renderSub(GLEx g, float offsetX, float offsetY, float x, float y, TArray<TreeElement> level,
@@ -153,22 +168,22 @@ public class LTextTree extends LComponent {
 
 			float superPos = y + offY + font.stringHeight(me.getText());
 			if (i != 0) {
-				superPos = posHeight + font.stringHeight(me.getText()) + space;
+				superPos = posHeight + font.stringHeight(me.getText()) + _space;
 			}
 			g.drawString(me.getText(), x + offX, superPos);
 
 			TArray<TreeElement> childs = me.childs;
 
 			if (childs.size > 0) {
-				float offsetPosX = x + font.stringWidth(me.getText()) + space;
+				float offsetPosX = x + font.stringWidth(me.getText()) + _space;
 				for (int j = 0; j < childs.size; j++) {
 					TreeElement tme = childs.get(j);
 
-					float offsetPosY = (j * (font.stringHeight(tme.getText()) + space));
+					float offsetPosY = (j * (font.stringHeight(tme.getText()) + _space));
 					posHeight = (superPos + offsetPosY);
 
 					g.drawString(flagStyle, offsetPosX, posHeight);
-					float posX = offsetPosX + font.stringWidth(flagStyle) + space;
+					float posX = offsetPosX + font.stringWidth(flagStyle) + _space;
 					float size = 0;
 
 					posHeight += size;
@@ -241,6 +256,17 @@ public class LTextTree extends LComponent {
 
 	public void setFlagStyle(String flagStyle) {
 		this.flagStyle = flagStyle;
+	}
+
+	@Override
+	public IFont getFont() {
+		return _font;
+	}
+
+	@Override
+	public LTextTree setFont(IFont font) {
+		this._font = font;
+		return this;
 	}
 
 	@Override

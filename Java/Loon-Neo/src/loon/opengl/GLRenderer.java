@@ -37,11 +37,11 @@ public class GLRenderer implements LRelease {
 	private GLEx _gl;
 
 	public GLRenderer() {
-		this(null, 3000);
+		this(null, 2048);
 	}
 
 	public GLRenderer(GLEx gl) {
-		this(gl, 3000);
+		this(gl, 2048);
 	}
 
 	public GLRenderer(GLEx gl, int maxVertices) {

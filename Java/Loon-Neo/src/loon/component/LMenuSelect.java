@@ -281,6 +281,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		if (!visible) {
 			return;
 		}
+		IFont tmp = g.getFont();
+		g.setFont(_font);
 		if (_showBackground && _background != null) {
 			if (_selectRects != null && _selectRects.length > 0) {
 				RectF rect = _selectRects[0];
@@ -329,6 +331,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				}
 			}
 		}
+		g.setFont(tmp);
 	}
 
 	protected void drawSelectedFill(GLEx g, float x, float y, float width, float height) {
@@ -567,7 +570,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	public String getUIName() {
-		return "menuselect";
+		return "MenuSelect";
 	}
 
 	@Override

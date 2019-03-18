@@ -3,7 +3,6 @@ package org.test;
 import loon.LTexture;
 import loon.Stage;
 import loon.canvas.LColor;
-import loon.component.DefUI;
 import loon.component.LTextArea;
 import loon.event.Touched;
 
@@ -11,8 +10,8 @@ public class TextAreaTest extends Stage {
 
 	@Override
 	public void create() {
-		// 构建一个300x100的游戏窗体背景图,颜色黑蓝相间,横向渐变
-		LTexture texture = DefUI.getGameWinFrame(300, 240, LColor.black,
+		// 构建一个300x240的游戏窗体背景图,颜色黑蓝相间,横向渐变
+		LTexture texture = getGameWinFrame(300, 240, LColor.black,
 				LColor.blue, false);
 		//允许显示行数默认(若显示行数设置可以写成(10,66,36,300,240)这类),位置66,36,大小300x240
 		final LTextArea area = new LTextArea(66, 36, 300, 240);
@@ -37,7 +36,7 @@ public class TextAreaTest extends Stage {
 		area.setLeftOffset(5);
 		area.setTopOffset(5);
 		// addString为在前一行追加数据
-		 area.addString("1",LColor.red);
+		area.addString("1",LColor.red);
 		add(area);
 		add(MultiScreenTest.getBackButton(this,0));
 	}

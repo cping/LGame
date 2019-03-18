@@ -71,7 +71,7 @@ public class MapTest extends Stage {
 			final int[] rightIds = { 6, 7, 8 };
 			final int[] downIds = {  0, 1, 2 };
 			final int[] upIds = {  9, 10, 11 };
-			// 也可以这样设置也可以，播放时直接传入key的字符串数值，两种方式都能生效
+			// 也可以这样设置，播放时直接传入key的字符串数值，两种方式都能生效
 			/*hero.setPlayIndex("left", PlayIndex.at(frames,leftIds));
 			hero.setPlayIndex("right", PlayIndex.at(frames,rightIds));
 			hero.setPlayIndex("down", PlayIndex.at(frames,downIds));

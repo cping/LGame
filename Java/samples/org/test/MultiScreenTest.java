@@ -23,6 +23,9 @@ public class MultiScreenTest extends Screen {
 
 	private int page = 0;
 
+	/**
+	 * Screen初始化特效使用像素风飘过
+	 */
 	@Override
 	public LTransition onTransition() {
 		return LTransition.newPixelThunder(LColor.yellow);
@@ -34,12 +37,10 @@ public class MultiScreenTest extends Screen {
 	}
 
 	public static LClickButton getBackButton(final Screen screen, final int page) {
-		return getBackButton(screen, page, screen.getWidth() - 100,
-				screen.getHeight() - 70);
+		return getBackButton(screen, page, screen.getWidth() - 100, screen.getHeight() - 70);
 	}
 
-	public static LClickButton getBackButton(final Screen screen,
-			final int page, final int x, int y) {
+	public static LClickButton getBackButton(final Screen screen, final int page, final int x, int y) {
 
 		LClickButton back = new LClickButton("Back", x, y, 80, 50);
 		screen.addTouchLimit(back);
@@ -69,30 +70,29 @@ public class MultiScreenTest extends Screen {
 				if (!click.isPressed()) {
 
 					// 为按钮设置一个旋转动画，每次前进36度
-					set(comp).rotateTo(360, 36f).start()
-							.setActionListener(new ActionListener() { // 监听动作事件
+					set(comp).rotateTo(360, 36f).start().setActionListener(new ActionListener() { // 监听动作事件
 
-										// 事件完毕后，调用screen标记为main的
-										@Override
-										public void stop(ActionBind o) {
-											Screen s = screen.runScreen("main");
-											if (s != null) {
-												s.index = page;
-											}
-											// 还原当前动作角色旋转角度为0
-											o.setRotation(0);
-										}
+						// 事件完毕后，调用screen标记为main的
+						@Override
+						public void stop(ActionBind o) {
+							Screen s = screen.runScreen("main");
+							if (s != null) {
+								s.index = page;
+							}
+							// 还原当前动作角色旋转角度为0
+							o.setRotation(0);
+						}
 
-										@Override
-										public void start(ActionBind o) {
+						@Override
+						public void start(ActionBind o) {
 
-										}
+						}
 
-										@Override
-										public void process(ActionBind o) {
+						@Override
+						public void process(ActionBind o) {
 
-										}
-									});
+						}
+					});
 					click.press();
 				}
 
@@ -144,18 +144,14 @@ public class MultiScreenTest extends Screen {
 
 	}
 
-	final String[] page0 = { "MessageBox", "Live2d", "Action", "Effect",
-			"Emulator", "TileMap", "SpriteBatch", "BatchScreen", "BMFont",
-			"Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite",
-			"TexturePack", "LNode", "Scroll", "Cycle", "TextArea", "Progress",
-			"Particle", "SelectIcon", "Control", "JsonRes", "SheetFont",
-			"ParConfig", "RippleTouch", "Sound", "Gesture", "Physical",
-			"LNode2", "Input", "Depth", "Canvas", "GameMap", "MoveClip",
-			"TextureImage", "Session" };
+	final String[] page0 = { "MessageBox", "Live2d", "Action", "Effect", "Emulator", "TileMap", "SpriteBatch",
+			"BatchScreen", "BMFont", "Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite", "TexturePack",
+			"LNode", "Scroll", "Cycle", "TextArea", "Progress", "Particle", "SelectIcon", "Control", "JsonRes",
+			"SheetFont", "ParConfig", "RippleTouch", "Sound", "Gesture", "Physical", "LNode2", "Input", "Depth",
+			"Canvas", "GameMap", "MoveClip", "TextureImage", "Session" };
 
-	final String[] page1 = { "Screen", "Slider", "Alert", "Animation",
-			"FrameLoop", "Script", "SText", "Light", "Countdown", "AVG",
-			"Layer", "LLK","TextField","SRPG","PShadow","Array2DMap","Image","Natural" };
+	final String[] page1 = { "Screen", "Slider", "Alert", "Animation", "FrameLoop", "Script", "SText", "Light",
+			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural","MenuSelect","CheckBox","TextTree" };
 
 	static BMFont info_font;
 
@@ -183,6 +179,8 @@ public class MultiScreenTest extends Screen {
 		} else {
 			page = screen.index;
 		}
+		
+
 		if (page == 0) {
 			addScreen(page0[index++], new LMessageBoxTest());
 			addScreen(page0[index++], new Live2dTest());
@@ -243,33 +241,35 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new MapTest());
 			addScreen(page1[index++], new ImageTest());
 			addScreen(page1[index++], new NaturalTest());
+			addScreen(page1[index++], new MenuSelectTest());
+			addScreen(page1[index++], new CheckBoxTest());
+			addScreen(page1[index++], new TextTreeTest());
 		}
+
 		// 默认按钮大小为100x25
 		int btnWidth = 100;
 		int btnHeight = 25;
 		// 添加一组按钮布局，并返回按钮对象
-		TArray<LClickButton> clicks = LayoutManager.elementButtons(this,
-				pages[page], 15, 25, btnWidth, btnHeight, clickListener,
-				LSystem.viewSize.getHeight() - btnHeight);
+		TArray<LClickButton> clicks = LayoutManager.elementButtons(this, pages[page], 15, 25, btnWidth, btnHeight,
+				clickListener, LSystem.viewSize.getHeight() - btnHeight);
 
 		// final TArray<ActionTween> tweens = new TArray<ActionTween>();
 
 		// 首先让按钮不可见
-		for (int i=0;i<clicks.size;i++) {
+		for (int i = 0; i < clicks.size; i++) {
 			LClickButton btn = clicks.get(i);
-			//设置按钮头alpha为0(即不显示)
+			// 设置按钮头alpha为0(即不显示)
 			btn.setAlpha(0);
-			//设置提示信息为按钮名
+			// 设置提示信息为按钮名
 			btn.setToolTipText(pages[page][i]);
-			//设置位图字体()
+			// 设置位图字体()
 			btn.setFont(info_font);
 			// 为按钮设置事件，并加载入一个集合
 			// tweens.add(set(btn));
 		}
 
 		// 设置一个退出按钮
-		LClickButton exitClick = LClickButton.make(48, 48, "cross.png",
-				"cross_effect.png", "cross_effect.png");
+		LClickButton exitClick = LClickButton.make(48, 48, "cross.png", "cross_effect.png", "cross_effect.png");
 		// 设定一个特殊状态为true
 		exitClick.setStatus(LObject.TRUE);
 		// 设置监听
@@ -284,8 +284,7 @@ public class MultiScreenTest extends Screen {
 		// tweens.add(set(exitClick));
 
 		// 设置一个下页按钮
-		LClickButton nextClick = LClickButton.make(page == 0 ? "NEXT" : "BACK",
-				45, 25);
+		LClickButton nextClick = LClickButton.make(page == 0 ? "NEXT" : "BACK", 45, 25);
 		// 设定一个特殊状态为false
 		nextClick.setStatus(LObject.FALSE);
 		// 设置监听
@@ -315,12 +314,12 @@ public class MultiScreenTest extends Screen {
 
 			@Override
 			public void DoClick(LComponent comp) {
-				//如果按钮文本为next
+				// 如果按钮文本为next
 				if (((LClickButton) comp).getText().equals("NEXT")) {
-					//索引变更为page+1
+					// 索引变更为page+1
 					runScreen("main").index = page + 1;
 				} else {
-					//变更为page-1
+					// 变更为page-1
 					runScreen("main").index = page - 1;
 				}
 			}
@@ -341,11 +340,12 @@ public class MultiScreenTest extends Screen {
 					 * for (ActionTween tween : tweens) { // 淡出事件，开始执行
 					 * tween.fadeOut(10f).start(); // 删除单独进程（否则会不断执行） kill(); }
 					 */
-							findUINames("ClickButton").// 查找出所有组件名称为
-																	// ClickButton
-																	// 的（此处可查找多个）
-							// fadeIn(10).startTweens();
-							fadeIn(10).delay(1f).rotateTo(360).startTweens(); // 组件淡入，速度10，间隔1秒，旋转360，开始动画
+					findUINames("ClickButton").// 查找出所有组件名称为
+												// ClickButton
+												// 的（此处可查找多个）
+					// fadeIn(10).startTweens();
+					fadeIn(10).delay(1f).rotateTo(360).startTweens(); // 组件淡入，速度10，间隔1秒，旋转360，开始动画
+					// 杀掉这个伪进程（这是同步执行的，非线程）
 					kill();
 				}
 

@@ -42,8 +42,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		return new LCheckBox(txt, x, y, c);
 	}
 
-	public final static LCheckBox at(IFont font, String txt, int x, int y,
-			LColor c) {
+	public final static LCheckBox at(IFont font, String txt, int x, int y, LColor c) {
 		return new LCheckBox(txt, x, y, c, font);
 	}
 
@@ -52,6 +51,8 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	private float boxsize;
 
 	private boolean boxtoleftoftext = false, showtext = true;
+
+	private int fontSpace = 0;
 
 	private LColor fontColor;
 
@@ -70,72 +71,56 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	}
 
 	public LCheckBox(String txt, int x, int y, LColor textcolor) {
-		this(txt, x, y, textcolor, SkinManager.get().getCheckBoxSkin()
-				.getFont());
+		this(txt, x, y, textcolor, SkinManager.get().getCheckBoxSkin().getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, LColor textcolor, IFont font) {
-		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
-				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getCheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getUncheckedTexture().getWidth(), true, textcolor, font);
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin().getUncheckedTexture(),
+				SkinManager.get().getCheckBoxSkin().getCheckedTexture(),
+				SkinManager.get().getCheckBoxSkin().getUncheckedTexture().getWidth(), true, textcolor, font);
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize) {
-		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
-				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getCheckedTexture(), boxsize, true, SkinManager.get()
-				.getCheckBoxSkin().getFontColor(), SkinManager.get()
-				.getCheckBoxSkin().getFont());
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin().getUncheckedTexture(),
+				SkinManager.get().getCheckBoxSkin().getCheckedTexture(), boxsize, true,
+				SkinManager.get().getCheckBoxSkin().getFontColor(), SkinManager.get().getCheckBoxSkin().getFont());
 	}
 
 	public LCheckBox(String txt, int x, int y, int boxsize, LColor textcolor) {
-		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
-				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getCheckedTexture(), boxsize, true, textcolor, SkinManager
-				.get().getCheckBoxSkin().getFont());
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin().getUncheckedTexture(),
+				SkinManager.get().getCheckBoxSkin().getCheckedTexture(), boxsize, true, textcolor,
+				SkinManager.get().getCheckBoxSkin().getFont());
 	}
 
-	public LCheckBox(String txt, int x, int y, int boxsize,
-			boolean boxtoleftoftext) {
-		this(txt, x, y, boxsize, boxtoleftoftext, SkinManager.get()
-				.getCheckBoxSkin().getFont());
+	public LCheckBox(String txt, int x, int y, int boxsize, boolean boxtoleftoftext) {
+		this(txt, x, y, boxsize, boxtoleftoftext, SkinManager.get().getCheckBoxSkin().getFont());
 	}
 
-	public LCheckBox(String txt, int x, int y, int boxsize,
-			boolean boxtoleftoftext, IFont font) {
-		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
-				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getCheckedTexture(), boxsize, boxtoleftoftext, SkinManager
-				.get().getCheckBoxSkin().getFontColor(), font);
+	public LCheckBox(String txt, int x, int y, int boxsize, boolean boxtoleftoftext, IFont font) {
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin().getUncheckedTexture(),
+				SkinManager.get().getCheckBoxSkin().getCheckedTexture(), boxsize, boxtoleftoftext,
+				SkinManager.get().getCheckBoxSkin().getFontColor(), font);
 	}
 
-	public LCheckBox(String txt, int x, int y, int boxsize,
+	public LCheckBox(String txt, int x, int y, int boxsize, boolean boxtoleftoftext, LColor textcolor, IFont font) {
+		this(txt, x, y, SkinManager.get().getCheckBoxSkin().getUncheckedTexture(),
+				SkinManager.get().getCheckBoxSkin().getCheckedTexture(), boxsize, boxtoleftoftext, textcolor, font);
+	}
+
+	public LCheckBox(String txt, int x, int y, String uncheckedFile, String checkedFile, int boxsize,
 			boolean boxtoleftoftext, LColor textcolor, IFont font) {
-		this(txt, x, y, SkinManager.get().getCheckBoxSkin()
-				.getUncheckedTexture(), SkinManager.get().getCheckBoxSkin()
-				.getCheckedTexture(), boxsize, boxtoleftoftext, textcolor, font);
+		this(txt, x, y, LTextures.loadTexture(uncheckedFile), LTextures.loadTexture(checkedFile), boxsize,
+				boxtoleftoftext, textcolor, font);
 	}
 
-	public LCheckBox(String txt, int x, int y, String uncheckedFile,
-			String checkedFile, int boxsize, boolean boxtoleftoftext,
-			LColor textcolor, IFont font) {
-		this(txt, x, y, LTextures.loadTexture(uncheckedFile), LTextures
-				.loadTexture(checkedFile), boxsize, boxtoleftoftext, textcolor,
-				font);
+	public LCheckBox(CheckBoxSkin skin, String txt, int x, int y, int boxsize, boolean boxtoleftoftext) {
+		this(txt, x, y, skin.getUncheckedTexture(), skin.getCheckedTexture(), boxsize, boxtoleftoftext,
+				skin.getFontColor(), skin.getFont());
 	}
 
-	public LCheckBox(CheckBoxSkin skin, String txt, int x, int y, int boxsize,
-			boolean boxtoleftoftext) {
-		this(txt, x, y, skin.getUncheckedTexture(), skin.getCheckedTexture(),
-				boxsize, boxtoleftoftext, skin.getFontColor(), skin.getFont());
-	}
-
-	public LCheckBox(String txt, int x, int y, LTexture unchecked,
-			LTexture checked, int boxsize, boolean boxtoleftoftext,
-			LColor textcolor, IFont font) {
-		super(x, y, font.stringWidth(txt) + boxsize, (int) MathUtils.max(
-				font.getHeight(), boxsize));
+	public LCheckBox(String txt, int x, int y, LTexture unchecked, LTexture checked, int boxsize,
+			boolean boxtoleftoftext, LColor textcolor, IFont font) {
+		super(x, y, font.stringWidth(txt) + boxsize, (int) MathUtils.max(font.getHeight(), boxsize));
 		this.text = txt;
 		this.unchecked = unchecked;
 		this.checked = checked;
@@ -146,12 +131,12 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		IFont tmp = g.getFont();
+		g.setFont(font);
 		if (boxtoleftoftext) {
 			if (showtext && text != null) {
-				font.drawString(g, text, x + boxsize, y
-						+ (font.getHeight() - boxsize) / 2 + 5, fontColor);
+				g.drawString(text, x + boxsize, y + (font.getHeight() - boxsize) / 2 + fontSpace, fontColor);
 			}
 			if (!ticked) {
 				g.draw(unchecked, x, y, boxsize, boxsize, baseColor);
@@ -160,19 +145,18 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 			}
 		} else {
 			if (showtext && text != null) {
-				font.drawString(g, text, x + boxsize + 5, y
-						+ (font.getHeight() - boxsize) / 2 + 5, fontColor);
+				g.drawString(text, x + boxsize + fontSpace, y + (font.getHeight() - boxsize) / 2 + fontSpace,
+						fontColor);
 			}
 			if (!ticked) {
-				g.draw(unchecked, x + font.stringWidth(text) + boxsize + 5, y
-						+ font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
-						boxsize, baseColor);
+				g.draw(unchecked, x + font.stringWidth(text) + boxsize + fontSpace,
+						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, baseColor);
 			} else {
-				g.draw(checked, x + font.stringWidth(text) + boxsize + 5, y
-						+ font.getHeight() / 2 - boxsize / 2 + 5, boxsize,
-						boxsize, baseColor);
+				g.draw(checked, x + font.stringWidth(text) + boxsize + fontSpace,
+						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, baseColor);
 			}
 		}
+		g.setFont(tmp);
 	}
 
 	@Override
@@ -202,8 +186,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	@Override
 	protected void processTouchDragged() {
 		if (input != null) {
-			this.over = this.pressed = this.intersects(this.input.getTouchX(),
-					this.input.getTouchY());
+			this.over = this.pressed = this.intersects(this.input.getTouchX(), this.input.getTouchY());
 		}
 		super.processTouchDragged();
 	}
@@ -287,11 +270,30 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		this.fontColor = fontColor;
 	}
 
+	public LTexture getChecked() {
+		return checked;
+	}
+
+	public int getFontSpace() {
+		return fontSpace;
+	}
+
+	public void setFontSpace(int fontSpace) {
+		this.fontSpace = fontSpace;
+	}
+
+	public boolean isBoxtoleftofText() {
+		return boxtoleftoftext;
+	}
+
+	public void setBoxtoleftofText(boolean b) {
+		this.boxtoleftoftext = b;
+	}
+
 	@Override
 	public LCheckBox setFont(IFont font) {
 		this.font = font;
-		this.setSize((int) (this.font.stringWidth(text) + boxsize),
-				(int) MathUtils.max(font.getHeight(), boxsize));
+		this.setSize((int) (this.font.stringWidth(text) + boxsize), (int) MathUtils.max(font.getHeight(), boxsize));
 		return this;
 	}
 
