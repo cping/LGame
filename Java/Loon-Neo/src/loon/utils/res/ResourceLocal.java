@@ -15,6 +15,7 @@ import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.TimeUtils;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLParser;
 
@@ -60,7 +61,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 					Json.Object group = groupsList.getObject(i);
 					String groupName = group.getString("name");
 					if (groupName == null) {
-						groupName = "G" + System.currentTimeMillis();
+						groupName = "G" + TimeUtils.millis();
 					}
 					String keyStrings = group.getString("keys");
 					String[] keys = StringUtils.split(keyStrings, ',');

@@ -104,8 +104,18 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight) throws IOException {
+		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
+				Format.LINEAR);
+	}
+
 	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) throws IOException {
 		this(fileName, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
+	}
+
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight)
+			throws IOException {
+		this(fileName, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
 	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format)
@@ -113,27 +123,56 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight,
+			Format format) throws IOException {
+		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight, format);
+	}
+
 	public TileMap(int[][] maps, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
 		this(new Field2D(maps, tileWidth, tileHeight), mWidth, mHeight, format);
+	}
+
+	public TileMap(int[][] maps, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
+		this(new Field2D(maps, tileWidth, tileHeight), screen, mWidth, mHeight, format);
 	}
 
 	public TileMap(int[][] maps, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(maps, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
+	public TileMap(int[][] maps, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight) {
+		this(maps, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
+	}
+
 	public TileMap(int[][] maps, int tileWidth, int tileHeight) {
 		this(maps, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public TileMap(int[][] maps, Screen screen, int tileWidth, int tileHeight) {
+		this(maps, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public TileMap(Field2D field) {
 		this(field, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
+	public TileMap(Field2D field, Screen screen) {
+		this(field, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
+	}
+
 	public TileMap(Field2D field, Format format) {
 		this(field, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
 	}
 
+	public TileMap(Field2D field, Screen screen, Format format) {
+		this(field, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
+	}
+
 	public TileMap(Field2D field, int mWidth, int mHeight, Format format) {
+		this(field, null, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
+	}
+
+	public TileMap(Field2D field, Screen screen, int mWidth, int mHeight, Format format) {
 		this.field = field;
 		if (field != null && mWidth == -1 && mHeight == -1) {
 			this.maxWidth = field.getViewWidth();
@@ -154,7 +193,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.active = true;
 		this.dirty = true;
 		this.visible = true;
-		this._mapSprites = new Sprites(LSystem.getProcess().getScreen(), maxWidth, maxHeight);
+		this._mapSprites = new Sprites("TileMapSprites", screen == null ? LSystem.getProcess().getScreen() : screen,
+				maxWidth, maxHeight);
 		this.imgPack.setFormat(format);
 	}
 
@@ -669,8 +709,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public void setMapValues(int v) {
 		field.setValues(v);
 	}
-	
-	public Field2D getNewField2D(){
+
+	public Field2D getNewField2D() {
 		return new Field2D(field);
 	}
 

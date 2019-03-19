@@ -22,14 +22,21 @@ package loon.action.map;
 
 import loon.action.sprite.Scene;
 import loon.utils.TArray;
+import loon.utils.TimeUtils;
 
 public class Story {
 
-	private long timer = System.currentTimeMillis();
+	private long timer;
 
-	private String storyName = String.valueOf(timer);
+	private String storyName;
 
-	private TArray<Scene> scenes = new TArray<Scene>();
+	private TArray<Scene> scenes;
+
+	public Story() {
+		timer = TimeUtils.millis();
+		storyName = String.valueOf(timer);
+		scenes = new TArray<Scene>(10);
+	}
 
 	public String getStoryName() {
 		return this.storyName;

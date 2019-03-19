@@ -40,6 +40,7 @@ import loon.utils.IntMap;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
+import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.UnitPort;
@@ -90,7 +91,7 @@ public class LTexture extends Painter implements LRelease {
 
 	private boolean isBatch;
 
-	String tmpLazy = "tex" + System.currentTimeMillis();
+	String tmpLazy = "tex" + TimeUtils.millis();
 
 	int refCount;
 

@@ -38,6 +38,7 @@ import loon.utils.ArrayMap;
 import loon.utils.IntArray;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.TArray;
+import loon.utils.TimeUtils;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -298,7 +299,7 @@ public class LTexturePack implements LRelease {
 	}
 
 	public synchronized int putImage(Image image) {
-		return putImage(System.currentTimeMillis() + "|" + String.valueOf((count + 1)), image);
+		return putImage(TimeUtils.millis() + "|" + String.valueOf((count + 1)), image);
 	}
 
 	public synchronized int putImage(String name, Image image) {

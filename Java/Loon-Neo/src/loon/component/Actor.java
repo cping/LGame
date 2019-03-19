@@ -27,6 +27,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.PlayerUtils;
+import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.ArrowTo;
@@ -52,8 +53,8 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-public class Actor extends LObject<Actor> implements Flip<Actor>,
-		Comparable<Actor>, ActionBind, XY, LRelease, BoxSize {
+public class Actor extends LObject<Actor>
+		implements Flip<Actor>, Comparable<Actor>, ActionBind, Visible, XY, LRelease, BoxSize {
 
 	private String flag = "Actor";
 
@@ -362,8 +363,7 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 	 * @param delay
 	 * @return
 	 */
-	public ShakeTo shakeTo(float shakeX, float shakeY, float duration,
-			float delay) {
+	public ShakeTo shakeTo(float shakeX, float shakeY, float duration, float delay) {
 		failIfNotInLayer();
 		return gameLayer.callShakeTo(this, shakeX, shakeY, duration, delay);
 	}
@@ -635,10 +635,8 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 		float oldX = _location.getX();
 		float oldY = _location.getY();
 		if (this.gameLayer.isBounded()) {
-			_location.x = this.limitValue(x, this.gameLayer.getWidth()
-					- getWidth());
-			_location.y = this.limitValue(y, this.gameLayer.getHeight()
-					- getHeight());
+			_location.x = this.limitValue(x, this.gameLayer.getWidth() - getWidth());
+			_location.y = this.limitValue(y, this.gameLayer.getHeight() - getHeight());
 		} else {
 			_location.x = x;
 			_location.y = y;
@@ -686,13 +684,11 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 	public void setImage(LTexture img) {
 		if (img != null || this.image != null) {
 			boolean sizeChanged = true;
-			if (img != null && this.image != null
-					&& img.getWidth() == this.image.getWidth()
+			if (img != null && this.image != null && img.getWidth() == this.image.getWidth()
 					&& img.getHeight() == this.image.getHeight()) {
 				sizeChanged = false;
 			}
-			if (image != null && image.getParent() == null
-					&& image.isChildAllClose()) {
+			if (image != null && image.getParent() == null && image.isChildAllClose()) {
 				if (image != null) {
 					image.close();
 					image = null;
@@ -737,11 +733,9 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 	public RectBox getRectBox() {
 		RectBox tmp = getBoundingRect();
 		if (tmp == null) {
-			return getRect(_location.x, _location.y, getWidth() * scaleX,
-					getHeight() * scaleY);
+			return getRect(_location.x, _location.y, getWidth() * scaleX, getHeight() * scaleY);
 		}
-		return getRect(_location.x, _location.y, tmp.width * scaleX, tmp.height
-				* scaleY);
+		return getRect(_location.x, _location.y, tmp.width * scaleX, tmp.height * scaleY);
 	}
 
 	/**
@@ -787,8 +781,7 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 					this.ys[minY] = height;
 				}
 			} else {
-				this.boundingRect = MathUtils.getBounds(_location.x,
-						_location.y, this.image.getWidth(),
+				this.boundingRect = MathUtils.getBounds(_location.x, _location.y, this.image.getWidth(),
 						this.image.getHeight(), _rotation);
 			}
 		}
@@ -841,8 +834,7 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 		}
 	}
 
-	private static boolean checkOutside(float[] myX, float[] myY,
-			float[] otherX, float[] otherY) {
+	private static boolean checkOutside(float[] myX, float[] myY, float[] otherX, float[] otherY) {
 		for (int v = 0; v < 4; ++v) {
 			int v1 = v + 1 & 3;
 			float edgeX = myX[v] - myX[v1];
@@ -851,8 +843,7 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 			float reY = edgeX;
 			if (reX != 0 || edgeX != 0) {
 				for (int e = 0; e < 4; ++e) {
-					float scalar = reX * (otherX[e] - myX[v1]) + reY
-							* (otherY[e] - myY[v1]);
+					float scalar = reX * (otherX[e] - myX[v1]) + reY * (otherY[e] - myY[v1]);
 					if (scalar < 0) {
 						continue;
 					}
@@ -868,18 +859,15 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 		if (this.image == null) {
 			if (other.image != null) {
 				thisBounds1 = this.gameLayer.getCellSize();
-				return other.containsPoint(_location.x() * thisBounds1
-						+ thisBounds1 / 2, _location.y() * thisBounds1
-						+ thisBounds1 / 2);
+				return other.containsPoint(_location.x() * thisBounds1 + thisBounds1 / 2,
+						_location.y() * thisBounds1 + thisBounds1 / 2);
 			} else {
-				return _location.x == other._location.x
-						&& _location.y == other._location.y;
+				return _location.x == other._location.x && _location.y == other._location.y;
 			}
 		} else if (other.image == null) {
 			thisBounds1 = this.gameLayer.getCellSize();
-			return this.containsPoint(other._location.x() * thisBounds1
-					+ thisBounds1 / 2, other._location.y() * thisBounds1
-					+ thisBounds1 / 2);
+			return this.containsPoint(other._location.x() * thisBounds1 + thisBounds1 / 2,
+					other._location.y() * thisBounds1 + thisBounds1 / 2);
 		} else {
 			RectBox thisBounds = this.getBoundingRect();
 			RectBox otherBounds = other.getBoundingRect();
@@ -892,34 +880,29 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 				float[] myY = this.ys;
 				float[] otherX = other.xs;
 				float[] otherY = other.ys;
-				return checkOutside(myX, myY, otherX, otherY) ? false
-						: !checkOutside(otherX, otherY, myX, myY);
+				return checkOutside(myX, myY, otherX, otherY) ? false : !checkOutside(otherX, otherY, myX, myY);
 			}
 		}
 	}
 
-	public TArray<Actor> getNeighbours(float distance, boolean diagonal,
-			String flag) {
+	public TArray<Actor> getNeighbours(float distance, boolean diagonal, String flag) {
 		this.failIfNotInLayer();
 		return this.getLLayer().getNeighbours(this, distance, diagonal, flag);
 	}
 
 	public TArray<Actor> getCollisionObjects(float dx, float dy, String flag) {
 		this.failIfNotInLayer();
-		return this.gameLayer.getCollisionObjectsAt(_location.x + dx,
-				_location.y + dy, flag);
+		return this.gameLayer.getCollisionObjectsAt(_location.x + dx, _location.y + dy, flag);
 	}
 
 	public Actor getOnlyCollisionObject(float dx, float dy, String flag) {
 		this.failIfNotInLayer();
-		return this.gameLayer.getOnlyObjectAt(this, _location.x + dx,
-				_location.y + dy, flag);
+		return this.gameLayer.getOnlyObjectAt(this, _location.x + dx, _location.y + dy, flag);
 	}
 
 	public TArray<Actor> getCollisionObjects(float radius, String flag) {
 		this.failIfNotInLayer();
-		TArray<Actor> inRange = this.gameLayer.getObjectsInRange(_location.x,
-				_location.y, radius, flag);
+		TArray<Actor> inRange = this.gameLayer.getObjectsInRange(_location.x, _location.y, radius, flag);
 		inRange.remove(this);
 		return inRange;
 	}
@@ -962,16 +945,14 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 			if (this.boundingRect == null) {
 				this.calcBounds();
 			}
-			if (this._rotation != 0 && this._rotation != 90
-					&& this._rotation != 270) {
+			if (this._rotation != 0 && this._rotation != 90 && this._rotation != 270) {
 				for (int v = 0; v < 4; ++v) {
 					int v1 = v + 1 & 3;
 					float edgeX = this.xs[v] - this.xs[v1];
 					float edgeY = this.ys[v] - this.ys[v1];
 					float reX = -edgeY;
 					if (reX != 0 || edgeX != 0) {
-						float scalar = reX * (px - this.xs[v1]) + edgeX
-								* (py - this.ys[v1]);
+						float scalar = reX * (px - this.xs[v1]) + edgeX * (py - this.ys[v1]);
 						if (scalar >= 0) {
 							return false;
 						}
@@ -980,10 +961,8 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 
 				return true;
 			} else {
-				return px >= this.boundingRect.getX()
-						&& px < this.boundingRect.getRight()
-						&& py >= this.boundingRect.getY()
-						&& py < this.boundingRect.getBottom();
+				return px >= this.boundingRect.getX() && px < this.boundingRect.getRight()
+						&& py >= this.boundingRect.getY() && py < this.boundingRect.getBottom();
 			}
 		}
 	}
@@ -1146,17 +1125,17 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 	public boolean isFlipY() {
 		return flipY;
 	}
-	
+
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
 	@Override
-	public boolean isActionCompleted(){
+	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
-	
+
 	@Override
 	public void close() {
 		if (image != null) {
@@ -1168,6 +1147,5 @@ public class Actor extends LObject<Actor> implements Flip<Actor>,
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
-
 
 }

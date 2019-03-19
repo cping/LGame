@@ -44,10 +44,11 @@ public class Mesh implements LRelease {
 
 	static final ObjectMap<LGame, TArray<Mesh>> gmeshes = new ObjectMap<LGame, TArray<Mesh>>();
 
-	final VertexData vertices;
-	final IndexData indices;
-	boolean autoBind = true;
-	final boolean isVertexArray;
+	private final VertexData vertices;
+	private final IndexData indices;
+	private final boolean isVertexArray;
+
+	private boolean autoBind = true;
 
 	protected Mesh(VertexData vertices, IndexData indices, boolean isVertexArray) {
 		this.vertices = vertices;
@@ -355,8 +356,9 @@ public class Mesh implements LRelease {
 			}
 		}
 
-		if (autoBind)
+		if (autoBind) {
 			unbind(shader);
+		}
 	}
 
 	private boolean closed;
@@ -732,14 +734,14 @@ public class Mesh implements LRelease {
 		setVertices(vertices, 0, vertices.length);
 	}
 
+	final static Vector2f tmp = new Vector2f();
+
 	public static void transformUV(final Matrix3 matrix, final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
-		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length)
+		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {
 			throw new IndexOutOfBoundsException("start = " + start + ", count = " + count + ", vertexSize = "
 					+ vertexSize + ", length = " + vertices.length);
-
-		final Vector2f tmp = new Vector2f();
-
+		}
 		int idx = offset + (start * vertexSize);
 		for (int i = 0; i < count; i++) {
 			tmp.set(vertices[idx], vertices[idx + 1]).mulSelf(matrix);
@@ -828,16 +830,23 @@ public class Mesh implements LRelease {
 		}
 
 		Mesh result;
-		if (attrs == null)
+		if (attrs == null) {
 			result = new Mesh(isStatic, numVertices, indices == null ? 0 : indices.length, getVertexAttributes());
-		else
+		} else {
 			result = new Mesh(isStatic, numVertices, indices == null ? 0 : indices.length, attrs);
+		}
 		result.setVertices(vertices, 0, numVertices * newVertexSize);
 		result.setIndices(indices);
 		return result;
+
 	}
 
 	public Mesh copy(boolean isStatic) {
 		return copy(isStatic, false, null);
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " " + getManagedStatus();
 	}
 }

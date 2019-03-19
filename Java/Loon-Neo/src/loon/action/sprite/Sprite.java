@@ -45,6 +45,7 @@ import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.TimeUtils;
 import loon.utils.res.MovieSpriteSheet;
 
 public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, IArray, LTrans, BoxSize {
@@ -97,7 +98,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param y
 	 */
 	public Sprite(float x, float y) {
-		this("Sprite" + System.currentTimeMillis(), x, y);
+		this("Sprite" + TimeUtils.millis(), x, y);
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param timer
 	 */
 	public Sprite(String fileName, int maxFrame, float x, float y, int row, int col, long timer) {
-		this("Sprite" + System.currentTimeMillis(), fileName, maxFrame, x, y, row, col, timer);
+		this("Sprite" + TimeUtils.millis(), fileName, maxFrame, x, y, row, col, timer);
 	}
 
 	/**
@@ -280,7 +281,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param timer
 	 */
 	public Sprite(LTexture[] images, int maxFrame, float x, float y, long timer) {
-		this("Sprite" + System.currentTimeMillis(), images, maxFrame, x, y, timer);
+		this("Sprite" + TimeUtils.millis(), images, maxFrame, x, y, timer);
 	}
 
 	/**
@@ -322,7 +323,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param timer
 	 */
 	public Sprite(MovieSpriteSheet sheet, float x, float y, long timer) {
-		this("Sprite" + System.currentTimeMillis(), sheet, x, y, timer);
+		this("Sprite" + TimeUtils.millis(), sheet, x, y, timer);
 	}
 
 	/**

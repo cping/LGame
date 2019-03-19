@@ -33,6 +33,7 @@ import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.TimeUtils;
 import loon.utils.timer.LTimerContext;
 
 public class AVGCG implements LRelease {
@@ -236,8 +237,7 @@ public class AVGCG implements LRelease {
 						if (animation.loop && animation.startTime == -1) {
 							animation.start(0, loop);
 						}
-						PointI point = animation.getPos(System
-								.currentTimeMillis());
+						PointI point = animation.getPos(TimeUtils.millis());
 						if (animation.alpha != 1f) {
 							g.setAlpha(animation.alpha);
 						}

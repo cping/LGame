@@ -107,7 +107,7 @@ public class Text implements LRelease {
 		this._initNativeDraw = false;
 	}
 
-	public void paintString(GLEx g, float offsetX, float offsetY, LColor color) {
+	private void initLFont() {
 		if (!_initNativeDraw) {
 			if (_font instanceof LFont) {
 				LSTRDictionary.get().bind((LFont) _font, _lines);
@@ -126,6 +126,96 @@ public class Text implements LRelease {
 			}
 			_initNativeDraw = true;
 		}
+	}
+
+	public void paintNonStyleString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
+		initLFont();
+		_font.drawString(g, mes, offsetX, offsetY, color);
+	}
+
+	public void paintString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
+		initLFont();
+		if (_textOptions._autoWrap != AutoWrap.VERTICAL && _lines.size == 1) {
+			switch (_textOptions._horizontalAlign) {
+			case CENTER:
+				_font.drawString(g, mes, (getWidth() / 2 - _font.stringWidth(mes) / 2) + offsetX, offsetY, color);
+				break;
+			case LEFT:
+				_font.drawString(g, mes, offsetX, offsetY, color);
+				break;
+			case RIGHT:
+				_font.drawString(g, mes, getWidth() - _font.stringWidth(mes) + offsetX, offsetY, color);
+				break;
+			default:
+				break;
+			}
+		} else if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
+			float viewX = 0;
+			int idx = 0;
+			if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
+				char ch = mes.charAt(0);
+				float viewY = 0;
+				if (ch != '\n') {
+					viewY = offsetY + idx * (_font.stringHeight(mes) + _textOptions.getLeading());
+					idx++;
+				} else {
+					viewX += _font.getSize() + getLeading();
+					viewY = 0;
+					idx = 0;
+				}
+				switch (_textOptions._horizontalAlign) {
+				case CENTER:
+					_font.drawString(g, mes, viewX + offsetX + (getWidth() / 2 - _font.stringWidth(mes) / 2), viewY,
+							color);
+					break;
+				case LEFT:
+					_font.drawString(g, mes, viewX + offsetX, viewY, color);
+					break;
+				case RIGHT:
+					_font.drawString(g, mes, viewX + offsetX + getWidth() - _font.stringWidth(mes), viewY, color);
+					break;
+				default:
+					break;
+				}
+
+			} else {
+				switch (_textOptions._horizontalAlign) {
+				case CENTER:
+					_font.drawString(g, mes, offsetX + (getWidth() / 2 - _font.stringWidth(mes) / 2),
+							offsetY + _textOptions.getLeading(), color);
+					break;
+				case LEFT:
+					_font.drawString(g, mes, offsetX, +_textOptions.getLeading(), color);
+					break;
+				case RIGHT:
+					_font.drawString(g, mes, offsetX + getWidth() - _font.stringWidth(mes),
+							offsetY + _textOptions.getLeading(), color);
+					break;
+				default:
+					break;
+				}
+			}
+
+		} else {
+			switch (_textOptions._horizontalAlign) {
+			case CENTER:
+				_font.drawString(g, mes, offsetX + (getWidth() / 2 - _font.stringWidth(mes) / 2),
+						offsetY + _textOptions.getLeading(), color);
+				break;
+			case LEFT:
+				_font.drawString(g, mes, offsetX, offsetY + _textOptions.getLeading(), color);
+				break;
+			case RIGHT:
+				_font.drawString(g, mes, offsetX + getWidth() - _font.stringWidth(mes), offsetY, color);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	public void paintString(GLEx g, float offsetX, float offsetY, LColor color) {
+		initLFont();
 		if (_textOptions._autoWrap != AutoWrap.VERTICAL && _lines.size == 1) {
 			CharSequence c = _lines.get(0);
 			String mes = null;

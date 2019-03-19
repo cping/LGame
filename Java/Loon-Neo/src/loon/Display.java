@@ -36,6 +36,7 @@ import loon.utils.GLUtils;
 import loon.utils.GifEncoder;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimer;
@@ -406,7 +407,7 @@ public class Display extends LSystemView {
 	}
 
 	private void tickFrames() {
-		long time = System.currentTimeMillis();
+		long time = TimeUtils.millis();
 		if (time - frameCount > 1000L) {
 			frameRate = MathUtils.min(setting.fps, frames);
 			frames = 0;

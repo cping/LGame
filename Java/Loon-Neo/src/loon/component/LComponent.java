@@ -29,6 +29,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.PlayerUtils;
 import loon.Screen;
+import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
@@ -58,7 +59,7 @@ import loon.utils.Flip;
 import loon.utils.MathUtils;
 
 public abstract class LComponent extends LObject<LContainer>
-		implements Flip<LComponent>, ActionBind, XY, BoxSize, LRelease {
+		implements Flip<LComponent>, Visible, ActionBind, XY, BoxSize, LRelease {
 
 	// 默认锁定当前组件(否则可以拖动)
 	protected boolean locked = true;

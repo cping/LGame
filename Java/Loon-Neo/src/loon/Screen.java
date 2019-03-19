@@ -1101,13 +1101,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			sprites.removeAll();
 			sprites = null;
 		}
-		this.sprites = new Sprites(this, width, height);
+		this.sprites = new Sprites("ScreenSprites", this, width, height);
 		if (desktop != null) {
 			desktop.close();
 			desktop.clear();
 			desktop = null;
 		}
-		this.desktop = new Desktop(this, width, height);
+		this.desktop = new Desktop("ScreenDesktop", this, width, height);
 		this.keyActions.clear();
 		this.isNext = true;
 		this.index = 0;

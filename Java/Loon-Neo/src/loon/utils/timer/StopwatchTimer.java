@@ -1,6 +1,7 @@
 package loon.utils.timer;
 
 import loon.event.Updateable;
+import loon.utils.TimeUtils;
 
 /**
  * 计时器(也就是俗称的秒表，需要正常计算时间的游戏都会用到)
@@ -66,9 +67,13 @@ public class StopwatchTimer {
 	}
 
 	private long currentTime() {
-		return System.currentTimeMillis();
+		return TimeUtils.millis();
 	}
 
+	public StopwatchTimer end() {
+		return stop();
+	}
+	
 	public StopwatchTimer stop() {
 		lastStop = to;
 		to = currentTime();

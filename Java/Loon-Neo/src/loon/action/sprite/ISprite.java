@@ -24,13 +24,14 @@ import loon.LObject.State;
 import loon.LRelease;
 import loon.LTexture;
 import loon.Screen;
+import loon.Visible;
 import loon.action.ActionBind;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public interface ISprite extends ActionBind, LRelease, XY {
+public interface ISprite extends ActionBind, Visible, LRelease, XY {
 
 	public static final int TYPE_FADE_IN = 0;
 
@@ -50,14 +51,10 @@ public interface ISprite extends ActionBind, LRelease, XY {
 
 	float getY();
 
-	void setVisible(boolean v);
-
 	void setColor(LColor c);
 
 	LColor getColor();
-
-	boolean isVisible();
-
+	
 	void createUI(GLEx g);
 
 	void createUI(GLEx g, float offsetX, float offsetY);

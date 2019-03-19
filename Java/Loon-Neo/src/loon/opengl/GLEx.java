@@ -2995,10 +2995,21 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this.isClosed;
 	}
 
+	/**
+	 * GLEx是否全部渲染都使用贴图进行
+	 * 
+	 * @return
+	 */
 	public boolean isAlltextures() {
 		return this.lastBrush.alltextures;
 	}
 
+	/**
+	 * 此项数值为true时,则GLEx全部Shape渲染都为贴图模拟
+	 * 
+	 * @param all
+	 * @return
+	 */
 	public GLEx setAlltextures(boolean all) {
 		this.lastBrush.alltextures = all;
 		return this;
@@ -3054,6 +3065,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public void close() {
 		this.isClosed = true;
 		this.useBegin = false;
+		if (glRenderer != null) {
+			glRenderer.close();
+		}
 	}
 
 }

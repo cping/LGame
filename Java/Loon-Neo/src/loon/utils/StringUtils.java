@@ -704,7 +704,7 @@ final public class StringUtils extends CharUtils {
 		}
 		return count >= size;
 	}
-	
+
 	/**
 	 * 检查是否为纯字母
 	 * 
@@ -977,52 +977,6 @@ final public class StringUtils extends CharUtils {
 		return sb.toString();
 	}
 
-	public final static String unificationStrings(String mes) {
-		if (isEmpty(mes)) {
-			return mes;
-		}
-		CharArray chars = new CharArray();
-		for (int i = 0, size = mes.length(); i < size; i++) {
-			char ch = mes.charAt(i);
-			if (!chars.contains(ch)) {
-				chars.add(ch);
-			}
-		}
-		return chars.getString();
-	}
-
-	public final static String unificationCharSequence(CharSequence[] messages) {
-		if (messages == null || messages.length == 0) {
-			return "";
-		}
-		CharArray chars = new CharArray();
-		for (CharSequence text : messages) {
-			for (int i = 0, size = text.length(); i < size; i++) {
-				char ch = text.charAt(i);
-				if (!chars.contains(ch)) {
-					chars.add(ch);
-				}
-			}
-		}
-		return chars.getString();
-	}
-
-	public final static String unificationStrings(String[] messages) {
-		if (isEmpty(messages)) {
-			return "";
-		}
-		CharArray chars = new CharArray();
-		for (String text : messages) {
-			for (int i = 0, size = text.length(); i < size; i++) {
-				char ch = text.charAt(i);
-				if (!chars.contains(ch)) {
-					chars.add(ch);
-				}
-			}
-		}
-		return chars.getString();
-	}
-
 	public static final CharSequence padFront(final CharSequence chars, final char padChar, final int len) {
 		final int padCount = len - chars.length();
 		if (padCount <= 0) {
@@ -1036,6 +990,200 @@ final public class StringUtils extends CharUtils {
 			sb.append(chars);
 
 			return sb.toString();
+		}
+	}
+
+	private final static boolean unificationAllow(char ch) {
+		return ch != '\n' && ch != '\t' && ch != '\r' && ch != ' ';
+	}
+
+	public final static String unificationStrings(String mes) {
+		return unificationStrings(mes, null);
+	}
+
+	public final static String unificationStrings(String mes, CharSequence limit) {
+		if (isEmpty(mes)) {
+			return "";
+		}
+		CharArray chars = new CharArray();
+		if (limit == null || limit.length() == 0) {
+			for (int i = 0, size = mes.length(); i < size; i++) {
+				char ch = mes.charAt(i);
+				if (unificationAllow(ch) && !chars.contains(ch)) {
+					chars.add(ch);
+				}
+			}
+		} else {
+			boolean running;
+			for (int i = 0, size = mes.length(); i < size; i++) {
+				running = true;
+				char ch = mes.charAt(i);
+				for (int j = 0; j < limit.length(); j++) {
+					if (limit.charAt(j) == ch) {
+						running = false;
+						break;
+					}
+				}
+				if (running && unificationAllow(ch) && !chars.contains(ch)) {
+					chars.add(ch);
+				}
+			}
+		}
+		if (chars.length == 0) {
+			return "";
+		} else {
+			return chars.sort().getString().trim();
+		}
+	}
+
+	public final static String merge(String[] messages) {
+		StringBuilder sbr = new StringBuilder();
+		for (String mes : messages) {
+			if (mes != null) {
+				sbr.append(mes.trim());
+			}
+		}
+		return sbr.toString().trim();
+	}
+
+	public final static String merge(CharSequence[] messages) {
+		StringBuilder sbr = new StringBuilder();
+		for (CharSequence mes : messages) {
+			if (mes != null) {
+				sbr.append(mes);
+			}
+		}
+		return sbr.toString().trim();
+	}
+
+	public final static String unificationCharSequence(CharSequence[] messages) {
+		return unificationCharSequence(messages, null);
+	}
+
+	public final static String unificationCharSequence(CharSequence[] messages, CharSequence limit) {
+		if (messages == null || messages.length == 0) {
+			return "";
+		}
+		boolean mode = (limit == null || limit.length() == 0);
+		CharArray chars = new CharArray();
+		for (CharSequence mes : messages) {
+			if (mes == null) {
+				continue;
+			}
+			if (mode) {
+				for (int i = 0, size = mes.length(); i < size; i++) {
+					char ch = mes.charAt(i);
+					if (unificationAllow(ch) && !chars.contains(ch)) {
+						chars.add(ch);
+					}
+				}
+			} else {
+				boolean running;
+				for (int i = 0, size = mes.length(); i < size; i++) {
+					running = true;
+					char ch = mes.charAt(i);
+					for (int j = 0; j < limit.length(); j++) {
+						if (limit.charAt(j) == ch) {
+							running = false;
+							break;
+						}
+					}
+					if (running && unificationAllow(ch) && !chars.contains(ch)) {
+						chars.add(ch);
+					}
+				}
+			}
+		}
+		if (chars.length == 0) {
+			return "";
+		} else {
+			return chars.sort().getString().trim();
+		}
+	}
+
+	public final static String unificationStrings(String[] messages) {
+		return unificationStrings(messages, null);
+	}
+
+	public final static String unificationStrings(String[] messages, CharSequence limit) {
+		if (isEmpty(messages)) {
+			return "";
+		}
+		boolean mode = (limit == null || limit.length() == 0);
+		CharArray chars = new CharArray();
+		for (String mes : messages) {
+			if (mes == null) {
+				continue;
+			}
+			if (mode) {
+				for (int i = 0, size = mes.length(); i < size; i++) {
+					char ch = mes.charAt(i);
+					if (unificationAllow(ch) && !chars.contains(ch)) {
+						chars.add(ch);
+					}
+				}
+			} else {
+				boolean running;
+				for (int i = 0, size = mes.length(); i < size; i++) {
+					running = true;
+					char ch = mes.charAt(i);
+					for (int j = 0; j < limit.length(); j++) {
+						if (limit.charAt(j) == ch) {
+							running = false;
+							break;
+						}
+					}
+					if (running && unificationAllow(ch) && !chars.contains(ch)) {
+						chars.add(ch);
+					}
+				}
+			}
+		}
+		if (chars.length == 0) {
+			return "";
+		} else {
+			return chars.sort().getString().trim();
+		}
+	}
+
+	public final static String unificationChars(char[] messages) {
+		return unificationChars(messages, null);
+	}
+
+	public final static String unificationChars(char[] messages, CharSequence limit) {
+		if (messages == null || messages.length == 0) {
+			return "";
+		}
+		boolean mode = (limit == null || limit.length() == 0);
+		CharArray chars = new CharArray();
+		if (mode) {
+			for (int i = 0, size = messages.length; i < size; i++) {
+				char ch = messages[i];
+				if (unificationAllow(ch) && !chars.contains(ch)) {
+					chars.add(ch);
+				}
+			}
+		} else {
+			boolean running;
+			for (int i = 0, size = messages.length; i < size; i++) {
+				running = true;
+				char ch = messages[i];
+				for (int j = 0; j < limit.length(); j++) {
+					if (limit.charAt(j) == ch) {
+						running = false;
+						break;
+					}
+				}
+				if (running && unificationAllow(ch) && !chars.contains(ch)) {
+					chars.add(ch);
+				}
+			}
+		}
+
+		if (chars.length == 0) {
+			return "";
+		} else {
+			return chars.sort().getString().trim();
 		}
 	}
 

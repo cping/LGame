@@ -3,6 +3,7 @@ package loon;
 import loon.action.map.Config;
 import loon.event.SysKey;
 import loon.utils.MathUtils;
+import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -79,7 +80,7 @@ public class AccelerometerDefault implements Accelerometer {
 	private final void onSensor(float[] values) {
 		synchronized (this) {
 
-			long curTime = System.currentTimeMillis();
+			long curTime = TimeUtils.millis();
 
 			currentX = values[0];
 			currentY = values[1];

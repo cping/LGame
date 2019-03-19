@@ -33,7 +33,6 @@ import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
-import loon.utils.CharArray;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -215,6 +214,8 @@ public class LSTRFont implements IFont {
 
 	private LColor[] colors = null;
 
+	private String text;
+
 	private LFont font;
 
 	private IntObject intObject;
@@ -262,7 +263,7 @@ public class LSTRFont implements IFont {
 	}
 
 	public LSTRFont(LFont font, String[] strings) {
-		this(font, StringUtils.unificationStrings(strings).toCharArray(), true);
+		this(font, StringUtils.merge(strings).toCharArray(), true);
 	}
 
 	public LSTRFont(LFont font, boolean asyn) {
@@ -274,16 +275,11 @@ public class LSTRFont implements IFont {
 	}
 
 	public LSTRFont(LFont font, String[] strings, boolean asyn) {
-		this(font, StringUtils.unificationStrings(strings).toCharArray(), asyn);
+		this(font, StringUtils.merge(strings).toCharArray(), asyn);
 	}
 
-	private String text;
-
-	public String getText() {
-		return text;
-	}
-
-	public LSTRFont(LFont font, char[] chs, boolean asyn) {
+	public LSTRFont(LFont font, char[] charMessage, boolean asyn) {
+		CharSequence chs = " " + StringUtils.unificationChars(charMessage);
 		this.displays = new ObjectMap<String, Cache>(totalCharSet);
 		this.useCache = true;
 		this.font = font;
@@ -293,27 +289,16 @@ public class LSTRFont implements IFont {
 		this.ascent = font.getAscent();
 		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
-		if (chs != null && chs.length > 0) {
-			int size = chs.length;
-			CharArray chars = new CharArray();
-			for (int i = 0; i < size; i++) {
-				char ch = chs[i];
-				if (!chars.contains(ch))
-					chars.add(ch);
-			}
-			if (chs.length == chars.length) {
-				this.additionalChars = chs;
-			} else {
-				this.additionalChars = chars.items;
-			}
-			this.text = new String(additionalChars);
+		if (chs != null && chs.length() > 0) {
+			StringBuilder tmp = new StringBuilder(chs);
+			this.text = tmp.toString();
+			this.additionalChars = text.toCharArray();
 			if (additionalChars != null && additionalChars.length > totalCharSet) {
 				textureWidth *= 2;
 			}
 			this.make(asyn);
-			chars = null;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(text.trim())) {
 			_isClose = true;
 			return;
 		}
@@ -735,21 +720,21 @@ public class LSTRFont implements IFont {
 		return fontBatch;
 	}
 
-	private void setImageColor(float r, float g, float b,float a) {
-		setColor(Painter.TOP_LEFT, r, g, b,a);
-		setColor(Painter.TOP_RIGHT, r, g, b,a);
-		setColor(Painter.BOTTOM_LEFT, r, g, b,a);
-		setColor(Painter.BOTTOM_RIGHT, r, g, b,a);
+	private void setImageColor(float r, float g, float b, float a) {
+		setColor(Painter.TOP_LEFT, r, g, b, a);
+		setColor(Painter.TOP_RIGHT, r, g, b, a);
+		setColor(Painter.BOTTOM_LEFT, r, g, b, a);
+		setColor(Painter.BOTTOM_RIGHT, r, g, b, a);
 	}
 
 	private void setImageColor(LColor c) {
 		if (c == null) {
 			return;
 		}
-		setImageColor(c.r, c.g, c.b,c.a);
+		setImageColor(c.r, c.g, c.b, c.a);
 	}
 
-	private void setColor(int corner, float r, float g, float b,float a) {
+	private void setColor(int corner, float r, float g, float b, float a) {
 		if (colors == null) {
 			colors = new LColor[] { new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
 					new LColor(1, 1, 1, 1f) };
@@ -1006,4 +991,7 @@ public class LSTRFont implements IFont {
 		return s;
 	}
 
+	public String getText() {
+		return text;
+	}
 }

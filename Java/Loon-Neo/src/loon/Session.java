@@ -26,6 +26,7 @@ import loon.utils.Base64Coder;
 import loon.utils.Bundle;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.TimeUtils;
 
 /**
  * 游戏记录器，用于记录当前游戏数据
@@ -206,7 +207,7 @@ public class Session implements Bundle<String> {
 	}
 
 	public String set(int index, String value) {
-		String name = "session_name_" + System.currentTimeMillis();
+		String name = "session_name_" + TimeUtils.millis();
 		set(name, index, value);
 		return name;
 	}

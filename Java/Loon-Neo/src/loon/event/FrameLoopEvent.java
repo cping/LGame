@@ -37,7 +37,7 @@ public abstract class FrameLoopEvent {
 	}
 
 	public float getSecond() {
-		return timer.getDelay() / (float) LSystem.SECOND;
+		return (float) timer.getDelay() / (float) LSystem.SECOND;
 	}
 
 	public LTimer getTimer() {

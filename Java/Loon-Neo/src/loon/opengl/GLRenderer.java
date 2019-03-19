@@ -37,11 +37,11 @@ public class GLRenderer implements LRelease {
 	private GLEx _gl;
 
 	public GLRenderer() {
-		this(null, 2048);
+		this(null, 3000);
 	}
 
 	public GLRenderer(GLEx gl) {
-		this(gl, 2048);
+		this(gl, 3000);
 	}
 
 	public GLRenderer(GLEx gl, int maxVertices) {
@@ -51,8 +51,7 @@ public class GLRenderer implements LRelease {
 
 	public void begin(Affine2f affine, GLType type) {
 		if (_currType != null) {
-			throw LSystem.runThrow(
-					"Call end() before beginning a new shape batch !");
+			throw LSystem.runThrow("Call end() before beginning a new shape batch !");
 		}
 		_currType = type;
 		_affine = affine;
@@ -111,8 +110,8 @@ public class GLRenderer implements LRelease {
 		_renderer.vertex(x2, y2, 0);
 	}
 
-	public void curve(float x1, float y1, float cx1, float cy1, float cx2,
-			float cy2, float x2, float y2, int segments) {
+	public void curve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
+			int segments) {
 		if (_currType != GLType.Line) {
 			throw LSystem.runThrow("Must call begin(GLType.Line)");
 		}
@@ -163,11 +162,9 @@ public class GLRenderer implements LRelease {
 		_renderer.vertex(x2, y2, 0);
 	}
 
-	public void triangle(float x1, float y1, float x2, float y2, float x3,
-			float y3) {
+	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow(
-					"Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 		checkFlush(6);
 		float colorFloat = _color.toFloatBits();
@@ -198,8 +195,7 @@ public class GLRenderer implements LRelease {
 
 	public void rect(float x, float y, float width, float height) {
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow(
-					"Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 
 		checkFlush(8);
@@ -241,11 +237,9 @@ public class GLRenderer implements LRelease {
 		}
 	}
 
-	public void rect(float x, float y, float width, float height, LColor col1,
-			LColor col2, LColor col3, LColor col4) {
+	public void rect(float x, float y, float width, float height, LColor col1, LColor col2, LColor col3, LColor col4) {
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow(
-					"Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 		checkFlush(8);
 
@@ -294,8 +288,7 @@ public class GLRenderer implements LRelease {
 		if (segments <= 0)
 			throw new IllegalArgumentException("segments must be >= 0.");
 		if (_currType != GLType.Filled && _currType != GLType.Line)
-			throw LSystem.runThrow(
-					"Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		checkFlush(segments * 2 + 2);
 		float angle = 2 * 3.1415926f / segments;
 		float cos = MathUtils.cos(angle);
@@ -344,12 +337,10 @@ public class GLRenderer implements LRelease {
 		}
 		if (vertices.length < 6) {
 
-			throw new IllegalArgumentException(
-					"Polygons must contain at least 3 points.");
+			throw new IllegalArgumentException("Polygons must contain at least 3 points.");
 		}
 		if (vertices.length % 2 != 0) {
-			throw new IllegalArgumentException(
-					"Polygons must have a pair number of vertices.");
+			throw new IllegalArgumentException("Polygons must have a pair number of vertices.");
 		}
 		final int numFloats = vertices.length;
 
@@ -386,12 +377,10 @@ public class GLRenderer implements LRelease {
 			throw LSystem.runThrow("Must call begin(GLType.Line)");
 		}
 		if (xs.length < 3 || ys.length < 3) {
-			throw new IllegalArgumentException(
-					"Polygons must contain at least 3 points.");
+			throw new IllegalArgumentException("Polygons must contain at least 3 points.");
 		}
 		if (xs.length % 2 != 0 || ys.length % 2 != 0) {
-			throw new IllegalArgumentException(
-					"Polygons must have a pair number of vertices.");
+			throw new IllegalArgumentException("Polygons must have a pair number of vertices.");
 		}
 		final int numFloats = size;
 
@@ -436,12 +425,10 @@ public class GLRenderer implements LRelease {
 				line(vertices[0], vertices[1], vertices[0] + 1, vertices[1] + 1);
 				return;
 			}
-			throw new IllegalArgumentException(
-					"Polylines must contain at least 2 points.");
+			throw new IllegalArgumentException("Polylines must contain at least 2 points.");
 		}
 		if (count % 2 != 0) {
-			throw new IllegalArgumentException(
-					"Polylines must have an even number of vertices.");
+			throw new IllegalArgumentException("Polylines must have an even number of vertices.");
 		}
 		checkFlush(count);
 
@@ -509,14 +496,12 @@ public class GLRenderer implements LRelease {
 		arc(x, y, radius, start, degrees, 32);
 	}
 
-	public void arc(float x, float y, float radius, float start, float end,
-			int segments) {
+	public void arc(float x, float y, float radius, float start, float end, int segments) {
 		if (segments <= 0) {
 			throw new IllegalArgumentException("segments must be >= 0.");
 		}
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow(
-					"Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 		float arcAngle = end - start;
 		if (arcAngle < 0) {
@@ -586,19 +571,29 @@ public class GLRenderer implements LRelease {
 
 	public void end() {
 		if (_renderer != null) {
-			LSystem.mainEndDraw();
-			if (_gl == null) {
-				_gl = LSystem.base().display().GL();
-			}
 			int tmp = _gl.getBlendMode();
-			if (!LColor.white.equals(_color)) {
-				_gl.setBlendMode(LSystem.MODE_SPEED);
+			try {
+				LSystem.mainEndDraw();
+				if (_gl == null || _gl.disposed()) {
+					_gl = LSystem.base().display().GL();
+				}
+				if (!LColor.white.equals(_color)) {
+					_gl.setBlendMode(LSystem.MODE_SPEED);
+				}
+			} catch (Exception ex) {
+				throw LSystem.runThrow(ex.getMessage(), ex);
+			} finally {
+				_renderer.end();
+				_gl.setBlendMode(tmp);
+				_currType = null;
+				LSystem.mainBeginDraw();
 			}
-			_renderer.end();
-			_gl.setBlendMode(tmp);
-			_currType = null;
-			LSystem.mainBeginDraw();
 		}
+	}
+
+	public GLRenderer setGLEx(GLEx g) {
+		this._gl = g;
+		return this;
 	}
 
 	public void flush() {

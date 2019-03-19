@@ -23,6 +23,7 @@ package loon;
 import loon.event.InputMake;
 import loon.event.InputMakeImpl;
 import loon.utils.ObjectMap;
+import loon.utils.TimeUtils;
 import loon.utils.reply.Act;
 
 public class EmptyGame extends LGame {
@@ -112,7 +113,7 @@ public class EmptyGame extends LGame {
 		throw new UnsupportedOperationException();
 	}
 
-	private final long start = System.currentTimeMillis();
+	private final long start = TimeUtils.millis();
 
 	@Override
 	public LGame.Type type() {
@@ -121,12 +122,12 @@ public class EmptyGame extends LGame {
 
 	@Override
 	public double time() {
-		return (double) System.currentTimeMillis();
+		return (double) TimeUtils.millis();
 	}
 
 	@Override
 	public int tick() {
-		return (int) (System.currentTimeMillis() - start);
+		return (int) (TimeUtils.millis() - start);
 	}
 
 	@Override

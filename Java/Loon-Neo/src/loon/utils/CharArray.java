@@ -30,7 +30,7 @@ public class CharArray implements IArray {
 
 	public CharArray(boolean ordered, int capacity) {
 		this.ordered = ordered;
-		items = new char[capacity];
+		this.items = new char[capacity];
 	}
 
 	public CharArray(CharArray array) {

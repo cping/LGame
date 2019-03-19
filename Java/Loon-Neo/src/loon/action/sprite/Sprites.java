@@ -24,6 +24,7 @@ import loon.LObject.State;
 import loon.LRelease;
 import loon.LSystem;
 import loon.Screen;
+import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.geom.PointI;
@@ -33,6 +34,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
@@ -40,7 +42,7 @@ import loon.utils.TArray;
  * 当LNode系列精灵和SpriteBatchScreen合用时，也支持触屏.）
  * 
  */
-public class Sprites implements IArray, LRelease {
+public class Sprites implements IArray, Visible, LRelease {
 
 	private final static TArray<Sprites> SPRITES_CACHE = new TArray<Sprites>(8);
 
@@ -78,21 +80,32 @@ public class Sprites implements IArray, LRelease {
 
 	private Screen _screen;
 
-	public Sprites(Screen screen, float width, float height) {
-		this(screen, (int) width, (int) height);
-	}
+	private final String _sprites_name;
 
 	public Sprites(Screen screen, int w, int h) {
+		this(null, screen, w, h);
+	}
+
+	public Sprites(Screen screen, float width, float height) {
+		this(null, screen, (int) width, (int) height);
+	}
+
+	public Sprites(Screen screen) {
+		this(null, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public Sprites(String name, Screen screen, float w, float h) {
+		this(name, screen, (int) w, (int) h);
+	}
+
+	public Sprites(String name, Screen screen, int w, int h) {
 		this._screen = screen;
 		this._visible = true;
 		this._width = w;
 		this._height = h;
 		this._sprites = new ISprite[capacity];
+		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + SPRITES_CACHE.size() : name;
 		SPRITES_CACHE.add(this);
-	}
-
-	public Sprites(Screen screen) {
-		this(screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	/**
@@ -615,7 +628,9 @@ public class Sprites implements IArray, LRelease {
 	 * @param elapsedTime
 	 */
 	public void update(long elapsedTime) {
-
+		if(!_visible){
+			return;
+		}
 		boolean listerner = (sprListerner != null);
 		for (int i = _size - 1; i >= 0; i--) {
 
@@ -635,6 +650,9 @@ public class Sprites implements IArray, LRelease {
 	 * @param g
 	 */
 	public void paint(final GLEx g, final float minX, final float minY, final float maxX, final float maxY) {
+		if(!_visible){
+			return;
+		}
 		float spriteX;
 		float spriteY;
 		float spriteWidth;
@@ -816,10 +834,12 @@ public class Sprites implements IArray, LRelease {
 		return _width;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return _visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this._visible = visible;
 	}
@@ -836,9 +856,18 @@ public class Sprites implements IArray, LRelease {
 		return _screen;
 	}
 
+	public String getName() {
+		return _sprites_name;
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return _size == 0 || _sprites == null;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " " + "[name=" + _sprites_name + ", total=" + size() + "]";
 	}
 
 	@Override

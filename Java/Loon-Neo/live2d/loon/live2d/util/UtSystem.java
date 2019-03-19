@@ -1,5 +1,7 @@
 package loon.live2d.util;
 
+import loon.utils.TimeUtils;
+
 public class UtSystem
 {
 
@@ -30,11 +32,11 @@ public class UtSystem
     }
     
     public static long getTimeMSec() {
-        return System.currentTimeMillis();
+        return TimeUtils.millis();
     }
     
     public static long getSystemTimeMSec() {
-        return System.currentTimeMillis();
+        return TimeUtils.millis();
     }
     
 }

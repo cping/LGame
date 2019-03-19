@@ -72,6 +72,7 @@ import loon.srpg.view.SRPGMessageListener;
 import loon.srpg.view.SRPGMessageView;
 import loon.srpg.view.SRPGMiniStatusView;
 import loon.utils.ArrayMap;
+import loon.utils.TimeUtils;
 import loon.utils.timer.LTimerContext;
 
 /** 因为使用线程实现了游戏中的同步与异步，所以此Screen暂时无法运行在HTML5(GWT实现版)平台,有待重写. **/
@@ -136,10 +137,9 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 	@Deprecated
 	public synchronized void waitTime(long i) {
-		for (long time = System.currentTimeMillis() + i; System
-				.currentTimeMillis() < time;)
+		for (long time = TimeUtils.millis() + i; TimeUtils.millis() < time;)
 			try {
-				super.wait(time - System.currentTimeMillis());
+				super.wait(time - TimeUtils.millis());
 			} catch (Exception ex) {
 			}
 	}

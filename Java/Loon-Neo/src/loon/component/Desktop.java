@@ -24,6 +24,7 @@ package loon.component;
 import loon.LRelease;
 import loon.LSystem;
 import loon.Screen;
+import loon.Visible;
 import loon.action.sprite.ISprite;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
@@ -34,13 +35,14 @@ import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
  * 
  */
-public class Desktop implements LRelease {
+public class Desktop implements Visible, LRelease {
 
 	private final static TArray<Desktop> DESKTOP_CACHE = new TArray<Desktop>(8);
 
@@ -70,15 +72,46 @@ public class Desktop implements LRelease {
 
 	private LToolTip tooltip;
 
+	private boolean dvisible;
+	
+	private final String desktop_name;
+
 	/**
 	 * 空桌面控制
 	 */
 	public Desktop() {
-		this(null, 1, 1);
+		this(null, null, 1, 1);
 	}
 
+	/**
+	 * 构造一个可用桌面
+	 * 
+	 * @param screen
+	 */
+	public Desktop(Screen screen) {
+		this(null, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	/**
+	 * 构造一个可用桌面
+	 * 
+	 * @param screen
+	 * @param width
+	 * @param height
+	 */
 	public Desktop(Screen screen, float width, float height) {
-		this(screen, (int) width, (int) height);
+		this(null, screen, (int) width, (int) height);
+	}
+
+	/**
+	 * 构造一个可用桌面
+	 * 
+	 * @param screen
+	 * @param width
+	 * @param height
+	 */
+	public Desktop(Screen screen, int width, int height) {
+		this(null, screen, width, height);
 	}
 
 	/**
@@ -88,8 +121,10 @@ public class Desktop implements LRelease {
 	 * @param width
 	 * @param height
 	 */
-	private Desktop(Screen screen, int width, int height) {
-		this.contentPane = new LPanel(0, 0, width, height);
+	public Desktop(String name, Screen screen, int width, int height) {
+		this.desktop_name = StringUtils.isEmpty(name) ? "Desktop" + DESKTOP_CACHE.size() : name;
+		this.dvisible = true;
+		this.contentPane = new LPanel(0, 0, (int) width, (int) height);
 		this.input = screen;
 		this.tooltip = new LToolTip();
 		this.contentPane.add(this.tooltip);
@@ -230,6 +265,9 @@ public class Desktop implements LRelease {
 	 * 
 	 */
 	public void update(long timer) {
+		if(!this.dvisible){
+			return;
+		}
 		if (!this.contentPane.isVisible()) {
 			return;
 		}
@@ -336,6 +374,9 @@ public class Desktop implements LRelease {
 	}
 
 	public void createUI(GLEx g) {
+		if(!dvisible){
+			return;
+		}
 		try {
 			g.saveTx();
 			this.contentPane.createUI(g);
@@ -825,8 +866,28 @@ public class Desktop implements LRelease {
 		return input;
 	}
 
+	public String getName() {
+		return desktop_name;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return dvisible;
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		this.dvisible = visible;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " " + "[name=" + desktop_name + ", total=" + size() + "]";
+	}
+
 	@Override
 	public void close() {
+		this.dvisible = false;
 		if (contentPane != null) {
 			contentPane.close();
 		}

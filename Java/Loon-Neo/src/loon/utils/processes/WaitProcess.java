@@ -5,6 +5,7 @@ import loon.event.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
+import loon.utils.TimeUtils;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -27,11 +28,11 @@ public class WaitProcess implements GameProcess, LRelease {
 	private RealtimeProcess _waitProcess;
 
 	public WaitProcess(Updateable update) {
-		this("Process" + System.currentTimeMillis(), 60, update);
+		this("Process" + TimeUtils.millis(), 60, update);
 	}
 
 	public WaitProcess(long delay, Updateable update) {
-		this("Process" + System.currentTimeMillis(), delay, update);
+		this("Process" + TimeUtils.millis(), delay, update);
 	}
 
 	public WaitProcess(String id, long delay, Updateable update) {

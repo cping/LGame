@@ -22,6 +22,7 @@ package loon.opengl;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.utils.ObjectMap;
@@ -66,14 +67,14 @@ public final class LSTRDictionary {
 
 	private boolean tmp_asyn = true;
 
-	private final ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(20);
+	private final ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(32);
 
-	private final ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(20);
+	private final ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(32);
 
-	private final ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(20);
+	private final ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(32);
 
 	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
-	private final static String ADDED = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ:.^,!?@#$%^&*(){}[]<>\"'\\/+-~～▼▲◆【】：，。…？！";
+	private final static String ADDED = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ:.,!?@#$&%^*(){}[]<>\"'\\/+-~～▼▲◆【】：，。…？！";
 
 	private final static char[] checkMessage = ADDED.toCharArray();
 
@@ -87,9 +88,9 @@ public final class LSTRDictionary {
 
 	public static class Dict implements LRelease {
 
-		TArray<Character> dicts;
+		protected TArray<Character> dicts;
 
-		LSTRFont font;
+		protected LSTRFont font;
 
 		public static Dict newDict() {
 			return new Dict();
@@ -97,6 +98,13 @@ public final class LSTRDictionary {
 
 		public Dict() {
 			dicts = new TArray<Character>(512);
+		}
+
+		public LTexture getTexture() {
+			if (font != null) {
+				return font.getTexture();
+			}
+			return null;
 		}
 
 		public LSTRFont getSTR() {
@@ -210,14 +218,18 @@ public final class LSTRDictionary {
 		for (int i = 0, size = buffers.length; i < size; i++) {
 			buffers[i] = chars.get(i);
 		}
-		return bind(font, StringUtils.unificationCharSequence(buffers));
+		return bind(font, StringUtils.unificationCharSequence(buffers, ADDED), false);
 	}
 
 	public final Dict bind(final LFont font, final String[] messages) {
-		return bind(font, StringUtils.unificationStrings(messages));
+		return bind(font, StringUtils.unificationStrings(messages, ADDED), false);
 	}
 
 	public final Dict bind(final LFont font, final String mes) {
+		return bind(font, mes, true);
+	}
+
+	public final Dict bind(final LFont font, final String mes, final boolean autoStringFilter) {
 		if (StringUtils.isEmpty(mes)) {
 			return new Dict();
 		}
@@ -238,7 +250,12 @@ public final class LSTRDictionary {
 			}
 			return (_lastDict = pDict);
 		}
-		final String message = StringUtils.unificationStrings(mes + ADDED);
+		final String message;
+		if (autoStringFilter) {
+			message = StringUtils.unificationStrings(mes, ADDED) + ADDED;
+		} else {
+			message = mes + ADDED;
+		}
 		if (cacheList.size > CACHE_SIZE) {
 			clearStringLazy();
 		}
@@ -298,7 +315,6 @@ public final class LSTRDictionary {
 					}
 				}
 			}
-
 			return (_lastDict = pDict);
 		}
 	}
