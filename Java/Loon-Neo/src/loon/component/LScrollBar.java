@@ -28,6 +28,9 @@ import loon.component.skin.SkinManager;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
 
+/**
+ * 滚轴边角的UI
+ */
 public class LScrollBar extends LComponent {
 
 	public static final int RIGHT = 0;

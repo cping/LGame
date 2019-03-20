@@ -25,12 +25,13 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.Visible;
 import loon.action.sprite.ISprite;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
-public class AVGChara implements XY , LRelease {
+public class AVGChara implements Visible, XY, LRelease {
 
 	private LTexture characterCG;
 
@@ -38,21 +39,21 @@ public class AVGChara implements XY , LRelease {
 
 	private float height;
 
-	float x;
+	protected float x;
 
-	float y;
+	protected float y;
 
-	int flag = -1;
+	protected int flag = -1;
 
-	float time;
+	protected float time;
 
-	float currentFrame;
+	protected float currentFrame;
 
-	float opacity;
+	protected float opacity;
 
-	protected boolean isMove, isAnimation, isVisible = true;
+	protected boolean moved, showAnimation, visible = true;
 
-	int maxWidth, maxHeight;
+	protected int maxWidth, maxHeight;
 
 	private float moveX;
 
@@ -73,10 +74,8 @@ public class AVGChara implements XY , LRelease {
 	 * @param width
 	 * @param height
 	 */
-	public AVGChara(LTexture image, final int x, final int y, int width,
-			int height) {
-		this.load(image, x, y, width, height, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+	public AVGChara(LTexture image, final int x, final int y, int width, int height) {
+		this.load(image, x, y, width, height, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public AVGChara(LTexture image, final int x, final int y) {
@@ -84,12 +83,10 @@ public class AVGChara implements XY , LRelease {
 	}
 
 	public AVGChara(final String resName, final int x, final int y) {
-		this(resName, x, y, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		this(resName, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public AVGChara(final String resName, final int x, final int y,
-			final int w, final int h) {
+	public AVGChara(final String resName, final int x, final int y, final int w, final int h) {
 		String path = resName;
 		if (StringUtils.startsWith(path, '"')) {
 			path = resName.replaceAll("\"", "");
@@ -97,8 +94,8 @@ public class AVGChara implements XY , LRelease {
 		if (path.endsWith(".an")) {
 			this.x = x;
 			this.y = y;
-			this.isAnimation = true;
-				this.anm = new AVGAnm(path);
+			this.showAnimation = true;
+			this.anm = new AVGAnm(path);
 			this.maxWidth = w;
 			this.maxHeight = h;
 		} else {
@@ -113,18 +110,16 @@ public class AVGChara implements XY , LRelease {
 	}
 
 	private void load(LTexture image, final int x, final int y) {
-		this.load(image, x, y, image.getWidth(), image.getHeight(),
-				LSystem.viewSize.getWidth(),
+		this.load(image, x, y, image.getWidth(), image.getHeight(), LSystem.viewSize.getWidth(),
 				LSystem.viewSize.getHeight());
 	}
 
-	private void load(LTexture image, final int x, final int y, int width,
-			int height, final int w, final int h) {
+	private void load(LTexture image, final int x, final int y, int width, int height, final int w, final int h) {
 		this.maxWidth = w;
 		this.maxHeight = h;
-		this.isAnimation = false;
+		this.showAnimation = false;
 		this.characterCG = image;
-		this.isMove = true;
+		this.moved = true;
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -171,7 +166,11 @@ public class AVGChara implements XY , LRelease {
 	}
 
 	public void setMove(boolean move) {
-		isMove = move;
+		moved = move;
+	}
+
+	public boolean isMoved() {
+		return moved;
 	}
 
 	public void flush() {
@@ -230,7 +229,7 @@ public class AVGChara implements XY , LRelease {
 	}
 
 	public void setX(float x) {
-		if (isMove) {
+		if (moved) {
 			float move = x - this.moveX;
 			if (move < 0) {
 				this.moveX = this.x;
@@ -284,19 +283,21 @@ public class AVGChara implements XY , LRelease {
 	}
 
 	public boolean isAnimation() {
-		return isAnimation;
+		return showAnimation;
 	}
 
-	void setAnimation(boolean isAnimation) {
-		this.isAnimation = isAnimation;
+	void setAnimation(boolean a) {
+		this.showAnimation = a;
 	}
 
+	@Override
 	public boolean isVisible() {
-		return isVisible;
+		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean isVisible) {
-		this.isVisible = isVisible;
+		this.visible = isVisible;
 	}
 
 	public LTexture getTexture() {
@@ -305,7 +306,7 @@ public class AVGChara implements XY , LRelease {
 
 	@Override
 	public void close() {
-		this.isVisible = false;
+		this.visible = false;
 		if (characterCG != null) {
 			characterCG.close();
 			characterCG = null;
@@ -313,7 +314,7 @@ public class AVGChara implements XY , LRelease {
 		if (anm != null) {
 			anm.close();
 			anm = null;
-			isAnimation = false;
+			showAnimation = false;
 		}
 	}
 

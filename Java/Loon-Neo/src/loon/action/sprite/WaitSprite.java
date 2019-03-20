@@ -27,6 +27,9 @@ import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
+/**
+ * 各种等待特效的合集,各种圈和线条滴溜溜的转……
+ */
 public class WaitSprite extends Entity {
 	
 	private final class DrawWait {

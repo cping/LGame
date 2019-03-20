@@ -22,6 +22,9 @@ package loon.geom;
 
 import loon.utils.StringUtils;
 
+/**
+ * 一个最基础的矩形碰撞器
+ */
 public class AABB implements XY {
 
 	public float minX, minY;

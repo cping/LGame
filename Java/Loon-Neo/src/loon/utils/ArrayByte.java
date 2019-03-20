@@ -27,6 +27,9 @@ import java.io.UTFDataFormatException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 
+/**
+ * Loon的Byte[]操作用类
+ */
 public class ArrayByte {
 
 	public static final int BIG_ENDIAN = 0;
@@ -397,6 +400,15 @@ public class ArrayByte {
 
 	public void setExpandArray(boolean expandArray) {
 		this.expandArray = expandArray;
+	}
+
+	public String toUTF8String() {
+		byte[] buffer = getData();
+		try {
+			return new String(buffer, LSystem.ENCODING);
+		} catch (Exception e) {
+			return new String(buffer);
+		}
 	}
 
 	@Override

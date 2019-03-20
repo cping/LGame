@@ -36,7 +36,8 @@ import loon.utils.TArray;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 
-/*
+/**
+ * Loon的表格显示用UI组件,用以显示以及操作表格数据
  * 
  * Example:
  * 

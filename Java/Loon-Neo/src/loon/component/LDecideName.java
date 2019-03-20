@@ -43,7 +43,9 @@ import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 import loon.utils.MathUtils;
 
-/*
+/**
+ * 在一些不方便输入字符串的设备上,输入角色名称时可用此UI,字数不够上下分页,多来几个就成了……
+ * 
  * Examples:
  * 
  *      TArray<String> list = new TArray<String>();

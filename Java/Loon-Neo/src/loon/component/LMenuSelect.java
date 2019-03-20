@@ -41,26 +41,25 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 /**
- * 游戏中常见的分行选择型菜单栏,注入几行文字(字符串数组),就会自行产生几行可选菜单
+ * 游戏中常见的分行选择型菜单栏,注入几行文字(字符串数组),就会自行产生几行可选菜单UI<br>
  * 
- * LMenuSelect ms = new LMenuSelect("第一选项,第二个,第三个,第四个,我是第五个", 66, 66); 
- * // 选中行的选择外框渲染颜色,不设置不显示 
- * // ms.setSelectRectColor(LColor.red); 
- * // 选中行所用的图像标记(箭头图之类),不设置使用默认样式 
- * // ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME+"creese.png"); 
- * // 选择框菜单所用的背景图,不设置使用默认样式,也可以noBackground不显示
- *    ms.setBackground(DefUI.getGameWinFrame(ms.width(), ms.height(),LColor.black,LColor.blue, false)); 
- * // 设置监听 ms.setMenuListener(new
- *    LMenuSelect.ClickEvent() {
+ * LMenuSelect ms = new LMenuSelect("第一选项,第二个,第三个,第四个,我是第五个", 66, 66); <br>
+ * // 选中行的选择外框渲染颜色,不设置不显示 <br>
+ * // ms.setSelectRectColor(LColor.red); <br>
+ * // 选中行所用的图像标记(箭头图之类),不设置使用默认样式 <br>
+ * // ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME+"creese.png"); <br>
+ * // 选择框菜单所用的背景图,不设置使用默认样式,也可以noneBackground不显示<br>
+ *    ms.setBackground(DefUI.getGameWinFrame(ms.width(), ms.height(),LColor.black,LColor.blue, false)); <br>
+ * // 设置监听 ms.setMenuListener(new LMenuSelect.ClickEvent() {<br>
  * 
- * // 监听当前点击的索引与内容
+ * // 监听当前点击的索引与内容<br>
  * 
- * @Override public void onSelected(int index, String context) { // 添加气泡提示
+ * @Override public void onSelected(int index, String context) { // 添加气泡提示<br>
  *           
- *           add(LToast.makeText(context, Style.SUCCESS));
+ *           add(LToast.makeText(context, Style.SUCCESS));<br>
  * 
- *           }}); 
- *   // 添加到screen 
+ *           }}); <br>
+ *   // 添加到screen <br>
  *   add(ms);
  */
 public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
@@ -542,7 +541,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		this._fontColor = fc;
 	}
 
-	public LMenuSelect noBackground() {
+	public LMenuSelect noneBackground() {
 		this._drawBackground = false;
 		this._showBackground = false;
 		this._background = null;
@@ -551,7 +550,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	public LComponent clearBackground() {
-		this.noBackground();
+		this.noneBackground();
 		return this;
 	}
 

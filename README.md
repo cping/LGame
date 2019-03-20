@@ -7,6 +7,8 @@
 *目前的0.5版已经初步可用，我会逐渐增加测试用例和文档，以后这引擎就不会再有大的结构变动了，然后我会据此出C++，C#之类其它语法版本，当然核心还是Java，只是方便做Java版一键语法转换和平台迁移。顺便我会出一个API精简的"非OpenGL"Java版封装(其实就是把最古老的AWT版重写一次)，这个封装会基于Android和JavaScript的Canvas进行渲染(而不是像现在一样渲染和主窗口是默认绑定的)，方便用户把Loon功能嵌入一些非游戏应用中(比如给应用UI加个特效什么)，或者一些更轻度的小游戏开发，这个精简版本只会支持JavaSE，JavaFX，Android，JavaScript(HTML5)。
 
 * 本引擎开发环境是JDK 1.8，设置的最低运行环境为JRE 1.7，请注意低版本JRE不能识别高版本编译的jar，如果直接使用jar（而非导入代码），而无法运行，请注意替换为高版本JRE，或者以源码编译为低版本类库。
+
+[免费的游戏素材可见此](https://raw.github.com/cping/LGame/master/dev-res/README.md "Game Source of Free")
 _________
 
 #LGame (formal name : Loon)

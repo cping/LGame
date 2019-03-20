@@ -37,39 +37,39 @@ import loon.utils.TArray;
 //0.3.3新增类,用以按指定的格式循环播放动画图像
 public class AVGAnm implements Expression, LRelease {
 
-	final PointI point = new PointI();
+	protected final PointI point = new PointI();
 
 	private String path;
 
-	float alpha = 1.0f;
+	protected float alpha = 1.0f;
 
-	float angle;
+	protected float angle;
 
-	int width, height, imageWidth, imageHeight;
+	protected int width, height, imageWidth, imageHeight;
 
-	TArray<Integer> posxTmps = new TArray<Integer>();
+	protected TArray<Integer> posxTmps = new TArray<Integer>();
 
-	TArray<Integer> posyTmps = new TArray<Integer>();
+	protected TArray<Integer> posyTmps = new TArray<Integer>();
 
-	int[] posx = null;
+	protected int[] posx = null;
 
-	int[] posy = null;
+	protected int[] posy = null;
 
-	TArray<Integer> time = new TArray<Integer>();
+	protected TArray<Integer> time = new TArray<Integer>();
 
-	int tmp_time = 20;
+	protected int tmp_time = 20;
 
-	int alltime = 0;
+	protected int alltime = 0;
 
-	int count = 0;
+	protected int count = 0;
 
-	long startTime = -1;
+	protected long startTime = -1;
 
-	boolean loop = true, load = false;
+	protected boolean loop = true, load = false;
 
-	LTexture texture;
+	protected LTexture texture;
 
-	LColor color;
+	protected LColor color;
 
 	public AVGAnm(String resName) {
 		open(BaseIO.loadText(resName));

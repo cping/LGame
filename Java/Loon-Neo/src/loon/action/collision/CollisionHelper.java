@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.action.collision;
 
 import loon.canvas.Image;
@@ -24,8 +44,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param r2
 	 * @return
 	 */
-	public static boolean isCollision(float x1, float y1, float r1, float x2,
-			float y2, float r2) {
+	public static boolean isCollision(float x1, float y1, float r1, float x2, float y2, float r2) {
 		float a = r1 + r2;
 		float dx = x1 - x2;
 		float dy = y1 - y2;
@@ -108,8 +127,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param radius
 	 * @return
 	 */
-	private static boolean isPointToLine(Point point1, Point point2,
-			Point middle, float radius) {
+	private static boolean isPointToLine(Point point1, Point point2, Point middle, float radius) {
 		Line line = new Line(point1, point2);
 		float distance = line.ptLineDist(middle);
 		return distance < radius;
@@ -136,15 +154,13 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param y2
 	 * @return
 	 */
-	public boolean isPixelCollide(Image src, float x1, float y1, Image dest,
-			float x2, float y2) {
+	public boolean isPixelCollide(Image src, float x1, float y1, Image dest, float x2, float y2) {
 
-		float width1 = x1 + src.width() - 1, height1 = y1 + src.height() - 1, width2 = x2
-				+ dest.width() - 1, height2 = y2 + dest.height() - 1;
+		float width1 = x1 + src.width() - 1, height1 = y1 + src.height() - 1, width2 = x2 + dest.width() - 1,
+				height2 = y2 + dest.height() - 1;
 
-		int xstart = (int) MathUtils.max(x1, x2), ystart = (int) MathUtils.max(
-				y1, y2), xend = (int) MathUtils.min(width1, width2), yend = (int) MathUtils
-				.min(height1, height2);
+		int xstart = (int) MathUtils.max(x1, x2), ystart = (int) MathUtils.max(y1, y2),
+				xend = (int) MathUtils.min(width1, width2), yend = (int) MathUtils.min(height1, height2);
 
 		int toty = MathUtils.abs(yend - ystart);
 		int totx = MathUtils.abs(xend - xstart);
@@ -161,8 +177,7 @@ public final class CollisionHelper extends ShapeUtils {
 					if (((src.getPixel(nx, ny) & LColor.TRANSPARENT) != 0x00)
 							&& ((dest.getPixel(nx1, ny1) & LColor.TRANSPARENT) != 0x00)) {
 						return true;
-					} else if (getPixelData(src, nx, ny)[0] != 0
-							&& getPixelData(dest, nx1, ny1)[0] != 0) {
+					} else if (getPixelData(src, nx, ny)[0] != 0 && getPixelData(dest, nx1, ny1)[0] != 0) {
 						return true;
 					}
 				} catch (Exception e) {
@@ -177,6 +192,14 @@ public final class CollisionHelper extends ShapeUtils {
 		return LColor.getRGBs(image.getPixel(x, y));
 	}
 
+	public final static boolean intersect(RectBox rect, int x, int y) {
+		if (rect != null) {
+			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y && y < rect.Bottom())
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * 判断指定大小的两组像素是否相交
 	 * 
@@ -186,8 +209,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param dataB
 	 * @return
 	 */
-	public static boolean intersect(RectBox rectA, int[] dataA, RectBox rectB,
-			int[] dataB) {
+	public static boolean intersect(RectBox rectA, int[] dataA, RectBox rectB, int[] dataB) {
 		int top = (int) MathUtils.max(rectA.getY(), rectB.getY());
 		int bottom = (int) MathUtils.min(rectA.getBottom(), rectB.getBottom());
 		int left = (int) MathUtils.max(rectA.getX(), rectB.getX());
@@ -196,10 +218,8 @@ public final class CollisionHelper extends ShapeUtils {
 		for (int y = top; y < bottom; y++) {
 			for (int x = left; x < right; x++) {
 
-				int colorA = dataA[(int) ((x - rectA.x) + (y - rectA.y)
-						* rectA.width)];
-				int colorB = dataB[(int) ((x - rectB.x) + (y - rectB.y)
-						* rectB.width)];
+				int colorA = dataA[(int) ((x - rectA.x) + (y - rectA.y) * rectA.width)];
+				int colorB = dataB[(int) ((x - rectB.x) + (y - rectB.y) * rectB.width)];
 				if (colorA >>> 24 != 0 && colorB >>> 24 != 0) {
 					return true;
 				}
@@ -223,6 +243,17 @@ public final class CollisionHelper extends ShapeUtils {
 		return s1.intersects(s2);
 	}
 
+	public final static int[] intersect(RectBox rect1, RectBox rect2) {
+		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom()
+				&& rect2.Top() < rect1.Bottom()) {
+			return new int[] { rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
+					rect1.Top() < rect2.Top() ? rect2.Top() - rect1.Top() : 0,
+					rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
+					rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0 };
+		}
+		return null;
+	}
+
 	/**
 	 * 判断两个Shape是否存在包含关系
 	 * 
@@ -235,6 +266,18 @@ public final class CollisionHelper extends ShapeUtils {
 			return false;
 		}
 		return s1.contains(s2);
+	}
+
+	public final static void confine(RectBox rect, RectBox field) {
+		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
+		if (x < field.Left()) {
+			x = field.Left();
+		}
+		int y = (int) (rect.Bottom() > field.Bottom() ? field.Bottom() - rect.getHeight() : rect.Top());
+		if (y < field.Top()) {
+			y = field.Top();
+		}
+		rect.offset(x, y);
 	}
 
 	public final static Line getLine(Shape shape, int s, int e) {
@@ -250,70 +293,56 @@ public final class CollisionHelper extends ShapeUtils {
 		return line;
 	}
 
-	public final static boolean checkAABBvsAABB(Vector2f p1, float w1,
-			float h1, Vector2f p2, float w2, float h2) {
+	public final static boolean checkAABBvsAABB(Vector2f p1, float w1, float h1, Vector2f p2, float w2, float h2) {
 		return checkAABBvsAABB(p1.x, p1.y, w1, h1, p2.x, p2.y, w2, h2);
 	}
 
-	public final static boolean checkAABBvsAABB(float x1, float y1, float w1,
-			float h1, float x2, float y2, float w2, float h2) {
-		return !(x1 > x2 + w2 || x1 + w1 < x2)
-				&& !(y1 > y2 + h2 || y1 + h1 < y2);
+	public final static boolean checkAABBvsAABB(float x1, float y1, float w1, float h1, float x2, float y2, float w2,
+			float h2) {
+		return !(x1 > x2 + w2 || x1 + w1 < x2) && !(y1 > y2 + h2 || y1 + h1 < y2);
 	}
 
-	public final static boolean checkAABBvsAABB(Vector2f p1Min, Vector2f p1Max,
-			Vector2f p2Min, Vector2f p2Max) {
-		return checkAABBvsAABB(p1Min.x, p1Min.y, p1Max.x - p1Min.x, p1Max.y
-				- p1Min.y, p2Min.x, p2Min.y, p2Max.x - p2Min.x, p2Max.y
-				- p2Min.y);
+	public final static boolean checkAABBvsAABB(Vector2f p1Min, Vector2f p1Max, Vector2f p2Min, Vector2f p2Max) {
+		return checkAABBvsAABB(p1Min.x, p1Min.y, p1Max.x - p1Min.x, p1Max.y - p1Min.y, p2Min.x, p2Min.y,
+				p2Max.x - p2Min.x, p2Max.y - p2Min.y);
 	}
 
-	public final static boolean checkAABBvsAABB(Vector3f p1, float w1,
-			float h1, float t1, Vector3f p2, float w2, float h2, float t2) {
-		return checkAABBvsAABB(p1.x, p1.y, p1.z, w1, h1, t1, p2.x, p2.y, p2.z,
-				w2, h2, t2);
+	public final static boolean checkAABBvsAABB(Vector3f p1, float w1, float h1, float t1, Vector3f p2, float w2,
+			float h2, float t2) {
+		return checkAABBvsAABB(p1.x, p1.y, p1.z, w1, h1, t1, p2.x, p2.y, p2.z, w2, h2, t2);
 	}
 
-	public final static boolean checkAABBvsAABB(float x1, float y1, float z1,
-			float w1, float h1, float t1, float x2, float y2, float z2,
-			float w2, float h2, float t2) {
-		return !(x1 > x2 + w2 || x1 + w1 < x2)
-				&& !(y1 > y2 + h2 || y1 + h1 < y2)
-				&& !(z1 > z2 + t2 || z1 + t1 < z2);
+	public final static boolean checkAABBvsAABB(float x1, float y1, float z1, float w1, float h1, float t1, float x2,
+			float y2, float z2, float w2, float h2, float t2) {
+		return !(x1 > x2 + w2 || x1 + w1 < x2) && !(y1 > y2 + h2 || y1 + h1 < y2) && !(z1 > z2 + t2 || z1 + t1 < z2);
 	}
 
-	public final static boolean checkAABBvsAABB(Vector3f p1Min, Vector3f p1Max,
-			Vector3f p2Min, Vector3f p2Max) {
-		return checkAABBvsAABB(p1Min.x, p1Min.y, p1Min.z, p1Max.x - p1Min.x,
-				p1Max.y - p1Min.y, p1Max.z - p1Min.z, p2Min.x, p2Min.y,
-				p1Min.z, p2Max.x - p2Min.x, p2Max.y - p2Min.y, p2Max.z
-						- p2Min.z);
+	public final static boolean checkAABBvsAABB(Vector3f p1Min, Vector3f p1Max, Vector3f p2Min, Vector3f p2Max) {
+		return checkAABBvsAABB(p1Min.x, p1Min.y, p1Min.z, p1Max.x - p1Min.x, p1Max.y - p1Min.y, p1Max.z - p1Min.z,
+				p2Min.x, p2Min.y, p1Min.z, p2Max.x - p2Min.x, p2Max.y - p2Min.y, p2Max.z - p2Min.z);
 	}
 
-	public final static boolean checkCircleCircle(Vector2f p1, float r1,
-			Vector2f p2, float r2) {
+	public final static boolean checkCircleCircle(Vector2f p1, float r1, Vector2f p2, float r2) {
 		return checkCircleCircle(p1.x, p1.y, r1, p2.x, p2.y, r2);
 	}
 
-	public final static boolean checkCircleCircle(float x1, float y1, float r1,
-			float x2, float y2, float r2) {
+	public final static boolean checkCircleCircle(float x1, float y1, float r1, float x2, float y2, float r2) {
 		float distance = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
 		float radiusSumSq = (r1 + r2) * (r1 + r2);
 
 		return distance <= radiusSumSq;
 	}
 
-	public final static boolean checkSphereSphere(Vector3f p1, float r1,
-			Vector3f p2, float r2) {
+	public final static boolean checkSphereSphere(Vector3f p1, float r1, Vector3f p2, float r2) {
 		return checkSphereSphere(p1.x, p1.y, p1.z, r1, p2.x, p2.y, p2.z, r2);
 	}
 
-	public final static boolean checkSphereSphere(float x1, float y1, float z1,
-			float r1, float x2, float y2, float z2, float r2) {
-		float distance = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)
-				+ (z2 - z1) * (z2 - z1);
+	public final static boolean checkSphereSphere(float x1, float y1, float z1, float r1, float x2, float y2, float z2,
+			float r2) {
+		float distance = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1);
 		float radiusSumSq = (r1 + r2) * (r1 + r2);
 
 		return distance <= radiusSumSq;
 	}
+
 }

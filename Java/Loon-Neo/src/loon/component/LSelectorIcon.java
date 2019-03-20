@@ -28,6 +28,9 @@ import loon.canvas.LColor;
 import loon.event.CallFunction;
 import loon.opengl.GLEx;
 
+/**
+ * 一个让选中位置闪啊闪的UI
+ */
 public class LSelectorIcon extends LComponent {
 
 	private CallFunction _function;

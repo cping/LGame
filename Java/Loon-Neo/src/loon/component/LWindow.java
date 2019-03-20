@@ -38,6 +38,9 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 
+/**
+ * 一个空的窗体UI,单纯用来添加其它组件到上面,也可以alert弹出一些信息给用户
+ */
 public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	private String _title;

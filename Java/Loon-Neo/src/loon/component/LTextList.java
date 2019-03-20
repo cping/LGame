@@ -31,8 +31,8 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 
-/*
- *          新增类，用以列表方式显示指定数据，本身有默认UI，用户也可以自行注入图片进行替换.
+/**
+ * 文字列表显示用UI,用以列表方式显示指定数据,LGame本身附带有默认UI,用户也可以自行注入图片进行替换.
  * 
  *          Example1:
  * 

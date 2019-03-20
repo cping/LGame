@@ -15,6 +15,8 @@
  */
 package loon;
 
+import loon.action.collision.CollisionHelper;
+import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
@@ -54,100 +56,120 @@ public class Director extends SoundBox {
 	public enum Origin {
 
 		FIXED {
+			@Override
 			public float ox(float width) {
 				return 0;
 			}
 
+			@Override
 			public float oy(float height) {
 				return 0;
 			}
 		},
 
 		CENTER {
+			@Override
 			public float ox(float width) {
 				return width / 2;
 			}
 
+			@Override
 			public float oy(float height) {
 				return height / 2;
 			}
 		},
 
 		TOP_LEFT {
+			@Override
 			public float ox(float width) {
 				return 0;
 			}
 
+			@Override
 			public float oy(float height) {
 				return height;
 			}
 		},
 
 		TOP_RIGHT {
+			@Override
 			public float ox(float width) {
 				return width;
 			}
 
+			@Override
 			public float oy(float height) {
 				return height;
 			}
 		},
 
 		BOTTOM_LEFT {
+			@Override
 			public float ox(float width) {
 				return 0;
 			}
 
+			@Override
 			public float oy(float height) {
 				return 0;
 			}
 		},
 
 		BOTTOM_RIGHT {
+			@Override
 			public float ox(float width) {
 				return width;
 			}
 
+			@Override
 			public float oy(float height) {
 				return 0;
 			}
 		},
 
 		LEFT_CENTER {
+			@Override
 			public float ox(float width) {
 				return 0;
 			}
 
+			@Override
 			public float oy(float height) {
 				return height / 2;
 			}
 		},
 
 		TOP_CENTER {
+			@Override
 			public float ox(float width) {
 				return width / 2;
 			}
 
+			@Override
 			public float oy(float height) {
 				return height;
 			}
 		},
 
 		BOTTOM_CENTER {
+			@Override
 			public float ox(float width) {
 				return width / 2;
 			}
 
+			@Override
 			public float oy(float height) {
 				return 0;
 			}
 		},
 
 		RIGHT_CENTER {
+			@Override
 			public float ox(float width) {
 				return width;
 			}
 
+			@Override
 			public float oy(float height) {
 				return height / 2;
 			}
@@ -233,30 +255,7 @@ public class Director extends SoundBox {
 		x -= (int) renderRect.getWidth() >> 1;
 		y -= (int) renderRect.getHeight() >> 1;
 		viewRect.offset(x, y);
-		confine(viewRect, world);
-	}
-
-	public final static void confine(RectBox rect, RectBox field) {
-		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
-		if (x < field.Left()) {
-			x = field.Left();
-		}
-		int y = (int) (rect.Bottom() > field.Bottom() ? field.Bottom() - rect.getHeight() : rect.Top());
-		if (y < field.Top()) {
-			y = field.Top();
-		}
-		rect.offset(x, y);
-	}
-
-	public final static int[] intersect(RectBox rect1, RectBox rect2) {
-		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom()
-				&& rect2.Top() < rect1.Bottom()) {
-			return new int[] { rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
-					rect1.Top() < rect2.Top() ? rect2.Top() - rect1.Top() : 0,
-					rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
-					rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0 };
-		}
-		return null;
+		CollisionHelper.confine(viewRect, world);
 	}
 
 	public boolean isOrientationPortrait() {
@@ -389,7 +388,8 @@ public class Director extends SoundBox {
 
 	private final static Affine2f _trans = new Affine2f();
 
-	public final static Vector2f local2Global(float centerX, float centerY, float posX, float posY, Vector2f resultPoint) {
+	public final static Vector2f local2Global(float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
 		return local2Global(0, 1f, 1f, 0, 0, false, false, centerX, centerY, posX, posY, resultPoint);
 	}
 
@@ -403,8 +403,8 @@ public class Director extends SoundBox {
 		return local2Global(rotation, 1f, 1f, 0, 0, false, false, centerX, centerY, posX, posY, resultPoint);
 	}
 
-	public final static Vector2f local2Global(float rotation, boolean flipX, boolean flipY, float centerX, float centerY,
-			float posX, float posY, Vector2f resultPoint) {
+	public final static Vector2f local2Global(float rotation, boolean flipX, boolean flipY, float centerX,
+			float centerY, float posX, float posY, Vector2f resultPoint) {
 		return local2Global(rotation, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY, posX, posY, resultPoint);
 	}
 
@@ -447,12 +447,15 @@ public class Director extends SoundBox {
 		return resultPoint;
 	}
 
-	public final static boolean inside(RectBox rect, int x, int y) {
-		if (rect != null) {
-			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y && y < rect.Bottom())
-				return true;
-		}
-		return false;
+	public final static Counter newCounter() {
+		return new Counter();
 	}
 
+	public final static LimitedCounter newLimitedCounter(int limit) {
+		return new LimitedCounter(limit);
+	}
+
+	public final static ActionCounter newActionCounter(int limit, Updateable update) {
+		return new ActionCounter(limit, update);
+	}
 }

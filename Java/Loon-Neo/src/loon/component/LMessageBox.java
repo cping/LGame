@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.component;
 
 import loon.LSystem;
@@ -17,34 +37,33 @@ import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
- * 此组件功能近似LMessage，并且允许连续播放文字序列 ，设置角色头像和显示位置，差异在于，此组件不支持彩色文字设置，也就是只允许'\n'符号生效
- * 而在效率上无文字缓存，所以总体帧率耗费比LMessage更大，适合动态频率高的场合使用，但是此组件多个同时存在会影响帧率
- **/
-/*
- * 以下为简单用例:
+ * 此组件功能近似LMessage，并且允许连续播放文字序列 ，设置角色头像和显示位置，差异在于，此组件不支持彩色文字设置，也就是只允许'\n'符号生效<br>
+ * 而在效率上无文字缓存，所以总体帧率耗费比LMessage更大，适合动态频率高的场合使用，但是此组件多个同时存在会影响帧率<br>
  * 
- * LTexture texture = DefUI.getGameWinFrame(200, 200); LMessageBox box = new
- * LMessageBox(new String[] { "人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",
- * "明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" }, texture, 66, 66, 180, 180);
- * box.getMessageBox().setOffset(10, 10); add(box); box.SetClick(new
- * ClickListener() {
+ * 以下为简单用例:<br>
  * 
- * @Override public void UpClick(LComponent comp, float x, float y) {
+ * LTexture texture = DefUI.getGameWinFrame(200, 200); <br>
+ * LMessageBox box = new LMessageBox(new String[] { "人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",
+ * "明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" }, texture, 66, 66, 180, 180);<br>
+ * box.getMessageBox().setOffset(10, 10); add(box); box.SetClick(new ClickListener() {<br>
  * 
- * }
+ * @Override public void UpClick(LComponent comp, float x, float y) {<br>
  * 
- * @Override public void DragClick(LComponent comp, float x, float y) {
+ * }<br>
  * 
- * }
+ * @Override public void DragClick(LComponent comp, float x, float y) {<br>
  * 
- * @Override public void DownClick(LComponent comp, float x, float y) {
- * LMessageBox box = (LMessageBox) comp; box.next(); }
+ * }<br>
  * 
- * @Override public void DoClick(LComponent comp) {
+ * @Override public void DownClick(LComponent comp, float x, float y) {<br>
+ * LMessageBox box = (LMessageBox) comp; box.next(); <br>
+ * }<br>
  * 
- * } });
+ * @Override public void DoClick(LComponent comp) {<br>
  * 
- * } });
+ * } });<br>
+ * 
+ * } });<br>
  */
 public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 

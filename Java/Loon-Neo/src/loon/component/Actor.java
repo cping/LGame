@@ -53,6 +53,10 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
+/**
+ * 演员类,用于同Layer合作渲染游戏,这个类的可控性要比Sprite包下类及其子类强,<br>
+ * 但是操作上设定的也更加死板,不适用于复杂游戏
+ */
 public class Actor extends LObject<Actor>
 		implements Flip<Actor>, Comparable<Actor>, ActionBind, Visible, XY, LRelease, BoxSize {
 

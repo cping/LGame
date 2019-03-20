@@ -47,7 +47,7 @@ public class BMFont implements IFont {
 
 	private static BMFont _font;
 
-	/*
+	/**
 	 * 获得一个默认的BMFont.
 	 * 
 	 * 比如:

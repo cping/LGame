@@ -34,7 +34,9 @@ import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 
-// 与LButton的差异在于，内置有默认UI图片，并且可以选择大小，而不是必须按照图片大小拆分
+/**
+ * 与LButton的差异在于，它内置有默认UI图片，并且可以选择大小，而不是必须按照图片大小拆分
+ */
 public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	private CallFunction _function;

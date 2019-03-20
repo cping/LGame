@@ -31,6 +31,9 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 
+/**
+ * 信息显示用UI,支持一些简单的字符命令用于构建显示文字
+ */
 public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	private Animation animation;

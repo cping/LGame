@@ -1064,6 +1064,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.fristPaintFlag = true;
 		this.secondPaintFlag = true;
 		this.lastPaintFlag = true;
+		this.setSize(width, height);
 	}
 
 	public boolean contains(float x, float y) {

@@ -31,6 +31,9 @@ import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 
+/**
+ * 按钮用UI,它和LClickButton的主要差异在于，这个按钮必须依赖纹理生成,也就是有图才能用(而且最好注入4张图,对应四种状态)
+ */
 public class LButton extends LComponent implements FontSet<LButton> {
 
 	private String text = null;

@@ -30,6 +30,9 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
+/**
+ * 一个单纯的文字框组件UI,长度可动态改变
+ */
 public class LTextBar extends LComponent {
 
 	private boolean _drawUI = false;

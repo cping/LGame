@@ -29,6 +29,9 @@ import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
+/**
+ * 游戏手柄用UI(Loon默认jar中有图,当然也可以自定义),支持上下左右四方向移动,八方向移动请使用LControl
+ */
 public class LPad extends LComponent {
 
 	private boolean isLeft, isRight, isUp, isDown, isClick;

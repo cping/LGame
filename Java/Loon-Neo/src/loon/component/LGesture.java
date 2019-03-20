@@ -30,7 +30,9 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-//0.3.3版新增类,用以进行跨平台手势操作。
+/**
+ * 0.3.3版新增类,用以进行跨平台手势操作(触屏经过的路径,默认会以指定颜色显示出来轨迹,当然也可以隐藏轨迹,仅仅获得经过的路径)
+ */
 public class LGesture extends LComponent {
 
 	private float mX;
@@ -203,27 +205,6 @@ public class LGesture extends LComponent {
 			return goalPath.getCenter();
 		}
 		return new float[] { 0, 0 };
-	}
-
-	@Override
-	public void dragClick() {
-		if (Click != null) {
-			Click.DragClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	@Override
-	public void downClick() {
-		if (Click != null) {
-			Click.DownClick(this, input.getTouchX(), input.getTouchY());
-		}
-	}
-
-	@Override
-	public void upClick() {
-		if (Click != null) {
-			Click.UpClick(this, input.getTouchX(), input.getTouchY());
-		}
 	}
 
 	public void clear() {

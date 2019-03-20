@@ -35,6 +35,9 @@ import loon.utils.TArray;
 import loon.utils.timer.GameTime;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * 仿照XNA(monogame)的GameScreen进行实现的Screen,基础API都有近似实现,作用就是结合SpriteBatch的对应API转移游戏代码……
+ */
 public abstract class DrawableScreen extends Screen {
 
 	@Override

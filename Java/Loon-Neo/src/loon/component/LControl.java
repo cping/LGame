@@ -30,7 +30,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
 /**
- * 内置的滑杆控制器，用以操作八方向行走等
+ * 内置的滑杆控制器UI(LGame的jar中默认有图,当然也允许自定义)，用以操作八方向行走等
  */
 public class LControl extends LComponent {
 

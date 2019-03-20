@@ -33,6 +33,9 @@ import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
+/**
+ * UI组件的上级类,作为容器可以把多个LComponent注入一个LContainer
+ */
 public abstract class LContainer extends LComponent implements IArray {
 
 	protected LComponent[] _childs = new LComponent[0];

@@ -34,6 +34,9 @@ import loon.utils.LIterator;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
+/**
+ * 一个Layer类,用于同Actor类合作渲染游戏
+ */
 public class LLayer extends ActorLayer {
 
 	private Sprites _layerSprites;

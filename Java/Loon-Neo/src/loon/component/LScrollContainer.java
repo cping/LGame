@@ -28,6 +28,9 @@ import loon.component.skin.SkinManager;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
+/**
+ * 一个允许滚动显示其中内容的LContainer
+ */
 public class LScrollContainer extends LContainer {
 
 	private int scrollX;

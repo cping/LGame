@@ -58,6 +58,9 @@ import loon.opengl.TextureUtils;
 import loon.utils.Flip;
 import loon.utils.MathUtils;
 
+/**
+ * Loon桌面组件的核心,所有UI类组件基于此类产生
+ */
 public abstract class LComponent extends LObject<LContainer>
 		implements Flip<LComponent>, Visible, ActionBind, XY, BoxSize, LRelease {
 

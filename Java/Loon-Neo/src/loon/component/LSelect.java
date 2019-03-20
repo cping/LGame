@@ -33,6 +33,9 @@ import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
+/**
+ * 一个选项器UI,与LMenuSelect的最大区别在于这个的UI大小是固定的,而LMenuSelect会随着注入的内容不同而自行改变UI大小
+ */
 public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	private IFont messageFont;

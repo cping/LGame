@@ -32,6 +32,9 @@ import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
+/**
+ * CheckBox,单纯的选项打勾用UI
+ */
 public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	public final static LCheckBox at(String txt, int x, int y) {

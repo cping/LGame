@@ -47,6 +47,9 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
+/**
+ * 文字输入用UI
+ */
 public class LTextField extends LTextBar {
 
 	public static LTextField at(int x, int y) {

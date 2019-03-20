@@ -24,6 +24,9 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
+/**
+ * 一个附带渐变效果的状态条,可以使用为血条动态显示之类的
+ */
 public class StatusBar extends Entity {
 
 	private LColor colorback, colorbefore, colorafter;

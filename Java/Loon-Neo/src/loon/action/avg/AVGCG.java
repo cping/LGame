@@ -48,7 +48,7 @@ public class AVGCG implements LRelease {
 
 	private boolean style, loop;
 
-	int sleep, sleepMax, shakeNumber;
+	protected int sleep, sleepMax, shakeNumber;
 
 	public AVGCG(Screen screen) {
 		this.actionRole = new Sprites(screen);
@@ -205,7 +205,7 @@ public class AVGCG implements LRelease {
 		synchronized (charas) {
 			for (int i = 0; i < charas.size(); i++) {
 				AVGChara chara = (AVGChara) charas.get(i);
-				if (chara == null || !chara.isVisible) {
+				if (chara == null || !chara.visible) {
 					continue;
 				}
 				if (style) {
@@ -231,7 +231,7 @@ public class AVGCG implements LRelease {
 						}
 					}
 				}
-				if (chara.isAnimation) {
+				if (chara.showAnimation) {
 					AVGAnm animation = chara.anm;
 					if (animation.load) {
 						if (animation.loop && animation.startTime == -1) {

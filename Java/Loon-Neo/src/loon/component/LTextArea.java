@@ -44,7 +44,7 @@ import loon.opengl.LSTRDictionary;
 import loon.utils.StringUtils;
 
 /**
- * 字符串显示用类,支持多种文字显示特效,个人建议主要用来做信息推送显示
+ * 字符串显示用组件UI,支持多种文字显示特效,主要用来做信息推送显示之类游戏效果(比如rpg打怪时的文字描述什么的)
  */
 public class LTextArea extends LComponent implements FontSet<LTextArea> {
 

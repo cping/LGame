@@ -1,3 +1,23 @@
+/**
+ * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.font;
 
 import loon.HorizontalAlign;
@@ -6,6 +26,9 @@ import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * Loon的字体渲染辅助工具,它并非针对某一特定Font的,而是所有实现了IFont接口的类都可以使用此工具
+ */
 public class FontUtils {
 
 	private static final int UNSPECIFIED = -1;
