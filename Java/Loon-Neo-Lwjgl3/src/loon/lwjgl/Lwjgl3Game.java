@@ -529,7 +529,7 @@ public class Lwjgl3Game extends LGame {
 
 			GLFWImage icon = GLFWImage.malloc();
 			icon.set(pixmap.getWidth(), pixmap.getHeight(),
-					pixmap.convertPixmapToByteBuffer());
+					pixmap.convertPixmapToByteBuffer(true));
 			buffer.put(icon);
 
 			icon.free();

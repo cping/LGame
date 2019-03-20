@@ -2182,11 +2182,18 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public ByteBuffer convertPixmapToByteBuffer() {
+		return convertPixmapToByteBuffer(false);
+	}
+	
+	public ByteBuffer convertPixmapToByteBuffer(boolean filterTran) {
 		Support support = LSystem.base().support();
 		ByteBuffer buffer = support.newByteBuffer(_width * _height * 4);
 		for (int y = 0; y < getHeight(); y++) {
 			for (int x = 0; x < getWidth(); x++) {
 				int pixel = this._drawPixels[y * _width + x];
+				if (filterTran && pixel == LColor.TRANSPARENT) {
+					pixel = 0;
+				}
 				buffer.put((byte) ((pixel >> 16) & 0xFF));
 				buffer.put((byte) ((pixel >> 8) & 0xFF));
 				buffer.put((byte) (pixel & 0xFF));

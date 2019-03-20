@@ -24,7 +24,6 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -133,7 +132,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree>{
 	}
 
 	public LTextTree(int x, int y, int width, int height, float space) {
-		this(LFont.getDefaultFont(), x, y, width, height, space);
+		this(LSystem.getSystemGameFont(), x, y, width, height, space);
 	}
 
 	public LTextTree(IFont font, int x, int y, int width, int height, float space) {

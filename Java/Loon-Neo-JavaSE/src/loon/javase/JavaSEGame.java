@@ -441,7 +441,7 @@ public class JavaSEGame extends LGame {
 		int size = pixmap.length;
 		ByteBuffer[] buffers = new ByteBuffer[size];
 		for (int i = 0; i < size; i++) {
-			buffers[i] = pixmap[i].convertPixmapToByteBuffer();
+			buffers[i] = pixmap[i].convertPixmapToByteBuffer(true);
 		}
 		Display.setIcon(buffers);
 	}

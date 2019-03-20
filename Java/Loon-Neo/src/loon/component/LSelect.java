@@ -29,7 +29,9 @@ import loon.component.skin.SkinManager;
 import loon.event.SysKey;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.font.LFont;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
@@ -44,8 +46,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	private int left, top, type, nTop;
 
-	private int sizeFont, doubleSizeFont, tmpOffset, messageLeft, nLeft,
-			messageTop, selectSize, selectFlag;
+	private int sizeFont, doubleSizeFont, tmpOffset, messageLeft, nLeft, messageTop, selectSize, selectFlag;
 
 	private float autoAlpha;
 
@@ -80,27 +81,22 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LSelect(LTexture formImage, int x, int y) {
-		this(SkinManager.get().getMessageSkin().getFont(), formImage, x, y,
-				formImage.getWidth(), formImage.getHeight());
+		this(SkinManager.get().getMessageSkin().getFont(), formImage, x, y, formImage.getWidth(),
+				formImage.getHeight());
 	}
 
-	public LSelect(IFont font, LTexture formImage, int x, int y, int width,
-			int height) {
-		this(font, formImage, x, y, width, height, SkinManager.get()
-				.getMessageSkin().getFontColor());
+	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height) {
+		this(font, formImage, x, y, width, height, SkinManager.get().getMessageSkin().getFontColor());
 	}
 
 	public LSelect(MessageSkin skin, int x, int y, int width, int height) {
-		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height,
-				skin.getFontColor());
+		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin.getFontColor());
 	}
 
-	public LSelect(IFont font, LTexture formImage, int x, int y, int width,
-			int height, LColor fontColor) {
+	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor fontColor) {
 		super(x, y, width, height);
 		if (formImage == null) {
-			this.setBackground(LTextures.createTexture(width, height,
-					LTexture.Format.LINEAR));
+			this.setBackground(LTextures.createTexture(width, height, LTexture.Format.LINEAR));
 			this.setAlpha(0.3F);
 		} else {
 			this.setBackground(formImage);
@@ -181,6 +177,9 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
 		}
+		if (messageFont instanceof LFont) {
+			LSTRDictionary.get().bind((LFont) messageFont, selects);
+		}
 	}
 
 	@Override
@@ -211,12 +210,10 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
 		}
-		messageLeft = (x + doubleSizeFont + sizeFont / 2) + tmpOffset + left
-				+ doubleSizeFont;
+		messageLeft = (x + doubleSizeFont + sizeFont / 2) + tmpOffset + left + doubleSizeFont;
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
-			messageFont.drawString(g, message, messageLeft, messageTop
-					- messageFont.getAscent(), fontColor);
+			messageFont.drawString(g, message, messageLeft, messageTop - messageFont.getAscent(), fontColor);
 		} else {
 			messageTop = y + top;
 		}
@@ -229,15 +226,12 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 				isSelect = (type == (selectFlag > 0 ? selectFlag : 1));
 				if ((buoyage != null) && isSelect) {
 					g.setAlpha(autoAlpha);
-					g.draw(buoyage, nLeft, nTop
-							- (int) (buoyage.getHeight() / 1.5), baseColor);
+					g.draw(buoyage, nLeft, nTop - (int) (buoyage.getHeight() / 1.5), baseColor);
 					g.setAlpha(1F);
 				}
-				messageFont.drawString(g, selects[i], messageLeft, nTop
-						- messageFont.getAscent(), fontColor);
+				messageFont.drawString(g, selects[i], messageLeft, nTop - messageFont.getAscent(), fontColor);
 				if ((cursor != null) && isSelect) {
-					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2,
-							LColor.white);
+					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2, LColor.white);
 				}
 
 			}
@@ -272,8 +266,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	@Override
 	protected void processTouchReleased() {
 		this.upClick();
-		if (LSystem.base() != null
-				&& (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)) {
+		if (LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)) {
 			this.processTouchMoved();
 		}
 	}
@@ -282,8 +275,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	protected synchronized void processTouchMoved() {
 		if (selects != null) {
 			int touchY = input.getTouchY();
-			selectFlag = selectSize
-					- (((nTop + 30) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
+			selectFlag = selectSize - (((nTop + 30) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
 			if (selectFlag < 1) {
 				selectFlag = 0;
 			}
@@ -366,8 +358,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 
 	}
 

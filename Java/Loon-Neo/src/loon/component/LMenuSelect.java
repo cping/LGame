@@ -35,6 +35,7 @@ import loon.font.LFont;
 import loon.geom.PointF;
 import loon.geom.RectF;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -49,18 +50,19 @@ import loon.utils.timer.LTimer;
  * // 选中行所用的图像标记(箭头图之类),不设置使用默认样式 <br>
  * // ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME+"creese.png"); <br>
  * // 选择框菜单所用的背景图,不设置使用默认样式,也可以noneBackground不显示<br>
- *    ms.setBackground(DefUI.getGameWinFrame(ms.width(), ms.height(),LColor.black,LColor.blue, false)); <br>
+ * ms.setBackground(DefUI.getGameWinFrame(ms.width(),
+ * ms.height(),LColor.black,LColor.blue, false)); <br>
  * // 设置监听 ms.setMenuListener(new LMenuSelect.ClickEvent() {<br>
  * 
  * // 监听当前点击的索引与内容<br>
  * 
  * @Override public void onSelected(int index, String context) { // 添加气泡提示<br>
- *           
+ * 
  *           add(LToast.makeText(context, Style.SUCCESS));<br>
  * 
  *           }}); <br>
- *   // 添加到screen <br>
- *   add(ms);
+ *           // 添加到screen <br>
+ *           add(ms);
  */
 public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
@@ -143,7 +145,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LMenuSelect(String[] labels, int x, int y) {
-		this(LFont.getDefaultFont(), labels, x, y);
+		this(LSystem.getSystemGameFont(), labels, x, y);
 	}
 
 	public LMenuSelect(IFont font, String[] labels, int x, int y) {
@@ -249,8 +251,10 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				_selectRects[i] = new RectF(0, maxHeight, maxWidth, height);
 				maxHeight += height;
 			}
-
 			setSize(maxWidth + _flag_text_space * 2, maxHeight + _flag_text_space * 2);
+			if (_font instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) _font, _labels);
+			}
 		}
 		return this;
 	}

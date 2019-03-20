@@ -202,6 +202,11 @@ public class LLabel extends LComponent {
 	public CharSequence getText() {
 		return _text.getText();
 	}
+	
+	public LLabel setText(CharSequence ch){
+		_text.setText(ch);
+		return this;
+	}
 
 	public float getOffsetLeft() {
 		return _offsetX;

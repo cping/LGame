@@ -16,7 +16,7 @@
 
 * IKVM: 基于Mono衍生的Java版封装库以及字节码转换工具。[下载地址](http://weblog.ikvm.net/)
 * Robovm: 基于LLVM开发，运行时转换字节码为本地机器码，并提供有完善的本地API支持，为IOS提供了完整的Java运行时环境，附带可视化IDE。 [官网](https://robovm.com/)
-* Multi-OS Engine: 由Intel推出的，免费的Java跨平台工具（特意注明了： It’s free! ），使用AOT静态代码转换方式的Java跨平台工具（目前支持Android和IOS），现阶段只有预览版，程序示例:https://github.com/moe-java-samples/moe-java-samples。另外，这玩意还有很强的跨平台补丁功能（而且不必改变原有Java文件，可以直接注明替换），比如LibGDXMissileCommand的示例中，演示了直接通过add_moe_support.patch打补丁方式，转换libgdx项目到它的IOS支持库。[官网](https://software.intel.com/en-us/multi-os-engine/)
+* Multi-OS Engine: 由Intel推出的，免费的Java跨平台工具（特意注明了： It’s free! ），使用AOT静态代码转换方式的Java跨平台工具（目前支持Android和IOS），现阶段只有预览版，程序示例: [Github上示例](https://github.com/moe-java-samples/moe-java-samples)。另外，这玩意还有很强的跨平台补丁功能（而且不必改变原有Java文件，可以直接注明替换），比如LibGDXMissileCommand的示例中，演示了直接通过add_moe_support.patch打补丁方式，转换libgdx项目到它的IOS支持库。[官网](https://software.intel.com/en-us/multi-os-engine/)
 * CodenameOne: 最初源自XMLVM的Java跨平台项目（XMLVM目前已经停止开发），原始版本的运行原理是转换Java代码为XML描述的中间语言，然后再转换为具体环境下的本地开发语言，并不具备具体平台的API支持功能。但是，CodenameOne为其增加了WP、Android以及IOS的本地环境API（不过提供的仅仅是CodenameOne自己的封装包，而不是完整的官方API，这点与Robovm差异很大），所以也就可以直接让程序运行于上述平台之上。[项目地址](https://github.com/codenameone/CodenameOne/)
 * avian: 基于openjdk二次开发，Java运行时环境的轻量级二次封装库，据作者说未来将会完整支持IOS和Android平台(目前也可以跑IOS，但需要越狱……)。[项目地址](https://github.com/ReadyTalk/avian/)
 * GWT: 经典的Java to JavaScript代码转换，以及页面开发工具，附带有较为完善的JS仿写Java的本地支持库，可以满足大多数【平台无关】的Java代码直接转换到浏览器环境。[项目地址](https://github.com/gwtproject/gwt/)

@@ -8,7 +8,7 @@
 
 * 本引擎开发环境是JDK 1.8，设置的最低运行环境为JRE 1.7，请注意低版本JRE不能识别高版本编译的jar，如果直接使用jar（而非导入代码），而无法运行，请注意替换为高版本JRE，或者以源码编译为低版本类库。
 
-[免费的游戏素材可见此](https://raw.github.com/cping/LGame/master/dev-res/README.md "Game Source of Free")
+[免费的游戏素材可见此](https://raw.github.com/cping/LGame/blob/master/dev-res/README.md "Game Source of Free")
 _________
 
 #LGame (formal name : Loon)
