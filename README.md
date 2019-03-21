@@ -29,8 +29,7 @@ LGame puts all of its effort into keeping things short and simple. The initial s
 LGame is built around the users wishes, so do not hesitate to suggest and critique!
 
 ### Game Run the Example(JavaSE)
-
-'''java
+```java
 
 package org.test;
 
@@ -78,8 +77,7 @@ public class Main  {
 		});
 	}
 }
-'''
-
+```
 ## Create a LGame project
 LGame comes with a file called LGameProjectMake.jar which is an executable UI and command line tool. You can simply execute the JAR file which will open the setup UI.
 ![LGame](https://raw.github.com/cping/LGame/master/install.png "install")
