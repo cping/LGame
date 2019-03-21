@@ -79,7 +79,10 @@ public class Main  {
 }
 ```
 ## Create a LGame project
+
 LGame comes with a file called LGameProjectMake.jar which is an executable UI and command line tool. You can simply execute the JAR file which will open the setup UI.
+
+
 ![LGame](https://raw.github.com/cping/LGame/master/install.png "install")
 
 Built-in over 30 game example(Part screenshots):
