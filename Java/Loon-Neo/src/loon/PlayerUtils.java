@@ -1,6 +1,25 @@
+/**
+ * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon;
 
-import loon.Log.Level;
 import loon.action.ActionBind;
 import loon.action.ActionCallback;
 import loon.action.ActionControl;
@@ -165,115 +184,4 @@ public class PlayerUtils extends Director {
 		return player;
 	}
 
-	public final static void debug(String msg) {
-		LSystem.debug(msg);
-	}
-
-	public final static void debug(String msg, Object... args) {
-		LSystem.debug(msg, args);
-	}
-
-	public final static void debug(String msg, Throwable throwable) {
-		LSystem.debug(msg, throwable);
-	}
-
-	public final static void info(String msg) {
-		LSystem.info(msg);
-	}
-
-	public final static void info(String msg, Object... args) {
-		LSystem.info(msg, args);
-	}
-
-	public final static void info(String msg, Throwable throwable) {
-		LSystem.info(msg, throwable);
-	}
-
-	public final static void error(String msg) {
-		LSystem.error(msg);
-	}
-
-	public final static void error(String msg, Object... args) {
-		LSystem.error(msg, args);
-	}
-
-	public final static void error(String msg, Throwable throwable) {
-		LSystem.error(msg, throwable);
-	}
-
-	public final static RuntimeException runThrow(String msg) {
-		return LSystem.runThrow(msg);
-	}
-
-	public final static RuntimeException runThrow(String msg, Throwable thr) {
-		return LSystem.runThrow(msg, thr);
-	}
-
-	public final static RuntimeException runThrow(String msg, Object... args) {
-		return LSystem.runThrow(msg, args);
-	}
-
-	public final static void d(String msg) {
-		LSystem.debug(msg);
-	}
-
-	public final static void d(String msg, Object... args) {
-		LSystem.debug(msg, args);
-	}
-
-	public final static void d(String msg, Throwable throwable) {
-		LSystem.debug(msg, throwable);
-	}
-
-	public final static void i(String msg) {
-		LSystem.info(msg);
-	}
-
-	public final static void i(String msg, Object... args) {
-		LSystem.info(msg, args);
-	}
-
-	public final static void i(String msg, Throwable throwable) {
-		LSystem.info(msg, throwable);
-	}
-
-	public final static void w(String msg) {
-		LSystem.warn(msg);
-	}
-
-	public final static void w(String msg, Object... args) {
-		LSystem.warn(msg, args);
-	}
-
-	public final static void w(String msg, Throwable throwable) {
-		LSystem.warn(msg, throwable);
-	}
-	
-	public final static void e(String msg) {
-		LSystem.error(msg);
-	}
-
-	public final static void e(String msg, Object... args) {
-		LSystem.error(msg, args);
-	}
-
-	public final static void e(String msg, Throwable throwable) {
-		LSystem.error(msg, throwable);
-	}
-
-	public final static RuntimeException re(String msg) {
-		return LSystem.runThrow(msg);
-	}
-
-	public final static RuntimeException re(String msg, Throwable thr) {
-		return LSystem.runThrow(msg, thr);
-	}
-
-	public final static RuntimeException re(String msg, Object... args) {
-		return LSystem.runThrow(msg, args);
-	}
-	
-	public final static void setLogMinLevel(Level level) {
-		LSystem.setLogMinLevel(level);
-	}
 }

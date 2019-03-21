@@ -30,7 +30,7 @@ public class PointI implements XY {
 	public int y = 0;
 
 	public PointI() {
-
+		this(0, 0);
 	}
 
 	public PointI(int x1, int y1) {
@@ -55,19 +55,22 @@ public class PointI implements XY {
 		return MathUtils.sqrt(MathUtils.mul(x, x) + MathUtils.mul(y, y));
 	}
 
-	public final void negate() {
+	public final PointI negate() {
 		x = -x;
 		y = -y;
+		return this;
 	}
 
-	public final void offset(int x, int y) {
+	public final PointI offset(int x, int y) {
 		this.x += x;
 		this.y += y;
+		return this;
 	}
 
-	public final void set(PointI p) {
+	public final PointI set(PointI p) {
 		this.x = p.x;
 		this.y = p.y;
+		return this;
 	}
 
 	public final int distanceTo(PointI p) {
@@ -85,14 +88,21 @@ public class PointI implements XY {
 	public final int distanceTo(PointI p1, PointI p2) {
 		final int tx = p2.x - p1.x;
 		final int ty = p2.y - p1.y;
-		final int u = MathUtils.div(
-				MathUtils.mul(x - p1.x, tx) + MathUtils.mul(y - p1.y, ty),
+		final int u = MathUtils.div(MathUtils.mul(x - p1.x, tx) + MathUtils.mul(y - p1.y, ty),
 				MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 		final int ix = p1.x + MathUtils.mul(u, tx);
 		final int iy = p1.y + MathUtils.mul(u, ty);
 		final int dx = ix - x;
 		final int dy = iy - y;
 		return MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
+	}
+
+	public PointI cpy(PointI p) {
+		return new PointI(p.x, p.y);
+	}
+
+	public PointI cpy() {
+		return cpy(this);
 	}
 
 	@Override

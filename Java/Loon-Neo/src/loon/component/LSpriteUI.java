@@ -114,14 +114,14 @@ public class LSpriteUI extends LContainer {
 	@Override
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
-			this.downClick();
+			super.processTouchPressed();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		if (!input.isMoving()) {
-			this.upClick();
+			super.processTouchReleased();
 		}
 	}
 

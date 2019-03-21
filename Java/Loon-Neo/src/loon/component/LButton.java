@@ -218,19 +218,14 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	@Override
-	protected void processTouchClicked() {
-		this.doClick();
-	}
-
-	@Override
 	protected void processTouchPressed() {
-		this.downClick();
+		super.processTouchPressed();
 		this.pressed = true;
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		this.upClick();
+		super.processTouchReleased();
 		if (_function != null) {
 			_function.call(this);
 		}

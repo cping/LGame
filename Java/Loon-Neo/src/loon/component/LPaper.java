@@ -79,7 +79,7 @@ public class LPaper extends LContainer {
 	@Override
 	protected void processTouchClicked() {
 		if (!input.isMoving()) {
-			this.doClick();
+			super.processTouchClicked();
 		}
 	}
 
@@ -121,14 +121,14 @@ public class LPaper extends LContainer {
 	@Override
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
-			this.downClick();
+			super.processTouchPressed();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		if (!input.isMoving()) {
-			this.upClick();
+			super.processTouchReleased();
 		}
 	}
 

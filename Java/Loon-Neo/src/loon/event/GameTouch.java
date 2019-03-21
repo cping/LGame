@@ -148,7 +148,8 @@ public class GameTouch {
 		return new Vector2f((int) x, (int) y);
 	}
 
+	@Override
 	public String toString() {
-		return "id:" + id + "," + get() + ", point: " + pointer + ", button:" + button;
+		return "id:" + id + "," + get() + ", point:" + pointer + ", button:" + button;
 	}
 }

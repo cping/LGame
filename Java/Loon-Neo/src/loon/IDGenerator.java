@@ -24,6 +24,8 @@ public class IDGenerator {
 
 	private static IDGenerator instance;
 
+	private final Counter _counter = new Counter();
+	
 	public final static IDGenerator make() {
 		return new IDGenerator();
 	}
@@ -39,8 +41,6 @@ public class IDGenerator {
 			return instance;
 		}
 	}
-	
-	private final Counter _counter = new Counter();
 
 	private IDGenerator() {
 	}

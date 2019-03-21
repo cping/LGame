@@ -48,6 +48,7 @@ import loon.utils.MathUtils;
  * 
  * Examples:
  * 
+ * <pre>
  *      TArray<String> list = new TArray<String>();
  *      list.add("赵钱孙李周吴郑王");
  *      list.add("冯陈褚卫蒋沈韩杨"); 
@@ -56,6 +57,7 @@ import loon.utils.MathUtils;
  *      list.add("<>"); 
  *      LDecideName decideName = new LDecideName(list,0, 0);
  *      add(decideName);
+ * </pre>
  */
 public class LDecideName extends LComponent implements FontSet<LDecideName> {
 

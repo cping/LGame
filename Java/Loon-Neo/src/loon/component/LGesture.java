@@ -25,10 +25,14 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.event.SysTouch;
 import loon.geom.Path;
+import loon.geom.PointF;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.GestureData;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.URecognizer;
+import loon.utils.URecognizerResult;
 
 /**
  * 0.3.3版新增类,用以进行跨平台手势操作(触屏经过的路径,默认会以指定颜色显示出来轨迹,当然也可以隐藏轨迹,仅仅获得经过的路径)
@@ -65,13 +69,11 @@ public class LGesture extends LComponent {
 	}
 
 	public LGesture() {
-		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
-				true);
+		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), true);
 	}
 
 	public LGesture(boolean flag) {
-		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
-				flag);
+		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), flag);
 	}
 
 	@Override
@@ -84,8 +86,7 @@ public class LGesture extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		g.saveBrush();
 		if (visible && goalPath != null) {
 			int tmp = g.color();
@@ -119,16 +120,16 @@ public class LGesture extends LComponent {
 			}
 			curveEndX = x;
 			curveEndY = y;
-			downClick();
 		}
+		super.processTouchPressed();
 	}
 
 	@Override
 	protected void processTouchReleased() {
+		super.processTouchReleased();
 		if (autoClear) {
 			clear();
 		}
-		upClick();
 	}
 
 	@Override
@@ -154,7 +155,7 @@ public class LGesture extends LComponent {
 				}
 			}
 		}
-		super.dragClick();
+		super.processTouchDragged();
 	}
 
 	public float[] getPoints() {
@@ -164,12 +165,25 @@ public class LGesture extends LComponent {
 		return null;
 	}
 
+	public TArray<PointF> getListPoint() {
+		if (goalPath != null) {
+			float[] points = goalPath.getPoints();
+			int size = points.length;
+			TArray<PointF> result = new TArray<PointF>(size);
+			for (int i = 0; i < size; i += 2) {
+				result.add(new PointF(points[i], points[i + 1]));
+			}
+			return result;
+		}
+		return null;
+	}
+
 	public TArray<Vector2f> getList() {
 		if (goalPath != null) {
 			float[] points = goalPath.getPoints();
 			int size = points.length;
 			TArray<Vector2f> result = new TArray<Vector2f>(size);
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < size; i += 2) {
 				result.add(new Vector2f(points[i], points[i + 1]));
 			}
 			return result;
@@ -190,8 +204,7 @@ public class LGesture extends LComponent {
 			int size = points.length;
 			for (int i = 0; i < size;) {
 				if (i < size - 3) {
-					length += distance(points[0 + i], points[1 + i],
-							points[2 + i], points[3 + i]);
+					length += distance(points[0 + i], points[1 + i], points[2 + i], points[3 + i]);
 				}
 				i += 4;
 			}
@@ -252,6 +265,56 @@ public class LGesture extends LComponent {
 	 */
 	public void setAutoClear(boolean autoClear) {
 		this.autoClear = autoClear;
+	}
+
+	/**
+	 * 获得一个指定数据的手势分析器
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public URecognizerResult getRecognizer(GestureData data, int type) {
+		URecognizer analyze = new URecognizer(data, type);
+		if (goalPath != null) {
+			float[] points = goalPath.getPoints();
+			int size = points.length;
+			TArray<PointF> v = new TArray<PointF>();
+			for (int i = 0; i < size; i += 2) {
+				v.add(new PointF(points[i], points[i + 1]));
+			}
+			return analyze.getRecognize(v);
+		}
+		return new URecognizerResult();
+	}
+
+	/**
+	 * 获得一个指定数据的手势分析器
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public URecognizerResult getRecognizer(GestureData data) {
+		return getRecognizer(data, URecognizer.GESTURES_DEFAULT);
+	}
+
+	/**
+	 * 使用指定文件中的采样数据分析手势
+	 * 
+	 * @param path
+	 * @param resampledFirst
+	 * @return
+	 */
+	public URecognizerResult getRecognizer(String path, boolean resampledFirst) {
+		return getRecognizer(GestureData.loadUserPoints(path, resampledFirst), URecognizer.GESTURES_NONE);
+	}
+
+	/**
+	 * 获得一个手势分析器
+	 * 
+	 * @return
+	 */
+	public URecognizerResult getRecognizer() {
+		return getRecognizer(new GestureData(), URecognizer.GESTURES_DEFAULT);
 	}
 
 	@Override

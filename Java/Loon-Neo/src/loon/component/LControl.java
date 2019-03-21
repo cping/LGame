@@ -129,13 +129,14 @@ public class LControl extends LComponent {
 		final float relativeY = MathUtils.bringToBounds(0, baseHeight,
 				SysTouch.getY() - getScreenY())
 				/ baseHeight - 0.5f;
-
 		onUpdateControlDot(relativeX, relativeY);
+		super.processTouchPressed();
 	}
 
 	@Override
 	public void processTouchReleased() {
 		centerOffset();
+		super.processTouchReleased();
 	}
 
 	private void position(final float x, final float y, final int direction) {

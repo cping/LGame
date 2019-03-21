@@ -23,44 +23,71 @@ package loon;
 import loon.font.IFont;
 import loon.utils.NumberUtils;
 
+/**
+ * LGame的基础配置类,游戏初始化属性由此产生
+ */
 public class LSetting {
 
-	// 若此处true,则fps,memory以及sprite数量全部显示
+	/**
+	 * 若此处true,则fps,memory以及sprite数量之类数据
+	 */
 	public boolean isDebug = false;
 
-	// 此项为true时,将log信息也打印到窗体中
+	/**
+	 * 此项为true时,log信息也将同时打印到游戏窗体中
+	 */
 	public boolean isDisplayLog = false;
 
-	// 是否显示FPS帧率
+	/**
+	 * 是否显示FPS帧率
+	 */
 	public boolean isFPS = false;
 
-	// 是否显示内存
+	/**
+	 * 是否显示游戏内存消耗
+	 */
 	public boolean isMemory = false;
 
-	// 是否显示精灵与桌面组件数量
+	/**
+	 * 是否显示精灵与桌面组件数量
+	 */
 	public boolean isSprites = false;
 
-	// 是否显示logo（替换logo使用logoPath指定地址）
+	/**
+	 * 是否显示logo（替换logo使用logoPath指定地址）
+	 */
 	public boolean isLogo = false;
 
-	// 帧率
+	/**
+	 * 帧率
+	 */
 	public int fps = 60;
 
-	// 游戏画面实际宽度
+	/**
+	 * 游戏画面实际宽度
+	 */
 	public int width = 480;
 
-	// 游戏画面实际高度
+	/**
+	 * 游戏画面实际高度
+	 */
 	public int height = 320;
 
-	// 游戏画面缩放大小（不需要则维持在-1即可）
+	/**
+	 * 游戏画面缩放大小,假如原始画面大小480x320,下列项为640x480,则会拉伸画布,缩放到640x480显示（不需要则维持在-1即可）
+	 */
 	public int width_zoom = -1;
 
 	public int height_zoom = -1;
 
-	// 是否全屏
+	/**
+	 * 是否全屏
+	 */
 	public boolean fullscreen = false;
 
-	// 是否使用虚拟触屏按钮
+	/**
+	 * 是否使用虚拟触屏按钮(针对非手机平台)
+	 */
 	public boolean emulateTouch = false;
 
 	public int activationKey = -1;
@@ -97,14 +124,23 @@ public class LSetting {
 		this.fontName = setting.fontName;
 	}
 
+	/**
+	 * 全局的log显示用字体,不设置则默认使用LFont贴图本地字体
+	 */
 	public void setSystemLogFont(IFont font) {
 		LSystem.setSystemLogFont(font);
 	}
-
+	
+	/**
+	 * 全局的游戏画面用字体,不设置则默认使用LFont贴图本地字体
+	 */
 	public void setSystemGameFont(IFont font) {
 		LSystem.setSystemGameFont(font);
 	}
 
+	/**
+	 * loon中一切字体的统一设置
+	 */
 	public void setSystemGlobalFont(IFont font) {
 		LSystem.setSystemGlobalFont(font);
 	}

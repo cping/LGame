@@ -201,11 +201,6 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	@Override
-	protected void processTouchClicked() {
-		this.doClick();
-	}
-
-	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
 			this.doClick();
@@ -215,14 +210,14 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	@Override
 	protected void processTouchPressed() {
 		if (!input.isMoving()) {
-			this.downClick();
+			super.processTouchPressed();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		if (!input.isMoving()) {
-			this.upClick();
+			super.processTouchReleased();
 		}
 	}
 

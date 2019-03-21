@@ -27,194 +27,202 @@ import loon.utils.json.JsonParserException;
 import loon.utils.json.JsonSink;
 
 public interface Json {
-  
-  interface TypedArray<T> {
 
-    int length();
+	interface TypedArray<T> {
 
-    T get(int index);
+		int length();
 
-    T get(int index, T dflt);
+		T get(int index);
 
-    Iterator<T> iterator();
+		T get(int index, T dflt);
 
-    public static class Util {
+		Iterator<T> iterator();
 
-      public static TypedArray<Boolean> create (Boolean... data) {
-        return Util.<Boolean>toArray(data);
-      }
+		public static class Util {
 
-      public static TypedArray<Integer> create (Integer... data) {
-        return Util.<Integer>toArray(data);
-      }
+			public static TypedArray<Boolean> create(Boolean... data) {
+				return Util.<Boolean>toArray(data);
+			}
 
-      public static TypedArray<Float> create (Float... data) {
-        return Util.<Float>toArray(data);
-      }
+			public static TypedArray<Integer> create(Integer... data) {
+				return Util.<Integer>toArray(data);
+			}
 
-      public static TypedArray<Double> create (Double... data) {
-        return Util.<Double>toArray(data);
-      }
+			public static TypedArray<Float> create(Float... data) {
+				return Util.<Float>toArray(data);
+			}
 
-      public static TypedArray<String> create (String... data) {
-        return Util.<String>toArray(data);
-      }
+			public static TypedArray<Double> create(Double... data) {
+				return Util.<Double>toArray(data);
+			}
 
-      public static TypedArray<Json.Object> create (Json.Object... data) {
-        return Util.<Json.Object>toArray(data);
-      }
+			public static TypedArray<String> create(String... data) {
+				return Util.<String>toArray(data);
+			}
 
-      public static TypedArray<Json.Array> create (Json.Array... data) {
-        return Util.<Json.Array>toArray(data);
-      }
+			public static TypedArray<Json.Object> create(Json.Object... data) {
+				return Util.<Json.Object>toArray(data);
+			}
 
-      private static <T> TypedArray<T> toArray (final java.lang.Object[] data) {
-        return new TypedArray<T>() {
-          public int length() {
-            return data.length;
-          }
-          public T get(int index) {
-            @SuppressWarnings("unchecked") T value = (T)data[index];
-            return value;
-          }
-          public T get(int index, T dflt) {
-            return (index < 0 || index >= data.length) ? dflt : get(index);
-          }
-          public Iterator<T> iterator() {
-            @SuppressWarnings({ "unchecked", "rawtypes" }) TArray<T> list = (TArray<T>)new TArray(data);
-            return list.iterator();
-          }
-        };
-      }
-    }
-  }
+			public static TypedArray<Json.Array> create(Json.Array... data) {
+				return Util.<Json.Array>toArray(data);
+			}
 
+			private static <T> TypedArray<T> toArray(final java.lang.Object[] data) {
+				return new TypedArray<T>() {
+					@Override
+					public int length() {
+						return data.length;
+					}
 
-  interface Array {
+					@Override
+					public T get(int index) {
+						@SuppressWarnings("unchecked")
+						T value = (T) data[index];
+						return value;
+					}
 
-    int length();
+					@Override
+					public T get(int index, T dflt) {
+						return (index < 0 || index >= data.length) ? dflt : get(index);
+					}
 
-    boolean getBoolean(int index);
+					@Override
+					public Iterator<T> iterator() {
+						@SuppressWarnings({ "unchecked", "rawtypes" })
+						TArray<T> list = (TArray<T>) new TArray(data);
+						return list.iterator();
+					}
+				};
+			}
+		}
+	}
 
-    boolean getBoolean(int index, boolean dflt);
+	interface Array {
 
-    float getNumber(int index);
+		int length();
 
-    float getNumber(int index, float dflt);
+		boolean getBoolean(int index);
 
-    double getDouble(int index);
+		boolean getBoolean(int index, boolean dflt);
 
-    double getDouble(int index, double dflt);
+		float getNumber(int index);
 
-    int getInt(int index);
+		float getNumber(int index, float dflt);
 
-    int getInt(int index, int dflt);
+		double getDouble(int index);
 
-    long getLong(int index);
+		double getDouble(int index, double dflt);
 
-    long getLong(int index, long dflt);
+		int getInt(int index);
 
-    String getString(int index);
+		int getInt(int index, int dflt);
 
-    String getString(int index, String dflt);
+		long getLong(int index);
 
-    Object getObject(int index);
+		long getLong(int index, long dflt);
 
-    Object getObject(int index, Object dflt);
+		String getString(int index);
 
-    Array getArray(int index);
+		String getString(int index, String dflt);
 
-    Array getArray(int index, Array dflt);
+		Object getObject(int index);
 
-    boolean isArray(int index);
+		Object getObject(int index, Object dflt);
 
-    boolean isBoolean(int index);
+		Array getArray(int index);
 
-    boolean isNull(int index);
+		Array getArray(int index, Array dflt);
 
-    boolean isNumber(int index);
+		boolean isArray(int index);
 
-    boolean isString(int index);
+		boolean isBoolean(int index);
 
-    boolean isObject(int index);
+		boolean isNull(int index);
 
-    Array add(java.lang.Object value);
+		boolean isNumber(int index);
 
-    Array add(int index, java.lang.Object value);
+		boolean isString(int index);
 
-    Array remove(int index);
+		boolean isObject(int index);
 
-    Array set(int index, java.lang.Object value);
+		Array add(java.lang.Object value);
 
-    <T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink);
-  }
+		Array add(int index, java.lang.Object value);
 
-  interface Object {
+		Array remove(int index);
 
-    boolean getBoolean(String key);
+		Array set(int index, java.lang.Object value);
 
-    boolean getBoolean(String key, boolean dflt);
+		<T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink);
+	}
 
-    float getNumber(String key);
+	interface Object {
 
-    float getNumber(String key, float dflt);
+		boolean getBoolean(String key);
 
-    double getDouble(String key);
+		boolean getBoolean(String key, boolean dflt);
 
-    double getDouble(String key, double dflt);
+		float getNumber(String key);
 
-    int getInt(String key);
+		float getNumber(String key, float dflt);
 
-    int getInt(String key, int dflt);
+		double getDouble(String key);
 
-    long getLong(String key);
+		double getDouble(String key, double dflt);
 
-    long getLong(String key, long dflt);
+		int getInt(String key);
 
-    String getString(String key);
+		int getInt(String key, int dflt);
 
-    String getString(String key, String dflt);
+		long getLong(String key);
 
-    Object getObject(String key);
+		long getLong(String key, long dflt);
 
-    Object getObject(String key, Object dflt);
+		String getString(String key);
 
-    Array getArray(String key);
+		String getString(String key, String dflt);
 
-    Array getArray(String key, Array dflt);
+		Object getObject(String key);
 
-    boolean containsKey(String key);
+		Object getObject(String key, Object dflt);
 
-    TypedArray<String> keys();
+		Array getArray(String key);
 
-    boolean isArray(String key);
+		Array getArray(String key, Array dflt);
 
-    boolean isBoolean(String key);
+		boolean containsKey(String key);
 
-    boolean isNull(String key);
+		TypedArray<String> keys();
 
-    boolean isNumber(String key);
+		boolean isArray(String key);
 
-    boolean isString(String key);
+		boolean isBoolean(String key);
 
-    boolean isObject(String key);
+		boolean isNull(String key);
 
-    Object put(String key, java.lang.Object value);
+		boolean isNumber(String key);
 
-    Object remove(String key);
+		boolean isString(String key);
 
-    <T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink);
-  }
+		boolean isObject(String key);
 
-  Array createArray();
+		Object put(String key, java.lang.Object value);
 
-  Object createObject();
+		Object remove(String key);
 
-  boolean isArray(java.lang.Object o);
+		<T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink);
+	}
 
-  boolean isObject(java.lang.Object o);
+	Array createArray();
 
-  Object parse(String json) throws JsonParserException;
+	Object createObject();
 
-  Array parseArray(String json) throws JsonParserException;
+	boolean isArray(java.lang.Object o);
+
+	boolean isObject(java.lang.Object o);
+
+	Object parse(String json) throws JsonParserException;
+
+	Array parseArray(String json) throws JsonParserException;
 }

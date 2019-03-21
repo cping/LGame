@@ -18,41 +18,34 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.utils;
 
-/**
- * 用以保存两个数值的区间
- */
-public class Region {
+import loon.geom.PointF;
 
-	private int start;
-	private int end;
+public class URecognizerObject {
+	
+	private String name;
+	
+	private TArray<PointF> points;
 
-	public Region(int start, int end) {
-		super();
-		this.start = start;
-		this.end = end;
+	public URecognizerObject(String n, TArray<PointF> points) 
+	{
+		this.name = n;
+		this.points = URecognizer.loadResample(points, URecognizer.MXA_POINTS);
+		this.points = URecognizer.loadRotateToZero(this.points);
+		this.points = URecognizer.loadScaleToSquare(this.points, URecognizer.MAX_SQUARE_COUNT);
+		this.points = URecognizer.loadTranslateToOrigin(this.points);		
 	}
 
-	public void setStart(int start) {
-		this.start = start;
+	public String getName() {
+		return name;
 	}
 
-	public void setEnd(int end) {
-		this.end = end;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public int getStart() {
-		return start;
+	public TArray<PointF> getPoints() {
+		return points;
 	}
-
-	public int getEnd() {
-		return end;
-	}
-
-	@Override
-	public String toString() {
-		return "region [start=" + start + ", end=" + end + "]";
-	}
-
 }

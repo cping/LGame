@@ -258,6 +258,8 @@ public class MathUtils {
 
 	public static final float PI_OVER4 = 0.785398f;
 
+	public static final float PHI = 0.618f;
+	
 	static private final int BIG_ENOUGH_INT = 16 * 1024;
 
 	static private final float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;

@@ -251,7 +251,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 			if ((selects != null) && (selectFlag > 0)) {
 				this.result = selects[selectFlag - 1];
 			}
-			this.doClick();
+			super.processTouchClicked();
 			this.onClick = true;
 		} else {
 			this.onClick = false;
@@ -259,13 +259,8 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	@Override
-	protected void processTouchPressed() {
-		this.downClick();
-	}
-
-	@Override
 	protected void processTouchReleased() {
-		this.upClick();
+		super.processTouchReleased();
 		if (LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)) {
 			this.processTouchMoved();
 		}

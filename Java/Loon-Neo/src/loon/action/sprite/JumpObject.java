@@ -23,6 +23,9 @@ package loon.action.sprite;
 import loon.action.map.TileMap;
 import loon.geom.Vector2f;
 
+/**
+ * 一个可以做出'跳跃'动作的ActionObject实现
+ */
 public class JumpObject extends ActionObject {
 
 	public static interface JumpListener {

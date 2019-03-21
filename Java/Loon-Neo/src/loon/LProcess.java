@@ -45,11 +45,11 @@ import loon.utils.timer.LTimerContext;
 
 public class LProcess extends PlayerUtils {
 
-	TArray<Updateable> loads;
+	protected TArray<Updateable> loads;
 
-	TArray<Updateable> unloads;
+	protected TArray<Updateable> unloads;
 
-	EmulatorListener emulatorListener;
+	protected EmulatorListener emulatorListener;
 
 	private EmulatorButtons emulatorButtons;
 

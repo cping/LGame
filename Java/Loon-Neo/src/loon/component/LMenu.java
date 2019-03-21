@@ -43,9 +43,14 @@ import loon.utils.TArray;
  * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，
  * 若setSupportScroll(true)则支持滚动)
  * 
- * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); panel.add("ABC");
- * panel.add("EFG"); panel.add("ABC"); panel.add("EFG"); panel.add("ABC");
- * panel.add("EFG");
+ * Example:
+ * 
+ * <pre>
+ * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); 
+ * panel.add("ABC");
+ * panel.add("EFG"); 
+ * panel.add("ABC"); 
+ * </pre>
  */
 public class LMenu extends LComponent implements FontSet<LMenu> {
 

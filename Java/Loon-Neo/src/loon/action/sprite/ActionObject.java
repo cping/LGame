@@ -35,35 +35,18 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.Flip;
 
+/**
+ * 和瓦片地图绑定的动作对象,用来抽象一些简单的地图中精灵动作,允许渲染到SpriteBatch或者GLEx中
+ */
 public abstract class ActionObject extends LObject<ISprite> implements Flip<ActionObject>, Config, ISprite {
 
-	boolean visible = true;
+	protected boolean visible = true;
 
-	boolean flipX = false, flipY = false;
+	protected boolean flipX = false, flipY = false;
 
-	float scaleX = 1, scaleY = 1;
+	protected float scaleX = 1, scaleY = 1;
 
-	Sprites sprites = null;
-
-	public void setScale(final float s) {
-		this.setScale(s, s);
-	}
-
-	public void setScale(final float sx, final float sy) {
-		if (this.scaleX == sx && this.scaleY == sy) {
-			return;
-		}
-		this.scaleX = sx;
-		this.scaleY = sy;
-	}
-
-	public float getScaleX() {
-		return this.scaleX;
-	}
-
-	public float getScaleY() {
-		return this.scaleY;
-	}
+	protected Sprites sprites = null;
 
 	protected Attribute attribute;
 
@@ -340,6 +323,29 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 			return LSystem.getProcess().getScreen();
 		}
 		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
+	}
+
+	public void setScale(final float s) {
+		this.setScale(s, s);
+	}
+
+	@Override
+	public void setScale(final float sx, final float sy) {
+		if (this.scaleX == sx && this.scaleY == sy) {
+			return;
+		}
+		this.scaleX = sx;
+		this.scaleY = sy;
+	}
+
+	@Override
+	public float getScaleX() {
+		return this.scaleX;
+	}
+
+	@Override
+	public float getScaleY() {
+		return this.scaleY;
 	}
 
 	@Override

@@ -41,7 +41,23 @@ public class AABB implements XY {
 		this.maxX = maxX;
 		this.maxY = maxY;
 	}
+	
+	public int width(){
+		return (int)this.maxX;
+	}
 
+	public int height(){
+		return (int)this.maxY;
+	}
+	
+	public float getWidth(){
+		return this.maxX;
+	}
+	
+	public float getHeight(){
+		return this.maxY;
+	}
+	
 	public AABB cpy() {
 		return new AABB(this.minX, this.minY, this.maxX, this.maxY);
 	}

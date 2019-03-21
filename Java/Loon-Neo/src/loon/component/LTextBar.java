@@ -283,19 +283,14 @@ public class LTextBar extends LComponent {
 	}
 
 	@Override
-	protected void processTouchClicked() {
-		this.doClick();
-	}
-
-	@Override
 	protected void processTouchPressed() {
-		this.downClick();
+		super.processTouchPressed();
 		this.pressed = true;
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		this.upClick();
+		super.processTouchReleased();
 		this.pressed = false;
 	}
 

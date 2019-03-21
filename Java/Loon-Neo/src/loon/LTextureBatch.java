@@ -36,7 +36,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
 /**
- * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（texture.geTexturetBatch即可获得）,
+ * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（texture.geTexturetBatch即可获得）,<br>
  * 方便针对特定纹理的缓存以及渲染.
  */
 public class LTextureBatch implements LRelease {

@@ -31,14 +31,17 @@ public class SaveBatchImpl implements Save.Batch {
 		this.storage = storage;
 	}
 
+	@Override
 	public void setItem(String key, String data) {
 		updates.put(key, data);
 	}
 
+	@Override
 	public void removeItem(String key) {
 		updates.put(key, null);
 	}
 
+	@Override
 	public void commit() {
 		try {
 			onBeforeCommit();

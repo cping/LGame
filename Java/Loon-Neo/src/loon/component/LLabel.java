@@ -38,13 +38,16 @@ import loon.opengl.GLEx;
  * 
  * Example1:
  * 
+ * <pre>
  * LLabel label =
  * LLabel.make(HorizontalAlign.LEFT,"ABC",0,0,200,100,LColor.red);
+ * </pre>
  * 
  * Example2:
  * 
+ * <pre>
  * LLabel label = LLabel.make("ABC",99,99,LColor.red);
- * 
+ * </pre>
  */
 public class LLabel extends LComponent {
 

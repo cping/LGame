@@ -30,7 +30,7 @@ public class PointF implements XY {
 	public float y = 0;
 
 	public PointF() {
-
+		this(0, 0);
 	}
 
 	public PointF(float x1, float y1) {
@@ -55,19 +55,22 @@ public class PointF implements XY {
 		return MathUtils.sqrt(MathUtils.mul(x, x) + MathUtils.mul(y, y));
 	}
 
-	public final void negate() {
+	public final PointF negate() {
 		x = -x;
 		y = -y;
+		return this;
 	}
 
-	public final void offset(float x, float y) {
+	public final PointF offset(float x, float y) {
 		this.x += x;
 		this.y += y;
+		return this;
 	}
 
-	public final void set(PointF p) {
+	public final PointF set(PointF p) {
 		this.x = p.x;
 		this.y = p.y;
+		return this;
 	}
 
 	public final float distanceTo(PointF p) {
@@ -85,14 +88,21 @@ public class PointF implements XY {
 	public final float distanceTo(PointF p1, PointF p2) {
 		final float tx = p2.x - p1.x;
 		final float ty = p2.y - p1.y;
-		final float u = MathUtils.div(
-				MathUtils.mul(x - p1.x, tx) + MathUtils.mul(y - p1.y, ty),
+		final float u = MathUtils.div(MathUtils.mul(x - p1.x, tx) + MathUtils.mul(y - p1.y, ty),
 				MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 		final float ix = p1.x + MathUtils.mul(u, tx);
 		final float iy = p1.y + MathUtils.mul(u, ty);
 		final float dx = ix - x;
 		final float dy = iy - y;
 		return MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
+	}
+
+	public PointF cpy(PointF p) {
+		return new PointF(p.x, p.y);
+	}
+
+	public PointF cpy() {
+		return cpy(this);
 	}
 
 	@Override
@@ -104,7 +114,7 @@ public class PointF implements XY {
 	public float getY() {
 		return y;
 	}
-	
+
 	@Override
 	public String toString() {
 		return StringUtils.format("PointF [x:{0},y:{1}]", x, y);

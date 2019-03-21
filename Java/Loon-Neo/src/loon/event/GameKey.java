@@ -77,4 +77,8 @@ public class GameKey {
 		return type == SysKey.UP;
 	}
 
+	@Override
+	public String toString() {
+		return "type:" + type+","+ "keyChar:" + keyChar + ", keyCode:" + keyCode;
+	}
 }

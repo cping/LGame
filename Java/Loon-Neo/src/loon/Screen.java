@@ -94,63 +94,308 @@ import loon.utils.timer.LTimerContext;
  */
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease, XY {
 
+	/**
+	 * Screen切换方式(单纯移动)
+	 *
+	 */
+	public static enum MoveMethod {
+		FROM_LEFT, FROM_UP, FROM_DOWN, FROM_RIGHT, FROM_UPPER_LEFT, FROM_UPPER_RIGHT, FROM_LOWER_LEFT, FROM_LOWER_RIGHT, OUT_LEFT, OUT_UP, OUT_DOWN, OUT_RIGHT, OUT_UPPER_LEFT, OUT_UPPER_RIGHT, OUT_LOWER_LEFT, OUT_LOWER_RIGHT;
+	}
+
+	/**
+	 * Screen切换方式(渐变效果)
+	 *
+	 */
+	public static enum PageMethod {
+		Unkown, Accordion, BackToFore, CubeIn, Depth, Fade, Rotate, RotateDown, RotateUp, Stack, ZoomIn, ZoomOut;
+	}
+
+	/**
+	 * Screen中组件替换选择器,用switch之类分支结构选择指定Screen进行替换
+	 */
 	public static interface ReplaceEvent {
 
 		public Screen getScreen(int idx);
 
 	}
 
-	private ArrayMap keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
+	/**
+	 * Screen中组件渲染顺序选择用枚举类型,Loon的Screen允许桌面组件(UI),精灵,以及用户渲染(Draw接口中的实现)<br>
+	 * 自行设置渲染顺序.默认条件下精灵最下,桌面在后,用户渲染最上.
+	 */
+	public static enum DrawOrder {
+		SPRITE, DESKTOP, USER
+	}
+
+	public final static int SCREEN_NOT_REPAINT = 0;
+
+	public final static int SCREEN_TEXTURE_REPAINT = 1;
+
+	public final static int SCREEN_COLOR_REPAINT = 2;
+
+	public final static byte DRAW_EMPTY = -1;
+
+	public final static byte DRAW_USER = 0;
+
+	public final static byte DRAW_SPRITE = 1;
+
+	public final static byte DRAW_DESKTOP = 2;
+
+	private ArrayMap _keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
+
+	private Updateable _closeUpdate;
+
+	private ClickListener _clickListener;
+
+	private TouchedClick _touchListener;
+
+	private final String _screenName;
+
+	private boolean _isExistCamera = false;
+
+	private BaseCamera _baseCamera;
+
+	private ScreenAction _screenAction = null;
+
+	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
+
+	protected final Closeable.Set _conns = new Closeable.Set();
+
+	private LTransition _transition;
+
+	private boolean spriteRun, desktopRun, stageRun;
+
+	private boolean fristPaintFlag;
+
+	private boolean secondPaintFlag;
+
+	private boolean lastPaintFlag;
+
+	// 0.3.2版新增的简易重力控制接口
+	private GravityHandler gravityHandler;
+
+	private LColor _backgroundColor;
+
+	private RectBox _rectBox;
+
+	private LColor _baseColor;
+
+	private float _alpha = 1f;
+
+	private float _rotation = 0;
+
+	private float _pivotX = -1f, _pivotY = -1f;
+
+	private float _scaleX = 1f, _scaleY = 1f;
+
+	private boolean _flipX = false, _flipY = false;
+
+	private boolean _visible = true;
+
+	private TArray<RectBox> _limits = new TArray<RectBox>(10);
+
+	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
+
+	private int mode, frame;
+
+	private boolean processing = true;
+
+	private LTexture currentScreenBackground;
+
+	protected LProcess handler;
+
+	private TArray<LRelease> releases;
+
+	private int width, height, halfWidth, halfHeight;
+	// 精灵集合
+	private Sprites sprites;
+
+	// 桌面集合
+	private Desktop desktop;
+
+	private PointI touch = new PointI(0, 0);
+
+	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
+
+	private float tx, ty;
+
+	private float lastTouchX, lastTouchY, touchDX, touchDY;
+
+	public long elapsedTime;
+
+	private final static boolean[] touchType, keyType;
+
+	private int touchButtonPressed = SysInput.NO_BUTTON, touchButtonReleased = SysInput.NO_BUTTON;
+
+	private int keyButtonPressed = SysInput.NO_KEY, keyButtonReleased = SysInput.NO_KEY;
+
+	protected boolean isNext;
+
+	// 首先绘制的对象
+	private PaintOrder fristOrder;
+
+	// 其次绘制的对象
+	private PaintOrder secondOrder;
+
+	// 最后绘制的对象
+	private PaintOrder lastOrder;
+
+	private PaintOrder userOrder, spriteOrder, desktopOrder;
+
+	private boolean replaceLoading;
+
+	private int replaceScreenSpeed = 8;
+
+	private LTimer replaceDelay = new LTimer(0);
+
+	private Screen replaceDstScreen;
+
+	private ScreenSwitch screenSwitch;
+
+	private EmptyObject dstPos = new EmptyObject();
+
+	private MoveMethod replaceMethod = MoveMethod.FROM_LEFT;
+
+	private boolean isScreenFrom = false;
+
+	// 每次screen处理事件循环的额外间隔时间
+	private LTimer delayTimer = new LTimer(0);
+	// 希望Screen中所有组件的update暂停的时间
+	private LTimer pauseTimer = new LTimer(LSystem.SECOND);
+	// 是否已经暂停
+	private boolean isTimerPaused = false;
+
+	public int index = 0;
+
+	public final class PaintOrder {
+
+		private byte type;
+
+		private Screen screen;
+
+		public PaintOrder(byte t, Screen s) {
+			this.type = t;
+			this.screen = s;
+		}
+
+		void paint(GLEx g) {
+			switch (type) {
+			case DRAW_USER:
+				screen.draw(g);
+				break;
+			case DRAW_SPRITE:
+				if (spriteRun) {
+					sprites.createUI(g);
+				} else if (spriteRun = (sprites != null && sprites.size() > 0)) {
+					sprites.createUI(g);
+				}
+				break;
+			case DRAW_DESKTOP:
+				if (desktopRun) {
+					desktop.createUI(g);
+				} else if (desktopRun = (desktop != null && desktop.size() > 0)) {
+					desktop.createUI(g);
+				}
+				break;
+			case DRAW_EMPTY:
+			default:
+				break;
+			}
+		}
+
+		void update(LTimerContext c) {
+			switch (type) {
+			case DRAW_USER:
+				screen.alter(c);
+				break;
+			case DRAW_SPRITE:
+				spriteRun = (sprites != null && sprites.size() > 0);
+				if (spriteRun) {
+					sprites.update(c.timeSinceLastUpdate);
+				}
+				break;
+			case DRAW_DESKTOP:
+				desktopRun = (desktop != null && desktop.size() > 0);
+				if (desktopRun) {
+					desktop.update(c.timeSinceLastUpdate);
+				}
+				break;
+			case DRAW_EMPTY:
+			default:
+				break;
+			}
+		}
+	}
+
+	public Screen(String name, int w, int h) {
+		this._screenName = name;
+		this.resetSize(w, h);
+	}
+
+	public Screen(String name) {
+		this(name, 0, 0);
+	}
+
+	public Screen(int w, int h) {
+		this("unkown", w, h);
+	}
+
+	public Screen() {
+		this("unkown", 0, 0);
+	}
+
+	public Screen setID(int id) {
+		this.index = id;
+		return this;
+	}
+
+	public int getID() {
+		return this.index;
+	}
 
 	public boolean containsActionKey(Integer keyCode) {
-		return keyActions.containsKey(keyCode);
+		return _keyActions.containsKey(keyCode);
 	}
 
 	public void addActionKey(Integer keyCode, ActionKey e) {
-		keyActions.put(keyCode, e);
+		_keyActions.put(keyCode, e);
 	}
 
 	public void removeActionKey(Integer keyCode) {
-		keyActions.remove(keyCode);
+		_keyActions.remove(keyCode);
 	}
 
 	public void pressActionKey(Integer keyCode) {
-		ActionKey key = (ActionKey) keyActions.getValue(keyCode);
+		ActionKey key = (ActionKey) _keyActions.getValue(keyCode);
 		if (key != null) {
 			key.press();
 		}
 	}
 
 	public void releaseActionKey(Integer keyCode) {
-		ActionKey key = (ActionKey) keyActions.getValue(keyCode);
+		ActionKey key = (ActionKey) _keyActions.getValue(keyCode);
 		if (key != null) {
 			key.release();
 		}
 	}
 
 	public void clearActionKey() {
-		keyActions.clear();
+		_keyActions.clear();
 	}
 
 	public void releaseActionKeys() {
-		int keySize = keyActions.size();
+		int keySize = _keyActions.size();
 		if (keySize > 0) {
 			for (int i = 0; i < keySize; i++) {
-				ActionKey act = (ActionKey) keyActions.get(i);
+				ActionKey act = (ActionKey) _keyActions.get(i);
 				act.release();
 			}
 		}
 	}
 
-	private Updateable closeUpdate;
-
 	public SkinManager skin() {
 		return SkinManager.get();
 	}
-
-	private ClickListener _clickListener;
-
-	private TouchedClick _touchListener;
 
 	private final TouchedClick makeTouched() {
 		if (_touchListener == null) {
@@ -231,24 +476,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen onDrag(Touched t) {
 		makeTouched().setDragTouch(t);
 		return this;
-	}
-
-	private ScreenAction _screenAction = null;
-
-	public int index = 0;
-
-	public Screen setID(int id) {
-		this.index = id;
-		return this;
-	}
-
-	public int getID() {
-		return this.index;
-	}
-
-	// Screen中组件渲染顺序,默认精灵最下,桌面在后,用户渲染最上
-	public static enum DrawOrder {
-		SPRITE, DESKTOP, USER
 	}
 
 	/**
@@ -365,12 +592,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	/** 受限函数结束 **/
 
-	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
-
-	private LTransition _transition;
-
-	protected final Closeable.Set _conns = new Closeable.Set();
-
 	public LayoutConstraints getRootConstraints() {
 		if (desktop != null) {
 			return desktop.getRootConstraints();
@@ -423,10 +644,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			desktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
 		}
 	}
-
-	private boolean _isExistCamera = false;
-
-	private BaseCamera _baseCamera;
 
 	public Screen setCamera(BaseCamera came) {
 		_isExistCamera = (came != null);
@@ -506,8 +723,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	private TArray<LRelease> releases;
-
 	public Screen putRelease(LRelease r) {
 		if (releases == null) {
 			releases = new TArray<LRelease>(10);
@@ -543,87 +758,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return elapsedTime;
 	}
 
-	public final static byte DRAW_EMPTY = -1;
-
-	public final static byte DRAW_USER = 0;
-
-	public final static byte DRAW_SPRITE = 1;
-
-	public final static byte DRAW_DESKTOP = 2;
-
-	// 每次screen处理事件循环的额外间隔时间
-	private LTimer delayTimer = new LTimer(0);
-	// 希望Screen中所有组件的update暂停的时间
-	private LTimer pauseTimer = new LTimer(LSystem.SECOND);
-	// 是否已经暂停
-	private boolean isTimerPaused = false;
-
-	public final class PaintOrder {
-
-		private byte type;
-
-		private Screen screen;
-
-		public PaintOrder(byte t, Screen s) {
-			this.type = t;
-			this.screen = s;
-		}
-
-		void paint(GLEx g) {
-			switch (type) {
-			case DRAW_USER:
-				screen.draw(g);
-				break;
-			case DRAW_SPRITE:
-				if (spriteRun) {
-					sprites.createUI(g);
-				} else if (spriteRun = (sprites != null && sprites.size() > 0)) {
-					sprites.createUI(g);
-				}
-				break;
-			case DRAW_DESKTOP:
-				if (desktopRun) {
-					desktop.createUI(g);
-				} else if (desktopRun = (desktop != null && desktop.size() > 0)) {
-					desktop.createUI(g);
-				}
-				break;
-			case DRAW_EMPTY:
-			default:
-				break;
-			}
-		}
-
-		void update(LTimerContext c) {
-			switch (type) {
-			case DRAW_USER:
-				screen.alter(c);
-				break;
-			case DRAW_SPRITE:
-				spriteRun = (sprites != null && sprites.size() > 0);
-				if (spriteRun) {
-					sprites.update(c.timeSinceLastUpdate);
-				}
-				break;
-			case DRAW_DESKTOP:
-				desktopRun = (desktop != null && desktop.size() > 0);
-				if (desktopRun) {
-					desktop.update(c.timeSinceLastUpdate);
-				}
-				break;
-			case DRAW_EMPTY:
-			default:
-				break;
-			}
-		}
-
-	}
-
 	public LGame getGame() {
 		return LSystem._base;
 	}
-
-	private boolean spriteRun, desktopRun, stageRun;
 
 	public final boolean isSpriteRunning() {
 		return spriteRun;
@@ -637,121 +774,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return stageRun;
 	}
 
-	private boolean fristPaintFlag;
-
-	private boolean secondPaintFlag;
-
-	private boolean lastPaintFlag;
-
-	public static enum SensorDirection {
-		NONE, LEFT, RIGHT, UP, DOWN;
-	}
-
-	public static interface LEvent {
-
-		public Screen call();
-
-	}
-
 	public abstract void draw(GLEx g);
 
-	public final static int SCREEN_NOT_REPAINT = 0;
-
-	public final static int SCREEN_TEXTURE_REPAINT = 1;
-
-	public final static int SCREEN_COLOR_REPAINT = 2;
-
-	// 0.3.2版新增的简易重力控制接口
-	private GravityHandler gravityHandler;
-
-	private LColor _backgroundColor;
-
-	private float lastTouchX, lastTouchY, touchDX, touchDY;
-
-	public long elapsedTime;
-
-	private final static boolean[] touchType, keyType;
-
-	private int touchButtonPressed = SysInput.NO_BUTTON, touchButtonReleased = SysInput.NO_BUTTON;
-
-	private int keyButtonPressed = SysInput.NO_KEY, keyButtonReleased = SysInput.NO_KEY;
-
-	boolean isNext;
-
-	private RectBox _rectBox;
-
-	private LColor _baseColor;
-
-	private float _alpha = 1f;
-	private float _rotation = 0;
-	private float _pivotX = -1f, _pivotY = -1f;
-	private float _scaleX = 1f, _scaleY = 1f;
-	private boolean _flipX = false, _flipY = false;
-	private boolean _visible = true;
-
-	private int mode, frame;
-
-	private boolean processing = true;
-
-	private LTexture currentScreenBackground;
-
-	protected LProcess handler;
-
-	private int width, height, halfWidth, halfHeight;
-
-	private SensorDirection direction = SensorDirection.NONE;
-
-	// 精灵集合
-	private Sprites sprites;
-
-	// 桌面集合
-	private Desktop desktop;
-
-	private PointI touch = new PointI(0, 0);
-
-	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
-
-	private float tx, ty;
-
-	// 首先绘制的对象
-	private PaintOrder fristOrder;
-
-	// 其次绘制的对象
-	private PaintOrder secondOrder;
-
-	// 最后绘制的对象
-	private PaintOrder lastOrder;
-
-	private PaintOrder userOrder, spriteOrder, desktopOrder;
-
-	private TArray<RectBox> _limits = new TArray<RectBox>(10);
-
-	private boolean replaceLoading;
-
-	private int replaceScreenSpeed = 8;
-
-	private LTimer replaceDelay = new LTimer(0);
-
-	private Screen replaceDstScreen;
-
-	private ScreenSwitch screenSwitch;
-
-	private EmptyObject dstPos = new EmptyObject();
-
-	private MoveMethod replaceMethod = MoveMethod.FROM_LEFT;
-
-	private boolean isScreenFrom = false;
-
-	// Screen切换方式(单纯移动)
-	public static enum MoveMethod {
-		FROM_LEFT, FROM_UP, FROM_DOWN, FROM_RIGHT, FROM_UPPER_LEFT, FROM_UPPER_RIGHT, FROM_LOWER_LEFT, FROM_LOWER_RIGHT, OUT_LEFT, OUT_UP, OUT_DOWN, OUT_RIGHT, OUT_UPPER_LEFT, OUT_UPPER_RIGHT, OUT_LOWER_LEFT, OUT_LOWER_RIGHT;
-	}
-
-	// Screen切换方式(渐变效果)
-	public static enum PageMethod {
-		Unkown, Accordion, BackToFore, CubeIn, Depth, Fade, Rotate, RotateDown, RotateUp, Stack, ZoomIn, ZoomOut;
-	}
-
+	/**
+	 * 替换当前Screen为其它Screen(替换效果随机)
+	 * 
+	 * @param screen
+	 * @return
+	 */
 	public Screen replaceScreen(final Screen screen) {
 		Screen tmp = null;
 		int rnd = MathUtils.random(0, 11);
@@ -832,6 +862,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return tmp;
 	}
 
+	/**
+	 * 替换当前Screen为其它Screen,替换效果指定
+	 * 
+	 * @param screen
+	 * @param screenSwitch
+	 * @return
+	 */
 	public Screen replaceScreen(final Screen screen, ScreenSwitch screenSwitch) {
 		if (screen != null && screen != this) {
 			screen.setOnLoadState(false);
@@ -864,6 +901,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return replaceScreen(screen, new ScreenSwitch(m, this, screen));
 	}
 
+	/**
+	 * 替换当前Screen为其它Screen,并指定页面交替的移动效果
+	 * 
+	 * @param screen
+	 * @param m
+	 * @return
+	 */
 	public Screen replaceScreen(final Screen screen, MoveMethod m) {
 		if (screen != null && screen != this) {
 			screen.setOnLoadState(false);
@@ -871,7 +915,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			screen.setLock(true);
 			this.replaceMethod = m;
 			this.replaceDstScreen = screen;
-
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
 			switch (m) {
 			case FROM_LEFT:
@@ -954,7 +997,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private void submitReplaceScreen() {
 		if (handler != null) {
 			handler.setCurrentScreen(replaceDstScreen, false);
-			replaceDstScreen.closeUpdate = new Updateable() {
+			replaceDstScreen._closeUpdate = new Updateable() {
 
 				@Override
 				public void action(Object a) {
@@ -1026,25 +1069,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		touchType = new boolean[15];
 	}
 
-	private final String _screenName;
-
-	public Screen(String name, int w, int h) {
-		this._screenName = name;
-		this.resetSize(w, h);
-	}
-
-	public Screen(String name) {
-		this(name, 0, 0);
-	}
-
-	public Screen(int w, int h) {
-		this("unkown", w, h);
-	}
-
-	public Screen() {
-		this("unkown", 0, 0);
-	}
-
 	final public void resetSize() {
 		resetSize(0, 0);
 	}
@@ -1109,7 +1133,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			desktop = null;
 		}
 		this.desktop = new Desktop("ScreenDesktop", this, width, height);
-		this.keyActions.clear();
+		this._keyActions.clear();
 		this.isNext = true;
 		this.index = 0;
 		this.tx = ty = 0;
@@ -1161,6 +1185,46 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			handler.removeAllUnLoad();
 		}
 		return this;
+	}
+
+	/**
+	 * 设置游戏中使用的默认IFont
+	 * 
+	 * @param font
+	 * @return
+	 */
+	public Screen setSystemGameFont(IFont font) {
+		LSystem.setSystemGameFont(font);
+		return this;
+	}
+
+	/**
+	 * 获得游戏中使用的IFont
+	 * 
+	 * @return
+	 */
+	public IFont getSystemGameFont() {
+		return LSystem.getSystemGameFont();
+	}
+
+	/**
+	 * 设置系统log使用的默认IFont
+	 * 
+	 * @param font
+	 * @return
+	 */
+	public Screen setSystemLogFont(IFont font) {
+		LSystem.setSystemLogFont(font);
+		return this;
+	}
+
+	/**
+	 * 设置系统log使用的IFont
+	 * 
+	 * @return
+	 */
+	public IFont getSystemLogFont() {
+		return LSystem.getSystemLogFont();
 	}
 
 	/**
@@ -2014,6 +2078,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return (LClickButton) click.up(touched);
 	}
 
+	public LLabel addLabel(String text) {
+		return addLabel(text, 0, 0);
+	}
+
 	public LLabel addLabel(String text, float x, float y) {
 		return addLabel(text, Vector2f.at(x, y));
 	}
@@ -2543,8 +2611,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	private final void process(final LTimerContext timer) {
-		for (int i = 0; i < keyActions.size(); i++) {
-			ActionKey act = (ActionKey) keyActions.get(i);
+		for (int i = 0; i < _keyActions.size(); i++) {
+			ActionKey act = (ActionKey) _keyActions.get(i);
 			if (act.isPressed()) {
 				act.act(elapsedTime);
 				if (act.isReturn) {
@@ -2916,13 +2984,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		int type = e.getType();
 		int code = e.getKeyCode();
 		try {
-			int keySize = keyActions.size();
+			int keySize = _keyActions.size();
 			if (keySize > 0) {
 				int keyCode = e.getKeyCode();
 				for (int i = 0; i < keySize; i++) {
-					Integer c = (Integer) keyActions.getKey(i);
+					Integer c = (Integer) _keyActions.getKey(i);
 					if (c == keyCode) {
-						ActionKey act = (ActionKey) keyActions.getValue(c);
+						ActionKey act = (ActionKey) _keyActions.getValue(c);
 						act.press();
 					}
 				}
@@ -2962,13 +3030,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		int type = e.getType();
 		int code = e.getKeyCode();
 		try {
-			int keySize = keyActions.size();
+			int keySize = _keyActions.size();
 			if (keySize > 0) {
 				int keyCode = e.getKeyCode();
 				for (int i = 0; i < keySize; i++) {
-					Integer c = (Integer) keyActions.getKey(i);
+					Integer c = (Integer) _keyActions.getKey(i);
 					if (c == keyCode) {
-						ActionKey act = (ActionKey) keyActions.getValue(c);
+						ActionKey act = (ActionKey) _keyActions.getValue(c);
 						act.release();
 					}
 				}
@@ -3207,7 +3275,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return halfHeight;
 	}
 
-	public SensorDirection getSensorDirection() {
+	public Accelerometer.SensorDirection setSensorDirection(Accelerometer.SensorDirection dir) {
+		this.direction = dir;
+		return direction;
+	}
+
+	public Accelerometer.SensorDirection getSensorDirection() {
 		return direction;
 	}
 
@@ -3257,6 +3330,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return LSystem._base.display();
 	}
 
+	/**
+	 * 设定是否允许自行释放桌面组件(UI)资源
+	 * 
+	 * @param a
+	 * @return
+	 */
 	public Screen setAutoDestory(final boolean a) {
 		if (desktop != null) {
 			desktop.setAutoDestory(a);
@@ -3271,10 +3350,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return false;
 	}
 
+	/**
+	 * 获得指定名称的资源管理器
+	 */
 	public ResourceLocal RES(String path) {
 		return getResourceConfig(path);
 	}
 
+	/**
+	 * 获得指定名称的资源管理器
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public ResourceLocal getResourceConfig(String path) {
 		if (LSystem._base == null) {
 			return new ResourceLocal(path);
@@ -3282,10 +3370,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return LSystem._base.assets().getJsonResource(path);
 	}
 
+	/**
+	 * 当前Screen是否旋转
+	 * 
+	 * @return
+	 */
 	public boolean isRotated() {
 		return this._rotation != 0;
 	}
 
+	/**
+	 * 设定Screen旋转角度
+	 * 
+	 * @param r
+	 */
 	public void setRotation(float r) {
 		this._rotation = r;
 		if (_rotation > 360f) {
@@ -3784,15 +3882,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			_conns.close();
 			release();
 			close();
-			keyActions.clear();
+			_keyActions.clear();
 			if (currentScreenBackground != null) {
 				currentScreenBackground.close();
 				currentScreenBackground = null;
 			}
-			if (closeUpdate != null) {
-				closeUpdate.action(this);
+			if (_closeUpdate != null) {
+				_closeUpdate.action(this);
 			}
-			closeUpdate = null;
+			_closeUpdate = null;
 			screenSwitch = null;
 			DefUI.self().clearDefaultUI();
 		}

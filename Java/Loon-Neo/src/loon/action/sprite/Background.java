@@ -20,6 +20,9 @@
  */
 package loon.action.sprite;
 
+/**
+ * 背景精灵的抽象类(全屏大小的精灵)
+ */
 public abstract class Background extends Entity {
 
 	public Background(float x, float y, float w, float h) {

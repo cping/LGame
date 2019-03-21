@@ -35,16 +35,22 @@ import loon.utils.timer.LTimer;
 /**
  * 显示滚动文字的精灵(主要就是用来做前情提要滚动，比如:从前有个魔王，魔王认识个勇者，勇者不懂经济，魔王是个学霸，于是XXX这类的……)
  * 
+ * <pre>
  * ScrollText s = new ScrollText("ABCDEFG\nMNBVCXZ");
- * s.setDirection(Direction.LEFT); add(s); centerOn(s);
+ * s.setDirection(Direction.LEFT);
+ * add(s);
+ * centerOn(s);
+ * </pre>
  * 
  * or:
  * 
- * String[] texts=
- * {"九阳神功惊俗世","君临天下易筋经","葵花宝典兴国邦","欢喜禅功祸苍生","紫雷刀出乾坤破","如来掌起山河动","浑天玄宇称宝鉴"
- * ,"天晶不出谁争锋","啦啦啦啦啦"}; ScrollText s = new
- * ScrollText(texts,TextOptions.VERTICAL_LEFT());
- * s.setDirection(Direction.LEFT); s.setLocation(115,20); add(s);
+ * <pre>
+ * String[] texts = { "九阳神功惊俗世", "君临天下易筋经", "葵花宝典兴国邦", "欢喜禅功祸苍生", "紫雷刀出乾坤破", "如来掌起山河动", "浑天玄宇称宝鉴", "天晶不出谁争锋", "我没疯" };
+ * ScrollText s = new ScrollText(texts, TextOptions.VERTICAL_LEFT());
+ * s.setDirection(Direction.LEFT);
+ * s.setLocation(115, 20);
+ * add(s);
+ * </pre>
  */
 public class ScrollText extends Entity {
 
@@ -90,28 +96,22 @@ public class ScrollText extends Entity {
 	}
 
 	public ScrollText(String text, int x, int y, int width, int height) {
-		this(LSystem.getSystemGameFont(), new TextOptions(), text, x, y, width,
-				height);
+		this(LSystem.getSystemGameFont(), new TextOptions(), text, x, y, width, height);
 	}
 
-	public ScrollText(TextOptions opt, String text, int x, int y, int width,
-			int height) {
+	public ScrollText(TextOptions opt, String text, int x, int y, int width, int height) {
 		this(LSystem.getSystemGameFont(), opt, text, x, y, width, height);
 	}
 
-	public ScrollText(String text, String font, Style type, int size, int x,
-			int y, int width, int height) {
-		this(LFont.getFont(font, type, size), new TextOptions(), text, x, y,
-				width, height);
+	public ScrollText(String text, String font, Style type, int size, int x, int y, int width, int height) {
+		this(LFont.getFont(font, type, size), new TextOptions(), text, x, y, width, height);
 	}
 
-	public ScrollText(IFont font, TextOptions opt, String text, int x, int y,
-			int width, int height) {
+	public ScrollText(IFont font, TextOptions opt, String text, int x, int y, int width, int height) {
 		this(font, opt, new String[] { text }, x, y, width, height);
 	}
 
-	public ScrollText(IFont font, TextOptions opt, String[] text, int x, int y,
-			int width, int height) {
+	public ScrollText(IFont font, TextOptions opt, String[] text, int x, int y, int width, int height) {
 		if (text.length == 1) {
 			this._text = new Text(font, text[0], opt);
 		} else {
@@ -159,18 +159,11 @@ public class ScrollText extends Entity {
 				}
 			}
 
-			boolean intersects = LSystem.getProcess() != null
-					&& LSystem.getProcess().getScreen() != null
-					&& LSystem.getProcess().getScreen()
-							.intersects(textX, textY, getWidth(), getHeight());
+			boolean intersects = LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
+					&& LSystem.getProcess().getScreen().intersects(textX, textY, getWidth(), getHeight());
 			if (_text.getAutoWrap() == AutoWrap.VERTICAL) {
-				intersects = LSystem.getProcess() != null
-						&& LSystem.getProcess().getScreen() != null
-						&& LSystem
-								.getProcess()
-								.getScreen()
-								.intersects(textX, textY, getHeight(),
-										getWidth());
+				intersects = LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
+						&& LSystem.getProcess().getScreen().intersects(textX, textY, getHeight(), getWidth());
 			}
 			if (!intersects) {
 				stop = true;

@@ -23,12 +23,34 @@ package loon;
 import loon.event.InputMake;
 import loon.utils.reply.Act;
 
-/*
- * 此类为最主要的游戏功能类集合对象，其中涵盖了Loon的基础对象实例。
+/**
+ * 此类为最主要的游戏功能类集合对象，所有Loon初始化由此开始，其中涵盖了Loon的基础对象实例。
  */
 public abstract class LGame {
 
+	/**
+	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
+	 */
+	public static enum Type {
+		JAVASE, ANDROID, IOS, WP, HTML5, UNITY, SWITCH, STUB
+	}
+
+	/**
+	 * 基本游戏状态
+	 */
+	public static enum Status {
+		PAUSE, RESUME, EXIT
+	};
+
 	public Act<Error> errors = Act.create();
+
+	public Act<Status> status = Act.create();
+
+	public Act<LGame> frame = Act.create();
+
+	public LSetting setting;
+
+	private Display display;
 
 	public LGame(LSetting config, Platform plat) {
 		LSystem._platform = plat;
@@ -58,22 +80,6 @@ public abstract class LGame {
 		setting.fontName = fontName;
 	}
 
-	public static enum Type {
-		JAVASE, ANDROID, IOS, WP, HTML5, UNITY, STUB
-	}
-
-	public LSetting setting;
-
-	private Display display;
-
-	public static enum Status {
-		PAUSE, RESUME, EXIT
-	};
-
-	public Act<Status> status = Act.create();
-
-	public Act<LGame> frame = Act.create();
-
 	public static class Error {
 		public final String message;
 		public final Throwable cause;
@@ -97,7 +103,7 @@ public abstract class LGame {
 	/**
 	 * 由于GWT不支持真实的反射，而完全模拟反射需要耗费大量资源，精确反射又难以控制用户具体使用的类，所以统一放弃外部反射方法，
 	 * 不让用户有机会使用自定义的类操作。
-	 * */
+	 */
 	/*
 	 * private static Class<?> getType(Object o) { if (o instanceof Integer) {
 	 * return Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE;
@@ -131,7 +137,7 @@ public abstract class LGame {
 		Type type = this.type();
 		return type == LGame.Type.HTML5;
 	}
-	
+
 	public void reportError(String message, Throwable cause) {
 		errors.emit(new Error(message, cause));
 		log().warn(message, cause);
@@ -184,8 +190,8 @@ public abstract class LGame {
 	public abstract Log log();
 
 	public abstract Save save();
-	
-	public abstract Accelerometer accel(); 
+
+	public abstract Accelerometer accel();
 
 	public abstract Support support();
 

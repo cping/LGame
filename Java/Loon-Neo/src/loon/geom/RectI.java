@@ -433,4 +433,12 @@ public class RectI implements XY {
 	public float getY() {
 		return y;
 	}
+	
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
 }

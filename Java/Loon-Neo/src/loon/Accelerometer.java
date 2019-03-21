@@ -22,6 +22,9 @@ package loon;
 
 public interface Accelerometer {
 	
+	/**
+	 * 重力感应方向
+	 */
 	public static enum SensorDirection {
 		EMPTY, LEFT, RIGHT, UP, DOWN;
 	}

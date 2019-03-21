@@ -61,8 +61,7 @@ public class RectF implements XY {
 		public boolean equals(Object obj) {
 			Range r = (Range) obj;
 			if (r != null) {
-				return left == r.left && top == r.top && right == r.right
-						&& bottom == r.bottom;
+				return left == r.left && top == r.top && right == r.right && bottom == r.bottom;
 			}
 			return false;
 		}
@@ -143,8 +142,7 @@ public class RectF implements XY {
 		}
 
 		public boolean contains(float x, float y) {
-			return left < right && top < bottom && x >= left && x < right
-					&& y >= top && y < bottom;
+			return left < right && top < bottom && x >= left && x < right && y >= top && y < bottom;
 		}
 
 		public boolean contains(Circle circle) {
@@ -154,28 +152,22 @@ public class RectF implements XY {
 			float ymin = circle.y - circle.radius;
 			float ymax = ymin + 2f * circle.radius;
 
-			return ((xmin > getX() && xmin < getX() + width()) && (xmax > getX() && xmax < getX()
-					+ width()))
-					&& ((ymin > getY() && ymin < getY() + height()) && (ymax > getY() && ymax < getY()
-							+ height()));
+			return ((xmin > getX() && xmin < getX() + width()) && (xmax > getX() && xmax < getX() + width()))
+					&& ((ymin > getY() && ymin < getY() + height()) && (ymax > getY() && ymax < getY() + height()));
 		}
 
 		public boolean contains(float left, float top, float right, float bottom) {
-			return this.left < this.right && this.top < this.bottom
-					&& this.left <= left && this.top <= top
+			return this.left < this.right && this.top < this.bottom && this.left <= left && this.top <= top
 					&& this.right >= right && this.bottom >= bottom;
 		}
 
 		public boolean contains(Range r) {
-			return this.left < this.right && this.top < this.bottom
-					&& left <= r.left && top <= r.top && right >= r.right
-					&& bottom >= r.bottom;
+			return this.left < this.right && this.top < this.bottom && left <= r.left && top <= r.top
+					&& right >= r.right && bottom >= r.bottom;
 		}
 
-		public boolean intersect(float left, float top, float right,
-				float bottom) {
-			if (this.left < right && left < this.right && this.top < bottom
-					&& top < this.bottom) {
+		public boolean intersect(float left, float top, float right, float bottom) {
+			if (this.left < right && left < this.right && this.top < bottom && top < this.bottom) {
 				if (this.left < left) {
 					this.left = left;
 				}
@@ -198,8 +190,7 @@ public class RectF implements XY {
 		}
 
 		public boolean setIntersect(Range a, Range b) {
-			if (a.left < b.right && b.left < a.right && a.top < b.bottom
-					&& b.top < a.bottom) {
+			if (a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom) {
 				left = MathUtils.max(a.left, b.left);
 				top = MathUtils.max(a.top, b.top);
 				right = MathUtils.min(a.right, b.right);
@@ -209,15 +200,12 @@ public class RectF implements XY {
 			return false;
 		}
 
-		public boolean intersects(float left, float top, float right,
-				float bottom) {
-			return this.left < right && left < this.right && this.top < bottom
-					&& top < this.bottom;
+		public boolean intersects(float left, float top, float right, float bottom) {
+			return this.left < right && left < this.right && this.top < bottom && top < this.bottom;
 		}
 
 		public boolean intersects(Range a, Range b) {
-			return a.left < b.right && b.left < a.right && a.top < b.bottom
-					&& b.top < a.bottom;
+			return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
 		}
 
 		public void union(float left, float top, float right, float bottom) {
@@ -306,7 +294,7 @@ public class RectF implements XY {
 	public RectF(RectF rect) {
 		this(rect.x, rect.y, rect.width, rect.height);
 	}
-	
+
 	public RectF(Range range) {
 		this(range.x(), range.y(), range.width(), range.height());
 	}
@@ -335,8 +323,7 @@ public class RectF implements XY {
 	}
 
 	public boolean inside(float x, float y) {
-		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y)
-				&& ((y - this.y) < this.height);
+		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}
 
 	public float getRight() {
@@ -368,8 +355,7 @@ public class RectF implements XY {
 		float i_r = MathUtils.min(a_r, b_r);
 		float i_y = MathUtils.max(a_y, b_y);
 		float i_t = MathUtils.min(a_t, b_t);
-		return i_x < i_r && i_y < i_t ? new RectF(i_x, i_y, i_r - i_x, i_t
-				- i_y) : new RectF();
+		return i_x < i_r && i_y < i_t ? new RectF(i_x, i_y, i_r - i_x, i_t - i_y) : new RectF();
 	}
 
 	public static RectF getIntersection(RectF a, RectF b, RectF result) {
@@ -436,5 +422,13 @@ public class RectF implements XY {
 	@Override
 	public float getY() {
 		return y;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
 	}
 }

@@ -42,27 +42,29 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 /**
- * 游戏中常见的分行选择型菜单栏,注入几行文字(字符串数组),就会自行产生几行可选菜单UI<br>
+ * 游戏中常见的分行选择型菜单栏,注入几行文字(字符串数组),就会自行产生几行可选菜单UI
  * 
- * LMenuSelect ms = new LMenuSelect("第一选项,第二个,第三个,第四个,我是第五个", 66, 66); <br>
- * // 选中行的选择外框渲染颜色,不设置不显示 <br>
- * // ms.setSelectRectColor(LColor.red); <br>
- * // 选中行所用的图像标记(箭头图之类),不设置使用默认样式 <br>
- * // ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME+"creese.png"); <br>
- * // 选择框菜单所用的背景图,不设置使用默认样式,也可以noneBackground不显示<br>
+ * <pre>
+ * LMenuSelect ms = new LMenuSelect("第一选项,第二个,第三个,第四个,我是第五个", 66, 66); 
+ * // 选中行的选择外框渲染颜色,不设置不显示 
+ * // ms.setSelectRectColor(LColor.red); 
+ * // 选中行所用的图像标记(箭头图之类),不设置使用默认样式 
+ * // ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME+"creese.png"); 
+ * // 选择框菜单所用的背景图,不设置使用默认样式,也可以noneBackground不显示
  * ms.setBackground(DefUI.getGameWinFrame(ms.width(),
- * ms.height(),LColor.black,LColor.blue, false)); <br>
- * // 设置监听 ms.setMenuListener(new LMenuSelect.ClickEvent() {<br>
+ * ms.height(),LColor.black,LColor.blue, false)); 
+ * // 设置监听 ms.setMenuListener(new LMenuSelect.ClickEvent() {
  * 
- * // 监听当前点击的索引与内容<br>
+ * // 监听当前点击的索引与内容
  * 
- * @Override public void onSelected(int index, String context) { // 添加气泡提示<br>
+ * public void onSelected(int index, String context) { 
+ *           // 添加气泡提示
+ *           add(LToast.makeText(context, Style.SUCCESS));
  * 
- *           add(LToast.makeText(context, Style.SUCCESS));<br>
- * 
- *           }}); <br>
- *           // 添加到screen <br>
+ *           }}); 
+ *           // 添加到screen 
  *           add(ms);
+ * </pre>
  */
 public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
@@ -391,18 +393,13 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	@Override
-	protected void processTouchClicked() {
-		this.doClick();
-	}
-
-	@Override
 	protected void processTouchPressed() {
 		if (!visible) {
 			return;
 		}
 		if (!_touchEvent.isPressed()) {
 			this._pressed = true;
-			this.downClick();
+			super.processTouchPressed();
 			this._touchEvent.press();
 		}
 	}
@@ -417,7 +414,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			if (_menuSelectedEvent != null && _labels != null && _labels.length > 0) {
 				_menuSelectedEvent.onSelected(_selected, _labels[_selected]);
 			}
-			this.upClick();
+			super.processTouchReleased();
 			if (_function != null) {
 				_function.call(this);
 			}
