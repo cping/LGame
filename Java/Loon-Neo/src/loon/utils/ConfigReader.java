@@ -3,24 +3,36 @@ package loon.utils;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
+import loon.LRelease;
 import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
 
 /**
  * 一个简单的多文本数据存储及读取用类,作用类似于ini文件
+ * <p>
  * 
- * 存储格式为:
- * begin name = "key1"
- * value1
- * end
- * begin name = "key2"
- * value2
- * end
- * key3 = "567"
+ * 用它可以进行一些简单的键值对(key-value)模式数据设置,不想使用xml或json配置时的帮手
+ * <p>
+ * 
+ * 完整存储格式为(可部分使用):
+ * 
+ * <pre>
+ * //($后是数据段名称，下面是数据，两个一组，换行符开始下一组，或者再次出现$也算一组新数据)
+ * $bigdata1
+ * begin name = "key1" 
+ * value1 
+ * end 
+ * begin name = "key2" 
+ * value2 
+ * end 
+ * key3 ="567" 
  * key4 = "780"
+ * $bigdata2
+ * ......
+ * </pre>
  */
-public class ConfigReader implements Expression, Bundle<String> {
+public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private String FLAG_L_TAG = "//";
 
@@ -28,34 +40,98 @@ public class ConfigReader implements Expression, Bundle<String> {
 
 	private String FLAG_I_TAG = "'";
 
-	private final static ObjectMap<String, ConfigReader> pConfigReaders = new ObjectMap<String, ConfigReader>();
+	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
 
 	public static ConfigReader getInstance(final String path) {
-		synchronized (pConfigReaders) {
-			ConfigReader reader = pConfigReaders.get(path);
-			if (reader == null || reader.isClose) {
+		synchronized (CONFIG_CACHE) {
+			ConfigReader reader = CONFIG_CACHE.get(path);
+			if (reader == null || reader._closed) {
 				reader = new ConfigReader(path);
-				pConfigReaders.put(path, reader);
+				CONFIG_CACHE.put(path, reader);
 			}
 			return reader;
 		}
 	}
 
-	private final ObjectMap<String, String> pConfigItems = new ObjectMap<String, String>();
+	private boolean _closed;
 
-	private StringBuffer values = new StringBuffer();
+	private final ObjectMap<String, String> _configItems = new ObjectMap<String, String>();
 
-	private boolean isClose;
+	private TArray<StringKeyValue> _loaders;
+
+	private final String _path;
+
+	private final StringBuffer template_values = new StringBuffer();
 
 	public ObjectMap<String, String> getContent() {
-		return new ObjectMap<String, String>(pConfigItems);
+		return new ObjectMap<String, String>(_configItems);
 	}
 
 	public ConfigReader(final String resName) {
-		parse(BaseIO.loadText(resName));
+		this._path = resName;
+		parseMap(resName);
 	}
 
-	public void parse(final String text) {
+	public void parseMap(final String path) {
+		if (_loaders == null) {
+			_loaders = new TArray<StringKeyValue>();
+		}
+		String context = BaseIO.loadText(path);
+		StringTokenizer reader = new StringTokenizer(context, LSystem.NL);
+		String curTemplate = "";
+		StringKeyValue curBuffer = null;
+		String result = null;
+		try {
+			for (; reader.hasMoreTokens();) {
+				result = reader.nextToken().trim();
+				if (StringUtils.isEmpty(result)) {
+					continue;
+				}
+				if (result.startsWith("\\")) {
+					continue;
+				}
+				if (result.charAt(0) == '$') {
+					if (!curTemplate.equals("") && curBuffer != null) {
+						_loaders.add(curBuffer);
+					}
+					curTemplate = result.substring(1).trim();
+					curBuffer = new StringKeyValue(curTemplate);
+				} else {
+					if (curBuffer != null) {
+						curBuffer.addValue(result);
+						curBuffer.addValue(LSystem.LS);
+					}
+				}
+			}
+			if (!curTemplate.equals("") && curBuffer != null) {
+				_loaders.add(curBuffer);
+			}
+		} catch (Exception ex) {
+			throw LSystem.runThrow(ex.getMessage(), ex);
+		}
+		if (_loaders != null && _loaders.size > 0) {
+			loadMapKey(_loaders.get(0).getKey());
+		} else {
+			parseData(context);
+		}
+	}
+
+	public void loadMapKey(final String name) {
+		if (_loaders != null) {
+			for (StringKeyValue v : _loaders) {
+				if (v != null && v.getKey().equals(name)) {
+					parseData(v.getValue());
+					return;
+				}
+			}
+		}
+	}
+
+	public void parseData(final String text) {
+		_configItems.clear();
+		if (StringUtils.isEmpty(text)) {
+			return;
+		}
 		StringTokenizer reader = new StringTokenizer(text, LSystem.NL);
 		String record = null;
 		StringBuffer mapBuffer = new StringBuffer();
@@ -75,7 +151,7 @@ public class ConfigReader implements Expression, Bundle<String> {
 				} else if (record.startsWith("end")) {
 					mapFlag = false;
 					if (mapName != null) {
-						pConfigItems.put(mapName, mapBuffer.toString());
+						_configItems.put(mapName, mapBuffer.toString());
 					}
 				} else if (mapFlag) {
 					mapBuffer.append(record);
@@ -89,7 +165,7 @@ public class ConfigReader implements Expression, Bundle<String> {
 	private final String loadItem(final String mes, final boolean save) {
 		char[] chars = mes.toCharArray();
 		int size = chars.length;
-		StringBuffer sbr = values.delete(0, values.length());
+		StringBuffer sbr = template_values.delete(0, template_values.length());
 		String key = null;
 		String value = null;
 		int idx = 0;
@@ -123,21 +199,21 @@ public class ConfigReader implements Expression, Bundle<String> {
 		if (key != null) {
 			value = sbr.toString();
 			if (save) {
-				pConfigItems.put(key.trim(), value.trim());
+				_configItems.put(key.trim(), value.trim());
 			}
 		}
 		return value.trim();
 	}
 
 	public void putItem(String key, String value) {
-		synchronized (pConfigItems) {
-			pConfigItems.put(key, value);
+		synchronized (_configItems) {
+			_configItems.put(key, value);
 		}
 	}
 
 	public void removeItem(String key) {
-		synchronized (pConfigItems) {
-			pConfigItems.remove(key);
+		synchronized (_configItems) {
+			_configItems.remove(key);
 		}
 	}
 
@@ -147,8 +223,8 @@ public class ConfigReader implements Expression, Bundle<String> {
 
 	public boolean getBoolValue(String name, boolean fallback) {
 		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
+		synchronized (_configItems) {
+			v = _configItems.get(name);
 		}
 		if (v == null) {
 			return fallback;
@@ -162,8 +238,8 @@ public class ConfigReader implements Expression, Bundle<String> {
 
 	public int getIntValue(String name, int fallback) {
 		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
+		synchronized (_configItems) {
+			v = _configItems.get(name);
 		}
 		if (v == null) {
 			return fallback;
@@ -177,8 +253,8 @@ public class ConfigReader implements Expression, Bundle<String> {
 
 	public float getFloatValue(String name, float fallback) {
 		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
+		synchronized (_configItems) {
+			v = _configItems.get(name);
 		}
 		if (v == null) {
 			return fallback;
@@ -192,8 +268,8 @@ public class ConfigReader implements Expression, Bundle<String> {
 
 	public String getValue(String name, String fallback) {
 		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
+		synchronized (_configItems) {
+			v = _configItems.get(name);
 		}
 		if (v == null) {
 			return fallback;
@@ -247,8 +323,8 @@ public class ConfigReader implements Expression, Bundle<String> {
 
 	public int[][] getArray2D(String name, int[][] fallback) {
 		String v = null;
-		synchronized (pConfigItems) {
-			v = pConfigItems.get(name);
+		synchronized (_configItems) {
+			v = _configItems.get(name);
 		}
 		if (v != null) {
 			boolean pFlag = false;
@@ -293,15 +369,27 @@ public class ConfigReader implements Expression, Bundle<String> {
 		return fallback;
 	}
 
+	public String getPath() {
+		return _path;
+	}
+
 	public boolean isClose() {
-		return isClose;
+		return _closed;
 	}
 
 	public void dispose() {
-		isClose = true;
-		if (pConfigItems != null) {
-			pConfigItems.clear();
+		_closed = true;
+		if (_loaders != null) {
+			_loaders.clear();
 		}
+		if (_configItems != null) {
+			_configItems.clear();
+		}
+	}
+
+	@Override
+	public void close() {
+		dispose();
 	}
 
 }

@@ -81,13 +81,13 @@ public class SLGTest extends Stage {
 
 	// 战斗个体图
 	private LTexture[] unitImages = TextureUtils
-			.getSplitTextures(TextureUtils.filterColor("images/unit.png", new LColor(255, 0, 255)), tile, tile);
+			.getSplitTextures(TextureUtils.filterColor("assets/unit.png", new LColor(255, 0, 255)), tile, tile);
 
 	private LTexture[] iconImages = TextureUtils
-			.getSplitTextures(TextureUtils.filterColor("images/icon.png", new LColor(255, 0, 255)), tile, tile);
+			.getSplitTextures(TextureUtils.filterColor("assets/icon.png", new LColor(255, 0, 255)), tile, tile);
 
 	private LTexture[] listImages = TextureUtils
-			.getSplitTextures(TextureUtils.filterColor("images/list.png", new LColor(255, 0, 255)), tile, tile);
+			.getSplitTextures(TextureUtils.filterColor("assets/list.png", new LColor(255, 0, 255)), tile, tile);
 
 	final static int tile = 32;
 
@@ -367,7 +367,7 @@ public class SLGTest extends Stage {
 		clips.add(new LTexturePackClip(2, "3", 32, 0, 32, 32));
 		clips.add(new LTexturePackClip(3, "4", 32, 32, 32, 32));
 		// 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
-		map.setImagePack("images/map.png", clips);
+		map.setImagePack("assets/map.png", clips);
 		map.setLimit(new int[] { 1, 2, 3 });
 		// 执行地图与图片绑定
 		map.pack();
@@ -423,6 +423,7 @@ public class SLGTest extends Stage {
 
 		});
 
+		add(MultiScreenTest.getBackButton(this,1));
 	}
 
 	public void initRange() {

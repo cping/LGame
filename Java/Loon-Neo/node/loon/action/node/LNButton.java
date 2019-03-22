@@ -291,6 +291,7 @@ public class LNButton extends LNUI {
 	
 	@Override
 	public void processTouchDragged() {
+		super.processTouchDragged();
 		for (String key : this._buttonElement.keys()) {
 			LNNode node = this._buttonElement.get(key);
 			node.stopAllAction();

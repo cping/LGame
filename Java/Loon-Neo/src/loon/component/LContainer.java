@@ -729,6 +729,18 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	@Override
+	protected void processResize() {
+		if (_childs != null && _childs.length > 0) {
+			for (int i = 0; i < _childs.length; i++) {
+				LComponent comp = _childs[i];
+				if (comp != null && comp != this && comp.getParent() == this) {
+					comp.processResize();
+				}
+			}
+		}
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder buffer = new StringBuilder(128);
 		toString(buffer, 1);

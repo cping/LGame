@@ -189,12 +189,15 @@ public class GestureData {
 				if (StringUtils.isEmpty(result)) {
 					continue;
 				}
+				result = result.trim();
+				if (result.startsWith("\\")) {
+					continue;
+				}
 				if (result.charAt(0) == '$') {
 					if (!curTemplate.equals("") && curPoints != null) {
 						loaders.add(new GestureLoader(curTemplate, curPoints, resampledFirst));
 					}
-
-					curTemplate = result.substring(1);
+					curTemplate = result.substring(1).trim();
 					curPoints = new TArray<PointF>();
 				} else {
 					if (curPoints != null) {

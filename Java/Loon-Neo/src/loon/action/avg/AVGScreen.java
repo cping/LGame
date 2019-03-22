@@ -90,40 +90,40 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	// 任务集合
 	private ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(20);
 
-	private boolean isSelectMessage, scrFlag, isRunning, running;
-
 	private IFont _font;
 
-	private int delay;
+	private int _plapDelay;
 
 	private String _scriptName;
 
-	private String selectMessage;
+	private String _selectMessage;
 
-	private String dialogFileName;
+	private String _dialogFileName;
+
+	private LTexture _dialogTexture;
+	
+	private boolean isSelectMessage, isScriptRunning, isGameRunning, scrFlag;
 
 	// 若需要任意处点击皆可继续脚本，此标记应为true
-	private boolean screenClick = false;
+	private boolean screenClickd = false;
 
 	// 若需要点击触发脚本继续的功能暂时失效，此处应为true
-	private boolean limitClick = false;
+	private boolean limitClickd = false;
 
 	// 自动播放的延迟时间
 	private LTimer autoTimer = new LTimer(LSystem.SECOND);
 
 	private int clickButtonLayer = 200;
 
-	private LColor color;
+	private LColor gameColor;
 
 	protected Command command;
 
-	protected LTexture dialog;
-
 	protected AVGCG scrCG;
 
-	protected LSelect select;
+	protected LSelect selectUI;
 
-	protected LMessage message;
+	protected LMessage messageUI;
 
 	protected Desktop messageDesktop;
 
@@ -185,10 +185,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			if (tasking()) {
 				return;
 			}
-			if (_items != null && command != null && select != null) {
+			if (_items != null && command != null && selectUI != null) {
 				if ((LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch))
 						? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) {
-					int idx = select.getResultIndex();
+					int idx = selectUI.getResultIndex();
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
 						if (MathUtils.isNan(gotoFlag)) {
@@ -309,7 +309,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 			private float x, y;
 
-			private String _scriptName, scriptSource, scripteContext;
+			private String _scriptName, _scriptSource, _scripteContext;
 
 			private boolean isCompleted;
 
@@ -320,14 +320,14 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 			@Override
 			public void call() {
-				Entity entity = Entity.make(scriptSource, x, y);
+				Entity entity = Entity.make(_scriptSource, x, y);
 				if (_scriptName != null) {
 					entity.setName(_scriptName);
 				} else {
-					entity.setName(scriptSource);
+					entity.setName(_scriptSource);
 				}
-				if (scripteContext != null) {
-					act(entity, scripteContext).start().setActionListener(new ActionListener() {
+				if (_scripteContext != null) {
+					act(entity, _scripteContext).start().setActionListener(new ActionListener() {
 
 						@Override
 						public void stop(ActionBind o) {
@@ -360,14 +360,14 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				}
 				String[] list = StringUtils.split(scriptInfo, ',');
 				if (list.length == 1) {
-					scriptSource = list[0];
+					_scriptSource = list[0];
 				} else if (list.length == 2) {
-					scriptSource = list[0];
+					_scriptSource = list[0];
 					if (MathUtils.isNan(list[1])) {
 						x = y = Float.parseFloat(list[1]);
 					}
 				} else if (list.length == 3) {
-					scriptSource = list[0];
+					_scriptSource = list[0];
 					if (MathUtils.isNan(list[1])) {
 						x = Float.parseFloat(list[1]);
 					}
@@ -375,7 +375,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						y = Float.parseFloat(list[2]);
 					}
 				} else if (list.length == 4) {
-					scriptSource = list[0];
+					_scriptSource = list[0];
 					_scriptName = list[1];
 					if (MathUtils.isNan(list[2])) {
 						x = Float.parseFloat(list[2]);
@@ -391,7 +391,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (start != -1 && end != -1 && end > start) {
 						scriptInfo = scriptInfo.substring(start + 1, end);
 					}
-					scripteContext = scriptInfo;
+					_scripteContext = scriptInfo;
 				}
 
 			}
@@ -473,8 +473,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			return;
 		}
 		if (img != null) {
-			this.dialogFileName = img.getSource();
-			this.dialog = img;
+			this._dialogFileName = img.getSource();
+			this._dialogTexture = img;
 		}
 	}
 
@@ -502,7 +502,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		public void UpClick(LComponent comp, float x, float y) {
 			if (command != null && label != null) {
 				command.gotoIndex(label);
-				//跳转后清除选择框,防止opt命令和select命令产生组件重叠时产生重复点击
+				// 跳转后清除选择框,防止opt命令和select命令产生组件重叠时产生重复点击
 				clearSelectMessage();
 				nextScript();
 			}
@@ -528,18 +528,18 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	/**
 	 * 清除默认的选择框标记
 	 */
-	private void clearSelectMessage(){
-		boolean selecting = (select == null);
+	private void clearSelectMessage() {
+		boolean selecting = (selectUI == null);
 		if (!selecting) {
-			select.SetClick(null);
-			select.setVisible(false);
-			limitClick = false;
+			selectUI.SetClick(null);
+			selectUI.setVisible(false);
+			limitClickd = false;
 			scrFlag = false;
 			isSelectMessage = false;
 			_clickcount = 0;
 		}
 	}
-	
+
 	/**
 	 * 添加选项按钮到游戏中
 	 * 
@@ -609,11 +609,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	@Override
 	public final void onLoad() {
 		this.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
-		this.delay = 60;
-		if (dialog == null && dialogFileName != null) {
-			this.dialog = LTextures.loadTexture(dialogFileName);
+		this._plapDelay = 60;
+		if (_dialogTexture == null && _dialogFileName != null) {
+			this._dialogTexture = LTextures.loadTexture(_dialogFileName);
 		}
-		this.running = true;
+		this.isGameRunning = true;
 	}
 
 	@Override
@@ -639,7 +639,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 			@Override
 			public void run(LTimerContext time) {
-				if (running) {
+				if (isGameRunning) {
 					if (messageDesktop != null) {
 						switch (_speedMode) {
 						default:
@@ -680,7 +680,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 		};
 		setSpeedMode(_speedMode);
-		avgProcess.setDelay(delay);
+		avgProcess.setDelay(_plapDelay);
 		RealtimeProcessManager.get().addProcess(avgProcess);
 
 	}
@@ -691,36 +691,36 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		this.messageDesktop = new Desktop(this, getWidth(), getHeight());
 		this.effectSprites = new Sprites(this, getWidth(), getHeight());
-		if (dialog == null) {
+		if (_dialogTexture == null) {
 			Image tmp = Image.createImage(getWidth() - 20, getHeight() / 2 - 20);
 			Canvas g = tmp.getCanvas();
 			g.setColor(0, 0, 0, 125);
 			g.fillRect(0, 0, tmp.getWidth(), tmp.getHeight());
 			g = null;
-			dialog = tmp.texture();
+			_dialogTexture = tmp.texture();
 			if (tmp != null) {
 				tmp.close();
 				tmp = null;
 			}
 		}
-		this.message = new LMessage(_font, dialog, 0, 0);
-		this.message.setFontColor(LColor.white);
-		int size = (int) (message.getWidth() / (message.getMessageFont().getSize()));
+		this.messageUI = new LMessage(_font, _dialogTexture, 0, 0);
+		this.messageUI.setFontColor(LColor.white);
+		int size = (int) (messageUI.getWidth() / (messageUI.getMessageFont().getSize()));
 		if (size % 2 != 0) {
 			size = size - 3;
 		} else {
 			size = size - 4;
 		}
-		this.message.setMessageLength(size);
-		this.message.setLocation((getWidth() - message.getWidth()) / 2, getHeight() - message.getHeight() - 10);
-		this.message.setTopOffset(-5);
-		this.message.setVisible(false);
-		this.select = new LSelect(_font, dialog, message.x(), message.y());
-		this.select.setTopOffset(5);
+		this.messageUI.setMessageLength(size);
+		this.messageUI.setLocation((getWidth() - messageUI.getWidth()) / 2, getHeight() - messageUI.getHeight() - 10);
+		this.messageUI.setTopOffset(-5);
+		this.messageUI.setVisible(false);
+		this.selectUI = new LSelect(_font, _dialogTexture, messageUI.x(), messageUI.y());
+		this.selectUI.setTopOffset(5);
 		this.scrCG = new AVGCG(this);
-		this.messageDesktop.add(message);
-		this.messageDesktop.add(select);
-		this.select.setVisible(false);
+		this.messageDesktop.add(messageUI);
+		this.messageDesktop.add(selectUI);
+		this.selectUI.setVisible(false);
 	}
 
 	/**
@@ -730,18 +730,18 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 */
 	public AVGScreen setFont(final IFont font) {
 		this._font = font;
-		if (message != null) {
-			message.setMessageFont(font);
+		if (messageUI != null) {
+			messageUI.setMessageFont(font);
 		}
-		if (select != null) {
-			select.setMessageFont(font);
+		if (selectUI != null) {
+			selectUI.setMessageFont(font);
 		}
 		return this;
 	}
 
 	public IFont getFont() {
-		if (message != null) {
-			return message.getMessageFont();
+		if (messageUI != null) {
+			return messageUI.getMessageFont();
 		}
 		return this._font;
 	}
@@ -756,7 +756,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	public abstract void initCommandConfig(final Command command);
 
-	final public void select(int type) {
+	final public void selectUI(int type) {
 		if (command != null) {
 			command.select(type);
 			isSelectMessage = false;
@@ -825,7 +825,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	@Override
 	final public void draw(GLEx g) {
-		if (!running || !isOnLoadComplete() || isClose()) {
+		if (!isGameRunning || !isOnLoadComplete() || isClose()) {
 			return;
 		}
 		if (scrCG == null) {
@@ -842,26 +842,26 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 		} else {
 			scrCG.sleep--;
-			if (color != null) {
+			if (gameColor != null) {
 				float alpha = (float) (scrCG.sleepMax - scrCG.sleep) / scrCG.sleepMax;
 				if (alpha > 0.1f && alpha < 1.0f) {
 					if (scrCG.getBackgroundCG() != null) {
 						g.draw(scrCG.getBackgroundCG(), 0, 0);
 					}
 					LColor c = g.getColor();
-					g.setColor(color.r, color.g, color.b, alpha);
+					g.setColor(gameColor.r, gameColor.g, gameColor.b, alpha);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					g.setColor(c);
 				} else {
 					LColor c = g.getColor();
-					g.setColor(color);
+					g.setColor(gameColor);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					g.setColor(c);
 				}
 			}
 			if (scrCG.sleep <= 0) {
 				scrCG.sleep = 0;
-				color = null;
+				gameColor = null;
 			}
 			g.setAlpha(1.0f);
 		}
@@ -870,8 +870,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	public abstract void drawScreen(GLEx g);
 
 	public void nextScript() {
-		if (command != null && !isClose() && running) {
-			for (; isRunning = command.next();) {
+		if (command != null && !isClose() && isGameRunning) {
+			for (; isScriptRunning = command.next();) {
 				if (isSelectMessage) {
 					continue;
 				}
@@ -901,8 +901,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_CLEAR) || cmdFlag.equalsIgnoreCase(CommandType.L_DEL)) {
 					if (orderFlag == null) {
 						if (messageDesktop != null) {
-							message.setVisible(false);
-							select.setVisible(false);
+							messageUI.setVisible(false);
+							selectUI.setVisible(false);
 							effectSprites.clear();
 							scrCG.clear();
 							getSprites().removeAll();
@@ -1008,43 +1008,43 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESMOVE)) {
 					// 空值时复位
 					if (mesFlag == null) {
-						int mesSize = (int) (message.getWidth() / (message.getMessageFont().getSize()));
+						int mesSize = (int) (messageUI.getWidth() / (messageUI.getMessageFont().getSize()));
 						if (mesSize % 2 != 0) {
 							mesSize = mesSize - 3;
 						} else {
 							mesSize = mesSize - 4;
 						}
-						this.message.setMessageLength(mesSize);
-						this.message.setLocation((getWidth() - message.getWidth()) / 2,
-								getHeight() - message.getHeight() - 10);
-						this.message.setTopOffset(-5);
-						this.select.setTopOffset(5);
+						this.messageUI.setMessageLength(mesSize);
+						this.messageUI.setLocation((getWidth() - messageUI.getWidth()) / 2,
+								getHeight() - messageUI.getHeight() - 10);
+						this.messageUI.setTopOffset(-5);
+						this.selectUI.setTopOffset(5);
 					} else if (mesFlag != null) {
 						if (orderFlag != null) {
 							if (MathUtils.isNan(mesFlag) && (MathUtils.isNan(orderFlag))) {
 								float x = Float.parseFloat(mesFlag);
 								float y = Float.parseFloat(orderFlag);
-								message.setLocation(x, y);
-								select.setLocation(x, y);
+								messageUI.setLocation(x, y);
+								selectUI.setLocation(x, y);
 							}
 						} else {
 							if (mesFlag.indexOf(',') == -1 && MathUtils.isNan(mesFlag)) {
 								float v = Float.parseFloat(mesFlag);
-								message.setX(v);
-								select.setX(v);
+								messageUI.setX(v);
+								selectUI.setX(v);
 							} else {
 								String[] res = StringUtils.split(mesFlag, ',');
 								String v1 = res[0].trim();
 								String v2 = res[1].trim();
 								if (res.length == 1 && MathUtils.isNan(v1)) {
 									float v = Float.parseFloat(v1);
-									message.setX(v);
-									select.setX(v);
+									messageUI.setX(v);
+									selectUI.setX(v);
 								} else if (res.length == 2 && MathUtils.isNan(v1) && MathUtils.isNan(v2)) {
 									float x = Float.parseFloat(v1);
 									float y = Float.parseFloat(v2);
-									message.setLocation(x, y);
-									select.setLocation(x, y);
+									messageUI.setLocation(x, y);
+									selectUI.setLocation(x, y);
 								}
 							}
 						}
@@ -1148,13 +1148,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEOUT) || cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
 					this.scrFlag = true;
-					this.color = new LColor(mesFlag);
+					this.gameColor = new LColor(mesFlag);
 					if (effectSprites != null) {
 						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_IN, 30, color));
+							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_IN, 30, gameColor));
 						} else {
-							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_OUT, 30, color));
+							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_OUT, 30, gameColor));
 						}
 					}
 					continue;
@@ -1162,7 +1162,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELLEN)) {
 					if (mesFlag != null) {
 						if (MathUtils.isNan(mesFlag)) {
-							select.setLeftOffset(Integer.parseInt(mesFlag));
+							selectUI.setLeftOffset(Integer.parseInt(mesFlag));
 						}
 					}
 					continue;
@@ -1170,7 +1170,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELTOP)) {
 					if (mesFlag != null) {
 						if (MathUtils.isNan(mesFlag)) {
-							select.setTopOffset(Integer.parseInt(mesFlag));
+							selectUI.setTopOffset(Integer.parseInt(mesFlag));
 						}
 					}
 					continue;
@@ -1178,7 +1178,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEN)) {
 					if (mesFlag != null) {
 						if (MathUtils.isNan(mesFlag)) {
-							message.setMessageLength(Integer.parseInt(mesFlag));
+							messageUI.setMessageLength(Integer.parseInt(mesFlag));
 						}
 					}
 					continue;
@@ -1186,7 +1186,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESTOP)) {
 					if (mesFlag != null) {
 						if (MathUtils.isNan(mesFlag)) {
-							message.setTopOffset(Integer.parseInt(mesFlag));
+							messageUI.setTopOffset(Integer.parseInt(mesFlag));
 						}
 					}
 					continue;
@@ -1194,31 +1194,31 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEFT)) {
 					if (mesFlag != null) {
 						if (MathUtils.isNan(mesFlag)) {
-							message.setLeftOffset(Integer.parseInt(mesFlag));
+							messageUI.setLeftOffset(Integer.parseInt(mesFlag));
 						}
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESCOLOR)) {
 					if (mesFlag != null) {
-						message.setFontColor(new LColor(mesFlag));
+						messageUI.setFontColor(new LColor(mesFlag));
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MES)) {
-					if (select.isVisible()) {
-						select.setVisible(false);
+					if (selectUI.isVisible()) {
+						selectUI.setVisible(false);
 					}
 					scrFlag = true;
 					String nMessage = mesFlag;
-					message.setMessage(StringUtils.replace(nMessage, "&", " "));
-					message.setVisible(true);
+					messageUI.setMessage(StringUtils.replace(nMessage, "&", " "));
+					messageUI.setVisible(true);
 					break;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESSTOP)) {
 					scrFlag = true;
-					message.setVisible(false);
-					select.setVisible(false);
+					messageUI.setVisible(false);
+					selectUI.setVisible(false);
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECT)) {
@@ -1236,13 +1236,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								}
 							}
 							final String selectList = mesFlag.substring(selectStart + 1, selectEnd).trim();
-							if (message.isVisible()) {
-								message.setVisible(false);
+							if (messageUI.isVisible()) {
+								messageUI.setVisible(false);
 							}
-							select.setVisible(true);
+							selectUI.setVisible(true);
 							scrFlag = true;
 							isSelectMessage = true;
-							limitClick = true;
+							limitClickd = true;
 							String[] list = StringUtils.split(selectList, ',');
 							final int selectLength = list.length;
 							final int len = selectLength / 2;
@@ -1255,34 +1255,34 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 									items.add(list[i]);
 								}
 							}
-							select.setMessage(messageInfo, selects);
+							selectUI.setMessage(messageInfo, selects);
 							addProcess(new RealtimeProcess() {
 
 								@Override
 								public void run(LTimerContext time) {
-									select.SetClick(new SelectClick(items));
+									selectUI.SetClick(new SelectClick(items));
 									kill();
 								}
 							});
 							break;
 						} else {
-							selectMessage = mesFlag;
+							_selectMessage = mesFlag;
 						}
 					} else {
-						selectMessage = mesFlag;
+						_selectMessage = mesFlag;
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECTS)) {
-					if (message.isVisible()) {
-						message.setVisible(false);
+					if (messageUI.isVisible()) {
+						messageUI.setVisible(false);
 					}
-					select.SetClick(null);
-					select.setVisible(true);
+					selectUI.SetClick(null);
+					selectUI.setVisible(true);
 					scrFlag = true;
 					isSelectMessage = true;
 					String[] selects = command.getReads();
-					select.setMessage(selectMessage, selects);
+					selectUI.setMessage(_selectMessage, selects);
 					break;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SHAKE)) {
@@ -1307,14 +1307,14 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					} else {
 						colors = new String[] { "0", "0", "0" };
 					}
-					if (color == null && colors != null && colors.length == 3) {
-						color = new LColor(Integer.valueOf(colors[0]).intValue(), Integer.valueOf(colors[1]).intValue(),
+					if (gameColor == null && colors != null && colors.length == 3) {
+						gameColor = new LColor(Integer.valueOf(colors[0]).intValue(), Integer.valueOf(colors[1]).intValue(),
 								Integer.valueOf(colors[2]).intValue());
 						scrCG.sleep = 20;
 						scrCG.sleepMax = scrCG.sleep;
 						scrFlag = false;
 					} else {
-						color = null;
+						gameColor = null;
 					}
 					continue;
 				}
@@ -1362,7 +1362,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_EXIT)) {
 					scrFlag = true;
-					running = false;
+					isGameRunning = false;
 					onExit();
 					break;
 				}
@@ -1385,7 +1385,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (isSelectMessage) {
 			return;
 		}
-		if (message.isVisible() && !message.isComplete()) {
+		if (messageUI.isVisible() && !messageUI.isComplete()) {
 			return;
 		}
 		nextScript();
@@ -1400,13 +1400,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (tasking()) {
 			return;
 		}
-		if (limitClick) {
+		if (limitClickd) {
 			return;
 		}
-		if (!running) {
+		if (!isGameRunning) {
 			return;
 		}
-		if (message.isVisible() && !message.isComplete()) {
+		if (messageUI.isVisible() && !messageUI.isComplete()) {
 			return;
 		}
 		boolean isNext = false;
@@ -1414,17 +1414,17 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			if (!scrFlag) {
 				scrFlag = true;
 			}
-			if (!screenClick && message.isVisible()) {
-				isNext = message.intersects(getTouchX(), getTouchY());
+			if (!screenClickd && messageUI.isVisible()) {
+				isNext = messageUI.intersects(getTouchX(), getTouchY());
 			} else {
 				isNext = true;
 			}
-		} else if (scrFlag && select.getResultIndex() != -1) {
-			onSelect(selectMessage, select.getResultIndex());
-			isNext = select.intersects(getTouchX(), getTouchY());
+		} else if (scrFlag && selectUI.getResultIndex() != -1) {
+			onSelect(_selectMessage, selectUI.getResultIndex());
+			isNext = selectUI.intersects(getTouchX(), getTouchY());
 			if ((LSystem.base() != null && LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)
 					? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) {
-				message.setVisible(false);
+				messageUI.setVisible(false);
 				clearSelectMessage();
 			}
 		}
@@ -1443,8 +1443,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		} else {
 			command.formatCommand(fileName);
 		}
-		if (message.getFont() instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) message.getFont(), command.getCommands());
+		if (messageUI.getFont() instanceof LFont) {
+			LSTRDictionary.get().bind((LFont) messageUI.getFont(), command.getCommands());
 		}
 		initCommandConfig(command);
 		nextScript();
@@ -1455,36 +1455,36 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public String getSelectMessage() {
-		return selectMessage;
+		return _selectMessage;
 	}
 
 	private void initAVG() {
 		this.initDesktop();
-		this.initMessageConfig(message);
-		this.initSelectConfig(select);
+		this.initMessageConfig(messageUI);
+		this.initSelectConfig(selectUI);
 		this.initCommandConfig(_scriptName);
 	}
 
 	public abstract void onLoading();
 
 	public boolean isCommandGo() {
-		return isRunning;
+		return isScriptRunning;
 	}
 
 	public LMessage messageConfig() {
-		return message;
+		return messageUI;
 	}
 
 	public void setDialogImage(LTexture dialog) {
-		this.dialog = dialog;
+		this._dialogTexture = dialog;
 	}
 
 	public LTexture getDialogImage() {
-		return dialog;
+		return _dialogTexture;
 	}
 
 	public int getPause() {
-		return delay;
+		return _plapDelay;
 	}
 
 	public void setPause(int pause) {
@@ -1492,16 +1492,16 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public int getDelay() {
-		return delay;
+		return _plapDelay;
 	}
 
 	public void setDelay(int d) {
-		this.delay = d;
+		this._plapDelay = d;
 		if (_speedMode == SpeedMode.Flash || _speedMode == SpeedMode.Quickly || _speedMode == SpeedMode.Fast) {
-			delay = 0;
+			_plapDelay = 0;
 		}
 		if (avgProcess != null) {
-			avgProcess.setDelay(delay);
+			avgProcess.setDelay(_plapDelay);
 		}
 	}
 
@@ -1510,27 +1510,27 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public LTexture getDialog() {
-		return dialog;
+		return this.getDialogImage();
 	}
 
 	public void setDialog(LTexture dialog) {
-		this.dialog = dialog;
+		this.setDialogImage(dialog);
 	}
 
 	public LMessage getMessage() {
-		return message;
+		return messageUI;
 	}
 
 	public void setMessage(LMessage message) {
-		this.message = message;
+		this.messageUI = message;
 	}
 
 	public boolean isRunning() {
-		return running;
+		return isGameRunning;
 	}
 
 	public void setRunning(boolean running) {
-		this.running = running;
+		this.isGameRunning = running;
 	}
 
 	public AVGCG getScrCG() {
@@ -1562,7 +1562,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public LSelect getLSelect() {
-		return select;
+		return selectUI;
 	}
 
 	public int getSleep() {
@@ -1586,7 +1586,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public void setCommandGo(boolean isRunning) {
-		this.isRunning = isRunning;
+		this.isScriptRunning = isRunning;
 	}
 
 	public void setScrFlag(boolean scrFlag) {
@@ -1594,11 +1594,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public boolean isLocked() {
-		return limitClick;
+		return limitClickd;
 	}
 
 	public void setLocked(boolean locked) {
-		this.limitClick = locked;
+		this.limitClickd = locked;
 	}
 
 	@Override
@@ -1681,7 +1681,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public boolean isLimitClick() {
-		return limitClick;
+		return limitClickd;
 	}
 
 	/**
@@ -1690,11 +1690,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * @param limitClick
 	 */
 	public void setLimitClick(boolean lc) {
-		this.limitClick = lc;
+		this.limitClickd = lc;
 	}
 
 	public boolean isScreenClick() {
-		return screenClick;
+		return screenClickd;
 	}
 
 	/**
@@ -1703,7 +1703,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * @param screenClick
 	 */
 	public void setScreenClick(boolean screenClick) {
-		this.screenClick = screenClick;
+		this.screenClickd = screenClick;
 	}
 
 	public SpeedMode getSpeedMode() {
@@ -1718,7 +1718,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	public void setSpeedMode(SpeedMode m) {
 		this._speedMode = m;
 		if (_speedMode == SpeedMode.Flash || _speedMode == SpeedMode.Quickly || _speedMode == SpeedMode.Fast) {
-			delay = 0;
+			_plapDelay = 0;
 		}
 	}
 
@@ -1773,7 +1773,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	@Override
 	public void close() {
-		running = false;
+		isGameRunning = false;
 		if (avgProcess != null) {
 			avgProcess.kill();
 			avgProcess = null;
@@ -1789,18 +1789,18 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (command != null) {
 			command = null;
 		}
-		if (message != null) {
-			message.close();
-			message = null;
+		if (messageUI != null) {
+			messageUI.close();
+			messageUI = null;
 		}
 		if (scrCG != null) {
 			scrCG.close();
 			scrCG = null;
 		}
-		if (dialog != null) {
-			if (dialog.getSource() != null) {
-				dialog.close();
-				dialog = null;
+		if (_dialogTexture != null) {
+			if (_dialogTexture.getSource() != null) {
+				_dialogTexture.close();
+				_dialogTexture = null;
 			}
 		}
 		_currentTasks.clear();

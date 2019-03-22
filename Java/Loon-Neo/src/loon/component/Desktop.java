@@ -73,7 +73,7 @@ public class Desktop implements Visible, LRelease {
 	private LToolTip tooltip;
 
 	private boolean dvisible;
-	
+
 	private final String desktop_name;
 
 	/**
@@ -265,7 +265,7 @@ public class Desktop implements Visible, LRelease {
 	 * 
 	 */
 	public void update(long timer) {
-		if(!this.dvisible){
+		if (!this.dvisible) {
 			return;
 		}
 		if (!this.contentPane.isVisible()) {
@@ -374,7 +374,7 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public void createUI(GLEx g) {
-		if(!dvisible){
+		if (!dvisible) {
 			return;
 		}
 		try {
@@ -859,6 +859,12 @@ public class Desktop implements Visible, LRelease {
 	public void clear() {
 		if (contentPane != null) {
 			contentPane.clear();
+		}
+	}
+
+	public void resize() {
+		if (contentPane != null) {
+			contentPane.processResize();
 		}
 	}
 

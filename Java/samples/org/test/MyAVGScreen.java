@@ -90,7 +90,7 @@ public class MyAVGScreen extends AVGScreen {
 		} else if ((flag + "去死吧，星星").equalsIgnoreCase(mes)) {
 			type = 0;
 		} else if ((flag + "关于天才").equalsIgnoreCase(mes)) {
-			message.setVisible(false);
+			messageUI.setVisible(false);
 			setScrFlag(true);
 			// 强行锁定脚本
 			setLocked(true);

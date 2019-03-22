@@ -15,6 +15,7 @@ import loon.event.ClickListener;
 import loon.event.GameTouch;
 import loon.font.BMFont;
 import loon.opengl.GLEx;
+import loon.utils.I18N;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
@@ -151,7 +152,7 @@ public class MultiScreenTest extends Screen {
 			"Canvas", "GameMap", "MoveClip", "TextureImage", "Session" };
 
 	final String[] page1 = { "Screen", "Slider", "Alert", "Animation", "FrameLoop", "Script", "SText", "Light",
-			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural","MenuSelect","CheckBox","TextTree" };
+			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural","MenuSelect","CheckBox","TextTree","SLG","I18N" };
 
 	static BMFont info_font;
 
@@ -244,6 +245,8 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new MenuSelectTest());
 			addScreen(page1[index++], new CheckBoxTest());
 			addScreen(page1[index++], new TextTreeTest());
+			addScreen(page1[index++], new SLGTest());
+			addScreen(page1[index++], new I18NTest());
 		}
 
 		// 默认按钮大小为100x25

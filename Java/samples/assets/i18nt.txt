@@ -1,0 +1,6 @@
+$cn
+pwd="中文"
+next="下一个"
+$en
+pwd="password"
+next="next"

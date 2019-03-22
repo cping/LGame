@@ -302,6 +302,7 @@ public class LProcess extends PlayerUtils {
 					if (!LSystem._base.display().showLogo) {
 						startTransition();
 						screen.setClose(false);
+						screen.resetOrder();
 						screen.resetSize();
 						screen.onLoad();
 						screen.onLoaded();
@@ -348,6 +349,7 @@ public class LProcess extends PlayerUtils {
 
 	public void resize(int w, int h) {
 		if (isInstance) {
+			_currentScreen.resetSize(w, h);
 			_currentScreen.resize(w, h);
 		}
 	}
@@ -878,6 +880,7 @@ public class LProcess extends PlayerUtils {
 
 	public void setScreen(final Screen screen) {
 		if (screen.handler == null) {
+			screen.resetOrder();
 			screen.resetSize();
 		}
 		if (_game.setting.isLogo && _game.display().showLogo) {

@@ -73,6 +73,9 @@ public class ArrayByteReader implements LRelease {
 			default:
 				sbr.append((char) c);
 			}
+			if (in.available() <= 0) {
+				keepReading = false;
+			}
 		} while (keepReading);
 		return sbr.toString();
 	}

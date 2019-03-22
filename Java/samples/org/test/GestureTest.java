@@ -1,28 +1,15 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.canvas.LColor;
 import loon.component.LGesture;
 import loon.component.LLabel;
-import loon.event.GameTouch;
 import loon.event.Touched;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class GestureTest extends Screen {
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class GestureTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 
 		final LGesture g = new LGesture();
 		g.setColor(LColor.red);
@@ -46,49 +33,5 @@ public class GestureTest extends Screen {
 		add(MultiScreenTest.getBackButton(this, 0));
 	}
 
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
 
 }

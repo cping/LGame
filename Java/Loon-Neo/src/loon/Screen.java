@@ -1079,6 +1079,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.height = (h <= 0 ? LSystem.viewSize.getHeight() : h);
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
+		this.setSize(width, height);
+		if (desktopRun && desktop != null) {
+			desktop.resize();
+		}
+	}
+
+	final public void resetOrder() {
 		// 最先精灵
 		this.fristOrder = DRAW_SPRITE_PAINT();
 		// 其次桌面
@@ -1088,7 +1095,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.fristPaintFlag = true;
 		this.secondPaintFlag = true;
 		this.lastPaintFlag = true;
-		this.setSize(width, height);
 	}
 
 	public boolean contains(float x, float y) {

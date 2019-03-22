@@ -374,6 +374,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean isContainer() {
 		return false;
 	}
@@ -382,6 +383,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * 更新组件状态
 	 * 
 	 */
+	@Override
 	public void update(long elapsedTime) {
 		if (isClose) {
 			return;
@@ -575,12 +577,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LContainer getContainer() {
-		return this._super;
+		return getSuper();
 	}
 
 	final void setContainer(LContainer container) {
-		this._super = container;
-
+		this.setSuper(container);
 		this.validatePosition();
 	}
 
@@ -825,6 +826,9 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected void keyReleased(GameKey key) {
 	}
+
+	protected void processResize() {
+	};
 
 	void keyPressed() {
 		this.checkFocusKey();
