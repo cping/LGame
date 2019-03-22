@@ -74,7 +74,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			comp.setContainer(null);
 		}
 		comp.setContainer(this);
-		comp.setDesktop(this.desktop);
+		comp.setDesktop(this._desktop);
 		comp.setState(State.ADDED);
 		if (comp instanceof LScrollContainer) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
@@ -82,18 +82,18 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs = CollectionUtils.expand(this._childs, 1, false);
 		this._childs[0] = comp;
 		this.childCount++;
-		if (desktop != null) {
-			this.desktop.setDesktop(comp);
+		if (_desktop != null) {
+			this._desktop.setDesktop(comp);
 			if (this.input == null) {
-				this.input = desktop.input;
+				this.input = _desktop.input;
 			}
 			if (comp.input == null) {
-				comp.input = desktop.input;
+				comp.input = _desktop.input;
 			}
 		}
 		this.sortComponents();
 		this.latestInserted = comp;
-		this.setDesktops(this.desktop);
+		this.setDesktops(this._desktop);
 		return this;
 	}
 
@@ -117,7 +117,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		this._childs = newChilds;
 		this._childs[index] = comp;
-		this.desktop.setDesktop(comp);
+		this._desktop.setDesktop(comp);
 		this.sortComponents();
 		this.latestInserted = comp;
 		return this;
@@ -338,7 +338,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	public LComponent remove(int index) {
 		LComponent comp = this._childs[index];
 		if (comp != null) {
-			this.desktop.setComponentStat(comp, false);
+			this._desktop.setComponentStat(comp, false);
 			comp.setContainer(null);
 			comp.setState(State.REMOVED);
 			if (comp instanceof ActionBind) {
@@ -352,7 +352,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public void clear() {
-		this.desktop.clearComponentsStat(this._childs);
+		this._desktop.clearComponentsStat(this._childs);
 		for (int i = 0; i < this.childCount; i++) {
 			LComponent comp = this._childs[i];
 			if (comp != null) {
@@ -375,7 +375,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void update(long timer) {
-		if (isClose) {
+		if (this._component_isClose) {
 			return;
 		}
 		if (!this.isVisible()) {
@@ -395,14 +395,14 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void validatePosition() {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		super.validatePosition();
 		for (int i = 0; i < this.childCount; i++) {
 			this._childs[i].validatePosition();
 		}
-		if (!this.elastic) {
+		if (!this._component_elastic) {
 			for (int i = 0; i < this.childCount; i++) {
 				if (this._childs[i].getX() > this.getWidth() || this._childs[i].getY() > this.getHeight()
 						|| this._childs[i].getX() + this._childs[i].getWidth() < 0
@@ -425,7 +425,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void createUI(GLEx g) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		if (!this.isVisible()) {
@@ -433,11 +433,11 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		synchronized (_childs) {
 			super.createUI(g);
-			if (this.elastic) {
+			if (this._component_elastic) {
 				g.setClip(this.getScreenX(), this.getScreenY(), this.getWidth(), this.getHeight());
 			}
 			this.renderComponents(g);
-			if (this.elastic) {
+			if (this._component_elastic) {
 				g.clearClip();
 			}
 		}
@@ -540,14 +540,14 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean isElastic() {
-		return this.elastic;
+		return this._component_elastic;
 	}
 
 	public void setElastic(boolean b) {
 		if (getWidth() > 32 || getHeight() > 32) {
-			this.elastic = b;
+			this._component_elastic = b;
 		} else {
-			this.elastic = false;
+			this._component_elastic = false;
 		}
 	}
 
@@ -751,10 +751,10 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	public void close() {
 		super.close();
-		if (autoDestroy) {
+		if (_component_autoDestroy) {
 			if (_childs != null) {
 				for (LComponent c : _childs) {
-					if (c != null && !c.isClose) {
+					if (c != null && !c._component_isClose) {
 						c.close();
 						c = null;
 					}

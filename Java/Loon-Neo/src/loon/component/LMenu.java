@@ -659,7 +659,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	private boolean mouseSelect = false;
 
 	public void update(long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);

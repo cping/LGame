@@ -108,7 +108,7 @@ public abstract class ActorLayer extends LContainer {
 	 */
 	public MoveTo callMoveTo(Field2D field, ActionBind o, boolean flag, int x,
 			int y) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		MoveTo move = new MoveTo(field, x, y, flag);
@@ -142,7 +142,7 @@ public abstract class ActorLayer extends LContainer {
 	 */
 	public MoveTo callMoveTo(ActionBind o, boolean flag, int x, int y, int w,
 			int h) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		if (tmpField == null) {
@@ -201,7 +201,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public FadeTo callFadeTo(ActionBind o, int type, int speed) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		FadeTo fade = new FadeTo(type, speed);
@@ -240,7 +240,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public RotateTo callRotateTo(ActionBind o, float angle, float speed) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		RotateTo rotate = new RotateTo(angle, speed);
@@ -257,7 +257,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public JumpTo callJumpTo(ActionBind o, int j, float g) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		JumpTo jump = new JumpTo(j, g);
@@ -274,7 +274,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public CircleTo callCircleTo(ActionBind o, int radius, int velocity) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		CircleTo circle = new CircleTo(radius, velocity);
@@ -292,7 +292,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public FireTo callFireTo(ActionBind o, float x, float y, float speed) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		FireTo fire = new FireTo(x, y, speed);
@@ -309,7 +309,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public ScaleTo callScaleTo(ActionBind o, float sx, float sy) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		ScaleTo scale = new ScaleTo(sx, sy);
@@ -337,7 +337,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public ArrowTo callArrowTo(ActionBind o, float tx, float ty) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		ArrowTo arrow = new ArrowTo(tx, ty);
@@ -354,7 +354,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public ColorTo callColorTo(ActionBind o, LColor start, LColor end) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		ColorTo color = new ColorTo(start, end, 1f);
@@ -371,7 +371,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public ColorTo callColorTo(ActionBind o, LColor end, float duration) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		ColorTo color = new ColorTo(o.getColor(), end, duration);
@@ -391,7 +391,7 @@ public abstract class ActorLayer extends LContainer {
 	 */
 	public ColorTo callColorTo(ActionBind o, LColor start, LColor end,
 			float duration, float delay) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		ColorTo color = new ColorTo(start, end, duration, delay);
@@ -408,7 +408,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public ShakeTo callShakeTo(ActionBind o, float shakeX, float shakeY) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		ShakeTo shake = new ShakeTo(shakeX, shakeY);
@@ -428,7 +428,7 @@ public abstract class ActorLayer extends LContainer {
 	 */
 	public ShakeTo callShakeTo(ActionBind o, float shakeX, float shakeY,
 			float duration, float delay) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		ShakeTo shake = new ShakeTo(shakeX, shakeY, duration, delay);
@@ -444,7 +444,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public Field2D createArrayMap(int tileWidth, int tileHeight) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		tmpField = new Field2D(
@@ -459,7 +459,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param map
 	 */
 	public void setField2D(Field2D field) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		if (field == null) {
@@ -495,7 +495,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param y
 	 */
 	public void addObject(Actor object, float x, float y) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		synchronized (objects) {
@@ -514,7 +514,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param object
 	 */
 	public void addObject(Actor object) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		addObject(object, object.x(), object.y());
@@ -526,7 +526,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param actor
 	 */
 	void sendToFront(Actor actor) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		if (objects != null) {
@@ -544,7 +544,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param actor
 	 */
 	void sendToBack(Actor actor) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		if (objects != null) {
@@ -565,7 +565,7 @@ public abstract class ActorLayer extends LContainer {
 	 */
 	public RectBox[] getRandomLayerLocation(int nx, int ny, int nw, int nh,
 			int count) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		if (count <= 0) {
@@ -622,7 +622,7 @@ public abstract class ActorLayer extends LContainer {
 	 */
 	public RectBox[] getRandomLayerLocation(int actorWidth, int actorHeight,
 			int count) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return getRandomLayerLocation(0, 0, actorWidth, actorHeight, count);
@@ -636,7 +636,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public RectBox[] getRandomLayerLocation(Actor actor, int count) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		RectBox rect = actor.getRectBox();
@@ -651,7 +651,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public RectBox getRandomLayerLocation(Actor actor) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		RectBox[] rects = getRandomLayerLocation(actor, 1);
@@ -667,7 +667,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param object
 	 */
 	public void removeObject(Actor object) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		if (objects.size() == 0) {
@@ -691,7 +691,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param objects
 	 */
 	public void removeObjects(TArray<Actor> objects) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		synchronized (objects) {
@@ -709,7 +709,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param flagName
 	 */
 	public void removeObject(String flagName) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		synchronized (objects) {
@@ -740,7 +740,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public TArray<Actor> getCollisionObjects(Actor actor) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return getCollisionObjects(actor.getFlag());
@@ -751,7 +751,7 @@ public abstract class ActorLayer extends LContainer {
 	 * 
 	 */
 	public void reset() {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		if (objects != null) {
@@ -778,7 +778,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public TArray<Actor> getCollisionObjects(String flag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return this.collisionChecker.getObjects(flag);
@@ -793,7 +793,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public TArray<Actor> getCollisionObjectsAt(float x, float y, String flag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return this.collisionChecker.getObjectsAt(x, y, flag);
@@ -807,7 +807,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public Actor getOnlyCollisionObjectsAt(float x, float y) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return objects.getOnlyCollisionObjectsAt(x, y);
@@ -821,7 +821,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public Actor getOnlyCollisionObjectsAt(float x, float y, Object tag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return objects.getOnlyCollisionObjectsAt(x, y, tag);
@@ -833,7 +833,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @return
 	 */
 	public int size() {
-		if (isClose) {
+		if (_component_isClose) {
 			return 0;
 		}
 		return this.objects.size();
@@ -847,28 +847,28 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	Actor getSynchronizedObject(float x, float y) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return objects.getSynchronizedObject(x, y);
 	}
 
 	TArray<Actor> getIntersectingObjects(Actor actor, String flag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return this.collisionChecker.getIntersectingObjects(actor, flag);
 	}
 
 	Actor getOnlyIntersectingObject(Actor object, String flag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return this.collisionChecker.getOnlyIntersectingObject(object, flag);
 	}
 
 	TArray<Actor> getObjectsInRange(float x, float y, float r, String flag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
@@ -876,7 +876,7 @@ public abstract class ActorLayer extends LContainer {
 
 	TArray<Actor> getNeighbours(Actor actor, float distance, boolean d,
 			String flag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		if (distance < 0) {
@@ -909,35 +909,35 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	TArray<Actor> getCollisionObjects(float x, float y) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return collisionChecker.getObjectsAt(x, y, null);
 	}
 
 	void updateObjectLocation(Actor object, float oldX, float oldY) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		this.collisionChecker.updateObjectLocation(object, oldX, oldY);
 	}
 
 	void updateObjectSize(Actor object) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		this.collisionChecker.updateObjectSize(object);
 	}
 
 	Actor getOnlyObjectAt(Actor object, float dx, float dy, String flag) {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return this.collisionChecker.getOnlyObjectAt(object, dx, dy, flag);
 	}
 
 	ActorTreeSet getObjectsListInPaintO() {
-		if (isClose) {
+		if (_component_isClose) {
 			return null;
 		}
 		return this.objects;

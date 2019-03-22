@@ -84,7 +84,7 @@ public class LSlider extends LComponent {
 
 	@Override
 	public void update(final long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);

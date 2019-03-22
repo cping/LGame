@@ -226,7 +226,7 @@ public class LControl extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		if (visible) {
+		if (isVisible()) {
 			g.setAlpha(0.5f);
 			g.draw(controlBase, x, y, baseWidth, baseHeight);
 			g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);

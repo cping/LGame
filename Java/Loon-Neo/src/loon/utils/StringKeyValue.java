@@ -77,6 +77,14 @@ public class StringKeyValue {
 		return value;
 	}
 
+	public int length() {
+		return (_buffer != null && _buffer.length() > 0)  ? _buffer.length() : 0;
+	}
+
+	public char charAt(int i) {
+		return (_buffer != null && _buffer.length() > i) ? _buffer.charAt(i) : (char) -1;
+	}
+
 	@Override
 	public String toString() {
 		return getKey() + ":" + getValue();

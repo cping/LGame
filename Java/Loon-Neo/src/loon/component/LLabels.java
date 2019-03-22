@@ -66,7 +66,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);

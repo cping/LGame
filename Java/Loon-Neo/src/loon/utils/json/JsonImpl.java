@@ -21,6 +21,7 @@
 package loon.utils.json;
 
 import loon.Json;
+import loon.LSystem;
 
 public class JsonImpl implements Json {
 
@@ -54,13 +55,13 @@ public class JsonImpl implements Json {
 		return JsonParser.array().from(json);
 	}
 
-	static void checkJsonType(java.lang.Object value) {
+	final static void checkJsonType(java.lang.Object value) {
 		if (value == null || value instanceof String
 				|| value instanceof Json.Object || value instanceof Json.Array
-				|| value instanceof Boolean || value instanceof Number)
+				|| value instanceof Boolean || value instanceof Number){
 			return;
-
-		throw new IllegalArgumentException("Invalid JSON type [value=" + value
+		}
+		throw LSystem.runThrow("Invalid JSON type [value=" + value
 				+ ", class=" + value.getClass() + "]");
 	}
 

@@ -24,13 +24,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UTFDataFormatException;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.MathUtils;
 
 /**
  * Loon的Byte[]操作用类
  */
-public class ArrayByte {
+public class ArrayByte implements IArray, LRelease {
 
 	public static final int BIG_ENDIAN = 0;
 
@@ -70,6 +71,7 @@ public class ArrayByte {
 	}
 
 	public void setOrder(int type) {
+		expandArray = true;
 		position = 0;
 		byteOrder = type;
 	}
@@ -402,6 +404,22 @@ public class ArrayByte {
 		this.expandArray = expandArray;
 	}
 
+	public ArrayByte setArray(ArrayByte uarr, int offset) {
+		int max = uarr.length() < (this.length() - offset) ? uarr.length() : (length() - offset);
+		this.write(uarr.data, offset, max);
+		return this;
+	}
+
+	public ArrayByte slice(int begin, int end) {
+		if (end == -1) {
+			end = this.length();
+		}
+		int len = end - begin;
+		ArrayByte bytes = new ArrayByte(len);
+		bytes.write(this.data, begin, len);
+		return bytes;
+	}
+
 	public String toUTF8String() {
 		byte[] buffer = getData();
 		try {
@@ -412,10 +430,27 @@ public class ArrayByte {
 	}
 
 	@Override
+	public int size() {
+		return length();
+	}
+
+	@Override
+	public void clear() {
+		this.reset();
+		this.data = new byte[length()];
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return this.data == null || length() == 0;
+	}
+
+	@Override
 	public String toString() {
 		return new String(Base64Coder.encode(data));
 	}
 
+	@Override
 	public void close() {
 		data = null;
 	}

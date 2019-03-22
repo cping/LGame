@@ -87,16 +87,16 @@ public class LGesture extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		g.saveBrush();
-		if (visible && goalPath != null) {
+		if (isVisible() && goalPath != null) {
+			g.saveBrush();
 			int tmp = g.color();
 			g.setLineWidth(lineWidth);
 			g.setColor(baseColor);
 			g.drawPolyline(goalPath);
 			g.resetLineWidth();
 			g.setColor(tmp);
+			g.restoreBrush();
 		}
-		g.restoreBrush();
 	}
 
 	@Override

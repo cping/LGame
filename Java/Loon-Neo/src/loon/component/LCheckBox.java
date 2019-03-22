@@ -169,7 +169,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);

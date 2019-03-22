@@ -28,16 +28,16 @@ import loon.utils.TArray;
 
 final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	
-	private Array<Object> json = new Array<Object>();
-	private T root;
+	private Array<Object> _json_arrays = new Array<Object>();
+	private T _root;
 
 	JsonBuilder(T root) {
-		this.root = root;
-		json.add(root);
+		this._root = root;
+		_json_arrays.add(root);
 	}
 
 	public T done() {
-		return root;
+		return _root;
 	}
 
 	@Override
@@ -136,7 +136,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> array() {
 		JsonArray a = new JsonArray();
 		value(a);
-		json.add(a);
+		_json_arrays.add(a);
 		return this;
 	}
 
@@ -144,7 +144,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> object() {
 		JsonObject o = new JsonObject();
 		value(o);
-		json.add(o);
+		_json_arrays.add(o);
 		return this;
 	}
 
@@ -152,7 +152,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> array(String key) {
 		JsonArray a = new JsonArray();
 		value(key, a);
-		json.add(a);
+		_json_arrays.add(a);
 		return this;
 	}
 
@@ -160,22 +160,22 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	public JsonBuilder<T> object(String key) {
 		JsonObject o = new JsonObject();
 		value(key, o);
-		json.add(o);
+		_json_arrays.add(o);
 		return this;
 	}
 
 	@Override
 	public JsonBuilder<T> end() {
-		if (json.size() == 1) {
+		if (_json_arrays.size() == 1) {
 			throw LSystem.runThrow("Cannot end the root object or array");
 		}
-		json.pop();
+		_json_arrays.pop();
 		return this;
 	}
 
 	private JsonObject obj() {
 		try {
-			return (JsonObject) json.peek();
+			return (JsonObject) _json_arrays.peek();
 		} catch (ClassCastException e) {
 			throw LSystem.runThrow(
 					"Attempted to write a keyed value to a JsonArray");
@@ -184,7 +184,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 
 	private JsonArray arr() {
 		try {
-			return (JsonArray) json.peek();
+			return (JsonArray) _json_arrays.peek();
 		} catch (ClassCastException e) {
 			throw LSystem.runThrow(
 					"Attempted to write a non-keyed value to a JsonObject");

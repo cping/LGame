@@ -184,7 +184,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);
@@ -201,7 +201,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	@Override
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		LColor oldColor = g.getColor();

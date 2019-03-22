@@ -390,7 +390,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (visible) {
+		if (isVisible()) {
 			super.update(elapsedTime);
 			animation.update(elapsedTime);
 		}
@@ -419,7 +419,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		if (visible) {
+		if (isVisible()) {
 			if (_background != null) {
 				g.draw(_background, x, y, getWidth(), getHeight(), baseColor);
 			}

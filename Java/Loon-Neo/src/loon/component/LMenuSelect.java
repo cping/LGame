@@ -82,7 +82,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	private CallFunction _function;
 
-	private boolean _over, _pressed;
+	private boolean _over, _pressed,_focused;
 
 	private int _pressedTime = 0;
 
@@ -283,7 +283,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		IFont tmp = g.getFont();
@@ -351,7 +351,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);
@@ -369,7 +369,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		if (_colorUpdate.action(elapsedTime)) {
 			_colorUpdate.refresh();
 		}
-		if (selected) {
+		if (_focused) {
 			_pressed = true;
 			return;
 		}
@@ -394,7 +394,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	protected void processTouchPressed() {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		if (!_touchEvent.isPressed()) {
@@ -406,7 +406,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	protected void processTouchReleased() {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		if (_touchEvent.isPressed()) {
@@ -434,7 +434,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	protected void processKeyPressed() {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		if (this.isSelected()) {
@@ -466,7 +466,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	protected void processKeyReleased() {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		if (this.isSelected()) {

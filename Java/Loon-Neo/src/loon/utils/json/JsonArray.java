@@ -21,173 +21,202 @@
 package loon.utils.json;
 
 import loon.Json;
+import loon.LSystem;
 import loon.utils.TArray;
 
 class JsonArray implements Json.Array {
 
-	private final TArray<Object> list;
+	private final TArray<Object> _json_array_context;
 
 	public JsonArray() {
-		list = new TArray<Object>();
+		_json_array_context = new TArray<Object>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 	}
 
 	JsonArray(Object... collection) {
-		list = new TArray<Object>(collection);
+		_json_array_context = new TArray<Object>(collection);
 	}
-
-	public static JsonBuilder<JsonArray> builder() {
+	
+	public final static JsonBuilder<JsonArray> at() {
+		return builder();
+	}
+	
+	public final static JsonBuilder<JsonArray> builder() {
 		return new JsonBuilder<JsonArray>(new JsonArray());
 	}
 
+	@Override
 	public JsonArray add(java.lang.Object value) {
 		JsonImpl.checkJsonType(value);
-		list.add(value);
+		_json_array_context.add(value);
 		return this;
 	}
 
+	@Override
 	public JsonArray add(int index, java.lang.Object value) {
 		JsonImpl.checkJsonType(value);
-		while (list.size < index) {
-			list.add(null);
+		while (_json_array_context.size < index) {
+			_json_array_context.add(null);
 		}
-		list.insert(index, value);
+		_json_array_context.insert(index, value);
 		return this;
 	}
 
+	@Override
 	public Json.Array getArray(int key) {
 		return getArray(key, (Json.Array) null);
 	}
 
+	@Override
 	public Json.Array getArray(int key, Json.Array default_) {
 		Object o = get(key);
 		return (o instanceof Json.Array) ? (Json.Array) get(key) : default_;
 	}
 
+	@Override
 	public boolean getBoolean(int key) {
 		return getBoolean(key, false);
 	}
 
+	@Override
 	public boolean getBoolean(int key, boolean default_) {
 		Object o = get(key);
 		return o instanceof Boolean ? (Boolean) o : default_;
 	}
 
+	@Override
 	public double getDouble(int key) {
 		return getDouble(key, 0);
 	}
 
+	@Override
 	public double getDouble(int key, double default_) {
 		Object o = get(key);
 		return o instanceof Number ? ((Number) o).doubleValue() : default_;
 	}
 
+	@Override
 	public float getNumber(int key) {
 		return getNumber(key, 0);
 	}
 
+	@Override
 	public float getNumber(int key, float default_) {
 		Object o = get(key);
 		return o instanceof Number ? ((Number) o).floatValue() : default_;
 	}
 
+	@Override
 	public int getInt(int key) {
 		return getInt(key, 0);
 	}
 
+	@Override
 	public int getInt(int key, int default_) {
 		Object o = get(key);
 		return o instanceof Number ? ((Number) o).intValue() : default_;
 	}
 
+	@Override
 	public long getLong(int key) {
 		return getLong(key, 0);
 	}
 
+	@Override
 	public long getLong(int key, long default_) {
 		Object o = get(key);
 		return o instanceof Number ? ((Number) o).longValue() : default_;
 	}
 
+	@Override
 	public Json.Object getObject(int key) {
 		return getObject(key, null);
 	}
 
+	@Override
 	public Json.Object getObject(int key, Json.Object default_) {
 		Object o = get(key);
 		return o instanceof Json.Object ? (Json.Object) get(key) : default_;
 	}
 
+	@Override
 	public String getString(int key) {
 		return getString(key, null);
 	}
 
+	@Override
 	public String getString(int key, String default_) {
 		Object o = get(key);
 		return (o instanceof String) ? (String) o : default_;
 	}
 
+	@Override
 	public boolean isArray(int key) {
 		return get(key) instanceof Json.Array;
 	}
 
+	@Override
 	public boolean isBoolean(int key) {
 		return get(key) instanceof Boolean;
 	}
 
+	@Override
 	public boolean isNull(int key) {
 		return get(key) == null;
 	}
 
+	@Override
 	public boolean isNumber(int key) {
 		return get(key) instanceof Number;
 	}
 
+	@Override
 	public boolean isString(int key) {
 		return get(key) instanceof String;
 	}
 
+	@Override
 	public boolean isObject(int key) {
 		return get(key) instanceof Json.Object;
 	}
 
 	@Override
 	public int length() {
-		return list.size;
+		return _json_array_context.size;
 	}
 
 	@Override
 	public JsonArray remove(int index) {
-		if (index < 0 || index >= list.size)
+		if (index < 0 || index >= _json_array_context.size)
 			return this;
-		list.remove(index);
+		_json_array_context.remove(index);
 		return this;
 	}
 
 	@Override
 	public JsonArray set(int index, java.lang.Object value) {
 		JsonImpl.checkJsonType(value);
-		while (list.size <= index) {
-			list.add(null);
+		while (_json_array_context.size <= index) {
+			_json_array_context.add(null);
 		}
-		list.set(index, value);
+		_json_array_context.set(index, value);
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return list.toString();
+		return _json_array_context.toString();
 	}
 
 	@Override
 	public <T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink) {
-		for (int i = 0; i < list.size; i++) {
-			sink.value(list.get(i));
+		for (int i = 0; i < _json_array_context.size; i++) {
+			sink.value(_json_array_context.get(i));
 		}
 		return sink;
 	}
 
 	Object get(int key) {
-		return (key >= 0 && key < list.size) ? list.get(key) : null;
+		return (key >= 0 && key < _json_array_context.size) ? _json_array_context.get(key) : null;
 	}
 
 }

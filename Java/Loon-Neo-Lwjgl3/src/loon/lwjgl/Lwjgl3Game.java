@@ -95,8 +95,7 @@ public class Lwjgl3Game extends LGame {
 		osIsUnix = OS_NAME.indexOf("nix") != -1 || OS_NAME.indexOf("nux") != 1;
 		osIsMacOs = OS_NAME.indexOf("mac") != -1;
 		osIsWindows = OS_NAME.indexOf("windows") != -1;
-		osIsWindowsXP = OS_NAME.startsWith("Windows")
-				&& (OS_NAME.compareTo("5.1") >= 0);
+		osIsWindowsXP = OS_NAME.startsWith("Windows") && (OS_NAME.compareTo("5.1") >= 0);
 		osIsWindows2003 = "windows 2003".equals(OS_NAME);
 		osBit64 = System.getProperty("os.arch").equals("amd64");
 	}
@@ -141,8 +140,7 @@ public class Lwjgl3Game extends LGame {
 	}
 
 	public static boolean isHPUX() {
-		return System.getProperty("java.vm.vendor").indexOf(
-				"Hewlett-Packard Company") != -1;
+		return System.getProperty("java.vm.vendor").indexOf("Hewlett-Packard Company") != -1;
 	}
 
 	public static boolean isIBM() {
@@ -183,8 +181,7 @@ public class Lwjgl3Game extends LGame {
 		protected Lwjgl3ImplGraphics createGraphics() {
 			return new Lwjgl3ImplGraphics(this, null, Scale.ONE) {
 				{
-					setSize(game.setting.width, game.setting.height,
-							game.setting.fullscreen);
+					setSize(game.setting.width, game.setting.height, game.setting.fullscreen);
 				}
 
 				@Override
@@ -194,8 +191,7 @@ public class Lwjgl3Game extends LGame {
 
 				@Override
 				public Dimension screenSize() {
-					return new Dimension(game.setting.width,
-							game.setting.height);
+					return new Dimension(game.setting.width, game.setting.height);
 				}
 
 				@Override
@@ -232,9 +228,7 @@ public class Lwjgl3Game extends LGame {
 		glfwSetErrorCallback(errorCallback = new GLFWErrorCallback() {
 			@Override
 			public void invoke(int error, long description) {
-				log().error(
-						"GL Error (" + error + "):"
-								+ getDescription(description));
+				log().error("GL Error (" + error + "):" + getDescription(description));
 			}
 		});
 		if (!glfwInit())
@@ -262,18 +256,16 @@ public class Lwjgl3Game extends LGame {
 		glfwWindowHint(GLFW_SAMPLES, 0);
 		window = glfwCreateWindow(width, height, config.appName, monitor, 0);
 		if (window == 0) {
-			throw new RuntimeException(
-					"Failed to create window; see error log.");
+			throw new RuntimeException("Failed to create window; see error log.");
 		}
 		this.graphics = createGraphics();
 		this.input = createInput();
 
-		glfwSetWindowPos(window, (vidMode.width() - width) / 2,
-				(vidMode.height() - height) / 2);
+		glfwSetWindowPos(window, (vidMode.width() - width) / 2, (vidMode.height() - height) / 2);
 		glfwMakeContextCurrent(window);
 
 		graphics.setSize(config.width, config.height, config.fullscreen);
-		
+
 		if (config instanceof JavaSetting) {
 			glfwSwapInterval(((JavaSetting) config).vSyncEnabled ? 1 : 0);
 		} else {
@@ -288,8 +280,7 @@ public class Lwjgl3Game extends LGame {
 				public void onEmit(KeyMake.Event event) {
 					if (event instanceof KeyMake.KeyEvent) {
 						KeyMake.KeyEvent kevent = (KeyMake.KeyEvent) event;
-						if (kevent.keyCode == config.activationKey
-								&& kevent.down) {
+						if (kevent.keyCode == config.activationKey && kevent.down) {
 							toggleActivation();
 						}
 					}
@@ -375,21 +366,16 @@ public class Lwjgl3Game extends LGame {
 	private static void browse(String url) throws Exception {
 		if (isMacOS()) {
 			Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
-			Method openURL = fileMgr.getDeclaredMethod("openURL",
-					new Class[] { String.class });
+			Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
 			openURL.invoke(null, new Object[] { url });
 		} else if (isWindows()) {
-			Runtime.getRuntime().exec(
-					"rundll32 url.dll,FileProtocolHandler " + url);
+			Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
 		} else {
-			String[] browsers = { "google-chrome", "firefox", "mozilla",
-					"opera", "epiphany", "konqueror", "netscape", "links",
-					"lynx", "epiphany", "conkeror", "midori", "kazehakase", };
+			String[] browsers = { "google-chrome", "firefox", "mozilla", "opera", "epiphany", "konqueror", "netscape",
+					"links", "lynx", "epiphany", "conkeror", "midori", "kazehakase", };
 			String browser = null;
 			for (int count = 0; count < browsers.length && browser == null; count++) {
-				if (Runtime.getRuntime()
-						.exec(new String[] { "which", browsers[count] })
-						.waitFor() == 0) {
+				if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0) {
 					browser = browsers[count];
 				}
 			}
@@ -412,44 +398,32 @@ public class Lwjgl3Game extends LGame {
 			} catch (Throwable err) {
 				try {
 					if (isWindows()) {
-						File iexplore = new File(
-								"C:\\Program Files\\Internet Explorer\\iexplore.exe");
+						File iexplore = new File("C:\\Program Files\\Internet Explorer\\iexplore.exe");
 						if (iexplore.exists()) {
-							systemRuntime.exec(iexplore.getAbsolutePath()
-									+ " \"" + url + "\"");
+							systemRuntime.exec(iexplore.getAbsolutePath() + " \"" + url + "\"");
 						} else {
-							File chrome = new File(
-									"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
+							File chrome = new File("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
 							if (chrome.exists()) {
-								systemRuntime.exec(chrome.getAbsolutePath()
-										+ " \"" + url + "\"");
+								systemRuntime.exec(chrome.getAbsolutePath() + " \"" + url + "\"");
 								return;
 							}
-							chrome = new File(
-									"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
+							chrome = new File("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
 							if (chrome.exists()) {
-								systemRuntime.exec(chrome.getAbsolutePath()
-										+ " \"" + url + "\"");
+								systemRuntime.exec(chrome.getAbsolutePath() + " \"" + url + "\"");
 								return;
 							}
-							systemRuntime
-									.exec("rundll32 url.dll,FileProtocolHandler "
-											+ url);
+							systemRuntime.exec("rundll32 url.dll,FileProtocolHandler " + url);
 						}
 					} else if (isMacOS()) {
 						systemRuntime.exec("open " + url);
 					} else if (isUnix()) {
-						String[] browsers = { "google-chrome", "firefox",
-								"mozilla", "opera", "epiphany", "konqueror",
-								"netscape", "links", "lynx", "epiphany",
-								"conkeror", "midori", "kazehakase" };
+						String[] browsers = { "google-chrome", "firefox", "mozilla", "opera", "epiphany", "konqueror",
+								"netscape", "links", "lynx", "epiphany", "conkeror", "midori", "kazehakase" };
 						StringBuffer cmd = new StringBuffer();
 						for (int i = 0; i < browsers.length; i++) {
-							cmd.append((i == 0 ? "" : " || ") + browsers[i]
-									+ " \"" + url + "\" ");
+							cmd.append((i == 0 ? "" : " || ") + browsers[i] + " \"" + url + "\" ");
 						}
-						systemRuntime.exec(new String[] { "sh", "-c",
-								cmd.toString() });
+						systemRuntime.exec(new String[] { "sh", "-c", cmd.toString() });
 					}
 				} catch (IOException ex) {
 					e.printStackTrace();
@@ -528,8 +502,7 @@ public class Lwjgl3Game extends LGame {
 			Pixmap pixmap = images[i];
 
 			GLFWImage icon = GLFWImage.malloc();
-			icon.set(pixmap.getWidth(), pixmap.getHeight(),
-					pixmap.convertPixmapToByteBuffer(true));
+			icon.set(pixmap.getWidth(), pixmap.getHeight(), pixmap.convertPixmapToByteBuffer(true));
 			buffer.put(icon);
 
 			icon.free();
@@ -549,7 +522,7 @@ public class Lwjgl3Game extends LGame {
 	public void reset() {
 		boolean wasActive = glfwGetWindowAttrib(window, GLFW_VISIBLE) > 0;
 		while (!glfwWindowShouldClose(window)) {
-			boolean newActive = glfwGetWindowAttrib(window, GLFW_VISIBLE) > 0;
+			boolean newActive = active && glfwGetWindowAttrib(window, GLFW_VISIBLE) > 0;
 			if (wasActive != newActive) {
 				status.emit(wasActive ? Status.PAUSE : Status.RESUME);
 				wasActive = newActive;

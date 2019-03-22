@@ -171,7 +171,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);

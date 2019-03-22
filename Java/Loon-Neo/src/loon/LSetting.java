@@ -90,21 +90,49 @@ public class LSetting {
 	 */
 	public boolean emulateTouch = false;
 
+	/**
+	 * 仅对JavaSE环境有效,不为-1时对应的按键触发后,窗体停止活动
+	 */
 	public int activationKey = -1;
 
+	/**
+	 * 仅对JavaSE环境有效,为true时后台强制转换所有Image为TYPE_INT_ARGB_PRE类型
+	 */
 	public boolean convertImagesOnLoad = true;
 
+	/**
+	 * 当前游戏或应用名
+	 */
 	public String appName = LSystem.APP_NAME;
 
+	/**
+	 * 使用的初始化logo
+	 */
 	public String logoPath = "loon_logo.png";
 
+	/**
+	 * 当前字体名
+	 */
 	public String fontName = LSystem.FONT_NAME;
 
+	/**
+	 * 当前应用版本号
+	 */
+	public String version = "unkown";
+
+	/**
+	 * 允许注销纹理(为false所有纹理都不被注销)
+	 */
 	public boolean disposeTexture = true;
 
+	/**
+	 * 保存注入纹理的像素(为false不保存)
+	 */
 	public boolean saveTexturePixels = true;
 
-	// 当前游戏类型，默认为"未知"
+	/**
+	 * 当前游戏类型，默认为"未知"
+	 */
 	public GameType gameType = GameType.UNKOWN;
 
 	public void copy(LSetting setting) {
@@ -122,6 +150,7 @@ public class LSetting {
 		this.appName = setting.appName;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
+		this.fontName = setting.version;
 	}
 
 	/**
@@ -130,7 +159,7 @@ public class LSetting {
 	public void setSystemLogFont(IFont font) {
 		LSystem.setSystemLogFont(font);
 	}
-	
+
 	/**
 	 * 全局的游戏画面用字体,不设置则默认使用LFont贴图本地字体
 	 */
@@ -144,7 +173,7 @@ public class LSetting {
 	public void setSystemGlobalFont(IFont font) {
 		LSystem.setSystemGlobalFont(font);
 	}
-	
+
 	public boolean landscape() {
 		return this.height < this.width;
 	}

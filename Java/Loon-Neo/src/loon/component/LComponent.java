@@ -210,15 +210,15 @@ public abstract class LComponent extends LObject<LContainer>
 
 	private LTexture[] _imageUI = null;
 
-	protected boolean elastic = false;
+	protected boolean _component_elastic = false;
 
-	protected boolean autoDestroy = true;
+	protected boolean _component_autoDestroy = true;
 
-	protected boolean isClose = false;
+	protected boolean _component_isClose = false;
 
 	protected boolean isFull = false;
 
-	private boolean isSelectDraw = false;
+	protected boolean isSelectDraw = false;
 	// 渲染状态
 	public boolean customRendering = false;
 
@@ -243,25 +243,25 @@ public abstract class LComponent extends LObject<LContainer>
 	protected String tooltip;
 
 	// 组件标记
-	protected boolean visible = true;
+	protected boolean _component_visible = true;
 
-	protected boolean enabled = true;
+	protected boolean _component_enabled = true;
 
 	// 是否为焦点
-	protected boolean focusable = true;
+	protected boolean _component_focusable = true;
 
 	// 是否已选中
-	protected boolean selected = false;
+	protected boolean _component_selected = false;
 
-	protected Desktop desktop = Desktop.EMPTY_DESKTOP;
-
-	protected SysInput input;
+	protected Desktop _desktop = Desktop.EMPTY_DESKTOP;
 
 	protected boolean _isLimitMove = false, _drawBackground = true;
 
 	protected LTexture _background;
 
 	protected LayoutConstraints _rootConstraints = null;
+
+	protected SysInput input;
 
 	protected LColor baseColor = null;
 
@@ -385,7 +385,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 */
 	@Override
 	public void update(long elapsedTime) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
 		if (_super != null) {
@@ -404,10 +404,10 @@ public abstract class LComponent extends LObject<LContainer>
 	 * @param g
 	 */
 	public void createUI(GLEx g) {
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
-		if (!this.visible) {
+		if (!this._component_visible) {
 			return;
 		}
 		if (_alpha < 0.01f) {
@@ -425,7 +425,7 @@ public abstract class LComponent extends LObject<LContainer>
 				g.setAlpha(_alpha * screenAlpha);
 				final int width = (int) this.getWidth();
 				final int height = (int) this.getHeight();
-				if (this.elastic) {
+				if (this._component_elastic) {
 					g.setClip(this._screenX, this._screenY, width, height);
 				}
 				if (update) {
@@ -472,7 +472,7 @@ public abstract class LComponent extends LObject<LContainer>
 				if (update) {
 					g.restoreTx();
 				}
-				if (this.elastic) {
+				if (this._component_elastic) {
 					g.clearClip();
 				}
 				g.setBlendMode(blend);
@@ -498,18 +498,18 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean contains(float x, float y, float width, float height) {
-		return (this.visible)
+		return (this._component_visible
 				&& (x >= this._screenX && y >= this._screenY && ((x + width) <= (this._screenX + this._width * _scaleX))
-						&& ((y + height) <= (this._screenY + this._height * _scaleY)));
+						&& ((y + height) <= (this._screenY + this._height * _scaleY))));
 	}
 
 	public boolean intersects(float x1, float y1) {
-		return (this.visible) && (x1 >= this._screenX && x1 <= this._screenX + this._width * _scaleX
+		return (this._component_visible) && (x1 >= this._screenX && x1 <= this._screenX + this._width * _scaleX
 				&& y1 >= this._screenY && y1 <= this._screenY + this._height * _scaleY);
 	}
 
 	public boolean intersects(LComponent comp) {
-		return (this.visible) && (comp.isVisible())
+		return (this._component_visible) && (comp.isVisible())
 				&& (this._screenX + this._width * _scaleX >= comp._screenX
 						&& this._screenX <= comp._screenX + comp._width
 						&& this._screenY + this._height * _scaleY >= comp._screenY
@@ -518,42 +518,42 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public boolean isVisible() {
-		return this.visible;
+		return this._component_visible;
 	}
 
 	@Override
 	public void setVisible(boolean v) {
-		if (this.visible == v) {
+		if (this._component_visible == v) {
 			return;
 		}
-		this.visible = v;
-		if (desktop != null) {
-			this.desktop.setComponentStat(this, this.visible);
+		this._component_visible = v;
+		if (_desktop != null) {
+			this._desktop.setComponentStat(this, this._component_visible);
 		}
 	}
 
 	public boolean isEnabled() {
-		return (this._super == null) ? this.enabled : (this.enabled && this._super.isEnabled());
+		return (this._super == null) ? this._component_enabled : (this._component_enabled && this._super.isEnabled());
 	}
 
 	public void setEnabled(boolean b) {
-		if (this.enabled == b) {
+		if (this._component_enabled == b) {
 			return;
 		}
-		this.enabled = b;
-		this.desktop.setComponentStat(this, this.enabled);
+		this._component_enabled = b;
+		this._desktop.setComponentStat(this, this._component_enabled);
 	}
 
 	public boolean isSelected() {
-		return this.selected;
+		return this._component_selected;
 	}
 
 	final void setSelected(boolean b) {
-		this.selected = b;
+		this._component_selected = b;
 	}
 
 	public boolean requestFocus() {
-		return this.desktop.selectComponent(this);
+		return this._desktop.selectComponent(this);
 	}
 
 	public void transferFocus() {
@@ -569,11 +569,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isFocusable() {
-		return this.focusable;
+		return this._component_focusable;
 	}
 
 	public void setFocusable(boolean b) {
-		this.focusable = b;
+		this._component_focusable = b;
 	}
 
 	public LContainer getContainer() {
@@ -939,15 +939,15 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isClose() {
-		return isClose;
+		return _component_isClose;
 	}
 
 	public boolean isAutoDestroy() {
-		return autoDestroy;
+		return _component_autoDestroy;
 	}
 
 	public void setAutoDestroy(boolean autoDestroy) {
-		this.autoDestroy = autoDestroy;
+		this._component_autoDestroy = autoDestroy;
 	}
 
 	@Override
@@ -1082,7 +1082,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent show() {
-		visible = true;
+		_component_visible = true;
 		if (!getScreen().contains(this)) {
 			getScreen().add(this);
 		}
@@ -1090,7 +1090,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent hide() {
-		visible = false;
+		_component_visible = false;
 		if (getScreen().contains(this)) {
 			getScreen().remove(this);
 		}
@@ -1098,12 +1098,12 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean toggleVisible() {
-		if (visible) {
+		if (_component_visible) {
 			hide();
 		} else {
 			show();
 		}
-		return visible;
+		return _component_visible;
 	}
 
 	public LComponent enabled() {
@@ -1298,36 +1298,36 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void setDesktop(Desktop d) {
-		if (this.desktop == d) {
+		if (this._desktop == d) {
 			return;
 		}
-		this.desktop = d;
+		this._desktop = d;
 		this.input = d.input;
 	}
 
 	public Desktop getDesktop() {
-		return this.desktop;
+		return this._desktop;
 	}
 
 	public Screen getScreen() {
-		return (desktop == null || desktop.input == null) ? LSystem.getProcess().getScreen() : desktop.input;
+		return (_desktop == null || _desktop.input == null) ? LSystem.getProcess().getScreen() : _desktop.input;
 	}
 
 	@Override
 	public void close() {
-		if (!autoDestroy) {
+		if (!_component_autoDestroy) {
 			return;
 		}
-		if (isClose) {
+		if (_component_isClose) {
 			return;
 		}
-		this.isClose = true;
-		this.desktop.setComponentStat(this, false);
+		this._component_visible = false;
+		this._component_isClose = true;
+		this._desktop.setComponentStat(this, false);
 		if (this._super != null) {
 			this._super.remove(this);
 		}
-		this.desktop = Desktop.EMPTY_DESKTOP;
-		this.input = null;
+		this._desktop = Desktop.EMPTY_DESKTOP;
 		this._super = null;
 		if (_imageUI != null) {
 			for (int i = 0, size = _imageUI.length; i < size; i++) {
@@ -1340,10 +1340,11 @@ public abstract class LComponent extends LObject<LContainer>
 			this._background.close();
 			this._background = null;
 		}
-		this.selected = false;
-		this.visible = false;
-		this.Click = null;
+		this._component_selected = false;
+		this._component_visible = false;
 		this._touchListener = null;
+		this.input = null;
+		this.Click = null;
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}

@@ -161,4 +161,19 @@ public class GeometryUtils {
 		return ((v1ex - vsx) * (v2ex - vsx) + (v1ey - vsy) * (v2ey - vsy));
 	}
 
+	public static void transPointList(float[] points, float x, float y) {
+		int i = 0, len = points.length;
+		for (i = 0; i < len; i += 2) {
+			points[i] += x;
+			points[i + 1] += y;
+		}
+	}
+
+	public static void transPointList(int[] points, int x, int y) {
+		int i = 0, len = points.length;
+		for (i = 0; i < len; i += 2) {
+			points[i] += x;
+			points[i + 1] += y;
+		}
+	}
 }

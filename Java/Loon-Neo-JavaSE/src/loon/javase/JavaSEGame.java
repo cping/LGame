@@ -85,8 +85,7 @@ public class JavaSEGame extends LGame {
 		osIsUnix = OS_NAME.indexOf("nix") != -1 || OS_NAME.indexOf("nux") != 1;
 		osIsMacOs = OS_NAME.indexOf("mac") != -1;
 		osIsWindows = OS_NAME.indexOf("windows") != -1;
-		osIsWindowsXP = OS_NAME.startsWith("Windows")
-				&& (OS_NAME.compareTo("5.1") >= 0);
+		osIsWindowsXP = OS_NAME.startsWith("Windows") && (OS_NAME.compareTo("5.1") >= 0);
 		osIsWindows2003 = "windows 2003".equals(OS_NAME);
 		osBit64 = System.getProperty("os.arch").equals("amd64");
 	}
@@ -131,8 +130,7 @@ public class JavaSEGame extends LGame {
 	}
 
 	public static boolean isHPUX() {
-		return System.getProperty("java.vm.vendor").indexOf(
-				"Hewlett-Packard Company") != -1;
+		return System.getProperty("java.vm.vendor").indexOf("Hewlett-Packard Company") != -1;
 	}
 
 	public static boolean isIBM() {
@@ -173,8 +171,7 @@ public class JavaSEGame extends LGame {
 		protected JavaSEGraphics createGraphics() {
 			return new JavaSEGraphics(this, null, Scale.ONE) {
 				{
-					setSize(game.setting.width, game.setting.height,
-							game.setting.fullscreen);
+					setSize(game.setting.width, game.setting.height, game.setting.fullscreen);
 				}
 
 				@Override
@@ -184,8 +181,7 @@ public class JavaSEGame extends LGame {
 
 				@Override
 				public Dimension screenSize() {
-					return new Dimension(game.setting.width,
-							game.setting.height);
+					return new Dimension(game.setting.width, game.setting.height);
 				}
 
 				@Override
@@ -216,8 +212,7 @@ public class JavaSEGame extends LGame {
 				public void onEmit(KeyMake.Event event) {
 					if (event instanceof KeyMake.KeyEvent) {
 						KeyMake.KeyEvent kevent = (KeyMake.KeyEvent) event;
-						if (kevent.keyCode == config.activationKey
-								&& kevent.down) {
+						if (kevent.keyCode == config.activationKey && kevent.down) {
 							toggleActivation();
 						}
 					}
@@ -228,7 +223,7 @@ public class JavaSEGame extends LGame {
 		this.setTitle(config.appName);
 		this.initProcess();
 		if (setting instanceof JavaSetting) {
-			setIcon(((JavaSetting)setting).iconPaths);
+			setIcon(((JavaSetting) setting).iconPaths);
 		}
 		this.graphics.init();
 		this.input.init();
@@ -297,21 +292,16 @@ public class JavaSEGame extends LGame {
 	private static void browse(String url) throws Exception {
 		if (isMacOS()) {
 			Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
-			Method openURL = fileMgr.getDeclaredMethod("openURL",
-					new Class[] { String.class });
+			Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
 			openURL.invoke(null, new Object[] { url });
 		} else if (isWindows()) {
-			Runtime.getRuntime().exec(
-					"rundll32 url.dll,FileProtocolHandler " + url);
+			Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
 		} else {
-			String[] browsers = { "google-chrome", "firefox", "mozilla",
-					"opera", "epiphany", "konqueror", "netscape", "links",
-					"lynx", "epiphany", "conkeror", "midori", "kazehakase", };
+			String[] browsers = { "google-chrome", "firefox", "mozilla", "opera", "epiphany", "konqueror", "netscape",
+					"links", "lynx", "epiphany", "conkeror", "midori", "kazehakase", };
 			String browser = null;
 			for (int count = 0; count < browsers.length && browser == null; count++) {
-				if (Runtime.getRuntime()
-						.exec(new String[] { "which", browsers[count] })
-						.waitFor() == 0) {
+				if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0) {
 					browser = browsers[count];
 				}
 			}
@@ -334,44 +324,32 @@ public class JavaSEGame extends LGame {
 			} catch (Throwable err) {
 				try {
 					if (isWindows()) {
-						File iexplore = new File(
-								"C:\\Program Files\\Internet Explorer\\iexplore.exe");
+						File iexplore = new File("C:\\Program Files\\Internet Explorer\\iexplore.exe");
 						if (iexplore.exists()) {
-							systemRuntime.exec(iexplore.getAbsolutePath()
-									+ " \"" + url + "\"");
+							systemRuntime.exec(iexplore.getAbsolutePath() + " \"" + url + "\"");
 						} else {
-							File chrome = new File(
-									"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
+							File chrome = new File("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
 							if (chrome.exists()) {
-								systemRuntime.exec(chrome.getAbsolutePath()
-										+ " \"" + url + "\"");
+								systemRuntime.exec(chrome.getAbsolutePath() + " \"" + url + "\"");
 								return;
 							}
-							chrome = new File(
-									"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
+							chrome = new File("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
 							if (chrome.exists()) {
-								systemRuntime.exec(chrome.getAbsolutePath()
-										+ " \"" + url + "\"");
+								systemRuntime.exec(chrome.getAbsolutePath() + " \"" + url + "\"");
 								return;
 							}
-							systemRuntime
-									.exec("rundll32 url.dll,FileProtocolHandler "
-											+ url);
+							systemRuntime.exec("rundll32 url.dll,FileProtocolHandler " + url);
 						}
 					} else if (isMacOS()) {
 						systemRuntime.exec("open " + url);
 					} else if (isUnix()) {
-						String[] browsers = { "google-chrome", "firefox",
-								"mozilla", "opera", "epiphany", "konqueror",
-								"netscape", "links", "lynx", "epiphany",
-								"conkeror", "midori", "kazehakase" };
+						String[] browsers = { "google-chrome", "firefox", "mozilla", "opera", "epiphany", "konqueror",
+								"netscape", "links", "lynx", "epiphany", "conkeror", "midori", "kazehakase" };
 						StringBuffer cmd = new StringBuffer();
 						for (int i = 0; i < browsers.length; i++) {
-							cmd.append((i == 0 ? "" : " || ") + browsers[i]
-									+ " \"" + url + "\" ");
+							cmd.append((i == 0 ? "" : " || ") + browsers[i] + " \"" + url + "\" ");
 						}
-						systemRuntime.exec(new String[] { "sh", "-c",
-								cmd.toString() });
+						systemRuntime.exec(new String[] { "sh", "-c", cmd.toString() });
 					}
 				} catch (IOException ex) {
 					e.printStackTrace();
@@ -449,7 +427,7 @@ public class JavaSEGame extends LGame {
 	public void reset() {
 		boolean wasActive = Display.isActive();
 		while (!Display.isCloseRequested()) {
-			boolean newActive = Display.isActive();
+			boolean newActive = active && Display.isActive();
 			if (wasActive != newActive) {
 				status.emit(wasActive ? Status.PAUSE : Status.RESUME);
 				wasActive = newActive;

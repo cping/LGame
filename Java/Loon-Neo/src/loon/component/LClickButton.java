@@ -47,7 +47,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	private IFont font;
 
-	private boolean over, pressed, grayButton;
+	private boolean pressed, selected, over, grayButton;
 
 	private int pressedTime, offsetLeft, offsetTop;
 
@@ -215,7 +215,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		super.update(elapsedTime);

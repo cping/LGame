@@ -23,6 +23,9 @@ package loon.utils;
 import loon.LRelease;
 import loon.LSystem;
 
+/**
+ * I18N多语言文件配置用类
+ */
 public class I18N implements LRelease {
 
 	private static ObjectMap<String, I18N> _I18N_CACHE;

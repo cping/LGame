@@ -95,7 +95,6 @@ public class LLayer extends ActorLayer {
 		super(x, y, w, h, size, bounded);
 		this.setLocation(x, y);
 		this.actorDrag = true;
-		this.visible = true;
 		this.customRendering = true;
 		this.isTouchClick = true;
 		this._isLimitMove = true;
@@ -218,7 +217,7 @@ public class LLayer extends ActorLayer {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (visible) {
+		if (isVisible()) {
 			super.update(elapsedTime);
 			if (timer.action(this.elapsedTime = elapsedTime)) {
 				action(elapsedTime);
@@ -241,7 +240,7 @@ public class LLayer extends ActorLayer {
 
 	@Override
 	public void createCustomUI(GLEx g, int x, int y, int w, int h) {
-		if (!visible) {
+		if (!isVisible()) {
 			return;
 		}
 		paintObjects(g, x, y, x + w, y + h);

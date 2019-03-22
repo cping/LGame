@@ -92,7 +92,7 @@ public class LPaper extends LContainer {
 
 	@Override
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
-		if (visible) {
+		if (isVisible()) {
 			if (animation.getSpriteImage() != null) {
 				g.draw(animation.getSpriteImage(), x, y, baseColor);
 			}
@@ -112,7 +112,7 @@ public class LPaper extends LContainer {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (visible) {
+		if (isVisible()) {
 			super.update(elapsedTime);
 			animation.update(elapsedTime);
 		}
