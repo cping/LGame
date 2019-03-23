@@ -779,6 +779,20 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
+	protected void processTouchDragged() {
+		if (!locked) {
+			if (getContainer() != null) {
+				getContainer().sendToFront(this);
+			}
+			if (isContainer()) {
+				this.move(getUITouchX() - getWidth() / 2, getUITouchY() - getHeight() / 2);
+			} else {
+				this.move(getUITouchX(), getUITouchY());
+			}
+		}
+		this.dragClick();
+	}
+
 	protected void processTouchClicked() {
 		this.doClick();
 	}
@@ -793,16 +807,6 @@ public abstract class LComponent extends LObject<LContainer>
 			this.upClick();
 			this._downClick = false;
 		}
-	}
-
-	protected void processTouchDragged() {
-		if (!locked) {
-			if (getContainer() != null) {
-				getContainer().sendToFront(this);
-			}
-			this.move(getUITouchX(), getUITouchY());
-		}
-		this.dragClick();
 	}
 
 	protected void processTouchMoved() {
@@ -1019,7 +1023,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_super == null) {
 			return SysTouch.getX() - getX();
 		} else {
-			if (_super instanceof LScrollContainer) {
+			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
 				return SysTouch.getX() + ((LScrollContainer) _super).getScrollX() - _super.getX() - getX();
 			} else {
 				return SysTouch.getX() - _super.getX() - getX();
@@ -1031,7 +1035,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_super == null) {
 			return SysTouch.getY() - getY();
 		} else {
-			if (_super instanceof LScrollContainer) {
+			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
 				return SysTouch.getY() + ((LScrollContainer) _super).getScrollY() - _super.getY() - getY();
 			} else {
 				return SysTouch.getY() - _super.getY() - getY();

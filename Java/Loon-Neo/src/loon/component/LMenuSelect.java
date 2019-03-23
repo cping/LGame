@@ -122,23 +122,27 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	private LTimer _colorUpdate;
 
-	public static LMenuSelect makeMenu(String labels, int x, int y) {
+	public static LMenuSelect make(String labels) {
+		return new LMenuSelect(labels, 0, 0);
+	}
+	
+	public static LMenuSelect make(String labels, int x, int y) {
 		return new LMenuSelect(labels, x, y);
 	}
 
-	public static LMenuSelect makeMenu(String[] labels, int x, int y) {
+	public static LMenuSelect make(String[] labels, int x, int y) {
 		return new LMenuSelect(labels, x, y);
 	}
 
-	public static LMenuSelect makeMenu(IFont font, String[] labels, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, int x, int y) {
 		return new LMenuSelect(font, labels, x, y);
 	}
 
-	public static LMenuSelect makeMenu(IFont font, String[] labels, String path, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, String path, int x, int y) {
 		return new LMenuSelect(font, labels, path, x, y);
 	}
 
-	public static LMenuSelect makeMenu(IFont font, String[] labels, LTexture bg, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, LTexture bg, int x, int y) {
 		return new LMenuSelect(font, labels, bg, x, y);
 	}
 

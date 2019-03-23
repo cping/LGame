@@ -2,18 +2,16 @@ package org.test;
 
 import loon.LTransition;
 import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.Animation;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteLabel;
 import loon.canvas.LColor;
 import loon.event.FrameLoopEvent;
-import loon.event.GameTouch;
 import loon.font.Font.Style;
-import loon.opengl.GLEx;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimerContext;
 
-public class AnimationTest extends Screen {
+public class AnimationTest extends Stage {
 
 	int WIDTH = 110;
 	int HEIGHT = 110;
@@ -80,7 +78,7 @@ public class AnimationTest extends Screen {
 	}
 
 	@Override
-	public void onLoad() {
+	public void create() {
 		
 		add(MultiScreenTest.getBackButton(this,1));
 
@@ -101,7 +99,7 @@ public class AnimationTest extends Screen {
 					//导入精灵图，速度70
 					chr = new Character(i, Animation.getDefaultAnimation(
 							charSkin, 70));
-
+					chr.setTag(""+i);
 					chr.setLocation(MathUtils.random()
 							* (getWidth() + WIDTH * 2), MathUtils.random()
 							* (getHeight() - HEIGHT));
@@ -123,53 +121,4 @@ public class AnimationTest extends Screen {
 
 	}
 
-	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
 }

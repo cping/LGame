@@ -1,43 +1,36 @@
 package org.test;
 
-import loon.Screen;
+import loon.Stage;
 import loon.component.LButton;
 import loon.component.LClickButton;
 import loon.component.LPaper;
 import loon.event.ActionKey;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
+import loon.event.ActionUpdate;
 
-public class TitleScreen extends Screen {
+public class TitleScreen extends Stage {
 
-	LButton start, end;
+	public void create() {
 
-	LPaper title;
-	
-	public TitleScreen() {
+		final LButton start, end;
 
-	}
+		final LPaper title;
 
-	public void onLoad() {
-		
-		//add(MultiScreenTest.getBackButton(this,1));
+		// add(MultiScreenTest.getBackButton(this,1));
 		setBackground("assets/avg/back1.png");
 
 		start = new LButton("assets/avg/title_start.png", 191, 57) {
 
-			ActionKey action = new ActionKey(
-					ActionKey.DETECT_INITIAL_PRESS_ONLY);
+			ActionKey action = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 			public void doClick() {
 				if (!action.isPressed()) {
 					action.press();
-					//随机使用一个Screen替换效果
+					// 随机使用一个Screen替换效果
 					replaceScreen(new MyAVGScreen());
-					//使用固定Screen过渡效果
-					//replaceScreen(new MyAVGScreen(), PageMethod.ZoomOut);
-					//使用单纯Screen移动效果
-					//replaceScreen(new MyAVGScreen(),MoveMethod.FROM_LEFT);
+					// 使用固定Screen过渡效果
+					// replaceScreen(new MyAVGScreen(), PageMethod.ZoomOut);
+					// 使用单纯Screen移动效果
+					// replaceScreen(new MyAVGScreen(),MoveMethod.FROM_LEFT);
 				}
 			}
 		};
@@ -79,60 +72,27 @@ public class TitleScreen extends Screen {
 		title = new LPaper("assets/avg/title.png", -200, 0);
 
 		add(title);
-		
+
 		LClickButton click = MultiScreenTest.getBackButton(this, 1);
 		add(click);
-	}
 
-	public void alter(LTimerContext c) {
-		if (isOnLoadComplete()) {
-			if (title.getScreenX() + title.getWidth() + 25 <= getWidth()) {
-				title.move_right(3);
-			} else {
-				start.setEnabled(true);
-				end.setEnabled(true);
+		addProcess(new ActionUpdate() {
+
+			@Override
+			public void action(Object a) {
+				if (title.getScreenX() + title.getWidth() + 25 <= getWidth()) {
+					title.move_right(3);
+				} else {
+					start.setEnabled(true);
+					end.setEnabled(true);
+				}
 			}
-		}
-	}
 
-	public void draw(GLEx g) {
-
-	}
-
-	public void touchDown(GameTouch e) {
-
-	}
-
-	public void touchMove(GameTouch e) {
-
-	}
-
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
+			@Override
+			public boolean completed() {
+				return start.isEnabled() && end.isEnabled();
+			}
+		});
 
 	}
 

@@ -1,27 +1,15 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.Entity;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class DepthTest extends Screen {
+public class DepthTest extends Stage {
 
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
-	
-	@Override
-	public void draw(GLEx g) {
-
-	}
 
 	@Override
-	public void onLoad() {
+	public void create() {
 
 		//设置layer层级
 		int[] depths = { 0, -1, 1, 3, 2, -4, -3, 4, -2 };
@@ -54,48 +42,4 @@ public class DepthTest extends Screen {
 		add(MultiScreenTest.getBackButton(this,0));
 	}
 
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
 }

@@ -1,26 +1,14 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.ActionScript;
 import loon.action.sprite.Sprite;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class ActionScriptTest extends Screen {
+public class ActionScriptTest extends Stage {
 
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 
 		Sprite sprite = new Sprite("assets/ball.png");
 		sprite.setLocation(200,200);
@@ -32,57 +20,4 @@ public class ActionScriptTest extends Screen {
 		script.start();
 	}
 
-	@Override
-	public void alter(LTimerContext timer) {
-		
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-		
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-		
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-		
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-		
-
-	}
-
-	@Override
-	public void resume() {
-		
-
-	}
-
-	@Override
-	public void pause() {
-		
-
-	}
-
-	@Override
-	public void close() {
-		
-
-	}
 }

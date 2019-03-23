@@ -25,6 +25,7 @@ import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -124,7 +125,7 @@ public class LScrollContainer extends LContainer {
 		} else {
 			int size = verticalScrollbar.width();
 			if (scrollX > width() + size) {
-				scrollX = width() + size ;
+				scrollX = width() + size;
 			}
 		}
 	}
@@ -166,6 +167,18 @@ public class LScrollContainer extends LContainer {
 	@Override
 	public LComponent add(LComponent comp, int index) {
 		super.add(comp, index);
+		scrollContainerRealSizeChanged();
+		return this;
+	}
+
+	public LComponent add(LComponent comp, Vector2f pos) {
+		super.add(comp, pos.x(), pos.y());
+		scrollContainerRealSizeChanged();
+		return this;
+	}
+
+	public LComponent add(LComponent comp, int x, int y) {
+		super.add(comp, x, y);
 		scrollContainerRealSizeChanged();
 		return this;
 	}

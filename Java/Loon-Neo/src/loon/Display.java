@@ -136,6 +136,27 @@ public class Display extends LSystemView {
 
 	}
 
+	private final class PaintAllPort extends Port<LTimerContext> {
+
+		private final Display _display;
+
+		PaintAllPort(Display d) {
+			this._display = d;
+		}
+
+		@Override
+		public void onEmit(LTimerContext clock) {
+			synchronized (clock) {
+				if (!LSystem.PAUSED) {
+					_manager.tick(clock);
+					_action_control.call(clock.timeSinceLastUpdate);
+					_display.draw(clock);
+				}
+			}
+		}
+
+	}
+
 	private final class UpdatePort extends Port<LTimerContext> {
 
 		UpdatePort() {
@@ -250,8 +271,12 @@ public class Display extends LSystemView {
 		GL20 gl = game.graphics().gl;
 		_glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget, gl);
 		_glEx.update();
-		paint.connect(new PaintPort(this));
-		update.connect(new UpdatePort());
+		if (_setting.isSyncTween) {
+			paint.connect(new PaintAllPort(this));
+		} else {
+			paint.connect(new PaintPort(this));
+			update.connect(new UpdatePort());
+		}
 		if (!_setting.isLogo) {
 			_process.start();
 		}

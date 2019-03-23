@@ -223,8 +223,6 @@ public class TrilateralBatch extends BaseBatch {
 				a2f.translate(w, h);
 				a2f.scale(-1, 1);
 				a2f.translate(-w, -h);
-				w = ubufWidth / 2;
-				h = ubufHeight / 2;
 				a2f.translate(w, h);
 				a2f.rotate(MathUtils.PI);
 				a2f.translate(-w, -h);

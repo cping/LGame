@@ -1,27 +1,14 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.component.LComponent;
 import loon.component.LTextList;
 import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.event.ClickListener;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class ListTest extends Screen {
 
-	@Override
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
-
-	@Override
-	public void draw(GLEx g) {
-
-	}
+public class ListTest extends Stage {
 
 	// 制作一个按钮监听器
 	private class MyClickListener implements ClickListener {
@@ -53,7 +40,7 @@ public class ListTest extends Screen {
 	}
 
 	@Override
-	public void onLoad() {
+	public void create() {
 		
 		MyClickListener clickListener = new MyClickListener();
 
@@ -67,51 +54,6 @@ public class ListTest extends Screen {
 		add(list);
 		
 		add(MultiScreenTest.getBackButton(this,0));
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
 	}
 
 }

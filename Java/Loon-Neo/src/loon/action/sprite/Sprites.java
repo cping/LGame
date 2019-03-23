@@ -437,8 +437,19 @@ public class Sprites implements IArray, Visible, LRelease {
 			return false;
 		}
 		for (int i = 0; i < _size; i++) {
-			if (_sprites[i] != null && sprite.equals(_sprites[i])) {
+			ISprite sp = _sprites[i];
+			boolean exist = (sp != null);
+			if (exist && sprite.equals(sp)) {
 				return true;
+			}
+			if (exist && sp instanceof Entity) {
+				Entity superEntity = (Entity) sp;
+				for (int j = 0; j < superEntity.getChildCount(); j++) {
+					boolean superExist = (superEntity.getChildByIndex(j) != null);
+					if (superExist && sp.equals(superEntity.getChildByIndex(j))) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;
@@ -628,7 +639,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param elapsedTime
 	 */
 	public void update(long elapsedTime) {
-		if(!_visible){
+		if (!_visible) {
 			return;
 		}
 		boolean listerner = (sprListerner != null);
@@ -650,7 +661,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param g
 	 */
 	public void paint(final GLEx g, final float minX, final float minY, final float maxX, final float maxY) {
-		if(!_visible){
+		if (!_visible) {
 			return;
 		}
 		float spriteX;

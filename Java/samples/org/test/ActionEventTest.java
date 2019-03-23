@@ -1,8 +1,8 @@
 package org.test;
 
 import loon.LSystem;
-import loon.LTransition;
 import loon.Screen;
+import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
@@ -14,30 +14,18 @@ import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteLabel;
 import loon.canvas.LColor;
 import loon.event.FrameLoopEvent;
-import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.event.Updateable;
 import loon.geom.Bezier;
 import loon.geom.Vector2f;
-import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.LTimer;
-import loon.utils.timer.LTimerContext;
 
-public class ActionEventTest extends Screen {
-
-	@Override
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class ActionEventTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 
 		final SpriteLabel label = new SpriteLabel("Plase Touch The Screen", 120, 20);
 		add(label);
@@ -189,51 +177,6 @@ public class ActionEventTest extends Screen {
 		});
 
 		add(MultiScreenTest.getBackButton(this, 0));
-
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
 
 	}
 

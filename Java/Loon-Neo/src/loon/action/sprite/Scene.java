@@ -29,7 +29,7 @@ import loon.utils.TArray;
  * 由Entity产生的窗体Scene,方便递归调用
  */
 public class Scene extends Entity {
-	
+
 	private long secondsElapsedTotal;
 
 	protected Scene _parentScene;
@@ -44,7 +44,7 @@ public class Scene extends Entity {
 	private TArray<Character> characters = new TArray<Character>();
 
 	public Scene() {
-
+		this(0);
 	}
 
 	public Scene(final int count) {
@@ -133,6 +133,7 @@ public class Scene extends Entity {
 		this.clearChildScene();
 	}
 
+	@Override
 	protected void onManagedPaint(final GLEx gl, float offsetX, float offsetY) {
 		final Scene childScene = this._childScene;
 		if (childScene == null || !this._childSceneModalDraw) {
@@ -169,8 +170,7 @@ public class Scene extends Entity {
 		this.setChildScene(child, false, false);
 	}
 
-	public void setChildScene(final Scene child, final boolean modalDraw,
-			final boolean modalUpdate) {
+	public void setChildScene(final Scene child, final boolean modalDraw, final boolean modalUpdate) {
 		child.setParentScene(this);
 		this._childScene = child;
 		this._childSceneModalDraw = modalDraw;

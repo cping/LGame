@@ -26,6 +26,7 @@ import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.event.GameKey;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
@@ -63,6 +64,16 @@ public abstract class LContainer extends LComponent implements IArray {
 		return this;
 	}
 
+	public LComponent add(LComponent comp, Vector2f pos) {
+		return add(comp, pos.x(), pos.y());
+	}
+
+	public LComponent add(LComponent comp, int x, int y) {
+		add(comp);
+		comp.setLocation(x, y);
+		return this;
+	}
+
 	public LComponent add(LComponent comp) {
 		if (this == comp) {
 			return this;
@@ -76,7 +87,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		comp.setContainer(this);
 		comp.setDesktop(this._desktop);
 		comp.setState(State.ADDED);
-		if (comp instanceof LScrollContainer) {
+		if (comp.isContainer() && (comp instanceof LScrollContainer)) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
 		}
 		this._childs = CollectionUtils.expand(this._childs, 1, false);
@@ -103,7 +114,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		comp.setContainer(this);
 		comp.setState(State.ADDED);
-		if (comp instanceof LScrollContainer) {
+		if (comp.isContainer() && (comp instanceof LScrollContainer)) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
 		}
 		LComponent[] newChilds = new LComponent[this._childs.length + 1];
@@ -245,8 +256,19 @@ public abstract class LContainer extends LComponent implements IArray {
 			return false;
 		}
 		for (int i = 0; i < this.childCount; i++) {
-			if (_childs[i] != null && comp.equals(_childs[i])) {
+			LComponent child = _childs[i];
+			boolean exist = (child != null);
+			if (exist && comp.equals(child)) {
 				return true;
+			}
+			if (exist && child.isContainer() && (child instanceof LContainer)) {
+				LContainer superComp = (LContainer) child;
+				for (int j = 0; j < superComp._childs.length; j++) {
+					boolean superExist = (superComp._childs[j] != null);
+					if (superExist && comp.equals(superComp._childs[j])) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;
@@ -558,14 +580,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			LComponent child = this._childs[i];
-			if (child != null && child.getSuper() != null && child.getSuper() instanceof LScrollContainer) {
+			if (child != null && child.getSuper() != null && child.getSuper().isContainer()
+					&& (child.getSuper() instanceof LScrollContainer)) {
 				LScrollContainer scr = (LScrollContainer) child.getSuper();
 				int nx = x1 + scr.getScrollX();
 				int ny = y1 + scr.getScrollY();
 				if (child.intersects(nx, ny)) {
 					LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(nx, ny);
 					LContainer container = comp.getContainer();
-					if (container != null && container instanceof LScrollContainer) {
+					if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
 						if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
 								|| comp.getHeight() >= container.getHeight())) {
 							return comp.getContainer();
@@ -577,7 +600,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			if (child.intersects(x1, y1)) {
 				LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(x1, y1);
 				LContainer container = comp.getContainer();
-				if (container != null && container instanceof LScrollContainer) {
+				if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
 					if (container.contains(comp)
 							&& (comp.getWidth() >= container.getWidth() || comp.getHeight() >= container.getHeight())) {
 						return comp.getContainer();
@@ -736,7 +759,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				buffer.append("|  ");
 			}
 			LComponent c = comps[i];
-			if (c instanceof LContainer) {
+			if (c!=null && c.isContainer() && (c instanceof LContainer)) {
 				((LContainer) c).toString(buffer, indent + 1);
 			} else {
 				buffer.append(c);

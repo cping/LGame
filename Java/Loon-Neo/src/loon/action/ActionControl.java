@@ -20,6 +20,8 @@
  */
 package loon.action;
 
+import loon.utils.timer.LTimer;
+
 /** 全局生效的动作控制类（在Loon中任何场景都适用），所有实现了ActionBind的类都可以被此类控制 **/
 public class ActionControl {
 
@@ -28,7 +30,9 @@ public class ActionControl {
 
 	private static ActionControl instanceAction;
 
-	private Actions actions;
+	private final Actions actions;
+
+	private final LTimer delayTimer;
 
 	private boolean pause;
 
@@ -48,7 +52,23 @@ public class ActionControl {
 		if (pause || actions.getCount() == 0) {
 			return;
 		}
-		actions.update(elapsedTime);
+		if (delayTimer.action(elapsedTime)) {
+			actions.update(elapsedTime);
+		}
+	}
+
+	public final void delay(long d) {
+		delayTimer.setDelay(d);
+	}
+
+	public final LTimer getTimer() {
+		return delayTimer;
+	}
+
+	public static final void setDelay(long delay) {
+		if (instanceAction != null) {
+			instanceAction.delay(delay);
+		}
 	}
 
 	public static final void update(long elapsedTime) {
@@ -59,6 +79,7 @@ public class ActionControl {
 
 	private ActionControl() {
 		actions = new Actions();
+		delayTimer = new LTimer(0);
 	}
 
 	public void addAction(ActionEvent action, ActionBind obj, boolean paused) {
@@ -80,7 +101,7 @@ public class ActionControl {
 	public boolean isCompleted(ActionBind actObject) {
 		return actions.isCompleted(actObject);
 	}
-	
+
 	public int getCount() {
 		return actions.getCount();
 	}
@@ -92,7 +113,7 @@ public class ActionControl {
 	public boolean stopTags(ActionBind k, Object tag) {
 		return actions.stopTags(k, tag);
 	}
-	
+
 	public void removeAction(Object tag, ActionBind actObject) {
 		actions.removeAction(tag, actObject);
 	}

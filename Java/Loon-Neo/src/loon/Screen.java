@@ -2047,31 +2047,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public LMenuSelect addMenu(String labels, int x, int y) {
-		LMenuSelect menu = LMenuSelect.makeMenu(labels, x, y);
+		LMenuSelect menu = LMenuSelect.make(labels, x, y);
 		add(menu);
 		return menu;
 	}
 
 	public LMenuSelect addMenu(String[] labels, int x, int y) {
-		LMenuSelect menu = LMenuSelect.makeMenu(labels, x, y);
+		LMenuSelect menu = LMenuSelect.make(labels, x, y);
 		add(menu);
 		return menu;
 	}
 
 	public LMenuSelect addMenu(IFont font, String[] labels, int x, int y) {
-		LMenuSelect menu = LMenuSelect.makeMenu(font, labels, x, y);
+		LMenuSelect menu = LMenuSelect.make(font, labels, x, y);
 		add(menu);
 		return menu;
 	}
 
 	public LMenuSelect addMenu(IFont font, String[] labels, String path, int x, int y) {
-		LMenuSelect menu = LMenuSelect.makeMenu(font, labels, path, x, y);
+		LMenuSelect menu = LMenuSelect.make(font, labels, path, x, y);
 		add(menu);
 		return menu;
 	}
 
 	public LMenuSelect addMenu(IFont font, String[] labels, LTexture bg, int x, int y) {
-		LMenuSelect menu = LMenuSelect.makeMenu(font, labels, bg, x, y);
+		LMenuSelect menu = LMenuSelect.make(font, labels, bg, x, y);
 		add(menu);
 		return menu;
 	}
@@ -3835,6 +3835,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return _screenName;
 	}
 
+	/**
+	 * 全局延迟缓动动画指定时间
+	 * 
+	 * @param delay
+	 */
+	public void setTweenDelay(long delay){
+		ActionControl.setDelay(delay);
+	}
+	
 	/**
 	 * 注销Screen
 	 */
