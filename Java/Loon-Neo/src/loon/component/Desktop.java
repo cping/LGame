@@ -125,6 +125,7 @@ public class Desktop implements Visible, LRelease {
 		this.desktop_name = StringUtils.isEmpty(name) ? "Desktop" + DESKTOP_CACHE.size() : name;
 		this.dvisible = true;
 		this.contentPane = new LPanel(0, 0, (int) width, (int) height);
+		this.contentPane.desktopContainer = true;
 		this.input = screen;
 		this.tooltip = new LToolTip();
 		this.contentPane.add(this.tooltip);

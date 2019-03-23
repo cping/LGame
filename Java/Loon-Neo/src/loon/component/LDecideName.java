@@ -49,21 +49,24 @@ import loon.utils.MathUtils;
  * Examples:
  * 
  * <pre>
- *      TArray<String> list = new TArray<String>();
- *      list.add("赵钱孙李周吴郑王");
- *      list.add("冯陈褚卫蒋沈韩杨"); 
- *      list.add("朱秦尤许何吕施张"); 
- *      list.add("孔曹严华金魏陶姜");
- *      list.add("<>"); 
- *      LDecideName decideName = new LDecideName(list,0, 0);
- *      add(decideName);
+ * TArray<String> list = new TArray<String>();
+ * list.add("赵钱孙李周吴郑王");
+ * list.add("冯陈褚卫蒋沈韩杨");
+ * list.add("朱秦尤许何吕施张");
+ * list.add("孔曹严华金魏陶姜");
+ * list.add("<>");
+ * LDecideName decideName = new LDecideName(list, 0, 0);
+ * add(decideName);
  * </pre>
  */
 public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
-	private LColor fontColor = LColor.white;
+	private LColor _fontColor = LColor.white;
 
 	private IFont _font;
+
+	private int text_width_space = 5;
+	
 	private String enterFlag;
 
 	private String name;
@@ -90,42 +93,35 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		this(mes, x, y, 400, 250);
 	}
 
-	public LDecideName(String label, TArray<String> mes, int x, int y,
-			int width, int height) {
-		this(label, "", mes, SkinManager.get().getMessageSkin().getFont(), x,
-				y, width, height, SkinManager.get().getMessageSkin()
-						.getBackgroundTexture());
+	public LDecideName(String label, TArray<String> mes, int x, int y, int width, int height) {
+		this(label, "", mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height,
+				SkinManager.get().getMessageSkin().getBackgroundTexture());
 	}
 
-	public LDecideName(String label, TArray<String> mes, int x, int y,
-			int width, int height, LTexture bg) {
-		this(label, "", mes, SkinManager.get().getMessageSkin().getFont(), x,
-				y, width, height, bg);
+	public LDecideName(String label, TArray<String> mes, int x, int y, int width, int height, LTexture bg) {
+		this(label, "", mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height, bg);
 	}
 
 	public LDecideName(TArray<String> mes, int x, int y, int width, int height) {
-		this("Name:", "", mes, SkinManager.get().getMessageSkin().getFont(), x,
-				y, width, height, SkinManager.get().getMessageSkin()
-						.getBackgroundTexture());
+		this("Name:", "", mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height,
+				SkinManager.get().getMessageSkin().getBackgroundTexture());
 	}
 
-	public LDecideName(String label, String name, TArray<String> mes, IFont f,
-			int x, int y, int width, int height, LTexture bg) {
-		this(label, name, mes, f, x, y, width, height, bg, SkinManager.get()
-				.getMessageSkin().getFontColor());
+	public LDecideName(String label, String name, TArray<String> mes, IFont f, int x, int y, int width, int height,
+			LTexture bg) {
+		this(label, name, mes, f, x, y, width, height, bg, SkinManager.get().getMessageSkin().getFontColor());
 	}
 
-	public LDecideName(MessageSkin skin, String label, String name,
-			TArray<String> mes, int x, int y, int width, int height) {
-		this(label, name, mes, skin.getFont(), x, y, width, height, skin
-				.getBackgroundTexture(), skin.getFontColor());
+	public LDecideName(MessageSkin skin, String label, String name, TArray<String> mes, int x, int y, int width,
+			int height) {
+		this(label, name, mes, skin.getFont(), x, y, width, height, skin.getBackgroundTexture(), skin.getFontColor());
 	}
 
-	public LDecideName(String label, String name, TArray<String> mes, IFont f,
-			int x, int y, int width, int height, LTexture bg, LColor color) {
+	public LDecideName(String label, String name, TArray<String> mes, IFont f, int x, int y, int width, int height,
+			LTexture bg, LColor color) {
 		super(x, y, width, height - f.getHeight() - 20);
 		this._font = f;
-		this.fontColor = color;
+		this._fontColor = color;
 		this.baseColor = new LColor(0, 150, 0, 150);
 		this.labelName = label;
 		this.name = name;
@@ -161,42 +157,36 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		}
 		float posX = x + leftOffset;
 		if (labelName != null) {
-			g.drawString(labelName + this.name, posX + labelOffsetX, y
-					+ labelOffsetY, LColor.orange);
+			g.drawString(labelName + this.name, posX + labelOffsetX + text_width_space,
+					y + labelOffsetY - text_width_space / 2, LColor.orange);
 		}
 		float posY = y + topOffset;
 		for (int j = 0; j < this.keyArrays.size; j++) {
 			for (int i = 0; i < this.keyArrays.get(j).length(); i++)
 				if (this.keyArrays.get(j).charAt(i) != '　') {
-					g.drawString(
-							String.valueOf(this.keyArrays.get(j).charAt(i)),
-							posX
-									+ MathUtils.round((i * dx + 0.01f)
-											* getWidth()),
-							posY
-									+ MathUtils.round(((j + 1) * dy - 0.01f)
-											* getHeight()) - _font.getAscent(),
-							fontColor);
+					g.drawString(String.valueOf(this.keyArrays.get(j).charAt(i)),
+							posX + MathUtils.round((i * dx + 0.01f) * getWidth()) + text_width_space,
+							posY + MathUtils.round(((j + 1) * dy - 0.01f) * getHeight()) - _font.getAscent()
+									- text_width_space / 2,
+									_fontColor);
 					if (showGrid) {
-						g.drawRect(
-								posX + MathUtils.round((i * dx) * getWidth()),
-								posY + MathUtils.round((j * dy) * getHeight()),
-								MathUtils.round(dx * getWidth()),
+						g.drawRect(posX + MathUtils.round((i * dx) * getWidth()),
+								posY + MathUtils.round((j * dy) * getHeight()), MathUtils.round(dx * getWidth()),
 								MathUtils.round(dy * getHeight()));
 					}
 				}
 		}
 		g.setColor(baseColor);
-		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()),
-				posY + MathUtils.round((this.cursorY * dy) * getHeight()),
-				MathUtils.round(dx * getWidth()),
-				MathUtils.round(dy * getHeight()));
+		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()) - 1,
+				posY + MathUtils.round((this.cursorY * dy) * getHeight()) - 1, MathUtils.round(dx * getWidth()) + 2,
+				MathUtils.round(dy * getHeight()) + 2);
 		g.setFont(oldFont);
 		g.setColor(oldColor);
 	}
 
+	@Override
 	protected void processTouchReleased() {
-		super.processKeyReleased();
+		super.processTouchReleased();
 		this.pushEnter();
 	}
 
@@ -298,10 +288,8 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	private int leftOffset, topOffset;
 
 	public void moveCursor(float x, float y) {
-		int indexX = (int) ((x - (this.getX() + leftOffset)) / MathUtils
-				.round(dx * getWidth()));
-		int indexY = (int) ((y - (this.getY() + topOffset)) / MathUtils
-				.round(dy * getHeight()));
+		int indexX = (int) ((x - leftOffset)) / MathUtils.round(dx * getWidth());
+		int indexY = (int) ((y - topOffset)) / MathUtils.round(dy * getHeight());
 		if ((indexX < 0) || (indexY < 0) || (indexY >= this.keyArrays.size)
 				|| (indexX >= this.keyArrays.get(0).length()))
 			return;
@@ -316,7 +304,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	}
 
 	public void setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+		this._fontColor = fontColor;
 	}
 
 	public String getLabelName() {
@@ -328,10 +316,8 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
-		moveCursor(getUITouchX(),
-				getUITouchY());
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		moveCursor(getUITouchX(), getUITouchY());
 		draw(g, x, y);
 	}
 
@@ -432,7 +418,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		this._font = font;
 		return this;
 	}
-	
+
 	@Override
 	public IFont getFont() {
 		return _font;
@@ -465,6 +451,14 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	public void setShowGrid(boolean showGrid) {
 		this.showGrid = showGrid;
+	}
+
+	public int getTextWidthSpace() {
+		return text_width_space;
+	}
+
+	public void setTextWidthSpace(int tws) {
+		this.text_width_space = tws;
 	}
 
 	@Override

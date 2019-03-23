@@ -64,6 +64,9 @@ import loon.utils.MathUtils;
 public abstract class LComponent extends LObject<LContainer>
 		implements Flip<LComponent>, Visible, ActionBind, XY, BoxSize, LRelease {
 
+	// 充当卓面容器
+	protected boolean desktopContainer;
+
 	// 默认锁定当前组件(否则可以拖动)
 	protected boolean locked = true;
 
@@ -1317,6 +1320,10 @@ public abstract class LComponent extends LObject<LContainer>
 		return (_desktop == null || _desktop.input == null) ? LSystem.getProcess().getScreen() : _desktop.input;
 	}
 
+	public boolean isDesktopContainer() {
+		return desktopContainer;
+	}
+	
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -1357,4 +1364,5 @@ public abstract class LComponent extends LObject<LContainer>
 	public String toString() {
 		return getName() + " pos=" + _location + " size=" + " [ " + getRectBox().toString() + "]";
 	}
+
 }
