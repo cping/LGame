@@ -44,7 +44,7 @@ public class ActionControl {
 		}
 	}
 
-	private final void call(long elapsedTime) {
+	public final void call(long elapsedTime) {
 		if (pause || actions.getCount() == 0) {
 			return;
 		}

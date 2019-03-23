@@ -110,7 +110,9 @@ public class Display extends LSystemView {
 		return gifEncoder;
 	}
 
-	private final RealtimeProcessManager manager;
+	private final RealtimeProcessManager _manager;
+
+	private final ActionControl _action_control;
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
@@ -126,6 +128,7 @@ public class Display extends LSystemView {
 		public void onEmit(LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
+					_manager.tick(clock);
 					_display.draw(clock);
 				}
 			}
@@ -142,12 +145,10 @@ public class Display extends LSystemView {
 		public void onEmit(LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
-					manager.tick(clock);
-					ActionControl.update(clock.timeSinceLastUpdate);
+					_action_control.call(clock.timeSinceLastUpdate);
 				}
 			}
 		}
-
 	}
 
 	private final class Logo implements LRelease {
@@ -220,13 +221,13 @@ public class Display extends LSystemView {
 
 	private float cred, cgreen, cblue, calpha;
 
-	private final GLEx glEx;
+	private final GLEx _glEx;
 
-	private final LProcess process;
+	private final LProcess _process;
 
-	private LSetting setting;
+	private LSetting _setting;
 
-	boolean showLogo = false, initDrawConfig = false;;
+	protected boolean showLogo = false, initDrawConfig = false;;
 
 	private Logo logoTex;
 
@@ -234,33 +235,34 @@ public class Display extends LSystemView {
 		if (show && fpsFont == null) {
 			this.fpsFont = LSystem.getSystemLogFont();
 		}
-		showLogo = setting.isLogo;
-		if (showLogo && !StringUtils.isEmpty(setting.logoPath)) {
-			logoTex = new Logo(newTexture(setting.logoPath));
+		showLogo = _setting.isLogo;
+		if (showLogo && !StringUtils.isEmpty(_setting.logoPath)) {
+			logoTex = new Logo(newTexture(_setting.logoPath));
 		}
 	}
 
 	public Display(LGame game, int updateRate) {
 		super(game, updateRate);
-		setting = LSystem._base.setting;
-		process = LSystem._process;
-		manager = RealtimeProcessManager.get();
+		_setting = LSystem._base.setting;
+		_process = LSystem._process;
+		_manager = RealtimeProcessManager.get();
+		_action_control = ActionControl.get();
 		GL20 gl = game.graphics().gl;
-		glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget, gl);
-		glEx.update();
-		paint.connect(new PaintPort(this)).setPriority(-1);
-		update.connect(new UpdatePort()).setPriority(1);
-		if (!setting.isLogo) {
-			process.start();
+		_glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget, gl);
+		_glEx.update();
+		paint.connect(new PaintPort(this));
+		update.connect(new UpdatePort());
+		if (!_setting.isLogo) {
+			_process.start();
 		}
 	}
 
 	public void setScreen(Screen screen) {
-		process.setScreen(screen);
+		_process.setScreen(screen);
 	}
 
 	public LProcess getProcess() {
-		return process;
+		return _process;
 	}
 
 	/**
@@ -298,56 +300,57 @@ public class Display extends LSystemView {
 
 		// fix渲染时机，避免调用渲染在纹理构造前
 		if (!initDrawConfig) {
-			newDefView(setting.isFPS || setting.isLogo || setting.isMemory || setting.isSprites || setting.isDebug);
+			newDefView(
+					_setting.isFPS || _setting.isLogo || _setting.isMemory || _setting.isSprites || _setting.isDebug);
 			initDrawConfig = true;
 		}
 
 		if (showLogo) {
 			try {
-				glEx.save();
-				glEx.begin();
-				glEx.clear(cred, cgreen, cblue, calpha);
+				_glEx.save();
+				_glEx.begin();
+				_glEx.clear(cred, cgreen, cblue, calpha);
 				if (logoTex == null || logoTex.finish || logoTex.logo.disposed()) {
 					showLogo = false;
 					return;
 				}
-				logoTex.draw(glEx);
+				logoTex.draw(_glEx);
 				if (logoTex.finish) {
 					showLogo = false;
 					logoTex.close();
 					logoTex = null;
 				}
 			} finally {
-				glEx.end();
-				glEx.restore();
+				_glEx.end();
+				_glEx.restore();
 				if (!showLogo) {
-					process.start();
+					_process.start();
 				}
 			}
 			return;
 		}
 
-		if (!process.next()) {
+		if (!_process.next()) {
 			return;
 		}
 		try {
-			glEx.saveTx();
-			glEx.begin();
-			glEx.reset(cred, cgreen, cblue, calpha);
+			_glEx.saveTx();
+			_glEx.begin();
+			_glEx.reset(cred, cgreen, cblue, calpha);
 
-			process.load();
-			process.calls();
-			process.runTimer(clock);
-			process.draw(glEx);
+			_process.load();
+			_process.calls();
+			_process.runTimer(clock);
+			_process.draw(_glEx);
 
-			final boolean debug = setting.isDebug;
+			final boolean debug = _setting.isDebug;
 			// 显示fps速度
-			if (debug || setting.isFPS) {
+			if (debug || _setting.isFPS) {
 				tickFrames();
-				fpsFont.drawString(glEx, "FPS:" + frameRate, 5, 5, 0, LColor.white);
+				fpsFont.drawString(_glEx, "FPS:" + frameRate, 5, 5, 0, LColor.white);
 			}
 			// 显示内存
-			if (debug || setting.isMemory) {
+			if (debug || _setting.isMemory) {
 				if (runtime == null) {
 					runtime = Runtime.getRuntime();
 				}
@@ -355,19 +358,19 @@ public class Display extends LSystemView {
 				long currentMemory = totalMemory - runtime.freeMemory();
 				String memory = ((float) ((currentMemory * 10) >> 20) / 10) + " of "
 						+ ((float) ((runtime.maxMemory() * 10) >> 20) / 10) + " MB";
-				fpsFont.drawString(glEx, "MEMORY:" + memory, 5, 25, 0, LColor.white);
+				fpsFont.drawString(_glEx, "MEMORY:" + memory, 5, 25, 0, LColor.white);
 			}
-			if (debug || setting.isSprites) {
-				fpsFont.drawString(glEx,
+			if (debug || _setting.isSprites) {
+				fpsFont.drawString(_glEx,
 						"SPRITE:" + Sprites.allSpritesCount() + "," + " DESKTOP:" + Desktop.allDesktopCount(), 5, 45, 0,
 						LColor.white);
 			}
 			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
-			if (debug && setting.isDisplayLog) {
-				process.paintLog(glEx, 5, 65);
+			if (debug && _setting.isDisplayLog) {
+				_process.paintLog(_glEx, 5, 65);
 			}
-			process.drawEmulator(glEx);
-			process.unload();
+			_process.drawEmulator(_glEx);
+			_process.unload();
 
 			// 如果存在屏幕录像设置
 			if (videoScreenToGif && !LSystem.PAUSED && gifEncoder != null) {
@@ -378,8 +381,8 @@ public class Display extends LSystemView {
 						image = tmp;
 					} else {
 						// 因为内存和速度关系,考虑到全平台录制,因此默认只录屏幕大小的一半(否则在手机上绝对抗不了5分钟以上……)
-						image = Image.getResize(tmp, (int) (process.getWidth() * 0.5f),
-								(int) (process.getHeight() * 0.5f));
+						image = Image.getResize(tmp, (int) (_process.getWidth() * 0.5f),
+								(int) (_process.getHeight() * 0.5f));
 					}
 					gifEncoder.addFrame(image);
 					if (tmp != null) {
@@ -394,22 +397,22 @@ public class Display extends LSystemView {
 			}
 
 		} finally {
-			glEx.end();
-			glEx.restoreTx();
-			process.resetTouch();
+			_glEx.end();
+			_glEx.restoreTx();
+			_process.resetTouch();
 		}
 
 	}
 
 	public Display resize(int viewWidth, int viewHeight) {
-		process.resize(viewWidth, viewHeight);
+		_process.resize(viewWidth, viewHeight);
 		return this;
 	}
 
 	private void tickFrames() {
 		long time = TimeUtils.millis();
 		if (time - frameCount > 1000L) {
-			frameRate = MathUtils.min(setting.fps, frames);
+			frameRate = MathUtils.min(_setting.fps, frames);
 			frames = 0;
 			frameCount = time;
 		}
@@ -437,7 +440,7 @@ public class Display extends LSystemView {
 	}
 
 	public GLEx GL() {
-		return glEx;
+		return _glEx;
 	}
 
 	public float width() {

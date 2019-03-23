@@ -112,7 +112,6 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this.setCursor(LSystem.FRAMEWORK_IMG_NAME + "creese.png");
 		this.setElastic(true);
 		this.setLocked(true);
-		this.setLayer(100);
 	}
 
 	public void setLeftOffset(int left) {

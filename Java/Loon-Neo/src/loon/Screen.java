@@ -149,7 +149,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private TouchedClick _touchListener;
 
-	private final String _screenName;
+	private String _screenName;
 
 	private boolean _isExistCamera = false;
 
@@ -328,8 +328,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen(String name, int w, int h) {
-		this._screenName = name;
-		this.resetSize(w, h);
+		init(name, w, h);
 	}
 
 	public Screen(String name) {
@@ -342,6 +341,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public Screen() {
 		this("unkown", 0, 0);
+	}
+
+	protected void init(String name, int w, int h) {
+		this._screenName = name;
+		resetSize(w, h);
 	}
 
 	public Screen setID(int id) {

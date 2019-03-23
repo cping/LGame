@@ -127,20 +127,17 @@ public class LTextures {
 		return textureList.contains(texture);
 	}
 
-	public static int getRefCount(LTexture texture) {
-		return texture.refCount;
-	}
-
 	public static int getRefCount(String fileName) {
-		String key = fileName.trim().toLowerCase();
+		String key = fileName.trim();
 		LTexture texture = lazyTextures.get(key);
 		if (texture != null) {
 			return texture.refCount;
 		}
 		for (int i = 0, size = textureList.size; i < size; i++) {
 			LTexture tex2d = textureList.get(i);
-			if (tex2d != null) {
-				if (key.equals(tex2d.getSource()) || key.equals(tex2d.getSource().toLowerCase())) {
+			String source = tex2d.getSource();
+			if (tex2d != null && source.indexOf("<canvas>") == -1) {
+				if (key.equalsIgnoreCase(source) || key.equalsIgnoreCase(tex2d.tmpLazy)) {
 					return tex2d.refCount;
 				}
 			}
@@ -149,7 +146,7 @@ public class LTextures {
 	}
 
 	public static LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
-		return loadNinePatchTexture(fileName,null, x, y, w, h, Format.LINEAR);
+		return loadNinePatchTexture(fileName, null, x, y, w, h, Format.LINEAR);
 	}
 
 	public static LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,

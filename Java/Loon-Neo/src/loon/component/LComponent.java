@@ -763,19 +763,19 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public void downClick() {
 		if (Click != null) {
-			Click.DownClick(this, input.getTouchX(), input.getTouchY());
+			Click.DownClick(this, getUITouchX(), getUITouchY());
 		}
 	}
 
 	public void dragClick() {
 		if (Click != null) {
-			Click.DragClick(this, input.getTouchX(), input.getTouchY());
+			Click.DragClick(this, getUITouchX(), getUITouchY());
 		}
 	}
 
 	public void upClick() {
 		if (Click != null) {
-			Click.UpClick(this, input.getTouchX(), input.getTouchY());
+			Click.UpClick(this, getUITouchX(), getUITouchY());
 		}
 	}
 
@@ -800,7 +800,7 @@ public abstract class LComponent extends LObject<LContainer>
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}
-			this.move(this.input.getTouchDX(), this.input.getTouchDY());
+			this.move(getUITouchX(), getUITouchY());
 		}
 		this.dragClick();
 	}

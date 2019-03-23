@@ -87,7 +87,7 @@ public class LToolTip extends LComponent {
 		this._background = background;
 		this._text = new Text(font, text);
 		this._fontColor = color;
-		this.setLayer(1000);
+		this.setLayer(10000);
 		this.setAlpha(0);
 	}
 

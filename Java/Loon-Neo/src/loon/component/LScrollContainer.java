@@ -67,7 +67,6 @@ public class LScrollContainer extends LContainer {
 		super(x, y, w, h);
 		this.backgroundTexture = texture;
 		this.setElastic(true);
-		this.setLayer(100);
 	}
 
 	@Override

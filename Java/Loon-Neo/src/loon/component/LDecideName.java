@@ -330,7 +330,8 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component,
 			LTexture[] buttonImage) {
-		moveCursor(this.input.getTouchX(), this.input.getTouchY());
+		moveCursor(getUITouchX(),
+				getUITouchY());
 		draw(g, x, y);
 	}
 

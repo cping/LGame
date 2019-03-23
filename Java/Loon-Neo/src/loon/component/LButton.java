@@ -212,8 +212,8 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	@Override
 	protected void processTouchDragged() {
-		this.over = this.pressed = this.intersects(this.input.getTouchX(),
-				this.input.getTouchY());
+		this.over = this.pressed = this.intersects(getUITouchX(),
+				getUITouchY());
 		super.processTouchDragged();
 	}
 

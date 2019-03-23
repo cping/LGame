@@ -171,7 +171,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		this.backgroundTexture = backgroundTexture;
 		this.setElastic(false);
 		this.setLocked(true);
-		this.setLayer(0);
 	}
 
 	public void setData(TArray<ListItem> list, int width) {

@@ -358,7 +358,6 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 		this._drawBackground = false;
 		this.setElastic(true);
 		this.setLocked(false);
-		this.setLayer(500);
 	}
 
 	public Animation getAnimation() {

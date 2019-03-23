@@ -17,6 +17,7 @@ package loon;
 
 import loon.Log.Level;
 import loon.action.collision.CollisionHelper;
+import loon.event.ActionUpdate;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.Dimension;
@@ -24,9 +25,31 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
+import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.timer.LTimerContext;
 
 public class Director extends SoundBox {
+
+	public final static void addProcess(final ActionUpdate update) {
+		addProcess(update, 0);
+	}
+
+	public final static void addProcess(final ActionUpdate update, final long delay) {
+		if (update == null) {
+			return;
+		}
+		RealtimeProcessManager.get().addProcess(new RealtimeProcess(delay) {
+
+			@Override
+			public void run(LTimerContext time) {
+				if (update.completed()) {
+					kill();
+				}
+				update.action(time);
+			}
+		});
+	}
 
 	public final static void addProcess(GameProcess process) {
 		if (process == null) {

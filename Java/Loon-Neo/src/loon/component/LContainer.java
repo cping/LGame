@@ -525,6 +525,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
+	@Override
 	public boolean isSelected() {
 		if (!super.isSelected()) {
 			for (int i = 0; i < this.childCount; i++) {
@@ -556,9 +557,25 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		for (int i = 0; i < this.childCount; i++) {
-			if (this._childs[i].intersects(x1, y1)) {
-				LComponent comp = (!this._childs[i].isContainer()) ? this._childs[i]
-						: ((LContainer) this._childs[i]).findComponent(x1, y1);
+			LComponent child = this._childs[i];
+			if (child != null && child.getSuper() != null && child.getSuper() instanceof LScrollContainer) {
+				LScrollContainer scr = (LScrollContainer) child.getSuper();
+				int nx = x1 + scr.getScrollX();
+				int ny = y1 + scr.getScrollY();
+				if (child.intersects(nx, ny)) {
+					LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(nx, ny);
+					LContainer container = comp.getContainer();
+					if (container != null && container instanceof LScrollContainer) {
+						if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
+								|| comp.getHeight() >= container.getHeight())) {
+							return comp.getContainer();
+						}
+					}
+					return comp;
+				}
+			}
+			if (child.intersects(x1, y1)) {
+				LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(x1, y1);
 				LContainer container = comp.getContainer();
 				if (container != null && container instanceof LScrollContainer) {
 					if (container.contains(comp)

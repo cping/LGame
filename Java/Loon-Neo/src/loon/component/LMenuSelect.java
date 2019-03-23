@@ -388,7 +388,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	protected void processTouchDragged() {
-		this._over = this._pressed = this.intersects(this.input.getTouchX(), this.input.getTouchY());
+		this._over = this._pressed = this.intersects(getUITouchX(),
+				getUITouchY());
 		super.processTouchDragged();
 	}
 

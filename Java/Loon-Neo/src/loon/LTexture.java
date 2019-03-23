@@ -91,9 +91,9 @@ public class LTexture extends Painter implements LRelease {
 
 	private boolean isBatch;
 
-	String tmpLazy = "tex" + TimeUtils.millis();
+	protected String tmpLazy = "tex" + TimeUtils.millis();
 
-	int refCount;
+	protected int refCount;
 
 	public final static class Format {
 
@@ -1129,6 +1129,10 @@ public class LTexture extends Painter implements LRelease {
 		return _disabledTexture;
 	}
 
+	public int getRefCount() {
+		return this.refCount;
+	}
+
 	/**
 	 * 布尔值为真时，将强制关闭当前纹理，无论状态
 	 * 
@@ -1148,7 +1152,7 @@ public class LTexture extends Painter implements LRelease {
 		} else if (!isChildAllClose()) {
 			return;
 		}
-		int refCount = LTextures.getRefCount(this);
+		this.refCount--;
 		// forcedDelete时强制删除子纹理及父纹理，无论状态
 		if (forcedDelete) {
 			refCount = 0;
@@ -1159,7 +1163,7 @@ public class LTexture extends Painter implements LRelease {
 				_countTexture--;
 				free();
 			}
-		} else if (refCount <= 0) {
+		} else if (refCount <= 0 && LTextures.getRefCount(getSource()) <= 0) {
 			if (parent != null && parent.isChildAllClose()) {
 				parent.close();
 			} else {

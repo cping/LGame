@@ -188,7 +188,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this.displayY = (y + ((height / 2) - (cellHeight / 2)))
 				- font.getHeight() / 2;
 		this.setSize(cellWidth, cellHeight);
-		this.setLayer(1000);
+		this.setLayer(10000);
 		this.timer.setDelay(this.mDuration);
 	}
 

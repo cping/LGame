@@ -38,7 +38,6 @@ public class LSpriteUI extends LContainer {
 		this.setBackground(sprite.getBitmap());
 		this.setElastic(true);
 		this.setLocked(false);
-		this.setLayer(100);
 	}
 
 	public void syncSprite() {

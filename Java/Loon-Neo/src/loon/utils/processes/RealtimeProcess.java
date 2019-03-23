@@ -79,12 +79,14 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		}
 	}
 
-	public void sleep(long delay) {
+	public RealtimeProcess sleep(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
-	public void setDelay(long delay) {
+	public RealtimeProcess setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -95,16 +97,19 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		return timer.getCurrentTick();
 	}
 
-	public void interrupt() {
+	public RealtimeProcess interrupt() {
 		timer.stop();
+		return this;
 	}
 
-	public void stop() {
+	public RealtimeProcess stop() {
 		timer.stop();
+		return this;
 	}
 
-	public void start() {
+	public RealtimeProcess start() {
 		timer.start();
+		return this;
 	}
 
 	public boolean isActive() {

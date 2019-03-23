@@ -77,26 +77,19 @@ public class LControl extends LComponent {
 	}
 
 	public LControl(int x, int y, int bw, int bh, int dw, int dh) {
-		this(x, y, LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME
-				+ "control_base.png"), LTextures
-				.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "control_dot.png"),
-				bw, bh, dw, dh);
+		this(x, y, LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "control_base.png"),
+				LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "control_dot.png"), bw, bh, dw, dh);
 	}
 
-	public LControl(int x, int y, String basename, String dot, int bw, int bh,
-			int dw, int dh) {
-		this(x, y, LTextures.loadTexture(basename), LTextures.loadTexture(dot),
-				bw, bh, dw, dh);
+	public LControl(int x, int y, String basename, String dot, int bw, int bh, int dw, int dh) {
+		this(x, y, LTextures.loadTexture(basename), LTextures.loadTexture(dot), bw, bh, dw, dh);
 	}
 
-	public LControl(ControlSkin skin, int x, int y, int bw, int bh, int dw,
-			int dh) {
-		this(x, y, skin.getControlBaseTexture(), skin.getControlDotTexture(),
-				bw, bh, dw, dh);
+	public LControl(ControlSkin skin, int x, int y, int bw, int bh, int dw, int dh) {
+		this(x, y, skin.getControlBaseTexture(), skin.getControlDotTexture(), bw, bh, dw, dh);
 	}
 
-	public LControl(int x, int y, LTexture basefile, LTexture dot, int bw,
-			int bh, int dw, int dh) {
+	public LControl(int x, int y, LTexture basefile, LTexture dot, int bw, int bh, int dw, int dh) {
 		super(x, y, bw, bh);
 		this.controlBase = basefile;
 		this.controlDot = dot;
@@ -123,12 +116,10 @@ public class LControl extends LComponent {
 
 	@Override
 	public void processTouchPressed() {
-		final float relativeX = MathUtils.bringToBounds(0, baseWidth,
-				SysTouch.getX() - getScreenX())
-				/ baseWidth - 0.5f;
-		final float relativeY = MathUtils.bringToBounds(0, baseHeight,
-				SysTouch.getY() - getScreenY())
-				/ baseHeight - 0.5f;
+		final float relativeX = MathUtils.bringToBounds(0, baseWidth, SysTouch.getX() - getScreenX()) / baseWidth
+				- 0.5f;
+		final float relativeY = MathUtils.bringToBounds(0, baseHeight, SysTouch.getY() - getScreenY()) / baseHeight
+				- 0.5f;
 		onUpdateControlDot(relativeX, relativeY);
 		super.processTouchPressed();
 	}
@@ -224,14 +215,15 @@ public class LControl extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
-		if (isVisible()) {
-			g.setAlpha(0.5f);
-			g.draw(controlBase, x, y, baseWidth, baseHeight);
-			g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
-			g.setAlpha(1f);
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		if (!isVisible()) {
+			return;
 		}
+		g.setAlpha(0.5f);
+		g.draw(controlBase, x, y, baseWidth, baseHeight);
+		g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
+		g.setAlpha(1f);
+
 	}
 
 	@Override

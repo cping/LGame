@@ -108,7 +108,6 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		this.setWait(false);
 		this.setElastic(true);
 		this.setLocked(true);
-		this.setLayer(100);
 	}
 
 	public void setWait(boolean flag) {
@@ -267,7 +266,8 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 			}
 			this.move(this.input.getTouchDX(), this.input.getTouchDY());
 			if (Click != null) {
-				Click.DragClick(this, input.getTouchX(), input.getTouchY());
+				Click.DragClick(this, getUITouchX(),
+						getUITouchY());
 			}
 			this.updateIcon();
 		}

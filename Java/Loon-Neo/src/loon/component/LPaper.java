@@ -41,7 +41,6 @@ public class LPaper extends LContainer {
 		}
 		this.setElastic(true);
 		this.setLocked(true);
-		this.setLayer(100);
 	}
 
 	public LPaper(LTexture background) {
