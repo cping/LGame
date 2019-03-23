@@ -57,6 +57,8 @@ public class TileRoom {
 		}
 	}
 
+	private int id;
+
 	private int x;
 
 	private int y;
@@ -73,7 +75,8 @@ public class TileRoom {
 
 	private boolean joined;
 
-	public TileRoom(int x, int y, int width, int height) {
+	public TileRoom(int i, int x, int y, int width, int height) {
+		this.id = i;
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -96,8 +99,9 @@ public class TileRoom {
 		return this.y;
 	}
 
-	public void setLock(boolean l) {
+	public TileRoom setLock(boolean l) {
 		this.locked = l;
+		return this;
 	}
 
 	public boolean isLock() {
@@ -114,18 +118,18 @@ public class TileRoom {
 		return record.y;
 	}
 
-	public void connect(TileRoom other, int x, int y) {
+	public TileRoom connect(TileRoom other, int x, int y) {
 		RoomLink record = new RoomLink(other, x, y);
 		if (this.connected.get(other) == null) {
 			this.connected.put(other, record);
 			this.connectedRooms.add(other);
 			other.connect(this, x, y);
 		}
+		return this;
 	}
 
 	public boolean contains(int xp, int yp) {
-		return (xp >= this.x) && (yp >= this.y) && (xp < this.x + this.width)
-				&& (yp < this.y + this.height);
+		return (xp >= this.x) && (yp >= this.y) && (xp < this.x + this.width) && (yp < this.y + this.height);
 	}
 
 	public ObjectMap<TileRoom, RoomLink> connected() {
@@ -148,7 +152,7 @@ public class TileRoom {
 		return this.connected.get(room);
 	}
 
-	public void convert(Field2D field, int in, int out) {
+	public TileRoom convert(Field2D field, int in, int out) {
 		for (int xp = 0; xp < this.width; xp++) {
 			for (int yp = 0; yp < this.height; yp++) {
 				if (field.getType(this.x + xp, this.y + yp) == in) {
@@ -156,13 +160,23 @@ public class TileRoom {
 				}
 			}
 		}
+		return this;
 	}
 
 	public boolean isJoined() {
 		return this.joined;
 	}
 
-	public void setJoined(boolean j) {
+	public TileRoom setJoined(boolean j) {
 		this.joined = j;
+		return this;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int i) {
+		this.id = i;
 	}
 }

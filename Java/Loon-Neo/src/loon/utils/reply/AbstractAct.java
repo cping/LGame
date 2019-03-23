@@ -23,56 +23,66 @@ package loon.utils.reply;
 /**
  * 处理传递过来的具体数据，将其依照规则过滤后，触发指定的事件反馈.
  */
-public class AbstractAct<T> extends Bypass implements ActView<T>
-{
-    @Override public <M> ActView<M> map (final Function<? super T, M> func) {
-        final AbstractAct<T> outer = this;
-        return new MappedAct<M>() {
-            @Override protected Connection connect () {
-                return outer.connect(new Listener<T>() {
-                    @Override public void onEmit (T value) {
-                        notifyEmit(func.apply(value));
-                    }
-                });
-            }
-        };
-    }
+public class AbstractAct<T> extends Bypass implements ActView<T> {
+	@Override
+	public <M> ActView<M> map(final Function<? super T, M> func) {
+		final AbstractAct<T> outer = this;
+		return new MappedAct<M>() {
+			@Override
+			protected Connection connect() {
+				return outer.connect(new Listener<T>() {
+					@Override
+					public void onEmit(T value) {
+						notifyEmit(func.apply(value));
+					}
+				});
+			}
+		};
+	}
 
-    @Override public ActView<T> filter (final Function<? super T, Boolean> pred) {
-        final AbstractAct<T> outer = this;
-        return new MappedAct<T>() {
-            @Override protected Connection connect () {
-                return outer.connect(new Listener<T>() {
-                    @Override public void onEmit (T value) {
-                        if (pred.apply(value)) {
-                            notifyEmit(value);
-                        }
-                    }
-                });
-            }
-        };
-    }
+	@Override
+	public ActView<T> filter(final Function<? super T, Boolean> pred) {
+		final AbstractAct<T> outer = this;
+		return new MappedAct<T>() {
+			@Override
+			protected Connection connect() {
+				return outer.connect(new Listener<T>() {
+					@Override
+					public void onEmit(T value) {
+						if (pred.apply(value)) {
+							notifyEmit(value);
+						}
+					}
+				});
+			}
+		};
+	}
 
-    @Override public Connection connect (Listener<? super T> port) {
-        return addConnection(port);
-    }
+	@Override
+	public Connection connect(Listener<? super T> port) {
+		return addConnection(port);
+	}
 
-    @Override public void disconnect (Listener<? super T> port) {
-        removeConnection(port);
-    }
+	@Override
+	public void disconnect(Listener<? super T> port) {
+		removeConnection(port);
+	}
 
-    @Override Listener<T> placeholderListener () {
-        @SuppressWarnings("unchecked") Listener<T> p = (Listener<T>)Ports.DEF;
-        return p;
-    }
+	@Override
+	Listener<T> placeholderListener() {
+		@SuppressWarnings("unchecked")
+		Listener<T> p = (Listener<T>) Ports.DEF;
+		return p;
+	}
 
-    protected void notifyEmit (T event) {
-        notify(EMIT, event, null, null);
-    }
+	protected void notifyEmit(T event) {
+		notify(EMIT, event, null, null);
+	}
 
-    @SuppressWarnings("unchecked") protected static final Notifier EMIT = new Notifier() {
-        public void notify (Object port, Object event, Object _1, Object _2) {
-            ((Listener<Object>)port).onEmit(event);
-        }
-    };
+	@SuppressWarnings("unchecked")
+	protected static final Notifier EMIT = new Notifier() {
+		public void notify(Object port, Object event, Object _1, Object _2) {
+			((Listener<Object>) port).onEmit(event);
+		}
+	};
 }

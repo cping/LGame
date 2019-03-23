@@ -21,14 +21,21 @@ import loon.utils.MathUtils;
 
 public class PConcavePolygonShape extends PShape {
 
-	PConvexPolygonShape[] convexes;
-	Vector2f[] localVers;
-	int numConvexes;
-	int numVertices;
-	PPolygonizer poly;
-	PFigure fig;
-	PTriangulator tri;
-	Vector2f[] vers;
+	protected PConvexPolygonShape[] convexes;
+	
+	protected Vector2f[] localVers;
+	
+	protected int numConvexes;
+	
+	protected int numVertices;
+	
+	protected PPolygonizer poly;
+	
+	protected PFigure fig;
+	
+	protected PTriangulator tri;
+	
+	protected Vector2f[] vers;
 
 	public PConcavePolygonShape(float[] xvers, float[] yvers, float density) {
 		fig = new PFigure();

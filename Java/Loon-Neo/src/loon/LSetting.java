@@ -32,7 +32,7 @@ public class LSetting {
 	 * 如果此项为true,则Loon中的缓动动画会和图像渲染同步(为false时缓动刷新次数会比画面渲染次数少),true时缓动动画会更加流畅,<p>
 	 * 但是缓动资源较多则可能延迟画面渲染(因为都卡在一起执行了)
 	 */
-	public boolean isSyncTween = true;
+	public boolean isSyncTween = false;
 	/**
 	 * 若此处true,则fps,memory以及sprite数量之类数据
 	 */

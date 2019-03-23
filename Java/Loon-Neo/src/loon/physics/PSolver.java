@@ -19,15 +19,19 @@ import loon.utils.MathUtils;
 
 public class PSolver {
 
-	PBody b1;
-	PBody b2;
-	PContact[] cs;
-	float fric;
-	int numContacts;
-	boolean rem;
-	float rest;
-	PShape s1;
-	PShape s2;
+	protected PBody b1;
+	protected PBody b2;
+	
+	protected PContact[] cs;
+	
+	protected float fric;
+	protected float rest;
+	protected int numContacts;
+	
+	protected boolean rem;
+
+	protected PShape s1;
+	protected PShape s2;
 
 	public PSolver(PShape shape1, PShape shape2, PContact contacts[], int num) {
 		s1 = shape1;

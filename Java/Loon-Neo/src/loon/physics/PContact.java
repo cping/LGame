@@ -19,23 +19,39 @@ import loon.geom.Vector2f;
 
 public class PContact {
 
-	float corI;
-	PContactData data;
-	Vector2f localRel1;
-	Vector2f localRel2;
-	float massN;
-	float massT;
-	float norI;
-	Vector2f normal;
-	float overlap;
-	Vector2f pos;
-	Vector2f rel1;
-	Vector2f rel2;
-	Vector2f relPosVel;
-	Vector2f relVel;
-	Vector2f tangent;
-	float tanI;
-	float targetVelocity;
+	protected PContactData data;
+	
+	protected Vector2f localRel1;
+	
+	protected Vector2f localRel2;
+
+	protected float corI;
+	
+	protected float massN;
+	
+	protected float massT;
+	
+	protected float norI;
+	
+	protected float overlap;
+
+	protected Vector2f normal;
+	
+	protected Vector2f pos;
+	
+	protected Vector2f rel1;
+	
+	protected Vector2f rel2;
+	
+	protected Vector2f relPosVel;
+	
+	protected Vector2f relVel;
+	
+	protected Vector2f tangent;
+	
+	protected float tanI;
+	
+	protected float targetVelocity;
 
 	public PContact() {
 		rel1 = new Vector2f();

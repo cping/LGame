@@ -29,7 +29,7 @@ public class Character extends CharacterValue {
 
 	private TArray<Attribute> attributes = new TArray<Attribute>();
 
-	private TArray<Item> items = new TArray<Item>();
+	private TArray<Item<Object>> items = new TArray<Item<Object>>();
 
 	private ISprite roleObject;
 
@@ -91,15 +91,15 @@ public class Character extends CharacterValue {
 		return this.attributes.size;
 	}
 
-	public void addItem(Item item) {
+	public void addItem(Item<Object> item) {
 		this.items.add(item);
 	}
 
-	public Item getItem(int index) {
+	public Item<Object> getItem(int index) {
 		return this.items.get(index);
 	}
 
-	public Item getItem(String name) {
+	public Item<Object> getItem(String name) {
 		int index = findItem(name);
 		if (index == -1) {
 			return null;
@@ -116,7 +116,7 @@ public class Character extends CharacterValue {
 		return -1;
 	}
 
-	public Item removeItem(int index) {
+	public Item<Object> removeItem(int index) {
 		return this.items.removeIndex(index);
 	}
 

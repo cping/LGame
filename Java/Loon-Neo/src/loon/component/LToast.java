@@ -315,8 +315,9 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return this;
 	}
 
-	public void setAutoClose(boolean autoClose) {
+	public LToast setAutoClose(boolean autoClose) {
 		this.autoClose = autoClose;
+		return this;
 	}
 
 	@Override

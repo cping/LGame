@@ -10,6 +10,7 @@ import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 
 public class PPhysManager {
+	
 	public float scale;
 
 	public float offX;

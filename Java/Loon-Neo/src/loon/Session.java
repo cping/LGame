@@ -224,13 +224,13 @@ public class Session implements Bundle<String> {
 		return set(index, value ? "1" : "0");
 	}
 
-	public void set(String name, String value) {
-		set(name, 0, value);
+	public Session set(String name, String value) {
+		return set(name, 0, value);
 	}
 
-	public void set(String name, int index, String value) {
+	public Session set(String name, int index, String value) {
 		if(StringUtils.isEmpty(value)){
-			return;
+			return this;
 		}
 		synchronized (recordsList) {
 			Record record = (Record) records.get(name);
@@ -241,35 +241,36 @@ public class Session implements Bundle<String> {
 			}
 			record.set(index, value);
 		}
+		return this;
 	}
 
-	public void set(String name, int value) {
-		set(name, 0, value);
+	public Session set(String name, int value) {
+		return set(name, 0, value);
 	}
 
-	public void set(String name, int index, int value) {
-		set(name, index, String.valueOf(value));
+	public Session set(String name, int index, int value) {
+		return set(name, index, String.valueOf(value));
 	}
 
-	public void set(String name, float value) {
-		set(name, 0, value);
+	public Session set(String name, float value) {
+		return set(name, 0, value);
 	}
 
-	public void set(String name, int index, float value) {
-		set(name, index, String.valueOf(value));
+	public Session set(String name, int index, float value) {
+		return set(name, index, String.valueOf(value));
 	}
 
-	public void set(String name, boolean value) {
-		set(name, 0, value ? "1" : "0");
+	public Session set(String name, boolean value) {
+		return set(name, 0, value ? "1" : "0");
 	}
 
-	public void set(String name, int index, boolean value) {
-		set(name, index, value ? "1" : "0");
+	public Session set(String name, int index, boolean value) {
+		return set(name, index, value ? "1" : "0");
 	}
 
-	public void add(String name, String value) {
+	public Session add(String name, String value) {
 		if(StringUtils.isEmpty(value)){
-			return;
+			return this;
 		}
 		synchronized (recordsList) {
 			Record record = (Record) records.get(name);
@@ -281,18 +282,19 @@ public class Session implements Bundle<String> {
 			int id = record.size();
 			record.set(id++, value);
 		}
+		return this;
 	}
 
-	public void add(String name, int value) {
-		add(name, String.valueOf(value));
+	public Session add(String name, int value) {
+		return add(name, String.valueOf(value));
 	}
 
-	public void add(String name, float value) {
-		add(name, String.valueOf(value));
+	public Session add(String name, float value) {
+		return add(name, String.valueOf(value));
 	}
 
-	public void add(String name, boolean value) {
-		add(name, value ? "1" : "0");
+	public Session add(String name, boolean value) {
+		return add(name, value ? "1" : "0");
 	}
 
 	public String get(String name, int index) {
@@ -337,7 +339,7 @@ public class Session implements Bundle<String> {
 		return getBoolean(name, 0);
 	}
 
-	public void delete(String name) {
+	public Session delete(String name) {
 		synchronized (recordsList) {
 			records.remove(name);
 			for (int i = 0; i < recordsList.size; i++) {
@@ -348,6 +350,7 @@ public class Session implements Bundle<String> {
 				}
 			}
 		}
+		return this;
 	}
 
 	@Override
@@ -433,22 +436,24 @@ public class Session implements Bundle<String> {
 		}
 	}
 
-	public void activate(String name) {
+	public Session activate(String name) {
 		synchronized (recordsList) {
 			Record record = new Record(name);
 			record.active = true;
 			records.put(name, record);
 			recordsList.add(record);
 		}
+		return this;
 	}
 
-	public void clear(String name) {
+	public Session clear(String name) {
 		synchronized (recordsList) {
 			Record record = (Record) records.remove(name);
 			if (record != null) {
 				recordsList.remove(record);
 			}
 		}
+		return this;
 	}
 
 	public boolean isActive(String name) {
@@ -462,7 +467,7 @@ public class Session implements Bundle<String> {
 		}
 	}
 
-	public void reject(String name) {
+	public Session reject(String name) {
 		synchronized (recordsList) {
 			clear(name);
 			Record record = new Record(name);
@@ -471,17 +476,19 @@ public class Session implements Bundle<String> {
 			records.put(name, record);
 			recordsList.add(record);
 		}
+		return this;
 	}
 
 	public String getSessionName() {
 		return name;
 	}
 
-	public void save() {
+	public Session save() {
 		String result = encode();
 		if (!StringUtils.isEmpty(result)) {
 			saveData(result);
 		}
+		return this;
 	}
 
 	public ArrayMap getRecords(int index) {
@@ -501,7 +508,7 @@ public class Session implements Bundle<String> {
 		return new Session(name);
 	}
 
-	public void dispose(String name) {
+	public Session dispose(String name) {
 		synchronized (recordsList) {
 			clear(name);
 			Record record = new Record(name);
@@ -509,6 +516,7 @@ public class Session implements Bundle<String> {
 			records.put(name, record);
 			recordsList.add(record);
 		}
+		return this;
 	}
 
 	public void dispose() {

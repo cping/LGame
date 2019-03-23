@@ -19,8 +19,10 @@ import loon.utils.CollectionUtils;
 
 public class PSweepAndPrune {
 
-	boolean checkX;
-	int numObject;
+	protected boolean checkX;
+	
+	protected int numObject;
+	
 	private PSortableObject[] objsX;
 	private PSortableObject[] objsY;
 

@@ -21,14 +21,19 @@ public class PRodJoint extends PJoint {
 
 	private Vector2f anchor1;
 	private Vector2f anchor2;
+	
 	private PBody b1;
 	private PBody b2;
+	
 	private float dist;
 	private float length;
+	
 	private Vector2f localAnchor1;
 	private Vector2f localAnchor2;
+	
 	private float mass;
 	private float norI;
+	
 	private Vector2f normal;
 	private Vector2f relAnchor1;
 	private Vector2f relAnchor2;

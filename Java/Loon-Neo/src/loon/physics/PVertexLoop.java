@@ -20,11 +20,14 @@ import loon.geom.Vector2f;
 public class PVertexLoop {
 
 	public boolean crossPoint;
+	
 	public Vector2f epsilon;
+	public Vector2f v;
+	
 	public PVertexLoop next;
 	public PVertexLoop pair;
 	public PVertexLoop prev;
-	public Vector2f v;
+	
 
 	public PVertexLoop(float x, float y) {
 		this.v = new Vector2f(x, y);

@@ -21,14 +21,19 @@ import loon.utils.MathUtils;
 public class PDragJoint extends PJoint {
 
 	private Vector2f anchor;
-	private PBody b;
+	
+	private PBody bodyObject;
+	
 	private Vector2f dragPoint;
+	
 	private Vector2f localAnchor;
+	
 	private PTransformer mass;
+	
 	private Vector2f relAnchor;
 
 	public PDragJoint(PBody b, float px, float py) {
-		this.b = b;
+		this.bodyObject = b;
 		dragPoint = new Vector2f(px, py);
 		localAnchor = new Vector2f(px - b.pos.x, py - b.pos.y);
 		b.mAng.transpose().mulEqual(localAnchor);
@@ -43,7 +48,7 @@ public class PDragJoint extends PJoint {
 	}
 
 	public PBody getBody() {
-		return b;
+		return bodyObject;
 	}
 
 	public Vector2f getDragPoint() {
@@ -55,20 +60,20 @@ public class PDragJoint extends PJoint {
 	}
 
 	void preSolve(float dt) {
-		relAnchor = b.mAng.mul(localAnchor);
-		anchor.set(relAnchor.x + b.pos.x, relAnchor.y + b.pos.y);
-		mass = PTransformer.calcEffectiveMass(b, relAnchor);
+		relAnchor = bodyObject.mAng.mul(localAnchor);
+		anchor.set(relAnchor.x + bodyObject.pos.x, relAnchor.y + bodyObject.pos.y);
+		mass = PTransformer.calcEffectiveMass(bodyObject, relAnchor);
 		Vector2f f = anchor.sub(dragPoint);
-		float k = b.m;
+		float k = bodyObject.m;
 		f.mulLocal(-k * 20F);
-		Vector2f relVel = b.vel.cpy();
-		relVel.x += -b.angVel * relAnchor.y;
-		relVel.y += b.angVel * relAnchor.x;
+		Vector2f relVel = bodyObject.vel.cpy();
+		relVel.x += -bodyObject.angVel * relAnchor.y;
+		relVel.y += bodyObject.angVel * relAnchor.x;
 		relVel.mulLocal(MathUtils.sqrt(k * 20F * k));
 		f.subLocal(relVel);
 		f.mulLocal(dt);
 		mass.mulEqual(f);
-		b.applyImpulse(f.x, f.y, anchor.x, anchor.y);
+		bodyObject.applyImpulse(f.x, f.y, anchor.x, anchor.y);
 	}
 
 	public void setDragPosition(float px, float py) {
@@ -77,7 +82,7 @@ public class PDragJoint extends PJoint {
 
 	public void setRelativeAnchorPoint(float relx, float rely) {
 		localAnchor.set(relx, rely);
-		b.mAng.transpose().mulEqual(localAnchor);
+		bodyObject.mAng.transpose().mulEqual(localAnchor);
 	}
 
 	void solvePosition() {
@@ -87,11 +92,9 @@ public class PDragJoint extends PJoint {
 	}
 
 	void update() {
-		relAnchor = b.mAng.mul(localAnchor);
-		anchor.set(relAnchor.x + b.pos.x, relAnchor.y + b.pos.y);
-		if (b.rem || b.fix) {
-			rem = true;
-		}
+		relAnchor = bodyObject.mAng.mul(localAnchor);
+		anchor.set(relAnchor.x + bodyObject.pos.x, relAnchor.y + bodyObject.pos.y);
+		if (bodyObject.rem || bodyObject.fix) rem = true;
 	}
 
 }

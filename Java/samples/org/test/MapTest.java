@@ -96,9 +96,10 @@ public class MapTest extends Stage {
 
 				@Override
 				public void on(final float x, final float y) {
-					// 角色缓动动画移动,以map中二维数组为基础,4方走法,每次移动增加8个像素(并且矫正地图的偏移位置,否则直接获得屏幕触点肯定错误),速度2(实际就是一次移动几个像素格)
+
+					// 角色缓动动画移动,以map中二维数组为基础,4方走法,每次移动增加8个像素(并且矫正地图的偏移位置,否则直接获得屏幕触点肯定错误),速度8(实际就是一次移动几个像素格)
 					final MoveTo move = new MoveTo(map.getField(), map.offsetXPixel(hero.x()),
-							map.offsetYPixel(hero.y()), map.offsetXPixel(x), map.offsetYPixel(y), false, 2);
+							map.offsetYPixel(hero.y()), map.offsetXPixel(x), map.offsetYPixel(y), false, 8);
 					// 监听MoveTo
 					move.setActionListener(new ActionListener() {
 
@@ -111,7 +112,6 @@ public class MapTest extends Stage {
 
 						@Override
 						public void start(ActionBind o) {
-
 						}
 
 						@Override

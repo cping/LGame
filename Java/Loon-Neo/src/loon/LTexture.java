@@ -638,28 +638,31 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	public void setImageColor(float r, float g, float b, float a) {
+	public LTexture setImageColor(float r, float g, float b, float a) {
 		setColor(TOP_LEFT, r, g, b, a);
 		setColor(TOP_RIGHT, r, g, b, a);
 		setColor(BOTTOM_LEFT, r, g, b, a);
 		setColor(BOTTOM_RIGHT, r, g, b, a);
+		return this;
 	}
 
-	public void setImageColor(float r, float g, float b) {
+	public LTexture setImageColor(float r, float g, float b) {
 		setColor(TOP_LEFT, r, g, b);
 		setColor(TOP_RIGHT, r, g, b);
 		setColor(BOTTOM_LEFT, r, g, b);
 		setColor(BOTTOM_RIGHT, r, g, b);
+		return this;
 	}
 
-	public void setImageColor(LColor c) {
+	public LTexture setImageColor(LColor c) {
 		if (c == null) {
-			return;
+			return this;
 		}
 		setImageColor(c.r, c.g, c.b, c.a);
+		return this;
 	}
 
-	public void setColor(GLPaint paint) {
+	public LTexture setColor(GLPaint paint) {
 		if (colors == null) {
 			colors = new LColor[4];
 		}
@@ -667,9 +670,10 @@ public class LTexture extends Painter implements LRelease {
 		colors[1] = paint.getTopRightColor();
 		colors[2] = paint.getBottomLeftColor();
 		colors[3] = paint.getBottomRightColor();
+		return this;
 	}
 
-	public void setColor(int corner, float r, float g, float b, float a) {
+	public LTexture setColor(int corner, float r, float g, float b, float a) {
 		if (colors == null) {
 			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
 					new LColor(1f, 1f, 1f, 1f) };
@@ -678,9 +682,10 @@ public class LTexture extends Painter implements LRelease {
 		colors[corner].g = g;
 		colors[corner].b = b;
 		colors[corner].a = a;
+		return this;
 	}
 
-	public void setColor(int corner, float r, float g, float b) {
+	public LTexture setColor(int corner, float r, float g, float b) {
 		if (colors == null) {
 			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
 					new LColor(1f, 1f, 1f, 1f) };
@@ -688,6 +693,7 @@ public class LTexture extends Painter implements LRelease {
 		colors[corner].r = r;
 		colors[corner].g = g;
 		colors[corner].b = b;
+		return this;
 	}
 
 	public LTextureBatch getTextureBatch() {
@@ -708,7 +714,7 @@ public class LTexture extends Painter implements LRelease {
 		return batch;
 	}
 
-	void makeBatch(String name, Source source, int size) {
+	protected void makeBatch(String name, Source source, int size) {
 		if (!isBatch) {
 			batch = new LTextureBatch(this, source, size);
 			if (!StringUtils.isEmpty(name)) {
@@ -718,7 +724,7 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	void freeBatch() {
+	protected void freeBatch() {
 		if (isBatch) {
 			if (batch != null) {
 				batch.close();
@@ -728,66 +734,72 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	public void postCache(Cache cache) {
+	public LTexture postCache(Cache cache) {
 		if (isBatch()) {
 			batch.postCache(cache, colors == null ? null : colors[0], 0, 0);
 		}
+		return this;
 	}
 
 	public boolean isBatch() {
 		return (isBatch && batch.isLoaded);
 	}
 
-	public void glBegin() {
+	public LTexture glBegin() {
 		getTextureBatch();
 		batch.begin();
+		return this;
 	}
 
-	public void glEnd() {
+	public LTexture glEnd() {
 		if (isBatch) {
 			batch.end();
 		}
+		return this;
 	}
 
-	public void setBatchPos(float x, float y) {
+	public LTexture setBatchPos(float x, float y) {
 		if (isBatch) {
 			batch.setLocation(x, y);
 		}
+		return this;
 	}
 
 	public boolean isBatchLocked() {
 		return isBatch && batch.isCacheLocked;
 	}
 
-	public void glCacheCommit() {
+	public LTexture glCacheCommit() {
 		if (isBatch) {
 			batch.postLastCache();
 		}
+		return this;
 	}
 
-	public void draw(float x, float y) {
+	public LTexture draw(float x, float y) {
 		draw(x, y, width(), height());
+		return this;
 	}
 
-	public void draw(float x, float y, float width, float height) {
+	public LTexture draw(float x, float y, float width, float height) {
 		if (isBatch) {
 			batch.draw(colors, x, y, width, height);
 		} else {
-
 			gfx.game.display().GL().draw(this, x, y, width, height, colors == null ? null : colors[0]);
 		}
+		return this;
 	}
 
-	public void draw(float x, float y, LColor[] c) {
+	public LTexture draw(float x, float y, LColor[] c) {
 		if (isBatch) {
 			batch.draw(c, x, y, width(), height());
 		} else {
-
 			gfx.game.display().GL().draw(this, x, y, width(), height(), c == null ? null : c[0]);
 		}
+		return this;
 	}
 
-	public void draw(float x, float y, LColor c) {
+	public LTexture draw(float x, float y, LColor c) {
 		if (isBatch) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
@@ -801,9 +813,10 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width(), height(), c);
 		}
+		return this;
 	}
 
-	public void draw(float x, float y, float width, float height, LColor c) {
+	public LTexture draw(float x, float y, float width, float height, LColor c) {
 		if (isBatch) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
@@ -817,9 +830,10 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, c);
 		}
+		return this;
 	}
 
-	public void drawFlipX(float x, float y, LColor c) {
+	public LTexture drawFlipX(float x, float y, LColor c) {
 		if (isBatch) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
@@ -833,9 +847,10 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			gfx.game.display().GL().drawFlip(this, x, y, c);
 		}
+		return this;
 	}
 
-	public void drawFlipY(float x, float y, LColor c) {
+	public LTexture drawFlipY(float x, float y, LColor c) {
 		if (isBatch) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
@@ -849,22 +864,24 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			gfx.game.display().GL().drawMirror(this, x, y, c);
 		}
+		return this;
 	}
 
-	public void draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2, LColor[] c) {
+	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2, LColor[] c) {
 		if (isBatch) {
 			batch.draw(c, x, y, width, height, x1, y1, x2, y2);
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, x1, y1, x2, y2, c == null ? null : c[0]);
 		}
+		return this;
 	}
 
-	public void drawEmbedded(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
+	public LTexture drawEmbedded(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			LColor c) {
-		draw(x, y, width - x, height - y, x1, y1, x2, y2, c);
+		return draw(x, y, width - x, height - y, x1, y1, x2, y2, c);
 	}
 
-	public void draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2, LColor c) {
+	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2, LColor c) {
 		if (isBatch) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 
@@ -880,43 +897,46 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, x1, y1, x2, y2, c);
 		}
+		return this;
 	}
 
-	public void draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight) {
+	public LTexture draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight) {
 		if (isBatch) {
 			batch.draw(colors, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight);
 		} else {
 			gfx.game.display().GL().draw(this, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight,
 					colors == null ? null : colors[0]);
 		}
+		return this;
 	}
 
-	public void drawEmbedded(float x, float y, float width, float height, float x1, float y1, float x2, float y2) {
-		draw(x, y, width - x, height - y, x1, y1, x2, y2);
+	public LTexture drawEmbedded(float x, float y, float width, float height, float x1, float y1, float x2, float y2) {
+		return draw(x, y, width - x, height - y, x1, y1, x2, y2);
 	}
 
-	public void draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2) {
+	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2) {
 		if (isBatch) {
 			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, x1, y1, x2, y2, colors == null ? null : colors[0]);
 		}
+		return this;
 	}
 
-	public void draw(float x, float y, float rotation) {
-		draw(x, y, this.width(), this.height(), 0, 0, this.width(), this.height(), rotation,
+	public LTexture draw(float x, float y, float rotation) {
+		return draw(x, y, this.width(), this.height(), 0, 0, this.width(), this.height(), rotation,
 				colors == null ? null : colors[0]);
 	}
 
-	public void draw(float x, float y, float w, float h, float rotation, LColor c) {
-		draw(x, y, w, h, 0, 0, this.width(), this.height(), rotation, c);
+	public LTexture draw(float x, float y, float w, float h, float rotation, LColor c) {
+		return draw(x, y, w, h, 0, 0, this.width(), this.height(), rotation, c);
 	}
 
-	public void draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
+	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			float rotation, LColor c) {
 		if (rotation == 0) {
 			draw(x, y, width, height, x1, y1, x2, y2, c);
-			return;
+			return this;
 		}
 		if (isBatch) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
@@ -931,6 +951,7 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, x1, y1, x2, y2, c, rotation);
 		}
+		return this;
 	}
 
 	private boolean checkUpdateColor(LColor c) {
@@ -954,16 +975,18 @@ public class LTexture extends Painter implements LRelease {
 		return null;
 	}
 
-	public void postLastBatchCache() {
+	public LTexture postLastBatchCache() {
 		if (isBatch) {
 			batch.postLastCache();
 		}
+		return this;
 	}
 
-	public void disposeLastCache() {
+	public LTexture disposeLastCache() {
 		if (isBatch) {
 			batch.disposeLastCache();
 		}
+		return this;
 	}
 
 	@Override

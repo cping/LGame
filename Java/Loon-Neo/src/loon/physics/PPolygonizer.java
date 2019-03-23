@@ -17,10 +17,13 @@ package loon.physics;
 
 public class PPolygonizer {
 
-	int numPolygons;
-	int numTriangles;
-	PPolygon[] polygons;
-	PPolygon[] triangles;
+	protected int numPolygons;
+	
+	protected int numTriangles;
+	
+	protected PPolygon[] polygons;
+	
+	protected PPolygon[] triangles;
 
 	public PPolygonizer() {
 	}

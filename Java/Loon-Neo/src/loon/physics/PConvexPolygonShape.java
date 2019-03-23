@@ -19,11 +19,16 @@ import loon.geom.Vector2f;
 
 public class PConvexPolygonShape extends PShape {
 
-	Vector2f[] localNors;
-	Vector2f[] localVers;
-	Vector2f[] nors;
-	int numVertices;
-	Vector2f[] vers;
+	protected Vector2f[] localNors;
+	
+	protected Vector2f[] localVers;
+
+	protected Vector2f[] vers;
+	
+	protected Vector2f[] nors;
+	
+	protected int numVertices;
+	
 
 	public PConvexPolygonShape(float xvers[], float yvers[], float density) {
 		float xs[] = xvers;
@@ -135,6 +140,7 @@ public class PConvexPolygonShape extends PShape {
 		return vertices;
 	}
 
+	@Override
 	void update() {
 		for (int i = 0; i < numVertices; i++) {
 			vers[i].set(localVers[i].x, localVers[i].y);

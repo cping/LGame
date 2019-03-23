@@ -195,32 +195,36 @@ public class ScrollText extends Entity {
 		return stop;
 	}
 
-	public void setStop(boolean stop) {
+	public ScrollText setStop(boolean stop) {
 		this.stop = stop;
+		return this;
 	}
 
 	public int getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(int speed) {
+	public ScrollText setSpeed(int speed) {
 		this.speed = speed;
+		return this;
 	}
 
 	public LColor getTextColor() {
 		return getColor();
 	}
 
-	public void setTextColor(LColor textColor) {
+	public ScrollText setTextColor(LColor textColor) {
 		setColor(textColor);
+		return this;
 	}
 
 	public LTimer getTimer() {
 		return timer;
 	}
 
-	public void setDelay(long d) {
+	public ScrollText setDelay(long d) {
 		this.timer.setDelay(d);
+		return this;
 	}
 
 	public long getDelay() {
@@ -239,16 +243,18 @@ public class ScrollText extends Entity {
 		return direction;
 	}
 
-	public void setDirection(Direction direction) {
+	public ScrollText setDirection(Direction direction) {
 		this.direction = direction;
+		return this;
 	}
 
 	public float getSpace() {
 		return space;
 	}
 
-	public void setSpace(float space) {
+	public ScrollText setSpace(float space) {
 		this.space = space;
+		return this;
 	}
 
 	@Override

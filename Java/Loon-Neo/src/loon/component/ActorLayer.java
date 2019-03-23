@@ -45,7 +45,7 @@ import loon.utils.TArray;
 
 public abstract class ActorLayer extends LContainer {
 
-	private final static int min_size = 48;
+	private final static int LAYER_MIN_SIZE = 32;
 
 	private Field2D tmpField;
 
@@ -53,11 +53,11 @@ public abstract class ActorLayer extends LContainer {
 
 	protected int cellSize;
 
-	CollisionChecker collisionChecker;
+	protected CollisionChecker collisionChecker;
 
-	ActorTreeSet objects;
+	protected ActorTreeSet objects;
 
-	long elapsedTime;
+	protected long elapsedTime;
 
 	private int tileSize = 32;
 
@@ -573,8 +573,8 @@ public abstract class ActorLayer extends LContainer {
 		}
 		int layerWidth = (int) getWidth();
 		int layerHeight = (int) getHeight();
-		int actorWidth = nw > min_size ? nw : min_size;
-		int actorHeight = nh > min_size ? nh : min_size;
+		int actorWidth = nw > LAYER_MIN_SIZE ? nw : LAYER_MIN_SIZE;
+		int actorHeight = nh > LAYER_MIN_SIZE ? nh :LAYER_MIN_SIZE;
 		int x = nx / actorWidth;
 		int y = ny / actorHeight;
 		int row = layerWidth / actorWidth;

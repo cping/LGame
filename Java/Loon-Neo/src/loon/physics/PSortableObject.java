@@ -17,10 +17,10 @@ package loon.physics;
 
 public class PSortableObject {
 
-	PSortableAABB aabb;
-	boolean begin;
-	PShape parent;
-	float value;
+	protected PSortableAABB aabb;
+	protected boolean begin;
+	protected PShape parent;
+	protected float value;
 
 	public PSortableObject(PShape s, PSortableAABB aabb, float value,
 			boolean begin) {

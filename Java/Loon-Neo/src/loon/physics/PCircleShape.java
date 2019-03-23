@@ -19,7 +19,8 @@ import loon.geom.Circle;
 
 public class PCircleShape extends PShape {
 
-	float rad;
+	protected float rad;
+	
 	private Circle mcircle;
 
 	public PCircleShape(float px, float py, float radius, float angle,

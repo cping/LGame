@@ -20,43 +20,48 @@
  */
 package loon.utils.reply;
 
-public abstract class Connection implements Closeable
-{
+public abstract class Connection implements Closeable {
 
-    public static Connection join (final Connection... conns) {
-        return new Connection() {
-            @Override public void close () {
-                for (Connection c : conns) {
-                	c.close();
-                }
-            }
-            @Override public Connection once () {
-                for (Connection c : conns){
-                	c.once();
-                }
-                return this;
-            }
-            @Override public Connection setPriority (int priority) {
-                for (Connection c : conns){
-                	c.setPriority(priority);
-                }
-                return this;
-            }
-            @Override public Connection holdWeakly () {
-                for (Connection c : conns) {
-                	c.holdWeakly();
-                }
-                return this;
-            }
-        };
-    }
+	public static Connection join(final Connection... conns) {
+		return new Connection() {
+			@Override
+			public void close() {
+				for (Connection c : conns) {
+					c.close();
+				}
+			}
 
- 
-    public abstract void close ();
+			@Override
+			public Connection once() {
+				for (Connection c : conns) {
+					c.once();
+				}
+				return this;
+			}
 
-    public abstract Connection once ();
+			@Override
+			public Connection setPriority(int priority) {
+				for (Connection c : conns) {
+					c.setPriority(priority);
+				}
+				return this;
+			}
 
-    public abstract Connection setPriority (int priority);
+			@Override
+			public Connection holdWeakly() {
+				for (Connection c : conns) {
+					c.holdWeakly();
+				}
+				return this;
+			}
+		};
+	}
 
-    public abstract Connection holdWeakly ();
+	public abstract void close();
+
+	public abstract Connection once();
+
+	public abstract Connection setPriority(int priority);
+
+	public abstract Connection holdWeakly();
 }

@@ -501,18 +501,21 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return this._box.getLeading();
 	}
 
-	public void setLeading(final float leading) {
+	public LMessageBox setLeading(final float leading) {
 		this._box.setLeading(leading);
+		return this;
 	}
 
 	public String getString() {
 		return this._tmpString;
 	}
 
+	@Override
 	public IFont getFont() {
 		return this._font;
 	}
 
+	@Override
 	public LMessageBox setFont(IFont font) {
 		this._font = font;
 		return this;
@@ -570,10 +573,10 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	}
 
-	public void reset() {
+	public LMessageBox reset() {
 		messageIndex = 0;
 		stopMessage = false;
-		restart();
+		return restart();
 	}
 
 	public LMessageBox loop() {
@@ -672,15 +675,16 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return this.finished;
 	}
 
-	public void restart() {
+	public LMessageBox restart() {
 		this.renderCol = 0;
 		this.renderRow = 0;
 		this.typeDelayTime = delay;
 		this.pageBlinkTime = 0;
 		this.finished = false;
+		return this;
 	}
 
-	public void showAll() {
+	public LMessageBox showAll() {
 		Message message = _messageList.get(messageIndex);
 		if (message.lines.isEmpty()) {
 			this.renderRow = (this.renderCol = 0);
@@ -689,28 +693,33 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			this.renderCol = message.lines.get(this.renderRow).length();
 			this.finished = true;
 		}
+		return this;
 	}
 
-	public void setFaceImage(LTexture texture) {
-		this._box.setFaceImage(texture);
+	public LMessageBox setFaceImage(LTexture texture) {
+		 this._box.setFaceImage(texture);
+		 return this;
 	}
 
-	public void setFaceImage(LTexture texture, float x, float y) {
+	public LMessageBox setFaceImage(LTexture texture, float x, float y) {
 		this._box.setFaceImage(texture);
 		this._box.setFaceCenterX(x);
 		this._box.setFaceCenterY(y);
+		return this;
 	}
 
 	public LTexture getFaceImage() {
 		return this._box.imgFace;
 	}
 
-	public void pauseMessage() {
+	public LMessageBox pauseMessage() {
 		this.stopMessage = true;
+		return this;
 	}
 
-	public void resumeMessage() {
+	public LMessageBox resumeMessage() {
 		this.stopMessage = false;
+		return this;
 	}
 
 	protected void toFaceImage(final String face) {
@@ -755,16 +764,18 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return pageTime;
 	}
 
-	public void setPageTime(int pageTime) {
+	public LMessageBox setPageTime(int pageTime) {
 		this.pageTime = pageTime;
+		return this;
 	}
 
 	public int getDelay() {
 		return delay;
 	}
 
-	public void setDelay(int time) {
+	public LMessageBox setDelay(int time) {
 		this.delay = time;
+		return this;
 	}
 
 	@Override

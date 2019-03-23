@@ -315,40 +315,47 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		return cursor;
 	}
 
-	public void setNotCursor() {
+	public LSelect setNotCursor() {
 		this.cursor = null;
+		return this;
 	}
 
-	public void setCursor(LTexture cursor) {
+	public LSelect setCursor(LTexture cursor) {
 		this.cursor = cursor;
+		return this;
 	}
 
-	public void setCursor(String fileName) {
+	public LSelect setCursor(String fileName) {
 		setCursor(LTextures.loadTexture(fileName));
+		return this;
 	}
 
 	public LTexture getBuoyage() {
 		return buoyage;
 	}
 
-	public void setNotBuoyage() {
+	public LSelect setNotBuoyage() {
 		this.cursor = null;
+		return this;
 	}
 
-	public void setBuoyage(LTexture buoyage) {
+	public LSelect setBuoyage(LTexture buoyage) {
 		this.buoyage = buoyage;
+		return this;
 	}
 
-	public void setBuoyage(String fileName) {
+	public LSelect setBuoyage(String fileName) {
 		setBuoyage(LTextures.loadTexture(fileName));
+		return this;
 	}
 
 	public boolean isFlashBuoyage() {
 		return isAutoAlpha;
 	}
 
-	public void setFlashBuoyage(boolean flashBuoyage) {
+	public LSelect setFlashBuoyage(boolean flashBuoyage) {
 		this.isAutoAlpha = flashBuoyage;
+		return this;
 	}
 
 	@Override

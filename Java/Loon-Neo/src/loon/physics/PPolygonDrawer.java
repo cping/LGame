@@ -18,8 +18,11 @@ package loon.physics;
 public class PPolygonDrawer {
 
 	private final int maxVertices = 1024;
+	
 	public int numVertices;
+	
 	public float[] xs;
+	
 	public float[] ys;
 
 	public PPolygonDrawer() {

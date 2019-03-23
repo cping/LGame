@@ -539,56 +539,61 @@ public abstract class LComponent extends LObject<LContainer>
 		return (this._super == null) ? this._component_enabled : (this._component_enabled && this._super.isEnabled());
 	}
 
-	public void setEnabled(boolean b) {
+	public LComponent setEnabled(boolean b) {
 		if (this._component_enabled == b) {
-			return;
+			return this;
 		}
 		this._component_enabled = b;
 		this._desktop.setComponentStat(this, this._component_enabled);
+		return this;
 	}
 
 	public boolean isSelected() {
 		return this._component_selected;
 	}
 
-	final void setSelected(boolean b) {
+	final LComponent setSelected(boolean b) {
 		this._component_selected = b;
+		return this;
 	}
 
 	public boolean requestFocus() {
 		return this._desktop.selectComponent(this);
 	}
 
-	public void transferFocus() {
+	public LComponent transferFocus() {
 		if (this.isSelected() && this._super != null) {
 			this._super.transferFocus(this);
 		}
+		return this;
 	}
 
-	public void transferFocusBackward() {
+	public LComponent transferFocusBackward() {
 		if (this.isSelected() && this._super != null) {
 			this._super.transferFocusBackward(this);
 		}
+		return this;
 	}
 
 	public boolean isFocusable() {
 		return this._component_focusable;
 	}
 
-	public void setFocusable(boolean b) {
+	public LComponent setFocusable(boolean b) {
 		this._component_focusable = b;
+		return this;
 	}
 
 	public LContainer getContainer() {
 		return getSuper();
 	}
 
-	final void setContainer(LContainer container) {
+	protected final void setContainer(LContainer container) {
 		this.setSuper(container);
 		this.validatePosition();
 	}
 
-	public void setBounds(float dx, float dy, int width, int height) {
+	public LComponent setBounds(float dx, float dy, int width, int height) {
 		setLocation(dx, dy);
 		if (this._width != width || this._height != height) {
 			this._width = width;
@@ -601,6 +606,7 @@ public abstract class LComponent extends LObject<LContainer>
 			}
 			this.validateSize();
 		}
+		return this;
 	}
 
 	@Override
@@ -788,7 +794,7 @@ public abstract class LComponent extends LObject<LContainer>
 				getContainer().sendToFront(this);
 			}
 			if (isContainer()) {
-				this.move(getUITouchX() - getWidth() / 2, getUITouchY() - getHeight() / 2);
+				this.move(getUITouchX() - getWidth() / 2, getUITouchY());
 			} else {
 				this.move(getUITouchX(), getUITouchY());
 			}
@@ -1067,12 +1073,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return _super.getHeight();
 	}
 
-	public void setPivotX(float pX) {
+	public LComponent setPivotX(float pX) {
 		_pivotX = pX;
+		return this;
 	}
 
-	public void setPivotY(float pY) {
+	public LComponent setPivotY(float pY) {
 		_pivotY = pY;
+		return this;
 	}
 
 	public float getPivotX() {
@@ -1083,9 +1091,10 @@ public abstract class LComponent extends LObject<LContainer>
 		return _pivotY;
 	}
 
-	public void setPivot(float pX, float pY) {
+	public LComponent setPivot(float pX, float pY) {
 		setPivotX(pX);
 		setPivotY(pY);
+		return this;
 	}
 
 	public LComponent show() {
@@ -1323,7 +1332,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public boolean isDesktopContainer() {
 		return desktopContainer;
 	}
-	
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {

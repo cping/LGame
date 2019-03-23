@@ -96,8 +96,9 @@ public abstract class LGame {
 		return display;
 	}
 
-	public void initProcess() {
+	public LGame initProcess() {
 		LSystem.initProcess(this);
+		return this;
 	}
 
 	/**
@@ -138,9 +139,10 @@ public abstract class LGame {
 		return type == LGame.Type.HTML5;
 	}
 
-	public void reportError(String message, Throwable cause) {
+	public LGame reportError(String message, Throwable cause) {
 		errors.emit(new Error(message, cause));
 		log().warn(message, cause);
+		return this;
 	}
 
 	public <E> void dispatchEvent(Act<E> signal, E event) {
@@ -159,16 +161,18 @@ public abstract class LGame {
 		}
 	}
 
-	public void invokeLater(Runnable runnable) {
+	public LGame invokeLater(Runnable runnable) {
 		asyn().invokeLater(runnable);
+		return this;
 	}
 
 	public boolean isAsyncSupported() {
 		return asyn().isAsyncSupported();
 	}
 
-	public void invokeAsync(Runnable action) {
+	public LGame invokeAsync(Runnable action) {
 		asyn().invokeAsync(action);
+		return this;
 	}
 
 	public abstract LGame.Type type();

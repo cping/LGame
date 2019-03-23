@@ -19,10 +19,13 @@ import loon.geom.Vector2f;
 
 public class PPolygon {
 
-	int numVertices;
-	boolean polygonized;
-	float[] xs;
-	float[] ys;
+	protected int numVertices;
+	
+	protected boolean polygonized;
+	
+	protected float[] xs;
+	
+	protected float[] ys;
 
 	public PPolygon(float[] xs, float[] ys) {
 		this.numVertices = xs.length;

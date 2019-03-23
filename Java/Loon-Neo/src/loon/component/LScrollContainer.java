@@ -112,7 +112,7 @@ public class LScrollContainer extends LContainer {
 
 	}
 
-	public void moveScrollX(int newScrollX) {
+	public LScrollContainer moveScrollX(int newScrollX) {
 		if (accumulate) {
 			scrollX += newScrollX;
 		} else {
@@ -128,9 +128,10 @@ public class LScrollContainer extends LContainer {
 				scrollX = width() + size;
 			}
 		}
+		return this;
 	}
 
-	public void moveScrollY(int newScrollY) {
+	public LScrollContainer moveScrollY(int newScrollY) {
 		if (accumulate) {
 			scrollY += newScrollY;
 		} else {
@@ -147,6 +148,7 @@ public class LScrollContainer extends LContainer {
 				scrollY = height() - size * 2;
 			}
 		}
+		return this;
 	}
 
 	public int getScrollX() {
@@ -171,12 +173,14 @@ public class LScrollContainer extends LContainer {
 		return this;
 	}
 
+	@Override
 	public LComponent add(LComponent comp, Vector2f pos) {
 		super.add(comp, pos.x(), pos.y());
 		scrollContainerRealSizeChanged();
 		return this;
 	}
 
+	@Override
 	public LComponent add(LComponent comp, int x, int y) {
 		super.add(comp, x, y);
 		scrollContainerRealSizeChanged();
@@ -206,18 +210,20 @@ public class LScrollContainer extends LContainer {
 		}
 	}
 
-	public void adjustSlider(int sliderWidth, int sliderHeight) {
+	public LScrollContainer adjustSlider(int sliderWidth, int sliderHeight) {
 		if (verticalScrollbar != null) {
 			verticalScrollbar.adjustSlider(sliderWidth, sliderHeight);
 		}
 		if (horizontalScrollbar != null) {
 			horizontalScrollbar.adjustSlider(sliderWidth, sliderHeight);
 		}
+		return this;
 	}
 
-	public void scrollContainerRealSizeChanged() {
+	public LScrollContainer scrollContainerRealSizeChanged() {
 		checkIfScrollbarIsNecessary();
 		fitScrollBarSize();
+		return this;
 	}
 
 	private void checkIfScrollbarIsNecessary() {
@@ -265,20 +271,21 @@ public class LScrollContainer extends LContainer {
 		return maxY;
 	}
 
-	public void addScrollbar(LScrollBar scrollBar) {
+	public LScrollContainer addScrollbar(LScrollBar scrollBar) {
 		if (scrollBar.getOrientation() == LScrollBar.LEFT || scrollBar.getOrientation() == LScrollBar.RIGHT) {
 			if (verticalScrollbar != null) {
 				remove(verticalScrollbar);
 			}
 			verticalScrollbar = scrollBar;
 			scrollBar.setScrollContainer(this);
-			return;
+			return this;
 		}
 		if (horizontalScrollbar != null) {
 			remove(horizontalScrollbar);
 		}
 		horizontalScrollbar = scrollBar;
 		scrollBar.setScrollContainer(this);
+		return this;
 	}
 
 	@Override
@@ -318,48 +325,54 @@ public class LScrollContainer extends LContainer {
 		return verticalScrollbar;
 	}
 
-	public void setVerticalScrollbar(LScrollBar verticalScrollbar) {
+	public LScrollContainer setVerticalScrollbar(LScrollBar verticalScrollbar) {
 		this.verticalScrollbar = verticalScrollbar;
+		return this;
 	}
 
 	public LScrollBar getHorizontalScrollbar() {
 		return horizontalScrollbar;
 	}
 
-	public void setHorizontalScrollbar(LScrollBar horizontalScrollbar) {
+	public LScrollContainer setHorizontalScrollbar(LScrollBar horizontalScrollbar) {
 		this.horizontalScrollbar = horizontalScrollbar;
+		return this;
 	}
 
 	public boolean isAccumulate() {
 		return accumulate;
 	}
 
-	public void setAccumulate(boolean accumulate) {
+	public LScrollContainer setAccumulate(boolean accumulate) {
 		this.accumulate = accumulate;
+		return this;
 	}
 
 	public boolean isShowScroll() {
 		return showScroll;
 	}
 
-	public void setShowScroll(boolean showScroll) {
+	public LScrollContainer setShowScroll(boolean showScroll) {
 		this.showScroll = showScroll;
+		return this;
 	}
 
 	public boolean isAllowHorizontalScroll() {
 		return allowHorizontalScroll;
 	}
 
-	public void setAllowHorizontalScroll(boolean a) {
+	public LScrollContainer setAllowHorizontalScroll(boolean a) {
 		this.allowHorizontalScroll = a;
+		return this;
 	}
 
 	public boolean isAllowVerticalScrollbar() {
 		return allowVerticalScrollbar;
 	}
 
-	public void setAllowVerticalScrollbar(boolean a) {
+	public LScrollContainer setAllowVerticalScrollbar(boolean a) {
 		this.allowVerticalScrollbar = a;
+		return this;
 	}
 
 	@Override

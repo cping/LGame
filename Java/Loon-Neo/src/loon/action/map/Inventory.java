@@ -23,35 +23,38 @@ package loon.action.map;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Keys;
 
-public class Inventory {
+public class Inventory<T> {
 
-	private ObjectMap<String, Item> items;
+	private ObjectMap<String, Item<T>> items;
 
 	private int gold;
 
 	public Inventory() {
 		super();
-		items = new ObjectMap<String, Item>(128);
+		items = new ObjectMap<String, Item<T>>(128);
 		gold = 0;
 	}
 
-	public void subtractGold(int i) {
+	public Inventory<T> subtractGold(int i) {
 		gold -= i;
+		return this;
 	}
 
-	public void addGold(int i) {
+	public Inventory<T> addGold(int i) {
 		gold += i;
+		return this;
 	}
 
 	public int getGold() {
 		return gold;
 	}
 
-	public void setGold(int i) {
+	public Inventory<T> setGold(int i) {
 		gold = i;
+		return this;
 	}
 
-	public boolean addItem(String key, Item obj) {
+	public boolean addItem(String key, Item<T> obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -76,13 +79,15 @@ public class Inventory {
 		return names;
 	}
 
-	public void merge(Inventory i) {
+	public Inventory<T> merge(Inventory<T> i) {
 		items.putAll(i.items);
 		this.addGold(i.getGold());
+		return this;
 	}
 
-	public void clear() {
+	public Inventory<T> clear() {
 		items.clear();
+		return this;
 	}
 
 }

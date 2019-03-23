@@ -31,7 +31,6 @@ public class PInsertionSorter {
 				objs[j] = s;
 			}
 		}
-
 	}
 
 	private PInsertionSorter() {

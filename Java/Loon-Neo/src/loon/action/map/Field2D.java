@@ -33,17 +33,17 @@ import loon.utils.TArray;
 
 public class Field2D implements Config {
 
-	private final static float angular = MathUtils.cos(MathUtils.PI / 4);
+	private final static float ANGULAR = 0.706F;
 
 	private Vector2f _offset = new Vector2f();
 
 	private RectBox _rect = null;
 
+	private Tile _tileImpl;
+	
+	private String _name = "Field2D";
+	
 	public Object Tag;
-
-	private String name = "Field2D";
-
-	private Tile tileImpl;
 
 	public static int angle(Vector2f source, Vector2f target) {
 		int nx = target.x() - source.x();
@@ -142,16 +142,16 @@ public class Field2D implements Config {
 		float tright = MathUtils.sin(angle) * 1 + MathUtils.cos(angle) * 0;
 		float tleft = MathUtils.sin(angle) * -1 + MathUtils.cos(angle) * 0;
 		float tdown = MathUtils.sin(angle) * 0 + MathUtils.cos(angle) * 1;
-		if (tup > angular) {
+		if (tup > ANGULAR) {
 			return TUP;
 		}
-		if (tright > angular) {
+		if (tright > ANGULAR) {
 			return TRIGHT;
 		}
-		if (tleft > angular) {
+		if (tleft > ANGULAR) {
 			return TLEFT;
 		}
-		if (tdown > angular) {
+		if (tdown > ANGULAR) {
 			return TDOWN;
 		}
 		return EMPTY;
@@ -220,7 +220,7 @@ public class Field2D implements Config {
 	}
 
 	public Tile getTile(int x, int y) {
-		return tileImpl.at(x, y);
+		return _tileImpl.at(x, y);
 	}
 
 	public void set(int[][] data, int tw, int th) {
@@ -229,11 +229,11 @@ public class Field2D implements Config {
 		this.setTileHeight(th);
 		this.width = data[0].length;
 		this.height = data.length;
-		if (tileImpl == null) {
-			this.tileImpl = new TileHelper(tileWidth, tileHeight);
+		if (_tileImpl == null) {
+			this._tileImpl = new TileHelper(tileWidth, tileHeight);
 		} else {
-			this.tileImpl.setWidth(tileWidth);
-			this.tileImpl.setHeight(tileHeight);
+			this._tileImpl.setWidth(tileWidth);
+			this._tileImpl.setHeight(tileHeight);
 		}
 	}
 
@@ -489,11 +489,11 @@ public class Field2D implements Config {
 	}
 
 	public Tile getTileImpl() {
-		return tileImpl;
+		return _tileImpl;
 	}
 
 	public void setTileImpl(Tile tileImpl) {
-		this.tileImpl = tileImpl;
+		this._tileImpl = tileImpl;
 	}
 
 	public Vector2f getOffset() {
@@ -513,11 +513,11 @@ public class Field2D implements Config {
 	}
 
 	public void setName(String n) {
-		this.name = n;
+		this._name = n;
 	}
 
 	public String getName() {
-		return this.name;
+		return this._name;
 	}
 
 }

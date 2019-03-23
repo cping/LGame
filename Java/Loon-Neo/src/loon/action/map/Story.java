@@ -42,12 +42,14 @@ public class Story {
 		return this.storyName;
 	}
 
-	public void setStoryName(String storyName) {
+	public Story setStoryName(String storyName) {
 		this.storyName = storyName;
+		return this;
 	}
 
-	public void addScene(Scene scene) {
+	public Story addScene(Scene scene) {
 		this.scenes.add(scene);
+		return this;
 	}
 
 	public Scene getScene(int index) {
@@ -87,8 +89,9 @@ public class Story {
 		return timer;
 	}
 
-	public void setTimer(long timer) {
+	public Story setTimer(long timer) {
 		this.timer = timer;
+		return this;
 	}
 
 	public Character findCharacter(String name) {

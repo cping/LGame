@@ -22,25 +22,40 @@ import loon.utils.MathUtils;
 
 public abstract class PShape {
 
-	AABB _aabb;
-	float _ang;
-	float _dens;
-	float _fric;
-	float _localAng;
-	float ii;
-	float mm;
-	Vector2f _localPos;
-	PTransformer _mAng;
-	PBody _parent;
-	Vector2f _pos;
-	boolean _rem;
-	float _rest;
-	PSortableAABB _sapAABB;
-	PShapeType _type;
-	LColor _color;
-	LColor _strokeColor;
+	protected AABB _aabb;
+	
+	protected float _ang;
+	
+	protected float _dens;
+	
+	protected float _fric;
+	
+	protected float _localAng;
+	
+	protected float ii, mm;
+	
+	protected Vector2f _localPos;
+	
+	protected PTransformer _mAng;
+	
+	protected PBody _parent;
+	
+	protected Vector2f _pos;
+	
+	protected boolean _rem;
+	
+	protected float _rest;
+	
+	protected PSortableAABB _sapAABB;
+	
+	protected PShapeType _type;
+	
+	protected LColor _color;
+	
+	protected LColor _strokeColor;
+	
 	private boolean _rnd;
-
+	
 	public PShape() {
 		this(true);
 	}
@@ -56,8 +71,7 @@ public abstract class PShape {
 		_type = PShapeType.NULL_SHAPE;
 		_rnd = randColor;
 		if (randColor) {
-			setColor((int) (MathUtils.random() * 160F + 96F),
-					(int) (MathUtils.random() * 160F + 96F),
+			setColor((int) (MathUtils.random() * 160F + 96F), (int) (MathUtils.random() * 160F + 96F),
 					(int) (MathUtils.random() * 160F + 96F));
 		}
 	}
@@ -132,8 +146,8 @@ public abstract class PShape {
 	public void setColor(int r, int g, int b) {
 		if (_rnd) {
 			_color = new LColor(r, g, b);
-			_strokeColor = new LColor((int) ((float) r * 0.375F),
-					(int) ((float) g * 0.375F), (int) ((float) b * 0.375F));
+			_strokeColor = new LColor((int) ((float) r * 0.375F), (int) ((float) g * 0.375F),
+					(int) ((float) b * 0.375F));
 		}
 	}
 

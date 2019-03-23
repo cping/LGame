@@ -20,26 +20,28 @@
  */
 package loon.action.map;
 
-public class Item {
+public class Item<T> {
 
 	private String name;
 
-	private Object object;
+	private T object;
 
 	public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public Item<T> setName(String name) {
 		this.name = name;
+		return this;
 	}
 
-	public Object getObject() {
+	public T getObject() {
 		return this.object;
 	}
 
-	public void setObject(Object object) {
-		this.object = object;
+	public Item<T> setObject(T o) {
+		this.object = o;
+		return this;
 	}
 
 }

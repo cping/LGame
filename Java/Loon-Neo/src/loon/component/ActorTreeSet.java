@@ -30,7 +30,7 @@ import loon.utils.SortedList;
 
 public class ActorTreeSet {
 
-	boolean isDirty;
+	protected boolean isDirty;
 
 	private SortedList<ActorSet> subSets = new SortedList<ActorSet>();
 

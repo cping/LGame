@@ -19,14 +19,18 @@ import loon.geom.AABB;
 
 public class PSortableAABB {
 
-	AABB aabb;
-	PSortableObject beginX;
-	PSortableObject beginY;
-	PSortableObject endX;
-	PSortableObject endY;
-	PShape parent;
-	PSweepAndPrune sap;
-	boolean set;
+	protected AABB aabb;
+	
+	protected PSortableObject beginX;
+	protected PSortableObject beginY;
+	protected PSortableObject endX;
+	protected PSortableObject endY;
+	
+	protected PShape parent;
+	
+	protected PSweepAndPrune sap;
+	
+	protected boolean set;
 
 	public PSortableAABB() {
 	}

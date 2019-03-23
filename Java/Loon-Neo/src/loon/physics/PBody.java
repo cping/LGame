@@ -21,24 +21,41 @@ import loon.utils.MathUtils;
 
 public class PBody {
 
-	AABB aabb;
-	float ang;
-	float angVel;
-	float correctAngVel;
-	Vector2f correctVel;
-	boolean fix;
-	float i;
-	float invI;
-	float invM;
-	float m;
-	PTransformer mAng;
-	int numShapes;
-	Vector2f pos;
-	boolean rem;
-	PShape[] shapes;
-	Vector2f vel;
-	PPhysWorld w;
-	Object tag;
+	protected AABB aabb;
+	
+	protected float ang;
+	
+	protected float angVel;
+	
+	protected float correctAngVel;
+	
+	protected Vector2f correctVel;
+	
+	protected boolean fix;
+	
+	protected float i;
+	
+	protected float invI;
+	
+	protected float invM;
+	
+	protected float m;
+	
+	protected PTransformer mAng;
+	
+	protected int numShapes;
+	
+	protected Vector2f pos;
+	
+	protected boolean rem;
+	
+	protected PShape[] shapes;
+	
+	protected Vector2f vel;
+	
+	protected PPhysWorld w;
+	
+	protected Object tag;
 
 	public PBody(float angle, boolean fixate, PShape[] ss) {
 		pos = new Vector2f();

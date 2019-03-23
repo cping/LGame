@@ -74,7 +74,7 @@ public class Actor extends LObject<Actor>
 
 	private LTexture image;
 
-	Object data;
+	protected Object data;
 
 	private RectBox boundingRect;
 
@@ -86,15 +86,15 @@ public class Actor extends LObject<Actor>
 
 	private Animation animation;
 
-	boolean isAnimation;
+	protected boolean isAnimation;
 
-	LColor filterColor;
+	protected LColor filterColor;
 
-	ActorListener actorListener;
+	protected ActorListener actorListener;
 
-	float scaleX = 1, scaleY = 1;
+	protected float scaleX = 1, scaleY = 1;
 
-	boolean flipX = false, flipY = false;
+	protected boolean flipX = false, flipY = false;
 
 	public Actor(Animation animation) {
 		this(animation, 0, 0);

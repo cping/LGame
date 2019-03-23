@@ -17,8 +17,9 @@ package loon.physics;
 
 public abstract class PJoint {
 
-	boolean rem;
-	PJointType type;
+	protected boolean rem;
+	
+	protected PJointType type;
 
 	public PJoint() {
 		type = PJointType.NULL_JOINT;

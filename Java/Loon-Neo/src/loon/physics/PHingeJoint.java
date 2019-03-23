@@ -21,32 +21,54 @@ import loon.utils.MathUtils;
 public class PHingeJoint extends PJoint {
 
 	private Vector2f anchor1;
+
 	private Vector2f anchor2;
+
 	private float angI;
+
 	private float angM;
+
 	private PBody b1;
+
 	private PBody b2;
+
 	private boolean enableLimit;
+
 	private boolean enableMotor;
+
 	private Vector2f impulse;
+
 	private float limI;
+
 	private int limitState;
+
 	private Vector2f localAnchor1;
+
 	private Vector2f localAnchor2;
+
 	private float localAngle;
+
 	private PTransformer mass;
+
 	private float maxAngle;
+
 	private float minAngle;
+
 	private float motI;
+
 	private float motorSpeed;
+
 	private float motorTorque;
+
 	private Vector2f relAnchor1;
+
 	private Vector2f relAnchor2;
+
 	private float rest;
+
 	private float targetAngleSpeed;
 
-	public PHingeJoint(PBody b1, PBody b2, float rel1x, float rel1y,
-			float rel2x, float rel2y) {
+	public PHingeJoint(PBody b1, PBody b2, float rel1x, float rel1y, float rel2x, float rel2y) {
 		this.b1 = b1;
 		this.b2 = b2;
 		localAngle = b2.ang - b1.ang;
@@ -115,6 +137,7 @@ public class PHingeJoint extends PJoint {
 		return enableMotor;
 	}
 
+	@Override
 	void preSolve(float dt) {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);
@@ -208,13 +231,13 @@ public class PHingeJoint extends PJoint {
 		b2.mAng.transpose().mulEqual(localAnchor2);
 	}
 
+	@Override
 	void solvePosition() {
 		if (enableLimit && limitState != 0) {
 			float over = b2.ang - b1.ang - localAngle;
 			if (over < minAngle) {
 				over += 0.008F;
-				over = ((over - minAngle) + b2.correctAngVel)
-						- b1.correctAngVel;
+				over = ((over - minAngle) + b2.correctAngVel) - b1.correctAngVel;
 				float torque = over * 0.2F * angM;
 				float subAngleImpulse = angI;
 				angI = MathUtils.min(angI + torque, 0.0F);
@@ -224,8 +247,7 @@ public class PHingeJoint extends PJoint {
 			}
 			if (over > maxAngle) {
 				over -= 0.008F;
-				over = ((over - maxAngle) + b2.correctAngVel)
-						- b1.correctAngVel;
+				over = ((over - maxAngle) + b2.correctAngVel) - b1.correctAngVel;
 				float torque = over * 0.2F * angM;
 				float subAngleImpulse = angI;
 				angI = MathUtils.max(angI + torque, 0.0F);
@@ -235,8 +257,7 @@ public class PHingeJoint extends PJoint {
 			}
 		}
 		Vector2f force = anchor2.sub(anchor1);
-		force.subLocal(PTransformer.calcRelativeCorrectVelocity(b1, b2,
-				relAnchor1, relAnchor2));
+		force.subLocal(PTransformer.calcRelativeCorrectVelocity(b1, b2, relAnchor1, relAnchor2));
 		float length = force.length();
 		force.normalize();
 		force.mulLocal(MathUtils.max(length * 0.2f - 0.002f, 0.0f));
@@ -245,9 +266,9 @@ public class PHingeJoint extends PJoint {
 		b2.positionCorrection(-force.x, -force.y, anchor2.x, anchor2.y);
 	}
 
+	@Override
 	void solveVelocity(float dt) {
-		Vector2f relVel = PTransformer.calcRelativeVelocity(b1, b2, relAnchor1,
-				relAnchor2);
+		Vector2f relVel = PTransformer.calcRelativeVelocity(b1, b2, relAnchor1, relAnchor2);
 		Vector2f force = mass.mul(relVel).negate();
 		impulse.addSelf(force);
 		b1.applyImpulse(force.x, force.y, anchor1.x, anchor1.y);
@@ -256,8 +277,7 @@ public class PHingeJoint extends PJoint {
 			float angRelVel = b2.angVel - b1.angVel - motorSpeed;
 			float torque = angM * angRelVel;
 			float subMotorI = motI;
-			motI = MathUtils.clamp(motI + torque, -motorTorque * dt,
-					motorTorque * dt);
+			motI = MathUtils.clamp(motI + torque, -motorTorque * dt, motorTorque * dt);
 			torque = motI - subMotorI;
 			b1.applyTorque(torque);
 			b2.applyTorque(-torque);
@@ -279,6 +299,7 @@ public class PHingeJoint extends PJoint {
 		}
 	}
 
+	@Override
 	void update() {
 		relAnchor1 = b1.mAng.mul(localAnchor1);
 		relAnchor2 = b2.mAng.mul(localAnchor2);

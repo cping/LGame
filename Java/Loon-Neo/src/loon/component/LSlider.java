@@ -170,16 +170,19 @@ public class LSlider extends LComponent {
 		return _listener;
 	}
 
-	public void setListener(ValueListener v) {
+	public LSlider setListener(ValueListener v) {
 		this._listener = v;
+		return this;
 	}
 
-	public void setPadding(float p) {
+	public LSlider setPadding(float p) {
 		this._padding = p;
+		return this;
 	}
 
-	public void setBarImageHeight(float b) {
+	public LSlider setBarImageHeight(float b) {
 		this._barImageHeight = b;
+		return this;
 	}
 
 	@Override
@@ -197,7 +200,7 @@ public class LSlider extends LComponent {
 		}
 	}
 
-	public void setPercentage(float p) {
+	public LSlider setPercentage(float p) {
 		if (p >= 0f && p <= 1f) {
 			this._value = p;
 		} else {
@@ -207,6 +210,7 @@ public class LSlider extends LComponent {
 				this._value = 0f;
 			}
 		}
+		return this;
 	}
 	
 	@Override

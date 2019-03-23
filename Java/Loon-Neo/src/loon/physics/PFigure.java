@@ -20,8 +20,10 @@ import loon.utils.MathUtils;
 
 public class PFigure {
 
-	Vector2f[] done;
-	int numVertices;
+	protected Vector2f[] done;
+	
+	protected int numVertices;
+	
 	private PVertexLoop vers;
 
 	public PFigure() {

@@ -20,6 +20,9 @@
  */
 package loon;
 
+/**
+ * 一个ID计数器
+ */
 public class IDGenerator {
 
 	private static IDGenerator instance;

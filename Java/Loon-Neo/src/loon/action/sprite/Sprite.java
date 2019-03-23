@@ -468,8 +468,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param col
 	 * @param timer
 	 */
-	public void setAnimation(String fileName, int maxFrame, int row, int col, long timer) {
+	public Sprite setAnimation(String fileName, int maxFrame, int row, int col, long timer) {
 		setAnimation(new Animation(), TextureUtils.getSplitTextures(fileName, row, col), maxFrame, timer);
+		return this;
 	}
 
 	/**
@@ -480,8 +481,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param col
 	 * @param timer
 	 */
-	public void setAnimation(String fileName, int row, int col, long timer) {
+	public Sprite setAnimation(String fileName, int row, int col, long timer) {
 		setAnimation(fileName, -1, row, col, timer);
+		return this;
 	}
 
 	/**
@@ -491,8 +493,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param maxFrame
 	 * @param timer
 	 */
-	public void setAnimation(LTexture[] images, int maxFrame, long timer) {
+	public Sprite setAnimation(LTexture[] images, int maxFrame, long timer) {
 		setAnimation(new Animation(), images, maxFrame, timer);
+		return this;
 	}
 
 	/**
@@ -501,8 +504,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param images
 	 * @param timer
 	 */
-	public void setAnimation(LTexture[] images, long timer) {
+	public Sprite setAnimation(LTexture[] images, long timer) {
 		setAnimation(new Animation(), images, -1, timer);
+		return this;
 	}
 
 	/**
@@ -545,9 +549,10 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * 
 	 * @param vector
 	 */
-	public void updateLocation(Vector2f vector) {
+	public Sprite updateLocation(Vector2f vector) {
 		this.setX(MathUtils.round(vector.getX()));
 		this.setY(MathUtils.round(vector.getY()));
+		return this;
 	}
 
 	public LTexture getImage() {
@@ -765,24 +770,27 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return spriteName;
 	}
 
-	public void setSpriteName(String spriteName) {
+	public Sprite setSpriteName(String spriteName) {
 		this.spriteName = spriteName;
+		return this;
 	}
 
 	public int getTransform() {
 		return transform;
 	}
 
-	public void setTransform(int transform) {
+	public Sprite setTransform(int transform) {
 		this.transform = transform;
+		return this;
 	}
 
 	public LColor getFilterColor() {
 		return new LColor(filterColor);
 	}
 
-	public void setFilterColor(LColor filterColor) {
+	public Sprite setFilterColor(LColor filterColor) {
 		this.filterColor = filterColor;
+		return this;
 	}
 
 	@Override
@@ -795,24 +803,28 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return _scaleX;
 	}
 
-	public void setScaleX(float _scaleX) {
-		this._scaleX = _scaleX;
+	public Sprite setScaleX(float scaleX) {
+		this._scaleX = scaleX;
+		return this;
 	}
 
 	public float getScaleY() {
 		return _scaleY;
 	}
 
-	public void setScaleY(float _scaleY) {
-		this._scaleY = _scaleY;
+	public Sprite setScaleY(float scaleY) {
+		this._scaleY = scaleY;
+		return this;
 	}
 
-	public void setPivotX(float pX) {
+	public Sprite setPivotX(float pX) {
 		_pivot.setX(pX);
+		return this;
 	}
 
-	public void setPivotY(float pY) {
+	public Sprite setPivotY(float pY) {
 		_pivot.setY(pY);
+		return this;
 	}
 
 	public float getPivotX() {
@@ -852,8 +864,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return getCollisionBox();
 	}
 
-	public void setScale(float s) {
+	public Sprite setScale(float s) {
 		this.setScale(s, s);
+		return this;
 	}
 
 	@Override
@@ -862,17 +875,19 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		this._scaleY = sy;
 	}
 
-	public void setSize(float width, float height) {
+	public Sprite setSize(float width, float height) {
 		this._scaleX = getWidth() / width;
 		this._scaleY = getHeight() / height;
+		return this;
 	}
 
 	public int getMaxFrame() {
 		return maxFrame;
 	}
 
-	public void setMaxFrame(int maxFrame) {
+	public Sprite setMaxFrame(int maxFrame) {
 		this.maxFrame = maxFrame;
+		return this;
 	}
 
 	@Override
@@ -885,14 +900,15 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		this._scaleY = (h / getHeight());
 	}
 
-	public void addChildAt(ISprite spr, float x, float y) {
+	public Sprite addChildAt(ISprite spr, float x, float y) {
 		if (spr != null) {
 			spr.setLocation(x, y);
 			addChild(spr);
 		}
+		return this;
 	}
 
-	public void addChild(ISprite spr) {
+	public Sprite addChild(ISprite spr) {
 		if (_childList == null) {
 			_childList = new TArray<ISprite>();
 		}
@@ -901,6 +917,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		spr.setState(State.ADDED);
 		_childList.add(spr);
 		childSorter.sort(_childList);
+		return this;
 	}
 
 	public boolean removeChild(ISprite spr) {
@@ -945,9 +962,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return false;
 	}
 
-	public void removeChilds() {
+	public Sprite removeChilds() {
 		if (this._childList == null) {
-			return;
+			return this;
 		}
 		for (int i = this._childList.size - 1; i >= 0; i--) {
 			final ISprite removed = this._childList.get(i);
@@ -961,6 +978,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 			}
 		}
 		this._childList.clear();
+		return this;
 	}
 
 	@Override
@@ -977,8 +995,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return _origin;
 	}
 
-	public void setOrigin(Origin o) {
+	public Sprite setOrigin(Origin o) {
 		this._origin = o;
+		return this;
 	}
 
 	@Override

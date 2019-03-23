@@ -18,6 +18,7 @@ package loon.physics;
 public class PContactData {
 
 	public boolean flip;
+	
 	public int id;
 
 	public PContactData() {
