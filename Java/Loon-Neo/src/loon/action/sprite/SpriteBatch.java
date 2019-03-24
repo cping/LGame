@@ -59,11 +59,12 @@ public class SpriteBatch extends PixmapFImpl {
 	private float alpha = 1f;
 
 	private final ExpandVertices expandVertices;
-	int idx = 0;
-	LTexture lastTexture = null;
-	float invTexWidth = 0, invTexHeight = 0;
+	
+	protected int idx = 0;
+	protected LTexture lastTexture = null;
+	protected float invTexWidth = 0, invTexHeight = 0;
 
-	boolean drawing = false;
+	protected boolean drawing = false;
 
 	private ShaderProgram shader;
 	private ShaderProgram customShader = null;
@@ -72,12 +73,6 @@ public class SpriteBatch extends PixmapFImpl {
 	private float color = LColor.white.toFloatBits();
 
 	private LColor tempColor = new LColor(1, 1, 1, 1);
-
-	public int renderCalls = 0;
-
-	public int totalRenderCalls = 0;
-
-	public int maxSpritesInBatch = 0;
 
 	private boolean isLoaded;
 
@@ -446,7 +441,6 @@ public class SpriteBatch extends PixmapFImpl {
 		if (drawing) {
 			throw LSystem.runThrow("SpriteBatch.end must be called before begin.");
 		}
-		renderCalls = 0;
 		LSystem.base().graphics().gl.glDepthMask(false);
 		if (customShader != null) {
 			customShader.begin();
@@ -536,12 +530,7 @@ public class SpriteBatch extends PixmapFImpl {
 		int old = GLUtils.getBlendMode();
 		try {
 			LSystem.mainEndDraw();
-			renderCalls++;
-			totalRenderCalls++;
 			int spritesInBatch = idx / 20;
-			if (spritesInBatch > maxSpritesInBatch) {
-				maxSpritesInBatch = spritesInBatch;
-			}
 			int count = spritesInBatch * 6;
 			GLUtils.bindTexture(gl, lastTexture);
 			switch (lastBlendState) {

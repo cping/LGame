@@ -21,6 +21,7 @@
 package loon.action.map.view;
 
 public class ChoiceModel {
+	
 	final int _x;
 	final int _y;
 	final int _width;

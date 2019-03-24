@@ -15,7 +15,7 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
-/*
+/**
  * 这是一个特殊的精灵类，它并不执行任何渲染或者图像操作，而是用于添加一个脚本循环到游戏中去
  */
 public class RocSSprite extends LObject<ISprite> implements ISprite {

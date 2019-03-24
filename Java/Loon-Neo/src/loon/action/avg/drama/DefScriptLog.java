@@ -4,6 +4,10 @@ import loon.LSystem;
 import loon.Log;
 import loon.utils.StringUtils;
 
+/**
+ * 脚本log
+ *
+ */
 public class DefScriptLog implements IScriptLog {
 
 	private boolean _show = true;

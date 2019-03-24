@@ -54,8 +54,9 @@ public class ShapeEntity extends Entity {
 		g.setColor(color);
 	}
 
-	public void setShape(Shape s) {
+	public ShapeEntity setShape(Shape s) {
 		this._shape = s;
+		return this;
 	}
 
 	public Shape getShape() {

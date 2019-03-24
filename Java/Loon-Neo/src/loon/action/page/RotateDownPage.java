@@ -26,6 +26,7 @@ public class RotateDownPage extends BasePage {
 
 	private static final float ROT_MOD = -15f;
 
+	@Override
 	public void onTransform(Screen screen, float position) {
 		final float width = screen.getWidth();
 		final float height = screen.getHeight();

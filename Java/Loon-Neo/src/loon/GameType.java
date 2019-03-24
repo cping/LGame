@@ -20,6 +20,9 @@
  */
 package loon;
 
+/**
+ * 常见游戏类型枚举
+ */
 public enum GameType {
 
 	UNKOWN("Unkown Game"),

@@ -349,8 +349,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * 
 	 * @param running
 	 */
-	public void setRunning(boolean running) {
+	public Sprite setRunning(boolean running) {
 		animation.setRunning(running);
+		return this;
 	}
 
 	/**
@@ -367,8 +368,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * 
 	 * @param index
 	 */
-	public void setCurrentFrameIndex(int index) {
+	public Sprite setCurrentFrameIndex(int index) {
 		animation.setCurrentFrameIndex(index);
+		return this;
 	}
 
 	/**
@@ -514,18 +516,17 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * 
 	 * @param animation
 	 */
-	public void setAnimation(Animation animation) {
+	public Sprite setAnimation(Animation animation) {
 		this.animation = animation;
 		this.maxFrame = animation.getTotalFrames();
+		return this;
 	}
 
 	public Animation getAnimation() {
 		return animation;
 	}
 
-	protected void onUpdate(long elapsedTime) {
-
-	}
+	protected void onUpdate(long elapsedTime) {}
 
 	/**
 	 * 变更动画
@@ -835,8 +836,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return _pivot.getY();
 	}
 
-	public void setPivot(float pX, float pY) {
+	public Sprite setPivot(float pX, float pY) {
 		_pivot.set(pX, pY);
+		return this;
 	}
 
 	@Override

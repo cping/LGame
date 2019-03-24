@@ -163,6 +163,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		Flash, // 神速
 	}
 
+	/**
+	 * 选择UI监听
+	 *
+	 */
 	private class SelectClick implements ClickListener {
 
 		private TArray<String> _items;
@@ -869,7 +873,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	public abstract void drawScreen(GLEx g);
 
-	public void nextScript() {
+	/**
+	 * 读取一行AVG脚本命令
+	 */
+	public AVGScreen nextScript() {
 		if (command != null && !isClose() && isGameRunning) {
 			for (; isScriptRunning = command.next();) {
 				if (isSelectMessage) {
@@ -1320,7 +1327,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_GB)) {
 					if (mesFlag == null) {
-						return;
+						return this;
 					}
 					if (mesFlag.equalsIgnoreCase("none")) {
 						scrCG.noneBackgroundCG();
@@ -1332,7 +1339,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_CG)) {
 
 					if (mesFlag == null) {
-						return;
+						return this;
 					}
 					if (scrCG != null && scrCG.count() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 						scrCG.close();
@@ -1363,13 +1370,15 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_EXIT)) {
 					scrFlag = true;
 					isGameRunning = false;
+					//用户的锅
 					onExit();
 					break;
 				}
 			}
 		}
+		return this;
 	}
-
+	// todo
 	public abstract void onExit();
 
 	private void playAutoNext() {
@@ -1395,19 +1404,19 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return _currentTasks.size() > 0;
 	}
 
-	public void click() {
+	public AVGScreen click() {
 		// 如果存在未完成任务，则不允许继续脚本
 		if (tasking()) {
-			return;
+			return this;
 		}
 		if (limitClickd) {
-			return;
+			return this;
 		}
 		if (!isGameRunning) {
-			return;
+			return this;
 		}
 		if (messageUI.isVisible() && !messageUI.isComplete()) {
-			return;
+			return this;
 		}
 		boolean isNext = false;
 		if (!isSelectMessage && scrCG.sleep <= 0) {
@@ -1431,11 +1440,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (isNext && !isSelectMessage) {
 			nextScript();
 		}
+		return this;
 	}
 
-	public void initCommandConfig(String fileName) {
+	public AVGScreen initCommandConfig(String fileName) {
 		if (fileName == null) {
-			return;
+			return this;
 		}
 		Command.resetCache();
 		if (command == null) {
@@ -1448,6 +1458,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		initCommandConfig(command);
 		nextScript();
+		return this;
 	}
 
 	public boolean isScrFlag() {
@@ -1475,8 +1486,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return messageUI;
 	}
 
-	public void setDialogImage(LTexture dialog) {
+	public AVGScreen setDialogImage(LTexture dialog) {
 		this._dialogTexture = dialog;
+		return this;
 	}
 
 	public LTexture getDialogImage() {
@@ -1487,15 +1499,15 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return _plapDelay;
 	}
 
-	public void setPause(int pause) {
-		setDelay(pause);
+	public AVGScreen setPause(int pause) {
+		return setDelay(pause);
 	}
 
 	public int getDelay() {
 		return _plapDelay;
 	}
 
-	public void setDelay(int d) {
+	public AVGScreen setDelay(int d) {
 		this._plapDelay = d;
 		if (_speedMode == SpeedMode.Flash || _speedMode == SpeedMode.Quickly || _speedMode == SpeedMode.Fast) {
 			_plapDelay = 0;
@@ -1503,6 +1515,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (avgProcess != null) {
 			avgProcess.setDelay(_plapDelay);
 		}
+		return this;
 	}
 
 	public Desktop getAvgDesktop() {
@@ -1513,48 +1526,54 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return this.getDialogImage();
 	}
 
-	public void setDialog(LTexture dialog) {
+	public AVGScreen setDialog(LTexture dialog) {
 		this.setDialogImage(dialog);
+		return this;
 	}
 
 	public LMessage getMessage() {
 		return messageUI;
 	}
 
-	public void setMessage(LMessage message) {
+	public AVGScreen setMessage(LMessage message) {
 		this.messageUI = message;
+		return this;
 	}
 
 	public boolean isRunning() {
 		return isGameRunning;
 	}
 
-	public void setRunning(boolean running) {
+	public AVGScreen setRunning(boolean running) {
 		this.isGameRunning = running;
+		return this;
 	}
 
 	public AVGCG getScrCG() {
 		return scrCG;
 	}
 
-	public void setScrCG(AVGCG scrCG) {
+	public AVGScreen setScrCG(AVGCG scrCG) {
 		this.scrCG = scrCG;
+		return this;
 	}
 
 	public String getScriptName() {
 		return _scriptName;
 	}
 
-	public void setScriptName(String name) {
+	public AVGScreen setScriptName(String name) {
 		this._scriptName = name;
+		return this;
 	}
 
 	public Command getCommand() {
 		return command;
 	}
 
-	public void setCommand(Command command) {
+	public AVGScreen setCommand(Command command) {
 		this.command = command;
+		return this;
 	}
 
 	public boolean isSelectMessage() {
@@ -1569,36 +1588,41 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return scrCG.sleep;
 	}
 
-	public void setSleep(int sleep) {
+	public AVGScreen setSleep(int sleep) {
 		scrCG.sleep = sleep;
+		return this;
 	}
 
 	public int getSleepMax() {
 		return scrCG.sleepMax;
 	}
 
-	public void setSleepMax(int sleepMax) {
+	public AVGScreen setSleepMax(int sleepMax) {
 		scrCG.sleepMax = sleepMax;
+		return this;
 	}
 
 	public Sprites getAvgSprites() {
 		return effectSprites;
 	}
 
-	public void setCommandGo(boolean isRunning) {
+	public AVGScreen setCommandGo(boolean isRunning) {
 		this.isScriptRunning = isRunning;
+		return this;
 	}
 
-	public void setScrFlag(boolean scrFlag) {
+	public AVGScreen setScrFlag(boolean scrFlag) {
 		this.scrFlag = scrFlag;
+		return this;
 	}
 
 	public boolean isLocked() {
 		return limitClickd;
 	}
 
-	public void setLocked(boolean locked) {
+	public AVGScreen setLocked(boolean locked) {
 		this.limitClickd = locked;
+		return this;
 	}
 
 	@Override
@@ -1660,12 +1684,14 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return autoPlay;
 	}
 
-	public void setAutoPlay(boolean autoPlay) {
+	public AVGScreen setAutoPlay(boolean autoPlay) {
 		this.autoPlay = autoPlay;
+		return this;
 	}
 
-	public void setAutoDelay(long d) {
+	public AVGScreen setAutoDelay(long d) {
 		autoTimer.setDelay(d);
+		return this;
 	}
 
 	public long getAutoDelay() {
@@ -1676,8 +1702,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return autoTimer;
 	}
 
-	public void setAutoTimer(LTimer autoTimer) {
+	public AVGScreen setAutoTimer(LTimer autoTimer) {
 		this.autoTimer = autoTimer;
+		return this;
 	}
 
 	public boolean isLimitClick() {
@@ -1689,8 +1716,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 
 	 * @param limitClick
 	 */
-	public void setLimitClick(boolean lc) {
+	public AVGScreen setLimitClick(boolean lc) {
 		this.limitClickd = lc;
+		return this;
 	}
 
 	public boolean isScreenClick() {
@@ -1702,8 +1730,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 
 	 * @param screenClick
 	 */
-	public void setScreenClick(boolean screenClick) {
+	public AVGScreen setScreenClick(boolean screenClick) {
 		this.screenClickd = screenClick;
+		return this;
 	}
 
 	public SpeedMode getSpeedMode() {
@@ -1715,11 +1744,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 
 	 * @param m
 	 */
-	public void setSpeedMode(SpeedMode m) {
+	public AVGScreen setSpeedMode(SpeedMode m) {
 		this._speedMode = m;
 		if (_speedMode == SpeedMode.Flash || _speedMode == SpeedMode.Quickly || _speedMode == SpeedMode.Fast) {
 			_plapDelay = 0;
 		}
+		return this;
 	}
 
 	/**
@@ -1727,8 +1757,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 
 	 * @param speedName
 	 */
-	public void setSpeedMode(String speedName) {
+	public AVGScreen setSpeedMode(String speedName) {
 		setSpeedMode(toSpeedMode(speedName));
+		return this;
 	}
 
 	public int getClickcount() {
@@ -1744,15 +1775,17 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 
 	 * @param v
 	 */
-	public void setMobileSelectValidLimit(int v) {
+	public AVGScreen setMobileSelectValidLimit(int v) {
 		this._mobile_select_valid_limit = v;
+		return this;
 	}
 
 	/**
 	 * 清空当前任务
 	 */
-	public void clearCurrentTasks() {
+	public AVGScreen clearCurrentTasks() {
 		_currentTasks.clear();
+		return this;
 	}
 
 	public Array<Task> getCurrentTasks() {

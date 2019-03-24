@@ -26,6 +26,7 @@ import loon.geom.Dimension;
 import loon.opengl.GLEx;
 
 public class TextureCellRenderer implements ICellRenderer {
+	
 	private boolean scaleTexture = true;
 
 	public void paint(GLEx g, Object value, int x, int y, int width, int height) {

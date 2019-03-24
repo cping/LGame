@@ -24,7 +24,8 @@ import loon.Screen;
 import loon.utils.MathUtils;
 
 public class BTFPage extends BasePage{
-
+	
+	@Override
 	public void onTransform(Screen screen, float position) {
 		final float width = screen.getWidth();
 		final float scale = MathUtils.min(

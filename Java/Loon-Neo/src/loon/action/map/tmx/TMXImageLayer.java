@@ -22,16 +22,15 @@ package loon.action.map.tmx;
 
 import loon.utils.xml.XMLElement;
 
-
 public class TMXImageLayer extends TMXMapLayer {
+
 	private TMXImage image;
 
 	public TMXImageLayer(TMXMap map) {
-		super(map, "", 0, 0, map.getWidth(), map.getHeight(), 1.0f, true,
-				TmxLayerType.IMAGE);
+		super(map, "", 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.IMAGE);
 	}
 
-	public void parse(XMLElement element) {
+	public TMXImageLayer parse(XMLElement element) {
 
 		name = element.getAttribute("name", "");
 
@@ -42,15 +41,16 @@ public class TMXImageLayer extends TMXMapLayer {
 		visible = element.getBoolAttribute("visible", true);
 
 		XMLElement nodes = element.getChildrenByName("image");
-		if (nodes!=null) {
+		if (nodes != null) {
 			image = new TMXImage();
 			image.parse(nodes, getMap().getFilePath());
 		}
 
 		nodes = element.getChildrenByName("properties");
-		if (nodes!=null) {
+		if (nodes != null) {
 			properties.parse(nodes);
 		}
+		return this;
 	}
 
 	public TMXImage getImage() {

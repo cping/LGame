@@ -20,12 +20,12 @@
  */
 package loon.action.map.tmx.objects;
 
-
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
 public class TMXPolygon {
-	
+
 	private TArray<TMXPoint> points;
 
 	public TMXPolygon() {
@@ -56,5 +56,10 @@ public class TMXPolygon {
 
 			points.add(point);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return StringUtils.format("TMXPolygon [" + points.toString() + "]");
 	}
 }

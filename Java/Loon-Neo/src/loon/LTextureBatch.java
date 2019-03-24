@@ -150,13 +150,13 @@ public class LTextureBatch implements LRelease {
 
 	}
 
-	int count = 0;
+	protected int count = 0;
 
 	private final ExpandVertices expandVertices;
 
-	float invTexWidth = 0, invTexHeight = 0;
+	protected float invTexWidth = 0, invTexHeight = 0;
 
-	boolean drawing = false;
+	protected boolean drawing = false;
 
 	private LTexture lastTexture = null;
 
@@ -167,14 +167,14 @@ public class LTextureBatch implements LRelease {
 	private ShaderProgram globalShader = null;
 
 	private final float whiteColor = LColor.white.toFloatBits();
-	float color = whiteColor;
+	protected float color = whiteColor;
 	private LColor tempColor = new LColor(1, 1, 1, 1);
 
 	public int maxSpritesInBatch = 0;
 
-	boolean isLoaded;
+	protected boolean isLoaded;
 
-	LTexture texture;
+	protected LTexture texture;
 
 	private Matrix4 batchMatrix;
 

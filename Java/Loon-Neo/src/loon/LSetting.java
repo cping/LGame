@@ -160,7 +160,8 @@ public class LSetting {
 		this.appName = setting.appName;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
-		this.fontName = setting.version;
+		this.version = setting.version;
+		this.isCheckReisze = setting.isCheckReisze;
 	}
 
 	/**

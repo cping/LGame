@@ -25,7 +25,7 @@ import loon.LTextures;
 import loon.canvas.Image;
 
 /**
- * 显示图片用的精灵(本质上就是Entity)
+ * 显示图片用的精灵(本质上就是个显示图用的Entity)
  */
 public class Picture extends Entity {
 

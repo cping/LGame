@@ -20,7 +20,7 @@
  */
 package loon.action.avg.drama;
 
-/*
+/**
  * 针对AVGScreen的游戏脚本命令，具体可以结合AVG示例使用
  */
 public interface CommandType {
@@ -160,10 +160,13 @@ public interface CommandType {
 	// 移动到XXX
 	String L_TO = "to";
 
+	//播放一个an动画文件
 	String L_APLAY = "aplay";
 
+	//停止an文件播放
 	String L_ASTOP = "astop";
 
+	//延迟an文件
 	String L_ADELAY = "adelay";
 
 	// 触发退出标记（无实际操作，只调用AVGScreen中同名函数）

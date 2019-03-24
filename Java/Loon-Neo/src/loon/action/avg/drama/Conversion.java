@@ -20,7 +20,6 @@
  */
 package loon.action.avg.drama;
 
-
 import loon.LRelease;
 import loon.LSystem;
 import loon.utils.MathUtils;
@@ -28,6 +27,10 @@ import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * 指令分析器
+ *
+ */
 public abstract class Conversion implements Expression {
 
 	private static final int MAX_LENGTH = 128;
@@ -50,7 +53,7 @@ public abstract class Conversion implements Expression {
 
 	final Exp exp = new Exp();
 
-	static boolean isCondition(String s) {
+	public static final boolean isCondition(String s) {
 		if (s.equalsIgnoreCase("==")) {
 			return true;
 		} else if (s.equalsIgnoreCase("!=")) {
@@ -67,7 +70,7 @@ public abstract class Conversion implements Expression {
 		return false;
 	}
 
-	static boolean isOperator(char c) {
+	public static final boolean isOperator(char c) {
 		switch (c) {
 		case '+':
 			return true;
@@ -91,9 +94,8 @@ public abstract class Conversion implements Expression {
 		return false;
 	}
 
-	public static String updateOperator(String context) {
-		if (context != null
-				&& (StringUtils.startsWith(context, '"') || StringUtils.startsWith(context, '\''))) {
+	public static final String updateOperator(String context) {
+		if (context != null && (StringUtils.startsWith(context, '"') || StringUtils.startsWith(context, '\''))) {
 			return context;
 		}
 		int size = context.length();
@@ -135,7 +137,7 @@ public abstract class Conversion implements Expression {
 		return sbr.toString().trim();
 	}
 
-	public static TArray<String> splitToList(final String string, final char tag) {
+	public static final TArray<String> splitToList(final String string, final char tag) {
 		return new TArray<String>(StringUtils.split(string, tag));
 	}
 
@@ -146,8 +148,7 @@ public abstract class Conversion implements Expression {
 		private char[] expChr;
 
 		private boolean exp(String exp) {
-			return exp.indexOf("+") != -1 || exp.indexOf("-") != -1
-					|| exp.indexOf("*") != -1 || exp.indexOf("/") != -1
+			return exp.indexOf("+") != -1 || exp.indexOf("-") != -1 || exp.indexOf("*") != -1 || exp.indexOf("/") != -1
 					|| exp.indexOf("%") != -1;
 		}
 
@@ -166,8 +167,7 @@ public abstract class Conversion implements Expression {
 			return eval(v);
 		}
 
-		private void evalFloatValue(Compute compute, int stIdx, int lgt,
-				float sign) {
+		private void evalFloatValue(Compute compute, int stIdx, int lgt, float sign) {
 			if (expChr[stIdx] == '$') {
 				String label = new String(expChr, stIdx + 1, lgt - 1);
 				if (label.equals("rand")) {
@@ -184,8 +184,7 @@ public abstract class Conversion implements Expression {
 				}
 			} else {
 				try {
-					compute.push(Float.parseFloat(new String(expChr, stIdx, lgt))
-					* sign, STACK_NUM);
+					compute.push(Float.parseFloat(new String(expChr, stIdx, lgt)) * sign, STACK_NUM);
 				} catch (NumberFormatException e) {
 					compute.push(0, STACK_NUM);
 				}
@@ -237,8 +236,7 @@ public abstract class Conversion implements Expression {
 				if (op[1] == stIdx) {
 					switch (expChr[op[1]]) {
 					case '-':
-						evalFloatValue(compute, stIdx + 1, edIdx - stIdx - 1,
-								-1);
+						evalFloatValue(compute, stIdx + 1, edIdx - stIdx - 1, -1);
 						break;
 					case '+':
 						evalFloatValue(compute, stIdx + 1, edIdx - stIdx - 1, 1);
@@ -372,8 +370,7 @@ public abstract class Conversion implements Expression {
 						if (opr[i] >= STACK_VARIABLE) {
 							stkIdx++;
 						} else {
-							stack[stkIdx - 2] = calcOp(opr[i],
-									stack[stkIdx - 2], stack[stkIdx - 1]);
+							stack[stkIdx - 2] = calcOp(opr[i], stack[stkIdx - 2], stack[stkIdx - 1]);
 							stkIdx--;
 						}
 						break;

@@ -31,6 +31,9 @@ import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.utils.MathUtils;
 
+/**
+ * 碰撞事件检测与处理工具
+ */
 public final class CollisionHelper extends ShapeUtils {
 
 	/**

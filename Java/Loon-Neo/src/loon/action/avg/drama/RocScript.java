@@ -29,7 +29,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-/*
+/**
  * Loon默认提供的脚本解释器，无平台依赖，用来实现一种近似于Processing的线型渲染与操作，
  * 另外，RocScript中也允许使用Command中的命令.
  */

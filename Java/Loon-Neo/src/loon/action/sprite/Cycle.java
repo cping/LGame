@@ -551,88 +551,99 @@ public class Cycle extends Entity {
 		return data;
 	}
 
-	public void setData(TArray<Object[]> data) {
+	public Cycle setData(TArray<Object[]> data) {
 		this.data = data;
+		return this;
 	}
 
 	public int getFrame() {
 		return frame;
 	}
 
-	public void setFrame(int frame) {
+	public Cycle setFrame(int frame) {
 		this.frame = frame;
+		return this;
 	}
 
 	public boolean isUpdate() {
 		return isUpdate;
 	}
 
-	public void setUpdate(boolean isUpdate) {
+	public Cycle setUpdate(boolean isUpdate) {
 		this.isUpdate = isUpdate;
+		return this;
 	}
 
 	public Progress getLast() {
 		return last;
 	}
 
-	public void setLast(Progress last) {
+	public Cycle setLast(Progress last) {
 		this.last = last;
+		return this;
 	}
 
 	public int getLineWidth() {
 		return lineWidth;
 	}
 
-	public void setLineWidth(int lineWidth) {
+	public Cycle setLineWidth(int lineWidth) {
 		this.lineWidth = lineWidth;
+		return this;
 	}
 
 	public float getMultiplier() {
 		return multiplier;
 	}
 
-	public void setMultiplier(float multiplier) {
+	public Cycle setMultiplier(float multiplier) {
 		this.multiplier = multiplier;
+		return this;
 	}
 
 	public int getPadding() {
 		return padding;
 	}
 
-	public void setPadding(int padding) {
+	public Cycle setPadding(int padding) {
 		this.padding = padding;
+		return this;
 	}
 
 	public float getPointDistance() {
 		return pointDistance;
 	}
 
-	public void setPointDistance(float pointDistance) {
+	public Cycle setPointDistance(float pointDistance) {
 		this.pointDistance = pointDistance;
+		return this;
 	}
 
 	public TArray<Progress> getPoints() {
 		return points;
 	}
 
-	public void setPoints(TArray<Progress> points) {
+	public Cycle setPoints(TArray<Progress> points) {
 		this.points = points;
+		return this;
 	}
 
 	public float getStepsPerFrame() {
 		return stepsPerFrame;
 	}
 
-	public void setStepsPerFrame(float stepsPerFrame) {
+	public Cycle setStepsPerFrame(float stepsPerFrame) {
 		this.stepsPerFrame = stepsPerFrame;
+		return this;
 	}
 
 	public int getStepType() {
 		return stepType;
 	}
 
-	public void setStepType(int stepType) {
+	public Cycle setStepType(int stepType) {
 		this.stepType = stepType;
+		return this;
 	}
 
 	public boolean isStopped() {
@@ -643,26 +654,29 @@ public class Cycle extends Entity {
 		return trailLength;
 	}
 
-	public void setTrailLength(float trailLength) {
+	public Cycle setTrailLength(float trailLength) {
 		this.trailLength = trailLength;
+		return this;
 	}
 
 	public int getBlockHeight() {
 		return (int) blockHeight;
 	}
 
-	public void setBlockHeight(float blockHeight) {
+	public Cycle setBlockHeight(float blockHeight) {
 		this.blockHeight = blockHeight;
 		this.blockHalfHeight = blockHeight / 2;
+		return this;
 	}
 
 	public int getBlockWidth() {
 		return (int) blockWidth;
 	}
 
-	public void setBlockWidth(float blockWidth) {
+	public Cycle setBlockWidth(float blockWidth) {
 		this.blockWidth = blockWidth;
 		this.blockHalfWidth = blockWidth / 2;
+		return this;
 	}
 
 	public Shape getShape() {

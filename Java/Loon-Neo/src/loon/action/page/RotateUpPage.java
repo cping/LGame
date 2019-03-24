@@ -25,7 +25,8 @@ import loon.Screen;
 public class RotateUpPage extends BasePage{
 
 	private static final float ROT_MOD = -15f;
-
+	
+	@Override
 	public void onTransform(Screen screen, float position) {
 		final float width = screen.getWidth();
 		final float rotation = ROT_MOD * position * 12.25f;

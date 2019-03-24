@@ -58,9 +58,9 @@ public class LTexturePack implements LRelease {
 
 	private int count;
 
-	LColor colorMask;
+	protected LColor colorMask;
 
-	boolean useAlpha, packed, packing;
+	protected boolean useAlpha, packed, packing;
 
 	private String fileName, name;
 
@@ -511,21 +511,23 @@ public class LTexturePack implements LRelease {
 		return texture != null && texture.existCache();
 	}
 
-	public void glBegin() {
+	public LTexturePack glBegin() {
 		if (count > 0) {
 			pack();
 			texture.glBegin();
 		}
+		return this;
 	}
 
 	public LTextureBatch getTextureBatch() {
 		return texture.getTextureBatch();
 	}
 
-	public void glEnd() {
+	public LTexturePack glEnd() {
 		if (count > 0) {
 			texture.glEnd();
 		}
+		return this;
 	}
 
 	public boolean isBatchLocked() {
@@ -698,18 +700,19 @@ public class LTexturePack implements LRelease {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
 	}
 
-	public void drawOnlyBatch(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
+	public LTexturePack drawOnlyBatch(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
 			float sy2, LColor[] color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
-			return;
+			return this;
 		}
 		if (texture.isBatch()) {
 			texture.draw(dx1, dy1, dx2, dy2, sx1 + entry.bounds.left, sy1 + entry.bounds.top,
 					sx2 + entry.bounds.right - entry.bounds.left, sy2 + entry.bounds.bottom - entry.bounds.top, color);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
+		return this;
 	}
 
 	public PointI draw(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
@@ -789,8 +792,9 @@ public class LTexturePack implements LRelease {
 		}
 	}
 
-	public void packed() {
+	public LTexturePack packed() {
 		this.packed(Format.DEFAULT);
+		return this;
 	}
 
 	public synchronized void packed(Format format) {
@@ -911,11 +915,12 @@ public class LTexturePack implements LRelease {
 		return colorMask;
 	}
 
-	public void setColorMask(LColor colorMask) {
+	public LTexturePack setColorMask(LColor colorMask) {
 		this.colorMask = colorMask;
+		return this;
 	}
 
-	private void free() {
+	private LTexturePack free() {
 		if (temps != null) {
 			for (int i = 0; i < temps.size(); i++) {
 				PackEntry e = (PackEntry) temps.get(i);
@@ -927,8 +932,10 @@ public class LTexturePack implements LRelease {
 				}
 			}
 		}
+		return this;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sbr = new StringBuffer(1000);
 		sbr.append("<?xml version=\"1.0\" standalone=\"yes\" ?>\n");
@@ -953,8 +960,9 @@ public class LTexturePack implements LRelease {
 		return format;
 	}
 
-	public void setFormat(Format format) {
+	public LTexturePack setFormat(Format format) {
 		this.format = format;
+		return this;
 	}
 
 	public LTexturePack setDisabledTexture(boolean d) {
@@ -968,6 +976,7 @@ public class LTexturePack implements LRelease {
 		return this.texture == null ? false : this.texture.isDisabledTexture();
 	}
 
+	@Override
 	public synchronized void close() {
 		free();
 		if (texture != null) {

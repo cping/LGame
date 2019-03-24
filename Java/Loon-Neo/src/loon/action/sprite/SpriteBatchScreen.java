@@ -42,11 +42,12 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
 /**
- * 该类为0.3.3版最新增加的Screen类，图形渲染使用单一的SpriteBatch，相较于使用GLEx，更适合多纹理渲染。
+ * 该类为0.3.3版最新增加的Screen类，图形渲染使用单一的SpriteBatch，相较于使用GLEx，更适合多纹理渲染。<p>
+ * 
+ * 并且支持直接绑定Loon的物理引擎。
  * 
  */
 public abstract class SpriteBatchScreen extends Screen implements Config {
-
 
 	private float objX = 0, objY = 0;
 

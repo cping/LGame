@@ -26,6 +26,9 @@ import loon.geom.Shape;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
+/**
+ * 一个碰撞盒子,可以检测任意不规则(多边形)碰撞
+ */
 public class Hitbox {
 
 	private TArray<Polygon> shapes;

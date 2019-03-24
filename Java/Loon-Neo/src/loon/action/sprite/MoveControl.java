@@ -446,8 +446,9 @@ public class MoveControl implements LRelease {
 		return _speed;
 	}
 
-	public void setSpeed(int s) {
+	public MoveControl setSpeed(int s) {
 		this._speed = s;
+		return this;
 	}
 
 	public boolean isRunning() {

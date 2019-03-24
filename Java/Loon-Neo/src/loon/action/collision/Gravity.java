@@ -22,32 +22,34 @@ package loon.action.collision;
 
 import loon.action.ActionBind;
 
-// 自0.3.2版起新增类，用以绑定任意一个LGame对象进行简单的重力牵引。
+/**
+ * 自0.3.2版起新增类，用以绑定任意一个LGame对象进行简单的重力牵引操作。
+ */
 public class Gravity {
 
-	Object object;
+	public Object object;
 
-	ActionBind bind;
+	public ActionBind bind;
 
-	boolean enabled;
+	public boolean enabled;
 
-	float bounce;
+	public float bounce;
 
-	float gadd;
+	public float gadd;
 
-	float g;
+	public float g;
 
-	float accelerationX;
+	public float accelerationX;
 
-	float accelerationY;
+	public float accelerationY;
 
-	float velocityX;
+	public float velocityX;
 
-	float velocityY;
+	public float velocityY;
 
-	float angularVelocity;
+	public float angularVelocity;
 
-	String name;
+	public String name;
 
 	public Gravity(String name, ActionBind o) {
 		this.name = name;
@@ -112,8 +114,7 @@ public class Gravity {
 		this.accelerationY = accelerationY;
 	}
 
-	public void setAcceleration(final float accelerationX,
-			final float accelerationY) {
+	public void setAcceleration(final float accelerationX, final float accelerationY) {
 		this.accelerationX = accelerationX;
 		this.accelerationY = accelerationY;
 	}

@@ -267,6 +267,7 @@ public class MoveObject extends ActionObject {
 		return false;
 	}
 
+	@Override
 	public int hashCode() {
 		if (tiles == null) {
 			return super.hashCode();
@@ -449,8 +450,9 @@ public class MoveObject extends ActionObject {
 		return timer.getDelay();
 	}
 
-	public void setDelay(long d) {
+	public MoveObject setDelay(long d) {
 		timer.setDelay(d);
+		return this;
 	}
 
 	public int getDirection() {
@@ -461,8 +463,9 @@ public class MoveObject extends ActionObject {
 		return speed;
 	}
 
-	public void setSpeed(int speed) {
+	public MoveObject setSpeed(int speed) {
 		this.speed = speed;
+		return this;
 	}
 
 	public boolean isComplete() {
@@ -478,32 +481,35 @@ public class MoveObject extends ActionObject {
 		return ShapeUtils.getAngleDiff(_rotation, r);
 	}
 
-	public void close() {
-		super.close();
-		if (findPath != null) {
-			findPath.clear();
-			findPath = null;
-		}
-	}
-
 	public AStarFindHeuristic getHeuristic() {
 		return heuristic;
 	}
 
-	public void setHeuristic(AStarFindHeuristic heuristic) {
+	public MoveObject setHeuristic(AStarFindHeuristic heuristic) {
 		this.heuristic = heuristic;
+		return this;
 	}
 
 	public boolean isAllDirection() {
 		return allDirection;
 	}
 
-	public void setAllDirection(boolean allDirection) {
+	public MoveObject setAllDirection(boolean allDirection) {
 		this.allDirection = allDirection;
+		return this;
 	}
 
 	public boolean isMoving() {
 		return isMoving;
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		if (findPath != null) {
+			findPath.clear();
+			findPath = null;
+		}
 	}
 
 }

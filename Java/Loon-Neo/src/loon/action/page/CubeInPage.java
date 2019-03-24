@@ -23,7 +23,8 @@ package loon.action.page;
 import loon.Screen;
 
 public class CubeInPage extends BasePage{
-
+	
+	@Override
 	public void onTransform(Screen screen, float position) {
 		screen.setPivotX(position > 0 ? -1 : screen.getWidth());
 		screen.setPivotY(-1);

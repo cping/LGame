@@ -30,12 +30,15 @@ import loon.utils.StringUtils;
 import loon.utils.timer.CountdownTimer;
 
 /**
- * 显示大写数字
+ * 显示大写数字<p>
  * 
  * example:
+ * 
+ * <pre>
  *  NumberSprite number = new NumberSprite("1334");
  *	number.setLocation(125, 125);
  *	add(number);
+ * </pre>
  * 
  */
 public class NumberSprite extends Entity {
@@ -118,8 +121,9 @@ public class NumberSprite extends Entity {
 		}
 	}
 
-	public void setUnit(int unit) {
+	public NumberSprite setUnit(int unit) {
 		this.unit = unit;
+		return this;
 	}
 
 	public int getUnit() {
@@ -152,7 +156,7 @@ public class NumberSprite extends Entity {
 		}
 	}
 
-	public void drawNumber(GLEx g, int x, int y, int[][] num) {
+	public NumberSprite drawNumber(GLEx g, int x, int y, int[][] num) {
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		for (int i = 0; i < 3; i++) {
@@ -163,11 +167,12 @@ public class NumberSprite extends Entity {
 			}
 		}
 		g.setColor(tmp);
+		return this;
 	}
 
-	public void drawNumber(GLEx g, int x, int y, String num) {
+	public NumberSprite drawNumber(GLEx g, int x, int y, String num) {
 		if (StringUtils.isEmpty(num)) {
-			return;
+			return this;
 		}
 		int index, size = unit * 9, offset = unit * 2;
 		for (int i = 0; i < num.length(); i++) {
@@ -194,9 +199,10 @@ public class NumberSprite extends Entity {
 				}
 			}
 		}
+		return this;
 	}
 
-	public void drawNumber(Canvas g, int x, int y, int[][] num) {
+	public NumberSprite drawNumber(Canvas g, int x, int y, int[][] num) {
 		int tmp1 = g.getFillColor();
 		int tmp2 = g.getStrokeColor();
 		g.setColor(_baseColor);
@@ -209,11 +215,12 @@ public class NumberSprite extends Entity {
 		}
 		g.setFillColor(tmp1);
 		g.setStrokeColor(tmp2);
+		return this;
 	}
 
-	public void drawNumber(Canvas g, int x, int y, String num) {
+	public NumberSprite drawNumber(Canvas g, int x, int y, String num) {
 		if (StringUtils.isEmpty(num)) {
-			return;
+			return this;
 		}
 		int index, size = unit * 10, offset = unit / 2;
 		for (int i = 0; i < num.length(); i++) {
@@ -244,6 +251,7 @@ public class NumberSprite extends Entity {
 				g.setStrokeColor(tmp2);
 			}
 		}
+		return this;
 	}
 
 	@Override
@@ -265,8 +273,9 @@ public class NumberSprite extends Entity {
 		}
 	}
 
-	public void setCountdownTimer(CountdownTimer timer) {
+	public NumberSprite setCountdownTimer(CountdownTimer timer) {
 		this.countdownTimer = timer;
+		return this;
 	}
 
 	public CountdownTimer getCountdownTimer() {

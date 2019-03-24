@@ -32,6 +32,9 @@ import loon.utils.res.TextureData;
 import loon.utils.res.MovieSpriteSheet;
 import loon.utils.timer.LTimer;
 
+/**
+ * as中同名对象的仿写,干什么用大家都懂……
+ */
 public class MovieClip extends DisplayObject {
 
 	private boolean _autoDispose = false;
@@ -48,27 +51,6 @@ public class MovieClip extends DisplayObject {
 
 	private boolean _isLoop = false;
 
-	public boolean isLoop() {
-		return _isLoop;
-	}
-
-	public void setLoop(boolean v) {
-		if (_isLoop != v) {
-			_isLoop = v;
-		}
-	}
-
-
-	public boolean autoDispsoe() {
-		return _autoDispose;
-	}
-
-	public void setAutoDispose(boolean v) {
-		if (_autoDispose != v) {
-			_autoDispose = v;
-		}
-	}
-
 	public MovieClip(MovieSpriteSheet sheet, int interval) {
 		init(sheet, interval, DisplayObject.ANCHOR_TOP_LEFT);
 	}
@@ -83,7 +65,7 @@ public class MovieClip extends DisplayObject {
 		setAnchor(anchor);
 	}
 
-	public void nextFrame() {
+	public MovieClip nextFrame() {
 		_playIndex++;
 		if (_playIndex == _sheet.datas().length) {
 			this.dispatchEvent(EventType.EVENT_MOVIE_CLIP_RESTART);
@@ -93,12 +75,12 @@ public class MovieClip extends DisplayObject {
 						&& (this.getParent() instanceof MovieSprite)) {
 					((MovieSprite) this.getParent()).removeChild(this);
 				}
-				return;
+				return this;
 			}
 
 			if (!_isLoop) {
 				_isStop = true;
-				return;
+				return this;
 			}
 
 			_playIndex = 0;
@@ -107,6 +89,7 @@ public class MovieClip extends DisplayObject {
 
 		TextureData ssd = _sheet.datas()[_playIndex];
 		setSSD(ssd);
+		return this;
 	}
 
 	private void setSSD(TextureData ssd) {
@@ -122,9 +105,10 @@ public class MovieClip extends DisplayObject {
 		}
 	}
 
-	public void reset() {
+	public MovieClip reset() {
 		_isStop = false;
 		_delay.refresh();
+		return this;
 	}
 
 	public int currentFrame() {
@@ -138,7 +122,7 @@ public class MovieClip extends DisplayObject {
 		return null;
 	}
 
-	public void gotoAndStop(String label) {
+	public MovieClip gotoAndStop(String label) {
 		if (null != _sheet) {
 			TextureData ssd = _sheet.getSSD(label);
 			if (ssd != null) {
@@ -146,17 +130,19 @@ public class MovieClip extends DisplayObject {
 				_isStop = true;
 			}
 		}
+		return this;
 	}
 
-	public void gotoAndStop(int frame) {
+	public MovieClip gotoAndStop(int frame) {
 		if (null != _sheet && frame >= 0 && frame < _sheet.datas().length) {
 			TextureData ssd = _sheet.datas()[frame];
 			setSSD(ssd);
 			_isStop = true;
 		}
+		return this;
 	}
 
-	public void gotoAndPlay(String label) {
+	public MovieClip gotoAndPlay(String label) {
 		if (null != _sheet) {
 			TextureData ssd = _sheet.getSSD(label);
 			if (ssd != null) {
@@ -164,24 +150,29 @@ public class MovieClip extends DisplayObject {
 				_isStop = false;
 			}
 		}
+		return this;
 	}
 
-	public void gotoAndPlay(int frame) {
+	public MovieClip gotoAndPlay(int frame) {
 		if (null != _sheet && frame >= 0 && frame < _sheet.datas().length) {
 			TextureData ssd = _sheet.datas()[frame];
 			setSSD(ssd);
 			_isStop = false;
 		}
+		return this;
 	}
 
-	public void play() {
+	public MovieClip play() {
 		_isStop = true;
+		return this;
 	}
 
-	public void stop() {
+	public MovieClip stop() {
 		_isStop = false;
+		return this;
 	}
 
+	@Override
 	protected void onScaleChange(float scaleX, float scaleY) {
 		setScale(scaleX, scaleY);
 	}
@@ -304,13 +295,37 @@ public class MovieClip extends DisplayObject {
 		}
 
 	}
-
+	
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
+	@Override
 	public boolean isActionCompleted(){
 		return PlayerUtils.isActionCompleted(this);
+	}
+
+	public boolean isLoop() {
+		return _isLoop;
+	}
+
+	public MovieClip setLoop(boolean v) {
+		if (_isLoop != v) {
+			_isLoop = v;
+		}
+		return this;
+	}
+
+	public boolean autoDispsoe() {
+		return _autoDispose;
+	}
+
+	public MovieClip setAutoDispose(boolean v) {
+		if (_autoDispose != v) {
+			_autoDispose = v;
+		}
+		return this;
 	}
 	
 	@Override

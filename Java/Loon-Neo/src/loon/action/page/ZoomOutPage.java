@@ -23,8 +23,9 @@ package loon.action.page;
 import loon.Screen;
 import loon.utils.MathUtils;
 
-public class ZoomOutPage extends BasePage{
-
+public class ZoomOutPage extends BasePage {
+	
+	@Override
 	public void onTransform(Screen screen, float position) {
         final float scale = 1f + MathUtils.abs(position);
         screen.setScaleX(scale);

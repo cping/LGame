@@ -346,6 +346,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	}
 
+	@Override
 	public void close() {
 		try {
 			if (path == null) {

@@ -146,12 +146,13 @@ public class Scene extends Entity {
 		}
 	}
 
-	public void back() {
+	public Scene back() {
 		this.clearChildScene();
 		if (this._parentScene != null) {
 			this._parentScene.clearChildScene();
 			this._parentScene = null;
 		}
+		return this;
 	}
 
 	public boolean hasChildScene() {
@@ -162,23 +163,25 @@ public class Scene extends Entity {
 		return this._childScene;
 	}
 
-	public void setChildSceneModal(final Scene child) {
-		this.setChildScene(child, true, true);
+	public Scene setChildSceneModal(final Scene child) {
+		return this.setChildScene(child, true, true);
 	}
 
-	public void setChildScene(final Scene child) {
-		this.setChildScene(child, false, false);
+	public Scene setChildScene(final Scene child) {
+		return this.setChildScene(child, false, false);
 	}
 
-	public void setChildScene(final Scene child, final boolean modalDraw, final boolean modalUpdate) {
+	public Scene setChildScene(final Scene child, final boolean modalDraw, final boolean modalUpdate) {
 		child.setParentScene(this);
 		this._childScene = child;
 		this._childSceneModalDraw = modalDraw;
 		this._childSceneModalUpdate = modalUpdate;
+		return this;
 	}
 
-	public void clearChildScene() {
+	public Scene clearChildScene() {
 		this._childScene = null;
+		return this;
 	}
 
 	@Override

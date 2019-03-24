@@ -26,6 +26,9 @@ import loon.action.ActionBind;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
+/**
+ * 简单的重力控制器,使用时需要绑定Gravity
+ */
 public class GravityHandler implements LRelease {
 
 	public static interface GravityUpdate {

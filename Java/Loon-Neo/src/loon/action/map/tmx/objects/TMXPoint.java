@@ -20,8 +20,13 @@
  */
 package loon.action.map.tmx.objects;
 
-public class TMXPoint
+import loon.geom.PointI;
+import loon.utils.StringUtils;
+
+public class TMXPoint extends PointI
 {
-    public int x;
-    public int y;
+	@Override
+	public String toString() {
+		return StringUtils.format("TMXPoint [x:{0},y:{1}]", x, y);
+	}
 }

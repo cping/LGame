@@ -25,6 +25,7 @@ import loon.utils.MathUtils;
 
 public class ZoomInPage extends BasePage{
 
+	@Override
 	public void onTransform(Screen screen, float position) {
 		final float scale = position < 0 ? position + 1f : MathUtils.abs(1f - position);
 		screen.setScaleX(scale);

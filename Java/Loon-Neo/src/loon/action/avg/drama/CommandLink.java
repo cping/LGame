@@ -9,8 +9,8 @@ public class CommandLink {
 
 	private int _lineCount = 0;
 
-	public CommandLink(String fileName) {
-		String context = BaseIO.loadText(fileName);
+	public CommandLink(String path) {
+		String context = BaseIO.loadText(path);
 		_commands = new StringBuffer(context.length());
 		_commands.append(context.toString());
 		_lineCount = -1;

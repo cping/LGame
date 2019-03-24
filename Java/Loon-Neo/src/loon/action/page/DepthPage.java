@@ -26,7 +26,8 @@ import loon.utils.MathUtils;
 public class DepthPage extends BasePage{
 
 	private static final float MIN_SCALE = 0.75f;
-
+	
+	@Override
 	public void onTransform(Screen screen, float position) {
 		if (position <= 0f) {
 			screen.setX(0f);

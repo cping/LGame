@@ -81,27 +81,32 @@ public class JumpObject extends ActionObject {
 		canJumperTwo = true;
 	}
 
-	public void stop() {
+	public JumpObject stop() {
 		vx = 0;
+		return this;
 	}
 
-	public void accelerateLeft() {
+	public JumpObject accelerateLeft() {
 		vx = -speed;
+		return this;
 	}
 
-	public void accelerateRight() {
+	public JumpObject accelerateRight() {
 		vx = speed;
+		return this;
 	}
 
-	public void accelerateUp() {
+	public JumpObject accelerateUp() {
 		vy = speed;
+		return this;
 	}
 
-	public void accelerateDown() {
+	public JumpObject accelerateDown() {
 		vy = -speed;
+		return this;
 	}
 
-	public void jump() {
+	public JumpObject jump() {
 		if (onGround || forceJump) {
 			vy = -jumpSpeed;
 			onGround = false;
@@ -110,26 +115,30 @@ public class JumpObject extends ActionObject {
 			vy = -jumpSpeed;
 			canJumperTwo = false;
 		}
+		return this;
 	}
 
-	public void setForceJump(boolean forceJump) {
+	public JumpObject setForceJump(boolean forceJump) {
 		this.forceJump = forceJump;
+		return this;
 	}
 
 	public float getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(float speed) {
+	public JumpObject setSpeed(float speed) {
 		this.speed = speed;
+		return this;
 	}
 
-	public void setJumperTwo(boolean jumperTwo) {
+	public JumpObject setJumperTwo(boolean jumperTwo) {
 		this.jumperTwo = jumperTwo;
+		return this;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
-
 		if (animation != null) {
 			animation.update(elapsedTime);
 		}
@@ -177,18 +186,20 @@ public class JumpObject extends ActionObject {
 		}
 	}
 
-	public void isCheck(int x, int y) {
+	public JumpObject isCheck(int x, int y) {
 		if (listener != null) {
 			listener.check(x, y);
 		}
+		return this;
 	}
 
 	public JumpListener getJumpListener() {
 		return listener;
 	}
 
-	public void setJumpListener(JumpListener listener) {
+	public JumpObject setJumpListener(JumpListener listener) {
 		this.listener = listener;
+		return this;
 	}
 
 }

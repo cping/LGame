@@ -26,6 +26,7 @@ import loon.canvas.LColor;
 import loon.utils.xml.XMLElement;
 
 public class TMXImage {
+	
 	public enum Format {
 		PNG, GIF, JPG, BMP, OTHER
 	}
@@ -78,12 +79,12 @@ public class TMXImage {
 		return width;
 	}
 
-	public LColor getTrans() {
-		return trans;
-	}
-
 	public int getHeight() {
 		return height;
+	}
+	
+	public LColor getTrans() {
+		return trans;
 	}
 
 }
