@@ -462,7 +462,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				g.draw(_background, offsetX, offsetY);
 			}
 		}
-		dirty = dirty && imgPack.existCache();
+		dirty = dirty || !imgPack.existCache();
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
 			imgPack.postCache();
 			if (playAnimation) {
