@@ -43,7 +43,7 @@ public abstract class Bypass {
 		_listeners = null;
 	}
 
-	abstract GoListener placeholderListener();
+	abstract GoListener defaultListener();
 
 	protected synchronized Cons addConnection(GoListener listener) {
 		if (listener == null)
@@ -83,6 +83,7 @@ public abstract class Bypass {
 	protected synchronized void removeConnection(final GoListener listener) {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
+				@Override
 				public void action(Object o){
 					_listeners = Cons.removeAll(_listeners, listener);
 					connectionRemoved();
@@ -112,6 +113,7 @@ public abstract class Bypass {
 		synchronized (this) {
 			if (_listeners == DISPATCHING) {
 				_pendingRuns = append(_pendingRuns, new Runs() {
+					@Override
 					public void action(Object o) {
 						Bypass.this.notify(notifier, a1, a2, a3);
 					}
@@ -140,7 +142,7 @@ public abstract class Bypass {
 				_listeners = lners;
 			}
 			Runs run;
-			while ((run = nextRun()) != null) {
+			for (;(run = nextRun()) != null;) {
 				try {
 					run.action(this);
 				} catch (RuntimeException ex) {

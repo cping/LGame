@@ -120,6 +120,9 @@ public class RoboVMGraphics extends Graphics {
 	void setSize(CGRect bounds) {
 		int viewWidth = scale.scaledCeil((float) bounds.getWidth());
 		int viewHeight = scale.scaledCeil((float) bounds.getHeight());
+		if (!isAllowResize(viewWidth, viewHeight)) {
+			return;
+		}
 		viewportChanged(scale, viewWidth, viewHeight);
 	}
 

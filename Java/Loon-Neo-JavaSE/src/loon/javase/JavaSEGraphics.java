@@ -103,8 +103,12 @@ public abstract class JavaSEGraphics extends Graphics {
 
 	protected void updateViewport(Scale scale, float displayWidth,
 			float displayHeight) {
-		viewportChanged(scale, scale.scaledCeil(displayWidth),
-				scale.scaledCeil(displayHeight));
+		int viewWidth = scale.scaledCeil(displayWidth);
+		int viewHeight = scale.scaledCeil(displayHeight);
+		if(!isAllowResize(viewWidth, viewHeight)){
+			return;
+		}
+		viewportChanged(scale, viewWidth,viewHeight);
 	}
 
 	java.awt.Font resolveFont(Font font) {

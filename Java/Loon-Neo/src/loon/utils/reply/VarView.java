@@ -30,19 +30,12 @@ public interface VarView<T>
 
     <M> VarView<M> map (Function<? super T, M> func);
 
-    <M> VarView<M> flatMap (Function<? super T, ? extends VarView<M>> func);
-
     Connection connect (Listener<? super T> listener);
-
-    Connection connectNotify (Listener<? super T> listener);
 
     void disconnect (Listener<? super T> listener);
 
     Connection connect (ActView.Listener<? super T> listener);
 
-    Connection connectNotify (ActView.Listener<? super T> listener);
-
     Connection connect (Port<? super T> listener);
 
-    Connection connectNotify (Port<? super T> listener);
 }

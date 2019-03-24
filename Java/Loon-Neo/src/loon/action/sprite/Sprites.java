@@ -450,6 +450,14 @@ public class Sprites implements IArray, Visible, LRelease {
 						return true;
 					}
 				}
+			} else if (exist && sp instanceof Sprite) {
+				Sprite superSprite = (Sprite) sp;
+				for (int j = 0; j < superSprite.size(); j++) {
+					boolean superExist = (superSprite.getChildByIndex(j) != null);
+					if (superExist && sp.equals(superSprite.getChildByIndex(j))) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;

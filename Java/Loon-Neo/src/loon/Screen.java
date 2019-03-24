@@ -1087,6 +1087,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (desktopRun && desktop != null) {
 			desktop.resize();
 		}
+		this.resize(width, height);
 	}
 
 	final public void resetOrder() {

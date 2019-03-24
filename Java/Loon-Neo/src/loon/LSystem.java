@@ -120,7 +120,6 @@ public class LSystem {
 	// 是否单独切分渲染用字体
 	public static boolean USE_TRUEFONT_CLIP = true;
 
-	public static boolean LOCK_SCREEN = false;
 	// 包内默认的图片路径
 	public static String FRAMEWORK_IMG_NAME = "loon_";
 

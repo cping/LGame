@@ -65,7 +65,6 @@ public class AndroidGameViewGL extends GLSurfaceView {
 			public void onSurfaceChanged(GL10 gl, int width, int height) {
 				if (game != null) {
 					game.graphics().onSizeChanged(width, height);
-					gl.glViewport(0, 0, width, height);
 					if (!started.get()) {
 						startGame();
 					}

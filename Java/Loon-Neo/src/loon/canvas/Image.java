@@ -154,6 +154,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public GoFuture<LTexture> textureAsync() {
 		return state.map(new Function<Image, LTexture>() {
+			@Override
 			public LTexture apply(Image image) {
 				return texture();
 			}

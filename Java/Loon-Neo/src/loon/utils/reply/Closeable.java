@@ -20,73 +20,43 @@
  */
 package loon.utils.reply;
 
+import loon.LRelease;
 import loon.utils.ObjectSet;
 
-//如果报错，请确认自己的jdk为1.7或以上，因为AutoCloseable这个资源标记是1.7才开始有的
-public interface Closeable extends AutoCloseable {
+public interface Closeable extends LRelease {
 
-    class Set implements Closeable {
-    	
-        protected ObjectSet<AutoCloseable> _set; 
-    	
-        @Override public void close () {
-            if (_set != null) {
-                ManyFailure error = null;
-                for (AutoCloseable c : _set) try {
-                    c.close();
-                } catch (Exception e) {
-                    if (error == null) {
-                    	error = new ManyFailure();
-                    }
-                    error.addSuppressed(e);
-                }
-                _set.clear();
-                if (error != null) {
-                	throw error;
-                }
-            }
-        }
+	class Set implements Closeable {
 
-        public <T extends AutoCloseable> T add (T c) {
-            if (_set == null){
-            	_set = new ObjectSet<>();
-            }
-            _set.add(c);
-            return c;
-        }
+		protected ObjectSet<LRelease> _set;
 
-        public void remove (AutoCloseable c) {
-            if (_set != null){
-            	_set.remove(c);
-            }
-        }
+		@Override
+		public void close() {
+			if (_set != null) {
+				for (LRelease c : _set) {
+					try {
+						c.close();
+					} catch (Throwable e) {
+					}
+				}
+				_set.clear();
+			}
+		}
 
-    }
+		public <T extends LRelease> T add(T c) {
+			if (_set == null) {
+				_set = new ObjectSet<>();
+			}
+			_set.add(c);
+			return c;
+		}
 
-    class Shutdown {
-        public static final Closeable DEF = new Closeable() {
-            public void close () {} 
-        };
+		public void remove(LRelease c) {
+			if (_set != null) {
+				_set.remove(c);
+			}
+		}
+	}
 
-        public static Closeable join (final Closeable... cons) {
-            return new Closeable() {
-                @Override public void close () {
-                    for (int ii = 0; ii < cons.length; ii++) {
-                        if (cons[ii] == null) {
-                        	continue;
-                        }
-                        cons[ii].close();
-                        cons[ii] = null;
-                    }
-                }
-            };
-        }
-
-        public static Closeable close (Closeable con) {
-            con.close();
-            return DEF;
-        }
-    }
-
-    void close ();
+	@Override
+	public void close();
 }

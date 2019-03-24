@@ -54,15 +54,6 @@ public abstract class Try<T> {
 		}
 
 		@Override
-		public <R> Try<R> flatMap(Function<? super T, Try<R>> func) {
-			try {
-				return func.apply(value);
-			} catch (Throwable t) {
-				return failure(t);
-			}
-		}
-
-		@Override
 		public String toString() {
 			return "Success(" + value + ")";
 		}
@@ -102,11 +93,6 @@ public abstract class Try<T> {
 		}
 
 		@Override
-		public <R> Try<R> flatMap(Function<? super T, Try<R>> func) {
-			return this.<R>casted();
-		}
-
-		@Override
 		public String toString() {
 			return "Failure(" + cause + ")";
 		}
@@ -125,14 +111,6 @@ public abstract class Try<T> {
 		return new Failure<T>(cause);
 	}
 
-	public static <T, R> Function<Try<T>, Try<R>> lift(final Function<? super T, R> func) {
-		return new Function<Try<T>, Try<R>>() {
-			public Try<R> apply(Try<T> result) {
-				return result.map(func);
-			}
-		};
-	}
-
 	public abstract T get();
 
 	public abstract Throwable getFailure();
@@ -144,8 +122,6 @@ public abstract class Try<T> {
 	}
 
 	public abstract <R> Try<R> map(Function<? super T, R> func);
-
-	public abstract <R> Try<R> flatMap(Function<? super T, Try<R>> func);
 
 	private Try() {
 	}

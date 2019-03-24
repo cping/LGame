@@ -83,45 +83,17 @@ public class GoFuture<T> {
 		return this;
 	}
 
-	public VarView<Boolean> isComplete() {
-		if (_isComplete == null) {
-			_isComplete = _result.map(Functions.NON_NULL);
-		}
-		return _isComplete;
-	}
-
 	public boolean isCompleteNow() {
 		return _result.get() != null;
 	}
 
-	public GoFuture<T> bindComplete(ActView.Listener<Boolean> slot) {
-		isComplete().connectNotify(slot);
-		return this;
-	}
-
 	public <R> GoFuture<R> map(final Function<? super T, R> func) {
 		return new GoFuture<R>(_result.map(new Function<Try<T>, Try<R>>() {
+			@Override
 			public Try<R> apply(Try<T> result) {
 				return result == null ? null : result.map(func);
 			}
 		}));
-	}
-
-	public <R> GoFuture<R> flatMap(final Function<? super T, GoFuture<R>> func) {
-		final Var<Try<R>> mapped = Var.create(null);
-		_result.connectNotify(new ActView.Listener<Try<T>>() {
-			public void onEmit(Try<T> result) {
-				if (result == null) {
-					return;
-				}
-				if (result.isFailure()) {
-					mapped.update(Try.<R>failure(result.getFailure()));
-				} else {
-					func.apply(result.get()).onComplete(mapped.port());
-				}
-			}
-		});
-		return new GoFuture<R>(mapped);
 	}
 
 	public Try<T> result() {

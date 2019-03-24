@@ -49,8 +49,7 @@ public class AndroidGraphics extends Graphics {
 
 	private final AndroidGame game;
 
-	private Map<Refreshable, Void> refreshables = Collections
-			.synchronizedMap(new WeakHashMap<Refreshable, Void>());
+	private Map<Refreshable, Void> refreshables = Collections.synchronizedMap(new WeakHashMap<Refreshable, Void>());
 
 	private final Map<Pair<String, Font.Style>, Typeface> fonts = new HashMap<Pair<String, Font.Style>, Typeface>();
 	private final Map<Pair<String, Font.Style>, String[]> ligatureHacks = new HashMap<Pair<String, Font.Style>, String[]>();
@@ -65,34 +64,30 @@ public class AndroidGraphics extends Graphics {
 	final Bitmap.Config preferredBitmapConfig;
 
 	public AndroidGraphics(AndroidGame game, Bitmap.Config bitmapConfig) {
-		super(game, new AndroidGL20(), game.setting.scaling() ? Scale.ONE
-				: new Scale(game.activity.scaleFactor()));
+		super(game, new AndroidGL20(), game.setting.scaling() ? Scale.ONE : new Scale(game.activity.scaleFactor()));
 		this.game = game;
 		this.preferredBitmapConfig = bitmapConfig;
 	}
 
 	void onSizeChanged(int viewWidth, int viewHeight) {
+		if (!isAllowResize(viewWidth, viewHeight)) {
+			return;
+		}
 		screenSize.width = viewWidth / scale.factor;
 		screenSize.height = viewHeight / scale.factor;
-		game.log().info(
-				"Updating size " + viewWidth + "x" + viewHeight + " / "
-						+ scale.factor + " -> " + screenSize);
+		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
 	}
 
-	public void registerFont(String path, String name, Font.Style style,
-			String... ligatureGlyphs) {
+	public void registerFont(String path, String name, Font.Style style, String... ligatureGlyphs) {
 		try {
-			registerFont(game.assets().getTypeface(path), name, style,
-					ligatureGlyphs);
+			registerFont(game.assets().getTypeface(path), name, style, ligatureGlyphs);
 		} catch (Exception e) {
-			game.reportError("Failed to load font [name=" + name + ", path="
-					+ path + "]", e);
+			game.reportError("Failed to load font [name=" + name + ", path=" + path + "]", e);
 		}
 	}
 
-	public void registerFont(Typeface face, String name, Font.Style style,
-			String... ligatureGlyphs) {
+	public void registerFont(Typeface face, String name, Font.Style style, String... ligatureGlyphs) {
 		Pair<String, Font.Style> key = Pair.create(name, style);
 		fonts.put(key, face);
 		ligatureHacks.put(key, ligatureGlyphs);
@@ -126,8 +121,7 @@ public class AndroidGraphics extends Graphics {
 	@Override
 	public Canvas createCanvas(float width, float height) {
 		Scale scale = canvasScaleFunc.computeScale(width, height, this.scale);
-		return createCanvasImpl(scale, scale.scaledCeil(width),
-				scale.scaledCeil(height));
+		return createCanvasImpl(scale, scale.scaledCeil(width), scale.scaledCeil(height));
 	}
 
 	@Override
@@ -141,12 +135,9 @@ public class AndroidGraphics extends Graphics {
 	}
 
 	@Override
-	protected Canvas createCanvasImpl(Scale scale, int pixelWidth,
-			int pixelHeight) {
-		Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight,
-				preferredBitmapConfig);
-		return new AndroidCanvas(this, new AndroidImage(this, scale, bitmap,
-				"<canvas>"));
+	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
+		Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight, preferredBitmapConfig);
+		return new AndroidCanvas(this, new AndroidImage(this, scale, bitmap, "<canvas>"));
 	}
 
 	AndroidFont resolveFont(Font font) {

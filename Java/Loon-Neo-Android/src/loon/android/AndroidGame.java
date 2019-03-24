@@ -66,6 +66,11 @@ public class AndroidGame extends LGame {
 		// 是否锁定注销功能(若为true，则默认back按键不许退出)
 		public boolean lockBackDestroy = false;
 
+		// 是否启动back注销功能(若为true，则默认back按键即注销游戏)
+		public boolean isBackDestroy = false;
+		
+		// 是否锁定屏幕缩放
+		public boolean isLockResize = true;
 	}
 
 	final private static String BULID_BRAND, BULID_MODEL, BULIDM_PRODUCT,

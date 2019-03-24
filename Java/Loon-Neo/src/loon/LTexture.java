@@ -89,7 +89,7 @@ public class LTexture extends Painter implements LRelease {
 
 	private LTextureBatch batch;
 
-	private boolean isBatch;
+	private boolean _isBatch;
 
 	protected String tmpLazy = "tex" + TimeUtils.millis();
 
@@ -387,8 +387,6 @@ public class LTexture extends Painter implements LRelease {
 				}
 			}
 		}
-
-		LTextureBatch.isBatchCacheDitry = true;
 	}
 
 	public void bind() {
@@ -696,6 +694,10 @@ public class LTexture extends Painter implements LRelease {
 		return this;
 	}
 
+	public boolean checkExistBatch() {
+		return _isBatch && batch != null && !batch.closed();
+	}
+
 	public LTextureBatch getTextureBatch() {
 		return getTextureBatch(null);
 	}
@@ -715,21 +717,25 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	protected void makeBatch(String name, Source source, int size) {
-		if (!isBatch) {
-			batch = new LTextureBatch(this, source, size);
-			if (!StringUtils.isEmpty(name)) {
-				batch.setTextureBatchName(name);
+		if (!checkExistBatch()) {
+			batch = LTextureBatch.getBatchCache(this);
+			if (batch == null || batch.closed()) {
+				batch = new LTextureBatch(this, source, size);
+				if (!StringUtils.isEmpty(name)) {
+					batch.setTextureBatchName(name);
+				}
+				LTextureBatch.bindBatchCache(batch);
+				_isBatch = true;
 			}
-			isBatch = true;
 		}
 	}
 
 	protected void freeBatch() {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			if (batch != null) {
 				batch.close();
 				batch = null;
-				isBatch = false;
+				_isBatch = false;
 			}
 		}
 	}
@@ -742,7 +748,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isBatch() {
-		return (isBatch && batch.isLoaded);
+		return (checkExistBatch() && batch.isLoaded);
 	}
 
 	public LTexture glBegin() {
@@ -752,25 +758,29 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture glEnd() {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.end();
 		}
 		return this;
 	}
 
 	public LTexture setBatchPos(float x, float y) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.setLocation(x, y);
 		}
 		return this;
 	}
 
 	public boolean isBatchLocked() {
-		return isBatch && batch.isCacheLocked;
+		return checkExistBatch() && batch.isCacheLocked;
+	}
+
+	public boolean existCache() {
+		return checkExistBatch() && batch.existCache();
 	}
 
 	public LTexture glCacheCommit() {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.postLastCache();
 		}
 		return this;
@@ -782,7 +792,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture draw(float x, float y, float width, float height) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.draw(colors, x, y, width, height);
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, colors == null ? null : colors[0]);
@@ -791,7 +801,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture draw(float x, float y, LColor[] c) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.draw(c, x, y, width(), height());
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width(), height(), c == null ? null : c[0]);
@@ -800,7 +810,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture draw(float x, float y, LColor c) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
@@ -817,7 +827,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture draw(float x, float y, float width, float height, LColor c) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
@@ -834,7 +844,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture drawFlipX(float x, float y, LColor c) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
@@ -851,7 +861,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture drawFlipY(float x, float y, LColor c) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
@@ -867,8 +877,9 @@ public class LTexture extends Painter implements LRelease {
 		return this;
 	}
 
-	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2, LColor[] c) {
-		if (isBatch) {
+	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
+			LColor[] c) {
+		if (checkExistBatch()) {
 			batch.draw(c, x, y, width, height, x1, y1, x2, y2);
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, x1, y1, x2, y2, c == null ? null : c[0]);
@@ -881,8 +892,9 @@ public class LTexture extends Painter implements LRelease {
 		return draw(x, y, width - x, height - y, x1, y1, x2, y2, c);
 	}
 
-	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2, LColor c) {
-		if (isBatch) {
+	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
+			LColor c) {
+		if (checkExistBatch()) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 
 			final boolean update = checkUpdateColor(c);
@@ -901,7 +913,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.draw(colors, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight);
 		} else {
 			gfx.game.display().GL().draw(this, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight,
@@ -915,7 +927,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2) {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
 		} else {
 			gfx.game.display().GL().draw(this, x, y, width, height, x1, y1, x2, y2, colors == null ? null : colors[0]);
@@ -938,7 +950,7 @@ public class LTexture extends Painter implements LRelease {
 			draw(x, y, width, height, x1, y1, x2, y2, c);
 			return this;
 		}
-		if (isBatch) {
+		if (checkExistBatch()) {
 			LColor old = (colors == null ? LColor.white : colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
@@ -969,21 +981,21 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public Cache newBatchCache() {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			return batch.newCache();
 		}
 		return null;
 	}
 
 	public LTexture postLastBatchCache() {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.postLastCache();
 		}
 		return this;
 	}
 
 	public LTexture disposeLastCache() {
-		if (isBatch) {
+		if (checkExistBatch()) {
 			batch.disposeLastCache();
 		}
 		return this;
@@ -1041,6 +1053,9 @@ public class LTexture extends Painter implements LRelease {
 		}
 		synchronized (LTextures.class) {
 			LTextures.removeTexture(this);
+			if (batch != null) {
+				LTextureBatch.disposeBatchCache(batch, false);
+			}
 			final Updateable update = new Updateable() {
 
 				@Override

@@ -24,6 +24,11 @@ package loon.utils.reply;
  * 处理传递过来的具体数据，将其依照规则过滤后，触发指定的事件反馈.
  */
 public class AbstractAct<T> extends Bypass implements ActView<T> {
+	
+    public static UnitPort DEF = new UnitPort() {
+        public void onEmit () {} 
+    };
+	
 	@Override
 	public <M> ActView<M> map(final Function<? super T, M> func) {
 		final AbstractAct<T> outer = this;
@@ -69,9 +74,9 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 	}
 
 	@Override
-	Listener<T> placeholderListener() {
+	Listener<T> defaultListener() {
 		@SuppressWarnings("unchecked")
-		Listener<T> p = (Listener<T>) Ports.DEF;
+		Listener<T> p = (Listener<T>) AbstractAct.DEF;
 		return p;
 	}
 

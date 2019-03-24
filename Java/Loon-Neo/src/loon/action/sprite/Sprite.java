@@ -981,6 +981,17 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return this;
 	}
 
+	public int getChildCount() {
+		return size();
+	}
+
+	public ISprite getChildByIndex(int idx) {
+		if (_childList != null && idx >= 0 && idx < size()) {
+			return _childList.get(idx);
+		}
+		return null;
+	}
+
 	@Override
 	public void setColor(LColor color) {
 		setFilterColor(color);

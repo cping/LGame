@@ -424,7 +424,7 @@ public class LTexturePack implements LRelease {
 	}
 
 	public synchronized LTexture pack(Format format) {
-		if (texture != null && !packing) {
+		if (texture != null && !packing && !texture.isClose()) {
 			return texture;
 		}
 		if (_glex == null) {
@@ -433,7 +433,6 @@ public class LTexturePack implements LRelease {
 		if (fileName != null) {
 			texture = LTextures.loadTexture(fileName, format);
 		} else {
-
 			Image image = packImage();
 			if (image == null) {
 				return null;
@@ -442,7 +441,6 @@ public class LTexturePack implements LRelease {
 				texture.close();
 				texture = null;
 			}
-
 			if (colorMask != null) {
 				int[] pixels = image.getPixels();
 				int size = pixels.length;
@@ -490,21 +488,27 @@ public class LTexturePack implements LRelease {
 		return ints.toArray();
 	}
 
-	public void saveCache() {
-		if (texture != null) {
+	public boolean saveCache() {
+		if (isBatch()) {
 			texture.disposeLastCache();
 			texture.newBatchCache();
 		}
+		return false;
 	}
 
-	public void postCache() {
-		if (texture != null) {
+	public boolean postCache() {
+		if (isBatch()) {
 			texture.postLastBatchCache();
 		}
+		return false;
 	}
 
 	public boolean isBatch() {
 		return texture != null && texture.isBatch();
+	}
+
+	public boolean existCache() {
+		return texture != null && texture.existCache();
 	}
 
 	public void glBegin() {

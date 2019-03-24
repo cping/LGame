@@ -74,13 +74,11 @@ public abstract class Graphics {
 		}
 
 		public float xscale() {
-			return _graphics.game.setting.scaling() ? LSystem.getScaleWidth()
-					: _graphics.scale.factor;
+			return _graphics.game.setting.scaling() ? LSystem.getScaleWidth() : _graphics.scale.factor;
 		}
 
 		public float yscale() {
-			return _graphics.game.setting.scaling() ? LSystem.getScaleHeight()
-					: _graphics.scale.factor;
+			return _graphics.game.setting.scaling() ? LSystem.getScaleHeight() : _graphics.scale.factor;
 		}
 
 		public boolean flip() {
@@ -106,8 +104,7 @@ public abstract class Graphics {
 		if (viewMatrix == null) {
 			viewMatrix = new Matrix4();
 			viewMatrix.setToOrtho2D(0, 0, view.getWidth(), view.getHeight());
-		} else if (display != null && display.GL() != null
-				&& !(affine = display.GL().tx()).equals(lastAffine)) {
+		} else if (display != null && display.GL() != null && !(affine = display.GL().tx()).equals(lastAffine)) {
 			viewMatrix = affine.toViewMatrix4();
 			lastAffine = affine;
 		}
@@ -127,27 +124,22 @@ public abstract class Graphics {
 	public abstract Dimension screenSize();
 
 	public Canvas createCanvas(float width, float height) {
-		return createCanvasImpl(scale, scale.scaledCeil(width),
-				scale.scaledCeil(height));
+		return createCanvasImpl(scale, scale.scaledCeil(width), scale.scaledCeil(height));
 	}
 
 	public Canvas createCanvas(Dimension size) {
 		return createCanvas(size.width, size.height);
 	}
 
-	public LTexture createTexture(float width, float height,
-			LTexture.Format config) {
+	public LTexture createTexture(float width, float height, LTexture.Format config) {
 		int texWidth = config.toTexWidth(scale.scaledCeil(width));
 		int texHeight = config.toTexHeight(scale.scaledCeil(height));
 		if (texWidth <= 0 || texHeight <= 0) {
-			throw new IllegalArgumentException("Invalid texture size: "
-					+ texWidth + "x" + texHeight);
+			throw new IllegalArgumentException("Invalid texture size: " + texWidth + "x" + texHeight);
 		}
 		int id = createTexture(config);
-		gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, null);
-		return new LTexture(this, id, config, texWidth,
-				texHeight, scale, width, height);
+		gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+		return new LTexture(this, id, config, texWidth, texHeight, scale, width, height);
 	}
 
 	public LTexture createTexture(Dimension size, LTexture.Format config) {
@@ -156,8 +148,7 @@ public abstract class Graphics {
 
 	public abstract TextLayout layoutText(String text, TextFormat format);
 
-	public abstract TextLayout[] layoutText(String text, TextFormat format,
-			TextWrap wrap);
+	public abstract TextLayout[] layoutText(String text, TextFormat format, TextWrap wrap);
 
 	private class DisposePort extends UnitPort {
 
@@ -181,8 +172,7 @@ public abstract class Graphics {
 	public LTexture finalColorTex() {
 		if (colorTex == null) {
 			Canvas canvas = createCanvas(1, 1);
-			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width,
-					canvas.height);
+			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width, canvas.height);
 			colorTex = canvas.toTexture(LTexture.Format.NEAREST);
 			colorTex.setDisabledTexture(true);
 		}
@@ -199,30 +189,41 @@ public abstract class Graphics {
 		return 0;
 	}
 
-	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth,
-			int pixelHeight);
+	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight);
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
 		Display d = game.display();
-		if (!LSystem.LOCK_SCREEN) {
-			LSystem.viewSize.setSize(
-					(int) (viewWidth / LSystem.getScaleWidth()),
-					(int) (viewHeight / LSystem.getScaleHeight()));
-			if (viewMatrix != null) {
-				LSystem.viewSize.getMatrix().mul(viewMatrix);
+		LSystem.viewSize.setSize((int) (viewWidth / LSystem.getScaleWidth()),
+				(int) (viewHeight / LSystem.getScaleHeight()));
+		if (viewMatrix != null) {
+			LSystem.viewSize.getMatrix().mul(viewMatrix);
+		}
+		this.scale = scale;
+		this.viewPixelWidth = viewWidth;
+		this.viewPixelHeight = viewHeight;
+		this.viewSizeM.width = game.setting.scaling() ? LSystem.invXScaled(viewPixelWidth)
+				: scale.invScaled(viewPixelWidth);
+		this.viewSizeM.height = game.setting.scaling() ? LSystem.invXScaled(viewPixelHeight)
+				: scale.invScaled(viewPixelHeight);
+		if (d != null) {
+			d.resize(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		}
+	}
+
+	protected boolean isAllowResize(int viewWidth, int viewHeight) {
+		if (game.setting.isCheckReisze) {
+			Dimension size = this.screenSize();
+			if (size == null || size.width <= 0 || size.height <= 0) {
+				return true;
 			}
-			this.scale = scale;
-			this.viewPixelWidth = viewWidth;
-			this.viewPixelHeight = viewHeight;
-			this.viewSizeM.width = game.setting.scaling() ? LSystem
-					.invXScaled(viewPixelWidth) : scale
-					.invScaled(viewPixelWidth);
-			this.viewSizeM.height = game.setting.scaling() ? LSystem
-					.invXScaled(viewPixelHeight) : scale
-					.invScaled(viewPixelHeight);
-			if (d != null) {
-				d.resize(viewPixelWidth, viewPixelHeight);
+			if (game.setting.landscape() && viewWidth > viewHeight) {
+				return true;
+			} else if (viewWidth < viewHeight) {
+				return true;
 			}
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -239,14 +240,11 @@ public abstract class Graphics {
 			return createTexture(config, 1);
 		}
 		GLUtils.bindTexture(gl, id);
-		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				config.magFilter);
+		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, config.magFilter);
 		int minFilter = mipmapify(config.minFilter, config.mipmaps);
 		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				config.repeatX ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				config.repeatY ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, config.repeatX ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, config.repeatY ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		return id;
 	}
 

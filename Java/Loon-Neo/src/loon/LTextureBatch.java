@@ -53,68 +53,62 @@ public class LTextureBatch implements LRelease {
 
 	public boolean quad = true;
 
-	public static boolean isBatchCacheDitry;
+	private final static IntMap<LTextureBatch> BATCH_POOLS = new IntMap<LTextureBatch>(10);
 
-	private final static IntMap<LTextureBatch> batchPools = new IntMap<LTextureBatch>(10);
+	public final static int batchCacheSize() {
+		return BATCH_POOLS.size;
+	}
 
 	public final static void clearBatchCaches() {
-		if (batchPools == null || batchPools.size == 0) {
+		if (BATCH_POOLS == null || BATCH_POOLS.size == 0) {
 			return;
 		}
-		if (LTextureBatch.isBatchCacheDitry) {
-			IntMap<LTextureBatch> batchCaches;
-			synchronized (batchPools) {
-				batchCaches = new IntMap<LTextureBatch>(batchPools);
-				batchPools.clear();
-			}
-			for (LTextureBatch bt : batchCaches.values()) {
-				if (bt != null) {
-					synchronized (bt) {
-						bt.close();
-						bt = null;
-					}
+		IntMap<LTextureBatch> batchCaches;
+		synchronized (BATCH_POOLS) {
+			batchCaches = new IntMap<LTextureBatch>(BATCH_POOLS);
+		}
+		for (LTextureBatch bt : batchCaches.values()) {
+			if (bt != null) {
+				synchronized (bt) {
+					bt.close();
+					bt = null;
 				}
 			}
-			batchCaches = null;
-			LTextureBatch.isBatchCacheDitry = false;
 		}
+		BATCH_POOLS.clear();
+		batchCaches = null;
 	}
 
-	public final static LTextureBatch bindBatchCache(final LTexture texture) {
-		return bindBatchCache(0, texture);
-	}
-
-	public final static LTextureBatch bindBatchCache(final int index, final LTexture texture) {
+	public final static LTextureBatch getBatchCache(LTexture texture) {
 		if (texture == null) {
 			return null;
 		}
-		int texId = texture.getID();
-		return bindBatchCache(index, texId, texture);
+		return BATCH_POOLS.get(texture.getID());
 	}
 
-	public final static LTextureBatch bindBatchCache(final Object o, final int texId, final LTexture texture) {
-		return bindBatchCache(o.hashCode(), texId, texture);
-	}
-
-	public final static LTextureBatch bindBatchCache(final int index, final int texId, final LTexture texture) {
-		if (batchPools.size > 128) {
+	public final static LTextureBatch bindBatchCache(LTextureBatch batch) {
+		if (BATCH_POOLS.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			clearBatchCaches();
 		}
-		int key = LSystem.unite(index, texId);
-		LTextureBatch pBatch = batchPools.get(key);
+		int key = batch.getTextureID();
+		LTextureBatch pBatch = BATCH_POOLS.get(key);
 		if (pBatch == null) {
-			synchronized (batchPools) {
-				pBatch = new LTextureBatch(texture);
-				batchPools.put(key, pBatch);
+			pBatch = batch;
+			synchronized (BATCH_POOLS) {
+				BATCH_POOLS.put(key, pBatch);
 			}
 		}
 		return pBatch;
 	}
 
-	public final static LTextureBatch disposeBatchCache(int texId) {
-		synchronized (batchPools) {
-			LTextureBatch pBatch = batchPools.remove(texId);
-			if (pBatch != null) {
+	public final static LTextureBatch disposeBatchCache(LTextureBatch batch) {
+		return disposeBatchCache(batch, true);
+	}
+
+	public final static LTextureBatch disposeBatchCache(LTextureBatch batch, boolean closed) {
+		synchronized (BATCH_POOLS) {
+			LTextureBatch pBatch = BATCH_POOLS.remove(batch.getTextureID());
+			if (closed && pBatch != null) {
 				synchronized (pBatch) {
 					pBatch.close();
 					pBatch = null;
@@ -614,10 +608,12 @@ public class LTextureBatch implements LRelease {
 		mesh.setGLType(type);
 	}
 
-	public void postLastCache() {
+	public boolean postLastCache() {
 		if (lastCache != null) {
 			commit(LSystem.base().graphics().getViewMatrix(), lastCache, null, lastBlendState);
+			return true;
 		}
+		return false;
 	}
 
 	public Cache getLastCache() {
@@ -625,7 +621,7 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public boolean existCache() {
-		return lastCache != null;
+		return lastCache != null && lastCache.count > 0;
 	}
 
 	public Cache newCache() {
@@ -636,11 +632,13 @@ public class LTextureBatch implements LRelease {
 		}
 	}
 
-	public void disposeLastCache() {
+	public boolean disposeLastCache() {
 		if (lastCache != null) {
 			lastCache.close();
 			lastCache = null;
+			return true;
 		}
+		return false;
 	}
 
 	private float xOff, yOff, widthRatio, heightRatio;
@@ -1229,10 +1227,29 @@ public class LTextureBatch implements LRelease {
 		}
 	}
 
+	public int getTextureID() {
+		if (texture != null) {
+			return texture.getID();
+		}
+		return -1;
+	}
+
+	public int getTextureHashCode() {
+		if (texture != null) {
+			return texture.hashCode();
+		}
+		return -1;
+	}
+
+	public boolean closed() {
+		return isClosed;
+	}
+
 	@Override
 	public void close() {
 		isClosed = true;
 		isLoaded = false;
+		isCacheLocked = false;
 		if (shader != null) {
 			shader.close();
 		}
@@ -1248,6 +1265,7 @@ public class LTextureBatch implements LRelease {
 		if (!defName.equals(name)) {
 			mesh.dispose(name, expandVertices.getSize());
 		}
+		disposeBatchCache(this, false);
 		runningCache = false;
 	}
 

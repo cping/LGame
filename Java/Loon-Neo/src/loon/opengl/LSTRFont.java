@@ -920,8 +920,6 @@ public class LSTRFont implements IFont {
 		displays.clear();
 		if (fontBatch != null) {
 			fontBatch.close();
-			LTextureBatch.isBatchCacheDitry = true;
-			LTextureBatch.clearBatchCaches();
 		}
 		if (texture != null) {
 			texture.close(true);

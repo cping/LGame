@@ -20,42 +20,45 @@
  */
 package loon.utils.reply;
 
-public class Var<T> extends AbstractValue<T>
-{
+public class Var<T> extends AbstractValue<T> {
 
-    public static <T> Var<T> create (T value) {
-        return new Var<T>(value);
-    }
+	protected T _value;
 
-    public Var (T value) {
-        _value = value;
-    }
+	public static <T> Var<T> create(T value) {
+		return new Var<T>(value);
+	}
 
-    public T update (T value) {
-        return updateAndNotifyIf(value);
-    }
+	public Var(T value) {
+		_value = value;
+	}
 
-    public T updateForce (T value) {
-        return updateAndNotify(value);
-    }
+	public T update(T value) {
+		return updateAndNotifyIf(value);
+	}
 
-    public Port<T> port () {
-        return new Port<T> () {
-            @Override public void onEmit (T value) {
-                update(value);
-            }
-        };
-    }
+	public T updateForce(T value) {
+		return updateAndNotify(value);
+	}
 
-    @Override public T get () {
-        return _value;
-    }
+	public Port<T> port() {
+		return new Port<T>() {
+			@Override
+			public void onEmit(T value) {
+				update(value);
+			}
+		};
+	}
 
-    @Override protected T updateLocal (T value) {
-        T oldValue = _value;
-        _value = value;
-        return oldValue;
-    }
+	@Override
+	public T get() {
+		return _value;
+	}
 
-    protected T _value;
+	@Override
+	protected T updateLocal(T value) {
+		T oldValue = _value;
+		_value = value;
+		return oldValue;
+	}
+
 }

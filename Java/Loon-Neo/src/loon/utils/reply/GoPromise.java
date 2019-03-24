@@ -65,8 +65,9 @@ public class GoPromise<T> extends GoFuture<T> {
 			@Override
 			protected synchronized Try<T> updateAndNotify(Try<T> value,
 					boolean force) {
-				if (_value != null)
+				if (_value != null){
 					throw new IllegalStateException("Already completed");
+				}
 				try {
 					return super.updateAndNotify(value, force);
 				} finally {

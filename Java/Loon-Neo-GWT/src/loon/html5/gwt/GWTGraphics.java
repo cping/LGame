@@ -198,7 +198,12 @@ public class GWTGraphics extends Graphics {
 		canvas.setHeight(scale().scaledCeil(height));
 		canvas.getStyle().setWidth(width, Style.Unit.PX);
 		canvas.getStyle().setHeight(height, Style.Unit.PX);
-		viewportChanged(scale(), canvas.getWidth(), canvas.getHeight());
+		int viewWidth = canvas.getWidth();
+		int viewHeight = canvas.getHeight();
+		if (!isAllowResize(viewWidth, viewHeight)) {
+			return;
+		}
+		viewportChanged(scale(), viewWidth, viewHeight);
 	}
 
 	public void registerFontMetrics(String name, Font font, float lineHeight) {

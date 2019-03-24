@@ -22,19 +22,6 @@ package loon.utils.reply;
 
 public interface Callback<T> {
 
-	public static abstract class Chain<T> implements Callback<T> {
-		private Callback<?> onFailure;
-
-		public Chain(Callback<?> onFailure) {
-			this.onFailure = onFailure;
-		}
-
-		@Override
-		public void onFailure(Throwable cause) {
-			onFailure.onFailure(cause);
-		}
-	}
-
 	void onSuccess(T result);
 
 	void onFailure(Throwable cause);

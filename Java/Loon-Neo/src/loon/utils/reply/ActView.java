@@ -22,7 +22,6 @@ package loon.utils.reply;
 
 public interface ActView<T>
 {
-
     interface Listener<T> extends Bypass.GoListener {
 
         void onEmit (T event);

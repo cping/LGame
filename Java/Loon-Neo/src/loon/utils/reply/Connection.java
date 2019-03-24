@@ -22,46 +22,10 @@ package loon.utils.reply;
 
 public abstract class Connection implements Closeable {
 
-	public static Connection join(final Connection... conns) {
-		return new Connection() {
-			@Override
-			public void close() {
-				for (Connection c : conns) {
-					c.close();
-				}
-			}
-
-			@Override
-			public Connection once() {
-				for (Connection c : conns) {
-					c.once();
-				}
-				return this;
-			}
-
-			@Override
-			public Connection setPriority(int priority) {
-				for (Connection c : conns) {
-					c.setPriority(priority);
-				}
-				return this;
-			}
-
-			@Override
-			public Connection holdWeakly() {
-				for (Connection c : conns) {
-					c.holdWeakly();
-				}
-				return this;
-			}
-		};
-	}
-
 	public abstract void close();
 
 	public abstract Connection once();
 
 	public abstract Connection setPriority(int priority);
 
-	public abstract Connection holdWeakly();
 }

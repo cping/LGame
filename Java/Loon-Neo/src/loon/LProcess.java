@@ -350,7 +350,6 @@ public class LProcess extends PlayerUtils {
 	public void resize(int w, int h) {
 		if (isInstance) {
 			_currentScreen.resetSize(w, h);
-			_currentScreen.resize(w, h);
 		}
 	}
 
@@ -406,12 +405,6 @@ public class LProcess extends PlayerUtils {
 			unloads.clear();
 		}
 		clearScreens();
-	}
-
-	public void calls() {
-		if (isInstance) {
-			LTextureBatch.clearBatchCaches();
-		}
 	}
 
 	public boolean next() {

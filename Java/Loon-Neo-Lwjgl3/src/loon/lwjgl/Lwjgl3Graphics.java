@@ -68,6 +68,9 @@ public class Lwjgl3Graphics extends Lwjgl3ImplGraphics {
 		if (scale != scale().factor) {
 			this.scale = new Scale(scale);
 		}
+		if (!isAllowResize(fbWidth, fbHeight)) {
+			return;
+		}
 		viewportChanged(scale(), fbWidth, fbHeight);
 	}
 
