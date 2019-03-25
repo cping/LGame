@@ -20,20 +20,19 @@
  */
 package loon.utils.xml;
 
-import java.util.Stack;
-
 import loon.BaseIO;
 import loon.LSystem;
+import loon.utils.TArray;
 
 public class XMLParser {
 
-	static final int OPEN_TAG = 0;
+	public static final int OPEN_TAG = 0;
 
-	static final int CLOSE_TAG = 1;
+	public static final int CLOSE_TAG = 1;
 
-	static final int OPEN_CLOSE_TAG = 2;
+	public static final int OPEN_CLOSE_TAG = 2;
 
-	private Stack<XMLElement> stack = new Stack<XMLElement>();
+	private TArray<XMLElement> stack = new TArray<XMLElement>();
 
 	private XMLElement topElement;
 
@@ -47,7 +46,7 @@ public class XMLParser {
 		} else {
 			this.topElement.addContents(root);
 		}
-		this.stack.push(root);
+		this.stack.add(root);
 		this.topElement = root;
 		if (l != null) {
 			l.addElement(idx, root);

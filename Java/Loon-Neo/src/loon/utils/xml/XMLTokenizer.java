@@ -52,13 +52,11 @@ public class XMLTokenizer {
 				i = i != 0 ? 0 : 1;
 			}
 			this.pointer += 1;
-		} while ((this.pointer < this.text.length())
-				&& ((this.text.charAt(this.pointer) != '>') || (i != 0)));
+		} while ((this.pointer < this.text.length()) && ((this.text.charAt(this.pointer) != '>') || (i != 0)));
 		if (this.pointer < this.text.length()) {
 			this.pointer += 1;
 		} else {
-			throw LSystem.runThrow(
-					"Tokenizer error: < without > at end of text");
+			throw LSystem.runThrow("Tokenizer error: < without > at end of text");
 		}
 		return this.text.substring(j, this.pointer);
 	}
@@ -72,9 +70,13 @@ public class XMLTokenizer {
 				i = i != 0 ? 0 : 1;
 			}
 			this.pointer += 1;
-		} while ((this.pointer < this.text.length())
-				&& ((this.text.charAt(this.pointer) != '<') || (i != 0)));
+		} while ((this.pointer < this.text.length()) && ((this.text.charAt(this.pointer) != '<') || (i != 0)));
 		return this.text.substring(j, this.pointer);
+	}
+
+	@Override
+	public String toString() {
+		return this.text;
 	}
 
 }

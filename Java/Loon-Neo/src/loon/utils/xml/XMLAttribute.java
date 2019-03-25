@@ -29,7 +29,7 @@ public class XMLAttribute {
 
 	private String value;
 
-	XMLElement element;
+	protected XMLElement element;
 
 	XMLAttribute(String n, String v) {
 		this.name = n;

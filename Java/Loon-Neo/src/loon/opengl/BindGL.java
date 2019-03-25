@@ -20,15 +20,25 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.event.Updateable;
 import loon.utils.GLUtils;
 
-public class BindGL implements Updateable {
+public abstract class BindGL implements Updateable {
 
 	public final GL20 gl;
+
 	protected int curTexId = -1;
 	protected int lastTexId = -1;
+
+	public BindGL() {
+		this(LSystem.base().graphics().gl);
+	}
+
+	public BindGL(GL20 gl) {
+		this.gl = gl;
+	}
 
 	public int getCurrentTextureID() {
 		return this.curTexId;
@@ -46,22 +56,13 @@ public class BindGL implements Updateable {
 		this.curTexId = id;
 	}
 
-	public void submit() {
+	public void clear() {
 		lastTexId = -1;
 		curTexId = -1;
 	}
 
-	public BindGL(GL20 gl) {
-		this.gl = gl;
-	}
-
 	public void bindTexture() {
 		GLUtils.bindTexture(gl, curTexId);
-	}
-
-	@Override
-	public void action(Object a) {
-
 	}
 
 }

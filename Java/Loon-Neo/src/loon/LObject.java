@@ -533,6 +533,20 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		_location.setY(y);
 	}
 
+	public void nextXY(float nextValue) {
+		setX(getX() + nextValue);
+		setY(getY() + nextValue);
+	}
+
+	public Vector2f getRoundedLocation(float x, float y) {
+		float nx = getX() + x;
+		float ny = getY() + y;
+		if ((nx + ny) % 2 == 1) {
+			y++;
+		}
+		return Vector2f.at(nx, ny);
+	}
+
 	public Vector2f getLocation() {
 		return _location;
 	}

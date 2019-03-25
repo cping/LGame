@@ -20,12 +20,13 @@
  */
 package loon.geom;
 
+import loon.action.map.GeometryUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class ShapeUtils {
+public class ShapeUtils extends GeometryUtils {
 
-	public static Vector2f calculateVector(float angle, float magnitude) {
+	public static final Vector2f calculateVector(float angle, float magnitude) {
 		Vector2f v = new Vector2f();
 		v.x = MathUtils.sin(MathUtils.toRadians(angle));
 		v.x *= magnitude;
@@ -34,13 +35,12 @@ public class ShapeUtils {
 		return v;
 	}
 
-	public static float calculateAngle(float x, float y, float x1, float y1) {
+	public static final float calculateAngle(float x, float y, float x1, float y1) {
 		float angle = MathUtils.atan2(y - y1, x - x1);
 		return (MathUtils.toDegrees(angle) - 90);
 	}
 
-	public static float updateAngle(float currentAngle, float targetAngle,
-			float step) {
+	public static final float updateAngle(float currentAngle, float targetAngle, float step) {
 		float pi = MathUtils.PI;
 
 		currentAngle = (currentAngle + pi * 2) % (pi * 2);
@@ -50,8 +50,7 @@ public class ShapeUtils {
 			return targetAngle;
 		}
 
-		if (2 * pi - currentAngle + targetAngle < pi
-				|| 2 * pi - targetAngle + currentAngle < pi) {
+		if (2 * pi - currentAngle + targetAngle < pi || 2 * pi - targetAngle + currentAngle < pi) {
 			if (currentAngle < targetAngle) {
 				currentAngle -= step;
 			} else {
@@ -67,7 +66,7 @@ public class ShapeUtils {
 		return (2 * pi + currentAngle) % (2 * pi);
 	}
 
-	public static float updateLine(float value, float target, float step) {
+	public static final float updateLine(float value, float target, float step) {
 		if (MathUtils.abs(value - target) < step)
 			return target;
 		if (value > target) {
@@ -76,7 +75,7 @@ public class ShapeUtils {
 		return value + step;
 	}
 
-	public static float getAngleDiff(float currentAngle, float targetAngle) {
+	public static final float getAngleDiff(float currentAngle, float targetAngle) {
 		float pi = MathUtils.PI;
 		currentAngle = (currentAngle + pi * 2) % (pi * 2);
 		targetAngle = (targetAngle + pi * 2) % (pi * 2);
@@ -93,23 +92,20 @@ public class ShapeUtils {
 		return diff;
 	}
 
-	public static Vector2f rotateVector(Vector2f v, Vector2f center, float angle) {
+	public static final Vector2f rotateVector(Vector2f v, Vector2f center, float angle) {
 		Vector2f result = new Vector2f();
 		float x = v.x - center.x;
 		float y = v.y - center.y;
-		result.x = MathUtils.cos(angle) * x - MathUtils.sin(angle) * y
-				+ center.x;
-		result.y = MathUtils.sin(angle) * x + MathUtils.cos(angle) * y
-				+ center.y;
+		result.x = MathUtils.cos(angle) * x - MathUtils.sin(angle) * y + center.x;
+		result.y = MathUtils.sin(angle) * x + MathUtils.cos(angle) * y + center.y;
 		return result;
 	}
 
-	public static Triangle triangulate(Vector2f[] vertices) {
+	public static final Triangle triangulate(Vector2f[] vertices) {
 		return triangulate(new TriangleBasic(), vertices);
 	}
 
-	public static Triangle triangulate(Triangle triangulator,
-			Vector2f[] vertices) {
+	public static final Triangle triangulate(Triangle triangulator, Vector2f[] vertices) {
 		int size = vertices.length;
 		for (int i = 0; i < size; i++) {
 			triangulator.addPolyPoint(vertices[i].x, vertices[i].y);
@@ -118,7 +114,7 @@ public class ShapeUtils {
 		return triangulator;
 	}
 
-	public static void calculateCenter(Vector2f[] vertices, Vector2f center) {
+	public static final void calculateCenter(Vector2f[] vertices, Vector2f center) {
 		center.x = 0f;
 		center.y = 0f;
 		for (int i = 0; i < vertices.length; i++) {
@@ -129,13 +125,13 @@ public class ShapeUtils {
 		center.y /= vertices.length;
 	}
 
-	public static void translateVertices(Vector2f[] vertices, Vector2f tx) {
+	public static final void translateVertices(Vector2f[] vertices, Vector2f tx) {
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i].addSelf(tx.x, tx.y);
 		}
 	}
 
-	public static void calculateBounds(Vector2f[] vertices, RectBox bounds) {
+	public static final void calculateBounds(Vector2f[] vertices, RectBox bounds) {
 		bounds.x = Float.MAX_VALUE;
 		bounds.y = Float.MAX_VALUE;
 
@@ -167,8 +163,7 @@ public class ShapeUtils {
 		}
 	}
 
-	public static void calculateConvexHull(TArray<Vector2f> points,
-			TArray<Vector2f> convexHullPoints) {
+	public static final void calculateConvexHull(TArray<Vector2f> points, TArray<Vector2f> convexHullPoints) {
 		if (points.size <= 1) {
 			return;
 		}
@@ -196,12 +191,11 @@ public class ShapeUtils {
 		} while (p != bot);
 	}
 
-	public static float area(Vector2f a, Vector2f b, Vector2f c) {
+	public static final float area(Vector2f a, Vector2f b, Vector2f c) {
 		return area(a.x, a.y, b.x, b.y, c.x, c.y);
 	}
 
-	public static float area(float x0, float y0, float x1, float y1, float x2,
-			float y2) {
+	public static final float area(float x0, float y0, float x1, float y1, float x2, float y2) {
 		return x1 * y2 - y1 * x2 + x2 * y0 - y2 * x0 + x0 * y1 - y0 * x1;
 	}
 }

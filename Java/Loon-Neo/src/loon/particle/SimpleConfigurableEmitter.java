@@ -152,7 +152,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		scaleY = new LinearInterpolator(curve, 0, 1);
 	}
 
-	public void setImageName(String imageName) {
+	public SimpleConfigurableEmitter setImageName(String imageName) {
 		if (StringUtils.isEmpty(imageName)) {
 			imageName = null;
 		}
@@ -163,6 +163,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		} else {
 			updateImage = true;
 		}
+		return this;
 	}
 
 	public String getImageName() {
@@ -381,21 +382,23 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		return false;
 	}
 
-	public void replay() {
+	public SimpleConfigurableEmitter replay() {
 		reset();
 		nextSpawn = 0;
 		leftToEmit = (int) emitCount.random();
 		timeout = (int) (length.random());
+		return this;
 	}
 
-	public void reset() {
+	public SimpleConfigurableEmitter reset() {
 		completed = false;
 		if (engine != null) {
 			engine.releaseAll(this);
 		}
+		return this;
 	}
 
-	public void replayCheck() {
+	public SimpleConfigurableEmitter replayCheck() {
 		if (completed()) {
 			if (engine != null) {
 				if (engine.getParticleCount() == 0) {
@@ -403,6 +406,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 				}
 			}
 		}
+		return this;
 	}
 
 	public interface Value {
@@ -422,8 +426,9 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 			return value;
 		}
 
-		public void setValue(float value) {
+		public SimpleValue setValue(float value) {
 			this.value = value;
+			return this;
 		}
 	}
 
@@ -439,8 +444,9 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 			return (MathUtils.random() * value);
 		}
 
-		public void setValue(float value) {
+		public RandomValue setValue(float value) {
 			this.value = value;
+			return this;
 		}
 
 		public float getValue() {
@@ -465,8 +471,9 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 			this.active = false;
 		}
 
-		public void setCurve(TArray<Vector2f> curve) {
+		public LinearInterpolator setCurve(TArray<Vector2f> curve) {
 			this.curve = curve;
+			return this;
 		}
 
 		public TArray<Vector2f> getCurve() {
@@ -493,24 +500,27 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 			return active;
 		}
 
-		public void setActive(boolean active) {
+		public LinearInterpolator setActive(boolean active) {
 			this.active = active;
+			return this;
 		}
 
 		public int getMax() {
 			return max;
 		}
 
-		public void setMax(int max) {
+		public LinearInterpolator setMax(int max) {
 			this.max = max;
+			return this;
 		}
 
 		public int getMin() {
 			return min;
 		}
 
-		public void setMin(int min) {
+		public LinearInterpolator setMin(int min) {
 			this.min = min;
+			return this;
 		}
 	}
 
@@ -526,8 +536,9 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		}
 	}
 
-	public void addColorPoint(float pos, LColor col) {
+	public SimpleConfigurableEmitter addColorPoint(float pos, LColor col) {
 		colors.add(new ColorRecord(pos, col));
+		return this;
 	}
 
 	public class Range {
@@ -551,24 +562,27 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 			return enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		public Range setEnabled(boolean enabled) {
 			this.enabled = enabled;
+			return this;
 		}
 
 		public float getMax() {
 			return max;
 		}
 
-		public void setMax(float max) {
+		public Range setMax(float max) {
 			this.max = max;
+			return this;
 		}
 
 		public float getMin() {
 			return min;
 		}
 
-		public void setMin(float min) {
+		public Range setMin(float min) {
 			this.min = min;
+			return this;
 		}
 	}
 
@@ -606,7 +620,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 
 	@Override
 	public String toString() {
-		return "[" + name + "]";
+		return "SimpleConfigurableEmitter [" + name + "]";
 	}
 
 }

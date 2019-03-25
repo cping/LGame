@@ -37,6 +37,9 @@ import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 
+/**
+ * Loon的基础资源加载器
+ */
 public abstract class BaseIO extends DefUI {
 
 	public final static GoFuture<String> loadAsynText(String path) {

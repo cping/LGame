@@ -316,14 +316,15 @@ public class SimpleParticleSystem extends Entity {
 		return dummy;
 	}
 
-	public void release(SimpleParticle particle) {
+	public SimpleParticleSystem release(SimpleParticle particle) {
 		if (particle != dummy) {
 			ParticlePool pool = particlesByEmitter.get(particle.getEmitter());
 			pool.available.add(particle);
 		}
+		return this;
 	}
 
-	public void releaseAll(SimpleEmitter emitter) {
+	public SimpleParticleSystem releaseAll(SimpleEmitter emitter) {
 		if (!particlesByEmitter.isEmpty()) {
 			Iterator<ParticlePool> it = particlesByEmitter.values().iterator();
 			while (it.hasNext()) {
@@ -338,23 +339,26 @@ public class SimpleParticleSystem extends Entity {
 				}
 			}
 		}
+		return this;
 	}
 
-	public void moveAll(SimpleEmitter emitter, float x, float y) {
+	public SimpleParticleSystem moveAll(SimpleEmitter emitter, float x, float y) {
 		ParticlePool pool = particlesByEmitter.get(emitter);
 		for (int i = 0; i < pool.particles.length; i++) {
 			if (pool.particles[i].inUse()) {
 				pool.particles[i].move(x, y);
 			}
 		}
+		return this;
 	}
 
 	public int getBlendingState() {
 		return state;
 	}
 
-	public void setBlendingState(int s) {
+	public SimpleParticleSystem setBlendingState(int s) {
 		this.state = s;
+		return this;
 	}
 
 }

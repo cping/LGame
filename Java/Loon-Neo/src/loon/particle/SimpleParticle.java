@@ -75,9 +75,10 @@ public class SimpleParticle {
 		return y;
 	}
 
-	public void move(float x, float y) {
+	public SimpleParticle move(float x, float y) {
 		this.x += x;
 		this.y += y;
+		return this;
 	}
 
 	public float getSize() {
@@ -88,8 +89,9 @@ public class SimpleParticle {
 		return color;
 	}
 
-	public void setImage(LTexture image) {
+	public SimpleParticle setImage(LTexture image) {
 		this.image = image;
+		return this;
 	}
 
 	public float getOriginalLife() {
@@ -104,7 +106,7 @@ public class SimpleParticle {
 		return life > 0;
 	}
 
-	public void paint(GLEx g) {
+	public SimpleParticle paint(GLEx g) {
 		if ((engine.usePoints() && (usePoints == INHERIT_POINTS))
 				|| (usePoints == USE_POINTS)) {
 			g.drawPoint(velx, scaleY, color.getARGB());
@@ -116,9 +118,10 @@ public class SimpleParticle {
 			image.draw((x - (size / 2)), (y - (size / 2)), size, size, angle,
 					color);
 		}
+		return this;
 	}
 
-	public void update(long delta) {
+	public SimpleParticle update(long delta) {
 		emitter.updateParticle(this, delta);
 		life -= delta;
 		if (life > 0) {
@@ -127,9 +130,10 @@ public class SimpleParticle {
 		} else {
 			engine.release(this);
 		}
+		return this;
 	}
 
-	public void init(SimpleEmitter emitter, float life) {
+	public SimpleParticle init(SimpleEmitter emitter, float l) {
 		x = 0;
 		this.emitter = emitter;
 		y = 0;
@@ -137,45 +141,53 @@ public class SimpleParticle {
 		vely = 0;
 		size = 10;
 		type = 0;
-		this.originalLife = this.life = life;
+		this.originalLife = this.life = l;
 		oriented = false;
 		scaleY = 1.0f;
+		return this;
 	}
 
-	public void setType(int type) {
+	public SimpleParticle setType(int type) {
 		this.type = type;
+		return this;
 	}
 
-	public void setUsePoint(int usePoints) {
+	public SimpleParticle setUsePoint(int usePoints) {
 		this.usePoints = usePoints;
+		return this;
 	}
 
 	public int getType() {
 		return type;
 	}
 
-	public void setSize(float size) {
+	public SimpleParticle setSize(float size) {
 		this.size = size;
+		return this;
 	}
 
-	public void adjustSize(float delta) {
+	public SimpleParticle adjustSize(float delta) {
 		size += delta;
 		size = MathUtils.max(0, size);
+		return this;
 	}
 
-	public void setLife(float life) {
+	public SimpleParticle setLife(float life) {
 		this.life = life;
+		return this;
 	}
 
-	public void adjustLife(float delta) {
+	public SimpleParticle adjustLife(float delta) {
 		life += delta;
+		return this;
 	}
 
-	public void kill() {
+	public SimpleParticle kill() {
 		life = 1;
+		return this;
 	}
 
-	public void setColor(float r, float g, float b, float a) {
+	public SimpleParticle setColor(float r, float g, float b, float a) {
 		if (color.equals(LColor.white)) {
 			color = new LColor(r, g, b, a);
 		} else {
@@ -184,36 +196,42 @@ public class SimpleParticle {
 			color.b = b;
 			color.a = a;
 		}
+		return this;
 	}
 
-	public void setPosition(float x, float y) {
+	public SimpleParticle setPosition(float x, float y) {
 		this.x = x;
 		this.y = y;
+		return this;
 	}
 
-	public void setVelocity(float dirx, float diry, float speed) {
+	public SimpleParticle setVelocity(float dirx, float diry, float speed) {
 		this.velx = dirx * speed;
 		this.vely = diry * speed;
+		return this;
 	}
 
-	public void setSpeed(float speed) {
+	public SimpleParticle setSpeed(float speed) {
 		float currentSpeed = MathUtils.sqrt((velx * velx) + (vely * vely));
 		velx *= speed;
 		vely *= speed;
 		velx /= currentSpeed;
 		vely /= currentSpeed;
+		return this;
 	}
 
-	public void setVelocity(float velx, float vely) {
+	public SimpleParticle setVelocity(float velx, float vely) {
 		setVelocity(velx, vely, 1);
+		return this;
 	}
 
-	public void adjustPosition(float dx, float dy) {
+	public SimpleParticle adjustPosition(float dx, float dy) {
 		x += dx;
 		y += dy;
+		return this;
 	}
 
-	public void adjustColor(float r, float g, float b, float a) {
+	public SimpleParticle adjustColor(float r, float g, float b, float a) {
 		if (color == null) {
 			color = new LColor(1, 1, 1, 1f);
 		}
@@ -221,9 +239,10 @@ public class SimpleParticle {
 		color.g += g;
 		color.b += b;
 		color.a += a;
+		return this;
 	}
 
-	public void adjustColor(int r, int g, int b, int a) {
+	public SimpleParticle adjustColor(int r, int g, int b, int a) {
 		if (color == null) {
 			color = new LColor(1, 1, 1, 1f);
 		}
@@ -232,11 +251,13 @@ public class SimpleParticle {
 		color.g += (g / 255.0f);
 		color.b += (b / 255.0f);
 		color.a += (a / 255.0f);
+		return this;
 	}
 
-	public void adjustVelocity(float dx, float dy) {
+	public SimpleParticle adjustVelocity(float dx, float dy) {
 		velx += dx;
 		vely += dy;
+		return this;
 	}
 
 	public SimpleEmitter getEmitter() {
@@ -247,8 +268,9 @@ public class SimpleParticle {
 		return oriented;
 	}
 
-	public void setOriented(boolean oriented) {
+	public SimpleParticle setOriented(boolean oriented) {
 		this.oriented = oriented;
+		return this;
 	}
 
 	public float getScaleY() {

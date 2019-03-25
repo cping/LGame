@@ -40,6 +40,7 @@ public class XMLDocument implements LRelease {
 		return this.header;
 	}
 
+	@Override
 	public String toString() {
 		return this.header + this.root.toString();
 	}

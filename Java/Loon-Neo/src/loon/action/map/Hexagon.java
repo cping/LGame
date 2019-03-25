@@ -28,7 +28,7 @@ public class Hexagon implements Geometry {
 	protected int x, y, halfWidth, midHeight, endHeight;
 
 	public Hexagon() {
-
+		this(0, 0, 0, 0, 0);
 	}
 
 	public Hexagon(int x, int y, int halfWidth, int midHeight, int endHeight) {
@@ -76,8 +76,7 @@ public class Hexagon implements Geometry {
 	@Override
 	public RectBox getFrameRect() {
 		if (frameRect == null) {
-			frameRect = new RectBox(x, y, x + halfWidth + halfWidth, y
-					+ endHeight + midHeight + endHeight);
+			frameRect = new RectBox(x, y, x + halfWidth + halfWidth, y + endHeight + midHeight + endHeight);
 		}
 		return frameRect;
 	}
@@ -87,8 +86,7 @@ public class Hexagon implements Geometry {
 	@Override
 	public int[] getCenter() {
 		if (center == null) {
-			center = new int[] { x + halfWidth,
-					y + endHeight + (midHeight >> 1) };
+			center = new int[] { x + halfWidth, y + endHeight + (midHeight >> 1) };
 		}
 		return center;
 	}
@@ -103,10 +101,8 @@ public class Hexagon implements Geometry {
 			int y1 = y + endHeight;
 			int y2 = y + endHeight + midHeight;
 			int y3 = y + endHeight + midHeight + endHeight;
-			endpoints = new int[][] { new int[] { x1, y },
-					new int[] { x2, y1 }, new int[] { x2, y2 },
-					new int[] { x1, y3 }, new int[] { x, y2 },
-					new int[] { x, y1 } };
+			endpoints = new int[][] { new int[] { x1, y }, new int[] { x2, y1 }, new int[] { x2, y2 },
+					new int[] { x1, y3 }, new int[] { x, y2 }, new int[] { x, y1 } };
 		}
 		return endpoints;
 	}

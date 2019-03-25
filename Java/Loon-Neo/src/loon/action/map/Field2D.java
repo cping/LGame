@@ -20,10 +20,10 @@
  */
 package loon.action.map;
 
+import loon.action.collision.CollisionHelper;
 import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileHelper;
 import loon.geom.RectBox;
-import loon.geom.RectI;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.IntMap;
@@ -40,9 +40,9 @@ public class Field2D implements Config {
 	private RectBox _rect = null;
 
 	private Tile _tileImpl;
-	
+
 	private String _name = "Field2D";
-	
+
 	public Object Tag;
 
 	public static int angle(Vector2f source, Vector2f target) {
@@ -357,9 +357,12 @@ public class Field2D implements Config {
 		return true;
 	}
 
+	public boolean inside(int x, int y) {
+		return CollisionHelper.intersect(0, 0, width * tileWidth, height * tileHeight, x, y);
+	}
+
 	public boolean inside(float x, float y) {
-		RectI rect = new RectI(0, 0, width * tileWidth, height * tileHeight);
-		return rect.inside((int) x, (int) y);
+		return inside((int) x, (int) y);
 	}
 
 	public boolean isHit(int px, int py) {
@@ -367,7 +370,6 @@ public class Field2D implements Config {
 		if (type == -1) {
 			return false;
 		}
-
 		if (limit != null) {
 			for (int i = 0; i < limit.length; i++) {
 				if (limit[i] == type) {
@@ -476,13 +478,13 @@ public class Field2D implements Config {
 		}
 		return _rect;
 	}
-	
-	public Field2D setValues(int val){
+
+	public Field2D setValues(int val) {
 		int w = data[0].length;
 		int h = data.length;
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				 data[i][j] = val;
+				data[i][j] = val;
 			}
 		}
 		return this;

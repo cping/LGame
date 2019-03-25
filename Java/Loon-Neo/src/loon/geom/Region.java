@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import loon.utils.MathUtils;
+
 /**
  * 用以保存两个数值的区间
  */
@@ -50,6 +52,10 @@ public class Region {
 		return end;
 	}
 
+	public int random() {
+		return (int) (start + (MathUtils.random() * (end - start)));
+	}
+	
 	@Override
 	public String toString() {
 		return "region [start=" + start + ", end=" + end + "]";

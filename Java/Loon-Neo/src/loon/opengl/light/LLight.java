@@ -58,7 +58,7 @@ public abstract class LLight {
 		this.height = height;
 	}
 
-	public void setColor(int corner, float r, float g, float b, float a) {
+	public LLight setColor(int corner, float r, float g, float b, float a) {
 		if (colors == null) {
 			colors = new LColor[] { new LColor(1, 1, 1, 1f),
 					new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
@@ -69,6 +69,7 @@ public abstract class LLight {
 		colors[corner].g = g;
 		colors[corner].b = b;
 		colors[corner].a = a;
+		return this;
 	}
 
 	/**
@@ -78,7 +79,7 @@ public abstract class LLight {
 	 * @param x
 	 * @param y
 	 */
-	public void setLightColor(int x, int y) {
+	public LLight setLightColor(int x, int y) {
 		if (x < width && y < height) {
 			setColor(0, lightValue[x][y][0], lightValue[x][y][1],
 					lightValue[x][y][2], 1);
@@ -90,6 +91,7 @@ public abstract class LLight {
 					lightValue[x][y + 1][2], 1);
 			isLightDirty = true;
 		}
+		return this;
 	}
 
 	private void createLight() {
@@ -103,30 +105,33 @@ public abstract class LLight {
 		updateLight();
 	}
 
-	public void setMainLight(Light l) {
+	public LLight setMainLight(Light l) {
 		this.mainLight = l;
 		this.isLightDirty = true;
+		return this;
 	}
 
 	public Light getMainLight() {
 		return mainLight;
 	}
 
-	public void addLight(Light l) {
+	public LLight addLight(Light l) {
 		if (l != null) {
 			this.lights.add(l);
 			this.isLightDirty = true;
 		}
+		return this;
 	}
 
-	public void removeLight(Light l) {
+	public LLight removeLight(Light l) {
 		if (l != null) {
 			this.lights.remove(l);
 			this.isLightDirty = true;
 		}
+		return this;
 	}
 
-	public void setLight(boolean l) {
+	public LLight setLight(boolean l) {
 		if (lightValue == null && l) {
 			createLight();
 		}
@@ -134,20 +139,22 @@ public abstract class LLight {
 		if (!l) {
 			colors = null;
 		}
+		return this;
 	}
 
 	public boolean isLight() {
 		return lightingOn;
 	}
 
-	public void clearLight() {
+	public LLight clearLight() {
 		if (lights != null) {
 			this.lights.clear();
 			this.isLightDirty = true;
 		}
+		return this;
 	}
 
-	public void updateLight() {
+	public LLight updateLight() {
 		if (mainLight == null) {
 			throw LSystem.runThrow("the main light is null !");
 		}
@@ -171,6 +178,7 @@ public abstract class LLight {
 			}
 		}
 		this.isLightDirty = true;
+		return this;
 	}
 
 	// 地图光源用类

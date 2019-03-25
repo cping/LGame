@@ -23,8 +23,8 @@ package loon.opengl.light;
 import loon.canvas.LColor;
 import loon.geom.Vector3f;
 
-
 public class DirectionalLight extends BaseLight {
+	
 	public final Vector3f direction = new Vector3f();
 	
 	public DirectionalLight set(final DirectionalLight copyFrom) {

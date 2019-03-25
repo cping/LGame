@@ -28,6 +28,7 @@ public class XMLComment {
 		return this.text;
 	}
 
+	@Override
 	public String toString() {
 		return "<!--" + this.text + "-->";
 	}

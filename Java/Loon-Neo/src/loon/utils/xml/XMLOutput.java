@@ -24,13 +24,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.Stack;
 
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class XMLOutput extends Writer {
 
-	private final Stack<String> _stack = new Stack<String>();
+	private final TArray<String> _stack = new TArray<String>();
 
 	private final Writer _writer;
 
@@ -75,7 +75,7 @@ public class XMLOutput extends Writer {
 			return false;
 		}
 		_count++;
-		_stack.push(_currentElement);
+		_stack.add(_currentElement);
 		_currentElement = null;
 		_writer.write(">");
 		return true;
@@ -138,6 +138,7 @@ public class XMLOutput extends Writer {
 		}
 	}
 
+	@Override
 	public void close() throws IOException {
 		while (_stack.size() != 0) {
 			end();
@@ -145,15 +146,18 @@ public class XMLOutput extends Writer {
 		_writer.close();
 	}
 
+	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
 		content();
 		_writer.write(cbuf, off, len);
 	}
 
+	@Override
 	public void flush() throws IOException {
 		_writer.flush();
 	}
 
+	@Override
 	public String toString() {
 		return _writer.toString();
 	}

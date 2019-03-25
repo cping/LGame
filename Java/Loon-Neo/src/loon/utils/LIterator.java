@@ -28,5 +28,6 @@ public interface LIterator<E> extends Iterator<E>{
 
     E next();
 
+    @Override
     void remove();
 }
