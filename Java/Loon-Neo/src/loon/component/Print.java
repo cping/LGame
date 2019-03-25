@@ -45,13 +45,10 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	// they is other char flags
-	private final static char[] _wrapchars = { '\u3002', '\u3001', '\uff0c',
-			'\uff0e', '\u300d', '\uff3d', '\u3011', '\u300f', '\u30fc',
-			'\uff5e', '\uff09', '\u3041', '\u3043', '\u3045', '\u3047',
-			'\u3049', '\u30a1', '\u30a3', '\u30a5', '\u30a7', '\u30a9',
-			'\u30c3', '\u30e3', '\u30e5', '\u30e7', '\u30ee', '\u308e',
-			'\u3083', '\u3085', '\u3087', '\u3063', '\u2026', '\uff0d',
-			'\uff01', '\uff1f' };
+	private final static char[] _wrapchars = { '\u3002', '\u3001', '\uff0c', '\uff0e', '\u300d', '\uff3d', '\u3011',
+			'\u300f', '\u30fc', '\uff5e', '\uff09', '\u3041', '\u3043', '\u3045', '\u3047', '\u3049', '\u30a1',
+			'\u30a3', '\u30a5', '\u30a7', '\u30a9', '\u30c3', '\u30e3', '\u30e5', '\u30e7', '\u30ee', '\u308e',
+			'\u3083', '\u3085', '\u3087', '\u3063', '\u2026', '\uff0d', '\uff01', '\uff1f' };
 
 	private final static int _otherFlagsSize = _wrapchars.length;
 
@@ -65,8 +62,7 @@ public class Print implements FontSet<Print>, LRelease {
 	 * @param width
 	 * @return
 	 */
-	public static TArray<String> formatMessage(String text, IFont font,
-			int width) {
+	public static TArray<String> formatMessage(String text, IFont font, int width) {
 		TArray<String> list = new TArray<String>();
 
 		if (text == null) {
@@ -161,8 +157,7 @@ public class Print implements FontSet<Print>, LRelease {
 		this("", font, vector, width, height);
 	}
 
-	public Print(String context, IFont font, Vector2f vector, int width,
-			int height) {
+	public Print(String context, IFont font, Vector2f vector, int width, int height) {
 		this.setMessage(context, font);
 		this.vector = vector;
 		this.width = width;
@@ -187,8 +182,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 		private String _context = null;
 
-		private PrintUpdate(Print print, String context, IFont font,
-				boolean isComplete, boolean drawFont) {
+		private PrintUpdate(Print print, String context, IFont font, boolean isComplete, boolean drawFont) {
 			_print = print;
 			_context = context;
 			_font = font;
@@ -201,20 +195,17 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_context == null) {
 				return;
 			}
-			if (_print.strings != null && !_print.strings.isClose()
-					&& !_drawDrawingFont) {
+			if (_print.strings != null && !_print.strings.isClose() && !_drawDrawingFont) {
 				_print.strings.close();
 			}
 			// 如果是默认的loon系统字体
 			if (_font instanceof LFont) {
 				if (_drawDrawingFont) {
-					LSTRDictionary.Dict dict = LSTRDictionary.get().bind(
-							(LFont) _font, _context);
+					LSTRDictionary.Dict dict = LSTRDictionary.get().bind((LFont) _font, _context);
 					_print.strings = dict.getSTR();
 					_print.ifont = _font;
 				} else {
-					_print.strings = new LSTRFont((LFont) _font, _context,
-							LSystem.isHTML5());
+					_print.strings = new LSTRFont((LFont) _font, _context, LSystem.isHTML5());
 				}
 				// 其他字体(一般是Bitmap Font)
 			} else {
@@ -250,10 +241,8 @@ public class Print implements FontSet<Print>, LRelease {
 		setMessage(context, font, isComplete, false);
 	}
 
-	public void setMessage(String context, IFont font, boolean isComplete,
-			boolean drawFont) {
-		LSystem.load(new PrintUpdate(this, context, font, isComplete,
-				this.nativeFont = drawFont));
+	public void setMessage(String context, IFont font, boolean isComplete, boolean drawFont) {
+		LSystem.load(new PrintUpdate(this, context, font, isComplete, this.nativeFont = drawFont));
 	}
 
 	public String getMessage() {
@@ -303,8 +292,7 @@ public class Print implements FontSet<Print>, LRelease {
 	public void drawDefFont(GLEx g, LColor old) {
 		synchronized (showMessages) {
 			this.size = showMessages.length;
-			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : strings
-					.getSize());
+			this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : strings.getSize());
 			this.fontHeight = strings.getHeight();
 			switch (dirmode) {
 			default:
@@ -312,15 +300,13 @@ public class Print implements FontSet<Print>, LRelease {
 				this.tmp_dir = 2;
 				break;
 			case LEFT:
-				this.tmp_dir = (width - (fontSize * messageLength)) / 2
-						- (int) (fontSize * 1.5);
+				this.tmp_dir = (width - (fontSize * messageLength)) / 2 - (int) (fontSize * 1.5);
 				break;
 			case RIGHT:
 				this.tmp_dir = (fontSize * messageLength) / 2;
 				break;
 			case CENTER:
-				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2
-						+ (int) (fontSize * 4);
+				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2 + (int) (fontSize * 4);
 				break;
 			}
 			this.left = tmp_dir;
@@ -359,8 +345,7 @@ public class Print implements FontSet<Print>, LRelease {
 					interceptMaxString = 0;
 					interceptCount = 0;
 				}
-				if (showMessages[i] == 'n'
-						&& showMessages[i > 0 ? i - 1 : 0] == '\\') {
+				if (showMessages[i] == 'n' && showMessages[i > 0 ? i - 1 : 0] == '\\') {
 					index = 0;
 					left = tmp_dir;
 					offset++;
@@ -371,15 +356,13 @@ public class Print implements FontSet<Print>, LRelease {
 					offset++;
 					continue;
 				} else if (text == '<') {
-					LColor color = getColor(showMessages[i < size - 1 ? i + 1
-							: i]);
+					LColor color = getColor(showMessages[i < size - 1 ? i + 1 : i]);
 					if (color != null) {
 						interceptMaxString = 1;
 						fontColor = color;
 					}
 					continue;
-				} else if (showMessages[i > 0 ? i - 1 : i] == '<'
-						&& getColor(text) != null) {
+				} else if (showMessages[i > 0 ? i - 1 : i] == '<' && getColor(text) != null) {
 					continue;
 				} else if (text == '/') {
 					if (showMessages[i < size - 1 ? i + 1 : i] == '>') {
@@ -411,12 +394,10 @@ public class Print implements FontSet<Print>, LRelease {
 				}
 				if (i != size - 1) {
 					strings.addChar(text, vector.x + left + leftOffset,
-							(offset * fontHeight) + vector.y + fontSize
-									+ topOffset, fontColor);
+							(offset * fontHeight) + vector.y + fontSize + topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
 					iconX = vector.x + left + leftOffset;
-					iconY = (offset * fontHeight) + vector.y + fontSize
-							+ topOffset + strings.getAscent();
+					iconY = (offset * fontHeight) + vector.y + fontSize + topOffset + strings.getAscent();
 					if (iconX != 0 && iconY != 0) {
 						g.draw(creeseIcon, iconX, iconY);
 					}
@@ -439,12 +420,10 @@ public class Print implements FontSet<Print>, LRelease {
 		synchronized (showMessages) {
 			this.size = showMessages.length;
 			if (nativeFont) {
-				this.fontSize = (int) (isEnglish ? strings.getSize() / 2
-						: ifont.getSize());
+				this.fontSize = (int) (isEnglish ? strings.getSize() / 2 : ifont.getSize());
 				this.fontHeight = strings.getHeight();
 			} else {
-				this.fontSize = (int) (isEnglish ? ifont.getSize() / 2 : ifont
-						.getSize());
+				this.fontSize = (int) (isEnglish ? ifont.getSize() / 2 : ifont.getSize());
 				this.fontHeight = ifont.getHeight();
 			}
 			switch (dirmode) {
@@ -453,15 +432,13 @@ public class Print implements FontSet<Print>, LRelease {
 				this.tmp_dir = 0;
 				break;
 			case LEFT:
-				this.tmp_dir = (width - (fontSize * messageLength)) / 2
-						- (int) (fontSize * 1.5);
+				this.tmp_dir = (width - (fontSize * messageLength)) / 2 - (int) (fontSize * 1.5);
 				break;
 			case RIGHT:
 				this.tmp_dir = (fontSize * messageLength) / 2;
 				break;
 			case CENTER:
-				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2
-						+ (int) (fontSize * 4);
+				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2 + (int) (fontSize * 4);
 				break;
 			}
 			this.left = tmp_dir;
@@ -479,8 +456,7 @@ public class Print implements FontSet<Print>, LRelease {
 					interceptMaxString = 0;
 					interceptCount = 0;
 				}
-				if (showMessages[i] == 'n'
-						&& showMessages[i > 0 ? i - 1 : 0] == '\\') {
+				if (showMessages[i] == 'n' && showMessages[i > 0 ? i - 1 : 0] == '\\') {
 					index = 0;
 					left = tmp_dir;
 					offset++;
@@ -491,15 +467,13 @@ public class Print implements FontSet<Print>, LRelease {
 					offset++;
 					continue;
 				} else if (text == '<') {
-					LColor color = getColor(showMessages[i < size - 1 ? i + 1
-							: i]);
+					LColor color = getColor(showMessages[i < size - 1 ? i + 1 : i]);
 					if (color != null) {
 						interceptMaxString = 1;
 						fontColor = color;
 					}
 					continue;
-				} else if (showMessages[i > 0 ? i - 1 : i] == '<'
-						&& getColor(text) != null) {
+				} else if (showMessages[i > 0 ? i - 1 : i] == '<' && getColor(text) != null) {
 					continue;
 				} else if (text == '/') {
 					if (showMessages[i < size - 1 ? i + 1 : i] == '>') {
@@ -532,12 +506,10 @@ public class Print implements FontSet<Print>, LRelease {
 				}
 				if (i != size - 1) {
 					ifont.drawString(g, tmpText, vector.x + left + leftOffset,
-							(offset * fontHeight) + vector.y + fontSize
-									+ topOffset, fontColor);
+							(offset * fontHeight) + vector.y + fontSize + topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
 					iconX = vector.x + left + leftOffset;
-					iconY = (offset * fontHeight) + vector.y + fontSize
-							+ topOffset + ifont.getAscent();
+					iconY = (offset * fontHeight) + vector.y + fontSize + topOffset + ifont.getAscent();
 					if (iconX != 0 && iconY != 0) {
 						g.draw(creeseIcon, iconX, iconY);
 					}
@@ -615,8 +587,7 @@ public class Print implements FontSet<Print>, LRelease {
 					return false;
 				}
 				if (messageBuffer.length() > 0) {
-					messageBuffer.delete(messageBuffer.length() - 1,
-							messageBuffer.length());
+					messageBuffer.delete(messageBuffer.length() - 1, messageBuffer.length());
 				}
 				this.messageBuffer.append(messages.charAt(messageCount));
 				this.messageBuffer.append('_');
@@ -730,6 +701,17 @@ public class Print implements FontSet<Print>, LRelease {
 	@Override
 	public IFont getFont() {
 		return ifont;
+	}
+
+	@Override
+	public Print setFontColor(LColor color) {
+		this.fontColor = color;
+		return this;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return fontColor.cpy();
 	}
 
 	public boolean isWait() {

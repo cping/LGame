@@ -110,15 +110,15 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	private boolean tableHeaderVisible = true;
 
-	private LColor headerBackgroundColor = LColor.gray;
+	private LColor headerBackgroundColor = LColor.gray.cpy();
 
-	private LColor gridColor = LColor.gray;
+	private LColor gridColor = LColor.gray.cpy();
 
-	private LColor textColor = LColor.white;
+	private LColor textColor = LColor.white.cpy();
 
-	private LColor selectionColor = LColor.red.darker();
+	private LColor selectionColor = LColor.red.darker().cpy();
 
-	private LColor headTextColor = LColor.orange;
+	private LColor headTextColor = LColor.orange.cpy();
 
 	private IFont font;
 
@@ -628,41 +628,47 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return selectionCount;
 	}
 
-	public void distributeColumnWidthsEqually() {
+	public LTable distributeColumnWidthsEqually() {
 		if (model == null) {
 			throw new IllegalStateException("The table has no model!");
 		}
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].setWidth((int) (getWidth() / columns.length));
 		}
+		return this;
 	}
 
-	public void setColumnWidth(int columnIndex, int widthInPixel) {
+	public LTable setColumnWidth(int columnIndex, int widthInPixel) {
 		getColumn(columnIndex).setWidth(widthInPixel);
+		return this;
 	}
 
-	public void setColumnWidth(int columnIndex, float relativeWidth) {
+	public LTable setColumnWidth(int columnIndex, float relativeWidth) {
 		getColumn(columnIndex).setRelativeWidth(relativeWidth);
+		return this;
 	}
 
 	public boolean isMultipleSelection() {
 		return multipleSelection;
 	}
 
-	public void setMultipleSelection(boolean multipleSelection) {
+	public LTable setMultipleSelection(boolean multipleSelection) {
 		this.multipleSelection = multipleSelection;
+		return this;
 	}
 
-	public void clearSelection() {
+	public LTable clearSelection() {
 		for (int i = 0; i < selected.length; i++) {
 			selected[i] = false;
 		}
+		return this;
 	}
 
-	public void layout() {
+	public LTable layout() {
 		if (model != null && columns.length > 0 && getColumnWidth(0) == -1) {
 			distributeColumnWidthsEqually();
 		}
+		return this;
 	}
 
 	public int getSelection() {
@@ -720,8 +726,9 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return columnMinWidth;
 	}
 
-	public void setColumnMinWidth(int columnMinWidth) {
+	public LTable setColumnMinWidth(int columnMinWidth) {
 		this.columnMinWidth = columnMinWidth;
+		return this;
 	}
 
 	public int getColumnWidth(int columnIndex) {
@@ -739,21 +746,35 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return headerTexture;
 	}
 
-	public void setHeaderTexture(LTexture headerTexture) {
+	public LTable setHeaderTexture(LTexture headerTexture) {
 		this.headerTexture = headerTexture;
+		return this;
 	}
 
 	public LTexture getBackgroundTexture() {
 		return backgroundTexture;
 	}
 
-	public void setBackgroundTexture(LTexture backgroundTexture) {
+	public LTable setBackgroundTexture(LTexture backgroundTexture) {
 		this.backgroundTexture = backgroundTexture;
+		return this;
 	}
 
+	@Override
+	public LTable setFontColor(LColor color) {
+		this.textColor = color;
+		return this;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return textColor.cpy();
+	}
+	
 	@Override
 	public String getUIName() {
 		return "Table";
 	}
+
 
 }

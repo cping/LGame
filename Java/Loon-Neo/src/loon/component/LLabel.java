@@ -26,6 +26,7 @@ import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.Font.Style;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.Text;
@@ -48,7 +49,7 @@ import loon.opengl.GLEx;
  * LLabel label = LLabel.make("ABC", 99, 99, LColor.red);
  * </pre>
  */
-public class LLabel extends LComponent {
+public class LLabel extends LComponent implements FontSet<LLabel>{
 
 	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, int size, LTexture tex, LColor c) {
 		IFont font = LFont.getFont(size);
@@ -146,6 +147,8 @@ public class LLabel extends LComponent {
 	private final Text _text;
 
 	private float _offsetX, _offsetY;
+	
+	private LColor _fontColor;
 
 	public LLabel(HorizontalAlign alignment, IFont font, LColor c, LTexture bg, String mes, int x, int y, int width,
 			int height) {
@@ -161,7 +164,7 @@ public class LLabel extends LComponent {
 			int y, int width, int height) {
 		super(x, y, width, height);
 		this.setBackground(bg);
-		this.baseColor = c;
+		this._fontColor = c;
 		opt.setHorizontalAlign(alignment);
 		this._text = new Text(font, mes, opt);
 		if (bg == null) {
@@ -176,7 +179,7 @@ public class LLabel extends LComponent {
 	}
 
 	public void draw(GLEx g, int x, int y) {
-		_text.paintString(g, x + _offsetX, y + _offsetY, baseColor);
+		_text.paintString(g, x + _offsetX, y + _offsetY, _fontColor);
 	}
 
 	public IFont getFont() {
@@ -200,30 +203,44 @@ public class LLabel extends LComponent {
 		return _offsetX;
 	}
 
-	public void setOffsetLeft(float offsetLeft) {
+	public LLabel setOffsetLeft(float offsetLeft) {
 		this._offsetX = offsetLeft;
+		return this;
 	}
 
 	public float getOffsetTop() {
 		return _offsetY;
 	}
 
-	public void setOffsetTop(float offsetTop) {
+	public LLabel setOffsetTop(float offsetTop) {
 		this._offsetY = offsetTop;
+		return this;
 	}
 
 	public float getSpace() {
 		return _text.getSpace();
 	}
 
-	public void setSpace(float space) {
+	public LLabel setSpace(float space) {
 		this._text.setSpace(space);
+		return this;
 	}
 
 	public Text getOptions() {
 		return this._text;
 	}
 
+	@Override
+	public LLabel setFontColor(LColor color) {
+		_fontColor = color;
+		return this;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return _fontColor.cpy();
+	}
+	
 	@Override
 	public String getUIName() {
 		return "Label";
@@ -234,5 +251,12 @@ public class LLabel extends LComponent {
 		super.close();
 		_text.close();
 	}
+
+	@Override
+	public LLabel setFont(IFont font) {
+		this._text.setFont(font);
+		return this;
+	}
+
 
 }

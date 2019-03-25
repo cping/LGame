@@ -305,7 +305,7 @@ public class LLayer extends ActorLayer {
 							actorY,
 							width,
 							height,
-							baseColor == null ? thing.filterColor : baseColor
+							_component_baseColor == null ? thing.filterColor : _component_baseColor
 									.mul(thing.filterColor), thing
 									.getRotation(), thing.scaleX, thing.scaleY,
 							thing.flipX, thing.flipY);

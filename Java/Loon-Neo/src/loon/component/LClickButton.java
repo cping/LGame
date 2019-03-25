@@ -180,24 +180,24 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		if (grayButton) {
 			if (!isEnabled()) {
 				g.draw(clickedClick, x, y, getWidth(), getHeight(),
-						baseColor == null ? LColor.gray : baseColor.mul(LColor.gray));
+						_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
 			} else if (isTouchPressed()) {
-				g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
+				g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else if (isTouchOver()) {
-				g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
+				g.draw(hoverClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else {
 				g.draw(idleClick, x, y, getWidth(), getHeight(),
-						baseColor == null ? LColor.gray : baseColor.mul(LColor.gray));
+						_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
 			}
 		} else {
 			if (!isEnabled()) {
-				g.draw(clickedClick, x, y, getWidth(), getHeight(), baseColor);
+				g.draw(clickedClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else if (isTouchPressed()) {
-				g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
+				g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else if (isTouchOver()) {
-				g.draw(hoverClick, x, y, getWidth(), getHeight(), baseColor);
+				g.draw(hoverClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else {
-				g.draw(idleClick, x, y, getWidth(), getHeight(), baseColor);
+				g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			}
 		}
 		if (!StringUtils.isEmpty(text)) {
@@ -228,14 +228,16 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		}
 	}
 
-	public void checked() {
+	public LClickButton checked() {
 		this.pressed = true;
 		this.selected = true;
+		return this;
 	}
 
-	public void unchecked() {
+	public LClickButton unchecked() {
 		this.pressed = false;
 		this.selected = false;
+		return this;
 	}
 
 	public boolean isTouchOver() {
@@ -312,16 +314,18 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		return offsetLeft;
 	}
 
-	public void setOffsetLeft(int offsetLeft) {
+	public LClickButton setOffsetLeft(int offsetLeft) {
 		this.offsetLeft = offsetLeft;
+		return this;
 	}
 
 	public int getOffsetTop() {
 		return offsetTop;
 	}
 
-	public void setOffsetTop(int offsetTop) {
+	public LClickButton setOffsetTop(int offsetTop) {
 		this.offsetTop = offsetTop;
+		return this;
 	}
 
 	@Override
@@ -340,61 +344,69 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	public LClickButton setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 	public LTexture getIdleClick() {
 		return idleClick;
 	}
 
-	public void setIdleClick(LTexture idleClick) {
+	public LClickButton setIdleClick(LTexture idleClick) {
 		this.idleClick = idleClick;
+		return this;
 	}
 
 	public LTexture getHoverClick() {
 		return hoverClick;
 	}
 
-	public void setHoverClick(LTexture hoverClick) {
+	public LClickButton setHoverClick(LTexture hoverClick) {
 		this.hoverClick = hoverClick;
+		return this;
 	}
 
 	public LTexture getClickedClick() {
 		return clickedClick;
 	}
 
-	public void setClickedClick(LTexture clickedClick) {
+	public LClickButton setClickedClick(LTexture clickedClick) {
 		this.clickedClick = clickedClick;
+		return this;
 	}
 
-	public void setTexture(LTexture clickedClick) {
+	public LClickButton setTexture(LTexture clickedClick) {
 		this.clickedClick = clickedClick;
 		this.idleClick = clickedClick;
 		this.hoverClick = clickedClick;
+		return this;
 	}
 
-	public void setTexture(String path) {
+	public LClickButton setTexture(String path) {
 		setTexture(LTextures.loadTexture(path));
+		return this;
 	}
 
 	public boolean isGrayButton() {
 		return grayButton;
 	}
 
-	public void setGrayButton(boolean g) {
+	public LClickButton setGrayButton(boolean g) {
 		this.grayButton = g;
+		return this;
 	}
 
 	public CallFunction getFunction() {
 		return _function;
 	}
 
-	public void setFunction(CallFunction function) {
+	public LClickButton setFunction(CallFunction function) {
 		this._function = function;
+		return this;
 	}
 
 	@Override

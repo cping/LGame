@@ -101,7 +101,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	private String _dialogFileName;
 
 	private LTexture _dialogTexture;
-	
+
 	private boolean isSelectMessage, isScriptRunning, isGameRunning, scrFlag;
 
 	// 若需要任意处点击皆可继续脚本，此标记应为true
@@ -115,6 +115,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	private int clickButtonLayer = 200;
 
+	private LColor fontColor = LColor.white.cpy();
+	
 	private LColor gameColor;
 
 	protected Command command;
@@ -555,6 +557,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 				@Override
 				public void run(LTimerContext time) {
+					click.setFontColor(fontColor);
 					click.Tag = CommandType.L_OPTION + (click.getText() == null ? command.getIndex() : click.getText());
 					click.setLayer(clickButtonLayer);
 					getDesktop().add(click);
@@ -572,6 +575,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * @param order
 	 */
 	private final void setOpt(LClickButton click, String order) {
+		click.setFontColor(fontColor);
 		int startFlag = order.indexOf('{');
 		int endFlag = order.lastIndexOf('}');
 		if (startFlag != -1 && endFlag != -1 && endFlag > startFlag) {
@@ -708,7 +712,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 		}
 		this.messageUI = new LMessage(_font, _dialogTexture, 0, 0);
-		this.messageUI.setFontColor(LColor.white);
+		this.messageUI.setFontColor(fontColor);
 		int size = (int) (messageUI.getWidth() / (messageUI.getMessageFont().getSize()));
 		if (size % 2 != 0) {
 			size = size - 3;
@@ -720,6 +724,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		this.messageUI.setTopOffset(-5);
 		this.messageUI.setVisible(false);
 		this.selectUI = new LSelect(_font, _dialogTexture, messageUI.x(), messageUI.y());
+		this.selectUI.setFontColor(fontColor);
 		this.selectUI.setTopOffset(5);
 		this.scrCG = new AVGCG(this);
 		this.messageDesktop.add(messageUI);
@@ -1315,8 +1320,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						colors = new String[] { "0", "0", "0" };
 					}
 					if (gameColor == null && colors != null && colors.length == 3) {
-						gameColor = new LColor(Integer.valueOf(colors[0]).intValue(), Integer.valueOf(colors[1]).intValue(),
-								Integer.valueOf(colors[2]).intValue());
+						gameColor = new LColor(Integer.valueOf(colors[0]).intValue(),
+								Integer.valueOf(colors[1]).intValue(), Integer.valueOf(colors[2]).intValue());
 						scrCG.sleep = 20;
 						scrCG.sleepMax = scrCG.sleep;
 						scrFlag = false;
@@ -1370,7 +1375,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_EXIT)) {
 					scrFlag = true;
 					isGameRunning = false;
-					//用户的锅
+					// 用户的锅
 					onExit();
 					break;
 				}
@@ -1378,6 +1383,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		return this;
 	}
+
 	// todo
 	public abstract void onExit();
 
@@ -1800,8 +1806,23 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return clickButtonLayer;
 	}
 
-	public void setClickButtonLayer(int clickButtonLayer) {
+	public AVGScreen setClickButtonLayer(int clickButtonLayer) {
 		this.clickButtonLayer = clickButtonLayer;
+		return this;
+	}
+
+	@Override
+	public AVGScreen setFontColor(LColor color) {
+		if (color == null) {
+			return this;
+		}
+		this.fontColor = color;
+		return this;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return fontColor.cpy();
 	}
 
 	@Override

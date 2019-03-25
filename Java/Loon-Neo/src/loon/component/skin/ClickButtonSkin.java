@@ -88,11 +88,13 @@ public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 		return this;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	public ClickButtonSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 }

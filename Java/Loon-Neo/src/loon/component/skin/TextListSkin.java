@@ -99,10 +99,12 @@ public class TextListSkin implements FontSet<TextListSkin>{
 		this.scrollFlagBTexture = scrollFlagBTexture;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
+	@Override
 	public TextListSkin setFont(IFont font) {
 		this.font = font;
 		return this;
@@ -112,8 +114,9 @@ public class TextListSkin implements FontSet<TextListSkin>{
 		return fontColor;
 	}
 
-	public void setFontColor(LColor fontColor) {
+	public TextListSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 }

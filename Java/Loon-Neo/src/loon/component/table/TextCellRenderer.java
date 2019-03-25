@@ -71,8 +71,8 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 		return this.font;
 	}
 
-	public void setTextColor(LColor textColor) {
-		this.textColor = textColor;
+	public TextCellRenderer setTextColor(LColor textColor) {
+		return setFontColor(textColor);
 	}
 
 	public Dimension getCellContentSize(Object value) {
@@ -81,5 +81,16 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 		}
 		String s = value.toString();
 		return new Dimension(font.stringWidth(s), font.getHeight());
+	}
+
+	@Override
+	public TextCellRenderer setFontColor(LColor color) {
+		this.textColor = color;
+		return this;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return textColor.cpy();
 	}
 }

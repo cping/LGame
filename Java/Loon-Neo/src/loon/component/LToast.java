@@ -52,66 +52,56 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	};
 
 	public static LToast makeText(String text) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), null,
-				text, LENGTH_SHORT);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, LENGTH_SHORT);
 	}
 
 	public static LToast makeText(String text, Style style) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), null,
-				text, LENGTH_SHORT, style);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, LENGTH_SHORT, style);
 	}
 
 	public static LToast makeText(String text, int duration) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), null,
-				text, duration, Style.NORMAL);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, duration, Style.NORMAL);
 	}
 
 	public static LToast makeText(LComponent owner, String text) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), owner,
-				text, LENGTH_SHORT);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, LENGTH_SHORT);
 	}
 
 	public static LToast makeText(LComponent owner, String text, Style style) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), owner,
-				text, LENGTH_SHORT, style);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, LENGTH_SHORT, style);
 	}
 
 	public static LToast makeText(LComponent owner, String text, int duration) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), owner,
-				text, duration, Style.NORMAL);
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, duration, Style.NORMAL);
 	}
 
 	public static LToast makeText(IFont font, LComponent owner, String text) {
 		return makeText(font, owner, text, LENGTH_SHORT);
 	}
 
-	public static LToast makeText(IFont font, LComponent owner, String text,
-			Style style) {
+	public static LToast makeText(IFont font, LComponent owner, String text, Style style) {
 		return makeText(font, owner, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(IFont font, LComponent owner, String text,
-			int duration) {
+	public static LToast makeText(IFont font, LComponent owner, String text, int duration) {
 		return makeText(font, owner, text, duration, Style.NORMAL);
 	}
 
-	public static LToast makeText(IFont font, LComponent owner, String text,
-			int duration, Style style) {
+	public static LToast makeText(IFont font, LComponent owner, String text, int duration, Style style) {
 		LToast toast = null;
 		if (owner != null) {
 			if (owner instanceof LToast) {
 				return (LToast) owner;
 			} else if (owner instanceof LContainer) {
-				toast = new LToast(font, text, duration, owner.x(), owner.y(),
-						(int) owner.getWidth(), (int) owner.getHeight());
+				toast = new LToast(font, text, duration, owner.x(), owner.y(), (int) owner.getWidth(),
+						(int) owner.getHeight());
 				((LContainer) owner).add(toast);
 			} else {
-				toast = new LToast(font, text, duration, owner.x(), owner.y(),
-						(int) owner.getWidth(), (int) owner.getHeight());
+				toast = new LToast(font, text, duration, owner.x(), owner.y(), (int) owner.getWidth(),
+						(int) owner.getHeight());
 			}
 		} else {
-			toast = new LToast(font, text, duration, 0, 0,
-					LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+			toast = new LToast(font, text, duration, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 		}
 		if (style == Style.SUCCESS) {
 			toast.mBackgroundColor = SUCCESS_GRAY;
@@ -150,25 +140,20 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	private int mType;
 	private boolean autoClose = true;
 
-	public LToast(IFont font, String text, int duration, int x, int y,
-			int width, int height) {
-		this(font, SkinManager.get().getMessageSkin().getFontColor(), text,
-				duration, x, y, width, height);
+	public LToast(IFont font, String text, int duration, int x, int y, int width, int height) {
+		this(font, SkinManager.get().getMessageSkin().getFontColor(), text, duration, x, y, width, height);
 	}
 
-	public LToast(IFont font, LColor fontColor, String text, int duration,
-			int x, int y, int width, int height) {
+	public LToast(IFont font, LColor fontColor, String text, int duration, int x, int y, int width, int height) {
 		this(font, null, fontColor, text, duration, x, y, width, height);
 	}
 
-	public LToast(MessageSkin skin, String text, int duration, int x, int y,
-			int width, int height) {
-		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(),
-				text, duration, x, y, width, height);
+	public LToast(MessageSkin skin, String text, int duration, int x, int y, int width, int height) {
+		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text, duration, x, y, width, height);
 	}
 
-	public LToast(IFont font, LTexture backgounrd, LColor fontColor,
-			String text, int duration, int x, int y, int width, int height) {
+	public LToast(IFont font, LTexture backgounrd, LColor fontColor, String text, int duration, int x, int y, int width,
+			int height) {
 		super(x, y, width, height);
 		this._drawBackground = false;
 		this._background = backgounrd;
@@ -178,15 +163,13 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this.mDuration = duration;
 		this.font = font;
 		this.mText = text;
-		this.cellWidth = font.stringWidth(mText)
-				+ (_frame_length_multiplier * 10);
+		this.cellWidth = font.stringWidth(mText) + (_frame_length_multiplier * 10);
 		this.cellHeight = font.getHeight() + 10;
 		if (this.cellHeight < 30) {
 			this.cellHeight = 30;
 		}
 		this.displayX = x + ((width / 2) - (cellWidth / 2));
-		this.displayY = (y + ((height / 2) - (cellHeight / 2)))
-				- font.getHeight() / 2;
+		this.displayY = (y + ((height / 2) - (cellHeight / 2))) - font.getHeight() / 2;
 		this.setSize(cellWidth, cellHeight);
 		this.setLayer(10000);
 		this.timer.setDelay(this.mDuration);
@@ -203,8 +186,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (!isVisible()) {
 			return;
 		}
@@ -218,11 +200,10 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			if (_background == null) {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			} else {
-				g.draw(_background, displayX, displayY, w, h, baseColor);
+				g.draw(_background, displayX, displayY, w, h, _component_baseColor);
 			}
-			font.drawString(g, mText,
-					displayX + (cellWidth - font.stringWidth(mText)) / 2,
-					displayY + 2, mForegroundColor.cpy().setAlpha(getAlpha()));
+			font.drawString(g, mText, displayX + (cellWidth - font.stringWidth(mText)) / 2, displayY + 2,
+					mForegroundColor.cpy().setAlpha(getAlpha()));
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);
@@ -313,6 +294,17 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	public LToast setFont(IFont f) {
 		this.font = f;
 		return this;
+	}
+
+	@Override
+	public LToast setFontColor(LColor color) {
+		this.mForegroundColor = color;
+		return null;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return mForegroundColor.cpy();
 	}
 
 	public LToast setAutoClose(boolean autoClose) {

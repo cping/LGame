@@ -67,14 +67,14 @@ public class LSelectorIcon extends LComponent {
 		this.pSize = size;
 		this.alphaRate = 3f;
 		this.borderColor = b;
-		this.baseColor = c;
+		this._component_baseColor = c;
 	}
 
 	public void draw(Canvas g, int mainX, int mainY) {
 		int fill = g.getFillColor();
 		int stroke = g.getStrokeColor();
-		g.setColor(baseColor.getRed(), baseColor.getGreen(),
-				baseColor.getBlue(), 125);
+		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(),
+				_component_baseColor.getBlue(), 125);
 		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
 				pSize);
 		g.strokeRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
@@ -89,8 +89,8 @@ public class LSelectorIcon extends LComponent {
 
 	public void draw(GLEx g, int mainX, int mainY) {
 		int color = g.color();
-		g.setColor(baseColor.getRed(), baseColor.getGreen(),
-				baseColor.getBlue(), 125);
+		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(),
+				_component_baseColor.getBlue(), 125);
 		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
 				pSize);
 		g.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
@@ -104,8 +104,8 @@ public class LSelectorIcon extends LComponent {
 
 	public void draw(SpriteBatch batch, int mainX, int mainY) {
 		float color = batch.getFloatColor();
-		batch.setColor(baseColor.getRed(), baseColor.getGreen(),
-				baseColor.getBlue(), 125);
+		batch.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(),
+				_component_baseColor.getBlue(), 125);
 		batch.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
 				pSize);
 		batch.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
@@ -278,15 +278,15 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public LColor getBackgroundColor() {
-		return baseColor;
+		return _component_baseColor.cpy();
 	}
 
-	public void setBackgroundColor(LColor baseColor) {
-		this.baseColor = baseColor;
+	public void setBackgroundColor(LColor c) {
+		this._component_baseColor = c;
 	}
 
 	public LColor getBorderColor() {
-		return borderColor;
+		return borderColor.cpy();
 	}
 
 	public void setBorderColor(LColor borderColor) {

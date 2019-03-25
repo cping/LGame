@@ -34,14 +34,10 @@ import loon.opengl.GLEx;
 /**
  * 文字列表显示用UI,用以列表方式显示指定数据,LGame本身附带有默认UI,用户也可以自行注入图片进行替换.
  * 
- *          Example1:
+ * Example1:
  * 
- *          LTextList list = new LTextList(0,0,150,100); 
- *          list.add("图灵测试");
- *          list.add("人月神话");
- *          list.add("费雪效应"); 
- *          list.add("ABC");
- *          list.add("EFG");
+ * LTextList list = new LTextList(0,0,150,100); list.add("图灵测试");
+ * list.add("人月神话"); list.add("费雪效应"); list.add("ABC"); list.add("EFG");
  */
 public class LTextList extends LComponent implements FontSet<LTextList> {
 
@@ -51,8 +47,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	public final int LIST_SPACE_BOTTOM = 5;
 
-	private LTexture bgTexture, choiceTexture, scrollTexture,
-			scrollFlagATexture, scrollFlagBTexture;
+	private LTexture bgTexture, choiceTexture, scrollTexture, scrollFlagATexture, scrollFlagBTexture;
 
 	private int max;
 	private String[] name;
@@ -61,11 +56,11 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	private boolean[] lengthCheck;
 	private int num;
-	private LColor defaultStringColor = LColor.white;
+	private LColor defaultStringColor = LColor.white.cpy();
 	private LColor nextStringColor = this.defaultStringColor;
 
-	private LColor choiceStringColor = LColor.black;
-	private LColor choiceStringBoxColor = LColor.cyan;
+	private LColor choiceStringColor = LColor.black.cpy();
+	private LColor choiceStringBoxColor = LColor.cyan.cpy();
 
 	private IFont _font;
 	private int selectList;
@@ -106,30 +101,25 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		this(128, x, y, w, h, 30);
 	}
 
-	public LTextList(int max, int x, int y, int width, int height,
-			int scrollButtonWidth) {
-		this(SkinManager.get().getTextListSkin().getFont(), max, x, y, width,
-				height, scrollButtonWidth, SkinManager.get().getTextListSkin()
-						.getBackgoundTexture(), SkinManager.get()
-						.getTextListSkin().getChoiceTexture(), SkinManager
-						.get().getTextListSkin().getScrollTexture(),
+	public LTextList(int max, int x, int y, int width, int height, int scrollButtonWidth) {
+		this(SkinManager.get().getTextListSkin().getFont(), max, x, y, width, height, scrollButtonWidth,
+				SkinManager.get().getTextListSkin().getBackgoundTexture(),
+				SkinManager.get().getTextListSkin().getChoiceTexture(),
+				SkinManager.get().getTextListSkin().getScrollTexture(),
 				SkinManager.get().getTextListSkin().getScrollFlagATexture(),
 				SkinManager.get().getTextListSkin().getScrollFlagBTexture());
 	}
 
-	public LTextList(int max, int x, int y, int width, int height,
-			int scrollButtonWidth, LTexture bg, LTexture choice,
+	public LTextList(int max, int x, int y, int width, int height, int scrollButtonWidth, LTexture bg, LTexture choice,
 			LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
-		this(SkinManager.get().getTextListSkin().getFont(), max, x, y, width, height,
-				scrollButtonWidth, bg, choice, scroll, scrollFlagA, scrollFlagB);
+		this(SkinManager.get().getTextListSkin().getFont(), max, x, y, width, height, scrollButtonWidth, bg, choice,
+				scroll, scrollFlagA, scrollFlagB);
 	}
 
-	public LTextList(TextListSkin skin, int max, int x, int y, int width,
-			int height, int scrollButtonWidth) {
-		this(skin.getFont(), max, x, y, width, height, scrollButtonWidth, skin
-				.getBackgoundTexture(), skin.getChoiceTexture(), skin
-				.getScrollTexture(), skin.getScrollFlagATexture(), skin
-				.getScrollFlagBTexture());
+	public LTextList(TextListSkin skin, int max, int x, int y, int width, int height, int scrollButtonWidth) {
+		this(skin.getFont(), max, x, y, width, height, scrollButtonWidth, skin.getBackgoundTexture(),
+				skin.getChoiceTexture(), skin.getScrollTexture(), skin.getScrollFlagATexture(),
+				skin.getScrollFlagBTexture());
 	}
 
 	/**
@@ -158,9 +148,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	 * @param scrollFlagB
 	 *            滚轴上下标识用图(B)
 	 */
-	public LTextList(IFont font, int max, int x, int y, int width, int height,
-			int scrollButtonWidth, LTexture bg, LTexture choice,
-			LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
+	public LTextList(IFont font, int max, int x, int y, int width, int height, int scrollButtonWidth, LTexture bg,
+			LTexture choice, LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
 		super(x, y, (width - scrollButtonWidth), height);
 		this.reset(max);
 		this._font = font;
@@ -203,18 +192,21 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	public IFont getFont() {
 		return _font;
 	}
-	
-	public void changeName(int position, String nameString, int numberInt) {
+
+	public LTextList changeName(int position, String nameString, int numberInt) {
 		this.name[position] = nameString;
 		this.number[position] = numberInt;
+		return this;
 	}
 
-	public void changeColor(int numberInt, LColor colorValue) {
+	public LTextList changeColor(int numberInt, LColor colorValue) {
 		this.color[numberInt] = colorValue;
+		return this;
 	}
 
-	public void setNextStringColor(LColor nextStringColor) {
+	public LTextList setNextStringColor(LColor nextStringColor) {
 		this.nextStringColor = nextStringColor;
+		return this;
 	}
 
 	private void removeNames(int idx, int flag) {
@@ -286,8 +278,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		this.defaultStringColor = stringNewColor;
 	}
 
-	public void setDefaultStringColor(LColor newStringColor,
-			LColor newChoiceStringColor, LColor newChoiceStringBoxColor) {
+	public void setDefaultStringColor(LColor newStringColor, LColor newChoiceStringColor,
+			LColor newChoiceStringBoxColor) {
 		this.defaultStringColor = newStringColor;
 		this.choiceStringColor = newChoiceStringColor;
 		this.choiceStringBoxColor = newChoiceStringBoxColor;
@@ -355,8 +347,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		}
 	}
 
-	public synchronized void draw(GLEx g, int x, int y, float mouseX,
-			float mouseY) {
+	public synchronized void draw(GLEx g, int x, int y, float mouseX, float mouseY) {
 		try {
 			g.saveBrush();
 			if (this.max > 0) {
@@ -370,24 +361,21 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 					g.setTint(255, 255, 255);
 					g.drawRect(x, y, getWidth(), getHeight());
 				} else {
-					g.draw(bgTexture, x, y, getWidth(), getHeight(), baseColor);
+					g.draw(bgTexture, x, y, getWidth(), getHeight(), _component_baseColor);
 				}
 
 				this.drawNum = (int) ((getHeight() - 10) / fontSize);
 				this.loop = 0;
 				this.selectList = -1;
 
-				for (int i = this.scrollList; i < this.drawNum
-						+ this.scrollList; i++) {
+				for (int i = this.scrollList; i < this.drawNum + this.scrollList; i++) {
 					if (i >= this.num)
 						break;
 					this.drawX = (x + 5);
 					this.drawY = (y + 5 + this.loop * fontSize);
 
 					if (!this.scrollBarDrag) {
-						if ((mouseY > this.drawY)
-								&& (mouseY <= this.drawY + fontSize)
-								&& (mouseX > this.drawX)
+						if ((mouseY > this.drawY) && (mouseY <= this.drawY + fontSize) && (mouseX > this.drawX)
 								&& (mouseX < this.drawX + getWidth())) {
 							this.selectList = i;
 						}
@@ -399,18 +387,15 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 						this.lengthCheck[i] = true;
 						if (this.name[i] != null) {
 							while (_font.stringWidth(this.name[i]) > getWidth()) {
-								this.name[i] = this.name[i].substring(0,
-										this.name[i].length() - 1);
+								this.name[i] = this.name[i].substring(0, this.name[i].length() - 1);
 							}
 						}
 					}
 
-					if ((this.selectList == i)
-							|| ((this.useHold) && (this.hold == i))) {
+					if ((this.selectList == i) || ((this.useHold) && (this.hold == i))) {
 						if ((this.useHold) && (this.hold == i)) {
 							g.setTint(255, 255, 0);
-							g.fillRect(x + 1, this.drawY, getWidth() - 1,
-									fontSize);
+							g.fillRect(x + 1, this.drawY, getWidth() - 1, fontSize);
 							g.setTint(LColor.black);
 							drawString(g, this.name[i], this.drawX, this.drawY);
 							this.hold = -1;
@@ -419,11 +404,9 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 						if (this.selectList == i) {
 							if (choiceTexture == null) {
 								g.setTint(this.choiceStringBoxColor);
-								g.fillRect(x + 1, this.drawY, getWidth() - 2,
-										fontSize + 2);
+								g.fillRect(x + 1, this.drawY, getWidth() - 2, fontSize + 2);
 							} else {
-								g.draw(this.choiceTexture, x + 2, this.drawY,
-										getWidth() - 2, fontSize + 2, baseColor);
+								g.draw(this.choiceTexture, x + 2, this.drawY, getWidth() - 2, fontSize + 2, _component_baseColor);
 							}
 							g.setTint(this.choiceStringColor);
 							drawString(g, this.name[i], this.drawX, this.drawY);
@@ -442,14 +425,13 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 				if ((this.drawNum < this.num) && (this.drawNum > 0)) {
 					this.scrollBarHeight = (this.scrollBarHeight_max / this.num / this.drawNum);
-					this.scrollBarHeight = (this.scrollBarHeight_max
-							* this.drawNum / this.num);
+					this.scrollBarHeight = (this.scrollBarHeight_max * this.drawNum / this.num);
 					if (this.scrollBarHeight < 8)
 						this.scrollBarHeight = 8;
 
 					this.scrollBarY = (y + this.scrollButtonHeight + 1);
-					this.scrollBarY += (this.scrollBarHeight_max - this.scrollBarHeight)
-							* this.scrollList / (this.num - this.drawNum);
+					this.scrollBarY += (this.scrollBarHeight_max - this.scrollBarHeight) * this.scrollList
+							/ (this.num - this.drawNum);
 				} else {
 					this.scrollBarHeight = this.scrollBarHeight_max;
 					this.scrollBarY = (y + this.scrollButtonHeight + 1);
@@ -474,19 +456,14 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 				}
 
 				if (SysTouch.isDrag()) {
-					if ((mouseX > this.scrollBarX)
-							&& (mouseX <= this.scrollBarX
-									+ this.scrollButtonWidth)
+					if ((mouseX > this.scrollBarX) && (mouseX <= this.scrollBarX + this.scrollButtonWidth)
 							&& (mouseY > y + this.scrollButtonHeight)
-							&& (mouseY < y + getHeight()
-									- this.scrollButtonHeight)) {
+							&& (mouseY < y + getHeight() - this.scrollButtonHeight)) {
 						this.scrollBarDrag = true;
 					}
 				} else {
 					this.scrollBarDrag = false;
 				}
-
-		
 
 				this.scrollButtonX = (int) (x + getWidth());
 				this.scrollButtonY = y;
@@ -497,8 +474,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 					} else {
 						g.setTint(LColor.black);
 					}
-					g.fillRect(this.scrollButtonX + 1, this.scrollButtonY + 1,
-							this.scrollButtonWidth, this.scrollButtonHeight);
+					g.fillRect(this.scrollButtonX + 1, this.scrollButtonY + 1, this.scrollButtonWidth,
+							this.scrollButtonHeight);
 					g.setTint(255, 255, 255);
 					this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
 					this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
@@ -508,20 +485,14 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 					this.py[2] = (this.scrollButtonY + 1 + this.scrollButtonHeight * 5 / 6);
 					g.fillPolygon(this.px, this.py, 3);
 				} else {
-					g.draw(this.scrollFlagATexture, this.scrollButtonX + 1,
-							this.scrollButtonY + 1, this.scrollButtonWidth - 1,
-							this.scrollButtonHeight - 1, baseColor);
+					g.draw(this.scrollFlagATexture, this.scrollButtonX + 1, this.scrollButtonY + 1,
+							this.scrollButtonWidth - 1, this.scrollButtonHeight - 1, _component_baseColor);
 				}
 
 				this.scrollUpButtonON = false;
-				if ((!this.scrollBarDrag)
-						&& isFocusable()
-						&& (mouseX > this.scrollButtonX)
-						&& (mouseX <= this.scrollButtonX
-								+ this.scrollButtonWidth)
-						&& (mouseY > this.scrollButtonY)
-						&& (mouseY < this.scrollButtonY
-								+ this.scrollButtonHeight)) {
+				if ((!this.scrollBarDrag) && isFocusable() && (mouseX > this.scrollButtonX)
+						&& (mouseX <= this.scrollButtonX + this.scrollButtonWidth) && (mouseY > this.scrollButtonY)
+						&& (mouseY < this.scrollButtonY + this.scrollButtonHeight)) {
 					if (this.scrollList > 0) {
 						this.scrollList -= 1;
 					}
@@ -538,22 +509,15 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 				} else {
 					g.setTint(255, 255, 255);
 				}
-				g.fillRect(this.scrollBarX, this.scrollBarY,
-						this.scrollButtonWidth, this.scrollBarHeight);
+				g.fillRect(this.scrollBarX, this.scrollBarY, this.scrollButtonWidth, this.scrollBarHeight);
 			} else {
-				g.draw(this.scrollTexture, this.scrollBarX,
-						this.scrollBarY, this.scrollButtonWidth,
-						this.scrollBarHeight, baseColor);
+				g.draw(this.scrollTexture, this.scrollBarX, this.scrollBarY, this.scrollButtonWidth,
+						this.scrollBarHeight, _component_baseColor);
 
 			}
-			if ((!this.scrollBarDrag)
-					&& isFocusable()
-					&& (mouseX > this.scrollButtonX)
-					&& (mouseX <= this.scrollButtonX
-							+ this.scrollButtonWidth)
-					&& (mouseY > this.scrollButtonY)
-					&& (mouseY < this.scrollButtonY
-							+ this.scrollButtonHeight)) {
+			if ((!this.scrollBarDrag) && isFocusable() && (mouseX > this.scrollButtonX)
+					&& (mouseX <= this.scrollButtonX + this.scrollButtonWidth) && (mouseY > this.scrollButtonY)
+					&& (mouseY < this.scrollButtonY + this.scrollButtonHeight)) {
 				if (this.scrollList < this.num - this.drawNum) {
 					this.scrollList += 1;
 				}
@@ -565,8 +529,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 				} else {
 					g.setTint(LColor.black);
 				}
-				g.fillRect(this.scrollButtonX + 1, this.scrollButtonY - 1,
-						this.scrollButtonWidth, this.scrollButtonHeight);
+				g.fillRect(this.scrollButtonX + 1, this.scrollButtonY - 1, this.scrollButtonWidth,
+						this.scrollButtonHeight);
 				g.setTint(LColor.white);
 				this.px[0] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 6);
 				this.px[1] = (this.scrollButtonX + 1 + this.scrollButtonWidth / 2);
@@ -576,9 +540,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 				this.py[2] = (this.scrollButtonY - 1 + this.scrollButtonHeight / 6);
 				g.fillPolygon(this.px, this.py, 3);
 			} else {
-				g.draw(this.scrollFlagBTexture, this.scrollButtonX + 1,
-						this.scrollButtonY + 1, this.scrollButtonWidth - 1,
-						this.scrollButtonHeight - 1, baseColor);
+				g.draw(this.scrollFlagBTexture, this.scrollButtonX + 1, this.scrollButtonY + 1,
+						this.scrollButtonWidth - 1, this.scrollButtonHeight - 1, _component_baseColor);
 			}
 		} finally {
 			g.restoreBrush();
@@ -594,17 +557,24 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public LTextList setFontColor(LColor color) {
+		this.defaultStringColor = color;
+		return null;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return defaultStringColor.cpy();
+	}
+
+	@Override
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		synchronized (this) {
-			if (getContainer() == null
-					|| !(getContainer() instanceof LScrollContainer)) {
+			if (getContainer() == null || !(getContainer() instanceof LScrollContainer)) {
 				draw(g, x, y, SysTouch.getX(), SysTouch.getY());
 			} else {
-				draw(g, x, y, ((LScrollContainer) getContainer()).getScrollX()
-						+ SysTouch.getX(),
-						((LScrollContainer) getContainer()).getScrollY()
-								+ SysTouch.getY());
+				draw(g, x, y, ((LScrollContainer) getContainer()).getScrollX() + SysTouch.getX(),
+						((LScrollContainer) getContainer()).getScrollY() + SysTouch.getY());
 			}
 		}
 	}

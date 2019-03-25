@@ -22,6 +22,7 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.LColor;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
@@ -34,13 +35,14 @@ import loon.utils.TArray;
  * LTextTree tree = new LTextTree(30, 100, 400, 400);
  * tree.addElement("数学").addSub("微积分").addSub("几何"); add(tree);
  */
-public class LTextTree extends LComponent implements FontSet<LTextTree>{
+public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	private TArray<TreeElement> list = new TArray<TreeElement>();
 	private TArray<TreeElement> elements = new TArray<TreeElement>();
 	private int totalElementsCount = 0;
 
 	private IFont _font;
+	private LColor _fontColor = LColor.white;
 
 	private float _space = 8;
 
@@ -149,12 +151,12 @@ public class LTextTree extends LComponent implements FontSet<LTextTree>{
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		IFont tmp = g.getFont();
 		g.setFont(_font);
-		renderSub(g, offsetX, offsetY, x, y, elements, 0f, g.alpha());
+		renderSub(g, offsetX, offsetY, x, y, elements, 0f);
 		g.setFont(tmp);
 	}
 
 	private float renderSub(GLEx g, float offsetX, float offsetY, float x, float y, TArray<TreeElement> level,
-			float moved, float alpha) {
+			float moved) {
 		float offX = offsetX;
 		float offY = offsetY;
 
@@ -169,7 +171,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree>{
 			if (i != 0) {
 				superPos = posHeight + font.stringHeight(me.getText()) + _space;
 			}
-			g.drawString(me.getText(), x + offX, superPos);
+			g.drawString(me.getText(), x + offX, superPos, _fontColor);
 
 			TArray<TreeElement> childs = me.childs;
 
@@ -181,12 +183,12 @@ public class LTextTree extends LComponent implements FontSet<LTextTree>{
 					float offsetPosY = (j * (font.stringHeight(tme.getText()) + _space));
 					posHeight = (superPos + offsetPosY);
 
-					g.drawString(flagStyle, offsetPosX, posHeight);
+					g.drawString(flagStyle, offsetPosX, posHeight, _fontColor);
 					float posX = offsetPosX + font.stringWidth(flagStyle) + _space;
 					float size = 0;
 
 					posHeight += size;
-					g.drawString(tme.getText(), posX, posHeight);
+					g.drawString(tme.getText(), posX, posHeight, _fontColor);
 
 				}
 			}
@@ -266,6 +268,17 @@ public class LTextTree extends LComponent implements FontSet<LTextTree>{
 	public LTextTree setFont(IFont font) {
 		this._font = font;
 		return this;
+	}
+
+	@Override
+	public LTextTree setFontColor(LColor color) {
+		this._fontColor = color;
+		return this;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return _fontColor.cpy();
 	}
 
 	@Override

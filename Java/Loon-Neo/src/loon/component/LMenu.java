@@ -258,7 +258,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						g.draw(this.texture, this.x + 3f, this.y
 								+ this.parent.paddingy + this.parent.scroll,
 								this.itemWidth, this.itemHeight,
-								parent.baseColor);
+								parent._component_baseColor);
 					}
 					if (this.label != null) {
 						font.drawString(
@@ -286,7 +286,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					}
 					if (texture != null) {
 						g.draw(this.texture, this.x, this.y, this.itemWidth,
-								this.itemHeight, parent.baseColor);
+								this.itemHeight, parent._component_baseColor);
 					}
 					if (this.label != null) {
 						font.drawString(
@@ -591,7 +591,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 			case MOVE_LEFT:
 				if ((selected == this) || (selected == null)) {
 					g.draw(this.tab, this.width, getTaby(), tabWidth,
-							tabHeight, baseColor);
+							tabHeight, _component_baseColor);
 					if (label != null) {
 						g.setAlpha(1f);
 						font.drawString(
@@ -608,7 +608,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				}
 				if ((this.active) || (this.width > 0)) {
 					g.draw(mainpanel, 0, 0, this.width, getScreenHeight(),
-							baseColor);
+							_component_baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -623,7 +623,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					float posX = this.getScreenWidth() - this.width
 							- this.tabWidth;
 					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight,
-							baseColor);
+							_component_baseColor);
 					if (label != null) {
 						g.setAlpha(1f);
 						font.drawString(
@@ -641,7 +641,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				if ((this.active) || (this.width > 0)) {
 					float posX = this.getScreenWidth() - this.width;
 					g.draw(mainpanel, posX, 0, this.width, getScreenHeight(),
-							baseColor);
+							_component_baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -735,48 +735,54 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return main_panel_size;
 	}
 
-	public void setPanelWidth(float w) {
+	public LMenu setPanelWidth(float w) {
 		this.main_panel_size = w;
+		return this;
 	}
 
 	public int getItemLeftOffset() {
 		return item_left_offset;
 	}
 
-	public void setItemLeftOffset(int left) {
+	public LMenu setItemLeftOffset(int left) {
 		this.item_left_offset = left;
+		return this;
 	}
 
 	public int getItemTopOffset() {
 		return item_top_offset;
 	}
 
-	public void setItemTopOffset(int top) {
+	public LMenu setItemTopOffset(int top) {
 		this.item_top_offset = top;
+		return this;
 	}
 
 	public boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public LMenu setActive(boolean active) {
 		this.active = active;
+		return this;
 	}
 
 	public float getScroll() {
 		return scroll;
 	}
 
-	public void setScroll(float scroll) {
+	public LMenu setScroll(float scroll) {
 		this.scroll = scroll;
+		return this;
 	}
 
 	public float getScrollspeed() {
 		return scrollspeed;
 	}
 
-	public void setScrollspeed(float scrollspeed) {
+	public LMenu setScrollspeed(float scrollspeed) {
 		this.scrollspeed = scrollspeed;
+		return this;
 	}
 
 	public LMenu getSelected() {
@@ -787,40 +793,45 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return cellWidth;
 	}
 
-	public void setCellWidth(float cellWidth) {
+	public LMenu setCellWidth(float cellWidth) {
 		this.cellWidth = cellWidth;
+		return this;
 	}
 
 	public float getCellHeight() {
 		return cellHeight;
 	}
 
-	public void setCellHeight(float cellHeight) {
+	public LMenu setCellHeight(float cellHeight) {
 		this.cellHeight = cellHeight;
+		return this;
 	}
 
 	public String getLabel() {
 		return label;
 	}
 
-	public void setLabel(String label) {
+	public LMenu setLabel(String label) {
 		this.label = label;
+		return this;
 	}
 
 	public int getXslot() {
 		return xslot;
 	}
 
-	public void setXslot(int xslot) {
+	public LMenu setXslot(int xslot) {
 		this.xslot = xslot;
+		return this;
 	}
 
 	public int getYslot() {
 		return yslot;
 	}
 
-	public void setYslot(int yslot) {
+	public LMenu setYslot(int yslot) {
 		this.yslot = yslot;
+		return this;
 	}
 
 	public float getMaxscroll() {
@@ -835,16 +846,18 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return paddingx;
 	}
 
-	public void setPaddingx(float paddingx) {
-		this.paddingx = paddingx;
+	public LMenu setPaddingx(float p) {
+		this.paddingx = p;
+		return this;
 	}
 
 	public float getPaddingy() {
 		return paddingy;
 	}
 
-	public void setPaddingy(float paddingy) {
-		this.paddingy = paddingy;
+	public LMenu setPaddingy(float p) {
+		this.paddingy = p;
+		return this;
 	}
 
 	public int getRows() {
@@ -871,8 +884,9 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		this.supportScroll = s;
 	}
 
-	public void setType(int t) {
+	public LMenu setType(int t) {
 		this.type = t;
+		return this;
 	}
 
 	public boolean isdefUI() {
@@ -883,18 +897,14 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return alphaMenu;
 	}
 
-	public void setAlphaMenu(float alphaMenu) {
-		this.alphaMenu = alphaMenu;
+	public LMenu setAlphaMenu(float a) {
+		this.alphaMenu = a;
+		return this;
 	}
 
 	@Override
-	public String getUIName() {
-		return "Menu";
-	}
-
-	@Override
-	public LMenu setFont(IFont font) {
-		this.font = font;
+	public LMenu setFont(IFont f) {
+		this.font = f;
 		return this;
 	}
 
@@ -904,11 +914,17 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+	public LMenu setFontColor(LColor f) {
+		this.fontColor = f;
+		return this;
+	}
+
+	@Override
+	public String getUIName() {
+		return "Menu";
 	}
 
 	@Override

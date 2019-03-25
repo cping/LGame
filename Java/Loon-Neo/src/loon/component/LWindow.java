@@ -420,17 +420,17 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (isVisible()) {
 			if (_background != null) {
-				g.draw(_background, x, y, getWidth(), getHeight(), baseColor);
+				g.draw(_background, x, y, getWidth(), getHeight(), _component_baseColor);
 			}
 			if (_title != null) {
-				g.draw(_barTexture, x, y, getWidth(), this._barheight, baseColor);
+				g.draw(_barTexture, x, y, getWidth(), this._barheight, _component_baseColor);
 				if (_font != null) {
 					_font.drawString(g, _title, x + 5,
 							y + (this._barheight - _font.getHeight()) / 2 - (LSystem.isDesktop() ? 5 : 0), _fontColor);
 				}
 			}
 			if (animation.getSpriteImage() != null) {
-				g.draw(animation.getSpriteImage(), x, y, baseColor);
+				g.draw(animation.getSpriteImage(), x, y, _component_baseColor);
 			}
 			if (x != 0 && y != 0) {
 				g.translate(x, y);
@@ -489,12 +489,15 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 		return this;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return _fontColor;
+		return _fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public LWindow setFontColor(LColor fontColor) {
 		this._fontColor = fontColor;
+		return this;
 	}
 
 	@Override

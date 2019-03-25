@@ -51,10 +51,12 @@ public class WindowSkin implements FontSet<WindowSkin>{
 		this.backgroundTexture = background;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
+	@Override
 	public WindowSkin setFont(IFont font) {
 		this.font = font;
 		return this;
@@ -76,11 +78,14 @@ public class WindowSkin implements FontSet<WindowSkin>{
 		this.backgroundTexture = backgroundTexture;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public WindowSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 }

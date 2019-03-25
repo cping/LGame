@@ -52,6 +52,7 @@ public class LGesture extends LComponent {
 	private Path goalPath;
 
 	private int lineWidth;
+	
 
 	public LGesture(int x, int y, int w, int h, boolean c) {
 		this(x, y, w, h, c, LColor.orange);
@@ -59,9 +60,11 @@ public class LGesture extends LComponent {
 
 	public LGesture(int x, int y, int w, int h, boolean c, LColor col) {
 		super(x, y, w, h);
+		this._drawBackground = false;
+		this._component_baseColor = col;
 		this.autoClear = c;
 		this.lineWidth = 5;
-		this.baseColor = col;
+
 	}
 
 	public LGesture(int x, int y, int w, int h) {
@@ -91,7 +94,7 @@ public class LGesture extends LComponent {
 			g.saveBrush();
 			int tmp = g.color();
 			g.setLineWidth(lineWidth);
-			g.setColor(baseColor);
+			g.setColor(_component_baseColor);
 			g.drawPolyline(goalPath);
 			g.resetLineWidth();
 			g.setColor(tmp);
@@ -307,7 +310,7 @@ public class LGesture extends LComponent {
 	public URecognizerResult getRecognizer(String path, boolean resampledFirst) {
 		return getRecognizer(GestureData.loadUserPoints(path, resampledFirst), URecognizer.GESTURES_NONE);
 	}
-
+	
 	/**
 	 * 获得一个手势分析器
 	 * 
@@ -321,5 +324,6 @@ public class LGesture extends LComponent {
 	public String getUIName() {
 		return "Gesture";
 	}
+
 
 }

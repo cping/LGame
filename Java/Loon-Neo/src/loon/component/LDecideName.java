@@ -63,6 +63,8 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	private LColor _fontColor = LColor.white;
 
+	private LColor _selectedColor ;
+	
 	private IFont _font;
 
 	private int text_width_space = 5;
@@ -88,6 +90,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	private int initDraw = -1;
 
 	private char enterFlagString = '>', clearFlagString = '<';
+	
 
 	public LDecideName(TArray<String> mes, int x, int y) {
 		this(mes, x, y, 400, 250);
@@ -122,7 +125,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		super(x, y, width, height - f.getHeight() - 20);
 		this._font = f;
 		this._fontColor = color;
-		this.baseColor = new LColor(0, 150, 0, 150);
+		this._selectedColor = new LColor(0, 150, 0, 150);
 		this.labelName = label;
 		this.name = name;
 		this.keyArrays = mes;
@@ -176,7 +179,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 					}
 				}
 		}
-		g.setColor(baseColor);
+		g.setColor(_selectedColor);
 		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()) - 1,
 				posY + MathUtils.round((this.cursorY * dy) * getHeight()) - 1, MathUtils.round(dx * getWidth()) + 2,
 				MathUtils.round(dy * getHeight()) + 2);
@@ -300,11 +303,18 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	}
 
 	public void setSelectColor(LColor selectColor) {
-		this.baseColor = selectColor;
+		this._selectedColor = selectColor;
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public LColor getFontColor() {
+		return this._fontColor;
+	}
+	
+	@Override
+	public LDecideName setFontColor(LColor fontColor) {
 		this._fontColor = fontColor;
+		return this;
 	}
 
 	public String getLabelName() {

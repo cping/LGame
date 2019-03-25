@@ -225,7 +225,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 				isSelect = (type == (selectFlag > 0 ? selectFlag : 1));
 				if ((buoyage != null) && isSelect) {
 					g.setAlpha(autoAlpha);
-					g.draw(buoyage, nLeft, nTop - (int) (buoyage.getHeight() / 1.5), baseColor);
+					g.draw(buoyage, nLeft, nTop - (int) (buoyage.getHeight() / 1.5), _component_baseColor);
 					g.setAlpha(1F);
 				}
 				messageFont.drawString(g, selects[i], messageLeft, nTop - messageFont.getAscent(), fontColor);
@@ -286,12 +286,14 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		}
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	public LSelect setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 	public IFont getMessageFont() {

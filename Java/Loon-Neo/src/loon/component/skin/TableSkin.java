@@ -54,10 +54,12 @@ public class TableSkin implements FontSet<TableSkin>{
 		this.backgroundTexture = background;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
+	@Override
 	public TableSkin setFont(IFont font) {
 		this.font = font;
 		return this;
@@ -71,12 +73,15 @@ public class TableSkin implements FontSet<TableSkin>{
 		this.backgroundTexture = background;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public TableSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 	public LTexture getHeaderTexture() {

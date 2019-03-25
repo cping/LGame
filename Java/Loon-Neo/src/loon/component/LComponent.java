@@ -256,6 +256,8 @@ public abstract class LComponent extends LObject<LContainer>
 	// 是否已选中
 	protected boolean _component_selected = false;
 
+	protected LColor _component_baseColor = null;
+	
 	protected Desktop _desktop = Desktop.EMPTY_DESKTOP;
 
 	protected boolean _isLimitMove = false, _drawBackground = true;
@@ -265,8 +267,6 @@ public abstract class LComponent extends LObject<LContainer>
 	protected LayoutConstraints _rootConstraints = null;
 
 	protected SysInput input;
-
-	protected LColor baseColor = null;
 
 	/**
 	 * 构造可用组件
@@ -458,7 +458,7 @@ public abstract class LComponent extends LObject<LContainer>
 				}
 				g.setBlendMode(_blend);
 				if (_drawBackground && _background != null) {
-					g.draw(_background, this._screenX, this._screenY, width, height, baseColor);
+					g.draw(_background, this._screenX, this._screenY, width, height, _component_baseColor);
 				}
 				if (this.customRendering) {
 					this.createCustomUI(g, this._screenX, this._screenY, width, height);
@@ -466,10 +466,7 @@ public abstract class LComponent extends LObject<LContainer>
 					this.createUI(g, this._screenX, this._screenY, this, this._imageUI);
 				}
 				if (isDrawSelect()) {
-					int tmp = g.color();
-					g.setColor(baseColor);
-					g.drawRect(this._screenX, this._screenY, width - 1f, height - 1f);
-					g.setColor(tmp);
+					g.drawRect(this._screenX, this._screenY, width - 1f, height - 1f, _component_baseColor);
 				}
 			} finally {
 				if (update) {
@@ -1222,12 +1219,12 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void setColor(LColor c) {
-		this.baseColor = c;
+		this._component_baseColor = c;
 	}
 
 	@Override
 	public LColor getColor() {
-		return new LColor(this.baseColor);
+		return new LColor(this._component_baseColor);
 	}
 
 	public Origin getOrigin() {

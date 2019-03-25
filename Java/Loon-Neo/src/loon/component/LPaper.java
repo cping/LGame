@@ -93,7 +93,7 @@ public class LPaper extends LContainer {
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (isVisible()) {
 			if (animation.getSpriteImage() != null) {
-				g.draw(animation.getSpriteImage(), x, y, baseColor);
+				g.draw(animation.getSpriteImage(), x, y, _component_baseColor);
 			}
 			if (x != 0 && y != 0) {
 				g.translate(x, y);

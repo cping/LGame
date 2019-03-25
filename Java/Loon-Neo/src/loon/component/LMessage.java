@@ -291,12 +291,15 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 				- dw / 2 - 20), (int) (getScreenY() + getHeight() - dh - 10));
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public LMessage setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 	@Override

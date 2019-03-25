@@ -49,10 +49,12 @@ public class MessageSkin implements FontSet<MessageSkin>{
 		this.backgroundTexture = back;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
+	@Override
 	public MessageSkin setFont(IFont font) {
 		this.font = font;
 		return this;
@@ -66,12 +68,15 @@ public class MessageSkin implements FontSet<MessageSkin>{
 		this.backgroundTexture = background;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public MessageSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 }

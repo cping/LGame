@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class MenuSkin implements FontSet<MenuSkin>{
+public class MenuSkin implements FontSet<MenuSkin> {
 
 	private IFont font;
 	private LColor fontColor;
@@ -43,14 +43,13 @@ public class MenuSkin implements FontSet<MenuSkin>{
 				DefUI.self().getDefaultTextures(4));
 	}
 
-	public MenuSkin(IFont font, LColor fontColor, LTexture mainTexture,
-			LTexture tabTexture) {
+	public MenuSkin(IFont font, LColor fontColor, LTexture mainTexture, LTexture tabTexture) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.mainTexture = mainTexture;
 		this.tabTexture = tabTexture;
 	}
-	
+
 	@Override
 	public IFont getFont() {
 		return font;
@@ -62,12 +61,15 @@ public class MenuSkin implements FontSet<MenuSkin>{
 		return this;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public MenuSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 	public LTexture getMainTexture() {

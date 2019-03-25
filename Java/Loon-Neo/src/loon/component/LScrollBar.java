@@ -279,7 +279,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	public LColor getScrollBarColor() {
-		return scrollBarColor;
+		return scrollBarColor.cpy();
 	}
 
 	public void setScrollBarColor(LColor scrollBarColor) {
@@ -287,7 +287,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	public LColor getSliderColor() {
-		return sliderColor;
+		return sliderColor.cpy();
 	}
 
 	public void setSliderColor(LColor sliderColor) {
@@ -431,8 +431,8 @@ public class LScrollBar extends LComponent {
 			g.fillRect(x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, scrollBarColor);
 			g.fillRect(sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, sliderColor);
 		} else {
-			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, baseColor);
-			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, baseColor);
+			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, _component_baseColor);
+			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, _component_baseColor);
 		}
 	}
 

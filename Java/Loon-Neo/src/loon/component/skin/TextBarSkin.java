@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class TextBarSkin implements FontSet<TextBarSkin>{
+public class TextBarSkin implements FontSet<TextBarSkin> {
 
 	private LTexture leftTexture;
 	private LTexture rightTexture;
@@ -40,8 +40,7 @@ public class TextBarSkin implements FontSet<TextBarSkin>{
 	}
 
 	public final static TextBarSkin defEmpty() {
-		return new TextBarSkin(LSystem.getSystemGameFont(), LColor.white, null,
-				null, null);
+		return new TextBarSkin(LSystem.getSystemGameFont(), LColor.white, null, null, null);
 	}
 
 	public TextBarSkin() {
@@ -49,8 +48,7 @@ public class TextBarSkin implements FontSet<TextBarSkin>{
 				DefUI.self().getDefaultTextures(7), DefUI.self().getDefaultTextures(7));
 	}
 
-	public TextBarSkin(IFont font, LColor fontColor, LTexture left,
-			LTexture right, LTexture body) {
+	public TextBarSkin(IFont font, LColor fontColor, LTexture left, LTexture right, LTexture body) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.leftTexture = left;
@@ -82,20 +80,25 @@ public class TextBarSkin implements FontSet<TextBarSkin>{
 		this.bodyTexture = bodyTexture;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
+	@Override
 	public TextBarSkin setFont(IFont font) {
 		this.font = font;
 		return this;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public TextBarSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 }

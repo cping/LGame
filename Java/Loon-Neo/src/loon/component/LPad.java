@@ -192,7 +192,7 @@ public class LPad extends LComponent {
 			freeClick();
 		}
 		pack.glBegin();
-		pack.draw(0, x, y, backWidth, backHeight, baseColor);
+		pack.draw(0, x, y, backWidth, backHeight, _component_baseColor);
 		if (isClick) {
 			if (angle < 360) {
 				angle += 1;
@@ -200,11 +200,11 @@ public class LPad extends LComponent {
 				angle = 0;
 			}
 			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight, angle,
-					baseColor);
+					_component_baseColor);
 		}
 		pack.draw(1, x + (backWidth - baseWidth) * 0.5f, y
 				+ (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight,
-				baseColor);
+				_component_baseColor);
 		pack.glEnd();
 	}
 	

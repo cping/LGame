@@ -52,21 +52,26 @@ public class CheckBoxSkin implements FontSet<CheckBoxSkin>{
 		this.checkedTexture = checked;
 	}
 
+	@Override
 	public IFont getFont() {
 		return font;
 	}
 
+	@Override
 	public CheckBoxSkin setFont(IFont font) {
 		this.font = font;
 		return this;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public CheckBoxSkin setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 	public LTexture getUncheckedTexture() {

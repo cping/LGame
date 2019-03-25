@@ -111,7 +111,11 @@ public abstract class AbstractBox implements XY {
 			g.draw(_textureBox, x, y, c);
 		}
 	}
-
+	
+	public LColor getFontColor() {
+		return this.fontColor.cpy();
+	}
+	
 	public void setFontColor(LColor color) {
 		this.fontColor = color;
 	}

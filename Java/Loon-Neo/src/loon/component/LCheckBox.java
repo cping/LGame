@@ -142,9 +142,9 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 				g.drawString(text, x + boxsize, y + (font.getHeight() - boxsize) / 2 + fontSpace, fontColor);
 			}
 			if (!ticked) {
-				g.draw(unchecked, x, y, boxsize, boxsize, baseColor);
+				g.draw(unchecked, x, y, boxsize, boxsize, _component_baseColor);
 			} else {
-				g.draw(checked, x, y, boxsize, boxsize, baseColor);
+				g.draw(checked, x, y, boxsize, boxsize, _component_baseColor);
 			}
 		} else {
 			if (showtext && text != null) {
@@ -153,10 +153,10 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 			}
 			if (!ticked) {
 				g.draw(unchecked, x + font.stringWidth(text) + boxsize + fontSpace,
-						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, baseColor);
+						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, _component_baseColor);
 			} else {
 				g.draw(checked, x + font.stringWidth(text) + boxsize + fontSpace,
-						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, baseColor);
+						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, _component_baseColor);
 			}
 		}
 		g.setFont(tmp);
@@ -257,16 +257,20 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		return showtext;
 	}
 
-	public void setShowText(boolean show) {
+	public LCheckBox setShowText(boolean show) {
 		this.showtext = show;
+		return this;
 	}
 
+	@Override
 	public LColor getFontColor() {
-		return fontColor;
+		return fontColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
+	@Override
+	public LCheckBox setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
+		return this;
 	}
 
 	public LTexture getChecked() {

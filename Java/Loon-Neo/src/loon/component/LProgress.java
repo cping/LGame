@@ -62,13 +62,13 @@ public class LProgress extends LComponent {
 		this(ProgressType.GAME, LColor.red, x, y, width, height, null, null);
 	}
 
-	public LProgress(LColor baseColor, int x, int y, int width, int height) {
-		this(ProgressType.GAME, baseColor, x, y, width, height, null, null);
+	public LProgress(LColor _component_baseColor, int x, int y, int width, int height) {
+		this(ProgressType.GAME, _component_baseColor, x, y, width, height, null, null);
 	}
 
-	public LProgress(ProgressType type, LColor baseColor, int x, int y,
+	public LProgress(ProgressType type, LColor _component_baseColor, int x, int y,
 			int width, int height) {
-		this(type, baseColor, x, y, width, height, null, null);
+		this(type, _component_baseColor, x, y, width, height, null, null);
 	}
 
 	public LProgress(ProgressSkin skin, int x, int y, int width, int height) {
@@ -76,12 +76,12 @@ public class LProgress extends LComponent {
 				.getBackgroundTexture(), skin.getProgressTexture());
 	}
 
-	public LProgress(ProgressType type, LColor baseColor, int x, int y,
+	public LProgress(ProgressType type, LColor _component_baseColor, int x, int y,
 			int width, int height, LTexture bg, LTexture bgProgress) {
 		super(x, y, width, height);
 		this.progressType = type;
 		this.batch = new SpriteBatch(128);
-		this.baseColor = baseColor;
+		this._component_baseColor = _component_baseColor;
 		switch (progressType) {
 		case GAME:
 			this.texture = new LTextureRegion(LSystem.FRAMEWORK_IMG_NAME
@@ -140,7 +140,7 @@ public class LProgress extends LComponent {
 				float posY = getHeight() / 2;
 				batch.draw(bgTexture, x + getHeight() / 2 + getWidth() / 2, y
 						- posY, size, getHeight(), 90);
-				batch.setColor(baseColor);
+				batch.setColor(_component_baseColor);
 				size = getWidth() * percentage;
 				batch.draw(bgProgressTexture, x + getHeight() / 2 + getWidth()
 						/ 2, y + getWidth() - size - posY, getWidth()
@@ -150,7 +150,7 @@ public class LProgress extends LComponent {
 			case UI:
 				batch.draw(bgTexture.getTexture(), x, y, getHeight(),
 						getWidth());
-				batch.setColor(baseColor);
+				batch.setColor(_component_baseColor);
 				size = (getWidth() * percentage - 2);
 				batch.draw(bgProgressTexture.getTexture(), x + 1, y
 						+ getWidth() - size - 1, getHeight() - 2, size);
@@ -159,7 +159,7 @@ public class LProgress extends LComponent {
 			default:
 				batch.draw(bgTexture.getTexture(), x, y, getHeight(),
 						getWidth());
-				batch.setColor(baseColor);
+				batch.setColor(_component_baseColor);
 				size = (getWidth() * percentage);
 				batch.draw(bgProgressTexture.getTexture(), x, y + getWidth()
 						- size, getHeight(), size);
@@ -173,7 +173,7 @@ public class LProgress extends LComponent {
 						getWidth() * (1 - percentage), getHeight());
 				batch.draw(bgTextureEnd, x + getWidth() + 1, y,
 						bgTextureEnd.getRegionWidth(), getHeight());
-				batch.setColor(baseColor);
+				batch.setColor(_component_baseColor);
 				batch.draw(bgProgressTexture, x + 1, y,
 						getWidth() * percentage, getHeight());
 				batch.draw(bgProgressStart, x, y,
@@ -183,7 +183,7 @@ public class LProgress extends LComponent {
 			case UI:
 				batch.draw(bgTexture.getTexture(), x, y, getWidth(),
 						getHeight());
-				batch.setColor(baseColor);
+				batch.setColor(_component_baseColor);
 				batch.draw(bgProgressTexture.getTexture(), x + 1, y + 1,
 						getWidth() * percentage - 2, getHeight() - 2);
 				batch.resetColor();
@@ -191,7 +191,7 @@ public class LProgress extends LComponent {
 			default:
 				batch.draw(bgTexture.getTexture(), x, y, getWidth(),
 						getHeight());
-				batch.setColor(baseColor);
+				batch.setColor(_component_baseColor);
 				batch.draw(bgProgressTexture.getTexture(), x, y, getWidth()
 						* percentage, getHeight());
 				batch.resetColor();

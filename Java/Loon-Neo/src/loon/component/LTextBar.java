@@ -175,14 +175,14 @@ public class LTextBar extends LComponent {
 				}
 			} else {
 				if (left != null) {
-					g.draw(left, x, y, left.getWidth(), MathUtils.max(body.getHeight(), height), baseColor);
+					g.draw(left, x, y, left.getWidth(), MathUtils.max(body.getHeight(), height), _component_baseColor);
 				}
 				if (body != null) {
 					if (left != null) {
 						g.draw(body, x + left.getWidth(), y, textWidth() + _font.getSize(),
-								MathUtils.max(body.getHeight(), height), baseColor);
+								MathUtils.max(body.getHeight(), height), _component_baseColor);
 					} else {
-						g.draw(body, x, y, 0, _maxWidth, baseColor);
+						g.draw(body, x, y, 0, _maxWidth, _component_baseColor);
 					}
 				}
 				if (right != null && body != null) {
@@ -193,7 +193,7 @@ public class LTextBar extends LComponent {
 						w = textWidth() + _font.getSize();
 					}
 					g.draw(right, x + left.getWidth() + w, y, left.getWidth(), MathUtils.max(body.getHeight(), height),
-							baseColor);
+							_component_baseColor);
 				}
 				if (left != null) {
 					if (_messages != null) {
@@ -250,7 +250,7 @@ public class LTextBar extends LComponent {
 	}
 
 	public LColor getFontColor() {
-		return _fontColor;
+		return _fontColor.cpy();
 	}
 
 	public void setFontColor(LColor fontColor) {

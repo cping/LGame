@@ -34,15 +34,6 @@ import loon.utils.TArray;
  */
 public class LLabels extends LComponent implements FontSet<LLabels> {
 
-	public LLabels(int x, int y, int width, int height) {
-		this(LSystem.getSystemGameFont(), x, y, width, height);
-	}
-
-	public LLabels(IFont font, int x, int y, int width, int height) {
-		super(x, y, width, height);
-		this.font = font;
-	}
-
 	class Info {
 
 		LColor color;
@@ -60,9 +51,21 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 
 	private IFont font;
 
+	private LColor fontColor;
+
 	public TArray<Info> labels = new TArray<Info>();
 
 	private float speed = 0;
+
+	public LLabels(int x, int y, int width, int height) {
+		this(LSystem.getSystemGameFont(), x, y, width, height);
+	}
+
+	public LLabels(IFont font, int x, int y, int width, int height) {
+		super(x, y, width, height);
+		this.font = font;
+		this.fontColor = LColor.white.cpy();
+	}
 
 	@Override
 	public void update(long elapsedTime) {
@@ -75,28 +78,21 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 	}
 
 	public void draw(GLEx g, int x, int y) {
+		if (!isVisible()) {
+			return;
+		}
 		for (int i = 0; i < labels.size; i++) {
 			Info label = labels.get(i);
 			if (label.length == -1) {
-				font.drawString(
-						g,
-						label.message,
-						x + label.x,
-						y + label.y - font.getHeight() / 2 + 5,
-						baseColor == null ? label.color : baseColor
-								.mul(label.color));
+				font.drawString(g, label.message, x + label.x, y + label.y - font.getHeight() / 2 + 5,
+						fontColor == null ? label.color : fontColor.mul(label.color));
 			} else {
 				label.stateTime += speed;
 				if (label.stateTime > label.length) {
 					labels.remove(label);
 				} else {
-					font.drawString(
-							g,
-							label.message,
-							x + label.x,
-							y + label.y - font.getHeight() / 2 + 5,
-							baseColor == null ? label.color : baseColor
-									.mul(label.color));
+					font.drawString(g, label.message, x + label.x, y + label.y - font.getHeight() / 2 + 5,
+							fontColor == null ? label.color : fontColor.mul(label.color));
 				}
 			}
 		}
@@ -110,8 +106,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 		addLabel(x, y, message, -1, color, -1);
 	}
 
-	public void addLabel(float x, float y, String message, float length,
-			LColor color, float speed) {
+	public void addLabel(float x, float y, String message, float length, LColor color, float speed) {
 		Info label = new Info();
 		label.x = x;
 		label.y = y;
@@ -123,8 +118,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		draw(g, x, y);
 	}
 
@@ -137,6 +131,17 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 	@Override
 	public IFont getFont() {
 		return this.font;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return fontColor.cpy();
+	}
+
+	@Override
+	public LLabels setFontColor(LColor color) {
+		this.fontColor = color;
+		return this;
 	}
 
 	@Override

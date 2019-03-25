@@ -96,6 +96,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private int countFrame;
 	private LColor triangleColor = LColor.orange;
 	private LColor tmpcolor = new LColor(LColor.white);
+	private LColor fontColor = new LColor(LColor.white);
 	private String flag = LSystem.FLAG_TAG;
 
 	public LTextArea(int x, int y, int w, int h) {
@@ -328,32 +329,48 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.getMessageLength[this.num] = d_length;
 	}
 
-	public void addString(String mes, LColor color) {
-		setColor(color.getRed(), color.getGreen(), color.getBlue());
-		addString(mes);
+	@Override
+	public LTextArea setFontColor(LColor color) {
+		this.fontColor = color;
+		return this;
 	}
 
-	public void addString(String mes) {
+	@Override
+	public LColor getFontColor() {
+		return this.fontColor.cpy();
+	}
+
+	public LTextArea addString(String mes) {
+		return addString(mes, fontColor);
+	}
+
+	public LTextArea addString(String mes, LColor color) {
+		if (color != null) {
+			setColor(color.getRed(), color.getGreen(), color.getBlue());
+		}
 		this.num -= 1;
 		if (this.num < 0) {
 			this.num = (this.max - 1);
 		}
 		setGetMessageLength(this.getMessageLength[this.num]);
 		put(this.message[this.num] + mes);
+		return this;
 	}
 
-	public void setBright(int max, int speed) {
+	public LTextArea setBright(int max, int speed) {
 		this.brightMax = max;
 		this.brightSpeed = speed;
+		return this;
 	}
 
-	public void setWaitTriangleColor(LColor color) {
+	public LTextArea setWaitTriangleColor(LColor color) {
 		this.triangleColor = color;
+		return this;
 	}
 
-	public void draw(GLEx g, int dx, int dy, int d_type, int lines) {
+	public LTextArea draw(GLEx g, int dx, int dy, int d_type, int lines) {
 		if (_background != null) {
-			g.draw(_background, dx, dy, getWidth(), getHeight(), baseColor);
+			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
 		}
 		int oldColor = g.color();
 		this.countFrame += 1;
@@ -469,10 +486,12 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			this.num = (this.max - 1);
 		}
 		g.setColor(oldColor);
+		return this;
 	}
 
-	public void setWaitFlag(boolean w) {
+	public LTextArea setWaitFlag(boolean w) {
 		this.waitFlag = w;
+		return this;
 	}
 
 	public int getMax() {
@@ -483,47 +502,52 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return showType;
 	}
 
-	public void setShowType(int showType) {
+	public LTextArea setShowType(int showType) {
 		this.showType = showType;
+		return this;
 	}
 
 	public int[] getBright() {
 		return bright;
 	}
 
-	public void setBright(int[] bright) {
+	public LTextArea setBright(int[] bright) {
 		this.bright = bright;
+		return this;
 	}
 
 	public int[] getBrightType() {
 		return brightType;
 	}
 
-	public void setBrightType(int[] brightType) {
+	public LTextArea setBrightType(int[] brightType) {
 		this.brightType = brightType;
+		return this;
 	}
 
 	public int getBrightMax() {
 		return brightMax;
 	}
 
-	public void setBrightMax(int brightMax) {
+	public LTextArea setBrightMax(int brightMax) {
 		this.brightMax = brightMax;
+		return this;
 	}
 
 	public int getBrightSpeed() {
 		return brightSpeed;
 	}
 
-	public void setBrightSpeed(int brightSpeed) {
+	public LTextArea setBrightSpeed(int brightSpeed) {
 		this.brightSpeed = brightSpeed;
+		return this;
 	}
 
 	public int getPostLine() {
 		return postLine;
 	}
 
-	public LComponent setPostLine(int postLine) {
+	public LTextArea setPostLine(int postLine) {
 		this.postLine = postLine;
 		return this;
 	}
@@ -532,7 +556,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return countFrame;
 	}
 
-	public LComponent setCountFrame(int countFrame) {
+	public LTextArea setCountFrame(int countFrame) {
 		this.countFrame = countFrame;
 		return this;
 	}
@@ -561,7 +585,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return leftOffset;
 	}
 
-	public LComponent setLeftOffset(int leftOffset) {
+	public LTextArea setLeftOffset(int leftOffset) {
 		this.leftOffset = leftOffset;
 		return this;
 	}
@@ -570,7 +594,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return topOffset;
 	}
 
-	public LComponent setTopOffset(int topOffset) {
+	public LTextArea setTopOffset(int topOffset) {
 		this.topOffset = topOffset;
 		return this;
 	}
@@ -584,8 +608,9 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return flag;
 	}
 
-	public void setFlag(String flag) {
+	public LTextArea setFlag(String flag) {
 		this.flag = flag;
+		return this;
 	}
 
 	@Override

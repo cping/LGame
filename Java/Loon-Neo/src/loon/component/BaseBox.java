@@ -54,6 +54,7 @@ public class BaseBox extends AbstractBox {
 	public static class BoxItem implements FontSet<BoxItem> {
 
 		private IFont font;
+		private LColor fontColor;
 		private String text;
 
 		private boolean isEnable;
@@ -63,12 +64,16 @@ public class BaseBox extends AbstractBox {
 		private float y1;
 		private float y2;
 
-		public BoxItem(IFont font, String text, boolean isEnable,
-				TextAlignment align) {
+		public BoxItem(IFont font, String text, boolean isEnable, TextAlignment align) {
+			this(font, text, isEnable, align, LColor.white);
+		}
+
+		public BoxItem(IFont font, String text, boolean isEnable, TextAlignment align, LColor color) {
 			this.font = font;
 			this.text = text;
 			this.isEnable = isEnable;
 			this.align = align;
+			this.fontColor = color;
 		}
 
 		public BoxItem(IFont font, String text) {
@@ -135,11 +140,14 @@ public class BaseBox extends AbstractBox {
 		}
 
 		public boolean isFocused(float x, float y) {
-			if ((x >= this.x1) && (x <= this.x2) && (y >= this.y1)
-					&& (y <= this.y2)) {
+			if ((x >= this.x1) && (x <= this.x2) && (y >= this.y1) && (y <= this.y2)) {
 				return true;
 			}
 			return false;
+		}
+
+		public void draw(GLEx g) {
+			this.font.drawString(g, this.text, this.x1, this.y1, this.fontColor);
 		}
 
 		public void draw(GLEx g, LColor color) {
@@ -153,13 +161,24 @@ public class BaseBox extends AbstractBox {
 
 		@Override
 		public BoxItem setFont(IFont font) {
-			this.font  = font;
+			this.font = font;
 			return this;
 		}
 
 		@Override
 		public IFont getFont() {
 			return this.font;
+		}
+
+		@Override
+		public BoxItem setFontColor(LColor color) {
+			this.fontColor = color;
+			return this;
+		}
+
+		@Override
+		public LColor getFontColor() {
+			return fontColor.cpy();
 		}
 	}
 
@@ -193,8 +212,7 @@ public class BaseBox extends AbstractBox {
 		this.itemsOffsetX = (this.font.stringWidth("H") * 0.5f);
 		this.mode = MenuMode.NORMAL;
 		this.wideFlag = "n";
-		this._boxWidth = (MathUtils.round(this.itemsOffsetX * 2f) + this.font
-				.stringWidth("HHHH"));
+		this._boxWidth = (MathUtils.round(this.itemsOffsetX * 2f) + this.font.stringWidth("HHHH"));
 		this.dirty();
 	}
 
@@ -203,8 +221,7 @@ public class BaseBox extends AbstractBox {
 		if (this.mode == MenuMode.NORMAL) {
 			int lh = this.font.getHeight();
 			this.lineHeight = (lh * 1.134146f);
-			this._boxHeight = (lh / 2 + MathUtils.round(this.lineHeight
-					* this.numberOfMenus));
+			this._boxHeight = (lh / 2 + MathUtils.round(this.lineHeight * this.numberOfMenus));
 			this.itemsOffsetY = (lh / 4f);
 			this._borderW = 3f;
 		}
@@ -272,20 +289,17 @@ public class BaseBox extends AbstractBox {
 		for (int i = 0; i < this.menuItems.length; i++) {
 			switch (this.menuItems[i].getAlign()) {
 			case LEFT:
-				this.menuItems[i].setMenuCoordinates(this._boxX
-						+ this.itemsOffsetX, this._boxY + this.itemsOffsetY
-						+ lh * i);
+				this.menuItems[i].setMenuCoordinates(this._boxX + this.itemsOffsetX,
+						this._boxY + this.itemsOffsetY + lh * i);
 				break;
 			case CENTER:
 				int itemW = getMenuItemWidth(i);
-				this.menuItems[i].setMenuCoordinates(this._boxX
-						+ (getWidth() / 2 - itemW / 2), this._boxY
-						+ this.itemsOffsetY + lh * i);
+				this.menuItems[i].setMenuCoordinates(this._boxX + (getWidth() / 2 - itemW / 2),
+						this._boxY + this.itemsOffsetY + lh * i);
 				break;
 			case RIGHT:
-				this.menuItems[i].setMenuCoordinates(this._boxX
-						+ this.itemsOffsetX, this._boxY + this.itemsOffsetY
-						+ lh * i);
+				this.menuItems[i].setMenuCoordinates(this._boxX + this.itemsOffsetX,
+						this._boxY + this.itemsOffsetY + lh * i);
 				break;
 			}
 		}
@@ -365,16 +379,14 @@ public class BaseBox extends AbstractBox {
 	}
 
 	public void addMenuItem(BoxItem menuItem) {
-		if ((this.menuItems.length == 1)
-				&& (StringUtils.isEmpty(this.menuItems[0].getText()))) {
+		if ((this.menuItems.length == 1) && (StringUtils.isEmpty(this.menuItems[0].getText()))) {
 			setMenuItem(0, menuItem);
 		} else {
 			addMenuItem(this.menuItems.length, menuItem);
 		}
 	}
 
-	public void addMenuItem(int menuIndex, BoxItem menuItem)
-			throws IllegalArgumentException {
+	public void addMenuItem(int menuIndex, BoxItem menuItem) throws IllegalArgumentException {
 		if ((menuIndex < 0) || (menuIndex > this.menuItems.length)) {
 			return;
 		}
