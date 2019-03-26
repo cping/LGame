@@ -275,6 +275,15 @@ public final class CollisionHelper extends ShapeUtils {
 		return s1.contains(s2);
 	}
 
+	public static final boolean contains(float sx, float sy, float sw, float sh, float dx, float dy, float dw,
+			float dh) {
+		return (dx >= sx && dy >= sy && ((dx + dw) <= (sx + sw)) && ((dy + dh) <= (sy + sh)));
+	}
+
+	public static final boolean contains(int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh) {
+		return (dx >= sx && dy >= sy && ((dx + dw) <= (sx + sw)) && ((dy + dh) <= (sy + sh)));
+	}
+
 	public static final void confine(RectBox rect, RectBox field) {
 		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
 		if (x < field.Left()) {

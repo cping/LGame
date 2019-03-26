@@ -595,6 +595,14 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public abstract float getHeight();
 
+	public float getContainerX() {
+		return LSystem.getProcess() == null ? 0 : LSystem.getProcess().getX();
+	}
+
+	public float getContainerY() {
+		return LSystem.getProcess() == null ? 0 : LSystem.getProcess().getY();
+	}
+
 	public float getContainerWidth() {
 		return LSystem.viewSize.width();
 	}

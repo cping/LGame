@@ -73,18 +73,15 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		this(font, formImage, x, y, formImage.getWidth(), formImage.getHeight());
 	}
 
-	public LMessage(IFont font, LTexture formImage, int x, int y, int width,
-			int height) {
+	public LMessage(IFont font, LTexture formImage, int x, int y, int width, int height) {
 		this(font, formImage, x, y, width, height, SkinManager.get().getMessageSkin().getFontColor());
 	}
 
 	public LMessage(MessageSkin skin, int x, int y, int width, int height) {
-		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height,
-				skin.getFontColor());
+		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin.getFontColor());
 	}
 
-	public LMessage(IFont font, LTexture formImage, int x, int y, int width,
-			int height, LColor color) {
+	public LMessage(IFont font, LTexture formImage, int x, int y, int width, int height, LColor color) {
 		super(x, y, width, height);
 		this.fontColor = color;
 		this.messageFont = (font == null ? SkinManager.get().getMessageSkin().getFont() : font);
@@ -147,15 +144,28 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public void setTipIcon(String fileName) {
-		print.setCreeseIcon(LTextures.loadTexture(fileName));
+		setTipIcon(LTextures.loadTexture(fileName));
 	}
 
 	public void setTipIcon(LTexture icon) {
-		print.setCreeseIcon(icon);
+		if (icon != null) {
+			print.setCreeseIcon(icon);
+			setDisplayIconFlag(true);
+		}
 	}
 
 	public void setNotTipIcon() {
 		print.setCreeseIcon(null);
+		setDisplayIconFlag(false);
+	}
+
+	public LMessage setDisplayIconFlag(boolean flag) {
+		print.setIconFlag(flag);
+		return this;
+	}
+
+	public boolean isDisplayIconFlag() {
+		return print.isIconFlag();
 	}
 
 	public void setEnglish(boolean e) {
@@ -239,8 +249,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	private int tmpColor;
 
 	@Override
-	protected synchronized void createCustomUI(GLEx g, int x, int y, int w,
-			int h) {
+	protected synchronized void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (!isVisible()) {
 			return;
 		}
@@ -266,8 +275,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 			}
 			this.move(this.input.getTouchDX(), this.input.getTouchDY());
 			if (Click != null) {
-				Click.DragClick(this, getUITouchX(),
-						getUITouchY());
+				Click.DragClick(this, getUITouchX(), getUITouchY());
 			}
 			this.updateIcon();
 		}
@@ -287,8 +295,8 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	private void updateIcon() {
-		this.setPauseIconAnimationLocation((int) (getScreenX() + getWidth()
-				- dw / 2 - 20), (int) (getScreenY() + getHeight() - dh - 10));
+		this.setPauseIconAnimationLocation((int) (getScreenX() + getWidth() - dw / 2 - 20),
+				(int) (getScreenY() + getHeight() - dh - 10));
 	}
 
 	@Override
@@ -315,7 +323,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	public LMessage setFont(IFont font) {
 		return this.setMessageFont(font);
 	}
-	
+
 	/**
 	 * 注入一个实现了IFont接口的字体
 	 * 
@@ -327,8 +335,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 
 	}
 

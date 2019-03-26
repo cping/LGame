@@ -257,7 +257,7 @@ public abstract class LComponent extends LObject<LContainer>
 	protected boolean _component_selected = false;
 
 	protected LColor _component_baseColor = null;
-	
+
 	protected Desktop _desktop = Desktop.EMPTY_DESKTOP;
 
 	protected boolean _isLimitMove = false, _drawBackground = true;
@@ -1052,6 +1052,16 @@ public abstract class LComponent extends LObject<LContainer>
 	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
+	}
+
+	@Override
+	public float getContainerX() {
+		return this._super == null ? super.getContainerX() : this._super.getScreenX();
+	}
+
+	@Override
+	public float getContainerY() {
+		return this._super == null ? super.getContainerY() : this._super.getScreenY();
 	}
 
 	@Override

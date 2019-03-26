@@ -759,7 +759,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				buffer.append("|  ");
 			}
 			LComponent c = comps[i];
-			if (c!=null && c.isContainer() && (c instanceof LContainer)) {
+			if (c != null && c.isContainer() && (c instanceof LContainer)) {
 				((LContainer) c).toString(buffer, indent + 1);
 			} else {
 				buffer.append(c);
@@ -770,10 +770,10 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	protected void processResize() {
-		if (_childs != null && _childs.length > 0) {
-			for (int i = 0; i < _childs.length; i++) {
+		if (_childs != null && childCount > 0) {
+			for (int i = this.childCount - 1; i >= 0; i--) {
 				LComponent comp = _childs[i];
-				if (comp != null && comp != this && comp.getParent() == this) {
+				if (comp != null && comp != this) {
 					comp.processResize();
 				}
 			}

@@ -1084,7 +1084,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
 		this.setSize(width, height);
+		if (spriteRun && sprites != null) {
+			sprites.setSize(width, height);
+		}
 		if (desktopRun && desktop != null) {
+			desktop.setSize(width, height);
 			desktop.resize();
 		}
 		this.resize(width, height);

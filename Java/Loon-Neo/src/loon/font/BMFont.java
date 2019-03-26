@@ -200,7 +200,9 @@ public class BMFont implements IFont {
 		} else {
 			displays.clear();
 		}
-
+		if (StringUtils.isEmpty(text)) {
+			throw LSystem.runThrow("BMFont resource is null !");
+		}
 		StringTokenizer br = new StringTokenizer(text, LSystem.NL);
 		info = br.nextToken();
 		common = br.nextToken();

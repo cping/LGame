@@ -66,13 +66,15 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	private int viewY;
 
+	private int viewWidth;
+
+	private int viewHeight;
+
 	private boolean _isViewWindowSet = false, _visible = true;
 
 	private SpriteListener sprListerner;
 
 	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(false);
-
-	private int capacity = 128;
 
 	private int _size;
 
@@ -103,9 +105,30 @@ public class Sprites implements IArray, Visible, LRelease {
 		this._visible = true;
 		this._width = w;
 		this._height = h;
-		this._sprites = new ISprite[capacity];
+		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + SPRITES_CACHE.size() : name;
 		SPRITES_CACHE.add(this);
+	}
+
+	/**
+	 * 设定Sprites大小
+	 * 
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public Sprites setSize(int w, int h) {
+		if (this._width != w || this._height != h) {
+			this._width = w;
+			this._height = h;
+			if (this._width == 0) {
+				this._width = 1;
+			}
+			if (this._height == 0) {
+				this._height = 1;
+			}
+		}
+		return this;
 	}
 
 	/**
@@ -243,10 +266,10 @@ public class Sprites implements IArray, Visible, LRelease {
 			return this.add(sprite);
 		} else {
 			if (sprite.getWidth() > getWidth()) {
-				setViewWindow(viewX, viewY, (int) sprite.getWidth(), _height);
+				setViewWindow(viewX, viewY, (int) MathUtils.max(sprite.getWidth(), LSystem.viewSize.width), _height);
 			}
 			if (sprite.getHeight() > getHeight()) {
-				setViewWindow(viewX, viewY, _width, (int) sprite.getHeight());
+				setViewWindow(viewX, viewY, _width, (int) MathUtils.max(sprite.getWidth(), LSystem.viewSize.width));
 			}
 			System.arraycopy(this._sprites, index, this._sprites, index + 1, this._size - index);
 			this._sprites[index] = sprite;
@@ -311,10 +334,10 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 		sprite.setSprites(this);
 		if (sprite.getWidth() > getWidth()) {
-			setViewWindow(viewX, viewY, (int) sprite.getWidth(), _height);
+			setViewWindow(viewX, viewY, (int) MathUtils.max(sprite.getWidth(), LSystem.viewSize.width), _height);
 		}
 		if (sprite.getHeight() > getHeight()) {
-			setViewWindow(viewX, viewY, _width, (int) sprite.getHeight());
+			setViewWindow(viewX, viewY, _width, (int) MathUtils.max(sprite.getHeight(), LSystem.viewSize.height));
 		}
 		if (this._size == this._sprites.length) {
 			expandCapacity((_size + 1) * 2);
@@ -720,39 +743,44 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 		float minX, minY, maxX, maxY;
 		if (this._isViewWindowSet) {
-			g.setClip(x, y, this._width, this._height);
-			minX = this.viewX;
-			maxX = minX + this._width;
-			minY = this.viewY;
-			maxY = minY + this._height;
+			minX = x + this.viewX;
+			maxX = minX + this.viewWidth;
+			minY = y + this.viewY;
+			maxY = minY + this.viewHeight;
 		} else {
 			minX = x;
 			maxX = x + this._width;
 			minY = y;
 			maxY = y + this._height;
 		}
-		g.translate(x - this.viewX, y - this.viewY);
+		boolean offset = (minX != 0 || minY != 0);
+		if (offset) {
+			g.translate(minX, minY);
+		}
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
 				int layerX = spr.x();
 				int layerY = spr.y();
-
 				float layerWidth = spr.getWidth() + 1;
 				float layerHeight = spr.getHeight() + 1;
-
 				if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
 					continue;
 				}
-
 				spr.createUI(g);
-
 			}
 		}
-		g.translate(-(x - this.viewX), -(y - this.viewY));
-		if (this._isViewWindowSet) {
-			g.clearClip();
+		if (offset) {
+			g.translate(-minX, -minY);
 		}
+	}
+
+	public float getX() {
+		return viewX;
+	}
+
+	public float getY() {
+		return viewY;
 	}
 
 	/**
@@ -767,8 +795,8 @@ public class Sprites implements IArray, Visible, LRelease {
 		this._isViewWindowSet = true;
 		this.viewX = x;
 		this.viewY = y;
-		this._width = width;
-		this._height = height;
+		this.viewWidth = width;
+		this.viewHeight = height;
 	}
 
 	/**

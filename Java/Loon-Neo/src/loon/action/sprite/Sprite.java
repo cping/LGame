@@ -77,11 +77,11 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 
 	private boolean _flipX = false, _flipY = false;
 
-	private int maxFrame;
+	private int _maxFrame;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
 
-	private Sprites sprites = null;
+	private Sprites _sprites = null;
 
 	/**
 	 * 默认构造函数
@@ -449,9 +449,9 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 * @param timer
 	 */
 	private void setAnimation(Animation myAnimation, LTexture[] images, int max, long timer) {
-		this.maxFrame = max;
-		if (maxFrame != -1) {
-			for (int i = 0; i < maxFrame; i++) {
+		this._maxFrame = max;
+		if (_maxFrame != -1) {
+			for (int i = 0; i < _maxFrame; i++) {
 				myAnimation.addFrame(images[i], timer);
 			}
 		} else {
@@ -518,7 +518,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	 */
 	public Sprite setAnimation(Animation animation) {
 		this.animation = animation;
-		this.maxFrame = animation.getTotalFrames();
+		this._maxFrame = animation.getTotalFrames();
 		return this;
 	}
 
@@ -652,7 +652,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 			return;
 		}
 
-		if (animation.getCurrentFrameIndex() > maxFrame) {
+		if (animation.getCurrentFrameIndex() > _maxFrame) {
 			animation.reset();
 		}
 		image = animation.getSpriteImage();
@@ -884,11 +884,11 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	}
 
 	public int getMaxFrame() {
-		return maxFrame;
+		return _maxFrame;
 	}
 
 	public Sprite setMaxFrame(int maxFrame) {
-		this.maxFrame = maxFrame;
+		this._maxFrame = maxFrame;
 		return this;
 	}
 
@@ -915,7 +915,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 			_childList = new TArray<ISprite>();
 		}
 		spr.setParent(this);
-		spr.setSprites(this.sprites);
+		spr.setSprites(this._sprites);
 		spr.setState(State.ADDED);
 		_childList.add(spr);
 		childSorter.sort(_childList);
@@ -1065,29 +1065,49 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 	}
 
 	@Override
+	public float getContainerX() {
+		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
+	}
+
+	@Override
+	public float getContainerY() {
+		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
+	}
+
+	@Override
+	public float getContainerWidth() {
+		return this._sprites == null ? LSystem.viewSize.getWidth() : this._sprites.getWidth();
+	}
+
+	@Override
+	public float getContainerHeight() {
+		return this._sprites == null ? LSystem.viewSize.getHeight() : this._sprites.getHeight();
+	}
+
+	@Override
 	public boolean isEmpty() {
 		return false;
 	}
 
 	@Override
 	public void setSprites(Sprites ss) {
-		if (this.sprites == ss) {
+		if (this._sprites == ss) {
 			return;
 		}
-		this.sprites = ss;
+		this._sprites = ss;
 	}
 
 	@Override
 	public Sprites getSprites() {
-		return this.sprites;
+		return this._sprites;
 	}
 
 	@Override
 	public Screen getScreen() {
-		if (this.sprites == null) {
+		if (this._sprites == null) {
 			return LSystem.getProcess().getScreen();
 		}
-		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
+		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 
 	@Override

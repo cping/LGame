@@ -745,6 +745,7 @@ public class LSTRFont implements IFont {
 		colors[corner].a = a;
 	}
 
+	@Override
 	public int charWidth(char c) {
 		if (_isClose) {
 			return 0;
@@ -839,10 +840,12 @@ public class LSTRFont implements IFont {
 		return lines * getLineHeight() + height;
 	}
 
+	@Override
 	public int getHeight() {
 		return fontHeight;
 	}
 
+	@Override
 	public int getSize() {
 		return fontSize;
 	}
@@ -851,6 +854,7 @@ public class LSTRFont implements IFont {
 		return fontHeight;
 	}
 
+	@Override
 	public float getAscent() {
 		return ascent;
 	}

@@ -209,11 +209,21 @@ final public class StringUtils extends CharUtils {
 		int size = chars.length;
 		for (int j = 0; j < size; j++) {
 			char letter = chars[j];
-			if ((97 > letter || letter > 122) && (65 > letter || letter > 90) && (48 > letter || letter > 57)) {
+			if (isEnglishAndNumeric(letter)) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * 判定是否由纯粹的西方字符组成
+	 * 
+	 * @param letter
+	 * @return
+	 */
+	public static boolean isEnglishAndNumeric(char letter) {
+		return (97 > letter || letter > 122) && (65 > letter || letter > 90) && (48 > letter || letter > 57);
 	}
 
 	/**

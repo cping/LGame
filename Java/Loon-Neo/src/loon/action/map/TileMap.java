@@ -23,7 +23,6 @@ package loon.action.map;
 import java.io.IOException;
 
 import loon.LObject;
-import loon.LProcess;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -557,6 +556,38 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		}
 	}
 
+	public void scrollDown(float distance) {
+		this.offset.y = limitOffsetY(MathUtils.min((this.offset.y + distance),
+				(MathUtils.max(0, this.field.getViewHeight() - getContainerHeight()))));
+	}
+
+	public void scrollLeft(float distance) {
+		this.offset.x = limitOffsetX(MathUtils.max(this.offset.x - distance, 0));
+	}
+
+	public void scrollLeftUp(float distance) {
+		this.scrollUp(distance);
+		this.scrollLeft(distance);
+	}
+
+	public void scrollRight(float distance) {
+		this.offset.x = limitOffsetX(MathUtils.min((this.offset.x + distance),
+				(MathUtils.max(0, this.field.getViewWidth() - getContainerWidth()))));
+	}
+
+	public void scrollUp(float distance) {
+		this.offset.y = limitOffsetY(MathUtils.max(this.offset.y - distance, 0));
+	}
+
+	public void scrollRightDown(float distance) {
+		this.scrollDown(distance);
+		this.scrollRight(distance);
+	}
+
+	public void scrollClear() {
+		this.offset.set(0, 0);
+	}
+
 	public int[] getLimit() {
 		return field.getLimit();
 	}
@@ -681,7 +712,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	/**
-	 * 设置瓦片位置
+	 * 设定偏移量
 	 * 
 	 * @param x
 	 * @param y
@@ -870,15 +901,24 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return this;
 	}
 
+	protected float limitOffsetX(float newOffsetX) {
+		float offsetX = getContainerWidth() / 2 - newOffsetX;
+		offsetX = MathUtils.min(offsetX, 0);
+		offsetX = MathUtils.max(offsetX, getContainerWidth() - getWidth());
+		return offsetX;
+	}
+
+	protected float limitOffsetY(float newOffsetY) {
+		float offsetY = getContainerHeight() / 2 - newOffsetY;
+		offsetY = MathUtils.min(offsetY, 0);
+		offsetY = MathUtils.max(offsetY, getContainerHeight() - getHeight());
+		return offsetY;
+	}
+
 	public TileMap followActionObject() {
 		if (follow != null) {
-			LProcess process = LSystem.getProcess();
-			float offsetX = process.getWidth() / 2 - follow.getX();
-			offsetX = MathUtils.min(offsetX, 0);
-			offsetX = MathUtils.max(offsetX, process.getWidth() - getWidth());
-			float offsetY = process.getHeight() / 2 - follow.getY();
-			offsetY = MathUtils.min(offsetY, 0);
-			offsetY = MathUtils.max(offsetY, process.getHeight() - getHeight());
+			float offsetX = limitOffsetX(follow.getX());
+			float offsetY = limitOffsetY(follow.getY());
 			setOffset(offsetX, offsetY);
 			field.setOffset(offset);
 		}
@@ -1037,6 +1077,26 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			return LSystem.getProcess().getScreen();
 		}
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+	}
+
+	@Override
+	public float getContainerX() {
+		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
+	}
+
+	@Override
+	public float getContainerY() {
+		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
+	}
+
+	@Override
+	public float getContainerWidth() {
+		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
+	}
+
+	@Override
+	public float getContainerHeight() {
+		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
 	}
 
 	@Override
