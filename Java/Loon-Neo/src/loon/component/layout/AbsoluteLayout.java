@@ -111,11 +111,13 @@ public class AbsoluteLayout extends LayoutManager {
 		}
 	}
 
+	@Override
 	final SizeValue calculateConstraintWidth(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		return null;
 	}
-
+	
+	@Override
 	final SizeValue calculateConstraintHeight(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		return null;
@@ -159,7 +161,7 @@ public class AbsoluteLayout extends LayoutManager {
 				final BoxSize box) {
 		}
 	}
-
+	
 	public static class KeepInsidePostProcess implements LayoutProcess {
 		@Override
 		public void process(final int rootBoxX, final int rootBoxY,

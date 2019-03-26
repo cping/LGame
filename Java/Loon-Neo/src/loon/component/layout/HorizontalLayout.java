@@ -30,6 +30,7 @@ public class HorizontalLayout extends LayoutManager {
 		return new HorizontalLayout();
 	}
 	
+	@Override
 	public final void layoutElements(final LayoutPort root,
 			final LayoutPort... children) {
 		if (isInvalid(root, children)) {
@@ -170,12 +171,14 @@ public class HorizontalLayout extends LayoutManager {
 			return (parentWidth - maxFixedWidth);
 		}
 	}
-
+	
+	@Override
 	public final SizeValue calculateConstraintWidth(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		return null;
 	}
-
+	
+	@Override
 	public final SizeValue calculateConstraintHeight(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		int newHeight = 0;

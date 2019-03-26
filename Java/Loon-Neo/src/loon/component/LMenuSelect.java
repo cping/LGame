@@ -545,10 +545,12 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return _labels;
 	}
 
+	@Override
 	public LColor getFontColor() {
 		return fontColor.cpy();
 	}
 
+	@Override
 	public LMenuSelect setFontColor(LColor fc) {
 		this.fontColor = fc;
 		return this;

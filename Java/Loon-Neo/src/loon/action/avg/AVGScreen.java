@@ -116,7 +116,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	private int clickButtonLayer = 200;
 
 	private LColor fontColor = LColor.white.cpy();
-	
+
 	private LColor gameColor;
 
 	protected Command command;
@@ -192,8 +192,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				return;
 			}
 			if (_items != null && command != null && selectUI != null) {
-				if ((LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch))
-						? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) {
+				if (((LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch))
+						? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) && selectUI.isClick()) {
 					int idx = selectUI.getResultIndex();
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
@@ -1434,7 +1434,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			} else {
 				isNext = true;
 			}
-		} else if (scrFlag && selectUI.getResultIndex() != -1) {
+		} else if ((scrFlag && selectUI.getResultIndex() != -1) && selectUI.isClick()) {
 			onSelect(_selectMessage, selectUI.getResultIndex());
 			isNext = selectUI.intersects(getTouchX(), getTouchY());
 			if ((LSystem.base() != null && LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)

@@ -20,8 +20,31 @@
  */
 package loon.action.map.battle;
 
+import loon.utils.MathUtils;
+
 public class BattleControl {
 
 	private BattleState battleState = BattleState.START;
-	
+
+	public static final int[] getItemEffectDispersion(int recover_hp, int recover_sp, int variance) {
+		int num;
+		if ((variance > 0) && (MathUtils.abs(recover_hp) > 0)) {
+			num = MathUtils.max((MathUtils.abs(recover_hp) * variance) / 100, 1);
+			recover_hp += (BattleRNG.random(num + 1) + BattleRNG.random(num + 1)) - num;
+		}
+		if ((variance > 0) && (MathUtils.abs(recover_sp) > 0)) {
+			num = Math.max((MathUtils.abs(recover_sp) * variance) / 100, 1);
+			recover_sp += (BattleRNG.random(num + 1) + BattleRNG.random(num + 1)) - num;
+		}
+		return new int[] { recover_hp, recover_sp };
+	}
+
+	public BattleState getBattleState() {
+		return battleState;
+	}
+
+	public void setBattleState(BattleState battleState) {
+		this.battleState = battleState;
+	}
+
 }

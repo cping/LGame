@@ -35,12 +35,13 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 
 	private String flag;
 
-	public void init(float x, float y, float distance, boolean diag, String flag) {
+	public CollisionNeighbourQuery init(float x, float y, float distance, boolean diag, String flag) {
 		this.x = x;
 		this.y = y;
 		this.distance = distance;
 		this.diag = diag;
 		this.flag = flag;
+		return this;
 	}
 
 	@Override

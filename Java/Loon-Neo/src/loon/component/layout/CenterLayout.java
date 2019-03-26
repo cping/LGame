@@ -31,6 +31,7 @@ public class CenterLayout extends LayoutManager {
 		return new CenterLayout();
 	}
 	
+	@Override
 	public void layoutElements(final LayoutPort rootElement,
 			final LayoutPort... elements) {
 
@@ -159,7 +160,8 @@ public class CenterLayout extends LayoutManager {
 			box.setY(rootBoxY + (rootBoxHeight - boxHeight) / 2);
 		}
 	}
-
+	
+	@Override
 	public SizeValue calculateConstraintWidth(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		if (children.isEmpty()) {
@@ -179,7 +181,8 @@ public class CenterLayout extends LayoutManager {
 				+ root.getBoxConstraints().getPaddingRight()
 						.getValueAsInt(root.getBox().getWidth()) + "px");
 	}
-
+	
+	@Override
 	public SizeValue calculateConstraintHeight(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		if (children.isEmpty()) {

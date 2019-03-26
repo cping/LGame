@@ -67,12 +67,12 @@ final public class StringUtils extends CharUtils {
 		return b.toString();
 	}
 
-	public static boolean isBoolean(String o) {
+	public static final boolean isBoolean(String o) {
 		String str = o.trim().toLowerCase();
 		return str.equals("true") || str.equals("false") || str.equals("yes") || str.equals("no") || str.equals("ok");
 	}
 
-	public static boolean toBoolean(String o) {
+	public static final boolean toBoolean(String o) {
 		String str = o.trim().toLowerCase();
 		if (str.equals("true") || str.equals("yes") || str.equals("ok")) {
 			return true;
@@ -84,7 +84,7 @@ final public class StringUtils extends CharUtils {
 		return false;
 	}
 
-	public static boolean equals(String a, String b) {
+	public static final boolean equals(String a, String b) {
 		if (a == null || b == null) {
 			return (a == b);
 		} else {
@@ -92,11 +92,11 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	public static String trim(String text) {
+	public static final String trim(String text) {
 		return (rtrim(ltrim(text.trim()))).trim();
 	}
 
-	public static String rtrim(String s) {
+	public static final String rtrim(String s) {
 		int off = s.length() - 1;
 		while (off >= 0 && s.charAt(off) <= ' ') {
 			off--;
@@ -104,7 +104,7 @@ final public class StringUtils extends CharUtils {
 		return off < s.length() - 1 ? s.substring(0, off + 1) : s;
 	}
 
-	public static String ltrim(String s) {
+	public static final String ltrim(String s) {
 		int off = 0;
 		while (off < s.length() && s.charAt(off) <= ' ') {
 			off++;
@@ -127,7 +127,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, Object... o) {
+	public static final String join(Character flag, Object... o) {
 		StringBuilder sbr = new StringBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
@@ -146,7 +146,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, float[] o) {
+	public static final String join(Character flag, float[] o) {
 		StringBuilder sbr = new StringBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
@@ -165,7 +165,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, int[] o) {
+	public static final String join(Character flag, int[] o) {
 		StringBuilder sbr = new StringBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
@@ -183,7 +183,7 @@ final public class StringUtils extends CharUtils {
 	 * @param res
 	 * @return
 	 */
-	public static String concat(Object... res) {
+	public static final String concat(Object... res) {
 		StringBuffer sbr = new StringBuffer(res.length);
 		for (int i = 0; i < res.length; i++) {
 			if (res[i] instanceof Integer) {
@@ -201,7 +201,7 @@ final public class StringUtils extends CharUtils {
 	 * @param string
 	 * @return
 	 */
-	public static boolean isEnglishAndNumeric(String string) {
+	public static final boolean isEnglishAndNumeric(String string) {
 		if (string == null || string.length() == 0) {
 			return false;
 		}
@@ -222,7 +222,7 @@ final public class StringUtils extends CharUtils {
 	 * @param letter
 	 * @return
 	 */
-	public static boolean isEnglishAndNumeric(char letter) {
+	public static final boolean isEnglishAndNumeric(char letter) {
 		return (97 > letter || letter > 122) && (65 > letter || letter > 90) && (48 > letter || letter > 57);
 	}
 
@@ -232,7 +232,7 @@ final public class StringUtils extends CharUtils {
 	 * @param c
 	 * @return
 	 */
-	public static boolean isSingle(final char c) {
+	public static final boolean isSingle(final char c) {
 		return (':' == c || '：' == c) || (',' == c || '，' == c) || ('"' == c || '“' == c)
 				|| ((0x0020 <= c) && (c <= 0x007E) && !((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')))
 						&& !('0' <= c) && (c <= '9'));
@@ -246,7 +246,7 @@ final public class StringUtils extends CharUtils {
 	 * @param flag
 	 * @return
 	 */
-	public static String[] split(String str, Character flag) {
+	public static final String[] split(String str, Character flag) {
 		if (isEmpty(str)) {
 			return new String[] { str };
 		}
@@ -284,7 +284,7 @@ final public class StringUtils extends CharUtils {
 	 * @param flags
 	 * @return
 	 */
-	public static String[] split(String str, char[] flags) {
+	public static final String[] split(String str, char[] flags) {
 		return split(str, flags, false);
 	}
 
@@ -295,7 +295,7 @@ final public class StringUtils extends CharUtils {
 	 * @param flags
 	 * @return
 	 */
-	public static String[] split(String str, char[] flags, boolean newline) {
+	public static final String[] split(String str, char[] flags, boolean newline) {
 		if ((flags.length == 0) || (str.length() == 0)) {
 			return new String[0];
 		}
@@ -355,7 +355,7 @@ final public class StringUtils extends CharUtils {
 	 * @param separator
 	 * @return
 	 */
-	public static String[] split(String str, String separator) {
+	public static final String[] split(String str, String separator) {
 		int sepLength = separator.length();
 		if (sepLength == 0) {
 			return new String[] { str };
@@ -386,7 +386,7 @@ final public class StringUtils extends CharUtils {
 	 * @param str
 	 * @return
 	 */
-	public static String[] splitCsv(String str) {
+	public static final String[] splitCsv(String str) {
 		TArray<String> stringList = new TArray<String>();
 		String tempString;
 		StringBuilder sb = new StringBuilder();
@@ -434,7 +434,7 @@ final public class StringUtils extends CharUtils {
 	 * @throws NullPointerException
 	 * @throws IllegalArgumentException
 	 */
-	public static String[] splitSize(String str, int size) throws NullPointerException, IllegalArgumentException {
+	public static final String[] splitSize(String str, int size) throws NullPointerException, IllegalArgumentException {
 		if (isEmpty(str)) {
 			return new String[] { str };
 		}
@@ -623,7 +623,7 @@ final public class StringUtils extends CharUtils {
 	 * @param str
 	 * @return
 	 */
-	public static boolean isChinaLanguage(String mes) {
+	public static final boolean isChinaLanguage(String mes) {
 		int size = mes.length();
 		int count = 0;
 		for (int i = 0; i < size; i++) {
@@ -634,7 +634,7 @@ final public class StringUtils extends CharUtils {
 		return count >= size;
 	}
 
-	public static boolean containChinaLanguage(String mes) {
+	public static final boolean containChinaLanguage(String mes) {
 		int size = mes.length();
 		for (int i = 0; i < size; i++) {
 			if (isChinese(mes.charAt(i))) {
@@ -644,7 +644,7 @@ final public class StringUtils extends CharUtils {
 		return false;
 	}
 
-	public static boolean isChinese(char c) {
+	public static final boolean isChinese(char c) {
 		return c >= 0x4e00 && c <= 0x9fa5;
 	}
 
@@ -654,7 +654,7 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isEmpty(String param) {
+	public static final boolean isEmpty(String param) {
 		return param == null || param.length() == 0 || "".equals(param.trim());
 	}
 
@@ -664,7 +664,7 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isEmpty(String... param) {
+	public static final boolean isEmpty(String... param) {
 		return param == null || param.length == 0;
 	}
 
@@ -739,7 +739,7 @@ final public class StringUtils extends CharUtils {
 	 * @param letter
 	 * @return
 	 */
-	public static boolean isNumeric(char letter) {
+	public static final boolean isNumeric(char letter) {
 		return ('0' > letter || letter > '9');
 	}
 
@@ -749,7 +749,7 @@ final public class StringUtils extends CharUtils {
 	 * @param value
 	 * @return
 	 */
-	public static boolean isAlphabetNumeric(CharSequence value) {
+	public static final boolean isAlphabetNumeric(CharSequence value) {
 		if (value == null || value.length() == 0)
 			return true;
 		for (int i = 0; i < value.length(); i++) {
@@ -768,7 +768,7 @@ final public class StringUtils extends CharUtils {
 	 * @param newString
 	 * @return
 	 */
-	public static String replaceMatch(String line, String oldString, String newString) {
+	public static final String replaceMatch(String line, String oldString, String newString) {
 		int i = 0;
 		int j = 0;
 		if ((i = line.indexOf(oldString, i)) >= 0) {
@@ -792,7 +792,7 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * @see #indexOf(int[], int, int)
 	 */
-	public static int indexOf(int[] arr, int v) {
+	public static final int indexOf(int[] arr, int v) {
 		return indexOf(arr, v, 0);
 	}
 
@@ -805,7 +805,7 @@ final public class StringUtils extends CharUtils {
 	 *            从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
-	public static int indexOf(int[] arr, int v, int off) {
+	public static final int indexOf(int[] arr, int v, int off) {
 		if (null != arr)
 			for (int i = off; i < arr.length; i++) {
 				if (arr[i] == v)
@@ -819,7 +819,7 @@ final public class StringUtils extends CharUtils {
 	 * @param v
 	 * @return 最后一个匹配元素的下标
 	 */
-	public static int lastIndexOf(int[] arr, int v) {
+	public static final int lastIndexOf(int[] arr, int v) {
 		if (null != arr)
 			for (int i = arr.length - 1; i >= 0; i--) {
 				if (arr[i] == v)
@@ -831,7 +831,7 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * @see #indexOf(char[], char, int)
 	 */
-	public static int indexOf(char[] arr, char v) {
+	public static final int indexOf(char[] arr, char v) {
 		if (null != arr)
 			for (int i = 0; i < arr.length; i++) {
 				if (arr[i] == v)
@@ -849,7 +849,7 @@ final public class StringUtils extends CharUtils {
 	 *            从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
-	public static int indexOf(char[] arr, char v, int off) {
+	public static final int indexOf(char[] arr, char v, int off) {
 		if (null != arr)
 			for (int i = off; i < arr.length; i++) {
 				if (arr[i] == v)
@@ -863,7 +863,7 @@ final public class StringUtils extends CharUtils {
 	 * @param v
 	 * @return 第一个匹配元素的下标
 	 */
-	public static int lastIndexOf(char[] arr, char v) {
+	public static final int lastIndexOf(char[] arr, char v) {
 		if (null != arr)
 			for (int i = arr.length - 1; i >= 0; i--) {
 				if (arr[i] == v)
@@ -875,7 +875,7 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * @see #indexOf(long[], long, int)
 	 */
-	public static int indexOf(long[] arr, long v) {
+	public static final int indexOf(long[] arr, long v) {
 		return indexOf(arr, v, 0);
 	}
 
@@ -888,7 +888,7 @@ final public class StringUtils extends CharUtils {
 	 *            从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
-	public static int indexOf(long[] arr, long v, int off) {
+	public static final int indexOf(long[] arr, long v, int off) {
 		if (null != arr)
 			for (int i = off; i < arr.length; i++) {
 				if (arr[i] == v)
@@ -902,7 +902,7 @@ final public class StringUtils extends CharUtils {
 	 * @param v
 	 * @return 第一个匹配元素的下标
 	 */
-	public static int lastIndexOf(long[] arr, long v) {
+	public static final int lastIndexOf(long[] arr, long v) {
 		if (null != arr)
 			for (int i = arr.length - 1; i >= 0; i--) {
 				if (arr[i] == v)
@@ -918,7 +918,7 @@ final public class StringUtils extends CharUtils {
 	 * @param chr
 	 * @return
 	 */
-	public static int charCount(String str, char chr) {
+	public static final int charCount(String str, char chr) {
 		int count = 0;
 		if (str != null) {
 			int length = str.length();
@@ -932,7 +932,7 @@ final public class StringUtils extends CharUtils {
 		return count;
 	}
 
-	public static String unescape(String escaped) {
+	public static final String unescape(String escaped) {
 		int length = escaped.length();
 		int i = 0;
 		StringBuilder sb = new StringBuilder(escaped.length() / 2);
@@ -960,7 +960,7 @@ final public class StringUtils extends CharUtils {
 		return sb.toString();
 	}
 
-	public static String escape(String raw) {
+	public static final String escape(String raw) {
 		int length = raw.length();
 		int i = 0;
 		StringBuilder sb = new StringBuilder(raw.length() / 2);
@@ -1197,11 +1197,11 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	public static int indexOf(CharSequence s, char ch) {
+	public static final int indexOf(CharSequence s, char ch) {
 		return indexOf(s, ch, 0);
 	}
 
-	public static int indexOf(CharSequence c, char ch, int start) {
+	public static final int indexOf(CharSequence c, char ch, int start) {
 		if (c instanceof String) {
 			return ((String) c).indexOf(ch, start);
 		}
@@ -1212,7 +1212,7 @@ final public class StringUtils extends CharUtils {
 		return new char[len];
 	}
 
-	public static int indexOf(CharSequence c, char ch, int start, int end) {
+	public static final int indexOf(CharSequence c, char ch, int start, int end) {
 		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof String)) {
 			final int INDEX_INCREMENT = 500;
 			char[] temp = obtain(INDEX_INCREMENT);
@@ -1245,6 +1245,17 @@ final public class StringUtils extends CharUtils {
 		return -1;
 	}
 
+	public static final String[] getListToStrings(TArray<String> list) {
+		if (list == null || list.size == 0) {
+			return null;
+		}
+		String[] result = new String[list.size];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = list.get(i);
+		}
+		return result;
+	}
+
 	public static final TArray<CharSequence> getArrays(CharSequence[] chars) {
 		if (chars == null) {
 			return new TArray<CharSequence>(0);
@@ -1257,7 +1268,7 @@ final public class StringUtils extends CharUtils {
 		return arrays;
 	}
 
-	public static void getChars(CharSequence c, int start, int end, char[] dest, int destoff) {
+	public static final void getChars(CharSequence c, int start, int end, char[] dest, int destoff) {
 		if (c instanceof String) {
 			((String) c).getChars(start, end, dest, destoff);
 		} else if (c instanceof StringBuffer) {
@@ -1281,7 +1292,7 @@ final public class StringUtils extends CharUtils {
 		return count;
 	}
 
-	public static boolean isSpace(char c) {
+	public static final boolean isSpace(char c) {
 		switch (c) {
 		case ' ':
 			return true;
@@ -1298,11 +1309,11 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	public static int countCharacters(final TArray<CharSequence> chars) {
+	public static final int countCharacters(final TArray<CharSequence> chars) {
 		return countCharacters(chars, false);
 	}
 
-	public static int countCharacters(final TArray<CharSequence> chars, final boolean ignoreWhitespaces) {
+	public static final int countCharacters(final TArray<CharSequence> chars, final boolean ignoreWhitespaces) {
 		int characters = 0;
 		if (ignoreWhitespaces) {
 			for (int i = chars.size - 1; i >= 0; i--) {

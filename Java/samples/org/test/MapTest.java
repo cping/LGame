@@ -2,6 +2,7 @@ package org.test;
 
 import java.io.IOException;
 
+import loon.LTextureBatch;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -22,6 +23,8 @@ import loon.event.Touched;
 import loon.event.Updateable;
 import loon.opengl.LTexturePackClip;
 import loon.utils.TArray;
+import loon.utils.processes.RealtimeProcess;
+import loon.utils.timer.LTimerContext;
 
 public class MapTest extends Stage {
 
@@ -51,6 +54,7 @@ public class MapTest extends Stage {
 			map.setImagePack("assets/rpg/map.png", clips);
 			// 执行切图
 			map.pack();
+		
 			// 设置数组瓦片索引id和切图id的绑定关系(不设置时按照setImagePack中注入的切图id自动和地图id匹配)
 			/*map.putTile(0, 0);
 			map.putTile(1, 1);
@@ -63,7 +67,6 @@ public class MapTest extends Stage {
 			// 制作动画角色,切分大小32x32每帧,显示位置到坐标3,4(换算为数组地图位置),显示大小32x32
 			final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, map.tilesToPixelsX(3),
 					map.tilesToPixelsY(4), 32, 32);
-			
 			// 播放动画,速度每帧220
 			final long[] frames = {220, 220, 220 };
 			// 左右下上四方向的帧播放顺序(也可以理解为具体播放的帧)
@@ -148,7 +151,6 @@ public class MapTest extends Stage {
 			mc.start();
 			// 注销窗体时关闭移动控制器
 			putRelease(mc);
-
 			// ----按键移动---
 			//构建键盘监听
 			ActionKey left = new ActionKey();

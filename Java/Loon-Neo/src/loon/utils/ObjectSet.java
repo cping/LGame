@@ -1,6 +1,5 @@
 package loon.utils;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import loon.LSystem;
@@ -453,7 +452,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 	}
 
 	static public class ObjectSetIterator<K> implements Iterable<K>,
-			Iterator<K> {
+	LIterator<K> {
 		public boolean hasNext;
 
 		final ObjectSet<K> set;

@@ -131,17 +131,18 @@ public class LToolTip extends LComponent {
 		}
 	}
 
-	public void setFadeTime(float delay) {
+	public LToolTip setFadeTime(float delay) {
 		this.fadeTime = delay;
+		return this;
 	}
 
 	public float getFadeTime() {
 		return this.fadeTime;
 	}
 
-	public void showTip() {
+	public LToolTip showTip() {
 		if (this.tooltip == null) {
-			return;
+			return this;
 		}
 		this.setVisible(true);
 		this.initial = 0;
@@ -160,13 +161,14 @@ public class LToolTip extends LComponent {
 		this._alpha = 0f;
 		this.running = true;
 		this.fadeCompleted = false;
+		return this;
 	}
 
 	public LComponent getToolTipComponent() {
 		return this.tooltip;
 	}
 
-	public void setToolTipComponent(LComponent tooltip) {
+	public LToolTip setToolTipComponent(LComponent tooltip) {
 		if (tooltip != null) {
 			if (tooltip.getToolTipParent() != null) {
 				tooltip = tooltip.getToolTipParent();
@@ -176,37 +178,41 @@ public class LToolTip extends LComponent {
 			}
 		}
 		if (this.tooltip == tooltip) {
-			return;
+			return this;
 		}
 		this.tooltip = tooltip;
 		this.tooltipChanged = true;
 		if (!this.isVisible()) {
 			this.initial = 0;
 		}
+		return this;
 	}
 
 	public int getInitialDelay() {
 		return this.initialDelay;
 	}
 
-	public void setInitialDelay(int i) {
+	public LToolTip setInitialDelay(int i) {
 		this.initialDelay = i;
+		return this;
 	}
 
 	public int getDismissDelay() {
 		return this.dismissDelay;
 	}
 
-	public void setDismissDelay(int i) {
+	public LToolTip setDismissDelay(int i) {
 		this.dismissDelay = i;
+		return this;
 	}
 
 	public int getReshowDelay() {
 		return this.reshowDelay;
 	}
 
-	public void setReshowDelay(int i) {
+	public LToolTip setReshowDelay(int i) {
 		this.reshowDelay = i;
+		return this;
 	}
 
 	@Override

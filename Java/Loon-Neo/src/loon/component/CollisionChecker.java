@@ -21,8 +21,7 @@
  */
 package loon.component;
 
-import java.util.Iterator;
-
+import loon.utils.LIterator;
 import loon.utils.TArray;
 
 public interface CollisionChecker{
@@ -55,7 +54,7 @@ public interface CollisionChecker{
 
 	Actor getOnlyIntersectingObject(Actor actor, String flag);
 
-	Iterator<Actor> getActorsIterator();
+	LIterator<Actor> getActorsIterator();
 
 	TArray<Actor> getActorsList();
 	

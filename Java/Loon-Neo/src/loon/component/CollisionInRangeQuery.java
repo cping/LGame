@@ -40,10 +40,11 @@ public class CollisionInRangeQuery implements CollisionQuery {
 
 	private RectBox object;
 
-	public void init(float x, float y, float r) {
+	public CollisionInRangeQuery init(float x, float y, float r) {
 		this.x = x;
 		this.y = y;
 		this.r = r;
+		return this;
 	}
 
 	@Override

@@ -343,10 +343,12 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		return pressed;
 	}
 
+	@Override
 	public LColor getFontColor() {
 		return fontColor.cpy();
 	}
 
+	@Override
 	public LClickButton setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
 		return this;

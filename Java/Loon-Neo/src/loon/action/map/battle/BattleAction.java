@@ -20,15 +20,59 @@
  */
 package loon.action.map.battle;
 
+import java.util.Comparator;
+
 public abstract class BattleAction {
-	
+
+	public class SpeedComparer implements Comparator<BattleAction> {
+
+		@Override
+		public int compare(BattleAction o1, BattleAction o2) {
+			int speedA = o1.actionSpeed;
+			int speedB = o2.actionSpeed;
+			if (speedA > speedB) {
+				return -1;
+			}
+			if (speedA < speedB) {
+				return 1;
+			}
+			return 0;
+		}
+
+	}
+
 	private String actionName;
-	
+
+	public boolean forcing;
+
 	private int actionSpeed;
 	private int turnCost;
 	private int actionAnimationCode;
-	
-	public abstract void act(Character player, Character enemy);
+	private int basic;
+	private int itemId;
+	private int skillId;
+	private int kind;
+	private int speed;
+	private int targetIndex;
+	private int rating;
+
+	public BattleAction() {
+		this.reset();
+	}
+
+	public void reset() {
+		this.actionName = "unkwon";
+		this.actionSpeed = 0;
+		this.turnCost = 0;
+		this.actionAnimationCode = -1;
+		this.speed = 0;
+		this.kind = 0;
+		this.basic = 0;
+		this.skillId = 0;
+		this.itemId = 0;
+		this.targetIndex = -1;
+		this.forcing = false;
+	}
 
 	public int getActionSpeed() {
 		return actionSpeed;
@@ -54,12 +98,80 @@ public abstract class BattleAction {
 		this.actionName = actionName;
 	}
 
-	public int getActionAnimationCode() {	
+	public int getActionAnimationCode() {
 		return actionAnimationCode;
 	}
 
 	public void setActionAnimation(int code) {
 		this.actionAnimationCode = code;
 	}
-	
+
+	public boolean isForcing() {
+		return forcing;
+	}
+
+	public void setForcing(boolean forcing) {
+		this.forcing = forcing;
+	}
+
+	public int getBasic() {
+		return basic;
+	}
+
+	public void setBasic(int basic) {
+		this.basic = basic;
+	}
+
+	public int getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(int itemId) {
+		this.itemId = itemId;
+	}
+
+	public int getKind() {
+		return kind;
+	}
+
+	public void setKind(int kind) {
+		this.kind = kind;
+	}
+
+	public int getSkillId() {
+		return skillId;
+	}
+
+	public void setSkillId(int skillId) {
+		this.skillId = skillId;
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
+	public int getTargetIndex() {
+		return targetIndex;
+	}
+
+	public void setTargetIndex(int targetIndex) {
+		this.targetIndex = targetIndex;
+	}
+
+	public void setActionAnimationCode(int actionAnimationCode) {
+		this.actionAnimationCode = actionAnimationCode;
+	}
+
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
 }

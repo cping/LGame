@@ -31,4 +31,8 @@ public class BattleRNG {
 	public static final int random(int min, int max) {
 		return MathUtils.random(min, max);
 	}
+
+	public static final int random(int value) {
+		return MathUtils.random(value);
+	}
 }

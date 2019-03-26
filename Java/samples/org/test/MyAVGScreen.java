@@ -9,6 +9,7 @@ import loon.component.LMessage;
 import loon.component.LPaper;
 import loon.component.LSelect;
 import loon.event.GameTouch;
+import loon.font.BMFont;
 import loon.opengl.GLEx;
 
 public class MyAVGScreen extends AVGScreen {
@@ -25,8 +26,9 @@ public class MyAVGScreen extends AVGScreen {
 	public MyAVGScreen() {
 		super("assets/avg/script/s1.txt", AVGDialog.getRMXPDialog("assets/avg/w6.png",
 				460, 150));
-	
-		/*try {
+	/*
+	 * 使用bmfont字体用此设置
+		try {
 			setFont(new BMFont("test.fnt", "test.png"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -66,6 +68,9 @@ public class MyAVGScreen extends AVGScreen {
 	public void initSelectConfig(LSelect select) {
 	}
 
+	/**
+	 * 逐行解析未知(自定义)脚本命令
+	 */
 	public boolean nextScript(String mes) {
 
 		// 自定义命令（有些自定义命令为了突出写成了中文，实际不推荐）
@@ -93,11 +98,11 @@ public class MyAVGScreen extends AVGScreen {
 			messageUI.setVisible(false);
 			setScrFlag(true);
 			// 强行锁定脚本
-			setLocked(true);
+			setScriptLocked(true);
 			LButton yes = new LButton("assets/avg/dialog_yes.png", 112, 33) {
 				public void doClick() {
 					// 解除锁定
-					setLocked(false);
+					setScriptLocked(false);
 					// 触发事件
 					// click();
 					// 删除当前按钮

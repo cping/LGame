@@ -173,17 +173,20 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		this.setLocked(true);
 	}
 
-	public void setData(TArray<ListItem> list, int width) {
+	public LTable setData(TArray<ListItem> list, int width) {
 		setModel(new SimpleTableModel(list), width);
+		return this;
 	}
 
-	public void bindIcon(String name, LTexture texture) {
+	public LTable bindIcon(String name, LTexture texture) {
 		bindIcons.put(name, new BindIcon(name, texture));
+		return this;
 	}
 
-	public void bindIcon(String name, String fileName) {
+	public LTable bindIcon(String name, String fileName) {
 		bindIcons
 				.put(name, new BindIcon(name, LTextures.loadTexture(fileName)));
+		return this;
 	}
 
 	private BindIcon containsBindIcon(String name) {
@@ -196,12 +199,14 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return null;
 	}
 
-	public void removeIcon(String name) {
+	public LTable removeIcon(String name) {
 		bindIcons.remove(name);
+		return this;
 	}
 
-	public void removeIcon(int idx) {
+	public LTable removeIcon(int idx) {
 		bindIcons.remove(idx);
+		return this;
 	}
 
 	public Dimension getContentMinSizeHint() {
@@ -218,7 +223,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				* cellSpacing);
 	}
 
-	public void mouseDragged(float x, float y) {
+	public LTable mouseDragged(float x, float y) {
 		if (isTableHeadVisible()) {
 			if (header.columnResizeIndex > -1) {
 				int newWidth = (int) (header.columnWidthBuffer + (x - header.mouseX));
@@ -226,50 +231,53 @@ public class LTable extends LContainer implements FontSet<LTable> {
 						+ getColumnWidth(header.columnResizeIndex + 1);
 				if (newWidth < getColumnMinWidth()
 						|| sum - newWidth < getColumnMinWidth()) {
-					return;
+					return this;
 				}
 				columns[header.columnResizeIndex].setWidth(newWidth);
 				columns[header.columnResizeIndex + 1].setWidth(sum - newWidth);
 			}
 		}
+		return this;
 	}
 
-	public void mouseExited(float x, float y) {
+	public LTable mouseExited(float x, float y) {
 		if (header.columnResizeIndex > -1) {
 			header.columnResizeIndex = -1;
 		}
+		return this;
 	}
 
-	public void mouseMoved(float x, float y) {
+	public LTable mouseMoved(float x, float y) {
 		if (!isTableHeadVisible()) {
-			return;
+			return this;
 		}
 		if (header.headerY < (y + getCellHeight() + getCellHeight())) {
 			int column = isOnColumn((int) x);
 			if (column >= 0) {
 				header.columnResizeIndex = column;
-				return;
+				return this;
 			} else if (header.columnResizeIndex > -1) {
 				header.columnResizeIndex = -1;
 			}
 		} else if (header.columnResizeIndex > -1) {
 			header.columnResizeIndex = -1;
 		}
+		return this;
 	}
 
-	public void mousePressed(float x, float y) {
+	public LTable mousePressed(float x, float y) {
 		if (isTableHeadVisible()) {
 			if (header.columnResizeIndex > -1) {
 				header.mouseX = (int) x;
 				header.columnWidthBuffer = getColumnWidth(header.columnResizeIndex);
-				return;
+				return this;
 			} else {
 				header.columnResizeIndex = 0;
 			}
 		}
 
 		if (readOnly) {
-			return;
+			return this;
 		}
 
 		assertSelectionArraySize();
@@ -288,7 +296,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		}
 
 		if (row < 0 || row >= selected.length) {
-			return;
+			return this;
 		}
 
 		if (!selected[row]) {
@@ -303,8 +311,10 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			clearSelection();
 			selected[row] = !selected[row];
 		}
+		return this;
 	}
 
+	@Override
 	protected void processTouchDragged() {
 		mouseDragged(getUITouchX(), getUITouchY());
 		if (!locked) {
@@ -318,6 +328,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		super.dragClick();
 	}
 
+	@Override
 	protected void processTouchPressed() {
 		super.processTouchPressed();
 		mousePressed(getUITouchX(), getUITouchY());
@@ -518,16 +529,18 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return headTextColor;
 	}
 
-	public void setHeadTextColor(LColor headTextColor) {
+	public LTable setHeadTextColor(LColor headTextColor) {
 		this.headTextColor = headTextColor;
+		return this;
 	}
 
 	public LColor getSelectionColor() {
 		return selectionColor;
 	}
 
-	public void setSelectionColor(LColor selectionColor) {
+	public LTable setSelectionColor(LColor selectionColor) {
 		this.selectionColor = selectionColor;
+		return this;
 	}
 
 	public LColor getGridColor() {
@@ -542,12 +555,14 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return cellHeight;
 	}
 
-	public void setCellHeight(int cellHeight) {
+	public LTable setCellHeight(int cellHeight) {
 		this.cellHeight = cellHeight;
+		return this;
 	}
 
-	public void setGridVisible(boolean gridVisible) {
+	public LTable setGridVisible(boolean gridVisible) {
 		this.gridVisible = gridVisible;
+		return this;
 	}
 
 	public boolean isTableHeadVisible() {
@@ -566,28 +581,30 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return cellSpacing;
 	}
 
-	public void setCellSpacing(int cellSpacing) {
+	public LTable setCellSpacing(int cellSpacing) {
 		this.cellSpacing = cellSpacing;
+		return this;
 	}
 
 	public LColor getHeaderBackgroundColor() {
 		return headerBackgroundColor;
 	}
 
-	public void setHeaderBackgroundColor(LColor headerBackgroundColor) {
+	public LTable setHeaderBackgroundColor(LColor headerBackgroundColor) {
 		this.headerBackgroundColor = headerBackgroundColor;
+		return this;
 	}
 
 	protected HeaderControl getHeader() {
 		return header;
 	}
 
-	public void setSelected(int index, boolean b) {
+	public LTable setSelected(int index, boolean b) {
 		assertModel();
 		assertSelectionArraySize();
 
 		if (index < 0 || index >= selected.length) {
-			return;
+			return this;
 		}
 
 		if (multipleSelection) {
@@ -604,15 +621,17 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			selected[index] = b;
 			selectionCount = 1;
 		}
+		return this;
 	}
 
-	public void setModel(ITableModel m, int width) {
+	public LTable setModel(ITableModel m, int width) {
 		model = m;
 		columns = new TableColumn[m.getColumnCount()];
 		selected = new boolean[m.getRowCount()];
 		for (int i = 0; i < columns.length; i++) {
 			columns[i] = new TableColumn(m.getColumnName(i), width);
 		}
+		return this;
 	}
 
 	public ITableModel getModel() {
@@ -681,8 +700,9 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return -1;
 	}
 
-	public void setReadOnly(boolean readOnly) {
+	public LTable setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
+		return this;
 	}
 
 	public TableColumn getColumn(int columnIndex) {

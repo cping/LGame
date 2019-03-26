@@ -1,6 +1,5 @@
 /**
- * 
- * Copyright 2008 - 2011
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,28 +16,10 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.1
+ * @version 0.5
  */
-package loon.component;
+package loon.action.map.battle;
 
-public class CollisionPointQuery implements CollisionQuery {
-
-	private float x;
-
-	private float y;
-
-	private String flag;
-
-	public CollisionPointQuery init(float x, float y, String flag) {
-		this.x = x;
-		this.y = y;
-		this.flag = flag;
-		return this;
-	}
-
-	@Override
-	public boolean checkCollision(Actor actor) {
-		return this.flag != null && !flag.equals(actor.getFlag()) ? false
-				: actor.containsPoint(this.x, this.y);
-	}
+public enum ParticleEffectState {
+	Flame, Smoke, Aura, Fireplace, Light, Splash, Soot, EventBase, Flare, Teleport, Spirit, None;
 }

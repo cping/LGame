@@ -20,8 +20,6 @@
  */
 package loon.component;
 
-import java.util.Iterator;
-
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
@@ -234,7 +232,7 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public Iterator<Actor> getActorsIterator() {
+	public LIterator<Actor> getActorsIterator() {
 		return collisionChecker.getActorsIterator();
 	}
 

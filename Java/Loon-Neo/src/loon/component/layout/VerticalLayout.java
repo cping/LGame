@@ -114,6 +114,7 @@ public class VerticalLayout extends LayoutManager {
 		return new SizeValue(newWidth + "px");
 	}
 
+	@Override
 	public SizeValue calculateConstraintHeight(final LayoutPort root,
 			final TArray<LayoutPort> children) {
 		int newHeight = 0;

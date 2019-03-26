@@ -26,7 +26,9 @@ import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.event.ActionKey;
 import loon.event.SysKey;
+import loon.event.SysTouch;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -47,6 +49,8 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	private int left, top, type, nTop;
 
 	private int sizeFont, doubleSizeFont, tmpOffset, messageLeft, nLeft, messageTop, selectSize, selectFlag;
+	
+	private int space;
 
 	private float autoAlpha;
 
@@ -59,6 +63,10 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	private LTexture cursor, buoyage;
 
 	private boolean isAutoAlpha, isSelect;
+
+	private boolean clicked;
+	
+	private ActionKey eventClick = new ActionKey();
 
 	public LSelect(IFont font, int x, int y, int width, int height) {
 		this(font, (LTexture) null, x, y, width, height);
@@ -104,7 +112,8 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this.fontColor = fontColor;
 		this.messageFont = (font == null ? LSystem.getSystemGameFont() : font);
 		this.customRendering = true;
-		this.selectFlag = 1;
+		this.selectFlag = -1;
+		this.space = 30;
 		this.tmpOffset = -(width / 10);
 		this.delay = new LTimer(150);
 		this.autoAlpha = 0.25F;
@@ -196,6 +205,18 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 				}
 			}
 		}
+		if (!SysTouch.isUp()) {
+			if (selects != null) {
+				int touchY = input.getTouchY();
+				selectFlag = selectSize - (((nTop + space) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
+				if (selectFlag < 1) {
+					selectFlag = 0;
+				}
+				if (selectFlag > selectSize) {
+					selectFlag = selectSize;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -203,7 +224,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (!isVisible()) {
 			return;
 		}
-		LColor oldColor = g.getColor();
+		int oldColor = g.color();
 		sizeFont = messageFont.getSize();
 		doubleSizeFont = sizeFont * 2;
 		if (doubleSizeFont == 0) {
@@ -220,7 +241,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (selects != null) {
 			nLeft = messageLeft - sizeFont / 4;
 			for (int i = 0; i < selects.length; i++) {
-				nTop += 30;
+				nTop += space;
 				type = i + 1;
 				isSelect = (type == (selectFlag > 0 ? selectFlag : 1));
 				if ((buoyage != null) && isSelect) {
@@ -238,51 +259,36 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		g.setColor(oldColor);
 	}
 
-	private boolean onClick;
-
 	public boolean isClick() {
-		return onClick;
+		return clicked;
 	}
 
 	@Override
-	protected void processTouchClicked() {
-		if (!input.isMoving()) {
-			if ((selects != null) && (selectFlag > 0)) {
-				this.result = selects[selectFlag - 1];
-			}
-			super.processTouchClicked();
-			this.onClick = true;
-		} else {
-			this.onClick = false;
+	protected void processTouchPressed() {
+		if (!eventClick.isPressed()) {
+			this.clicked = false;
+			super.processTouchPressed();
+			eventClick.press();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		super.processTouchReleased();
-		if (LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)) {
-			this.processTouchMoved();
-		}
-	}
-
-	@Override
-	protected synchronized void processTouchMoved() {
-		if (selects != null) {
-			int touchY = input.getTouchY();
-			selectFlag = selectSize - (((nTop + 30) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
-			if (selectFlag < 1) {
-				selectFlag = 0;
+		if (eventClick.isPressed()) {
+			this.clicked = true;
+			if ((this.selects != null) && (this.selectFlag > 0)) {
+				this.result = this.selects[selectFlag - 1];
 			}
-			if (selectFlag > selectSize) {
-				selectFlag = selectSize;
-			}
+			super.processTouchReleased();
+			eventClick.release();
 		}
 	}
 
 	@Override
 	protected void processKeyPressed() {
+		super.processKeyPressed();
 		if (this.isSelected() && this.input.getKeyPressed() == SysKey.ENTER) {
-			this.doClick();
+			this.clicked = true;
 		}
 	}
 
@@ -358,6 +364,14 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	public LSelect setFlashBuoyage(boolean flashBuoyage) {
 		this.isAutoAlpha = flashBuoyage;
 		return this;
+	}
+
+	public int getSpace() {
+		return space;
+	}
+
+	public void setSpace(int space) {
+		this.space = space;
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package loon.utils;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import loon.LSystem;
@@ -36,25 +35,20 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 	public ObjectMap(int initialCapacity, float loadFactor) {
 		if (initialCapacity < 0)
-			throw new IllegalArgumentException("initialCapacity must be >= 0: "
-					+ initialCapacity);
+			throw new IllegalArgumentException("initialCapacity must be >= 0: " + initialCapacity);
 		if (initialCapacity > 1 << 30)
-			throw new IllegalArgumentException("initialCapacity is too large: "
-					+ initialCapacity);
+			throw new IllegalArgumentException("initialCapacity is too large: " + initialCapacity);
 		capacity = MathUtils.nextPowerOfTwo(initialCapacity);
 
 		if (loadFactor <= 0)
-			throw new IllegalArgumentException("loadFactor must be > 0: "
-					+ loadFactor);
+			throw new IllegalArgumentException("loadFactor must be > 0: " + loadFactor);
 		this.loadFactor = loadFactor;
 
 		threshold = (int) (capacity * loadFactor);
 		mask = capacity - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = MathUtils.max(3,
-				(int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
-		pushIterations = MathUtils.max(MathUtils.min(capacity, 8),
-				(int) MathUtils.sqrt(capacity) / 8);
+		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
+		pushIterations = MathUtils.max(MathUtils.min(capacity, 8), (int) MathUtils.sqrt(capacity) / 8);
 
 		keyTable = (K[]) new Object[capacity + stashCapacity];
 		valueTable = (V[]) new Object[keyTable.length];
@@ -64,8 +58,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 		this(map.capacity, map.loadFactor);
 		stashSize = map.stashSize;
 		System.arraycopy(map.keyTable, 0, keyTable, 0, map.keyTable.length);
-		System.arraycopy(map.valueTable, 0, valueTable, 0,
-				map.valueTable.length);
+		System.arraycopy(map.valueTable, 0, valueTable, 0, map.valueTable.length);
 		size = map.size;
 	}
 
@@ -180,8 +173,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 		push(key, value, index1, key1, index2, key2, index3, key3);
 	}
 
-	private void push(K insertKey, V insertValue, int index1, K key1,
-			int index2, K key2, int index3, K key3) {
+	private void push(K insertKey, V insertValue, int index1, K key1, int index2, K key2, int index3, K key3) {
 		K[] keyTable = this.keyTable;
 		V[] valueTable = this.valueTable;
 		int mask = this.mask;
@@ -367,8 +359,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 	public void shrink(int maximumCapacity) {
 		if (maximumCapacity < 0)
-			throw new IllegalArgumentException("maximumCapacity must be >= 0: "
-					+ maximumCapacity);
+			throw new IllegalArgumentException("maximumCapacity must be >= 0: " + maximumCapacity);
 		if (size > maximumCapacity)
 			maximumCapacity = size;
 		if (capacity <= maximumCapacity)
@@ -476,10 +467,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 		threshold = (int) (newSize * loadFactor);
 		mask = newSize - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = MathUtils.max(3,
-				(int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
-		pushIterations = MathUtils.max(MathUtils.min(newSize, 8),
-				(int) MathUtils.sqrt(newSize) / 8);
+		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
+		pushIterations = MathUtils.max(MathUtils.min(newSize, 8), (int) MathUtils.sqrt(newSize) / 8);
 
 		K[] oldKeyTable = keyTable;
 		V[] oldValueTable = valueTable;
@@ -617,8 +606,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 		}
 	}
 
-	static private abstract class MapIterator<K, V, I> implements Iterable<I>,
-			Iterator<I> {
+	static private abstract class MapIterator<K, V, I> implements Iterable<I>, LIterator<I> {
 		public boolean hasNext;
 
 		final ObjectMap<K, V> map;
@@ -649,8 +637,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		public void remove() {
 			if (currentIndex < 0)
-				throw new IllegalStateException(
-						"next must be called before remove.");
+				throw new IllegalStateException("next must be called before remove.");
 			if (currentIndex >= map.capacity) {
 				map.removeStashIndex(currentIndex);
 				nextIndex = currentIndex - 1;
