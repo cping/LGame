@@ -23,4 +23,5 @@ package loon.action.map.battle;
 public class BattleControl {
 
 	private BattleState battleState = BattleState.START;
+	
 }

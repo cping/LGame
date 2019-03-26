@@ -773,7 +773,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs != null && childCount > 0) {
 			for (int i = this.childCount - 1; i >= 0; i--) {
 				LComponent comp = _childs[i];
-				if (comp != null && comp != this) {
+				if (comp != null && comp != this && comp.getParent() == this) {
 					comp.processResize();
 				}
 			}

@@ -38,7 +38,7 @@ import loon.utils.timer.LTimer;
 public class MovieClip extends DisplayObject {
 
 	private boolean _autoDispose = false;
-	
+
 	private TextureData _ssd = null;
 
 	private MovieSpriteSheet _sheet = null;
@@ -71,8 +71,7 @@ public class MovieClip extends DisplayObject {
 			this.dispatchEvent(EventType.EVENT_MOVIE_CLIP_RESTART);
 
 			if (_autoDispose) {
-				if (this.getParent() != null
-						&& (this.getParent() instanceof MovieSprite)) {
+				if (this.getParent() != null && (this.getParent() instanceof MovieSprite)) {
 					((MovieSprite) this.getParent()).removeChild(this);
 				}
 				return this;
@@ -179,16 +178,14 @@ public class MovieClip extends DisplayObject {
 
 	@Override
 	protected void addedToStage() {
-		if (LSystem.getProcess() != null
-				&& LSystem.getProcess().getScreen() != null) {
+		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
 			LSystem.getProcess().getScreen().add(this);
 		}
 	}
 
 	@Override
 	protected void removedFromStage() {
-		if (LSystem.getProcess() != null
-				&& LSystem.getProcess().getScreen() != null) {
+		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
 			LSystem.getProcess().getScreen().remove(this);
 		}
 	}
@@ -229,8 +226,7 @@ public class MovieClip extends DisplayObject {
 			tempRect.setBounds(p.x, p.y, getWidth(), getHeight());
 		}
 		RectBox rect = null;
-		if (LSystem.getProcess() != null
-				&& LSystem.getProcess().getScreen() != null) {
+		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
 			rect = LSystem.getProcess().getScreen().getBox();
 		} else {
 			rect = LSystem.viewSize.getRect();
@@ -287,22 +283,20 @@ public class MovieClip extends DisplayObject {
 			} else {
 				rotate += _rotation;
 			}
-			g.draw(_sheet.sheet(), destX, destY, drawRect.width,
-					drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(), _ssd.h(),
-					_baseColor, rotate, _scaleX, _scaleY, _anchorValue,
-					_pivotValue, dir);
+			g.draw(_sheet.sheet(), destX, destY, drawRect.width, drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(),
+					_ssd.h(), _baseColor, rotate, _scaleX, _scaleY, _anchorValue, _pivotValue, dir);
 
 		}
 
 	}
-	
+
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
 
 	@Override
-	public boolean isActionCompleted(){
+	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
 
@@ -327,7 +321,27 @@ public class MovieClip extends DisplayObject {
 		}
 		return this;
 	}
-	
+
+	@Override
+	public float getContainerX() {
+		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
+	}
+
+	@Override
+	public float getContainerY() {
+		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
+	}
+
+	@Override
+	public float getContainerWidth() {
+		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
+	}
+
+	@Override
+	public float getContainerHeight() {
+		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+	}
+
 	@Override
 	public void close() {
 		if (_sheet != null) {

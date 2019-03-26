@@ -87,7 +87,7 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 	private boolean _stopUpdate = false;
 
 	private Sprites _sprites = null;
-	
+
 	protected float _width, _height;
 
 	protected LTexture _image;
@@ -665,6 +665,30 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 		}
 	}
 
+	public float getScreenX() {
+		float x = 0;
+		ISprite parent = _super;
+		if (parent != null) {
+			x += parent.getX();
+			for (; (parent = parent.getParent()) != null;) {
+				x += parent.getX();
+			}
+		}
+		return x + getX();
+	}
+
+	public float getScreenY() {
+		float y = 0;
+		ISprite parent = _super;
+		if (parent != null) {
+			y += parent.getY();
+			for (; (parent = parent.getParent()) != null;) {
+				y += parent.getY();
+			}
+		}
+		return y + getY();
+	}
+
 	protected void prePaint(final GLEx g) {
 
 	}
@@ -1179,11 +1203,17 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 
 	@Override
 	public float getContainerX() {
+		if (_super != null) {
+			return getScreenX() - getX();
+		}
 		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
 	}
 
 	@Override
 	public float getContainerY() {
+		if (_super != null) {
+			return getScreenX() - getY();
+		}
 		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
 	}
 

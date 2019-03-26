@@ -168,6 +168,24 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return print.isIconFlag();
 	}
 
+	public float getOffsetIconX() {
+		return print.getOffsetIconX();
+	}
+
+	public LMessage setOffsetIconX(float offsetIconX) {
+		print.setOffsetIconX(offsetIconX);
+		return this;
+	}
+
+	public float getOffsetIconY() {
+		return print.getOffsetIconY();
+	}
+
+	public LMessage setOffsetIconY(float offsetIconY) {
+		print.setOffsetIconX(offsetIconY);
+		return this;
+	}
+
 	public void setEnglish(boolean e) {
 		print.setEnglish(true);
 	}

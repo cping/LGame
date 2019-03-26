@@ -1079,13 +1079,43 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 
+	public float getScreenX() {
+		float x = 0;
+		ISprite parent = _super;
+		if (parent != null) {
+			x += parent.getX();
+			for (; (parent = parent.getParent()) != null;) {
+				x += parent.getX();
+			}
+		}
+		return x + getX();
+	}
+
+	public float getScreenY() {
+		float y = 0;
+		ISprite parent = _super;
+		if (parent != null) {
+			y += parent.getY();
+			for (; (parent = parent.getParent()) != null;) {
+				y += parent.getY();
+			}
+		}
+		return y + getY();
+	}
+
 	@Override
 	public float getContainerX() {
+		if (_super != null) {
+			return getScreenX() - getX();
+		}
 		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
 	}
 
 	@Override
 	public float getContainerY() {
+		if (_super != null) {
+			return getScreenY() - getY();
+		}
 		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
 	}
 

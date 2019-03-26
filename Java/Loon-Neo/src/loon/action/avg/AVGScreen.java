@@ -1622,11 +1622,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return this;
 	}
 
-	public boolean isLocked() {
+	public boolean isScriptLocked() {
 		return limitClickd;
 	}
 
-	public AVGScreen setLocked(boolean locked) {
+	public AVGScreen setScriptLocked(boolean locked) {
 		this.limitClickd = locked;
 		return this;
 	}

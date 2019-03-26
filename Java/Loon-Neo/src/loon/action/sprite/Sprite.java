@@ -526,7 +526,8 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return animation;
 	}
 
-	protected void onUpdate(long elapsedTime) {}
+	protected void onUpdate(long elapsedTime) {
+	}
 
 	/**
 	 * 变更动画
@@ -742,7 +743,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 				x += parent.getX();
 			}
 		}
-		return x;
+		return x + getX();
 	}
 
 	public float getScreenY() {
@@ -754,7 +755,7 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 				y += parent.getY();
 			}
 		}
-		return y;
+		return y + getY();
 	}
 
 	@Override
@@ -1066,22 +1067,28 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 
 	@Override
 	public float getContainerX() {
+		if (_super != null) {
+			return getScreenX() - getX();
+		}
 		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
 	}
 
 	@Override
 	public float getContainerY() {
+		if (_super != null) {
+			return getScreenY() - getY();
+		}
 		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
 	}
 
 	@Override
 	public float getContainerWidth() {
-		return this._sprites == null ? LSystem.viewSize.getWidth() : this._sprites.getWidth();
+		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return this._sprites == null ? LSystem.viewSize.getHeight() : this._sprites.getHeight();
+		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
 	}
 
 	@Override

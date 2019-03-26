@@ -288,9 +288,13 @@ public class RectF implements XY {
 	public float y = 0f;
 
 	public RectF() {
-
+		this(0, 0, 0, 0);
 	}
 
+	public RectF(float w, float h) {
+		this(0, 0, w, h);
+	}
+	
 	public RectF(RectF rect) {
 		this(rect.x, rect.y, rect.width, rect.height);
 	}

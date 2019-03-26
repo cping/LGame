@@ -147,7 +147,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private boolean isEnglish, isWait, isIconFlag;
 
-	private float iconX, iconY;
+	private float iconX, iconY, offsetIconX, offsetIconY;
 
 	private int lazyHashCade = 1;
 
@@ -291,19 +291,19 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	private int maxHeignt(IFont font, char[] showMessages) {
+	protected int maxFontHeignt(IFont font, char[] showMessages, int size) {
 		int height = 0;
-		for (int i = 0; i < showMessages.length; i++) {
+		for (int i = 0; i < size; i++) {
 			height = MathUtils.max(height, font.stringHeight(String.valueOf(showMessages[i])));
 		}
-		return height;
+		return MathUtils.max(font.getHeight(), height);
 	}
 
 	public void drawDefFont(GLEx g, LColor old) {
 		synchronized (showMessages) {
 			this.size = showMessages.length;
 			this.fontSize = strings.getSize();
-			this.fontHeight = maxHeignt(strings, showMessages);
+			this.fontHeight = maxFontHeignt(strings, showMessages, size);
 			switch (dirmode) {
 			default:
 			case NONE:
@@ -335,7 +335,7 @@ public class Print implements FontSet<Print>, LRelease {
 			if (hashCode == lazyHashCade) {
 				strings.postCharCache();
 				if (isIconFlag && iconX != 0 && iconY != 0) {
-					g.draw(creeseIcon, iconX, iconY);
+					g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
 				}
 				return;
 			}
@@ -413,7 +413,7 @@ public class Print implements FontSet<Print>, LRelease {
 					iconX = vector.x + left + leftOffset;
 					iconY = (offset * fontHeight) + vector.y + fontSize + topOffset + strings.getAscent();
 					if (isIconFlag && iconX != 0 && iconY != 0) {
-						g.draw(creeseIcon, iconX, iconY);
+						g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
 					}
 				}
 				index++;
@@ -435,10 +435,10 @@ public class Print implements FontSet<Print>, LRelease {
 			this.size = showMessages.length;
 			if (nativeFont) {
 				this.fontSize = strings.getSize();
-				this.fontHeight = maxHeignt(strings, showMessages);
+				this.fontHeight = maxFontHeignt(strings, showMessages, size);
 			} else {
 				this.fontSize = ifont.getSize();
-				this.fontHeight = maxHeignt(ifont, showMessages);
+				this.fontHeight = maxFontHeignt(ifont, showMessages, size);
 			}
 			switch (dirmode) {
 			default:
@@ -529,14 +529,14 @@ public class Print implements FontSet<Print>, LRelease {
 					iconX = vector.x + left + leftOffset;
 					iconY = (offset * fontHeight) + vector.y + fontSize + topOffset + ifont.getAscent();
 					if (isIconFlag && iconX != 0 && iconY != 0) {
-						g.draw(creeseIcon, iconX, iconY);
+						g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
 					}
 				}
 				index++;
 			}
 			if (onComplete) {
 				if (isIconFlag && iconX != 0 && iconY != 0) {
-					g.draw(creeseIcon, iconX, iconY);
+					g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
 				}
 			}
 			if (messageCount == next) {
@@ -753,6 +753,22 @@ public class Print implements FontSet<Print>, LRelease {
 
 	public float getIconY() {
 		return iconY;
+	}
+
+	public float getOffsetIconX() {
+		return offsetIconX;
+	}
+
+	public void setOffsetIconX(float offsetIconX) {
+		this.offsetIconX = offsetIconX;
+	}
+
+	public float getOffsetIconY() {
+		return offsetIconY;
+	}
+
+	public void setOffsetIconY(float offsetIconY) {
+		this.offsetIconY = offsetIconY;
 	}
 
 	@Override

@@ -20,6 +20,15 @@
  */
 package loon.action.map.battle;
 
+import loon.utils.MathUtils;
+
 public class BattleRNG {
 
+	public static final boolean checkPct(int value) {
+		return (MathUtils.nextInt(0, 100) <= value);
+	}
+
+	public static final int random(int min, int max) {
+		return MathUtils.random(min, max);
+	}
 }

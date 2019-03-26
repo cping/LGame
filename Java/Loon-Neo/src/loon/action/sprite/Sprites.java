@@ -103,10 +103,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	public Sprites(String name, Screen screen, int w, int h) {
 		this._screen = screen;
 		this._visible = true;
-		this._width = w;
-		this._height = h;
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + SPRITES_CACHE.size() : name;
+		this.setSize(w, h);
 		SPRITES_CACHE.add(this);
 	}
 
@@ -126,6 +125,12 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 			if (this._height == 0) {
 				this._height = 1;
+			}
+			if (viewWidth < this._width) {
+				viewWidth = this._width;
+			}
+			if (viewHeight < this._height) {
+				viewHeight = this._height;
 			}
 		}
 		return this;
