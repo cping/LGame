@@ -22,6 +22,7 @@ package loon.action.map.colider;
 
 import loon.action.map.AStarFindHeuristic;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
@@ -175,8 +176,8 @@ public class TileImplPathFind{
 		if (heuristic != null) {
 			return heuristic.getScore(f.getX(), f.getY(), f.getX(), f.getY());
 		}
-		int xDiff = Math.abs(f.getX() - t.getX());
-		int yDiff = Math.abs(f.getY() - t.getY());
+		int xDiff = MathUtils.abs(f.getX() - t.getX());
+		int yDiff = MathUtils.abs(f.getY() - t.getY());
 		return (xDiff + yDiff) * 10;
 	}
 
@@ -192,8 +193,8 @@ public class TileImplPathFind{
 		int fromX = _toPx(tm, from.getX()), fromY = _toPx(tm, from.getY()), toX = _toPx(tm, to.getX()),
 				toY = _toPx(tm, to.getY());
 
-		int xDiff = Math.abs(fromX - toX);
-		int yDiff = Math.abs(fromY - toY);
+		int xDiff = MathUtils.abs(fromX - toX);
+		int yDiff = MathUtils.abs(fromY - toY);
 
 		float xMove, yMove;
 		float currentX = fromX, currentY = fromY;

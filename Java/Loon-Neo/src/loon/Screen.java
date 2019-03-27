@@ -27,7 +27,9 @@ import loon.action.ActionControl;
 import loon.action.ActionTween;
 import loon.action.camera.BaseCamera;
 import loon.action.camera.EmptyCamera;
+import loon.action.collision.Gravity;
 import loon.action.collision.GravityHandler;
+import loon.action.collision.GravityResult;
 import loon.action.page.ScreenSwitch;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprite;
@@ -79,6 +81,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.ConfigReader;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
+import loon.utils.Resolution;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
@@ -714,15 +717,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen add(Port<LTimerContext> timer) {
+		return add(timer, false);
+	}
+
+	public Screen add(Port<LTimerContext> timer, boolean paint) {
 		if (LSystem._base != null && LSystem._base.display() != null) {
-			_conns.add(LSystem._base.display().update.connect(timer));
+			if (paint) {
+				_conns.add(LSystem._base.display().paint.connect(timer));
+			} else {
+				_conns.add(LSystem._base.display().update.connect(timer));
+			}
 		}
 		return this;
 	}
 
 	public Screen remove(Port<LTimerContext> timer) {
+		return remove(timer, false);
+	}
+
+	public Screen remove(Port<LTimerContext> timer, boolean paint) {
 		if (LSystem._base != null && LSystem._base.display() != null) {
-			_conns.remove(LSystem._base.display().update.connect(timer));
+			if (paint) {
+				_conns.remove(LSystem._base.display().paint.connect(timer));
+			} else {
+				_conns.remove(LSystem._base.display().update.connect(timer));
+			}
 		}
 		return this;
 	}
@@ -1091,6 +1110,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			desktop.setSize(width, height);
 			desktop.resize();
 		}
+		if (isGravity && gravityHandler != null) {
+			gravityHandler.setLimit(width, height);
+		}
 		this.resize(width, height);
 	}
 
@@ -1298,10 +1320,33 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public GravityHandler setGravity(boolean g) {
 		if (g && gravityHandler == null) {
-			gravityHandler = new GravityHandler();
+			gravityHandler = new GravityHandler(getWidth(), getHeight());
 		}
 		this.isGravity = g;
 		return gravityHandler;
+	}
+
+	/**
+	 * 设定重力系统是否启动
+	 * 
+	 * @param g
+	 * @return
+	 */
+	public GravityHandler getGravity(boolean g) {
+		return gravityHandler;
+	}
+
+	/**
+	 * 返回一个对象和当前其它重力对象的碰撞关系
+	 * 
+	 * @param g
+	 * @return
+	 */
+	public GravityResult getCollisionBetweenObjects(Gravity g) {
+		if (isGravity) {
+			return gravityHandler.getCollisionBetweenObjects(g);
+		}
+		return null;
 	}
 
 	/**
@@ -3845,10 +3890,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @param delay
 	 */
-	public void setTweenDelay(long delay){
+	public void setTweenDelay(long delay) {
 		ActionControl.setDelay(delay);
 	}
-	
+
+	public Resolution getOriginResolution() {
+		if (LSystem.getProcess() != null) {
+			return LSystem.getProcess().getOriginResolution();
+		}
+		return new Resolution(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public Resolution getDisplayResolution() {
+		if (LSystem.getProcess() != null) {
+			return LSystem.getProcess().getDisplayResolution();
+		}
+		return new Resolution(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public String getOriginResolutionMode() {
+		return getOriginResolution().matchMode();
+	}
+
+	public String getDisplayResolutionMode() {
+		return getDisplayResolution().matchMode();
+	}
+
 	/**
 	 * 注销Screen
 	 */

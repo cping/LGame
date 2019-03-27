@@ -36,6 +36,10 @@ import loon.utils.MathUtils;
  */
 public final class CollisionHelper extends ShapeUtils {
 
+	private static final RectBox rectTemp1 = new RectBox();
+
+	private static final RectBox rectTemp2 = new RectBox();
+
 	/**
 	 * 检查两个坐标值是否在指定的碰撞半径内
 	 * 
@@ -195,6 +199,15 @@ public final class CollisionHelper extends ShapeUtils {
 		return LColor.getRGBs(image.getPixel(x, y));
 	}
 
+	public static boolean isPointInRect(float rectX, float rectY, float rectW, float rectH, float x, float y) {
+		if (x >= rectX && x <= rectX + rectW) {
+			if (y >= rectY && y <= rectY + rectH) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static final boolean intersect(RectBox rect, int x, int y) {
 		if (rect != null) {
 			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y && y < rect.Bottom())
@@ -251,14 +264,40 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	public static final int[] intersect(RectBox rect1, RectBox rect2) {
-		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom()
-				&& rect2.Top() < rect1.Bottom()) {
+		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right()
+				&& rect1.Top() < rect2.Bottom() && rect2.Top() < rect1.Bottom()) {
 			return new int[] { rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
 					rect1.Top() < rect2.Top() ? rect2.Top() - rect1.Top() : 0,
-					rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
-					rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0 };
+							rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
+							rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0 };
 		}
 		return null;
+	}
+
+	public static final boolean intersects(float x, float y, float width, float height, float dx, float dy, float dw,
+			float dh) {
+		return intersects(x, y, width, height, dx, dy, dw, dh, false);
+	}
+
+	public static final boolean intersects(float x, float y, float width, float height, float dx, float dy, float dw,
+			float dh, boolean touchingIsIn) {
+		rectTemp1.setBounds(x, y, width, height).normalize();
+		rectTemp2.setBounds(dx, dy, dw, dh).normalize();
+		if (touchingIsIn) {
+			if (rectTemp1.x + rectTemp1.width == rectTemp2.x){
+				return true;
+			}
+			if (rectTemp1.x == rectTemp2.x + rectTemp2.width){
+				return true;
+			}
+			if (rectTemp1.y + rectTemp1.height == rectTemp2.y){
+				return true;
+			}
+			if (rectTemp1.y == rectTemp2.y + rectTemp2.height){
+				return true;
+			}
+		}
+		return rectTemp1.overlaps(rectTemp2);
 	}
 
 	/**
@@ -359,6 +398,10 @@ public final class CollisionHelper extends ShapeUtils {
 		float radiusSumSq = (r1 + r2) * (r1 + r2);
 
 		return distance <= radiusSumSq;
+	}
+
+	public static final float getJumpVelo(float gravity, float distance) {
+		return MathUtils.sqrt(2 * distance * gravity);
 	}
 
 }

@@ -20,12 +20,16 @@
  */
 package loon.action.collision;
 
+import loon.LRelease;
 import loon.action.ActionBind;
+import loon.geom.RectBox;
 
 /**
  * 自0.3.2版起新增类，用以绑定任意一个LGame对象进行简单的重力牵引操作。
  */
-public class Gravity {
+public class Gravity implements LRelease {
+
+	private static final RectBox HIT_SELF = new RectBox();
 
 	public Object object;
 
@@ -51,17 +55,22 @@ public class Gravity {
 
 	public String name;
 
+	public RectBox bounds = new RectBox();
+
+	public Gravity(ActionBind o) {
+		this("unkown", o);
+	}
+
 	public Gravity(String name, ActionBind o) {
+		this(name, o, o.getX(), o.getY(), o.getWidth(), o.getHeight());
+	}
+
+	public Gravity(String name, ActionBind o, float x, float y, float w, float h) {
 		this.name = name;
 		this.object = o;
 		this.bind = o;
 		this.enabled = true;
-	}
-
-	public Gravity(ActionBind o) {
-		this.object = o;
-		this.bind = o;
-		this.enabled = true;
+		this.setBounds(x, y, w, h);
 	}
 
 	public boolean isEnabled() {
@@ -89,13 +98,12 @@ public class Gravity {
 	}
 
 	public void setVelocity(final float velocity) {
-		this.velocityX = velocity;
-		this.velocityY = velocity;
+		setVelocity(velocity);
 	}
 
 	public void setVelocity(final float velocityX, final float velocityY) {
-		this.velocityX = velocityX;
-		this.velocityY = velocityY;
+		this.setVelocityX(velocityX);
+		this.setVelocityY(velocityY);
 	}
 
 	public float getAccelerationX() {
@@ -115,13 +123,12 @@ public class Gravity {
 	}
 
 	public void setAcceleration(final float accelerationX, final float accelerationY) {
-		this.accelerationX = accelerationX;
-		this.accelerationY = accelerationY;
+		this.setAccelerationX(accelerationX);
+		this.setAccelerationY(accelerationY);
 	}
 
 	public void setAcceleration(final float acceleration) {
-		this.accelerationX = acceleration;
-		this.accelerationY = acceleration;
+		this.setAcceleration(acceleration);
 	}
 
 	public void accelerate(final float accelerationX, final float accelerationY) {
@@ -165,6 +172,23 @@ public class Gravity {
 		this.bounce = bounce;
 	}
 
+	public Gravity setBounds(float x, float y, float w, float h) {
+		bounds.setBounds(x, y, w, h);
+		return this;
+	}
+
+	public boolean hitInPath(float scale, Gravity other) {
+		HIT_SELF.setBounds(other.getAreaOfTravel(scale));
+		return bounds.overlaps(HIT_SELF) || HIT_SELF.overlaps(bounds);
+	}
+
+	public RectBox getAreaOfTravel(float scale) {
+		HIT_SELF.setBounds(bounds.x, bounds.y, velocityX * scale + bounds.width,
+				velocityY * scale + bounds.height);
+		bounds.normalize(HIT_SELF);
+		return HIT_SELF;
+	}
+
 	public void reset() {
 		this.accelerationX = 0;
 		this.accelerationY = 0;
@@ -179,6 +203,11 @@ public class Gravity {
 	public void dispose() {
 		this.enabled = false;
 		this.bind = null;
+	}
+
+	@Override
+	public void close() {
+		dispose();
 	}
 
 }

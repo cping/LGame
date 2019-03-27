@@ -209,7 +209,8 @@ public class LSetting {
 	public int getShowHeight() {
 		return this.height_zoom > 0 ? this.height_zoom : this.height;
 	}
-
+	
+	
 	/**
 	 * 判断设备是否宽屏
 	 * 

@@ -198,4 +198,58 @@ public class ShapeUtils extends GeometryUtils {
 	public static final float area(float x0, float y0, float x1, float y1, float x2, float y2) {
 		return x1 * y2 - y1 * x2 + x2 * y0 - y2 * x0 + x0 * y1 - y0 * x1;
 	}
+
+	public static final float getScaleFactor(float srcSize, float dstSize) {
+		float dScale = 1;
+		if (srcSize > dstSize) {
+			dScale = dstSize / srcSize;
+		} else {
+			dScale = dstSize / srcSize;
+		}
+		return dScale;
+	}
+
+	public static final float getScaleFactorToFit(float ox, float oy, float nx, float ny) {
+		float dScaleWidth = getScaleFactor(ox, nx);
+		float dScaleHeight = getScaleFactor(oy, ny);
+		return MathUtils.min(dScaleHeight, dScaleWidth);
+	}
+
+	public static final float snapToNearest(float number, float interval) {
+		interval = MathUtils.abs(interval);
+		if (interval == 0) {
+			return number;
+		}
+		return MathUtils.round(number / interval) * interval;
+	}
+
+	public static final float lockAtIntervals(float number, float interval) {
+		interval = MathUtils.abs(interval);
+		if (interval == 0) {
+			return number;
+		}
+		return ((int) (number / interval)) * interval;
+	}
+
+	public static final float calcRotationAngleInDegrees(float x, float y, float tx, float ty) {
+		float theta = MathUtils.atan2(tx - x, ty - y);
+		float angle = theta * MathUtils.RAD_TO_DEG;
+		if (angle < 0) {
+			angle += 360;
+		}
+		angle += 180;
+		return angle;
+	}
+
+	public static final float calcRotationAngleInRadians(float x, float y, float tx, float ty) {
+		return calcRotationAngleInDegrees(x, y, tx, ty) * MathUtils.DEG_TO_RAD;
+	}
+
+	public static final float calcRadiansDiff(float x, float y, float tx, float ty) {
+		float d = calcRotationAngleInDegrees(x, y, tx, ty);
+		d -= 90;
+		d %= 360;
+		return MathUtils.toRadians(d);
+	}
+
 }

@@ -97,6 +97,7 @@ public class LToolTip extends LComponent {
 		if (this.isVisible()) {
 			if (this.tooltip != null && !this.tooltipChanged) {
 				if (dismissing && running) {
+			
 					if (!fadeCompleted) {
 						currentFrame++;
 						if (currentFrame == fadeTime) {

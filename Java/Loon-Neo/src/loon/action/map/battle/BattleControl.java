@@ -33,7 +33,7 @@ public class BattleControl {
 			recover_hp += (BattleRNG.random(num + 1) + BattleRNG.random(num + 1)) - num;
 		}
 		if ((variance > 0) && (MathUtils.abs(recover_sp) > 0)) {
-			num = Math.max((MathUtils.abs(recover_sp) * variance) / 100, 1);
+			num = MathUtils.max((MathUtils.abs(recover_sp) * variance) / 100, 1);
 			recover_sp += (BattleRNG.random(num + 1) + BattleRNG.random(num + 1)) - num;
 		}
 		return new int[] { recover_hp, recover_sp };

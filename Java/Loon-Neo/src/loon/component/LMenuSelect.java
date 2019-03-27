@@ -82,7 +82,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	private CallFunction _function;
 
-	private boolean _over, _pressed,_focused;
+	private boolean _over, _pressed, _focused;
 
 	private int _pressedTime = 0;
 
@@ -112,6 +112,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	private float _flagHeight = 0;
 
+	private String _result = null;
+
 	private LColor selectRectColor;
 
 	private LColor fontColor;
@@ -125,7 +127,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	public static LMenuSelect make(String labels) {
 		return new LMenuSelect(labels, 0, 0);
 	}
-	
+
 	public static LMenuSelect make(String labels, int x, int y) {
 		return new LMenuSelect(labels, x, y);
 	}
@@ -382,6 +384,14 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		}
 	}
 
+
+	public String getResult() {
+		if (_labels != null && _selected > -1 && _selected < _labels.length) {
+			_result = _labels[_selected];
+		}
+		return _result;
+	}
+
 	public boolean isTouchOver() {
 		return this._over;
 	}
@@ -392,8 +402,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	protected void processTouchDragged() {
-		this._over = this._pressed = this.intersects(getUITouchX(),
-				getUITouchY());
+		this._over = this._pressed = this.intersects(getUITouchX(), getUITouchY());
 		super.processTouchDragged();
 	}
 
@@ -589,7 +598,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	public void setSelectBackgroundColor(LColor selectBackgroundColor) {
 		this.selectBackgroundColor = selectBackgroundColor;
 	}
-	
+
 	@Override
 	public String getUIName() {
 		return "MenuSelect";
@@ -602,6 +611,5 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			_flag_image.close();
 		}
 	}
-
 
 }

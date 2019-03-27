@@ -37,6 +37,7 @@ import loon.utils.Bundle;
 import loon.utils.ListMap;
 import loon.utils.MapBundle;
 import loon.utils.MathUtils;
+import loon.utils.Resolution;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -89,6 +90,7 @@ public class LProcess extends PlayerUtils {
 		if (input != null) {
 			if (!game.setting.emulateTouch && !game.isMobile()) {
 				input.mouseEvents.connect(new MouseMake.ButtonSlot() {
+					@Override
 					public void onEmit(MouseMake.ButtonEvent event) {
 						_currentInput.callMouse(event);
 					}
@@ -1009,6 +1011,28 @@ public class LProcess extends PlayerUtils {
 
 	public Screen getCurrentScreen() {
 		return _currentScreen;
+	}
+
+	public Resolution getOriginResolution() {
+		if (_game != null && _game.setting != null) {
+			return new Resolution(_game.setting.width, _game.setting.height);
+		}
+		return new Resolution(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public Resolution getDisplayResolution() {
+		if (_game != null && _game.setting != null) {
+			return new Resolution(_game.setting.width_zoom, _game.setting.height_zoom);
+		}
+		return new Resolution(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public String getOriginResolutionMode() {
+		return getOriginResolution().matchMode();
+	}
+
+	public String getDisplayResolutionMode() {
+		return getDisplayResolution().matchMode();
 	}
 
 	public LGame getGame() {
