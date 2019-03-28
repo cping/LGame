@@ -71,7 +71,7 @@ final public class AVGDialog {
 		}
 		String keyName = "buoyage" + width + "|" + height + "|" + rmxpImage.getSource();
 		LTexture lazy = lazyImages.get(keyName);
-		if (lazy == null) {
+		if (lazy == null || lazy.isClosed()) {
 			Image lazyImage;
 			Image image, left, right, center, up, down = null;
 			final int objWidth = 32;
@@ -128,7 +128,7 @@ final public class AVGDialog {
 		}
 		String keyName = "dialog" + width + "|" + height + "|" + rmxpImage.getSource();
 		LTexture lazy = lazyImages.get(keyName);
-		if (lazy == null) {
+		if (lazy == null || lazy.isClosed()) {
 			try {
 				final int objWidth = 64;
 				final int objHeight = 64;

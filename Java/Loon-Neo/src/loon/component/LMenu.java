@@ -163,6 +163,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 			if (tex == null) {
 				this.keep = false;
 			}
+			freeRes().add(texture);
 		}
 
 		public boolean isVisible() {

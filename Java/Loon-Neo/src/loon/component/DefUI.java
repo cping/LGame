@@ -612,5 +612,6 @@ public class DefUI {
 			}
 			defaultTextures.clear();
 		}
+		LGradation.dispose();
 	}
 }

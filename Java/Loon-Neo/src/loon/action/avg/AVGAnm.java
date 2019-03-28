@@ -65,7 +65,7 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected long startTime = -1;
 
-	protected boolean loop = true, load = false,closed = false;;
+	protected boolean loop = true, load = false, closed = false;;
 
 	protected LTexture texture;
 
@@ -85,8 +85,7 @@ public class AVGAnm implements Expression, LRelease {
 			String script = null;
 			for (; reader.hasMoreTokens();) {
 				script = reader.nextToken().trim();
-				if (script.length() > 0 && !script.startsWith(FLAG_L_TAG)
-						&& !script.startsWith(FLAG_C_TAG)
+				if (script.length() > 0 && !script.startsWith(FLAG_L_TAG) && !script.startsWith(FLAG_C_TAG)
 						&& !script.startsWith(FLAG_I_TAG)) {
 					final String[] element = script.split(";");
 					for (int j = 0; j < element.length; j++) {
@@ -96,7 +95,7 @@ public class AVGAnm implements Expression, LRelease {
 			}
 		} catch (Exception ex) {
 			this.load = false;
-			LSystem.error(ex.getMessage(),ex);
+			LSystem.error(ex.getMessage(), ex);
 			return;
 		}
 		this.load = true;
@@ -147,16 +146,13 @@ public class AVGAnm implements Expression, LRelease {
 				String[] p = value.split(",");
 				if (p.length > 2 && p.length < 5) {
 					for (int i = 0; i < p.length; i++) {
-						p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll(
-								"[\\t ]*$", "");
+						p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", "");
 					}
 					if (p.length == 3) {
-						color = new LColor(Integer.parseInt(p[0]),
-								Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]));
 					}
 					if (p.length == 4) {
-						color = new LColor(Integer.parseInt(p[0]),
-								Integer.parseInt(p[1]), Integer.parseInt(p[2]),
+						color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]),
 								Integer.parseInt(p[3]));
 					}
 				}
@@ -178,8 +174,7 @@ public class AVGAnm implements Expression, LRelease {
 			} else if ("pos".equalsIgnoreCase(key)) {
 				String[] p = value.split(",");
 				for (int i = 0; i < p.length; i++) {
-					p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll(
-							"[\\t ]*$", "");
+					p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", "");
 				}
 				switch (p.length) {
 				case 1:
@@ -279,8 +274,7 @@ public class AVGAnm implements Expression, LRelease {
 		this.startTime = elapsedTime;
 		this.loop = loop;
 		if (texture != null) {
-			if (texture.getWidth() == imageWidth
-					&& texture.getHeight() == imageHeight) {
+			if (texture.getWidth() == imageWidth && texture.getHeight() == imageHeight) {
 				this.loop = false;
 			}
 		}

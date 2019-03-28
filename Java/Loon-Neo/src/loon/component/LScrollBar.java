@@ -90,6 +90,7 @@ public class LScrollBar extends LComponent {
 		this.orientation = orientation;
 		this.scrollBar = a;
 		this.slider = b;
+		freeRes().add(a, b);
 	}
 
 	public void setScrollContainer(LScrollContainer scrollContainer) {
@@ -432,7 +433,8 @@ public class LScrollBar extends LComponent {
 			g.fillRect(sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, sliderColor);
 		} else {
 			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, _component_baseColor);
-			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, _component_baseColor);
+			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight,
+					_component_baseColor);
 		}
 	}
 

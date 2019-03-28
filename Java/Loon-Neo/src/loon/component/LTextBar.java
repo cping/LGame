@@ -117,6 +117,7 @@ public class LTextBar extends LComponent {
 		this.right = right;
 		this.body = body;
 		this.setText(txt);
+		freeRes().add(left, right, body);
 	}
 
 	public LTextBar(int x, int y, int width, int height) {

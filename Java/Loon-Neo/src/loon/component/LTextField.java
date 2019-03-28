@@ -69,69 +69,57 @@ public class LTextField extends LTextBar {
 		SysInputFactory.setKeyBoard(keyboard);
 	}
 
-	public static final int INPUT_STRING = 0, INPUT_SIGNED_INTEGER_NUM = 1,
-			INPUT_UNSIGNED_INTEGER_NUM = 2,
-			INPUT_INTEGER = INPUT_SIGNED_INTEGER_NUM,
-			INPUT_SIGNED_FLOATING_POINT_NUM = 3,
-			INPUT_UNSIGNED_FLOATING_POINT_NUM = 4,
-			INPUT_FLOATING_POINT_NUM = INPUT_SIGNED_INTEGER_NUM;
+	public static final int INPUT_STRING = 0, INPUT_SIGNED_INTEGER_NUM = 1, INPUT_UNSIGNED_INTEGER_NUM = 2,
+			INPUT_INTEGER = INPUT_SIGNED_INTEGER_NUM, INPUT_SIGNED_FLOATING_POINT_NUM = 3,
+			INPUT_UNSIGNED_FLOATING_POINT_NUM = 4, INPUT_FLOATING_POINT_NUM = INPUT_SIGNED_INTEGER_NUM;
 
 	private String cursor = "_";
 
 	protected int INPUT_TYPE = INPUT_STRING;
 	protected int startidx, limit;
 
-	public LTextField(IFont font, String txt, LTexture left, LTexture right,
-			LTexture body, int x, int y, LColor textcolor, int type, int limit) {
+	public LTextField(IFont font, String txt, LTexture left, LTexture right, LTexture body, int x, int y,
+			LColor textcolor, int type, int limit) {
 		super(txt, left, right, body, x, y, textcolor, font);
 		this._font = font;
 		this.INPUT_TYPE = type;
 		this.startidx = txt.length();
 		this.limit = limit + startidx;
 		this.setFocusable(true);
+		freeRes().add(left, right, body);
 	}
 
-	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, LColor textcolor, int type, int limit) {
-		this(SkinManager.get().getTextBarSkin().getFont(), txt, left, right,
-				body, x, y, textcolor, type, limit);
+	public LTextField(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor textcolor,
+			int type, int limit) {
+		this(SkinManager.get().getTextBarSkin().getFont(), txt, left, right, body, x, y, textcolor, type, limit);
 	}
 
-	public LTextField(IFont font, String txt, int x, int y, LColor textcolor,
-			int inp, int limit) {
+	public LTextField(IFont font, String txt, int x, int y, LColor textcolor, int inp, int limit) {
 		this(font, txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
 				SkinManager.get().getTextBarSkin().getRightTexture(),
-				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y,
-				textcolor, inp, limit);
+				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y, textcolor, inp, limit);
 	}
 
-	public LTextField(String txt, int x, int y, LColor textcolor, int inp,
-			int limit) {
+	public LTextField(String txt, int x, int y, LColor textcolor, int inp, int limit) {
 		this(txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
 				SkinManager.get().getTextBarSkin().getRightTexture(),
-				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y,
-				textcolor, inp, limit);
+				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y, textcolor, inp, limit);
 	}
 
-	public LTextField(String txt, LTexture left, LTexture right, LTexture body,
-			int x, int y, int type, int limit) {
-		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin()
-				.getFontColor(), type, limit);
+	public LTextField(String txt, LTexture left, LTexture right, LTexture body, int x, int y, int type, int limit) {
+		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin().getFontColor(), type, limit);
 	}
 
 	public LTextField(String txt, int x, int y, int type, int limit) {
-		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(),
-				type, limit);
+		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(), type, limit);
 	}
 
 	public LTextField(String txt, int x, int y, int limit) {
-		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(),
-				INPUT_STRING, limit);
+		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, limit);
 	}
 
 	public LTextField(String txt, int x, int y) {
-		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(),
-				INPUT_STRING, 128);
+		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, 128);
 	}
 
 	public int getInputType() {
@@ -145,16 +133,14 @@ public class LTextField extends LTextBar {
 
 	public String getInput() {
 		String result = _text.substring(startidx);
-		if ((result.endsWith("-") || result.length() == 0)
-				&& INPUT_TYPE != INPUT_STRING) {
+		if ((result.endsWith("-") || result.length() == 0) && INPUT_TYPE != INPUT_STRING) {
 			return "0";
 		}
 		return result;
 	}
 
 	public boolean wasEntered() {
-		return this.input.getKeyPressed() == SysKey.ENTER
-				|| !this.isFocusable();
+		return this.input.getKeyPressed() == SysKey.ENTER || !this.isFocusable();
 	}
 
 	@Override
@@ -166,8 +152,7 @@ public class LTextField extends LTextBar {
 
 		char nextchar = key.getKeyChar();
 		if (nextchar == 0
-				&& (StringUtils.isChinese(nextchar) || StringUtils
-						.isAlphabetNumeric(String.valueOf(nextchar)))) {
+				&& (StringUtils.isChinese(nextchar) || StringUtils.isAlphabetNumeric(String.valueOf(nextchar)))) {
 			return;
 		}
 
@@ -186,20 +171,17 @@ public class LTextField extends LTextBar {
 				valid = Character.isDigit(nextchar);
 				break;
 			case INPUT_SIGNED_INTEGER_NUM:
-				valid = Character.isDigit(nextchar) || nextchar == '-'
-						&& isatstart;
+				valid = Character.isDigit(nextchar) || nextchar == '-' && isatstart;
 				break;
 			case INPUT_UNSIGNED_FLOATING_POINT_NUM:
 				valid = Character.isDigit(nextchar) || nextchar == '.';
 				break;
 			case INPUT_SIGNED_FLOATING_POINT_NUM:
-				valid = Character.isDigit(nextchar) || nextchar == '.'
-						|| nextchar == '-' && isatstart;
+				valid = Character.isDigit(nextchar) || nextchar == '.' || nextchar == '-' && isatstart;
 				break;
 			}
 		}
-		if (valid && SysKey.getKeyCode() != SysKey.BACK
-				&& SysKey.getKeyCode() != SysKey.BACKSPACE) {
+		if (valid && SysKey.getKeyCode() != SysKey.BACK && SysKey.getKeyCode() != SysKey.BACKSPACE) {
 			if (SysKey.getKeyCode() == SysKey.ENTER) {
 				_text += LSystem.LS;
 			} else {
@@ -216,8 +198,7 @@ public class LTextField extends LTextBar {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		addCursor();
 		super.createUI(g, x, y, component, buttonImage);
 		removeCursor();
@@ -240,8 +221,7 @@ public class LTextField extends LTextBar {
 			return;
 		}
 		if (_text.endsWith(cursor)) {
-			_text = _text.substring(0,
-					MathUtils.max(startidx, _text.length() - cursor.length()));
+			_text = _text.substring(0, MathUtils.max(startidx, _text.length() - cursor.length()));
 		}
 	}
 

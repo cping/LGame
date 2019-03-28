@@ -47,7 +47,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	public final int LIST_SPACE_BOTTOM = 5;
 
-	private LTexture bgTexture, choiceTexture, scrollTexture, scrollFlagATexture, scrollFlagBTexture;
+	private LTexture choiceTexture, scrollTexture, scrollFlagATexture, scrollFlagBTexture;
 
 	private int max;
 	private String[] name;
@@ -153,11 +153,12 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		super(x, y, (width - scrollButtonWidth), height);
 		this.reset(max);
 		this._font = font;
-		this.bgTexture = bg;
 		this.choiceTexture = choice;
 		this.scrollTexture = scroll;
 		this.scrollFlagATexture = scrollFlagA;
 		this.scrollFlagBTexture = scrollFlagB;
+		this.onlyBackground(bg);
+		freeRes().add(choiceTexture, scrollTexture, scrollFlagATexture, scrollFlagBTexture);
 	}
 
 	public void reset(int d_max) {
@@ -355,13 +356,13 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 				int fontSize = _font.getSize();
 
 				// 如果没有设置背景，则绘制
-				if (bgTexture == null) {
+				if (_background == null) {
 					g.setTint(this.listColor);
 					g.fillRect(x, y, getWidth(), getHeight());
 					g.setTint(255, 255, 255);
 					g.drawRect(x, y, getWidth(), getHeight());
 				} else {
-					g.draw(bgTexture, x, y, getWidth(), getHeight(), _component_baseColor);
+					g.draw(_background, x, y, getWidth(), getHeight(), _component_baseColor);
 				}
 
 				this.drawNum = (int) ((getHeight() - 10) / fontSize);
@@ -406,7 +407,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 								g.setTint(this.choiceStringBoxColor);
 								g.fillRect(x + 1, this.drawY, getWidth() - 2, fontSize + 2);
 							} else {
-								g.draw(this.choiceTexture, x + 2, this.drawY, getWidth() - 2, fontSize + 2, _component_baseColor);
+								g.draw(this.choiceTexture, x + 2, this.drawY, getWidth() - 2, fontSize + 2,
+										_component_baseColor);
 							}
 							g.setTint(this.choiceStringColor);
 							drawString(g, this.name[i], this.drawX, this.drawY);

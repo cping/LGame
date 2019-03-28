@@ -24,6 +24,7 @@ import loon.LTexture.Format;
 import loon.canvas.Image;
 import loon.canvas.NinePatchAbstract.Repeat;
 import loon.utils.ObjectMap;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class LTextures {
@@ -112,6 +113,9 @@ public class LTextures {
 	}
 
 	public static LTexture newTexture(String path, Format config) {
+		if (StringUtils.isEmpty(path)) {
+			return null;
+		}
 		if (LSystem._base == null) {
 			return null;
 		}
@@ -128,6 +132,9 @@ public class LTextures {
 	}
 
 	public static int getRefCount(String fileName) {
+		if (StringUtils.isEmpty(fileName)) {
+			return 0;
+		}
 		String key = fileName.trim();
 		LTexture texture = lazyTextures.get(key);
 		if (texture != null) {
@@ -151,7 +158,7 @@ public class LTextures {
 
 	public static LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,
 			Format config) {
-		if (fileName == null) {
+		if (StringUtils.isEmpty(fileName)) {
 			return null;
 		}
 		synchronized (lazyTextures) {
@@ -179,7 +186,7 @@ public class LTextures {
 	}
 
 	public static LTexture loadTexture(String fileName, Format config) {
-		if (fileName == null) {
+		if (StringUtils.isEmpty(fileName)) {
 			return null;
 		}
 		synchronized (lazyTextures) {
@@ -221,6 +228,9 @@ public class LTextures {
 	}
 
 	static int removeTextureRef(String name, final boolean remove) {
+		if (StringUtils.isEmpty(name)) {
+			return 0;
+		}
 		final LTexture texture = lazyTextures.get(name);
 		if (texture != null) {
 			return texture.refCount--;

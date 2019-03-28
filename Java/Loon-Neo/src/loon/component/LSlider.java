@@ -35,8 +35,7 @@ public class LSlider extends LComponent {
 
 	private LTexture sliderImage, barImage;
 	private ValueListener _listener;
-	private float _value, _sliderWidth, _sliderHeight, _padding,
-			_barImageHeight;
+	private float _value, _sliderWidth, _sliderHeight, _padding, _barImageHeight;
 	private boolean _vertical;
 
 	public LSlider(int x, int y, int width, int height) {
@@ -47,20 +46,15 @@ public class LSlider extends LComponent {
 		this(LColor.gray.darker(), LColor.white, x, y, width, height, vertical);
 	}
 
-	public LSlider(LColor sliderColor, LColor barColor, int x, int y,
-			int width, int height, boolean vertical) {
-		this(SkinManager.get().getSliderSkin(sliderColor, barColor, vertical),
-				x, y, width, height, vertical);
+	public LSlider(LColor sliderColor, LColor barColor, int x, int y, int width, int height, boolean vertical) {
+		this(SkinManager.get().getSliderSkin(sliderColor, barColor, vertical), x, y, width, height, vertical);
 	}
 
-	public LSlider(SliderSkin skin, int x, int y, int width, int height,
-			boolean vertical) {
-		this(skin.getSliderText(), skin.getBarText(), x, y, width, height,
-				vertical);
+	public LSlider(SliderSkin skin, int x, int y, int width, int height, boolean vertical) {
+		this(skin.getSliderText(), skin.getBarText(), x, y, width, height, vertical);
 	}
 
-	public LSlider(LTexture sliderText, LTexture barText, int x, int y,
-			int width, int height, boolean vertical) {
+	public LSlider(LTexture sliderText, LTexture barText, int x, int y, int width, int height, boolean vertical) {
 		super(x, y, width, height);
 		_vertical = vertical;
 		if (vertical) {
@@ -80,6 +74,7 @@ public class LSlider extends LComponent {
 			this._barImageHeight = height / 10;
 			setHeight(height);
 		}
+		freeRes().add(sliderText, barText);
 	}
 
 	@Override
@@ -103,24 +98,17 @@ public class LSlider extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (_vertical) {
-			g.draw(barImage, x + _padding, y + getHeight() / 2
-					- _barImageHeight / 2, getWidth() - _padding * 2,
+			g.draw(barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
 					_barImageHeight);
-			g.draw(sliderImage, x + _padding * (getWidth() - _padding * 2)
-					- _sliderWidth / 2 + getWidth() / 2, y + _value
-					* (getHeight()) - _sliderHeight / 2, _sliderWidth,
-					_sliderHeight);
+			g.draw(sliderImage, x + _padding * (getWidth() - _padding * 2) - _sliderWidth / 2 + getWidth() / 2,
+					y + _value * (getHeight()) - _sliderHeight / 2, _sliderWidth, _sliderHeight);
 		} else {
-			g.draw(barImage, x + _padding, y + getHeight() / 2
-					- _barImageHeight / 2, getWidth() - _padding * 2,
+			g.draw(barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
 					_barImageHeight);
-			g.draw(sliderImage, x + _padding + _value
-					* (getWidth() - _padding * 2) - _sliderWidth / 2, y
-					+ getHeight() / 2 - _sliderHeight / 2, _sliderWidth,
-					_sliderHeight);
+			g.draw(sliderImage, x + _padding + _value * (getWidth() - _padding * 2) - _sliderWidth / 2,
+					y + getHeight() / 2 - _sliderHeight / 2, _sliderWidth, _sliderHeight);
 		}
 	}
 
@@ -212,21 +200,10 @@ public class LSlider extends LComponent {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public String getUIName() {
 		return "Slider";
-	}
-
-	@Override
-	public void close() {
-		super.close();
-		if (barImage != null) {
-			barImage.close();
-		}
-		if (sliderImage != null) {
-			sliderImage.close();
-		}
 	}
 
 }

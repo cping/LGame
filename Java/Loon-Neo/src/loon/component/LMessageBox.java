@@ -410,6 +410,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 		this._box.setLocation(x, y);
 		this._font = font;
+		freeRes().add(box);
 	}
 
 	public LMessageBox(String[] messages, String typeFlag, IFont font, LTexture box, int x, int y) {

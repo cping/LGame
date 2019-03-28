@@ -32,8 +32,7 @@ public class LSpriteUI extends LContainer {
 	private ISprite _sprite;
 
 	public LSpriteUI(ISprite sprite) {
-		super(sprite.x(), sprite.y(), (int) sprite.getWidth(), (int) sprite
-				.getHeight());
+		super(sprite.x(), sprite.y(), (int) sprite.getWidth(), (int) sprite.getHeight());
 		this.customRendering = true;
 		this.setBackground(sprite.getBitmap());
 		this.setElastic(true);
@@ -125,14 +124,21 @@ public class LSpriteUI extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 
 	}
 
 	@Override
 	public String getUIName() {
 		return "LSprite:" + _sprite == null ? "unkown" : _sprite.getName();
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		if (_sprite != null) {
+			_sprite.close();
+		}
 	}
 
 }

@@ -357,7 +357,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 	 * 
 	 */
 	protected synchronized void mainProcess() {
-		if (isClose()) {
+		if (isClosed()) {
 			return;
 		}
 		// 开始执行战场事务
@@ -366,7 +366,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 		srpgTeams.setPhase(0);
 		boolean battleStop = false;
 
-		for (; isEventLoop && !isClose();) {
+		for (; isEventLoop && !isClosed();) {
 			if (!isEventLoop) {
 				break;
 			}

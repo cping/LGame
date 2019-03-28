@@ -131,6 +131,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		this.boxtoleftoftext = boxtoleftoftext;
 		this.fontColor = textcolor;
 		this.font = font;
+		freeRes().add(unchecked, checked);
 	}
 
 	@Override
@@ -189,8 +190,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	@Override
 	protected void processTouchDragged() {
 		if (input != null) {
-			this.over = this.pressed = this.intersects(getUITouchX(),
-					getUITouchY());
+			this.over = this.pressed = this.intersects(getUITouchX(), getUITouchY());
 		}
 		super.processTouchDragged();
 	}

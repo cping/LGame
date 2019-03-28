@@ -54,6 +54,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.opengl.LTextureFree;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
 import loon.utils.MathUtils;
@@ -235,6 +236,8 @@ public abstract class LComponent extends LObject<LContainer>
 	protected float _scaleX = 1f, _scaleY = 1f;
 	// 屏幕位置
 	protected int _screenX, _screenY;
+
+	private LTextureFree _freeTextures;
 
 	private boolean _downClick = false;
 	// 中心点
@@ -910,8 +913,14 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		this._background = b;
-		this._background.setDisabledTexture(true);
+		freeRes().add(_background);
 		this.setSize(w, h);
+		return this;
+	}
+
+	public LComponent onlyBackground(LTexture b) {
+		this._drawBackground = false;
+		this.setBackground(b);
 		return this;
 	}
 
@@ -923,7 +932,7 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		this._background = b;
-		this._background.setDisabledTexture(true);
+		freeRes().add(_background);
 		if (_drawBackground) {
 			this._width = b.getWidth() > 1 ? b.getWidth() : this._width;
 			this._height = b.getHeight() > 1 ? b.getHeight() : this._height;
@@ -1339,7 +1348,14 @@ public abstract class LComponent extends LObject<LContainer>
 	public boolean isClosed() {
 		return _component_isClose;
 	}
-	
+
+	public LTextureFree freeRes() {
+		if (_freeTextures == null) {
+			_freeTextures = new LTextureFree();
+		}
+		return _freeTextures;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -1366,6 +1382,10 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_background != null) {
 			this._background.close();
 			this._background = null;
+		}
+		if (_freeTextures != null) {
+			this._freeTextures.close();
+			this._freeTextures = null;
 		}
 		this._component_selected = false;
 		this._component_visible = false;

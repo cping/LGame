@@ -351,13 +351,11 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 		this._barheight = (int) barheight;
 		this._title = txt;
 		this._fontColor = color;
-		this._background = background;
-		if (_background == null) {
-			_background = SkinManager.get().getWindowSkin().getBackgroundTexture();
-		}
-		this._drawBackground = false;
+		this.onlyBackground(
+				_background == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : _background);
 		this.setElastic(true);
 		this.setLocked(false);
+		freeRes().add(_barTexture);
 	}
 
 	public Animation getAnimation() {
@@ -503,12 +501,6 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	@Override
 	public void close() {
 		super.close();
-		if (_background != null) {
-			_background.close();
-		}
-		if (_barTexture != null) {
-			_barTexture.close();
-		}
 		if (animation != null) {
 			animation.close();
 			animation = null;

@@ -163,10 +163,10 @@ public class LLabel extends LComponent implements FontSet<LLabel>{
 	public LLabel(HorizontalAlign alignment, TextOptions opt, IFont font, LColor c, LTexture bg, String mes, int x,
 			int y, int width, int height) {
 		super(x, y, width, height);
-		this.setBackground(bg);
 		this._fontColor = c;
-		opt.setHorizontalAlign(alignment);
 		this._text = new Text(font, mes, opt);
+		this.setBackground(bg);
+		opt.setHorizontalAlign(alignment);
 		if (bg == null) {
 			setWidth(_text.getWidth());
 			setHeight(_text.getHeight());

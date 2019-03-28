@@ -39,8 +39,6 @@ public class LGradation implements LRelease {
 	private LTexture drawTexWidth, drawTexHeight;
 
 	private Image drawImgWidth, drawImgHeight;
-	
-	private boolean closed;
 
 	public static LGradation getInstance(LColor s, LColor e, int w, int h) {
 		return getInstance(s, e, w, h, 125);
@@ -76,9 +74,9 @@ public class LGradation implements LRelease {
 		this.alpha = alpha;
 	}
 
-	public synchronized void drawWidth(GLEx g, int x, int y) {
+	public void drawWidth(GLEx g, int x, int y) {
 		try {
-			if (drawTexWidth == null) {
+			if (drawTexWidth == null && !drawTexWidth.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				for (int i = 0; i < width; i++) {
 					gl.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
@@ -102,9 +100,9 @@ public class LGradation implements LRelease {
 		}
 	}
 
-	public synchronized void drawHeight(GLEx g, int x, int y) {
+	public void drawHeight(GLEx g, int x, int y) {
 		try {
-			if (drawTexHeight == null) {
+			if (drawTexHeight == null && !drawTexHeight.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				for (int i = 0; i < height; i++) {
 					gl.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
@@ -128,9 +126,9 @@ public class LGradation implements LRelease {
 		}
 	}
 
-	public synchronized void drawWidth(Canvas g, int x, int y) {
+	public void drawWidth(Canvas g, int x, int y) {
 		try {
-			if (drawImgWidth == null) {
+			if (drawImgWidth == null && !drawImgWidth.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				drawImgWidth = gl.image;
 				for (int i = 0; i < width; i++) {
@@ -153,9 +151,9 @@ public class LGradation implements LRelease {
 		}
 	}
 
-	public synchronized void drawHeight(Canvas g, int x, int y) {
+	public void drawHeight(Canvas g, int x, int y) {
 		try {
-			if (drawImgHeight == null) {
+			if (drawImgHeight == null && !drawImgHeight.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				drawImgHeight = gl.image;
 				for (int i = 0; i < height; i++) {
@@ -178,9 +176,9 @@ public class LGradation implements LRelease {
 		}
 	}
 
-	public synchronized void drawWidth(Pixmap g, int x, int y) {
+	public void drawWidth(Pixmap g, int x, int y) {
 		try {
-			if (drawImgWidth == null) {
+			if (drawImgWidth == null && !drawImgWidth.isClosed()) {
 				for (int i = 0; i < width; i++) {
 					g.setColor((start.getRed() * (width - i)) / width + (end.getRed() * i) / width,
 							(start.getGreen() * (width - i)) / width + (end.getGreen() * i) / width,
@@ -199,9 +197,9 @@ public class LGradation implements LRelease {
 		}
 	}
 
-	public synchronized void drawHeight(Pixmap g, int x, int y) {
+	public void drawHeight(Pixmap g, int x, int y) {
 		try {
-			if (drawImgHeight == null) {
+			if (drawImgHeight == null && !drawImgHeight.isClosed()) {
 				for (int i = 0; i < height; i++) {
 					g.setColor((start.getRed() * (height - i)) / height + (end.getRed() * i) / height,
 							(start.getGreen() * (height - i)) / height + (end.getGreen() * i) / height,
@@ -246,11 +244,6 @@ public class LGradation implements LRelease {
 		if (drawImgWidth != null) {
 			drawImgWidth.close();
 		}
-		this.closed = true;
-	}
-
-	public boolean isClosed() {
-		return closed;
 	}
 
 }

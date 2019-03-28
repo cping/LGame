@@ -79,6 +79,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		if (img != null) {
 			this.setImages(img);
 		}
+		freeRes().add(img);
 	}
 
 	public LButton(String text, int x, int y, int w, int h) {

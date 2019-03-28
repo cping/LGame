@@ -76,7 +76,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	private int cursorX = 0;
 	private int cursorY = 0;
 	private TArray<String> keyArrays;
-	private LTexture bgTexture;
 
 	private boolean bind = false, showGrid = false;;
 
@@ -126,10 +125,10 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		this._font = f;
 		this._fontColor = color;
 		this._selectedColor = new LColor(0, 150, 0, 150);
+		this.onlyBackground(bg);
 		this.labelName = label;
 		this.name = name;
 		this.keyArrays = mes;
-		this.bgTexture = bg;
 		this.leftOffset = _font.getHeight() + 15;
 		this.topOffset = _font.getHeight() + 20;
 	}
@@ -155,8 +154,8 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		}
 		IFont oldFont = g.getFont();
 		int oldColor = g.color();
-		if (bgTexture != null) {
-			g.draw(bgTexture, x, y, getWidth(), getHeight());
+		if (_background != null) {
+			g.draw(_background, x, y, getWidth(), getHeight());
 		}
 		float posX = x + leftOffset;
 		if (labelName != null) {
@@ -376,11 +375,11 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	}
 
 	public LTexture getBgTexture() {
-		return bgTexture;
+		return _background;
 	}
 
 	public void setBgTexture(LTexture bgTexture) {
-		this.bgTexture = bgTexture;
+		this.setBackground(bgTexture);
 	}
 
 	public int getMaxNameString() {
@@ -470,13 +469,4 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	public void setTextWidthSpace(int tws) {
 		this.text_width_space = tws;
 	}
-
-	@Override
-	public void close() {
-		super.close();
-		if (bgTexture != null) {
-			bgTexture.close();
-		}
-	}
-
 }

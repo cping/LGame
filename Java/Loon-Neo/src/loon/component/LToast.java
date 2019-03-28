@@ -152,11 +152,10 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text, duration, x, y, width, height);
 	}
 
-	public LToast(IFont font, LTexture backgounrd, LColor fontColor, String text, int duration, int x, int y, int width,
+	public LToast(IFont font, LTexture bg, LColor fontColor, String text, int duration, int x, int y, int width,
 			int height) {
 		super(x, y, width, height);
-		this._drawBackground = false;
-		this._background = backgounrd;
+		this.onlyBackground(bg);
 		this.mForegroundColor = fontColor;
 		this.mType = ISprite.TYPE_FADE_IN;
 		this.opacity = 0f;

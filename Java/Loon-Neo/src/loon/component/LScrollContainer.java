@@ -42,8 +42,6 @@ public class LScrollContainer extends LContainer {
 
 	private LScrollBar horizontalScrollbar;
 
-	private LTexture backgroundTexture;
-
 	private boolean allowHorizontalScroll = true;
 
 	private boolean allowVerticalScrollbar = true;
@@ -66,7 +64,7 @@ public class LScrollContainer extends LContainer {
 
 	public LScrollContainer(LTexture texture, int x, int y, int w, int h) {
 		super(x, y, w, h);
-		this.backgroundTexture = texture;
+		this.onlyBackground(texture);
 		this.setElastic(true);
 	}
 
@@ -83,11 +81,11 @@ public class LScrollContainer extends LContainer {
 		synchronized (childs) {
 			try {
 				g.saveTx();
-				if (backgroundTexture == null) {
+				if (_background == null) {
 					g.fillRect(getScreenX(), getScreenY(), getWidth(), getHeight(),
 							_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
 				} else {
-					g.draw(backgroundTexture, getScreenX(), getScreenY(), getWidth(), getHeight(), _component_baseColor);
+					g.draw(_background, getScreenX(), getScreenY(), getWidth(), getHeight(), _component_baseColor);
 				}
 				g.translate(-scrollX, -scrollY);
 				super.createUI(g);

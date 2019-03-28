@@ -1282,7 +1282,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		return cam_y == 0 ? _location.y() : cam_y;
 	}
 
-	public boolean isClose() {
+	public boolean isClosed() {
 		return _isClose;
 	}
 

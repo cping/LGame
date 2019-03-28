@@ -81,12 +81,11 @@ public class LToolTip extends LComponent {
 				.getFontColor());
 	}
 
-	public LToolTip(IFont font, String text, LTexture background, LColor color) {
+	public LToolTip(IFont font, String text, LTexture bg, LColor color) {
 		super(0, 0, 0, 0);
-		this._drawBackground = false;
-		this._background = background;
 		this._text = new Text(font, text);
 		this._fontColor = color;
+		this.onlyBackground(bg);
 		this.setLayer(10000);
 		this.setAlpha(0);
 	}

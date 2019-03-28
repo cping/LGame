@@ -238,7 +238,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public String getSource() {
-		return source;
+		return StringUtils.isEmpty(source) ? "" : source;
 	}
 
 	public Image getImage() {
@@ -1065,13 +1065,13 @@ public class LTexture extends Painter implements LRelease {
 							_closed = true;
 							_memorySize = 0;
 							freeBatch();
-							LSystem.debug(
-									"Texture : " + getSource() + " Closed,Size = " + getWidth() + "," + getHeight());
+							LSystem.debug("Texture : " + getSource() + " Closed,Size = " + getWidth() + ","
+									+ getHeight() + (Tag != null ? ",Tag = " + Tag : ""));
 						}
 					}
 				}
 			};
-			if (!LTextureBatch.isRunningCache() && source.indexOf("<canvas>") == -1) {
+			if (!LTextureBatch.isRunningCache() && isDrawCanvas()) {
 				RealtimeProcess process = new RealtimeProcess() {
 
 					@Override
@@ -1094,6 +1094,10 @@ public class LTexture extends Painter implements LRelease {
 
 	public int getHeight() {
 		return (int) height();
+	}
+
+	public boolean isDrawCanvas() {
+		return source != null && source.indexOf("<canvas>") != -1;
 	}
 
 	@Override
@@ -1171,7 +1175,6 @@ public class LTexture extends Painter implements LRelease {
 		return _disposed || _closed;
 	}
 
-	
 	/**
 	 * 布尔值为真时，将强制关闭当前纹理，无论状态
 	 * 

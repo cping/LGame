@@ -99,6 +99,7 @@ public class LControl extends LComponent {
 		this.dotHeight = dh;
 		this.allowDiagonal = true;
 		this.centerOffset();
+		freeRes().add(basefile, dot);
 	}
 
 	public boolean isAllowDiagonal() {
@@ -224,19 +225,6 @@ public class LControl extends LComponent {
 		g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
 		g.setAlpha(1f);
 
-	}
-
-	@Override
-	public void close() {
-		super.close();
-		if (controlBase != null) {
-			controlBase.close();
-			controlBase = null;
-		}
-		if (controlDot != null) {
-			controlDot.close();
-			controlDot = null;
-		}
 	}
 
 	@Override

@@ -141,8 +141,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.setWidthLimit(w);
 		this.setWaitFlag(true);
 		this.setSlideMessage(true);
-		this._background = bg;
-		this._drawBackground = false;
+		this.onlyBackground(bg);
 	}
 
 	public void set(int mMax) {
@@ -611,14 +610,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	public LTextArea setFlag(String flag) {
 		this.flag = flag;
 		return this;
-	}
-
-	@Override
-	public void close() {
-		super.close();
-		if (_background != null) {
-			_background.close();
-		}
 	}
 
 	@Override

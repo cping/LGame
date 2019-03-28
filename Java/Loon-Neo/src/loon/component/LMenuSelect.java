@@ -171,11 +171,10 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		this.selectBackgroundColor = LColor.blue.darker();
 		this.fontColor = LColor.white.cpy();
 		this.colorUpdate = new LTimer(LSystem.SECOND * 2);
-		this._background = bg;
-		this._drawBackground = false;
 		this._flag_text_space = 10;
 		this._showRect = false;
 		this._showBackground = true;
+		this.onlyBackground(bg);
 		this.setFont(font);
 		this.setLabels(labels);
 	}
@@ -202,6 +201,9 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	public LMenuSelect setImageFlag(LTexture tex) {
 		this._flag_image = tex;
+		if (_flag_image != null) {
+			freeRes().add(_flag_image);
+		}
 		return this;
 	}
 
@@ -383,7 +385,6 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			this._pressed = false;
 		}
 	}
-
 
 	public String getResult() {
 		if (_labels != null && _selected > -1 && _selected < _labels.length) {
@@ -603,13 +604,4 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	public String getUIName() {
 		return "MenuSelect";
 	}
-
-	@Override
-	public void close() {
-		super.close();
-		if (_flag_image != null) {
-			_flag_image.close();
-		}
-	}
-
 }

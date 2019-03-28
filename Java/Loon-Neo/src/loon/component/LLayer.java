@@ -94,10 +94,10 @@ public class LLayer extends ActorLayer {
 	public LLayer(int x, int y, int w, int h, boolean bounded, int size) {
 		super(x, y, w, h, size, bounded);
 		this.setLocation(x, y);
+		this._isLimitMove = true;
 		this.actorDrag = true;
 		this.customRendering = true;
 		this.isTouchClick = true;
-		this._isLimitMove = true;
 		this.isVSync = true;
 		this.setElastic(true);
 		this.setLocked(true);

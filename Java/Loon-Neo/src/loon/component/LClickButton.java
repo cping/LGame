@@ -173,6 +173,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		} else if (clicked == null) {
 			clickedClick = SkinManager.get().getClickButtonSkin().getClickedTexture();
 		}
+		freeRes().add(idleClick, hoverClick, clickedClick);
 	}
 
 	@Override
@@ -414,23 +415,6 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	@Override
 	public String getUIName() {
 		return "ClickButton";
-	}
-
-	@Override
-	public void close() {
-		super.close();
-		if (idleClick != null) {
-			idleClick.close();
-			idleClick = null;
-		}
-		if (hoverClick != null) {
-			hoverClick.close();
-			hoverClick = null;
-		}
-		if (clickedClick != null) {
-			clickedClick.close();
-			clickedClick = null;
-		}
 	}
 
 }
