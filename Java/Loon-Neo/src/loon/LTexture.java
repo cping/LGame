@@ -398,20 +398,6 @@ public class LTexture extends Painter implements LRelease {
 		GLUtils.bindTexture(LSystem.base().graphics().gl, id);
 	}
 
-	public boolean isClose() {
-		if (parent != null) {
-			return parent.isClose();
-		}
-		return _disposed || _closed;
-	}
-
-	public boolean disposed() {
-		if (parent != null) {
-			return parent.disposed();
-		}
-		return _disposed && _closed;
-	}
-
 	public UnitPort disposeAct() {
 		return new UnitPort() {
 			public void onEmit() {
@@ -459,7 +445,7 @@ public class LTexture extends Painter implements LRelease {
 
 	@Override
 	public void addToBatch(BaseBatch batch, int tint, Affine2f tx, float x, float y, float width, float height) {
-		if (isClose()) {
+		if (isClosed()) {
 			return;
 		}
 		batch.addQuad(this, tint, tx, x, y, width, height);
@@ -468,7 +454,7 @@ public class LTexture extends Painter implements LRelease {
 	@Override
 	public void addToBatch(BaseBatch batch, int tint, Affine2f tx, float dx, float dy, float dw, float dh, float sx,
 			float sy, float sw, float sh) {
-		if (isClose()) {
+		if (isClosed()) {
 			return;
 		}
 		batch.addQuad(this, tint, tx, dx, dy, dw, dh, sx, sy, sw, sh);
@@ -488,7 +474,7 @@ public class LTexture extends Painter implements LRelease {
 	public boolean isChildAllClose() {
 		if (childs != null) {
 			for (LTexture tex2d : childs.values()) {
-				if (tex2d != null && !tex2d.isClose()) {
+				if (tex2d != null && !tex2d.isClosed()) {
 					return false;
 				}
 			}
@@ -1171,6 +1157,21 @@ public class LTexture extends Painter implements LRelease {
 		return this.refCount;
 	}
 
+	public boolean disposed() {
+		if (parent != null) {
+			return parent.disposed();
+		}
+		return _disposed && _closed;
+	}
+
+	public boolean isClosed() {
+		if (parent != null) {
+			return parent.isClosed();
+		}
+		return _disposed || _closed;
+	}
+
+	
 	/**
 	 * 布尔值为真时，将强制关闭当前纹理，无论状态
 	 * 
@@ -1211,4 +1212,5 @@ public class LTexture extends Painter implements LRelease {
 			}
 		}
 	}
+
 }

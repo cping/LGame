@@ -127,7 +127,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private String messages;
 
-	private boolean onComplete, newLine, visible;
+	private boolean onComplete, newLine, visible, closed;
 
 	private StringBuffer messageBuffer = new StringBuffer(messageLength);
 
@@ -197,7 +197,7 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_context == null) {
 				return;
 			}
-			if (_print.strings != null && !_print.strings.isClose() && !_drawDrawingFont) {
+			if (_print.strings != null && !_print.strings.isClosed() && !_drawDrawingFont) {
 				_print.strings.close();
 			}
 			// 如果是默认的loon系统字体
@@ -771,6 +771,10 @@ public class Print implements FontSet<Print>, LRelease {
 		this.offsetIconY = offsetIconY;
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		if (!nativeFont) {
@@ -779,6 +783,7 @@ public class Print implements FontSet<Print>, LRelease {
 				strings = null;
 			}
 		}
+		closed = true;
 	}
 
 }

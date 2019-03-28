@@ -74,6 +74,8 @@ public class Desktop implements Visible, LRelease {
 
 	private boolean dvisible;
 
+	private boolean dclosed;
+	
 	private final String desktop_name;
 
 	/**
@@ -892,12 +894,17 @@ public class Desktop implements Visible, LRelease {
 		return super.toString() + " " + "[name=" + desktop_name + ", total=" + size() + "]";
 	}
 
+	public boolean isClosed() {
+		return dclosed;
+	}
+
 	@Override
 	public void close() {
 		this.dvisible = false;
 		if (contentPane != null) {
 			contentPane.close();
 		}
+		this.dclosed = true;
 		DESKTOP_CACHE.remove(this);
 	}
 

@@ -343,7 +343,7 @@ public class BMFont implements IFont {
 			return;
 		}
 		make();
-		if (displayList == null || displayList.isClose()) {
+		if (displayList == null || displayList.isClosed()) {
 			this.displayList = BaseIO.loadTexture(_imagePath);
 			return;
 		}
@@ -460,7 +460,7 @@ public class BMFont implements IFont {
 			return;
 		}
 		make();
-		if (displayList == null || displayList.isClose()) {
+		if (displayList == null || displayList.isClosed()) {
 			this.displayList = BaseIO.loadTexture(_imagePath);
 			return;
 		}

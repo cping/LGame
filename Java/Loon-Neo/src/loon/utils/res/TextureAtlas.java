@@ -82,8 +82,7 @@ public class TextureAtlas implements LRelease {
 		if (jsonFrames != null) {
 			TypedArray<String> keys = jsonFrames.keys();
 			int charAmount = keys.length();
-			ListMap<String, TextureData> frames = new ListMap<String, TextureData>(
-					charAmount);
+			ListMap<String, TextureData> frames = new ListMap<String, TextureData>(charAmount);
 			for (int i = 0; i < charAmount; i++) {
 				String key = keys.get(i);
 				Json.Object jsonChar = jsonFrames.getObject(key);
@@ -125,8 +124,7 @@ public class TextureAtlas implements LRelease {
 					Json.Object jsonObject = jsonObj.getObject(key);
 					TypedArray<String> resKeys = jsonObject.keys();
 					int charAmount = resKeys.length();
-					ListMap<String, TextureData> frames = new ListMap<String, TextureData>(
-							charAmount);
+					ListMap<String, TextureData> frames = new ListMap<String, TextureData>(charAmount);
 					for (int j = 0; j < charAmount; j++) {
 						String name = resKeys.get(j);
 						names.add(name);
@@ -178,5 +176,9 @@ public class TextureAtlas implements LRelease {
 			_img = null;
 		}
 
+	}
+
+	public boolean isClosed() {
+		return _img == null || _img.isClosed();
 	}
 }

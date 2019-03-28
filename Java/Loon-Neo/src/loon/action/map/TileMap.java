@@ -461,6 +461,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				g.draw(_background, offsetX, offsetY);
 			}
 		}
+		if (!active || imgPack == null || imgPack.closed()) {
+			completed();
+			return;
+		}
+
 		dirty = dirty || !imgPack.existCache();
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
 			imgPack.postCache();
@@ -938,6 +943,16 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		}
 	}
 
+	public int getPixelsAtFieldType(Vector2f pos) {
+		return field.getPixelsAtFieldType(pos.x, pos.y);
+	}
+
+	public int getPixelsAtFieldType(float x, float y) {
+		int itsX = pixelsToTilesWidth(x);
+		int itsY = pixelsToTilesHeight(y);
+		return field.getPixelsAtFieldType(itsX, itsY);
+	}
+
 	@Override
 	public Field2D getField2D() {
 		return field;
@@ -1127,6 +1142,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	@Override
 	public float getContainerHeight() {
 		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+	}
+
+	public boolean isClosed() {
+		return isDisposed();
 	}
 
 	@Override

@@ -424,7 +424,7 @@ public class LTexturePack implements LRelease {
 	}
 
 	public synchronized LTexture pack(Format format) {
-		if (texture != null && !packing && !texture.isClose()) {
+		if (texture != null && !packing && !texture.isClosed()) {
 			return texture;
 		}
 		if (_glex == null) {
@@ -700,8 +700,8 @@ public class LTexturePack implements LRelease {
 		return draw(name, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, 0, color);
 	}
 
-	public LTexturePack drawOnlyBatch(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1, float sx2,
-			float sy2, LColor[] color) {
+	public LTexturePack drawOnlyBatch(String name, float dx1, float dy1, float dx2, float dy2, float sx1, float sy1,
+			float sx2, float sy2, LColor[] color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
@@ -974,6 +974,10 @@ public class LTexturePack implements LRelease {
 
 	public boolean isDisabledTexture() {
 		return this.texture == null ? false : this.texture.isDisabledTexture();
+	}
+
+	public boolean closed() {
+		return texture == null || texture.isClosed();
 	}
 
 	@Override

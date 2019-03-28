@@ -127,15 +127,14 @@ public class SpriteBatchSheet implements LRelease {
 
 	public void draw(SpriteBatch batch) {
 		if (currentFrame >= 0) {
-			batch.draw(this.image, getDestRectLeft(), getDestRectTop(),
-					getDestRectRight(), getDestRectBottom(), getSpriteLeft(),
-					getSpriteTop(), getSpriteRight(), getSpriteBottom(), color);
+			batch.draw(this.image, getDestRectLeft(), getDestRectTop(), getDestRectRight(), getDestRectBottom(),
+					getSpriteLeft(), getSpriteTop(), getSpriteRight(), getSpriteBottom(), color);
 		}
 	}
 
 	public void draw(SpriteBatch batch, int maxX, int maxY) {
-		if (getDestRectRight() >= 0 && getDestRectBottom() >= 0
-				&& getDestRectLeft() < maxX && getDestRectTop() < maxY) {
+		if (getDestRectRight() >= 0 && getDestRectBottom() >= 0 && getDestRectLeft() < maxX
+				&& getDestRectTop() < maxY) {
 			draw(batch);
 		}
 	}
@@ -343,6 +342,10 @@ public class SpriteBatchSheet implements LRelease {
 
 	public void setColor(LColor color) {
 		this.color = color;
+	}
+
+	public boolean isClosed() {
+		return image == null || image.isClosed();
 	}
 
 	@Override

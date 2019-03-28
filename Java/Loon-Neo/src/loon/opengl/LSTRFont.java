@@ -376,7 +376,7 @@ public class LSTRFont implements IFont {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return;
 		}
 		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
@@ -514,7 +514,7 @@ public class LSTRFont implements IFont {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return;
 		}
 		final float x = mx + _offset.x;
@@ -606,7 +606,7 @@ public class LSTRFont implements IFont {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return;
 		}
 		this.charCurrent = c;
@@ -647,7 +647,7 @@ public class LSTRFont implements IFont {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return;
 		}
 		fontBatch.begin();
@@ -665,7 +665,7 @@ public class LSTRFont implements IFont {
 		if (processing()) {
 			return;
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return;
 		}
 		GL20 g = LSystem.base().graphics().gl;
@@ -689,7 +689,7 @@ public class LSTRFont implements IFont {
 		if (processing()) {
 			return;
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return;
 		}
 		GL20 g = LSystem.base().graphics().gl;
@@ -709,7 +709,7 @@ public class LSTRFont implements IFont {
 		if (processing()) {
 			return null;
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return null;
 		}
 		fontBatch.disposeLastCache();
@@ -757,7 +757,7 @@ public class LSTRFont implements IFont {
 		if (processing()) {
 			return font.charWidth(c);
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return 0;
 		}
 		if (c < totalCharSet) {
@@ -779,7 +779,7 @@ public class LSTRFont implements IFont {
 		if (processing()) {
 			return font.stringWidth(s);
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return 0;
 		}
 		int totalWidth = 0;
@@ -813,7 +813,7 @@ public class LSTRFont implements IFont {
 		if (processing()) {
 			return font.stringHeight(s);
 		}
-		if (texture.isClose()) {
+		if (texture.isClosed()) {
 			return 0;
 		}
 		int currentChar = 0;
@@ -907,7 +907,7 @@ public class LSTRFont implements IFont {
 		this.isasyn = a;
 	}
 
-	public boolean isClose() {
+	public boolean isClosed() {
 		return _isClose;
 	}
 

@@ -28,7 +28,7 @@ public abstract class BaseBatch extends LTextureBind {
 
 	public void addQuad(LTexture tex, int tint, Affine2f xf, float x, float y,
 			float w, float h) {
-		if (tex == null || tex.isClose()) {
+		if (tex == null || tex.isClosed()) {
 			return;
 		}
 	
@@ -59,7 +59,7 @@ public abstract class BaseBatch extends LTextureBind {
 
 	public void addQuad(LTexture tex, int tint, Affine2f xf, float dx,
 			float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
-		if (tex == null || tex.isClose()) {
+		if (tex == null || tex.isClosed()) {
 			return;
 		}
 	

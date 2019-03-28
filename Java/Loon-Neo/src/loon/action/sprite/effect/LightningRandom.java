@@ -40,6 +40,7 @@ public class LightningRandom implements ILightning {
 	private float hue = 4.5f;
 	private float[] noise = null;
 	private LColor color = null;
+	private boolean closed;
 
 	public LightningRandom(int count, Vector2f source, Vector2f dest) {
 		this(count, source.x, source.y, dest.x, dest.y, null);
@@ -157,9 +158,15 @@ public class LightningRandom implements ILightning {
 		return false;
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		particles.clear();
 		bolts.clear();
+		closed = true;
 	}
+
 }

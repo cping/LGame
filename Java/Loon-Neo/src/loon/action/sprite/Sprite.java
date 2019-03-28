@@ -1117,6 +1117,10 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 
+	public boolean isClosed() {
+		return isDisposed();
+	}
+
 	@Override
 	public void close() {
 		this.visible = false;

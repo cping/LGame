@@ -46,6 +46,7 @@ public class RainKernel implements IKernel {
 		offsetY = (5 - n) * 30 + 75 + MathUtils.random() * 15;
 	}
 
+	@Override
 	public int id() {
 		return id;
 	}
@@ -56,6 +57,7 @@ public class RainKernel implements IKernel {
 		y = -rainHeight;
 	}
 
+	@Override
 	public void update() {
 		if (!exist) {
 			if (MathUtils.random() < 0.002) {
@@ -71,24 +73,33 @@ public class RainKernel implements IKernel {
 		}
 	}
 
+	@Override
 	public void draw(GLEx g, float mx, float my) {
 		if (exist) {
 			rain.draw(mx + x, my + y);
 		}
 	}
 
+	@Override
 	public LTexture get() {
 		return rain;
 	}
 
+	@Override
 	public float getHeight() {
 		return rainHeight;
 	}
 
+	@Override
 	public float getWidth() {
 		return rainWidth;
 	}
 
+	public boolean isClosed() {
+		return rain == null || rain.isClosed();
+	}
+
+	@Override
 	public void close() {
 		if (rain != null) {
 			rain.close();

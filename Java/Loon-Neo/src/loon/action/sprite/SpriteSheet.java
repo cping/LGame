@@ -94,8 +94,8 @@ public class SpriteSheet implements LRelease {
 	public LTexture[][] getTextures() {
 		return subImages;
 	}
-	
-	public boolean contains(int x,int y){
+
+	public boolean contains(int x, int y) {
 		if ((x < 0) || (x >= subImages.length)) {
 			return false;
 		}
@@ -108,27 +108,22 @@ public class SpriteSheet implements LRelease {
 	private void checkImage(int x, int y) {
 		update();
 		if ((x < 0) || (x >= subImages.length)) {
-			throw LSystem.runThrow("SubImage out of sheet bounds " + x
-					+ "," + y);
+			throw LSystem.runThrow("SubImage out of sheet bounds " + x + "," + y);
 		}
 		if ((y < 0) || (y >= subImages[0].length)) {
-			throw LSystem.runThrow("SubImage out of sheet bounds " + x
-					+ "," + y);
+			throw LSystem.runThrow("SubImage out of sheet bounds " + x + "," + y);
 		}
 	}
 
 	public LTexture getImage(int x, int y) {
 		checkImage(x, y);
 		if ((x < 0) || (x >= subImages.length)) {
-			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x
-					+ "," + y);
+			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x + "," + y);
 		}
 		if ((y < 0) || (y >= subImages[0].length)) {
-			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x
-					+ "," + y);
+			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x + "," + y);
 		}
-		return target.copy(x * (tw + spacing) + margin, y * (th + spacing)
-				+ margin, tw, th);
+		return target.copy(x * (tw + spacing) + margin, y * (th + spacing) + margin, tw, th);
 	}
 
 	public int getHorizontalCount() {
@@ -231,6 +226,10 @@ public class SpriteSheet implements LRelease {
 
 	public void setHeight(int height) {
 		this.height = height;
+	}
+
+	public boolean isClosed() {
+		return target == null || target.isClosed();
 	}
 
 	public void close() {

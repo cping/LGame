@@ -31,6 +31,8 @@ public class FontSheet implements LRelease {
 
 	private TextureAtlas _texAtlas = null;
 
+	private boolean _closed = false;
+	
 	public LTexture sheet() {
 		return _texAtlas.img();
 	}
@@ -55,9 +57,15 @@ public class FontSheet implements LRelease {
 		_texAtlas = new TextureAtlas(sheet, jsonObj);
 	}
 
+	@Override
 	public void close() {
 		if (_texAtlas != null) {
 			_texAtlas.close();
 		}
+		_closed = true;
+	}
+
+	public boolean isClosed() {
+		return _closed;
 	}
 }

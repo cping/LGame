@@ -834,7 +834,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	@Override
 	final public void draw(GLEx g) {
-		if (!isGameRunning || !isOnLoadComplete() || isClose()) {
+		if (!isGameRunning || !isOnLoadComplete() || isClosed()) {
 			return;
 		}
 		if (scrCG == null) {
@@ -882,7 +882,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 读取一行AVG脚本命令
 	 */
 	public AVGScreen nextScript() {
-		if (command != null && !isClose() && isGameRunning) {
+		if (command != null && !isClosed() && isGameRunning) {
 			for (; isScriptRunning = command.next();) {
 				if (isSelectMessage) {
 					continue;

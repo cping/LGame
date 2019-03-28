@@ -373,7 +373,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		return _path;
 	}
 
-	public boolean isClose() {
+	public boolean isClosed() {
 		return _closed;
 	}
 

@@ -41,6 +41,8 @@ public class LightningBolt implements ILightning {
 	private LTimer timer = new LTimer(0);
 
 	private TArray<LightningLine> segments = new TArray<LightningLine>();
+	
+	private boolean closed;
 
 	public LightningBolt(Vector2f source, Vector2f dest) {
 		this(source, dest, new LColor(0.9f, 0.8f, 1f));
@@ -161,9 +163,14 @@ public class LightningBolt implements ILightning {
 		return MathUtils.random(min, max);
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		segments.clear();
+		closed = true;
 	}
 
 }

@@ -31,13 +31,11 @@ public abstract class RenderTarget implements LRelease {
 	public static RenderTarget create(Graphics gfx, final LTexture tex) {
 		GL20 gl = gfx.gl;
 		final int fb = gl.glGenFramebuffer();
-		if (fb == 0){
-			throw LSystem.runThrow("Failed to gen framebuffer: "
-					+ gl.glGetError());
+		if (fb == 0) {
+			throw LSystem.runThrow("Failed to gen framebuffer: " + gl.glGetError());
 		}
 		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
-		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-				GL_TEXTURE_2D, tex.getID(), 0);
+		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex.getID(), 0);
 		gl.checkError("RenderTarget.create");
 		return new RenderTarget(gfx) {
 			public int id() {
@@ -84,9 +82,21 @@ public abstract class RenderTarget implements LRelease {
 
 	public abstract boolean flip();
 
+	private boolean disposed;
+
 	public void bind() {
 		gfx.gl.glBindFramebuffer(GL_FRAMEBUFFER, id());
 		gfx.gl.glViewport(0, 0, width(), height());
+	}
+
+	@Override
+	public String toString() {
+		return "[id=" + id() + ", size=" + width() + "x" + height() + " @ " + xscale() + "x" + yscale() + ", flip="
+				+ flip() + "]";
+	}
+
+	public boolean isClosed() {
+		return disposed;
 	}
 
 	@Override
@@ -98,17 +108,10 @@ public abstract class RenderTarget implements LRelease {
 	}
 
 	@Override
-	public String toString() {
-		return "[id=" + id() + ", size=" + width() + "x" + height() + " @ "
-				+ xscale() + "x" + yscale() + ", flip=" + flip() + "]";
-	}
-
-	@Override
 	protected void finalize() {
-		if (!disposed){
+		if (!disposed) {
 			gfx.queueForDispose(this);
 		}
 	}
 
-	private boolean disposed;
 }

@@ -948,10 +948,6 @@ public abstract class LComponent extends LObject<LContainer>
 	protected void createCustomUI(int w, int h) {
 	}
 
-	public boolean isClose() {
-		return _component_isClose;
-	}
-
 	public boolean isAutoDestroy() {
 		return _component_autoDestroy;
 	}
@@ -1340,6 +1336,10 @@ public abstract class LComponent extends LObject<LContainer>
 		return desktopContainer;
 	}
 
+	public boolean isClosed() {
+		return _component_isClose;
+	}
+	
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {

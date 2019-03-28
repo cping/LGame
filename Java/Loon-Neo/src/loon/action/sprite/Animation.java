@@ -46,7 +46,7 @@ public class Animation implements LRelease {
 		return this.Listener;
 	}
 
-	boolean isRunning;
+	boolean isRunning,aClosed;
 
 	private TArray<AnimationFrame> frames;
 
@@ -424,6 +424,10 @@ public class Animation implements LRelease {
 		}
 	}
 
+	public boolean isClosed() {
+		return aClosed;
+	}
+	
 	@Override
 	public void close() {
 		if (frames != null) {
@@ -435,6 +439,8 @@ public class Animation implements LRelease {
 			frames.clear();
 		}
 		this.size = 0;
+		this.aClosed = true;
 	}
+
 
 }

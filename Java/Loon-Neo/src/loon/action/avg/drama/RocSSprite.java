@@ -29,7 +29,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	private LTimer _waitTimer = new LTimer(_delay);
 
 	private Object _result = null;
-	
+
 	private Sprites _sprites = null;
 
 	public RocSSprite(CommandLink link) {
@@ -245,11 +245,13 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		}
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
-	
-	@Override
-	public void close() {
-        setState(State.DISPOSED);
+
+	public boolean isClosed() {
+		return isDisposed();
 	}
 
-
+	@Override
+	public void close() {
+		setState(State.DISPOSED);
+	}
 }

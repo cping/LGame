@@ -100,7 +100,7 @@ public class LProgress extends LComponent {
 					texture.getRegionHeight() - 2);
 			break;
 		case UI:
-			if (defaultColorTexture == null || defaultColorTexture.isClose()) {
+			if (defaultColorTexture == null || defaultColorTexture.isClosed()) {
 				defaultColorTexture = LSystem.base().graphics().finalColorTex();
 			}
 			this.bgTexture = new LTextureRegion(SkinManager.get()

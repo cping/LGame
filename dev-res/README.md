@@ -48,6 +48,7 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * opengameart: 一个欧美的完全无版权问题的游戏资源下载站。[地址](http://opengameart.org/) 
 * aigei(爱给网):一个中国的资源站，涵盖游戏源码音频图像等多种资源，部分免费，主要是收费资源。[地址](http://www.aigei.com)
 * rr-sc(人人素材):一个中国的资源素材论坛，各种资源都有，部分免费，依旧是收费资源为主。[地址](https://www.rr-sc.com)
+* soundimage:一个欧美的免费资源站，有1800多种完全免费的图像和音频资源可用(音频为主)。[地址](https://www.soundimage.org)
 * soundeffect-lab: 一个日本的音频下载站，拥有多种效果音频类型(含游戏与其它场合)，大多数游戏有这网站撑着效果音就足够了，不过资源都是mp3发布，某些场合可能需要自己转码，另外该站已经写明商用免费。[地址](http://soundeffect-lab.info/sound/voice/game.html)
 * 猫手製アイコン屋: 日式素材下载站。 [地址](http://www007.upp.so-net.ne.jp/nekoteya/)
 * 消失点: 日式AVG（galgame）以及RMXP和RMVX素材站，素材以背景图和地图为主。[地址](http://www.aj.undo.jp/)  

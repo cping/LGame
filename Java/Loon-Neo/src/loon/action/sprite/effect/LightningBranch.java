@@ -40,6 +40,7 @@ public class LightningBranch implements ILightning {
 	private Vector2f end;
 	private Vector2f direction;
 	private TArray<LightningBolt> bolts = new TArray<LightningBolt>();
+	private boolean closed;
 
 	public LightningBranch(Vector2f s, Vector2f e) {
 		this(s, e, LColor.white);
@@ -113,9 +114,14 @@ public class LightningBranch implements ILightning {
 		return end;
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		bolts.clear();
+		closed = true;
 	}
 
 }

@@ -1227,6 +1227,10 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
 	}
 
+	public boolean isClosed() {
+		return isDisposed();
+	}
+
 	@Override
 	public void close() {
 		if (!isDisposed()) {

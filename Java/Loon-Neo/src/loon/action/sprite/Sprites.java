@@ -70,7 +70,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	private int viewHeight;
 
-	private boolean _isViewWindowSet = false, _visible = true;
+	private boolean _isViewWindowSet = false, _visible = true, _closed = false;
 
 	private SpriteListener sprListerner;
 
@@ -922,6 +922,10 @@ public class Sprites implements IArray, Visible, LRelease {
 		return super.toString() + " " + "[name=" + _sprites_name + ", total=" + size() + "]";
 	}
 
+	public boolean isClosed() {
+		return _closed;
+	}
+
 	@Override
 	public void close() {
 		this._visible = false;
@@ -931,7 +935,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		clear();
+		this._closed = true;
 		SPRITES_CACHE.remove(this);
 	}
-
 }

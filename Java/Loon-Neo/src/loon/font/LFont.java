@@ -87,7 +87,7 @@ public class LFont implements IFont {
 
 	private float _ascent = -1;
 
-	private boolean useCache;
+	private boolean useCache,closed;
 
 	public boolean isUseCache() {
 		return useCache;
@@ -412,6 +412,10 @@ public class LFont implements IFont {
 
 	@Override
 	public void close() {
+		closed = true;
+	}
 
+	public boolean isClosed() {
+		return closed;
 	}
 }

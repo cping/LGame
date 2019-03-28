@@ -55,7 +55,7 @@ public class LTextures {
 	}
 
 	static void putTexture(LTexture tex2d) {
-		if (tex2d != null && !tex2d.isClose() && !tex2d.isChild() && !textureList.contains(tex2d)) {
+		if (tex2d != null && !tex2d.isClosed() && !tex2d.isChild() && !textureList.contains(tex2d)) {
 			synchronized (textureList) {
 				textureList.add(tex2d);
 			}
@@ -69,7 +69,7 @@ public class LTextures {
 			textureList.clear();
 		}
 		for (LTexture tex : texs) {
-			if (tex != null && !tex.isLoaded() && !tex.isClose()) {
+			if (tex != null && !tex.isLoaded() && !tex.isClosed()) {
 				tex.reload();
 			}
 		}
@@ -79,7 +79,7 @@ public class LTextures {
 	public final static int getMemSize() {
 		int memTotal = 0;
 		for (LTexture tex : textureList) {
-			if (tex != null && !tex.isChild() && !tex.isClose()) {
+			if (tex != null && !tex.isChild() && !tex.isClosed()) {
 				memTotal += tex.getMemSize();
 			}
 		}
@@ -90,7 +90,7 @@ public class LTextures {
 		if (textureList.size > 0) {
 			TArray<LTexture> tex2d = new TArray<LTexture>(textureList);
 			for (LTexture tex : tex2d) {
-				if (tex != null && !tex.isChild() && !tex.isClose()) {
+				if (tex != null && !tex.isChild() && !tex.isClosed()) {
 					tex.close();
 				}
 			}
@@ -244,7 +244,7 @@ public class LTextures {
 			TArray<LTexture> textures = new TArray<LTexture>(lazyTextures.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
-				if (tex2d != null && !tex2d.isClose() && tex2d.getSource() != null
+				if (tex2d != null && !tex2d.isClosed() && tex2d.getSource() != null
 						&& tex2d.getSource().indexOf("<canvas>") == -1) {
 					tex2d.refCount = 0;
 					tex2d.close(true);
@@ -260,7 +260,7 @@ public class LTextures {
 			TArray<LTexture> textures = new TArray<LTexture>(lazyTextures.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
-				if (tex2d != null && !tex2d.isClose()) {
+				if (tex2d != null && !tex2d.isClosed()) {
 					tex2d.refCount = 0;
 					tex2d.close(true);
 					tex2d = null;

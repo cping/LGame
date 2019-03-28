@@ -34,6 +34,8 @@ public class TempTimer {
 
 	private static float _time;
 
+	private static Port<LTimerContext> _port;
+
 	public static void reset() {
 		_time = 0f;
 	}
@@ -60,21 +62,40 @@ public class TempTimer {
 
 	public static void bindScreen() {
 		if (LSystem.getProcess() != null) {
-			addToScreen(LSystem.getProcess().getScreen());
+			bindScreen(LSystem.getProcess().getScreen());
 		}
 	}
 
-	public static void addToScreen(Screen screen) {
+	public static void unbindScreen() {
+		if (LSystem.getProcess() != null) {
+			unbindScreen(LSystem.getProcess().getScreen());
+		}
+	}
+
+	public static void unbindScreen(Screen screen) {
+		if (screen == null) {
+			return;
+		}
+		if (_port != null) {
+			screen.remove(_port);
+			_port = null;
+		}
+	}
+
+	public static void bindScreen(Screen screen) {
 		if (screen == null) {
 			return;
 		}
 		reset();
-		screen.add(new Port<LTimerContext>() {
-			@Override
-			public void onEmit(LTimerContext clock) {
-				update(clock);
-			}
-		}, true);
+		if (_port == null) {
+			_port = new Port<LTimerContext>() {
+				@Override
+				public void onEmit(LTimerContext clock) {
+					update(clock);
+				}
+			};
+			screen.add(_port);
+		}
 	}
 
 	public static float getSaveTime() {

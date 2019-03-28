@@ -40,7 +40,7 @@ public class MoveControl implements LRelease {
 
 	private int _moveX = 0, _moveY = 0, _movingLength = 0;
 
-	private boolean _isMoving = false, _running = false, _freeDir = true;
+	private boolean _isMoving = false, _running = false, _freeDir = true, _closed = false;
 
 	private ActionBind _bind;
 
@@ -495,9 +495,14 @@ public class MoveControl implements LRelease {
 		return _lastDirection == Config.TUP;
 	}
 
+	public boolean isClosed() {
+		return _closed;
+	}
+
 	@Override
 	public void close() {
 		_running = false;
+		_closed = true;
 	}
 
 }

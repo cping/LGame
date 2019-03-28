@@ -40,7 +40,7 @@ public class EmulatorButtons implements LRelease {
 
 	private final static int offset = 10;
 
-	private boolean visible;
+	private boolean visible, closed;
 
 	private float ealpha = 0.5f;
 
@@ -487,11 +487,17 @@ public class EmulatorButtons implements LRelease {
 		}
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
+	@Override
 	public void close() {
 		if (pack != null) {
 			pack.close();
 			pack = null;
 		}
+		closed = true;
 	}
 
 }

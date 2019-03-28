@@ -20,6 +20,9 @@
  */
 package loon.utils.timer;
 
+/**
+ * Loon的计时器类
+ */
 public class LTimer {
 
 	protected static LTimer _instance = null;
@@ -61,7 +64,6 @@ public class LTimer {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -76,56 +78,65 @@ public class LTimer {
 		return false;
 	}
 
-	public void addPercentage(long elapsedTime) {
+	public LTimer addPercentage(long elapsedTime) {
 		this.currentTick += elapsedTime;
+		return this;
 	}
 
-	public void addPercentage(LTimerContext context) {
+	public LTimer addPercentage(LTimerContext context) {
 		this.currentTick += context.timeSinceLastUpdate;
+		return this;
 	}
 
-	public void refresh() {
+	public LTimer refresh() {
 		this.currentTick = 0;
+		return this;
 	}
 
-	public void setEquals(LTimer other) {
+	public LTimer setEquals(LTimer other) {
 		this.active = other.active;
 		this.delay = other.delay;
 		this.currentTick = other.currentTick;
+		return this;
 	}
 
 	public boolean isActive() {
 		return this.active;
 	}
 
-	public void start() {
+	public LTimer start() {
 		this.active = true;
+		return this;
 	}
 
-	public void stop() {
+	public LTimer stop() {
 		this.active = false;
+		return this;
 	}
 
-	public void setActive(boolean bool) {
+	public LTimer setActive(boolean bool) {
 		this.active = bool;
 		this.refresh();
+		return this;
 	}
 
 	public long getDelay() {
 		return this.delay;
 	}
 
-	public void setDelay(long delay) {
+	public LTimer setDelay(long delay) {
 		this.delay = delay;
 		this.refresh();
+		return this;
 	}
 
 	public long getCurrentTick() {
 		return this.currentTick;
 	}
 
-	public void setCurrentTick(long tick) {
+	public LTimer setCurrentTick(long tick) {
 		this.currentTick = tick;
+		return this;
 	}
 
 	public float getPercentage() {
@@ -136,10 +147,11 @@ public class LTimer {
 		return (float) (this.delay - this.currentTick);
 	}
 
-	public void clamp() {
+	public LTimer clamp() {
 		if (this.currentTick > this.delay) {
 			currentTick = delay;
 		}
+		return this;
 	}
 
 	public boolean isCompleted() {

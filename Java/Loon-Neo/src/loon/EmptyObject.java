@@ -109,11 +109,6 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 	}
 
 	@Override
-	public void close() {
-		setState(State.DISPOSED);
-	}
-
-	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}
@@ -123,4 +118,12 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 		return PlayerUtils.isActionCompleted(this);
 	}
 
+	public boolean isClosed() {
+		return isDisposed();
+	}
+
+	@Override
+	public void close() {
+		setState(State.DISPOSED);
+	}
 }

@@ -46,7 +46,7 @@ public class AVGCG implements LRelease {
 
 	private ArrayMap charas;
 
-	private boolean style, loop;
+	private boolean style, loop, closed;
 
 	protected int sleep, sleepMax, shakeNumber;
 
@@ -103,8 +103,7 @@ public class AVGCG implements LRelease {
 	}
 
 	public void add(String resName, int x, int y) {
-		add(resName, x, y, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		add(resName, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public void add(final String resName, float x, float y, float w, float h) {
@@ -168,8 +167,7 @@ public class AVGCG implements LRelease {
 			if (old != null) {
 				final float x = old.getX();
 				final float y = old.getY();
-				AVGChara newObject = new AVGChara(path2, 0, 0, old.maxWidth,
-						old.maxHeight);
+				AVGChara newObject = new AVGChara(path2, 0, 0, old.maxWidth, old.maxHeight);
 				newObject.setMove(false);
 				newObject.setX(x);
 				newObject.setY(y);
@@ -195,8 +193,7 @@ public class AVGCG implements LRelease {
 	public void paint(GLEx g) {
 		if (background != null) {
 			if (shakeNumber > 0) {
-				g.draw(background,
-						shakeNumber / 2 - MathUtils.random(shakeNumber),
+				g.draw(background, shakeNumber / 2 - MathUtils.random(shakeNumber),
 						shakeNumber / 2 - MathUtils.random(shakeNumber));
 			} else {
 				g.draw(background, 0, 0);
@@ -241,10 +238,8 @@ public class AVGCG implements LRelease {
 						if (animation.alpha != 1f) {
 							g.setAlpha(animation.alpha);
 						}
-						g.draw(animation.texture, chara.getX(), chara.getY(),
-								animation.width, animation.height, point.x,
-								point.y, point.x + animation.imageWidth,
-								point.y + animation.imageHeight,
+						g.draw(animation.texture, chara.getX(), chara.getY(), animation.width, animation.height,
+								point.x, point.y, point.x + animation.imageWidth, point.y + animation.imageHeight,
 								animation.color, animation.angle);
 						if (animation.alpha != 1f) {
 							g.setAlpha(1f);
@@ -314,6 +309,10 @@ public class AVGCG implements LRelease {
 		return actionRole;
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		synchronized (charas) {
@@ -336,6 +335,7 @@ public class AVGCG implements LRelease {
 			}
 			actionRole.clear();
 		}
+		closed = true;
 	}
 
 }

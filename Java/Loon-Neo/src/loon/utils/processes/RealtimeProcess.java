@@ -52,7 +52,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	public RealtimeProcess(long delay) {
 		this("Process" + TimeUtils.millis(), delay);
 	}
-	
+
 	public RealtimeProcess(String id, long delay) {
 		this.isDead = false;
 		this.id = id;
@@ -139,8 +139,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 			kill();
 		}
 		if (this.processesToFireWhenFinished != null) {
-			for (LIterator<GameProcess> it = this.processesToFireWhenFinished
-					.listIterator(); it.hasNext();) {
+			for (LIterator<GameProcess> it = this.processesToFireWhenFinished.listIterator(); it.hasNext();) {
 				RealtimeProcessManager.get().addProcess(it.next());
 			}
 		}

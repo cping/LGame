@@ -30,7 +30,7 @@ import loon.opengl.LSTRFont;
  */
 public class ShadowFont implements IFont {
 
-	private boolean withShadow = false;
+	private boolean withShadow = false, closed = false;
 	private LColor shadowColor = new LColor(0f, 0f, 0f, 1f);
 	private float shadowAlpha = 1f;
 	private LSTRFont strfont;
@@ -48,8 +48,7 @@ public class ShadowFont implements IFont {
 		return strfont.getFont();
 	}
 
-	public ShadowFont(LFont font, String[] messages, String append,
-			boolean shadow) {
+	public ShadowFont(LFont font, String[] messages, String append, boolean shadow) {
 		if (append != null) {
 			int size = messages.length + 1;
 			String[] dest = new String[size];
@@ -84,32 +83,27 @@ public class ShadowFont implements IFont {
 	public void drawString(GLEx g, String text, float x, float y, LColor color) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * color.a);
-			strfont.drawString(g, text, x + _offset.x, y + _offset.y,
-					shadowColor);
+			strfont.drawString(g, text, x + _offset.x, y + _offset.y, shadowColor);
 		}
 		strfont.drawString(g, text, x + _offset.x, y + _offset.y, color);
 	}
 
 	@Override
-	public void drawString(GLEx g, String string, float x, float y,
-			float rotation, LColor c) {
+	public void drawString(GLEx g, String string, float x, float y, float rotation, LColor c) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * c.a);
-			strfont.drawString(g, string, x + _offset.x, y + _offset.y,
-					rotation, shadowColor);
+			strfont.drawString(g, string, x + _offset.x, y + _offset.y, rotation, shadowColor);
 		}
 		strfont.drawString(g, string, x + _offset.x, y + _offset.y, rotation, c);
 	}
 
-	public void drawString(GLEx g, String string, float x, float y, float sx,
-			float sy, float ax, float ay, float rotation, LColor c) {
+	public void drawString(GLEx g, String string, float x, float y, float sx, float sy, float ax, float ay,
+			float rotation, LColor c) {
 		if (this.withShadow) {
 			this.shadowColor.a = (this.shadowAlpha * c.a);
-			strfont.drawString(g, x + _offset.x, y + _offset.y, sx, sy, ax, ay,
-					rotation, string, shadowColor);
+			strfont.drawString(g, x + _offset.x, y + _offset.y, sx, sy, ax, ay, rotation, string, shadowColor);
 		}
-		strfont.drawString(g, x + _offset.x, y + _offset.y, sx, sy, ax, ay,
-				rotation, string, c);
+		strfont.drawString(g, x + _offset.x, y + _offset.y, sx, sy, ax, ay, rotation, string, c);
 	}
 
 	public void setShadowColor(LColor color) {
@@ -224,6 +218,10 @@ public class ShadowFont implements IFont {
 
 	@Override
 	public void close() {
-		
+		this.closed = true;
+	}
+
+	public boolean isClosed() {
+		return closed;
 	}
 }

@@ -183,8 +183,7 @@ public class Gravity implements LRelease {
 	}
 
 	public RectBox getAreaOfTravel(float scale) {
-		HIT_SELF.setBounds(bounds.x, bounds.y, velocityX * scale + bounds.width,
-				velocityY * scale + bounds.height);
+		HIT_SELF.setBounds(bounds.x, bounds.y, velocityX * scale + bounds.width, velocityY * scale + bounds.height);
 		bounds.normalize(HIT_SELF);
 		return HIT_SELF;
 	}
@@ -203,6 +202,10 @@ public class Gravity implements LRelease {
 	public void dispose() {
 		this.enabled = false;
 		this.bind = null;
+	}
+
+	public boolean isClosed() {
+		return bind == null;
 	}
 
 	@Override

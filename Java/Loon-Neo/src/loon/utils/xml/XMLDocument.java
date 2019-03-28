@@ -27,6 +27,8 @@ public class XMLDocument implements LRelease {
 	private String header;
 
 	private XMLElement root;
+	
+	private boolean closed;
 
 	public XMLDocument(XMLElement e) {
 		this("<?xml version=\"1.0\" standalone=\"yes\" ?>\n", e);
@@ -55,6 +57,11 @@ public class XMLDocument implements LRelease {
 		if (root != null) {
 			root.dispose();
 		}
+		closed = true;
+	}
+
+	public boolean isClosed() {
+		return closed;
 	}
 
 }

@@ -37,7 +37,7 @@ public class GLBatch implements LRelease {
 
 	private Mesh mesh;
 	private ShaderProgram shader;
-	private boolean ownsShader;
+	private boolean ownsShader, closed;
 	private int numTexCoords;
 	private int vertexSize;
 	private int normalOffset;
@@ -313,6 +313,11 @@ public class GLBatch implements LRelease {
 		if (mesh != null) {
 			mesh.close();
 		}
+		closed = true;
+	}
+
+	public boolean isClosed() {
+		return closed;
 	}
 
 }

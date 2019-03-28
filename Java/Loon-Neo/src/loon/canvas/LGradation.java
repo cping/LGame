@@ -39,6 +39,8 @@ public class LGradation implements LRelease {
 	private LTexture drawTexWidth, drawTexHeight;
 
 	private Image drawImgWidth, drawImgHeight;
+	
+	private boolean closed;
 
 	public static LGradation getInstance(LColor s, LColor e, int w, int h) {
 		return getInstance(s, e, w, h, 125);
@@ -244,6 +246,11 @@ public class LGradation implements LRelease {
 		if (drawImgWidth != null) {
 			drawImgWidth.close();
 		}
+		this.closed = true;
+	}
+
+	public boolean isClosed() {
+		return closed;
 	}
 
 }

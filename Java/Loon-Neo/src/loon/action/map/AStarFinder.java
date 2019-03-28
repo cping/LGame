@@ -55,12 +55,10 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_SHORT = new DiagonalShort();
 
-	private final static IntMap<TArray<Vector2f>> finderLazy = new IntMap<TArray<Vector2f>>(
-			100);
+	private final static IntMap<TArray<Vector2f>> finderLazy = new IntMap<TArray<Vector2f>>(100);
 
-	private final static int makeLazyKey(AStarFindHeuristic heuristic,
-			int[][] map, int[] limits, int sx, int sy, int ex, int ey,
-			boolean flag) {
+	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
+			int ex, int ey, boolean flag) {
 		int hashCode = 1;
 		int w = map.length;
 		int h = map[0].length;
@@ -83,9 +81,8 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		return hashCode;
 	}
 
-	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
-			int[][] maps, int[] limits, int x1, int y1, int x2, int y2,
-			boolean flag) {
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int[] limits, int x1, int y1,
+			int x2, int y2, boolean flag) {
 		heuristic = (heuristic == null ? ASTAR_MANHATTAN : heuristic);
 		synchronized (finderLazy) {
 			if (finderLazy.size >= LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
@@ -117,27 +114,24 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		}
 	}
 
-	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
-			int[][] maps, int x1, int y1, int x2, int y2, boolean flag) {
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int x1, int y1, int x2, int y2,
+			boolean flag) {
 		return find(heuristic, maps, x1, y1, x2, y2, flag);
 	}
 
-	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
-			Field2D maps, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(heuristic, maps.getMap(), maps.getLimit(), x1, y1, x2, y2,
-				flag);
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, int x1, int y1, int x2, int y2,
+			boolean flag) {
+		return find(heuristic, maps.getMap(), maps.getLimit(), x1, y1, x2, y2, flag);
 	}
 
-	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
-			Field2D maps, Vector2f start, Vector2f goal, boolean flag) {
-		return find(heuristic, maps.getMap(), maps.getLimit(), start.x(),
-				start.y(), goal.x(), goal.y(), flag);
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, Vector2f start, Vector2f goal,
+			boolean flag) {
+		return find(heuristic, maps.getMap(), maps.getLimit(), start.x(), start.y(), goal.x(), goal.y(), flag);
 	}
 
-	public static TArray<Vector2f> find(AStarFindHeuristic heuristic,
-			int[][] maps, Vector2f start, Vector2f goal, boolean flag) {
-		return find(heuristic, maps, start.x(), start.y(), goal.x(), goal.y(),
-				flag);
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, Vector2f start, Vector2f goal,
+			boolean flag) {
+		return find(heuristic, maps, start.x(), start.y(), goal.x(), goal.y(), flag);
 	}
 
 	private Vector2f goal;
@@ -150,7 +144,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	private ScoredPath spath;
 
-	private boolean flying, flag;
+	private boolean flying, flag, closed;
 
 	private Field2D field;
 
@@ -169,9 +163,8 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		this.findHeuristic = heuristic;
 	}
 
-	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX,
-			int startY, int endX, int endY, boolean flying, boolean flag,
-			AStarFinderListener callback) {
+	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX, int startY, int endX, int endY,
+			boolean flying, boolean flag, AStarFinderListener callback) {
 		this.field = field;
 		this.startX = startX;
 		this.startY = startY;
@@ -183,8 +176,8 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		this.findHeuristic = heuristic;
 	}
 
-	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX,
-			int startY, int endX, int endY, boolean flying, boolean flag) {
+	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX, int startY, int endX, int endY,
+			boolean flying, boolean flag) {
 		this(heuristic, field, startX, startY, endX, endY, flying, flag, null);
 	}
 
@@ -216,8 +209,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		return calc(field, start, over, flag);
 	}
 
-	private TArray<Vector2f> calc(Field2D field, Vector2f start, Vector2f goal,
-			boolean flag) {
+	private TArray<Vector2f> calc(Field2D field, Vector2f start, Vector2f goal, boolean flag) {
 		if (start.equals(goal)) {
 			TArray<Vector2f> v = new TArray<Vector2f>();
 			v.add(start);
@@ -285,9 +277,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 				}
 				TArray<Vector2f> path = new TArray<Vector2f>(spath.path);
 				path.add(next);
-				float score = spath.score
-						+ findHeuristic
-								.getScore(goal.x, goal.y, next.x, next.y);
+				float score = spath.score + findHeuristic.getScore(goal.x, goal.y, next.x, next.y);
 				insert(score, path);
 			}
 		}
@@ -346,6 +336,10 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		try {
@@ -363,7 +357,9 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 			}
 			spath = null;
 			goal = null;
+			closed = true;
 		} catch (Throwable e) {
 		}
 	}
+
 }

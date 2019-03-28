@@ -147,6 +147,8 @@ public abstract class Conversion implements Expression {
 
 		private char[] expChr;
 
+		private boolean closed;
+
 		private boolean exp(String exp) {
 			return exp.indexOf("+") != -1 || exp.indexOf("-") != -1 || exp.indexOf("*") != -1 || exp.indexOf("/") != -1
 					|| exp.indexOf("%") != -1;
@@ -380,12 +382,18 @@ public abstract class Conversion implements Expression {
 			}
 		}
 
+		public boolean isClosed() {
+			return closed;
+		}
+
 		@Override
 		public void close() {
 			if (computes != null) {
 				computes.clear();
 			}
+			closed = true;
 		}
+
 	}
 
 }

@@ -37,7 +37,7 @@ import loon.utils.TArray;
  */
 public class Text implements LRelease {
 
-	private boolean _initNativeDraw;
+	private boolean _initNativeDraw = false, _closed = false;
 	protected IFont _font;
 	protected float _space = 0;
 	protected float _lineWidthMaximum;
@@ -451,6 +451,11 @@ public class Text implements LRelease {
 		_chars = null;
 		_lines = null;
 		_lineWidths = null;
+		_closed = true;
+	}
+
+	public boolean isClosed() {
+		return _closed;
 	}
 
 }

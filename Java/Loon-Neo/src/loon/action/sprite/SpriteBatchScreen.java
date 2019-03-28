@@ -217,7 +217,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public void commits() {
-		if (isClose()) {
+		if (isClosed()) {
 			return;
 		}
 		final int additionCount = pendingAdd.size;

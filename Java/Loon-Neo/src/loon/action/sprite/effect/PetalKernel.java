@@ -32,8 +32,7 @@ public class PetalKernel implements IKernel {
 
 	private LTexture sakura;
 
-	private float offsetX, offsetY, speed, x, y, width, height, sakuraWidth,
-			sakuraHeight;
+	private float offsetX, offsetY, speed, x, y, width, height, sakuraWidth, sakuraHeight;
 
 	private int id;
 
@@ -112,6 +111,10 @@ public class PetalKernel implements IKernel {
 		return sakuraWidth;
 	}
 
+	public boolean isClosed() {
+		return sakura == null || sakura.isClosed();
+	}
+
 	@Override
 	public void close() {
 		if (sakura != null) {
@@ -119,4 +122,5 @@ public class PetalKernel implements IKernel {
 			sakura = null;
 		}
 	}
+
 }

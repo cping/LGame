@@ -337,6 +337,10 @@ public class SpriteSheetFont implements IFont {
 		return charWidth;
 	}
 
+	public boolean isClosed() {
+		return _font == null || _font.isClosed();
+	}
+
 	@Override
 	public void close() {
 		if (_font != null) {

@@ -322,24 +322,8 @@ public class MovieClip extends DisplayObject {
 		return this;
 	}
 
-	@Override
-	public float getContainerX() {
-		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
-	}
-
-	@Override
-	public float getContainerY() {
-		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
-	}
-
-	@Override
-	public float getContainerWidth() {
-		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
-	}
-
-	@Override
-	public float getContainerHeight() {
-		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+	public boolean isClosed() {
+		return isDisposed();
 	}
 
 	@Override

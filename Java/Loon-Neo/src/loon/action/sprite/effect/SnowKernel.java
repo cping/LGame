@@ -34,8 +34,7 @@ public class SnowKernel implements IKernel {
 
 	private int id;
 
-	private float offsetX, offsetY, speed, x, y, width, height, snowWidth,
-			snowHeight;
+	private float offsetX, offsetY, speed, x, y, width, height, snowWidth, snowHeight;
 
 	public SnowKernel(LTexturePack pack, int n, int w, int h) {
 		snow = pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "snow_" + n);
@@ -48,6 +47,7 @@ public class SnowKernel implements IKernel {
 		speed = MathUtils.random();
 	}
 
+	@Override
 	public int id() {
 		return id;
 	}
@@ -58,6 +58,7 @@ public class SnowKernel implements IKernel {
 		y = -snowHeight;
 	}
 
+	@Override
 	public void update() {
 		if (!exist) {
 			if (MathUtils.random() < 0.002) {
@@ -87,24 +88,33 @@ public class SnowKernel implements IKernel {
 		}
 	}
 
+	@Override
 	public void draw(GLEx g, float mx, float my) {
 		if (exist) {
 			snow.draw(mx + x, my + y);
 		}
 	}
 
+	@Override
 	public LTexture get() {
 		return snow;
 	}
 
+	@Override
 	public float getHeight() {
 		return snowHeight;
 	}
 
+	@Override
 	public float getWidth() {
 		return snowWidth;
 	}
 
+	public boolean isClosed() {
+		return snow == null || snow.isClosed();
+	}
+
+	@Override
 	public void close() {
 		if (snow != null) {
 			snow.close();

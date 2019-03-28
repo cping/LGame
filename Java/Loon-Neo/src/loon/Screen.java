@@ -360,6 +360,85 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this.index;
 	}
 
+	/**
+	 * 转化DrawOrder为PaintOrder
+	 * 
+	 * @param tree
+	 * @return
+	 */
+	public final PaintOrder toPaintOrder(DrawOrder tree) {
+		PaintOrder order = null;
+		switch (tree) {
+		case SPRITE:
+			order = DRAW_SPRITE_PAINT();
+			break;
+		case DESKTOP:
+			order = DRAW_DESKTOP_PAINT();
+			break;
+		case USER:
+		default:
+			order = DRAW_USER_PAINT();
+			break;
+		}
+		return order;
+	}
+
+	/**
+	 * 设置Screen中组件渲染顺序
+	 * 
+	 * @param one
+	 * @param two
+	 * @param three
+	 */
+	public void setDrawOrder(DrawOrder one, DrawOrder two, DrawOrder three) {
+		this.setFristOrder(toPaintOrder(one));
+		this.setSecondOrder(toPaintOrder(two));
+		this.setLastOrder(toPaintOrder(three));
+	}
+
+	/**
+	 * 设置为默认渲染顺序
+	 */
+	public void defaultDraw() {
+		setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP, DrawOrder.USER);
+	}
+
+	/**
+	 * 最后绘制用户界面
+	 */
+	public void lastUserDraw() {
+		setFristOrder(DRAW_SPRITE_PAINT());
+		setSecondOrder(DRAW_DESKTOP_PAINT());
+		setLastOrder(DRAW_USER_PAINT());
+	}
+
+	/**
+	 * 优先绘制用户界面
+	 */
+	public void fristUserDraw() {
+		setFristOrder(DRAW_USER_PAINT());
+		setSecondOrder(DRAW_SPRITE_PAINT());
+		setLastOrder(DRAW_DESKTOP_PAINT());
+	}
+
+	/**
+	 * 把用户渲染置于精灵与桌面之间
+	 */
+	public void centerUserDraw() {
+		setFristOrder(DRAW_SPRITE_PAINT());
+		setSecondOrder(DRAW_USER_PAINT());
+		setLastOrder(DRAW_DESKTOP_PAINT());
+	}
+
+	/**
+	 * 只保留一个用户渲染接口（即无组件会被渲染出来）
+	 */
+	public void onlyUserDraw() {
+		setFristOrder(null);
+		setSecondOrder(null);
+		setLastOrder(DRAW_USER_PAINT());
+	}
+
 	public boolean containsActionKey(Integer keyCode) {
 		return _keyActions.containsKey(keyCode);
 	}
@@ -483,85 +562,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen onDrag(Touched t) {
 		makeTouched().setDragTouch(t);
 		return this;
-	}
-
-	/**
-	 * 转化DrawOrder为PaintOrder
-	 * 
-	 * @param tree
-	 * @return
-	 */
-	public final PaintOrder toPaintOrder(DrawOrder tree) {
-		PaintOrder order = null;
-		switch (tree) {
-		case SPRITE:
-			order = DRAW_SPRITE_PAINT();
-			break;
-		case DESKTOP:
-			order = DRAW_DESKTOP_PAINT();
-			break;
-		case USER:
-		default:
-			order = DRAW_USER_PAINT();
-			break;
-		}
-		return order;
-	}
-
-	/**
-	 * 设置Screen中组件渲染顺序
-	 * 
-	 * @param one
-	 * @param two
-	 * @param three
-	 */
-	public void setDrawOrder(DrawOrder one, DrawOrder two, DrawOrder three) {
-		this.setFristOrder(toPaintOrder(one));
-		this.setSecondOrder(toPaintOrder(two));
-		this.setLastOrder(toPaintOrder(three));
-	}
-
-	/**
-	 * 设置为默认渲染顺序
-	 */
-	public void defaultDraw() {
-		setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP, DrawOrder.USER);
-	}
-
-	/**
-	 * 最后绘制用户界面
-	 */
-	public void lastUserDraw() {
-		setFristOrder(DRAW_SPRITE_PAINT());
-		setSecondOrder(DRAW_DESKTOP_PAINT());
-		setLastOrder(DRAW_USER_PAINT());
-	}
-
-	/**
-	 * 优先绘制用户界面
-	 */
-	public void fristUserDraw() {
-		setFristOrder(DRAW_USER_PAINT());
-		setSecondOrder(DRAW_SPRITE_PAINT());
-		setLastOrder(DRAW_DESKTOP_PAINT());
-	}
-
-	/**
-	 * 把用户渲染置于精灵与桌面之间
-	 */
-	public void centerUserDraw() {
-		setFristOrder(DRAW_SPRITE_PAINT());
-		setSecondOrder(DRAW_USER_PAINT());
-		setLastOrder(DRAW_DESKTOP_PAINT());
-	}
-
-	/**
-	 * 只保留一个用户渲染接口（即无组件会被渲染出来）
-	 */
-	public void onlyUserDraw() {
-		setFristOrder(null);
-		setSecondOrder(null);
-		setLastOrder(DRAW_USER_PAINT());
 	}
 
 	/** 受限函数,关系到线程的同步与异步，使用此部分函数实现的功能，将无法在GWT编译的HTML5环境运行，所以默认注释掉. **/
@@ -1036,6 +1036,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	public Screen removeTouchLimit(RectBox r) {
+		if (r != null) {
+			_limits.remove(r);
+		}
+		return this;
+	}
+
+	public Screen removeTouchLimit(LObject<?> c) {
+		if (c != null) {
+			_limits.remove(c.getCollisionArea());
+		}
+		return this;
+	}
+
 	public Screen addTouchLimit(LObject<?> c) {
 		if (c != null) {
 			_limits.add(c.getCollisionArea());
@@ -1401,7 +1415,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @return
 	 */
-	public boolean isClose() {
+	public boolean isClosed() {
 		return isClose;
 	}
 

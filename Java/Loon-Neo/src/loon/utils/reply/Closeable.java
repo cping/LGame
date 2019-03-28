@@ -29,6 +29,12 @@ public interface Closeable extends LRelease {
 
 		protected ObjectSet<LRelease> _set;
 
+		protected boolean _closed = false;
+
+		public boolean isClosed() {
+			return _closed;
+		}
+
 		@Override
 		public void close() {
 			if (_set != null) {
@@ -40,6 +46,7 @@ public interface Closeable extends LRelease {
 				}
 				_set.clear();
 			}
+			_closed = true;
 		}
 
 		public <T extends LRelease> T add(T c) {

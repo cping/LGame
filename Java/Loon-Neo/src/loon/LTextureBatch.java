@@ -142,6 +142,11 @@ public class LTextureBatch implements LRelease {
 			System.arraycopy(verts, 0, vertices, 0, verts.length);
 		}
 
+		public boolean isClosed() {
+			return vertices == null;
+		}
+
+		@Override
 		public void close() {
 			if (vertices != null) {
 				vertices = null;
@@ -1245,6 +1250,10 @@ public class LTextureBatch implements LRelease {
 		return isClosed;
 	}
 
+	public boolean isClosed() {
+		return closed();
+	}
+
 	@Override
 	public void close() {
 		isClosed = true;
@@ -1274,4 +1283,5 @@ public class LTextureBatch implements LRelease {
 			texture.close(true);
 		}
 	}
+
 }

@@ -123,8 +123,8 @@ public final class LSTRDictionary {
 			return true;
 		}
 
-		public boolean isClose() {
-			return font.isClose();
+		public boolean isClosed() {
+			return font.isClosed();
 		}
 
 		@Override
@@ -233,13 +233,13 @@ public final class LSTRDictionary {
 		if (StringUtils.isEmpty(mes)) {
 			return new Dict();
 		}
-		if (mes.equals(_lastMessage) && _lastDict != null && !_lastDict.isClose()) {
+		if (mes.equals(_lastMessage) && _lastDict != null && !_lastDict.isClosed()) {
 			return _lastDict;
 		}
 		_lastMessage = mes;
 		if (checkEnglishString(mes)) {
 			Dict pDict = englishFontList.get(font);
-			if (pDict != null && pDict.isClose()) {
+			if (pDict != null && pDict.isClosed()) {
 				englishFontList.remove(font);
 				pDict = null;
 			}
@@ -273,7 +273,7 @@ public final class LSTRDictionary {
 			}
 			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_" + font.getSize();
 			Dict pDict = fontList.get(fontFlag);
-			if (pDict != null && pDict.isClose()) {
+			if (pDict != null && pDict.isClosed()) {
 				fontList.remove(fontFlag);
 				pDict = null;
 			}

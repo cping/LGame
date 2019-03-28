@@ -40,6 +40,8 @@ public class LColorPool implements LRelease {
 	private final LColor AlphaColor = new LColor(0f, 0f, 0f, 0f);
 
 	private IntMap<LColor> ColorMap = new IntMap<LColor>();
+	
+	private boolean closed;
 
 	public LColor getColor(float r, float g, float b, float a) {
 		if (a <= 0.1f) {
@@ -97,5 +99,10 @@ public class LColorPool implements LRelease {
 		if (ColorMap != null) {
 			ColorMap.clear();
 		}
+		closed = true;
+	}
+
+	public boolean isClosed() {
+		return closed;
 	}
 }

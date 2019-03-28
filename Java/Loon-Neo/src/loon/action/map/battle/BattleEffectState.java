@@ -21,19 +21,5 @@
 package loon.action.map.battle;
 
 public enum BattleEffectState {
-	  Strength,
-      Defense,
-      Magic,
-      Resistance,
-      Potion,
-      Armor,
-      Death,
-      Effect,
-      Monster,
-      Miss,
-      Fire,
-      Ice,
-      Rock,
-      Water,
-      Electricity;
+	Strength, Defense, Magic, Resistance, Potion, Armor, Death, Effect, Monster, Healing, Miss, Fire, Ice, Rock, Water, Kills, Assists, Damage, Electricity;
 }

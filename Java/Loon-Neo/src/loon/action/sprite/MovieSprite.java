@@ -172,15 +172,6 @@ public class MovieSprite extends DisplayObject implements IArray {
 	}
 
 	@Override
-	public void close() {
-		for (DisplayObject object : _childs) {
-			object.close();
-		}
-		_childs.clear();
-		setState(State.DISPOSED);
-	}
-
-	@Override
 	public int size() {
 		return _childs == null ? 0 : _childs.size;
 	}
@@ -204,5 +195,17 @@ public class MovieSprite extends DisplayObject implements IArray {
 	public boolean isActionCompleted() {
 		return PlayerUtils.isActionCompleted(this);
 	}
+
+	public boolean isClosed() {
+		return isDisposed();
+	}
 	
+	@Override
+	public void close() {
+		for (DisplayObject object : _childs) {
+			object.close();
+		}
+		_childs.clear();
+		setState(State.DISPOSED);
+	}
 }

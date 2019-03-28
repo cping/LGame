@@ -1201,7 +1201,7 @@ public class Command extends Conversion implements LRelease {
 
 	}
 
-	public boolean isClose() {
+	public boolean isClosed() {
 		return isClose;
 	}
 
@@ -1230,5 +1230,4 @@ public class Command extends Conversion implements LRelease {
 			exp.close();
 		}
 	}
-
 }

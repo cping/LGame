@@ -49,6 +49,8 @@ public class GravityHandler implements LRelease {
 
 	private GravityUpdate listener;
 
+	private boolean closed;
+
 	private int width, height;
 
 	private int bindWidth;
@@ -550,6 +552,10 @@ public class GravityHandler implements LRelease {
 		}
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		this.isEnabled = false;
@@ -573,6 +579,7 @@ public class GravityHandler implements LRelease {
 				}
 			}
 		}
+		closed = true;
 	}
 
 }

@@ -31,6 +31,8 @@ public class MovieSpriteSheet implements LRelease {
 	protected TextureData[] _datas = null;
 
 	private TextureAtlas _ta = null;
+	
+	private boolean _close = false;
 
 	protected MovieSpriteSheet(TextureAtlas ta, String[] frameNames) {
 		init(ta, frameNames);
@@ -120,5 +122,10 @@ public class MovieSpriteSheet implements LRelease {
 		if (_ta != null) {
 			_ta.close();
 		}
+		_close = true;
+	}
+
+	public boolean isClosed() {
+		return _close;
 	}
 }

@@ -511,7 +511,7 @@ public class Array<T> implements IArray {
 		return _close || _length == 0 || this._items.next == this._items;
 	}
 
-	public boolean isClose() {
+	public boolean isClosed() {
 		return _close;
 	}
 

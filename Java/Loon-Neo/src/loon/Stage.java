@@ -28,7 +28,40 @@ import loon.utils.timer.LTimerContext;
  * 一个Screen的衍生抽象类,除了create默认都不必实现,纯组件构建游戏时可以使用此类派生画面
  */
 public abstract class Stage extends Screen {
-	
+
+	private static float percent;
+
+	private static float maxPercent;
+
+	public final Stage setPercentMaximum(float max) {
+		maxPercent = max;
+		return this;
+	}
+
+	public final Stage setPercent(float cur, float max) {
+		percent = cur;
+		maxPercent = max;
+		return this;
+	}
+
+	public final Stage updatePercent(float number) {
+		percent = number / maxPercent;
+		return this;
+	}
+
+	public final Stage addPercent() {
+		return updatePercent(percent++);
+	}
+
+	public final Stage removePercent() {
+		return updatePercent(percent--);
+	}
+
+	public final int getPercent() {
+		return (int) percent;
+	}
+
+	@Override
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}

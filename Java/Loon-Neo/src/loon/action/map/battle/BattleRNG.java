@@ -24,6 +24,10 @@ import loon.utils.MathUtils;
 
 public class BattleRNG {
 
+	public static final int getPoss() {
+		return random(100);
+	}
+
 	public static final boolean checkPct(int value) {
 		return (MathUtils.nextInt(0, 100) <= value);
 	}

@@ -46,10 +46,10 @@ import loon.utils.TArray;
  * Example:
  * 
  * <pre>
- * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu"); 
+ * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu");
  * panel.add("ABC");
- * panel.add("EFG"); 
- * panel.add("ABC"); 
+ * panel.add("EFG");
+ * panel.add("ABC");
  * </pre>
  */
 public class LMenu extends LComponent implements FontSet<LMenu> {
@@ -101,17 +101,14 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		private MenuItemClick _itemclick;
 
 		MenuItem(LMenu parent, LTexture tex, String label, MenuItemClick click) {
-			this(SkinManager.get().getMenuSkin().getFont(), parent, tex, false,
-					label, click);
+			this(SkinManager.get().getMenuSkin().getFont(), parent, tex, false, label, click);
 		}
 
-		MenuItem(IFont font, LMenu parent, LTexture tex, String label,
-				MenuItemClick click) {
+		MenuItem(IFont font, LMenu parent, LTexture tex, String label, MenuItemClick click) {
 			this(font, parent, tex, false, label, click);
 		}
 
-		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep,
-				String label, MenuItemClick click) {
+		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep, String label, MenuItemClick click) {
 			this.texture = tex;
 			this.parent = parent;
 			if (parent != null) {
@@ -127,19 +124,16 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 			}
 		}
 
-		MenuItem(LMenu parent, LTexture tex, boolean keep, String label,
-				float x, float y, MenuItemClick click) {
-			this(SkinManager.get().getMenuSkin().getFont(), parent, tex, true,
-					label, x, y, 0, 0, click);
+		MenuItem(LMenu parent, LTexture tex, boolean keep, String label, float x, float y, MenuItemClick click) {
+			this(SkinManager.get().getMenuSkin().getFont(), parent, tex, true, label, x, y, 0, 0, click);
 		}
 
-		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep,
-				String label, float x, float y, MenuItemClick click) {
+		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep, String label, float x, float y,
+				MenuItemClick click) {
 			this(font, parent, tex, true, label, x, y, 0, 0, click);
 		}
 
-		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep,
-				String label, float x, float y, float w, float h,
+		MenuItem(IFont font, LMenu parent, LTexture tex, boolean keep, String label, float x, float y, float w, float h,
 				MenuItemClick click) {
 			this.x = x;
 			this.y = y;
@@ -209,13 +203,10 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				Vector2f pos = SysTouch.getLocation();
 				if (this.parent != null) {
 					if (!localpos) {
-						this.x = (this.parent.cellWidth * this.xslot
-								+ this.parent.cellWidth / this.itemWidth + this.xslot
-								* this.parent.paddingx)
-								- this.parent.item_left_offset;
-						this.y = (this.parent.cellHeight * this.yslot
-								+ this.parent.cellHeight / this.itemHeight + this.yslot
-								* this.parent.paddingy);
+						this.x = (this.parent.cellWidth * this.xslot + this.parent.cellWidth / this.itemWidth
+								+ this.xslot * this.parent.paddingx) - this.parent.item_left_offset;
+						this.y = (this.parent.cellHeight * this.yslot + this.parent.cellHeight / this.itemHeight
+								+ this.yslot * this.parent.paddingy);
 
 						if (x > Float.MAX_VALUE) {
 							x = 0;
@@ -229,8 +220,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						}
 					}
 					if (parent.type == LMenu.MOVE_RIGHT) {
-						float posX = parent.getScreenWidth()
-								- parent.main_panel_size;
+						float posX = parent.getScreenWidth() - parent.main_panel_size;
 						this.x = posX + x;
 					}
 					if (!localsize) {
@@ -245,8 +235,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					if (bounds().contains(pos.x, pos.y) && check) {
 						g.setTint(0.5f, 0.5f, 0.5f, 1.0f);
 						if (check && (!this.clicked)) {
-							ClickMenu menu = new ClickMenu(this._itemclick,
-									this);
+							ClickMenu menu = new ClickMenu(this._itemclick, this);
 							LSystem.load(menu);
 							this.clicked = true;
 						}
@@ -255,28 +244,21 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						this.clicked = false;
 					}
 					if (texture != null) {
-						g.draw(this.texture, this.x + 3f, this.y
-								+ this.parent.paddingy + this.parent.scroll,
-								this.itemWidth, this.itemHeight,
-								parent._component_baseColor);
+						g.draw(this.texture, this.x + 3f, this.y + this.parent.paddingy + this.parent.scroll,
+								this.itemWidth, this.itemHeight, parent._component_baseColor);
 					}
 					if (this.label != null) {
-						font.drawString(
-								g,
-								label,
-								(this.x + 3f + (itemWidth / 2 - font
-										.stringWidth(label) / 2)) + offsetX,
-								(this.y + this.parent.paddingy
-										+ this.parent.scroll - font.getAscent() - 2)
-										+ offsetY, parent.fontColor);
+						font.drawString(g, label,
+								(this.x + 3f + (itemWidth / 2 - font.stringWidth(label) / 2)) + offsetX,
+								(this.y + this.parent.paddingy + this.parent.scroll - font.getAscent() - 2) + offsetY,
+								parent.fontColor);
 					}
 
 				} else {
 					if (bounds().contains(pos.x, pos.y) && (check)) {
 						g.setTint(0.5f, 0.5f, 0.5f, 1.0f);
 						if (check && (!this.clicked)) {
-							ClickMenu menu = new ClickMenu(this._itemclick,
-									this);
+							ClickMenu menu = new ClickMenu(this._itemclick, this);
 							LSystem.load(menu);
 							this.clicked = true;
 						}
@@ -285,16 +267,12 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						this.clicked = false;
 					}
 					if (texture != null) {
-						g.draw(this.texture, this.x, this.y, this.itemWidth,
-								this.itemHeight, parent._component_baseColor);
+						g.draw(this.texture, this.x, this.y, this.itemWidth, this.itemHeight,
+								parent._component_baseColor);
 					}
 					if (this.label != null) {
-						font.drawString(
-								g,
-								this.label,
-								(this.x + (itemWidth / 2
-										- font.stringWidth(label) / 2 - font
-											.getAscent())) + offsetX,
+						font.drawString(g, this.label,
+								(this.x + (itemWidth / 2 - font.stringWidth(label) / 2 - font.getAscent())) + offsetX,
 								(this.y - 2) + offsetY, parent.fontColor);
 					}
 
@@ -310,24 +288,20 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		public RectBox bounds() {
 			if (parent.type == LMenu.MOVE_LEFT) {
 				if (itemrect == null) {
-					itemrect = new RectBox(this.x + 3f, this.y
-							+ this.parent.paddingy + this.parent.scroll,
+					itemrect = new RectBox(this.x + 3f, this.y + this.parent.paddingy + this.parent.scroll,
 							this.itemWidth, this.itemHeight);
 				} else {
-					itemrect.setBounds(this.x + 3f, this.y
-							+ this.parent.paddingy + this.parent.scroll,
-							this.itemWidth, this.itemHeight);
+					itemrect.setBounds(this.x + 3f, this.y + this.parent.paddingy + this.parent.scroll, this.itemWidth,
+							this.itemHeight);
 				}
 			} else if (parent.type == LMenu.MOVE_RIGHT) {
 
 				if (itemrect == null) {
-					itemrect = new RectBox(this.x + 3f, this.y
-							+ this.parent.paddingy + this.parent.scroll,
+					itemrect = new RectBox(this.x + 3f, this.y + this.parent.paddingy + this.parent.scroll,
 							this.itemWidth, this.itemHeight);
 				} else {
-					itemrect.setBounds(this.x + 3f, this.y
-							+ this.parent.paddingy + this.parent.scroll,
-							this.itemWidth, this.itemHeight);
+					itemrect.setBounds(this.x + 3f, this.y + this.parent.paddingy + this.parent.scroll, this.itemWidth,
+							this.itemHeight);
 				}
 			}
 			return itemrect;
@@ -363,6 +337,10 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				texture.close();
 				texture = null;
 			}
+		}
+
+		public boolean isClosed() {
+			return texture == null || texture.isClosed();
 		}
 	}
 
@@ -408,8 +386,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	private boolean _defUI;
 
 	public LMenu(int move_type, String label) {
-		this(move_type, SkinManager.get().getMenuSkin().getFont(), label, 100,
-				50);
+		this(move_type, SkinManager.get().getMenuSkin().getFont(), label, 100, 50);
 	}
 
 	public LMenu(int move_type, String label, int w, int h) {
@@ -417,53 +394,45 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width, int height) {
-		this(move_type, font, label, width, height, SkinManager.get()
-				.getMenuSkin().getTabTexture(), SkinManager.get().getMenuSkin()
-				.getMainTexture(), 0, 0, true);
+		this(move_type, font, label, width, height, SkinManager.get().getMenuSkin().getTabTexture(),
+				SkinManager.get().getMenuSkin().getMainTexture(), 0, 0, true);
 	}
 
-	public LMenu(int move_type, IFont font, String label, int width,
-			int height, String tabfile, String mainfile) {
-		this(move_type, font, label, width, height, LTextures
-				.loadTexture(tabfile), LTextures.loadTexture(mainfile), 0, 0,
-				false);
+	public LMenu(int move_type, IFont font, String label, int width, int height, String tabfile, String mainfile) {
+		this(move_type, font, label, width, height, LTextures.loadTexture(tabfile), LTextures.loadTexture(mainfile), 0,
+				0, false);
 	}
 
-	public LMenu(int move_type, IFont font, String label, int width,
-			int height, String tabfile, String mainfile, int taby, int mainsize) {
-		this(move_type, font, label, width, height, LTextures
-				.loadTexture(tabfile), LTextures.loadTexture(mainfile), taby,
-				mainsize, false);
+	public LMenu(int move_type, IFont font, String label, int width, int height, String tabfile, String mainfile,
+			int taby, int mainsize) {
+		this(move_type, font, label, width, height, LTextures.loadTexture(tabfile), LTextures.loadTexture(mainfile),
+				taby, mainsize, false);
 	}
 
-	public LMenu(int move_type, IFont font, String label, int width,
-			int height, LTexture tab, LTexture main, int taby) {
+	public LMenu(int move_type, IFont font, String label, int width, int height, LTexture tab, LTexture main,
+			int taby) {
 		this(move_type, font, label, width, height, tab, main, taby, 0, false);
 	}
 
-	public LMenu(int move_type, IFont font, String label, int width,
-			int height, LTexture tab, LTexture main, int taby, int mainsize) {
-		this(move_type, font, label, width, height, tab, main, taby, mainsize,
-				false);
+	public LMenu(int move_type, IFont font, String label, int width, int height, LTexture tab, LTexture main, int taby,
+			int mainsize) {
+		this(move_type, font, label, width, height, tab, main, taby, mainsize, false);
 	}
 
-	public LMenu(int move_type, IFont font, String label, int width,
-			int height, LTexture tab, LTexture main, int taby, int mainsize,
+	public LMenu(int move_type, IFont font, String label, int width, int height, LTexture tab, LTexture main, int taby,
+			int mainsize, boolean defUI) {
+		this(move_type, font, label, width, height, tab, main, taby, mainsize, defUI,
+				SkinManager.get().getMenuSkin().getFontColor());
+	}
+
+	public LMenu(MenuSkin skin, int move_type, String label, int width, int height, int taby, int mainsize,
 			boolean defUI) {
-		this(move_type, font, label, width, height, tab, main, taby, mainsize,
-				defUI, SkinManager.get().getMenuSkin().getFontColor());
+		this(move_type, skin.getFont(), label, width, height, skin.getTabTexture(), skin.getMainTexture(), taby,
+				mainsize, defUI, skin.getFontColor());
 	}
 
-	public LMenu(MenuSkin skin, int move_type, String label, int width,
-			int height, int taby, int mainsize, boolean defUI) {
-		this(move_type, skin.getFont(), label, width, height, skin
-				.getTabTexture(), skin.getMainTexture(), taby, mainsize, defUI,
-				skin.getFontColor());
-	}
-
-	public LMenu(int move_type, IFont font, String label, int width,
-			int height, LTexture tab, LTexture main, int taby, int mainsize,
-			boolean defUI, LColor color) {
+	public LMenu(int move_type, IFont font, String label, int width, int height, LTexture tab, LTexture main, int taby,
+			int mainsize, boolean defUI, LColor color) {
 		super(0, 0, width, height);
 		this.fontColor = color;
 		this.type = move_type;
@@ -482,8 +451,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		this.main_panel_size += this.cellWidth + this.paddingx;
 		this._defUI = defUI;
 		if (type > MOVE_RIGHT) {
-			throw LSystem.runThrow("Type:" + type
-					+ ", The Menu display mode is not supported !");
+			throw LSystem.runThrow("Type:" + type + ", The Menu display mode is not supported !");
 		}
 	}
 
@@ -540,33 +508,27 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public MenuItem add(String label, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, SkinManager.get().getMenuSkin()
-				.getTabTexture(), label, click));
+		return add(new LMenu.MenuItem(this, SkinManager.get().getMenuSkin().getTabTexture(), label, click));
 	}
 
 	public MenuItem add(String label, String file, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, LTextures.loadTexture(file), label,
-				click));
+		return add(new LMenu.MenuItem(this, LTextures.loadTexture(file), label, click));
 	}
 
 	public MenuItem add(String label, LTexture texture, MenuItemClick click) {
 		return add(new LMenu.MenuItem(this, texture, label, click));
 	}
 
-	public MenuItem add(String label, LTexture texture, float x, float y,
-			MenuItemClick click) {
+	public MenuItem add(String label, LTexture texture, float x, float y, MenuItemClick click) {
 		return add(new LMenu.MenuItem(this, texture, false, label, x, y, click));
 	}
 
-	public MenuItem add(String label, LTexture texture, float x, float y,
-			float w, float h, MenuItemClick click) {
-		return add(new LMenu.MenuItem(font, this, texture, false, label, x, y,
-				w, h, click));
+	public MenuItem add(String label, LTexture texture, float x, float y, float w, float h, MenuItemClick click) {
+		return add(new LMenu.MenuItem(font, this, texture, false, label, x, y, w, h, click));
 	}
 
 	public MenuItem add(MenuItem item) {
-		if (this.xslot > this.main_panel_size
-				/ (this.cellWidth + this.paddingx * 2)) {
+		if (this.xslot > this.main_panel_size / (this.cellWidth + this.paddingx * 2)) {
 			this.xslot = 1;
 			this.yslot += 1;
 			this.rows += 1;
@@ -582,33 +544,23 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	@Override
-	public synchronized void createUI(GLEx g, int x, int y,
-			LComponent component, LTexture[] buttonImage) {
+	public synchronized void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		float alpha = g.alpha();
 		try {
 			g.setAlpha(alphaMenu);
 			switch (type) {
 			case MOVE_LEFT:
 				if ((selected == this) || (selected == null)) {
-					g.draw(this.tab, this.width, getTaby(), tabWidth,
-							tabHeight, _component_baseColor);
+					g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight, _component_baseColor);
 					if (label != null) {
 						g.setAlpha(1f);
-						font.drawString(
-								g,
-								this.label,
-								this.width
-										+ (tabWidth / 2 - font
-												.stringWidth(label) / 2),
-								getTaby()
-										+ (tabHeight / 2 - font.getHeight() / 2)
-										- 5, fontColor);
+						font.drawString(g, this.label, this.width + (tabWidth / 2 - font.stringWidth(label) / 2),
+								getTaby() + (tabHeight / 2 - font.getHeight() / 2) - 5, fontColor);
 						g.setAlpha(alphaMenu);
 					}
 				}
 				if ((this.active) || (this.width > 0)) {
-					g.draw(mainpanel, 0, 0, this.width, getScreenHeight(),
-							_component_baseColor);
+					g.draw(mainpanel, 0, 0, this.width, getScreenHeight(), _component_baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -620,28 +572,18 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 
 			case MOVE_RIGHT:
 				if ((selected == this) || (selected == null)) {
-					float posX = this.getScreenWidth() - this.width
-							- this.tabWidth;
-					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight,
-							_component_baseColor);
+					float posX = this.getScreenWidth() - this.width - this.tabWidth;
+					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight, _component_baseColor);
 					if (label != null) {
 						g.setAlpha(1f);
-						font.drawString(
-								g,
-								this.label,
-								posX
-										+ (tabWidth / 2 - font
-												.stringWidth(label) / 2),
-								getTaby()
-										+ (tabHeight / 2 - font.getHeight() / 2)
-										- 5, fontColor);
+						font.drawString(g, this.label, posX + (tabWidth / 2 - font.stringWidth(label) / 2),
+								getTaby() + (tabHeight / 2 - font.getHeight() / 2) - 5, fontColor);
 						g.setAlpha(this.alphaMenu);
 					}
 				}
 				if ((this.active) || (this.width > 0)) {
 					float posX = this.getScreenWidth() - this.width;
-					g.draw(mainpanel, posX, 0, this.width, getScreenHeight(),
-							_component_baseColor);
+					g.draw(mainpanel, posX, 0, this.width, getScreenHeight(), _component_baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -665,8 +607,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		super.update(elapsedTime);
 
 		if (!this.active) {
-			if (tagbounds(type).contains(SysTouch.getX(), SysTouch.getY())
-					&& ((SysTouch.isDown() || SysTouch.isDrag()))
+			if (tagbounds(type).contains(SysTouch.getX(), SysTouch.getY()) && ((SysTouch.isDown() || SysTouch.isDrag()))
 					&& (selected == null)) {
 				this.active = true;
 				this.mouseSelect = true;
@@ -693,13 +634,10 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					this.scroll = (-this.maxscroll);
 				}
 
-				if (((tagbounds(type)
-						.contains(SysTouch.getX(), SysTouch.getY())) || (panelbounds(type)
-						.contains(SysTouch.getX(), SysTouch.getY())))) {
+				if (((tagbounds(type).contains(SysTouch.getX(), SysTouch.getY()))
+						|| (panelbounds(type).contains(SysTouch.getX(), SysTouch.getY())))) {
 					if (this.width < this.main_panel_size)
-						this.width += 0.3F
-								* (this.main_panel_size - this.width)
-								* (elapsedTime / 100f);
+						this.width += 0.3F * (this.main_panel_size - this.width) * (elapsedTime / 100f);
 					else {
 						this.width = this.main_panel_size;
 					}
@@ -708,11 +646,9 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					}
 					if (input.isMoving() && supportScroll) {
 						if (input.getTouchDY() > 5) {
-							this.scroll -= this.scrollspeed
-									* (elapsedTime / 100f);
+							this.scroll -= this.scrollspeed * (elapsedTime / 100f);
 						} else if (input.getTouchDY() < -5) {
-							this.scroll += this.scrollspeed
-									* (elapsedTime / 100f);
+							this.scroll += this.scrollspeed * (elapsedTime / 100f);
 						}
 					}
 				} else {

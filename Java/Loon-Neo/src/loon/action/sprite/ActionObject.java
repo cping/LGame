@@ -348,6 +348,10 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		return this.scaleY;
 	}
 
+	public boolean isClosed() {
+		return isDisposed();
+	}
+
 	@Override
 	public void close() {
 		if (animation != null) {

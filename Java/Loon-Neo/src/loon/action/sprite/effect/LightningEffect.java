@@ -136,21 +136,21 @@ public class LightningEffect extends Entity {
 	}
 
 	public LTexture getLightningSegment() {
-		if (lightningSegment == null || lightningSegment.isClose()) {
+		if (lightningSegment == null || lightningSegment.isClosed()) {
 			loadLightning();
 		}
 		return lightningSegment;
 	}
 
 	public LTexture getHalfCircle() {
-		if (halfCircle == null || halfCircle.isClose()) {
+		if (halfCircle == null || halfCircle.isClosed()) {
 			loadLightning();
 		}
 		return halfCircle;
 	}
 
 	public LTexture getPixel() {
-		if (pixel == null || pixel.isClose()) {
+		if (pixel == null || pixel.isClosed()) {
 			loadLightning();
 		}
 		return pixel;

@@ -44,7 +44,7 @@ public class CycleTest extends Screen {
 					count = 0;
 				}
 				// 如果Screen关闭，杀掉当前游戏进程
-				if (isClose()) {
+				if (isClosed()) {
 					kill();
 				}
 			}

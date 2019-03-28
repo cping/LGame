@@ -342,6 +342,16 @@ public class Field2D implements Config {
 		this.data = data;
 	}
 
+	public int getPixelsAtFieldType(Vector2f pos) {
+		return getPixelsAtFieldType(pos.x, pos.y);
+	}
+
+	public int getPixelsAtFieldType(float x, float y) {
+		int itsX = pixelsToTilesWidth(x);
+		int itsY = pixelsToTilesHeight(y);
+		return getPixelsAtFieldType(itsX, itsY);
+	}
+
 	public boolean isHit(Vector2f point) {
 		int type = get(data, point);
 		if (type == -1) {

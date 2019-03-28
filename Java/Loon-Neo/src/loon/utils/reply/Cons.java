@@ -26,7 +26,8 @@ class Cons extends Connection {
 
 	private Bypass _owner;
 	private ListenerRef _ref;
-	private boolean _oneShot;
+	private boolean _oneShot = false;
+	private boolean _closed = false;
 	private int _priority;
 
 	public Cons next;
@@ -46,6 +47,11 @@ class Cons extends Connection {
 			_owner.disconnect(this);
 			_owner = null;
 		}
+		_closed = true;
+	}
+
+	public boolean isClosed() {
+		return _closed;
 	}
 
 	@Override
@@ -65,7 +71,6 @@ class Cons extends Connection {
 		_owner.addCons(this);
 		return this;
 	}
-
 
 	protected Cons(Bypass owner, GoListener listener) {
 		_owner = owner;

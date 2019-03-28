@@ -306,18 +306,22 @@ public class LTransition {
 
 				final CrossEffect cross = new CrossEffect(c, texture);
 
+				@Override
 				public void draw(GLEx g) {
 					cross.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					cross.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return cross.isCompleted();
 				}
 
+				@Override
 				public void close() {
 					cross.close();
 				}
@@ -359,18 +363,22 @@ public class LTransition {
 
 				final ArcEffect arc = new ArcEffect(c);
 
+				@Override
 				public void draw(GLEx g) {
 					arc.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					arc.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return arc.isCompleted();
 				}
 
+				@Override
 				public void close() {
 					arc.close();
 				}
@@ -522,18 +530,22 @@ public class LTransition {
 
 				final FadeEffect fade = FadeEffect.getInstance(type, c);
 
+				@Override
 				public void draw(GLEx g) {
 					fade.createUI(g);
 				}
 
+				@Override
 				public void update(long elapsedTime) {
 					fade.update(elapsedTime);
 				}
 
+				@Override
 				public boolean completed() {
 					return fade.isCompleted();
 				}
 
+				@Override
 				public void close() {
 					fade.close();
 				}
@@ -542,7 +554,7 @@ public class LTransition {
 				public ISprite getSprite() {
 					return fade;
 				}
-
+				
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -640,7 +652,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return fadetile;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -689,7 +700,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return fadespiral;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -757,7 +767,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return fadeswipe;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -816,7 +825,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return ovalEffect;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -857,7 +865,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return windEffect;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -898,7 +905,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return darkinEffect;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -939,7 +945,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return darkoutEffect;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -980,7 +985,6 @@ public class LTransition {
 				public ISprite getSprite() {
 					return thunderEffect;
 				}
-
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -1016,7 +1020,6 @@ public class LTransition {
 			public ISprite getSprite() {
 				return null;
 			}
-
 		});
 
 		transition.setDisplayGameUI(true);

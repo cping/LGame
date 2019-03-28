@@ -65,8 +65,7 @@ public class TGA {
 		return loadHeader(in, new State());
 	}
 
-	private static State loadHeader(ArrayByte in, State info)
-			throws IOException {
+	private static State loadHeader(ArrayByte in, State info) throws IOException {
 
 		in.readByte();
 		in.readByte();
@@ -96,12 +95,10 @@ public class TGA {
 	}
 
 	private static final int getUnsignedShort(byte[] bytes, int byteIndex) {
-		return (getUnsignedByte(bytes, byteIndex + 1) << 8)
-				+ getUnsignedByte(bytes, byteIndex + 0);
+		return (getUnsignedByte(bytes, byteIndex + 1) << 8) + getUnsignedByte(bytes, byteIndex + 0);
 	}
 
-	private static void readBuffer(ArrayByte in, byte[] buffer)
-			throws IOException {
+	private static void readBuffer(ArrayByte in, byte[] buffer) throws IOException {
 		int bytesRead = 0;
 		int bytesToRead = buffer.length;
 		for (; bytesToRead > 0;) {
@@ -111,8 +108,7 @@ public class TGA {
 		}
 	}
 
-	private static final void skipBytes(ArrayByte in, long toSkip)
-			throws IOException {
+	private static final void skipBytes(ArrayByte in, long toSkip) throws IOException {
 		for (; toSkip > 0L;) {
 			long skipped = in.skip(toSkip);
 			if (skipped > 0) {
@@ -123,8 +119,7 @@ public class TGA {
 		}
 	}
 
-	private static final int compareFormatHeader(ArrayByte in, byte[] header)
-			throws IOException {
+	private static final int compareFormatHeader(ArrayByte in, byte[] header) throws IOException {
 
 		readBuffer(in, header);
 		boolean hasPalette = false;
@@ -180,8 +175,8 @@ public class TGA {
 				return TGA_HEADER_INVALID;
 			}
 		} else {
-			if ((paletteEntrySize != 15) && (paletteEntrySize != 16)
-					&& (paletteEntrySize != 24) && (paletteEntrySize != 32)) {
+			if ((paletteEntrySize != 15) && (paletteEntrySize != 16) && (paletteEntrySize != 24)
+					&& (paletteEntrySize != 32)) {
 				return TGA_HEADER_INVALID;
 			}
 		}
@@ -199,8 +194,7 @@ public class TGA {
 		case 8:
 		case 15:
 		case 16:
-			throw LSystem.runThrow(
-					"this State with non RGB or RGBA pixels are not yet supported.");
+			throw LSystem.runThrow("this State with non RGB or RGBA pixels are not yet supported.");
 		case 24:
 		case 32:
 			break;
@@ -215,9 +209,8 @@ public class TGA {
 		return result;
 	}
 
-	private static final void writePixel(int[] pixels, final byte red,
-			final byte green, final byte blue, final byte alpha,
-			final boolean hasAlpha, final int offset) {
+	private static final void writePixel(int[] pixels, final byte red, final byte green, final byte blue,
+			final byte alpha, final boolean hasAlpha, final int offset) {
 		int pixel;
 		if (hasAlpha) {
 			pixel = (red & 0xff);
@@ -233,9 +226,8 @@ public class TGA {
 		}
 	}
 
-	private static int[] readBuffer(ArrayByte in, int width, int height,
-			int srcBytesPerPixel, boolean acceptAlpha, boolean flipVertically)
-			throws IOException {
+	private static int[] readBuffer(ArrayByte in, int width, int height, int srcBytesPerPixel, boolean acceptAlpha,
+			boolean flipVertically) throws IOException {
 
 		int[] pixels = new int[width * height];
 		byte[] buffer = new byte[srcBytesPerPixel];
@@ -255,16 +247,13 @@ public class TGA {
 				}
 				int actualByteOffset = dstByteOffset;
 				if (!flipVertically) {
-					actualByteOffset = ((height - y - 1) * trgLineSize)
-							+ (x * dstBytesPerPixel);
+					actualByteOffset = ((height - y - 1) * trgLineSize) + (x * dstBytesPerPixel);
 				}
 
 				if (copyAlpha) {
-					writePixel(pixels, buffer[2], buffer[1], buffer[0],
-							buffer[3], true, actualByteOffset);
+					writePixel(pixels, buffer[2], buffer[1], buffer[0], buffer[3], true, actualByteOffset);
 				} else {
-					writePixel(pixels, buffer[2], buffer[1], buffer[0],
-							(byte) 0, false, actualByteOffset);
+					writePixel(pixels, buffer[2], buffer[1], buffer[0], (byte) 0, false, actualByteOffset);
 				}
 
 				dstByteOffset += dstBytesPerPixel;
@@ -273,9 +262,8 @@ public class TGA {
 		return pixels;
 	}
 
-	private static void loadUncompressed(byte[] header, State tga,
-			ArrayByte in, boolean acceptAlpha, boolean flipVertically)
-			throws IOException {
+	private static void loadUncompressed(byte[] header, State tga, ArrayByte in, boolean acceptAlpha,
+			boolean flipVertically) throws IOException {
 
 		// 图像宽
 		int orgWidth = getUnsignedShort(header, 12);
@@ -297,22 +285,20 @@ public class TGA {
 		}
 
 		// 不支持的格式
-		if ((orgWidth <= 0) || (orgHeight <= 0)
-				|| ((pixelDepth != 24) && (pixelDepth != 32))) {
+		if ((orgWidth <= 0) || (orgHeight <= 0) || ((pixelDepth != 24) && (pixelDepth != 32))) {
 			throw new IOException("Invalid texture information !");
 		}
 
 		int bytesPerPixel = (pixelDepth / 8);
 
 		// 获取图像数据并转为int[]
-		tga.pixels = readBuffer(in, orgWidth, orgHeight, bytesPerPixel,
-				acceptAlpha, flipVertically);
+		tga.pixels = readBuffer(in, orgWidth, orgHeight, bytesPerPixel, acceptAlpha, flipVertically);
 		// 图像色彩模式
 		tga.type = (acceptAlpha && (bytesPerPixel == 4) ? 4 : 3);
 	}
 
-	private static void loadCompressed(byte[] header, State tga, ArrayByte in,
-			boolean acceptAlpha, boolean flipVertically) throws IOException {
+	private static void loadCompressed(byte[] header, State tga, ArrayByte in, boolean acceptAlpha,
+			boolean flipVertically) throws IOException {
 
 		int orgWidth = getUnsignedShort(header, 12);
 		int orgHeight = getUnsignedShort(header, 14);
@@ -328,8 +314,7 @@ public class TGA {
 			flipVertically = !flipVertically;
 		}
 
-		if ((orgWidth <= 0) || (orgHeight <= 0)
-				|| ((pixelDepth != 24) && (pixelDepth != 32))) {
+		if ((orgWidth <= 0) || (orgHeight <= 0) || ((pixelDepth != 24) && (pixelDepth != 32))) {
 			throw new IOException("Invalid texture information !");
 		}
 
@@ -342,8 +327,7 @@ public class TGA {
 		int width = orgWidth;
 		int height = orgHeight;
 
-		final int dstBytesPerPixel = (acceptAlpha && (bytesPerPixel == 4) ? 4
-				: 3);
+		final int dstBytesPerPixel = (acceptAlpha && (bytesPerPixel == 4) ? 4 : 3);
 		final int trgLineSize = orgWidth * dstBytesPerPixel;
 
 		int[] pixels = new int[width * height];
@@ -374,17 +358,15 @@ public class TGA {
 
 				int actualByteOffset = dstByteOffset;
 				if (!flipVertically) {
-					actualByteOffset = ((height - y - 1) * trgLineSize)
-							+ (x * dstBytesPerPixel);
+					actualByteOffset = ((height - y - 1) * trgLineSize) + (x * dstBytesPerPixel);
 				}
 
 				if (dstBytesPerPixel == 4) {
-					writePixel(pixels, colorBuffer[2], colorBuffer[1],
-							colorBuffer[0], colorBuffer[3], true,
+					writePixel(pixels, colorBuffer[2], colorBuffer[1], colorBuffer[0], colorBuffer[3], true,
 							actualByteOffset);
 				} else {
-					writePixel(pixels, colorBuffer[2], colorBuffer[1],
-							colorBuffer[0], (byte) 0, false, actualByteOffset);
+					writePixel(pixels, colorBuffer[2], colorBuffer[1], colorBuffer[0], (byte) 0, false,
+							actualByteOffset);
 				}
 
 				dstByteOffset += dstBytesPerPixel;
@@ -419,8 +401,7 @@ public class TGA {
 		return tga;
 	}
 
-	public static State load(ArrayByte in, State tga, boolean acceptAlpha,
-			boolean flipVertically) throws IOException {
+	public static State load(ArrayByte in, State tga, boolean acceptAlpha, boolean flipVertically) throws IOException {
 		if (in.available() < TGA_HEADER_SIZE) {
 			return (null);
 		}

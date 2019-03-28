@@ -23,11 +23,55 @@ package loon.action.map.battle;
 public class BattleLevel {
 
 	private int level;
-	private boolean leveledUp;
+	private int levelMax;
+	private int levelExp;
 	private int exp;
+	private int expMax;
 	private int expForNextLevel;
 	private int expForPrevLevel;
 	private int expGained;
+	private boolean leveledUp;
+
+	public BattleLevel(int level, int levelMax, int levelExp, int exp, int expMax, int expForNextLevel,
+			int expForPrevLevel, int expGained, boolean leveledUp) {
+		this.init(level, levelMax, levelExp, exp, expMax, expForNextLevel, expForPrevLevel, expGained, leveledUp);
+	}
+
+	public void init(int level, int levelMax, int levelExp, int exp, int expMax, int expForNextLevel,
+			int expForPrevLevel, int expGained, boolean leveledUp) {
+		this.level = level;
+		this.levelMax = levelMax;
+		this.levelExp = levelExp;
+		this.exp = exp;
+		this.expMax = expMax;
+		this.expForNextLevel = expForNextLevel;
+		this.expForPrevLevel = expForPrevLevel;
+		this.expGained = expGained;
+		this.leveledUp = leveledUp;
+	}
+
+	public void update() {
+		if (level < levelMax && exp >= levelExp) {
+			exp = 0;
+			level++;
+			leveledUp = true;
+		} else if (exp < expMax) {
+			exp += expGained;
+		}
+		if (exp >= expMax) {
+			exp = expMax;
+		}
+		if (level < levelMax) {
+			expForPrevLevel = level + 1;
+		} else {
+			expForPrevLevel = level;
+		}
+		if (level > 0) {
+			expForPrevLevel = level - 1;
+		} else {
+			expForPrevLevel = 0;
+		}
+	}
 
 	public int getLevel() {
 		return level;
@@ -75,6 +119,30 @@ public class BattleLevel {
 
 	public void setExpGained(int expGained) {
 		this.expGained = expGained;
+	}
+
+	public int getLevelMax() {
+		return levelMax;
+	}
+
+	public void setLevelMax(int levelMax) {
+		this.levelMax = levelMax;
+	}
+
+	public int getExpMax() {
+		return expMax;
+	}
+
+	public void setExpMax(int expMax) {
+		this.expMax = expMax;
+	}
+
+	public int getLevelExp() {
+		return levelExp;
+	}
+
+	public void setLevelExp(int levelExp) {
+		this.levelExp = levelExp;
 	}
 
 }

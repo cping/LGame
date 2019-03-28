@@ -61,7 +61,7 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	private int moveSleep = 10;
 
-	private boolean moving;
+	private boolean moving, closed;
 
 	protected AVGAnm anm;
 
@@ -304,6 +304,10 @@ public class AVGChara implements Visible, XY, LRelease {
 		return characterCG;
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+	
 	@Override
 	public void close() {
 		this.visible = false;
@@ -316,6 +320,7 @@ public class AVGChara implements Visible, XY, LRelease {
 			anm = null;
 			showAnimation = false;
 		}
+		closed = true;
 	}
 
 }

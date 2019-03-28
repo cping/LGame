@@ -352,6 +352,10 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
 	}
 
+	public boolean isClosed() {
+		return isDisposed();
+	}
+	
 	@Override
 	public void close() {
 		visible = false;

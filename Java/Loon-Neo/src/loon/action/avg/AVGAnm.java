@@ -65,7 +65,7 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected long startTime = -1;
 
-	protected boolean loop = true, load = false;
+	protected boolean loop = true, load = false,closed = false;;
 
 	protected LTexture texture;
 
@@ -321,6 +321,10 @@ public class AVGAnm implements Expression, LRelease {
 		return 0;
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
 		stop();
@@ -328,6 +332,7 @@ public class AVGAnm implements Expression, LRelease {
 			texture.close();
 			texture = null;
 		}
+		closed = true;
 	}
 
 }
