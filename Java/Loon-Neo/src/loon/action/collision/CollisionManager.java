@@ -36,9 +36,18 @@ public class CollisionManager implements CollisionChecker {
 
 	private CollisionChecker collisionChecker = new BSPCollisionChecker();
 
+	public CollisionManager() {
+		initialize(32);
+	}
+
 	@Override
 	public void initialize(int cellSize) {
 		this.collisionChecker.initialize(cellSize);
+	}
+
+	@Override
+	public void initialize(int cellSizeX, int cellSizeY) {
+		this.collisionChecker.initialize(cellSizeX, cellSizeY);
 	}
 
 	@Override
@@ -59,8 +68,7 @@ public class CollisionManager implements CollisionChecker {
 
 	private void makeCollisionObjects(String flag, boolean includeSubclasses) {
 		if (flag == null) {
-			Entries<String, SortedList<CollisionObject>> entries = this.freeObjects
-					.entries();
+			Entries<String, SortedList<CollisionObject>> entries = this.freeObjects.entries();
 			for (; entries.hasNext();) {
 				Entry<String, SortedList<CollisionObject>> entry = entries.next();
 				LIterator<CollisionObject> itr = (entry.value).listIterator();
@@ -83,8 +91,7 @@ public class CollisionManager implements CollisionChecker {
 			}
 		}
 		if (includeSubclasses) {
-			Entries<String, SortedList<CollisionObject>> entries = this.freeObjects
-					.entries();
+			Entries<String, SortedList<CollisionObject>> entries = this.freeObjects.entries();
 			for (; entries.hasNext();) {
 				Entry<String, SortedList<CollisionObject>> entry = entries.next();
 				if (flag != null && flag.equals(entry.key)) {
@@ -123,12 +130,10 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public TArray<CollisionObject> getNeighbours(CollisionObject actor, float distance, boolean diag,
-			String flag) {
+	public TArray<CollisionObject> getNeighbours(CollisionObject actor, float distance, boolean diag, String flag) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(actor, flag);
-			return this.collisionChecker.getNeighbours(actor, distance, diag,
-					flag);
+			return this.collisionChecker.getNeighbours(actor, distance, diag, flag);
 		}
 	}
 
@@ -139,8 +144,7 @@ public class CollisionManager implements CollisionChecker {
 		for (; entries.hasNext();) {
 			Entry<String, SortedList<CollisionObject>> entry = entries.next();
 			if (flag == null || flag.equals(entry.key)) {
-				for (LIterator<CollisionObject> it = entry.value.listIterator(); it
-						.hasNext();) {
+				for (LIterator<CollisionObject> it = entry.value.listIterator(); it.hasNext();) {
 					result.add(it.next());
 				}
 			}
@@ -181,8 +185,7 @@ public class CollisionManager implements CollisionChecker {
 
 	@Override
 	public void removeObject(CollisionObject object) {
-		SortedList<CollisionObject> classSet = this.freeObjects.get(object
-				.getObjectFlag());
+		SortedList<CollisionObject> classSet = this.freeObjects.get(object.getObjectFlag());
 		if (classSet != null) {
 			classSet.remove(object);
 		} else {
@@ -239,6 +242,11 @@ public class CollisionManager implements CollisionChecker {
 	@Override
 	public TArray<CollisionObject> getActorsList() {
 		return collisionChecker.getActorsList();
+	}
+
+	@Override
+	public int numberActors() {
+		return collisionChecker.numberActors();
 	}
 
 }

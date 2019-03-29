@@ -3995,6 +3995,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (_closeUpdate != null) {
 				_closeUpdate.action(this);
 			}
+			disposeCollision();
 			_closeUpdate = null;
 			screenSwitch = null;
 			DefUI.self().clearDefaultUI();

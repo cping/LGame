@@ -24,9 +24,11 @@ package loon.action.collision;
 import loon.utils.LIterator;
 import loon.utils.TArray;
 
-public interface CollisionChecker{
+public interface CollisionChecker {
 
 	void initialize(int cellSize);
+
+	void initialize(int cellSizeX, int cellSizeY);
 
 	void addObject(CollisionObject actor);
 
@@ -38,6 +40,8 @@ public interface CollisionChecker{
 
 	void updateObjectSize(CollisionObject actor);
 
+	int numberActors();
+	
 	TArray<CollisionObject> getObjectsAt(float x, float y, String flag);
 
 	TArray<CollisionObject> getIntersectingObjects(CollisionObject actor, String flag);
@@ -57,6 +61,6 @@ public interface CollisionChecker{
 	LIterator<CollisionObject> getActorsIterator();
 
 	TArray<CollisionObject> getActorsList();
-	
+
 	void dispose();
 }

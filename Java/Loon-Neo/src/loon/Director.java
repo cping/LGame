@@ -17,6 +17,9 @@ package loon;
 
 import loon.Log.Level;
 import loon.action.collision.CollisionHelper;
+import loon.action.collision.CollisionManager;
+import loon.action.collision.CollisionObject;
+import loon.component.Actor;
 import loon.event.ActionUpdate;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
@@ -31,10 +34,224 @@ import loon.utils.timer.LTimerContext;
 
 public class Director extends SoundBox {
 
+	/**
+	 * 通用碰撞器(需要用户自行初始化,不实例化默认不存在)
+	 */
+	private CollisionManager _collisionManager;
+
+	private boolean _collisionClosed;
+
+	/**
+	 * 获得碰撞器实例对象
+	 * 
+	 * @return
+	 */
+	public CollisionManager getCollisionManager() {
+		if (_collisionClosed || _collisionManager == null) {
+			_collisionManager = new CollisionManager();
+			_collisionClosed = false;
+		}
+		return _collisionManager;
+	}
+
+	/**
+	 * 初始碰撞器检测的地图瓦片范围(也就是实际像素/瓦片大小后缩放进行碰撞),瓦片数值越小,精确度越高,但是计算时间也越长
+	 * 
+	 * @param tileSize
+	 */
+	public void initializeCollision(int tileSize) {
+		getCollisionManager().initialize(tileSize);
+	}
+
+	/**
+	 * 初始碰撞器检测的地图瓦片范围(也就是实际像素/瓦片大小后缩放进行碰撞),瓦片数值越小,精确度越高,但是计算时间也越长
+	 * 
+	 * @param tileSizeX
+	 * @param tileSizeY
+	 */
+	public void initializeCollision(int tileSizeX, int tileSizeY) {
+		getCollisionManager().initialize(tileSizeX, tileSizeY);
+	}
+
+	/**
+	 * 注入一个碰撞对象
+	 * 
+	 * @param obj
+	 */
+	public void putCollision(CollisionObject obj) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.addObject(obj);
+	}
+
+	/**
+	 * 删除一个碰撞对象
+	 * 
+	 * @param obj
+	 */
+	public void removeCollision(CollisionObject obj) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.removeObject(obj);
+	}
+
+	/**
+	 * 删除一个指定对象标记的碰撞对象
+	 * 
+	 * @param objFlag
+	 */
+	public void removeCollision(String objFlag) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.removeObject(objFlag);
+	}
+
+	/**
+	 * 获得当前存在的碰撞对象总数
+	 * 
+	 * @return
+	 */
+	public int getCollisionSize() {
+		if (_collisionClosed) {
+			return 0;
+		}
+		return _collisionManager.numberActors();
+	}
+
+	/**
+	 * 返回当前存在的碰撞对象集合
+	 * 
+	 * @return
+	 */
+	public TArray<CollisionObject> getCollisionObjects() {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getActorsList();
+	}
+
+	/**
+	 * 获得所有指定对象标记的碰撞对象
+	 * 
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getCollisionObjects(String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getObjects(objFlag);
+	}
+
+	/**
+	 * 获得与指定坐标碰撞并且有指定对象标记的对象
+	 * 
+	 * @param x
+	 * @param y
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getCollisionObjectsAt(float x, float y, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getObjectsAt(x, y, objFlag);
+	}
+
+	/**
+	 * 获得有指定标记并与指定对象相交的集合
+	 * 
+	 * @param actor
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getIntersectingObjects(Actor actor, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getIntersectingObjects(actor, objFlag);
+	}
+
+	/**
+	 * 获得一个有指定标记并与指定对象相交的单独对象
+	 * 
+	 * @param object
+	 * @param objFlag
+	 * @return
+	 */
+	public CollisionObject getOnlyIntersectingObject(Actor object, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getOnlyIntersectingObject(object, objFlag);
+	}
+
+	/**
+	 * 获得在指定位置指定大小圆轴内有指定标记的对象集合
+	 * 
+	 * @param x
+	 * @param y
+	 * @param r
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getObjectsInRange(float x, float y, float r, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getObjectsInRange(x, y, r, objFlag);
+	}
+
+	/**
+	 * 获得与指定对象相邻的全部对象
+	 * 
+	 * @param actor
+	 * @param distance
+	 * @param d
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getNeighbours(CollisionObject actor, float distance, boolean d, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		if (distance < 0) {
+			throw LSystem.runThrow("distance < 0");
+		} else {
+			return _collisionManager.getNeighbours(actor, distance, d, objFlag);
+		}
+	}
+
+	/**
+	 * 注销碰撞器
+	 * 
+	 */
+	public void disposeCollision() {
+		_collisionClosed = true;
+		if (_collisionManager != null) {
+			_collisionManager.dispose();
+			_collisionManager = null;
+		}
+	}
+
+	/**
+	 * 添加一个ActionUpdate进程到游戏,当completed为true时销毁
+	 * 
+	 * @param update
+	 */
 	public final static void addProcess(final ActionUpdate update) {
 		addProcess(update, 0);
 	}
 
+	/**
+	 * 添加一个ActionUpdate进程到游戏,以指定延迟时间刷新,当completed为true时销毁
+	 *  
+	 * @param update
+	 * @param delay
+	 */
 	public final static void addProcess(final ActionUpdate update, final long delay) {
 		if (update == null) {
 			return;
@@ -51,6 +268,11 @@ public class Director extends SoundBox {
 		});
 	}
 
+	/**
+	 * 添加一个GameProcess进程到游戏,不kill(或者通过RealtimeProcessManager.get()注销)则一直存在
+	 * 
+	 * @param process
+	 */
 	public final static void addProcess(GameProcess process) {
 		if (process == null) {
 			return;
@@ -58,6 +280,11 @@ public class Director extends SoundBox {
 		RealtimeProcessManager.get().addProcess(process);
 	}
 
+	/**
+	 * 删除一个GameProcess
+	 * 
+	 * @param process
+	 */
 	public final static void removeProcess(GameProcess process) {
 		if (process == null) {
 			return;
@@ -65,14 +292,30 @@ public class Director extends SoundBox {
 		removeProcess(process.getId());
 	}
 
+	/**
+	 * 删除一个指定id的GameProcess
+	 * 
+	 * @param id
+	 */
 	public final static void removeProcess(String id) {
 		RealtimeProcessManager.get().delete(id);
 	}
 
+	/**
+	 * 删除一个[包含]指定id(比如删1则100,1,11之类也会消失,有1就没)的GameProcess
+	 * 
+	 * @param id
+	 */
 	public final static void deleteIndex(String id) {
 		RealtimeProcessManager.get().deleteIndex(id);
 	}
 
+	/**
+	 * 获得指定id的GameProcess
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public final static GameProcess find(String id) {
 		return RealtimeProcessManager.get().find(id);
 	}

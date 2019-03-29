@@ -24,6 +24,7 @@ import loon.canvas.LColor;
 import loon.component.Print;
 import loon.font.IFont;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -51,6 +52,8 @@ public class LogDisplay {
 	private int _textHeight = 20;
 
 	private int _width = 1, _height = 1;
+
+	private int _space = 5;
 
 	public LogDisplay() {
 		this(LSystem.getSystemLogFont(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), LColor.white);
@@ -98,23 +101,26 @@ public class LogDisplay {
 		if (StringUtils.isEmpty(message)) {
 			return this;
 		}
-		if ((message.length() * _font.getSize() > _width) || (message.indexOf('\n') != -1)) {
-			TArray<String> mes = Print.formatMessage(message, _font, _width - _font.getSize());
-			for (String text : mes) {
+
+		int limitWidth = _width - _space;
+		TArray<String> textList = Print.formatMessage(message, _font, limitWidth);
+		boolean limit = (textList.size * _font.getSize() > limitWidth);
+		if (limit || textList.size > 0 || message.indexOf('\n') != -1) {
+			if (limit) {
+				textList = Print.formatMessage(message, _font, limitWidth - _space);
+			}
+			for (String text : textList) {
 				_texts.add(new LogDisplayItem(text, color));
 			}
 		} else {
 			_texts.add(new LogDisplayItem(message, color));
 		}
-		if (LSystem.isMobile()) {
-			if (_texts.size() - 1 > 0 && _texts.size() > _displayAmount - 1) {
-				_texts.removeIndex(0);
-			}
-		}else{
-			if (_texts.size() > _displayAmount) {
-				_texts.removeIndex(0);
-			}
+		if (LSystem.isMobile() && _texts.size() > MathUtils.max(_displayAmount, 1) - 1) {
+			_texts.removeIndex(0);
+		} else if (_texts.size() > _displayAmount) {
+			_texts.removeIndex(0);
 		}
+		
 		return this;
 	}
 
@@ -133,10 +139,19 @@ public class LogDisplay {
 		_texts.clear();
 	}
 
+	public void setSpace(int s) {
+		this._space = s;
+	}
+
+	public int getSpace() {
+		return this._space;
+	}
+
 	public void setFont(IFont font) {
 		this._font = font;
 		this._textHeight = font.getSize() + 5;
 		this._displayAmount = ((_height - font.getHeight()) / this._textHeight) - 3;
+		this._space = _font.getSize() / 4;
 	}
 
 	public IFont getFont() {

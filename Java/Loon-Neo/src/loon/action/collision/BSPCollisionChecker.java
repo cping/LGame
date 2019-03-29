@@ -89,7 +89,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	private final CollisionInRangeQuery inRangeQuery = new CollisionInRangeQuery();
 
-	private int cellSize;
+	private int cellSizeX, cellSizeY;
 
 	private BSPCollisionNode bspTree;
 
@@ -98,8 +98,21 @@ public class BSPCollisionChecker implements CollisionChecker {
 	private SortedList<BSPCollisionNode> cacheNodeStack = new SortedList<BSPCollisionNode>();
 
 	@Override
-	public void initialize(int cellSize) {
-		this.cellSize = cellSize;
+	public void initialize(int size) {
+		this.initialize(size, size);
+	}
+
+	@Override
+	public void initialize(int tsx, int tsy) {
+		this.cellSizeX = tsx;
+		this.cellSizeY = tsy;
+	}
+
+	public int numberActors() {
+		if (bspTree == null) {
+			return 0;
+		}
+		return bspTree.numberActors();
 	}
 
 	@Override
@@ -197,8 +210,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	}
 
-	private void insertObject(CollisionObject actor, RectBox actorBounds, RectBox bounds, RectBox area, BSPCollisionNode node,
-			RectBox result1, RectBox result2) {
+	private void insertObject(CollisionObject actor, RectBox actorBounds, RectBox bounds, RectBox area,
+			BSPCollisionNode node, RectBox result1, RectBox result2) {
 		if (!node.containsActor(actor)) {
 			if (!node.isEmpty() && (area.width > actorBounds.width || area.height > actorBounds.height)) {
 				RectBox leftArea = node.getLeftArea();
@@ -344,7 +357,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 					bspNode = node.getBSPNode();
 					bspArea = bspNode.getArea();
 					if (bspArea.contains(newBounds)) {
-						for (CollisionNode rNode2 = getNodeForActor(object); rNode2 != null; rNode2 = rNode2.getNext()) {
+						for (CollisionNode rNode2 = getNodeForActor(object); rNode2 != null; rNode2 = rNode2
+								.getNext()) {
 							if (rNode2 != node) {
 								BSPCollisionNode rNode1 = rNode2.getBSPNode();
 								rNode2.remove();
@@ -422,8 +436,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 		this.getIntersectingObjects(r, query, set, this.bspTree);
 	}
 
-	private synchronized void getIntersectingObjects(float[] r, CollisionQuery query, ObjectSet<CollisionObject> resultSet,
-			BSPCollisionNode startNode) {
+	private synchronized void getIntersectingObjects(float[] r, CollisionQuery query,
+			ObjectSet<CollisionObject> resultSet, BSPCollisionNode startNode) {
 		synchronized (cacheNodeStack) {
 			cacheNodeStack.clear();
 			try {
@@ -459,7 +473,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
-	private synchronized CollisionObject checkForOnlyCollision(CollisionObject ignore, BSPCollisionNode node, CollisionQuery query) {
+	private synchronized CollisionObject checkForOnlyCollision(CollisionObject ignore, BSPCollisionNode node,
+			CollisionQuery query) {
 		if (node == null) {
 			return null;
 		}
@@ -506,7 +521,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
-	private synchronized CollisionObject getOnlyIntersectingDown(RectBox r, CollisionQuery query, CollisionObject actor) {
+	private synchronized CollisionObject getOnlyIntersectingDown(RectBox r, CollisionQuery query,
+			CollisionObject actor) {
 		if (this.bspTree == null) {
 			return null;
 		} else {
@@ -552,8 +568,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 	@Override
 	public synchronized TArray<CollisionObject> getObjectsAt(float x, float y, String flag) {
 		synchronized (this.pointQuery) {
-			float px = x * this.cellSize + this.cellSize / 2f;
-			float py = y * this.cellSize + this.cellSize / 2f;
+			float px = x * this.cellSizeX + this.cellSizeX / 2f;
+			float py = y * this.cellSizeY + this.cellSizeY / 2f;
 			this.pointQuery.init(px, py, flag);
 			float[] r = { px, py, 1, 1 };
 			return this.getIntersectingObjects(r, this.pointQuery);
@@ -569,18 +585,25 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	private final static float getRadius(float r1, float r2) {
+		return MathUtils.max(r1, r2);
+	}
+
 	@Override
 	public synchronized TArray<CollisionObject> getObjectsInRange(float x, float y, float r, String flag) {
-		float halfCell = this.cellSize / 2;
-		float size = 2 * r * this.cellSize;
-		float[] rect = { (x - r) * this.cellSize + halfCell, (y - r) * this.cellSize + halfCell, size, size };
+		float halfCellX = this.cellSizeX / 2;
+		float halfCellY = this.cellSizeY / 2;
+		float sizeRX = 2 * r * this.cellSizeX;
+		float sizeRY = 2 * r * this.cellSizeY;
+		float[] rect = { (x - r) * this.cellSizeX + halfCellX, (y - r) * this.cellSizeY + halfCellY, sizeRX, sizeRY };
 		cacheSet.clear();
 		synchronized (this.actorQuery) {
 			this.actorQuery.init(flag, null);
 			intersectingObjects(rect, this.actorQuery, cacheSet);
 		}
 		synchronized (this.inRangeQuery) {
-			this.inRangeQuery.init(x * this.cellSize + halfCell, y * this.cellSize + halfCell, r * this.cellSize);
+			this.inRangeQuery.init(x * this.cellSizeX + halfCellX, y * this.cellSizeY + halfCellY,
+					r * getRadius(this.cellSizeX, this.cellSizeY));
 			TArray<CollisionObject> rangeResult = new TArray<CollisionObject>();
 			LIterator<CollisionObject> it = cacheSet.iterator();
 			for (; it.hasNext();) {
@@ -594,13 +617,15 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	@Override
-	public synchronized TArray<CollisionObject> getNeighbours(CollisionObject actor, float distance, boolean diag, String flag) {
+	public synchronized TArray<CollisionObject> getNeighbours(CollisionObject actor, float distance, boolean diag,
+			String flag) {
 		float x = actor.getX();
 		float y = actor.getY();
-		float xPixel = x * this.cellSize;
-		float yPixel = y * this.cellSize;
-		float dPixel = distance * this.cellSize;
-		float[] r = { xPixel - dPixel, yPixel - dPixel, dPixel * 2 + 1, dPixel * 2 + 1 };
+		float xPixel = x * this.cellSizeX;
+		float yPixel = y * this.cellSizeY;
+		float dxPixel = distance * this.cellSizeX;
+		float dyPixel = distance * this.cellSizeY;
+		float[] r = { xPixel - dxPixel, yPixel - dyPixel, dxPixel * 2 + 1, dyPixel * 2 + 1 };
 		synchronized (this.neighbourQuery) {
 			this.neighbourQuery.init(x, y, distance, diag, flag);
 			TArray<CollisionObject> res = this.getIntersectingObjects(r, this.neighbourQuery);
@@ -616,8 +641,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 	@Override
 	public synchronized CollisionObject getOnlyObjectAt(CollisionObject object, float dx, float dy, String flag) {
 		synchronized (this.pointQuery) {
-			float px = dx * this.cellSize + this.cellSize / 2f;
-			float py = dy * this.cellSize + this.cellSize / 2f;
+			float px = dx * this.cellSizeX + this.cellSizeX / 2f;
+			float py = dy * this.cellSizeY + this.cellSizeY / 2f;
 			this.pointQuery.init(px, py, flag);
 			Object query = this.pointQuery;
 			if (flag != null) {
@@ -652,6 +677,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		if (cacheSet != null) {
 			cacheSet.clear();
