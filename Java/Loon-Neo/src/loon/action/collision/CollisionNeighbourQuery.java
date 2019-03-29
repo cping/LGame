@@ -19,7 +19,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-package loon.component;
+package loon.action.collision;
 
 import loon.utils.MathUtils;
 
@@ -45,8 +45,8 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 	}
 
 	@Override
-	public boolean checkCollision(Actor actor) {
-		if (this.flag != null && !flag.equals(actor.getFlag())) {
+	public boolean checkCollision(CollisionObject actor) {
+		if (this.flag != null && !flag.equals(actor.getObjectFlag())) {
 			return false;
 		} else {
 			float actorX = actor.getX();

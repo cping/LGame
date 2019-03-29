@@ -222,13 +222,18 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		ActionControl.get().stop();
 	}
 
+	// 附注用的Tag标记对象(加上什么都可以,传参也行,标记对象也行)
 	public Object Tag;
 
 	protected float _alpha = 1f;
 
+	private Object _collisionData;
+
 	protected RectBox _rect;
 
 	protected String _name;
+
+	protected String _object_flag;
 
 	protected Vector2f _location = new Vector2f(0, 0);
 
@@ -277,6 +282,14 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public final int getLife() {
 		return getStatus();
+	}
+
+	public final void setObjectFlag(String flag) {
+		this._object_flag = flag;
+	}
+
+	public final String getObjectFlag() {
+		return this._object_flag;
 	}
 
 	public void setTransparency(int a) {
@@ -589,6 +602,14 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void bottomOn(final LObject<?> object) {
 		bottomOn(object, getWidth(), getHeight());
+	}
+
+	public final void setCollisionData(Object data) {
+		this._collisionData = data;
+	}
+
+	public final Object getCollisionData() {
+		return _collisionData;
 	}
 
 	public abstract float getWidth();

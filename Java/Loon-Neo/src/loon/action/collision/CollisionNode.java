@@ -1,6 +1,5 @@
 /**
- * 
- * Copyright 2008 - 2011
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,26 +16,26 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.1
+ * @version 0.5
  */
-package loon.component;
+package loon.action.collision;
 
-public final class ActorNode {
+public class CollisionNode {
 
-	private Actor actor;
+	private CollisionObject actor;
 
 	private BSPCollisionNode node;
 
-	private ActorNode next;
+	private CollisionNode next;
 
-	private ActorNode prev;
+	private CollisionNode prev;
 
 	private boolean mark;
 
-	public ActorNode(Actor actor, BSPCollisionNode node) {
+	public CollisionNode(CollisionObject actor, BSPCollisionNode node) {
 		this.actor = actor;
 		this.node = node;
-		ActorNode first = BSPCollisionChecker.getNodeForActor(actor);
+		CollisionNode first = BSPCollisionChecker.getNodeForActor(actor);
 		this.next = first;
 		BSPCollisionChecker.setNodeForActor(actor, this);
 		if (this.next != null) {
@@ -60,7 +59,7 @@ public final class ActorNode {
 		return markVal;
 	}
 
-	public Actor getActor() {
+	public CollisionObject getActor() {
 		return this.actor;
 	}
 
@@ -68,7 +67,7 @@ public final class ActorNode {
 		return this.node;
 	}
 
-	public ActorNode getNext() {
+	public CollisionNode getNext() {
 		return this.next;
 	}
 

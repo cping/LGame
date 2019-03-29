@@ -20,6 +20,7 @@
  */
 package loon.component;
 
+import loon.component.Actor;
 import loon.utils.Speed;
 
 public abstract class ActorSpeed extends Actor {

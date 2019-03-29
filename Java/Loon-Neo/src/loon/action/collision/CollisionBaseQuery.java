@@ -19,22 +19,28 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-package loon.component;
+package loon.action.collision;
 
-public class CollisionClassQuery implements CollisionQuery {
+public class CollisionBaseQuery implements CollisionQuery {
 
 	private String flag;
 
-	private CollisionQuery subQuery;
+	private CollisionObject compareObject;
 
-	public CollisionClassQuery(String flag, CollisionQuery subQuery) {
+	public void init(String flag, CollisionObject actor) {
 		this.flag = flag;
-		this.subQuery = subQuery;
+		this.compareObject = actor;
+	}
+
+	public boolean checkOnlyCollision(CollisionObject other) {
+		return (this.compareObject == null ? true : other
+				.intersects(this.compareObject));
 	}
 
 	@Override
-	public boolean checkCollision(Actor actor) {
-		return flag.equals(actor.getFlag()) ? this.subQuery.checkCollision(actor)
-				: false;
+	public boolean checkCollision(CollisionObject other) {
+		return this.flag != null && !flag.equals(other.getObjectFlag()) ? false
+				: (this.compareObject == null ? true : other
+						.intersects(this.compareObject));
 	}
 }

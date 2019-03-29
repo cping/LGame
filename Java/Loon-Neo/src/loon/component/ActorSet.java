@@ -22,6 +22,7 @@
 package loon.component;
 
 import loon.LSystem;
+import loon.component.Actor;
 import loon.utils.CollectionUtils;
 import loon.utils.LIterator;
 

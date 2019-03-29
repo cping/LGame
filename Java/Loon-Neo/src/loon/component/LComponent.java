@@ -33,6 +33,7 @@ import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
+import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
@@ -63,7 +64,7 @@ import loon.utils.MathUtils;
  * Loon桌面组件的核心,所有UI类组件基于此类产生
  */
 public abstract class LComponent extends LObject<LContainer>
-		implements Flip<LComponent>, Visible, ActionBind, XY, BoxSize, LRelease {
+		implements Flip<LComponent>, CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
 
 	// 充当卓面容器
 	protected boolean desktopContainer;
@@ -905,19 +906,6 @@ public abstract class LComponent extends LObject<LContainer>
 		return setBackground(new LColor(color));
 	}
 
-	public LComponent setBackground(LTexture b, float w, float h) {
-		if (b == null) {
-			return this;
-		}
-		if (b == this._background) {
-			return this;
-		}
-		this._background = b;
-		freeRes().add(_background);
-		this.setSize(w, h);
-		return this;
-	}
-
 	public LComponent onlyBackground(LTexture b) {
 		this._drawBackground = false;
 		this.setBackground(b);
@@ -931,18 +919,23 @@ public abstract class LComponent extends LObject<LContainer>
 		if (b == this._background) {
 			return this;
 		}
-		this._background = b;
-		freeRes().add(_background);
-		if (_drawBackground) {
-			this._width = b.getWidth() > 1 ? b.getWidth() : this._width;
-			this._height = b.getHeight() > 1 ? b.getHeight() : this._height;
-			if (this._width <= 0) {
-				this._width = 1;
-			}
-			if (this._height <= 0) {
-				this._height = 1;
-			}
+		if (!_drawBackground) {
+			return setBackground(b, this._width, this._height);
+		} else {
+			return setBackground(b, b.getWidth(), b.getHeight());
 		}
+	}
+
+	public LComponent setBackground(LTexture b, float w, float h) {
+		if (b == null) {
+			return this;
+		}
+		if (b == this._background) {
+			return this;
+		}
+		this._background = b;
+		this.setSize(w, h);
+		freeRes().add(_background);
 		return this;
 	}
 
@@ -1011,7 +1004,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_super != null) {
 			return _super.contains(x, y, w, h);
 		}
-		return false;
+		return getRectBox().contains(x, y, w, h);
 	}
 
 	public float getTouchDX() {
@@ -1354,6 +1347,21 @@ public abstract class LComponent extends LObject<LContainer>
 			_freeTextures = new LTextureFree();
 		}
 		return _freeTextures;
+	}
+
+	@Override
+	public RectBox getBoundingRect() {
+		return getCollisionBox();
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y) {
+		return getCollisionBox().contains(x, y, 1, 1);
+	}
+
+	@Override
+	public boolean intersects(CollisionObject object) {
+		return getCollisionBox().intersects(object.getRectBox());
 	}
 
 	@Override

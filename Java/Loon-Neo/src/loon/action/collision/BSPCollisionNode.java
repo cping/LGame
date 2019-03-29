@@ -19,7 +19,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-package loon.component;
+package loon.action.collision;
 
 import loon.geom.RectBox;
 import loon.utils.ObjectMap;
@@ -29,7 +29,7 @@ import loon.utils.TArray;
 
 public final class BSPCollisionNode {
 
-	private ObjectMap<Actor, ActorNode> actors;
+	private ObjectMap<CollisionObject, CollisionNode> actors;
 
 	private BSPCollisionNode parent;
 
@@ -49,7 +49,7 @@ public final class BSPCollisionNode {
 		this.area = area;
 		this.splitAxis = splitAxis;
 		this.splitPos = splitPos;
-		this.actors = new ObjectMap<Actor, ActorNode>();
+		this.actors = new ObjectMap<CollisionObject, CollisionNode>();
 	}
 
 	public void setChild(int side, BSPCollisionNode child) {
@@ -67,7 +67,7 @@ public final class BSPCollisionNode {
 	}
 
 	public void clear() {
-		for (ActorNode node : actors.values()) {
+		for (CollisionNode node : actors.values()) {
 			if (node != null) {
 				node.dispose();
 				node = null;
@@ -163,12 +163,12 @@ public final class BSPCollisionNode {
 		return this.left == child ? 0 : 1;
 	}
 
-	public void addActor(Actor actor) {
-		this.actors.put(actor, new ActorNode(actor, this));
+	public void addActor(CollisionObject actor) {
+		this.actors.put(actor, new CollisionNode(actor, this));
 	}
 
-	public boolean containsActor(Actor actor) {
-		ActorNode anode = this.actors.get(actor);
+	public boolean containsActor(CollisionObject actor) {
+		CollisionNode anode = this.actors.get(actor);
 		if (anode != null) {
 			anode.mark();
 			return true;
@@ -177,7 +177,7 @@ public final class BSPCollisionNode {
 		}
 	}
 
-	public void actorRemoved(Actor actor) {
+	public void actorRemoved(CollisionObject actor) {
 		this.actors.remove(actor);
 	}
 
@@ -189,17 +189,17 @@ public final class BSPCollisionNode {
 		return this.actors.size == 0;
 	}
 
-	public Entries<Actor, ActorNode> getEntriesIterator() {
+	public Entries<CollisionObject, CollisionNode> getEntriesIterator() {
 		return this.actors.entries();
 	}
 
-	public Keys<Actor> getActorsIterator() {
+	public Keys<CollisionObject> getActorsIterator() {
 		return this.actors.keys();
 	}
 
-	public TArray<Actor> getActorsList() {
-		TArray<Actor> result = new TArray<Actor>();
-		for (Keys<Actor> key = this.actors.keys(); key.hasNext();) {
+	public TArray<CollisionObject> getActorsList() {
+		TArray<CollisionObject> result = new TArray<CollisionObject>();
+		for (Keys<CollisionObject> key = this.actors.keys(); key.hasNext();) {
 			result.add(key.next());
 		}
 		return result;

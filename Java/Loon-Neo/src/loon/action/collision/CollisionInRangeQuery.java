@@ -19,28 +19,44 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-package loon.component;
+package loon.action.collision;
 
-public class CollisionBaseQuery implements CollisionQuery {
+import loon.geom.RectBox;
+import loon.utils.MathUtils;
 
-	private String flag;
+public class CollisionInRangeQuery implements CollisionQuery {
 
-	private Actor compareObject;
+	private float dx;
 
-	public void init(String flag, Actor actor) {
-		this.flag = flag;
-		this.compareObject = actor;
-	}
+	private float dy;
 
-	public boolean checkOnlyCollision(Actor other) {
-		return (this.compareObject == null ? true : other
-				.intersects(this.compareObject));
+	private float dist;
+
+	private float x;
+
+	private float y;
+
+	private float r;
+
+	private RectBox object;
+
+	public CollisionInRangeQuery init(float x, float y, float r) {
+		this.x = x;
+		this.y = y;
+		this.r = r;
+		return this;
 	}
 
 	@Override
-	public boolean checkCollision(Actor other) {
-		return this.flag != null && !flag.equals(other.getFlag()) ? false
-				: (this.compareObject == null ? true : other
-						.intersects(this.compareObject));
+	public boolean checkCollision(CollisionObject actor) {
+
+		object = actor.getRectBox();
+
+		dx = MathUtils.abs(object.getCenterX() - x);
+		dy = MathUtils.abs(object.getCenterY() - y);
+
+		dist = MathUtils.sqrt(dx * dx + dy * dy);
+
+		return dist <= this.r;
 	}
 }

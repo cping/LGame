@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
-package loon.component;
+package loon.action.collision;
 
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
@@ -30,7 +30,7 @@ import loon.utils.TArray;
 
 public class CollisionManager implements CollisionChecker {
 
-	private ObjectMap<String, SortedList<Actor>> freeObjects = new ObjectMap<String, SortedList<Actor>>();
+	private ObjectMap<String, SortedList<CollisionObject>> freeObjects = new ObjectMap<String, SortedList<CollisionObject>>();
 
 	private ObjectSet<String> collisionClasses = new ObjectSet<String>();
 
@@ -59,34 +59,34 @@ public class CollisionManager implements CollisionChecker {
 
 	private void makeCollisionObjects(String flag, boolean includeSubclasses) {
 		if (flag == null) {
-			Entries<String, SortedList<Actor>> entries = this.freeObjects
+			Entries<String, SortedList<CollisionObject>> entries = this.freeObjects
 					.entries();
 			for (; entries.hasNext();) {
-				Entry<String, SortedList<Actor>> entry = entries.next();
-				LIterator<Actor> itr = (entry.value).listIterator();
+				Entry<String, SortedList<CollisionObject>> entry = entries.next();
+				LIterator<CollisionObject> itr = (entry.value).listIterator();
 				for (; itr.hasNext();) {
-					Actor actor = itr.next();
+					CollisionObject actor = itr.next();
 					this.collisionChecker.addObject(actor);
 				}
 				this.collisionClasses.add(entry.key);
 			}
 			this.freeObjects.clear();
 		} else if (!this.collisionClasses.contains(flag)) {
-			SortedList<Actor> entries2 = this.freeObjects.remove(flag);
+			SortedList<CollisionObject> entries2 = this.freeObjects.remove(flag);
 			if (entries2 != null) {
 				this.collisionClasses.add(flag);
-				LIterator<Actor> it = entries2.listIterator();
+				LIterator<CollisionObject> it = entries2.listIterator();
 				for (; it.hasNext();) {
-					Actor entry1 = it.next();
+					CollisionObject entry1 = it.next();
 					this.collisionChecker.addObject(entry1);
 				}
 			}
 		}
 		if (includeSubclasses) {
-			Entries<String, SortedList<Actor>> entries = this.freeObjects
+			Entries<String, SortedList<CollisionObject>> entries = this.freeObjects
 					.entries();
 			for (; entries.hasNext();) {
-				Entry<String, SortedList<Actor>> entry = entries.next();
+				Entry<String, SortedList<CollisionObject>> entry = entries.next();
 				if (flag != null && flag.equals(entry.key)) {
 					this.makeCollisionObjects(entry.key, false);
 				}
@@ -94,20 +94,20 @@ public class CollisionManager implements CollisionChecker {
 		}
 	}
 
-	private void prepareForCollision(Actor actor, String flag) {
-		this.makeCollisionObjects(actor.getFlag(), false);
+	private void prepareForCollision(CollisionObject actor, String flag) {
+		this.makeCollisionObjects(actor.getObjectFlag(), false);
 		this.makeCollisionObjects(flag, true);
 	}
 
 	@Override
-	public void addObject(Actor actor) {
-		String flag = actor.getFlag();
+	public void addObject(CollisionObject actor) {
+		String flag = actor.getObjectFlag();
 		if (this.collisionClasses.contains(flag)) {
 			this.collisionChecker.addObject(actor);
 		} else {
-			SortedList<Actor> classSet = this.freeObjects.get(flag);
+			SortedList<CollisionObject> classSet = this.freeObjects.get(flag);
 			if (classSet == null) {
-				classSet = new SortedList<Actor>();
+				classSet = new SortedList<CollisionObject>();
 				this.freeObjects.put(flag, classSet);
 			}
 			classSet.add(actor);
@@ -115,7 +115,7 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public TArray<Actor> getIntersectingObjects(Actor actor, String flag) {
+	public TArray<CollisionObject> getIntersectingObjects(CollisionObject actor, String flag) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(actor, flag);
 			return this.collisionChecker.getIntersectingObjects(actor, flag);
@@ -123,7 +123,7 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public TArray<Actor> getNeighbours(Actor actor, float distance, boolean diag,
+	public TArray<CollisionObject> getNeighbours(CollisionObject actor, float distance, boolean diag,
 			String flag) {
 		synchronized (CollisionManager.class) {
 			this.prepareForCollision(actor, flag);
@@ -133,13 +133,13 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public TArray<Actor> getObjects(String flag) {
-		TArray<Actor> result = this.collisionChecker.getObjects(flag);
-		Entries<String, SortedList<Actor>> entries = this.freeObjects.entries();
+	public TArray<CollisionObject> getObjects(String flag) {
+		TArray<CollisionObject> result = this.collisionChecker.getObjects(flag);
+		Entries<String, SortedList<CollisionObject>> entries = this.freeObjects.entries();
 		for (; entries.hasNext();) {
-			Entry<String, SortedList<Actor>> entry = entries.next();
+			Entry<String, SortedList<CollisionObject>> entry = entries.next();
 			if (flag == null || flag.equals(entry.key)) {
-				for (LIterator<Actor> it = entry.value.listIterator(); it
+				for (LIterator<CollisionObject> it = entry.value.listIterator(); it
 						.hasNext();) {
 					result.add(it.next());
 				}
@@ -149,40 +149,40 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public TArray<Actor> getObjectsAt(float x, float y, String flag) {
+	public TArray<CollisionObject> getObjectsAt(float x, float y, String flag) {
 		this.makeCollisionObjects(flag, true);
 		return this.collisionChecker.getObjectsAt(x, y, flag);
 
 	}
 
 	@Override
-	public TArray<Actor> getObjectsInRange(float x, float y, float r, String flag) {
+	public TArray<CollisionObject> getObjectsInRange(float x, float y, float r, String flag) {
 		this.makeCollisionObjects(flag, true);
 		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
 
 	}
 
 	@Override
-	public TArray<Actor> getObjectsList() {
+	public TArray<CollisionObject> getObjectsList() {
 		return this.getObjects((String) null);
 	}
 
 	@Override
-	public Actor getOnlyIntersectingObject(Actor object, String flag) {
+	public CollisionObject getOnlyIntersectingObject(CollisionObject object, String flag) {
 		this.prepareForCollision(object, flag);
 		return this.collisionChecker.getOnlyIntersectingObject(object, flag);
 	}
 
 	@Override
-	public Actor getOnlyObjectAt(Actor object, float dx, float dy, String flag) {
+	public CollisionObject getOnlyObjectAt(CollisionObject object, float dx, float dy, String flag) {
 		this.prepareForCollision(object, flag);
 		return this.collisionChecker.getOnlyObjectAt(object, dx, dy, flag);
 	}
 
 	@Override
-	public void removeObject(Actor object) {
-		SortedList<Actor> classSet = this.freeObjects.get(object
-				.getFlag());
+	public void removeObject(CollisionObject object) {
+		SortedList<CollisionObject> classSet = this.freeObjects.get(object
+				.getObjectFlag());
 		if (classSet != null) {
 			classSet.remove(object);
 		} else {
@@ -191,7 +191,7 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	public void removeObject(String flag) {
-		SortedList<Actor> classSet = this.freeObjects.get(flag);
+		SortedList<CollisionObject> classSet = this.freeObjects.get(flag);
 		if (collisionClasses != null) {
 			collisionClasses.remove(flag);
 		}
@@ -201,15 +201,15 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public void updateObjectLocation(Actor object, float oldX, float oldY) {
-		if (!this.freeObjects.containsKey(object.getFlag())) {
+	public void updateObjectLocation(CollisionObject object, float oldX, float oldY) {
+		if (!this.freeObjects.containsKey(object.getObjectFlag())) {
 			this.collisionChecker.updateObjectLocation(object, oldX, oldY);
 		}
 	}
 
 	@Override
-	public void updateObjectSize(Actor object) {
-		if (!this.freeObjects.containsKey(object.getFlag())) {
+	public void updateObjectSize(CollisionObject object) {
+		if (!this.freeObjects.containsKey(object.getObjectFlag())) {
 			this.collisionChecker.updateObjectSize(object);
 		}
 	}
@@ -232,12 +232,12 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public LIterator<Actor> getActorsIterator() {
+	public LIterator<CollisionObject> getActorsIterator() {
 		return collisionChecker.getActorsIterator();
 	}
 
 	@Override
-	public TArray<Actor> getActorsList() {
+	public TArray<CollisionObject> getActorsList() {
 		return collisionChecker.getActorsList();
 	}
 

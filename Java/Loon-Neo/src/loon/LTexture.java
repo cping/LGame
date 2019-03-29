@@ -398,14 +398,6 @@ public class LTexture extends Painter implements LRelease {
 		GLUtils.bindTexture(LSystem.base().graphics().gl, id);
 	}
 
-	public UnitPort disposeAct() {
-		return new UnitPort() {
-			public void onEmit() {
-				close();
-			}
-		};
-	}
-
 	@Override
 	public LTexture texture() {
 		return this;
@@ -494,13 +486,6 @@ public class LTexture extends Painter implements LRelease {
 
 	public float getDisplayHeight() {
 		return displayHeight;
-	}
-
-	@Override
-	protected void finalize() {
-		if (!_disposed && !_closed) {
-			gfx.queueForDispose(this);
-		}
 	}
 
 	public LTexture cpy() {
@@ -1173,6 +1158,22 @@ public class LTexture extends Painter implements LRelease {
 			return parent.isClosed();
 		}
 		return _disposed || _closed;
+	}
+
+	public UnitPort disposeAct() {
+		return new UnitPort() {
+			@Override
+			public void onEmit() {
+				close();
+			}
+		};
+	}
+
+	@Override
+	protected void finalize() {
+		if (!_disposed && !_closed) {
+			gfx.queueForDispose(this);
+		}
 	}
 
 	/**

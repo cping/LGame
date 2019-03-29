@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
 import loon.Screen;
+import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
@@ -34,7 +35,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public abstract class DisplayObject extends EventDispatcher implements ISprite, XY, BoxSize {
+public abstract class DisplayObject extends EventDispatcher implements CollisionObject, ISprite, XY, BoxSize {
 
 	public static float morphX = 1f, morphY = 1f;
 
@@ -340,6 +341,21 @@ public abstract class DisplayObject extends EventDispatcher implements ISprite, 
 	@Override
 	public float getContainerY() {
 		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
+	}
+
+	@Override
+	public RectBox getBoundingRect() {
+		return getCollisionBox();
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y) {
+		return getCollisionBox().contains(x, y, 1, 1);
+	}
+
+	@Override
+	public boolean intersects(CollisionObject object) {
+		return getCollisionBox().intersects(object.getRectBox());
 	}
 
 	@Override

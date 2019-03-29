@@ -35,6 +35,9 @@ import loon.action.MoveTo;
 import loon.action.RotateTo;
 import loon.action.ScaleTo;
 import loon.action.ShakeTo;
+import loon.action.collision.CollisionChecker;
+import loon.action.collision.CollisionManager;
+import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
@@ -61,13 +64,28 @@ public abstract class ActorLayer extends LContainer {
 
 	private int tileSize = 32;
 
-	public ActorLayer(int x, int y, int layerWidth, int layerHeight,
-			int cellSize) {
+	private final static Actor collisionObjectToActor(CollisionObject object) {
+		if (object instanceof Actor) {
+			return (Actor) object;
+		}
+		return null;
+	}
+
+	private final static TArray<Actor> collisionObjectToActors(TArray<CollisionObject> list) {
+		TArray<Actor> newActors = new TArray<Actor>(list.size);
+		for (CollisionObject object : list) {
+			if (object instanceof Actor) {
+				newActors.add((Actor) object);
+			}
+		}
+		return newActors;
+	}
+
+	public ActorLayer(int x, int y, int layerWidth, int layerHeight, int cellSize) {
 		this(x, y, layerWidth, layerHeight, cellSize, true);
 	}
 
-	public ActorLayer(int x, int y, int layerWidth, int layerHeight,
-			int cellSize, boolean bounded) {
+	public ActorLayer(int x, int y, int layerWidth, int layerHeight, int cellSize, boolean bounded) {
 		super(x, y, layerWidth, layerHeight);
 		this.collisionChecker = new CollisionManager();
 		this.objects = new ActorTreeSet();
@@ -106,8 +124,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param y
 	 * @return
 	 */
-	public MoveTo callMoveTo(Field2D field, ActionBind o, boolean flag, int x,
-			int y) {
+	public MoveTo callMoveTo(Field2D field, ActionBind o, boolean flag, int x, int y) {
 		if (_component_isClose) {
 			return null;
 		}
@@ -140,8 +157,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param h
 	 * @return
 	 */
-	public MoveTo callMoveTo(ActionBind o, boolean flag, int x, int y, int w,
-			int h) {
+	public MoveTo callMoveTo(ActionBind o, boolean flag, int x, int y, int w, int h) {
 		if (_component_isClose) {
 			return null;
 		}
@@ -389,8 +405,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param delay
 	 * @return
 	 */
-	public ColorTo callColorTo(ActionBind o, LColor start, LColor end,
-			float duration, float delay) {
+	public ColorTo callColorTo(ActionBind o, LColor start, LColor end, float duration, float delay) {
 		if (_component_isClose) {
 			return null;
 		}
@@ -426,8 +441,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param delay
 	 * @return
 	 */
-	public ShakeTo callShakeTo(ActionBind o, float shakeX, float shakeY,
-			float duration, float delay) {
+	public ShakeTo callShakeTo(ActionBind o, float shakeX, float shakeY, float duration, float delay) {
 		if (_component_isClose) {
 			return null;
 		}
@@ -447,9 +461,8 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		tmpField = new Field2D(
-				new int[(int) (getHeight() / tileHeight)][(int) (getWidth() / tileWidth)],
-				tileWidth, tileHeight);
+		tmpField = new Field2D(new int[(int) (getHeight() / tileHeight)][(int) (getWidth() / tileWidth)], tileWidth,
+				tileHeight);
 		return tmpField;
 	}
 
@@ -466,11 +479,9 @@ public abstract class ActorLayer extends LContainer {
 			return;
 		}
 		if (tmpField != null) {
-			if ((field.getMap().length == tmpField.getMap().length)
-					&& (field.getTileWidth() == tmpField.getTileWidth())
+			if ((field.getMap().length == tmpField.getMap().length) && (field.getTileWidth() == tmpField.getTileWidth())
 					&& (field.getTileHeight() == tmpField.getTileHeight())) {
-				tmpField.set(field.getMap(), field.getTileWidth(),
-						field.getTileHeight());
+				tmpField.set(field.getMap(), field.getTileWidth(), field.getTileHeight());
 			}
 		} else {
 			tmpField = field;
@@ -563,8 +574,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param count
 	 * @return
 	 */
-	public RectBox[] getRandomLayerLocation(int nx, int ny, int nw, int nh,
-			int count) {
+	public RectBox[] getRandomLayerLocation(int nx, int ny, int nw, int nh, int count) {
 		if (_component_isClose) {
 			return null;
 		}
@@ -574,7 +584,7 @@ public abstract class ActorLayer extends LContainer {
 		int layerWidth = (int) getWidth();
 		int layerHeight = (int) getHeight();
 		int actorWidth = nw > LAYER_MIN_SIZE ? nw : LAYER_MIN_SIZE;
-		int actorHeight = nh > LAYER_MIN_SIZE ? nh :LAYER_MIN_SIZE;
+		int actorHeight = nh > LAYER_MIN_SIZE ? nh : LAYER_MIN_SIZE;
 		int x = nx / actorWidth;
 		int y = ny / actorHeight;
 		int row = layerWidth / actorWidth;
@@ -588,12 +598,10 @@ public abstract class ActorLayer extends LContainer {
 			}
 			int rx = MathUtils.random(row);
 			int ry = MathUtils.random(col);
-			if (oldRx != rx && oldRy != ry && rx != x && ry != y
-					&& rx * actorWidth != nx && ry * actorHeight != ny) {
+			if (oldRx != rx && oldRy != ry && rx != x && ry != y && rx * actorWidth != nx && ry * actorHeight != ny) {
 				boolean stop = false;
 				for (int j = 0; j < index; j++) {
-					if (randoms[j].x == rx && randoms[j].y == ry && oldRx != x
-							&& oldRy != y && rx * actorWidth != nx
+					if (randoms[j].x == rx && randoms[j].y == ry && oldRx != x && oldRy != y && rx * actorWidth != nx
 							&& ry * actorHeight != ny) {
 						stop = true;
 						break;
@@ -602,8 +610,7 @@ public abstract class ActorLayer extends LContainer {
 				if (stop) {
 					continue;
 				}
-				randoms[index] = new RectBox(rx * actorWidth, ry * actorHeight,
-						actorWidth, actorHeight);
+				randoms[index] = new RectBox(rx * actorWidth, ry * actorHeight, actorWidth, actorHeight);
 				oldRx = rx;
 				oldRy = ry;
 				index++;
@@ -620,8 +627,7 @@ public abstract class ActorLayer extends LContainer {
 	 * @param count
 	 * @return
 	 */
-	public RectBox[] getRandomLayerLocation(int actorWidth, int actorHeight,
-			int count) {
+	public RectBox[] getRandomLayerLocation(int actorWidth, int actorHeight, int count) {
 		if (_component_isClose) {
 			return null;
 		}
@@ -640,8 +646,7 @@ public abstract class ActorLayer extends LContainer {
 			return null;
 		}
 		RectBox rect = actor.getRectBox();
-		return getRandomLayerLocation((int) rect.x, (int) rect.y, rect.width,
-				rect.height, count);
+		return getRandomLayerLocation((int) rect.x, (int) rect.y, rect.width, rect.height, count);
 	}
 
 	/**
@@ -719,9 +724,8 @@ public abstract class ActorLayer extends LContainer {
 				if (actor == null) {
 					continue;
 				}
-				String flag = actor.getFlag();
-				if (flagName == null || flagName == flag
-						|| flagName.equals(flag)) {
+				String flag = actor.getObjectFlag();
+				if (flagName == null || flagName == flag || flagName.equals(flag)) {
 					if (this.objects.remove(actor)) {
 						this.collisionChecker.removeObject(actor);
 					}
@@ -743,7 +747,7 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		return getCollisionObjects(actor.getFlag());
+		return getCollisionObjects(actor.getObjectFlag());
 	}
 
 	/**
@@ -781,7 +785,7 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		return this.collisionChecker.getObjects(flag);
+		return collisionObjectToActors(this.collisionChecker.getObjects(flag));
 	}
 
 	/**
@@ -796,7 +800,7 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		return this.collisionChecker.getObjectsAt(x, y, flag);
+		return collisionObjectToActors(this.collisionChecker.getObjectsAt(x, y, flag));
 	}
 
 	/**
@@ -857,33 +861,31 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		return this.collisionChecker.getIntersectingObjects(actor, flag);
+		return collisionObjectToActors(this.collisionChecker.getIntersectingObjects(actor, flag));
 	}
 
 	Actor getOnlyIntersectingObject(Actor object, String flag) {
 		if (_component_isClose) {
 			return null;
 		}
-		return this.collisionChecker.getOnlyIntersectingObject(object, flag);
+		return collisionObjectToActor(this.collisionChecker.getOnlyIntersectingObject(object, flag));
 	}
 
 	TArray<Actor> getObjectsInRange(float x, float y, float r, String flag) {
 		if (_component_isClose) {
 			return null;
 		}
-		return this.collisionChecker.getObjectsInRange(x, y, r, flag);
+		return collisionObjectToActors(this.collisionChecker.getObjectsInRange(x, y, r, flag));
 	}
 
-	TArray<Actor> getNeighbours(Actor actor, float distance, boolean d,
-			String flag) {
+	TArray<Actor> getNeighbours(Actor actor, float distance, boolean d, String flag) {
 		if (_component_isClose) {
 			return null;
 		}
 		if (distance < 0) {
 			throw LSystem.runThrow("distance < 0");
 		} else {
-			return this.collisionChecker
-					.getNeighbours(actor, distance, d, flag);
+			return collisionObjectToActors(this.collisionChecker.getNeighbours(actor, distance, d, flag));
 		}
 	}
 
@@ -912,7 +914,7 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		return collisionChecker.getObjectsAt(x, y, null);
+		return collisionObjectToActors(collisionChecker.getObjectsAt(x, y, null));
 	}
 
 	void updateObjectLocation(Actor object, float oldX, float oldY) {
@@ -933,7 +935,7 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		return this.collisionChecker.getOnlyObjectAt(object, dx, dy, flag);
+		return collisionObjectToActor(this.collisionChecker.getOnlyObjectAt(object, dx, dy, flag));
 	}
 
 	ActorTreeSet getObjectsListInPaintO() {

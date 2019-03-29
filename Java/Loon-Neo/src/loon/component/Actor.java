@@ -40,6 +40,7 @@ import loon.action.MoveTo;
 import loon.action.RotateTo;
 import loon.action.ScaleTo;
 import loon.action.ShakeTo;
+import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
@@ -58,9 +59,7 @@ import loon.utils.timer.LTimer;
  * 但是操作上设定的也更加死板,不适用于复杂游戏
  */
 public class Actor extends LObject<Actor>
-		implements Flip<Actor>, Comparable<Actor>, ActionBind, Visible, XY, LRelease, BoxSize {
-
-	private String flag = "Actor";
+		implements CollisionObject, Flip<Actor>, Comparable<Actor>, ActionBind, Visible, XY, LRelease, BoxSize {
 
 	private static int sequenceNumber = 0;
 
@@ -73,8 +72,6 @@ public class Actor extends LObject<Actor>
 	private ActorLayer gameLayer;
 
 	private LTexture image;
-
-	protected Object data;
 
 	private RectBox boundingRect;
 
@@ -109,6 +106,7 @@ public class Actor extends LObject<Actor>
 		this.isAnimation = true;
 		this._location.set(x, y);
 		this.setImage(animation.getSpriteImage());
+		this.setObjectFlag("Actor");
 	}
 
 	public Actor() {
@@ -119,6 +117,7 @@ public class Actor extends LObject<Actor>
 		this.noSequenceNumber = sequenceNumber++;
 		this._location.set(x, y);
 		this.setImage(image);
+		this.setObjectFlag("Actor");
 	}
 
 	public Actor(LTexture image) {
@@ -743,11 +742,11 @@ public class Actor extends LObject<Actor>
 	}
 
 	/**
-	 * 获得当前Actor碰撞盒(内部使用)
+	 * 获得当前Actor碰撞盒
 	 * 
 	 * @return
 	 */
-	RectBox getBoundingRect() {
+	public RectBox getBoundingRect() {
 		if (this.boundingRect == null) {
 			this.calcBounds();
 		}
@@ -858,6 +857,17 @@ public class Actor extends LObject<Actor>
 		return false;
 	}
 
+	@Override
+	public boolean intersects(CollisionObject object) {
+		if (object instanceof Actor) {
+			return intersects((Actor) object);
+		} else {
+			RectBox thisBounds = this.getBoundingRect();
+			RectBox otherBounds = object.getBoundingRect();
+			return thisBounds.intersects(otherBounds);
+		}
+	}
+
 	public boolean intersects(Actor other) {
 		int thisBounds1;
 		if (this.image == null) {
@@ -912,7 +922,7 @@ public class Actor extends LObject<Actor>
 	}
 
 	public TArray<Actor> getCollisionObjects() {
-		return getCollisionObjects(flag);
+		return getCollisionObjects(getObjectFlag());
 	}
 
 	public TArray<Actor> getCollisionObjects(String flag) {
@@ -923,7 +933,7 @@ public class Actor extends LObject<Actor>
 	}
 
 	public Actor getOnlyCollisionObject() {
-		return getOnlyCollisionObject(flag);
+		return getOnlyCollisionObject(getObjectFlag());
 	}
 
 	public Actor getOnlyCollisionObject(String flag) {
@@ -1068,14 +1078,6 @@ public class Actor extends LObject<Actor>
 		this.setFlipX(m);
 	}
 
-	public String getFlag() {
-		return flag;
-	}
-
-	public void setFlag(String flag) {
-		this.flag = flag;
-	}
-
 	@Override
 	public void setWidth(float w) {
 		this.scaleX = w / getWidth();
@@ -1143,7 +1145,7 @@ public class Actor extends LObject<Actor>
 	public boolean isClosed() {
 		return isDisposed();
 	}
-	
+
 	@Override
 	public void close() {
 		if (image != null) {

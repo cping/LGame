@@ -199,7 +199,6 @@ public class MovieSprite extends DisplayObject implements IArray {
 	public boolean isClosed() {
 		return isDisposed();
 	}
-	
 	@Override
 	public void close() {
 		for (DisplayObject object : _childs) {

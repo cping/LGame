@@ -22,28 +22,42 @@ package loon.action.map.battle.behavior;
 
 public abstract class IActor {
 
-	IMove[] moves;
+	int currentIndex;
+	
+	IMove moves;
 
-	String[] nickname;
+	String name;
 
 	IStatistics statistics;
 
-	String[] title;
+	String title;
+	
+	int team ;
+	
+	IActorStatus actorStatus;
+	
+	boolean visible;
+	
+	boolean exist;
+	
+	float posX;
+	
+	float posY;
 
-	public IMove[] getMoves() {
+	public IMove getMoves() {
 		return moves;
 	}
 
-	public void setMoves(IMove[] moves) {
+	public void setMoves(IMove moves) {
 		this.moves = moves;
 	}
 
-	public String[] getNickname() {
-		return nickname;
+	public String getName() {
+		return name;
 	}
 
-	public void setNickname(String[] nickname) {
-		this.nickname = nickname;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public IStatistics getStatistics() {
@@ -54,11 +68,77 @@ public abstract class IActor {
 		this.statistics = statistics;
 	}
 
-	public String[] getTitle() {
+	public String getTitle() {
 		return title;
 	}
 
-	public void setTitle(String[] title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	public abstract boolean actionCheck();
+
+	public int getTeam() {
+		return team;
+	}
+
+	public void setTeam(int team) {
+		this.team = team;
+	}
+
+	public IActorStatus getActorStatus() {
+		return actorStatus;
+	}
+
+	public void setActorStatus(IActorStatus actorStatus) {
+		this.actorStatus = actorStatus;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+	public float getPosX() {
+		return posX;
+	}
+
+	public void setPosX(float posX) {
+		this.posX = posX;
+	}
+
+	public float getPosY() {
+		return posY;
+	}
+
+	public void setPosY(float posY) {
+		this.posY = posY;
+	}
+
+	public boolean isExist() {
+		return exist;
+	}
+
+	public void setExist(boolean exist) {
+		this.exist = exist;
+	}
+	
+	public int getCurrentIndex() {
+		return currentIndex;
+	}
+
+	public void setCurrentIndex(int currentIndex) {
+		this.currentIndex = currentIndex;
+	}
+	
+	public abstract void attack();
+		
+	public abstract void nextAction();
+
+	public abstract IActor nextEnemy();
+	
+	
 }

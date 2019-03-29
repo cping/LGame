@@ -97,7 +97,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private LColor triangleColor = LColor.orange;
 	private LColor tmpcolor = new LColor(LColor.white);
 	private LColor fontColor = new LColor(LColor.white);
-	private String flag = LSystem.FLAG_TAG;
+	private String lineFlag = LSystem.FLAG_TAG;
 
 	public LTextArea(int x, int y, int w, int h) {
 		this(-1, x, y, w, h);
@@ -462,7 +462,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				drawString(g, this.getMessage[this.num], this.posx, this.drawY, tmpcolor);
 				if ((this.waitFlag) && (i == 0) && index > 0) {
 					this.posy = (this.countFrame * 1 / 3 % this.font.getSize() / 2 - 2);
-					drawString(g, flag, this.posx + this.font.stringWidth(this.getMessage[this.num]),
+					drawString(g, lineFlag, this.posx + this.font.stringWidth(this.getMessage[this.num]),
 							this.drawY - this.posy, this.triangleColor);
 				}
 				if (this.brightType[i] == TYPE_DOWN) {
@@ -603,12 +603,12 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		draw(g, x, y, showType, postLine);
 	}
 
-	public String getFlag() {
-		return flag;
+	public String getLineFlag() {
+		return lineFlag;
 	}
 
-	public LTextArea setFlag(String flag) {
-		this.flag = flag;
+	public LTextArea setLineFlag(String flag) {
+		this.lineFlag = flag;
 		return this;
 	}
 

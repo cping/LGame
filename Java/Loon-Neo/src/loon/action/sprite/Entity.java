@@ -32,6 +32,7 @@ import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
+import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
@@ -44,7 +45,7 @@ import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
-public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize {
+public class Entity extends LObject<IEntity> implements CollisionObject, IEntity, IArray, BoxSize {
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
@@ -1225,6 +1226,21 @@ public class Entity extends LObject<IEntity> implements IEntity, IArray, BoxSize
 	@Override
 	public float getContainerHeight() {
 		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+	}
+
+	@Override
+	public RectBox getBoundingRect() {
+		return getCollisionBox();
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y) {
+		return inContains(x, y, 1, 1);
+	}
+
+	@Override
+	public boolean intersects(CollisionObject object) {
+		return getCollisionBox().intersects(object.getRectBox());
 	}
 
 	public boolean isClosed() {

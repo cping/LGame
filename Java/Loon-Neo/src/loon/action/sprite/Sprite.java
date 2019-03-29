@@ -31,6 +31,7 @@ import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
+import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.BoxSize;
@@ -48,7 +49,8 @@ import loon.utils.TArray;
 import loon.utils.TimeUtils;
 import loon.utils.res.MovieSpriteSheet;
 
-public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, IArray, LTrans, BoxSize {
+public class Sprite extends LObject<ISprite>
+		implements Flip<Sprite>, CollisionObject, ISprite, IArray, LTrans, BoxSize {
 
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(false);
 
@@ -1115,6 +1117,21 @@ public class Sprite extends LObject<ISprite> implements Flip<Sprite>, ISprite, I
 			return LSystem.getProcess().getScreen();
 		}
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+	}
+
+	@Override
+	public RectBox getBoundingRect() {
+		return getCollisionBox();
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y) {
+		return inContains(x, y, 1, 1);
+	}
+
+	@Override
+	public boolean intersects(CollisionObject object) {
+		return getCollisionBox().intersects(object.getRectBox());
 	}
 
 	public boolean isClosed() {

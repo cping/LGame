@@ -57,7 +57,7 @@ public class TDTest extends Screen {
 		private boolean removeFlag;
 
 		public Bullet(int type, String fileName, float dir, int damage) {
-			this.setFlag("Bullet");
+			this.setObjectFlag("Bullet");
 			this.type = type;
 			this.dir = dir;
 			this.damage = damage;
@@ -150,7 +150,7 @@ public class TDTest extends Screen {
 		boolean selected;
 
 		public Turret(String fileName) {
-			this.setFlag("Turret");
+			this.setObjectFlag("Turret");
 			setImage(fileName);
 			setDelay(100);
 			setAlpha(0);
@@ -255,7 +255,7 @@ public class TDTest extends Screen {
 
 		public Enemy(String fileName, int sx, int sy, int ex, int ey,
 				int speed, int hp) {
-			this.setFlag("Enemy");
+			this.setObjectFlag("Enemy");
 			this.setDelay(300);
 			this.setImage(fileName);
 			this.hpBar = new StatusBar(hp, hp, (this.width() - 25) / 2,
