@@ -22,9 +22,9 @@ package loon.action.map.battle.behavior;
 
 public abstract class IStatistic {
  
-    int current;
+	protected int current;
 
-    int normal;
+	protected  int normal;
 
 	public int getCurrent() {
 		return current;

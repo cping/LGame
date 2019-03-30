@@ -20,11 +20,23 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+
+/**
+ * 一个字符串键值(key-value)拼接工具,允许value动态输入
+ * 
+ * <pre>
+ * StringKeyValue kev = new StringKeyValue("test");
+ * kev.pushTag("code").pushTag("java").text("hello world").popTag("java").popTag("code");
+ * </pre>
+ */
 public class StringKeyValue {
 
 	private String key;
 
 	private String value;
+
+	private Array<CharSequence> flags;
 
 	private StringBuilder _buffer;
 
@@ -37,6 +49,7 @@ public class StringKeyValue {
 	public StringKeyValue(String k, String val) {
 		this.key = k;
 		this.value = val;
+		this.flags = new Array<CharSequence>();
 	}
 
 	public String getKey() {
@@ -53,6 +66,62 @@ public class StringKeyValue {
 		}
 		_buffer.append(ch);
 		_dirty = true;
+		return this;
+	}
+
+	public StringKeyValue tab() {
+		return addValue("	");
+	}
+
+	public StringKeyValue space() {
+		return addValue(" ");
+	}
+
+	public StringKeyValue newLine() {
+		return addValue(LSystem.LS);
+	}
+
+	public StringKeyValue pushBrace() {
+		return addValue("{");
+	}
+
+	public StringKeyValue popBrace() {
+		return addValue("}");
+	}
+
+	public StringKeyValue pushParen() {
+		return addValue("(");
+	}
+
+	public StringKeyValue popParen() {
+		return addValue(")");
+	}
+
+	public StringKeyValue pushBracket() {
+		return addValue("[");
+	}
+
+	public StringKeyValue popBracket() {
+		return addValue("]");
+	}
+
+	public StringKeyValue quot() {
+		return addValue("\"");
+	}
+
+	public StringKeyValue text(CharSequence mes) {
+		return addValue(mes);
+	}
+
+	public StringKeyValue pushTag(CharSequence flag) {
+		flags.add(flag);
+		return addValue("<" + flag + ">");
+	}
+
+	public StringKeyValue popTag(CharSequence flag) {
+		if (flags.size() > 0) {
+			return addValue("</" + flags.pop() + ">");
+		}
 		return this;
 	}
 
@@ -78,7 +147,7 @@ public class StringKeyValue {
 	}
 
 	public int length() {
-		return (_buffer != null && _buffer.length() > 0)  ? _buffer.length() : 0;
+		return (_buffer != null && _buffer.length() > 0) ? _buffer.length() : 0;
 	}
 
 	public char charAt(int i) {

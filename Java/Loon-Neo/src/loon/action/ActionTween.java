@@ -188,6 +188,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		reset();
 	}
 
+	public ActionTween select(boolean selected, ActionEvent a, ActionEvent b) {
+		return event(selected ? a : b);
+	}
+
 	public ActionTween flashTo() {
 		return event(new FlashTo());
 	}

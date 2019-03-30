@@ -512,6 +512,16 @@ public abstract class LComponent extends LObject<LContainer>
 				&& y1 >= this._screenY && y1 <= this._screenY + this._height * _scaleY);
 	}
 
+	@Override
+	public boolean intersects(CollisionObject obj) {
+		return intersects(obj.getRectBox());
+	}
+
+	@Override
+	public boolean intersects(RectBox rect) {
+		return getCollisionBox().intersects(rect);
+	}
+
 	public boolean intersects(LComponent comp) {
 		return (this._component_visible) && (comp.isVisible())
 				&& (this._screenX + this._width * _scaleX >= comp._screenX
@@ -1357,11 +1367,6 @@ public abstract class LComponent extends LObject<LContainer>
 	@Override
 	public boolean containsPoint(float x, float y) {
 		return getCollisionBox().contains(x, y, 1, 1);
-	}
-
-	@Override
-	public boolean intersects(CollisionObject object) {
-		return getCollisionBox().intersects(object.getRectBox());
 	}
 
 	@Override

@@ -22,27 +22,27 @@ package loon.action.map.battle.behavior;
 
 public abstract class IActor {
 
-	int currentIndex;
+	protected int currentIndex;
 	
-	IMove moves;
+	protected IMove moves;
 
-	String name;
+	protected String name;
 
-	IStatistics statistics;
+	protected IStatistics statistics;
 
-	String title;
+	protected String title;
 	
-	int team ;
+	protected int team ;
 	
-	IActorStatus actorStatus;
+	protected IActorStatus actorStatus;
 	
-	boolean visible;
+	protected boolean visible;
 	
-	boolean exist;
+	protected boolean exist;
 	
-	float posX;
+	protected float posX;
 	
-	float posY;
+	protected float posY;
 
 	public IMove getMoves() {
 		return moves;
@@ -76,8 +76,6 @@ public abstract class IActor {
 		this.title = title;
 	}
 	
-	public abstract boolean actionCheck();
-
 	public int getTeam() {
 		return team;
 	}
@@ -133,12 +131,14 @@ public abstract class IActor {
 	public void setCurrentIndex(int currentIndex) {
 		this.currentIndex = currentIndex;
 	}
-	
-	public abstract void attack();
+
+	public abstract boolean actionCheck();
+
+	public abstract void attackCheck();
 		
 	public abstract void nextAction();
 
-	public abstract IActor nextEnemy();
+	public abstract IActor enemyCheck();
 	
 	
 }

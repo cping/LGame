@@ -20,6 +20,7 @@
  */
 package loon.action.collision;
 
+import loon.geom.Vector2f;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
@@ -245,8 +246,38 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
+	public void setOffsetPos(float x, float y) {
+		collisionChecker.setOffsetPos(x, y);
+	}
+
+	@Override
+	public void setOffsetX(float x) {
+		collisionChecker.setOffsetX(x);
+	}
+
+	@Override
+	public void setOffsetY(float y) {
+		collisionChecker.setOffsetY(y);
+	}
+
+	@Override
+	public Vector2f getOffsetPos() {
+		return collisionChecker.getOffsetPos();
+	}
+
+	@Override
 	public int numberActors() {
 		return collisionChecker.numberActors();
+	}
+
+	@Override
+	public void setInTheLayer(boolean yes) {
+		collisionChecker.setInTheLayer(yes);
+	}
+
+	@Override
+	public boolean getInTheLayer() {
+		return collisionChecker.getInTheLayer();
 	}
 
 }

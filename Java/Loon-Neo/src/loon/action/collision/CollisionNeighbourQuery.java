@@ -21,6 +21,7 @@
  */
 package loon.action.collision;
 
+import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 
 public class CollisionNeighbourQuery implements CollisionQuery {
@@ -35,15 +36,32 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 
 	private String flag;
 
-	public CollisionNeighbourQuery init(float x, float y, float distance, boolean diag, String flag) {
-		this.x = x;
-		this.y = y;
+	private Vector2f offsetLocation;
+
+	public CollisionNeighbourQuery init(float x, float y, float distance, boolean diag, String flag, Vector2f offset) {
+		this.x = offsetX(x);
+		this.y = offsetY(y);
 		this.distance = distance;
 		this.diag = diag;
 		this.flag = flag;
+		this.offsetLocation = offset;
 		return this;
 	}
 
+	private float offsetX(float x) {
+		if (offsetLocation == null) {
+			return x;
+		}
+		return x + offsetLocation.x;
+	}
+
+	private float offsetY(float y) {
+		if (offsetLocation == null) {
+			return y;
+		}
+		return y + offsetLocation.y;
+	}
+	
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
 		if (this.flag != null && !flag.equals(actor.getObjectFlag())) {
@@ -71,5 +89,15 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void setOffsetPos(Vector2f offset) {
+		offsetLocation = offset;
+	}
+
+	@Override
+	public Vector2f getOffsetPos() {
+		return offsetLocation;
 	}
 }

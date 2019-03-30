@@ -858,14 +858,20 @@ public class Actor extends LObject<Actor>
 	}
 
 	@Override
-	public boolean intersects(CollisionObject object) {
-		if (object instanceof Actor) {
-			return intersects((Actor) object);
+	public boolean intersects(CollisionObject obj) {
+		if (obj instanceof Actor) {
+			return intersects((Actor) obj);
 		} else {
 			RectBox thisBounds = this.getBoundingRect();
-			RectBox otherBounds = object.getBoundingRect();
+			RectBox otherBounds = obj.getBoundingRect();
 			return thisBounds.intersects(otherBounds);
 		}
+	}
+
+	@Override
+	public boolean intersects(RectBox obj) {
+		RectBox thisBounds = this.getBoundingRect();
+		return thisBounds.intersects(obj);
 	}
 
 	public boolean intersects(Actor other) {

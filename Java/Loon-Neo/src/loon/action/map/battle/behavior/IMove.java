@@ -22,11 +22,13 @@ package loon.action.map.battle.behavior;
 
 public abstract class IMove {
 
-	String title;
+	protected String title;
 
-	int remaining;
+	protected int remaining;
 
-	int uses;
+	protected int uses;
+	
+	protected int area;
 
 	public String getTitle() {
 		return title;
@@ -50,5 +52,13 @@ public abstract class IMove {
 
 	public void setUses(int uses) {
 		this.uses = uses;
+	}
+
+	public int getArea() {
+		return area;
+	}
+
+	public void setArea(int area) {
+		this.area = area;
 	}
 }

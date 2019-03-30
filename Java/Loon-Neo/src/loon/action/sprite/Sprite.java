@@ -1133,7 +1133,12 @@ public class Sprite extends LObject<ISprite>
 	public boolean intersects(CollisionObject object) {
 		return getCollisionBox().intersects(object.getRectBox());
 	}
-
+	
+	@Override
+	public boolean intersects(RectBox rect) {
+		return getCollisionBox().intersects(rect);
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

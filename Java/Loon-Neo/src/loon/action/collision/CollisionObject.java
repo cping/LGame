@@ -23,23 +23,31 @@ package loon.action.collision;
 import loon.geom.RectBox;
 
 public interface CollisionObject {
-	
+
 	public RectBox getBoundingRect();
-	
+
 	public void setCollisionData(Object data);
 
 	public Object getCollisionData();
-	
+
 	public boolean containsPoint(float x, float y);
 
 	public boolean intersects(CollisionObject object);
-	
+
+	public boolean intersects(RectBox rect);
+
 	public String getObjectFlag();
 
 	public float getX();
 
 	public float getY();
 
+	public float getWidth();
+
+	public float getHeight();
+	
 	public RectBox getRectBox();
+
+	public int getLayer();
 
 }

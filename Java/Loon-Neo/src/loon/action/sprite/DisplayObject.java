@@ -359,6 +359,11 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
+	public boolean intersects(RectBox rect) {
+		return getCollisionBox().intersects(rect);
+	}
+	
+	@Override
 	public float getContainerWidth() {
 		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
 	}

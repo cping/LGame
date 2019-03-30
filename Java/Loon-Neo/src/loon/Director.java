@@ -32,10 +32,13 @@ import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * 此类被Screen继承,所有功能可以在Screen直接使用
+ */
 public class Director extends SoundBox {
 
 	/**
-	 * 通用碰撞器(需要用户自行初始化,不实例化默认不存在)
+	 * 通用碰撞管理器(需要用户自行初始化(getCollisionManager或initializeCollision),不实例化默认不存在)
 	 */
 	private CollisionManager _collisionManager;
 
@@ -71,6 +74,79 @@ public class Director extends SoundBox {
 	 */
 	public void initializeCollision(int tileSizeX, int tileSizeY) {
 		getCollisionManager().initialize(tileSizeX, tileSizeY);
+	}
+
+	/**
+	 * 若此项为true(默认为false),则碰撞查询涉及具体碰撞对象的碰撞关系时,只会返回与查询对象同一层(layer值,z值)的对象
+	 * 
+	 * @param itlayer
+	 */
+	public void setCollisionInTheLayer(boolean itlayer) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setInTheLayer(itlayer);
+	}
+
+	/**
+	 * 是否设定了同层(layer值,z值)限制(默认为false)
+	 * 
+	 * @param itlayer
+	 */
+	public boolean getCollisionInTheLayer() {
+		if (_collisionClosed) {
+			return false;
+		}
+		return _collisionManager.getInTheLayer();
+	}
+
+	/**
+	 * 让碰撞器偏移指定坐标后产生碰撞
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void setCollisionOffsetPos(float x, float y) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setOffsetPos(x, y);
+	}
+
+	/**
+	 * 让碰撞器偏移指定坐标后产生碰撞
+	 * 
+	 * @param x
+	 */
+	public void setCollisionOffsetX(float x) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setOffsetX(x);
+	}
+
+	/**
+	 * 让碰撞器偏移指定坐标后产生碰撞
+	 * 
+	 * @param y
+	 */
+	public void setCollisionOffsetY(float y) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setOffsetY(y);
+	}
+
+	/**
+	 * 获得碰撞器当前的偏移坐标
+	 * 
+	 * @return
+	 */
+	public Vector2f getCollisionOffsetPos() {
+		if (_collisionClosed) {
+			return Vector2f.ZERO();
+		}
+		return _collisionManager.getOffsetPos();
 	}
 
 	/**
@@ -122,7 +198,7 @@ public class Director extends SoundBox {
 	}
 
 	/**
-	 * 返回当前存在的碰撞对象集合
+	 * 返回当前碰撞管理器中存在的碰撞对象集合
 	 * 
 	 * @return
 	 */
@@ -248,7 +324,7 @@ public class Director extends SoundBox {
 
 	/**
 	 * 添加一个ActionUpdate进程到游戏,以指定延迟时间刷新,当completed为true时销毁
-	 *  
+	 * 
 	 * @param update
 	 * @param delay
 	 */

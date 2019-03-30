@@ -1243,6 +1243,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return getCollisionBox().intersects(object.getRectBox());
 	}
 
+	@Override
+	public boolean intersects(RectBox rect) {
+		return getCollisionBox().intersects(rect);
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

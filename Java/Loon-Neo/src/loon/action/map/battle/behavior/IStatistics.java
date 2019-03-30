@@ -22,9 +22,9 @@ package loon.action.map.battle.behavior;
 
 public class IStatistics {
 
-	IStatistic health ;
+	protected IStatistic health ;
 
-	IStatistic[] list;
+	protected IStatistic[] list;
 
 	public IStatistic getHealth() {
 		return health;

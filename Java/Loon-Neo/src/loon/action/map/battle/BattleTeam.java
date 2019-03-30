@@ -21,9 +21,7 @@
 package loon.action.map.battle;
 
 public enum BattleTeam {
-
     opponent,
-
-   
     player,
+    friendly
 }

@@ -89,12 +89,11 @@ public abstract class ActorLayer extends LContainer {
 		super(x, y, layerWidth, layerHeight);
 		this.collisionChecker = new CollisionManager();
 		this.objects = new ActorTreeSet();
-		this.cellSize = cellSize;
-		this.initialize(layerWidth, layerHeight, cellSize);
 		this.isBounded = bounded;
+		this.initialize(cellSize);
 	}
 
-	private void initialize(int width, int height, int cellSize) {
+	private void initialize(int cellSize) {
 		this.cellSize = cellSize;
 		this.collisionChecker.initialize(cellSize);
 	}

@@ -20,9 +20,10 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.event.QueryEvent;
 
-public class Array<T> implements IArray {
+public class Array<T> implements IArray, LRelease {
 
 	public static class ArrayNode<T> {
 
@@ -56,13 +57,13 @@ public class Array<T> implements IArray {
 		addAll(data);
 	}
 
-	public void insertBetween(Array<T> previous, Array<T> next, Array<T> newNode) {
-		insertBetween(previous._items, next._items, newNode._items);
+	public Array<T> insertBetween(Array<T> previous, Array<T> next, Array<T> newNode) {
+		return insertBetween(previous._items, next._items, newNode._items);
 	}
 
-	public void insertBetween(ArrayNode<T> previous, ArrayNode<T> next, ArrayNode<T> newNode) {
+	public Array<T> insertBetween(ArrayNode<T> previous, ArrayNode<T> next, ArrayNode<T> newNode) {
 		if (_close) {
-			return;
+			return this;
 		}
 		if (previous == this._items && next != this._items) {
 			this.addFront(newNode.data);
@@ -74,6 +75,7 @@ public class Array<T> implements IArray {
 			previous.next = newNode;
 			next.previous = newNode;
 		}
+		return this;
 	}
 
 	public Array<T> reverse() {
@@ -84,11 +86,11 @@ public class Array<T> implements IArray {
 		return tmp;
 	}
 
-	public void addAll(Array<T> data) {
+	public Array<T> addAll(Array<T> data) {
 		for (; data.hashNext();) {
 			add(data.next());
 		}
-		data.stopNext();
+		return data.stopNext();
 	}
 
 	public Array<T> concat(Array<T> data) {
@@ -110,7 +112,11 @@ public class Array<T> implements IArray {
 		return list;
 	}
 
-	public void add(T data) {
+	public Array<T> push(T data) {
+		return add(data);
+	}
+
+	public Array<T> add(T data) {
 		ArrayNode<T> newNode = new ArrayNode<T>();
 		ArrayNode<T> o = this._items.next;
 		newNode.data = data;
@@ -124,11 +130,12 @@ public class Array<T> implements IArray {
 				this.addBack(newNode.data);
 			}
 		}
+		return this;
 	}
 
-	public void addFront(T data) {
+	public Array<T> addFront(T data) {
 		if (_close) {
-			return;
+			return this;
 		}
 		ArrayNode<T> newNode = new ArrayNode<T>();
 		newNode.data = data;
@@ -137,11 +144,12 @@ public class Array<T> implements IArray {
 		this._items.next = newNode;
 		newNode.previous = this._items;
 		_length++;
+		return this;
 	}
 
-	public void addBack(T data) {
+	public Array<T> addBack(T data) {
 		if (_close) {
-			return;
+			return this;
 		}
 		ArrayNode<T> newNode = new ArrayNode<T>();
 		newNode.data = data;
@@ -150,6 +158,7 @@ public class Array<T> implements IArray {
 		this._items.previous = newNode;
 		newNode.next = this._items;
 		_length++;
+		return this;
 	}
 
 	public T get(int idx) {
@@ -171,9 +180,9 @@ public class Array<T> implements IArray {
 		return null;
 	}
 
-	public void set(int idx, T v) {
+	public Array<T> set(int idx, T v) {
 		if (_close) {
-			return;
+			return this;
 		}
 		int size = _length - 1;
 
@@ -193,6 +202,7 @@ public class Array<T> implements IArray {
 			}
 			set(idx, v);
 		}
+		return this;
 	}
 
 	public ArrayNode<T> node() {
@@ -393,9 +403,10 @@ public class Array<T> implements IArray {
 		return _next_count;
 	}
 
-	public void stopNext() {
+	public Array<T> stopNext() {
 		_next_tmp = null;
 		_next_count = 0;
+		return this;
 	}
 
 	public T previous() {
@@ -421,9 +432,10 @@ public class Array<T> implements IArray {
 		return _previous_count;
 	}
 
-	public void stopPrevious() {
+	public Array<T> stopPrevious() {
 		_previous_tmp = null;
 		_previous_count = 0;
+		return this;
 	}
 
 	public String toString(char split) {
@@ -492,6 +504,7 @@ public class Array<T> implements IArray {
 		return last();
 	}
 
+	@Override
 	public void clear() {
 		this._close = false;
 		this._length = 0;
@@ -503,10 +516,12 @@ public class Array<T> implements IArray {
 		this._items.previous = this._items;
 	}
 
+	@Override
 	public int size() {
 		return _length;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return _close || _length == 0 || this._items.next == this._items;
 	}
@@ -539,14 +554,17 @@ public class Array<T> implements IArray {
 			this.list = l;
 		}
 
+		@Override
 		public boolean hasNext() {
 			return list.hashNext();
 		}
 
+		@Override
 		public T next() {
 			return list.next();
 		}
 
+		@Override
 		public void remove() {
 			list.remove();
 		}
@@ -593,6 +611,11 @@ public class Array<T> implements IArray {
 		_close = true;
 		_length = 0;
 		_items = null;
+	}
+
+	@Override
+	public void close() {
+		dispose();
 	}
 
 }
