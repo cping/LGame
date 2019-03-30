@@ -23,6 +23,9 @@ package loon.action.map;
 import loon.action.sprite.ISprite;
 import loon.utils.TArray;
 
+/**
+ * 角色模板,提供了一些基础的人物参数
+ */
 public class Character extends CharacterValue {
 
 	private String name;

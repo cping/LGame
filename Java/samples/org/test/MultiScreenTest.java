@@ -152,7 +152,7 @@ public class MultiScreenTest extends Screen {
 			"Canvas", "GameMap", "MoveClip", "TextureImage", "Session" };
 
 	final String[] page1 = { "Screen", "Slider", "Alert", "Animation", "FrameLoop", "Script", "SText", "Light",
-			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural","MenuSelect","CheckBox","TextTree","SLG","I18N" };
+			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural","MenuSelect","CheckBox","TextTree","SLG","I18N","Buttle" };
 
 	static BMFont info_font;
 
@@ -247,6 +247,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new TextTreeTest());
 			addScreen(page1[index++], new SLGTest());
 			addScreen(page1[index++], new I18NTest());
+			addScreen(page1[index++], new ButtleTest());
 		}
 
 		// 默认按钮大小为100x25

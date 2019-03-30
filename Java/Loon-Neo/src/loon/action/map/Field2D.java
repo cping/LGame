@@ -31,6 +31,9 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
+/**
+ * 2维数组到地图数据的转化与处理用类
+ */
 public class Field2D implements Config {
 
 	private final static float ANGULAR = 0.706F;
@@ -157,7 +160,7 @@ public class Field2D implements Config {
 		return EMPTY;
 	}
 
-	private static Vector2f vector2;
+	private static Vector2f _tempDir;
 
 	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(9);
 
@@ -390,17 +393,51 @@ public class Field2D implements Config {
 		return true;
 	}
 
+	public static Vector2f getDirectionToPoint(int dir, int value) {
+		Vector2f direction = null;
+		switch (dir) {
+		case Config.UP:
+			direction = new Vector2f(value, -value);
+			break;
+		case Config.LEFT:
+			direction = new Vector2f(-value, -value);
+			break;
+		case Config.RIGHT:
+			direction = new Vector2f(value, value);
+			break;
+		case Config.DOWN:
+			direction = new Vector2f(-value, value);
+			break;
+		case Config.TUP:
+			direction = new Vector2f(0, -value);
+			break;
+		case Config.TLEFT:
+			direction = new Vector2f(-value, 0);
+			break;
+		case Config.TRIGHT:
+			direction = new Vector2f(value, 0);
+			break;
+		case Config.TDOWN:
+			direction = new Vector2f(0, value);
+			break;
+		default:
+			direction = new Vector2f(0, 0);
+			break;
+		}
+		return direction;
+	}
+
 	public static int getDirection(int x, int y) {
 		return getDirection(x, y, Config.EMPTY);
 	}
 
 	public static int getDirection(int x, int y, int value) {
-		if (vector2 == null) {
-			vector2 = new Vector2f(x, y);
+		if (_tempDir == null) {
+			_tempDir = new Vector2f(x, y);
 		} else {
-			vector2.set(x, y);
+			_tempDir.set(x, y);
 		}
-		Integer result = directions.get(vector2);
+		Integer result = directions.get(_tempDir);
 		if (result != null) {
 			return result;
 		} else {

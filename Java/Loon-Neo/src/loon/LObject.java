@@ -31,6 +31,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.BlendMode;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
@@ -289,7 +290,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public final String getObjectFlag() {
-		return this._object_flag;
+		return StringUtils.isEmpty(this._object_flag) ? "LObject" : this._object_flag;
 	}
 
 	public void setTransparency(int a) {

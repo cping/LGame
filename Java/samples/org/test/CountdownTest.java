@@ -1,24 +1,16 @@
 package org.test;
 
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.NumberSprite;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
-import loon.event.GameTouch;
 import loon.event.Touched;
-import loon.opengl.GLEx;
 import loon.utils.timer.CountdownTimer;
-import loon.utils.timer.LTimerContext;
 
-public class CountdownTest extends Screen {
-
-	@Override
-	public void draw(GLEx g) {
-
-	}
+public class CountdownTest extends Stage {
 
 	@Override
-	public void onLoad() {
+	public void create() {
 
 		add(MultiScreenTest.getBackButton(this, 1));
 		//设置默认倒计时器,倒数30秒
@@ -41,51 +33,6 @@ public class CountdownTest extends Screen {
 				timer.play(60);
 			}
 		}));
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
 	}
 
 }

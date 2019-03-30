@@ -27,7 +27,7 @@ import loon.LSystem;
  * 
  * <pre>
  * StringKeyValue kev = new StringKeyValue("test");
- * kev.pushTag("code").pushTag("java").text("hello world").popTag("java").popTag("code");
+ * kev.pushTag("code").pushTag("java").text("hello world").popTag().popTag();
  * </pre>
  */
 public class StringKeyValue {
@@ -113,15 +113,28 @@ public class StringKeyValue {
 		return addValue(mes);
 	}
 
-	public StringKeyValue pushTag(CharSequence flag) {
-		flags.add(flag);
-		return addValue("<" + flag + ">");
+	public StringKeyValue pushTag(CharSequence tag) {
+		flags.add(tag);
+		return addValue("<" + tag + ">");
 	}
 
-	public StringKeyValue popTag(CharSequence flag) {
+	public StringKeyValue popTag(CharSequence tag) {
+		CharSequence tmp = flags.pop();
+		return addValue("</" + ((tag == null || tag.length() == 0 || " ".equals(tag)) ? tmp : tag) + ">");
+	}
+
+	public StringKeyValue popTag() {
 		if (flags.size() > 0) {
 			return addValue("</" + flags.pop() + ">");
 		}
+		return this;
+	}
+
+	public StringKeyValue popTagAll() {
+		for (; flags.hashNext();) {
+			addValue("</" + flags.next() + ">");
+		}
+		flags.clear();
 		return this;
 	}
 

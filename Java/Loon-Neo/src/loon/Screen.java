@@ -716,10 +716,44 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 	}
 
+	/**
+	 * 作用近似于js的同名函数,以指定的延迟执行Updateable
+	 * 
+	 * @param update
+	 * @param delay
+	 * @return
+	 */
+	public Screen setTimeout(final Updateable update, final long delay) {
+		return add(new Port<LTimerContext>() {
+
+			final LTimer timer = new LTimer(0);
+
+			@Override
+			public void onEmit(LTimerContext event) {
+				if (timer.action(delay) && update != null) {
+					update.action(event);
+				}
+			}
+		}, true);
+	}
+
+	/**
+	 * 添加一个监听LTimerContext的Port
+	 * 
+	 * @param timer
+	 * @return
+	 */
 	public Screen add(Port<LTimerContext> timer) {
 		return add(timer, false);
 	}
 
+	/**
+	 * 添加一个监听LTimerContext的Port(若paint为true,则监听同步画布刷新,否则异步监听,默认为false)
+	 * 
+	 * @param timer
+	 * @param paint
+	 * @return
+	 */
 	public Screen add(Port<LTimerContext> timer, boolean paint) {
 		if (LSystem._base != null && LSystem._base.display() != null) {
 			if (paint) {
@@ -731,10 +765,23 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	/**
+	 * 删除一个Port的LTimerContext监听
+	 * 
+	 * @param timer
+	 * @return
+	 */
 	public Screen remove(Port<LTimerContext> timer) {
 		return remove(timer, false);
 	}
 
+	/**
+	 * 删除一个Port的LTimerContext监听(为true时,删除绑定到画布刷新中的,为false删除绑定到异步的update监听上的,默认为false)
+	 * 
+	 * @param timer
+	 * @param paint
+	 * @return
+	 */
 	public Screen remove(Port<LTimerContext> timer, boolean paint) {
 		if (LSystem._base != null && LSystem._base.display() != null) {
 			if (paint) {

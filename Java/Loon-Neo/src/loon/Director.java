@@ -19,7 +19,6 @@ import loon.Log.Level;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionManager;
 import loon.action.collision.CollisionObject;
-import loon.component.Actor;
 import loon.event.ActionUpdate;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
@@ -240,29 +239,29 @@ public class Director extends SoundBox {
 	/**
 	 * 获得有指定标记并与指定对象相交的集合
 	 * 
-	 * @param actor
+	 * @param obj
 	 * @param objFlag
 	 * @return
 	 */
-	public TArray<CollisionObject> getIntersectingObjects(Actor actor, String objFlag) {
+	public TArray<CollisionObject> getIntersectingObjects(CollisionObject obj, String objFlag) {
 		if (_collisionClosed) {
 			return null;
 		}
-		return _collisionManager.getIntersectingObjects(actor, objFlag);
+		return _collisionManager.getIntersectingObjects(obj, objFlag);
 	}
 
 	/**
 	 * 获得一个有指定标记并与指定对象相交的单独对象
 	 * 
-	 * @param object
+	 * @param obj
 	 * @param objFlag
 	 * @return
 	 */
-	public CollisionObject getOnlyIntersectingObject(Actor object, String objFlag) {
+	public CollisionObject getOnlyIntersectingObject(CollisionObject obj, String objFlag) {
 		if (_collisionClosed) {
 			return null;
 		}
-		return _collisionManager.getOnlyIntersectingObject(object, objFlag);
+		return _collisionManager.getOnlyIntersectingObject(obj, objFlag);
 	}
 
 	/**
@@ -284,20 +283,20 @@ public class Director extends SoundBox {
 	/**
 	 * 获得与指定对象相邻的全部对象
 	 * 
-	 * @param actor
+	 * @param obj
 	 * @param distance
 	 * @param d
 	 * @param objFlag
 	 * @return
 	 */
-	public TArray<CollisionObject> getNeighbours(CollisionObject actor, float distance, boolean d, String objFlag) {
+	public TArray<CollisionObject> getNeighbours(CollisionObject obj, float distance, boolean d, String objFlag) {
 		if (_collisionClosed) {
 			return null;
 		}
 		if (distance < 0) {
 			throw LSystem.runThrow("distance < 0");
 		} else {
-			return _collisionManager.getNeighbours(actor, distance, d, objFlag);
+			return _collisionManager.getNeighbours(obj, distance, d, objFlag);
 		}
 	}
 

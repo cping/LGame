@@ -173,24 +173,24 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public CollisionObject getOnlyIntersectingObject(CollisionObject object, String flag) {
-		this.prepareForCollision(object, flag);
-		return this.collisionChecker.getOnlyIntersectingObject(object, flag);
+	public CollisionObject getOnlyIntersectingObject(CollisionObject obj, String flag) {
+		this.prepareForCollision(obj, flag);
+		return this.collisionChecker.getOnlyIntersectingObject(obj, flag);
 	}
 
 	@Override
-	public CollisionObject getOnlyObjectAt(CollisionObject object, float dx, float dy, String flag) {
-		this.prepareForCollision(object, flag);
-		return this.collisionChecker.getOnlyObjectAt(object, dx, dy, flag);
+	public CollisionObject getOnlyObjectAt(CollisionObject obj, float dx, float dy, String flag) {
+		this.prepareForCollision(obj, flag);
+		return this.collisionChecker.getOnlyObjectAt(obj, dx, dy, flag);
 	}
 
 	@Override
-	public void removeObject(CollisionObject object) {
-		SortedList<CollisionObject> classSet = this.freeObjects.get(object.getObjectFlag());
+	public void removeObject(CollisionObject obj) {
+		SortedList<CollisionObject> classSet = this.freeObjects.get(obj.getObjectFlag());
 		if (classSet != null) {
-			classSet.remove(object);
+			classSet.remove(obj);
 		} else {
-			this.collisionChecker.removeObject(object);
+			this.collisionChecker.removeObject(obj);
 		}
 	}
 
@@ -205,16 +205,16 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
-	public void updateObjectLocation(CollisionObject object, float oldX, float oldY) {
-		if (!this.freeObjects.containsKey(object.getObjectFlag())) {
-			this.collisionChecker.updateObjectLocation(object, oldX, oldY);
+	public void updateObjectLocation(CollisionObject obj, float oldX, float oldY) {
+		if (!this.freeObjects.containsKey(obj.getObjectFlag())) {
+			this.collisionChecker.updateObjectLocation(obj, oldX, oldY);
 		}
 	}
 
 	@Override
-	public void updateObjectSize(CollisionObject object) {
-		if (!this.freeObjects.containsKey(object.getObjectFlag())) {
-			this.collisionChecker.updateObjectSize(object);
+	public void updateObjectSize(CollisionObject obj) {
+		if (!this.freeObjects.containsKey(obj.getObjectFlag())) {
+			this.collisionChecker.updateObjectSize(obj);
 		}
 	}
 

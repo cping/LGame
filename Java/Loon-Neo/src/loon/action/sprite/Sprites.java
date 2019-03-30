@@ -675,7 +675,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param elapsedTime
 	 */
 	public void update(long elapsedTime) {
-		if (!_visible) {
+		if (!_visible || _closed) {
 			return;
 		}
 		boolean listerner = (sprListerner != null);
@@ -697,7 +697,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param g
 	 */
 	public void paint(final GLEx g, final float minX, final float minY, final float maxX, final float maxY) {
-		if (!_visible) {
+		if (!_visible || _closed) {
 			return;
 		}
 		float spriteX;

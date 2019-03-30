@@ -4,8 +4,8 @@ import java.util.NoSuchElementException;
 
 import loon.LSystem;
 
-@SuppressWarnings("unchecked") 
-public class ObjectSet<T> implements Iterable<T> ,IArray {
+@SuppressWarnings("unchecked")
+public class ObjectSet<T> implements Iterable<T>, IArray {
 
 	private static final int PRIME2 = 0xb4b82e39;
 	private static final int PRIME3 = 0xced1c241;
@@ -32,25 +32,20 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 
 	public ObjectSet(int initialCapacity, float loadFactor) {
 		if (initialCapacity < 0)
-			throw new IllegalArgumentException("initialCapacity must be >= 0: "
-					+ initialCapacity);
+			throw new IllegalArgumentException("initialCapacity must be >= 0: " + initialCapacity);
 		if (initialCapacity > 1 << 30)
-			throw new IllegalArgumentException("initialCapacity is too large: "
-					+ initialCapacity);
+			throw new IllegalArgumentException("initialCapacity is too large: " + initialCapacity);
 		capacity = MathUtils.nextPowerOfTwo(initialCapacity);
 
 		if (loadFactor <= 0)
-			throw new IllegalArgumentException("loadFactor must be > 0: "
-					+ loadFactor);
+			throw new IllegalArgumentException("loadFactor must be > 0: " + loadFactor);
 		this.loadFactor = loadFactor;
 
 		threshold = (int) (capacity * loadFactor);
 		mask = capacity - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = MathUtils.max(3,
-				(int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
-		pushIterations = MathUtils.max(MathUtils.min(capacity, 8),
-				(int) MathUtils.sqrt(capacity) / 8);
+		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
+		pushIterations = MathUtils.max(MathUtils.min(capacity, 8), (int) MathUtils.sqrt(capacity) / 8);
 
 		keyTable = (T[]) new Object[capacity + stashCapacity];
 	}
@@ -120,8 +115,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 	public void addAll(TArray<? extends T> array, int offset, int length) {
 		if (offset + length > array.size)
 			throw new IllegalArgumentException(
-					"offset + length must be <= size: " + offset + " + "
-							+ length + " <= " + array.size);
+					"offset + length must be <= size: " + offset + " + " + length + " <= " + array.size);
 		addAll((T[]) array.items, offset, length);
 	}
 
@@ -179,8 +173,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 		push(key, index1, key1, index2, key2, index3, key3);
 	}
 
-	private void push(T insertKey, int index1, T key1, int index2, T key2,
-			int index3, T key3) {
+	private void push(T insertKey, int index1, T key1, int index2, T key2, int index3, T key3) {
 		T[] keyTable = this.keyTable;
 		int mask = this.mask;
 
@@ -298,8 +291,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 
 	public void shrink(int maximumCapacity) {
 		if (maximumCapacity < 0)
-			throw new IllegalArgumentException("maximumCapacity must be >= 0: "
-					+ maximumCapacity);
+			throw new IllegalArgumentException("maximumCapacity must be >= 0: " + maximumCapacity);
 		if (size > maximumCapacity)
 			maximumCapacity = size;
 		if (capacity <= maximumCapacity)
@@ -317,6 +309,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 		resize(maximumCapacity);
 	}
 
+	@Override
 	public void clear() {
 		if (size == 0)
 			return;
@@ -328,6 +321,9 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 	}
 
 	public boolean contains(T key) {
+		if (key == null) {
+			return false;
+		}
 		int hashCode = key.hashCode();
 		int index = hashCode & mask;
 		if (!key.equals(keyTable[index])) {
@@ -342,6 +338,9 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 	}
 
 	private boolean containsKeyStash(T key) {
+		if (key == null) {
+			return false;
+		}
 		T[] keyTable = this.keyTable;
 		for (int i = capacity, n = i + stashSize; i < n; i++)
 			if (key.equals(keyTable[i]))
@@ -370,10 +369,8 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 		threshold = (int) (newSize * loadFactor);
 		mask = newSize - 1;
 		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = MathUtils.max(3,
-				MathUtils.ceil(MathUtils.log(newSize)) * 2);
-		pushIterations = MathUtils.max(MathUtils.min(newSize, 8),
-				MathUtils.sqrt(newSize) / 8);
+		stashCapacity = MathUtils.max(3, MathUtils.ceil(MathUtils.log(newSize)) * 2);
+		pushIterations = MathUtils.max(MathUtils.min(newSize, 8), MathUtils.sqrt(newSize) / 8);
 
 		T[] oldKeyTable = keyTable;
 
@@ -451,8 +448,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 		return set;
 	}
 
-	static public class ObjectSetIterator<K> implements Iterable<K>,
-	LIterator<K> {
+	static public class ObjectSetIterator<K> implements Iterable<K>, LIterator<K> {
 		public boolean hasNext;
 
 		final ObjectSet<K> set;
@@ -483,8 +479,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 
 		public void remove() {
 			if (currentIndex < 0)
-				throw new IllegalStateException(
-						"next must be called before remove.");
+				throw new IllegalStateException("next must be called before remove.");
 			if (currentIndex >= set.capacity) {
 				set.removeStashIndex(currentIndex);
 				nextIndex = currentIndex - 1;
@@ -527,7 +522,7 @@ public class ObjectSet<T> implements Iterable<T> ,IArray {
 			return toArray(new TArray<K>(true, set.size));
 		}
 	}
-	
+
 	@Override
 	public int size() {
 		return size;
