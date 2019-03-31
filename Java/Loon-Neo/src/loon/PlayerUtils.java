@@ -29,15 +29,107 @@ import loon.action.ActionTween;
 import loon.action.sprite.CanvasPlayer;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
+import loon.event.ActionUpdate;
 import loon.event.Updateable;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.BooleanValue;
+import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.processes.GameProcess;
+import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.WaitProcess;
+import loon.utils.timer.LTimerContext;
 
+/**
+ * 组件动作用工具类,主要用来处理一些和ActionBind相关的事物
+ *
+ */
 public class PlayerUtils extends Director {
+
+	/**
+	 * 添加一个ActionUpdate进程到游戏,当completed为true时销毁
+	 * 
+	 * @param update
+	 */
+	public final static void addProcess(final ActionUpdate update) {
+		addProcess(update, 0);
+	}
+
+	/**
+	 * 添加一个ActionUpdate进程到游戏,以指定延迟时间刷新,当completed为true时销毁
+	 * 
+	 * @param update
+	 * @param delay
+	 */
+	public final static void addProcess(final ActionUpdate update, final long delay) {
+		if (update == null) {
+			return;
+		}
+		RealtimeProcessManager.get().addProcess(new RealtimeProcess(delay) {
+
+			@Override
+			public void run(LTimerContext time) {
+				if (update.completed()) {
+					kill();
+				}
+				update.action(time);
+			}
+		});
+	}
+
+	/**
+	 * 添加一个GameProcess进程到游戏,不kill(或者通过RealtimeProcessManager.get()注销)则一直存在
+	 * 
+	 * @param process
+	 */
+	public final static void addProcess(GameProcess process) {
+		if (process == null) {
+			return;
+		}
+		RealtimeProcessManager.get().addProcess(process);
+	}
+
+	/**
+	 * 删除一个GameProcess
+	 * 
+	 * @param process
+	 */
+	public final static void removeProcess(GameProcess process) {
+		if (process == null) {
+			return;
+		}
+		removeProcess(process.getId());
+	}
+
+	/**
+	 * 删除一个指定id的GameProcess
+	 * 
+	 * @param id
+	 */
+	public final static void removeProcess(String id) {
+		RealtimeProcessManager.get().delete(id);
+	}
+
+	/**
+	 * 删除一个[包含]指定id(比如删1则100,1,11之类也会消失,有1就没)的GameProcess
+	 * 
+	 * @param id
+	 */
+	public final static void deleteIndex(String id) {
+		RealtimeProcessManager.get().deleteIndex(id);
+	}
+
+	/**
+	 * 获得指定id的GameProcess
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public final static GameProcess find(String id) {
+		return RealtimeProcessManager.get().find(id);
+	}
 
 	/**
 	 * 间隔指定时间后，异步执行Updateable中内容(默认仅执行一次)
@@ -184,4 +276,71 @@ public class PlayerUtils extends Director {
 		return player;
 	}
 
+	/**
+	 * 求两个动作对象在X轴两点间距离
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	public final static float getDistanceXBetween(ActionBind src, ActionBind dst) {
+		return MathUtils.abs((dst.getX() + dst.getWidth() / 2) - (src.getX() + src.getWidth() / 2));
+	}
+
+	/**
+	 * 求指定动作对象与指定方形区域在X轴两点间距离
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	public final static float getDistanceXBetween(ActionBind src, RectBox dst) {
+		return MathUtils.abs((dst.getX() + dst.getWidth() / 2) - (src.getX() + src.getWidth() / 2));
+	}
+
+	/**
+	 * 求两个动作对象在Y轴两点间距离
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	public static float getDistanceYBetween(ActionBind src, ActionBind dst) {
+		return MathUtils.abs((dst.getY() + dst.getHeight() / 2) - (src.getY() + src.getHeight() / 2));
+	}
+
+	/**
+	 * 求指定动作对象与指定方形区域在Y轴两点间距离
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	public final static float getDistanceYBetween(ActionBind src, RectBox dst) {
+		return MathUtils.abs((dst.getY() + dst.getHeight() / 2) - (src.getY() + src.getHeight() / 2));
+	}
+
+	/**
+	 * 求两个动作对象在指定范围内的X轴距离
+	 * 
+	 * @param src
+	 * @param dst
+	 * @param allowable
+	 * @return
+	 */
+	public static float getAllowableXDistance(ActionBind src, ActionBind dst, float allowDistance) {
+		return (src.getWidth() / 2) + (dst.getWidth() / 2 - allowDistance);
+	}
+
+	/**
+	 * 求两个动作对象在指定范围内的Y轴距离
+	 * 
+	 * @param src
+	 * @param dst
+	 * @param allowable
+	 * @return
+	 */
+	public static float getAllowableYDistance(ActionBind src, ActionBind dst, float allowDistance) {
+		return (src.getHeight() / 2) + (dst.getHeight() / 2 - allowDistance);
+	}
 }

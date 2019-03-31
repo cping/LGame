@@ -28,27 +28,29 @@ import loon.utils.Easing.EasingMode;
  * 缓动动画使用的计时器
  */
 public class EaseTimer {
-
+	
 	private final float _duration;
-	private float _timer = 0;
-	private float _delta = 0;
-	private EasingMode _mode;
+	
+	private float _timer = 0f;
+	private float _delta = 0f;
+	private float _progress = 0f;
+	private float _delay = 0f;
+	private float _timeInAfter = 0f;
+	
 	private boolean _finished = false;
-	private float _progress = 0.0f;
-	private float _delay = 1f / 60f;
-	private float _timeInAfter = 0;
-	private final static EasingMode defaultEase = EasingMode.Linear;
+
+	private EasingMode _mode;
 
 	public EaseTimer(float duration) {
-		this(duration, 1f / 60f, defaultEase);
+		this(duration, 1f/60f, EasingMode.Linear);
 	}
 
 	public EaseTimer(float duration, EasingMode mode) {
-		this(duration, 1f / 60f, mode);
+		this(duration, 1f/60f, mode);
 	}
 
 	public EaseTimer(float duration, float delay) {
-		this(duration, delay, defaultEase);
+		this(duration, delay, EasingMode.Linear);
 	}
 
 	public EaseTimer(float duration, float delay, EasingMode mode) {
@@ -67,8 +69,8 @@ public class EaseTimer {
 		this._delta = timer._delta;
 		this._timeInAfter = timer._timeInAfter;
 	}
-	
-	public boolean action(long elapsedTime){
+
+	public boolean action(long elapsedTime) {
 		update(elapsedTime);
 		return isCompleted();
 	}
@@ -88,113 +90,86 @@ public class EaseTimer {
 		}
 		switch (this._mode) {
 		case InQuad:
-			this._progress = Easing.inQuad(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inQuad(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case OutQuad:
-			this._progress = Easing.outQuad(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.outQuad(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InOutQuad:
-			this._progress = Easing.inOutQuad(this._timer, this._duration,
-					1.0f, 0.0f);
+			this._progress = Easing.inOutQuad(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InCubic:
-			this._progress = Easing.inCubic(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inCubic(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case OutCubic:
-			this._progress = Easing.outCubic(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.outCubic(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InQuart:
-			this._progress = Easing.inQuart(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inQuart(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case OutQuart:
-			this._progress = Easing.outQuart(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.outQuart(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InOutQuart:
-			this._progress = Easing.inOutQuart(this._timer, this._duration,
-					1.0f, 0.0f);
+			this._progress = Easing.inOutQuart(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InQuint:
-			this._progress = Easing.inQuint(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inQuint(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case OutQuint:
-			this._progress = Easing.outQuint(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.outQuint(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InOutQuint:
-			this._progress = Easing.inOutQuint(this._timer, this._duration,
-					1.0f, 0.0f);
+			this._progress = Easing.inOutQuint(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InSine:
-			this._progress = Easing.inSine(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inSine(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case OutSine:
-			this._progress = Easing.outSine(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.outSine(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InOutSine:
-			this._progress = Easing.inOutSine(this._timer, this._duration,
-					1.0f, 0.0f);
+			this._progress = Easing.inOutSine(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InExp:
-			this._progress = Easing.inExp(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inExp(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case OutExp:
-			this._progress = Easing.outExp(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.outExp(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InOutExp:
-			this._progress = Easing.inOutExp(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inOutExp(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InCirc:
-			this._progress = Easing.inCirc(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inCirc(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case OutCirc:
-			this._progress = Easing.outCirc(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.outCirc(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InOutCirc:
-			this._progress = Easing.inOutCirc(this._timer, this._duration,
-					1.0f, 0.0f);
+			this._progress = Easing.inOutCirc(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InBack:
-			this._progress = Easing.inBack(this._timer, this._duration, 1.0f,
-					0.0f, 0.1f);
+			this._progress = Easing.inBack(this._timer, this._duration, 1.0f, 0.0f, 0.1f);
 			break;
 		case OutBack:
-			this._progress = Easing.outBack(this._timer, this._duration, 1.0f,
-					0.0f, 0.1f);
+			this._progress = Easing.outBack(this._timer, this._duration, 1.0f, 0.0f, 0.1f);
 			break;
 		case InOutBack:
-			this._progress = Easing.inOutBack(this._timer, this._duration,
-					1.0f, 0.0f, 0.1f);
+			this._progress = Easing.inOutBack(this._timer, this._duration, 1.0f, 0.0f, 0.1f);
 			break;
 		case OutBounce:
-			this._progress = Easing.outBounce(this._timer, this._duration,
-					1.0f, 0.0f);
+			this._progress = Easing.outBounce(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InBounce:
-			this._progress = Easing.inBounce(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.inBounce(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case InOutBounce:
-			this._progress = Easing.inOutBounce(this._timer, this._duration,
-					1.0f, 0.0f);
+			this._progress = Easing.inOutBounce(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 		case Linear:
 		default:
-			this._progress = Easing.linear(this._timer, this._duration, 1.0f,
-					0.0f);
+			this._progress = Easing.linear(this._timer, this._duration, 1.0f, 0.0f);
 			break;
 
 		}

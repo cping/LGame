@@ -264,12 +264,12 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	public static final int[] intersect(RectBox rect1, RectBox rect2) {
-		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right()
-				&& rect1.Top() < rect2.Bottom() && rect2.Top() < rect1.Bottom()) {
+		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom()
+				&& rect2.Top() < rect1.Bottom()) {
 			return new int[] { rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
 					rect1.Top() < rect2.Top() ? rect2.Top() - rect1.Top() : 0,
-							rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
-							rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0 };
+					rect1.Right() > rect2.Right() ? rect1.Right() - rect2.Right() : 0,
+					rect1.Bottom() > rect2.Bottom() ? rect1.Bottom() - rect2.Bottom() : 0 };
 		}
 		return null;
 	}
@@ -284,16 +284,16 @@ public final class CollisionHelper extends ShapeUtils {
 		rectTemp1.setBounds(x, y, width, height).normalize();
 		rectTemp2.setBounds(dx, dy, dw, dh).normalize();
 		if (touchingIsIn) {
-			if (rectTemp1.x + rectTemp1.width == rectTemp2.x){
+			if (rectTemp1.x + rectTemp1.width == rectTemp2.x) {
 				return true;
 			}
-			if (rectTemp1.x == rectTemp2.x + rectTemp2.width){
+			if (rectTemp1.x == rectTemp2.x + rectTemp2.width) {
 				return true;
 			}
-			if (rectTemp1.y + rectTemp1.height == rectTemp2.y){
+			if (rectTemp1.y + rectTemp1.height == rectTemp2.y) {
 				return true;
 			}
-			if (rectTemp1.y == rectTemp2.y + rectTemp2.height){
+			if (rectTemp1.y == rectTemp2.y + rectTemp2.height) {
 				return true;
 			}
 		}
@@ -402,6 +402,41 @@ public final class CollisionHelper extends ShapeUtils {
 
 	public static final float getJumpVelo(float gravity, float distance) {
 		return MathUtils.sqrt(2 * distance * gravity);
+	}
+
+	public final static boolean checkAngle(float angle, float actual) {
+		return actual > angle - 22.5f && actual < angle + 22.5f;
+	}
+	
+	/**
+	 * 判断两点坐标是否存在移动
+	 * 
+	 * @param distance
+	 * @param startPoints
+	 * @param endPoint
+	 * @return
+	 */
+	public static final boolean isMoved(float distance, Vector2f startPoints, Vector2f endPoint) {
+		return isMoved(distance, startPoints.x, startPoints.y, endPoint.x, endPoint.y);
+	}
+
+	/**
+	 * 判断两点坐标是否存在移动
+	 * 
+	 * @param distance
+	 * @param sx
+	 * @param sy
+	 * @param dx
+	 * @param dy
+	 * @return
+	 */
+	public static final boolean isMoved(float distance, float sx, float sy, float dx, float dy) {
+		float xDistance = dx - sx;
+		float yDistance = dy - sy;
+		if (MathUtils.abs(xDistance) < distance && MathUtils.abs(yDistance) < distance) {
+			return false;
+		}
+		return true;
 	}
 
 }

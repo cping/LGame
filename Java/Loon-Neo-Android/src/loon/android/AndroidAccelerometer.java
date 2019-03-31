@@ -8,9 +8,11 @@ import android.hardware.SensorManager;
 import loon.Accelerometer;
 import loon.AccelerometerState;
 import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.event.SysKey;
 import loon.utils.MathUtils;
+import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -69,29 +71,29 @@ public class AndroidAccelerometer implements Accelerometer {
 			}
 		}
 		// 将手机翻转角度转为手机朝向
-		if (LSystem.checkAngle(0, orientation)
-				|| LSystem.checkAngle(360, orientation)) {
+		if (CollisionHelper.checkAngle(0, orientation)
+				|| CollisionHelper.checkAngle(360, orientation)) {
 			_all_direction = Config.TUP;
 			_direction = SensorDirection.UP;
-		} else if (LSystem.checkAngle(45, orientation)) {
+		} else if (CollisionHelper.checkAngle(45, orientation)) {
 			_all_direction = Config.LEFT;
 			_direction = SensorDirection.LEFT;
-		} else if (LSystem.checkAngle(90, orientation)) {
+		} else if (CollisionHelper.checkAngle(90, orientation)) {
 			_all_direction = Config.TLEFT;
 			_direction = SensorDirection.LEFT;
-		} else if (LSystem.checkAngle(135, orientation)) {
+		} else if (CollisionHelper.checkAngle(135, orientation)) {
 			_all_direction = Config.DOWN;
 			_direction = SensorDirection.LEFT;
-		} else if (LSystem.checkAngle(180, orientation)) {
+		} else if (CollisionHelper.checkAngle(180, orientation)) {
 			_all_direction = Config.TDOWN;
 			_direction = SensorDirection.DOWN;
-		} else if (LSystem.checkAngle(225, orientation)) {
+		} else if (CollisionHelper.checkAngle(225, orientation)) {
 			_all_direction = Config.RIGHT;
 			_direction = SensorDirection.RIGHT;
-		} else if (LSystem.checkAngle(270, orientation)) {
+		} else if (CollisionHelper.checkAngle(270, orientation)) {
 			_all_direction = Config.TRIGHT;
 			_direction = SensorDirection.RIGHT;
-		} else if (LSystem.checkAngle(315, orientation)) {
+		} else if (CollisionHelper.checkAngle(315, orientation)) {
 			_all_direction = Config.UP;
 			_direction = SensorDirection.RIGHT;
 		} else {
@@ -103,7 +105,7 @@ public class AndroidAccelerometer implements Accelerometer {
 	private final void onSensor(float[] values) {
 		synchronized (this) {
 
-			long curTime = System.currentTimeMillis();
+			long curTime = TimeUtils.millis();
 
 			if (LSystem.base() != null && LSystem.base().setting.landscape()) {
 				currentX = -values[0];

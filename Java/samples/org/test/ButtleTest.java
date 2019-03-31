@@ -26,13 +26,19 @@ import loon.action.collision.CollisionObject;
 import loon.action.map.Config;
 import loon.action.sprite.BulletEntity;
 import loon.action.sprite.Entity;
+import loon.canvas.LColor;
 import loon.event.Touched;
 import loon.event.Updateable;
+import loon.utils.Easing.EasingMode;
 
-public class ButtleTest extends Stage{
+public class ButtleTest extends Stage {
 
 	@Override
 	public void create() {
+		// 可以通过设置syncTween与让缓动计算与画布刷新完全同步
+		// syncTween(true);
+		// 也可以设置全局的缓动动画延迟
+		// delayTween(10);
 		// 创建一个普通的Entity
 		final Entity fish = createEntity("assets/fish.png");
 		// 靠右待着
@@ -42,6 +48,7 @@ public class ButtleTest extends Stage{
 
 		// 构建子弹Entity
 		final BulletEntity bullets = new BulletEntity();
+		bullets.initializeCollision(4);
 		// 注入子弹碰撞对象role
 		bullets.putCollision(fish);
 		// 注入Screen
@@ -51,8 +58,8 @@ public class ButtleTest extends Stage{
 		up(new Touched() {
 			@Override
 			public void on(float x, float y) {
-				// 向东(右)发射[一个]子弹(支持8方向移动),速度300
-				bullets.addBullet("assets/ball.png", x, y, Config.E, 300);
+				// 移动模式InExp,向东(右)发射[一个]子弹(支持8方向移动),初始速度300,持续时间1
+				bullets.addBullet(EasingMode.InExp, "assets/ball.png", x, y, Config.E, 300, 1f);
 				// 此项为false时子弹越出BulletEntity范围时(默认与窗口等大)不删除子弹,默认为true
 				// bullets.setLimitMoved(false);
 			}
@@ -67,12 +74,13 @@ public class ButtleTest extends Stage{
 				CollisionObject obj = bullets.getOnlyIntersectingButtle(fish);
 				// 存在
 				if (obj != null) {
-					// fish震动
-					fish.selfAction().shakeTo(5f).start();
+					//调用缓动动画,fish变红,震动,还原颜色
+					fish.selfAction().colorTo(LColor.red).shakeTo(5f).colorTo(LColor.white).start();
+			
 				}
 
 			}
-		}, LSystem.SECOND );
+		}, LSystem.SECOND);
 
 		add(MultiScreenTest.getBackButton(this, 1));
 	}

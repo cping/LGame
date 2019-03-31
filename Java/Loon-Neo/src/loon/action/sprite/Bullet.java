@@ -23,15 +23,27 @@ package loon.action.sprite;
 import loon.LObject;
 import loon.LRelease;
 import loon.LTexture;
+import loon.PlayerUtils;
+import loon.action.ActionBind;
+import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
+import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimerContext;
 
-public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease {
+public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBind, LRelease {
+
+	protected static String BUTTLE_DEFAULT_NAME = "Buttle";
+
+	protected static int INIT_MOVE_SPEED = 100;
+
+	protected static float INIT_DURATION = 1f;
 
 	private int direction;
 	private int initSpeed;
@@ -44,34 +56,64 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 
 	private float width;
 	private float height;
+	private float scaleX;
+	private float scaleY;
 
-	public Bullet(LTexture tex, float x, float y, int dir) {
-		this(Animation.getDefaultAnimation(tex), x, y, dir);
+	private LColor baseColor;
+
+	private EaseTimer easeTimer;
+
+	public Bullet(EasingMode easingMode, LTexture tex, float x, float y, int dir) {
+		this(easingMode, Animation.getDefaultAnimation(tex), x, y, dir);
 	}
 
-	public Bullet(LTexture tex, float x, float y, int dir, int speed) {
-		this(Animation.getDefaultAnimation(tex), x, y, dir, speed);
+	public Bullet(EasingMode easingMode, LTexture tex, float x, float y, int dir, float duration) {
+		this(easingMode, Animation.getDefaultAnimation(tex), x, y, dir, INIT_MOVE_SPEED, duration);
 	}
 
-	public Bullet(Animation ani, float x, float y, int dir) {
-		this(ani, x, y, ani.getSpriteImage().getWidth(), ani.getSpriteImage().getHeight(), dir, 300);
+	public Bullet(EasingMode easingMode, Animation ani, float x, float y, int dir) {
+		this(easingMode, ani, x, y, ani.getSpriteImage().getWidth(), ani.getSpriteImage().getHeight(), dir,
+				INIT_DURATION);
 	}
 
-	public Bullet(Animation ani, float x, float y, int dir, int speed) {
-		this(ani, x, y, ani.getSpriteImage().getWidth(), ani.getSpriteImage().getHeight(), dir, speed);
+	public Bullet(EasingMode easingMode, LTexture texture, float x, float y, int dir, int initSpeed) {
+		this(easingMode, Animation.getDefaultAnimation(texture), x, y, dir, initSpeed);
 	}
 
-	public Bullet(float x, float y, int dir) {
-		this(null, x, y, 32, 32, dir, 300);
+	public Bullet(EasingMode easingMode, Animation ani, float x, float y, int dir, int initSpeed) {
+		this(easingMode, ani, x, y, ani.getSpriteImage().getWidth(), ani.getSpriteImage().getHeight(), dir, initSpeed,
+				INIT_DURATION);
 	}
 
-	public Bullet(Animation ani, float x, float y, float w, float h, int dir, int bulletSpeed) {
+	public Bullet(EasingMode easingMode, float x, float y, int dir) {
+		this(easingMode, null, x, y, 32, 32, dir, INIT_DURATION);
+	}
+
+	public Bullet(EasingMode easingMode, LTexture texture, float x, float y, int dir, int initSpeed, float duration) {
+		this(easingMode, Animation.getDefaultAnimation(texture), x, y, texture.getWidth(), texture.getHeight(), dir,
+				initSpeed, duration);
+	}
+
+	public Bullet(EasingMode easingMode, Animation ani, float x, float y, int dir, int initSpeed, float duration) {
+		this(easingMode, ani, x, y, ani.getSpriteImage().getWidth(), ani.getSpriteImage().getHeight(), dir, initSpeed,
+				duration);
+	}
+
+	public Bullet(EasingMode easingMode, Animation ani, float x, float y, float w, float h, int dir, float duration) {
+		this(easingMode, ani, x, y, w, h, dir, INIT_MOVE_SPEED, duration);
+	}
+
+	public Bullet(EasingMode easingMode, Animation ani, float x, float y, float w, float h, int dir,
+			int bulletInitSpeed, float duration) {
 		this.setLocation(x, y);
-		this.setObjectFlag(BulletEntity.buttleDefaultName);
+		this.setObjectFlag(BUTTLE_DEFAULT_NAME);
+		this.easeTimer = new EaseTimer(duration, easingMode);
+		this.baseColor = LColor.white.cpy();
 		this.animation = ani;
 		this.direction = dir;
-		this.initSpeed = bulletSpeed;
+		this.initSpeed = bulletInitSpeed;
 		this.speed = Field2D.getDirectionToPoint(this.direction, this.initSpeed);
+		this.scaleX = this.scaleY = 1f;
 		this.visible = true;
 		this.closed = false;
 		this.width = w;
@@ -90,7 +132,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 		if (animation != null) {
 			LTexture texture = animation.getSpriteImage();
 			if (texture != null) {
-				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight());
+				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor);
 				width = MathUtils.max(width, texture.width());
 				height = MathUtils.max(height, texture.height());
 			}
@@ -103,7 +145,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 			return;
 		}
 		animation.update(elapsedTime);
-		float delta = elapsedTime / 1000f;
+		easeTimer.update(elapsedTime);
+		float delta = easeTimer.getProgress();
 		float x = getX() + speed.getX() * delta;
 		float y = getY() + speed.getY() * delta;
 		setLocation(x, y);
@@ -117,16 +160,16 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 		return direction;
 	}
 
-	public Vector2f getSpeed() {
+	public Vector2f getInitSpeed() {
 		return speed;
 	}
 
-	public Bullet setSpeedX(int x) {
+	public Bullet setInitSpeedX(int x) {
 		speed.setX(x);
 		return this;
 	}
 
-	public Bullet setSpeedY(int y) {
+	public Bullet setInitSpeedY(int y) {
 		speed.setX(y);
 		return this;
 	}
@@ -173,20 +216,78 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 
 	@Override
 	public float getWidth() {
-		return width;
+		return width * scaleX;
 	}
 
 	@Override
 	public float getHeight() {
-		return height;
+		return height * scaleY;
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	@Override
+	public LColor getColor() {
+		return baseColor.cpy();
+	}
+
+	@Override
+	public void setColor(LColor newColor) {
+		this.baseColor = newColor;
+	}
+
+	@Override
+	public Field2D getField2D() {
+		return null;
+	}
+
+	@Override
+	public float getScaleX() {
+		return scaleX;
+	}
+
+	@Override
+	public float getScaleY() {
+		return scaleY;
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		this.scaleX = sx;
+		this.scaleY = sy;
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return false;
+	}
+
+	@Override
+	public boolean inContains(float x, float y, float w, float h) {
+		return getRectBox().contains(x, y, w, h);
+	}
+
+	@Override
+	public ActionTween selfAction() {
+		return PlayerUtils.set(this);
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return PlayerUtils.isActionCompleted(this);
 	}
 
 	@Override

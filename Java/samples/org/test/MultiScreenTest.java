@@ -15,7 +15,6 @@ import loon.event.ClickListener;
 import loon.event.GameTouch;
 import loon.font.BMFont;
 import loon.opengl.GLEx;
-import loon.utils.I18N;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
@@ -158,6 +157,12 @@ public class MultiScreenTest extends Screen {
 
 	@Override
 	public void onLoad() {
+		// 可以通过设置syncTween与让缓动计算与画布刷新完全同步(Loon默认异步)
+		// syncTween(true);
+		// 也可以设置全局的缓动动画延迟
+		// delayTween(10);
+		// 创建一个普通的Entity
+		
 		String[][] pages = { page0, page1 };
 		// 使用图片字体(如果不设置，则loon默认使用当前系统字体)
 		if (info_font == null) {
@@ -299,7 +304,8 @@ public class MultiScreenTest extends Screen {
 		// 偏移Screen大小-按钮大小-5
 		nextClick.setX(getWidth() - nextClick.getWidth() - 5);
 		nextClick.setY(getHeight() - nextClick.getHeight() - 24);
-		nextClick.SetClick(new ClickListener() {
+		//监听next按钮
+		nextClick.S(new ClickListener() {
 
 			@Override
 			public void UpClick(LComponent comp, float x, float y) {
@@ -349,7 +355,7 @@ public class MultiScreenTest extends Screen {
 												// 的（此处可查找多个）
 					// fadeIn(10).startTweens();
 					fadeIn(10).delay(1f).rotateTo(360).startTweens(); // 组件淡入，速度10，间隔1秒，旋转360，开始动画
-					// 杀掉这个伪进程（这是同步执行的，非线程）
+					// 杀掉这个伪进程（这是与Loon同步执行的，非真实单独线程）
 					kill();
 				}
 

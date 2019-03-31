@@ -28,14 +28,13 @@ import loon.action.collision.CollisionObject;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureFree;
+import loon.utils.Easing.EasingMode;
 import loon.utils.TArray;
 
 /**
  * 子弹用Entity,用来显示以及管理子弹(复数)用类
  */
 public class BulletEntity extends Entity {
-
-	protected final static String buttleDefaultName = "Buttle";
 
 	private boolean closed;
 
@@ -49,11 +48,14 @@ public class BulletEntity extends Entity {
 
 	private CollisionManager collisionManager;
 
+	private EasingMode easingMode;
+
 	public BulletEntity() {
 		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public BulletEntity(int x, int y, int w, int h) {
+		this.easingMode = EasingMode.Linear;
 		this.bullets = new TArray<Bullet>(32);
 		this.textureFree = new LTextureFree();
 		this.collisionManager = getCollisionManager();
@@ -73,23 +75,57 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity addBullet(LTexture texture, float x, float y, int dir) {
-		return addBullet(new Bullet(texture, x, y, dir));
+		return addBullet(easingMode, texture, x, y, dir);
 	}
 
 	public BulletEntity addBullet(Animation ani, float x, float y, int dir) {
-		return addBullet(new Bullet(ani, x, y, dir));
-	}
-	
-	public BulletEntity addBullet(String path, float x, float y, int dir) {
-		return addBullet(new Bullet(LTextures.loadTexture(path), x, y, dir));
+		return addBullet(easingMode, ani, x, y, dir);
 	}
 
-	public BulletEntity addBullet(Animation ani, float x, float y, int dir, int speed) {
-		return addBullet(new Bullet(ani, x, y, dir, speed));
+	public BulletEntity addBullet(String path, float x, float y, int dir) {
+		return addBullet(easingMode, LTextures.loadTexture(path), x, y, dir);
+	}
+
+	public BulletEntity addBullet(Animation ani, float x, float y, int dir, int initSpeed, float duration) {
+		return addBullet(easingMode, ani, x, y, dir, initSpeed, duration);
+	}
+
+	public BulletEntity addBullet(String path, float x, float y, int dir, int initSpeed, float duration) {
+		return addBullet(easingMode, path, x, y, dir, initSpeed, duration);
+	}
+
+	public BulletEntity addBullet(String path, float x, float y, int dir, int initSpeed) {
+		return addBullet(easingMode, path, x, y, dir, initSpeed);
+	}
+
+	public BulletEntity addBullet(EasingMode easing, LTexture texture, float x, float y, int dir) {
+		return addBullet(new Bullet(easing, texture, x, y, dir));
+	}
+
+	public BulletEntity addBullet(EasingMode easing, Animation ani, float x, float y, int dir) {
+		return addBullet(new Bullet(easing, ani, x, y, dir));
+	}
+
+	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir) {
+		return addBullet(new Bullet(easing, LTextures.loadTexture(path), x, y, dir));
+	}
+
+	public BulletEntity addBullet(EasingMode easing, Animation ani, float x, float y, int dir, int initSpeed,
+			float duration) {
+		return addBullet(new Bullet(easing, ani, x, y, dir, initSpeed, duration));
+	}
+
+	public BulletEntity addBullet(EasingMode easing, Animation ani, float x, float y, int dir, int initSpeed) {
+		return addBullet(new Bullet(easing, ani, x, y, dir, initSpeed));
+	}
+
+	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed) {
+		return addBullet(new Bullet(easing, LTextures.loadTexture(path), x, y, dir, initSpeed));
 	}
 	
-	public BulletEntity addBullet(String path, float x, float y, int dir, int speed) {
-		return addBullet(new Bullet(LTextures.loadTexture(path), x, y, dir, speed));
+	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed,
+			float duration) {
+		return addBullet(new Bullet(easing, LTextures.loadTexture(path), x, y, dir, initSpeed, duration));
 	}
 
 	public BulletEntity addBullet(Bullet bullet) {
@@ -280,7 +316,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getCollisionButtles() {
-		return getCollisionObjects(buttleDefaultName);
+		return getCollisionObjects(Bullet.BUTTLE_DEFAULT_NAME);
 	}
 
 	public TArray<CollisionObject> getCollisionObjectsAt(float x, float y, String objFlag) {
@@ -291,7 +327,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getCollisionButtlesAt(float x, float y) {
-		return getCollisionObjectsAt(x, y, buttleDefaultName);
+		return getCollisionObjectsAt(x, y, Bullet.BUTTLE_DEFAULT_NAME);
 	}
 
 	public TArray<CollisionObject> getIntersectingObjects(CollisionObject obj, String objFlag) {
@@ -302,7 +338,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getIntersectingButtles(CollisionObject obj) {
-		return getIntersectingObjects(obj, buttleDefaultName);
+		return getIntersectingObjects(obj, Bullet.BUTTLE_DEFAULT_NAME);
 	}
 
 	public CollisionObject getOnlyIntersectingObject(CollisionObject obj, String objFlag) {
@@ -313,7 +349,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public CollisionObject getOnlyIntersectingButtle(CollisionObject obj) {
-		return getOnlyIntersectingObject(obj, buttleDefaultName);
+		return getOnlyIntersectingObject(obj, Bullet.BUTTLE_DEFAULT_NAME);
 	}
 
 	public TArray<CollisionObject> getObjectsInRange(float x, float y, float r, String objFlag) {
@@ -324,7 +360,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getButtlesInRange(float x, float y, float r) {
-		return getObjectsInRange(x, y, r, buttleDefaultName);
+		return getObjectsInRange(x, y, r, Bullet.BUTTLE_DEFAULT_NAME);
 	}
 
 	public TArray<CollisionObject> getNeighbours(CollisionObject obj, float distance, boolean d, String objFlag) {
@@ -339,7 +375,20 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getNeighboursButtles(CollisionObject obj, float distance, boolean d) {
-		return getNeighbours(obj, distance, d, buttleDefaultName);
+		return getNeighbours(obj, distance, d, Bullet.BUTTLE_DEFAULT_NAME);
+	}
+
+	public EasingMode getEasingMode() {
+		return easingMode;
+	}
+
+	public void setEasingMode(EasingMode easingMode) {
+		this.easingMode = easingMode;
+	}
+
+	@Override
+	public boolean isClosed() {
+		return closed || super.isClosed();
 	}
 
 	@Override

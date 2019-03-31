@@ -869,6 +869,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		this.duration = duration;
 	}
 
+	public ActionTween delayGlobal(float delay) {
+		ActionControl.setDelay((long) (delay * 1000f));
+		return this;
+	}
+
 	public ActionTween ease(Easing ease) {
 		this.equation = ease;
 		return this;

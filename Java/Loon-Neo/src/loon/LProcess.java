@@ -44,7 +44,7 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimerContext;
 
-public class LProcess extends PlayerUtils {
+public class LProcess {
 
 	protected TArray<Updateable> loads;
 

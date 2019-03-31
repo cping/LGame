@@ -89,7 +89,7 @@ public class ColorTo extends ActionEvent {
 				startBlue = color.b;
 				startAlpha = color.a;
 			} else {
-				start = LColor.white;
+				start = LColor.white.cpy();
 				startRed = 0f;
 				startGreen = 0f;
 				startBlue = 0f;
@@ -123,7 +123,7 @@ public class ColorTo extends ActionEvent {
 			return;
 		}
 		if (endColor == null) {
-			endColor = LColor.white;
+			endColor = LColor.white.cpy();
 		}
 
 		startRed = startColor.r;

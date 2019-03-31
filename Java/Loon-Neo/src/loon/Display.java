@@ -199,8 +199,8 @@ public class Display extends LSystemView {
 				this.logo.loadTexture();
 			}
 			if (centerX == 0 || centerY == 0) {
-				this.centerX = (int) (LSystem.viewSize.width) / 2 - logo.getWidth() / 2;
-				this.centerY = (int) (LSystem.viewSize.height) / 2 - logo.getHeight() / 2;
+				this.centerX =  (LSystem.viewSize.getWidth()) / 2 - logo.getWidth() / 2;
+				this.centerY =  (LSystem.viewSize.getHeight()) / 2 - logo.getHeight() / 2;
 			}
 			if (logo == null || !logo.isLoaded()) {
 				return;
@@ -248,9 +248,15 @@ public class Display extends LSystemView {
 
 	private LSetting _setting;
 
-	protected boolean showLogo = false, initDrawConfig = false;;
+	protected boolean showLogo = false, initDrawConfig = false, tweenSync;
 
 	private Logo logoTex;
+
+	private PaintAllPort paintAllPort;
+
+	private PaintPort paintPort;
+
+	private UpdatePort updatePort;
 
 	private void newDefView(boolean show) {
 		if (show && fpsFont == null) {
@@ -271,14 +277,27 @@ public class Display extends LSystemView {
 		GL20 gl = game.graphics().gl;
 		_glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget, gl);
 		_glEx.update();
-		if (_setting.isSyncTween) {
-			paint.connect(new PaintAllPort(this));
-		} else {
-			paint.connect(new PaintPort(this));
-			update.connect(new UpdatePort());
-		}
+		updateSyncTween(_setting.isSyncTween);
 		if (!_setting.isLogo) {
 			_process.start();
+		}
+	}
+
+	public void updateSyncTween(boolean sync) {
+		if (paintAllPort != null) {
+			paint.disconnect(paintAllPort);
+		}
+		if (paintPort != null) {
+			paint.disconnect(paintPort);
+		}
+		if (update != null) {
+			update.disconnect(updatePort);
+		}
+		if (sync) {
+			paint.connect(paintAllPort = new PaintAllPort(this));
+		} else {
+			paint.connect(paintPort = new PaintPort(this));
+			update.connect(updatePort = new UpdatePort());
 		}
 	}
 

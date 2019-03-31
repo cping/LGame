@@ -23,6 +23,7 @@ package loon.component;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.component.skin.ControlSkin;
 import loon.event.SysTouch;
@@ -174,21 +175,21 @@ public class LControl extends LComponent {
 		}
 		if (this.allowDiagonal) {
 			final float angle = MathUtils.toDegrees(MathUtils.atan2(x, y)) + 180;
-			if (LSystem.checkAngle(0, angle) || LSystem.checkAngle(360, angle)) {
+			if (CollisionHelper.checkAngle(0, angle) || CollisionHelper.checkAngle(360, angle)) {
 				position(0, -SIDE, Config.TUP);
-			} else if (LSystem.checkAngle(45, angle)) {
+			} else if (CollisionHelper.checkAngle(45, angle)) {
 				position(-DIAGONAL, -DIAGONAL, Config.LEFT);
-			} else if (LSystem.checkAngle(90, angle)) {
+			} else if (CollisionHelper.checkAngle(90, angle)) {
 				position(-SIDE, 0, Config.TLEFT);
-			} else if (LSystem.checkAngle(135, angle)) {
+			} else if (CollisionHelper.checkAngle(135, angle)) {
 				position(-DIAGONAL, DIAGONAL, Config.DOWN);
-			} else if (LSystem.checkAngle(180, angle)) {
+			} else if (CollisionHelper.checkAngle(180, angle)) {
 				position(0, SIDE, Config.TDOWN);
-			} else if (LSystem.checkAngle(225, angle)) {
+			} else if (CollisionHelper.checkAngle(225, angle)) {
 				position(DIAGONAL, DIAGONAL, Config.RIGHT);
-			} else if (LSystem.checkAngle(270, angle)) {
+			} else if (CollisionHelper.checkAngle(270, angle)) {
 				position(SIDE, 0, Config.TRIGHT);
-			} else if (LSystem.checkAngle(315, angle)) {
+			} else if (CollisionHelper.checkAngle(315, angle)) {
 				position(DIAGONAL, -DIAGONAL, Config.UP);
 			} else {
 				position(0, 0, Config.EMPTY);

@@ -27,9 +27,14 @@ import loon.action.ActionControl;
 import loon.action.ActionTween;
 import loon.action.camera.BaseCamera;
 import loon.action.camera.EmptyCamera;
+import loon.action.collision.CollisionHelper;
+import loon.action.collision.CollisionManager;
+import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.collision.GravityHandler;
 import loon.action.collision.GravityResult;
+import loon.action.map.Config;
+import loon.action.map.Field2D;
 import loon.action.page.ScreenSwitch;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprite;
@@ -144,6 +149,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public final static byte DRAW_DESKTOP = 2;
 
+	/**
+	 * 通用碰撞管理器(需要用户自行初始化(getCollisionManager或initializeCollision),不实例化默认不存在)
+	 */
+	private CollisionManager _collisionManager;
+
+	private boolean _collisionClosed;
+	
 	private ArrayMap _keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 
 	private Updateable _closeUpdate;
@@ -755,11 +767,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen add(Port<LTimerContext> timer, boolean paint) {
-		if (LSystem._base != null && LSystem._base.display() != null) {
+		LGame game = LSystem._base;
+		if (game != null && game.display() != null) {
 			if (paint) {
-				_conns.add(LSystem._base.display().paint.connect(timer));
+				_conns.add(game.display().paint.connect(timer));
 			} else {
-				_conns.add(LSystem._base.display().update.connect(timer));
+				_conns.add(game.display().update.connect(timer));
 			}
 		}
 		return this;
@@ -783,13 +796,39 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen remove(Port<LTimerContext> timer, boolean paint) {
-		if (LSystem._base != null && LSystem._base.display() != null) {
+		LGame game = LSystem._base;
+		if (game != null && game.display() != null) {
 			if (paint) {
-				_conns.remove(LSystem._base.display().paint.connect(timer));
+				_conns.remove(game.display().paint.connect(timer));
 			} else {
-				_conns.remove(LSystem._base.display().update.connect(timer));
+				_conns.remove(game.display().update.connect(timer));
 			}
 		}
+		return this;
+	}
+
+	/**
+	 * 要求缓动动画计算与游戏画布刷新同步或异步(默认异步)
+	 * 
+	 * @param sync
+	 * @return
+	 */
+	public Screen syncTween(boolean sync) {
+		LGame game = LSystem._base;
+		if (game != null && game.display() != null) {
+			game.display().updateSyncTween(sync);
+		}
+		return this;
+	}
+
+	/**
+	 * 设定缓动动画延迟时间
+	 * 
+	 * @param delay
+	 * @return
+	 */
+	public Screen delayTween(long delay) {
+		ActionControl.setDelay(delay);
 		return this;
 	}
 
@@ -2732,7 +2771,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	private final void process(final LTimerContext timer) {
-		for (int i = 0; i < _keyActions.size(); i++) {
+		for (int i = _keyActions.size() - 1; i >= 0; i--) {
 			ActionKey act = (ActionKey) _keyActions.get(i);
 			if (act.isPressed()) {
 				act.act(elapsedTime);
@@ -3108,7 +3147,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			int keySize = _keyActions.size();
 			if (keySize > 0) {
 				int keyCode = e.getKeyCode();
-				for (int i = 0; i < keySize; i++) {
+				for (int i = keySize - 1; i >= 0; i--) {
 					Integer c = (Integer) _keyActions.getKey(i);
 					if (c == keyCode) {
 						ActionKey act = (ActionKey) _keyActions.getValue(c);
@@ -3975,6 +4014,316 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public String getDisplayResolutionMode() {
 		return getDisplayResolution().matchMode();
+	}
+
+	/**
+	 * 判断当前Touch行为与上次是否在屏幕中指定间距内存在移动
+	 * 
+	 * @param distance
+	 * @return
+	 */
+	public boolean isTouchMoved(float distance) {
+		return CollisionHelper.isMoved(distance, lastTouchX, lastTouchY, getTouchX(), getTouchY());
+	}
+
+	/**
+	 * 判断当前Touch行为与上次是否存在一定程度的移动(默认间距32个像素)
+	 * 
+	 * @return
+	 */
+	public boolean isTouchMoved() {
+		return isTouchMoved(32);
+	}
+
+	/**
+	 * 返回当前Touch行为的移动方向(返回int为map组件包中 @see Config 中设置的整型方向参数)
+	 * 
+	 * @param distance
+	 * @return
+	 */
+	public int getTouchDirection(float distance) {
+		if (isTouchMoved(distance)) {
+			return Field2D.getDirection(Vector2f.at(lastTouchX, lastTouchY), Vector2f.at(getTouchX(), getTouchY()));
+		}
+		return Config.EMPTY;
+	}
+
+	/**
+	 * 返回当前Touch行为的移动方向(返回map组件包中的Config整型方向)
+	 * 
+	 * @return
+	 */
+	public int getTouchDirection() {
+		return getTouchDirection(32);
+	}
+
+	/**
+	 * 获得碰撞器实例对象
+	 * 
+	 * @return
+	 */
+	public CollisionManager getCollisionManager() {
+		if (_collisionClosed || _collisionManager == null) {
+			_collisionManager = new CollisionManager();
+			_collisionClosed = false;
+		}
+		return _collisionManager;
+	}
+
+	/**
+	 * 初始碰撞器检测的地图瓦片范围(也就是实际像素/瓦片大小后缩放进行碰撞),瓦片数值越小,精确度越高,但是计算时间也越长
+	 * 
+	 * @param tileSize
+	 */
+	public void initializeCollision(int tileSize) {
+		getCollisionManager().initialize(tileSize);
+	}
+
+	/**
+	 * 初始碰撞器检测的地图瓦片范围(也就是实际像素/瓦片大小后缩放进行碰撞),瓦片数值越小,精确度越高,但是计算时间也越长
+	 * 
+	 * @param tileSizeX
+	 * @param tileSizeY
+	 */
+	public void initializeCollision(int tileSizeX, int tileSizeY) {
+		getCollisionManager().initialize(tileSizeX, tileSizeY);
+	}
+
+	/**
+	 * 若此项为true(默认为false),则碰撞查询涉及具体碰撞对象的碰撞关系时,只会返回与查询对象同一层(layer值,z值)的对象
+	 * 
+	 * @param itlayer
+	 */
+	public void setCollisionInTheLayer(boolean itlayer) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setInTheLayer(itlayer);
+	}
+
+	/**
+	 * 是否设定了同层(layer值,z值)限制(默认为false)
+	 * 
+	 * @param itlayer
+	 */
+	public boolean getCollisionInTheLayer() {
+		if (_collisionClosed) {
+			return false;
+		}
+		return _collisionManager.getInTheLayer();
+	}
+
+	/**
+	 * 让碰撞器偏移指定坐标后产生碰撞
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void setCollisionOffsetPos(float x, float y) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setOffsetPos(x, y);
+	}
+
+	/**
+	 * 让碰撞器偏移指定坐标后产生碰撞
+	 * 
+	 * @param x
+	 */
+	public void setCollisionOffsetX(float x) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setOffsetX(x);
+	}
+
+	/**
+	 * 让碰撞器偏移指定坐标后产生碰撞
+	 * 
+	 * @param y
+	 */
+	public void setCollisionOffsetY(float y) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.setOffsetY(y);
+	}
+
+	/**
+	 * 获得碰撞器当前的偏移坐标
+	 * 
+	 * @return
+	 */
+	public Vector2f getCollisionOffsetPos() {
+		if (_collisionClosed) {
+			return Vector2f.ZERO();
+		}
+		return _collisionManager.getOffsetPos();
+	}
+
+	/**
+	 * 注入一个碰撞对象
+	 * 
+	 * @param obj
+	 */
+	public void putCollision(CollisionObject obj) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.addObject(obj);
+	}
+
+	/**
+	 * 删除一个碰撞对象
+	 * 
+	 * @param obj
+	 */
+	public void removeCollision(CollisionObject obj) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.removeObject(obj);
+	}
+
+	/**
+	 * 删除一个指定对象标记的碰撞对象
+	 * 
+	 * @param objFlag
+	 */
+	public void removeCollision(String objFlag) {
+		if (_collisionClosed) {
+			return;
+		}
+		_collisionManager.removeObject(objFlag);
+	}
+
+	/**
+	 * 获得当前存在的碰撞对象总数
+	 * 
+	 * @return
+	 */
+	public int getCollisionSize() {
+		if (_collisionClosed) {
+			return 0;
+		}
+		return _collisionManager.numberActors();
+	}
+
+	/**
+	 * 返回当前碰撞管理器中存在的碰撞对象集合
+	 * 
+	 * @return
+	 */
+	public TArray<CollisionObject> getCollisionObjects() {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getActorsList();
+	}
+
+	/**
+	 * 获得所有指定对象标记的碰撞对象
+	 * 
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getCollisionObjects(String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getObjects(objFlag);
+	}
+
+	/**
+	 * 获得与指定坐标碰撞并且有指定对象标记的对象
+	 * 
+	 * @param x
+	 * @param y
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getCollisionObjectsAt(float x, float y, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getObjectsAt(x, y, objFlag);
+	}
+
+	/**
+	 * 获得有指定标记并与指定对象相交的集合
+	 * 
+	 * @param obj
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getIntersectingObjects(CollisionObject obj, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getIntersectingObjects(obj, objFlag);
+	}
+
+	/**
+	 * 获得一个有指定标记并与指定对象相交的单独对象
+	 * 
+	 * @param obj
+	 * @param objFlag
+	 * @return
+	 */
+	public CollisionObject getOnlyIntersectingObject(CollisionObject obj, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getOnlyIntersectingObject(obj, objFlag);
+	}
+
+	/**
+	 * 获得在指定位置指定大小圆轴内有指定标记的对象集合
+	 * 
+	 * @param x
+	 * @param y
+	 * @param r
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getObjectsInRange(float x, float y, float r, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		return _collisionManager.getObjectsInRange(x, y, r, objFlag);
+	}
+
+	/**
+	 * 获得与指定对象相邻的全部对象
+	 * 
+	 * @param obj
+	 * @param distance
+	 * @param d
+	 * @param objFlag
+	 * @return
+	 */
+	public TArray<CollisionObject> getNeighbours(CollisionObject obj, float distance, boolean d, String objFlag) {
+		if (_collisionClosed) {
+			return null;
+		}
+		if (distance < 0) {
+			throw LSystem.runThrow("distance < 0");
+		} else {
+			return _collisionManager.getNeighbours(obj, distance, d, objFlag);
+		}
+	}
+
+	/**
+	 * 注销碰撞器
+	 * 
+	 */
+	public void disposeCollision() {
+		_collisionClosed = true;
+		if (_collisionManager != null) {
+			_collisionManager.dispose();
+			_collisionManager = null;
+		}
 	}
 
 	/**

@@ -406,7 +406,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public LColor getColor() {
-		return this._baseColor;
+		return this._baseColor.cpy();
 	}
 
 	@Override

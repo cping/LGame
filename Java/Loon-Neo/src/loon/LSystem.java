@@ -40,9 +40,113 @@ import loon.utils.json.JsonImpl;
 
 public class LSystem {
 
-	public final static EmptyObject newEmptyObject() {
-		return new EmptyObject();
-	}
+	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,而不替换删除api,所以0.5会持续的比较长……)
+	public static final String version = "0.5";
+
+	// 默认的字符串打印完毕flag
+	public static String FLAG_TAG = "▼";
+
+	public static String FLAG_SELECT_TAG = "◆";
+
+	// 默认缓存数量
+	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
+
+	// 行分隔符
+	public static final String LS = System.getProperty("line.separator", "\n");
+
+	// 文件分割符
+	public static final String FS = System.getProperty("file.separator", "/");
+
+	// 换行标记
+	public static final String NL = "\r\n";
+
+	// 屏幕大小
+	public static final Dimension viewSize = new Dimension(480, 320);
+
+	public static final int MODE_NORMAL = 1;
+
+	public static final int MODE_ALPHA_MAP = 2;
+
+	public static final int MODE_ALPHA_BLEND = 3;
+
+	public static final int MODE_COLOR_MULTIPLY = 4;
+
+	public static final int MODE_ADD = 5;
+
+	public static final int MODE_SCREEN = 6;
+
+	public static final int MODE_ALPHA = 7;
+
+	public static final int MODE_SPEED = 8;
+
+	public static final int MODE_ALPHA_ONE = 9;
+
+	public static final int MODE_NONE = 10;
+
+	public static final int MODE_MASK = 11;
+
+	public static final int MODE_LIGHT = 12;
+
+	public static final int MODE_ALPHA_ADD = 13;
+
+	public static final int MODE_MULTIPLY = 14;
+	// 兆秒
+	public static final long MSEC = 1;
+
+	// 秒
+	public static final long SECOND = 1000;
+
+	// 分
+	public static final long MINUTE = SECOND * 60;
+
+	// 小时
+	public static final long HOUR = MINUTE * 60;
+
+	// 天
+	public static final long DAY = HOUR * 24;
+
+	// 周
+	public static final long WEEK = DAY * 7;
+
+	// 理论上一年
+	public static final long YEAR = DAY * 365;
+
+	// 是否使用了HTML5环境
+	private static boolean _USE_HTML5 = false;
+
+	private static boolean _USE_MOBILE = false;
+
+	public static String FONT_NAME = "Dialog";
+
+	public static String ENCODING = "UTF-8";
+
+	public static String APP_NAME = "Loon";
+
+	public static boolean NOT_DRAG = false;
+
+	public static boolean NOT_MOVE = false;
+
+	public static float EMULATOR_BUTTIN_SCALE = 1f;
+
+	private static float scaleWidth = 1f;
+
+	private static float scaleHeight = 1f;
+
+	public static boolean PAUSED = false;
+
+	public static boolean AUTO_REPAINT = true;
+
+	public static boolean USE_LOG = true;
+
+	// 是否单独切分渲染用字体
+	public static boolean USE_TRUEFONT_CLIP = true;
+
+	// 包内默认的图片路径
+	public static String FRAMEWORK_IMG_NAME = "loon_";
+
+	private static IFont _defaultLogFont = null;
+
+	private static IFont _defaultGameFont = null;
 
 	public final static String getGLExVertexShader() {
 		ShaderCmd cmd = ShaderCmd.getCmd("glex_vertex");
@@ -68,9 +172,9 @@ public class LSystem {
 		if (cmd.isCache()) {
 			return cmd.getShader();
 		} else {
-			cmd.putVarying("LOWP vec4","v_color");
+			cmd.putVarying("LOWP vec4", "v_color");
 			cmd.putVaryingVec2("v_texCoords");
-			cmd.putUniform("sampler2D","u_texture");
+			cmd.putUniform("sampler2D", "u_texture");
 			cmd.putMainLowpCmd("  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);");
 			return cmd.getShader();
 		}
@@ -81,60 +185,13 @@ public class LSystem {
 		if (cmd.isCache()) {
 			return cmd.getShader();
 		} else {
-			cmd.putUniform("LOWP vec4","v_color");
+			cmd.putUniform("LOWP vec4", "v_color");
 			cmd.putVaryingVec2("v_texCoords");
-			cmd.putUniform("sampler2D","u_texture");
+			cmd.putUniform("sampler2D", "u_texture");
 			cmd.putMainLowpCmd("  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);");
 			return cmd.getShader();
 		}
 	}
-	
-	public static String FONT_NAME = "Dialog";
-
-	public static String ENCODING = "UTF-8";
-
-	public static String APP_NAME = "Loon";
-
-	public static boolean LOW_API = true;
-
-	public static boolean NOT_DRAG = false;
-
-	public static boolean NOT_MOVE = false;
-
-	public static float EMULATOR_BUTTIN_SCALE = 1f;
-
-	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
-
-	private static float scaleWidth = 1f;
-
-	private static float scaleHeight = 1f;
-
-	public static final Dimension viewSize = new Dimension(480, 320);
-
-	public static boolean PAUSED = false;
-
-	public static boolean AUTO_REPAINT = true;
-
-	public static boolean USE_LOG = true;
-
-	// 是否单独切分渲染用字体
-	public static boolean USE_TRUEFONT_CLIP = true;
-
-	// 包内默认的图片路径
-	public static String FRAMEWORK_IMG_NAME = "loon_";
-
-	// 行分隔符
-	final public static String LS = System.getProperty("line.separator", "\n");
-
-	// 文件分割符
-	final public static String FS = System.getProperty("file.separator", "/");
-
-	// 换行标记
-	final public static String NL = "\r\n";
-
-	private static IFont _defaultLogFont = null;
-
-	private static IFont _defaultGameFont = null;
 
 	/**
 	 * 获得系统画面log中显示的字体(如果未设置则默认为本地字体渲染,字体大小16)
@@ -188,14 +245,6 @@ public class LSystem {
 		LSystem.setSystemGameFont(font);
 	}
 
-	// 默认的字符串打印完毕flag
-	public static String FLAG_TAG = "▼";
-	
-	public static String FLAG_SELECT_TAG = "◆";
-	
-	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api，而不替换删除api……)
-	public final static String version = "0.5";
-
 	public final String getVersionString() {
 		return version;
 	}
@@ -203,58 +252,6 @@ public class LSystem {
 	public final static Vector3f getVersion() {
 		return new Vector3f(0, 5, 0);
 	}
-
-	public static int MODE_NORMAL = 1;
-
-	public static int MODE_ALPHA_MAP = 2;
-
-	public static int MODE_ALPHA_BLEND = 3;
-
-	public static int MODE_COLOR_MULTIPLY = 4;
-
-	public static int MODE_ADD = 5;
-
-	public static int MODE_SCREEN = 6;
-
-	public static int MODE_ALPHA = 7;
-
-	public static int MODE_SPEED = 8;
-
-	public static int MODE_ALPHA_ONE = 9;
-
-	public static int MODE_NONE = 10;
-
-	public static int MODE_MASK = 11;
-
-	public static int MODE_LIGHT = 12;
-
-	public static int MODE_ALPHA_ADD = 13;
-
-	public static int MODE_MULTIPLY = 14;
-	// 兆秒
-	final public static long MSEC = 1;
-
-	// 秒
-	final public static long SECOND = 1000;
-
-	// 分
-	final public static long MINUTE = SECOND * 60;
-
-	// 小时
-	final public static long HOUR = MINUTE * 60;
-
-	// 天
-	final public static long DAY = HOUR * 24;
-
-	// 周
-	final public static long WEEK = DAY * 7;
-
-	// 理论上一年
-	final public static long YEAR = DAY * 365;
-
-	// 是否使用了HTML5环境
-	private static boolean _USE_HTML5 = false;
-	private static boolean _USE_MOBILE = false;
 
 	static LGame _base;
 
@@ -465,7 +462,6 @@ public class LSystem {
 		}
 	}
 
-
 	public static ShaderProgram createShader(String ver, String fragment) {
 		ShaderProgram shader = new ShaderProgram(ver, fragment);
 		if (shader.isCompiled() == false) {
@@ -500,10 +496,6 @@ public class LSystem {
 
 	public final static int unite(int hashCode, int value) {
 		return 31 * hashCode + value;
-	}
-
-	public final static boolean checkAngle(float angle, float actual) {
-		return actual > angle - 22.5f && actual < angle + 22.5f;
 	}
 
 	public static boolean isImage(String extension) {
