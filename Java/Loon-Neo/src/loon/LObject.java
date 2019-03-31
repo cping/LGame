@@ -354,6 +354,15 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public RectBox getCollisionArea() {
 		return getRect(getX(), getY(), getWidth(), getHeight());
 	}
+	
+	protected RectBox setRect(RectBox rect){
+		if (_rect == null) {
+			_rect = rect;
+		} else {
+			_rect.setBounds(rect);
+		}
+		return this._rect;
+	}
 
 	protected RectBox getRect(float x, float y, float w, float h) {
 		if (_rect == null) {

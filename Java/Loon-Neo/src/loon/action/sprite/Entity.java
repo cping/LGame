@@ -829,7 +829,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			int i = 0;
 			for (; i < childCount; i++) {
 				final IEntity child = children.get(i);
-				if (child.getLayer() < 0) {
+				if (child != null && child.getLayer() < 0) {
 					child.createUI(g, offsetX, offsetY);
 				} else {
 					break;
@@ -839,7 +839,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			this.paint(g, offsetX, offsetY);
 			this.postPaint(g);
 			for (; i < childCount; i++) {
-				children.get(i).createUI(g, offsetX, offsetY);
+				final IEntity child = children.get(i);
+				if (child != null && child.getLayer() >= 0) {
+					child.createUI(g, offsetX, offsetY);
+				}
 			}
 		}
 	}
@@ -1247,7 +1250,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public boolean intersects(RectBox rect) {
 		return getCollisionBox().intersects(rect);
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

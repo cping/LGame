@@ -248,7 +248,7 @@ public class Display extends LSystemView {
 
 	private LSetting _setting;
 
-	protected boolean showLogo = false, initDrawConfig = false, tweenSync;
+	protected boolean showLogo = false, initDrawConfig = false;
 
 	private Logo logoTex;
 

@@ -38,17 +38,59 @@ public class Field2D implements Config {
 
 	private final static float ANGULAR = 0.706F;
 
+	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(9);
+
+	final static private IntMap<Vector2f> directionValues = new IntMap<Vector2f>(9);
+
+	static {
+		directions.put(new Vector2f(0, 0), Config.EMPTY);
+		directions.put(new Vector2f(1, -1), Config.UP);
+		directions.put(new Vector2f(-1, -1), Config.LEFT);
+		directions.put(new Vector2f(1, 1), Config.RIGHT);
+		directions.put(new Vector2f(-1, 1), Config.DOWN);
+		directions.put(new Vector2f(0, -1), Config.TUP);
+		directions.put(new Vector2f(-1, 0), Config.TLEFT);
+		directions.put(new Vector2f(1, 0), Config.TRIGHT);
+		directions.put(new Vector2f(0, 1), Config.TDOWN);
+
+		directionValues.put(Config.EMPTY, new Vector2f(0, 0));
+		directionValues.put(Config.UP, new Vector2f(1, -1));
+		directionValues.put(Config.LEFT, new Vector2f(-1, -1));
+		directionValues.put(Config.RIGHT, new Vector2f(1, 1));
+		directionValues.put(Config.DOWN, new Vector2f(-1, 1));
+		directionValues.put(Config.TUP, new Vector2f(0, -1));
+		directionValues.put(Config.TLEFT, new Vector2f(-1, 0));
+		directionValues.put(Config.TRIGHT, new Vector2f(1, 0));
+		directionValues.put(Config.TDOWN, new Vector2f(0, 1));
+
+	}
+
+	private String _objectName = "Field2D";
+
 	private Vector2f _offset = new Vector2f();
 
-	private RectBox _rect = null;
+	private RectBox _rectTemp = null;
 
 	private Tile _tileImpl;
 
-	private String _name = "Field2D";
+	private static Vector2f _tempDir;
 
 	public Object Tag;
 
-	public static int angle(Vector2f source, Vector2f target) {
+	private TArray<Vector2f> result;
+
+	private int[][] mapArrays;
+
+	private int[] moveLimited;
+
+	// default size
+	private int tileWidth = 32;
+
+	private int tileHeight = 32;
+
+	private int width, height;
+
+	public static final int angle(Vector2f source, Vector2f target) {
 		int nx = target.x() - source.x();
 		int ny = target.y() - source.y();
 		int r = MathUtils.sqrt(nx * nx + ny * ny);
@@ -60,12 +102,110 @@ public class Field2D implements Config {
 		return angle;
 	}
 
-	public static int getDirection(Vector2f source, Vector2f target, int dirNumber) {
+	public static final float getDirectionToAngle(int dir) {
+		switch (dir) {
+		case Config.UP:
+			return 45;
+		case Config.LEFT:
+			return 315;
+		case Config.RIGHT:
+			return 135;
+		case Config.DOWN:
+			return 225;
+		case Config.TRIGHT:
+			return 90;
+		case Config.TDOWN:
+			return 180;
+		case Config.TLEFT:
+			return 270;
+		case Config.TUP:
+		default:
+			return 0;
+		}
+	}
+
+	public static final Vector2f getDirectionToPoint(int dir, int value) {
+		Vector2f direction = null;
+		switch (dir) {
+		case Config.UP:
+			direction = new Vector2f(value, -value);
+			break;
+		case Config.LEFT:
+			direction = new Vector2f(-value, -value);
+			break;
+		case Config.RIGHT:
+			direction = new Vector2f(value, value);
+			break;
+		case Config.DOWN:
+			direction = new Vector2f(-value, value);
+			break;
+		case Config.TUP:
+			direction = new Vector2f(0, -value);
+			break;
+		case Config.TLEFT:
+			direction = new Vector2f(-value, 0);
+			break;
+		case Config.TRIGHT:
+			direction = new Vector2f(value, 0);
+			break;
+		case Config.TDOWN:
+			direction = new Vector2f(0, value);
+			break;
+		default:
+			direction = new Vector2f(0, 0);
+			break;
+		}
+		return direction;
+	}
+
+	public static final int getDirection(int x, int y) {
+		return getDirection(x, y, Config.EMPTY);
+	}
+
+	public static final int getDirection(int x, int y, int value) {
+		int newX = 0;
+		int newY = 0;
+		if (x > 0) {
+			newX = 1;
+		} else if (x < 0) {
+			newX = -1;
+		}
+		if (y > 0) {
+			newY = 1;
+		} else if (y < 0) {
+			newY = -1;
+		}
+		if (_tempDir == null) {
+			_tempDir = new Vector2f(newX, newY);
+		} else {
+			_tempDir.set(newX, newY);
+		}
+		Integer result = directions.get(_tempDir);
+		if (result != null) {
+			return result;
+		} else {
+			return value;
+		}
+	}
+
+	public static final Vector2f getDirection(int type) {
+		if (type > Config.TDOWN) {
+			type = Config.TDOWN;
+		}
+		return directionValues.get(type).cpy();
+	}
+
+	private static void insertArrays(int[][] arrays, int index, int px, int py) {
+		arrays[index][0] = px;
+		arrays[index][1] = py;
+	}
+
+	public static final int getDirection(Vector2f source, Vector2f target, int dirNumber) {
 		int angleValue = angle(source, target);
 		return getDirection(source, target, angleValue, dirNumber);
 	}
 
-	public static int getDirection(Vector2f source, Vector2f target, float angleValue, int dirNumber) {
+	public static final int getDirection(Vector2f source, Vector2f target, float angleValue, int dirNumber) {
 		if (dirNumber == 4) {
 			if (angleValue < 90) {
 				return Config.RIGHT;
@@ -112,7 +252,7 @@ public class Field2D implements Config {
 		return Config.EMPTY;
 	}
 
-	public static int getDirection(Vector2f source, Vector2f target) {
+	public static final int getDirection(Vector2f source, Vector2f target) {
 		if (source.x - target.x > 0) {
 			if (source.y - target.y > 0) {
 				return Config.LEFT;
@@ -140,7 +280,7 @@ public class Field2D implements Config {
 		}
 	}
 
-	public static int getDirection(float angle) {
+	public static final int getDirection(float angle) {
 		float tup = MathUtils.sin(angle) * 0 + MathUtils.cos(angle) * -1;
 		float tright = MathUtils.sin(angle) * 1 + MathUtils.cos(angle) * 0;
 		float tleft = MathUtils.sin(angle) * -1 + MathUtils.cos(angle) * 0;
@@ -160,48 +300,6 @@ public class Field2D implements Config {
 		return EMPTY;
 	}
 
-	private static Vector2f _tempDir;
-
-	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(9);
-
-	final static private IntMap<Vector2f> directionValues = new IntMap<Vector2f>(9);
-
-	static {
-		directions.put(new Vector2f(0, 0), Config.EMPTY);
-		directions.put(new Vector2f(1, -1), Config.UP);
-		directions.put(new Vector2f(-1, -1), Config.LEFT);
-		directions.put(new Vector2f(1, 1), Config.RIGHT);
-		directions.put(new Vector2f(-1, 1), Config.DOWN);
-		directions.put(new Vector2f(0, -1), Config.TUP);
-		directions.put(new Vector2f(-1, 0), Config.TLEFT);
-		directions.put(new Vector2f(1, 0), Config.TRIGHT);
-		directions.put(new Vector2f(0, 1), Config.TDOWN);
-
-		directionValues.put(Config.EMPTY, new Vector2f(0, 0));
-		directionValues.put(Config.UP, new Vector2f(1, -1));
-		directionValues.put(Config.LEFT, new Vector2f(-1, -1));
-		directionValues.put(Config.RIGHT, new Vector2f(1, 1));
-		directionValues.put(Config.DOWN, new Vector2f(-1, 1));
-		directionValues.put(Config.TUP, new Vector2f(0, -1));
-		directionValues.put(Config.TLEFT, new Vector2f(-1, 0));
-		directionValues.put(Config.TRIGHT, new Vector2f(1, 0));
-		directionValues.put(Config.TDOWN, new Vector2f(0, 1));
-
-	}
-
-	private TArray<Vector2f> result;
-
-	private int[][] data;
-
-	private int[] limit;
-
-	// default size
-	private int tileWidth = 32;
-
-	private int tileHeight = 32;
-
-	private int width, height;
-
 	public Field2D(Field2D field) {
 		cpy(field);
 	}
@@ -210,28 +308,28 @@ public class Field2D implements Config {
 		set(TileMapConfig.loadAthwartArray(fileName), tw, th);
 	}
 
-	public Field2D(int[][] data) {
-		this(data, 0, 0);
+	public Field2D(int[][] mapArrays) {
+		this(mapArrays, 0, 0);
 	}
 
-	public Field2D(int[][] data, int tw, int th) {
-		this.set(data, tw, th);
+	public Field2D(int[][] mapArrays, int tw, int th) {
+		this.set(mapArrays, tw, th);
 	}
 
 	public void cpy(Field2D field) {
-		this.set(CollectionUtils.copyOf(field.data), field.tileWidth, field.tileHeight);
+		this.set(CollectionUtils.copyOf(field.mapArrays), field.tileWidth, field.tileHeight);
 	}
 
 	public Tile getTile(int x, int y) {
 		return _tileImpl.at(x, y);
 	}
 
-	public void set(int[][] data, int tw, int th) {
-		this.setMap(data);
+	public void set(int[][] mapArrays, int tw, int th) {
+		this.setMap(mapArrays);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
-		this.width = data[0].length;
-		this.height = data.length;
+		this.width = mapArrays[0].length;
+		this.height = mapArrays.length;
 		if (_tileImpl == null) {
 			this._tileImpl = new TileHelper(tileWidth, tileHeight);
 		} else {
@@ -315,16 +413,16 @@ public class Field2D implements Config {
 	}
 
 	public int[] getLimit() {
-		return limit;
+		return moveLimited;
 	}
 
 	public void setLimit(int[] limit) {
-		this.limit = limit;
+		this.moveLimited = limit;
 	}
 
 	public int getType(int x, int y) {
 		try {
-			return data[x][y];
+			return mapArrays[x][y];
 		} catch (Exception e) {
 			return -1;
 		}
@@ -332,17 +430,17 @@ public class Field2D implements Config {
 
 	public void setType(int x, int y, int tile) {
 		try {
-			this.data[x][y] = tile;
+			this.mapArrays[x][y] = tile;
 		} catch (Exception e) {
 		}
 	}
 
 	public int[][] getMap() {
-		return CollectionUtils.copyOf(data);
+		return CollectionUtils.copyOf(mapArrays);
 	}
 
-	public void setMap(int[][] data) {
-		this.data = data;
+	public void setMap(int[][] mapArrays) {
+		this.mapArrays = mapArrays;
 	}
 
 	public int getPixelsAtFieldType(Vector2f pos) {
@@ -356,13 +454,13 @@ public class Field2D implements Config {
 	}
 
 	public boolean isHit(Vector2f point) {
-		int type = get(data, point);
+		int type = get(mapArrays, point);
 		if (type == -1) {
 			return false;
 		}
-		if (limit != null) {
-			for (int i = 0; i < limit.length; i++) {
-				if (limit[i] == type) {
+		if (moveLimited != null) {
+			for (int i = 0; i < moveLimited.length; i++) {
+				if (moveLimited[i] == type) {
 					return false;
 				}
 			}
@@ -379,82 +477,18 @@ public class Field2D implements Config {
 	}
 
 	public boolean isHit(int px, int py) {
-		int type = get(data, px, py);
+		int type = get(mapArrays, px, py);
 		if (type == -1) {
 			return false;
 		}
-		if (limit != null) {
-			for (int i = 0; i < limit.length; i++) {
-				if (limit[i] == type) {
+		if (moveLimited != null) {
+			for (int i = 0; i < moveLimited.length; i++) {
+				if (moveLimited[i] == type) {
 					return false;
 				}
 			}
 		}
 		return true;
-	}
-
-	public static Vector2f getDirectionToPoint(int dir, int value) {
-		Vector2f direction = null;
-		switch (dir) {
-		case Config.UP:
-			direction = new Vector2f(value, -value);
-			break;
-		case Config.LEFT:
-			direction = new Vector2f(-value, -value);
-			break;
-		case Config.RIGHT:
-			direction = new Vector2f(value, value);
-			break;
-		case Config.DOWN:
-			direction = new Vector2f(-value, value);
-			break;
-		case Config.TUP:
-			direction = new Vector2f(0, -value);
-			break;
-		case Config.TLEFT:
-			direction = new Vector2f(-value, 0);
-			break;
-		case Config.TRIGHT:
-			direction = new Vector2f(value, 0);
-			break;
-		case Config.TDOWN:
-			direction = new Vector2f(0, value);
-			break;
-		default:
-			direction = new Vector2f(0, 0);
-			break;
-		}
-		return direction;
-	}
-
-	public static int getDirection(int x, int y) {
-		return getDirection(x, y, Config.EMPTY);
-	}
-
-	public static int getDirection(int x, int y, int value) {
-		if (_tempDir == null) {
-			_tempDir = new Vector2f(x, y);
-		} else {
-			_tempDir.set(x, y);
-		}
-		Integer result = directions.get(_tempDir);
-		if (result != null) {
-			return result;
-		} else {
-			return value;
-		}
-	}
-
-	public static Vector2f getDirection(int type) {
-		if (type > Config.TDOWN) {
-			type = Config.TDOWN;
-		}
-		return directionValues.get(type);
-	}
-
-	private static void insertArrays(int[][] arrays, int index, int px, int py) {
-		arrays[index][0] = px;
-		arrays[index][1] = py;
 	}
 
 	public int[][] neighbors(int px, int py, boolean flag) {
@@ -493,10 +527,10 @@ public class Field2D implements Config {
 		return result;
 	}
 
-	private int get(int[][] data, int px, int py) {
+	private int get(int[][] mapArrays, int px, int py) {
 		try {
 			if (px >= 0 && px < width && py >= 0 && py < height) {
-				return data[py][px];
+				return mapArrays[py][px];
 			} else {
 				return -1;
 			}
@@ -505,10 +539,10 @@ public class Field2D implements Config {
 		}
 	}
 
-	private int get(int[][] data, Vector2f point) {
+	private int get(int[][] mapArrays, Vector2f point) {
 		try {
 			if (point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height) {
-				return data[point.y()][point.x()];
+				return mapArrays[point.y()][point.x()];
 			} else {
 				return -1;
 			}
@@ -518,20 +552,20 @@ public class Field2D implements Config {
 	}
 
 	public RectBox getRect() {
-		if (_rect == null) {
-			_rect = new RectBox(0, 0, getViewWidth(), getViewHeight());
+		if (_rectTemp == null) {
+			_rectTemp = new RectBox(0, 0, getViewWidth(), getViewHeight());
 		} else {
-			_rect.setSize(getViewWidth(), getViewHeight());
+			_rectTemp.setSize(getViewWidth(), getViewHeight());
 		}
-		return _rect;
+		return _rectTemp;
 	}
 
 	public Field2D setValues(int val) {
-		int w = data[0].length;
-		int h = data.length;
+		int w = mapArrays[0].length;
+		int h = mapArrays.length;
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				data[i][j] = val;
+				mapArrays[i][j] = val;
 			}
 		}
 		return this;
@@ -562,11 +596,11 @@ public class Field2D implements Config {
 	}
 
 	public void setName(String n) {
-		this._name = n;
+		this._objectName = n;
 	}
 
 	public String getName() {
-		return this._name;
+		return this._objectName;
 	}
 
 }

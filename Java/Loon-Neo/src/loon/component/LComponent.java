@@ -749,14 +749,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public RectBox getCollisionBox() {
 		validatePosition();
-		if (_rect != null) {
-			_rect.setBounds(MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY,
+		return setRect(MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY,
 					_rotation, _rect));
-		} else {
-			_rect = MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY, _rotation,
-					_rect);
-		}
-		return _rect;
 	}
 
 	public LComponent getToolTipParent() {

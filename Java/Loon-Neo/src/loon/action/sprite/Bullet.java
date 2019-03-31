@@ -51,6 +51,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	private Vector2f speed;
 	private Animation animation;
 
+	private boolean dirToAngle;
 	private boolean closed;
 	private boolean visible;
 
@@ -112,13 +113,14 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		this.animation = ani;
 		this.direction = dir;
 		this.initSpeed = bulletInitSpeed;
-		this.speed = Field2D.getDirectionToPoint(this.direction, this.initSpeed);
 		this.scaleX = this.scaleY = 1f;
 		this.visible = true;
+		this.dirToAngle = true;
 		this.closed = false;
 		this.width = w;
 		this.height = h;
-		this._rect = new RectBox(x, y, w, h);
+		this.setDirection(this.direction);
+		this.getRect(x, y, w, h);
 	}
 
 	public void draw(GLEx g) {
@@ -132,7 +134,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		if (animation != null) {
 			LTexture texture = animation.getSpriteImage();
 			if (texture != null) {
-				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor);
+				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor, _rotation);
 				width = MathUtils.max(width, texture.width());
 				height = MathUtils.max(height, texture.height());
 			}
@@ -160,6 +162,14 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		return direction;
 	}
 
+	public boolean isDirToAngle() {
+		return dirToAngle;
+	}
+
+	public void setDirToAngle(boolean dta) {
+		this.dirToAngle = dta;
+	}
+
 	public Vector2f getInitSpeed() {
 		return speed;
 	}
@@ -175,8 +185,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	public void setDirection(int dir) {
-		if (this.direction != dir) {
+		if (this.direction != dir || this.speed == null) {
 			this.speed = Field2D.getDirectionToPoint(this.direction, this.initSpeed);
+			if (dirToAngle) {
+				this.setRotation(Field2D.getDirectionToAngle(dir));
+			}
 		}
 		this.direction = dir;
 	}

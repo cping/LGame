@@ -20,8 +20,9 @@
  */
 package loon.action.map;
 /**
- * 默认的方向键与真实方向对应关系如下
+ * <p>默认的方向键与真实方向对应关系如下</p>
  * 
+ * <pre>
  *          n
  *      wn     ne
  *    w           e
@@ -33,6 +34,7 @@ package loon.action.map;
  *   TLEFT       TRIGHT
  *     DOWN     RIGHT
  *         TDOWN
+ * </pre>         
  */
 public interface Config {
 	

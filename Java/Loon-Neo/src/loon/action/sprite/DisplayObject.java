@@ -225,12 +225,7 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 			y -= ((int) (_height * _scaleY) >> 1);
 			break;
 		}
-		if (_rect == null) {
-			_rect = new RectBox(x, y, _width * _scaleX, _height * _scaleY);
-		} else {
-			_rect.setBounds(x, y, _width * _scaleX, _height * _scaleY);
-		}
-		return _rect;
+		return getRect(x, y, _width * _scaleX, _height * _scaleY);
 	}
 
 	public PointF local2Global(float x, float y) {

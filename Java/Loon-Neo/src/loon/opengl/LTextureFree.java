@@ -86,7 +86,7 @@ public class LTextureFree implements IArray, LRelease {
 	}
 
 	public boolean add(LTexture tex) {
-		return add(tex, true);
+		return add(tex, false);
 	}
 
 	public LTextureFree add(LTexture... list) {

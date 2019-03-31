@@ -136,7 +136,7 @@ public class BulletEntity extends Entity {
 			return this;
 		}
 		if (bullet.getTexture() != null) {
-			textureFree.add(bullet.getTexture(), false);
+			textureFree.add(bullet.getTexture());
 		}
 		bullets.add(bullet);
 		collisionManager.addObject(bullet);

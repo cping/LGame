@@ -325,7 +325,7 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param src
 	 * @param dst
-	 * @param allowable
+	 * @param allowDistance
 	 * @return
 	 */
 	public static float getAllowableXDistance(ActionBind src, ActionBind dst, float allowDistance) {
@@ -337,7 +337,7 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param src
 	 * @param dst
-	 * @param allowable
+	 * @param allowDistance
 	 * @return
 	 */
 	public static float getAllowableYDistance(ActionBind src, ActionBind dst, float allowDistance) {
