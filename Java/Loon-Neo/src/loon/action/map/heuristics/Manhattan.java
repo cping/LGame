@@ -35,4 +35,8 @@ public class Manhattan implements AStarFindHeuristic {
 		return MANHATTAN;
 	}
 
+	@Override
+	public String toString() {
+		return "Manhattan";
+	}
 }

@@ -22,6 +22,7 @@ package loon.action;
 
 import loon.geom.Bezier;
 import loon.geom.Vector2f;
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -113,4 +114,16 @@ public class BezierBy extends ActionEvent {
 		return "bezierby";
 	}
 
+	@Override
+	public String toString(){
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("bezier", bezier)
+		.comma()
+		.kv("startX", startX)
+		.comma()
+		.kv("startY", startY)
+		.comma()
+		.kv("EaseTimer", easeTimer);
+		return builder.toString();
+	}
 }

@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 public class CircleTo extends ActionEvent {
 
@@ -114,4 +115,20 @@ public class CircleTo extends ActionEvent {
 		return "circle";
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("centerX",cx)
+		.comma()
+		.kv("centerY", cy)
+		.comma()
+		.kv("radius", radius)
+		.comma()
+		.kv("speed", speed)
+		.comma()
+		.kv("velocity", velocity)
+		.comma()
+		.kv("delta", dt);
+		return builder.toString();
+	}
 }

@@ -38,4 +38,8 @@ public class DiagonalShort implements AStarFindHeuristic {
 		return DIAGONAL_SHORT;
 	}
 
+	@Override
+	public String toString() {
+		return "DiagonalShort";
+	}
 }

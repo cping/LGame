@@ -29,6 +29,7 @@ import loon.utils.IntMap;
 import loon.utils.TArray;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 public class MoveTo extends ActionEvent {
 
@@ -468,5 +469,22 @@ public class MoveTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "move";
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("startLocation", startLocation)
+		.comma()
+		.kv("endLocation", endLocation)
+		.comma()
+		.kv("layerMap",layerMap)
+		.comma()
+		.kv("direction",direction)
+		.comma()
+		.kv("speed",speed)
+		.comma()
+		.kv("heuristic", heuristic);
+		return builder.toString();
 	}
 }

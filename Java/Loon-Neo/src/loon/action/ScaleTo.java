@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 public class ScaleTo extends ActionEvent {
 
@@ -64,10 +65,12 @@ public class ScaleTo extends ActionEvent {
 		return speed;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return _isCompleted;
 	}
 
+	@Override
 	public void onLoad() {
 		if (original != null) {
 			if (startX == -1) {
@@ -81,6 +84,7 @@ public class ScaleTo extends ActionEvent {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (original != null) {
 			synchronized (original) {
@@ -116,5 +120,26 @@ public class ScaleTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "scale";
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("startX", startX)
+		.comma()
+		.kv("startY", startY)
+		.comma()
+		.kv("deltaX", deltaX)
+		.comma()
+		.kv("deltaY", deltaY)
+		.comma()
+		.kv("endX",endX)
+		.comma()
+		.kv("endY",endY)
+		.comma()
+		.kv("speed",speed)
+		.comma()
+		.kv("delta", dt);
+		return builder.toString();
 	}
 }

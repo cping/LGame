@@ -20,6 +20,8 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
+
 /**
  * 缓动事件,多个缓动事件组合嵌套
  * 
@@ -73,5 +75,14 @@ public class TweenTo<T> extends ActionEvent {
 	@Override
 	public String getName() {
 		return "tween";
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		if (_base != null) {
+			builder.kv("ActionTweenBase", _base);
+		}
+		return builder.toString();
 	}
 }

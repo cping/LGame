@@ -20,10 +20,11 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.utils.TArray;
 
 /**
- * 同时运行多个ActionEvent
+ * 如果要[并行](也就是旋转,变色什么的一起来)进行缓动动画,并而分别进行,请把要演示的ActionEvent注入此类,此类用于同时运行多个ActionEvent
  */
 public class ParallelTo extends ActionEvent {
 
@@ -100,5 +101,21 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "parallel";
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		int size = events.size;
+		if (events != null && size > 0) {
+			for (int i = 0; i < size; i++) {
+				ActionEvent event = events.get(i);
+				if (event != null) {
+					builder.addValue(event.toString());
+					builder.tcomma();
+				}
+			}
+		}
+		return builder.toString();
 	}
 }

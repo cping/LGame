@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.Array;
+import loon.utils.StringKeyValue;
 
 public class ReplayTo extends ActionEvent {
 
@@ -82,8 +83,7 @@ public class ReplayTo extends ActionEvent {
 			if (event != currentEvent && event != null) {
 				replays.remove();
 				if (replay) {
-					if (event instanceof ReplayTo && repeatList != null
-							&& repeatList.size() > 0) {
+					if (event instanceof ReplayTo && repeatList != null && repeatList.size() > 0) {
 						Array<ActionEvent> tmp = new Array<ActionEvent>();
 						for (; repeatList.hashNext();) {
 							tmp.add(repeatList.next().reverse());
@@ -131,5 +131,21 @@ public class ReplayTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "replay";
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		if (replays != null && replays.size() > 0) {
+			for (; replays.hashNext();) {
+				ActionEvent event = replays.next();
+				if (event != null) {
+					builder.addValue(event.toString());
+					builder.tcomma();
+				}
+			}
+			replays.stopNext();
+		}
+		return builder.toString();
 	}
 }

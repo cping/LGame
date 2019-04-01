@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -137,5 +138,21 @@ public class RotateTo extends ActionEvent {
 	public String getName() {
 		return "rotate";
 	}
-
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("speed", speed)
+		.comma()
+		.kv("diffAngle", diffAngle)
+		.comma()
+		.kv("startRotation", startRotation)
+		.comma()
+		.kv("dstAngle", dstAngle)
+		.comma()
+		.kv("currentRotation",currentRotation)
+		.comma()
+		.kv("EaseTimer",easeTimer);
+		return builder.toString();
+	}
 }

@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.Flip;
+import loon.utils.StringKeyValue;
 
 public class FlipXTo extends ActionEvent {
 
@@ -66,5 +67,12 @@ public class FlipXTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "flipx";
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("flipX", flipX);
+		return builder.toString();
 	}
 }

@@ -39,4 +39,8 @@ public class Mixing implements AStarFindHeuristic {
 		return MIXING;
 	}
 
+	@Override
+	public String toString() {
+		return "Mixing";
+	}
 }

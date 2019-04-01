@@ -36,4 +36,8 @@ public class Euclidean implements AStarFindHeuristic {
 		return EUCLIDEAN;
 	}
 
+	@Override
+	public String toString() {
+		return "Euclidean";
+	}
 }

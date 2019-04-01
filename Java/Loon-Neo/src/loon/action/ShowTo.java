@@ -20,6 +20,8 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
+
 public class ShowTo extends ActionEvent {
 
 	private boolean visible;
@@ -63,5 +65,12 @@ public class ShowTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "show";
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("visible", visible);
+		return builder.toString();
 	}
 }

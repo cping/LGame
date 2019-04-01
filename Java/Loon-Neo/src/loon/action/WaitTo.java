@@ -22,6 +22,7 @@ package loon.action;
 
 import loon.event.ActionUpdate;
 import loon.geom.BooleanValue;
+import loon.utils.StringKeyValue;
 
 /**
  * 缓动事件,暂停一系列缓动动画,等待ActionUpdate的completed返回true或BooleanValue的result为true才会继续
@@ -82,5 +83,17 @@ public class WaitTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "wait";
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		if (actionUpdate != null) {
+			builder.kv("ActionUpdate", actionUpdate.completed());
+		}
+		if (boolValue != null) {
+			builder.kv("Boolean", boolValue.result());
+		}
+		return builder.toString();
 	}
 }

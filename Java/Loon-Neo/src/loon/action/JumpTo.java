@@ -21,16 +21,15 @@
 package loon.action;
 
 import loon.geom.RectBox;
+import loon.utils.StringKeyValue;
 
 public class JumpTo extends ActionEvent {
 
-	private float moveY;
-
 	private float moveX;
-
-	private int moveJump;
-
+	private float moveY;
 	private float gravity;
+	
+	private int moveJump;
 
 	public JumpTo(int m, float g) {
 		this(0, 0, m, g);
@@ -138,5 +137,18 @@ public class JumpTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "jump";
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("moveX", moveX)
+		.comma()
+		.kv("moveY", moveY)
+		.comma()
+		.kv("moveJump",moveJump)
+		.comma()
+		.kv("gravity",gravity);
+		return builder.toString();
 	}
 }

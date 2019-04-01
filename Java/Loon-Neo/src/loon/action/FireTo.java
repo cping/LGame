@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 public class FireTo extends ActionEvent {
 
@@ -40,10 +41,12 @@ public class FireTo extends ActionEvent {
 		this.speed = speed;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return _isCompleted;
 	}
 
+	@Override
 	public void onLoad() {
 		this.x = original.getX();
 		this.y = original.getY();
@@ -52,6 +55,7 @@ public class FireTo extends ActionEvent {
 		this.vy = (MathUtils.sin(direction) * this.speed);
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		this.x += this.vx;
 		this.y += this.vy;
@@ -104,5 +108,20 @@ public class FireTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "fire";
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("currentX", x)
+		.comma()
+		.kv("currentY", y)
+		.comma()
+		.kv("endX",endX)
+		.comma()
+		.kv("endY",endY)
+		.comma()
+		.kv("speed", speed);
+		return builder.toString();
 	}
 }

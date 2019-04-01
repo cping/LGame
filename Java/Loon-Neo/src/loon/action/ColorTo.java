@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.canvas.LColor;
+import loon.utils.StringKeyValue;
 import loon.utils.timer.EaseTimer;
 
 /**
@@ -79,7 +80,6 @@ public class ColorTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-
 		if (startRed == -1 || startGreen == -1 || startBlue == -1
 				|| startAlpha == -1) {
 			LColor color = original.getColor();
@@ -198,4 +198,14 @@ public class ColorTo extends ActionEvent {
 		return "color";
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("startColor",start)
+		.comma()
+		.kv("endColor", end)
+		.comma()
+		.kv("EaseTimer", easeTimer);
+		return builder.toString();
+	}
 }

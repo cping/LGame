@@ -35,6 +35,7 @@ import loon.utils.Array;
 import loon.utils.Easing;
 import loon.utils.TArray;
 import loon.utils.Easing.EasingMode;
+import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
@@ -528,10 +529,30 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new JumpTo(moveJump, gravity));
 	}
 
+	/**
+	 * <p>
+	 * 需要[并行]的缓动动画事件在此注入
+	 * </p>
+	 * 
+	 * 如果要[并行](也就是旋转,变色什么的一起来)进行缓动动画,而非分别进行,请把要演示的ActionEvent注入此类,此类用于同时运行多个ActionEvent
+	 * 
+	 * @param eves
+	 * @return
+	 */
 	public ActionTween parallelTo(ActionEvent... eves) {
 		return event(new ParallelTo(eves));
 	}
 
+	/**
+	 * <p>
+	 * 需要[并行]的缓动动画事件在此注入
+	 * </p>
+	 * 
+	 * 如果要[并行](也就是旋转,变色什么的一起来)进行缓动动画,而非分别进行,请把要演示的ActionEvent注入此类,此类用于同时运行多个ActionEvent
+	 * 
+	 * @param list
+	 * @return
+	 */
 	public ActionTween parallelTo(TArray<ActionEvent> list) {
 		return event(new ParallelTo(list));
 	}
@@ -542,6 +563,26 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween waitTo(ActionUpdate au) {
 		return event(new WaitTo(au));
+	}
+
+	public ActionTween transformPos(float x, float y) {
+		return event(TransformTo.pos(x, y));
+	}
+
+	public ActionTween transformScale(float scaleX, float scaleY) {
+		return event(TransformTo.scale(scaleX, scaleY));
+	}
+
+	public ActionTween transformAlpha(float newAlpha) {
+		return event(TransformTo.alpha(newAlpha));
+	}
+
+	public ActionTween transformRotation(float newRotation) {
+		return event(TransformTo.rotation(newRotation));
+	}
+
+	public ActionTween transformColor(LColor newColor) {
+		return event(TransformTo.color(newColor));
 	}
 
 	public ActionTween waitTo(BooleanValue bv) {
@@ -818,7 +859,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	/**
-	 * 自定义事件请在此处注入
+	 * 自定义事件(连续动画)请在此处注入
 	 * 
 	 * @param event
 	 * @return
@@ -828,7 +869,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	/**
-	 * 注入缓动动画事件(自定义事件也请在此处注入)
+	 * 注入缓动动画(连续动画)事件(自定义事件也请在此处注入)
 	 * 
 	 * @param event
 	 * @param listener
@@ -1161,11 +1202,31 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return this;
 	}
 
+	@Override
 	protected boolean containsTarget(ActionBind target) {
 		return this._target == target;
 	}
 
+	@Override
 	protected boolean containsTarget(ActionBind target, int tweenType) {
 		return this._target == target && this.type == tweenType;
 	}
+
+	@Override
+	public String toString() {
+		if (actionEvents == null) {
+			return "ActionTween []";
+		}
+		StringKeyValue builder = new StringKeyValue("ActionTween");
+		for (; actionEvents.hashNext();) {
+			ActionEvent eve = actionEvents.next();
+			if (eve != null) {
+				builder.addValue(eve.toString());
+				builder.newLine();
+			}
+		}
+		actionEvents.stopNext();
+		return builder.toString();
+	}
+
 }

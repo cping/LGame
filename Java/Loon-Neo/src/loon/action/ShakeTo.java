@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -109,4 +110,20 @@ public class ShakeTo extends ActionEvent {
 		return "shake";
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("shakeTimer", shakeTimer)
+		.comma()
+		.kv("shakeX", shakeX)
+		.comma()
+		.kv("shakeY",shakeY)
+		.comma()
+		.kv("startOffsetX",startOffsetX)
+		.comma()
+		.kv("startOffsetY",startOffsetY)
+		.comma()
+		.kv("EaseTimer", easeTimer);
+		return builder.toString();
+	}
 }

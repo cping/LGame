@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.action.sprite.ISprite;
+import loon.utils.StringKeyValue;
 
 public class FadeTo extends ActionEvent {
 
@@ -106,5 +107,17 @@ public class FadeTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "fade";
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		if(original != null){
+			builder.kv("alpha", original.getAlpha()).comma();
+		}
+		builder.kv("speed", time)
+		.comma()
+		.kv("currentFrame",currentFrame);
+		return builder.toString();
 	}
 }

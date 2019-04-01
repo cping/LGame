@@ -32,10 +32,15 @@ public class Closest implements AStarFindHeuristic {
 		float result = MathUtils.sqrt((dx * dx) + (dy * dy));
 		return result;
 	}
-	
+
 	@Override
 	public int getType() {
 		return CLOSEST;
+	}
+
+	@Override
+	public String toString() {
+		return "Closest";
 	}
 
 }

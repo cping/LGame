@@ -36,4 +36,8 @@ public class ClosestSquared implements AStarFindHeuristic {
 		return CLOSEST_SQUARED;
 	}
 
+	@Override
+	public String toString() {
+		return "ClosestSquared";
+	}
 }

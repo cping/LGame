@@ -23,6 +23,7 @@ package loon.action;
 import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -101,7 +102,7 @@ public class ArrowTo extends ActionEvent {
 		float dx = endX - startX;
 		float dy = endY - startY;
 		this.vx = dx / speed;
-		this.vy = 1 / speed * (dy - 1.0f / 2.0f * gravity * speed * speed);
+		this.vy = 1f / speed * (dy - 1.0f / 2.0f * gravity * speed * speed);
 		this.dir = Field2D.getDirection(MathUtils.atan2(endX - startX, endY
 				- startY));
 		this.currentX = startX;
@@ -168,5 +169,23 @@ public class ArrowTo extends ActionEvent {
 	public String getName() {
 		return "arrow";
 	}
-
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("gravity",gravity)
+		.comma()
+		.kv("startX",startX)
+		.comma()
+		.kv("startY",startY)
+		.comma()
+		.kv("currentX",currentX)
+		.comma()
+		.kv("currentY",currentY)
+		.comma()
+		.kv("direction",dir)
+		.comma()
+		.kv("EaseTimer",easeTimer);
+		return builder.toString();
+	}
 }

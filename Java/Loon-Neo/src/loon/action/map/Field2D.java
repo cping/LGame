@@ -20,12 +20,14 @@
  */
 package loon.action.map;
 
+import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileHelper;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
+import loon.utils.IArray;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -34,7 +36,7 @@ import loon.utils.TArray;
 /**
  * 2维数组到地图数据的转化与处理用类
  */
-public class Field2D implements Config {
+public class Field2D implements IArray, Config {
 
 	private final static float ANGULAR = 0.706F;
 
@@ -595,12 +597,52 @@ public class Field2D implements Config {
 		return y - _offset.y();
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return mapArrays == null || mapArrays.length == 0;
+	}
+
 	public void setName(String n) {
 		this._objectName = n;
 	}
 
 	public String getName() {
 		return this._objectName;
+	}
+
+	@Override
+	public int size() {
+		return width * height;
+	}
+
+	@Override
+	public void clear() {
+		set(new int[height][width], width, height);
+	}
+
+	@Override
+	public String toString() {
+		return toString(',');
+	}
+
+	public String toString(char split) {
+		if (isEmpty()) {
+			return "[]";
+		}
+		StringBuilder buffer = new StringBuilder(size() * 2 + height + 2);
+		buffer.append('[');
+		buffer.append(LSystem.LS);
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				buffer.append(mapArrays[i][j]);
+				if (j < width - 1) {
+					buffer.append(split);
+				}
+			}
+			buffer.append(LSystem.LS);
+		}
+		buffer.append(']');
+		return buffer.toString();
 	}
 
 }

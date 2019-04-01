@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.event.Updateable;
+import loon.utils.StringKeyValue;
 
 /**
  * 缓动事件,单纯执行一次Updateable的action中内容
@@ -66,5 +67,14 @@ public class UpdateTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "update";
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		if (updateable != null) {
+			builder.kv("Update", updateable);
+		}
+		return builder.toString();
 	}
 }

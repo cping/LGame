@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -163,4 +164,20 @@ public class MoveBy extends ActionEvent {
 		return "moveby";
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("speed", _speed)
+		.comma()
+		.kv("startX", _startX)
+		.comma()
+		.kv("startY",_startY)
+		.comma()
+		.kv("endX",_endX)
+		.comma()
+		.kv("endY",_endY)
+		.comma()
+		.kv("EaseTimer",easeTimer);
+		return builder.toString();
+	}
 }

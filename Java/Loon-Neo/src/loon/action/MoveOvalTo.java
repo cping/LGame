@@ -23,6 +23,7 @@ package loon.action;
 import loon.geom.Vector2f;
 import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.timer.EaseTimer;
 
 /**
@@ -206,5 +207,30 @@ public class MoveOvalTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "moveoval";
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("startAngle", startAngle)
+		.comma()
+		.kv("angle", angle)
+		.comma()
+		.kv("rotateScale",rotateScale)
+		.comma()
+		.kv("size",(width+" x "+height))
+		.comma()
+		.kv("per",per)
+		.comma()
+		.kv("startPoint",startPoint)
+		.comma()
+		.kv("currentPosX", currentPosX)
+		.comma()
+		.kv("directionX",directionX)
+		.comma()
+		.kv("directionY", directionY)
+		.comma()
+		.kv("EaseTimer",easeTimer);
+		return builder.toString();
 	}
 }

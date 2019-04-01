@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -173,5 +174,23 @@ public class TransferTo extends ActionEvent {
 	public String getName() {
 		return "transfer";
 	}
-
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("startPos", startPos)
+		.comma()
+		.kv("endPos", endPos)
+		.comma()
+		.kv("travelDistance",travelDistance)
+		.comma()
+		.kv("currentPosition",currentPosition)
+		.comma()
+		.kv("controllingX",controllingX)
+		.comma()
+		.kv("controllingY", controllingY)
+		.comma()
+		.kv("EaseTimer", easeTimer);
+		return builder.toString();
+	}
 }

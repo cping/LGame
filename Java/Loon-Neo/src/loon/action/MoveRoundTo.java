@@ -23,6 +23,7 @@ package loon.action;
 import loon.geom.Vector2f;
 import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.timer.EaseTimer;
 
 /**
@@ -141,5 +142,36 @@ public class MoveRoundTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "moveround";
+	}
+	
+
+	/**
+	 * 
+	private final float angle;
+	private final float startAngle;
+	private final float radius;
+	private final float startRadius;
+	private Vector2f startPoint,oldStartPoint;
+	private Vector2f centerPoint,oldCenterPoint;
+	private EaseTimer timer;
+	 */
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("startAngle", startAngle)
+		.comma()
+		.kv("angle", angle)
+		.comma()
+		.kv("startRadius",startRadius)
+		.comma()
+		.kv("radius",radius)
+		.comma()
+		.kv("startPoint",startPoint)
+		.comma()
+		.kv("centerPoint", centerPoint)
+		.comma()
+		.kv("EaseTimer",timer);
+		return builder.toString();
 	}
 }

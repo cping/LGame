@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -96,4 +97,15 @@ public class FlashTo extends ActionEvent {
 		return "flash";
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		if(original != null){
+			builder.kv("visible", original.isVisible()).comma();
+		}
+		builder.kv("interval", interval)
+		.comma()
+		.kv("EaseTimer", easeTimer);
+		return builder.toString();
+	}
 }

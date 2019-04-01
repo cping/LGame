@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.action.sprite.effect.BaseEffect;
+import loon.utils.StringKeyValue;
 
 public class EffectTo extends ActionEvent {
 
@@ -62,4 +63,10 @@ public class EffectTo extends ActionEvent {
 		return "effect";
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("BaseEffect", _effect);
+		return builder.toString();
+	}
 }

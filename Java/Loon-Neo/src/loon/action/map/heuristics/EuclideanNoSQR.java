@@ -35,4 +35,8 @@ public class EuclideanNoSQR implements AStarFindHeuristic {
 		return EUCLIDEAN_NOSQR;
 	}
 
+	@Override
+	public String toString() {
+		return "EuclideanNoSQR";
+	}
 }

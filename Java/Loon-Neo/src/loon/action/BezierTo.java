@@ -22,6 +22,7 @@ package loon.action;
 
 import loon.geom.Bezier;
 import loon.geom.Vector2f;
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 
 public class BezierTo extends BezierBy {
@@ -92,4 +93,18 @@ public class BezierTo extends BezierBy {
 		return "bezierto";
 	}
 
+	@Override
+	public String toString(){
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("bezierOriginal", originalconfig)
+		.comma()
+		.kv("bezier", bezier)
+		.comma()
+		.kv("startX", startX)
+		.comma()
+		.kv("startY", startY)
+		.comma()
+		.kv("EaseTimer", easeTimer);
+		return builder.toString();
+	}
 }

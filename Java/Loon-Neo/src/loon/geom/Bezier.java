@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.geom.Bezier;
+import loon.utils.StringKeyValue;
 
 public class Bezier {
 
@@ -84,5 +85,16 @@ public class Bezier {
 
 	public Bezier cpy() {
 		return new Bezier(controlPoint1, controlPoint2, endPosition);
+	}
+	
+	@Override
+	public String toString(){
+		StringKeyValue builder = new StringKeyValue("Bezier");
+		builder.kv("controlPoint1", controlPoint1)
+		.comma()
+		.kv("controlPoint2", controlPoint2)
+		.comma()
+		.kv("endPosition", endPosition);
+		return builder.toString();
 	}
 }

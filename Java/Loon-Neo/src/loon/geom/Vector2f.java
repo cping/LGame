@@ -700,10 +700,6 @@ public class Vector2f implements Serializable, XY {
 		y = MathUtils.abs(y);
 	}
 
-	public final String toString() {
-		return "(" + x + "," + y + ")";
-	}
-
 	public final static Vector2f abs(Vector2f a) {
 		return new Vector2f(MathUtils.abs(a.x), MathUtils.abs(a.y));
 	}
@@ -993,4 +989,10 @@ public class Vector2f implements Serializable, XY {
 		result.y = v.y;
 		return result;
 	}
+
+	@Override
+	public final String toString() {
+		return "(" + x + "," + y + ")";
+	}
+
 }

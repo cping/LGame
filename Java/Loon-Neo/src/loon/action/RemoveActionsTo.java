@@ -20,6 +20,8 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
+
 /**
  * 单纯删除指定动作对象的所有缓动动画事件
  */
@@ -73,5 +75,12 @@ public class RemoveActionsTo extends ActionEvent {
 	@Override
 	public String getName() {
 		return "remove";
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("removeBind", _removeBind);
+		return builder.toString();
 	}
 }

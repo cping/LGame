@@ -1147,6 +1147,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public boolean isClosed() {
 		return isDisposed();
 	}
+	
+	@Override
+	public String toString(){
+		return field.toString();
+	}
 
 	@Override
 	public void close() {

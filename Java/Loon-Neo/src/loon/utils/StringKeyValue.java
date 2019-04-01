@@ -47,7 +47,7 @@ public class StringKeyValue {
 	private boolean _init_buffer;
 
 	public StringKeyValue(String key) {
-		this(32, key, null);
+		this(128, key, null);
 	}
 
 	public StringKeyValue(int size, String key) {
@@ -81,6 +81,9 @@ public class StringKeyValue {
 	}
 
 	public StringKeyValue addValue(CharSequence ch) {
+		if (ch == null) {
+			return this;
+		}
 		initBuild();
 		_buffer.append(ch);
 		_dirty = true;
@@ -131,7 +134,14 @@ public class StringKeyValue {
 		return addValue(" , ");
 	}
 
+	public StringKeyValue tcomma() {
+		return addValue(",");
+	}
+
 	public StringKeyValue kv(CharSequence key, String[] values) {
+		if (key == null || value == null) {
+			return this;
+		}
 		int size = values.length;
 		StringBuilder sbr = new StringBuilder(size);
 		sbr.append('{');
@@ -146,6 +156,9 @@ public class StringKeyValue {
 	}
 
 	public StringKeyValue kv(CharSequence key, Object value) {
+		if (key == null || value == null) {
+			return this;
+		}
 		return addValue(key).addValue(" = ").addValue(value.toString());
 	}
 
