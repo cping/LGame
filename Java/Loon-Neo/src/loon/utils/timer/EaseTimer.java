@@ -22,6 +22,7 @@ package loon.utils.timer;
 
 import loon.utils.Easing;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 
 /**
@@ -216,4 +217,22 @@ public class EaseTimer {
 		return this._progress;
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("EaseTimer");
+		builder.kv("timer", _timer)
+		.comma()
+		.kv("duration", _duration)
+		.comma()
+		.kv("delta", _delta)
+		.comma()
+		.kv("progress", _progress)
+		.comma()
+		.kv("timeInAfter", _timeInAfter)
+		.comma()
+		.kv("easing", _mode)
+		.comma()
+		.kv("finished", _finished);
+		return builder.toString();
+	}
 }

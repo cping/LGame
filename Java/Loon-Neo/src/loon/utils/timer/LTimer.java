@@ -20,6 +20,8 @@
  */
 package loon.utils.timer;
 
+import loon.utils.StringKeyValue;
+
 /**
  * Loon的计时器类
  */
@@ -158,4 +160,14 @@ public class LTimer {
 		return this.currentTick >= this.delay;
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("LTimer");
+		builder.kv("currentTick", currentTick)
+		.comma()
+		.kv("delay", delay)
+		.comma()
+		.kv("active", active);
+		return builder.toString();
+	}
 }

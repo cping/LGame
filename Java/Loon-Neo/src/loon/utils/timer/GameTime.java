@@ -20,6 +20,8 @@
  */
 package loon.utils.timer;
 
+import loon.utils.StringKeyValue;
+
 public class GameTime {
 
 	protected static GameTime _instance = null;
@@ -84,4 +86,14 @@ public class GameTime {
 		return _totalTime;
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("GameTime");
+		builder.kv("elapsedTime", _elapsedTime)
+		.comma()
+		.kv("totalTime", _totalTime)
+		.comma()
+		.kv("running", _running);
+		return builder.toString();
+	}
 }

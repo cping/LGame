@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,25 +20,36 @@
  */
 package loon.action;
 
-import loon.event.Updateable;
+import loon.event.ActionUpdate;
+import loon.geom.BooleanValue;
 
 /**
- * 缓动事件,单纯执行一次Updateable的action中内容
+ * 缓动事件,暂停一系列缓动动画,等待ActionUpdate的completed返回true或BooleanValue的result为true才会继续
  */
-public class UpdateTo extends ActionEvent {
+public class WaitTo extends ActionEvent {
 
-	private Updateable updateable;
+	private ActionUpdate actionUpdate;
 
-	public UpdateTo(Updateable u) {
-		this.updateable = u;
+	private BooleanValue boolValue;
+
+	public WaitTo(ActionUpdate au) {
+		this.actionUpdate = au;
+	}
+
+	public WaitTo(BooleanValue bv) {
+		this.boolValue = bv;
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		if (updateable != null) {
-			updateable.action(original);
+		if (boolValue != null && boolValue.result()) {
+			this._isCompleted = true;
+		} else if (actionUpdate != null) {
+			actionUpdate.action(original);
+			if (actionUpdate.completed()) {
+				this._isCompleted = true;
+			}
 		}
-		this._isCompleted = true;
 	}
 
 	@Override
@@ -53,9 +64,14 @@ public class UpdateTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		UpdateTo update = new UpdateTo(updateable);
-		update.set(this);
-		return update;
+		WaitTo waitEvent = null;
+		if (actionUpdate != null) {
+			waitEvent = new WaitTo(actionUpdate);
+		} else if (boolValue != null) {
+			waitEvent = new WaitTo(boolValue);
+		}
+		waitEvent.set(this);
+		return waitEvent;
 	}
 
 	@Override
@@ -65,6 +81,6 @@ public class UpdateTo extends ActionEvent {
 
 	@Override
 	public String getName() {
-		return "update";
+		return "wait";
 	}
 }

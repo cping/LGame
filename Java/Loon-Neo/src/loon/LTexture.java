@@ -39,6 +39,7 @@ import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcess;
@@ -137,9 +138,15 @@ public class LTexture extends Painter implements LRelease {
 
 		@Override
 		public String toString() {
-			String repstr = (repeatX ? "x" : "") + (repeatY ? "y" : "");
-			return "[managed=" + managed + ", repeat=" + repstr + ", filter=" + minFilter + "/" + magFilter
-					+ ", mipmaps=" + mipmaps + "]";
+			StringKeyValue builder = new StringKeyValue("Managed");
+			builder.kv("managed", managed)
+			.comma()
+			.kv("repeat", (repeatX ? "x" : "") + (repeatY ? "y" : ""))
+			.comma()
+			.kv("filter",(minFilter + "/" + magFilter))
+			.comma()
+			.kv("mipmaps", mipmaps);
+			return builder.toString();
 		}
 	}
 
@@ -476,8 +483,15 @@ public class LTexture extends Painter implements LRelease {
 
 	@Override
 	public String toString() {
-		return "Texture[id=" + id + ", psize=" + pixelWidth + "x" + pixelHeight + ", dsize=" + displayWidth + "x"
-				+ displayHeight + " @ " + scale + ", config=" + config + "]";
+		StringKeyValue builder = new StringKeyValue("LTexture");
+		builder.kv("id", id)
+		.comma()
+		.kv("pixelSize", (pixelWidth + "x" + pixelHeight))
+		.comma()
+		.kv("displaySize",(displayWidth + "x" + displayHeight + " @ " + scale))
+		.comma()
+		.kv("config", config);
+		return builder.toString();
 	}
 
 	public float getDisplayWidth() {

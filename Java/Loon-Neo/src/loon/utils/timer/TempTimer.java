@@ -94,7 +94,7 @@ public class TempTimer {
 					update(clock);
 				}
 			};
-			screen.add(_port);
+			screen.add(_port, true);
 		}
 	}
 

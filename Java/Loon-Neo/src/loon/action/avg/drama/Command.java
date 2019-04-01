@@ -30,6 +30,7 @@ import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -1203,6 +1204,13 @@ public class Command extends Conversion implements LRelease {
 
 	public boolean isClosed() {
 		return isClose;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("command");
+		builder.kv("script", scriptList);
+		return builder.toString();
 	}
 
 	@Override

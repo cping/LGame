@@ -20,6 +20,11 @@
  */
 package loon.action;
 
+/**
+ * 缓动事件,多个缓动事件组合嵌套
+ * 
+ * @param <T>
+ */
 public class TweenTo<T> extends ActionEvent {
 
 	private ActionTweenBase<T> _base;
@@ -32,14 +37,17 @@ public class TweenTo<T> extends ActionEvent {
 		return _base;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return _isCompleted;
 	}
 
+	@Override
 	public void onLoad() {
 
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (_isCompleted) {
 			return;

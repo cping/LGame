@@ -21,6 +21,7 @@
 package loon.utils.timer;
 
 import loon.event.Updateable;
+import loon.utils.StringKeyValue;
 import loon.utils.TimeUtils;
 
 /**
@@ -114,5 +115,18 @@ public class StopwatchTimer {
 
 	public long getEndTime() {
 		return to;
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("StopwatchTimer");
+		builder.kv("from", from)
+		.comma()
+		.kv("to", to)
+		.comma()
+		.kv("lastStop", lastStop)
+		.comma()
+		.kv("target", target);
+		return builder.toString();
 	}
 }

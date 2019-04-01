@@ -155,7 +155,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	public void update(LTimerContext time) {
-		update(time.getTimeSinceLastUpdate());
+		update(time.timeSinceLastUpdate);
 	}
 
 	public int getDirection() {

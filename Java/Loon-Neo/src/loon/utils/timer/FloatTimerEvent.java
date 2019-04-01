@@ -21,6 +21,7 @@
 package loon.utils.timer;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 public abstract class FloatTimerEvent {
 
@@ -105,5 +106,20 @@ public abstract class FloatTimerEvent {
 
 	public float getDelay() {
 		return this.delay;
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("FloatTimerEvent");
+		builder.kv("delay", delay)
+		.comma()
+		.kv("repeat", repeat)
+		.comma()
+		.kv("acc", acc)
+		.comma()
+		.kv("done", done)
+		.comma()
+		.kv("stopped", stopped);
+		return builder.toString();
 	}
 }

@@ -20,6 +20,7 @@
  */
 package loon.utils.reply;
 
+import loon.utils.StringKeyValue;
 import loon.utils.reply.Bypass.GoListener;
 
 class Cons extends Connection {
@@ -144,8 +145,17 @@ class Cons extends Connection {
 
 	@Override
 	public String toString() {
-		return "[owner=" + _owner + ", pri=" + _priority + ", lner=" + listener() + ", hasNext=" + (next != null)
-				+ ", oneShot=" + oneShot() + "]";
+		StringKeyValue builder = new StringKeyValue("Cons");
+		builder.kv("owner", _owner)
+		.comma()
+		.kv("priority", _priority)
+		.comma()
+		.kv("listener", listener())
+		.comma()
+		.kv("hasNext", (next != null))
+		.comma()
+		.kv("oneShot", oneShot());
+		return builder.toString();
 	}
 
 }

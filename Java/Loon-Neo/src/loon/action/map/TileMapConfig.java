@@ -173,7 +173,7 @@ public class TileMapConfig {
 					resArr[i][j] = strPrms[j];
 				}
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 		}
 		return resArr;
 	}

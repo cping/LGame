@@ -25,9 +25,11 @@ import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseEffect;
 import loon.canvas.LColor;
+import loon.event.ActionUpdate;
 import loon.event.FrameLoopEvent;
 import loon.event.Updateable;
 import loon.geom.Bezier;
+import loon.geom.BooleanValue;
 import loon.geom.Vector2f;
 import loon.utils.Array;
 import loon.utils.Easing;
@@ -536,6 +538,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween updateTo(Updateable u) {
 		return event(new UpdateTo(u));
+	}
+
+	public ActionTween waitTo(ActionUpdate au) {
+		return event(new WaitTo(au));
+	}
+
+	public ActionTween waitTo(BooleanValue bv) {
+		return event(new WaitTo(bv));
 	}
 
 	public ActionTween moveRoundTo(float angle, float radius, Vector2f centerPoint, EasingMode easing) {

@@ -32,6 +32,8 @@ import loon.LSystem;
  */
 public class StringKeyValue {
 
+	private int capacity;
+
 	private String key;
 
 	private String value;
@@ -42,28 +44,44 @@ public class StringKeyValue {
 
 	private boolean _dirty;
 
-	public StringKeyValue(String k) {
-		this(k, null);
+	private boolean _init_buffer;
+
+	public StringKeyValue(String key) {
+		this(32, key, null);
 	}
 
-	public StringKeyValue(String k, String val) {
+	public StringKeyValue(int size, String key) {
+		this(size, key, null);
+	}
+
+	public StringKeyValue(int size, String k, String val) {
+		this.capacity = size;
 		this.key = k;
 		this.value = val;
 		this.flags = new Array<CharSequence>();
+	}
+
+	private void initBuild() {
+		if (!_init_buffer && _buffer == null) {
+			_buffer = new StringBuilder(capacity);
+			_init_buffer = true;
+		}
 	}
 
 	public String getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
-		this.key = key;
+	public void setKey(String newKey) {
+		this.key = newKey;
+	}
+
+	public int getCapacity() {
+		return capacity;
 	}
 
 	public StringKeyValue addValue(CharSequence ch) {
-		if (_buffer == null) {
-			_buffer = new StringBuilder();
-		}
+		initBuild();
 		_buffer.append(ch);
 		_dirty = true;
 		return this;
@@ -109,6 +127,28 @@ public class StringKeyValue {
 		return addValue("\"");
 	}
 
+	public StringKeyValue comma() {
+		return addValue(" , ");
+	}
+
+	public StringKeyValue kv(CharSequence key, String[] values) {
+		int size = values.length;
+		StringBuilder sbr = new StringBuilder(size);
+		sbr.append('{');
+		for (int i = 0; i < size; i++) {
+			sbr.append(values[i]);
+			if (i < size - 1) {
+				sbr.append(',');
+			}
+		}
+		sbr.append('}');
+		return addValue(key).addValue(" = ").addValue(sbr);
+	}
+
+	public StringKeyValue kv(CharSequence key, Object value) {
+		return addValue(key).addValue(" = ").addValue(value.toString());
+	}
+
 	public StringKeyValue text(CharSequence mes) {
 		return addValue(mes);
 	}
@@ -143,9 +183,7 @@ public class StringKeyValue {
 	}
 
 	public StringKeyValue removeValue(int start, int end) {
-		if (_buffer == null) {
-			_buffer = new StringBuilder();
-		}
+		initBuild();
 		_buffer.delete(start, end);
 		_dirty = true;
 		return this;
@@ -164,11 +202,11 @@ public class StringKeyValue {
 	}
 
 	public char charAt(int i) {
-		return (_buffer != null && _buffer.length() > i) ? _buffer.charAt(i) : (char) -1;
+		return (_buffer != null && _buffer.length() < i) ? _buffer.charAt(i) : (char) -1;
 	}
 
 	@Override
 	public String toString() {
-		return getKey() + ":" + getValue();
+		return getKey() + " [ " + getValue() + " ] ";
 	}
 }

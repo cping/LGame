@@ -22,6 +22,7 @@ package loon.utils.timer;
 
 import loon.LSystem;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -122,7 +123,7 @@ public class CountdownTimer extends RealtimeProcess {
 
 	@Override
 	public void run(LTimerContext time) {
-		_millisecond -= MathUtils.min(time.getTimeSinceLastUpdate(), 60f);
+		_millisecond -= MathUtils.min(time.timeSinceLastUpdate, 60f);
 		if (_millisecond <= 0) {
 			kill();
 		}
@@ -134,5 +135,18 @@ public class CountdownTimer extends RealtimeProcess {
 
 	public void setSeparator(String separator) {
 		this._separator = separator;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("CountdownTimer");
+		builder.kv("second", _second)
+		.comma()
+		.kv("millisecond", _millisecond)
+		.comma()
+		.kv("result", _result)
+		.comma()
+		.kv("finished", _finished);
+		return builder.toString();
 	}
 }

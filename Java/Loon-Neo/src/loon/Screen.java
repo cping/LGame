@@ -2853,7 +2853,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			} else if (screenSwitch != null) {
 				process(timer);
 				if (replaceDelay.action(timer)) {
-					screenSwitch.update(timer.getTimeSinceLastUpdate());
+					screenSwitch.update(timer.timeSinceLastUpdate);
 				}
 				if (screenSwitch.isCompleted()) {
 					submitReplaceScreen();
