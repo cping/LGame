@@ -30,10 +30,10 @@ public class VerticalLayout extends LayoutManager {
 		return new VerticalLayout();
 	}
 	
-	public void layoutElements(final LayoutPort root,
+	public LayoutManager layoutElements(final LayoutPort root,
 			final LayoutPort... children) {
 		if (isInvalid(root, children)) {
-			return;
+			return this;
 		}
 		int rootBoxX = getRootBoxX(root);
 		int rootBoxY = getRootBoxY(root);
@@ -95,6 +95,7 @@ public class VerticalLayout extends LayoutManager {
 
 			getY += elementHeight;
 		}
+		return this;
 	}
 
 	public SizeValue calculateConstraintWidth(final LayoutPort root,

@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.utils.timer.LTimer;
 
 public abstract class ActionEvent {
@@ -28,15 +29,15 @@ public abstract class ActionEvent {
 
 	private ActionListener actionListener;
 
-	boolean firstTick, _isCompleted, isInit;
+	protected boolean firstTick, _isCompleted, isInit;
 
-	ActionBind original;
+	protected ActionBind original;
 
-	Object tag;
+	protected Object tag;
 
-	float offsetX, offsetY;
+	protected float offsetX, offsetY;
 
-	float oldX, oldY;
+	protected float oldX, oldY;
 
 	public ActionEvent() {
 		timer = new LTimer(0);
@@ -46,17 +47,19 @@ public abstract class ActionEvent {
 		return timer.getDelay();
 	}
 
-	public void setDelay(long d) {
+	public ActionEvent setDelay(long d) {
 		timer.setDelay(d);
+		return this;
 	}
 
-	public void paused(boolean pause) {
+	public ActionEvent paused(boolean pause) {
 		ActionControl.get().paused(pause, original);
+		return this;
 	}
 
-	public void step(long elapsedTime) {
+	public ActionEvent step(long elapsedTime) {
 		if (original == null) {
-			return;
+			return this;
 		}
 		if (timer.action(elapsedTime)) {
 			if (firstTick) {
@@ -69,15 +72,16 @@ public abstract class ActionEvent {
 				actionListener.process(original);
 			}
 		}
+		return this;
 	}
 
 	public Object getOriginal() {
 		return original;
 	}
 
-	public void start(ActionBind o) {
+	public ActionEvent start(ActionBind o) {
 		if (o == null) {
-			return;
+			return this;
 		}
 		this.original = o;
 		if (original != null) {
@@ -91,16 +95,18 @@ public abstract class ActionEvent {
 		if (actionListener != null) {
 			actionListener.start(o);
 		}
+		return this;
 	}
 
 	public abstract void update(long elapsedTime);
 
 	public abstract void onLoad();
 
-	public void stop() {
+	public ActionEvent stop() {
 		if (actionListener != null) {
 			actionListener.stop(original);
 		}
+		return this;
 	}
 
 	public abstract boolean isComplete();
@@ -109,54 +115,62 @@ public abstract class ActionEvent {
 		return tag;
 	}
 
-	public void setTag(Object tag) {
+	public ActionEvent setTag(Object tag) {
 		this.tag = tag;
+		return this;
 	}
 
-	public final void setComplete(boolean isComplete) {
+	public final ActionEvent setComplete(boolean isComplete) {
 		this._isCompleted = isComplete;
+		return this;
 	}
 
 	public ActionListener getActionListener() {
 		return actionListener;
 	}
 
-	public void setActionListener(ActionListener actionListener) {
+	public ActionEvent setActionListener(ActionListener actionListener) {
 		this.actionListener = actionListener;
+		return this;
 	}
 
-	public void setOffset(float x, float y) {
+	public ActionEvent setOffset(float x, float y) {
 		this.offsetX = x;
 		this.offsetY = y;
+		return this;
 	}
 
 	public float getOffsetX() {
 		return offsetX;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public ActionEvent setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
+		return this;
 	}
 
 	public float getOffsetY() {
 		return offsetY;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public ActionEvent setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
+		return this;
 	}
 
-	public void set(ActionEvent e) {
+	public ActionEvent set(ActionEvent e) {
 		setOffset(e.offsetX, e.offsetY);
 		oldX = e.oldX;
 		oldY = e.oldY;
 		tag = e.tag;
 		actionListener = e.actionListener;
 		original = e.original;
+		return this;
 	}
 	
-	public void kill() {
+	public ActionEvent kill() {
 		this._isCompleted = true;
+		return this;
 	}
 	
 	public abstract ActionEvent cpy();
@@ -167,6 +181,15 @@ public abstract class ActionEvent {
 
 	@Override
 	public String toString() {
-		return getName();
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder
+		.kv("loaded", isInit)
+		.comma()
+		.kv("bind", original)
+		.comma()
+		.kv("offset", (offsetX + " x " + offsetY))
+		.comma()
+		.kv("tag", tag);
+		return builder.toString();
 	}
 }

@@ -23,10 +23,11 @@ package loon.geom;
 public enum Alignment {
 	
 	TOP_LEFT(0.0, 1.0) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX(), o.getY() + s.getHeight() - 1);
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX(), o.getY() + s.getHeight()
 					- b.getHeight());
@@ -35,11 +36,12 @@ public enum Alignment {
 	},
 
 	TOP(0.5, 1.0) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + (s.getWidth() - 1) / 2, o.getY()
 					+ s.getHeight() - 1);
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX() + (s.getWidth() - b.getWidth()) / 2,
 					o.getY() + s.getHeight() - b.getHeight());
@@ -47,11 +49,12 @@ public enum Alignment {
 	},
 
 	TOP_RIGHT(1.0, 1.0) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + s.getWidth() - 1, o.getY()
 					+ s.getHeight() - 1);
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX() + s.getWidth() - b.getWidth(),
 					o.getY() + s.getHeight() - b.getHeight());
@@ -59,10 +62,11 @@ public enum Alignment {
 	},
 
 	LEFT(0.0, 0.5) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX(), o.getY() + (s.getHeight() - 1) / 2);
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX(), o.getY()
 					+ (s.getHeight() - b.getHeight()) / 2);
@@ -70,11 +74,12 @@ public enum Alignment {
 	},
 
 	MIDDLE(0.5, 0.5) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + (s.getWidth() - 1) / 2, o.getY()
 					+ (s.getHeight() - 1) / 2);
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX() + (s.getWidth() - b.getWidth()) / 2,
 					o.getY() + (s.getHeight() - b.getHeight()) / 2);
@@ -82,11 +87,12 @@ public enum Alignment {
 	},
 
 	RIGHT(1.0, 0.5) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + s.getWidth() - 1, o.getY()
 					+ (s.getHeight() - 1) / 2);
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX() + s.getWidth() - b.getWidth(),
 					o.getY() + (s.getHeight() - b.getHeight()) / 2);
@@ -94,20 +100,22 @@ public enum Alignment {
 	},
 
 	BOTTOM_LEFT(0.0, 0.0) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX(), o.getY());
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX(), o.getY());
 		}
 	},
 
 	BOTTOM(0.5, 0.0) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + (s.getWidth() - 1) / 2, o.getY());
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX() + (s.getWidth() - b.getWidth()) / 2,
 					o.getY());
@@ -115,10 +123,11 @@ public enum Alignment {
 	},
 
 	BOTTOM_RIGHT(1.0, 0.0) {
+		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + s.getWidth() - 1, o.getY());
 		}
-
+		@Override
 		public Vector2f alignBox(Vector2f o, Dimension s, Dimension b) {
 			return new Vector2f(o.getX() + s.getWidth() - b.getWidth(),
 					o.getY());

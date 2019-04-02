@@ -37,12 +37,16 @@ public class RainKernel implements IKernel {
 	private float offsetX, offsetY, x, y, width, height, rainWidth, rainHeight;
 
 	public RainKernel(LTexturePack pack, int n, int w, int h) {
-		rain = pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "rain_" + n);
-		rainWidth = rain.width();
-		rainHeight = rain.height();
-		width = w;
-		height = h;
-		offsetX = 0;
+		this(pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "rain_" + n), n, w, h);
+	}
+
+	public RainKernel(LTexture texture, int n, int w, int h) {
+		this.rain = texture;
+		this.rainWidth = rain.width();
+		this.rainHeight = rain.height();
+		this.width = w;
+		this.height = h;
+		this.offsetX = 0;
 		offsetY = (5 - n) * 30 + 75 + MathUtils.random() * 15;
 	}
 

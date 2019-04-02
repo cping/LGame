@@ -37,14 +37,18 @@ public class PetalKernel implements IKernel {
 	private int id;
 
 	public PetalKernel(LTexturePack pack, int n, int w, int h) {
-		id = n;
-		sakura = pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "sakura_" + n);
-		sakuraWidth = sakura.width();
-		sakuraHeight = sakura.height();
-		width = w;
-		height = h;
-		offsetX = 0;
-		offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
+		this(pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "sakura_" + n), n, w, h);
+	}
+
+	public PetalKernel(LTexture texture, int n, int w, int h) {
+		this.id = n;
+		this.sakura = texture;
+		this.sakuraWidth = sakura.width();
+		this.sakuraHeight = sakura.height();
+		this.width = w;
+		this.height = h;
+		this.offsetX = 0;
+		this.offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
 		speed = MathUtils.random();
 	}
 

@@ -30,11 +30,11 @@ public class OverlayLayout extends LayoutManager {
 	}
 	
 	@Override
-	public final void layoutElements(final LayoutPort rootElement,
+	public final LayoutManager layoutElements(final LayoutPort rootElement,
 			final LayoutPort... elements) {
 
 		if (rootElement == null || elements == null || elements.length == 0) {
-			return;
+			return this;
 		}
 
 		BoxSize rootBox = rootElement.getBox();
@@ -49,6 +49,7 @@ public class OverlayLayout extends LayoutManager {
 				box.setHeight(rootBox.getHeight());
 			}
 		}
+		return this;
 	}
 
 	final SizeValue calculateConstraintWidth(final LayoutPort root,

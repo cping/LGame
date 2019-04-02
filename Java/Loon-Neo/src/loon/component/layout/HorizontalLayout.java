@@ -31,10 +31,10 @@ public class HorizontalLayout extends LayoutManager {
 	}
 	
 	@Override
-	public final void layoutElements(final LayoutPort root,
+	public final LayoutManager layoutElements(final LayoutPort root,
 			final LayoutPort... children) {
 		if (isInvalid(root, children)) {
-			return;
+			return this;
 		}
 
 		int rootBoxX = getRootBoxX(root);
@@ -98,6 +98,7 @@ public class HorizontalLayout extends LayoutManager {
 
 			getX += elementWidth;
 		}
+		return this;
 	}
 
 	private int processHeightConstraint(final int rootBoxHeight,

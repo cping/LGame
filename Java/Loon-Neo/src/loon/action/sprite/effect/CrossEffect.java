@@ -53,8 +53,8 @@ public class CrossEffect extends Entity implements BaseEffect {
 		this(c, LTextures.loadTexture(fileName));
 	}
 
-	public CrossEffect(int c, String file1, String file2) {
-		this(c, LTextures.loadTexture(file1), LTextures.loadTexture(file2));
+	public CrossEffect(int c, String oldImgPath, String newImgPath) {
+		this(c, LTextures.loadTexture(oldImgPath), LTextures.loadTexture(newImgPath));
 	}
 
 	public CrossEffect(int c, LTexture o) {

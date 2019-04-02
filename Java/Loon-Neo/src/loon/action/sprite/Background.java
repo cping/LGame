@@ -30,5 +30,4 @@ public abstract class Background extends Entity {
 		this.setSize(w, h);
 	}
 
-
 }

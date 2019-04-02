@@ -29,14 +29,15 @@ public class BattleSkillValue {
 	public BattleSkillValue MAG;
 	public BattleSkillValue LUK;
 
-	private String _name;
-	private int _minimumPoints, _maximumPoints, _increment, _currentPoint;
+	private String skillName;
+	
+	private int minimumPoints, maximumPoints, increment, currentPoint;
 
 	public BattleSkillValue(String name, int minps, int maxps, int increment) {
-		this._name = name;
-		this._minimumPoints = minps;
-		this._maximumPoints = maxps;
-		_currentPoint = increment;
+		this.skillName = name;
+		this.minimumPoints = minps;
+		this.maximumPoints = maxps;
+		currentPoint = increment;
 	}
 
 	public BattleSkillValue initTemplate() {
@@ -50,54 +51,54 @@ public class BattleSkillValue {
 	}
 
 	public void update() {
-		update(_increment);
+		update(increment);
 	}
 
 	public void update(int p) {
-		if (_currentPoint + p <= _maximumPoints) {
-			_currentPoint += p;
+		if (currentPoint + p <= maximumPoints) {
+			currentPoint += p;
 		} else
-			_currentPoint = _maximumPoints;
+			currentPoint = maximumPoints;
 	}
 
 	public String getName() {
-		return _name;
+		return skillName;
 	}
 
 	public void setName(String name) {
-		this._name = name;
+		this.skillName = name;
 	}
 
 	public int getMinimumPoints() {
-		return _minimumPoints;
+		return minimumPoints;
 	}
 
 	public void setMinimumPoints(int minps) {
-		this._minimumPoints = minps;
+		this.minimumPoints = minps;
 	}
 
 	public int getMaximumPoints() {
-		return _maximumPoints;
+		return maximumPoints;
 	}
 
 	public void setMaximumPoints(int maxps) {
-		this._maximumPoints = maxps;
+		this.maximumPoints = maxps;
 	}
 
 	public int getCurrentPoint() {
-		return _currentPoint;
+		return currentPoint;
 	}
 
 	public void setCurrentPoint(int cp) {
-		this._currentPoint = cp;
+		this.currentPoint = cp;
 	}
 
 	public int getIncrement() {
-		return _increment;
+		return increment;
 	}
 
 	public void setIncrement(int inc) {
-		this._increment = inc;
+		this.increment = inc;
 	}
 
 	public BattleSkillValue getSTR() {

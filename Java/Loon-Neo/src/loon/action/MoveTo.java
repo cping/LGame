@@ -220,9 +220,10 @@ public class MoveTo extends ActionEvent {
 	}
 
 	@Override
-	public void start(ActionBind target) {
+	public ActionEvent start(ActionBind target) {
 		super.start(target);
 		startLocation.set(target.getX(), target.getY());
+		return this;
 	}
 
 	public TArray<Vector2f> getPath() {

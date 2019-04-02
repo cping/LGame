@@ -39,11 +39,11 @@ public class AbsoluteLayout extends LayoutManager {
 		this.post = post;
 	}
 
-	public void layoutElements(final LayoutPort rootElement,
+	public LayoutManager layoutElements(final LayoutPort rootElement,
 			final LayoutPort... elements) {
 
 		if (rootElement == null || elements == null || elements.length == 0) {
-			return;
+			return this;
 		}
 
 		int rootBoxX = getRootBoxX(rootElement);
@@ -109,6 +109,7 @@ public class AbsoluteLayout extends LayoutManager {
 						box);
 			}
 		}
+		return this;
 	}
 
 	@Override

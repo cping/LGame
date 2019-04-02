@@ -32,11 +32,11 @@ public class CenterLayout extends LayoutManager {
 	}
 	
 	@Override
-	public void layoutElements(final LayoutPort rootElement,
+	public LayoutManager layoutElements(final LayoutPort rootElement,
 			final LayoutPort... elements) {
 
 		if (rootElement == null || elements == null || elements.length == 0) {
-			return;
+			return this;
 		}
 
 		BoxSize rootBox = rootElement.getBox();
@@ -63,6 +63,7 @@ public class CenterLayout extends LayoutManager {
 			handleHorizontalAlignment(rootBox, rootBoxConstraints, box,
 					constraint);
 		}
+		return this;
 	}
 
 	void handleHorizontalAlignment(final BoxSize rootBox,

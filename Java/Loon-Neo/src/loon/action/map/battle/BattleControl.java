@@ -20,11 +20,22 @@
  */
 package loon.action.map.battle;
 
+import loon.action.map.battle.behavior.IActors;
 import loon.utils.MathUtils;
 
 public class BattleControl {
 
-	private BattleState battleState = BattleState.START;
+	protected IActors actorControls;
+
+	private int saveId;
+
+	private int sceneId;
+
+	private int partyId;
+
+	private int gold;
+
+	private int exp;
 
 	public static final int[] getItemEffectDispersion(int recover_hp, int recover_sp, int variance) {
 		int num;
@@ -39,12 +50,52 @@ public class BattleControl {
 		return new int[] { recover_hp, recover_sp };
 	}
 
-	public BattleState getBattleState() {
-		return battleState;
+	public IActors getActorControls() {
+		return actorControls;
 	}
 
-	public void setBattleState(BattleState battleState) {
-		this.battleState = battleState;
+	public void setActorControls(IActors controls) {
+		this.actorControls = controls;
+	}
+
+	public int getSaveId() {
+		return saveId;
+	}
+
+	public void setSaveId(int saveId) {
+		this.saveId = saveId;
+	}
+
+	public int getSceneId() {
+		return sceneId;
+	}
+
+	public void setSceneId(int sceneId) {
+		this.sceneId = sceneId;
+	}
+
+	public int getPartyId() {
+		return partyId;
+	}
+
+	public void setPartyId(int partyId) {
+		this.partyId = partyId;
+	}
+
+	public int getGold() {
+		return gold;
+	}
+
+	public void setGold(int gold) {
+		this.gold = gold;
+	}
+
+	public int getExp() {
+		return exp;
+	}
+
+	public void setExp(int exp) {
+		this.exp = exp;
 	}
 
 }

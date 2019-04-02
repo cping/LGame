@@ -57,9 +57,10 @@ public class EventTo extends ActionEvent {
 	}
 
 	@Override
-	public void kill() {
+	public ActionEvent kill() {
 		super.kill();
 		_event.kill();
+		return this;
 	}
 
 	public FrameLoopEvent getLoopEvent() {

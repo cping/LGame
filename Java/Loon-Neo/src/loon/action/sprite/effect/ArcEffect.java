@@ -32,7 +32,7 @@ import loon.utils.timer.LTimer;
  */
 public class ArcEffect extends Entity implements BaseEffect {
 
-	private int count;
+	private int step;
 
 	private int div = 10;
 
@@ -74,11 +74,11 @@ public class ArcEffect extends Entity implements BaseEffect {
 		if (completed) {
 			return;
 		}
-		if (this.count >= this.div) {
+		if (this.step >= this.div) {
 			this.completed = true;
 		}
 		if (timer.action(elapsedTime)) {
-			count++;
+			step++;
 		}
 	}
 
@@ -96,10 +96,10 @@ public class ArcEffect extends Entity implements BaseEffect {
 		if (useTex) {
 			g.setPixSkip(8);
 		}
-		if (count <= 1) {
+		if (step <= 1) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height);
 		} else {
-			float deg = 360f / this.div * this.count;
+			float deg = 360f / this.div * this.step;
 			if (deg < 360) {
 				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f) + MathUtils.pow(_height / 2, 2.0f));
 				float x = getX() + (_width / 2 - length);
@@ -119,7 +119,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 	public void reset() {
 		super.reset();
 		this.completed = false;
-		this.count = 0;
+		this.step = 0;
 		this.turn = 1;
 	}
 

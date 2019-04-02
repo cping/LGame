@@ -117,7 +117,17 @@ public abstract class LayoutManager {
 		return _allow;
 	}
 
-	public final void layoutElements(final Screen root,
+	public final LayoutManager layoutElements(final Screen root,
+			final LComponent... children) {
+		int size = children.length;
+		LayoutPort[] ports = new LayoutPort[size];
+		for (int i = 0; i < size; i++) {
+			ports[i] = children[i].getLayoutPort();
+		}
+		return layoutElements(root.getLayoutPort(), ports);
+	}
+	
+	public final LayoutManager layoutElements(final LContainer root,
 			final LComponent... children) {
 		int size = children.length;
 		LayoutPort[] ports = new LayoutPort[size];
@@ -125,19 +135,10 @@ public abstract class LayoutManager {
 			ports[i] = children[i].getLayoutPort();
 		}
 		layoutElements(root.getLayoutPort(), ports);
+		return this;
 	}
 	
-	public final void layoutElements(final LContainer root,
-			final LComponent... children) {
-		int size = children.length;
-		LayoutPort[] ports = new LayoutPort[size];
-		for (int i = 0; i < size; i++) {
-			ports[i] = children[i].getLayoutPort();
-		}
-		layoutElements(root.getLayoutPort(), ports);
-	}
-	
-	public abstract void layoutElements(LayoutPort root, LayoutPort... children);
+	public abstract LayoutManager layoutElements(LayoutPort root, LayoutPort... children);
 
 	abstract SizeValue calculateConstraintWidth(LayoutPort root,
 			TArray<LayoutPort> children);

@@ -173,19 +173,19 @@ public class Command extends Conversion implements LRelease {
 		}
 	}
 
-	public void formatCommand(String fileName) {
-		formatCommand(fileName, Command.includeFile(fileName));
+	public Command formatCommand(String fileName) {
+		return formatCommand(fileName, Command.includeFile(fileName));
 	}
 
-	public void formatCommand(CommandLink cmd) {
+	public Command formatCommand(CommandLink cmd) {
 		String context = cmd.getValue();
 		String key = "key" + context.length() + context.charAt(0) + "." + context.charAt(context.length() - 1);
-		formatCommand(key, Command.includeString(key, context));
+		return formatCommand(key, Command.includeString(key, context));
 	}
 
-	public void formatCommand(String name, String[] res) {
+	public Command formatCommand(String name, String[] res) {
 		if (res == null || res.length == 0) {
-			return;
+			return this;
 		}
 		if (!"function".equalsIgnoreCase(name)) {
 			if (functions != null) {
@@ -222,6 +222,7 @@ public class Command extends Conversion implements LRelease {
 		this.isCache = false;
 		this.if_bool = false;
 		this.elseif_bool = false;
+		return this;
 	}
 
 	private boolean setupIF(String commandString, String nowPosFlagName, ArrayMap setEnvironmentList,
@@ -348,8 +349,9 @@ public class Command extends Conversion implements LRelease {
 		return isRead;
 	}
 
-	public void setRead(boolean isRead) {
+	public Command setRead(boolean isRead) {
 		this.isRead = isRead;
+		return this;
 	}
 
 	/**
@@ -453,11 +455,11 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @param type
 	 */
-	public void select(int type) {
+	public Command select(int type) {
 		if (innerCommand != null) {
 			innerCommand.setVariable(V_SELECT_KEY, String.valueOf(type));
 		}
-		setVariable(V_SELECT_KEY, String.valueOf(type));
+		return setVariable(V_SELECT_KEY, String.valueOf(type));
 	}
 
 	public String getSelect() {
@@ -470,8 +472,9 @@ public class Command extends Conversion implements LRelease {
 	 * @param key
 	 * @param value
 	 */
-	public void setVariable(String key, Object value) {
+	public Command setVariable(String key, Object value) {
 		setEnvironmentList.put(key, value);
+		return this;
 	}
 
 	/**
@@ -479,8 +482,9 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @param vars
 	 */
-	public void setVariables(ArrayMap vars) {
+	public Command setVariables(ArrayMap vars) {
 		setEnvironmentList.putAll(vars);
+		return this;
 	}
 
 	/**
@@ -1023,12 +1027,14 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @param name
 	 */
-	public final void loadCommand(String name) {
+	public final Command loadCommand(String name) {
 		loadCommand(name, -1);
+		return this;
 	}
 
-	public final void loadCommand(String name, int line) {
+	public final Command loadCommand(String name, int line) {
 		loadCommand(name, line, null);
+		return this;
 	}
 
 	/**

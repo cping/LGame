@@ -27,10 +27,6 @@ public abstract class IActor {
 	protected IMove moves;
 
 	protected String name;
-
-	protected IStatistics statistics;
-
-	protected String title;
 	
 	protected int team ;
 	
@@ -58,22 +54,6 @@ public abstract class IActor {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public IStatistics getStatistics() {
-		return statistics;
-	}
-
-	public void setStatistics(IStatistics statistics) {
-		this.statistics = statistics;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 	
 	public int getTeam() {

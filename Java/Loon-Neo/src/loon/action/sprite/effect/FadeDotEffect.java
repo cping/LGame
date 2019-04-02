@@ -31,7 +31,6 @@ import loon.utils.timer.LTimer;
 
 public class FadeDotEffect extends Entity implements BaseEffect {
 
-
 	private class Dot {
 
 		private float x;
@@ -157,7 +156,6 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 	public void setDelay(long delay) {
 		timer.setDelay(delay);
 	}
-
 
 	@Override
 	public boolean isCompleted() {
