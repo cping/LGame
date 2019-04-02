@@ -1,1 +1,1 @@
-This is "LGame" part of the plan is expected, In 2013 began to develop.
+﻿此为旧版,0.5版准备发布中,最终API实现以Java版为主。

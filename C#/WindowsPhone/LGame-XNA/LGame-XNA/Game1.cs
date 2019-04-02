@@ -31,7 +31,7 @@ namespace LGame_XNA
         public override void After(Loon.Action.Sprite.SpriteBatch batch)
         {
            // batch.Draw(font,"ABCD\nEF", 66, 66,LColor.red);
-            batch.Draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
+           batch.Draw(font, "Test", new Vector2f(150, 150), LColor.red, 0,
                      Vector2f.Zero, new Vector2f(1f, 1f), SpriteEffects.None);
         }
 

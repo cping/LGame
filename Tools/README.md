@@ -1,4 +1,6 @@
-Scattered Tools(Use LGame)
+﻿Scattered Tools(Use LGame)
+
+一些小工具集合
 
 CharacterEncoding(Java).jar 文本转码工具
 
