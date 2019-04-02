@@ -1,9 +1,8 @@
-#Loon Game Engine
+## Loon Game Engine
 
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![API](https://img.shields.io/badge/API-16%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=11)
 
 [免费的游戏素材可见此](https://github.com/cping/LGame/blob/master/dev-res/README.md "Game Source of Free")
 
