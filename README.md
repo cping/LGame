@@ -15,7 +15,7 @@ _________
 
 International Entertainment Machines
 
-#LGame
+## LGame
 
 formal name : Loon
 
@@ -103,4 +103,4 @@ Built-in over 30 game example(Part screenshots):
 
 License : http://www.apache.org/licenses/LICENSE-2.0
 
-#This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
+## This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
