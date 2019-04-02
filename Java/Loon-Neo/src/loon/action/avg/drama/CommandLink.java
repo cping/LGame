@@ -1,42 +1,52 @@
 package loon.action.avg.drama;
 
 import loon.BaseIO;
-import loon.LSystem;
+import loon.utils.StringKeyValue;
 
 public class CommandLink {
 
-	private StringBuffer _commands = null;
+	private StringKeyValue _commands = null;
 
 	private int _lineCount = 0;
 
 	public CommandLink(String path) {
+		this(path, "unkown");
+	}
+
+	public CommandLink(String path, String name) {
 		String context = BaseIO.loadText(path);
-		_commands = new StringBuffer(context.length());
-		_commands.append(context.toString());
+		_commands = new StringKeyValue(context.length(), name);
+		_commands.addValue(context.toString());
 		_lineCount = -1;
 	}
 
 	public CommandLink() {
-		_commands = new StringBuffer(1024);
+		_commands = new StringKeyValue(1024, "unkown");
 	}
 
-	public void line(CharSequence c) {
-		_commands.append(c);
-		_commands.append(LSystem.LS);
+	public CommandLink line(CharSequence c) {
+		_commands.addValue(c);
+		_commands.newLine();
 		_lineCount++;
+		return this;
 	}
 
-	public StringBuffer clear() {
+	public CommandLink clear() {
 		_lineCount = 0;
-		return _commands;
+		_commands.clear();
+		return this;
 	}
 
 	public int getLineCount() {
 		return this._lineCount;
 	}
 
-	public StringBuffer get() {
+	public StringKeyValue kvcmd() {
 		return _commands;
+	}
+	
+	public String getValue() {
+		return _commands.getValue();
 	}
 
 	@Override

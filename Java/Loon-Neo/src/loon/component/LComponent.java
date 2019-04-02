@@ -1403,9 +1403,4 @@ public abstract class LComponent extends LObject<LContainer>
 		removeActionEvents(this);
 	}
 
-	@Override
-	public String toString() {
-		return getName() + " pos=" + _location + " size=" + " [ " + getRectBox().toString() + "]";
-	}
-
 }

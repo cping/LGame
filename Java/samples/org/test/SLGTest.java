@@ -24,19 +24,18 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Random;
 
-import loon.EmulatorListener;
 import loon.LTexture;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.MoveTo;
-import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.sprite.Sprite;
 import loon.canvas.LColor;
 import loon.event.GameKey;
 import loon.event.SysKey;
 import loon.event.SysTouch;
+import loon.event.Touched;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePackClip;
 import loon.opengl.TextureUtils;
@@ -76,8 +75,6 @@ public class SLGTest extends Stage {
 	private int maxY;
 
 	private TArray<Role> unitList = new TArray<Role>(10);
-
-	private TArray<Sprite> moveObjectList = new TArray<Sprite>(10);
 
 	// 战斗个体图
 	private LTexture[] unitImages = TextureUtils
@@ -170,7 +167,7 @@ public class SLGTest extends Stage {
 				// 在右侧显示菜单
 				result = this.size - width - 1;
 			}
-			return 0;
+			return result;
 		}
 
 		/**
@@ -391,6 +388,13 @@ public class SLGTest extends Stage {
 		createRole("躲猫兵团3", 1, 2, 4, 5, 7);
 		createRole("躲猫兵团4", 1, 2, 4, 7, 2);
 		createRole("躲猫兵团5", 1, 2, 4, 7, 7);
+		up(new Touched() {
+
+			@Override
+			public void on(float x, float y) {
+					enter(SysKey.ENTER);
+			}
+		});
 
 		for (int y = 0; y <= maxY - 1; y++) {
 			for (int x = 0; x <= maxX - 1; x++) {
@@ -423,7 +427,7 @@ public class SLGTest extends Stage {
 
 		});
 
-		add(MultiScreenTest.getBackButton(this,1));
+		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 	public void initRange() {
@@ -553,7 +557,7 @@ public class SLGTest extends Stage {
 	 * 
 	 */
 	public void setBeforeAction() {
-		for (Iterator it = unitList.iterator(); it.hasNext();) {
+		for (Iterator<Role> it = unitList.iterator(); it.hasNext();) {
 			Role role = (Role) it.next();
 			role.setAction(0);
 		}
@@ -1096,8 +1100,10 @@ public class SLGTest extends Stage {
 	}
 
 	public void onKeyUp(GameKey e) {
+		enter(e.getKeyCode());
+	}
 
-		int eventCode = e.getKeyCode();
+	private void enter(int eventCode) {
 		switch (eventCode) {
 		// 按下Enter，开始触发游戏事件
 		case SysKey.ENTER:
@@ -1293,7 +1299,7 @@ public class SLGTest extends Stage {
 			return;
 		// 菜单可见
 		if (menu.visible) {
-			switch (e.getKeyCode()) {
+			switch (SysKey.getKeyCode()) {
 			case SysKey.UP:
 				if (menu.cur > 0) {
 					menu.cur = menu.cur - 1;
@@ -1309,7 +1315,7 @@ public class SLGTest extends Stage {
 		}
 		// 菜单不可见
 		else {
-			switch (e.getKeyCode()) {
+			switch (SysKey.getKeyCode()) {
 			case SysKey.LEFT:
 				curTileX = redressX(curTileX - 1);
 				break;
@@ -1327,6 +1333,7 @@ public class SLGTest extends Stage {
 		if (state.equalsIgnoreCase("角色移动")) {
 			setMoveCourse();
 		}
+
 	}
 
 	public void onCancelClick() {

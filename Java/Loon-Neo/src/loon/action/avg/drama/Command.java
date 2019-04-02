@@ -178,7 +178,7 @@ public class Command extends Conversion implements LRelease {
 	}
 
 	public void formatCommand(CommandLink cmd) {
-		String context = cmd.toString();
+		String context = cmd.getValue();
 		String key = "key" + context.length() + context.charAt(0) + "." + context.charAt(context.length() - 1);
 		formatCommand(key, Command.includeString(key, context));
 	}

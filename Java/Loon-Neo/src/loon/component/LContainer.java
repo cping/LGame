@@ -21,6 +21,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
@@ -747,18 +748,21 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	void toString(StringBuilder buffer, int indent) {
 		buffer.append(super.toString());
-		buffer.append('\n');
 		LComponent[] comps = _childs;
-		for (int i = 0, size = comps.length; i < size; i++) {
-			for (int ii = 0; ii < indent; ii++) {
-				buffer.append("|  ");
-			}
-			LComponent c = comps[i];
-			if (c != null && c.isContainer() && (c instanceof LContainer)) {
-				((LContainer) c).toString(buffer, indent + 1);
-			} else {
-				buffer.append(c);
-				buffer.append('\n');
+		int size = comps.length;
+		if (size > 0) {
+			buffer.append(LSystem.LS);
+			for (int i = 0; i < size; i++) {
+				for (int ii = 0; ii < indent; ii++) {
+					buffer.append("|  ");
+				}
+				LComponent c = comps[i];
+				if (c != null && c.isContainer() && (c instanceof LContainer)) {
+					((LContainer) c).toString(buffer, indent + 1);
+				} else {
+					buffer.append(c);
+					buffer.append(LSystem.LS);
+				}
 			}
 		}
 	}

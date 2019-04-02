@@ -1,64 +1,55 @@
 package org.test;
 
-import loon.Screen;
+import loon.Stage;
 import loon.action.avg.drama.CommandLink;
 import loon.action.avg.drama.IRocFunction;
 import loon.action.avg.drama.RocFunctions;
 import loon.action.avg.drama.RocSSprite;
 import loon.action.avg.drama.RocScript;
 import loon.action.sprite.SpriteLabel;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class RocScriptTest extends Screen {
+public class RocScriptTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 		
 		add(MultiScreenTest.getBackButton(this,1));
 
 		// 以字符串方式，注入一组脚本命令
 		CommandLink command = new CommandLink();
-		command.line("print 'testing'");
-		command.line("wait 1000");
-		command.line("print 456");
-		command.line("print 789");
-		command.line("print testvar");
-		command.line("if testvar == 'ABCDEFG' then");
-		command.line("print 'abcdefg'");
-		command.line("else");
-		command.line("print 'gfedcba'");
-		command.line("end");
-		command.line("function xyz(x , y) begin");
-		command.line("for i = x, i < y, i + 1 begin");
-		command.line("println i");
-		command.line("end");
-		command.line("end");
-		command.line("xyz(5 , 8)");
-		command.line("print 'end'");
-		command.line("label(testing)");
-		command.line("wait 3000");
-		command.line("dellabel()");
-		command.line("function getNum(x) begin");
-		command.line("return (x + 1)");
-		command.line("end");
-		command.line("t = getNum(9)");
-		command.line("print t");
-		command.line("function hello() begin");
-		command.line("return \"Hello World!\"");
-		command.line("end");
-		command.line("println hello()");
-		command.line("print 'end'");
-		String cmd = command.toString();
+		command.line("print 'testing'")
+		.line("wait 1000")
+		.line("print 456")
+		.line("print 789")
+		.line("print testvar")
+		.line("if testvar == 'ABCDEFG' then")
+		.line("print 'abcdefg'")
+		.line("else")
+		.line("print 'gfedcba'")
+		.line("end")
+		.line("function xyz(x , y) begin")
+		.line("for i = x, i < y, i + 1 begin")
+		.line("println i")
+		.line("end")
+		.line("end")
+		.line("xyz(5 , 8)")
+		.line("print 'end'")
+		.line("label(testing)")
+		.line("wait 3000")
+		.line("dellabel()")
+		.line("function getNum(x) begin")
+		.line("return (x + 1)")
+		.line("end")
+		.line("t = getNum(9)")
+		.line("print t")
+		.line("function hello() begin")
+		.line("return \"Hello World!\"")
+		.line("end")
+		.line("println hello()")
+		.line("print 'end'");
 
 		// 构建脚本执行器，非文件模式载入（若为true，则表示注入的是文件目录）
-		RocSSprite sprite = new RocSSprite(cmd, false);
+		RocSSprite sprite = new RocSSprite(command, false);
 
 		// 无限循环脚本
 		sprite.setLoopScript(true);
@@ -92,50 +83,4 @@ public class RocScriptTest extends Screen {
 		add(sprite);
 
 	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
-
 }

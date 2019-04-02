@@ -33,7 +33,11 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	private Sprites _sprites = null;
 
 	public RocSSprite(CommandLink link) {
-		this(link.toString(), false, false);
+		this(link.getValue(), false, false);
+	}
+
+	public RocSSprite(CommandLink link, boolean useScriptFile) {
+		this(link.getValue(), useScriptFile, false);
 	}
 
 	public RocSSprite(String script, boolean useScriptFile) {

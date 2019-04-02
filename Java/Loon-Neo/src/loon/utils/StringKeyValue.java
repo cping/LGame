@@ -138,12 +138,12 @@ public class StringKeyValue {
 		return addValue(" , ");
 	}
 
-	public StringKeyValue kv(CharSequence key, String[] values) {
-		if (key == null || value == null) {
+	public StringKeyValue kv(CharSequence key, Object[] values) {
+		if (key == null && values == null) {
 			return this;
 		}
 		int size = values.length;
-		StringBuilder sbr = new StringBuilder(size);
+		StringBuilder sbr = new StringBuilder(size + 32);
 		sbr.append('{');
 		for (int i = 0; i < size; i++) {
 			sbr.append(values[i]);
@@ -152,7 +152,7 @@ public class StringKeyValue {
 			}
 		}
 		sbr.append('}');
-		return addValue(key).addValue(" = ").addValue(sbr);
+		return kv(key, sbr.toString());
 	}
 
 	public StringKeyValue kv(CharSequence key, Object value) {
@@ -213,6 +213,14 @@ public class StringKeyValue {
 			_dirty = false;
 		}
 		return value;
+	}
+
+	public StringKeyValue clear() {
+		if (_buffer != null && _buffer.length() > 0) {
+			_buffer.delete(0, _buffer.length());
+			_dirty = true;
+		}
+		return this;
 	}
 
 	public int length() {
