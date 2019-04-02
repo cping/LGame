@@ -15,7 +15,9 @@ _________
 
 International Entertainment Machines
 
-#LGame (formal name : Loon)
+#LGame
+
+formal name : Loon
 
 A fast, simple & powerful game framework, powered by Java (also supports C# and C++).
 
