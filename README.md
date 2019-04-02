@@ -11,16 +11,15 @@
 * 本引擎开发环境是JDK 1.8，设置的最低运行环境为JRE 1.7，请注意低版本JRE不能识别高版本编译的jar，如果直接使用jar（而非导入代码），而无法运行，请注意替换为高版本JRE，或者以源码编译为低版本类库。
 _________
 
+源自中國本土的Java遊戲引擎項目
 
-##LGame (formal name : Loon)
+International Entertainment Machines
+
+#LGame (formal name : Loon)
 
 A fast, simple & powerful game framework, powered by Java (also supports C# and C++).
 
 LGame Project Restart,The game's just started.
-
-源自中國本土的Java遊戲引擎項目
-
-International Entertainment Machines
 
 ## Features
 LGame(LoonGame) is a very cool and small game library designed to simplify the complex and shorten the tedious for beginners and veterans alike. With it, you can use the best aspects of OpenGL/OpenGLES in an easy and organized way optimized for game programming. It is built around the concept that beginners should be able to start with the basics and then move up into a more complex plane of development with the veterans, all on the same platform.
