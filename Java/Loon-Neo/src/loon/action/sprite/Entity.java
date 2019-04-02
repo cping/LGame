@@ -1050,9 +1050,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public void toString(final StringBuilder s) {
-		s.append(this.getClass().getName());
-
+		s.append(super.toString());
 		if ((this._childrens != null) && (this._childrens.size > 0)) {
+			s.append(LSystem.LS);
 			s.append(" [");
 			final TArray<IEntity> entities = this._childrens;
 			for (int i = 0; i < entities.size; i++) {

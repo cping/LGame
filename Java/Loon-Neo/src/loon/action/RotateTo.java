@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.StringKeyValue;
+import loon.LSystem;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -38,20 +39,20 @@ public class RotateTo extends ActionEvent {
 	}
 
 	public RotateTo(float dstAngle, float speed, EasingMode easing) {
-		this(-1f, dstAngle, 1f, speed, 1f / 60f, easing);
+		this(-1f, dstAngle, 1f, speed, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
 	public RotateTo(float dstAngle, float speed) {
-		this(-1f, dstAngle, 1f, speed, 1f / 60f, EasingMode.Linear);
+		this(-1f, dstAngle, 1f, speed, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public RotateTo(float dstAngle, float diffAngle, float speed,
 			EasingMode easing) {
-		this(-1f, dstAngle, diffAngle, 2f, 1f / 60f, easing);
+		this(-1f, dstAngle, diffAngle, 2f, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
 	public RotateTo(float dstAngle, float diffAngle, float speed) {
-		this(-1f, dstAngle, diffAngle, 2f, 1f / 60f, EasingMode.Linear);
+		this(-1f, dstAngle, diffAngle, 2f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public RotateTo(float startRotation, float dstAngle, float diffAngle,

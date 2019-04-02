@@ -33,16 +33,13 @@ import loon.Support;
 import loon.utils.reply.Act;
 
 import org.robovm.apple.coregraphics.CGRect;
-import org.robovm.apple.foundation.NSTimer;
 import org.robovm.apple.foundation.NSURL;
 import org.robovm.apple.glkit.GLKViewDrawableColorFormat;
 import org.robovm.apple.glkit.GLKViewDrawableDepthFormat;
 import org.robovm.apple.glkit.GLKViewDrawableMultisample;
 import org.robovm.apple.glkit.GLKViewDrawableStencilFormat;
-import org.robovm.apple.opengles.EAGLContext;
 import org.robovm.apple.uikit.UIApplication;
 import org.robovm.apple.uikit.UIDevice;
-import org.robovm.objc.block.VoidBlock1;
 
 public class RoboVMGame extends LGame {
 
@@ -138,6 +135,7 @@ public class RoboVMGame extends LGame {
 		return (int) ((System.nanoTime() - gameStart) / 1000000);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void openURL(String url) {
 		if (!UIApplication.getSharedApplication().openURL(new NSURL(url))) {
@@ -185,6 +183,12 @@ public class RoboVMGame extends LGame {
 		return support();
 	}
 
+	private int getOSVersion() {
+		String systemVersion = UIDevice.getCurrentDevice().getSystemVersion();
+		int version = Integer.parseInt(systemVersion.split("\\.")[0]);
+		return version;
+	}
+	
 	void processFrame() {
 		emitFrame();
 	}
@@ -210,21 +214,9 @@ public class RoboVMGame extends LGame {
 	}
 
 	void willTerminate() {
-		new NSTimer(config.timeForTermination, new VoidBlock1<NSTimer>() {
-			public void invoke(NSTimer timer) {
-				EAGLContext.setCurrentContext(null);
-				if (assets != null && assets._audio != null) {
-					assets.getNativeAudio().terminate();
-				}
-			}
-		}, null, false);
+		pool.shutdown();
 		dispatchEvent(status, Status.EXIT);
 	}
 
-	private int getOSVersion() {
-		String systemVersion = UIDevice.getCurrentDevice().getSystemVersion();
-		int version = Integer.parseInt(systemVersion.split("\\.")[0]);
-		return version;
-	}
 
 }

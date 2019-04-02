@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.StringKeyValue;
+import loon.LSystem;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -34,11 +35,11 @@ public class FlashTo extends ActionEvent {
 	private float interval = 0;
 
 	public FlashTo() {
-		this(1f, 1f / 60f, EasingMode.Linear);
+		this(1f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public FlashTo(float duration) {
-		this(duration, 1f / 60f, EasingMode.Linear);
+		this(duration, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public FlashTo(float duration, float delay) {
@@ -46,7 +47,7 @@ public class FlashTo extends ActionEvent {
 	}
 
 	public FlashTo(float duration, EasingMode easing) {
-		this(duration, 1f / 60f, easing);
+		this(duration, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
 	public FlashTo(float duration, float delay, EasingMode easing) {

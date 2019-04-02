@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.StringKeyValue;
+import loon.LSystem;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -38,20 +39,20 @@ public class MoveBy extends ActionEvent {
 	}
 
 	public MoveBy(float endX, float endY, EasingMode easing) {
-		this(-1, -1, endX, endY, 0, 1f, 1f / 60f, easing, 0, 0);
+		this(-1, -1, endX, endY, 0, 1f, LSystem.DEFAULT_EASE_DELAY, easing, 0, 0);
 	}
 
 	public MoveBy(float endX, float endY, float duration, EasingMode easing) {
-		this(-1, -1, endX, endY, 0, duration, 1f / 60f, easing, 0, 0);
+		this(-1, -1, endX, endY, 0, duration, LSystem.DEFAULT_EASE_DELAY, easing, 0, 0);
 	}
 
 	public MoveBy(float endX, float endY, int speed) {
-		this(-1, -1, endX, endY, speed, 1f, 1f / 60f, EasingMode.Linear, 0, 0);
+		this(-1, -1, endX, endY, speed, 1f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear, 0, 0);
 	}
 
 	public MoveBy(float endX, float endY, int speed, EasingMode easing,
 			float sx, float sy) {
-		this(-1, -1, endX, endY, speed, 1f, 1f / 60f, easing, sx, sy);
+		this(-1, -1, endX, endY, speed, 1f, LSystem.DEFAULT_EASE_DELAY, easing, sx, sy);
 	}
 
 	public MoveBy(float startX, float startY, float endX, float endY,

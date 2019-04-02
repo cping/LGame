@@ -49,8 +49,11 @@ public class LSystem {
 	public static String FLAG_SELECT_TAG = "◆";
 
 	// 默认缓存数量
-	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
+	public static int DEFAULT_MAX_CACHE_SIZE = 32;
 
+	// 默认缓动函数延迟
+	public static float DEFAULT_EASE_DELAY = 1f / 60f;
+	
 	// 行分隔符
 	public static final String LS = System.getProperty("line.separator", "\n");
 

@@ -35,6 +35,7 @@ import org.robovm.apple.coregraphics.CGBitmapInfo;
 import org.robovm.apple.coregraphics.CGColorSpace;
 import org.robovm.apple.coregraphics.CGImageAlphaInfo;
 import org.robovm.apple.coregraphics.CGRect;
+import org.robovm.apple.foundation.Foundation;
 import org.robovm.apple.uikit.UIDevice;
 import org.robovm.apple.uikit.UIScreen;
 import org.robovm.apple.uikit.UIUserInterfaceIdiom;
@@ -43,14 +44,17 @@ public class RoboVMGraphics extends Graphics {
 
 	static final CGColorSpace colorSpace = CGColorSpace.createDeviceRGB();
 
+	private static final int DEF_MAX_SIZE = 10;
+	
+	final CGBitmapContext scratchCtx = createCGBitmap(DEF_MAX_SIZE, DEF_MAX_SIZE);
+	
 	final RoboVMGame game;
+	
 	private final float touchScale;
 	private final Vector2f touchTemp = new Vector2f();
 	private final Dimension screenSize = new Dimension();
+	
 	private int defaultFramebuffer;
-
-	private static final int S_SIZE = 10;
-	final CGBitmapContext scratchCtx = createCGBitmap(S_SIZE, S_SIZE);
 
 	private static boolean useHalfSize(RoboVMGame game) {
 		boolean isPad = UIDevice.getCurrentDevice().getUserInterfaceIdiom() == UIUserInterfaceIdiom.Pad;
@@ -58,7 +62,13 @@ public class RoboVMGraphics extends Graphics {
 	}
 
 	private static Scale viewScale(RoboVMGame game) {
-		float deviceScale = (float) UIScreen.getMainScreen().getScale();
+		int version = Foundation.getMajorSystemVersion();
+		float deviceScale = 1f;
+		if (version >= 8) {
+			deviceScale = (float) UIScreen.getMainScreen().getNativeScale();
+		} else {
+			deviceScale = (float) UIScreen.getMainScreen().getScale();
+		}
 		boolean useHalfSize = useHalfSize(game);
 		return new Scale((useHalfSize ? 2 : 1) * deviceScale);
 	}
@@ -98,10 +108,9 @@ public class RoboVMGraphics extends Graphics {
 	}
 
 	@Override
-	protected Canvas createCanvasImpl(Scale scale, int pixelWidth,
-			int pixelHeight) {
-		return new RoboVMCanvas(this, new RoboVMCanvasImage(this, scale,
-				pixelWidth, pixelHeight, game.config.interpolateCanvasDrawing));
+	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
+		return new RoboVMCanvas(this,
+				new RoboVMCanvasImage(this, scale, pixelWidth, pixelHeight, game.config.interpolateCanvasDrawing));
 	}
 
 	static CGBitmapContext createCGBitmap(int width, int height) {
@@ -112,8 +121,7 @@ public class RoboVMGraphics extends Graphics {
 	void viewDidInit(CGRect bounds) {
 		defaultFramebuffer = gl.glGetInteger(GL20.GL_FRAMEBUFFER_BINDING);
 		if (defaultFramebuffer == 0)
-			throw new IllegalStateException(
-					"Failed to determine defaultFramebuffer");
+			throw new IllegalStateException("Failed to determine defaultFramebuffer");
 		setSize(bounds);
 	}
 

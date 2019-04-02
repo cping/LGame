@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.LSystem;
 import loon.geom.Vector2f;
 import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
@@ -41,12 +42,12 @@ public class MoveRoundTo extends ActionEvent {
 	
 	public MoveRoundTo(float angle, float radius, Vector2f centerPoint,
 			float duration, EasingMode easing) {
-		this(0f, angle, 0f, radius, centerPoint, null, duration, 1f / 60f, easing);
+		this(0f, angle, 0f, radius, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
 	public MoveRoundTo(float angle, float radius, Vector2f centerPoint,
 			EasingMode easing) {
-		this(0f, angle, 0f, radius, centerPoint, null, 1f, 1f / 60f, easing);
+		this(0f, angle, 0f, radius, centerPoint, null, 1f, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
 	public MoveRoundTo(float angle, float radius, Vector2f centerPoint,
@@ -57,13 +58,13 @@ public class MoveRoundTo extends ActionEvent {
 	public MoveRoundTo(float startAngle, float angle, float startRadius,
 			float radius, Vector2f centerPoint) {
 		this(startAngle, angle, startRadius, radius, centerPoint, null, 1f,
-				1f / 60f, EasingMode.Linear);
+				LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public MoveRoundTo(float startAngle, float angle, float startRadius,
 			float radius, float duration, Vector2f centerPoint) {
 		this(startAngle, angle, startRadius, radius, centerPoint, null, duration,
-				1f / 60f, EasingMode.Linear);
+				LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public MoveRoundTo(float startAngle, float angle, float startRadius,

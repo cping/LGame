@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.LSystem;
 import loon.geom.Vector2f;
 import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
@@ -48,13 +49,13 @@ public class MoveOvalTo extends ActionEvent {
 	public MoveOvalTo(float startAngle, float angle, float width, float height,
 			Vector2f centerPoint, float duration) {
 		this(startAngle, angle, width, height, centerPoint, null, duration,
-				1f / 60f, EasingMode.Linear);
+				LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public MoveOvalTo(float startAngle, float angle, float width, float height,
 			Vector2f centerPoint, float duration, EasingMode easing) {
 		this(startAngle, angle, width, height, centerPoint, null, duration,
-				1f / 60f, easing);
+				LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
 	public MoveOvalTo(float startAngle, float angle, float width, float height,

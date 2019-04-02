@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.StringKeyValue;
+import loon.LSystem;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -38,7 +39,7 @@ public class ShakeTo extends ActionEvent {
 	}
 
 	public ShakeTo(float shakeX, float shakeY, float duration) {
-		this(shakeX, shakeY, duration, 1f / 60f, EasingMode.Linear);
+		this(shakeX, shakeY, duration, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public ShakeTo(float shakeX, float shakeY, float duration, float delay) {

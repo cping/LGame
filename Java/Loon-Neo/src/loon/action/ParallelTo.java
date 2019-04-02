@@ -112,7 +112,7 @@ public class ParallelTo extends ActionEvent {
 				ActionEvent event = events.get(i);
 				if (event != null) {
 					builder.addValue(event.toString());
-					builder.tcomma();
+					builder.comma();
 				}
 			}
 		}

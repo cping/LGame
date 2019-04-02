@@ -79,7 +79,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	private boolean _fixed = false;
 
-	private float _dt = 1F / 60F;
+	private float _dt = LSystem.DEFAULT_EASE_DELAY;
 
 	private RectBox _physicsRect;
 

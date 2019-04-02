@@ -20,6 +20,7 @@
  */
 package loon.utils.timer;
 
+import loon.LSystem;
 import loon.utils.Easing;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
@@ -43,11 +44,11 @@ public class EaseTimer {
 	private EasingMode _mode;
 
 	public EaseTimer(float duration) {
-		this(duration, 1f/60f, EasingMode.Linear);
+		this(duration, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public EaseTimer(float duration, EasingMode mode) {
-		this(duration, 1f/60f, mode);
+		this(duration, LSystem.DEFAULT_EASE_DELAY, mode);
 	}
 
 	public EaseTimer(float duration, float delay) {
@@ -181,7 +182,7 @@ public class EaseTimer {
 		this._progress = 0.0f;
 		this._finished = false;
 		this._delta = 0;
-		this._delay = 1f / 60f;
+		this._delay = LSystem.DEFAULT_EASE_DELAY;
 		this._timeInAfter = 0;
 	}
 

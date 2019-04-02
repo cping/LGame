@@ -31,6 +31,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.BlendMode;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
@@ -290,7 +291,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public final String getObjectFlag() {
-		return StringUtils.isEmpty(this._object_flag) ? "LObject" : this._object_flag;
+		return StringUtils.isEmpty(this._object_flag) ? getName() : this._object_flag;
 	}
 
 	public void setTransparency(int a) {
@@ -400,7 +401,13 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public String getName() {
 		if (_name == null) {
 			_name = getClass().getName();
-			_name = _name.substring(_name.lastIndexOf(".") + 1).intern();
+			int idx = _name.lastIndexOf('.');
+			if(idx!=-1 && idx>0){
+			    _name = _name.substring(idx + 1).intern();
+			}
+			else{
+				_name="LObject";
+			}
 		}
 		return _name;
 	}
@@ -653,6 +660,32 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	@Override
 	public int hashCode() {
 		return _seqNo;
+	}
+	
+	@Override
+	public String toString(){
+		StringKeyValue builder = new StringKeyValue("LObject");
+		builder
+		.kv("sequence", _seqNo)
+		.comma()
+		.kv("name",getName())
+		.comma()
+		.kv("state", _state.get())
+		.comma()
+		.kv("super", _super)
+		.comma()
+		.kv("pos", _location)
+		.comma()
+		.kv("size",_rect)
+		.comma()
+		.kv("alpha", _alpha)
+		.comma()
+		.kv("rotation", _rotation)
+		.comma()
+		.kv("layer", _layer)
+		.comma()
+		.kv("tag", Tag);
+		return builder.toString();
 	}
 
 }

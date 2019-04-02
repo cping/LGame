@@ -141,7 +141,7 @@ public class ReplayTo extends ActionEvent {
 				ActionEvent event = replays.next();
 				if (event != null) {
 					builder.addValue(event.toString());
-					builder.tcomma();
+					builder.comma();
 				}
 			}
 			replays.stopNext();

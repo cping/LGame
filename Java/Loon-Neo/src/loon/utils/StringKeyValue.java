@@ -131,11 +131,11 @@ public class StringKeyValue {
 	}
 
 	public StringKeyValue comma() {
-		return addValue(" , ");
+		return addValue(",");
 	}
 
-	public StringKeyValue tcomma() {
-		return addValue(",");
+	public StringKeyValue scomma() {
+		return addValue(" , ");
 	}
 
 	public StringKeyValue kv(CharSequence key, String[] values) {
@@ -156,10 +156,15 @@ public class StringKeyValue {
 	}
 
 	public StringKeyValue kv(CharSequence key, Object value) {
-		if (key == null || value == null) {
+		if (key == null && value == null) {
 			return this;
 		}
-		return addValue(key).addValue(" = ").addValue(value.toString());
+		if (key != null && value == null) {
+			return addValue(key).addValue("=").addValue("unkown");
+		} else if (key != null && value != null) {
+			return addValue(key).addValue("=").addValue(value.toString());
+		}
+		return this;
 	}
 
 	public StringKeyValue text(CharSequence mes) {
@@ -220,6 +225,6 @@ public class StringKeyValue {
 
 	@Override
 	public String toString() {
-		return getKey() + " [ " + getValue() + " ] ";
+		return getKey() + " [" + getValue() + "]";
 	}
 }

@@ -23,6 +23,7 @@ package loon.action;
 import loon.LSystem;
 import loon.Screen;
 import loon.event.FrameLoopEvent;
+import loon.utils.StringKeyValue;
 
 /**
  * 执行一个FrameLoopEvent事件
@@ -88,4 +89,10 @@ public class EventTo extends ActionEvent {
 		return "event";
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue(getName());
+		builder.kv("frameLoopEvent", _event);
+		return builder.toString();
+	}
 }

@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.utils.StringKeyValue;
+import loon.LSystem;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -38,12 +39,12 @@ public class TransferTo extends ActionEvent {
 
 	public TransferTo(float startPos, float endPos, float duration,
 			EasingMode mode, boolean controlX, boolean controlY) {
-		this(startPos, endPos, duration, 1f / 60f, mode, controlX, controlY);
+		this(startPos, endPos, duration, LSystem.DEFAULT_EASE_DELAY, mode, controlX, controlY);
 	}
 
 	public TransferTo(float startPos, float endPos, float duration,
 			EasingMode mode) {
-		this(startPos, endPos, duration, 1f / 60f, mode, true, false);
+		this(startPos, endPos, duration, LSystem.DEFAULT_EASE_DELAY, mode, true, false);
 	}
 
 	public TransferTo(float startPos, float endPos, float duration,

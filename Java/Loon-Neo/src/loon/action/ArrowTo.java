@@ -59,7 +59,7 @@ public class ArrowTo extends ActionEvent {
 	}
 
 	public ArrowTo(float tx, float ty, EasingMode mode) {
-		this(-1f, -1f, tx, ty, 1f, 200f, 1f, 1f / 60f, mode);
+		this(-1f, -1f, tx, ty, 1f, 200f, 1f, LSystem.DEFAULT_EASE_DELAY, mode);
 	}
 
 	public ArrowTo(float tx, float ty, float speed, float g) {
@@ -67,11 +67,11 @@ public class ArrowTo extends ActionEvent {
 	}
 
 	public ArrowTo(float st, float sy, float tx, float ty, float speed, float g) {
-		this(st, sy, tx, ty, speed, g, 1f, 1f / 60f, EasingMode.Linear);
+		this(st, sy, tx, ty, speed, g, 1f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public ArrowTo(float tx, float ty, float speed, float g, EasingMode mode) {
-		this(-1f, -1f, tx, ty, speed, g, 1f, 1f / 60f, mode);
+		this(-1f, -1f, tx, ty, speed, g, 1f, LSystem.DEFAULT_EASE_DELAY, mode);
 	}
 
 	public ArrowTo(float st, float sy, float tx, float ty, float speed,
