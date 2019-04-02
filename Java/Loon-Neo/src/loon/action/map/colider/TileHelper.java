@@ -22,6 +22,8 @@ package loon.action.map.colider;
 
 public class TileHelper implements Tile {
 
+	protected int id = -1;
+
 	protected int tileX = 0;
 
 	protected int tileY = 0;
@@ -31,10 +33,15 @@ public class TileHelper implements Tile {
 	protected int tileHeight = 0;
 
 	public TileHelper(int x, int y) {
-		this(x, y, 32, 32);
+		this(-1, x, y, 32, 32);
 	}
 
-	public TileHelper(int x, int y, int tileWidth, int tileHeight) {
+	public TileHelper(int id, int x, int y) {
+		this(id, x, y, 32, 32);
+	}
+
+	public TileHelper(int id, int x, int y, int tileWidth, int tileHeight) {
+		this.id = id;
 		this.tileX = x;
 		this.tileY = y;
 		this.tileWidth = tileWidth;
@@ -99,7 +106,12 @@ public class TileHelper implements Tile {
 
 	@Override
 	public Tile at(int x, int y) {
-		return new TileHelper(x, y, tileWidth, tileHeight);
+		return new TileHelper(-1, x, y, tileWidth, tileHeight);
+	}
+
+	@Override
+	public Tile at(int id, int x, int y) {
+		return new TileHelper(id, x, y, tileWidth, tileHeight);
 	}
 
 }

@@ -30,6 +30,7 @@ import loon.Screen;
 import loon.LTexture.Format;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.map.colider.TileImpl;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
@@ -67,20 +68,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	}
 
-	public static class Tile {
-
-		int id;
-
-		int imgId;
-
-		public Attribute attribute;
-
-		boolean isAnimation;
-
-		public Animation animation;
-
-	}
-
 	private int firstTileX;
 
 	private int firstTileY;
@@ -93,7 +80,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private LTexturePack imgPack;
 
-	private TArray<TileMap.Tile> arrays = new TArray<TileMap.Tile>(10);
+	private TArray<TileImpl> arrays = new TArray<TileImpl>(10);
 
 	private TArray<Animation> animations = new TArray<Animation>();
 
@@ -250,8 +237,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap removeTile(int id) {
-		for (Tile tile : arrays) {
-			if (tile.id == id) {
+		for (TileImpl tile : arrays) {
+			if (tile.idx == id) {
 				if (tile.isAnimation) {
 					animations.remove(tile.animation);
 				}
@@ -266,8 +253,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public int putAnimationTile(int id, Animation animation, Attribute attribute) {
 		if (active) {
-			TileMap.Tile tile = new TileMap.Tile();
-			tile.id = id;
+			TileImpl tile = new TileImpl(id);
 			tile.imgId = -1;
 			tile.attribute = attribute;
 			if (animation != null && animation.getTotalFrames() > 0) {
@@ -294,8 +280,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public int putTile(int id, Image img, Attribute attribute) {
 		if (active) {
-			TileMap.Tile tile = new TileMap.Tile();
-			tile.id = id;
+			TileImpl tile = new TileImpl(id);
 			tile.imgId = imgPack.putImage(img);
 			tile.attribute = attribute;
 			arrays.add(tile);
@@ -312,8 +297,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public int putTile(int id, LTexture img, Attribute attribute) {
 		if (active) {
-			TileMap.Tile tile = new TileMap.Tile();
-			tile.id = id;
+			TileImpl tile = new TileImpl(id);
 			tile.imgId = imgPack.putImage(img);
 			tile.attribute = attribute;
 			arrays.add(tile);
@@ -330,8 +314,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public int putTile(int id, String res, Attribute attribute) {
 		if (active) {
-			TileMap.Tile tile = new TileMap.Tile();
-			tile.id = id;
+			TileImpl tile = new TileImpl(id);
 			tile.imgId = imgPack.putImage(res);
 			tile.attribute = attribute;
 			arrays.add(tile);
@@ -348,8 +331,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileMap putTile(int id, int imgId, Attribute attribute) {
 		if (active) {
-			TileMap.Tile tile = new TileMap.Tile();
-			tile.id = id;
+			TileImpl tile = new TileImpl(id);
 			tile.imgId = imgId;
 			tile.attribute = attribute;
 			arrays.add(tile);
@@ -364,9 +346,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return putTile(id, imgId, null);
 	}
 
-	public TileMap.Tile getTile(int id) {
-		for (Tile tile : arrays) {
-			if (tile.id == id) {
+	public TileImpl getTile(int id) {
+		for (TileImpl tile : arrays) {
+			if (tile.idx == id) {
 				return tile;
 			}
 		}
@@ -475,8 +457,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 					for (int j = firstTileY; j < lastTileY; j++) {
 						if (i > -1 && j > -1 && i < field.getWidth() && j < field.getHeight()) {
 							int id = maps[j][i];
-							for (Tile tile : arrays) {
-								if (tile.isAnimation && tile.id == id) {
+							for (TileImpl tile : arrays) {
+								if (tile.isAnimation && tile.idx == id) {
 									if (useBatch) {
 										LColor tmp = batch.getColor();
 										batch.setColor(baseColor);
@@ -515,9 +497,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				for (int j = firstTileY; j < lastTileY; j++) {
 					if (i > -1 && j > -1 && i < field.getWidth() && j < field.getHeight()) {
 						int id = maps[j][i];
-						for (Tile tile : arrays) {
+						for (TileImpl tile : arrays) {
 							if (playAnimation) {
-								if (tile.id == id) {
+								if (tile.idx == id) {
 									if (tile.isAnimation) {
 										if (useBatch) {
 											LColor tmp = batch.getColor();
@@ -539,7 +521,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 												field.getTileHeight(), baseColor);
 									}
 								}
-							} else if (tile.id == id) {
+							} else if (tile.idx == id) {
 								imgPack.draw(tile.imgId, field.tilesToWidthPixels(i) + offsetX,
 										field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
 										field.getTileHeight(), baseColor);

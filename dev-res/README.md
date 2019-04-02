@@ -6,6 +6,7 @@
 * Slick2D: 最早出现的Java2D游戏引擎之一，只支持桌面游戏开发。[项目地址](http://slick.ninjacave.com/)
 * libGDX: 支持2D/3D的Java跨平台框架。[项目地址](https://github.com/libgdx/libgdx/)
 * LGame: 包括Java/C#/C++等多种语法版本，可能运行于全平台，并且支持2D/3D（含Live2D这类伪3D模型的导入）的游戏引擎。 [项目地址](https://github.com/cping/lgame/)
+* GameComposer: Java/JavaFX游戏引擎,支持多种web平台转换。[项目地址](https://github.com/mirkosertic/GameComposer)
 * playn: 2D的Java游戏引擎，支持多平台。 [项目地址](https://github.com/threerings/playn/)
 * FXGL: Java / JavaFX / Kotlin Game Library (Engine)  [项目地址](https://github.com/AlmasB/FXGL/)
 * LWJGL: 目前最常用的，对OpenGL/CL/AL等渲染API进行本地封装的Java开发包。[官网](http://lwjgl.org/)
@@ -21,6 +22,7 @@
 * avian: 基于openjdk二次开发，Java运行时环境的轻量级二次封装库，据作者说未来将会完整支持IOS和Android平台(目前也可以跑IOS，但需要越狱……)。[项目地址](https://github.com/ReadyTalk/avian/)
 * GWT: 经典的Java to JavaScript代码转换，以及页面开发工具，附带有较为完善的JS仿写Java的本地支持库，可以满足大多数【平台无关】的Java代码直接转换到浏览器环境。[项目地址](https://github.com/gwtproject/gwt/)
 * TeaVM: 新一代的Java to JavaScript(更准确的说，是Bytecode to JavaScript)转换项目。相比GWT而言，TeaVM支持反射，支持对象的同步和异步，能在JS上模拟出真实的Thread功能，也不必配置gwt.xml描述java文件就可以编译，并且支持scala和kotlin脚本，更有比GWT更完整的Java类库实现，优化也比GWT做的更好（GWT是Java代码转译为JS，而TeaVM是直接把bytecode转译为JS，在浏览器运行时等于是面向过程的瀑布式运行，所以解释时损耗更少），通常teaVM转换的JS代码，在执行效率上，要比GWT转换的高10%左右。唯一的缺点是，还在开发阶段，不够成熟，所以bug比较多…… [项目地址](https://github.com/konsoletyper/teavm/)
+* Bytecoder: 一个类似于TeaVM的Java to JavaScript工具。[项目地址](https://github.com/mirkosertic/Bytecoder)
 * j2obj: 仿造GWT原理的Java to Objective-C代码转换器，在IOS上拥有较为完整的JRE本地支持，可以满足大多数【平台无关】的Java代码直接转换到IOS环境。[项目地址](https://github.com/google/j2objc/)
 * openjdk: 完全开源的JDK（JRE）支持库，运行API上与Oracle版并无区别，但是实现上全部开源，也没有商用限制，也就是用户可以自行删减内容，方便精简出游戏专用JRE（而官方版在使用协议上是不能自行精简的）。 [完整编译版地址](https://github.com/alexkasko/openjdk-unofficial-builds/)
 

@@ -66,7 +66,7 @@ public class TileImplPathFind{
 				break;
 			}
 
-			for (Vector2f tc : currentTile.neighbours) {
+			for (Vector2f tc : currentTile.getNeighbours()) {
 				TileImpl neighbour = list.get(tc.x()).get(tc.y());
 				if (neighbour.solid) {
 					continue;

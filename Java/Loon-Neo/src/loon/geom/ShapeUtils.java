@@ -20,11 +20,10 @@
  */
 package loon.geom;
 
-import loon.action.map.GeometryUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class ShapeUtils extends GeometryUtils {
+public class ShapeUtils {
 
 	public static final Vector2f calculateVector(float angle, float magnitude) {
 		Vector2f v = new Vector2f();
@@ -252,4 +251,36 @@ public class ShapeUtils extends GeometryUtils {
 		return MathUtils.toRadians(d);
 	}
 
+
+	public static final int dot(Vector2f v1s, Vector2f v1e, Vector2f v2s, Vector2f v2e) {
+		return (int) ((v1e.x - v1s.x) * (v2e.x - v2s.x) + (v1e.y - v1s.y) * (v2e.y - v2s.y));
+	}
+
+	public static final int dot(int v1sx, int v1sy, int v1ex, int v1ey, int v2sx, int v2sy, int v2ex, int v2ey) {
+		return ((v1ex - v1sx) * (v2ex - v2sx) + (v1ey - v1sy) * (v2ey - v2sy));
+	}
+
+	public static final int dot(Vector2f vs, Vector2f v1e, Vector2f v2e) {
+		return (int) ((v1e.x - vs.x) * (v2e.x - vs.x) + (v1e.y - vs.y) * (v2e.y - vs.y));
+	}
+
+	public static final int dot(int vsx, int vsy, int v1ex, int v1ey, int v2ex, int v2ey) {
+		return ((v1ex - vsx) * (v2ex - vsx) + (v1ey - vsy) * (v2ey - vsy));
+	}
+
+	public static final void transPointList(float[] points, float x, float y) {
+		int i = 0, len = points.length;
+		for (i = 0; i < len; i += 2) {
+			points[i] += x;
+			points[i + 1] += y;
+		}
+	}
+
+	public static final void transPointList(int[] points, int x, int y) {
+		int i = 0, len = points.length;
+		for (i = 0; i < len; i += 2) {
+			points[i] += x;
+			points[i + 1] += y;
+		}
+	}
 }

@@ -990,6 +990,14 @@ public class Vector2f implements Serializable, XY {
 		return result;
 	}
 
+	public float[] toFloat() {
+		return new float[] { x, y };
+	}
+
+	public int[] toInt() {
+		return new int[] { x(), y() };
+	}
+	
 	@Override
 	public final String toString() {
 		return "(" + x + "," + y + ")";

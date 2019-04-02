@@ -20,12 +20,19 @@
  */
 package loon.action.map;
 
+import loon.LSystem;
 import loon.geom.Path;
 import loon.geom.RectBox;
 
-public class Hexagon implements Geometry {
+public class Hexagon {
+
+	private Path path = null;
 
 	protected int x, y, halfWidth, midHeight, endHeight;
+
+	private int[] center = null;
+
+	private int[][] endpoints = null;
 
 	public Hexagon() {
 		this(0, 0, 0, 0, 0);
@@ -73,7 +80,6 @@ public class Hexagon implements Geometry {
 
 	private RectBox frameRect = null;
 
-	@Override
 	public RectBox getFrameRect() {
 		if (frameRect == null) {
 			frameRect = new RectBox(x, y, x + halfWidth + halfWidth, y + endHeight + midHeight + endHeight);
@@ -81,9 +87,6 @@ public class Hexagon implements Geometry {
 		return frameRect;
 	}
 
-	private int[] center = null;
-
-	@Override
 	public int[] getCenter() {
 		if (center == null) {
 			center = new int[] { x + halfWidth, y + endHeight + (midHeight >> 1) };
@@ -91,9 +94,6 @@ public class Hexagon implements Geometry {
 		return center;
 	}
 
-	private int[][] endpoints = null;
-
-	@Override
 	public int[][] getEndpoints() {
 		if (endpoints == null) {
 			int x1 = x + halfWidth;
@@ -107,43 +107,17 @@ public class Hexagon implements Geometry {
 		return endpoints;
 	}
 
-	private Path path = null;
-
-	@Override
-	public Path getPath() {
-		if (path == null) {
-			path = new Path(0, 0);
-			getPath(path);
-		}
-		return path;
-	}
-
-	@Override
-	public Path getPath(Path path) {
-		int[][] endpoints = getEndpoints();
-		path.moveTo(endpoints[0][0], endpoints[0][1]);
-		path.lineTo(endpoints[1][0], endpoints[1][1]);
-		path.lineTo(endpoints[2][0], endpoints[2][1]);
-		path.lineTo(endpoints[3][0], endpoints[3][1]);
-		path.lineTo(endpoints[4][0], endpoints[4][1]);
-		path.lineTo(endpoints[5][0], endpoints[5][1]);
-		path.close();
-		return path;
-	}
-
 	@Override
 	public int hashCode() {
-		final int prime = 31;
 		int result = 1;
-		result = prime * result + endHeight;
-		result = prime * result + halfWidth;
-		result = prime * result + midHeight;
-		result = prime * result + x;
-		result = prime * result + y;
+		result = LSystem.unite(result, endHeight);
+		result = LSystem.unite(result, halfWidth);
+		result = LSystem.unite(result, midHeight);
+		result = LSystem.unite(result, x);
+		result = LSystem.unite(result, y);
 		return result;
 	}
 
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -165,4 +139,23 @@ public class Hexagon implements Geometry {
 		return true;
 	}
 
+	public Path getPath() {
+		if (path == null) {
+			path = new Path(0, 0);
+			getPath(path);
+		}
+		return path;
+	}
+
+	public Path getPath(Path path) {
+		int[][] endpoints = getEndpoints();
+		path.moveTo(endpoints[0][0], endpoints[0][1]);
+		path.lineTo(endpoints[1][0], endpoints[1][1]);
+		path.lineTo(endpoints[2][0], endpoints[2][1]);
+		path.lineTo(endpoints[3][0], endpoints[3][1]);
+		path.lineTo(endpoints[4][0], endpoints[4][1]);
+		path.lineTo(endpoints[5][0], endpoints[5][1]);
+		path.close();
+		return path;
+	}
 }
