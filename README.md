@@ -16,7 +16,6 @@ _________
 International Entertainment Machines
 
 ## LGame
-
 formal name : Loon
 
 A fast, simple & powerful game framework, powered by Java (also supports C# and C++).
@@ -29,6 +28,14 @@ LGame(LoonGame) is a very cool and small game library designed to simplify the c
 LGame puts all of its effort into keeping things short and simple. The initial setup of a game consists only of making a single class; then you are done. The interface is entirely documented for easy and fast learning, so once you are started, there is nothing between you and your killer game but coding and creativity.
 
 LGame is built around the users wishes, so do not hesitate to suggest and critique!
+
+### Games Code Samples
+
+![LGame](https://raw.github.com/cping/LGame/master/sample.png "samples")
+
+[Samples](https://github.com/cping/LGame/tree/master/Java/samples "Game Sample")
+
+[Examples](https://github.com/cping/LGame/tree/master/Java/Examples "Game Example")
 
 ### Game Run the Example(JavaSE)
 ```java
