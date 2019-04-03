@@ -41,15 +41,15 @@ public class TileImpl implements Tile {
 
 	public Animation animation;
 
-	public TArray<TileEvent> events = new TArray<TileEvent>();
+	protected TArray<TileEvent> events = new TArray<TileEvent>();
 
-	public boolean solid, closed = false, open = false;
+	protected boolean solid = false, closed = false, open = false;
 
-	public float G = 0f;
+	protected float G = 0f;
 
-	public float H = 0f;
+	protected float H = 0f;
 
-	public TileImpl parent = null;
+	protected TileImpl parent = null;
 
 	private TArray<Vector2f> neighbours;
 
@@ -59,6 +59,7 @@ public class TileImpl implements Tile {
 
 	public TileImpl(int idx, int x, int y) {
 		this.idx = idx;
+		this.imgId = idx;
 		this._x = x;
 		this._y = y;
 	}
@@ -178,5 +179,4 @@ public class TileImpl implements Tile {
 	public boolean isClosed() {
 		return closed;
 	}
-
 }

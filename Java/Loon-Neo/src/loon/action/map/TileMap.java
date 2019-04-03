@@ -38,6 +38,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.event.DrawListener;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -60,14 +61,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	// Screen的Sprites
 	private Sprites _sprites;
 
-	public static interface DrawListener {
-
-		public TileMap update(long elapsedTime);
-
-		public TileMap draw(GLEx g, float x, float y);
-
-	}
-
 	private int firstTileX;
 
 	private int firstTileY;
@@ -76,7 +69,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private int lastTileY;
 
-	public DrawListener listener;
+	public DrawListener<TileMap> listener;
 
 	private LTexturePack imgPack;
 
@@ -213,7 +206,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setImagePack(String fileName, TArray<LTexturePackClip> clips) {
-		if (imgPack != null) {
+		if (imgPack != null || imgPack.closed()) {
 			imgPack.close();
 			imgPack = null;
 		}
@@ -225,7 +218,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setImagePack(String file) {
-		if (imgPack != null) {
+		if (imgPack != null || imgPack.closed()) {
 			imgPack.close();
 			imgPack = null;
 		}
@@ -248,6 +241,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (animations.size == 0) {
 			playAnimation = false;
 		}
+		this.dirty = true;
 		return this;
 	}
 
@@ -369,10 +363,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap completed() {
-		if (imgPack != null) {
+		if (imgPack != null && !imgPack.closed()) {
 			imgPack.packed(format);
 			int[] list = imgPack.getIdList();
 			active = true;
+			dirty = true;
 			for (int i = 0, size = list.length; i < size; i++) {
 				int id = list[i];
 				putTile(id, id);
@@ -447,7 +442,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			completed();
 			return;
 		}
-
 		dirty = dirty || !imgPack.existCache();
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
 			imgPack.postCache();
@@ -771,11 +765,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return new Field2D(field);
 	}
 
-	public DrawListener getListener() {
+	public DrawListener<TileMap> getListener() {
 		return listener;
 	}
 
-	public TileMap setListener(DrawListener l) {
+	public TileMap setListener(DrawListener<TileMap> l) {
 		this.listener = l;
 		return this;
 	}
@@ -837,7 +831,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			int moveX = (int) newX;
 			int moveY = (int) newY;
 			draw(g, null, moveX, moveY);
-			_mapSprites.paintPos(g, moveX, moveY);
+			if (_mapSprites != null) {
+				_mapSprites.paintPos(g, moveX, moveY);
+			}
 		} catch (Exception ex) {
 			LSystem.error("Array2D TileMap error !", ex);
 		} finally {
@@ -872,7 +868,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				a.update(elapsedTime);
 			}
 		}
-		_mapSprites.update(elapsedTime);
+		if (_mapSprites != null) {
+			_mapSprites.update(elapsedTime);
+		}
 		if (listener != null) {
 			listener.update(elapsedTime);
 		}
@@ -1129,9 +1127,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public boolean isClosed() {
 		return isDisposed();
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return field.toString();
 	}
 

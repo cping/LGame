@@ -91,7 +91,7 @@ public class PShadowEffect extends Entity {
 		} else {
 			this._pixmap = img.getPixmap();
 		}
-		this.setTexture(_pixmap.toTexture());
+		this.setTexture(_pixmap.getImage(false).texture());
 		this.indexD = 255;
 		this.indexW = 0;
 		this.block = 8;
@@ -131,9 +131,9 @@ public class PShadowEffect extends Entity {
 			}
 			LTexture tex = super.getBitmap();
 			if (tex != null && tex.pixelWidth() == _pixmap.getWidth() && tex.pixelHeight() == _pixmap.getHeight()) {
-				tex.update(_pixmap.getImage(), false);
+				tex.update(_pixmap.getImage(false), false);
 			} else {
-				setTexture(_pixmap.getImage().texture());
+				setTexture(_pixmap.getImage(false).texture());
 			}
 		}
 	}

@@ -64,10 +64,6 @@ public class Lwjgl3Graphics extends Lwjgl3ImplGraphics {
 	}
 
 	private void viewportAndScaleChanged(int fbWidth, int fbHeight) {
-		float scale = fbWidth / viewSizeM.width;
-		if (scale != scale().factor) {
-			this.scale = new Scale(scale);
-		}
 		if (!isAllowResize(fbWidth, fbHeight)) {
 			return;
 		}

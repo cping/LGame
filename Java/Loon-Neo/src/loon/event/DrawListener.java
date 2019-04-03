@@ -1,5 +1,5 @@
 /**
- * Copyright 2014
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,27 +15,18 @@
  * 
  * @project loon
  * @author cping
- * @email javachenpeng@yahoo.com
- * @version 0.4.2
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
  */
-package loon.action.map;
+package loon.event;
 
-public class TileVisit<T> {
+import loon.opengl.GLEx;
 
-	protected T tile;
-	protected int[] position = new int[2];
+public interface DrawListener<T> {
+
+	public T update(long elapsedTime);
+
+	public T draw(GLEx g, float x, float y);
+
 	
-	public T getTile() {
-		return tile;
-	}
-	public void setTile(T tile) {
-		this.tile = tile;
-	}
-	public int[] getPosition() {
-		return position;
-	}
-	public void setPosition(int[] position) {
-		this.position = position;
-	}
-
 }

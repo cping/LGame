@@ -21,27 +21,29 @@
 package loon.action.map;
 
 import loon.LSystem;
-import loon.geom.Path;
+import loon.geom.Polygon;
 import loon.geom.RectBox;
 
 public class Hexagon {
 
-	private Path path = null;
+	private Polygon polygon = null;
 
-	protected int x, y, halfWidth, midHeight, endHeight;
+	protected int x, y, startWidth, midHeight, endHeight;
 
 	private int[] center = null;
 
 	private int[][] endpoints = null;
 
+	private RectBox frameRect = null;
+
 	public Hexagon() {
 		this(0, 0, 0, 0, 0);
 	}
 
-	public Hexagon(int x, int y, int halfWidth, int midHeight, int endHeight) {
+	public Hexagon(int x, int y, int startWidth, int midHeight, int endHeight) {
 		this.x = x;
 		this.y = y;
-		this.halfWidth = halfWidth;
+		this.startWidth = startWidth;
 		this.midHeight = midHeight;
 		this.endHeight = endHeight;
 	}
@@ -54,12 +56,12 @@ public class Hexagon {
 		return y;
 	}
 
-	public int getHalfWidth() {
-		return halfWidth;
+	public int getStartWidth() {
+		return startWidth;
 	}
 
 	public int getWidth() {
-		return halfWidth + halfWidth;
+		return startWidth + startWidth;
 	}
 
 	public int getMidHeight() {
@@ -78,31 +80,33 @@ public class Hexagon {
 		return endHeight + midHeight + midHeight;
 	}
 
-	private RectBox frameRect = null;
-
 	public RectBox getFrameRect() {
 		if (frameRect == null) {
-			frameRect = new RectBox(x, y, x + halfWidth + halfWidth, y + endHeight + midHeight + endHeight);
+			frameRect = new RectBox(x, y, x + startWidth + startWidth, y + endHeight + midHeight + endHeight);
 		}
 		return frameRect;
 	}
 
 	public int[] getCenter() {
 		if (center == null) {
-			center = new int[] { x + halfWidth, y + endHeight + (midHeight >> 1) };
+			center = new int[] { x + startWidth, y + endHeight + (midHeight >> 1) };
 		}
 		return center;
 	}
 
 	public int[][] getEndpoints() {
+		return getEndpoints(x, y);
+	}
+
+	public int[][] getEndpoints(int newX, int newY) {
 		if (endpoints == null) {
-			int x1 = x + halfWidth;
-			int x2 = x + halfWidth + halfWidth;
-			int y1 = y + endHeight;
-			int y2 = y + endHeight + midHeight;
-			int y3 = y + endHeight + midHeight + endHeight;
-			endpoints = new int[][] { new int[] { x1, y }, new int[] { x2, y1 }, new int[] { x2, y2 },
-					new int[] { x1, y3 }, new int[] { x, y2 }, new int[] { x, y1 } };
+			int x1 = newX + startWidth;
+			int x2 = newX + startWidth + startWidth;
+			int y1 = newY + endHeight;
+			int y2 = newY + endHeight + midHeight;
+			int y3 = newY + endHeight + midHeight + endHeight;
+			endpoints = new int[][] { new int[] { x1, newY }, new int[] { x2, y1 }, new int[] { x2, y2 },
+					new int[] { x1, y3 }, new int[] { newX, y2 }, new int[] { newX, y1 } };
 		}
 		return endpoints;
 	}
@@ -111,7 +115,7 @@ public class Hexagon {
 	public int hashCode() {
 		int result = 1;
 		result = LSystem.unite(result, endHeight);
-		result = LSystem.unite(result, halfWidth);
+		result = LSystem.unite(result, startWidth);
 		result = LSystem.unite(result, midHeight);
 		result = LSystem.unite(result, x);
 		result = LSystem.unite(result, y);
@@ -128,7 +132,7 @@ public class Hexagon {
 		Hexagon other = (Hexagon) obj;
 		if (endHeight != other.endHeight)
 			return false;
-		if (halfWidth != other.halfWidth)
+		if (startWidth != other.startWidth)
 			return false;
 		if (midHeight != other.midHeight)
 			return false;
@@ -139,23 +143,26 @@ public class Hexagon {
 		return true;
 	}
 
-	public Path getPath() {
-		if (path == null) {
-			path = new Path(0, 0);
-			getPath(path);
+	public Polygon getPolygon() {
+		if (polygon == null) {
+			polygon = new Polygon();
+			getPolygon(polygon, x, y);
 		}
-		return path;
+		return polygon;
 	}
 
-	public Path getPath(Path path) {
-		int[][] endpoints = getEndpoints();
-		path.moveTo(endpoints[0][0], endpoints[0][1]);
-		path.lineTo(endpoints[1][0], endpoints[1][1]);
-		path.lineTo(endpoints[2][0], endpoints[2][1]);
-		path.lineTo(endpoints[3][0], endpoints[3][1]);
-		path.lineTo(endpoints[4][0], endpoints[4][1]);
-		path.lineTo(endpoints[5][0], endpoints[5][1]);
-		path.close();
-		return path;
+	public Polygon getPolygon(int x, int y) {
+		return getPolygon(new Polygon(), x, y);
+	}
+
+	public Polygon getPolygon(Polygon poly, int x, int y) {
+		int[][] endpoints = getEndpoints(x, y);
+		poly.addPoint(endpoints[0][0], endpoints[0][1]);
+		poly.addPoint(endpoints[1][0], endpoints[1][1]);
+		poly.addPoint(endpoints[2][0], endpoints[2][1]);
+		poly.addPoint(endpoints[3][0], endpoints[3][1]);
+		poly.addPoint(endpoints[4][0], endpoints[4][1]);
+		poly.addPoint(endpoints[5][0], endpoints[5][1]);
+		return poly;
 	}
 }

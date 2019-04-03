@@ -35,6 +35,7 @@ import loon.opengl.MeshDefault;
 import loon.opengl.ShaderCmd;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
+import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.json.JsonImpl;
 
@@ -53,7 +54,7 @@ public class LSystem {
 
 	// 默认缓动函数延迟
 	public static float DEFAULT_EASE_DELAY = 1f / 60f;
-	
+
 	// 行分隔符
 	public static final String LS = System.getProperty("line.separator", "\n");
 
@@ -354,6 +355,14 @@ public class LSystem {
 
 	public static void setScaleHeight(float sy) {
 		LSystem.scaleHeight = sy;
+	}
+
+	public static Scale getScale() {
+		Graphics graphics = null;
+		if (LSystem.base() != null) {
+			graphics = LSystem.base().graphics();
+		}
+		return graphics == null ? new Scale(1f) : graphics.scale();
 	}
 
 	public static float invXScaled(float length) {

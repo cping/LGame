@@ -47,13 +47,7 @@ public class Path extends Shape {
 	}
 	
 	public Path(float sx, float sy) {
-		if (holes == null) {
-			holes = new TArray<TArray<float[]>>(10);
-		}
-		if (localPoints == null) {
-			localPoints = new TArray<float[]>(10);
-		}
-		this.set(sx, sy);
+		moveTo(sx, sy);
 	}
 	
 	public void reset(){
@@ -80,8 +74,13 @@ public class Path extends Shape {
 	}
 
 	public void moveTo(float sx, float sy) {
-		hole = new TArray<float[]>();
-		holes.add(hole);
+		if (holes == null) {
+			holes = new TArray<TArray<float[]>>(10);
+		}
+		if (localPoints == null) {
+			localPoints = new TArray<float[]>(10);
+		}
+		this.set(sx, sy);
 	}
 
 	public void quadTo(float x1, float y1, float x2, float y2) {

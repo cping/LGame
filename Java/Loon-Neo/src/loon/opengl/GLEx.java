@@ -888,6 +888,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx drawText(String message, float x, float y, LColor color) {
+		return drawText(message, x, y, color.getARGB(), 0);
+	}
+	
 	public GLEx drawText(String message, float x, float y, LColor color, float rotation) {
 		return drawText(message, x, y, color.getARGB(), rotation);
 	}

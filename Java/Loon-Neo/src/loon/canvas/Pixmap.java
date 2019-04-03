@@ -56,15 +56,47 @@ public class Pixmap extends Limit implements LRelease {
 
 	private Canvas tmpCanvas = null;
 
-	public Image getImage() {
-		if (tmpCanvas == null) {
-			if (LSystem.base() != null) {
-				Graphics graphics = LSystem.base().graphics();
-				Scale scale = graphics.scale();
-				tmpCanvas = graphics.createCanvas(scale.invScaledCeil(getWidth()), scale.invScaledCeil(getHeight()));
-			}
+	public Graphics getGraphics() {
+		if (LSystem.base() != null) {
+			return LSystem.base().graphics();
 		}
-		tmpCanvas.image.setPixmap(this);
+		return null;
+	}
+
+	public Image getImage() {
+		return getImage(true);
+	}
+	
+	public Image getImage(boolean scaleUpdate) {
+		Scale scale = LSystem.getScale();
+		if (scale.factor == 1f) {
+			if (tmpCanvas == null) {
+				tmpCanvas = getGraphics().createCanvas(getWidth(), getHeight());
+			}
+			if (_dirty) {
+				tmpCanvas.image.setPixmap(this);
+			}
+		} else if(scaleUpdate){
+			int newWidth = scale.scaledCeil(getWidth());
+			int newHeight = scale.scaledCeil(getHeight());
+			if (tmpCanvas == null) {
+				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
+			}
+			if (_dirty) {
+				tmpCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
+			}
+		} else{
+
+			int newWidth = scale.invScaledCeil(getWidth());
+			int newHeight = scale.invScaledCeil(getHeight());
+			if (tmpCanvas == null) {
+				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
+			}
+			if (_dirty) {
+				tmpCanvas.image.setPixmap(this);
+			}
+		
+		}
 		return tmpCanvas.image;
 	}
 
@@ -135,6 +167,8 @@ public class Pixmap extends Limit implements LRelease {
 
 	private RectI temp_rect = new RectI();
 
+	private boolean _dirty;
+
 	private int _baseColor = LColor.DEF_COLOR;
 
 	private int _background = LColor.black.getRGB();
@@ -184,7 +218,8 @@ public class Pixmap extends Limit implements LRelease {
 		} else {
 			this._transparent = LColor.TRANSPARENT;
 		}
-		_transparent = 0;
+		this._transparent = 0;
+		this._dirty = true;
 		this.defClip = new RectI(0, 0, _width, _height);
 		this.clip = new RectI(0, 0, _width, _height);
 	}
@@ -225,6 +260,7 @@ public class Pixmap extends Limit implements LRelease {
 		for (int i = 0; i < size; i++) {
 			_drawPixels[i] = 0;
 		}
+		_dirty = true;
 		return this;
 	}
 
@@ -587,6 +623,7 @@ public class Pixmap extends Limit implements LRelease {
 			for (int size = 0; size < h; size++) {
 				System.arraycopy(_drawPixels, (y + size) * _width + x, pixel._drawPixels, size * pixel._width, w);
 			}
+			_dirty = true;
 		} catch (IndexOutOfBoundsException e) {
 		}
 		return pixel;
@@ -1065,6 +1102,7 @@ public class Pixmap extends Limit implements LRelease {
 				}
 			}
 		}
+		_dirty = true;
 		return this;
 	}
 
@@ -1363,6 +1401,7 @@ public class Pixmap extends Limit implements LRelease {
 				System.arraycopy(currentPixels, (offsetY + size) * pixel._width + offsetX, _drawPixels,
 						(y + size) * _width + x, w);
 			}
+			_dirty = true;
 		} else {
 			int findIndex = y * _width + x;
 			int drawIndex = offsetY * pixel._width + offsetX;
@@ -1810,6 +1849,7 @@ public class Pixmap extends Limit implements LRelease {
 				int pixelIndex = x + y * _width;
 				_drawPixels[pixelIndex] = xorMode ? 0xFF000000 | ((_drawPixels[pixelIndex] ^ c) ^ xorRGB) : c;
 			}
+			_dirty = true;
 		}
 	}
 
@@ -2086,6 +2126,7 @@ public class Pixmap extends Limit implements LRelease {
 			return;
 		}
 		this._drawPixels = pixels;
+		this._dirty = true;
 	}
 
 	public int getData(int x, int y) {
@@ -2184,7 +2225,7 @@ public class Pixmap extends Limit implements LRelease {
 	public ByteBuffer convertPixmapToByteBuffer() {
 		return convertPixmapToByteBuffer(false);
 	}
-	
+
 	public ByteBuffer convertPixmapToByteBuffer(boolean filterTran) {
 		Support support = LSystem.base().support();
 		ByteBuffer buffer = support.newByteBuffer(_width * _height * 4);
