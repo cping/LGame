@@ -42,7 +42,7 @@ public class MapTest extends Stage {
 			// 构建数组地图精灵
 			final TileMap map = new TileMap("assets/rpg/map.txt", 32, 32);
 			// 设置切图方式
-			TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10);
+			/*TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10);
 			// 索引,名称,开始切图的x,y位置,以及切下来多少
 			clips.add(new LTexturePackClip(0, "1", 0, 0, 32, 32));
 			clips.add(new LTexturePackClip(1, "2", 32, 0, 32, 32));
@@ -51,7 +51,9 @@ public class MapTest extends Stage {
 			clips.add(new LTexturePackClip(4, "5", 128, 0, 32, 32));
 			clips.add(new LTexturePackClip(5, "6", 160, 0, 32, 32));
 			// 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
-			map.setImagePack("assets/rpg/map.png", clips);
+			map.setImagePack("assets/rpg/map.png", clips);*/
+			//按照瓦片规格自动获取地图切片(切出来大小都是一样的,只对规则图片有效)
+			map.setImagePackAuto("assets/rpg/map.png", 32,32);
 			// 执行切图
 			map.pack();
 		

@@ -796,6 +796,10 @@ public class LTexturePack implements LRelease {
 		this.packed(Format.DEFAULT);
 		return this;
 	}
+	
+	public boolean isPacked(){
+		return packed;
+	}
 
 	public synchronized void packed(Format format) {
 		this.pack(format);

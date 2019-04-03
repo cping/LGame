@@ -39,6 +39,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.event.DrawListener;
+import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.Polygon;
@@ -55,7 +56,7 @@ import loon.utils.SortedList;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class HexagonMap extends LObject<ISprite> implements ISprite {
+public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, ISprite {
 
 	public static final int LEFT = -3;
 	public static final int DOWNLEFT = -2;
@@ -228,15 +229,15 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 
 		@Override
 		public TileVisit<TileImpl> next() {
-			TileVisit<TileImpl> tile = new TileVisit<TileImpl>();
-			tile.tile = (TileImpl) tiles[i + m][j + n];
-			tile.position[0] = i + m - k;
-			tile.position[1] = j + n;
+			TileVisit<TileImpl> tileVisit = new TileVisit<TileImpl>();
+			tileVisit.tile = (TileImpl) tiles[i + m][j + n];
+			tileVisit.position[0] = i + m - k;
+			tileVisit.position[1] = j + n;
 			if (++i >= cols) {
 				k = (++j + n) >> 1;
 				i = 0;
 			}
-			return tile;
+			return tileVisit;
 		}
 
 		@Override
@@ -370,6 +371,8 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 		this._scaleX = this._scaleY = 1f;
 		this._rotation = 0f;
 		this.visible = true;
+		this.active = true;
+		this.dirty = true;
 		this.lastOffsetX = -1;
 		this.lastOffsetY = -1;
 		this.rectViewTemp = LSystem.viewSize.getRect().cpy();
@@ -623,8 +626,8 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 		return heuristic;
 	}
 
-	public void setHeuristic(AStarFindHeuristic heuristic) {
-		this.heuristic = heuristic;
+	public void setHeuristic(AStarFindHeuristic aheuristic) {
+		this.heuristic = aheuristic;
 	}
 
 	public int[][] adjacent(int[] position) {
@@ -739,9 +742,15 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 	}
 
 	private void drawText(GLEx g, Hexagon hexagon, int x, int y, int offX, int offY, LColor color) {
-		IFont font = g.getFont();
+		IFont font = null;
+		if (displayFont == null) {
+			font = g.getFont();
+		} else {
+			font = displayFont;
+		}
 		int[] center = hexagon.getCenter();
 		String text = "[" + x + "," + y + "]";
+		g.setFont(font);
 		g.drawText(text, (center[0] - getViewRect().x - font.stringWidth(text) / 2) + offX,
 				(center[1] - getViewRect().y + font.getHeight() / 2) + offY, color);
 	}
@@ -797,10 +806,16 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public SortedList<int[]> findPath(float endX, float endY) {
+		if (positionFlag == null) {
+			return null;
+		}
 		return findPath(positionFlag.x(), positionFlag.y(), (int) endX, (int) endY);
 	}
 
 	public SortedList<int[]> findPath(int endX, int endY) {
+		if (positionFlag == null) {
+			return null;
+		}
 		return findPath(positionFlag.x(), positionFlag.y(), endX, endY);
 	}
 
@@ -832,8 +847,18 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 		this.allowDisplayClicked = displayClicked;
 	}
 
+	public HexagonMap setImagePackAuto(String fileName, int tileWidth, int tileHeight) {
+		if (texturePack != null) {
+			texturePack.close();
+			texturePack = null;
+		}
+		texturePack = new LTexturePack(fileName, LTexturePackClip.getTextureSplit(fileName, tileWidth, tileHeight));
+		texturePack.packed(format);
+		return this;
+	}
+
 	public HexagonMap setImagePack(String fileName, TArray<LTexturePackClip> clips) {
-		if (texturePack != null || texturePack.closed()) {
+		if (texturePack != null) {
 			texturePack.close();
 			texturePack = null;
 		}
@@ -858,8 +883,10 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public HexagonMap completed() {
-		if (texturePack != null && !texturePack.closed()) {
-			texturePack.packed(format);
+		if (texturePack != null) {
+			if (!texturePack.isPacked()) {
+				texturePack.packed(format);
+			}
 			int[] list = texturePack.getIdList();
 			active = true;
 			dirty = true;
@@ -1184,11 +1211,11 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public float offsetXPixel(float x) {
-		return x - offset.x - _location.x;
+		return MathUtils.iceil((x - offset.x - _location.x) / _scaleX);
 	}
 
 	public float offsetYPixel(float y) {
-		return y - offset.y - _location.y;
+		return MathUtils.iceil((y - offset.y - _location.y) / _scaleY);
 	}
 
 	public boolean inMap(int x, int y) {
@@ -1432,6 +1459,10 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 		return active;
 	}
 
+	public boolean isClosed() {
+		return isDisposed();
+	}
+
 	@Override
 	public void close() {
 		roll = false;
@@ -1503,6 +1534,14 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 
 	public int putAnimationTile(int id, Animation animation) {
 		return putAnimationTile(id, animation, null);
+	}
+
+	public int putTileAutoHexagon(int id, Image img) {
+		return putTile(id, imageToHexagon(img), null);
+	}
+
+	public int putTileAutoHexagon(int id, String path) {
+		return putTile(id, imageToHexagon(path), null);
 	}
 
 	public int putTile(int id, Image img, Attribute attribute) {
@@ -1609,131 +1648,205 @@ public class HexagonMap extends LObject<ISprite> implements ISprite {
 			return;
 		}
 		int step = 0;
-		if (active && (texturePack == null || texturePack.closed())) {
+		if (!active || texturePack == null) {
 			completed();
 			return;
 		}
-		if (allowDisplayFindPath || allowDisplayClicked || allowDisplayPosition || allowDisplayPosText) {
-			for (TileVisit<TileImpl> visit : allTiles(getViewRect())) {
-				TileImpl tile = visit.tile;
-				Hexagon hexagon = coordinate(visit.position);
-				if (getViewRect().intersects(hexagon.getFrameRect())) {
-					TileImpl bindImpl = getTile(tile.idx);
-					if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-						g.draw(bindImpl.animation.getSpriteImage(), hexagon.getX() + offsetX, hexagon.getY() + offsetY);
+		IFont tmpFont = g.getFont();
+		try {
+			if (allowDisplayFindPath || allowDisplayClicked || allowDisplayPosition) {
+				for (TileVisit<TileImpl> visit : allTiles(getViewRect())) {
+					Hexagon hexagon = coordinate(visit.position);
+					if (getViewRect().intersects(hexagon.getFrameRect())) {
+						TileImpl tile = visit.tile;
+						TileImpl bindImpl = getTile(tile.idx);
+						if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
+							LTexture texture = bindImpl.animation.getSpriteImage();
+							if (texture != null) {
+								int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
+								int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
+								g.draw(texture, hexagon.getX() + offsetX, hexagon.getY() + offsetY, newWidth,
+										newHeight);
+								if (allowDisplayPosText) {
+									drawText(g, hexagon, visit.position[0], visit.position[1], offsetX, offsetY,
+											fontColor);
+								}
+							}
+						} else if (bindImpl != null) {
+							LTexture texture = texturePack.getTexture(bindImpl.imgId);
+							if (texture != null) {
+								int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
+								int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
+								g.draw(texture, hexagon.getX() + offsetX, hexagon.getY() + offsetY, newWidth,
+										newHeight);
+							}
+							if (allowDisplayPosText) {
+								drawText(g, hexagon, visit.position[0], visit.position[1], offsetX, offsetY, fontColor);
+							}
+						} else if (allowDisplayPosition) {
+							if (step > 6) {
+								step = 0;
+							}
+							LColor color = LColor.white;
+							switch (tile.idx) {
+							case 0:
+								color = LColor.red;
+								break;
+							case 1:
+								color = LColor.yellow;
+								break;
+							case 2:
+								color = LColor.blue;
+								break;
+							case 3:
+								color = LColor.cyan;
+								break;
+							case 4:
+								color = LColor.magenta;
+								break;
+							case 5:
+								color = LColor.maroon;
+								break;
+							default:
+								color = LColor.green;
+								break;
+							}
+							step++;
+							g.draw(getTempHexagon(hexagon), hexagon.getX() + offsetX, hexagon.getY() + offsetY, color);
+						}
 						if (allowDisplayPosText) {
 							drawText(g, hexagon, visit.position[0], visit.position[1], offsetX, offsetY, fontColor);
 						}
-					} else if (bindImpl != null) {
-						g.draw(texturePack.getTexture(bindImpl.imgId), hexagon.getX() + offsetX,
-								hexagon.getY() + offsetY, hexagon.getWidth(), hexagon.getHeight());
-						if (allowDisplayPosText) {
-							drawText(g, hexagon, visit.position[0], visit.position[1], offsetX, offsetY, fontColor);
-						}
-					} else if (allowDisplayPosition) {
-						if (step > 6) {
-							step = 0;
-						}
-						LColor color = LColor.white;
-						switch (tile.idx) {
-						case 0:
-							color = LColor.red;
-							break;
-						case 1:
-							color = LColor.yellow;
-							break;
-						case 2:
-							color = LColor.blue;
-							break;
-						case 3:
-							color = LColor.cyan;
-							break;
-						case 4:
-							color = LColor.magenta;
-							break;
-						case 5:
-							color = LColor.maroon;
-							break;
-						default:
-							color = LColor.green;
-							break;
-						}
-						step++;
-						g.draw(getTempHexagon(hexagon), hexagon.getX() + offsetX, hexagon.getY() + offsetY, color);
 					}
-					if (allowDisplayPosText) {
-						drawText(g, hexagon, visit.position[0], visit.position[1], offsetX, offsetY, fontColor);
+					if (allowDisplayFindPath && focuses != null) {
+						for (int[] position : focuses) {
+							hexagon = coordinate(position);
+							if (getViewRect().intersects(hexagon.getFrameRect())) {
+								g.draw(getTempHexagon(hexagon), hexagon.getX() + offsetX, hexagon.getY() + offsetY,
+										LColor.lightSkyBlue);
+								if (allowDisplayPosText) {
+									drawText(g, hexagon, position[0], position[1], offsetX, offsetY, fontColor);
+								}
+							}
+						}
 					}
-				}
-				if (allowDisplayFindPath && focuses != null) {
-					for (int[] position : focuses) {
+					if (allowDisplayClicked && positionFlag != null) {
+						int[] position = positionFlag.toInt();
 						hexagon = coordinate(position);
 						if (getViewRect().intersects(hexagon.getFrameRect())) {
-							g.draw(getTempHexagon(hexagon), hexagon.getX() + offsetX, hexagon.getY() + offsetY, LColor.lightSkyBlue);
+							g.draw(getTempHexagon(hexagon), hexagon.getX() + offsetX, hexagon.getY() + offsetY,
+									LColor.pink);
 							if (allowDisplayPosText) {
 								drawText(g, hexagon, position[0], position[1], offsetX, offsetY, fontColor);
 							}
 						}
 					}
 				}
-				if (allowDisplayClicked && positionFlag != null) {
-					int[] position = positionFlag.toInt();
-					hexagon = coordinate(position);
-					if (getViewRect().intersects(hexagon.getFrameRect())) {
-						g.draw(getTempHexagon(hexagon), hexagon.getX() + offsetX, hexagon.getY() + offsetY, LColor.pink);
-						if (allowDisplayPosText) {
-							drawText(g, hexagon, position[0], position[1], offsetX, offsetY, fontColor);
-						}
-					}
+			} else {
+				if (texturePack == null || texturePack.closed()) {
+					return;
 				}
-			}
-		} else {
-			if (texturePack == null || texturePack.closed()) {
-				return;
-			}
-			dirty = dirty || !texturePack.existCache();
-			if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY && rectViewTemp.equals(getViewRect())) {
-				texturePack.postCache();
-				if (playAnimation) {
-					for (TileVisit<TileImpl> visit : allTiles(getViewRect())) {
-						TileImpl tile = visit.tile;
-						Hexagon hexagon = coordinate(visit.position);
-						if (getViewRect().intersects(hexagon.getFrameRect())) {
-							TileImpl bindImpl = getTile(tile.idx);
-							if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-								g.draw(bindImpl.animation.getSpriteImage(), hexagon.getX() + offsetX,
-										hexagon.getY() + offsetY);
+				dirty = dirty || !texturePack.existCache();
+				if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY && rectViewTemp.equals(getViewRect())) {
+					texturePack.postCache();
+					if (playAnimation || allowDisplayPosText) {
+						for (TileVisit<TileImpl> visit : allTiles(getViewRect())) {
+							Hexagon hexagon = coordinate(visit.position);
+							if (getViewRect().intersects(hexagon.getFrameRect())) {
+								TileImpl tile = visit.tile;
+								TileImpl bindImpl = getTile(tile.idx);
+								if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
+									LTexture texture = bindImpl.animation.getSpriteImage();
+									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
+									int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
+									g.draw(texture, hexagon.getX() + offsetX, hexagon.getY() + offsetY, newWidth,
+											newHeight);
+								}
+								if (allowDisplayPosText) {
+									drawText(g, hexagon, visit.position[0], visit.position[1], offsetX, offsetY,
+											fontColor);
+								}
 							}
 						}
 					}
-				}
-			} else {
-				texturePack.glBegin();
-				for (TileVisit<TileImpl> visit : allTiles(getViewRect())) {
-					TileImpl tile = visit.tile;
-					Hexagon hexagon = coordinate(visit.position);
-					if (getViewRect().intersects(hexagon.getFrameRect())) {
-						TileImpl bindImpl = getTile(tile.idx);
-						if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-							g.draw(bindImpl.animation.getSpriteImage(), hexagon.getX() + offsetX,
-									hexagon.getY() + offsetY);
-						} else if (bindImpl != null) {
-							texturePack.draw(bindImpl.imgId, hexagon.getX() + offsetX, hexagon.getY() + offsetY,
-									hexagon.getWidth(), hexagon.getHeight());
+				} else {
+					texturePack.glBegin();
+					for (TileVisit<TileImpl> visit : allTiles(getViewRect())) {
+						Hexagon hexagon = coordinate(visit.position);
+						if (getViewRect().intersects(hexagon.getFrameRect())) {
+							TileImpl tile = visit.tile;
+							TileImpl bindImpl = getTile(tile.idx);
+							if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
+								LTexture texture = bindImpl.animation.getSpriteImage();
+								if (texture != null) {
+									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
+									int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
+									g.draw(texture, hexagon.getX() + offsetX, hexagon.getY() + offsetY, newWidth,
+											newHeight);
+								}
+							} else if (bindImpl != null) {
+								int id = bindImpl.imgId;
+								LTexture texture = texturePack.getTexture(id);
+								if (texture != null) {
+									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
+									int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
+									texturePack.draw(id, hexagon.getX() + offsetX, hexagon.getY() + offsetY, newWidth,
+											newHeight);
+								}
+							}
+							if (allowDisplayPosText) {
+								drawText(g, hexagon, visit.position[0], visit.position[1], offsetX, offsetY, fontColor);
+							}
 						}
 					}
+					texturePack.glEnd();
+					texturePack.saveCache();
+					lastOffsetX = offsetX;
+					lastOffsetY = offsetY;
+					dirty = false;
 				}
-				texturePack.glEnd();
-				texturePack.saveCache();
-				lastOffsetX = offsetX;
-				lastOffsetY = offsetY;
-				dirty = false;
 			}
+		} catch (Throwable thr) {
+			throw LSystem.runThrow(thr.getMessage(), thr);
+		} finally {
+			g.setFont(tmpFont);
 		}
+	}
+
+	public LTexture imageToHexagon(String path) {
+		return Hexagon.createImageToHexagon(path, origin, 1, 1);
+	}
+
+	public LTexture imageToHexagon(Image img) {
+		return Hexagon.createImageToHexagon(img, origin, 1, 1);
 	}
 
 	@Override
 	public String toString() {
 		return field2dMap == null ? super.toString() : field2dMap.toString();
+	}
+
+	private IFont displayFont;
+
+	@Override
+	public HexagonMap setFont(IFont font) {
+		this.displayFont = font;
+		return this;
+	}
+
+	@Override
+	public IFont getFont() {
+		return displayFont;
+	}
+
+	@Override
+	public HexagonMap setFontColor(LColor color) {
+		this.fontColor = color;
+		return this;
+	}
+
+	@Override
+	public LColor getFontColor() {
+		return fontColor.cpy();
 	}
 }

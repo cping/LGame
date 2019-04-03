@@ -20,11 +20,40 @@
  */
 package loon.action.map;
 
+import loon.BaseIO;
 import loon.LSystem;
+import loon.LTexture;
+import loon.canvas.Image;
+import loon.canvas.LColor;
+import loon.canvas.Pixmap;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 
 public class Hexagon {
+
+	public static final LTexture createImageToHexagon(String path, Hexagon hex) {
+		return createImageToHexagon(BaseIO.loadImage(path), hex, 0, 0);
+	}
+
+	public static final LTexture createImageToHexagon(String path, Hexagon hex, int offsetX, int offsetY) {
+		return createImageToHexagon(BaseIO.loadImage(path), hex, offsetX, offsetY);
+	}
+
+	public static final LTexture createImageToHexagon(Image img, Hexagon hex) {
+		return createImageToHexagon(img, hex, 0, 0);
+	}
+
+	public static final LTexture createImageToHexagon(Image img, Hexagon hex, int offsetX, int offsetY) {
+		Pixmap pixmap = img.getPixmap();
+		Polygon poly = hex.getPolygon(0, 0);
+		Pixmap newPixmap = new Pixmap(hex.getWidth(), hex.getHeight(), true);
+		newPixmap.fillPolygon(Pixmap.getResize(pixmap, offsetX, offsetY, hex.getWidth(), hex.getHeight()), poly);
+		newPixmap.setColor(LColor.black);
+		newPixmap.drawPolygon(poly);
+		pixmap = null;
+		img.close();
+		return newPixmap.texture();
+	}
 
 	private Polygon polygon = null;
 

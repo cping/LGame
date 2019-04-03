@@ -1,8 +1,42 @@
 package loon.opengl;
 
+import loon.LTexture;
+import loon.LTextures;
 import loon.geom.RectBox;
+import loon.utils.TArray;
 
 public class LTexturePackClip {
+
+	public static final TArray<LTexturePackClip> getTextureSplit(String path, int tileWidth, int tileHeight,
+			int offsetX, int offsetY) {
+		return getTextureSplit(LTextures.loadTexture(path), tileWidth, tileHeight, offsetX, offsetY);
+	}
+
+	public static final TArray<LTexturePackClip> getTextureSplit(String path, int tileWidth, int tileHeight) {
+		return getTextureSplit(LTextures.loadTexture(path), tileWidth, tileHeight, 0, 0);
+	}
+
+	public static final TArray<LTexturePackClip> getTextureSplit(LTexture texture, int tileWidth, int tileHeight) {
+		return getTextureSplit(texture, tileWidth, tileHeight, 0, 0);
+	}
+
+	public static final TArray<LTexturePackClip> getTextureSplit(LTexture texture, int tileWidth, int tileHeight,
+			int offsetX, int offsetY) {
+		int width = texture.getWidth();
+		int height = texture.getHeight();
+		int frame = 0;
+		int wlength = width / tileWidth;
+		int hlength = height / tileHeight;
+		TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(wlength * hlength);
+		for (int y = 0; y < hlength; y++) {
+			for (int x = 0; x < wlength; x++) {
+				clips.add(new LTexturePackClip(frame, String.valueOf(frame), offsetX + (x * tileWidth),
+						offsetY + (y * tileHeight), tileWidth, tileHeight));
+				frame++;
+			}
+		}
+		return clips;
+	}
 
 	public String name;
 

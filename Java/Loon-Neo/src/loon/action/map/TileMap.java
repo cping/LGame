@@ -201,12 +201,22 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return new TileMap(TileMapConfig.loadCharsField(resName, tileWidth, tileHeight));
 	}
 
+	public TileMap setImagePackAuto(String fileName, int tileWidth, int tileHeight) {
+		if (imgPack != null) {
+			imgPack.close();
+			imgPack = null;
+		}
+		imgPack = new LTexturePack(fileName, LTexturePackClip.getTextureSplit(fileName, tileWidth, tileHeight));
+		imgPack.packed(format);
+		return this;
+	}
+
 	public TileMap setImagePack(String fileName, LTexturePackClip[] clips) {
 		return setImagePack(fileName, new TArray<LTexturePackClip>(clips));
 	}
 
 	public TileMap setImagePack(String fileName, TArray<LTexturePackClip> clips) {
-		if (imgPack != null || imgPack.closed()) {
+		if (imgPack != null) {
 			imgPack.close();
 			imgPack = null;
 		}
@@ -218,7 +228,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setImagePack(String file) {
-		if (imgPack != null || imgPack.closed()) {
+		if (imgPack != null) {
 			imgPack.close();
 			imgPack = null;
 		}
@@ -363,8 +373,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap completed() {
-		if (imgPack != null && !imgPack.closed()) {
-			imgPack.packed(format);
+		if (imgPack != null) {
+			if (!imgPack.isPacked()) {
+				imgPack.packed(format);
+			}
 			int[] list = imgPack.getIdList();
 			active = true;
 			dirty = true;
@@ -438,7 +450,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				g.draw(_background, offsetX, offsetY);
 			}
 		}
-		if (!active || imgPack == null || imgPack.closed()) {
+		if (!active || imgPack == null) {
 			completed();
 			return;
 		}
@@ -988,11 +1000,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public float offsetXPixel(float x) {
-		return x - offset.x;
+		return MathUtils.iceil((x - offset.x - _location.x) / scaleX);
 	}
 
 	public float offsetYPixel(float y) {
-		return y - offset.y;
+		return MathUtils.iceil((y - offset.y - _location.y) / scaleY);
 	}
 
 	public boolean inMap(int x, int y) {

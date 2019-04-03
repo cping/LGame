@@ -66,7 +66,7 @@ public class Pixmap extends Limit implements LRelease {
 	public Image getImage() {
 		return getImage(true);
 	}
-	
+
 	public Image getImage(boolean scaleUpdate) {
 		Scale scale = LSystem.getScale();
 		if (scale.factor == 1f) {
@@ -76,7 +76,7 @@ public class Pixmap extends Limit implements LRelease {
 			if (_dirty) {
 				tmpCanvas.image.setPixmap(this);
 			}
-		} else if(scaleUpdate){
+		} else if (scaleUpdate) {
 			int newWidth = scale.scaledCeil(getWidth());
 			int newHeight = scale.scaledCeil(getHeight());
 			if (tmpCanvas == null) {
@@ -85,7 +85,7 @@ public class Pixmap extends Limit implements LRelease {
 			if (_dirty) {
 				tmpCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
 			}
-		} else{
+		} else {
 
 			int newWidth = scale.invScaledCeil(getWidth());
 			int newHeight = scale.invScaledCeil(getHeight());
@@ -95,7 +95,7 @@ public class Pixmap extends Limit implements LRelease {
 			if (_dirty) {
 				tmpCanvas.image.setPixmap(this);
 			}
-		
+
 		}
 		return tmpCanvas.image;
 	}
@@ -143,6 +143,18 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		Pixmap result = new Pixmap(w, h, image._hasAlpha);
 		result.drawPixmap(image, 0, 0, w, h, 0, 0, image.getWidth(), image.getHeight());
+		return result;
+	}
+
+	public static Pixmap getResize(Pixmap image, int x, int y, int w, int h) {
+		if (image == null) {
+			return null;
+		}
+		if (image._width == w && image._height == h) {
+			return image;
+		}
+		Pixmap result = new Pixmap(w, h, image._hasAlpha);
+		result.drawPixmap(image, 0, 0, w, h, x, y, image.getWidth() - x, image.getHeight() - y);
 		return result;
 	}
 
@@ -822,6 +834,30 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		drawPolyline(xps, yps, len);
 		drawLine(xps[len - 1], yps[len - 1], xps[0], yps[0]);
+		return this;
+	}
+
+	public Pixmap fillShapeImpl(Pixmap pixmap, Shape shape, int x1, int y1) {
+		if (shape == null) {
+			return this;
+		}
+		final float[] points = shape.getPoints();
+		int size = points.length;
+		int len = size / 2;
+		final int[] xps = new int[len];
+		final int[] yps = new int[len];
+		for (int i = 0, j = 0; i < size; i += 2, j++) {
+			xps[j] = (int) (points[i] + x1);
+			yps[j] = (int) (points[i + 1] + y1);
+		}
+		RectI bounds = RectI.getIntersection(setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
+		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+				if (contains(xps, yps, len, bounds, x, y)) {
+					drawPoint(x, y, pixmap.getData(x, y));
+				}
+			}
+		}
 		return this;
 	}
 
@@ -1769,6 +1805,30 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap fillPolygon(Polygon p) {
 		return fillShapeImpl(p, 0, 0);
+	}
+
+	/**
+	 * 绘制并填充一个多边形
+	 * 
+	 * @param pixmap
+	 * @param poly
+	 * @return
+	 */
+	public Pixmap fillPolygon(Pixmap pixmap, Polygon poly) {
+		return fillShapeImpl(pixmap, poly, 0, 0);
+	}
+
+	/**
+	 * 绘制并填充一个多边形
+	 * 
+	 * @param pixmap
+	 * @param poly
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Pixmap fillPolygon(Pixmap pixmap, Polygon poly, int x, int y) {
+		return fillShapeImpl(pixmap, poly, x, y);
 	}
 
 	/**
