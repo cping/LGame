@@ -260,17 +260,16 @@ public class MathUtils {
 
 	public static final float PHI = 0.618f;
 	
-	static private final int BIG_ENOUGH_INT = 16 * 1024;
-
-	static private final float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
-
 	static private final float CEIL = 0.9999999f;
 
-	static private final float BIG_ENOUGH_CEIL = NumberUtils
-			.intBitsToFloat(NumberUtils.floatToRawIntBits(BIG_ENOUGH_INT + 1) - 1);
+	static private final int BIG_ENOUGH_INT = 16384;
+	
+	static private final float BIG_ENOUGH_CEIL = 16384.998f;
 
 	static private final float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
 
+	static private final float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
+	
 	static private final int ATAN2_BITS = 7;
 
 	static private final int ATAN2_BITS2 = ATAN2_BITS << 1;
@@ -279,7 +278,7 @@ public class MathUtils {
 
 	static private final int ATAN2_COUNT = ATAN2_MASK + 1;
 
-	static private final int ATAN2_DIM = (int) Math.sqrt(ATAN2_COUNT);
+	static public final int ATAN2_DIM = 128;
 
 	static private final float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
 

@@ -278,6 +278,10 @@ public class LSystem {
 		return _base;
 	}
 
+	public final static boolean landscape() {
+		return viewSize.height < viewSize.width;
+	}
+	
 	public static void resetTextureRes() {
 		resetTextureRes(base());
 	}

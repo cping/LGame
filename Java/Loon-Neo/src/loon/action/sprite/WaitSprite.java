@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
@@ -31,7 +32,7 @@ import loon.utils.timer.LTimer;
  * 各种等待特效的合集,各种圈和线条滴溜溜的转……
  */
 public class WaitSprite extends Entity {
-	
+
 	private final class DrawWait {
 
 		private final float sx = 1.0f, sy = 1.0f;
@@ -63,11 +64,9 @@ public class WaitSprite extends Entity {
 			this.color = new LColor(LColor.white);
 			switch (style) {
 			case 0:
-				int r1 = width / 8,
-				r2 = height / 8;
+				int r1 = width / 8, r2 = height / 8;
 				this.r = (r1 < r2 ? r1 : r2) / 2;
-				this.list = new TArray<RectBox>(new RectBox[] {
-						new RectBox(sx + 3 * r, sy + 0 * r, 2 * r, 2 * r),
+				this.list = new TArray<RectBox>(new RectBox[] { new RectBox(sx + 3 * r, sy + 0 * r, 2 * r, 2 * r),
 						new RectBox(sx + 5 * r, sy + 1 * r, 2 * r, 2 * r),
 						new RectBox(sx + 6 * r, sy + 3 * r, 2 * r, 2 * r),
 						new RectBox(sx + 5 * r, sy + 5 * r, 2 * r, 2 * r),
@@ -105,27 +104,22 @@ public class WaitSprite extends Entity {
 				float _alpha = 0.0f;
 				float nx = x + width / 2 - (int) r * 4;
 				float ny = y + height / 2 - (int) r * 4;
-				g.translate(nx, ny);
 				for (RectBox s : list) {
 					_alpha = _alpha + 0.1f;
 					g.setAlpha(_alpha);
-					g.fillOval(s.x, s.y, s.width, s.height);
+					g.fillOval(nx + s.x, ny + s.y, s.width, s.height);
 				}
 				g.setAlpha(1.0F);
-				g.translate(-nx, -ny);
 				break;
 			case 1:
 				int old = g.getBlendMode();
 				g.setBlendMode(LSystem.MODE_NORMAL);
 				g.setLineWidth(10);
-				g.translate(x, y);
 				g.setColor(fill);
-				g.drawOval(0, 0, width, height);
+				g.drawOval(x, y, width, height);
 				int sa = angle % 360;
-				g.fillArc(x + (width - paintWidth) / 2, y
-						+ (height - paintHeight) / 2, paintWidth, paintHeight,
-						sa, sa + ANGLE_STEP);
-				g.translate(-x, -y);
+				g.fillArc(x + (width - paintWidth) / 2, y + (height - paintHeight) / 2, paintWidth, paintHeight, sa,
+						sa + ANGLE_STEP);
 				g.resetLineWidth();
 				g.setBlendMode(old);
 				break;
@@ -143,7 +137,7 @@ public class WaitSprite extends Entity {
 	private Cycle cycle;
 
 	public WaitSprite(int s) {
-		this(s, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		this(s, LSystem.landscape() ? 360 : 300, 300);
 	}
 
 	public WaitSprite(int s, int w, int h) {
@@ -153,37 +147,24 @@ public class WaitSprite extends Entity {
 		this.setRepaint(true);
 		this.setSize(w, h);
 		if (s > 1) {
+			int idx = s - 2;
 			int width = w / 2;
 			int height = h / 2;
-			cycle = newSample(s - 2, width, height);
-			RectBox limit = cycle.getCollisionBox();
-			setLocation(
-					(w - (limit.getWidth() == 0 ? 20 : limit.getWidth())) / 2,
-					(h - (limit.getHeight() == 0 ? 20 : limit.getHeight())) / 2);
+			cycle = newSample(idx, width, height);
+			cycle.setLocation((w - cycle.getWidth()) / 2, (h - cycle.getHeight()) / 2);
 		}
+		setLocation((LSystem.viewSize.getWidth() - w) / 2, (LSystem.viewSize.getHeight() - h) / 2);
 		update(0);
 	}
 
-	private final static Cycle newSample(int type, float srcWidth,
-			float srcHeight) {
+	private final static Cycle newSample(int type, float srcWidth, float srcHeight) {
 		float width = 1;
 		float height = 1;
 		float offset = 0;
 		int padding = 0;
+		type = MathUtils.max(0, MathUtils.min(type, 7));
 		switch (type) {
 		case 0:
-			offset = 12;
-			if (srcWidth < srcHeight) {
-				width = 60;
-				height = 60;
-				padding = -35;
-			} else {
-				width = 100;
-				height = 100;
-				padding = -35;
-			}
-			break;
-		case 1:
 			width = 100;
 			height = 40;
 			if (srcWidth < srcHeight) {
@@ -192,7 +173,7 @@ public class WaitSprite extends Entity {
 				offset = 8;
 			}
 			break;
-		case 2:
+		case 1:
 			width = 30;
 			height = 30;
 			if (srcWidth < srcHeight) {
@@ -201,22 +182,33 @@ public class WaitSprite extends Entity {
 				offset = 6;
 			}
 			break;
-		case 3:
-			width = 100;
-			height = 100;
-			padding = -30;
-			break;
-		case 4:
+		case 2:
 			width = 80;
 			height = 80;
 			offset = 14;
 			padding = -15;
 			break;
-		case 5:
+		case 3:
 			width = 100;
 			height = 100;
 			if (srcWidth < srcHeight) {
 				offset = -4;
+			}
+			break;
+		case 4:
+			width = 60;
+			height = 60;
+			offset = 12;
+			padding = -60;
+			break;
+		case 5:
+			width = 70;
+			height = 80;
+			offset = 12;
+			if (srcWidth < srcHeight) {
+				padding = -80;
+			} else {
+				padding = -30;
 			}
 			break;
 		case 6:
@@ -226,42 +218,17 @@ public class WaitSprite extends Entity {
 			if (srcWidth < srcHeight) {
 				padding = -60;
 			} else {
-				padding = -80;
+				padding = -60;
 			}
 			break;
 		case 7:
-			width = 70;
-			height = 80;
-			offset = 12;
-			if (srcWidth < srcHeight) {
-				padding = -80;
-			} else {
-				padding = -110;
-			}
-			break;
-		case 8:
-			width = 60;
-			height = 60;
-			offset = 12;
-			if (srcWidth < srcHeight) {
-				padding = -60;
-			} else {
-				padding = -80;
-			}
-			break;
-		case 9:
 			width = 80;
 			height = 80;
-			if (srcWidth < srcHeight) {
-				offset = -2;
-				padding = -20;
-			} else {
-				padding = -30;
-			}
+			offset = -2;
+			padding = -20;
 			break;
 		}
-		return Cycle.getSample(type, srcWidth, srcHeight, width, height,
-				offset, padding);
+		return Cycle.getSample(type, srcWidth, srcHeight, width, height, offset, padding);
 	}
 
 	@Override
@@ -295,9 +262,6 @@ public class WaitSprite extends Entity {
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (cycle != null) {
-			if (cycle.x() != x() || cycle.y() != y()) {
-				cycle.setLocation(x(), y());
-			}
 			cycle.update(elapsedTime);
 		} else {
 			if (delay.action(elapsedTime)) {

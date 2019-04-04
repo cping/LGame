@@ -1,47 +1,35 @@
 package org.test;
 
+import loon.Counter;
 import loon.LSystem;
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.WaitSprite;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
 
-public class CycleTest extends Screen {
+public class CycleTest extends Stage {
 
-	RealtimeProcess process;
-
-	@Override
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 
 		// 添加等待特效1
 		add(new WaitSprite(0));
 
 		// 构建一个独立的游戏进程(内部不是线程，只是loon提供的独立循环结构)
-		process = new RealtimeProcess() {
+		RealtimeProcess process = new RealtimeProcess() {
 
-			private int count = 0;
+			private Counter counter = newCounter();
 
 			@Override
 			public void run(LTimerContext time) {
 				getSprites().removeAll();
-				// 添加一个循环等待的特效
-				add(new WaitSprite(count++));
-				// 总共只有11个特效……
-				if (count > 11) {
-					count = 0;
+				// 添加一个循环的特效为指定id
+				add(new WaitSprite(counter.getValue()));
+				counter.increment();
+				// 累计到9重新计算
+				if (counter.getValue() > 9) {
+					counter.clear();
 				}
 				// 如果Screen关闭，杀掉当前游戏进程
 				if (isClosed()) {
@@ -49,57 +37,16 @@ public class CycleTest extends Screen {
 				}
 			}
 		};
-		// 延迟5秒执行一次特效切换
-		process.setDelay(LSystem.SECOND * 5);
-		// 注入进程
+		// 延迟2秒执行一次特效切换
+		process.setDelay(LSystem.SECOND * 2);
+		
+		//添加这个进程
 		addProcess(process);
-
-		add(MultiScreenTest.getBackButton(this,0));
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-		removeProcess(process);
+		
+		//窗体注销时关闭process
+		putRelease(process);
+	
+		add(MultiScreenTest.getBackButton(this, 0));
 	}
 
 }

@@ -749,8 +749,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public RectBox getCollisionBox() {
 		validatePosition();
-		return setRect(MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY,
-					_rotation, _rect));
+		return setRect(
+				MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY, _rotation, _rect));
 	}
 
 	public LComponent getToolTipParent() {
@@ -1011,42 +1011,52 @@ public abstract class LComponent extends LObject<LContainer>
 		return getRectBox().contains(x, y, w, h);
 	}
 
+	private float toPixelScaleX(float x) {
+		return MathUtils.iceil(x / _scaleX);
+	}
+
+	private float toPixelScaleY(float y) {
+		return MathUtils.iceil(y / _scaleY);
+	}
+
 	public float getTouchDX() {
-		return input == null ? SysTouch.getDX() : input.getTouchDX();
+		return toPixelScaleX(input == null ? SysTouch.getDX() : input.getTouchDX());
 	}
 
 	public float getTouchDY() {
-		return input == null ? SysTouch.getDY() : input.getTouchDY();
+		return toPixelScaleY(input == null ? SysTouch.getDY() : input.getTouchDY());
 	}
 
 	public float getTouchX() {
-		return input == null ? SysTouch.getX() : input.getTouchX();
+		return toPixelScaleX(input == null ? SysTouch.getX() : input.getTouchX());
 	}
 
 	public float getTouchY() {
-		return input == null ? SysTouch.getY() : input.getTouchY();
+		return toPixelScaleY(input == null ? SysTouch.getY() : input.getTouchY());
 	}
 
 	public float getUITouchX() {
 		if (_super == null) {
-			return SysTouch.getX() - getX();
+			return toPixelScaleX(SysTouch.getX() - getX());
 		} else {
 			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
-				return SysTouch.getX() + ((LScrollContainer) _super).getScrollX() - _super.getX() - getX();
+				return toPixelScaleX(
+						SysTouch.getX() + ((LScrollContainer) _super).getScrollX() - _super.getX() - getX());
 			} else {
-				return SysTouch.getX() - _super.getX() - getX();
+				return toPixelScaleX(SysTouch.getX() - _super.getX() - getX());
 			}
 		}
 	}
 
 	public float getUITouchY() {
 		if (_super == null) {
-			return SysTouch.getY() - getY();
+			return toPixelScaleY(SysTouch.getY() - getY());
 		} else {
 			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
-				return SysTouch.getY() + ((LScrollContainer) _super).getScrollY() - _super.getY() - getY();
+				return toPixelScaleY(
+						SysTouch.getY() + ((LScrollContainer) _super).getScrollY() - _super.getY() - getY());
 			} else {
-				return SysTouch.getY() - _super.getY() - getY();
+				return toPixelScaleY(SysTouch.getY() - _super.getY() - getY());
 			}
 		}
 	}

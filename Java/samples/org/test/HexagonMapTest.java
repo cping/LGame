@@ -31,7 +31,7 @@ public class HexagonMapTest extends Stage {
 	public void create() {
 		// 构建地图
 		final HexagonMap map = new HexagonMap();
-		//创建一个瓦片为32,32,16的六边形(宽6),以6x6(6行6列)为地图范围的地图
+		//创建一个瓦片为32,32,16的六边形(宽64,高80),以6x6(6行6列)为地图范围的地图
 		map.createMap(32, 32, 16, 6, 6);
 		// 填充所有瓦片为id:1
 		map.fillTiles(1);

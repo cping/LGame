@@ -27,13 +27,14 @@ import loon.utils.NumberUtils;
  * LGame的基础配置类,游戏初始化属性由此产生
  */
 public class LSetting {
-	
+
 	/**
 	 * 如果此项为true,则Loon会检查resize缩放行为,原本宽高比例是横屏，改成竖屏，或者竖屏改成横屏的resize将不被允许
 	 */
 	public boolean isCheckReisze = false;
 	/**
-	 * 如果此项为true,则Loon中的缓动动画会和图像渲染同步(为false时缓动刷新次数会比画面渲染次数少),true时缓动动画会更加流畅,<p>
+	 * 如果此项为true,则Loon中的缓动动画会和图像渲染同步(为false时缓动刷新次数会比画面渲染次数少),true时缓动动画会更加流畅,
+	 * <p>
 	 * 但是缓动资源较多则可能延迟画面渲染(因为都卡在一起执行了)
 	 */
 	public boolean isSyncTween = false;
@@ -194,6 +195,9 @@ public class LSetting {
 			LSystem.setScaleWidth((float) width_zoom / (float) width);
 			LSystem.setScaleHeight((float) height_zoom / (float) height);
 			LSystem.viewSize.setSize(width, height);
+			if (LSystem._process != null) {
+				LSystem._process.resize(width, height);
+			}
 		}
 	}
 
@@ -209,8 +213,7 @@ public class LSetting {
 	public int getShowHeight() {
 		return this.height_zoom > 0 ? this.height_zoom : this.height;
 	}
-	
-	
+
 	/**
 	 * 判断设备是否宽屏
 	 * 

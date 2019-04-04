@@ -21,8 +21,6 @@
 package loon.action.sprite;
 
 import loon.canvas.LColor;
-import loon.geom.Path;
-import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.opengl.GLEx;
@@ -33,69 +31,33 @@ import loon.utils.timer.LTimer;
 
 public class Cycle extends Entity {
 
-	public final static Cycle getSample(int type, float srcWidth,
-			float srcHeight, float width, float height, float offset,
-			int padding) {
-
+	public final static Cycle getSample(int type, float srcWidth, float srcHeight, float width, float height,
+			float offset, int padding) {
 		Cycle cycle = new Cycle();
-		float s = 1;
+		cycle.setDisplayWidth(width);
+		cycle.setDisplayHeight(height);
+
+		final float scale;
 		if (srcWidth > srcHeight) {
-			s = MathUtils.max(srcWidth / width, srcHeight / height);
+			scale = MathUtils.max(srcWidth / width, srcHeight / height);
 		} else {
-			s = MathUtils.min(srcWidth / width, srcHeight / height);
+			scale = MathUtils.min(srcWidth / width, srcHeight / height);
 		}
-		final float scale = s;
 		switch (type) {
 		case 0:
-			cycle = new Cycle() {
-
-				private Path path;
-
-				public void step(GLEx g, float x, float y, float progress,
-						int index, int frame, LColor color, float alpha) {
-					float cx = this.padding + 50, cy = this.padding + 50, angle = (MathUtils.PI / 180)
-							* (progress * 360), innerRadius = index == 1 ? 10
-							: 25;
-					if (path == null) {
-						path = new Path(getX() + x * scale, getY() + y * scale);
-					} else {
-						path.clear();
-						path.set(getX() + x * scale, getY() + y * scale);
-					}
-					path.lineTo(getX()
-							+ ((MathUtils.cos(angle) * innerRadius) + cx)
-							* scale, getY()
-							+ ((MathUtils.sin(angle) * innerRadius) + cy)
-							* scale);
-					path.close();
-					g.drawPolyline(path);
-				}
-			};
-			cycle.setLineWidth(5);
-			cycle.setDelay(45);
-			cycle.setColor(0xFF2E82);
-			cycle.setStepType(4);
-			cycle.setStepsPerFrame(1);
-			cycle.setTrailLength(1);
-			cycle.setPointDistance(0.05f);
-			cycle.addPath(Cycle.ARC, 50, 50, 40, 0, 360);
-			break;
-		case 1:
 			cycle.setColor(0xFF7B24);
 			cycle.setStepsPerFrame(1);
 			cycle.setTrailLength(1);
 			cycle.setPointDistance(0.10f);
 			cycle.setMultiplier(2);
-			cycle.addPath(Cycle.ARC, 10 * scale, 10 * scale, 10 * scale, -270,
-					-90);
-			cycle.addPath(Cycle.BEZIER, 10 * scale, 0 * scale, 40 * scale,
-					20 * scale, 20 * scale, 0, 30 * scale, 20 * scale);
-			cycle.addPath(Cycle.ARC, 40 * scale, 10 * scale, 10 * scale, 90,
-					-90);
-			cycle.addPath(Cycle.BEZIER, 40 * scale, 0 * scale, 10 * scale,
-					20 * scale, 30 * scale, 0, 20 * scale, 20 * scale);
+			cycle.addPath(Cycle.ARC, 10 * scale, 10 * scale, 10 * scale, -270, -90);
+			cycle.addPath(Cycle.BEZIER, 10 * scale, 0 * scale, 40 * scale, 20 * scale, 20 * scale, 0, 30 * scale,
+					20 * scale);
+			cycle.addPath(Cycle.ARC, 40 * scale, 10 * scale, 10 * scale, 90, -90);
+			cycle.addPath(Cycle.BEZIER, 40 * scale, 0 * scale, 10 * scale, 20 * scale, 30 * scale, 0, 20 * scale,
+					20 * scale);
 			break;
-		case 2:
+		case 1:
 			cycle.setColor(0xD4FF00);
 			cycle.setStepType(1);
 			cycle.setDelay(55);
@@ -103,72 +65,18 @@ public class Cycle extends Entity {
 			cycle.setTrailLength(0.3f);
 			cycle.setPointDistance(0.1f);
 			cycle.addPath(Cycle.LINE, 0, 0, 30 * scale, 0);
-			cycle.addPath(Cycle.LINE, 30 * scale, 0 * scale, 30 * scale,
-					30 * scale);
+			cycle.addPath(Cycle.LINE, 30 * scale, 0 * scale, 30 * scale, 30 * scale);
 			cycle.addPath(Cycle.LINE, 30 * scale, 30 * scale, 0, 30 * scale);
 			cycle.addPath(Cycle.LINE, 0, 30 * scale, 0, 0);
 			break;
-		case 3:
-
-			cycle = new Cycle() {
-
-				private Path path;
-
-				@Override
-				public void step(GLEx g, float x, float y, float progress,
-						int index, int frame, LColor color, float alpha) {
-
-					float tmp = g.alpha();
-					float cx = this.padding + 50, cy = this.padding + 50, angle = (MathUtils.PI / 180)
-							* (progress * 360);
-					alpha = MathUtils.max(0.5f, alpha);
-					g.setAlpha(alpha);
-					if (path == null) {
-						path = new Path(getX() + x * scale, getY() + y * scale);
-					} else {
-						path.clear();
-						path.set(getX() + x * scale, getY() + y * scale);
-					}
-					path.lineTo(getX() + ((MathUtils.cos(angle) * 35) + cx)
-							* scale, getY()
-							+ ((MathUtils.sin(angle) * 35) + cy) * scale);
-					path.close();
-					g.drawPolyline(path);
-					if (path == null) {
-						path = new Path(getX()
-								+ ((MathUtils.cos(-angle) * 32) + cx) * scale,
-								getY() + ((MathUtils.sin(-angle) * 32) + cy)
-										* scale);
-					} else {
-						path.clear();
-						path.set(getX() + ((MathUtils.cos(-angle) * 32) + cx)
-								* scale, getY()
-								+ ((MathUtils.sin(-angle) * 32) + cy) * scale);
-					}
-					path.lineTo(getX() + ((MathUtils.cos(-angle) * 27) + cx)
-							* scale, getY()
-							+ ((MathUtils.sin(-angle) * 27) + cy) * scale);
-					path.close();
-					g.drawPolyline(path);
-					g.setAlpha(tmp);
-				}
-			};
-			cycle.setColor(0x05E2FF);
-			cycle.setLineWidth(2);
-			cycle.setStepType(4);
-			cycle.setStepsPerFrame(1);
-			cycle.setTrailLength(1);
-			cycle.setPointDistance(0.025f);
-			cycle.addPath(Cycle.ARC, 50, 50, 40, 0, 360);
-			break;
-		case 4:
+		case 2:
 			cycle.setColor(0xFFA50000);
 			cycle.setStepsPerFrame(1);
 			cycle.setTrailLength(1);
 			cycle.setPointDistance(0.025f);
 			cycle.addPath(Cycle.ARC, 50 * scale, 50 * scale, 40 * scale, 0, 360);
 			break;
-		case 5:
+		case 3:
 			cycle.setColor(0xFF2E82);
 			cycle.setDelay(60);
 			cycle.setStepType(1);
@@ -178,20 +86,17 @@ public class Cycle extends Entity {
 			cycle.addPath(Cycle.LINE, 0, 20 * scale, 100 * scale, 20 * scale);
 			cycle.addPath(Cycle.LINE, 100 * scale, 20 * scale, 0, 20 * scale);
 			break;
-		case 6:
+		case 4:
 			cycle.setStepsPerFrame(7);
 			cycle.setTrailLength(0.7f);
 			cycle.setPointDistance(0.01f);
 			cycle.setDelay(35);
 			cycle.setLineWidth(10);
-			cycle.addPath(Cycle.LINE, 20 * scale, 70 * scale, 50 * scale,
-					20 * scale);
-			cycle.addPath(Cycle.LINE, 50 * scale, 20 * scale, 80 * scale,
-					70 * scale);
-			cycle.addPath(Cycle.LINE, 80 * scale, 70 * scale, 20 * scale,
-					70 * scale);
+			cycle.addPath(Cycle.LINE, 20 * scale, 70 * scale, 50 * scale, 20 * scale);
+			cycle.addPath(Cycle.LINE, 50 * scale, 20 * scale, 80 * scale, 70 * scale);
+			cycle.addPath(Cycle.LINE, 80 * scale, 70 * scale, 20 * scale, 70 * scale);
 			break;
-		case 7:
+		case 5:
 			cycle.setColor(0xD4FF00);
 			cycle.setStepsPerFrame(3);
 			cycle.setTrailLength(1);
@@ -200,24 +105,20 @@ public class Cycle extends Entity {
 			cycle.setPadding(0);
 			cycle.addPath(Cycle.ARC, 50 * scale, 50 * scale, 20 * scale, 360, 0);
 			break;
-		case 8:
+		case 6:
 			cycle.setColor(0x05E2FF);
 			cycle.setStepsPerFrame(1);
 			cycle.setTrailLength(1);
 			cycle.setPointDistance(0.02f);
 			cycle.addPath(Cycle.ARC, 50 * scale, 50 * scale, 30 * scale, 0, 360);
 			break;
-		case 9:
+		case 7:
 			cycle.setStepType(1);
 			cycle.setColor(LColor.yellow);
-			cycle.addPath(Cycle.LINE, 10 * scale, 10 * scale, 90 * scale,
-					10 * scale);
-			cycle.addPath(Cycle.LINE, 90 * scale, 10 * scale, 90 * scale,
-					90 * scale);
-			cycle.addPath(Cycle.LINE, 90 * scale, 90 * scale, 10 * scale,
-					90 * scale);
-			cycle.addPath(Cycle.LINE, 10 * scale, 90 * scale, 10 * scale,
-					10 * scale);
+			cycle.addPath(Cycle.LINE, 10 * scale, 10 * scale, 90 * scale, 10 * scale);
+			cycle.addPath(Cycle.LINE, 90 * scale, 10 * scale, 90 * scale, 90 * scale);
+			cycle.addPath(Cycle.LINE, 90 * scale, 90 * scale, 10 * scale, 90 * scale);
+			cycle.addPath(Cycle.LINE, 10 * scale, 90 * scale, 10 * scale, 10 * scale);
 			break;
 		}
 		float size = MathUtils.min(srcWidth / (1 / cycle.getPointDistance()),
@@ -254,12 +155,11 @@ public class Cycle extends Entity {
 
 	private LTimer timer;
 
-	private Polygon poly;
-
 	private Progress last;
 
 	protected float blockWidth, blockHeight, blockHalfWidth, blockHalfHeight;
 
+	protected float displayWidth, displayHeight;
 
 	class Progress {
 
@@ -275,6 +175,8 @@ public class Cycle extends Entity {
 			this.progress = p;
 		}
 	}
+
+	protected float scaleSize = 1f;
 
 	public Cycle() {
 		this(0, 0);
@@ -303,6 +205,8 @@ public class Cycle extends Entity {
 		this.timer = new LTimer(25);
 		this.setColor(LColor.white);
 		this.points = new TArray<Progress>();
+		this.displayWidth = w;
+		this.displayHeight = h;
 		this.multiplier = 1;
 		this.pointDistance = 0.05f;
 		this.padding = 0;
@@ -356,11 +260,9 @@ public class Cycle extends Entity {
 	}
 
 	private void setup() {
-
 		if (!isUpdate) {
 			return;
 		}
-
 		float[] args;
 		float value;
 		int index;
@@ -393,16 +295,16 @@ public class Cycle extends Entity {
 		this.isUpdate = false;
 	}
 
-	private final void step(GLEx g, Progress e, int index, int frame,
-			LColor color, float alpha, float offsetX, float offsetY) {
+	private final void step(GLEx g, Progress e, int index, int frame, LColor color, float alpha, float offsetX,
+			float offsetY) {
 		switch (stepType) {
 		case 0:
-			g.fillOval(x() + e.x - blockHalfWidth + offsetX, y() + e.y
-					- blockHalfHeight + offsetY, blockWidth, blockHeight);
+			g.fillOval(x() + e.x - blockHalfWidth + offsetX, y() + e.y - blockHalfHeight + offsetY, blockWidth,
+					blockHeight);
 			break;
 		case 1:
-			g.fillRect(x() + e.x - blockHalfWidth + offsetX, y() + e.y
-					- blockHalfHeight + offsetY, blockWidth, blockHeight);
+			g.fillRect(x() + e.x - blockHalfWidth + offsetX, y() + e.y - blockHalfHeight + offsetY, blockWidth,
+					blockHeight);
 			break;
 		case 2:
 			if (last != null) {
@@ -414,20 +316,17 @@ public class Cycle extends Entity {
 			break;
 		case 3:
 			if (last != null) {
-				g.drawLine(x() + last.x + offsetX, y() + last.y + offsetY, x()
-						+ e.x + offsetX, y() + e.y + offsetY);
+				g.drawLine(x() + last.x + offsetX, y() + last.y + offsetY, x() + e.x + offsetX, y() + e.y + offsetY);
 			}
 			last = e;
 			break;
 		case 4:
-			step(g, e.x + offsetX, e.y + offsetY, e.progress, index, frame,
-					color, alpha);
+			step(g, e.x + offsetX, e.y + offsetY, e.progress, index, frame, color, alpha);
 			break;
 		}
 	}
 
-	public void step(GLEx g, float x, float y, float progress, int index,
-			int frame, LColor color, float alpha) {
+	public void step(GLEx g, float x, float y, float progress, int index, int frame, LColor color, float alpha) {
 
 	}
 
@@ -447,8 +346,7 @@ public class Cycle extends Entity {
 			t = MathUtils.round(t * 1f / pd) / (1f / pd);
 			switch (index) {
 			case BEZIER:
-				result = bezier(t, f[0], f[1], f[2], f[3], f[4], f[5], f[6],
-						f[7]);
+				result = bezier(t, f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]);
 				break;
 			case ARC:
 				result = arc(t, f[0], f[1], f[2], f[3], f[4]);
@@ -466,24 +364,20 @@ public class Cycle extends Entity {
 
 	}
 
-	private final float[] bezier(float t, float p0x, float p0y, float p1x,
-			float p1y, float c0x, float c0y, float c1x, float c1y) {
+	private final float[] bezier(float t, float p0x, float p0y, float p1x, float p1y, float c0x, float c0y, float c1x,
+			float c1y) {
 
 		t = 1 - t;
 
-		float i = 1 - t, x = t * t, y = i * i, a = x * t, b = 3 * x * i, c = 3
-				* t * y, d = y * i;
+		float i = 1 - t, x = t * t, y = i * i, a = x * t, b = 3 * x * i, c = 3 * t * y, d = y * i;
 
-		return new float[] { a * p0x + b * c0x + c * c1x + d * p1x,
-				a * p0y + b * c0y + c * c1y + d * p1y };
+		return new float[] { a * p0x + b * c0x + c * c1x + d * p1x, a * p0y + b * c0y + c * c1y + d * p1y };
 	}
 
-	private final float[] arc(float t, float cx, float cy, float radius,
-			float start, float end) {
+	private final float[] arc(float t, float cx, float cy, float radius, float start, float end) {
 		float point = (end - start) * t + start;
 
-		return new float[] { (MathUtils.cos(point) * radius) + cx,
-				(MathUtils.sin(point) * radius) + cy };
+		return new float[] { (MathUtils.cos(point) * radius) + cx, (MathUtils.sin(point) * radius) + cy };
 
 	}
 
@@ -492,7 +386,6 @@ public class Cycle extends Entity {
 	}
 
 	private int tmpColor;
-
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
@@ -544,7 +437,6 @@ public class Cycle extends Entity {
 			}
 		}
 
-	
 	}
 
 	public TArray<Object[]> getData() {
@@ -679,22 +571,42 @@ public class Cycle extends Entity {
 		return this;
 	}
 
-	public Shape getShape() {
+	public RectBox getShape() {
+		float maxX = 0, maxY = 0;
+		float minX = 0, minY = 0;
 		if (isUpdate) {
 			setup();
-			poly = new Polygon();
 			for (Progress point : points) {
-				poly.addPoint(point.x, point.y);
+				maxX = MathUtils.max(maxX, point.x);
+				maxY = MathUtils.max(maxY, point.y);
+				minX = MathUtils.min(minX, point.x);
+				minY = MathUtils.min(minY, point.y);
 			}
+
 		}
-		return poly;
+		return new RectBox(minX, minY, maxX, maxY);
+	}
+
+	public float getDisplayWidth() {
+		return displayWidth;
+	}
+
+	public void setDisplayWidth(float displayWidth) {
+		this.displayWidth = displayWidth;
+	}
+
+	public float getDisplayHeight() {
+		return displayHeight;
+	}
+
+	public void setDisplayHeight(float displayHeight) {
+		this.displayHeight = displayHeight;
 	}
 
 	@Override
 	public RectBox getCollisionBox() {
 		Shape shape = getShape();
-		return getRect(shape.getX(), shape.getY(), shape.getWidth(),
-				shape.getHeight());
+		return getRect(shape.getX(), shape.getY(), shape.getMaxX(), shape.getMaxY());
 	}
 
 }

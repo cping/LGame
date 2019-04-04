@@ -891,7 +891,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx drawText(String message, float x, float y, LColor color) {
 		return drawText(message, x, y, color.getARGB(), 0);
 	}
-	
+
 	public GLEx drawText(String message, float x, float y, LColor color, float rotation) {
 		return drawText(message, x, y, color.getARGB(), rotation);
 	}
@@ -1753,12 +1753,31 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @return
 	 */
 	public GLEx drawPolyline(Shape shape, float x, float y) {
-		if (shape == null) {
+		return drawPolyline(shape.getPoints(), x, y);
+	}
+
+	/**
+	 * 绘制不连线的Shape
+	 * 
+	 * @param points
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public GLEx drawPolyline(float[] points, float x, float y) {
+		if (points == null || points.length == 0) {
+			return this;
+		}
+		int size = points.length;
+		if (size == 2) {
+			drawPoint(points[0], points[1]);
+			return this;
+		}
+		if (size == 4) {
+			drawLine(points[0], points[1], points[2], points[3]);
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			final float[] points = shape.getPoints();
-			int size = points.length;
 			int len = size / 2;
 			final float[] xps = new float[len];
 			final float[] yps = new float[len];
@@ -1768,10 +1787,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			}
 			drawPolylineImpl(xps, yps, len);
 		} else {
-			float[] points = shape.getPoints();
-			if (points.length == 0) {
-				return this;
-			}
 			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			beginRenderer(GLType.Line);
 			glRenderer.setColor(argb);
