@@ -178,6 +178,9 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		if (!_component_visible) {
+			return;
+		}
 		if (grayButton) {
 			if (!isEnabled()) {
 				g.draw(clickedClick, x, y, getWidth(), getHeight(),

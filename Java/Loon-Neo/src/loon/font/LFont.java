@@ -87,7 +87,7 @@ public class LFont implements IFont {
 
 	private float _ascent = -1;
 
-	private boolean useCache,closed;
+	private boolean useCache, closed;
 
 	public boolean isUseCache() {
 		return useCache;
@@ -206,6 +206,7 @@ public class LFont implements IFont {
 		}
 	}
 
+	@Override
 	public int charWidth(char ch) {
 		if (LSystem.base() == null) {
 			return 0;
@@ -214,6 +215,7 @@ public class LFont implements IFont {
 		return textLayout.bounds.width;
 	}
 
+	@Override
 	public int stringWidth(String message) {
 		if (LSystem.base() == null || StringUtils.isEmpty(message)) {
 			return 0;
@@ -246,6 +248,7 @@ public class LFont implements IFont {
 		return getHeight();
 	}
 
+	@Override
 	public int stringHeight(String message) {
 		if (LSystem.base() == null || StringUtils.isEmpty(message)) {
 			return 0;
@@ -271,6 +274,7 @@ public class LFont implements IFont {
 		return textFormat.font.style == Style.PLAIN;
 	}
 
+	@Override
 	public int getSize() {
 		return this._size == -1 ? (int) textFormat.font.size : this._size;
 	}

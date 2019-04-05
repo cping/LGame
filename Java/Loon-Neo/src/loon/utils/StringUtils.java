@@ -1007,45 +1007,6 @@ final public class StringUtils extends CharUtils {
 		return ch != '\n' && ch != '\t' && ch != '\r' && ch != ' ';
 	}
 
-	public final static String unificationStrings(String mes) {
-		return unificationStrings(mes, null);
-	}
-
-	public final static String unificationStrings(String mes, CharSequence limit) {
-		if (isEmpty(mes)) {
-			return "";
-		}
-		CharArray chars = new CharArray();
-		if (limit == null || limit.length() == 0) {
-			for (int i = 0, size = mes.length(); i < size; i++) {
-				char ch = mes.charAt(i);
-				if (unificationAllow(ch) && !chars.contains(ch)) {
-					chars.add(ch);
-				}
-			}
-		} else {
-			boolean running;
-			for (int i = 0, size = mes.length(); i < size; i++) {
-				running = true;
-				char ch = mes.charAt(i);
-				for (int j = 0; j < limit.length(); j++) {
-					if (limit.charAt(j) == ch) {
-						running = false;
-						break;
-					}
-				}
-				if (running && unificationAllow(ch) && !chars.contains(ch)) {
-					chars.add(ch);
-				}
-			}
-		}
-		if (chars.length == 0) {
-			return "";
-		} else {
-			return chars.sort().getString().trim();
-		}
-	}
-
 	public final static String merge(String[] messages) {
 		StringBuilder sbr = new StringBuilder();
 		for (String mes : messages) {
@@ -1066,16 +1027,72 @@ final public class StringUtils extends CharUtils {
 		return sbr.toString().trim();
 	}
 
+	public final static String unificationStrings(String mes) {
+		return unificationStrings(mes, null);
+	}
+
+	public final static String unificationStrings(String mes, CharSequence limit) {
+		return unificationStrings(new CharArray(128), mes, limit);
+	}
+
+	public final static String unificationStrings(CharArray tempChars, String mes) {
+		return unificationStrings(tempChars, mes, null);
+	}
+
+	public final static String unificationStrings(CharArray tempChars, String mes, CharSequence limit) {
+		if (isEmpty(mes)) {
+			return "";
+		}
+		tempChars.clear();
+		if (limit == null || limit.length() == 0) {
+			for (int i = 0, size = mes.length(); i < size; i++) {
+				char ch = mes.charAt(i);
+				if (unificationAllow(ch) && !tempChars.contains(ch)) {
+					tempChars.add(ch);
+				}
+			}
+		} else {
+			boolean running;
+			for (int i = 0, size = mes.length(); i < size; i++) {
+				running = true;
+				char ch = mes.charAt(i);
+				for (int j = 0; j < limit.length(); j++) {
+					if (limit.charAt(j) == ch) {
+						running = false;
+						break;
+					}
+				}
+				if (running && unificationAllow(ch) && !tempChars.contains(ch)) {
+					tempChars.add(ch);
+				}
+			}
+		}
+		if (tempChars.length == 0) {
+			return "";
+		} else {
+			return tempChars.sort().getString().trim();
+		}
+	}
+
 	public final static String unificationCharSequence(CharSequence[] messages) {
 		return unificationCharSequence(messages, null);
 	}
 
+	public final static String unificationCharSequence(CharArray tempChars, CharSequence[] messages) {
+		return unificationCharSequence(tempChars, messages, null);
+	}
+
 	public final static String unificationCharSequence(CharSequence[] messages, CharSequence limit) {
+		return unificationCharSequence(new CharArray(128), messages, limit);
+	}
+
+	public final static String unificationCharSequence(CharArray tempChars, CharSequence[] messages,
+			CharSequence limit) {
 		if (messages == null || messages.length == 0) {
 			return "";
 		}
+		tempChars.clear();
 		boolean mode = (limit == null || limit.length() == 0);
-		CharArray chars = new CharArray();
 		for (CharSequence mes : messages) {
 			if (mes == null) {
 				continue;
@@ -1083,8 +1100,8 @@ final public class StringUtils extends CharUtils {
 			if (mode) {
 				for (int i = 0, size = mes.length(); i < size; i++) {
 					char ch = mes.charAt(i);
-					if (unificationAllow(ch) && !chars.contains(ch)) {
-						chars.add(ch);
+					if (unificationAllow(ch) && !tempChars.contains(ch)) {
+						tempChars.add(ch);
 					}
 				}
 			} else {
@@ -1098,16 +1115,16 @@ final public class StringUtils extends CharUtils {
 							break;
 						}
 					}
-					if (running && unificationAllow(ch) && !chars.contains(ch)) {
-						chars.add(ch);
+					if (running && unificationAllow(ch) && !tempChars.contains(ch)) {
+						tempChars.add(ch);
 					}
 				}
 			}
 		}
-		if (chars.length == 0) {
+		if (tempChars.length == 0) {
 			return "";
 		} else {
-			return chars.sort().getString().trim();
+			return tempChars.sort().getString().trim();
 		}
 	}
 
@@ -1115,12 +1132,20 @@ final public class StringUtils extends CharUtils {
 		return unificationStrings(messages, null);
 	}
 
+	public final static String unificationStrings(CharArray tempChars, String[] messages) {
+		return unificationStrings(tempChars, messages, null);
+	}
+
 	public final static String unificationStrings(String[] messages, CharSequence limit) {
+		return unificationStrings(new CharArray(128), messages, limit);
+	}
+
+	public final static String unificationStrings(CharArray tempChars, String[] messages, CharSequence limit) {
 		if (isEmpty(messages)) {
 			return "";
 		}
+		tempChars.clear();
 		boolean mode = (limit == null || limit.length() == 0);
-		CharArray chars = new CharArray();
 		for (String mes : messages) {
 			if (mes == null) {
 				continue;
@@ -1128,8 +1153,8 @@ final public class StringUtils extends CharUtils {
 			if (mode) {
 				for (int i = 0, size = mes.length(); i < size; i++) {
 					char ch = mes.charAt(i);
-					if (unificationAllow(ch) && !chars.contains(ch)) {
-						chars.add(ch);
+					if (unificationAllow(ch) && !tempChars.contains(ch)) {
+						tempChars.add(ch);
 					}
 				}
 			} else {
@@ -1143,16 +1168,16 @@ final public class StringUtils extends CharUtils {
 							break;
 						}
 					}
-					if (running && unificationAllow(ch) && !chars.contains(ch)) {
-						chars.add(ch);
+					if (running && unificationAllow(ch) && !tempChars.contains(ch)) {
+						tempChars.add(ch);
 					}
 				}
 			}
 		}
-		if (chars.length == 0) {
+		if (tempChars.length == 0) {
 			return "";
 		} else {
-			return chars.sort().getString().trim();
+			return tempChars.sort().getString().trim();
 		}
 	}
 
@@ -1160,17 +1185,25 @@ final public class StringUtils extends CharUtils {
 		return unificationChars(messages, null);
 	}
 
+	public final static String unificationChars(CharArray tempChars, char[] messages) {
+		return unificationChars(tempChars, messages, null);
+	}
+
 	public final static String unificationChars(char[] messages, CharSequence limit) {
+		return unificationChars(new CharArray(128), messages, null);
+	}
+
+	public final static String unificationChars(CharArray tempChars, char[] messages, CharSequence limit) {
 		if (messages == null || messages.length == 0) {
 			return "";
 		}
+		tempChars.clear();
 		boolean mode = (limit == null || limit.length() == 0);
-		CharArray chars = new CharArray();
 		if (mode) {
 			for (int i = 0, size = messages.length; i < size; i++) {
 				char ch = messages[i];
-				if (unificationAllow(ch) && !chars.contains(ch)) {
-					chars.add(ch);
+				if (unificationAllow(ch) && !tempChars.contains(ch)) {
+					tempChars.add(ch);
 				}
 			}
 		} else {
@@ -1184,16 +1217,16 @@ final public class StringUtils extends CharUtils {
 						break;
 					}
 				}
-				if (running && unificationAllow(ch) && !chars.contains(ch)) {
-					chars.add(ch);
+				if (running && unificationAllow(ch) && !tempChars.contains(ch)) {
+					tempChars.add(ch);
 				}
 			}
 		}
 
-		if (chars.length == 0) {
+		if (tempChars.length == 0) {
 			return "";
 		} else {
-			return chars.sort().getString().trim();
+			return tempChars.sort().getString().trim();
 		}
 	}
 

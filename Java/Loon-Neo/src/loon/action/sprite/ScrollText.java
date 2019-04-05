@@ -65,6 +65,7 @@ public class ScrollText extends Entity {
 	private Vector2f textMove = new Vector2f();
 	private float textX = 0, textY = 0;
 	private float space = 5f;
+	private String[] messages;
 	private LTimer timer = new LTimer(50);
 
 	public ScrollText(String text) {
@@ -122,6 +123,7 @@ public class ScrollText extends Entity {
 			}
 			this._text = new Text(font, sbr.toString(), opt);
 		}
+		this.messages = text;
 		this.setRepaint(true);
 		this.setColor(LColor.white);
 		this.setLocation(x, y);
@@ -133,7 +135,7 @@ public class ScrollText extends Entity {
 		if (height > 0) {
 			this.setHeight(height);
 		} else {
-			this.setHeight(_text.getHeight());
+			this.setHeight(_text.getHeight() / messages.length);
 		}
 	}
 
@@ -158,7 +160,6 @@ public class ScrollText extends Entity {
 					break;
 				}
 			}
-
 			boolean intersects = LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 					&& LSystem.getProcess().getScreen().intersects(textX, textY, getWidth(), getHeight());
 			if (_text.getAutoWrap() == AutoWrap.VERTICAL) {
@@ -173,6 +174,9 @@ public class ScrollText extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (stop) {
+			return;
+		}
 		textX = textMove.x + getX() + _offset.x + offsetX;
 		textY = textMove.y + getY() + _offset.y + offsetY;
 		_text.paintString(g, textX, textY, _baseColor);
@@ -257,9 +261,15 @@ public class ScrollText extends Entity {
 		return this;
 	}
 
+	public String[] getMessages() {
+		return messages;
+	}
+
 	@Override
 	public void close() {
 		super.close();
 		_text.close();
+		stop = true;
 	}
+
 }

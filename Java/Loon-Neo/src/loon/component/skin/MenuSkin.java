@@ -39,7 +39,7 @@ public class MenuSkin implements FontSet<MenuSkin> {
 	}
 
 	public MenuSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(2),
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(2),
 				DefUI.self().getDefaultTextures(4));
 	}
 

@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LObject;
 import loon.component.layout.BoxSize;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -507,6 +508,10 @@ public class RectBox extends Shape implements BoxSize {
 	 */
 	public boolean contains(RectBox rect) {
 		return contains(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public boolean contains(LObject<?> rect) {
+		return contains(rect.getCollisionArea());
 	}
 
 	public boolean contains(Circle circle) {

@@ -1241,7 +1241,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void setColor(LColor c) {
-		this._component_baseColor = c;
+		this._component_baseColor = new LColor(c);
 	}
 
 	@Override

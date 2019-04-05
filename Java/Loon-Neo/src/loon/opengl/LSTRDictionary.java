@@ -25,13 +25,15 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.LFont;
-import loon.utils.ObjectMap;
+import loon.utils.ArrayMap;
+import loon.utils.CharArray;
+import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
-import loon.utils.ObjectMap.Entries;
-import loon.utils.ObjectMap.Entry;
 import loon.utils.TArray;
 
 public final class LSTRDictionary {
+
+	private final CharArray templateChars = new CharArray(256);
 
 	private final int CACHE_SIZE = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
 
@@ -67,11 +69,11 @@ public final class LSTRDictionary {
 
 	private boolean tmp_asyn = true;
 
-	private final ObjectMap<String, LFont> cacheList = new ObjectMap<String, LFont>(32);
+	private final ArrayMap cacheList = new ArrayMap(32);
 
-	private final ObjectMap<String, Dict> fontList = new ObjectMap<String, Dict>(32);
+	private final ArrayMap fontList = new ArrayMap(32);
 
-	private final ObjectMap<LFont, Dict> englishFontList = new ObjectMap<LFont, Dict>(32);
+	private final ArrayMap englishFontList = new ArrayMap(32);
 
 	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
 	private final static String ADDED = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ:.,!?@#$&%^*(){}[]<>\"'\\/+-~～▼▲◆【】：，。…？！";
@@ -112,10 +114,9 @@ public final class LSTRDictionary {
 		}
 
 		public boolean include(String mes) {
-			final char[] chars = mes.toCharArray();
-			int size = chars.length;
+			int size = mes.length();
 			for (int i = 0; i < size; i++) {
-				char flag = chars[i];
+				char flag = mes.charAt(i);
 				if (!dicts.contains(flag)) {
 					return false;
 				}
@@ -141,16 +142,64 @@ public final class LSTRDictionary {
 
 	}
 
-	public void clearEnglishLazy() {
-		synchronized (englishFontList) {
-			for (Dict d : englishFontList.values()) {
-				if (d != null) {
-					d.close();
-					d = null;
+	private void closeDict(ArrayMap list) {
+		synchronized (list) {
+			for (int i = list.size() - 1; i > -1; i--) {
+				Entry entry = list.getEntry(i);
+				if (entry != null) {
+					Dict dict = (Dict) entry.getValue();
+					if (dict != null) {
+						dict.close();
+						dict = null;
+					}
 				}
 			}
-			englishFontList.clear();
+			list.clear();
 		}
+	}
+
+	private static final String toFontString(LFont font) {
+		return font.getFontName() + "_" + font.getStyle() + "_" + font.getSize();
+	}
+
+	public LFont searchCacheFont(String mes) {
+		LFont cFont = (LFont) cacheList.get(mes);
+		if (cFont == null) {
+			for (int i = cacheList.size() - 1; i > -1; i--) {
+				Entry obj = cacheList.getEntry(i);
+				if (obj != null) {
+					String key = (String) obj.getKey();
+					if (checkMessage(key, mes)) {
+						cFont = (LFont) obj.getValue();
+						break;
+					}
+				}
+			}
+		}
+		return cFont;
+	}
+
+	public Dict searchCacheDict(LFont font, String mes) {
+		if (font != null) {
+			String fontFlag = toFontString(font);
+			Dict pDict = (Dict) fontList.get(fontFlag);
+			if (pDict != null && pDict.include(mes)) {
+				return pDict;
+			}
+		}
+		return null;
+	}
+
+	public Dict searchCacheDict(String mes) {
+		LFont cFont = searchCacheFont(mes);
+		if (cFont != null) {
+			return searchCacheDict(cFont, mes);
+		}
+		return null;
+	}
+
+	public void clearEnglishLazy() {
+		closeDict(englishFontList);
 	}
 
 	public void clearStringLazy() {
@@ -159,27 +208,17 @@ public final class LSTRDictionary {
 				cacheList.clear();
 			}
 		}
-		synchronized (fontList) {
-			for (Dict d : fontList.values()) {
-				if (d != null) {
-					d.close();
-					d = null;
-				}
-			}
-			fontList.clear();
-		}
+		closeDict(fontList);
 	}
 
 	public final boolean checkMessage(String key, String message) {
-		final char[] chars = message.toCharArray();
-		final char[] list = key.toCharArray();
-		int size = chars.length;
-		int limit = list.length;
+		int size = message.length();
+		int limit = key.length();
 		int idx = 0;
 		for (int j = 0; j < limit; j++) {
-			char name = list[j];
+			char name = key.charAt(j);
 			for (int i = 0; i < size; i++) {
-				char flag = chars[i];
+				char flag = message.charAt(i);
 				if (flag == name) {
 					idx++;
 				}
@@ -218,11 +257,11 @@ public final class LSTRDictionary {
 		for (int i = 0, size = buffers.length; i < size; i++) {
 			buffers[i] = chars.get(i);
 		}
-		return bind(font, StringUtils.unificationCharSequence(buffers, ADDED), false);
+		return bind(font, StringUtils.unificationCharSequence(templateChars, buffers, ADDED), false);
 	}
 
 	public final Dict bind(final LFont font, final String[] messages) {
-		return bind(font, StringUtils.unificationStrings(messages, ADDED), false);
+		return bind(font, StringUtils.unificationStrings(templateChars, messages, ADDED), false);
 	}
 
 	public final Dict bind(final LFont font, final String mes) {
@@ -238,7 +277,7 @@ public final class LSTRDictionary {
 		}
 		_lastMessage = mes;
 		if (checkEnglishString(mes)) {
-			Dict pDict = englishFontList.get(font);
+			Dict pDict = (Dict) englishFontList.get(font);
 			if (pDict != null && pDict.isClosed()) {
 				englishFontList.remove(font);
 				pDict = null;
@@ -252,71 +291,64 @@ public final class LSTRDictionary {
 		}
 		final String message;
 		if (autoStringFilter) {
-			message = StringUtils.unificationStrings(mes, ADDED) + ADDED;
+			message = StringUtils.unificationStrings(templateChars, mes, ADDED) + ADDED;
 		} else {
 			message = mes + ADDED;
 		}
-		if (cacheList.size > CACHE_SIZE) {
+		// 查询字典缓存
+		Dict cacheDict = searchCacheDict(font, message);
+		if (cacheDict != null && !cacheDict.isClosed()) {
+			return _lastDict = cacheDict;
+		}
+		if (cacheList.size() > CACHE_SIZE) {
 			clearStringLazy();
 		}
-		synchronized (fontList) {
-			LFont cFont = cacheList.get(message);
-			if (cFont == null) {
-				for (Entries<String, LFont> it = cacheList.iterator(); it.hasNext();) {
-					Entry<String, LFont> obj = it.next();
-					String key = obj.key;
-					if (checkMessage(key, message)) {
-						cFont = obj.value;
-						break;
-					}
-				}
-			}
-			String fontFlag = font.getFontName() + "_" + font.getStyle() + "_" + font.getSize();
-			Dict pDict = fontList.get(fontFlag);
-			if (pDict != null && pDict.isClosed()) {
-				fontList.remove(fontFlag);
-				pDict = null;
-			}
-			// 判定当前font与字体和已存在的文字图片纹理，是否和缓存的font适配
-			if ((cFont == null || pDict == null || (pDict != null && !pDict.include(mes)))) {
-				if (pDict == null) {
-					pDict = Dict.newDict();
-					fontList.put(fontFlag, pDict);
-				}
-				synchronized (pDict) {
-					cacheList.put(message, font);
-					TArray<Character> charas = pDict.dicts;
-					int oldSize = charas.size;
-					char[] chars = message.toCharArray();
-					int size = chars.length;
-					for (int i = 0; i < size; i++) {
-						char flag = chars[i];
-						if (!charas.contains(flag)) {
-							charas.add(flag);
-						}
-					}
-					int newSize = charas.size;
-					// 如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
-					if (oldSize != newSize) {
-						if (pDict.font != null) {
-							pDict.font.close();
-							pDict.font = null;
-						}
-						if (tmpBuffer == null) {
-							tmpBuffer = new StringBuffer(newSize);
-						} else {
-							tmpBuffer.delete(0, tmpBuffer.length());
-						}
-						for (int i = 0; i < newSize; i++) {
-							tmpBuffer.append(charas.get(i));
-						}
-						// 个别浏览器纹理同步会卡出国，只能异步……
-						pDict.font = new LSTRFont(font, tmpBuffer.toString(), tmp_asyn);
-					}
-				}
-			}
-			return (_lastDict = pDict);
+		// 查询字体缓存
+		LFont cFont = searchCacheFont(message);
+		String fontFlag = toFontString(font);
+		Dict pDict = (Dict) fontList.get(fontFlag);
+		if (pDict != null && pDict.isClosed()) {
+			fontList.remove(fontFlag);
+			pDict = null;
 		}
+		// 判定当前font与字体和已存在的文字图片纹理，是否和缓存的font适配
+		if ((cFont == null || pDict == null || (pDict != null && !pDict.include(mes)))) {
+			if (pDict == null) {
+				pDict = Dict.newDict();
+				fontList.put(fontFlag, pDict);
+			}
+			synchronized (pDict) {
+				cacheList.put(message, font);
+				TArray<Character> charas = pDict.dicts;
+				int oldSize = charas.size;
+				int size = message.length();
+				for (int i = 0; i < size; i++) {
+					char flag = message.charAt(i);
+					if (!charas.contains(flag)) {
+						charas.add(flag);
+					}
+				}
+				int newSize = charas.size;
+				// 如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
+				if (oldSize != newSize) {
+					if (pDict.font != null) {
+						pDict.font.close();
+						pDict.font = null;
+					}
+					if (tmpBuffer == null) {
+						tmpBuffer = new StringBuffer(newSize);
+					} else {
+						tmpBuffer.delete(0, tmpBuffer.length());
+					}
+					for (int i = 0; i < newSize; i++) {
+						tmpBuffer.append(charas.get(i));
+					}
+					// 个别浏览器纹理同步会卡出国，只能异步……
+					pDict.font = new LSTRFont(font, tmpBuffer.toString(), tmp_asyn);
+				}
+			}
+		}
+		return (_lastDict = pDict);
 	}
 
 	public final void drawString(LFont font, String message, float x, float y, float angle, LColor c) {
@@ -400,9 +432,13 @@ public final class LSTRDictionary {
 
 	public final LSTRFont STRFont(LFont font) {
 		if (fontList != null) {
-			for (Dict d : fontList.values()) {
-				if (d != null && d.font != null && d.font.getFont().equals(font)) {
-					return d.font;
+			for (int i = fontList.size() - 1; i > -1; i--) {
+				Entry entry = fontList.getEntry(i);
+				if (entry != null) {
+					Dict dict = (Dict) entry.getValue();
+					if (dict != null && dict.font != null && dict.font.getFont().equals(font)) {
+						return dict.font;
+					}
 				}
 			}
 		}

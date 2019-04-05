@@ -40,11 +40,11 @@ public class TextBarSkin implements FontSet<TextBarSkin> {
 	}
 
 	public final static TextBarSkin defEmpty() {
-		return new TextBarSkin(LSystem.getSystemGameFont(), LColor.white, null, null, null);
+		return new TextBarSkin(LSystem.getSystemGameFont(), LColor.white.cpy(), null, null, null);
 	}
 
 	public TextBarSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(7),
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(7),
 				DefUI.self().getDefaultTextures(7), DefUI.self().getDefaultTextures(7));
 	}
 

@@ -25,6 +25,14 @@ import loon.event.QueryEvent;
 
 public class Array<T> implements IArray, LRelease {
 
+	public static final <T> Array<T> at() {
+		return new Array<T>();
+	}
+
+	public static final <T> Array<T> at(Array<T> data) {
+		return new Array<T>(data);
+	}
+	
 	public static class ArrayNode<T> {
 
 		public ArrayNode<T> next;

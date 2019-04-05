@@ -39,7 +39,7 @@ public class WindowSkin implements FontSet<WindowSkin>{
 	}
 
 	public WindowSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white, DefUI.self().getDefaultTextures(0),
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(0),
 				DefUI.self().getDefaultTextures(7));
 	}
 

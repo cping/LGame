@@ -523,9 +523,7 @@ public class LSTRFont implements IFont {
 		this.charCurrent = 0;
 		this.totalWidth = 0;
 		this.totalHeight = 0;
-		final LTexture texture = fontBatch.toTexture();
 		int old = gl.color();
-		char[] charList = chars.toCharArray();
 		final boolean anchor = ax != 0 || ay != 0;
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
@@ -555,8 +553,9 @@ public class LSTRFont implements IFont {
 					xf.translate(ax, ay);
 				}
 			}
-			for (int i = 0; i < charList.length; i++) {
-				charCurrent = charList[i];
+			int size = chars.length();
+			for (int i = 0; i < size; i++) {
+				charCurrent = chars.charAt(i);
 				if (charCurrent < totalCharSet) {
 					intObject = charArray[charCurrent];
 				} else {
@@ -566,7 +565,6 @@ public class LSTRFont implements IFont {
 					totalHeight += fontSize;
 					totalWidth = 0;
 				}
-
 				if (intObject != null) {
 					if ((i >= startIndex) || (i <= endIndex)) {
 						gl.draw(texture, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,

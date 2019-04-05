@@ -31,6 +31,18 @@ import loon.utils.ObjectMap.Values;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class TArray<T> implements Iterable<T>, IArray {
 
+	public static final <T> TArray<T> at(int capacity) {
+		return new TArray<T>(capacity);
+	}
+
+	public static final <T> TArray<T> at(TArray<? extends T> array) {
+		return new TArray<T>(array);
+	}
+	
+	public static final <T> TArray<T> at() {
+		return at(0);
+	}
+	
 	public T[] items;
 
 	public int size;
@@ -122,7 +134,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 	public void addAll(T[] array, int start, int count) {
 		T[] items = this.items;
 		int sizeNeeded = size + count;
-		if (sizeNeeded > items.length){
+		if (sizeNeeded > items.length) {
 			items = resize(MathUtils.max(8, (int) (sizeNeeded * 1.75f)));
 		}
 		System.arraycopy(array, start, items, size, count);

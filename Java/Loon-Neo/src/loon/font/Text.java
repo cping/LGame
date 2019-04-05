@@ -127,7 +127,24 @@ public class Text implements LRelease {
 		this._initNativeDraw = false;
 	}
 
+	private String toString(CharSequence ch) {
+		String mes = null;
+		if (ch instanceof String) {
+			mes = (String) ch;
+		} else if (ch instanceof StringBuffer) {
+			mes = ((StringBuffer) ch).toString();
+		} else if (ch instanceof StringBuilder) {
+			mes = ((StringBuilder) ch).toString();
+		} else {
+			mes = new StringBuffer(ch).toString();
+		}
+		return mes;
+	}
+
 	private void initLFont() {
+		if(_closed){
+			return;
+		}
 		if (!_initNativeDraw) {
 			if (_font instanceof LFont) {
 				LSTRDictionary.get().bind((LFont) _font, _lines);
@@ -149,13 +166,19 @@ public class Text implements LRelease {
 	}
 
 	public void paintNonStyleString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
+		if(_closed){
+			return;
+		}
 		initLFont();
 		_font.drawString(g, mes, offsetX, offsetY, color);
 	}
 
 	public void paintString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
+		if(_closed){
+			return;
+		}
 		initLFont();
-		if (_textOptions._autoWrap != AutoWrap.VERTICAL && _lines.size == 1) {
+		if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
 			switch (_textOptions._horizontalAlign) {
 			case CENTER:
 				_font.drawString(g, mes, (getWidth() / 2 - _font.stringWidth(mes) / 2) + offsetX, offsetY, color);
@@ -235,48 +258,18 @@ public class Text implements LRelease {
 	}
 
 	public void paintString(GLEx g, float offsetX, float offsetY, LColor color) {
+		if(_closed){
+			return;
+		}
 		initLFont();
-		if (_textOptions._autoWrap != AutoWrap.VERTICAL && _lines.size == 1) {
-			CharSequence c = _lines.get(0);
-			String mes = null;
-			if (c instanceof String) {
-				mes = (String) c;
-			} else if (c instanceof StringBuffer) {
-				mes = ((StringBuffer) c).toString();
-			} else if (c instanceof StringBuilder) {
-				mes = ((StringBuilder) c).toString();
-			} else {
-				mes = new StringBuffer(c).toString();
-			}
-
-			switch (_textOptions._horizontalAlign) {
-			case CENTER:
-				_font.drawString(g, mes, (getWidth() / 2 - _font.stringWidth(mes) / 2) + offsetX, offsetY, color);
-				break;
-			case LEFT:
-				_font.drawString(g, mes, offsetX, offsetY, color);
-				break;
-			case RIGHT:
-				_font.drawString(g, mes, getWidth() - _font.stringWidth(mes) + offsetX, offsetY, color);
-				break;
-			default:
-				break;
-			}
+		if (_lines.size == 1) {
+			paintString(g, toString(_lines.get(0)), offsetX, offsetY, color);
 		} else if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
 			float viewX = 0;
 			int idx = 0;
 			for (int i = 0, size = _lines.size; i < size; i++) {
 				CharSequence c = _lines.get(i);
-				String mes = null;
-				if (c instanceof String) {
-					mes = (String) c;
-				} else if (c instanceof StringBuffer) {
-					mes = ((StringBuffer) c).toString();
-				} else if (c instanceof StringBuilder) {
-					mes = ((StringBuilder) c).toString();
-				} else {
-					mes = new StringBuffer(c).toString();
-				}
+				String mes = toString(c);
 				if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
 					char ch = mes.charAt(0);
 					float viewY = 0;
@@ -285,7 +278,6 @@ public class Text implements LRelease {
 						idx++;
 					} else {
 						viewX += _font.getSize() + getLeading();
-
 						viewY = 0;
 						idx = 0;
 					}
@@ -328,16 +320,7 @@ public class Text implements LRelease {
 		} else {
 			for (int i = 0, size = _lines.size; i < size; i++) {
 				CharSequence c = _lines.get(i);
-				String mes = null;
-				if (c instanceof String) {
-					mes = (String) c;
-				} else if (c instanceof StringBuffer) {
-					mes = ((StringBuffer) c).toString();
-				} else if (c instanceof StringBuilder) {
-					mes = ((StringBuilder) c).toString();
-				} else {
-					mes = new StringBuffer(c).toString();
-				}
+				String mes = toString(c);
 				switch (_textOptions._horizontalAlign) {
 				case CENTER:
 					_font.drawString(g, mes, offsetX + (getWidth() / 2 - _font.stringWidth(mes) / 2), offsetY
@@ -452,6 +435,7 @@ public class Text implements LRelease {
 		_lines = null;
 		_lineWidths = null;
 		_closed = true;
+		_initNativeDraw = false;
 	}
 
 	public boolean isClosed() {

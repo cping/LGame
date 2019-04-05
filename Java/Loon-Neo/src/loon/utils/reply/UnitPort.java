@@ -26,6 +26,7 @@ public abstract class UnitPort extends Port<Object> implements Updateable {
 
 	public static UnitPort toPort(final Updateable update) {
 		return new UnitPort() {
+			@Override
 			public void onEmit() {
 				update.action(this);
 			}
@@ -37,6 +38,7 @@ public abstract class UnitPort extends Port<Object> implements Updateable {
 	public UnitPort andThen(final UnitPort after) {
 		final UnitPort before = this;
 		return new UnitPort() {
+			@Override
 			public void onEmit() {
 				before.onEmit();
 				after.onEmit();

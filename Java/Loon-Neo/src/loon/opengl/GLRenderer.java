@@ -16,7 +16,11 @@ public class GLRenderer implements LRelease {
 
 		public static final GLType Line = new GLType(GL20.GL_LINES);
 
+		public static final GLType LineStrip = new GLType(GL20.GL_LINE_STRIP);
+		
 		public static final GLType Filled = new GLType(GL20.GL_TRIANGLES);
+
+		public static final GLType FillStrip = new GLType(GL20.GL_TRIANGLE_STRIP);
 
 		final int glType;
 

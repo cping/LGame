@@ -49,7 +49,22 @@ import loon.opengl.GLEx;
  * LLabel label = LLabel.make("ABC", 99, 99, LColor.red);
  * </pre>
  */
-public class LLabel extends LComponent implements FontSet<LLabel>{
+public class LLabel extends LComponent implements FontSet<LLabel> {
+
+	public static LLabel make(TextOptions options, String mes, int x, int y, LColor color) {
+		return new LLabel(HorizontalAlign.LEFT, options, SkinManager.get().getMessageSkin().getFont(), color, null, mes,
+				x, y, 0, 0);
+	}
+
+	public static LLabel make(HorizontalAlign alignment, TextOptions options, String mes, int x, int y, LColor color) {
+		return new LLabel(alignment, options, SkinManager.get().getMessageSkin().getFont(), color, null, mes, x, y, 0,
+				0);
+	}
+
+	public static LLabel make(HorizontalAlign alignment, TextOptions options, String mes, int x, int y) {
+		return new LLabel(alignment, options, SkinManager.get().getMessageSkin().getFont(),
+				SkinManager.get().getMessageSkin().getFontColor(), null, mes, x, y, 0, 0);
+	}
 
 	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, int size, LTexture tex, LColor c) {
 		IFont font = LFont.getFont(size);
@@ -76,6 +91,11 @@ public class LLabel extends LComponent implements FontSet<LLabel>{
 	public static LLabel make(String mes, String fontname, int size) {
 		return new LLabel(HorizontalAlign.LEFT, LFont.getFont(fontname, size),
 				SkinManager.get().getMessageSkin().getFontColor(), null, mes, 0, 0, 0, 0);
+	}
+
+	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y) {
+		return new LLabel(alignment, SkinManager.get().getMessageSkin().getFont(),
+				SkinManager.get().getMessageSkin().getFontColor(), mes, x, y);
 	}
 
 	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, IFont font) {
@@ -147,7 +167,7 @@ public class LLabel extends LComponent implements FontSet<LLabel>{
 	private final Text _text;
 
 	private float _offsetX, _offsetY;
-	
+
 	private LColor _fontColor;
 
 	public LLabel(HorizontalAlign alignment, IFont font, LColor c, LTexture bg, String mes, int x, int y, int width,
@@ -240,7 +260,7 @@ public class LLabel extends LComponent implements FontSet<LLabel>{
 	public LColor getFontColor() {
 		return _fontColor.cpy();
 	}
-	
+
 	@Override
 	public String getUIName() {
 		return "Label";
@@ -257,6 +277,5 @@ public class LLabel extends LComponent implements FontSet<LLabel>{
 		this._text.setFont(font);
 		return this;
 	}
-
 
 }

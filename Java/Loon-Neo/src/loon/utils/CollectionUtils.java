@@ -21,8 +21,6 @@
  */
 package loon.utils;
 
-import java.util.NoSuchElementException;
-
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.component.Actor;
@@ -41,21 +39,25 @@ final public class CollectionUtils {
 	protected CollectionUtils() {
 		super();
 	}
-	
+
 	/**
 	 * 判定指定对象是否存在于指定对象数组中
 	 * 
-	 * @param array
-	 * @param obj
+	 * @param arrays
+	 * @param data
 	 * @return
 	 */
-	public static int indexOf(Object[] array, Object obj) {
-		for (int i = 0; i < array.length; ++i) {
-			if (obj == array[i]) {
-				return i;
+	public static int indexOf(Object[] arrays, Object data) {
+		int len = arrays.length - 1;
+		int count = 0;
+		for (int i = len; i >= 0; i--) {
+			Object o = arrays[i];
+			if (o == data || (o != null && o.equals(data))) {
+				return len - count;
 			}
+			count++;
 		}
-		throw new NoSuchElementException("" + obj);
+		return -1;
 	}
 
 	/**
@@ -85,16 +87,16 @@ final public class CollectionUtils {
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static int[][] copyOf(int[][] obj) {
-		int size = obj.length;
+	public static int[][] copyOf(int[][] data) {
+		int size = data.length;
 		int[][] copy = new int[size][];
 		for (int i = 0; i < size; i++) {
-			int len = obj[i].length;
+			int len = data[i].length;
 			int[] res = new int[len];
-			System.arraycopy(obj[i], 0, res, 0, len);
+			System.arraycopy(data[i], 0, res, 0, len);
 			copy[i] = res;
 		}
 		return copy;
@@ -103,271 +105,271 @@ final public class CollectionUtils {
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static LComponent[] copyOf(LComponent[] obj) {
-		return copyOf(obj, obj.length);
+	public static LComponent[] copyOf(LComponent[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static LComponent[] copyOf(LComponent[] obj, int newSize) {
+	public static LComponent[] copyOf(LComponent[] data, int newSize) {
 		LComponent tempArr[] = new LComponent[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static String[] copyOf(String[] obj) {
-		return copyOf(obj, obj.length);
+	public static String[] copyOf(String[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static String[] copyOf(String[] obj, int newSize) {
+	public static String[] copyOf(String[] data, int newSize) {
 		String tempArr[] = new String[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static ISprite[] copyOf(ISprite[] obj, int newSize) {
+	public static ISprite[] copyOf(ISprite[] data, int newSize) {
 		ISprite tempArr[] = new ISprite[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static Actor[] copyOf(Actor[] obj, int newSize) {
+	public static Actor[] copyOf(Actor[] data, int newSize) {
 		Actor tempArr[] = new Actor[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static Object[] copyOf(Object[] obj, int newSize) {
+	public static Object[] copyOf(Object[] data, int newSize) {
 		Object tempArr[] = new Object[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static int[] copyOf(int[] obj) {
-		return copyOf(obj, obj.length);
+	public static int[] copyOf(int[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static int[] copyOf(int[] obj, int newSize) {
+	public static int[] copyOf(int[] data, int newSize) {
 		int tempArr[] = new int[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static double[] copyOf(double[] obj) {
-		return copyOf(obj, obj.length);
+	public static double[] copyOf(double[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static double[] copyOf(double[] obj, int newSize) {
+	public static double[] copyOf(double[] data, int newSize) {
 		double tempArr[] = new double[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static float[] copyOf(float[] obj) {
-		return copyOf(obj, obj.length);
+	public static float[] copyOf(float[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static float[] copyOf(float[] obj, int newSize) {
+	public static float[] copyOf(float[] data, int newSize) {
 		float tempArr[] = new float[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static byte[] copyOf(byte[] obj) {
-		return copyOf(obj, obj.length);
+	public static byte[] copyOf(byte[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static byte[] copyOf(byte[] obj, int newSize) {
+	public static byte[] copyOf(byte[] data, int newSize) {
 		byte tempArr[] = new byte[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static char[] copyOf(char[] obj) {
-		return copyOf(obj, obj.length);
+	public static char[] copyOf(char[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static char[] copyOf(char[] obj, int newSize) {
+	public static char[] copyOf(char[] data, int newSize) {
 		char tempArr[] = new char[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static long[] copyOf(long[] obj) {
-		return copyOf(obj, obj.length);
+	public static long[] copyOf(long[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static long[] copyOf(long[] obj, int newSize) {
+	public static long[] copyOf(long[] data, int newSize) {
 		long tempArr[] = new long[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @return
 	 */
-	public static boolean[] copyOf(boolean[] obj) {
-		return copyOf(obj, obj.length);
+	public static boolean[] copyOf(boolean[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
 	 * copy指定长度的数组数据
 	 * 
-	 * @param obj
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
-	public static boolean[] copyOf(boolean[] obj, int newSize) {
+	public static boolean[] copyOf(boolean[] data, int newSize) {
 		boolean tempArr[] = new boolean[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
 	// --为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
 	/**
 	 * 
-	 public static Object expand(Object obj, int i, boolean flag) { int j =
-	 * ArrayReflection.getLength(obj); Object obj1 =
-	 * ArrayReflection.newInstance(obj.getClass().getComponentType(), j + i);
-	 * System.arraycopy(obj, 0, obj1, flag ? 0 : i, j); return obj1; }
+	 * public static Object expand(Object data, int i, boolean flag) { int j =
+	 * ArrayReflection.getLength(data); Object obj1 =
+	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j + i);
+	 * System.arraycopy(data, 0, obj1, flag ? 0 : i, j); return obj1; }
 	 * 
-	 * public static Object expand(Object obj, int size) { return expand(obj,
+	 * public static Object expand(Object data, int size) { return expand(data,
 	 * size, true); }
 	 * 
-	 * public static Object expand(Object obj, int size, boolean flag, Class<?>
-	 * class1) { if (obj == null) { return ArrayReflection.newInstance(class1,
-	 * 1); } else { return expand(obj, size, flag); } }
+	 * public static Object expand(Object data, int size, boolean flag, Class<?>
+	 * class1) { if (data == null) { return ArrayReflection.newInstance(class1,
+	 * 1); } else { return expand(data, size, flag); } }
 	 * 
-	 * public static Object cut(Object obj, int size) { int j; if ((j =
-	 * ArrayReflection.getLength(obj)) == 1) { return
-	 * ArrayReflection.newInstance(obj.getClass().getComponentType(), 0); } int
-	 * k; if ((k = j - size - 1) > 0) { System.arraycopy(obj, size + 1, obj,
+	 * public static Object cut(Object data, int size) { int j; if ((j =
+	 * ArrayReflection.getLength(data)) == 1) { return
+	 * ArrayReflection.newInstance(data.getClass().getComponentType(), 0); } int
+	 * k; if ((k = j - size - 1) > 0) { System.arraycopy(data, size + 1, data,
 	 * size, k); } j--; Object obj1 =
-	 * ArrayReflection.newInstance(obj.getClass().getComponentType(), j);
-	 * System.arraycopy(obj, 0, obj1, 0, j); return obj1; }
+	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j);
+	 * System.arraycopy(data, 0, obj1, 0, j); return obj1; }
 	 * 
 	 * public static Object copyOf(Object src) { int srcLength =
 	 * ArrayReflection.getLength(src); Class<?> srcComponentType =
@@ -422,7 +424,7 @@ final public class CollectionUtils {
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
-	
+
 	public static boolean[] expand(boolean[] objs, int size) {
 		return expand(objs, size, true);
 	}
@@ -456,6 +458,21 @@ final public class CollectionUtils {
 		}
 		j--;
 		ISprite[] newArrays = new ISprite[j];
+		System.arraycopy(objs, 0, newArrays, 0, j);
+		return newArrays;
+	}
+
+	public static Object[] cutObject(Object[] objs, int size) {
+		int j;
+		if ((j = objs.length) == 1) {
+			return new Object[0];
+		}
+		int k;
+		if ((k = j - size - 1) > 0) {
+			System.arraycopy(objs, size + 1, objs, size, k);
+		}
+		j--;
+		Object[] newArrays = new Object[j];
 		System.arraycopy(objs, 0, newArrays, 0, j);
 		return newArrays;
 	}
@@ -508,95 +525,94 @@ final public class CollectionUtils {
 		return newArrays;
 	}
 
-	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] obj,
-			int newSize) {
+	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data, int newSize) {
 		PConvexPolygonShape tempArr[] = new PConvexPolygonShape[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] obj) {
-		return copyOf(obj, obj.length);
+	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static PBody[] copyOf(PBody[] obj, int newSize) {
+	public static PBody[] copyOf(PBody[] data, int newSize) {
 		PBody tempArr[] = new PBody[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PBody[] copyOf(PBody[] obj) {
-		return copyOf(obj, obj.length);
+	public static PBody[] copyOf(PBody[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static PJoint[] copyOf(PJoint[] obj) {
-		return copyOf(obj, obj.length);
+	public static PJoint[] copyOf(PJoint[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static PJoint[] copyOf(PJoint[] obj, int newSize) {
+	public static PJoint[] copyOf(PJoint[] data, int newSize) {
 		PJoint tempArr[] = new PJoint[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PSolver[] copyOf(PSolver[] obj) {
-		return copyOf(obj, obj.length);
+	public static PSolver[] copyOf(PSolver[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static PSolver[] copyOf(PSolver[] obj, int newSize) {
+	public static PSolver[] copyOf(PSolver[] data, int newSize) {
 		PSolver tempArr[] = new PSolver[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PShape[] copyOf(PShape[] obj) {
-		return copyOf(obj, obj.length);
+	public static PShape[] copyOf(PShape[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static PShape[] copyOf(PShape[] obj, int newSize) {
+	public static PShape[] copyOf(PShape[] data, int newSize) {
 		PShape tempArr[] = new PShape[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PSortableObject[] copyOf(PSortableObject[] obj) {
-		return copyOf(obj, obj.length);
+	public static PSortableObject[] copyOf(PSortableObject[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static PSortableObject[] copyOf(PSortableObject[] obj, int newSize) {
+	public static PSortableObject[] copyOf(PSortableObject[] data, int newSize) {
 		PSortableObject tempArr[] = new PSortableObject[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static LTexture[] copyOf(LTexture[] obj, int newSize) {
+	public static LTexture[] copyOf(LTexture[] data, int newSize) {
 		LTexture tempArr[] = new LTexture[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static LTexture[] copyOf(LTexture[] obj) {
-		return copyOf(obj, obj.length);
+	public static LTexture[] copyOf(LTexture[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] obj, int newSize) {
+	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] data, int newSize) {
 		ArrayMap.Entry tempArr[] = new ArrayMap.Entry[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] obj) {
-		return copyOf(obj, obj.length);
+	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] data) {
+		return copyOf(data, data.length);
 	}
 
-	public static IntHashMap.Entry[] copyOf(IntHashMap.Entry[] obj, int newSize) {
+	public static IntHashMap.Entry[] copyOf(IntHashMap.Entry[] data, int newSize) {
 		IntHashMap.Entry tempArr[] = new IntHashMap.Entry[newSize];
-		System.arraycopy(obj, 0, tempArr, 0, MathUtils.min(obj.length, newSize));
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static IntHashMap.Entry[] copyOf(IntHashMap.Entry[] obj) {
-		return copyOf(obj, obj.length);
+	public static IntHashMap.Entry[] copyOf(IntHashMap.Entry[] data) {
+		return copyOf(data, data.length);
 	}
 
 	/**
@@ -611,11 +627,70 @@ final public class CollectionUtils {
 			if (idx == last || idx > last) {
 				break;
 			}
-			T obj = arrays[idx];
+			T data = arrays[idx];
 			T swap = arrays[last];
 			arrays[idx] = swap;
-			arrays[last] = obj;
+			arrays[last] = data;
 		}
 	}
 
+	/**
+	 * 移除一个对象数组中数据
+	 * 
+	 * @param arrays
+	 * @param index
+	 * @return
+	 */
+	public static Object spliceObjectOne(Object[] arrays, int index) {
+		if (index >= arrays.length) {
+			return null;
+		}
+		int len = arrays.length - 1;
+		Object item = arrays[index];
+		for (int i = index; i < len; i++) {
+			arrays[i] = arrays[i + 1];
+		}
+		CollectionUtils.cutObject(arrays, len);
+		return item;
+	}
+
+	/**
+	 * 交换对象数组中两个对象的位置
+	 * 
+	 * @param arrays
+	 * @param data1
+	 * @param data2
+	 */
+	public static void swapObject(Object[] arrays, Object data1, Object data2) {
+		if (data1 == data2) {
+			return;
+		}
+		int index1 = indexOf(arrays, data1);
+		int index2 = indexOf(arrays, data2);
+		if (index1 < 0 || index2 < 0) {
+			return;
+		}
+		arrays[index1] = data2;
+		arrays[index2] = data1;
+		return;
+	}
+
+	/**
+	 * 替换对象数组中的指定对象
+	 * 
+	 * @param arrays
+	 * @param oldChild
+	 * @param newChild
+	 * @return
+	 */
+	public static boolean replaceObject(Object[] arrays, Object oldChild, Object newChild) {
+		int index1 = indexOf(arrays, oldChild);
+		int index2 = indexOf(arrays, newChild);
+		if (index1 != -1 && index2 == -1) {
+			arrays[index1] = newChild;
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
