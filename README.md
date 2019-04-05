@@ -111,7 +111,7 @@ Built-in over 30 game example(Part screenshots):
 License : http://www.apache.org/licenses/LICENSE-2.0
 
 ## Source Files
-==============
+```
 src
 ├── assets
 ├── ├── loon_bar.png
@@ -899,7 +899,7 @@ src
 ├── └── ZIndex.java
 └── loon.gwt.xml
 
-directory : 40 file : 745
-==============
+40 directories, 745 files
+```
 
-## This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
+### This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
