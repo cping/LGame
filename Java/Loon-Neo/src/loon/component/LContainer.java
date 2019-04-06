@@ -409,7 +409,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			LComponent component;
 			for (int i = 0; i < this.childCount; i++) {
 				component = _childs[i];
-				if (component != null) {
+				if (component != null && component != this) {
 					component.update(timer);
 				}
 			}
@@ -440,9 +440,11 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	protected void validateSize() {
 		super.validateSize();
-
 		for (int i = 0; i < this.childCount; i++) {
-			this._childs[i].validateSize();
+			LComponent comp = this._childs[i];
+			if (comp != null && comp != this) {
+				comp.validateSize();
+			}
 		}
 	}
 
@@ -468,7 +470,10 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	protected void renderComponents(GLEx g) {
 		for (int i = this.childCount - 1; i >= 0; i--) {
-			this._childs[i].createUI(g);
+			LComponent comp = this._childs[i];
+			if (comp != null && comp != this) {
+				comp.createUI(g);
+			}
 		}
 	}
 

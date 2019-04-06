@@ -768,13 +768,23 @@ final public class CollectionUtils {
 	 * 检查针对指定对象数组的取值范围是否安全
 	 * 
 	 * @param arrays
+	 * @param index
+	 * @return
+	 */
+	public static final boolean safeRange(Object[] arrays, int index) {
+		return safeRange(arrays, index, index, false, false);
+	}
+
+	/**
+	 * 检查针对指定对象数组的取值范围是否安全
+	 * 
+	 * @param arrays
 	 * @param startIndex
 	 * @param endIndex
 	 * @return
 	 */
 	public static final boolean safeRange(Object[] arrays, int startIndex, int endIndex) {
 		return safeRange(arrays, startIndex, endIndex, false);
-
 	}
 
 	/**

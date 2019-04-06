@@ -22,6 +22,7 @@ package loon.action.map;
 
 import java.util.Iterator;
 
+
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -56,6 +57,9 @@ import loon.utils.SortedList;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * 一个简单的,渲染六边形瓦片地图用的,二维数组地图构造以及显示类.复杂地图请使用tmx包
+ */
 public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, ISprite {
 
 	public static final int LEFT = -3;

@@ -33,6 +33,7 @@ import loon.font.LFont;
 import loon.geom.RectF;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -62,8 +63,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	private boolean _dirty;
 
 	private float _space = 0;
-
-	private String flagStyle = " => ";
 
 	private String templateResult = null;
 
@@ -98,6 +97,14 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 		public String getText() {
 			return StringUtils.replace(message, "\n", "");
+		}
+
+		public int getLevel() {
+			if (this.isRoot()) {
+				return 0;
+			} else {
+				return parent.getLevel() + 1;
+			}
 		}
 
 		public TArray<TreeElement> setSublevel(TreeElement[] array) {
@@ -256,7 +263,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 				_lines.add(mes);
 			}
 		}
-
 		float maxWidth = 0;
 		float maxHeight = 0;
 		float lastWidth = 0;
@@ -285,11 +291,10 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			_selectRects[i] = new RectF(0, maxHeight, maxWidth, height);
 			maxHeight += height;
 		}
-		setSize(maxWidth + _space * 2 - _font.getSize() * 2, maxHeight + _space * 2 - _font.getSize() * 2);
+		setSize(maxWidth + _space * 2 - _font.getSize(), maxHeight + _space * 2);
 		if (_font instanceof LFont) {
 			LSTRDictionary.get().bind((LFont) _font, StringUtils.getListToStrings(_lines));
 		}
-
 		_dirty = false;
 		return this;
 	}
@@ -310,6 +315,13 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 				}
 			}
 		}
+	}
+
+	public String getSelectedResult() {
+		if (_lines != null && _selected != -1 && CollectionUtils.safeRange(_lines.items, _selected)) {
+			return StringUtils.replaceTrim(_lines.get(_selected), subLastTreeFlag, subTreeNextFlag, subTreeFlag);
+		}
+		return null;
 	}
 
 	public String getResult() {
@@ -434,14 +446,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	public int getAmountOfTotalElements() {
 		return totalElementsCount;
-	}
-
-	public String getFlagStyle() {
-		return flagStyle;
-	}
-
-	public void setFlagStyle(String flagStyle) {
-		this.flagStyle = flagStyle;
 	}
 
 	@Override

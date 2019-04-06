@@ -41,6 +41,12 @@ public class TouchedClick implements ClickListener {
 	private TArray<ClickListener> clicks;
 
 	public TouchedClick addClickListener(ClickListener c) {
+		if (c == null) {
+			return this;
+		}
+		if (c == this) {
+			return this;
+		}
 		if (clicks == null) {
 			clicks = new TArray<ClickListener>(8);
 		}

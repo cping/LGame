@@ -198,14 +198,14 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 判定是否由纯粹的西方字符组成
 	 * 
-	 * @param string
+	 * @param message
 	 * @return
 	 */
-	public static final boolean isEnglishAndNumeric(String string) {
-		if (string == null || string.length() == 0) {
+	public static final boolean isEnglishAndNumeric(String message) {
+		if (message == null || message.length() == 0) {
 			return false;
 		}
-		char[] chars = string.toCharArray();
+		char[] chars = message.toCharArray();
 		int size = chars.length;
 		for (int j = 0; j < size; j++) {
 			char letter = chars[j];
@@ -478,35 +478,51 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 过滤指定字符串
 	 * 
-	 * @param string
+	 * @param message
 	 * @param oldString
 	 * @param newString
 	 * @return
 	 */
-	public static final String replace(String string, String oldString, String newString) {
-		if (string == null)
+	public static final String replace(String message, String oldString, String newString) {
+		if (message == null)
 			return null;
 		if (newString == null)
-			return string;
+			return message;
 		int i = 0;
-		if ((i = string.indexOf(oldString, i)) >= 0) {
-			char string2[] = string.toCharArray();
+		if ((i = message.indexOf(oldString, i)) >= 0) {
+			char string2[] = message.toCharArray();
 			char newString2[] = newString.toCharArray();
 			int oLength = oldString.length();
 			StringBuffer buf = new StringBuffer(string2.length);
 			buf.append(string2, 0, i).append(newString2);
 			i += oLength;
 			int j;
-			for (j = i; (i = string.indexOf(oldString, i)) > 0; j = i) {
+			for (j = i; (i = message.indexOf(oldString, i)) > 0; j = i) {
 				buf.append(string2, j, i - j).append(newString2);
 				i += oLength;
 			}
-
 			buf.append(string2, j, string2.length - j);
 			return buf.toString();
 		} else {
-			return string;
+			return message;
 		}
+	}
+
+	/**
+	 * 过滤指定字符串为空
+	 * 
+	 * @param message
+	 * @param oldStrings
+	 * @return
+	 */
+	public static final String replaceTrim(String message, String... oldStrings) {
+		if (message == null)
+			return null;
+		String trim = "";
+		for (int i = 0; i < oldStrings.length; i++) {
+			message = replace(message, oldStrings[i], trim);
+		}
+		return message.trim();
 	}
 
 	/**

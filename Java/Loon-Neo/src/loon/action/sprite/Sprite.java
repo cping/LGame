@@ -914,6 +914,12 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public Sprite addChild(ISprite spr) {
+		if (spr == null) {
+			return this;
+		}
+		if (spr == this) {
+			return this;
+		}
 		if (_childList == null) {
 			_childList = new TArray<ISprite>();
 		}
@@ -1133,12 +1139,12 @@ public class Sprite extends LObject<ISprite>
 	public boolean intersects(CollisionObject object) {
 		return getCollisionBox().intersects(object.getRectBox());
 	}
-	
+
 	@Override
 	public boolean intersects(RectBox rect) {
 		return getCollisionBox().intersects(rect);
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

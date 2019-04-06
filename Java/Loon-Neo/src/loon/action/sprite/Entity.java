@@ -492,6 +492,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (e == null) {
 			return;
 		}
+		if (e == this) {
+			return;
+		}
 		if (this._childrens == null) {
 			this.allocateChildren();
 		}
