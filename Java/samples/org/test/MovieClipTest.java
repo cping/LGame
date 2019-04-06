@@ -1,31 +1,16 @@
 package org.test;
 
 import loon.LTrans;
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.MovieClip;
 import loon.action.sprite.Sprite;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
 import loon.utils.res.ResourceLocal;
-import loon.utils.timer.LTimerContext;
 
-public class MovieClipTest extends Screen {
-
+public class MovieClipTest extends Stage {
 	@Override
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
-
-	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 		
-		ResourceLocal res = getResourceConfig("resource.json");
+		ResourceLocal res = RES("resource.json");
 		MovieClip c = new MovieClip(res.getSheet("Monster01json"), 128);
 		c.setLoop(true);
 		c.setScale(2f, 2f);
@@ -52,51 +37,6 @@ public class MovieClipTest extends Screen {
 		
 
 		add(MultiScreenTest.getBackButton(this,0));
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
 	}
 
 }

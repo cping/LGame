@@ -2,29 +2,15 @@ package org.test;
 
 import loon.BaseIO;
 import loon.LTexture;
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.Picture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
 import loon.utils.reply.Port;
-import loon.utils.timer.LTimerContext;
 
-public class TextureImageTest extends Screen {
-
-	@Override
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
-
-	@Override
-	public void draw(GLEx g) {
-
-	}
+public class TextureImageTest extends Stage {
 
 	static float width = 100;
 	static float height = 100;
@@ -33,7 +19,7 @@ public class TextureImageTest extends Screen {
 	static String imageGroundSrc = "imagetest2.png";
 
 	@Override
-	public void onLoad() {
+	public void create() {
 
 		setBackground(LColor.red);
 		
@@ -85,48 +71,4 @@ public class TextureImageTest extends Screen {
 		add(MultiScreenTest.getBackButton(this,0));
 	}
 
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
 }

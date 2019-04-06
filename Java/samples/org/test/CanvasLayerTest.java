@@ -1,32 +1,20 @@
 package org.test;
 
 import loon.LSystem;
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.CanvasPlayer;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
 import loon.geom.RectBox;
-import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public class CanvasLayerTest extends Screen {
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class CanvasLayerTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 		// 构建一个CanvasLayer对象，并实时渲染Canvas对象(PS:实时修改渲染对象比较耗费渲染时间，不建议在游戏中出现多个
 		// BTW:最主要是不同运行环境存在的差异较大，不同平台造成的帧率改变可能很多……)
 		final CanvasPlayer canyer = new CanvasPlayer();
@@ -80,48 +68,4 @@ public class CanvasLayerTest extends Screen {
 		add(MultiScreenTest.getBackButton(this,0));
 	}
 
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
 }

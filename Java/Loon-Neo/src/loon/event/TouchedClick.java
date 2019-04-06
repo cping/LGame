@@ -44,7 +44,9 @@ public class TouchedClick implements ClickListener {
 		if (clicks == null) {
 			clicks = new TArray<ClickListener>(8);
 		}
-		clicks.add(c);
+		if (!clicks.contains(c)) {
+			clicks.add(c);
+		}
 		return this;
 	}
 
@@ -58,7 +60,10 @@ public class TouchedClick implements ClickListener {
 		}
 		if (clicks != null) {
 			for (int i = 0, size = clicks.size; i < size; i++) {
-				clicks.get(i).DoClick(comp);
+				ClickListener listener = clicks.get(i);
+				if (listener != null && listener != this) {
+					listener.DoClick(comp);
+				}
 			}
 		}
 	}
@@ -73,7 +78,10 @@ public class TouchedClick implements ClickListener {
 		}
 		if (clicks != null) {
 			for (int i = 0, size = clicks.size; i < size; i++) {
-				clicks.get(i).DownClick(comp, x, y);
+				ClickListener listener = clicks.get(i);
+				if (listener != null && listener != this) {
+					listener.DownClick(comp, x, y);
+				}
 			}
 		}
 		_downClick = true;
@@ -90,7 +98,10 @@ public class TouchedClick implements ClickListener {
 			}
 			if (clicks != null) {
 				for (int i = 0, size = clicks.size; i < size; i++) {
-					clicks.get(i).UpClick(comp, x, y);
+					ClickListener listener = clicks.get(i);
+					if (listener != null && listener != this) {
+						listener.UpClick(comp, x, y);
+					}
 				}
 			}
 			_downClick = false;
@@ -107,7 +118,10 @@ public class TouchedClick implements ClickListener {
 		}
 		if (clicks != null) {
 			for (int i = 0, size = clicks.size; i < size; i++) {
-				clicks.get(i).DragClick(comp, x, y);
+				ClickListener listener = clicks.get(i);
+				if (listener != null && listener != this) {
+					listener.DragClick(comp, x, y);
+				}
 			}
 		}
 	}
@@ -152,9 +166,14 @@ public class TouchedClick implements ClickListener {
 		_enabled = e;
 	}
 
+	public boolean isClicked() {
+		return _downClick;
+	}
+
 	public void clear() {
 		if (clicks != null) {
 			clicks.clear();
 		}
+		_downClick = false;
 	}
 }

@@ -1,27 +1,13 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.component.LDecideName;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
 import loon.utils.TArray;
-import loon.utils.timer.LTimerContext;
 
-public class DecideNameTest extends Screen {
-
-	@Override
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class DecideNameTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
 
 		TArray<String> list = new TArray<String>();
 		list.add("赵钱孙李周吴郑王");
@@ -39,51 +25,6 @@ public class DecideNameTest extends Screen {
 		add(decideName);
 
 		add(MultiScreenTest.getBackButton(this,0));
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
 	}
 
 }

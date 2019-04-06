@@ -20,72 +20,138 @@
  */
 package loon.component;
 
+import java.util.Iterator;
+
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.event.SysTouch;
 import loon.font.FontSet;
+import loon.font.FontUtils;
 import loon.font.IFont;
+import loon.font.LFont;
+import loon.geom.RectF;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
- * 这是一个简单的字符串显示用类,通过输出具有上下级关系的字符串来描述一组事物
+ * 这是一个简单的字符串显示用类,通过输出具有上下级关系的字符串来描述一组事物,比如说角色转职表什么的
  * 
  * LTextTree tree = new LTextTree(30, 100, 400, 400);
- * tree.addElement("数学").addSub("微积分").addSub("几何"); add(tree);
+ * tree.addElement("数学").addSub("微积分","几何"); add(tree);
  */
 public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
-	private TArray<TreeElement> list = new TArray<TreeElement>();
 	private TArray<TreeElement> elements = new TArray<TreeElement>();
-	private int totalElementsCount = 0;
+
+	private TArray<String> _lines;
+
+	private RectF[] _selectRects;
+
+	private int _selected = -1;
 
 	private IFont _font;
-	private LColor _fontColor = LColor.white;
 
-	private float _space = 8;
+	private LColor _fontColor = LColor.white.cpy();
+
+	private String _root_name;
+
+	private boolean _dirty;
+
+	private float _space = 0;
 
 	private String flagStyle = " => ";
 
-	public static abstract class TreeElement {
+	private String templateResult = null;
 
-		public TArray<TreeElement> childs;
+	private int totalElementsCount;
+
+	public float offsetX = 0;
+
+	public float offsetY = 0;
+
+	private String subTreeFlag = "├── ";
+
+	private String subTreeNextFlag = "│   ";
+
+	private String subLastTreeFlag = "└── ";
+
+	public class TreeElement {
+
+		protected TArray<TreeElement> childs;
 
 		private int selectedInSub = 0;
-		public boolean onNextSublevel = false;
 
-		public TreeElement() {
+		protected boolean onNextSublevel = false;
+
+		private TreeElement parent;
+
+		private String message;
+
+		public TreeElement(String text) {
 			this.childs = new TArray<TreeElement>();
+			this.message = text;
 		}
 
-		public abstract String getText();
+		public String getText() {
+			return StringUtils.replace(message, "\n", "");
+		}
 
-		public TreeElement setSublevel(TreeElement[] array) {
+		public TArray<TreeElement> setSublevel(TreeElement[] array) {
+			if (array != null && array.length > 0) {
+				for (int i = 0; i < array.length; i++) {
+					array[i].parent = this;
+				}
+			}
 			childs = new TArray<TreeElement>(array);
-			return this;
+			_dirty = true;
+			return childs;
+		}
+
+		public TArray<TreeElement> addSub(String... eleNames) {
+			for (int i = 0; i < eleNames.length; i++) {
+				addSub(new TreeElement(eleNames[i]));
+			}
+			return getChilds();
 		}
 
 		public TreeElement addSub(final String elementName) {
-			return addSub(new TreeElement() {
+			return addSub(new TreeElement(elementName));
+		}
 
-				@Override
-				public String getText() {
-					return elementName;
-				}
-			});
+		public TreeElement addChild(final String elementName) {
+			return addChild(new TreeElement(elementName));
+		}
+
+		public TArray<TreeElement> getChilds() {
+			return new TArray<LTextTree.TreeElement>(childs);
+		}
+
+		public TreeElement addChild(TreeElement me) {
+			return addSub(me);
 		}
 
 		public TreeElement addSub(TreeElement me) {
 			childs.add(me);
-			return this;
+			me.parent = this;
+			_dirty = true;
+			return me;
 		}
 
-		public TreeElement addSub(TreeElement[] array) {
+		public TArray<TreeElement> addSub(TreeElement[] array) {
 			for (int i = 0; i < array.length; i++) {
 				childs.add(array[i]);
+				array[i].parent = this;
 			}
-			return this;
+			_dirty = true;
+			return getChilds();
+		}
+
+		public TreeElement getParent() {
+			return this.parent;
 		}
 
 		public int getSelected() {
@@ -100,6 +166,14 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 					selectedInSub = MathUtils.clamp(selectedInSub + amt, 0, childs.size - 1);
 				}
 			}
+		}
+
+		public boolean isRoot() {
+			return parent == null;
+		}
+
+		public boolean isLeaf() {
+			return childs.size() == 0;
 		}
 
 		public boolean moveSublevel(boolean right) {
@@ -126,125 +200,236 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	}
 
 	public LTextTree(int x, int y, int width, int height) {
-		this(x, y, width, height, 8f);
+		this("Root", x, y, width, height);
 	}
 
-	public LTextTree(IFont font, int x, int y, int width, int height) {
-		this(font, x, y, width, height, 8f);
+	public LTextTree(String name, int x, int y, int width, int height) {
+		this(name, x, y, width, height, 0f);
 	}
 
-	public LTextTree(int x, int y, int width, int height, float space) {
-		this(LSystem.getSystemGameFont(), x, y, width, height, space);
+	public LTextTree(IFont font, String name, int x, int y, int width, int height) {
+		this(font, name, x, y, width, height, 0f);
 	}
 
-	public LTextTree(IFont font, int x, int y, int width, int height, float space) {
+	public LTextTree(String name, int x, int y, int width, int height, float space) {
+		this(LSystem.getSystemGameFont(), name, x, y, width, height, space);
+	}
+
+	public LTextTree(IFont font, String name, int x, int y, int width, int height, float space) {
 		super(x, y, width, height);
 		this._space = space;
 		this._font = font;
+		this._root_name = name;
 	}
-
-	public float offsetX = 0;
-
-	public float offsetY = 0;
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		if (!_component_visible) {
+			return;
+		}
 		IFont tmp = g.getFont();
 		g.setFont(_font);
-		renderSub(g, offsetX, offsetY, x, y, elements, 0f);
+		renderSub(g, offsetX, offsetY, x, y);
 		g.setFont(tmp);
 	}
 
-	private float renderSub(GLEx g, float offsetX, float offsetY, float x, float y, TArray<TreeElement> level,
-			float moved) {
-		float offX = offsetX;
-		float offY = offsetY;
+	private void renderSub(GLEx g, float offsetX, float offsetY, float x, float y) {
+		if (_dirty || _lines == null) {
+			pack();
+		}
+		for (int i = 0; i < _lines.size; i++) {
+			String text = _lines.get(i);
+			RectF rect = _selectRects[i];
+			g.drawString(text, rect.x + x + offsetX, rect.y + y + offsetY, _fontColor);
+		}
+	}
 
-		IFont font = g.getFont();
-
-		float posHeight = 0;
-		for (int i = 0; i < level.size; i++) {
-
-			TreeElement me = level.get(i);
-
-			float superPos = y + offY + font.stringHeight(me.getText());
-			if (i != 0) {
-				superPos = posHeight + font.stringHeight(me.getText()) + _space;
+	public LTextTree pack() {
+		String result = getResult();
+		TArray<CharSequence> treeList = new TArray<CharSequence>();
+		FontUtils.splitLines(result, treeList);
+		this._lines = new TArray<String>(getAmountOfTotalElements());
+		for (CharSequence ch : treeList) {
+			int size = ch.length();
+			if (size > 1) {
+				String mes = new StringBuffer(ch).substring(0, size - 1).toString();
+				_lines.add(mes);
 			}
-			g.drawString(me.getText(), x + offX, superPos, _fontColor);
+		}
 
-			TArray<TreeElement> childs = me.childs;
-
-			if (childs.size > 0) {
-				float offsetPosX = x + font.stringWidth(me.getText()) + _space;
-				for (int j = 0; j < childs.size; j++) {
-					TreeElement tme = childs.get(j);
-
-					float offsetPosY = (j * (font.stringHeight(tme.getText()) + _space));
-					posHeight = (superPos + offsetPosY);
-
-					g.drawString(flagStyle, offsetPosX, posHeight, _fontColor);
-					float posX = offsetPosX + font.stringWidth(flagStyle) + _space;
-					float size = 0;
-
-					posHeight += size;
-					g.drawString(tme.getText(), posX, posHeight, _fontColor);
-
+		float maxWidth = 0;
+		float maxHeight = 0;
+		float lastWidth = 0;
+		float lastHeight = 0;
+		this._selectRects = new RectF[_lines.size];
+		for (int i = 0; i < _lines.size; i++) {
+			String text = _lines.get(i);
+			lastWidth = maxWidth;
+			lastHeight = maxHeight;
+			maxWidth = MathUtils.max(maxWidth, FontUtils.measureText(_font, text) + _font.getHeight() + _space);
+			int height = (int) (MathUtils.max(_font.stringHeight(text), _font.getHeight()) + _space);
+			if (maxWidth > lastWidth) {
+				for (int j = 0; j < _selectRects.length; j++) {
+					if (_selectRects[j] != null) {
+						_selectRects[j].width = maxWidth;
+					}
 				}
 			}
-
+			if (maxHeight > lastHeight) {
+				for (int j = 0; j < _selectRects.length; j++) {
+					if (_selectRects[j] != null) {
+						_selectRects[j].height = maxHeight;
+					}
+				}
+			}
+			_selectRects[i] = new RectF(0, maxHeight, maxWidth, height);
+			maxHeight += height;
 		}
-		return offY;
+		setSize(maxWidth + _space * 2 - _font.getSize() * 2, maxHeight + _space * 2 - _font.getSize() * 2);
+		if (_font instanceof LFont) {
+			LSTRDictionary.get().bind((LFont) _font, StringUtils.getListToStrings(_lines));
+		}
+
+		_dirty = false;
+		return this;
+	}
+
+	@Override
+	public void update(long elapsedTime) {
+		if (!isVisible()) {
+			return;
+		}
+		super.update(elapsedTime);
+		if (SysTouch.isDown() || SysTouch.isDrag() || SysTouch.isMove()) {
+			if (_selectRects != null) {
+				for (int i = 0; i < _selectRects.length; i++) {
+					RectF touched = _selectRects[i];
+					if (touched != null && touched.inside(getUITouchX(), getUITouchY())) {
+						_selected = i;
+					}
+				}
+			}
+		}
+	}
+
+	public String getResult() {
+		if (_dirty || templateResult == null) {
+			TreeElement trees = createTree();
+			templateResult = renderTree(trees);
+		}
+		return templateResult;
+	}
+
+	protected TreeElement createTree() {
+		String rootName = StringUtils.isEmpty(_root_name) ? "Root" : _root_name;
+		TreeElement treeRoot = new TreeElement(rootName);
+		for (TreeElement e : elements) {
+			if (e.isRoot()) {
+				putTree(e, treeRoot);
+			} else {
+				putNode(e, treeRoot);
+			}
+		}
+		return treeRoot;
+	}
+
+	protected void putTree(TreeElement node, TreeElement treeRoot) {
+		treeRoot.addSub(node);
+		TArray<TreeElement> root = node.getChilds();
+		for (TreeElement n : root) {
+			if (n.isRoot()) {
+				putTree(n, treeRoot.childs.last());
+				totalElementsCount++;
+			}
+		}
+	}
+
+	protected void putNode(TreeElement node, TreeElement filenode) {
+		if (filenode != node) {
+			filenode.addSub(node);
+			totalElementsCount++;
+		}
+	}
+
+	protected String renderTree(TreeElement tree) {
+		TArray<StringBuilder> lines = renderDirectoryTreeLines(tree);
+		String newline = LSystem.LS;
+		StringBuilder sb = new StringBuilder(lines.size() * 20);
+		for (StringBuilder line : lines) {
+			sb.append(line);
+			sb.append(newline);
+		}
+		return sb.toString();
+	}
+
+	protected TArray<StringBuilder> renderDirectoryTreeLines(TreeElement tree) {
+		TArray<StringBuilder> result = new TArray<StringBuilder>();
+		result.add(new StringBuilder().append(tree.getText()));
+		Iterator<TreeElement> iterator = tree.childs.iterator();
+		while (iterator.hasNext()) {
+			TArray<StringBuilder> subtree = renderDirectoryTreeLines(iterator.next());
+			if (iterator.hasNext()) {
+				addSubtree(result, subtree);
+			} else {
+				addLastSubtree(result, subtree);
+			}
+		}
+		return result;
+	}
+
+	protected void addSubtree(TArray<StringBuilder> result, TArray<StringBuilder> subtree) {
+		Iterator<StringBuilder> iterator = subtree.iterator();
+		StringBuilder sbr = iterator.next();
+		result.add(sbr.insert(0, subTreeFlag));
+		while (iterator.hasNext()) {
+			result.add(iterator.next().insert(0, subTreeNextFlag));
+		}
+	}
+
+	private void addLastSubtree(TArray<StringBuilder> result, TArray<StringBuilder> subtree) {
+		Iterator<StringBuilder> iterator = subtree.iterator();
+		StringBuilder sbr = iterator.next();
+		result.add(sbr.insert(0, subLastTreeFlag));
+		while (iterator.hasNext()) {
+			result.add(iterator.next().insert(0, "    "));
+		}
 	}
 
 	public TreeElement getSubElement(int idx) {
 		return elements.get(idx);
 	}
 
-	public TreeElement addElement(final String elementName) {
-		return addElement(new TreeElement() {
+	public TreeElement newElement(final String elementName) {
+		return new TreeElement(elementName);
+	}
 
-			@Override
-			public String getText() {
-				return elementName;
-			}
-		});
+	public TreeElement addElement(final String elementName) {
+		return addElement(new TreeElement(elementName));
 	}
 
 	public TreeElement addElement(TreeElement me) {
 		if (me == null) {
 			throw LSystem.runThrow("TreeElement cannot be null!");
 		}
-
 		elements.add(me);
 		updateElements();
 		return me;
 	}
 
-	public int updateElements() {
-		totalElementsCount = 0;
-		resetQueue();
-		int index = 0;
-		TreeElement element = null;
-		while (list.size > 0 && index < list.size) {
-			element = list.get(index);
-			totalElementsCount++;
-			index++;
-			if (element.childs.size <= 0) {
-				continue;
-			}
-			for (TreeElement m : element.childs) {
-				list.add(m);
-			}
-		}
-		return getAmountOfTotalElements();
+	public LTextTree clearElement() {
+		elements.clear();
+		_root_name = null;
+		updateElements();
+		return this;
 	}
 
-	private void resetQueue() {
-		list.clear();
-		for (TreeElement m : elements) {
-			list.add(m);
-		}
+	public boolean isDirty() {
+		return _dirty;
+	}
+
+	public int updateElements() {
+		_dirty = true;
+		return getAmountOfTotalElements();
 	}
 
 	public int getAmountOfTotalElements() {
@@ -266,7 +451,11 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	@Override
 	public LTextTree setFont(IFont font) {
+		if (_font == null) {
+			return this;
+		}
 		this._font = font;
+		this._dirty = true;
 		return this;
 	}
 
@@ -279,6 +468,51 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	@Override
 	public LColor getFontColor() {
 		return _fontColor.cpy();
+	}
+
+	public String getSubTreeFlag() {
+		return subTreeFlag;
+	}
+
+	public void setSubTreeFlag(String subTreeFlag) {
+		this.subTreeFlag = subTreeFlag;
+		this._dirty = true;
+	}
+
+	public String getSubTreeNextFlag() {
+		return subTreeNextFlag;
+	}
+
+	public void setSubTreeNextFlag(String subTreeNextFlag) {
+		this.subTreeNextFlag = subTreeNextFlag;
+		this._dirty = true;
+	}
+
+	public String getSubLastTreeFlag() {
+		return subLastTreeFlag;
+	}
+
+	public void setSubLastTreeFlag(String subLastTreeFlag) {
+		this.subLastTreeFlag = subLastTreeFlag;
+		this._dirty = true;
+	}
+
+	public String getRootName() {
+		return _root_name;
+	}
+
+	public LTextTree setRootName(String name) {
+		this._root_name = name;
+		this._dirty = true;
+		return this;
+	}
+
+	public int getSelected() {
+		return _selected;
+	}
+
+	public void setSelected(int selected) {
+		this._selected = selected;
 	}
 
 	@Override

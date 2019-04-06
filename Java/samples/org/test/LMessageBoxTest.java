@@ -1,30 +1,16 @@
 package org.test;
 
 import loon.LTexture;
-import loon.LTransition;
-import loon.Screen;
-import loon.component.DefUI;
+import loon.Stage;
 import loon.component.LComponent;
 import loon.component.LMessageBox;
 import loon.event.ClickListener;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class LMessageBoxTest extends Screen {
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class LMessageBoxTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
-		LTexture texture = DefUI.getGameWinFrame(200, 200);
+	public void create() {
+		LTexture texture = getGameWinFrame(200, 200);
 		LMessageBox box = new LMessageBox(new String[] {
 				"人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。",
 				"明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" }, texture, 66, 66, 180,
@@ -35,7 +21,7 @@ public class LMessageBoxTest extends Screen {
 		box.setOffset(10, 10);
 		add(box);
 		centerOn(box);
-		box.SetClick(new ClickListener() {
+		box.S(new ClickListener() {
 
 			@Override
 			public void UpClick(LComponent comp, float x, float y) {
@@ -59,52 +45,5 @@ public class LMessageBoxTest extends Screen {
 			}
 		});
 		add(MultiScreenTest.getBackButton(this,0));
-		
-
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
 	}
 }

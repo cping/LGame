@@ -1,7 +1,6 @@
 package org.test;
 
-import loon.LTransition;
-import loon.Screen;
+import loon.Stage;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseEffect;
 import loon.action.sprite.effect.FadeDotEffect;
@@ -9,29 +8,16 @@ import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
-import loon.opengl.GLEx;
 import loon.utils.Array;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
 
-public class EffectTest extends Screen {
-
-	RealtimeProcess process;
-	
-	Array<BaseEffect> effects = new Array<BaseEffect>();
-
-	public LTransition onTransition() {
-		return LTransition.newEmpty();
-	}
+public class EffectTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-
-	}
-
-	@Override
-	public void onLoad() {
+	public void create() {
+		
+		final Array<BaseEffect> effects = new Array<BaseEffect>();
 
 		// 设置背景图片
 		setBackground("back1.png");
@@ -41,7 +27,7 @@ public class EffectTest extends Screen {
 		effects.add(new FadeOvalEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeTileEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeSpiralEffect(ISprite.TYPE_FADE_IN, LColor.black));
-		process = new RealtimeProcess() {
+		RealtimeProcess process = new RealtimeProcess() {
 
 			@Override
 			public void run(LTimerContext time) {
@@ -65,52 +51,9 @@ public class EffectTest extends Screen {
 		// 加入一个单独的游戏进程
 		addProcess(process);
 		
+		//Screen关闭时注销进程,注销effct集合
+		putReleases(process,effects);
+		
 		add(MultiScreenTest.getBackButton(this,0));
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-		removeProcess(process);
-		effects.clear();
 	}
 }

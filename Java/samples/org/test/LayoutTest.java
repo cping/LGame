@@ -1,26 +1,17 @@
 package org.test;
 
-import loon.Screen;
+import loon.Stage;
 import loon.component.LClickButton;
 import loon.component.layout.HorizontalLayout;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.VerticalLayout;
-import loon.event.GameTouch;
 import loon.event.LTouchArea;
-import loon.opengl.GLEx;
-import loon.utils.timer.LTimerContext;
 
-public class LayoutTest extends Screen {
-
-	private LayoutManager layout;
+public class LayoutTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
+	public void create() {
 
-	}
-
-	@Override
-	public void onLoad() {
 		// 产生四个按钮(按钮大小和位置会根据布局改变，所以此处无需设置按钮大小)
 		final LClickButton test1 = LClickButton.make("test1");
 		final LClickButton test2 = LClickButton.make("test2");
@@ -35,13 +26,15 @@ public class LayoutTest extends Screen {
 		// 单独设置下方间隔
 		getRootConstraints().setPaddingBottom(100);
 
-		//如果不需要自动改变对象大小，可以设置禁止改变布局大小(不过，那样就请自行设定组件大小比率)
-		//layout.setChangeSize(false);
+		// 如果不需要自动改变对象大小，可以设置禁止改变布局大小(不过，那样就请自行设定组件大小比率)
+		// layout.setChangeSize(false);
 		// 执行布局,布局器为水平方式
 		packLayout(HorizontalLayout.at());
 
 		// 构建一个触屏监听
 		registerTouchArea(new LTouchArea() {
+
+			LayoutManager layout;
 
 			@Override
 			public void onAreaTouched(Event e, float touchX, float touchY) {
@@ -54,7 +47,7 @@ public class LayoutTest extends Screen {
 					} else {
 						layout = new HorizontalLayout();
 					}
-					//layout.setChangeSize(false);
+					// layout.setChangeSize(false);
 					// 执行布局(若直接packLayout,则会执行全部组件,那么back按钮也会被自动布局)
 					layoutElements(layout, test1, test2, test3, test4);
 				}
@@ -66,53 +59,8 @@ public class LayoutTest extends Screen {
 				return true;
 			}
 		});
-		
-		add(MultiScreenTest.getBackButton(this,0));
-	}
 
-	@Override
-	public void alter(LTimerContext timer) {
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void close() {
-
+		add(MultiScreenTest.getBackButton(this, 0));
 	}
 
 }

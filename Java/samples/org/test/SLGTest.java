@@ -159,15 +159,7 @@ public class SLGTest extends Stage {
 		 * @return
 		 */
 		public int getLeft(int x) {
-			int result = -1;
-			// 如果x点位置大于 size / 2，则在左侧显示菜单
-			if (x > this.size / 2) {
-				result = 0;
-			} else {
-				// 在右侧显示菜单
-				result = this.size - width - 1;
-			}
-			return result;
+			return x;
 		}
 
 		/**
@@ -392,7 +384,7 @@ public class SLGTest extends Stage {
 
 			@Override
 			public void on(float x, float y) {
-					enter(SysKey.ENTER);
+				enter(SysKey.ENTER);
 			}
 		});
 
@@ -986,7 +978,7 @@ public class SLGTest extends Stage {
 			}
 		}
 		// 菜单
-		if (true) {
+		if (menu.visible) {
 			g.setAlpha(0.50f);
 
 			g.draw(listImages[0], menu.getLeft(curTileX) * tile, 0);

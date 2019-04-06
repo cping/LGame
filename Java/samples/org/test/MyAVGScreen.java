@@ -9,7 +9,6 @@ import loon.component.LMessage;
 import loon.component.LPaper;
 import loon.component.LSelect;
 import loon.event.GameTouch;
-import loon.font.BMFont;
 import loon.opengl.GLEx;
 
 public class MyAVGScreen extends AVGScreen {

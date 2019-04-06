@@ -100,6 +100,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	protected Hexagon[][] hexagons;
 
+	private Field2D field2dMap;
+
 	private int[] position = new int[2];
 
 	private int[][] positions = new int[6][2];
@@ -123,6 +125,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	private boolean dirty;
 
 	private TArray<Animation> animations = new TArray<Animation>();
+
+	private IFont displayFont;
 
 	private Vector2f offset = new Vector2f(0, 0);
 
@@ -964,8 +968,6 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return getRect().getHeight();
 	}
 
-	private Field2D field2dMap;
-
 	private void setFieldMap(int[][] maps) {
 		if (origin != null) {
 			if (field2dMap == null) {
@@ -1459,40 +1461,6 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return active;
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
-	@Override
-	public void close() {
-		roll = false;
-		visible = false;
-		playAnimation = false;
-		animations.clear();
-		if (texturePack != null) {
-			texturePack.close();
-		}
-		if (textureCaches != null) {
-			for (int i = 0; i < textureCaches.size(); i++) {
-				Entry entry = textureCaches.getEntry(i);
-				if (entry != null) {
-					LTexture texture = (LTexture) entry.getValue();
-					if (texture != null) {
-						texture.close();
-						texture = null;
-					}
-				}
-			}
-		}
-		if (_mapSprites != null) {
-			_mapSprites.close();
-		}
-		if (_background != null) {
-			_background.close();
-		}
-		setState(State.DISPOSED);
-	}
-
 	public HexagonMap removeTile(int id) {
 		for (TileImpl tile : tileBinds) {
 			if (tile.idx == id) {
@@ -1647,7 +1615,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (!visible) {
 			return;
 		}
-		int step = 0;
+		if (_background != null) {
+			g.draw(_background, offsetX, offsetY);
+		}
 		if (!active || texturePack == null) {
 			completed();
 			return;
@@ -1655,6 +1625,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		IFont tmpFont = g.getFont();
 		try {
 			if (allowDisplayFindPath || allowDisplayClicked || allowDisplayPosition) {
+				int step = 0;
 				for (TileVisit<TileImpl> visit : allTiles(getViewRect())) {
 					Hexagon hexagon = coordinate(visit.position);
 					if (getViewRect().intersects(hexagon.getFrameRect())) {
@@ -1822,13 +1793,6 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public String toString() {
-		return field2dMap == null ? super.toString() : field2dMap.toString();
-	}
-
-	private IFont displayFont;
-
-	@Override
 	public HexagonMap setFont(IFont font) {
 		this.displayFont = font;
 		return this;
@@ -1849,4 +1813,44 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public LColor getFontColor() {
 		return fontColor.cpy();
 	}
+
+	@Override
+	public String toString() {
+		return field2dMap == null ? super.toString() : field2dMap.toString();
+	}
+
+	public boolean isClosed() {
+		return isDisposed();
+	}
+
+	@Override
+	public void close() {
+		roll = false;
+		visible = false;
+		playAnimation = false;
+		animations.clear();
+		if (texturePack != null) {
+			texturePack.close();
+		}
+		if (textureCaches != null) {
+			for (int i = 0; i < textureCaches.size(); i++) {
+				Entry entry = textureCaches.getEntry(i);
+				if (entry != null) {
+					LTexture texture = (LTexture) entry.getValue();
+					if (texture != null) {
+						texture.close();
+						texture = null;
+					}
+				}
+			}
+		}
+		if (_mapSprites != null) {
+			_mapSprites.close();
+		}
+		if (_background != null) {
+			_background.close();
+		}
+		setState(State.DISPOSED);
+	}
+
 }

@@ -71,7 +71,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public DrawListener<TileMap> listener;
 
-	private LTexturePack imgPack;
+	private LTexturePack texturePack;
 
 	private TArray<TileImpl> arrays = new TArray<TileImpl>(10);
 
@@ -185,7 +185,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		} else {
 			this.offset = field.getOffset();
 		}
-		this.imgPack = new LTexturePack();
+		this.texturePack = new LTexturePack();
 		this.format = format;
 		this.lastOffsetX = -1;
 		this.lastOffsetY = -1;
@@ -194,7 +194,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.visible = true;
 		this._mapSprites = new Sprites("TileMapSprites", screen == null ? LSystem.getProcess().getScreen() : screen,
 				maxWidth, maxHeight);
-		this.imgPack.setFormat(format);
+		this.texturePack.setFormat(format);
 	}
 
 	public static TileMap loadCharsMap(String resName, int tileWidth, int tileHeight) {
@@ -202,12 +202,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setImagePackAuto(String fileName, int tileWidth, int tileHeight) {
-		if (imgPack != null) {
-			imgPack.close();
-			imgPack = null;
+		if (texturePack != null) {
+			texturePack.close();
+			texturePack = null;
 		}
-		imgPack = new LTexturePack(fileName, LTexturePackClip.getTextureSplit(fileName, tileWidth, tileHeight));
-		imgPack.packed(format);
+		texturePack = new LTexturePack(fileName, LTexturePackClip.getTextureSplit(fileName, tileWidth, tileHeight));
+		texturePack.packed(format);
 		return this;
 	}
 
@@ -216,26 +216,26 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setImagePack(String fileName, TArray<LTexturePackClip> clips) {
-		if (imgPack != null) {
-			imgPack.close();
-			imgPack = null;
+		if (texturePack != null) {
+			texturePack.close();
+			texturePack = null;
 		}
 		this.active = false;
 		this.dirty = true;
-		imgPack = new LTexturePack(fileName, clips);
-		imgPack.packed(format);
+		texturePack = new LTexturePack(fileName, clips);
+		texturePack.packed(format);
 		return this;
 	}
 
 	public TileMap setImagePack(String file) {
-		if (imgPack != null) {
-			imgPack.close();
-			imgPack = null;
+		if (texturePack != null) {
+			texturePack.close();
+			texturePack = null;
 		}
 		this.active = false;
 		this.dirty = true;
-		imgPack = new LTexturePack(file);
-		imgPack.packed(format);
+		texturePack = new LTexturePack(file);
+		texturePack.packed(format);
 		return this;
 	}
 
@@ -285,7 +285,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, Image img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = imgPack.putImage(img);
+			tile.imgId = texturePack.putImage(img);
 			tile.attribute = attribute;
 			arrays.add(tile);
 			dirty = true;
@@ -302,7 +302,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, LTexture img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = imgPack.putImage(img);
+			tile.imgId = texturePack.putImage(img);
 			tile.attribute = attribute;
 			arrays.add(tile);
 			dirty = true;
@@ -319,7 +319,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, String res, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = imgPack.putImage(res);
+			tile.imgId = texturePack.putImage(res);
 			tile.attribute = attribute;
 			arrays.add(tile);
 			dirty = true;
@@ -373,11 +373,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap completed() {
-		if (imgPack != null) {
-			if (!imgPack.isPacked()) {
-				imgPack.packed(format);
+		if (texturePack != null) {
+			if (!texturePack.isPacked()) {
+				texturePack.packed(format);
 			}
-			int[] list = imgPack.getIdList();
+			int[] list = texturePack.getIdList();
 			active = true;
 			dirty = true;
 			for (int i = 0, size = list.length; i < size; i++) {
@@ -450,13 +450,13 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				g.draw(_background, offsetX, offsetY);
 			}
 		}
-		if (!active || imgPack == null) {
+		if (!active || texturePack == null) {
 			completed();
 			return;
 		}
-		dirty = dirty || !imgPack.existCache();
+		dirty = dirty || !texturePack.existCache();
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
-			imgPack.postCache();
+			texturePack.postCache();
 			if (playAnimation) {
 				int[][] maps = field.getMap();
 				for (int i = firstTileX; i < lastTileX; i++) {
@@ -489,7 +489,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 				throw LSystem.runThrow("Not to add any tiles !");
 			}
 
-			imgPack.glBegin();
+			texturePack.glBegin();
 
 			firstTileX = field.pixelsToTilesWidth(-offsetX);
 			firstTileY = field.pixelsToTilesHeight(-offsetY);
@@ -522,13 +522,13 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 													field.getTileHeight(), baseColor);
 										}
 									} else {
-										imgPack.draw(tile.imgId, field.tilesToWidthPixels(i) + offsetX,
+										texturePack.draw(tile.imgId, field.tilesToWidthPixels(i) + offsetX,
 												field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
 												field.getTileHeight(), baseColor);
 									}
 								}
 							} else if (tile.idx == id) {
-								imgPack.draw(tile.imgId, field.tilesToWidthPixels(i) + offsetX,
+								texturePack.draw(tile.imgId, field.tilesToWidthPixels(i) + offsetX,
 										field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
 										field.getTileHeight(), baseColor);
 							}
@@ -537,8 +537,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 					}
 				}
 			}
-			imgPack.glEnd();
-			imgPack.saveCache();
+			texturePack.glEnd();
+			texturePack.saveCache();
 			lastOffsetX = offsetX;
 			lastOffsetY = offsetY;
 			dirty = false;
@@ -870,7 +870,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public LTexture getBitmap() {
-		return imgPack.getTexture();
+		return texturePack.getTexture();
 	}
 
 	@Override
@@ -1151,8 +1151,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		playAnimation = false;
 		roll = false;
 		animations.clear();
-		if (imgPack != null) {
-			imgPack.close();
+		if (texturePack != null) {
+			texturePack.close();
 		}
 		if (_mapSprites != null) {
 			_mapSprites.close();

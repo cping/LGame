@@ -45,7 +45,7 @@ public class MultiScreenTest extends Screen {
 		LClickButton back = new LClickButton("Back", x, y, 80, 50);
 		screen.addTouchLimit(back);
 		back.setLayer(130);
-		back.SetClick(new ClickListener() {
+		back.S(new ClickListener() {
 
 			@Override
 			public void UpClick(LComponent comp, float x, float y) {
@@ -152,7 +152,7 @@ public class MultiScreenTest extends Screen {
 
 	final String[] page1 = { "Screen", "Slider", "Alert", "Animation", "FrameLoop", "Script", "SText", "Light",
 			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural","MenuSelect","CheckBox","TextTree","SLG","I18N","Buttle"
-			,"HexagonMap"};
+			,"HexagonMap","Label"};
 
 	static BMFont info_font;
 
@@ -255,6 +255,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new I18NTest());
 			addScreen(page1[index++], new ButtleTest());
 			addScreen(page1[index++], new HexagonMapTest());
+			addScreen(page1[index++], new LabelTest());
 		}
 
 		// 默认按钮大小为100x25
@@ -299,7 +300,7 @@ public class MultiScreenTest extends Screen {
 		// 设定一个特殊状态为false
 		nextClick.setStatus(LObject.FALSE);
 		// 设置监听
-		nextClick.SetClick(clickListener);
+		nextClick.S(clickListener);
 		// 初始透明度0
 		nextClick.setAlpha(0);
 		nextClick.setFont(info_font);

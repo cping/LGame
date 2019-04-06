@@ -11,19 +11,20 @@ public class NaturalTest extends Stage {
 
 	@Override
 	public void create() {
-		setBackground("assets/back1.png");
-		// 樱花
-		add(NaturalEffect.getPetalEffect());
+		//设置背景
+		setBackground("assets/back1.png")
+		// 添加自然效果樱花
+		.add(NaturalEffect.getPetalEffect())
 		// 雪
-		add(NaturalEffect.getSnowEffect());
+		.add(NaturalEffect.getSnowEffect())
 		// 雨
-		add(NaturalEffect.getRainEffect());
+		.add(NaturalEffect.getRainEffect())
 		// 雷(全屏随机)
-		add(NaturalEffect.getThunderEffect());
+		.add(NaturalEffect.getThunderEffect())
 		// 在屏幕中心添加一个label
-		centerOn(addLabel("天打雷劈屠真龙", 0, 0));
+		.centerOn(addLabel("天打雷劈屠真龙", 0, 0))
 		// 监听屏幕
-		down(new Touched() {
+		.down(new Touched() {
 
 			@Override
 			public void on(float x, float y) {
@@ -31,8 +32,8 @@ public class NaturalTest extends Stage {
 				add(LightningEffect.addBolt(Vector2f.at(x, y), Vector2f.at(getHalfWidth(), getHalfHeight()),
 						LColor.white));
 			}
-		});
-		add(MultiScreenTest.getBackButton(this, 1));
+		})
+		.add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 }

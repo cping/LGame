@@ -23,7 +23,6 @@ package org.test;
 import loon.LSystem;
 import loon.Stage;
 import loon.canvas.LColor;
-import loon.component.DefUI;
 import loon.component.LMenuSelect;
 import loon.component.LToast;
 import loon.component.LToast.Style;
