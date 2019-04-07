@@ -243,6 +243,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	private void renderSub(GLEx g, float offsetX, float offsetY, float x, float y) {
 		if (_dirty || _lines == null) {
 			pack();
+			return;
 		}
 		for (int i = 0; i < _lines.size; i++) {
 			String text = _lines.get(i);

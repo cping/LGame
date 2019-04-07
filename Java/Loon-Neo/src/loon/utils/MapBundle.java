@@ -2,17 +2,17 @@ package loon.utils;
 
 public class MapBundle<T> implements Bundle<T> {
 
-	private final ObjectMap<String, T> map;
+	protected final ObjectMap<String, T> _mapBundle;
 
 	public MapBundle() {
-		this.map = new ObjectMap<>(20);
+		this._mapBundle = new ObjectMap<>(20);
 	}
 
 	@Override
 	public void put(String key, T value) {
-		map.put(key, value);
+		_mapBundle.put(key, value);
 	}
-
+	
 	@Override
 	public T get(String key) {
 		return get(key, null);
@@ -20,7 +20,7 @@ public class MapBundle<T> implements Bundle<T> {
 
 	@Override
 	public T get(String key, T defaultValue) {
-		T value = map.get(key);
+		T value = _mapBundle.get(key);
 		if (value != null) {
 			return value;
 		} else {
@@ -35,7 +35,7 @@ public class MapBundle<T> implements Bundle<T> {
 
 	@Override
 	public T remove(String key, T defaultValue) {
-		T value = map.remove(key);
+		T value = _mapBundle.remove(key);
 		if (value != null) {
 			return value;
 		} else {

@@ -26,7 +26,7 @@ package loon.utils;
  */
 public class Calculator {
 
-	private final static int ADD = 0, SUBTRACT = 1, MULTIPLY = 2, DIVIDE = 3;
+	private final static int ADD = 0, SUBTRACT = 1, MULTIPLY = 2, DIVIDE = 3, EQUAL = 4;
 
 	private float currentTotal;
 
@@ -34,60 +34,118 @@ public class Calculator {
 		this(0);
 	}
 
-	public Calculator(float number) {
-		this.currentTotal = number;
+	public Calculator(Object num) {
+		this(convertObjectToFloat(num));
+	}
+
+	public Calculator(float num) {
+		this.currentTotal = num;
+	}
+
+	protected static final float convertObjectToFloat(Object num) {
+		if (num == null) {
+			return -1f;
+		}
+		float value;
+		if (num instanceof Number) {
+			value = ((Number) num).floatValue();
+		} else {
+			String mes = num.toString();
+			if (MathUtils.isNan(mes)) {
+				value = Float.valueOf(mes);
+			} else {
+				value = -1f;
+			}
+		}
+		return value;
+	}
+
+	public Calculator add(Object number) {
+		return add(convertObjectToFloat(number));
+	}
+
+	public Calculator sub(Object number) {
+		return sub(convertObjectToFloat(number));
+	}
+
+	public Calculator mul(Object number) {
+		return mul(convertObjectToFloat(number));
+	}
+
+	public Calculator div(Object number) {
+		return div(convertObjectToFloat(number));
+	}
+
+	public Calculator equal(Object number) {
+		return div(convertObjectToFloat(number));
 	}
 
 	public Calculator add(String number) {
-		return convertToDouble(number, ADD);
+		return convertToFloat(number, ADD);
 	}
 
 	public Calculator sub(String number) {
-		return convertToDouble(number, SUBTRACT);
+		return convertToFloat(number, SUBTRACT);
 	}
 
 	public Calculator mul(String number) {
-		return convertToDouble(number, MULTIPLY);
+		return convertToFloat(number, MULTIPLY);
 	}
 
 	public Calculator div(String number) {
-		return convertToDouble(number, DIVIDE);
+		return convertToFloat(number, DIVIDE);
 	}
 
-	private Calculator convertToDouble(String number, int operator) {
-		float dblNumber = Float.valueOf(number);
-		switch (operator) {
-		case ADD:
-			return add(dblNumber);
-		case SUBTRACT:
-			return sub(dblNumber);
-		case MULTIPLY:
-			return mul(dblNumber);
-		case DIVIDE:
-			return div(dblNumber);
-		default:
-			break;
+	private Calculator convertToFloat(String number, int operator) {
+		if (MathUtils.isNan(number)) {
+			float dblNumber = Float.valueOf(number);
+			switch (operator) {
+			case ADD:
+				return add(dblNumber);
+			case SUBTRACT:
+				return sub(dblNumber);
+			case MULTIPLY:
+				return mul(dblNumber);
+			case DIVIDE:
+				return div(dblNumber);
+			case EQUAL:
+				return equal(dblNumber);
+			default:
+				break;
+			}
 		}
 		return this;
 	}
 
 	public Calculator add(float number) {
-		currentTotal += number % 1.0 == 0 ? (int) number : number;
+		currentTotal += number % 1f == 0 ? (int) number : number;
 		return this;
 	}
 
 	public Calculator sub(float number) {
-		currentTotal -= number % 1.0 == 0 ? (int) number : number;
+		currentTotal -= number % 1f == 0 ? (int) number : number;
 		return this;
 	}
 
 	public Calculator mul(float number) {
-		currentTotal *= number % 1.0 == 0 ? (int) number : number;
+		currentTotal *= number % 1f == 0 ? (int) number : number;
 		return this;
 	}
 
 	public Calculator div(float number) {
-		currentTotal /= number % 1.0 == 0 ? (int) number : number;
+		currentTotal /= number % 1f == 0 ? (int) number : number;
+		return this;
+	}
+
+	public Calculator equal(float number) {
+		currentTotal = number;
+		return this;
+	}
+
+	public Calculator equal(String number) {
+		if (MathUtils.isNan(number)) {
+			currentTotal = Float.valueOf(number);
+		}
 		return this;
 	}
 
@@ -102,11 +160,6 @@ public class Calculator {
 	@Override
 	public String toString() {
 		return currentTotal % 1f == 0 ? Integer.toString(getInt()) : String.valueOf(currentTotal);
-	}
-
-	public Calculator equal(String number) {
-		currentTotal = Float.valueOf(number);
-		return this;
 	}
 
 }

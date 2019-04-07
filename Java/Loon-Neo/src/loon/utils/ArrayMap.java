@@ -21,13 +21,10 @@
  */
 package loon.utils;
 
-
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
-public class ArrayMap implements IArray{
-
-	static final private float LOAD_FACTOR = 0.75f;
+public class ArrayMap implements IArray {
 
 	private int threshold;
 
@@ -37,28 +34,39 @@ public class ArrayMap implements IArray{
 
 	private int size = 0;
 
+	private float loadFactor;
+
+	private int removed = 0;
+
 	public ArrayMap() {
 		this(CollectionUtils.INITIAL_CAPACITY);
 	}
-	
-	public ArrayMap(ArrayMap map){
+
+	public ArrayMap(int initialCapacity) {
+		this(initialCapacity, 0.75f);
+	}
+
+	public ArrayMap(ArrayMap map) {
 		this();
 		putAll(map);
 	}
 
-	public ArrayMap(int initialCapacity) {
+	public ArrayMap(int initialCapacity, float factor) {
 		if (initialCapacity <= 0) {
 			initialCapacity = CollectionUtils.INITIAL_CAPACITY;
 		}
-		keyTables = new Entry[initialCapacity];
-		valueTables = new Entry[initialCapacity];
-		threshold = (int) (initialCapacity * LOAD_FACTOR);
+		this.keyTables = new Entry[initialCapacity];
+		this.valueTables = new Entry[initialCapacity];
+		this.threshold = (int) (initialCapacity * factor);
+		this.loadFactor = factor;
 	}
 
+	@Override
 	public final int size() {
 		return size;
 	}
 
+	@Override
 	public final boolean isEmpty() {
 		return size == 0;
 	}
@@ -67,10 +75,48 @@ public class ArrayMap implements IArray{
 		return indexOf(value) >= 0;
 	}
 
+	protected final int indexOf(final Entry entry) {
+		if (entry != null) {
+			Entry value;
+			int start = 0;
+			int len = size - 1;
+			for (; start <= len;) {
+				int mid = start + (len - start) / 2;
+				value = valueTables[mid];
+				if (entry.index < value.index) {
+					len = mid - 1;
+				} else if (entry.index > value.index) {
+					start = mid + 1;
+				} else {
+					if (entry == value) {
+						return mid;
+					} else {
+						break;
+					}
+				}
+			}
+			for (int i = 0; i < size; i++) {
+				value = valueTables[i];
+				if (value == entry) {
+					return i;
+				}
+			}
+		} else {
+			for (int i = 0; i < size; i++) {
+				if (valueTables[i] == null) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
 	public final int indexOf(Object value) {
 		if (value != null) {
+			Object data = null;
 			for (int i = 0; i < size; i++) {
-				if (value.equals(valueTables[i].value)) {
+				data = valueTables[i].value;
+				if (data == value || data.equals(value)) {
 					return i;
 				}
 			}
@@ -152,8 +198,7 @@ public class ArrayMap implements IArray{
 
 	public final Entry getEntry(final int index) {
 		if (index >= size) {
-			throw new IndexOutOfBoundsException("Index:" + index + ", Size:"
-					+ size);
+			throw new IndexOutOfBoundsException("Index:" + index + ", Size:" + size);
 		}
 		return valueTables[index];
 	}
@@ -186,7 +231,15 @@ public class ArrayMap implements IArray{
 		}
 		ensureCapacity();
 		index = (hashCode & 0x7FFFFFFF) % keyTables.length;
-		Entry e = new Entry(hashCode, key, value, keyTables[index]);
+		Entry e = null;
+		if (removed < 0) {
+			removed = 0;
+		}
+		if (removed == 0) {
+			e = new Entry(size, hashCode, key, value, keyTables[index]);
+		} else {
+			e = new Entry(removed + size, hashCode, key, value, keyTables[index]);
+		}
 		keyTables[index] = e;
 		valueTables[size++] = e;
 		return null;
@@ -200,7 +253,8 @@ public class ArrayMap implements IArray{
 		Entry e = removeMap(key);
 		if (e != null) {
 			Object value = e.value;
-			removeList(indexOf(e));
+			int index = indexOf(e);
+			removeList(index);
 			e.clear();
 			return value;
 		}
@@ -211,10 +265,11 @@ public class ArrayMap implements IArray{
 		Entry e = removeList(index);
 		Object value = e.value;
 		removeMap(e.key);
-		e.value = null;
+		e.clear();
 		return value;
 	}
 
+	@Override
 	public final void clear() {
 		int length = keyTables.length;
 		for (int i = 0; i < length; i++) {
@@ -222,6 +277,11 @@ public class ArrayMap implements IArray{
 			valueTables[i] = null;
 		}
 		size = 0;
+		removed = 0;
+	}
+
+	public int getRemoved() {
+		return removed;
 	}
 
 	public Entry[] toEntrys() {
@@ -245,10 +305,12 @@ public class ArrayMap implements IArray{
 		return array;
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 
+	@Override
 	public final boolean equals(Object o) {
 		if (!(o instanceof ArrayMap)) {
 			return false;
@@ -265,6 +327,7 @@ public class ArrayMap implements IArray{
 		return true;
 	}
 
+	@Override
 	public Object clone() {
 		ArrayMap copy = new ArrayMap();
 		copy.threshold = threshold;
@@ -274,19 +337,9 @@ public class ArrayMap implements IArray{
 		return copy;
 	}
 
-	private final int indexOf(final Entry entry) {
-		for (int i = 0; i < size; i++) {
-			if (valueTables[i] == entry) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	private final Entry removeMap(Object key) {
 		int hashCode = 0;
 		int index = 0;
-
 		if (key != null) {
 			hashCode = key.hashCode();
 			index = (hashCode & 0x7FFFFFFF) % keyTables.length;
@@ -319,10 +372,10 @@ public class ArrayMap implements IArray{
 		Entry e = valueTables[index];
 		int numMoved = size - index - 1;
 		if (numMoved > 0) {
-			System.arraycopy(valueTables, index + 1, valueTables, index,
-					numMoved);
+			System.arraycopy(valueTables, index + 1, valueTables, index, numMoved);
 		}
 		valueTables[--size] = null;
+		removed++;
 		return e;
 	}
 
@@ -332,7 +385,7 @@ public class ArrayMap implements IArray{
 			int newCapacity = oldTable.length * 2 + 1;
 			Entry[] newMapTable = new Entry[newCapacity];
 			Entry[] newListTable = new Entry[newCapacity];
-			threshold = (int) (newCapacity * LOAD_FACTOR);
+			threshold = (int) (newCapacity * loadFactor);
 			System.arraycopy(oldTable, 0, newListTable, 0, size);
 			for (int i = 0; i < size; i++) {
 				Entry old = oldTable[i];
@@ -341,9 +394,11 @@ public class ArrayMap implements IArray{
 				old = old.next;
 				e.next = newMapTable[index];
 				newMapTable[index] = e;
+				newListTable[i].index = i;
 			}
 			keyTables = newMapTable;
 			valueTables = newListTable;
+			removed = 0;
 		}
 	}
 
@@ -389,6 +444,7 @@ public class ArrayMap implements IArray{
 		size = newSize;
 	}
 
+	@Override
 	public String toString() {
 		return toString(',');
 	}
@@ -398,8 +454,7 @@ public class ArrayMap implements IArray{
 			return "[]";
 		}
 		Entry[] values = this.valueTables;
-		StringBuilder buffer = new StringBuilder(
-				CollectionUtils.INITIAL_CAPACITY);
+		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
 		buffer.append('[');
 		for (int i = 0; i < size; i++) {
 			Object key = values[i].key;
@@ -417,17 +472,22 @@ public class ArrayMap implements IArray{
 
 	public class Entry {
 
-		int hashCode;
+		protected int index;
 
-		Object key;
+		protected int hashCode;
 
-		Object value;
+		protected Object key;
 
-		Entry next;
+		protected Object value;
 
-		public Entry(final int hashCode, final Object key, final Object value,
-				final Entry next) {
+		protected Entry next;
 
+		protected Entry(final int hashCode, final Object key, final Object value, final Entry next) {
+			this(-1, hashCode, key, value, next);
+		}
+
+		public Entry(final int index, final int hashCode, final Object key, final Object value, final Entry next) {
+			this.index = index;
 			this.hashCode = hashCode;
 			this.key = key;
 			this.value = value;
@@ -448,12 +508,17 @@ public class ArrayMap implements IArray{
 			return oldValue;
 		}
 
-		public void clear() {
+		public int getIndex() {
+			return this.index;
+		}
+
+		protected void clear() {
 			key = null;
 			value = null;
 			next = null;
 		}
 
+		@Override
 		public boolean equals(final Object o) {
 			if (this == o) {
 				return true;
@@ -463,10 +528,12 @@ public class ArrayMap implements IArray{
 					&& (value != null ? value.equals(e.value) : e.value == null);
 		}
 
+		@Override
 		public int hashCode() {
 			return hashCode;
 		}
 
+		@Override
 		public String toString() {
 			return key + "=" + value;
 		}

@@ -17,33 +17,30 @@ package loon.utils;
 
 public class IntHashMap implements IArray {
 
-	Entry[] valueTables;
+	private Entry[] valueTables;
 
-	int _size;
+	private int _size;
 
-	int _threshold;
+	private int _threshold;
 
-	int _modCount;
+	private int _modCount;
 
-	final float _loadFactor;
+	private final float _loadFactor;
 
 	public IntHashMap(int initialCapacity, float _loadFactor) {
 		if (initialCapacity < 0) {
-			throw new IllegalArgumentException("Illegal initial capacity: "
-					+ initialCapacity);
+			throw new IllegalArgumentException("Illegal initial capacity: " + initialCapacity);
 		}
 		if (initialCapacity > 1 << 30) {
 			initialCapacity = 1 << 30;
 		}
 		if (_loadFactor <= 0 || Float.isNaN(_loadFactor)) {
-			throw new IllegalArgumentException("Illegal load factor: "
-					+ _loadFactor);
+			throw new IllegalArgumentException("Illegal load factor: " + _loadFactor);
 		}
 		int capacity = 1;
 		while (capacity < initialCapacity) {
 			capacity <<= 1;
 		}
-
 		this._loadFactor = _loadFactor;
 		_threshold = (int) (capacity * _loadFactor);
 		valueTables = new Entry[capacity];
@@ -64,10 +61,12 @@ public class IntHashMap implements IArray {
 		return h & (length - 1);
 	}
 
+	@Override
 	public int size() {
 		return _size;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return _size == 0;
 	}
@@ -97,6 +96,7 @@ public class IntHashMap implements IArray {
 		}
 		return false;
 	}
+
 
 	public Entry getEntry(int key) {
 		int i = indexFor(key, valueTables.length);
@@ -259,6 +259,7 @@ public class IntHashMap implements IArray {
 		return e;
 	}
 
+	@Override
 	public void clear() {
 		_modCount++;
 		Entry tab[] = valueTables;
@@ -296,6 +297,31 @@ public class IntHashMap implements IArray {
 		return false;
 	}
 
+	public int capacity() {
+		return valueTables.length;
+	}
+
+	public float loadFactor() {
+		return _loadFactor;
+	}
+
+	public int getModCount() {
+		return _modCount;
+	}
+
+	void addEntry(int key, Object value, int bucketIndex) {
+		valueTables[bucketIndex] = new Entry(key, value, valueTables[bucketIndex]);
+		if (_size++ >= _threshold) {
+			resize(2 * valueTables.length);
+		}
+	}
+
+	void createEntry(int key, Object value, int bucketIndex) {
+		valueTables[bucketIndex] = new Entry(key, value, valueTables[bucketIndex]);
+		_size++;
+	}
+
+	@Override
 	public IntHashMap clone() {
 		IntHashMap result = new IntHashMap();
 		result.valueTables = new Entry[valueTables.length];
@@ -359,28 +385,6 @@ public class IntHashMap implements IArray {
 		public String toString() {
 			return getKey() + "=" + getValue();
 		}
-	}
-
-	void addEntry(int key, Object value, int bucketIndex) {
-		valueTables[bucketIndex] = new Entry(key, value,
-				valueTables[bucketIndex]);
-		if (_size++ >= _threshold) {
-			resize(2 * valueTables.length);
-		}
-	}
-
-	void createEntry(int key, Object value, int bucketIndex) {
-		valueTables[bucketIndex] = new Entry(key, value,
-				valueTables[bucketIndex]);
-		_size++;
-	}
-
-	public int capacity() {
-		return valueTables.length;
-	}
-
-	public float loadFactor() {
-		return _loadFactor;
 	}
 
 }

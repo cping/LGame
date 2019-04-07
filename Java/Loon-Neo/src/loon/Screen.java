@@ -81,11 +81,12 @@ import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayMap;
-import loon.utils.Bundle;
+import loon.utils.Calculator;
 import loon.utils.CollectionUtils;
 import loon.utils.ConfigReader;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
+import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
@@ -155,7 +156,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private CollisionManager _collisionManager;
 
 	private boolean _collisionClosed;
-	
+
 	private ArrayMap _keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 
 	private Updateable _closeUpdate;
@@ -3857,11 +3858,79 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @return
 	 */
-	public Bundle<?> getBundle() {
+	public ObjectBundle getBundle() {
 		if (LSystem.getProcess() != null) {
 			return LSystem.getProcess().getBundle();
 		}
-		return new EmptyBundle();
+		return new ObjectBundle();
+	}
+
+	/**
+	 * 添加Bundle对象
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public ObjectBundle addBundle(String key, Object value) {
+		if (LSystem.getProcess() != null) {
+			LSystem.getProcess().addBundle(key, value);
+		}
+		return new ObjectBundle();
+	}
+
+	/**
+	 * Bundle中指定数据做加法
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public ObjectBundle incBundle(String key, Object value) {
+		return getBundle().inc(key, value);
+	}
+
+	/**
+	 * Bundle中指定数据做减法
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public ObjectBundle subBundle(String key, Object value) {
+		return getBundle().sub(key, value);
+	}
+
+	/**
+	 * Bundle中指定数据做乘法
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public ObjectBundle mulBundle(String key, Object value) {
+		return getBundle().mul(key, value);
+	}
+
+	/**
+	 * Bundle中指定数据做除法
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public ObjectBundle divBundle(String key, Object value) {
+		return getBundle().div(key, value);
+	}
+
+	/**
+	 * 获得一个针对Bundle中指定数据的四则运算器
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Calculator calcBundle(String key) {
+		return getBundle().calc(key);
 	}
 
 	/**

@@ -33,10 +33,9 @@ import loon.event.Updateable;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
-import loon.utils.Bundle;
 import loon.utils.ListMap;
-import loon.utils.MapBundle;
 import loon.utils.MathUtils;
+import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -72,7 +71,7 @@ public class LProcess {
 
 	private LogDisplay _logDisplay;
 
-	private final Bundle<Object> _bundle;
+	private final ObjectBundle _bundle;
 
 	private final SysInputFactory _currentInput;
 
@@ -81,7 +80,7 @@ public class LProcess {
 	public LProcess(LGame game) {
 		super();
 		this._game = game;
-		this._bundle = new MapBundle<Object>();
+		this._bundle = new ObjectBundle();
 		this._currentInput = new SysInputFactory(this);
 		this._screens = new TArray<Screen>();
 		this._screenMap = new ListMap<CharSequence, Screen>();
@@ -1005,7 +1004,7 @@ public class LProcess {
 		return this;
 	}
 
-	public Bundle<Object> getBundle() {
+	public ObjectBundle getBundle() {
 		return _bundle;
 	}
 

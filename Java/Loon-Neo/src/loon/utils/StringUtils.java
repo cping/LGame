@@ -205,10 +205,9 @@ final public class StringUtils extends CharUtils {
 		if (message == null || message.length() == 0) {
 			return false;
 		}
-		char[] chars = message.toCharArray();
-		int size = chars.length;
+		int size = message.length();
 		for (int j = 0; j < size; j++) {
-			char letter = chars[j];
+			char letter = message.charAt(j);
 			if (isEnglishAndNumeric(letter)) {
 				return false;
 			}
