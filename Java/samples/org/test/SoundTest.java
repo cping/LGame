@@ -7,7 +7,7 @@ public class SoundTest extends Stage{
 	@Override
 	public void create() {
 		
-		LClickButton click1 = new LClickButton("Sound Ogg", 150, 100, 100, 25){
+		LClickButton click1 = new LClickButton("Sound Ogg", 150, 100, 120, 35){
 			
 			public void downClick(){
 				playSound("assets/shotgun.ogg");
@@ -16,7 +16,7 @@ public class SoundTest extends Stage{
 		add(click1);
 		
 
-		LClickButton click2 = new LClickButton("Sound Wav", 150, 150, 100, 25){
+		LClickButton click2 = new LClickButton("Sound Wav", 150, 150, 120, 35){
 			
 			public void downClick(){
 				playSound("assets/shotgun.wav");

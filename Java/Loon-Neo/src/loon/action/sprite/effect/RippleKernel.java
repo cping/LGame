@@ -27,11 +27,15 @@ import loon.utils.timer.LTimer;
 
 public class RippleKernel {
 
-	LColor color;
-	float x, y;
-	int existTime;
-	int limit;
-	LTimer timer = new LTimer(0);
+	protected LColor color;
+	
+	protected float x, y;
+	
+	protected int existTime;
+	
+	protected int limit;
+	
+	protected LTimer timer = new LTimer(0);
 
 	public RippleKernel(float x, float y) {
 		this(x, y, 25);

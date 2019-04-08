@@ -23,6 +23,7 @@ package loon;
 import loon.action.map.Config;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.ArcEffect;
+import loon.action.sprite.effect.FadeBoardEffect;
 import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
@@ -60,7 +61,7 @@ public class LTransition {
 	 * 常用特效枚举列表
 	 */
 	public enum TransType {
-		FadeIn, FadeOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
+		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
 	}
 
 	/**
@@ -76,6 +77,10 @@ public class LTransition {
 				return TransType.FadeIn;
 			} else if ("fadeout".equals(key)) {
 				return TransType.FadeOut;
+			} else if ("fadeboardin".equals(key)) {
+				return TransType.FadeBoardIn;
+			} else if ("fadeboardout".equals(key)) {
+				return TransType.FadeBoardOut;
 			} else if ("fadeovalin".equals(key)) {
 				return TransType.FadeOvalIn;
 			} else if ("fadeovalout".equals(key)) {
@@ -156,6 +161,12 @@ public class LTransition {
 			break;
 		case FadeOut:
 			transition = newFadeOut(c);
+			break;
+		case FadeBoardIn:
+			transition = newFadeBoardIn(c);
+			break;
+		case FadeBoardOut:
+			transition = newFadeBoardOut(c);
 			break;
 		case FadeOvalIn:
 			transition = newFadeOvalIn(c);
@@ -554,7 +565,7 @@ public class LTransition {
 				public ISprite getSprite() {
 					return fade;
 				}
-				
+
 			});
 			transition.setDisplayGameUI(true);
 			transition.code = 1;
@@ -766,6 +777,73 @@ public class LTransition {
 				@Override
 				public ISprite getSprite() {
 					return fadeswipe;
+				}
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	/**
+	 * 瓦片淡入(从左到右)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static final LTransition newFadeBoardIn(LColor c) {
+		return newFadeBoard(FadeEffect.TYPE_FADE_IN, c);
+	}
+
+	/**
+	 * 瓦片淡出(从左到右)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static final LTransition newFadeBoardOut(LColor c) {
+		return newFadeBoard(FadeEffect.TYPE_FADE_OUT, c);
+	}
+
+	/**
+	 * 瓦片淡出或淡入(从左到右)
+	 * 
+	 * @param type
+	 * @param c
+	 * @return
+	 */
+	public static final LTransition newFadeBoard(final int type, final LColor c) {
+		if (LSystem._base != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final FadeBoardEffect boardEffect = new FadeBoardEffect(type, c);
+
+				@Override
+				public void draw(GLEx g) {
+					boardEffect.createUI(g);
+				}
+
+				@Override
+				public void update(long elapsedTime) {
+					boardEffect.update(elapsedTime);
+				}
+
+				@Override
+				public boolean completed() {
+					return boardEffect.isCompleted();
+				}
+
+				@Override
+				public void close() {
+					boardEffect.close();
+				}
+
+				@Override
+				public ISprite getSprite() {
+					return boardEffect;
 				}
 			});
 			transition.setDisplayGameUI(true);

@@ -32,25 +32,22 @@ import loon.utils.TArray;
 
 public abstract class LayoutManager {
 
-	public final static void elements(final Screen root,
-			final TArray<LObject<?>> objs, int sx, int sy, int bwidth,
+	public final static void elements(final Screen root, final TArray<LObject<?>> objs, int sx, int sy, int bwidth,
 			int bheight, int maxHeight) {
 		final int offsetX = 2;
 		final int offsetY = 2;
-		elements(root, objs, sx, sy, bwidth, bheight, offsetX, offsetY,
-				maxHeight);
+		elements(root, objs, sx, sy, bwidth, bheight, offsetX, offsetY, maxHeight);
 	}
 
-	public final static void elements(final Screen root,
-			final TArray<LObject<?>> objs, int sx, int sy, int bwidth, int bheight) {
+	public final static void elements(final Screen root, final TArray<LObject<?>> objs, int sx, int sy, int bwidth,
+			int bheight) {
 		final int offsetX = 2;
 		final int offsetY = 2;
 		elements(root, objs, sx, sy, bwidth, bheight, offsetX, offsetY,
 				(int) (LSystem.viewSize.height - bheight - offsetY));
 	}
 
-	public final static void elements(final Screen root,
-			final TArray<LObject<?>> objs, int sx, int sy, int bwidth,
+	public final static void elements(final Screen root, final TArray<LObject<?>> objs, int sx, int sy, int bwidth,
 			int bheight, int offsetX, int offsetY, int maxHeight) {
 		int x = sx;
 		int y = sy;
@@ -66,28 +63,23 @@ public abstract class LayoutManager {
 		}
 	}
 
-	public final static TArray<LClickButton> elementButtons(final Screen root,
-			final String[] names, int sx, int sy, int bwidth, int bheight,
-			ClickListener listener, int maxHeight) {
+	public final static TArray<LClickButton> elementButtons(final Screen root, final String[] names, int sx, int sy,
+			int bwidth, int bheight, ClickListener listener, int maxHeight) {
 		final int offsetX = 2;
 		final int offsetY = 2;
-		return elementButtons(root, names, sx, sy, bwidth, bheight, offsetX,
-				offsetY, listener, maxHeight);
+		return elementButtons(root, names, sx, sy, bwidth, bheight, offsetX, offsetY, listener, maxHeight);
 	}
 
-	public final static TArray<LClickButton> elementButtons(final Screen root,
-			final String[] names, int sx, int sy, int bwidth, int bheight,
-			ClickListener listener) {
+	public final static TArray<LClickButton> elementButtons(final Screen root, final String[] names, int sx, int sy,
+			int bwidth, int bheight, ClickListener listener) {
 		final int offsetX = 2;
 		final int offsetY = 2;
-		return elementButtons(root, names, sx, sy, bwidth, bheight, offsetX,
-				offsetY, listener, (int) (LSystem.viewSize.height - bheight
-						- offsetY - sy));
+		return elementButtons(root, names, sx, sy, bwidth, bheight, offsetX, offsetY, listener,
+				(int) (LSystem.viewSize.height - bheight - offsetY - sy));
 	}
 
-	public final static TArray<LClickButton> elementButtons(final Screen root,
-			final String[] names, int sx, int sy, int bwidth, int bheight,
-			int offsetX, int offsetY, ClickListener listener, int maxHeight) {
+	public final static TArray<LClickButton> elementButtons(final Screen root, final String[] names, int sx, int sy,
+			int bwidth, int bheight, int offsetX, int offsetY, ClickListener listener, int maxHeight) {
 		int x = sx;
 		int y = sy;
 		TArray<LClickButton> clicks = new TArray<LClickButton>(names.length);
@@ -117,8 +109,7 @@ public abstract class LayoutManager {
 		return _allow;
 	}
 
-	public final LayoutManager layoutElements(final Screen root,
-			final LComponent... children) {
+	public final LayoutManager layoutElements(final Screen root, final LComponent... children) {
 		int size = children.length;
 		LayoutPort[] ports = new LayoutPort[size];
 		for (int i = 0; i < size; i++) {
@@ -126,9 +117,8 @@ public abstract class LayoutManager {
 		}
 		return layoutElements(root.getLayoutPort(), ports);
 	}
-	
-	public final LayoutManager layoutElements(final LContainer root,
-			final LComponent... children) {
+
+	public final LayoutManager layoutElements(final LContainer root, final LComponent... children) {
 		int size = children.length;
 		LayoutPort[] ports = new LayoutPort[size];
 		for (int i = 0; i < size; i++) {
@@ -137,12 +127,10 @@ public abstract class LayoutManager {
 		layoutElements(root.getLayoutPort(), ports);
 		return this;
 	}
-	
+
 	public abstract LayoutManager layoutElements(LayoutPort root, LayoutPort... children);
 
-	abstract SizeValue calculateConstraintWidth(LayoutPort root,
-			TArray<LayoutPort> children);
+	abstract SizeValue calculateConstraintWidth(LayoutPort root, TArray<LayoutPort> children);
 
-	abstract SizeValue calculateConstraintHeight(LayoutPort root,
-			TArray<LayoutPort> children);
+	abstract SizeValue calculateConstraintHeight(LayoutPort root, TArray<LayoutPort> children);
 }

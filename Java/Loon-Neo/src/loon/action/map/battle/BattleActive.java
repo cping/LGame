@@ -20,9 +20,45 @@
  */
 package loon.action.map.battle;
 
-public enum DamagesState {
-	   Physical,
-       Magical,
-       Cure,
-       Other;
+import loon.event.ActionUpdate;
+
+public class BattleActive implements ActionUpdate {
+
+	private boolean pause = false;
+	private int current = 0;
+	private int limitTime = 0;
+
+	public BattleActive(int time) {
+		this.limitTime = time;
+	}
+
+	public void pause(boolean pause) {
+		this.pause = pause;
+	}
+
+	public int getCurrent() {
+		return current;
+	}
+
+	public void setCurrent(int value) {
+		current = value > limitTime ? limitTime : value < 0 ? 0 : value;
+	}
+	
+	public void reset(){
+		current = 0;
+	}
+
+	@Override
+	public void action(Object a) {
+		if (!pause) {
+			if (current < limitTime) {
+				this.current++;
+			}
+		}
+	}
+
+	@Override
+	public boolean completed() {
+		return current >= limitTime;
+	}
 }

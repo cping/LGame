@@ -37,65 +37,77 @@ public class MovieSprite extends DisplayObject implements IArray {
 
 	@Override
 	protected void addedToStage() {
-		for (DisplayObject object : _childs) {
-			object.addedToStage();
+		for (DisplayObject obj : _childs) {
+			obj.addedToStage();
 		}
 	}
 
 	@Override
 	protected void removedFromStage() {
-		for (DisplayObject object : _childs) {
-			object.removedFromStage();
+		for (DisplayObject obj : _childs) {
+			obj.removedFromStage();
 		}
 	}
 
-	public DisplayObject addChild(DisplayObject object) {
-		if (object.getParent() != null && (object instanceof MovieSprite)) {
-			MovieSprite parent = (MovieSprite) object.getParent();
-			parent.removeChild(object);
+	public DisplayObject addChild(DisplayObject obj) {
+		if (obj == null) {
+			return this;
 		}
-		_childs.add(object);
-		object.setParent(this);
-		object.setState(State.ADDED);
-		return object;
+		if (obj == this) {
+			return this;
+		}
+		if (obj.getParent() != null && (obj instanceof MovieSprite)) {
+			MovieSprite parent = (MovieSprite) obj.getParent();
+			parent.removeChild(obj);
+		}
+		_childs.add(obj);
+		obj.setParent(this);
+		obj.setState(State.ADDED);
+		return obj;
 	}
 
-	public DisplayObject addChildAt(DisplayObject object, int index) {
-		if (object.getParent() != null && (object instanceof MovieSprite)) {
-			MovieSprite parent = (MovieSprite) object.getParent();
-			parent.removeChild(object);
+	public DisplayObject addChildAt(DisplayObject obj, int index) {
+		if (obj == null) {
+			return this;
 		}
-		_childs.insert(index, object);
-		object.setParent(this);
-		object.setState(State.ADDED);
-		return object;
+		if (obj == this) {
+			return this;
+		}
+		if (obj.getParent() != null && (obj instanceof MovieSprite)) {
+			MovieSprite parent = (MovieSprite) obj.getParent();
+			parent.removeChild(obj);
+		}
+		_childs.insert(index, obj);
+		obj.setParent(this);
+		obj.setState(State.ADDED);
+		return obj;
 	}
 
-	public DisplayObject removeChild(DisplayObject object) {
-		if (_childs.remove(object)) {
-			object.setParent(null);
-			object.setState(State.REMOVED);
-			removeActionEvents(object);
+	public DisplayObject removeChild(DisplayObject obj) {
+		if (_childs.remove(obj)) {
+			obj.setParent(null);
+			obj.setState(State.REMOVED);
+			removeActionEvents(obj);
 		}
-		return object;
+		return obj;
 	}
 
 	public DisplayObject removeChildAt(int index) {
 		if (index >= _childs.size) {
 			return null;
 		}
-		DisplayObject object = _childs.get(index);
-		if (object != null) {
-			object.setParent(null);
-			object.setState(State.REMOVED);
-			removeActionEvents(object);
+		DisplayObject obj = _childs.get(index);
+		if (obj != null) {
+			obj.setParent(null);
+			obj.setState(State.REMOVED);
+			removeActionEvents(obj);
 		}
 		_childs.removeIndex(index);
-		return object;
+		return obj;
 	}
 
-	public int getChildIndex(DisplayObject object) {
-		return _childs.indexOf(object);
+	public int getChildIndex(DisplayObject obj) {
+		return _childs.indexOf(obj);
 	}
 
 	public DisplayObject getChildAt(int index) {
@@ -107,9 +119,9 @@ public class MovieSprite extends DisplayObject implements IArray {
 
 	public DisplayObject getChildByName(String name) {
 		if (null != name) {
-			for (DisplayObject object : _childs) {
-				if (null != object.getName() && object.getName().equals(name)) {
-					return object;
+			for (DisplayObject obj : _childs) {
+				if (null != obj.getName() && obj.getName().equals(name)) {
+					return obj;
 				}
 			}
 		}
@@ -139,21 +151,21 @@ public class MovieSprite extends DisplayObject implements IArray {
 
 	@Override
 	protected void enterFrame(long time) {
-		for (DisplayObject object : _childs) {
-			object.enterFrame(time);
+		for (DisplayObject obj : _childs) {
+			obj.enterFrame(time);
 		}
 	}
 
 	protected void onScaleChange(float scaleX, float scaleY) {
-		for (DisplayObject object : _childs) {
-			object.onScaleChange(scaleX, scaleY);
+		for (DisplayObject obj : _childs) {
+			obj.onScaleChange(scaleX, scaleY);
 		}
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		for (DisplayObject object : _childs) {
-			object.enterFrame(elapsedTime);
+		for (DisplayObject obj : _childs) {
+			obj.enterFrame(elapsedTime);
 		}
 	}
 
@@ -164,9 +176,9 @@ public class MovieSprite extends DisplayObject implements IArray {
 
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-		for (DisplayObject object : _childs) {
-			if (object.isVisible()) {
-				object.createUI(g, offsetX, offsetY);
+		for (DisplayObject obj : _childs) {
+			if (obj.isVisible()) {
+				obj.createUI(g, offsetX, offsetY);
 			}
 		}
 	}
@@ -199,10 +211,11 @@ public class MovieSprite extends DisplayObject implements IArray {
 	public boolean isClosed() {
 		return isDisposed();
 	}
+
 	@Override
 	public void close() {
-		for (DisplayObject object : _childs) {
-			object.close();
+		for (DisplayObject obj : _childs) {
+			obj.close();
 		}
 		_childs.clear();
 		setState(State.DISPOSED);

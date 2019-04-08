@@ -34,17 +34,23 @@ import loon.utils.timer.LTimerContext;
  */
 public class MoveControl implements LRelease {
 
-	private int _speed = 8;
+	private int _moveSpeed = 8;
 
-	private int _px = 0, _py = 0, _direction = -1, _lastDirection = -1;
+	private float _offsetX = 0.4f;
+
+	private float _offsetY = 0.4f;
+
+	private int _posX = 0, _posY = 0, _direction = -1, _lastDirection = -1;
 
 	private int _moveX = 0, _moveY = 0, _movingLength = 0;
 
 	private boolean _isMoving = false, _running = false, _freeDir = true, _closed = false;
 
-	private ActionBind _bind;
+	private ActionBind _bindObject;
 
-	private Field2D _map;
+	private Field2D _currentArrayMap;
+
+	private long _delay = 30;
 
 	public MoveControl(ActionBind bind, TileMap map) {
 		this(bind, map.getField());
@@ -55,8 +61,8 @@ public class MoveControl implements LRelease {
 	}
 
 	public MoveControl(ActionBind bind, Field2D field2d) {
-		this._bind = bind;
-		this._map = field2d;
+		this._bindObject = bind;
+		this._currentArrayMap = field2d;
 	}
 
 	public void setDirection(int d) {
@@ -72,7 +78,7 @@ public class MoveControl implements LRelease {
 	}
 
 	public final void call() {
-		move(_bind, _map, _direction);
+		move(_bindObject, _currentArrayMap, _direction);
 	}
 
 	public MoveControl start() {
@@ -91,7 +97,7 @@ public class MoveControl implements LRelease {
 					}
 				}
 			};
-			process.setDelay(30);
+			process.setDelay(_delay);
 			_running = true;
 			RealtimeProcessManager.get().addProcess(process);
 		}
@@ -110,18 +116,18 @@ public class MoveControl implements LRelease {
 		float posY = bind.getY();
 		posX = posX / field2d.getTileWidth();
 		posY = posY / field2d.getTileHeight();
-		if (posX - (int) posX > 0.4) {
+		if ((posX - (int) posX) > _offsetX) {
 			posX = field2d.pixelsToTilesWidth(bind.getX()) + 1;
 		} else {
 			posX = field2d.pixelsToTilesWidth(bind.getX());
 		}
-		if (posY - (int) posY > 0.4) {
+		if ((posY - (int) posY) > _offsetY) {
 			posY = field2d.pixelsToTilesHeight(bind.getY()) + 1;
 		} else {
 			posY = field2d.pixelsToTilesHeight(bind.getY());
 		}
-		this._px = bind.x();
-		this._py = bind.y();
+		this._posX = bind.x();
+		this._posY = bind.y();
 		this._moveX = (int) posX;
 		this._moveY = (int) posY;
 		switch (direction) {
@@ -167,8 +173,8 @@ public class MoveControl implements LRelease {
 			break;
 		}
 		if (!notMove) {
-			bind.setX(_px);
-			bind.setY(_py);
+			bind.setX(_posX);
+			bind.setY(_posY);
 			_lastDirection = _direction;
 		}
 		return notMove;
@@ -184,31 +190,31 @@ public class MoveControl implements LRelease {
 			nextY = 0;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_px -= _speed;
-			if (_px < 0) {
-				_px = 0;
+			_posX -= _moveSpeed;
+			if (_posX < 0) {
+				_posX = 0;
 			}
-			_py -= _speed;
-			if (_py < 0) {
-				_py = 0;
+			_posY -= _moveSpeed;
+			if (_posY < 0) {
+				_posY = 0;
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileWidth()) {
 				_moveX--;
-				_px = _moveX * field2d.getTileWidth();
+				_posX = _moveX * field2d.getTileWidth();
 				_isMoving = false;
 				return true;
 			}
 			if (_movingLength >= field2d.getTileHeight()) {
 				_moveY--;
-				_py = _moveY * field2d.getTileHeight();
+				_posY = _moveY * field2d.getTileHeight();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 		return false;
 	}
@@ -220,21 +226,21 @@ public class MoveControl implements LRelease {
 			nextX = 0;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_px -= _speed;
-			if (_px < 0) {
-				_px = 0;
+			_posX -= _moveSpeed;
+			if (_posX < 0) {
+				_posX = 0;
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileWidth()) {
 				_moveX--;
-				_px = _moveX * field2d.getTileWidth();
+				_posX = _moveX * field2d.getTileWidth();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 		return false;
 	}
@@ -249,31 +255,31 @@ public class MoveControl implements LRelease {
 			nextY = field2d.getHeight() - 1;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_px += _speed;
-			if (_px > field2d.getViewWidth() - field2d.getTileWidth()) {
-				_px = field2d.getViewWidth() - field2d.getTileWidth();
+			_posX += _moveSpeed;
+			if (_posX > field2d.getViewWidth() - field2d.getTileWidth()) {
+				_posX = field2d.getViewWidth() - field2d.getTileWidth();
 			}
-			_py += _speed;
-			if (_py > field2d.getViewHeight() - field2d.getTileHeight()) {
-				_py = field2d.getViewHeight() - field2d.getTileHeight();
+			_posY += _moveSpeed;
+			if (_posY > field2d.getViewHeight() - field2d.getTileHeight()) {
+				_posY = field2d.getViewHeight() - field2d.getTileHeight();
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileWidth()) {
 				_moveX++;
-				_px = _moveX * field2d.getTileWidth();
+				_posX = _moveX * field2d.getTileWidth();
 				_isMoving = false;
 				return true;
 			}
 			if (_movingLength >= field2d.getTileHeight()) {
 				_moveY++;
-				_py = _moveY * field2d.getTileHeight();
+				_posY = _moveY * field2d.getTileHeight();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 
 		return false;
@@ -286,21 +292,21 @@ public class MoveControl implements LRelease {
 			nextX = field2d.getWidth() - 1;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_px += _speed;
-			if (_px > field2d.getViewWidth() - field2d.getTileWidth()) {
-				_px = field2d.getViewWidth() - field2d.getTileWidth();
+			_posX += _moveSpeed;
+			if (_posX > field2d.getViewWidth() - field2d.getTileWidth()) {
+				_posX = field2d.getViewWidth() - field2d.getTileWidth();
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileWidth()) {
 				_moveX++;
-				_px = _moveX * field2d.getTileWidth();
+				_posX = _moveX * field2d.getTileWidth();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 
 		return false;
@@ -316,31 +322,31 @@ public class MoveControl implements LRelease {
 			nextY = 0;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_px += _speed;
-			if (_px > field2d.getViewWidth() - field2d.getTileWidth()) {
-				_px = field2d.getViewWidth() - field2d.getTileWidth();
+			_posX += _moveSpeed;
+			if (_posX > field2d.getViewWidth() - field2d.getTileWidth()) {
+				_posX = field2d.getViewWidth() - field2d.getTileWidth();
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileWidth()) {
 				_moveX++;
-				_px = _moveX * field2d.getTileWidth();
+				_posX = _moveX * field2d.getTileWidth();
 				_isMoving = false;
 				return true;
 			}
-			_py -= _speed;
-			if (_py < 0) {
-				_py = 0;
+			_posY -= _moveSpeed;
+			if (_posY < 0) {
+				_posY = 0;
 			}
 			if (_movingLength >= field2d.getTileHeight()) {
 				_moveY--;
-				_py = _moveY * field2d.getTileHeight();
+				_posY = _moveY * field2d.getTileHeight();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 
 		return false;
@@ -353,21 +359,21 @@ public class MoveControl implements LRelease {
 			nextY = 0;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_py -= _speed;
-			if (_py < 0) {
-				_py = 0;
+			_posY -= _moveSpeed;
+			if (_posY < 0) {
+				_posY = 0;
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileHeight()) {
 				_moveY--;
-				_py = _moveY * field2d.getTileHeight();
+				_posY = _moveY * field2d.getTileHeight();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 
 		return false;
@@ -383,31 +389,31 @@ public class MoveControl implements LRelease {
 			nextY = field2d.getHeight() - 1;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_px -= _speed;
-			if (_px < 0) {
-				_px = 0;
+			_posX -= _moveSpeed;
+			if (_posX < 0) {
+				_posX = 0;
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileWidth()) {
 				_moveX--;
-				_px = _moveX * field2d.getTileWidth();
+				_posX = _moveX * field2d.getTileWidth();
 				_isMoving = false;
 				return true;
 			}
-			_py += _speed;
-			if (_py > field2d.getViewHeight() - field2d.getTileHeight()) {
-				_py = field2d.getViewHeight() - field2d.getTileHeight();
+			_posY += _moveSpeed;
+			if (_posY > field2d.getViewHeight() - field2d.getTileHeight()) {
+				_posY = field2d.getViewHeight() - field2d.getTileHeight();
 			}
 			if (_movingLength >= field2d.getTileHeight()) {
 				_moveY++;
-				_py = _moveY * field2d.getTileHeight();
+				_posY = _moveY * field2d.getTileHeight();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 		return false;
 	}
@@ -419,21 +425,21 @@ public class MoveControl implements LRelease {
 			nextY = field2d.getHeight() - 1;
 		}
 		if (field2d.isHit(nextX, nextY)) {
-			_py += _speed;
-			if (_py > field2d.getViewHeight() - field2d.getTileHeight()) {
-				_py = field2d.getViewHeight() - field2d.getTileHeight();
+			_posY += _moveSpeed;
+			if (_posY > field2d.getViewHeight() - field2d.getTileHeight()) {
+				_posY = field2d.getViewHeight() - field2d.getTileHeight();
 			}
-			_movingLength += _speed;
+			_movingLength += _moveSpeed;
 			if (_movingLength >= field2d.getTileHeight()) {
 				_moveY++;
-				_py = _moveY * field2d.getTileHeight();
+				_posY = _moveY * field2d.getTileHeight();
 				_isMoving = false;
 				return true;
 			}
 		} else {
 			_isMoving = false;
-			_px = _moveX * field2d.getTileWidth();
-			_py = _moveY * field2d.getTileHeight();
+			_posX = _moveX * field2d.getTileWidth();
+			_posY = _moveY * field2d.getTileHeight();
 		}
 		return false;
 	}
@@ -443,11 +449,11 @@ public class MoveControl implements LRelease {
 	}
 
 	public int getSpeed() {
-		return _speed;
+		return _moveSpeed;
 	}
 
 	public MoveControl setSpeed(int s) {
-		this._speed = s;
+		this._moveSpeed = s;
 		return this;
 	}
 
@@ -495,8 +501,32 @@ public class MoveControl implements LRelease {
 		return _lastDirection == Config.TUP;
 	}
 
+	public long getDelay() {
+		return _delay;
+	}
+
+	public void setDelay(long delay) {
+		this._delay = delay;
+	}
+
 	public boolean isClosed() {
 		return _closed;
+	}
+
+	public float getOffsetX() {
+		return _offsetX;
+	}
+
+	public void setOffsetX(float offsetX) {
+		this._offsetX = offsetX;
+	}
+
+	public float getOffsetY() {
+		return _offsetY;
+	}
+
+	public void setOffsetY(float offsetY) {
+		this._offsetY = offsetY;
 	}
 
 	@Override

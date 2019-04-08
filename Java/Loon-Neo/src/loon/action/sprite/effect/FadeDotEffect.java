@@ -31,6 +31,18 @@ import loon.utils.timer.LTimer;
 
 public class FadeDotEffect extends Entity implements BaseEffect {
 
+	private int countCompleted = 0;
+
+	private boolean finished;
+
+	private TArray<Dot> dots = new TArray<Dot>();
+
+	private int count = 4;
+
+	private int type = ISprite.TYPE_FADE_IN;
+
+	private LTimer timer = new LTimer(0);
+
 	private class Dot {
 
 		private float x;
@@ -99,27 +111,15 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 					float alpha = currentFrame / time;
 					g.setAlpha(alpha);
 				}
-				g.fillOval(x - rad + offsetX, y - rad + offsetY, rad * 2,
-						rad * 2);
+				g.fillOval(x - rad + offsetX, y - rad + offsetY, rad * 2, rad * 2);
 				g.setAlpha(a);
 			}
 		}
 
 	}
 
-	private boolean finished;
-
-	private TArray<Dot> dots = new TArray<Dot>();
-
-	private int count = 4;
-
-	private int type = ISprite.TYPE_FADE_IN;
-
-	private LTimer timer = new LTimer(0);
-
 	public FadeDotEffect(LColor c, int type, int time, int count) {
-		this(type, time, time, count, c, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		this(type, time, time, count, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public FadeDotEffect(LColor c) {
@@ -131,12 +131,10 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 	}
 
 	public FadeDotEffect(int type, int time, LColor c) {
-		this(type, time, time, 5, c, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		this(type, time, time, 5, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public FadeDotEffect(int type, int time, int rad, int count, LColor c,
-			int w, int h) {
+	public FadeDotEffect(int type, int time, int rad, int count, LColor c, int w, int h) {
 		this.type = type;
 		this.count = count;
 		this.setColor(c);
@@ -159,15 +157,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 
 	@Override
 	public boolean isCompleted() {
-		if (finished) {
-			return finished;
-		}
-		for (int i = 0; i < dots.size; i++) {
-			if (!((Dot) dots.get(i)).finished) {
-				return false;
-			}
-		}
-		return (finished = true);
+		return finished;
 	}
 
 	@Override
@@ -177,7 +167,16 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		}
 		if (timer.action(elapsedTime)) {
 			for (int i = 0; i < dots.size; i++) {
-				dots.get(i).update(elapsedTime);
+				Dot dot = dots.get(i);
+				if (dot != null) {
+					dot.update(elapsedTime);
+					if (dot.finished) {
+						countCompleted++;
+					}
+				}
+			}
+			if (countCompleted >= dots.size) {
+				finished = true;
 			}
 		}
 	}

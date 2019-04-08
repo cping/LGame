@@ -20,9 +20,36 @@
  */
 package loon.action.map.battle;
 
-public enum DamagesState {
-	   Physical,
-       Magical,
-       Cure,
-       Other;
+import loon.action.map.battle.behavior.IBattle;
+import loon.opengl.GLEx;
+import loon.utils.TArray;
+
+public abstract class BattleAnimation 
+{
+	private IBattle caster;
+	
+	private TArray<IBattle> targets;
+	
+	public BattleAnimation(IBattle caster, TArray<IBattle> targets)
+	{
+		this.caster = caster;
+		this.targets = targets;
+		this.init();
+	}
+
+	public abstract void draw(GLEx g);
+	
+	public abstract void update(long elapsedTime);
+	
+	public abstract void init();
+	
+	public abstract boolean completed();
+	
+	public TArray<IBattle> getTargets(){
+		return targets;
+	}
+	
+	public IBattle getCaster(){
+		return caster;
+	}
 }

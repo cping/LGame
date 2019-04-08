@@ -3,11 +3,14 @@ package org.test;
 import loon.Stage;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseEffect;
+import loon.action.sprite.effect.FadeBoardEffect;
 import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
+import loon.action.sprite.effect.SwipeEffect;
 import loon.canvas.LColor;
+import loon.component.LLabel;
 import loon.utils.Array;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
@@ -23,10 +26,17 @@ public class EffectTest extends Stage {
 		setBackground("back1.png");
 		// 插入不同的精灵特效
 		effects.add(new FadeSpiralEffect(ISprite.TYPE_FADE_IN, LColor.black));
+		effects.add(new FadeBoardEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeDotEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeOvalEffect(ISprite.TYPE_FADE_IN, LColor.black));
 		effects.add(new FadeTileEffect(ISprite.TYPE_FADE_IN, LColor.black));
-		effects.add(new FadeSpiralEffect(ISprite.TYPE_FADE_IN, LColor.black));
+		effects.add(new SwipeEffect(ISprite.TYPE_FADE_IN, LColor.black));
+		effects.add(new FadeSpiralEffect(ISprite.TYPE_FADE_OUT, LColor.black));
+		effects.add(new FadeBoardEffect(ISprite.TYPE_FADE_OUT, LColor.black));
+		effects.add(new FadeDotEffect(ISprite.TYPE_FADE_OUT, LColor.black));
+		effects.add(new FadeOvalEffect(ISprite.TYPE_FADE_OUT, LColor.black));
+		effects.add(new FadeTileEffect(ISprite.TYPE_FADE_OUT, LColor.black));
+		effects.add(new SwipeEffect(ISprite.TYPE_FADE_OUT, LColor.black));
 		RealtimeProcess process = new RealtimeProcess() {
 
 			@Override
@@ -45,6 +55,9 @@ public class EffectTest extends Stage {
 				// 如果全部特效都执行完毕，删除这个游戏进程本身
 				if (effects.size() == 0) {
 					kill();
+					LLabel label = addLabel("Effect Over");
+					centerOn(label);
+					
 				}
 			}
 		};

@@ -36,10 +36,14 @@ import loon.utils.timer.LTimer;
  */
 public class StringEffect extends Entity implements BaseEffect {
 
-	public static float MOVE_VALUE = 1.5f;
-	private LTimer _timer = new LTimer(0);
-	private Vector2f _update;
+	public final static float MoveDefaultValue = 1.5f;
+	
+	private LTimer delayTimer = new LTimer(0);
+	
+	private Vector2f updatePos;
+	
 	private Text _font;
+	
 	private boolean _completed;
 
 	/**
@@ -89,7 +93,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Ddown(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MoveDefaultValue, MoveDefaultValue), color);
 	}
 
 	/**
@@ -114,7 +118,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dup(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, -MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MoveDefaultValue, -MoveDefaultValue), color);
 	}
 
 	/**
@@ -139,7 +143,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dright(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MoveDefaultValue, MoveDefaultValue), color);
 	}
 
 	/**
@@ -164,7 +168,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dleft(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, -MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MoveDefaultValue, -MoveDefaultValue), color);
 	}
 
 	/**
@@ -189,7 +193,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect right(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, 0), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MoveDefaultValue, 0), color);
 	}
 
 	/**
@@ -214,7 +218,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect left(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, 0), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MoveDefaultValue, 0), color);
 	}
 
 	/**
@@ -239,7 +243,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect up(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(0, -MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(0, -MoveDefaultValue), color);
 	}
 
 	/**
@@ -264,7 +268,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect down(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(0, MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(0, MoveDefaultValue), color);
 	}
 
 	public final static StringEffect move(int dir, IFont font, String mes, Vector2f pos, LColor color) {
@@ -281,7 +285,7 @@ public class StringEffect extends Entity implements BaseEffect {
 
 	public StringEffect(TextOptions opt, IFont font, String mes, Vector2f pos, Vector2f update, LColor color) {
 		this._font = new Text(font, mes, opt);
-		this._update = update;
+		this.updatePos = update;
 		this._alpha = 1f;
 		this.setLocation(pos);
 		this.setColor(color);
@@ -299,8 +303,8 @@ public class StringEffect extends Entity implements BaseEffect {
 		if (_completed) {
 			return;
 		}
-		if (_timer.action(elapsedTime)) {
-			getLocation().addSelf(this._update);
+		if (delayTimer.action(elapsedTime)) {
+			getLocation().addSelf(this.updatePos);
 			this._alpha -= 0.0125f;
 			if (_alpha <= 0) {
 				_completed = true;
@@ -320,11 +324,11 @@ public class StringEffect extends Entity implements BaseEffect {
 	}
 
 	public void setDelay(long d) {
-		_timer.setDelay(d);
+		delayTimer.setDelay(d);
 	}
 
 	public long getDelay() {
-		return _timer.getDelay();
+		return delayTimer.getDelay();
 	}
 
 	public void setCompleted(boolean c) {

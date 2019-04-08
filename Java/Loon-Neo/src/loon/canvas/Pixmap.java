@@ -56,7 +56,7 @@ public class Pixmap extends Limit implements LRelease {
 
 	private Canvas tmpCanvas = null;
 
-	public Graphics getGraphics() {
+	protected Graphics getGraphics() {
 		if (LSystem.base() != null) {
 			return LSystem.base().graphics();
 		}
@@ -86,7 +86,6 @@ public class Pixmap extends Limit implements LRelease {
 				tmpCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
 			}
 		} else {
-
 			int newWidth = scale.invScaledCeil(getWidth());
 			int newHeight = scale.invScaledCeil(getHeight());
 			if (tmpCanvas == null) {
@@ -95,7 +94,6 @@ public class Pixmap extends Limit implements LRelease {
 			if (_dirty) {
 				tmpCanvas.image.setPixmap(this);
 			}
-
 		}
 		return tmpCanvas.image;
 	}

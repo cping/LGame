@@ -20,9 +20,23 @@
  */
 package loon.action.map.battle;
 
-public enum DamagesState {
-	   Physical,
-       Magical,
-       Cure,
-       Other;
+import loon.opengl.GLEx;
+
+public abstract class BattleEffectRenderer {
+	private BattleEffect effect;
+
+	public BattleEffectRenderer(BattleEffect effect) {
+		this.effect = effect;
+	}
+
+	public BattleEffect getEffect() {
+		return effect;
+	}
+
+	public abstract void draw(GLEx g);
+
+	public abstract void update(long elapsedTime);
+
+	public abstract boolean completed();
+
 }

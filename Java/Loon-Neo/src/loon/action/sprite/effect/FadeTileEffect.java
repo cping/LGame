@@ -28,6 +28,10 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
+/**
+ * 瓦片(向四周散开或向中心聚拢)淡入淡出效果
+ *
+ */
 public class FadeTileEffect extends Entity implements BaseEffect {
 
 	private int tilewidth, tileheight;

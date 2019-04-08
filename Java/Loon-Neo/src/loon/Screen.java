@@ -3878,7 +3878,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		return new ObjectBundle();
 	}
-
+	
+	/**
+	 * 删除Bundle对象
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public ObjectBundle removeBundle(String key) {
+		if (LSystem.getProcess() != null) {
+			LSystem.getProcess().removeBundle(key);
+		}
+		return new ObjectBundle();
+	}
+	
 	/**
 	 * Bundle中指定数据做加法
 	 * 

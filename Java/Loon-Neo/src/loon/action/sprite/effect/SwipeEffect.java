@@ -30,9 +30,9 @@ public class SwipeEffect extends Entity implements BaseEffect {
 
 	private LTimer timer = new LTimer(450);
 
-	public int type;
+	protected int type;
 
-	public boolean finished;
+	protected boolean finished;
 
 	public static SwipeEffect getInstance(int type, LColor c) {
 		return getInstance(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
