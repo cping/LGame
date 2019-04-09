@@ -28,7 +28,6 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
-import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
@@ -42,8 +41,6 @@ public class Field2D implements IArray, Config {
 
 	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(9);
 
-	final static private IntMap<Vector2f> directionValues = new IntMap<Vector2f>(9);
-
 	static {
 		directions.put(new Vector2f(0, 0), Config.EMPTY);
 		directions.put(new Vector2f(1, -1), Config.UP);
@@ -54,17 +51,6 @@ public class Field2D implements IArray, Config {
 		directions.put(new Vector2f(-1, 0), Config.TLEFT);
 		directions.put(new Vector2f(1, 0), Config.TRIGHT);
 		directions.put(new Vector2f(0, 1), Config.TDOWN);
-
-		directionValues.put(Config.EMPTY, new Vector2f(0, 0));
-		directionValues.put(Config.UP, new Vector2f(1, -1));
-		directionValues.put(Config.LEFT, new Vector2f(-1, -1));
-		directionValues.put(Config.RIGHT, new Vector2f(1, 1));
-		directionValues.put(Config.DOWN, new Vector2f(-1, 1));
-		directionValues.put(Config.TUP, new Vector2f(0, -1));
-		directionValues.put(Config.TLEFT, new Vector2f(-1, 0));
-		directionValues.put(Config.TRIGHT, new Vector2f(1, 0));
-		directionValues.put(Config.TDOWN, new Vector2f(0, 1));
-
 	}
 
 	private String _objectName = "Field2D";
@@ -194,7 +180,7 @@ public class Field2D implements IArray, Config {
 		if (type > Config.TDOWN) {
 			type = Config.TDOWN;
 		}
-		return directionValues.get(type).cpy();
+		return getDirectionToPoint(type, 1).cpy();
 	}
 
 	private static void insertArrays(int[][] arrays, int index, int px, int py) {

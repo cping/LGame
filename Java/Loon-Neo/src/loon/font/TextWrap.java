@@ -22,31 +22,33 @@ package loon.font;
 
 public class TextWrap {
 
-  public static final TextWrap MANUAL = new TextWrap(Float.MAX_VALUE);
+	public static final TextWrap MANUAL = new TextWrap(Float.MAX_VALUE);
 
-  public final float width;
+	public final float width;
 
-  public final float indent;
+	public final float indent;
 
-  public TextWrap(float width) {
-    this(width, 0);
-  }
+	public TextWrap(float width) {
+		this(width, 0);
+	}
 
-  public TextWrap(float width, float indent) {
-    this.width = width;
-    this.indent = indent;
-  }
+	public TextWrap(float width, float indent) {
+		this.width = width;
+		this.indent = indent;
+	}
 
-  @Override public int hashCode() {
-    return (int)width ^ (int)indent;
-  }
+	@Override
+	public int hashCode() {
+		return (int) width ^ (int) indent;
+	}
 
-  @Override public boolean equals(Object other) {
-    if (other instanceof TextWrap) {
-      TextWrap ow = (TextWrap)other;
-      return width == ow.width && indent == ow.indent;
-    } else {
-      return false;
-    }
-  }
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof TextWrap) {
+			TextWrap ow = (TextWrap) other;
+			return width == ow.width && indent == ow.indent;
+		} else {
+			return false;
+		}
+	}
 }

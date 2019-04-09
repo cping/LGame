@@ -38,11 +38,11 @@ public class TArray<T> implements Iterable<T>, IArray {
 	public static final <T> TArray<T> at(TArray<? extends T> array) {
 		return new TArray<T>(array);
 	}
-	
+
 	public static final <T> TArray<T> at() {
 		return at(0);
 	}
-	
+
 	public T[] items;
 
 	public int size;
@@ -472,6 +472,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	private ArrayIterable iterable;
 
+	@Override
 	public Iterator<T> iterator() {
 		if (iterable == null) {
 			iterable = new ArrayIterable(this);
@@ -499,6 +500,13 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return true;
 	}
 
+	public TArray<T> concat(TArray<? extends T> array) {
+		TArray<T> all = new TArray<T>(this);
+		all.addAll(array);
+		return all;
+	}
+
+	@Override
 	public String toString() {
 		if (size == 0)
 			return "[]";
@@ -528,11 +536,11 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return buffer.toString();
 	}
 
-	static public <T> TArray<T> with(T... array) {
+	public final static <T> TArray<T> with(T... array) {
 		return new TArray(array);
 	}
 
-	static public class ArrayIterator<T> implements Iterator<T>, Iterable<T> {
+	public final static class ArrayIterator<T> implements Iterator<T>, Iterable<T> {
 
 		private final TArray<T> array;
 		private final boolean allowRemove;
@@ -611,7 +619,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return false;
 	}
 
-	static public class ArrayIterable<T> implements Iterable<T> {
+	public final static class ArrayIterable<T> implements Iterable<T> {
 
 		private final TArray<T> array;
 		private final boolean allowRemove;

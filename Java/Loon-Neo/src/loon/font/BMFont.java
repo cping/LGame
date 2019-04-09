@@ -34,6 +34,7 @@ import loon.opengl.GLEx;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
@@ -300,10 +301,13 @@ public class BMFont implements IFont {
 		StringTokenizer tokens = new StringTokenizer(line, " =");
 		tokens.nextToken();
 		tokens.nextToken();
+		
 		def.id = Integer.parseInt(tokens.nextToken());
+		
 		if (def.id < 0) {
 			return null;
 		}
+
 		tokens.nextToken();
 		def.tx = Short.parseShort(tokens.nextToken());
 		tokens.nextToken();
@@ -804,6 +808,17 @@ public class BMFont implements IFont {
 		}
 		_initDraw = -1;
 		_initParse = false;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("BMFont");
+		builder.kv("info", info)
+		.comma()
+		.kv("common", common)
+		.comma()
+		.kv("page", page);
+		return builder.toString();
 	}
 
 }

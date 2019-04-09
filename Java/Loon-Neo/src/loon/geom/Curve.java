@@ -65,6 +65,7 @@ public class Curve extends Shape {
 		return new Vector2f(nx, ny);
 	}
 
+	@Override
 	protected void createPoints() {
 		float step = 1.0f / segments;
 		points = new float[(segments + 1) * 2];
@@ -95,6 +96,7 @@ public class Curve extends Shape {
 				dest[7]));
 	}
 
+	@Override
 	public boolean closed() {
 		return false;
 	}

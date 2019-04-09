@@ -20,13 +20,20 @@
  */
 package loon.geom;
 
+import loon.action.map.Config;
+import loon.action.map.Field2D;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class Line extends Shape {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public final static Line at(float x1, float y1, float x2, float y2) {
+		return new Line(x1, y1, x2, y2);
+	}
 
 	private Vector2f start;
 
@@ -73,13 +80,22 @@ public class Line extends Shape {
 	}
 
 	public Vector2f getStart() {
-		return start;
+		return start.cpy();
 	}
 
 	public Vector2f getEnd() {
-		return end;
+		return end.cpy();
 	}
 
+	public Vector2f getDirectionValue() {
+		return Field2D.getDirection(getDirection());
+	}
+
+	public int getDirection() {
+		return Field2D.getDirection(end.x() - start.x(), end.y() - start.y(), Config.EMPTY);
+	}
+
+	@Override
 	public float length() {
 		return vec.len();
 	}
@@ -103,6 +119,7 @@ public class Line extends Shape {
 		vec = new Vector2f(end);
 		vec.sub(start);
 
+		this.setLocation(start.x, start.y);
 	}
 
 	public void set(float sx, float sy, float ex, float ey) {
@@ -123,10 +140,12 @@ public class Line extends Shape {
 		return end.getY() - start.getY();
 	}
 
+	@Override
 	public float getX() {
 		return getX1();
 	}
 
+	@Override
 	public float getY() {
 		return getY1();
 	}
@@ -145,6 +164,50 @@ public class Line extends Shape {
 
 	public float getY2() {
 		return end.getY();
+	}
+
+	public TArray<Point> getBresenhamPoints(int stepRate) {
+		return getBresenhamPoints(stepRate, null);
+	}
+
+	public TArray<Point> getBresenhamPoints(int stepRate, TArray<Point> points) {
+		
+		stepRate = MathUtils.max(1, stepRate);
+		if (points == null) {
+			points = new TArray<Point>();
+		}
+
+		int x1 = MathUtils.round(getX1());
+		int y1 = MathUtils.round(getY1());
+		int x2 = MathUtils.round(getX2());
+		int y2 = MathUtils.round(getY2());
+
+		int dx = MathUtils.abs(x2 - x1);
+		int dy = MathUtils.abs(y2 - y1);
+		int sx = (x1 < x2) ? 1 : -1;
+		int sy = (y1 < y2) ? 1 : -1;
+		int err = (dx - dy);
+
+		points.add(Point.at(x1, y1));
+
+		float count = 1;
+
+		for (; !((x1 == x2) && (y1 == y2));) {
+			int e2 = err * 2;
+			if (e2 > -dy) {
+				err -= dy;
+				x1 += sx;
+			}
+			if (e2 < dx) {
+				err += dx;
+				y1 += sy;
+			}
+			if (count % stepRate == 0) {
+				points.add(Point.at(x1, y1));
+			}
+			count++;
+		}
+		return points;
 	}
 
 	public float distance(Vector2f point) {
@@ -212,11 +275,9 @@ public class Line extends Shape {
 			return false;
 		}
 
-		float ua = (dx2 * (start.getY() - other.start.getY()))
-				- (dy2 * (start.getX() - other.start.getX()));
+		float ua = (dx2 * (start.getY() - other.start.getY())) - (dy2 * (start.getX() - other.start.getX()));
 		ua /= denom;
-		float ub = (dx1 * (start.getY() - other.start.getY()))
-				- (dy1 * (start.getX() - other.start.getX()));
+		float ub = (dx1 * (start.getY() - other.start.getY())) - (dy1 * (start.getX() - other.start.getX()));
 		ub /= denom;
 
 		if ((limit) && ((ua < 0) || (ua > 1) || (ub < 0) || (ub > 1))) {
@@ -241,80 +302,26 @@ public class Line extends Shape {
 	}
 
 	public float ptSegDistSq(Point pt) {
-		return ptSegDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(),
-				pt.getY());
+		return ShapeUtils.ptSegDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 
 	public float ptSegDistSq(float px, float py) {
-		return ptSegDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
-	}
-
-	public static float ptSegDist(float x1, float y1, float x2, float y2,
-			float px, float py) {
-		return MathUtils.sqrt(ptSegDistSq(x1, y1, x2, y2, px, py));
-	}
-
-	public static float ptSegDistSq(float x1, float y1, float x2, float y2,
-			float px, float py) {
-		x2 -= x1;
-		y2 -= y1;
-		px -= x1;
-		py -= y1;
-		float dotprod = px * x2 + py * y2;
-		float projlenSq;
-		if (dotprod <= 0.0) {
-			projlenSq = 0.0f;
-		} else {
-			px = x2 - px;
-			py = y2 - py;
-			dotprod = px * x2 + py * y2;
-			if (dotprod <= 0.0) {
-				projlenSq = 0.0f;
-			} else {
-				projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
-			}
-		}
-		float lenSq = px * px + py * py - projlenSq;
-		if (lenSq < 0) {
-			lenSq = 0;
-		}
-		return lenSq;
-	}
-
-	public static float ptLineDist(float x1, float y1, float x2, float y2,
-			float px, float py) {
-		return MathUtils.sqrt(ptLineDistSq(x1, y1, x2, y2, px, py));
+		return ShapeUtils.ptSegDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
 	}
 
 	public float ptLineDist(Point pt) {
-		return ptLineDist(getX1(), getY1(), getX2(), getY2(), pt.getX(),
-				pt.getY());
+		return ShapeUtils.ptLineDist(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 
 	public float ptLineDistSq(float px, float py) {
-		return ptLineDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
+		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
 	}
 
 	public float ptLineDistSq(Point pt) {
-		return ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(),
-				pt.getY());
+		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 
-	public static float ptLineDistSq(float x1, float y1, float x2, float y2,
-			float px, float py) {
-		x2 -= x1;
-		y2 -= y1;
-		px -= x1;
-		py -= y1;
-		float dotprod = px * x2 + py * y2;
-		float projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
-		float lenSq = px * px + py * py - projlenSq;
-		if (lenSq < 0) {
-			lenSq = 0;
-		}
-		return lenSq;
-	}
-
+	@Override
 	public Shape transform(Matrix3 transform) {
 		float[] temp = new float[4];
 		createPoints();
@@ -322,8 +329,13 @@ public class Line extends Shape {
 		return new Line(temp[0], temp[1], temp[2], temp[3]);
 	}
 
+	@Override
 	public boolean closed() {
 		return false;
 	}
 
+	@Override
+	public final String toString() {
+		return "(" + getX1() + "," + getY1() + "," + getX2() + "," + getY2() + ")";
+	}
 }

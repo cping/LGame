@@ -428,10 +428,6 @@ public class Vector3f implements Serializable, XY {
 		return scaleSelf(MathUtils.cos(theta)).addSelf(tx * dl, ty * dl, tz * dl).norSelf();
 	}
 
-	public String toString() {
-		return "[" + x + ", " + y + ", " + z + "]";
-	}
-
 	public Vector3f limitSelf(float limit) {
 		return limit2Self(limit * limit);
 	}
@@ -1136,4 +1132,10 @@ public class Vector3f implements Serializable, XY {
 	public final static Vector3f cross(Vector3f a, Vector3f b) {
 		return new Vector3f(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ")";
+	}
+
 }

@@ -23,6 +23,7 @@ package loon.geom;
 import loon.LSystem;
 import loon.LTrans;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 /**
  * 以对象存储，而非数组的方式实现一个3x2(标准矩阵应为3x3)的2D仿射矩阵类，
@@ -969,10 +970,28 @@ public class Affine2f implements LTrans, XY {
 	/** 显示结果上补足了不存在的长高宽坐标，充当完整3x3矩阵…… **/
 	@Override
 	public String toString() {
-		return "affine [" + MathUtils.toString(m00) + " "
-				+ MathUtils.toString(m01) + " " + MathUtils.toString(m10) + " "
-				+ MathUtils.toString(m11) + " " + translation()
-				+ "][0.0, 0.0, 1.0]";
+		StringKeyValue builder = new StringKeyValue("Affine");
+		builder
+		.newLine()
+		.pushBracket()
+		.addValue(MathUtils.toString((m00)))
+		.comma()
+		.addValue(MathUtils.toString(m10))
+		.comma()
+		.addValue(MathUtils.toString(tx))
+		.popBracket()
+		.newLine()
+		.pushBracket()
+		.addValue(MathUtils.toString(m01))
+		.comma()
+		.addValue(MathUtils.toString(m11))
+		.comma()
+		.addValue(MathUtils.toString(ty))
+		.popBracket()
+		.newLine()
+		.addValue("[0.0,0.0,1.0]")
+		.newLine();
+		return builder.toString();
 	}
-
+	
 }

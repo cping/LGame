@@ -22,6 +22,7 @@
 package loon.geom;
 
 import loon.physics.PPolygon;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -203,16 +204,9 @@ public class Polygon extends Shape {
 		return vertices;
 	}
 
+	@Override
 	protected void createPoints() {
 
-	}
-
-	@Override
-	public String toString() {
-		return "Polygon{" + "points =[" + StringUtils.join(',', points)
-				+ "], center=[" + StringUtils.join(',', center)
-				+ "], rotation=" + rotation + ", minX=" + minX + ", minY="
-				+ minY + ", maxX=" + maxX + ", maxY=" + maxY + '}';
 	}
 
 	@Override
@@ -232,6 +226,25 @@ public class Polygon extends Shape {
 		float[] copyPoints = new float[points.length];
 		System.arraycopy(points, 0, copyPoints, 0, copyPoints.length);
 		return new Polygon(copyPoints);
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("Polygon");
+		builder.kv("points", "[" + StringUtils.join(',', points) + "]")
+		.comma()
+		.kv("center", "[" + StringUtils.join(',', center) + "]")
+		.comma()
+		.kv("rotation", rotation)
+		.comma()
+		.kv("minX", minX)
+		.comma()
+		.kv("minY", minY)
+		.comma()
+		.kv("maxX", maxX)
+		.comma()
+		.kv("maxY", maxY);
+		return builder.toString();
 	}
 
 }

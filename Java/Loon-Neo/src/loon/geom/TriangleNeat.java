@@ -302,10 +302,12 @@ public class TriangleNeat implements Triangle {
 		}
 	}
 
+	@Override
 	public int getTriangleCount() {
 		return numTriangles;
 	}
 
+	@Override
 	public float[] getTrianglePoint(int tri, int i) {
 		float xp = pointsX[triangles[tri].v[i]];
 		float yp = pointsY[triangles[tri].v[i]];
@@ -313,6 +315,7 @@ public class TriangleNeat implements Triangle {
 		return new float[] { xp, yp };
 	}
 
+	@Override
 	public void startHole() {
 	}
 }

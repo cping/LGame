@@ -25,6 +25,7 @@ import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
 /**
@@ -348,4 +349,20 @@ public class SpriteSheetFont implements IFont {
 		}
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("SpriteSheetFont");
+		builder.kv("startingCharacter", startingCharacter)
+		.comma()
+		.kv("horizontalCount", horizontalCount)
+		.comma()
+		.kv("verticalCount", verticalCount)
+		.comma()
+		.kv("charWidth", charWidth)
+		.comma()
+		.kv("charHeight", charHeight)
+		.comma()
+		.kv("numChars", numChars);
+		return builder.toString();
+	}
 }

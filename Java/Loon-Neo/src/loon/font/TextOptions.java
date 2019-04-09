@@ -29,10 +29,11 @@ public class TextOptions {
 
 	//默认行间间隔
 	public static float LEADING_DEFAULT = 5;
-	AutoWrap _autoWrap;
-	float _autoWrapWidth;
-	float _leading;
-	HorizontalAlign _horizontalAlign;
+	
+	protected AutoWrap _autoWrap;
+	protected float _autoWrapWidth;
+	protected float _leading;
+	protected HorizontalAlign _horizontalAlign;
 	
 	public static TextOptions LEFT(){
 		return new TextOptions(HorizontalAlign.LEFT);

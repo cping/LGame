@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import loon.utils.StringKeyValue;
+
 public class Padding {
 
 	private int left;
@@ -68,6 +70,14 @@ public class Padding {
 
 	@Override
 	public String toString() {
-		return "padding [left=" + left + ", top=" + top + ", right=" + right + ", bottom=" + bottom + "]";
+		StringKeyValue builder = new StringKeyValue("Padding");
+		builder.kv("left", left)
+		.comma()
+		.kv("top", top)
+		.comma()
+		.kv("right", right)
+		.comma()
+		.kv("bottom", bottom);
+		return builder.toString();
 	}
 }

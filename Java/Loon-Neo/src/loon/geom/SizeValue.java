@@ -136,11 +136,6 @@ public class SizeValue {
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return value;
-	}
-
 	public boolean hasWidthSuffix() {
 		return hasWidthSuffix;
 	}
@@ -153,4 +148,8 @@ public class SizeValue {
 		return "*".equals(value);
 	}
 
+	@Override
+	public String toString() {
+		return value;
+	}
 }

@@ -88,22 +88,27 @@ public class TriangleOver implements Triangle {
 		}
 	}
 
+	@Override
 	public void addPolyPoint(float x, float y) {
 	}
 
+	@Override
 	public int getTriangleCount() {
 		return triangles.length / 3;
 	}
 
+	@Override
 	public float[] getTrianglePoint(int tri, int i) {
 		float[] pt = triangles[(tri * 3) + i];
 
 		return new float[] { pt[0], pt[1] };
 	}
 
+	@Override
 	public void startHole() {
 	}
 
+	@Override
 	public boolean triangulate() {
 		return true;
 	}

@@ -26,6 +26,8 @@ import java.io.Serializable;
 import loon.action.sprite.ShapeEntity;
 import loon.canvas.LColor;
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
 public abstract class Shape implements Serializable, XY {
 
@@ -622,4 +624,26 @@ public abstract class Shape implements Serializable, XY {
 		return entity;
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("Shape");
+		builder.kv("pos", x+","+y)
+		.comma()
+		.kv("scale", scaleX+","+scaleY)
+		.comma()
+		.kv("points", "[" + StringUtils.join(',', points) + "]")
+		.comma()
+		.kv("center", "[" + StringUtils.join(',', center) + "]")
+		.comma()
+		.kv("rotation", rotation)
+		.comma()
+		.kv("minX", minX)
+		.comma()
+		.kv("minY", minY)
+		.comma()
+		.kv("maxX", maxX)
+		.comma()
+		.kv("maxY", maxY);
+		return builder.toString();
+	}
 }

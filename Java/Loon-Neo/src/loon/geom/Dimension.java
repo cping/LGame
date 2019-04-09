@@ -104,10 +104,6 @@ public class Dimension {
 		return (int) width;
 	}
 
-	public String toString() {
-		return "(" + width + ", " + height + ")";
-	}
-
 	public void setWidth(int width) {
 		this.width = width;
 		this.dirty = true;
@@ -133,4 +129,10 @@ public class Dimension {
 	public Dimension cpy() {
 		return new Dimension(width, height);
 	}
+
+	@Override
+	public String toString() {
+		return "(" + width + "," + height + ")";
+	}
+
 }

@@ -21,6 +21,7 @@
 package loon.font;
 
 import loon.LSystem;
+import loon.utils.StringKeyValue;
 
 public class Font {
 
@@ -86,6 +87,12 @@ public class Font {
 
 	@Override
 	public String toString() {
-		return name + " " + style + " " + size + "pt";
+		StringKeyValue builder = new StringKeyValue("Font");
+		builder.kv("name", name)
+		.comma()
+		.kv("style", style)
+		.comma()
+		.kv("size", size + "pt");
+		return builder.toString();
 	}
 }

@@ -29,6 +29,10 @@ public class Point extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public final static Point at(float x,float y){
+		return new Point(x,y);
+	}
+
 	public int clazz;
 
 	public static final int POINT_CONVEX = 1;
@@ -52,6 +56,7 @@ public class Point extends Shape {
 		return new Point(points[0], points[1]);
 	}
 
+	@Override
 	protected void createPoints() {
 		if (points == null) {
 			points = new float[2];
@@ -68,6 +73,7 @@ public class Point extends Shape {
 		calculateRadius();
 	}
 
+	@Override
 	protected void findCenter() {
 		if (center == null) {
 			center = new float[2];
@@ -76,6 +82,7 @@ public class Point extends Shape {
 		center[1] = points[1];
 	}
 
+	@Override
 	protected void calculateRadius() {
 		boundingCircleRadius = 0;
 	}
@@ -126,12 +133,20 @@ public class Point extends Shape {
 		dest.setLocation(this.x, this.y);
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		Point p = (Point) obj;
 		return p.x == this.x && p.y == this.y && p.clazz == this.clazz;
 	}
+	
+	@Override
+	public final String toString() {
+		return "(" + x + "," + y + ")";
+	}
+
 }

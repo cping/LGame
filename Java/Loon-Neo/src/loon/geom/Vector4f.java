@@ -1048,6 +1048,6 @@ public class Vector4f implements Serializable, XY {
 
 	@Override
 	public String toString() {
-		return "[" + x + ", " + y + ", " + z + ", " + w + "]";
+		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
 	}
 }

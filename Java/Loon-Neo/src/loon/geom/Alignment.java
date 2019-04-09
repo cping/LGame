@@ -16,13 +16,13 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.5
+ * @version 0.5f
  */
 package loon.geom;
 
 public enum Alignment {
 	
-	TOP_LEFT(0.0, 1.0) {
+	TOP_LEFT(0f, 1f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX(), o.getY() + s.getHeight() - 1);
@@ -35,7 +35,7 @@ public enum Alignment {
 
 	},
 
-	TOP(0.5, 1.0) {
+	TOP(0.5f, 1f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + (s.getWidth() - 1) / 2, o.getY()
@@ -48,7 +48,7 @@ public enum Alignment {
 		}
 	},
 
-	TOP_RIGHT(1.0, 1.0) {
+	TOP_RIGHT(1f, 1f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + s.getWidth() - 1, o.getY()
@@ -61,7 +61,7 @@ public enum Alignment {
 		}
 	},
 
-	LEFT(0.0, 0.5) {
+	LEFT(0f, 0.5f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX(), o.getY() + (s.getHeight() - 1) / 2);
@@ -73,7 +73,7 @@ public enum Alignment {
 		}
 	},
 
-	MIDDLE(0.5, 0.5) {
+	MIDDLE(0.5f, 0.5f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + (s.getWidth() - 1) / 2, o.getY()
@@ -86,7 +86,7 @@ public enum Alignment {
 		}
 	},
 
-	RIGHT(1.0, 0.5) {
+	RIGHT(1f, 0.5f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + s.getWidth() - 1, o.getY()
@@ -99,7 +99,7 @@ public enum Alignment {
 		}
 	},
 
-	BOTTOM_LEFT(0.0, 0.0) {
+	BOTTOM_LEFT(0f, 0f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX(), o.getY());
@@ -110,7 +110,7 @@ public enum Alignment {
 		}
 	},
 
-	BOTTOM(0.5, 0.0) {
+	BOTTOM(0.5f, 0f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + (s.getWidth() - 1) / 2, o.getY());
@@ -122,7 +122,7 @@ public enum Alignment {
 		}
 	},
 
-	BOTTOM_RIGHT(1.0, 0.0) {
+	BOTTOM_RIGHT(1f, 0f) {
 		@Override
 		public Vector2f align(Vector2f o, Dimension s) {
 			return new Vector2f(o.getX() + s.getWidth() - 1, o.getY());
@@ -134,20 +134,20 @@ public enum Alignment {
 		}
 	};
 
-	private double along;
+	private float along;
 
-	private double up;
+	private float up;
 
-	Alignment(double along, double up) {
+	Alignment(float along, float up) {
 		this.along = along;
 		this.up = up;
 	}
 
-	public double fromLeft() {
+	public float fromLeft() {
 		return along;
 	}
 
-	public double fromBottom() {
+	public float fromBottom() {
 		return up;
 	}
 

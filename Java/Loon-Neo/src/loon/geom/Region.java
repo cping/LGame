@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 /**
  * 用以保存两个数值的区间
@@ -58,7 +59,11 @@ public class Region {
 	
 	@Override
 	public String toString() {
-		return "region [start=" + start + ", end=" + end + "]";
+		StringKeyValue builder = new StringKeyValue("Region");
+		builder.kv("start", start)
+		.comma()
+		.kv("end", end);
+		return builder.toString();
 	}
 
 }

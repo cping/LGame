@@ -21,7 +21,6 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
-import loon.utils.StringUtils;
 
 /*最简化的浮点坐标处理类,以减少对象大小*/
 public class PointF implements XY {
@@ -117,6 +116,6 @@ public class PointF implements XY {
 
 	@Override
 	public String toString() {
-		return StringUtils.format("PointF [x:{0},y:{1}]", x, y);
+		return "(" + x + "," + y + ")";
 	}
 }

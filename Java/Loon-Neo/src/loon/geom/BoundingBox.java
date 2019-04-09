@@ -161,11 +161,9 @@ public class BoundingBox implements XY {
 	}
 
 	public BoundingBox set(Vector3f minimum, Vector3f maximum) {
-		min.set(minimum.x < maximum.x ? minimum.x : maximum.x,
-				minimum.y < maximum.y ? minimum.y : maximum.y,
+		min.set(minimum.x < maximum.x ? minimum.x : maximum.x, minimum.y < maximum.y ? minimum.y : maximum.y,
 				minimum.z < maximum.z ? minimum.z : maximum.z);
-		max.set(minimum.x > maximum.x ? minimum.x : maximum.x,
-				minimum.y > maximum.y ? minimum.y : maximum.y,
+		max.set(minimum.x > maximum.x ? minimum.x : maximum.x, minimum.y > maximum.y ? minimum.y : maximum.y,
 				minimum.z > maximum.z ? minimum.z : maximum.z);
 		cnt.set(min).addSelf(max).scaleSelf(0.5f);
 		dim.set(max).subtractSelf(min);
@@ -187,10 +185,8 @@ public class BoundingBox implements XY {
 	}
 
 	public BoundingBox inf() {
-		min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY,
-				Float.POSITIVE_INFINITY);
-		max.set(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY,
-				Float.NEGATIVE_INFINITY);
+		min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+		max.set(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
 		cnt.set(0, 0, 0);
 		dim.set(0, 0, 0);
 		return this;
@@ -198,11 +194,8 @@ public class BoundingBox implements XY {
 
 	public BoundingBox ext(Vector3f point) {
 		return this.set(
-				min.set(min(min.x, point.x), min(min.y, point.y),
-						min(min.z, point.z)),
-				max.set(MathUtils.max(max.x, point.x),
-						MathUtils.max(max.y, point.y),
-						MathUtils.max(max.z, point.z)));
+				min.set(MathUtils.min(min.x, point.x), MathUtils.min(min.y, point.y), MathUtils.min(min.z, point.z)),
+				max.set(MathUtils.max(max.x, point.x), MathUtils.max(max.y, point.y), MathUtils.max(max.z, point.z)));
 	}
 
 	public BoundingBox clr() {
@@ -214,29 +207,22 @@ public class BoundingBox implements XY {
 	}
 
 	public BoundingBox ext(BoundingBox a_bounds) {
-		return this.set(min.set(min(min.x, a_bounds.min.x),
-				min(min.y, a_bounds.min.y), min(min.z, a_bounds.min.z)), max
-				.set(max(max.x, a_bounds.max.x), max(max.y, a_bounds.max.y),
-						max(max.z, a_bounds.max.z)));
+		return this.set(
+				min.set(MathUtils.min(min.x, a_bounds.min.x), MathUtils.min(min.y, a_bounds.min.y),
+						MathUtils.min(min.z, a_bounds.min.z)),
+				max.set(MathUtils.max(max.x, a_bounds.max.x), MathUtils.max(max.y, a_bounds.max.y),
+						MathUtils.max(max.z, a_bounds.max.z)));
 	}
 
 	public BoundingBox ext(BoundingBox bounds, Matrix4 transform) {
-		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.min.z).mulSelf(
-				transform));
-		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.max.z).mulSelf(
-				transform));
-		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.min.z).mulSelf(
-				transform));
-		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.max.z).mulSelf(
-				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.min.z).mulSelf(
-				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.max.z).mulSelf(
-				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.min.z).mulSelf(
-				transform));
-		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.max.z).mulSelf(
-				transform));
+		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.min.z).mulSelf(transform));
+		ext(tmpVector.set(bounds.min.x, bounds.min.y, bounds.max.z).mulSelf(transform));
+		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.min.z).mulSelf(transform));
+		ext(tmpVector.set(bounds.min.x, bounds.max.y, bounds.max.z).mulSelf(transform));
+		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.min.z).mulSelf(transform));
+		ext(tmpVector.set(bounds.max.x, bounds.min.y, bounds.max.z).mulSelf(transform));
+		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.min.z).mulSelf(transform));
+		ext(tmpVector.set(bounds.max.x, bounds.max.y, bounds.max.z).mulSelf(transform));
 		return this;
 	}
 
@@ -255,9 +241,8 @@ public class BoundingBox implements XY {
 	}
 
 	public boolean contains(BoundingBox b) {
-		return !isValid()
-				|| (min.x <= b.min.x && min.y <= b.min.y && min.z <= b.min.z
-						&& max.x >= b.max.x && max.y >= b.max.y && max.z >= b.max.z);
+		return !isValid() || (min.x <= b.min.x && min.y <= b.min.y && min.z <= b.min.z && max.x >= b.max.x
+				&& max.y >= b.max.y && max.z >= b.max.z);
 	}
 
 	public boolean intersects(BoundingBox b) {
@@ -279,26 +264,17 @@ public class BoundingBox implements XY {
 	}
 
 	public boolean contains(Vector3f v) {
-		return min.x <= v.x && max.x >= v.x && min.y <= v.y && max.y >= v.y
-				&& min.z <= v.z && max.z >= v.z;
+		return min.x <= v.x && max.x >= v.x && min.y <= v.y && max.y >= v.y && min.z <= v.z && max.z >= v.z;
+	}
+
+	public BoundingBox ext(float x, float y, float z) {
+		return this.set(min.set(MathUtils.min(min.x, x), MathUtils.min(min.y, y), MathUtils.min(min.z, z)),
+				max.set(MathUtils.max(max.x, x), MathUtils.max(max.y, y), MathUtils.max(max.z, z)));
 	}
 
 	@Override
 	public String toString() {
-		return "[" + min + "|" + max + "]";
-	}
-
-	public BoundingBox ext(float x, float y, float z) {
-		return this.set(min.set(min(min.x, x), min(min.y, y), min(min.z, z)),
-				max.set(max(max.x, x), max(max.y, y), max(max.z, z)));
-	}
-
-	static final float min(final float a, final float b) {
-		return a > b ? b : a;
-	}
-
-	static final float max(final float a, final float b) {
-		return a > b ? a : b;
+		return "(" + min + "," + max + ")";
 	}
 
 }

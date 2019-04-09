@@ -147,6 +147,7 @@ public class Path extends Shape {
 		pointsDirty = true;
 	}
 
+	@Override
 	protected void createPoints() {
 		points = new float[localPoints.size * 2];
 		for (int i = 0; i < localPoints.size; i++) {
@@ -156,6 +157,7 @@ public class Path extends Shape {
 		}
 	}
 
+	@Override
 	public Shape transform(Matrix3 transform) {
 		Path p = new Path(cx, cy);
 		p.localPoints = transform(localPoints, transform);

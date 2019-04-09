@@ -22,6 +22,7 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 /*最简化的浮点体积处理类,以减少对象大小*/
 public class RectF implements XY {
@@ -434,5 +435,18 @@ public class RectF implements XY {
 
 	public float getHeight() {
 		return height;
+	}
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("RectF");
+		builder.kv("x", x)
+		.comma()
+		.kv("y", y)
+		.comma()
+		.kv("width", width)
+		.comma()
+		.kv("height", height);
+		return builder.toString();
 	}
 }

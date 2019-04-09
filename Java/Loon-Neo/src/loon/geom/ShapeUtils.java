@@ -251,7 +251,6 @@ public class ShapeUtils {
 		return MathUtils.toRadians(d);
 	}
 
-
 	public static final int dot(Vector2f v1s, Vector2f v1e, Vector2f v2s, Vector2f v2e) {
 		return (int) ((v1e.x - v1s.x) * (v2e.x - v2s.x) + (v1e.y - v1s.y) * (v2e.y - v2s.y));
 	}
@@ -283,4 +282,53 @@ public class ShapeUtils {
 			points[i + 1] += y;
 		}
 	}
+
+	public static final float ptSegDist(float x1, float y1, float x2, float y2, float px, float py) {
+		return MathUtils.sqrt(ptSegDistSq(x1, y1, x2, y2, px, py));
+	}
+
+	public static final float ptSegDistSq(float x1, float y1, float x2, float y2, float px, float py) {
+		x2 -= x1;
+		y2 -= y1;
+		px -= x1;
+		py -= y1;
+		float dotprod = px * x2 + py * y2;
+		float projlenSq;
+		if (dotprod <= 0.0) {
+			projlenSq = 0.0f;
+		} else {
+			px = x2 - px;
+			py = y2 - py;
+			dotprod = px * x2 + py * y2;
+			if (dotprod <= 0.0) {
+				projlenSq = 0.0f;
+			} else {
+				projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
+			}
+		}
+		float lenSq = px * px + py * py - projlenSq;
+		if (lenSq < 0) {
+			lenSq = 0;
+		}
+		return lenSq;
+	}
+
+	public static final float ptLineDist(float x1, float y1, float x2, float y2, float px, float py) {
+		return MathUtils.sqrt(ptLineDistSq(x1, y1, x2, y2, px, py));
+	}
+
+	public static final float ptLineDistSq(float x1, float y1, float x2, float y2, float px, float py) {
+		x2 -= x1;
+		y2 -= y1;
+		px -= x1;
+		py -= y1;
+		float dotprod = px * x2 + py * y2;
+		float projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
+		float lenSq = px * px + py * py - projlenSq;
+		if (lenSq < 0) {
+			lenSq = 0;
+		}
+		return lenSq;
+	}
+
 }

@@ -27,6 +27,8 @@ import loon.LSystem;
 import loon.Support;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
 public class Matrix4 implements Serializable, XY {
 
@@ -715,16 +717,7 @@ public class Matrix4 implements Serializable, XY {
 		this.set(right, tmpUp, tmpForward.scaleSelf(-1), position);
 		return this;
 	}
-
-	public String toString() {
-		return "[" + val[M00] + "|" + val[M01] + "|" + val[M02] + "|"
-				+ val[M03] + "]\n" + "[" + val[M10] + "|" + val[M11] + "|"
-				+ val[M12] + "|" + val[M13] + "]\n" + "[" + val[M20] + "|"
-				+ val[M21] + "|" + val[M22] + "|" + val[M23] + "]\n" + "["
-				+ val[M30] + "|" + val[M31] + "|" + val[M32] + "|" + val[M33]
-				+ "]\n";
-	}
-
+	
 	public Matrix4 lerp(Matrix4 matrix, float alpha) {
 		for (int i = 0; i < 16; i++)
 			this.val[i] = this.val[i] * (1 - alpha) + matrix.val[i] * alpha;
@@ -1286,4 +1279,23 @@ public class Matrix4 implements Serializable, XY {
 		}
 		return result;
 	}
+
+	@Override
+	public String toString() {
+			StringKeyValue builder = new StringKeyValue("Matrix4");
+			builder.newLine()
+			.addValue("[{0},{1},{2},{3}]")
+			.newLine()
+			.addValue("[{4},{5}.{6},{7}]")
+			.newLine()
+			.addValue("[{8},{9},{10},{11}]")
+			.newLine()
+			.addValue("[{12},{13},{14},{15}]")
+			.newLine();
+			return StringUtils.format(builder.toString(), val[M00], val[M01],val[M02], val[M03], 
+					val[M10], val[M11], val[M12], val[M13],
+					val[M20], val[M21], val[M22], val[M23], 
+					val[M30], val[M31],val[M32], val[M33]);
+	}
+
 }

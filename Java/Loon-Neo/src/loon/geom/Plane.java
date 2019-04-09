@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.utils.NumberUtils;
+import loon.utils.StringKeyValue;
 
 public class Plane implements XY {
 
@@ -157,7 +158,11 @@ public class Plane implements XY {
 
 	@Override
 	public String toString() {
-		return "Plane{" + "normal=" + normal + ", d=" + d + '}';
+		StringKeyValue builder = new StringKeyValue("Plane");
+		builder.kv("normal", normal)
+		.comma()
+		.kv("dot", d);
+		return builder.toString();
 	}
 
 }

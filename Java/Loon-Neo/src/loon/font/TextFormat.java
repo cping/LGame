@@ -20,62 +20,71 @@
  */
 package loon.font;
 
+import loon.utils.StringKeyValue;
+
 public class TextFormat {
 
-  public final Font font;
+	public final Font font;
 
-  public final boolean antialias;
+	public final boolean antialias;
 
-  public TextFormat() {
-    this(null);
-  }
+	public TextFormat() {
+		this(null);
+	}
 
-  public TextFormat(Font font) {
-    this(font, true);
-  }
+	public TextFormat(Font font) {
+		this(font, true);
+	}
 
-  public TextFormat(Font font, boolean antialias) {
-    this.font = font;
-    this.antialias = antialias;
-  }
+	public TextFormat(Font font, boolean antialias) {
+		this.font = font;
+		this.antialias = antialias;
+	}
 
-  public TextFormat withFont(Font font) {
-    return new TextFormat(font, this.antialias);
-  }
+	public TextFormat withFont(Font font) {
+		return new TextFormat(font, this.antialias);
+	}
 
-  public TextFormat withFont(String name, Font.Style style, float size) {
-    return withFont(new Font(name, style, size));
-  }
+	public TextFormat withFont(String name, Font.Style style, float size) {
+		return withFont(new Font(name, style, size));
+	}
 
-  public TextFormat withFont(String name, float size) {
-    return withFont(new Font(name, size));
-  }
+	public TextFormat withFont(String name, float size) {
+		return withFont(new Font(name, size));
+	}
 
-  public TextFormat withAntialias(boolean antialias) {
-    return new TextFormat(this.font, antialias);
-  }
-  
-  public Font getFont(){
-	  return font;
-  }
+	public TextFormat withAntialias(boolean antialias) {
+		return new TextFormat(this.font, antialias);
+	}
 
-  @Override public String toString() {
-    return "[font=" + font + ", antialias=" + antialias + "]";
-  }
+	public Font getFont() {
+		return font;
+	}
 
-  @Override public boolean equals(Object other) {
-    if (other instanceof TextFormat) {
-      TextFormat ofmt = (TextFormat)other;
-      return (font == ofmt.font || (font != null && font.equals(ofmt.font))) &&
-        antialias == ofmt.antialias;
-    } else {
-      return false;
-    }
-  }
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof TextFormat) {
+			TextFormat ofmt = (TextFormat) other;
+			return (font == ofmt.font || (font != null && font.equals(ofmt.font))) && antialias == ofmt.antialias;
+		} else {
+			return false;
+		}
+	}
 
-  @Override public int hashCode() {
-    int hash = (antialias ? 1 : 0);
-    if (font != null) hash ^= font.hashCode();
-    return hash;
-  }
+	@Override
+	public int hashCode() {
+		int hash = (antialias ? 1 : 0);
+		if (font != null)
+			hash ^= font.hashCode();
+		return hash;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("TextFormat");
+		builder.kv("font", font)
+		.comma()
+		.kv("antialias", antialias);
+		return builder.toString();
+	}
 }

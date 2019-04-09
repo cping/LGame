@@ -20,11 +20,37 @@
  */
 package loon.geom;
 
-public class Triangle2f {
+import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
+
+public class Triangle2f extends Shape implements Triangle {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public final static Triangle2f at(float x, float y, float w, float h) {
+		return new Triangle2f(x + w / 2, y + h / 2, w, h);
+	}
 
 	public float[] xpoints;
 
 	public float[] ypoints;
+
+	public Triangle2f() {
+		xpoints = new float[3];
+		ypoints = new float[3];
+	}
+
+	public Triangle2f(float w, float h) {
+		this();
+		set(w, h);
+	}
+
+	public Triangle2f(float x, float y, float w, float h) {
+		this();
+		set(x, y, w, h);
+	}
 
 	public Triangle2f(float x1, float y1, float x2, float y2, float x3, float y3) {
 		this();
@@ -51,19 +77,36 @@ public class Triangle2f {
 		}
 	}
 
-	public Triangle2f() {
-		xpoints = new float[3];
-		ypoints = new float[3];
+	public float getX1() {
+		return xpoints[0];
 	}
 
-	public Triangle2f(int w, int h) {
-		this();
-		set(w, h);
+	public float getX2() {
+		return xpoints[1];
 	}
 
-	public Triangle2f(int x, int y, int w, int h) {
-		this();
-		set(x, y, w, h);
+	public float getX3() {
+		return xpoints[2];
+	}
+
+	public float getY1() {
+		return ypoints[0];
+	}
+
+	public float getY2() {
+		return ypoints[1];
+	}
+
+	public float getY3() {
+		return ypoints[2];
+	}
+
+	protected void convertPoints(float[] points) {
+		int size = points.length / 2;
+		for (int i = 0, j = 0; i < size; i += 2, j++) {
+			xpoints[j] = points[i];
+			ypoints[j] = points[i + 1];
+		}
 	}
 
 	public float[] getVertexs() {
@@ -76,13 +119,13 @@ public class Triangle2f {
 		return verts;
 	}
 
-	public void set(int w, int h) {
+	public void set(float w, float h) {
 		set(w / 2 - 1, h / 2 - 1, w - 1, h - 1);
 	}
 
-	public void set(int x, int y, int w, int h) {
-		int halfWidth = w / 2;
-		int halfHeight = h / 2;
+	public void set(float x, float y, float w, float h) {
+		float halfWidth = w / 2;
+		float halfHeight = h / 2;
 		float top = -halfWidth;
 		float bottom = halfHeight;
 		float left = -halfHeight;
@@ -95,6 +138,8 @@ public class Triangle2f {
 		ypoints[0] = y + top;
 		ypoints[1] = y + bottom;
 		ypoints[2] = y + bottom;
+
+		updateTriangle(6);
 	}
 
 	public void set(Triangle2f t) {
@@ -104,6 +149,48 @@ public class Triangle2f {
 		ypoints[0] = t.ypoints[0];
 		ypoints[1] = t.ypoints[1];
 		ypoints[2] = t.ypoints[2];
+		updateTriangle(6);
+	}
+
+	protected void updateTriangle(int length) {
+
+		if (points == null || points.length != length) {
+			this.points = new float[length];
+		}
+
+		for (int i = 0, j = 0; i < length; i += 2, j++) {
+			points[i] = xpoints[j];
+			points[i + 1] = ypoints[j];
+		}
+
+		for (int i = 0; i < length; i++) {
+			this.points[i] = points[i];
+			if (i % 2 == 0) {
+				if (points[i] > maxX) {
+					maxX = points[i];
+				}
+				if (points[i] < minX) {
+					minX = points[i];
+				}
+				if (points[i] < x) {
+					x = points[i];
+				}
+			} else {
+				if (points[i] > maxY) {
+					maxY = points[i];
+				}
+				if (points[i] < minY) {
+					minY = points[i];
+				}
+				if (points[i] < y) {
+					y = points[i];
+				}
+			}
+		}
+
+		findCenter();
+		calculateRadius();
+		pointsDirty = true;
 	}
 
 	public boolean isInside(float nx, float ny) {
@@ -144,6 +231,66 @@ public class Triangle2f {
 		float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
 		return ((u >= 0) && (v >= 0) && (u + v <= 1));
+	}
+
+	@Override
+	protected void createPoints() {
+	}
+
+	@Override
+	public boolean triangulate() {
+		return true;
+	}
+
+	@Override
+	public int getTriangleCount() {
+		return 1;
+	}
+
+	@Override
+	public float[] getTrianglePoint(int t, int i) {
+		return null;
+	}
+
+	@Override
+	public void addPolyPoint(float x, float y) {
+	}
+
+	@Override
+	public void startHole() {
+	}
+
+	@Override
+	public Shape transform(Matrix3 transform) {
+		checkPoints();
+		Triangle2f resultTriangle = new Triangle2f();
+		float result[] = new float[points.length];
+		transform.transform(points, 0, result, 0, points.length / 2);
+		resultTriangle.points = result;
+		resultTriangle.findCenter();
+		resultTriangle.convertPoints(points);
+		return resultTriangle;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("Triangle");
+		builder.kv("xpoints", "[" + StringUtils.join(',', xpoints) + "]")
+		.comma()
+		.kv("ypoints", "[" + StringUtils.join(',', ypoints) + "]")
+		.comma()
+		.kv("center", "[" + StringUtils.join(',', center) + "]")
+		.comma()
+		.kv("rotation", rotation)
+		.comma()
+		.kv("minX", minX)
+		.comma()
+		.kv("minY", minY)
+		.comma()
+		.kv("maxX", maxX)
+		.comma()
+		.kv("maxY", maxY);
+		return builder.toString();
 	}
 
 }

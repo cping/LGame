@@ -20,7 +20,7 @@
  */
 package loon.geom;
 
-import loon.utils.StringUtils;
+import loon.utils.StringKeyValue;
 
 /**
  * 一个最基础的矩形碰撞器
@@ -99,8 +99,15 @@ public class AABB implements XY {
 
 	@Override
 	public String toString() {
-		return StringUtils.format("AABB [minX:{0},minY:{1},maxX:{2},maxY:{3}]",
-				minX, minY, maxX, maxY);
+		StringKeyValue builder = new StringKeyValue("AABB");
+		builder.kv("minX", minX)
+		.comma()
+		.kv("minY", minY)
+		.comma()
+		.kv("maxX", maxX)
+		.comma()
+		.kv("maxY", maxY);
+		return builder.toString();
 	}
 
 }

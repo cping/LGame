@@ -32,13 +32,11 @@ public class Bezier {
 	public Vector2f controlPoint2 = new Vector2f();
 
 	public Bezier() {
-
+		this(0f, 0f, 0f, 0f, 0f, 0f);
 	}
 
-	public Bezier(float cp1x, float cp1y, float cp2x, float cp2y, float endx,
-			float endy) {
-		this(Vector2f.at(cp1x, cp1y), Vector2f.at(cp2x, cp2y), Vector2f.at(
-				endx, endy));
+	public Bezier(float cp1x, float cp1y, float cp2x, float cp2y, float endx, float endy) {
+		this(Vector2f.at(cp1x, cp1y), Vector2f.at(cp2x, cp2y), Vector2f.at(endx, endy));
 	}
 
 	public Bezier(Vector2f controlPos1, Vector2f controlPos2, Vector2f endPos) {
@@ -86,9 +84,9 @@ public class Bezier {
 	public Bezier cpy() {
 		return new Bezier(controlPoint1, controlPoint2, endPosition);
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Bezier");
 		builder.kv("controlPoint1", controlPoint1)
 		.comma()

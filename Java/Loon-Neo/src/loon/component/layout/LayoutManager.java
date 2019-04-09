@@ -28,12 +28,111 @@ import loon.component.LComponent;
 import loon.component.LContainer;
 import loon.event.ClickListener;
 import loon.geom.Circle;
+import loon.geom.Line;
+import loon.geom.Point;
 import loon.geom.RectBox;
 import loon.geom.SizeValue;
+import loon.geom.Triangle2f;
+import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public abstract class LayoutManager {
+
+	public final static void elementsTriangle(final Screen root, final TArray<ActionBind> objs, float x, float y,
+			float w, float h, int stepRate) {
+		elementsTriangle(root, objs, Triangle2f.at(x, y, w, h), stepRate, 0f, 0f);
+	}
+
+	public final static void elementsTriangle(final Screen root, final TArray<ActionBind> objs, Triangle2f triangle,
+			int stepRate) {
+		elementsTriangle(root, objs, triangle, stepRate, 0f, 0f);
+	}
+
+	/**
+	 * 构建一个三角区域,让集合中的动作元素尽可能填充慢这一三角区域
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param triangle
+	 * @param stepRate
+	 * @param offsetX
+	 * @param offsetY
+	 */
+	public final static void elementsTriangle(final Screen root, final TArray<ActionBind> objs, Triangle2f triangle,
+			int stepRate, float offsetX, float offsetY) {
+		TArray<Point> p1 = Line.at(triangle.getX1(), triangle.getY1(), triangle.getY1(), triangle.getY2())
+				.getBresenhamPoints(stepRate);
+		TArray<Point> p2 = Line.at(triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3())
+				.getBresenhamPoints(stepRate);
+		TArray<Point> p3 = Line.at(triangle.getX3(), triangle.getY3(), triangle.getX1(), triangle.getY1())
+				.getBresenhamPoints(stepRate);
+		p1.pop();
+		p2.pop();
+		p3.pop();
+
+		TArray<Point> list = new TArray<Point>(p1);
+		list.addAll(p2);
+		list.addAll(p3);
+
+		int step = p1.size / objs.size;
+		int pl = 0;
+		float newX = 0;
+		float newY = 0;
+		for (int i = 0; i < objs.size; i++) {
+			ActionBind obj = objs.get(i);
+			Point point = list.get(MathUtils.floor(pl));
+			newX = point.x + offsetX;
+			newY = point.y + offsetY;
+			obj.setLocation(newX, newY);
+			if (!root.contains(obj)) {
+				root.add(obj);
+			}
+			pl += step;
+		}
+	}
+
+	public final static void elementsLine(final Screen root, final TArray<ActionBind> objs, float x1, float y1,
+			float x2, float y2) {
+		elementsLine(root, objs, x1, y1, x2, y2, 2f, 2f);
+	}
+
+	public final static void elementsLine(final Screen root, final TArray<ActionBind> objs, float x1, float y1,
+			float x2, float y2, float offsetX, float offsetY) {
+		elementsLine(root, objs, Line.at(x1, y1, x2, y2), offsetX, offsetY);
+	}
+
+	/**
+	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param line
+	 * @param offsetX
+	 * @param offsetY
+	 */
+	public final static void elementsLine(final Screen root, final TArray<ActionBind> objs, Line line, float offsetX,
+			float offsetY) {
+		Vector2f pos = line.getDirectionValue();
+		int size = objs.size;
+		float newX = line.x;
+		float newY = line.y;
+		float offX = pos.x * offsetX;
+		float offY = pos.y * offsetY;
+		float locX = 0;
+		float locY = 0;
+		for (int i = 0; i < size; i++) {
+			ActionBind obj = objs.get(i);
+			locX = pos.x * obj.getWidth();
+			locY = pos.y * obj.getHeight();
+			newX += (locX + offX);
+			newY += (locY + offY);
+			obj.setLocation(newX - locX, newY - locY);
+			if (!root.contains(obj)) {
+				root.add(obj);
+			}
+		}
+	}
 
 	public final static void elementsCircle(final Screen root, final TArray<ActionBind> objs, float x, float y,
 			float radius) {
@@ -46,7 +145,7 @@ public abstract class LayoutManager {
 	}
 
 	/**
-	 * 绘制一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
 	 * 
 	 * @param root
 	 * @param objs

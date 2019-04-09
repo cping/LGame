@@ -27,6 +27,8 @@ import java.util.Collection;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
 public class Matrix3 implements Serializable, XY {
 
@@ -110,26 +112,17 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public Matrix3 mul(Matrix3 m) {
-		float v00 = val[M00] * m.val[M00] + val[M01] * m.val[M10] + val[M02]
-				* m.val[M20];
-		float v01 = val[M00] * m.val[M01] + val[M01] * m.val[M11] + val[M02]
-				* m.val[M21];
-		float v02 = val[M00] * m.val[M02] + val[M01] * m.val[M12] + val[M02]
-				* m.val[M22];
+		float v00 = val[M00] * m.val[M00] + val[M01] * m.val[M10] + val[M02] * m.val[M20];
+		float v01 = val[M00] * m.val[M01] + val[M01] * m.val[M11] + val[M02] * m.val[M21];
+		float v02 = val[M00] * m.val[M02] + val[M01] * m.val[M12] + val[M02] * m.val[M22];
 
-		float v10 = val[M10] * m.val[M00] + val[M11] * m.val[M10] + val[M12]
-				* m.val[M20];
-		float v11 = val[M10] * m.val[M01] + val[M11] * m.val[M11] + val[M12]
-				* m.val[M21];
-		float v12 = val[M10] * m.val[M02] + val[M11] * m.val[M12] + val[M12]
-				* m.val[M22];
+		float v10 = val[M10] * m.val[M00] + val[M11] * m.val[M10] + val[M12] * m.val[M20];
+		float v11 = val[M10] * m.val[M01] + val[M11] * m.val[M11] + val[M12] * m.val[M21];
+		float v12 = val[M10] * m.val[M02] + val[M11] * m.val[M12] + val[M12] * m.val[M22];
 
-		float v20 = val[M20] * m.val[M00] + val[M21] * m.val[M10] + val[M22]
-				* m.val[M20];
-		float v21 = val[M20] * m.val[M01] + val[M21] * m.val[M11] + val[M22]
-				* m.val[M21];
-		float v22 = val[M20] * m.val[M02] + val[M21] * m.val[M12] + val[M22]
-				* m.val[M22];
+		float v20 = val[M20] * m.val[M00] + val[M21] * m.val[M10] + val[M22] * m.val[M20];
+		float v21 = val[M20] * m.val[M01] + val[M21] * m.val[M11] + val[M22] * m.val[M21];
+		float v22 = val[M20] * m.val[M02] + val[M21] * m.val[M12] + val[M22] * m.val[M22];
 
 		val[M00] = v00;
 		val[M10] = v10;
@@ -145,26 +138,17 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public Matrix3 mulLeft(Matrix3 m) {
-		float v00 = m.val[M00] * val[M00] + m.val[M01] * val[M10] + m.val[M02]
-				* val[M20];
-		float v01 = m.val[M00] * val[M01] + m.val[M01] * val[M11] + m.val[M02]
-				* val[M21];
-		float v02 = m.val[M00] * val[M02] + m.val[M01] * val[M12] + m.val[M02]
-				* val[M22];
+		float v00 = m.val[M00] * val[M00] + m.val[M01] * val[M10] + m.val[M02] * val[M20];
+		float v01 = m.val[M00] * val[M01] + m.val[M01] * val[M11] + m.val[M02] * val[M21];
+		float v02 = m.val[M00] * val[M02] + m.val[M01] * val[M12] + m.val[M02] * val[M22];
 
-		float v10 = m.val[M10] * val[M00] + m.val[M11] * val[M10] + m.val[M12]
-				* val[M20];
-		float v11 = m.val[M10] * val[M01] + m.val[M11] * val[M11] + m.val[M12]
-				* val[M21];
-		float v12 = m.val[M10] * val[M02] + m.val[M11] * val[M12] + m.val[M12]
-				* val[M22];
+		float v10 = m.val[M10] * val[M00] + m.val[M11] * val[M10] + m.val[M12] * val[M20];
+		float v11 = m.val[M10] * val[M01] + m.val[M11] * val[M11] + m.val[M12] * val[M21];
+		float v12 = m.val[M10] * val[M02] + m.val[M11] * val[M12] + m.val[M12] * val[M22];
 
-		float v20 = m.val[M20] * val[M00] + m.val[M21] * val[M10] + m.val[M22]
-				* val[M20];
-		float v21 = m.val[M20] * val[M01] + m.val[M21] * val[M11] + m.val[M22]
-				* val[M21];
-		float v22 = m.val[M20] * val[M02] + m.val[M21] * val[M12] + m.val[M22]
-				* val[M22];
+		float v20 = m.val[M20] * val[M00] + m.val[M21] * val[M10] + m.val[M22] * val[M20];
+		float v21 = m.val[M20] * val[M01] + m.val[M21] * val[M11] + m.val[M22] * val[M21];
+		float v22 = m.val[M20] * val[M02] + m.val[M21] * val[M12] + m.val[M22] * val[M22];
 
 		val[M00] = v00;
 		val[M10] = v10;
@@ -203,8 +187,7 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public Matrix3 setToRotation(Vector3f axis, float degrees) {
-		return setToRotation(axis, MathUtils.cosDeg(degrees),
-				MathUtils.sinDeg(degrees));
+		return setToRotation(axis, MathUtils.cosDeg(degrees), MathUtils.sinDeg(degrees));
 	}
 
 	public Matrix3 setToRotation(Vector3f axis, float cos, float sin) {
@@ -279,17 +262,9 @@ public class Matrix3 implements Serializable, XY {
 		return this;
 	}
 
-	public String toString() {
-		return "[" + val[0] + "|" + val[3] + "|" + val[6] + "]\n" + "["
-				+ val[1] + "|" + val[4] + "|" + val[7] + "]\n" + "[" + val[2]
-				+ "|" + val[5] + "|" + val[8] + "]";
-	}
-
 	public float det() {
-		return val[M00] * val[M11] * val[M22] + val[M01] * val[M12] * val[M20]
-				+ val[M02] * val[M10] * val[M21] - val[M00] * val[M12]
-				* val[M21] - val[M01] * val[M10] * val[M22] - val[M02]
-				* val[M11] * val[M20];
+		return val[M00] * val[M11] * val[M22] + val[M01] * val[M12] * val[M20] + val[M02] * val[M10] * val[M21]
+				- val[M00] * val[M12] * val[M21] - val[M01] * val[M10] * val[M22] - val[M02] * val[M11] * val[M20];
 	}
 
 	public Matrix3 inv() {
@@ -531,26 +506,17 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	private static void mul(float[] mata, float[] matb) {
-		float v00 = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02]
-				* matb[M20];
-		float v01 = mata[M00] * matb[M01] + mata[M01] * matb[M11] + mata[M02]
-				* matb[M21];
-		float v02 = mata[M00] * matb[M02] + mata[M01] * matb[M12] + mata[M02]
-				* matb[M22];
+		float v00 = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20];
+		float v01 = mata[M00] * matb[M01] + mata[M01] * matb[M11] + mata[M02] * matb[M21];
+		float v02 = mata[M00] * matb[M02] + mata[M01] * matb[M12] + mata[M02] * matb[M22];
 
-		float v10 = mata[M10] * matb[M00] + mata[M11] * matb[M10] + mata[M12]
-				* matb[M20];
-		float v11 = mata[M10] * matb[M01] + mata[M11] * matb[M11] + mata[M12]
-				* matb[M21];
-		float v12 = mata[M10] * matb[M02] + mata[M11] * matb[M12] + mata[M12]
-				* matb[M22];
+		float v10 = mata[M10] * matb[M00] + mata[M11] * matb[M10] + mata[M12] * matb[M20];
+		float v11 = mata[M10] * matb[M01] + mata[M11] * matb[M11] + mata[M12] * matb[M21];
+		float v12 = mata[M10] * matb[M02] + mata[M11] * matb[M12] + mata[M12] * matb[M22];
 
-		float v20 = mata[M20] * matb[M00] + mata[M21] * matb[M10] + mata[M22]
-				* matb[M20];
-		float v21 = mata[M20] * matb[M01] + mata[M21] * matb[M11] + mata[M22]
-				* matb[M21];
-		float v22 = mata[M20] * matb[M02] + mata[M21] * matb[M12] + mata[M22]
-				* matb[M22];
+		float v20 = mata[M20] * matb[M00] + mata[M21] * matb[M10] + mata[M22] * matb[M20];
+		float v21 = mata[M20] * matb[M01] + mata[M21] * matb[M11] + mata[M22] * matb[M21];
+		float v22 = mata[M20] * matb[M02] + mata[M21] * matb[M12] + mata[M22] * matb[M22];
 
 		mata[M00] = v00;
 		mata[M10] = v10;
@@ -579,22 +545,18 @@ public class Matrix3 implements Serializable, XY {
 		set(a1, a2, a3, b1, b2, b3, 0, 0, 1);
 	}
 
-	public void set(float a1, float a2, float a3, float b1, float b2, float b3,
-			float c1, float c2, float c3) {
+	public void set(float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3) {
 		this.val = new float[] { a1, a2, a3, b1, b2, b3, c1, c2, c3 };
 	}
 
-	public void transform(float[] source, int sourceOffset,
-			float[] destination, int destOffset, int numberOfPoints) {
+	public void transform(float[] source, int sourceOffset, float[] destination, int destOffset, int numberOfPoints) {
 
-		float result[] = source == destination ? new float[numberOfPoints * 2]
-				: destination;
+		float result[] = source == destination ? new float[numberOfPoints * 2] : destination;
 
 		for (int i = 0; i < numberOfPoints * 2; i += 2) {
 			for (int j = 0; j < 6; j += 3) {
 				result[i + (j / 3)] = source[i + sourceOffset] * this.val[j]
-						+ source[i + sourceOffset + 1] * this.val[j + 1] + 1
-						* this.val[j + 2];
+						+ source[i + sourceOffset + 1] * this.val[j + 1] + 1 * this.val[j + 2];
 			}
 		}
 
@@ -610,12 +572,10 @@ public class Matrix3 implements Serializable, XY {
 		float[] mp = new float[9];
 		float n00 = this.val[0] * m.val[0] + this.val[1] * m.val[3];
 		float n01 = this.val[0] * m.val[1] + this.val[1] * m.val[4];
-		float n02 = this.val[0] * m.val[2] + this.val[1] * m.val[5]
-				+ this.val[2];
+		float n02 = this.val[0] * m.val[2] + this.val[1] * m.val[5] + this.val[2];
 		float n10 = this.val[3] * m.val[0] + this.val[4] * m.val[3];
 		float n11 = this.val[3] * m.val[1] + this.val[4] * m.val[4];
-		float n12 = this.val[3] * m.val[2] + this.val[4] * m.val[5]
-				+ this.val[5];
+		float n12 = this.val[3] * m.val[2] + this.val[4] * m.val[5] + this.val[5];
 		mp[0] = n00;
 		mp[1] = n01;
 		mp[2] = n02;
@@ -628,8 +588,8 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public static Matrix3 createRotateTransform(float angle) {
-		return new Matrix3(MathUtils.cos(angle), -MathUtils.sin(angle), 0,
-				MathUtils.sin(angle), MathUtils.cos(angle), 0);
+		return new Matrix3(MathUtils.cos(angle), -MathUtils.sin(angle), 0, MathUtils.sin(angle), MathUtils.cos(angle),
+				0);
 	}
 
 	public static Matrix3 createRotateTransform(float angle, float x, float y) {
@@ -678,12 +638,12 @@ public class Matrix3 implements Serializable, XY {
 	public float getTranslationY() {
 		return this.val[M12];
 	}
-	
-	public float getScaleX(){
+
+	public float getScaleX() {
 		return this.val[M00];
 	}
-	
-	public float getScaleY(){
+
+	public float getScaleY() {
 		return this.val[M11];
 	}
 
@@ -738,20 +698,20 @@ public class Matrix3 implements Serializable, XY {
 
 	public void rotationX(float angleX) {
 		angleX = MathUtils.PI / 180 * angleX;
-		set(1f, 0f, 0f, 0f, MathUtils.cos(angleX), -MathUtils.sin(angleX), 0f,
-				MathUtils.sin(angleX), MathUtils.cos(angleX));
+		set(1f, 0f, 0f, 0f, MathUtils.cos(angleX), -MathUtils.sin(angleX), 0f, MathUtils.sin(angleX),
+				MathUtils.cos(angleX));
 	}
 
 	public void rotationY(float angleY) {
 		angleY = MathUtils.PI / 180 * angleY;
-		set(MathUtils.cos(angleY), 0f, MathUtils.sin(angleY), 0f, 1f, 0f,
-				-MathUtils.sin(angleY), 0f, MathUtils.cos(angleY));
+		set(MathUtils.cos(angleY), 0f, MathUtils.sin(angleY), 0f, 1f, 0f, -MathUtils.sin(angleY), 0f,
+				MathUtils.cos(angleY));
 	}
 
 	public void rotationZ(float angleZ) {
 		angleZ = MathUtils.PI / 180 * angleZ;
-		set(MathUtils.cos(angleZ), -MathUtils.sin(angleZ), 0f,
-				MathUtils.sin(angleZ), MathUtils.cos(angleZ), 0f, 0f, 0f, 1f);
+		set(MathUtils.cos(angleZ), -MathUtils.sin(angleZ), 0f, MathUtils.sin(angleZ), MathUtils.cos(angleZ), 0f, 0f, 0f,
+				1f);
 	}
 
 	public boolean isIdt() {
@@ -877,26 +837,16 @@ public class Matrix3 implements Serializable, XY {
 			throw new ArithmeticException("This matrix cannot be inverted !");
 		}
 
-		final float temp00 = this.val[4] * this.val[8] - this.val[5]
-				* this.val[7];
-		final float temp01 = this.val[2] * this.val[7] - this.val[1]
-				* this.val[8];
-		final float temp02 = this.val[1] * this.val[5] - this.val[2]
-				* this.val[4];
-		final float temp10 = this.val[5] * this.val[6] - this.val[3]
-				* this.val[8];
-		final float temp11 = this.val[0] * this.val[8] - this.val[2]
-				* this.val[6];
-		final float temp12 = this.val[2] * this.val[3] - this.val[0]
-				* this.val[5];
-		final float temp20 = this.val[3] * this.val[7] - this.val[4]
-				* this.val[6];
-		final float temp21 = this.val[1] * this.val[6] - this.val[0]
-				* this.val[7];
-		final float temp22 = this.val[0] * this.val[4] - this.val[1]
-				* this.val[3];
-		result.set(temp00, temp01, temp02, temp10, temp11, temp12, temp20,
-				temp21, temp22);
+		final float temp00 = this.val[4] * this.val[8] - this.val[5] * this.val[7];
+		final float temp01 = this.val[2] * this.val[7] - this.val[1] * this.val[8];
+		final float temp02 = this.val[1] * this.val[5] - this.val[2] * this.val[4];
+		final float temp10 = this.val[5] * this.val[6] - this.val[3] * this.val[8];
+		final float temp11 = this.val[0] * this.val[8] - this.val[2] * this.val[6];
+		final float temp12 = this.val[2] * this.val[3] - this.val[0] * this.val[5];
+		final float temp20 = this.val[3] * this.val[7] - this.val[4] * this.val[6];
+		final float temp21 = this.val[1] * this.val[6] - this.val[0] * this.val[7];
+		final float temp22 = this.val[0] * this.val[4] - this.val[1] * this.val[3];
+		result.set(temp00, temp01, temp02, temp10, temp11, temp12, temp20, temp21, temp22);
 		result.mul(1.0f / det);
 		return result;
 	}
@@ -974,8 +924,8 @@ public class Matrix3 implements Serializable, XY {
 	public static void mul(Matrix3 result, Matrix3 m1, Matrix3 m2) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				result.set(i, j, m1.get(i, 0) * m2.get(0, j) + m1.get(i, 1)
-						* m2.get(1, j) + m1.get(i, 2) * m2.get(2, j));
+				result.set(i, j,
+						m1.get(i, 0) * m2.get(0, j) + m1.get(i, 1) * m2.get(1, j) + m1.get(i, 2) * m2.get(2, j));
 			}
 		}
 	}
@@ -1014,14 +964,11 @@ public class Matrix3 implements Serializable, XY {
 		return distance(x1, y1, 0.f, x2, y2, 0.f);
 	}
 
-	public static float distance(float x1, float y1, float z1, float x2,
-			float y2, float z2) {
-		return MathUtils.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)
-				+ (z2 - z1) * (z2 - z1));
+	public static float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
+		return MathUtils.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1));
 	}
 
-	public static boolean isOnTriange(float x1, float y1, float x2, float y2,
-			float x3, float y3, float x, float y) {
+	public static boolean isOnTriange(float x1, float y1, float x2, float y2, float x3, float y3, float x, float y) {
 		float a;
 		float b;
 		boolean s;
@@ -1156,8 +1103,7 @@ public class Matrix3 implements Serializable, XY {
 		return m44;
 	}
 
-	public static void setRotateEulerM(float[] rm, int rmOffset, float x,
-			float y, float z) {
+	public static void setRotateEulerM(float[] rm, int rmOffset, float x, float y, float z) {
 		x = x * 0.01745329f;
 		y = y * 0.01745329f;
 		z = z * 0.01745329f;
@@ -1227,5 +1173,20 @@ public class Matrix3 implements Serializable, XY {
 		}
 		return result;
 	}
-
+	
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("Matrix3");
+		builder.newLine()
+		.addValue("[{0},{1},{2}]")
+		.newLine()
+		.addValue("[{3},{4}.{5}]")
+		.newLine()
+		.addValue("[{6},{7},{8}]")
+		.newLine();
+		return StringUtils.format(builder.toString(), val[M00], val[M01], val[M02], 
+				val[M10], val[M11], val[M12], 
+				val[M20], val[M21], val[M22]);
+	}
+	
 }

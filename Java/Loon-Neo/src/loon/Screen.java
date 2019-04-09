@@ -74,6 +74,7 @@ import loon.event.LTouchArea.Event;
 import loon.font.Font.Style;
 import loon.font.IFont;
 import loon.geom.Circle;
+import loon.geom.Line;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -4483,7 +4484,53 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 以圆形环绕部署动作对象，绘制一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
+	 * 
+	 * @param objs
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @return
+	 */
+	public final Screen elementsLine(final TArray<ActionBind> objs, float x1, float y1, float x2, float y2) {
+		LayoutManager.elementsLine(this, objs, x1, y1, x2, y2);
+		return this;
+	}
+
+	/**
+	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
+	 * 
+	 * @param objs
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param offsetX
+	 * @param offsetY
+	 * @return
+	 */
+	public final Screen elementsLine(final TArray<ActionBind> objs, float x1, float y1, float x2, float y2,
+			float offsetX, float offsetY) {
+		LayoutManager.elementsLine(this, objs, x1, y1, x2, y2, offsetX, offsetY);
+		return this;
+	}
+
+	/**
+	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
+	 * 
+	 * @param objs
+	 * @param line
+	 * @param offsetX
+	 * @param offsetY
+	 */
+	public final Screen elementsLine(final TArray<ActionBind> objs, Line line, float offsetX, float offsetY) {
+		LayoutManager.elementsLine(this, objs, line, offsetX, offsetY);
+		return this;
+	}
+
+	/**
+	 * 以圆形环绕部署动作对象，构建一个圆形区域,让集合中的动作元素延续这一圆形对象按照指定的startAngle到endAngle范围环绕
 	 * 
 	 * @param objs
 	 * @param x
@@ -4497,7 +4544,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 以圆形环绕部署动作对象，绘制一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 以圆形环绕部署动作对象，构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
 	 * 
 	 * @param root
 	 * @param objs
@@ -4512,7 +4559,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 以圆形环绕部署动作对象，绘制一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 以圆形环绕部署动作对象，构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
 	 * 
 	 * @param root
 	 * @param objs

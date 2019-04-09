@@ -107,7 +107,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private Affine2f lastTrans;
 
 	private BrushSave lastBrush;
-
+	
+	private float triangleValue = 0.5235988f;
+	
 	private float scaleX = 1f, scaleY = 1f;
 
 	private float offsetStringX = 0, offsetStringY = 0;
@@ -1856,10 +1858,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx drawTriangle(LColor color, float x, float y, float r) {
 		float x1 = x;
 		float y1 = y - r;
-		float x2 = x - (r * MathUtils.cos(MathUtils.PI / 6));
-		float y2 = y + (r * MathUtils.sin(MathUtils.PI / 6));
-		float x3 = x + (r * MathUtils.cos(MathUtils.PI / 6));
-		float y3 = y + (r * MathUtils.sin(MathUtils.PI / 6));
+		float x2 = x - (r * MathUtils.cos(triangleValue));
+		float y2 = y + (r * MathUtils.sin(triangleValue));
+		float x3 = x + (r * MathUtils.cos(triangleValue));
+		float y3 = y + (r * MathUtils.sin(triangleValue));
 		float[] xpos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;
@@ -1872,7 +1874,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		fillPolygon(xpos, ypos, 3);
 		return this;
 	}
-
+	
 	/**
 	 * 绘制倒三角
 	 * 
@@ -1884,10 +1886,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx drawRTriangle(LColor color, float x, float y, float r) {
 		float x1 = x;
 		float y1 = y + r;
-		float x2 = x - (r * MathUtils.cos(MathUtils.PI / 6.0f));
-		float y2 = y - (r * MathUtils.sin(MathUtils.PI / 6.0f));
-		float x3 = x + (r * MathUtils.cos(MathUtils.PI / 6.0f));
-		float y3 = y - (r * MathUtils.sin(MathUtils.PI / 6.0f));
+		float x2 = x - (r * MathUtils.cos(triangleValue));
+		float y2 = y - (r * MathUtils.sin(triangleValue));
+		float x3 = x + (r * MathUtils.cos(triangleValue));
+		float y3 = y - (r * MathUtils.sin(triangleValue));
 		float[] xpos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;

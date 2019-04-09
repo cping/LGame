@@ -29,6 +29,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
 /**
@@ -309,18 +310,18 @@ public class LFont implements IFont {
 		return textLayout.leading();
 	}
 
-	private int hash = 1;
+	private int fontHash = 1;
 
 	@Override
 	public int hashCode() {
-		if (hash == 1) {
-			hash = LSystem.unite(textFormat.font.name.charAt(0), hash);
-			hash = LSystem.unite(textFormat.font.name.length(), hash);
-			hash = LSystem.unite(textFormat.font.name.hashCode(), hash);
-			hash = LSystem.unite(textFormat.font.style.ordinal(), hash);
-			hash = LSystem.unite((int) textFormat.font.size, hash);
+		if (fontHash == 1) {
+			fontHash = LSystem.unite(textFormat.font.name.charAt(0), fontHash);
+			fontHash = LSystem.unite(textFormat.font.name.length(), fontHash);
+			fontHash = LSystem.unite(textFormat.font.name.hashCode(), fontHash);
+			fontHash = LSystem.unite(textFormat.font.style.ordinal(), fontHash);
+			fontHash = LSystem.unite((int) textFormat.font.size, fontHash);
 		}
-		return hash;
+		return fontHash;
 	}
 
 	@Override
@@ -410,11 +411,6 @@ public class LFont implements IFont {
 	}
 
 	@Override
-	public String toString() {
-		return textFormat.toString();
-	}
-
-	@Override
 	public void close() {
 		closed = true;
 	}
@@ -422,4 +418,12 @@ public class LFont implements IFont {
 	public boolean isClosed() {
 		return closed;
 	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("LFont");
+		builder.addValue(textFormat.toString());
+		return builder.toString();
+	}
+
 }

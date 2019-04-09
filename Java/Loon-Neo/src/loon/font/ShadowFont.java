@@ -224,4 +224,9 @@ public class ShadowFont implements IFont {
 	public boolean isClosed() {
 		return closed;
 	}
+	
+	@Override
+	public String toString() {
+		return getFont().toString();
+	}
 }

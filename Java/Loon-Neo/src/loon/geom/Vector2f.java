@@ -864,7 +864,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public static String pointToString(float x, float y) {
-		return MathUtils.toString(x) + MathUtils.toString(y);
+		return MathUtils.toString(x) + "," + MathUtils.toString(y);
 	}
 
 	public final Vector2f addSelf(Vector2f v) {
@@ -997,7 +997,7 @@ public class Vector2f implements Serializable, XY {
 	public int[] toInt() {
 		return new int[] { x(), y() };
 	}
-	
+
 	@Override
 	public final String toString() {
 		return "(" + x + "," + y + ")";

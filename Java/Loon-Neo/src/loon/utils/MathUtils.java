@@ -77,7 +77,7 @@ public class MathUtils {
 		return Math.abs(a - b) <= tolerance;
 	}
 
-	static public final float FLOAT_ROUNDING_ERROR = 0.000001f;
+	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
 
 	static public int nextPowerOfTwo(int value) {
 		if (value == 0)
@@ -259,17 +259,17 @@ public class MathUtils {
 	public static final float PI_OVER4 = 0.785398f;
 
 	public static final float PHI = 0.618f;
-	
+
 	static private final float CEIL = 0.9999999f;
 
 	static private final int BIG_ENOUGH_INT = 16384;
-	
+
 	static private final float BIG_ENOUGH_CEIL = 16384.998f;
 
 	static private final float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
 
 	static private final float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
-	
+
 	static private final int ATAN2_BITS = 7;
 
 	static private final int ATAN2_BITS2 = ATAN2_BITS << 1;
@@ -278,7 +278,7 @@ public class MathUtils {
 
 	static private final int ATAN2_COUNT = ATAN2_MASK + 1;
 
-	static public final int ATAN2_DIM = 128;
+	public static final int ATAN2_DIM = 128;
 
 	static private final float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
 
@@ -556,95 +556,95 @@ public class MathUtils {
 		return g + lnscale[shift];
 	}
 
-	static public final float tan(float angle) {
+	public static final float tan(float angle) {
 		return (float) Math.tan(angle);
 	}
 
-	static public final float asin(float value) {
+	public static final float asin(float value) {
 		return (float) Math.asin(value);
 	}
 
-	static public final float acos(float value) {
+	public static final float acos(float value) {
 		return (float) Math.acos(value);
 	}
 
-	static public final float atan(float value) {
+	public static final float atan(float value) {
 		return (float) Math.atan(value);
 	}
 
-	static public final float mag(float a, float b) {
+	public static final float mag(float a, float b) {
 		return (float) Math.sqrt(a * a + b * b);
 	}
 
-	static public final float mag(float a, float b, float c) {
+	public static final float mag(float a, float b, float c) {
 		return (float) Math.sqrt(a * a + b * b + c * c);
 	}
 
-	static public final float dist(float x1, float y1, float x2, float y2) {
+	public static final float dist(float x1, float y1, float x2, float y2) {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1));
 	}
 
-	static public final float dist(float x1, float y1, float z1, float x2, float y2, float z2) {
+	public static final float dist(float x1, float y1, float z1, float x2, float y2, float z2) {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1) + sq(z2 - z1));
 	}
 
-	static public final float abs(float n) {
+	public static final float abs(float n) {
 		return (n < 0) ? -n : n;
 	}
 
-	static public final int abs(int n) {
+	public static final int abs(int n) {
 		return (n < 0) ? -n : n;
 	}
 
-	static public final float sq(float a) {
+	public static final float sq(float a) {
 		return a * a;
 	}
 
-	static public final float sqrt(float a) {
+	public static final float sqrt(float a) {
 		return (float) Math.sqrt(a);
 	}
 
-	static public final float log(float a) {
+	public static final float log(float a) {
 		return (float) Math.log(a);
 	}
 
-	static public final float exp(float a) {
+	public static final float exp(float a) {
 		return (float) Math.exp(a);
 	}
 
-	static public final float pow(float a, float b) {
+	public static final float pow(float a, float b) {
 		return (float) Math.pow(a, b);
 	}
 
-	static public final int max(int a, int b) {
+	public static final int max(int a, int b) {
 		return (a > b) ? a : b;
 	}
 
-	static public final float max(float a, float b) {
+	public static final float max(float a, float b) {
 		return (a > b) ? a : b;
 	}
 
-	static public final long max(long a, long b) {
+	public static final long max(long a, long b) {
 		return (a > b) ? a : b;
 	}
 
-	static public final int max(int a, int b, int c) {
+	public static final int max(int a, int b, int c) {
 		return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
 	}
 
-	static public final float max(float a, float b, float c) {
+	public static final float max(float a, float b, float c) {
 		return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
 	}
 
-	static public final int min(int a, int b, int c) {
+	public static final int min(int a, int b, int c) {
 		return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
 	}
 
-	static public final float min(float a, float b, float c) {
+	public static final float min(float a, float b, float c) {
 		return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
 	}
 
-	static public final float min(float a, float b) {
+	public static final float min(float a, float b) {
 		return (a <= b) ? a : b;
 	}
 
@@ -660,11 +660,11 @@ public class MathUtils {
 		return Math.round(x * (1 - m) + y * m);
 	}
 
-	static public final float norm(float value, float start, float stop) {
+	public static final float norm(float value, float start, float stop) {
 		return (value - start) / (stop - start);
 	}
 
-	static public final float map(float value, float istart, float istop, float ostart, float ostop) {
+	public static final float map(float value, float istart, float istop, float ostart, float ostop) {
 		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 	}
 
@@ -952,14 +952,22 @@ public class MathUtils {
 	}
 
 	public static String toString(float value, int decimalPlaces) {
+		return toString(value, decimalPlaces, false);
+	}
+
+	public static String toString(float value, int decimalPlaces, boolean showTag) {
 		if (Float.isNaN(value))
 			return "NaN";
 
 		StringBuilder buf = new StringBuilder();
-		if (value >= 0)
-			buf.append("+");
-		else {
-			buf.append("-");
+		if (value >= 0) {
+			if (showTag) {
+				buf.append("+");
+			}
+		} else {
+			if (showTag) {
+				buf.append("-");
+			}
 			value = -value;
 		}
 		int ivalue = (int) value;
@@ -981,7 +989,7 @@ public class MathUtils {
 		return buf.toString();
 	}
 
-	public final static int round(int div1, int div2) {
+	public static final int round(int div1, int div2) {
 		final int remainder = div1 % div2;
 		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
 			return div1 / div2;
@@ -992,7 +1000,7 @@ public class MathUtils {
 		}
 	}
 
-	public final static float round(float div1, float div2) {
+	public static final float round(float div1, float div2) {
 		final float remainder = div1 % div2;
 		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
 			return div1 / div2;
@@ -1003,7 +1011,7 @@ public class MathUtils {
 		}
 	}
 
-	public final static long round(long div1, long div2) {
+	public static final long round(long div1, long div2) {
 		final long remainder = div1 % div2;
 		if (MathUtils.abs(remainder) * 2 <= MathUtils.abs(div2)) {
 			return div1 / div2;
@@ -1014,7 +1022,7 @@ public class MathUtils {
 		}
 	}
 
-	public final static int toShift(int angle) {
+	public static final int toShift(int angle) {
 		if (angle <= 45) {
 			return SHIFT[angle];
 		} else if (angle >= 315) {
@@ -1039,11 +1047,11 @@ public class MathUtils {
 				+ 3 * MathUtils.pow(t, 2) * (1 - t) * c + MathUtils.pow(t, 3) * d);
 	}
 
-	public final static int parseUnsignedInt(String s) {
+	public static final int parseUnsignedInt(String s) {
 		return parseUnsignedInt(s, 10);
 	}
 
-	public final static int parseUnsignedInt(String s, int radix) {
+	public static final int parseUnsignedInt(String s, int radix) {
 		if (s == null) {
 			throw LSystem.runThrow("null");
 		}
@@ -1113,27 +1121,27 @@ public class MathUtils {
 		return MathUtils.abs(x) <= MathUtils.abs(y) ? x : y;
 	}
 
-	public final static float lerpCut(float progress, float progressLowCut, float progressHighCut, float fromValue,
+	public static final float lerpCut(float progress, float progressLowCut, float progressHighCut, float fromValue,
 			float toValue) {
 		progress = MathUtils.clamp(progress, progressLowCut, progressHighCut);
 		float a = (progress - progressLowCut) / (progressHighCut - progressLowCut);
 		return MathUtils.lerp(fromValue, toValue, a);
 	}
 
-	public final static float scale(float value, float maxValue, float maxScale) {
+	public static final float scale(float value, float maxValue, float maxScale) {
 		return (maxScale / maxValue) * value;
 	}
 
-	public final static float percent(float value, float percent) {
+	public static final float percent(float value, float percent) {
 		return value * (percent * 0.01f);
 	}
 
-	public final static int percent(int value, int percent) {
+	public static final int percent(int value, int percent) {
 		return (int) (value * (percent * 0.01f));
 	}
-	
-    public final static int compare(int x, int y) {
-        return (x < y) ? -1 : ((x == y) ? 0 : 1);
-    }
+
+	public static final int compare(int x, int y) {
+		return (x < y) ? -1 : ((x == y) ? 0 : 1);
+	}
 
 }

@@ -22,7 +22,7 @@ package loon.opengl;
 
 import loon.LTexture;
 import loon.geom.Affine2f;
-import loon.geom.Vector2f;
+import loon.utils.StringKeyValue;
 import loon.utils.reply.GoFuture;
 
 public abstract class Painter extends TextureSource {
@@ -83,8 +83,16 @@ public abstract class Painter extends TextureSource {
 
 	@Override
 	public String toString() {
-		return "Tile[" + width() + "x" + height() + "/"
-				+ Vector2f.pointToString(sx(), sy()) + "/"
-				+ Vector2f.pointToString(tx(), ty()) + "] <- " + texture();
+		StringKeyValue builder = new StringKeyValue("Painter");
+		builder.kv("size", width() + "x" + height())
+		.comma()
+		.kv("xOff", sx())
+		.comma()
+		.kv("yOff", sy())
+		.comma()
+		.kv("widthRatio", tx())
+		.comma()
+		.kv("heightRatio", ty());
+		return builder.toString() + " <- " + texture();
 	}
 }
