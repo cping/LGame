@@ -23,6 +23,7 @@ package loon.action;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.utils.Easing;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 /*
@@ -53,109 +54,96 @@ public class ActionScript {
 		_src = script;
 	}
 
+	protected final float convertToFloat(String num) {
+		if (MathUtils.isNan(num)) {
+			return Float.parseFloat(num);
+		}
+		return -1f;
+	}
+
 	public TweenTo<ActionTween> start() {
 		if (_tween != null) {
 			if (_src != null) {
 				String result = StringUtils.replace(_src, LSystem.LS, "");
 				String[] list = StringUtils.split(result, "->");
-
 				for (String cmd : list) {
 					if (cmd.length() > 0) {
 
 						int start = cmd.indexOf('(');
 						int end = cmd.lastIndexOf(')');
+
 						String name = null;
 						String[] parameters = null;
+
 						if (start != -1 && end != -1 && end > start) {
 							name = cmd.substring(0, start).trim().toLowerCase();
-							parameters = StringUtils.split(
-									cmd.substring(start + 1, end), ',');
+							parameters = StringUtils.split(cmd.substring(start + 1, end), ',');
 						} else {
 							name = cmd.trim().toLowerCase();
 						}
+						
 						if ("resume".equals(name) || "resumeto".equals(name)) {
 							_tween.resume();
-						} else if ("delay".equals(name)
-								|| "delayto".equals(name)) {
+						} else if ("delay".equals(name) || "delayto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									_tween.delay(Float
-											.parseFloat(parameters[0]));
+									_tween.delay(convertToFloat(parameters[0]));
 								}
 							}
 						} else if ("move".equals(name) || "moveto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.moveTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]));
+									_tween.moveTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
 									if (StringUtils.isBoolean(parameters[2])) {
-										_tween.moveTo(
-												Float.parseFloat(parameters[0]),
-												Float.parseFloat(parameters[1]),
-												StringUtils
-														.toBoolean(parameters[2]));
+										_tween.moveTo(convertToFloat(parameters[0]),
+												convertToFloat(parameters[1]),
+												StringUtils.toBoolean(parameters[2]));
 									} else {
-										_tween.moveTo(
-												Float.parseFloat(parameters[0]),
-												Float.parseFloat(parameters[1]),
-												(int) Float
-														.parseFloat(parameters[2]));
+										_tween.moveTo(convertToFloat(parameters[0]),
+												convertToFloat(parameters[1]),
+												(int) convertToFloat(parameters[2]));
 									}
 								} else if (parameters.length == 4) {
-									_tween.moveTo(Float
-											.parseFloat(parameters[0]), Float
-											.parseFloat(parameters[1]),
-											StringUtils
-													.toBoolean(parameters[2]),
-											(int) Float
-													.parseFloat(parameters[3]));
+									_tween.moveTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), StringUtils.toBoolean(parameters[2]),
+											(int) convertToFloat(parameters[3]));
 								}
 							}
 						} else if ("moveby".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.moveBy(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]));
+									_tween.moveBy(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
-									_tween.moveBy(Float
-											.parseFloat(parameters[0]), Float
-											.parseFloat(parameters[1]),
-											(int) Float
-													.parseFloat(parameters[2]));
+									_tween.moveBy(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]),
+											(int) convertToFloat(parameters[2]));
 								}
 							}
-						} else if ("rotate".equals(name)
-								|| "rotateto".equals(name)) {
+						} else if ("rotate".equals(name) || "rotateto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									_tween.rotateTo(Float
-											.parseFloat(parameters[0]));
+									_tween.rotateTo(convertToFloat(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.rotateTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]));
+									_tween.rotateTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								}
 							}
-						} else if ("rotate".equals(name)
-								|| "rotateto".equals(name)) {
+						} else if ("rotate".equals(name) || "rotateto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									_tween.rotateTo(Float
-											.parseFloat(parameters[0]));
+									_tween.rotateTo(convertToFloat(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.rotateTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]));
+									_tween.rotateTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								}
 							}
 						} else if ("fadein".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									_tween.fadeIn(Float
-											.parseFloat(parameters[0]));
+									_tween.fadeIn(convertToFloat(parameters[0]));
 								}
 							} else {
 								_tween.fadeIn(60);
@@ -163,120 +151,123 @@ public class ActionScript {
 						} else if ("fadeout".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									_tween.fadeOut(Float
-											.parseFloat(parameters[0]));
+									_tween.fadeOut(convertToFloat(parameters[0]));
 								}
 							} else {
 								_tween.fadeOut(60);
 							}
-						} else if ("color".equals(name)
-								|| "colorto".equals(name)) {
+						} else if ("color".equals(name) || "colorto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
 									_tween.colorTo(new LColor(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.colorTo(new LColor(parameters[0]),
-											new LColor(parameters[1]));
+									_tween.colorTo(new LColor(parameters[0]), new LColor(parameters[1]));
 								} else if (parameters.length == 3) {
-									_tween.colorTo(new LColor(parameters[0]),
-											new LColor(parameters[1]),
-											Float.parseFloat(parameters[2]));
+									_tween.colorTo(new LColor(parameters[0]), new LColor(parameters[1]),
+											convertToFloat(parameters[2]));
 								} else if (parameters.length == 4) {
-									_tween.colorTo(new LColor(parameters[0]),
-											new LColor(parameters[1]),
-											Float.parseFloat(parameters[2]),
-											Float.parseFloat(parameters[3]));
+									_tween.colorTo(new LColor(parameters[0]), new LColor(parameters[1]),
+											convertToFloat(parameters[2]), convertToFloat(parameters[3]));
 								}
 							} else {
-								_tween.colorTo(LColor.white);
+								_tween.colorTo(LColor.white.cpy());
 							}
-						} else if ("shake".equals(name)
-								|| "shaketo".equals(name)) {
+						} else if ("transformpos".equals(name) || "transpos".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.shakeTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]));
-								} else if (parameters.length == 3) {
-									_tween.shakeTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]),
-											Float.parseFloat(parameters[2]));
-								} else if (parameters.length == 4) {
-									_tween.shakeTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]),
-											Float.parseFloat(parameters[2]),
-											Float.parseFloat(parameters[3]));
+									_tween.transformPos(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								}
 							}
-						} else if ("transfer".equals(name)
-								|| "transferto".equals(name)) {
+						} else if ("transformscale".equals(name) || "transscale".equals(name)) {
 							if (parameters != null) {
-								if (parameters.length == 4) {
-									_tween.transferTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]),
-											Float.parseFloat(parameters[2]),
-											Easing.toEasingMode(parameters[3]));
-								} else if (parameters.length == 6) {
-									_tween.transferTo(Float
-											.parseFloat(parameters[0]), Float
-											.parseFloat(parameters[1]), Float
-											.parseFloat(parameters[2]), Easing
-											.toEasingMode(parameters[3]),
-											StringUtils
-													.toBoolean(parameters[4]),
-											StringUtils
-													.toBoolean(parameters[5]));
-								} else if (parameters.length == 7) {
-									_tween.transferTo(Float
-											.parseFloat(parameters[0]), Float
-											.parseFloat(parameters[1]), Float
-											.parseFloat(parameters[2]), Float
-											.parseFloat(parameters[3]), Easing
-											.toEasingMode(parameters[4]),
-											StringUtils
-													.toBoolean(parameters[5]),
-											StringUtils
-													.toBoolean(parameters[6]));
+								if (parameters.length == 2) {
+									_tween.transformScale(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								}
 							}
-						} else if ("scale".equals(name)
-								|| "scaleto".equals(name)) {
+						} else if ("transformalpha".equals(name) || "transalpha".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									float scale = Float
-											.parseFloat(parameters[0]);
+									_tween.transformAlpha(convertToFloat(parameters[0]));
+								}
+							}
+						} else if ("transformrotation".equals(name) || "transrotation".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 1) {
+									_tween.transformRotation(convertToFloat(parameters[0]));
+								}
+							}
+						} else if ("transformcolor".equals(name) || "transcolor".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 1) {
+									_tween.transformColor(LColor.decode(parameters[0]));
+								} else if (parameters.length == 3) {
+									_tween.transformColor(new LColor(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2])));
+								} else if (parameters.length == 4) {
+									_tween.transformColor(new LColor(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2])));
+								}
+							}
+						} else if ("shake".equals(name) || "shaketo".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 2) {
+									_tween.shakeTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
+								} else if (parameters.length == 3) {
+									_tween.shakeTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2]));
+								} else if (parameters.length == 4) {
+									_tween.shakeTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
+											convertToFloat(parameters[3]));
+								}
+							}
+						} else if ("transfer".equals(name) || "transferto".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 4) {
+									_tween.transferTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
+											Easing.toEasingMode(parameters[3]));
+								} else if (parameters.length == 6) {
+									_tween.transferTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
+											Easing.toEasingMode(parameters[3]), StringUtils.toBoolean(parameters[4]),
+											StringUtils.toBoolean(parameters[5]));
+								} else if (parameters.length == 7) {
+									_tween.transferTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
+											convertToFloat(parameters[3]), Easing.toEasingMode(parameters[4]),
+											StringUtils.toBoolean(parameters[5]), StringUtils.toBoolean(parameters[6]));
+								}
+							}
+						} else if ("scale".equals(name) || "scaleto".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 1) {
+									float scale = convertToFloat(parameters[0]);
 									_tween.scaleTo(scale, scale);
 								} else if (parameters.length == 2) {
-									_tween.scaleTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]));
+									_tween.scaleTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
-									_tween.scaleTo(
-											Float.parseFloat(parameters[0]),
-											Float.parseFloat(parameters[1]),
-											Float.parseFloat(parameters[2]));
+									_tween.scaleTo(convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]), convertToFloat(parameters[2]));
 								}
 							}
 						} else if ("show".equals(name) || "showto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									_tween.showTo(StringUtils
-											.toBoolean(parameters[0]));
+									_tween.showTo(StringUtils.toBoolean(parameters[0]));
 								}
 							}
-						} else if ("repeat".equals(name)
-								|| "repeatto".equals(name)) {
+						} else if ("repeat".equals(name) || "repeatto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {
-									_tween.repeat(Float
-											.parseFloat(parameters[0]));
+									_tween.repeat(convertToFloat(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.repeat((int) Float
-											.parseFloat(parameters[0]), Float
-											.parseFloat(parameters[1]));
+									_tween.repeat((int) convertToFloat(parameters[0]),
+											convertToFloat(parameters[1]));
 								}
 							} else {
 								_tween.repeat(1f);

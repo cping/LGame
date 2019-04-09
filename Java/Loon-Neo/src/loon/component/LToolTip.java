@@ -65,20 +65,18 @@ public class LToolTip extends LComponent {
 	}
 
 	public LToolTip(String text) {
-		this(SkinManager.get().getMessageSkin().getFont(), text, SkinManager
-				.get().getMessageSkin().getBackgroundTexture(), SkinManager
-				.get().getMessageSkin().getFontColor());
+		this(SkinManager.get().getMessageSkin().getFont(), text,
+				SkinManager.get().getMessageSkin().getBackgroundTexture(),
+				SkinManager.get().getMessageSkin().getFontColor());
 	}
 
 	public LToolTip(IFont font, String text, LColor fontColor) {
-		this(font, text, SkinManager.get().getMessageSkin()
-				.getBackgroundTexture(), fontColor);
+		this(font, text, SkinManager.get().getMessageSkin().getBackgroundTexture(), fontColor);
 	}
 
 	public LToolTip(IFont font, String text) {
-		this(font, text, SkinManager.get().getMessageSkin()
-				.getBackgroundTexture(), SkinManager.get().getMessageSkin()
-				.getFontColor());
+		this(font, text, SkinManager.get().getMessageSkin().getBackgroundTexture(),
+				SkinManager.get().getMessageSkin().getFontColor());
 	}
 
 	public LToolTip(IFont font, String text, LTexture bg, LColor color) {
@@ -96,7 +94,7 @@ public class LToolTip extends LComponent {
 		if (this.isVisible()) {
 			if (this.tooltip != null && !this.tooltipChanged) {
 				if (dismissing && running) {
-			
+
 					if (!fadeCompleted) {
 						currentFrame++;
 						if (currentFrame == fadeTime) {
@@ -122,8 +120,7 @@ public class LToolTip extends LComponent {
 			if (this.reshow > 0) {
 				this.reshow--;
 			}
-			if (this.tooltip != null
-					&& (this.reshow > 0 || ++this.initial >= this.initialDelay)) {
+			if (this.tooltip != null && (this.reshow > 0 || ++this.initial >= this.initialDelay)) {
 				this.showTip();
 
 			}
@@ -153,8 +150,7 @@ public class LToolTip extends LComponent {
 		if (this.tooltip != null) {
 			if (!this.tooltip.getToolTipText().equals(this.tipText)) {
 				this.tipText = this.tooltip.getToolTipText();
-				String[] componentTipText = StringUtils.split(this.tipText,
-						'\n');
+				String[] componentTipText = StringUtils.split(this.tipText, '\n');
 				this.dismissTime = (this.dismissDelay * componentTipText.length);
 			}
 		}
@@ -216,8 +212,7 @@ public class LToolTip extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (component == null || tooltip == null) {
 			return;
 		}
@@ -246,6 +241,30 @@ public class LToolTip extends LComponent {
 			_text.paintString(g, posX + 2 - width, posY, _fontColor);
 		}
 
+	}
+
+	public int getDismiss() {
+		return dismiss;
+	}
+
+	public void setDismiss(int dismiss) {
+		this.dismiss = dismiss;
+	}
+
+	public int getDismissTime() {
+		return dismissTime;
+	}
+
+	public void setDismissTime(int dismissTime) {
+		this.dismissTime = dismissTime;
+	}
+
+	public boolean isDismissing() {
+		return dismissing;
+	}
+
+	public void setDismissing(boolean dismissing) {
+		this.dismissing = dismissing;
 	}
 
 	@Override

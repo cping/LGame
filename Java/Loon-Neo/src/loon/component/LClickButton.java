@@ -30,10 +30,13 @@ import loon.component.skin.SkinManager;
 import loon.event.CallFunction;
 import loon.font.BMFont;
 import loon.font.FontSet;
+import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 /**
@@ -174,6 +177,15 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			clickedClick = SkinManager.get().getClickButtonSkin().getClickedTexture();
 		}
 		freeRes().add(idleClick, hoverClick, clickedClick);
+		autoSize();
+	}
+
+	public void autoSize() {
+		if (getWidth() <= 1f || getHeight() <= 1f) {
+			PointF size = FontUtils.getTextWidthAndHeight(font, text, getWidth(), getHeight());
+			this.setWidth(MathUtils.max(getWidth(), size.x));
+			this.setHeight(MathUtils.max(getHeight(), size.y));
+		}
 	}
 
 	@Override

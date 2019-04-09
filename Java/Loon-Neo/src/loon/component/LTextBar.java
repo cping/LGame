@@ -25,7 +25,9 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
 import loon.component.skin.TextBarSkin;
+import loon.font.FontUtils;
 import loon.font.IFont;
+import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -118,12 +120,21 @@ public class LTextBar extends LComponent {
 		this.body = body;
 		this.setText(txt);
 		freeRes().add(left, right, body);
+		autoSize();
 	}
 
 	public LTextBar(int x, int y, int width, int height) {
 		super(x, y, width, height);
 	}
 
+	public void autoSize() {
+		if (getWidth() <= 1f || getHeight() <= 1f) {
+			PointF size = FontUtils.getTextWidthAndHeight(_font, _text, getWidth(), getHeight());
+			this.setWidth(MathUtils.max(getWidth(), size.x));
+			this.setHeight(MathUtils.max(getHeight(), size.y));
+		}
+	}
+	
 	public void setMaxWidth(float w) {
 		this._maxWidth = (int) w;
 	}

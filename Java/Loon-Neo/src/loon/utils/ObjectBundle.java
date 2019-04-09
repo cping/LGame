@@ -23,7 +23,7 @@ package loon.utils;
 /**
  * 一个Loon数据临时存储器Bundle的Object存储实现,具有简单的存储中数据四则运算能力.<br>
  * 
- * Screen中默认的Bundle就是此类.
+ * Screen中默认的全局通用Bundle(screen.getBundle获得)就是此类.
  * 
  * <pre>
  * 

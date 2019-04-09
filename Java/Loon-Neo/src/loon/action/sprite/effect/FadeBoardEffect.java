@@ -86,7 +86,6 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 			this._angle = angle;
 			this._scaleX = scaleX;
 			this._scaleY = scaleY;
-
 			if (fadeType == TYPE_FADE_OUT) {
 				this._deltaScaleX = targetScaleX - _scaleX;
 				this._deltaScaleY = targetScaleY - _scaleY;
@@ -113,7 +112,6 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 				_currentDelta += MathUtils.max(elapsedTime / 1000f, 0.01f);
 				float delta = MathUtils.sin(_currentDelta / blocDuration * 1.5707964f);
 				if (fadeType == TYPE_FADE_OUT) {
-
 					_angle += (delta * 100f);
 					_alpha += delta;
 					if (_alpha > 1f) {
@@ -279,6 +277,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		super.close();
 		this._completed = true;
 		this._dirty = true;
+		
 		if (blockTexture != null) {
 			blockTexture.close();
 		}

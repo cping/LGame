@@ -90,7 +90,20 @@ public class PlayerUtils extends Director {
 		}
 		RealtimeProcessManager.get().addProcess(process);
 	}
-
+	
+	/**
+	 * 查看GameProcess是否存在
+	 * 
+	 * @param process
+	 * @return
+	 */
+	public final static boolean containsProcess(GameProcess process) {
+		if (process == null) {
+			return false;
+		}
+		return RealtimeProcessManager.get().containsProcess(process);
+	}
+	
 	/**
 	 * 删除一个GameProcess
 	 * 

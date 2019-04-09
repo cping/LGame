@@ -75,19 +75,8 @@ public class LTextField extends LTextBar {
 
 	private String cursor = "_";
 
-	protected int INPUT_TYPE = INPUT_STRING;
+	protected int inputType = INPUT_STRING;
 	protected int startidx, limit;
-
-	public LTextField(IFont font, String txt, LTexture left, LTexture right, LTexture body, int x, int y,
-			LColor textcolor, int type, int limit) {
-		super(txt, left, right, body, x, y, textcolor, font);
-		this._font = font;
-		this.INPUT_TYPE = type;
-		this.startidx = txt.length();
-		this.limit = limit + startidx;
-		this.setFocusable(true);
-		freeRes().add(left, right, body);
-	}
 
 	public LTextField(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor textcolor,
 			int type, int limit) {
@@ -122,18 +111,29 @@ public class LTextField extends LTextBar {
 		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, 128);
 	}
 
+	public LTextField(IFont font, String txt, LTexture left, LTexture right, LTexture body, int x, int y,
+			LColor textcolor, int type, int limit) {
+		super(txt, left, right, body, x, y, textcolor, font);
+		this._font = font;
+		this.inputType = type;
+		this.startidx = txt.length();
+		this.limit = limit + startidx;
+		this.setFocusable(true);
+		freeRes().add(left, right, body);
+	}
+
 	public int getInputType() {
-		return INPUT_TYPE;
+		return inputType;
 	}
 
 	public LTextField setInputType(int type) {
-		INPUT_TYPE = type;
+		inputType = type;
 		return this;
 	}
 
 	public String getInput() {
 		String result = _text.substring(startidx);
-		if ((result.endsWith("-") || result.length() == 0) && INPUT_TYPE != INPUT_STRING) {
+		if ((result.endsWith("-") || result.length() == 0) && inputType != INPUT_STRING) {
 			return "0";
 		}
 		return result;
@@ -165,8 +165,8 @@ public class LTextField extends LTextBar {
 			return;
 		}
 		boolean valid = true;
-		if (INPUT_TYPE != INPUT_STRING) {
-			switch (INPUT_TYPE) {
+		if (inputType != INPUT_STRING) {
+			switch (inputType) {
 			case INPUT_UNSIGNED_INTEGER_NUM:
 				valid = Character.isDigit(nextchar);
 				break;

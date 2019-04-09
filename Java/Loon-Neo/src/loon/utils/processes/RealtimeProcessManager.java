@@ -50,12 +50,21 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 		return new RealtimeProcessManager();
 	}
 
+	@Override
 	public void addProcess(GameProcess realtimeProcess) {
 		synchronized (this.processes) {
 			this.processes.add(realtimeProcess);
 		}
 	}
 
+	@Override
+	public boolean containsProcess(GameProcess realtimeProcess) {
+		synchronized (this.processes) {
+			return this.processes.contains(realtimeProcess);
+		}
+	}
+	
+	@Override
 	public void tick(LTimerContext time) {
 		if (processes.size > 0) {
 			final SortedList<GameProcess> toBeUpdated;

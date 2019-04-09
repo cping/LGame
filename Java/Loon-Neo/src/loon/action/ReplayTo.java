@@ -27,15 +27,15 @@ public class ReplayTo extends ActionEvent {
 
 	private Array<ActionEvent> repeatList;
 
-	Array<ActionEvent> replays;
+	protected Array<ActionEvent> replays;
 
-	Array<ActionEvent> _cache_list;
+	protected Array<ActionEvent> _cache_list;
 
-	ActionEvent currentEvent;
+	protected ActionEvent currentEvent;
 
-	boolean replay;
+	protected boolean replay;
 
-	int count;
+	protected int count;
 
 	public ReplayTo(Array<ActionEvent> list) {
 		this(list, true);

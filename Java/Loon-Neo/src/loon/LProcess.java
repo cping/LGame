@@ -163,6 +163,12 @@ public class LProcess {
 		}
 	}
 
+	public boolean containsLoad(Updateable u) {
+		synchronized (loads) {
+			return loads.contains(u);
+		}
+	}
+
 	public void removeLoad(Updateable u) {
 		synchronized (loads) {
 			loads.remove(u);
@@ -191,6 +197,12 @@ public class LProcess {
 	public void addUnLoad(Updateable u) {
 		synchronized (unloads) {
 			unloads.add(u);
+		}
+	}
+
+	public boolean containsUnLoad(Updateable u) {
+		synchronized (unloads) {
+			return unloads.contains(u);
 		}
 	}
 

@@ -28,6 +28,15 @@ public class Circle extends Ellipse {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static Circle at(float x, float y, float r) {
+		return new Circle(x, y, r);
+	}
+
+	public static Circle at(float x, float y, float w, float h) {
+		float radius = MathUtils.max(w, h);
+		return new Circle(x + radius / 2f, y + radius / 2f, radius);
+	}
+
 	public float radius;
 
 	/**

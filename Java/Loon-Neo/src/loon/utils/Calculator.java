@@ -52,7 +52,7 @@ public class Calculator {
 		} else {
 			String mes = num.toString();
 			if (MathUtils.isNan(mes)) {
-				value = Float.valueOf(mes);
+				value = Float.parseFloat(mes);
 			} else {
 				value = -1f;
 			}
@@ -60,45 +60,45 @@ public class Calculator {
 		return value;
 	}
 
-	public Calculator add(Object number) {
-		return add(convertObjectToFloat(number));
+	public Calculator add(Object num) {
+		return add(convertObjectToFloat(num));
 	}
 
-	public Calculator sub(Object number) {
-		return sub(convertObjectToFloat(number));
+	public Calculator sub(Object num) {
+		return sub(convertObjectToFloat(num));
 	}
 
-	public Calculator mul(Object number) {
-		return mul(convertObjectToFloat(number));
+	public Calculator mul(Object num) {
+		return mul(convertObjectToFloat(num));
 	}
 
-	public Calculator div(Object number) {
-		return div(convertObjectToFloat(number));
+	public Calculator div(Object num) {
+		return div(convertObjectToFloat(num));
 	}
 
-	public Calculator equal(Object number) {
-		return div(convertObjectToFloat(number));
+	public Calculator equal(Object num) {
+		return div(convertObjectToFloat(num));
 	}
 
-	public Calculator add(String number) {
-		return convertToFloat(number, ADD);
+	public Calculator add(String num) {
+		return convertToFloat(num, ADD);
 	}
 
-	public Calculator sub(String number) {
-		return convertToFloat(number, SUBTRACT);
+	public Calculator sub(String num) {
+		return convertToFloat(num, SUBTRACT);
 	}
 
-	public Calculator mul(String number) {
-		return convertToFloat(number, MULTIPLY);
+	public Calculator mul(String num) {
+		return convertToFloat(num, MULTIPLY);
 	}
 
-	public Calculator div(String number) {
-		return convertToFloat(number, DIVIDE);
+	public Calculator div(String num) {
+		return convertToFloat(num, DIVIDE);
 	}
 
-	private Calculator convertToFloat(String number, int operator) {
-		if (MathUtils.isNan(number)) {
-			float dblNumber = Float.valueOf(number);
+	private Calculator convertToFloat(String num, int operator) {
+		if (MathUtils.isNan(num)) {
+			float dblNumber = Float.parseFloat(num);
 			switch (operator) {
 			case ADD:
 				return add(dblNumber);
@@ -117,34 +117,34 @@ public class Calculator {
 		return this;
 	}
 
-	public Calculator add(float number) {
-		currentTotal += number % 1f == 0 ? (int) number : number;
+	public Calculator add(float num) {
+		currentTotal += num % 1f == 0 ? (int) num : num;
 		return this;
 	}
 
-	public Calculator sub(float number) {
-		currentTotal -= number % 1f == 0 ? (int) number : number;
+	public Calculator sub(float num) {
+		currentTotal -= num % 1f == 0 ? (int) num : num;
 		return this;
 	}
 
-	public Calculator mul(float number) {
-		currentTotal *= number % 1f == 0 ? (int) number : number;
+	public Calculator mul(float num) {
+		currentTotal *= num % 1f == 0 ? (int) num : num;
 		return this;
 	}
 
-	public Calculator div(float number) {
-		currentTotal /= number % 1f == 0 ? (int) number : number;
+	public Calculator div(float num) {
+		currentTotal /= num % 1f == 0 ? (int) num : num;
 		return this;
 	}
 
-	public Calculator equal(float number) {
-		currentTotal = number;
+	public Calculator equal(float num) {
+		currentTotal = num;
 		return this;
 	}
 
-	public Calculator equal(String number) {
-		if (MathUtils.isNan(number)) {
-			currentTotal = Float.valueOf(number);
+	public Calculator equal(String num) {
+		if (MathUtils.isNan(num)) {
+			currentTotal = Float.parseFloat(num);
 		}
 		return this;
 	}

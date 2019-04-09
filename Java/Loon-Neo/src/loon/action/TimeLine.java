@@ -41,7 +41,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 			try {
 				obj.reset();
 				onSuccess(obj);
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				onFailure(ex);
 			}
 		}

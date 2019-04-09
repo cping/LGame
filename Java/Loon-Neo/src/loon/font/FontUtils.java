@@ -22,7 +22,9 @@ package loon.font;
 
 import loon.HorizontalAlign;
 import loon.canvas.LColor;
+import loon.geom.PointF;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -100,6 +102,25 @@ public class FontUtils {
 		} else {
 			return font.stringWidth(new StringBuffer(chars).substring(start, end).toString());
 		}
+	}
+
+	public static PointF getTextWidthAndHeight(IFont font, String message, float defWidth, float defHeight) {
+		if (font != null && message != null) {
+			TArray<CharSequence> result = new TArray<CharSequence>();
+			result = splitLines(message, result);
+			float maxWidth = 0f;
+			float space = font.getSize() / 4f;
+			for (int i = 0; i < result.size; i++) {
+				maxWidth = MathUtils.max(maxWidth, font.stringWidth(new StringBuffer(result.get(i)).toString()));
+			}
+			if (defWidth >= 1f && defHeight >= 1f) {
+				return new PointF(MathUtils.max(defWidth, maxWidth) + space,
+						MathUtils.max(defHeight, (result.size * font.getHeight())) + space);
+			} else {
+				return new PointF(maxWidth + space, (result.size * font.getHeight()) + space);
+			}
+		}
+		return new PointF(defWidth, defHeight);
 	}
 
 	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {

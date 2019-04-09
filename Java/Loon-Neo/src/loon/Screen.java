@@ -73,6 +73,7 @@ import loon.event.Updateable;
 import loon.event.LTouchArea.Event;
 import loon.font.Font.Style;
 import loon.font.IFont;
+import loon.geom.Circle;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -841,6 +842,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	public boolean containsRelease(LRelease r) {
+		if (releases == null) {
+			return false;
+		}
+		return releases.contains(r);
+	}
+
 	public Screen removeRelease(LRelease r) {
 		if (releases == null) {
 			releases = new TArray<LRelease>(10);
@@ -1290,6 +1298,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	public boolean containsLoad(Updateable u) {
+		if (handler != null) {
+			return handler.containsLoad(u);
+		}
+		return false;
+	}
+
 	public Screen removeLoad(Updateable u) {
 		if (handler != null) {
 			handler.removeLoad(u);
@@ -1309,6 +1324,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			handler.addUnLoad(u);
 		}
 		return this;
+	}
+
+	public boolean containsUnLoad(Updateable u) {
+		if (handler != null) {
+			return handler.containsUnLoad(u);
+		}
+		return false;
 	}
 
 	public Screen removeUnLoad(Updateable u) {
@@ -2346,19 +2368,35 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public boolean contains(ISprite sprite) {
+		return contains(sprite, false);
+	}
+
+	public boolean contains(ISprite sprite, boolean canView) {
 		boolean can = false;
 		if (sprites != null) {
 			can = sprites.contains(sprite);
 		}
-		return can && contains(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
+		if (canView) {
+			return can && contains(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
+		} else {
+			return can;
+		}
 	}
 
 	public boolean intersects(ISprite sprite) {
+		return intersects(sprite, false);
+	}
+
+	public boolean intersects(ISprite sprite, boolean canView) {
 		boolean can = false;
 		if (sprites != null) {
 			can = sprites.contains(sprite);
 		}
-		return can && intersects(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
+		if (canView) {
+			return can && intersects(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
+		} else {
+			return can;
+		}
 	}
 
 	public Screen remove(ISprite sprite) {
@@ -2371,11 +2409,36 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public boolean contains(LComponent sprite) {
+	public boolean contains(LComponent comp) {
+		return contains(comp, false);
+	}
+
+	public boolean contains(LComponent comp, boolean canView) {
+		boolean can = false;
 		if (desktop != null) {
-			return desktop.contains(sprite);
+			can = desktop.contains(comp);
 		}
-		return false;
+		if (canView) {
+			return can && getRectBox().contains(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
+		} else {
+			return can;
+		}
+	}
+
+	public boolean intersects(LComponent comp) {
+		return intersects(comp, false);
+	}
+
+	public boolean intersects(LComponent comp, boolean canView) {
+		boolean can = false;
+		if (desktop != null) {
+			can = desktop.contains(comp);
+		}
+		if (canView) {
+			return can && getRectBox().intersects(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
+		} else {
+			return can;
+		}
 	}
 
 	public Screen remove(LTexture tex) {
@@ -2409,15 +2472,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public boolean contains(ActionBind obj) {
+	public boolean containsView(ActionBind obj) {
 		return getRectBox().contains(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
 	}
 
 	public boolean contains(Object obj) {
 		if (obj instanceof ISprite) {
-			return contains((ISprite) obj);
+			return contains((ISprite) obj, false);
 		} else if (obj instanceof LComponent) {
-			return contains((LComponent) obj);
+			return contains((LComponent) obj, false);
+		} else if (obj instanceof Updateable) {
+			Updateable update = (Updateable) obj;
+			boolean can = containsLoad(update);
+			if (!can) {
+				can = containsUnLoad(update);
+			}
+			return can;
+		} else if (obj instanceof GameProcess) {
+			return containsProcess((GameProcess) obj);
+		} else if (obj instanceof LRelease) {
+			return containsRelease((LRelease) obj);
 		}
 		return false;
 	}
@@ -3854,7 +3928,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 返回Bundle对象(作用类似Android中同名类,内部为key-value键值对形式的值,用来跨screen传递数据)
+	 * 返回全局通用的Bundle对象(作用类似Android中同名类,内部为key-value键值对形式的值,用来跨screen传递数据)
 	 * 
 	 * @return
 	 */
@@ -3866,7 +3940,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 添加Bundle对象
+	 * 添加全局通用的Bundle对象
 	 * 
 	 * @param key
 	 * @param value
@@ -3878,9 +3952,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		return new ObjectBundle();
 	}
-	
+
 	/**
-	 * 删除Bundle对象
+	 * 删除全局通用的Bundle对象
 	 * 
 	 * @param key
 	 * @return
@@ -3891,9 +3965,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		return new ObjectBundle();
 	}
-	
+
 	/**
-	 * Bundle中指定数据做加法
+	 * 全局通用的Bundle中指定数据做加法
 	 * 
 	 * @param key
 	 * @param value
@@ -3904,7 +3978,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * Bundle中指定数据做减法
+	 * 全局通用的Bundle中指定数据做减法
 	 * 
 	 * @param key
 	 * @param value
@@ -3915,7 +3989,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * Bundle中指定数据做乘法
+	 * 全局通用的Bundle中指定数据做乘法
 	 * 
 	 * @param key
 	 * @param value
@@ -3926,7 +4000,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * Bundle中指定数据做除法
+	 * 全局通用的Bundle中指定数据做除法
 	 * 
 	 * @param key
 	 * @param value
@@ -3937,7 +4011,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 获得一个针对Bundle中指定数据的四则运算器
+	 * 获得一个针对全局通用的Bundle中指定数据的四则运算器
 	 * 
 	 * @param key
 	 * @return
@@ -3960,7 +4034,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 截屏screen并保存在image(image存在系统依赖,为系统本地image类组件的封装)
+	 * 截屏screen并保存在image(image存在系统依赖,为系统本地image类组件的封装,所以效果可能存在差异)
 	 * 
 	 * @return
 	 */
@@ -4409,6 +4483,119 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 以圆形环绕部署动作对象，绘制一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 
+	 * @param objs
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @return
+	 */
+	public final Screen elementsCircle(final TArray<ActionBind> objs, float x, float y, float radius) {
+		LayoutManager.elementsCircle(this, objs, x, y, radius);
+		return this;
+	}
+
+	/**
+	 * 以圆形环绕部署动作对象，绘制一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param circle
+	 * @param startAngle
+	 * @param endAngle
+	 * @return
+	 */
+	public final Screen elementsCircle(final TArray<ActionBind> objs, Circle circle, float startAngle, float endAngle) {
+		LayoutManager.elementsCircle(this, objs, circle, startAngle, endAngle);
+		return this;
+	}
+
+	/**
+	 * 以圆形环绕部署动作对象，绘制一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param circle
+	 * @param startAngle
+	 * @param endAngle
+	 * @param offsetX
+	 * @param offsetY
+	 */
+	public final Screen elementsCircle(final TArray<ActionBind> objs, Circle circle, float startAngle, float endAngle,
+			float offsetX, float offsetY) {
+		LayoutManager.elementsCircle(this, objs, circle, startAngle, endAngle, offsetX, offsetY);
+		return this;
+	}
+
+	/**
+	 * 把指定对象布局,在指定的RectBox范围内部署,并注入Screen
+	 * 
+	 * @param objs
+	 * @param rectView
+	 * @return
+	 */
+	public final Screen elements(final TArray<ActionBind> objs, RectBox rectView) {
+		LayoutManager.elements(this, objs, rectView);
+		return this;
+	}
+
+	/**
+	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
+	 * 
+	 * @param objs
+	 * @param rectView
+	 * @param cellWidth
+	 * @param cellHeight
+	 * @return
+	 */
+	public final Screen elements(final TArray<ActionBind> objs, RectBox rectView, float cellWidth, float cellHeight) {
+		LayoutManager.elements(this, objs, rectView, cellWidth, cellHeight);
+		return this;
+	}
+
+	/**
+	 * 把指定对象布局,在指定的RectBox范围内部署,并注入Screen
+	 * 
+	 * @param objs
+	 *            要布局的对象集合
+	 * @param rectView
+	 *            显示范围
+	 * @param cellWidth
+	 *            单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param cellHeight
+	 *            单独对象的默认height(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param offsetX
+	 *            显示坐标偏移x轴
+	 * @param offsetY
+	 *            显示坐标偏移y轴
+	 */
+	public final Screen elements(final TArray<ActionBind> objs, RectBox rectView, float cellWidth, float cellHeight,
+			float offsetX, float offsetY) {
+		LayoutManager.elements(this, objs, rectView, cellWidth, cellHeight, offsetX, offsetY);
+		return this;
+	}
+
+	/**
+	 * 以指定名称指定坐标指定大小开始,在Screen中生成一组LClickButton,并返回Click对象集合
+	 * 
+	 * @param names
+	 * @param sx
+	 * @param sy
+	 * @param cellWidth
+	 * @param cellHeight
+	 * @param offsetX
+	 * @param offsetY
+	 * @param listener
+	 * @param maxHeight
+	 * @return
+	 */
+	public final TArray<LClickButton> elementButtons(final String[] names, int sx, int sy, int cellWidth,
+			int cellHeight, int offsetX, int offsetY, ClickListener listener, int maxHeight) {
+		return LayoutManager.elementButtons(this, names, sx, sy, cellWidth, cellHeight, listener, maxHeight);
+	}
+
+	/**
 	 * 注销Screen
 	 */
 	public final void destroy() {
@@ -4464,7 +4651,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 			_conns.close();
 			release();
-			close();
 			_keyActions.clear();
 			if (currentScreenBackground != null) {
 				currentScreenBackground.close();
@@ -4477,6 +4663,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			_closeUpdate = null;
 			screenSwitch = null;
 			DefUI.self().clearDefaultUI();
+			close();
 		}
 	}
 
