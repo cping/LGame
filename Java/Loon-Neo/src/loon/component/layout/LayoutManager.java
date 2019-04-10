@@ -30,7 +30,6 @@ import loon.event.ClickListener;
 import loon.geom.Circle;
 import loon.geom.Line;
 import loon.geom.Point;
-import loon.geom.RectBox;
 import loon.geom.SizeValue;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
@@ -39,18 +38,36 @@ import loon.utils.TArray;
 
 public abstract class LayoutManager {
 
+	/**
+	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 */
 	public final static void elementsTriangle(final Screen root, final TArray<ActionBind> objs, float x, float y,
-			float w, float h, int stepRate) {
-		elementsTriangle(root, objs, Triangle2f.at(x, y, w, h), stepRate, 0f, 0f);
+			float w, float h) {
+		elementsTriangle(root, objs, Triangle2f.at(x, y, w, h), 1, 0f, 0f);
 	}
 
+	/**
+	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param triangle
+	 * @param stepRate
+	 */
 	public final static void elementsTriangle(final Screen root, final TArray<ActionBind> objs, Triangle2f triangle,
 			int stepRate) {
 		elementsTriangle(root, objs, triangle, stepRate, 0f, 0f);
 	}
 
 	/**
-	 * 构建一个三角区域,让集合中的动作元素尽可能填充慢这一三角区域
+	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
 	 * 
 	 * @param root
 	 * @param objs
@@ -92,11 +109,33 @@ public abstract class LayoutManager {
 		}
 	}
 
+	/**
+	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
 	public final static void elementsLine(final Screen root, final TArray<ActionBind> objs, float x1, float y1,
 			float x2, float y2) {
 		elementsLine(root, objs, x1, y1, x2, y2, 2f, 2f);
 	}
 
+	/**
+	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param offsetX
+	 * @param offsetY
+	 */
 	public final static void elementsLine(final Screen root, final TArray<ActionBind> objs, float x1, float y1,
 			float x2, float y2, float offsetX, float offsetY) {
 		elementsLine(root, objs, Line.at(x1, y1, x2, y2), offsetX, offsetY);
@@ -134,11 +173,29 @@ public abstract class LayoutManager {
 		}
 	}
 
+	/**
+	 * 构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param x
+	 * @param y
+	 * @param radius
+	 */
 	public final static void elementsCircle(final Screen root, final TArray<ActionBind> objs, float x, float y,
 			float radius) {
 		elementsCircle(root, objs, Circle.at(x, y, radius), -1f, -1f, 0f, 0f);
 	}
 
+	/**
+	 * 构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param circle
+	 * @param startAngle
+	 * @param endAngle
+	 */
 	public final static void elementsCircle(final Screen root, final TArray<ActionBind> objs, Circle circle,
 			float startAngle, float endAngle) {
 		elementsCircle(root, objs, circle, startAngle, endAngle, 0f, 0f);
@@ -178,11 +235,27 @@ public abstract class LayoutManager {
 		}
 	}
 
-	public final static void elements(final Screen root, final TArray<ActionBind> objs, RectBox rectView) {
+	/**
+	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param rectView
+	 */
+	public final static void elements(final Screen root, final TArray<ActionBind> objs, BoxSize rectView) {
 		elements(root, objs, rectView, 1f, 1f);
 	}
 
-	public final static void elements(final Screen root, final TArray<ActionBind> objs, RectBox rectView,
+	/**
+	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
+	 * 
+	 * @param root
+	 * @param objs
+	 * @param rectView
+	 * @param cellWidth
+	 * @param cellHeight
+	 */
+	public final static void elements(final Screen root, final TArray<ActionBind> objs, BoxSize rectView,
 			float cellWidth, float cellHeight) {
 		elements(root, objs, rectView, 1f, 1f, 2f, 2f);
 	}
@@ -205,11 +278,11 @@ public abstract class LayoutManager {
 	 * @param offsetY
 	 *            显示坐标偏移y轴
 	 */
-	public final static void elements(final Screen root, final TArray<ActionBind> objs, RectBox rectView,
+	public final static void elements(final Screen root, final TArray<ActionBind> objs, BoxSize rectView,
 			float cellWidth, float cellHeight, float offsetX, float offsetY) {
 		float blockWidth;
 		float blockHeight;
-		float x = rectView.x, y = rectView.y;
+		float x = rectView.getX(), y = rectView.getY();
 		for (int i = 0; i < objs.size; i++) {
 			ActionBind obj = objs.get(i);
 			blockWidth = MathUtils.max(cellWidth, obj.getWidth());
@@ -220,11 +293,11 @@ public abstract class LayoutManager {
 			}
 			y += blockHeight + offsetY;
 			if (y >= rectView.getHeight()) {
-				y = rectView.y();
+				y = rectView.getY();
 				x += blockWidth + offsetX;
 			}
 			if (x >= rectView.getWidth()) {
-				x = rectView.x();
+				x = rectView.getX();
 			}
 		}
 	}

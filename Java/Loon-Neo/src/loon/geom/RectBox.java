@@ -23,7 +23,7 @@ package loon.geom;
 import loon.LObject;
 import loon.component.layout.BoxSize;
 import loon.utils.MathUtils;
-import loon.utils.StringUtils;
+import loon.utils.StringKeyValue;
 
 public class RectBox extends Shape implements BoxSize {
 
@@ -31,132 +31,18 @@ public class RectBox extends Shape implements BoxSize {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public float maxX() {
-		return x() + width();
-	}
-
-	public float maxY() {
-		return y() + height();
-	}
-
-	public boolean isEmpty() {
-		return getWidth() <= 0 || height() <= 0;
-	}
-
-	public RectBox setEmpty() {
-		this.x = 0;
-		this.y = 0;
-		this.width = 0;
-		this.height = 0;
-		return this;
+	
+	public final static RectBox at(int x, int y, int w, int h){
+		return new RectBox(x, y, w, h);
 	}
 
 	public int width;
 
 	public int height;
 
-	public RectBox offset(Vector2f offset) {
-		x += offset.x;
-		y += offset.y;
-		return this;
-	}
+	private int _ox, _oy, _ow, _oh;
 
-	public RectBox offset(int offsetX, int offsetY) {
-		x += offsetX;
-		y += offsetY;
-		return this;
-	}
-
-	public RectBox offset(Point point) {
-		x += point.x;
-		y += point.y;
-		return this;
-	}
-
-	public RectBox offset(PointF point) {
-		x += point.x;
-		y += point.y;
-		return this;
-	}
-
-	public RectBox offset(PointI point) {
-		x += point.x;
-		y += point.y;
-		return this;
-	}
-
-	public RectBox add(float px, float py) {
-		float x1 = MathUtils.min(x, px);
-		float x2 = MathUtils.max(x + width, px);
-		float y1 = MathUtils.min(y, py);
-		float y2 = MathUtils.max(y + height, py);
-		setBounds(x1, y1, x2 - x1, y2 - y1);
-		return this;
-	}
-
-	public RectBox add(Vector2f v) {
-		return add(v.x, v.y);
-	}
-
-	public RectBox add(RectBox r) {
-		int tx2 = this.width;
-		int ty2 = this.height;
-		if ((tx2 | ty2) < 0) {
-			setBounds(r.x, r.y, r.width, r.height);
-		}
-		int rx2 = r.width;
-		int ry2 = r.height;
-		if ((rx2 | ry2) < 0) {
-			return this;
-		}
-		float tx1 = this.x;
-		float ty1 = this.y;
-		tx2 += tx1;
-		ty2 += ty1;
-		float rx1 = r.x;
-		float ry1 = r.y;
-		rx2 += rx1;
-		ry2 += ry1;
-		if (tx1 > rx1) {
-			tx1 = rx1;
-		}
-		if (ty1 > ry1) {
-			ty1 = ry1;
-		}
-		if (tx2 < rx2) {
-			tx2 = rx2;
-		}
-		if (ty2 < ry2) {
-			ty2 = ry2;
-		}
-		tx2 -= tx1;
-		ty2 -= ty1;
-		if (tx2 > Integer.MAX_VALUE) {
-			tx2 = Integer.MAX_VALUE;
-		}
-		if (ty2 > Integer.MAX_VALUE) {
-			ty2 = Integer.MAX_VALUE;
-		}
-		setBounds(tx1, ty1, tx2, ty2);
-		return this;
-	}
-
-	public int Left() {
-		return this.x();
-	}
-
-	public int Right() {
-		return (int) (this.x + this.width);
-	}
-
-	public int Top() {
-		return this.y();
-	}
-
-	public int Bottom() {
-		return (int) (this.y + this.height);
-	}
+	private Matrix4 _matrix;
 
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
@@ -176,6 +62,18 @@ public class RectBox extends Shape implements BoxSize {
 
 	public RectBox(RectBox rect) {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public RectBox offset(Vector2f offset) {
+		x += offset.x;
+		y += offset.y;
+		return this;
+	}
+
+	public RectBox offset(int offsetX, int offsetY) {
+		x += offsetX;
+		y += offsetY;
+		return this;
 	}
 
 	public RectBox setBoundsFromCenter(float centerX, float centerY, float cornerX, float cornerY) {
@@ -265,10 +163,6 @@ public class RectBox extends Shape implements BoxSize {
 		return !(x > rectangle.x + rectangle.width || x + width < rectangle.x || y > rectangle.y + rectangle.height
 				|| y + height < rectangle.y);
 	}
-
-	private int _ox, _oy, _ow, _oh;
-
-	private Matrix4 _matrix;
 
 	public Matrix4 getMatrix() {
 		if (_matrix == null) {
@@ -772,9 +666,135 @@ public class RectBox extends Shape implements BoxSize {
 		dest.setBounds(x1, y1, x2 - x1, y2 - y1);
 	}
 
+	public float maxX() {
+		return x() + width();
+	}
+
+	public float maxY() {
+		return y() + height();
+	}
+
+	public boolean isEmpty() {
+		return getWidth() <= 0 || height() <= 0;
+	}
+
+	public RectBox setEmpty() {
+		this.x = 0;
+		this.y = 0;
+		this.width = 0;
+		this.height = 0;
+		return this;
+	}
+
+	public RectBox offset(Point point) {
+		x += point.x;
+		y += point.y;
+		return this;
+	}
+
+	public RectBox offset(PointF point) {
+		x += point.x;
+		y += point.y;
+		return this;
+	}
+
+	public RectBox offset(PointI point) {
+		x += point.x;
+		y += point.y;
+		return this;
+	}
+
+	public RectBox add(float px, float py) {
+		float x1 = MathUtils.min(x, px);
+		float x2 = MathUtils.max(x + width, px);
+		float y1 = MathUtils.min(y, py);
+		float y2 = MathUtils.max(y + height, py);
+		setBounds(x1, y1, x2 - x1, y2 - y1);
+		return this;
+	}
+
+	public RectBox add(Vector2f v) {
+		return add(v.x, v.y);
+	}
+
+	public RectBox add(RectBox r) {
+		int tx2 = this.width;
+		int ty2 = this.height;
+		if ((tx2 | ty2) < 0) {
+			setBounds(r.x, r.y, r.width, r.height);
+		}
+		int rx2 = r.width;
+		int ry2 = r.height;
+		if ((rx2 | ry2) < 0) {
+			return this;
+		}
+		float tx1 = this.x;
+		float ty1 = this.y;
+		tx2 += tx1;
+		ty2 += ty1;
+		float rx1 = r.x;
+		float ry1 = r.y;
+		rx2 += rx1;
+		ry2 += ry1;
+		if (tx1 > rx1) {
+			tx1 = rx1;
+		}
+		if (ty1 > ry1) {
+			ty1 = ry1;
+		}
+		if (tx2 < rx2) {
+			tx2 = rx2;
+		}
+		if (ty2 < ry2) {
+			ty2 = ry2;
+		}
+		tx2 -= tx1;
+		ty2 -= ty1;
+		if (tx2 > Integer.MAX_VALUE) {
+			tx2 = Integer.MAX_VALUE;
+		}
+		if (ty2 > Integer.MAX_VALUE) {
+			ty2 = Integer.MAX_VALUE;
+		}
+		setBounds(tx1, ty1, tx2, ty2);
+		return this;
+	}
+
+	public int Left() {
+		return this.x();
+	}
+
+	public int Right() {
+		return (int) (this.x + this.width);
+	}
+
+	public int Top() {
+		return this.y();
+	}
+
+	public int Bottom() {
+		return (int) (this.y + this.height);
+	}
+
 	@Override
 	public String toString() {
-		return StringUtils.format("RectBox [x:{0},y:{1},width:{2},height:{3}]", x, y, width, height);
+		StringKeyValue builder = new StringKeyValue("RectBox");
+		builder.kv("x", x)
+		.comma()
+		.kv("y", y)
+		.comma()
+		.kv("width", width)
+		.comma()
+		.kv("height", height)
+		.comma()
+		.kv("left", Left())
+		.comma()
+		.kv("right", Right())
+		.comma()
+		.kv("top", Top())
+		.comma()
+		.kv("bottom", Bottom());
+		return builder.toString();
 	}
 
 }

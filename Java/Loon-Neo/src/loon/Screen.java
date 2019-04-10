@@ -54,6 +54,7 @@ import loon.component.LLayer;
 import loon.component.LMenuSelect;
 import loon.component.LPaper;
 import loon.component.UIControls;
+import loon.component.layout.BoxSize;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
@@ -77,6 +78,7 @@ import loon.geom.Circle;
 import loon.geom.Line;
 import loon.geom.PointI;
 import loon.geom.RectBox;
+import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -4484,6 +4486,51 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
+	 * 
+	 * @param objs
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public final Screen elementsTriangle(final TArray<ActionBind> objs, float x, float y, float w,
+			float h) {
+		LayoutManager.elementsTriangle(this, objs, x, y, w, h);
+		return this;
+	}
+
+	/**
+	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
+	 * 
+	 * @param objs
+	 * @param triangle
+	 * @param stepRate
+	 * @return
+	 */
+	public final Screen elementsTriangle(final TArray<ActionBind> objs, Triangle2f triangle,
+			int stepRate) {
+		LayoutManager.elementsTriangle(this, objs, triangle, stepRate);
+		return this;
+	}
+
+	/**
+	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
+	 * 
+	 * @param objs
+	 * @param triangle
+	 * @param stepRate
+	 * @param offsetX
+	 * @param offsetY
+	 */
+	public final Screen elementsTriangle(final TArray<ActionBind> objs, Triangle2f triangle, int stepRate,
+			float offsetX, float offsetY) {
+		LayoutManager.elementsTriangle(this, objs, triangle, stepRate, offsetX, offsetY);
+		return this;
+	}
+
+	/**
 	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
 	 * 
 	 * @param objs
@@ -4582,7 +4629,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param rectView
 	 * @return
 	 */
-	public final Screen elements(final TArray<ActionBind> objs, RectBox rectView) {
+	public final Screen elements(final TArray<ActionBind> objs, BoxSize rectView) {
 		LayoutManager.elements(this, objs, rectView);
 		return this;
 	}
@@ -4596,7 +4643,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param cellHeight
 	 * @return
 	 */
-	public final Screen elements(final TArray<ActionBind> objs, RectBox rectView, float cellWidth, float cellHeight) {
+	public final Screen elements(final TArray<ActionBind> objs, BoxSize rectView, float cellWidth, float cellHeight) {
 		LayoutManager.elements(this, objs, rectView, cellWidth, cellHeight);
 		return this;
 	}
@@ -4617,7 +4664,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param offsetY
 	 *            显示坐标偏移y轴
 	 */
-	public final Screen elements(final TArray<ActionBind> objs, RectBox rectView, float cellWidth, float cellHeight,
+	public final Screen elements(final TArray<ActionBind> objs, BoxSize rectView, float cellWidth, float cellHeight,
 			float offsetX, float offsetY) {
 		LayoutManager.elements(this, objs, rectView, cellWidth, cellHeight, offsetX, offsetY);
 		return this;
