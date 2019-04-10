@@ -20,6 +20,7 @@
  */
 package loon.component.layout;
 
+import loon.geom.BoxSize;
 import loon.geom.RectBox;
 import loon.geom.SizeValue;
 

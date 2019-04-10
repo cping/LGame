@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.component.layout;
+package loon.geom;
 
 public interface BoxSize {
 

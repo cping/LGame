@@ -21,7 +21,6 @@
 package loon.geom;
 
 import loon.LObject;
-import loon.component.layout.BoxSize;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 

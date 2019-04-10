@@ -25,7 +25,7 @@ import loon.utils.StringKeyValue;
 /**
  * 一个最基础的矩形碰撞器
  */
-public class AABB implements XY {
+public class AABB implements XY, BoxSize {
 
 	public float minX, minY;
 
@@ -41,30 +41,31 @@ public class AABB implements XY {
 		this.maxX = maxX;
 		this.maxY = maxY;
 	}
-	
-	public int width(){
-		return (int)this.maxX;
+
+	public int width() {
+		return (int) this.maxX;
 	}
 
-	public int height(){
-		return (int)this.maxY;
+	public int height() {
+		return (int) this.maxY;
 	}
-	
-	public float getWidth(){
+
+	@Override
+	public float getWidth() {
 		return this.maxX;
 	}
-	
-	public float getHeight(){
+
+	@Override
+	public float getHeight() {
 		return this.maxY;
 	}
-	
+
 	public AABB cpy() {
 		return new AABB(this.minX, this.minY, this.maxX, this.maxY);
 	}
 
 	public boolean isHit(AABB b) {
-		return this.minX < b.maxX && b.minX < this.maxX && this.minY < b.maxY
-				&& b.minY < this.maxY;
+		return this.minX < b.maxX && b.minX < this.maxX && this.minY < b.maxY && b.minY < this.maxY;
 	}
 
 	public void set(float minX, float minY, float maxX, float maxY) {
@@ -72,6 +73,26 @@ public class AABB implements XY {
 		this.minY = minY;
 		this.maxX = maxX;
 		this.maxY = maxY;
+	}
+
+	@Override
+	public void setX(float x) {
+		this.minX = x;
+	}
+
+	@Override
+	public void setY(float y) {
+		this.minY = y;
+	}
+
+	@Override
+	public void setWidth(float w) {
+		this.maxX = w;
+	}
+
+	@Override
+	public void setHeight(float h) {
+		this.maxY = h;
 	}
 
 	@Override
@@ -91,10 +112,8 @@ public class AABB implements XY {
 		float ymin = circle.y - circle.radius;
 		float ymax = ymin + 2f * circle.radius;
 
-		return ((xmin > minX && xmin < minX + maxX) && (xmax > minX && xmax < minX
-				+ maxX))
-				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY
-						+ maxY));
+		return ((xmin > minX && xmin < minX + maxX) && (xmax > minX && xmax < minX + maxX))
+				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY + maxY));
 	}
 
 	@Override

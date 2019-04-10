@@ -44,7 +44,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
-import loon.component.layout.BoxSize;
+import loon.geom.BoxSize;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;

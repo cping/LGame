@@ -26,7 +26,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class Polygon extends Shape {
+public class Polygon extends Shape implements BoxSize {
 	/**
 	 * 
 	 */
@@ -227,6 +227,16 @@ public class Polygon extends Shape {
 		System.arraycopy(points, 0, copyPoints, 0, copyPoints.length);
 		return new Polygon(copyPoints);
 	}
+
+	@Override
+	public void setWidth(float w) {
+        this.maxX = w;
+	}
+
+	@Override
+	public void setHeight(float h) {
+	    this.maxY = h; 
+	}
 	
 	@Override
 	public String toString() {
@@ -246,5 +256,4 @@ public class Polygon extends Shape {
 		.kv("maxY", maxY);
 		return builder.toString();
 	}
-
 }
